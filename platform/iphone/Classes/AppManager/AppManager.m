@@ -32,6 +32,55 @@
 static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned int ziplen);
 //const char* RhoGetRootPath();
 
+
+
+BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
+    NSError *error;
+    
+    NSDictionary *attributes = [fileManager attributesOfItemAtPath:path error:&error]; 
+    
+    if (attributes == nil) {
+        //NSLog(@"     SymLink  NO : %@", path);
+        return NO;
+    }
+    
+    NSString* fileType = [attributes objectForKey:NSFileType];
+    
+    if (fileType == nil) {
+        //NSLog(@"     SymLink  NO : %@", path);
+        return NO;
+    }
+
+    BOOL res = [NSFileTypeSymbolicLink isEqualToString:fileType];
+    if (res) {
+        //NSLog(@"     SymLink YES : %@", path);
+    }
+    else {
+        //NSLog(@"     SymLink  NO : %@", path);
+    }
+    
+    return res;
+}
+
+
+@interface RhoFileManagerDelegate_RemoveOnly_SymLinks : NSObject {
+@public
+}
+
+-(BOOL)fileManager:(NSFileManager *)fileManager shouldRemoveItemAtPath:(NSString *)path;
+@end
+
+@implementation RhoFileManagerDelegate_RemoveOnly_SymLinks
+
+
+-(BOOL)fileManager:(NSFileManager *)fileManager shouldRemoveItemAtPath:(NSString *)path {
+    return isPathIsSymLink(fileManager, path);
+}
+
+@end
+
+
+
 @implementation AppManager
 
 + (AppManager *)instance
@@ -128,6 +177,7 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
     return result;
 }
 
+
 /*
  * Configures AppManager
  */
@@ -159,6 +209,30 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 	
     if (contentChanged) {
 #ifdef RHO_DONT_COPY_ON_START
+        // we have next situations when we should remove old content:
+        // 1. we upgrade old version (where we copy all files)
+        //    we should remove all files
+        // 2. we upgrade version with symlinks
+        //    we should remove only symlinks 
+        // we check old "lib/framework/rho/rho.iseq" file - if it is SymLink then we have new version of Rhodes (with SymLinks instead of files)
+
+        NSString* testName = [rhoRoot stringByAppendingPathComponent:@"lib"];
+        //BOOL libExist = [fileManager fileExistsAtPath:testName];
+        //if (libExist) {
+        //    NSLog(@" Lib File is Exist: %@", testName);
+        //}
+        //else {
+        //    NSLog(@" Lib File is NOT Exist: %@", testName);
+        //}
+        
+        BOOL isNewVersion = isPathIsSymLink(fileManager, testName);
+        
+        RhoFileManagerDelegate_RemoveOnly_SymLinks* myDelegate = nil;
+        if (isNewVersion) {
+            myDelegate = [[RhoFileManagerDelegate_RemoveOnly_SymLinks alloc] init];
+            [fileManager setDelegate:myDelegate];
+        }
+
         NSError *error;
         // Create symlink to "lib"
         NSString *src = [bundleRoot stringByAppendingPathComponent:@"lib"];
@@ -187,13 +261,22 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
                 NSString *target = [dst stringByAppendingPathComponent:child];
                 NSLog(@"dst: %@", target);
                 [fileManager removeItemAtPath:target error:&error];
-                if ([child isEqualToString:@"rhoconfig.txt"])
+                if ([child isEqualToString:@"rhoconfig.txt"]) {
+                    [fileManager setDelegate:nil];
+                    [fileManager removeItemAtPath:target error:&error];
+                    [fileManager setDelegate:myDelegate];
                     [fileManager copyItemAtPath:fchild toPath:target error:&error];
-                else
+                }
+                else {
                     [fileManager createSymbolicLinkAtPath:target withDestinationPath:fchild error:&error];
+                }
             }
         }
         
+        [fileManager setDelegate:nil];
+        if (myDelegate != nil) {
+            [myDelegate release];
+        }
         // Finally, copy "hash" and "name" files
         NSString *items[] = {@"hash", @"name"};
         for (int i = 0, lim = sizeof(items)/sizeof(items[0]); i < lim; ++i) {
@@ -375,8 +458,20 @@ void rho_sys_run_app(const char* appname, VALUE params)
 			}
 		//}
 	}
+    const char* full_url = [app_name UTF8String];
+    RAWLOG_INFO1("rho_sys_run_app: %s", full_url);	
 	
-	rho_sys_open_url([app_name UTF8String]);
+
+	BOOL res = FALSE;
+
+    if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:app_name]]) {
+        res = [[UIApplication sharedApplication] openURL:[NSURL URLWithString:app_name]];
+    }
+	
+	if ( res)
+		RAWLOG_INFO("rho_sys_run_app suceeded.");	
+	else
+		RAWLOG_INFO("rho_sys_run_app failed.");	
 }
 
 

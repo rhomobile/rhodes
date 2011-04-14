@@ -137,6 +137,10 @@ module Rho
       def get_blob_folder()
         Rho::RhoFSConnector::get_blob_folder()
       end
+
+      def get_public_folder()
+        Rho::RhoFSConnector::get_public_folder()
+      end
       
       def get_blob_path(relative_path)
         Rho::RhoFSConnector::get_blob_path(relative_path)      
