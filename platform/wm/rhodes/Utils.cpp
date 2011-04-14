@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "common/RhoPort.h"
 
 void UnixTimeToFileTime (const time_t unixTime, LPFILETIME pFileTime)
 {
@@ -40,7 +41,7 @@ time_t SystemTimeToUnixTime (const LPSYSTEMTIME sysTime)
 	atm.tm_isdst = -1; 
 	
 	time_t retVal = -1 ;
-	retVal = ::mktime (&atm);
+	retVal = mktime(&atm);
 
 	return retVal;
 }
