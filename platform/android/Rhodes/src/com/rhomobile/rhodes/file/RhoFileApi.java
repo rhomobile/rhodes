@@ -12,13 +12,15 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesService;
 
 import android.content.res.AssetManager;
+import android.os.ParcelFileDescriptor;
 
 public class RhoFileApi {
 	
-	//private static final String TAG = "RhoFileApiJava";
+	private static final String TAG = RhoFileApi.class.getSimpleName();
 	
 	private static final int MAX_SIZE = 2*1024*1024;
 	
@@ -137,6 +139,36 @@ public class RhoFileApi {
 		}
 	}
 	
+    public static ParcelFileDescriptor openParcelFd(String path)
+    {
+        //Log.d(TAG, "open: " + path);
+        if (needEmulate(path)) {
+            String relPath = makeRelativePath(path);
+//            try {
+//                Logger.D(TAG, "Opening file: " + path + " from package as: " + relPath);
+//                return am.openFd(relPath).getParcelFileDescriptor();
+//            }
+//            catch (IOException e) {
+//                Logger.I(TAG, "Can not open ParcelFileDescriptor. " + e.getMessage());
+                if(!copy(relPath))
+                {
+                    return null;
+                }
+                Logger.D(TAG, "File extracted from package to file system: " + path);
+//            }
+        }
+        
+        try {
+            //Log.d(TAG, "open (2): " + path);
+            File file = new File(path);
+            Logger.D(TAG, "Opening file from file system: " + file.getAbsolutePath());
+            return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
+        } catch (FileNotFoundException e) {
+            Logger.E(TAG, "Can not open ParcelFileDescriptor" + e.getMessage());
+            return null;
+        }
+    }
+    
 	public static InputStream openInPackage(String path)
 	{
 		try {

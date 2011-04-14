@@ -21,7 +21,6 @@
 package com.rhomobile.rhodes.uri;
 
 import java.net.URISyntaxException;
-import java.util.Map;
 
 import com.rhomobile.rhodes.Logger;
 
