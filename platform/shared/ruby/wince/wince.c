@@ -549,7 +549,7 @@ FILE *wce_fopen( const char *fname, const char *mode )
 {
 	TCHAR* tfname = wce_replaceRelativeDir(fname);
 	TCHAR* tmode = wce_mbtowc(mode);
-	FILE* fp = _tfopen(tfname, tmode);
+	FILE* fp = _wfopen(tfname, tmode);
 	free(tfname); free(tmode);
 	return fp;
 }

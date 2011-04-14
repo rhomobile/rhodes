@@ -1,5 +1,5 @@
 #pragma once
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 #include <msinkaut.h>
 #else
 struct IInkOverlay{};
