@@ -31,7 +31,11 @@ module Rho
       def get_blob_folder()
         File.join(__rhoGetCurrentDir(), 'db/db-files')
       end
-      
+
+      def get_public_folder()
+        File.join(__rhoGetCurrentDir(), 'apps/public')
+      end
+
       def get_blob_path(relative_path)
         cur_dir = __rhoGetCurrentDir()
         if cur_dir && cur_dir.length()>0
