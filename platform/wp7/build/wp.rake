@@ -165,9 +165,9 @@ end
 namespace "run" do
 		desc "Build, install .xap and run on WP7 emulator"
 		task :wp => ["device:wp:production"] do
-		if $app_config["productid"] != nil
+		if $app_config["wp"]["productid"] != nil
 			args = []
-			args << $app_config["productid"]
+			args << $app_config["wp"]["productid"]
 			args << $app_config["name"]
 			args << $app_path + "/icon/icon.png"
 			args << $targetdir + "/" + $appname + ".xap"
