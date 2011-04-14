@@ -81,7 +81,8 @@ end
 		end 
 
 		task :rubyext => ["config:wp"] do
-			chdir $startdir + "/res/build-tools"
+			#chdir $startdir + "/res/build-tools"
+			chdir "../ironruby/bin/Debug"
 
 			args = []
 			args << $startdir + "/" + $vcbindir + "/RhoRubyExtGen/Debug/RhoRubyExtGen.dll"
