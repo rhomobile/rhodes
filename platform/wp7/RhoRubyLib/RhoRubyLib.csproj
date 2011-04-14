@@ -23,9 +23,9 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\$(RootNamespace)\$(Configuration)</OutputPath>
+    <OutputPath>..\bin\$(RootNamespace)\Debug</OutputPath>
     <BaseIntermediateOutputPath>..\bin\$(RootNamespace)</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>..\bin\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
+    <IntermediateOutputPath>..\bin\$(RootNamespace)\Debug</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
@@ -35,7 +35,9 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>Bin\Release</OutputPath>
+    <OutputPath>..\bin\$(RootNamespace)\Debug</OutputPath>
+    <BaseIntermediateOutputPath>..\bin\$(RootNamespace)</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>..\bin\$(RootNamespace)\Debug</IntermediateOutputPath>
     <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
@@ -44,21 +46,21 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="IronRuby">
-      <HintPath>..\..\..\..\ironruby\bin\Silverlight3Debug\IronRuby.dll</HintPath>
+      <HintPath>..\..\..\..\ironruby\bin\Silverlight3$(Configuration)\IronRuby.dll</HintPath>
     </Reference>
     <Reference Include="IronRuby.Libraries">
-      <HintPath>..\..\..\..\ironruby\bin\Silverlight3Debug\IronRuby.Libraries.dll</HintPath>
+      <HintPath>..\..\..\..\ironruby\bin\Silverlight3$(Configuration)\IronRuby.Libraries.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Phone" />
     <Reference Include="Microsoft.Phone.Interop" />
     <Reference Include="Microsoft.Scripting">
-      <HintPath>..\..\..\..\ironruby\bin\Silverlight3Debug\Microsoft.Scripting.dll</HintPath>
+      <HintPath>..\..\..\..\ironruby\bin\Silverlight3$(Configuration)\Microsoft.Scripting.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Scripting.Core">
-      <HintPath>..\..\..\..\ironruby\bin\Silverlight3Debug\Microsoft.Scripting.Core.dll</HintPath>
+      <HintPath>..\..\..\..\ironruby\bin\Silverlight3$(Configuration)\Microsoft.Scripting.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Dynamic">
-      <HintPath>..\..\..\..\ironruby\bin\Silverlight3Debug\Microsoft.Dynamic.dll</HintPath>
+      <HintPath>..\..\..\..\ironruby\bin\Silverlight3$(Configuration)\Microsoft.Dynamic.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows" />
     <Reference Include="system" />

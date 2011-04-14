@@ -98,7 +98,7 @@ end
 			chdir $config["build"]["wppath"]
 
 			#args = ['/M4', 'rhodes.sln', "\"Release|#{$sdk}\""]
-			args = ['rhodes.sln']
+			args = ['rhodes.sln', '/property:Configuration=Release']
 
 			puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
 			Jake.run($msbuild,args)
