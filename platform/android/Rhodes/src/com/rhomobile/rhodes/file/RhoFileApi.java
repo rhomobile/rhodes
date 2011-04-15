@@ -2,6 +2,7 @@ package com.rhomobile.rhodes.file;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -138,37 +139,42 @@ public class RhoFileApi {
 			return null;
 		}
 	}
-	
+
+    private static void forceFile(String path)
+    {
+        String relPath = makeRelativePath(path);
+        if(copy(relPath))
+            Logger.D(TAG, "File extracted from package to file system: " + path);
+    }
+
+    public static FileDescriptor openFd(String path)
+    {
+        forceFile(path);
+        try {
+            Logger.D(TAG, "Opening file from file system: " + absolutePath(path));
+
+            FileInputStream fs = new FileInputStream(absolutePath(path));
+            return fs.getFD();
+        } catch (Exception e) {
+            Logger.E(TAG, "Can not open file descriptor: " + e.getMessage());
+            return null;
+        }
+    }
+
     public static ParcelFileDescriptor openParcelFd(String path)
     {
-        //Log.d(TAG, "open: " + path);
-        if (needEmulate(path)) {
-            String relPath = makeRelativePath(path);
-//            try {
-//                Logger.D(TAG, "Opening file: " + path + " from package as: " + relPath);
-//                return am.openFd(relPath).getParcelFileDescriptor();
-//            }
-//            catch (IOException e) {
-//                Logger.I(TAG, "Can not open ParcelFileDescriptor. " + e.getMessage());
-                if(!copy(relPath))
-                {
-                    return null;
-                }
-                Logger.D(TAG, "File extracted from package to file system: " + path);
-//            }
-        }
-        
+        forceFile(path);
         try {
-            //Log.d(TAG, "open (2): " + path);
+            Logger.D(TAG, "Opening file from file system: " + absolutePath(path));
+
             File file = new File(path);
-            Logger.D(TAG, "Opening file from file system: " + file.getAbsolutePath());
             return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
         } catch (FileNotFoundException e) {
             Logger.E(TAG, "Can not open ParcelFileDescriptor" + e.getMessage());
             return null;
         }
     }
-    
+
 	public static InputStream openInPackage(String path)
 	{
 		try {
