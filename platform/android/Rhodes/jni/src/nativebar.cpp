@@ -1,6 +1,7 @@
 #include "rhodes/JNIRhodes.h"
 
 #include <common/rhoparams.h>
+#include "common/RhodesApp.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "NativeBar"
@@ -117,4 +118,13 @@ RHO_GLOBAL int native_tabbar_get_current_tab() {
     jmethodID mid = getJNIClassStaticMethod(env, cls, "activeTab", "()I");
     if (!mid) return 0;
     return env->CallStaticIntMethod(cls, mid);
+}
+
+
+//private static native void onTabBarChangeTabCallback(String callback_url, String tab_index);
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mainview_TabbedMainView_onTabBarChangeTabCallback
+  (JNIEnv *env, jclass, jstring callback, jstring body)
+{
+        rho_net_request_with_data(rho_http_normalizeurl(rho_cast<std::string>(callback).c_str()), rho_cast<std::string>(body).c_str());
+
 }
