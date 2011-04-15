@@ -122,6 +122,13 @@ end
 		
 			chdir $config["build"]["wppath"]
 
+			doc = REXML::Document.new(File.open($startdir+"/"+$config["build"]["wppath"]+"/rhodes/Properties/WMAppManifest.xml"))
+			doc.elements.each("Deployment/App") { 
+			|element| element.attributes["ProductID"] =  "{"+$app_config["wp"]["productid"]+"}"
+			          element.attributes["Title"] =  $app_config["name"]
+			}
+			File.open($startdir+"/"+$config["build"]["wppath"]+"/rhodes/Properties/WMAppManifest.xml", "w") { |f| doc.write f; f.close }
+
 			#args = ['/M4', 'rhodes.sln', "\"Release|#{$sdk}\""]
 			args = ['rhodes.sln', '/property:Configuration=Release']
 
@@ -212,7 +219,7 @@ namespace "run" do
 			puts Jake.run($wp7runner, args)
 		else
 			puts "productid must be set in build.yml"
-			puts "productid's format is {xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}"
+			puts "productid's format is xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 		end
 		end
 end
