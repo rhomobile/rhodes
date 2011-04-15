@@ -30,9 +30,9 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\$(RootNamespace)\Debug</OutputPath>
+    <OutputPath>..\bin\$(RootNamespace)\$(Configuration)</OutputPath>
     <BaseIntermediateOutputPath>..\bin\$(RootNamespace)</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>..\bin\$(RootNamespace)\Debug</IntermediateOutputPath>
+    <IntermediateOutputPath>..\bin\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
@@ -42,9 +42,9 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\$(RootNamespace)\Debug</OutputPath>
+    <OutputPath>..\bin\$(RootNamespace)\$(Configuration)</OutputPath>
     <BaseIntermediateOutputPath>..\bin\$(RootNamespace)</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>..\bin\$(RootNamespace)\Debug</IntermediateOutputPath>
+    <IntermediateOutputPath>..\bin\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
     <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
