@@ -586,6 +586,11 @@ Means the same as above and place TabBar in bottom of screen (actual only on And
 	
 **NOTE: If you setup :background_color on Android you should also setup :selected_color for each tab **	 
 
+Create TabBar and set callback for change tab event. In callback see @params['tab_index'] for string value with new tab index.
+	:::ruby
+	Rho::NativeTabbar.create(:tabs => tabs, :on_change_tab_callback => url_for(:action => :tabbar_on_tab_change_callback))
+
+
 Remove current tabbar. Does nothing if there is no active bar	
 	:::ruby
 	Rho::NativeTabbar.remove
