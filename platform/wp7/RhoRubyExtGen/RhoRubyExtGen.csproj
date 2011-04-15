@@ -17,9 +17,9 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\$(RootNamespace)\Debug</OutputPath>
+    <OutputPath>..\bin\$(RootNamespace)\$(Configuration)</OutputPath>
     <BaseIntermediateOutputPath>..\bin\$(RootNamespace)</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>..\bin\$(RootNamespace)\Debug</IntermediateOutputPath>
+    <IntermediateOutputPath>..\bin\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -27,9 +27,9 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\$(RootNamespace)\Debug</OutputPath>
+    <OutputPath>..\bin\$(RootNamespace)\$(Configuration)</OutputPath>
     <BaseIntermediateOutputPath>..\bin\$(RootNamespace)</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>..\bin\$(RootNamespace)\Debug</IntermediateOutputPath>
+    <IntermediateOutputPath>..\bin\$(RootNamespace)\$(Configuration)</IntermediateOutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
