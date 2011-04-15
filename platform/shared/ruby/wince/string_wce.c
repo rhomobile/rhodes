@@ -6,14 +6,14 @@
 #include "wince.h" /* for wce_mbtowc */
 
 /* _strdup already exists in stdlib.h? */
-/*char *strdup(const char * str)
+char *strdup(const char * str)
 {
 	char *p;
 
 	p = malloc( strlen(str)+1 );
 	strcpy( p, str );
 	return p;
-}*/
+}
 
 char* strerror(int errno)
 {
