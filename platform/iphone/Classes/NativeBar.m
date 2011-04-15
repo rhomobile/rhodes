@@ -120,6 +120,8 @@ void create_nativebar_innner(int bar_type, rho_param *p)
 
 	const char* background_color = NULL;
 	const char* background_color_enable = NULL;
+    
+    const char* on_change_tab_callback = NULL;
 	
 	rho_param *params = NULL;
     switch (p->type) {
@@ -135,7 +137,11 @@ void create_nativebar_innner(int bar_type, rho_param *p)
 					background_color = value->v.string;
 					background_color_enable = "true";
                 }
-				
+
+                if (strcasecmp(name, "on_change_tab_callback") == 0) {
+					on_change_tab_callback = value->v.string;
+                }
+                
                 if (strcasecmp(name, "buttons") == 0 || strcasecmp(name, "tabs") == 0) {
                     params = value;
                 }
@@ -252,9 +258,12 @@ void create_nativebar_innner(int bar_type, rho_param *p)
 		}
 		
 	}
-	if (background_color != nil) {
+	if (background_color != NULL) {
 		[properties setObject:[NSString stringWithUTF8String:background_color] forKey:NATIVE_BAR_BACKGOUND_COLOR];	
 	}
+    if (on_change_tab_callback != NULL) {
+		[properties setObject:[NSString stringWithUTF8String:on_change_tab_callback] forKey:NATIVE_BAR_ON_CHANGE_TAB_CALLBACK];	
+    }
 	
     id runnable = [RhoNativeBarCreateTask class];
     id arg1 = [NSValue valueWithBytes:&bar_type objCType:@encode(int)];
