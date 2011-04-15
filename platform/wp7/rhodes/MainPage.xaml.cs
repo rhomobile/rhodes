@@ -11,6 +11,8 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
+using System.Xml.Linq;
+
 
 using System.IO.IsolatedStorage;
 using System.IO;
@@ -21,10 +23,32 @@ namespace Rhodes
 {
     public partial class MainPage : PhoneApplicationPage
     {
+        private static string GetWinPhoneAttribute(string attributeName)
+        {
+            string ret = string.Empty;
+
+            try
+            {
+                XElement xe = XElement.Load("WMAppManifest.xml");
+                var attr = (from manifest in xe.Descendants("App")
+                            select manifest).SingleOrDefault();
+                if (attr != null)
+                    ret = attr.Attribute(attributeName).Value;
+            }
+            catch
+            {
+                // Ignore errors in case this method is called
+                // from design time in VS.NET
+            }
+
+            return ret;
+        }
+        
         // Constructor
         public MainPage()
         {
             InitializeComponent();
+            ApplicationTitle.Text = GetWinPhoneAttribute("Title");
 
             webBrowser1.IsScriptEnabled = true;
 
