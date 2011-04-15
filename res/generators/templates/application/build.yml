@@ -15,5 +15,7 @@ iphone:
   entitlements:
   BundleIdentifier: com.rhomobile.<%=@app_name_cleared%>
   BundleURLScheme: <%=@app_name_cleared%>
+wp:
+  productid: '<%=@productid%>'
 
 extensions: ["json", "another-extension"]
