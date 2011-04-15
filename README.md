@@ -1,7 +1,7 @@
 Rhodes
 ===
 
-The [Rhodes framework](http://github.com/rhomobile/rhodes) is a framework for building locally executing, device-optimized mobile applications for smartphone devices. These applications are optimized for interacting with transactional enterprise application backends (with synced local data via [RhoSync](http://github.com/rhomobile/rhosync)). Rhodes is available for iPhone, Windows Mobile, and Research in Motion (Blackberry) smartphones.  
+The [Rhodes framework](http://github.com/rhomobile/rhodes) is a framework for building locally executing, device-optimized mobile applications for smartphone devices. These applications are optimized for interacting with transactional enterprise application backends (with synced local data via [RhoSync](http://github.com/rhomobile/rhosync)). Rhodes is available for iPhone, Android, Windows Mobile, and Research in Motion (Blackberry) smartphones.  
 
 Rhodes is available as an open source product under the MIT license.  For developers interested a commercial license is still [available](http://rhomobile.com/products/rhodes/license/).
 
@@ -43,4 +43,4 @@ The [Rhodes Developer Reference](http://docs.rhomobile.com/rhodes/introduction) 
 
 For further questions [email us](mailto:info@rhomobile.com) or join the [Google Group](http://groups.google.com/group/rhomobile).
 
-For questions on licensing contact [our sales team](mailto:sales@rhomobile.com).
+For questions on commercial support contact [our sales team](mailto:sales@rhomobile.com).
