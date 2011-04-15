@@ -199,7 +199,7 @@ def set_app_name_android(newname)
             if $uri_custom.nil?
               filter.add_element "data", { "android:scheme" => $uri_scheme }
             else
-              filter.add_element ( "data", { "android:scheme" => $uri_scheme, "android:host" => $uri_custom } )
+              filter.add_element( "data", { "android:scheme" => $uri_scheme, "android:host" => $uri_custom } )
             end
           end
         end
