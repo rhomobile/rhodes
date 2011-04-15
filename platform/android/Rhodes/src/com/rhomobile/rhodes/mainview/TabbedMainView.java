@@ -63,9 +63,14 @@ public class TabbedMainView implements MainView {
 	private int mBackgroundColor = 0;
 	private boolean mBackgroundColorEnable = false;
 	
+	private String mChangeTabCallback = null;
+	
 	
 	private boolean mIsReallyOnScreen = false;
 	//private String mLoadUrlAfterLoadToScreen = null;
+	
+	private static native void onTabBarChangeTabCallback(String callback_url, String body);
+	
 	
 	private static class TabData {
 		public MainView view;
@@ -434,6 +439,11 @@ public class TabbedMainView implements MainView {
 				mBackgroundColor = color;
 				mBackgroundColorEnable = true;
 			}
+			
+			Object callbackObj = settings.get("on_change_tab_callback");
+			if ((callbackObj != null) && (callbackObj instanceof String)) {
+				mChangeTabCallback = (String)callbackObj;
+			}
 
 			Object placeBottomObj = settings.get("place_tabs_bottom");
 			if ((placeBottomObj != null) && (placeBottomObj instanceof String)) {
@@ -707,6 +717,10 @@ public class TabbedMainView implements MainView {
 			
 			if (mIsReallyOnScreen && real_change) {
 				processTabHostColors(tabHost, sel_col, sel_col_enable);
+			}
+			if (real_change && (mChangeTabCallback != null)) {
+				String body = "&rho_callback=1" + "&tab_index=" + String.valueOf(new_tabIndex);
+				onTabBarChangeTabCallback(mChangeTabCallback, body);
 			}
 		}
 		
