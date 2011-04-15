@@ -20,11 +20,9 @@
  */
 package com.rhomobile.rhodes.alert;
 
-import java.io.File;
-import java.io.FileInputStream;
-
 import android.content.Context;
 import android.media.MediaPlayer;
+
 import android.os.Vibrator;
 
 import com.rhomobile.rhodes.Capabilities;
@@ -114,18 +112,7 @@ public class Alert {
 					return false;
 				}
 			});
-			fileName = RhoFileApi.normalizePath("apps/" + fileName);
-			File f = new File(RhodesService.getInstance().getRootPath());
-			f = new File(f, fileName);
-			if (!f.exists())
-				RhoFileApi.copy(fileName);
-			
-			String source = f.getCanonicalPath();
-			Logger.T(TAG, "Final file name: " + source);
-			//mp.setDataSource(source);
-			
-			FileInputStream fs = new FileInputStream(f);
-			mp.setDataSource(fs.getFD());
+			mp.setDataSource(RhoFileApi.openFd("apps/" + fileName));
 			
 			mp.prepare();
 			mp.start();
