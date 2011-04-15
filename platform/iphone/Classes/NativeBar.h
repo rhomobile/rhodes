@@ -18,6 +18,7 @@
 #define NATIVE_BAR_ITEMS							@"items"
 
 #define NATIVE_BAR_BACKGOUND_COLOR					@"bkg_color"
+#define NATIVE_BAR_ON_CHANGE_TAB_CALLBACK           @"on_change_tab_callback"
 
 #define NATIVE_BAR_ITEM_LABEL						@"label"
 #define NATIVE_BAR_ITEM_ACTION						@"action"

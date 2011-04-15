@@ -15,11 +15,12 @@
 	SplittedMainView* splittedView;
     NSArray *itemsData;
     int tabindex;	
-	
+    NSString* on_change_tab_callback;
 }
 
 @property (nonatomic,retain) NSArray *itemsData;
 @property (nonatomic,assign) int tabindex;
+@property (nonatomic,retain) NSString *on_change_tab_callback;
 
 - (id)initWithItems:(NSDictionary*)bar_info parent:(SplittedMainView*)parent;
 
@@ -50,5 +51,6 @@
 
 - (UIWebView*)getWebView:(int)tab_index;
 
+-(void)callCallback:(int)new_index;
 
 @end
