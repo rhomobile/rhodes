@@ -563,6 +563,14 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doSyncSource
     rho_sync_doSyncSourceByName(source.c_str());
 }
 
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesApplication_setStartParameters
+  (JNIEnv *, jclass, jstring strUrl)
+{
+    std::string const &url = rho_cast<std::string>(strUrl);
+    RHODESAPP().setStartParameters(url.c_str());
+}
+
+
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesAppOptions_getOptionsUrl
   (JNIEnv *env, jclass)
 {
