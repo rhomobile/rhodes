@@ -89,9 +89,34 @@ end
 			args << "/libraries:rho.rubyext"
 			args << "/out: " + $startdir + "/"+ $config["build"]["wppath"] +"/RhoRubyLib/" + "Initializers.Generated.cs"
 			puts Jake.run($genpath, args)
+		end
+		
+		task :ironruby => ["config:wp"] do   	
+			if $config["env"]["paths"]["ironruby"].nil?
+				chdir "../ironruby/Solutions"
+			else
+				chdir $config["env"]["paths"]["ironruby"]+"\\Solutions"
+			end
+
+			args = ['Ruby.sln', '/property:Configuration=Silverlight3Release']
+
+			if (!File.exists? "../bin/Silverlight3Release/Microsoft.Dynamic.dll") &&
+			   (!File.exists? "../bin/Silverlight3Release/Microsoft.Scripting.dll") &&
+			   (!File.exists? "../bin/Silverlight3Release/Microsoft.Scripting.Core.dll") && 
+			   (!File.exists? "../bin/Silverlight3Release/IronRuby.Libraries.dll") && 
+			   (!File.exists? "../bin/Silverlight3Release/IronRuby.dll" )
+				puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
+				Jake.run($msbuild,args)
+				unless $? == 0
+					puts "Error building"
+					exit 1
+				end
+			end
+ 
+			chdir $startdir
 		end 
 
-		task :rhodes => ["config:wp", "build:wp:rhobundle"] do
+		task :rhodes => ["config:wp", "build:wp:rhobundle", "build:wp:ironruby"] do
 		    out_dir = $startdir + "/"+ $config["build"]["wppath"] +"/rhodes"
 			cp $app_path + "/icon/icon.png", out_dir if File.exists? $app_path + "/icon/icon.ico"     
 		
