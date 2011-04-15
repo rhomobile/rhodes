@@ -118,7 +118,7 @@
   -->
   <ProjectExtensions />
   <PropertyGroup>
-    <PostBuildEvent>rake build:wp:devrhobundle</PostBuildEvent>
+    <PostBuildEvent>rake build:wp:devrhobundle$(Configuration)</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>
