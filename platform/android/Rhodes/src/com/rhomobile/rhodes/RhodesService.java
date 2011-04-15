@@ -7,7 +7,6 @@ import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Calendar;
@@ -63,8 +62,6 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
-import android.webkit.MimeTypeMap;
-import android.webkit.URLUtil;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.RemoteViews;
@@ -268,20 +265,12 @@ public class RhodesService extends Service {
 		
 		if (Utils.isAppHashChanged()) {
 			try {
-				Log.i(TAG, "Application hash was changed, so remove files");
+				Log.i(TAG, "Application hash was changed");
 				
-				Utils.deleteChildrenIgnoreFirstLevel(new File(getRootPath(), "apps"), "rhoconfig.txt");
 				Utils.deleteRecursively(new File(getRootPath(), "lib"));
 				
 				LocalFileProvider.revokeUriPermissions(context);
-/*				
-				String[] folders = {"apps", "lib"};
-				for (String folder : folders) {
-					File f = new File(getRootPath(), folder);
-					if (!f.exists())
-						continue;
-					Utils.deleteRecursively(f);
-				}*/
+
 				initRootPath();
 				RhoFileApi.init();
 				RhoFileApi.copy("hash");
