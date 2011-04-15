@@ -14,6 +14,8 @@ public class RhodesApplication extends Application {
 		NativeLibraries.load();
 	}
 	
+	static native void setStartParameters(String uri);
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();

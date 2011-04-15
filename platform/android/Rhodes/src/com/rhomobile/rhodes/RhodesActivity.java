@@ -80,7 +80,15 @@ public class RhodesActivity extends BaseActivity {
 		Intent intent = getIntent();
 		//intent.putExtra(RHO_URL_START_KEY, "/app/BrowserStart");
 		//intent.putExtra(RHO_URL_PARAMS_KEY, "param1=value1&param2=value2");
-		Log.d(TAG, "MY URI: " + intent.toUri(Intent.URI_INTENT_SCHEME));
+		//Log.d(TAG, "MY URI: " + intent.toUri(Intent.URI_INTENT_SCHEME));
+
+        // Check if we really started through URI
+        if(intent.getData() != null)
+        {
+            //Workaround to get URI string from intent since intent.getData() badly initialized
+            Log.d(TAG, "Application URI: " + intent.toUri(0));
+            RhodesApplication.setStartParameters(intent.toUri(0).toString());
+        }
 
 		if (!RhodesService.isEnableTitle()) {
 			requestWindowFeature(Window.FEATURE_NO_TITLE);
