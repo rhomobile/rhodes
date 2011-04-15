@@ -72,6 +72,11 @@ public class TabbedMainView implements MainView {
 	private static native void onTabBarChangeTabCallback(String callback_url, String body);
 	
 	
+	private void callChangeTabCallback(int index) {
+		String body = "&rho_callback=1" + "&tab_index=" + String.valueOf(index);
+		onTabBarChangeTabCallback(mChangeTabCallback, body);
+	}
+	
 	private static class TabData {
 		public MainView view;
 		public String url;
@@ -442,7 +447,7 @@ public class TabbedMainView implements MainView {
 			
 			Object callbackObj = settings.get("on_change_tab_callback");
 			if ((callbackObj != null) && (callbackObj instanceof String)) {
-				mChangeTabCallback = (String)callbackObj;
+				mChangeTabCallback = new String(((String)callbackObj));
 			}
 
 			Object placeBottomObj = settings.get("place_tabs_bottom");
@@ -706,6 +711,11 @@ public class TabbedMainView implements MainView {
 				return;
 			}
 			tabIndex = new_tabIndex;
+
+			if (real_change && (mChangeTabCallback != null)) {
+				callChangeTabCallback(tabIndex);
+			}
+			
 			if ((data.reload /*|| real_change*/) || !data.loaded ) {
 				if (mIsReallyOnScreen) {
 					RhodesService.loadUrl(data.url);
@@ -717,10 +727,6 @@ public class TabbedMainView implements MainView {
 			
 			if (mIsReallyOnScreen && real_change) {
 				processTabHostColors(tabHost, sel_col, sel_col_enable);
-			}
-			if (real_change && (mChangeTabCallback != null)) {
-				String body = "&rho_callback=1" + "&tab_index=" + String.valueOf(new_tabIndex);
-				onTabBarChangeTabCallback(mChangeTabCallback, body);
 			}
 		}
 		
