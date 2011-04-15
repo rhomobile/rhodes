@@ -6,7 +6,7 @@
 #endif //_CRT_SECURE_NO_DEPRECATE
 
 //#ifndef __APPLE__
-#if defined( _WIN32_WCE ) || defined(__SYMBIAN32__)
+#if defined( __WIN32_WCE ) || defined(__SYMBIAN32__)
 #include <stdlib.h>
 
 #ifndef _RHO_NO_MEMDEFINES
@@ -122,7 +122,8 @@ inline void* operator new(size_t size, const std::nothrow_t&) __THROW {
 #endif
 
 #endif //_RHO_NO_MEMDEFINES
-
+#else
+#define sys_free free
 //#endif// _WIN32_WCE
 #endif
 
