@@ -180,6 +180,33 @@ def set_app_name_android(newname)
   end
 
   app = doc.elements["manifest/application"]
+
+  app.elements.each("activity") do |a|
+    a.elements.each("intent-filter") do |filter|
+      filter.elements.each("action") do |act|
+        act_name = act.attribute("name", "android")
+        next if act_name.nil?
+        if act_name.to_s =~ /\.VIEW$/
+          default_filter = false
+          browsable_filter = false
+          filter.elements.each("category") do |c|
+            cat_name = c.attribute("name", "android")
+            next if cat_name.nil?
+            default_filter = true if cat_name.to_s =~ /\.DEFAULT$/
+            browsable_filter = true if cat_name.to_s =~ /\.BROWSABLE$/
+          end
+          if default_filter and browsable_filter
+            if $uri_custom.nil?
+              filter.add_element "data", { "android:scheme" => $uri_scheme }
+            else
+              filter.add_element ( "data", { "android:scheme" => $uri_scheme, "android:host" => $uri_custom } )
+            end
+          end
+        end
+      end
+    end
+  end
+
   provider = app.add_element(
     "provider",
     { "android:name" => "#{JAVA_PACKAGE_NAME}.LocalFileProvider",
@@ -242,6 +269,9 @@ namespace "config" do
     $emuversion = $app_config["android"]["version"] unless $app_config["android"].nil?
     $emuversion = $config["android"]["version"] if $emuversion.nil? and !$config["android"].nil?
 
+    $uri_scheme = $app_config["android"]["BundleURLScheme"] unless $app_config["android"].nil?
+    $uri_scheme = $config["android"]["BundleURLScheme"] if $uri_scheme.nil? and not $config["android"].nil?
+
     # Here is switch between release/debug configuration used for
     # building native libraries
     if $app_config["debug"].nil?
@@ -293,6 +323,10 @@ namespace "config" do
     $app_package_name = "com.#{$vendor}." + $appname.downcase.gsub(/[^A-Za-z_0-9]/, '') unless $app_package_name
     $app_package_name.gsub!(/\.[\d]/, "._")
 
+    if $uri_scheme.nil?
+      $uri_custom = $app_package_name 
+      $uri_scheme = "http"
+    end
 
     $rhomanifest = File.join $androidpath, "Rhodes", "AndroidManifest.xml"
     $appmanifest = File.join $tmpdir, "AndroidManifest.xml"
