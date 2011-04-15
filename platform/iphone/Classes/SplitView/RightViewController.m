@@ -66,7 +66,7 @@
 
 @implementation RightViewController
 
-@synthesize itemsData, tabindex;
+@synthesize itemsData, tabindex, on_change_tab_callback;
 
 - (id)initWithItems:(NSDictionary*)bar_info parent:(SplittedMainView*)parent {
 	self = [self initWithNibName:nil bundle:nil];
@@ -130,6 +130,7 @@
 		[self.view addSubview:v.view];
 		[self.view setNeedsLayout];
 		[v.view setNeedsDisplay];
+        [self callCallback:0];
 	}
 	
 	return self;
@@ -153,6 +154,17 @@
 }
 
 
+-(void)callCallback:(int)new_index {
+    // call callback
+    if (self.on_change_tab_callback != nil) {
+        NSString* strBody = @"&rho_callback=1";
+        strBody = [strBody stringByAppendingString:@"&tab_index="];
+        strBody = [strBody stringByAppendingString:[NSString stringWithFormat:@"%d",new_index]];
+        const char* cb = [self.on_change_tab_callback UTF8String];
+        const char* b = [strBody UTF8String];
+        rho_net_request_with_data(rho_http_normalizeurl(cb), b);
+    }
+}
 
 - (SimpleMainView*) getSimpleView:(int)index {
 	if ((index < 0) || (index >= [self.itemsData count])) {
@@ -245,6 +257,7 @@
 	[cur_v.view removeFromSuperview];
 	[self.view addSubview:new_v.view];
 	[self.view setNeedsLayout];
+    [self callCallback:index];    
 }
 
 - (void)switchTab:(int)index {
