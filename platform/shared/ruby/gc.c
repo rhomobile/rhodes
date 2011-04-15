@@ -403,7 +403,7 @@ rb_objspace_alloc(void)
 /* 4KB */
 /*#define HEAP_SIZE 0x1000 */
 /* 2KB */
-#define HEAP_SIZE 0x800
+#define HEAP_SIZE 0x10000
 
 #define HEAP_OBJ_LIMIT (HEAP_SIZE / sizeof(struct RVALUE))
 
