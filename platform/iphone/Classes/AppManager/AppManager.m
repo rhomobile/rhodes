@@ -214,7 +214,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
         //    we should remove all files
         // 2. we upgrade version with symlinks
         //    we should remove only symlinks 
-        // we check old "lib/framework/rho/rho.iseq" file - if it is SymLink then we have new version of Rhodes (with SymLinks instead of files)
+        // we check old "lib" file - if it is SymLink then we have new version of Rhodes (with SymLinks instead of files)
 
         NSString* testName = [rhoRoot stringByAppendingPathComponent:@"lib"];
         //BOOL libExist = [fileManager fileExistsAtPath:testName];
@@ -301,7 +301,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
         }
 #endif
 	}
-
+    
 	rho_logconf_Init(rho_native_rhopath());
 	rho_rhodesapp_create(rho_native_rhopath());
 	RAWLOG_INFO("Rhodes started");

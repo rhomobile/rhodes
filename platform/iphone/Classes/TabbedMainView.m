@@ -230,7 +230,7 @@
 
 @implementation TabbedMainView
 
-@synthesize tabbar, tabbarData, tabindex;
+@synthesize tabbar, tabbarData, tabindex, on_change_tab_callback;
 
 
 
@@ -309,6 +309,7 @@
 	NSDictionary* global_properties = (NSDictionary*)[bar_info objectForKey:NATIVE_BAR_PROPERTIES];
 	if (global_properties != nil) {
 		background_color = (NSString*)[global_properties objectForKey:NATIVE_BAR_BACKGOUND_COLOR];
+        self.on_change_tab_callback = (NSString*)[global_properties objectForKey:NATIVE_BAR_ON_CHANGE_TAB_CALLBACK];
 	}
 	
 	if (background_color != nil) {
@@ -475,6 +476,7 @@
         [self navigateRedirect:initUrl tab:0];
         RhoTabBarData *td = [self tabData:0];
         td.loaded = YES;
+        [self callCallback:0];
     }
 	if (tab_to_initial_select >= 0) {
 		tabbar.selectedIndex = tab_to_initial_select;
@@ -563,23 +565,6 @@
 	int new_index = tabbar.selectedIndex;
     RhoTabBarData *td = [self tabData:new_index];
 	if (td != nil) {
-		//if (tabindex != new_index) {
-			tabindex = new_index;
-			if (!td.loaded || td.reload) {
-				const char *s = [td.url UTF8String];
-				rho_rhodesapp_load_url(s);
-				td.loaded = YES;
-			}
-			[[[self subView:tabindex] view] setNeedsDisplay];
-		//}
-	}
-}
-
-
-- (void)onSwitchTab:(int)tab_index {
-	int new_index = tab_index;
-    RhoTabBarData *td = [self tabData:new_index];
-	if (td != nil) {
 		tabindex = new_index;
 		if (!td.loaded || td.reload) {
 			const char *s = [td.url UTF8String];
@@ -587,6 +572,39 @@
 			td.loaded = YES;
 		}
 		[[[self subView:tabindex] view] setNeedsDisplay];
+	}
+}
+
+-(void)callCallback:(int)new_index {
+    // call callback
+    if (self.on_change_tab_callback != nil) {
+        NSString* strBody = @"&rho_callback=1";
+        strBody = [strBody stringByAppendingString:@"&tab_index="];
+        strBody = [strBody stringByAppendingString:[NSString stringWithFormat:@"%d",new_index]];
+        const char* cb = [self.on_change_tab_callback UTF8String];
+        const char* b = [strBody UTF8String];
+        rho_net_request_with_data(rho_http_normalizeurl(cb), b);
+    }
+}
+
+
+- (void)onSwitchTab:(int)tab_index {
+	int new_index = tab_index;
+    RhoTabBarData *td = [self tabData:new_index];
+	if (td != nil) {
+        BOOL real_change = tabindex != new_index;
+		//if (tabindex != new_index) {
+        tabindex = new_index;
+        if (!td.loaded || td.reload) {
+            const char *s = [td.url UTF8String];
+            rho_rhodesapp_load_url(s);
+            td.loaded = YES;
+        }
+        [[[self subView:tabindex] view] setNeedsDisplay];
+		//}
+		if (real_change) {
+            [self callCallback:new_index];
+        }
 	}
 }
 

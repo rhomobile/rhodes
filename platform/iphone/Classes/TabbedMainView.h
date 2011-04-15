@@ -36,16 +36,20 @@
     RhoUITabBarController *tabbar;
     NSArray *tabbarData;
     int tabindex;
+    NSString* on_change_tab_callback;
 }
 
 @property (nonatomic,retain) RhoUITabBarController *tabbar;
 @property (nonatomic,retain) NSArray *tabbarData;
 @property (nonatomic,assign) int tabindex;
+@property (nonatomic,retain) NSString *on_change_tab_callback;
 
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p bar_info:(NSDictionary*)bar_info;
 
 - (UIWebView*)getWebView:(int)tab_index;
 
 - (void)onViewWillActivate:(RhoViewController*)view;
+
+-(void)callCallback:(int)new_index;
 
 @end
