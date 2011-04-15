@@ -136,7 +136,7 @@ end
 		end 
 
 		task :devrhobundle => [:rhobundle, :rhobundlemap, "device:wp:addbundletoxap"] do
-			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Debug/"
+			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
 			doc = REXML::Document.new(File.open(out_dir + "XapCacheFile.xml"))
 			chdir $srcdir
 			Dir.glob(File.join("**", '*.*')).each do |f|
@@ -146,8 +146,8 @@ end
 			
 			chdir $startdir
 
-			mkdir_p $config["build"]["wppath"] + "/rhodes/obj/debug" if not File.exists? $config["build"]["wppath"] + "/rhodes/obj/debug"
-			cp out_dir + "XapCacheFile.xml", $config["build"]["wppath"] + "/rhodes/obj/debug"
+			mkdir_p $config["build"]["wppath"] + "/rhodes/obj/Release" if not File.exists? $config["build"]["wppath"] + "/rhodes/obj/Release"
+			cp out_dir + "XapCacheFile.xml", $config["build"]["wppath"] + "/rhodes/obj/Release"
 		end
 	end
 end
@@ -162,7 +162,7 @@ end
 			#cp_r $srcdir + "/RhoBundleMap.txt", $bindir + "/rho"
 			#cp_r $srcdir + "/timestamp.txt", $bindir + "/rho"
 
-			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Debug/"
+			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
 			
 			chdir $startdir
 			args = []
@@ -178,7 +178,7 @@ end
 		desc "Build production for device or emulator"
 		task :production => ["config:wp","build:wp:rhobundle","build:wp:rhodes"] do
 			#out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/"
-			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Debug/"
+			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
 			cp  out_dir + "rhodes.xap", out_dir + $appname + ".xap"
 
 			mkdir_p $bindir if not File.exists? $bindir
@@ -188,9 +188,21 @@ end
 	end
 end
 
+namespace "clean" do
+  desc "Clean wp"
+  task :wp => "clean:wm:all"
+  namespace "wm" do
+    task :rhodes => ["config:wp"] do
+      rm_rf $vcbindir
+      rm_rf $targetdir
+    end
+    task :all => "clean:wm:rhodes"
+  end
+end
+
 namespace "run" do
 		desc "Build, install .xap and run on WP7 emulator"
-		task :wp => ["device:wp:production"] do
+		task :wp => ["clean:wm:all", "device:wp:production"] do
 		if $app_config["wp"]["productid"] != nil
 			args = []
 			args << $app_config["wp"]["productid"]
