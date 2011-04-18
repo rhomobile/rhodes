@@ -97,6 +97,29 @@ def make_application_build_config_header_file
   Jake.modify_file_if_content_changed(File.join($startdir, "platform", "shared", "common", "app_build_configs.c"), f)
 end
 
+def make_application_build_capabilities_header_file
+  f = StringIO.new("", "w+")      
+  f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
+  #f.puts "// Generated #{Time.now.to_s}"
+  f.puts ""
+
+  caps = []
+ 
+  $app_config["capabilities"].each do |cap|
+     caps << cap
+  end
+
+  caps.sort.each do |cap|
+     f.puts '#define APP_BUILD_CAPABILITY_'+cap.upcase
+  end
+
+  f.puts ''
+  
+  Jake.modify_file_if_content_changed(File.join($startdir, "platform", "shared", "common", "app_build_capabilities.h"), f)
+end
+
+
+
 def make_application_build_config_java_file
 
     f = StringIO.new("", "w+")
@@ -218,6 +241,7 @@ namespace "config" do
       make_application_build_config_java_file
     else  
       make_application_build_config_header_file    
+      make_application_build_capabilities_header_file
     end
 
   end
