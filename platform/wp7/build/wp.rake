@@ -142,7 +142,7 @@ end
 			chdir $startdir
 		end 
 
-		task :devrhobundleRelease => [:rhobundle, :rhobundlemap, "device:wp:addbundletoxap"] do
+		task :devrhobundleRelease => [:rhobundle, :rhobundlemap, "device:wp:addbundletoxapRelease"] do
 			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
 			doc = REXML::Document.new(File.open(out_dir + "XapCacheFile.xml"))
 			chdir $srcdir
@@ -157,7 +157,7 @@ end
 			cp out_dir + "XapCacheFile.xml", $config["build"]["wppath"] + "/rhodes/obj/Release"
 		end
 
-		task :devrhobundleDebug => [:rhobundle, :rhobundlemap, "device:wp:addbundletoxap"] do
+		task :devrhobundleDebug => [:rhobundle, :rhobundlemap, "device:wp:addbundletoxapDebug"] do
 			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Debug/"
 			doc = REXML::Document.new(File.open(out_dir + "XapCacheFile.xml"))
 			chdir $srcdir
@@ -176,7 +176,28 @@ end
  
  namespace "device" do
 	namespace "wp" do
-		task :addbundletoxap do
+		task :addbundletoxapDebug do
+			#mkdir_p $bindir + "/rho" if not File.exists? $bindir + "/rho"
+			#cp_r $srcdir + "/apps", $bindir + "/rho"
+			#cp_r $srcdir + "/db", $bindir + "/rho"
+			#cp_r $srcdir + "/lib", $bindir + "/rho"
+			#cp_r $srcdir + "/RhoBundleMap.txt", $bindir + "/rho"
+			#cp_r $srcdir + "/timestamp.txt", $bindir + "/rho"
+
+			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Debug/"
+			
+			chdir $startdir
+			args = []
+			args << "a"
+			args << "-tzip"
+			args << out_dir + "rhodes.xap"
+			args << $srcdir + "/*"
+			puts Jake.run($zippath, args)
+
+			#rm_r $bindir + "/rho"
+		end
+
+		task :addbundletoxapRelease do
 			#mkdir_p $bindir + "/rho" if not File.exists? $bindir + "/rho"
 			#cp_r $srcdir + "/apps", $bindir + "/rho"
 			#cp_r $srcdir + "/db", $bindir + "/rho"
