@@ -1497,9 +1497,9 @@ namespace "run" do
         log_name  = $app_path + '/RhoLogSpec.txt'
         File.delete(log_name) if File.exist?(log_name)
 
-	device_flag = '-e'
+	    device_flag = '-e'
 
-        #run_emulator :hidden => true
+        run_emulator :hidden => true if device_flag != '-d'
         do_uninstall(device_flag)
         
         # Failsafe to prevent eternal hangs
