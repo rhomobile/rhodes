@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'templater'
+require 'thread'
 #TODO: This is temporary, see https://www.pivotaltracker.com/story/show/3399292
 gem "activesupport", "~> 2.3.5"
 require 'active_support'
