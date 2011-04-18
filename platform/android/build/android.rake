@@ -1484,9 +1484,13 @@ def kill_adb_and_emulator
 end
 
 def logcat(device_flag = '-e', log_path = $applog_path)
-  if !$applog_file.nil?
+  if !log_path.nil?
     Thread.new { Jake.run($adb, [device_flag, 'logcat', '>>', log_path], nil, true) }
   end
+end
+
+def logclear(device_flag = '-e')
+  Thread.new { Jake.run($adb, [device_flag, 'logcat', '-c'], nil, true) }
 end
 
 namespace "run" do
@@ -1497,14 +1501,14 @@ namespace "run" do
         log_name  = $app_path + '/RhoLogSpec.txt'
         File.delete(log_name) if File.exist?(log_name)
 
-	    device_flag = '-e'
+        device_flag = '-e'
 
-        run_emulator :hidden => true if device_flag != '-d'
+        logclear(device_flag)        run_emulator :hidden => true
         do_uninstall(device_flag)
         
         # Failsafe to prevent eternal hangs
         Thread.new {
-          sleep 1000
+          sleep 2000
           kill_adb_and_emulator
         }
 
@@ -1516,7 +1520,7 @@ namespace "run" do
 
         puts "waiting for application"
 
-	for i in 0..60
+        for i in 0..60
             if application_running(device_flag, $app_package_name)
 		break
             else
@@ -1524,7 +1528,7 @@ namespace "run" do
             end
         end
 
-        puts "waiting for log"
+        puts "waiting for log: " + log_name
         
         for i in 0..60
 			if !File.exist?(log_name)
@@ -1532,6 +1536,11 @@ namespace "run" do
 			else
 				break
 			end
+        end
+
+		if !File.exist?(log_name)
+            puts "Can not read log file: " + log_name
+			exit(1)
         end
 
         puts "start read log"

@@ -883,32 +883,21 @@ Use rho_open_target=_blank in html link. Note that jqtouch or other javascript l
 See CustomUri of [system API sample application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/CustomUri/controller.rb) for example.
 
 ## Run rhodes application from browser
-Starting from rhodes-2.4.0, on Android any rhodes app can be started by link from browser.
-This allow specify link on web page which will open specific rhodes app on specific page
-and (optionally) pass parameters there.
+On Android it is possible to start rhodes app by http link from browser. It is also possible to register custom URI scheme for the app.
+By default the http://com.vendor.appname URI format is used. If custom URI scheme is set up in build.yml then this scheme is used followed by any string.
 
-Here is method written on Ruby which will form specific link from package name, start page and parameters:
-	:::ruby
-	require 'uri'
-	def make_link(pkgname, startpage = '', params = {})
-		if params.size > 0
-			startpage += '?'
-			params.each do |k,v|
-				startpage += "#{k.to_s}=#{v.to_s}&"
-			end
-		end
-		link = "intent:#Intent;component=#{pkgname}/com.rhomobile.rhodes.RhodesActivity;"
-		link += "S.RhoUrlStart=#{URI.escape(startpage, /[^#{URI::PATTERN::UNRESERVED}]/)};" if startpage.size > 0
-		link += "end"
-		link
-	end
+http scheme example:
+    :::html
+    <a href="http://com.rhomobile.rhodessystemapisamples">Open System API Samples</a>
 
-Example:
-	:::html
-	<a href="intent:#Intent;component=com.rhomobile.rhodessystemapisamples/com.rhomobile.rhodes.RhodesActivity;S.RhoUrlStart=%2Fapp%2FAlert%3Fparam1%3Dvalue1%26param2%3Dvalue2;end">Open System API Samples on Alert page</a>
+Custom scheme example:
+    :::ruby
+    android:
+        BundleURLScheme: rhodes
 
-This link will open [System API Samples app](http://github.com/rhomobile/rhodes-system-api-samples) (package name com.rhomobile.rhodessystemapisamples on /app/Alert page
-and pass two parameters there: param1=value1 and param2=value2
+    :::html
+    <a href="rhodes://any_string_here">Open System API Samples</a>
+
 
 ## MapView
 MapView class provides an embeddable map interface, similar to the one provided by the Maps application. The following code would go into your controller and the map appears on a whole page.
