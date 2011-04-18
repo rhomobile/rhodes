@@ -642,15 +642,12 @@ Open ActiveSync main window, go to the File -> Connection Settings, select check
 
 ### Build application from the command line
 
-Make sure that `C:\Program Files\Microsoft Visual Studio 8\VC\vcpackages` is in your path (required to run vcbuild.exe). Here is the list of paths which should be in PATH env variable:
-
-<i>C:\Program Files\Microsoft Visual Studio 8\Common7\IDE;C:\Program Files\Microsoft Visual Studio 8\VC\BIN;C:\Program Files\Microsoft Visual Studio 8\Common7\Tools;C:\Program Files\Microsoft Visual Studio 8\Common7\Tools\bin;C:\Program Files\Microsoft Visual Studio 8\VC\PlatformSDK\bin;C:\Program Files\Microsoft Visual Studio 8\SDK\v2.0\bin</i>
-
-Add path to CabWiz.exe to rhobuild.yml in the Rhodes folder:
+Add path to vcbuild.exe and CabWiz.exe to rhobuild.yml in the Rhodes folder:
 
 	env:
 	  paths:
-	    cabwiz: C:/Program Files/Windows Mobile 6 SDK/Tools/CabWiz
+	    vcbuild: 'C:/Program Files/Microsoft Visual Studio 8/VC/vcpackages/vcbuild.exe'
+	    cabwiz: 'C:/Program Files/Windows Mobile 6 SDK/Tools/CabWiz'
 
 ### To run application on device or emulator(Visual Studio 2008 only) :
 
