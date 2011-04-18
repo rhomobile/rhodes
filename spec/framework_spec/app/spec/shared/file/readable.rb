@@ -2,6 +2,8 @@ describe :file_readable, :shared => true do
   before :each do
     if System.get_property('platform') == 'ANDROID'
       @file = "#{ENV['TMP']}/i_exist"
+    elsif System.get_property('platform') == 'WINDOWS'
+      @file = "c:/Temp/i_exist"    
     else
       @file = "/tmp/i_exist"
     end
