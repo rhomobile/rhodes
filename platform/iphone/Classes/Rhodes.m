@@ -12,6 +12,7 @@
 //#include "common/app_build_configs.h"
 #import "SplitView/SplittedMainView.h"
 
+#include "common/app_build_capabilities.h"
 
 
 #undef DEFAULT_LOGCATEGORY
@@ -573,10 +574,12 @@ static Rhodes *instance = NULL;
     signatureDelegate = [[SignatureDelegate alloc] init];
     nvDelegate = [[NVDelegate alloc] init];
     
+#ifdef APP_BUILD_CAPABILITY_PUSH    
 #ifdef __IPHONE_3_0
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
      (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)];
-#endif
+#endif //__IPHONE_3_0
+#endif //APP_BUILD_CAPABILITY_PUSH    
     
 #ifdef __IPHONE_4_0
     eventStore = [[EKEventStore alloc] init];
@@ -772,7 +775,11 @@ static Rhodes *instance = NULL;
 	[self doStartUp];
 } */
 
+
+#ifdef APP_BUILD_CAPABILITY_PUSH
+
 #ifdef __IPHONE_3_0
+
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
 	NSLog(@"Device token is %@", deviceToken);
@@ -798,7 +805,10 @@ static Rhodes *instance = NULL;
 {
 	[self processPushMessage:userInfo];
 }
-#endif
+
+#endif //__IPHONE_3_0
+
+#endif //APP_BUILD_CAPABILITY_PUSH
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     RAWLOG_INFO("Application did become active");
