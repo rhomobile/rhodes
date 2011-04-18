@@ -267,7 +267,14 @@ public class RhodesService extends Service {
 			try {
 				Log.i(TAG, "Application hash was changed");
 				
-				Utils.deleteRecursively(new File(getRootPath(), "lib"));
+				File libDir = new File(getRootPath(), "lib");
+				File testLib = new File(libDir.getPath(), "rhoframework.iseq");
+				if(libDir.isDirectory() && testLib.isFile())
+				{
+				    Log.i(TAG, "Updating from very old rhodes version, clean filesystem.");
+				    Utils.deleteChildrenIgnoreFirstLevel(new File(getRootPath(), "apps"), "rhoconfig.txt");
+				    Utils.deleteRecursively(libDir);
+				}
 				
 				LocalFileProvider.revokeUriPermissions(context);
 
