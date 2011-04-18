@@ -105,8 +105,12 @@ def make_application_build_capabilities_header_file
 
   caps = []
  
-  $app_config["capabilities"].each do |cap|
-     caps << cap
+  capabilities = $app_config["capabilities"]
+
+  if capabilities != nil
+     capabilities.each do |cap|
+        caps << cap
+     end
   end
 
   caps.sort.each do |cap|
