@@ -30,6 +30,7 @@ namespace rho.common
         private Hash m_menuItems = null;
         private Uri m_currentUri = null; 
         private CHttpServer m_httpServer;
+        private bool m_barIsStarted = false;
         int m_currentTabIndex = 0;
         String[] m_currentUrls = new String[5];
         private String m_strBlobsDirPath, m_strDBDirPath;
@@ -40,6 +41,7 @@ namespace rho.common
         public WebBrowser WebBrowser{ get { return m_webBrowser; } }
         public CHttpServer HttpServer{ get { return m_httpServer; } }
         public CRhoRuby RhoRuby { get { return CRhoRuby.Instance; } }
+        public bool barIsStarted { get { return m_barIsStarted; } }
 
         public String getBlobsDirPath() { return m_strBlobsDirPath; }
         public String getHomeUrl() { return m_strHomeUrl; }
@@ -350,6 +352,7 @@ namespace rho.common
 
                 createToolBarButtons(barType, hashArray);
                 setMenuItems(m_menuItems);
+                m_barIsStarted = true;
             });
         }
 
@@ -365,6 +368,7 @@ namespace rho.common
                     m_appMainPage.ApplicationBar.IsVisible = false;
 
                     m_appMainPage.ApplicationBar = null;
+                    m_barIsStarted = false;
                 }
             });
         }
