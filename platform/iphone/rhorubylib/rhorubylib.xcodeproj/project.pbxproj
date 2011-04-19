@@ -834,6 +834,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = rhorubylib;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				SYMROOT = ../build;
 			};
 			name = Debug;
@@ -855,6 +856,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = rhorubylib;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				SYMROOT = ../build;
 			};
 			name = Release;
@@ -917,6 +919,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = rhorubylib;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				SYMROOT = ../build;
 			};
 			name = Distribution;
