@@ -55,7 +55,7 @@ namespace rho.rubyext
         [RubyMethodAttribute("started", RubyMethodAttributes.PublicSingleton)]
         public static Boolean isStarted(RubyModule/*!*/ self)
         {
-            return true;
+            return RhodesApp.barIsStarted;
         }
 
         [RubyMethodAttribute("set_tab_badge", RubyMethodAttributes.PublicSingleton)]
