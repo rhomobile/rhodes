@@ -4,8 +4,7 @@ require 'thread'
 #TODO: This is temporary, see https://www.pivotaltracker.com/story/show/3399292
 gem "activesupport", "~> 2.3.5"
 require 'active_support'
-gem "uuidtools", "~> 2.1.2"
-require 'uuidtools'
+require 'uuid'
 require File.dirname(__FILE__) + '/../../lib/rhodes'
 
 
@@ -60,7 +59,9 @@ module Rhogen
       @sdk_path.gsub!("\\","/")
       @app_name = name
       @app_name_cleared = name.downcase.split(/[^a-z]/).map{|w| w.downcase}.join("_")
-      @productid = UUIDTools::UUID.random_create().to_s()
+      puuid = UUID.new
+      generated_uuid = puuid.generate
+      @productid = generated_uuid
       template.source = 'build.yml'
       template.destination = "#{name}/build.yml"
     end
