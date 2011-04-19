@@ -643,10 +643,27 @@ namespace rho.net
 	        return RHODESAPP().canonicalizeRhoUrl(strUrl);
         }
 
+        public void closeConnection()
+        {
+            if (m_webRequest != null)
+            {
+                try
+                {
+                    m_webRequest.Abort();
+                }
+                catch (IOException exc)
+                {
+                    LOG.ERROR("There was an error close connection", exc);
+                }
+            }
+
+            m_webRequest = null;
+        }
+
 	    public void cancel()
         {
 		    m_bCancel = true;
-		    //TODO: cancel current request
+            closeConnection();
         }
 
 	    /*static{
