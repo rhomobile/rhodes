@@ -399,6 +399,7 @@ namespace rho.common
         private void processToolBarCommand(object sender, EventArgs e,  String strAction)
         {
 
+            boolean callback = false;
             if (strAction == "back")
             {
                 if (m_backHistory.Count > 0)
@@ -407,6 +408,12 @@ namespace rho.common
                     m_webBrowser.Navigate(destination);
                 }
                 return;
+            }
+
+            if (strAction.startsWith("callback:"))
+            {
+                strAction = strAction.substring(9);
+                callback = true;
             }
 
             if (strAction == "forward" && m_forwardHistory.Count > 0)
@@ -451,7 +458,12 @@ namespace rho.common
             }
 
             strAction = canonicalizeRhoUrl(strAction);
-            m_webBrowser.Navigate(new Uri(strAction));
+            if (callback)
+            {
+                RhoClassFactory.createNetRequest().pushData(strAction, "rho_callback=1", null);
+            }
+            else
+                m_webBrowser.Navigate(new Uri(strAction));
         }
 
         public String addCallbackObject(Object valObject, String strName)
