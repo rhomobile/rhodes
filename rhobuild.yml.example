@@ -37,9 +37,9 @@ android:
   
 excludedirs:
   all:
-    - **/.*.swo
-    - **/.*.swn
-    - **/.DS_Store
+    - "**/.*.swo"
+    - "**/.*.swn"
+    - "**/.DS_Store"
   bb:
     - public/js/iui
     - public/js/jquery*
@@ -48,7 +48,7 @@ excludedirs:
     - public/css/iphone*
     - public/iwebkit
     - public/themes
-    - **/jquery*.js
-    - **/*.db
+    - "**/jquery*.js"
+    - "**/*.db"
   
 
