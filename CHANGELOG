@@ -1,3 +1,21 @@
+## 2.4
+* Android: support old sdk(s)
+* Blackberry: encryption for hsql database
+* Support running Rhodes application from external browser using link
+* Windows Mobile: signature capture
+* Add RhoSync server error processing methods to client
+* Country codes in localization files
+* Rhom now support find by integer values
+* Android: fix multitasking issues
+* Fix rotation issue in application, created by rhogen
+* Android: GPS coordinates by wireless network
+* Android: fix Honeycomb issues
+* Android: support latest ndk toolchain
+* Android: directory enumeration
+* Fix rotation/change orientation issues
+* iPhone: support non-english contacts
+* Implement Ruby timer
+
 ## 2.3.1
 * iPhone XCode 4 support
 * Android 3.0 SDK support
