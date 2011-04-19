@@ -643,7 +643,11 @@
 			isa = PBXProject;
 			buildConfigurationList = 1DEB91EF08733DB70010E9CD /* Build configuration list for PBXProject "curl" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+			);
 			mainGroup = 08FB7794FE84155DC02AAC07 /* curl */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -757,7 +761,9 @@
 				);
 				PRODUCT_NAME = curl;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				SYMROOT = ../build;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -775,7 +781,9 @@
 				);
 				PRODUCT_NAME = curl;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				SYMROOT = ../build;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -834,7 +842,9 @@
 				);
 				PRODUCT_NAME = curl;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				SYMROOT = ../build;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Distribution;
 		};
