@@ -91,6 +91,8 @@ public class SyncSource
     Vector/*<CAssociation>*/ m_arAssociations = new Vector();
     Vector/*Ptr<net::CMultipartItem*>*/ m_arMultipartItems = new Vector();
     Vector/*<String>*/                  m_arBlobAttrs = new Vector();
+    Hashtable/*<String,int>*/           m_hashIgnorePushObjects = new Hashtable();
+    Hashtable/*<String,int>*/           m_hashBelongsTo = new Hashtable();
     
     Integer getID() { return m_nID; }
     String getName() { return m_strName; }
@@ -215,10 +217,14 @@ public class SyncSource
 	        {
 		        if ( isEmptyToken() )
 		            processToken(1);
-		    	
+
+		        syncClientChanges();
+		        syncServerChanges();
+		        /*		        
 		        boolean bSyncedServer = syncClientChanges();
 		        if ( !bSyncedServer )
 		        	syncServerChanges();
+		        */
 	        }	        
 	    }catch(Exception exc)
 	    {
@@ -233,7 +239,23 @@ public class SyncSource
              new Integer(m_bGetAtLeastOnePage?1:0), new Integer(m_nRefreshTime), getID() );
 	    }
 	}
+	
+	void syncClientChanges()throws Exception
+	{
+      	PROF.START("Pull");
 
+        boolean bSyncClient = false;
+        {
+            IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and sent<=1 LIMIT 1 OFFSET 0", getID());
+            bSyncClient = !res.isEnd();
+        }
+        if ( bSyncClient )
+            doSyncClientChanges();
+
+        PROF.STOP("Pull");
+	}
+	
+/*
 	boolean syncClientChanges()throws Exception
 	{
 	    boolean bSyncedServer = false;
@@ -274,8 +296,69 @@ public class SyncSource
 	{
 	    IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and update_type='create' and sent>1  LIMIT 1 OFFSET 0", getID());
 	    return !res.isEnd();
+	}*/
+
+	void addBelongsTo(String strAttrib, Integer nSrcID)
+	{
+	    m_hashBelongsTo.put(strAttrib, nSrcID);
 	}
 
+	Integer getBelongsToSrcID(String strAttrib)
+	{
+	    if ( m_hashBelongsTo.containsKey(strAttrib) )
+	        return (Integer)m_hashBelongsTo.get(strAttrib);
+
+	    return new Integer(-1);
+	}
+
+	void checkIgnorePushObjects()throws Exception
+	{
+	    // ignore changes in pending creates
+	    {
+	        IDBResult res = getDB().executeSQL("SELECT distinct(object) FROM changed_values where source_id=? and sent>=2", getID() );
+	        for( ; !res.isEnd(); res.next() )
+	        {
+	            String strObject = res.getStringByIdx(0);
+	            m_hashIgnorePushObjects.put(strObject, new Integer(1));
+	        }
+	    }
+
+	    //check for belongs_to
+	    String strAttribQuests = "";
+	    Vector/*<String>*/ arValues = new Vector();
+	    arValues.addElement(getID());
+    	Enumeration keys = m_hashBelongsTo.keys();
+		while (keys.hasMoreElements()) 
+		{
+	        if ( strAttribQuests.length() > 0 )
+	            strAttribQuests += ",";
+
+	        strAttribQuests += "?";
+	        arValues.addElement(keys.nextElement());
+	    }
+
+	    if ( strAttribQuests.length() > 0 )
+	    {
+	        IDBResult res = getDB().executeSQLEx( "SELECT object, attrib, value FROM changed_values where source_id=? and sent<=1 and attrib IN ( " + strAttribQuests + " )",  
+	        		arValues );
+
+	        for( ; !res.isEnd(); res.next() )
+	        {
+	            String strObject = res.getStringByIdx(0);
+	            String strAttrib = res.getStringByIdx(1);
+	            String strValue = res.getStringByIdx(2);
+
+	            IDBResult res2 = getDB().executeSQL(
+	                "SELECT object FROM changed_values where source_id=? and sent>=2 and object=? LIMIT 1 OFFSET 0", 
+	                getBelongsToSrcID(strAttrib), strValue );
+	            
+	            if (!res2.isEnd())
+	                m_hashIgnorePushObjects.put(strObject, new Integer(1) );
+
+	        }
+	    }
+	}
+	
 	void doSyncClientChanges()throws Exception
 	{
 	    String arUpdateTypes[] = {"create", "update", "delete"};
@@ -286,32 +369,41 @@ public class SyncSource
 	    String strBody = "{\"source_name\":" + JSONEntry.quoteValue(getName()) + ",\"client_id\":" + JSONEntry.quoteValue(getSync().getClientID());
 	    boolean bSend = false;
 	    int i = 0;
-	    for( i = 0; i < 3 && getSync().isContinueSync(); i++ )
+	    
+	    getDB().Lock();
+	    try{
+		    checkIgnorePushObjects();
+		    
+		    for( i = 0; i < 3 && getSync().isContinueSync(); i++ )
+		    {
+		        String strBody1;
+		        strBody1 = makePushBody_Ver3(arUpdateTypes[i], true);
+		        if (strBody1.length() > 0)
+		        {
+		            strBody += "," + strBody1;
+	
+		            String strBlobAttrs = "";
+		            for ( int j = 0; j < (int)m_arBlobAttrs.size(); j++)
+		            {
+		                if ( strBlobAttrs.length() > 0 )   
+		                    strBlobAttrs += ",";
+	
+		                strBlobAttrs += JSONEntry.quoteValue((String)m_arBlobAttrs.elementAt(j));
+		            }
+	
+		            if ( strBlobAttrs.length() > 0 )
+		                strBody += ",\"blob_fields\":[" + strBlobAttrs + "]";
+	
+		            arUpdateSent[i] = true;
+		            bSend = true;
+		        }
+		    }
+		    strBody += "}";
+	    }finally
 	    {
-	        String strBody1;
-	        strBody1 = makePushBody_Ver3(arUpdateTypes[i], true);
-	        if (strBody1.length() > 0)
-	        {
-	            strBody += "," + strBody1;
-
-	            String strBlobAttrs = "";
-	            for ( int j = 0; j < (int)m_arBlobAttrs.size(); j++)
-	            {
-	                if ( strBlobAttrs.length() > 0 )   
-	                    strBlobAttrs += ",";
-
-	                strBlobAttrs += JSONEntry.quoteValue((String)m_arBlobAttrs.elementAt(j));
-	            }
-
-	            if ( strBlobAttrs.length() > 0 )
-	                strBody += ",\"blob_fields\":[" + strBlobAttrs + "]";
-
-	            arUpdateSent[i] = true;
-	            bSend = true;
-	        }
+	    	getDB().Unlock();
 	    }
-	    strBody += "}";
-
+	    
 	    if ( bSend )
 	    {
 	        LOG.INFO( "Push client changes to server. Source: " + getName() + "Size :" + strBody.length() );
@@ -399,6 +491,9 @@ public class SyncSource
 	        String value = res.getStringByIdx(2);
 	        String attribType = res.getStringByIdx(3);
 
+	        if ( m_hashIgnorePushObjects.containsKey(strObject) )
+	        	continue;
+	        
 	        if ( attribType.compareTo("blob.file") == 0 )
 	        {
 	            MultipartItem oItem = new MultipartItem();

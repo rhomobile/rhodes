@@ -578,7 +578,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	{
 	    Hashtable/*<String, int>*/ hashPassed = new Hashtable();
 	    
-	    for( int nCurSrc = m_sources.size()-1; nCurSrc > 0 ; )
+	    for( int nCurSrc = m_sources.size()-1; nCurSrc >= 0 ; )
 	    {
 	        SyncSource oCurSrc = (SyncSource)m_sources.elementAt(nCurSrc);
 	        if ( oCurSrc.getAssociations().size() == 0 || hashPassed.containsKey(oCurSrc.getName()) )
@@ -590,6 +590,9 @@ public class SyncEngine implements NetRequest.IRhoSession
 	            {
 	                SyncSource.CAssociation oAssoc = (SyncSource.CAssociation)oCurSrc.getAssociations().elementAt(i);
 	                int nAssocSrcIndex = findSrcIndex( m_sources, oAssoc.m_strSrcName);
+	                if ( nAssocSrcIndex >= 0 )
+	                	((SyncSource)m_sources.elementAt(nAssocSrcIndex)).addBelongsTo( oAssoc.m_strAttrib, oCurSrc.getID() );
+	                			
 	                if ( nAssocSrcIndex >=0 && nAssocSrcIndex < nSrc )
 	                {
 	                    m_sources.removeElementAt( nSrc );

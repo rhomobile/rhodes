@@ -446,7 +446,7 @@ void CSyncEngine::checkSourceAssociations()
 {
     Hashtable<String, int> hashPassed;
     
-    for( int nCurSrc = m_sources.size()-1; nCurSrc > 0 ; )
+    for( int nCurSrc = m_sources.size()-1; nCurSrc >= 0 ; )
     {
         CSyncSource& oCurSrc = *(m_sources.elementAt(nCurSrc));
         if ( oCurSrc.getAssociations().size() == 0 || hashPassed.containsKey(oCurSrc.getName()) )
@@ -458,6 +458,9 @@ void CSyncEngine::checkSourceAssociations()
             {
                 const CSyncSource::CAssociation& oAssoc = oCurSrc.getAssociations().elementAt(i);
                 int nAssocSrcIndex = findSrcIndex( m_sources, oAssoc.m_strSrcName);
+                if ( nAssocSrcIndex >= 0 )
+                    m_sources.elementAt(nAssocSrcIndex)->addBelongsTo( oAssoc.m_strAttrib, oCurSrc.getID() );
+
                 if ( nAssocSrcIndex >=0 && nAssocSrcIndex < nSrc )
                 {
                     m_sources.removeElementAt( nSrc, false );
