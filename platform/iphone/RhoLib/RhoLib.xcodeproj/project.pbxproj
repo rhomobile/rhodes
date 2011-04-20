@@ -471,6 +471,7 @@
 				);
 				PRODUCT_NAME = rholib;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared";
 			};
@@ -491,6 +492,7 @@
 				);
 				PRODUCT_NAME = rholib;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared";
 			};
@@ -552,6 +554,7 @@
 				);
 				PRODUCT_NAME = rholib;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared";
 			};
