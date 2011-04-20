@@ -347,10 +347,17 @@ public class RhodesActivity extends BaseActivity {
         Logger.D(TAG, "onServiceConnected: " + name.toShortString());
 
         Intent intent = getIntent();
-        String rhoStartParams = (intent.getData() != null) ? intent.toUri(0) : "";
-        Uri uri = Uri.parse(rhoStartParams);
+        String startParams = (intent.getData() != null) ? intent.toUri(0) : "";
+        Uri uri = Uri.parse(startParams);
+        String scheme = uri.getScheme();
+        if(startParams.compareTo("") != 0)
+        {
+            startParams = startParams.substring(scheme.length() + 1);
+            if(startParams.startsWith("//"))
+                startParams = startParams.substring(2);
+        }
 
-        if(!RhodesService.canStartApp(rhoStartParams, "&#"))
+        if(!RhodesService.canStartApp(startParams, "&#"))
         {
             Logger.E(TAG, "This is hidden app and can be started only with security key.");
             getRhodesApplication().exit();
