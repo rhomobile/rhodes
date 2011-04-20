@@ -123,9 +123,13 @@ void CSyncSource::sync()
         if ( isEmptyToken() )
             processToken(1);
 
+        syncClientChanges();
+        syncServerChanges();
+/*
         boolean bSyncedServer = syncClientChanges();
         if ( !bSyncedServer )
             syncServerChanges();
+*/
     }
 
     CTimeInterval endTime = CTimeInterval::getCurrentTime();
@@ -137,6 +141,22 @@ void CSyncSource::sync()
                          getID() );
 }
 
+void CSyncSource::syncClientChanges()
+{
+  	PROF_START("Pull");
+
+    boolean bSyncClient  = true;
+    {
+        IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and sent<=1 LIMIT 1 OFFSET 0", getID());
+        bSyncClient = !res.isEnd();
+    }
+    if ( bSyncClient )
+        doSyncClientChanges();
+
+    PROF_STOP("Pull");
+}
+
+/*
 boolean CSyncSource::syncClientChanges()
 {
     boolean bSyncedServer = false;
@@ -177,6 +197,66 @@ boolean CSyncSource::isPendingClientChanges()
 {
     IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and update_type='create' and sent>1  LIMIT 1 OFFSET 0", getID());
     return !res.isEnd();
+}*/
+
+void CSyncSource::addBelongsTo(const String& strAttrib, int nSrcID)
+{
+    m_hashBelongsTo.put(strAttrib, nSrcID);
+}
+
+int CSyncSource::getBelongsToSrcID(const String& strAttrib)
+{
+    if ( m_hashBelongsTo.containsKey(strAttrib) )
+        return m_hashBelongsTo.get(strAttrib);
+
+    return -1;
+}
+
+void CSyncSource::checkIgnorePushObjects()
+{
+    // ignore changes in pending creates
+    {
+        IDBResult res = getDB().executeSQL("SELECT distinct(object) FROM changed_values where source_id=? and sent>=2", getID() );
+        for( ; !res.isEnd(); res.next() )
+        {
+            String strObject = res.getStringByIdx(0);
+            m_hashIgnorePushObjects.put(strObject, 1);
+        }
+    }
+
+    //check for belongs_to
+    String strAttribQuests = "";
+    Vector<String> arValues;
+    arValues.addElement(convertToStringA(getID()));
+    for ( Hashtable<String,int>::iterator it = m_hashBelongsTo.begin();  it != m_hashBelongsTo.end(); ++it )
+    {
+        if ( strAttribQuests.length() > 0 )
+            strAttribQuests += ",";
+
+        strAttribQuests += "?";
+        arValues.addElement(it->first);
+    }
+
+    if ( strAttribQuests.length() > 0 )
+    {
+        IDBResult res = getDB().executeSQLEx( (String("SELECT object, attrib, value FROM changed_values where source_id=? and sent<=1 and attrib IN ( ") + strAttribQuests + " )").c_str(), 
+             arValues );
+
+        for( ; !res.isEnd(); res.next() )
+        {
+            String strObject = res.getStringByIdx(0);
+            String strAttrib = res.getStringByIdx(1);
+            String strValue = res.getStringByIdx(2);
+
+            IDBResult res2 = getDB().executeSQL(
+                "SELECT object FROM changed_values where source_id=? and sent>=2 and object=? LIMIT 1 OFFSET 0", 
+                getBelongsToSrcID(strAttrib), strValue );
+            
+            if (!res2.isEnd())
+                m_hashIgnorePushObjects.put(strObject, 1);
+
+        }
+    }
 }
 
 void CSyncSource::doSyncClientChanges()
@@ -189,6 +269,10 @@ void CSyncSource::doSyncClientChanges()
     String strBody = "{\"source_name\":" + CJSONEntry::quoteValue(getName()) + ",\"client_id\":" + CJSONEntry::quoteValue(getSync().getClientID());
     boolean bSend = false;
     int i = 0;
+
+    getDB().Lock();
+    checkIgnorePushObjects();
+
     for( i = 0; i < 3 && getSync().isContinueSync(); i++ )
     {
         String strBody1;
@@ -214,6 +298,8 @@ void CSyncSource::doSyncClientChanges()
         }
     }
     strBody += "}";
+
+    getDB().Unlock();
 
     if ( bSend )
     {
@@ -307,6 +393,9 @@ void CSyncSource::makePushBody_Ver3(String& strBody, const String& strUpdateType
         String strObject = res.getStringByIdx(1);
         String value = res.getStringByIdx(2);
         String attribType = res.getStringByIdx(3);
+
+        if ( m_hashIgnorePushObjects.containsKey(strObject) )
+            continue;
 
         if ( attribType.compare("blob.file") == 0 )
         {

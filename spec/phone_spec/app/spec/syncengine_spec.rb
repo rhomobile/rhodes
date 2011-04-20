@@ -100,6 +100,7 @@ if !defined?(RHO_WP7)
     Rho::RhoConfig.syncserver.should == saveSrv
   end
 end
+
   it "should not sync without login" do
     SyncEngine.logged_in.should == 0
   
@@ -107,6 +108,7 @@ end
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_CLIENTISNOTLOGGEDIN
 
   end
+
 =begin
   it "should update sources from database" do
     uniq_sources = Rho::RhoConfig::sources.values  
@@ -636,6 +638,102 @@ end
     
   end
 
+  it "should NOT push pending created objects" do
+    item = getProduct.create({:name => 'Test', :brand => "Rho"})
+    records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
+    records.length.should == 1
+    records[0]['attrib'].should == 'object'
+
+    err_resp = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":0},{\"total_count\":0},{\"create-error\":{\"" + item.object + "\":{\"name\":\"wrongname\",\"an_attribute\":\"error create\"},\"" + item.object + "-error\":{\"message\":\"error create\"}}}]"
+    
+    SyncEngine.set_source_property(getProduct().get_source_id.to_i(), "rho_server_response", err_resp )    
+    res = ::Rho::RhoSupport::parse_query_parameters getProduct.sync( "/app/Settings/sync_notify")
+
+    item.update_attributes({:price => "123"})
+
+    records2 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
+    records2.length.should == ($spec_settings[:schema_model] ? 7 : 2)
+
+    records2 = getTestDB().select_from_table('changed_values','*', {'update_type' => 'create', "sent"=>0})
+    records2.length.should == 0
+
+    records3 = getTestDB().select_from_table('changed_values','*', {'update_type' => 'update', "sent"=>0})
+    records3.length.should == 1
+
+    SyncEngine.set_source_property(getProduct().get_source_id.to_i(), "rho_server_response", err_resp )    
+    res = ::Rho::RhoSupport::parse_query_parameters getProduct.sync( "/app/Settings/sync_notify")
+
+    records3 = getTestDB().select_from_table('changed_values','*', {'update_type' => 'update', "sent"=>1})
+    records3.length.should == 1
+    
+  end
+
+  it "should push when pending created objects" do
+    item = getProduct.create({:name => 'Test', :brand => "Rho"})
+    records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
+    records.length.should == 1
+    records[0]['attrib'].should == 'object'
+
+    err_resp = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":0},{\"total_count\":0},{\"create-error\":{\"" + item.object + "\":{\"name\":\"wrongname\",\"an_attribute\":\"error create\"},\"" + item.object + "-error\":{\"message\":\"error create\"}}}]"
+    
+    SyncEngine.set_source_property(getProduct().get_source_id.to_i(), "rho_server_response", err_resp )    
+    res = ::Rho::RhoSupport::parse_query_parameters getProduct.sync( "/app/Settings/sync_notify")
+
+    item2 = getProduct.create({:name => 'Test2', :brand => "Rho2"})
+    records2 = getTestDB().select_from_table('changed_values','*', {'update_type' => 'create', "sent"=>0} )
+    records2.length.should == 1
+    records2[0]['attrib'].should == 'object'
+
+    SyncEngine.set_source_property(getProduct().get_source_id.to_i(), "rho_server_response", "" )    
+    res = ::Rho::RhoSupport::parse_query_parameters getProduct.sync( "/app/Settings/sync_notify")
+    res['status'].should == 'ok'
+    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+
+    records2 = getTestDB().select_from_table('changed_values','*')
+    records2.length.should == 0
+
+    item3 = getProduct.find(item2.object)
+    item3.should be_nil
+    
+  end
+
+  it "should NOT push when children pending created objects" do
+    cust1 = getCustomer.create( {:first => "CustTest1"})
+    cust2 = getCustomer.create( {:first => "CustTest2"})
+    
+    @product_test_name = Rho::RhoConfig.generate_id().to_s
+    item = getProduct.create({:name => @product_test_name, :quantity => cust1.object, :sku => cust2.object})
+    item2 = getProduct.find(item.object)
+    item2.vars.should == item.vars
+    
+    err_resp = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":0},{\"total_count\":0},{\"create-error\":{\"" + cust1.object + "\":{\"name\":\"wrongname\",\"an_attribute\":\"error create\"},\"" + cust1.object + "-error\":{\"message\":\"error create\"}}}]"
+    SyncEngine.set_source_property(getCustomer().get_source_id.to_i(), "rho_server_response", err_resp )    
+    res = ::Rho::RhoSupport::parse_query_parameters getCustomer.sync( "/app/Settings/sync_notify")
+
+    records2 = getTestDB().select_from_table('changed_values','*', {'update_type' => 'create', 
+        'source_id'=>getCustomer().get_source_id.to_i(), 'sent'=>2})
+    records2.length.should > 0
+    records2 = getTestDB().select_from_table('changed_values','*', {'update_type' => 'create', 
+        'source_id'=>getProduct().get_source_id.to_i(), 'sent'=>0})
+    records2.length.should > 0
+
+    SyncEngine.set_source_property(getCustomer().get_source_id.to_i(), "rho_server_response", "" )    
+    res = ::Rho::RhoSupport::parse_query_parameters getProduct.sync( "/app/Settings/sync_notify")
+    res['status'].should == 'ok'
+    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+
+    getTestDB().select_from_table('changed_values','*')
+    records2 = getTestDB().select_from_table('changed_values','*', {'update_type' => 'create', 
+        'source_id'=>getCustomer().get_source_id.to_i(), 'sent'=>2})
+    records2.length.should > 0
+    records2 = getTestDB().select_from_table('changed_values','*', {'update_type' => 'create', 
+        'source_id'=>getProduct().get_source_id.to_i(), 'sent'=>1})
+    records2.length.should > 0
+
+    item2 = getProduct.find(item.object)
+    item2.vars.should_not be_nil
+  end
+          
   it "should logout" do
     SyncEngine.logout()
   
