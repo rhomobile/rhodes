@@ -62,6 +62,8 @@ private:
     Vector<CAssociation> m_arAssociations;
     VectorPtr<net::CMultipartItem*> m_arMultipartItems;
     Vector<String>                  m_arBlobAttrs;
+    Hashtable<String,int>           m_hashIgnorePushObjects;
+    Hashtable<String,int>           m_hashBelongsTo;
 
 public:
     int m_nErrCode;
@@ -70,7 +72,7 @@ public:
 public:
     CSyncSource(int id, const String& strName, const String& strSyncType, db::CDBAdapter& db, CSyncEngine& syncEngine );
     virtual void sync();
-    virtual boolean syncClientChanges();
+    virtual void syncClientChanges();
 
     int getID()const { return m_nID; }
     String getName() { return m_strName; }
@@ -100,7 +102,11 @@ public:
     CSyncSource(CSyncEngine& syncEngine, db::CDBAdapter& db );
 
     void doSyncClientChanges();
-    boolean isPendingClientChanges();
+    void checkIgnorePushObjects();
+    int    getBelongsToSrcID(const String& strAttrib);
+    void   addBelongsTo(const String& strAttrib, int nSrcID);
+
+    //boolean isPendingClientChanges();
 
     void syncServerChanges();
     void makePushBody_Ver3(String& strBody, const String& strUpdateType, boolean isSync);
