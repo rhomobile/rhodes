@@ -1,3 +1,8 @@
+## 2.4.1
+* iPhone: fix production build
+* Android: fix 2.1 version
+* Sync: do not stop sync on source with pending create objects
+
 ## 2.4
 * Android: support old sdk(s)
 * Blackberry: encryption for hsql database
