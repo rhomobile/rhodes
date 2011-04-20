@@ -76,19 +76,6 @@ public class RhodesActivity extends BaseActivity {
 		Thread ct = Thread.currentThread();
 		//ct.setPriority(Thread.MAX_PRIORITY);
 		uiThreadId = ct.getId();
-		
-		Intent intent = getIntent();
-		//intent.putExtra(RHO_URL_START_KEY, "/app/BrowserStart");
-		//intent.putExtra(RHO_URL_PARAMS_KEY, "param1=value1&param2=value2");
-		//Log.d(TAG, "MY URI: " + intent.toUri(Intent.URI_INTENT_SCHEME));
-
-        // Check if we really started through URI
-        if(intent.getData() != null)
-        {
-            //Workaround to get URI string from intent since intent.getData() badly initialized
-            Log.d(TAG, "Application URI: " + intent.toUri(0));
-            RhodesApplication.setStartParameters(intent.toUri(0).toString());
-        }
 
 		if (!RhodesService.isEnableTitle()) {
 			requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -356,30 +343,27 @@ public class RhodesActivity extends BaseActivity {
 	@Override
 	public void onServiceConnected(ComponentName name, IBinder service) {
 		super.onServiceConnected(name, service);
-		
-		Bundle startParams = null;
-		Object params = getIntent().getExtras();
-		if (params != null && params instanceof Bundle)
-			startParams = (Bundle)params;
-		
-		String rhoStartParams = null;
-		if (startParams != null)
-			rhoStartParams = startParams.getString(RHO_START_PARAMS_KEY);
-		if (rhoStartParams == null)
-			rhoStartParams = "";
-		
-		if (!RhodesService.canStartApp(rhoStartParams, ", ")) {
-			Logger.E(TAG, "This is hidden app and can be started only with security key.");
-			getRhodesApplication().exit();
-			return;
-		}
-		
-		String urlStart = startParams == null ? null : startParams.getString(RHO_URL_START_KEY);
-		if (urlStart != null) {
-			Logger.D(TAG, "PROCESS URL START: " + urlStart);
-			RhoConf.setString("start_path", Uri.decode(urlStart));
-		}
-		
+
+        Logger.D(TAG, "onServiceConnected: " + name.toShortString());
+
+        Intent intent = getIntent();
+        String rhoStartParams = (intent.getData() != null) ? intent.toUri(0) : "";
+        Uri uri = Uri.parse(rhoStartParams);
+
+        if(!RhodesService.canStartApp(rhoStartParams, "&#"))
+        {
+            Logger.E(TAG, "This is hidden app and can be started only with security key.");
+            getRhodesApplication().exit();
+            return;
+        }
+
+        String urlStart = uri.getPath();
+        if (urlStart.compareTo("") != 0)
+        {
+            Logger.D(TAG, "PROCESS URL START: " + urlStart);
+            RhoConf.setString("start_path", Uri.decode(urlStart));
+        }
+
 		ENABLE_LOADING_INDICATION = !RhoConf.getBool("disable_loading_indication");
 	}
 

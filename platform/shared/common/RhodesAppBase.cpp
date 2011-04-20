@@ -52,17 +52,11 @@ String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl)
     if (strUrl.length() == 0 )
         return m_strHomeUrl;
 
-    if ( strncmp("http://", strUrl.c_str(), 7 ) == 0 ||
-        strncmp("https://", strUrl.c_str(), 8 ) == 0 ||
-        strncmp("javascript:", strUrl.c_str(), 11 ) == 0 ||
-        strncmp("mailto:", strUrl.c_str(), 7) == 0 ||
-        strncmp("tel:", strUrl.c_str(), 4) == 0 ||
-        strncmp("wtai:", strUrl.c_str(), 5) == 0 ||
-        strncmp("sms:", strUrl.c_str(), 4) == 0
-        )
-        return strUrl;
+    size_t pos = strUrl.find_first_of(":#");
+    if((pos == String::npos) || (strUrl.at(pos) == '#'))
+        return CFilePath::join(m_strHomeUrl,strUrl);
 
-    return CFilePath::join(m_strHomeUrl,strUrl);
+    return strUrl;
 }
 
 } //namespace common
