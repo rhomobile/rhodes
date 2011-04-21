@@ -35,6 +35,7 @@
 #define IDC_EDIT1                       1006
 #define IDC_MSGCLASSES                  1006
 #define IDC_EDIT2                       1007
+#define ID_DATETIME_CAPTION             1007
 #define IDC_MSGEXCLUDE                  1008
 #define IDC_SYNCSTATUS                  1009
 #define IDC_BUTTON2                     1010
@@ -46,6 +47,7 @@
 #define IDC_BT_LIST                     1020
 #define IDC_SLIDER1                     1020
 #define IDC_SLIDER_ZOOM                 1020
+#define ID_TIME_CAPTION                 1021
 #define IDC_BUTTON1                     1022
 #define IDC_BT_CANCEL                   1022
 #define IDC_BT_STATIC                   1023
@@ -87,7 +89,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        125
 #define _APS_NEXT_COMMAND_VALUE         40031
-#define _APS_NEXT_CONTROL_VALUE         1021
+#define _APS_NEXT_CONTROL_VALUE         1022
 #define _APS_NEXT_SYMED_VALUE           111
 #endif
 #endif
