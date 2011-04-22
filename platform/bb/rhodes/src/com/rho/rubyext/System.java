@@ -15,6 +15,7 @@ import com.xruby.runtime.lang.*;
 import com.xruby.runtime.builtin.*;
 import com.rho.RhoRubyHelper;
 import com.rho.file.IRAFile;
+import com.rho.Version;
 
 import net.rim.device.api.system.ApplicationDescriptor;
 import net.rim.device.api.system.ApplicationManager;
@@ -358,7 +359,11 @@ public class System {
     		return ObjectFactory.createBoolean(rhomobile.RhodesApplication.getInstance().hasTouchScreen());
     	if ( strPropName.equalsIgnoreCase("has_sqlite") )
     		return ObjectFactory.createBoolean(com.rho.Capabilities.USE_SQLITE);
-    	    	
+    	if ( strPropName.equalsIgnoreCase("webview") ) {
+    		Version.SoftVersion ver = Version.getSoftVersion();
+    		return ObjectFactory.createString((ver.nMajor < 6 ? "BB" : "WEBKIT")+"/"+DeviceInfo.getSoftwareVersion() ); 
+    	}
+
     	return RubyConstant.QNIL;
     }
 

@@ -13,6 +13,9 @@
 		<% elsif  System::get_property('platform') == 'ANDROID' %>
             <link href="/public/css/webkit.css" type="text/css" rel="stylesheet"/>
 			<link href="/public/css/android.css" type="text/css" rel="stylesheet"/>
+		<% elsif System::get_property('webview') =~ /^WEBKIT/ %>
+            <link href="/public/css/webkit.css" type="text/css" rel="stylesheet"/>
+			<link href="/public/css/android.css" type="text/css" rel="stylesheet"/>
 		<% else %>
 			<link href="/public/css/windows_mobile.css" type="text/css" rel="stylesheet"/>
 		<% end %>	

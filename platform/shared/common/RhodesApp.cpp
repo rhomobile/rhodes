@@ -788,7 +788,7 @@ void CRhodesApp::initAppUrls()
     CRhodesAppBase::initAppUrls(); 
     m_currentTabIndex = 0;
 
-#if defined( OS_WINCE ) || defined( OS_WINDOWS )
+#if defined( OS_WINCE )
     m_strHomeUrl = "http://localhost:";
 #else
     m_strHomeUrl = "http://127.0.0.1:";
