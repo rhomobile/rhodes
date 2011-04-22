@@ -7,7 +7,7 @@
     
     <uses-sdk android:minSdkVersion="9" />
     
-    <uses-feature android:name="android.hardware.nfc" android:required="true" />
+    <uses-feature android:name="android.hardware.nfc" android:required="false" />
 
     <application>
         
