@@ -327,8 +327,58 @@ static void toHexString(int i, String& strRes, int radix)
     strRes += (buf+f+1);
 }
 
+int get_msie_version(rho::String& msieVer)
+// Return codes are as follows:
+//    0  : Success
+//    1  : Unable to open Registry Key
+//    2  : Unable to read key value
+{
+#ifdef OS_WINDOWS
+    LONG lResult;
+    HKEY hKey;
+    DWORD dwSize=100,dwType;
+    char szVAL[100];
+
+    // Open the key for query access
+    lResult = ::RegOpenKeyEx(HKEY_LOCAL_MACHINE,
+        LPCTSTR("SOFTWARE\\Microsoft\\Internet Explorer"),
+        0,KEY_QUERY_VALUE,&hKey);
+
+    if(lResult != ERROR_SUCCESS)   // Unable to open Key
+    {
+        return 1;
+    }
+
+    // OK, read the value
+    lResult=::RegQueryValueEx(hKey,LPTSTR("Version"),NULL,
+        &dwType, LPBYTE(szVAL),&dwSize);
+
+    if(lResult != ERROR_SUCCESS)    // Unable to get value
+    {
+        // Close the key before quitting
+        lResult=::RegCloseKey(hKey);
+        return 2;
+    }
+
+    // Close the key
+    lResult=::RegCloseKey(hKey);
+
+    msieVer += "/";
+    msieVer += szVAL;
+#endif
+    return 0;
+}
+
 int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 {
+	if (strcasecmp("webview",szPropName) == 0)
+	{
+		rho::String msieVer = "IE";
+		get_msie_version(msieVer);
+		*resValue = rho_ruby_create_string(msieVer.c_str());
+		return 1;
+	}
+
 	if (strcasecmp("has_camera",szPropName) == 0) 
         {*resValue = rho_ruby_create_boolean(has_camera()); return 1;}
 
