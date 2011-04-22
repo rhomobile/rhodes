@@ -7,7 +7,7 @@ USE_TRACES = false
 
 ANDROID_API_LEVEL_TO_MARKET_VERSION = {}
 ANDROID_MARKET_VERSION_TO_API_LEVEL = {}
-{2 => "1.1", 3 => "1.5", 4 => "1.6", 5 => "2.0", 6 => "2.0.1", 7 => "2.1", 8 => "2.2", 9 => "2.3", 10 => "2.3.3", 11 => "3.0" }.each do |k,v|
+{2 => "1.1", 3 => "1.5", 4 => "1.6", 5 => "2.0", 6 => "2.0.1", 7 => "2.1", 8 => "2.2", 9 => "2.3.1", 10 => "2.3.3", 11 => "3.0" }.each do |k,v|
   ANDROID_API_LEVEL_TO_MARKET_VERSION[k] = v
   ANDROID_MARKET_VERSION_TO_API_LEVEL[v] = k
 end
@@ -367,6 +367,9 @@ namespace "config" do
 
     puts "+++ Looking for platform..." if USE_TRACES
     napilevel = ANDROID_API_LEVEL
+    
+    cur_api_levels = Array.new
+    
     Dir.glob(File.join($androidsdkpath, "platforms", "*")).each do |platform|
       props = File.join(platform, "source.properties")
       unless File.file? props
@@ -384,12 +387,42 @@ namespace "config" do
       end
 
       puts "+++ API LEVEL of #{platform}: #{apilevel}" if USE_TRACES
+      cur_api_levels.push apilevel
 
       if apilevel > napilevel
         napilevel = apilevel
         $androidplatform = File.basename(platform)
         $found_api_level = apilevel
       end
+    end
+
+    requested_api_level = get_api_level($emuversion)
+
+    if USE_TRACES
+      puts "Found API levels:"
+      cur_api_levels.each do |level|
+        puts level
+      end
+      puts "Requested version: #{$emuversion}"
+      puts "Corresponding API level #{requested_api_level}"
+    end
+
+    if requested_api_level.nil?
+      puts "ERROR!!! Wrong Android API version: #{$emuversion}"
+      exit 1
+    end
+
+    is_api_level_installed = false
+    cur_api_levels.each do |level|
+      if level == requested_api_level
+        is_api_level_installed = true
+        break
+      end
+    end
+
+    if !is_api_level_installed
+      puts "ERROR!!! API version is not found in installed Android SDK: #{$emuversion}"
+      exit 1
     end
 
     if $androidplatform.nil?
