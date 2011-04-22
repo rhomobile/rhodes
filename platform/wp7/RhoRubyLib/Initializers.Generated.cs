@@ -109,8 +109,9 @@ namespace rho.rubyext {
         
         private static void LoadRho__AsyncHttp_Class(IronRuby.Builtins.RubyModule/*!*/ module) {
             DefineLibraryMethod(module, "cancel", 0x21, 
-                0x00000002U, 
-                new Action<IronRuby.Builtins.RubyModule, System.String>(rho.rubyext.RhoRoot.RhoAsyncHttp.Cancel)
+                0x00000002U, 0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule, System.String>(rho.rubyext.RhoRoot.RhoAsyncHttp.Cancel), 
+                new Action<IronRuby.Builtins.RubyModule>(rho.rubyext.RhoRoot.RhoAsyncHttp.Cancel)
             );
             
             DefineLibraryMethod(module, "do_request", 0x21, 
