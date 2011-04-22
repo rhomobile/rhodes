@@ -16,5 +16,6 @@ iphone:
   
 android:    
   extensions: ["digest"]
+  version: 2.3.3
 
 extensions: ["mspec", "fileutils", "digest", "digest-md5", "test-libs"]
