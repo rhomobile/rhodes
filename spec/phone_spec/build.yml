@@ -21,7 +21,8 @@ android:
     - network_state
     
   extensions: ["barcode"]
-  
+  version: 2.3.3
+
 wm:
   extensions: ["barcode"]
   
