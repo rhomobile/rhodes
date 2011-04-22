@@ -851,8 +851,11 @@ void __stdcall CMainWindow::OnBeforeNavigate2(IDispatch* pDisp, VARIANT * pvtURL
 
     LOG(TRACE) + "OnBeforeNavigate2: " + szURL;
 
-    if ( wcsstr(szURL, L"rho_open_target=_blank") != 0)
+    const wchar_t *to_remove;
+    if ( (to_remove = wcsstr(szURL, L"rho_open_target=_blank")) != 0)
     {
+        wcscpy((wchar_t*)to_remove, (wchar_t*)to_remove+22);
+
         LOG(INFO) + "Open external browser: " + szURL;
 #ifdef OS_WINCE
         rho_wmsys_run_app(convertToStringA(szURL).c_str(), 0 );
