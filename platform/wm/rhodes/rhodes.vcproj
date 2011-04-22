@@ -1516,6 +1516,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\rho\rubyext\NativeToolbarExt.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\rho\rubyext\NativeToolbarExt.h"
+					>
+				</File>
+				<File
 					RelativePath=".\rho\rubyext\SystemImpl.cpp"
 					>
 				</File>
