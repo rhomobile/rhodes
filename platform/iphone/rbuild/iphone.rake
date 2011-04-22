@@ -239,6 +239,31 @@ def app_expanded_path(appname)
 end
 
 
+def check_sdk(sdkname) 
+
+      puts 'Check SDK :'
+      args = ['-version', '-sdk', sdkname]
+
+      puts Jake.run($xcodebuild,args)
+      ret = $?
+
+      chdir $startdir
+
+      unless ret == 0
+        puts ""
+        puts "ERROR: invalid SDK in BUILD.YML !"
+        puts sdkname+' is NOT installed on this computer !'
+        puts ""
+
+        puts "See all installed SDKs on this computer :"
+        args = ['-showsdks']
+        Jake.run($xcodebuild,args)
+        
+        exit 1
+      end
+end
+
+
 namespace "config" do
   task :set_iphone_platform do
     $current_platform = "iphone"
@@ -293,6 +318,8 @@ namespace "config" do
 
     puts $sdk
     
+    check_sdk($sdk)    
+
     if $sdk =~ /iphonesimulator/
       $sdkver = $sdk.gsub(/iphonesimulator/,"")
       $sdkroot = $devroot + "/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" + $sdkver + ".sdk"
