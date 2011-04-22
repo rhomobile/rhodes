@@ -212,7 +212,7 @@ namespace rho.db
 		return res; 
 	}
 	
-	public IDBResult executeSQLReportNonUniqueEx(String strStatement, Vector<String> vecValues){
+	public IDBResult executeSQLReportNonUniqueEx(String strStatement, Vector<Object> vecValues){
 		//LOG.TRACE("executeSQLReportNonUnique: " + strStatement);
 		
 		Object[] values = new Object[vecValues.size()];
@@ -231,7 +231,7 @@ namespace rho.db
 		return res; 
 	}
 	
-	public IDBResult executeSQLEx(String strStatement, Vector<String> vecValues){
+	public IDBResult executeSQLEx(String strStatement, Vector<Object> vecValues){
 		Object[] values = new Object[vecValues.size()];
 		for (int i = 0; i < vecValues.size(); i++ )
 			values[i] = vecValues.elementAt(i);
