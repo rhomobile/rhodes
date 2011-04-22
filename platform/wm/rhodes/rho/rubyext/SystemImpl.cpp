@@ -4,6 +4,10 @@
 #include "common/StringConverter.h"
 #include "common/RhoFilePath.h"
 #include "ruby/ext/rho/rhoruby.h"
+#ifdef RHODES_EMULATOR
+#undef null
+#include <QWebPage>
+#endif
 #include "MainWindow.h"
 
 #if defined( OS_WINCE ) && !defined( OS_PLATFORM_CE )
@@ -327,6 +331,7 @@ static void toHexString(int i, String& strRes, int radix)
     strRes += (buf+f+1);
 }
 
+#ifndef RHODES_EMULATOR
 int get_msie_version(rho::String& msieVer)
 // Return codes are as follows:
 //    0  : Success
@@ -368,14 +373,19 @@ int get_msie_version(rho::String& msieVer)
 #endif
     return 0;
 }
+#endif
 
 int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 {
 	if (strcasecmp("webview",szPropName) == 0)
 	{
+#ifdef RHODES_EMULATOR
+		*resValue = rho_ruby_create_string("WEBKIT/" QTWEBKIT_VERSION_STR);
+#else
 		rho::String msieVer = "IE";
 		get_msie_version(msieVer);
 		*resValue = rho_ruby_create_string(msieVer.c_str());
+#endif
 		return 1;
 	}
 
