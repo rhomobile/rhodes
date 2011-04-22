@@ -60,6 +60,8 @@ namespace rho.sync
         Vector<CAssociation> m_arAssociations = new Vector<CAssociation>();
         Vector<NetRequest.MultipartItem> m_arMultipartItems = new Vector<NetRequest.MultipartItem>();
         Vector<String>                  m_arBlobAttrs = new Vector<String>();
+        Hashtable<String, int> m_hashIgnorePushObjects = new Hashtable<String, int>();
+        Hashtable<String, int> m_hashBelongsTo = new Hashtable<String, int>();
     
         public int getID() { return m_nID; }
         public String getName() { return m_strName; }
@@ -184,11 +186,14 @@ namespace rho.sync
 	            {
 		            if ( isEmptyToken() )
 		                processToken(1);
-		    	
+                    syncClientChanges();
+    		        syncServerChanges();
+		        /*			    	
 		            boolean bSyncedServer = syncClientChanges();
 		            if ( !bSyncedServer )
 		        	    syncServerChanges();
-	            }	        
+                 */
+	            }
 	        }catch(Exception exc)
 	        {
 	    	    getSync().stopSync();
@@ -203,6 +208,22 @@ namespace rho.sync
 	        }
 	    }
 
+	    public void syncClientChanges()//throws Exception
+	    {
+      	    PROF.START("Pull");
+
+            boolean bSyncClient = false;
+            {
+                IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and sent<=1 LIMIT 1 OFFSET 0", getID());
+                bSyncClient = !res.isEnd();
+            }
+            if ( bSyncClient )
+                doSyncClientChanges();
+
+            PROF.STOP("Pull");
+	    }
+	
+        /*
         public boolean syncClientChanges()
 	    {
 	        boolean bSyncedServer = false;
@@ -243,6 +264,68 @@ namespace rho.sync
 	    {
 	        IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and update_type='create' and sent>1  LIMIT 1 OFFSET 0", getID());
 	        return !res.isEnd();
+	    }*/
+
+	    public void addBelongsTo(String strAttrib, int nSrcID)
+	    {
+	        m_hashBelongsTo.put(strAttrib, nSrcID);
+	    }
+
+	    int getBelongsToSrcID(String strAttrib)
+	    {
+	        if ( m_hashBelongsTo.containsKey(strAttrib) )
+	            return m_hashBelongsTo.get(strAttrib);
+
+	        return -1;
+	    }
+
+	    void checkIgnorePushObjects()//throws Exception
+	    {
+	        // ignore changes in pending creates
+	        {
+	            IDBResult res = getDB().executeSQL("SELECT distinct(object) FROM changed_values where source_id=? and sent>=2", getID() );
+	            for( ; !res.isEnd(); res.next() )
+	            {
+	                String strObject = res.getStringByIdx(0);
+	                m_hashIgnorePushObjects.put(strObject, 1);
+	            }
+	        }
+
+	        //check for belongs_to
+	        String strAttribQuests = "";
+            Vector<Object> arValues = new Vector<Object>();
+	        arValues.addElement(getID());
+
+            Hashtable<String,int>.Enumerator hashEnum = m_hashBelongsTo.GetEnumerator();
+            while (hashEnum.MoveNext())
+            {
+	            if ( strAttribQuests.length() > 0 )
+	                strAttribQuests += ",";
+
+	            strAttribQuests += "?";
+	            arValues.addElement(hashEnum.Current.Key);
+	        }
+
+	        if ( strAttribQuests.length() > 0 )
+	        {
+	            IDBResult res = getDB().executeSQLEx( "SELECT object, attrib, value FROM changed_values where source_id=? and sent<=1 and attrib IN ( " + strAttribQuests + " )",  
+	        		    arValues );
+
+	            for( ; !res.isEnd(); res.next() )
+	            {
+	                String strObject = res.getStringByIdx(0);
+	                String strAttrib = res.getStringByIdx(1);
+	                String strValue = res.getStringByIdx(2);
+
+	                IDBResult res2 = getDB().executeSQL(
+	                    "SELECT object FROM changed_values where source_id=? and sent>=2 and object=? LIMIT 1 OFFSET 0", 
+	                    getBelongsToSrcID(strAttrib), strValue );
+	            
+	                if (!res2.isEnd())
+	                    m_hashIgnorePushObjects.put(strObject, 1 );
+
+	            }
+	        }
 	    }
 
 	    void doSyncClientChanges()
@@ -255,31 +338,40 @@ namespace rho.sync
 	        String strBody = "{\"source_name\":" + JSONEntry.quoteValue(getName()) + ",\"client_id\":" + JSONEntry.quoteValue(getSync().getClientID());
 	        boolean bSend = false;
 	        int i = 0;
-	        for( i = 0; i < 3 && getSync().isContinueSync(); i++ )
-	        {
-	            String strBody1;
-	            strBody1 = makePushBody_Ver3(arUpdateTypes[i], true);
-	            if (strBody1.length() > 0)
+	        getDB().Lock();
+	        try{
+		        checkIgnorePushObjects();
+		    
+	            for( i = 0; i < 3 && getSync().isContinueSync(); i++ )
 	            {
-	                strBody += "," + strBody1;
-
-	                String strBlobAttrs = "";
-	                for ( int j = 0; j < (int)m_arBlobAttrs.size(); j++)
+	                String strBody1;
+	                strBody1 = makePushBody_Ver3(arUpdateTypes[i], true);
+	                if (strBody1.length() > 0)
 	                {
-	                    if ( strBlobAttrs.length() > 0 )   
-	                        strBlobAttrs += ",";
+	                    strBody += "," + strBody1;
 
-	                    strBlobAttrs += JSONEntry.quoteValue((String)m_arBlobAttrs.elementAt(j));
+	                    String strBlobAttrs = "";
+	                    for ( int j = 0; j < (int)m_arBlobAttrs.size(); j++)
+	                    {
+	                        if ( strBlobAttrs.length() > 0 )   
+	                            strBlobAttrs += ",";
+
+	                        strBlobAttrs += JSONEntry.quoteValue((String)m_arBlobAttrs.elementAt(j));
+	                    }
+
+	                    if ( strBlobAttrs.length() > 0 )
+	                        strBody += ",\"blob_fields\":[" + strBlobAttrs + "]";
+
+	                    arUpdateSent[i] = true;
+	                    bSend = true;
 	                }
-
-	                if ( strBlobAttrs.length() > 0 )
-	                    strBody += ",\"blob_fields\":[" + strBlobAttrs + "]";
-
-	                arUpdateSent[i] = true;
-	                bSend = true;
 	            }
-	        }
-	        strBody += "}";
+	            strBody += "}";
+            }
+            finally
+            {
+                getDB().Unlock();
+            }
 
 	        if ( bSend )
 	        {
@@ -367,6 +459,9 @@ namespace rho.sync
 	            String strObject = res.getStringByIdx(1);
 	            String value = res.getStringByIdx(2);
 	            String attribType = res.getStringByIdx(3);
+
+                if ( m_hashIgnorePushObjects.containsKey(strObject) )
+    	        	continue;
 
 	            if ( attribType.compareTo("blob.file") == 0 )
 	            {
@@ -775,7 +870,8 @@ namespace rho.sync
 	    {
 	        if ( strCmd.compareTo("insert") == 0 )
 	        {
-	            Vector<String> vecValues = new Vector<String>(), vecAttrs = new Vector<String>();
+	            Vector<Object> vecValues = new Vector<Object>();
+                Vector<String> vecAttrs = new Vector<String>();
 	            String strCols = "", strQuest = "", strSet = "";
 	            for( ; !attrIter.isEnd() && getSync().isContinueSync(); attrIter.next() )
 	            {
