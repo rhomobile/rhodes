@@ -1490,7 +1490,7 @@ def logcat(device_flag = '-e', log_path = $applog_path)
 end
 
 def logclear(device_flag = '-e')
-  Thread.new { Jake.run($adb, [device_flag, 'logcat', '-c'], nil, true) }
+  Jake.run($adb, [device_flag, 'logcat', '-c'], nil, true) 
 end
 
 namespace "run" do

@@ -204,11 +204,16 @@ namespace rho.net
             }
             catch (WebException e)
             {
-                LOG.ERROR("EndGetResponse", e);
-                response = (HttpWebResponse)e.Response;
-                m_code = Convert.ToInt32(response.StatusCode);
+                if (!m_bCancel)
+                {
+                    LOG.ERROR("EndGetResponse", e);
+                    response = (HttpWebResponse)e.Response;
+                    m_code = response != null ? Convert.ToInt32(response.StatusCode) : 0;
+                }else
+                    LOG.INFO("Request was cancelled by user.");
             }
-
+            if (response == null || m_bCancel)
+                return;
             
             Stream stream = response.GetResponseStream();
 
@@ -260,11 +265,16 @@ namespace rho.net
             }
             catch (WebException e)
             {
-                LOG.ERROR("EndGetResponse", e);
-                response = (HttpWebResponse)e.Response;
-                m_code = Convert.ToInt32(response.StatusCode);
+                if (!m_bCancel)
+                {
+                    LOG.ERROR("EndGetResponse", e);
+                    response = (HttpWebResponse)e.Response;
+                    m_code = response != null ? Convert.ToInt32(response.StatusCode) : 0;
+                }else
+                    LOG.INFO("Request was cancelled by user.");
             }
-
+            if (response == null || m_bCancel)
+                return;
 
             Stream stream = response.GetResponseStream();
 

@@ -26,6 +26,12 @@ namespace rho.rubyext
 
             }
 
+            [RubyMethodAttribute("cancel", RubyMethodAttributes.PublicSingleton)]
+            public static void Cancel(RubyModule/*!*/ self)
+            {
+
+            }
+
             [RubyMethodAttribute("do_request", RubyMethodAttributes.PublicSingleton)]
             public static MutableString doRequest(RubyModule/*!*/ self, [NotNull]String command, Hash args)
             {

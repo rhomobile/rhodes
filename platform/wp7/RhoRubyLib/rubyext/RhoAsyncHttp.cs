@@ -29,6 +29,13 @@ namespace rho.rubyext
                     CAsyncHttp.getInstance().cancelRequest(cancelCallback);
             }
 
+            [RubyMethodAttribute("cancel", RubyMethodAttributes.PublicSingleton)]
+            public static void Cancel(RubyModule/*!*/ self)
+            {
+                if (CAsyncHttp.getInstance() != null)
+                    CAsyncHttp.getInstance().cancelRequest("*");
+            }
+
             [RubyMethodAttribute("do_request", RubyMethodAttributes.PublicSingleton)]
             public static MutableString doRequest(RubyModule/*!*/ self, [NotNull]String command, Hash args)
             {
