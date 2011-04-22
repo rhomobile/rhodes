@@ -11,6 +11,8 @@
 #define max(a,b)            (((a) > (b)) ? (a) : (b))
 #endif
 
+extern CMainWindow& getAppWindow();
+
 IMPLEMENT_LOGCLASS(CNativeToolbar,"NativeToolbar");
 extern "C" int rho_wmsys_has_touchscreen();
 
