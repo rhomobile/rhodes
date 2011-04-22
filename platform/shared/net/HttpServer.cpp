@@ -376,7 +376,7 @@ bool CHttpServer::run()
         FD_ZERO(&readfds);
         FD_SET(m_listener, &readfds);
 
-        timeval tv = {0};
+        timeval tv = {0,0};
         unsigned long nTimeout = RHODESAPP().getTimer().getNextTimeout();
         tv.tv_sec = nTimeout/1000;
         tv.tv_usec = (nTimeout - tv.tv_sec*1000)*1000;
@@ -647,7 +647,9 @@ bool CHttpServer::process(SOCKET sock)
         send_response(create_response("500 Internal Error"));
         return false;
     }
-    
+
+    RAWLOG_INFO1("Process URI: '%s'", uri.c_str());
+
     return decide(method, uri, query, headers, body);
 }
 
