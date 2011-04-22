@@ -1,6 +1,9 @@
 #include "stdafx.h"
 
+#include "MainWindow.h"
 #include "NativeToolbarExt.h"
+
+extern CMainWindow& getAppWindow();
 
 extern "C"
 {

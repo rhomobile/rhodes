@@ -97,6 +97,7 @@ Global
 		{95D5D2E5-FEF5-4CA9-88CF-FCB0F7465E62}.EmulatorRelease|Smartphone 2003 (ARMV4).ActiveCfg = EmulatorRelease|Smartphone 2003 (ARMV4)
 		{95D5D2E5-FEF5-4CA9-88CF-FCB0F7465E62}.EmulatorRelease|Smartphone 2003 (ARMV4).Deploy.0 = EmulatorRelease|Smartphone 2003 (ARMV4)
 		{95D5D2E5-FEF5-4CA9-88CF-FCB0F7465E62}.EmulatorRelease|Win32.ActiveCfg = EmulatorRelease|Win32
+		{95D5D2E5-FEF5-4CA9-88CF-FCB0F7465E62}.EmulatorRelease|Win32.Build.0 = EmulatorRelease|Win32
 		{95D5D2E5-FEF5-4CA9-88CF-FCB0F7465E62}.EmulatorRelease|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).ActiveCfg = EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)
 		{95D5D2E5-FEF5-4CA9-88CF-FCB0F7465E62}.EmulatorRelease|Windows Mobile 5.0 Smartphone SDK (ARMV4I).ActiveCfg = EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)
 		{95D5D2E5-FEF5-4CA9-88CF-FCB0F7465E62}.EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I).ActiveCfg = EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)
@@ -148,6 +149,7 @@ Global
 		{AA77BEC0-2A60-4589-A784-7D78F60B35B6}.EmulatorRelease|Smartphone 2003 (ARMV4).ActiveCfg = EmulatorRelease|Smartphone 2003 (ARMV4)
 		{AA77BEC0-2A60-4589-A784-7D78F60B35B6}.EmulatorRelease|Smartphone 2003 (ARMV4).Deploy.0 = EmulatorRelease|Smartphone 2003 (ARMV4)
 		{AA77BEC0-2A60-4589-A784-7D78F60B35B6}.EmulatorRelease|Win32.ActiveCfg = EmulatorRelease|Win32
+		{AA77BEC0-2A60-4589-A784-7D78F60B35B6}.EmulatorRelease|Win32.Build.0 = EmulatorRelease|Win32
 		{AA77BEC0-2A60-4589-A784-7D78F60B35B6}.EmulatorRelease|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).ActiveCfg = EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)
 		{AA77BEC0-2A60-4589-A784-7D78F60B35B6}.EmulatorRelease|Windows Mobile 5.0 Smartphone SDK (ARMV4I).ActiveCfg = EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)
 		{AA77BEC0-2A60-4589-A784-7D78F60B35B6}.EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I).ActiveCfg = EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)
@@ -198,6 +200,7 @@ Global
 		{B381B601-04B1-475B-B635-003F8E7DA3A9}.EmulatorRelease|Smartphone 2003 (ARMV4).ActiveCfg = EmulatorRelease|Smartphone 2003 (ARMV4)
 		{B381B601-04B1-475B-B635-003F8E7DA3A9}.EmulatorRelease|Smartphone 2003 (ARMV4).Deploy.0 = EmulatorRelease|Smartphone 2003 (ARMV4)
 		{B381B601-04B1-475B-B635-003F8E7DA3A9}.EmulatorRelease|Win32.ActiveCfg = EmulatorRelease|Win32
+		{B381B601-04B1-475B-B635-003F8E7DA3A9}.EmulatorRelease|Win32.Build.0 = EmulatorRelease|Win32
 		{B381B601-04B1-475B-B635-003F8E7DA3A9}.EmulatorRelease|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).ActiveCfg = EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)
 		{B381B601-04B1-475B-B635-003F8E7DA3A9}.EmulatorRelease|Windows Mobile 5.0 Smartphone SDK (ARMV4I).ActiveCfg = EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)
 		{B381B601-04B1-475B-B635-003F8E7DA3A9}.EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I).ActiveCfg = EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)
@@ -248,6 +251,7 @@ Global
 		{6F57C60E-C083-4D46-A3B9-E17948A33518}.EmulatorRelease|Smartphone 2003 (ARMV4).ActiveCfg = EmulatorRelease|Smartphone 2003 (ARMV4)
 		{6F57C60E-C083-4D46-A3B9-E17948A33518}.EmulatorRelease|Smartphone 2003 (ARMV4).Deploy.0 = EmulatorRelease|Smartphone 2003 (ARMV4)
 		{6F57C60E-C083-4D46-A3B9-E17948A33518}.EmulatorRelease|Win32.ActiveCfg = EmulatorRelease|Win32
+		{6F57C60E-C083-4D46-A3B9-E17948A33518}.EmulatorRelease|Win32.Build.0 = EmulatorRelease|Win32
 		{6F57C60E-C083-4D46-A3B9-E17948A33518}.EmulatorRelease|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).ActiveCfg = EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)
 		{6F57C60E-C083-4D46-A3B9-E17948A33518}.EmulatorRelease|Windows Mobile 5.0 Smartphone SDK (ARMV4I).ActiveCfg = EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)
 		{6F57C60E-C083-4D46-A3B9-E17948A33518}.EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I).ActiveCfg = EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)
@@ -294,6 +298,7 @@ Global
 		{F196A418-11F1-4067-9F4F-BCC7D70E6EC5}.EmulatorRelease|Smartphone 2003 (ARMV4).ActiveCfg = EmulatorRelease|Smartphone 2003 (ARMV4)
 		{F196A418-11F1-4067-9F4F-BCC7D70E6EC5}.EmulatorRelease|Smartphone 2003 (ARMV4).Deploy.0 = EmulatorRelease|Smartphone 2003 (ARMV4)
 		{F196A418-11F1-4067-9F4F-BCC7D70E6EC5}.EmulatorRelease|Win32.ActiveCfg = EmulatorRelease|Win32
+		{F196A418-11F1-4067-9F4F-BCC7D70E6EC5}.EmulatorRelease|Win32.Build.0 = EmulatorRelease|Win32
 		{F196A418-11F1-4067-9F4F-BCC7D70E6EC5}.EmulatorRelease|Windows Mobile 5.0 Pocket PC SDK (ARMV4I).ActiveCfg = EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)
 		{F196A418-11F1-4067-9F4F-BCC7D70E6EC5}.EmulatorRelease|Windows Mobile 5.0 Smartphone SDK (ARMV4I).ActiveCfg = EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)
 		{F196A418-11F1-4067-9F4F-BCC7D70E6EC5}.EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I).ActiveCfg = EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)
