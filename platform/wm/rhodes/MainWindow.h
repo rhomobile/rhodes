@@ -2,6 +2,8 @@
 
 #pragma once
 
+#ifndef RHODES_EMULATOR
+
 #if !defined(_WIN32_WCE) || defined( OS_PLATFORM_CE )
 #include <exdispid.h>
 #include <exdisp.h>
@@ -256,4 +258,10 @@ private:
 
 #if !defined(_WIN32_WCE) || defined( OS_PLATFORM_CE ) 
 HBITMAP SHLoadImageFile (  LPCTSTR pszFileName );
+#endif
+
+#else
+
+#include "emulator\MainWindowQt.h"
+
 #endif
