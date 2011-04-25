@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="rapi.lib"
+				AdditionalDependencies="rapi.lib Ws2_32.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -136,6 +136,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="rapi.lib Ws2_32.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -179,6 +180,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\LogServer.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -206,6 +211,10 @@
 			>
 			<File
 				RelativePath=".\detool.h"
+				>
+			</File>
+			<File
+				RelativePath=".\LogServer.h"
 				>
 			</File>
 			<File
