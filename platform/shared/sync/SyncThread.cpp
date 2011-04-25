@@ -372,9 +372,19 @@ unsigned long rho_sync_is_blob_attr(const char* szPartition, int nSrcID, const c
 
 void rho_sync_setobjectnotify_url(const char* szUrl)
 {
-    CSyncNotify::setObjectNotifyUrl(szUrl);
+    CSyncNotify::setObjectNotification(new CObjectNotification(szUrl));
 }
 
+void rho_sync_setobjectnotify_url_c(/*RHOC_CALLBACK*/void* callback, void* callback_data)
+{
+    CSyncNotify::setObjectNotification( new CObjectNotification((RHOC_CALLBACK)callback, callback_data));
+}
+
+void rho_sync_clear_object_notification()
+{
+    CSyncNotify::setObjectNotification(0);   
+}
+    
 void rho_sync_addobjectnotify(int nSrcID, const char* szObject)
 {
     CSyncThread::getSyncEngine().getNotify().addObjectNotify(nSrcID, szObject);
