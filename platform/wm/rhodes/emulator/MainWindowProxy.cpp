@@ -117,8 +117,8 @@ void CMainWindowProxy::createToolbar(rho_param *p)
         return;
 
     int bar_type = TOOLBAR_TYPE;
-    QColor m_rgbBackColor = QColor(220,220,220);
-    QColor m_rgbMaskColor = QColor(255,255,255);
+	std::auto_ptr<QColor> m_rgbBackColor (NULL);
+    std::auto_ptr<QColor> m_rgbMaskColor (NULL);
     int m_nHeight = CNativeToolbar::MIN_TOOLBAR_HEIGHT;
 
     rho_param *params = NULL;
@@ -135,9 +135,9 @@ void CMainWindowProxy::createToolbar(rho_param *p)
                     rho_param *value = p->v.hash->value[i];
                     
                     if (strcasecmp(name, "background_color") == 0) 
-                        m_rgbBackColor = getColorFromString(value->v.string);
+                        m_rgbBackColor.reset(new QColor(getColorFromString(value->v.string)));
                     else if (strcasecmp(name, "mask_color") == 0) 
-                        m_rgbMaskColor = getColorFromString(value->v.string);
+                        m_rgbMaskColor.reset(new QColor(getColorFromString(value->v.string)));
                     else if (strcasecmp(name, "view_height") == 0) 
                         m_nHeight = atoi(value->v.string);
                     else if (strcasecmp(name, "buttons") == 0 || strcasecmp(name, "tabs") == 0) 
@@ -248,7 +248,7 @@ void CMainWindowProxy::createToolbar(rho_param *p)
             }
         }
     }
-    ((QtMainWindow*)qtMainWindow)->setToolbarStyle(false, m_rgbBackColor.name());
+	((QtMainWindow*)qtMainWindow)->setToolbarStyle(false, (m_rgbBackColor.get()!=NULL ? m_rgbBackColor->name() : ""));
     ((QtMainWindow*)qtMainWindow)->toolbarShow();
 }
 

@@ -153,11 +153,11 @@ void QtMainWindow::on_toolbarAction_triggered(bool checked)
     QObject* sender = QObject::sender();
     QAction* action;
     if (sender && (action = dynamic_cast<QAction*>(sender))) {
-        rho::String strAction = action->data().toString().toStdString();
-        if ( strcasecmp(strAction.c_str(), "forward") == 0 )
+		rho::String* strAction = new rho::String(action->data().toString().toStdString());
+        if ( strcasecmp(strAction->c_str(), "forward") == 0 )
             rho_webview_navigate_forward();
         else
-            RHODESAPP().loadUrl(strAction);
+            RHODESAPP().loadUrl(*strAction);
     }
 }
 
