@@ -8,6 +8,10 @@ namespace common {
     class CRhoFile;
 }
 
+namespace net {
+	class RawSocket;
+}
+
 class CLogFileSink : public ILogSink{
     common::CRhoFile* m_pFile;
     common::CRhoFile* m_pPosFile;
@@ -33,13 +37,31 @@ class CLogOutputSink : public ILogSink{
     const LogSettings& m_oLogConf;
 
 public:
-    CLogOutputSink(const LogSettings& oSettings) : m_oLogConf(oSettings){}
+    CLogOutputSink(const LogSettings& oSettings) : m_oLogConf(oSettings){
+	}
 
     void writeLogMessage( String& strMsg );
     int getCurPos(){ return -1; }
     void clear(){}
 };
 
+
+class CLogSocketSink : public ILogSink{
+    const LogSettings& m_oLogConf;
+
+    rho::net::RawSocket *m_logNetClient;
+
+	String m_hostName;
+	String m_hostPort;
+public:
+    CLogSocketSink(const LogSettings& oSettings); 
+	virtual ~CLogSocketSink() { delete m_logNetClient; }
+
+    void writeLogMessage( String& strMsg );
+    int getCurPos(){ return -1; }
+    void clear(){}
+};
+  
 }
 
 #endif //_RHOLOGSINK_H_

@@ -2,6 +2,7 @@
 
 #include "common/RhoFile.h"
 #include "common/StringConverter.h"
+#include "net/RawSocket.h"
 
 #if defined( OS_SYMBIAN )
 #include <e32debug.h>
@@ -132,4 +133,27 @@ void CLogOutputSink::writeLogMessage( String& strMsg )
     fflush(stdout);
 }
 
+CLogSocketSink::CLogSocketSink(const LogSettings& oSettings) 
+	: m_oLogConf(oSettings)
+	, m_logNetClient(0)
+{
+	m_hostName = oSettings.getLogHost();
+    m_hostPort = oSettings.getLogPort(); 
+}
+
+void CLogSocketSink::writeLogMessage( String& strMsg )
+{
+    if (!m_logNetClient)
+    {
+		m_logNetClient = new rho::net::RawSocket(m_hostName, m_hostPort);
+    }
+    
+    if (!m_logNetClient->isInit())
+    {
+         m_logNetClient->init();
+    }
+
+    m_logNetClient->send(strMsg);
+}
+        
 }

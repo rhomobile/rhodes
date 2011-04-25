@@ -18,18 +18,24 @@ LogSettings::LogSettings(){
     m_nMinSeverity = 0; 
     m_bLogToOutput = true; 
     m_bLogToFile = false;
+    m_bLogToSocket = true;
 
     m_nMaxLogFileSize = 0; 
     m_bLogPrefix = true; 
 
+	m_strLogHost = "PPP_PEER";
+	m_strLogPort = "11000";
+
     m_pFileSink = new CLogFileSink(*this);
     m_pOutputSink = new CLogOutputSink(*this);
+    m_pSocketSink = new CLogSocketSink(*this);
     m_pLogViewSink = NULL;
 }
 
 LogSettings::~LogSettings(){
     delete m_pFileSink;
     delete m_pOutputSink;
+    delete m_pSocketSink;
 }
 
 void LogSettings::getLogTextW(StringW& strTextW)
@@ -88,6 +94,12 @@ void LogSettings::loadFromConf(rho::common::RhoSettings& oRhoConf){
         setEnabledCategories( oRhoConf.getString("LogCategories").c_str() );
     if (oRhoConf.isExist( "ExcludeLogCategories") )
         setDisabledCategories( oRhoConf.getString("ExcludeLogCategories").c_str() );
+	if ( oRhoConf.isExist( "LogToSocket") )
+		setLogToSocket( oRhoConf.getBool("LogToSocket") );
+	if ( oRhoConf.isExist( "LogSocketHost") )
+		m_strLogHost = oRhoConf.getString("LogSocketHost");
+	if ( oRhoConf.isExist( "LogSocketPort") )
+		m_strLogPort = oRhoConf.getString("LogSocketPort");
 }
 
 void LogSettings::setLogFilePath(const char* szLogFilePath){ 
@@ -124,6 +136,9 @@ void LogSettings::sinkLogMessage( String& strMsg ){
     //Should be at the end
     if ( isLogToOutput() )
         m_pOutputSink->writeLogMessage(strMsg);
+
+    if ( isLogToSocket() )
+        m_pSocketSink->writeLogMessage(strMsg);
 }
 
 bool LogSettings::isCategoryEnabled(const LogCategory& cat)const{
