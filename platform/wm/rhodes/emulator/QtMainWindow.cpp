@@ -19,6 +19,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     this->ui->webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     this->move(0,0);
     this->ui->toolBar->hide();
+    this->ui->toolBarRight->hide();
 
     // connecting WebInspector
     wi->setWindowTitle("Web Inspector");
@@ -128,11 +129,13 @@ void QtMainWindow::toolbarRemoveAllButtons()
 void QtMainWindow::toolbarShow()
 {
     ui->toolBar->show();
+    ui->toolBarRight->show();
 }
 
 void QtMainWindow::toolbarHide()
 {
     ui->toolBar->hide();
+    ui->toolBarRight->hide();
 }
 
 int QtMainWindow::toolbarGetHeight()
@@ -174,10 +177,19 @@ void QtMainWindow::toolbarAddSeparator()
     ui->toolBar->addSeparator();
 }
 
-void QtMainWindow::toolbarHideBorders()
+void QtMainWindow::setToolbarStyle(bool border, QString background)
 {
-	ui->toolBar->setStyleSheet("QToolBar{border:0px}");
-    ui->toolBarRight->setStyleSheet("QToolBar{border:0px}");
+	QString style = "";
+	if (!border) style += "border:0px";
+	if (background.length()>0) {
+        if (style.length()>0) style += ";";
+        style += "background:"+background;
+    }
+	if (style.length()>0) {
+		style = "QToolBar{"+style+"}";
+	    ui->toolBar->setStyleSheet(style);
+        ui->toolBarRight->setStyleSheet(style);
+	}
 }
 
 void QtMainWindow::menuAddAction(const QString & text, int item)
