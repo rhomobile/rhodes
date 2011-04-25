@@ -35,6 +35,23 @@ struct CSyncNotification
 	~CSyncNotification();
 };
 
+struct CObjectNotification
+{
+    String m_strUrl;
+    RHOC_CALLBACK m_cCallback;
+    void*         m_cCallbackData;
+    
+    CObjectNotification(): m_cCallback(0), m_cCallbackData(0){}
+    
+    CObjectNotification(String strUrl);
+    CObjectNotification(RHOC_CALLBACK callback, void* callback_data) : 
+        m_cCallback(callback), m_cCallbackData(callback_data){}
+    
+    String toString()const;
+    
+    ~CObjectNotification();
+};
+    
 class CSyncNotify
 {
     DEFINE_LOGCLASS;
@@ -46,7 +63,7 @@ private:
 
     CSyncEngine& m_syncEngine;
 
-    static String m_strObjectNotifyUrl;
+    static common::CAutoPtr<CObjectNotification> m_pObjectNotify;
     HashtablePtr<int, Hashtable<String,int>* > m_hashSrcIDAndObject;
     HashtablePtr<int, Hashtable<String,String>* > m_hashCreateObjectErrors;
     String m_strSingleObjectSrcName, m_strSingleObjectID;
@@ -79,8 +96,8 @@ public:
 
     void addObjectNotify(int nSrcID, const String& strObject );
     void addObjectNotify(const String& strSrcName, const String& strObject );
-    static void setObjectNotifyUrl(String strUrl);
-    static String getObjectNotifyUrl();
+    static void setObjectNotification(CObjectNotification* pNotify);
+    static CObjectNotification* getObjectNotification();
     void cleanObjectNotifications();
     void cleanCreateObjectErrors();
 
