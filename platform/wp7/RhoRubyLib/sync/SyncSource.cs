@@ -417,7 +417,7 @@ namespace rho.sync
 	            if ( arUpdateSent[i] )
 	            {
 	                //oo conflicts
-	                if ( i < 1 ) //create
+                    if (i < 1 && !SyncEngine.getSourceOptions().getBoolProperty(getID(), "pass_through") ) //create
 	                    getDB().executeSQL("UPDATE changed_values SET sent=2 WHERE source_id=? and update_type=? and sent=1", getID(), arUpdateTypes[i] );
 	                else
 	                //
