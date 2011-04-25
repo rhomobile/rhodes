@@ -248,6 +248,8 @@ void CMainWindowProxy::createToolbar(rho_param *p)
             }
         }
     }
+    if (nSeparators==1)
+	    ((QtMainWindow*)qtMainWindow)->toolbarHideBorders();
     ((QtMainWindow*)qtMainWindow)->toolbarShow();
 }
 

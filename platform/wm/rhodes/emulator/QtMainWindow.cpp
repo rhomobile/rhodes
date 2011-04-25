@@ -174,6 +174,12 @@ void QtMainWindow::toolbarAddSeparator()
     ui->toolBar->addSeparator();
 }
 
+void QtMainWindow::toolbarHideBorders()
+{
+	ui->toolBar->setStyleSheet("QToolBar{border:0px}");
+    ui->toolBarRight->setStyleSheet("QToolBar{border:0px}");
+}
+
 void QtMainWindow::menuAddAction(const QString & text, int item)
 {
     QAction* qAction = new QAction(text, ui->toolBar);
