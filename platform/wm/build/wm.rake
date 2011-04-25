@@ -38,13 +38,14 @@ namespace "config" do
   end
   
 
-  task :wm => [:set_wm_platform, "config:common"] do
+  task :wm => [:set_wm_platform, "config:common"] do    
     $rubypath = "res/build-tools/RhoRuby.exe" #path to RubyMac
     $builddir = $config["build"]["wmpath"] + "/build"
     $vcbindir = $config["build"]["wmpath"] + "/bin"
     $appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"] 
     $bindir = $app_path + "/bin"
     $rhobundledir =  $app_path + "/RhoBundle"
+    $log_file = $app_config["applog"].nil? ? "applog.txt" : $app_config["applog"] 
     $srcdir =  $bindir + "/RhoBundle"
     $targetdir = $bindir + "/target/wm6p"
     $tmpdir =  $bindir +"/tmp"
@@ -251,18 +252,22 @@ end
 namespace "run" do
 
     def gelLogPath
-      win32rhopath = 'platform/wm/bin/win32/rhodes/Debug/rho/'
-      win32logpath = File.join(win32rhopath,"RhoLog.txt")        
-      win32logpath = File.expand_path(win32logpath)
-      return win32logpath
+      log_file_path =  File.join($app_path, $log_file)
+      return log_file_path
     end
+
     desc "Build and run on WM6 emulator"
     task :wm => ["device:wm:production"] do
    	  cd $startdir + "/res/build-tools"
 	  detool = "detool.exe"    
 	  args   = [ 'emu', '"Windows Mobile 6 Professional Emulator"', $appname, $srcdir, $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe" ]
 	  puts "\nStarting application on the WM6 emulator\n\n"
-	  
+	  log_file = gelLogPath
+
+	  Thread.new { 
+            Jake.run(detool,['log', log_file])
+          }
+
 	  Thread.new { 
             Jake.run(detool,args)
           }
@@ -281,7 +286,14 @@ namespace "run" do
 	  args   = [ 'dev', $appname, $srcdir, $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe" ]
 	  puts "\nStarting application on the device"
 	  puts "Please, connect you device via ActiveSync.\n\n"
-	  Jake.run(detool,args)
+
+	  Thread.new { 
+            Jake.run(detool,['log', log_file])
+          }
+
+	  Thread.new { 
+            Jake.run(detool,args)
+          }
     end
 
   namespace "device" do

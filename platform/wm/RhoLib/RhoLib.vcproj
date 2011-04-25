@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="RhoLib"
 	ProjectGUID="{F196A418-11F1-4067-9F4F-BCC7D70E6EC5}"
 	RootNamespace="RhoLib"
@@ -1922,6 +1922,14 @@
 			</File>
 			<File
 				RelativePath="..\..\shared\net\inetrequest.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\net\RawSocket.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\net\RawSocket.h"
 				>
 			</File>
 			<File
