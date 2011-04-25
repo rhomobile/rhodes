@@ -21,11 +21,15 @@ struct ILogSink{
 class LogSettings{
     LogSeverity m_nMinSeverity;
     bool        m_bLogToOutput;
+    bool        m_bLogToSocket;
 
     bool        m_bLogToFile;
     String      m_strLogFilePath;
 //    String      m_strLogConfFilePath;
     unsigned int m_nMaxLogFileSize;
+
+	String      m_strLogHost;
+    String      m_strLogPort;
 
     bool        m_bLogPrefix;
 
@@ -34,6 +38,7 @@ class LogSettings{
     ILogSink*   m_pFileSink;
     ILogSink*   m_pOutputSink;
     ILogSink*   m_pLogViewSink;
+    ILogSink*   m_pSocketSink;
 
     static common::CMutex m_FlushLock;
     static common::CMutex m_CatLock;
@@ -51,6 +56,9 @@ public:
     bool isLogToFile()const{ return m_bLogToFile;}
     void setLogToFile(bool bLogToFile){ m_bLogToFile = bLogToFile;}
 
+    bool isLogToSocket()const{ return m_bLogToSocket;}
+    void setLogToSocket(bool bLogToSocket){ m_bLogToSocket = bLogToSocket;}
+
     const String& getLogFilePath()const{ return m_strLogFilePath;}
     void setLogFilePath(const char* szLogFilePath);
 
@@ -62,6 +70,9 @@ public:
 
     bool isLogPrefix()const{ return m_bLogPrefix;}
     void setLogPrefix(bool bLogPrefix){ m_bLogPrefix = bLogPrefix;}
+
+	const String& getLogHost() const { return m_strLogHost; }
+	const String& getLogPort() const { return m_strLogPort; }
 
     void setEnabledCategories( const char* szCatList );
     void setDisabledCategories( const char* szCatList );
