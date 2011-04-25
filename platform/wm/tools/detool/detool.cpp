@@ -4,6 +4,7 @@
 #include <strsafe.h>
 
 #include "detool.h"
+#include "LogServer.h"
 
 #define RHOSETUP_DLL "rhosetup.dll"
 
@@ -418,7 +419,8 @@ enum {
 	DEPLOY_EMUCAB,
 	DEPLOY_DEVCAB,
 	DEPLOY_EMU,
-	DEPLOY_DEV
+	DEPLOY_DEV,
+	DEPLOY_LOG
 };
 
 int copyExecutable (TCHAR *file_name, TCHAR *app_dir)
@@ -435,7 +437,6 @@ int copyExecutable (TCHAR *file_name, TCHAR *app_dir)
 	_tcscat(exe_fullpath, _T("\\"));
 	_tcscat(exe_fullpath, app_name);
 	_tcscat(exe_fullpath, _T(".exe"));
-
 
 	hSrc = CreateFile(file_name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (INVALID_HANDLE_VALUE == hSrc) {
@@ -603,12 +604,35 @@ copyBundleFailure:
 	return EXIT_FAILURE;
 }
 
+void startLogServer( TCHAR * log_file ) 
+{
+	// Declare and initialize variables
+	WSADATA wsaData;
+	int iResult;
+	LogServer logSrv(log_file);
+
+	// Initialize Winsock
+	iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+	if (iResult != 0) {
+		printf("WSAStartup failed: %d\n", iResult);
+		return;
+	}
+	
+	if (logSrv.init())
+	{
+		logSrv.run();
+	}
+
+	WSACleanup();
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	TCHAR *emu_name = NULL;
 	TCHAR *cab_file = NULL;
 	TCHAR *bundle_path = NULL;
 	TCHAR *app_exe = NULL;
+	TCHAR *log_file = NULL;
 	TCHAR params_buf[MAX_PATH + 16];
 	WIN32_FIND_DATAW findData;
 	int new_copy = 0;
@@ -641,7 +665,14 @@ int _tmain(int argc, _TCHAR* argv[])
 		cab_file = argv[2];
 		app_name = argv[3];
 		deploy_type = DEPLOY_DEVCAB;
-	} else {
+	} else if (argc == 3) { // log
+		if (strcmp(T2A(argv[1]), "log") == 0) {
+			log_file = argv[2];
+			app_name = _T("");
+			deploy_type = DEPLOY_LOG;
+		}
+	}
+	else {
 		usage();
 		return EXIT_FAILURE;
 	}
@@ -744,7 +775,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			}
 	
 			CoUninitialize();
-	
+
 			ExitProcess(EXIT_SUCCESS);
 		}
 	}
@@ -969,5 +1000,12 @@ int _tmain(int argc, _TCHAR* argv[])
 			_tprintf( TEXT("DONE\n"));
 	}
 
+	if (deploy_type == DEPLOY_LOG)
+	{
+		if (log_file != NULL) {
+			startLogServer(log_file);
+		}
+	}
+	
 	return EXIT_SUCCESS;
 }
