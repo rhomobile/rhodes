@@ -58,6 +58,26 @@ int callback_impl(const char* szNotify, void* data)
 	return 0;
 }
 
+int callback_object_impl(const char* szNotify, void* data)
+{
+    RHO_SYNC_OBJECT_NOTIFY oNotify = {0};
+    rho_syncclient_parse_objectnotify(szNotify, &oNotify);
+	
+	RhoSyncObjectNotify* notify =  [[RhoSyncObjectNotify alloc] init: &oNotify];
+	
+	CCallbackData* callbackObj = data;
+	
+    if ( callbackObj.targetThread != [NSThread currentThread] )
+        [ callbackObj.targetObject performSelector:callbackObj.targetMethod onThread:callbackObj.targetThread withObject:notify waitUntilDone:FALSE];
+    else
+        [ callbackObj.targetObject performSelector:callbackObj.targetMethod withObject:notify];
+    
+	//[notify release];
+	//[callbackObj release];
+	
+	return 0;
+}
+
 void rho_free_callbackdata(void* pData)
 {
 	CCallbackData* callbackObj = pData;
@@ -203,6 +223,22 @@ void rho_free_callbackdata(void* pData)
 - (void) clearNotification
 {
 	rho_sync_clear_notification(-1);
+}
+
+- (void) setObjectNotification: (SEL) callback target:(id)target
+{
+	rho_sync_setobjectnotify_url_c( callback_object_impl, 
+                                [[ CCallbackData alloc] init: callback target: target thread:[NSThread currentThread] ] );
+}
+
+- (void) clearObjectNotification
+{
+	rho_sync_clear_object_notification();
+}
+
+- (void) addObjectNotify: (int) nSrcID szObject:(NSString*) szObject
+{
+    rho_sync_addobjectnotify(nSrcID, [szObject cStringUsingEncoding:[NSString defaultCStringEncoding]]); 
 }
 
 - (RhoSyncNotify*) syncAll

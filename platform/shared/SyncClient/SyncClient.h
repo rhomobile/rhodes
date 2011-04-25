@@ -35,6 +35,20 @@ typedef struct _RHO_SYNC_NOTIFY
     char* callback_params;
 }RHO_SYNC_NOTIFY;
 
+typedef struct _RHO_SYNC_OBJECT_NOTIFY
+{
+    int deleted_count;
+    int updated_count;
+    int created_count;
+    int* deleted_source_ids;
+    int* updated_source_ids;
+    int* created_source_ids;
+    
+    char** deleted_objects;
+    char** updated_objects;
+    char** created_objects;
+}RHO_SYNC_OBJECT_NOTIFY;
+    
 void rho_syncclient_initmodel(RHOM_MODEL* model);
 void rho_syncclient_init(RHOM_MODEL* pModels, int nModels);
 void rho_syncclient_destroy();
@@ -45,6 +59,9 @@ void rho_syncclient_database_full_reset(bool bClientReset);
 void rho_syncclient_parsenotify(const char* msg, RHO_SYNC_NOTIFY* pNotify);
 void rho_syncclient_free_syncnotify(RHO_SYNC_NOTIFY* pNotify);
 
+void rho_syncclient_parse_objectnotify(const char* msg, RHO_SYNC_OBJECT_NOTIFY* pNotify);
+void rho_syncclient_free_sync_objectnotify(RHO_SYNC_OBJECT_NOTIFY* pNotify);
+    
 unsigned long rho_syncclient_strarray_create();
 void rho_syncclient_strarray_add(unsigned long ar, const char* szStr);
 void rho_syncclient_strarray_delete(unsigned long ar);

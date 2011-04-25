@@ -12,7 +12,7 @@ using namespace rho::net;
 using namespace rho::common;
 using namespace rho::db;
 
-String CSyncNotify::m_strObjectNotifyUrl;
+common::CAutoPtr<CObjectNotification> CSyncNotify::m_pObjectNotify;
 common::CMutex CSyncNotify::m_mxObjectNotify;
 
 void CSyncNotify::addObjectNotify(int nSrcID, const String& strObject)
@@ -77,15 +77,12 @@ void CSyncNotify::processSingleObject()
 void CSyncNotify::fireObjectsNotification()
 {
 	String strBody = "";
-    String strUrl = "";
 
     {
         synchronized(m_mxObjectNotify)
 
-        if ( m_strObjectNotifyUrl.length() == 0 )
+        if ( !m_pObjectNotify)
             return;
-
-        strUrl = getNet().resolveUrl(m_strObjectNotifyUrl);
 
         for (HashtablePtr<int, Hashtable<String,int>* >::iterator it = m_hashSrcIDAndObject.begin();  it != m_hashSrcIDAndObject.end(); ++it )
         {
@@ -133,7 +130,16 @@ void CSyncNotify::fireObjectsNotification()
             return;
     }
 
-    callNotify( CSyncNotification(strUrl,"",false), strBody);
+    if ( m_pObjectNotify->m_strUrl.length() > 0 )
+    {
+        String strUrl = getNet().resolveUrl(m_pObjectNotify->m_strUrl);
+  
+        callNotify( CSyncNotification(strUrl,"",false), strBody);
+    }else if (m_pObjectNotify->m_cCallback)
+    {
+        (*m_pObjectNotify->m_cCallback)(strBody.c_str(), m_pObjectNotify->m_cCallbackData);
+        //callNotify( CSyncNotification(m_pObjectNotify->m_cCallback,m_pObjectNotify->m_cCallbackData,false), strBody);
+    }
 }
 
 void CSyncNotify::onObjectChanged(int nSrcID, const String& strObject, int nType)
@@ -191,19 +197,19 @@ String CSyncNotify::makeCreateObjectErrorBody(int nSrcID)
     return strBody;
 }
 
-void CSyncNotify::setObjectNotifyUrl(String strUrl)
+void CSyncNotify::setObjectNotification(CObjectNotification* pNotify)
 { 
     synchronized(m_mxObjectNotify)
     {
-        m_strObjectNotifyUrl = strUrl; 
+        m_pObjectNotify = pNotify; 
     }
 }
 
-String CSyncNotify::getObjectNotifyUrl()
+CObjectNotification* CSyncNotify::getObjectNotification()
 {
     synchronized(m_mxObjectNotify)
     {
-        return m_strObjectNotifyUrl;
+        return m_pObjectNotify;
     }
 }
 
@@ -269,7 +275,29 @@ String CSyncNotification::toString()const
 	strRes += m_strParams;
 	return strRes;
 }
-	
+    
+CObjectNotification::CObjectNotification(String strUrl) : 
+   m_cCallback(null), m_cCallbackData(null)
+{
+    m_strUrl = strUrl;
+}
+
+CObjectNotification::~CObjectNotification()
+{
+    if ( m_cCallbackData )
+        rho_free_callbackdata(m_cCallbackData);
+}
+
+String CObjectNotification::toString()const
+{
+    if ( m_cCallback )
+        return "C_Callback";
+    
+    String strRes = "Url :";
+    strRes += m_strUrl;
+    return strRes;
+}
+
 void CSyncNotify::setSearchNotification(CSyncNotification* pNotify )
 {
     LOG(INFO) + "Set search notification." + (pNotify ? pNotify->toString() : "");
