@@ -147,6 +147,7 @@ void rho_sync_clear_notification(int source_id);
 int rho_sync_set_pollinterval(int nInterval);
 void rho_sync_set_syncserver(const char* syncserver);
 void rho_sync_setobjectnotify_url(const char* szUrl);
+void rho_sync_clear_object_notification();    
 void rho_sync_addobjectnotify(int nSrcID, const char* szObject);
 void rho_sync_cleanobjectnotify();
 int rho_sync_get_pagesize();
@@ -164,6 +165,8 @@ unsigned long rho_sync_login_c(const char *name, const char *password, /*RHOC_CA
 unsigned long rho_sync_doSearchByNames(unsigned long ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, /*RHOC_CALLBACK*/void* callback, void* callback_data);
 void rho_sync_set_notification_c(int source_id, /*RHOC_CALLBACK*/void* callback, void* callback_data);
 
+void rho_sync_setobjectnotify_url_c(/*RHOC_CALLBACK*/void* callback, void* callback_data);
+    
 void rho_sync_stop();
 
 #ifdef __cplusplus

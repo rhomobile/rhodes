@@ -57,6 +57,30 @@ int shouldSearchProduct()
 	return 1;
 }
 
+@interface CObjectCallback : NSObject {
+}
+@property(readonly) RhoSyncObjectNotify* m_pNotify;
+
+- (id) init;
+- (void)objectNotifyCallback:(RhoSyncObjectNotify*) notify;
+@end
+
+@implementation CObjectCallback
+@synthesize  m_pNotify;
+- (id) init
+{
+    self = [super init];
+	    
+    [sclient setObjectNotification:@selector(objectNotifyCallback:) target:self];        
+    return self;
+}
+
+- (void)objectNotifyCallback:(RhoSyncObjectNotify*) notify
+{
+    m_pNotify = notify;
+}
+@end
+
 int shouldCreateNewProduct()
 {
 	NSMutableDictionary* item = [[NSMutableDictionary alloc] init];
@@ -69,6 +93,9 @@ int shouldCreateNewProduct()
 	if ( ![item2 isEqualToDictionary: item])
 		return 0;
 
+    CObjectCallback* pObjectCallback = [[ CObjectCallback alloc] init];
+    [sclient addObjectNotify: [[item objectForKey:@"source_id"] intValue] szObject:[item valueForKey:@"object"] ];
+     
 	RhoSyncNotify* res = [product sync];
 	if ( res.error_code!= RHO_ERR_NONE )
 		return 0;
@@ -76,13 +103,23 @@ int shouldCreateNewProduct()
 	NSDictionary* item3 = [product find:[item valueForKey:@"object"]];
 	if ( item3 )
 		return 0;
-	
+
+	if ( !pObjectCallback.m_pNotify.created_objects )
+        return 0;
+
+	if ( [pObjectCallback.m_pNotify.created_objects count] <= 0 )
+        return 0;
+    
+	if ( [[pObjectCallback.m_pNotify.created_objects objectAtIndex:0] compare: [item valueForKey:@"object"]] != 0 )
+        return 0;
+    
 	[res release];
 
 	[item3 release];
 	[item2 release];
 	[item release];
-	
+	[pObjectCallback release];
+    
 	return 1;
 }
 

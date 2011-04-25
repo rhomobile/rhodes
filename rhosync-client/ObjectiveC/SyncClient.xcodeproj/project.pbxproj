@@ -251,6 +251,8 @@
 		5C59ACDD12E82C0E00ED4A1E /* RhoCryptImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C59ACDA12E82C0E00ED4A1E /* RhoCryptImpl.mm */; };
 		5C59ACEE12E82C5700ED4A1E /* sqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C59ACEC12E82C5700ED4A1E /* sqlite3.c */; };
 		5C59ACEF12E82C5700ED4A1E /* sqlite3.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C59ACED12E82C5700ED4A1E /* sqlite3.h */; };
+		5C5CD3C013620579006DD4C5 /* RhoSyncObjectNotify.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5CD3BE13620579006DD4C5 /* RhoSyncObjectNotify.h */; };
+		5C5CD3C113620579006DD4C5 /* RhoSyncObjectNotify.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5CD3BF13620579006DD4C5 /* RhoSyncObjectNotify.m */; };
 		5C83677A134660310008F198 /* INetRequest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C836779134660310008F198 /* INetRequest.cpp */; };
 /* End PBXBuildFile section */
 
@@ -499,6 +501,8 @@
 		5C59ACDA12E82C0E00ED4A1E /* RhoCryptImpl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RhoCryptImpl.mm; path = ../../platform/shared/common/iphone/RhoCryptImpl.mm; sourceTree = SOURCE_ROOT; };
 		5C59ACEC12E82C5700ED4A1E /* sqlite3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sqlite3.c; path = ../../platform/shared/sqlite/sqlite3.c; sourceTree = SOURCE_ROOT; };
 		5C59ACED12E82C5700ED4A1E /* sqlite3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sqlite3.h; path = ../../platform/shared/sqlite/sqlite3.h; sourceTree = SOURCE_ROOT; };
+		5C5CD3BE13620579006DD4C5 /* RhoSyncObjectNotify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoSyncObjectNotify.h; sourceTree = "<group>"; };
+		5C5CD3BF13620579006DD4C5 /* RhoSyncObjectNotify.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoSyncObjectNotify.m; sourceTree = "<group>"; };
 		5C836779134660310008F198 /* INetRequest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = INetRequest.cpp; path = ../../platform/shared/net/INetRequest.cpp; sourceTree = SOURCE_ROOT; };
 		D2AAC07E0554694100DB518D /* libSyncClient.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSyncClient.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -541,6 +545,8 @@
 				5C40D1ED12282E4D007298DA /* RhoSyncClient.m */,
 				5C40D1EE12282E4D007298DA /* RhoSyncNotify.h */,
 				5C40D1EF12282E4D007298DA /* RhoSyncNotify.m */,
+				5C5CD3BE13620579006DD4C5 /* RhoSyncObjectNotify.h */,
+				5C5CD3BF13620579006DD4C5 /* RhoSyncObjectNotify.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -1021,6 +1027,7 @@
 				5C59ACDB12E82C0E00ED4A1E /* RhoClassFactory.h in Headers */,
 				5C59ACDC12E82C0E00ED4A1E /* RhoCryptImpl.h in Headers */,
 				5C59ACEF12E82C5700ED4A1E /* sqlite3.h in Headers */,
+				5C5CD3C013620579006DD4C5 /* RhoSyncObjectNotify.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1203,6 +1210,7 @@
 				5C59ACDD12E82C0E00ED4A1E /* RhoCryptImpl.mm in Sources */,
 				5C59ACEE12E82C5700ED4A1E /* sqlite3.c in Sources */,
 				5C83677A134660310008F198 /* INetRequest.cpp in Sources */,
+				5C5CD3C113620579006DD4C5 /* RhoSyncObjectNotify.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
