@@ -42,26 +42,6 @@ void rho_syncclient_initmodel(RHOM_MODEL* model)
     model->partition = "user";
 }
 
-void rho_syncclient_free_syncnotify(RHO_SYNC_NOTIFY* pNotify)
-{
-    if (!pNotify)
-        return;
-
-    if ( pNotify->source_name != null )
-        free(pNotify->source_name);
-
-    if ( pNotify->status != null )
-        free(pNotify->status);
-
-    if ( pNotify->error_message != null )
-        free(pNotify->error_message);
-
-    if ( pNotify->callback_params != null )
-        free(pNotify->callback_params);
-
-    memset( pNotify, 0, sizeof(RHO_SYNC_NOTIFY) );
-}
-
 void rho_syncclient_processmodels(RHOM_MODEL* pModels, int nModels)
 {
     db::CDBAdapter& oUserDB = db::CDBAdapter::getUserDB();
@@ -705,6 +685,142 @@ void rho_syncclient_parsenotify(const char* msg, RHO_SYNC_NOTIFY* pNotify)
         pNotify->callback_params = strdup(msg+nLastPos);
 }
 
+void rho_syncclient_free_syncnotify(RHO_SYNC_NOTIFY* pNotify)
+{
+    if (!pNotify)
+        return;
+    
+    if ( pNotify->source_name != null )
+        free(pNotify->source_name);
+    
+    if ( pNotify->status != null )
+        free(pNotify->status);
+    
+    if ( pNotify->error_message != null )
+        free(pNotify->error_message);
+    
+    if ( pNotify->callback_params != null )
+        free(pNotify->callback_params);
+    
+    memset( pNotify, 0, sizeof(RHO_SYNC_NOTIFY) );
+}
+    
+void rho_syncclient_parse_objectnotify(const char* msg, RHO_SYNC_OBJECT_NOTIFY* pNotify)
+{
+    {
+        CTokenizer oTokenizer( msg, "&" );
+        while (oTokenizer.hasMoreTokens()) 
+        {
+            String tok = oTokenizer.nextToken();
+            if (tok.length() == 0)
+                continue;
+        
+            CTokenizer oValueTok( tok, "=" );
+            String name = net::URI::urlDecode(oValueTok.nextToken());
+        
+            if ( String_startsWith(name, "deleted[][object]"))
+                pNotify->deleted_count++;
+            else if ( String_startsWith(name, "updated[][object]")) 
+                pNotify->updated_count++;
+            else  if ( String_startsWith(name, "created[][object]")) 
+                pNotify->created_count++; 
+        }
+    }
+    
+    if ( pNotify->deleted_count > 0 )
+    {
+        pNotify->deleted_source_ids = new int[pNotify->deleted_count];
+        pNotify->deleted_objects = new char*[pNotify->deleted_count];
+    }
+    
+    if ( pNotify->updated_count > 0 )
+    {
+        pNotify->updated_source_ids = new int[pNotify->updated_count];
+        pNotify->updated_objects = new char*[pNotify->updated_count];
+    }
+
+    if ( pNotify->created_count > 0 )
+    {
+        pNotify->created_source_ids = new int[pNotify->created_count];
+        pNotify->created_objects = new char*[pNotify->created_count];
+    }
+
+    {
+        CTokenizer oTokenizer( msg, "&" );
+        int nDeleted = 0, nUpdated = 0, nCreated = 0;
+        while (oTokenizer.hasMoreTokens()) 
+        {
+            String tok = oTokenizer.nextToken();
+            if (tok.length() == 0)
+                continue;
+            
+            CTokenizer oValueTok( tok, "=" );
+            String name = net::URI::urlDecode(oValueTok.nextToken());
+            String value = net::URI::urlDecode(oValueTok.nextToken());
+            
+            if ( String_startsWith(name, "deleted[][object]"))
+            {
+                pNotify->deleted_objects[nDeleted] = strdup(value.c_str());
+                nDeleted++;
+            }else if (String_startsWith(name, "deleted[][source_id]"))
+                convertFromStringA( value.c_str(), pNotify->deleted_source_ids[nDeleted] );
+            else if ( String_startsWith(name, "updated[][object]")) 
+            {
+                pNotify->updated_objects[nUpdated] = strdup(value.c_str());
+                nUpdated++;
+            }else if (String_startsWith(name, "updated[][source_id]"))
+                convertFromStringA( value.c_str(), pNotify->updated_source_ids[nUpdated] );
+            else  if ( String_startsWith(name, "created[][object]")) 
+            {
+                pNotify->created_objects[nCreated] = strdup(value.c_str());
+                nCreated++;
+            }else if (String_startsWith(name, "created[][source_id]"))
+                convertFromStringA( value.c_str(), pNotify->created_source_ids[nCreated] );
+        }
+    }
+}
+    
+void rho_syncclient_free_sync_objectnotify(RHO_SYNC_OBJECT_NOTIFY* pNotify)
+{
+    if (!pNotify)
+        return;
+    
+    if ( pNotify->deleted_source_ids != null )
+        free(pNotify->deleted_source_ids);
+
+    if ( pNotify->updated_source_ids != null )
+        free(pNotify->updated_source_ids);
+
+    if ( pNotify->created_source_ids != null )
+        free(pNotify->created_source_ids);
+    
+    if ( pNotify->deleted_objects != null )
+    {
+        for(int i = 0; i < pNotify->deleted_count; i++)
+            free(pNotify->deleted_objects[i]);
+        
+        free(pNotify->deleted_objects);
+    }
+
+    if ( pNotify->updated_objects != null )
+    {
+        for(int i = 0; i < pNotify->updated_count; i++)
+            free(pNotify->updated_objects[i]);
+        
+        free(pNotify->updated_objects);
+    }
+
+    if ( pNotify->created_objects != null )
+    {
+        for(int i = 0; i < pNotify->created_count; i++)
+            free(pNotify->created_objects[i]);
+        
+        free(pNotify->created_objects);
+    }
+    
+    memset( pNotify, 0, sizeof(RHO_SYNC_NOTIFY) );        
+}
+    
 unsigned long rho_syncclient_strarray_create()
 {
     return (unsigned long)(new rho::Vector<rho::String>());
