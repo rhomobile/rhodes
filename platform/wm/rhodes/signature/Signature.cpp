@@ -63,18 +63,30 @@ LRESULT CRhoTakeSignatureDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 	RHO_ASSERT(SHCreateMenuBar(&mbi));
 
 	HRESULT hr = S_OK;
-	hr = ::CoCreateInstance(CLSID_InkOverlay,
-                            NULL,
-                            CLSCTX_INPROC_SERVER,
-                            IID_IInkOverlay,
-                            (void **)&m_pInkOverlay);
 
-	ASSERT(SUCCEEDED(hr));
-	// Attach the inkoverlay object to the window and enable it to start collecting ink
-    m_pInkOverlay->put_hWnd((long)m_hWnd);
-    ASSERT(SUCCEEDED(hr));
-    hr = m_pInkOverlay->put_Enabled(VARIANT_TRUE);
-    ASSERT(SUCCEEDED(hr));
+	HRESULT co_init_result = CoInitializeEx(NULL, 0/*COINIT_APARTMENTTHREADED*/);
+	if ( (co_init_result == S_OK) || (co_init_result == S_FALSE)  ) {
+
+		hr = ::CoCreateInstance(CLSID_InkOverlay,
+								NULL,
+								CLSCTX_INPROC_SERVER,
+								IID_IInkOverlay,
+								(void **)&m_pInkOverlay);
+
+		//ASSERT(SUCCEEDED(hr));
+		if (m_pInkOverlay != NULL) {
+			// Attach the inkoverlay object to the window and enable it to start collecting ink
+			m_pInkOverlay->put_hWnd((long)m_hWnd);
+			//ASSERT(SUCCEEDED(hr));
+			hr = m_pInkOverlay->put_Enabled(VARIANT_TRUE);
+		}
+		else {
+			RAWLOG_ERROR("ERROR: Can not get Ink Overlay in Signature Capture !");
+		}
+	}
+	else {
+		RAWLOG_ERROR("ERROR: Can not Signature CoInitialize !");
+	}
 #endif
 
 	return FALSE;
@@ -221,7 +233,7 @@ HRESULT Imaging_SaveToFile(HBITMAP handle, LPTSTR filename, LPCTSTR format)
 {
 	HRESULT res = S_OK;
 #if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
-	res = CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	res = CoInitializeEx(NULL, 0/*COINIT_MULTITHREADED*/);
 	if ((res == S_OK) || (res == S_FALSE)) {
 		IImagingFactory* factory=NULL;
 		if (CoCreateInstance(CLSID_ImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IImagingFactory, (void**)&factory) == S_OK) {
@@ -340,9 +352,13 @@ HRESULT Imaging_SaveToFile(HBITMAP handle, LPTSTR filename, LPCTSTR format)
 				}
 			}
 		}
+		else {
+			RAWLOG_ERROR("ERROR: Can not Signature Bitmap preparing get Image Factory !");
+		}
 		factory->Release();
 		CoUninitialize();
 	} else {
+		RAWLOG_ERROR("ERROR: Can not Signature Bitmap preparing CoInitialize !");
 		return res;
 	}
 #endif
