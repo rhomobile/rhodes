@@ -2,14 +2,11 @@
 #define _RHOLOGSINK_H_
 
 #include "RhoLogConf.h"
+#include "net/RawSocket.h"
 
 namespace rho {
 namespace common {
     class CRhoFile;
-}
-
-namespace net {
-	class RawSocket;
 }
 
 class CLogFileSink : public ILogSink{
