@@ -196,9 +196,10 @@ namespace "config" do
         puts "Could not find rhodes application. Please verify your application setting in #{File.dirname(__FILE__)}/rhobuild.yml"
         exit 1
       end
-      $app_config = Jake.config(File.open(File.join($app_path, "build.yml")))
-
     end
+
+    $app_config = Jake.config(File.open(File.join($app_path, "build.yml")))
+
     Jake.set_bbver($app_config["bbver"].to_s)
     
     extpaths = []

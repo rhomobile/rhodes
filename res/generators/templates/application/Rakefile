@@ -6,7 +6,7 @@ unless File.exists? "build.yml"
 end
 
 
-$app_config = YAML::load_file("build.yml")
+#$app_config = YAML::load_file("build.yml")
 $app_path = File.expand_path(File.dirname(__FILE__))
 
 if ENV["RHO_HOME"].nil?
