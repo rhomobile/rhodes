@@ -470,7 +470,9 @@ namespace "build" do
       restore_app_icon
 
       unless ret == 0
-        puts "Error cleaning"
+        puts '************************************'
+        puts "ERROR during building by XCode !"
+        puts 'XCode return next error code = '+ret.to_s
         exit 1
       end
 
