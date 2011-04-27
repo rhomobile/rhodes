@@ -83,7 +83,7 @@ static bool isfile(String const &path)
         const char *s;
         size_t len;
     } index_files[] = {
-        {"index_erb.iseq", 14},
+        {"index"RHO_ERB_EXT, strlen("index"RHO_ERB_EXT)},
         {"index.html", 10},
         {"index.htm", 9},
         {"index.php", 9},
@@ -865,8 +865,8 @@ bool CHttpServer::dispatch(String const &uri, Route &route)
     //check if there is controller.rb to run
 	struct stat st;
 
-    String newfilename = m_root + "/" + route.application + "/" + route.model + "/" + controllerName + "_controller.iseq";
-    String filename = m_root + "/" + route.application + "/" + route.model + "/controller.iseq";
+    String newfilename = m_root + "/" + route.application + "/" + route.model + "/" + controllerName + "_controller"RHO_RB_EXT;
+    String filename = m_root + "/" + route.application + "/" + route.model + "/controller"RHO_RB_EXT;
 
     //look for controller.rb or model_name_controller.rb
     if ((stat(filename.c_str(), &st) != 0 || !S_ISREG(st.st_mode)) && (stat(newfilename.c_str(), &st) != 0 || !S_ISREG(st.st_mode)))
@@ -1076,7 +1076,7 @@ bool CHttpServer::decide(String const &method, String const &uri, String const &
         String q = query.empty() ? "" : "?" + query;
         
         HeaderList headers;
-        headers.push_back(Header("Location", CFilePath::join( uri, "index_erb.iseq") + q));
+        headers.push_back(Header("Location", CFilePath::join( uri, "index"RHO_ERB_EXT) + q));
         
         send_response(create_response("301 Moved Permanently", headers));
         return false;

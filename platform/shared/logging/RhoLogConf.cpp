@@ -180,7 +180,13 @@ using namespace rho::common;
 
 void rho_logconf_Init(const char* szRootPath){
 
+#ifdef RHODES_EMULATOR
+    String strRootPath = szRootPath;
+    strRootPath += RHO_EMULATOR_DIR"/";
+    rho::common::CFilePath oLogPath( strRootPath );
+#else
     rho::common::CFilePath oLogPath( szRootPath );
+#endif
 
     //Set defaults
 #ifdef RHO_DEBUG

@@ -29,6 +29,13 @@ VALUE __rhoGetCurrentDir(void)
     return rb_str_new2(rho_native_rhopath());
 }
 
+#ifdef RHODES_EMULATOR
+VALUE __rhoGetRhodesDir(void)
+{
+    return rb_str_new2(rho_rhodesapp_getrhodespath());
+}
+#endif// RHODES_EMULATOR
+
 VALUE
 rb_f_eval_compiled(int argc, VALUE *argv, VALUE self)
 {
@@ -120,11 +127,6 @@ rb_require_compiled(VALUE obj, VALUE fname)
 
     return result;
 }
-
-static const char *const loadable_ext[] = {
-    ".iseq",
-    0
-};
 /*
 static char* g_curAppPath = 0;
 void RhoSetCurAppPath(char* path){
@@ -194,7 +196,7 @@ static VALUE find_file(VALUE fname)
 
     if ( strncmp(RSTRING_PTR(fname), rho_native_rhopath(), strlen(rho_native_rhopath())) == 0 ){
         res = rb_str_dup(fname);
-        rb_str_cat(res,".iseq",5);
+        rb_str_cat(res,RHO_RB_EXT,strlen(RHO_RB_EXT));
         //RAWLOG_INFO1("find_file: res: %s", RSTRING_PTR(res));
     }else{
         int i = 0;
@@ -211,7 +213,7 @@ static VALUE find_file(VALUE fname)
                 res = rb_str_dup(dir);
                 rb_str_cat(res,"/",1);
                 rb_str_cat(res,RSTRING_PTR(fname1),RSTRING_LEN(fname1));
-                rb_str_cat(res,".iseq",5);
+                rb_str_cat(res,RHO_RB_EXT,strlen(RHO_RB_EXT));
                 //RAWLOG_INFO1("find_file: check file: %s", RSTRING_PTR(res));
 
                 if( eaccess(RSTRING_PTR(res), R_OK) == 0 ){
@@ -227,13 +229,13 @@ static VALUE find_file(VALUE fname)
             res = rb_str_dup(dir);
             rb_str_cat(res,"/",1);
             rb_str_cat(res,RSTRING_PTR(fname),RSTRING_LEN(fname));
-            rb_str_cat(res,".iseq",5);
+            rb_str_cat(res,RHO_RB_EXT,strlen(RHO_RB_EXT));
 
             if ( g_curAppPath != 0 && eaccess(RSTRING_PTR(res), R_OK) != 0 ){
                 res = rb_str_new2(g_curAppPath);
                 rb_str_cat(res,"/",1);
                 rb_str_cat(res,RSTRING_PTR(fname),RSTRING_LEN(fname));
-                rb_str_cat(res,".iseq",5);
+                rb_str_cat(res,RHO_RB_EXT,strlen(RHO_RB_EXT));
             }
         } */
     }
@@ -307,6 +309,12 @@ VALUE require_compiled(VALUE fname, VALUE* result)
         strcmp("digest/sha1",szName1)==0 )
         return Qtrue;
 
+    RAWLOG_INFO1("require_compiled: %s", RSTRING_PTR(fname));
+
+#ifdef RHODES_EMULATOR
+    *result = rb_require_safe(fname, rb_safe_level());
+    return retval; 
+#endif
     RHO_LOCK(require_lock);
 
     if ( isAlreadyLoaded(fname) == Qtrue )
@@ -386,7 +394,11 @@ rb_obj_rhom_init(VALUE obj, VALUE iv)
 void Init_RhoSupport()
 {
 	rb_define_global_function("require", rb_require_compiled, 1);
+#ifndef RHODES_EMULATOR
 	rb_define_global_function("eval_compiled_file", rb_f_eval_compiled, -1);
+#else
+    rb_define_global_function("__rhoGetRhodesDir", __rhoGetRhodesDir, 0);
+#endif
 	rb_define_global_function("__rhoGetCurrentDir", __rhoGetCurrentDir, 0);
 	rb_define_global_function("load", rb_require_compiled, 1);
 	rb_define_global_function("__rhoGetCallbackObject", __rhoGetCallbackObject, 1);
@@ -400,14 +412,10 @@ void Init_RhoSupport()
 
 static void Init_RhoBlobs()
 {
-  VALUE path = rb_str_new2(rho_rhodesapp_getblobsdirpath());
+    const char* szBlobPath = rho_rhodesapp_getblobsdirpath();
+    RAWLOG_INFO1("Init_RhoBlobs: %s", szBlobPath );
 
-  RAWLOG_INFO1("Init_RhoBlobs: %s", RSTRING_PTR(path) );
-
-  if ( rb_funcall(rb_cDir, rb_intern("exist?"), 1, path)==Qfalse )
-    rb_funcall(rb_cDir, rb_intern("mkdir"), 1, path);
-
-  RAWLOG_INFO("Init_RhoBlobs: done");
+    rho_file_recursive_createdir(szBlobPath, rho_native_rhopath());
 }
 
 void rhoRubyLogWithSeverity(int severity, VALUE category, VALUE str) {

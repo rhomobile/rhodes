@@ -667,7 +667,7 @@ module Rhom
                                   #new_obj.vars.merge!( { attrName.to_sym()=>attrVal } ) if attrVal
                                   
                                   if attribs && attribs != '*'    
-                                     next unless attribs.include? (attrName)
+                                     next unless attribs.include? attrName
                                   end
                                   
 								  new_obj.vars[attrName.to_sym()] = attrVal if attrVal
@@ -935,7 +935,7 @@ module Rhom
                                     new_item = {'object'=>object_id }
                                     item_attribs.each do |item|
                                        if attribs && attribs != '*'    
-                                         next unless attribs.include? (item['attrib'])
+                                         next unless attribs.include? item['attrib']
                                        end
                                        
                                        new_item[item['attrib']] = item['value']
@@ -1738,7 +1738,7 @@ module Rhom
         end #unless
         #modelname = classname.split(/(?=[A-Z])/).map{|w| w.downcase}.join("_")
         #puts "classname: #{classname}; modelname: #{modelname}"
-        #require "#{classname}/#{modelname}" if File.exists? File.join(Rho::RhoFSConnector.get_base_app_path,'app',classname,"#{modelname}.iseq")
+        #require "#{classname}/#{modelname}" if File.exists? File.join(Rho::RhoFSConnector.get_base_app_path,'app',classname,"#{modelname}" + RHO_RB_EXT)
       #end
     end #init_object
   end # RhomObjectFactory

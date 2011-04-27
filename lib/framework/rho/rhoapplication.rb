@@ -155,7 +155,7 @@ module Rho
 	  undercase.slice!(0) if undercase.start_with?('_')
 	  #TODO: WP7 - for some reason it added _ at the start
 	  	
-      if Rho::file_exist?(  req[:modelpath]+ undercase +'.iseq' )
+      if Rho::file_exist?(  req[:modelpath]+ undercase +RHO_RB_EXT )
         require req['model'] + '/' + undercase #req[:modelpath]+ undercase
       else
         require req['model'] + '/controller' #req[:modelpath]+'controller'

@@ -15,5 +15,11 @@ namespace rho.rubyext
         {
             return RhodesApp.getCallbackObject(index); ;
         }
+
+        public static Object __rho_exist_in_resources(Object/*!*/ self, String path)
+        {
+            return CRhoFile.isResourceFileExist(path);
+        }
+
     }
 }
