@@ -21,8 +21,10 @@
 package com.rhomobile.rhodes.alert;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.MediaPlayer;
 
+import android.os.Bundle;
 import android.os.Vibrator;
 
 import com.rhomobile.rhodes.Capabilities;
@@ -119,6 +121,15 @@ public class Alert {
 		} catch (Exception e) {
 			reportFail("playFile", e);
 		}
+	}
+	public static void showNotification(Context ctx, int id,
+								 String title, String text,
+								 Bundle extras)
+	{
+		Intent notificationIntent = new Intent(ctx, RhodesService.class);
+		if(extras != null)
+			notificationIntent.putExtras(extras);
+		StatusNotification.simpleNotification(TAG, id, ctx, notificationIntent, title, text);
 	}
 	
 }
