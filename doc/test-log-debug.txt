@@ -126,7 +126,9 @@ To enable tcp debugging, you have two make a few small modifications to your app
 
 Include the extensions net-http and debugger in your build.yml.
 
-	extensions: ["net-http", "debugger"]
+	extensions:
+	- net-http
+	- debugger
 
 Modify your rhoconfig.txt add a line at the bottom debug_host. This should be set to an ip address of the machine that the debugger app is running on that is reachable by the phone or emulator.
 
