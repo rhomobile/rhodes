@@ -102,7 +102,7 @@ module Rho
       model = params[:controller] || params[:model] || @request['model'] 
       action = params[:action].nil? ? nil : params[:action].to_s
       id = params[:id].nil? ? nil : params[:id].to_s
-      id = "{#{id}}" if id and not ( id =~ /^{/ and id =~ /}$/ )
+      id = "{#{id}}" if id and not( id =~ /^{/ and id =~ /}$/ )
 
       if params[:query_s]
         query = params[:query_s]

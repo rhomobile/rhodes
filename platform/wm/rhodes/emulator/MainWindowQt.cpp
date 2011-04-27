@@ -69,7 +69,7 @@ void CMainWindow::createCustomMenu(void)
     RHODESAPP().getAppMenu().copyMenuItems(m_arAppMenuItems);
     //m_mainWindowProxy.createCustomMenu();
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
-    String strIndexPage = CFilePath::join(RHODESAPP().getStartUrl(),"index_erb.iseq");
+    String strIndexPage = CFilePath::join(RHODESAPP().getStartUrl(),"index"RHO_ERB_EXT);
     if ( RHODESAPP().getCurrentUrl().compare(RHODESAPP().getStartUrl()) == 0 ||
          RHODESAPP().getCurrentUrl().compare(strIndexPage) == 0 )
         m_arAppMenuItems.addElement(CAppMenuItem("Reload RhoBundle","reload_rhobundle"));
@@ -143,6 +143,11 @@ LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
         m_logView.DestroyWindow();
     }
     LOGCONF().setLogView(NULL);
+
+    if (m_alertDialog && m_alertDialog->IsWindow() )
+        m_alertDialog->DestroyWindow();
+    if (m_SyncStatusDlg.IsWindow() )
+        m_SyncStatusDlg.DestroyWindow();
 
     PostQuitMessage(0);
 

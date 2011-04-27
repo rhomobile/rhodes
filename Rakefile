@@ -507,42 +507,12 @@ def common_bundle_start(startdir, dest)
 end
 
 def create_manifest
-  dir = File.join($srcdir, 'apps')
-  #fname = "config.rb"
-  fappManifest = File.new( File.join(dir,'app_manifest.txt'), "w")
-  dir = File.join($srcdir, 'apps/app')
-
-  Find.find(dir) do |path|
-
-    strDir = File.dirname(path)
-    next unless dir == File.dirname(strDir) #one level only
+    require File.dirname(__FILE__) + '/lib/framework/rhoappmanifest'
     
-    if File.basename(path) == "config.rb"
-        puts "******ERROR enumerating models***********"
-        puts "Model definition has changed and doesn't use config.rb anymore: '#{path}' "
-        puts "You should replace config.rb with <model_name>.rb file as described: "
-        puts "http://wiki.rhomobile.com/index.php/Rhom#Rhom_Models"
-        puts "*****************************************"
-        exit 1
-    end
+    fappManifest = Rho::AppManifest.enumerate_models(File.join($srcdir, 'apps/app'))
+    content = fappManifest.read();
     
-    fname = File.dirname(path)
-    fname = File.basename(fname)
-    modelname = fname.split(/(?=[A-Z])/).map{|w| w.downcase}.join("_")
-    fname = modelname + ".rb"
-  
-    if File.basename(path) == fname
-
-      relPath = path[dir.length+1, File.dirname(path).length-1]   #relative path
-      relPath = relPath[0, relPath.length-3] #remove .rb extension and app
-      relPath = File.join(File.dirname(relPath), modelname )
-      fappManifest.puts( relPath )
-
-    end
-  end
-
-  fappManifest.close()
-  
+    File.open( File.join($srcdir,'apps/app_manifest.txt'), "w"){|file| file.write(content)}    
 end
 
 def process_exclude_folders
@@ -999,4 +969,19 @@ namespace "build" do
         
         rm_rf bin_dir
     end
+end
+
+namespace "run" do
+namespace "win32" do
+    task :rhodes_emulator => "config:common" do
+    
+    path = "platform\\wm\\bin\\Win32\\rhodes\\EmulatorDebug\\rhodes.exe"
+    args = []
+    args << "-approot='#{$app_path}'"
+    args << "-rhodespath='#{$startdir}'"
+    
+    Jake.run2 path, args, {:nowait => true}
+                
+    end
+end
 end
