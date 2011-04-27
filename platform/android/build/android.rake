@@ -602,6 +602,13 @@ namespace "config" do
     $push_sender = $app_config["android"]["push"]["sender"] if !$app_config["android"].nil? and !$app_config["android"]["push"].nil?
     $push_sender = "support@rhomobile.com" if $push_sender.nil?
 
+    $push_notifications = nil
+    $push_notifications = $app_config["android"]["push"]["notifications"] if !$app_config["android"].nil? and !$app_config["android"]["push"].nil?
+    $push_notifications = 'false' if $push_notifications.nil?
+    $push_notifications = get_boolean($push_notifications.to_s)
+
+    
+
     mkdir_p $bindir if not File.exists? $bindir
     mkdir_p $rhobindir if not File.exists? $rhobindir
     mkdir_p $targetdir if not File.exists? $targetdir
@@ -965,6 +972,11 @@ namespace "build" do
         f.puts "public class Capabilities {"
         ANDROID_PERMISSIONS.keys.sort.each do |k|
           f.puts "  public static boolean #{k.upcase}_ENABLED = true;"
+        end
+        if $push_notifications
+            f.puts "  public static boolean PUSH_NOTIFICATIONS =  true;"
+        else
+            f.puts "  public static boolean PUSH_NOTIFICATIONS =  false;"
         end
         f.puts "}"
       end
