@@ -653,8 +653,11 @@ const String& CRhodesApp::getRhoMessage(int nError, const char* szName)
 
 void CRhodesApp::initHttpServer()
 {
-    String strAppRootPath = getRhoRootPath() + "apps";
-    
+    String strAppRootPath = getRhoRootPath();
+#ifndef RHODES_EMULATOR
+    strAppRootPath += "apps";
+#endif
+
     m_httpServer = new net::CHttpServer(atoi(getFreeListeningPort()), strAppRootPath);
     m_httpServer->register_uri("/system/geolocation", rubyext::CGeoLocation::callback_geolocation);
     m_httpServer->register_uri("/system/syncdb", callback_syncdb);
@@ -1267,6 +1270,11 @@ const char* rho_rhodesapp_getloadingpagepath()
 const char* rho_rhodesapp_getblobsdirpath()
 {
     return RHODESAPP().getBlobsDirPath().c_str();
+}
+
+const char* rho_rhodesapp_getdbdirpath()
+{
+    return RHODESAPP().getDBDirPath().c_str();
 }
 
 const char* rho_rhodesapp_getapprootpath() {

@@ -1146,7 +1146,7 @@ void CMainWindow::createCustomMenu()
 	RHODESAPP().getAppMenu().copyMenuItems(m_arAppMenuItems);
 
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
-    String strIndexPage = CFilePath::join(RHODESAPP().getStartUrl(),"index_erb.iseq");
+    String strIndexPage = CFilePath::join(RHODESAPP().getStartUrl(),"index"RHO_ERB_EXT);
     if ( RHODESAPP().getCurrentUrl().compare(RHODESAPP().getStartUrl()) == 0 ||
          RHODESAPP().getCurrentUrl().compare(strIndexPage) == 0 )
         m_arAppMenuItems.addElement(CAppMenuItem("Reload RhoBundle","reload_rhobundle"));

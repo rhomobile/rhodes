@@ -831,6 +831,7 @@ eval_string(VALUE self, VALUE src, VALUE scope, const char *file, int line)
  *     eval "str + ' Fred'", getBinding("bye")   #=> "bye Fred"
  */
 
+int rho_ruby_is_enabled_eval();
 VALUE
 rb_f_eval(int argc, VALUE *argv, VALUE self)
 {
@@ -838,12 +839,12 @@ rb_f_eval(int argc, VALUE *argv, VALUE self)
     VALUE s = rb_gv_get("$_s");
     VALUE sString = rb_funcall(s, rb_intern("to_s"),0);
     char *sockStr = StringValuePtr(sString);
-
-    if( sockStr == NULL || strstr(sockStr,"TCPSocket") == NULL) {
+    if( rho_ruby_is_enabled_eval() == 0 && (sockStr == NULL || strstr(sockStr,"TCPSocket") == NULL)) {
 
       rb_raise(rb_eNotImpError,
           "Not implemented: eval is not supported.");
-    } else {
+    } else 
+    {
 
     VALUE src, scope, vfile, vline;
     const char *file = "(eval)";

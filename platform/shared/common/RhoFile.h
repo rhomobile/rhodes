@@ -42,6 +42,7 @@ public:
     static void         deleteFilesInFolder(const char* szFolderPath);
     static void         loadTextFile(const char* szFilePath, String& strFile);
     static void         createFolder(const char* szDirPath);
+    static void         recursiveCreateDir(const char* szFolderPath, const char* szBasePath);
     static void         readStringFromFile( const char* szFilePath, String& strData );
     static void         writeStringToFile( const char* szFilePath, String& strData );
 private:

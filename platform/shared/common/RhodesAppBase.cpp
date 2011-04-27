@@ -1,5 +1,6 @@
 #include "RhodesAppBase.h"
 #include "common/RhoFilePath.h"
+#include "common/RhoFile.h"
 #include "unzip/unzip.h"
 
 namespace rho {
@@ -34,9 +35,18 @@ CRhodesAppBase::CRhodesAppBase(const String& strRootPath) : CRhoThread()
 	
 void CRhodesAppBase::initAppUrls() 
 {
+#ifndef RHODES_EMULATOR
     m_strBlobsDirPath = getRhoRootPath() + "db/db-files";
 	m_strDBDirPath = getRhoRootPath() + "db";
+
     m_strAppRootPath = getRhoRootPath() + "apps";
+    m_strRhodesPath = "";
+#else
+    m_strBlobsDirPath = getRhoRootPath() + RHO_EMULATOR_DIR"/db/db-files";
+	m_strDBDirPath = getRhoRootPath() + RHO_EMULATOR_DIR"/db";
+
+    m_strAppRootPath += getRhoRootPath();
+#endif
 }
 
 String CRhodesAppBase::resolveDBFilesPath(const String& strFilePath)
@@ -122,75 +132,85 @@ const char* rho_rhodesapp_getplatform()
 #endif			
 }
 
-	static const char table64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+const char* rho_rhodesapp_getrhodespath()
+{
+    return RHODESAPPBASE().getRhodesPath().c_str();
+}
+
+void rho_file_recursive_createdir(const char* szPath, const char* szBasePath)
+{
+    rho::common::CRhoFile::recursiveCreateDir(szPath, szBasePath);
+}
+
+static const char table64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+int rho_base64_encode(const char *src, int srclen, char *dst)
+{
+	if (srclen < 0)
+		srclen = strlen(src);
+	if (!dst)
+		return (srclen/3)*4 + (srclen%3 ? 4 : 0) + 1;
 	
-	int rho_base64_encode(const char *src, int srclen, char *dst)
-	{
-		if (srclen < 0)
-			srclen = strlen(src);
-		if (!dst)
-			return (srclen/3)*4 + (srclen%3 ? 4 : 0) + 1;
+	int out = 0;
+	for(int in = 0; in < srclen; in += 3, out += 4) {
 		
-		int out = 0;
-		for(int in = 0; in < srclen; in += 3, out += 4) {
-			
-			unsigned x = 0;
-			int actual = 0;
-			for (int i = 0; i < 3; ++i) {
-				char c;
-				if (in + i >= srclen)
-					c = 0;
-				else {
-					c = src[in + i];
-					actual += 8;
-				}
-				x = (x << 8) + (unsigned char)c;
+		unsigned x = 0;
+		int actual = 0;
+		for (int i = 0; i < 3; ++i) {
+			char c;
+			if (in + i >= srclen)
+				c = 0;
+			else {
+				c = src[in + i];
+				actual += 8;
 			}
-			
-			for (int i = 0; i < 4; ++i) {
-				if (actual <= 0) {
-					dst[out + i] = '=';
-				}
-				else {
-					dst[out + i] = table64[(x >> 18) & 0x3F];
-					x <<= 6;
-					actual -= 6;
-				}
-			}
+			x = (x << 8) + (unsigned char)c;
 		}
 		
-		dst[out++] = '\0';
-		return out;
-	}
-	
-	int rho_base64_decode(const char *src, int srclen, char *dst)
-	{
-		if (srclen < 0)
-			srclen = strlen(src);
-		// Do not decode in case if srclen can not be divided by 4
-		if (srclen%4)
-			return 0;
-		if (!dst)
-			return srclen*3/4 + 1;
-		
-		char *found;
-		int out = 0;
-		for (int in = 0; in < srclen; in += 4, out += 3) {
-			unsigned x = 0;
-			for (int i = 0; i < 4; ++i) {
-				if ((found = strchr(const_cast<char*>(table64), src[in + i])) != NULL)
-					x = (x << 6) + (unsigned int)(found - table64);
-				else if (src[in + i] == '=')
-					x <<= 6;
+		for (int i = 0; i < 4; ++i) {
+			if (actual <= 0) {
+				dst[out + i] = '=';
 			}
-			
-			for (int i = 0; i < 3; ++i) {
-				dst[out + i] = (unsigned char)((x >> 16) & 0xFF);
-				x <<= 8;
+			else {
+				dst[out + i] = table64[(x >> 18) & 0x3F];
+				x <<= 6;
+				actual -= 6;
 			}
 		}
-		dst[out++] = '\0';
-		return out;
 	}
+	
+	dst[out++] = '\0';
+	return out;
+}
+
+int rho_base64_decode(const char *src, int srclen, char *dst)
+{
+	if (srclen < 0)
+		srclen = strlen(src);
+	// Do not decode in case if srclen can not be divided by 4
+	if (srclen%4)
+		return 0;
+	if (!dst)
+		return srclen*3/4 + 1;
+	
+	char *found;
+	int out = 0;
+	for (int in = 0; in < srclen; in += 4, out += 3) {
+		unsigned x = 0;
+		for (int i = 0; i < 4; ++i) {
+			if ((found = strchr(const_cast<char*>(table64), src[in + i])) != NULL)
+				x = (x << 6) + (unsigned int)(found - table64);
+			else if (src[in + i] == '=')
+				x <<= 6;
+		}
+		
+		for (int i = 0; i < 3; ++i) {
+			dst[out + i] = (unsigned char)((x >> 16) & 0xFF);
+			x <<= 8;
+		}
+	}
+	dst[out++] = '\0';
+	return out;
+}
 	
 } //extern "C"

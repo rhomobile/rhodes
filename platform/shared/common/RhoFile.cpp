@@ -1,5 +1,7 @@
 #include "RhoFile.h"
 #include "common/StringConverter.h"
+#include "common/Tokenizer.h"
+#include "common/RhoFilePath.h"
 
 namespace rho{
 namespace common{
@@ -219,6 +221,19 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
 #else
     mkdir(szFolderPath, S_IRWXU);
 #endif
+}
+
+/*static*/ void CRhoFile::recursiveCreateDir(const char* szFolderPath, const char* szBasePath)
+{
+    String strRelPath = String(szFolderPath).substr(strlen(szBasePath), strlen(szFolderPath) );
+    String strPath = szBasePath;
+    CTokenizer oTokenizer( strRelPath, "/\\" );
+	while (oTokenizer.hasMoreTokens()) 
+    {
+		String tok = oTokenizer.nextToken();
+        strPath = CFilePath::join(strPath, tok);
+        createFolder(strPath.c_str());
+    }
 }
 
 /*static*/ void CRhoFile::renameFile( const char* szOldFilePath, const char* szNewFilePath )
