@@ -187,12 +187,34 @@ static VALUE checkRhoBundleInPath(VALUE fname)
     return rb_str_new2(slash1+1);
 }
 
+static VALUE check_extension(VALUE res, VALUE fname)
+{
+    char* szSlash = strchr(RSTRING_PTR(fname), '/');
+    if (!szSlash)
+        szSlash = strchr(RSTRING_PTR(fname), '\\');
+    if (!szSlash)
+        rb_str_append(res,fname);
+    else
+        rb_str_cat(res, RSTRING_PTR(fname), szSlash-RSTRING_PTR(fname));
+
+    rb_str_cat2(res,"\\");
+    rb_str_append(res,fname);
+    rb_str_cat2(res,RHO_RB_EXT);
+
+    return eaccess(RSTRING_PTR(res), R_OK) == 0 ? res : 0;
+}
+
 static VALUE find_file(VALUE fname)
 {
     VALUE res;
     int nOK = 0;
 
     //RAWLOG_INFO1("find_file: fname: %s", RSTRING_PTR(fname));
+#ifdef RHODES_EMULATOR
+    if ( strncmp(RSTRING_PTR(fname), rho_rhodesapp_getrhodespath(), strlen(rho_rhodesapp_getrhodespath())) == 0 )
+        res = fname;
+    else
+#endif
 
     if ( strncmp(RSTRING_PTR(fname), rho_native_rhopath(), strlen(rho_native_rhopath())) == 0 ){
         res = rb_str_dup(fname);
@@ -222,7 +244,30 @@ static VALUE find_file(VALUE fname)
                 }
             }
             if ( !nOK )
+            {
+#ifdef RHODES_EMULATOR
+                //check for extensions
+                res = rb_str_new2(rho_rhodesapp_getrhodespath() );
+                rb_str_cat2(res,"\\lib\\extensions\\");
+
+                res = check_extension(res, fname);
+                if ( !res )
+                {
+                    res = rb_str_new2(rho_native_rhopath() );
+                    rb_str_cat2(res,"\\extensions\\");
+
+                    res = check_extension(res, fname);
+                }
+
+                if( res )
+                    nOK = 1;
+                else
+                    return 0;
+#else
                 return 0;
+#endif
+                
+            }
         } /*else {
             dir = RARRAY_PTR(load_path)[RARRAY_LEN(load_path)-1];
 
@@ -309,11 +354,11 @@ VALUE require_compiled(VALUE fname, VALUE* result)
         strcmp("digest/sha1",szName1)==0 )
         return Qtrue;
 
-    RAWLOG_INFO1("require_compiled: %s", RSTRING_PTR(fname));
+    //RAWLOG_INFO1("require_compiled: %s", RSTRING_PTR(fname));
 
 #ifdef RHODES_EMULATOR
-    *result = rb_require_safe(fname, rb_safe_level());
-    return retval; 
+    //*result = rb_require_safe(fname, rb_safe_level());
+    //return retval; 
 #endif
     RHO_LOCK(require_lock);
 
@@ -336,13 +381,20 @@ VALUE require_compiled(VALUE fname, VALUE* result)
         //rb_ary_push(GET_VM()->loaded_features, path);
         rb_ary_push(GET_VM()->loaded_features, fname);
 
+#ifdef RHODES_EMULATOR
+        if ( strstr( RSTRING_PTR(path), ".rb") == 0 )
+            rb_str_cat(path,".rb",3);
+
+        rb_load(path, 0);
+        //return retval; 
+#else
         rb_gc_disable();
         seq = loadISeqFromFile(path);
         rb_gc_enable();
 
         //*result = rb_funcall(seq, rb_intern("eval"), 0 );
         *result = rb_iseq_eval(seq);
-
+#endif
         goto RCompExit;
     }
 
