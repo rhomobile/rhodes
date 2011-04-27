@@ -1,5 +1,7 @@
 package com.rhomobile.rhodes;
 
+import com.rhomobile.rhodes.alert.StatusNotification;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -54,7 +56,13 @@ public class PushReceiver extends BroadcastReceiver {
 		serviceIntent.putExtra(RhodesService.INTENT_SOURCE, INTENT_SOURCE);
 		serviceIntent.putExtra(INTENT_TYPE, INTENT_TYPE_MESSAGE);
 		serviceIntent.putExtra(INTENT_EXTRAS, extras);
-		context.startService(serviceIntent);
+		String alert = extras.getString("alert");
+		String from = extras.getString("from");
+
+		if (Capabilities.PUSH_NOTIFICATIONS)
+			StatusNotification.simpleNotification(TAG, INTENT_TYPE_MESSAGE, context, serviceIntent, "PUSH message from: " + from, alert);
+		else
+			context.startService(serviceIntent);
 	}
 	
 	@Override
