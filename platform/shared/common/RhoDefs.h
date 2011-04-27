@@ -88,5 +88,14 @@ typedef int LogSeverity;
 #include "tcmalloc/rhomem.h"
 #endif
 
+#ifdef RHODES_EMULATOR
+#define RHO_RB_EXT ".rb"
+#define RHO_ERB_EXT ".erb"
+#define RHO_EMULATOR_DIR "rhodes_emulator"
+#else
+#define RHO_RB_EXT ".iseq"
+#define RHO_ERB_EXT "_erb.iseq"
+#endif
+
 #endif //_RHODEFS_H_
 

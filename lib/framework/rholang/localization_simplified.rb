@@ -30,17 +30,21 @@ module LocalizationSimplified
         @@cur_locale = curLocale
 
         unless check_exist
-            file = File.join( __rhoGetCurrentDir(), "lib", file)
+if defined?( RHODES_EMULATOR )        
+            file = File.join( __rhoGetRhodesDir(), 'lib/framework', file)
+else
+            file = File.join( __rhoGetCurrentDir(), 'lib', file)            
+end            
             puts "file: #{file}"
         end
       
-        if curCountry && curCountry.length() > 0 && Rho::file_exist?(file + curLocale + '_' + curCountry + '.iseq') 
+        if curCountry && curCountry.length() > 0 && Rho::file_exist?(file + curLocale + '_' + curCountry + RHO_RB_EXT) 
             require file + curLocale + '_' + curCountry
-        elsif Rho::file_exist?(file + curLocale + '.iseq')
+        elsif Rho::file_exist?(file + curLocale + RHO_RB_EXT)
             require file + curLocale
         else    
             puts 'Could not find resources for locale: ' + curLocale.to_s + ";file: #{file}"if curLocale != 'en'
-            if curLocale != 'en' && Rho::file_exist?(file + 'en.iseq')
+            if curLocale != 'en' && Rho::file_exist?(file + 'en' + RHO_RB_EXT)
                 puts 'Load english resources.'
                 require file + 'en'
             end    

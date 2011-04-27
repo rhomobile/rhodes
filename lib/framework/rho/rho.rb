@@ -35,7 +35,7 @@ module Rho
       else
         load_models_from_file(Rho::RhoFSConnector::get_app_manifest_filename)
       end
-      
+
       # Initialize application and sources
       @@rho_framework = self
       @db_partitions = {}
@@ -179,12 +179,28 @@ module Rho
       end
       APPLICATIONS[appname]
     end
-
+    
+if defined?( RHODES_EMULATOR )
     def load_models_from_file(app_manifest_filename=nil)
-      File.open(app_manifest_filename).each do |line|
+        require 'rhoappmanifest'
+        
+        fappManifest = Rho::AppManifest.enumerate_models(Rho::RhoFSConnector.get_app_path('app').chop)
+        _load_models_from_file(fappManifest)
+        fappManifest.close
+    end
+else
+    def load_models_from_file(app_manifest_filename=nil)
+        f = File.open(app_manifest_filename)
+        _load_models_from_file(f)    
+        f.close
+    end
+end
+
+    def _load_models_from_file(f)    
+      f.each do |line|
         str = line.chomp
         if str != nil and str.length > 0 
-            #puts "model file: #{str}"
+            puts "model file: #{str}"
             model_name = File.basename(File.dirname(str))
 
             Rho::RhoConfig::add_source(model_name, {:loaded => false, :file_path => str})
@@ -447,7 +463,7 @@ module Rho
                 
                 associationsSrc = find_src_byname(uniq_sources, src_name)
                 if !associationsSrc
-                    puts ( "Error: belongs_to '#{source['name']}' : source name '#{src_name}' does not exist."  )
+                    puts "Error: belongs_to '#{source['name']}' : source name '#{src_name}' does not exist."
                     next
                 end
                 
@@ -882,10 +898,10 @@ module Rho
       
       err_page = nil
       if exception && exception.is_a?(::Rhom::RecordNotFound)
-        err_page = RhoApplication::get_app_path(APPNAME) + 'E400_erb.iseq'
+        err_page = RhoApplication::get_app_path(APPNAME) + 'E400' + RHO_ERB_EXT
         err_page = nil unless ::Rho::file_exist?(err_page)
       elsif exception
-        err_page = RhoApplication::get_app_path(APPNAME) + 'E500_erb.iseq'
+        err_page = RhoApplication::get_app_path(APPNAME) + 'E500' + RHO_ERB_EXT
         err_page = nil unless ::Rho::file_exist?(err_page)
       end
 

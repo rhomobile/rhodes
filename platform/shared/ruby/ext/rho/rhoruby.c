@@ -135,6 +135,7 @@ void rho_ruby_stop_threadidle()
 
 void RhoRubyStart()
 {
+    const char* szRoot = rho_native_rhopath();
     //VALUE moduleRhom;
 #ifdef HAVE_LOCALE_H
     setlocale(LC_CTYPE, "");
@@ -155,7 +156,26 @@ void RhoRubyStart()
 #endif
     //rb_funcall(rb_mGC, rb_intern("stress="), 1, Qtrue);
 
-    ruby_init_loadpath(rho_native_rhopath());
+    ruby_init_loadpath(szRoot);
+#ifdef RHODES_EMULATOR
+    {
+        VALUE load_path = GET_VM()->load_path;
+        char* app_path = malloc(strlen(szRoot)+100);
+
+        rb_ary_clear(load_path);
+
+        strcpy(app_path, szRoot);
+        strcat(app_path, "app");
+
+        rb_ary_push(load_path, rb_str_new2(app_path) );
+
+        strcpy(app_path, rho_rhodesapp_getrhodespath());
+        strcat(app_path, "\\lib\\framework");
+        rb_ary_push(load_path, rb_str_new2(app_path) );
+    }
+
+#endif
+
     Init_strscan();
     Init_sqlite3_api();
     Init_GeoLocation();
@@ -189,7 +209,14 @@ void RhoRubyStart()
     gettimeofday (&start, NULL);
 #endif
 
+#ifdef RHODES_EMULATOR
+    rb_const_set(rb_cObject, rb_intern("RHODES_EMULATOR"), Qtrue);
     require_compiled(rb_str_new2("rhoframework"), &framework );
+    framework = rb_const_get(rb_cObject,rb_intern("RHO_FRAMEWORK"));
+#else
+    require_compiled(rb_str_new2("rhoframework"), &framework );
+#endif //RHODES_EMULATOR
+
     if ( framework == 0 || framework == Qnil )
     {
         RAWLOG_FATAL("RHO framework creating failed. Application will exit.");
@@ -227,6 +254,15 @@ void RhoRubyStart()
 
     }
 }
+int rho_ruby_is_enabled_eval()
+{
+#ifdef RHODES_EMULATOR
+    return 1;
+#else
+    return 0;
+#endif
+}
+
 void RhoRubyInitApp()
 {
     rb_funcall(framework, initApp_mid, 0);

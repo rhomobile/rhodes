@@ -5,7 +5,10 @@ require 'rho/rho'
 module Rho
   class RhoController
     begin
-      if Rho::file_exist? File.join(__rhoGetCurrentDir(), 'lib/rhodes_translator.iseq')
+      is_translator_exist = true
+      is_translator_exist = Rho::file_exist?( File.join(__rhoGetCurrentDir(), 'lib/rhodes_translator' + RHO_RB_EXT) ) if !defined?( RHODES_EMULATOR )
+          
+      if is_translator_exist
         require 'rhodes_translator'
         include RhodesTranslator::Translator
         include RhodesTranslator::Binding
@@ -24,14 +27,8 @@ module Rho
 
     def self.renderfile(filename, req = {}, res = {})
       res = ""
-	  if defined?(RHO_WP7)
-		if File.extname(filename) == '.iseq'
-			filename = filename[0,filename.length-5] + '.rb'
-		end
-	  end
 
-	  render_ext = defined?(RHO_WP7) ? '.rb' : '.iseq'
-      if File.extname(filename) == render_ext
+      if filename.end_with?(RHO_ERB_EXT)
         res = (RhoController.new).inst_render_index(filename, req, res)
       else
         res = IO.read(filename)
@@ -53,7 +50,7 @@ module Rho
       @content = eval_compiled_file(filename, getBinding() )
       if !xhr?
           rho_info 'index layout' 
-          layout = File.dirname(filename) + "/layout_erb.iseq"
+          layout = File.dirname(filename) + "/layout" + RHO_ERB_EXT
           @content = eval_compiled_file(layout, getBinding() ) if Rho::file_exist?(layout)
 	  else
           if @request["headers"]["Transition-Enabled"] == "true"
@@ -114,14 +111,15 @@ module Rho
         options[:layout] = false
       else
         if options[:file].nil? or !options[:file].is_a?(String)
-          if Rho::file_exist?(@request[:modelpath]+action.to_s+'_erb.iseq')
-            @content = eval_compiled_file(@request[:modelpath]+action+'_erb.iseq', getBinding() )
+          fname = @request[:modelpath]+action.to_s+RHO_ERB_EXT
+          if Rho::file_exist?(fname)
+            @content = eval_compiled_file(fname, getBinding() )
           else
             @content = ""
           end
         else
           options[:file] = options[:file].gsub(/\.erb$/,"").gsub(/^\/app/,"")
-          @content = eval_compiled_file(RhoApplication::get_app_path(@request['application'])+options[:file]+'_erb.iseq', getBinding() )
+          @content = eval_compiled_file(RhoApplication::get_app_path(@request['application'])+options[:file]+RHO_ERB_EXT, getBinding() )
           options[:layout] = false if options[:layout].nil?
         end
       end
@@ -136,7 +134,7 @@ module Rho
       end
 
       if options[:layout] != false
-        layoutfile = RhoApplication::get_app_path(@request['application']) + options[:layout].to_s + "_erb.iseq"
+        layoutfile = RhoApplication::get_app_path(@request['application']) + options[:layout].to_s + RHO_ERB_EXT
         @content = eval_compiled_file(layoutfile, binding ) if Rho::file_exist?(layoutfile)
         rho_info 'Layout file: ' + layoutfile + '. Content size: ' + @content.length.to_s
       end
@@ -228,7 +226,7 @@ module Rho
         end
         modelpath = @request[:modelpath]
         modelpath = Rho::RhoFSConnector.get_model_path("app",model) if model
-        content = eval_compiled_file(modelpath+'_' + partial_name.to_s+'_erb.iseq', locals.get_binding )
+        content = eval_compiled_file(modelpath+'_' + partial_name.to_s+RHO_ERB_EXT, locals.get_binding )
       else
         #xruby issue - https://www.pivotaltracker.com/story/show/3454121
         content = render_partial_collection(options,partial_name)
@@ -272,7 +270,7 @@ module Rho
     def add_objectnotify(arg)
       return unless arg
 
-      if arg.is_a? (Array)
+      if arg.is_a?(Array)
         arg.each do |item|
           @@m_arObjectNotify.push(strip_braces(item.object))
           @@m_arSrcIDNotify.push(item.source_id)

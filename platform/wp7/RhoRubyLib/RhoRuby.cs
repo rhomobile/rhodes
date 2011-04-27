@@ -77,6 +77,12 @@ namespace rho
                 RubyMethodVisibility.Public,
                 m_context.ObjectClass
             ));
+            m_context.ObjectClass.AddMethod(m_context, "__rho_exist_in_resources", new RubyLibraryMethodInfo(
+                new[] { LibraryOverload.Create(new Func<System.Object, System.String, System.Object>(RhoKernelOps.__rho_exist_in_resources), false, 0, 0) },
+                RubyMethodVisibility.Public,
+                m_context.ObjectClass
+            ));
+
             m_context.Loader.LoadAssembly("RhoRubyLib", "rho.rubyext.rubyextLibraryInitializer", true, true);
 
             System.Collections.ObjectModel.Collection<string> paths = new System.Collections.ObjectModel.Collection<string>();

@@ -2,7 +2,11 @@
 #include "RhoFile.h"
 #include "RhoFilePath.h"
 #include "StringConverter.h"
+#ifdef RHODES_EMULATOR
+static const char* CONF_FILENAME = "rhoconfig.txt";
+#else
 static const char* CONF_FILENAME = "apps/rhoconfig.txt";
+#endif
 static const char* CONF_CHANGES = ".changes";
 static const char* CONF_TIMESTAMP = ".timestamp";
 static const char* CONF_TIMESTAMP_PROP = "rho_conf_timestamp";

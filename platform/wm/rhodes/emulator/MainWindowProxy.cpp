@@ -231,16 +231,16 @@ void CMainWindowProxy::createToolbar(rho_param *p)
                         strImagePath = rho::common::CFilePath::join( RHODESAPP().getAppRootPath(), icon );
                     else {
                         if ( strcasecmp(action, "options")==0 )
-                            strImagePath = "lib/res/options_btn.png";
+                            strImagePath = "res/options_btn.wm.png";
                         else if ( strcasecmp(action, "home")==0 )
-                            strImagePath = "lib/res/home_btn.png";
+                            strImagePath = "res/home_btn.wm.png";
                         else if ( strcasecmp(action, "refresh")==0 )
-                            strImagePath = "lib/res/refresh_btn.png";
+                            strImagePath = "res/refresh_btn.wm.png";
                         else if ( strcasecmp(action, "back")==0 )
-                            strImagePath = "lib/res/back_btn.png";
+                            strImagePath = "res/back_btn.wm.png";
                         else if ( strcasecmp(action, "forward")==0 )
-                            strImagePath = "lib/res/forward_btn.png";
-                        strImagePath = strImagePath.length() > 0 ? CFilePath::join( RHODESAPP().getRhoRootPath(), strImagePath) : String();
+                            strImagePath = "res/forward_btn.wm.png";
+                        strImagePath = strImagePath.length() > 0 ? CFilePath::join( RHODESAPP().getRhodesPath(), "lib/framework/" + strImagePath) : String();
                     }
 
                     ((QtMainWindow*)qtMainWindow)->toolbarAddAction(QIcon(QString(strImagePath.c_str())), QString(label), action, wasSeparator);

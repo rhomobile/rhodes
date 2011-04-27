@@ -87,6 +87,15 @@ public :
 					m_strRootPath = path;
 					free(path);
 				}
+			} else if (wcsncmp(lpszToken, _T("rhodespath"),10)==0) 
+            {
+				String token = convertToStringA(lpszToken);
+				//parseToken will allocate extra byte at the end of the returned token value
+                char* path = parseToken( token.c_str(), token.length() );
+				if (path) {
+					m_strRhodesPath = path;
+					free(path);
+				}
 			}
 #endif
 			lpszToken = FindOneOf(lpszToken, szTokens);
@@ -189,6 +198,8 @@ public :
 	    }
 
         rho::common::CRhodesApp::Create(m_strRootPath );
+        RHODESAPP().setRhodesPath(m_strRhodesPath);
+
         String strTitle = RHODESAPP().getAppTitle();
 
         DWORD dwStyle = WS_VISIBLE;
@@ -428,7 +439,7 @@ public :
 
 private:
     CMainWindow m_appWindow;
-    rho::String m_strRootPath;
+    rho::String m_strRootPath, m_strRhodesPath;
 	int m_nRestarting;
 
 #ifdef OS_WINDOWS
@@ -588,10 +599,12 @@ char* parseToken( const char* start, int len ) {
         return NULL;
 
     const char* szValue = start + i+1;
-    int nValueLen = len - (i+1);
+    int nValueLen = 0;
 
-    while(*szValue==' ' || *szValue=='\'' || *szValue=='"' && nValueLen >= 0 ){ szValue++; nValueLen--;}
-    while(nValueLen > 0 && (szValue[nValueLen-1]==' ' || szValue[nValueLen-1]=='\'' || szValue[nValueLen-1]=='"')) nValueLen--;
+    while(*szValue==' ' || *szValue=='\'' || *szValue=='"' && nValueLen >= 0 ){ szValue++;}
+    while(szValue[nValueLen] && szValue[nValueLen] !='\'' && szValue[nValueLen] != '"' ){ nValueLen++;}
+
+    //while(nValueLen > 0 && (szValue[nValueLen-1]==' ' || szValue[nValueLen-1]=='\'' || szValue[nValueLen-1]=='"')) nValueLen--;
 
 	char* value = (char*) malloc(nValueLen+2);
 	strncpy(value, szValue, nValueLen);
