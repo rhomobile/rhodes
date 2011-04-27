@@ -65,7 +65,7 @@ module Rho
         res = send req['action'].nil? ? default_action : req['action']
       else
         called_action = @request['action'].nil? ? default_action : @request['action']
-        unless Rho::file_exist?(@request[:modelpath]+called_action.to_s+'_erb.iseq')
+        unless Rho::file_exist?(@request[:modelpath]+called_action.to_s+RHO_ERB_EXT)
           rho_error( "Action '#{act}' does not exist in controller or has private access."  )
           res = render :string => "<font size=\"+4\"><h2>404 Not Found.</h2>The action <i>#{called_action}</i> does not have a view or a controller</font>"
         end
@@ -87,8 +87,8 @@ module Rho
     # Returns true if the request's header contains "XMLHttpRequest".
     def xml_http_request?
       return false if !@request || !@request['headers'] || !@request['headers']['X-Requested-With']
-       
-      not /XMLHttpRequest/i.match(@request['headers']['X-Requested-With']).nil?
+      test2 = /XMLHttpRequest/i.match(@request['headers']['X-Requested-With'])
+      not test2.nil?
     end
     alias xhr? :xml_http_request?
 

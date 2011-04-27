@@ -20,7 +20,12 @@ void CAppMenu::addAppMenuItem( const String& strLabel, const String& strLink )
     if ( strcasecmp( strLabel.c_str(), "back" )==0 && strcasecmp( strLink.c_str(), "back" )!=0 )
         RHODESAPP().setAppBackUrl(strLink);
     else
-    	m_arAppMenuItems.push_back(CAppMenuItem(strLabel, strLink));
+    {
+        synchronized(m_mxAppMenu) 
+	    {
+        	m_arAppMenuItems.push_back(CAppMenuItem(strLabel, strLink));
+        }
+    }
 }
 
 extern "C" void
