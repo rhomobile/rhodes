@@ -638,7 +638,7 @@ RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isOnStartPag
 
 
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isEnableTitle
-  (JNIEnv *, jclass, jstring cmdLine, jstring sep)
+  (JNIEnv *, jclass)
 {
     bool value = true;
     const char* svalue = get_app_build_config_item("android_title");
@@ -700,6 +700,19 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_setPushRegistrat
 {
     std::string id = rho_cast<std::string>(env, jId);
     rho::sync::CClientRegister::Create(id.c_str());
+}
+
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getPushRegistrationId
+  (JNIEnv * env, jobject)
+{
+    rho::sync::CClientRegister* pClientRegister = rho::sync::CClientRegister::getInstance();
+    if(pClientRegister != NULL)
+    {
+        const std::string& id = pClientRegister->getDevicePin();
+        return rho_cast<jhstring>(env, id).release();
+    }
+    const char* const empty = "";
+    return rho_cast<jhstring>(env, empty).release();
 }
 
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_callPushCallback
