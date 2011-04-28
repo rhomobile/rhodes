@@ -1425,7 +1425,36 @@ end
     @accts[1].rating.to_i.should > size    
     @accts[2].rating.to_i.should > size
   end
-      
+
+  it "should find by non-string fields" do
+    if $spec_settings[:schema_model]  
+        item = getAccount.create( {:new_name => 'prod1', :float_test => 2.3, :date_test => 123, :time_test => 678} )
+        item.float_test.is_a?(Float).should == true
+        item.date_test.is_a?(Integer).should == true
+        item.time_test.is_a?(Integer).should == true
+        
+        items = getAccount.find(:all, :conditions => {:float_test => 2.3} )
+        items.should_not be_nil
+        items.length.should == 1
+        item2 = items[0]
+        
+        item2.object.should == item.object
+        item2.float_test.is_a?(Float).should == true
+        item2.date_test.is_a?(Integer).should == true
+        item2.time_test.is_a?(Integer).should == true
+        
+        items = getAccount.find(:all, :conditions => { {:name=>'float_test', :op=>'<'}=> 53 } )
+        items.should_not be_nil
+        items.length.should == 1
+        item2 = items[0]    
+        
+        item2.object.should == item.object    
+        item2.float_test.is_a?(Float).should == true
+        item2.date_test.is_a?(Integer).should == true
+        item2.time_test.is_a?(Integer).should == true    
+    end        
+  end
+        
 end
 #=begin
 describe "Rhom#paginate" do
