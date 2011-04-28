@@ -528,10 +528,10 @@ Or multiple declarations:
 ## Accessing Sync Info with RhomSource
 Rhom exposes sync information as a `RhomSource` object.  You can use this information for alerts, status pages, etc.  
 
-To access a RhomSource, load it by id:
+To access a RhomSource, load it by name:
 
 	:::ruby
-	@source = RhomSource.find(@params['id'])
+	@source = RhomSource.find('source_name')
 
 Here are the available statistics:
 
@@ -560,7 +560,7 @@ For example, to show the formatted time for the `Product` model:
 
 	:::ruby
 	RhomSource.find(
-      Product.get_source_id
+      Product.get_source_name
     ).last_updated.strftime("%m/%d/%Y, %I:%M%p")
       #=> "01/19/2011, 06:40PM"
 
