@@ -56,5 +56,8 @@ class Account_s
     property :SurveyID,        :string    
     property :CallID,        :string    
     property :SurveyResultID,        :string    
-    
+   
+    property :float_test,  :float
+    property :date_test,  :date
+    property :time_test,  :time    
 end
