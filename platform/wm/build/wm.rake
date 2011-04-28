@@ -333,7 +333,21 @@ namespace "run" do
       exit 1
     end
   end
- 
+
+	namespace "win32" do
+		task :rhodes_emulator => "config:common" do
+    
+		path = File.join( $config['env']['paths']['rhodes-emulator'], "rhodes.exe")
+
+		args = []
+		args << "-approot='#{$app_path}'"
+		args << "-rhodespath='#{$startdir}'"
+    
+		Jake.run2 path, args, {:nowait => true}
+                
+		end
+	end
+
   namespace "win32" do
 
     task :delete_db do
