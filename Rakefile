@@ -970,18 +970,3 @@ namespace "build" do
         rm_rf bin_dir
     end
 end
-
-namespace "run" do
-namespace "win32" do
-    task :rhodes_emulator => "config:common" do
-    
-    path = "platform\\wm\\bin\\Win32\\rhodes\\EmulatorDebug\\rhodes.exe"
-    args = []
-    args << "-approot='#{$app_path}'"
-    args << "-rhodespath='#{$startdir}'"
-    
-    Jake.run2 path, args, {:nowait => true}
-                
-    end
-end
-end
