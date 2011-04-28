@@ -864,6 +864,20 @@ See log in VS output console
         
 * Run application in emulator and login with empty credentials
 
+## RhoSimulator
+Currently it works only on Windows.
+
+* Download [RhoSimulator](http://rhosimulator.s3.amazonaws.com/RhoSimulator.zip) and unzip it.
+
+* Edit 'rhodes/rhobuild.yml':
+
+        env: 
+            paths:    
+                rhosimulator: <RhoSimulator folder>
+* Run in rhodes or application folder:
+
+    rake run:win32:rhosimulator
+    
 ## How to set application name and icon
 
 ### Application Name
