@@ -351,17 +351,19 @@ public class RhodesService extends Service {
 		
 		try {
 			if (Capabilities.PUSH_ENABLED) {
-				PushService.register();
+				if (getPushRegistrationId().length() == 0) {
+					PushService.register();
 				
-				getRhodesApplication().addOnExitHandler(new Runnable() {
-					public void run() {
-						try {
-							PushService.unregister();
-						} catch (IllegalAccessException e) {
-							Log.e(TAG, e.getMessage());
-						}
-					}
-				});
+//					getRhodesApplication().addOnExitHandler(new Runnable() {
+//						public void run() {
+//							try {
+//								PushService.unregister();
+//							} catch (IllegalAccessException e) {
+//								Log.e(TAG, e.getMessage());
+//							}
+//						}
+//					});
+				}
 			}
 		} catch (IllegalAccessException e) {
 			Log.e(TAG, e.getMessage());
@@ -454,7 +456,7 @@ public class RhodesService extends Service {
 				String id = intent.getStringExtra(PushReceiver.INTENT_REGISTRATION_ID);
 				if (id == null)
 					throw new IllegalArgumentException("Empty registration id received in service command");
-				Logger.D(TAG, "Received PUSH registration id: " + id);
+				Logger.I(TAG, "Received PUSH registration id: " + id);
 				setPushRegistrationId(id);
 				break;
 			case PushReceiver.INTENT_TYPE_MESSAGE:
@@ -1087,6 +1089,7 @@ public class RhodesService extends Service {
     }
 
 	private native void setPushRegistrationId(String id);
+	private native String getPushRegistrationId(); 
 	
 	private native boolean callPushCallback(String data);
 	
