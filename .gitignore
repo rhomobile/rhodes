@@ -37,6 +37,7 @@ platform/iphone/*/rholog.txt
 platform/win32/**/*.pch
 platform/wm/**/*.pch
 platform/wp7/bin/*
+platform/wp7/IronRuby/bin/*
 platform/wp7/WPApplication/rho/*
 platform/wp7/WPApplication/obj/*
 platform/wp7/WPApplication/Bin/*
