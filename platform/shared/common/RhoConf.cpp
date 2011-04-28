@@ -94,7 +94,7 @@ void RhoSettings::loadFromFile()
     m_mapChangedValues.clear();
 
     String strSettings;
-    CRhoFile::readStringFromFile(getConfFilePath().c_str(), strSettings);
+    CRhoFile::readStringFromFile(getAppConfFilePath().c_str(), strSettings);
     loadFromString( strSettings.c_str(), m_mapValues );
 
     readChanges();
@@ -235,7 +235,15 @@ extern "C" {
 void rho_conf_Init(const char* szRootPath){
 	rho::common::CFilePath oRhoPath( szRootPath );
 
+    RHOCONF().setAppConfFilePath(oRhoPath.makeFullPath(CONF_FILENAME).c_str());
+#ifdef RHODES_EMULATOR
+    rho::String strPath = rho::common::CFilePath::join( szRootPath, RHO_EMULATOR_DIR);
+    strPath = rho::common::CFilePath::join( strPath, CONF_FILENAME);
+    RHOCONF().setConfFilePath(strPath.c_str());
+#else
     RHOCONF().setConfFilePath(oRhoPath.makeFullPath(CONF_FILENAME).c_str());
+#endif
+
     RHOCONF().loadFromFile();
 }
 
