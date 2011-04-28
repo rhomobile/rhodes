@@ -600,13 +600,21 @@ end
         strCreate = "" unless strCreate
         if schema_attr['property']
             arCols = schema_attr['property']
-            arCols = arCols
-            strCols = ""
-            arCols.each do |col, type|
-                strCols += ',' if strCols.length() > 0
-                strCols += "\"#{col}\" varchar default NULL"
-                #TODO: support column type
-            end
+            strCols = arCols.collect do |col, type|
+                "\"#{col}\" " + 
+                case type[0]
+                    when :integer
+                        'integer'
+                    when :float
+                        'float'
+                    when :date
+                        'integer'
+                    when :time
+                        'integer'
+                    else
+                        'varchar'
+                end + " default null"
+            end.join(',')
 
             strCols += ',' if strCols.length() > 0
             strCols += "\"object\" varchar(255) PRIMARY KEY"
