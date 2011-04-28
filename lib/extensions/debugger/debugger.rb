@@ -1,5 +1,4 @@
-
-require 'net/http'
+require 'timeout'
 
 def debug_read_cmd(io)
     outbuf = ""
@@ -98,8 +97,3 @@ rescue
   puts "Unable to open connection to debugger:" + $!.inspect
   $_s = nil
 end
-
-
-
-
-
