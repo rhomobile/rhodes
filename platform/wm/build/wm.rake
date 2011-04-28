@@ -335,10 +335,14 @@ namespace "run" do
   end
 
 	namespace "win32" do
-		task :rhodes_emulator => "config:common" do
+		task :rhosimulator => "config:common" do
     
-		path = File.join( $config['env']['paths']['rhodes-emulator'], "rhodes.exe")
-
+		path = File.join( $config['env']['paths']['rhosimulator'], "rhosimulator.exe")
+        if !File.exists?(path)
+            puts "Cannot find RhoSimulator: '#{path}' does not exists"
+            puts "Install RhoSimulator and modify 'rhosimulator' section in '<rhodes>/rhobuild.yml'"
+        end
+        
 		args = []
 		args << "-approot='#{$app_path}'"
 		args << "-rhodespath='#{$startdir}'"
