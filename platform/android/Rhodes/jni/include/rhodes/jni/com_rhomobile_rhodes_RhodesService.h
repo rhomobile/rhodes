@@ -149,11 +149,27 @@ JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_canStartApp
 
 /*
  * Class:     com_rhomobile_rhodes_RhodesService
+ * Method:    isEnableTitle
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isEnableTitle
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     com_rhomobile_rhodes_RhodesService
  * Method:    setPushRegistrationId
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_setPushRegistrationId
   (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     com_rhomobile_rhodes_RhodesService
+ * Method:    getPushRegistrationId
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getPushRegistrationId
+  (JNIEnv *, jobject);
 
 /*
  * Class:     com_rhomobile_rhodes_RhodesService
