@@ -46,6 +46,10 @@ end
 
       def get_blob_path(relative_path)
         cur_dir = __rhoGetCurrentDir()
+if defined?( RHODES_EMULATOR )
+        cur_dir = File.join(cur_dir, RHO_EMULATOR_DIR)
+end
+        
         if cur_dir && cur_dir.length()>0
             File.join(cur_dir, relative_path)
         else
