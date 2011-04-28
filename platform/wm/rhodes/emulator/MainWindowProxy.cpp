@@ -228,7 +228,7 @@ void CMainWindowProxy::createToolbar(rho_param *p)
                 } else {
                     String strImagePath;
                     if ( icon && *icon )
-                        strImagePath = rho::common::CFilePath::join( RHODESAPP().getAppRootPath(), icon );
+                        strImagePath = rho::common::CFilePath::join( RHODESAPP().getRhoRootPath(), icon );
                     else {
                         if ( strcasecmp(action, "options")==0 )
                             strImagePath = "res/options_btn.wm.png";
