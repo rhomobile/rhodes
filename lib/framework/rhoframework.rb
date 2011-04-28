@@ -6,7 +6,7 @@ elsif defined?( RHODES_EMULATOR )
     RHO_RB_EXT = '.rb'
     RHO_ERB_EXT = '.erb'
     RHO_APPS_DIR = ''
-    RHO_EMULATOR_DIR = 'rhodes_emulator'    
+    RHO_EMULATOR_DIR = 'rhosimulator'    
     module Kernel   
 	    def eval_compiled_file(fname, bind)
 	        require 'erb'
