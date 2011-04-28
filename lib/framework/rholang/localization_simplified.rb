@@ -10,12 +10,12 @@ module LocalizationSimplified
   # substitute all daynames and monthnames with localized names
   # from RUtils plugin
   def self.localize_strftime(date='%d.%m.%Y', time='')
-    date.gsub!('%%', @@ignore)
+    #date.gsub!('%%', @@ignore)
     date.gsub!('%a', LocalizationSimplified::DateHelper::AbbrDaynames[time.wday])
     date.gsub!('%A', LocalizationSimplified::DateHelper::Daynames[time.wday])
     date.gsub!('%b', LocalizationSimplified::DateHelper::AbbrMonthnames[time.mon])
     date.gsub!('%B', LocalizationSimplified::DateHelper::Monthnames[time.mon])
-    date.gsub!(@@ignore, '%%')
+    #date.gsub!(@@ignore, '%%')
   end
   
   def self.get_cur_locale

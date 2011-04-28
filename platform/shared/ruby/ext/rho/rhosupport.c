@@ -385,6 +385,7 @@ VALUE require_compiled(VALUE fname, VALUE* result)
         if ( strstr( RSTRING_PTR(path), ".rb") == 0 )
             rb_str_cat(path,".rb",3);
 
+        GET_VM()->src_encoding_index = rb_utf8_encindex();
         rb_load(path, 0);
         //return retval; 
 #else
