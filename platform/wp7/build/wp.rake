@@ -92,31 +92,44 @@ end
 		end
 		
 		task :ironruby => ["config:wp"] do   	
+		    iron_path = ""
 			if $config["env"]["paths"]["ironruby"].nil?
-				chdir "../ironruby/Solutions"
+				iron_path = "../ironruby"
 			else
-				chdir $config["env"]["paths"]["ironruby"]+"\\Solutions"
+				iron_path = $config["env"]["paths"]["ironruby"]
 			end
+			cp_r File.join( $config["build"]["wppath"], "IronRuby/Languages"), iron_path
+			
+			chdir File.join( iron_path, "Solutions" )
 
 			args = ['Ruby.sln', '/property:Configuration=Silverlight3Release']
-
-			if (!File.exists? "../bin/Silverlight3Release/Microsoft.Dynamic.dll") &&
-			   (!File.exists? "../bin/Silverlight3Release/Microsoft.Scripting.dll") &&
-			   (!File.exists? "../bin/Silverlight3Release/Microsoft.Scripting.Core.dll") && 
-			   (!File.exists? "../bin/Silverlight3Release/IronRuby.Libraries.dll") && 
-			   (!File.exists? "../bin/Silverlight3Release/IronRuby.dll" )
-				puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
+			
+			#if (!File.exists? "../bin/Silverlight3Release/Microsoft.Dynamic.dll") &&
+			#   (!File.exists? "../bin/Silverlight3Release/Microsoft.Scripting.dll") &&
+			#   (!File.exists? "../bin/Silverlight3Release/Microsoft.Scripting.Core.dll") && 
+			#   (!File.exists? "../bin/Silverlight3Release/IronRuby.Libraries.dll") && 
+			#   (!File.exists? "../bin/Silverlight3Release/IronRuby.dll" )
+			#	puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
 				Jake.run($msbuild,args)
 				unless $? == 0
 					puts "Error building"
 					exit 1
 				end
-			end
+			#end
  
 			chdir $startdir
+
+            iron_release = File.join( $config["build"]["wppath"], "IronRuby/bin/Silverlight3Release")
+            rm_rf iron_release
+            mkdir_p iron_release
+			cp File.join( iron_path, "bin/Silverlight3Release/IronRuby.dll" ), iron_release
+			cp File.join( iron_path, "bin/Silverlight3Release/IronRuby.Libraries.dll" ), iron_release
+			cp File.join( iron_path, "bin/Silverlight3Release/Microsoft.Dynamic.dll" ), iron_release
+			cp File.join( iron_path, "bin/Silverlight3Release/Microsoft.Scripting.dll" ), iron_release
+			cp File.join( iron_path, "bin/Silverlight3Release/Microsoft.Scripting.Core.dll" ), iron_release
 		end 
 
-		task :rhodes => ["config:wp", "build:wp:rhobundle", "build:wp:ironruby"] do
+		task :rhodes => ["config:wp", "build:wp:rhobundle"] do
 		    out_dir = $startdir + "/"+ $config["build"]["wppath"] +"/rhodes"
 			cp $app_path + "/icon/icon.png", out_dir if File.exists? $app_path + "/icon/icon.ico"     
 		
