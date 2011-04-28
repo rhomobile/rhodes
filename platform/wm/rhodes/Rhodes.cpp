@@ -80,7 +80,7 @@ public :
                 char* path = parseToken( token.c_str(), token.length() );
 				if (path) {
 					int len = strlen(path);
-					if (!(path[len]=='\\' || path[len]=='/')) {
+					if (!(path[len-1]=='\\' || path[len-1]=='/')) {
 						path[len] = '\\';
 						path[len+1]  = 0;
 					}
