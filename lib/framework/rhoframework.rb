@@ -87,6 +87,10 @@ begin
     require 'rho/render'
     
     require 'rho'
+
+if defined?( RHODES_EMULATOR )
+    require 'debugger'
+end
 	
     puts 'RHO loaded'
     RHO_FRAMEWORK = Rho::RHO.new
