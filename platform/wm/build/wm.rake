@@ -341,6 +341,7 @@ namespace "run" do
         if !File.exists?(path)
             puts "Cannot find RhoSimulator: '#{path}' does not exists"
             puts "Install RhoSimulator and modify 'rhosimulator' section in '<rhodes>/rhobuild.yml'"
+            exit 1
         end
         
 		args = []
