@@ -354,26 +354,16 @@ VALUE require_compiled(VALUE fname, VALUE* result)
         strcmp("digest/sha1",szName1)==0 )
         return Qtrue;
 
-    //RAWLOG_INFO1("require_compiled: %s", RSTRING_PTR(fname));
-
-#ifdef RHODES_EMULATOR
-    //*result = rb_require_safe(fname, rb_safe_level());
-    //return retval; 
-#endif
     RHO_LOCK(require_lock);
 
     if ( isAlreadyLoaded(fname) == Qtrue )
         goto RCompExit;
 
-    //RAWLOG_INFO1("find_file: %s", RSTRING_PTR(fname));
     path = find_file(fname);
 
     if ( path != 0 )
     {
         VALUE seq;
-
-//        if ( isAlreadyLoaded(path) == Qtrue )
-//            return Qtrue;
 
         RAWLOG_INFO1("require_compiled: %s", szName1);
 
@@ -387,7 +377,9 @@ VALUE require_compiled(VALUE fname, VALUE* result)
 
         GET_VM()->src_encoding_index = rb_utf8_encindex();
         rb_load(path, 0);
-        //return retval; 
+
+        if ( strncmp( RSTRING_PTR(path), rho_native_rhopath(), strlen(rho_native_rhopath()) ) == 0 )
+            rb_ary_delete(GET_VM()->loaded_features, fname);
 #else
         rb_gc_disable();
         seq = loadISeqFromFile(path);
