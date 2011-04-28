@@ -91,10 +91,11 @@ typedef int LogSeverity;
 #ifdef RHODES_EMULATOR
 #define RHO_RB_EXT ".rb"
 #define RHO_ERB_EXT ".erb"
-#define RHO_EMULATOR_DIR "rhodes_emulator"
+#define RHO_EMULATOR_DIR "rhosimulator"
 #else
 #define RHO_RB_EXT ".iseq"
 #define RHO_ERB_EXT "_erb.iseq"
+#define RHO_EMULATOR_DIR ""
 #endif
 
 #endif //_RHODEFS_H_

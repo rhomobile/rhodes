@@ -12,7 +12,7 @@ namespace common{
 #define RHODBVERSION "DBVersion"
 
 class RhoSettings{
-    String      m_strConfFilePath;
+    String      m_strConfFilePath, m_strAppConfFilePath;
     Hashtable<String,String> m_mapValues;
     Hashtable<String,String> m_mapChangedValues;
     HashtablePtr<String,Vector<String>* > m_mapConflictedValues;
@@ -31,6 +31,8 @@ public:
 
     const String& getConfFilePath()const{ return m_strConfFilePath;}
     void setConfFilePath(const char* szConfFilePath){ m_strConfFilePath = szConfFilePath; }
+    const String& getAppConfFilePath()const{ return m_strAppConfFilePath;}
+    void setAppConfFilePath(const char* szConfFilePath){ m_strAppConfFilePath = szConfFilePath; }
 
     void loadFromFile();
 
