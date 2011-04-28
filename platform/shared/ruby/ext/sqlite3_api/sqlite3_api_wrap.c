@@ -265,8 +265,10 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
                 case T_STRING:
                     sqlite3_bind_text(statement, i+1, RSTRING_PTR(arg), RSTRING_LEN(arg), SQLITE_TRANSIENT);
                     break;
-                case T_FIXNUM:
                 case T_FLOAT:
+                    sqlite3_bind_double(statement, i+1, NUM2DBL(arg));
+                    break;
+                case T_FIXNUM:
                 case T_BIGNUM:
                     sqlite3_bind_int64(statement, i+1, NUM2LL(arg));
                     break;
@@ -297,6 +299,12 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
 			    switch(nColType){
 				    case SQLITE_NULL:
 					    break;
+                    case SQLITE_FLOAT:
+                    {
+                        double dVal = sqlite3_column_double(statement, nCol);
+                        colValue = DBL2NUM(dVal);
+                        break;
+                    }
                     case SQLITE_INTEGER:
                     {
                         sqlite_int64 nVal = sqlite3_column_int64(statement, nCol);
