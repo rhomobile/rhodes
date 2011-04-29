@@ -66,6 +66,7 @@ namespace Rhodes
             webBrowser1.Navigating += WebBrowser_OnNavigating;
             webBrowser1.Navigated += WebBrowser_OnNavigated;
             webBrowser1.ScriptNotify += WebBrowser_OnScriptNotify;
+            progressBar.IsIndeterminate = true;
         }
 
         private CRhodesApp RHODESAPP(){return CRhodesApp.Instance;}
@@ -107,6 +108,7 @@ namespace Rhodes
                 LoadingImage.Visibility = Visibility.Collapsed;
                 webBrowser2.Visibility = Visibility.Collapsed;
                 webBrowser1.Visibility = Visibility.Visible;
+                progressBar.Visibility = Visibility.Collapsed;
             }
             RHODESAPP().addToHistory(e.Uri);
         }
