@@ -277,7 +277,7 @@ public class SyncNotify {
     void onSyncSourceEnd( int nSrc, Vector/*Ptr<CSyncSource*>&*/ sources )
     {
         SyncSource src = (SyncSource)sources.elementAt(nSrc);
-
+/*
         if ( getSync().getState() == SyncEngine.esStop && src.m_nErrCode != RhoAppAdapter.ERR_NONE )
         {
         	SyncNotification pSN = getSyncNotifyBySrc(src);
@@ -286,7 +286,7 @@ public class SyncNotify {
         	else
         		fireAllSyncNotifications(true, src.m_nErrCode, src.m_strError, "" );
         }
-        else
+        else*/
             fireSyncNotification( src, true, src.m_nErrCode, "");
 
         cleanCreateObjectErrors();

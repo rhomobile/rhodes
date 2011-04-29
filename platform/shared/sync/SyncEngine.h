@@ -104,7 +104,7 @@ public:
     void prepareSync(ESyncState eState, const CSourceID* oSrcID);
 
     VectorPtr<CSyncSource*>& getSources(){ return m_sources; }
-    int getStartSource();
+    //int getStartSource();
     String loadClientID();
     String readClientID();
     String requestClientIDByNet();
@@ -136,7 +136,7 @@ private:
     void processServerSources(String strSources);
     void checkSourceAssociations();
 
-    boolean syncOneSource(int i);
+    void syncOneSource(int i);
     void syncAllSources();
 
     friend class CSyncSource;
