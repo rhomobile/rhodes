@@ -48,6 +48,9 @@ namespace "build" do
     $rootdir = ENV['RHO_ROOT']
     raise "RHO_ROOT is not set" if $rootdir.nil?
 
+    curdir = pwd
+    $barcodedir = curdir.gsub('/ext/barcode/platform/android','');
+
     require File.join($rootdir, 'platform/android/build/androidcommon.rb')
 
     setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
@@ -61,28 +64,45 @@ namespace "build" do
 
     src_files = []
     src_files << fixed_path + '/barcode/shared/ruby/barcode_wrap.c'
-    src_files << fixed_path + '/barcode/shared/src/zbar.c'
-    src_files << fixed_path + '/barcode/shared/zbar/rho_bridge.c'
-    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/error.c'
-    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/decoder/code128.c'
-    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/decoder/code39.c'
-    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/decoder/ean.c'
-    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/decoder/i25.c'
-    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/processor/null.c'
-    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/video/null.c'
-    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/window/null.c'
-    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/config.c'
-    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/convert.c'
-    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/decoder.c'
-    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/image.c'
-    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/img_scanner.c'
-    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/refcnt.c'
-    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/scanner.c'
-    src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/symbol.c'
+    #src_files << fixed_path + '/barcode/shared/src/zbar.c'
+    #src_files << fixed_path + '/barcode/shared/zbar/rho_bridge.c'
+    #src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/error.c'
+    #src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/decoder/code128.c'
+    #src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/decoder/code39.c'
+    #src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/decoder/ean.c'
+    #src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/decoder/i25.c'
+    #src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/processor/null.c'
+    #src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/video/null.c'
+    #src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/window/null.c'
+    #src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/config.c'
+    #src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/convert.c'
+    #src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/decoder.c'
+    #src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/image.c'
+    #src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/img_scanner.c'
+    #src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/refcnt.c'
+    #src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/scanner.c'
+    #src_files << fixed_path + '/barcode/shared/zbar/zbar/zbar/symbol.c'
+    #src_files << fixed_path + '/barcode/platform/android/jni/src/imageprovider.cpp'
 
-    src_files << fixed_path + '/barcode/platform/android/jni/src/imageprovider.cpp'
+    src_files << fixed_path + '/barcode/platform/android/jni/src/barcode.cpp'
 
     build_extension('Barcode', $arch, src_files)
+
+    #build java part
+    javafiles = []	
+    File.open('ext_build.files', "r") do |f|
+        while line = f.gets
+           javafiles << line
+        end
+    end
+
+    flname = $targetdir + '/ext_build.files'
+    File.open(flname, "w") do |f|
+        javafiles.each do |j|
+            f.puts $barcodedir + '/' + j
+        end
+    end
+
   end
 end
 
