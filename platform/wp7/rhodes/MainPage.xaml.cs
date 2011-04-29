@@ -50,6 +50,14 @@ namespace Rhodes
             InitializeComponent();
             ApplicationTitle.Text = GetWinPhoneAttribute("Title");
 
+            if (CRhoFile.isResourceFileExist("/apps/app/loading.png") == false)
+            {
+                LoadingImage.Visibility = Visibility.Collapsed;
+                webBrowser2.Visibility = Visibility.Visible;
+            }
+            else
+                webBrowser2.Visibility = Visibility.Collapsed;
+
             webBrowser1.Visibility = Visibility.Collapsed;
             webBrowser1.IsScriptEnabled = true;
 
@@ -75,6 +83,8 @@ namespace Rhodes
 
         private void WebBrowser_OnLoaded(object sender, RoutedEventArgs e)
         {
+            if (webBrowser2.Visibility == Visibility.Visible)
+                webBrowser2.NavigateToString(CRhoFile.readStringFromResourceFile("/apps/app/loading.html"));
             RHODESAPP().Init(webBrowser1, this);
         }
 
@@ -95,6 +105,7 @@ namespace Rhodes
             if (webBrowser1.Visibility == Visibility.Collapsed)
             {
                 LoadingImage.Visibility = Visibility.Collapsed;
+                webBrowser2.Visibility = Visibility.Collapsed;
                 webBrowser1.Visibility = Visibility.Visible;
             }
             RHODESAPP().addToHistory(e.Uri);
