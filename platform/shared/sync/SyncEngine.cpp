@@ -771,7 +771,7 @@ String CSyncEngine::makeBulkDataFileName(String strDataUrl, String strDbPath, St
     CFilePath oFilePath(strDbPath);
     return oFilePath.changeBaseName(strNewName+strExt);
 }
-
+/*
 int CSyncEngine::getStartSource()
 {
     for( int i = 0; i < (int)m_sources.size(); i++ )
@@ -782,37 +782,36 @@ int CSyncEngine::getStartSource()
     }
 
     return -1;
-}
+}*/
 
-boolean CSyncEngine::syncOneSource(int i)
+void CSyncEngine::syncOneSource(int i)
 {
     CSyncSource& src = *m_sources.elementAt(i);
     if ( src.getSyncType().compare("bulk_sync_only")==0 )
-        return true;
+        return;
 
     if ( isSessionExist() && getState() != esStop )
         src.sync();
 
     getNotify().onSyncSourceEnd(i, m_sources);
 
-    return src.m_nErrCode == RhoAppAdapter.ERR_NONE;
+//    return src.m_nErrCode == RhoAppAdapter.ERR_NONE;
 }
 
 void CSyncEngine::syncAllSources()
 {
-    boolean bError = false;
+//    boolean bError = false;
 
-    int nStartSrc = getStartSource();
-    if ( nStartSrc >= 0 )
-        bError = !syncOneSource(nStartSrc);
+//    int nStartSrc = getStartSource();
+//    if ( nStartSrc >= 0 )
+//        bError = !syncOneSource(nStartSrc);
 
-    //TODO: do not stop on error source
     for( int i = 0; i < (int)m_sources.size() && isContinueSync(); i++ )
     {
-        bError = !syncOneSource(i);
+        /*bError = !*/syncOneSource(i);
     }
 
-    if ( !bError && !isSchemaChanged() )
+    if ( !isSchemaChanged() )
     	getNotify().fireSyncNotification(null, true, RhoAppAdapter.ERR_NONE, RhoAppAdapter.getMessageText("sync_completed"));
 }
 
