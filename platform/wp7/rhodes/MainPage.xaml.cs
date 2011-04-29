@@ -50,6 +50,7 @@ namespace Rhodes
             InitializeComponent();
             ApplicationTitle.Text = GetWinPhoneAttribute("Title");
 
+            webBrowser1.Visibility = Visibility.Collapsed;
             webBrowser1.IsScriptEnabled = true;
 
             webBrowser1.Loaded += WebBrowser_OnLoaded;
@@ -91,6 +92,11 @@ namespace Rhodes
 
         private void WebBrowser_OnNavigated(object sender, NavigationEventArgs e)
         {
+            if (webBrowser1.Visibility == Visibility.Collapsed)
+            {
+                LoadingImage.Visibility = Visibility.Collapsed;
+                webBrowser1.Visibility = Visibility.Visible;
+            }
             RHODESAPP().addToHistory(e.Uri);
         }
 
