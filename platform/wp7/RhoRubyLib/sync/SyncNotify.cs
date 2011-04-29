@@ -273,7 +273,7 @@ namespace rho.sync
         public void onSyncSourceEnd( int nSrc, Vector<SyncSource> sources )
         {
             SyncSource src = sources.elementAt(nSrc);
-
+/*
             if ( getSync().getState() == SyncEngine.esStop && src.m_nErrCode != RhoAppAdapter.ERR_NONE )
             {
         	    SyncNotification pSN = getSyncNotifyBySrc(src);
@@ -282,7 +282,7 @@ namespace rho.sync
         	    else
         		    fireAllSyncNotifications(true, src.m_nErrCode, src.m_strError, "" );
             }
-            else
+            else*/
                 fireSyncNotification( src, true, src.m_nErrCode, "");
 
             cleanCreateObjectErrors();

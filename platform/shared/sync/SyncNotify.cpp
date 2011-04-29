@@ -217,7 +217,7 @@ void CSyncNotify::onSyncSourceEnd( int nSrc, VectorPtr<CSyncSource*>& sources )
 {
     CSyncSource& src = *sources.elementAt(nSrc);
 
-    if ( getSync().getState() == CSyncEngine::esStop && src.m_nErrCode != RhoAppAdapter.ERR_NONE )
+/*    if ( getSync().getState() == CSyncEngine::esStop && src.m_nErrCode != RhoAppAdapter.ERR_NONE )
     {
 		CSyncNotification* pSN = getSyncNotifyBySrc(&src);
 		if ( pSN != null )
@@ -225,7 +225,7 @@ void CSyncNotify::onSyncSourceEnd( int nSrc, VectorPtr<CSyncSource*>& sources )
 		else
 			fireAllSyncNotifications(true, src.m_nErrCode, src.m_strError, "" );
     }
-    else
+    else*/
         fireSyncNotification(&src, true, src.m_nErrCode, "");
 
     cleanCreateObjectErrors();
