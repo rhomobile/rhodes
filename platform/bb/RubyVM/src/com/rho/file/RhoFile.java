@@ -97,4 +97,14 @@ public class RhoFile
 				try{ oFile.close();}catch(Exception e){}
 		}
 	}
+	
+	public static void deleteFile(String szFilePath)
+	{
+		try{
+			RhoClassFactory.createFile().delete(szFilePath);
+		}catch(Exception exc)
+		{
+			LOG.ERROR("deleteFile failed.", exc);			
+		}
+	}
 }
