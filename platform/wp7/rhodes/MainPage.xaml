@@ -26,6 +26,7 @@
             <TextBlock x:Name="PageTitle" Text="" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
         </StackPanel>
         <Image x:Name="LoadingImage" Source="/apps/app/loading.png"></Image>
+        <ProgressBar Height="40" Name="progressBar" Width="300" />
         <phone:WebBrowser Grid.Row="1" HorizontalAlignment="Left" Name="webBrowser1" VerticalAlignment="Top" Height="607" Width="480" />
         <phone:WebBrowser Grid.Row="1" HorizontalAlignment="Left" Name="webBrowser2" VerticalAlignment="Top" Height="607" Width="480" />
         <!--ContentPanel - place additional content here-->
