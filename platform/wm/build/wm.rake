@@ -138,8 +138,6 @@ namespace "build" do
       Rake::Task["build:bundle:noxruby"].execute
     end
 
-
-  
     task :devrhobundle => ["config:set_win32_platform", :rhobundle] do
         win32rhopath = 'platform/wm/bin/win32/rhodes/Debug/rho/'
         mkdir_p win32rhopath
@@ -161,6 +159,25 @@ namespace "build" do
         File.open(confpath, "w") { |f| f.write(confpath_content) }  if old_appname == $appname && confpath_content && confpath_content.length()>0
         
     end
+    
+    task :rhosimulator => ["config:set_win32_platform", "config:wm"] do
+        chdir $config["build"]["wmpath"]
+
+        args = ['/M4', 'rhodes.sln', '"EmulatorRelease|win32"']
+        puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
+        puts Jake.run($vcbuild,args)
+
+        chdir $startdir
+
+        unless $? == 0
+          puts "Error building"
+          exit 1
+        end
+        
+        cp File.join($startdir, $vcbindir, "win32/rhodes/EmulatorRelease/rhosimulator.exe"), 
+            File.join( $startdir, "platform/win32/RhoSimulator/")
+    end
+        
   end
 
   #desc "Build rhodes for win32"
@@ -337,9 +354,15 @@ namespace "run" do
 	namespace "win32" do
 		task :rhosimulator => "config:common" do
     
-		path = File.join( $config['env']['paths']['rhosimulator'], "rhosimulator.exe")
+        if $config['env']['paths']['rhosimulator']
+		    path = File.join( $config['env']['paths']['rhosimulator'], "rhosimulator.exe")
+		else
+		    path = File.join( $startdir, "platform/win32/RhoSimulator/rhosimulator.exe")
+		end
+		    
         if !File.exists?(path)
             puts "Cannot find RhoSimulator: '#{path}' does not exists"
+            puts "Install Rhodes gem OR"
             puts "Install RhoSimulator and modify 'rhosimulator' section in '<rhodes>/rhobuild.yml'"
             exit 1
         end
