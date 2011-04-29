@@ -908,7 +908,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    FilePath oFilePath = new FilePath(strDbPath);
 	    return oFilePath.changeBaseName(strNewName+strExt);
 	}
-	
+/*	
 	int getStartSource()
 	{
 	    for( int i = 0; i < m_sources.size(); i++ )
@@ -920,15 +920,15 @@ public class SyncEngine implements NetRequest.IRhoSession
 	
 	    return -1;
 	}
-
-	boolean syncOneSource(int i)throws Exception
+*/
+	void syncOneSource(int i)throws Exception
 	{
     	SyncSource src = null;
-    	boolean bError = false;
+    	//boolean bError = false;
     	try{
 		    src = (SyncSource)m_sources.elementAt(i);
 		    if ( src.getSyncType().compareTo("bulk_sync_only")==0 )
-		        return true;
+		        return;
 	
 		    if ( isSessionExist() && getState() != esStop )
 		        src.sync();
@@ -939,31 +939,32 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    	if ( src.m_nErrCode == RhoAppAdapter.ERR_NONE )
 	    		src.m_nErrCode = RhoAppAdapter.ERR_RUNTIME;
 	    	
-	    	setState(esStop);
-    		throw exc;
+	    	//setState(esStop);
+    		//throw exc;
+	    	LOG.ERROR("Sync of source '" + src.getName()+ "' failed.", exc);
     	}finally{
     		getNotify().onSyncSourceEnd( i, m_sources );
-    		bError = src.m_nErrCode != RhoAppAdapter.ERR_NONE;
+    		//bError = src.m_nErrCode != RhoAppAdapter.ERR_NONE;
     	}
     	
-	    return !bError;
+	    //return !bError;
 	}
 	
 	void syncAllSources()throws Exception
 	{
-	    boolean bError = false;
+//	    boolean bError = false;
 
-	    int nStartSrc = getStartSource();
-	    if ( nStartSrc >= 0 )
-	        bError = !syncOneSource(nStartSrc);
+//	    int nStartSrc = getStartSource();
+//	    if ( nStartSrc >= 0 )
+//	        bError = !syncOneSource(nStartSrc);
 
 	    //TODO: do not stop on error source
 	    for( int i = 0; i < (int)m_sources.size() && isContinueSync(); i++ )
 	    {
-	        bError = !syncOneSource(i);
+	        /*bError = !*/syncOneSource(i);
 	    }
 
-	    if ( !bError && !isSchemaChanged() )
+	    if ( !isSchemaChanged() )
 	    	getNotify().fireSyncNotification(null, true, RhoAppAdapter.ERR_NONE, RhoAppAdapter.getMessageText("sync_completed"));
 	}
 	

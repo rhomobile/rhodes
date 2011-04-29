@@ -180,10 +180,10 @@ namespace rho.sync
 	        //m_bIsSearch = false;
 	    
 	        try{
-	            if ( isTokenFromDB() && getToken() > 1 )
-	                syncServerChanges();  //sync only server changes, which was paused before
-	            else
-	            {
+	            //if ( isTokenFromDB() && getToken() > 1 )
+	            //    syncServerChanges();  //sync only server changes, which was paused before
+	            //else
+	            //{
 		            if ( isEmptyToken() )
 		                processToken(1);
                     syncClientChanges();
@@ -193,10 +193,10 @@ namespace rho.sync
 		            if ( !bSyncedServer )
 		        	    syncServerChanges();
                  */
-	            }
+	            //}
 	        }catch(Exception exc)
 	        {
-	    	    getSync().stopSync();
+	    	    //getSync().stopSync();
 	    	    throw exc;
 	        }finally{
 		       TimeInterval endTime = TimeInterval.getCurrentTime();
@@ -342,7 +342,7 @@ namespace rho.sync
 	        try{
 		        checkIgnorePushObjects();
 		    
-	            for( i = 0; i < 3 && getSync().isContinueSync(); i++ )
+	            for( i = 0; i < 3; i++ )
 	            {
 	                String strBody1;
 	                strBody1 = makePushBody_Ver3(arUpdateTypes[i], true);
@@ -373,7 +373,7 @@ namespace rho.sync
                 getDB().Unlock();
             }
 
-	        if ( bSend )
+            if (bSend && getSync().isContinueSync())
 	        {
 	            LOG.INFO( "Push client changes to server. Source: " + getName() + "Size :" + strBody.length() );
 	            LOG.TRACE("Push body: " + strBody);		
@@ -390,7 +390,7 @@ namespace rho.sync
 		                NetResponse resp = getNet().pushMultipartData( getProtocol().getClientChangesUrl(), m_arMultipartItems, getSync(), null );
 		                if ( !resp.isOK() )
 		                {
-		                    getSync().setState(SyncEngine.esStop);
+                            //getSync().stopSync();
 		                    m_nErrCode = RhoAppAdapter.ERR_REMOTESERVER;
 		                    m_strError = resp.getCharData();
 		                }
@@ -399,7 +399,7 @@ namespace rho.sync
 		                NetResponse resp = getNet().pushData( getProtocol().getClientChangesUrl(), strBody, getSync());
 		                if ( !resp.isOK() )
 		                {
-		                    getSync().setState(SyncEngine.esStop);
+                            //getSync().stopSync();
 		                    m_nErrCode = RhoAppAdapter.ERR_REMOTESERVER;
 		                    m_strError = resp.getCharData();
 		                }
@@ -412,7 +412,7 @@ namespace rho.sync
 		        
 	        }
 
-	        for( i = 0; i < 3 && getSync().isContinueSync(); i++ )
+            for (i = 0; i < 3 && m_nErrCode == RhoAppAdapter.ERR_NONE; i++)
 	        {
 	            if ( arUpdateSent[i] )
 	            {
@@ -552,8 +552,9 @@ namespace rho.sync
 	    void syncServerChanges()
 	    {
 		    LOG.INFO("Sync server changes source ID :" + getID() );
-		
-	        while( getSync().isContinueSync() )
+
+            while (getSync().isContinueSync() &&
+                    (m_nErrCode == RhoAppAdapter.ERR_NONE || m_nErrCode == RhoAppAdapter.ERR_CUSTOMSYNCSERVER))
 	        {
 	            setCurPageCount(0);
 	            String strUrl = getProtocol().getServerQueryUrl("");
@@ -572,7 +573,7 @@ namespace rho.sync
 	
 		            if ( !resp.isOK() )
 		            {
-		                getSync().stopSync();
+		                //getSync().stopSync();
 		                m_nErrCode = RhoAppAdapter.getErrorFromResponse(resp);
 		                m_strError = resp.getCharData();
 		                continue;
@@ -806,7 +807,7 @@ namespace rho.sync
 		                processServerCmd_Ver3_Schema(strCmd,strObject,attrIter);
 		            else
 		            {
-		                for( ; !attrIter.isEnd() && getSync().isContinueSync(); attrIter.next() )
+		                for( ; !attrIter.isEnd(); attrIter.next() )
 		                {
 		                    String strAttrib = attrIter.getCurKey();
 		                    String strValue = attrIter.getCurString();
@@ -873,11 +874,11 @@ namespace rho.sync
 	            Vector<Object> vecValues = new Vector<Object>();
                 Vector<String> vecAttrs = new Vector<String>();
 	            String strCols = "", strQuest = "", strSet = "";
-	            for( ; !attrIter.isEnd() && getSync().isContinueSync(); attrIter.next() )
+	            for( ; !attrIter.isEnd(); attrIter.next() )
 	            {
 	                CAttrValue oAttrValue = new CAttrValue(attrIter.getCurKey(),attrIter.getCurString());
 	                if ( !processBlob(strCmd,strObject,oAttrValue) )
-	                    continue;
+	                    break;
 	        	
 	                if ( strCols.length() > 0 )
 	                    strCols += ",";
@@ -949,7 +950,7 @@ namespace rho.sync
 	            String strSqlUpdate = "UPDATE ";
 	            strSqlUpdate += getName() + " SET " + strSet + " WHERE object=?";
 	        
-	            if ( strSet.length() == 0 || !getSync().isContinueSync() )
+	            if ( strSet.length() == 0 )
 	                return;
 	        
 	            getDB().executeSQL(strSqlUpdate, strObject);
@@ -1167,7 +1168,8 @@ namespace rho.sync
 			    NetResponse resp = getNet().pullFile(url, fName, getSync(), null);
 	            if ( !resp.isOK() )
 	            {
-	        	    getSync().stopSync();
+	        	    //getSync().stopSync();
+                    CRhoFile.deleteFile(fName);
 	        	    m_nErrCode = RhoAppAdapter.getErrorFromResponse(resp);
 	        	    return false;
 	            }

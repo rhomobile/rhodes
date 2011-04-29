@@ -116,10 +116,10 @@ void CSyncSource::sync()
     CTimeInterval startTime = CTimeInterval::getCurrentTime();
     //m_bIsSearch = false;
 
-    if ( isTokenFromDB() && getToken() > 1 )
-        syncServerChanges();  //sync only server changes, which was paused before
-    else
-    {
+//    if ( isTokenFromDB() && getToken() > 1 )
+//        syncServerChanges();  //sync only server changes, which was paused before
+//    else
+//    {
         if ( isEmptyToken() )
             processToken(1);
 
@@ -130,7 +130,7 @@ void CSyncSource::sync()
         if ( !bSyncedServer )
             syncServerChanges();
 */
-    }
+//    }
 
     CTimeInterval endTime = CTimeInterval::getCurrentTime();
 
@@ -273,7 +273,7 @@ void CSyncSource::doSyncClientChanges()
     getDB().Lock();
     checkIgnorePushObjects();
 
-    for( i = 0; i < 3 && getSync().isContinueSync(); i++ )
+    for( i = 0; i < 3; i++ )
     {
         String strBody1;
         makePushBody_Ver3(strBody1, arUpdateTypes[i], true);
@@ -301,7 +301,7 @@ void CSyncSource::doSyncClientChanges()
 
     getDB().Unlock();
 
-    if ( bSend )
+    if ( bSend && getSync().isContinueSync())
     {
         LOG(INFO) + "Push client changes to server. Source: " + getName() + "Size :" + strBody.length();
         LOG(TRACE) + "Push body: " + strBody;		
@@ -318,7 +318,7 @@ void CSyncSource::doSyncClientChanges()
             NetResponse resp = getNet().pushMultipartData( getProtocol().getClientChangesUrl(), m_arMultipartItems, &getSync(), null);
             if ( !resp.isOK() )
             {
-                getSync().setState(CSyncEngine::esStop);
+                //getSync().stopSync();
                 m_nErrCode = RhoAppAdapter.getErrorFromResponse(resp);
                 m_strError = resp.getCharData();
             }
@@ -327,14 +327,14 @@ void CSyncSource::doSyncClientChanges()
             NetResponse resp = getNet().pushData( getProtocol().getClientChangesUrl(), strBody, &getSync());
             if ( !resp.isOK() )
             {
-                getSync().setState(CSyncEngine::esStop);
+                //getSync().stopSync();
                 m_nErrCode = RhoAppAdapter.getErrorFromResponse(resp);
                 m_strError = resp.getCharData();
             }
         }
     }
 
-    for( i = 0; i < 3 && getSync().isContinueSync(); i++ )
+    for( i = 0; i < 3 && m_nErrCode == RhoAppAdapter.ERR_NONE; i++ )
     {
         if ( arUpdateSent[i] )
         {
@@ -489,7 +489,8 @@ void CSyncSource::syncServerChanges()
 {
     LOG(INFO) + "Sync server changes source ID :" + getID();
 
-    while( getSync().isContinueSync() )
+    while( getSync().isContinueSync() && 
+           ( m_nErrCode == RhoAppAdapter.ERR_NONE || m_nErrCode == RhoAppAdapter.ERR_CUSTOMSYNCSERVER) )
     {
         setCurPageCount(0);
         String strUrl = getProtocol().getServerQueryUrl("");
@@ -505,7 +506,7 @@ void CSyncSource::syncServerChanges()
 
         if ( !resp.isOK() )
         {
-            getSync().stopSync();
+            //getSync().stopSync();
 		    m_nErrCode = RhoAppAdapter.getErrorFromResponse(resp);
             m_strError = resp.getCharData();
             continue;
@@ -738,7 +739,7 @@ void CSyncSource::processSyncCommand(const String& strCmd, CJSONEntry oCmdEntry,
             processServerCmd_Ver3_Schema(strCmd,strObject,attrIter);
         else
         {
-            for( ; !attrIter.isEnd() && getSync().isContinueSync(); attrIter.next() )
+            for( ; !attrIter.isEnd(); attrIter.next() )
             {
                 String strAttrib = attrIter.getCurKey();
                 String strValue = attrIter.getCurString();
@@ -800,11 +801,11 @@ void CSyncSource::processServerCmd_Ver3_Schema(const String& strCmd, const Strin
     {
         Vector<String> vecValues, vecAttrs;
         String strCols = "", strQuest = "", strSet = "";
-        for( ; !attrIter.isEnd() && getSync().isContinueSync(); attrIter.next() )
+        for( ; !attrIter.isEnd(); attrIter.next() )
         {
             CAttrValue oAttrValue(attrIter.getCurKey(),attrIter.getCurString());
             if ( !processBlob(strCmd,strObject,oAttrValue) )
-                continue;
+                break;
 
             if ( strCols.length() > 0 )
                 strCols += ",";
@@ -876,7 +877,7 @@ void CSyncSource::processServerCmd_Ver3_Schema(const String& strCmd, const Strin
         String strSqlUpdate = "UPDATE ";
         strSqlUpdate += getName() + " SET " + strSet + " WHERE object=?";
 
-        if ( strSet.length() == 0 || !getSync().isContinueSync() )
+        if ( strSet.length() == 0 )
             return;
 
         getDB().executeSQL(strSqlUpdate.c_str(), strObject);
@@ -1095,7 +1096,8 @@ boolean CSyncSource::downloadBlob(CAttrValue& value)//throws Exception
     NetResponse resp = getNet().pullFile(url, fName, &getSync(), null);
     if ( !resp.isOK() )
     {
-        getSync().stopSync();
+        CRhoFile::deleteFile(fName.c_str());
+        //getSync().stopSync();
 		m_nErrCode = RhoAppAdapter.getErrorFromResponse(resp);
         //m_strError = resp.getCharData();
         return false;
