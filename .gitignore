@@ -35,6 +35,7 @@ platform/wm/target/*
 platform/wm/build/cleanup.js
 platform/iphone/*/rholog.txt
 platform/win32/**/*.pch
+platform/win32/RhoSimulator
 platform/wm/**/*.pch
 platform/wp7/bin/*
 platform/wp7/IronRuby/bin/*
