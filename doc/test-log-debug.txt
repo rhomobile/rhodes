@@ -130,9 +130,10 @@ Include the extensions net-http and debugger in your build.yml.
 	- net-http
 	- debugger
 
-Modify your rhoconfig.txt add a line at the bottom debug_host. This should be set to an ip address of the machine that the debugger app is running on that is reachable by the phone or emulator.
+Modify your rhoconfig.txt add two lines at the bottom: debug_host and debug_port. This should be set to an ip address and port of the machine that the debugger app is running on that is reachable by the phone or emulator.
 
 	debug_host = '192.168.1.106'
+	debug_port = 9000
 
 Modify your application.rb. At the top of the application.rb file in your app, after the first require add the line:
 
