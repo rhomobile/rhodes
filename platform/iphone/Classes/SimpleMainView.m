@@ -476,11 +476,11 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		}
 		break;
 	}
-	if ((current_orientation == UIInterfaceOrientationLandscapeLeft) || (current_orientation == UIInterfaceOrientationLandscapeRight)) {
-		int t = width;
-		width = height;
-		height = t;
-	}
+	//if ((current_orientation == UIInterfaceOrientationLandscapeLeft) || (current_orientation == UIInterfaceOrientationLandscapeRight)) {
+	//	int t = width;
+	//	width = height;
+	//	height = t;
+	//}
 	//rho_rhodesapp_callScreenRotationCallback((int)wFrame.size.width, (int)wFrame.size.height, angle);
 	rho_rhodesapp_callScreenRotationCallback(width, height, angle);
 }
