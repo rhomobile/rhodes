@@ -396,6 +396,7 @@ namespace "config" do
       end
     end
 
+    $emuversion = get_market_version($found_api_level) if $emuversion.nil?
     requested_api_level = get_api_level($emuversion)
 
     if USE_TRACES
@@ -557,7 +558,6 @@ namespace "config" do
       end
     end
 
-    $emuversion = get_market_version($found_api_level) if $emuversion.nil?
     $emuversion = $emuversion.to_s
     $avdname = "rhoAndroid" + $emuversion.gsub(/[^0-9]/, "")
     $avdname += "ext" if $use_google_addon_api

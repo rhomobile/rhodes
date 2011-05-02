@@ -481,8 +481,8 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_nativeInitPath
     g_apk_path = rho_cast<std::string>(env, apk_path);
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_createRhodesApp
-  (JNIEnv *env, jobject)
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesApplication_createRhodesApp
+  (JNIEnv *env, jclass)
 {
     jclass clsRE = getJNIClass(RHODES_JAVA_CLASS_RUNTIME_EXCEPTION);
     if (!clsRE)
@@ -538,14 +538,14 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_createRhodesApp
     rho_rhodesapp_create(szRootPath);
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_startRhodesApp
-  (JNIEnv *env, jobject obj)
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesApplication_startRhodesApp
+  (JNIEnv *, jclass)
 {
     rho_rhodesapp_start();
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_stopRhodesApp
-  (JNIEnv *, jobject)
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesApplication_stopRhodesApp
+  (JNIEnv *, jclass)
 {
     rho_rhodesapp_destroy();
 }
@@ -637,7 +637,7 @@ RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isOnStartPag
 }
 
 
-RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isEnableTitle
+RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isTitleEnabled
   (JNIEnv *, jclass)
 {
     bool value = true;
@@ -648,7 +648,7 @@ RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isEnableTitl
     return (jboolean)value;
 }
 
-RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_canStartApp
+RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesApplication_canStartApp
   (JNIEnv *, jclass, jstring cmdLine, jstring sep)
 {
     std::string const &strCmdLine = rho_cast<std::string>(cmdLine);
