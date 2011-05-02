@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 #undef com_rhomobile_rhodes_RhodesService_DEBUG
-#define com_rhomobile_rhodes_RhodesService_DEBUG 0L
+#define com_rhomobile_rhodes_RhodesService_DEBUG 1L
 #undef com_rhomobile_rhodes_RhodesService_DOWNLOAD_PACKAGE_ID
 #define com_rhomobile_rhodes_RhodesService_DOWNLOAD_PACKAGE_ID 1L
 /*
@@ -18,22 +18,6 @@ extern "C" {
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_initClassLoader
   (JNIEnv *, jobject, jobject);
-
-/*
- * Class:     com_rhomobile_rhodes_RhodesService
- * Method:    createRhodesApp
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_createRhodesApp
-  (JNIEnv *, jobject);
-
-/*
- * Class:     com_rhomobile_rhodes_RhodesService
- * Method:    startRhodesApp
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_startRhodesApp
-  (JNIEnv *, jobject);
 
 /*
  * Class:     com_rhomobile_rhodes_RhodesService
@@ -141,11 +125,11 @@ JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isOnStartPage
 
 /*
  * Class:     com_rhomobile_rhodes_RhodesService
- * Method:    canStartApp
- * Signature: (Ljava/lang/String;Ljava/lang/String;)Z
+ * Method:    isEnableTitle
+ * Signature: ()Z
  */
-JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_canStartApp
-  (JNIEnv *, jclass, jstring, jstring);
+JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isTitleEnabled
+  (JNIEnv *, jclass);
 
 /*
  * Class:     com_rhomobile_rhodes_RhodesService
