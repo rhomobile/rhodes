@@ -77,7 +77,7 @@ public class RhodesActivity extends BaseActivity {
 		//ct.setPriority(Thread.MAX_PRIORITY);
 		uiThreadId = ct.getId();
 
-		if (!RhodesService.isEnableTitle()) {
+		if (!RhodesService.isTitleEnabled()) {
 			requestWindowFeature(Window.FEATURE_NO_TITLE);
 		}
 		else {
@@ -141,24 +141,31 @@ public class RhodesActivity extends BaseActivity {
 		super.onStart();
 		//sInstance = this;
 	}
-	
-	@Override
+
+    @Override
+    public void onPause() 
+    {
+        super.onPause();
+        Log.i(TAG, ">>>>>>>>>>>>>>> onPause()");
+
+        RhodesService r = RhodesService.getInstance();
+        if (r != null)
+            r.callUiDestroyedCallback();
+    }
+
+    @Override
 	public void onStop() 
 	{
 		super.onStop();
-
-		RhodesService r = RhodesService.getInstance();
-		if (r != null)
-			r.callUiDestroyedCallback();
+        Log.i(TAG, ">>>>>>>>>>>>>>> onStop()");
 	}
 	
 	@Override
 	public void onDestroy() {
-		//RhodesService r = RhodesService.getInstance();
-		//if (r != null)
-		//	r.callUiDestroyedCallback();
-		
-		sInstance = null;
+        Log.i(TAG, ">>>>>>>>>>>>>>> onDestroy()");
+        
+        //TODO: Check is it really correct in case activity killed immediately after onPause()
+        sInstance = null;
 		super.onDestroy();
 	}
 	
@@ -357,10 +364,10 @@ public class RhodesActivity extends BaseActivity {
                 startParams = startParams.substring(2);
         }
 
-        if(!RhodesService.canStartApp(startParams, "&#"))
+        if(!RhodesApplication.canStart(startParams))
         {
             Logger.E(TAG, "This is hidden app and can be started only with security key.");
-            getRhodesApplication().exit();
+            RhodesService.exit();
             return;
         }
 
