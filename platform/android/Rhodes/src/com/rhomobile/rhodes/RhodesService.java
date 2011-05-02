@@ -70,7 +70,7 @@ public class RhodesService extends Service {
 	
 	private static final String TAG = RhodesService.class.getSimpleName();
 	
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	
 	public static final String INTENT_EXTRA_PREFIX = "com.rhomobile.rhodes.";
 	
@@ -128,8 +128,61 @@ public class RhodesService extends Service {
 	
 	private boolean mNeedGeoLocationRestart = false;
 	
-	static PowerManager.WakeLock wakeLockObject = null;
-	static boolean wakeLockEnabled = false;
+	class PowerWakeLock {
+	    private PowerManager.WakeLock wakeLockObject = null;
+	    private boolean wakeLockEnabled = false;
+
+        synchronized boolean isHeld() {
+            return (wakeLockObject != null) && wakeLockObject.isHeld(); 
+        }
+        synchronized boolean acquire(boolean enable) {
+            if (enable) {
+                Logger.I(TAG, "Enable WakeLock");
+                wakeLockEnabled = true;
+            }
+            if (wakeLockEnabled) {
+                if (wakeLockObject == null) {
+                    PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
+                    if (pm != null) {
+                        Logger.I(TAG, "Acquire WakeLock");
+                        wakeLockObject = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, TAG);
+                        wakeLockObject.setReferenceCounted(false);
+                        wakeLockObject.acquire();
+                    }
+                    else {
+                        Logger.E(TAG, "Can not get PowerManager to acquire WakeLock!!!");
+                    }
+                    return false;
+                }
+                //return wakeLockObject.isHeld();
+                return true;
+            }
+            return false;
+        }
+        synchronized boolean release()
+        {
+            if (wakeLockObject != null) {
+                Logger.I(TAG, "Release WakeLock");
+                wakeLockObject.release();
+                wakeLockObject = null;
+                return true;
+            }
+            return false;
+	    }
+	    
+	    synchronized boolean reset() {
+            if (wakeLockObject != null) {
+                Logger.I(TAG, "Reset WakeLock");
+                wakeLockObject.release();
+                wakeLockObject = null;
+                wakeLockEnabled = false;
+                return true;
+            }
+            return false;
+	    }
+	}
+	
+	private PowerWakeLock wakeLock = new PowerWakeLock();
 	
 	private Vector<UriHandler> mUriHandlers = new Vector<UriHandler>();
 	
@@ -151,9 +204,6 @@ public class RhodesService extends Service {
 	}
 	
 	private native void initClassLoader(ClassLoader c);
-	
-	private native void createRhodesApp();
-	private native void startRhodesApp();
 	
 	public native void doSyncAllSources(boolean v);
 	public native void doSyncSource(String source);
@@ -179,15 +229,14 @@ public class RhodesService extends Service {
 	
 	public static native boolean isOnStartPage();
 	
-	public static native boolean canStartApp(String strCmdLine, String strSeparators);
-	
 	public static RhodesService getInstance() {
 		return sInstance;
 	}
 	
-	public static native boolean isEnableTitle();
+	public static native boolean isTitleEnabled();
 	
 	
+    // TODO: Move these methods to RhodesApplication class
 	private void initRootPath() {
 		ApplicationInfo appInfo = getAppInfo();
 		String dataDir = appInfo.dataDir;
@@ -216,6 +265,7 @@ public class RhodesService extends Service {
 		return mRootPath;
 	}
 	
+    // TODO: Move these methods to RhodesApplication class
 	private ApplicationInfo getAppInfo() {
 		Context context = this;
 		String pkgName = context.getPackageName();
@@ -288,7 +338,7 @@ public class RhodesService extends Service {
 			}
 		}
 		
-		createRhodesApp();
+		RhodesApplication.create();
 		
 		RhodesActivity ra = RhodesActivity.getInstance();
 		if (ra != null) {
@@ -335,35 +385,10 @@ public class RhodesService extends Service {
 		mUriHandlers.addElement(new SmsUriHandler(context));
 		mUriHandlers.addElement(new VideoUriHandler(context));
 		
-		getRhodesApplication().addOnExitHandler(new Runnable() {
-			public void run() {
-				PerformOnUiThread.exec( new Runnable() {
-					public void run() {
-						if (wakeLockObject != null) {
-							wakeLockObject.release();
-							wakeLockObject = null;
-							wakeLockEnabled = false;
-						}
-					}
-				}, false);
-			}
-		});
-		
 		try {
 			if (Capabilities.PUSH_ENABLED) {
-				if (getPushRegistrationId().length() == 0) {
+				if (getPushRegistrationId().length() == 0)
 					PushService.register();
-				
-//					getRhodesApplication().addOnExitHandler(new Runnable() {
-//						public void run() {
-//							try {
-//								PushService.unregister();
-//							} catch (IllegalAccessException e) {
-//								Log.e(TAG, e.getMessage());
-//							}
-//						}
-//					});
-				}
 			}
 		} catch (IllegalAccessException e) {
 			Log.e(TAG, e.getMessage());
@@ -371,7 +396,7 @@ public class RhodesService extends Service {
 			return;
 		}
 		
-		startRhodesApp();
+		RhodesApplication.start();
 		
 		if (sActivitiesActive > 0)
 			handleAppActivation();
@@ -409,10 +434,11 @@ public class RhodesService extends Service {
 	
 	@Override
 	public void onDestroy() {
-		if (DEBUG)
+	
+		if(DEBUG)
 			Log.d(TAG, "+++ onDestroy");
 		sInstance = null;
-		getRhodesApplication().exit();
+		RhodesApplication.stop();
 	}
 	
 	@Override
@@ -538,12 +564,24 @@ public class RhodesService extends Service {
 		return ra.getMainView();
 	}
 
-	public RhodesApplication getRhodesApplication() {
-		return (RhodesApplication)getApplication();
-	}
-	
 	public static void exit() {
-		getInstance().getRhodesApplication().exit();
+        try {
+            RhodesActivity activity = RhodesActivity.getInstance();
+            if (activity != null)
+                activity.finish();
+            
+            RhodesService service = RhodesService.getInstance();
+            if (service != null)
+            {
+                service.wakeLock.reset();
+                service.stopSelf();
+            }
+            
+            RhodesApplication.stop();
+        }
+        catch (Exception e) {
+            Logger.E(TAG, e.getMessage());
+        }
 	}
 	
 	public void rereadScreenProperties() {
@@ -1179,78 +1217,37 @@ public class RhodesService extends Service {
 	}
 	
 	private void restoreWakeLockIfNeeded() {
-		PerformOnUiThread.exec( new Runnable() {
-			public void run() {
-				if (wakeLockEnabled) {
-					if (wakeLockObject == null) {
-						PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
-						if (pm != null) {
-							Logger.I(TAG, "activityStarted() restore wakeLock object");
-							wakeLockObject = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, TAG);
-							wakeLockObject.acquire();
-						}
-						else {
-							Logger.E(TAG, "activityStarted() - Can not get PowerManager !!!");
-						}
-					}
-				}
-			}
-		}, false);
+		 wakeLock.acquire(false);
 	}
 	
 	private void stopWakeLock() {
-		PerformOnUiThread.exec( new Runnable() {
-			public void run() {
-				if (wakeLockObject != null) {
-					Logger.I(TAG, "activityStopped() temporary destroy wakeLock object");
-					wakeLockObject.release();
-					wakeLockObject = null;
-				}
-			}
-		}, false);
+		Logger.I(TAG, "activityStopped() temporary release wakeLock object");
+		wakeLock.release();
 	}
 	
 	public static int rho_sys_set_sleeping(int enable) {
 		Logger.I(TAG, "rho_sys_set_sleeping("+enable+")");
-		int wasEnabled = 1;
-		if (wakeLockObject != null) {
-			wasEnabled = 0;
-		}
-		if (enable != 0) {
-			// disable lock device
-			PerformOnUiThread.exec( new Runnable() {
-				public void run() {
-					if (wakeLockObject != null) {
-						wakeLockObject.release();
-						wakeLockObject = null;
-						wakeLockEnabled = false;
-					}
-				}
-			}, false);
-		}
-		else {
-			// lock device from sleep
-			PerformOnUiThread.exec( new Runnable() {
-				public void run() {
-					if (wakeLockObject == null) {
-						getInstance();
-						PowerManager pm = (PowerManager)RhodesService.getContext().getSystemService(Context.POWER_SERVICE);
-						if (pm != null) {
-							wakeLockObject = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, TAG);
-							wakeLockObject.acquire();
-							wakeLockEnabled = true;
-						}
-						else {
-							Logger.E(TAG, "rho_sys_set_sleeping() - Can not get PowerManager !!!");
-						}
-					}
-				}
-			}, false);
+		RhodesService rs = RhodesService.getInstance();
+        int wasEnabled = rs.wakeLock.isHeld() ? 1 : 0;
+		if(rs != null)
+		{
+		
+	        if (enable != 0) {
+	            // disable lock device
+				wasEnabled = rs.wakeLock.reset() ? 1 : 0;
+			}
+	        else {
+	            // lock device from sleep
+			    PerformOnUiThread.exec(new Runnable() {
+			        public void run() {
+			            RhodesService rs = RhodesService.getInstance();
+			            if(rs != null) rs.wakeLock.acquire(true);
+			            else Logger.E(TAG, "rho_sys_set_sleeping() - No RhodesService has initialized !!!"); }
+			    }, false);
+			}
 		}
 		return wasEnabled;
 	}
-	
-	
 	
 	private void handleAppActivation() {
 		if (DEBUG)

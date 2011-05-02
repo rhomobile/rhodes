@@ -110,7 +110,7 @@ public class SimpleMainView implements MainView {
 	private class ActionExit implements View.OnClickListener {
 		public void onClick(View v) {
 			restoreWebView();
-			RhodesService.getInstance().getRhodesApplication().exit();
+			RhodesService.exit();
 		}
 	};
 

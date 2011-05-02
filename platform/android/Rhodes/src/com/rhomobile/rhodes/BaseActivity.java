@@ -3,6 +3,7 @@ package com.rhomobile.rhodes;
 import android.app.Activity;
 import android.app.Application;
 import android.content.ComponentName;
+//import android.content.Context;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -96,12 +97,12 @@ public class BaseActivity extends Activity implements ServiceConnection {
 		}
 	}
 	
-	public RhodesApplication getRhodesApplication() {
-		Application app = super.getApplication();
-		if (DEBUG)
-			Log.d(TAG, "getApplication: " + app);
-		return (RhodesApplication)app;
-	}
+//	public NativeApplication getRhodesApplication() {
+//		Application app = super.getApplication();
+//		if (DEBUG)
+//			Log.d(TAG, "getApplication: " + app);
+//		return (NativeApplication)app;
+//	}
 
 	@Override
 	public void onServiceConnected(ComponentName name, IBinder service) {
