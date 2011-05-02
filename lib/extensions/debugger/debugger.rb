@@ -36,10 +36,10 @@ def debug_handle_cmd()
       wait = false
     elsif cmd =~/^BP/
       ary = cmd.split(":")
-      $_file = ary[1].gsub(/\|/,':')
-      $_line = ary[2].chomp
+      bp = ary[1].gsub(/\|/,':') + ':' + ary[2].chomp
+      $_breakpoint.store(bp,1)
       wait = true
-      puts "Breakpoint received: #{$_file}:#{$_line}"
+      puts "Breakpoint received: #{bp}"
     elsif cmd =~ /^STEP/
       $_step = true
       wait = false
@@ -60,10 +60,12 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
   $_binding = bind;
   if event =~ /line/
 
-    if ($_file or $_step)
-      if ((file =~ Regexp.new(Regexp.escape($_file) + '$') and line.to_i == $_line.to_i) or $_step)
-        filename = file.gsub(/:/, '|')
-        $_s.write("BP:#{filename}:#{line}\n")
+    if (!($_breakpoint.empty?))
+      filename = file.sub(/^(.*?[\\\/]|)app[\\\/](.*)$/,'\\2')
+      ln = line.to_i.to_s
+      if (($_breakpoint.has_key?(filename + ':' + ln)) or $_step)
+        fn = filename.gsub(/:/, '|')
+        $_s.write("BP:#{fn}:#{ln}\n")
 
         wait = true
         while wait
@@ -90,8 +92,7 @@ begin
   puts "connected: " + $_s.to_s
   $_s.write("CONNECT\n")
 
-  $_file = nil
-  $_line = nil
+  $_breakpoint = Hash.new
   $_step = false
   $_cmd = ""
 
