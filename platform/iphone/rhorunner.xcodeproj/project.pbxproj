@@ -72,7 +72,10 @@
 		F5FD0944106151C200B7B8ED /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0943106151C200B7B8ED /* MapViewController.m */; };
 		FA291E9811FF2EF70096AC39 /* SignatureDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA291E9511FF2EF70096AC39 /* SignatureDelegate.m */; };
 		FA291E9911FF2EF70096AC39 /* SignatureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA291E9711FF2EF70096AC39 /* SignatureViewController.m */; };
+		FA3C79AE136ED523002302E5 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA3C79AD136ED523002302E5 /* CoreVideo.framework */; };
+		FA3C79E2136ED8BB002302E5 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA3C79E1136ED8BB002302E5 /* CoreMedia.framework */; };
 		FA4981B511FFC53C00488CB2 /* SignatureView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA4981B411FFC53C00488CB2 /* SignatureView.m */; };
+		FA4D3F8D136B0A98009D6E63 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4D3F8C136B0A98009D6E63 /* libiconv.dylib */; };
 		FA522E7F12DEA7B300AB55CC /* NVDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA522E7B12DEA7B300AB55CC /* NVDelegate.m */; };
 		FA522E8012DEA7B300AB55CC /* NVViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA522E7D12DEA7B300AB55CC /* NVViewController.m */; };
 		FA522E8112DEA7B300AB55CC /* RhoNativeViewManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA522E7E12DEA7B300AB55CC /* RhoNativeViewManager.mm */; };
@@ -265,8 +268,11 @@
 		FA291E9511FF2EF70096AC39 /* SignatureDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignatureDelegate.m; path = Signature/SignatureDelegate.m; sourceTree = "<group>"; };
 		FA291E9611FF2EF70096AC39 /* SignatureViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignatureViewController.h; path = Signature/SignatureViewController.h; sourceTree = "<group>"; };
 		FA291E9711FF2EF70096AC39 /* SignatureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignatureViewController.m; path = Signature/SignatureViewController.m; sourceTree = "<group>"; };
+		FA3C79AD136ED523002302E5 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS4.3.sdk/System/Library/Frameworks/CoreVideo.framework; sourceTree = DEVELOPER_DIR; };
+		FA3C79E1136ED8BB002302E5 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS4.3.sdk/System/Library/Frameworks/CoreMedia.framework; sourceTree = DEVELOPER_DIR; };
 		FA4981B311FFC53C00488CB2 /* SignatureView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignatureView.h; path = Signature/SignatureView.h; sourceTree = "<group>"; };
 		FA4981B411FFC53C00488CB2 /* SignatureView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignatureView.m; path = Signature/SignatureView.m; sourceTree = "<group>"; };
+		FA4D3F8C136B0A98009D6E63 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS4.3.sdk/usr/lib/libiconv.dylib; sourceTree = DEVELOPER_DIR; };
 		FA522E7A12DEA7B300AB55CC /* NVDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NVDelegate.h; path = NativeView/NVDelegate.h; sourceTree = "<group>"; };
 		FA522E7B12DEA7B300AB55CC /* NVDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NVDelegate.m; path = NativeView/NVDelegate.m; sourceTree = "<group>"; };
 		FA522E7D12DEA7B300AB55CC /* NVViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NVViewController.m; path = NativeView/NVViewController.m; sourceTree = "<group>"; };
@@ -299,6 +305,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA3C79E2136ED8BB002302E5 /* CoreMedia.framework in Frameworks */,
+				FA3C79AE136ED523002302E5 /* CoreVideo.framework in Frameworks */,
+				FA4D3F8D136B0A98009D6E63 /* libiconv.dylib in Frameworks */,
 				BDB15ED510B2EC8700003DFA /* librhorubylib.a in Frameworks */,
 				BDB15ED410B2EC7500003DFA /* librholib.a in Frameworks */,
 				BDB15ED310B2EC6D00003DFA /* libcurl.a in Frameworks */,
@@ -376,6 +385,9 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				FA3C79E1136ED8BB002302E5 /* CoreMedia.framework */,
+				FA3C79AD136ED523002302E5 /* CoreVideo.framework */,
+				FA4D3F8C136B0A98009D6E63 /* libiconv.dylib */,
 				FA52317212E750F300AB55CC /* Resources */,
 				BDFBD99910B1B9A900BAAFAB /* Settings.bundle */,
 				BDFBD99510B1B99A00BAAFAB /* Entitlements.plist */,
