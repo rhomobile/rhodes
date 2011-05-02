@@ -1,60 +1,52 @@
 package com.rhomobile.rhodes;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Application;
+import android.os.Handler;
 import android.os.Process;
 
-public class RhodesApplication extends Application {
+public class RhodesApplication extends Application{
 	
-	private List<Runnable> mOnExit = new ArrayList<Runnable>();
-	
+//    private static final String TAG = NativeApplication.class.getSimpleName();
+    private static Handler mHandler;
 	static {
 		NativeLibraries.load();
 	}
+
+    private native static void createRhodesApp();
+    private native static void startRhodesApp();
+    private native static void stopRhodesApp();
+    private native static boolean canStartApp(String strCmdLine, String strSeparators);
 	
-	static native void setStartParameters(String uri);
-	
-	@Override
-	public void onCreate() {
-		super.onCreate();
+    public static void create()
+    {
+        createRhodesApp();
+    }
+
+    public static void start()
+	{
+	    startRhodesApp();
+	}
+
+	public static boolean canStart(String strCmdLine)
+	{
+	    return canStartApp(strCmdLine, "&#");
 	}
 	
-	public void addOnExitHandler(Runnable action) {
-		synchronized (this) {
-			mOnExit.add(action);
-		}
-	}
-	
-	public boolean removeOnExitHandler(Runnable action) {
-		synchronized (this) {
-			return mOnExit.remove(action);
-		}
-	}
-	
-	public void exit() {
-		List<Runnable> onExit = new ArrayList<Runnable>();
-		synchronized (this) {
-			onExit.addAll(mOnExit);
-		}
-		
-		for (Runnable action : onExit) {
-			action.run();
-		}
-		
-		try {
-			RhodesService r = RhodesService.getInstance();
-			if (r != null)
-				r.stopSelf();
-		}
-		catch (Exception e) {}
-		
-		RhodesActivity ra = RhodesActivity.getInstance();
-		if (ra != null)
-			ra.finish();
-		
-		Process.killProcess(Process.myPid());
-	}
-	
+    public static void stop() {
+        
+        mHandler = new Handler();
+        mHandler.postDelayed(new Runnable() {
+            public void run() {
+                stopRhodesApp();
+                Process.sendSignal(Process.myPid(), Process.SIGNAL_QUIT);
+                mHandler.postDelayed(new Runnable() {
+                    public void run() {
+                        Process.killProcess(Process.myPid());
+                    }
+                }, 500);
+            }
+        }, 500);
+    }
+
+
 }
