@@ -6,7 +6,7 @@
 #include "SyncClient/SyncClient.h"
 #include "sync/SyncThread.h"
 #include "common/RhoConf.h"
-#include "common/RhoError.h"
+#include "SyncClient/RhoError.h"
 #include "common/RhoTime.h"
 
 #include "gtest/gtest.h"
@@ -236,4 +236,9 @@ TEST(SyncClient, shouldDeleteAllTestProduct)
 
     rho_syncclient_hash_delete(cond);
     rho_syncclient_strhasharray_delete(items);
+}
+
+extern "C" void rho_free_callbackdata(void* pData)
+{
+	//It is used in SyncClient.
 }
