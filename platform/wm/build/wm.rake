@@ -177,7 +177,7 @@ namespace "build" do
         cp File.join($startdir, $vcbindir, "win32/rhodes/EmulatorRelease/rhosimulator.exe"), 
             File.join( $startdir, "platform/win32/RhoSimulator/")
     end
-        
+
   end
 
   #desc "Build rhodes for win32"
@@ -354,26 +354,39 @@ namespace "run" do
 	namespace "win32" do
 		task :rhosimulator => "config:common" do
     
-        if $config['env']['paths']['rhosimulator']
-		    path = File.join( $config['env']['paths']['rhosimulator'], "rhosimulator.exe")
-		else
-		    path = File.join( $startdir, "platform/win32/RhoSimulator/rhosimulator.exe")
-		end
-		    
-        if !File.exists?(path)
-            puts "Cannot find RhoSimulator: '#{path}' does not exists"
-            puts "Install Rhodes gem OR"
-            puts "Install RhoSimulator and modify 'rhosimulator' section in '<rhodes>/rhobuild.yml'"
-            exit 1
-        end
-        
-		args = []
-		args << "-approot='#{$app_path}'"
-		args << "-rhodespath='#{$startdir}'"
-    
-		Jake.run2 path, args, {:nowait => true}
+            if $config['env']['paths']['rhosimulator']
+		        path = File.join( $config['env']['paths']['rhosimulator'], "rhosimulator.exe")
+		    else
+		        path = File.join( $startdir, "platform/win32/RhoSimulator/rhosimulator.exe")
+		    end
+    		    
+            if !File.exists?(path)
+                puts "Cannot find RhoSimulator: '#{path}' does not exists"
+                puts "Install Rhodes gem OR"
+                puts "Install RhoSimulator and modify 'rhosimulator' section in '<rhodes>/rhobuild.yml'"
+                exit 1
+            end
+            
+		    args = []
+		    args << "-approot='#{$app_path}'"
+		    args << "-rhodespath='#{$startdir}'"
+		    if $debug_port
+                args << "-debug_port=#{$debug_port}"
+                args << "-debug_host='127.0.0.0'"
+            end
+                
+		    Jake.run2 path, args, {:nowait => true}
                 
 		end
+		
+        task :rhosimulator_debug, :debug_port do |t, args|
+        
+            puts "Args were: #{args}"
+            $debug_port = args[:debug_port].to_i
+            Rake::Task["run:win32:rhosimulator"].invoke
+                    
+        end
+		
 	end
 
   namespace "win32" do
