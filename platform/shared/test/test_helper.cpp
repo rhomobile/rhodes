@@ -1,5 +1,6 @@
 #include "common/RhoPort.h"
 #include "common/RhoStd.h"
+#include "common/RhodesApp.h"
 #ifdef OS_WINDOWS
 #include <atlstr.h>
 #endif
@@ -27,6 +28,12 @@ extern "C" const char* rho_native_rhopath()
 
     return m_strRootPath.c_str();
 }
+
+rho::StringW rho::common::CRhodesApp::getAppNameW()
+{
+    return L"Rhodes";
+}
+
 #endif
 
 int rho_testvprintf(const char * fmt, va_list args)

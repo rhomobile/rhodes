@@ -2503,11 +2503,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\RhoCryptImpl.cpp"
+					RelativePath=".\rho\common\RhoCryptImpl.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\RhoCryptImpl.h"
+					RelativePath=".\rho\common\RhoCryptImpl.h"
 					>
 				</File>
 				<File
