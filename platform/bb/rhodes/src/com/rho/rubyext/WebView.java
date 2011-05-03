@@ -119,9 +119,16 @@ public class WebView
 		klass.getSingletonClass().defineMethod("set_cookie", new RubyTwoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyValue arg2, RubyBlock block) {
 				try {
-					String url = arg1.toString();
-					String cookie = arg2.toString();
-					RhodesApplication.getInstance().setCookie(RhodesApp.getInstance().canonicalizeRhoUrl(url), cookie);
+					final String url = arg1.toString();
+					final String cookie = arg2.toString();
+					
+					RhodesApplication.getInstance().invokeLater( new Runnable() { 
+			            public void run() 
+			            {
+							RhodesApplication.getInstance().setCookie(RhodesApp.getInstance().canonicalizeRhoUrl(url), cookie);
+			            }
+			        } );
+					
 					return RubyConstant.QNIL;
 				}
 				catch (Exception e) {
