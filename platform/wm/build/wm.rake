@@ -371,8 +371,8 @@ namespace "run" do
 		    args << "-approot='#{$app_path}'"
 		    args << "-rhodespath='#{$startdir}'"
 		    if $debug_port
-                args << "-debug_port=#{$debug_port}"
-                args << "-debug_host='127.0.0.0'"
+                args << "-debugport=#{$debug_port}"
+                args << "-debughost='127.0.0.1'"
             end
                 
 		    Jake.run2 path, args, {:nowait => true}
