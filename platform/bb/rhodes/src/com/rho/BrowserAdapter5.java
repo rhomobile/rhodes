@@ -145,7 +145,7 @@ public class BrowserAdapter5 implements IBrowserAdapter
 
     public void executeJavascript(String strJavascript)
     {
-        //synchronized (Application.getEventLock()) 
+        synchronized (Application.getEventLock()) 
         {
         	BrowserField field = (BrowserField)m_oMainScreen.getField(0);
         	field.executeScript("javascript:" + strJavascript);
@@ -154,7 +154,7 @@ public class BrowserAdapter5 implements IBrowserAdapter
     
     public void setCookie(String url, String cookie)
     {
-        //synchronized (Application.getEventLock()) 
+        synchronized (Application.getEventLock()) 
         {
         	BrowserFieldCookieManager man = (BrowserFieldCookieManager)m_oConfig.getProperty(BrowserFieldConfig.COOKIE_MANAGER);
         	if ( man != null )
