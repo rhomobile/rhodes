@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../../shared;../../../../shared/test/gtest/include;../../../../shared/test/gtest"
+				AdditionalIncludeDirectories="../../../../../platform/shared;../../../../../platform/shared/test/gtest/include;../../../../../platform/shared/test/gtest"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wininet.lib ws2_32.lib"
+				AdditionalDependencies="wininet.lib ws2_32.lib Crypt32.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -117,9 +117,9 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../../../../shared;../../../../shared/test/gtest/include;../../../../shared/test/gtest"
+				AdditionalIncludeDirectories="../../../../../platform/shared;../../../../../platform/shared/test/gtest/include;../../../../../platform/shared/test/gtest"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
@@ -136,6 +136,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="wininet.lib ws2_32.lib Crypt32.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -175,47 +176,47 @@
 		<Filter
 			Name="test"
 			>
-			<File
-				RelativePath="..\..\Test\SyncClientTest.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\shared\test\test_helper.cpp"
-				>
-			</File>
 			<Filter
 				Name="gtest"
 				>
 				<File
-					RelativePath="..\..\..\..\shared\test\gtest\src\gtest-death-test.cc"
+					RelativePath="..\..\..\..\..\platform\shared\test\gtest\src\gtest-death-test.cc"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\shared\test\gtest\src\gtest-filepath.cc"
+					RelativePath="..\..\..\..\..\platform\shared\test\gtest\src\gtest-filepath.cc"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\shared\test\gtest\src\gtest-internal-inl.h"
+					RelativePath="..\..\..\..\..\platform\shared\test\gtest\src\gtest-internal-inl.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\shared\test\gtest\src\gtest-port.cc"
+					RelativePath="..\..\..\..\..\platform\shared\test\gtest\src\gtest-port.cc"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\shared\test\gtest\src\gtest-test-part.cc"
+					RelativePath="..\..\..\..\..\platform\shared\test\gtest\src\gtest-test-part.cc"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\shared\test\gtest\src\gtest-typed-test.cc"
+					RelativePath="..\..\..\..\..\platform\shared\test\gtest\src\gtest-typed-test.cc"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\shared\test\gtest\src\gtest.cc"
+					RelativePath="..\..\..\..\..\platform\shared\test\gtest\src\gtest.cc"
 					>
 				</File>
 			</Filter>
 		</Filter>
+		<File
+			RelativePath="..\..\SyncClientTest.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\..\platform\shared\test\test_helper.cpp"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
