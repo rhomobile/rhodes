@@ -55,10 +55,16 @@ def debug_handle_cmd()
     elsif cmd =~ /^DISABLE/
       $_breakpoints_enabled = false
       puts "[Debugger] Breakpoints disabled"
-    elsif cmd =~ /^STEP/
+    elsif cmd =~ /^STEPINTO/
       $_step = true
+      $_step_level = -1
       wait = false
-      puts "[Debugger] Step"
+      puts "[Debugger] Step into"
+    elsif cmd =~ /^STEPOVER/
+      $_step = true
+      $_step_level = $_call_stack
+      wait = false
+      puts "[Debugger] Step over"
     elsif cmd =~ /^CONT/
       wait = false
       $_step = false
@@ -75,26 +81,41 @@ end
 $_tracefunc = lambda{|event, file, line, id, bind, classname|
   $_self = self;
   $_binding = bind;
-  if event =~ /line/
+  if event =~ /^line/
 
-    if ($_step or ($_breakpoints_enabled and (not $_breakpoint.empty?)))
+    unhandled = true
+    step_stop = $_step and (($_step_level < 0) or ($_call_stack <= $_step_level))
+    if (step_stop or ($_breakpoints_enabled and (not $_breakpoint.empty?)))
       filename = file.sub(/^(.*?[\\\/]|)app[\\\/](.*)$/,'\\2')
       ln = line.to_i.to_s
-      if ($_step or ($_breakpoints_enabled and ($_breakpoint.has_key?(filename + ':' + ln))))
+      if (step_stop or ($_breakpoints_enabled and ($_breakpoint.has_key?(filename + ':' + ln))))
         fn = filename.gsub(/:/, '|')
-        $_s.write(($_step ? "STEP" : "BP") + ":#{fn}:#{ln}\n")
-        puts "[Debugger] " + ($_step ? "Stop" : "Breakpoint") + " in #{fn} at #{ln}"
+        $_s.write((step_stop ? "STEP" : "BP") + ":#{fn}:#{ln}\n")
+        puts "[Debugger] " + (step_stop ? "Stop" : "Breakpoint") + " in #{fn} at #{ln}"
+
+        local = eval("local_variables", bind)
+        local.each do |l|
+          $_s.write("AW:#{l}:#{eval(l,bind).inspect}\n")
+        end
 
         wait = true
         while wait
           debug_read_cmd($_s,wait)
           wait = debug_handle_cmd()
         end
+        unhandled = false
       end
     end
 
-    debug_read_cmd($_s,false)
-    debug_handle_cmd()
+    if unhandled
+      debug_read_cmd($_s,false)
+      debug_handle_cmd()
+    end
+
+  elsif event =~ /^call/
+    ++$_call_stack
+  elsif event =~ /^return/
+    --$_call_stack
   end
 }
 
@@ -113,6 +134,8 @@ begin
   $_breakpoint = Hash.new
   $_breakpoints_enabled = true
   $_step = false
+  $_step_level = -1
+  $_call_stack = 0
   $_cmd = ""
 
   set_trace_func $_tracefunc
