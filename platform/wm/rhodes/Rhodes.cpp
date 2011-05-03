@@ -96,6 +96,24 @@ public :
 					m_strRhodesPath = path;
 					free(path);
 				}
+			} else if (wcsncmp(lpszToken, _T("debughost"),9)==0) 
+            {
+				String token = convertToStringA(lpszToken);
+				//parseToken will allocate extra byte at the end of the returned token value
+                char* host = parseToken( token.c_str(), token.length() );
+				if (host) {
+					m_strDebugHost = host;
+					free(host);
+				}
+			} else if (wcsncmp(lpszToken, _T("debugport"),9)==0) 
+            {
+				String token = convertToStringA(lpszToken);
+				//parseToken will allocate extra byte at the end of the returned token value
+                char* port = parseToken( token.c_str(), token.length() );
+				if (port) {
+					m_strDebugPort = port;
+					free(port);
+				}
 			}
 #endif
 			lpszToken = FindOneOf(lpszToken, szTokens);
@@ -157,6 +175,10 @@ public :
 				parseHttpProxyURI(RHOCONF().getString("http_proxy_url"));
 			}
 		}
+        if (m_strDebugHost.length() > 0)
+		    RHOCONF().setString("debug_host", m_strDebugHost, false);
+        if (m_strDebugPort.length() > 0)
+            RHOCONF().setString("debug_port", m_strDebugPort, false);
 #endif
         //::SetThreadPriority(GetCurrentThread(),10);
 
@@ -439,7 +461,7 @@ public :
 
 private:
     CMainWindow m_appWindow;
-    rho::String m_strRootPath, m_strRhodesPath;
+    rho::String m_strRootPath, m_strRhodesPath, m_strDebugHost, m_strDebugPort;
 	int m_nRestarting;
 
 #ifdef OS_WINDOWS
