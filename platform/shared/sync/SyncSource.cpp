@@ -1103,7 +1103,7 @@ boolean CSyncSource::downloadBlob(CAttrValue& value)//throws Exception
         return false;
     }
 
-    value.m_strValue = CFilePath::getRelativePath( fName, RHODESAPPBASE().getRhoRootPath());
+    value.m_strValue = RHODESAPPBASE().getRelativeDBFilesPath( fName );
     
     return true;
 }
