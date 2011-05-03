@@ -3,7 +3,9 @@ require 'timeout'
 def debug_read_cmd(io,wait)
   begin
     if wait
-      $_cmd << io.readpartial(4096)
+      if ($_cmd !~/[\n\r]/)
+        $_cmd << io.readpartial(4096)
+      end
     else
       $_cmd << io.read_nonblock(4096)
     end
@@ -13,7 +15,7 @@ def debug_read_cmd(io,wait)
 end
 
 def execute_cmd(cmd) 
-  puts "executing: #{cmd}"
+  puts "[Debugger] Executing: #{cmd}"
   result = ""
   begin
     result = eval(cmd, $_binding).inspect
@@ -26,30 +28,45 @@ def execute_cmd(cmd)
 end
 
 def debug_handle_cmd()
-  cmd = $_cmd.match(/^([^\n\r])*([\n\r]+|$)/)[0]
-  $_cmd = $_cmd.sub(/^([^\n\r])*([\n\r]+|$)(.*$)/, "\\3")
+  cmd = $_cmd.match(/^([^\n\r]*)([\n\r]+|$)/)[0]
+  $_cmd = $_cmd.sub(/^([^\n\r]*)([\n\r]+|$)(.*$)/, "\\3")
+  wait = true
   if cmd != ""
-    puts "Received command: #{cmd}"
-    wait = true
+    puts "[Debugger] Received command: #{cmd}"
     if cmd =~/^CONNECTED/
-      puts "Connected to debugger"
+      puts "[Debugger] Connected to debugger"
       wait = false
-    elsif cmd =~/^BP/
+    elsif cmd =~/^(BP|RM):/
       ary = cmd.split(":")
       bp = ary[1].gsub(/\|/,':') + ':' + ary[2].chomp
-      $_breakpoint.store(bp,1)
-      wait = true
-      puts "Breakpoint received: #{bp}"
+      if (cmd =~/^RM:/)
+        $_breakpoint.delete(bp)
+        puts "[Debugger] Breakpoint removed: #{bp}"
+      else
+        $_breakpoint.store(bp,1)
+        puts "[Debugger] Breakpoint added: #{bp}"
+      end
+    elsif cmd =~ /^RMALL/
+      $_breakpoint.clear
+      puts "[Debugger] All breakpoints removed"
+    elsif cmd =~ /^ENABLE/
+      $_breakpoints_enabled = true
+      puts "[Debugger] Breakpoints enabled"
+    elsif cmd =~ /^DISABLE/
+      $_breakpoints_enabled = false
+      puts "[Debugger] Breakpoints disabled"
     elsif cmd =~ /^STEP/
       $_step = true
       wait = false
-      puts "Received STEP"
+      puts "[Debugger] Step"
     elsif cmd =~ /^CONT/
       wait = false
       $_step = false
+      puts "[Debugger] Resuming"
     elsif cmd =~ /^EV:/
-      cmd = cmd.gsub(/^EV:/,"")
-      execute_cmd cmd
+      execute_cmd cmd.sub(/^EV:/,"")
+    else
+      puts "[Debugger] Unknown command"
     end
   end
   wait
@@ -60,12 +77,13 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
   $_binding = bind;
   if event =~ /line/
 
-    if (!($_breakpoint.empty?))
+    if ($_step or ($_breakpoints_enabled and (not $_breakpoint.empty?)))
       filename = file.sub(/^(.*?[\\\/]|)app[\\\/](.*)$/,'\\2')
       ln = line.to_i.to_s
-      if (($_breakpoint.has_key?(filename + ':' + ln)) or $_step)
+      if ($_step or ($_breakpoints_enabled and ($_breakpoint.has_key?(filename + ':' + ln))))
         fn = filename.gsub(/:/, '|')
-        $_s.write("BP:#{fn}:#{ln}\n")
+        $_s.write(($_step ? "STEP" : "BP") + ":#{fn}:#{ln}\n")
+        puts "[Debugger] " + ($_step ? "Stop" : "Breakpoint") + " in #{fn} at #{ln}"
 
         wait = true
         while wait
@@ -84,20 +102,25 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
 $_s = nil
 
 begin
-  puts "opening connection"
+  puts "[Debugger] Opening connection"
   debug_host = (Rho::RhoConfig.debug_host.nil? or Rho::RhoConfig.debug_host == "") ? '127.0.0.1' : Rho::RhoConfig.debug_host
   debug_port = (Rho::RhoConfig.debug_port.nil? or Rho::RhoConfig.debug_port == "") ? 9000 : Rho::RhoConfig.debug_port
   $_s = timeout(30) { TCPSocket.open(debug_host, debug_port) }
 
-  puts "connected: " + $_s.to_s
+  puts "[Debugger] Connected: " + $_s.to_s
   $_s.write("CONNECT\n")
 
   $_breakpoint = Hash.new
+  $_breakpoints_enabled = true
   $_step = false
   $_cmd = ""
 
   set_trace_func $_tracefunc
 rescue
-  puts "Unable to open connection to debugger:" + $!.inspect
+  puts "[Debugger] Unable to open connection to debugger: " + $!.inspect
   $_s = nil
 end
+
+END {
+  $_s.write("QUIT\n") if (not $_s.nil?)
+}
