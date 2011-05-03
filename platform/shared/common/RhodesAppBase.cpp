@@ -49,12 +49,32 @@ void CRhodesAppBase::initAppUrls()
 #endif
 }
 
-String CRhodesAppBase::resolveDBFilesPath(const String& strFilePath)
+String CRhodesAppBase::getRelativeDBFilesPath(const String& strFilePath)
 {
-    if ( String_startsWith(strFilePath, getRhoRootPath()) )
+#ifndef RHODES_EMULATOR
+    String strDbFileRoot = getRhoRootPath();
+#else
+    String strDbFileRoot = getRhoRootPath() + RHO_EMULATOR_DIR;
+#endif
+
+    if ( !String_startsWith(strFilePath, strDbFileRoot) )
         return strFilePath;
 
-    return CFilePath::join(getRhoRootPath(), strFilePath);
+    return strFilePath.substr(strDbFileRoot.length());
+}
+
+String CRhodesAppBase::resolveDBFilesPath(const String& strFilePath)
+{
+#ifndef RHODES_EMULATOR
+    String strDbFileRoot = getRhoRootPath();
+#else
+    String strDbFileRoot = getRhoRootPath() + RHO_EMULATOR_DIR;
+#endif
+
+    if ( String_startsWith(strFilePath, strDbFileRoot) )
+        return strFilePath;
+
+    return CFilePath::join(strDbFileRoot, strFilePath);
 }
 
 String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl) 
