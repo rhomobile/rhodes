@@ -55,16 +55,16 @@ def debug_handle_cmd()
     elsif cmd =~ /^DISABLE/
       $_breakpoints_enabled = false
       puts "[Debugger] Breakpoints disabled"
-    elsif cmd =~ /^STEPINTO/
-      $_step = true
-      $_step_level = -1
-      wait = false
-      puts "[Debugger] Step into"
     elsif cmd =~ /^STEPOVER/
       $_step = true
       $_step_level = $_call_stack
       wait = false
       puts "[Debugger] Step over"
+    elsif cmd =~ /^STEP/
+      $_step = true
+      $_step_level = -1
+      wait = false
+      puts "[Debugger] Step into"
     elsif cmd =~ /^CONT/
       wait = false
       $_step = false
