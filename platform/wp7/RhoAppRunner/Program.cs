@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
+using System.Threading;
+using System.Reflection;
 using Microsoft.SmartDevice.Connectivity;
 
 namespace RhoAppRunner
@@ -15,6 +18,10 @@ namespace RhoAppRunner
 
             bool useEmulator = true;
             Device WP7Device = null;
+
+            if (args[4] == "dev")
+                useEmulator = false;
+
             if (useEmulator)
                 WP7Device = WP7SDK.GetDevices().Single(d => d.Name == "Windows Phone 7 Emulator");
             else
@@ -31,6 +38,7 @@ namespace RhoAppRunner
                 Console.WriteLine("Uninstalling sample XAP to Windows Phone 7 Emulator/Device...");
 
                 app = WP7Device.GetApplication(appID);
+
                 app.Uninstall();
 
                 Console.WriteLine("Sample XAP Uninstalled from Windows Phone 7 Emulator/Device...");
