@@ -96,6 +96,11 @@ def debug_handle_cmd()
       $_step_level = $_call_stack
       wait = false
       puts "[Debugger] Step over"
+    elsif cmd =~ /^STEPRET/
+      $_step = true
+      $_step_level = $_call_stack-1
+      wait = false
+      puts "[Debugger] Step return"
     elsif cmd =~ /^STEP/
       $_step = true
       $_step_level = -1
@@ -139,7 +144,8 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
       ln = line.to_i.to_s
       if (step_stop or ($_breakpoints_enabled and ($_breakpoint.has_key?(filename + ':' + ln))))
         fn = filename.gsub(/:/, '|')
-        $_s.write((step_stop ? "STEP" : "BP") + ":#{fn}:#{ln}:#{classname}:#{id}\n")
+        cl = classname.to_s.gsub(/:/,'#')
+        $_s.write((step_stop ? "STEP" : "BP") + ":#{fn}:#{ln}:#{cl}:#{id}\n")
         puts "[Debugger] " + (step_stop ? "Stop" : "Breakpoint") + " in #{fn} at #{ln}"
 
         wait = true
