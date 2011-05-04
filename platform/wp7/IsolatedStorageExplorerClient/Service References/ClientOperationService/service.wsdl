@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="ClientOperationService" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsp:Policy wsu:Id="NetNamedPipeBinding_IClientOperationService_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <msb:BinaryEncoding xmlns:msb="http://schemas.microsoft.com/ws/06/2004/mspolicy/netbinary1">
+        </msb:BinaryEncoding>
+        <wsaw:UsingAddressing>
+        </wsaw:UsingAddressing>
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://tempuri.org/Imports">
+      <xsd:import namespace="http://tempuri.org/" />
+      <xsd:import namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import namespace="http://schemas.datacontract.org/2004/07/ExplorerService.Common.DataContracts.Operations" />
+      <xsd:import namespace="http://schemas.datacontract.org/2004/07/ExplorerService.Common.DataContracts.Operations.Requests" />
+      <xsd:import namespace="http://schemas.datacontract.org/2004/07/ExplorerService.Common.DataContracts.Operations.OperationProgress" />
+      <xsd:import namespace="http://schemas.datacontract.org/2004/07/ExplorerService.Common.DataContracts" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IClientOperationService_StartOperationSession_InputMessage">
+    <wsdl:part name="parameters" element="tns:StartOperationSession" />
+  </wsdl:message>
+  <wsdl:message name="IClientOperationService_StartOperationSession_OutputMessage">
+    <wsdl:part name="parameters" element="tns:StartOperationSessionResponse" />
+  </wsdl:message>
+  <wsdl:message name="IClientOperationService_CancelOperation_InputMessage">
+    <wsdl:part name="parameters" element="tns:CancelOperation" />
+  </wsdl:message>
+  <wsdl:message name="IClientOperationService_CancelOperation_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CancelOperationResponse" />
+  </wsdl:message>
+  <wsdl:message name="IClientOperationService_PostOperation_InputMessage">
+    <wsdl:part name="parameters" element="tns:PostOperation" />
+  </wsdl:message>
+  <wsdl:message name="IClientOperationService_PostOperation_OutputMessage">
+    <wsdl:part name="parameters" element="tns:PostOperationResponse" />
+  </wsdl:message>
+  <wsdl:message name="IClientOperationService_EndOperationSession_InputMessage">
+    <wsdl:part name="parameters" element="tns:EndOperationSession" />
+  </wsdl:message>
+  <wsdl:message name="IClientOperationService_EndOperationSession_OutputMessage">
+    <wsdl:part name="parameters" element="tns:EndOperationSessionResponse" />
+  </wsdl:message>
+  <wsdl:message name="IClientOperationService_OperationProgress_OutputCallbackMessage">
+    <wsdl:part name="parameters" element="tns:OperationProgress" />
+  </wsdl:message>
+  <wsdl:portType msc:usingSession="true" name="IClientOperationService">
+    <wsdl:operation msc:isInitiating="true" msc:isTerminating="false" name="StartOperationSession">
+      <wsdl:input wsaw:Action="http://tempuri.org/IClientOperationService/StartOperationSession" message="tns:IClientOperationService_StartOperationSession_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IClientOperationService/StartOperationSessionResponse" message="tns:IClientOperationService_StartOperationSession_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation msc:isInitiating="true" msc:isTerminating="true" name="CancelOperation">
+      <wsdl:input wsaw:Action="http://tempuri.org/IClientOperationService/CancelOperation" message="tns:IClientOperationService_CancelOperation_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IClientOperationService/CancelOperationResponse" message="tns:IClientOperationService_CancelOperation_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation msc:isInitiating="false" msc:isTerminating="false" name="PostOperation">
+      <wsdl:input wsaw:Action="http://tempuri.org/IClientOperationService/PostOperation" message="tns:IClientOperationService_PostOperation_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IClientOperationService/PostOperationResponse" message="tns:IClientOperationService_PostOperation_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation msc:isInitiating="false" msc:isTerminating="true" name="EndOperationSession">
+      <wsdl:input wsaw:Action="http://tempuri.org/IClientOperationService/EndOperationSession" message="tns:IClientOperationService_EndOperationSession_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IClientOperationService/EndOperationSessionResponse" message="tns:IClientOperationService_EndOperationSession_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation msc:isInitiating="true" msc:isTerminating="false" name="OperationProgress">
+      <wsdl:output wsaw:Action="http://tempuri.org/IClientOperationService/OperationProgress" message="tns:IClientOperationService_OperationProgress_OutputCallbackMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="NetNamedPipeBinding_IClientOperationService" type="tns:IClientOperationService">
+    <wsp:PolicyReference URI="#NetNamedPipeBinding_IClientOperationService_policy">
+    </wsp:PolicyReference>
+    <soap12:binding transport="http://schemas.microsoft.com/soap/named-pipe" />
+    <wsdl:operation name="StartOperationSession">
+      <soap12:operation soapAction="http://tempuri.org/IClientOperationService/StartOperationSession" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CancelOperation">
+      <soap12:operation soapAction="http://tempuri.org/IClientOperationService/CancelOperation" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PostOperation">
+      <soap12:operation soapAction="http://tempuri.org/IClientOperationService/PostOperation" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="EndOperationSession">
+      <soap12:operation soapAction="http://tempuri.org/IClientOperationService/EndOperationSession" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="OperationProgress">
+      <soap12:operation soapAction="http://tempuri.org/IClientOperationService/OperationProgress" style="document" />
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ClientOperationService">
+    <wsdl:port name="NetNamedPipeBinding_IClientOperationService" binding="tns:NetNamedPipeBinding_IClientOperationService">
+      <soap12:address location="net.pipe://localhost/ExplorerService/ClientOperationService/ClientOperationService" />
+      <wsa10:EndpointReference>
+        <wsa10:Address>net.pipe://localhost/ExplorerService/ClientOperationService/ClientOperationService</wsa10:Address>
+      </wsa10:EndpointReference>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
