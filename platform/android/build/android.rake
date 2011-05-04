@@ -563,8 +563,8 @@ namespace "config" do
     $avdname += "ext" if $use_google_addon_api
     $avdtarget = $androidtargets[get_api_level($emuversion)]
 
-    $appavdname = $app_config["android"]["emulator"] if $app_config["android"] != nil
-    $appavdname = $config["android"]["emulator"] if $appavdname.nil? and !$config["android"].nil?
+    $appavdname = $app_config["android"]["emulator"] if $app_config["android"] != nil && $app_config["android"].length > 0
+    $appavdname = $config["android"]["emulator"] if $appavdname.nil? and !$config["android"].nil? and $config["android"].length > 0
 
     setup_ndk($androidndkpath, ANDROID_API_LEVEL)
     
@@ -1506,7 +1506,7 @@ def run_application (target_flag)
   args << "android.intent.action.MAIN"
   args << "-n"
   args << $app_package_name + "/#{JAVA_PACKAGE_NAME}.RhodesActivity"
-  Thread.new { Jake.run($adb, args) }
+  Jake.run($adb, args)
 end
 
 def application_running(flag, pkgname)
@@ -1628,6 +1628,48 @@ namespace "run" do
     task :emulator => "device:android:debug" do
         run_emulator
         load_app_and_run
+    end
+
+    task :get_info => "config:android" do
+        $androidtargets.each do |level|
+            puts "#{get_market_version(level[0])}"
+        end
+
+        emu_version = $emuversion
+        
+        puts ""        
+        cur_name = ""
+        
+        `"#{$androidbin}" list avd`.split(/\n/).each do |line|
+            line.each_line do |item|
+                ar = item.split(':')
+                ar[0].strip!
+                if ar[0] == "Name"
+                    cur_name = ar[1].strip!
+                    puts "#{cur_name}"
+                end
+                
+                if $appavdname && cur_name == $appavdname && (ar[0] == "Target" || ar.length == 1)
+                    
+                    text = ar[0] == "Target" ? ar[1] : ar[0]
+                    
+                    nAnd = text.index("Android")
+                    if nAnd
+                        nAnd = text.index(" ", nAnd)
+                        nAnd1 = text.index("-", nAnd+1)                    
+                        nAnd1 = text.index(" ", nAnd+1) unless nAnd1
+                        emu_version = text[nAnd+1, nAnd1-nAnd-1]
+                    end    
+                end
+                
+            end    
+        end
+
+        puts ""
+
+        puts "#{emu_version}"
+        puts "#{$appavdname}"
+
     end
 
     def  kill_adb
