@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="IsolatedStorageExplorerClient.UI.Controls.OperationsPanel.UploadFileOperation"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" mc:Ignorable="d"
+             Background="#FF293955">
+    <StackPanel>
+        <StackPanel Background="#FF293955">
+            <Label x:Name="messageLabel"
+                   Content="Creating new folder..."
+                   HorizontalAlignment="Center"
+                   Foreground="White" />
+            <ProgressBar x:Name="progressBar"
+                         Margin="25,15,25,15"
+                         Height="15"
+                         IsIndeterminate="True"
+                         MaxWidth="450" />
+        </StackPanel>
+        <Button x:Name="CancelButton" Content="Cancel" Margin="5" Width="75" HorizontalAlignment="Center" IsEnabled="False"
+                Click="CancelButtonClick" />
+    </StackPanel>
+
+</UserControl>

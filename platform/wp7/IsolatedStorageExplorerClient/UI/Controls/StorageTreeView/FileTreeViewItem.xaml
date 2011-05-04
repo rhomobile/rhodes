@@ -1,0 +1,28 @@
+﻿<TreeViewItem x:Class="IsolatedStorageExplorerClient.UI.Controls.StorageTreeView.FileTreeViewItem"
+              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              mc:Ignorable="d">
+    <TreeViewItem.ContextMenu>
+        <ContextMenu>
+            <MenuItem x:Name="downloadFileMenuItem"
+                      Header="Download File"
+                      Click="DownloadFileMenuItemClick">
+                <MenuItem.Icon>
+                    <Image Source="/IsolatedStorageExplorerClient;component/UI/Resources/Images/downloadFile.png"
+                           Height="18" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator />
+            <MenuItem x:Name="deleteMenuItem"
+                      Header="Delete"
+                      Click="DeleteMenuItemClick">
+                <MenuItem.Icon>
+                    <Image Source="/IsolatedStorageExplorerClient;component/UI/Resources/Images/delete.png"
+                           Height="18" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </ContextMenu>
+    </TreeViewItem.ContextMenu>
+</TreeViewItem>
