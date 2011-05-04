@@ -7,6 +7,7 @@ namespace "config" do
 		$rubypath = "res/build-tools/RhoRuby.exe"
 		$zippath = "res/build-tools/7za.exe"
 		$wp7runner = "res/build-tools/RhoAppRunner.exe"
+		$wp7explorer = "res/build-tools/wp7explorer.exe"
 		$genpath = "ClassInitGenerator.exe"
 		$builddir = $config["build"]["wppath"] + "/build"
 		$vcbindir = $config["build"]["wppath"] + "/bin"
@@ -186,6 +187,18 @@ end
 		end
 	end
 end
+
+def get_app_log()
+	args = []
+	args << $app_config["wp"]["productid"]
+	args << ""
+	args << ""
+	args << ""
+	args << "RhoLog.txt"
+	cc_run($wp7runner, args) or return false
+	puts "RhoLog.txt stored to " + $app_path
+	return true
+end
  
  namespace "device" do
 	namespace "wp" do
@@ -241,6 +254,10 @@ end
 			mkdir_p $targetdir if not File.exists? $targetdir
 			mv out_dir + $appname + ".xap", $targetdir
 		end
+
+		task :getlog => "config:wp" do
+			#get_app_log() or exit 1
+		end
 	end
 end
 
@@ -265,10 +282,35 @@ namespace "run" do
 			args << $app_config["name"]
 			args << $app_path + "/icon/icon.png"
 			args << $targetdir + "/" + $appname + ".xap"
+			args << "emu"
 			puts Jake.run($wp7runner, args)
 		else
 			puts "productid must be set in build.yml"
 			puts "productid's format is xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 		end
+		end
+
+		namespace "wp" do
+			desc "Start Isolated Storage Explorer"
+			task :explorer  => ["config:wp"] do
+				args = []
+				puts Jake.run($wp7explorer, args)
+			end
+
+			desc "Build, install .xap and run on WP7 device"
+			task :device => ["clean:wm:all", "device:wp:production"] do
+			if $app_config["wp"]["productid"] != nil
+				args = []
+				args << $app_config["wp"]["productid"]
+				args << $app_config["name"]
+				args << $app_path + "/icon/icon.png"
+				args << $targetdir + "/" + $appname + ".xap"
+				args << "dev"
+				puts Jake.run($wp7runner, args)
+			else
+				puts "productid must be set in build.yml"
+				puts "productid's format is xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+			end
+			end
 		end
 end
