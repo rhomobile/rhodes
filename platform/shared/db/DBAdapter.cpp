@@ -430,9 +430,11 @@ static boolean destroyTableName(String tableName, const rho::Vector<rho::String>
 boolean CDBAdapter::isTableExist(String strTableName)
 {
     Vector<String> vecTables;
-
+    Lock();
     IDBResult res = executeSQL( "SELECT name FROM sqlite_master WHERE type='table' AND name=?", strTableName.c_str() );
-    return !res.isEnd();
+    boolean bRes = !res.isEnd();
+    Unlock();
+    return bRes;
 }
 
 void CDBAdapter::destroy_tables(const rho::Vector<rho::String>& arIncludeTables, const rho::Vector<rho::String>& arExcludeTables)
