@@ -1506,7 +1506,7 @@ def run_application (target_flag)
   args << "android.intent.action.MAIN"
   args << "-n"
   args << $app_package_name + "/#{JAVA_PACKAGE_NAME}.RhodesActivity"
-  Jake.run($adb, args)
+  Thread.new { Jake.run($adb, args) }
 end
 
 def application_running(flag, pkgname)
