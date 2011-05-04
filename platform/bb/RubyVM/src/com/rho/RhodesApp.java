@@ -116,10 +116,11 @@ public class RhodesApp
     
     boolean isExternalUrl(String strUrl)
     {
-    	return strUrl.startsWith("http://") || strUrl.startsWith("https://") ||
-    		strUrl.startsWith("javascript:") || strUrl.startsWith("mailto:")
-    		 || strUrl.startsWith("tel:")|| strUrl.startsWith("wtai:") ||
-    		 strUrl.startsWith("sms:");    
+    	return strUrl.indexOf(':') != -1;
+    	//strUrl.startsWith("http://") || strUrl.startsWith("https://") ||
+    	//	strUrl.startsWith("javascript:") || strUrl.startsWith("mailto:")
+    	//	 || strUrl.startsWith("tel:")|| strUrl.startsWith("wtai:") ||
+    	//	 strUrl.startsWith("sms:");    
     }
     
     public String canonicalizeRhoUrl(String url) 
