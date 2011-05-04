@@ -144,6 +144,12 @@ Next, change the include statement in `product.rb` to `include Rhom::FixedSchema
 	  property :price, :string
 	  property :quantity, :string
 	  property :sku, :string
+	  
+	  property :int_prop, :integer
+	  property :float_prop, :float
+	  property :date_prop, :date #translate to integer type
+	  property :time_prop, :time #translate to integer type
+	  
 	end
 
 That's it!  Now your model is a fixed schema model, the table will be generated automatically for you when the application launches.
