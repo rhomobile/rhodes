@@ -218,6 +218,11 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
         return (CRhodesApp*)m_pInstance;
 
     m_pInstance = new CRhodesApp(strRootPath);
+
+    String push_pin = RHOCONF().getString("push_pin");
+    if(!push_pin.empty())
+        rho::sync::CClientRegister::Create(push_pin.c_str());
+
     return (CRhodesApp*)m_pInstance;
 }
 
