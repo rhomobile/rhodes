@@ -40,6 +40,7 @@ import net.rim.device.api.ui.Manager;
 import net.rim.device.api.math.Fixed32;
 //import net.rim.device.api.system.EventInjector.KeyCodeEvent;
 import net.rim.blackberry.api.invoke.MessageArguments;
+import net.rim.blackberry.api.invoke.PhoneArguments;
 import net.rim.blackberry.api.mail.Address;
 import net.rim.blackberry.api.mail.Message.RecipientType;
 
@@ -281,8 +282,22 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     	return str;
     }
     
+    private boolean isHistoryIgnore(String strUrl)
+    {
+    	if ( strUrl == null || strUrl.length() == 0 )
+    		return true;
+    	
+    	if (strUrl.indexOf(':') == -1 )
+    		return false;
+    	
+    	return !(strUrl.startsWith("http:")||strUrl.startsWith("https:"));
+    }
+    
     public void addToHistory(String strUrl, String refferer )
     {
+    	if ( isHistoryIgnore(strUrl) )
+    		return;
+    	
     	strUrl = removeSemicolon(strUrl);
     	refferer = removeSemicolon(refferer);
     	
@@ -1649,7 +1664,7 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
         		}
         	}
 
-        	if ( uri.getScheme().equalsIgnoreCase("rhomailto"))
+        	if ( uri.getScheme().equalsIgnoreCase("rhomailto") || uri.getScheme().equalsIgnoreCase("mailto"))
         	{
         		runMailApplication(uri);
         		return;
@@ -1659,6 +1674,11 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
         		
         		MessageArguments args = new MessageArguments( msg );
         		Invoke.invokeApplication(Invoke.APP_TYPE_MESSAGES, args);
+        		return;
+        	}else if ( uri.getScheme().equalsIgnoreCase("tel"))
+        	{
+        		Invoke.invokeApplication(Invoke.APP_TYPE_PHONE, new PhoneArguments( PhoneArguments.ARG_CALL,
+        				uri.getPath() ));
         		return;
         	}
 
