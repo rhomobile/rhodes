@@ -44,6 +44,7 @@ platform/wp7/WPApplication/obj/*
 platform/wp7/WPApplication/Bin/*
 platform/wp7/*.sdf
 platform/wp7/rhodes/obj/*
+platform/wp7/**/obj/*
 rhosync-client/ObjectiveC/Tests/SyncClientTest/build/*
 rhosync-client/ObjectiveC/Tests/build/*
 rhosync-client/ObjectiveC/build/*
