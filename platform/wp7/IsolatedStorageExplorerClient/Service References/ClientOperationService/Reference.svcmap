@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="76134fe6-1a07-4763-8cb4-d411c617f183" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings>
+      <CollectionMapping TypeName="System.Collections.Generic.List`1" Category="List" />
+    </CollectionMappings>
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="net.pipe://localhost/ExplorerService/ClientOperationService/mex" Protocol="mex" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="service.wsdl" MetadataType="Wsdl" ID="7f1f56bf-7927-4dbf-8541-7428f4c70ca2" SourceId="1" SourceUrl="net.pipe://localhost/ExplorerService/ClientOperationService/mex" />
+    <MetadataFile FileName="service.xsd" MetadataType="Schema" ID="5c593af8-05f2-46a9-a2bc-8754766d5426" SourceId="1" SourceUrl="net.pipe://localhost/ExplorerService/ClientOperationService/mex" />
+    <MetadataFile FileName="service1.xsd" MetadataType="Schema" ID="022dc94f-0af2-4431-81f0-dacd20a79abf" SourceId="1" SourceUrl="net.pipe://localhost/ExplorerService/ClientOperationService/mex" />
+    <MetadataFile FileName="ExplorerService.Common.DataContracts.Operations.xsd" MetadataType="Schema" ID="b5cfa07f-4006-407d-a860-49ab07dd2261" SourceId="1" SourceUrl="net.pipe://localhost/ExplorerService/ClientOperationService/mex" />
+    <MetadataFile FileName="ExplorerService.Common.DataContracts.Operations.Requests.xsd" MetadataType="Schema" ID="1a08d957-6146-4bdf-864f-f468bfb35233" SourceId="1" SourceUrl="net.pipe://localhost/ExplorerService/ClientOperationService/mex" />
+    <MetadataFile FileName="ExplorerService.Common.DataContracts.Operations.OperationProgress.xsd" MetadataType="Schema" ID="897cc351-9826-44aa-87ba-804f932bad94" SourceId="1" SourceUrl="net.pipe://localhost/ExplorerService/ClientOperationService/mex" />
+    <MetadataFile FileName="ExplorerService.Common.DataContracts.xsd" MetadataType="Schema" ID="196bb33b-b472-4264-9c7b-3d6030287aa6" SourceId="1" SourceUrl="net.pipe://localhost/ExplorerService/ClientOperationService/mex" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>
