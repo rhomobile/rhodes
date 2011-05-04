@@ -1,0 +1,34 @@
+﻿<configuration>
+    <system.serviceModel>
+        <bindings>
+            <customBinding>
+                <binding name="CustomBinding_IApplicationOperationsService">
+                    <binaryMessageEncoding />
+                    <httpTransport maxReceivedMessageSize="2147483647" maxBufferSize="2147483647" />
+                </binding>
+                <binding name="CustomBinding_IApplicationStreamingService">
+                    <binaryMessageEncoding />
+                    <httpTransport maxReceivedMessageSize="2147483647" maxBufferSize="2147483647" />
+                </binding>
+                <binding name="CustomBinding_IApplicationSessionService">
+                    <binaryMessageEncoding />
+                    <httpTransport maxReceivedMessageSize="2147483647" maxBufferSize="2147483647" />
+                </binding>
+            </customBinding>
+        </bindings>
+        <client>
+            <endpoint address="http://localhost:2502/ApplicationOperationsService/ApplicationOperationsService.svc"
+                binding="customBinding" bindingConfiguration="CustomBinding_IApplicationOperationsService"
+                contract="ApplicationOperationsService.IApplicationOperationsService"
+                name="CustomBinding_IApplicationOperationsService" />
+            <endpoint address="http://localhost:2502/ApplicationStreamingService/ApplicationStreamingService.svc"
+                binding="customBinding" bindingConfiguration="CustomBinding_IApplicationStreamingService"
+                contract="ApplicationStreamingService.IApplicationStreamingService"
+                name="CustomBinding_IApplicationStreamingService" />
+            <endpoint address="http://localhost:2502/ApplicationSessionService/ApplicationSessionService.svc"
+                binding="customBinding" bindingConfiguration="CustomBinding_IApplicationSessionService"
+                contract="ApplicationSessionService.IApplicationSessionService"
+                name="CustomBinding_IApplicationSessionService" />
+        </client>
+    </system.serviceModel>
+</configuration>

@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/" xmlns:tns="http://schemas.datacontract.org/2004/07/ExplorerService.Common.DataContracts.Operations.OperationProgress" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/ExplorerService.Common.DataContracts.Operations.OperationProgress" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:import namespace="http://schemas.datacontract.org/2004/07/ExplorerService.Common.DataContracts" />
+  <xs:complexType name="OperationProgress">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="OperationId" type="ser:guid" />
+      <xs:element minOccurs="0" name="TotalProgress" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="OperationProgress" nillable="true" type="tns:OperationProgress" />
+  <xs:complexType name="OperationCompleted">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:OperationProgress">
+        <xs:sequence>
+          <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/ExplorerService.Common.DataContracts" minOccurs="0" name="NewIsolatedStorageInformation" nillable="true" type="q1:IsolatedStorageInformation" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="OperationCompleted" nillable="true" type="tns:OperationCompleted" />
+  <xs:complexType name="OperationCanceled">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:OperationCompleted">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="CancelTime" type="xs:dateTime" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="OperationCanceled" nillable="true" type="tns:OperationCanceled" />
+  <xs:complexType name="OperationFailedDueToException">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:OperationProgress">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ExceptionMessage" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="FailedRequestId" type="ser:guid" />
+          <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/ExplorerService.Common.DataContracts" minOccurs="0" name="NewIsolatedStorageInformation" nillable="true" type="q2:IsolatedStorageInformation" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="OperationFailedDueToException" nillable="true" type="tns:OperationFailedDueToException" />
+  <xs:complexType name="OperationReceived">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:OperationProgress">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ReceiveTime" type="xs:dateTime" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="OperationReceived" nillable="true" type="tns:OperationReceived" />
+</xs:schema>
