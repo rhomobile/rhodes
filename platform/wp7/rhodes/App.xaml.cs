@@ -64,6 +64,7 @@ namespace Rhodes
         {
             //initRuby();
             //RhoRubyStart();
+            IsolatedStorageExplorer.Explorer.Start("localhost");
         }
 
         // Code to execute when the application is activated (brought to foreground)
