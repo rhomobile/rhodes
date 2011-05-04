@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sqlite3", "sqlite3\sqlite3.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RhoAppRunner", "RhoAppRunner\RhoAppRunner.csproj", "{FE6CF1DD-B683-4D6E-99D7-CE28861D880D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IsolatedStorageExplorer", "IsolatedStorageExplorer\IsolatedStorageExplorer.csproj", "{4D2DC72F-E1EC-4F2E-AD67-537617776AAF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,6 +74,16 @@ Global
 		{FE6CF1DD-B683-4D6E-99D7-CE28861D880D}.Release|Mixed Platforms.ActiveCfg = Release|x86
 		{FE6CF1DD-B683-4D6E-99D7-CE28861D880D}.Release|x86.ActiveCfg = Release|x86
 		{FE6CF1DD-B683-4D6E-99D7-CE28861D880D}.Release|x86.Build.0 = Release|x86
+		{4D2DC72F-E1EC-4F2E-AD67-537617776AAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D2DC72F-E1EC-4F2E-AD67-537617776AAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D2DC72F-E1EC-4F2E-AD67-537617776AAF}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{4D2DC72F-E1EC-4F2E-AD67-537617776AAF}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{4D2DC72F-E1EC-4F2E-AD67-537617776AAF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4D2DC72F-E1EC-4F2E-AD67-537617776AAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D2DC72F-E1EC-4F2E-AD67-537617776AAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D2DC72F-E1EC-4F2E-AD67-537617776AAF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{4D2DC72F-E1EC-4F2E-AD67-537617776AAF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{4D2DC72F-E1EC-4F2E-AD67-537617776AAF}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
