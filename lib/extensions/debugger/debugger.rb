@@ -14,7 +14,7 @@ def debug_read_cmd(io,wait)
   end
 end
 
-def execute_cmd(cmd) 
+def execute_cmd(cmd, include_code)
   puts "[Debugger] Executing: #{cmd}"
   result = ""
   begin
@@ -24,7 +24,43 @@ def execute_cmd(cmd)
   end
   
   result = result.gsub(/\n/,"\\n")
-  $_s.write("EV:" + result + "\n")
+  cmd = cmd.sub(/[\n\r]+$/, '').gsub(/\n/,"\\n").gsub(/:/,'#')
+  $_s.write("EV" + (include_code ? "L:#{cmd}:" : ':') + result + "\n")
+end
+
+def get_variables(scope)
+  if (scope =~ /^GVARS/)
+   cmd = "global_variables"
+   prefix = ""
+   vartype = "G"
+  elsif (scope =~ /^LVARS/)
+   cmd = "local_variables"
+   prefix = ""
+   vartype = "L"
+  elsif (scope =~ /^CVARS/)
+   if $_classname =~ /^\s*$/
+     return
+   end
+   cmd = "class_variables"
+   prefix = "#{$_classname}."
+   vartype = "C"
+  elsif (scope =~ /^IVARS/)
+   if ($_classname =~ /^\s*$/) or ($_methodname =~ /^\s*$/)
+     return
+   end
+   cmd = "instance_variables"
+   prefix = "self."
+   vartype = "I"
+  end
+  begin
+    # puts "[Debugger] Watching list: '#{prefix}#{cmd}'"
+    vars = eval(prefix + cmd, $_binding)
+    vars.each do |v|
+      # puts "[Debugger] Watching '#{v}'"
+      $_s.write("V:#{vartype}:#{v}:#{eval(v,$_binding).inspect}\n")
+    end
+  rescue
+  end
 end
 
 def debug_handle_cmd()
@@ -68,9 +104,20 @@ def debug_handle_cmd()
     elsif cmd =~ /^CONT/
       wait = false
       $_step = false
+      $_resumed = true
       puts "[Debugger] Resuming"
-    elsif cmd =~ /^EV:/
-      execute_cmd cmd.sub(/^EV:/,"")
+    elsif cmd =~ /^SUSP/
+      $_step = true
+      $_step_level = -1
+      wait = true
+      puts "[Debugger] Suspend"
+    elsif cmd =~ /^KILL/
+      puts "[Debugger] Terminating..."
+      System.exit
+    elsif cmd =~ /^EVL?:/
+      execute_cmd cmd.sub(/^EVL?:/,""), (cmd =~ /^EVL:/ ? true : false)
+    elsif cmd =~ /^[GLCI]VARS/
+      get_variables cmd
     else
       puts "[Debugger] Unknown command"
     end
@@ -81,6 +128,8 @@ end
 $_tracefunc = lambda{|event, file, line, id, bind, classname|
   $_self = self;
   $_binding = bind;
+  $_classname = classname;
+  $_methodname = id;
   if event =~ /^line/
 
     unhandled = true
@@ -90,13 +139,8 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
       ln = line.to_i.to_s
       if (step_stop or ($_breakpoints_enabled and ($_breakpoint.has_key?(filename + ':' + ln))))
         fn = filename.gsub(/:/, '|')
-        $_s.write((step_stop ? "STEP" : "BP") + ":#{fn}:#{ln}\n")
+        $_s.write((step_stop ? "STEP" : "BP") + ":#{fn}:#{ln}:#{classname}:#{id}\n")
         puts "[Debugger] " + (step_stop ? "Stop" : "Breakpoint") + " in #{fn} at #{ln}"
-
-        local = eval("local_variables", bind)
-        local.each do |l|
-          $_s.write("AW:#{l}:#{eval(l,bind).inspect}\n")
-        end
 
         wait = true
         while wait
@@ -110,6 +154,11 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
     if unhandled
       debug_read_cmd($_s,false)
       debug_handle_cmd()
+    end
+
+    if $_resumed
+      $_resumed = false
+      $_s.write("RESUMED\n")
     end
 
   elsif event =~ /^call/
@@ -136,14 +185,15 @@ begin
   $_step = false
   $_step_level = -1
   $_call_stack = 0
+  $_resumed = false
   $_cmd = ""
+
+  at_exit {
+   $_s.write("QUIT\n") if (not $_s.nil?)
+  }
 
   set_trace_func $_tracefunc
 rescue
   puts "[Debugger] Unable to open connection to debugger: " + $!.inspect
   $_s = nil
 end
-
-END {
-  $_s.write("QUIT\n") if (not $_s.nil?)
-}
