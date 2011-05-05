@@ -158,9 +158,6 @@ namespace rho.common
 
         private void logMessage(int severity, String msg, Exception e, boolean bOutputOnly)
         {
-            if (msg.Contains("http://localhost:8000") == true)
-                return;
-
             m_severity = severity;
 		    if ( !isEnabled() )
 			    return;
