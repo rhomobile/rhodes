@@ -1,5 +1,6 @@
 package com.rhomobile.rhodes.socket;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -53,7 +54,7 @@ public class SSLImpl {
 	};
 	
 	private static void reportFail(String name, Exception e) {
-		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
+		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getClass().getSimpleName() + ": " + e.getMessage());
 	}
 	
 	private static SSLSocketFactory getFactory(boolean verify) throws NoSuchAlgorithmException, KeyManagementException {
@@ -92,6 +93,9 @@ public class SSLImpl {
 		try {
 			if (sock != null)
 				sock.close();
+		}
+		catch (IOException e) {
+		    Logger.I(TAG, "shutdown fails: IOException: " + e.getMessage());
 		}
 		catch (Exception e) {
 			reportFail("shutdown", e);
