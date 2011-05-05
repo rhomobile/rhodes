@@ -14,12 +14,17 @@ using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using rho.common;
+using rho.logging;
+using System.ComponentModel;
+using System.Threading;
+using System.Windows;
 
 namespace Rhodes
 {
     public partial class App : Application
     {
         private static CRhodesApp RHODESAPP() { return CRhodesApp.Instance; }
+        private static BackgroundWorker m_logThread = new BackgroundWorker();
 
         /// <summary>
         /// Provides easy access to the root frame of the Phone Application.
@@ -64,7 +69,10 @@ namespace Rhodes
         {
             //initRuby();
             //RhoRubyStart();
-            IsolatedStorageExplorer.Explorer.Start("localhost");
+            //IsolatedStorageExplorer.Explorer.Start("localhost");
+            m_logThread.DoWork += RhoLogSender.logWorkerDoWork;
+            m_logThread.RunWorkerCompleted += RhoLogSender.logWorkerRunWorkerCompleted;
+            m_logThread.RunWorkerAsync();
         }
 
         // Code to execute when the application is activated (brought to foreground)
@@ -84,6 +92,7 @@ namespace Rhodes
         private void Application_Closing(object sender, ClosingEventArgs e)
         {
             RHODESAPP().stopApp();
+            m_logThread.CancelAsync();
         }
 
         // Code to execute if a navigation fails
