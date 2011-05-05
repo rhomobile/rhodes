@@ -18,15 +18,16 @@ end
 def execute_cmd(cmd, include_code)
   puts "[Debugger] Executing: #{cmd}"
   result = ""
+  error = '0';
   begin
     result = eval(cmd, $_binding).inspect
   rescue Exception => exc
-    result = "ERROR: #{$!}"
+    error = '1';
+    result = "#{$!}".inspect
   end
   
-  result = result.gsub(/\n/,"\\n")
   cmd = URI.escape(cmd.sub(/[\n\r]+$/, ''), Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
-  $_s.write("EV" + (include_code ? "L:#{cmd}:" : ':') + result + "\n")
+  $_s.write("EV" + (include_code ? "L:#{error}:#{cmd}:" : ':'+(error.to_i != 0 ? 'ERROR: ':'')) + result + "\n")
 end
 
 def get_variables(scope)
