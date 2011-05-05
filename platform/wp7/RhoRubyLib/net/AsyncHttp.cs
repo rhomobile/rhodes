@@ -40,7 +40,7 @@ namespace rho.net
         {
             if (m_pInstance != null)
             {
-                m_pInstance.stop(-1);
+                m_pInstance.stop(2);
 
                 m_pInstance = null;
             }
@@ -285,6 +285,9 @@ namespace rho.net
 
         void callNotify(NetResponse resp, int nError )
         {
+            if (m_bInternal)
+                return;
+
             m_strResBody = "rho_callback=1";
             m_strResBody += "&status=";
             if ( nError > 0 )
