@@ -332,8 +332,13 @@ namespace rho.net
         
         public MutableString getRetValue()
         {
-    	    if ( m_strCallback.length() == 0 )
-    	        return CRhoRuby.create_string(m_strResBody); 
+            if (m_strCallback.length() == 0)
+            {
+             if(m_strResBody == null)
+                 return CRhoRuby.create_string("");
+             else
+                return CRhoRuby.create_string(m_strResBody);
+            }
 
     	    return null;
         }
