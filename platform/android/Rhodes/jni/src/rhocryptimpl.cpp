@@ -26,6 +26,7 @@ CRhoCryptImpl::CRhoCryptImpl() : m_obj(0), m_dataOut(0)
 
     m_obj = env->NewObject(cls, midConstructor);
     env->NewGlobalRef(m_obj);
+    env->DeleteLocalRef(m_obj);
 
     m_dataOut = (unsigned char*)malloc(1024); //sqlite page size
 }

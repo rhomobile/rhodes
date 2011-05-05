@@ -93,7 +93,7 @@ public class RhoCryptImpl
 	
 	private static void reportFail(String name, Exception e) 
 	{
-	    Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
+	    Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getClass().getSimpleName() + ": " + e.getMessage());
 	}
 	
     public boolean db_encrypt( String szPartition, ByteBuffer dataIn, ByteBuffer dataOut )
@@ -120,7 +120,7 @@ public class RhoCryptImpl
 	    	initContext(szPartition);
 
             dataOut.rewind();
-	    	m_decryptCipher.doFinal(dataIn, dataOut);            
+	    	m_decryptCipher.doFinal(dataIn, dataOut);
 	    	
 	    	return true;
 		}catch(Exception exc)
