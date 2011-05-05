@@ -23,8 +23,9 @@ namespace rho.net
 		    new RhoLogger("AsyncHttp");
         public RhoLogger getLog() { return LOG;  }
 	    private static CRhodesApp RHODESAPP(){ return CRhodesApp.Instance; }
-	
+	    
         static CAsyncHttp m_pInstance;
+        private bool m_bInternal = false;
 
         public static CAsyncHttp Create()
         {
@@ -47,9 +48,10 @@ namespace rho.net
 
         public static CAsyncHttp getInstance(){ return m_pInstance; }
     
-        public CAsyncHttp(bool bDoLog = true)
+        public CAsyncHttp(bool bInternal = false)
         {
-            if (bDoLog)
+            m_bInternal = bInternal;
+            if (!m_bInternal)
             {
                 base.setLogCategory(LOG.getLogCategory());
             }
@@ -96,7 +98,8 @@ namespace rho.net
         public MutableString addHttpCommand(HttpCommand pCmd)
         {
             pCmd.setLog(LOG);
-            if (pCmd.m_strCallback.length() == 0)
+            pCmd.setInternal(m_bInternal);
+            if (!m_bInternal && pCmd.m_strCallback.length() == 0)
             {
                 processCommandBase(pCmd);
                 return pCmd.getRetValue();
@@ -131,6 +134,8 @@ namespace rho.net
             private MutableString m_valBody;    
         
             RhoParams    m_params;
+            bool m_bInternal = false;
+            public void setInternal(bool b) { m_bInternal = b;  }
 
             public HttpCommand(String strCmd, RhoParams p)
             {
