@@ -1,3 +1,4 @@
+require 'uri'
 require 'timeout'
 
 def debug_read_cmd(io,wait)
@@ -19,12 +20,12 @@ def execute_cmd(cmd, include_code)
   result = ""
   begin
     result = eval(cmd, $_binding).inspect
-  rescue
+  rescue Exception => exc
     result = "ERROR: #{$!}"
   end
   
   result = result.gsub(/\n/,"\\n")
-  cmd = cmd.sub(/[\n\r]+$/, '').gsub(/\n/,"\\n").gsub(/:/,'#')
+  cmd = URI.escape(cmd.sub(/[\n\r]+$/, ''), Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
   $_s.write("EV" + (include_code ? "L:#{cmd}:" : ':') + result + "\n")
 end
 
