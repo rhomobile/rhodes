@@ -9,7 +9,10 @@ namespace rho.common
 	
 	    public void setLogCategory(String category)
 	    {
-		    LOG.setLogCategory(category);
+            if (category != null)
+                LOG.setLogCategory(category);
+            else
+                LOG = new RhoEmptyLogger();
 	    }
 	
 	    public static int QUEUE_POLL_INTERVAL_SECONDS  = 300;
