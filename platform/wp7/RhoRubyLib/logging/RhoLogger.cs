@@ -7,6 +7,8 @@ namespace rho.common
     {
         public static boolean RHO_STRIP_LOG = false;
 
+        private static Vector<String> m_logItems = new Vector<String>();
+
         private static int L_TRACE = 0;
 	    private static int L_INFO = 1;
 	    private static int L_WARNING = 2;
@@ -20,6 +22,7 @@ namespace rho.common
 	    private String m_strMessage;
 	    private int    m_severity;
 	    private static Mutex m_SinkLock = new Mutex();
+        private static Mutex m_SinkLock2 = new Mutex();
 	    //private static IRhoRubyHelper m_sysInfo;
 	    public static String LOGFILENAME = "RhoLog.txt";
 
@@ -34,6 +37,22 @@ namespace rho.common
 
         public String getLogCategory() { return m_category; }
         public void setLogCategory(String category) { m_category = category; }
+
+        static public String flushLogItems()
+        {
+            String result = "";
+            lock (m_SinkLock2)
+            {
+                int size = m_logItems.size();
+                for (int i = 0; i < size; i++)
+                {
+                    result += m_logItems[i]+";";
+                }
+                m_logItems.Clear();
+            }
+
+            return result; 
+        }
 
         public static void close() { m_oLogConf.close(); }
 
@@ -139,6 +158,9 @@ namespace rho.common
 
         private void logMessage(int severity, String msg, Exception e, boolean bOutputOnly)
         {
+            if (msg.Contains("http://localhost:8000") == true)
+                return;
+
             m_severity = severity;
 		    if ( !isEnabled() )
 			    return;
@@ -177,6 +199,8 @@ namespace rho.common
 		    }
 	        if ( m_severity == L_FATAL )
 	    	    processFatalError();
+
+            m_logItems.Add(m_strMessage);
         }
 
         static boolean isSimulator()

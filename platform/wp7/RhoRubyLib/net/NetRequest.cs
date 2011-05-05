@@ -209,11 +209,22 @@ namespace rho.net
                     LOG.ERROR("EndGetResponse", e);
                     response = (HttpWebResponse)e.Response;
                     m_code = response != null ? Convert.ToInt32(response.StatusCode) : 0;
-                }else
+                }
+                else
                     LOG.INFO("Request was cancelled by user.");
             }
-            if (response == null || m_bCancel)
+            catch (Exception e)
+            {
+                ///LOG.ERROR("EndGetResponse", e);
+                m_respWaitEvent.Set();
                 return;
+            }
+
+            if (response == null || m_bCancel)
+            {
+                m_respWaitEvent.Set();
+                return;
+            }
             
             Stream stream = response.GetResponseStream();
 
@@ -416,6 +427,7 @@ namespace rho.net
 		
 		    m_bCancel = false;
 
+            closeConnection();
             m_webRequest = WebRequest.Create(m_strUrl) as HttpWebRequest;
 
             m_webRequest.CookieContainer = new CookieContainer();
