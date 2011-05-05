@@ -19,8 +19,9 @@ namespace rho.net
 {
     public class CAsyncHttp : CThreadQueue 
     {
-        private static RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+        private RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		    new RhoLogger("AsyncHttp");
+        public RhoLogger getLog() { return LOG;  }
 	    private static CRhodesApp RHODESAPP(){ return CRhodesApp.Instance; }
 	
         static CAsyncHttp m_pInstance;
@@ -39,7 +40,6 @@ namespace rho.net
             if (m_pInstance != null)
             {
                 m_pInstance.stop(-1);
-                LOG.INFO("Thread shutdown");
 
                 m_pInstance = null;
             }
@@ -47,9 +47,17 @@ namespace rho.net
 
         public static CAsyncHttp getInstance(){ return m_pInstance; }
     
-        public CAsyncHttp()
+        public CAsyncHttp(bool bDoLog = true)
         {
-            base.setLogCategory(LOG.getLogCategory());
+            if (bDoLog)
+            {
+                base.setLogCategory(LOG.getLogCategory());
+            }
+            else
+            {
+                LOG = new RhoEmptyLogger();
+                base.setLogCategory(null);
+            }
 
             setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
         }
@@ -85,19 +93,20 @@ namespace rho.net
             }   
         }
 
-        public MutableString addHttpCommand(IQueueCommand pCmd)
+        public MutableString addHttpCommand(HttpCommand pCmd)
         {
-            if (((HttpCommand)pCmd).m_strCallback.length() == 0)
+            pCmd.setLog(LOG);
+            if (pCmd.m_strCallback.length() == 0)
             {
                 processCommandBase(pCmd);
-                return ((HttpCommand)pCmd).getRetValue();
+                return pCmd.getRetValue();
             }
             else
             {
                 addQueueCommand(pCmd);
                 start(epLow);
 
-                return ((HttpCommand)pCmd).getRetValue();
+                return pCmd.getRetValue();
             }
         }
 
@@ -110,6 +119,9 @@ namespace rho.net
 
         public class HttpCommand : IQueueCommand
         {
+            private RhoLogger LOG;
+            public void setLog(RhoLogger log) { LOG = log; }
+
 	        int m_eCmd;
             public String m_strCallback, m_strCallbackParams;
             Hashtable<String, String> m_mapHeaders = new Hashtable<String, String>();
