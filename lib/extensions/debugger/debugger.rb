@@ -56,10 +56,12 @@ def get_variables(scope)
   begin
     # puts "[Debugger] Watching list: '#{prefix}#{cmd}'"
     vars = eval(prefix + cmd, $_binding)
+    $_s.write("VSTART:#{vartype}\n")
     vars.each do |v|
       # puts "[Debugger] Watching '#{v}'"
       $_s.write("V:#{vartype}:#{v}:#{eval(v,$_binding).inspect}\n")
     end
+    $_s.write("VEND:#{vartype}\n")
   rescue
   end
 end
