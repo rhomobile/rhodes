@@ -46,7 +46,7 @@ namespace rho.common
                 int size = m_logItems.size();
                 for (int i = 0; i < size; i++)
                 {
-                    result += m_logItems[i]+";";
+                    result += m_logItems[i]+"@@@";
                 }
                 m_logItems.Clear();
             }
@@ -311,6 +311,9 @@ namespace rho.common
     	    m_oLogConf.setLogPrefix(true);		
     	
     	    m_oLogConf.setLogToFile(true);
+
+            //TODO - if ip is empy in rhoconfig then we have to set to false
+            m_oLogConf.setLogToServer(true);
         
 		    if ( isSimulator() ) {
 			    m_oLogConf.setMinSeverity( L_INFO );
