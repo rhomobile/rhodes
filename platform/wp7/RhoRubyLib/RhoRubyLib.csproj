@@ -78,6 +78,7 @@
     <Compile Include="db\SqliteCopyResult.cs" />
     <Compile Include="json\JsonParser.cs" />
     <Compile Include="json\RJSONTokener.cs" />
+    <Compile Include="logging\RhoLogSender.cs" />
     <Compile Include="net\AsyncHttp.cs" />
     <Compile Include="RhoAppAdapter.cs" />
     <Compile Include="common\Mutex.cs" />
