@@ -8,6 +8,7 @@ namespace "config" do
 		$zippath = "res/build-tools/7za.exe"
 		$wp7runner = "res/build-tools/RhoAppRunner.exe"
 		$wp7explorer = "res/build-tools/wp7explorer.exe"
+		$wp7logserver = "res/build-tools/RhoLogserver.exe"
 		$genpath = "ClassInitGenerator.exe"
 		$builddir = $config["build"]["wppath"] + "/build"
 		$vcbindir = $config["build"]["wppath"] + "/bin"
@@ -277,6 +278,7 @@ namespace "run" do
 		desc "Build, install .xap and run on WP7 emulator"
 		task :wp => ["clean:wm:all", "device:wp:production"] do
 		if $app_config["wp"]["productid"] != nil
+			system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
 			args = []
 			args << $app_config["wp"]["productid"]
 			args << $app_config["name"]
@@ -300,6 +302,7 @@ namespace "run" do
 			desc "Build, install .xap and run on WP7 device"
 			task :device => ["clean:wm:all", "device:wp:production"] do
 			if $app_config["wp"]["productid"] != nil
+			    system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
 				args = []
 				args << $app_config["wp"]["productid"]
 				args << $app_config["name"]
