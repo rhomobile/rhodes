@@ -7,6 +7,7 @@ namespace rho.logging
     {
     int         m_nMinSeverity = 0;
     boolean     m_bLogToOutput = false;
+    boolean     m_bLogToServer = false;
 
     boolean     m_bLogToFile = false;
     String      m_strLogFilePath = "";
@@ -18,18 +19,23 @@ namespace rho.logging
 
     IRhoLogSink   m_pFileSink = null;
     IRhoLogSink   m_pOutputSink = null;
+    IRhoLogSink   m_pServerSink = null;
     Mutex m_FlushLock = new Mutex();
     Mutex m_CatLock = new Mutex();
 
 	public RhoLogConf(){
 		m_pFileSink = new rho.logging.RhoLogFileSink(this);
 		m_pOutputSink = new rho.logging.RhoLogOutputSink(this);
+        m_pServerSink = new rho.logging.RhoLogServerSink(this);
     }
 
 	public void close()
     {
         if (m_pFileSink != null)
             m_pFileSink.close();
+
+        if (m_pServerSink != null)
+            m_pServerSink.close();
 	}
 	
 	RhoConf RHOCONF(){ return RhoConf.getInstance(); }
@@ -68,6 +74,8 @@ namespace rho.logging
 
     boolean isLogToOutput(){ return m_bLogToOutput;}
     public void setLogToOutput(boolean bLogToOutput) { m_bLogToOutput = bLogToOutput; }
+    boolean isLogToServer() { return m_bLogToServer; }
+    public void setLogToServer(boolean bLogToServer) { m_bLogToServer = bLogToServer; }
 
     boolean isLogToFile(){ return m_bLogToFile;}
     public void setLogToFile(boolean bLogToFile) { m_bLogToFile = bLogToFile; }
@@ -136,6 +144,9 @@ namespace rho.logging
         //Should be at the end
         if ( isLogToOutput() )
             m_pOutputSink.writeLogMessage(strMsg);
+
+        if (isLogToServer())
+            m_pServerSink.writeLogMessage(strMsg);
     	
     }
     
