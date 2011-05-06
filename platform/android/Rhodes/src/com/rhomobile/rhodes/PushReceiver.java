@@ -15,6 +15,10 @@ public class PushReceiver extends BroadcastReceiver {
 	
 	private static final String REG_ID = "registration_id";
 	
+	private static final String NOTIFICATION_NONE = "none";
+    private static final String NOTIFICATION_BACKGROUND = "background";
+    private static final String NOTIFICATION_ALWAYS = "always";
+	
 	public static final String INTENT_SOURCE = PushReceiver.class.getName();
 	
 	private static final String INTENT_PREFIX = PushReceiver.class.getPackage().getName();
@@ -59,7 +63,13 @@ public class PushReceiver extends BroadcastReceiver {
 		String alert = extras.getString("alert");
 		String from = extras.getString("from");
 
-		if (Capabilities.PUSH_NOTIFICATIONS)
+        boolean statusNotification = false;
+		if (Push.PUSH_NOTIFICATIONS.equals(NOTIFICATION_ALWAYS))
+		    statusNotification = true;
+		else if (Push.PUSH_NOTIFICATIONS.equals(NOTIFICATION_BACKGROUND))
+		    statusNotification = !RhodesService.isRhodesActivityStarted();
+		
+		if (statusNotification)
 			StatusNotification.simpleNotification(TAG, INTENT_TYPE_MESSAGE, context, serviceIntent, "PUSH message from: " + from, alert);
 		else
 			context.startService(serviceIntent);

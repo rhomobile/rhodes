@@ -114,6 +114,13 @@ public class RhodesService extends Service {
 	private static boolean mCameraAvailable;
 	
 	private static int sActivitiesActive;
+	private static boolean sRhodesActivityStarted = false;
+	
+	synchronized
+	static void rhodesActivityStarted(boolean started) { sRhodesActivityStarted = started; }
+	
+	synchronized
+	public static boolean isRhodesActivityStarted() { return sRhodesActivityStarted; }
 	
 	private static int mGeoLocationInactivityTimeout;
 

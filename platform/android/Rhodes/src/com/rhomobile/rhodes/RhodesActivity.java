@@ -139,12 +139,14 @@ public class RhodesActivity extends BaseActivity {
 	@Override
 	public void onStart() {
 		super.onStart();
-		//sInstance = this;
+	    RhodesService.rhodesActivityStarted(true);
 	}
 
     @Override
     public void onPause() 
     {
+        RhodesService.rhodesActivityStarted(false);
+
         super.onPause();
         Log.i(TAG, ">>>>>>>>>>>>>>> onPause()");
 
