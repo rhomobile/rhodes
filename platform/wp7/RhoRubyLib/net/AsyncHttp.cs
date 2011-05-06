@@ -106,7 +106,25 @@ namespace rho.net
             }
             else
             {
-                addQueueCommand(pCmd);
+                if (m_bInternal)
+                {
+                    lock (getCommandLock())
+                    {
+                        if (getCommands().isEmpty())
+                            addQueueCommand(pCmd);
+                        else
+                        {
+                            HttpCommand cmd = getCommands().get(0) as HttpCommand;
+                            MutableString rString = cmd.m_params.findHashParam("body") as MutableString;
+                            MutableString rString2 = pCmd.m_params.findHashParam("body") as MutableString;
+
+                            rString.Append(rString2);
+                        }
+                    }
+                }else
+                    addQueueCommand(pCmd);
+
+
                 start(epLow);
 
                 return pCmd.getRetValue();
@@ -133,7 +151,7 @@ namespace rho.net
             String m_strResBody;
             private MutableString m_valBody;    
         
-            RhoParams    m_params;
+            public RhoParams    m_params;
             bool m_bInternal = false;
             public void setInternal(bool b) { m_bInternal = b;  }
 
