@@ -25,7 +25,7 @@ Rhodes provide access to device specific capabilities such as GPS, PIM, camera, 
 	<tr><td class='cap'>Signature Capture</td><td>2.1</td><td class='tbd'>2.5</td><td class='tbd'>2.5</td><td>2.1</td><tr>
 	<tr class='tbd'><td class='cap'>Audio/Video capture</td><td>3.0</td><td>3.0</td><td>3.0</td><td>3.0</td><tr>
 	<tr><td class='cap'>Bluetooth</td><td>2.2</td><td>2.2</td><td>2.2</td><td>2.2</td><tr>
-	<tr><td class='cap'>NFC</td><td></td><td></td><td></td><td>3.0</td><tr>
+	<tr><td class='cap'>NFC</td><td class='tbd'>-</td><td class='tbd'>-</td><td class='tbd'>-</td><td>3.0</td><tr>
 	<tr><td class='cap'>Push</td><td>1.2</td><td class='tbd'>3.0</td><td>1.2</td><td>2.2</td><tr>
 	<tr><td class='cap'>Screen rotation</td><td>2.1</td><td class='tbd'>2.5</td><td>2.0</td><td>2.1</td><tr>
 	<tr><td class='cap'>Native Maps</td><td>1.4</td><td class='tbd'>2.5</td><td>1.4</td><td>1.5</td><tr>
