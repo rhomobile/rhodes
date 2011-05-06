@@ -151,7 +151,7 @@ namespace rho.common
 	        logMessage(severity, msg, e, false );
         }
 
-        private void logMessage(int severity, String msg, Exception e, boolean bOutputOnly)
+        protected virtual void logMessage(int severity, String msg, Exception e, boolean bOutputOnly)
         {
             m_severity = severity;
 		    if ( !isEnabled() )
@@ -262,15 +262,15 @@ namespace rho.common
             //EventLogger.logEvent(EVENT_GUID, m_strMessage.getBytes());
         }
 
-        public void FATAL(String message)
+        public virtual void FATAL(String message)
         {
             logMessage(L_FATAL, message);
         }
-        public void FATAL(Exception e)
+        public virtual void FATAL(Exception e)
         {
             logMessage(L_FATAL, "", e);
         }
-        public void FATAL(String message, Exception e)
+        public virtual void FATAL(String message, Exception e)
         {
             logMessage(L_FATAL, message, e);
         }
@@ -332,8 +332,4 @@ namespace rho.common
         }
     }
 
-    public class RhoEmptyLogger : RhoLogger
-    {
-        public RhoEmptyLogger() : base("") { }
-    }
 }
