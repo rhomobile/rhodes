@@ -7,7 +7,7 @@ def debug_read_cmd(io,wait)
       cmd = io.readpartial(4096)
       $_cmd << cmd if cmd !~ /^\s*$/
     else
-      cmd << io.read_nonblock(4096)
+      cmd = io.read_nonblock(4096)
       $_cmd << cmd if cmd !~ /^\s*$/
     end
   rescue
@@ -16,6 +16,7 @@ def debug_read_cmd(io,wait)
 end
 
 def execute_cmd(cmd, advanced)
+  cmd = URI.unescape(cmd.gsub(/\+/,' ')) if advanced
   puts "[Debugger] Executing: #{cmd}"
   result = ""
   error = '0';
