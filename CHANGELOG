@@ -1,3 +1,10 @@
+## 3.0
+* RhoSimulator: simulator for fast Rhodes application development, support debugging using Rhodes Eclipse plug-in.(Windows only)
+* Windows Phone 7 support
+* Android: NFC support
+* Android: System.open_url open different media files
+* Rhom support different attribute type for Schema models
+
 ## 2.4.1
 * iPhone: fix production build
 * Android: fix 2.1 version
