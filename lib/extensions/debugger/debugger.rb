@@ -4,18 +4,18 @@ require 'timeout'
 def debug_read_cmd(io,wait)
   begin
     if wait
-      if ($_cmd !~/[\n\r]/)
-        $_cmd << io.readpartial(4096)
-      end
+      cmd = io.readpartial(4096)
+      $_cmd << cmd if cmd !~ /^\s*$/
     else
-      $_cmd << io.read_nonblock(4096)
+      cmd << io.read_nonblock(4096)
+      $_cmd << cmd if cmd !~ /^\s*$/
     end
   rescue
     # puts $!.inspect
   end
 end
 
-def execute_cmd(cmd, include_code)
+def execute_cmd(cmd, advanced)
   puts "[Debugger] Executing: #{cmd}"
   result = ""
   error = '0';
@@ -26,8 +26,8 @@ def execute_cmd(cmd, include_code)
     result = "#{$!}".inspect
   end
   
-  cmd = URI.escape(cmd.sub(/[\n\r]+$/, ''), Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
-  $_s.write("EV" + (include_code ? "L:#{error}:#{cmd}:" : ':'+(error.to_i != 0 ? 'ERROR: ':'')) + result + "\n")
+  cmd = URI.escape(cmd.sub(/[\n\r]+$/, ''), Regexp.new("[^#{URI::PATTERN::UNRESERVED}]")) if advanced
+  $_s.write("EV" + (advanced ? "L:#{error}:#{cmd}:" : ':'+(error.to_i != 0 ? 'ERROR: ':'')) + result + "\n")
 end
 
 def get_variables(scope)
@@ -55,11 +55,9 @@ def get_variables(scope)
    vartype = "I"
   end
   begin
-    # puts "[Debugger] Watching list: '#{prefix}#{cmd}'"
     vars = eval(prefix + cmd, $_binding)
     $_s.write("VSTART:#{vartype}\n")
     vars.each do |v|
-      # puts "[Debugger] Watching '#{v}'"
       $_s.write("V:#{vartype}:#{v}:#{eval(v,$_binding).inspect}\n")
     end
     $_s.write("VEND:#{vartype}\n")
@@ -67,16 +65,21 @@ def get_variables(scope)
   end
 end
 
-def debug_handle_cmd()
+def log_command(cmd)
+  puts "[Debugger] Received command: #{cmd}"
+end
+
+def debug_handle_cmd(inline)
   cmd = $_cmd.match(/^([^\n\r]*)([\n\r]+|$)/)[0]
-  $_cmd = $_cmd.sub(/^([^\n\r]*)([\n\r]+|$)(.*$)/, "\\3")
-  wait = true
+  processed = false
+  wait = inline
   if cmd != ""
-    puts "[Debugger] Received command: #{cmd}"
     if cmd =~/^CONNECTED/
+      log_command(cmd)
       puts "[Debugger] Connected to debugger"
-      wait = false
+      processed = true
     elsif cmd =~/^(BP|RM):/
+      log_command(cmd)
       ary = cmd.split(":")
       bp = ary[1].gsub(/\|/,':') + ':' + ary[2].chomp
       if (cmd =~/^RM:/)
@@ -86,56 +89,85 @@ def debug_handle_cmd()
         $_breakpoint.store(bp,1)
         puts "[Debugger] Breakpoint added: #{bp}"
       end
+      processed = true
     elsif cmd =~ /^RMALL/
+      log_command(cmd)
       $_breakpoint.clear
       puts "[Debugger] All breakpoints removed"
+      processed = true
     elsif cmd =~ /^ENABLE/
+      log_command(cmd)
       $_breakpoints_enabled = true
       puts "[Debugger] Breakpoints enabled"
+      processed = true
     elsif cmd =~ /^DISABLE/
+      log_command(cmd)
       $_breakpoints_enabled = false
       puts "[Debugger] Breakpoints disabled"
-    elsif cmd =~ /^STEPOVER/
+      processed = true
+    elsif inline and (cmd =~ /^STEPOVER/)
+      log_command(cmd)
       $_step = true
       $_step_level = $_call_stack
       wait = false
       puts "[Debugger] Step over"
-    elsif cmd =~ /^STEPRET/
+      processed = true
+    elsif inline and (cmd =~ /^STEPRET/)
+      log_command(cmd)
       $_step = true
       $_step_level = $_call_stack-1
       wait = false
       puts "[Debugger] Step return"
-    elsif cmd =~ /^STEP/
+      processed = true
+    elsif inline and (cmd =~ /^STEP/)
+      log_command(cmd)
       $_step = true
       $_step_level = -1
       wait = false
       puts "[Debugger] Step into"
-    elsif cmd =~ /^CONT/
+      processed = true
+    elsif inline and (cmd =~ /^CONT/)
+      log_command(cmd)
       wait = false
       $_step = false
       $_resumed = true
       puts "[Debugger] Resuming"
+      processed = true
     elsif cmd =~ /^SUSP/
+      log_command(cmd)
       $_step = true
       $_step_level = -1
       wait = true
       puts "[Debugger] Suspend"
+      processed = true
     elsif cmd =~ /^KILL/
+      log_command(cmd)
       puts "[Debugger] Terminating..."
+      processed = true
       System.exit
-    elsif cmd =~ /^EVL?:/
+    elsif inline and (cmd =~ /^EVL?:/)
+      log_command(cmd)
+      processed = true
       execute_cmd cmd.sub(/^EVL?:/,""), (cmd =~ /^EVL:/ ? true : false)
-    elsif cmd =~ /^[GLCI]VARS/
+    elsif inline and (cmd =~ /^[GLCI]VARS/)
+      log_command(cmd)
       get_variables cmd
-    else
+      processed = true
+    elsif inline
+      log_command(cmd)
       puts "[Debugger] Unknown command"
+      processed = true
     end
   end
-  wait
+  if processed
+    $_cmd = $_cmd.sub(/^([^\n\r]*)[\n\r]+(.*$)/, "\\2")
+    $_wait = wait if inline
+  end
+  processed
 end
 
 $_tracefunc = lambda{|event, file, line, id, bind, classname|
-  $_self = self;
+  return if eval('Thread.current!=Thread.main', bind)
   $_binding = bind;
   $_classname = classname;
   $_methodname = id;
@@ -152,29 +184,28 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
         $_s.write((step_stop ? "STEP" : "BP") + ":#{fn}:#{ln}:#{cl}:#{id}\n")
         puts "[Debugger] " + (step_stop ? "Stop" : "Breakpoint") + " in #{fn} at #{ln}"
 
-        wait = true
-        while wait
-          debug_read_cmd($_s,wait)
-          wait = debug_handle_cmd()
+        $_wait = true
+        while $_wait
+          while debug_handle_cmd(true) do end
+          sleep if $_wait
         end
         unhandled = false
       end
     end
 
     if unhandled
-      debug_read_cmd($_s,false)
-      debug_handle_cmd()
-    end
-
-    if $_resumed
-      $_resumed = false
-      $_s.write("RESUMED\n")
+      debug_handle_cmd(true)
     end
 
   elsif event =~ /^call/
-    ++$_call_stack
+    $_call_stack += 1
   elsif event =~ /^return/
-    --$_call_stack
+    $_call_stack -= 1
+  end
+
+  if $_resumed
+    $_resumed = false
+    $_s.write("RESUMED\n")
   end
 }
 
@@ -199,10 +230,22 @@ begin
   $_cmd = ""
 
   at_exit {
-   $_s.write("QUIT\n") if (not $_s.nil?)
+    $_s.write("QUIT\n") if (not $_s.nil?)
   }
 
   set_trace_func $_tracefunc
+
+  Thread.new {
+    while true
+      debug_read_cmd($_s,true)
+      while debug_handle_cmd(false) do end
+      if ($_cmd !~ /^\s*$/) and (Thread.main.stop?)
+        $_wait = true
+        Thread.main.wakeup
+      end
+    end
+  }
+
 rescue
   puts "[Debugger] Unable to open connection to debugger: " + $!.inspect
   $_s = nil
