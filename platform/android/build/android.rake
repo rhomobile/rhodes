@@ -604,8 +604,8 @@ namespace "config" do
 
     $push_notifications = nil
     $push_notifications = $app_config["android"]["push"]["notifications"] if !$app_config["android"].nil? and !$app_config["android"]["push"].nil?
-    $push_notifications = 'false' if $push_notifications.nil?
-    $push_notifications = get_boolean($push_notifications.to_s)
+    $push_notifications = "none" if $push_notifications.nil?
+    $push_notifications = $push_notifications
 
     
 
@@ -973,11 +973,6 @@ namespace "build" do
         ANDROID_PERMISSIONS.keys.sort.each do |k|
           f.puts "  public static boolean #{k.upcase}_ENABLED = true;"
         end
-        if $push_notifications
-            f.puts "  public static boolean PUSH_NOTIFICATIONS =  true;"
-        else
-            f.puts "  public static boolean PUSH_NOTIFICATIONS =  false;"
-        end
         f.puts "}"
       end
 
@@ -986,6 +981,11 @@ namespace "build" do
         f.puts "package #{JAVA_PACKAGE_NAME};"
         f.puts "public class Push {"
         f.puts "  public static final String SENDER = \"#{$push_sender}\";"
+        if $push_notifications.nil?
+            f.puts "  public static final String PUSH_NOTIFICATIONS =  \"none\";"
+        else
+            f.puts "  public static final String PUSH_NOTIFICATIONS =  \"#{$push_notifications}\";"
+        end
         f.puts "};"
       end
 
