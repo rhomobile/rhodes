@@ -2,7 +2,7 @@
 
 namespace rho.logging
 {
-    interface IRhoLogSink
+    public interface IRhoLogSink
     {
         void writeLogMessage(String strMsg);
         int getCurPos();

@@ -76,7 +76,18 @@ namespace rho.common
 			
 		    return "0" + nDigit.ToString();
 	    }
-	
+
+        private String get3FixedDigit(int nDigit)
+        {
+            if (nDigit > 99)
+                return nDigit.ToString();
+
+            if (nDigit > 9 )
+                return "0" + nDigit.ToString();
+
+            return "00" + nDigit.ToString();
+        }
+
 	    private String getLocalTimeString()
         {
             DateTime time = DateTime.Now;
@@ -91,7 +102,7 @@ namespace rho.common
 			    get2FixedDigit(time.Second);
 			
 			    //if ( false ) //comment this to show milliseconds
-				    strTime += ":" + get2FixedDigit(time.Millisecond);
+				    strTime += ":" + get3FixedDigit(time.Millisecond);
 			
 		    return strTime;
 	    }
@@ -187,7 +198,7 @@ namespace rho.common
 			
 		    if ( bOutputOnly )
 		    {
-                System.Diagnostics.Debug.WriteLine(m_strMessage);
+                getLogConf().getOutputSink().writeLogMessage(m_strMessage);
 		    }else
 		    {
 		        lock( m_SinkLock ){
