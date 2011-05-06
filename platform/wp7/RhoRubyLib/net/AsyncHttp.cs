@@ -141,7 +141,7 @@ namespace rho.net
         public class HttpCommand : IQueueCommand
         {
             private RhoLogger LOG;
-            public void setLog(RhoLogger log) { LOG = log; }
+            public void setLog(RhoLogger log) { LOG = log; m_pNetRequest.setLog(LOG);  }
 
 	        int m_eCmd;
             public String m_strCallback, m_strCallbackParams;
