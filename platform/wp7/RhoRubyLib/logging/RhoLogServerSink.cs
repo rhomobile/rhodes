@@ -12,11 +12,14 @@ namespace rho.logging
     public class RhoLogServerSink : IRhoLogSink
     {
         private static RhoLogConf m_oLogConf;
+        RhoConf RHOCONF() { return RhoConf.getInstance(); }
         CAsyncHttp m_aHttp = new CAsyncHttp(true);
+        String m_addrHost = "";
 
         public RhoLogServerSink(RhoLogConf conf)
         {
             m_oLogConf = conf;
+            m_addrHost = "http://"+RHOCONF().getString("rhologhost") + ":" + RHOCONF().getString("rhologport");
         }
 
         public void close()
@@ -39,7 +42,7 @@ namespace rho.logging
         {
             IDictionary<object, object> map = new Dictionary<object, object>();
             Hash values = new Hash(map);
-            values.Add(MutableString.Create("url"), MutableString.Create("http://localhost:8000"));
+            values.Add(MutableString.Create("url"), MutableString.Create(m_addrHost));
             values.Add(MutableString.Create("body"), MutableString.Create(strMsg));
             RhoParams p = new RhoParams(values);
             m_aHttp.addHttpCommand(new CAsyncHttp.HttpCommand("POST", p));

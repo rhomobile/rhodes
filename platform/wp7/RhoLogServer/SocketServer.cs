@@ -118,20 +118,10 @@ namespace RhoLogServer
                     content = state.sb.ToString();
                     if ((content.Length > 0) || (content.IndexOf("") > -1))
                     {
-                        Object objData = content.Replace("%20", " ");
+                        Object objData = content;
                         byte[] byData = System.Text.Encoding.UTF8.GetBytes(objData.ToString());
-                        System.Text.Encoding enc = System.Text.Encoding.ASCII;
-                        String tmp = enc.GetString(byData);
-                        int begin = tmp.IndexOf("logbegin_");
-                        int end = tmp.IndexOf("_logend");
-                        tmp = tmp.Substring(begin + 9, end - begin - 9);
-                        String[] logs = tmp.Split(new char[] { '@', '@', '@' });
                         FileStream st = File.Open(m_logPath, FileMode.OpenOrCreate | FileMode.Append);
-                        for (int i = 0; i < logs.Length; i++)
-                        {
-                            if (logs[i].Trim().Length == 0) continue;
-                            st.Write(System.Text.Encoding.UTF8.GetBytes(logs[i] + "\r\n"), 0, logs[i].Length + 2);
-                        }
+                        st.Write(byData, 0, byData.Length);
                         st.Close();
                     }
                     //handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(this.ReadCallback), state);

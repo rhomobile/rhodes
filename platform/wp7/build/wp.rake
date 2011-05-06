@@ -56,6 +56,12 @@ end
 		task :rhobundle => ["config:wp"] do
 			Rake::Task["build:bundle:noiseq"].execute
 
+			#write host and port 4 log server     
+			confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
+			confpath_content += "\r\n" + "rhologhost=" + Jake.localip()
+			confpath_content += "\r\n" + "rhologport=8000"
+			File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
+
 			#move public folder to root
 			cp_r $srcdir + "/apps/public", $srcdir + "/public"
 			rm_r $srcdir + "/apps/public"
@@ -275,6 +281,11 @@ namespace "clean" do
 end
 
 namespace "run" do
+        def gelLogPath
+			log_file_path =  File.join($app_path, $log_file)
+			return log_file_path
+		end
+
 		desc "Build, install .xap and run on WP7 emulator"
 		task :wp => ["clean:wm:all", "device:wp:production"] do
 		if $app_config["wp"]["productid"] != nil
@@ -293,6 +304,10 @@ namespace "run" do
 		end
 
 		namespace "wp" do
+		    task :get_log => "config:wm" do
+				puts "log_file=" + gelLogPath
+			end
+
 			desc "Build, install .xap and run on WP7 device"
 			task :device => ["clean:wm:all", "device:wp:production"] do
 			if $app_config["wp"]["productid"] != nil
