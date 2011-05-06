@@ -14,12 +14,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sqlite3", "sqlite3\sqlite3.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RhoAppRunner", "RhoAppRunner\RhoAppRunner.csproj", "{FE6CF1DD-B683-4D6E-99D7-CE28861D880D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IsolatedStorageExplorer", "IsolatedStorageExplorer\IsolatedStorageExplorer.csproj", "{4D2DC72F-E1EC-4F2E-AD67-537617776AAF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IsolatedStorageExplorerClient", "IsolatedStorageExplorerClient\IsolatedStorageExplorerClient.csproj", "{E80F8EA0-DFE7-4226-85DC-E02D12DBA2A2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfExplorerClient", "WpfExplorerClient\WpfExplorerClient.csproj", "{DF480419-0030-4B27-A2AA-4F54E34B3050}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RhoLogServer", "RhoLogServer\RhoLogServer.csproj", "{896E5017-59D6-41BD-9CBF-191F77237222}"
 EndProject
 Global
@@ -80,32 +74,6 @@ Global
 		{FE6CF1DD-B683-4D6E-99D7-CE28861D880D}.Release|Mixed Platforms.ActiveCfg = Release|x86
 		{FE6CF1DD-B683-4D6E-99D7-CE28861D880D}.Release|x86.ActiveCfg = Release|x86
 		{FE6CF1DD-B683-4D6E-99D7-CE28861D880D}.Release|x86.Build.0 = Release|x86
-		{4D2DC72F-E1EC-4F2E-AD67-537617776AAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4D2DC72F-E1EC-4F2E-AD67-537617776AAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4D2DC72F-E1EC-4F2E-AD67-537617776AAF}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{4D2DC72F-E1EC-4F2E-AD67-537617776AAF}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{4D2DC72F-E1EC-4F2E-AD67-537617776AAF}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{4D2DC72F-E1EC-4F2E-AD67-537617776AAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4D2DC72F-E1EC-4F2E-AD67-537617776AAF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4D2DC72F-E1EC-4F2E-AD67-537617776AAF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{4D2DC72F-E1EC-4F2E-AD67-537617776AAF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{4D2DC72F-E1EC-4F2E-AD67-537617776AAF}.Release|x86.ActiveCfg = Release|Any CPU
-		{E80F8EA0-DFE7-4226-85DC-E02D12DBA2A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E80F8EA0-DFE7-4226-85DC-E02D12DBA2A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E80F8EA0-DFE7-4226-85DC-E02D12DBA2A2}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{E80F8EA0-DFE7-4226-85DC-E02D12DBA2A2}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E80F8EA0-DFE7-4226-85DC-E02D12DBA2A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E80F8EA0-DFE7-4226-85DC-E02D12DBA2A2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E80F8EA0-DFE7-4226-85DC-E02D12DBA2A2}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{E80F8EA0-DFE7-4226-85DC-E02D12DBA2A2}.Release|x86.ActiveCfg = Release|Any CPU
-		{DF480419-0030-4B27-A2AA-4F54E34B3050}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{DF480419-0030-4B27-A2AA-4F54E34B3050}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{DF480419-0030-4B27-A2AA-4F54E34B3050}.Debug|x86.ActiveCfg = Debug|x86
-		{DF480419-0030-4B27-A2AA-4F54E34B3050}.Debug|x86.Build.0 = Debug|x86
-		{DF480419-0030-4B27-A2AA-4F54E34B3050}.Release|Any CPU.ActiveCfg = Release|x86
-		{DF480419-0030-4B27-A2AA-4F54E34B3050}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{DF480419-0030-4B27-A2AA-4F54E34B3050}.Release|x86.ActiveCfg = Release|x86
-		{DF480419-0030-4B27-A2AA-4F54E34B3050}.Release|x86.Build.0 = Release|x86
 		{896E5017-59D6-41BD-9CBF-191F77237222}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{896E5017-59D6-41BD-9CBF-191F77237222}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{896E5017-59D6-41BD-9CBF-191F77237222}.Debug|x86.ActiveCfg = Debug|x86

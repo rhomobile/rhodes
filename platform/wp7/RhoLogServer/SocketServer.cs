@@ -118,21 +118,14 @@ namespace RhoLogServer
                     content = state.sb.ToString();
                     if ((content.Length > 0) || (content.IndexOf("") > -1))
                     {
-                        String strh = String.Format("Client # {0} data: ", id);
-                        strh += content.Replace("\0", "");                   
-                        state.sb.Length = 0;
-
-
-                        //Send the incoming string to all current connections (remove if you don't want);
-                        //////////////////////////////////////////////////////////////////////
-                        Object objData = content.Replace("%20", "");
+                        Object objData = content.Replace("%20", " ");
                         byte[] byData = System.Text.Encoding.UTF8.GetBytes(objData.ToString());
                         System.Text.Encoding enc = System.Text.Encoding.ASCII;
                         String tmp = enc.GetString(byData);
                         int begin = tmp.IndexOf("logbegin_");
                         int end = tmp.IndexOf("_logend");
                         tmp = tmp.Substring(begin + 9, end - begin - 9);
-                        String[] logs = tmp.Split(';');
+                        String[] logs = tmp.Split(new char[] { '@', '@', '@' });
                         FileStream st = File.Open(m_logPath, FileMode.OpenOrCreate | FileMode.Append);
                         for (int i = 0; i < logs.Length; i++)
                         {
