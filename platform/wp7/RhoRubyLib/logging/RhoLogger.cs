@@ -7,8 +7,6 @@ namespace rho.common
     {
         public static boolean RHO_STRIP_LOG = false;
 
-        private static Vector<String> m_logItems = new Vector<String>();
-
         private static int L_TRACE = 0;
 	    private static int L_INFO = 1;
 	    private static int L_WARNING = 2;
@@ -191,8 +189,6 @@ namespace rho.common
 		    }
 	        if ( m_severity == L_FATAL )
 	    	    processFatalError();
-
-            m_logItems.Add(m_strMessage);
         }
 
         static boolean isSimulator()
