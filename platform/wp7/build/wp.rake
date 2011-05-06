@@ -26,6 +26,16 @@ namespace "config" do
 		$sdk = $app_config["wpsdk"] unless $app_config["wpsdk"].nil?
 
 		$excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
+		
+        if !$app_config["wp"] || !$app_config["wp"]["productid"]
+			puts "Add wp:productid to application build.yml"
+			puts "productid is GUID in format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+			puts "for example:"
+			puts "wp:"
+            puts "  productid: 'fd55c4d0-51fa-012e-7844-3caec51bd50e'"
+            
+            exit 1
+		end		
 	end
 end
  
@@ -325,6 +335,7 @@ namespace "run" do
 			puts "productid must be set in build.yml"
 			puts "productid's format is xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 		end
+
 		end
 
 		namespace "wp" do
