@@ -19,7 +19,7 @@ namespace rho.common
             m_pParams = copy.m_pParams;
         }
 
-        protected Object findHashParam(String name)
+        public Object findHashParam(String name)
         {
     	    if ( !(m_pParams is Hash) ) 
     		    return null;
