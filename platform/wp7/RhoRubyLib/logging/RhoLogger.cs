@@ -305,7 +305,6 @@ namespace rho.common
     	    m_oLogConf.setLogToFile(true);
 
             //TODO - if ip is empy in rhoconfig then we have to set to false
-            m_oLogConf.setLogToServer(true);
         
 		    if ( isSimulator() ) {
 			    m_oLogConf.setMinSeverity( L_INFO );
@@ -329,6 +328,9 @@ namespace rho.common
     	    //
     	    RhoConf.getInstance().loadConf();
     	    m_oLogConf.loadFromConf(RhoConf.getInstance());
+
+            if (RhoConf.getInstance().getString("rhologhost") != null)
+                m_oLogConf.setServerSynk(new rho.logging.RhoLogServerSink(m_oLogConf));
         }
     }
 
