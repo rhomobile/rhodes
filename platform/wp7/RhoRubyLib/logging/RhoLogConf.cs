@@ -23,6 +23,8 @@ namespace rho.logging
     Mutex m_FlushLock = new Mutex();
     Mutex m_CatLock = new Mutex();
 
+    public IRhoLogSink getOutputSink() { return m_pOutputSink; }
+
 	public RhoLogConf(){
 		m_pFileSink = new rho.logging.RhoLogFileSink(this);
 		m_pOutputSink = new rho.logging.RhoLogOutputSink(this);
