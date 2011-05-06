@@ -68,7 +68,7 @@ namespace rho
 
         public override Stream OpenInputFileStream(string path)
         {
-            System.Diagnostics.Debug.WriteLine("open_file: " + path, "");
+            //System.Diagnostics.Debug.WriteLine("open_file: " + path, "");
 
             StreamResourceInfo sr = Application.GetResourceStream(new Uri(CFilePath.removeFirstSlash(path), UriKind.Relative));
             if (sr == null)
