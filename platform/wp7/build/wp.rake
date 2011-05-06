@@ -66,6 +66,12 @@ end
 		task :rhobundle => ["config:wp"] do
 			Rake::Task["build:bundle:noiseq"].execute
 
+			#write host and port 4 log server     
+			confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
+			confpath_content += "\r\n" + "rhologhost=" + Jake.localip()
+			confpath_content += "\r\n" + "rhologport=8000"
+			File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
+
 			#move public folder to root
 			cp_r $srcdir + "/apps/public", $srcdir + "/public"
 			rm_r $srcdir + "/apps/public"
@@ -213,17 +219,17 @@ end
 
 def run_rho_log_server()
     $rhologhostaddr = Jake.localip()
-	$rhologhostport = 0
+	$rhologhostport = 8000
     $rhologserver = WEBrick::HTTPServer.new :BindAddress => $rhologhostaddr, :Port => $rhologhostport
     $rhologhostport = $rhologserver.config[:Port]
     puts "LOCAL SERVER STARTED ON #{$rhologhostaddr}:#{$rhologhostport}"
     Thread.new { $rhologserver.start }
 
 	#write host and port 4 log server     
-    confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
-    confpath_content += "\r\n" + "rhologhost=" + $rhologhostaddr
-	confpath_content += "\r\n" + "rhologport=" + $rhologhostport.to_s()
-	File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
+    #confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
+    #confpath_content += "\r\n" + "rhologhost=" + $rhologhostaddr
+	#confpath_content += "\r\n" + "rhologport=" + $rhologhostport.to_s()
+	#File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
 
 	$rhologfile = File.open(gelLogPath, "w+")
 
@@ -317,7 +323,7 @@ namespace "run" do
 		if $app_config["wp"] && $app_config["wp"]["productid"] != nil
 			#system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
 			run_rho_log_server()
-			Rake::Task["device:wp:addbundletoxapRelease"].invoke
+			#Rake::Task["device:wp:addbundletoxapRelease"].invoke
 
 			args = []
 			args << $app_config["wp"]["productid"]
@@ -348,7 +354,7 @@ namespace "run" do
 			if $app_config["wp"] && $app_config["wp"]["productid"] != nil
 			    #system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
 				run_rho_log_server()
-				Rake::Task["device:wp:addbundletoxapRelease"].invoke
+				#Rake::Task["device:wp:addbundletoxapRelease"].invoke
 
 				args = []
 				args << $app_config["wp"]["productid"]
