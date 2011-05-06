@@ -9,10 +9,11 @@ namespace rho.net
 {
     public class NetRequest
     {
-        private static RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+        private RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		    new RhoLogger("Net");
         private static CRhodesApp RHODESAPP() { return CRhodesApp.Instance; }
-	
+        public void setLog(RhoLogger log) { LOG = log;  }
+
 	    boolean m_bCancel = false;
 	    boolean m_sslVerifyPeer = true;
         ManualResetEvent m_respWaitEvent = new ManualResetEvent(true);
