@@ -7,7 +7,6 @@ namespace rho.logging
     {
     int         m_nMinSeverity = 0;
     boolean     m_bLogToOutput = false;
-    boolean     m_bLogToServer = false;
 
     boolean     m_bLogToFile = false;
     String      m_strLogFilePath = "";
@@ -28,7 +27,6 @@ namespace rho.logging
 	public RhoLogConf(){
 		m_pFileSink = new rho.logging.RhoLogFileSink(this);
 		m_pOutputSink = new rho.logging.RhoLogOutputSink(this);
-        m_pServerSink = new rho.logging.RhoLogServerSink(this);
     }
 
 	public void close()
@@ -76,8 +74,6 @@ namespace rho.logging
 
     boolean isLogToOutput(){ return m_bLogToOutput;}
     public void setLogToOutput(boolean bLogToOutput) { m_bLogToOutput = bLogToOutput; }
-    boolean isLogToServer() { return m_bLogToServer; }
-    public void setLogToServer(boolean bLogToServer) { m_bLogToServer = bLogToServer; }
 
     boolean isLogToFile(){ return m_bLogToFile;}
     public void setLogToFile(boolean bLogToFile) { m_bLogToFile = bLogToFile; }
@@ -102,6 +98,8 @@ namespace rho.logging
 
     public void setMaxLogFileSize(int nMaxSize) { m_nMaxLogFileSize = nMaxSize; }
     public int getMaxLogFileSize(){ return m_nMaxLogFileSize; }
+
+    public void setServerSynk(IRhoLogSink pServerSynk) { m_pServerSink = pServerSynk; }
 
     public boolean isLogPrefix(){ return m_bLogPrefix;}
     public void setLogPrefix(boolean bLogPrefix){ m_bLogPrefix = bLogPrefix;}
@@ -147,8 +145,7 @@ namespace rho.logging
         if ( isLogToOutput() )
             m_pOutputSink.writeLogMessage(strMsg);
 
-        if (isLogToServer())
-            m_pServerSink.writeLogMessage(strMsg);
+        m_pServerSink.writeLogMessage(strMsg);
     	
     }
     
