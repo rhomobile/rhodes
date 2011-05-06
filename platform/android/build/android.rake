@@ -215,7 +215,7 @@ def set_app_name_android(newname)
 
   provider.add_element "grant-uri-permission", { "android:pathPrefix" => "/rhodes/apps/" }
 
-  #manifest.elements.each('uses-permission') { |e| manifest.delete e }
+  manifest.elements.each('uses-permission') { |e| manifest.delete e }
 
   caps.sort.each do |cap|
     element = REXML::Element.new('uses-permission')
