@@ -87,7 +87,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Properties\AppManifest.xml" />
+    <None Include="Properties\AppManifest.xml">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\WMAppManifest.xml">
       <SubType>Designer</SubType>
     </None>
@@ -102,10 +104,6 @@
     <Content Include="SplashScreenImage.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\IsolatedStorageExplorer\IsolatedStorageExplorer.csproj">
-      <Project>{4D2DC72F-E1EC-4F2E-AD67-537617776AAF}</Project>
-      <Name>IsolatedStorageExplorer</Name>
-    </ProjectReference>
     <ProjectReference Include="..\RhoRubyLib\RhoRubyLib.csproj">
       <Project>{9CAF724B-1466-4A76-9251-5ADB132F636F}</Project>
       <Name>RhoRubyLib</Name>

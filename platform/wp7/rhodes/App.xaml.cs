@@ -69,10 +69,6 @@ namespace Rhodes
         {
             //initRuby();
             //RhoRubyStart();
-            //IsolatedStorageExplorer.Explorer.Start("localhost");
-            //m_logThread.DoWork += RhoLogSender.logWorkerDoWork;
-            //m_logThread.RunWorkerCompleted += RhoLogSender.logWorkerRunWorkerCompleted;
-            //m_logThread.RunWorkerAsync();
         }
 
         // Code to execute when the application is activated (brought to foreground)
