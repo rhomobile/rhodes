@@ -26,6 +26,16 @@ namespace "config" do
 		$sdk = $app_config["wpsdk"] unless $app_config["wpsdk"].nil?
 
 		$excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
+		
+        if !$app_config["wp"] || !$app_config["wp"]["productid"]
+			puts "Add wp:productid to application build.yml"
+			puts "productid is GUID in format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+			puts "for example:"
+			puts "wp:"
+            puts "  productid: 'fd55c4d0-51fa-012e-7844-3caec51bd50e'"
+            
+            exit 1
+		end		
 	end
 end
  
@@ -288,7 +298,6 @@ namespace "run" do
 
 		desc "Build, install .xap and run on WP7 emulator"
 		task :wp => ["clean:wm:all", "device:wp:production"] do
-		if $app_config["wp"]["productid"] != nil
 			system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
 			args = []
 			args << $app_config["wp"]["productid"]
@@ -297,10 +306,6 @@ namespace "run" do
 			args << $targetdir + "/" + $appname + ".xap"
 			args << "emu"
 			puts Jake.run($wp7runner, args)
-		else
-			puts "productid must be set in build.yml"
-			puts "productid's format is xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-		end
 		end
 
 		namespace "wp" do
@@ -310,7 +315,6 @@ namespace "run" do
 
 			desc "Build, install .xap and run on WP7 device"
 			task :device => ["clean:wm:all", "device:wp:production"] do
-			if $app_config["wp"]["productid"] != nil
 			    system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
 				args = []
 				args << $app_config["wp"]["productid"]
@@ -319,10 +323,6 @@ namespace "run" do
 				args << $targetdir + "/" + $appname + ".xap"
 				args << "dev"
 				puts Jake.run($wp7runner, args)
-			else
-				puts "productid must be set in build.yml"
-				puts "productid's format is xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-			end
 			end
 		end
 end
