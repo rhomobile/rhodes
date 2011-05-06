@@ -54,6 +54,77 @@ namespace rho
             }
         }
 
+        class CRhoOutputStream : Stream
+        {
+            private static RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
+                        new RhoLogger("APP");
+
+            private bool m_bError = false;
+            public CRhoOutputStream(bool bError) { m_bError = bError; }
+
+            public override bool CanRead
+            {
+                get { return false; }
+            }
+
+            public override bool CanSeek
+            {
+                get { return false; }
+            }
+
+            public override bool CanWrite
+            {
+                get { return true; }
+            }
+
+            public override void Flush()
+            {
+            
+            }
+
+            public override long Length
+            {
+                get { throw new NotSupportedException(); }
+            }
+
+            public override long Position
+            {
+                get { throw new NotSupportedException(); }
+                set { throw new NotSupportedException(); }
+            }
+
+            public override int Read(byte[]/*!*/ buffer, int offset, int count)
+            {
+                throw new NotSupportedException();
+            }
+
+            public override long Seek(long offset, SeekOrigin origin)
+            {
+                throw new NotSupportedException();
+            }
+
+            public override void SetLength(long value)
+            {
+                throw new NotSupportedException();
+            }
+
+            public override void Write(byte[]/*!*/ buffer, int offset, int count)
+            {
+                if (count == 0)
+                    return;
+
+                if (count == 1 && buffer[0] == 10 || buffer[0] == 13)
+                    return;
+
+                String str = System.Text.Encoding.UTF8.GetString(buffer, offset, count);
+
+                if (m_bError)
+                    LOG.ERROR(str);
+                else
+                    LOG.INFO(str);
+            }
+        }
+
         private void initRuby()
         {
             ScriptRuntimeSetup runtimeSetup = ScriptRuntimeSetup.ReadConfiguration();
@@ -68,6 +139,11 @@ namespace rho
             languageSetup.Options["Verbosity"] = 2;
 
             m_runtime = IronRuby.Ruby.CreateRuntime(runtimeSetup);
+            Stream errStream = new CRhoOutputStream(true);
+            m_runtime.IO.SetErrorOutput(errStream, new StreamWriter(errStream, System.Text.Encoding.UTF8));
+            Stream outStream = new CRhoOutputStream(false);
+            m_runtime.IO.SetOutput(outStream, new StreamWriter(outStream, System.Text.Encoding.UTF8));
+
             m_engine = IronRuby.Ruby.GetEngine(m_runtime);
             m_context = (RubyContext)Microsoft.Scripting.Hosting.Providers.HostingHelpers.GetLanguageContext(m_engine);
 

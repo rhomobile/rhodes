@@ -163,7 +163,12 @@ namespace rho.logging
 
         public void writeLogMessage(String strMsg) 
         {
-            System.Diagnostics.Debug.WriteLine(strMsg);
+#if DEBUG
+            if ( strMsg.charAt(strMsg.length() - 1) != '\n' )
+                System.Diagnostics.Debug.WriteLine(strMsg);
+            else
+                System.Diagnostics.Debug.WriteLine(strMsg.Substring(0, strMsg.length() - 1));
+#endif
 	    }
 
         public void clear()
