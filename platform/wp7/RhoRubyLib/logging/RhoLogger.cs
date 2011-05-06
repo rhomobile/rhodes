@@ -38,22 +38,6 @@ namespace rho.common
         public String getLogCategory() { return m_category; }
         public void setLogCategory(String category) { m_category = category; }
 
-        static public String flushLogItems()
-        {
-            String result = "";
-            lock (m_SinkLock2)
-            {
-                int size = m_logItems.size();
-                for (int i = 0; i < size; i++)
-                {
-                    result += m_logItems[i]+"@@@";
-                }
-                m_logItems.Clear();
-            }
-
-            return result; 
-        }
-
         public static void close() { m_oLogConf.close(); }
 
         private boolean isEnabled()

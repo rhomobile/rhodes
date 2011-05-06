@@ -293,12 +293,6 @@ namespace "run" do
 		end
 
 		namespace "wp" do
-			desc "Start Isolated Storage Explorer"
-			task :explorer  => ["config:wp"] do
-				args = []
-				puts Jake.run($wp7explorer, args)
-			end
-
 			desc "Build, install .xap and run on WP7 device"
 			task :device => ["clean:wm:all", "device:wp:production"] do
 			if $app_config["wp"]["productid"] != nil
