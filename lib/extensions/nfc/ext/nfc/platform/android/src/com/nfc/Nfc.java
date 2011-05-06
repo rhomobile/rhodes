@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
@@ -38,8 +39,19 @@ public class Nfc  extends BroadcastReceiver {
 	
 	
 	public static int isSupported() {
-		//NfcAdapter da = NfcAdapter.getDefaultAdapter(RhodesService.getContext());
-		NfcAdapter da = NfcAdapter.getDefaultAdapter();
+		NfcAdapter da = null;
+		try {
+			int sdkVersion = Integer.parseInt(Build.VERSION.SDK);
+			if (sdkVersion >= Build.VERSION_CODES.GINGERBREAD_MR1) {
+				da = NfcAdapter.getDefaultAdapter(RhodesService.getContext());
+			}
+			else if (sdkVersion >= Build.VERSION_CODES.GINGERBREAD) {
+				da = NfcAdapter.getDefaultAdapter();
+			}
+		}
+		catch (Exception e) {
+			// nothing
+		}
 		if (da == null) {
 			return 0;
 		}
