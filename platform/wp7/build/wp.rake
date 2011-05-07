@@ -296,9 +296,14 @@ namespace "run" do
 		if $app_config["wp"] && $app_config["wp"]["productid"] != nil
 			#system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
 
+			File.delete($app_path + "/started")
 			run_rho_log_server()
-			puts "RhoLogServr is starting"
-			sleep(5)
+			puts "RhoLogServer is starting"
+			while(1)
+			if File.exists?($app_path + "/started")
+				break
+			end
+			end
 
 			Rake::Task["device:wp:addbundletoxapRelease"].invoke
 			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
@@ -339,6 +344,8 @@ namespace "run" do
 				confpath_content += "\r\n" + "rhologport=" + $rhologhostport.to_s()
 				File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
 				puts "LOCAL SERVER STARTED ON #{$rhologhostaddr}:#{$rhologhostport}"
+				started = File.open($app_path + "/started", "w+")
+				started.close
 				Thread.new { $rhologserver.start }
 				#write host and port 4 log server     
 				$rhologfile = File.open(getLogPath, "w+")
@@ -358,9 +365,14 @@ namespace "run" do
 			task :device => ["clean:wm:all", "device:wp:production"] do
 			if $app_config["wp"] && $app_config["wp"]["productid"] != nil
 			    #system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
+				File.delete($app_path + "/started")
 				run_rho_log_server()
 				puts "RhoLogServr is starting"
-				sleep(5)
+				while(1)
+				if File.exists?($app_path + "/started")
+					break
+				end
+				end
 
 				Rake::Task["device:wp:addbundletoxapRelease"].invoke
 				out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
