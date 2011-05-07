@@ -212,29 +212,8 @@ def get_app_log()
 end
 
 def run_rho_log_server()
-    $rhologhostaddr = Jake.localip()
-	$rhologhostport = 0
-    $rhologserver = WEBrick::HTTPServer.new :BindAddress => $rhologhostaddr, :Port => $rhologhostport
-    $rhologhostport = $rhologserver.config[:Port]
-    puts "LOCAL SERVER STARTED ON #{$rhologhostaddr}:#{$rhologhostport}"
-    Thread.new { $rhologserver.start }
-
-	#write host and port 4 log server     
-    confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
-    confpath_content += "\r\n" + "rhologhost=" + $rhologhostaddr
-	confpath_content += "\r\n" + "rhologport=" + $rhologhostport.to_s()
-	File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
-
-	$rhologfile = File.open(gelLogPath, "w+")
-
-    $rhologserver.mount_proc '/' do |req,res|
-		$rhologfile.puts req.body
-		$rhologfile.flush
-		res.status = 200
-		res.chunked = true
-		res.body = ""
-	end
-  end
+    system("START rake run:wp:rhologserver")
+end
  
  namespace "device" do
 	namespace "wp" do
@@ -307,16 +286,20 @@ namespace "clean" do
 end
 
 namespace "run" do
-        def gelLogPath
-			log_file_path =  File.join($app_path, $log_file)
+        def getLogPath
+			log_file_path =  File.join($app_path, $app_config["applog"].nil? ? "applog.txt" : $app_config["applog"] )
 			return log_file_path
 		end
-		
+
 		desc "Build, install .xap and run on WP7 emulator"
 		task :wp => ["clean:wm:all", "device:wp:production"] do
 		if $app_config["wp"] && $app_config["wp"]["productid"] != nil
 			#system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
+
 			run_rho_log_server()
+			puts "RhoLogServr is starting"
+			sleep(5)
+
 			Rake::Task["device:wp:addbundletoxapRelease"].invoke
 			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
 			cp  out_dir + "rhodes.xap", out_dir + $appname + ".xap"
@@ -329,11 +312,46 @@ namespace "run" do
 			args << $targetdir + "/" + $appname + ".xap"
 			args << "emu"
 			puts Jake.run($wp7runner, args)
+
+			#while(1)
+			#	sleep(1000)
+			#end
+			#$rhologfile.close
+		else
+			puts "productid must be set in build.yml"
+			puts "productid's format is xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+		end
+
 		end
 
 		namespace "wp" do
-		    task :get_log => "config:wm" do
-				puts "log_file=" + gelLogPath
+		    task :get_log => "config:wp" do
+				puts "log_file=" + getLogPath
+			end
+
+			task :rhologserver => ["config:wp"] do
+				$rhologhostaddr = Jake.localip()
+				$rhologhostport = 0
+				$rhologserver = WEBrick::HTTPServer.new :BindAddress => $rhologhostaddr, :Port => $rhologhostport
+				$rhologhostport = $rhologserver.config[:Port]
+				puts "LOCAL SERVER STARTED ON #{$rhologhostaddr}:#{$rhologhostport}"
+				Thread.new { $rhologserver.start }
+				#write host and port 4 log server     
+				confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
+				confpath_content += "\r\n" + "rhologhost=" + $rhologhostaddr
+				confpath_content += "\r\n" + "rhologport=" + $rhologhostport.to_s()
+				File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
+				$rhologfile = File.open(getLogPath, "w+")
+				$rhologserver.mount_proc '/' do |req,res|
+					$rhologfile.puts req.body
+					$rhologfile.flush
+					res.status = 200
+					res.chunked = true
+					res.body = ""
+				end
+				while(1)
+					sleep(1000)
+				end
 			end
 
 			desc "Build, install .xap and run on WP7 device"
@@ -353,6 +371,15 @@ namespace "run" do
 				args << $targetdir + "/" + $appname + ".xap"
 				args << "dev"
 				puts Jake.run($wp7runner, args)
+
+				#while(1)
+				#	sleep(1000)
+				#end
+				#$rhologfile.close
+			else
+				puts "productid must be set in build.yml"
+				puts "productid's format is xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+			end
 			end
 		end
 end
