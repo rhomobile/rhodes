@@ -359,6 +359,9 @@ namespace "run" do
 			if $app_config["wp"] && $app_config["wp"]["productid"] != nil
 			    #system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
 				run_rho_log_server()
+				puts "RhoLogServr is starting"
+				sleep(5)
+
 				Rake::Task["device:wp:addbundletoxapRelease"].invoke
 				out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
 				cp  out_dir + "rhodes.xap", out_dir + $appname + ".xap"
