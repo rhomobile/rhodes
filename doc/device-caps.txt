@@ -695,6 +695,38 @@ Next, your RhoSync application should be running on a network that is accessible
 
 Now your Rhodes application is configured to receive push messages.
 
+To handle push message in ruby code it's needed to register push callback
+
+    :::ruby
+    class AppApplication < Rho::RhoApplication
+      def initialize
+        super
+        System.set_push_notification "/app/Push/push_callback", ""
+      end
+    end
+
+Push callback set up in form of local application URL and called as callback nevermind rho_callback=1 specified in it's parameters list or not.
+There is several push message parameters that can be handled by Rhodes authomatically. These are:
+- alert
+- sound
+- vibrate
+- do_sync
+Every parameter can be specified in a push message body with its value:
+
+    :::text
+    alert=some message here&sound=alert.wav&vibrate=3&do_sync=sync_src1,sync_src2
+
+Automatic push message parameters handling takes its place in case no custom push callback or push callback returns "rho_push":
+
+    :::ruby
+    def push_callback
+    
+      # do some work here
+    
+      "rho_push"
+    end
+
+
 ### iPhone
 iPhone PUSH support uses the Apple Push Notification Service (APNS) introduced in iPhone SDK 3.0.  In order to use the service, you will need to obtain a push-enabled provisioning profile and a server-side push certificate used for encrypting RhoSync->APNS traffic.
 
@@ -743,10 +775,23 @@ Then modify your application's build.yml and specify there google account used t
 	android:
 	  push:
 	    sender: push-app@gmail.com
+        
 
 This is the same address used by RhoSync to retrieve authtoken. See [here](/rhosync/push#android) for more information.
 
-NOTE: **WARNING** This e-mail address MUST NOT be the same as origin of google account on phone! This mean that google account registered on your phone/emulator MUST NOT be push-app@gmail.com; it MUST be another one. This is known bug in Android C2DM implementation - if sender and receiver are the same, underlying android service crash and lose message. More details [here](http://groups.google.com/group/android-c2dm/browse_thread/thread/128790789c4e9d6a/67aca1e1764724d4). 
+NOTE: **WARNING** This e-mail address MUST NOT be the same as origin of google account on phone! This mean that google account registered on your phone/emulator MUST NOT be push-app@gmail.com; it MUST be another one. This is known bug in Android C2DM implementation - if sender and receiver are the same, underlying android service crash and lose message. More details [here](http://groups.google.com/group/android-c2dm/browse_thread/thread/128790789c4e9d6a/67aca1e1764724d4). This is actual not for all Android versions.
+
+At Android it is possible to set up status bar notifications for PUSH messages. In this case push message is handled by application only after user has opened the notification.
+There is two modes available for push notifications:
+ - <i>always</i> - push notification is shown always
+ - <i>background</i> - push notification is shown only if application is backgrounded (not started)
+If no push notification mode is specified in build.yml then no any notifications are shown at all.
+
+	:::yaml
+	android:
+	  push:
+	    notification: background
+        
 
 ### BlackBerry
 Notifications to BlackBerry are sent using PAP 2.0 message through a BES/MDS server.  
