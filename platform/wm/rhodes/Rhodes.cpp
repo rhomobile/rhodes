@@ -96,6 +96,15 @@ public :
 					m_strRhodesPath = path;
 					free(path);
 				}
+			} else if (wcsncmp(lpszToken, _T("appname"),7)==0) 
+            {
+				String token = convertToStringA(lpszToken);
+				//parseToken will allocate extra byte at the end of the returned token value
+                char* path = parseToken( token.c_str(), token.length() );
+				if (path) {
+                    convertToStringW(path, m_strAppNameW);
+					free(path);
+				}
 			} else if (wcsncmp(lpszToken, _T("debughost"),9)==0) 
             {
 				String token = convertToStringA(lpszToken);
@@ -222,8 +231,6 @@ public :
         rho::common::CRhodesApp::Create(m_strRootPath );
         RHODESAPP().setRhodesPath(m_strRhodesPath);
 
-        String strTitle = RHODESAPP().getAppTitle();
-
         DWORD dwStyle = WS_VISIBLE;
 
 #if !defined(_WIN32_WCE)
@@ -231,8 +238,9 @@ public :
 #endif
         // Create the main application window
 #ifdef RHODES_EMULATOR
-        m_appWindow.Initialize(convertToStringW(strTitle).c_str());
+        m_appWindow.Initialize(m_strAppNameW.c_str());
 #else
+        String strTitle = RHODESAPP().getAppTitle();
         m_appWindow.Create(NULL, CWindow::rcDefault, convertToStringW(strTitle).c_str(), dwStyle);
 #endif
         if (NULL == m_appWindow.m_hWnd)
@@ -462,6 +470,7 @@ public :
 private:
     CMainWindow m_appWindow;
     rho::String m_strRootPath, m_strRhodesPath, m_strDebugHost, m_strDebugPort;
+    rho::StringW m_strAppNameW;
 	int m_nRestarting;
 
 #ifdef OS_WINDOWS

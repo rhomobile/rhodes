@@ -351,8 +351,16 @@ namespace "run" do
     end
   end
 
+	namespace "rhosimulator" do
+        task :get_log => "config:common" do
+            $log_file = $app_config["applog"].nil? ? "applog.txt" : $app_config["applog"] 	    
+            puts "log_file=" + File.join($app_path, "rhosimulator", $log_file)
+        end
+    end
+    
 	namespace "win32" do
 		task :rhosimulator => "config:common" do
+            $appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"] 
     
             if $config['env']['paths']['rhosimulator']
 		        path = File.join( $config['env']['paths']['rhosimulator'], "rhosimulator.exe")
@@ -370,6 +378,8 @@ namespace "run" do
 		    args = []
 		    args << "-approot='#{$app_path}'"
 		    args << "-rhodespath='#{$startdir}'"
+            args << "-appname='#{$appname}'"		    
+            
 		    if $debug_port
                 args << "-debugport=#{$debug_port}"
                 args << "-debughost='127.0.0.1'"
