@@ -334,13 +334,13 @@ namespace "run" do
 				$rhologhostport = 0
 				$rhologserver = WEBrick::HTTPServer.new :BindAddress => $rhologhostaddr, :Port => $rhologhostport
 				$rhologhostport = $rhologserver.config[:Port]
-				puts "LOCAL SERVER STARTED ON #{$rhologhostaddr}:#{$rhologhostport}"
-				Thread.new { $rhologserver.start }
-				#write host and port 4 log server     
 				confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
 				confpath_content += "\r\n" + "rhologhost=" + $rhologhostaddr
 				confpath_content += "\r\n" + "rhologport=" + $rhologhostport.to_s()
 				File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
+				puts "LOCAL SERVER STARTED ON #{$rhologhostaddr}:#{$rhologhostport}"
+				Thread.new { $rhologserver.start }
+				#write host and port 4 log server     
 				$rhologfile = File.open(getLogPath, "w+")
 				$rhologserver.mount_proc '/' do |req,res|
 					$rhologfile.puts req.body
