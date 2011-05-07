@@ -296,13 +296,13 @@ namespace "run" do
 		if $app_config["wp"] && $app_config["wp"]["productid"] != nil
 			#system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
 
-			File.delete($app_path + "/started")
+			File.delete($app_path + "/started") if File.exists?($app_path + "/started")
 			run_rho_log_server()
 			puts "RhoLogServer is starting"
 			while(1)
-			if File.exists?($app_path + "/started")
-				break
-			end
+			    if File.exists?($app_path + "/started")
+				    break
+			    end
 			end
 
 			Rake::Task["device:wp:addbundletoxapRelease"].invoke
@@ -365,13 +365,13 @@ namespace "run" do
 			task :device => ["clean:wm:all", "device:wp:production"] do
 			if $app_config["wp"] && $app_config["wp"]["productid"] != nil
 			    #system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
-				File.delete($app_path + "/started")
+				File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
 				run_rho_log_server()
-				puts "RhoLogServr is starting"
+				puts "RhoLogServer is starting"
 				while(1)
-				if File.exists?($app_path + "/started")
-					break
-				end
+				    if File.exists?($app_path + "/started")
+					    break
+				    end
 				end
 
 				Rake::Task["device:wp:addbundletoxapRelease"].invoke
