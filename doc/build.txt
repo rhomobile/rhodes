@@ -757,12 +757,12 @@ If you use Visual Studio 2010 : add path to `msbuild` to `rhobuild.yml` in rhode
 To build and run emulator run:
 
 	:::term
-	$ run:win32
+	$rake  run:win32
 
 To clean all binaries run:
 
 	:::term
-	$ clean:win32
+	$rake clean:win32
 
 ### Logging
 
@@ -827,42 +827,48 @@ Use it at your own risk!
 * Visual Studio 2010 installed or VS Express for Windows Phone and VS Express for C#
     * [Windows Phone Developer Tools RTW](http://www.microsoft.com/downloads/en/details.aspx?FamilyID=04704acf-a63a-4f97-952c-8b51b34b00ce)
     * [Windows Phone Developer Tools January 2011 Update](http://www.microsoft.com/downloads/en/details.aspx?FamilyID=49b9d0c5-6597-4313-912a-f0cca9c7d277)
-    
+
+### Build and run using Rhodes gem
+
+* Install Rhodes gem
+* Run application simulator:
+
+        $rake run:wp
+
+* Run application device:    
+
+        $rake run:wp:device
+
+* See log in application folder : rholog.txt
+
+NOTE: When running on device you may need to disconnect USB cable from device to see log
+
+* After Application code modifications, run rake commands. DO NOT close simulator!
+
+### Build from sources
+* Checkout rhodes source code from github 
 * Get IronRuby master branch to parent folder of rhodes:
 
         $ git clone https://github.com/IronLanguages/main.git
   
   rename IronLanguages folder to IronRuby
 
-### Build IronRuby(Once)
-* Checkout rhodes source code from github 
+* Build IronRuby(Once)
 
-* Copy folder `rhodes\platform\wp7\IronRuby\Languages` to `IronRuby`
-
-* Open `IronRuby\Solutions\Ruby.sln` in VS 2010 or VS Express 2010 for C#.
-
-* Select 'Silverlight3Debug|Any CPU' in solution configuration and build solution
+        rake build:wp:ironruby
 
 ### Build from IDE
-* Checkout rhodes source code from github
-* Open the file `rhobuild.yml` using a text editor:
+#### IronRuby
+* Copy folder `rhodes\platform\wp7\IronRuby\Languages` to `IronRuby`
+* Open `IronRuby\Solutions\Ruby.sln` in VS 2010 or VS Express 2010 for C#.
+* Select 'Silverlight3Debug|Any CPU' or 'Silverlight3Release|Any CPU' in solution configuration and build solution
 
-    define the path to your application
-    
+#### Rhodes
 * Open `rhodes\platform\wp7\rhodes.sln` in VS 2010 or VS Express 2010 for Windows Phone.
-* Select Debug configuration, Windows Phone 7 Emulator target and build solution.
+* Select Debug or Release configuration, Windows Phone 7 Emulator target and build solution.
 * Run emulator by pressing Start Debugging or Start Without Debugging
 * After Application code modifications , build Rhodes solution and Start Debugging. DO NOT close emulator!
-
-### Logging
-See log in VS output console
-
-### Run store sample
-* Checkout store sample:
-
-        $ git clone https://github.com/rhomobile/store.git
-        
-* Run application in emulator and login with empty credentials
+* See log in VS output console (Debug mode only)
 
 ## RhoSimulator
 Currently it works only on Windows. 
