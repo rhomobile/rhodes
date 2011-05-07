@@ -212,7 +212,7 @@ def get_app_log()
 end
 
 def run_rho_log_server()
-    system("START rake run:wp:rhologserver")
+    system("START rake run:wp:rhologserver[#{$app_path}]")
 end
  
  namespace "device" do
@@ -334,7 +334,12 @@ namespace "run" do
 				puts "log_file=" + getLogPath
 			end
 
-			task :rhologserver => ["config:wp"] do
+			task :rhologserver, :app_path  do |t, args|
+			    puts "Args were: #{args}"
+			    $app_path = args[:app_path]
+			    
+			    Rake::Task["config:wp"].invoke
+			    
 				$rhologhostaddr = Jake.localip()
 				$rhologhostport = 0
 				$rhologserver = WEBrick::HTTPServer.new :BindAddress => $rhologhostaddr, :Port => $rhologhostport
