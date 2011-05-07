@@ -49,8 +49,6 @@ HWND CMainWindow::Initialize(const wchar_t* title)
     HWND hWnd = (HWND)m_mainWindowProxy.init(this, title);
     SubclassWindow(hWnd);
 
-    SetWindowText(L"RhoSimulator");
-
     //rho_rhodesapp_callAppActiveCallback(1);
     rho_rhodesapp_callUiCreatedCallback();
     return hWnd;
