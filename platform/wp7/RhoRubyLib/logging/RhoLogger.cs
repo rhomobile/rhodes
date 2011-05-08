@@ -325,7 +325,7 @@ namespace rho.common
     	    RhoConf.getInstance().loadConf();
     	    m_oLogConf.loadFromConf(RhoConf.getInstance());
 
-            if (RhoConf.getInstance().getString("rhologhost") != null)
+            if (RhoConf.getInstance().getString("rhologhost").length() > 0)
                 m_oLogConf.setServerSynk(new rho.logging.RhoLogServerSink(m_oLogConf));
         }
     }
