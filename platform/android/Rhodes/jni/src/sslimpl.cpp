@@ -88,9 +88,9 @@ void* SSLImpl::createStorage()
 {
     JNIEnv *env = jnienv();
     jobject obj = env->NewObject(cls, midConstructor);
-    env->NewGlobalRef(obj);
+    jobject objG = env->NewGlobalRef(obj);
     env->DeleteLocalRef(obj);
-    return obj;
+    return objG;
 }
 
 void SSLImpl::freeStorage(void *ptr)
