@@ -1,0 +1,236 @@
+# Rhodes Release procedure
+## Install Rhodes beta
+    gem uninstall rhodes
+    gem install rhodes --pre --no-ri --no-rdoc 
+    
+    add <gem>/bin to PATH environment variable
+    copy rhobuild.yml from rhodes to gem
+    
+## Test procedures
+Remove Rhodes application from Device and Simulators, clean Simulator and remove files from device
+
+### Framework spec
+Run on simulator from gem folder:
+    rake run:win32:framework_spec
+    rake run:android:framework_spec
+    rake run:iphone:framework_spec
+    
+Build and Run on device:
+    rake device:wm:production
+    rake device:android:production
+    rake device:iphone:production    
+    
+### Phone spec
+Run on simulator from gem folder:
+    rake run:win32:phone_spec
+    rake run:android:phone_spec
+    rake run:iphone:phone_spec
+    rake run:bb:phone_spec
+    rake run:wp:phone_spec
+    
+Build and Run on device:
+    rake device:wm:production
+    rake device:android:production
+    rake device:iphone:production
+    rake device:bb:production        
+    rake device:wp:production    
+    
+### New generated application
+    rhodes app mytest
+
+Run on RhoSimulator from 'mytest' folder:
+    rake run:win32:rhosimulator
+
+Run on Platform Simulator from 'mytest' folder.
+    
+### System-api-samples
+
+    git clone git@github.com:rhomobile/rhodes-system-api-samples.git
+    
+* Check application loading image (loading.png) - for iPhone you should see image correspondent to your device and orientation(only for iPad).
+* My Contacts : you should see contacts from SIM card and phone memory(if available), create new contact, go to phone book, you should see new record. Go back to app, edit some properties, than delete. Make sure that record deleted from phone book
+* My Events : you should see events from Calendar(if available), create new event, go to phone calendar, you should see new  event. Go back to app, edit some properties, than delete. Make sure that event deleted from phone calendar
+* My Location: go outside building and wait 5 minutes, you should see your coordinates
+* My camera Images:
+  - choose picture: you should see list of phone pictures, <br/>select one, it should displayed by rhodes
+  - take picture: camera should open, make photo, rhodes should display new picture
+* Signature Capture test(only for iPhone and Android): open "My Signatures" page. Press [Take Signature] - new screen with custom toolbar/set of buttons(depends of platform) opened. Draw signature by you finger. select [Done]/[OK] button. You should see you signature as image on signature page.
+* Screen rotation callback
+* Select date/time: press Edit link for each edit, first time press OK, second time press Cancel:
+    - Date and Time: you should see 2 fields Date, Time
+    - Date only: only date should be displayed
+    - Time only: only time should be displayed
+    - rotate phone - screen should be rotated
+    When you reopen DateTime Picker you should see current date time always.
+* Select date/time using AJAX: press Edit link or just touch field for each edit, first time press OK, second time press Cancel:
+    - Date and Time: you should see 2 fields Date, Time
+    - Date only: only date should be displayed
+    - Time only: only time should be displayed
+    Setting date/time should be processed without reload page. When you reopen DateTime Picker you should see date time from field (previosly setted).
+* Alerts: select each link. you should see corresponding actions
+* Ringtones: all phone ring-tones should be listed. Select 2 of them  - you should listen some sound. On second press [stop], sound should     stopped immediately
+* AsyncHttpTest: Apache license page should be displayed
+* AsyncHttpsTest: gmail login page should be displayed
+* Async Download file: you should see image with many r
+* System test: 
+   - check system settings
+   - press JS popup: you should see javascript alert
+   - press execute_js:  you should see javascript alert (Blackberry is not supported)
+* Localization test: you should see Russian text, dates and currency in various formats  
+* Dynamic menu test: 
+   - see description on the page and press menu button, check all items
+   - press call callback menu item: you should see text Callback called at the bottom of the page
+   - press 'Test back with alert', enter some text to edit, when press Back button - you should see<br/> Alert with message 'Do you want to leave?'. Press No - text from edit should not disappear. <br/>Press back again, on alert press Yes - you should return to dynamic menu test
+   - press 'Test back with close', when press Back button - application should exit
+* Rho tests: press on each link, you should see corresponding page with message
+* Barcode recognize test: open "My Barcode recognize ..." press [scan] under image - see Alert with correct recognized code. Press [Take Picture] for make shot of barcode by camea and see Alert with recognized code or "[]" if not recognized.
+* Bluetooth Chat Demo: 
+  1. Phone and external Bluetooth device (for example external GPS Bluetooth device) - for Android, Windows Mobile and Blackberry only.
+     - pair device with phone
+     - open "Bluetooth Chat Demo" page and press "Connect as Client"
+     - select external device
+     - you should see received data from device
+  2. Phone and another phone. - for iPhone only another iPhone/iPad supported !
+     - pair devices (skip for iPhones)
+     - open "Bluetooth Chat Demo" on both devices
+     - select "Connect as Server" on first device and "Connect as Client" on second device
+     - on second device select first device from list of Bluetooth devices
+     - write message and press [Send](on first or second device) - on another device you should see received message
+* Custom URI schemes: 
+   - mailto should invoke send mail display with filled reviver field 
+   - tel should display phone app with filled phone number
+   - sms should invoke sms sending screen with filled phone number
+* Select some link(not home page), move app to background, when click on app icon, you should see selected page(not home page)
+* On iPhone: Go to "Native bar test" page, select "No bar", "Toolbar", "Tab bar" one-by-one. On tab bar page select tabs one-by-one.
+   After each of operation, trigger "Out of memory" error by selecting simulator menu item "Hardware -> Simulate memory warning".
+   Expected behavior - silent handle of this event. There MUST NOT be crash.
+* On iPhone and Android: Go to "Native bar test" page, select "Tab bar". Select "Switch to Tab 1" - you should switched to Tab 1 with Home tasklist screen.
+* On iPhone and Android: Go to "Native bar test" page, select "Tab bar". Scroll screen up and down:  header bar should “reseating” properly at the top of the screen.
+
+* Open Settings page, Login with empty credentials, open Image - you should see some images there.
+
+### Store
+    git clone git@github.com:rhomobile/store.git
+
+Run and Login with empty credentials, you should see Products and Customers
+
+### Network connectivity test on each platform device
+* turn ON - wifi and GPRS
+* run system api samples, run AsyncHttp test - it should pass
+* move app to background, turn OFF wifi
+* run system api samples, run AsyncHttp test - it should pass
+* move app to background, turn OFF GPRS
+* run system api samples, run AsyncHttp test - it should failed
+* move app to background, turn ON GPRS
+* run system api samples, run AsyncHttp test - it should pass
+* move app to background, turn OFF GPRS, turn ON WIFI
+* run system api samples, run AsyncHttp test - it should pass
+    
+## Install Eclipse plug-in beta
+* Install Eclipse >=3.6
+* Install plug-in: http://rhostudio.s3.amazonaws.com/beta
+
+## Test Eclipse plug-in
+See [http://rhostudio.rhomobile.com]
+* Create new Rhodes application
+* Run and Debug using RhoSimulator: set breakpoint, see variables, see application log in console
+
+##Install Rhodes Eclipse
+Download and unzip: http://rhostudio.s3.amazonaws.com/bundle/win/RhoStudio.zip
+
+## Test Rhodes Eclipse
+Same procedure as for plug-in
+
+##Build Rhodes gem
+
+### Local machine steps
+
+    git clone git@github.com:rhomobile/rhodes.git
+
+1.CHANGELOG
+
+2.Make sure the major.minor.patch version
+   match what you want to release:
+
+     $ rake get_version
+
+   Use set_version to update if it is not correct:
+
+     $ rake set_version[2.3.1]
+
+3.Edit rhodes.gemspec, set s.version :
+
+BETA:
+	s.version = "2.3.1.beta.1"
+
+RELEASE:
+	s.version = Rhodes::VERSION
+
+4.Build RhoSimulator:
+
+    rake build:win32:rhosimulator
+
+4.1 Zip files in folder 'rhodes\platform\win32\RhoSimulator' and copy to :
+http://rhosimulator.s3.amazonaws.com/RhoSimulator
+
+5.Build IronRuby:
+
+    rake build:wp:ironruby
+
+6.Push changes to git
+     git commit -m "bumping version for release"
+     git push
+
+7.Put tag:
+
+    git tag -m "rhodes release" 2.3.1 0548dea055f0aa00642a66c18ea207bd7344dda7
+    git push --tags
+
+### cijoe steps:
+1.Run commands:
+    ssh rhomobile@cijoe.rhomobile.com
+
+    cd ~/rhodes-release
+
+    rm -rf * 
+    git reset --hard
+    git pull
+
+2.Copy 'rhodes\platform\wp7\IronRuby\bin\Silverlight3Release' to cijoe from local computer
+3.Copy 'rhodes\platform\win32\RhoSimulator' to cijoe from local computer
+
+4.Build and push gem:
+    rake gem
+    gem push rhodes-<version>.gem
+
+##Build Eclipse plug-in
+
+0.download Eclipse for RAP/RPC developer
+
+1.download git repository (git@github.com:rhomobile/rhostudio.git)
+
+2.Import project into Eclipse (File/Import/'Existing project into Workspace')
+
+3.Install DLTK 2.0
+
+4.Import into workspace next DLTK plugins
+
+    org.eclipse.dltk.debug
+    org.eclipse.dltk.ruby.ui
+    org.eclipse.dltk.ui
+
+5.add imported plugins to java build paths (Project properties/Java build path/Libraries/Add JAR)
+
+6.select imported plugins in Project properties/Java build path/Libraries/Order and Export 
+
+5.build and run Eclipse configuration
+
+##Build Rhodes Eclipse
+
+1.Install (http://www.eclipse.org/egit/)
+
+2.import plugin org.eclipse.platform
+
+3.Start export product (File/Export/Plugin development/Eclipse product)
+
+4.Select destination folder and export
