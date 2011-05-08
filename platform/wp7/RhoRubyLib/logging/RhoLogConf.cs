@@ -145,8 +145,8 @@ namespace rho.logging
         if ( isLogToOutput() )
             m_pOutputSink.writeLogMessage(strMsg);
 
-        m_pServerSink.writeLogMessage(strMsg);
-    	
+        if (m_pServerSink != null)
+            m_pServerSink.writeLogMessage(strMsg);
     }
     
     public int  getLogTextPos(){
