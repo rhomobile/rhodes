@@ -68,13 +68,30 @@ namespace rho
 
         public override Stream OpenInputFileStream(string path)
         {
-            //System.Diagnostics.Debug.WriteLine("open_file: " + path, "");
+            Stream st = null;
 
             StreamResourceInfo sr = Application.GetResourceStream(new Uri(CFilePath.removeFirstSlash(path), UriKind.Relative));
-            if (sr == null)
+            if (sr != null)
+                st = sr.Stream;
+
+            if (st == null)
+            {
+                try
+                {
+                    CRhoFile file = new CRhoFile();
+                    file.open(path, CRhoFile.EOpenModes.OpenReadOnly);
+                    st = file.getStream();
+                }
+                catch (Exception exc)
+                {
+                    throw new System.IO.FileNotFoundException();
+                }
+            }
+
+            if (st == null)
                 throw new System.IO.FileNotFoundException();
 
-            return sr.Stream;
+            return st;
         }
 
         public override Stream OpenInputFileStream(string path, FileMode mode, FileAccess access, FileShare share)
@@ -83,22 +100,16 @@ namespace rho
 
             Stream st = null;
             if (access == FileAccess.Read)
-            {
-                st = OpenInputFileStream(path);
-                if (st == null)
-                {
-                    CRhoFile file = new CRhoFile();
-                    file.open(path, CRhoFile.EOpenModes.OpenReadOnly);
-                    st = file.getStream();
-                }
-
-            }
+                return OpenInputFileStream(path);
             else
             {
                 CRhoFile file = new CRhoFile();
                 file.open(path, CRhoFile.EOpenModes.OpenForReadWrite);
                 st = file.getStream();
             }
+
+            if (st == null)
+                throw new System.IO.FileNotFoundException();
 
             return st;
         }
