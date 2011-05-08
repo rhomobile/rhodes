@@ -24,9 +24,9 @@ CRhoCryptImpl::CRhoCryptImpl() : m_obj(0), m_dataOut(0)
     midSetDBCryptKey = getJNIClassMethod(env, cls, "set_db_CryptKey", "(Ljava/lang/String;Ljava/lang/String;Z)Z");
     if (!midSetDBCryptKey) return;
 
-    m_obj = env->NewObject(cls, midConstructor);
-    env->NewGlobalRef(m_obj);
-    env->DeleteLocalRef(m_obj);
+    jobject obj = env->NewObject(cls, midConstructor);
+    m_obj = env->NewGlobalRef(obj);
+    env->DeleteLocalRef(obj);
 
     m_dataOut = (unsigned char*)malloc(1024); //sqlite page size
 }
