@@ -378,7 +378,7 @@ namespace "config" do
     puts "+++ Looking for platform..." if USE_TRACES
     napilevel = $min_sdk_level
     
-    cur_api_levels = Array.new
+    android_api_levels = Array.new
     
     Dir.glob(File.join($androidsdkpath, "platforms", "*")).each do |platform|
       props = File.join(platform, "source.properties")
@@ -397,21 +397,23 @@ namespace "config" do
       end
 
       puts "+++ API LEVEL of #{platform}: #{apilevel}" if USE_TRACES
-      cur_api_levels.push apilevel
+      android_api_levels.push apilevel
 
-      if apilevel > napilevel
+      if apilevel >= napilevel
         napilevel = apilevel
         $androidplatform = File.basename(platform)
         $found_api_level = apilevel
       end
     end
 
+    android_api_levels.sort!
+
     $emuversion = get_market_version($found_api_level) if $emuversion.nil?
     requested_api_level = get_api_level($emuversion)
 
     if USE_TRACES
       puts "Found API levels:"
-      cur_api_levels.each do |level|
+      android_api_levels.each do |level|
         puts level
       end
       puts "Requested version: #{$emuversion}"
@@ -424,7 +426,7 @@ namespace "config" do
     end
 
     is_api_level_installed = false
-    cur_api_levels.each do |level|
+    android_api_levels.each do |level|
       if level == requested_api_level
         is_api_level_installed = true
         break
@@ -533,6 +535,7 @@ namespace "config" do
     # Detect Google API add-on path
     if $use_google_addon_api
       puts "+++ Looking for Google APIs add-on..." if USE_TRACES
+      puts "Previously found API level: #{$found_api_level}" if USE_TRACES
       napilevel = $min_sdk_level
       Dir.glob(File.join($androidsdkpath, 'add-ons', '*')).each do |dir|
 
@@ -553,7 +556,7 @@ namespace "config" do
 
         puts "+++ API LEVEL of #{dir}: #{apilevel}" if USE_TRACES
 
-        if apilevel >= napilevel and ($found_api_level.nil? or apilevel > $found_api_level)
+        if apilevel >= napilevel
           
           sgapijar = File.join(dir, 'libs', 'maps.jar')
           if File.exists? sgapijar
@@ -564,8 +567,7 @@ namespace "config" do
         end
       end
       if $gapijar.nil?
-        puts "+++ No Google APIs add-on found (which is required because appropriate capabilities enabled in build.yml)"
-        exit 1
+        raise "+++ No Google APIs add-on found (which is required because appropriate capabilities enabled in build.yml)"
       else
         puts "+++ Google APIs add-on found: #{$gapijar}" if USE_TRACES
       end
@@ -579,7 +581,7 @@ namespace "config" do
     $appavdname = $app_config["android"]["emulator"] if $app_config["android"] != nil && $app_config["android"].length > 0
     $appavdname = $config["android"]["emulator"] if $appavdname.nil? and !$config["android"].nil? and $config["android"].length > 0
 
-    setup_ndk($androidndkpath, $min_sdk_level)
+    setup_ndk($androidndkpath, $found_api_level)
     
     $std_includes = File.join $androidndkpath, "sources", "cxx-stl", "stlport", "stlport"
     unless File.directory? $std_includes
