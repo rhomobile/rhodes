@@ -17,7 +17,7 @@ end
 
 def execute_cmd(cmd, advanced)
   cmd = URI.unescape(cmd.gsub(/\+/,' ')) if advanced
-  puts "[Debugger] Executing: #{cmd}"
+  puts "[Debugger] Executing: #{cmd.inspect}"
   result = ""
   error = '0';
   begin
