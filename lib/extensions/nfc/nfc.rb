@@ -1,4 +1,114 @@
 module Rho
+
+
+class NFCTagTechnology
+
+  MIFARE_CLASSIC = 'MifareClassic'
+  MIFARE_ULTRALIGHT = 'MifareUltralight'
+
+  def initialize(tech_name)
+       @techname = tech_name
+  end
+
+  def get_name
+      return @techname
+  end
+
+  def connect
+      Nfc.tech_connect(get_name)
+  end
+
+  def close
+      Nfc.tech_close(get_name)
+  end
+
+  def is_connected
+      return (  Nfc.tech_is_connected(get_name) != 0)
+  end
+
+end
+
+class NFCTagTechnology_MifareClassic < NFCTagTechnology
+
+  def initialize
+       super(NFCTagTechnology::MIFARE_CLASSIC)
+  end
+
+   # index - integer
+   # block - 16 byte array
+   def  write_block(index, block)
+       Nfc.tech_MifareClassic_write_block(index, block)
+   end
+
+   # index - integer
+   # return 16 byte array
+   def read_block(index)
+       return Nfc.tech_MifareClassic_read_block(index)
+   end
+
+   # return size in bytes 
+   def get_size
+       return Nfc.tech_MifareClassic_get_size
+   end
+
+end
+
+class NFCTagTechnology_MifareUltralight < NFCTagTechnology
+
+  def initialize
+       super(NFCTagTechnology::MIFARE_ULTRALIGHT)
+  end
+
+   # index - integer
+   # block - 4 byte array
+   def  write_page(index, block)
+       Nfc.tech_MifareUltralight_write_page(index, block)
+   end
+
+   # index - integer
+   # return 16 byte array
+   def read_pages(index)
+       return Nfc.tech_MifareUltralight_read_pages(index)
+   end
+
+   # return size in bytes 
+   def get_size
+       return Nfc.tech_MifareUltralight_get_size
+   end
+
+end
+
+
+class NFCTag
+
+  def initialize(tech_list)
+     puts 'Ruby NFCTag.initialize()'
+     @techlist = tech_list
+  end
+
+  # return array of string
+  def get_tech_list
+      return @techlist
+  end  
+
+  def  get_tech(tech_name)
+      if @techlist.include?(tech_name)
+          if tech_name == 'MifareClassic'
+              return NFCTagTechnology_MifareClassic.New()
+          end
+          if tech_name == 'MifareUltralight'
+              return NFCTagTechnology_MifareULtralight.New()
+          end
+      else
+          return nil
+      end
+  end
+
+end
+
+
+
+
  
 class NFCManager
  
@@ -59,8 +169,29 @@ class NFCManager
   #                     'payload_as_string' - string, payload prepared to string (support specail formats for URI, TEXT) 
   #                     'subrecords' - message hash (only for SMART_POSTER type)
   
+  # set callback for tech events (Tag discovered/lost, tech special events)
   def self.set_nfc_callback(callback_url)
        Nfc.set_callback(callback_url)
+  end
+
+  # in callback
+  # @params['Tag_event'] - 'discovered', 'lost'
+  def self.set_nfc_tech_callback(callback_url)
+       Nfc.set_tech_callback(callback_url)
+  end
+
+  # set list of Techs for listen (array of strings)
+  def set_listen_tech_list(tech_list)
+      Nfc.set_listen_tech_list(tech_list)
+  end
+
+  # return current discovered Tag or nil if not any Tag discovered now
+  def get_current_Tag
+       tech_list = Nfc.tech_get_techList
+       if tech_list.size == 0
+           return nil
+       end
+       return NFCTag.New(tech_list)
   end
 
   def self.convert_Tnf_to_string(tnf)
@@ -116,5 +247,8 @@ class NFCManager
   end
  
 end
+
+
+
 
 end

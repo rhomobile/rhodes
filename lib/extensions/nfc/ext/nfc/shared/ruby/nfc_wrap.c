@@ -1545,6 +1545,7 @@ static VALUE mNfc;
 #define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),(void**)(a)) 
 
 
+#include "ruby/ext/rho/rhoruby.h"
 
 extern void rho_nfc_set_callback(const char* callback_url);
 #define set_callback rho_nfc_set_callback
@@ -1557,6 +1558,42 @@ extern int rho_nfc_is_enabled(void);
 
 extern int rho_nfc_is_supported(void);
 #define is_supported rho_nfc_is_supported
+
+extern void rho_nfc_set_tech_callback(const char* callback_url);
+#define set_tech_callback rho_nfc_set_tech_callback
+
+extern void rho_nfc_set_listen_tech_list(VALUE tech_list);
+#define set_listen_tech_list rho_nfc_set_listen_tech_list
+
+extern VALUE rho_nfc_get_tech_list();
+#define get_tech_list rho_nfc_get_tech_list
+
+extern void rho_nfc_tech_connect(const char* name);
+#define tech_connect rho_nfc_tech_connect
+
+extern void rho_nfc_tech_close(const char* name);
+#define tech_close rho_nfc_tech_close
+
+extern int rho_nfc_tech_is_connected(const char* name);
+#define tech_is_connected rho_nfc_tech_is_connected
+
+extern int rho_nfc_tech_MifareClassic_get_size();
+#define tech_MifareClassic_get_size rho_nfc_tech_MifareClassic_get_size
+
+extern void rho_nfc_tech_MifareClassic_write_block(int index, VALUE block);
+#define tech_MifareClassic_write_block rho_nfc_tech_MifareClassic_write_block
+
+extern VALUE rho_nfc_tech_MifareClassic_read_block(int index);
+#define tech_MifareClassic_read_block rho_nfc_tech_MifareClassic_read_block
+
+extern int rho_nfc_tech_MifareUltralight_get_size();
+#define tech_MifareUltralight_get_size rho_nfc_tech_MifareUltralight_get_size
+
+extern void rho_nfc_tech_MifareUltralight_write_page(int index, VALUE block);
+#define tech_MifareUltralight_write_page rho_nfc_tech_MifareUltralight_write_page
+
+extern VALUE rho_nfc_tech_MifareUltralight_read_pages(int index);
+#define tech_MifareUltralight_read_pages rho_nfc_tech_MifareUltralight_read_pages
 
 
 
@@ -1758,6 +1795,262 @@ _wrap_is_supported(int argc, VALUE *argv, VALUE self) {
   }
   result = (int)is_supported();
   vresult = SWIG_From_int((int)(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_set_tech_callback(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "set_tech_callback" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  set_tech_callback((char const *)arg1);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_set_listen_tech_list(int argc, VALUE *argv, VALUE self) {
+  VALUE arg1 = (VALUE) 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  arg1 = argv[0];
+  set_listen_tech_list(arg1);
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_get_tech_list(int argc, VALUE *argv, VALUE self) {
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (VALUE)get_tech_list();
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_connect(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "tech_connect" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  tech_connect((char const *)arg1);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_close(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "tech_close" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  tech_close((char const *)arg1);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_is_connected(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int result;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "tech_is_connected" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (int)tech_is_connected((char const *)arg1);
+  vresult = SWIG_From_int((int)(result));
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_MifareClassic_get_size(int argc, VALUE *argv, VALUE self) {
+  int result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (int)tech_MifareClassic_get_size();
+  vresult = SWIG_From_int((int)(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_MifareClassic_write_block(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  VALUE arg2 = (VALUE) 0 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "tech_MifareClassic_write_block" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = (int)(val1);
+  arg2 = argv[1];
+  tech_MifareClassic_write_block(arg1,arg2);
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_MifareClassic_read_block(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  VALUE result;
+  int val1 ;
+  int ecode1 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "tech_MifareClassic_read_block" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = (int)(val1);
+  result = (VALUE)tech_MifareClassic_read_block(arg1);
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_MifareUltralight_get_size(int argc, VALUE *argv, VALUE self) {
+  int result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (int)tech_MifareUltralight_get_size();
+  vresult = SWIG_From_int((int)(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_MifareUltralight_write_page(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  VALUE arg2 = (VALUE) 0 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "tech_MifareUltralight_write_page" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = (int)(val1);
+  arg2 = argv[1];
+  tech_MifareUltralight_write_page(arg1,arg2);
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_MifareUltralight_read_pages(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  VALUE result;
+  int val1 ;
+  int ecode1 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "tech_MifareUltralight_read_pages" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = (int)(val1);
+  result = (VALUE)tech_MifareUltralight_read_pages(arg1);
+  vresult = result;
   return vresult;
 fail:
   return Qnil;
@@ -2030,5 +2323,17 @@ SWIGEXPORT void Init_Nfc(void) {
   rb_define_module_function(mNfc, "enable", _wrap_enable, -1);
   rb_define_module_function(mNfc, "is_enabled", _wrap_is_enabled, -1);
   rb_define_module_function(mNfc, "is_supported", _wrap_is_supported, -1);
+  rb_define_module_function(mNfc, "set_tech_callback", _wrap_set_tech_callback, -1);
+  rb_define_module_function(mNfc, "set_listen_tech_list", _wrap_set_listen_tech_list, -1);
+  rb_define_module_function(mNfc, "get_tech_list", _wrap_get_tech_list, -1);
+  rb_define_module_function(mNfc, "tech_connect", _wrap_tech_connect, -1);
+  rb_define_module_function(mNfc, "tech_close", _wrap_tech_close, -1);
+  rb_define_module_function(mNfc, "tech_is_connected", _wrap_tech_is_connected, -1);
+  rb_define_module_function(mNfc, "tech_MifareClassic_get_size", _wrap_tech_MifareClassic_get_size, -1);
+  rb_define_module_function(mNfc, "tech_MifareClassic_write_block", _wrap_tech_MifareClassic_write_block, -1);
+  rb_define_module_function(mNfc, "tech_MifareClassic_read_block", _wrap_tech_MifareClassic_read_block, -1);
+  rb_define_module_function(mNfc, "tech_MifareUltralight_get_size", _wrap_tech_MifareUltralight_get_size, -1);
+  rb_define_module_function(mNfc, "tech_MifareUltralight_write_page", _wrap_tech_MifareUltralight_write_page, -1);
+  rb_define_module_function(mNfc, "tech_MifareUltralight_read_pages", _wrap_tech_MifareUltralight_read_pages, -1);
 }
 

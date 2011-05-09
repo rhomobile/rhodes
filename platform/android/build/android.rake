@@ -701,6 +701,7 @@ namespace "build" do
       ENV["RHO_ROOT"] = $startdir
       ENV["BUILD_DIR"] ||= $startdir + "/platform/android/build"
       ENV["RHO_INC"] = $appincdir
+      ENV["RHO_ANDROID_TMP_DIR"] = $tmpdir
 
       mkdir_p $extensionsdir unless File.directory? $extensionsdir
 

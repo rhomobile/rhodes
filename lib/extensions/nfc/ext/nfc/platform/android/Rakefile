@@ -51,6 +51,8 @@ namespace "build" do
     raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
     $rootdir = ENV['RHO_ROOT']
     raise "RHO_ROOT is not set" if $rootdir.nil?
+    $rho_build_dir = ENV['RHO_ANDROID_TMP_DIR']
+    raise "RHO_ANDROID_TMP_DIR is not set" if $rho_build_dir.nil?
 
     require File.join($rootdir, 'platform/android/build/androidcommon.rb')
 
@@ -87,6 +89,10 @@ namespace "build" do
     maniname = $targetdir + '/AndroidManifest.xml'
 
     cp_r mymaniname, maniname
+
+    # copy xml NFC filter
+    myres = $nfcdir + '/ext/nfc/platform/android/res'  
+    cp_r myres, $rho_build_dir
 
   end
 end
