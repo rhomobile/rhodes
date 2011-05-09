@@ -5,6 +5,8 @@
 # $libname[]      list of paths to compiled library
 # $build_release  set to true to disable debug binaries
 
+USE_TRACES = Rake.application.options.trace
+
 if RUBY_PLATFORM =~ /(win|w)32$/
   $bat_ext = ".bat"
   $exe_ext = ".exe"
@@ -36,6 +38,8 @@ def get_sources(name)
 end
 
 def setup_ndk(ndkpath,apilevel)
+  puts "setup_ndk(#{ndkpath}, #{apilevel})" if USE_TRACES
+
   $ndktools = nil
   $ndkabi = "unknown"
   $ndkgccver = "unknown"
@@ -58,9 +62,36 @@ def setup_ndk(ndkpath,apilevel)
 
   variants = []
   variants << "platforms"
-  variants << "build/platforms"
+  #variants << "build/platforms"
+  variants << File.join("build", "platforms")
+
+  api_levels = Array.new
+  variant = "platforms"
+
   variants.each do |variant|
-    sysroot = File.join(ndkpath, variant, "android-#{apilevel}/arch-arm")
+    puts "Check NDK folder: #{variant}" if USE_TRACES
+    Dir.glob(File.join(ndkpath, variant, "*")).each do |platform|
+      sys_root = File.join platform, "arch-arm"
+      puts "Checking #{sys_root} for NDK nsysroot"  if USE_TRACES
+      next unless File.directory? sys_root
+      next unless platform =~ /android-([0-9]+)$/
+      api_level = $1.to_i 
+      api_levels.push api_level
+      puts "NDK API level: #{api_level}" if USE_TRACES
+    end
+  end
+  
+  api_levels.sort!
+
+  last_api_level = 0
+  api_levels.each do |cur_api_level|
+    puts "Checking is API level enough: #{cur_api_level}"  if USE_TRACES
+    break if cur_api_level > apilevel.to_i
+    last_api_level = cur_api_level
+  end
+
+  variants.each do |variant|
+    sysroot = File.join(ndkpath, variant, "android-#{last_api_level}/arch-arm")
     next unless File.directory? sysroot
     $ndksysroot = sysroot
     break
@@ -68,6 +99,7 @@ def setup_ndk(ndkpath,apilevel)
   if $ndksysroot.nil?
     raise "Can't detect NDK sysroot (corrupted NDK installation?)"
   end
+  puts "NDK sysroot: #{$ndksysroot}"
 
   ['gcc', 'g++', 'ar', 'strip', 'objdump'].each do |tool|
     name = tool.gsub('+', 'p')
