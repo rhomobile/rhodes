@@ -40,6 +40,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -55,6 +56,7 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.telephony.TelephonyManager;
@@ -85,7 +87,7 @@ public class RhodesService extends Service {
 	private static final String ACTION_ASK_CANCEL_DOWNLOAD = "com.rhomobile.rhodes.DownloadManager.ACTION_ASK_CANCEL_DOWNLOAD";
 	private static final String ACTION_CANCEL_DOWNLOAD = "com.rhomobile.rhodes.DownloadManager.ACTION_CANCEL_DOWNLOAD";
 	
-	private static RhodesService sInstance;
+	private static RhodesService sInstance = null;
 	
 	private final IBinder mBinder = new LocalBinder();
 	
@@ -102,8 +104,6 @@ public class RhodesService extends Service {
 	
 	private NotificationManager mNM;
 	
-	//private MainView mMainView;
-	
 	private static int mScreenWidth;
 	private static int mScreenHeight;
 	private static int mScreenOrientation;
@@ -117,7 +117,9 @@ public class RhodesService extends Service {
 	private static boolean sRhodesActivityStarted = false;
 	
 	synchronized
-	static void rhodesActivityStarted(boolean started) { sRhodesActivityStarted = started; }
+	static void rhodesActivityStarted(boolean started) {
+	    sRhodesActivityStarted = started;
+	}
 	
 	synchronized
 	public static boolean isRhodesActivityStarted() { return sRhodesActivityStarted; }
@@ -209,6 +211,8 @@ public class RhodesService extends Service {
 		
 		return false;
 	}
+	
+	Handler mHandler = null;
 	
 	private native void initClassLoader(ClassLoader c);
 	
@@ -404,7 +408,7 @@ public class RhodesService extends Service {
 		}
 		
 		RhodesApplication.start();
-		
+
 		if (sActivitiesActive > 0)
 			handleAppActivation();
 	}
@@ -493,9 +497,18 @@ public class RhodesService extends Service {
 				setPushRegistrationId(id);
 				break;
 			case PushReceiver.INTENT_TYPE_MESSAGE:
-				Bundle extras = intent.getBundleExtra(PushReceiver.INTENT_EXTRAS);
+				final Bundle extras = intent.getBundleExtra(PushReceiver.INTENT_EXTRAS);
 				Logger.D(TAG, "Received PUSH message: " + extras);
-				handlePushMessage(extras);
+				RhodesApplication.runWhen(
+				        RhodesApplication.AppState.AppStarted,
+				        new RhodesApplication.StateHandler() {
+                            @Override
+                            public boolean run()
+                            {
+                                handlePushMessage(extras);
+                                return true;
+                            }
+                        });
 				break;
 			default:
 				Logger.W(TAG, "Unknown command type received from " + source + ": " + type);
@@ -1166,18 +1179,36 @@ public class RhodesService extends Service {
 		
 		String data = builder.toString();
 		Logger.D(TAG, "Received PUSH message: " + data);
-		if (callPushCallback(data))
-			return;
+		if (callPushCallback(data)) {
+		    Logger.T(TAG, "Push message completely handled in callback");
+		    return;
+		}
 		
-		String alert = extras.getString("alert");
+		final String alert = extras.getString("alert");
 		if (alert != null) {
 			Logger.D(TAG, "PUSH: Alert: " + alert);
-			Alert.showPopup(alert);
+			RhodesApplication.runWhen(
+			        RhodesApplication.UiState.MainActivityStarted,
+			        new RhodesApplication.StateHandler() {
+                        @Override
+                        public boolean run() {
+                            Alert.showPopup(alert);
+                            return true;
+                        }
+			        });
 		}
-		String sound = extras.getString("sound");
+		final String sound = extras.getString("sound");
 		if (sound != null) {
 			Logger.D(TAG, "PUSH: Sound file name: " + sound);
-			Alert.playFile("/public/alerts/" + sound, null);
+            RhodesApplication.runWhen(
+                    RhodesApplication.UiState.MainActivityStarted,
+                    new RhodesApplication.StateHandler() {
+                        @Override
+                        public boolean run() {
+                            Alert.playFile("/public/alerts/" + sound, null);
+                            return true;
+                        }
+                    });
 		}
 		String vibrate = extras.getString("vibrate");
 		if (vibrate != null) {
@@ -1189,8 +1220,17 @@ public class RhodesService extends Service {
 			catch (NumberFormatException e) {
 				duration = 5;
 			}
+			final int arg_duration = duration;
 			Logger.D(TAG, "Vibrate " + duration + " seconds");
-			Alert.vibrate(duration);
+            RhodesApplication.runWhen(
+                    RhodesApplication.UiState.MainActivityStarted,
+                    new RhodesApplication.StateHandler() {
+                        @Override
+                        public boolean run() {
+                            Alert.vibrate(arg_duration);
+                            return true;
+                        }
+                    });
 		}
 		
 		String syncSources = extras.getString("do_sync");
@@ -1199,15 +1239,34 @@ public class RhodesService extends Service {
 			boolean syncAll = false;
 			for (String source : syncSources.split(",")) {
 				Logger.D(TAG, "url = " + source);
-				if (source.equalsIgnoreCase("all"))
+				if (source.equalsIgnoreCase("all")) {
 					syncAll = true;
-				else {
-					doSyncSource(source.trim());
+				    break;
+				} else {
+				    final String arg_source = source.trim();
+		            RhodesApplication.runWhen(
+		                    RhodesApplication.AppState.AppActivated,
+		                    new RhodesApplication.StateHandler() {
+		                        @Override
+		                        public boolean run() {
+		                            doSyncSource(arg_source);
+		                            return true;
+		                        }
+		                    });
 				}
 			}
 			
-			if (syncAll)
-				doSyncAllSources(true);
+			if (syncAll) {
+                RhodesApplication.runWhen(
+                        RhodesApplication.AppState.AppActivated,
+                        new RhodesApplication.StateHandler() {
+                            @Override
+                            public boolean run() {
+                                doSyncAllSources(true); 
+                                return true;
+                            }
+                        });
+			}
 		}
 	}
 	
@@ -1262,11 +1321,13 @@ public class RhodesService extends Service {
 		restartGeoLocationIfNeeded();
 		restoreWakeLockIfNeeded();
 		callActivationCallback(true);
+        RhodesApplication.stateChanged(RhodesApplication.AppState.AppActivated);
 	}
 	
 	private void handleAppDeactivation() {
 		if (DEBUG)
 			Log.d(TAG, "handle app deactivation");
+        RhodesApplication.stateChanged(RhodesApplication.AppState.AppDeactivated);
 		stopWakeLock();
 		stopGeoLocation();
 		callActivationCallback(false);
@@ -1304,10 +1365,23 @@ public class RhodesService extends Service {
 	
 	@Override
 	public void startActivity(Intent intent) {
-		RhodesActivity ra = RhodesActivity.getInstance();
-		if (ra == null)
-			throw new IllegalStateException("Trying to start activity, but main activity is empty (we are in background, no UI active)");
-		ra.startActivity(intent);
+
+        RhodesActivity ra = RhodesActivity.getInstance();
+        if(intent.getComponent().compareTo(new ComponentName(this, RhodesActivity.class.getName())) == 0) {
+            Logger.T(TAG, "Start or bring main activity: " + RhodesActivity.class.getName() + ".");
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            if (ra == null) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                super.startActivity(intent);
+                return;
+            }
+        }
+
+        if (ra != null) {
+            ra.startActivity(intent);
+        } else {
+            throw new IllegalStateException("Trying to start activity, but there is no main activity instance (we are in background, no UI active)");
+        }
 	}
 	
 	public static Context getContext() {
@@ -1320,5 +1394,26 @@ public class RhodesService extends Service {
 	public static boolean isJQTouch_mode() {
 		return RhoConf.getBool("jqtouch_mode");
 	}
-	
+
+    public static void bringToFront() {
+        if (isRhodesActivityStarted()) {
+            Logger.T(TAG, "Main activity is already at front, do nothing");
+            return;
+        }
+
+        RhodesService srv = RhodesService.getInstance();
+        if (srv == null)
+            throw new IllegalStateException("No rhodes service instance at this moment");
+
+        Logger.T(TAG, "Bring main activity to front");
+        if (RhodesActivity.getInstance() != null)
+            Logger.T(TAG, "There is main activity, should bring to front");
+        else
+            Logger.T(TAG, "There is no main activity, should start new one");
+        
+        Intent intent = new Intent(srv, RhodesActivity.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        srv.startActivity(intent);
+    }
+
 }
