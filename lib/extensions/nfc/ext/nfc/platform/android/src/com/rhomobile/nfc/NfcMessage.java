@@ -1,4 +1,4 @@
-package com.nfc;
+package com.rhomobile.nfc;
 
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
