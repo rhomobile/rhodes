@@ -1,4 +1,4 @@
-package com.nfc;
+package com.rhomobile.nfc;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
