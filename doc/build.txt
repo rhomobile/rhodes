@@ -267,7 +267,13 @@ List of capabilities related to changes in AndroidManifest - add or remove this 
   	sdcard
   	push
 
+### Set up minimal Andoid SDK API level
 
+The minimal API level supported by Rhodes is 4 (Android 1.6)
+It is possible to set greated minimal API level with build.yml. This will restrict installing an application on any Android OS prior to 3.0:
+
+   android:
+     minSDK: 11
 
 ### Building app and running it in emulator from the command line
 
