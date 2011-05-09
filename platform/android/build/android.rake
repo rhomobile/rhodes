@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/androidcommon.rb'
 require 'pathname'
 
 USE_OWN_STLPORT = false
-USE_TRACES = false
+#USE_TRACES = false
 
 ANDROID_API_LEVEL_TO_MARKET_VERSION = {}
 ANDROID_MARKET_VERSION_TO_API_LEVEL = {}
@@ -26,7 +26,7 @@ JAVA_PACKAGE_NAME = 'com.rhomobile.rhodes'
 # For complete list of android API levels and its mapping to
 # market names (such as "Android-1.5" etc) see output of
 # command "android list targets"
-ANDROID_API_LEVEL = 4
+ANDROID_SDK_LEVEL = 4
 
 ANDROID_PERMISSIONS = {
   'audio' => ['RECORD_AUDIO', 'MODIFY_AUDIO_SETTINGS'],
@@ -152,7 +152,7 @@ def set_app_name_android(newname)
   manifest.elements.each('uses-sdk') { |e| manifest.delete e }
   
   element = REXML::Element.new('uses-sdk')
-  element.add_attribute('android:minSdkVersion', ANDROID_API_LEVEL.to_s)
+  element.add_attribute('android:minSdkVersion', $min_sdk_level.to_s)
   manifest.add element
 
   # Remove category LAUNCHER from all activities if hidden_app is set
@@ -266,11 +266,21 @@ namespace "config" do
     $use_google_addon_api = false
     $use_google_addon_api = true if $use_geomapping
 
+    #Additionally $use_google_addon_api set to true if PUSH capability is enabled
+
+    puts "Use Google addon API: #{$use_google_addon_api}" if USE_TRACES
+
     $emuversion = $app_config["android"]["version"] unless $app_config["android"].nil?
     $emuversion = $config["android"]["version"] if $emuversion.nil? and !$config["android"].nil?
 
     $uri_scheme = $app_config["android"]["BundleURLScheme"] unless $app_config["android"].nil?
     $uri_scheme = $config["android"]["BundleURLScheme"] if $uri_scheme.nil? and not $config["android"].nil?
+
+    $min_sdk_level = $app_config["android"]["minSDK"] unless $app_config["android"].nil?
+    $min_sdk_level = $config["android"]["minSDK"] if $min_sdk_level.nil? and not $config["android"].nil?
+    $min_sdk_level = $min_sdk_level.to_i unless $min_sdk_level.nil?
+    $min_sdk_level = ANDROID_SDK_LEVEL if $min_sdk_level.nil?
+
 
     # Here is switch between release/debug configuration used for
     # building native libraries
@@ -366,7 +376,7 @@ namespace "config" do
     end
 
     puts "+++ Looking for platform..." if USE_TRACES
-    napilevel = ANDROID_API_LEVEL
+    napilevel = $min_sdk_level
     
     cur_api_levels = Array.new
     
@@ -427,12 +437,15 @@ namespace "config" do
     end
 
     if $androidplatform.nil?
-      ajar = File.join($androidsdkpath, 'platforms', 'android-' + ANDROID_API_LEVEL_TO_MARKET_VERSION[ANDROID_API_LEVEL], 'android.jar')
-      $androidplatform = 'android-' + ANDROID_API_LEVEL_TO_MARKET_VERSION[ANDROID_API_LEVEL] if File.file?(ajar)
+      ajar = File.join($androidsdkpath, 'platforms', 'android-' + $min_sdk_level.to_s, 'android.jar')
+      if USE_TRACES
+        puts "Using target path: "+ ajar
+      end
+      $androidplatform = 'android-' + $min_sdk_level.to_s if File.file?(ajar)
     end
 
     if $androidplatform.nil?
-      puts "+++ No required platform (API level >= #{ANDROID_API_LEVEL}) found, can't proceed"
+      puts "+++ No required platform (API level >= #{$min_sdk_level}) found, can't proceed"
       puts "+++ Looks like you have no installed required Android platform package."
       puts "+++ To solve that, please strictly follow instructions from http://wiki.rhomobile.com/index.php/BuildingRhodes#Prerequisites_5"
       exit 1
@@ -520,7 +533,7 @@ namespace "config" do
     # Detect Google API add-on path
     if $use_google_addon_api
       puts "+++ Looking for Google APIs add-on..." if USE_TRACES
-      napilevel = ANDROID_API_LEVEL
+      napilevel = $min_sdk_level
       Dir.glob(File.join($androidsdkpath, 'add-ons', '*')).each do |dir|
 
         props = File.join(dir, 'manifest.ini')
@@ -540,9 +553,9 @@ namespace "config" do
 
         puts "+++ API LEVEL of #{dir}: #{apilevel}" if USE_TRACES
 
-        if apilevel > napilevel
+        if apilevel >= napilevel and ($found_api_level.nil? or apilevel > $found_api_level)
           
-	  sgapijar = File.join(dir, 'libs', 'maps.jar')
+          sgapijar = File.join(dir, 'libs', 'maps.jar')
           if File.exists? sgapijar
             napilevel = apilevel
             $gapijar = sgapijar
@@ -566,7 +579,7 @@ namespace "config" do
     $appavdname = $app_config["android"]["emulator"] if $app_config["android"] != nil && $app_config["android"].length > 0
     $appavdname = $config["android"]["emulator"] if $appavdname.nil? and !$config["android"].nil? and $config["android"].length > 0
 
-    setup_ndk($androidndkpath, ANDROID_API_LEVEL)
+    setup_ndk($androidndkpath, $min_sdk_level)
     
     $std_includes = File.join $androidndkpath, "sources", "cxx-stl", "stlport", "stlport"
     unless File.directory? $std_includes
@@ -681,7 +694,7 @@ namespace "build" do
 
       ENV['RHO_PLATFORM'] = 'android'
       ENV["ANDROID_NDK"] = $androidndkpath
-      ENV["ANDROID_API_LEVEL"] = ANDROID_API_LEVEL.to_s
+      ENV["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
       ENV["TARGET_TEMP_DIR"] = $extensionsdir
       ENV["RHO_ROOT"] = $startdir
       ENV["BUILD_DIR"] ||= $startdir + "/platform/android/build"
