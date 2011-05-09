@@ -7,7 +7,7 @@ USE_OWN_STLPORT = false
 
 ANDROID_API_LEVEL_TO_MARKET_VERSION = {}
 ANDROID_MARKET_VERSION_TO_API_LEVEL = {}
-{2 => "1.1", 3 => "1.5", 4 => "1.6", 5 => "2.0", 6 => "2.0.1", 7 => "2.1", 8 => "2.2", 9 => "2.3", 10 => "2.3.3", 11 => "3.0" }.each do |k,v|
+{2 => "1.1", 3 => "1.5", 4 => "1.6", 5 => "2.0", 6 => "2.0.1", 7 => "2.1", 8 => "2.2", 9 => "2.3.1", 10 => "2.3.3", 11 => "3.0" }.each do |k,v|
   ANDROID_API_LEVEL_TO_MARKET_VERSION[k] = v
   ANDROID_MARKET_VERSION_TO_API_LEVEL[v] = k
 end
@@ -378,7 +378,7 @@ namespace "config" do
     puts "+++ Looking for platform..." if USE_TRACES
     napilevel = $min_sdk_level
     
-    cur_api_levels = Array.new
+    android_api_levels = Array.new
     
     Dir.glob(File.join($androidsdkpath, "platforms", "*")).each do |platform|
       props = File.join(platform, "source.properties")
@@ -397,12 +397,45 @@ namespace "config" do
       end
 
       puts "+++ API LEVEL of #{platform}: #{apilevel}" if USE_TRACES
+      android_api_levels.push apilevel
 
-      if apilevel > napilevel
+      if apilevel >= napilevel
         napilevel = apilevel
         $androidplatform = File.basename(platform)
         $found_api_level = apilevel
       end
+    end
+
+    android_api_levels.sort!
+
+    $emuversion = get_market_version($found_api_level) if $emuversion.nil?
+    requested_api_level = get_api_level($emuversion)
+
+    if USE_TRACES
+      puts "Found API levels:"
+      android_api_levels.each do |level|
+        puts level
+      end
+      puts "Requested version: #{$emuversion}"
+      puts "Corresponding API level #{requested_api_level}"
+    end
+
+    if requested_api_level.nil?
+      puts "ERROR!!! Wrong Android API version: #{$emuversion}"
+      exit 1
+    end
+
+    is_api_level_installed = false
+    android_api_levels.each do |level|
+      if level == requested_api_level
+        is_api_level_installed = true
+        break
+      end
+    end
+
+    if !is_api_level_installed
+      puts "ERROR!!! API version is not found in installed Android SDK: #{$emuversion}"
+      exit 1
     end
 
     if $androidplatform.nil?
@@ -502,6 +535,7 @@ namespace "config" do
     # Detect Google API add-on path
     if $use_google_addon_api
       puts "+++ Looking for Google APIs add-on..." if USE_TRACES
+      puts "Previously found API level: #{$found_api_level}" if USE_TRACES
       napilevel = $min_sdk_level
       Dir.glob(File.join($androidsdkpath, 'add-ons', '*')).each do |dir|
 
@@ -522,7 +556,7 @@ namespace "config" do
 
         puts "+++ API LEVEL of #{dir}: #{apilevel}" if USE_TRACES
 
-        if apilevel >= napilevel and ($found_api_level.nil? or apilevel > $found_api_level)
+        if apilevel >= napilevel
           
           sgapijar = File.join(dir, 'libs', 'maps.jar')
           if File.exists? sgapijar
@@ -533,23 +567,21 @@ namespace "config" do
         end
       end
       if $gapijar.nil?
-        puts "+++ No Google APIs add-on found (which is required because appropriate capabilities enabled in build.yml)"
-        exit 1
+        raise "+++ No Google APIs add-on found (which is required because appropriate capabilities enabled in build.yml)"
       else
         puts "+++ Google APIs add-on found: #{$gapijar}" if USE_TRACES
       end
     end
 
-    $emuversion = get_market_version($found_api_level) if $emuversion.nil?
     $emuversion = $emuversion.to_s
     $avdname = "rhoAndroid" + $emuversion.gsub(/[^0-9]/, "")
     $avdname += "ext" if $use_google_addon_api
     $avdtarget = $androidtargets[get_api_level($emuversion)]
 
-    $appavdname = $app_config["android"]["emulator"] if $app_config["android"] != nil
-    $appavdname = $config["android"]["emulator"] if $appavdname.nil? and !$config["android"].nil?
+    $appavdname = $app_config["android"]["emulator"] if $app_config["android"] != nil && $app_config["android"].length > 0
+    $appavdname = $config["android"]["emulator"] if $appavdname.nil? and !$config["android"].nil? and $config["android"].length > 0
 
-    setup_ndk($androidndkpath, $min_sdk_level)
+    setup_ndk($androidndkpath, $found_api_level)
     
     $std_includes = File.join $androidndkpath, "sources", "cxx-stl", "stlport", "stlport"
     unless File.directory? $std_includes
@@ -584,6 +616,13 @@ namespace "config" do
     $push_sender = $config["android"]["push"]["sender"] if !$config["android"].nil? and !$config["android"]["push"].nil?
     $push_sender = $app_config["android"]["push"]["sender"] if !$app_config["android"].nil? and !$app_config["android"]["push"].nil?
     $push_sender = "support@rhomobile.com" if $push_sender.nil?
+
+    $push_notifications = nil
+    $push_notifications = $app_config["android"]["push"]["notifications"] if !$app_config["android"].nil? and !$app_config["android"]["push"].nil?
+    $push_notifications = "none" if $push_notifications.nil?
+    $push_notifications = $push_notifications
+
+    
 
     mkdir_p $bindir if not File.exists? $bindir
     mkdir_p $rhobindir if not File.exists? $rhobindir
@@ -957,6 +996,11 @@ namespace "build" do
         f.puts "package #{JAVA_PACKAGE_NAME};"
         f.puts "public class Push {"
         f.puts "  public static final String SENDER = \"#{$push_sender}\";"
+        if $push_notifications.nil?
+            f.puts "  public static final String PUSH_NOTIFICATIONS =  \"none\";"
+        else
+            f.puts "  public static final String PUSH_NOTIFICATIONS =  \"#{$push_notifications}\";"
+        end
         f.puts "};"
       end
 
@@ -1506,7 +1550,7 @@ def logcat(device_flag = '-e', log_path = $applog_path)
 end
 
 def logclear(device_flag = '-e')
-  Thread.new { Jake.run($adb, [device_flag, 'logcat', '-c'], nil, true) }
+  Jake.run($adb, [device_flag, 'logcat', '-c'], nil, true) 
 end
 
 namespace "run" do
@@ -1599,6 +1643,48 @@ namespace "run" do
     task :emulator => "device:android:debug" do
         run_emulator
         load_app_and_run
+    end
+
+    task :get_info => "config:android" do
+        $androidtargets.each do |level|
+            puts "#{get_market_version(level[0])}"
+        end
+
+        emu_version = $emuversion
+        
+        puts ""        
+        cur_name = ""
+        
+        `"#{$androidbin}" list avd`.split(/\n/).each do |line|
+            line.each_line do |item|
+                ar = item.split(':')
+                ar[0].strip!
+                if ar[0] == "Name"
+                    cur_name = ar[1].strip!
+                    puts "#{cur_name}"
+                end
+                
+                if $appavdname && cur_name == $appavdname && (ar[0] == "Target" || ar.length == 1)
+                    
+                    text = ar[0] == "Target" ? ar[1] : ar[0]
+                    
+                    nAnd = text.index("Android")
+                    if nAnd
+                        nAnd = text.index(" ", nAnd)
+                        nAnd1 = text.index("-", nAnd+1)                    
+                        nAnd1 = text.index(" ", nAnd+1) unless nAnd1
+                        emu_version = text[nAnd+1, nAnd1-nAnd-1]
+                    end    
+                end
+                
+            end    
+        end
+
+        puts ""
+
+        puts "#{emu_version}"
+        puts "#{$appavdname}"
+
     end
 
     def  kill_adb
