@@ -167,19 +167,19 @@ end
 			chdir $startdir
 		end 
 
-		task :devrhobundleRelease => [:rhobundle, :rhobundlemap, "device:wp:addbundletoxapRelease"] do
-			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
-			doc = REXML::Document.new(File.open(out_dir + "XapCacheFile.xml"))
-			chdir $srcdir
-			Dir.glob(File.join("**", '*.*')).each do |f|
-				doc.root[1,0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='" + f.gsub("/", "\\") + "'" 
-			end
-			File.open(out_dir + "XapCacheFile.xml", "w") { |f| doc.write f, 2; f.close }
+		task :devrhobundleRelease do #=> [:rhobundle, :rhobundlemap, "device:wp:addbundletoxapRelease"] do
+			#out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
+			#doc = REXML::Document.new(File.open(out_dir + "XapCacheFile.xml"))
+			#chdir $srcdir
+			#Dir.glob(File.join("**", '*.*')).each do |f|
+		#		doc.root[1,0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='" + f.gsub("/", "\\") + "'" 
+		#	end
+		#	File.open(out_dir + "XapCacheFile.xml", "w") { |f| doc.write f, 2; f.close }
 			
-			chdir $startdir
+		#	chdir $startdir
 
-			mkdir_p $config["build"]["wppath"] + "/rhodes/obj/Release" if not File.exists? $config["build"]["wppath"] + "/rhodes/obj/Release"
-			cp out_dir + "XapCacheFile.xml", $config["build"]["wppath"] + "/rhodes/obj/Release"
+		#	mkdir_p $config["build"]["wppath"] + "/rhodes/obj/Release" if not File.exists? $config["build"]["wppath"] + "/rhodes/obj/Release"
+	#		cp out_dir + "XapCacheFile.xml", $config["build"]["wppath"] + "/rhodes/obj/Release"
 		end
 
 		task :devrhobundleDebug => [:rhobundle, :rhobundlemap, "device:wp:addbundletoxapDebug"] do
