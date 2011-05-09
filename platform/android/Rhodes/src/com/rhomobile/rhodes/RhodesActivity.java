@@ -42,7 +42,7 @@ public class RhodesActivity extends BaseActivity {
 	static final String RHO_START_PARAMS_KEY = "RhoStartParams";
 	static final String RHO_URL_START_KEY = "RhoUrlStart";
 	
-	private static RhodesActivity sInstance;
+	private static RhodesActivity sInstance = null;
 	
 	private Handler mHandler;
 	
@@ -92,8 +92,11 @@ public class RhodesActivity extends BaseActivity {
 		mHandler.post(mSetup);
 		
 		sInstance = this;
+
+		Log.i(TAG, ">>>>>>>>>>>>>>> onCreate()");
 		
 		notifyUiCreated();
+        RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityCreated);
 	}
 	
 	private void notifyUiCreated() {
@@ -137,14 +140,26 @@ public class RhodesActivity extends BaseActivity {
 	}
 
 	@Override
+	protected void onNewIntent(Intent intent) {
+	    super.onNewIntent(intent);
+        Log.i(TAG, ">>>>>>>>>>>>>>> onNewIntent()");
+	}
+	
+	@Override
 	public void onStart() {
 		super.onStart();
 	    RhodesService.rhodesActivityStarted(true);
-	}
+
+        Log.i(TAG, ">>>>>>>>>>>>>>> onStart()");
+        
+        RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityStarted);
+}
 
     @Override
     public void onPause() 
     {
+        RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityPaused);
+
         RhodesService.rhodesActivityStarted(false);
 
         super.onPause();
