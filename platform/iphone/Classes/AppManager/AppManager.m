@@ -479,6 +479,11 @@ void rho_sys_bring_to_front()
     RAWLOG_INFO("rho_sys_bring_to_front has no implementation on iPhone.");	
 }
 
+void rho_sys_report_app_started()
+{
+    RAWLOG_INFO("rho_sys_report_app_started has no implementation on iPhone.");	
+}
+
 
 extern VALUE rho_sys_has_network();
 
