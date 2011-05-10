@@ -17,7 +17,9 @@ import java.util.TimeZone;
 import java.util.UUID;
 import java.util.Vector;
 
+import com.rhomobile.rhodes.RhodesApplication.AppState;
 import com.rhomobile.rhodes.alert.Alert;
+import com.rhomobile.rhodes.alert.StatusNotification;
 import com.rhomobile.rhodes.event.EventStore;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.geolocation.GeoLocation;
@@ -86,7 +88,11 @@ public class RhodesService extends Service {
 	
 	private static final String ACTION_ASK_CANCEL_DOWNLOAD = "com.rhomobile.rhodes.DownloadManager.ACTION_ASK_CANCEL_DOWNLOAD";
 	private static final String ACTION_CANCEL_DOWNLOAD = "com.rhomobile.rhodes.DownloadManager.ACTION_CANCEL_DOWNLOAD";
-	
+
+    private static final String NOTIFICATION_NONE = "none";
+    private static final String NOTIFICATION_BACKGROUND = "background";
+    private static final String NOTIFICATION_ALWAYS = "always";
+
 	private static RhodesService sInstance = null;
 	
 	private final IBinder mBinder = new LocalBinder();
@@ -232,9 +238,9 @@ public class RhodesService extends Service {
 	
 	public static native void onScreenOrientationChanged(int width, int height, int angle);
 	
-	public native void callUiCreatedCallback();
-	public native void callUiDestroyedCallback();
-	public native void callActivationCallback(boolean active);
+	public static native void callUiCreatedCallback();
+	public static native void callUiDestroyedCallback();
+	public static native void callActivationCallback(boolean active);
 	
 	public static native String getBuildConfig(String key);
 	
@@ -411,6 +417,11 @@ public class RhodesService extends Service {
 
 		if (sActivitiesActive > 0)
 			handleAppActivation();
+	}
+	
+	public static void handleAppStarted()
+	{
+	    RhodesApplication.stateChanged(AppState.AppStarted);
 	}
 	
 	private void setFullscreenParameters() {
@@ -1158,33 +1169,50 @@ public class RhodesService extends Service {
 			Logger.W(TAG, "Empty PUSH message received");
 			return;
 		}
-		
-		StringBuilder builder = new StringBuilder();
-		
-		Set<String> keys = extras.keySet();
-		// Remove system related keys
-		keys.remove("collapse_key");
-		keys.remove("from");
-		
-		for (String key : keys) {
-			Logger.D(TAG, "PUSH item: " + key);
-			Object value = extras.get(key);
-			if (builder.length() > 0)
-				builder.append("&");
-			builder.append(key);
-			builder.append("=");
-			if (value != null)
-				builder.append(value.toString());
-		}
-		
-		String data = builder.toString();
-		Logger.D(TAG, "Received PUSH message: " + data);
-		if (callPushCallback(data)) {
-		    Logger.T(TAG, "Push message completely handled in callback");
-		    return;
-		}
-		
-		final String alert = extras.getString("alert");
+
+        StringBuilder builder = new StringBuilder();
+        Set<String> keys = extras.keySet();
+
+        for (String key : keys) {
+
+            // Skip system related keys
+            if(key.equals("from"))
+                continue;
+            if(key.equals("collapse_key"))
+                continue;
+
+            Logger.D(TAG, "PUSH item: " + key);
+            Object value = extras.get(key);
+            if (builder.length() > 0)
+                builder.append("&");
+            builder.append(key);
+            if (value != null) {
+                builder.append("=");
+                builder.append(value.toString());
+            }
+        }
+        String data = builder.toString();
+
+        Logger.D(TAG, "Received PUSH message: " + data);
+        if (callPushCallback(data)) {
+            Logger.T(TAG, "Push message completely handled in callback");
+            return;
+        }
+
+        final String alert = extras.getString("alert");
+        final String from = extras.getString("from");
+
+        boolean statusNotification = false;
+        if (Push.PUSH_NOTIFICATIONS.equals(NOTIFICATION_ALWAYS))
+            statusNotification = true;
+        else if (Push.PUSH_NOTIFICATIONS.equals(NOTIFICATION_BACKGROUND))
+            statusNotification = !isRhodesActivityStarted();
+        
+        if (statusNotification) {
+            Intent intent = new Intent(getContext(), RhodesActivity.class);
+            StatusNotification.simpleNotification(TAG, 0, getContext(), intent, "PUSH message from: " + from, alert);
+        }
+
 		if (alert != null) {
 			Logger.D(TAG, "PUSH: Alert: " + alert);
 			RhodesApplication.runWhen(
@@ -1245,7 +1273,7 @@ public class RhodesService extends Service {
 				} else {
 				    final String arg_source = source.trim();
 		            RhodesApplication.runWhen(
-		                    RhodesApplication.AppState.AppActivated,
+		                    RhodesApplication.AppState.AppStarted,
 		                    new RhodesApplication.StateHandler() {
 		                        @Override
 		                        public boolean run() {
@@ -1258,7 +1286,7 @@ public class RhodesService extends Service {
 			
 			if (syncAll) {
                 RhodesApplication.runWhen(
-                        RhodesApplication.AppState.AppActivated,
+                        RhodesApplication.AppState.AppStarted,
                         new RhodesApplication.StateHandler() {
                             @Override
                             public boolean run() {

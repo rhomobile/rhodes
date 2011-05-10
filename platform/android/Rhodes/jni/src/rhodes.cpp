@@ -678,19 +678,19 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_onScreenOrientat
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_callUiCreatedCallback
-  (JNIEnv *, jobject)
+  (JNIEnv *, jclass)
 {
     rho_rhodesapp_callUiCreatedCallback();
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_callUiDestroyedCallback
-  (JNIEnv *, jobject)
+  (JNIEnv *, jclass)
 {
     rho_rhodesapp_callUiDestroyedCallback();
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_callActivationCallback
-  (JNIEnv *, jobject, jboolean active)
+  (JNIEnv *, jclass, jboolean active)
 {
     rho_rhodesapp_callAppActiveCallback(active);
 }
