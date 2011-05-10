@@ -190,8 +190,9 @@ if defined?( RHODES_EMULATOR )
     end
 else
     def load_models_from_file(app_manifest_filename=nil)
+if defined? RHO_WP7    
 		return unless Rho::file_exist?(app_manifest_filename)
-
+end
         f = File.open(app_manifest_filename)
         _load_models_from_file(f)    
         f.close
