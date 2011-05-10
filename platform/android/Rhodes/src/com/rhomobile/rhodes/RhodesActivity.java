@@ -42,7 +42,7 @@ public class RhodesActivity extends BaseActivity {
 	static final String RHO_START_PARAMS_KEY = "RhoStartParams";
 	static final String RHO_URL_START_KEY = "RhoUrlStart";
 	
-	private static RhodesActivity sInstance;
+	private static RhodesActivity sInstance = null;
 	
 	private Handler mHandler;
 	
@@ -77,7 +77,7 @@ public class RhodesActivity extends BaseActivity {
 		//ct.setPriority(Thread.MAX_PRIORITY);
 		uiThreadId = ct.getId();
 
-		if (!RhodesService.isEnableTitle()) {
+		if (!RhodesService.isTitleEnabled()) {
 			requestWindowFeature(Window.FEATURE_NO_TITLE);
 		}
 		else {
@@ -92,8 +92,11 @@ public class RhodesActivity extends BaseActivity {
 		mHandler.post(mSetup);
 		
 		sInstance = this;
+
+		Log.i(TAG, ">>>>>>>>>>>>>>> onCreate()");
 		
 		notifyUiCreated();
+        RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityCreated);
 	}
 	
 	private void notifyUiCreated() {
@@ -137,28 +140,49 @@ public class RhodesActivity extends BaseActivity {
 	}
 
 	@Override
-	public void onStart() {
-		super.onStart();
-		//sInstance = this;
+	protected void onNewIntent(Intent intent) {
+	    super.onNewIntent(intent);
+        Log.i(TAG, ">>>>>>>>>>>>>>> onNewIntent()");
 	}
 	
 	@Override
+	public void onStart() {
+		super.onStart();
+	    RhodesService.rhodesActivityStarted(true);
+
+        Log.i(TAG, ">>>>>>>>>>>>>>> onStart()");
+        
+        RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityStarted);
+}
+
+    @Override
+    public void onPause() 
+    {
+        RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityPaused);
+
+        RhodesService.rhodesActivityStarted(false);
+
+        super.onPause();
+        Log.i(TAG, ">>>>>>>>>>>>>>> onPause()");
+
+        RhodesService r = RhodesService.getInstance();
+        if (r != null)
+            r.callUiDestroyedCallback();
+    }
+
+    @Override
 	public void onStop() 
 	{
 		super.onStop();
-
-		RhodesService r = RhodesService.getInstance();
-		if (r != null)
-			r.callUiDestroyedCallback();
+        Log.i(TAG, ">>>>>>>>>>>>>>> onStop()");
 	}
 	
 	@Override
 	public void onDestroy() {
-		//RhodesService r = RhodesService.getInstance();
-		//if (r != null)
-		//	r.callUiDestroyedCallback();
-		
-		sInstance = null;
+        Log.i(TAG, ">>>>>>>>>>>>>>> onDestroy()");
+        
+        //TODO: Check is it really correct in case activity killed immediately after onPause()
+        sInstance = null;
 		super.onDestroy();
 	}
 	
@@ -357,10 +381,10 @@ public class RhodesActivity extends BaseActivity {
                 startParams = startParams.substring(2);
         }
 
-        if(!RhodesService.canStartApp(startParams, "&#"))
+        if(!RhodesApplication.canStart(startParams))
         {
             Logger.E(TAG, "This is hidden app and can be started only with security key.");
-            getRhodesApplication().exit();
+            RhodesService.exit();
             return;
         }
 

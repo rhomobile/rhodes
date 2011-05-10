@@ -1,60 +1,177 @@
 package com.rhomobile.rhodes;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Vector;
 
 import android.app.Application;
+import android.os.Handler;
 import android.os.Process;
 
-public class RhodesApplication extends Application {
+public class RhodesApplication extends Application{
 	
-	private List<Runnable> mOnExit = new ArrayList<Runnable>();
-	
+    private static final String TAG = RhodesApplication.class.getSimpleName();
+    private static Handler mHandler;
 	static {
 		NativeLibraries.load();
 	}
+
+    private native static void createRhodesApp();
+    private native static void startRhodesApp();
+    private native static void stopRhodesApp();
+    private native static boolean canStartApp(String strCmdLine, String strSeparators);
 	
-	static native void setStartParameters(String uri);
-	
-	@Override
-	public void onCreate() {
-		super.onCreate();
+    public static void create()
+    {
+        createRhodesApp();
+    }
+
+    public static void start()
+	{
+	    startRhodesApp();
+        stateChanged(AppState.AppStarted);
+	}
+
+	public static boolean canStart(String strCmdLine)
+	{
+	    return canStartApp(strCmdLine, "&#");
 	}
 	
-	public void addOnExitHandler(Runnable action) {
-		synchronized (this) {
-			mOnExit.add(action);
-		}
-	}
-	
-	public boolean removeOnExitHandler(Runnable action) {
-		synchronized (this) {
-			return mOnExit.remove(action);
-		}
-	}
-	
-	public void exit() {
-		List<Runnable> onExit = new ArrayList<Runnable>();
-		synchronized (this) {
-			onExit.addAll(mOnExit);
-		}
-		
-		for (Runnable action : onExit) {
-			action.run();
-		}
-		
-		try {
-			RhodesService r = RhodesService.getInstance();
-			if (r != null)
-				r.stopSelf();
-		}
-		catch (Exception e) {}
-		
-		RhodesActivity ra = RhodesActivity.getInstance();
-		if (ra != null)
-			ra.finish();
-		
-		Process.killProcess(Process.myPid());
-	}
-	
+    public static void stop() {
+        
+        mHandler = new Handler();
+        mHandler.postDelayed(new Runnable() {
+            public void run() {
+                stopRhodesApp();
+                Process.sendSignal(Process.myPid(), Process.SIGNAL_QUIT);
+                mHandler.postDelayed(new Runnable() {
+                    public void run() {
+                        Process.killProcess(Process.myPid());
+                    }
+                }, 500);
+            }
+        }, 500);
+    }
+
+    public interface StateHandler
+    {
+        boolean run();
+    }
+    
+    enum AppState
+    {
+        Undefined("Undefined") {
+            @Override
+            public boolean canHandle(AppState state) { return false; }
+        },
+        AppStarted("AppStarted") {
+            @Override
+            public boolean canHandle(AppState state) { return state == this; }
+        },
+        AppActivated("AppActivated") {
+            @Override
+            public boolean canHandle(AppState state) { return (state == this) || (state == AppStarted); }
+        },
+        AppDeactivated("AppDEactivated") {
+            @Override
+            public boolean canHandle(AppState state) { return (state == this) || (state == AppStarted); }
+        };
+        
+        private Vector<StateHandler> mHandlers = new Vector<StateHandler>();
+        private String TAG;
+        
+        private AppState(String tag) { TAG = tag; }
+        
+        private synchronized void handle()
+        {
+            Logger.T(TAG, "Running AppState handlers: " + TAG);
+            Vector<StateHandler> doneHandlers = new Vector<StateHandler>();
+            for (StateHandler handler: mHandlers) {
+                if (handler.run()) {
+                    doneHandlers.add(handler);
+                }
+            }
+            mHandlers.removeAll(doneHandlers);
+        }
+        
+        public synchronized void addHandler(StateHandler handler) { mHandlers.add(handler); }
+        public abstract boolean canHandle(AppState state);
+        
+        static public void handleState(AppState state) { state.handle(); }
+    }
+    
+    enum UiState
+    {
+        Undefined("Undefined") {
+            @Override
+            public boolean canHandle(UiState state) { return false; }
+        },
+        MainActivityCreated("MainActivityCreated") {
+            @Override
+            public boolean canHandle(UiState state) { return state == this; }
+        },
+        MainActivityStarted("MainActivityStarted") {
+            @Override
+            public boolean canHandle(UiState state) { return (state == this) || (state == MainActivityCreated); }
+        },
+        MainActivityPaused("MainActivityPaused") {
+            @Override
+            public boolean canHandle(UiState state) { return (state == this) || (state == MainActivityCreated); }
+        };
+
+        private Vector<StateHandler> mHandlers = new Vector<StateHandler>();
+        public String TAG;
+        
+        private UiState(String tag) { TAG = tag; }
+        
+        private synchronized void handle()
+        {
+            Logger.T(TAG, "Running AppState handlers: " + TAG);
+            Vector<StateHandler> doneHandlers = new Vector<StateHandler>();
+            for (StateHandler handler: mHandlers) {
+                if (handler.run()) {
+                    doneHandlers.add(handler);
+                }
+            }
+            mHandlers.removeAll(doneHandlers);
+        }
+        
+        public synchronized void addHandler(StateHandler handler) { mHandlers.add(handler); }
+        public abstract boolean canHandle(UiState state);
+        
+        static public void handleState(UiState state) { state.handle(); }
+    }
+
+    private static AppState sAppState = AppState.Undefined;
+    private static UiState sUiState = UiState.Undefined;
+    
+    public static void runWhen(AppState state, StateHandler handler) {
+        if (sAppState.canHandle(state)) {
+            Logger.T(TAG, "Running AppState handler immediately: " + state.TAG);
+            if (handler.run())
+                return;
+        }
+        state.addHandler(handler);
+        Logger.T(TAG, "AppState handler added: " + state.TAG);
+    }
+
+    public static void runWhen(UiState state, StateHandler handler) {
+        if (sUiState.canHandle(state)) {
+            Logger.T(TAG, "Running UiState handler immediately: " + state.TAG);
+            if (handler.run())
+                return;
+        }
+        state.addHandler(handler);
+        Logger.T(TAG, "UiState handler added: " + state.TAG);
+    }
+
+    public static void stateChanged(AppState state)
+    {
+        sAppState = state;
+        AppState.handleState(state); 
+    }
+    public static void stateChanged(UiState state)
+    {
+        sUiState = state;
+        UiState.handleState(state);
+    }
+
 }

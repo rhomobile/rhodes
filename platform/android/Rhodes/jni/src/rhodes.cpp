@@ -481,8 +481,8 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_nativeInitPath
     g_apk_path = rho_cast<std::string>(env, apk_path);
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_createRhodesApp
-  (JNIEnv *env, jobject)
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesApplication_createRhodesApp
+  (JNIEnv *env, jclass)
 {
     jclass clsRE = getJNIClass(RHODES_JAVA_CLASS_RUNTIME_EXCEPTION);
     if (!clsRE)
@@ -538,14 +538,14 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_createRhodesApp
     rho_rhodesapp_create(szRootPath);
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_startRhodesApp
-  (JNIEnv *env, jobject obj)
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesApplication_startRhodesApp
+  (JNIEnv *, jclass)
 {
     rho_rhodesapp_start();
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_stopRhodesApp
-  (JNIEnv *, jobject)
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesApplication_stopRhodesApp
+  (JNIEnv *, jclass)
 {
     rho_rhodesapp_destroy();
 }
@@ -637,8 +637,8 @@ RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isOnStartPag
 }
 
 
-RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isEnableTitle
-  (JNIEnv *, jclass, jstring cmdLine, jstring sep)
+RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isTitleEnabled
+  (JNIEnv *, jclass)
 {
     bool value = true;
     const char* svalue = get_app_build_config_item("android_title");
@@ -648,7 +648,7 @@ RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isEnableTitl
     return (jboolean)value;
 }
 
-RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_canStartApp
+RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesApplication_canStartApp
   (JNIEnv *, jclass, jstring cmdLine, jstring sep)
 {
     std::string const &strCmdLine = rho_cast<std::string>(cmdLine);
@@ -699,7 +699,19 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_setPushRegistrat
   (JNIEnv *env, jobject, jstring jId)
 {
     std::string id = rho_cast<std::string>(env, jId);
+    rho::sync::CClientRegister* pClientRegister = rho::sync::CClientRegister::getInstance();
+    if(pClientRegister && (pClientRegister->getDevicePin().compare(id) != 0))
+    {
+        rho::sync::CClientRegister::Destroy();
+    }
     rho::sync::CClientRegister::Create(id.c_str());
+    RHOCONF().setString("push_pin", id.c_str(), true);
+}
+
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getPushRegistrationId
+  (JNIEnv * env, jobject)
+{
+    return rho_cast<jhstring>(RHOCONF().getString("push_pin").c_str()).release();
 }
 
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_callPushCallback

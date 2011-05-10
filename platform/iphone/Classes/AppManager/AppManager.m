@@ -474,6 +474,11 @@ void rho_sys_run_app(const char* appname, VALUE params)
 		RAWLOG_INFO("rho_sys_run_app failed.");	
 }
 
+void rho_sys_bring_to_front()
+{
+    RAWLOG_INFO("rho_sys_bring_to_front has no implementation on iPhone.");	
+}
+
 
 extern VALUE rho_sys_has_network();
 

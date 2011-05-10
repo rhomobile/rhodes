@@ -24,6 +24,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/Utils.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/WebView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/alert/Alert.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/alert/PopupActivity.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/alert/StatusNotification.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/IRhoBluetoothManager.java 
 platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothDeviceListActivity.java 
 platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothManager.java 
