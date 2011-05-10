@@ -79,7 +79,7 @@ namespace "build" do
     end
 
     flname = $targetdir + '/ext_build.files'
-    File.open(flname, "w") do |f|
+    File.open(flname, "a") do |f|
         javafiles.each do |j|
             f.puts $nfcdir + '/' + j
         end
