@@ -27,7 +27,6 @@ public class RhodesApplication extends Application{
     public static void start()
 	{
 	    startRhodesApp();
-        stateChanged(AppState.AppStarted);
 	}
 
 	public static boolean canStart(String strCmdLine)
@@ -70,7 +69,7 @@ public class RhodesApplication extends Application{
             @Override
             public boolean canHandle(AppState state) { return (state == this) || (state == AppStarted); }
         },
-        AppDeactivated("AppDEactivated") {
+        AppDeactivated("AppDeactivated") {
             @Override
             public boolean canHandle(AppState state) { return (state == this) || (state == AppStarted); }
         };

@@ -640,6 +640,11 @@ void rho_sys_bring_to_front()
     LOG(INFO) + "rho_sys_bring_to_front() has no implementation on Win Mobile.";
 }
 
+void rho_sys_report_app_started()
+{
+    LOG(INFO) + "rho_sys_report_app_started() has no implementation on Win Mobile.";
+}
+
 int rho_sys_is_app_installed(const char *appname)
 {
     int nRet = 0;
