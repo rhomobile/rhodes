@@ -89,7 +89,7 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_onScreenOrientati
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_callUiCreatedCallback
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass);
 
 /*
  * Class:     com_rhomobile_rhodes_RhodesService
@@ -97,7 +97,7 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_callUiCreatedCall
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_callUiDestroyedCallback
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass);
 
 /*
  * Class:     com_rhomobile_rhodes_RhodesService
@@ -105,7 +105,7 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_callUiDestroyedCa
  * Signature: (Z)V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_callActivationCallback
-  (JNIEnv *, jobject, jboolean);
+  (JNIEnv *, jclass, jboolean);
 
 /*
  * Class:     com_rhomobile_rhodes_RhodesService
@@ -125,18 +125,10 @@ JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isOnStartPage
 
 /*
  * Class:     com_rhomobile_rhodes_RhodesService
- * Method:    isEnableTitle
+ * Method:    isTitleEnabled
  * Signature: ()Z
  */
 JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isTitleEnabled
-  (JNIEnv *, jclass);
-
-/*
- * Class:     com_rhomobile_rhodes_RhodesService
- * Method:    isEnableTitle
- * Signature: ()Z
- */
-JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isEnableTitle
   (JNIEnv *, jclass);
 
 /*

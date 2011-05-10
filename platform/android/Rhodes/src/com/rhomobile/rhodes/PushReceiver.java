@@ -1,7 +1,5 @@
 package com.rhomobile.rhodes;
 
-import com.rhomobile.rhodes.alert.StatusNotification;
-
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,14 +8,11 @@ import android.os.Bundle;
 import android.util.Log;
 
 public class PushReceiver extends BroadcastReceiver {
-	
-	private static final String TAG = PushReceiver.class.getSimpleName();
-	
+    private static final boolean DEBUG = false;
+
+    private static final String TAG = PushReceiver.class.getSimpleName();
+
 	private static final String REG_ID = "registration_id";
-	
-	private static final String NOTIFICATION_NONE = "none";
-    private static final String NOTIFICATION_BACKGROUND = "background";
-    private static final String NOTIFICATION_ALWAYS = "always";
 	
 	public static final String INTENT_SOURCE = PushReceiver.class.getName();
 	
@@ -55,24 +50,19 @@ public class PushReceiver extends BroadcastReceiver {
 	
 	private void handleMessage(Context context, Intent intent) {
 		Bundle extras = intent.getExtras();
-		Log.d(TAG, "Message: " + extras);
+
+		if (DEBUG) {
+		    Log.d(TAG, "Message: " + extras.toString());
+		    for (String key: extras.keySet()) {
+		        Log.d(TAG, key + ": " + extras.get(key).toString());
+		    }
+		}
+
 		Intent serviceIntent = new Intent(context, RhodesService.class);
 		serviceIntent.putExtra(RhodesService.INTENT_SOURCE, INTENT_SOURCE);
 		serviceIntent.putExtra(INTENT_TYPE, INTENT_TYPE_MESSAGE);
 		serviceIntent.putExtra(INTENT_EXTRAS, extras);
-		String alert = extras.getString("alert");
-		String from = extras.getString("from");
-
-        boolean statusNotification = false;
-		if (Push.PUSH_NOTIFICATIONS.equals(NOTIFICATION_ALWAYS))
-		    statusNotification = true;
-		else if (Push.PUSH_NOTIFICATIONS.equals(NOTIFICATION_BACKGROUND))
-		    statusNotification = !RhodesService.isRhodesActivityStarted();
-		
-		if (statusNotification)
-			StatusNotification.simpleNotification(TAG, INTENT_TYPE_MESSAGE, context, serviceIntent, "PUSH message from: " + from, alert);
-		else
-			context.startService(serviceIntent);
+		context.startService(serviceIntent);
 	}
 	
 	@Override
