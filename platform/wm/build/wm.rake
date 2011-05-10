@@ -359,6 +359,7 @@ namespace "run" do
     end
     
 	namespace "win32" do
+	    desc "Run application on RhoSimulator"
 		task :rhosimulator => "config:common" do
             $appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"] 
     
