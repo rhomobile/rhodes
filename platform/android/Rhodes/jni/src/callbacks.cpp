@@ -199,6 +199,16 @@ RHO_GLOBAL void rho_sys_bring_to_front()
     env->CallStaticVoidMethod(cls, mid);
 }
 
+RHO_GLOBAL void rho_sys_report_app_started()
+{
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "handleAppStarted", "()V");
+    if (!mid) return;
+    env->CallStaticVoidMethod(cls, mid);
+}
+
 RHO_GLOBAL void rho_sys_open_url(const char *url)
 {
     JNIEnv *env = jnienv();

@@ -31,6 +31,7 @@ void rho_map_location(char* query);
 void rho_appmanager_load( void* httpContext, const char* szQuery);
 void rho_db_init_attr_manager();
 void rho_sys_app_exit();
+void rho_sys_report_app_started();
 }
 
 namespace rho {
@@ -182,6 +183,7 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
 
         case local_server_started:
             m_expected = ui_created;
+            rho_sys_report_app_started();
             break;
         case ui_created:
             {

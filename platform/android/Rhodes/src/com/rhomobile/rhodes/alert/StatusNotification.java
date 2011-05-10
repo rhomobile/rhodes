@@ -21,13 +21,13 @@ public class StatusNotification
 	public static Notification simpleNotification(String tag, int notificationId, Context ctx, Intent intent, String title, String text)
 	{
 		Notification notification = makeNotification(text);
-		PendingIntent contentIntent = PendingIntent.getService(ctx, 0, intent, 0);
+		PendingIntent contentIntent = PendingIntent.getActivity(ctx, 0, intent, 0);
 		
 		notification.setLatestEventInfo(ctx, title, text, contentIntent);
 		notification.defaults = Notification.DEFAULT_ALL;
 		notification.flags |= Notification.FLAG_AUTO_CANCEL;
 		
-		customNotification(tag, notificationId, ctx,notification);
+		customNotification(tag, notificationId, ctx, notification);
 		
 		return notification;
 	}
