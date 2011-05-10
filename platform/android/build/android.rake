@@ -703,6 +703,11 @@ namespace "build" do
       ENV["RHO_INC"] = $appincdir
       ENV["RHO_ANDROID_TMP_DIR"] = $tmpdir
 
+      ext_build_files = File.join($extensionsdir, "ext_build.files")
+      if File.exist? ext_build_files
+           rm ext_build_files
+      end
+
       mkdir_p $extensionsdir unless File.directory? $extensionsdir
 
       $app_config["extensions"].each do |ext|
