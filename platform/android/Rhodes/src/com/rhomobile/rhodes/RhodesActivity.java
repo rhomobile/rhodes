@@ -142,7 +142,7 @@ public class RhodesActivity extends BaseActivity {
 	@Override
 	protected void onNewIntent(Intent intent) {
 	    super.onNewIntent(intent);
-        Log.i(TAG, ">>>>>>>>>>>>>>> onNewIntent()");
+        Log.d(TAG, "RhodesActivity.onNewIntent()");
 	}
 	
 	@Override
@@ -150,7 +150,7 @@ public class RhodesActivity extends BaseActivity {
 		super.onStart();
 	    RhodesService.rhodesActivityStarted(true);
 
-        Log.i(TAG, ">>>>>>>>>>>>>>> onStart()");
+        Log.d(TAG, "RhodesActivity.onStart()");
         
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityStarted);
 }
@@ -163,23 +163,21 @@ public class RhodesActivity extends BaseActivity {
         RhodesService.rhodesActivityStarted(false);
 
         super.onPause();
-        Log.i(TAG, ">>>>>>>>>>>>>>> onPause()");
+        Log.d(TAG, "RhodesActivity.onPause()");
 
-        RhodesService r = RhodesService.getInstance();
-        if (r != null)
-            r.callUiDestroyedCallback();
+        RhodesService.callUiDestroyedCallback();
     }
 
     @Override
 	public void onStop() 
 	{
 		super.onStop();
-        Log.i(TAG, ">>>>>>>>>>>>>>> onStop()");
+        Log.d(TAG, "RhodesActivity.onStop()");
 	}
 	
 	@Override
 	public void onDestroy() {
-        Log.i(TAG, ">>>>>>>>>>>>>>> onDestroy()");
+        Log.d(TAG, "RhodesActivity.onDestroy()");
         
         //TODO: Check is it really correct in case activity killed immediately after onPause()
         sInstance = null;
