@@ -21,11 +21,19 @@ public class RhodesApplication extends Application{
 	
     public static void create()
     {
+        if (sAppState != AppState.Undefined) {
+            Logger.E(TAG, "Cannot create application, it is already started!!!");
+            return;
+        }
         createRhodesApp();
     }
 
     public static void start()
 	{
+        if (sAppState != AppState.Undefined) {
+            Logger.E(TAG, "Cannot start application it is already started!!!");
+            return;
+        }
 	    startRhodesApp();
 	}
 
@@ -50,12 +58,16 @@ public class RhodesApplication extends Application{
         }, 500);
     }
 
-    public interface StateHandler
+    
+    public static abstract class StateHandler
     {
-        boolean run();
+        private Exception error;
+        protected void setError(Exception err) { error = err; }
+        public Exception getError() { return error; }
+        public abstract boolean run();
     }
     
-    enum AppState
+    public enum AppState
     {
         Undefined("Undefined") {
             @Override
@@ -74,6 +86,8 @@ public class RhodesApplication extends Application{
             public boolean canHandle(AppState state) { return (state == this) || (state == AppStarted); }
         };
         
+        private static boolean appActivatedFlag = false;
+        
         private Vector<StateHandler> mHandlers = new Vector<StateHandler>();
         private String TAG;
         
@@ -87,6 +101,12 @@ public class RhodesApplication extends Application{
                 if (handler.run()) {
                     doneHandlers.add(handler);
                 }
+                Exception error = handler.getError();
+                if (error != null)
+                {
+                    Logger.E(TAG, error);
+                    Thread.dumpStack();
+                }
             }
             mHandlers.removeAll(doneHandlers);
         }
@@ -94,10 +114,20 @@ public class RhodesApplication extends Application{
         public synchronized void addHandler(StateHandler handler) { mHandlers.add(handler); }
         public abstract boolean canHandle(AppState state);
         
-        static public void handleState(AppState state) { state.handle(); }
+        static public AppState handleState(AppState state, AppState prev) {
+            if((state == AppActivated) && (prev != Undefined)) {
+                appActivatedFlag = true;
+                return prev;
+            }
+            state.handle();
+            if((state == AppStarted) && appActivatedFlag) {
+                AppActivated.handle();
+            }
+            return AppActivated;
+        }
     }
     
-    enum UiState
+    public enum UiState
     {
         Undefined("Undefined") {
             @Override
@@ -129,6 +159,12 @@ public class RhodesApplication extends Application{
                 if (handler.run()) {
                     doneHandlers.add(handler);
                 }
+                Exception error = handler.getError();
+                if (error != null)
+                {
+                    Logger.E(TAG, error);
+                    Thread.dumpStack();
+                }
             }
             mHandlers.removeAll(doneHandlers);
         }
@@ -136,13 +172,21 @@ public class RhodesApplication extends Application{
         public synchronized void addHandler(StateHandler handler) { mHandlers.add(handler); }
         public abstract boolean canHandle(UiState state);
         
-        static public void handleState(UiState state) { state.handle(); }
+        static public UiState handleState(UiState state, UiState prev) {
+            if(!prev.canHandle(state))
+            {
+                state.handle();
+                return state;
+            }
+            return prev;
+        }
     }
 
     private static AppState sAppState = AppState.Undefined;
     private static UiState sUiState = UiState.Undefined;
     
     public static void runWhen(AppState state, StateHandler handler) {
+        Logger.T(TAG, "Current AppState : " + sAppState.TAG);
         if (sAppState.canHandle(state)) {
             Logger.T(TAG, "Running AppState handler immediately: " + state.TAG);
             if (handler.run())
@@ -153,6 +197,7 @@ public class RhodesApplication extends Application{
     }
 
     public static void runWhen(UiState state, StateHandler handler) {
+        Logger.T(TAG, "Current UiState : " + sUiState.TAG);
         if (sUiState.canHandle(state)) {
             Logger.T(TAG, "Running UiState handler immediately: " + state.TAG);
             if (handler.run())
@@ -164,13 +209,13 @@ public class RhodesApplication extends Application{
 
     public static void stateChanged(AppState state)
     {
-        sAppState = state;
-        AppState.handleState(state); 
+        sAppState = AppState.handleState(state, sAppState);
+        Logger.I(TAG, "New AppState: " + sAppState.TAG);
     }
     public static void stateChanged(UiState state)
     {
-        sUiState = state;
-        UiState.handleState(state);
+        sUiState = UiState.handleState(state, sUiState);
+        Logger.I(TAG, "New UiState: " + sUiState.TAG);
     }
 
 }
