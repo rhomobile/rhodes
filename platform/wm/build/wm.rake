@@ -165,7 +165,7 @@ namespace "build" do
 
         qtdir = ENV['QTDIR']
         unless (qtdir !~/^\s*$/) and File.directory?(qtdir)
-          puts "Please, set QTDIR environment variable to Qt root directory path"
+          puts "\nPlease, set QTDIR environment variable to Qt root directory path"
           exit 1
         end
 
