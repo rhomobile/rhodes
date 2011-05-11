@@ -1215,28 +1215,12 @@ public class RhodesService extends Service {
 
 		if (alert != null) {
 			Logger.D(TAG, "PUSH: Alert: " + alert);
-			RhodesApplication.runWhen(
-			        RhodesApplication.UiState.MainActivityStarted,
-			        new RhodesApplication.StateHandler() {
-                        @Override
-                        public boolean run() {
-                            Alert.showPopup(alert);
-                            return true;
-                        }
-			        });
+            Alert.showPopup(alert);
 		}
 		final String sound = extras.getString("sound");
 		if (sound != null) {
 			Logger.D(TAG, "PUSH: Sound file name: " + sound);
-            RhodesApplication.runWhen(
-                    RhodesApplication.UiState.MainActivityStarted,
-                    new RhodesApplication.StateHandler() {
-                        @Override
-                        public boolean run() {
-                            Alert.playFile("/public/alerts/" + sound, null);
-                            return true;
-                        }
-                    });
+            Alert.playFile("/public/alerts/" + sound, null);
 		}
 		String vibrate = extras.getString("vibrate");
 		if (vibrate != null) {
@@ -1250,15 +1234,7 @@ public class RhodesService extends Service {
 			}
 			final int arg_duration = duration;
 			Logger.D(TAG, "Vibrate " + duration + " seconds");
-            RhodesApplication.runWhen(
-                    RhodesApplication.UiState.MainActivityStarted,
-                    new RhodesApplication.StateHandler() {
-                        @Override
-                        public boolean run() {
-                            Alert.vibrate(arg_duration);
-                            return true;
-                        }
-                    });
+            Alert.vibrate(arg_duration);
 		}
 		
 		String syncSources = extras.getString("do_sync");
@@ -1440,7 +1416,6 @@ public class RhodesService extends Service {
             Logger.T(TAG, "There is no main activity, should start new one");
         
         Intent intent = new Intent(srv, RhodesActivity.class);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         srv.startActivity(intent);
     }
 
