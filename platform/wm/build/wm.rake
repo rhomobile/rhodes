@@ -173,9 +173,12 @@ namespace "build" do
           puts "Error building"
           exit 1
         end
-        
-        cp File.join($startdir, $vcbindir, "win32/rhodes/EmulatorRelease/rhosimulator.exe"), 
-            File.join( $startdir, "platform/win32/RhoSimulator/")
+
+        target_path = File.join( $startdir, "platform/win32/RhoSimulator/")
+        if not File.directory?(target_path)
+          Dir.mkdir(target_path)
+        end
+        cp File.join($startdir, $vcbindir, "win32/rhodes/EmulatorRelease/rhosimulator.exe"), target_path
     end
 
   end
