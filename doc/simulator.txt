@@ -1,0 +1,94 @@
+# Using RhoSimulator
+
+RhoSimulator allows to [run](#run-application-in-rhosimulator) Rhodes applications without lengthy build process and to [debug](#debugging-with-rhostudio) them in [RhoStudio](../rhostudio.tutorial). Currently RhoSimulator works on <b>Windows</b> only.
+
+## Install RhoSimulator
+
+If you have [Rhodes gem](install#rhodes-gem), then RhoSimulator is installed already.
+
+If you would like to run RhoSimulator without Rhodes gem, [download it](http://rhosimulator.s3.amazonaws.com/RhoSimulator.zip), unzip and specify path to `rhosimulator.exe` at `rhodes/rhobuild.yml`:
+
+        env: 
+           paths:    
+              rhosimulator: <RhoSimulator folder>
+
+Alternatively you may [build](#build-rhosimulator) your own customized version of RhoSimulator as described [below](#build-rhosimulator).
+
+## Run application in RhoSimulator
+
+To run application in RhoSimulator just run in rhodes or application folder:
+
+    rake run:win32:rhosimulator
+
+## Debugging with RhoStudio
+
+### Prerequisites
+
+* Install [RhoStudio](../rhostudio.tutorial)
+* Install [RhoSimulator](#install-rhosimulator)
+* Ensure your application is configured properly and successfully [runs in RhoSimulator](#run-application-in-rhosimulator) (from command line as described above)
+
+### Starting debug session in RhoStudio
+
+* Select Run » Debug Configurations... from top menu
+* Find 'Rhodes Application' section on the left and add new (or modify existing) configuration
+* On 'Common setting' tab select a project by clicking 'Browse...' button next to 'Project name:'
+* Select 'Rho simulator' as the platform
+* Click 'Apply' and then 'Debug'
+
+### Debug capabilities
+
+In present version of RhoStudio you may:
+
+* Set breakpoints in Ruby code (.rb files)
+* Watch variable values (global, local, class and instance) - currently auto-watch list is displayed in Expressions window
+* View application log in Console window
+
+## Build RhoSimulator
+
+If you use custom native extensions, then running and debugging your applications in RhoSimulator requires a custom build.
+Follow these instructions to build your own customized version of RhoSimulator.
+
+### Preliminary steps
+
+* Currently only <b>Visual Studio 2005 Service Pack 1</b> is supported
+* Follow [Build for Windows - Prerequisites](build#build-for-windows), but do not install the Rhodes gem since you're going to use Rhodes SDK source.
+* Get the `rhodes` source (if haven't done it already) as described [here](build#setup-rhodes-source-code). Don't forget to add the `bin` folder to your path, run `rhodes-setup` and update Rhodes SDK path in `build.yml` at your application root folder.
+* First build the Qt libraries for VS 2005:
+    * Download the Qt source:
+        * Go to [http://qt.nokia.com/downloads](http://qt.nokia.com/downloads)
+        * Choose the open source LGPL version
+        * Under the Framework Only section choose Qt libraries for Windows (VS 2008)
+        * Cancel automatically started download, and download the [source code](http://get.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.3.zip)
+        * Extract the downloaded archive, e.g. into `C:\Qt\4.7.3-msvc2005`
+    * Open Control Panel » System » Advanced system settings » Environment Variables and then:
+        * Create new system variable `QTDIR` = `C:\Qt\4.7.3-msvc2005`
+        * Add to the `PATH` variable: `%QTDIR%\bin`
+        * Either close all command prompts and Visual Studio instances, or reboot the computer so the new settings take effect.
+    * Open Visual Studio 2005 Command Prompt. This is accomplished using Start » All Programs » Microsoft Visual Studio 2005 » Visual Studio Tools » Visual Studio 2005 Command Prompt. Run in Visual Studio 2005 Command Prompt:
+
+			> vcvarsall.bat x86
+			> C:
+			> cd \Qt\4.7.3-msvc2005
+			> configure -opensource -platform win32-msvc2005
+			> nmake
+			> nmake clean
+
+      Be aware that it will take a while to build the Qt libraries from sources (maybe few hours or so). Particularly the `configure` command may run for a few minutes, and the `nmake` command may run for a few hours.
+    * After the build process is completed exit Visual Studio 2005 Command Prompt
+
+### Build with rake command:
+
+	rake build:win32:rhosimulator
+
+To run Rhodes applications in custom built RhoSimulator, please ensure that no `env:` » `paths:` » `rhosimulator:` line is present at your `rhobuild.yml` (if present, remove that line).
+
+### Build in Visual Studio 2005:
+
+* Open the solution:
+  `C:\Rhomobile\rhodes\platform\wm\rhodes\rhodes.vcproj`
+* Build solution for the configuration `EmulatorRelease|Win32`
+* Specify the path to custom built RhoSimulator at `rhobuild.yml`:
+        env: 
+          paths:    
+            rhosimulator: platform/wm/bin/Win32/rhodes/EmulatorRelease
