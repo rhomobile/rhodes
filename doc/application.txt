@@ -93,7 +93,7 @@ Method on_ui_created will be invoked after application's UI was created (usually
 		# for example, create tab bar:
 		# NativeBar.create(Rho::RhoApplication::TABBAR_TYPE, tabs)
 		
-		super.on_ui_created() # To navigate to start_path from rhoconfig.txt
+		super # To navigate to start_path from rhoconfig.txt
 	end
 
 Method on_ui_destroyed will be invoked when application's UI was destroyed (usually on app exit)
