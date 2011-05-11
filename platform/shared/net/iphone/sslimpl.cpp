@@ -39,12 +39,13 @@ static void report_error(const char *s, CFStreamError *e)
 
 void * SSLImpl::createStorage()
 {
-    return malloc(sizeof(ssl_data_t));
+    return calloc(1, sizeof(ssl_data_t));
 }
 
 void SSLImpl::freeStorage(void *ptr)
 {
-    free(ptr);
+    if (ptr)
+        free(ptr);
 }
     
 CURLcode SSLImpl::connect(int sockfd, int nonblocking, int *done, int ssl_verify_peer, void *storage)
