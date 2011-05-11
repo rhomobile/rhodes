@@ -11,6 +11,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.ByteBuffer;
 
 //import android.util.Base64;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.app.Activity;
 import com.rhomobile.rhodes.Logger;
@@ -24,10 +25,10 @@ public class RhoCryptImpl
 	final String m_strPrefName = "rho_internal_data";
 	Cipher m_encryptCipher, m_decryptCipher;
 	final int m_nKeyLenBit = 128;  // 192 and 256 bits may not be available
-	
-	private void readKeyFromStorage()
-	{
-    	SharedPreferences settings = RhodesActivity.getInstance().getSharedPreferences( m_strPrefName, Activity.MODE_PRIVATE);
+
+    private void readKeyFromStorage()
+    {
+        SharedPreferences settings = RhodesService.getInstance().getSharedPreferences( m_strPrefName, Context.MODE_PRIVATE);
     	String strOldKey = settings.getString(m_strDBPartition, "");
     	if ( strOldKey != null && strOldKey.length() > 0 )
     	{
@@ -46,7 +47,7 @@ public class RhoCryptImpl
 
 	private void writeKeyToStorage()
 	{
-		SharedPreferences settings = RhodesActivity.getInstance().getSharedPreferences(m_strPrefName, Activity.MODE_PRIVATE);		
+		SharedPreferences settings = RhodesService.getInstance().getSharedPreferences(m_strPrefName, Context.MODE_PRIVATE);		
     	SharedPreferences.Editor editor = settings.edit();
     	String strKey = Base64.encodeToString(m_dbKeyData, false);//, Base64.DEFAULT);
     	editor.putString(m_strDBPartition, strKey );
@@ -70,8 +71,10 @@ public class RhoCryptImpl
 	
 	private void initContext(String szPartition)throws Exception
 	{
-	    if ( m_dbKeyData != null )
+	    if ( m_dbKeyData != null ) {
+	        Logger.T(TAG, "RhoCrypt context already initialized, partition: " + szPartition);
 	        return;
+	    }
 
 	    initKey(szPartition);
 	    
@@ -89,6 +92,8 @@ public class RhoCryptImpl
 		m_decryptCipher = Cipher.getInstance("AES/CBC/NoPadding");  
 		m_decryptCipher.init(Cipher.DECRYPT_MODE, skeySpec, paramSpec);
 		
+        Logger.T(TAG, "RhoCrypt context initialized for partition: " + szPartition);
+
 	}
 	
 	private static void reportFail(String name, Exception e) 
@@ -103,8 +108,12 @@ public class RhoCryptImpl
 	    	initContext(szPartition);
 
             dataOut.rewind();
-	    	m_encryptCipher.doFinal(dataIn, dataOut);
-	    	
+
+            if (m_encryptCipher == null)
+                throw new NullPointerException("m_encryptCipher == null");
+
+            m_encryptCipher.doFinal(dataIn, dataOut);
+
 	    	return true;
     	}catch(Exception exc)
     	{
@@ -115,17 +124,21 @@ public class RhoCryptImpl
     
     public boolean db_decrypt( String szPartition, ByteBuffer dataIn, ByteBuffer dataOut )
     {
-    	try
-    	{
-	    	initContext(szPartition);
-
+        try
+        {
+            initContext(szPartition);
+            
             dataOut.rewind();
-	    	m_decryptCipher.doFinal(dataIn, dataOut);
-	    	
-	    	return true;
+
+            if (m_decryptCipher == null)
+                throw new NullPointerException("m_decryptCipher == null");
+
+            m_decryptCipher.doFinal(dataIn, dataOut);
+
+            return true;
 		}catch(Exception exc)
 		{
-			reportFail("db_encrypt", exc);
+			reportFail("db_decrypt", exc);
 			return false;
 		}
     }
