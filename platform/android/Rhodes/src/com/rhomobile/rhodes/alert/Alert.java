@@ -29,6 +29,7 @@ import android.os.Vibrator;
 
 import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.RhodesApplication;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
@@ -43,48 +44,72 @@ public class Alert {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
 	}
 
-	public static void showPopup(final Object params) {
-		try {
-			Logger.T(TAG, "showPopup");
-			PerformOnUiThread.exec(new Runnable() {
-				public void run() {
-					PopupActivity.showDialog(params);
-				}
-			}, false);
-		}
-		catch (Exception e) {
-			reportFail("showPopup", e);
-		}
-	}
-	
-	public static void hidePopup() {
-		try {
-			Logger.T(TAG, "hidePopup");
-			PerformOnUiThread.exec(new Runnable() {
-				public void run() {
-					PopupActivity.hidePopup();
-				}
-			}, false);
-		}
-		catch (Exception e) {
-			reportFail("hidePopup", e);
-		}
-	}
+    public static void showPopup(final Object params) {
+        RhodesApplication.runWhen(
+                RhodesApplication.AppState.AppActivated,
+                new RhodesApplication.StateHandler() {
+                    @Override
+                    public boolean run() {
+                        try {
+                            Logger.T(TAG, "showPopup");
+                            PerformOnUiThread.exec(new Runnable() {
+                                @Override
+                                public void run() { PopupActivity.showDialog(params); }
+                            }, false);
+                        }
+                        catch (Exception e) {
+                            reportFail("showPopup", e);
+                            setError(e);
+                        }
+                        return true;
+                    }
+                });
+    }
 
-	public static void showStatusPopup(final String title, final String message, final String hide) {
-		try {
-			Logger.I(TAG, "showStatusPopup");
-			PerformOnUiThread.exec(new Runnable() {
-				public void run() {
-					PopupActivity.showStatusDialog(title, message, hide);
-				}
-			}, false);
-		}
-		catch (Exception e) {
-			reportFail("showStatusPopup", e);
-		}
-	}
-	
+    public static void hidePopup() {
+        RhodesApplication.runWhen(
+                RhodesApplication.AppState.AppActivated,
+                new RhodesApplication.StateHandler() {
+                    @Override
+                    public boolean run() {
+                        try {
+                            Logger.T(TAG, "hidePopup");
+                            PerformOnUiThread.exec(new Runnable() {
+                                @Override
+                                public void run() { PopupActivity.hidePopup(); }
+                            }, false);
+                        }
+                        catch (Exception e) {
+                            reportFail("hidePopup", e);
+                            setError(e);
+                        }
+                        return true;
+                    }
+                });
+    }
+
+    public static void showStatusPopup(final String title, final String message, final String hide) {
+        RhodesApplication.runWhen(
+                RhodesApplication.AppState.AppActivated,
+                new RhodesApplication.StateHandler() {
+                    @Override
+                    public boolean run() {
+                        try {
+                            Logger.I(TAG, "showStatusPopup");
+                            PerformOnUiThread.exec(new Runnable() {
+                                @Override
+                                public void run() { PopupActivity.showStatusDialog(title, message, hide); }
+                            }, false);
+                        }
+                        catch (Exception e) {
+                            reportFail("showStatusPopup", e);
+                            setError(e);
+                        }
+                        return true;
+                    }
+                });
+    }
+
 	public static void vibrate(int duration) {
 		try {
 			if (!Capabilities.VIBRATE_ENABLED)
