@@ -55,7 +55,7 @@ public class Alert {
                             PerformOnUiThread.exec(new Runnable() {
                                 @Override
                                 public void run() { PopupActivity.showDialog(params); }
-                            }, false);
+                            });
                         }
                         catch (Exception e) {
                             reportFail("showPopup", e);
@@ -77,7 +77,7 @@ public class Alert {
                             PerformOnUiThread.exec(new Runnable() {
                                 @Override
                                 public void run() { PopupActivity.hidePopup(); }
-                            }, false);
+                            });
                         }
                         catch (Exception e) {
                             reportFail("hidePopup", e);
@@ -99,7 +99,7 @@ public class Alert {
                             PerformOnUiThread.exec(new Runnable() {
                                 @Override
                                 public void run() { PopupActivity.showStatusDialog(title, message, hide); }
-                            }, false);
+                            });
                         }
                         catch (Exception e) {
                             reportFail("showStatusPopup", e);
