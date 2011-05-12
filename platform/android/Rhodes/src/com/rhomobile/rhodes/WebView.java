@@ -90,7 +90,7 @@ public class WebView {
 
 	public static void navigate(String url, int index) {
 		try {
-			PerformOnUiThread.exec(new NavigateTask(url, index), false);
+			PerformOnUiThread.exec(new NavigateTask(url, index));
 		}
 		catch (Exception e) {
 			reportFail("navigate", e);
@@ -99,7 +99,7 @@ public class WebView {
 	
 	public static void navigateBack() {
 		try {
-			PerformOnUiThread.exec(new NavigateBackTask(activeTab()), false);
+			PerformOnUiThread.exec(new NavigateBackTask(activeTab()));
 		}
 		catch (Exception e) {
 			reportFail("navigateBack", e);
@@ -108,7 +108,7 @@ public class WebView {
 	
 	public static void refresh(int index) {
 		try {
-			PerformOnUiThread.exec(new RefreshTask(index), false);
+			PerformOnUiThread.exec(new RefreshTask(index));
 		}
 		catch (Exception e) {
 			reportFail("refresh", e);
@@ -129,7 +129,7 @@ public class WebView {
 	
 	public static void executeJs(String js, int index) {
 		try {
-			PerformOnUiThread.exec(new NavigateTask("javascript:" + js, index), false);
+			PerformOnUiThread.exec(new NavigateTask("javascript:" + js, index));
 		}
 		catch (Exception e) {
 			reportFail("executeJs", e);
@@ -138,7 +138,7 @@ public class WebView {
 	
 	public static void setCookie(String url, String cookie) {
 		try {
-			PerformOnUiThread.exec(new SetCookieTask(url, cookie), false);
+			PerformOnUiThread.exec(new SetCookieTask(url, cookie));
 		}
 		catch (Exception e) {
 			reportFail("setCookie", e);
