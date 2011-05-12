@@ -10,10 +10,8 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.ByteBuffer;
 
-//import android.util.Base64;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.app.Activity;
 import com.rhomobile.rhodes.Logger;
 
 public class RhoCryptImpl 
