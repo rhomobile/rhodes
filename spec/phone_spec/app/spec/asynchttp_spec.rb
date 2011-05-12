@@ -154,8 +154,8 @@ describe "AsyncHttp" do
         res['body'].index('The requested method PUT is not allowed for the URL').should_not be_nil
         
     end    
-    
-    def upload_withbody_test
+
+    it "should upload with body" do
         return unless $is_network_available
         
         server = 'http://rhologs.heroku.com'
@@ -179,7 +179,7 @@ describe "AsyncHttp" do
         File.exists?(file_name).should == true
     end
 
-    def upload_multiple_test
+    it "should upload miltiple" do
         return unless $is_network_available
         
         server = 'http://rhologs.heroku.com'
@@ -209,15 +209,13 @@ describe "AsyncHttp" do
         File.exists?(file_name).should == true
     end
 
-# TODO: Fix this test!
-=begin
-    def httpsget_test
+    it "should send https request" do
         return unless $is_network_available
             
         res = Rho::AsyncHttp.get(
-          :url => 'https://mail.google.com/' )
+          :url => 'https://rhologs.heroku.com' )
         
-        #puts "res : #{res}"  
+        puts "res : #{res}"  
         
         res['status'].should == 'ok'
         
@@ -229,5 +227,5 @@ describe "AsyncHttp" do
         end    
         
     end
-=end
+
 end    
