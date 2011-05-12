@@ -4,7 +4,7 @@
 
 There are three ways to extend Rhodes. You can add to the Ruby gems supported by Rhodes ("Rhodes extensions"). You can create new "native extensions" in the underlying SDK for a given smartphone operating system. You can extend the types of views available in Rhodes ("native extensions").
 
-## Rhodes Extensions	
+## Ruby Extensions	
 
 ### Supported extensions and libraries
 To keep rhodes lightweight we didn't provide extensions and libraries beyond core Ruby functionality. Examples of the features that either aren't necessary in Rhodes or we haven't provided for space reasons are: web services, XML, pluralization, YAML, etc. 
