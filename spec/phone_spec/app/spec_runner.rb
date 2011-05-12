@@ -51,6 +51,8 @@ if !defined?(RHO_WP7)
     config[:files] << "spec/bulksync_spec"
 end
 
+    config[:files] << "spec/uri_spec" if System.get_property('platform') == 'ANDROID'
+
   end
 
   def run
