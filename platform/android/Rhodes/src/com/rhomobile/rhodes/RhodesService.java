@@ -583,9 +583,8 @@ public class RhodesService extends Service {
 		}
 	}
 	
-	public void setMainView(MainView v) {
-		RhodesActivity ra = RhodesActivity.getInstance();
-		ra.setMainView(v);
+	public void setMainView(MainView v) throws NullPointerException {
+		RhodesActivity.safeGetInstance().setMainView(v);
 	}
 	
 	public MainView getMainView() {
@@ -638,7 +637,7 @@ public class RhodesService extends Service {
 				aboutDialog.setCancelable(true);
 				aboutDialog.show();
 			}
-		}, false);
+		});
 	}
 	
 	public static void showLogView() {
@@ -649,7 +648,7 @@ public class RhodesService extends Service {
 				logViewDialog.setCancelable(true);
 				logViewDialog.show();
 			}
-		}, false);
+		});
 	}
 	
 	public static void showLogOptions() {
@@ -660,7 +659,7 @@ public class RhodesService extends Service {
 				logOptionsDialog.setCancelable(true);
 				logOptionsDialog.show();
 			}
-		}, false);
+		});
 	}
 	
 	// Called from native code
@@ -1109,7 +1108,7 @@ public class RhodesService extends Service {
 									Logger.E(TAG, "Can't install file from " + tmpFile.getAbsolutePath() + ": " + e.getMessage());
 								}
 							}
-						}, false);
+						});
 					}
 				}
 				catch (IOException e) {
@@ -1313,7 +1312,7 @@ public class RhodesService extends Service {
 			            RhodesService rs = RhodesService.getInstance();
 			            if(rs != null) rs.wakeLock.acquire(true);
 			            else Logger.E(TAG, "rho_sys_set_sleeping() - No RhodesService has initialized !!!"); }
-			    }, false);
+			    });
 			}
 		}
 		return wasEnabled;
@@ -1410,11 +1409,7 @@ public class RhodesService extends Service {
             throw new IllegalStateException("No rhodes service instance at this moment");
 
         Logger.T(TAG, "Bring main activity to front");
-        if (RhodesActivity.getInstance() != null)
-            Logger.T(TAG, "There is main activity, should bring to front");
-        else
-            Logger.T(TAG, "There is no main activity, should start new one");
-        
+
         Intent intent = new Intent(srv, RhodesActivity.class);
         srv.startActivity(intent);
     }

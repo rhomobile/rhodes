@@ -135,8 +135,7 @@ public class RhodesActivity extends BaseActivity {
 					getInstance().getWindow().setFlags( WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN, WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
 				}
 			}
-		}		
-		, false);
+		});
 	}
 
 	@Override
@@ -216,10 +215,18 @@ public class RhodesActivity extends BaseActivity {
 		return mAppMenu.onMenuItemSelected(item);
 	}
 	
+	@Deprecated
 	public static RhodesActivity getInstance() {
 		return sInstance;
 	}
-	
+
+    public static RhodesActivity safeGetInstance() throws NullPointerException {
+        if(sInstance != null)
+            return sInstance;
+        else
+            throw new NullPointerException("RhodesActivity.sInstance == null");
+    }
+
 	public RhodesService getService() {
 		return mRhodesService;
 	}

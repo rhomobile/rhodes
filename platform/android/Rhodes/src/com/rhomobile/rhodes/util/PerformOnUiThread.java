@@ -35,8 +35,7 @@ public class PerformOnUiThread implements Runnable {
                     @Override
                     public boolean run() {
                         try {
-                            RhodesActivity ra = RhodesActivity.getInstance();
-                            ra.post(r, delay);
+                            RhodesActivity.safeGetInstance().post(r, delay);
                         }
                         catch (Exception e) {
                             Logger.E(TAG, "exec failed: " + e.getMessage());
@@ -45,41 +44,57 @@ public class PerformOnUiThread implements Runnable {
                         return true;
                     }
                 });
-	}
-	
+    }
+
+    @Deprecated
 	public static void exec(final Runnable r, final boolean wait) {
-	    RhodesApplication.runWhen(
+        if (wait)
+            sync_exec(r);
+        else
+            exec(r);
+    }
+
+    public static void exec(final Runnable r) {
+        RhodesApplication.runWhen(
                 RhodesApplication.UiState.MainActivityCreated,
                 new RhodesApplication.StateHandler() {
                     @Override
                     public boolean run() {
                         try {
-                            RhodesActivity ra = RhodesActivity.getInstance();
-                            if (!wait) {
-                                ra.post(r);
-                            }
-                            else {
-                                long thrId = Thread.currentThread().getId();
-                                if (ra.getUiThreadId() == thrId) {
-                                    // We are already in UI thread
-                                    r.run();
-                                }
-                                else {
-                                    // Post request to UI thread and wait when it would be done
-                                    synchronized (r) {
-                                        ra.post(new PerformOnUiThread(r));
-                                        r.wait();
-                                        //TODO: Repair synchronized exec
-                                    }
-                                }
-                            }
-                        }
-                        catch (Exception e) {
+                            RhodesActivity.safeGetInstance().post(r);
+                        } catch (Exception e) {
                             Logger.E(TAG, "exec failed: " + e.getMessage());
                             setError(e);
                         }
                         return true;
                     }
                 });
-	}
+    }
+    
+    
+    // Special exec edition for RhoBluetoothManager
+    //TODO: Use future pattern to return result and wait
+    @Deprecated
+    public static void sync_exec(final Runnable r)
+    {
+        try {
+            RhodesActivity ra = RhodesActivity.safeGetInstance();
+            
+            long thrId = Thread.currentThread().getId();
+            if (ra.getUiThreadId() == thrId) {
+                // We are already in UI thread
+                r.run();
+            }
+            else {
+                // Post request to UI thread and wait when it would be done
+                synchronized (r) {
+                    ra.post(new PerformOnUiThread(r));
+                    r.wait();
+                }
+            }
+        } catch (Exception e) {
+            Logger.E(TAG, "exec failed: " + e.getMessage());
+            Thread.dumpStack();
+        }
+    }
 };
