@@ -115,15 +115,16 @@ public class RhodesApplication extends Application{
         public abstract boolean canHandle(AppState state);
         
         static public AppState handleState(AppState state, AppState prev) {
-            if((state == AppActivated) && (prev != Undefined)) {
+            if((state == AppActivated) && (prev == Undefined)) {
                 appActivatedFlag = true;
                 return prev;
             }
             state.handle();
             if((state == AppStarted) && appActivatedFlag) {
                 AppActivated.handle();
+                return AppActivated;
             }
-            return AppActivated;
+            return state;
         }
     }
     
