@@ -1570,7 +1570,7 @@ namespace "run" do
         device_flag = '-e'
 
         logclear(device_flag)
-        run_emulator :hidden => true
+        run_emulator( :hidden => true ) if device_flag == '-e'
         do_uninstall(device_flag)
         
         # Failsafe to prevent eternal hangs
