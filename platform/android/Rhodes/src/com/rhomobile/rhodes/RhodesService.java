@@ -1371,7 +1371,7 @@ public class RhodesService extends Service {
 	public void startActivity(Intent intent) {
 
         RhodesActivity ra = RhodesActivity.getInstance();
-        if(intent.getComponent().compareTo(new ComponentName(this, RhodesActivity.class.getName())) == 0) {
+        if(intent.getComponent() != null && intent.getComponent().compareTo(new ComponentName(this, RhodesActivity.class.getName())) == 0) {
             Logger.T(TAG, "Start or bring main activity: " + RhodesActivity.class.getName() + ".");
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             if (ra == null) {
