@@ -42,8 +42,8 @@ extern void rho_nfc_tech_MifareClassic_write_block(int index, VALUE block);
 extern VALUE rho_nfc_tech_MifareClassic_read_block(int index);
 #define tech_MifareClassic_read_block rho_nfc_tech_MifareClassic_read_block
 
-extern int rho_nfc_tech_MifareUltralight_get_size();
-#define tech_MifareUltralight_get_size rho_nfc_tech_MifareUltralight_get_size
+extern int rho_nfc_tech_MifareClassic_get_block_count();
+#define tech_MifareClassic_get_block_count rho_nfc_tech_MifareClassic_get_block_count
 
 extern void rho_nfc_tech_MifareUltralight_write_page(int index, VALUE block);
 #define tech_MifareUltralight_write_page rho_nfc_tech_MifareUltralight_write_page
@@ -66,7 +66,7 @@ extern int tech_is_connected(const char* name);
 extern int tech_MifareClassic_get_size();
 extern void tech_MifareClassic_write_block(int index, VALUE block);
 extern VALUE tech_MifareClassic_read_block(int index);
-extern int tech_MifareUltralight_get_size();
+extern int tech_MifareClassic_get_block_count();
 extern void tech_MifareUltralight_write_page(int index, VALUE block);
 extern VALUE tech_MifareUltralight_read_pages(int index);
 
