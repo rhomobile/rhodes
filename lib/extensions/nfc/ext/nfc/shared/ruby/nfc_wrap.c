@@ -1586,8 +1586,8 @@ extern void rho_nfc_tech_MifareClassic_write_block(int index, VALUE block);
 extern VALUE rho_nfc_tech_MifareClassic_read_block(int index);
 #define tech_MifareClassic_read_block rho_nfc_tech_MifareClassic_read_block
 
-extern int rho_nfc_tech_MifareUltralight_get_size();
-#define tech_MifareUltralight_get_size rho_nfc_tech_MifareUltralight_get_size
+extern int rho_nfc_tech_MifareClassic_get_block_count();
+#define tech_MifareClassic_get_block_count rho_nfc_tech_MifareClassic_get_block_count
 
 extern void rho_nfc_tech_MifareUltralight_write_page(int index, VALUE block);
 #define tech_MifareUltralight_write_page rho_nfc_tech_MifareUltralight_write_page
@@ -1995,14 +1995,14 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_tech_MifareUltralight_get_size(int argc, VALUE *argv, VALUE self) {
+_wrap_tech_MifareClassic_get_block_count(int argc, VALUE *argv, VALUE self) {
   int result;
   VALUE vresult = Qnil;
   
   if ((argc < 0) || (argc > 0)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
-  result = (int)tech_MifareUltralight_get_size();
+  result = (int)tech_MifareClassic_get_block_count();
   vresult = SWIG_From_int((int)(result));
   return vresult;
 fail:
@@ -2332,7 +2332,7 @@ SWIGEXPORT void Init_Nfc(void) {
   rb_define_module_function(mNfc, "tech_MifareClassic_get_size", _wrap_tech_MifareClassic_get_size, -1);
   rb_define_module_function(mNfc, "tech_MifareClassic_write_block", _wrap_tech_MifareClassic_write_block, -1);
   rb_define_module_function(mNfc, "tech_MifareClassic_read_block", _wrap_tech_MifareClassic_read_block, -1);
-  rb_define_module_function(mNfc, "tech_MifareUltralight_get_size", _wrap_tech_MifareUltralight_get_size, -1);
+  rb_define_module_function(mNfc, "tech_MifareClassic_get_block_count", _wrap_tech_MifareClassic_get_block_count, -1);
   rb_define_module_function(mNfc, "tech_MifareUltralight_write_page", _wrap_tech_MifareUltralight_write_page, -1);
   rb_define_module_function(mNfc, "tech_MifareUltralight_read_pages", _wrap_tech_MifareUltralight_read_pages, -1);
 }
