@@ -275,13 +275,13 @@ end
 
 namespace "clean" do
   desc "Clean wp"
-  task :wp => "clean:wm:all"
-  namespace "wm" do
+  task :wp => "clean:wp:all"
+  namespace "wp" do
     task :rhodes => ["config:wp"] do
       rm_rf $vcbindir
       rm_rf $targetdir
     end
-    task :all => "clean:wm:rhodes"
+    task :all => "clean:wp:rhodes"
   end
 end
 
@@ -292,7 +292,7 @@ namespace "run" do
 		end
 
 		desc "Build, install .xap and run on WP7 emulator"
-		task :wp => ["clean:wm:all", "device:wp:production"] do
+		task :wp => ["device:wp:production"] do
 		if $app_config["wp"] && $app_config["wp"]["productid"] != nil
 			#system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
 
@@ -367,7 +367,7 @@ namespace "run" do
 			end
 
 			desc "Build, install .xap and run on WP7 device"
-			task :device => ["clean:wm:all", "device:wp:production"] do
+			task :device => ["device:wp:production"] do
 			if $app_config["wp"] && $app_config["wp"]["productid"] != nil
 			    #system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
 				File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
