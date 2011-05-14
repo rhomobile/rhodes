@@ -110,7 +110,7 @@ public:
 private:
     rho::Vector<rho::common::CAppMenuItem> m_arAppMenuItems;
     CAlertDialog *m_alertDialog;
-    CSyncStatusDlg m_SyncStatusDlg;
+    CSyncStatusDlg *m_SyncStatusDlg;
 };
 
 #if !defined(_WIN32_WCE)
