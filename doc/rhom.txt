@@ -597,11 +597,11 @@ Returns 1 if last sync was successful, 0 if it failed.
 	@source.last_sync_success 
 	  #=> 1
 
-### `distinct_object`
+### `distinct_objects`
 Number of records for this source.
 
 	:::ruby
-	@source.distinct_object
+	@source.distinct_objects
 	  #=> 837
 
 ## Resetting the Database
