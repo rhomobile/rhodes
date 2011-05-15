@@ -958,7 +958,10 @@ boolean CRhodesApp::sendLog()
 
     boolean bOldSaveToFile = LOGCONF().isLogToFile();
     LOGCONF().setLogToFile(false);
-    NetResponse resp = getNetRequest().pushMultipartData( strQuery, oItem, &(rho::sync::CSyncThread::getSyncEngine()), null );
+    NetRequest oNetRequest;
+    oNetRequest.setSslVerifyPeer(false);
+
+    NetResponse resp = getNetRequest(&oNetRequest).pushMultipartData( strQuery, oItem, &(rho::sync::CSyncThread::getSyncEngine()), null );
     LOGCONF().setLogToFile(bOldSaveToFile);
 
     if ( !resp.isOK() )
