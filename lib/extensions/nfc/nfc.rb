@@ -51,6 +51,11 @@ class NFCTagTechnology_MifareClassic < NFCTagTechnology
        return Nfc.tech_MifareClassic_get_size
    end
 
+   #return number of blocks
+   def get_block_count
+       return Nfc.tech_MifareClassic_get_block_count
+   end
+
 end
 
 class NFCTagTechnology_MifareUltralight < NFCTagTechnology
@@ -71,11 +76,6 @@ class NFCTagTechnology_MifareUltralight < NFCTagTechnology
        return Nfc.tech_MifareUltralight_read_pages(index)
    end
 
-   # return size in bytes 
-   def get_size
-       return Nfc.tech_MifareUltralight_get_size
-   end
-
 end
 
 
@@ -94,10 +94,10 @@ class NFCTag
   def  get_tech(tech_name)
       if @techlist.include?(tech_name)
           if tech_name == 'MifareClassic'
-              return NFCTagTechnology_MifareClassic.New()
+              return NFCTagTechnology_MifareClassic.new()
           end
           if tech_name == 'MifareUltralight'
-              return NFCTagTechnology_MifareULtralight.New()
+              return NFCTagTechnology_MifareULtralight.new()
           end
       else
           return nil
@@ -180,18 +180,18 @@ class NFCManager
        Nfc.set_tech_callback(callback_url)
   end
 
-  # set list of Techs for listen (array of strings)
-  def set_listen_tech_list(tech_list)
-      Nfc.set_listen_tech_list(tech_list)
-  end
+  # set self.list of Techs for listen (array of strings)
+  #def set_listen_tech_list(tech_list)
+  #    Nfc.set_listen_tech_list(tech_list)
+  #end
 
   # return current discovered Tag or nil if not any Tag discovered now
-  def get_current_Tag
-       tech_list = Nfc.tech_get_techList
+  def self.get_current_Tag
+       tech_list = Nfc.get_tech_list
        if tech_list.size == 0
            return nil
        end
-       return NFCTag.New(tech_list)
+       return NFCTag.new(tech_list)
   end
 
   def self.convert_Tnf_to_string(tnf)
