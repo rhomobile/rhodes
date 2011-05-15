@@ -402,6 +402,7 @@ public class RhoConf {
 		
 		NetResponse resp = null;
 		try{
+			nq.sslVerifyPeer(false);
 			resp = nq.pushMultipartData(strQuery, oItem, com.rho.sync.SyncThread.getSyncEngine(), null );
 		}catch(Exception exc)
 		{
