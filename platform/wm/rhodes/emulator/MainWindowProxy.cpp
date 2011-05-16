@@ -33,7 +33,7 @@ CMainWindowProxy::~CMainWindowProxy(void)
 void CMainWindowProxy::navigate(const wchar_t* url)
 {
     LOG(INFO) + "navigate: '"+url+"'";
-    ((QtMainWindow*)qtMainWindow)->navigate(QUrl(QString::fromWCharArray(url)));
+    ((QtMainWindow*)qtMainWindow)->navigate(QString::fromWCharArray(url));
 }
 
 void CMainWindowProxy::setCallback(IMainWindowCallback* callback)
