@@ -171,7 +171,7 @@ INetResponse* CURLNetRequest::doRequest(const char *method, const String& strUrl
                                         Hashtable<String,String>* pHeaders)
 {
     INetResponse* pResp = doPull(method, strUrl, strBody, null, oSession, pHeaders);
-	return pResp;
+    return pResp;
 }
 
 CURLcode CURLNetRequest::doCURLPerform(const String& strUrl)
@@ -198,8 +198,12 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
     if (oFile)
         nStartFrom = oFile->size();
 
-	if( !net::URI::isLocalHost(strUrl.c_str()) )	
-	   rho_net_impl_network_indicator(1);
+	if( !net::URI::isLocalHost(strUrl.c_str()) )
+    {
+        //Log every non localhost requests
+        RAWLOG_INFO2("%s request (Pull): %s", method, strUrl.c_str());
+        rho_net_impl_network_indicator(1);
+    }
 
     Hashtable<String,String> h;
     if (pHeaders)
@@ -277,6 +281,7 @@ INetResponse* CURLNetRequest::pushMultipartData(const String& strUrl, VectorPtr<
     int nRespCode = -1;
     String strRespBody;
     
+    RAWLOG_INFO1("POST request (Push): %s", strUrl.c_str());
     rho_net_impl_network_indicator(1);
     
     curl_slist *hdrs = m_curl.set_options("POST", strUrl, String(), oSession, pHeaders);
