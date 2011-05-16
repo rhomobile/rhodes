@@ -518,14 +518,18 @@ end
 def process_exclude_folders
   excl = []
 
+  exclude_platform = $config['platform']
+  exclude_platform = "bb6" if $bb6
+  exclude_platform = "wm" if exclude_platform == 'win32'
+
   if $app_config["excludedirs"]
       excl << $app_config["excludedirs"]['all'] if $app_config["excludedirs"]['all']
-      excl << $app_config["excludedirs"][$config["platform"]] if $app_config["excludedirs"][$config["platform"]]
+      excl << $app_config["excludedirs"][exclude_platform] if $app_config["excludedirs"][exclude_platform]
   end
       
   if  $config["excludedirs"]    
       excl << $config["excludedirs"]['all'] if $config["excludedirs"]['all']
-      excl << $config["excludedirs"][$config["platform"]] if $config["excludedirs"][$config["platform"]]
+      excl << $config["excludedirs"][exclude_platform] if $config["excludedirs"][exclude_platform]
   end  
   
   if excl
