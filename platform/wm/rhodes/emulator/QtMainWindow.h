@@ -24,7 +24,7 @@ public:
     virtual void closeEvent(QCloseEvent *);
     void setCallback(IMainWindowCallback* callback);
     // webview
-    void navigate(QUrl url);
+    void navigate(QString url);
     void GoBack(void);
     void GoForward(void);
     void Refresh(void);
