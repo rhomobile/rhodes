@@ -406,6 +406,8 @@ public class RhodesService extends Service {
 			if (Capabilities.PUSH_ENABLED) {
 				if (getPushRegistrationId().length() == 0)
 					PushService.register();
+				else
+				    Log.i(TAG, "PUSH already registered: " + getPushRegistrationId());
 			}
 		} catch (IllegalAccessException e) {
 			Log.e(TAG, e.getMessage());
@@ -1381,6 +1383,15 @@ public class RhodesService extends Service {
         }
 
         if (ra != null) {
+            if (DEBUG) {
+                Logger.T(TAG, "Starting new activity on top:");
+                Bundle extras = intent.getExtras();
+                if (extras != null) {
+                    for (String key: extras.keySet()) {
+                        Log.d(TAG, key + ": " + extras.get(key).toString());
+                    }
+                }
+            }
             ra.startActivity(intent);
         } else {
             throw new IllegalStateException("Trying to start activity, but there is no main activity instance (we are in background, no UI active)");
