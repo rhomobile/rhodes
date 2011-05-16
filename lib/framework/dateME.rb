@@ -2,6 +2,9 @@ require 'date/format'
 
 class Time
 
+  def getlocal() localtime end
+  def to_time() getlocal end
+
   def __makeTwoDigit(num)
     str = num.to_s
     if str.length < 2
@@ -101,7 +104,27 @@ class Date
     ((@m_date-x._get_date()).to_i)/(60*60*24)
   end
 
+  def + (x)
+    Date.new( @m_date + x*(60*60*24) )
+  end
+
+  # Get the week day of this date.  Sunday is day-of-week 0;
+  # Saturday is day-of-week 6.
   def wday() @m_date.wday end
+  
+  # Get the commercial day of the week of this date.  Monday is
+  # commercial day-of-week 1; Sunday is commercial day-of-week 7.
+  def cwday() 
+    _wday = @m_date.wday
+    return 7 if _wday == 0
+    
+    return _wday
+  end
+
+  # Get the commercial week of the year of this date.
+  # TODO: cweek()
+  #def cweek() 0 end
+  
   def mon() @m_date.mon end
   def year() @m_date.year end
   def mday() @m_date.mday end
@@ -121,6 +144,9 @@ class Date
   end
 
   private_class_method :now
+
+  def to_time() Time.local(year(), mon(), mday()) end
+  def to_date() self end
   
 end
 
