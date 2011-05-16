@@ -1,6 +1,8 @@
 package com.rhomobile.rhodes;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
 import com.rhomobile.rhodes.mainview.MainView;
@@ -55,12 +57,30 @@ public class RhodesActivity extends BaseActivity {
 	private WebChromeClient mChromeClient;
 	private WebViewClient mWebViewClient;
 	private RhoWebSettings mWebSettings;
+
 	
 	private long uiThreadId = 0;
 	
 	public long getUiThreadId() {
 		return uiThreadId;
 	}
+	
+	private ArrayList<RhodesActivityListener> mListeners = null;
+	
+	private boolean mIsForeground = false;
+	
+	public boolean isForegroundNow() {
+		return mIsForeground;
+	}
+	
+	public void addRhodesActivityListener(RhodesActivityListener listener) {
+		mListeners.add(listener);
+	}
+	
+	public void removeRhodesActivityListener(RhodesActivityListener listener) {
+		mListeners.remove(listener);
+	}
+	
 	
 	private Runnable mSetup = new Runnable() {
 		public void run() {
@@ -72,6 +92,8 @@ public class RhodesActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		
 		super.onCreate(savedInstanceState);
+		
+		mListeners = new ArrayList<RhodesActivityListener>();
 		
 		Thread ct = Thread.currentThread();
 		//ct.setPriority(Thread.MAX_PRIORITY);
@@ -142,6 +164,12 @@ public class RhodesActivity extends BaseActivity {
 	protected void onNewIntent(Intent intent) {
 	    super.onNewIntent(intent);
         Log.d(TAG, "RhodesActivity.onNewIntent()");
+        {
+        	Iterator<RhodesActivityListener> iterator = mListeners.iterator();
+        	while (iterator.hasNext()) {
+        		iterator.next().onNewIntent(this, intent);
+        	}
+        }
 	}
 	
 	@Override
@@ -152,11 +180,31 @@ public class RhodesActivity extends BaseActivity {
         Log.d(TAG, "RhodesActivity.onStart()");
         
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityStarted);
-}
+	}
+	
+	@Override
+	public void onResume() {
+    	mIsForeground = true;
+		super.onResume();
+        {
+        	Iterator<RhodesActivityListener> iterator = mListeners.iterator();
+        	while (iterator.hasNext()) {
+        		iterator.next().onResume(this);
+        	}
+        }
+	}
 
     @Override
     public void onPause() 
     {
+    	mIsForeground = false;
+        {
+        	Iterator<RhodesActivityListener> iterator = mListeners.iterator();
+        	while (iterator.hasNext()) {
+        		iterator.next().onPause(this);
+        	}
+        }
+    	
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityPaused);
 
         RhodesService.rhodesActivityStarted(false);
