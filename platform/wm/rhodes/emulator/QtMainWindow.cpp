@@ -3,6 +3,7 @@
 #include "ui_QtMainWindow.h"
 #include "ExternalWebView.h"
 #include <QResizeEvent>
+#include <QWebFrame>
 #include "common/RhoStd.h"
 #include "common/RhodesApp.h"
 #include "rubyext/WebView.h"
@@ -76,8 +77,11 @@ void QtMainWindow::on_webView_linkClicked(const QUrl& url)
         externalWebView->navigate(QUrl(sUrl.remove("rho_open_target=_blank")));
         externalWebView->show();
         externalWebView->activateWindow();
-    } else
-        ui->webView->setUrl(url);
+    } else {
+        sUrl.remove(QRegExp("#+$"));
+        if (sUrl.compare(ui->webView->url().toString())!=0)
+            ui->webView->load(QUrl(sUrl));
+    }
 }
 
 void QtMainWindow::on_webView_loadStarted()
@@ -100,9 +104,14 @@ void QtMainWindow::on_menuMain_aboutToShow()
     if (cb) cb->createCustomMenu();
 }
 
-void QtMainWindow::navigate(QUrl url)
+void QtMainWindow::navigate(QString url)
 {
-    ui->webView->setUrl(url);
+    if (url.startsWith("javascript:", Qt::CaseInsensitive)) {
+        url.remove(0,11);
+        ui->webView->stop();
+        ui->webView->page()->mainFrame()->evaluateJavaScript(url);
+    } else
+        ui->webView->load(QUrl(url));
 }
 
 void QtMainWindow::GoBack(void)
