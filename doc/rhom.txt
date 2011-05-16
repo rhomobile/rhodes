@@ -224,10 +224,12 @@ Below is a full list of options available to fixed schema models:
 	  property :mycustomproperty, 'hello'
 	end
 
-### Fixed Schema Data Migrations
-When the application starts the first time after an update, the database will be (re)created if the `app_db_version` in `rhoconfig.txt` is different from what existed before.  If the database is recreated, the existing database is removed along with all data.  
+## Data Migrations
+To clean all client data at startup - change `app_db_version` in `rhoconfig.txt`.
+This scenario will work for Property Bag and Fixed Schema models
 
-For this scenario, Rhom provides an application hook to migrate the data manually, overriding the default behavior which deletes the data.  You can also use this hook to run business logic related to updating the database.  For example, your application may want to display a customized alert notifying the user that a migration is in progress and it may take a few moments.
+### Fixed Schema Data Migrations
+Rhom provides an application hook to migrate the data manually, overriding the default behavior which deletes the data.  You can also use this hook to run business logic related to updating the database.  For example, your application may want to display a customized alert notifying the user that a migration is in progress and it may take a few moments.
 
 To use this hook, first we need to track the `:schema_version` in our model:
 
