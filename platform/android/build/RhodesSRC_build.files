@@ -15,6 +15,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/RhoCryptImpl.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhoLogConf.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhoMenu.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesActivity.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesActivityListener.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesAppOptions.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesApplication.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesService.java
