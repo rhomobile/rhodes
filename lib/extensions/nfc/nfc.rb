@@ -15,7 +15,9 @@ class NFCTagTechnology
   end
 
   def connect
+      #puts 'NFCTagTechnology.connect() START'
       Nfc.tech_connect(get_name)
+      #puts 'NFCTagTechnology.connect() FINISH'
   end
 
   def close
@@ -23,13 +25,27 @@ class NFCTagTechnology
   end
 
   def is_connected
-      return (  Nfc.tech_is_connected(get_name) != 0)
+      #puts 'NFCTagTechnology.is_connected() START'
+      res = Nfc.tech_is_connected(@techname)
+      resb = false
+      if res != 0
+          resb = true
+      end    
+      #puts 'NFCTagTechnology.is_connected() FINISH'
+      return resb
   end
 
 end
 
 class NFCTagTechnology_MifareClassic < NFCTagTechnology
 
+    KEY_DEFAULT = [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]
+    
+    KEY_MIFARE_APPLICATION_DIRECTORY = [0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5]
+    
+    KEY_NFC_FORUM =[0xD3, 0xF7, 0xD3, 0xF7, 0xD3, 0xF7]    
+    
+    
   def initialize
        super(NFCTagTechnology::MIFARE_CLASSIC)
   end
@@ -56,6 +72,38 @@ class NFCTagTechnology_MifareClassic < NFCTagTechnology
        return Nfc.tech_MifareClassic_get_block_count
    end
 
+   # return count of sectors 
+   def get_sector_count
+       return Nfc.tech_MifareClassic_get_sector_count
+   end    
+    
+   # return count of blocks in sector 
+   def get_blocks_in_sector_count(index)
+       return Nfc.tech_MifareClassic_get_blocks_in_sector_count(index)
+   end    
+
+    # return index of first block in sector 
+    def sector_to_block(index)
+        return Nfc.tech_MifareClassic_sector_to_block(index)
+    end    
+           
+    # authenticate sector with key
+    # key is 6 byte array
+    # return true if authenticate was passed
+    def authenticate_sector_with_key_A(index, key)
+        r = Nfc.tech_MifareClassic_authenticate_sector_with_key_A(index, key)
+        return r!=0
+    end   
+       
+    # authenticate sector with key
+    # key is 6 byte array
+    # return true if authenticate was passed
+    def authenticate_sector_with_key_B(index, key)
+        r = Nfc.tech_MifareClassic_authenticate_sector_with_key_B(index, key)
+        return r!=0
+    end   
+   
+    
 end
 
 class NFCTagTechnology_MifareUltralight < NFCTagTechnology
@@ -82,7 +130,7 @@ end
 class NFCTag
 
   def initialize(tech_list)
-     puts 'Ruby NFCTag.initialize()'
+      #puts 'Ruby NFCTag.initialize()'
      @techlist = tech_list
   end
 

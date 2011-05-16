@@ -45,6 +45,23 @@ extern VALUE rho_nfc_tech_MifareClassic_read_block(int index);
 extern int rho_nfc_tech_MifareClassic_get_block_count();
 #define tech_MifareClassic_get_block_count rho_nfc_tech_MifareClassic_get_block_count
 
+
+extern int rho_nfc_tech_MifareClassic_get_sector_count();
+#define tech_MifareClassic_get_sector_count rho_nfc_tech_MifareClassic_get_sector_count
+
+extern int rho_nfc_tech_MifareClassic_get_blocks_in_sector_count(int index);
+#define tech_MifareClassic_get_blocks_in_sector_count rho_nfc_tech_MifareClassic_get_blocks_in_sector_count
+
+extern int rho_nfc_tech_MifareClassic_sector_to_block(int index);
+#define tech_MifareClassic_sector_to_block rho_nfc_tech_MifareClassic_sector_to_block
+
+extern int rho_nfc_tech_MifareClassic_authenticate_sector_with_key_A(int index, VALUE key);
+#define tech_MifareClassic_authenticate_sector_with_key_A rho_nfc_tech_MifareClassic_authenticate_sector_with_key_A
+
+extern int rho_nfc_tech_MifareClassic_authenticate_sector_with_key_B(int index, VALUE key);
+#define tech_MifareClassic_authenticate_sector_with_key_B rho_nfc_tech_MifareClassic_authenticate_sector_with_key_B
+
+
 extern void rho_nfc_tech_MifareUltralight_write_page(int index, VALUE block);
 #define tech_MifareUltralight_write_page rho_nfc_tech_MifareUltralight_write_page
 
@@ -67,6 +84,11 @@ extern int tech_MifareClassic_get_size();
 extern void tech_MifareClassic_write_block(int index, VALUE block);
 extern VALUE tech_MifareClassic_read_block(int index);
 extern int tech_MifareClassic_get_block_count();
+extern int tech_MifareClassic_get_sector_count();
+extern int tech_MifareClassic_get_blocks_in_sector_count(int index);
+extern int tech_MifareClassic_sector_to_block(int index);
+extern int tech_MifareClassic_authenticate_sector_with_key_A(int index, VALUE key);
+extern int tech_MifareClassic_authenticate_sector_with_key_B(int index, VALUE key);
 extern void tech_MifareUltralight_write_page(int index, VALUE block);
 extern VALUE tech_MifareUltralight_read_pages(int index);
 

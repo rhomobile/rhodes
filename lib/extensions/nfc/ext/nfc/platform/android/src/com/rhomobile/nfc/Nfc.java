@@ -8,12 +8,16 @@ import java.util.Map;
 import java.util.Set;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
+import android.nfc.NfcManager;
 import android.nfc.Tag;
 import android.nfc.tech.MifareClassic;
 import android.nfc.tech.MifareUltralight;
@@ -25,10 +29,12 @@ import android.util.Log;
 
 import com.rhomobile.rhodes.PushService;
 import com.rhomobile.rhodes.RhodesActivity;
+import com.rhomobile.rhodes.RhodesActivityListener;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.Utils;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 
-public class Nfc  {
+public class Nfc implements RhodesActivityListener {
 
 	private static final String TECH_MIFARE_CLASSIC = "MifareClassic";
 	private static final String TECH_MIFARE_ULTRALIGHT = "MifareUltralight";
@@ -105,8 +111,141 @@ public class Nfc  {
 	}
 	
 	public static void setEnable(int enable) {
+		log(" $$$$$$$$$ setEnable() START() ");
+		boolean oldEnable = ourIsEnable;
 		ourIsEnable = (enable != 0);
+		if ((oldEnable == false) && (ourIsEnable == true)) {
+			RhodesActivity.safeGetInstance().addRhodesActivityListener(getInstance());
+			if (RhodesActivity.safeGetInstance().isForegroundNow()) {
+				PerformOnUiThread.exec( new Runnable() {
+					public void run() {
+						if (RhodesActivity.safeGetInstance().isForegroundNow()) {
+							getInstance().onResume(RhodesActivity.safeGetInstance());
+						}
+					}
+				});
+			}
+		}
+		if ((oldEnable == true) && (ourIsEnable == false)) {
+			RhodesActivity.safeGetInstance().removeRhodesActivityListener(getInstance());
+			if (RhodesActivity.safeGetInstance().isForegroundNow()) {
+				PerformOnUiThread.exec( new Runnable() {
+					public void run() {
+						NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(RhodesActivity.getContext());
+						nfcAdapter.disableForegroundDispatch(RhodesActivity.safeGetInstance());
+					}
+				});
+			}
+		}
+		log(" $$$$$$$$$ setEnable() FINISH() ");
 	}
+	
+	public void onPause(RhodesActivity activity) {
+		log(" $$$$$$$$$ onPause() ");
+		NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(RhodesActivity.getContext());
+		nfcAdapter.disableForegroundDispatch(activity);
+	}
+	
+	public void onResume(RhodesActivity activity) {
+		log(" $$$$$$$$$ onResume() ");
+		NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(RhodesActivity.getContext());
+		IntentFilter[] filters = new IntentFilter[1];
+		filters[0] = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
+		
+		PendingIntent intent = 
+            PendingIntent.getActivity(activity, 0,
+              new Intent(activity, activity.getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 
+              0);
+		
+		nfcAdapter.enableForegroundDispatch(activity, intent, null, null);
+	}
+	
+	public void onNewIntent(RhodesActivity activity, Intent intent) {
+		String action = intent.getAction();
+		
+		log(" $$$$$$$$$ onNewIntent !!! Action = "+action);
+		
+		
+		if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
+			log("ACTION_TAG_DISCOVERED !");
+            Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+            NdefMessage[] msgs;
+            if (rawMsgs != null) {
+    			log(" Found rawMessages from Intent !");
+                msgs = new NdefMessage[rawMsgs.length];
+                for (int i = 0; i < rawMsgs.length; i++) {
+                    msgs[i] = (NdefMessage) rawMsgs[i];
+                }
+            } else {
+                // Unknown tag type
+    			log(" Intent not have any Messages !");
+                byte[] empty = new byte[] {};
+                NdefRecord record = new NdefRecord(NdefRecord.TNF_UNKNOWN, empty, empty, empty);
+                NdefMessage msg = new NdefMessage(new NdefRecord[] {record});
+                msgs = new NdefMessage[] {msg};
+            }
+            getInstance().onReceiveMessages(msgs);
+			Tag tag = (Tag)intent.getExtras().get(NfcAdapter.EXTRA_TAG);
+			if (tag != null) {
+				log("     Tag found in extars ! ");
+            	onReceiveTag(tag);
+			}
+			else {
+				log("     Tag not found in extars ! ");
+			}
+        }
+		if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
+			log("ACTION_NDEF_DISCOVERED !");
+			Uri u = intent.getData();
+			
+			log("     Data = "+u.toString());
+			String t = intent.getType();
+			if (t != null) {
+				log("     Type = "+t);
+			}
+			else {
+				log("     Type is NULL= ");
+			}
+			
+			Tag tag = (Tag)intent.getExtras().get(NfcAdapter.EXTRA_TAG);
+			if (tag != null) {
+				log("     Tag found in extars ! ");
+			}
+			else {
+				log("     Tag not found in extars ! ");
+			}
+			
+			
+            Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+            NdefMessage[] msgs;
+            if (rawMsgs != null) {
+                msgs = new NdefMessage[rawMsgs.length];
+                for (int i = 0; i < rawMsgs.length; i++) {
+                    msgs[i] = (NdefMessage) rawMsgs[i];
+                }
+            } else {
+                // Unknown tag type
+    			log("     Unknown Tag type !!!");
+                byte[] empty = new byte[] {};
+                NdefRecord record = new NdefRecord(NdefRecord.TNF_UNKNOWN, empty, empty, empty);
+                NdefMessage msg = new NdefMessage(new NdefRecord[] {record});
+                msgs = new NdefMessage[] {msg};
+            }
+            getInstance().onReceiveMessages(msgs);
+            
+            if (tag != null) {
+            	onReceiveTag(tag);
+            }
+        }
+		if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
+			log("ACTION_TECH_DISCOVERED !");
+			Tag tag = (Tag)intent.getExtras().get(NfcAdapter.EXTRA_TAG);
+			if (tag != null) {
+				Nfc.getInstance().onReceiveTag(tag);
+			}
+        }
+	}
+	
 	
 	public static void setCallback(String callback) {
 		ourCallback = callback;
@@ -125,6 +264,7 @@ public class Nfc  {
 
 	
 	public void onReceiveTag(Tag tag) {
+		log("onReceiveTag()");
 		if (tag == null) {
 			return;
 		}
@@ -140,55 +280,57 @@ public class Nfc  {
 		if (mMifareClassic != null) {
 			mTechs.put("MifareClassic", mMifareClassic);
 			log("     MifareClassic found !");
-			try {
-				mMifareClassic.connect();
-			} catch (IOException e) {
-				log("     MifareClassic.connect() throw Exception !!!");
-				e.printStackTrace();
-			}
+			//try {
+				//mMifareClassic.connect();
+			//} catch (IOException e) {
+			//	log("     MifareClassic.connect() throw Exception !!!");
+			//	e.printStackTrace();
+			//}
 			boolean ic = mMifareClassic.isConnected();
 			log("     MifareClassic.isConnected() = "+String.valueOf(ic));
 			log("     MifareClassic.block_count() = "+String.valueOf(mMifareClassic.getBlockCount()));
 			log("     MifareClassic.sector_count() = "+String.valueOf(mMifareClassic.getSectorCount()));
 			log("     MifareClassic.size() = "+String.valueOf(mMifareClassic.getSize()));
 			
-			int i;
-			for (i = 0; i < mMifareClassic.getSectorCount(); i++) {
-				try {
-					boolean auth = mMifareClassic.authenticateSectorWithKeyA(i, mMifareClassic.KEY_DEFAULT);
-
-					log("  sector ["+String.valueOf(i)+"]   auth = "+String.valueOf(auth));
-
-					if ( !auth) {
-						auth = mMifareClassic.authenticateSectorWithKeyA(i, mMifareClassic.KEY_MIFARE_APPLICATION_DIRECTORY);
-						log("  sector ["+String.valueOf(i)+"]   auth with MIFARE_APP_DIR = "+String.valueOf(auth));
-					}
-
-					if ( !auth) {
-						auth = mMifareClassic.authenticateSectorWithKeyA(i, mMifareClassic.KEY_NFC_FORUM);
-						log("  sector ["+String.valueOf(i)+"]   auth with NFC = "+String.valueOf(auth));
-					}
-					
-					if (auth) {
-						int j;
-						byte block[] = new byte[16];
-						for (j = 0; j < mMifareClassic.getBlockCountInSector(i); j++) {
-							int index = mMifareClassic.sectorToBlock(i);
-							tech_MifareClassic_read_block(index + j, block);
+			if (false) {
+				int i;
+				for (i = 0; i < mMifareClassic.getSectorCount(); i++) {
+					try {
+						boolean auth = mMifareClassic.authenticateSectorWithKeyA(i, mMifareClassic.KEY_DEFAULT);
+	
+						log("  sector ["+String.valueOf(i)+"]   auth = "+String.valueOf(auth));
+	
+						if ( !auth) {
+							auth = mMifareClassic.authenticateSectorWithKeyA(i, mMifareClassic.KEY_MIFARE_APPLICATION_DIRECTORY);
+							log("  sector ["+String.valueOf(i)+"]   auth with MIFARE_APP_DIR = "+String.valueOf(auth));
 						}
+	
+						if ( !auth) {
+							auth = mMifareClassic.authenticateSectorWithKeyA(i, mMifareClassic.KEY_NFC_FORUM);
+							log("  sector ["+String.valueOf(i)+"]   auth with NFC = "+String.valueOf(auth));
+						}
+						
+						if (auth) {
+							int j;
+							byte block[] = new byte[16];
+							for (j = 0; j < mMifareClassic.getBlockCountInSector(i); j++) {
+								int index = mMifareClassic.sectorToBlock(i);
+								tech_MifareClassic_read_block(index + j, block);
+							}
+						}
+					} catch (IOException e) {
+						log("mMifareClassic.authenticateSectorWithKeyA() throw Exception");
+						e.printStackTrace();
 					}
-				} catch (IOException e) {
-					log("mMifareClassic.authenticateSectorWithKeyA() throw Exception");
-					e.printStackTrace();
 				}
 			}
 			
-			try {
-				mMifareClassic.authenticateSectorWithKeyA(0, mMifareClassic.KEY_MIFARE_APPLICATION_DIRECTORY);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			//try {
+				//mMifareClassic.authenticateSectorWithKeyA(0, mMifareClassic.KEY_MIFARE_APPLICATION_DIRECTORY);
+			//} catch (IOException e) {
+			//	// TODO Auto-generated catch block
+			//	e.printStackTrace();
+			//}
 			
 		}
 		if (mMifareUltralight != null) {
@@ -205,7 +347,7 @@ public class Nfc  {
 			mTechList.add(key);
 		}
 		
-        Utils.platformLog(TAG, "NFC TAG Tech Received ! Service started = "+String.valueOf(isRhodesApplicationRun()));
+        log("NFC TAG Tech Received ! Service started = "+String.valueOf(isRhodesApplicationRun()));
         
         if (isRhodesApplicationRun()) {
         	if (ourIsEnable) {
@@ -214,30 +356,35 @@ public class Nfc  {
         				callTechCallback(ourTechCallback, "discovered");
         			}
                 	else {
-                        Utils.platformLog(TAG, "Nfc callback is empty");
+                        log("Nfc callback is empty");
                 	}
         		}
             	else {
-                    Utils.platformLog(TAG, "Nfc callback is null");
+                    log("Nfc callback is null");
             	}
         	}
         	else {
-                Utils.platformLog(TAG, "Nfc is not enabled");
+                log("Nfc is not enabled");
         	}
         }
         
 	}
 	
 	public void onReceiveMessages(NdefMessage[] msgs) {
+		
+		//return;
+		
+		
+		log("onReceiveMessages()");
         if (msgs == null || msgs.length == 0) {
             return;
         }
 		
-        Utils.platformLog(TAG, "NFC TAG Received ! Service started = "+String.valueOf(isRhodesApplicationRun()));
+        log("NFC TAG(with NDE Messages) Received ! Service started = "+String.valueOf(isRhodesApplicationRun()));
         
         NfcMessagePack pack = new NfcMessagePack(msgs);
         
-        Utils.platformLog(TAG, "Message Pack created");
+        log("Message Pack created");
         if (isRhodesApplicationRun()) {
         	if (ourIsEnable) {
         		if (ourCallback != null) {
@@ -245,18 +392,18 @@ public class Nfc  {
         				callCallback(ourCallback, pack);
         			}
                 	else {
-                        Utils.platformLog(TAG, "Nfc callback is empty");
+                        log("Nfc callback is empty");
                 	}
         		}
             	else {
-                    Utils.platformLog(TAG, "Nfc callback is null");
+                    log("Nfc callback is null");
             	}
         	}
         	else {
-                Utils.platformLog(TAG, "Nfc is not enabled");
+                log("Nfc is not enabled");
         	}
         }
-        
+        //*/
 	}
 	
 
@@ -343,6 +490,59 @@ public class Nfc  {
 		return 0;
 	}
 
+	public static int tech_MifareClassic_get_sector_count() {
+		if (getInstance().mMifareClassic != null)
+			return getInstance().mMifareClassic.getSectorCount();
+		return 0;
+	}
+
+	public static int tech_MifareClassic_get_blocks_in_sector_count(int index) {
+		if (getInstance().mMifareClassic != null)
+			return getInstance().mMifareClassic.getBlockCountInSector(index);
+		return 0;
+	}
+
+	public static int tech_MifareClassic_sector_to_block(int index) {
+		if (getInstance().mMifareClassic != null)
+			return getInstance().mMifareClassic.sectorToBlock(index);
+		return 0;
+	}
+
+	public static int tech_MifareClassic_authenticate_sector_with_key_A(int index, byte[] key) {
+		if (getInstance().mMifareClassic != null) {
+			try {
+				boolean auth = getInstance().mMifareClassic.authenticateSectorWithKeyA(index, key);
+				if (auth) {
+					return 1;
+				}
+			}
+			catch (IOException e) {
+				log("IOException in tech_MifareClassic_authenticate_sector_with_key_A()");
+			}
+		}
+		return 0;
+	}
+	
+	public static int tech_MifareClassic_authenticate_sector_with_key_B(int index, byte[] key) {
+		if (getInstance().mMifareClassic != null) {
+			try {
+				boolean auth = getInstance().mMifareClassic.authenticateSectorWithKeyB(index, key);
+				if (auth) {
+					return 1;
+				}
+			}
+			catch (IOException e) {
+				log("IOException in tech_MifareClassic_authenticate_sector_with_key_B()");
+			}
+		}
+		return 0;
+	}
+	
+	
+	
+	
+	
+	
 	public static void tech_MifareClassic_write_block(int index, byte[] block) {
 		
 	}
@@ -363,7 +563,6 @@ public class Nfc  {
 		try {
 			readed_block = getInstance().mMifareClassic.readBlock(index);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			log ("     Exception in tech_MifareClassic_read_block("+String.valueOf(index)+")");
 			e.printStackTrace();
 		}
