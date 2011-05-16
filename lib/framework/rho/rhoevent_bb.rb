@@ -11,6 +11,9 @@ module Rho
       elsif args.first == :all
 
         if args.length > 1
+          args[1][:start_date] = args[1][:start_date].to_time unless args[1][:start_date].nil?
+          args[1][:end_date] = args[1][:end_date].to_time unless args[1][:end_date].nil?
+        
           records = Calendar::findCalendarEvents(pb, args[1])
         else
           records = Calendar::getallCalendarEvents(pb)
