@@ -11,25 +11,6 @@
 
     <application>
         
-        <activity  android:name="com.rhomobile.nfc.NfcActivity">
-            <intent-filter>
-                <action android:name="android.nfc.action.TAG_DISCOVERED"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </activity>
-
-        <activity  android:name="com.rhomobile.nfc.NfcTechActivity">
-            <intent-filter>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <action android:name="android.nfc.action.TECH_DISCOVERED" />
-            </intent-filter>
-
-            <meta-data android:name="android.nfc.action.TECH_DISCOVERED"
-                android:resource="@xml/filter_nfc"
-            />
-
-        </activity>
-        
     </application>
     
     <uses-permission android:name="android.permission.NFC" />
