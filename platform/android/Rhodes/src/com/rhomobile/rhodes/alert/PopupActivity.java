@@ -250,7 +250,7 @@ public class PopupActivity extends Activity {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static void showDialog(Context ctx, Object params) {
+	public static void showDialog(RhodesService ctx, Object params) {
 		String title = "";
 		String message = null;
 		String icon = null;

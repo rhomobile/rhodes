@@ -51,12 +51,16 @@ public class PushReceiver extends BroadcastReceiver {
 	private void handleMessage(Context context, Intent intent) {
 		Bundle extras = intent.getExtras();
 
-		if (DEBUG) {
-		    Log.d(TAG, "Message: " + extras.toString());
-		    for (String key: extras.keySet()) {
-		        Log.d(TAG, key + ": " + extras.get(key).toString());
-		    }
-		}
+        if (DEBUG) {
+            if (extras != null) {
+                Log.d(TAG, "Message: " + extras.toString());
+                for (String key: extras.keySet()) {
+                    Log.d(TAG, key + ": " + extras.get(key).toString());
+                }
+            } else {
+                Log.d(TAG, "Message: <empty>");
+            }
+        }
 
 		Intent serviceIntent = new Intent(context, RhodesService.class);
 		serviceIntent.putExtra(RhodesService.INTENT_SOURCE, INTENT_SOURCE);
