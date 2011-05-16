@@ -3,11 +3,4 @@
     <tech-list>
         <tech>android.nfc.tech.MifareClassic</tech>
     </tech-list>
-    <tech-list>
-        <tech>android.nfc.tech.MifareUltralight</tech>
-    </tech-list>
-    <tech-list>
-        <tech>android.nfc.tech.MifareClassic</tech>
-        <tech>android.nfc.tech.MifareUltralight</tech>
-    </tech-list>
 </resources>
