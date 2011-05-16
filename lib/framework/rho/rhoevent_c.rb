@@ -12,6 +12,9 @@ module Rho
           end
         end
 
+        params['start_date'] = params['start_date'].to_time unless params['start_date'].nil?
+        params['end_date'] = params['end_date'].to_time unless params['end_date'].nil?
+        
         params['start_date'] = MIN_TIME if params['start_date'].nil? or params['start_date'] < MIN_TIME
         params['end_date'] = MAX_TIME if params['end_date'].nil? or params['end_date'] > MAX_TIME
         
