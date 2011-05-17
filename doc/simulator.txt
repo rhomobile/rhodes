@@ -61,7 +61,7 @@ Follow these instructions to build your own customized version of RhoSimulator.
         * Under the Framework Only section choose Qt libraries for Windows (VS 2008)
         * Cancel automatically started download, and download the [source code](http://get.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.3.zip)
         * Extract the downloaded archive, e.g. into `C:\Qt\4.7.3-msvc2005`
-    * OpenSSL library:
+    * Prepare to build the OpenSSL library:
         * Download [v0.9 source code](http://www.openssl.org/source/openssl-0.9.8r.tar.gz) from [www.openssl.org](http://www.openssl.org/) and extract the downloaded archive, e.g. into `C:\Qt\openssl-0.9.8r`
         * Install Perl interpreter (if it's not installed yet), e.g. [ActiveState Perl](http://www.activestate.com/activeperl)
     * Open Control Panel » System » Advanced system settings » Environment Variables and then:
