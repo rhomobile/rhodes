@@ -573,18 +573,120 @@ You can find complete example of using Bluetooth API in [Rhodes-System-Api-Sampl
 
 ## NFC
 
-NFC (Near Field Communication). NFC API provide access to NFC functionality. You can check NFC availability on current device and register callback for listen event when NFC tag near of device. Currently NFC supported only on Android. And also Android version must be 2.3 or later.
+NFC (Near Field Communication). NFC API provide access to NFC functionality. You can check NFC availability on current device and register callback for listen event when NFC tag near of device. Currently NFC supported only on Android. And also Android version must be 2.3.3 or later.
 NFC API implemented in native extension. You should add "nfc" to extension list in your nuild.yml before start using NFC in your application. And also do not forget enable NFC for start process NFC events - Rho::NFCManager.enable.
 
 ### NFC API
 
 	:::ruby
 	module Rho
- 	
+	
+	
+	class NFCTagTechnology
+		
+	  MIFARE_CLASSIC = 'MifareClassic'
+	  MIFARE_ULTRALIGHT = 'MifareUltralight'
+	
+	  def get_name
+	  end
+	
+	  def connect
+	  end
+	
+	  def close
+	  end
+	
+	  def is_connected
+	  end
+	
+	end
+	
+	class NFCTagTechnology_MifareClassic < NFCTagTechnology
+	
+	    KEY_DEFAULT = [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]
+	    KEY_MIFARE_APPLICATION_DIRECTORY = [0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5]
+	    KEY_NFC_FORUM =[0xD3, 0xF7, 0xD3, 0xF7, 0xD3, 0xF7]    
+	    
+	    TYPE_CLASSIC = 0
+	    TYPE_PLUS = 1
+	    TYPE_PRO = 2
+	    TYPE_UNKNOWN = -1
+
+	   # return int type type 
+	   def get_type
+	   end 
+	   
+	   # return named type (for known types) 
+	   def convert_type_to_string(type)
+	   end    
+	    
+	   # index - integer
+	   # block - 16 byte array
+	   def  write_block(index, block)
+	   end
+	
+	   # index - integer
+	   # return 16 byte array
+	   def read_block(index)
+	   end
+	
+	   # return size in bytes 
+	   def get_size
+	   end
+	
+	   #return number of blocks
+	   def get_block_count
+	   end
+	
+	   # return count of sectors 
+	   def get_sector_count
+	   end    
+	    
+	   # return count of blocks in sector 
+	   def get_blocks_in_sector_count(index)
+	   end    
+	
+	    # return index of first block in sector 
+	    def sector_to_block(index)
+	    end    
+	           
+	    # authenticate sector with key
+	    # key is 6 byte array
+	    # return true if authenticate was passed
+	    def authenticate_sector_with_key_A(index, key)
+	    end   
+       
+	    # authenticate sector with key
+	    # key is 6 byte array
+	    # return true if authenticate was passed
+	    def authenticate_sector_with_key_B(index, key)
+	    end   
+	   
+	    # send data (byte array) to Tag and receive result - byte array
+	    def transceive(data)
+	    end    
+	    
+	end
+	
+	
+	class NFCTag
+	
+	  # return array of string
+	  def get_tech_list
+	  end  
+	
+	  # return array of bytes
+	  def get_ID
+	  end    
+	    
+	  def  get_tech(tech_name)
+	  end
+	
+	end
+	
 	class NFCManager
  	
-	
-	# 3-bit TNF (Type Name Format) field: Indicates how to interpret the type field
+	  # 3-bit TNF (Type Name Format) field: Indicates how to interpret the type field
 	
 	  TNF_ABSOLUTE_URI = 3
 	  TNF_EMPTY = 0
@@ -609,13 +711,13 @@ NFC API implemented in native extension. You should add "nfc" to extension list 
 	  # return true/false
 	  def self.is_supported
 	  end
-	  	
+  	
 	  def self.enable
 	  end
 	
 	  def self.disable
 	  end
-	
+
 	  # return true/false
 	  def self.is_enabled
 	  end
@@ -627,26 +729,34 @@ NFC API implemented in native extension. You should add "nfc" to extension list 
 	  #       'records' - array of records (each record is hash)
 	  #              record hash items :
 	  #                     'raw_record' - array of bytes (raw record)
-	  #                     'id' - array of bytes
+ 	  #                     'id' - array of bytes
 	  #                     'payload' - array of bytes
 	  #                     'tnf' - int
 	  #                     'type' - array of bytes 
 	  #                     'payload_as_string' - string, payload prepared to string (support specail formats for URI, TEXT) 
 	  #                     'subrecords' - message hash (only for SMART_POSTER type)
-	  
+	  # set callback for tech events (Tag discovered/lost, tech special events)
 	  def self.set_nfc_callback(callback_url)
+	  end
+	
+	  # in callback
+	  # @params['Tag_event'] - 'discovered', 'lost'
+	  def self.set_nfc_tech_callback(callback_url)
+	  end
+		
+	  # return current discovered Tag or nil if not any Tag discovered now
+	  def self.get_current_Tag
 	  end
 	
 	  def self.convert_Tnf_to_string(tnf)
 	  end
-	  
+	
 	  def self.convert_RTD_to_string(rtd)
 	  end
-	 
+ 	
 	end
 	
 	end
-
 
 ### Example of NFC API using
 
