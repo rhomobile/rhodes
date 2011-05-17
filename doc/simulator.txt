@@ -20,6 +20,9 @@ To run application in RhoSimulator just run in rhodes or application folder:
 
     rake run:win32:rhosimulator
 
+If you modified Rhodes application sources, just press 'Refresh' in RhoSimulator to reload application, i.e. generally no RhoSimulator restart is required.
+The restart of RhoSimulator is required only if a model was added/modified or some code was added to the AppApplication class.
+
 ## Debugging with RhoStudio
 
 ### Prerequisites
