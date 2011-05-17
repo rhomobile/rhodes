@@ -61,9 +61,20 @@ Follow these instructions to build your own customized version of RhoSimulator.
         * Under the Framework Only section choose Qt libraries for Windows (VS 2008)
         * Cancel automatically started download, and download the [source code](http://get.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.3.zip)
         * Extract the downloaded archive, e.g. into `C:\Qt\4.7.3-msvc2005`
+    * OpenSSL library:
+        * Download [v0.9 source code](http://www.openssl.org/source/openssl-0.9.8r.tar.gz) from [www.openssl.org](http://www.openssl.org/) and extract the downloaded archive, e.g. into `C:\Qt\openssl-0.9.8r`
+        * Install Perl interpreter (if it's not installed yet), e.g. [ActiveState Perl](http://www.activestate.com/activeperl)
+        * Build OpenSSL:
+
+				> perl Configure VC-WIN32 --prefix=C:/Qt/openssl-0.9.8r
+				> ms\do_masm
+				> nmake -f ms\ntdll.mak
+				> nmake -f ms\ntdll.mak install
+				> nmake -f ms\ntdll.mak clean
+
     * Open Control Panel » System » Advanced system settings » Environment Variables and then:
         * Create new system variable `QTDIR` = `C:\Qt\4.7.3-msvc2005`
-        * Add to the `PATH` variable: `%QTDIR%\bin`
+        * Add to the `PATH` variable: `C:\Qt\4.7.3-msvc2005\bin;C:\Qt\openssl-0.9.8r\bin`
         * Either close all command prompts and Visual Studio instances, or reboot the computer so the new settings take effect.
     * Open Visual Studio 2005 Command Prompt. This is accomplished using Start » All Programs » Microsoft Visual Studio 2005 » Visual Studio Tools » Visual Studio 2005 Command Prompt. Run in Visual Studio 2005 Command Prompt:
 
@@ -71,6 +82,10 @@ Follow these instructions to build your own customized version of RhoSimulator.
 			> C:
 			> cd \Qt\4.7.3-msvc2005
 			> configure -opensource -platform win32-msvc2005
+			  -nomake examples -nomake demos -nomake docs
+			  -qt-libpng -qt-libjpeg -qt-libtiff -qt-gif -qt-libmng
+			  -openssl-linked -I C:/Qt/openssl-0.9.8r/include
+			  -L C:/Qt/openssl-0.9.8r/lib
 			> nmake
 			> nmake clean
 
