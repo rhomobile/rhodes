@@ -64,22 +64,26 @@ Follow these instructions to build your own customized version of RhoSimulator.
     * OpenSSL library:
         * Download [v0.9 source code](http://www.openssl.org/source/openssl-0.9.8r.tar.gz) from [www.openssl.org](http://www.openssl.org/) and extract the downloaded archive, e.g. into `C:\Qt\openssl-0.9.8r`
         * Install Perl interpreter (if it's not installed yet), e.g. [ActiveState Perl](http://www.activestate.com/activeperl)
-        * Build OpenSSL:
-
-				> perl Configure VC-WIN32 --prefix=C:/Qt/openssl-0.9.8r
-				> ms\do_masm
-				> nmake -f ms\ntdll.mak
-				> nmake -f ms\ntdll.mak install
-				> nmake -f ms\ntdll.mak clean
-
     * Open Control Panel » System » Advanced system settings » Environment Variables and then:
         * Create new system variable `QTDIR` = `C:\Qt\4.7.3-msvc2005`
-        * Add to the `PATH` variable: `C:\Qt\4.7.3-msvc2005\bin;C:\Qt\openssl-0.9.8r\bin`
+        * Add to the `PATH` variable: `C:\Qt\4.7.3-msvc2005\bin;C:\Qt\openssl-0.9.8r\bin` (it doesn't matter that `C:\Qt\openssl-0.9.8r\bin` folder does not exist yet)
         * Either close all command prompts and Visual Studio instances, or reboot the computer so the new settings take effect.
     * Open Visual Studio 2005 Command Prompt. This is accomplished using Start » All Programs » Microsoft Visual Studio 2005 » Visual Studio Tools » Visual Studio 2005 Command Prompt. Run in Visual Studio 2005 Command Prompt:
 
 			> vcvarsall.bat x86
 			> C:
+
+    * To build OpenSSL library run in the same command prompt:
+
+			> cd \Qt\openssl-0.9.8r
+			> perl Configure VC-WIN32 --prefix=C:/Qt/openssl-0.9.8r
+			> ms\do_masm
+			> nmake -f ms\ntdll.mak
+			> nmake -f ms\ntdll.mak install
+			> nmake -f ms\ntdll.mak clean
+
+    * To build Qt library run in the same command prompt:
+
 			> cd \Qt\4.7.3-msvc2005
 			> configure -opensource -platform win32-msvc2005
 			  -nomake examples -nomake demos -nomake docs
