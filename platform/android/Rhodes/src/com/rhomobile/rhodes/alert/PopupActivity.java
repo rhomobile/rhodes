@@ -160,8 +160,10 @@ public class PopupActivity extends Activity {
 		createDialog(title, message, icon, buttons, callback);
 	}
 	
-	private void createDialog(String title, String message, Drawable icon, Vector<CustomButton> buttons, String callback) {
+	synchronized private void createDialog(String title, String message, Drawable icon, Vector<CustomButton> buttons, String callback) {
 		Context ctx = this;
+		
+		Logger.T(TAG, "Creating dialog{ title: " + title + ", message: " + message + ", buttons cnt: " + buttons.size() + ", callback: " + callback);
 		
 		int nTopPadding = 10;
         
@@ -316,7 +318,7 @@ public class PopupActivity extends Activity {
 		}
 		
 		Intent intent = new Intent(ctx, PopupActivity.class);
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_USER_ACTION);
+		//intent.addFlags(/*Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_USER_ACTION*/);
 		intent.putExtra(INTENT_EXTRA_PREFIX + ".title", title);
 		intent.putExtra(INTENT_EXTRA_PREFIX + ".message", message);
 		intent.putExtra(INTENT_EXTRA_PREFIX + ".icon", icon);
@@ -337,7 +339,7 @@ public class PopupActivity extends Activity {
 		}
 		
 		Intent intent = new Intent(ctx, PopupActivity.class);
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_USER_ACTION);
+		//intent.addFlags(/*Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_USER_ACTION*/);
 		intent.putExtra(INTENT_EXTRA_PREFIX + ".title", title);
 		intent.putExtra(INTENT_EXTRA_PREFIX + ".message", message);
 		intent.putExtra(INTENT_EXTRA_PREFIX + ".buttons.ids", new String[] {hide});
@@ -345,7 +347,7 @@ public class PopupActivity extends Activity {
 		ctx.startActivity(intent);
 	}
 	
-	public static void hidePopup() {
+	public synchronized static void hidePopup() {
 		if (currentAlert == null)
 			return;
 		currentAlert.dismiss();
