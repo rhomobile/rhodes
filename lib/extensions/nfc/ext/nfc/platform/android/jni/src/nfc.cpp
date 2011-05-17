@@ -56,27 +56,40 @@ class CNFCByteArray {
 public:
 	CNFCByteArray(JNIEnv* env, jobject jo_bytearray) {
         logi("Construct ByteArray from java object START");
-		mSize = env->GetArrayLength((jbyteArray)jo_bytearray);
-        if (mSize > 0) {
-            if (logging_enable) {
-                char msg[128];
-                sprintf(msg, "    array size = %d", mSize);
-                logi(msg);
+        mBuf = NULL;
+        if (jo_bytearray != NULL) {
+            mSize = env->GetArrayLength((jbyteArray)jo_bytearray);
+            if (mSize > 0) {
+                if (logging_enable) {
+                    char msg[128];
+                    sprintf(msg, "    array size = %d", mSize);
+                    logi(msg);
+                }
+                mBuf = new unsigned char[mSize];
+                unsigned char* jarray_buf = (unsigned char*)env->GetByteArrayElements((jbyteArray)jo_bytearray, 0);
+                int i;
+                for (i = 0; i < mSize; i++) {
+                    mBuf[i] = jarray_buf[i];
+                }
+                env->ReleaseByteArrayElements((jbyteArray)jo_bytearray, (jbyte*)jarray_buf, 0);
             }
-            mBuf = new unsigned char[mSize];
-            unsigned char* jarray_buf = (unsigned char*)env->GetByteArrayElements((jbyteArray)jo_bytearray, 0);
-            int i;
-            for (i = 0; i < mSize; i++) {
-                mBuf[i] = jarray_buf[i];
+            else {
+                logi("    invalid size !");
+                mBuf = NULL;
             }
-            env->ReleaseByteArrayElements((jbyteArray)jo_bytearray, (jbyte*)jarray_buf, 0);
-        }
-        else {
-            logi("    invalid size !");
-            mBuf = NULL;
         }
         logi("Construct ByteArray from java object FINISH");
 	}
+    
+    VALUE makeVALUE() {
+        if (mBuf != NULL) {
+            return rho_ruby_create_byte_array(mBuf, mSize);
+        }
+        else  {
+            return rho_ruby_get_NIL();
+        }
+        
+    }
 
 
 	virtual ~CNFCByteArray() {
@@ -234,6 +247,26 @@ extern "C" int rho_nfc_tech_MifareClassic_get_size() {
 
 extern "C" void rho_nfc_tech_MifareClassic_write_block(int index, VALUE block) {
 
+    logi("rho_nfc_tech_MifareClassic_write_block START");
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return;
+    jmethodID mid = env->GetStaticMethodID(cls, "tech_MifareClassic_write_block", "(I[B)V");
+    if (!mid) return;
+    
+    int res = 0;
+    jbyteArray buf_j = (jbyteArray)env->NewByteArray(16);
+    jbyte* buf_p = env->GetByteArrayElements(buf_j, 0);
+    
+    rho_ruby_unpack_byte_array(block, (unsigned char*)buf_p, 16);
+    
+    env->CallStaticVoidMethod(cls, mid, index, buf_j);
+    
+    env->ReleaseByteArrayElements(buf_j, buf_p, 0);
+    env->DeleteLocalRef(buf_j);
+    
+    logi("rho_nfc_tech_MifareClassic_write_block FINISH");
+    
 }
 
 extern "C" VALUE rho_nfc_tech_MifareClassic_read_block(int index) {
@@ -277,8 +310,6 @@ extern "C" int rho_nfc_tech_MifareClassic_get_block_count() {
     return c;
 }
 
-
-
 extern "C" int rho_nfc_tech_MifareClassic_get_sector_count() {
     logi("rho_nfc_tech_MifareClassic_get_sector_count START");    
     JNIEnv *env = jnienv();
@@ -311,6 +342,60 @@ extern "C" int rho_nfc_tech_MifareClassic_sector_to_block(int index) {
     logi("rho_nfc_tech_MifareClassic_sector_to_block FINISH");    
     return env->CallStaticIntMethod(cls, mid, index);
 }
+
+extern "C" int rho_nfc_tech_MifareClassic_get_type() {
+    logi("rho_nfc_tech_MifareClassic_get_type START");    
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return 0;
+    jmethodID mid = env->GetStaticMethodID(cls, "tech_MifareClassic_get_sector_count", "()I");
+    if (!mid) return 0;
+    logi("rho_nfc_tech_MifareClassic_get_type FINISH");    
+    return env->CallStaticIntMethod(cls, mid);
+}
+
+extern "C" VALUE rho_nfc_tech_MifareClassic_transceive(VALUE data) {
+    logi("rho_nfc_tech_MifareClassic_transceive START");    
+    
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return rho_ruby_get_NIL();
+    jmethodID mid = env->GetStaticMethodID(cls, "tech_MifareClassic_transceive", "([B)[B");
+    if (!mid) return rho_ruby_get_NIL();
+    
+    int size = rho_ruby_unpack_byte_array(data, 0, 0);
+    jbyteArray buf_j = (jbyteArray)env->NewByteArray(size);
+    jbyte* buf_p = env->GetByteArrayElements(buf_j, 0);
+    
+    rho_ruby_unpack_byte_array(data, (unsigned char*)buf_p, size);
+    
+    jbyteArray j_arr =  (jbyteArray)env->CallStaticObjectMethod(cls, mid, buf_j);
+    
+    env->ReleaseByteArrayElements(buf_j, buf_p, 0);
+    env->DeleteLocalRef(buf_j);
+    
+    
+    CNFCByteArray ar(env, j_arr);
+    logi("rho_nfc_tech_MifareClassic_transceive FINISH");    
+    
+    return ar.makeVALUE();
+    
+}
+
+extern "C" VALUE rho_nfc_tag_get_id() {
+    
+    logi("rho_nfc_tech_MifareClassic_get_type START");    
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return rho_ruby_get_NIL();
+    jmethodID mid = env->GetStaticMethodID(cls, "tag_get_id", "()[B");
+    if (!mid) return rho_ruby_get_NIL();
+    jbyteArray j_arr =  (jbyteArray)env->CallStaticObjectMethod(cls, mid);
+    CNFCByteArray ar(env, j_arr);
+    logi("rho_nfc_tech_MifareClassic_get_type FINISH");    
+    return ar.makeVALUE();
+}
+
 
 extern "C" int rho_nfc_tech_MifareClassic_authenticate_sector_with_key_A(int index, VALUE key) {
 

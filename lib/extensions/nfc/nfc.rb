@@ -45,11 +45,38 @@ class NFCTagTechnology_MifareClassic < NFCTagTechnology
     
     KEY_NFC_FORUM =[0xD3, 0xF7, 0xD3, 0xF7, 0xD3, 0xF7]    
     
+    TYPE_CLASSIC = 0
+    TYPE_PLUS = 1
+    TYPE_PRO = 2
+    TYPE_UNKNOWN = -1
     
   def initialize
        super(NFCTagTechnology::MIFARE_CLASSIC)
   end
 
+   # return int type type 
+   def get_type
+       return Nfc.tech_MifareClassic_get_type
+   end 
+   
+   # return named type (for known types) 
+   def convert_type_to_string(type)
+       res = 'unknown'
+       if type == TYPE_CLASSIC
+           res = 'TYPE_CLASSIC'
+       end
+       if type == TYPE_PLUS
+           res = 'TYPE_PLUS'
+       end
+       if type == TYPE_PRO
+           res = 'TYPE_PRO'
+       end
+       if type == TYPE_UNKNOWN
+           res = 'TYPE_UNKNOWN'
+       end
+       return res
+   end    
+    
    # index - integer
    # block - 16 byte array
    def  write_block(index, block)
@@ -103,6 +130,10 @@ class NFCTagTechnology_MifareClassic < NFCTagTechnology
         return r!=0
     end   
    
+    # send data (byte array) to Tag and receive result - byte array
+    def transceive(data)
+        return Nfc.tech_MifareClassic_transceive(data)
+    end    
     
 end
 
@@ -139,6 +170,10 @@ class NFCTag
       return @techlist
   end  
 
+  def get_ID
+      return Nfc.tag_get_id
+  end    
+    
   def  get_tech(tech_name)
       if @techlist.include?(tech_name)
           if tech_name == 'MifareClassic'
