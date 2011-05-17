@@ -783,6 +783,11 @@ Rholog.txt is placed in `<rhodes folder>\platform\wm\bin\win32\rhodes\Debug\rho`
 * Visual Studio 2010 installed or VS Express for Windows Phone and VS Express for C#
     * [Windows Phone Developer Tools RTW](http://www.microsoft.com/downloads/en/details.aspx?FamilyID=04704acf-a63a-4f97-952c-8b51b34b00ce)
     * [Windows Phone Developer Tools January 2011 Update](http://www.microsoft.com/downloads/en/details.aspx?FamilyID=49b9d0c5-6597-4313-912a-f0cca9c7d277)
+* Add path to `msbuild` to `rhobuild.yml` in rhodes folder. For example:
+
+	    env:
+	      paths:
+	        msbuild: C:/Windows/Microsoft.NET/Framework/v4.0.30319/MSBuild.exe
 
 ### Build and run using Rhodes gem
 
