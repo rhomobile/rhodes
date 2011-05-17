@@ -52,10 +52,12 @@ public class Alert {
                     public boolean run() {
                         try {
                             Logger.T(TAG, "showPopup");
-                            PerformOnUiThread.exec(new Runnable() {
-                                @Override
-                                public void run() { PopupActivity.showDialog(params); }
-                            });
+                            //PerformOnUiThread.exec(new Runnable() {
+                            //    @Override
+                            //    public void run() {
+                                    PopupActivity.showDialog(params);
+                            //    }
+                            //});
                         }
                         catch (Exception e) {
                             reportFail("showPopup", e);
@@ -74,10 +76,12 @@ public class Alert {
                     public boolean run() {
                         try {
                             Logger.T(TAG, "hidePopup");
-                            PerformOnUiThread.exec(new Runnable() {
-                                @Override
-                                public void run() { PopupActivity.hidePopup(); }
-                            });
+                            //PerformOnUiThread.exec(new Runnable() {
+                            //    @Override
+                            //    public void run() {
+                                    PopupActivity.hidePopup();
+                            //    }
+                            //});
                         }
                         catch (Exception e) {
                             reportFail("hidePopup", e);
@@ -96,10 +100,12 @@ public class Alert {
                     public boolean run() {
                         try {
                             Logger.I(TAG, "showStatusPopup");
-                            PerformOnUiThread.exec(new Runnable() {
-                                @Override
-                                public void run() { PopupActivity.showStatusDialog(title, message, hide); }
-                            });
+                            //PerformOnUiThread.exec(new Runnable() {
+                            //    @Override
+                            //    public void run() {
+                                    PopupActivity.showStatusDialog(title, message, hide);
+                            //    }
+                            //});
                         }
                         catch (Exception e) {
                             reportFail("showStatusPopup", e);
