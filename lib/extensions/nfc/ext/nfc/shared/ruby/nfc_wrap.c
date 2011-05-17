@@ -1589,7 +1589,6 @@ extern VALUE rho_nfc_tech_MifareClassic_read_block(int index);
 extern int rho_nfc_tech_MifareClassic_get_block_count();
 #define tech_MifareClassic_get_block_count rho_nfc_tech_MifareClassic_get_block_count
 
-
 extern int rho_nfc_tech_MifareClassic_get_sector_count();
 #define tech_MifareClassic_get_sector_count rho_nfc_tech_MifareClassic_get_sector_count
 
@@ -1605,7 +1604,15 @@ extern int rho_nfc_tech_MifareClassic_authenticate_sector_with_key_A(int index, 
 extern int rho_nfc_tech_MifareClassic_authenticate_sector_with_key_B(int index, VALUE key);
 #define tech_MifareClassic_authenticate_sector_with_key_B rho_nfc_tech_MifareClassic_authenticate_sector_with_key_B
 
+extern int rho_nfc_tech_MifareClassic_get_type();    
+#define tech_MifareClassic_get_type rho_nfc_tech_MifareClassic_get_type
 
+extern VALUE rho_nfc_tech_MifareClassic_transceive(VALUE data);    
+#define tech_MifareClassic_transceive rho_nfc_tech_MifareClassic_transceive
+    
+extern VALUE rho_nfc_tag_get_id();
+#define tag_get_id rho_nfc_tag_get_id
+    
 extern void rho_nfc_tech_MifareUltralight_write_page(int index, VALUE block);
 #define tech_MifareUltralight_write_page rho_nfc_tech_MifareUltralight_write_page
 
@@ -2144,6 +2151,56 @@ fail:
 
 
 SWIGINTERN VALUE
+_wrap_tech_MifareClassic_get_type(int argc, VALUE *argv, VALUE self) {
+  int result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (int)tech_MifareClassic_get_type();
+  vresult = SWIG_From_int((int)(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tag_get_id(int argc, VALUE *argv, VALUE self) {
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (VALUE)tag_get_id();
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_MifareClassic_transceive(int argc, VALUE *argv, VALUE self) {
+  VALUE arg1 = (VALUE) 0 ;
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  arg1 = argv[0];
+  result = (VALUE)tech_MifareClassic_transceive(arg1);
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
 _wrap_tech_MifareUltralight_write_page(int argc, VALUE *argv, VALUE self) {
   int arg1 ;
   VALUE arg2 = (VALUE) 0 ;
@@ -2471,6 +2528,9 @@ SWIGEXPORT void Init_Nfc(void) {
   rb_define_module_function(mNfc, "tech_MifareClassic_sector_to_block", _wrap_tech_MifareClassic_sector_to_block, -1);
   rb_define_module_function(mNfc, "tech_MifareClassic_authenticate_sector_with_key_A", _wrap_tech_MifareClassic_authenticate_sector_with_key_A, -1);
   rb_define_module_function(mNfc, "tech_MifareClassic_authenticate_sector_with_key_B", _wrap_tech_MifareClassic_authenticate_sector_with_key_B, -1);
+  rb_define_module_function(mNfc, "tech_MifareClassic_get_type", _wrap_tech_MifareClassic_get_type, -1);
+  rb_define_module_function(mNfc, "tag_get_id", _wrap_tag_get_id, -1);
+  rb_define_module_function(mNfc, "tech_MifareClassic_transceive", _wrap_tech_MifareClassic_transceive, -1);
   rb_define_module_function(mNfc, "tech_MifareUltralight_write_page", _wrap_tech_MifareUltralight_write_page, -1);
   rb_define_module_function(mNfc, "tech_MifareUltralight_read_pages", _wrap_tech_MifareUltralight_read_pages, -1);
 }

@@ -53,7 +53,6 @@ public class Nfc implements RhodesActivityListener {
 	
 	private static Tag ourTag = null;
 	
-	
 	private MifareClassic mMifareClassic = null;
 	private MifareUltralight mMifareUltralight = null;
 	private ArrayList<String> mTechList = null;
@@ -501,6 +500,38 @@ public class Nfc implements RhodesActivityListener {
 			return getInstance().mMifareClassic.getBlockCountInSector(index);
 		return 0;
 	}
+	
+	public static int tech_MifareClassic_get_type() {
+		if (getInstance().mMifareClassic != null)
+			return getInstance().mMifareClassic.getType();
+		return -2;
+	}
+	
+	public static byte[] tech_MifareClassic_transceive(byte[] data) {
+		log ("tech_MifareClassic_transceive() START");
+		
+		if (getInstance().mMifareClassic == null) {
+			log ("     MifareClassic is not supported in current Tag");
+			return null;
+		}
+		byte[] result = null;
+		try {
+			result = getInstance().mMifareClassic.transceive(data);
+		} catch (IOException e) {
+			log ("     Exception in tech_MifareClassic_transceive()");
+			e.printStackTrace();
+		}
+		log("tech_MifareClassic_transceive() FINISH");
+		return result;
+	}
+	
+	public static byte[] tag_get_id() {
+		if (ourTag == null) {
+			return null;
+		}
+		return ourTag.getId();
+	}
+	
 
 	public static int tech_MifareClassic_sector_to_block(int index) {
 		if (getInstance().mMifareClassic != null)
@@ -544,6 +575,19 @@ public class Nfc implements RhodesActivityListener {
 	
 	
 	public static void tech_MifareClassic_write_block(int index, byte[] block) {
+		log ("tech_MifareClassic_write_block("+String.valueOf(index)+") START");
+		
+		if (getInstance().mMifareClassic == null) {
+			log ("     MifareClassic is not supported in current Tag");
+			return;
+		}
+		try {
+			getInstance().mMifareClassic.writeBlock(index, block);
+		} catch (IOException e) {
+			log ("     Exception in tech_MifareClassic_write_block("+String.valueOf(index)+")");
+			e.printStackTrace();
+		}
+		log("tech_MifareClassic_read_block("+String.valueOf(index)+") FINISH");
 		
 	}
 	
