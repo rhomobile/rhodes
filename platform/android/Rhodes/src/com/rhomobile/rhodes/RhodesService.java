@@ -1383,12 +1383,16 @@ public class RhodesService extends Service {
         }
 
         if (ra != null) {
+            Logger.T(TAG, "Starting new activity on top.");
             if (DEBUG) {
-                Logger.T(TAG, "Starting new activity on top:");
                 Bundle extras = intent.getExtras();
                 if (extras != null) {
                     for (String key: extras.keySet()) {
-                        Log.d(TAG, key + ": " + extras.get(key).toString());
+                        Object val = extras.get(key);
+                        if(val != null)
+                            Log.d(TAG, key + ": " + val.toString());
+                        else
+                            Log.d(TAG, key + ": <empty>");
                     }
                 }
             }
