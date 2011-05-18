@@ -118,10 +118,17 @@ def debug_handle_cmd(inline)
       processed = true
     elsif inline and (cmd =~ /^STEPRET/)
       log_command(cmd)
-      $_step = 3
-      $_step_level = $_call_stack-1
+      if $_call_stack < 1
+        $_step = 0
+        $_resumed = true
+        comment = ' (continue)'
+      else
+        $_step = 3
+        $_step_level = $_call_stack-1;
+        comment = ''
+      end
       wait = false
-      puts "[Debugger] Step return"
+      puts "[Debugger] Step return" + comment
       processed = true
     elsif inline and (cmd =~ /^STEP/)
       log_command(cmd)
@@ -175,36 +182,41 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
   $_binding = bind;
   $_classname = classname;
   $_methodname = id;
-  if event =~ /^line/
+  file = file.to_s.gsub('\\', '/')
+  if file[0, $_app_path.length] == $_app_path
+    if event =~ /^line/
 
-    unhandled = true
-    step_stop = ($_step > 0) and (($_step_level < 0) or ($_call_stack <= $_step_level))
-    if (step_stop or ($_breakpoints_enabled and (not $_breakpoint.empty?)))
-      filename = file.sub(/^(.*?[\\\/]|)app[\\\/](.*)$/,'\\2')
-      ln = line.to_i.to_s
-      if (step_stop or ($_breakpoints_enabled and ($_breakpoint.has_key?(filename + ':' + ln))))
-        fn = filename.gsub(/:/, '|')
-        cl = classname.to_s.gsub(/:/,'#')
-        $_s.write((step_stop ? DEBUGGER_STEP_TYPE[$_step-1] : "BP") + ":#{fn}:#{ln}:#{cl}:#{id}\n")
-        puts "[Debugger] " + (step_stop ? DEBUGGER_STEP_COMMENT[$_step-1] : "Breakpoint") + " in #{fn} at #{ln}"
+      unhandled = true
+      step_stop = ($_step > 0) and (($_step_level < 0) or ($_call_stack <= $_step_level))
+      if (step_stop or ($_breakpoints_enabled and (not $_breakpoint.empty?)))
+        filename = file[$_app_path.length, file.length-$_app_path.length]
+        ln = line.to_i.to_s
+        if (step_stop or ($_breakpoints_enabled and ($_breakpoint.has_key?(filename + ':' + ln))))
+          fn = filename.gsub(/:/, '|')
+          cl = classname.to_s.gsub(/:/,'#')
+          $_s.write((step_stop ? DEBUGGER_STEP_TYPE[$_step-1] : "BP") + ":#{fn}:#{ln}:#{cl}:#{id}\n")
+          puts "[Debugger] " + (step_stop ? DEBUGGER_STEP_COMMENT[$_step-1] : "Breakpoint") + " in #{fn} at #{ln}"
+          $_step = 0
+          $_step_level = -1
 
-        $_wait = true
-        while $_wait
-          while debug_handle_cmd(true) do end
-          sleep if $_wait
+          $_wait = true
+          while $_wait
+            while debug_handle_cmd(true) do end
+            sleep if $_wait
+          end
+          unhandled = false
         end
-        unhandled = false
       end
-    end
 
-    if unhandled
-      debug_handle_cmd(true)
-    end
+      if unhandled
+        debug_handle_cmd(true)
+      end
 
-  elsif event =~ /^call/
-    $_call_stack += 1
-  elsif event =~ /^return/
-    $_call_stack -= 1
+    elsif event =~ /^call/
+      $_call_stack += 1
+    elsif event =~ /^return/
+      $_call_stack -= 1
+    end
   end
 
   if $_resumed
@@ -232,6 +244,7 @@ begin
   $_call_stack = 0
   $_resumed = false
   $_cmd = ""
+  $_app_path = File.join(Rho::RhoApplication::get_base_app_path(), 'app/').gsub('\\', '/')
 
   at_exit {
     $_s.write("QUIT\n") if (not $_s.nil?)
