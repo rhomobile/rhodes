@@ -1,6 +1,9 @@
 require 'uri'
 require 'timeout'
 
+DEBUGGER_STEP_TYPE = ['STEP','STOVER','STRET','SUSP']
+DEBUGGER_STEP_COMMENT = ['Stepped into','Stepped over','Stepped return','Suspended']
+
 def debug_read_cmd(io,wait)
   begin
     if wait
@@ -108,21 +111,21 @@ def debug_handle_cmd(inline)
       processed = true
     elsif inline and (cmd =~ /^STEPOVER/)
       log_command(cmd)
-      $_step = true
+      $_step = 2
       $_step_level = $_call_stack
       wait = false
       puts "[Debugger] Step over"
       processed = true
     elsif inline and (cmd =~ /^STEPRET/)
       log_command(cmd)
-      $_step = true
+      $_step = 3
       $_step_level = $_call_stack-1
       wait = false
       puts "[Debugger] Step return"
       processed = true
     elsif inline and (cmd =~ /^STEP/)
       log_command(cmd)
-      $_step = true
+      $_step = 1
       $_step_level = -1
       wait = false
       puts "[Debugger] Step into"
@@ -130,13 +133,13 @@ def debug_handle_cmd(inline)
     elsif inline and (cmd =~ /^CONT/)
       log_command(cmd)
       wait = false
-      $_step = false
+      $_step = 0
       $_resumed = true
       puts "[Debugger] Resuming"
       processed = true
     elsif cmd =~ /^SUSP/
       log_command(cmd)
-      $_step = true
+      $_step = 4
       $_step_level = -1
       wait = true
       puts "[Debugger] Suspend"
@@ -175,15 +178,15 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
   if event =~ /^line/
 
     unhandled = true
-    step_stop = $_step and (($_step_level < 0) or ($_call_stack <= $_step_level))
+    step_stop = ($_step > 0) and (($_step_level < 0) or ($_call_stack <= $_step_level))
     if (step_stop or ($_breakpoints_enabled and (not $_breakpoint.empty?)))
       filename = file.sub(/^(.*?[\\\/]|)app[\\\/](.*)$/,'\\2')
       ln = line.to_i.to_s
       if (step_stop or ($_breakpoints_enabled and ($_breakpoint.has_key?(filename + ':' + ln))))
         fn = filename.gsub(/:/, '|')
         cl = classname.to_s.gsub(/:/,'#')
-        $_s.write((step_stop ? "STEP" : "BP") + ":#{fn}:#{ln}:#{cl}:#{id}\n")
-        puts "[Debugger] " + (step_stop ? "Stop" : "Breakpoint") + " in #{fn} at #{ln}"
+        $_s.write((step_stop ? DEBUGGER_STEP_TYPE[$_step-1] : "BP") + ":#{fn}:#{ln}:#{cl}:#{id}\n")
+        puts "[Debugger] " + (step_stop ? DEBUGGER_STEP_COMMENT[$_step-1] : "Breakpoint") + " in #{fn} at #{ln}"
 
         $_wait = true
         while $_wait
@@ -224,7 +227,7 @@ begin
 
   $_breakpoint = Hash.new
   $_breakpoints_enabled = true
-  $_step = false
+  $_step = 0
   $_step_level = -1
   $_call_stack = 0
   $_resumed = false
