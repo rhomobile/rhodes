@@ -22,58 +22,122 @@ public class NfcRecord {
 	private NfcMessage mSubrecords = null;
 	
 	
+	public NfcRecord(byte[] array) {
+		NdefRecord r = null;
+		try {
+			r = new NdefRecord(array);
+		} catch (FormatException e) {
+			Nfc.loge("Exception during make NdefRecord from byte array !");
+			e.printStackTrace();
+		}
+		initFromNdefRecord(r);
+	}
 	
 	public NfcRecord(NdefRecord rec) {
+		initFromNdefRecord(rec);
+	}
 
+	public NfcRecord(short tnf, byte[] type, byte[] id, byte[] payload) {
+		NdefRecord r = null;
+		r = new NdefRecord(tnf, type, id, payload);
+		initFromNdefRecord(r);
+	}
+	
+	public void initFromNdefRecord(NdefRecord rec) {
+
+		if (rec == null) {
+			return;
+		}
+		
 		mId = rec.getId();
+		
+		/*
+		if (mId != null) {
+			Utils.platformLog("NfcRecord", " ID = "+mId.toString());
+			
+			StringBuffer s = new StringBuffer();
+			s.append("   ID is : ");
+			int i;
+			for (i = 0; i < mId.length; i++) {
+				s.append(mId[i]);
+				s.append(":");
+			}
+			Utils.platformLog("NfcRecord", s.toString());
+			
+			
+		}
+		else {
+			Utils.platformLog("NfcRecord", " ID is NULL !!!");
+		}
+		*/
+		
 		mPayload = rec.getPayload();
 		mTnf = rec.getTnf();
 		mType = rec.getType();
 		mByteArray = rec.toByteArray();
 		mPayloadString = "";
 		
-        try {
-		
+		mPayloadString = makePayloadString((short)mTnf, mType, mPayload, this);
+	}
+	
+	public static String makePayloadString(short tnf, byte[] type, byte[] payload, NfcRecord record) {
+        String payload_string = "";
+		try {
 			// detect type for prepare string from payload
-			if (mTnf == NdefRecord.TNF_ABSOLUTE_URI) {
-				mPayloadString = new String(mPayload, Charset.forName("UTF-8"));
+			if (tnf == NdefRecord.TNF_ABSOLUTE_URI) {
+				payload_string = new String(payload, Charset.forName("UTF-8"));
 			}
-			else if (mTnf == NdefRecord.TNF_WELL_KNOWN) {
-				if (Arrays.equals(mType, NdefRecord.RTD_URI)) {
-			        String prefix = getUriPrefixByNfcCode(mPayload[0]);
-			        String uri = new String(Arrays.copyOfRange(mPayload, 1, mPayload.length), Charset.forName("UTF-8"));
-			        mPayloadString = prefix + uri;
+			else if (tnf == NdefRecord.TNF_WELL_KNOWN) {
+				if (Arrays.equals(type, NdefRecord.RTD_URI)) {
+			        String prefix = getUriPrefixByNfcCode(payload[0]);
+			        String uri = new String(Arrays.copyOfRange(payload, 1, payload.length), Charset.forName("UTF-8"));
+			        payload_string = prefix + uri;
 				}
-				else if (Arrays.equals(mType, NdefRecord.RTD_TEXT)) {
-		            String textEncoding = ((mPayload[0] & 0200) == 0) ? "UTF-8" : "UTF-16";
-		            int languageCodeLength = mPayload[0] & 0077;
-		            String languageCode = new String(mPayload, 1, languageCodeLength, "US-ASCII");
-		            String text = new String(mPayload, languageCodeLength + 1, mPayload.length - languageCodeLength - 1, textEncoding);
-					mPayloadString = text;
+				else if (Arrays.equals(type, NdefRecord.RTD_TEXT)) {
+		            String textEncoding = ((payload[0] & 0200) == 0) ? "UTF-8" : "UTF-16";
+		            int languageCodeLength = payload[0] & 0077;
+		            String languageCode = new String(payload, 1, languageCodeLength, "US-ASCII");
+		            String text = new String(payload, languageCodeLength + 1, payload.length - languageCodeLength - 1, textEncoding);
+		            payload_string = text;
 				}
-				else if (Arrays.equals(mType, NdefRecord.RTD_SMART_POSTER)) {
+				else if (Arrays.equals(type, NdefRecord.RTD_SMART_POSTER)) {
 				       try {
-				            NdefMessage subRecords = new NdefMessage(mPayload);
-				            mSubrecords = new NfcMessage(subRecords);
+				            NdefMessage subRecords = new NdefMessage(payload);
+				            if (record != null) {
+				            	record.mSubrecords = new NfcMessage(subRecords);
+				            }
 				       } catch (FormatException e) {
 				            //throw new IllegalArgumentException(e);
-				    	   Utils.platformLog("NFC support native extension", "Invalid record with RTD_SMART_POSTER type !");
+				    	   Nfc.loge("constructor of NfcRecord: Invalid record with RTD_SMART_POSTER type !");
 				       }
 				}
 				else {
-					mPayloadString = new String(mPayload, Charset.forName("UTF-8"));
+					payload_string = new String(payload, Charset.forName("UTF-8"));
 				}
 			}
 			else {
-				mPayloadString = new String(mPayload, Charset.forName("UTF-8"));
+				payload_string = new String(payload, Charset.forName("UTF-8"));
 			}
         } catch (UnsupportedEncodingException e) {
             // should never happen unless we get a malformed tag.
             //throw new IllegalArgumentException(e);
-	    	   Utils.platformLog("NFC support native extension", "catch UnsupportedEncodingException - tag maybe broken !");
+        	Nfc.loge("construct string from payload: catch UnsupportedEncodingException - tag maybe broken !");
         }
+		
+		return payload_string;
 	}
-
+	
+	public NdefRecord makeNdefRecord() {
+		NdefRecord r = null;
+		try {
+			r = new NdefRecord(getByteArray());
+		} catch (FormatException e) {
+			Nfc.loge("Exception during make NdefRecord from byte array !");
+			e.printStackTrace();
+		}
+		return r;
+	}
+	
 	public byte[] getId() {
 		return mId;
 	}
@@ -103,7 +167,7 @@ public class NfcRecord {
 	}
 	
 	
-	private String getUriPrefixByNfcCode(byte code) {
+	private static String getUriPrefixByNfcCode(byte code) {
 		switch(code) {
 			case 0x00: return "";
 	        case 0x01: return "http://www.";
