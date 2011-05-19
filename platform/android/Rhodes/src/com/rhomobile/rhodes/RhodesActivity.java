@@ -74,7 +74,9 @@ public class RhodesActivity extends BaseActivity {
 	}
 	
 	public void addRhodesActivityListener(RhodesActivityListener listener) {
-		mListeners.add(listener);
+		if (!mListeners.contains(listener)) {
+			mListeners.add(listener);
+		}
 	}
 	
 	public void removeRhodesActivityListener(RhodesActivityListener listener) {

@@ -1619,6 +1619,73 @@ extern void rho_nfc_tech_MifareUltralight_write_page(int index, VALUE block);
 extern VALUE rho_nfc_tech_MifareUltralight_read_pages(int index);
 #define tech_MifareUltralight_read_pages rho_nfc_tech_MifareUltralight_read_pages
 
+extern int rho_nfc_tech_MifareUltralight_get_type();    
+#define tech_MifareUltralight_get_type rho_nfc_tech_MifareUltralight_get_type
+    
+extern VALUE rho_nfc_tech_MifareUltralight_transceive(VALUE data);    
+#define tech_MifareUltralight_transceive rho_nfc_tech_MifareUltralight_transceive
+    
+extern int rho_nfc_tech_Ndef_get_max_size();    
+#define tech_Ndef_get_max_size rho_nfc_tech_Ndef_get_max_size    
+
+extern VALUE rho_nfc_tech_Ndef_get_type();    
+#define tech_Ndef_get_type rho_nfc_tech_Ndef_get_type    
+    
+extern int rho_nfc_tech_Ndef_is_writable();    
+#define tech_Ndef_is_writable rho_nfc_tech_Ndef_is_writable    
+    
+extern int rho_nfc_tech_Ndef_can_make_read_only();    
+#define tech_Ndef_can_make_read_only rho_nfc_tech_Ndef_can_make_read_only    
+    
+extern int rho_nfc_tech_Ndef_make_read_only();    
+#define tech_Ndef_make_read_only rho_nfc_tech_Ndef_make_read_only    
+    
+extern void rho_nfc_tech_Ndef_write_Nde_message(VALUE message_in_byte_array);    
+#define tech_Ndef_write_Nde_message rho_nfc_tech_Ndef_write_Nde_message
+    
+extern VALUE rho_nfc_tech_Ndef_read_Nde_message();    
+#define tech_Ndef_read_Nde_message rho_nfc_tech_Ndef_read_Nde_message
+    
+extern VALUE rho_nfc_tech_NfcA_get_Atqa();    
+#define tech_NfcA_get_Atqa rho_nfc_tech_NfcA_get_Atqa
+    
+extern int rho_nfc_tech_NfcA_get_Sak();    
+#define tech_NfcA_get_Sak rho_nfc_tech_NfcA_get_Sak
+
+extern VALUE rho_nfc_tech_NfcA_transceive(VALUE data);    
+#define tech_NfcA_transceive rho_nfc_tech_NfcA_transceive
+    
+extern VALUE rho_nfc_convert_byte_array_to_NdeRecord_hash(VALUE array);    
+#define convert_byte_array_to_NdeRecord_hash rho_nfc_convert_byte_array_to_NdeRecord_hash
+    
+extern VALUE rho_nfc_convert_NdeRecord_hash_to_byte_array(VALUE array);    
+#define convert_NdeRecord_hash_to_byte_array rho_nfc_convert_NdeRecord_hash_to_byte_array
+
+extern VALUE rho_nfc_convert_NdeMessage_byte_array_to_NdeRecords_array(VALUE array);    
+#define convert_NdeMessage_byte_array_to_NdeRecords_array rho_nfc_convert_NdeMessage_byte_array_to_NdeRecords_array
+    
+extern VALUE rho_nfc_convert_NdeRecords_array_to_NdeMessage_byte_array(VALUE array);    
+#define convert_NdeRecords_array_to_NdeMessage_byte_array rho_nfc_convert_NdeRecords_array_to_NdeMessage_byte_array
+    
+extern VALUE rho_nfc_make_string_from_payload(VALUE payload, int tnf, VALUE type);
+#define make_string_from_payload rho_nfc_make_string_from_payload
+    
+extern VALUE rho_nfc_make_payload_with_absolute_uri(const char* str);
+#define make_payload_with_absolute_uri rho_nfc_make_payload_with_absolute_uri
+    
+extern VALUE rho_nfc_make_payload_with_well_known_text(const char* language, const char* str);
+#define make_payload_with_well_known_text rho_nfc_make_payload_with_well_known_text
+
+extern VALUE rho_nfc_make_payload_with_well_known_uri(int prefix, const char* str);
+#define make_payload_with_well_known_uri rho_nfc_make_payload_with_well_known_uri
+
+extern void rho_nfc_p2p_enable_foreground_nde_push(VALUE nde_message_byte_array);    
+#define p2p_enable_foreground_nde_push rho_nfc_p2p_enable_foreground_nde_push
+    
+extern void rho_nfc_p2p_disable_foreground_nde_push();    
+#define p2p_disable_foreground_nde_push rho_nfc_p2p_disable_foreground_nde_push
+    
+    
 
 
 SWIGINTERN swig_type_info*
@@ -2247,6 +2314,428 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_tech_MifareUltralight_get_type(int argc, VALUE *argv, VALUE self) {
+  int result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (int)tech_MifareUltralight_get_type();
+  vresult = SWIG_From_int((int)(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_MifareUltralight_transceive(int argc, VALUE *argv, VALUE self) {
+  VALUE arg1 = (VALUE) 0 ;
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  arg1 = argv[0];
+  result = (VALUE)tech_MifareUltralight_transceive(arg1);
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_Ndef_get_max_size(int argc, VALUE *argv, VALUE self) {
+  int result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (int)tech_Ndef_get_max_size();
+  vresult = SWIG_From_int((int)(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_Ndef_get_type(int argc, VALUE *argv, VALUE self) {
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (VALUE)tech_Ndef_get_type();
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_Ndef_is_writable(int argc, VALUE *argv, VALUE self) {
+  int result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (int)tech_Ndef_is_writable();
+  vresult = SWIG_From_int((int)(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_Ndef_can_make_read_only(int argc, VALUE *argv, VALUE self) {
+  int result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (int)tech_Ndef_can_make_read_only();
+  vresult = SWIG_From_int((int)(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_Ndef_make_read_only(int argc, VALUE *argv, VALUE self) {
+  int result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (int)tech_Ndef_make_read_only();
+  vresult = SWIG_From_int((int)(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_Ndef_write_Nde_message(int argc, VALUE *argv, VALUE self) {
+  VALUE arg1 = (VALUE) 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  arg1 = argv[0];
+  tech_Ndef_write_Nde_message(arg1);
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_Ndef_read_Nde_message(int argc, VALUE *argv, VALUE self) {
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (VALUE)tech_Ndef_read_Nde_message();
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_NfcA_get_Atqa(int argc, VALUE *argv, VALUE self) {
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (VALUE)tech_NfcA_get_Atqa();
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_NfcA_get_Sak(int argc, VALUE *argv, VALUE self) {
+  int result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (int)tech_NfcA_get_Sak();
+  vresult = SWIG_From_int((int)(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_NfcA_transceive(int argc, VALUE *argv, VALUE self) {
+  VALUE arg1 = (VALUE) 0 ;
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  arg1 = argv[0];
+  result = (VALUE)tech_NfcA_transceive(arg1);
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_convert_byte_array_to_NdeRecord_hash(int argc, VALUE *argv, VALUE self) {
+  VALUE arg1 = (VALUE) 0 ;
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  arg1 = argv[0];
+  result = (VALUE)convert_byte_array_to_NdeRecord_hash(arg1);
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_convert_NdeRecord_hash_to_byte_array(int argc, VALUE *argv, VALUE self) {
+  VALUE arg1 = (VALUE) 0 ;
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  arg1 = argv[0];
+  result = (VALUE)convert_NdeRecord_hash_to_byte_array(arg1);
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_convert_NdeMessage_byte_array_to_NdeRecords_array(int argc, VALUE *argv, VALUE self) {
+  VALUE arg1 = (VALUE) 0 ;
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  arg1 = argv[0];
+  result = (VALUE)convert_NdeMessage_byte_array_to_NdeRecords_array(arg1);
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_convert_NdeRecords_array_to_NdeMessage_byte_array(int argc, VALUE *argv, VALUE self) {
+  VALUE arg1 = (VALUE) 0 ;
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  arg1 = argv[0];
+  result = (VALUE)convert_NdeRecords_array_to_NdeMessage_byte_array(arg1);
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_make_string_from_payload(int argc, VALUE *argv, VALUE self) {
+  VALUE arg1 = (VALUE) 0 ;
+  int arg2 ;
+  VALUE arg3 = (VALUE) 0 ;
+  VALUE result;
+  int val2 ;
+  int ecode2 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 3) || (argc > 3)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 3)",argc); SWIG_fail;
+  }
+  arg1 = argv[0];
+  ecode2 = SWIG_AsVal_int(argv[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "make_string_from_payload" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  arg3 = argv[2];
+  result = (VALUE)make_string_from_payload(arg1,arg2,arg3);
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_make_payload_with_absolute_uri(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  VALUE result;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "make_payload_with_absolute_uri" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (VALUE)make_payload_with_absolute_uri((char const *)arg1);
+  vresult = result;
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_make_payload_with_well_known_text(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  VALUE result;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "make_payload_with_well_known_text" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "make_payload_with_well_known_text" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  result = (VALUE)make_payload_with_well_known_text((char const *)arg1,(char const *)arg2);
+  vresult = result;
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_make_payload_with_well_known_uri(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  char *arg2 = (char *) 0 ;
+  VALUE result;
+  int val1 ;
+  int ecode1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "make_payload_with_well_known_uri" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = (int)(val1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "make_payload_with_well_known_uri" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  result = (VALUE)make_payload_with_well_known_uri(arg1,(char const *)arg2);
+  vresult = result;
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return vresult;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_p2p_enable_foreground_nde_push(int argc, VALUE *argv, VALUE self) {
+  VALUE arg1 = (VALUE) 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  arg1 = argv[0];
+  p2p_enable_foreground_nde_push(arg1);
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_p2p_disable_foreground_nde_push(int argc, VALUE *argv, VALUE self) {
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  p2p_disable_foreground_nde_push();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -2533,5 +3022,27 @@ SWIGEXPORT void Init_Nfc(void) {
   rb_define_module_function(mNfc, "tech_MifareClassic_transceive", _wrap_tech_MifareClassic_transceive, -1);
   rb_define_module_function(mNfc, "tech_MifareUltralight_write_page", _wrap_tech_MifareUltralight_write_page, -1);
   rb_define_module_function(mNfc, "tech_MifareUltralight_read_pages", _wrap_tech_MifareUltralight_read_pages, -1);
+  rb_define_module_function(mNfc, "tech_MifareUltralight_get_type", _wrap_tech_MifareUltralight_get_type, -1);
+  rb_define_module_function(mNfc, "tech_MifareUltralight_transceive", _wrap_tech_MifareUltralight_transceive, -1);
+  rb_define_module_function(mNfc, "tech_Ndef_get_max_size", _wrap_tech_Ndef_get_max_size, -1);
+  rb_define_module_function(mNfc, "tech_Ndef_get_type", _wrap_tech_Ndef_get_type, -1);
+  rb_define_module_function(mNfc, "tech_Ndef_is_writable", _wrap_tech_Ndef_is_writable, -1);
+  rb_define_module_function(mNfc, "tech_Ndef_can_make_read_only", _wrap_tech_Ndef_can_make_read_only, -1);
+  rb_define_module_function(mNfc, "tech_Ndef_make_read_only", _wrap_tech_Ndef_make_read_only, -1);
+  rb_define_module_function(mNfc, "tech_Ndef_write_Nde_message", _wrap_tech_Ndef_write_Nde_message, -1);
+  rb_define_module_function(mNfc, "tech_Ndef_read_Nde_message", _wrap_tech_Ndef_read_Nde_message, -1);
+  rb_define_module_function(mNfc, "tech_NfcA_get_Atqa", _wrap_tech_NfcA_get_Atqa, -1);
+  rb_define_module_function(mNfc, "tech_NfcA_get_Sak", _wrap_tech_NfcA_get_Sak, -1);
+  rb_define_module_function(mNfc, "tech_NfcA_transceive", _wrap_tech_NfcA_transceive, -1);
+  rb_define_module_function(mNfc, "convert_byte_array_to_NdeRecord_hash", _wrap_convert_byte_array_to_NdeRecord_hash, -1);
+  rb_define_module_function(mNfc, "convert_NdeRecord_hash_to_byte_array", _wrap_convert_NdeRecord_hash_to_byte_array, -1);
+  rb_define_module_function(mNfc, "convert_NdeMessage_byte_array_to_NdeRecords_array", _wrap_convert_NdeMessage_byte_array_to_NdeRecords_array, -1);
+  rb_define_module_function(mNfc, "convert_NdeRecords_array_to_NdeMessage_byte_array", _wrap_convert_NdeRecords_array_to_NdeMessage_byte_array, -1);
+  rb_define_module_function(mNfc, "make_string_from_payload", _wrap_make_string_from_payload, -1);
+  rb_define_module_function(mNfc, "make_payload_with_absolute_uri", _wrap_make_payload_with_absolute_uri, -1);
+  rb_define_module_function(mNfc, "make_payload_with_well_known_text", _wrap_make_payload_with_well_known_text, -1);
+  rb_define_module_function(mNfc, "make_payload_with_well_known_uri", _wrap_make_payload_with_well_known_uri, -1);
+  rb_define_module_function(mNfc, "p2p_enable_foreground_nde_push", _wrap_p2p_enable_foreground_nde_push, -1);
+  rb_define_module_function(mNfc, "p2p_disable_foreground_nde_push", _wrap_p2p_disable_foreground_nde_push, -1);
 }
 

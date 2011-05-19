@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
+import android.nfc.FormatException;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
@@ -21,6 +22,8 @@ import android.nfc.NfcManager;
 import android.nfc.Tag;
 import android.nfc.tech.MifareClassic;
 import android.nfc.tech.MifareUltralight;
+import android.nfc.tech.Ndef;
+import android.nfc.tech.NfcA;
 import android.nfc.tech.TagTechnology;
 import android.os.Build;
 import android.os.Bundle;
@@ -46,6 +49,8 @@ public class Nfc implements RhodesActivityListener {
 	private static String ourCallback = null;
 	private static String ourTechCallback = null;
 	
+	private static NdefMessage ourP2PNdefMessage = null;
+	
 	private static Nfc ourInstance = null;
 
 	private static native void callCallback(String callback_url, NfcMessagePack msgpack);
@@ -55,6 +60,8 @@ public class Nfc implements RhodesActivityListener {
 	
 	private MifareClassic mMifareClassic = null;
 	private MifareUltralight mMifareUltralight = null;
+	private Ndef mNdef = null;
+	private NfcA mNfcA = null;
 	private ArrayList<String> mTechList = null;
 	private Hashtable<String,TagTechnology> mTechs = null;
 	
@@ -62,11 +69,15 @@ public class Nfc implements RhodesActivityListener {
 	
 	private static native void logNative(String msg);
 
-	private static void log(String msg) {
+	public static void log(String msg) {
 		//logNative(msg);
 		if (isLogging) { 
 			Utils.platformLog(TAG, msg);
 		}
+	}
+
+	public static void loge(String msg) {
+		Utils.platformLog(TAG, msg);
 	}
 	
 	public static Nfc getInstance() {
@@ -115,26 +126,23 @@ public class Nfc implements RhodesActivityListener {
 		ourIsEnable = (enable != 0);
 		if ((oldEnable == false) && (ourIsEnable == true)) {
 			RhodesActivity.safeGetInstance().addRhodesActivityListener(getInstance());
-			if (RhodesActivity.safeGetInstance().isForegroundNow()) {
-				PerformOnUiThread.exec( new Runnable() {
-					public void run() {
-						if (RhodesActivity.safeGetInstance().isForegroundNow()) {
-							getInstance().onResume(RhodesActivity.safeGetInstance());
-						}
+			PerformOnUiThread.exec( new Runnable() {
+				public void run() {
+					if (RhodesActivity.safeGetInstance().isForegroundNow()) {
+						getInstance().onResume(RhodesActivity.safeGetInstance());
 					}
-				});
-			}
+				}
+			});
 		}
 		if ((oldEnable == true) && (ourIsEnable == false)) {
 			RhodesActivity.safeGetInstance().removeRhodesActivityListener(getInstance());
-			if (RhodesActivity.safeGetInstance().isForegroundNow()) {
-				PerformOnUiThread.exec( new Runnable() {
-					public void run() {
-						NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(RhodesActivity.getContext());
-						nfcAdapter.disableForegroundDispatch(RhodesActivity.safeGetInstance());
+			PerformOnUiThread.exec( new Runnable() {
+				public void run() {
+					if (RhodesActivity.safeGetInstance().isForegroundNow()) {
+						getInstance().onPause(RhodesActivity.safeGetInstance());
 					}
-				});
-			}
+				}
+			});
 		}
 		log(" $$$$$$$$$ setEnable() FINISH() ");
 	}
@@ -143,6 +151,7 @@ public class Nfc implements RhodesActivityListener {
 		log(" $$$$$$$$$ onPause() ");
 		NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(RhodesActivity.getContext());
 		nfcAdapter.disableForegroundDispatch(activity);
+		nfcAdapter.disableForegroundNdefPush(activity);
 	}
 	
 	public void onResume(RhodesActivity activity) {
@@ -157,6 +166,9 @@ public class Nfc implements RhodesActivityListener {
               0);
 		
 		nfcAdapter.enableForegroundDispatch(activity, intent, null, null);
+		if (ourP2PNdefMessage != null) {
+			nfcAdapter.enableForegroundNdefPush(activity, ourP2PNdefMessage);			
+		}
 	}
 	
 	public void onNewIntent(RhodesActivity activity, Intent intent) {
@@ -197,7 +209,12 @@ public class Nfc implements RhodesActivityListener {
 			log("ACTION_NDEF_DISCOVERED !");
 			Uri u = intent.getData();
 			
-			log("     Data = "+u.toString());
+			if (u != null) {
+				log("     Data = "+u.toString());
+			}
+			else {
+				log("     Data = NULL");
+			}
 			String t = intent.getType();
 			if (t != null) {
 				log("     Type = "+t);
@@ -275,65 +292,24 @@ public class Nfc implements RhodesActivityListener {
 		
 		mMifareClassic = MifareClassic.get(tag);
 		mMifareUltralight = MifareUltralight.get(tag);
+		mNdef = Ndef.get(tag);
+		mNfcA = NfcA.get(tag);
 
 		if (mMifareClassic != null) {
 			mTechs.put("MifareClassic", mMifareClassic);
 			log("     MifareClassic found !");
-			//try {
-				//mMifareClassic.connect();
-			//} catch (IOException e) {
-			//	log("     MifareClassic.connect() throw Exception !!!");
-			//	e.printStackTrace();
-			//}
-			boolean ic = mMifareClassic.isConnected();
-			log("     MifareClassic.isConnected() = "+String.valueOf(ic));
 			log("     MifareClassic.block_count() = "+String.valueOf(mMifareClassic.getBlockCount()));
 			log("     MifareClassic.sector_count() = "+String.valueOf(mMifareClassic.getSectorCount()));
 			log("     MifareClassic.size() = "+String.valueOf(mMifareClassic.getSize()));
-			
-			if (false) {
-				int i;
-				for (i = 0; i < mMifareClassic.getSectorCount(); i++) {
-					try {
-						boolean auth = mMifareClassic.authenticateSectorWithKeyA(i, mMifareClassic.KEY_DEFAULT);
-	
-						log("  sector ["+String.valueOf(i)+"]   auth = "+String.valueOf(auth));
-	
-						if ( !auth) {
-							auth = mMifareClassic.authenticateSectorWithKeyA(i, mMifareClassic.KEY_MIFARE_APPLICATION_DIRECTORY);
-							log("  sector ["+String.valueOf(i)+"]   auth with MIFARE_APP_DIR = "+String.valueOf(auth));
-						}
-	
-						if ( !auth) {
-							auth = mMifareClassic.authenticateSectorWithKeyA(i, mMifareClassic.KEY_NFC_FORUM);
-							log("  sector ["+String.valueOf(i)+"]   auth with NFC = "+String.valueOf(auth));
-						}
-						
-						if (auth) {
-							int j;
-							byte block[] = new byte[16];
-							for (j = 0; j < mMifareClassic.getBlockCountInSector(i); j++) {
-								int index = mMifareClassic.sectorToBlock(i);
-								tech_MifareClassic_read_block(index + j, block);
-							}
-						}
-					} catch (IOException e) {
-						log("mMifareClassic.authenticateSectorWithKeyA() throw Exception");
-						e.printStackTrace();
-					}
-				}
-			}
-			
-			//try {
-				//mMifareClassic.authenticateSectorWithKeyA(0, mMifareClassic.KEY_MIFARE_APPLICATION_DIRECTORY);
-			//} catch (IOException e) {
-			//	// TODO Auto-generated catch block
-			//	e.printStackTrace();
-			//}
-			
 		}
 		if (mMifareUltralight != null) {
 			mTechs.put("MifareUltralight", mMifareClassic);
+		}
+		if (mNdef != null) {
+			mTechs.put("Ndef", mNdef);
+		}
+		if (mNfcA != null) {
+			mTechs.put("NfcA", mNfcA);
 		}
 		
 
@@ -437,7 +413,7 @@ public class Nfc implements RhodesActivityListener {
 		try {
 			tech.connect();
 		} catch (IOException e) {
-			log("Exception in tech_connect()");
+			loge("Exception in tech_connect()");
 			e.printStackTrace();
 		}
 		log("tech_connect("+tech_name+") FINISH");
@@ -454,7 +430,7 @@ public class Nfc implements RhodesActivityListener {
 		try {
 			tech.close();
 		} catch (IOException e) {
-			log("Exception in tech_close()");
+			loge("Exception in tech_close()");
 			e.printStackTrace();
 		}
 	}
@@ -518,7 +494,7 @@ public class Nfc implements RhodesActivityListener {
 		try {
 			result = getInstance().mMifareClassic.transceive(data);
 		} catch (IOException e) {
-			log ("     Exception in tech_MifareClassic_transceive()");
+			loge("     Exception in tech_MifareClassic_transceive()");
 			e.printStackTrace();
 		}
 		log("tech_MifareClassic_transceive() FINISH");
@@ -548,7 +524,7 @@ public class Nfc implements RhodesActivityListener {
 				}
 			}
 			catch (IOException e) {
-				log("IOException in tech_MifareClassic_authenticate_sector_with_key_A()");
+				loge("IOException in tech_MifareClassic_authenticate_sector_with_key_A()");
 			}
 		}
 		return 0;
@@ -563,17 +539,12 @@ public class Nfc implements RhodesActivityListener {
 				}
 			}
 			catch (IOException e) {
-				log("IOException in tech_MifareClassic_authenticate_sector_with_key_B()");
+				loge("IOException in tech_MifareClassic_authenticate_sector_with_key_B()");
 			}
 		}
 		return 0;
 	}
-	
-	
-	
-	
-	
-	
+		
 	public static void tech_MifareClassic_write_block(int index, byte[] block) {
 		log ("tech_MifareClassic_write_block("+String.valueOf(index)+") START");
 		
@@ -584,7 +555,7 @@ public class Nfc implements RhodesActivityListener {
 		try {
 			getInstance().mMifareClassic.writeBlock(index, block);
 		} catch (IOException e) {
-			log ("     Exception in tech_MifareClassic_write_block("+String.valueOf(index)+")");
+			loge("     Exception in tech_MifareClassic_write_block("+String.valueOf(index)+")");
 			e.printStackTrace();
 		}
 		log("tech_MifareClassic_read_block("+String.valueOf(index)+") FINISH");
@@ -607,7 +578,7 @@ public class Nfc implements RhodesActivityListener {
 		try {
 			readed_block = getInstance().mMifareClassic.readBlock(index);
 		} catch (IOException e) {
-			log ("     Exception in tech_MifareClassic_read_block("+String.valueOf(index)+")");
+			loge("     Exception in tech_MifareClassic_read_block("+String.valueOf(index)+")");
 			e.printStackTrace();
 		}
 		if (readed_block == null) {
@@ -627,14 +598,275 @@ public class Nfc implements RhodesActivityListener {
 	}
 	
 	
+
+	public static int tech_Ndef_get_max_size() {
+		if (getInstance().mNdef != null)
+			return getInstance().mNdef.getMaxSize();
+		return 0;
+	}
+
+	public static String tech_Ndef_get_type() {
+		if (getInstance().mNdef != null)
+			return getInstance().mNdef.getType();
+		return null;
+	}
+
+	public static int tech_Ndef_is_writable() {
+		int res = 0;
+		if (getInstance().mNdef != null)
+			if (getInstance().mNdef.isWritable()) {
+				res = 1;
+			}
+		return res;
+	}
+
+	public static int tech_Ndef_can_make_read_only() {
+		int res = 0;
+		if (getInstance().mNdef != null)
+			if (getInstance().mNdef.canMakeReadOnly()) {
+				res = 1;
+			}
+		return res;
+	}
+
+	public static int tech_Ndef_make_read_only() {
+		int res = 0;
+		if (getInstance().mNdef != null)
+			try {
+				if (getInstance().mNdef.makeReadOnly()) {
+					res = 1;
+				}
+			} catch (IOException e) {
+				loge("     Exception in tech_Ndef_make_read_only()");
+				e.printStackTrace();
+			}
+		return res;
+	}
+
+	public static void tech_Ndef_write_Nde_message(byte[] message) {
+		/*
+		if (message != null) {
+			Utils.platformLog("MSG", " ID = "+message.toString());
+			
+			StringBuffer s = new StringBuffer();
+			s.append("   Message is ["+String.valueOf(message.length)+"]   : ");
+			int i;
+			for (i = 0; i < message.length; i++) {
+				s.append(message[i]);
+				s.append(":");
+			}
+			Utils.platformLog("MSG", s.toString());
+			
+			
+		}
+		else {
+			Utils.platformLog("MSG", " message is NULL !!!");
+		}
+		*/
+		
+		
+	    try {
+			NdefMessage m = new NdefMessage(message);
+			if (getInstance().mNdef != null) {
+				getInstance().mNdef.writeNdefMessage(m);
+			}
+		} catch (FormatException e) {
+			loge("Format exception in tech_Ndef_write_Nde_message()");
+			e.printStackTrace();
+		} catch (IOException e) {
+			loge("IO exception in tech_Ndef_write_Nde_message()");
+			e.printStackTrace();
+		}
+	}
+
+	public static byte[] tech_Ndef_read_Nde_message() {
+		NdefMessage m = null;
+		if (getInstance().mNdef != null) {
+			try {
+				m = getInstance().mNdef.getNdefMessage();
+			} catch (IOException e) {
+				loge("IO exception in tech_Ndef_read_Nde_message()");
+				e.printStackTrace();
+			} catch (FormatException e) {
+				loge("Format exception in tech_Ndef_read_Nde_message()");
+				e.printStackTrace();
+			}
+		}
+		if (m != null) {
+			return m.toByteArray();
+		}
+		return null;
+	}
+
+	public static byte[] tech_NfcA_get_Atqa() {
+		if (getInstance().mNfcA != null) {
+			return getInstance().mNfcA.getAtqa();
+		}
+		return null;
+	}
+
+	public static int tech_NfcA_get_Sak() {
+		if (getInstance().mNfcA != null) {
+			return getInstance().mNfcA.getSak();
+		}
+		return 0;
+	}
+
+	public static byte[] tech_NfcA_transceive(byte[] data) {
+		if (getInstance().mNfcA == null) {
+			log ("     mNfcA is not supported in current Tag");
+			return null;
+		}
+		byte[] result = null;
+		try {
+			result = getInstance().mNfcA.transceive(data);
+		} catch (IOException e) {
+			loge("     Exception in tech_NfcA_transceive()");
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+
+	public static NfcRecord convert_byte_array_to_NdeRecord_hash(byte[] array) {
+	    return new NfcRecord(array);
+	}
+
+	public static byte[] convert_NdeRecord_hash_to_byte_array(byte[] id, byte[] payload, int tnf, byte[] type) {
+	    NfcRecord r = new NfcRecord((short)tnf, type, id, payload);
+	    return r.getByteArray();
+	}
+
+	public static NfcMessage convert_NdeMessage_byte_array_to_NdeRecords_array(byte[] array) {
+		return new NfcMessage(array);
+	}
+
+	public static NfcMessage make_empty_NfcMessage() {
+		return new NfcMessage();
+	}
+
+	public static NfcRecord make_NfcRecord(byte[] id, byte[] payload, int tnf, byte[] type) {
+		return new NfcRecord((short)tnf, type, id, payload);
+	}
+	
+	public static String make_string_from_payload(byte[] payload, int tnf, byte[] type) {
+		return NfcRecord.makePayloadString((short)tnf, type, payload, null);
+	}
+
+	public static byte[] make_payload_with_absolute_uri(String str) {
+	    return str.getBytes();
+	}
+
+	public static byte[] make_payload_with_well_known_text(String language, String str) {
+	    byte[] b_lang = language.getBytes();
+	    byte[] b_str = str.getBytes();
+	    byte[] result = new byte[b_lang.length + b_str.length+1];
+	    
+	    result[0] = (byte)b_lang.length;
+	    int i;
+	    for (i = 0; i < b_lang.length; i++) {
+	    	result[1+i] = b_lang[i];
+	    }
+	    for (i = 0; i < b_str.length; i++) {
+	    	result[1+b_lang.length+i] = b_str[i];
+	    }
+	    return result;
+	}
+
+	public static byte[] make_payload_with_well_known_uri(int prefix, String str) {
+		byte[] b_str = str.getBytes();
+	    byte[] result = new byte[1+b_str.length];
+	    
+	    result[0] = (byte)prefix;
+	    int i;
+	    for (i = 0; i < b_str.length; i++) {
+	    	result[1+i] = b_str[i];
+	    }
+	    return result;
+	}
+
+	public static void p2p_enable_foreground_nde_push(byte[] nde_message_byte_array) {
+		ourP2PNdefMessage = null;
+		try {
+			ourP2PNdefMessage = new NdefMessage(nde_message_byte_array);
+		} catch (FormatException e) {
+			loge("Format Exception during prepare NdefMessage in p2p_enable_foreground_nde_push() !");
+			e.printStackTrace();
+		}
+		if ((ourP2PNdefMessage != null) && (ourIsEnable)) {
+			if (RhodesActivity.safeGetInstance().isForegroundNow()) {
+				PerformOnUiThread.exec( new Runnable() {
+					public void run() {
+						if (RhodesActivity.safeGetInstance().isForegroundNow()) {
+							NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(RhodesActivity.getContext());
+							nfcAdapter.enableForegroundNdefPush(RhodesActivity.safeGetInstance(), ourP2PNdefMessage);
+						}
+					}
+				});
+			}
+		}
+	}
+
+	public static void p2p_disable_foreground_nde_push() {
+		ourP2PNdefMessage = null;
+		PerformOnUiThread.exec( new Runnable() {
+			public void run() {
+				if (RhodesActivity.safeGetInstance().isForegroundNow()) {
+					NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(RhodesActivity.getContext());
+					nfcAdapter.disableForegroundNdefPush(RhodesActivity.safeGetInstance());
+				}
+			}
+		});
+	}
+
 	public static void tech_MifareUltralight_write_page(int index, byte[] page) {
-		
+		if (getInstance().mMifareUltralight == null) {
+			log ("     MifareUltralight is not supported in current Tag");
+			return;
+		}
+		try {
+			getInstance().mMifareUltralight.writePage(index, page);
+		} catch (IOException e) {
+			loge("     Exception in tech_MifareUltralight_write_page("+String.valueOf(index)+")");
+			e.printStackTrace();
+		}
 	}
 	
-	public static void tech_MifareUltralight_read_pages(int index, byte[] pages) {
-		
+	public static byte[] tech_MifareUltralight_read_pages(int index) {
+		byte[] result = null;
+		if (getInstance().mMifareUltralight == null) {
+			log ("     MifareUltralight is not supported in current Tag");
+			return null;
+		}
+		try {
+			result = getInstance().mMifareUltralight.readPages(index);
+		} catch (IOException e) {
+			loge("     Exception in tech_MifareUltralight_read_pages("+String.valueOf(index)+")");
+			e.printStackTrace();
+		}
+		return result;
 	}
 	
+	public static int tech_MifareUltralight_get_type() {
+		if (getInstance().mMifareUltralight != null)
+			return getInstance().mMifareUltralight.getType();
+		return -2;
+	}
+
+	public static byte[] tech_MifareUltralight_transceive(byte[] data) {
+		if (getInstance().mMifareUltralight == null) {
+			log ("     MifareUltralight is not supported in current Tag");
+			return null;
+		}
+		byte[] result = null;
+		try {
+			result = getInstance().mMifareUltralight.transceive(data);
+		} catch (IOException e) {
+			loge("     Exception in tech_MifareUltralight_transceive()");
+			e.printStackTrace();
+		}
+		return result;
+	}
 	
 	
 	
