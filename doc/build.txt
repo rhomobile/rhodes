@@ -798,7 +798,7 @@ Rholog.txt is placed in `<rhodes folder>\platform\wm\bin\win32\rhodes\Debug\rho`
           productid: 632621d0-5ecb-012e-2c97-482a1411c191
 NOTE: When you use rhodes command to generate application, productid is generated automatically
 
-* Windows Phone 7 does not support POST action in HTML forms. 
+* Windows Phone 7 does not support POST method in HTML forms. So you have to change all form method to GET or use javascript to do it:
 
     Copy file:
 
@@ -830,6 +830,7 @@ NOTE: When you use rhodes command to generate application, productid is generate
         }
 
 You can use [Rhodes Application Generator](#generator) to see application code with all this changes
+NOTE: in form action when using url_for specify :action => :create to call create controller method
 
 ### Build and run using Rhodes gem
 
