@@ -1685,6 +1685,60 @@ extern void rho_nfc_p2p_enable_foreground_nde_push(VALUE nde_message_byte_array)
 extern void rho_nfc_p2p_disable_foreground_nde_push();    
 #define p2p_disable_foreground_nde_push rho_nfc_p2p_disable_foreground_nde_push
     
+extern VALUE rho_nfc_tech_IsoDep_get_hi_layer_responce();
+#define tech_IsoDep_get_hi_layer_responce rho_nfc_tech_IsoDep_get_hi_layer_responce
+    
+extern VALUE rho_nfc_tech_IsoDep_get_historical_bytes();
+#define tech_IsoDep_get_historical_bytes rho_nfc_tech_IsoDep_get_historical_bytes
+    
+extern void rho_nfc_tech_IsoDep_set_timeout(int timeout);
+#define tech_IsoDep_set_timeout rho_nfc_tech_IsoDep_set_timeout
+    
+extern VALUE rho_nfc_tech_IsoDep_transceive(VALUE data);    
+#define tech_IsoDep_transceive rho_nfc_tech_IsoDep_transceive
+
+extern void rho_nfc_tech_NdefFormatable_format(VALUE ndef_message_byte_array);
+#define tech_NdefFormatable_format rho_nfc_tech_NdefFormatable_format
+
+extern void rho_nfc_tech_NdefFormatable_format_read_only(VALUE ndef_message_byte_array);
+#define tech_NdefFormatable_format_read_only rho_nfc_tech_NdefFormatable_format_read_only
+    
+// return byte[]
+extern VALUE rho_nfc_tech_NfcB_get_application_data();
+#define tech_NfcB_get_application_data rho_nfc_tech_NfcB_get_application_data
+    
+// return byte[]
+extern VALUE rho_nfc_tech_NfcB_get_protocol_info();
+#define tech_NfcB_get_protocol_info rho_nfc_tech_NfcB_get_protocol_info
+    
+// byte[] -> byte[]
+extern VALUE rho_nfc_tech_NfcB_transceive(VALUE data);    
+#define tech_NfcB_transceive rho_nfc_tech_NfcB_transceive
+    
+// return byte[]
+extern VALUE rho_nfc_tech_NfcF_get_manufacturer();
+#define tech_NfcF_get_manufacturer rho_nfc_tech_NfcF_get_manufacturer
+    
+// return byte[]
+extern VALUE rho_nfc_tech_NfcF_get_system_code();
+#define tech_NfcF_get_system_code rho_nfc_tech_NfcF_get_system_code
+    
+// byte[] -> byte[]
+extern VALUE rho_nfc_tech_NfcF_transceive(VALUE data);    
+#define tech_NfcF_transceive rho_nfc_tech_NfcF_transceive
+    
+extern int rho_nfc_tech_NfcV_get_dsf_id();
+#define tech_NfcV_get_dsf_id rho_nfc_tech_NfcV_get_dsf_id
+    
+extern int rho_nfc_tech_NfcV_get_responce_flags();
+#define tech_NfcV_get_responce_flags rho_nfc_tech_NfcV_get_responce_flags
+    
+// byte[] -> byte[]
+extern VALUE rho_nfc_tech_NfcV_transceive(VALUE data);    
+#define tech_NfcV_transceive rho_nfc_tech_NfcV_transceive
+    
+    
+    
     
 
 
@@ -2736,6 +2790,257 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_tech_IsoDep_get_hi_layer_responce(int argc, VALUE *argv, VALUE self) {
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (VALUE)tech_IsoDep_get_hi_layer_responce();
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_IsoDep_get_historical_bytes(int argc, VALUE *argv, VALUE self) {
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (VALUE)tech_IsoDep_get_historical_bytes();
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_IsoDep_set_timeout(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "tech_IsoDep_set_timeout" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = (int)(val1);
+  tech_IsoDep_set_timeout(arg1);
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_IsoDep_transceive(int argc, VALUE *argv, VALUE self) {
+  VALUE arg1 = (VALUE) 0 ;
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  arg1 = argv[0];
+  result = (VALUE)tech_IsoDep_transceive(arg1);
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_NdefFormatable_format(int argc, VALUE *argv, VALUE self) {
+  VALUE arg1 = (VALUE) 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  arg1 = argv[0];
+  tech_NdefFormatable_format(arg1);
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_NdefFormatable_format_read_only(int argc, VALUE *argv, VALUE self) {
+  VALUE arg1 = (VALUE) 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  arg1 = argv[0];
+  tech_NdefFormatable_format_read_only(arg1);
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_NfcB_get_application_data(int argc, VALUE *argv, VALUE self) {
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (VALUE)tech_NfcB_get_application_data();
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_NfcB_get_protocol_info(int argc, VALUE *argv, VALUE self) {
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (VALUE)tech_NfcB_get_protocol_info();
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_NfcB_transceive(int argc, VALUE *argv, VALUE self) {
+  VALUE arg1 = (VALUE) 0 ;
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  arg1 = argv[0];
+  result = (VALUE)tech_NfcB_transceive(arg1);
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_NfcF_get_manufacturer(int argc, VALUE *argv, VALUE self) {
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (VALUE)tech_NfcF_get_manufacturer();
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_NfcF_get_system_code(int argc, VALUE *argv, VALUE self) {
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (VALUE)tech_NfcF_get_system_code();
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_NfcF_transceive(int argc, VALUE *argv, VALUE self) {
+  VALUE arg1 = (VALUE) 0 ;
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  arg1 = argv[0];
+  result = (VALUE)tech_NfcF_transceive(arg1);
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_NfcV_get_dsf_id(int argc, VALUE *argv, VALUE self) {
+  int result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (int)tech_NfcV_get_dsf_id();
+  vresult = SWIG_From_int((int)(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_NfcV_get_responce_flags(int argc, VALUE *argv, VALUE self) {
+  int result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (int)tech_NfcV_get_responce_flags();
+  vresult = SWIG_From_int((int)(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_tech_NfcV_transceive(int argc, VALUE *argv, VALUE self) {
+  VALUE arg1 = (VALUE) 0 ;
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  arg1 = argv[0];
+  result = (VALUE)tech_NfcV_transceive(arg1);
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -3044,5 +3349,20 @@ SWIGEXPORT void Init_Nfc(void) {
   rb_define_module_function(mNfc, "make_payload_with_well_known_uri", _wrap_make_payload_with_well_known_uri, -1);
   rb_define_module_function(mNfc, "p2p_enable_foreground_nde_push", _wrap_p2p_enable_foreground_nde_push, -1);
   rb_define_module_function(mNfc, "p2p_disable_foreground_nde_push", _wrap_p2p_disable_foreground_nde_push, -1);
+  rb_define_module_function(mNfc, "tech_IsoDep_get_hi_layer_responce", _wrap_tech_IsoDep_get_hi_layer_responce, -1);
+  rb_define_module_function(mNfc, "tech_IsoDep_get_historical_bytes", _wrap_tech_IsoDep_get_historical_bytes, -1);
+  rb_define_module_function(mNfc, "tech_IsoDep_set_timeout", _wrap_tech_IsoDep_set_timeout, -1);
+  rb_define_module_function(mNfc, "tech_IsoDep_transceive", _wrap_tech_IsoDep_transceive, -1);
+  rb_define_module_function(mNfc, "tech_NdefFormatable_format", _wrap_tech_NdefFormatable_format, -1);
+  rb_define_module_function(mNfc, "tech_NdefFormatable_format_read_only", _wrap_tech_NdefFormatable_format_read_only, -1);
+  rb_define_module_function(mNfc, "tech_NfcB_get_application_data", _wrap_tech_NfcB_get_application_data, -1);
+  rb_define_module_function(mNfc, "tech_NfcB_get_protocol_info", _wrap_tech_NfcB_get_protocol_info, -1);
+  rb_define_module_function(mNfc, "tech_NfcB_transceive", _wrap_tech_NfcB_transceive, -1);
+  rb_define_module_function(mNfc, "tech_NfcF_get_manufacturer", _wrap_tech_NfcF_get_manufacturer, -1);
+  rb_define_module_function(mNfc, "tech_NfcF_get_system_code", _wrap_tech_NfcF_get_system_code, -1);
+  rb_define_module_function(mNfc, "tech_NfcF_transceive", _wrap_tech_NfcF_transceive, -1);
+  rb_define_module_function(mNfc, "tech_NfcV_get_dsf_id", _wrap_tech_NfcV_get_dsf_id, -1);
+  rb_define_module_function(mNfc, "tech_NfcV_get_responce_flags", _wrap_tech_NfcV_get_responce_flags, -1);
+  rb_define_module_function(mNfc, "tech_NfcV_transceive", _wrap_tech_NfcV_transceive, -1);
 }
 
