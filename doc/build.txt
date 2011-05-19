@@ -783,15 +783,58 @@ Rholog.txt is placed in `<rhodes folder>\platform\wm\bin\win32\rhodes\Debug\rho`
 * Visual Studio 2010 installed or VS Express for Windows Phone and VS Express for C#
     * [Windows Phone Developer Tools RTW](http://www.microsoft.com/downloads/en/details.aspx?FamilyID=04704acf-a63a-4f97-952c-8b51b34b00ce)
     * [Windows Phone Developer Tools January 2011 Update](http://www.microsoft.com/downloads/en/details.aspx?FamilyID=49b9d0c5-6597-4313-912a-f0cca9c7d277)
+    
 * Add path to `msbuild` to `rhobuild.yml` in rhodes folder. For example:
 
 	    env:
 	      paths:
 	        msbuild: C:/Windows/Microsoft.NET/Framework/v4.0.30319/MSBuild.exe
 
+### Application changes
+    
+* Add to application build.yml productid GUID. For example:
+
+        wp:
+          productid: 632621d0-5ecb-012e-2c97-482a1411c191
+NOTE: When you use rhodes command to generate application, productid is generated automatically
+
+* Windows Phone 7 does not support POST action in HTML forms. 
+
+    Copy file:
+
+        <rhodes>\res\generators\templates\application\public\js\wp7.js
+
+        to your application public/js folder
+        
+    Modify layout.erb:
+
+        <%if System::get_property('platform') == 'WP7' %>
+            <script src="/public/js/wp7.js" type="text/javascript"></script> 
+        <% end %>
+
+        <% if System::get_property('platform') == 'WP7' %>
+	        <body onload="wp7_change_forms_action_to_get()">
+        <% else %>
+	        <body>
+        <% end %>
+            <%%= @content %>
+        </body>
+
+    This script just replace FORM action to GET:
+
+        function wp7_change_forms_action_to_get() {
+            for(i=0;i<document.forms.length; i++)
+            {
+                document.forms[i].method = "GET";
+            }
+        }
+
+You can use [Rhodes Application Generator](#generator) to see application code with all this changes
+
 ### Build and run using Rhodes gem
 
 * Install Rhodes gem
+
 * Run application simulator:
 
         $rake run:wp
