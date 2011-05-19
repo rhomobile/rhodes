@@ -14,6 +14,8 @@ namespace rho.rubyext
 
         #region Private Implementation Details
 
+        private static RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
+            new RhoLogger("RhoNativeBar");
         private static CRhodesApp RhodesApp { get { return CRhodesApp.Instance; } }
 
         #endregion
@@ -23,27 +25,66 @@ namespace rho.rubyext
         [RubyMethodAttribute("create", RubyMethodAttributes.PublicSingleton)]
         public static void Create(RubyModule/*!*/ self, int barType, RubyArray args)
         {
-            if (args != null && args.Count > 0)
-                RhodesApp.createToolBar(barType, (Object)args);
+            try
+            {
+                if (args != null && args.Count > 0)
+                    RhodesApp.createToolBar(barType, (Object)args);
 
-            if (barType == 2)
-                RhodesApp.removeToolBar();
+                if (barType == 2)
+                    RhodesApp.removeToolBar();
+            }
+            catch (Exception ex)
+            {
+                Exception rubyEx = self.Context.CurrentException;
+                if (rubyEx == null)
+                {
+                    rubyEx = RubyExceptionData.InitializeException(new RuntimeError(ex.Message.ToString()), ex.Message);
+                }
+                LOG.ERROR("create", ex);
+                throw rubyEx;
+            }
         }
 
         [RubyMethodAttribute("create", RubyMethodAttributes.PublicSingleton)]
         public static void Create(RubyModule/*!*/ self, int barType, Hash args)
         {
-            if (args != null && args.Count > 0)
-                RhodesApp.createToolBar(barType, (Object)args);
+            try
+            {
+                if (args != null && args.Count > 0)
+                    RhodesApp.createToolBar(barType, (Object)args);
 
-            if (barType == 2)
-                RhodesApp.removeToolBar();
+                if (barType == 2)
+                    RhodesApp.removeToolBar();
+            }
+            catch (Exception ex)
+            {
+                Exception rubyEx = self.Context.CurrentException;
+                if (rubyEx == null)
+                {
+                    rubyEx = RubyExceptionData.InitializeException(new RuntimeError(ex.Message.ToString()), ex.Message);
+                }
+                LOG.ERROR("create", ex);
+                throw rubyEx;
+            }
         }
 
         [RubyMethodAttribute("remove", RubyMethodAttributes.PublicSingleton)]
         public static void Remove(RubyModule/*!*/ self)
         {
-            RhodesApp.removeToolBar();
+            try
+            {
+                RhodesApp.removeToolBar();
+            }
+            catch (Exception ex)
+            {
+                Exception rubyEx = self.Context.CurrentException;
+                if (rubyEx == null)
+                {
+                    rubyEx = RubyExceptionData.InitializeException(new RuntimeError(ex.Message.ToString()), ex.Message);
+                }
+                LOG.ERROR("remove", ex);
+                throw rubyEx;
+            }
         }
 
         [RubyMethodAttribute("switch_tab", RubyMethodAttributes.PublicSingleton)]
@@ -55,7 +96,23 @@ namespace rho.rubyext
         [RubyMethodAttribute("started", RubyMethodAttributes.PublicSingleton)]
         public static Boolean isStarted(RubyModule/*!*/ self)
         {
-            return RhodesApp.barIsStarted;
+            Boolean res = false;
+            try
+            {
+                res = RhodesApp.barIsStarted;
+            }
+            catch (Exception ex)
+            {
+                Exception rubyEx = self.Context.CurrentException;
+                if (rubyEx == null)
+                {
+                    rubyEx = RubyExceptionData.InitializeException(new RuntimeError(ex.Message.ToString()), ex.Message);
+                }
+                LOG.ERROR("started", ex);
+                throw rubyEx;
+            }
+
+            return res;
         }
 
         [RubyMethodAttribute("set_tab_badge", RubyMethodAttributes.PublicSingleton)]
@@ -67,19 +124,58 @@ namespace rho.rubyext
         [RubyMethodAttribute("create_native_toolbar", RubyMethodAttributes.PublicSingleton)]
         public static void createNativeToolBar(RubyModule/*!*/ self, int barType, RubyArray args)
         {
-            Create(self, barType, args);
+            try
+            {
+                Create(self, barType, args);
+            }
+            catch (Exception ex)
+            {
+                Exception rubyEx = self.Context.CurrentException;
+                if (rubyEx == null)
+                {
+                    rubyEx = RubyExceptionData.InitializeException(new RuntimeError(ex.Message.ToString()), ex.Message);
+                }
+                LOG.ERROR("create_native_toolbar", ex);
+                throw rubyEx;
+            }
         }
 
         [RubyMethodAttribute("create_native_toolbar", RubyMethodAttributes.PublicSingleton)]
         public static void createNativeToolBar(RubyModule/*!*/ self, int barType, Hash args)
         {
-            Create(self, barType, args);
+            try
+            {
+                Create(self, barType, args);
+            }
+            catch (Exception ex)
+            {
+                Exception rubyEx = self.Context.CurrentException;
+                if (rubyEx == null)
+                {
+                    rubyEx = RubyExceptionData.InitializeException(new RuntimeError(ex.Message.ToString()), ex.Message);
+                }
+                LOG.ERROR("create_native_toolbar", ex);
+                throw rubyEx;
+            }
         }
 
         [RubyMethodAttribute("remove_native_toolbar", RubyMethodAttributes.PublicSingleton)]
         public static void removeNativeToolBar(RubyModule/*!*/ self)
         {
-            Remove(self);
+            try
+            {
+                Remove(self);
+            }
+            catch (Exception ex)
+            {
+                Exception rubyEx = self.Context.CurrentException;
+                if (rubyEx == null)
+                {
+                    rubyEx = RubyExceptionData.InitializeException(new RuntimeError(ex.Message.ToString()), ex.Message);
+                }
+                LOG.ERROR("remove_native_toolbar", ex);
+                throw rubyEx;
+            }
         }
 
         [RubyMethodAttribute("create_native_tabbar", RubyMethodAttributes.PublicSingleton)]
