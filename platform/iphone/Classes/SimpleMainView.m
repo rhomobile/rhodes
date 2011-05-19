@@ -616,7 +616,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	self.webView.backgroundColor = bc;
 	self.view.backgroundColor = bc;
 	
-	NSString* data = [NSString stringWithFormat:@"<body bgcolor=\"#%X\"></body>", bkg_color]; 
+	NSString* data = [NSString stringWithFormat:@"<body bgcolor=\"#%6$X\"></body>", bkg_color]; 
 	
 	self.webView.hidden = YES;
 	
