@@ -170,10 +170,14 @@ public:
 	}
     
     VALUE makeVALUE() {
+        logi("make VALUE from byte array START");
         if (mBuf != NULL) {
-            return rho_ruby_create_byte_array(mBuf, mSize);
+            VALUE v = rho_ruby_create_byte_array(mBuf, mSize);
+            logi("make VALUE from byte array FINISH");
+            return v;
         }
         else  {
+            logi("make VALUE from byte array FINISH NIL");
             return rho_ruby_get_NIL();
         }
         
@@ -616,6 +620,17 @@ extern "C" void rho_nfc_set_tech_callback(const char* callback_url) {
 	env->CallStaticVoidMethod(cls, mid, objCallback);
 	env->DeleteLocalRef(objCallback);
 }
+
+extern "C" void rho_nfc_perform_open_application_event() {
+	JNIEnv *env = jnienv();
+	jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+	if (!cls) return;
+	jmethodID mid = env->GetStaticMethodID( cls, "performOpenApplicationTag", "()V");
+	if (!mid) return;
+	env->CallStaticVoidMethod(cls, mid);
+}
+
+
 
 extern "C" void rho_nfc_set_listen_tech_list(VALUE tech_list) {
 

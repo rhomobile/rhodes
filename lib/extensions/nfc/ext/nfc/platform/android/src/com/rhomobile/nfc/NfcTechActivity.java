@@ -25,6 +25,8 @@ public class NfcTechActivity  extends Activity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+	
+	/* NOT USED NOW !	
 		super.onCreate(savedInstanceState);
 		Intent intent = getIntent();
 		String action = intent.getAction();
@@ -36,6 +38,7 @@ public class NfcTechActivity  extends Activity {
 			}
         }
 		finish();
+	*/
 	}	
 	
 

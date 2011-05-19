@@ -31,12 +31,20 @@ class NdefRecord
     
    def init_from_byte_array(array)
        @byte_array = array
-       hash = Nfc.convert_byte_array_to_NdeRecord_hash(@byte_array)
-       @id = hash[ID]
-       @tnf = hash[TNF]
-       @type = hash[TYPE]
-       @payload = hash[PAYLOAD]
-       @payload_as_string = hash['payload_as_string']
+       if array != nil
+           hash = Nfc.convert_byte_array_to_NdeRecord_hash(@byte_array)
+           @id = hash[ID]
+           @tnf = hash[TNF]
+           @type = hash[TYPE]
+           @payload = hash[PAYLOAD]
+           @payload_as_string = hash['payload_as_string']
+       else
+           @id = nil
+           @tnf = 0
+           @type = nil
+           @payload = nil
+           @payload_as_string = nil
+       end           
    end
     
    # hash :
@@ -151,23 +159,25 @@ end
 class NdefMessage
    
    def init_from_byte_array(array)
-       
+              
        @byte_array = array
        @records = []
        
-       record_array = Nfc.convert_NdeMessage_byte_array_to_NdeRecords_array(@byte_array)
-       i = 0
-       while i < record_array.size do
-           record_ba = record_array[i]
-           
-           rec = NdefRecord.new
-           rec.init_from_byte_array(record_ba)
-           
-           @records << rec
-           
-           i = i+1
-       end    
+       if array != nil 
        
+           record_array = Nfc.convert_NdeMessage_byte_array_to_NdeRecords_array(@byte_array)
+           i = 0
+           while i < record_array.size do
+               record_ba = record_array[i]
+           
+               rec = NdefRecord.new
+               rec.init_from_byte_array(record_ba)
+           
+               @records << rec
+           
+               i = i+1
+           end    
+        end
    end
     
    def init_from_array_of_NdefRecord(array)
@@ -704,6 +714,13 @@ class NFCManager
        end
        return NFCTag.new(tech_list)
   end
+
+  # call this function after application is started and you setup all functionality for process NFC event
+  # when application in background or not started, then NFC event was saved and application open/start process executed
+  # for process saved event - call this function 
+  def self.perform_open_application_event
+      Nfc.perform_open_application_event
+  end    
 
   # ndef_message - NdefMessage
   # start push NdefMessage to any receivers
