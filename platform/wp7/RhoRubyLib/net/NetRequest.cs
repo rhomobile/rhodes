@@ -72,7 +72,7 @@ namespace rho.net
 		        {
 				    String strName = hashEnum.Current.Key;
 				    String strValue = hashEnum.Current.Value;
-                    m_webRequest.Headers[strName] = strValue;
+                    m_webRequest.Headers[strName.Replace("-", "")] = strValue;
 		        }
 			
 		    }
