@@ -10,7 +10,28 @@
     <uses-feature android:name="android.hardware.nfc" android:required="false" />
 
     <application>
-        
+
+        <activity  android:name="com.rhomobile.nfc.NfcActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED"/>
+            </intent-filter>
+
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.nfc.action.ACTION_TAG_DISCOVERED"/>
+            </intent-filter>
+
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.nfc.action.TECH_DISCOVERED" />
+            </intent-filter>
+
+            <meta-data android:name="android.nfc.action.TECH_DISCOVERED"
+                android:resource="@xml/filter_nfc"
+            />
+        </activity>
+
     </application>
     
     <uses-permission android:name="android.permission.NFC" />
