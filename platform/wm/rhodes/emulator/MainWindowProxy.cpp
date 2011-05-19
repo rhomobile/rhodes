@@ -44,6 +44,8 @@ void CMainWindowProxy::setCallback(IMainWindowCallback* callback)
 void* CMainWindowProxy::init(IMainWindowCallback* callback, const wchar_t* title)
 {
     int argc = 0;
+	QCoreApplication::setOrganizationName("Rhomobile");
+	QCoreApplication::setApplicationName("RhoSimulator");
     qtApplication = (void*)new QApplication(argc, 0);
     qtMainWindow = (void*)new QtMainWindow();
     ((QtMainWindow*)qtMainWindow)->setWindowTitle(QString::fromWCharArray(title));
