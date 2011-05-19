@@ -3,6 +3,27 @@ module Rho
     
 class NdefRecord
     
+    # 3-bit TNF (Type Name Format) field: Indicates how to interpret the type field
+    
+    TNF_ABSOLUTE_URI = 3
+    TNF_EMPTY = 0
+    TNF_EXTERNAL_TYPE = 4
+    TNF_MIME_MEDIA = 2
+    TNF_UNCHANGED = 6
+    TNF_UNKNOWN = 5
+    TNF_WELL_KNOWN = 1
+    
+    
+    # RTD Text types. For use with TNF_WELL_KNOWN
+    
+    RTD_TEXT = [0x54]   # "T"
+    RTD_URI = [0x55] # "U"
+    RTD_SMART_POSTER = [0x53, 0x70] # "Sp"
+    RTD_ALTERNATIVE_CARRIER = [0x61, 0x63]   # "ac"
+    RTD_HANDOVER_CARRIER = [0x48, 0x63] # "Hc"
+    RTD_HANDOVER_REQUEST = [0x48, 0x72] # "Hr"
+    RTD_HANDOVER_SELECT = [0x48, 0x73] # "Hs"
+    
    ID = 'id'
    TNF = 'tnf'
    TYPE = 'type'
@@ -18,40 +39,112 @@ class NdefRecord
        @payload_as_string = hash['payload_as_string']
    end
     
+   # hash :
+   #       'id' - byte[]
+   #       'tnf' - int
+   #       'type' - byte[]
+   #       'payload' - byte[]
    def init_from_hash(hash)
        byte_arr = Nfc.convert_NdeRecord_hash_to_byte_array(hash)
        init_from_byte_array(byte_arr)
    end    
     
+   # return byte[] 
    def get_id
        return @id
    end 
     
+   # return int 
    def get_tnf
        return @tnf
    end    
-    
+   
+   # return byte[] 
    def get_type
        return @type
    end    
-    
+   
+   # return byte[]  
    def get_payload
        return @payload
    end    
 
+   # return string   
    def get_payload_as_string
        return @payload_as_string
    end    
 
+   # return raw byte[]  
    def get_byte_array
        return @byte_array
    end
-    
+   
+   # return hash 
+   # hash :
+   #       'id' - byte[]
+   #       'tnf' - int
+   #       'type' - byte[]
+   #       'payload' - byte[]
+   #       'payload_as_string' - string
    def make_hash
        hash = { 'id' => @id, 'tnf' => @tnf, 'type' => @type, 'payload' => @payload, 'payload_as_string' => @payload_as_string}
        return hash
    end    
     
+  # convert int tnf to string
+  def self.convert_Tnf_to_string(tnf)
+       res = 'unknown'
+       if tnf == TNF_ABSOLUTE_URI
+            res = 'TNF_ABSOLUTE_URI'
+       end
+       if tnf == TNF_EMPTY
+            res = 'TNF_EMPTY'
+       end
+       if tnf == TNF_EXTERNAL_TYPE
+            res = 'TNF_EXTERNAL_TYPE'
+       end
+       if tnf == TNF_MIME_MEDIA
+            res = 'TNF_MIME_MEDIA'
+       end
+       if tnf == TNF_UNCHANGED
+            res = 'TNF_UNCHANGED'
+       end
+       if tnf == TNF_UNKNOWN
+            res = 'TNF_UNKNOWN'
+       end
+       if tnf == TNF_WELL_KNOWN
+            res = 'TNF_WELL_KNOWN'
+       end
+       return res
+  end
+
+  # convert byte[] type to string
+  def self.convert_RTD_to_string(rtd)
+       res = 'unknown'
+       if rtd == RTD_TEXT
+            res = 'RTD_TEXT'
+       end
+       if rtd == RTD_URI
+            res = 'RTD_URI'
+       end
+       if rtd == RTD_SMART_POSTER
+            res = 'RTD_SMART_POSTER'
+       end
+       if rtd == RTD_ALTERNATIVE_CARRIER
+            res = 'RTD_ALTERNATIVE_CARRIER'
+       end
+       if rtd == RTD_HANDOVER_CARRIER
+            res = 'RTD_HANDOVER_CARRIER'
+       end
+       if rtd == RTD_HANDOVER_REQUEST
+            res = 'RTD_HANDOVER_REQUEST'
+       end
+       if rtd == RTD_HANDOVER_SELECT
+            res = 'RTD_HANDOVER_SELECT'
+       end
+       return res
+  end
+
 end    
     
 
@@ -97,10 +190,12 @@ class NdefMessage
        
    end 
     
+   # return raw byte[]   
    def get_byte_array
        return @byte_array
    end
 
+   # return array of NdefRecord
    def get_records
        return @records
    end    
@@ -112,27 +207,36 @@ end
 
 class NFCTagTechnology
 
+  ISODEP = 'IsoDep'
   MIFARE_CLASSIC = 'MifareClassic'
   MIFARE_ULTRALIGHT = 'MifareUltralight'
   NDEF = 'Ndef'
+  NDEF_FORMATABLE = 'NdefFormatable'
   NFCA = 'NfcA'
+  NFCB = 'NfcB'
+  NFCF = 'NfcF'
+  NFCV = 'NfcV'
 
   def initialize(tech_name)
        @techname = tech_name
   end
 
+  # return string    
   def get_name
       return @techname
   end
 
+  # connect - only after it you can make any I/O operation     
   def connect
       Nfc.tech_connect(get_name)
   end
 
+  # close connect - make it after your I/O operations     
   def close
       Nfc.tech_close(get_name)
   end
 
+  # return true if tech connected and ready for I/O operations     
   def is_connected
       res = Nfc.tech_is_connected(@techname)
       resb = false
@@ -151,14 +255,18 @@ class NFCTagTechnology_NfcA < NFCTagTechnology
         super(NFCTagTechnology::NFCA)
     end
     
+    # return byte[]
     def get_Atqa
         return Nfc.tech_NfcA_get_Atqa
     end    
 
+    # return int
     def get_Sak
         return Nfc.tech_NfcA_get_Sak
     end
     
+    # data - byte[]
+    # return byte[]
     def transceive(data)
         return Nfc.tech_NfcA_transceive(data)
     end    
@@ -167,30 +275,42 @@ end
 
 class NFCTagTechnology_Ndef < NFCTagTechnology
         
+    MIFARE_CLASSIC = 'com.nxp.ndef.mifareclassic'
+    NFC_FORUM_TYPE_1 = 'org.nfcforum.ndef.type1'
+    NFC_FORUM_TYPE_2 = 'org.nfcforum.ndef.type2'
+    NFC_FORUM_TYPE_3 = 'org.nfcforum.ndef.type3'
+    NFC_FORUM_TYPE_4 = 'org.nfcforum.ndef.type4'
+    
     def initialize
         super(NFCTagTechnology::NDEF)
     end
         
+    # return int
     def get_max_size
         return Nfc.tech_Ndef_get_max_size
     end    
     
+    # return bool
     def is_writable
         return (Nfc.tech_Ndef_is_writable != 0)
     end    
     
+    # return bool
     def can_make_read_only
         return (Nfc.tech_Ndef_can_make_read_only != 0)
     end    
     
+    # return bool
     def make_read_only
         return (Nfc.tech_Ndef_make_read_only != 0)
     end    
     
+    # return string
     def get_type
         return Nfc.tech_Ndef_get_type
     end    
         
+    # return NdefMessage
     def read_NdefMessage
         msg_ar =  Nfc.tech_Ndef_read_Nde_message
         msg = NdefMessage.new
@@ -198,6 +318,7 @@ class NFCTagTechnology_Ndef < NFCTagTechnology
         return msg
     end    
     
+    # msg - NdefMessage
     def write_NdefMessage(msg)
         Nfc.tech_Ndef_write_Nde_message(msg.get_byte_array)
     end
@@ -229,7 +350,7 @@ class NFCTagTechnology_MifareClassic < NFCTagTechnology
    end 
    
    # return named type (for known types) 
-   def convert_type_to_string(type)
+   def self.convert_type_to_string(type)
        res = 'unknown'
        if type == TYPE_CLASSIC
            res = 'TYPE_CLASSIC'
@@ -308,9 +429,18 @@ end
 
 class NFCTagTechnology_MifareUltralight < NFCTagTechnology
 
-  def initialize
+   TYPE_ULTRALIGHT = 1
+   TYPE_ULTRALIGHT_C = 2
+   TYPE_UNKNOWN = -1
+
+   def initialize
        super(NFCTagTechnology::MIFARE_ULTRALIGHT)
-  end
+   end
+
+   # return int
+   def get_type
+      return Nfc.tech_MifareUltralight_get_type
+   end
 
    # index - integer
    # block - 4 byte array
@@ -324,7 +454,142 @@ class NFCTagTechnology_MifareUltralight < NFCTagTechnology
        return Nfc.tech_MifareUltralight_read_pages(index)
    end
 
+    # send data (byte array) to Tag and receive result - byte array
+    def transceive(data)
+        return Nfc.tech_MifareUltralight_transceive(data)
+    end    
+
 end
+
+
+class NFCTagTechnology_IsoDep < NFCTagTechnology
+    
+    def initialize
+        super(NFCTagTechnology::ISODEP)
+    end
+    
+    # return byte[]
+    def get_hi_layer_responce
+        return Nfc.tech_IsoDep_get_hi_layer_responce
+    end    
+
+    # return byte[]
+    def get_historical_bytes
+        return Nfc.tech_IsoDep_get_historical_bytes
+    end    
+
+
+    # timeout - int
+    def set_timeout(timeout)
+        return Nfc.tech_IsoDep_set_timeout(timeout)
+    end
+    
+    # data - byte[]
+    # return byte[]
+    def transceive(data)
+        return Nfc.tech_IsoDep_transceive(data)
+    end    
+    
+end    
+
+
+class NFCTagTechnology_NdefFormatable < NFCTagTechnology
+        
+    
+    def initialize
+        super(NFCTagTechnology::NDEF_FORMATABLE)
+    end
+        
+    # msg - NdefMessage
+    def format(msg)
+        Nfc.tech_NdefFormatable_format(msg.get_byte_array)
+    end
+  
+    # msg - NdefMessage
+    def format_read_only(msg)
+        Nfc.tech_NdefFormatable_format_read_only(msg.get_byte_array)
+    end
+        
+end    
+
+
+class NFCTagTechnology_NfcB < NFCTagTechnology
+    
+    def initialize
+        super(NFCTagTechnology::NFCB)
+    end
+    
+    # return byte[]
+    def get_application_data
+        return Nfc.tech_NfcB_get_application_data
+    end    
+
+    # return byte[]
+    def get_protocol_info
+        return Nfc.tech_NfcB_get_protocol_info
+    end    
+
+
+    # data - byte[]
+    # return byte[]
+    def transceive(data)
+        return Nfc.tech_NfcB_transceive(data)
+    end    
+    
+end    
+
+
+class NFCTagTechnology_NfcF < NFCTagTechnology
+    
+    def initialize
+        super(NFCTagTechnology::NFCF)
+    end
+    
+    # return byte[]
+    def get_manufacturer
+        return Nfc.tech_NfcF_get_manufacturer
+    end    
+
+    # return byte[]
+    def get_system_code
+        return Nfc.tech_NfcF_get_system_code
+    end    
+
+
+    # data - byte[]
+    # return byte[]
+    def transceive(data)
+        return Nfc.tech_NfcF_transceive(data)
+    end    
+    
+end    
+
+
+class NFCTagTechnology_NfcV < NFCTagTechnology
+    
+    def initialize
+        super(NFCTagTechnology::NFCV)
+    end
+    
+    # return int
+    def get_dsf_id
+        return Nfc.tech_NfcV_get_dsf_id
+    end    
+
+    # return int
+    def get_responce_flags
+        return Nfc.tech_NfcV_get_responce_flags
+    end    
+
+
+    # data - byte[]
+    # return byte[]
+    def transceive(data)
+        return Nfc.tech_NfcV_transceive(data)
+    end    
+    
+end    
+
 
 
 class NFCTag
@@ -357,6 +622,21 @@ class NFCTag
           if tech_name == 'NfcA'
               return NFCTagTechnology_NfcA.new()
           end
+          if tech_name == 'IsoDep'
+              return NFCTagTechnology_IsoDep.new()
+          end
+          if tech_name == 'NdefFormatable'
+              return NFCTagTechnology_NdefFormatable.new()
+          end
+          if tech_name == 'NfcB'
+              return NFCTagTechnology_NfcB.new()
+          end
+          if tech_name == 'NfcF'
+              return NFCTagTechnology_NfcF.new()
+          end
+          if tech_name == 'NfcV'
+              return NFCTagTechnology_NfcV.new()
+          end
       else
           return nil
       end
@@ -370,28 +650,6 @@ end
  
 class NFCManager
  
-
-  # 3-bit TNF (Type Name Format) field: Indicates how to interpret the type field
-
-  TNF_ABSOLUTE_URI = 3
-  TNF_EMPTY = 0
-  TNF_EXTERNAL_TYPE = 4
-  TNF_MIME_MEDIA = 2
-  TNF_UNCHANGED = 6
-  TNF_UNKNOWN = 5
-  TNF_WELL_KNOWN = 1
-
-
-  # RTD Text types. For use with TNF_WELL_KNOWN
-  
-  RTD_TEXT = [0x54]   # "T"
-  RTD_URI = [0x55] # "U"
-  RTD_SMART_POSTER = [0x53, 0x70] # "Sp"
-  RTD_ALTERNATIVE_CARRIER = [0x61, 0x63]   # "ac"
-  RTD_HANDOVER_CARRIER = [0x48, 0x63] # "Hc"
-  RTD_HANDOVER_REQUEST = [0x48, 0x72] # "Hr"
-  RTD_HANDOVER_SELECT = [0x48, 0x73] # "Hs"
-
 
   # return true/false
   def self.is_supported
@@ -433,15 +691,10 @@ class NFCManager
   end
 
   # in callback
-  # @params['Tag_event'] - 'discovered', 'lost'
+  # @params['Tag_event'] - 'discovered'
   def self.set_nfc_tech_callback(callback_url)
        Nfc.set_tech_callback(callback_url)
   end
-
-  # set self.list of Techs for listen (array of strings)
-  #def set_listen_tech_list(tech_list)
-  #    Nfc.set_listen_tech_list(tech_list)
-  #end
 
   # return current discovered Tag or nil if not any Tag discovered now
   def self.get_current_Tag
@@ -452,111 +705,73 @@ class NFCManager
        return NFCTag.new(tech_list)
   end
 
-
+  # ndef_message - NdefMessage
+  # start push NdefMessage to any receivers
   def self.p2p_enable_foreground_nde_push(ndef_message)
       Nfc.p2p_enable_foreground_nde_push(ndef_message.get_byte_array)
   end    
 
+  # stop any push NdefMessage to receivers
   def self.p2p_disable_foreground_nde_push
       Nfc.p2p_disable_foreground_nde_push
   end    
 
 
-
+  # make NdefRecord from byte[]
   def self.make_NdefRecord_from_byte_array(array)
      rec = NdefRecord.new
      rec.init_from_byte_array(array) 
      return rec 
   end    
 
+  # make NdefRecord from hash
+  # hash :
+  #       'id' - byte[]
+  #       'tnf' - int
+  #       'type' - byte[]
+  #       'payload' - byte[]
   def self.make_NdefRecord_from_hash(hash)
      rec = NdefRecord.new
      rec.init_from_hash(hash) 
      return rec 
   end    
 
+  # make NdefMessage from byte[]
   def self.make_NdefMessage_from_byte_array(array)
      msg = NdefMessage.new
      msg.init_from_byte_array(array) 
      return msg 
   end    
 
+  # make NdefMessage from NdefRecord[]
   def self.make_NdefMessage_from_array_of_NdefRecord(array)
      msg = NdefMessage.new
      msg.init_from_array_of_NdefRecord(array) 
      return msg 
   end    
 
-  
+  # make string from byte[] payload
+  # tnf - int (from NdefRecord)
+  # type - byte[] (from NdefRecord) 
   def self.make_string_from_payload(payload, tnf, type)
      return Nfc.make_string_from_payload(payload, tnf, type)
   end    
   
+  # prepare byte[] payload from string with Absolute URI
   def self.make_payload_with_absolute_uri(uri_string)
       return Nfc.make_payload_with_absolute_uri(uri_string)
   end    
 
+  # prepare byte[] payload from int prefix code and string URI
   def self.make_payload_with_well_known_uri(prefix_code, uri_string)
       return Nfc.make_payload_with_well_known_uri(prefix_code, uri_string)
   end    
 
+  # prepare byte[] payload from string language code and string text
   def self.make_payload_with_well_known_text(language, text)
       return Nfc.make_payload_with_well_known_text(language, text)
   end    
 
-
-
-  def self.convert_Tnf_to_string(tnf)
-       res = 'unknown'
-       if tnf == TNF_ABSOLUTE_URI
-            res = 'TNF_ABSOLUTE_URI'
-       end
-       if tnf == TNF_EMPTY
-            res = 'TNF_EMPTY'
-       end
-       if tnf == TNF_EXTERNAL_TYPE
-            res = 'TNF_EXTERNAL_TYPE'
-       end
-       if tnf == TNF_MIME_MEDIA
-            res = 'TNF_MIME_MEDIA'
-       end
-       if tnf == TNF_UNCHANGED
-            res = 'TNF_UNCHANGED'
-       end
-       if tnf == TNF_UNKNOWN
-            res = 'TNF_UNKNOWN'
-       end
-       if tnf == TNF_WELL_KNOWN
-            res = 'TNF_WELL_KNOWN'
-       end
-       return res
-  end
-
-  def self.convert_RTD_to_string(rtd)
-       res = 'unknown'
-       if rtd == RTD_TEXT
-            res = 'RTD_TEXT'
-       end
-       if rtd == RTD_URI
-            res = 'RTD_URI'
-       end
-       if rtd == RTD_SMART_POSTER
-            res = 'RTD_SMART_POSTER'
-       end
-       if rtd == RTD_ALTERNATIVE_CARRIER
-            res = 'RTD_ALTERNATIVE_CARRIER'
-       end
-       if rtd == RTD_HANDOVER_CARRIER
-            res = 'RTD_HANDOVER_CARRIER'
-       end
-       if rtd == RTD_HANDOVER_REQUEST
-            res = 'RTD_HANDOVER_REQUEST'
-       end
-       if rtd == RTD_HANDOVER_SELECT
-            res = 'RTD_HANDOVER_SELECT'
-       end
-       return res
-  end
  
 end
 
