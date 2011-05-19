@@ -193,8 +193,8 @@ extern int rho_nfc_tech_NfcV_get_responce_flags();
 extern VALUE rho_nfc_tech_NfcV_transceive(VALUE data);    
 #define tech_NfcV_transceive rho_nfc_tech_NfcV_transceive
     
-    
-    
+extern void rho_nfc_perform_open_application_event();    
+#define perform_open_application_event rho_nfc_perform_open_application_event    
     
 %}
 
@@ -259,6 +259,7 @@ extern VALUE tech_NfcF_transceive(VALUE data);
 extern int tech_NfcV_get_dsf_id();
 extern int tech_NfcV_get_responce_flags();
 extern VALUE tech_NfcV_transceive(VALUE data);    
+extern void perform_open_application_event();    
 
 
 

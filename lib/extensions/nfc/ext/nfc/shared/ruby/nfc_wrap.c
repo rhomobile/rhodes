@@ -1737,8 +1737,8 @@ extern int rho_nfc_tech_NfcV_get_responce_flags();
 extern VALUE rho_nfc_tech_NfcV_transceive(VALUE data);    
 #define tech_NfcV_transceive rho_nfc_tech_NfcV_transceive
     
-    
-    
+extern void rho_nfc_perform_open_application_event();    
+#define perform_open_application_event rho_nfc_perform_open_application_event    
     
 
 
@@ -3041,6 +3041,18 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_perform_open_application_event(int argc, VALUE *argv, VALUE self) {
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  perform_open_application_event();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -3364,5 +3376,6 @@ SWIGEXPORT void Init_Nfc(void) {
   rb_define_module_function(mNfc, "tech_NfcV_get_dsf_id", _wrap_tech_NfcV_get_dsf_id, -1);
   rb_define_module_function(mNfc, "tech_NfcV_get_responce_flags", _wrap_tech_NfcV_get_responce_flags, -1);
   rb_define_module_function(mNfc, "tech_NfcV_transceive", _wrap_tech_NfcV_transceive, -1);
+  rb_define_module_function(mNfc, "perform_open_application_event", _wrap_perform_open_application_event, -1);
 }
 
