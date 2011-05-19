@@ -1,10 +1,121 @@
 module Rho
 
+    
+class NdefRecord
+    
+   ID = 'id'
+   TNF = 'tnf'
+   TYPE = 'type'
+   PAYLOAD = 'payload' 
+    
+   def init_from_byte_array(array)
+       @byte_array = array
+       hash = Nfc.convert_byte_array_to_NdeRecord_hash(@byte_array)
+       @id = hash[ID]
+       @tnf = hash[TNF]
+       @type = hash[TYPE]
+       @payload = hash[PAYLOAD]
+       @payload_as_string = hash['payload_as_string']
+   end
+    
+   def init_from_hash(hash)
+       byte_arr = Nfc.convert_NdeRecord_hash_to_byte_array(hash)
+       init_from_byte_array(byte_arr)
+   end    
+    
+   def get_id
+       return @id
+   end 
+    
+   def get_tnf
+       return @tnf
+   end    
+    
+   def get_type
+       return @type
+   end    
+    
+   def get_payload
+       return @payload
+   end    
+
+   def get_payload_as_string
+       return @payload_as_string
+   end    
+
+   def get_byte_array
+       return @byte_array
+   end
+    
+   def make_hash
+       hash = { 'id' => @id, 'tnf' => @tnf, 'type' => @type, 'payload' => @payload, 'payload_as_string' => @payload_as_string}
+       return hash
+   end    
+    
+end    
+    
+
+class NdefMessage
+   
+   def init_from_byte_array(array)
+       
+       @byte_array = array
+       @records = []
+       
+       record_array = Nfc.convert_NdeMessage_byte_array_to_NdeRecords_array(@byte_array)
+       i = 0
+       while i < record_array.size do
+           record_ba = record_array[i]
+           
+           rec = NdefRecord.new
+           rec.init_from_byte_array(record_ba)
+           
+           @records << rec
+           
+           i = i+1
+       end    
+       
+   end
+    
+   def init_from_array_of_NdefRecord(array)
+       
+       record_array = []
+       
+       i = 0
+       
+       while i < array.size do
+           rec = array[i]
+           
+           record_array << rec.get_byte_array
+       
+           i = i+1
+       end    
+           
+       msg_array = Nfc.convert_NdeRecords_array_to_NdeMessage_byte_array(record_array)   
+           
+       init_from_byte_array(msg_array)    
+       
+   end 
+    
+   def get_byte_array
+       return @byte_array
+   end
+
+   def get_records
+       return @records
+   end    
+    
+    
+end    
+    
+    
 
 class NFCTagTechnology
 
   MIFARE_CLASSIC = 'MifareClassic'
   MIFARE_ULTRALIGHT = 'MifareUltralight'
+  NDEF = 'Ndef'
+  NFCA = 'NfcA'
 
   def initialize(tech_name)
        @techname = tech_name
@@ -15,9 +126,7 @@ class NFCTagTechnology
   end
 
   def connect
-      #puts 'NFCTagTechnology.connect() START'
       Nfc.tech_connect(get_name)
-      #puts 'NFCTagTechnology.connect() FINISH'
   end
 
   def close
@@ -25,18 +134,78 @@ class NFCTagTechnology
   end
 
   def is_connected
-      #puts 'NFCTagTechnology.is_connected() START'
       res = Nfc.tech_is_connected(@techname)
       resb = false
       if res != 0
           resb = true
       end    
-      #puts 'NFCTagTechnology.is_connected() FINISH'
       return resb
   end
 
 end
 
+    
+class NFCTagTechnology_NfcA < NFCTagTechnology
+    
+    def initialize
+        super(NFCTagTechnology::NFCA)
+    end
+    
+    def get_Atqa
+        return Nfc.tech_NfcA_get_Atqa
+    end    
+
+    def get_Sak
+        return Nfc.tech_NfcA_get_Sak
+    end
+    
+    def transceive(data)
+        return Nfc.tech_NfcA_transceive(data)
+    end    
+    
+end    
+
+class NFCTagTechnology_Ndef < NFCTagTechnology
+        
+    def initialize
+        super(NFCTagTechnology::NDEF)
+    end
+        
+    def get_max_size
+        return Nfc.tech_Ndef_get_max_size
+    end    
+    
+    def is_writable
+        return (Nfc.tech_Ndef_is_writable != 0)
+    end    
+    
+    def can_make_read_only
+        return (Nfc.tech_Ndef_can_make_read_only != 0)
+    end    
+    
+    def make_read_only
+        return (Nfc.tech_Ndef_make_read_only != 0)
+    end    
+    
+    def get_type
+        return Nfc.tech_Ndef_get_type
+    end    
+        
+    def read_NdefMessage
+        msg_ar =  Nfc.tech_Ndef_read_Nde_message
+        msg = NdefMessage.new
+        msg.init_from_byte_array(msg_ar)
+        return msg
+    end    
+    
+    def write_NdefMessage(msg)
+        Nfc.tech_Ndef_write_Nde_message(msg.get_byte_array)
+    end
+  
+        
+end    
+    
+    
 class NFCTagTechnology_MifareClassic < NFCTagTechnology
 
     KEY_DEFAULT = [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]
@@ -182,6 +351,12 @@ class NFCTag
           if tech_name == 'MifareUltralight'
               return NFCTagTechnology_MifareULtralight.new()
           end
+          if tech_name == 'Ndef'
+              return NFCTagTechnology_Ndef.new()
+          end
+          if tech_name == 'NfcA'
+              return NFCTagTechnology_NfcA.new()
+          end
       else
           return nil
       end
@@ -276,6 +451,60 @@ class NFCManager
        end
        return NFCTag.new(tech_list)
   end
+
+
+  def self.p2p_enable_foreground_nde_push(ndef_message)
+      Nfc.p2p_enable_foreground_nde_push(ndef_message.get_byte_array)
+  end    
+
+  def self.p2p_disable_foreground_nde_push
+      Nfc.p2p_disable_foreground_nde_push
+  end    
+
+
+
+  def self.make_NdefRecord_from_byte_array(array)
+     rec = NdefRecord.new
+     rec.init_from_byte_array(array) 
+     return rec 
+  end    
+
+  def self.make_NdefRecord_from_hash(hash)
+     rec = NdefRecord.new
+     rec.init_from_hash(hash) 
+     return rec 
+  end    
+
+  def self.make_NdefMessage_from_byte_array(array)
+     msg = NdefMessage.new
+     msg.init_from_byte_array(array) 
+     return msg 
+  end    
+
+  def self.make_NdefMessage_from_array_of_NdefRecord(array)
+     msg = NdefMessage.new
+     msg.init_from_array_of_NdefRecord(array) 
+     return msg 
+  end    
+
+  
+  def self.make_string_from_payload(payload, tnf, type)
+     return Nfc.make_string_from_payload(payload, tnf, type)
+  end    
+  
+  def self.make_payload_with_absolute_uri(uri_string)
+      return Nfc.make_payload_with_absolute_uri(uri_string)
+  end    
+
+  def self.make_payload_with_well_known_uri(prefix_code, uri_string)
+      return Nfc.make_payload_with_well_known_uri(prefix_code, uri_string)
+  end    
+
+  def self.make_payload_with_well_known_text(language, text)
+      return Nfc.make_payload_with_well_known_text(language, text)
+  end    
+
+
 
   def self.convert_Tnf_to_string(tnf)
        res = 'unknown'
