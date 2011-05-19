@@ -141,6 +141,60 @@ extern void rho_nfc_p2p_enable_foreground_nde_push(VALUE nde_message_byte_array)
 extern void rho_nfc_p2p_disable_foreground_nde_push();    
 #define p2p_disable_foreground_nde_push rho_nfc_p2p_disable_foreground_nde_push
     
+extern VALUE rho_nfc_tech_IsoDep_get_hi_layer_responce();
+#define tech_IsoDep_get_hi_layer_responce rho_nfc_tech_IsoDep_get_hi_layer_responce
+    
+extern VALUE rho_nfc_tech_IsoDep_get_historical_bytes();
+#define tech_IsoDep_get_historical_bytes rho_nfc_tech_IsoDep_get_historical_bytes
+    
+extern void rho_nfc_tech_IsoDep_set_timeout(int timeout);
+#define tech_IsoDep_set_timeout rho_nfc_tech_IsoDep_set_timeout
+    
+extern VALUE rho_nfc_tech_IsoDep_transceive(VALUE data);    
+#define tech_IsoDep_transceive rho_nfc_tech_IsoDep_transceive
+
+extern void rho_nfc_tech_NdefFormatable_format(VALUE ndef_message_byte_array);
+#define tech_NdefFormatable_format rho_nfc_tech_NdefFormatable_format
+
+extern void rho_nfc_tech_NdefFormatable_format_read_only(VALUE ndef_message_byte_array);
+#define tech_NdefFormatable_format_read_only rho_nfc_tech_NdefFormatable_format_read_only
+    
+// return byte[]
+extern VALUE rho_nfc_tech_NfcB_get_application_data();
+#define tech_NfcB_get_application_data rho_nfc_tech_NfcB_get_application_data
+    
+// return byte[]
+extern VALUE rho_nfc_tech_NfcB_get_protocol_info();
+#define tech_NfcB_get_protocol_info rho_nfc_tech_NfcB_get_protocol_info
+    
+// byte[] -> byte[]
+extern VALUE rho_nfc_tech_NfcB_transceive(VALUE data);    
+#define tech_NfcB_transceive rho_nfc_tech_NfcB_transceive
+    
+// return byte[]
+extern VALUE rho_nfc_tech_NfcF_get_manufacturer();
+#define tech_NfcF_get_manufacturer rho_nfc_tech_NfcF_get_manufacturer
+    
+// return byte[]
+extern VALUE rho_nfc_tech_NfcF_get_system_code();
+#define tech_NfcF_get_system_code rho_nfc_tech_NfcF_get_system_code
+    
+// byte[] -> byte[]
+extern VALUE rho_nfc_tech_NfcF_transceive(VALUE data);    
+#define tech_NfcF_transceive rho_nfc_tech_NfcF_transceive
+    
+extern int rho_nfc_tech_NfcV_get_dsf_id();
+#define tech_NfcV_get_dsf_id rho_nfc_tech_NfcV_get_dsf_id
+    
+extern int rho_nfc_tech_NfcV_get_responce_flags();
+#define tech_NfcV_get_responce_flags rho_nfc_tech_NfcV_get_responce_flags
+    
+// byte[] -> byte[]
+extern VALUE rho_nfc_tech_NfcV_transceive(VALUE data);    
+#define tech_NfcV_transceive rho_nfc_tech_NfcV_transceive
+    
+    
+    
     
 %}
 
@@ -190,5 +244,29 @@ extern VALUE make_payload_with_well_known_text(const char* language, const char*
 extern VALUE make_payload_with_well_known_uri(int prefix, const char* str);
 extern void p2p_enable_foreground_nde_push(VALUE nde_message_byte_array);    
 extern void p2p_disable_foreground_nde_push();    
+extern VALUE tech_IsoDep_get_hi_layer_responce();
+extern VALUE tech_IsoDep_get_historical_bytes();
+extern void tech_IsoDep_set_timeout(int timeout);
+extern VALUE tech_IsoDep_transceive(VALUE data);    
+extern void tech_NdefFormatable_format(VALUE ndef_message_byte_array);
+extern void tech_NdefFormatable_format_read_only(VALUE ndef_message_byte_array);
+extern VALUE tech_NfcB_get_application_data();
+extern VALUE tech_NfcB_get_protocol_info();
+extern VALUE tech_NfcB_transceive(VALUE data);    
+extern VALUE tech_NfcF_get_manufacturer();
+extern VALUE tech_NfcF_get_system_code();
+extern VALUE tech_NfcF_transceive(VALUE data);    
+extern int tech_NfcV_get_dsf_id();
+extern int tech_NfcV_get_responce_flags();
+extern VALUE tech_NfcV_transceive(VALUE data);    
+
+
+
+
+
+
+
+
+
 
 

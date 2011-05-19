@@ -20,17 +20,21 @@ import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcManager;
 import android.nfc.Tag;
+import android.nfc.tech.IsoDep;
 import android.nfc.tech.MifareClassic;
 import android.nfc.tech.MifareUltralight;
 import android.nfc.tech.Ndef;
+import android.nfc.tech.NdefFormatable;
 import android.nfc.tech.NfcA;
+import android.nfc.tech.NfcB;
+import android.nfc.tech.NfcF;
+import android.nfc.tech.NfcV;
 import android.nfc.tech.TagTechnology;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 
-import com.rhomobile.rhodes.PushService;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesActivityListener;
 import com.rhomobile.rhodes.RhodesService;
@@ -39,10 +43,6 @@ import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 public class Nfc implements RhodesActivityListener {
 
-	private static final String TECH_MIFARE_CLASSIC = "MifareClassic";
-	private static final String TECH_MIFARE_ULTRALIGHT = "MifareUltralight";
-	private static final String TECH_NDEF = "Ndef";
-	
 	private static final String TAG = Nfc.class.getSimpleName();
 	
 	private static boolean ourIsEnable = false;
@@ -62,6 +62,11 @@ public class Nfc implements RhodesActivityListener {
 	private MifareUltralight mMifareUltralight = null;
 	private Ndef mNdef = null;
 	private NfcA mNfcA = null;
+	private IsoDep mIsoDep = null;
+	private NdefFormatable mNdefFormatable = null;
+	private NfcB mNfcB = null;
+	private NfcF mNfcF = null;
+	private NfcV mNfcV = null;
 	private ArrayList<String> mTechList = null;
 	private Hashtable<String,TagTechnology> mTechs = null;
 	
@@ -294,13 +299,20 @@ public class Nfc implements RhodesActivityListener {
 		mMifareUltralight = MifareUltralight.get(tag);
 		mNdef = Ndef.get(tag);
 		mNfcA = NfcA.get(tag);
+		mIsoDep = IsoDep.get(tag);
+		mNdefFormatable = NdefFormatable.get(tag);
+		mNfcB = NfcB.get(tag);
+		mNfcF = NfcF.get(tag);
+		mNfcV = NfcV.get(tag);
 
 		if (mMifareClassic != null) {
 			mTechs.put("MifareClassic", mMifareClassic);
-			log("     MifareClassic found !");
-			log("     MifareClassic.block_count() = "+String.valueOf(mMifareClassic.getBlockCount()));
-			log("     MifareClassic.sector_count() = "+String.valueOf(mMifareClassic.getSectorCount()));
-			log("     MifareClassic.size() = "+String.valueOf(mMifareClassic.getSize()));
+			if (isLogging) {
+				log("     MifareClassic found !");
+				log("     MifareClassic.block_count() = "+String.valueOf(mMifareClassic.getBlockCount()));
+				log("     MifareClassic.sector_count() = "+String.valueOf(mMifareClassic.getSectorCount()));
+				log("     MifareClassic.size() = "+String.valueOf(mMifareClassic.getSize()));
+			}
 		}
 		if (mMifareUltralight != null) {
 			mTechs.put("MifareUltralight", mMifareClassic);
@@ -311,12 +323,24 @@ public class Nfc implements RhodesActivityListener {
 		if (mNfcA != null) {
 			mTechs.put("NfcA", mNfcA);
 		}
+		if (mIsoDep != null) {
+			mTechs.put("IsoDep", mIsoDep);
+		}
+		if (mNdefFormatable != null) {
+			mTechs.put("NdefFormatable", mNdefFormatable);
+		}
+		if (mNfcB != null) {
+			mTechs.put("NfcB", mNfcB);
+		}
+		if (mNfcF != null) {
+			mTechs.put("NfcF", mNfcF);
+		}
+		if (mNfcV != null) {
+			mTechs.put("NfcV", mNfcV);
+		}
 		
-
 		Set<String> keys = mTechs.keySet();
-		
 		Iterator<String> iterator = keys.iterator();
-		
 		while (iterator.hasNext()) {
 			String key = iterator.next();
 			mTechList.add(key);
@@ -346,10 +370,6 @@ public class Nfc implements RhodesActivityListener {
 	}
 	
 	public void onReceiveMessages(NdefMessage[] msgs) {
-		
-		//return;
-		
-		
 		log("onReceiveMessages()");
         if (msgs == null || msgs.length == 0) {
             return;
@@ -378,7 +398,6 @@ public class Nfc implements RhodesActivityListener {
                 log("Nfc is not enabled");
         	}
         }
-        //*/
 	}
 	
 
@@ -663,8 +682,6 @@ public class Nfc implements RhodesActivityListener {
 			Utils.platformLog("MSG", " message is NULL !!!");
 		}
 		*/
-		
-		
 	    try {
 			NdefMessage m = new NdefMessage(message);
 			if (getInstance().mNdef != null) {
@@ -728,6 +745,159 @@ public class Nfc implements RhodesActivityListener {
 	}
 
 
+	public static byte[] tech_IsoDep_get_hi_layer_responce() {
+		if (getInstance().mIsoDep != null) {
+			return getInstance().mIsoDep.getHiLayerResponse();
+		}
+		return null;
+	}
+
+	public static byte[] tech_IsoDep_get_historical_bytes() {
+		if (getInstance().mIsoDep != null) {
+			return getInstance().mIsoDep.getHistoricalBytes();
+		}
+		return null;
+	}
+
+	public static void tech_IsoDep_set_timeout(int timeout) {
+		if (getInstance().mIsoDep != null) {
+			getInstance().mIsoDep.setTimeout(timeout);
+		}
+	}
+
+	public static byte[] tech_IsoDep_transceive(byte[] data) {
+		if (getInstance().mIsoDep == null) {
+			log ("     IsoDep is not supported in current Tag");
+			return null;
+		}
+		byte[] result = null;
+		try {
+			result = getInstance().mIsoDep.transceive(data);
+		} catch (IOException e) {
+			loge("     Exception in tech_mIsoDep_transceive()");
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public static void tech_NdefFormatable_format(byte[] ndef_message_byte_array) {
+	    try {
+			NdefMessage m = new NdefMessage(ndef_message_byte_array);
+			if (getInstance().mNdefFormatable != null) {
+				getInstance().mNdefFormatable.format(m);
+			}
+		} catch (FormatException e) {
+			loge("Format exception in tech_NdefFormatable_format()");
+			e.printStackTrace();
+		} catch (IOException e) {
+			loge("IO exception in tech_NdefFormatable_format()");
+			e.printStackTrace();
+		}
+	}
+
+	public static void tech_NdefFormatable_format_read_only(byte[] ndef_message_byte_array) {
+	    try {
+			NdefMessage m = new NdefMessage(ndef_message_byte_array);
+			if (getInstance().mNdefFormatable != null) {
+				getInstance().mNdefFormatable.formatReadOnly(m);
+			}
+		} catch (FormatException e) {
+			loge("Format exception in tech_NdefFormatable_format_read_only()");
+			e.printStackTrace();
+		} catch (IOException e) {
+			loge("IO exception in tech_NdefFormatable_format_read_only()");
+			e.printStackTrace();
+		}
+	}
+
+	public static byte[] tech_NfcB_get_application_data() {
+		if (getInstance().mNfcB != null) {
+			return getInstance().mNfcB.getApplicationData();
+		}
+		return null;
+	}
+
+	public static byte[] tech_NfcB_get_protocol_info() {
+		if (getInstance().mNfcB != null) {
+			return getInstance().mNfcB.getProtocolInfo();
+		}
+		return null;
+	}
+
+	public static byte[] tech_NfcB_transceive(byte[] data) {
+		if (getInstance().mNfcB == null) {
+			log ("     NfcB is not supported in current Tag");
+			return null;
+		}
+		byte[] result = null;
+		try {
+			result = getInstance().mNfcB.transceive(data);
+		} catch (IOException e) {
+			loge("     Exception in tech_NfcB_transceive()");
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public static byte[] tech_NfcF_get_manufacturer() {
+		if (getInstance().mNfcF != null) {
+			return getInstance().mNfcF.getManufacturer();
+		}
+		return null;
+	}
+
+	public static byte[] tech_NfcF_get_system_code() {
+		if (getInstance().mNfcF != null) {
+			return getInstance().mNfcF.getSystemCode();
+		}
+		return null;
+	}
+
+	public static byte[] tech_NfcF_transceive(byte[] data) {
+		if (getInstance().mNfcF == null) {
+			log ("     NfcF is not supported in current Tag");
+			return null;
+		}
+		byte[] result = null;
+		try {
+			result = getInstance().mNfcF.transceive(data);
+		} catch (IOException e) {
+			loge("     Exception in tech_NfcF_transceive()");
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public static int tech_NfcV_get_dsf_id() {
+		if (getInstance().mNfcV != null) {
+			return getInstance().mNfcV.getDsfId();
+		}
+		return 0;
+	}
+
+	public static int tech_NfcV_get_responce_flags() {
+		if (getInstance().mNfcV != null) {
+			return getInstance().mNfcV.getResponseFlags();
+		}
+		return 0;
+	}
+
+	public static byte[] tech_NfcV_transceive(byte[] data) {
+		if (getInstance().mNfcV == null) {
+			log ("     NfcV is not supported in current Tag");
+			return null;
+		}
+		byte[] result = null;
+		try {
+			result = getInstance().mNfcV.transceive(data);
+		} catch (IOException e) {
+			loge("     Exception in tech_NfcV_transceive()");
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	
 	public static NfcRecord convert_byte_array_to_NdeRecord_hash(byte[] array) {
 	    return new NfcRecord(array);
 	}

@@ -501,6 +501,15 @@ int rho_ruby_unpack_byte_array(VALUE array_value, unsigned char* buf, int max_le
 	return size;
 }
 
+int rho_ruby_array_get_size(VALUE ar) {
+	if (TYPE(ar) != T_ARRAY) {
+		return -1;
+	}
+	int size = RARRAY_LEN(ar);
+    return size;    
+}
+
+
 
 
 VALUE rho_ruby_createHash() {
