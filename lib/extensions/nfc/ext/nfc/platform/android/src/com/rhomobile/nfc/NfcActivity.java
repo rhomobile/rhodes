@@ -24,6 +24,8 @@ public class NfcActivity  extends Activity {
 	
 	private static final String TAG = NfcActivity.class.getSimpleName();
 	
+	private static Intent ourIntent = null;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -33,64 +35,81 @@ public class NfcActivity  extends Activity {
 		Utils.platformLog(TAG, " $$$$$$$$$ NfcActivity STARTED !!! Action = "+action);
 		
 		
-		if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
-			Utils.platformLog(TAG, "ACTION_TAG_DISCOVERED !");
-            Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-            NdefMessage[] msgs;
-            if (rawMsgs != null) {
-                msgs = new NdefMessage[rawMsgs.length];
-                for (int i = 0; i < rawMsgs.length; i++) {
-                    msgs[i] = (NdefMessage) rawMsgs[i];
-                }
-            } else {
-                // Unknown tag type
-                byte[] empty = new byte[] {};
-                NdefRecord record = new NdefRecord(NdefRecord.TNF_UNKNOWN, empty, empty, empty);
-                NdefMessage msg = new NdefMessage(new NdefRecord[] {record});
-                msgs = new NdefMessage[] {msg};
-            }
-            Nfc.getInstance().onReceiveMessages(msgs);
-        }
-		if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
-			Utils.platformLog(TAG, "ACTION_NDEF_DISCOVERED !");
-			Uri u = intent.getData();
-			
-			Utils.platformLog(TAG, "     Data = "+u.toString());
-			String t = intent.getType();
-			if (t != null) {
-				Utils.platformLog(TAG, "     Type = "+t);
+		if ( (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) ||
+		(NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action))  ||
+		(NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) ) {
+
+			RhodesActivity rhodes_activity = null;
+			// check RhodesActivity state
+			try {
+				rhodes_activity = RhodesActivity.safeGetInstance();
+			}
+			catch(NullPointerException e) {
+				
+			}
+			boolean isForeground = false;
+			if (rhodes_activity != null) {
+				isForeground = rhodes_activity.isForegroundNow();
+			}
+			if (isForeground) {
+				Nfc.getInstance().onNewIntent(rhodes_activity, intent);
+				finish();
 			}
 			else {
-				Utils.platformLog(TAG, "     Type is NULL= ");
+				/*
+				ourIntent = intent;
+				Thread thread = new Thread() {
+					public void run() {
+						
+						while (!isRhodesActivityOnForeground()) {
+							try {
+								sleep(100);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+						
+						Nfc.getInstance().onNewIntent(RhodesActivity.safeGetInstance(), ourIntent);
+						//finish();
+						//this.stop();
+					}
+				};
+				thread.start();
+				*/
+				Nfc.setApplicationStartupIntent(intent);
+				
+		        Intent run_intent = new Intent();
+		        run_intent.setClass(this, RhodesActivity.class);
+		     	startActivity(run_intent);
+		     	
+		     	finish();
+
 			}
 			
-			Tag tag = (Tag)intent.getExtras().get(NfcAdapter.EXTRA_TAG);
-			if (tag != null) {
-				Utils.platformLog(TAG, "     Tag found in extars ! ");
-			}
-			else {
-				Utils.platformLog(TAG, "     Tag not found in extars ! ");
-			}
 			
 			
-            Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-            NdefMessage[] msgs;
-            if (rawMsgs != null) {
-                msgs = new NdefMessage[rawMsgs.length];
-                for (int i = 0; i < rawMsgs.length; i++) {
-                    msgs[i] = (NdefMessage) rawMsgs[i];
-                }
-            } else {
-                // Unknown tag type
-    			Utils.platformLog(TAG, "     Unknown Tag type !!!");
-                byte[] empty = new byte[] {};
-                NdefRecord record = new NdefRecord(NdefRecord.TNF_UNKNOWN, empty, empty, empty);
-                NdefMessage msg = new NdefMessage(new NdefRecord[] {record});
-                msgs = new NdefMessage[] {msg};
-            }
-            Nfc.getInstance().onReceiveMessages(msgs);
-        }
-		finish();
+		}
+		
+		
+		
+		//finish();
+	}
+	
+	public static boolean isRhodesActivityOnForeground() {
+		RhodesActivity rhodes_activity = null;
+		// check RhodesActivity state
+		try {
+			rhodes_activity = RhodesActivity.safeGetInstance();
+		}
+		catch(NullPointerException e) {
+			
+		}
+		boolean isForeground = false;
+		if (rhodes_activity != null) {
+			isForeground = rhodes_activity.isForegroundNow();
+		}
+		return isForeground;
 	}
 	
 

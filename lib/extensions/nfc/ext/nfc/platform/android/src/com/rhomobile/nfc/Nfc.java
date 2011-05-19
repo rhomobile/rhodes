@@ -73,6 +73,30 @@ public class Nfc implements RhodesActivityListener {
 	private static final boolean isLogging = false;
 	
 	private static native void logNative(String msg);
+	
+	
+	private static NdefMessage[] ourApplicationStartupMessages = null;
+	private static Tag ourApplicationStartupTag = null;
+	
+	public static void setApplicationStartupIntent(Intent intent) {
+		getInstance().onNewIntent(null, intent, true);
+	}
+	
+	public static void performOpenApplicationTag() {
+		PerformOnUiThread.exec(new Runnable() {
+			public void run() {
+				if (ourApplicationStartupMessages != null) {
+					getInstance().onReceiveMessages(ourApplicationStartupMessages);
+					ourApplicationStartupMessages = null;
+				}
+				if (ourApplicationStartupTag != null) {
+					getInstance().onReceiveTag(ourApplicationStartupTag);
+					ourApplicationStartupTag = null;
+				}
+			}
+		}, 100);
+	}
+	
 
 	public static void log(String msg) {
 		//logNative(msg);
@@ -175,12 +199,11 @@ public class Nfc implements RhodesActivityListener {
 			nfcAdapter.enableForegroundNdefPush(activity, ourP2PNdefMessage);			
 		}
 	}
-	
-	public void onNewIntent(RhodesActivity activity, Intent intent) {
+
+	public void onNewIntent(RhodesActivity activity, Intent intent, boolean postpone) {
 		String action = intent.getAction();
 		
 		log(" $$$$$$$$$ onNewIntent !!! Action = "+action);
-		
 		
 		if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
 			log("ACTION_TAG_DISCOVERED !");
@@ -200,11 +223,21 @@ public class Nfc implements RhodesActivityListener {
                 NdefMessage msg = new NdefMessage(new NdefRecord[] {record});
                 msgs = new NdefMessage[] {msg};
             }
-            getInstance().onReceiveMessages(msgs);
-			Tag tag = (Tag)intent.getExtras().get(NfcAdapter.EXTRA_TAG);
+            if (postpone) {
+            	ourApplicationStartupMessages = msgs;
+            }
+            else {
+            	getInstance().onReceiveMessages(msgs);
+            }
+            Tag tag = (Tag)intent.getExtras().get(NfcAdapter.EXTRA_TAG);
 			if (tag != null) {
 				log("     Tag found in extars ! ");
-            	onReceiveTag(tag);
+	            if (postpone) {
+	            	ourApplicationStartupTag = tag;
+	            }
+	            else {
+	            	getInstance().onReceiveTag(tag);
+	            }
 			}
 			else {
 				log("     Tag not found in extars ! ");
@@ -252,20 +285,41 @@ public class Nfc implements RhodesActivityListener {
                 NdefMessage msg = new NdefMessage(new NdefRecord[] {record});
                 msgs = new NdefMessage[] {msg};
             }
-            getInstance().onReceiveMessages(msgs);
+            if (postpone) {
+            	ourApplicationStartupMessages = msgs;
+            }
+            else {
+            	getInstance().onReceiveMessages(msgs);
+            }
             
             if (tag != null) {
-            	onReceiveTag(tag);
+	            if (postpone) {
+	            	ourApplicationStartupTag = tag;
+	            }
+	            else {
+	            	getInstance().onReceiveTag(tag);
+	            }
             }
         }
 		if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
 			log("ACTION_TECH_DISCOVERED !");
 			Tag tag = (Tag)intent.getExtras().get(NfcAdapter.EXTRA_TAG);
 			if (tag != null) {
-				Nfc.getInstance().onReceiveTag(tag);
+	            if (postpone) {
+	            	ourApplicationStartupTag = tag;
+	            }
+	            else {
+	            	getInstance().onReceiveTag(tag);
+	            }
 			}
         }
 	}
+	
+	public void onNewIntent(RhodesActivity activity, Intent intent) {
+		onNewIntent(activity, intent, false);
+	}
+	
+	
 	
 	
 	public static void setCallback(String callback) {
@@ -285,6 +339,10 @@ public class Nfc implements RhodesActivityListener {
 
 	
 	public void onReceiveTag(Tag tag) {
+		//if (!ourIsEnable) {
+		//	return;
+		//}
+		
 		log("onReceiveTag()");
 		if (tag == null) {
 			return;
@@ -352,6 +410,7 @@ public class Nfc implements RhodesActivityListener {
         	if (ourIsEnable) {
         		if (ourTechCallback != null) {
         			if (ourTechCallback.length() > 0) {
+        	            log("call Tech callback !");
         				callTechCallback(ourTechCallback, "discovered");
         			}
                 	else {
@@ -366,10 +425,16 @@ public class Nfc implements RhodesActivityListener {
                 log("Nfc is not enabled");
         	}
         }
+        else {
+            log("Rhodes application is not runned");
+        }
         
 	}
 	
 	public void onReceiveMessages(NdefMessage[] msgs) {
+		//if (!ourIsEnable) {
+		//	return;
+		//}
 		log("onReceiveMessages()");
         if (msgs == null || msgs.length == 0) {
             return;
