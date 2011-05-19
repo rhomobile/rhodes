@@ -25,27 +25,109 @@ void logi(const char* text) {
 } 
 
 
+class CRubyString {
+public:
+    
+    CRubyString(const char* str) {
+        mStr = str;
+        mJavaObject = NULL;
+        mEnv = NULL;
+    }
+    
+    ~CRubyString() {
+        if (mJavaObject != NULL) {
+            mEnv->DeleteLocalRef(mJavaObject);
+        }
+    }
+    
+    jstring makeJavaString(JNIEnv* env) {
+        mEnv = env;
+        mJavaObject = env->NewStringUTF(mStr);
+        return mJavaObject;
+    }
+    
+private:    
+    jstring mJavaObject;
+    JNIEnv* mEnv;
+    const char* mStr;
+};
 
-
-
-
-
+class CRubyByteArray {
+public:
+    CRubyByteArray(VALUE array) {
+        if (array != 0) {
+            mSize = rho_ruby_unpack_byte_array(array, 0, 0);
+            mBuf = new unsigned char[mSize];
+            rho_ruby_unpack_byte_array(array, mBuf, mSize);
+        }
+        else {
+            mBuf = NULL;
+            mSize = 0;
+        }
+        mJavaObject = NULL;
+    }
+    
+    jbyteArray makeJavaByteArray(JNIEnv* env) {
+        if (mBuf != NULL) {
+            mEnv = env;
+            mJavaObject = (jbyteArray)env->NewByteArray(mSize);
+            jbyte* buf_p = env->GetByteArrayElements(mJavaObject, 0);
+            int i;
+            for (i = 0; i < mSize; i++) {
+                buf_p[i] = mBuf[i];
+            }
+            env->ReleaseByteArrayElements(mJavaObject, buf_p, 0);
+        }
+        return mJavaObject;
+    }
+    
+    ~CRubyByteArray() {
+        if (mJavaObject != NULL) {
+            mEnv->DeleteLocalRef(mJavaObject);
+        }
+        if (mBuf != NULL) {
+            delete mBuf;
+        }
+    }
+    
+private:
+    unsigned char* mBuf;
+    int mSize;
+    jbyteArray mJavaObject;
+    JNIEnv* mEnv;
+};
 
 
 class CNFCString {
 public:
 	CNFCString(JNIEnv* env, jobject jo_string) {
-		const char* msg = env->GetStringUTFChars((jstring)jo_string,0);
-		mSize = strlen(msg);
-		mBuf = new char[mSize+1];
-		strcpy(mBuf, msg);
-		env->ReleaseStringUTFChars((jstring)jo_string, msg);
+        mBuf = NULL;
+        if (jo_string != NULL) {
+            const char* msg = env->GetStringUTFChars((jstring)jo_string,0);
+            mSize = strlen(msg);
+            mBuf = new char[mSize+1];
+            strcpy(mBuf, msg);
+            env->ReleaseStringUTFChars((jstring)jo_string, msg);
+        }
 	}
 
 	virtual ~CNFCString() {
-		delete mBuf;
+        if (mBuf != NULL) {
+            delete mBuf;
+        }
 	}
 
+    VALUE makeVALUE() {
+        if (mBuf != NULL) {
+            return rho_ruby_create_string((const char*)mBuf);
+        }
+        else  {
+            return rho_ruby_get_NIL();
+        }
+        
+    }
+    
+    
 	char* mBuf;
 	int mSize;
 };
@@ -98,14 +180,274 @@ public:
         }
 	}
 
-
 	unsigned char* mBuf;
 	int mSize;
 };
 
 
+static jclass jclass_NfcMessagePack = NULL;
+static jclass jclass_NfcMessage = NULL;
+static jclass jclass_NfcRecord = NULL;
+
+static jmethodID jmethod_NfcMessagePack_getItemCount = NULL;
+static jmethodID jmethod_NfcMessagePack_getItem = NULL;
+
+static jmethodID jmethod_NfcMessage_getItemCount = NULL;
+static jmethodID jmethod_NfcMessage_getItem = NULL;
+static jmethodID jmethod_NfcMessage_getByteArray = NULL;
+static jmethodID jmethod_NfcMessage_addConstructRecord = NULL;
+static jmethodID jmethod_NfcMessage_initFromConstructRecordList = NULL;
+
+static jmethodID jmethod_NfcRecord_getId = NULL;
+static jmethodID jmethod_NfcRecord_getPayload = NULL;
+static jmethodID jmethod_NfcRecord_getPayloadString = NULL;
+static jmethodID jmethod_NfcRecord_getTnf = NULL;
+static jmethodID jmethod_NfcRecord_getType = NULL;
+static jmethodID jmethod_NfcRecord_getByteArray = NULL;
+static jmethodID jmethod_NfcRecord_getSubrecords = NULL;
 
 
+
+void initJavaIds(JNIEnv *env_param = NULL) {
+    
+    JNIEnv *env = NULL;//jnienv();
+    if (env_param != NULL) {
+        env = env_param;
+        jclass_NfcMessagePack = env->FindClass("com/rhomobile/nfc/NfcMessagePack");
+        jclass_NfcMessage = env->FindClass("com/rhomobile/nfc/NfcMessage");
+        jclass_NfcRecord = env->FindClass("com/rhomobile/nfc/NfcRecord");
+    }
+    else {
+        env = jnienv();
+        jclass_NfcMessagePack = rho_find_class(env, "com/rhomobile/nfc/NfcMessagePack");
+        jclass_NfcMessage = rho_find_class(env, "com/rhomobile/nfc/NfcMessage");
+        jclass_NfcRecord = rho_find_class(env, "com/rhomobile/nfc/NfcRecord");
+    }
+	// fill java ids
+    
+	jmethod_NfcMessagePack_getItemCount = env->GetMethodID( jclass_NfcMessagePack, "getItemCount", "()I");
+	jmethod_NfcMessagePack_getItem = env->GetMethodID( jclass_NfcMessagePack, "getItem", "(I)Lcom/rhomobile/nfc/NfcMessage;");
+    
+	jmethod_NfcMessage_getItemCount = env->GetMethodID( jclass_NfcMessage, "getItemCount", "()I");
+	jmethod_NfcMessage_getItem = env->GetMethodID( jclass_NfcMessage, "getItem", "(I)Lcom/rhomobile/nfc/NfcRecord;");
+	jmethod_NfcMessage_getByteArray = env->GetMethodID( jclass_NfcMessage, "getByteArray", "()[B");
+	jmethod_NfcMessage_addConstructRecord = env->GetMethodID( jclass_NfcMessage, "addConstructRecord", "(Lcom/rhomobile/nfc/NfcRecord;)V");
+	jmethod_NfcMessage_initFromConstructRecordList = env->GetMethodID( jclass_NfcMessage, "initFromConstructRecordList", "()V");
+    
+	jmethod_NfcRecord_getId = env->GetMethodID( jclass_NfcRecord, "getId", "()[B");
+	jmethod_NfcRecord_getPayload = env->GetMethodID( jclass_NfcRecord, "getPayload", "()[B");
+	jmethod_NfcRecord_getPayloadString = env->GetMethodID( jclass_NfcRecord, "getPayloadString", "()Ljava/lang/String;");
+	jmethod_NfcRecord_getTnf = env->GetMethodID( jclass_NfcRecord, "getTnf", "()I");
+	jmethod_NfcRecord_getType = env->GetMethodID( jclass_NfcRecord, "getType", "()[B");
+	jmethod_NfcRecord_getByteArray = env->GetMethodID( jclass_NfcRecord, "getByteArray", "()[B");
+	jmethod_NfcRecord_getSubrecords = env->GetMethodID( jclass_NfcRecord, "getSubrecords", "()Lcom/rhomobile/nfc/NfcMessage;");
+    
+}
+
+
+
+class CNFCMessage;
+
+class CNFCRecord {
+public:
+	CNFCRecord(JNIEnv* env, jobject jrec); 
+    
+    VALUE makeHashValue();
+    
+	virtual ~CNFCRecord();
+    
+	CNFCByteArray* mId;
+	CNFCByteArray* mPayload;
+	CNFCString* mPayloadString;
+	int mTnf;
+	CNFCByteArray* mType;
+	CNFCByteArray* mByteArray;
+	CNFCMessage* mSubrecords;
+	
+};
+
+typedef CNFCRecord* CNFCRecordPtr;
+
+class CNFCMessage {
+public:
+	CNFCMessage(JNIEnv* env, jobject jmsg) {
+		mRecordCount = env->CallIntMethod(jmsg, jmethod_NfcMessage_getItemCount);
+		int i;
+		mRecords = new CNFCRecordPtr[mRecordCount];
+		for (i = 0; i < mRecordCount; i++) {
+			mRecords[i] = new CNFCRecord(env, env->CallObjectMethod(jmsg, jmethod_NfcMessage_getItem, i));
+		}
+		mByteArray = new CNFCByteArray(env, env->CallObjectMethod(jmsg, jmethod_NfcMessage_getByteArray));
+	}
+    
+	virtual ~CNFCMessage() {
+		int i;
+		for (i = 0; i < mRecordCount; i++) {
+			delete mRecords[i];
+		}
+		delete[] mRecords;
+		delete mByteArray;
+	}
+    
+    VALUE makeHashValue();
+    
+	CNFCRecordPtr* mRecords;
+	int mRecordCount;
+	CNFCByteArray* mByteArray;
+};
+
+typedef CNFCMessage* CNFCMessagePtr;
+
+CNFCRecord::CNFCRecord(JNIEnv* env, jobject jrec) {
+	mSubrecords = NULL;
+	mId = new CNFCByteArray(env, env->CallObjectMethod(jrec, jmethod_NfcRecord_getId));
+	mPayload = new CNFCByteArray(env, env->CallObjectMethod(jrec, jmethod_NfcRecord_getPayload));
+	mPayloadString = new CNFCString(env, env->CallObjectMethod(jrec, jmethod_NfcRecord_getPayloadString));
+	mType = new CNFCByteArray(env, env->CallObjectMethod(jrec, jmethod_NfcRecord_getType));
+	mByteArray = new CNFCByteArray(env, env->CallObjectMethod(jrec, jmethod_NfcRecord_getByteArray));
+	mTnf = env->CallIntMethod(jrec, jmethod_NfcRecord_getTnf);
+	jobject message = env->CallObjectMethod(jrec, jmethod_NfcRecord_getSubrecords);
+	if (message != NULL) {
+		mSubrecords = new CNFCMessage(env, message);
+	}
+}
+
+CNFCRecord::~CNFCRecord() {
+	delete mId;
+	delete mPayload;
+	delete mPayloadString;
+	delete mType;
+	delete mByteArray;
+	if (mSubrecords != NULL) {
+		delete mSubrecords;
+	}
+}
+
+VALUE CNFCRecord::makeHashValue() {
+    VALUE hash = rho_ruby_createHash();
+    rho_ruby_add_to_hash(hash, rho_ruby_create_string("raw_record"), mByteArray->makeVALUE());
+    rho_ruby_add_to_hash(hash, rho_ruby_create_string("id"), mId->makeVALUE());
+    rho_ruby_add_to_hash(hash, rho_ruby_create_string("payload"), mPayload->makeVALUE());
+    rho_ruby_add_to_hash(hash, rho_ruby_create_string("tnf"), rho_ruby_create_integer(mTnf));
+    rho_ruby_add_to_hash(hash, rho_ruby_create_string("type"), mType->makeVALUE());
+    rho_ruby_add_to_hash(hash, rho_ruby_create_string("payload_as_string"), mPayloadString->makeVALUE());
+    if (mSubrecords != NULL) {
+        rho_ruby_add_to_hash(hash, rho_ruby_create_string("subrecords"), mSubrecords->makeHashValue());
+    }
+    return hash;
+}
+
+VALUE CNFCMessage::makeHashValue() {
+    VALUE hash = rho_ruby_createHash();
+    rho_ruby_add_to_hash(hash, rho_ruby_create_string("raw_message"), mByteArray->makeVALUE());
+    
+    VALUE records = rho_ruby_create_array();
+    int i;
+    for (i = 0; i < mRecordCount; i++) {
+        rho_ruby_add_to_array(records, mRecords[i]->makeHashValue());
+    }
+    
+    rho_ruby_add_to_hash(hash, rho_ruby_create_string("records"), records);
+    
+    return hash;
+    
+}
+
+
+class CNFCMessagePack {
+public:
+    
+	CNFCMessagePack(JNIEnv* env, jobject jmsg_pack) {
+		mMessageCount = env->CallIntMethod(jmsg_pack, jmethod_NfcMessagePack_getItemCount);
+		int i;
+		mMessages = new CNFCMessagePtr[mMessageCount];
+		for (i = 0; i < mMessageCount; i++) {
+			mMessages[i] = new CNFCMessage(env, env->CallObjectMethod(jmsg_pack, jmethod_NfcMessagePack_getItem, i));
+		}
+	}
+    
+	virtual ~CNFCMessagePack() {
+		int i;
+		for (i = 0; i < mMessageCount; i++) {
+			delete mMessages[i];
+		}
+		delete[] mMessages;
+	}
+    
+	CNFCMessagePtr* mMessages;
+    int mMessageCount;
+};
+
+
+
+class RhoCallbackNFCContainer : public rho::ICallbackObject
+{
+public:
+	RhoCallbackNFCContainer(CNFCMessagePack* pack) {
+		mMessagePack = pack;
+	}
+    
+	virtual ~RhoCallbackNFCContainer() {
+		delete mMessagePack;
+	}
+    
+	VALUE makeString(CNFCString* str) {
+        logi("                make ruby string");
+		return rho_ruby_create_string((const char*)str->mBuf);
+	}
+    
+	VALUE makeByteArray(CNFCByteArray* array) {
+        logi("                make ruby byte array");
+        if (array->mBuf != NULL) {
+            if (logging_enable) {
+                char msg[128];
+                sprintf(msg, "                    array size = %d", array->mSize);
+                logi(msg);
+            }
+            
+            return rho_ruby_create_byte_array(array->mBuf, array->mSize);
+        }
+        else  {
+            return rho_ruby_get_NIL();
+        }
+	}
+    
+    
+	/*
+     # in callback
+     # @params['messages'] - array of messages (each message is hash)
+     # message hash items : 
+     #       'raw_message' - array of bytes (raw message)
+     #       'records' - array of records (each record is hash)
+     #              record hash items :
+     #                     'raw_record' - array of bytes (raw record)
+     #                     ' id' - array of bytes
+     #                     'payload' - array of bytes
+     #                     'tnf' - int
+     #                     'type' - array of bytes 
+     #                     'payload_as_string' - string, payload prepared to string (support specail formats for URI, TEXT) 
+     #                     'subrecords' - array of subrecords, each records is hash (only for SMART_POSTER type)
+     */
+    
+	// return Ruby object
+	virtual unsigned long getObjectValue() {
+		logi("make Ruby value for callback START");
+        
+		VALUE messages_array = rho_ruby_create_array();
+		int i;
+        
+		logi("    make messages array :");
+		for (i = 0; i < mMessagePack->mMessageCount; i++) {
+			rho_ruby_add_to_array(messages_array, mMessagePack->mMessages[i]->makeHashValue());	
+		}
+        
+		logi("make Ruby value for callback FINISH");
+		return messages_array;
+	}
+    
+private:
+	CNFCMessagePack*	mMessagePack;
+};
 
 
 
@@ -174,19 +516,15 @@ extern "C" VALUE rho_nfc_get_tech_list() {
 	JNIEnv *env = jnienv();
 	jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
 	if (!cls) return rho_ruby_get_NIL();
-    logi("rho_nfc_get_tech_list 01");
 	jmethodID mid = env->GetStaticMethodID( cls, "get_tech_list_count", "()I");
 	if (!mid) return rho_ruby_get_NIL();
-    logi("rho_nfc_get_tech_list 02");
 	jmethodID mids = env->GetStaticMethodID( cls, "get_tech_list", "(I)Ljava/lang/String;");
 	if (!mids) return rho_ruby_get_NIL();
-    logi("rho_nfc_get_tech_list 03");
 	int count =  env->CallStaticIntMethod(cls, mid);
 
 	VALUE array = rho_ruby_create_array();
 
 	int i;
-    logi("rho_nfc_get_tech_list 04");
     
 	for (i = 0; i < count; i++) {
 		CNFCString  cs(env, env->CallStaticObjectMethod(cls, mids, i));
@@ -194,7 +532,6 @@ extern "C" VALUE rho_nfc_get_tech_list() {
         logi("rho_nfc_get_tech_list 05");
 
 	}
-    logi("rho_nfc_get_tech_list 06");
 	return array;
 }
 
@@ -275,10 +612,8 @@ extern "C" VALUE rho_nfc_tech_MifareClassic_read_block(int index) {
     JNIEnv *env = jnienv();
     jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
     if (!cls) return rho_ruby_get_NIL();
-    logi("rho_nfc_tech_MifareClassic_read_block 02");
     jmethodID mid = env->GetStaticMethodID(cls, "tech_MifareClassic_read_block", "(I[B)I");
     if (!mid) return rho_ruby_get_NIL();
-    logi("rho_nfc_tech_MifareClassic_read_block 03");
 
     VALUE val = rho_ruby_get_NIL();
     jbyteArray buf_j = (jbyteArray)env->NewByteArray(16);
@@ -383,7 +718,6 @@ extern "C" VALUE rho_nfc_tech_MifareClassic_transceive(VALUE data) {
 }
 
 extern "C" VALUE rho_nfc_tag_get_id() {
-    
     logi("rho_nfc_tech_MifareClassic_get_type START");    
     JNIEnv *env = jnienv();
     jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
@@ -450,15 +784,444 @@ extern "C" int rho_nfc_tech_MifareClassic_authenticate_sector_with_key_B(int ind
 }
 
 
+extern "C" int rho_nfc_tech_Ndef_get_max_size() {
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return 0;
+    jmethodID mid = env->GetStaticMethodID(cls, "tech_Ndef_get_max_size", "()I");
+    if (!mid) return 0;
+    return env->CallStaticIntMethod(cls, mid);
+}
 
+// return string
+extern "C" VALUE rho_nfc_tech_Ndef_get_type() {
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return rho_ruby_get_NIL();
+    jmethodID mid = env->GetStaticMethodID(cls, "tech_Ndef_get_type", "()Ljava/lang/String;");
+    if (!mid) return rho_ruby_get_NIL();
+    jstring j_str =  (jstring)env->CallStaticObjectMethod(cls, mid);
+    CNFCString s(env, j_str);
+    return s.makeVALUE();
+}
+
+extern "C" int rho_nfc_tech_Ndef_is_writable() {
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return 0;
+    jmethodID mid = env->GetStaticMethodID(cls, "tech_Ndef_is_writable", "()I");
+    if (!mid) return 0;
+    return env->CallStaticIntMethod(cls, mid);
+}
+
+extern "C" int rho_nfc_tech_Ndef_can_make_read_only() {
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return 0;
+    jmethodID mid = env->GetStaticMethodID(cls, "tech_Ndef_can_make_read_only", "()I");
+    if (!mid) return 0;
+    return env->CallStaticIntMethod(cls, mid);
+}
+
+extern "C" int rho_nfc_tech_Ndef_make_read_only() {
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return 0;
+    jmethodID mid = env->GetStaticMethodID(cls, "tech_Ndef_make_read_only", "()I");
+    if (!mid) return 0;
+    return env->CallStaticIntMethod(cls, mid);
+}
+
+extern "C" void rho_nfc_tech_Ndef_write_Nde_message(VALUE message_in_byte_array) {
+    
+    logi("rho_nfc_tech_Ndef_write_Nde_message START");
+    
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return;
+    jmethodID mid = env->GetStaticMethodID(cls, "tech_Ndef_write_Nde_message", "([B)V");
+    if (!mid) return;
+    
+    logi("rho_nfc_tech_Ndef_write_Nde_message 02");
+    int size = rho_ruby_unpack_byte_array(message_in_byte_array, 0, 0);
+    logi("rho_nfc_tech_Ndef_write_Nde_message 03");
+    
+    jbyteArray buf_j = (jbyteArray)env->NewByteArray(size);
+    logi("rho_nfc_tech_Ndef_write_Nde_message 04");
+    
+    jbyte* buf_p = env->GetByteArrayElements(buf_j, 0);
+    logi("rho_nfc_tech_Ndef_write_Nde_message 05");
+    
+    rho_ruby_unpack_byte_array(message_in_byte_array, (unsigned char*)buf_p, size);
+    logi("rho_nfc_tech_Ndef_write_Nde_message 06");
+    
+    env->CallStaticVoidMethod(cls, mid, buf_j);
+    logi("rho_nfc_tech_Ndef_write_Nde_message 07");
+    
+    env->ReleaseByteArrayElements(buf_j, buf_p, 0);
+    logi("rho_nfc_tech_Ndef_write_Nde_message 08");
+    
+    env->DeleteLocalRef(buf_j);
+    logi("rho_nfc_tech_Ndef_write_Nde_message FINISH");
+    
+}
+
+// return byte[]
+extern "C" VALUE rho_nfc_tech_Ndef_read_Nde_message() {
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return rho_ruby_get_NIL();
+    jmethodID mid = env->GetStaticMethodID(cls, "tech_Ndef_read_Nde_message", "()[B");
+    if (!mid) return rho_ruby_get_NIL();
+    jbyteArray j_arr =  (jbyteArray)env->CallStaticObjectMethod(cls, mid);
+    CNFCByteArray ar(env, j_arr);
+    return ar.makeVALUE();
+}
+
+// return byte[]
+extern "C" VALUE rho_nfc_tech_NfcA_get_Atqa() {
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return rho_ruby_get_NIL();
+    jmethodID mid = env->GetStaticMethodID(cls, "tech_NfcA_get_Atqa", "()[B");
+    if (!mid) return rho_ruby_get_NIL();
+    jbyteArray j_arr =  (jbyteArray)env->CallStaticObjectMethod(cls, mid);
+    CNFCByteArray ar(env, j_arr);
+    return ar.makeVALUE();
+}
+
+extern "C" int rho_nfc_tech_NfcA_get_Sak() {
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return 0;
+    jmethodID mid = env->GetStaticMethodID(cls, "tech_NfcA_get_Sak", "()I");
+    if (!mid) return 0;
+    return env->CallStaticIntMethod(cls, mid);
+}
+
+// return byte[]
+extern "C" VALUE rho_nfc_tech_NfcA_transceive(VALUE data) {
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return rho_ruby_get_NIL();
+    jmethodID mid = env->GetStaticMethodID(cls, "tech_NfcA_transceive", "([B)[B");
+    if (!mid) return rho_ruby_get_NIL();
+    
+    int size = rho_ruby_unpack_byte_array(data, 0, 0);
+    jbyteArray buf_j = (jbyteArray)env->NewByteArray(size);
+    jbyte* buf_p = env->GetByteArrayElements(buf_j, 0);
+    
+    rho_ruby_unpack_byte_array(data, (unsigned char*)buf_p, size);
+    
+    jbyteArray j_arr =  (jbyteArray)env->CallStaticObjectMethod(cls, mid, buf_j);
+    
+    env->ReleaseByteArrayElements(buf_j, buf_p, 0);
+    env->DeleteLocalRef(buf_j);
+    
+    CNFCByteArray ar(env, j_arr);
+    
+    return ar.makeVALUE();
+}
+
+
+// return HASH
+extern "C" VALUE rho_nfc_convert_byte_array_to_NdeRecord_hash(VALUE array) {
+    initJavaIds();
+    
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return rho_ruby_get_NIL();
+    jmethodID mid = env->GetStaticMethodID(cls, "convert_byte_array_to_NdeRecord_hash", "([B)Lcom/rhomobile/nfc/NfcRecord;");
+    if (!mid) return rho_ruby_get_NIL();
+    
+    int size = rho_ruby_unpack_byte_array(array, 0, 0);
+    jbyteArray buf_j = (jbyteArray)env->NewByteArray(size);
+    jbyte* buf_p = env->GetByteArrayElements(buf_j, 0);
+    
+    rho_ruby_unpack_byte_array(array, (unsigned char*)buf_p, size);
+    
+    jobject j_o =  env->CallStaticObjectMethod(cls, mid, buf_j);
+    
+    env->ReleaseByteArrayElements(buf_j, buf_p, 0);
+    env->DeleteLocalRef(buf_j);
+    
+    CNFCRecord r(env, j_o);
+    
+    return r.makeHashValue();
+}
+
+// return byte array
+extern "C" VALUE rho_nfc_convert_NdeRecord_hash_to_byte_array(VALUE hash) {
+    initJavaIds();
+
+    VALUE ruby_id = rho_ruby_hash_aref(hash, "id");
+    VALUE ruby_type = rho_ruby_hash_aref(hash, "type");
+    VALUE ruby_payload = rho_ruby_hash_aref(hash, "payload");
+    VALUE ruby_tnf = rho_ruby_hash_aref(hash, "tnf");
+
+    int tnf = (int)rho_ruby_get_int(ruby_tnf);
+    CRubyByteArray c_id(ruby_id);
+    CRubyByteArray c_type(ruby_type);
+    CRubyByteArray c_payload(ruby_payload);
+    
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return rho_ruby_get_NIL();
+    jmethodID mid = env->GetStaticMethodID(cls, "convert_NdeRecord_hash_to_byte_array", "([B[BI[B)[B");
+    if (!mid) return rho_ruby_get_NIL();
+    
+    jbyteArray j_result = (jbyteArray)env->CallStaticObjectMethod(cls, mid, c_id.makeJavaByteArray(env), c_payload.makeJavaByteArray(env), tnf, c_type.makeJavaByteArray(env));
+    
+    CNFCByteArray ar(env, j_result);
+    
+    return ar.makeVALUE();
+}
+
+// return array of byte array
+extern "C" VALUE rho_nfc_convert_NdeMessage_byte_array_to_NdeRecords_array(VALUE array) {
+    logi("rho_nfc_convert_NdeMessage_byte_array_to_NdeRecords_array START");
+    
+    initJavaIds();
+
+    logi("rho_nfc_convert_NdeMessage_byte_array_to_NdeRecords_array 01");
+    
+    CRubyByteArray c_msg(array);
+
+    logi("rho_nfc_convert_NdeMessage_byte_array_to_NdeRecords_array 02");
+    
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return rho_ruby_get_NIL();
+    logi("rho_nfc_convert_NdeMessage_byte_array_to_NdeRecords_array 03");
+    
+    jmethodID mid = env->GetStaticMethodID(cls, "convert_NdeMessage_byte_array_to_NdeRecords_array", "([B)Lcom/rhomobile/nfc/NfcMessage;");
+    if (!mid) return rho_ruby_get_NIL();
+    logi("rho_nfc_convert_NdeMessage_byte_array_to_NdeRecords_array 04");
+    
+    jobject j_msg = env->CallStaticObjectMethod(cls, mid, c_msg.makeJavaByteArray(env));
+    logi("rho_nfc_convert_NdeMessage_byte_array_to_NdeRecords_array 05");
+    
+    CNFCMessage msg(env, j_msg);
+    logi("rho_nfc_convert_NdeMessage_byte_array_to_NdeRecords_array 06");
+    
+    int i;
+    
+    VALUE result = rho_ruby_create_array();
+    
+    for (i = 0; i < msg.mRecordCount; i++) {
+        CNFCRecord* rec = msg.mRecords[i];
+        rho_ruby_add_to_array(result, rec->mByteArray->makeVALUE());   
+        logi("rho_nfc_convert_NdeMessage_byte_array_to_NdeRecords_array 07");
+        
+    }
+    logi("rho_nfc_convert_NdeMessage_byte_array_to_NdeRecords_array 08");
+    
+    
+    return result;
+}
+
+// return byte array
+extern "C" VALUE rho_nfc_convert_NdeRecords_array_to_NdeMessage_byte_array(VALUE array) {
+    initJavaIds();
+    
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return rho_ruby_get_NIL();
+    jmethodID mid_make_msg = env->GetStaticMethodID(cls, "make_empty_NfcMessage", "()Lcom/rhomobile/nfc/NfcMessage;");
+    if (!mid_make_msg) return rho_ruby_get_NIL();
+    jmethodID mid_make_rec = env->GetStaticMethodID(cls, "convert_byte_array_to_NdeRecord_hash", "([B)Lcom/rhomobile/nfc/NfcRecord;");
+    if (!mid_make_rec) return rho_ruby_get_NIL();
+    
+    jobject j_msg = env->CallStaticObjectMethod(cls, mid_make_msg);
+    
+    int count = rho_ruby_array_get_size(array);
+    int i;
+    
+    for (i = 0; i < count; i++) {
+        CRubyByteArray c_rec(rho_ruby_array_get(array, i));
+        
+        jobject j_rec = env->CallStaticObjectMethod(cls, mid_make_rec, c_rec.makeJavaByteArray(env));
+        
+        env->CallVoidMethod(j_msg, jmethod_NfcMessage_addConstructRecord, j_rec);
+    }
+    env->CallVoidMethod(j_msg, jmethod_NfcMessage_initFromConstructRecordList);
+    
+    CNFCByteArray ar(env, env->CallObjectMethod(j_msg, jmethod_NfcMessage_getByteArray));
+    
+    return ar.makeVALUE();
+    
+}
+
+// String make_string_from_payload(byte[] payload, int tnf, byte[] type)
+// return string
+extern "C" VALUE rho_nfc_make_string_from_payload(VALUE payload, int tnf, VALUE type) {
+    
+    CRubyByteArray c_payload(payload);
+    CRubyByteArray c_type(type);
+    
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return rho_ruby_get_NIL();
+    jmethodID mid = env->GetStaticMethodID(cls, "make_string_from_payload", "([BI[B)Ljava/lang/String;");
+    if (!mid) return rho_ruby_get_NIL();
+    
+    jstring j_s = (jstring)env->CallStaticObjectMethod(cls, mid, c_payload.makeJavaByteArray(env), tnf, c_type.makeJavaByteArray(env));
+    
+    CNFCString s(env, j_s);
+    
+    return s.makeVALUE();
+}
+
+// return byte[]
+extern "C" VALUE rho_nfc_make_payload_with_absolute_uri(const char* str) {
+    
+    CRubyString c_s(str);
+    
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return rho_ruby_get_NIL();
+    jmethodID mid = env->GetStaticMethodID(cls, "make_payload_with_absolute_uri", "(Ljava/lang/String;)[B");
+    if (!mid) return rho_ruby_get_NIL();
+    
+    jobject j_o = env->CallStaticObjectMethod(cls, mid, c_s.makeJavaString(env));
+    
+    CNFCByteArray ar(env, j_o);
+    
+    return ar.makeVALUE();
+    
+}
+
+// return byte[]
+extern "C" VALUE rho_nfc_make_payload_with_well_known_text(const char* language, const char* str) {
+    CRubyString c_lang(language);
+    CRubyString c_s(str);
+    
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return rho_ruby_get_NIL();
+    jmethodID mid = env->GetStaticMethodID(cls, "make_payload_with_well_known_text", "(Ljava/lang/String;Ljava/lang/String;)[B");
+    if (!mid) return rho_ruby_get_NIL();
+    
+    jobject j_o = env->CallStaticObjectMethod(cls, mid, c_lang.makeJavaString(env), c_s.makeJavaString(env));
+    
+    CNFCByteArray ar(env, j_o);
+    
+    return ar.makeVALUE();
+    
+}
+
+// return byte[]
+extern "C" VALUE rho_nfc_make_payload_with_well_known_uri(int prefix, const char* str) {
+    CRubyString c_s(str);
+    
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return rho_ruby_get_NIL();
+    jmethodID mid = env->GetStaticMethodID(cls, "make_payload_with_well_known_uri", "(ILjava/lang/String;)[B");
+    if (!mid) return rho_ruby_get_NIL();
+    
+    jobject j_o = env->CallStaticObjectMethod(cls, mid, prefix, c_s.makeJavaString(env));
+    
+    CNFCByteArray ar(env, j_o);
+    
+    return ar.makeVALUE();
+}
+
+extern "C" void rho_nfc_p2p_enable_foreground_nde_push(VALUE nde_message_byte_array) {
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return;
+    jmethodID mid = env->GetStaticMethodID(cls, "p2p_enable_foreground_nde_push", "([B)V");
+    if (!mid) return;
+    
+    int size = rho_ruby_unpack_byte_array(nde_message_byte_array, 0, 0);
+    jbyteArray buf_j = (jbyteArray)env->NewByteArray(size);
+    jbyte* buf_p = env->GetByteArrayElements(buf_j, 0);
+    rho_ruby_unpack_byte_array(nde_message_byte_array, (unsigned char*)buf_p, size);
+    
+    env->CallStaticVoidMethod(cls, mid, buf_j);
+    
+    env->ReleaseByteArrayElements(buf_j, buf_p, 0);
+    env->DeleteLocalRef(buf_j);
+}
+
+extern "C" void rho_nfc_p2p_disable_foreground_nde_push() {
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return;
+    jmethodID mid = env->GetStaticMethodID(cls, "p2p_disable_foreground_nde_push", "()V");
+    if (!mid) return;
+    env->CallStaticVoidMethod(cls, mid);
+}
 
 extern "C" void rho_nfc_tech_MifareUltralight_write_page(int index, VALUE block) {
-
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return;
+    jmethodID mid = env->GetStaticMethodID(cls, "tech_MifareUltralight_write_page", "(I[B)V");
+    if (!mid) return;
+    
+    int res = 0;
+    int size = rho_ruby_unpack_byte_array(block, 0, 0);
+    jbyteArray buf_j = (jbyteArray)env->NewByteArray(size);
+    jbyte* buf_p = env->GetByteArrayElements(buf_j, 0);
+    
+    rho_ruby_unpack_byte_array(block, (unsigned char*)buf_p, size);
+    
+    env->CallStaticVoidMethod(cls, mid, index, buf_j);
+    
+    env->ReleaseByteArrayElements(buf_j, buf_p, 0);
+    env->DeleteLocalRef(buf_j);
 }
 
 extern "C" VALUE rho_nfc_tech_MifareUltralight_read_pages(int index) {
-       return rho_ruby_get_NIL();
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return rho_ruby_get_NIL();
+    jmethodID mid = env->GetStaticMethodID(cls, "tech_MifareUltralight_read_pages", "(I)[B");
+    if (!mid) return rho_ruby_get_NIL();
+
+    jbyteArray j_arr =  (jbyteArray)env->CallStaticIntMethod(cls, mid, index);
+
+    CNFCByteArray ar(env, j_arr);
+    
+    return ar.makeVALUE();
 }
+
+extern "C" int rho_nfc_tech_MifareUltralight_get_type() {
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return 0;
+    jmethodID mid = env->GetStaticMethodID(cls, "tech_MifareUltralight_get_type", "()I");
+    if (!mid) return 0;
+    return env->CallStaticIntMethod(cls, mid);
+}
+
+extern "C" VALUE rho_nfc_tech_MifareUltralight_transceive(VALUE data) {
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    if (!cls) return rho_ruby_get_NIL();
+    jmethodID mid = env->GetStaticMethodID(cls, "tech_MifareUltralight_transceive", "([B)[B");
+    if (!mid) return rho_ruby_get_NIL();
+    
+    int size = rho_ruby_unpack_byte_array(data, 0, 0);
+    jbyteArray buf_j = (jbyteArray)env->NewByteArray(size);
+    jbyte* buf_p = env->GetByteArrayElements(buf_j, 0);
+    
+    rho_ruby_unpack_byte_array(data, (unsigned char*)buf_p, size);
+    
+    jbyteArray j_arr =  (jbyteArray)env->CallStaticObjectMethod(cls, mid, buf_j);
+    
+    env->ReleaseByteArrayElements(buf_j, buf_p, 0);
+    env->DeleteLocalRef(buf_j);
+    
+    CNFCByteArray ar(env, j_arr);
+    
+    return ar.makeVALUE();
+    
+}
+
+
 
 
 //  private native void callTechCallback(String callback_url, String event);
@@ -498,263 +1261,17 @@ extern "C" void JNICALL Java_com_rhomobile_nfc_Nfc_logNative
 
 
 
-static jclass jclass_NfcMessagePack = NULL;
-static jclass jclass_NfcMessage = NULL;
-static jclass jclass_NfcRecord = NULL;
-
-static jmethodID jmethod_NfcMessagePack_getItemCount = NULL;
-static jmethodID jmethod_NfcMessagePack_getItem = NULL;
-
-static jmethodID jmethod_NfcMessage_getItemCount = NULL;
-static jmethodID jmethod_NfcMessage_getItem = NULL;
-static jmethodID jmethod_NfcMessage_getByteArray = NULL;
-
-static jmethodID jmethod_NfcRecord_getId = NULL;
-static jmethodID jmethod_NfcRecord_getPayload = NULL;
-static jmethodID jmethod_NfcRecord_getPayloadString = NULL;
-static jmethodID jmethod_NfcRecord_getTnf = NULL;
-static jmethodID jmethod_NfcRecord_getType = NULL;
-static jmethodID jmethod_NfcRecord_getByteArray = NULL;
-static jmethodID jmethod_NfcRecord_getSubrecords = NULL;
-
-
-
-
-class CNFCMessage;
-
-class CNFCRecord {
-public:
-	CNFCRecord(JNIEnv* env, jobject jrec); 
-
-	virtual ~CNFCRecord();
-
-	CNFCByteArray* mId;
-	CNFCByteArray* mPayload;
-	CNFCString* mPayloadString;
-	int mTnf;
-	CNFCByteArray* mType;
-	CNFCByteArray* mByteArray;
-	CNFCMessage* mSubrecords;
-	
-};
-
-typedef CNFCRecord* CNFCRecordPtr;
-
-class CNFCMessage {
-public:
-	CNFCMessage(JNIEnv* env, jobject jmsg) {
-		mRecordCount = env->CallIntMethod(jmsg, jmethod_NfcMessage_getItemCount);
-		int i;
-		mRecords = new CNFCRecordPtr[mRecordCount];
-		for (i = 0; i < mRecordCount; i++) {
-			mRecords[i] = new CNFCRecord(env, env->CallObjectMethod(jmsg, jmethod_NfcMessage_getItem, i));
-		}
-		mByteArray = new CNFCByteArray(env, env->CallObjectMethod(jmsg, jmethod_NfcMessage_getByteArray));
-	}
-
-	virtual ~CNFCMessage() {
-		int i;
-		for (i = 0; i < mRecordCount; i++) {
-			delete mRecords[i];
-		}
-		delete[] mRecords;
-		delete mByteArray;
-	}
-
-	CNFCRecordPtr* mRecords;
-	int mRecordCount;
-	CNFCByteArray* mByteArray;
-};
-
-typedef CNFCMessage* CNFCMessagePtr;
-
-CNFCRecord::CNFCRecord(JNIEnv* env, jobject jrec) {
-	mSubrecords = NULL;
-	mId = new CNFCByteArray(env, env->CallObjectMethod(jrec, jmethod_NfcRecord_getId));
-	mPayload = new CNFCByteArray(env, env->CallObjectMethod(jrec, jmethod_NfcRecord_getPayload));
-	mPayloadString = new CNFCString(env, env->CallObjectMethod(jrec, jmethod_NfcRecord_getPayloadString));
-	mType = new CNFCByteArray(env, env->CallObjectMethod(jrec, jmethod_NfcRecord_getType));
-	mByteArray = new CNFCByteArray(env, env->CallObjectMethod(jrec, jmethod_NfcRecord_getByteArray));
-	mTnf = env->CallIntMethod(jrec, jmethod_NfcRecord_getTnf);
-	jobject message = env->CallObjectMethod(jrec, jmethod_NfcRecord_getSubrecords);
-	if (message != NULL) {
-		mSubrecords = new CNFCMessage(env, message);
-	}
-}
-
-CNFCRecord::~CNFCRecord() {
-	delete mId;
-	delete mPayload;
-	delete mPayloadString;
-	delete mType;
-	delete mByteArray;
-	if (mSubrecords != NULL) {
-		delete mSubrecords;
-	}
-}
-
-
-class CNFCMessagePack {
-public:
-
-	CNFCMessagePack(JNIEnv* env, jobject jmsg_pack) {
-		mMessageCount = env->CallIntMethod(jmsg_pack, jmethod_NfcMessagePack_getItemCount);
-		int i;
-		mMessages = new CNFCMessagePtr[mMessageCount];
-		for (i = 0; i < mMessageCount; i++) {
-			mMessages[i] = new CNFCMessage(env, env->CallObjectMethod(jmsg_pack, jmethod_NfcMessagePack_getItem, i));
-		}
-	}
-
-	virtual ~CNFCMessagePack() {
-		int i;
-		for (i = 0; i < mMessageCount; i++) {
-			delete mMessages[i];
-		}
-		delete[] mMessages;
-	}
-
-	CNFCMessagePtr* mMessages;
-    int mMessageCount;
-};
-
-
-
-class RhoCallbackNFCContainer : public rho::ICallbackObject
-{
-public:
-	RhoCallbackNFCContainer(CNFCMessagePack* pack) {
-		mMessagePack = pack;
-	}
-
-	virtual ~RhoCallbackNFCContainer() {
-		delete mMessagePack;
-	}
-
-	VALUE makeString(CNFCString* str) {
-        logi("                make ruby string");
-		return rho_ruby_create_string((const char*)str->mBuf);
-	}
-   
-	VALUE makeByteArray(CNFCByteArray* array) {
-        logi("                make ruby byte array");
-        if (array->mBuf != NULL) {
-            if (logging_enable) {
-                char msg[128];
-                sprintf(msg, "                    array size = %d", array->mSize);
-                logi(msg);
-            }
-            
-            return rho_ruby_create_byte_array(array->mBuf, array->mSize);
-        }
-        else  {
-            return rho_ruby_get_NIL();
-        }
-	}
-
-	VALUE makeRecordHash(CNFCRecord* record) {
-        logi("            make record START");
-		VALUE hash = rho_ruby_createHash();
-		rho_ruby_add_to_hash(hash, rho_ruby_create_string("raw_record"), makeByteArray(record->mByteArray));
-		rho_ruby_add_to_hash(hash, rho_ruby_create_string("id"), makeByteArray(record->mId));
-		rho_ruby_add_to_hash(hash, rho_ruby_create_string("payload"), makeByteArray(record->mPayload));
-		rho_ruby_add_to_hash(hash, rho_ruby_create_string("tnf"), rho_ruby_create_integer(record->mTnf));
-		rho_ruby_add_to_hash(hash, rho_ruby_create_string("type"), makeByteArray(record->mType));
-		rho_ruby_add_to_hash(hash, rho_ruby_create_string("payload_as_string"), makeString(record->mPayloadString));
-		if (record->mSubrecords != NULL) {
-			rho_ruby_add_to_hash(hash, rho_ruby_create_string("subrecords"), makeMessageHash(record->mSubrecords));
-		}
-        logi("            make record FINISH");
-		return hash;
-	}
-
-	VALUE makeMessageHash(CNFCMessage* msg) {
-        logi("        make message START");
-		VALUE hash = rho_ruby_createHash();
-		rho_ruby_add_to_hash(hash, rho_ruby_create_string("raw_message"), makeByteArray(msg->mByteArray));
-
-		VALUE records = rho_ruby_create_array();
-		int i;
-        logi("        make message make records :");
-		for (i = 0; i < msg->mRecordCount; i++) {
-			rho_ruby_add_to_array(records, makeRecordHash(msg->mRecords[i]));
-		}
-
-		rho_ruby_add_to_hash(hash, rho_ruby_create_string("records"), records);
-
-        logi("        make message FINISH");
-		return hash;
-	}
-
-
-	/*
-	# in callback
-	# @params['messages'] - array of messages (each message is hash)
-	# message hash items : 
-	#       'raw_message' - array of bytes (raw message)
-	#       'records' - array of records (each record is hash)
-	#              record hash items :
-	#                     'raw_record' - array of bytes (raw record)
-	#                     ' id' - array of bytes
-	#                     'payload' - array of bytes
-	#                     'tnf' - int
-	#                     'type' - array of bytes 
-	#                     'payload_as_string' - string, payload prepared to string (support specail formats for URI, TEXT) 
-	#                     'subrecords' - array of subrecords, each records is hash (only for SMART_POSTER type)
-	*/
-
-	// return Ruby object
-	virtual unsigned long getObjectValue() {
-		logi("make Ruby value for callback START");
-
-		VALUE messages_array = rho_ruby_create_array();
-		int i;
-
-		logi("    make messages array :");
-		for (i = 0; i < mMessagePack->mMessageCount; i++) {
-			rho_ruby_add_to_array(messages_array, makeMessageHash(mMessagePack->mMessages[i]));	
-		}
-
-		logi("make Ruby value for callback FINISH");
-		return messages_array;
-	}
-
-private:
-	CNFCMessagePack*	mMessagePack;
-};
-
 
 //  private native void callCallback(String callback_url, NfcMessagePack msgpack);
 extern "C" void JNICALL Java_com_rhomobile_nfc_Nfc_callCallback
 (JNIEnv *env, jclass, jstring js_callback_url, jobject jo_msgpack)
 {
 	logi("native callback START");
-	// fill java ids
-	jclass_NfcMessagePack = env->FindClass("com/rhomobile/nfc/NfcMessagePack");
-	jclass_NfcMessage = env->FindClass("com/rhomobile/nfc/NfcMessage");
-	jclass_NfcRecord = env->FindClass("com/rhomobile/nfc/NfcRecord");
 
-	jmethod_NfcMessagePack_getItemCount = env->GetMethodID( jclass_NfcMessagePack, "getItemCount", "()I");
-	jmethod_NfcMessagePack_getItem = env->GetMethodID( jclass_NfcMessagePack, "getItem", "(I)Lcom/rhomobile/nfc/NfcMessage;");
-
-	jmethod_NfcMessage_getItemCount = env->GetMethodID( jclass_NfcMessage, "getItemCount", "()I");
-	jmethod_NfcMessage_getItem = env->GetMethodID( jclass_NfcMessage, "getItem", "(I)Lcom/rhomobile/nfc/NfcRecord;");
-	jmethod_NfcMessage_getByteArray = env->GetMethodID( jclass_NfcMessage, "getByteArray", "()[B");
-
-	jmethod_NfcRecord_getId = env->GetMethodID( jclass_NfcRecord, "getId", "()[B");
-	jmethod_NfcRecord_getPayload = env->GetMethodID( jclass_NfcRecord, "getPayload", "()[B");
-	jmethod_NfcRecord_getPayloadString = env->GetMethodID( jclass_NfcRecord, "getPayloadString", "()Ljava/lang/String;");
-	jmethod_NfcRecord_getTnf = env->GetMethodID( jclass_NfcRecord, "getTnf", "()I");
-	jmethod_NfcRecord_getType = env->GetMethodID( jclass_NfcRecord, "getType", "()[B");
-	jmethod_NfcRecord_getByteArray = env->GetMethodID( jclass_NfcRecord, "getByteArray", "()[B");
-	jmethod_NfcRecord_getSubrecords = env->GetMethodID( jclass_NfcRecord, "getSubrecords", "()Lcom/rhomobile/nfc/NfcMessage;");
-
-	logi("native callback TMP 01 java IDs collected");
-
+    initJavaIds(env);
+    
 	CNFCMessagePack* messagePack = new CNFCMessagePack(env, jo_msgpack);
 
-	logi("native callback TMP 02 C++ containers created");
-	
 	char url[2048];
 	char body[2048];
 
@@ -762,17 +1279,12 @@ extern "C" void JNICALL Java_com_rhomobile_nfc_Nfc_callCallback
 	strcpy(url, jurl);
 	env->ReleaseStringUTFChars(js_callback_url, jurl);
 
-	logi("native callback TMP 03 url prepared");
-
 	strcpy(body, "&rho_callback=1");
 	strcat(body, "&");
 	strcat(body, (RHODESAPP().addCallbackObject( new RhoCallbackNFCContainer(messagePack), "messages")).c_str());
 
-	logi("native callback TMP 03+1 body prepared");
-
 	rho_net_request_with_data(rho_http_normalizeurl(url), body);
 
-	logi("native callback FINISH");
 }
 
 

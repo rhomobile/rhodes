@@ -75,6 +75,73 @@ extern void rho_nfc_tech_MifareUltralight_write_page(int index, VALUE block);
 extern VALUE rho_nfc_tech_MifareUltralight_read_pages(int index);
 #define tech_MifareUltralight_read_pages rho_nfc_tech_MifareUltralight_read_pages
 
+extern int rho_nfc_tech_MifareUltralight_get_type();    
+#define tech_MifareUltralight_get_type rho_nfc_tech_MifareUltralight_get_type
+    
+extern VALUE rho_nfc_tech_MifareUltralight_transceive(VALUE data);    
+#define tech_MifareUltralight_transceive rho_nfc_tech_MifareUltralight_transceive
+    
+extern int rho_nfc_tech_Ndef_get_max_size();    
+#define tech_Ndef_get_max_size rho_nfc_tech_Ndef_get_max_size    
+
+extern VALUE rho_nfc_tech_Ndef_get_type();    
+#define tech_Ndef_get_type rho_nfc_tech_Ndef_get_type    
+    
+extern int rho_nfc_tech_Ndef_is_writable();    
+#define tech_Ndef_is_writable rho_nfc_tech_Ndef_is_writable    
+    
+extern int rho_nfc_tech_Ndef_can_make_read_only();    
+#define tech_Ndef_can_make_read_only rho_nfc_tech_Ndef_can_make_read_only    
+    
+extern int rho_nfc_tech_Ndef_make_read_only();    
+#define tech_Ndef_make_read_only rho_nfc_tech_Ndef_make_read_only    
+    
+extern void rho_nfc_tech_Ndef_write_Nde_message(VALUE message_in_byte_array);    
+#define tech_Ndef_write_Nde_message rho_nfc_tech_Ndef_write_Nde_message
+    
+extern VALUE rho_nfc_tech_Ndef_read_Nde_message();    
+#define tech_Ndef_read_Nde_message rho_nfc_tech_Ndef_read_Nde_message
+    
+extern VALUE rho_nfc_tech_NfcA_get_Atqa();    
+#define tech_NfcA_get_Atqa rho_nfc_tech_NfcA_get_Atqa
+    
+extern int rho_nfc_tech_NfcA_get_Sak();    
+#define tech_NfcA_get_Sak rho_nfc_tech_NfcA_get_Sak
+
+extern VALUE rho_nfc_tech_NfcA_transceive(VALUE data);    
+#define tech_NfcA_transceive rho_nfc_tech_NfcA_transceive
+    
+extern VALUE rho_nfc_convert_byte_array_to_NdeRecord_hash(VALUE array);    
+#define convert_byte_array_to_NdeRecord_hash rho_nfc_convert_byte_array_to_NdeRecord_hash
+    
+extern VALUE rho_nfc_convert_NdeRecord_hash_to_byte_array(VALUE array);    
+#define convert_NdeRecord_hash_to_byte_array rho_nfc_convert_NdeRecord_hash_to_byte_array
+
+extern VALUE rho_nfc_convert_NdeMessage_byte_array_to_NdeRecords_array(VALUE array);    
+#define convert_NdeMessage_byte_array_to_NdeRecords_array rho_nfc_convert_NdeMessage_byte_array_to_NdeRecords_array
+    
+extern VALUE rho_nfc_convert_NdeRecords_array_to_NdeMessage_byte_array(VALUE array);    
+#define convert_NdeRecords_array_to_NdeMessage_byte_array rho_nfc_convert_NdeRecords_array_to_NdeMessage_byte_array
+    
+extern VALUE rho_nfc_make_string_from_payload(VALUE payload, int tnf, VALUE type);
+#define make_string_from_payload rho_nfc_make_string_from_payload
+    
+extern VALUE rho_nfc_make_payload_with_absolute_uri(const char* str);
+#define make_payload_with_absolute_uri rho_nfc_make_payload_with_absolute_uri
+    
+extern VALUE rho_nfc_make_payload_with_well_known_text(const char* language, const char* str);
+#define make_payload_with_well_known_text rho_nfc_make_payload_with_well_known_text
+
+extern VALUE rho_nfc_make_payload_with_well_known_uri(int prefix, const char* str);
+#define make_payload_with_well_known_uri rho_nfc_make_payload_with_well_known_uri
+
+extern void rho_nfc_p2p_enable_foreground_nde_push(VALUE nde_message_byte_array);    
+#define p2p_enable_foreground_nde_push rho_nfc_p2p_enable_foreground_nde_push
+    
+extern void rho_nfc_p2p_disable_foreground_nde_push();    
+#define p2p_disable_foreground_nde_push rho_nfc_p2p_disable_foreground_nde_push
+    
+    
 %}
 
 extern void set_callback(const char* callback_url);
@@ -101,4 +168,27 @@ extern VALUE tag_get_id();
 extern VALUE tech_MifareClassic_transceive(VALUE data);    
 extern void tech_MifareUltralight_write_page(int index, VALUE block);
 extern VALUE tech_MifareUltralight_read_pages(int index);
+extern int tech_MifareUltralight_get_type();    
+extern VALUE tech_MifareUltralight_transceive(VALUE data);    
+extern int tech_Ndef_get_max_size();    
+extern VALUE tech_Ndef_get_type();    
+extern int tech_Ndef_is_writable();    
+extern int tech_Ndef_can_make_read_only();    
+extern int tech_Ndef_make_read_only();    
+extern void tech_Ndef_write_Nde_message(VALUE message_in_byte_array);    
+extern VALUE tech_Ndef_read_Nde_message();   
+extern VALUE tech_NfcA_get_Atqa();    
+extern int tech_NfcA_get_Sak();    
+extern VALUE tech_NfcA_transceive(VALUE data);    
+extern VALUE convert_byte_array_to_NdeRecord_hash(VALUE array);    
+extern VALUE convert_NdeRecord_hash_to_byte_array(VALUE array);    
+extern VALUE convert_NdeMessage_byte_array_to_NdeRecords_array(VALUE array);    
+extern VALUE convert_NdeRecords_array_to_NdeMessage_byte_array(VALUE array);    
+extern VALUE make_string_from_payload(VALUE payload, int tnf, VALUE type);
+extern VALUE make_payload_with_absolute_uri(const char* str);
+extern VALUE make_payload_with_well_known_text(const char* language, const char* str);
+extern VALUE make_payload_with_well_known_uri(int prefix, const char* str);
+extern void p2p_enable_foreground_nde_push(VALUE nde_message_byte_array);    
+extern void p2p_disable_foreground_nde_push();    
+
 
