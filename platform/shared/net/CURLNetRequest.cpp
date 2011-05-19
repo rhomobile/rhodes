@@ -198,8 +198,10 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
     if (oFile)
         nStartFrom = oFile->size();
 
-	if( !net::URI::isLocalHost(strUrl.c_str()) )	
-	   rho_net_impl_network_indicator(1);
+    if( !net::URI::isLocalHost(strUrl.c_str()) ) {
+        rho_net_impl_network_indicator(1);
+        RAWLOG_INFO2("Pull request (%s): %s", method, strUrl.c_str());
+    }
 
     Hashtable<String,String> h;
     if (pHeaders)
@@ -278,6 +280,7 @@ INetResponse* CURLNetRequest::pushMultipartData(const String& strUrl, VectorPtr<
     String strRespBody;
     
     rho_net_impl_network_indicator(1);
+    RAWLOG_INFO1("Push request (POST): %s", strUrl.c_str());
     
     curl_slist *hdrs = m_curl.set_options("POST", strUrl, String(), oSession, pHeaders);
     CURL *curl = m_curl.curl();
