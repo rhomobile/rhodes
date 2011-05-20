@@ -16,6 +16,18 @@ module Rho
     System::get_property('platform') == 'APPLE' || System::get_property('platform') == 'ANDROID' || is_bb6
   end
 
+  def self.close_database(arg_partition=nil)
+    if arg_partition
+        puts "Close database for partition: #{arg_partition}"    
+        ::Rho::RHO.get_db_partitions()[arg_partition].close
+    else
+        ::Rho::RHO.get_db_partitions().each do |partition, db|
+            puts "Close database for partition: #{partition}"
+            db.close
+        end
+    end    
+  end
+    
   class RHO
     APPLICATIONS = {}
     APPNAME = 'app'
