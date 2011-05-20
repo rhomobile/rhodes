@@ -480,15 +480,16 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     	if ( ClientRegister.getInstance() != null )
     		ClientRegister.getInstance().Destroy();
     	
-    	if ( SyncThread.getInstance() != null )
-    		SyncThread.getInstance().Destroy();
-    	
     	RhoRuby.rho_ruby_deactivateApp();
     	RhoRuby.rho_ruby_uiDestroyed();
     	
 		GeoLocation.stop();
+
+    	if ( SyncThread.getInstance() != null )
+    		SyncThread.getInstance().Destroy();
+
         RhoRuby.RhoRubyStop();
-        
+    	
     	try{
     		RhoClassFactory.getNetworkAccess().close();
     	}catch(IOException exc){
