@@ -89,8 +89,11 @@ namespace rho.db
 	public void close()
 	{ 
 		try{
-			m_dbStorage.close();
-			m_dbStorage = null;
+            if (m_dbStorage != null)
+            {
+                m_dbStorage.close();
+                m_dbStorage = null;
+            }
 		}catch(Exception exc)
 		{
     		LOG.ERROR("DB close failed.", exc);
