@@ -87,19 +87,26 @@ namespace rho.common
             RHOCONF().conflictsResolved();
         }
 
-        public void stopApp()
+        public void closeApp()
         {
-            string[] ar1 = CRhoFile.enumDirectory("db");
-
-            RhoRuby.Stop();
-            SyncThread.getInstance().Destroy();
-            m_httpServer.stop(2);
-            CAsyncHttp.Destroy();
+            m_httpServer.stop(10);
 
             RhoLogger.close();
             m_UIWaitEvent.Close();
+        }
 
-            string[] ar2 = CRhoFile.enumDirectory("db");
+        public void stopApp()
+        {
+            //string[] ar1 = CRhoFile.enumDirectory("db");
+
+            RhoRuby.callUIDestroyed();
+
+            SyncThread.getInstance().Destroy();
+            CAsyncHttp.Destroy();
+
+            RhoRuby.Stop();
+
+            //string[] ar2 = CRhoFile.enumDirectory("db");
             //int i = 0;
             //net::CAsyncHttp::Destroy();
         }
