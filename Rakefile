@@ -688,6 +688,9 @@ namespace "build" do
 
       rm "#{$srcdir}/bb.rb"
 
+      chdir $srcdir
+      Dir.glob("**/*.erb") { |f| rm f }
+
 	  chdir startdir
       cp_r "platform/shared/db/res/db", $srcdir 
     end
