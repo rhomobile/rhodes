@@ -31,9 +31,9 @@ public class PerformOnUiThread implements Runnable {
 	public static void exec(final Runnable r, final int delay) {
         RhodesApplication.runWhen(
                 RhodesApplication.UiState.MainActivityCreated,
-                new RhodesApplication.StateHandler() {
+                new RhodesApplication.StateHandler(true) {
                     @Override
-                    public boolean run() {
+                    public void run() {
                         try {
                             RhodesActivity ra = RhodesActivity.getInstance();
                             ra.post(r, delay);
@@ -42,7 +42,6 @@ public class PerformOnUiThread implements Runnable {
                             Logger.E(TAG, "exec failed: " + e.getMessage());
                             setError(e);
                         }
-                        return true;
                     }
                 });
 	}
@@ -50,9 +49,9 @@ public class PerformOnUiThread implements Runnable {
 	public static void exec(final Runnable r, final boolean wait) {
 	    RhodesApplication.runWhen(
                 RhodesApplication.UiState.MainActivityCreated,
-                new RhodesApplication.StateHandler() {
+                new RhodesApplication.StateHandler(true) {
                     @Override
-                    public boolean run() {
+                    public void run() {
                         try {
                             RhodesActivity ra = RhodesActivity.getInstance();
                             if (!wait) {
@@ -78,7 +77,6 @@ public class PerformOnUiThread implements Runnable {
                             Logger.E(TAG, "exec failed: " + e.getMessage());
                             setError(e);
                         }
-                        return true;
                     }
                 });
 	}
