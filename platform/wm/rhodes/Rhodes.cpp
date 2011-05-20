@@ -314,6 +314,10 @@ public :
         rho_clientregister_destroy();
 #endif
 
+#ifdef RHODES_EMULATOR
+        m_appWindow.DestroyUi();
+#endif
+
         rho::common::CRhodesApp::Destroy();
 
         net::CNetRequestImpl::deinitConnection();
