@@ -47,9 +47,9 @@ public class Alert {
     public static void showPopup(final Object params) {
         RhodesApplication.runWhen(
                 RhodesApplication.AppState.AppActivated,
-                new RhodesApplication.StateHandler() {
+                new RhodesApplication.StateHandler(true) {
                     @Override
-                    public boolean run() {
+                    public void run() {
                         try {
                             Logger.T(TAG, "showPopup");
                             //PerformOnUiThread.exec(new Runnable() {
@@ -63,7 +63,6 @@ public class Alert {
                             reportFail("showPopup", e);
                             setError(e);
                         }
-                        return true;
                     }
                 });
     }
@@ -71,9 +70,9 @@ public class Alert {
     public static void hidePopup() {
         RhodesApplication.runWhen(
                 RhodesApplication.AppState.AppActivated,
-                new RhodesApplication.StateHandler() {
+                new RhodesApplication.StateHandler(true) {
                     @Override
-                    public boolean run() {
+                    public void run() {
                         try {
                             Logger.T(TAG, "hidePopup");
                             //PerformOnUiThread.exec(new Runnable() {
@@ -87,7 +86,6 @@ public class Alert {
                             reportFail("hidePopup", e);
                             setError(e);
                         }
-                        return true;
                     }
                 });
     }
@@ -95,9 +93,9 @@ public class Alert {
     public static void showStatusPopup(final String title, final String message, final String hide) {
         RhodesApplication.runWhen(
                 RhodesApplication.AppState.AppActivated,
-                new RhodesApplication.StateHandler() {
+                new RhodesApplication.StateHandler(true) {
                     @Override
-                    public boolean run() {
+                    public void run() {
                         try {
                             Logger.I(TAG, "showStatusPopup");
                             //PerformOnUiThread.exec(new Runnable() {
@@ -111,7 +109,6 @@ public class Alert {
                             reportFail("showStatusPopup", e);
                             setError(e);
                         }
-                        return true;
                     }
                 });
     }
