@@ -1,5 +1,7 @@
 ﻿using System;
 using rho.logging;
+using IronRuby.Runtime;
+using IronRuby.Builtins;
 
 namespace rho.common
 {
@@ -290,6 +292,17 @@ namespace rho.common
 	    	    getLogConf().clearLog();
 	        }
 	    }
+
+        public void HandleRubyException(Exception ex, String message)
+        {
+            Exception rubyEx = ex;
+            if (rubyEx == null)
+            {
+                rubyEx = RubyExceptionData.InitializeException(new RuntimeError(ex.Message.ToString()), ex.Message);
+            }
+            logMessage(L_ERROR, message);
+            throw rubyEx;
+        }
 	
         public static void InitRhoLog()
         {
