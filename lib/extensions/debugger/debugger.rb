@@ -113,6 +113,7 @@ def debug_handle_cmd(inline)
       log_command(cmd)
       $_step = 2
       $_step_level = $_call_stack
+      $_resumed = true
       wait = false
       puts "[Debugger] Step over"
       processed = true
@@ -120,13 +121,13 @@ def debug_handle_cmd(inline)
       log_command(cmd)
       if $_call_stack < 1
         $_step = 0
-        $_resumed = true
         comment = ' (continue)'
       else
         $_step = 3
         $_step_level = $_call_stack-1;
         comment = ''
       end
+      $_resumed = true
       wait = false
       puts "[Debugger] Step return" + comment
       processed = true
@@ -134,6 +135,7 @@ def debug_handle_cmd(inline)
       log_command(cmd)
       $_step = 1
       $_step_level = -1
+      $_resumed = true
       wait = false
       puts "[Debugger] Step into"
       processed = true
