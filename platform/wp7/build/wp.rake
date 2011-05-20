@@ -141,7 +141,9 @@ end
 			cp File.join( iron_path, "bin/Silverlight3Release/Microsoft.Scripting.Core.dll" ), iron_release
 		end 
 
-		task :rhodes => ["config:wp", "build:wp:rhobundle"] do
+		task :rhodes do #=> ["config:wp", "build:wp:rhobundle"] do
+		    chdir $startdir
+		    
 		    out_dir = $startdir + "/"+ $config["build"]["wppath"] +"/rhodes"
 			cp $app_path + "/icon/icon.png", out_dir if File.exists? $app_path + "/icon/icon.ico"     
 		
@@ -149,7 +151,7 @@ end
 
 			doc = REXML::Document.new(File.open($startdir+"/"+$config["build"]["wppath"]+"/rhodes/Properties/WMAppManifest.xml"))
 			doc.elements.each("Deployment/App") { 
-			|element| element.attributes["ProductID"] =  "{"+$app_config["wp"]["productid"]+"}"
+			    |element| element.attributes["ProductID"] =  "{"+$app_config["wp"]["productid"]+"}"
 			          element.attributes["Title"] =  $app_config["name"]
 			}
 			File.open($startdir+"/"+$config["build"]["wppath"]+"/rhodes/Properties/WMAppManifest.xml", "w") { |f| doc.write f; f.close }
@@ -167,6 +169,9 @@ end
 			chdir $startdir
 		end 
 
+		task :rhobundle_production => [:rhobundle, :rhobundlemap] do
+        end
+        
 		task :devrhobundleRelease do #=> [:rhobundle, :rhobundlemap, "device:wp:addbundletoxapRelease"] do
 			#out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
 			#doc = REXML::Document.new(File.open(out_dir + "XapCacheFile.xml"))
@@ -174,11 +179,11 @@ end
 			#Dir.glob(File.join("**", '*.*')).each do |f|
 		#		doc.root[1,0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='" + f.gsub("/", "\\") + "'" 
 		#	end
-		#	File.open(out_dir + "XapCacheFile.xml", "w") { |f| doc.write f, 2; f.close }
+	#		File.open(out_dir + "XapCacheFile.xml", "w") { |f| doc.write f, 2; f.close }
 			
-		#	chdir $startdir
+	#		chdir $startdir
 
-		#	mkdir_p $config["build"]["wppath"] + "/rhodes/obj/Release" if not File.exists? $config["build"]["wppath"] + "/rhodes/obj/Release"
+	#		mkdir_p $config["build"]["wppath"] + "/rhodes/obj/Release" if not File.exists? $config["build"]["wppath"] + "/rhodes/obj/Release"
 	#		cp out_dir + "XapCacheFile.xml", $config["build"]["wppath"] + "/rhodes/obj/Release"
 		end
 
@@ -260,7 +265,17 @@ end
 		end
 
 		desc "Build production for device or emulator"
-		task :production => ["config:wp","build:wp:rhobundle","build:wp:rhodes"] do
+		task :production => ["build:wp:rhobundle_production","build:wp:rhodes", "device:wp:addbundletoxapRelease"] do
+			#out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/"
+			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
+			cp  out_dir + "rhodes.xap", out_dir + $appname + ".xap"
+
+			mkdir_p $bindir if not File.exists? $bindir
+			mkdir_p $targetdir if not File.exists? $targetdir
+			mv out_dir + $appname + ".xap", $targetdir
+		end
+
+		task :production_noxap => ["build:wp:rhobundle_production","build:wp:rhodes"] do
 			#out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/"
 			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
 			cp  out_dir + "rhodes.xap", out_dir + $appname + ".xap"
@@ -292,40 +307,41 @@ namespace "run" do
 		end
 
 		desc "Build, install .xap and run on WP7 emulator"
-		task :wp => ["device:wp:production"] do
-		if $app_config["wp"] && $app_config["wp"]["productid"] != nil
-			#system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
+		task :wp => ["device:wp:production_noxap"] do
+		
+		    if $app_config["wp"] && $app_config["wp"]["productid"] != nil
+			    #system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
 
-			File.delete($app_path + "/started") if File.exists?($app_path + "/started")
-			run_rho_log_server()
-			puts "RhoLogServer is starting"
-			while(1)
-			    if File.exists?($app_path + "/started")
-				    break
+			    File.delete($app_path + "/started") if File.exists?($app_path + "/started")
+			    run_rho_log_server()
+			    puts "RhoLogServer is starting"
+			    while(1)
+			        if File.exists?($app_path + "/started")
+				        break
+			        end
 			    end
-			end
 
-			Rake::Task["device:wp:addbundletoxapRelease"].invoke
-			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
-			cp  out_dir + "rhodes.xap", out_dir + $appname + ".xap"
-			mv out_dir + $appname + ".xap", $targetdir
+			    Rake::Task["device:wp:addbundletoxapRelease"].invoke
+			    out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
+			    cp  out_dir + "rhodes.xap", out_dir + $appname + ".xap"
+			    mv out_dir + $appname + ".xap", $targetdir
 
-			args = []
-			args << $app_config["wp"]["productid"]
-			args << $app_config["name"]
-			args << $app_path + "/icon/icon.png"
-			args << $targetdir + "/" + $appname + ".xap"
-			args << "emu"
-			puts Jake.run($wp7runner, args)
+			    args = []
+			    args << $app_config["wp"]["productid"]
+			    args << $app_config["name"]
+			    args << $app_path + "/icon/icon.png"
+			    args << $targetdir + "/" + $appname + ".xap"
+			    args << "emu"
+			    puts Jake.run($wp7runner, args)
 
-			#while(1)
-			#	sleep(1000)
-			#end
-			#$rhologfile.close
-		else
-			puts "productid must be set in build.yml"
-			puts "productid's format is xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-		end
+			    #while(1)
+			    #	sleep(1000)
+			    #end
+			    #$rhologfile.close
+		    else
+			    puts "productid must be set in build.yml"
+			    puts "productid's format is xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+		    end
 
 		end
 
@@ -367,39 +383,40 @@ namespace "run" do
 			end
 
 			desc "Build, install .xap and run on WP7 device"
-			task :device => ["device:wp:production"] do
-			if $app_config["wp"] && $app_config["wp"]["productid"] != nil
-			    #system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
-				File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
-				run_rho_log_server()
-				puts "RhoLogServer is starting"
-				while(1)
-				    if File.exists?($app_path + "/started")
-					    break
+			task :device => ["device:wp:production_noxap"] do
+			
+			    if $app_config["wp"] && $app_config["wp"]["productid"] != nil
+			        #system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
+				    File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
+				    run_rho_log_server()
+				    puts "RhoLogServer is starting"
+				    while(1)
+				        if File.exists?($app_path + "/started")
+					        break
+				        end
 				    end
-				end
 
-				Rake::Task["device:wp:addbundletoxapRelease"].invoke
-				out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
-				cp  out_dir + "rhodes.xap", out_dir + $appname + ".xap"
-				mv out_dir + $appname + ".xap", $targetdir
+				    Rake::Task["device:wp:addbundletoxapRelease"].invoke
+				    out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
+				    cp  out_dir + "rhodes.xap", out_dir + $appname + ".xap"
+				    mv out_dir + $appname + ".xap", $targetdir
 
-				args = []
-				args << $app_config["wp"]["productid"]
-				args << $app_config["name"]
-				args << $app_path + "/icon/icon.png"
-				args << $targetdir + "/" + $appname + ".xap"
-				args << "dev"
-				puts Jake.run($wp7runner, args)
+				    args = []
+				    args << $app_config["wp"]["productid"]
+				    args << $app_config["name"]
+				    args << $app_path + "/icon/icon.png"
+				    args << $targetdir + "/" + $appname + ".xap"
+				    args << "dev"
+				    puts Jake.run($wp7runner, args)
 
-				#while(1)
-				#	sleep(1000)
-				#end
-				#$rhologfile.close
-			else
-				puts "productid must be set in build.yml"
-				puts "productid's format is xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-			end
+				    #while(1)
+				    #	sleep(1000)
+				    #end
+				    #$rhologfile.close
+			    else
+				    puts "productid must be set in build.yml"
+				    puts "productid's format is xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+			    end
 			end
 		end
 end
