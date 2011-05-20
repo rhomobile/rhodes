@@ -296,8 +296,9 @@ void CRhodesApp::run()
     LOG(INFO) + "RhodesApp thread shutdown";
 
     rubyext::CGeoLocation::Destroy();
-    RhoRubyStop();
     sync::CSyncThread::Destroy();
+
+    RhoRubyStop();
 }
 
 CRhodesApp::~CRhodesApp(void)
