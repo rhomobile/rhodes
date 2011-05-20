@@ -26,16 +26,28 @@ module Rho
     end
 
     def self.renderfile(filename, req = {}, res = {})
-      res = ""
+      begin
+          res = ""
 
-      if filename.end_with?(RHO_ERB_EXT)
-        res = (RhoController.new).inst_render_index(filename, req, res)
-      else
-        res = IO.read(filename)
-      end
-      RhoController.start_objectnotify()
-      RhoController.start_geoview_notification()
-      res
+          if filename.end_with?(RHO_ERB_EXT)
+            res = (RhoController.new).inst_render_index(filename, req, res)
+          else
+            res = IO.read(filename)
+          end
+          RhoController.start_objectnotify()
+          RhoController.start_geoview_notification()
+          res
+      rescue Exception => exception
+        if defined? RHO_WP7
+          #For some reason rho_serve get another exception, so report original one here                
+          if exception
+            trace_msg = exception.backtrace.join("\n")
+            puts "renderfile error: #{exception}\n #{trace_msg}"
+          end  
+        end
+        
+        raise
+      end    
     end
 
     def inst_render_index(filename, req, res)
