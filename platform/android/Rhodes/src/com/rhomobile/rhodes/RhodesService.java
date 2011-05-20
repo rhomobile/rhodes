@@ -74,7 +74,7 @@ public class RhodesService extends Service {
 	
 	private static final String TAG = RhodesService.class.getSimpleName();
 	
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	
 	public static final String INTENT_EXTRA_PREFIX = "com.rhomobile.rhodes.";
 	
@@ -404,10 +404,11 @@ public class RhodesService extends Service {
 		
 		try {
 			if (Capabilities.PUSH_ENABLED) {
-				if (getPushRegistrationId().length() == 0)
+				String pushPin = getPushRegistrationId();
+				if (pushPin.length() == 0)
 					PushService.register();
 				else
-				    Log.i(TAG, "PUSH already registered: " + getPushRegistrationId());
+				    Log.i(TAG, "PUSH already registered: " + pushPin);
 			}
 		} catch (IllegalAccessException e) {
 			Log.e(TAG, e.getMessage());
@@ -514,12 +515,11 @@ public class RhodesService extends Service {
 				Logger.D(TAG, "Received PUSH message: " + extras);
 				RhodesApplication.runWhen(
 				        RhodesApplication.AppState.AppStarted,
-				        new RhodesApplication.StateHandler() {
+				        new RhodesApplication.StateHandler(true) {
                             @Override
-                            public boolean run()
+                            public void run()
                             {
                                 handlePushMessage(extras);
-                                return true;
                             }
                         });
 				break;
@@ -1207,7 +1207,7 @@ public class RhodesService extends Service {
         if (Push.PUSH_NOTIFICATIONS.equals(NOTIFICATION_ALWAYS))
             statusNotification = true;
         else if (Push.PUSH_NOTIFICATIONS.equals(NOTIFICATION_BACKGROUND))
-            statusNotification = !isRhodesActivityStarted();
+            statusNotification = !RhodesApplication.canHandleNow(RhodesApplication.AppState.AppActivated);
         
         if (statusNotification) {
             Intent intent = new Intent(getContext(), RhodesActivity.class);
@@ -1249,28 +1249,12 @@ public class RhodesService extends Service {
 				    break;
 				} else {
 				    final String arg_source = source.trim();
-		            RhodesApplication.runWhen(
-		                    RhodesApplication.AppState.AppStarted,
-		                    new RhodesApplication.StateHandler() {
-		                        @Override
-		                        public boolean run() {
-		                            doSyncSource(arg_source);
-		                            return true;
-		                        }
-		                    });
+                    doSyncSource(arg_source);
 				}
 			}
 			
 			if (syncAll) {
-                RhodesApplication.runWhen(
-                        RhodesApplication.AppState.AppStarted,
-                        new RhodesApplication.StateHandler() {
-                            @Override
-                            public boolean run() {
-                                doSyncAllSources(true); 
-                                return true;
-                            }
-                        });
+                doSyncAllSources(true); 
 			}
 		}
 	}
