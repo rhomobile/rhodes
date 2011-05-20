@@ -87,6 +87,8 @@ namespace rho.net
         {
             RHODESAPP().startApp();
             base.run();
+
+            RHODESAPP().stopApp();
         }
 
         public override void processCommand(IQueueCommand pCmd)

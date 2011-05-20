@@ -175,6 +175,8 @@ namespace rho
             //m_engine.Execute("def test; while false; end; end; test();");
             //m_engine.Execute("class RecordNotFound < StandardError;end; raise RecordNotFound;");
             //m_engine.Execute("test = {}; test.__id__;");
+            //m_engine.Execute("module GeoLocation; end; def test; begin; eval(\"GeoLocation.non_exist_method();\"); rescue Exception => e; puts \"exc: #{e}\"; end; end; test();");
+            //m_engine.Execute("module GeoLocation; end; def test; GeoLocation.non_exist_method(); 123; end; begin; res = {}; res['a'] = test(); rescue Exception => e; puts \"exc: #{e}\"; end;");
 
             StreamResourceInfo sr = Application.GetResourceStream(new Uri("lib/rhoframework.rb", UriKind.Relative));
 
@@ -198,6 +200,11 @@ namespace rho
 
             m_engine.Operations.InvokeMember(m_rhoframework, "init_app");
             m_engine.Operations.InvokeMember(m_rhoframework, "ui_created");
+        }
+
+        public void callUIDestroyed()
+        {
+            m_engine.Operations.InvokeMember(m_rhoframework, "ui_destroyed");
         }
 
         public void Stop()
