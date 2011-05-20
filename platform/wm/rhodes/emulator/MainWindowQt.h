@@ -48,6 +48,7 @@ public:
     void Navigate2(BSTR URL);
     HWND Initialize(const wchar_t* title);
     void MessageLoop(void);
+	void DestroyUi(void);
     void performOnUiThread(rho::common::IRhoRunnable* pTask);
     CNativeToolbar& getToolbar(){ return m_toolbar; }
     CMainWindowProxy &getProxy(){ return m_mainWindowProxy; }
