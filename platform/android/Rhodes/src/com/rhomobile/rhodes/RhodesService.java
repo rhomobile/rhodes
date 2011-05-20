@@ -404,10 +404,11 @@ public class RhodesService extends Service {
 		
 		try {
 			if (Capabilities.PUSH_ENABLED) {
-				if (getPushRegistrationId().length() == 0)
+				String pushPin = getPushRegistrationId();
+				if (pushPin.length() == 0)
 					PushService.register();
 				else
-				    Log.i(TAG, "PUSH already registered: " + getPushRegistrationId());
+				    Log.i(TAG, "PUSH already registered: " + pushPin);
 			}
 		} catch (IllegalAccessException e) {
 			Log.e(TAG, e.getMessage());
@@ -1207,7 +1208,7 @@ public class RhodesService extends Service {
         if (Push.PUSH_NOTIFICATIONS.equals(NOTIFICATION_ALWAYS))
             statusNotification = true;
         else if (Push.PUSH_NOTIFICATIONS.equals(NOTIFICATION_BACKGROUND))
-            statusNotification = !isRhodesActivityStarted();
+            statusNotification = !RhodesApplication.canHandleNow(RhodesApplication.AppState.AppActivated);
         
         if (statusNotification) {
             Intent intent = new Intent(getContext(), RhodesActivity.class);
