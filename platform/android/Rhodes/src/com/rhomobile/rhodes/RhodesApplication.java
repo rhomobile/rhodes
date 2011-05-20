@@ -186,6 +186,9 @@ public class RhodesApplication extends Application{
     private static AppState sAppState = AppState.Undefined;
     private static UiState sUiState = UiState.Undefined;
     
+    public static boolean canHandleNow(AppState state) { return sAppState.canHandle(state); }
+    public static boolean canHandleNow(UiState state) { return sUiState.canHandle(state); }
+    
     public static void runWhen(AppState state, StateHandler handler) {
         Logger.T(TAG, "Current AppState : " + sAppState.TAG);
         if (sAppState.canHandle(state)) {
