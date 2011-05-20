@@ -1100,6 +1100,9 @@ For example:
 ** stop ** - stop timer by callback
 	:::ruby
 	Rho::Timer.stop(callback_url)
+
+### Sample
+See controller and view in the /app/RhoTimerTest folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/RhoTimerTest/controller.rb) for more information.
 		
 ## Screen rotation
 When user rotate device, Rhodes update view corresponding to new orientation. To get notification about rotation use callback:
