@@ -29,6 +29,25 @@ void loge(const char* text) {
 } 
 
 
+class CNfcJavaClass {
+public:
+    CNfcJavaClass() {
+        JNIEnv *env = jnienv();
+        mNfcClass = rho_find_class(env, "com/rhomobile/nfc/Nfc");
+    }
+
+    ~CNfcJavaClass() {
+        JNIEnv *env = jnienv();
+        env->DeleteLocalRef(mNfcClass);
+    }
+    
+    jclass get() {
+        return mNfcClass;
+    }
+    
+private:
+    jclass mNfcClass;
+};
 
 
 class CRubyString {
@@ -199,12 +218,12 @@ public:
 
 VALUE JavaHelper_exec_bytearray_bytearray(VALUE array, const char* method_name) {
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) {
+    CNfcJavaClass cls;
+    if (!cls.get()) {
         loge("Nfc class not found !");
         return rho_ruby_get_NIL();
     }
-    jmethodID mid = env->GetStaticMethodID(cls, method_name, "([B)[B");
+    jmethodID mid = env->GetStaticMethodID(cls.get(), method_name, "([B)[B");
     if (!mid) { 
         loge("Nfc method :");
         loge(method_name);
@@ -217,7 +236,7 @@ VALUE JavaHelper_exec_bytearray_bytearray(VALUE array, const char* method_name) 
     
     rho_ruby_unpack_byte_array(array, (unsigned char*)buf_p, size);
     
-    jbyteArray j_arr =  (jbyteArray)env->CallStaticObjectMethod(cls, mid, buf_j);
+    jbyteArray j_arr =  (jbyteArray)env->CallStaticObjectMethod(cls.get(), mid, buf_j);
     
     env->ReleaseByteArrayElements(buf_j, buf_p, 0);
     env->DeleteLocalRef(buf_j);
@@ -229,12 +248,12 @@ VALUE JavaHelper_exec_bytearray_bytearray(VALUE array, const char* method_name) 
 
 void JavaHelper_exec_void_bytearray(VALUE array, const char* method_name) {
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) {
+    CNfcJavaClass cls;
+    if (!cls.get()) {
         loge("Nfc class not found !");
         return;
     }
-    jmethodID mid = env->GetStaticMethodID(cls, method_name, "([B)V");
+    jmethodID mid = env->GetStaticMethodID(cls.get(), method_name, "([B)V");
     if (!mid) { 
         loge("Nfc method :");
         loge(method_name);
@@ -247,7 +266,7 @@ void JavaHelper_exec_void_bytearray(VALUE array, const char* method_name) {
     
     rho_ruby_unpack_byte_array(array, (unsigned char*)buf_p, size);
     
-    env->CallStaticVoidMethod(cls, mid, buf_j);
+    env->CallStaticVoidMethod(cls.get(), mid, buf_j);
     
     env->ReleaseByteArrayElements(buf_j, buf_p, 0);
     env->DeleteLocalRef(buf_j);
@@ -255,19 +274,19 @@ void JavaHelper_exec_void_bytearray(VALUE array, const char* method_name) {
 
 VALUE JavaHelper_exec_bytearray_void(const char* method_name) {
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) {
+    CNfcJavaClass cls;
+    if (!cls.get()) {
         loge("Nfc class not found !");
         return rho_ruby_get_NIL();
     }
-    jmethodID mid = env->GetStaticMethodID(cls, method_name, "()[B");
+    jmethodID mid = env->GetStaticMethodID(cls.get(), method_name, "()[B");
     if (!mid) { 
         loge("Nfc method :");
         loge(method_name);
         loge("NOT FOUND !");
         return rho_ruby_get_NIL();
     }
-    jbyteArray j_arr =  (jbyteArray)env->CallStaticObjectMethod(cls, mid);
+    jbyteArray j_arr =  (jbyteArray)env->CallStaticObjectMethod(cls.get(), mid);
     
     CNFCByteArray ar(env, j_arr);
     
@@ -276,40 +295,40 @@ VALUE JavaHelper_exec_bytearray_void(const char* method_name) {
 
 int JavaHelper_exec_int_void(const char* method_name) {
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) {
+    CNfcJavaClass cls;
+    if (!cls.get()) {
         loge("Nfc class not found !");
         return 0;
     }
-    jmethodID mid = env->GetStaticMethodID(cls, method_name, "()I");
+    jmethodID mid = env->GetStaticMethodID(cls.get(), method_name, "()I");
     if (!mid) { 
         loge("Nfc method :");
         loge(method_name);
         loge("NOT FOUND !");
         return 0;
     }
-    return env->CallStaticIntMethod(cls, mid);
+    return env->CallStaticIntMethod(cls.get(), mid);
 }
 
 void JavaHelper_exec_void_int(int value, const char* method_name) {
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) {
+    CNfcJavaClass cls;
+    if (!cls.get()) {
         loge("Nfc class not found !");
         return;
     }
-    jmethodID mid = env->GetStaticMethodID(cls, method_name, "(I)V");
+    jmethodID mid = env->GetStaticMethodID(cls.get(), method_name, "(I)V");
     if (!mid) { 
         loge("Nfc method :");
         loge(method_name);
         loge("NOT FOUND !");
         return;
     }
-    env->CallStaticVoidMethod(cls, mid, value);
+    env->CallStaticVoidMethod(cls.get(), mid, value);
 }
 
 
-
+static bool ourNeedToFree = false;
 static jclass jclass_NfcMessagePack = NULL;
 static jclass jclass_NfcMessage = NULL;
 static jclass jclass_NfcRecord = NULL;
@@ -338,15 +357,22 @@ void initJavaIds(JNIEnv *env_param = NULL) {
     JNIEnv *env = NULL;//jnienv();
     if (env_param != NULL) {
         env = env_param;
-        jclass_NfcMessagePack = env->FindClass("com/rhomobile/nfc/NfcMessagePack");
-        jclass_NfcMessage = env->FindClass("com/rhomobile/nfc/NfcMessage");
-        jclass_NfcRecord = env->FindClass("com/rhomobile/nfc/NfcRecord");
     }
     else {
         env = jnienv();
+    }
+    
+    if (env_param != NULL) {
+        jclass_NfcMessagePack = env->FindClass("com/rhomobile/nfc/NfcMessagePack");
+        jclass_NfcMessage = env->FindClass("com/rhomobile/nfc/NfcMessage");
+        jclass_NfcRecord = env->FindClass("com/rhomobile/nfc/NfcRecord");
+        ourNeedToFree = false;
+    }
+    else {
         jclass_NfcMessagePack = rho_find_class(env, "com/rhomobile/nfc/NfcMessagePack");
         jclass_NfcMessage = rho_find_class(env, "com/rhomobile/nfc/NfcMessage");
         jclass_NfcRecord = rho_find_class(env, "com/rhomobile/nfc/NfcRecord");
+        ourNeedToFree = true;
     }
 	// fill java ids
     
@@ -368,7 +394,6 @@ void initJavaIds(JNIEnv *env_param = NULL) {
 	jmethod_NfcRecord_getSubrecords = env->GetMethodID( jclass_NfcRecord, "getSubrecords", "()Lcom/rhomobile/nfc/NfcMessage;");
     
 }
-
 
 
 class CNFCMessage;
@@ -584,22 +609,22 @@ private:
 
 extern "C" void rho_nfc_set_callback(const char* callback_url) {
 	JNIEnv *env = jnienv();
-	jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-	if (!cls) return;
-	jmethodID mid = env->GetStaticMethodID( cls, "setCallback", "(Ljava/lang/String;)V");
+	CNfcJavaClass cls;
+	if (!cls.get()) return;
+	jmethodID mid = env->GetStaticMethodID( cls.get(), "setCallback", "(Ljava/lang/String;)V");
 	if (!mid) return;
 	jstring objCallback = env->NewStringUTF(callback_url);
-	env->CallStaticVoidMethod(cls, mid, objCallback);
+	env->CallStaticVoidMethod(cls.get(), mid, objCallback);
 	env->DeleteLocalRef(objCallback);
 }
 
 extern "C" void rho_nfc_enable(int enable) {
 	JNIEnv *env = jnienv();
-	jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-	if (!cls) return;
-	jmethodID mid = env->GetStaticMethodID( cls, "setEnable", "(I)V");
+	CNfcJavaClass cls;
+	if (!cls.get()) return;
+	jmethodID mid = env->GetStaticMethodID( cls.get(), "setEnable", "(I)V");
 	if (!mid) return;
-	env->CallStaticVoidMethod(cls, mid, enable);
+	env->CallStaticVoidMethod(cls.get(), mid, enable);
 }
 
 extern "C" int rho_nfc_is_enabled(void) {
@@ -612,22 +637,22 @@ extern "C" int rho_nfc_is_supported(void) {
 
 extern "C" void rho_nfc_set_tech_callback(const char* callback_url) {
 	JNIEnv *env = jnienv();
-	jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-	if (!cls) return;
-	jmethodID mid = env->GetStaticMethodID( cls, "setTechCallback", "(Ljava/lang/String;)V");
+	CNfcJavaClass cls;
+	if (!cls.get()) return;
+	jmethodID mid = env->GetStaticMethodID( cls.get(), "setTechCallback", "(Ljava/lang/String;)V");
 	if (!mid) return;
 	jstring objCallback = env->NewStringUTF(callback_url);
-	env->CallStaticVoidMethod(cls, mid, objCallback);
+	env->CallStaticVoidMethod(cls.get(), mid, objCallback);
 	env->DeleteLocalRef(objCallback);
 }
 
 extern "C" void rho_nfc_perform_open_application_event() {
 	JNIEnv *env = jnienv();
-	jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-	if (!cls) return;
-	jmethodID mid = env->GetStaticMethodID( cls, "performOpenApplicationTag", "()V");
+	CNfcJavaClass cls;
+	if (!cls.get()) return;
+	jmethodID mid = env->GetStaticMethodID( cls.get(), "performOpenApplicationTag", "()V");
 	if (!mid) return;
-	env->CallStaticVoidMethod(cls, mid);
+	env->CallStaticVoidMethod(cls.get(), mid);
 }
 
 
@@ -640,20 +665,20 @@ extern "C" VALUE rho_nfc_get_tech_list() {
 
     logi("rho_nfc_get_tech_list START");
 	JNIEnv *env = jnienv();
-	jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-	if (!cls) return rho_ruby_get_NIL();
-	jmethodID mid = env->GetStaticMethodID( cls, "get_tech_list_count", "()I");
+	CNfcJavaClass cls;
+	if (!cls.get()) return rho_ruby_get_NIL();
+	jmethodID mid = env->GetStaticMethodID( cls.get(), "get_tech_list_count", "()I");
 	if (!mid) return rho_ruby_get_NIL();
-	jmethodID mids = env->GetStaticMethodID( cls, "get_tech_list", "(I)Ljava/lang/String;");
+	jmethodID mids = env->GetStaticMethodID( cls.get(), "get_tech_list", "(I)Ljava/lang/String;");
 	if (!mids) return rho_ruby_get_NIL();
-	int count =  env->CallStaticIntMethod(cls, mid);
+	int count =  env->CallStaticIntMethod(cls.get(), mid);
 
 	VALUE array = rho_ruby_create_array();
 
 	int i;
     
 	for (i = 0; i < count; i++) {
-		CNFCString  cs(env, env->CallStaticObjectMethod(cls, mids, i));
+		CNFCString  cs(env, env->CallStaticObjectMethod(cls.get(), mids, i));
 		rho_ruby_add_to_array( array, rho_ruby_create_string(cs.mBuf));
         logi("rho_nfc_get_tech_list 05");
 
@@ -664,36 +689,36 @@ extern "C" VALUE rho_nfc_get_tech_list() {
 extern "C" void rho_nfc_tech_connect(const char* name) {
     logi("rho_nfc_tech_connect START");
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) return;
-    jmethodID mid = env->GetStaticMethodID(cls, "tech_connect", "(Ljava/lang/String;)V");
+    CNfcJavaClass cls;
+    if (!cls.get()) return;
+    jmethodID mid = env->GetStaticMethodID(cls.get(), "tech_connect", "(Ljava/lang/String;)V");
     if (!mid) return;
     jstring objCallback = env->NewStringUTF(name);
-    env->CallStaticVoidMethod(cls, mid, objCallback);
+    env->CallStaticVoidMethod(cls.get(), mid, objCallback);
     env->DeleteLocalRef(objCallback);
     logi("rho_nfc_tech_connect FINISH");
 }
 
 extern "C" void rho_nfc_tech_close(const char* name) {
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) return;
-    jmethodID mid = env->GetStaticMethodID(cls, "tech_close", "(Ljava/lang/String;)V");
+    CNfcJavaClass cls;
+    if (!cls.get()) return;
+    jmethodID mid = env->GetStaticMethodID(cls.get(), "tech_close", "(Ljava/lang/String;)V");
     if (!mid) return;
     jstring objCallback = env->NewStringUTF(name);
-    env->CallStaticVoidMethod(cls, mid, objCallback);
+    env->CallStaticVoidMethod(cls.get(), mid, objCallback);
     env->DeleteLocalRef(objCallback);
 }
 
 extern "C" int rho_nfc_tech_is_connected(const char* name) {
     logi("rho_nfc_tech_is_connected START");
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) return 0;
-    jmethodID mid = env->GetStaticMethodID(cls, "tech_is_connected", "(Ljava/lang/String;)I");
+    CNfcJavaClass cls;
+    if (!cls.get()) return 0;
+    jmethodID mid = env->GetStaticMethodID(cls.get(), "tech_is_connected", "(Ljava/lang/String;)I");
     if (!mid) return 0;
     jstring objCallback = env->NewStringUTF(name);
-    int res = env->CallStaticIntMethod(cls, mid, objCallback);
+    int res = env->CallStaticIntMethod(cls.get(), mid, objCallback);
     env->DeleteLocalRef(objCallback);
     logi("rho_nfc_tech_is_connected FINISH");
     return res;    
@@ -707,9 +732,9 @@ extern "C" void rho_nfc_tech_MifareClassic_write_block(int index, VALUE block) {
 
     logi("rho_nfc_tech_MifareClassic_write_block START");
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) return;
-    jmethodID mid = env->GetStaticMethodID(cls, "tech_MifareClassic_write_block", "(I[B)V");
+    CNfcJavaClass cls;
+    if (!cls.get()) return;
+    jmethodID mid = env->GetStaticMethodID(cls.get(), "tech_MifareClassic_write_block", "(I[B)V");
     if (!mid) return;
     
     int res = 0;
@@ -718,7 +743,7 @@ extern "C" void rho_nfc_tech_MifareClassic_write_block(int index, VALUE block) {
     
     rho_ruby_unpack_byte_array(block, (unsigned char*)buf_p, 16);
     
-    env->CallStaticVoidMethod(cls, mid, index, buf_j);
+    env->CallStaticVoidMethod(cls.get(), mid, index, buf_j);
     
     env->ReleaseByteArrayElements(buf_j, buf_p, 0);
     env->DeleteLocalRef(buf_j);
@@ -731,14 +756,14 @@ extern "C" VALUE rho_nfc_tech_MifareClassic_read_block(int index) {
 
     logi("rho_nfc_tech_MifareClassic_read_block START");
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) return rho_ruby_get_NIL();
-    jmethodID mid = env->GetStaticMethodID(cls, "tech_MifareClassic_read_block", "(I[B)I");
+    CNfcJavaClass cls;
+    if (!cls.get()) return rho_ruby_get_NIL();
+    jmethodID mid = env->GetStaticMethodID(cls.get(), "tech_MifareClassic_read_block", "(I[B)I");
     if (!mid) return rho_ruby_get_NIL();
 
     VALUE val = rho_ruby_get_NIL();
     jbyteArray buf_j = (jbyteArray)env->NewByteArray(16);
-    int res = env->CallStaticIntMethod(cls, mid, index, buf_j);
+    int res = env->CallStaticIntMethod(cls.get(), mid, index, buf_j);
     jbyte* buf_p = env->GetByteArrayElements(buf_j, 0);
     if (res != 0) {
           logi("java Nfc return real array");
@@ -765,23 +790,23 @@ extern "C" int rho_nfc_tech_MifareClassic_get_sector_count() {
 extern "C" int rho_nfc_tech_MifareClassic_get_blocks_in_sector_count(int index) {
     logi("rho_nfc_tech_MifareClassic_get_blocks_in_sector_count START");    
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) return 0;
-    jmethodID mid = env->GetStaticMethodID(cls, "tech_MifareClassic_get_blocks_in_sector_count", "(I)I");
+    CNfcJavaClass cls;
+    if (!cls.get()) return 0;
+    jmethodID mid = env->GetStaticMethodID(cls.get(), "tech_MifareClassic_get_blocks_in_sector_count", "(I)I");
     if (!mid) return 0;
     logi("rho_nfc_tech_MifareClassic_get_blocks_in_sector_count FINISH");    
-    return env->CallStaticIntMethod(cls, mid, index);
+    return env->CallStaticIntMethod(cls.get(), mid, index);
 }
 
 extern "C" int rho_nfc_tech_MifareClassic_sector_to_block(int index) {
     logi("rho_nfc_tech_MifareClassic_sector_to_block START");    
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) return 0;
-    jmethodID mid = env->GetStaticMethodID(cls, "tech_MifareClassic_sector_to_block", "(I)I");
+    CNfcJavaClass cls;
+    if (!cls.get()) return 0;
+    jmethodID mid = env->GetStaticMethodID(cls.get(), "tech_MifareClassic_sector_to_block", "(I)I");
     if (!mid) return 0;
     logi("rho_nfc_tech_MifareClassic_sector_to_block FINISH");    
-    return env->CallStaticIntMethod(cls, mid, index);
+    return env->CallStaticIntMethod(cls.get(), mid, index);
 }
 
 extern "C" int rho_nfc_tech_MifareClassic_get_type() {
@@ -801,9 +826,9 @@ extern "C" int rho_nfc_tech_MifareClassic_authenticate_sector_with_key_A(int ind
 
     logi("rho_nfc_tech_MifareClassic_authenticate_sector_with_key_A START");
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) return 0;
-    jmethodID mid = env->GetStaticMethodID(cls, "tech_MifareClassic_authenticate_sector_with_key_A", "(I[B)I");
+    CNfcJavaClass cls;
+    if (!cls.get()) return 0;
+    jmethodID mid = env->GetStaticMethodID(cls.get(), "tech_MifareClassic_authenticate_sector_with_key_A", "(I[B)I");
     if (!mid) return 0;
     
     int res = 0;
@@ -812,7 +837,7 @@ extern "C" int rho_nfc_tech_MifareClassic_authenticate_sector_with_key_A(int ind
     
     rho_ruby_unpack_byte_array(key, (unsigned char*)buf_p, 6);
     
-    res = env->CallStaticIntMethod(cls, mid, index, buf_j);
+    res = env->CallStaticIntMethod(cls.get(), mid, index, buf_j);
 
     env->ReleaseByteArrayElements(buf_j, buf_p, 0);
     env->DeleteLocalRef(buf_j);
@@ -826,9 +851,9 @@ extern "C" int rho_nfc_tech_MifareClassic_authenticate_sector_with_key_A(int ind
 extern "C" int rho_nfc_tech_MifareClassic_authenticate_sector_with_key_B(int index, VALUE key) {
     logi("rho_nfc_tech_MifareClassic_authenticate_sector_with_key_B START");
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) return 0;
-    jmethodID mid = env->GetStaticMethodID(cls, "tech_MifareClassic_authenticate_sector_with_key_B", "(I[B)I");
+    CNfcJavaClass cls;
+    if (!cls.get()) return 0;
+    jmethodID mid = env->GetStaticMethodID(cls.get(), "tech_MifareClassic_authenticate_sector_with_key_B", "(I[B)I");
     if (!mid) return 0;
     
     int res = 0;
@@ -837,7 +862,7 @@ extern "C" int rho_nfc_tech_MifareClassic_authenticate_sector_with_key_B(int ind
     
     rho_ruby_unpack_byte_array(key, (unsigned char*)buf_p, 6);
     
-    res = env->CallStaticIntMethod(cls, mid, index, buf_j);
+    res = env->CallStaticIntMethod(cls.get(), mid, index, buf_j);
     
     env->ReleaseByteArrayElements(buf_j, buf_p, 0);
     env->DeleteLocalRef(buf_j);
@@ -856,11 +881,11 @@ extern "C" int rho_nfc_tech_Ndef_get_max_size() {
 // return string
 extern "C" VALUE rho_nfc_tech_Ndef_get_type() {
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) return rho_ruby_get_NIL();
-    jmethodID mid = env->GetStaticMethodID(cls, "tech_Ndef_get_type", "()Ljava/lang/String;");
+    CNfcJavaClass cls;
+    if (!cls.get()) return rho_ruby_get_NIL();
+    jmethodID mid = env->GetStaticMethodID(cls.get(), "tech_Ndef_get_type", "()Ljava/lang/String;");
     if (!mid) return rho_ruby_get_NIL();
-    jstring j_str =  (jstring)env->CallStaticObjectMethod(cls, mid);
+    jstring j_str =  (jstring)env->CallStaticObjectMethod(cls.get(), mid);
     CNFCString s(env, j_str);
     return s.makeVALUE();
 }
@@ -906,9 +931,9 @@ extern "C" VALUE rho_nfc_convert_byte_array_to_NdeRecord_hash(VALUE array) {
     initJavaIds();
     
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) return rho_ruby_get_NIL();
-    jmethodID mid = env->GetStaticMethodID(cls, "convert_byte_array_to_NdeRecord_hash", "([B)Lcom/rhomobile/nfc/NfcRecord;");
+    CNfcJavaClass cls;
+    if (!cls.get()) return rho_ruby_get_NIL();
+    jmethodID mid = env->GetStaticMethodID(cls.get(), "convert_byte_array_to_NdeRecord_hash", "([B)Lcom/rhomobile/nfc/NfcRecord;");
     if (!mid) return rho_ruby_get_NIL();
     
     int size = rho_ruby_unpack_byte_array(array, 0, 0);
@@ -917,7 +942,7 @@ extern "C" VALUE rho_nfc_convert_byte_array_to_NdeRecord_hash(VALUE array) {
     
     rho_ruby_unpack_byte_array(array, (unsigned char*)buf_p, size);
     
-    jobject j_o =  env->CallStaticObjectMethod(cls, mid, buf_j);
+    jobject j_o =  env->CallStaticObjectMethod(cls.get(), mid, buf_j);
     
     env->ReleaseByteArrayElements(buf_j, buf_p, 0);
     env->DeleteLocalRef(buf_j);
@@ -942,12 +967,12 @@ extern "C" VALUE rho_nfc_convert_NdeRecord_hash_to_byte_array(VALUE hash) {
     CRubyByteArray c_payload(ruby_payload);
     
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) return rho_ruby_get_NIL();
-    jmethodID mid = env->GetStaticMethodID(cls, "convert_NdeRecord_hash_to_byte_array", "([B[BI[B)[B");
+    CNfcJavaClass cls;
+    if (!cls.get()) return rho_ruby_get_NIL();
+    jmethodID mid = env->GetStaticMethodID(cls.get(), "convert_NdeRecord_hash_to_byte_array", "([B[BI[B)[B");
     if (!mid) return rho_ruby_get_NIL();
     
-    jbyteArray j_result = (jbyteArray)env->CallStaticObjectMethod(cls, mid, c_id.makeJavaByteArray(env), c_payload.makeJavaByteArray(env), tnf, c_type.makeJavaByteArray(env));
+    jbyteArray j_result = (jbyteArray)env->CallStaticObjectMethod(cls.get(), mid, c_id.makeJavaByteArray(env), c_payload.makeJavaByteArray(env), tnf, c_type.makeJavaByteArray(env));
     
     CNFCByteArray ar(env, j_result);
     
@@ -962,12 +987,12 @@ extern "C" VALUE rho_nfc_convert_NdeMessage_byte_array_to_NdeRecords_array(VALUE
     CRubyByteArray c_msg(array);
 
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) return rho_ruby_get_NIL();
-    jmethodID mid = env->GetStaticMethodID(cls, "convert_NdeMessage_byte_array_to_NdeRecords_array", "([B)Lcom/rhomobile/nfc/NfcMessage;");
+    CNfcJavaClass cls;
+    if (!cls.get()) return rho_ruby_get_NIL();
+    jmethodID mid = env->GetStaticMethodID(cls.get(), "convert_NdeMessage_byte_array_to_NdeRecords_array", "([B)Lcom/rhomobile/nfc/NfcMessage;");
     if (!mid) return rho_ruby_get_NIL();
     
-    jobject j_msg = env->CallStaticObjectMethod(cls, mid, c_msg.makeJavaByteArray(env));
+    jobject j_msg = env->CallStaticObjectMethod(cls.get(), mid, c_msg.makeJavaByteArray(env));
     
     CNFCMessage msg(env, j_msg);
     
@@ -989,14 +1014,14 @@ extern "C" VALUE rho_nfc_convert_NdeRecords_array_to_NdeMessage_byte_array(VALUE
     initJavaIds();
     
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) return rho_ruby_get_NIL();
-    jmethodID mid_make_msg = env->GetStaticMethodID(cls, "make_empty_NfcMessage", "()Lcom/rhomobile/nfc/NfcMessage;");
+    CNfcJavaClass cls;
+    if (!cls.get()) return rho_ruby_get_NIL();
+    jmethodID mid_make_msg = env->GetStaticMethodID(cls.get(), "make_empty_NfcMessage", "()Lcom/rhomobile/nfc/NfcMessage;");
     if (!mid_make_msg) return rho_ruby_get_NIL();
-    jmethodID mid_make_rec = env->GetStaticMethodID(cls, "convert_byte_array_to_NdeRecord_hash", "([B)Lcom/rhomobile/nfc/NfcRecord;");
+    jmethodID mid_make_rec = env->GetStaticMethodID(cls.get(), "convert_byte_array_to_NdeRecord_hash", "([B)Lcom/rhomobile/nfc/NfcRecord;");
     if (!mid_make_rec) return rho_ruby_get_NIL();
     
-    jobject j_msg = env->CallStaticObjectMethod(cls, mid_make_msg);
+    jobject j_msg = env->CallStaticObjectMethod(cls.get(), mid_make_msg);
     
     int count = rho_ruby_array_get_size(array);
     int i;
@@ -1004,7 +1029,7 @@ extern "C" VALUE rho_nfc_convert_NdeRecords_array_to_NdeMessage_byte_array(VALUE
     for (i = 0; i < count; i++) {
         CRubyByteArray c_rec(rho_ruby_array_get(array, i));
         
-        jobject j_rec = env->CallStaticObjectMethod(cls, mid_make_rec, c_rec.makeJavaByteArray(env));
+        jobject j_rec = env->CallStaticObjectMethod(cls.get(), mid_make_rec, c_rec.makeJavaByteArray(env));
         
         env->CallVoidMethod(j_msg, jmethod_NfcMessage_addConstructRecord, j_rec);
     }
@@ -1024,12 +1049,12 @@ extern "C" VALUE rho_nfc_make_string_from_payload(VALUE payload, int tnf, VALUE 
     CRubyByteArray c_type(type);
     
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) return rho_ruby_get_NIL();
-    jmethodID mid = env->GetStaticMethodID(cls, "make_string_from_payload", "([BI[B)Ljava/lang/String;");
+    CNfcJavaClass cls;
+    if (!cls.get()) return rho_ruby_get_NIL();
+    jmethodID mid = env->GetStaticMethodID(cls.get(), "make_string_from_payload", "([BI[B)Ljava/lang/String;");
     if (!mid) return rho_ruby_get_NIL();
     
-    jstring j_s = (jstring)env->CallStaticObjectMethod(cls, mid, c_payload.makeJavaByteArray(env), tnf, c_type.makeJavaByteArray(env));
+    jstring j_s = (jstring)env->CallStaticObjectMethod(cls.get(), mid, c_payload.makeJavaByteArray(env), tnf, c_type.makeJavaByteArray(env));
     
     CNFCString s(env, j_s);
     
@@ -1042,12 +1067,12 @@ extern "C" VALUE rho_nfc_make_payload_with_absolute_uri(const char* str) {
     CRubyString c_s(str);
     
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) return rho_ruby_get_NIL();
-    jmethodID mid = env->GetStaticMethodID(cls, "make_payload_with_absolute_uri", "(Ljava/lang/String;)[B");
+    CNfcJavaClass cls;
+    if (!cls.get()) return rho_ruby_get_NIL();
+    jmethodID mid = env->GetStaticMethodID(cls.get(), "make_payload_with_absolute_uri", "(Ljava/lang/String;)[B");
     if (!mid) return rho_ruby_get_NIL();
     
-    jobject j_o = env->CallStaticObjectMethod(cls, mid, c_s.makeJavaString(env));
+    jobject j_o = env->CallStaticObjectMethod(cls.get(), mid, c_s.makeJavaString(env));
     
     CNFCByteArray ar(env, j_o);
     
@@ -1061,12 +1086,12 @@ extern "C" VALUE rho_nfc_make_payload_with_well_known_text(const char* language,
     CRubyString c_s(str);
     
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) return rho_ruby_get_NIL();
-    jmethodID mid = env->GetStaticMethodID(cls, "make_payload_with_well_known_text", "(Ljava/lang/String;Ljava/lang/String;)[B");
+    CNfcJavaClass cls;
+    if (!cls.get()) return rho_ruby_get_NIL();
+    jmethodID mid = env->GetStaticMethodID(cls.get(), "make_payload_with_well_known_text", "(Ljava/lang/String;Ljava/lang/String;)[B");
     if (!mid) return rho_ruby_get_NIL();
     
-    jobject j_o = env->CallStaticObjectMethod(cls, mid, c_lang.makeJavaString(env), c_s.makeJavaString(env));
+    jobject j_o = env->CallStaticObjectMethod(cls.get(), mid, c_lang.makeJavaString(env), c_s.makeJavaString(env));
     
     CNFCByteArray ar(env, j_o);
     
@@ -1079,12 +1104,12 @@ extern "C" VALUE rho_nfc_make_payload_with_well_known_uri(int prefix, const char
     CRubyString c_s(str);
     
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) return rho_ruby_get_NIL();
-    jmethodID mid = env->GetStaticMethodID(cls, "make_payload_with_well_known_uri", "(ILjava/lang/String;)[B");
+    CNfcJavaClass cls;
+    if (!cls.get()) return rho_ruby_get_NIL();
+    jmethodID mid = env->GetStaticMethodID(cls.get(), "make_payload_with_well_known_uri", "(ILjava/lang/String;)[B");
     if (!mid) return rho_ruby_get_NIL();
     
-    jobject j_o = env->CallStaticObjectMethod(cls, mid, prefix, c_s.makeJavaString(env));
+    jobject j_o = env->CallStaticObjectMethod(cls.get(), mid, prefix, c_s.makeJavaString(env));
     
     CNFCByteArray ar(env, j_o);
     
@@ -1097,18 +1122,18 @@ extern "C" void rho_nfc_p2p_enable_foreground_nde_push(VALUE nde_message_byte_ar
 
 extern "C" void rho_nfc_p2p_disable_foreground_nde_push() {
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) return;
-    jmethodID mid = env->GetStaticMethodID(cls, "p2p_disable_foreground_nde_push", "()V");
+    CNfcJavaClass cls;
+    if (!cls.get()) return;
+    jmethodID mid = env->GetStaticMethodID(cls.get(), "p2p_disable_foreground_nde_push", "()V");
     if (!mid) return;
-    env->CallStaticVoidMethod(cls, mid);
+    env->CallStaticVoidMethod(cls.get(), mid);
 }
 
 extern "C" void rho_nfc_tech_MifareUltralight_write_page(int index, VALUE block) {
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) return;
-    jmethodID mid = env->GetStaticMethodID(cls, "tech_MifareUltralight_write_page", "(I[B)V");
+    CNfcJavaClass cls;
+    if (!cls.get()) return;
+    jmethodID mid = env->GetStaticMethodID(cls.get(), "tech_MifareUltralight_write_page", "(I[B)V");
     if (!mid) return;
     
     int res = 0;
@@ -1118,7 +1143,7 @@ extern "C" void rho_nfc_tech_MifareUltralight_write_page(int index, VALUE block)
     
     rho_ruby_unpack_byte_array(block, (unsigned char*)buf_p, size);
     
-    env->CallStaticVoidMethod(cls, mid, index, buf_j);
+    env->CallStaticVoidMethod(cls.get(), mid, index, buf_j);
     
     env->ReleaseByteArrayElements(buf_j, buf_p, 0);
     env->DeleteLocalRef(buf_j);
@@ -1126,12 +1151,12 @@ extern "C" void rho_nfc_tech_MifareUltralight_write_page(int index, VALUE block)
 
 extern "C" VALUE rho_nfc_tech_MifareUltralight_read_pages(int index) {
     JNIEnv *env = jnienv();
-    jclass cls = rho_find_class(env, "com/rhomobile/nfc/Nfc");
-    if (!cls) return rho_ruby_get_NIL();
-    jmethodID mid = env->GetStaticMethodID(cls, "tech_MifareUltralight_read_pages", "(I)[B");
+    CNfcJavaClass cls;
+    if (!cls.get()) return rho_ruby_get_NIL();
+    jmethodID mid = env->GetStaticMethodID(cls.get(), "tech_MifareUltralight_read_pages", "(I)[B");
     if (!mid) return rho_ruby_get_NIL();
 
-    jbyteArray j_arr =  (jbyteArray)env->CallStaticIntMethod(cls, mid, index);
+    jbyteArray j_arr =  (jbyteArray)env->CallStaticIntMethod(cls.get(), mid, index);
 
     CNFCByteArray ar(env, j_arr);
     
