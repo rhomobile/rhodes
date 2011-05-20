@@ -142,9 +142,11 @@ void Curl_rhossl_close(struct connectdata *conn, int sockindex)
 int Curl_rhossl_shutdown(struct connectdata *conn, int sockindex)
 {
     struct ssl_connect_data *connssl = &conn->ssl[sockindex];
-    rho_ssl_shutdown(connssl->storage);
-    rho_ssl_free_storage(connssl->storage);
-    connssl->storage = NULL;
+    if(connssl->storage != 0) {
+        rho_ssl_shutdown(connssl->storage);
+        rho_ssl_free_storage(connssl->storage);
+        connssl->storage = NULL;
+    }
     return 0;
 }
 
