@@ -975,6 +975,15 @@ int rho_db_open(const char* szDBPath, const char* szDBPartition, void** ppDB)
     return 0;
 }
 
+int rho_db_close(void* pDB)
+{
+    rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
+    db.close();
+
+    //TODO: get error code from DBException
+    return 0;
+}
+
 int rho_db_startTransaction(void* pDB)
 {
     rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);

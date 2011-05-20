@@ -9,7 +9,7 @@ static VALUE mSqlite3;
 static VALUE mDatabase;
 
 extern int rho_db_open(const char* szDBPath, const char* szDBPartition, void** ppDB);
-//extern int rho_sync_closeDB();
+extern int rho_db_close(void* pDB);
 extern int rho_db_startTransaction(void* pDB);
 extern int rho_db_commitTransaction(void* pDB);
 extern int rho_db_rollbackTransaction(void* pDB);
@@ -60,9 +60,8 @@ static VALUE db_close(int argc, VALUE *argv, VALUE self){
 	
 	Data_Get_Struct(self, void *, ppDB);
 	
-    //do not close sync db, close it at exit
-	rc = 0;//rho_sync_closeDB();//sqlite3_close(db);
-	
+    rc = rho_db_close(*ppDB);
+
 	return INT2NUM(rc);
 }
 
