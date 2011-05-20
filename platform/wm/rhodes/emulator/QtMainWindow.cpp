@@ -4,6 +4,8 @@
 #include "ExternalWebView.h"
 #include <QResizeEvent>
 #include <QWebFrame>
+#include <QWebSettings>
+#include <QWebSecurityOrigin>
 #include "common/RhoStd.h"
 #include "common/RhodesApp.h"
 #include "rubyext/WebView.h"
@@ -16,8 +18,22 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     cb(NULL)
 {
     ui->setupUi(this);
-    this->ui->webView->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+
+    QWebSettings* qs = QWebSettings::globalSettings(); //this->ui->webView->settings();
+    qs->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+    qs->setAttribute(QWebSettings::LocalStorageEnabled, true);
+    qs->setAttribute(QWebSettings::OfflineStorageDatabaseEnabled, true);
+    qs->setAttribute(QWebSettings::OfflineWebApplicationCacheEnabled, true);
+    qs->setOfflineStorageDefaultQuota(1024*1024*1024);
+
+    rho::String rs_dir = RHODESAPP().getRhoRootPath()+RHO_EMULATOR_DIR;
+    qs->setOfflineWebApplicationCachePath(rs_dir.c_str());
+    qs->setLocalStoragePath(rs_dir.c_str());
+    qs->setOfflineStoragePath(rs_dir.c_str());
+
     this->ui->webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    this->ui->webView->page()->mainFrame()->securityOrigin().setDatabaseQuota(1024*1024*1024);
+
     this->move(0,0);
     this->ui->toolBar->hide();
     this->ui->toolBarRight->hide();
