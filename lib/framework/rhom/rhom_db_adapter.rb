@@ -32,15 +32,15 @@ class RhomDbAdapter
   end
 
   # closes the database if and only if it is open
-  #def close
-  #  if @database
-  #    @database.close
-  #    @database = nil
-  #  else
-  #    return false
-  #  end
-  #  return true
-  #end   
+  def close
+    if @database
+      @database.close
+      @database = nil
+    else
+      return false
+    end
+    return true
+  end   
 
   def is_ui_waitfordb
       @database.is_ui_waitfordb
