@@ -114,6 +114,11 @@ void CMainWindow::onCustomMenuItemCommand(int nItemPos)
     oMenuItem.processCommand();
 }
 
+void CMainWindow::DestroyUi(void)
+{
+    rho_rhodesapp_callUiDestroyedCallback();
+}
+
 
 // **************************************************************************
 //
@@ -138,8 +143,6 @@ LRESULT CMainWindow::OnExecuteRunnable(UINT /*uMsg*/, WPARAM wParam, LPARAM lPar
 
 LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-    rho_rhodesapp_callUiDestroyedCallback();
-
     if(m_logView.IsWindow()) {
         m_logView.DestroyWindow();
     }
