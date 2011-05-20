@@ -298,6 +298,8 @@ void CRhodesApp::run()
     rubyext::CGeoLocation::Destroy();
     sync::CSyncThread::Destroy();
 
+    net::CAsyncHttp::Destroy();
+
     RhoRubyStop();
 }
 
@@ -342,7 +344,7 @@ void CRhodesApp::stopApp()
         stop(2000);
     }
 
-    net::CAsyncHttp::Destroy();
+//    net::CAsyncHttp::Destroy();
 }
 
 template <typename T>
