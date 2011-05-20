@@ -57,8 +57,11 @@ public class DBAdapter extends RubyBasic
 	public void close()
 	{ 
 		try{
-			m_dbStorage.close();
-			m_dbStorage = null;
+			if ( m_dbStorage != null )
+			{
+				m_dbStorage.close();
+				m_dbStorage = null;
+			}
 		}catch(Exception exc)
 		{
     		LOG.ERROR("DB close failed.", exc);
@@ -1179,10 +1182,19 @@ public class DBAdapter extends RubyBasic
 		    	
 			}
 		});
-		/*klass.defineMethod( "close", new RubyNoArgMethod(){ 
-			protected RubyValue run(RubyValue receiver, RubyBlock block ){
-				return ((DBAdapter)receiver).rb_close();}
-		});*/
+		klass.defineMethod( "close", new RubyNoArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyBlock block )
+			{
+		    	try{
+					((DBAdapter)receiver).close();
+					return ObjectFactory.createInteger(0);
+		    	}catch( Exception e ){
+		    		LOG.ERROR("close failed.", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+		    	}
+			}
+		});
+		
 		klass.defineMethod( "execute", new RubyVarArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 				return ((DBAdapter)receiver).rb_execute(args.get(0), args.get(1), 
