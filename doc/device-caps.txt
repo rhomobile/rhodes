@@ -1087,19 +1087,19 @@ For example you can use Alert.show_status in sync notification callback:
 
 ## Timer
 
-In your controller, you may start timer using Rho::RhoTimer class:
+In your controller, you may start timer using Rho::Timer class:
 
-** start_timer ** - start timer and call callback after some interval
+** start ** - start timer and call callback after some interval
 	:::ruby
-	Rho::RhoTimer.start_timer(interval_milliseconds, callback_url, callback_data)
+	Rho::Timer.start(interval_milliseconds, callback_url, callback_data)
 
 For example:
     :::ruby
-	Rho::RhoTimer.start_timer(5000, (url_for :action => :timer_callback), "test")
+	Rho::Timer.start(5000, (url_for :action => :timer_callback), "test")
 	
-** stop_timer ** - stop timer by callback
+** stop ** - stop timer by callback
 	:::ruby
-	Rho::RhoTimer.stop_timer(callback_url)
+	Rho::Timer.stop(callback_url)
 		
 ## Screen rotation
 When user rotate device, Rhodes update view corresponding to new orientation. To get notification about rotation use callback:
