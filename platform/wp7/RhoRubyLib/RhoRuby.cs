@@ -28,6 +28,7 @@ namespace rho
         private ScriptRuntime m_runtime;
         private ScriptEngine m_engine;
         RubyContext m_context;
+        public RubyContext rubyContext { get { return m_context; } }
         private object m_rhoframework;
 
         public WebBrowser WebBrowser{ get { return m_webBrowser; } }
