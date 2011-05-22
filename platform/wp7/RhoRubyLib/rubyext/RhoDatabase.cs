@@ -17,6 +17,9 @@ namespace rho.rubyext
         {
             static CRhoRuby RhoRuby { get { return CRhoRuby.Instance; } }
 
+            static RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
+                new RhoLogger("RhoDatabase");
+
             DBAdapter m_db;
             RhoDatabase() { }
 
@@ -39,27 +42,43 @@ namespace rho.rubyext
             [RubyMethod("close")]
             public static void Close(RhoDatabase/*!*/ self)
             {
-                self.m_db.close();
+                try
+                {
+                    self.m_db.close();
+                }
+                catch (Exception ex)
+                {
+                    LOG.HandleRubyException(ex, RhoRuby.rubyContext.CurrentException, "close");
+                }
             }
 
             [RubyMethod("commit")]
             public static void Commit(RhoDatabase/*!*/ self)
             {
-                self.m_db.commit();
-
+                try
+                {
+                    self.m_db.commit();
+                }
+                catch (Exception ex)
+                {
+                    LOG.HandleRubyException(ex, RhoRuby.rubyContext.CurrentException, "commit");
+                }
             }
 
             [RubyMethod("destroy_tables")]
             public static void destroyTables(RhoDatabase/*!*/ self, RubyArray arInclude, RubyArray arExclude)
             {
-                Vector<String> vecIncludes = RhoRuby.makeVectorStringFromArray(arInclude);
-                Vector<String> vecExcludes = RhoRuby.makeVectorStringFromArray(arExclude);
+                try
+                {
+                    Vector<String> vecIncludes = RhoRuby.makeVectorStringFromArray(arInclude);
+                    Vector<String> vecExcludes = RhoRuby.makeVectorStringFromArray(arExclude);
 
-                self.m_db.rb_destroy_tables(vecIncludes, vecExcludes);
-
-                //throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-                //TODO: threw ruby exception
-
+                    self.m_db.rb_destroy_tables(vecIncludes, vecExcludes);
+                }
+                catch (Exception ex)
+                {
+                    LOG.HandleRubyException(ex, RhoRuby.rubyContext.CurrentException, "destroy_tables");
+                }
             }
 
             [RubyMethod("execute")]
@@ -117,45 +136,93 @@ namespace rho.rubyext
                     return retArr;
                 }catch (Exception exc)
                 {
-                    //TODO: throw ruby exception
-                    throw exc;
+                    LOG.HandleRubyException(exc, RhoRuby.rubyContext.CurrentException, "execute");
+                    return null;
                 }
             }
 
             [RubyMethod("is_ui_waitfordb")]
             public static Boolean isUiWaitForDb(RhoDatabase/*!*/ self)
             {
-                return self.m_db.isUIWaitDB();
+                Boolean res = false;
+                try
+                {
+                    res = self.m_db.isUIWaitDB();
+                }
+                catch (Exception ex)
+                {
+                    LOG.HandleRubyException(ex, RhoRuby.rubyContext.CurrentException, "is_ui_waitfordb");
+                }
+
+                return res;
             }
 
             [RubyMethod("lock_db")]
             public static void Lock(RhoDatabase/*!*/ self)
             {
-                self.m_db.Lock();
+                try
+                {
+                    self.m_db.Lock();
+                }
+                catch (Exception ex)
+                {
+                    LOG.HandleRubyException(ex, RhoRuby.rubyContext.CurrentException, "lock_db");
+                }
             }
 
             [RubyMethod("rollback")]
             public static void Rollback(RhoDatabase/*!*/ self)
             {
-                self.m_db.rollback();
+                try
+                {
+                    self.m_db.rollback();
+                }
+                catch (Exception ex)
+                {
+                    LOG.HandleRubyException(ex, RhoRuby.rubyContext.CurrentException, "rollback");
+                }
             }
 
             [RubyMethod("start_transaction")]
             public static void startTransaction(RhoDatabase/*!*/ self)
             {
-                self.m_db.startTransaction();
+                try
+                {
+                    self.m_db.startTransaction();
+                }
+                catch (Exception ex)
+                {
+                    LOG.HandleRubyException(ex, RhoRuby.rubyContext.CurrentException, "start_transaction");
+                }
             }
 
             [RubyMethod("table_exist?")]
             public static Boolean isTableExist(RhoDatabase/*!*/ self, MutableString/*!*/ tblName)
             {
-                return self.m_db.isTableExist( tblName.ToString() );
+                Boolean res = false;
+                try
+                {
+                    res = self.m_db.isTableExist(tblName.ToString());
+                }
+                catch (Exception ex)
+                {
+                    LOG.HandleRubyException(ex, RhoRuby.rubyContext.CurrentException, "table_exist?");
+                }
+
+                return res;
             }
 
             [RubyMethod("unlock_db")]
             public static void Unlock(RhoDatabase/*!*/ self)
             {
-                self.m_db.Unlock();
+                try
+                {
+                    self.m_db.Unlock();
+                }
+                catch (Exception ex)
+                {
+                    LOG.HandleRubyException(ex, RhoRuby.rubyContext.CurrentException, "unlock_db");
+                }
             }
 
             #endregion
