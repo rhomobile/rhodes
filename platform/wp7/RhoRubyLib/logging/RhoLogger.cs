@@ -293,9 +293,8 @@ namespace rho.common
 	        }
 	    }
 
-        public void HandleRubyException(Exception ex, String message)
+        public void HandleRubyException(Exception ex, Exception rubyEx,  String message)
         {
-            Exception rubyEx = ex;
             if (rubyEx == null)
             {
                 rubyEx = RubyExceptionData.InitializeException(new RuntimeError(ex.Message.ToString()), ex.Message);
