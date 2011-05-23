@@ -101,6 +101,41 @@ def set_app_url_scheme(newname)
   return ret_value
 end
 
+BAKUP_FILES = ['rhorunner.xcodeproj', 'Entitlements.plist', 'icon.png', 'icon114.png', 'icon57.png', 'icon72.png', 'Info.plist']
+CLEAR_FILES = ['Default.png', 'Default@2x.png', 'Default-Portrait.png', 'Default-PortraitUpsideDown.png', 'Default-Landscape.png', 'Default-LadscapeLeft.png', 'Default-LandscapeRight.png']
+
+def make_project_bakup
+     BAKUP_FILES.each do |f|
+           filename_origin = $config["build"]["iphonepath"] + "/" +f
+           filename_bak = $config["build"]["iphonepath"] + "/project_bakup/" +f
+           is_folder = File.directory? filename_bak 
+           if File.exists? filename_origin
+                if (!File.exists? filename_bak) && (!is_folder) 
+                    bak_folder = $config["build"]["iphonepath"] + "/project_bakup"
+                    mkdir_p bak_folder
+                    cp_r filename_origin,filename_bak
+                end
+           end        
+     end
+end
+
+def restore_project_from_bak
+     BAKUP_FILES.each do |f|
+           filename_origin = $config["build"]["iphonepath"] + "/" +f
+           filename_bak = $config["build"]["iphonepath"] + "/project_bakup/" +f
+           if File.exists? filename_bak
+                   rm_rf filename_origin 
+                   cp_r filename_bak,filename_origin                      
+           end        
+     end
+     CLEAR_FILES.each do |f|
+           filename = $config["build"]["iphonepath"] + "/" +f
+           if File.exists? filename
+                   rm_rf filename                      
+           end        
+     end
+end
+
 def set_app_url_name(newname)
   ret_value = ''
   fname = $config["build"]["iphonepath"] + "/Info.plist"
@@ -148,7 +183,7 @@ def restore_app_icon
   end
 end
 
-def set_app_icon
+def set_app_icon(make_bak)
   puts "set icon"
   ipath = $config["build"]["iphonepath"]
   begin
@@ -156,7 +191,9 @@ def set_app_icon
       ibak = File.join(ipath, name + '.bak')
       icon = File.join(ipath, name + '.png')
       appicon = File.join($app_path, 'icon', name + '.png')
-      cp icon, ibak unless File.exists? ibak
+      if make_bak 
+         cp icon, ibak unless File.exists? ibak
+      end
       cp appicon, ipath
     end
   rescue => e
@@ -181,7 +218,7 @@ def restore_default_images
   end
 end
 
-def set_default_images
+def set_default_images(make_bak)
   puts "set_default_images"
   ipath = $config["build"]["iphonepath"]
   begin
@@ -192,7 +229,9 @@ def set_default_images
       appimage = File.join($app_path, 'app', name + '.png')
       appsimage = File.join($app_path, 'app', name + '.iphone.png')
       if File.exists? imag
-        cp imag, ibak unless File.exists? ibak
+        if make_bak
+           cp imag, ibak unless File.exists? ibak
+        end 
       end
       #bundlei = File.join($srcdir, defname + '.png')
       #cp appimage, bundlei unless !File.exist? appimage
@@ -357,6 +396,7 @@ namespace "config" do
     #xcode_configuration = ENV['CONFIGURATION']
     #$configuration = xcode_configuration if not xcode_configuration.nil?
 
+    make_project_bakup
   end
 end
 
@@ -419,7 +459,35 @@ namespace "build" do
         end
       end
     end
-    
+
+    task :restore_xcode_project => ["config:iphone"] do
+       restore_project_from_bak 
+    end    
+
+    task :setup_xcode_project => ["config:iphone"] do
+      restore_project_from_bak
+
+      appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
+      vendor = $app_config['vendor'] ? $app_config['vendor'] : "rhomobile"
+      bundle_identifier = "com.#{vendor}.#{appname}"
+      bundle_identifier = $app_config["iphone"]["BundleIdentifier"] unless $app_config["iphone"]["BundleIdentifier"].nil?
+      saved_identifier = set_app_bundle_identifier(bundle_identifier)
+      
+      saved_url_scheme = set_app_url_scheme($app_config["iphone"]["BundleURLScheme"]) unless $app_config["iphone"]["BundleURLScheme"].nil?
+      saved_url_name = set_app_url_name(bundle_identifier)
+
+      set_app_icon(false)
+      set_default_images(false)
+
+      if $entitlements == ""
+          if $configuration == "Distribution"
+              $entitlements = "Entitlements.plist"
+          end
+      end
+
+      set_signing_identity($signidentity,$provisionprofile,$entitlements.to_s) if $signidentity.to_s != ""
+    end
+
 #    desc "Build rhodes"
     task :rhodes => ["config:iphone", "build:iphone:rhobundle"] do
       
@@ -432,6 +500,7 @@ namespace "build" do
       saved_name = set_app_name($app_config["name"]) unless $app_config["name"].nil?
       saved_version = set_app_version($app_config["version"]) unless $app_config["version"].nil?
 
+
       appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
       vendor = $app_config['vendor'] ? $app_config['vendor'] : "rhomobile"
       bundle_identifier = "com.#{vendor}.#{appname}"
@@ -441,8 +510,8 @@ namespace "build" do
       saved_url_scheme = set_app_url_scheme($app_config["iphone"]["BundleURLScheme"]) unless $app_config["iphone"]["BundleURLScheme"].nil?
       saved_url_name = set_app_url_name(bundle_identifier)
 
-      set_app_icon
-      set_default_images
+      set_app_icon(true)
+      set_default_images(true)
 
       if $entitlements == ""
           if $configuration == "Distribution"
