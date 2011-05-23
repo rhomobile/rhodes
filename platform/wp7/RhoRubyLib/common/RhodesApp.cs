@@ -35,6 +35,7 @@ namespace rho.common
         String[] m_currentUrls = new String[5];
         private String m_strBlobsDirPath, m_strDBDirPath;
         private String m_strHomeUrl;
+        private String m_strAppBackUrl;
         ManualResetEvent m_UIWaitEvent = new ManualResetEvent(false);
         Vector<Object> m_arCallbackObjects = new Vector<Object>();
 
@@ -305,7 +306,10 @@ namespace rho.common
                 if (m_appMainPage.ApplicationBar == null)
                     createEmptyToolBar();
                 else
+                {
                     m_appMainPage.ApplicationBar.MenuItems.Clear();
+                    setAppBackUrl("");
+                }
 
                 m_menuItems = menuItems;
 
@@ -321,6 +325,8 @@ namespace rho.common
 
                     if (action == "close") continue;
 
+                    if (item.Text.toLowerCase() == "back" && action.toLowerCase() != "back") setAppBackUrl(action);
+
                     item.Click += delegate(object sender, EventArgs e) { processToolBarCommand(sender, e, action); };
 
                     m_appMainPage.ApplicationBar.MenuItems.Add(item);
@@ -334,6 +340,7 @@ namespace rho.common
             m_appMainPage.ApplicationBar.IsMenuEnabled = true;
             m_appMainPage.ApplicationBar.IsVisible = true;
             m_appMainPage.ApplicationBar.Opacity = 1.0;
+            setAppBackUrl("");
         }
 
         public void createToolBar(int barType, Object barParams)
@@ -413,7 +420,9 @@ namespace rho.common
             boolean callback = false;
             if (strAction == "back")
             {
-                if (m_backHistory.Count > 0)
+                if (m_strAppBackUrl.length() > 0)
+                    processToolBarCommand(this, e, m_strAppBackUrl);
+                else if (m_backHistory.Count > 0)
                 {
                     Uri destination = m_backHistory.Peek();
                     m_webBrowser.Navigate(destination);
@@ -506,6 +515,12 @@ namespace rho.common
             Object res = (Object)m_arCallbackObjects.elementAt(nIndex);
             m_arCallbackObjects[nIndex] = null;
             return res;
+        }
+
+        public void setAppBackUrl(String url)
+        {
+            m_strAppBackUrl = url;
+            m_backHistory.Clear();
         }
     }
 }
