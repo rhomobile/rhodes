@@ -95,6 +95,16 @@ Open up a command window and switch to your application's directory. Run:
 	
 This changes your rhobuild.yml in the SDK folder to point to your application.
 
+Prepare XCode rrhorunner.xcodeproj and other files for current application :
+
+	:::term
+  	rake build:iphone:setup_xcode_project
+
+Restore original XCode rrhorunner.xcodeproj and other files :
+
+	:::term
+  	rake build:iphone:restore_xcode_project
+
 After you change application code just run 'Build and Go' command in XCode to build for the simulator.
 
 If you want to build for the device, open the 'rhorunner' target and select your code signing information that you installed from the apple developer site and change your active sdk to a device.
