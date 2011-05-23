@@ -62,7 +62,14 @@ def get_variables(scope)
     vars = eval(prefix + cmd, $_binding)
     $_s.write("VSTART:#{vartype}\n")
     vars.each do |v|
-      $_s.write("V:#{vartype}:#{v}:#{eval(v,$_binding).inspect}\n")
+      if v !~ /^\$(=|KCODE)$/
+        begin
+          result = eval(v,$_binding).inspect
+        rescue Exception => exc
+          result = "#{$!}".inspect
+        end
+        $_s.write("V:#{vartype}:#{v}:#{result}\n")
+      end
     end
     $_s.write("VEND:#{vartype}\n")
   rescue
@@ -70,7 +77,7 @@ def get_variables(scope)
 end
 
 def log_command(cmd)
-  puts "[Debugger] Received command: #{cmd}"
+  # puts "[Debugger] Received command: #{cmd}"
 end
 
 def debug_handle_cmd(inline)
