@@ -38,7 +38,7 @@ class Jake
 
   def self.get_absolute(path)
     return File.expand_path(path) if File.exists?(path)
-    currentdir = pwd
+    currentdir = Dir.pwd()
     
     path = currentdir + "/" + path
   
@@ -210,13 +210,13 @@ class Jake
 
   	wd = options[:directory]
   	if not wd.nil?
-      currentdir = pwd()
+      currentdir = Dir.pwd()
       chdir wd
     end
 
     cmdstr = argv.map { |x| x =~ / |\|/ ? '"' + x + '"' : x }.join(' ')
 
-    puts "PWD: " + pwd
+    puts "PWD: " + Dir.pwd()
     puts "CMD: " + cmdstr
     $stdout.flush
 
@@ -278,7 +278,7 @@ class Jake
 
       p = Pathname.new(src)
     src = p.realpath
-    currentdir = pwd()
+    currentdir = Dir.pwd()
     src = src.to_s.gsub(/"/,"")
   
     args = Array.new
@@ -344,7 +344,7 @@ class Jake
     javabin = $config["env"]["paths"]["java"]
     cmd = jdehome + "/bin/rapc.exe"
     
-    currentdir = pwd()
+    currentdir = Dir.pwd()
   
   
     chdir destdir
