@@ -389,6 +389,11 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 		return 1;
 	}
 
+#ifdef RHODES_EMULATOR
+    if (strcasecmp("main_window_closed",szPropName) == 0) 
+        {*resValue = rho_ruby_create_boolean(CMainWindow::mainWindowClosed); return 1;}
+#endif
+
 	if (strcasecmp("has_camera",szPropName) == 0) 
         {*resValue = rho_ruby_create_boolean(has_camera()); return 1;}
 
