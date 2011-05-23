@@ -250,7 +250,7 @@ namespace "build" do
     def runPreverify(args)  
       jdehome = $config["env"]["paths"][$bbver]["jde"]
     
-      startdir = pwd
+      startdir = Dir.pwd()
       chdir $tmpdir
       puts Jake.run(File.join(jdehome,"bin/preverify"),args)
       chdir startdir
