@@ -179,24 +179,28 @@ public class Nfc implements RhodesActivityListener {
 	public void onPause(RhodesActivity activity) {
 		log(" $$$$$$$$$ onPause() ");
 		NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(RhodesActivity.getContext());
-		nfcAdapter.disableForegroundDispatch(activity);
-		nfcAdapter.disableForegroundNdefPush(activity);
+		if (nfcAdapter != null) {
+			nfcAdapter.disableForegroundDispatch(activity);
+			nfcAdapter.disableForegroundNdefPush(activity);
+		}
 	}
 	
 	public void onResume(RhodesActivity activity) {
 		log(" $$$$$$$$$ onResume() ");
 		NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(RhodesActivity.getContext());
-		IntentFilter[] filters = new IntentFilter[1];
-		filters[0] = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
-		
-		PendingIntent intent = 
-            PendingIntent.getActivity(activity, 0,
-              new Intent(activity, activity.getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 
-              0);
-		
-		nfcAdapter.enableForegroundDispatch(activity, intent, null, null);
-		if (ourP2PNdefMessage != null) {
-			nfcAdapter.enableForegroundNdefPush(activity, ourP2PNdefMessage);			
+		if (nfcAdapter != null) {
+			IntentFilter[] filters = new IntentFilter[1];
+			filters[0] = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
+			
+			PendingIntent intent = 
+	            PendingIntent.getActivity(activity, 0,
+	              new Intent(activity, activity.getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 
+	              0);
+			
+			nfcAdapter.enableForegroundDispatch(activity, intent, null, null);
+			if (ourP2PNdefMessage != null) {
+				nfcAdapter.enableForegroundNdefPush(activity, ourP2PNdefMessage);			
+			}
 		}
 	}
 
