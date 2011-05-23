@@ -35,6 +35,23 @@ module Alert
 	end
 end
 
+module NavBar
+	def self.create( arg )
+		#TODO: create
+	end
+	
+	def self.remove( )
+		#TODO: remove
+	end
+
+	def self.started( )
+		#TODO: started
+		
+		false
+	end
+	
+end
+
 module Rho
 
 class RhoConf
