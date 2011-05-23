@@ -1,0 +1,542 @@
+# NFC
+
+## NFC Overview
+NFC (Near Field Communication). NFC API provide access to NFC functionality. You can check NFC availability on current device and register callback for listen event when NFC tag near of device. Currently NFC supported only on Android. And also Android version must be 2.3.3 or later.
+NFC API implemented in native extension. You should add "nfc" to extension list in your nuild.yml before start using NFC in your application. And also do not forget enable NFC for start process NFC events - Rho::NFCManager.enable.
+NFC Ruby API based on Android NFC API. We recommended investigate Android doc for understand NFC Techs etc. See [Android NFC](http://developer.android.com/guide/topics/nfc/index.html)
+
+## NFC events
+There are two different NFC callback can be received (you should setup callbacks before!) :
+* NFC callback : it executed when Android ACTION_NDEF_DISCOVERED or ACTION_TAG_DISCOVERED events processed.
+* NFC Tech callback : it executed when Android ACTION_TECH_DISCOVERED event processed.
+In case of current state of NFC support in Android you can receive NFC callback only if your application in foreground. If your application is not run or in background - only ACTION_TECH_DISCOVERED is processed. 
+For process ACTION_TECH_DISCOVERED event you should setup list of techs in special resource file : [Rhodes ROOT]/platform/android/Rhodes/res/xml/filter_nfc.xml. See according Android documentation - [Android ACTION_TECH_DISCOVERED description](http://developer.android.com/reference/android/nfc/NfcAdapter.html#ACTION_TECH_DISCOVERED)
+For processing events received when application not run or in background, after start/activate use special method of NfcManager : 
+
+	:::ruby
+	Rho::NFCManager.perform_open_application_event
+
+In Tech callback access to Techs by get current Tag and request tech list/tech suport objects like this :
+
+	:::ruby
+	tag = Rho::NFCManager.get_current_Tag
+	mifareClassic = tag.get_tech(Rho::NFCTagTechnology::MIFARE_CLASSIC)
+	if mifareClassic != nil
+	     puts 'MifareClassic is supported !'
+	     mifareClassic.connect
+
+## NdefMessage NdefRecord
+
+NFC Message contain list of NdefRecord. You can read/write NdefMessage when you access to Tag via Ndef/NdefFormatable techs. Also you should send NdefMessage when you use P2P NFC functionality.
+Example of construct NdefMessage for P2P send:
+
+	:::ruby
+	payload = Rho::NFCManager.make_payload_with_well_known_uri(0, 'http://www.rhomobile.com')
+	hash = { 'id' => [0], 'type' => Rho::NdefRecord::RTD_URI, 'tnf' => Rho::NdefRecord::TNF_WELL_KNOWN, 'payload' => payload}
+	record = Rho::NFCManager.make_NdefRecord_from_hash(hash)
+	records = [record]
+	msg = Rho::NFCManager.make_NdefMessage_from_array_of_NdefRecord(records)
+	# start push message
+	Rho::NFCManager.p2p_enable_foreground_nde_push(msg)
+	
+
+## NFC API
+
+	:::ruby
+	module Rho
+	
+	    
+	class NdefRecord
+	    
+	    # 3-bit TNF (Type Name Format) field: Indicates how to interpret the type field
+	    TNF_ABSOLUTE_URI = 3
+	    TNF_EMPTY = 0
+	    TNF_EXTERNAL_TYPE = 4
+	    TNF_MIME_MEDIA = 2
+	    TNF_UNCHANGED = 6
+	    TNF_UNKNOWN = 5
+	    TNF_WELL_KNOWN = 1
+	    
+	    # RTD Text types. For use with TNF_WELL_KNOWN
+	    RTD_TEXT = [0x54]   # "T"
+	    RTD_URI = [0x55] # "U"
+	    RTD_SMART_POSTER = [0x53, 0x70] # "Sp"
+	    RTD_ALTERNATIVE_CARRIER = [0x61, 0x63]   # "ac"
+	    RTD_HANDOVER_CARRIER = [0x48, 0x63] # "Hc"
+	    RTD_HANDOVER_REQUEST = [0x48, 0x72] # "Hr"
+	    RTD_HANDOVER_SELECT = [0x48, 0x73] # "Hs"
+	    
+	   ID = 'id'
+	   TNF = 'tnf'
+	   TYPE = 'type'
+	   PAYLOAD = 'payload' 
+	    
+	    
+	   # return byte[] 
+	   def get_id
+	   end 
+	    
+	   # return int 
+	   def get_tnf
+	   end    
+	   
+	   # return byte[] 
+	   def get_type
+	   end    
+	   
+	   # return byte[]  
+	   def get_payload
+	   end    
+	
+	   # return string   
+	   def get_payload_as_string
+	   end    
+	
+	   # return raw byte[]  
+	   def get_byte_array
+	   end
+	   
+	   # return hash 
+	   # hash :
+	   #       'id' - byte[]
+	   #       'tnf' - int
+	   #       'type' - byte[]
+	   #       'payload' - byte[]
+	   #       'payload_as_string' - string
+	   def make_hash
+	   end    
+	    
+	  # convert int tnf to string
+	  def self.convert_Tnf_to_string(tnf)
+	  end
+	
+	  # convert byte[] type to string
+	  def self.convert_RTD_to_string(rtd)
+	  end
+	
+	end    
+	    
+	
+	class NdefMessage
+	   
+	    
+	   # return raw byte[]   
+	   def get_byte_array
+	   end
+	
+	   # return array of NdefRecord
+	   def get_records
+	   end    
+	    
+	    
+	end    
+	    
+	    
+	
+	class NFCTagTechnology
+	
+	  ISODEP = 'IsoDep'
+	  MIFARE_CLASSIC = 'MifareClassic'
+	  MIFARE_ULTRALIGHT = 'MifareUltralight'
+	  NDEF = 'Ndef'
+	  NDEF_FORMATABLE = 'NdefFormatable'
+	  NFCA = 'NfcA'
+	  NFCB = 'NfcB'
+	  NFCF = 'NfcF'
+	  NFCV = 'NfcV'
+	
+	  # return string    
+	  def get_name
+	  end
+	
+	  # connect - only after it you can make any I/O operation     
+	  def connect
+	  end
+	
+	  # close connect - make it after your I/O operations     
+	  def close
+	  end
+	
+	  # return true if tech connected and ready for I/O operations     
+	  def is_connected
+	  end
+	
+	end
+	
+	    
+	class NFCTagTechnology_NfcA < NFCTagTechnology
+	    
+	    # return byte[]
+	    def get_Atqa
+	    end    
+	
+	    # return int
+	    def get_Sak
+	    end
+	    
+	    # data - byte[]
+	    # return byte[]
+	    def transceive(data)
+	    end    
+	    
+	end    
+	
+	class NFCTagTechnology_Ndef < NFCTagTechnology
+	        
+	    MIFARE_CLASSIC = 'com.nxp.ndef.mifareclassic'
+	    NFC_FORUM_TYPE_1 = 'org.nfcforum.ndef.type1'
+	    NFC_FORUM_TYPE_2 = 'org.nfcforum.ndef.type2'
+	    NFC_FORUM_TYPE_3 = 'org.nfcforum.ndef.type3'
+	    NFC_FORUM_TYPE_4 = 'org.nfcforum.ndef.type4'
+	    
+	    # return int
+	    def get_max_size
+	    end    
+	    
+	    # return bool
+	    def is_writable
+	    end    
+	    
+	    # return bool
+	    def can_make_read_only
+	    end    
+	    
+	    # return bool
+	    def make_read_only
+	    end    
+	    
+	    # return string
+	    def get_type
+	    end    
+	        
+	    # return NdefMessage
+	    def read_NdefMessage
+	    end    
+	    
+	    # msg - NdefMessage
+	    def write_NdefMessage(msg)
+	    end
+	  
+	        
+	end    
+	    
+	    
+	class NFCTagTechnology_MifareClassic < NFCTagTechnology
+	
+	    KEY_DEFAULT = [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]
+	    KEY_MIFARE_APPLICATION_DIRECTORY = [0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5]
+	    KEY_NFC_FORUM =[0xD3, 0xF7, 0xD3, 0xF7, 0xD3, 0xF7]    
+	    
+	    TYPE_CLASSIC = 0
+	    TYPE_PLUS = 1
+	    TYPE_PRO = 2
+	    TYPE_UNKNOWN = -1
+	    
+	   # return int type type 
+	   def get_type
+	   end 
+	   
+	   # return named type (for known types) 
+	   def self.convert_type_to_string(type)
+	   end    
+	    
+	   # index - integer
+	   # block - 16 byte array
+	   def  write_block(index, block)
+	   end
+	
+	   # index - integer
+	   # return 16 byte array
+	   def read_block(index)
+	   end
+	
+	   # return size in bytes 
+	   def get_size
+	   end
+	
+	   #return number of blocks
+	   def get_block_count
+	   end
+	
+	   # return count of sectors 
+	   def get_sector_count
+	   end    
+	    
+	   # return count of blocks in sector 
+	   def get_blocks_in_sector_count(index)
+	   end    
+	
+	    # return index of first block in sector 
+	    def sector_to_block(index)
+	    end    
+	           
+	    # authenticate sector with key
+	    # key is 6 byte array
+	    # return true if authenticate was passed
+	    def authenticate_sector_with_key_A(index, key)
+	    end   
+	       
+	    # authenticate sector with key
+	    # key is 6 byte array
+	    # return true if authenticate was passed
+	    def authenticate_sector_with_key_B(index, key)
+	    end   
+	   
+	    # send data (byte array) to Tag and receive result - byte array
+	    def transceive(data)
+	    end    
+	    
+	end
+	
+	class NFCTagTechnology_MifareUltralight < NFCTagTechnology
+	
+	   TYPE_ULTRALIGHT = 1
+	   TYPE_ULTRALIGHT_C = 2
+	   TYPE_UNKNOWN = -1
+	
+	   # return int
+	   def get_type
+	   end
+	
+	   # index - integer
+	   # block - 4 byte array
+	   def  write_page(index, block)
+	   end
+	
+	   # index - integer
+	   # return 16 byte array
+	   def read_pages(index)
+	   end
+	
+	    # send data (byte array) to Tag and receive result - byte array
+	    def transceive(data)
+	    end    
+	
+	end
+	
+	
+	class NFCTagTechnology_IsoDep < NFCTagTechnology
+	    
+	    # return byte[]
+	    def get_hi_layer_responce
+	    end    
+	
+	    # return byte[]
+	    def get_historical_bytes
+	    end    
+	
+	
+	    # timeout - int
+	    def set_timeout(timeout)
+	    end
+	    
+	    # data - byte[]
+	    # return byte[]
+	    def transceive(data)
+	    end    
+	    
+	end    
+	
+	
+	class NFCTagTechnology_NdefFormatable < NFCTagTechnology
+	        
+	    # msg - NdefMessage
+	    def format(msg)
+	    end
+	  
+	    # msg - NdefMessage
+	    def format_read_only(msg)
+	    end
+	        
+	end    
+	
+	
+	class NFCTagTechnology_NfcB < NFCTagTechnology
+	    
+	    # return byte[]
+	    def get_application_data
+	    end    
+	
+	    # return byte[]
+	    def get_protocol_info
+	    end    
+	
+	
+	    # data - byte[]
+	    # return byte[]
+	    def transceive(data)
+	    end    
+	    
+	end    
+	
+	
+	class NFCTagTechnology_NfcF < NFCTagTechnology
+	    
+	    # return byte[]
+	    def get_manufacturer
+	    end    
+	
+	    # return byte[]
+	    def get_system_code
+	    end    
+	
+	
+	    # data - byte[]
+	    # return byte[]
+	    def transceive(data)
+	    end    
+	    
+	end    
+	
+	
+	class NFCTagTechnology_NfcV < NFCTagTechnology
+	    
+	    # return int
+	    def get_dsf_id
+	    end    
+	
+	    # return int
+	    def get_responce_flags
+	    end    
+	
+	
+	    # data - byte[]
+	    # return byte[]
+	    def transceive(data)
+	    end    
+	    
+	end    
+	
+	
+	
+	class NFCTag
+	
+	  # return array of string
+	  def get_tech_list
+	  end  
+	
+	# return byte[]
+	  def get_ID
+	  end    
+	    
+	  # return object with implementation of requested tech (based on NFCTagTechnology) 
+	  def  get_tech(tech_name)
+	  end
+	
+	end
+	
+	
+	
+	
+	 
+	class NFCManager
+	 
+	
+	  # return true/false
+	  def self.is_supported
+	  end
+	  
+	  def self.enable
+	  end
+	
+	  def self.disable
+	  end
+	
+	  # return true/false
+	  def self.is_enabled
+	  end
+	
+	  # in callback
+	  # @params['messages'] - array of messages (each message is hash)
+	  # message hash items : 
+	  #       'raw_message' - array of bytes (raw message)
+	  #       'records' - array of records (each record is hash)
+	  #              record hash items :
+	  #                     'raw_record' - array of bytes (raw record)
+	  #                     'id' - array of bytes
+	  #                     'payload' - array of bytes
+	  #                     'tnf' - int
+	  #                     'type' - array of bytes 
+	  #                     'payload_as_string' - string, payload prepared to string (support specail formats for URI, TEXT) 
+	  #                     'subrecords' - message hash (only for SMART_POSTER type)
+	  
+	  # set callback for tech events (Tag discovered/lost, tech special events)
+	  def self.set_nfc_callback(callback_url)
+	  end
+	
+	  # in callback
+	  # @params['Tag_event'] - 'discovered'
+	  def self.set_nfc_tech_callback(callback_url)
+	  end
+	
+	  # return current discovered Tag or nil if not any Tag discovered now
+	  def self.get_current_Tag
+	  end
+	
+	  # call this function after application is started and you setup all functionality for process NFC event
+	  # when application in background or not started, then NFC event was saved and application open/start process executed
+	  # for process saved event - call this function 
+	  def self.perform_open_application_event
+	  end    
+	
+	  # ndef_message - NdefMessage
+	  # start push NdefMessage to any receivers
+	  def self.p2p_enable_foreground_nde_push(ndef_message)
+	  end    
+	
+	  # stop any push NdefMessage to receivers
+	  def self.p2p_disable_foreground_nde_push
+	  end    
+	
+	
+	  # make NdefRecord from byte[]
+	  def self.make_NdefRecord_from_byte_array(array)
+	  end    
+	
+	  # make NdefRecord from hash
+	  # hash :
+	  #       'id' - byte[]
+	  #       'tnf' - int
+	  #       'type' - byte[]
+	  #       'payload' - byte[]
+	  def self.make_NdefRecord_from_hash(hash)
+	  end    
+	
+	  # make NdefMessage from byte[]
+	  def self.make_NdefMessage_from_byte_array(array)
+	  end    
+	
+	  # make NdefMessage from NdefRecord[]
+	  def self.make_NdefMessage_from_array_of_NdefRecord(array)
+	  end    
+	
+	  # make string from byte[] payload
+	  # tnf - int (from NdefRecord)
+	  # type - byte[] (from NdefRecord) 
+	  def self.make_string_from_payload(payload, tnf, type)
+	  end    
+	  
+	  # prepare byte[] payload from string with Absolute URI
+	  def self.make_payload_with_absolute_uri(uri_string)
+	  end    
+	
+	  # prepare byte[] payload from int prefix code and string URI
+	  def self.make_payload_with_well_known_uri(prefix_code, uri_string)
+	  end    
+	
+	  # prepare byte[] payload from string language code and string text
+	  def self.make_payload_with_well_known_text(language, text)
+	  end    
+	
+	 
+	end
+	
+	end
+
+
+
+## Example of NFC API using
+
+You can find complete example of using NFC API in [Rhodes-System-Api-Samples](http://github.com/rhomobile/rhodes-system-api-samples). See NFC Demo page - [NFC Demo](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/Nfc/). 
+
+
