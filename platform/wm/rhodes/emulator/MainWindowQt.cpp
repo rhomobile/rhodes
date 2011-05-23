@@ -20,6 +20,8 @@ extern "C" void rho_geoimpl_turngpsoff();
 int CMainWindow::m_screenWidth;
 int CMainWindow::m_screenHeight;
 
+bool CMainWindow::mainWindowClosed = false;
+
 CMainWindow::CMainWindow() { }
 
 CMainWindow::~CMainWindow() { }
@@ -119,6 +121,10 @@ void CMainWindow::DestroyUi(void)
     rho_rhodesapp_callUiDestroyedCallback();
 }
 
+void CMainWindow::onWindowClose(void)
+{
+     mainWindowClosed = true;
+}
 
 // **************************************************************************
 //

@@ -211,6 +211,9 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
           $_wait = true
           while $_wait
             while debug_handle_cmd(true) do end
+            if System::get_property('main_window_closed')
+              $_wait = false
+            end
             sleep if $_wait
           end
           unhandled = false
