@@ -1,3 +1,7 @@
+## 3.0.1
+* Fix customer issues
+* Android: fix push issues
+
 ## 3.0
 * RhoSimulator: simulator for fast Rhodes application development, support debugging using Rhodes Eclipse plug-in.(Windows only)
 * Windows Phone 7 support
