@@ -6,10 +6,16 @@
 #include <QWebFrame>
 #include <QWebSettings>
 #include <QWebSecurityOrigin>
+#include "ext/rho/rhoruby.h"
 #include "common/RhoStd.h"
 #include "common/RhodesApp.h"
 #include "rubyext/WebView.h"
 #undef null
+
+extern "C" {
+	extern VALUE rb_thread_main(void);
+	extern VALUE rb_thread_wakeup(VALUE thread);
+}
 
 QtMainWindow::QtMainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -69,7 +75,9 @@ void QtMainWindow::showEvent(QShowEvent *)
 
 void QtMainWindow::closeEvent(QCloseEvent *ce)
 {
-    wi->close();
+    rb_thread_wakeup(rb_thread_main());
+    if (cb) cb->onWindowClose();
+	wi->close();
     QMainWindow::closeEvent(ce);
 }
 
