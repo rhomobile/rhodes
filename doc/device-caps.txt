@@ -24,7 +24,7 @@ Rhodes provide access to device specific capabilities such as GPS, PIM, camera, 
 	<tr><td class='cap'>Toolbar</td><td>1.2.2</td><td>2.3</td><td>3.0</td><td class='tbd'>n/a</td><td>1.5</td><td>3.0</td></tr>
 	<tr><td class='cap'>Tab Bar</td><td>1.2.2</td><td class='tbd'>3.5</td><td class='tbd'>TBD</td><td class='tbd'>n/a</td><td>1.5</td><td class='tbd'>3.5</td></tr>
 	<tr><td class='cap'>Nav Bar</td><td>2.0</td><td class='tbd'>3.5</td><td class='tbd'>TBD</td><td class='tbd'>n/a</td><td>2.0</td><td class='tbd'>4.0</td></tr>
-	<tr><td class='cap'>Signature Capture</td><td>2.1</td><td class='tbd'>3.5</td><td class='tbd'>TBD</td><td class='tbd'>3.5</td><td>2.1</td><td class='tbd'>4.0</td></tr>
+	<tr><td class='cap'>Signature Capture</td><td>2.1</td><td>3.0</td><td class='tbd'>TBD</td><td class='tbd'>3.5</td><td>2.1</td><td class='tbd'>4.0</td></tr>
 	<tr class='tbd'><td class='cap'>Audio/Video capture</td><td>4.0</td><td>4.0</td><td class='tbd'>TBD</td><td>4.0</td><td>4.0</td><td>4.0</td></tr>
 	<tr><td class='cap'>Bluetooth</td><td>2.2</td><td>2.2</td><td class='tbd'>TBD</td><td>2.2</td><td>2.2</td><td class='tbd'>4.0</td></tr>
 	<tr><td class='cap'>NFC</td><td class='tbd'>TBD</td><td class='tbd'>TBD</td><td class='tbd'>TBD</td><td class='tbd'>TBD</td><td>3.0</td><td class='tbd'>4.0</td></tr>
