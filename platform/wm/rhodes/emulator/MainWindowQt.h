@@ -44,6 +44,7 @@ public:
     virtual void logEvent(const ::std::string& message);
     virtual void createCustomMenu(void);
     virtual void onCustomMenuItemCommand(int nItemPos);
+	virtual void onWindowClose(void);
     // public methods:
     void Navigate2(BSTR URL);
     HWND Initialize(const wchar_t* title);
@@ -53,6 +54,8 @@ public:
     CNativeToolbar& getToolbar(){ return m_toolbar; }
     CMainWindowProxy &getProxy(){ return m_mainWindowProxy; }
     HWND getWebViewHWND();
+	// for 'main_window_closed' System property
+	static bool mainWindowClosed;
 
     BEGIN_MSG_MAP(CMainWindow)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
