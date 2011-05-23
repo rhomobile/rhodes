@@ -19,7 +19,7 @@
 
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT"/>
-                <action android:name="android.nfc.action.ACTION_TAG_DISCOVERED"/>
+                <action android:name="android.nfc.action.TAG_DISCOVERED"/>
             </intent-filter>
 
             <intent-filter>
