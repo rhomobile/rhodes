@@ -1504,14 +1504,14 @@ end
 
 
 def is_emulator_running
-  `#{$adb} devices`.split("\n")[1..-1].each do |line|
+  `"#{$adb}" devices`.split("\n")[1..-1].each do |line|
     return true if line =~ /^emulator/
   end
   return false
 end
 
 def is_device_running
-  `#{$adb} devices`.split("\n")[1..-1].each do |line|
+  `"#{$adb}" devices`.split("\n")[1..-1].each do |line|
     return true if line !~ /^emulator/
   end
   return false
@@ -1532,7 +1532,7 @@ end
 
 def application_running(flag, pkgname)
   pkg = pkgname.gsub(/\./, '\.')
-  `#{$adb} #{flag} shell ps`.split.each do |line|
+  `"#{$adb}" #{flag} shell ps`.split.each do |line|
     return true if line =~ /#{pkg}/
   end
   false
