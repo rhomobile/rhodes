@@ -180,7 +180,7 @@ def debug_handle_cmd(inline)
     end
   end
   if processed
-    $_cmd = $_cmd.sub(/^([^\n\r]*)[\n\r]+(.*$)/, "\\2")
+    $_cmd = $_cmd.sub(/^([^\n\r]*)([\n\r]+(.*)|)$/, "\\3")
     $_wait = wait if inline
   end
   processed
