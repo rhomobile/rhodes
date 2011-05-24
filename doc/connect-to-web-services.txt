@@ -194,6 +194,9 @@ Below, a product model is created using the response from the web service and th
 	  end
 	end
 
+**NOTE: For disable jQTouch caching (by default jQTouch cached your async HTTP request result and will show saved content instead of new requested content), change creation of jQTouch object in layout.erb to next line : <script>jQT = $.jQTouch({cacheGetRequests: false});</script>**
+
+
 ### Note About Animated Transitions
 
 If you deploy to platforms that don"t handle animated transitions (like Windows Mobile and BlackBerry), the controller will need to handle both cases. In your `AsyncHttp` request, you"ll need to set the `callback_param` with the `@request` variable. 
