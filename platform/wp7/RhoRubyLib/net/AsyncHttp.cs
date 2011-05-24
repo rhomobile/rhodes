@@ -194,6 +194,7 @@ namespace rho.net
     	    		    try{
     	    			  /////  m_valBody = json.nextRValue();
                             fastJSON.RJSONTokener.JsonDecode(resp.getCharData());
+                            m_valBody = MutableString.CreateAscii(resp.getCharData());
     	    			    return;
     	    		    }catch(Exception exc)
     	    		    {
