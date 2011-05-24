@@ -1038,7 +1038,9 @@ public class Nfc implements RhodesActivityListener {
 					public void run() {
 						if (RhodesActivity.safeGetInstance().isForegroundNow()) {
 							NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(RhodesActivity.getContext());
-							nfcAdapter.enableForegroundNdefPush(RhodesActivity.safeGetInstance(), ourP2PNdefMessage);
+							if (nfcAdapter != null) {
+								nfcAdapter.enableForegroundNdefPush(RhodesActivity.safeGetInstance(), ourP2PNdefMessage);
+							}
 						}
 					}
 				});
@@ -1052,7 +1054,9 @@ public class Nfc implements RhodesActivityListener {
 			public void run() {
 				if (RhodesActivity.safeGetInstance().isForegroundNow()) {
 					NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(RhodesActivity.getContext());
-					nfcAdapter.disableForegroundNdefPush(RhodesActivity.safeGetInstance());
+					if (nfcAdapter != null) {
+						nfcAdapter.disableForegroundNdefPush(RhodesActivity.safeGetInstance());
+					}
 				}
 			}
 		});
