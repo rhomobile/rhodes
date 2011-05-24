@@ -149,7 +149,7 @@ namespace rho.net
 
             private NetRequest m_pNetRequest;
             String m_strResBody;
-            private MutableString m_valBody;    
+            private Object m_valBody;    
         
             public RhoParams    m_params;
             bool m_bInternal = false;
@@ -190,11 +190,8 @@ namespace rho.net
                     m_mapHeaders.TryGetValue("content-type", out strContType);
     	    	    if ( strContType != null && strContType.indexOf("application/json") >=0 )
     	    	    {   
-    	    		   ///// RJSONTokener json = new RJSONTokener(resp.getCharData());
     	    		    try{
-    	    			  /////  m_valBody = json.nextRValue();
-                            fastJSON.RJSONTokener.JsonDecode(resp.getCharData());
-                            m_valBody = MutableString.CreateAscii(resp.getCharData());
+                            m_valBody = fastJSON.RJSONTokener.JsonDecode(resp.getCharData());
     	    			    return;
     	    		    }catch(Exception exc)
     	    		    {
