@@ -179,10 +179,15 @@ module Rho
         raise Rho::RhoError.new(errCode)
     end
     
+    def set_app(appname, app)
+        APPLICATIONS[appname] = app
+    end
+    
     def get_app(appname)
       if (APPLICATIONS[appname].nil?)
         require 'application' #RhoApplication::get_app_path(appname)+'application'
-        APPLICATIONS[appname] = Object.const_get('AppApplication').new
+        #APPLICATIONS[appname] = Object.const_get('AppApplication').new
+        Object.const_get('AppApplication').new
         unless APPLICATIONS[appname].initialized?
           msg = "RhoApplication was not correctly initialized (forget to call 'super' in AppApplication.initialize ?)"
           puts msg
@@ -285,19 +290,22 @@ end
     end
 =end
     
-    def check_source_migration(app)
-	  uniq_sources = Rho::RhoConfig::sources.values
+    def self.check_sources_migration(uniq_sources)
       uniq_sources.each do |source|
-          next unless source.has_key?('migrate_version')
-          
-          db = ::Rho::RHO.get_src_db(source['name'])	  
-          
-          if !app.on_migrate_source(source['migrate_version'], source)
-            db.execute_batch_sql(source['schema']['sql'])
-          end  
-          
-          db.update_into_table('sources', {"schema_version"=>source['schema_version']},{"name"=>source['name']})
+          check_source_migration(source)
       end
+    end
+
+    def self.check_source_migration(source)
+        return unless source.has_key?('migrate_version')
+
+        db = ::Rho::RHO.get_src_db(source['name'])	  
+
+        if !get_instance().get_app(APPNAME).on_migrate_source(source['migrate_version'], source)
+            db.execute_batch_sql(source['schema']['sql'])
+        end  
+
+        db.update_into_table('sources', {"schema_version"=>source['schema_version']},{"name"=>source['name']})
     end
 
     def reset_db_on_sync_user_changed() 
@@ -422,9 +430,12 @@ end
                     begin
                         uniq_sources = [Rho::RhoConfig::sources[modelName]]
                         init_db_sources(db, uniq_sources, partition, hash_migrate)
+
+                        puts "Migrate schema sources: #{hash_migrate}"
                         
                         ::Rho::RHO.init_schema_sources_partition(uniq_sources, hash_migrate, partition, db)
-
+                        check_sources_migration(uniq_sources)
+                        
                         ::Rho::RHO.init_sync_source_properties(uniq_sources)
                         
                         SyncEngine.update_blob_attribs(partition, Rho::RhoConfig::sources[modelName]['source_id'].to_i() )
@@ -513,8 +524,11 @@ end
                 
             @db_partitions[partition] = db
         end
-        
+
+        puts "Migrate schema sources: #{hash_migrate}"
         ::Rho::RHO.init_schema_sources(hash_migrate)
+        ::Rho::RHO.check_sources_migration(uniq_sources)
+        
         ::Rho::RHO.init_sync_source_properties(uniq_sources)
     end
 
@@ -770,7 +784,6 @@ end
           
         end
         
-        puts "Migrate schema sources: #{hash_migrate}"
     end
     
     def serve(req)
