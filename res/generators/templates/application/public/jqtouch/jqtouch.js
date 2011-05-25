@@ -256,7 +256,7 @@
             }
         }
 
-        function goTo(toPage, animation) {
+        function goTo(toPage, animation, is_history) {
             var fromPage = hist[0].page;
 
             if (typeof(toPage) === 'string') {
@@ -272,7 +272,11 @@
                 }
             }
             if (animatePages(fromPage, toPage, animation)) {
-                addPageToHistory(toPage, animation);
+                if (is_history)
+                {
+                    addPageToHistory(toPage, animation);
+                }
+                
                 return publicObj;
             }
             else
@@ -342,7 +346,7 @@
             // Branch on internal or external href
             else if (hash && hash != '#') {
                 $el.addClass('active');
-                goTo($(hash).data('referrer', $el), animation);
+                goTo($(hash).data('referrer', $el), animation, true);
             } else {
                 $el.addClass('loading active');
                 showPageByHref($el.attr('href'), {
@@ -469,7 +473,8 @@
             }, 100);
         }
 
-        function insertPages(nodes, animation) {
+        function insertPages(nodes, animation, is_history) {
+            
             var targetPage = null;
             $(nodes).each(function(index, node) {
                 var $node = $(this);
@@ -482,7 +487,7 @@
                 }
             });
             if (targetPage !== null) {
-                goTo(targetPage, animation);
+                goTo(targetPage, animation, is_history);
                 return targetPage;
             }
             else
@@ -492,9 +497,11 @@
         }
 
         function insertAsyncPage(data) {
-            $('.waiting').remove();
+            //$('.waiting').remove();
+            setTimeout(function(){ $('.waiting').remove(); },450);
+            
             var settings = asyncRequestSettings;
-            var firstPage = insertPages(data, settings.animation);
+            var firstPage = insertPages(data, settings.animation,true);
             if (firstPage)
             {
                 if (settings.method == 'GET' && jQTSettings.cacheGetRequests && settings.$referrer)
@@ -541,11 +548,12 @@
                                     $referrer: settings.$referrer,
                                     callback: settings.callback
                                 };
-                                $(data).addClass("waiting").appendTo($body);
+                                data = $(data).addClass("waiting");
+                                insertPages(data, settings.animation,false);
                             } else {
 
                                 // success
-                                var firstPage = insertPages(data, settings.animation);
+                                var firstPage = insertPages(data, settings.animation,true);
                                 if (firstPage)
                                 {
                                     if (settings.method == 'GET' && jQTSettings.cacheGetRequests && settings.$referrer)
