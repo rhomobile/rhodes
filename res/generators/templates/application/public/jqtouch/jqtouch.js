@@ -548,8 +548,10 @@
                                     $referrer: settings.$referrer,
                                     callback: settings.callback
                                 };
-                                data = $(data).addClass("waiting");
-                                insertPages(data, settings.animation,false);
+                                $(data).addClass("waiting").appendTo($body);
+                                //TODO: support animated progress page
+                                //data = $(data).addClass("waiting");
+                                //insertPages(data, settings.animation,false);
                             } else {
 
                                 // success
