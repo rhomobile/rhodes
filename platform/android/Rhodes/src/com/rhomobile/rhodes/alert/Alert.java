@@ -98,12 +98,12 @@ public class Alert {
                     public void run() {
                         try {
                             Logger.I(TAG, "showStatusPopup");
-                            //PerformOnUiThread.exec(new Runnable() {
-                            //    @Override
-                            //    public void run() {
+                            PerformOnUiThread.exec(new Runnable() {
+                                @Override
+                                public void run() {
                                     PopupActivity.showStatusDialog(title, message, hide);
-                            //    }
-                            //});
+                                }
+                            });
                         }
                         catch (Exception e) {
                             reportFail("showStatusPopup", e);
