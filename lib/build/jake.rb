@@ -211,7 +211,7 @@ class Jake
   	wd = options[:directory]
   	if not wd.nil?
       currentdir = Dir.pwd()
-      chdir wd
+      Dir.chdir wd
     end
 
     cmdstr = argv.map { |x| x =~ / |\|/ ? '"' + x + '"' : x }.join(' ')
@@ -256,7 +256,7 @@ class Jake
     end
 
     if not wd.nil?
-      chdir currentdir
+      Dir.chdir currentdir
     end
 
     retval
@@ -286,9 +286,9 @@ class Jake
     args << "xf"
     args << src.to_s
   
-    chdir targetdir
+    Dir.chdir targetdir
     puts run(cmd,args)
-    chdir currentdir
+    Dir.chdir currentdir
   end
   
   def self.jarfilelist(target)
@@ -347,7 +347,7 @@ class Jake
     currentdir = Dir.pwd()
   
   
-    chdir destdir
+    Dir.chdir destdir
   
     if output and title and version and vendor
       f = File.new(output + ".rapc", "w")
@@ -403,7 +403,7 @@ class Jake
     cmd.gsub!(/\//,"\\")
     outputstring = run(cmd, args)
     puts outputstring unless $? == 0
-    chdir currentdir
+    Dir.chdir currentdir
   
   end
   
