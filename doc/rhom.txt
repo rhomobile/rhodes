@@ -229,7 +229,7 @@ To clean all client data at startup - change `app_db_version` in `rhoconfig.txt`
 This scenario will work for Property Bag and Fixed Schema models
 
 ### Fixed Schema Data Migrations
-Rhom provides an application hook to migrate the data manually, overriding the default behavior which deletes the data.  You can also use this hook to run business logic related to updating the database.  For example, your application may want to display a customized alert notifying the user that a migration is in progress and it may take a few moments.
+Rhom provides an application hook to migrate the data manually.  You can also use this hook to run business logic related to updating the database.  For example, your application may want to display a customized alert notifying the user that a migration is in progress and it may take a few moments.
 
 To use this hook, first we need to track the `:schema_version` in our model:
 
@@ -254,25 +254,21 @@ This is called on application start when `:schema_version` has changed.
 	  #					new_src['schema']['sql'] contains new schema sql
 	  def on_migrate_source(old_version, new_src)
 	    # ... do something like alert user ...
-	    super
+	    true # does not create table
 	  end
 	end
-	
-To let Rhom automatically delete the table and replace the schema:
 
-	:::ruby
-	def on_migrate_source(old_version, new_src)
-	  # ... do something like alert user ...
-	  super
-	end
+**NOTE: To modify schema without recreate table, you can use only ADD COLUMN command, you cannot remove column or change type(This is sqlite limitation) **
 
 Return `false` to run the custom sql specified by the new_src['schema']['sql'] string:
     
 	:::ruby
 	def on_migrate_source(old_version, new_src)
 	  # ... do something like alert user ...
-	  false
+	  false # create table by source schema - useful only for non-synced models
 	end
+
+**NOTE: For sync sources, you cannot just recreate table without data copy. Because server will not send this data at sync time. **
 
 	
 ## Rhom API
