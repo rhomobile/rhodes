@@ -38,9 +38,11 @@ module Rho
         @@native_bar_data = nil #{:type => :nobar}
       end
 	  
-      ::Rho::RHO.get_instance().check_source_migration(self)
+      #::Rho::RHO.get_instance().check_sources_migration(self)
 
       @initialized = true
+      
+      ::Rho::RHO.get_instance().set_app(::Rho::RHO::APPNAME, self)
     end
 
     def init_nativebar
@@ -102,13 +104,13 @@ module Rho
     # works for schema sources
     #return true to run script creating table    
     def on_migrate_source(old_version, new_src)
-        puts "on_migrate_source; old_version :#{old_version}; new_src : #{new_src}"
-        if new_src['schema']
-            db = ::Rho::RHO.get_src_db(new_src['name'])
-            db.delete_table(new_src['name'])
+        puts "default on_migrate_source - do nothing; old_version :#{old_version}; new_src : #{new_src}"
+        #if new_src['schema']
+        #    db = ::Rho::RHO.get_src_db(new_src['name'])
+        #    db.delete_table(new_src['name'])
             
-            return false  #create new table
-        end
+        #    return false  #create new table
+        #end
         
         return true
     end
