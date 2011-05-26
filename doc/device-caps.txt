@@ -1117,6 +1117,18 @@ Open link in external application (browser for http:// links):
 
 Open appstore on iphone: [http://wiki.akosma.com/IPhone_URL_Schemes#App_Store](http://wiki.akosma.com/IPhone_URL_Schemes#App_Store)
 
+### jQuery/JQtouch
+When using jQuery/JQtouch in application code, you cannot use usual html links for hyperlinks. You need to call controller action and call WebView.navigate from there:
+
+    #Ajax call of controller method:
+    $.get("/app/TestController/send_mail",function(data) {});
+    
+    #TestController method:
+    def send_mail
+        WebView.navigate( 'mailto:test@host.com' )        
+        #to open url inexternal application you can use System.open_url
+    end
+
 ### Blackberry
 On Blackberry 5.0 and later you can use JavaScript [blackberry.launch object](http://docs.blackberry.com/en/developers/deliverables/18446/blackberry_launch_971534_11.jsp#blackberry_launch_newMap_971532_11)
 to create SMS, make Phone call etc.
