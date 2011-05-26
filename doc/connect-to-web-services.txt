@@ -9,7 +9,11 @@ Below is the list of available `AsyncHttp` methods you can use to asyncrhonously
 * `:url` - URL of the request.
 * `:headers` - Hash of headers to send with the request.
 * `:callback` - Callback action to execute when the request is done.
-* `:callback_param` - (optional) Parameters to send to the callback.
+* `:callback_param` - (optional) Parameters to send to the callback. Parameters values should be url encoded:
+
+        :callback_param => "action=text&title=#{Rho::RhoSupport.url_encode(@params['page_title'])}"
+        #values will be decoded automatically in callback
+
 * `:authentication` - (optional) Send Basic Auth header with request.  This takes the form:
 		
 		:authentication => {
@@ -193,6 +197,9 @@ Below, a product model is created using the response from the web service and th
 	    WebView.navigate url_for :action => :index
 	  end
 	end
+
+**NOTE: For disable jQTouch caching (by default jQTouch cached your async HTTP request result and will show saved content instead of new requested content), change creation of jQTouch object in layout.erb to next line : <script>jQT = $.jQTouch({cacheGetRequests: false});</script>**
+
 
 ### Note About Animated Transitions
 
