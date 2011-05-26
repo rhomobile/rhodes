@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import com.rhomobile.rhodes.AndroidR;
+import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesAppOptions;
 import com.rhomobile.rhodes.RhodesService;
@@ -573,6 +574,8 @@ public class SimpleMainView implements MainView {
 	}
 
 	public void navigate(String url, int index) {
+	    Logger.T(TAG, "navigate: " + url);
+	    
 		String cleared_url = processForNativeView(url);
 		if (cleared_url.length() > 0) {
 			// check for handle because if we call loadUrl - WebView do not check this url for handle

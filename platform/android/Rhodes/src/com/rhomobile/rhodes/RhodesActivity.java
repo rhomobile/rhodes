@@ -137,7 +137,9 @@ public class RhodesActivity extends BaseActivity {
 		//ct.setPriority(Thread.MAX_PRIORITY);
 		uiThreadId = ct.getId();
 
-		if (!RhodesService.isTitleEnabled()) {
+        sInstance = this;
+
+        if (!RhodesService.isTitleEnabled()) {
 			requestWindowFeature(Window.FEATURE_NO_TITLE);
 		}
 		else {
@@ -145,13 +147,12 @@ public class RhodesActivity extends BaseActivity {
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 10000);
 
-		mSplashScreen = new SplashScreen(this);
-		setMainView(mSplashScreen);
-		
 		mHandler = new Handler();
-		mHandler.post(mSetup);
-		
-		sInstance = this;
+
+		initWebStuff();
+
+        mSplashScreen = new SplashScreen(this);
+        setMainView(mSplashScreen);
 
 		Log.i(TAG, ">>>>>>>>>>>>>>> onCreate()");
 
