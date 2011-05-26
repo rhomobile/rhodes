@@ -1,5 +1,7 @@
 package com.rhomobile.nfc;
 
+import java.util.Iterator;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -16,6 +18,7 @@ import android.util.Log;
 
 import com.rhomobile.rhodes.PushService;
 import com.rhomobile.rhodes.RhodesActivity;
+import com.rhomobile.rhodes.RhodesActivityListener;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.Utils;
 
@@ -31,70 +34,41 @@ public class NfcActivity  extends Activity {
 		super.onCreate(savedInstanceState);
 		Intent intent = getIntent();
 		String action = intent.getAction();
+		Utils.platformLog(TAG, " NfcActivity onCreate !!! Action = "+action);
+		processNewIntent(intent);
+		finish();
+	}
+
+	@Override
+	protected void onNewIntent(Intent intent) {
+	    super.onNewIntent(intent);
+		String action = intent.getAction();
+		Utils.platformLog(TAG, " NfcActivity onNewIntent !!! Action = "+action);
+	    processNewIntent(intent);
+	}	
+	
+	private void processNewIntent(Intent intent) {
+	    super.onNewIntent(intent);
+		String action = intent.getAction();
 		
-		Utils.platformLog(TAG, " $$$$$$$$$ NfcActivity STARTED !!! Action = "+action);
+		Utils.platformLog(TAG, " NfcActivity processNewIntent !!! Action = "+action);
 		
 		
 		if ( (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) ||
 		(NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action))  ||
 		(NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) ) {
 
-			RhodesActivity rhodes_activity = null;
-			// check RhodesActivity state
-			try {
-				rhodes_activity = RhodesActivity.safeGetInstance();
-			}
-			catch(NullPointerException e) {
-				
-			}
-			boolean isForeground = false;
-			if (rhodes_activity != null) {
-				isForeground = rhodes_activity.isForegroundNow();
-			}
-			if (isForeground) {
-				Nfc.getInstance().onNewIntent(rhodes_activity, intent);
-				finish();
-			}
-			else {
-				/*
-				ourIntent = intent;
-				Thread thread = new Thread() {
-					public void run() {
-						
-						while (!isRhodesActivityOnForeground()) {
-							try {
-								sleep(100);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-						
-						Nfc.getInstance().onNewIntent(RhodesActivity.safeGetInstance(), ourIntent);
-						//finish();
-						//this.stop();
-					}
-				};
-				thread.start();
-				*/
-				Nfc.setApplicationStartupIntent(intent);
-				
-		        Intent run_intent = new Intent();
-		        run_intent.setClass(this, RhodesActivity.class);
-		     	startActivity(run_intent);
-		     	
-		     	finish();
+			Nfc.log("NfcActivity: RhodesActivity is not Foreground - save messages and start Activity");
 
-			}
+			Nfc.setApplicationStartupIntent(intent);
 			
-			
-			
+	        Intent run_intent = new Intent();
+	        run_intent.setClass(this, RhodesActivity.class);
+	     	startActivity(run_intent);
+		     	
 		}
-		
-		
-		
-		//finish();
 	}
+	
 	
 	public static boolean isRhodesActivityOnForeground() {
 		RhodesActivity rhodes_activity = null;
