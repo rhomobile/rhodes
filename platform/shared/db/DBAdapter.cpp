@@ -175,6 +175,9 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
                 executeSQL( "UPDATE client_info SET reset=1" );
             }
         }
+
+//        db.updateAllAttribChanges();
+//        db.copyTable("changed_values", db, *this );
         db.close();
 
         CRhoFile::deleteFile( (m_strDbPath+"_oldver").c_str());
