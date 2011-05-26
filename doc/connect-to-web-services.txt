@@ -9,7 +9,11 @@ Below is the list of available `AsyncHttp` methods you can use to asyncrhonously
 * `:url` - URL of the request.
 * `:headers` - Hash of headers to send with the request.
 * `:callback` - Callback action to execute when the request is done.
-* `:callback_param` - (optional) Parameters to send to the callback.
+* `:callback_param` - (optional) Parameters to send to the callback. Parameters values should be url encoded:
+
+        :callback_param => "action=text&title=#{Rho::RhoSupport.url_encode(@params['page_title'])}"
+        #use Rho::RhoSupport.url_decode to decode values in callback
+
 * `:authentication` - (optional) Send Basic Auth header with request.  This takes the form:
 		
 		:authentication => {
