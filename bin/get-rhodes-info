@@ -1,0 +1,61 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'templater'
+require File.join(File.dirname(__FILE__), '..', 'res', 'generators', 'rhogen')
+require File.join(File.dirname(__FILE__), '..', 'lib', 'rhodes')
+
+# Stub this method to force 1.8 compatibility (come on templater!)
+class Encoding
+  def find
+    "utf-8"
+  end
+
+  def dummy?
+    false
+  end
+end
+
+class String
+  def force_encoding(enc)
+    return self
+  end
+
+  def encoding
+    if RUBY_VERSION =~ /1\.8/ and Encoding.responds_to?('new')
+      Encoding.new
+    else
+      Encoding.default_external
+    end
+  end
+end
+
+params = ["--rhodes-ver"]
+
+def findParam(paramArray, paramId)
+   i=0
+   until i == paramArray.size do
+
+     param = paramArray[i]
+     paramPair = param.split('=')
+
+     if paramPair.size > 1
+       if paramId == paramPair[0] then
+         return paramPair[1].to_s
+       end 
+     end
+
+     i += 1
+   end
+
+   return nil
+end
+
+requestVer = findParam(ARGV, params[0])
+
+if requestVer >= Rhodes::VERSION
+  puts 1
+else
+  puts 0
+end
+
