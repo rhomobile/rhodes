@@ -569,7 +569,15 @@ int getStringLenFromValue(VALUE val){
 rho_param *rho_param_fromvalue(VALUE v)
 {
     int i, size;
+/*
+    if (v == NULL) {
+         return NULL;
+    }
 
+    if (rho_ruby_is_NIL(v)) {
+         return NULL;
+    }
+*/
     switch(TYPE(v)) {
     case T_ARRAY:
         {

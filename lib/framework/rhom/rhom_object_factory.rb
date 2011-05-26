@@ -349,6 +349,16 @@ module Rhom
                     sql
                 end
 
+                def getCondAttribName(key)
+                    if key.is_a?(Hash)
+                        attrib_name = key[:name] if key[:name] 
+                    else
+                        attrib_name = key
+                    end
+                    
+                    attrib_name
+                end
+                
                 def makeCondWhereEx(key,value,srcid_value)
                     sql = ""
 
@@ -368,17 +378,24 @@ module Rhom
                     if srcid_value.nil?
                         sql << (val_func.length > 0 ? val_func + "(#{attrib_name})" : "#{attrib_name}") + ' '
                     else
-                        sql << "attrib=?"                    
-					    vals << (val_func.upcase == 'CAST' ? attrib_name.split(' ')[0] : attrib_name)
-					    
-                        sql << " AND source_id=?"
-					    vals << srcid_value
+                        unless attrib_name.is_a?(String) && attrib_name == 'object'
+                            sql << "attrib=?"                    
+					        vals << (val_func.upcase == 'CAST' ? attrib_name.split(' ')[0] : attrib_name)
+					        
+                            sql << " AND source_id=?"
+					        vals << srcid_value
 
-                        if val_func.upcase == 'CAST'
-                            sql << " AND " + val_func + "(value " + attrib_name.split(' ')[1] + ' ' + attrib_name.split(' ')[2] + " ) "
-                        else
-                            sql << " AND " + (val_func.length > 0 ? val_func + "(value)" : "value") + ' '
-                        end    
+                            if val_func.upcase == 'CAST'
+                                sql << " AND " + val_func + "(value " + attrib_name.split(' ')[1] + ' ' + attrib_name.split(' ')[2] + " ) "
+                            else
+                                sql << " AND " + (val_func.length > 0 ? val_func + "(value)" : "value") + ' '
+                            end    
+    					else
+                            sql << " source_id=?"
+					        vals << srcid_value
+    					
+                            sql << " AND object "
+                        end
                     end
                     
                     if val_op == 'IN' or val_op == 'in'
@@ -459,7 +476,12 @@ module Rhom
                         
                             condition_hash.each do |key,value|
                                 sql << "\nINTERSECT\n" if sql.length > 0 
-                                sql << "SELECT object FROM object_values WHERE \n"
+                                attrib_name = getCondAttribName(key)
+                                unless attrib_name && attrib_name.is_a?(String) && attrib_name == 'object'
+                                    sql << "SELECT object FROM object_values WHERE \n"
+                                else
+                                    sql << "SELECT DISTINCT(object) FROM object_values WHERE \n"
+                                end    
 								
                                 sqlCond, valCond = makeCondWhereEx(key,value,get_source_id)
 								sql << sqlCond
