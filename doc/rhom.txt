@@ -226,7 +226,9 @@ Below is a full list of options available to fixed schema models:
 
 ## Data Migrations
 To clean all client data at startup - change `app_db_version` in `rhoconfig.txt`.
-This scenario will work for Property Bag and Fixed Schema models
+This scenario will work for Property Bag and Fixed Schema models.
+
+**NOTE: All local client changes will be lost **
 
 ### Fixed Schema Data Migrations
 Rhom provides an application hook to migrate the data manually.  You can also use this hook to run business logic related to updating the database.  For example, your application may want to display a customized alert notifying the user that a migration is in progress and it may take a few moments.
@@ -254,6 +256,10 @@ This is called on application start when `:schema_version` has changed.
 	  #					new_src['schema']['sql'] contains new schema sql
 	  def on_migrate_source(old_version, new_src)
 	    # ... do something like alert user ...
+	    
+        db = Rho::RHO.get_src_db(new_src['name'])
+        db.execute_sql("ALTER TABLE #{new_src['name']} ADD COLUMN mytest VARCHAR DEFAULT null")
+	    
 	    true # does not create table
 	  end
 	end

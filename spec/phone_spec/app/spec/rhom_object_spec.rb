@@ -1454,7 +1454,41 @@ end
         item2.time_test.is_a?(Integer).should == true    
     end        
   end
-        
+
+  it "should find by object" do
+    accts = getAccount.find(:all,:conditions=>
+        { 
+            { :name => "object", :op =>"IN" } => ['44e804f2-4933-4e20-271c-48fcecd9450d','63cf13da-cff4-99e7-f946-48fcec93f1cc'] 
+        }
+    )
+    accts.length.should == 2  
+    
+    accts = getAccount.find(:all,:conditions=>
+        { 
+            { :name => "object", :op =>"IN" } => ['1','2','3'] 
+        }
+    )
+    accts.length.should == 0
+    
+  end          
+  
+  it "should complex find by object" do
+    accts = getAccount.find(:all,:conditions=> { 
+            { :name => "object", :op =>"IN" } => ['44e804f2-4933-4e20-271c-48fcecd9450d','63cf13da-cff4-99e7-f946-48fcec93f1cc'],
+            { :name => "name" } => 'Mobio India' 
+        }
+    )
+    accts.length.should == 1
+    
+    accts = getAccount.find(:all,:conditions=>{ 
+            { :name => "object", :op =>"IN" } => ['1','2','3'],
+            { :name => "name" } => 'Mobio India' 
+        }
+    )
+    accts.length.should == 0
+    
+  end          
+  
 end
 #=begin
 describe "Rhom#paginate" do
