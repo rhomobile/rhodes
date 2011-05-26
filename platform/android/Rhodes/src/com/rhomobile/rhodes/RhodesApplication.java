@@ -121,7 +121,7 @@ public class RhodesApplication extends Application{
                 appActivatedFlag = true;
                 Logger.I(TAG, "Cannot commit now, application will be activated when started.");
             } else {
-       	      	Logger.T(TAG, "Commiting AppState handlers.");
+       	      	Logger.T(TAG, "Commiting handlers...");
 	            Vector<StateHandler> doneHandlers = new Vector<StateHandler>();
 	            for (StateHandler handler: mHandlers) {
 	            	handlers.add(handler);
@@ -132,7 +132,7 @@ public class RhodesApplication extends Application{
 	            mHandlers.removeAll(doneHandlers);
 	            sAppState = this;
             }
-            Logger.T(TAG, "After AppState commit: " + sAppState.TAG);
+            Logger.T(TAG, "AppState has commited: " + sAppState.TAG);
             return handlers;
         }
         
@@ -182,7 +182,7 @@ public class RhodesApplication extends Application{
 
             if (!sUiState.canHandle(this)) {
         		
-	            Logger.T(TAG, "Commiting UiState handlers.");
+	            Logger.T(TAG, "Commiting handlers...");
 	            Vector<StateHandler> doneHandlers = new Vector<StateHandler>();
 	            for (StateHandler handler: mHandlers) {
 	            	handlers.add(handler);
@@ -193,7 +193,7 @@ public class RhodesApplication extends Application{
 	            mHandlers.removeAll(doneHandlers);
 	            sUiState = this;
         	}
-            Logger.T(TAG, "After UiState commit: " + sUiState.TAG);
+            Logger.T(TAG, "UiState has committed: " + sUiState.TAG);
             return handlers;
         }
         
@@ -202,7 +202,7 @@ public class RhodesApplication extends Application{
         
         static public void handleState(UiState state) {
             runHandlers(state.commit());
-            Logger.I(sAppState.TAG, "Handlers have completed.");
+            Logger.I(sUiState.TAG, "Handlers have completed.");
         }
     }
 
