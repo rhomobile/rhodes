@@ -434,7 +434,7 @@ end
                         puts "Migrate schema sources: #{hash_migrate}"
                         
                         ::Rho::RHO.init_schema_sources_partition(uniq_sources, hash_migrate, partition, db)
-                        check_sources_migration(uniq_sources)
+                        ::Rho::RHO.check_sources_migration(uniq_sources)
                         
                         ::Rho::RHO.init_sync_source_properties(uniq_sources)
                         
