@@ -89,9 +89,15 @@ public class Nfc implements RhodesActivityListener {
 					getInstance().onReceiveMessages(ourApplicationStartupMessages);
 					ourApplicationStartupMessages = null;
 				}
+				else {
+					log("ourApplicationStartupMessages is NULL !");
+				}
 				if (ourApplicationStartupTag != null) {
 					getInstance().onReceiveTag(ourApplicationStartupTag);
 					ourApplicationStartupTag = null;
+				}
+				else {
+					log("ourApplicationStartupTag is NULL !");
 				}
 			}
 		}, 100);
@@ -207,7 +213,7 @@ public class Nfc implements RhodesActivityListener {
 	public void onNewIntent(RhodesActivity activity, Intent intent, boolean postpone) {
 		String action = intent.getAction();
 		
-		log(" $$$$$$$$$ onNewIntent !!! Action = "+action);
+		Utils.platformLog("Nfc", "onNewIntent !!! Action = "+action+"     postpone="+String.valueOf(postpone));
 		
 		if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
 			log("ACTION_TAG_DISCOVERED !");
