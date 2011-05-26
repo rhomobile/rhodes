@@ -109,9 +109,12 @@ module ApplicationHelper
   def render_transition(params)
     @params["rho_callback"] = nil
     params[:layout] = false
+    tab_index = params[:tab_index]
+    tab_index = -1 if tab_index == nil
     # TODO: escape carriage returns instead of removing them altoegether
     content = render(params).split('\'').join('\\\'').split(/[\r\n]/).join('')
-    WebView.execute_js("Rho.insertAsyncPage('<div>#{content}</div>')")
+    content = content.unpack("U*").collect {|s| (s > 127 ? "&##{s};" : s.chr) }.join("")
+    WebView.execute_js("Rho.insertAsyncPage('<div>#{content}</div>')", tab_index)
   end
 
   def caller_request_hash_to_query
