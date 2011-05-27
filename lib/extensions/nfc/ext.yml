@@ -1,2 +1,6 @@
 entry: Init_Nfc	
+android_rhodes_activity_listener: com.rhomobile.nfc.Nfc
+android_manifest_changes: ext/nfc/platform/android/AndroidManifest.xml
+android_resources_addons: ext/nfc/platform/android/additional_files
+android_additional_sources_list: ext/nfc/platform/android/ext_build.files
 libraries: ["Nfc"]
