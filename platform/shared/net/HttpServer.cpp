@@ -1036,18 +1036,27 @@ bool CHttpServer::call_ruby_method(String const &uri, String const &body, String
     return true;
 }
 
-bool CHttpServer::decide(String const &method, String const &uri, String const &query,
+bool CHttpServer::decide(String const &method, String const &arg_uri, String const &query,
                          HeaderList const &headers, String const &body)
 {
-    RAWTRACE1("Decide what to do with uri %s", uri.c_str());
-    callback_t callback = registered(uri);
+    RAWTRACE1("Decide what to do with uri %s", arg_uri.c_str());
+    callback_t callback = registered(arg_uri);
     if (callback) {
-        RAWTRACE1("Uri %s is registered callback, so handle it appropriately", uri.c_str());
+        RAWTRACE1("Uri %s is registered callback, so handle it appropriately", arg_uri.c_str());
         callback(this, query.length() ? query : body);
         return true;
     }
-    
-    String fullPath = CFilePath::join(m_root,uri);
+
+    String uri = arg_uri;
+
+#ifdef OS_ANDROID
+    //Work around malformed Android WebView URLs
+    if ((uri.find("/app") != 0) && (uri.find("/public") != 0) && (uri.find("/rhodata/apps/") == String::npos)) {
+        uri = CFilePath::join("/app", uri);
+    }
+#endif
+
+    String fullPath = CFilePath::join(m_root, uri);
     
     Route route;
     if (dispatch(uri, route)) {
