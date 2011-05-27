@@ -1071,6 +1071,7 @@ bool CHttpServer::decide(String const &method, String const &uri, String const &
         return true;
     }
     
+#ifndef ANDROID
     if (isdir(fullPath)) {
         RAWTRACE1("Uri %s is directory, redirecting to index", uri.c_str());
         String q = query.empty() ? "" : "?" + query;
@@ -1081,7 +1082,14 @@ bool CHttpServer::decide(String const &method, String const &uri, String const &
         send_response(create_response("301 Moved Permanently", headers));
         return false;
     }
-    
+#else
+    //Work around this Android redirect bug:
+    //http://code.google.com/p/android/issues/detail?can=2&q=11583&id=11583
+    if (isdir(fullPath)) {
+        RAWTRACE1("Uri %s is directory, override with index", uri.c_str());
+        return decide(method, CFilePath::join( uri, "index"RHO_ERB_EXT), query, headers, body);
+    }
+#endif
     if (isindex(uri)) {
         if (!isfile(fullPath)) {
             RAWLOG_ERROR1("The file %s was not found", fullPath.c_str());
