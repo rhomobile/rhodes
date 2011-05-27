@@ -68,9 +68,14 @@ public class RhodesActivity extends BaseActivity {
 	private ArrayList<RhodesActivityListener> mListeners = null;
 	
 	private boolean mIsForeground = false;
+	private boolean mIsInsideStartStop = false;
 	
 	public boolean isForegroundNow() {
 		return mIsForeground;
+	}
+	
+	public boolean isInsideStartStop() {
+		return mIsInsideStartStop;
 	}
 	
 	public void addRhodesActivityListener(RhodesActivityListener listener) {
@@ -90,13 +95,44 @@ public class RhodesActivity extends BaseActivity {
 		}
 	};
 	
+	
+	public void processStartupListeners() {
+		int i;
+		for (i = 1; i < RhodesActivityStartupListeners.ourRunnableList.length; i++) {
+			String classname = RhodesActivityStartupListeners.ourRunnableList[i];
+			Class<? extends RhodesActivityListener> klass = null;
+			try {
+				klass = Class.forName(classname).asSubclass(RhodesActivityListener.class);
+			} catch (ClassNotFoundException e) {
+				Utils.platformLog("RhodesActivity", "processStartupListeners() : ClassNotFoundException for ["+classname+"]");
+				e.printStackTrace();
+			}
+			RhodesActivityListener listener = null;
+			try {
+				if (klass != null) {
+					listener = klass.newInstance();
+				}
+			} catch (InstantiationException e) {
+				Utils.platformLog("RhodesActivity", "processStartupListeners() : InstantiationException for ["+classname+"]");
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				Utils.platformLog("RhodesActivity", "processStartupListeners() : IllegalAccessException for ["+classname+"]");
+				e.printStackTrace();
+			}
+			if (listener != null) {
+				listener.onRhodesActivityStartup(this);
+			}
+		}
+	}
+	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
 		super.onCreate(savedInstanceState);
 		
 		mListeners = new ArrayList<RhodesActivityListener>();
-		
+
 		Thread ct = Thread.currentThread();
 		//ct.setPriority(Thread.MAX_PRIORITY);
 		uiThreadId = ct.getId();
@@ -118,6 +154,14 @@ public class RhodesActivity extends BaseActivity {
 		sInstance = this;
 
 		Log.i(TAG, ">>>>>>>>>>>>>>> onCreate()");
+
+		processStartupListeners();
+        {
+        	Iterator<RhodesActivityListener> iterator = mListeners.iterator();
+        	while (iterator.hasNext()) {
+        		iterator.next().onCreate(this, getIntent());
+        	}
+        }
 		
 		notifyUiCreated();
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityCreated);
@@ -180,12 +224,14 @@ public class RhodesActivity extends BaseActivity {
 	    RhodesService.rhodesActivityStarted(true);
 
         Log.d(TAG, "RhodesActivity.onStart()");
+        mIsInsideStartStop = true;
         
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityStarted);
 	}
 	
 	@Override
 	public void onResume() {
+        Log.d(TAG, "RhodesActivity.onResume()");
     	mIsForeground = true;
 		super.onResume();
         {
@@ -222,6 +268,7 @@ public class RhodesActivity extends BaseActivity {
 	{
 		super.onStop();
         Log.d(TAG, "RhodesActivity.onStop()");
+        mIsInsideStartStop = false;
 	}
 	
 	@Override
