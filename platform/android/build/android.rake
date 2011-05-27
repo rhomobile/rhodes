@@ -253,6 +253,11 @@ namespace "config" do
 
   task :android => [:set_android_platform, "config:common"] do
 
+    $ext_android_rhodes_activity_listener = []
+    $ext_android_manifest_changes= []
+    $ext_android_resources_addons = []
+    $ext_android_additional_sources_list = []
+
     $gapikey = $app_config["android"]["apikey"] unless $app_config["android"].nil?
     $gapikey = $config["android"]["apikey"] if $gapikey.nil? and not $config["android"].nil?
     $gapikey = '' unless $gapikey.is_a? String
@@ -713,6 +718,39 @@ namespace "build" do
       $app_config["extensions"].each do |ext|
         $app_config["extpaths"].each do |p|
           extpath = File.join(p, ext, 'ext')
+
+          extyml = File.join(p, ext,"ext.yml")
+          if File.file? extyml
+            extconf = Jake.config(File.open(extyml))
+
+            android_listener = extconf["android_rhodes_activity_listener"]
+            $ext_android_rhodes_activity_listener << android_listener unless android_listener.nil?
+
+            android_manifest_changes = extconf["android_manifest_changes"]
+            if android_manifest_changes != nil
+              android_manifest_changes = File.join(p, ext, android_manifest_changes)
+              $ext_android_manifest_changes << android_manifest_changes
+            end
+
+            android_resources_addons = extconf["android_resources_addons"]
+            if android_resources_addons != nil
+              android_resources_addons = File.join(p, ext, android_resources_addons)
+              $ext_android_resources_addons << android_resources_addons
+            end
+
+            android_additional_sources_list = extconf["android_additional_sources_list"]
+            if android_additional_sources_list != nil
+              android_additional_sources_list = File.join(p, ext, android_additional_sources_list)
+
+              File.open(android_additional_sources_list, "r") do |f|
+                  while line = f.gets
+                    $ext_android_additional_sources_list << File.join(p, ext, line)
+                  end
+              end
+
+            end
+          end
+
           if RUBY_PLATFORM =~ /(win|w)32$/
             next unless File.exists? File.join(extpath, 'build.bat')
           else
@@ -1112,10 +1150,131 @@ namespace "build" do
     task :rhodes => :rhobundle do
       javac = $config["env"]["paths"]["java"] + "/javac" + $exe_ext
 
+
+      set_app_name_android($appname)
+
+
       rm_rf $tmpdir + "/Rhodes"
       mkdir_p $tmpdir + "/Rhodes"
 
-      set_app_name_android($appname)
+      $ext_android_manifest_changes << File.join($extensionsdir, "AndroidManifest.xml")
+
+      app_f = File.new($appmanifest)
+      manifest_orig_doc = REXML::Document.new(app_f)
+      app_f.close
+      dst_manifest =  manifest_orig_doc.elements["manifest"]
+      dst_application =  manifest_orig_doc.elements["manifest/application"]
+      dst_main_activity = nil
+      puts '$$$$$$$$$$$$$$ try to found MainActivity'
+      dst_application.elements.each("activity") do |a|
+        puts '$$$$$$$$ activity with attr = '+a.attribute('name','android').to_s
+        if a.attribute('name','android').to_s == 'com.rhomobile.rhodes.RhodesActivity'
+            puts '          $$$ FOUND !'
+            dst_main_activity = a
+        end
+      end
+
+      $ext_android_manifest_changes.each do |m|
+
+        ext_manifest = m
+        if File.exists? ext_manifest
+          puts 'AndroidManifest.xml['+ext_manifest+'] from native extension found !'
+
+          manifest_ext_doc = REXML::Document.new(File.new(ext_manifest))
+
+          src_manifest =  manifest_ext_doc.elements["manifest"]
+
+          src_application =  manifest_ext_doc.elements["manifest/application"]
+
+          if src_application != nil
+              puts 'Extension Manifest process application item :'
+              src_application.elements.each do |e|
+                  puts '$$$$$$$$ process element with attr = '+e.attribute('name','android').to_s
+                  if e.attribute('name','android').to_s == 'com.rhomobile.rhodes.RhodesActivity'
+                    e.elements.each do |sube|
+                      puts '         add item to MainActivity['+sube.xpath+']'
+                      dst_main_activity.add sube
+                    end
+                  else
+                    puts '         add item ['+e.xpath+']'
+                    dst_application.add e
+                  end
+              end
+          end
+
+          puts 'Extension Manifest process root <manifest> item :'
+          src_manifest.elements.each do |e|
+              p = e.xpath
+              if p != '/manifest/application'
+                    dst_e = manifest_orig_doc.elements[p]
+                    if dst_e != nil
+                          if p == '/manifest/uses-sdk'
+                              puts '         found and delete original item ['+p+']'
+                              manifest_orig_doc.elements.delete p
+                          end
+                    end
+                    puts '         and new item ['+p+']'
+                    dst_manifest.add e
+              end
+          end
+
+        else
+          puts 'AndroidManifest change file ['+m+'] from native extension not found !'
+        end
+
+      end
+
+      #puts 'Result Manifest :'
+      #manifest_orig_doc.elements['manifest'].elements.each do |e|
+      #   puts '     + '+e.xpath
+      #   if e.xpath == '/manifest/application'
+      #       manifest_orig_doc.elements['manifest/application'].elements.each do |t|
+      #             puts '              + '+t.xpath
+      #       end
+      #   end
+      #end
+
+      puts 'delete original manifest'
+      File.delete($appmanifest)
+
+      updated_f = File.open($appmanifest, "w")
+      manifest_orig_doc.write updated_f, 2
+      updated_f.close
+
+      #rm tappmanifest
+      puts 'Manifest updated by extension saved!'
+
+
+      # RhodesActivity Listeners
+      f = StringIO.new("", "w+")
+      f.puts '// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!'
+      f.puts 'package com.rhomobile.rhodes;'
+      f.puts ''
+      f.puts 'import com.rhomobile.rhodes.phonebook.ContactAccessor;'
+      f.puts ''
+      f.puts 'class RhodesActivityStartupListeners {'
+      f.puts ''
+      f.puts '	public static final String[] ourRunnableList = { ""'
+      $ext_android_rhodes_activity_listener.each do |a|
+         f.puts '       ,"'+a+'"'
+      end
+      f.puts '	};'
+      f.puts ''
+      f.puts '}'
+      Jake.modify_file_if_content_changed(File.join($startdir, "platform","android","Rhodes","src","com","rhomobile","rhodes","RhodesActivityStartupListeners.java"), f)
+
+
+      puts 'EXT:  add additional files to project before build'
+      $ext_android_resources_addons.each do |r|
+         puts 'add resources from extension copy ['+r+'] to ['+$tmpdir+']'
+          Dir.foreach(r) do |f|
+             cp = File.join(r, f)
+             if ((File.directory?(cp)) || (File.file?(cp))) && ((f != '.') && ( f != '..'))
+                cp_r cp,$tmpdir
+             end
+          end
+      end
+
       generate_rjava
 
       srclist = File.join($builddir, "RhodesSRC_build.files")
@@ -1126,10 +1285,10 @@ namespace "build" do
           line.chomp!
           next if line =~ /\/AndroidR\.java\s*$/
 
-		  if !$use_geomapping
-			next if line == "platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/GoogleMapView.java"
-			next if line == "platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/AnnotationsOverlay.java"
-		  end
+		      if !$use_geomapping
+			        next if line == "platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/GoogleMapView.java"
+			        next if line == "platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/AnnotationsOverlay.java"
+		      end
 
           #next if !$use_geomapping and line =~ /\/GoogleMapView\//
           #next if !$use_geomapping and line =~ /\/AnnotationsOverlay\//
@@ -1155,74 +1314,12 @@ namespace "build" do
         puts 'ext_build.files not found - no additional java files for compilation'
       end
 
-      ext_manifest = File.join($extensionsdir, "AndroidManifest.xml")
-      if File.exists? ext_manifest
-        puts 'AndroidManifest.xml from native extension found !'
-
-        #tappmanifest = $appmanifest + '_tmp'
-        
-        #cp_r $appmanifest,tappmanifest
-
-        app_f = File.new($appmanifest)
-        manifest_orig_doc = REXML::Document.new(app_f)
-        app_f.close
-
-        manifest_ext_doc = REXML::Document.new(File.new(ext_manifest))
-        
-        src_manifest =  manifest_ext_doc.elements["manifest"]
-        dst_manifest =  manifest_orig_doc.elements["manifest"]
-        
-
-        src_application =  manifest_ext_doc.elements["manifest/application"]              
-        dst_application =  manifest_orig_doc.elements["manifest/application"]
-
-        if src_application != nil
-            puts 'Extension Manifest process application item :'
-            src_application.elements.each do |e|
-                  puts '         add item ['+e.xpath+']' 
-                  dst_application.add e
-            end
-        end
-
-        puts 'Extension Manifest process root <manifest> item :'
-        src_manifest.elements.each do |e|
-            p = e.xpath
-            if p != '/manifest/application'
-                  dst_e = manifest_orig_doc.elements[p]
-                  if dst_e != nil
-                        if p == '/manifest/uses-sdk' 
-                            puts '         found and delete original item ['+p+']' 
-                            manifest_orig_doc.elements.delete p
-                        end
-                  end
-                  puts '         and new item ['+p+']' 
-                  dst_manifest.add e
-            end
-        end  
-
-        #puts 'Result Manifest :'
-        #manifest_orig_doc.elements['manifest'].elements.each do |e|
-        #   puts '     + '+e.xpath
-        #   if e.xpath == '/manifest/application'
-        #       manifest_orig_doc.elements['manifest/application'].elements.each do |t|
-        #             puts '              + '+t.xpath
-        #       end
-        #   end
-        #end
-
-        puts 'delete original manifest'
-        File.delete($appmanifest)
-
-        updated_f = File.open($appmanifest, "w") 
-        manifest_orig_doc.write updated_f, 2
-        updated_f.close
-
-        #rm tappmanifest
-        puts 'Manifest updated by extension saved!'
-        
-
-      else
-        puts 'AndroidManifest.xml from native extension not found - no any changes in main AndroidManifest.xml'
+      # process collected ext src files
+      puts 'process additional java files for build from extensions :'
+      $ext_android_additional_sources_list.each do |s|
+        s.chomp!
+        puts 'java file : ' + s
+        lines << "\""+s+"\""
       end
 
       File.open(newsrclist, "w") { |f| f.write lines.join("\n") }

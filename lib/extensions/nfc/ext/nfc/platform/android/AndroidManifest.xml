@@ -3,15 +3,13 @@
     package="com.rhomobile.rhodes"
     android:installLocation="auto"
     android:versionCode="29"
-    android:versionName="2.3.1">
-    
-    <uses-sdk android:minSdkVersion="10" />
-    
-    <uses-feature android:name="android.hardware.nfc" android:required="false" />
+    android:versionName="2.3.3">
 
-    <application>
+  <application >
 
-        <activity  android:name="com.rhomobile.nfc.NfcActivity">
+        <activity
+            android:name="com.rhomobile.rhodes.RhodesActivity">
+
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED"/>
@@ -30,10 +28,15 @@
             <meta-data android:name="android.nfc.action.TECH_DISCOVERED"
                 android:resource="@xml/filter_nfc"
             />
-        </activity>
 
-    </application>
+        </activity>
     
+    </application >
+
+    <uses-sdk android:minSdkVersion="10" />
+    
+    <uses-feature android:name="android.hardware.nfc" android:required="false" />
+
     <uses-permission android:name="android.permission.NFC" />
 
 </manifest> 

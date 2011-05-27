@@ -19,6 +19,7 @@ import android.util.Log;
 import com.rhomobile.rhodes.PushService;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesActivityListener;
+import com.rhomobile.rhodes.RhodesApplication;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.Utils;
 
@@ -31,6 +32,7 @@ public class NfcActivity  extends Activity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		Utils.platformLog(TAG, " $$$$$$$  NfcActivity onCreate !!! START ");
 		super.onCreate(savedInstanceState);
 		Intent intent = getIntent();
 		String action = intent.getAction();
@@ -39,8 +41,47 @@ public class NfcActivity  extends Activity {
 		finish();
 	}
 
+	
+	@Override
+	public void onStart() {
+		Utils.platformLog(TAG, " $$$$$$$  NfcActivity onStart !!! START ");
+		super.onStart();
+	}
+	
+	@Override
+	public void onResume() {
+		Utils.platformLog(TAG, " $$$$$$$  NfcActivity onResume !!! START ");
+ 		super.onResume();
+ 		//finish();
+ 	}
+
+    @Override
+    public void onPause() 
+    {
+		Utils.platformLog(TAG, " $$$$$$$  NfcActivity onPause !!! START ");
+    	super.onPause();
+    }
+
+    @Override
+	public void onStop() 
+	{
+		Utils.platformLog(TAG, " $$$$$$$  NfcActivity onStop !!! START ");
+		super.onStop();
+	}
+	
+	@Override
+	public void onDestroy() {
+		Utils.platformLog(TAG, " $$$$$$$  NfcActivity onDestroy !!! START ");
+		super.onDestroy();
+	}
+	
+	
+	
+	
+	
 	@Override
 	protected void onNewIntent(Intent intent) {
+		Utils.platformLog(TAG, " $$$$$$$  NfcActivity onNewIntent !!! START ");
 	    super.onNewIntent(intent);
 		String action = intent.getAction();
 		Utils.platformLog(TAG, " NfcActivity onNewIntent !!! Action = "+action);
