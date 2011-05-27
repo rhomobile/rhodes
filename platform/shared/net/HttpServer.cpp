@@ -1069,7 +1069,7 @@ bool CHttpServer::decide(String const &method, String const &uri, String const &
         return true;
     }
     
-#ifndef ANDROID
+#ifndef OS_ANDROID
     if (isdir(fullPath)) {
         RAWTRACE1("Uri %s is directory, redirecting to index", uri.c_str());
         String q = query.empty() ? "" : "?" + query;
@@ -1085,7 +1085,7 @@ bool CHttpServer::decide(String const &method, String const &uri, String const &
     //http://code.google.com/p/android/issues/detail?can=2&q=11583&id=11583
     if (isdir(fullPath)) {
         RAWTRACE1("Uri %s is directory, override with index", uri.c_str());
-        return decide(method, CFilePath::join( uri, "index"RHO_ERB_EXT), query, headers, body);
+        return decide(method, CFilePath::join( uri, "index_erb.iseq"), query, headers, body);
     }
 #endif
     if (isindex(uri)) {
