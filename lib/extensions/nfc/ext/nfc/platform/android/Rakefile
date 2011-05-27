@@ -71,28 +71,28 @@ namespace "build" do
     build_extension('Nfc', $arch, src_files)
 
     #build java part
-    javafiles = []	
-    File.open('ext_build.files', "r") do |f|
-        while line = f.gets
-           javafiles << line
-        end
-    end
+    #javafiles = []	
+    #File.open('ext_build.files', "r") do |f|
+    #    while line = f.gets
+    #       javafiles << line
+    #    end
+    #end
 
-    flname = $targetdir + '/ext_build.files'
-    File.open(flname, "a") do |f|
-        javafiles.each do |j|
-            f.puts $nfcdir + '/' + j
-        end
-    end
+    #flname = $targetdir + '/ext_build.files'
+    #File.open(flname, "a") do |f|
+    #    javafiles.each do |j|
+    #        f.puts $nfcdir + '/' + j
+    #    end
+    #end
 
-    mymaniname = $nfcdir + '/ext/nfc/platform/android/AndroidManifest.xml'  
-    maniname = $targetdir + '/AndroidManifest.xml'
+    #mymaniname = $nfcdir + '/ext/nfc/platform/android/AndroidManifest.xml'  
+    #maniname = $targetdir + '/AndroidManifest.xml'
 
-    cp_r mymaniname, maniname
+    #cp_r mymaniname, maniname
 
     # copy xml NFC filter
-    myres = $nfcdir + '/ext/nfc/platform/android/res'  
-    cp_r myres, $rho_build_dir
+    #myres = $nfcdir + '/ext/nfc/platform/android/res'  
+    #cp_r myres, $rho_build_dir
 
   end
 end
