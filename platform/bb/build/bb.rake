@@ -81,7 +81,7 @@ def startsim(hidden=false)
     args << "/no-guibacklight"
   end
         
-  args << "/app-param=JvmDebugFile:"+Jake.get_absolute($app_config["applog"]) if $app_config["applog"] && $app_config["applog"].length() > 0
+  args << "/app-param=JvmDebugFile:"+Jake.get_absolute_ex($app_config["applog"], $app_path) if $app_config["applog"] && $app_config["applog"].length() > 0
 
   Jake.run2 command, args, {:directory => jde + "/simulator", :nowait => true}
 end
