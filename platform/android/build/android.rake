@@ -1555,8 +1555,20 @@ def logcat(device_flag = '-e', log_path = $applog_path)
   end
 end
 
+def logcat_process(device_flag = '-e', log_path = $applog_path)
+  if !log_path.nil?
+    Thread.new { system("\"#{$adb}\" #{device_flag} logcat >> \"#{log_path}\" ") }  
+  end
+end
+
 def logclear(device_flag = '-e')
   Jake.run($adb, [device_flag, 'logcat', '-c'], nil, true) 
+end
+
+namespace "android" do
+    task :get_log => "config:android" do
+		puts "log_file=" + $applog_path
+	end
 end
 
 namespace "run" do
@@ -1711,9 +1723,10 @@ namespace "run" do
       puts 'Sleep for 5 sec. waiting for "adb start-server"'
       sleep 5
 
-      if !$applog_file.nil?
-        Thread.new { Jake.run($adb, ['logcat', '>>', $applog_path], nil, true) }
-      end
+      #if !$applog_file.nil?
+      #  Thread.new { Jake.run($adb, ['logcat', '>>', $applog_path], nil, true) }
+      #end
+      logcat_process()
 
       if $appavdname != nil
         $avdname = $appavdname
@@ -1765,9 +1778,10 @@ namespace "run" do
               Jake.run($adb, ['start-server'], nil, true)
               adbRestarts += 1
 
-              if !$applog_file.nil?
-                Thread.new { Jake.run($adb, ['logcat', '>>', $applog_path], nil, true) }
-              end
+              #if !$applog_file.nil?
+              #  Thread.new { Jake.run($adb, ['logcat', '>>', $applog_path], nil, true) }
+              #end
+              logcat_process()
             else
               puts "Still waiting..."
             end
@@ -1824,6 +1838,8 @@ namespace "run" do
     task :device => "device:android:install" do
       puts "Starting application..."
       run_application("-d")
+      
+      logcat_process("-d")
     end
   end
 
