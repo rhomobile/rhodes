@@ -78,6 +78,7 @@ public class Nfc implements RhodesActivityListener {
 	private static NdefMessage[] ourApplicationStartupMessages = null;
 	private static Tag ourApplicationStartupTag = null;
 	
+	
 	public static void setApplicationStartupIntent(Intent intent) {
 		getInstance().onNewIntent(null, intent, true);
 	}
@@ -160,7 +161,7 @@ public class Nfc implements RhodesActivityListener {
 		boolean oldEnable = ourIsEnable;
 		ourIsEnable = (enable != 0);
 		if ((oldEnable == false) && (ourIsEnable == true)) {
-			RhodesActivity.safeGetInstance().addRhodesActivityListener(getInstance());
+			//RhodesActivity.safeGetInstance().addRhodesActivityListener(getInstance());
 			PerformOnUiThread.exec( new Runnable() {
 				public void run() {
 					if (RhodesActivity.safeGetInstance().isForegroundNow()) {
@@ -170,7 +171,7 @@ public class Nfc implements RhodesActivityListener {
 			});
 		}
 		if ((oldEnable == true) && (ourIsEnable == false)) {
-			RhodesActivity.safeGetInstance().removeRhodesActivityListener(getInstance());
+			//RhodesActivity.safeGetInstance().removeRhodesActivityListener(getInstance());
 			PerformOnUiThread.exec( new Runnable() {
 				public void run() {
 					if (RhodesActivity.safeGetInstance().isForegroundNow()) {
@@ -181,6 +182,15 @@ public class Nfc implements RhodesActivityListener {
 		}
 		log(" $$$$$$$$$ setEnable() FINISH() ");
 	}
+	
+	public void onCreate(RhodesActivity activity, Intent intent) {
+		getInstance().onNewIntent(activity, intent, true);
+	}
+	
+	public void onRhodesActivityStartup(RhodesActivity activity) {
+		activity.addRhodesActivityListener(getInstance());
+	}
+	
 	
 	public void onPause(RhodesActivity activity) {
 		log(" $$$$$$$$$ onPause() ");
@@ -194,7 +204,7 @@ public class Nfc implements RhodesActivityListener {
 	public void onResume(RhodesActivity activity) {
 		log(" $$$$$$$$$ onResume() ");
 		NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(RhodesActivity.getContext());
-		if (nfcAdapter != null) {
+		if ((nfcAdapter != null) && (ourIsEnable)) {
 			IntentFilter[] filters = new IntentFilter[1];
 			filters[0] = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
 			
@@ -326,7 +336,12 @@ public class Nfc implements RhodesActivityListener {
 	}
 	
 	public void onNewIntent(RhodesActivity activity, Intent intent) {
-		onNewIntent(activity, intent, false);
+		if (activity.isInsideStartStop()) {
+			onNewIntent(activity, intent, false);
+		}
+		else {
+			onNewIntent(activity, intent, true);
+		}
 	}
 	
 	

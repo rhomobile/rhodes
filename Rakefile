@@ -207,7 +207,7 @@ namespace "config" do
     extpaths << $app_config["paths"]["extensions"] if $app_config["paths"] and $app_config["paths"]["extensions"]
     extpaths << $config["env"]["paths"]["extensions"] if $config["env"]["paths"]["extensions"]
     extpaths << File.join($app_path, "extensions")
-    extpaths << "lib/extensions"
+    extpaths << File.join($startdir, "lib","extensions")
     $app_config["extpaths"] = extpaths
 
     if $app_config["build"] and $app_config["build"] == "release"
