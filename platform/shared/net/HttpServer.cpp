@@ -1071,7 +1071,7 @@ bool CHttpServer::decide(String const &method, String const &uri, String const &
         return true;
     }
     
-#ifndef ANDROID
+#ifndef OS_ANDROID
     if (isdir(fullPath)) {
         RAWTRACE1("Uri %s is directory, redirecting to index", uri.c_str());
         String q = query.empty() ? "" : "?" + query;
@@ -1115,7 +1115,6 @@ bool CHttpServer::decide(String const &method, String const &uri, String const &
 
         return true;
     }
-    //RAWLOG_INFO("Sending File");
     
     // Try to send requested file
     RAWTRACE1("Uri %s should be regular file, trying to send it", uri.c_str());
