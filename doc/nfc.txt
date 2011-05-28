@@ -10,7 +10,7 @@ There are two different NFC callback can be received (you should setup callbacks
 * NFC callback : it executed when Android ACTION_NDEF_DISCOVERED or ACTION_TAG_DISCOVERED events processed.
 * NFC Tech callback : it executed when Android ACTION_TECH_DISCOVERED event processed.
 In case of current state of NFC support in Android you can receive NFC callback only if your application in foreground. If your application is not run or in background - only ACTION_TECH_DISCOVERED is processed. 
-For process ACTION_TECH_DISCOVERED event you should setup list of techs in special resource file : [Rhodes ROOT]/platform/android/Rhodes/res/xml/filter_nfc.xml. See according Android documentation - [Android ACTION_TECH_DISCOVERED description](http://developer.android.com/reference/android/nfc/NfcAdapter.html#ACTION_TECH_DISCOVERED)
+For process ACTION_TECH_DISCOVERED event you should setup list of techs in special resource file : [Rhodes ROOT]/lib/extensions/nfc/ext/nfc/platform/android/additional_files/res/xml/filter_nfc.xml. See according Android documentation - [Android ACTION_TECH_DISCOVERED description](http://developer.android.com/reference/android/nfc/NfcAdapter.html#ACTION_TECH_DISCOVERED)
 For processing events received when application not run or in background, after start/activate use special method of NfcManager : 
 
 	:::ruby
