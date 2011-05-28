@@ -603,6 +603,11 @@ Get current tab index
 	:::ruby
 	Rho::NativeTabbar.get_current_tab 
 
+Set iPhone badge to Tab (worked only on iOS devices!) 
+	:::ruby
+	# set badge '12' to tab 1
+	Rho::NativeTabbar.set_tab_badge( 1, '12')
+
 
 Rho::NativeTabbar.create() create native tab bar UI element and activate its first tab. If you want to see another tab, call Rho::NativeTabbar.switch_tab explicitly just after NativeBar.create:
 
