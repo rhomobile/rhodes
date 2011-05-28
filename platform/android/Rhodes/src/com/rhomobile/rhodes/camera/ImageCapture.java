@@ -23,6 +23,8 @@ package com.rhomobile.rhodes.camera;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
@@ -33,6 +35,7 @@ import android.content.ContentValues;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
+import android.hardware.Camera.Size;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore.Images.Media;
@@ -189,8 +192,36 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 				camera.stopPreview();
 			}
 			Camera.Parameters p = camera.getParameters();
+			
 			int newW = (w >> 3) << 3;
 			int newH = (h >> 3) << 3;
+			List<Size> sizes = p.getSupportedPreviewSizes();
+			Iterator<Size> iter = sizes.iterator();
+			// find closest preview size
+			float min_r = -1;
+			int minW = 0;
+			int minH = 0;
+			while (iter.hasNext()) {
+				Size s = iter.next();
+				if (min_r < 0) {
+					min_r = (float)s.width*(float)s.width+(float)s.height*(float)s.height;
+					minW = s.width;
+					minH = s.height;
+				}
+				else {
+					float cur_r = ((float)newW-(float)s.width)*((float)newW-(float)s.width)+((float)newH-(float)s.height)*((float)newH-(float)s.height);
+					if (cur_r < min_r) {
+						min_r = cur_r;
+						minW = s.width;
+						minH = s.height;
+					}
+				}
+			}
+			if (min_r >= 0) {
+				newW = minW;
+				newH = minH;
+			}
+			
 			p.setPreviewSize(newW, newH);
 			camera.setParameters(p);
 			camera.setPreviewDisplay(holder);
