@@ -2,7 +2,6 @@
 
 #include "NativeToolbarQt.h"
 #include "common/rhoparams.h"
-#include "MainWindowProxy.h"
 #include "MainWindow.h"
 #include "common/RhoFilePath.h"
 #include "rubyext/WebView.h"
@@ -27,7 +26,7 @@ CNativeToolbar::~CNativeToolbar(void)
 
 void CNativeToolbar::OnFinalMessage(HWND /*hWnd*/)
 {
-    getAppWindow().getProxy().removeAllButtons();
+    getAppWindow().removeAllButtons();
 }
 
 /*static*/ CNativeToolbar& CNativeToolbar::getInstance()
@@ -37,21 +36,21 @@ void CNativeToolbar::OnFinalMessage(HWND /*hWnd*/)
 
 void CNativeToolbar::createToolbar(rho_param *p)
 {
-    getAppWindow().getProxy().createToolbar(p);
+    getAppWindow().createToolbar(p);
 }
 
 
 void CNativeToolbar::removeToolbar()
 {
-    getAppWindow().getProxy().removeToolbar();
+    getAppWindow().removeToolbar();
 }
 
 int CNativeToolbar::getHeight()
 {
-    return getAppWindow().getProxy().getHeight();
+    return getAppWindow().getHeight();
 }
 
 bool CNativeToolbar::isStarted()
 {
-    return getAppWindow().getProxy().isStarted();
+    return getAppWindow().isStarted();
 }
