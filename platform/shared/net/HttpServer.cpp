@@ -1051,7 +1051,11 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
 
 #ifdef OS_ANDROID
     //Work around malformed Android WebView URLs
-    if ((uri.find("/app") != 0) && (uri.find("/public") != 0) && (uri.find("/rhodata/apps/") == String::npos)) {
+    if (!String_startsWith(uri, "/app") &&
+        !String_startsWith(uri, "/public") &&
+        !String_startsWith(uri, "/data")) 
+    {
+        RAWTRACE1("Malformed URL: '%s', adding '/app' prefix.", uri.c_str());
         uri = CFilePath::join("/app", uri);
     }
 #endif
