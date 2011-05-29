@@ -2,9 +2,11 @@
 
 #pragma once
 
+#include <string>
 #include "logging/RhoLog.h"
 #include "common/RhoConf.h"
 #include "common/RhodesApp.h"
+#include "common/rhoparams.h"
 #include "Alert.h"
 #include "RhoNativeViewManagerWM.h"
 #include "SyncStatusDlg.h"
@@ -13,7 +15,6 @@
 #include "menubar.h"
 #endif
 #include "LogView.h"
-#include "MainWindowProxy.h"
 #include "MainWindowCallback.h"
 
 static UINT WM_TAKEPICTURE             = ::RegisterWindowMessage(L"RHODES_WM_TAKEPICTURE");
@@ -52,10 +53,28 @@ public:
 	void DestroyUi(void);
     void performOnUiThread(rho::common::IRhoRunnable* pTask);
     CNativeToolbar& getToolbar(){ return m_toolbar; }
-    CMainWindowProxy &getProxy(){ return m_mainWindowProxy; }
     HWND getWebViewHWND();
 	// for 'main_window_closed' System property
 	static bool mainWindowClosed;
+
+    // proxy methods:
+    void* init(IMainWindowCallback* callback, const wchar_t* title);
+    void setCallback(IMainWindowCallback* callback);
+    void messageLoop(void);
+    void navigate(const wchar_t* url);
+    void GoBack(void);
+    void GoForward(void);
+    void Refresh(void);
+    // toolbar proxy
+    bool isStarted();
+    int getHeight();
+    void createToolbar(rho_param *p);
+    void removeToolbar();
+    void removeAllButtons();
+    // menu proxy
+    void menuClear();
+    void menuAddSeparator();
+    void menuAddAction(const char* label, int item);
 
     BEGIN_MSG_MAP(CMainWindow)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
@@ -101,7 +120,8 @@ private:
 private:
     CLogView m_logView;
     CNativeToolbar m_toolbar;
-    CMainWindowProxy m_mainWindowProxy;
+    void* qtMainWindow;
+    void* qtApplication;
 
 private:
     static int m_screenWidth;
