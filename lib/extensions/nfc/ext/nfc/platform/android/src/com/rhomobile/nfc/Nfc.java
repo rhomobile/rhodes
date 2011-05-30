@@ -123,21 +123,31 @@ public class Nfc implements RhodesActivityListener {
 		return ourInstance;
 	}
 	
-	
-	public static int isSupported() {
+	public static NfcAdapter getDefaultAdapter(Context ctx) {
+		Context context = ctx;
+		if (ctx == null) {
+			context = RhodesActivity.getContext();
+		}
 		NfcAdapter da = null;
 		try {
-			int sdkVersion = Integer.parseInt(Build.VERSION.SDK);
+			int sdkVersion = Build.VERSION.SDK_INT;
 			if (sdkVersion >= Build.VERSION_CODES.GINGERBREAD_MR1) {
-				da = NfcAdapter.getDefaultAdapter(RhodesService.getContext());
-			}
+				da = NfcAdapter.getDefaultAdapter(RhodesActivity.getContext());
+			} 
 			else if (sdkVersion >= Build.VERSION_CODES.GINGERBREAD) {
 				da = NfcAdapter.getDefaultAdapter();
 			}
 		}
 		catch (Exception e) {
 			// nothing
+			Utils.platformLog(TAG, "Exception during get NFCAdapter");
+			e.printStackTrace();
 		}
+		return da;
+	}
+	
+	public static int isSupported() {
+		NfcAdapter da = getDefaultAdapter(null);
 		if (da == null) {
 			return 0;
 		}
@@ -194,7 +204,7 @@ public class Nfc implements RhodesActivityListener {
 	
 	public void onPause(RhodesActivity activity) {
 		log(" $$$$$$$$$ onPause() ");
-		NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(RhodesActivity.getContext());
+		NfcAdapter nfcAdapter = getDefaultAdapter(RhodesActivity.getContext());
 		if (nfcAdapter != null) {
 			nfcAdapter.disableForegroundDispatch(activity);
 			nfcAdapter.disableForegroundNdefPush(activity);
@@ -203,7 +213,7 @@ public class Nfc implements RhodesActivityListener {
 	
 	public void onResume(RhodesActivity activity) {
 		log(" $$$$$$$$$ onResume() ");
-		NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(RhodesActivity.getContext());
+		NfcAdapter nfcAdapter = getDefaultAdapter(RhodesActivity.getContext());
 		if ((nfcAdapter != null) && (ourIsEnable)) {
 			IntentFilter[] filters = new IntentFilter[1];
 			filters[0] = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
