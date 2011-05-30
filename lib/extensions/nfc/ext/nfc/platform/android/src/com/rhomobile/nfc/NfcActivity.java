@@ -1,26 +1,10 @@
 package com.rhomobile.nfc;
 
-import java.util.Iterator;
-
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.nfc.NdefMessage;
-import android.nfc.NdefRecord;
-import android.nfc.NfcAdapter;
-import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.util.Log;
-
-import com.rhomobile.rhodes.PushService;
 import com.rhomobile.rhodes.RhodesActivity;
-import com.rhomobile.rhodes.RhodesActivityListener;
-import com.rhomobile.rhodes.RhodesApplication;
-import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.Utils;
 
 public class NfcActivity  extends Activity {
@@ -29,6 +13,10 @@ public class NfcActivity  extends Activity {
 	private static final String TAG = NfcActivity.class.getSimpleName();
 	
 	private static Intent ourIntent = null;
+	
+	private static int getSDKVersion() {
+		return Build.VERSION.SDK_INT;
+	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +77,7 @@ public class NfcActivity  extends Activity {
 	}	
 	
 	private void processNewIntent(Intent intent) {
+		/*
 	    super.onNewIntent(intent);
 		String action = intent.getAction();
 		
@@ -108,6 +97,7 @@ public class NfcActivity  extends Activity {
 	     	startActivity(run_intent);
 		     	
 		}
+		*/
 	}
 	
 	

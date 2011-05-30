@@ -29,6 +29,24 @@ void loge(const char* text) {
 } 
 
 
+static bool checkSDK() {
+     bool sdk_ok = false;
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/nfc/NfcActivity");
+    if (!cls) {
+        loge("NfcActivity class not found !");
+        return false;
+    }
+    jmethodID mid = env->GetStaticMethodID(cls, "getSDKVersion", "()I");
+    if (!mid) { 
+        loge("NfcActivity.getSDKVersion() NOT FOUND !");
+        return false;
+    }
+    int version = env->CallStaticIntMethod(cls, mid);
+    env->DeleteLocalRef(cls);
+    return (version >= 9);
+}
+
 class CNfcJavaClass {
 public:
     CNfcJavaClass() {
@@ -608,6 +626,9 @@ private:
 
 
 extern "C" void rho_nfc_set_callback(const char* callback_url) {
+	if (!checkSDK()) {
+		return;
+	} 
 	JNIEnv *env = jnienv();
 	CNfcJavaClass cls;
 	if (!cls.get()) return;
@@ -619,6 +640,9 @@ extern "C" void rho_nfc_set_callback(const char* callback_url) {
 }
 
 extern "C" void rho_nfc_enable(int enable) {
+	if (!checkSDK()) {
+		return;
+	} 
 	JNIEnv *env = jnienv();
 	CNfcJavaClass cls;
 	if (!cls.get()) return;
@@ -628,14 +652,23 @@ extern "C" void rho_nfc_enable(int enable) {
 }
 
 extern "C" int rho_nfc_is_enabled(void) {
+	if (!checkSDK()) {
+		return 0;
+	} 
     return JavaHelper_exec_int_void("isEnabled");    
 }
 
 extern "C" int rho_nfc_is_supported(void) {
+	if (!checkSDK()) {
+		return 0;
+	} 
     return JavaHelper_exec_int_void("isSupported");    
 }
 
 extern "C" void rho_nfc_set_tech_callback(const char* callback_url) {
+	if (!checkSDK()) {
+		return;
+	} 
 	JNIEnv *env = jnienv();
 	CNfcJavaClass cls;
 	if (!cls.get()) return;
@@ -647,6 +680,9 @@ extern "C" void rho_nfc_set_tech_callback(const char* callback_url) {
 }
 
 extern "C" void rho_nfc_perform_open_application_event() {
+	if (!checkSDK()) {
+		return;
+	} 
 	JNIEnv *env = jnienv();
 	CNfcJavaClass cls;
 	if (!cls.get()) return;
@@ -664,6 +700,9 @@ extern "C" void rho_nfc_set_listen_tech_list(VALUE tech_list) {
 extern "C" VALUE rho_nfc_get_tech_list() {
 
     logi("rho_nfc_get_tech_list START");
+	if (!checkSDK()) {
+		return rho_ruby_get_NIL();
+	} 
 	JNIEnv *env = jnienv();
 	CNfcJavaClass cls;
 	if (!cls.get()) return rho_ruby_get_NIL();
@@ -928,6 +967,9 @@ extern "C" VALUE rho_nfc_tech_NfcA_transceive(VALUE data) {
 
 // return HASH
 extern "C" VALUE rho_nfc_convert_byte_array_to_NdeRecord_hash(VALUE array) {
+    if (!checkSDK()) {
+         return rho_ruby_get_NIL();
+    } 
     initJavaIds();
     
     JNIEnv *env = jnienv();
@@ -954,6 +996,9 @@ extern "C" VALUE rho_nfc_convert_byte_array_to_NdeRecord_hash(VALUE array) {
 
 // return byte array
 extern "C" VALUE rho_nfc_convert_NdeRecord_hash_to_byte_array(VALUE hash) {
+    if (!checkSDK()) {
+         return rho_ruby_get_NIL();
+    } 
     initJavaIds();
 
     VALUE ruby_id = rho_ruby_hash_aref(hash, "id");
@@ -981,6 +1026,9 @@ extern "C" VALUE rho_nfc_convert_NdeRecord_hash_to_byte_array(VALUE hash) {
 
 // return array of byte array
 extern "C" VALUE rho_nfc_convert_NdeMessage_byte_array_to_NdeRecords_array(VALUE array) {
+    if (!checkSDK()) {
+         return rho_ruby_get_NIL();
+    } 
     
     initJavaIds();
 
@@ -1011,6 +1059,9 @@ extern "C" VALUE rho_nfc_convert_NdeMessage_byte_array_to_NdeRecords_array(VALUE
 
 // return byte array
 extern "C" VALUE rho_nfc_convert_NdeRecords_array_to_NdeMessage_byte_array(VALUE array) {
+    if (!checkSDK()) {
+         return rho_ruby_get_NIL();
+    } 
     initJavaIds();
     
     JNIEnv *env = jnienv();
@@ -1044,6 +1095,9 @@ extern "C" VALUE rho_nfc_convert_NdeRecords_array_to_NdeMessage_byte_array(VALUE
 // String make_string_from_payload(byte[] payload, int tnf, byte[] type)
 // return string
 extern "C" VALUE rho_nfc_make_string_from_payload(VALUE payload, int tnf, VALUE type) {
+    if (!checkSDK()) {
+         return rho_ruby_get_NIL();
+    } 
     
     CRubyByteArray c_payload(payload);
     CRubyByteArray c_type(type);
@@ -1063,6 +1117,9 @@ extern "C" VALUE rho_nfc_make_string_from_payload(VALUE payload, int tnf, VALUE 
 
 // return byte[]
 extern "C" VALUE rho_nfc_make_payload_with_absolute_uri(const char* str) {
+    if (!checkSDK()) {
+         return rho_ruby_get_NIL();
+    } 
     
     CRubyString c_s(str);
     
@@ -1082,6 +1139,9 @@ extern "C" VALUE rho_nfc_make_payload_with_absolute_uri(const char* str) {
 
 // return byte[]
 extern "C" VALUE rho_nfc_make_payload_with_well_known_text(const char* language, const char* str) {
+    if (!checkSDK()) {
+         return rho_ruby_get_NIL();
+    } 
     CRubyString c_lang(language);
     CRubyString c_s(str);
     
@@ -1101,6 +1161,9 @@ extern "C" VALUE rho_nfc_make_payload_with_well_known_text(const char* language,
 
 // return byte[]
 extern "C" VALUE rho_nfc_make_payload_with_well_known_uri(int prefix, const char* str) {
+    if (!checkSDK()) {
+         return rho_ruby_get_NIL();
+    } 
     CRubyString c_s(str);
     
     JNIEnv *env = jnienv();
@@ -1117,10 +1180,16 @@ extern "C" VALUE rho_nfc_make_payload_with_well_known_uri(int prefix, const char
 }
 
 extern "C" void rho_nfc_p2p_enable_foreground_nde_push(VALUE nde_message_byte_array) {
+    if (!checkSDK()) {
+         return;
+    } 
     JavaHelper_exec_void_bytearray(nde_message_byte_array, "p2p_enable_foreground_nde_push");
 }
 
 extern "C" void rho_nfc_p2p_disable_foreground_nde_push() {
+    if (!checkSDK()) {
+         return;
+    } 
     JNIEnv *env = jnienv();
     CNfcJavaClass cls;
     if (!cls.get()) return;
