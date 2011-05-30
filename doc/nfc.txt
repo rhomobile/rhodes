@@ -5,6 +5,8 @@ NFC (Near Field Communication). NFC API provide access to NFC functionality. You
 NFC API implemented in native extension. You should add "nfc" to extension list in your nuild.yml before start using NFC in your application. And also do not forget enable NFC for start process NFC events - Rho::NFCManager.enable.
 NFC Ruby API based on Android NFC API. We recommended investigate Android doc for understand NFC Techs etc. See [Android NFC](http://developer.android.com/guide/topics/nfc/index.html)
 
+NOTE: Before start using of NFC functionality, do not forget check current platform for supporting of NFC ! Use this :   Rho::NFCManager.is_supported
+
 ## NFC events
 There are two different NFC callback can be received (you should setup callbacks before!) :
 * NFC callback : it executed when Android ACTION_NDEF_DISCOVERED or ACTION_TAG_DISCOVERED events processed.
