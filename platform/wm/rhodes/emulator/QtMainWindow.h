@@ -41,6 +41,11 @@ public:
     void menuClear(void);
     void menuAddAction(const QString & text, int item);
     void menuAddSeparator(void);
+	// tabbar
+    void tabbarRemoveAllTabs(void);
+    void tabbarShow(void);
+    void tabbarHide(void);
+    int tabbarGetHeight(void);
 private:
     Ui::QtMainWindow *ui;
     QWebInspector *wi;
