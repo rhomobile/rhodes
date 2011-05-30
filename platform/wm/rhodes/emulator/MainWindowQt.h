@@ -11,6 +11,7 @@
 #include "RhoNativeViewManagerWM.h"
 #include "SyncStatusDlg.h"
 #include "NativeToolbarQt.h"
+#include "NativeTabbarQt.h"
 #if defined(OS_WINDOWS)
 #include "menubar.h"
 #endif
@@ -23,8 +24,8 @@ static UINT WM_TAKESIGNATURE           = ::RegisterWindowMessage(L"RHODES_WM_TAK
 static UINT WM_ALERT_SHOW_POPUP        = ::RegisterWindowMessage(L"RHODES_WM_ALERT_SHOW_POPUP");
 static UINT WM_ALERT_HIDE_POPUP        = ::RegisterWindowMessage(L"RHODES_WM_ALERT_HIDE_POPUP");
 static UINT WM_DATETIME_PICKER         = ::RegisterWindowMessage(L"RHODES_WM_DATETIME_PICKER");
-static UINT WM_EXECUTE_COMMAND           = ::RegisterWindowMessage(L"RHODES_WM_EXECUTE_COMMAND");
-static UINT WM_EXECUTE_RUNNABLE           = ::RegisterWindowMessage(L"RHODES_WM_EXECUTE_RUNNABLE");
+static UINT WM_EXECUTE_COMMAND         = ::RegisterWindowMessage(L"RHODES_WM_EXECUTE_COMMAND");
+static UINT WM_EXECUTE_RUNNABLE        = ::RegisterWindowMessage(L"RHODES_WM_EXECUTE_RUNNABLE");
 
 #define ID_CUSTOM_MENU_ITEM_FIRST (WM_APP+3)
 #define ID_CUSTOM_MENU_ITEM_LAST  (ID_CUSTOM_MENU_ITEM_FIRST + (APP_MENU_ITEMS_MAX) - 1)
@@ -53,7 +54,8 @@ public:
 	void DestroyUi(void);
     void performOnUiThread(rho::common::IRhoRunnable* pTask);
     CNativeToolbar& getToolbar(){ return m_toolbar; }
-    HWND getWebViewHWND();
+    CNativeTabbar& getTabbar(){ return m_tabbar; }
+    HWND getWebViewHWND(int index);
 	// for 'main_window_closed' System property
 	static bool mainWindowClosed;
 
@@ -65,9 +67,10 @@ public:
     void GoBack(void);
     void GoForward(void);
     void Refresh(void);
-    // toolbar proxy
+	// toolbar/tabbar
     bool isStarted();
-    int getHeight();
+    // toolbar proxy
+    int getToolbarHeight();
     void createToolbar(rho_param *p);
     void removeToolbar();
     void removeAllButtons();
@@ -75,6 +78,14 @@ public:
     void menuClear();
     void menuAddSeparator();
     void menuAddAction(const char* label, int item);
+	// tabbar
+    int getTabbarHeight();
+    void removeAllTabs();
+    void createTabbar(int bar_type, rho_param *p);
+    void removeTabbar();
+    void tabbarSwitch(int index);
+    void tabbarBadge(int index, char* badge);
+    int tabbarGetCurrent();
 
     BEGIN_MSG_MAP(CMainWindow)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
@@ -120,6 +131,7 @@ private:
 private:
     CLogView m_logView;
     CNativeToolbar m_toolbar;
+	CNativeTabbar m_tabbar;
     void* qtMainWindow;
     void* qtApplication;
 

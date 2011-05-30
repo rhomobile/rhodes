@@ -47,7 +47,7 @@ void CNativeToolbar::removeToolbar()
 
 int CNativeToolbar::getHeight()
 {
-    return getAppWindow().getHeight();
+    return getAppWindow().getToolbarHeight();
 }
 
 bool CNativeToolbar::isStarted()

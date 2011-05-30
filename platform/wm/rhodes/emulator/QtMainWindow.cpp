@@ -10,6 +10,7 @@
 #include "common/RhoStd.h"
 #include "common/RhodesApp.h"
 #include "rubyext/WebView.h"
+#include "rubyext/NativeToolbarExt.h"
 #undef null
 
 extern "C" {
@@ -152,6 +153,42 @@ void QtMainWindow::Refresh(void)
 {
     ui->webView->reload();
 }
+
+// Tabbar:
+
+void QtMainWindow::tabbarRemoveAllTabs()
+{
+    //ui->tabBar->clear();
+    //ui->tabBarRight->clear();
+}
+
+void QtMainWindow::tabbarShow()
+{
+    //ui->tabBar->show();
+    //ui->tabBarRight->show();
+}
+
+void QtMainWindow::tabbarHide()
+{
+    //ui->tabBar->hide();
+    //ui->tabBarRight->hide();
+
+    if (!rho_rhodesapp_check_mode())
+        return;
+    int bar_type = NOBAR_TYPE;
+    //id runnable = [RhoNativeBarCreateTask class];
+    //id arg1 = [NSValue valueWithBytes:&bar_type objCType:@encode(int)];
+    //[Rhodes performOnUiThread:runnable arg:arg1 arg:nil wait:NO];
+}
+
+int QtMainWindow::tabbarGetHeight()
+{
+    //return ui->tabBar->height();
+	return 120;
+}
+
+
+// Toolbar:
 
 void QtMainWindow::toolbarRemoveAllButtons()
 {
