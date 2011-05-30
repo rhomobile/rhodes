@@ -33,8 +33,6 @@
     
     </application >
 
-    <uses-sdk android:minSdkVersion="10" />
-    
     <uses-feature android:name="android.hardware.nfc" android:required="false" />
 
     <uses-permission android:name="android.permission.NFC" />
