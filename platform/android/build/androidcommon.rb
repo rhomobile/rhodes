@@ -207,7 +207,7 @@ def cc_run(command, args, chdir = nil)
   cmdstr = argv.map! { |x| x.to_s }.map! { |x| x =~ / / ? '"' + x + '"' : x }.join(' ')
   puts cmdstr
   $stdout.flush
-  argv = cmdstr if RUBY_VERSION =~ /^1\.8/
+  argv = cmdstr if RUBY_VERSION =~ /^1\.[89]/
   IO.popen(argv) do |f|
     while data = f.gets
       puts data
@@ -334,4 +334,25 @@ def cc_clean(name)
   [$objdir[name], $libname[name]].each do |x|
     rm_rf x if File.exists? x
   end
+end
+
+def apk_build(sdk, apk_name, res_name, dex_name, debug)
+    puts "Building APK file..."
+    prev_dir = Dir.pwd
+    Dir.chdir File.join(sdk, "tools")
+    #"-classpath", File.join("lib", "sdklib.jar"), "com.android.sdklib.build.ApkBuilderMain", 
+    if debug
+        params = [apk_name, "-z", res_name, "-f", dex_name]
+    else
+        params = [apk_name, "-u", "-z", res_name, "-f", dex_name]
+    end
+    
+    Jake.run("apkbuilder" + $bat_ext, params)
+    
+    unless $?.success?
+        Dir.chdir prev_dir
+        puts "Error building APK file"
+        exit 1
+    end
+    Dir.chdir prev_dir
 end
