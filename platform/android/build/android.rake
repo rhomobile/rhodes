@@ -1468,20 +1468,15 @@ namespace "device" do
       final_apkfile =  $targetdir + "/" + $appname + "-debug.apk"
       resourcepkg =  $bindir + "/rhodes.ap_"
 
-      puts "Building APK file"
-      Jake.run($apkbuilder, [simple_apkfile, "-z", resourcepkg, "-f", dexfile])
-      unless $?.success?
-        puts "Error building APK file"
-        exit 1
-      end
-
+      apk_build $androidsdkpath, simple_apkfile, resourcepkg, dexfile, true
+      
       puts "Align Debug APK file"
       args = []
       args << "-f"
       args << "-v"
       args << "4"
-      args << '"' + simple_apkfile + '"'
-      args << '"' + final_apkfile + '"'
+      args << simple_apkfile
+      args << final_apkfile
       puts Jake.run($zipalign, args)
       unless $?.success?
         puts "Error running zipalign"
@@ -1515,12 +1510,7 @@ namespace "device" do
       signed_apkfile =  $targetdir + "/" + $appname + "_tmp_signed.apk"
       resourcepkg =  $bindir + "/rhodes.ap_"
 
-      puts "Building APK file"
-      Jake.run($apkbuilder, [simple_apkfile, "-u", "-z", resourcepkg, "-f", dexfile])
-      unless $?.success?
-        puts "Error building APK file"
-        exit 1
-      end
+      apk_build $androidsdkpath, simple_apkfile, resourcepkg, dexfile, false
 
       if not File.exists? $keystore
         puts "Generating private keystore..."
