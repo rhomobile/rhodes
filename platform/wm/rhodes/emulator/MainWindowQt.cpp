@@ -384,8 +384,8 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
     if (!rho_rhodesapp_check_mode() || !rho_wmsys_has_touchscreen() )
         return;
 
-    const char* background_color = NULL;
-    const char* background_color_enable = NULL;
+	std::auto_ptr<QColor> background_color (NULL);
+    //const char* background_color_enable = NULL;
     const char* on_change_tab_callback = NULL;
     
     rho_param *params = NULL;
@@ -401,8 +401,8 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
                     const char *name = p->v.hash->name[i];
                     rho_param *value = p->v.hash->value[i];
                     if (strcasecmp(name, "background_color") == 0) {
-                        background_color = value->v.string;
-                        background_color_enable = "true";
+                        background_color.reset(new QColor(getColorFromString(value->v.string)));
+                        //background_color_enable = "true";
                     } else if (strcasecmp(name, "on_change_tab_callback") == 0) {
                         on_change_tab_callback = value->v.string;
                     } else if (strcasecmp(name, "buttons") == 0 || strcasecmp(name, "tabs") == 0) {
@@ -418,7 +418,7 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
     }
     
     if (!params) {
-        RAWLOG_ERROR("Wrong parameters for create_nativebar");
+        RAWLOG_ERROR("Wrong parameters for create_tabbar");
         return;
     }
     
@@ -457,7 +457,7 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
                 return;
             }
             if (strcasecmp(name, "background_color") == 0) {
-                background_color = value->v.string;
+                background_color.reset(new QColor(getColorFromString(value->v.string)));
                 skip_item = true;
             }
             
@@ -512,7 +512,8 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
         }
         
     }
-    if (background_color != NULL) {
+    if (background_color.get()!=NULL != NULL) {
+	    //((QtMainWindow*)qtMainWindow)->setTabbarStyle(false, m_rgbBackColor->name());
         //[properties setObject:[NSString stringWithUTF8String:background_color] forKey:NATIVE_BAR_BACKGOUND_COLOR];    
     }
     if (on_change_tab_callback != NULL) {
@@ -521,6 +522,76 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
     //id runnable = [RhoNativeBarCreateTask class];
     //id arg1 = [NSValue valueWithBytes:&bar_type objCType:@encode(int)];
     //[Rhodes performOnUiThread:runnable arg:arg1 arg:main_properties wait:NO];
+
+	// RhoNativeBarCreateTask:
+    /*
+    id view = nil;
+   
+    Rhodes *r = [Rhodes sharedInstance];
+    
+    id mainView = [r mainView];
+    UIWindow* w = r.window;
+
+	SimpleMainView* smv = nil;
+    if ([mainView isKindOfClass:[SimpleMainView class]]) {
+	    smv = (SimpleMainView*)mainView;
+	}
+    switch (type) {
+		case NOBAR_TYPE:
+			if (smv != nil) {
+				[smv removeToolbar];
+			}
+			else {
+				view = [[SimpleMainView alloc] initWithMainView:mainView parent:w ];
+				[r setMainView:view];
+				[view release];
+			}
+			started = 0;
+			break;
+		case TOOLBAR_TYPE:
+			if (smv != nil) {
+				[smv addToolbar:parameters];
+			}
+			else {
+				view = [[SimpleMainView alloc] initWithMainView:mainView parent:w bar_info:parameters];
+				[r setMainView:view];
+				[view release];
+			}
+			started = 1;
+			break;
+		case TABBAR_TYPE: {
+			[[Rhodes sharedInstance] hideSplash];
+			view = [[TabbedMainView alloc] initWithMainView:mainView parent:w bar_info:parameters];
+			started = 1;
+			[r setMainView:view];
+			[view release];
+		}
+			break;
+		case VTABBAR_TYPE: {
+			[[Rhodes sharedInstance] hideSplash];
+			BOOL is_iPad = NO;
+			{
+				NSString *model = [[UIDevice currentDevice] model]; // "iPad ..."
+				if ([model hasPrefix:@"iPad"]) {
+					is_iPad = YES;
+				}
+			}
+			if (is_iPad) {
+				view = [[SplittedMainView alloc] initWithMainView:mainView parent:w bar_info:parameters];
+			}
+			else {
+				view = [[TabbedMainView alloc] initWithMainView:mainView parent:w bar_info:parameters];
+			}
+			started = 1;
+			[r setMainView:view];
+			[view release];
+			}
+			break;
+		default:
+			RAWLOG_ERROR1("Unknown bar type passed: %d", type);
+        return;
+    }
+    */
 }
 
 int CMainWindow::getTabbarHeight()
@@ -547,6 +618,9 @@ void CMainWindow::tabbarSwitch(int index)
     //id runnable = [RhoNativeBarSwitchTabTask class];
     //id arg = [NSValue valueWithBytes:&index objCType:@encode(int)];
     //[Rhodes performOnUiThread:runnable arg:arg wait:NO];
+
+    // RhoNativeBarSwitchTabTask:
+	//[[[Rhodes sharedInstance] mainView] switchTab:index];
 }
 
 void CMainWindow::tabbarBadge(int index, char* badge)
@@ -559,6 +633,16 @@ void CMainWindow::tabbarBadge(int index, char* badge)
     //id arg2 = [NSValue valueWithBytes:&val objCType:@encode(char*)];
     //[Rhodes performOnUiThread:runnable arg:arg1 arg:arg2 wait:YES];
     //RAWLOG_INFO("set_tab_badge done");
+
+	// RhoNativeBarSetTabBadgeTask:
+	/*
+    char* badge_val=[val pointerValue];
+    [value getValue:&index];
+    RAWLOG_INFO1("RhoNativeBarSetTabBadgeTask %d",index);
+    RAWLOG_INFO1("RhoNativeBarSetTabBadgeTask %s",badge_val);
+	  //if ([[[Rhodes sharedInstance] mainView] respondsToSelector:@selector(setTabBadge::)]) 	
+	    [[[Rhodes sharedInstance] mainView] setTabBadge:index val:badge_val];
+	*/
 }
 
 int CMainWindow::tabbarGetCurrent()

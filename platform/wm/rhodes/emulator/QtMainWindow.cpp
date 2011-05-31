@@ -154,24 +154,22 @@ void QtMainWindow::Refresh(void)
     ui->webView->reload();
 }
 
+
 // Tabbar:
 
 void QtMainWindow::tabbarRemoveAllTabs()
 {
     //ui->tabBar->clear();
-    //ui->tabBarRight->clear();
 }
 
 void QtMainWindow::tabbarShow()
 {
     //ui->tabBar->show();
-    //ui->tabBarRight->show();
 }
 
 void QtMainWindow::tabbarHide()
 {
     //ui->tabBar->hide();
-    //ui->tabBarRight->hide();
 
     if (!rho_rhodesapp_check_mode())
         return;
@@ -261,6 +259,9 @@ void QtMainWindow::setToolbarStyle(bool border, QString background)
         ui->toolBarRight->setStyleSheet(style);
 	}
 }
+
+
+// Menu:
 
 void QtMainWindow::menuAddAction(const QString & text, int item)
 {
