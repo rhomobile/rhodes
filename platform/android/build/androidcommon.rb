@@ -347,7 +347,7 @@ def apk_build(sdk, apk_name, res_name, dex_name, debug)
         params = [apk_name, "-u", "-z", res_name, "-f", dex_name]
     end
     
-    Jake.run("apkbuilder" + $bat_ext, params)
+    Jake.run File.join(".", "apkbuilder" + $bat_ext), params
     
     unless $?.success?
         Dir.chdir prev_dir
