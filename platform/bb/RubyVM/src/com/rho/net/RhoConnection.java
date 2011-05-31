@@ -855,14 +855,6 @@ public class RhoConnection implements IHttpConnection {
 			if ( responseData != null )
 				contentLength = Integer.parseInt(resHeaders.getPropertyIgnoreCase("Content-Length"));
 
-			try {
-				IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
-				helper.wakeUpGeoLocation();
-			}catch(Exception exc)
-			{
-				LOG.ERROR("getGeoLocationText failed", exc);
-			}
-			
 		}
 	}
 	
