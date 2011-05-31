@@ -36,7 +36,8 @@ module Rho
           parts = line.chomp.split('|')
 
           row = {}
-          columns.each_with_index do |col,idx| 
+          columns.each_with_index do |col,idx|
+            col.strip! 
             if col == 'source_name'
               src_name = parts[idx]
               src_name = source_map[src_name] if source_map
