@@ -225,6 +225,11 @@ namespace rho.rubyext {
                 new Func<IronRuby.Builtins.RubyModule, System.String, System.Int32, System.String, System.Boolean>(rho.rubyext.RhoSyncEngine.is_blob_attr)
             );
             
+            DefineLibraryMethod(module, "is_syncing", 0x21, 
+                0x00000000U, 
+                new Func<IronRuby.Builtins.RubyModule, System.Boolean>(rho.rubyext.RhoSyncEngine.is_syncing)
+            );
+            
             DefineLibraryMethod(module, "logged_in", 0x21, 
                 0x00000000U, 
                 new Func<IronRuby.Builtins.RubyModule, System.Int32>(rho.rubyext.RhoSyncEngine.logged_in)
@@ -272,7 +277,7 @@ namespace rho.rubyext {
             
             DefineLibraryMethod(module, "stop_sync", 0x21, 
                 0x00000000U, 
-                new Action<IronRuby.Builtins.RubyModule>(rho.rubyext.RhoSyncEngine.set_pollinterval)
+                new Action<IronRuby.Builtins.RubyModule>(rho.rubyext.RhoSyncEngine.stop_sync)
             );
             
             DefineLibraryMethod(module, "update_blob_attribs", 0x21, 
