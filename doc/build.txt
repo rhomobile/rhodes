@@ -241,7 +241,7 @@ In case if you are planning to work with native geo mapping (MapView interface),
 	android:
 	  mapping: yes
 
-If you are using Eclipse (Optional) please follow [these instructions](http://source.android.com/using-eclipse) on how to increase Java memory space to use Android.
+If you are using Eclipse (Optional) please follow [these instructions](http://source.android.com/source/using-eclipse.html) on how to increase Java memory space to use Android.
 
 
 Please check you applications and change the way how you include css files into html pages.

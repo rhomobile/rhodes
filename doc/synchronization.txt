@@ -305,6 +305,7 @@ Next, in your controller action that displays the object(s), add the object noti
 	
 		# refresh the current page
 	    WebView.refresh
+	    # or call System.execute_js to call javascript function which will update list
 	  end
 	end
 
