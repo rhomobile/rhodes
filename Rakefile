@@ -107,7 +107,7 @@ def make_application_build_capabilities_header_file
  
   capabilities = $app_config["capabilities"]
 
-  if capabilities != nil
+  if capabilities != nil && capabilities.is_a?(Array)
      capabilities.each do |cap|
         caps << cap
      end
