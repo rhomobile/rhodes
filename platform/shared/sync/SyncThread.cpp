@@ -236,6 +236,11 @@ void rho_sync_stop()
 	}
 }
 
+unsigned long rho_sync_is_syncing()
+{
+    return rho_ruby_create_boolean(CSyncThread::getSyncEngine().isSyncing());
+}
+
 extern "C" void
 source_iter(const char* szName, void* parSources)
 {
