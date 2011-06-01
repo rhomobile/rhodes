@@ -77,7 +77,7 @@ public:
     bool run();
     void stop();
 
-    bool send_response(String const &response) {return send_response_impl(response, false);}
+    bool send_response(String const &response, bool redirect = false);
     bool send_response_body(String const &data) {return send_response_impl(data, true);}
     
     String create_response(String const &reason);
@@ -124,3 +124,4 @@ private:
 } // namespace rho
 
 #endif // RHO_HTTP_SERVER_F5FFD21AD3EE463E850C5E2C789397BD
+

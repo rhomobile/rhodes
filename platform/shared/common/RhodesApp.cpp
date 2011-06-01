@@ -1170,7 +1170,7 @@ void rho_http_redirect( void* httpContext, const char* szUrl)
     headers.push_back(HttpHeader("Content-Type", "text/plain"));
     
     CHttpServer *serv = (CHttpServer *)httpContext;
-    serv->send_response(serv->create_response("301 Moved Permanently", headers));
+    serv->send_response(serv->create_response("301 Moved Permanently", headers), true);
 }
 
 void rho_http_senderror(void* httpContext, int nError, const char* szMsg)
