@@ -377,7 +377,7 @@ namespace rho.rubyext
         }
 
         [RubyMethod("stop_sync", RubyMethodAttributes.PublicSingleton)]
-        public static void set_pollinterval(RubyModule/*!*/ self)
+        public static void stop_sync(RubyModule/*!*/ self)
         {
             try
             {
@@ -392,6 +392,20 @@ namespace rho.rubyext
                 }
                 LOG.ERROR("stop_sync", ex);
                 throw rubyEx;
+            }
+        }
+
+        [RubyMethod("is_syncing", RubyMethodAttributes.PublicSingleton)]
+        public static bool is_syncing(RubyModule/*!*/ self)
+        {
+            try
+            {
+                return SyncThread.getSyncEngine().isSyncing();
+            }
+            catch (Exception ex)
+            {
+                LOG.HandleRubyException(ex, RhoRuby.rubyContext.CurrentException, "is_syncing");
+                return false;
             }
         }
 
