@@ -1239,7 +1239,7 @@ public class RhodesService extends Service {
 		}
 		
 		String syncSources = extras.getString("do_sync");
-		if (syncSources != null) {
+		if ((syncSources != null) && (syncSources.length() > 0)) {
 			Logger.D(TAG, "PUSH: Sync:");
 			boolean syncAll = false;
 			for (String source : syncSources.split(",")) {
