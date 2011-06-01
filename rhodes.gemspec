@@ -29,6 +29,7 @@ Gem::Specification.new do |s|
   s.executables << 'upgrade-rhodes-app'
   s.executables << 'rhodes-setup'
   s.executables << 'set-rhodes-sdk'
+  s.executables << 'get-rhodes-info'
   #this is a hack, we dont have an extension, but we want to run postinstall code. It's done via the 'building' of an extension
   s.extensions << 'ext/extconf.rb'
   s.summary = %q{The Rhodes framework is the easiest way to develop NATIVE apps with full device capabilities (GPS, PIM, camera, etc.) for any smartphone.}
