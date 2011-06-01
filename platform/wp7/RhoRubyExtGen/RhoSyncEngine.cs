@@ -96,8 +96,14 @@ namespace rho.rubyext
         }
 
         [RubyMethod("stop_sync", RubyMethodAttributes.PublicSingleton)]
-        public static void set_pollinterval(RubyModule/*!*/ self)
+        public static void stop_sync(RubyModule/*!*/ self)
         {
+        }
+
+        [RubyMethod("is_syncing", RubyMethodAttributes.PublicSingleton)]
+        public static bool is_syncing(RubyModule/*!*/ self)
+        {
+            return false;
         }
 
         [RubyMethod("set_source_property", RubyMethodAttributes.PublicSingleton)]
