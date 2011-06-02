@@ -179,33 +179,131 @@ namespace rho.rubyext
         }
 
         [RubyMethodAttribute("create_native_tabbar", RubyMethodAttributes.PublicSingleton)]
+        public static void createNativeTabBar(RubyModule/*!*/ self, int barType, Hash args)
+        {
+            try
+            {
+                if (args != null && args.Count > 0)
+                {
+                    RhodesApp.removeTabBar();
+                    RhodesApp.createTabBar(barType, (Object)args);
+                }
+
+                if (barType == 2)
+                    RhodesApp.removeTabBar();
+            }
+            catch (Exception ex)
+            {
+                Exception rubyEx = self.Context.CurrentException;
+                if (rubyEx == null)
+                {
+                    rubyEx = RubyExceptionData.InitializeException(new RuntimeError(ex.Message.ToString()), ex.Message);
+                }
+                LOG.ERROR("create_native_tabbar", ex);
+                throw rubyEx;
+            }
+        }
+
+        [RubyMethodAttribute("create_native_tabbar", RubyMethodAttributes.PublicSingleton)]
         public static void createNativeTabBar(RubyModule/*!*/ self, int barType, RubyArray args)
         {
+            try
+            {
+                if (args != null && args.Count > 0)
+                {
+                    RhodesApp.removeTabBar();
+                    RhodesApp.createTabBar(barType, (Object)args);
+                }
 
+                if (barType == 2)
+                    RhodesApp.removeTabBar();
+            }
+            catch (Exception ex)
+            {
+                Exception rubyEx = self.Context.CurrentException;
+                if (rubyEx == null)
+                {
+                    rubyEx = RubyExceptionData.InitializeException(new RuntimeError(ex.Message.ToString()), ex.Message);
+                }
+                LOG.ERROR("create_native_tabbar", ex);
+                throw rubyEx;
+            }
         }
 
         [RubyMethodAttribute("remove_native_tabbar", RubyMethodAttributes.PublicSingleton)]
         public static void removeNativeTabBar(RubyModule/*!*/ self)
         {
-
+            try
+            {
+                RhodesApp.removeTabBar();
+            }
+            catch (Exception ex)
+            {
+                Exception rubyEx = self.Context.CurrentException;
+                if (rubyEx == null)
+                {
+                    rubyEx = RubyExceptionData.InitializeException(new RuntimeError(ex.Message.ToString()), ex.Message);
+                }
+                LOG.ERROR("remove_native_tabbar", ex);
+                throw rubyEx;
+            }
         }
 
         [RubyMethodAttribute("native_tabbar_switch_tab", RubyMethodAttributes.PublicSingleton)]
         public static void nativeTabBarSwitchTab(RubyModule/*!*/ self, int index)
         {
-
+            try
+            {
+                RhodesApp.switchTab(index);
+            }
+            catch (Exception ex)
+            {
+                Exception rubyEx = self.Context.CurrentException;
+                if (rubyEx == null)
+                {
+                    rubyEx = RubyExceptionData.InitializeException(new RuntimeError(ex.Message.ToString()), ex.Message);
+                }
+                LOG.ERROR("native_tabbar_switch_tab", ex);
+                throw rubyEx;
+            }
         }
 
         [RubyMethodAttribute("native_tabbar_set_tab_badge", RubyMethodAttributes.PublicSingleton)]
         public static void nativeTabBarSetTabBadge(RubyModule/*!*/ self, int index, MutableString/*!*/ val)
         {
-
+            try
+            {
+                RhodesApp.setTabBadge(index, val);
+            }
+            catch (Exception ex)
+            {
+                Exception rubyEx = self.Context.CurrentException;
+                if (rubyEx == null)
+                {
+                    rubyEx = RubyExceptionData.InitializeException(new RuntimeError(ex.Message.ToString()), ex.Message);
+                }
+                LOG.ERROR("native_tabbar_set_tab_badge", ex);
+                throw rubyEx;
+            }
         }
 
         [RubyMethodAttribute("native_tabbar_get_current_tab", RubyMethodAttributes.PublicSingleton)]
-        public static void nativeTabBarGetCurrentTab(RubyModule/*!*/ self)
+        public static int nativeTabBarGetCurrentTab(RubyModule/*!*/ self)
         {
-      
+            try
+            {
+                return RhodesApp.getCurrentTab();
+            }
+            catch (Exception ex)
+            {
+                Exception rubyEx = self.Context.CurrentException;
+                if (rubyEx == null)
+                {
+                    rubyEx = RubyExceptionData.InitializeException(new RuntimeError(ex.Message.ToString()), ex.Message);
+                }
+                LOG.ERROR("native_tabbar_get_current_tab", ex);
+                throw rubyEx;
+            }
         }
 
         #endregion
