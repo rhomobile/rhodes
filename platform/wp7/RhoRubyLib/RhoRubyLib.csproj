@@ -65,6 +65,9 @@
     <Reference Include="System.Windows" />
     <Reference Include="system" />
     <Reference Include="system.Core" />
+    <Reference Include="System.Windows.Controls">
+      <HintPath>C:\Program Files\Microsoft SDKs\Silverlight\v4.0\Libraries\Client\System.Windows.Controls.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Net" />
   </ItemGroup>
@@ -135,6 +138,9 @@
     <Compile Include="sync\SyncThread.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="views\RhoView.xaml.cs">
+      <DependentUpon>RhoView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WP_PlatformAdaptationLayer.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -143,7 +149,12 @@
       <Name>sqlite3</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Page Include="views\RhoView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />
   <ProjectExtensions />
