@@ -72,6 +72,12 @@ namespace rho.rubyext
         }
 
         [RubyMethodAttribute("create_native_tabbar", RubyMethodAttributes.PublicSingleton)]
+        public static void createNativeTabBar(RubyModule/*!*/ self, int barType, Hash args)
+        {
+
+        }
+
+        [RubyMethodAttribute("create_native_tabbar", RubyMethodAttributes.PublicSingleton)]
         public static void createNativeTabBar(RubyModule/*!*/ self, int barType, RubyArray args)
         {
 
@@ -96,9 +102,9 @@ namespace rho.rubyext
         }
 
         [RubyMethodAttribute("native_tabbar_get_current_tab", RubyMethodAttributes.PublicSingleton)]
-        public static void nativeTabBarGetCurrentTab(RubyModule/*!*/ self)
+        public static int nativeTabBarGetCurrentTab(RubyModule/*!*/ self)
         {
-
+            return 0;
         }
 
         #endregion

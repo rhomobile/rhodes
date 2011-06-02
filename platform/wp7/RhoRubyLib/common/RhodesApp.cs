@@ -10,6 +10,9 @@ using Microsoft.Phone.Shell;
 using IronRuby.Builtins;
 using System.Windows.Media;
 using System.Windows.Navigation;
+using System.Windows.Controls;
+using rho.views;
+using System.Windows;
 
 namespace rho.common
 {
@@ -25,6 +28,8 @@ namespace rho.common
 
         private WebBrowser m_webBrowser;
         private PhoneApplicationPage m_appMainPage;
+        private Grid m_layoutRoot;
+        private TabControl m_tabControl;
         private Stack<Uri> m_backHistory = new Stack<Uri>();
         private Stack<Uri> m_forwardHistory = new Stack<Uri>();
         private Hash m_menuItems = null;
@@ -36,6 +41,8 @@ namespace rho.common
         private String m_strBlobsDirPath, m_strDBDirPath;
         private String m_strHomeUrl;
         private String m_strAppBackUrl;
+        private RhoView m_rhoView;
+        private RhoView m_masterView = null;
         ManualResetEvent m_UIWaitEvent = new ManualResetEvent(false);
         Vector<Object> m_arCallbackObjects = new Vector<Object>();
 
@@ -43,11 +50,15 @@ namespace rho.common
         public CHttpServer HttpServer{ get { return m_httpServer; } }
         public CRhoRuby RhoRuby { get { return CRhoRuby.Instance; } }
         public bool barIsStarted { get { return m_barIsStarted; } }
+        public Stack<Uri> BackHistory { get { return m_backHistory; } set { m_backHistory = value; } }
+        public Stack<Uri> ForwardHistory { get { return m_forwardHistory; } set { m_forwardHistory = value; } }
+        public Uri CurrentUri { get { return m_currentUri; } set { m_currentUri = value; } }
+        public RhoView rhoView { get { return m_rhoView; } }
 
         public String getBlobsDirPath() { return m_strBlobsDirPath; }
         public String getHomeUrl() { return m_strHomeUrl; }
 
-        public void Init(WebBrowser browser, PhoneApplicationPage appMainPage)
+        public void Init(WebBrowser browser, PhoneApplicationPage appMainPage, Grid layoutRoot, RhoView rhoView)
         {
             initAppUrls();
             RhoLogger.InitRhoLog();
@@ -56,10 +67,18 @@ namespace rho.common
             CRhoFile.recursiveCreateDir(CFilePath.join(getBlobsDirPath()," "));
 
             m_webBrowser = browser;
-            m_appMainPage = appMainPage;
-            m_appMainPage.ApplicationBar = null;
+            if (m_appMainPage == null)
+                m_appMainPage = appMainPage;
+            if (m_layoutRoot == null)
+                m_layoutRoot = layoutRoot;
+            //m_appMainPage.ApplicationBar = null;
 
-            m_httpServer = new CHttpServer(CFilePath.join(getRhoRootPath(), "apps"));
+            if (m_httpServer == null)
+                m_httpServer = new CHttpServer(CFilePath.join(getRhoRootPath(), "apps"));
+
+            m_rhoView = rhoView;
+            if (m_rhoView.MasterView)
+                m_masterView = rhoView;
         }
 
         public void startApp()
@@ -520,7 +539,138 @@ namespace rho.common
         public void setAppBackUrl(String url)
         {
             m_strAppBackUrl = url;
-            m_backHistory.Clear();
+            if (m_backHistory != null)
+                m_backHistory.Clear();
+        }
+
+        private void createTabBarButtons(int barType, Object[] hashArray)
+        {
+            for (int i = 0; hashArray != null && i < hashArray.Length; i++)
+            {
+                if (hashArray[i] != null && hashArray[i] is Hash)
+                {
+                    String action = null;
+                    String icon = null;
+                    String label = null;
+                    Brush web_bkg_color = null;
+                    bool reload = false;
+                    bool use_current_view_for_tab = false;
+                    object val = null;
+
+                    Hash values = (Hash)hashArray[i];
+                    if (values.TryGetValue((object)MutableString.Create("action"), out val))
+                        action = val.ToString();
+                    if (values.TryGetValue((object)MutableString.Create("icon"), out val))
+                        icon = val.ToString();
+                    if (values.TryGetValue((object)MutableString.Create("label"), out val))
+                        label = val.ToString();
+                    if (values.TryGetValue((object)MutableString.Create("reload"), out val))
+                        reload = Convert.ToBoolean(val);
+                    if (values.TryGetValue((object)MutableString.Create("web_bkg_color"), out val))
+                        web_bkg_color = new SolidColorBrush(getColorFromString(val.ToString()));
+                    if (values.TryGetValue((object)MutableString.Create("use_current_view_for_tab"), out val))
+                        use_current_view_for_tab = Convert.ToBoolean(val);
+
+                    //if (label == null && barType == 0)
+                    //    label = ".";//Text can not be empty. it's WP7's restriction!!!
+
+                    if (icon == null)//icon can not be null or empty. so now i don't know how to create separator
+                    {
+                        icon = getDefaultImagePath(action);
+                    }
+
+                    //if (icon == null || action == null)
+                       // continue;
+
+
+                    //tabItem.Header = "Test";to do
+                    TabItem tabItem = new TabItem();
+                    //if (i == 0)// && use_current_view_for_tab)
+                    tabItem.Content = new RhoView(m_appMainPage, m_layoutRoot, action, reload, web_bkg_color);
+                    if (values.TryGetValue((object)MutableString.Create("selected_color"), out val))
+                        tabItem.Background = new SolidColorBrush(getColorFromString(val.ToString()));
+                    if (values.TryGetValue((object)MutableString.Create("disabled"), out val))
+                        tabItem.IsEnabled = !Convert.ToBoolean(val);
+                    m_tabControl.Items.Add(tabItem);
+                }
+            }
+        }
+
+        public void createTabBar(int tabBarType, Object tabBarParams)
+        {
+            m_appMainPage.Dispatcher.BeginInvoke( () =>
+            {
+                m_tabControl = new TabControl();
+                if (tabBarType == 1)
+                    m_tabControl.TabStripPlacement = Dock.Top;
+                else if (tabBarType == 3)
+                    m_tabControl.TabStripPlacement = Dock.Left;
+
+                Object[] hashArray = null;
+                Hash paramHash = null;
+                object val = null;
+
+                if (tabBarParams is RubyArray)
+                    hashArray = ((RubyArray)tabBarParams).ToArray();
+                else
+                    paramHash = (Hash)tabBarParams;
+
+                if (paramHash != null && paramHash.TryGetValue((object)MutableString.Create("background_color"), out val))
+                    m_tabControl.Background = new SolidColorBrush(getColorFromString(val.ToString()));
+
+                if (paramHash != null && paramHash.TryGetValue((object)MutableString.Create("tabs"), out val) && val is RubyArray)
+                    hashArray = ((RubyArray)val).ToArray();
+
+                createTabBarButtons(tabBarType, hashArray);
+                m_tabControl.Margin = new Thickness(0, 70, 0, 0);
+                m_layoutRoot.Children.Add(m_tabControl);
+            });
+        }
+
+        public void removeTabBar()
+        {
+            m_appMainPage.Dispatcher.BeginInvoke( () =>
+            {
+                if (m_tabControl != null)
+                {
+                    m_tabControl.Items.Clear();
+                    m_layoutRoot.Children.Remove(m_tabControl);
+                    m_masterView.refresh();
+                }
+            });
+        }
+
+        public void switchTab(int index)
+        {
+            m_appMainPage.Dispatcher.BeginInvoke(() =>
+            {
+                if (m_tabControl != null)
+                {
+                    m_tabControl.SelectedIndex = index;
+                }
+            });
+        }
+
+        public void setTabBadge(int index, MutableString val)
+        {
+            m_appMainPage.Dispatcher.BeginInvoke(() =>
+            {
+                if (m_tabControl != null)
+                {
+                    //TO DO
+                    //((TabItem)m_tabControl.Items[index]).Header
+                }
+            });
+        }
+
+        public int getCurrentTab()
+        {
+            if (m_tabControl != null)
+            {
+                return m_tabControl.SelectedIndex;
+            }
+                
+            return -1;
         }
     }
 }

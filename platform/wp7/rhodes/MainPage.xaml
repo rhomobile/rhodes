@@ -6,6 +6,7 @@
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:rho.views;assembly=RhoRubyLib"
     mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="768"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
@@ -25,10 +26,10 @@
             <TextBlock x:Name="ApplicationTitle" Text="" Style="{StaticResource PhoneTextNormalStyle}"/>
             <TextBlock x:Name="PageTitle" Text="" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
         </StackPanel>
-        <Image x:Name="LoadingImage" Source="/apps/app/loading.png"></Image>
+        <local:RhoView Grid.Row="1" HorizontalAlignment="Left" x:Name="rhoview1" VerticalAlignment="Top" Height="607" Width="480"/>
+        <!--<Image x:Name="LoadingImage" Source="/apps/app/loading.png"></Image>
         <ProgressBar Height="40" Name="progressBar" Width="300" />
-        <phone:WebBrowser Grid.Row="1" HorizontalAlignment="Left" Name="webBrowser1" VerticalAlignment="Top" Height="607" Width="480" />
-        <phone:WebBrowser Grid.Row="1" HorizontalAlignment="Left" Name="webBrowser2" VerticalAlignment="Top" Height="607" Width="480" />
+        <phone:WebBrowser Grid.Row="1" HorizontalAlignment="Left" Name="webBrowser1" VerticalAlignment="Top" Height="607" Width="480" />-->
         <!--ContentPanel - place additional content here-->
     </Grid>
 

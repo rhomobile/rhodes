@@ -23,6 +23,15 @@ namespace Rhodes
 {
     public partial class MainPage : PhoneApplicationPage
     {
+        private static MainPage m_instance = null;
+        public static MainPage Instance()
+        {
+            if (m_instance == null)
+                m_instance = new MainPage();
+
+            return m_instance;
+        }
+
         private static string GetWinPhoneAttribute(string attributeName)
         {
             string ret = string.Empty;
@@ -49,8 +58,12 @@ namespace Rhodes
         {
             InitializeComponent();
             ApplicationTitle.Text = GetWinPhoneAttribute("Title");
+            m_instance = this;
+            rhoview1.MainPage = this;
+            rhoview1.MainPageLayoutRoot = LayoutRoot;
+            rhoview1.MasterView = true;
 
-            if (CRhoFile.isResourceFileExist("/apps/app/loading.png") == false)
+            /*if (CRhoFile.isResourceFileExist("/apps/app/loading.png") == false)
             {
                 LoadingImage.Visibility = Visibility.Collapsed;
                 webBrowser2.Visibility = Visibility.Visible;
@@ -66,7 +79,7 @@ namespace Rhodes
             webBrowser1.Navigating += WebBrowser_OnNavigating;
             webBrowser1.Navigated += WebBrowser_OnNavigated;
             webBrowser1.ScriptNotify += WebBrowser_OnScriptNotify;
-            progressBar.IsIndeterminate = true;
+            //progressBar.IsIndeterminate = true;*/
         }
 
         private CRhodesApp RHODESAPP(){return CRhodesApp.Instance;}
@@ -84,9 +97,9 @@ namespace Rhodes
 
         private void WebBrowser_OnLoaded(object sender, RoutedEventArgs e)
         {
-            if (webBrowser2.Visibility == Visibility.Visible)
-                webBrowser2.NavigateToString(CRhoFile.readStringFromResourceFile("/apps/app/loading.html"));
-            RHODESAPP().Init(webBrowser1, this);
+            //if (webBrowser2.Visibility == Visibility.Visible)
+            //    webBrowser2.NavigateToString(CRhoFile.readStringFromResourceFile("/apps/app/loading.html"));
+            //RHODESAPP().Init(webBrowser1, this);
         }
 
         private void WebBrowser_OnLoadCompleted(object sender, NavigationEventArgs e)
@@ -95,21 +108,21 @@ namespace Rhodes
 
         private void WebBrowser_OnNavigating(object sender, NavigatingEventArgs e)
         {
-            if (!RHODESAPP().HttpServer.processBrowserRequest(e.Uri))
-                return;
+            //if (!RHODESAPP().HttpServer.processBrowserRequest(e.Uri))
+            //    return;
 
-            e.Cancel = true;
+            //e.Cancel = true;
         }
 
         private void WebBrowser_OnNavigated(object sender, NavigationEventArgs e)
         {
-            if (webBrowser1.Visibility == Visibility.Collapsed)
+            /*if (webBrowser1.Visibility == Visibility.Collapsed)
             {
                 LoadingImage.Visibility = Visibility.Collapsed;
                 webBrowser2.Visibility = Visibility.Collapsed;
                 webBrowser1.Visibility = Visibility.Visible;
                 progressBar.Visibility = Visibility.Collapsed;
-            }
+            }*/
             RHODESAPP().addToHistory(e.Uri);
         }
 
