@@ -14,8 +14,8 @@
 #undef null
 
 extern "C" {
-	extern VALUE rb_thread_main(void);
-	extern VALUE rb_thread_wakeup(VALUE thread);
+    extern VALUE rb_thread_main(void);
+    extern VALUE rb_thread_wakeup(VALUE thread);
 }
 
 QtMainWindow::QtMainWindow(QWidget *parent) :
@@ -55,6 +55,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
 
 QtMainWindow::~QtMainWindow()
 {
+    tabbarRemoveAllTabs();
     delete wi;
     delete ui;
 }
@@ -78,7 +79,7 @@ void QtMainWindow::closeEvent(QCloseEvent *ce)
 {
     rb_thread_wakeup(rb_thread_main());
     if (cb) cb->onWindowClose();
-	wi->close();
+    wi->close();
     QMainWindow::closeEvent(ce);
 }
 
@@ -159,32 +160,85 @@ void QtMainWindow::Refresh(void)
 
 void QtMainWindow::tabbarRemoveAllTabs()
 {
-    //ui->tabBar->clear();
+    // removing Tabs
+    for (int i=ui->tabBar->count(); i >= 0; --i)
+        ui->tabBar->removeTab(i);
+    // removing WebViews
+    if (tabViews.size()>0) {
+        //for (std::vector<QWebView*>::iterator itab=tabViews.begin(); itab!=tabViews.end(); ++itab)
+        //    delete &(*itab);
+        tabViews.clear();
+    }
+}
+
+int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disabled, QTabBarRuntimeParams& tbri)
+{
+    if (icon && (strlen(icon) > 0))
+        ui->tabBar->addTab(QIcon(QString(icon)), label);
+    else
+        ui->tabBar->addTab(label);
+    QWebView* wv = new QWebView();
+    /* >>> begin of development testing code */ 
+    QString tab_id;
+    tab_id.setNum(ui->tabBar->count());
+    wv->setHtml( QString("<html><body><h1>") + tab_id + QString("</h1></body></html>") );
+    /* <<< end of development testing code */ 
+    tabViews.push_back(wv);
+    return ui->tabBar->count() - 1;
 }
 
 void QtMainWindow::tabbarShow()
 {
-    //ui->tabBar->show();
+    ui->tabBar->show();
 }
 
 void QtMainWindow::tabbarHide()
 {
-    //ui->tabBar->hide();
-
-    if (!rho_rhodesapp_check_mode())
-        return;
-    int bar_type = NOBAR_TYPE;
-    //id runnable = [RhoNativeBarCreateTask class];
-    //id arg1 = [NSValue valueWithBytes:&bar_type objCType:@encode(int)];
-    //[Rhodes performOnUiThread:runnable arg:arg1 arg:nil wait:NO];
+    ui->tabBar->hide();
 }
 
 int QtMainWindow::tabbarGetHeight()
 {
-    //return ui->tabBar->height();
-	return 120;
+    return ui->tabBar->height();
 }
 
+void QtMainWindow::tabbarSwitch(int index)
+{
+    ui->tabBar->setCurrentIndex(index);
+}
+
+int QtMainWindow::tabbarGetCurrent()
+{
+    return ui->tabBar->currentIndex();
+}
+
+void QtMainWindow::on_tabBar_currentChanged(int index)
+{
+    if (index < tabViews.size()) {
+        ui->verticalLayout->removeWidget(ui->webView);
+        for (unsigned int i=0; i<tabViews.size(); ++i)
+            if (i != index) {
+                tabViews[i]->setParent(0);
+                ui->verticalLayout->removeWidget(tabViews[i]);
+            } else {
+                tabViews[i]->setParent(ui->centralWidget);
+                ui->verticalLayout->addWidget(tabViews[i]);
+            }
+    }
+}
+
+void QtMainWindow::setTabbarStyle(QString background)
+{
+    QString style = ""; // "border:0px"
+    if (background.length()>0) {
+        if (style.length()>0) style += ";";
+        style += "background:"+background;
+    }
+    if (style.length()>0) {
+        style = "QTabBar{"+style+"}";
+        ui->tabBar->setStyleSheet(style);
+    }
+}
 
 // Toolbar:
 
@@ -221,7 +275,7 @@ void QtMainWindow::on_toolbarAction_triggered(bool checked)
     QObject* sender = QObject::sender();
     QAction* action;
     if (sender && (action = dynamic_cast<QAction*>(sender))) {
-		rho::String* strAction = new rho::String(action->data().toString().toStdString());
+        rho::String* strAction = new rho::String(action->data().toString().toStdString());
         if ( strcasecmp(strAction->c_str(), "forward") == 0 )
             rho_webview_navigate_forward();
         else
@@ -247,17 +301,17 @@ void QtMainWindow::toolbarAddSeparator()
 
 void QtMainWindow::setToolbarStyle(bool border, QString background)
 {
-	QString style = "";
-	if (!border) style += "border:0px";
-	if (background.length()>0) {
+    QString style = "";
+    if (!border) style += "border:0px";
+    if (background.length()>0) {
         if (style.length()>0) style += ";";
         style += "background:"+background;
     }
-	if (style.length()>0) {
-		style = "QToolBar{"+style+"}";
-	    ui->toolBar->setStyleSheet(style);
+    if (style.length()>0) {
+        style = "QToolBar{"+style+"}";
+        ui->toolBar->setStyleSheet(style);
         ui->toolBarRight->setStyleSheet(style);
-	}
+    }
 }
 
 

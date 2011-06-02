@@ -284,12 +284,8 @@ public :
 		return m_appWindow;
 	}
 
-	HWND GetWebViewWindow(int index) {
-#ifdef RHODES_EMULATOR
-		return m_appWindow.getWebViewHWND(index);
-#else
+	HWND GetWebViewWindow() {
 		return m_appWindow.getWebViewHWND();
-#endif
 	}
 
     void RunMessageLoop( ) throw( )
@@ -517,8 +513,8 @@ CMainWindow& getAppWindow()
 	return _AtlModule.GetAppWindow();
 }
 
-extern "C" HWND getWebViewWnd(int index) {
-	return _AtlModule.GetWebViewWindow(index);
+extern "C" HWND getWebViewWnd() {
+	return _AtlModule.GetWebViewWindow();
 }
 
 CMainWindow* Rhodes_getMainWindow() {

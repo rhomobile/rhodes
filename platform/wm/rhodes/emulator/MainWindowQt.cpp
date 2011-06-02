@@ -17,6 +17,7 @@
 #include <QString>
 #include <QApplication>
 #include <QtGui/QAction>
+#include <QHash>
 #include "QtMainWindow.h"
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
@@ -36,6 +37,7 @@ int CMainWindow::m_screenHeight;
 bool CMainWindow::mainWindowClosed = false;
 
 CMainWindow::CMainWindow():
+    m_started(true),
     qtApplication(NULL),
     qtMainWindow(NULL)
 {
@@ -77,7 +79,7 @@ HWND CMainWindow::Initialize(const wchar_t* title)
     return hWnd;
 }
 
-HWND CMainWindow::getWebViewHWND(int index)
+HWND CMainWindow::getWebViewHWND()
 {
     // TODO
     return 0;
@@ -375,6 +377,12 @@ void CMainWindow::createToolbar(rho_param *p)
     }
 	((QtMainWindow*)qtMainWindow)->setToolbarStyle(false, (m_rgbBackColor.get()!=NULL ? m_rgbBackColor->name() : ""));
     ((QtMainWindow*)qtMainWindow)->toolbarShow();
+    m_started = true;
+}
+
+bool charToBool(const char* str)
+{
+    return str && ((stricmp(str,"true")==0) || (stricmp(str,"yes")==0) || (atoi(str)==1));
 }
 
 void CMainWindow::createTabbar(int bar_type, rho_param *p)
@@ -384,8 +392,14 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
     if (!rho_rhodesapp_check_mode() || !rho_wmsys_has_touchscreen() )
         return;
 
+    if (bar_type==NOBAR_TYPE) {
+        ((QtMainWindow*)qtMainWindow)->toolbarRemoveAllButtons();
+        ((QtMainWindow*)qtMainWindow)->tabbarRemoveAllTabs();
+        m_started = false;
+        return;
+    }
+
 	std::auto_ptr<QColor> background_color (NULL);
-    //const char* background_color_enable = NULL;
     const char* on_change_tab_callback = NULL;
     
     rho_param *params = NULL;
@@ -402,7 +416,6 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
                     rho_param *value = p->v.hash->value[i];
                     if (strcasecmp(name, "background_color") == 0) {
                         background_color.reset(new QColor(getColorFromString(value->v.string)));
-                        //background_color_enable = "true";
                     } else if (strcasecmp(name, "on_change_tab_callback") == 0) {
                         on_change_tab_callback = value->v.string;
                     } else if (strcasecmp(name, "buttons") == 0 || strcasecmp(name, "tabs") == 0) {
@@ -422,14 +435,10 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
         return;
     }
     
+    ((QtMainWindow*)qtMainWindow)->tabbarRemoveAllTabs();
+
     int size = params->v.array->size;
 
-    //NSMutableDictionary* main_properties = [NSMutableDictionary dictionaryWithCapacity:2];
-    //NSMutableDictionary* properties = [NSMutableDictionary dictionaryWithCapacity:1];
-    //[main_properties setObject:properties forKey:NATIVE_BAR_PROPERTIES];
-    //NSMutableArray* items = [NSMutableArray arrayWithCapacity:size];
-    //[main_properties setObject:items forKey:NATIVE_BAR_ITEMS];
-    
     for (int i = 0; i < size; ++i) {
         rho_param *hash = params->v.array->value[i];
         if (hash->type != RHO_PARAM_HASH) {
@@ -494,104 +503,32 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
             return;
         }
         if (!skip_item) {
-            //NSMutableDictionary* item = [NSMutableDictionary dictionaryWithCapacity:10];    
-            //[item setObject:[NSString stringWithUTF8String:label] forKey:NATIVE_BAR_ITEM_LABEL];
-            //[item setObject:[NSString stringWithUTF8String:action] forKey:NATIVE_BAR_ITEM_ACTION];
-            //[item setObject:[NSString stringWithUTF8String:(icon ? icon : "")] forKey:NATIVE_BAR_ITEM_ICON];
-            //[item setObject:[NSString stringWithUTF8String:(reload ? reload : "false")] forKey:NATIVE_BAR_ITEM_RELOAD];
-            //[item setObject:[NSString stringWithUTF8String:(colored_icon ? colored_icon : "false")] forKey:NATIVE_BAR_ITEM_COLORED_ICON];
+            QtMainWindow::QTabBarRuntimeParams tbri;
+            tbri["action"] = QString(action);
+            tbri["reload"] = charToBool(reload);
+            tbri["use_current_view_for_tab"] = charToBool(use_current_view_for_tab);
+
+            String strIconPath = icon ? CFilePath::join( RHODESAPP().getAppRootPath(), icon) : String();
+
+            ((QtMainWindow*)qtMainWindow)->tabbarAddTab(QString(label), icon ? strIconPath.c_str() : NULL, charToBool(disabled), tbri);
+
             if (selected_color != NULL) {
                 //[item setObject:[NSString stringWithUTF8String:selected_color] forKey:NATIVE_BAR_ITEM_SELECTED_COLOR];
             }
-            //[item setObject:[NSString stringWithUTF8String:(disabled ? disabled : "false")] forKey:NATIVE_BAR_ITEM_DISABLED];
             if (web_bkg_color != NULL) {
                 //[item setObject:[NSString stringWithUTF8String:web_bkg_color] forKey:NATIVE_BAR_ITEM_WEB_BACKGROUND_COLOR];
             }
-            //[item setObject:[NSString stringWithUTF8String:(use_current_view_for_tab ? use_current_view_for_tab : "false")] forKey:NATIVE_BAR_ITEM_USE_CURRENT_VIEW_FOR_TAB];
-            //[items addObject:item];
         }
-        
     }
     if (background_color.get()!=NULL != NULL) {
-	    //((QtMainWindow*)qtMainWindow)->setTabbarStyle(false, m_rgbBackColor->name());
-        //[properties setObject:[NSString stringWithUTF8String:background_color] forKey:NATIVE_BAR_BACKGOUND_COLOR];    
+	    ((QtMainWindow*)qtMainWindow)->setTabbarStyle(background_color->name());
     }
     if (on_change_tab_callback != NULL) {
+		// TODO: implement callback
         //[properties setObject:[NSString stringWithUTF8String:on_change_tab_callback] forKey:NATIVE_BAR_ON_CHANGE_TAB_CALLBACK];    
     }
-    //id runnable = [RhoNativeBarCreateTask class];
-    //id arg1 = [NSValue valueWithBytes:&bar_type objCType:@encode(int)];
-    //[Rhodes performOnUiThread:runnable arg:arg1 arg:main_properties wait:NO];
-
-	// RhoNativeBarCreateTask:
-    /*
-    id view = nil;
-   
-    Rhodes *r = [Rhodes sharedInstance];
-    
-    id mainView = [r mainView];
-    UIWindow* w = r.window;
-
-	SimpleMainView* smv = nil;
-    if ([mainView isKindOfClass:[SimpleMainView class]]) {
-	    smv = (SimpleMainView*)mainView;
-	}
-    switch (type) {
-		case NOBAR_TYPE:
-			if (smv != nil) {
-				[smv removeToolbar];
-			}
-			else {
-				view = [[SimpleMainView alloc] initWithMainView:mainView parent:w ];
-				[r setMainView:view];
-				[view release];
-			}
-			started = 0;
-			break;
-		case TOOLBAR_TYPE:
-			if (smv != nil) {
-				[smv addToolbar:parameters];
-			}
-			else {
-				view = [[SimpleMainView alloc] initWithMainView:mainView parent:w bar_info:parameters];
-				[r setMainView:view];
-				[view release];
-			}
-			started = 1;
-			break;
-		case TABBAR_TYPE: {
-			[[Rhodes sharedInstance] hideSplash];
-			view = [[TabbedMainView alloc] initWithMainView:mainView parent:w bar_info:parameters];
-			started = 1;
-			[r setMainView:view];
-			[view release];
-		}
-			break;
-		case VTABBAR_TYPE: {
-			[[Rhodes sharedInstance] hideSplash];
-			BOOL is_iPad = NO;
-			{
-				NSString *model = [[UIDevice currentDevice] model]; // "iPad ..."
-				if ([model hasPrefix:@"iPad"]) {
-					is_iPad = YES;
-				}
-			}
-			if (is_iPad) {
-				view = [[SplittedMainView alloc] initWithMainView:mainView parent:w bar_info:parameters];
-			}
-			else {
-				view = [[TabbedMainView alloc] initWithMainView:mainView parent:w bar_info:parameters];
-			}
-			started = 1;
-			[r setMainView:view];
-			[view release];
-			}
-			break;
-		default:
-			RAWLOG_ERROR1("Unknown bar type passed: %d", type);
-        return;
-    }
-    */
+    ((QtMainWindow*)qtMainWindow)->tabbarShow();
+    ((QtMainWindow*)qtMainWindow)->tabbarSwitch(0);
 }
 
 int CMainWindow::getTabbarHeight()
@@ -611,16 +548,7 @@ void CMainWindow::removeAllTabs()
 
 void CMainWindow::tabbarSwitch(int index)
 {
-    // TODO: Implement!
-
-    if (!rho_rhodesapp_check_mode())
-        return;
-    //id runnable = [RhoNativeBarSwitchTabTask class];
-    //id arg = [NSValue valueWithBytes:&index objCType:@encode(int)];
-    //[Rhodes performOnUiThread:runnable arg:arg wait:NO];
-
-    // RhoNativeBarSwitchTabTask:
-	//[[[Rhodes sharedInstance] mainView] switchTab:index];
+    ((QtMainWindow*)qtMainWindow)->tabbarSwitch(index);
 }
 
 void CMainWindow::tabbarBadge(int index, char* badge)

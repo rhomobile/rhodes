@@ -55,7 +55,7 @@ public:
     void performOnUiThread(rho::common::IRhoRunnable* pTask);
     CNativeToolbar& getToolbar(){ return m_toolbar; }
     CNativeTabbar& getTabbar(){ return m_tabbar; }
-    HWND getWebViewHWND(int index);
+    HWND getWebViewHWND();
 	// for 'main_window_closed' System property
 	static bool mainWindowClosed;
 
@@ -132,6 +132,7 @@ private:
     CLogView m_logView;
     CNativeToolbar m_toolbar;
 	CNativeTabbar m_tabbar;
+    bool m_started;
     void* qtMainWindow;
     void* qtApplication;
 
