@@ -440,7 +440,7 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
         return;
     }
     
-    ((QtMainWindow*)qtMainWindow)->tabbarRemoveAllTabs();
+    ((QtMainWindow*)qtMainWindow)->tabbarInitialize();
 
     int size = params->v.array->size;
 
@@ -541,9 +541,9 @@ void CMainWindow::removeTabbar()
     ((QtMainWindow*)qtMainWindow)->tabbarHide();
 }
 
-void CMainWindow::removeAllTabs()
+void CMainWindow::removeAllTabs(bool restore)
 {
-    ((QtMainWindow*)qtMainWindow)->tabbarRemoveAllTabs();
+    ((QtMainWindow*)qtMainWindow)->tabbarRemoveAllTabs(restore);
 }
 
 void CMainWindow::tabbarSwitch(int index)

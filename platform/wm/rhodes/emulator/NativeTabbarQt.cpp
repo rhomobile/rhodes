@@ -26,7 +26,7 @@ CNativeTabbar::~CNativeTabbar(void)
 
 void CNativeTabbar::OnFinalMessage(HWND /*hWnd*/)
 {
-    getAppWindow().removeAllTabs();
+    getAppWindow().removeAllTabs(false);
 }
 
 /*static*/ CNativeTabbar& CNativeTabbar::getInstance()
