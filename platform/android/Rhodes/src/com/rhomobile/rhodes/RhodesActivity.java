@@ -494,14 +494,14 @@ public class RhodesActivity extends BaseActivity {
             return;
         }
 
-        //String urlStart = uri.getPath();
-        //if (urlStart != null) { 
-		//    if ("".compareTo(urlStart) != 0)
-		//    {
-		//        Logger.D(TAG, "PROCESS URL START: " + urlStart);
-		//        RhoConf.setString("start_path", Uri.decode(urlStart));
-		//    }
-        //}
+        String urlStart = uri.getPath();
+        if (urlStart != null) { 
+		    if ("".compareTo(urlStart) != 0)
+		    {
+		        Logger.D(TAG, "PROCESS URL START: " + urlStart);
+		        RhoConf.setString("start_path", Uri.decode(urlStart));
+		    }
+        }
 
 		ENABLE_LOADING_INDICATION = !RhoConf.getBool("disable_loading_indication");
 	}
