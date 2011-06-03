@@ -171,19 +171,27 @@ void QtMainWindow::tabbarRemoveAllTabs()
     }
 }
 
-int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disabled, QTabBarRuntimeParams& tbri)
+int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disabled, const QColor* web_bkg_color, QTabBarRuntimeParams& tbri)
 {
-    if (icon && (strlen(icon) > 0))
+    QWebView* wv = new QWebView();
+	// TODO: if (web_bkg_color) wv->... *web_bkg_color
+
+    /* >>> begin of development testing code */ 
+    QString tab_id;
+    tab_id.setNum(tabViews.size());
+    wv->setHtml( QString("<html><body><h1>") + tab_id + QString("</h1></body></html>") );
+    /* <<< end of development testing code */ 
+
+	tabViews.push_back(wv);
+
+	if (icon && (strlen(icon) > 0))
         ui->tabBar->addTab(QIcon(QString(icon)), label);
     else
         ui->tabBar->addTab(label);
-    QWebView* wv = new QWebView();
-    /* >>> begin of development testing code */ 
-    QString tab_id;
-    tab_id.setNum(ui->tabBar->count());
-    wv->setHtml( QString("<html><body><h1>") + tab_id + QString("</h1></body></html>") );
-    /* <<< end of development testing code */ 
-    tabViews.push_back(wv);
+    if (disabled)
+		ui->tabBar->setTabEnabled(ui->tabBar->count()-1, false);
+	ui->tabBar->setTabData(ui->tabBar->count()-1, tbri);
+
     return ui->tabBar->count() - 1;
 }
 
@@ -215,7 +223,14 @@ int QtMainWindow::tabbarGetCurrent()
 void QtMainWindow::on_tabBar_currentChanged(int index)
 {
     if (index < tabViews.size()) {
+		//wi->setWindowTitle(QString(index));
+	    //wi->setPage(0);
+	    //wi->setPage(tabViews[index]->page());
+
+		// setTabTextColor(index, ...) <- tbri["selected_color"]
+
         ui->verticalLayout->removeWidget(ui->webView);
+		ui->webView->setParent(0);
         for (unsigned int i=0; i<tabViews.size(); ++i)
             if (i != index) {
                 tabViews[i]->setParent(0);
