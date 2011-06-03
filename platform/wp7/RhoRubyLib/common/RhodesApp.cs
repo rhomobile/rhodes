@@ -320,7 +320,7 @@ namespace rho.common
 
         public void setMenuItems(Hash menuItems)
         {
-            m_webBrowser.Dispatcher.BeginInvoke( () =>
+            m_appMainPage.Dispatcher.BeginInvoke(() =>
             {
                 if (m_appMainPage.ApplicationBar == null)
                     createEmptyToolBar();
@@ -364,7 +364,7 @@ namespace rho.common
 
         public void createToolBar(int barType, Object barParams)
         {
-            m_webBrowser.Dispatcher.BeginInvoke( () =>
+            m_appMainPage.Dispatcher.BeginInvoke(() =>
             {
                 createEmptyToolBar();
 
@@ -391,7 +391,7 @@ namespace rho.common
 
         public void removeToolBar()
         {
-            m_webBrowser.Dispatcher.BeginInvoke( () =>
+            m_appMainPage.Dispatcher.BeginInvoke(() =>
             {
                 if (m_appMainPage.ApplicationBar != null)
                 {
@@ -585,6 +585,7 @@ namespace rho.common
 
                     //tabItem.Header = "Test";to do
                     TabItem tabItem = new TabItem();
+                    tabItem.Header = new RhoTabHeader(label, icon);
                     //if (i == 0)// && use_current_view_for_tab)
                     tabItem.Content = new RhoView(m_appMainPage, m_layoutRoot, action, reload, web_bkg_color);
                     if (values.TryGetValue((object)MutableString.Create("selected_color"), out val))
