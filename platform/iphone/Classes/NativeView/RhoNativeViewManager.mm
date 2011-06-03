@@ -26,7 +26,7 @@ static int currentID = 1;
     NSString *type_name;
 	NativeView* nv_view;
 	NativeViewFactory* nv_factory;
-	int tab_indes;
+	int tab_index;
     int nv_id;
 	VALUE start_params;
     NSString *message;
@@ -85,7 +85,7 @@ static int currentID = 1;
 - (NativeView*)getNativeView;
 - (void)setFactory:(id)factory;
 - (id)getFactory;
-+ (NativeViewOCImpl*)makeNativeView:(NativeView*)nativeView;
++ (NativeViewOCImpl*)makeNativeView:(NativeView*)nativeView factory:(id)factory;
 
 @end
 
