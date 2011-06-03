@@ -377,6 +377,7 @@ void CMainWindow::createToolbar(rho_param *p)
     }
 	((QtMainWindow*)qtMainWindow)->setToolbarStyle(false, (m_rgbBackColor.get()!=NULL ? m_rgbBackColor->name() : ""));
     ((QtMainWindow*)qtMainWindow)->toolbarShow();
+    //removeTabbar();
     m_started = true;
 }
 
@@ -392,12 +393,16 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
     if (!rho_rhodesapp_check_mode() || !rho_wmsys_has_touchscreen() )
         return;
 
+	/*
     if (bar_type==NOBAR_TYPE) {
-        ((QtMainWindow*)qtMainWindow)->toolbarRemoveAllButtons();
-        ((QtMainWindow*)qtMainWindow)->tabbarRemoveAllTabs();
+        removeToolbar();
+		removeAllButtons();
+        removeTabbar();
+		removeAllTabs();
         m_started = false;
         return;
     }
+    */
 
 	std::auto_ptr<QColor> background_color (NULL);
     const char* on_change_tab_callback = NULL;
@@ -454,7 +459,7 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
         
         const char *selected_color = NULL;
         const char *disabled = NULL;
-        const char* web_bkg_color = NULL;
+		std::auto_ptr<QColor> web_bkg_color (NULL);
         const char* use_current_view_for_tab = NULL;
         
         bool skip_item = false;
@@ -486,7 +491,7 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
             else if (strcasecmp(name, "disabled") == 0)
                 disabled = value->v.string;
             else if (strcasecmp(name, "web_bkg_color") == 0)
-                web_bkg_color = value->v.string;
+                web_bkg_color.reset(new QColor(getColorFromString(value->v.string)));
             else if (strcasecmp(name, "use_current_view_for_tab") == 0) {
                 use_current_view_for_tab = value->v.string;
                 if (strcasecmp(use_current_view_for_tab, "true") == 0) {
@@ -507,20 +512,12 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
             tbri["action"] = QString(action);
             tbri["reload"] = charToBool(reload);
             tbri["use_current_view_for_tab"] = charToBool(use_current_view_for_tab);
-
+			tbri["selected_color"] = QString(selected_color ? selected_color : "");
             String strIconPath = icon ? CFilePath::join( RHODESAPP().getAppRootPath(), icon) : String();
-
-            ((QtMainWindow*)qtMainWindow)->tabbarAddTab(QString(label), icon ? strIconPath.c_str() : NULL, charToBool(disabled), tbri);
-
-            if (selected_color != NULL) {
-                //[item setObject:[NSString stringWithUTF8String:selected_color] forKey:NATIVE_BAR_ITEM_SELECTED_COLOR];
-            }
-            if (web_bkg_color != NULL) {
-                //[item setObject:[NSString stringWithUTF8String:web_bkg_color] forKey:NATIVE_BAR_ITEM_WEB_BACKGROUND_COLOR];
-            }
+            ((QtMainWindow*)qtMainWindow)->tabbarAddTab(QString(label), icon ? strIconPath.c_str() : NULL, charToBool(disabled), web_bkg_color.get(), tbri);
         }
     }
-    if (background_color.get()!=NULL != NULL) {
+    if (background_color.get() != NULL) {
 	    ((QtMainWindow*)qtMainWindow)->setTabbarStyle(background_color->name());
     }
     if (on_change_tab_callback != NULL) {
@@ -528,7 +525,9 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
         //[properties setObject:[NSString stringWithUTF8String:on_change_tab_callback] forKey:NATIVE_BAR_ON_CHANGE_TAB_CALLBACK];    
     }
     ((QtMainWindow*)qtMainWindow)->tabbarShow();
-    ((QtMainWindow*)qtMainWindow)->tabbarSwitch(0);
+
+	//removeToolbar();
+    m_started = true;
 }
 
 int CMainWindow::getTabbarHeight()
@@ -575,12 +574,7 @@ void CMainWindow::tabbarBadge(int index, char* badge)
 
 int CMainWindow::tabbarGetCurrent()
 {
-    // TODO: Implement!
-
-    //Rhodes *r = [Rhodes sharedInstance];
-    //return [[r mainView] activeTab];
-	//TODO: Implement me!
-	return 0;
+	return ((QtMainWindow*)qtMainWindow)->tabbarGetCurrent();
 }
 
 // Menu
