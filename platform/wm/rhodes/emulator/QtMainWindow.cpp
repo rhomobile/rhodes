@@ -6,6 +6,7 @@
 #include <QWebFrame>
 #include <QWebSettings>
 #include <QWebSecurityOrigin>
+#include <QWebHistory>
 #include "ext/rho/rhoruby.h"
 #include "common/RhoStd.h"
 #include "common/RhodesApp.h"
@@ -22,7 +23,8 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::QtMainWindow),
     wi(new QWebInspector()),
-    cb(NULL)
+    cb(NULL),
+    cur_tbrp(0)
 {
     ui->setupUi(this);
 
@@ -40,6 +42,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
 
     this->ui->webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     this->ui->webView->page()->mainFrame()->securityOrigin().setDatabaseQuota(1024*1024*1024);
+    this->main_webView = this->ui->webView;
 
     this->move(0,0);
     this->ui->toolBar->hide();
@@ -160,37 +163,39 @@ void QtMainWindow::Refresh(void)
 
 void QtMainWindow::tabbarRemoveAllTabs()
 {
-    // removing Tabs
-    for (int i=ui->tabBar->count(); i >= 0; --i)
-        ui->tabBar->removeTab(i);
     // removing WebViews
     if (tabViews.size()>0) {
-        //for (std::vector<QWebView*>::iterator itab=tabViews.begin(); itab!=tabViews.end(); ++itab)
-        //    delete &(*itab);
+        for (std::vector<QWebView*>::iterator itab=tabViews.begin(); itab!=tabViews.end(); ++itab) {
+            tabbarDisconnectWebView(*itab);
+            // delete &(*itab);
+        }
         tabViews.clear();
     }
+    // removing Tabs
+    for (int i=ui->tabBar->count()-1; i >= 0; --i)
+        ui->tabBar->removeTab(i);
+    // restoring main WebView
+    tabbarWebViewRestore();
 }
 
-int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disabled, const QColor* web_bkg_color, QTabBarRuntimeParams& tbri)
+int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disabled, const QColor* web_bkg_color, QTabBarRuntimeParams& tbrp)
 {
     QWebView* wv = new QWebView();
-	// TODO: if (web_bkg_color) wv->... *web_bkg_color
+    wv->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    wv->page()->mainFrame()->securityOrigin().setDatabaseQuota(1024*1024*1024);
+    if (web_bkg_color && (web_bkg_color->name().length()>0))
+        wv->setHtml( QString("<html><body style=\"background:") + web_bkg_color->name() + QString("\"></body></html>") );
+    tabViews.push_back(wv);
 
-    /* >>> begin of development testing code */ 
-    QString tab_id;
-    tab_id.setNum(tabViews.size());
-    wv->setHtml( QString("<html><body><h1>") + tab_id + QString("</h1></body></html>") );
-    /* <<< end of development testing code */ 
-
-	tabViews.push_back(wv);
-
+    cur_tbrp = &tbrp;
 	if (icon && (strlen(icon) > 0))
         ui->tabBar->addTab(QIcon(QString(icon)), label);
     else
         ui->tabBar->addTab(label);
     if (disabled)
 		ui->tabBar->setTabEnabled(ui->tabBar->count()-1, false);
-	ui->tabBar->setTabData(ui->tabBar->count()-1, tbri);
+    cur_tbrp = 0;
+	ui->tabBar->setTabData(ui->tabBar->count()-1, tbrp);
 
     return ui->tabBar->count() - 1;
 }
@@ -200,8 +205,53 @@ void QtMainWindow::tabbarShow()
     ui->tabBar->show();
 }
 
+void QtMainWindow::tabbarConnectWebView(QWebView* webView)
+{
+    if (webView->parent()==0) {
+        webView->setParent(ui->centralWidget);
+        ui->verticalLayout->addWidget(webView);
+        webView->show();
+    }
+    if (webView != main_webView) {
+        QObject::connect(webView, SIGNAL(linkClicked(const QUrl&)), this, SLOT(on_webView_linkClicked(const QUrl&)));
+        QObject::connect(webView, SIGNAL(loadStarted()), this, SLOT(on_webView_loadStarted()));
+        QObject::connect(webView, SIGNAL(loadFinished(bool)), this, SLOT(on_webView_loadFinished(bool)));
+        QObject::connect(webView, SIGNAL(urlChanged(QUrl)), this, SLOT(on_webView_urlChanged(QUrl)));
+    }
+    ui->webView = webView;
+}
+
+void QtMainWindow::tabbarDisconnectWebView(QWebView* webView)
+{
+    if (webView->parent()!=0) {
+        webView->setParent(0);
+        ui->verticalLayout->removeWidget(webView);
+        webView->hide();
+    }
+    if (webView != main_webView) {
+        QObject::disconnect(webView, SIGNAL(linkClicked(const QUrl&)), this, SLOT(on_webView_linkClicked(const QUrl&)));
+        QObject::disconnect(webView, SIGNAL(loadStarted()), this, SLOT(on_webView_loadStarted()));
+        QObject::disconnect(webView, SIGNAL(loadFinished(bool)), this, SLOT(on_webView_loadFinished(bool)));
+        QObject::disconnect(webView, SIGNAL(urlChanged(QUrl)), this, SLOT(on_webView_urlChanged(QUrl)));
+    }
+}
+
+void QtMainWindow::tabbarWebViewRestore()
+{
+    if (ui->webView != main_webView) {
+        tabbarDisconnectWebView(ui->webView);
+        ui->webView = main_webView;
+        if (main_webView->parent()==0) {
+            main_webView->setParent(ui->centralWidget);
+            ui->verticalLayout->addWidget(main_webView);
+            main_webView->show();
+        }
+    }
+}
+
 void QtMainWindow::tabbarHide()
 {
+    tabbarWebViewRestore();
     ui->tabBar->hide();
 }
 
@@ -223,22 +273,35 @@ int QtMainWindow::tabbarGetCurrent()
 void QtMainWindow::on_tabBar_currentChanged(int index)
 {
     if (index < tabViews.size()) {
+        QTabBarRuntimeParams tbrp = cur_tbrp != 0 ? *cur_tbrp : ui->tabBar->tabData(index).toHash();
+        bool use_current_view_for_tab = tbrp["use_current_view_for_tab"].toBool();
+
 		//wi->setWindowTitle(QString(index));
 	    //wi->setPage(0);
 	    //wi->setPage(tabViews[index]->page());
 
 		// setTabTextColor(index, ...) <- tbri["selected_color"]
 
-        ui->verticalLayout->removeWidget(ui->webView);
-		ui->webView->setParent(0);
-        for (unsigned int i=0; i<tabViews.size(); ++i)
-            if (i != index) {
-                tabViews[i]->setParent(0);
-                ui->verticalLayout->removeWidget(tabViews[i]);
+        if (use_current_view_for_tab) {
+            tabbarConnectWebView(main_webView);
+        } else {
+            tabbarDisconnectWebView(main_webView);
+        }
+
+        for (unsigned int i=0; i<tabViews.size(); ++i) {
+            if (use_current_view_for_tab || (i != index)) {
+                tabbarDisconnectWebView(tabViews[i]);
             } else {
-                tabViews[i]->setParent(ui->centralWidget);
-                ui->verticalLayout->addWidget(tabViews[i]);
+                tabbarConnectWebView(tabViews[i]);
             }
+        }
+
+        if (tbrp["reload"].toBool() || (ui->webView->history()->count()==0)) {
+            rho::String* strAction = new rho::String(tbrp["action"].toString().toStdString());
+            RHODESAPP().loadUrl(*strAction);
+        }
+
+        // TODO: tbrp["selected_color"] / tbrp["background_color"]
     }
 }
 
