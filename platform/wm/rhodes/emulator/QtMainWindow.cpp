@@ -58,7 +58,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
 
 QtMainWindow::~QtMainWindow()
 {
-    tabbarRemoveAllTabs();
+    tabbarRemoveAllTabs(false);
     delete wi;
     delete ui;
 }
@@ -161,21 +161,26 @@ void QtMainWindow::Refresh(void)
 
 // Tabbar:
 
-void QtMainWindow::tabbarRemoveAllTabs()
+void QtMainWindow::tabbarRemoveAllTabs(bool restore)
 {
     // removing WebViews
     if (tabViews.size()>0) {
-        for (std::vector<QWebView*>::iterator itab=tabViews.begin(); itab!=tabViews.end(); ++itab) {
+        for (std::vector<QWebView*>::iterator itab=tabViews.begin(); itab!=tabViews.end(); ++itab)
             tabbarDisconnectWebView(*itab);
-            // delete &(*itab);
-        }
         tabViews.clear();
     }
+
     // removing Tabs
     for (int i=ui->tabBar->count()-1; i >= 0; --i)
         ui->tabBar->removeTab(i);
+
     // restoring main WebView
-    tabbarWebViewRestore();
+    tabbarWebViewRestore(restore);
+}
+
+void QtMainWindow::tabbarInitialize()
+{
+    tabbarRemoveAllTabs(false);
 }
 
 int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disabled, const QColor* web_bkg_color, QTabBarRuntimeParams& tbrp)
@@ -188,7 +193,7 @@ int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disa
     tabViews.push_back(wv);
 
     cur_tbrp = &tbrp;
-	if (icon && (strlen(icon) > 0))
+    if (icon && (strlen(icon) > 0))
         ui->tabBar->addTab(QIcon(QString(icon)), label);
     else
         ui->tabBar->addTab(label);
@@ -236,22 +241,19 @@ void QtMainWindow::tabbarDisconnectWebView(QWebView* webView)
     }
 }
 
-void QtMainWindow::tabbarWebViewRestore()
+void QtMainWindow::tabbarWebViewRestore(bool reload)
 {
     if (ui->webView != main_webView) {
         tabbarDisconnectWebView(ui->webView);
-        ui->webView = main_webView;
-        if (main_webView->parent()==0) {
-            main_webView->setParent(ui->centralWidget);
-            ui->verticalLayout->addWidget(main_webView);
-            main_webView->show();
-        }
+        tabbarConnectWebView(main_webView);
+        if (reload)
+            main_webView->back();
     }
 }
 
 void QtMainWindow::tabbarHide()
 {
-    tabbarWebViewRestore();
+    tabbarWebViewRestore(true);
     ui->tabBar->hide();
 }
 

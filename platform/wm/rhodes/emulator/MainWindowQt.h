@@ -80,7 +80,7 @@ public:
     void menuAddAction(const char* label, int item);
 	// tabbar
     int getTabbarHeight();
-    void removeAllTabs();
+    void removeAllTabs(bool restore);
     void createTabbar(int bar_type, rho_param *p);
     void removeTabbar();
     void tabbarSwitch(int index);
