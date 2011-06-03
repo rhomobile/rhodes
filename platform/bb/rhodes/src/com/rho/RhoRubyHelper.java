@@ -119,6 +119,14 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 		
 		return netCallback.m_response;
 	}
+
+	public void postUrlNoWait(String url, String body)
+	{
+		HttpHeaders headers = new HttpHeaders();
+		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
+		
+		RhodesApplication.getInstance().postUrl(url, body, headers);
+	}
 	
 	public NetResponse postUrlSync(String url, String body)throws Exception
 	{

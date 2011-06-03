@@ -214,7 +214,10 @@ public class RhodesApp
         strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
         String strBody = "button_id=" + id + "&button_title=" + title;
         strBody += "&rho_callback=1";
-        getNet().pushData( strCallbackUrl, strBody, null );
+        //getNet().pushData( strCallbackUrl, strBody, null );
+        
+		IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
+		helper.postUrlNoWait(strCallbackUrl,strBody);
     }
  
     public String getCurrentUrl(int index)
