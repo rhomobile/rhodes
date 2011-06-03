@@ -43,9 +43,9 @@ void CRhodesAppBase::initAppUrls()
     m_strRhodesPath = "";
 #else
     m_strBlobsDirPath = getRhoRootPath() + RHO_EMULATOR_DIR"/db/db-files";
-	m_strDBDirPath = getRhoRootPath() + RHO_EMULATOR_DIR"/db";
+    m_strDBDirPath = getRhoRootPath() + RHO_EMULATOR_DIR"/db";
 
-    m_strAppRootPath += getRhoRootPath();
+    m_strAppRootPath = getRhoRootPath();
 #endif
 }
 
