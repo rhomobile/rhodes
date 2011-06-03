@@ -47,7 +47,8 @@ public:
     void menuAddAction(const QString & text, int item);
     void menuAddSeparator(void);
     // tabbar
-    void tabbarRemoveAllTabs(void);
+    void tabbarInitialize(void);
+    void tabbarRemoveAllTabs(bool restore);
     void tabbarShow(void);
     void tabbarHide(void);
     int tabbarGetHeight(void);
@@ -56,7 +57,7 @@ public:
     int tabbarAddTab(const QString& label, const char* icon, bool disabled, const QColor* web_bkg_color, QTabBarRuntimeParams& tbri);
     void setTabbarStyle(QString background);
 private:
-    void tabbarWebViewRestore();
+    void tabbarWebViewRestore(bool reload);
     void tabbarConnectWebView(QWebView* webView);
     void tabbarDisconnectWebView(QWebView* webView);
 
