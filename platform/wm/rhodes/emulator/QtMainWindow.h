@@ -56,10 +56,17 @@ public:
     int tabbarAddTab(const QString& label, const char* icon, bool disabled, const QColor* web_bkg_color, QTabBarRuntimeParams& tbri);
     void setTabbarStyle(QString background);
 private:
+    void tabbarWebViewRestore();
+    void tabbarConnectWebView(QWebView* webView);
+    void tabbarDisconnectWebView(QWebView* webView);
+
+private:
     Ui::QtMainWindow *ui;
     QWebInspector *wi;
     IMainWindowCallback* cb;
     std::vector<QWebView*> tabViews;
+    QWebView* main_webView;
+    QTabBarRuntimeParams* cur_tbrp;
 
 private slots:
     void on_webView_urlChanged(QUrl );

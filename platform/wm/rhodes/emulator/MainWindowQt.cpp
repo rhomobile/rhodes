@@ -508,13 +508,14 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
             return;
         }
         if (!skip_item) {
-            QtMainWindow::QTabBarRuntimeParams tbri;
-            tbri["action"] = QString(action);
-            tbri["reload"] = charToBool(reload);
-            tbri["use_current_view_for_tab"] = charToBool(use_current_view_for_tab);
-			tbri["selected_color"] = QString(selected_color ? selected_color : "");
+            QtMainWindow::QTabBarRuntimeParams tbrp;
+            tbrp["action"] = QString(action);
+            tbrp["reload"] = charToBool(reload);
+            tbrp["use_current_view_for_tab"] = charToBool(use_current_view_for_tab);
+			tbrp["selected_color"] = QString(selected_color ? selected_color : "");
+            tbrp["background_color"] = background_color.get() != NULL ? background_color->name() : QString("");
             String strIconPath = icon ? CFilePath::join( RHODESAPP().getAppRootPath(), icon) : String();
-            ((QtMainWindow*)qtMainWindow)->tabbarAddTab(QString(label), icon ? strIconPath.c_str() : NULL, charToBool(disabled), web_bkg_color.get(), tbri);
+            ((QtMainWindow*)qtMainWindow)->tabbarAddTab(QString(label), icon ? strIconPath.c_str() : NULL, charToBool(disabled), web_bkg_color.get(), tbrp);
         }
     }
     if (background_color.get() != NULL) {
