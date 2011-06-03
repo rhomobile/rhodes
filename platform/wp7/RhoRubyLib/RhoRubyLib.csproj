@@ -138,6 +138,9 @@
     <Compile Include="sync\SyncThread.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="views\RhoTabHeader.xaml.cs">
+      <DependentUpon>RhoTabHeader.xaml</DependentUpon>
+    </Compile>
     <Compile Include="views\RhoView.xaml.cs">
       <DependentUpon>RhoView.xaml</DependentUpon>
     </Compile>
@@ -150,6 +153,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="views\RhoTabHeader.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="views\RhoView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
