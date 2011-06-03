@@ -183,6 +183,8 @@ has to be handled in sync callback. Otherwise sync will stop on this model. To f
     * action - May be :delete or :recreate. :delete just remove object from client, :recreate will push this object to server again at next sync.
 
 #### update-error
+If not handled, local modifications, which were failing on server, will never sync to server again
+So sync will work fine, but nobody will know about these changes
 
 	:::ruby
 	SyncEngine.on_sync_update_error( src_name, objects, action )
@@ -192,6 +194,8 @@ has to be handled in sync callback. Otherwise sync will stop on this model. To f
     * action - May be :retry - will push update object operation to server again at next sync.
 
 #### delete-error
+If not handled, local modifications, which were failing on server, will never sync to server again
+So sync will work fine, but nobody will know about these changes
 
 	:::ruby
 	SyncEngine.on_sync_delete_error( src_name, objects, action )
