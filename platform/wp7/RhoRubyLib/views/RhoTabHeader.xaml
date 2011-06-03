@@ -12,7 +12,7 @@
     <Grid x:Name="LayoutRoot">
         <StackPanel Orientation="Horizontal">
             <Image Name="img" Height="auto" Width="auto"/>
-            <TextBlock Name="lbl" Margin="2,0,0,0" VerticalAlignment="Center" />
+            <TextBlock Name="lbl" Margin="2,0,0,0" Foreground="Black" VerticalAlignment="Center" />
         </StackPanel>
     </Grid>
 </UserControl>
