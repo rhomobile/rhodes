@@ -98,6 +98,8 @@ namespace rho.views
                 else
                     webBrowser1.Navigate(new Uri(m_strAction));
             }
+
+            webBrowser1.UpdateLayout();
         }
 
         private void WebBrowser_OnNavigating(object sender, NavigatingEventArgs e)
