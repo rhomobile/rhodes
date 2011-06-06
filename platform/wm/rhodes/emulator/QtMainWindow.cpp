@@ -308,6 +308,15 @@ void QtMainWindow::on_tabBar_currentChanged(int index)
             }
         }
 
+        if (tbrp["on_change_tab_callback"].toString().length() > 0) {
+            QString body = QString("&rho_callback=1&tab_index=") + QVariant(index+1).toString();
+            rho::String* cbStr = new rho::String(tbrp["on_change_tab_callback"].toString().toStdString());
+            const char* cb = cbStr->c_str();
+            rho::String* bStr = new rho::String(body.toStdString());
+            const char* b = bStr->c_str();
+            rho_net_request_with_data(rho_http_normalizeurl(cb), b);
+        }
+
         if (tbrp["reload"].toBool() || (ui->webView->history()->count()==0)) {
             rho::String* strAction = new rho::String(tbrp["action"].toString().toStdString());
             RHODESAPP().loadUrl(*strAction);
@@ -317,6 +326,7 @@ void QtMainWindow::on_tabBar_currentChanged(int index)
     }
 }
 
+/*
 void QtMainWindow::setTabbarStyle(QString background)
 {
     QString style = ""; // "border:0px"
@@ -329,6 +339,7 @@ void QtMainWindow::setTabbarStyle(QString background)
         ui->tabBar->setStyleSheet(style);
     }
 }
+*/
 
 // Toolbar:
 

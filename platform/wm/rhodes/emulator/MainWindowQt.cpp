@@ -514,17 +514,13 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
             tbrp["use_current_view_for_tab"] = charToBool(use_current_view_for_tab);
 			tbrp["selected_color"] = QString(selected_color ? selected_color : "");
             tbrp["background_color"] = background_color.get() != NULL ? background_color->name() : QString("");
+            tbrp["on_change_tab_callback"] = QString(on_change_tab_callback != NULL ? on_change_tab_callback : "");
             String strIconPath = icon ? CFilePath::join( RHODESAPP().getAppRootPath(), icon) : String();
             ((QtMainWindow*)qtMainWindow)->tabbarAddTab(QString(label), icon ? strIconPath.c_str() : NULL, charToBool(disabled), web_bkg_color.get(), tbrp);
         }
     }
-    if (background_color.get() != NULL) {
-	    ((QtMainWindow*)qtMainWindow)->setTabbarStyle(background_color->name());
-    }
-    if (on_change_tab_callback != NULL) {
-		// TODO: implement callback
-        //[properties setObject:[NSString stringWithUTF8String:on_change_tab_callback] forKey:NATIVE_BAR_ON_CHANGE_TAB_CALLBACK];    
-    }
+    //if (background_color.get() != NULL) ((QtMainWindow*)qtMainWindow)->setTabbarStyle(background_color->name());
+
     ((QtMainWindow*)qtMainWindow)->tabbarShow();
 
 	//removeToolbar();
