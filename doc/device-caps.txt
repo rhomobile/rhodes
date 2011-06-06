@@ -938,6 +938,8 @@ Use rho_open_target=_blank in html link. Note that jqtouch or other javascript l
 See CustomUri of [system API sample application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/CustomUri/controller.rb) for example.
 
 ## Run rhodes application from browser
+
+### Android
 On Android it is possible to start rhodes app by http link from browser. It is also possible to register custom URI scheme for the app.
 By default the http://com.vendor.appname URI format is used. If custom URI scheme is set up in build.yml then this scheme is used followed by any string.
 
@@ -952,6 +954,30 @@ Custom scheme example:
 
     :::html
     <a href="rhodes://any_string_here">Open System API Samples</a>
+
+### iPhone
+On iOS devices it is possible to start rhodes app by link with special registered URI scheme from browser. You should register custom URI scheme for the app.
+Custom URI scheme is set up in build.yml then this scheme is used followed by any string.
+
+Custom scheme example:
+    :::ruby
+    iphone:
+        BundleURLScheme: myapp
+
+    :::html
+    <a href="myapp:string_with_params">Open MyApp application</a>
+
+In application you can get start params by 
+    :::ruby
+    System.get_start_params()
+
+For previous example start params will be "string_with_params".
+
+For execute you rhodes based application from enother rhodes based application use next code:
+	:::ruby
+	System.open_url('myapp:string_with_params')
+
+
 
 
 ## MapView
