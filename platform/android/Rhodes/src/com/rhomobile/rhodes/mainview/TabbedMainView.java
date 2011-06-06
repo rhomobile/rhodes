@@ -809,7 +809,7 @@ public class TabbedMainView implements MainView {
 
 		host.setCurrentTab(tabIndex);
 		
-		RhodesActivity.getInstance().post( new Runnable() {
+		RhodesActivity.safeGetInstance().post( new Runnable() {
 			public void run() {
 				//Utils.platformLog("TabbedMainView", "invoke post setup code in UI thread");
 

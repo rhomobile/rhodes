@@ -24,6 +24,7 @@ import com.rhomobile.rhodes.event.EventStore;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.geolocation.GeoLocation;
 import com.rhomobile.rhodes.mainview.MainView;
+import com.rhomobile.rhodes.mainview.SplashScreen;
 import com.rhomobile.rhodes.ui.AboutDialog;
 import com.rhomobile.rhodes.ui.LogOptionsDialog;
 import com.rhomobile.rhodes.ui.LogViewDialog;

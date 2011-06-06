@@ -21,7 +21,6 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesAppOptions.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesApplication.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesService.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RingtoneManager.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/SplashScreen.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/Utils.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/WebView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/alert/Alert.java
@@ -46,6 +45,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/file/RhoFileApi.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/geolocation/GeoLocation.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/geolocation/GeoLocationImpl.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mainview/MainView.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/mainview/SplashScreen.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mainview/SimpleMainView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mainview/TabbedMainView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/Annotation.java
@@ -86,3 +86,4 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/webview/ChromeClientOld.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebSettings.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebSettingsNew.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebSettingsOld.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebViewClient.java
