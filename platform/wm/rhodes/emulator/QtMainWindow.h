@@ -58,15 +58,17 @@ public:
     void setTabbarStyle(QString background);
 private:
     void tabbarWebViewRestore(bool reload);
-    void tabbarConnectWebView(QWebView* webView);
-    void tabbarDisconnectWebView(QWebView* webView);
+    void tabbarConnectWebView(QWebView* webView, QWebInspector* webInspector);
+    void tabbarDisconnectWebView(QWebView* webView, QWebInspector* webInspector);
 
 private:
     Ui::QtMainWindow *ui;
-    QWebInspector *wi;
+    QWebInspector *main_webInspector;
     IMainWindowCallback* cb;
     std::vector<QWebView*> tabViews;
+    std::vector<QWebInspector*> tabInspect;
     QWebView* main_webView;
+    QWebInspector* cur_webInspector;
     QTabBarRuntimeParams* cur_tbrp;
 
 private slots:
