@@ -81,6 +81,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/uri/TelUriHandler.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/uri/UriHandler.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/uri/VideoUriHandler.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/util/PerformOnUiThread.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/util/PhoneId.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/ChromeClientNew.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/ChromeClientOld.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebSettings.java
