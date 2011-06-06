@@ -109,6 +109,10 @@ module Rhom
             db.execute_sql("UPDATE sources SET token=0")        
             db.destroy_tables( :exclude => (reset_client_info ? ['sources'] : ['sources','client_info']) )
         end
+
+        if ( reset_client_info && Rho::RhoConfig.exists?('push_pin') )
+            Rho::RhoConfig.push_pin=''
+        end    
       
         hash_migrate = {}
         ::Rho::RHO.init_schema_sources(hash_migrate) 
