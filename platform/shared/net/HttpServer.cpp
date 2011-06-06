@@ -1105,8 +1105,6 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
         
         HeaderList headers;
         headers.push_back(Header("Location", CFilePath::join( uri, "index"RHO_ERB_EXT) + q));
-//        headers.push_back(Header("Content-Length", 0));
-//        headers.push_back(Header("Allow", method));
         
         send_response(create_response("301 Moved Permanently", headers), true);
         return false;

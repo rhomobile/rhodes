@@ -89,14 +89,6 @@ public class RhodesActivity extends BaseActivity {
 		mListeners.remove(listener);
 	}
 	
-	
-	private Runnable mSetup = new Runnable() {
-		public void run() {
-			doSetup();
-		}
-	};
-	
-	
 	public void processStartupListeners() {
 		int i;
 		for (i = 1; i < RhodesActivityStartupListeners.ourRunnableList.length; i++) {
@@ -138,9 +130,9 @@ public class RhodesActivity extends BaseActivity {
 		//ct.setPriority(Thread.MAX_PRIORITY);
 		uiThreadId = ct.getId();
 
-        sInstance = this;
+		sInstance = this;
 
-        if (!RhodesService.isTitleEnabled()) {
+		if (!RhodesService.isTitleEnabled()) {
 			requestWindowFeature(Window.FEATURE_NO_TITLE);
 		}
 		else {
@@ -336,10 +328,6 @@ public class RhodesActivity extends BaseActivity {
 	
 	public void post(Runnable r, int delay) {
 		mHandler.postDelayed(r, delay);
-	}
-	
-	private void doSetup() {
-		initWebStuff();
 	}
 	
 	public SplashScreen getSplashScreen() {

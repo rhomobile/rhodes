@@ -14,9 +14,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.WebView;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 public class SplashScreen implements MainView {
@@ -29,7 +27,7 @@ public class SplashScreen implements MainView {
 	private static final String LOADING_PNG = "apps/app/loading.png";
 	private static final String LOADING_PAGE = "apps/app/loading.html";
 	
-	private ViewGroup mContentView;
+	private View mContentView;
 	
 	private WebView mWebView;
 	
@@ -37,13 +35,11 @@ public class SplashScreen implements MainView {
 	private native void nativeHide();
 	private native int howLongWaitMs();
 	
-	public SplashScreen(RhodesActivity context) {
+	public SplashScreen(Context context) {
 		AssetManager am = context.getResources().getAssets();
-		mContentView = new FrameLayout(context);
-		View view = createImageView(context, am);
-		if (view == null)
-			view = createHtmlView(context, am);
-		mContentView.addView(view);
+		mContentView = createImageView(context, am);
+		if (mContentView == null)
+			mContentView = createHtmlView(context, am);
 	}
 	
 	private View createImageView(Context context, AssetManager am) {
@@ -74,7 +70,7 @@ public class SplashScreen implements MainView {
 		return null;
 	}
 	
-	private View createHtmlView(RhodesActivity context, AssetManager am) {
+	private View createHtmlView(Context context, AssetManager am) {
 		boolean hasNeededPage;
 
 		String page = LOADING_PAGE;
@@ -95,14 +91,14 @@ public class SplashScreen implements MainView {
 		}
 		
 		// Now create WebView and load appropriate content there
-		mWebView = context.createWebView();
+		WebView view = new WebView(context);
 		
 		if (hasNeededPage)
-		    mWebView.loadUrl("file:///android_asset/" + page);
+			view.loadUrl("file:///android_asset/" + page);
 		else
-		    mWebView.loadData("<html><title>Loading</title><body>Loading...</body></html>", "text/html", "utf-8");
+			view.loadData("<html><title>Loading</title><body>Loading...</body></html>", "text/html", "utf-8");
 		
-		return mWebView;
+		return view;
 	}
 	
 	public void start() {
@@ -116,10 +112,10 @@ public class SplashScreen implements MainView {
 	
 	@Override
 	public WebView getWebView(int index) {
-//		if (mWebView == null) {
-//			RhodesActivity ra = RhodesActivity.safeGetInstance();
-//			mWebView = ra.createWebView();
-//		}
+		if (mWebView == null) {
+			RhodesActivity ra = RhodesActivity.getInstance();
+			mWebView = ra.createWebView();
+		}
 		return mWebView;
 	}
 	
@@ -130,7 +126,8 @@ public class SplashScreen implements MainView {
 	
 	@Override
 	public void navigate(String url, int index) {
-        Logger.T(TAG, "navigate: " + url);
+		if (DEBUG)
+			Log.d(TAG, "navigate: url=" + url);
 
         RhodesService r = RhodesService.getInstance();
 		MainView mainView = r.getMainView();
@@ -142,10 +139,7 @@ public class SplashScreen implements MainView {
 	
 	@Override
 	public WebView detachWebView() {
-		WebView webView =  getWebView(0);
-		if(webView != null)
-		    mContentView.removeView(webView);
-		return webView;
+		return getWebView(0);
 	}
 	@Override
 	public void back(int index) 
