@@ -70,6 +70,9 @@ namespace rho.views
 
         private void WebBrowser_OnLoaded(object sender, RoutedEventArgs e)
         {
+            OperatingSystem os = Environment.OSVersion;
+            Version vs = os.Version;
+            if (vs.Minor < 10) m_reload = true;
             if (RHODESAPP().rhoView != null)
             {
                 RHODESAPP().rhoView.BackHistory = RHODESAPP().BackHistory;
@@ -98,8 +101,6 @@ namespace rho.views
                 else
                     webBrowser1.Navigate(new Uri(m_strAction));
             }
-
-            webBrowser1.UpdateLayout();
         }
 
         private void WebBrowser_OnNavigating(object sender, NavigatingEventArgs e)
