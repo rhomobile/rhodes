@@ -127,7 +127,7 @@ public class SimpleMainView implements MainView {
 				public void run() {
 					RhodesService.loadUrl(ActionCustom.this.url);
 				}
-			}, false);
+			});
 		}
 	};
 	
@@ -514,7 +514,7 @@ public class SimpleMainView implements MainView {
 		if (v != null)
 			webView = v.detachWebView();
 		if (webView == null)
-			webView = RhodesActivity.getInstance().createWebView();
+			webView = RhodesActivity.safeGetInstance().createWebView();
 		view.addView(webView, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
 		
 		LinearLayout bottom = new LinearLayout(ctx);
