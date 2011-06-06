@@ -198,7 +198,10 @@ module Rho
         require 'helpers/browser_helper'
         include BrowserHelper
         
-        def initialize(obj=nil)
+        def initialize()
+        end
+        
+        def set_vars(obj=nil)
           @vars = {}
           if obj
             obj.each do |key,value|
@@ -231,11 +234,14 @@ module Rho
        
       content = ""
       if options[:collection].nil?
-        locals = localclass.new(options[:locals])
+        locals = localclass.new()
 
         self.instance_variables.each do |ivar|
           locals.instance_variable_set(ivar,self.instance_variable_get(ivar))
         end
+        
+        locals.set_vars(options[:locals])
+        
         modelpath = @request[:modelpath]
         modelpath = Rho::RhoFSConnector.get_model_path("app",model) if model
         content = eval_compiled_file(modelpath+'_' + partial_name.to_s+RHO_ERB_EXT, locals.get_binding )
