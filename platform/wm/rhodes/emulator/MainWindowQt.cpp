@@ -61,11 +61,11 @@ void CMainWindow::logEvent(const ::std::string& message)
     LOG(INFO) + message;
 }
 
-void CMainWindow::Navigate2(BSTR URL) {
+void CMainWindow::Navigate2(BSTR URL, int index) {
     String cleared_url = convertToStringA(OLE2CT(URL));
     if (!cleared_url.empty()) {
         StringW cw = convertToStringW(cleared_url);
-        navigate(cw.c_str());
+        navigate(cw.c_str(), index);
     }
 }
 
@@ -79,7 +79,7 @@ HWND CMainWindow::Initialize(const wchar_t* title)
     return hWnd;
 }
 
-HWND CMainWindow::getWebViewHWND()
+HWND CMainWindow::getWebViewHWND(int index)
 {
     // TODO
     return 0;
@@ -156,10 +156,10 @@ void CMainWindow::onWindowClose(void)
 //
 // **************************************************************************
 
-void CMainWindow::navigate(const wchar_t* url)
+void CMainWindow::navigate(const wchar_t* url, int index)
 {
     LOG(INFO) + "navigate: '"+url+"'";
-    ((QtMainWindow*)qtMainWindow)->navigate(QString::fromWCharArray(url));
+    ((QtMainWindow*)qtMainWindow)->navigate(QString::fromWCharArray(url), index);
 }
 
 void CMainWindow::setCallback(IMainWindowCallback* callback)
@@ -198,15 +198,15 @@ void CMainWindow::GoForward(void)
     ((QtMainWindow*)qtMainWindow)->GoForward();
 }
 
-void CMainWindow::Refresh(void)
+void CMainWindow::Refresh(int index)
 {
     LOG(INFO) + "refresh";
-    ((QtMainWindow*)qtMainWindow)->Refresh();
+    ((QtMainWindow*)qtMainWindow)->Refresh(index);
 }
 
 bool CMainWindow::isStarted()
 {
-    return true;
+    return ((QtMainWindow*)qtMainWindow)->isStarted();
 }
 
 int CMainWindow::getToolbarHeight()
@@ -678,18 +678,22 @@ LRESULT CMainWindow::OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
     return 0;
 }
 
-LRESULT CMainWindow::OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CMainWindow::OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
-    Refresh();
+    Refresh((int)hWndCtl);
     return 0;
 }
 
 LRESULT CMainWindow::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
-    LPTSTR wcurl = (LPTSTR)hWndCtl;
-    if (wcurl) {
-        Navigate2(wcurl);
-        free(wcurl);
+    TNavigateData* nd = (TNavigateData*)hWndCtl;
+    if (nd) {
+        LPTSTR wcurl = (LPTSTR)(nd->url);
+        if (wcurl) {
+            Navigate2(wcurl, nd->index);
+            free(wcurl);
+        }
+        free(nd);
     }
     return 0;
 }

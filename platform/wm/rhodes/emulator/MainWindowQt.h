@@ -48,14 +48,14 @@ public:
     virtual void onCustomMenuItemCommand(int nItemPos);
 	virtual void onWindowClose(void);
     // public methods:
-    void Navigate2(BSTR URL);
+    void Navigate2(BSTR URL, int index);
     HWND Initialize(const wchar_t* title);
     void MessageLoop(void);
 	void DestroyUi(void);
     void performOnUiThread(rho::common::IRhoRunnable* pTask);
     CNativeToolbar& getToolbar(){ return m_toolbar; }
     CNativeTabbar& getTabbar(){ return m_tabbar; }
-    HWND getWebViewHWND();
+    HWND getWebViewHWND(int index);
 	// for 'main_window_closed' System property
 	static bool mainWindowClosed;
 
@@ -63,10 +63,10 @@ public:
     void* init(IMainWindowCallback* callback, const wchar_t* title);
     void setCallback(IMainWindowCallback* callback);
     void messageLoop(void);
-    void navigate(const wchar_t* url);
+    void navigate(const wchar_t* url, int index);
     void GoBack(void);
     void GoForward(void);
-    void Refresh(void);
+    void Refresh(int index);
 	// toolbar/tabbar
     bool isStarted();
     // toolbar proxy
@@ -117,8 +117,8 @@ private:
     LRESULT OnNavigateForwardCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    LRESULT OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    LRESULT OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/);
+    LRESULT OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/);
 
     LRESULT OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
@@ -148,6 +148,11 @@ private:
     rho::Vector<rho::common::CAppMenuItem> m_arAppMenuItems;
     CAlertDialog *m_alertDialog;
     CSyncStatusDlg *m_SyncStatusDlg;
+public:
+    typedef struct _TNavigateData {
+        int index;
+        const wchar_t* url;
+    } TNavigateData;
 };
 
 #if !defined(_WIN32_WCE)
