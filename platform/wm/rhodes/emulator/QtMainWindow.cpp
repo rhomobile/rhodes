@@ -195,6 +195,7 @@ void QtMainWindow::tabbarRemoveAllTabs(bool restore)
 void QtMainWindow::tabbarInitialize()
 {
     tabbarRemoveAllTabs(false);
+    ui->tabBar->setStyleSheet("");
 }
 
 int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disabled, const QColor* web_bkg_color, QTabBarRuntimeParams& tbrp)
@@ -307,8 +308,6 @@ void QtMainWindow::on_tabBar_currentChanged(int index)
         QTabBarRuntimeParams tbrp = cur_tbrp != 0 ? *cur_tbrp : ui->tabBar->tabData(index).toHash();
         bool use_current_view_for_tab = tbrp["use_current_view_for_tab"].toBool();
 
-		// setTabTextColor(index, ...) <- tbri["selected_color"]
-
         if (use_current_view_for_tab) {
             tabbarConnectWebView(main_webView, main_webInspector);
         } else {
@@ -338,25 +337,9 @@ void QtMainWindow::on_tabBar_currentChanged(int index)
             rho::String* strAction = new rho::String(tbrp["action"].toString().toStdString());
             RHODESAPP().loadUrl(*strAction);
         }
-
-        // TODO: tbrp["selected_color"] / tbrp["background_color"]
     }
 }
 
-/*
-void QtMainWindow::setTabbarStyle(QString background)
-{
-    QString style = ""; // "border:0px"
-    if (background.length()>0) {
-        if (style.length()>0) style += ";";
-        style += "background:"+background;
-    }
-    if (style.length()>0) {
-        style = "QTabBar{"+style+"}";
-        ui->tabBar->setStyleSheet(style);
-    }
-}
-*/
 
 // Toolbar:
 

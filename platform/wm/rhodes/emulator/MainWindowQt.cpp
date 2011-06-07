@@ -457,7 +457,7 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
         const char *reload = NULL;
         const char *colored_icon = NULL;
         
-        const char *selected_color = NULL;
+    	std::auto_ptr<QColor> selected_color (NULL);
         const char *disabled = NULL;
 		std::auto_ptr<QColor> web_bkg_color (NULL);
         const char* use_current_view_for_tab = NULL;
@@ -486,7 +486,7 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
             else if (strcasecmp(name, "colored_icon") == 0)
                 colored_icon = value->v.string;
             else if (strcasecmp(name, "selected_color") == 0){
-                selected_color = value->v.string;
+                selected_color.reset(new QColor(getColorFromString(value->v.string)));
             }    
             else if (strcasecmp(name, "disabled") == 0)
                 disabled = value->v.string;
@@ -512,14 +512,13 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
             tbrp["action"] = QString(action);
             tbrp["reload"] = charToBool(reload);
             tbrp["use_current_view_for_tab"] = charToBool(use_current_view_for_tab);
-			tbrp["selected_color"] = QString(selected_color ? selected_color : "");
             tbrp["background_color"] = background_color.get() != NULL ? background_color->name() : QString("");
+			tbrp["selected_color"] = selected_color.get() != NULL ? selected_color->name() : QString("");
             tbrp["on_change_tab_callback"] = QString(on_change_tab_callback != NULL ? on_change_tab_callback : "");
             String strIconPath = icon ? CFilePath::join( RHODESAPP().getAppRootPath(), icon) : String();
             ((QtMainWindow*)qtMainWindow)->tabbarAddTab(QString(label), icon ? strIconPath.c_str() : NULL, charToBool(disabled), web_bkg_color.get(), tbrp);
         }
     }
-    //if (background_color.get() != NULL) ((QtMainWindow*)qtMainWindow)->setTabbarStyle(background_color->name());
 
     ((QtMainWindow*)qtMainWindow)->tabbarShow();
 
