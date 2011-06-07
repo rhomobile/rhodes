@@ -1,3 +1,4 @@
+#pragma warning(disable:4018)
 #pragma warning(disable:4996)
 #include "QtMainWindow.h"
 #include "ui_QtMainWindow.h"
@@ -198,19 +199,24 @@ void QtMainWindow::tabbarInitialize()
 
 int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disabled, const QColor* web_bkg_color, QTabBarRuntimeParams& tbrp)
 {
-    // creating web view
-    QWebView* wv = new QWebView();
-    wv->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-    wv->page()->mainFrame()->securityOrigin().setDatabaseQuota(1024*1024*1024);
-    if (web_bkg_color && (web_bkg_color->name().length()>0))
-        wv->setHtml( QString("<html><body style=\"background:") + web_bkg_color->name() + QString("\"></body></html>") );
+    QWebView* wv = main_webView;
+    QWebInspector* wI = main_webInspector;
+    if (!tbrp["use_current_view_for_tab"].toBool()) {
+        // creating web view
+        wv = new QWebView();
+        wv->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+        wv->page()->mainFrame()->securityOrigin().setDatabaseQuota(1024*1024*1024);
+        if (web_bkg_color && (web_bkg_color->name().length()>0))
+            wv->setHtml( QString("<html><body style=\"background:") + web_bkg_color->name() + QString("\"></body></html>") );
+        // creating and attaching web inspector
+        wI = new QWebInspector();
+        wI->setWindowTitle("Web Inspector");
+        wI->setPage(wv->page());
+        wI->move(main_webInspector->x(), main_webInspector->y());
+        wI->resize(main_webInspector->width(), main_webInspector->height());
+    }
+
     tabViews.push_back(wv);
-    // creating and attaching web inspector
-    QWebInspector* wI = new QWebInspector();
-    wI->setWindowTitle("Web Inspector");
-    wI->setPage(wv->page());
-    wI->move(main_webInspector->x(), main_webInspector->y());
-    wI->resize(main_webInspector->width(), main_webInspector->height());
     tabInspect.push_back(wI);
 
     cur_tbrp = &tbrp;
@@ -310,15 +316,17 @@ void QtMainWindow::on_tabBar_currentChanged(int index)
         }
 
         for (unsigned int i=0; i<tabViews.size(); ++i) {
-            if (use_current_view_for_tab || (i != index)) {
-                tabbarDisconnectWebView(tabViews[i], tabInspect[i]);
-            } else {
-                tabbarConnectWebView(tabViews[i], tabInspect[i]);
+            if (tabViews[i] != main_webView) {
+                if (use_current_view_for_tab || (i != index)) {
+                    tabbarDisconnectWebView(tabViews[i], tabInspect[i]);
+                } else {
+                    tabbarConnectWebView(tabViews[i], tabInspect[i]);
+                }
             }
         }
 
         if (tbrp["on_change_tab_callback"].toString().length() > 0) {
-            QString body = QString("&rho_callback=1&tab_index=") + QVariant(index+1).toString();
+            QString body = QString("&rho_callback=1&tab_index=") + QVariant(index).toString();
             rho::String* cbStr = new rho::String(tbrp["on_change_tab_callback"].toString().toStdString());
             const char* cb = cbStr->c_str();
             rho::String* bStr = new rho::String(body.toStdString());
