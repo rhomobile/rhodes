@@ -427,8 +427,6 @@ public class RhodesService extends Service {
 			return;
 		}
 		
-		getPhoneId();
-		
 		RhodesApplication.start();
 
 		if (sActivitiesActive > 0)
@@ -828,6 +826,10 @@ public class RhodesService extends Service {
 			}
 			else if (name.equalsIgnoreCase("has_calendar")) {
 				return new Boolean(EventStore.hasCalendar());
+			}
+			else if (name.equalsIgnoreCase("phone_id")) {
+			    PhoneId phoneId = RhodesService.getInstance().getPhoneId();
+			    return phoneId.toString();
 			}
 		}
 		catch (Exception e) {
