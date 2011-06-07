@@ -903,7 +903,7 @@ For example you can use Alert.show_status in sync notification callback:
 
 In your controller, you may start timer using Rho::Timer class:
 
-** start_timer ** - start timer and call callback after some interval
+** start ** - start timer and call callback after some interval
 	:::ruby
 	Rho::Timer.start(interval_milliseconds, callback_url, callback_data)
 
@@ -911,7 +911,7 @@ For example:
     :::ruby
 	Rho::Timer.start(5000, (url_for :action => :timer_callback), "test")
 	
-** stop_timer ** - stop timer by callback
+** stop ** - stop timer by callback
 	:::ruby
 	Rho::Timer.stop(callback_url)
 		
