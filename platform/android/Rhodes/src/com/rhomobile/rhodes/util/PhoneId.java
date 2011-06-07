@@ -43,31 +43,6 @@ public class PhoneId
 
     private PhoneId(Context context) throws UnsupportedOperationException {
         String rawId = new String();
-        final String androidId = Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
-
-        // Use the Android ID unless it's broken, in which case fallback on deviceId,
-        // unless it's not available, then fallback on a random number.
-        if (!"9774d56d682e549c".equals(androidId)) {
-            rawId += androidId;
-            Logger.D(TAG, "ANDROID_ID: " + androidId);
-        }
-        if (Capabilities.PHONE_ENABLED) {
-            final String deviceId = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
-            if (deviceId != null && deviceId.length() > 0) {
-                rawId += deviceId;
-                Logger.D(TAG, "Phone device id: " + deviceId);
-            }
-        }
-        if (Capabilities.BLUETOOTH_ENABLED) {
-            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-            if (bluetoothAdapter != null) {
-                final String bluetoothAddr = bluetoothAdapter.getAddress();
-                if(bluetoothAddr != null && bluetoothAddr.length() > 0) {
-                    rawId += bluetoothAddr;
-                    Logger.D(TAG, "Bluetooth address: " + bluetoothAddr);
-                }
-            }
-        }
         try {
             Class<?> c = Class.forName("android.os.SystemProperties");
             Method get = c.getMethod("get", String.class);
@@ -75,13 +50,48 @@ public class PhoneId
             rawId += serialNo;
             Logger.D(TAG, "Serial#: " + serialNo);
         } catch (Exception ignored) {
+            Logger.W(TAG, "Cannot get proprietary serial number.");
+        }
+        if (rawId.length() == 0) {
+
+            final String androidId = Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
+
+            // Use the Android ID unless it's broken, in which case fallback on deviceId,
+            // unless it's not available, then fallback on a random number.
+            if (!"9774d56d682e549c".equals(androidId)) {
+                rawId += androidId;
+                Logger.D(TAG, "ANDROID_ID: " + androidId);
+            } else {
+                Logger.W(TAG, "Brocken Android ID, cannot use it: " + androidId);
+            }
+            if (Capabilities.PHONE_ENABLED) {
+                final String deviceId = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
+                if (deviceId != null && deviceId.length() > 0) {
+                    rawId += deviceId;
+                    Logger.D(TAG, "Phone device id: " + deviceId);
+                } else {
+                    Logger.W(TAG, "No telephony service device id.");
+                }
+            } else {
+                Logger.W(TAG, "Phone capability is disabled< cannot access telephony service for its device id.");
+            }
+//            if (Capabilities.BLUETOOTH_ENABLED) {
+//                BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+//                if (bluetoothAdapter != null) {
+//                    final String bluetoothAddr = bluetoothAdapter.getAddress();
+//                    if(bluetoothAddr != null && bluetoothAddr.length() > 0) {
+//                        rawId += bluetoothAddr;
+//                        Logger.D(TAG, "Bluetooth address: " + bluetoothAddr);
+//                    }
+//                }
+//            }
         }
         if (rawId.length() > 0) {
             UUID uuid = UUID.nameUUIDFromBytes(rawId.getBytes());
             mPhoneId = uuid.toString();
             Logger.D(TAG, "Generated phone id: " + mPhoneId);
         } else {
-            throw new UnsupportedOperationException("Cannot generate unique device id.");
+            mPhoneId = "";
         }
     }
 
