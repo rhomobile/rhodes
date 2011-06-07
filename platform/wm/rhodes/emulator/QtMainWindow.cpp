@@ -94,6 +94,14 @@ void QtMainWindow::resizeEvent(QResizeEvent *event)
         cb->updateSizeProperties(event->size().width(), event->size().height()); // ui->webView
 }
 
+bool QtMainWindow::isStarted(void)
+{
+    return (tabViews.size() > 0) ||
+      ( (ui->toolBar->isVisible() || ui->toolBarRight->isVisible()) &&
+        ((ui->toolBar->actions().size() > 0) || (ui->toolBarRight->actions().size() > 0))
+      );
+}
+
 void QtMainWindow::on_actionBack_triggered()
 {
     ui->webView->back();
@@ -135,14 +143,15 @@ void QtMainWindow::on_menuMain_aboutToShow()
     if (cb) cb->createCustomMenu();
 }
 
-void QtMainWindow::navigate(QString url)
+void QtMainWindow::navigate(QString url, int index)
 {
+    QWebView* wv = (index < tabViews.size()) && (index >= 0) ? tabViews[index] : ui->webView;
     if (url.startsWith("javascript:", Qt::CaseInsensitive)) {
         url.remove(0,11);
-        ui->webView->stop();
-        ui->webView->page()->mainFrame()->evaluateJavaScript(url);
+        wv->stop();
+        wv->page()->mainFrame()->evaluateJavaScript(url);
     } else
-        ui->webView->load(QUrl(url));
+        wv->load(QUrl(url));
 }
 
 void QtMainWindow::GoBack(void)
@@ -155,9 +164,9 @@ void QtMainWindow::GoForward(void)
     ui->webView->forward();
 }
 
-void QtMainWindow::Refresh(void)
+void QtMainWindow::Refresh(int index)
 {
-    ui->webView->reload();
+    ((index < tabViews.size()) && (index >= 0) ? tabViews[index] : ui->webView) -> reload();
 }
 
 
@@ -283,12 +292,12 @@ void QtMainWindow::tabbarSwitch(int index)
 
 int QtMainWindow::tabbarGetCurrent()
 {
-    return ui->tabBar->currentIndex();
+    return tabViews.size() > 0 ? ui->tabBar->currentIndex() : 0;
 }
 
 void QtMainWindow::on_tabBar_currentChanged(int index)
 {
-    if (index < tabViews.size()) {
+    if ((index < tabViews.size()) && (index >= 0)) {
         QTabBarRuntimeParams tbrp = cur_tbrp != 0 ? *cur_tbrp : ui->tabBar->tabData(index).toHash();
         bool use_current_view_for_tab = tbrp["use_current_view_for_tab"].toBool();
 

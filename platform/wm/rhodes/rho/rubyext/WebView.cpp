@@ -12,12 +12,15 @@
 
 using namespace rho;
 using namespace rho::common;
+
+extern CMainWindow& getAppWindow();
+
 extern "C" {
 HWND getMainWnd();
 
 void rho_webview_refresh(int index) 
 {
-//rho_webview_navigate(RHODESAPP().getCurrentUrl().c_str(),0);
+    //rho_webview_navigate(RHODESAPP().getCurrentUrl().c_str(),0);
     ::PostMessage( getMainWnd(), WM_COMMAND, IDM_REFRESH, (LPARAM)index );
 }
 
@@ -30,7 +33,14 @@ void rho_webview_navigate(const char* url, int index)
     }
 
     String strUrl = RHODESAPP().canonicalizeRhoUrl(url);
+#ifdef RHODES_EMULATOR
+    CMainWindow::TNavigateData* nd = (CMainWindow::TNavigateData*)malloc(sizeof(CMainWindow::TNavigateData));
+    nd->index = index;
+    nd->url = _tcsdup(convertToStringW(strUrl).c_str());
+    ::PostMessage( getMainWnd(), WM_COMMAND, IDM_NAVIGATE, (LPARAM)nd );
+#else
     ::PostMessage( getMainWnd(), WM_COMMAND, IDM_NAVIGATE, (LPARAM)_tcsdup(convertToStringW(strUrl).c_str()) );
+#endif
 }
 
 void rho_webview_navigate_back()
@@ -61,7 +71,11 @@ const char* rho_webview_current_location(int index)
 
 int rho_webview_active_tab() 
 {
+#ifdef RHODES_EMULATOR
+    return getAppWindow().tabbarGetCurrent();
+#else
 	return 0;
+#endif
 }
 
 void rho_webview_set_menu_items(VALUE valMenu) 
