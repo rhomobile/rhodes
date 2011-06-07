@@ -251,7 +251,11 @@ public :
         RHODESAPP().startApp();
 
         // Navigate to the "loading..." page
-		m_appWindow.Navigate2(_T("about:blank"));
+		m_appWindow.Navigate2(_T("about:blank")
+#ifdef RHODES_EMULATOR
+            , -1
+#endif
+        );
         // Show the main application window
         m_appWindow.ShowWindow(nShowCmd);
 
@@ -284,8 +288,12 @@ public :
 		return m_appWindow;
 	}
 
-	HWND GetWebViewWindow() {
-		return m_appWindow.getWebViewHWND();
+	HWND GetWebViewWindow(int index) {
+		return m_appWindow.getWebViewHWND(
+#ifdef RHODES_EMULATOR
+            index
+#endif
+        );
 	}
 
     void RunMessageLoop( ) throw( )
@@ -513,8 +521,8 @@ CMainWindow& getAppWindow()
 	return _AtlModule.GetAppWindow();
 }
 
-extern "C" HWND getWebViewWnd() {
-	return _AtlModule.GetWebViewWindow();
+extern "C" HWND getWebViewWnd(int index) {
+	return _AtlModule.GetWebViewWindow(index);
 }
 
 CMainWindow* Rhodes_getMainWindow() {

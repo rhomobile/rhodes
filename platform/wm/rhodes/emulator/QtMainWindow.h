@@ -29,10 +29,11 @@ public:
     virtual void closeEvent(QCloseEvent *);
     void setCallback(IMainWindowCallback* callback);
     // webview
-    void navigate(QString url);
+    void navigate(QString url, int index);
     void GoBack(void);
     void GoForward(void);
-    void Refresh(void);
+    void Refresh(int index);
+    bool isStarted(void);
     // toolbar
     void toolbarRemoveAllButtons(void);
     void toolbarShow(void);
