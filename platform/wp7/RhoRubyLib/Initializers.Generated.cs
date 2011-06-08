@@ -31,6 +31,7 @@ namespace rho.rubyext {
             IronRuby.Builtins.RubyModule def1 = DefineGlobalModule("Rho", typeof(rho.rubyext.Rho), 0x00000008, null, null, null, IronRuby.Builtins.RubyModule.EmptyArray);
             IronRuby.Builtins.RubyModule def4 = DefineModule("Rho::AsyncHttp", typeof(rho.rubyext.RhoRoot.RhoAsyncHttp), 0x00000008, null, LoadRho__AsyncHttp_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
             IronRuby.Builtins.RubyModule def2 = DefineModule("Rho::JSON", typeof(rho.rubyext.Rho.RhoJSON), 0x00000008, null, LoadRho__JSON_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
+            DefineGlobalModule("RhoConf", typeof(rho.rubyext.RhoConfig), 0x00000008, null, LoadRhoConf_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
             IronRuby.Builtins.RubyModule def5 = DefineGlobalModule("SQLite3", typeof(rho.rubyext.RhoSQLite3), 0x00000008, null, null, null, IronRuby.Builtins.RubyModule.EmptyArray);
             IronRuby.Builtins.RubyClass def6 = DefineClass("SQLite3::Database", typeof(rho.rubyext.RhoSQLite3.RhoDatabase), 0x00000008, classRef0, LoadSQLite3__Database_Instance, null, null, IronRuby.Builtins.RubyModule.EmptyArray, 
                 new Func<IronRuby.Builtins.RubyClass, IronRuby.Builtins.MutableString, IronRuby.Builtins.MutableString, rho.rubyext.RhoSQLite3.RhoDatabase>(rho.rubyext.RhoSQLite3.RhoDatabase.Create)
@@ -131,6 +132,44 @@ namespace rho.rubyext {
             DefineLibraryMethod(module, "quote_value", 0x21, 
                 0x00000002U, 
                 new Func<IronRuby.Builtins.RubyModule, System.String, System.Object>(rho.rubyext.Rho.RhoJSON.quote_value)
+            );
+            
+        }
+        
+        private static void LoadRhoConf_Class(IronRuby.Builtins.RubyModule/*!*/ module) {
+            DefineLibraryMethod(module, "clean_log", 0x21, 
+                0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule>(rho.rubyext.RhoConfig.clean_log)
+            );
+            
+            DefineLibraryMethod(module, "get_property_by_name", 0x21, 
+                0x00000002U, 
+                new Func<IronRuby.Builtins.RubyModule, System.String, System.Object>(rho.rubyext.RhoConfig.get_property_by_name)
+            );
+            
+            DefineLibraryMethod(module, "is_property_exists", 0x21, 
+                0x00000002U, 
+                new Func<IronRuby.Builtins.RubyModule, System.String, System.Boolean>(rho.rubyext.RhoConfig.is_property_exists)
+            );
+            
+            DefineLibraryMethod(module, "read_log", 0x21, 
+                0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule, System.Int32>(rho.rubyext.RhoConfig.read_log)
+            );
+            
+            DefineLibraryMethod(module, "send_log", 0x21, 
+                0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule>(rho.rubyext.RhoConfig.send_log)
+            );
+            
+            DefineLibraryMethod(module, "set_property_by_name", 0x21, 
+                0x00000002U, 
+                new Action<IronRuby.Builtins.RubyModule, System.String, System.Object>(rho.rubyext.RhoConfig.set_property_by_name)
+            );
+            
+            DefineLibraryMethod(module, "show_log", 0x21, 
+                0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule>(rho.rubyext.RhoConfig.show_log)
             );
             
         }
@@ -296,12 +335,17 @@ namespace rho.rubyext {
             
             DefineLibraryMethod(module, "execute_js", 0x21, 
                 0x00000002U, 
-                new Action<IronRuby.Builtins.RubyModule, System.String>(rho.rubyext.RhoWebView.execute_js)
+                new Action<IronRuby.Builtins.RubyModule, System.String, System.Int32>(rho.rubyext.RhoWebView.execute_js)
             );
             
             DefineLibraryMethod(module, "navigate", 0x21, 
                 0x00000002U, 
-                new Action<IronRuby.Builtins.RubyModule, System.String>(rho.rubyext.RhoWebView.Navigate)
+                new Action<IronRuby.Builtins.RubyModule, System.String, System.Int32>(rho.rubyext.RhoWebView.Navigate)
+            );
+            
+            DefineLibraryMethod(module, "refresh", 0x21, 
+                0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule, System.Int32>(rho.rubyext.RhoWebView.Refresh)
             );
             
             DefineLibraryMethod(module, "set_menu_items", 0x21, 

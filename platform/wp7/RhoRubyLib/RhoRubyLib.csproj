@@ -118,6 +118,7 @@
     <Compile Include="net\HttpServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="rubyext\RhoAsyncHttp.cs" />
+    <Compile Include="rubyext\RhoConfig.cs" />
     <Compile Include="rubyext\RhoDatabase.cs" />
     <Compile Include="RhoRuby.cs" />
     <Compile Include="rubyext\RhoJSON.cs" />

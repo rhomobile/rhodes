@@ -64,7 +64,7 @@ namespace rho.net
                 else if ( m_nCommand == scIndex )
                     strUrl = m_Parent.processIndex(m_route, m_method, m_uri, m_query, m_body);
 
-                RHODESAPP().processWebNavigate(strUrl);
+                RHODESAPP().processWebNavigate(strUrl, -1);
             }
 
             public boolean equals(IQueueCommand cmd) { return false; }

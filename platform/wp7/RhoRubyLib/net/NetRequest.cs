@@ -214,7 +214,7 @@ namespace rho.net
                 else
                     LOG.INFO("Request was cancelled by user.");
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 ///LOG.ERROR("EndGetResponse", e);
                 m_respWaitEvent.Set();
