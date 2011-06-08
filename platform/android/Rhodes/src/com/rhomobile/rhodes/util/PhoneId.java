@@ -48,7 +48,7 @@ public class PhoneId
             Method get = c.getMethod("get", String.class);
             final String serialNo = (String) get.invoke(c, "ro.serialno");
             rawId += serialNo;
-            Logger.D(TAG, "Serial#: " + serialNo);
+            Logger.I(TAG, "Serial#: " + serialNo);
         } catch (Exception ignored) {
             Logger.W(TAG, "Cannot get proprietary serial number.");
         }
@@ -60,7 +60,7 @@ public class PhoneId
             // unless it's not available, then fallback on a random number.
             if (!"9774d56d682e549c".equals(androidId)) {
                 rawId += androidId;
-                Logger.D(TAG, "ANDROID_ID: " + androidId);
+                Logger.I(TAG, "ANDROID_ID: " + androidId);
             } else {
                 Logger.W(TAG, "Brocken Android ID, cannot use it: " + androidId);
             }
@@ -68,7 +68,7 @@ public class PhoneId
                 final String deviceId = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
                 if (deviceId != null && deviceId.length() > 0) {
                     rawId += deviceId;
-                    Logger.D(TAG, "Phone device id: " + deviceId);
+                    Logger.I(TAG, "Phone device id: " + deviceId);
                 } else {
                     Logger.W(TAG, "No telephony service device id.");
                 }
@@ -89,7 +89,7 @@ public class PhoneId
         if (rawId.length() > 0) {
             UUID uuid = UUID.nameUUIDFromBytes(rawId.getBytes());
             mPhoneId = uuid.toString();
-            Logger.D(TAG, "Generated phone id: " + mPhoneId);
+            Logger.I(TAG, "Generated phone id: " + mPhoneId);
         } else {
             mPhoneId = "";
         }
