@@ -83,6 +83,23 @@ RHO_GLOBAL void rho_nativethread_end(void *)
     jvm()->DetachCurrentThread();
 }
 
+rho::String rho_sysimpl_get_phone_id()
+{
+    JNIEnv *env = jnienv();
+
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+    if (!cls) return 0;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "getProperty", "(Ljava/lang/String;)Ljava/lang/Object;");
+    if (!mid) return 0;
+
+    jhstring propNameObj = rho_cast<jhstring>("phone_id");
+    jhobject result = jhobject(env->CallStaticObjectMethod(cls, mid, propNameObj.get()));
+    if (!result) return 0;
+
+    jstring resStrObj = (jstring)result.get();
+    return rho_cast<std::string>(resStrObj);
+}
+
 RHO_GLOBAL int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 {
     JNIEnv *env = jnienv();
