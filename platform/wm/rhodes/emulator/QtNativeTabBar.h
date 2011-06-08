@@ -8,13 +8,13 @@ class QtNativeTabBar : public QTabBar
 public:
     explicit QtNativeTabBar(QWidget* parent=0) : QTabBar(parent)
     {
-        this->setIconSize(QSize(58, 58));
+        this->setIconSize(QSize(32, 32));
         this->setExpanding(true);
     }
 protected:
     QSize tabSizeHint(int) const
     {
-        return QSize(80, 80);
+        return QSize(96, 56);
     }
 
     void paintEvent(QPaintEvent *)
@@ -57,12 +57,15 @@ protected:
                         // icon is aligned to top
                         QRect iconRect = QRect(tab.rect);
                         iconRect.setHeight(iSize.height());
+                        iconRect.translate(0, 4);
                         // text occupies all the rest
                         QRect labelRect = QRect(tab.rect);
                         labelRect.setTop(labelRect.top()+iSize.height());
+                        labelRect.setHeight(labelRect.height()-6);
+                        labelRect.translate(0, 6);
                         // drawing
                         painter.drawItemPixmap(iconRect, Qt::AlignCenter, tab.icon.pixmap(iSize));
-                        painter.drawItemText(labelRect, Qt::AlignHCenter, tab.palette, enabled, tab.text);
+                        painter.drawItemText(labelRect, Qt::AlignHCenter | Qt::AlignTop, tab.palette, enabled, tab.text);
                     }
                 }
             }
