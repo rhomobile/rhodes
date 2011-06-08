@@ -3,6 +3,8 @@
 #include "common/RhoConf.h"
 #include "common/RhodesApp.h"
 
+extern rho::String rho_sysimpl_get_phone_id();
+
 namespace rho{
 namespace sync{
 
@@ -79,7 +81,7 @@ String CClientRegister::getRegisterBody(const String& strClientID)
 	int port = RHOCONF().getInt("push_port");
 
     return CSyncThread::getSyncEngine().getProtocol().getClientRegisterBody( strClientID, m_strDevicePin, 
-        port > 0 ? port : DEFAULT_PUSH_PORT, rho_rhodesapp_getplatform());
+        port > 0 ? port : DEFAULT_PUSH_PORT, rho_rhodesapp_getplatform(), rho_sysimpl_get_phone_id() );
 }
 
 boolean CClientRegister::doRegister(CSyncEngine& oSync) 
