@@ -235,3 +235,11 @@ void choose_picture(char* callback_url) {
 //#endif
 }
 
+void take_picture(char* callback_url, VALUE options_hash) {
+	HWND main_wnd = getMainWnd();
+	::PostMessage(main_wnd,WM_TAKEPICTURE,0,(LPARAM)strdup(callback_url));
+}
+
+VALUE get_camera_info(const char* camera_type) {
+     return rho_ruby_get_NIL();
+}

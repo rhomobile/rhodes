@@ -261,10 +261,21 @@ static Rhodes *instance = NULL;
         UIImagePickerController* picker = [[UIImagePickerController alloc] init]; 
         picker.sourceType = type;
         picker.delegate = delegateObject;
+        
 #ifndef __IPHONE_3_1
-        picker.allowsImageEditing = YES;
+        if (delegateObject.settings.enable_editing != 0) {
+            picker.allowsImageEditing = YES;
+        }
+        else {
+            picker.allowsImageEditing = NO;
+        }
 #else
-        picker.allowsEditing = YES;
+        if (delegateObject.settings.enable_editing != 0) {
+            picker.allowsEditing = YES;
+        }
+        else {
+            picker.allowsEditing = NO;
+        }
 #endif
         // Show picker
 #ifdef __IPHONE_3_2
@@ -283,9 +294,15 @@ static Rhodes *instance = NULL;
             [popover setPopoverContentSize:CGSizeMake(CGRectGetWidth(rect), CGRectGetHeight(rect))];
             [popover presentPopoverFromRect:rect inView:[[self mainView] view] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
         }
-        else
+        else 
 #endif
+        {
+            if (delegateObject.settings.camera_type == CAMERA_SETTINGS_TYPE_FRONT) {
+                picker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+            }
+            
             [window addSubview:picker.view];
+        }
     } @catch(NSException* theException) {
         RAWLOG_ERROR2("startCameraPickerFromViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
         return NO;
@@ -294,10 +311,11 @@ static Rhodes *instance = NULL;
 	return YES;
 }
 
-- (void)takePicture:(NSString*) url {
+- (void)takePicture:(RhoCameraSettings*) settings {
     if (!rho_rhodesapp_check_mode())
         return;
-    [pickImageDelegate setPostUrl:url];
+    [pickImageDelegate setPostUrl:settings.callback_url];
+    pickImageDelegate.settings = settings;
     [self startCameraPicker:pickImageDelegate 
                  sourceType:UIImagePickerControllerSourceTypeCamera];
 }
