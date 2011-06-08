@@ -208,6 +208,9 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
         h = *pHeaders;
     
     for (int nAttempts = 0; nAttempts < 10; ++nAttempts) {
+        
+        RAWTRACE1("Doing Pull attempt: %d...", nAttempts);
+        
         Vector<char> respChunk;
         
         curl_slist *hdrs = m_curl.set_options(method, strUrl, strBody, oSession, &h);
@@ -224,10 +227,14 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
         CURLcode err = doCURLPerform(strUrl);
         curl_slist_free_all(hdrs);
         
+        RAWTRACE1("doCURLPerform response: %d", err);
+        
         long statusCode = 0;
         if (curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode) != 0)
             statusCode = 500;
-		
+
+        RAWTRACE1("statusCode: %d", statusCode);
+
 		if (statusCode == 416 )
 		{
 			//Do nothing, file is already loaded
@@ -255,12 +262,14 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
         }
         
         nRespCode = getResponseCode(err, respBody, oSession);
+        RAWTRACE1("nRespCode: %d", nRespCode);
         break;
     }
 
-	if( !net::URI::isLocalHost(strUrl.c_str()) )		   
-	   rho_net_impl_network_indicator(0);
+    if( !net::URI::isLocalHost(strUrl.c_str()) )
+        rho_net_impl_network_indicator(0);
 
+    RAWTRACE("Pull done");
     return makeResponse(respBody, nRespCode);
 }
 
@@ -280,7 +289,7 @@ INetResponse* CURLNetRequest::pushMultipartData(const String& strUrl, VectorPtr<
     String strRespBody;
     
     rho_net_impl_network_indicator(1);
-    RAWLOG_INFO1("Push request (POST): %s", strUrl.c_str());
+    RAWTRACE1("Push request (POST): %s", strUrl.c_str());
     
     curl_slist *hdrs = m_curl.set_options("POST", strUrl, String(), oSession, pHeaders);
     CURL *curl = m_curl.curl();
@@ -599,6 +608,7 @@ void CURLNetRequest::CURLHolder::activate()
 
 void CURLNetRequest::CURLHolder::deactivate()
 {
+    
     common::CMutexLock guard(m_lock);
     if (m_active == 0)
         return;
@@ -617,6 +627,12 @@ CURLcode CURLNetRequest::CURLHolder::perform()
     CURLcode result;
     for(;;) {
         int running;
+        
+        if (!is_active()) {
+            RAWLOG_INFO("All connections are dropped");
+            result = CURLE_ABORTED_BY_CALLBACK;
+            break;
+        }
         CURLMcode err = curl_multi_perform(m_curlm, &running);
         if (err == CURLM_CALL_MULTI_PERFORM)
             continue;
@@ -673,6 +689,13 @@ CURLcode CURLNetRequest::CURLHolder::perform()
 
     deactivate();
     return result;
+}
+
+bool CURLNetRequest::CURLHolder::is_active()
+{
+    RAWTRACE1("There is %d active connection(s)", m_active);
+    common::CMutexLock guard(m_lock);
+    return m_active > 0;
 }
 
 } // namespace net

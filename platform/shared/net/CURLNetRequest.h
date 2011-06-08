@@ -36,6 +36,7 @@ class CURLNetRequest : public INetRequestImpl
     private:
         void activate();
         void deactivate();
+        bool is_active();
         
     private:
         CURL *m_curl;

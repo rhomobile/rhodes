@@ -70,7 +70,7 @@ public class SSLImpl {
 		return factory;
 	}
 	
-	public boolean connect(int fd, boolean sslVerifyPeer) {
+	public synchronized boolean connect(int fd, boolean sslVerifyPeer) {
 		try {
 			sockfd = fd;
 			RhoSockAddr remote = getRemoteSockAddr(sockfd);
@@ -89,20 +89,21 @@ public class SSLImpl {
 		}
 	}
 	
-	public void shutdown() {
+	public synchronized void shutdown() {
 		try {
-			if (sock != null)
+			if (sock != null) {
 				sock.close();
-		}
-		catch (IOException e) {
-		    Logger.I(TAG, "shutdown fails: IOException: " + e.getMessage());
+				sock = null;
+				os = null;
+				is = null;
+			}
 		}
 		catch (Exception e) {
 			reportFail("shutdown", e);
 		}
 	}
 	
-	public boolean send(byte[] data) {
+	public synchronized boolean send(byte[] data) {
 		try {
 			if (os == null)
 				return false;
@@ -115,7 +116,7 @@ public class SSLImpl {
 		}
 	}
 	
-	public int recv(byte[] data) {
+	public synchronized int recv(byte[] data) {
 		try {
 			if (is == null)
 				return -1;
