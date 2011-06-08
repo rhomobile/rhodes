@@ -189,20 +189,59 @@ namespace rho.common
             return new NetResponse("", 200);
         }
 
-        public void processWebNavigate(String strUrl)
+        public void processWebNavigate(String strUrl, int index)
         {
             m_webBrowser.Dispatcher.BeginInvoke( () =>
             {
-                m_webBrowser.IsScriptEnabled = true;
-                m_webBrowser.Navigate(new Uri(strUrl, UriKind.Relative));
+                if (index > 0)
+                {
+                    if (m_tabControl != null && m_tabControl.Items.Count > 0)
+                    {
+                        ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.IsScriptEnabled = true;
+                        ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(new Uri(strUrl, UriKind.Relative));
+                    }
+                }
+                else
+                {
+                    m_webBrowser.IsScriptEnabled = true;
+                    m_webBrowser.Navigate(new Uri(strUrl, UriKind.Relative));
+                }
             });
         }
 
-        public void processInvokeScript(String strScript)
+        public void processWebRefresh(int index)
         {
             m_webBrowser.Dispatcher.BeginInvoke(() =>
             {
-                m_webBrowser.InvokeScript(strScript);
+                if (index > 0)
+                {
+                    if (m_tabControl != null && m_tabControl.Items.Count > 0)
+                    {
+                        ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(m_webBrowser.Source);
+                    }
+                }
+                else
+                {
+                    m_webBrowser.Navigate(m_webBrowser.Source);
+                }
+            });
+        }
+
+        public void processInvokeScript(String strScript, int index)
+        {
+            m_webBrowser.Dispatcher.BeginInvoke(() =>
+            {
+                if (index > 0)
+                {
+                    if (m_tabControl != null && m_tabControl.Items.Count > 0)
+                    {
+                        ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.InvokeScript(strScript);
+                    }
+                }
+                else
+                {
+                    m_webBrowser.InvokeScript(strScript);
+                }
             });
         }
         

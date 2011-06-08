@@ -20,7 +20,10 @@ namespace rho.views
     {
         private Stack<Uri> m_backHistory = new Stack<Uri>();
         private Stack<Uri> m_forwardHistory = new Stack<Uri>();
-        private Hash m_menuItems = null;
+        /// <summary>
+        /// 
+        /// </summary>
+        //private Hash m_menuItems = null;
         private Uri m_currentUri = null;
         private PhoneApplicationPage m_mainPage = null;
         private Grid m_layoutRoot = null;

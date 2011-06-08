@@ -82,7 +82,7 @@ namespace rho
                     file.open(path, CRhoFile.EOpenModes.OpenReadOnly);
                     st = file.getStream();
                 }
-                catch (Exception exc)
+                catch (Exception)
                 {
                     throw new System.IO.FileNotFoundException();
                 }

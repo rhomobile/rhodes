@@ -23,11 +23,11 @@ namespace rho.rubyext
         #region Private Instance & Singleton Methods
 
         [RubyMethodAttribute("navigate", RubyMethodAttributes.PublicSingleton)]
-        public static void Navigate(RubyModule/*!*/ self, [NotNull]String/*!*/ url)
+        public static void Navigate(RubyModule/*!*/ self, [NotNull]String/*!*/ url, int index = 0)
         {
             try
             {
-                RHODESAPP().processWebNavigate(url);
+                RHODESAPP().processWebNavigate(url, index);
             }
             catch (Exception ex)
             {
@@ -41,12 +41,31 @@ namespace rho.rubyext
             }
         }
 
-        [RubyMethodAttribute("execute_js", RubyMethodAttributes.PublicSingleton)]
-        public static void execute_js(RubyModule/*!*/ self, [NotNull]String/*!*/ strScript)
+        [RubyMethodAttribute("refresh", RubyMethodAttributes.PublicSingleton)]
+        public static void Refresh(RubyModule/*!*/ self, int index = 0)
         {
             try
             {
-                RHODESAPP().processInvokeScript(strScript);
+                RHODESAPP().processWebRefresh(index);
+            }
+            catch (Exception ex)
+            {
+                Exception rubyEx = self.Context.CurrentException;
+                if (rubyEx == null)
+                {
+                    rubyEx = RubyExceptionData.InitializeException(new RuntimeError(ex.Message.ToString()), ex.Message);
+                }
+                LOG.ERROR("refresh", ex);
+                throw rubyEx;
+            }
+        }
+
+        [RubyMethodAttribute("execute_js", RubyMethodAttributes.PublicSingleton)]
+        public static void execute_js(RubyModule/*!*/ self, [NotNull]String/*!*/ strScript, int index = 0)
+        {
+            try
+            {
+                RHODESAPP().processInvokeScript(strScript, index);
             }
             catch (Exception ex)
             {
