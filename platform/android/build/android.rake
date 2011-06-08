@@ -1,9 +1,11 @@
 #
+
 require File.dirname(__FILE__) + '/androidcommon.rb'
+require File.dirname(__FILE__) + '/android_tools.rb'
 require 'pathname'
 
 USE_OWN_STLPORT = false
-#USE_TRACES = false
+#USE_TRACES = # see androidcommon.h
 
 ANDROID_API_LEVEL_TO_MARKET_VERSION = {}
 ANDROID_MARKET_VERSION_TO_API_LEVEL = {}
@@ -1450,14 +1452,6 @@ namespace "package" do
   end
 end
 
-def get_app_log(appname, device, silent = false)
-  pkgname = "com.#{$vendor}." + appname.downcase.gsub(/[^A-Za-z_0-9]/, '')
-  path = File.join('/data/data', pkgname, 'rhodata', 'RhoLog.txt')
-  cc_run($adb, [device ? '-d' : '-e', 'pull', path, $app_path]) or return false
-  puts "RhoLog.txt stored to " + $app_path unless silent
-  return true
-end
-
 namespace "device" do
   namespace "android" do
 
@@ -1576,7 +1570,7 @@ namespace "device" do
     end
 
     task :getlog => "config:android" do
-      get_app_log($appname, true) or exit 1
+      AndroidTools.get_app_log($appname, true) or exit 1
     end
   end
 end
@@ -1584,73 +1578,9 @@ end
 namespace "emulator" do
   namespace "android" do
     task :getlog => "config:android" do
-      get_app_log($appname, false) or exit 1
+      AndroidTools.get_app_log($appname, false) or exit 1
     end
   end
-end
-
-
-def is_emulator_running
-  `"#{$adb}" devices`.split("\n")[1..-1].each do |line|
-    return true if line =~ /^emulator/
-  end
-  return false
-end
-
-def is_device_running
-  `"#{$adb}" devices`.split("\n")[1..-1].each do |line|
-    return true if line !~ /^emulator/
-  end
-  return false
-end
-
-def run_application (target_flag)
-  args = []
-  args << target_flag
-  args << "shell"
-  args << "am"
-  args << "start"
-  args << "-a"
-  args << "android.intent.action.MAIN"
-  args << "-n"
-  args << $app_package_name + "/#{JAVA_PACKAGE_NAME}.RhodesActivity"
-  Jake.run($adb, args)
-end
-
-def application_running(flag, pkgname)
-  pkg = pkgname.gsub(/\./, '\.')
-  `"#{$adb}" #{flag} shell ps`.split.each do |line|
-    return true if line =~ /#{pkg}/
-  end
-  false
-end
-
-def kill_adb_and_emulator
-  if RUBY_PLATFORM =~ /windows|cygwin|mingw/
-    # Windows
-    `taskkill /F /IM adb.exe`
-    `taskkill /F /IM emulator.exe`
-  else
-    `killall -9 adb`
-    `killall -9 emulator`
-  end
-end
-
-def logcat(device_flag = '-e', log_path = $applog_path)
-  if !log_path.nil?
-    rm_rf log_path unless !File.exist(log_path)
-    Thread.new { Jake.run($adb, [device_flag, 'logcat', '>>', log_path], nil, true) }
-  end
-end
-
-def logcat_process(device_flag = '-e', log_path = $applog_path)
-  if !log_path.nil?
-    Thread.new { system("\"#{$adb}\" #{device_flag} logcat >> \"#{log_path}\" ") }  
-  end
-end
-
-def logclear(device_flag = '-e')
-  Jake.run($adb, [device_flag, 'logcat', '-c'], nil, true) 
 end
 
 namespace "android" do
@@ -1669,18 +1599,18 @@ namespace "run" do
 
         device_flag = '-e'
 
-        logclear(device_flag)
+        AndroidTools.logclear(device_flag)
         run_emulator( :hidden => true ) if device_flag == '-e'
         do_uninstall(device_flag)
         
         # Failsafe to prevent eternal hangs
         Thread.new {
           sleep 2000
-          kill_adb_and_emulator
+          AndroidTools.kill_adb_and_emulator
         }
 
         load_app_and_run(device_flag)
-        logcat(device_flag, log_name)
+        AndroidTools.logcat(device_flag, log_name)
 
         Jake.before_run_spec
         start = Time.now
@@ -1688,7 +1618,7 @@ namespace "run" do
         puts "waiting for application"
 
         for i in 0..60
-            if application_running(device_flag, $app_package_name)
+            if AndroidTools.application_running(device_flag, $app_package_name)
 		break
             else
                 sleep(1)
@@ -1724,7 +1654,7 @@ namespace "run" do
             end
             io.close
             
-            break unless application_running(device_flag, $app_package_name)
+            break unless AndroidTools.application_running(device_flag, $app_package_name)
             sleep(5) unless end_spec
         end
 
@@ -1811,10 +1741,7 @@ namespace "run" do
       puts 'Sleep for 5 sec. waiting for "adb start-server"'
       sleep 5
 
-      #if !$applog_file.nil?
-      #  Thread.new { Jake.run($adb, ['logcat', '>>', $applog_path], nil, true) }
-      #end
-      logcat_process()
+      AndroidTools.logcat_process()
 
       if $appavdname != nil
         $avdname = $appavdname
@@ -1832,7 +1759,7 @@ namespace "run" do
         end
       end
 
-      running = is_emulator_running
+      running = AndroidTools.is_emulator_running
 
       if !running
         # Start the emulator, check on it every 5 seconds until it's running
@@ -1846,17 +1773,11 @@ namespace "run" do
         while (Time.now - startedWaiting < 180 )
           sleep 5
           now = Time.now
-          #emulatorState = ""
-          #Jake.run2($adb,["-e", "get-state"],{:system => false, :hideerrors => :false}) do |line|
-          #  puts "RET: " + line
-          #  emulatorState += line
-          #end
           started = false
           Jake.run2 $adb, ["-e", "shell", "ps"], :system => false, :hideerrors => false do |line|
             started = true if line =~ /android\.process\.acore/
             true
           end
-          #if emulatorState =~ /unknown/
           unless started
             printf("%.2fs: ",(now - startedWaiting))
             if (now - startedWaiting) > (60 * adbRestarts)
@@ -1866,10 +1787,7 @@ namespace "run" do
               Jake.run($adb, ['start-server'], nil, true)
               adbRestarts += 1
 
-              #if !$applog_file.nil?
-              #  Thread.new { Jake.run($adb, ['logcat', '>>', $applog_path], nil, true) }
-              #end
-              logcat_process()
+              AndroidTools.logcat_process()
             else
               puts "Still waiting..."
             end
@@ -1880,7 +1798,7 @@ namespace "run" do
           end
         end
 
-        if !is_emulator_running
+        if !AndroidTools.is_emulator_running
           puts "Emulator still isn't up and running, giving up"
           exit 1
         end
@@ -1919,15 +1837,15 @@ namespace "run" do
       end
 
       puts "Loading complete, starting application.." if done
-      run_application(device_flag) if done
+      AndroidTools.run_application(device_flag) if done
     end
 
     desc "build and install on device"
     task :device => "device:android:install" do
       puts "Starting application..."
-      run_application("-d")
+      AndroidTools.run_application("-d")
       
-      logcat_process("-d")
+      AndroidTools.logcat_process("-d")
     end
   end
 
@@ -1968,7 +1886,7 @@ namespace "uninstall" do
 
   namespace "android" do
     task :emulator => "config:android" do
-      unless is_emulator_running
+      unless AndroidTools.is_emulator_running
         puts "WARNING!!! Emulator is not up and running"
         exit 1
       end
@@ -1977,7 +1895,7 @@ namespace "uninstall" do
 
     desc "uninstall from device"
     task :device => "config:android" do
-      unless is_device_running
+      unless AndroidTools.is_device_running
         puts "WARNING!!! Device is not connected"
         exit 1
       end
