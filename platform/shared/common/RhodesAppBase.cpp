@@ -96,6 +96,8 @@ extern "C" {
 
 int rho_unzip_file(const char* szZipPath)
 {
+    rho::common::CFilePath oPath(szZipPath);
+    rho::String strBaseDir = oPath.getFolderName();
 #ifdef  UNICODE
     rho::StringW strZipPathW;
     rho::common::convertToStringW(szZipPath, strZipPathW);
@@ -104,14 +106,14 @@ int rho_unzip_file(const char* szZipPath)
         return 0;
 
 	// Set base for unziping
-    SetUnzipBaseDir(hz, rho::common::convertToStringW(RHODESAPPBASE().getDBDirPath()).c_str() );
+    SetUnzipBaseDir(hz, rho::common::convertToStringW(strBaseDir).c_str());
 #else
     HZIP hz = OpenZipFile(szZipPath, "");
     if ( !hz )
         return 0;
 
 	// Set base for unziping
-    SetUnzipBaseDir(hz, RHODESAPPBASE().getDBDirPath().c_str() );
+    SetUnzipBaseDir(hz,strBaseDir.c_str() );
 #endif
 
     ZIPENTRY ze;
