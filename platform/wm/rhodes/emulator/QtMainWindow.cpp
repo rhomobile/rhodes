@@ -23,7 +23,7 @@ extern "C" {
 QtMainWindow::QtMainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::QtMainWindow),
-    main_webInspector(new QWebInspector()),
+    webInspectorWindow(new QtWebInspector()),
     cb(NULL),
     cur_tbrp(0)
 {
@@ -44,6 +44,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     this->ui->webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     this->ui->webView->page()->mainFrame()->securityOrigin().setDatabaseQuota(1024*1024*1024);
     this->main_webView = this->ui->webView;
+    this->main_webInspector = webInspectorWindow->webInspector();
     this->cur_webInspector = this->main_webInspector;
 
     this->move(0,0);
@@ -51,17 +52,15 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     this->ui->toolBarRight->hide();
 
     // connecting WebInspector
-    main_webInspector->setWindowTitle("Web Inspector");
     main_webInspector->setPage(ui->webView->page());
-    main_webInspector->move(416, 0);
-    main_webInspector->resize(850, 600);
-    main_webInspector->show();
+    webInspectorWindow->show();
+    //webInspectorWindow->activateWindow();
 }
 
 QtMainWindow::~QtMainWindow()
 {
     tabbarRemoveAllTabs(false);
-    delete main_webInspector;
+    delete webInspectorWindow;
     delete ui;
 }
 
@@ -85,7 +84,7 @@ void QtMainWindow::closeEvent(QCloseEvent *ce)
     rb_thread_wakeup(rb_thread_main());
     if (cb) cb->onWindowClose();
     tabbarRemoveAllTabs(false);
-    main_webInspector->close();
+    webInspectorWindow->close();
     QMainWindow::closeEvent(ce);
 }
 
@@ -178,7 +177,9 @@ void QtMainWindow::tabbarRemoveAllTabs(bool restore)
     // removing WebViews
     for (int i=0; i<tabViews.size(); ++i) {
         tabbarDisconnectWebView(tabViews[i], tabInspect[i]);
-        tabInspect[i]->close();
+        webInspectorWindow->removeWebInspector(tabInspect[i]);
+        if (cur_webInspector==tabInspect[i])
+            cur_webInspector = 0;
         delete tabInspect[i];
     }
     tabViews.clear();
@@ -213,12 +214,11 @@ int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disa
         wI = new QWebInspector();
         wI->setWindowTitle("Web Inspector");
         wI->setPage(wv->page());
-        wI->move(main_webInspector->x(), main_webInspector->y());
-        wI->resize(main_webInspector->width(), main_webInspector->height());
     }
 
     tabViews.push_back(wv);
     tabInspect.push_back(wI);
+    webInspectorWindow->addWebInspector(wI);
 
     cur_tbrp = &tbrp;
     if (icon && (strlen(icon) > 0))
@@ -251,8 +251,7 @@ void QtMainWindow::tabbarConnectWebView(QWebView* webView, QWebInspector* webIns
         QObject::connect(webView, SIGNAL(loadFinished(bool)), this, SLOT(on_webView_loadFinished(bool)));
         QObject::connect(webView, SIGNAL(urlChanged(QUrl)), this, SLOT(on_webView_urlChanged(QUrl)));
     }
-    webInspector->show();
-    webInspector->raise();
+    webInspectorWindow->showWebInspector(webInspector);
     ui->webView = webView;
     cur_webInspector = webInspector;
 }
@@ -270,6 +269,8 @@ void QtMainWindow::tabbarDisconnectWebView(QWebView* webView, QWebInspector* web
         QObject::disconnect(webView, SIGNAL(loadFinished(bool)), this, SLOT(on_webView_loadFinished(bool)));
         QObject::disconnect(webView, SIGNAL(urlChanged(QUrl)), this, SLOT(on_webView_urlChanged(QUrl)));
     }
+    if (webInspector)
+        webInspectorWindow->hideWebInspector(webInspector);
 }
 
 void QtMainWindow::tabbarWebViewRestore(bool reload)
@@ -307,6 +308,9 @@ void QtMainWindow::on_tabBar_currentChanged(int index)
     if ((index < tabViews.size()) && (index >= 0)) {
         QTabBarRuntimeParams tbrp = cur_tbrp != 0 ? *cur_tbrp : ui->tabBar->tabData(index).toHash();
         bool use_current_view_for_tab = tbrp["use_current_view_for_tab"].toBool();
+
+        webInspectorWindow->setWindowTitle(QString("Web Inspector - Tab ") + QVariant(index+1).toString() +
+            QString(" - ") + tbrp["label"].toString());
 
         if (use_current_view_for_tab) {
             tabbarConnectWebView(main_webView, main_webInspector);
