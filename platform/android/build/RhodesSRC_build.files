@@ -34,6 +34,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothManagerOl
 platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/RhoBluetoothSession.java 
 platform/android/Rhodes/src/com/rhomobile/rhodes/bluetooth/UUIDHelper.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/camera/Camera.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/camera/CameraSettings.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/camera/FileList.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/camera/ImageCapture.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/camera/ImageCaptureCallback.java

@@ -1525,8 +1525,9 @@ SWIG_Ruby_SetModule(swig_module_info *pointer)
 /* -------- TYPES TABLE (BEGIN) -------- */
 
 #define SWIGTYPE_p_char swig_types[0]
-static swig_type_info *swig_types[2];
-static swig_module_info swig_module = {swig_types, 1, 0, 0, 0, 0};
+#define SWIGTYPE_p_rho_param swig_types[1]
+static swig_type_info *swig_types[3];
+static swig_module_info swig_module = {swig_types, 2, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1545,8 +1546,13 @@ static VALUE mCamera;
 #define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),(void**)(a)) 
 
 
-extern void take_picture(char* callback_url);
+#include "ext/rho/rhoruby.h"
+
+extern void take_picture(char* callback_url, rho_param *options_hash);
 extern void choose_picture(char* callback_url);
+
+extern VALUE get_camera_info(const char* camera_type);
+
 
 
 SWIGINTERN swig_type_info*
@@ -1605,11 +1611,15 @@ SWIG_AsCharPtrAndSize(VALUE obj, char** cptr, size_t* psize, int *alloc)
 SWIGINTERN VALUE
 _wrap_take_picture(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
+  rho_param *arg2 = (rho_param *) 0 ;
   int res1 ;
   char *buf1 = 0 ;
   int alloc1 = 0 ;
   
-  if ((argc < 1) || (argc > 1)) {
+  {
+    arg2 = NULL;
+  }
+  if ((argc < 1) || (argc > 2)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
   }
   res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
@@ -1617,11 +1627,22 @@ _wrap_take_picture(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "take_picture" "', argument " "1"" of type '" "char *""'");
   }
   arg1 = (char *)(buf1);
-  take_picture(arg1);
+  if (argc > 1) {
+    {
+      arg2 = rho_param_fromvalue(argv[1]);
+    }
+  }
+  take_picture(arg1,arg2);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  {
+    rho_param_free(arg2);
+  }
   return Qnil;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  {
+    rho_param_free(arg2);
+  }
   return Qnil;
 }
 
@@ -1650,19 +1671,50 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_get_camera_info(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  VALUE result;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "get_camera_info" "', argument " "1"" of type '" "char const *""'");
+  }
+  arg1 = (char *)(buf1);
+  result = (VALUE)get_camera_info((char const *)arg1);
+  vresult = result;
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_rho_param = {"_p_rho_param", "rho_param *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_char,
+  &_swigt__p_rho_param,
 };
 
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_rho_param[] = {  {&_swigt__p_rho_param, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_char,
+  _swigc__p_rho_param,
 };
 
 
@@ -1914,5 +1966,6 @@ SWIGEXPORT void Init_Camera(void) {
   SWIG_RubyInitializeTrackings();
   rb_define_module_function(mCamera, "take_picture", _wrap_take_picture, -1);
   rb_define_module_function(mCamera, "choose_picture", _wrap_choose_picture, -1);
+  rb_define_module_function(mCamera, "get_camera_info", _wrap_get_camera_info, -1);
 }
 

@@ -37,6 +37,7 @@ import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.Size;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore.Images.Media;
 import android.view.KeyEvent;
@@ -66,6 +67,10 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
     private OrientationEventListener myOrientationEventListener;
     private int m_rotation = 0;
     
+    private CameraSettings mSettings = null;
+    private boolean mIsFrontCamera = false;
+    
+    
 	// private Uri target = Media.EXTERNAL_CONTENT_URI;
 
 	@Override
@@ -79,6 +84,7 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 		
 		Bundle extras = getIntent().getExtras();
 		callbackUrl = extras.getString(com.rhomobile.rhodes.camera.Camera.INTENT_EXTRA_PREFIX + "callback");
+		mSettings = (CameraSettings)extras.getSerializable(com.rhomobile.rhodes.camera.Camera.INTENT_EXTRA_PREFIX + "settings");
 		
 		surfaceView = (SurfaceView) findViewById(AndroidR.id.surface);
 		surfaceHolder = surfaceView.getHolder();
@@ -172,7 +178,29 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 	public void surfaceCreated(SurfaceHolder holder) {
 		Logger.D(TAG, "surfaceCreated");
 		try {
-			camera = Camera.open();
+			int sdkVersion = Integer.parseInt(Build.VERSION.SDK);
+			if (sdkVersion >= Build.VERSION_CODES.GINGERBREAD) {
+				if (mSettings.getCameraType() == mSettings.CAMERA_TYPE_FRONT) {
+					// find front camera
+					int camera_count = Camera.getNumberOfCameras();
+					int i;
+					for (i = 0 ; i < camera_count; i++) {
+						Camera.CameraInfo info = new Camera.CameraInfo();
+						Camera.getCameraInfo(i, info);
+						if (info.facing == info.CAMERA_FACING_FRONT) {
+							camera = Camera.open(i);
+							mIsFrontCamera = true;
+							break;
+						}
+					}
+				}
+				else {
+					camera = Camera.open();
+				}
+			}
+			else {
+				camera = Camera.open();
+			}
 		}
 		catch (Exception e) {
 			Logger.E(TAG, e.getMessage());
@@ -223,6 +251,14 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 			}
 			
 			p.setPreviewSize(newW, newH);
+			if (mSettings != null) {
+	            if ((mSettings.getWidth() > 0) && (mSettings.getHeight() > 0)) {
+	                p.setPictureSize(mSettings.getWidth(), mSettings.getHeight());
+	            }
+	            if (mSettings.getColorModel() == mSettings.CAMERA_COLOR_MODEL_GRAYSCALE) {
+	            	p.setColorEffect(Camera.Parameters.EFFECT_MONO);
+	            }
+			}
 			camera.setParameters(p);
 			camera.setPreviewDisplay(holder);
 			camera.startPreview();
@@ -297,9 +333,55 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
             int nCamRotate = 90;
             if ( (m_rotation > 45 && m_rotation < 135) || (m_rotation > 225 && m_rotation < 315) )
                 nCamRotate = 0;
-                
+            if (mIsFrontCamera) {
+                nCamRotate = 0;
+                parameters.setRotation(270);
+            }
 	        Logger.D(TAG, "Camera rotation: " + nCamRotate );
             parameters.set("rotation", nCamRotate );
+            if ((mSettings.getWidth() > 0) && (mSettings.getHeight() > 0)) {
+            
+    			Camera.Parameters p = camera.getParameters();
+    			
+    			int newW = mSettings.getWidth();
+    			int newH = mSettings.getHeight();
+
+    	        Logger.D(TAG, "Preferred size : " + String.valueOf(newW) + " x " + String.valueOf(newH) );
+   			
+    			List<Size> sizes = p.getSupportedPictureSizes();
+    			Iterator<Size> iter = sizes.iterator();
+    			// find closest preview size
+    			float min_r = -1;
+    			int minW = 0;
+    			int minH = 0;
+    	        Logger.D(TAG, "    Supported sizes : ");
+    			while (iter.hasNext()) {
+    				Size s = iter.next();
+        	        Logger.D(TAG, "         size : " + String.valueOf((int)s.width) + " x " + String.valueOf((int)s.height) );
+    				if (min_r < 0) {
+    					min_r = (float)s.width*(float)s.width+(float)s.height*(float)s.height;
+    					minW = s.width;
+    					minH = s.height;
+    				}
+    				else {
+    					float cur_r = ((float)newW-(float)s.width)*((float)newW-(float)s.width)+((float)newH-(float)s.height)*((float)newH-(float)s.height);
+    					if (cur_r < min_r) {
+    						min_r = cur_r;
+    						minW = s.width;
+    						minH = s.height;
+    					}
+    				}
+    			}
+    			if (min_r >= 0) {
+    				newW = minW;
+    				newH = minH;
+    			}
+    	        Logger.D(TAG, "    Selected size : " + String.valueOf(newW) + " x " + String.valueOf(newH) );
+            	parameters.setPictureSize(newW, newH);
+            }
+            if (mSettings.getColorModel() == mSettings.CAMERA_COLOR_MODEL_GRAYSCALE) {
+            	parameters.setColorEffect(Camera.Parameters.EFFECT_MONO);
+            }
             camera.setParameters(parameters);
 
 		} catch (Exception ex) {
