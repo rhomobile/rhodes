@@ -234,3 +234,10 @@ int rho_base64_decode(const char *src, int srclen, char *dst)
 }
 	
 } //extern "C"
+
+#if !defined(OS_ANDROID)
+rho::String rho_sysimpl_get_phone_id()
+{
+    return "";
+}
+#endif
