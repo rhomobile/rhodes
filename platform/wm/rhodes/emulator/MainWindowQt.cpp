@@ -509,6 +509,7 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
         }
         if (!skip_item) {
             QtMainWindow::QTabBarRuntimeParams tbrp;
+            tbrp["label"] = QString(label);
             tbrp["action"] = QString(action);
             tbrp["reload"] = charToBool(reload);
             tbrp["use_current_view_for_tab"] = charToBool(use_current_view_for_tab);

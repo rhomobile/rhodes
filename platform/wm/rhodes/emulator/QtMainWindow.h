@@ -7,6 +7,7 @@
 #include <QtWebKit/QWebView>
 #include <QtWebKit/QWebInspector>
 #include <QAction>
+#include "QtWebInspector.h"
 #include "MainWindowCallback.h"
 #include "common/IRhoThreadImpl.h"
 
@@ -70,6 +71,7 @@ private:
     QWebView* main_webView;
     QWebInspector* cur_webInspector;
     QTabBarRuntimeParams* cur_tbrp;
+    QtWebInspector* webInspectorWindow;
 
 private slots:
     void on_webView_urlChanged(QUrl );
