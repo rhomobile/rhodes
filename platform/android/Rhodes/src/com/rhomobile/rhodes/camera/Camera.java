@@ -64,10 +64,12 @@ public class Camera {
 	private static class Picture implements Runnable {
 		private String url;
 		private Class<?> klass;
+		private CameraSettings settings;
 		
-		public Picture(String u, Class<?> c) {
+		public Picture(String u, Class<?> c, Object settingsObj) {
 			url = u;
 			klass = c;
+			settings = new CameraSettings(settingsObj);
 		}
 		
 		public void run() {
@@ -75,13 +77,14 @@ public class Camera {
 			RhodesActivity ra = RhodesActivity.getInstance();
 			Intent intent = new Intent(ra, klass);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "callback", url);
+			intent.putExtra(INTENT_EXTRA_PREFIX + "settings", settings);
 			ra.startActivity(intent);
 		}
 	};
 	
-	public static void takePicture(String url) {
+	public static void takePicture(String url, Object params_obj) {
 		try {
-			Runnable runnable = Capabilities.CAMERA_ENABLED ? new Picture(url, ImageCapture.class) :
+			Runnable runnable = Capabilities.CAMERA_ENABLED ? new Picture(url, ImageCapture.class, params_obj) :
 				new CameraDisabled(url);
 			PerformOnUiThread.exec(runnable, false);
 		}
@@ -92,7 +95,7 @@ public class Camera {
 
 	public static void choosePicture(String url) {
 		try {
-			PerformOnUiThread.exec(new Picture(url, FileList.class), false);
+			PerformOnUiThread.exec(new Picture(url, FileList.class, null), false);
 		}
 		catch (Exception e) {
 			reportFail("choosePicture", e);
