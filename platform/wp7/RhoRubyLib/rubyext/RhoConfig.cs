@@ -124,7 +124,7 @@ namespace rho.rubyext
         {
             try
             {
-                //TODO
+                RhoLogger.clearLog();
             }
             catch (Exception ex)
             {
