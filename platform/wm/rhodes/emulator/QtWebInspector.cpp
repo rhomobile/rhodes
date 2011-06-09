@@ -34,7 +34,7 @@ void QtWebInspector::removeWebInspector(QWebInspector* wi)
 
 void QtWebInspector::showWebInspector(QWebInspector* wi)
 {
-    wi->setMaximumSize(16777215,16777215);
+    wi->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX);
     if (ui->webInspector == wi)
         setWindowTitle("Web Inspector");
 }
