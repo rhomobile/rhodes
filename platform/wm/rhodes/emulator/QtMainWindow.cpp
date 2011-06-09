@@ -8,6 +8,7 @@
 #include <QWebSettings>
 #include <QWebSecurityOrigin>
 #include <QWebHistory>
+#include <QLabel>
 #include "ext/rho/rhoruby.h"
 #include "common/RhoStd.h"
 #include "common/RhodesApp.h"
@@ -213,7 +214,7 @@ void QtMainWindow::tabbarInitialize()
     if (ui->webView)
         ui->webView->stop();
     tabbarRemoveAllTabs(false);
-    ui->tabBar->setStyleSheet("");
+    ui->tabBar->clearStyleSheet();
 }
 
 int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disabled, const QColor* web_bkg_color, QTabBarRuntimeParams& tbrp)
@@ -261,7 +262,7 @@ void QtMainWindow::tabbarShow()
 void QtMainWindow::tabbarConnectWebView(QWebView* webView, QWebInspector* webInspector)
 {
     if (webView) {
-        webView->setMaximumSize(16777215,16777215); //->show();
+        webView->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX); //->show();
         if (webView != main_webView) {
             QObject::connect(webView, SIGNAL(linkClicked(const QUrl&)), this, SLOT(on_webView_linkClicked(const QUrl&)));
             QObject::connect(webView, SIGNAL(loadStarted()), this, SLOT(on_webView_loadStarted()));
@@ -297,8 +298,8 @@ void QtMainWindow::tabbarWebViewRestore(bool reload)
         tabbarDisconnectWebView(ui->webView, cur_webInspector);
         tabbarConnectWebView(main_webView, main_webInspector);
     } else if (reload) {
-        main_webView->setMaximumSize(16777215,16777215); //->show();
-        main_webInspector->setMaximumSize(16777215,16777215); //->show();
+        main_webView->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX); //->show();
+        main_webInspector->setMaximumSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX); //->show();
     }
 }
 
@@ -320,6 +321,11 @@ void QtMainWindow::tabbarSwitch(int index)
 int QtMainWindow::tabbarGetCurrent()
 {
     return tabViews.size() > 0 ? ui->tabBar->currentIndex() : 0;
+}
+
+void QtMainWindow::tabbarSetBadge(int index, QString badge)
+{
+    ui->tabBar->setTabButton(index, QTabBar::RightSide, (badge.length() > 0 ? new QLabel(badge) : 0));
 }
 
 void QtMainWindow::on_tabBar_currentChanged(int index)
