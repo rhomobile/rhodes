@@ -37,6 +37,7 @@ namespace rho.rubyext {
                 new Func<IronRuby.Builtins.RubyClass, IronRuby.Builtins.MutableString, IronRuby.Builtins.MutableString, rho.rubyext.RhoSQLite3.RhoDatabase>(rho.rubyext.RhoSQLite3.RhoDatabase.Create)
             );
             DefineGlobalModule("SyncEngine", typeof(rho.rubyext.RhoSyncEngine), 0x00000008, null, LoadSyncEngine_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
+            DefineGlobalModule("System", typeof(rho.rubyext.RhoSystem), 0x00000008, null, LoadSystem_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
             DefineGlobalModule("WebView", typeof(rho.rubyext.RhoWebView), 0x00000008, null, LoadWebView_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
             SetConstant(def3, "AsyncHttp", def4);
             SetConstant(def1, "JSON", def2);
@@ -323,6 +324,99 @@ namespace rho.rubyext {
             DefineLibraryMethod(module, "update_blob_attribs", 0x21, 
                 0x00000006U, 
                 new Action<IronRuby.Builtins.RubyModule, System.String, System.Int32>(rho.rubyext.RhoSyncEngine.update_blob_attribs)
+            );
+            
+        }
+        
+        private static void LoadSystem_Class(IronRuby.Builtins.RubyModule/*!*/ module) {
+            DefineLibraryMethod(module, "app_install", 0x21, 
+                0x00000002U, 
+                new Action<IronRuby.Builtins.RubyModule, System.String>(rho.rubyext.RhoSystem.app_install)
+            );
+            
+            DefineLibraryMethod(module, "app_installed?", 0x21, 
+                0x00000002U, 
+                new Func<IronRuby.Builtins.RubyModule, System.String, System.Boolean>(rho.rubyext.RhoSystem.is_app_installed)
+            );
+            
+            DefineLibraryMethod(module, "app_uninstall", 0x21, 
+                0x00000002U, 
+                new Action<IronRuby.Builtins.RubyModule, System.String>(rho.rubyext.RhoSystem.app_uninstall)
+            );
+            
+            DefineLibraryMethod(module, "exit", 0x21, 
+                0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule>(rho.rubyext.RhoSystem.exit)
+            );
+            
+            DefineLibraryMethod(module, "get_locale", 0x21, 
+                0x00000000U, 
+                new Func<IronRuby.Builtins.RubyModule, System.String>(rho.rubyext.RhoSystem.get_locale)
+            );
+            
+            DefineLibraryMethod(module, "get_property", 0x21, 
+                0x00000002U, 
+                new Func<IronRuby.Builtins.RubyModule, System.String, System.Object>(rho.rubyext.RhoSystem.get_property_by_name)
+            );
+            
+            DefineLibraryMethod(module, "get_screen_height", 0x21, 
+                0x00000000U, 
+                new Func<IronRuby.Builtins.RubyModule, System.Int32>(rho.rubyext.RhoSystem.get_screen_height)
+            );
+            
+            DefineLibraryMethod(module, "get_screen_width", 0x21, 
+                0x00000000U, 
+                new Func<IronRuby.Builtins.RubyModule, System.Int32>(rho.rubyext.RhoSystem.get_screen_width)
+            );
+            
+            DefineLibraryMethod(module, "get_start_params", 0x21, 
+                0x00000002U, 
+                new Func<IronRuby.Builtins.RubyModule, System.String, System.String>(rho.rubyext.RhoSystem.get_start_params)
+            );
+            
+            DefineLibraryMethod(module, "has_network", 0x21, 
+                0x00000000U, 
+                new Func<IronRuby.Builtins.RubyModule, System.Boolean>(rho.rubyext.RhoSystem.has_network)
+            );
+            
+            DefineLibraryMethod(module, "open_url", 0x21, 
+                0x00000002U, 
+                new Action<IronRuby.Builtins.RubyModule, System.String>(rho.rubyext.RhoSystem.open_url)
+            );
+            
+            DefineLibraryMethod(module, "run_app", 0x21, 
+                0x00000002U, 
+                new Action<IronRuby.Builtins.RubyModule, System.String, System.String>(rho.rubyext.RhoSystem.run_app)
+            );
+            
+            DefineLibraryMethod(module, "set_push_notification", 0x21, 
+                0x00000006U, 
+                new Action<IronRuby.Builtins.RubyModule, System.String, System.String>(rho.rubyext.RhoSystem.set_push_notification)
+            );
+            
+            DefineLibraryMethod(module, "set_screen_rotation_notification", 0x21, 
+                0x00000006U, 
+                new Action<IronRuby.Builtins.RubyModule, System.String, System.String>(rho.rubyext.RhoSystem.set_screen_rotation_notification)
+            );
+            
+            DefineLibraryMethod(module, "set_sleeping", 0x21, 
+                0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule, System.Boolean>(rho.rubyext.RhoSystem.set_sleeping)
+            );
+            
+            DefineLibraryMethod(module, "start_timer", 0x21, 
+                0x00000004U, 
+                new Action<IronRuby.Builtins.RubyModule, System.Int32, System.String, System.String>(rho.rubyext.RhoSystem.start_timer)
+            );
+            
+            DefineLibraryMethod(module, "stop_timer", 0x21, 
+                0x00000002U, 
+                new Action<IronRuby.Builtins.RubyModule, System.String>(rho.rubyext.RhoSystem.stop_timer)
+            );
+            
+            DefineLibraryMethod(module, "unzip_file", 0x21, 
+                0x00000002U, 
+                new Action<IronRuby.Builtins.RubyModule, System.String>(rho.rubyext.RhoSystem.unzip_file)
             );
             
         }
