@@ -445,8 +445,13 @@ public class Nfc implements RhodesActivityListener {
         	if (ourIsEnable) {
         		if (ourTechCallback != null) {
         			if (ourTechCallback.length() > 0) {
-        	            log("call Tech callback !");
-        				callTechCallback(ourTechCallback, "discovered");
+        				if (mTechList.size() > 0) {
+        					log("call Tech callback !");
+        					callTechCallback(ourTechCallback, "discovered");
+        				}
+        				else {
+                            log("received Tag is not support any techs - empty Tag !, then no callback !");
+        				}
         			}
                 	else {
                         log("Nfc callback is empty");
