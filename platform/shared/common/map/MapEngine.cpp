@@ -206,8 +206,8 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
                 {
                     for (int j = 0, limm = value->v.hash->size; j < limm; ++j)
                     {
-                        char *rname = value->v.hash->name[i];
-                        rho_param *rvalue = value->v.hash->value[i];
+                        char *rname = value->v.hash->name[j];
+                        rho_param *rvalue = value->v.hash->value[j];
                         if (!rname || !rvalue)
                             continue;
                         if (strcasecmp(rname, "center") == 0)
