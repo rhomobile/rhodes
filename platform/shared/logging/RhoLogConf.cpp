@@ -18,7 +18,7 @@ LogSettings::LogSettings(){
     m_nMinSeverity = 0; 
     m_bLogToOutput = true; 
     m_bLogToFile = false;
-    m_bLogToSocket = true;
+    m_bLogToSocket = false;
 
     m_nMaxLogFileSize = 0; 
     m_bLogPrefix = true; 
