@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
   s.add_dependency('rake', '>= 0.8.7')
   s.add_dependency('activesupport', '~> 2.3.5')
   s.add_dependency('uuid', '>= 2.3.2')
-  s.add_development_dependency('rdoc', '>= 2.4.3')
+  s.add_development_dependency('rdoc', '~> 3.6.1')
   s.executables << 'rhogen'
   s.executables << 'rhodes'
   s.executables << 'upgrade-rhodes-app'
