@@ -236,10 +236,17 @@ namespace details
 
 std::string rho_cast_helper<std::string, jstring>::operator()(JNIEnv *env, jstring s)
 {
-    const char *ts = env->GetStringUTFChars(s, JNI_FALSE);
-    std::string ret(ts);
-    env->ReleaseStringUTFChars(s, ts);
-    return ret;
+    if(env->IsSameObject(s, NULL) == JNI_TRUE)
+    {
+        //Avoid crash in case of null java reference
+        return std::string();
+    } else
+    {
+        const char *ts = env->GetStringUTFChars(s, JNI_FALSE);
+        std::string ret(ts);
+        env->ReleaseStringUTFChars(s, ts);
+        return ret;
+    }
 }
 
 jhstring rho_cast_helper<jhstring, char const *>::operator()(JNIEnv *env, char const *s)
