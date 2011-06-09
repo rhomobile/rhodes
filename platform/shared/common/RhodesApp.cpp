@@ -1439,15 +1439,16 @@ void rho_free_callbackdata(void* pData)
 
 int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
 {
+    String strCmdLineSecToken;
+    String security_key = "security_token=";
+    String strCmdLine = szCmdLine ? szCmdLine : "";
+
     CRhodesApp::setStartParameters(szCmdLine);
+    LOG(INFO) + "New start params: " + strCmdLine;
 
 	const char* szAppSecToken = get_app_build_config_item("security_token");
     if ( !szAppSecToken || !*szAppSecToken)
         return 1;
-
-    String strCmdLineSecToken;
-	String security_key = "security_token=";
-    String strCmdLine = szCmdLine ? szCmdLine : "";
 
 	int skpos = strCmdLine.find(security_key);
 	if ((String::size_type)skpos != String::npos) 

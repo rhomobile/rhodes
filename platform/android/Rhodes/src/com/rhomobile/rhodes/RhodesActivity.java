@@ -200,18 +200,22 @@ public class RhodesActivity extends BaseActivity {
 		});
 	}
 
-	@Override
-	protected void onNewIntent(Intent intent) {
-	    super.onNewIntent(intent);
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
         Log.d(TAG, "RhodesActivity.onNewIntent()");
+
+        handleStartParams(intent);
+
         {
         	Iterator<RhodesActivityListener> iterator = mListeners.iterator();
         	while (iterator.hasNext()) {
         		iterator.next().onNewIntent(this, intent);
         	}
         }
-	}
-	
+    }
+
 	@Override
 	public void onStart() {
 		super.onStart();
@@ -439,39 +443,46 @@ public class RhodesActivity extends BaseActivity {
 
         Logger.D(TAG, "onServiceConnected: " + name.toShortString());
 
-        Intent intent = getIntent();
-        String startParams = (intent.getData() != null) ? intent.toUri(0) : "";
-        
-        
-        Uri uri = Uri.parse(startParams);
-        String scheme = uri.getScheme();
-        if(startParams.compareTo("") != 0)
+        handleStartParams(getIntent());
+
+		ENABLE_LOADING_INDICATION = !RhoConf.getBool("disable_loading_indication");
+	}
+
+    private void handleStartParams(Intent intent)
+    {
+        String strUri = (intent.getData() != null) ? intent.toUri(0) : "";
+        StringBuilder startParams = new StringBuilder(); 
+
+        if(strUri.length() > 0)
         {
-            startParams = startParams.substring(scheme.length() + 1);
-            if(startParams.startsWith("//"))
-                startParams = startParams.substring(2);
+            Uri uri = Uri.parse(strUri);
+            String authority = uri.getAuthority();
+            String path = uri.getPath();
+            String query = uri.getQuery();
+
+            if (authority != null)
+                startParams.append(authority);
+            if (path != null)
+                startParams.append(path);
+            if (query != null)
+                startParams.append('?').append(query);
         }
-        if (startParams.lastIndexOf("#") >= 0) {
-        	startParams = startParams.substring(0, startParams.lastIndexOf("#"));
-        }
-        if(!RhodesApplication.canStart(startParams))
+        if(!RhodesApplication.canStart(startParams.toString()))
         {
             Logger.E(TAG, "This is hidden app and can be started only with security key.");
             RhodesService.exit();
             return;
         }
 
-        String urlStart = uri.getPath();
-        if (urlStart != null) { 
-		    if ("".compareTo(urlStart) != 0)
-		    {
-		        Logger.D(TAG, "PROCESS URL START: " + urlStart);
-		        RhoConf.setString("start_path", Uri.decode(urlStart));
-		    }
-        }
-
-		ENABLE_LOADING_INDICATION = !RhoConf.getBool("disable_loading_indication");
-	}
+//        String urlStart = uri.getPath();
+//        if (urlStart != null) { 
+//            if ("".compareTo(urlStart) != 0)
+//            {
+//                Logger.D(TAG, "PROCESS URL START: " + urlStart);
+//                RhoConf.setString("start_path", Uri.decode(urlStart));
+//            }
+//        }
+    }
 
 	public static Context getContext() {
 		RhodesActivity ra = RhodesActivity.getInstance();
