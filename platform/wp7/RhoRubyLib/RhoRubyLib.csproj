@@ -52,6 +52,7 @@
       <HintPath>..\ironruby\bin\Silverlight3$(Configuration)\IronRuby.Libraries.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Phone" />
+    <Reference Include="Microsoft.Phone.Controls, Version=7.0.0.0, Culture=neutral, PublicKeyToken=24eec0d8c86cda1e, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Phone.Interop" />
     <Reference Include="Microsoft.Scripting">
       <HintPath>..\ironruby\bin\Silverlight3$(Configuration)\Microsoft.Scripting.dll</HintPath>
@@ -65,9 +66,7 @@
     <Reference Include="System.Windows" />
     <Reference Include="system" />
     <Reference Include="system.Core" />
-    <Reference Include="System.Windows.Controls">
-      <HintPath>C:\Program Files\Microsoft SDKs\Silverlight\v4.0\Libraries\Client\System.Windows.Controls.dll</HintPath>
-    </Reference>
+    <Reference Include="System.Windows.Controls, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Net" />
   </ItemGroup>
