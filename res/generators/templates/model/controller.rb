@@ -4,7 +4,7 @@ require 'helpers/browser_helper'
 class <%= class_name %>Controller < Rho::RhoController
   include BrowserHelper
 
-  #GET /<%= class_name %>
+  # GET /<%= class_name %>
   def index
     @<%= name.downcase.pluralize %> = <%= class_name %>.find(:all)
     render :back => '/app'
@@ -53,5 +53,6 @@ class <%= class_name %>Controller < Rho::RhoController
   def delete
     @<%= name.downcase %> = <%= class_name %>.find(@params['id'])
     @<%= name.downcase %>.destroy if @<%= name.downcase %>
-    redirect :action => :index  end
+    redirect :action => :index  
+  end
 end
