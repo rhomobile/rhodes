@@ -125,6 +125,9 @@
     <Compile Include="rubyext\RhoKernelOps.cs" />
     <Compile Include="rubyext\RhoNativeBar.cs" />
     <Compile Include="rubyext\RhoSyncEngine.cs" />
+    <Compile Include="rubyext\RhoSystem.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="rubyext\RhoWebView.cs" />
     <Compile Include="json\JSONStructIterator.cs" />
     <Compile Include="json\JSONArrayIterator.cs" />

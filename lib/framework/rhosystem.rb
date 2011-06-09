@@ -1,26 +1,26 @@
 #require 'strscan'
 load_assembly 'IronRuby.Libraries', 'IronRuby.StandardLibrary.StringScanner'
 
-module System
-	def self.get_locale
-		"en"
-	end
+#module System
+#	def self.get_locale
+#		"en"
+#	end
 
-	def self.get_property(name)
-		return "WP7" if name == "platform"
-		return "7.0" if name == "os_version"
-		return "us" if name == "country"
-		""
-	end
+#	def self.get_property(name)
+#		return "WP7" if name == "platform"
+#		return "7.0" if name == "os_version"
+#		return "us" if name == "country"
+#		""
+#	end
 
-	def self.open_url(url)
+#	def self.open_url(url)
 		#TODO: open_url
-	end
+#	end
 
-	def self.app_installed?(app_name)
-		return false
-	end
-end
+#	def self.app_installed?(app_name)
+#		return false
+#	end
+#end
 
 module GeoLocation
   def self.set_view_notification(geoview_callback, geoview_callback_data, geoview_timeout_sec)
