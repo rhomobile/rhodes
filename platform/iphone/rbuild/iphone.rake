@@ -231,7 +231,8 @@ def set_default_images(make_bak)
       if File.exists? imag
         if make_bak
            cp imag, ibak unless File.exists? ibak
-        end 
+        end
+        rm_f imag
       end
       #bundlei = File.join($srcdir, defname + '.png')
       #cp appimage, bundlei unless !File.exist? appimage
