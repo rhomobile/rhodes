@@ -18,6 +18,17 @@ Alternatively you may [build](#build-rhosimulator) your own customized version o
 
 To run application in RhoSimulator just run in rhodes or application folder:
 
+    #run RhoSimulator to simulate specific platform:
+    rake run:android:rhosimulator 
+    rake run:iphone:rhosimulator
+    
+    #bbver from build.yml will be used as System.get_property('os_version')
+    rake run:bb:rhosimulator
+    
+    rake run:wm:rhosimulator
+    rake run:wp:rhosimulator
+
+    #run RhoSimulator to simulate 'UNKNOWN' platform:
     rake run:win32:rhosimulator
 
 If you modified Rhodes application sources, just press 'Refresh' in RhoSimulator to reload application, i.e. generally no RhoSimulator restart is required.
