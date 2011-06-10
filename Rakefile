@@ -1,7 +1,7 @@
 require 'find'
 require 'erb'
-#require 'rake/rdoctask'
-require 'rdoc/task'
+require 'rake/rdoctask'
+#require 'rdoc/task'
 require 'digest/sha2'
 require 'rexml/document'
 
@@ -920,8 +920,8 @@ task :switch_app => "config:common" do
 end
 
 
-#Rake::RDocTask.new do |rd|
-RDoc::Task.new do |rd|
+Rake::RDocTask.new do |rd|
+#RDoc::Task.new do |rd|
   rd.main = "README.textile"
   rd.rdoc_files.include("README.textile", "lib/framework/**/*.rb")
 end
