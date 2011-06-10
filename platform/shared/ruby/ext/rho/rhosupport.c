@@ -32,7 +32,7 @@ VALUE __rhoGetCurrentDir(void)
 #ifdef RHODES_EMULATOR
 VALUE __rhoGetRhodesDir(void)
 {
-    return rb_str_new2(rho_rhodesapp_getrhodespath());
+    return rb_str_new2(rho_simconf_getRhodesPath());
 }
 #endif// RHODES_EMULATOR
 
@@ -187,15 +187,18 @@ static VALUE checkRhoBundleInPath(VALUE fname)
     return rb_str_new2(slash1+1);
 }
 
-static VALUE check_extension(VALUE res, VALUE fname)
+static VALUE check_extension(VALUE res, VALUE fname, int nAddExtName)
 {
-    char* szSlash = strchr(RSTRING_PTR(fname), '/');
-    if (!szSlash)
-        szSlash = strchr(RSTRING_PTR(fname), '\\');
-    if (!szSlash)
-        rb_str_append(res,fname);
-    else
-        rb_str_cat(res, RSTRING_PTR(fname), szSlash-RSTRING_PTR(fname));
+    if ( nAddExtName )
+    {
+        char* szSlash = strchr(RSTRING_PTR(fname), '/');
+        if (!szSlash)
+            szSlash = strchr(RSTRING_PTR(fname), '\\');
+        if (!szSlash)
+            rb_str_append(res,fname);
+        else
+            rb_str_cat(res, RSTRING_PTR(fname), szSlash-RSTRING_PTR(fname));
+    }
 
     rb_str_cat2(res,"\\");
     rb_str_append(res,fname);
@@ -211,7 +214,7 @@ static VALUE find_file(VALUE fname)
 
     //RAWLOG_INFO1("find_file: fname: %s", RSTRING_PTR(fname));
 #ifdef RHODES_EMULATOR
-    if ( strncmp(RSTRING_PTR(fname), rho_rhodesapp_getrhodespath(), strlen(rho_rhodesapp_getrhodespath())) == 0 )
+    if ( strncmp(RSTRING_PTR(fname), rho_simconf_getRhodesPath(), strlen(rho_simconf_getRhodesPath())) == 0 )
         res = fname;
     else
 #endif
@@ -247,16 +250,22 @@ static VALUE find_file(VALUE fname)
             {
 #ifdef RHODES_EMULATOR
                 //check for extensions
-                res = rb_str_new2(rho_rhodesapp_getrhodespath() );
+                res = rb_str_new2(rho_simconf_getRhodesPath() );
                 rb_str_cat2(res,"\\lib\\extensions\\");
 
-                res = check_extension(res, fname);
+                res = check_extension(res, fname, 1);
                 if ( !res )
                 {
                     res = rb_str_new2(rho_native_rhopath() );
                     rb_str_cat2(res,"\\extensions\\");
 
-                    res = check_extension(res, fname);
+                    res = check_extension(res, fname,1);
+                }
+
+                if ( !res )
+                {
+                    res = rb_str_new2( rho_simconf_getstring("ext_path") );
+                    res = check_extension(res, fname, 0);
                 }
 
                 if( res )

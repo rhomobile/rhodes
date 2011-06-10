@@ -9,6 +9,7 @@
 #include "ruby/ext/rho/rhoruby.h"
 #include "net/NetRequestImpl.h"
 #include "sync/ClientRegister.h"
+#include "common/RhoFilePath.h"
 
 using namespace rho;
 using namespace rho::common;
@@ -96,7 +97,7 @@ public :
 					m_strRhodesPath = path;
 					free(path);
 				}
-			} else if (wcsncmp(lpszToken, _T("appname"),7)==0) 
+			} /* else if (wcsncmp(lpszToken, _T("appname"),7)==0) 
             {
 				String token = convertToStringA(lpszToken);
 				//parseToken will allocate extra byte at the end of the returned token value
@@ -123,7 +124,7 @@ public :
 					m_strDebugPort = port;
 					free(port);
 				}
-			}
+			} */
 #endif
 			lpszToken = FindOneOf(lpszToken, szTokens);
 		}
@@ -168,7 +169,11 @@ public :
 #endif
 
 		rho_logconf_Init(m_strRootPath.c_str());
-
+        RHOSIMCONF().setAppConfFilePath(CFilePath::join( m_strRootPath, RHO_EMULATOR_DIR"/rhosimconfig.txt").c_str());
+        RHOSIMCONF().loadFromFile();
+        if ( m_strRhodesPath.length() > 0 )
+            RHOSIMCONF().setString("rhodes_path", m_strRhodesPath, false );
+        
         if ( !rho_rhodesapp_canstartapp(g_strCmdLine.c_str(), " /-,") )
         {
 			LOG(INFO) + "This is hidden app and can be started only with security key.";
@@ -184,10 +189,10 @@ public :
 				parseHttpProxyURI(RHOCONF().getString("http_proxy_url"));
 			}
 		}
-        if (m_strDebugHost.length() > 0)
-		    RHOCONF().setString("debug_host", m_strDebugHost, false);
-        if (m_strDebugPort.length() > 0)
-            RHOCONF().setString("debug_port", m_strDebugPort, false);
+        if (RHOSIMCONF().getString("debug_host").length() > 0)
+		    RHOCONF().setString("debug_host", RHOSIMCONF().getString("debug_host"), false);
+        if (RHOSIMCONF().getString("debug_port").length() > 0)
+            RHOCONF().setString("debug_port", RHOSIMCONF().getString("debug_port"), false);
 #endif
         //::SetThreadPriority(GetCurrentThread(),10);
 
@@ -229,7 +234,7 @@ public :
 	    }
 
         rho::common::CRhodesApp::Create(m_strRootPath );
-        RHODESAPP().setRhodesPath(m_strRhodesPath);
+        //RHODESAPP().setRhodesPath(m_strRhodesPath);
 
         DWORD dwStyle = WS_VISIBLE;
 
@@ -238,7 +243,7 @@ public :
 #endif
         // Create the main application window
 #ifdef RHODES_EMULATOR
-        m_appWindow.Initialize(m_strAppNameW.c_str());
+        m_appWindow.Initialize(convertToStringW(RHOSIMCONF().getString("app_name")).c_str());
 #else
         String strTitle = RHODESAPP().getAppTitle();
         m_appWindow.Create(NULL, CWindow::rcDefault, convertToStringW(strTitle).c_str(), dwStyle);
@@ -481,8 +486,8 @@ public :
 
 private:
     CMainWindow m_appWindow;
-    rho::String m_strRootPath, m_strRhodesPath, m_strDebugHost, m_strDebugPort;
-    rho::StringW m_strAppNameW;
+    rho::String m_strRootPath, m_strRhodesPath;//, m_strDebugHost, m_strDebugPort;*/
+    //rho::StringW m_strAppNameW;
 	int m_nRestarting;
 
 #ifdef OS_WINDOWS

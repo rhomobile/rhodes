@@ -176,12 +176,12 @@ void RhoSettings::saveChangesToString(String& strData)
     }
 }
 
-String RhoSettings::getString(const char* szName){
+const String& RhoSettings::getString(const char* szName){
 	std::map<String,String>::iterator it = m_mapValues.find(szName);
 	if ( it != m_mapValues.end() )
         return it->second;
 
-    return String();
+    return m_EmptyString;
 }
 
 String RhoSettings::getPath(const char* szName){

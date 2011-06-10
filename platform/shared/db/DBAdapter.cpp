@@ -652,7 +652,7 @@ void CDBAdapter::executeBatch(const char* szSql, CDBError& error)
 void CDBAdapter::createSchema()
 {
 #ifdef RHODES_EMULATOR
-    String strPath = CFilePath::join( RHODESAPP().getRhodesPath(), "platform/shared/db/res/db/syncdb.schema" );
+    String strPath = CFilePath::join( RHOSIMCONF().getRhodesPath(), "platform/shared/db/res/db/syncdb.schema" );
     CFilePath oPath(strPath);
 #else
     CFilePath oPath(m_strDbPath);
@@ -678,7 +678,7 @@ void CDBAdapter::createTriggers()
 {
     char* errmsg = 0;
 #ifdef RHODES_EMULATOR
-    String strPath = CFilePath::join( RHODESAPP().getRhodesPath(), "platform/shared/db/res/db/syncdb.triggers" );
+    String strPath = CFilePath::join( RHOSIMCONF().getRhodesPath(), "platform/shared/db/res/db/syncdb.triggers" );
     CFilePath oPath(strPath);
 #else
     CFilePath oPath(m_strDbPath);

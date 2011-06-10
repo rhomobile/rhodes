@@ -21,7 +21,7 @@ protected:
 
     static CRhodesAppBase* m_pInstance;
 
-    String m_strRhoRootPath, m_strBlobsDirPath, m_strDBDirPath, m_strAppRootPath, m_strRhodesPath;
+    String m_strRhoRootPath, m_strBlobsDirPath, m_strDBDirPath, m_strAppRootPath;//, m_strRhodesPath;
     String m_strHomeUrl;
 
     CRhodesAppBase(const String& strRootPath);
@@ -33,8 +33,8 @@ public:
     String resolveDBFilesPath(const String& strFilePath);
     String getRelativeDBFilesPath(const String& strFilePath);
     const String& getRhoRootPath(){return m_strRhoRootPath;}
-    const String& getRhodesPath(){return m_strRhodesPath;}
-    void setRhodesPath(const String& path){m_strRhodesPath = path;}
+    //const String& getRhodesPath(){return m_strRhodesPath;}
+    //void setRhodesPath(const String& path){m_strRhodesPath = path;}
     const String& getAppRootPath(){return m_strAppRootPath;}
     const String& getBlobsDirPath(){return m_strBlobsDirPath; }
     const String& getDBDirPath(){return m_strDBDirPath; }
@@ -61,7 +61,7 @@ extern "C" {
 
 const char* rho_native_rhopath();
 const char* rho_rhodesapp_getplatform();
-const char* rho_rhodesapp_getrhodespath();
+//const char* rho_rhodesapp_getrhodespath();
 void rho_file_recursive_createdir(const char* szPath, const char* szBasePath);
 
 int rho_unzip_file(const char* szZipPath);
