@@ -1186,6 +1186,14 @@ public class RhodesService extends Service {
 			return;
 		}
 
+        String phoneId = extras.getString("phone_id");
+        if (phoneId != null && phoneId.length() > 0 &&
+                !phoneId.equals(this.getPhoneId().toString())) {
+            Logger.W(TAG, "Push message for another phone_id: " + phoneId);
+            Logger.W(TAG, "Current phone_id: " + this.getPhoneId().toString());
+            return;
+        }
+
         StringBuilder builder = new StringBuilder();
         Set<String> keys = extras.keySet();
 
@@ -1196,6 +1204,9 @@ public class RhodesService extends Service {
                 continue;
             if(key.equals("collapse_key"))
                 continue;
+            if(key.equals("phone_id")) {
+                continue;
+            }
 
             Logger.D(TAG, "PUSH item: " + key);
             Object value = extras.get(key);
