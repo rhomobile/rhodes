@@ -25,7 +25,7 @@ public class SSLImpl {
 	private static SSLSocketFactory factory = null;
 	
 	private SSLSocket sock;
-	private int sockfd;
+	//private int sockfd;
 	
 	private InputStream is;
 	private OutputStream os;
@@ -72,15 +72,20 @@ public class SSLImpl {
 	
 	public boolean connect(int fd, boolean sslVerifyPeer) {
 		try {
-			sockfd = fd;
-			RhoSockAddr remote = getRemoteSockAddr(sockfd);
-			Socket s = new RhoSocket(sockfd, remote);
-			SSLSocketFactory f = getFactory(sslVerifyPeer);
-			sock = (SSLSocket)f.createSocket(s, remote.host.toString(), remote.port, true);
-			sock.setUseClientMode(true);
-			os = sock.getOutputStream();
-			is = sock.getInputStream();
-			return true;
+            RhoSockAddr remote = getRemoteSockAddr(fd);
+            Socket s = new RhoSocket(fd, remote);
+            SSLSocketFactory f = getFactory(sslVerifyPeer);
+
+            SSLSocket aSock = (SSLSocket)f.createSocket(s, remote.host.toString(), remote.port, true);
+            aSock.setUseClientMode(true);
+
+            synchronized (this) {
+                sock = aSock;
+                os = sock.getOutputStream();
+                is = sock.getInputStream();
+                //sockfd = fd;
+            }
+            return true;
 		}
 		catch (Exception e) {
 			reportFail("connect", e);
@@ -91,11 +96,16 @@ public class SSLImpl {
 	
 	public void shutdown() {
 		try {
-			if (sock != null)
-				sock.close();
-		}
-		catch (IOException e) {
-		    Logger.I(TAG, "shutdown fails: IOException: " + e.getMessage());
+			if (sock != null) {
+                synchronized (this) {
+                    if (sock != null) {
+                        sock.close();
+                        sock = null;
+                        os = null;
+                        is = null;
+                    }
+                }
+			}
 		}
 		catch (Exception e) {
 			reportFail("shutdown", e);
@@ -104,30 +114,43 @@ public class SSLImpl {
 	
 	public boolean send(byte[] data) {
 		try {
-			if (os == null)
-				return false;
-			os.write(data);
-			return true;
+			if (os != null) {
+                OutputStream aOs = null;
+                synchronized (this) {
+                    if (os != null)
+                        aOs = os;
+                }
+                if (aOs != null) {
+                    aOs.write(data);
+                    return true;
+                }
+			}
 		}
 		catch (Exception e) {
 			reportFail("send", e);
-			return false;
 		}
+        return false;
 	}
 	
 	public int recv(byte[] data) {
 		try {
-			if (is == null)
-				return -1;
-			
-			int size = data.length;
-			int n = is.read(data, 0, size);
-			return n;
+			if (is != null) {
+                InputStream aIs = null;
+                synchronized (this) {
+                    if (is != null)
+                        aIs = is;
+                }
+                if (aIs != null) {
+                    int size = data.length;
+                    int n = is.read(data, 0, size);
+                    return n;
+                }
+			}
 		}
 		catch (Exception e) {
 			reportFail("recv", e);
-			return -1;
 		}
-	}
-	
+        return -1;
+    }
+
 }
