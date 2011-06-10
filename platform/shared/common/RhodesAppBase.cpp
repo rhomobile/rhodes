@@ -150,6 +150,9 @@ const char* rho_rhodesapp_getplatform()
     if ( strPlatform.compare("wm") == 0 )
         return "WINDOWS";
 
+    if ( strPlatform.compare("wp") == 0 )
+        return "WP7";
+
     if ( strPlatform.compare("android") == 0 )
         return "ANDROID";
 
