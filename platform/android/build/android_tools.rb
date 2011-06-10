@@ -70,7 +70,7 @@ module_function :kill_adb_and_emulator
 
 def logcat(device_flag = '-e', log_path = $applog_path)
   if !log_path.nil?
-    rm_rf log_path unless !File.exist(log_path)
+    rm_rf log_path if File.exist?(log_path)
     Thread.new { Jake.run($adb, [device_flag, 'logcat', '>>', log_path], nil, true) }
   end
 end
