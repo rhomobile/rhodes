@@ -169,11 +169,15 @@ public :
 #endif
 
 		rho_logconf_Init(m_strRootPath.c_str());
+
+#ifdef RHODES_EMULATOR
         RHOSIMCONF().setAppConfFilePath(CFilePath::join( m_strRootPath, RHO_EMULATOR_DIR"/rhosimconfig.txt").c_str());
         RHOSIMCONF().loadFromFile();
         if ( m_strRhodesPath.length() > 0 )
             RHOSIMCONF().setString("rhodes_path", m_strRhodesPath, false );
-        
+        RHOCONF().setString( "rhosim_platform", RHOSIMCONF().getString( "platform"), false);
+#endif
+
         if ( !rho_rhodesapp_canstartapp(g_strCmdLine.c_str(), " /-,") )
         {
 			LOG(INFO) + "This is hidden app and can be started only with security key.";
@@ -189,10 +193,13 @@ public :
 				parseHttpProxyURI(RHOCONF().getString("http_proxy_url"));
 			}
 		}
+#ifdef RHODES_EMULATOR
         if (RHOSIMCONF().getString("debug_host").length() > 0)
 		    RHOCONF().setString("debug_host", RHOSIMCONF().getString("debug_host"), false);
         if (RHOSIMCONF().getString("debug_port").length() > 0)
             RHOCONF().setString("debug_port", RHOSIMCONF().getString("debug_port"), false);
+#endif
+
 #endif
         //::SetThreadPriority(GetCurrentThread(),10);
 
