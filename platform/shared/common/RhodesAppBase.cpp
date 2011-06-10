@@ -153,11 +153,11 @@ const char* rho_rhodesapp_getplatform()
 	return "UNKNOWN";
 #endif			
 }
-
+/*
 const char* rho_rhodesapp_getrhodespath()
 {
     return RHODESAPPBASE().getRhodesPath().c_str();
-}
+}*/
 
 void rho_file_recursive_createdir(const char* szPath, const char* szBasePath)
 {

@@ -1757,6 +1757,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\shared\common\RhoSimConf.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\common\RhoSimConf.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\shared\common\RhoStd.h"
 				>
 			</File>

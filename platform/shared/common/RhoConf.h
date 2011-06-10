@@ -16,9 +16,10 @@ class RhoSettings{
     Hashtable<String,String> m_mapValues;
     Hashtable<String,String> m_mapChangedValues;
     HashtablePtr<String,Vector<String>* > m_mapConflictedValues;
+    String m_EmptyString;
 
 public:
-    String getString(const char* szName);
+    const String& getString(const char* szName);
     String getPath(const char* szName);
     int    getInt(const char* szName);
     bool   getBool(const char* szName);
@@ -78,5 +79,9 @@ int   rho_conf_is_property_exists(const char* name);
 #ifdef __cplusplus
 }
 #endif //__cplusplus
+
+#ifdef RHODES_EMULATOR
+#include "RhoSimConf.h"
+#endif //RHODES_EMULATOR
 
 #endif //_RHOCONF_H_

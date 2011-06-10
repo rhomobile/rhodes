@@ -400,16 +400,35 @@ namespace "run" do
                 exit 1
             end
             
+            sim_conf = "rhodes_path='#{$startdir}'\r\n"
+            sim_conf += "app_name='#{$appname}'\r\n"
+            sim_conf += "debug_port=#{$debug_port}\r\n"
+            sim_conf += "debug_host='127.0.0.1'\r\n"
+            
+            #check gem extensions
+            $app_config["extensions"].each do |extname|
+                begin
+                    $rhodes_extensions = nil
+                    require extname
+                    extpath = $rhodes_extensions[0] unless $rhodes_extensions.nil?
+                    
+                    sim_conf += "ext_path='#{extpath}'\r\n" if extpath && extpath.length() > 0 
+                rescue Exception => e
+                end
+            end
+            
+            fdir = File.join($app_path, 'rhosimulator')
+            mkdir fdir unless File.exist?(fdir)
+            
+            fname = File.join(fdir, 'rhosimconfig.txt')
+            #puts "#{fname}"
+	        File.open(fname, "wb") do |fconf|
+	            fconf.write( sim_conf )
+	        end
+                        
 		    args = []
 		    args << "-approot='#{$app_path}'"
-		    args << "-rhodespath='#{$startdir}'"
-            args << "-appname='#{$appname}'"		    
-            
-		    if $debug_port
-                args << "-debugport=#{$debug_port}"
-                args << "-debughost='127.0.0.1'"
-            end
-                
+		    
 		    Jake.run2 path, args, {:nowait => true}
                 
 		end
