@@ -1,6 +1,7 @@
 #include "RhodesAppBase.h"
 #include "common/RhoFilePath.h"
 #include "common/RhoFile.h"
+#include "common/RhoConf.h"
 #include "unzip/unzip.h"
 
 namespace rho {
@@ -40,7 +41,7 @@ void CRhodesAppBase::initAppUrls()
 	m_strDBDirPath = getRhoRootPath() + "db";
 
     m_strAppRootPath = getRhoRootPath() + "apps";
-    m_strRhodesPath = "";
+    //m_strRhodesPath = "";
 #else
     m_strBlobsDirPath = getRhoRootPath() + RHO_EMULATOR_DIR"/db/db-files";
     m_strDBDirPath = getRhoRootPath() + RHO_EMULATOR_DIR"/db";
@@ -137,6 +138,28 @@ int rho_unzip_file(const char* szZipPath)
     return res == ZR_OK ? 1 : 0;
 }
 
+#ifdef RHODES_EMULATOR
+
+const char* rho_rhodesapp_getplatform()
+{
+    rho::String strPlatform = RHOSIMCONF().getString("platform");
+
+    if ( strPlatform.compare("bb") == 0 || strPlatform.compare("bb6") == 0 )
+        return "Blackberry";
+    
+    if ( strPlatform.compare("wm") == 0 || strPlatform.compare("win32") == 0 )
+        return "WINDOWS";
+
+    if ( strPlatform.compare("android") == 0 )
+        return "ANDROID";
+
+    if ( strPlatform.compare("iphone") == 0 )
+        return "APPLE";
+
+    return "UNKNOWN";
+}    
+#else
+
 const char* rho_rhodesapp_getplatform()
 {
 #if defined(OS_MACOSX)
@@ -153,6 +176,8 @@ const char* rho_rhodesapp_getplatform()
 	return "UNKNOWN";
 #endif			
 }
+#endif  //!RHODES_EMULATOR
+
 /*
 const char* rho_rhodesapp_getrhodespath()
 {
