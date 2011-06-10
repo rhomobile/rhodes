@@ -38,7 +38,7 @@ class Jake
 
   def self.get_absolute(path)
     return File.expand_path(path) if File.exists?(path)
-    currentdir = pwd
+    currentdir = Dir.pwd
     
     path = currentdir + "/" + path
   
@@ -210,13 +210,13 @@ class Jake
 
   	wd = options[:directory]
   	if not wd.nil?
-      currentdir = pwd()
-      chdir wd
+      currentdir = Dir.pwd()
+      Dir.chdir wd
     end
 
     cmdstr = argv.map { |x| x =~ / |\|/ ? '"' + x + '"' : x }.join(' ')
 
-    puts "PWD: " + pwd
+    puts "PWD: " + Dir.pwd
     puts "CMD: " + cmdstr
     $stdout.flush
 
@@ -256,7 +256,7 @@ class Jake
     end
 
     if not wd.nil?
-      chdir currentdir
+      Dir.chdir currentdir
     end
 
     retval
@@ -278,7 +278,7 @@ class Jake
 
       p = Pathname.new(src)
     src = p.realpath
-    currentdir = pwd()
+    currentdir = Dir.pwd()
     src = src.to_s.gsub(/"/,"")
   
     args = Array.new
@@ -286,9 +286,9 @@ class Jake
     args << "xf"
     args << src.to_s
   
-    chdir targetdir
+    Dir.chdir targetdir
     puts run(cmd,args)
-    chdir currentdir
+    Dir.chdir currentdir
   end
   
   def self.jarfilelist(target)
@@ -344,10 +344,10 @@ class Jake
     javabin = $config["env"]["paths"]["java"]
     cmd = jdehome + "/bin/rapc.exe"
     
-    currentdir = pwd()
+    currentdir = Dir.pwd()
   
   
-    chdir destdir
+    Dir.chdir destdir
   
     if output and title and version and vendor
       f = File.new(output + ".rapc", "w")
@@ -403,7 +403,7 @@ class Jake
     cmd.gsub!(/\//,"\\")
     outputstring = run(cmd, args)
     puts outputstring unless $? == 0
-    chdir currentdir
+    Dir.chdir currentdir
   
   end
   
