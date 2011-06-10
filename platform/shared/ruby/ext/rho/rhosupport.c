@@ -207,9 +207,27 @@ static VALUE check_extension(VALUE res, VALUE fname, int nAddExtName)
     return eaccess(RSTRING_PTR(res), R_OK) == 0 ? res : 0;
 }
 
+static VALUE check_app_file_exist(VALUE dir, VALUE fname1, const char* szPlatform)
+{
+    //RAWLOG_INFO1("find_file: check dir %s", RSTRING_PTR(dir));
+    VALUE res = rb_str_dup(dir);
+    rb_str_cat(res,"/",1);
+    rb_str_cat(res,RSTRING_PTR(fname1),RSTRING_LEN(fname1));
+    if (szPlatform)
+    {
+        rb_str_cat(res,".",1);
+        rb_str_cat(res,szPlatform,strlen(szPlatform));
+    }
+
+    rb_str_cat(res,RHO_RB_EXT,strlen(RHO_RB_EXT));
+    //RAWLOG_INFO1("find_file: check file: %s", RSTRING_PTR(res));
+
+    return eaccess(RSTRING_PTR(res), R_OK) == 0 ? res : 0;
+}
+
 static VALUE find_file(VALUE fname)
 {
-    VALUE res;
+    VALUE res = 0;
     int nOK = 0;
 
     //RAWLOG_INFO1("find_file: fname: %s", RSTRING_PTR(fname));
@@ -234,14 +252,15 @@ static VALUE find_file(VALUE fname)
         if (RARRAY_LEN(load_path)>1){
             for( ; i < RARRAY_LEN(load_path); i++ ){
                 VALUE dir = RARRAY_PTR(load_path)[i];
-                //RAWLOG_INFO1("find_file: check dir %s", RSTRING_PTR(dir));
-                res = rb_str_dup(dir);
-                rb_str_cat(res,"/",1);
-                rb_str_cat(res,RSTRING_PTR(fname1),RSTRING_LEN(fname1));
-                rb_str_cat(res,RHO_RB_EXT,strlen(RHO_RB_EXT));
-                //RAWLOG_INFO1("find_file: check file: %s", RSTRING_PTR(res));
 
-                if( eaccess(RSTRING_PTR(res), R_OK) == 0 ){
+#ifdef RHODES_EMULATOR
+                res = check_app_file_exist(dir, fname1, rho_simconf_getstring("platform"));
+#endif
+                if ( !res )
+                    res = check_app_file_exist(dir, fname1, 0 );
+
+                if (res)
+                {
                     nOK = 1;
                     break;
                 }

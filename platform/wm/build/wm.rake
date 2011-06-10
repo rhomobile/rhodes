@@ -381,8 +381,11 @@ namespace "run" do
             puts "log_file=" + File.join($app_path, "rhosimulator", $log_file)
         end
     end
-    
+
+  
 	namespace "win32" do
+	
+	    
 	    desc "Run application on RhoSimulator"
 		task :rhosimulator => "config:common" do
             $appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"] 
@@ -404,6 +407,7 @@ namespace "run" do
             sim_conf += "app_name='#{$appname}'\r\n"
             sim_conf += "debug_port=#{$debug_port}\r\n"
             sim_conf += "debug_host='127.0.0.1'\r\n"
+            sim_conf += $rhosim_config if $rhosim_config
             
             #check gem extensions
             $app_config["extensions"].each do |extname|
@@ -442,6 +446,13 @@ namespace "run" do
         end
 		
 	end
+
+    namespace "wm" do    
+        task :rhosimulator => "config:common" do    
+            $rhosim_config = "platform='wm'\r\n"
+            Rake::Task["run:win32:rhosimulator"].invoke            
+        end
+    end
 
   namespace "win32" do
 
