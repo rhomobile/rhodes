@@ -182,19 +182,20 @@ end
 namespace "config" do
   task :set_bb_platform do
     $current_platform = "bb"
+    
   end
   
-  task :bb => [:set_bb_platform, "config:common"] do
-
-    #$rubypath = "res/build-tools/RhoRuby.exe" #path to RhoRuby
-
+  task :read_bb_version do
     $bbver = $app_config["bbver"].to_s
     unless $app_config[$current_platform] && $app_config[$current_platform]["ignore_bb6_suffix"]  && $app_config[$current_platform]['ignore_bb6_suffix'].to_s == '1'
         $bb6 = true if $bbver.split('.')[0].to_i >= 6
         
         puts "use bb6 suffix" if $bb6
     end    
-    
+  end
+      
+  task :bb => [:set_bb_platform, "config:common", :read_bb_version] do
+
     use_sqlite = $app_config[$current_platform] && $app_config[$current_platform]['use_sqlite']  && $app_config[$current_platform]['use_sqlite'].to_s == '1'
     $use_sqlite = $bbver.split('.')[0].to_i >= 5 && use_sqlite ? true : false
     puts "$use_sqlite : #{$use_sqlite}"
@@ -1045,6 +1046,19 @@ namespace "run" do
         stopsim if $bbver.split('.')[0].to_i < 5
         stopmds
     end  
+
+    task :rhosimulator => ["config:set_bb_platform", "config:common", "config:read_bb_version"] do
+    
+        if $bb6
+            $rhosim_config = "platform='bb6'\r\n"
+        else
+            $rhosim_config = "platform='bb'\r\n"            
+        end    
+
+        $rhosim_config += "os_version='#{$bbver}'\r\n"
+        
+        Rake::Task["run:win32:rhosimulator"].invoke
+    end
 
   end
 

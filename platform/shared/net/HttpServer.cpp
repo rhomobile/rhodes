@@ -1,6 +1,7 @@
 #include "net/HttpServer.h"
 #include "common/RhodesApp.h"
 #include "common/RhoFilePath.h"
+#include "common/RhoConf.h"
 #include "net/URI.h"
 #include "ruby/ext/rho/rhoruby.h"
 
@@ -931,7 +932,28 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
     if (verbose) RAWTRACE1("Sending file %s...", fullPath.c_str());
     
     struct stat st;
-    if (stat(fullPath.c_str(), &st) != 0 || !S_ISREG(st.st_mode)) {
+    bool bCheckExist = true;
+#ifdef RHODES_EMULATOR
+    String strPlatform = RHOSIMCONF().getString("platform");
+    if ( strPlatform.length() > 0 )
+    {
+        String fullPath1 = fullPath;
+        int nDot = fullPath1.rfind('.');
+        if ( nDot >= 0 )
+            fullPath1.insert(nDot, String(".") + strPlatform);
+        else
+            fullPath1 += String(".") + strPlatform;
+
+        if (stat(fullPath1.c_str(), &st) == 0 && S_ISREG(st.st_mode))
+        {
+            fullPath = fullPath1;
+            bCheckExist = false;
+        }
+    }
+
+#endif
+
+    if ( bCheckExist && (stat(fullPath.c_str(), &st) != 0 || !S_ISREG(st.st_mode))) {
         RAWLOG_ERROR1("The file %s was not found", path.c_str());
         String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + path + " was not found.</font></html>";
         send_response(create_response("404 Not Found",error));

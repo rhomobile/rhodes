@@ -11,7 +11,22 @@ elsif defined?( RHODES_EMULATOR )
 	    def eval_compiled_file(fname, bind)
 	        require 'erb'
 	        
+	        rhosim_platform = Rho::RhoConfig.rhosim_platform
+	        if rhosim_platform && rhosim_platform.length() > 0 
+	            dot = fname.rindex('.')
+	            
+	            if dot
+	                fname1 = fname.dup
+                    fname1.insert(dot, "." + rhosim_platform )
+	            else
+	                fname1 = fname + "."  + rhosim_platform
+	            end
+	            
+                fname = fname1 if File.exist?(fname1)	            
+	        end
+
 	        puts "eval_compiled_file : #{fname}"
+	        
 	        strFile = IO.read(fname)
 	        code = ERB.new(strFile).src
 	        

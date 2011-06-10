@@ -2,6 +2,7 @@
 #include "ruby/ext/rho/rhoruby.h"
 #include "sync/ClientRegister.h"
 #include "common/RhodesApp.h"
+#include "common/RhoConf.h"
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoSystem"
@@ -13,6 +14,24 @@ extern VALUE rho_sys_has_network();
 extern VALUE rho_sys_get_locale();
 extern int rho_sys_get_screen_width();
 extern int rho_sys_get_screen_height();
+#ifdef RHODES_EMULATOR
+int rho_simimpl_get_property(char* szPropName, VALUE* resValue)
+{
+	if (strcasecmp("os_version",szPropName) == 0)
+	{
+        *resValue = rho_ruby_create_string( RHOSIMCONF().getString("os_version").c_str());
+		return 1;
+	}
+
+	if (strcasecmp("is_emulator",szPropName) == 0)
+    {
+        *resValue = rho_ruby_create_boolean(1);
+        return 1;
+    }
+
+    return 0;
+}
+#endif
 
 VALUE rho_sys_get_property(char* szPropName) 
 {
@@ -20,6 +39,11 @@ VALUE rho_sys_get_property(char* szPropName)
         return rho_ruby_get_NIL();
     
     VALUE res;
+#ifdef RHODES_EMULATOR
+    if (rho_simimpl_get_property(szPropName, &res))
+        return res;
+#endif
+
     if (rho_sysimpl_get_property(szPropName, &res))
         return res;
 

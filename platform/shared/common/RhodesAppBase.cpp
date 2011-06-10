@@ -147,7 +147,7 @@ const char* rho_rhodesapp_getplatform()
     if ( strPlatform.compare("bb") == 0 || strPlatform.compare("bb6") == 0 )
         return "Blackberry";
     
-    if ( strPlatform.compare("wm") == 0 || strPlatform.compare("win32") == 0 )
+    if ( strPlatform.compare("wm") == 0 )
         return "WINDOWS";
 
     if ( strPlatform.compare("android") == 0 )
