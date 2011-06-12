@@ -1,5 +1,14 @@
 #
 
+def kill_detool
+  if RUBY_PLATFORM =~ /windows|cygwin|mingw/
+    # Windows
+    `taskkill /F /IM detool.exe`
+  else
+    `killall -9 detool`
+  end
+end
+
 def sign (cabfile)	
 	puts "Singing .cab file"
 	
@@ -55,6 +64,12 @@ namespace "config" do
     $cabwiz = "cabwiz" if $cabwiz.nil?
     $sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
     $sdk = $app_config["wmsdk"] unless $app_config["wmsdk"].nil?
+
+    if $app_config["wm"].nil?
+      $port = "11000"
+    else
+      $port = $app_config["wm"]["logport"].nil? ? "11000" : $app_config["wm"]["logport"] 
+    end
 
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
 
@@ -299,9 +314,12 @@ namespace "run" do
 
     desc "Build and run on WM6 emulator"
     task :wm => ["device:wm:production"] do
+          # kill all running detool
+          kill_detool
+
    	  cd $startdir + "/res/build-tools"
 	  detool = "detool.exe"    
-	  args   = [ 'emu', '"Windows Mobile 6 Professional Emulator"', $appname, $srcdir, $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe" ]
+	  args   = [ 'emu', '"Windows Mobile 6 Professional Emulator"', $appname, $srcdir, $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe" , $port]
 	  puts "\nStarting application on the WM6 emulator\n\n"
 	  log_file = gelLogPath
 
@@ -322,38 +340,47 @@ namespace "run" do
 
     desc "Build and run on the Windows Phone"
     task :device => ["device:wm:production"] do
+          # kill all running detool
+          kill_detool
+
    	  cd $startdir + "/res/build-tools"
 	  detool = "detool.exe"    
-	  args   = [ 'dev', $appname, $srcdir, $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe" ]
+	  args   = [ 'dev', $appname, $srcdir, $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe", $port ]
 	  puts "\nStarting application on the device"
 	  puts "Please, connect you device via ActiveSync.\n\n"
 
 	  Thread.new { 
-            Jake.run(detool,['log', log_file])
+            Jake.run(detool, ['log', log_file])
           }
 
 	  Thread.new { 
-            Jake.run(detool,args)
+            Jake.run(detool, args)
           }
     end
 
-  namespace "device" do
-		desc "Build, install .cab  and run on the Windows Phone"
-		task :cab => ["device:wm:production"] do
-   			cd $startdir + "/res/build-tools"
-			detool = "detool.exe"    
-			args   = ['devcab', $targetdir + '/' +  $appname + ".cab", $appname]
-			puts "\nStarting application on the device"
-			puts "Please, connect you device via ActiveSync.\n\n"
-			Jake.run(detool,args)
-		end
-  end
+    namespace "device" do
+	desc "Build, install .cab  and run on the Windows Phone"
+	task :cab => ["device:wm:production"] do
+            # kill all running detool
+            kill_detool
+
+   	    cd $startdir + "/res/build-tools"
+	    detool = "detool.exe"    
+	    args   = ['devcab', $targetdir + '/' +  $appname + ".cab", $appname, $port]
+	    puts "\nStarting application on the device"
+	    puts "Please, connect you device via ActiveSync.\n\n"
+	    Jake.run(detool,args)
+        end
+    end
 
     desc "Build, install .cab and run on WM6 emulator"
     task :cab => ["device:wm:production"] do
+          # kill all running detool
+          kill_detool
+
   	  cd $startdir + "/res/build-tools"
 	  detool = "detool.exe"
-	  args   = ['emucab', '"Windows Mobile 6 Professional Emulator"', $targetdir + '/' +  $appname + ".cab", $appname]
+	  args   = ['emucab', '"Windows Mobile 6 Professional Emulator"', $targetdir + '/' +  $appname + ".cab", $appname, $port]
 	  puts "\nStarting application on the WM6 emulator\n\n"
 	  Jake.run(detool,args)
     end
@@ -375,16 +402,15 @@ namespace "run" do
     end
   end
 
-	namespace "rhosimulator" do
-        task :get_log => "config:common" do
+  namespace "rhosimulator" do
+    task :get_log => "config:common" do
             $log_file = $app_config["applog"].nil? ? "applog.txt" : $app_config["applog"] 	    
             puts "log_file=" + File.join($app_path, "rhosimulator", $log_file)
-        end
     end
+  end
 
   
-	namespace "win32" do
-	
+  namespace "win32" do
 	    
 	    desc "Run application on RhoSimulator"
 		task :rhosimulator => "config:common" do
@@ -443,16 +469,15 @@ namespace "run" do
             $debug_port = args[:debug_port].to_i
             Rake::Task["run:win32:rhosimulator"].invoke
                     
-        end
-		
-	end
+        end		
+  end
 
-    namespace "wm" do    
-        task :rhosimulator => "config:common" do    
-            $rhosim_config = "platform='wm'\r\n"
-            Rake::Task["run:win32:rhosimulator"].invoke            
-        end
+  namespace "wm" do    
+    task :rhosimulator => "config:common" do    
+       $rhosim_config = "platform='wm'\r\n"
+       Rake::Task["run:win32:rhosimulator"].invoke            
     end
+  end
 
   namespace "win32" do
 
