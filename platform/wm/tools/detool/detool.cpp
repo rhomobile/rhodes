@@ -604,12 +604,12 @@ copyBundleFailure:
 	return EXIT_FAILURE;
 }
 
-void startLogServer( TCHAR * log_file ) 
+void startLogServer( TCHAR * log_file, TCHAR* log_port ) 
 {
 	// Declare and initialize variables
 	WSADATA wsaData;
 	int iResult;
-	LogServer logSrv(log_file);
+	LogServer logSrv(log_file, log_port);
 
 	// Initialize Winsock
 	iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -633,6 +633,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	TCHAR *bundle_path = NULL;
 	TCHAR *app_exe = NULL;
 	TCHAR *log_file = NULL;
+	TCHAR *log_port = NULL;
 	TCHAR params_buf[MAX_PATH + 16];
 	WIN32_FIND_DATAW findData;
 	int new_copy = 0;
@@ -646,28 +647,33 @@ int _tmain(int argc, _TCHAR* argv[])
 			app_name    = argv[3];
 			bundle_path = argv[4];
 			app_exe     = argv[5];
+			log_port    = argv[6];
 			deploy_type = DEPLOY_EMU;
 		}
 		if (strcmp(T2A(argv[1]), "emucab") == 0) {
 			emu_name = argv[2];
 			cab_file = argv[3];
 			app_name = argv[4];
+			log_port = argv[5];
 			deploy_type = DEPLOY_EMUCAB;
 		}
 
 		if (strcmp(T2A(argv[1]), "dev") == 0) {
-			app_name = argv[2];
+			app_name    = argv[2];
 			bundle_path = argv[3];
-			app_exe = argv[4];
+			app_exe     = argv[4];
+			log_port    = argv[5];
 			deploy_type = DEPLOY_DEV;
 		}
-	} else if (argc == 4) { //assuming that need to deploy and start on device
+	} else if (argc == 5) { //assuming that need to deploy and start on device
 		cab_file = argv[2];
 		app_name = argv[3];
+		log_port = argv[4];
 		deploy_type = DEPLOY_DEVCAB;
-	} else if (argc == 3) { // log
+	} else if (argc == 4) { // log
 		if (strcmp(T2A(argv[1]), "log") == 0) {
 			log_file = argv[2];
+			log_port = argv[3];
 			app_name = _T("");
 			deploy_type = DEPLOY_LOG;
 		}
@@ -765,7 +771,12 @@ int _tmain(int argc, _TCHAR* argv[])
 				_tcscat(params_buf, _T("\\"));
 				_tcscat(params_buf, app_name);
 				_tcscat(params_buf, _T(".exe"));
-				if(!wceRunProcess(T2A(params_buf), NULL)) {
+
+				TCHAR params[128];
+				_tcscpy(params, _T("-log="));
+				_tcscat(params, log_port);
+
+				if(!wceRunProcess(T2A(params_buf), T2A(params))) {
 					_tprintf( TEXT("FAILED\n"));
 					goto stop_emu_deploy;
 				}
@@ -778,6 +789,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 			ExitProcess(EXIT_SUCCESS);
 		}
+
+//		emu "Windows Mobile 6 Professional Emulator" RhodesApplication1 c:/android/runtime-rhostudio.product/RhodesApplication1/bin/RhoBundle "C:/Android/rhodes/platform/wm/bin/Windows Mobile 6 Professional SDK (ARMV4I)/rhodes/Release/RhodesApplication1.exe" 11000
 	}
 	if (deploy_type == DEPLOY_EMUCAB) {
 		if (SUCCEEDED(CoInitializeEx(NULL, COINIT_MULTITHREADED))) {
@@ -835,7 +848,12 @@ int _tmain(int argc, _TCHAR* argv[])
 			_tcscat(params_buf, _T("\\"));
 			_tcscat(params_buf, app_name);
 			_tcscat(params_buf, _T(".exe"));
-			if(!wceRunProcess(T2A(params_buf), NULL)) {
+
+			TCHAR params[128];
+			_tcscpy(params, _T("-log="));
+			_tcscpy(params, log_port);
+
+			if(!wceRunProcess(T2A(params_buf), T2A(params))) {
 				_tprintf( TEXT("FAILED\n"));
 				goto stop_emu_deploy;
 			}
@@ -924,8 +942,11 @@ int _tmain(int argc, _TCHAR* argv[])
 		_tcscat(params_buf, _T(".exe"));
 		_tprintf( TEXT("%s\n"), params_buf);
 
-		
-		if(!wceRunProcess(T2A(params_buf), NULL)) {
+		TCHAR params[128];
+		_tcscpy(params, _T("-log="));
+		_tcscpy(params, log_port);
+
+		if(!wceRunProcess(T2A(params_buf), T2A(params))) {
 			_tprintf( TEXT("FAILED\n"));
 			goto stop_emu_deploy;
 		}
@@ -993,7 +1014,12 @@ int _tmain(int argc, _TCHAR* argv[])
 			_tcscat(params_buf, _T("\\"));
 			_tcscat(params_buf, app_name);
 			_tcscat(params_buf, _T(".exe"));
-			if(!wceRunProcess (T2A(params_buf), NULL)) {
+
+            TCHAR params[128];
+            _tcscpy(params, _T("-log="));
+			_tcscpy(params, log_port);
+
+			if(!wceRunProcess (T2A(params_buf), T2A(params))) {
 				_tprintf( TEXT("FAILED\n"));
 				goto stop_emu_deploy;
 			}
@@ -1003,7 +1029,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	if (deploy_type == DEPLOY_LOG)
 	{
 		if (log_file != NULL) {
-			startLogServer(log_file);
+			startLogServer(log_file, log_port);
 		}
 	}
 	

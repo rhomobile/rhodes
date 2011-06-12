@@ -4,11 +4,13 @@
 
 #define DEFAULT_BUFLEN 1024
 #define DEFAULT_PORT "11000"
-#define DEFAULT_HOST "localhost"
+#define DEFAULT_HOST _T("localhost")
 
-LogServer::LogServer(TCHAR* logFilePath) 
+LogServer::LogServer(TCHAR* logFilePath, TCHAR* log_port) 
 	: m_logFilePath(logFilePath)
 	, m_hLogFile(INVALID_HANDLE_VALUE)
+	, m_logPort(log_port)
+    , m_logHost(DEFAULT_HOST)
 {
 }
 
@@ -23,6 +25,8 @@ LogServer::~LogServer(void)
 //
 bool LogServer::init()
 {
+	USES_CONVERSION;
+
 	addrinfo *result = NULL, hints;
 
 	memset(&hints, 0, sizeof (hints));
@@ -34,7 +38,7 @@ bool LogServer::init()
 	createFile();
 
 	// Resolve the local address and port to be used by the server
-	int iResult = getaddrinfo(DEFAULT_HOST, DEFAULT_PORT, &hints, &result);
+	int iResult = getaddrinfo(T2A(m_logHost), T2A(m_logPort), &hints, &result);
 	
 	if (iResult != 0) 
 	{

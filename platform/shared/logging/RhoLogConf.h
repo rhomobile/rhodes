@@ -69,11 +69,14 @@ public:
     unsigned int getMaxLogFileSize()const{ return m_nMaxLogFileSize; }
 
     bool isLogPrefix()const{ return m_bLogPrefix;}
-    void setLogPrefix(bool bLogPrefix){ m_bLogPrefix = bLogPrefix;}
+	void setLogPrefix(bool bLogPrefix){ m_bLogPrefix = bLogPrefix; }
 
 	const String& getLogHost() const { return m_strLogHost; }
-	const String& getLogPort() const { return m_strLogPort; }
+	void setLogHost(const char* szLogHost) { m_strLogHost = rho::String(szLogHost); }
 
+	const String& getLogPort() const { return m_strLogPort; }
+	void setLogPort(const char* szLogPort);
+	
     void setEnabledCategories( const char* szCatList );
     void setDisabledCategories( const char* szCatList );
     const String& getEnabledCategories(){ return m_strEnabledCategories; }
@@ -111,7 +114,7 @@ inline rho::LogSettings& LOGCONF(){ return rho::g_LogSettings; }
 extern "C"{
 #endif //__cplusplus
 
-void rho_logconf_Init(const char* szRootPath);
+void rho_logconf_Init(const char* szRootPath, const char* szLogPort);
 
 char* rho_logconf_getText();
 int   rho_logconf_getTextPos();
