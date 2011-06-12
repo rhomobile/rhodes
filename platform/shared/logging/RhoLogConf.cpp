@@ -23,19 +23,28 @@ LogSettings::LogSettings(){
     m_nMaxLogFileSize = 0; 
     m_bLogPrefix = true; 
 
-	m_strLogHost = "PPP_PEER";
-	m_strLogPort = "11000";
+    m_strLogHost = "PPP_PEER";
 
     m_pFileSink = new CLogFileSink(*this);
     m_pOutputSink = new CLogOutputSink(*this);
-    m_pSocketSink = new CLogSocketSink(*this);
     m_pLogViewSink = NULL;
+	m_pSocketSink = NULL;
 }
 
 LogSettings::~LogSettings(){
     delete m_pFileSink;
     delete m_pOutputSink;
     delete m_pSocketSink;
+}
+
+void LogSettings::setLogPort(const char* szLogPort) 
+{
+	setLogToSocket(true);
+
+	m_strLogPort = rho::String(szLogPort); 
+
+	delete m_pSocketSink;
+    m_pSocketSink = new CLogSocketSink(*this);
 }
 
 void LogSettings::getLogTextW(StringW& strTextW)
@@ -96,10 +105,6 @@ void LogSettings::loadFromConf(rho::common::RhoSettings& oRhoConf){
         setDisabledCategories( oRhoConf.getString("ExcludeLogCategories").c_str() );
 	if ( oRhoConf.isExist( "LogToSocket") )
 		setLogToSocket( oRhoConf.getBool("LogToSocket") );
-	if ( oRhoConf.isExist( "LogSocketHost") )
-		m_strLogHost = oRhoConf.getString("LogSocketHost");
-	if ( oRhoConf.isExist( "LogSocketPort") )
-		m_strLogPort = oRhoConf.getString("LogSocketPort");
 }
 
 void LogSettings::setLogFilePath(const char* szLogFilePath){ 
@@ -178,7 +183,7 @@ extern "C" {
 using namespace rho;
 using namespace rho::common;
 
-void rho_logconf_Init(const char* szRootPath){
+void rho_logconf_Init(const char* szRootPath, const char* szLogPort){
 
 #ifdef RHODES_EMULATOR
     String strRootPath = szRootPath;
@@ -210,6 +215,7 @@ void rho_logconf_Init(const char* szRootPath){
     rho_conf_Init(szRootPath);
 
     LOGCONF().loadFromConf(RHOCONF());
+	LOGCONF().setLogPort(szLogPort);
 }
 
 char* rho_logconf_getText() {

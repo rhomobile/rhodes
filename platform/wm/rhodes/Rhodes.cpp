@@ -20,9 +20,7 @@ using namespace stdext;
 typedef unsigned long VALUE;
 #endif //!RUBY_RUBY_H
 
-#if defined(OS_WINDOWS)
 char* parseToken( const char* start, int len );
-#endif
 
 extern "C" void rho_ringtone_manager_stop();
 
@@ -54,14 +52,30 @@ public :
 		LPCTSTR lpszToken = FindOneOf(lpCmdLine, szTokens);
         getRhoRootPath();
 
+		//m_logPort = rho::String("11200");
+
 		while (lpszToken != NULL)
 		{
 			if (WordCmpI(lpszToken, _T("Restarting"))==0) {
 				m_nRestarting = 10;
 			}
 
+			if (wcsncmp(lpszToken, _T("log"), 3)==0) 
+			{
+				String token = convertToStringA(lpszToken);
+				//parseToken will allocate extra byte at the end of the returned token value
+				char* port = parseToken( token.c_str(), token.length() );
+				if (port) {
+					String strLogPort = port;
+					m_logPort = strLogPort;
+					free(port);
+				}
+				else {
+					m_logPort = rho::String("11000");
+				}
+			}
 #if defined(OS_WINDOWS)
-			if (wcsncmp(lpszToken, _T("http_proxy_url"),14)==0) 
+			else if (wcsncmp(lpszToken, _T("http_proxy_url"),14)==0) 
             {
 				String token = convertToStringA(lpszToken);
                 char *proxy = parseToken( token.c_str(), token.length() );
@@ -168,7 +182,7 @@ public :
 		}
 #endif
 
-		rho_logconf_Init(m_strRootPath.c_str());
+		rho_logconf_Init(m_strRootPath.c_str(), m_logPort.c_str());
 
 #ifdef RHODES_EMULATOR
         RHOSIMCONF().setAppConfFilePath(CFilePath::join( m_strRootPath, RHO_EMULATOR_DIR"/rhosimconfig.txt").c_str());
@@ -493,7 +507,7 @@ public :
 
 private:
     CMainWindow m_appWindow;
-    rho::String m_strRootPath, m_strRhodesPath;//, m_strDebugHost, m_strDebugPort;*/
+    rho::String m_strRootPath, m_strRhodesPath, m_logPort;//, m_strDebugHost, m_strDebugPort;*/
     //rho::StringW m_strAppNameW;
 	int m_nRestarting;
 
@@ -629,7 +643,7 @@ extern "C" void Init_fcntl(void)
 	return TRUE;
 }*/
 
-#if defined(OS_WINDOWS)
+
 //parseToken will allocate extra byte at the end of the 
 //returned token value
 char* parseToken( const char* start, int len ) {
@@ -667,6 +681,8 @@ char* parseToken( const char* start, int len ) {
 
 	return value;
 }
+
+#if defined(OS_WINDOWS)
 /*
 // char -> wchar_t 
 wchar_t* wce_mbtowc(const char* a)

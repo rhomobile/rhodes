@@ -7,9 +7,11 @@ class LogServer
 {
 	SOCKET m_listenSocket;
 	TCHAR* m_logFilePath;
+	TCHAR* m_logPort;
+	TCHAR* m_logHost;
 	HANDLE m_hLogFile;
 public:
-	LogServer(TCHAR* logFilePath);
+	LogServer(TCHAR* logFilePath, TCHAR* log_port);
 	~LogServer(void);
 	//
 	bool init();
