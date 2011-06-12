@@ -45,14 +45,14 @@ namespace net
 
 bool RawSocket::init()
 {
-    RAWTRACE("Init raw socket");
+    //RAWTRACE("Init raw socket");
     m_isInit = create();
     return m_isInit;
 }
 
 bool RawSocket::create()
 {
-    RAWTRACE("Start create raw socket");
+    //RAWTRACE("Start create raw socket");
     cleanup();
 
     int iResult;
@@ -63,39 +63,39 @@ bool RawSocket::create()
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
 
-    RAWTRACE("Get host adress");
+    //RAWTRACE("Get host adress");
 
     // Resolve the server address and port
     iResult = getaddrinfo(m_hostName.c_str(), m_hostPort.c_str(), &hints, &addrInfo);
 
     if (iResult != 0) {
-        RAWTRACE2("Unable to get addres info for host %s, port %s", m_hostName.c_str(), m_hostPort.c_str());
+        //RAWTRACE2("Unable to get addres info for host %s, port %s", m_hostName.c_str(), m_hostPort.c_str());
         return false;
     }
 
-    RAWTRACE("Create socket");
+    //RAWTRACE("Create socket");
     // Create a SOCKET for connecting to server
     m_clientSocket = socket(addrInfo->ai_family, addrInfo->ai_socktype, addrInfo->ai_protocol);
 
     if (m_clientSocket == INVALID_SOCKET) {
-        RAWTRACE2("Socket can`t create for host %s, port %s", m_hostName.c_str(), m_hostPort.c_str());
+        //RAWTRACE2("Socket can`t create for host %s, port %s", m_hostName.c_str(), m_hostPort.c_str());
         freeaddrinfo(addrInfo);
         return false;
     }
 
     // Connect to server.
-    RAWTRACE("Connect to server");
+    //RAWTRACE("Connect to server");
     iResult = connect(m_clientSocket, addrInfo->ai_addr, (int)addrInfo->ai_addrlen);
 
     if (iResult == SOCKET_ERROR) {
-        RAWTRACE2("Can`t connect to host %s, port %s ", m_hostName.c_str(), m_hostPort.c_str());
+        //RAWTRACE2("Can`t connect to host %s, port %s ", m_hostName.c_str(), m_hostPort.c_str());
         cleanup();
         return false;
     }
 
     freeaddrinfo(addrInfo);
 
-    RAWTRACE("End of socket creating");
+    //RAWTRACE("End of socket creating");
 
     return true;
 }
@@ -109,7 +109,7 @@ bool RawSocket::send(const String& sendData)
 
     if (iResult == SOCKET_ERROR) 
     {
-        RAWTRACE2("Data not send for host %s, port %s", m_hostName.c_str(), m_hostPort.c_str());
+        //RAWTRACE2("Data not send for host %s, port %s", m_hostName.c_str(), m_hostPort.c_str());
         cleanup();
         return false;
     }
