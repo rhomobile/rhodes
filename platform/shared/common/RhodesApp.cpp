@@ -246,7 +246,7 @@ CRhodesApp::CRhodesApp(const String& strRootPath)
 
     m_appCallbacksQueue = new CAppCallbacksQueue();
 
-#if defined( OS_WINCE ) || defined (OS_WINDOWS)
+#if defined(OS_WINCE) || defined (OS_WINDOWS)
     //initializing winsock
     WSADATA WsaData;
     int result = WSAStartup(MAKEWORD(2,2),&WsaData);
