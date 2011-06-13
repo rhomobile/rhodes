@@ -822,7 +822,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+			Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="1"
@@ -923,7 +923,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="EmulatorDebug|Win32"
+			Name="SimulatorDebug|Win32"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="1"
@@ -957,7 +957,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;&quot;.\emulator\GeneratedFiles&quot;;&quot;$(QTDIR)\include&quot;;&quot;.\emulator\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtWebKit&quot;"
+				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;&quot;..\..\shared\qtrhodes\GeneratedFiles&quot;;&quot;$(QTDIR)\include&quot;;&quot;..\..\shared\qtrhodes\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtWebKit&quot;"
 				PreprocessorDefinitions="_DEBUG;DEBUG;WIN32;_WINDOWS;RHODES_EMULATOR;UNICODE;QT_LARGEFILE_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_WEBKIT_LIB"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
@@ -1019,7 +1019,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+			Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="1"
@@ -1120,7 +1120,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+			Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="1"
@@ -1221,7 +1221,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+			Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="1"
@@ -1320,7 +1320,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="EmulatorRelease|Win32"
+			Name="SimulatorRelease|Win32"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="1"
@@ -1354,7 +1354,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;&quot;.\emulator\GeneratedFiles&quot;;&quot;$(QTDIR)\include&quot;;&quot;.\emulator\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtWebKit&quot;"
+				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;&quot;..\..\shared\qtrhodes\GeneratedFiles&quot;;&quot;$(QTDIR)\include&quot;;&quot;..\..\shared\qtrhodes\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtWebKit&quot;"
 				PreprocessorDefinitions="_NDEBUG;NDEBUG;WIN32;_WINDOWS;RHODES_EMULATOR;UNICODE;QT_LARGEFILE_SUPPORT;QT_NO_DEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_WEBKIT_LIB"
 				RuntimeLibrary="0"
 				TreatWChar_tAsBuiltInType="false"
@@ -1418,7 +1418,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+			Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="1"
@@ -1514,7 +1514,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+			Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="1"
@@ -2227,7 +2227,7 @@
 				RelativePath=".\MainWindow.cpp"
 				>
 				<FileConfiguration
-					Name="EmulatorDebug|Win32"
+					Name="SimulatorDebug|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2235,7 +2235,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Win32"
+					Name="SimulatorRelease|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2311,7 +2311,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Smartphone 2003 (ARMV4)"
+					Name="Release|Smartphone 2003 (ARMV4)"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -2319,7 +2319,63 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Smartphone 2003 (ARMV4)"
+					Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorRelease|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -2538,7 +2594,7 @@
 					RelativePath=".\rho\rubyext\NativeToolbar.cpp"
 					>
 					<FileConfiguration
-						Name="EmulatorDebug|Win32"
+						Name="SimulatorDebug|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2546,7 +2602,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="EmulatorRelease|Win32"
+						Name="SimulatorRelease|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2598,6 +2654,22 @@
 						Name="VCCLCompilerTool"
 					/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorRelease|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\phonebook\NativeAddressBook.h"
@@ -2612,6 +2684,22 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorRelease|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2640,6 +2728,13 @@
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -2700,10 +2795,10 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="emulator"
+			Name="simulator"
 			>
 			<File
-				RelativePath=".\emulator\ExternalWebView.cpp"
+				RelativePath="..\..\shared\qtrhodes\ExternalWebView.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -2770,7 +2865,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2778,7 +2873,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Win32"
+					Name="SimulatorDebug|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -2786,7 +2881,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2794,7 +2889,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+					Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2802,7 +2897,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2810,7 +2905,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Win32"
+					Name="SimulatorRelease|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -2818,7 +2913,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2826,7 +2921,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+					Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2835,7 +2930,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\emulator\ExternalWebView.h"
+				RelativePath="..\..\shared\qtrhodes\ExternalWebView.h"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -2902,7 +2997,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2910,18 +3005,18 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Win32"
+					Name="SimulatorDebug|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WEBKIT_LIB &quot;-I.&quot; &quot;-I.\emulator\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\emulator\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;.\emulator\ExternalWebView.h&quot; -o &quot;.\emulator\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WEBKIT_LIB &quot;-I.&quot; &quot;-I..\..\shared\qtrhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qtrhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;..\..\shared\qtrhodes\ExternalWebView.h&quot; -o &quot;..\..\shared\qtrhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
-						Outputs="&quot;.\emulator\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
+						Outputs="&quot;..\..\shared\qtrhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2929,7 +3024,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+					Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2937,7 +3032,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2945,18 +3040,18 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Win32"
+					Name="SimulatorRelease|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WEBKIT_LIB  &quot;-I.\emulator\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\emulator\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I.&quot; &quot;.\emulator\ExternalWebView.h&quot; -o &quot;.\emulator\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WEBKIT_LIB  &quot;-I..\..\shared\qtrhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qtrhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I.&quot; &quot;..\..\shared\qtrhodes\ExternalWebView.h&quot; -o &quot;..\..\shared\qtrhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
-						Outputs="&quot;.\emulator\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
+						Outputs="&quot;..\..\shared\qtrhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2964,7 +3059,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+					Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2973,7 +3068,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\emulator\ExternalWebView.ui"
+				RelativePath="..\..\shared\qtrhodes\ExternalWebView.ui"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -3040,7 +3135,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3048,18 +3143,18 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Win32"
+					Name="SimulatorDebug|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Uic&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;.\emulator\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;..\..\shared\qtrhodes\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="$(QTDIR)\bin\uic.exe"
-						Outputs="&quot;.\emulator\GeneratedFiles\ui_$(InputName).h&quot;"
+						Outputs="&quot;..\..\shared\qtrhodes\GeneratedFiles\ui_$(InputName).h&quot;"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3067,7 +3162,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+					Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3075,7 +3170,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3083,18 +3178,18 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Win32"
+					Name="SimulatorRelease|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Uic&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;.\emulator\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;..\..\shared\qtrhodes\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="$(QTDIR)\bin\uic.exe"
-						Outputs="&quot;.\emulator\GeneratedFiles\ui_$(InputName).h&quot;"
+						Outputs="&quot;..\..\shared\qtrhodes\GeneratedFiles\ui_$(InputName).h&quot;"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3102,7 +3197,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+					Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3111,7 +3206,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\emulator\MainWindowCallback.h"
+				RelativePath="..\..\shared\qtrhodes\MainWindowCallback.h"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -3178,7 +3273,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3186,14 +3281,14 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Win32"
+					Name="SimulatorDebug|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3201,7 +3296,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+					Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3209,7 +3304,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3217,14 +3312,14 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Win32"
+					Name="SimulatorRelease|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3232,7 +3327,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+					Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3241,7 +3336,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\emulator\MainWindowQt.cpp"
+				RelativePath=".\simulator\MainWindowQt.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -3308,7 +3403,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3316,7 +3411,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3324,7 +3419,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+					Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3332,7 +3427,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3340,7 +3435,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3348,7 +3443,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+					Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3357,7 +3452,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\emulator\MainWindowQt.h"
+				RelativePath=".\simulator\MainWindowQt.h"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -3424,7 +3519,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3432,14 +3527,14 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Win32"
+					Name="SimulatorDebug|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3447,7 +3542,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+					Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3455,7 +3550,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3463,14 +3558,14 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Win32"
+					Name="SimulatorRelease|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3478,7 +3573,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+					Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3487,7 +3582,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\emulator\NativeTabbarQt.cpp"
+				RelativePath=".\simulator\NativeTabbarQt.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -3554,7 +3649,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3562,7 +3657,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3570,7 +3665,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+					Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3578,7 +3673,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3586,7 +3681,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3594,7 +3689,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+					Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3603,7 +3698,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\emulator\NativeTabbarQt.h"
+				RelativePath=".\simulator\NativeTabbarQt.h"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -3670,7 +3765,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3678,14 +3773,14 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Win32"
+					Name="SimulatorDebug|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3693,7 +3788,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+					Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3701,7 +3796,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3709,14 +3804,14 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Win32"
+					Name="SimulatorRelease|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3724,7 +3819,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+					Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3733,7 +3828,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\emulator\NativeToolbarQt.cpp"
+				RelativePath=".\simulator\NativeToolbarQt.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -3800,7 +3895,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3808,7 +3903,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3816,7 +3911,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+					Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3824,7 +3919,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3832,7 +3927,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3840,7 +3935,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+					Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3849,7 +3944,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\emulator\NativeToolbarQt.h"
+				RelativePath=".\simulator\NativeToolbarQt.h"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -3916,7 +4011,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3924,14 +4019,14 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Win32"
+					Name="SimulatorDebug|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3939,7 +4034,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+					Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3947,7 +4042,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3955,14 +4050,14 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Win32"
+					Name="SimulatorRelease|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3970,7 +4065,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+					Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3979,7 +4074,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\emulator\QtMainWindow.cpp"
+				RelativePath="..\..\shared\qtrhodes\QtMainWindow.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -4046,7 +4141,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4054,7 +4149,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Win32"
+					Name="SimulatorDebug|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -4062,7 +4157,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4070,7 +4165,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+					Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4078,7 +4173,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4086,7 +4181,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Win32"
+					Name="SimulatorRelease|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -4094,7 +4189,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4102,7 +4197,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+					Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4111,7 +4206,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\emulator\QtMainWindow.h"
+				RelativePath="..\..\shared\qtrhodes\QtMainWindow.h"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -4178,7 +4273,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4186,18 +4281,18 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Win32"
+					Name="SimulatorDebug|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WEBKIT_LIB &quot;-I.&quot; &quot;-I.\emulator\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\emulator\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;.\emulator\QtMainWindow.h&quot; -o &quot;.\emulator\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WEBKIT_LIB &quot;-I.&quot; &quot;-I..\..\shared\qtrhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qtrhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;..\..\shared\qtrhodes\QtMainWindow.h&quot; -o &quot;..\..\shared\qtrhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
-						Outputs="&quot;.\emulator\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
+						Outputs="&quot;..\..\shared\qtrhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4205,7 +4300,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+					Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4213,7 +4308,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4221,18 +4316,18 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Win32"
+					Name="SimulatorRelease|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WEBKIT_LIB  &quot;-I.\emulator\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\emulator\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I.&quot; &quot;.\emulator\QtMainWindow.h&quot; -o &quot;.\emulator\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WEBKIT_LIB  &quot;-I..\..\shared\qtrhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qtrhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I.&quot; &quot;..\..\shared\qtrhodes\QtMainWindow.h&quot; -o &quot;..\..\shared\qtrhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
-						Outputs="&quot;.\emulator\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
+						Outputs="&quot;..\..\shared\qtrhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4240,7 +4335,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+					Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4249,7 +4344,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\emulator\QtMainWindow.ui"
+				RelativePath="..\..\shared\qtrhodes\QtMainWindow.ui"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -4316,7 +4411,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4324,18 +4419,18 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Win32"
+					Name="SimulatorDebug|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Uic&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;.\emulator\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;..\..\shared\qtrhodes\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="$(QTDIR)\bin\uic.exe"
-						Outputs="&quot;.\emulator\GeneratedFiles\ui_$(InputName).h&quot;"
+						Outputs="&quot;..\..\shared\qtrhodes\GeneratedFiles\ui_$(InputName).h&quot;"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4343,7 +4438,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+					Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4351,7 +4446,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4359,18 +4454,18 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Win32"
+					Name="SimulatorRelease|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Uic&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;.\emulator\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;..\..\shared\qtrhodes\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="$(QTDIR)\bin\uic.exe"
-						Outputs="&quot;.\emulator\GeneratedFiles\ui_$(InputName).h&quot;"
+						Outputs="&quot;..\..\shared\qtrhodes\GeneratedFiles\ui_$(InputName).h&quot;"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4378,7 +4473,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+					Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4387,7 +4482,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\emulator\QtNativeTabBar.cpp"
+				RelativePath="..\..\shared\qtrhodes\QtNativeTabBar.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -4454,7 +4549,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4462,7 +4557,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Win32"
+					Name="SimulatorDebug|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -4470,7 +4565,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4478,7 +4573,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+					Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4486,7 +4581,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4494,7 +4589,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Win32"
+					Name="SimulatorRelease|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -4502,7 +4597,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4510,7 +4605,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+					Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4519,7 +4614,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\emulator\QtNativeTabBar.h"
+				RelativePath="..\..\shared\qtrhodes\QtNativeTabBar.h"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -4586,7 +4681,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4594,14 +4689,14 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Win32"
+					Name="SimulatorDebug|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4609,7 +4704,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+					Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4617,7 +4712,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4625,14 +4720,14 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Win32"
+					Name="SimulatorRelease|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4640,7 +4735,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+					Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4649,7 +4744,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\emulator\QtWebInspector.cpp"
+				RelativePath="..\..\shared\qtrhodes\QtWebInspector.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -4716,7 +4811,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4724,7 +4819,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Win32"
+					Name="SimulatorDebug|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -4732,7 +4827,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4740,7 +4835,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+					Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4748,7 +4843,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4756,7 +4851,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Win32"
+					Name="SimulatorRelease|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -4764,7 +4859,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4772,7 +4867,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+					Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4781,7 +4876,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\emulator\QtWebInspector.h"
+				RelativePath="..\..\shared\qtrhodes\QtWebInspector.h"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -4848,7 +4943,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4856,18 +4951,18 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Win32"
+					Name="SimulatorDebug|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WEBKIT_LIB &quot;-I.&quot; &quot;-I.\emulator\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\emulator\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;.\emulator\QtWebInspector.h&quot; -o &quot;.\emulator\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WEBKIT_LIB &quot;-I.&quot; &quot;-I..\..\shared\qtrhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qtrhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;..\..\shared\qtrhodes\QtWebInspector.h&quot; -o &quot;..\..\shared\qtrhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
-						Outputs="&quot;.\emulator\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
+						Outputs="&quot;..\..\shared\qtrhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4875,7 +4970,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+					Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4883,7 +4978,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4891,18 +4986,18 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Win32"
+					Name="SimulatorRelease|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WEBKIT_LIB  &quot;-I.\emulator\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\emulator\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I.&quot; &quot;.\emulator\QtWebInspector.h&quot; -o &quot;.\emulator\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WEBKIT_LIB  &quot;-I..\..\shared\qtrhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qtrhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I.&quot; &quot;..\..\shared\qtrhodes\QtWebInspector.h&quot; -o &quot;..\..\shared\qtrhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
-						Outputs="&quot;.\emulator\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
+						Outputs="&quot;..\..\shared\qtrhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4910,7 +5005,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+					Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4919,7 +5014,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\emulator\QtWebInspector.ui"
+				RelativePath="..\..\shared\qtrhodes\QtWebInspector.ui"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -4986,7 +5081,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4994,18 +5089,18 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Win32"
+					Name="SimulatorDebug|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Uic&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;.\emulator\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;..\..\shared\qtrhodes\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="$(QTDIR)\bin\uic.exe"
-						Outputs="&quot;.\emulator\GeneratedFiles\ui_$(InputName).h&quot;"
+						Outputs="&quot;..\..\shared\qtrhodes\GeneratedFiles\ui_$(InputName).h&quot;"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -5013,7 +5108,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+					Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -5021,7 +5116,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -5029,18 +5124,18 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Win32"
+					Name="SimulatorRelease|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Uic&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;.\emulator\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;..\..\shared\qtrhodes\GeneratedFiles\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="$(QTDIR)\bin\uic.exe"
-						Outputs="&quot;.\emulator\GeneratedFiles\ui_$(InputName).h&quot;"
+						Outputs="&quot;..\..\shared\qtrhodes\GeneratedFiles\ui_$(InputName).h&quot;"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+					Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -5048,7 +5143,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+					Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -5061,7 +5156,7 @@
 				SourceControlFiles="false"
 				>
 				<File
-					RelativePath=".\emulator\GeneratedFiles\ui_ExternalWebView.h"
+					RelativePath="..\..\shared\qtrhodes\GeneratedFiles\ui_ExternalWebView.h"
 					>
 					<FileConfiguration
 						Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -5128,7 +5223,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+						Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -5136,14 +5231,14 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="EmulatorDebug|Win32"
+						Name="SimulatorDebug|Win32"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+						Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -5151,7 +5246,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+						Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -5159,7 +5254,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+						Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -5167,14 +5262,14 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="EmulatorRelease|Win32"
+						Name="SimulatorRelease|Win32"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+						Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -5182,7 +5277,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+						Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -5191,7 +5286,7 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath=".\emulator\GeneratedFiles\ui_QtMainWindow.h"
+					RelativePath="..\..\shared\qtrhodes\GeneratedFiles\ui_QtMainWindow.h"
 					>
 					<FileConfiguration
 						Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -5258,7 +5353,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+						Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -5266,14 +5361,14 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="EmulatorDebug|Win32"
+						Name="SimulatorDebug|Win32"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+						Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -5281,7 +5376,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+						Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -5289,7 +5384,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+						Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -5297,14 +5392,14 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="EmulatorRelease|Win32"
+						Name="SimulatorRelease|Win32"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+						Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -5312,7 +5407,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+						Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -5321,7 +5416,7 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath=".\emulator\GeneratedFiles\ui_QtWebInspector.h"
+					RelativePath="..\..\shared\qtrhodes\GeneratedFiles\ui_QtWebInspector.h"
 					>
 					<FileConfiguration
 						Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -5388,7 +5483,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+						Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -5396,14 +5491,14 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="EmulatorDebug|Win32"
+						Name="SimulatorDebug|Win32"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+						Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -5411,7 +5506,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+						Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -5419,7 +5514,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+						Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -5427,14 +5522,14 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="EmulatorRelease|Win32"
+						Name="SimulatorRelease|Win32"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+						Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -5442,7 +5537,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+						Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -5454,7 +5549,7 @@
 					Name="Debug"
 					>
 					<File
-						RelativePath=".\emulator\GeneratedFiles\EmulatorDebug\moc_ExternalWebView.cpp"
+						RelativePath="..\..\shared\qtrhodes\GeneratedFiles\SimulatorDebug\moc_ExternalWebView.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -5531,7 +5626,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+							Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -5540,7 +5635,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorDebug|Win32"
+							Name="SimulatorDebug|Win32"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -5548,7 +5643,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+							Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -5557,7 +5652,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+							Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -5566,7 +5661,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+							Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -5575,7 +5670,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorRelease|Win32"
+							Name="SimulatorRelease|Win32"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -5585,7 +5680,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+							Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -5594,7 +5689,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+							Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -5604,7 +5699,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath=".\emulator\GeneratedFiles\EmulatorDebug\moc_QtMainWindow.cpp"
+						RelativePath="..\..\shared\qtrhodes\GeneratedFiles\SimulatorDebug\moc_QtMainWindow.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -5681,7 +5776,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+							Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -5690,7 +5785,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorDebug|Win32"
+							Name="SimulatorDebug|Win32"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -5698,7 +5793,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+							Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -5707,7 +5802,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+							Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -5716,7 +5811,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+							Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -5725,7 +5820,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorRelease|Win32"
+							Name="SimulatorRelease|Win32"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -5735,7 +5830,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+							Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -5744,7 +5839,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+							Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -5754,7 +5849,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath=".\emulator\GeneratedFiles\EmulatorDebug\moc_QtWebInspector.cpp"
+						RelativePath="..\..\shared\qtrhodes\GeneratedFiles\SimulatorDebug\moc_QtWebInspector.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -5831,7 +5926,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+							Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -5840,7 +5935,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorDebug|Win32"
+							Name="SimulatorDebug|Win32"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -5848,7 +5943,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+							Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -5857,7 +5952,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+							Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -5866,7 +5961,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+							Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -5875,7 +5970,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorRelease|Win32"
+							Name="SimulatorRelease|Win32"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -5885,7 +5980,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+							Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -5894,7 +5989,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+							Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -5908,7 +6003,7 @@
 					Name="Release"
 					>
 					<File
-						RelativePath=".\emulator\GeneratedFiles\EmulatorRelease\moc_ExternalWebView.cpp"
+						RelativePath="..\..\shared\qtrhodes\GeneratedFiles\SimulatorRelease\moc_ExternalWebView.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -5975,7 +6070,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+							Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -5983,7 +6078,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorDebug|Win32"
+							Name="SimulatorDebug|Win32"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -5991,7 +6086,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+							Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -5999,7 +6094,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+							Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -6007,7 +6102,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+							Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -6015,7 +6110,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorRelease|Win32"
+							Name="SimulatorRelease|Win32"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -6023,7 +6118,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+							Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -6031,7 +6126,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+							Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -6040,7 +6135,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath=".\emulator\GeneratedFiles\EmulatorRelease\moc_QtMainWindow.cpp"
+						RelativePath="..\..\shared\qtrhodes\GeneratedFiles\SimulatorRelease\moc_QtMainWindow.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -6107,7 +6202,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+							Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -6115,7 +6210,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorDebug|Win32"
+							Name="SimulatorDebug|Win32"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -6123,7 +6218,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+							Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -6131,7 +6226,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+							Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -6139,7 +6234,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+							Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -6147,7 +6242,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorRelease|Win32"
+							Name="SimulatorRelease|Win32"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -6155,7 +6250,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+							Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -6163,7 +6258,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+							Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -6172,7 +6267,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath=".\emulator\GeneratedFiles\EmulatorRelease\moc_QtWebInspector.cpp"
+						RelativePath="..\..\shared\qtrhodes\GeneratedFiles\SimulatorRelease\moc_QtWebInspector.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -6239,7 +6334,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+							Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -6247,7 +6342,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorDebug|Win32"
+							Name="SimulatorDebug|Win32"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -6255,7 +6350,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+							Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -6263,7 +6358,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+							Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -6271,7 +6366,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+							Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -6279,7 +6374,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorRelease|Win32"
+							Name="SimulatorRelease|Win32"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -6287,7 +6382,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+							Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -6295,7 +6390,7 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+							Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
