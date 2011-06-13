@@ -324,7 +324,7 @@ namespace "run" do
 	  log_file = gelLogPath
 
 	  Thread.new { 
-            Jake.run(detool,['log', log_file])
+            Jake.run(detool,['log', log_file, $port])
           }
 
 	  Thread.new { 
@@ -350,7 +350,7 @@ namespace "run" do
 	  puts "Please, connect you device via ActiveSync.\n\n"
 
 	  Thread.new { 
-            Jake.run(detool, ['log', log_file])
+            Jake.run(detool,['log', log_file, $port])
           }
 
 	  Thread.new { 
@@ -369,6 +369,11 @@ namespace "run" do
 	    args   = ['devcab', $targetdir + '/' +  $appname + ".cab", $appname, $port]
 	    puts "\nStarting application on the device"
 	    puts "Please, connect you device via ActiveSync.\n\n"
+
+   	    Thread.new { 
+               Jake.run(detool,['log', log_file, $port])
+            }
+
 	    Jake.run(detool,args)
         end
     end
@@ -381,6 +386,11 @@ namespace "run" do
   	  cd $startdir + "/res/build-tools"
 	  detool = "detool.exe"
 	  args   = ['emucab', '"Windows Mobile 6 Professional Emulator"', $targetdir + '/' +  $appname + ".cab", $appname, $port]
+
+	  Thread.new { 
+            Jake.run(detool,['log', log_file, $port])
+          }
+
 	  puts "\nStarting application on the WM6 emulator\n\n"
 	  Jake.run(detool,args)
     end
