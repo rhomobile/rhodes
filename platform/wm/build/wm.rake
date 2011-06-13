@@ -184,7 +184,7 @@ namespace "build" do
           exit 1
         end
 
-        args = ['/M4', 'rhodes.sln', '"EmulatorRelease|win32"']
+        args = ['/M4', 'rhodes.sln', '"SimulatorRelease|win32"']
         puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
         puts Jake.run($vcbuild,args)
 
@@ -199,7 +199,7 @@ namespace "build" do
         if not File.directory?(target_path)
           Dir.mkdir(target_path)
         end
-        cp File.join($startdir, $vcbindir, "win32/rhodes/EmulatorRelease/rhosimulator.exe"), target_path
+        cp File.join($startdir, $vcbindir, "win32/rhodes/SimulatorRelease/rhosimulator.exe"), target_path
 
         cp File.join(qtdir, "bin/QtCore4.dll"), target_path
         cp File.join(qtdir, "bin/QtGui4.dll"), target_path

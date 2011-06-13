@@ -120,8 +120,8 @@ To run Rhodes applications in custom built RhoSimulator, please ensure that no `
 
 * Open the solution:
   `C:\Rhomobile\rhodes\platform\wm\rhodes\rhodes.vcproj`
-* Build solution for the configuration `EmulatorRelease|Win32`
+* Build solution for the configuration `SimulatorRelease|Win32`
 * Specify the path to custom built RhoSimulator at `rhobuild.yml`:
         env: 
           paths:    
-            rhosimulator: platform/wm/bin/Win32/rhodes/EmulatorRelease
+            rhosimulator: platform/wm/bin/Win32/rhodes/SimulatorRelease

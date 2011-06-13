@@ -608,7 +608,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+			Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
@@ -683,7 +683,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+			Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
@@ -758,7 +758,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+			Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
@@ -833,7 +833,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="EmulatorDebug|Win32"
+			Name="SimulatorDebug|Win32"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
@@ -900,7 +900,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+			Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
@@ -974,7 +974,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+			Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
@@ -1049,7 +1049,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+			Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
@@ -1123,7 +1123,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="EmulatorRelease|Win32"
+			Name="SimulatorRelease|Win32"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
@@ -1933,6 +1933,70 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorRelease|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)"
 					>
 					<Tool
@@ -2391,6 +2455,22 @@
 							Name="VCCLCompilerTool"
 						/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorDebug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorRelease|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\shared\ruby\wince\assert.h"
@@ -2416,7 +2496,7 @@
 					RelativePath="..\..\shared\ruby\wince\direct.c"
 					>
 					<FileConfiguration
-						Name="Debug|Win32"
+						Name="SimulatorDebug|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2424,7 +2504,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="SimulatorRelease|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2456,7 +2536,7 @@
 					RelativePath="..\..\shared\ruby\wince\errno.c"
 					>
 					<FileConfiguration
-						Name="Debug|Win32"
+						Name="SimulatorDebug|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2464,7 +2544,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="SimulatorRelease|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2496,7 +2576,7 @@
 					RelativePath="..\..\shared\ruby\wince\fcntl.h"
 					>
 					<FileConfiguration
-						Name="Debug|Win32"
+						Name="SimulatorDebug|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2504,7 +2584,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="SimulatorRelease|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2536,7 +2616,7 @@
 					RelativePath="..\..\shared\ruby\wince\io_wce.c"
 					>
 					<FileConfiguration
-						Name="Debug|Win32"
+						Name="SimulatorDebug|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2544,7 +2624,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="SimulatorRelease|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2565,6 +2645,22 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorDebug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorRelease|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2596,7 +2692,7 @@
 					RelativePath="..\..\shared\ruby\wince\signal.h"
 					>
 					<FileConfiguration
-						Name="Debug|Win32"
+						Name="SimulatorDebug|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2604,7 +2700,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="SimulatorRelease|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2636,7 +2732,7 @@
 					RelativePath="..\..\shared\ruby\wince\stddef.h"
 					>
 					<FileConfiguration
-						Name="Debug|Win32"
+						Name="SimulatorDebug|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2644,7 +2740,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="SimulatorRelease|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2676,7 +2772,7 @@
 					RelativePath="..\..\shared\ruby\wince\stdlib.c"
 					>
 					<FileConfiguration
-						Name="Debug|Win32"
+						Name="SimulatorDebug|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2684,7 +2780,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="SimulatorRelease|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2716,7 +2812,7 @@
 					RelativePath="..\..\shared\ruby\wince\time.h"
 					>
 					<FileConfiguration
-						Name="Debug|Win32"
+						Name="SimulatorDebug|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2724,7 +2820,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="SimulatorRelease|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2745,6 +2841,22 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorDebug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorRelease|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2776,7 +2888,7 @@
 					RelativePath="..\..\shared\ruby\wince\wince.c"
 					>
 					<FileConfiguration
-						Name="Debug|Win32"
+						Name="SimulatorDebug|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2784,7 +2896,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="SimulatorRelease|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2816,7 +2928,7 @@
 					RelativePath="..\..\shared\ruby\wince\wincemain.c"
 					>
 					<FileConfiguration
-						Name="Debug|Win32"
+						Name="SimulatorDebug|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2824,7 +2936,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Release|Win32"
+						Name="SimulatorRelease|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2845,6 +2957,382 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorDebug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorRelease|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\shared\ruby\wince\stdio.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorDebug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorRelease|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\shared\ruby\wince\stdlib.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorDebug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorRelease|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\shared\ruby\wince\string_wce.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorDebug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorRelease|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\shared\ruby\wince\time.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorDebug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorRelease|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\shared\ruby\wince\time_wce.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorDebug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorRelease|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\shared\ruby\wince\varargs.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorDebug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorRelease|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\shared\ruby\wince\wince.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorDebug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorRelease|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\shared\ruby\wince\wince.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorDebug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorRelease|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\shared\ruby\wince\wincemain.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorDebug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorRelease|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\shared\ruby\wince\wincon.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorDebug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorRelease|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -2874,6 +3362,22 @@
 								Name="VCCLCompilerTool"
 							/>
 						</FileConfiguration>
+						<FileConfiguration
+							Name="SimulatorDebug|Win32"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="SimulatorRelease|Win32"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\..\shared\ruby\wince\sys\stat.h"
@@ -2888,6 +3392,22 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="Release|Win32"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="SimulatorDebug|Win32"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="SimulatorRelease|Win32"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -2914,6 +3434,22 @@
 								Name="VCCLCompilerTool"
 							/>
 						</FileConfiguration>
+						<FileConfiguration
+							Name="SimulatorDebug|Win32"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="SimulatorRelease|Win32"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\..\shared\ruby\wince\sys\timeb.h"
@@ -2928,6 +3464,22 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="Release|Win32"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="SimulatorDebug|Win32"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="SimulatorRelease|Win32"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -2954,6 +3506,22 @@
 								Name="VCCustomBuildTool"
 							/>
 						</FileConfiguration>
+						<FileConfiguration
+							Name="SimulatorDebug|Win32"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="SimulatorRelease|Win32"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\..\shared\ruby\wince\sys\utime.c"
@@ -2974,6 +3542,22 @@
 								Name="VCCLCompilerTool"
 							/>
 						</FileConfiguration>
+						<FileConfiguration
+							Name="SimulatorDebug|Win32"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="SimulatorRelease|Win32"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\..\shared\ruby\wince\sys\utime.h"
@@ -2988,6 +3572,22 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="Release|Win32"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="SimulatorDebug|Win32"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCustomBuildTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="SimulatorRelease|Win32"
 							ExcludedFromBuild="true"
 							>
 							<Tool
