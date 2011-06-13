@@ -25,8 +25,11 @@ public class SSLImpl {
 	private static SSLSocketFactory factory = null;
 	
 	private SSLSocket sock;
-	//private int sockfd;
-	
+
+    //Used from jni
+    @SuppressWarnings("unused")
+    private int sockfd;
+
 	private InputStream is;
 	private OutputStream os;
 	
@@ -83,7 +86,7 @@ public class SSLImpl {
                 sock = aSock;
                 os = sock.getOutputStream();
                 is = sock.getInputStream();
-                //sockfd = fd;
+                sockfd = fd;
             }
             return true;
 		}
@@ -103,6 +106,9 @@ public class SSLImpl {
                         sock = null;
                         os = null;
                         is = null;
+
+                        //TODO: check file descriptor is closed gracefully
+                        sockfd = -1;
                     }
                 }
 			}
