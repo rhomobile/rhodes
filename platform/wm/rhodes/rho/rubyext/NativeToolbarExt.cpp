@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "MainWindow.h"
-#include "NativeToolbarExt.h"
+#include "rubyext/NativeToolbarExt.h"
 
 extern CMainWindow& getAppWindow();
 

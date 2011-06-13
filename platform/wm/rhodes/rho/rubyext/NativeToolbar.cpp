@@ -5,7 +5,7 @@
 #include "MainWindow.h"
 #include "common/RhoFilePath.h"
 #include "rubyext/WebView.h"
-#include "NativeToolbarExt.h"
+#include "rubyext/NativeToolbarExt.h"
 
 #ifndef max
 #define max(a,b)            (((a) > (b)) ? (a) : (b))
