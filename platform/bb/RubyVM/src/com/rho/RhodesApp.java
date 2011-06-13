@@ -114,7 +114,7 @@ public class RhodesApp
         return res;
     }
     
-    boolean isExternalUrl(String strUrl)
+    public boolean isExternalUrl(String strUrl)
     {
     	return strUrl.indexOf(':') != -1;
     	//strUrl.startsWith("http://") || strUrl.startsWith("https://") ||
