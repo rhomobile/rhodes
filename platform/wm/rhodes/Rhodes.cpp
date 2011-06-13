@@ -52,7 +52,7 @@ public :
 		LPCTSTR lpszToken = FindOneOf(lpCmdLine, szTokens);
         getRhoRootPath();
 
-		//m_logPort = rho::String("11200");
+		m_logPort = rho::String("11000");
 
 		while (lpszToken != NULL)
 		{
