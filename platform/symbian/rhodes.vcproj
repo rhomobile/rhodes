@@ -294,6 +294,14 @@
 				</File>
 			</Filter>
 		</Filter>
+		<Filter
+			Name="qml"
+			>
+			<File
+				RelativePath=".\qml\rhodes.qml"
+				>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 		<Global
