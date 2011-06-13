@@ -1,3 +1,6 @@
+## 3.0.2
+* Fix run Android on Windows with Ruby 1.8.x
+
 ## 3.0.1
 * Fix customer issues
 * Android: fix push issues
