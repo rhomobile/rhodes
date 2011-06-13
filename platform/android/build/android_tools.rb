@@ -10,7 +10,6 @@ module AndroidTools
 def get_app_log (appname, device, silent = false)
   pkgname = "com.#{$vendor}." + appname.downcase.gsub(/[^A-Za-z_0-9]/, '')
   path = File.join('/data/data', pkgname, 'rhodata', 'RhoLog.txt')
-#  cc_run($adb, [device ? '-d' : '-e', 'pull', path, $app_path]) or return false
   Jake.run($adb, [device ? '-d' : '-e', 'pull', path, $app_path]) or return false
   puts "RhoLog.txt stored to " + $app_path
   return true
@@ -84,6 +83,7 @@ end
 module_function :logcat_process
 
 def logclear(device_flag = '-e')
+  return if(device_flag == '-e' and !is_emulator_running)
   Jake.run($adb, [device_flag, 'logcat', '-c'], nil, true) 
 end
 module_function :logclear
