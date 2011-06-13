@@ -169,6 +169,8 @@ end
 namespace "config" do
   task :common do
     $startdir = File.dirname(__FILE__)
+    $startdir.gsub!('\\', '/')
+    
     $binextensions = []
     buildyml = 'rhobuild.yml'
 
