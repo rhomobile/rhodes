@@ -377,7 +377,7 @@ int get_msie_version(rho::String& msieVer)
 
 int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 {
-	if (strcasecmp("webview",szPropName) == 0)
+	if (strcasecmp("webview_framework",szPropName) == 0)
 	{
 #ifdef RHODES_EMULATOR
 		*resValue = rho_ruby_create_string("WEBKIT/" QTWEBKIT_VERSION_STR);
