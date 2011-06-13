@@ -11,7 +11,7 @@
 #include "camera/Camera.h"
 #include "common/RhoFilePath.h"
 #include "NativeToolbarQt.h"
-#include "rho/rubyext/NativeToolbarExt.h"
+#include "rubyext/NativeToolbarExt.h"
 #include "AppManager.h"
 #undef null
 #include <QString>
