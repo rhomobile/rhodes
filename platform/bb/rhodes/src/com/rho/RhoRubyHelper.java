@@ -33,7 +33,9 @@ import com.xruby.runtime.lang.RubyRuntime;
 import com.rho.net.NetResponse;
 import javax.microedition.io.HttpConnection;
 
-public class RhoRubyHelper implements IRhoRubyHelper {
+public class RhoRubyHelper implements IRhoRubyHelper 
+{
+	private static RhodesApp RHODESAPP(){ return RhodesApp.getInstance(); }
 
 	// WARNING!!! Be very careful when modify these lines! There was a case when
 	// entire application has verification error in case if this line is not at start
@@ -168,6 +170,14 @@ public class RhoRubyHelper implements IRhoRubyHelper {
 	{
 		BrowserSession session = Browser.getDefaultSession();
 		session.showBrowser();
+		
+		if( !RHODESAPP().isExternalUrl(url) )
+		{
+			try{
+				url = FilePath.join(Jsr75File.getRhoPath(), url);
+			}catch(  java.io.IOException exc){}
+		}
+		//String strURL = RHODESAPP().canonicalizeRhoUrl(url);
 		session.displayPage(url);
 	}
 	
