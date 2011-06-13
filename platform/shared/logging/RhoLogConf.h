@@ -114,7 +114,7 @@ inline rho::LogSettings& LOGCONF(){ return rho::g_LogSettings; }
 extern "C"{
 #endif //__cplusplus
 
-void rho_logconf_Init(const char* szRootPath, const char* szLogPort);
+void rho_logconf_Init(const char* szRootPath, const char* szLogPort = "");
 
 char* rho_logconf_getText();
 int   rho_logconf_getTextPos();
