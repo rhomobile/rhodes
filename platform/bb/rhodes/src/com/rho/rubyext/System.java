@@ -359,7 +359,7 @@ public class System {
     		return ObjectFactory.createBoolean(rhomobile.RhodesApplication.getInstance().hasTouchScreen());
     	if ( strPropName.equalsIgnoreCase("has_sqlite") )
     		return ObjectFactory.createBoolean(com.rho.Capabilities.USE_SQLITE);
-    	if ( strPropName.equalsIgnoreCase("webview") ) {
+    	if ( strPropName.equalsIgnoreCase("webview_framework") ) {
     		Version.SoftVersion ver = Version.getSoftVersion();
     		return ObjectFactory.createString((ver.nMajor < 6 ? "BB" : "WEBKIT")+"/"+DeviceInfo.getSoftwareVersion() ); 
     	}
