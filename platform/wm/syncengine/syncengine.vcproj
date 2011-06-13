@@ -608,7 +608,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="EmulatorDebug|Pocket PC 2003 (ARMV4)"
+			Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
@@ -683,7 +683,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="EmulatorDebug|Smartphone 2003 (ARMV4)"
+			Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
@@ -758,7 +758,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="EmulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+			Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
@@ -834,7 +834,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="EmulatorDebug|Win32"
+			Name="SimulatorDebug|Win32"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
@@ -901,7 +901,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="EmulatorRelease|Pocket PC 2003 (ARMV4)"
+			Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
@@ -975,7 +975,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="EmulatorRelease|Smartphone 2003 (ARMV4)"
+			Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
@@ -1049,7 +1049,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="EmulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+			Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
@@ -1124,7 +1124,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="EmulatorRelease|Win32"
+			Name="SimulatorRelease|Win32"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"

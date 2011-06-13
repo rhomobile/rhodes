@@ -18,7 +18,7 @@
 #include <QApplication>
 #include <QtGui/QAction>
 #include <QHash>
-#include "QtMainWindow.h"
+#include "qtrhodes/QtMainWindow.h"
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 

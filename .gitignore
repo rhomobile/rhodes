@@ -154,4 +154,4 @@ xcuserdata
 
 Manifest.java
 
-platform/wm/rhodes/emulator/GeneratedFiles/*
+platform/shared/qtrhodes/GeneratedFiles/*

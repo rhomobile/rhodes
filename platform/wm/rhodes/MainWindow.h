@@ -262,6 +262,6 @@ HBITMAP SHLoadImageFile (  LPCTSTR pszFileName );
 
 #else
 
-#include "emulator\MainWindowQt.h"
+#include "simulator\MainWindowQt.h"
 
 #endif
