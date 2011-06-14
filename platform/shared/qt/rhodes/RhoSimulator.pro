@@ -18,16 +18,16 @@ DEFINES += RHODES_EMULATOR
 INCLUDEPATH += ../..\
 ../../ruby
 
-SOURCES += ExternalWebView.cpp\
-QtMainWindow.cpp\
-QtNativeTabBar.cpp\
-QtWebInspector.cpp
-
 HEADERS +=ExternalWebView.h\
 MainWindowCallback.h\
 QtMainWindow.h\
 QtNativeTabBar.h\
 QtWebInspector.h
+
+SOURCES += ExternalWebView.cpp\
+QtMainWindow.cpp\
+QtNativeTabBar.cpp\
+QtWebInspector.cpp
 
 FORMS += ExternalWebView.ui\
 QtMainWindow.ui\
