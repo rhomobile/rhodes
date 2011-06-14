@@ -12,9 +12,10 @@ macx {
 
 DEFINES += RHODES_EMULATOR
 
-INCLUDEPATH += ../..\
-../../ruby
+INCLUDEPATH += ../..
 
-SOURCES += 
+HEADERS += ../../sqlite/sqlite3.h\
+../../sqlite/sqlite3ext.h
 
-HEADERS +=
+SOURCES += ../../sqlite/sqlite3.c\
+../../sqlite/crypto.c 
