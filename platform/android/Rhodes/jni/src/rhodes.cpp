@@ -533,7 +533,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesApplication_createRhodes
     const char* szRootPath = rho_native_rhopath();
 
     // Init logconf
-    rho_logconf_Init(szRootPath);
+    rho_logconf_Init(szRootPath, "");
 
     // Disable log to stdout as on android all stdout redirects to /dev/null
     RHOCONF().setBool("LogToOutput", false, true);

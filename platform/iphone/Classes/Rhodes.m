@@ -518,7 +518,7 @@ static Rhodes *instance = NULL;
         
         const char *szRootPath = rho_native_rhopath();
         NSLog(@"Init logconf");
-        rho_logconf_Init(szRootPath);
+        rho_logconf_Init(szRootPath, "");
         NSLog(@"Create rhodes app");
         rho_rhodesapp_create(szRootPath);
         app_created = YES;

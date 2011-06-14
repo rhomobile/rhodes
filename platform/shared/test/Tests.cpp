@@ -10,7 +10,7 @@
 
 void runAllLogTests();
 extern "C" void runAllProfilingTests();
-extern "C" void rho_logconf_Init(const char* path);
+extern "C" void rho_logconf_Init(const char* path, const char* logPort);
 extern "C" const char* RhoGetRootPath();
 
 #ifdef OS_MACOSX
@@ -30,7 +30,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		
 #endif
 	
-    rho_logconf_Init(RhoGetRootPath());
+    rho_logconf_Init(RhoGetRootPath(), "");
 
     //runAllLogTests();
     //runAllProfilingTests();
