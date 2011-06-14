@@ -59,7 +59,8 @@
                 extensions = $.jQTouch.prototype.extensions,
                 defaultAnimations = ['slide','flip','slideup','swap','cube','pop','dissolve','fade','back'],
                 animations = [],
-                hairextensions = '';
+                hairextensions = '',
+				pagehref = '';
 
         // Get the party started
         init(options);
@@ -70,7 +71,7 @@
                 addGlossToIcon: true,
 //                backSelector: '.back, .cancel, .goback',
                 backSelector: '.backButton a',  // Rho
-                cacheGetRequests: true,
+                cacheGetRequests: false,
                 cubeSelector: '.cube',
                 dissolveSelector: '.dissolve',
                 fadeSelector: '.fade',
@@ -234,21 +235,25 @@
                 if (isNaN(numberOfPages) || numberOfPages < 1) {
                     numberOfPages = 1;
                 }
-                ;
 
                 // Grab the current page for the "from" info
                 var animation = hist[0].animation;
                 var fromPage = hist[0].page;
-
+				var fromId = hist[0].id;
                 // Remove all pages in front of the target page
                 hist.splice(0, numberOfPages);
 
                 // Grab the target page
                 var toPage = hist[0].page;
-
+				if(hist[0].id != "" && $('#' + hist[0].id).length == 0) {
+					toPage.appendTo($body);
+				}
                 // Make the animations
                 animatePages(fromPage, toPage, animation, true);
-
+				if(fromId != "") {
+					cmd = "$('#" + fromId + "').remove();";
+					setTimeout(cmd,350);
+				}
                 return publicObj;
             } else {
                 //console.error('No pages in history.');
@@ -276,7 +281,10 @@
                 {
                     addPageToHistory(toPage, animation);
                 }
-                
+				if(hist[1].id != ""){
+					cmd = "$('#" + hist[1].id + "').remove();";
+					setTimeout(cmd,350);
+				}
                 return publicObj;
             }
             else
@@ -296,7 +304,7 @@
             var $el = $(e.target);
 
             if ($el.attr('nodeName') !== 'A') {
-                $el = $el.parent('a');
+                $el = $el.parents('a:first');
             }
 
             var target = $el.attr('target'),
@@ -481,6 +489,8 @@
                 if (!$node.attr('id')) {
                     $node.attr('id', 'page-' + (++newPageCount));
                 }
+				$node.attr('pagehref', pagehref);
+				$body.find('*[pagehref="' +pagehref+ '"]').remove();
                 $node.appendTo($body);
                 if ($node.hasClass('current') || !targetPage) {
                     targetPage = $node;
@@ -527,6 +537,7 @@
             var settings = $.extend({}, defaults, options);
             if (href != '#')
             {
+				pagehref = href;
                 // Rho: changed ajax signature to support Rhomobile transitions
                 $.ajax({
                     url: href,
