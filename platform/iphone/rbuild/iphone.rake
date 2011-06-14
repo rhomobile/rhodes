@@ -866,6 +866,7 @@ namespace "run" do
          simlink = File.join($simdir, $sdkver, "Library", "Preferences")
 
          $simrhodes = File.join(simapp, $guid)
+         chmod 0744, File.join($simrhodes, "rhorunner.app", "rhorunner") unless !File.exists?(File.join($simrhodes, "rhorunner.app", "rhorunner"))
 
          mkdir_p File.join($simrhodes, "Documents")
          mkdir_p File.join($simrhodes, "Library", "Preferences")
