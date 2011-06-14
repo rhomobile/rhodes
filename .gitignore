@@ -155,3 +155,5 @@ xcuserdata
 Manifest.java
 
 platform/shared/qt/rhodes/GeneratedFiles/*
+platform/shared/qt/*/Makefile
+platform/osx/build/*
