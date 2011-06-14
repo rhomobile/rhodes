@@ -1,9 +1,9 @@
 QT -= core
 
 TARGET = sqlite3
-TEMPLATE = staticlib
+TEMPLATE = lib
 
-# CONFIG += qt
+CONFIG += staticlib
 
 macx {
   DESTDIR = ../../../osx/build/sqlite3

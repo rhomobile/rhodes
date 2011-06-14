@@ -11,6 +11,10 @@ macx {
   UI_DIR = ../../../osx/build/RhoSimulator/generated_files
   OBJECTS_DIR = ../../../osx/build/RhoSimulator/tmp
   RCC_DIR =  ../../../osx/build/RhoSimulator/resources
+  LIBS += -L../../../osx/build/rubylib -lrubylib
+  LIBS += -L../../../osx/build/rholib -lrholib
+  LIBS += -L../../../osx/build/sqlite3 -lsqlite3
+  LIBS += -L../../../osx/build/syncengine -lsyncengine
 }
 
 DEFINES += RHODES_EMULATOR
