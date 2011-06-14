@@ -16,7 +16,7 @@
 #include "menubar.h"
 #endif
 #include "LogView.h"
-#include "qtrhodes/MainWindowCallback.h"
+#include "qt/rhodes/MainWindowCallback.h"
 
 static UINT WM_TAKEPICTURE             = ::RegisterWindowMessage(L"RHODES_WM_TAKEPICTURE");
 static UINT WM_SELECTPICTURE           = ::RegisterWindowMessage(L"RHODES_WM_SELECTPICTURE");
