@@ -1,9 +1,9 @@
 QT -= core
 
 TARGET = rubylib
-TEMPLATE = staticlib
+TEMPLATE = lib
 
-# CONFIG += qt
+CONFIG += staticlib
 
 macx {
   DESTDIR = ../../../osx/build/rubylib
@@ -18,7 +18,7 @@ INCLUDEPATH += ../..\
 ../../ruby/generated\
 ../../ruby/iphone
 
-HEADERS += ext/rho/rhoruby.h\
+HEADERS += ../../ruby/ext/rho/rhoruby.h\
 ../../ruby/ext/socket/addrinfo.h\
 ../../ruby/ext/socket/constants.h\
 ../../ruby/ext/socket/sockport.h\

@@ -1,9 +1,9 @@
 QT -= core
 
 TARGET = rholib
-TEMPLATE = staticlib
+TEMPLATE = lib
 
-# CONFIG += qt
+CONFIG += staticlib
 
 macx {
   DESTDIR = ../../../osx/build/rholib

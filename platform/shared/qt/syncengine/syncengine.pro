@@ -1,9 +1,9 @@
 QT -= core
 
 TARGET = syncengine
-TEMPLATE = staticlib
+TEMPLATE = lib
 
-# CONFIG += qt
+CONFIG += staticlib
 
 macx {
   DESTDIR = ../../../osx/build/syncengine
@@ -37,8 +37,7 @@ HEADERS += ../../json/arraylist.h\
 ../../db/DBResult.h\
 ../../sync/ClientRegister.h
 
-SOURCES += 
-../../json/arraylist.c\
+SOURCES += ../../json/arraylist.c\
 ../../json/debug.c\
 ../../json/json_object.c\
 ../../json/json_tokener.c\
