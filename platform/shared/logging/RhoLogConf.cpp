@@ -183,6 +183,7 @@ extern "C" {
 using namespace rho;
 using namespace rho::common;
 
+    
 void rho_logconf_Init(const char* szRootPath, const char* szLogPort){
 
 #ifdef RHODES_EMULATOR
@@ -215,7 +216,12 @@ void rho_logconf_Init(const char* szRootPath, const char* szLogPort){
     rho_conf_Init(szRootPath);
 
     LOGCONF().loadFromConf(RHOCONF());
-	LOGCONF().setLogPort(szLogPort);
+    if (szLogPort != NULL) {
+        LOGCONF().setLogPort(szLogPort);
+    }
+    else {
+        LOGCONF().setLogPort("");
+    }
 }
 
 char* rho_logconf_getText() {

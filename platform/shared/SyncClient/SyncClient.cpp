@@ -75,7 +75,7 @@ void rho_syncclient_processmodels(RHOM_MODEL* pModels, int nModels)
 
 void rho_syncclient_init(RHOM_MODEL* pModels, int nModels)
 {
-    rho_logconf_Init(rho_native_rhopath());
+    rho_logconf_Init(rho_native_rhopath(), "");
     CRhodesAppBase::Create( rho_native_rhopath() );
 
     String strDbPath = rho_native_rhopath();

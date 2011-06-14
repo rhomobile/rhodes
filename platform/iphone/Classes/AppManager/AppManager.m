@@ -302,7 +302,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 #endif
 	}
     
-	rho_logconf_Init(rho_native_rhopath());
+	rho_logconf_Init(rho_native_rhopath(), "");
 	rho_rhodesapp_create(rho_native_rhopath());
 	RAWLOG_INFO("Rhodes started");
 }
