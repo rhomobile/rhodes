@@ -53,8 +53,8 @@ public class RhoWebViewClient extends WebViewClient
     @Override
     public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
         
-        if(RhoConf.getBool("NoSSLVerifyPeer")) {
-            Logger.D(TAG, "Skip SSL error.");// + error.toString());
+        if(RhoConf.getBool("no_ssl_verify_peer")) {
+            Logger.D(TAG, "Skip SSL error.");
             handler.proceed();
         } else {
             StringBuilder msg = new StringBuilder();
