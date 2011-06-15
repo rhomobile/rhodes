@@ -150,12 +150,15 @@ Turn on Full Browser mode for Blackberry 4.6.0 and higher
 Turn on Persistent Storage usage mode for Blackberry
 
 	use_persistent_storage = 1
-	
 
 To use only models from bulk database. If true, application will not create models and will use models from bulk sync database
 
 	use_bulk_model = true
-	
+
+Disable WebView to check SSL sertificate (Android). Used to allow proced with self signed sertificates. Use at your own risk.
+
+	no_ssl_verify_peer = 1
+
 ### Last Visited Page
 To save/restore last visited page use WebView.current_location in on_ui_created/on_ui_destroyed of [AppAplication class](application#appapplication-class).
 
