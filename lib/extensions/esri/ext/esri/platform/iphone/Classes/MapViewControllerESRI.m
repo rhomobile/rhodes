@@ -310,7 +310,7 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 //@synthesize locator = _locator;
 @synthesize calloutTemplate = _calloutTemplate;
 
-@synthesize params_value, region_center, region_radius, esriLogo, esri_standard_map_url, esri_satellite_map_url;
+@synthesize params_value, region_center, region_radius, esriLogo, esri_standard_map_url, esri_satellite_map_url, zoomEnabled, scrollEnabled, showsUserLocation, region_set, mapType;	
 
 
 - (id)initWithParams:(rho_param*)params {
@@ -318,24 +318,25 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 	
 	[self init];
 
-	mapType =  ESRI_MapType_RoadMap;
-	zoomEnabled = TRUE;
-	scrollEnabled = TRUE;	
-	showsUserLocation = TRUE;
-	region_set = FALSE;
-	params_value = NULL;
+	self.mapType =  ESRI_MapType_RoadMap;
+	self.zoomEnabled = TRUE;
+	self.scrollEnabled = TRUE;	
+	self.showsUserLocation = TRUE;
+	self.region_set = FALSE;
+	self.params_value = NULL;
+    self.region_center = nil;
 	
-	esri_standard_map_url = kESRI_standart_map_URL;
-	esri_satellite_map_url = kESRI_satellite_map_URL;
+	self.esri_standard_map_url = kESRI_standart_map_URL;
+	self.esri_satellite_map_url = kESRI_satellite_map_URL;
 	
 	{
 		char* std_map = rho_conf_getString("esri_map_url_roadmap");
 		if (std_map) {
-			esri_standard_map_url = [[NSString stringWithUTF8String:std_map] stringByAppendingString:@"MapServer"];
+			self.esri_standard_map_url = [[NSString stringWithUTF8String:std_map] stringByAppendingString:@"MapServer"];
 		}
 		char* sat_map = rho_conf_getString("esri_map_url_satellite");
 		if (sat_map) {
-			esri_satellite_map_url = [[NSString stringWithUTF8String:std_map] stringByAppendingString:@"MapServer"];
+			self.esri_satellite_map_url = [[NSString stringWithUTF8String:std_map] stringByAppendingString:@"MapServer"];
 		}
 	}
 	
@@ -354,7 +355,7 @@ static RhoCloseMapTaskESRI* instance_close = nil;
         }
         if (st)
             [self setSettings:st];
-        params_value = params;//[self setAnnotations:ann];
+        self.params_value = params;//[self setAnnotations:ann];
     }
     //rho_param_free(params);
 	return self;
@@ -460,24 +461,24 @@ static RhoCloseMapTaskESRI* instance_close = nil;
                 if (!center || !radius)
                     continue;
                 
-                region_center = [NSString stringWithUTF8String:center];
-                region_radius = strtod(radius, NULL);
+                self.region_center = [NSString stringWithUTF8String:center];
+                self.region_radius = strtod(radius, NULL);
 			}
         }
         else if (strcasecmp(name, "zoom_enabled") == 0) {
             if (value->type != RHO_PARAM_STRING)
                 continue;
-            zoomEnabled = strcasecmp(value->v.string, "true") == 0;
+            self.zoomEnabled = strcasecmp(value->v.string, "true") == 0;
         }
         else if (strcasecmp(name, "scroll_enabled") == 0) {
             if (value->type != RHO_PARAM_STRING)
                 continue;
-            scrollEnabled = strcasecmp(value->v.string, "true") == 0;
+            self.scrollEnabled = strcasecmp(value->v.string, "true") == 0;
         }
         else if (strcasecmp(name, "shows_user_location") == 0) {
             if (value->type != RHO_PARAM_STRING)
                 continue;
-            showsUserLocation = strcasecmp(value->v.string, "true") == 0;
+            self.showsUserLocation = strcasecmp(value->v.string, "true") == 0;
         }
     }
 }

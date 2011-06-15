@@ -37,8 +37,8 @@
 }
 
 // 
-@property (copy) NSString *region_center;
-@property (copy) NSString *gapikey;
+@property (nonatomic,retain) NSString *region_center;
+@property (nonatomic,retain) NSString *gapikey;
 @property (nonatomic,retain) UIView *savedMainView;
 
 + (void)createMap:(rho_param*)params;
