@@ -1243,15 +1243,17 @@ Links with style display:block:
 	</a>
 Solution: remove display:block from a element
 
-### Blackberry 5.0 full browser
+### Blackberry 5.0 and above full browser
 
-Blackberry 5.0 has new BrowserField class, which support javascript, ajax and extended css. To use it set in [rhoconfig.txt](configuration#run-time-configuration):
+Blackberry 5.0 and above has new BrowserField class, which support javascript, ajax and extended css. To use it set in [rhoconfig.txt](configuration#run-time-configuration):
 
 	# use full browser only on BB 5.0 and above
 	use_bb_full_browser=5 
 
 	# use full browser only on touch devices including 5.0
 	use_bb_full_browser=touch 
+
+WebView.execute_js is also supported in this mode.
 
 NOTE: on Blackberry 5.0 non-touch device full browser has problems with fields navigation - it does not move from one focus field to another like usual browser field does, it just move from one symbol to another. This issue make full browser usable only on touch screen devices.
 
