@@ -502,7 +502,35 @@ public class RhodesService extends Service {
 	}
 	
 	private void handleCommand(Intent intent, int startId) {
-		String source = intent.getStringExtra(INTENT_SOURCE);
+
+		Logger.I(TAG, "start command: " + intent.toUri(Intent.URI_INTENT_SCHEME));
+
+        StringBuilder msg = new StringBuilder();
+        msg.append("Start command: ");
+        if (intent.getData() != null)
+            msg.append(intent.getDataString());
+        final Bundle intentExtras = intent.getExtras();
+        if (intentExtras != null) {
+            msg.append("extras: {");
+            Set<String> keys = intentExtras.keySet();
+            boolean first = true;
+
+            for (String key : keys) {
+                if (!first)
+                    msg.append("; ");
+                else
+                    first = false;
+                msg.append(key);
+                Object value = intentExtras.get(key);
+                if (value != null) {
+                    msg.append(": ");
+                    msg.append(value.toString());
+                }
+            }
+        }
+        Logger.I(TAG, msg.toString());
+
+        String source = intent.getStringExtra(INTENT_SOURCE);
 		Logger.D(TAG, "handleCommand: startId=" + startId + ", source=" + source);
 		if (source == null)
 			throw new IllegalArgumentException("Service command received from empty source");
