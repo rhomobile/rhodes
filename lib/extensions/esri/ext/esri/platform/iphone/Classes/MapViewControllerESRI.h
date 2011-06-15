@@ -43,12 +43,19 @@
 
 
 
-typedef enum  {
-	ESRI_MapType_RoadMap,
-	ESRI_MapType_Satellite,
-	ESRI_MapType_Hybrid
-} RHO_ESRI_Map_Type;
+//typedef enum  {
+//	ESRI_MapType_RoadMap,
+//	ESRI_MapType_Satellite,
+//	ESRI_MapType_Hybrid
+//} RHO_ESRI_Map_Type;
 
+typedef int RHO_ESRI_Map_Type;
+
+#define ESRI_MapType_RoadMap 1
+#define ESRI_MapType_Satellite 2
+#define ESRI_MapType_Hybrid 3
+    
+    
 //Set up constant for predefined where clause for search
 //#define kLayerDefinitionFormat @"STATE_NAME = '%@'"
 
@@ -105,7 +112,7 @@ typedef enum  {
 @property (nonatomic, retain) IBOutlet AGSMapView *mapView;
 @property (nonatomic, assign) AGSDynamicMapServiceLayer *dynamicLayer;
 @property (nonatomic, assign) UIView *dynamicLayerView;
-@property (nonatomic, assign) RHO_ESRI_Map_Type mapType;
+
 
 @property (nonatomic, retain) AGSGraphicsLayer *graphicsLayer;
 //@property (nonatomic, retain) AGSLocator *locator;
@@ -114,6 +121,16 @@ typedef enum  {
 @property (nonatomic, assign) rho_param* params_value;
 
 @property (nonatomic, retain) UIImageView* esriLogo;
+
+
+
+
+@property (assign) BOOL zoomEnabled;
+@property (assign) BOOL scrollEnabled;	
+@property (assign) BOOL showsUserLocation;
+@property (assign) BOOL region_set;	
+@property (assign) RHO_ESRI_Map_Type mapType;
+
 
 
 - (id)initWithParams:(rho_param*)params;
