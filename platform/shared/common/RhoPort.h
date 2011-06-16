@@ -142,7 +142,7 @@ char* str_assign(char* data);
       (unsigned long)pthread_self(), ##__VA_ARGS__)
 
 #else // OS_ANDROID
-#define RHO_LOG(...)
+#define RHO_LOG(ARGS...)
 #endif // OS_ANDROID
 
 #define RHO_TRACE_POINT RHO_LOG("trace point")
