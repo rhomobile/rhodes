@@ -5,14 +5,16 @@
 #-------------------------------------------------
 
 QT       -= gui
+DEFINES += _SYMBIAN=1
 
 TARGET = rubylib
 TEMPLATE = lib
 CONFIG += staticlib
-INCLUDEPATH += ../../shared/
-INCLUDEPATH += ../../shared/ruby/
-INCLUDEPATH += ../../shared/ruby/include/
-INCLUDEPATH += ../../shared/ruby/symbian/
+INCLUDEPATH += ../../shared
+INCLUDEPATH += ../../shared/ruby
+INCLUDEPATH += ../../shared/ruby/include
+INCLUDEPATH += ../../shared/ruby/symbian
+
 
 SOURCES += \
     ../../shared/ruby/enc/utf_8.c \
