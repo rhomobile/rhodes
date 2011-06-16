@@ -216,7 +216,7 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
 
 /*static*/ void CRhoFile::createFolder(const char* szFolderPath)
 {
-#if defined(OS_WINDOWS) || defined(OS_WINCE)
+#if defined(OS_WINDOWS) || defined(OS_WINCE) || defined(OS_SYMBIAN32)
     _mkdir(szFolderPath);
 #else
     mkdir(szFolderPath, S_IRWXU);
