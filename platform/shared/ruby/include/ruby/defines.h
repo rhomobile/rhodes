@@ -188,7 +188,7 @@ void xfree(void*);
 #endif /* __APPLE__ */
 #endif /* NeXT */
 
-#if defined(_WIN32) && !defined(_SYMBIAN)
+#if defined(_WIN32)
 #include "ruby/win32.h"
 #endif
 
