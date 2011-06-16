@@ -9,6 +9,7 @@ QT       -= gui
 TARGET = sqlite3
 TEMPLATE = lib
 CONFIG += staticlib
+INCLUDEPATH += ../../shared/
 
 SOURCES += \
     ../../shared/sqlite/sqlite3.c
