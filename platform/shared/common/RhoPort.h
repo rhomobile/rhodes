@@ -131,20 +131,4 @@ char* str_assign(char* data);
 }
 #endif
 
-//#define RHO_ENABLE_LOG
-
-#if defined(OS_ANDROID) && defined(RHO_ENABLE_LOG)
-
-#include <android/log.h>
-
-#define RHO_LOG(fmt, ...) \
-  __android_log_print(ANDROID_LOG_INFO, "RHO_LOG", "%s:%d: thread %08lx: " fmt, __FILE__, __LINE__, \
-      (unsigned long)pthread_self(), ##__VA_ARGS__)
-
-#else // OS_ANDROID
-#define RHO_LOG(ARGS...)
-#endif // OS_ANDROID
-
-#define RHO_TRACE_POINT RHO_LOG("trace point")
-
 #endif //_RHOPORT_H_

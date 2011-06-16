@@ -18,6 +18,19 @@
   errno = EACCES; \
   return -1
 
+//#define RHO_ENABLE_LOG
+#if defined(OS_ANDROID) && defined(RHO_ENABLE_LOG)
+#include <android/log.h>
+#define RHO_LOG(fmt, ...) \
+  __android_log_print(ANDROID_LOG_INFO, "RHO_LOG", "%s:%d: thread %08lx: " fmt, __FILE__, __LINE__, \
+      (unsigned long)pthread_self(), ##__VA_ARGS__)
+
+#else // OS_ANDROID
+#define RHO_LOG(...)
+#endif // OS_ANDROID
+
+#define RHO_TRACE_POINT RHO_LOG("trace point")
+
 enum rho_fileapi_type_t
 {
     rho_type_file,
