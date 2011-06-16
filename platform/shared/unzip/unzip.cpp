@@ -59,9 +59,12 @@ typedef unsigned short WORD;
 #ifdef UNICODE
 
 #ifdef __SYMBIAN32__
-	#define _tsprintf sprintf
+        #define _tcslen wcslen
+        #define _tcsncpy wcsncpy
+        #define _tcsstr wcsstr
+        #define _tsprintf swprintf
+        #define _T(x)       (TCHAR*)__T(x)
 #else
-	#define _tsprintf swprintf
 #endif
 
 #else

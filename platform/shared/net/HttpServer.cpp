@@ -475,7 +475,7 @@ bool CHttpServer::receive_request(ByteVector &request)
         int n = recv(m_sock, &buf[0], sizeof(buf), 0);
         if (n == -1) {
             int e = RHO_NET_ERROR_CODE;
-#if !defined(OS_WINDOWS) && !defined(OS_WINCE)
+#if !defined(WINDOWS_PLATFORM)
             if (e == EINTR)
                 continue;
 #else
@@ -523,7 +523,7 @@ bool CHttpServer::send_response_impl(String const &data, bool continuation)
     }
     
     // First of all, make socket blocking
-#if defined(OS_WINDOWS) || defined(OS_WINCE)
+#if defined(WINDOWS_PLATFORM)
     unsigned long optval = 0;
         if(::ioctlsocket(m_sock, FIONBIO, &optval) == SOCKET_ERROR) {
         RAWLOG_ERROR1("Can not set blocking socket mode: %d", RHO_NET_ERROR_CODE);
@@ -546,7 +546,7 @@ bool CHttpServer::send_response_impl(String const &data, bool continuation)
         int n = send(m_sock, data.c_str() + pos, data.size() - pos, 0);
         if (n == -1) {
             int e = RHO_NET_ERROR_CODE;
-#if !defined(OS_WINDOWS) && !defined(OS_WINCE)
+#if !defined(WINDOWS_PLATFORM)
             if (e == EINTR)
                 continue;
 #endif
@@ -630,7 +630,7 @@ bool CHttpServer::process(SOCKET sock)
     m_sock = sock;
 
 	// First of all, make socket non-blocking
-#if defined(OS_WINDOWS) || defined(OS_WINCE)
+#if defined(WINDOWS_PLATFORM)
 	unsigned long optval = 1;
 	if(::ioctlsocket(m_sock, FIONBIO, &optval) == SOCKET_ERROR) {
 		RAWLOG_ERROR1("Can not set non-blocking socket mode: %d", RHO_NET_ERROR_CODE);

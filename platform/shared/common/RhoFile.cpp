@@ -210,7 +210,7 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
 #endif
 }
 
-#if defined(OS_WINDOWS) || defined(OS_WINCE)
+#if defined(WINDOWS_PLATFORM)
     extern "C" int _mkdir(const char * dir);
 #endif
 
