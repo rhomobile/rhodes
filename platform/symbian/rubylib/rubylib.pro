@@ -9,6 +9,10 @@ QT       -= gui
 TARGET = rubylib
 TEMPLATE = lib
 CONFIG += staticlib
+INCLUDEPATH += ../../shared/
+INCLUDEPATH += ../../shared/ruby/
+INCLUDEPATH += ../../shared/ruby/include/
+INCLUDEPATH += ../../shared/ruby/symbian/
 
 SOURCES += \
     ../../shared/ruby/enc/utf_8.c \
@@ -111,7 +115,6 @@ SOURCES += \
     ../../shared/ruby/ext/webview/webview_wrap.c
 
 HEADERS += \
-    ../../shared/ruby/regenc.h \
     ../../shared/ruby/id.h \
     ../../shared/ruby/gc.h \
     ../../shared/ruby/eval_intern.h \
@@ -123,12 +126,16 @@ HEADERS += \
     ../../shared/ruby/transcode_data.h \
     ../../shared/ruby/revision.h \
     ../../shared/ruby/regparse.h \
-    ../../shared/ruby/regint.h \
     ../../shared/ruby/ext/calendar/event.h \
     ../../shared/ruby/ext/phonebook/phonebook.h \
     ../../shared/ruby/ext/rho/rhoruby.h \
     ../../shared/ruby/ext/socket/sockport.h \
-    ../../shared/ruby/ext/socket/addrinfo.h
+    ../../shared/ruby/ext/socket/addrinfo.h \
+    ../../shared/ruby/regint.h \
+    ../../shared/ruby/regenc.h \
+    ../../shared/ruby/symbian/ruby/config.h \
+    ../../shared/ruby/symbian/symbian.h \
+    ../../shared/ruby/symbian/assert.h
 unix:!symbian {
     maemo5 {
         target.path = /opt/usr/lib
