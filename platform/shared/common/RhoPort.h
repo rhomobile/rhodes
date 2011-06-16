@@ -131,4 +131,6 @@ char* str_assign(char* data);
 }
 #endif
 
+#define RHO_TRACE_POINT RHO_LOG("trace point")
+
 #endif //_RHOPORT_H_

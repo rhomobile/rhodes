@@ -9,6 +9,7 @@ QT       -= gui
 TARGET = rholib
 TEMPLATE = lib
 CONFIG += staticlib
+DEFINES += __SYMBIAN32__=1
 INCLUDEPATH += ../../shared/
 
 SOURCES += \
