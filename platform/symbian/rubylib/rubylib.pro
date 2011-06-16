@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       -= gui
-DEFINES += _SYMBIAN=1
+DEFINES += __SYMBIAN32__=1
 
 TARGET = rubylib
 TEMPLATE = lib
