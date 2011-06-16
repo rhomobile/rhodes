@@ -3,6 +3,9 @@
 
 #if defined(__SYMBIAN32__)
 # define OS_SYMBIAN
+#if defined(WIN32)
+# define OS_SYMBIAN32
+#endif
 #elif defined(_WIN32_WCE)
 # define OS_WINCE _WIN32_WINCE
 #elif defined(WIN32)
