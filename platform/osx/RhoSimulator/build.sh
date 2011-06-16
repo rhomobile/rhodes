@@ -5,6 +5,9 @@ make all
 cd ../rholib
 qmake -o Makefile -spec macx-g++ rholib.pro
 make all
+# cd ../curl
+# qmake -o Makefile -spec macx-g++ curl.pro
+# make all
 cd ../sqlite3
 qmake -o Makefile -spec macx-g++ sqlite3.pro
 make all

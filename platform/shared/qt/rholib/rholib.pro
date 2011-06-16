@@ -25,6 +25,7 @@ HEADERS += ../../common/RhoAppAdapter.h\
 ../../common/RhodesAppBase.h\
 ../../common/RhodesApp.h\
 ../../common/RhoConf.h\
+../../common/RhoSimConf.h\
 ../../statistic/RhoProfiler.h\
 ../../common/RhoDefs.h\
 ../../common/RhoFatalError.h\
@@ -66,6 +67,7 @@ SOURCES += ../../common/RhoTime.cpp\
 ../../common/RhodesAppBase.cpp\
 ../../common/RhodesApp.cpp\
 ../../common/RhoConf.cpp\
+../../common/RhoSimConf.cpp\
 ../../statistic/RhoProfiler.cpp\
 ../../common/RhoFile.cpp\
 ../../logging/RhoLog.cpp\
