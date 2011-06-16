@@ -21,6 +21,10 @@
 #else
 #endif
 
+#if defined(OS_WINDOWS) || defined(OS_WINCE) || defined(OS_SYMBIAN32)
+#define WINDOWS_PLATFORM
+#endif
+
 #ifdef __cplusplus
 # if defined(__GNUC__) && __GNUC__ >= 4
 #  define RHO_GLOBAL extern "C" __attribute__ ((visibility ("default")))

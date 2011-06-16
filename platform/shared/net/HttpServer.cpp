@@ -7,7 +7,7 @@
 
 #include <algorithm>
 
-#if !defined(OS_WINDOWS) && !defined(OS_WINCE)
+#if !defined(OS_WINDOWS) && !defined(OS_WINCE) && !defined(OS_SYMBIAN32)
 #include <arpa/inet.h>
 #endif
 
@@ -25,7 +25,7 @@ char *strerror(int errnum ){return "";}
 
 #endif
 
-#if defined(OS_WINDOWS) || defined(OS_WINCE)
+#if defined(OS_WINDOWS) || defined(OS_WINCE) || defined(OS_SYMBIAN32)
 typedef unsigned __int16 uint16_t;
 
 #  ifndef S_ISDIR
@@ -397,7 +397,7 @@ bool CHttpServer::run()
                     return true;
                 }
                 if (conn == INVALID_SOCKET) {
-        #if !defined(OS_WINDOWS) && !defined(OS_WINCE)
+        #if !defined(WINDOWS_PLATFORM)
                     if (RHO_NET_ERROR_CODE == EINTR)
                         continue;
         #endif

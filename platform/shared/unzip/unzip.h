@@ -5,6 +5,10 @@
 extern "C" {
 #endif
 
+#if defined(UNICODE) && !defined(_UNICODE)
+#define _UNICODE
+#endif
+
 #if defined(WIN32) || defined(_WIN32_WCE)
 #else
 #define ZIP_STD
