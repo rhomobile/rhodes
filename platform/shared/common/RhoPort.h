@@ -3,7 +3,7 @@
 
 #include "RhoDefs.h"
 
-#if defined( OS_WINDOWS ) || defined( OS_WINCE )
+#if defined( OS_WINDOWS ) || defined( OS_WINCE ) || defined(OS_SYMBIAN32)
 
 #include <windows.h>
 #include <time.h>

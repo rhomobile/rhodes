@@ -8,7 +8,7 @@
 namespace rho{
 namespace common{
 
-#if defined(OS_WINDOWS) || defined(OS_WINCE)
+#if defined(OS_WINDOWS) || defined(OS_WINCE) || defined(OS_SYMBIAN32)
 typedef CRITICAL_SECTION MutexType;
 #else
 typedef pthread_mutex_t MutexType;
@@ -28,7 +28,7 @@ private:
     MutexType m_nativeMutex;
 };
 
-#if defined(OS_WINDOWS) || defined(OS_WINCE)
+#if defined(OS_WINDOWS) || defined(OS_WINCE) || defined(OS_SYMBIAN32)
 CMutex::CMutex()             { InitializeCriticalSection(&m_nativeMutex); }
 CMutex::~CMutex()            { DeleteCriticalSection(&m_nativeMutex); }
 void CMutex::Lock()         { EnterCriticalSection(&m_nativeMutex); }
