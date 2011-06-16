@@ -9,6 +9,7 @@ QT       -= gui
 TARGET = syncengine
 TEMPLATE = lib
 CONFIG += staticlib
+INCLUDEPATH += ../../shared/
 
 SOURCES += \
     ../../shared/db/DBResult.cpp \
