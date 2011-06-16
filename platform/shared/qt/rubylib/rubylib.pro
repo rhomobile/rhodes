@@ -8,6 +8,9 @@ CONFIG += staticlib
 macx {
   DESTDIR = ../../../osx/build/rubylib
   OBJECTS_DIR = ../../../osx/build/rubylib/tmp
+  INCLUDEPATH += ../../ruby/iphone
+  HEADERS += ../../ruby/iphone/ruby/config.h\
+../../ruby/iphone/crt_externs.h
 }
 
 DEFINES += RHODES_EMULATOR
@@ -15,8 +18,7 @@ DEFINES += RHODES_EMULATOR
 INCLUDEPATH += ../..\
 ../../ruby\
 ../../ruby/include\
-../../ruby/generated\
-../../ruby/iphone
+../../ruby/generated
 
 HEADERS += ../../ruby/ext/rho/rhoruby.h\
 ../../ruby/ext/socket/addrinfo.h\
@@ -37,8 +39,6 @@ HEADERS += ../../ruby/ext/rho/rhoruby.h\
 ../../ruby/version.h\
 ../../ruby/vm_core.h\
 ../../ruby/vm_opts.h\
-../../ruby/iphone/ruby/config.h\
-../../ruby/iphone/crt_externs.h\
 ../../ruby/thread_pthread.h
 
 SOURCES += ../../ruby/ext/datetimepicker/datetimepicker_wrap.c\
