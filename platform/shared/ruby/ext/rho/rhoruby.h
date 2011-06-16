@@ -23,7 +23,7 @@ extern "C" {
 typedef unsigned long VALUE;
 #endif //!RUBY_RUBY_H
 	
-#if defined( OS_WINDOWS ) || defined( OS_WINCE )
+#if defined( OS_WINDOWS ) || defined( OS_WINCE ) || defined(OS_SYMBIAN32)
 typedef unsigned __int64 uint64__;
 #else
 typedef unsigned long long uint64__;
