@@ -155,7 +155,7 @@ To use only models from bulk database. If true, application will not create mode
 
 	use_bulk_model = true
 
-Disable WebView to check SSL sertificate (Android). Used to allow proced with self signed sertificates. Use at your own risk.
+Disable WebView to check SSL sertificate (Android). Used to allow proced with self signed sertificates. Use at your own risk. This configuration option works well for any Android version except 2.3.3/2.3.4 (due to Android WebView behavior).
 
 	no_ssl_verify_peer = 1
 
