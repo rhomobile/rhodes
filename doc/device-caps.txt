@@ -54,6 +54,7 @@ Properties:
 * has_network - is device connected to the network
 * phone_number - device phone number
 * device_id - returns device ID which may be used to receive push messages. This is not phone device id, this is PUSH device id - you should register you phone for PUSH before get this parameter. Read [Push Notification documentation](device-caps#push-notifications) about it. On iPhone it may be empty right after application started while Rhodes registers to receive PUSH notifications; you should wait till it become non-empty.
+* phone_id - returns hardware based id. It depends on capabilities configured for an application and has to remain same even across application uninstall/install.
 * full_browser -  is full browser in the WebView control on Blackberry (see [here](#blackberry-browser-support) for more details)
 * device_name - name of device application running on. Examples: '9000' (BB), 'iPhone', 'dream' (Android)
 * os_version - version of OS of device. Examples: '4.6.0.192' (BB), '3.0' (iPhone), '1.6' (Android)
