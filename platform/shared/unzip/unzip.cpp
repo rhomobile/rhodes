@@ -9,6 +9,10 @@
 #define ZIP_STD
 #endif
 
+#if defined(UNICODE) && !defined(_UNICODE)
+#define _UNICODE
+#endif
+
 #ifdef ZIP_STD
 #include <stdio.h>
 #include <string.h>
@@ -3974,7 +3978,7 @@ ZRESULT TUnzip::Get(int index,ZIPENTRY *ze)
   ze->index=uf->num_file;
   TCHAR tfn[MAX_PATH];
 #ifdef UNICODE
-#ifdef __SYMBIAN32__
+#if defined(__SYMBIAN32__) && !defined(WIN32)
   strcpy(tfn,fn);
 #else  
   MultiByteToWideChar(CP_UTF8,0,fn,-1,tfn,MAX_PATH);
@@ -4082,7 +4086,7 @@ ZRESULT TUnzip::Find(const TCHAR *tname,bool ic,int *index,ZIPENTRY *ze)
 { char name[MAX_PATH];
 #ifdef UNICODE
 
-#ifdef __SYMBIAN32__
+#if defined(__SYMBIAN32__) && !defined(WIN32)
   strcpy(name,tname);
 #else
   WideCharToMultiByte(CP_UTF8,0,tname,-1,name,MAX_PATH,0,0);
