@@ -3,7 +3,7 @@
 
 #include "RhoStd.h"
 
-#if !defined( OS_WINDOWS ) && !defined(OS_WINCE)
+#if !defined( OS_WINDOWS ) && !defined(OS_WINCE) && !defined(OS_SYMBIAN32)
 #include <sys/time.h>
 #endif
 
@@ -39,7 +39,7 @@ public:
         int nSize = 0;
         if ( ms )
         {
-#if !defined( OS_WINDOWS ) && !defined(OS_WINCE)
+#if !defined( OS_WINDOWS ) && !defined(OS_WINCE) && !defined(OS_SYMBIAN32)
             struct timeval tv;
             struct timezone tz;
             struct tm* locTime;
@@ -121,7 +121,7 @@ public:
     static CTimeInterval getCurrentTime(){
         CTimeInterval res;
 
-#if defined( OS_WINDOWS ) || defined(OS_WINCE)
+#if defined( OS_WINDOWS ) || defined(OS_WINCE) || defined(OS_SYMBIAN32)
         res.m_nativeTime = GetTickCount();
 #else
         struct timeval tv;

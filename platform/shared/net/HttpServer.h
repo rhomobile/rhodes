@@ -4,7 +4,7 @@
 #include "common/RhoStd.h"
 #include "logging/RhoLog.h"
 
-#if !defined(OS_WINDOWS) && !defined(OS_WINCE)
+#if !defined(OS_WINDOWS) && !defined(OS_WINCE) && !defined(OS_SYMBIAN32)
 typedef int SOCKET;
 #  define INVALID_SOCKET -1
 #  define SOCKET_ERROR -1
