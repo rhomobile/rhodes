@@ -9,10 +9,6 @@
 #define ZIP_STD
 #endif
 
-#if defined(UNICODE) && !defined(_UNICODE)
-#define _UNICODE
-#endif
-
 #ifdef ZIP_STD
 #include <stdio.h>
 #include <string.h>
