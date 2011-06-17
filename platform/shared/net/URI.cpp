@@ -303,11 +303,5 @@ String URI::urlEncode(const String& fullPath)
 	}
 }
 	
-/**static*/ boolean URI::isLocalHost(const String& strUrl)
-{
-	return strUrl.find("http://localhost") == 0 ||
-        strUrl.find("http://127.0.0.1") == 0;
-}	
-
 }
 }
