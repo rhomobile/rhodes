@@ -31,6 +31,8 @@ int rho_native_view_manager_create_native_view(const char* viewtype, int tab_ind
     //RhoNativeViewUtil::executeInUIThread_WM(open_command);
 
     //return opened_view->id;
+
+    return -1;
 }
 
 void rho_native_view_manager_navigate_native_view(int native_view_id, const char* url)

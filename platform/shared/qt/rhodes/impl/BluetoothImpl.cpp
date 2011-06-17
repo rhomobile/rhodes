@@ -57,11 +57,12 @@ void rho_bluetooth_session_write_string(const char* connected_device_name, const
 
 VALUE rho_bluetooth_session_read_data(const char* connected_device_name)
 {
-    return 0;
+    return rho_ruby_get_NIL();
 }
 
 void rho_bluetooth_session_write_data(const char* connected_device_name, VALUE data)
 {
+    //TODO: rho_bluetooth_session_write_data
 }
 
 } //extern "C"

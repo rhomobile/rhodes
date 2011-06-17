@@ -170,7 +170,7 @@ void RhoRubyStart()
         rb_ary_push(load_path, rb_str_new2(app_path) );
 
         strcpy(app_path, rho_simconf_getRhodesPath());
-        strcat(app_path, "\\lib\\framework");
+        strcat(app_path, "/lib/framework");
         rb_ary_push(load_path, rb_str_new2(app_path) );
     }
 

@@ -24,7 +24,8 @@ void  choose_datetime(char* callback, char* title,
     choose_datetime_with_range( callback, title, initial_time, format, data, 0, 0);
 }
 
-void set_change_value_callback_datetime(char* callback) {
+void set_change_value_callback_datetime(char* callback)
+{
     //TODO: implement set_change_value_callback_datetime
 }
 
