@@ -357,6 +357,8 @@ For examples on how to use the API provided by this class, see the view and cont
 
 ## Camera
 
+### Main API
+
 Check if the device has a camera:
 	:::ruby
 	System::get_property('has_camera')
@@ -375,6 +377,38 @@ Once the user has taken/chosen a picture, the callback URL you specified will be
 
 * Status is 'ok', 'cancel', or 'error'
 * image_uri points to the taken/chosen image stored in the /public/db-files folder; the image file will have auto-generated name.
+
+### Extended API (only on iOS and Android)
+
+Take a picture:
+	:::ruby
+	Camera::take_picture('/app/model/camera_callback', options_hash)
+
+options_has - hash contain additional parameters :
+"camera_type" - "default"(is the same with "main"), "main", "front". Default value = "default"
+"desired_width" - number, desired width in pixels. Default value = max camera width
+"desired_height" - number, desired height in pixels. Default value = max camera height
+"color_model" "RGB", "Grayscale". Default value = "RGB"
+"format" "jpg", "png". Default value = "jpg"
+"enable_editing" - boolean, enable post photo capture image customize (supported only on iPhone !). Default value = true. If you enable this, image will captured reduced to screen size (not full size)!
+
+Additional parameters in camera callback :
+"status" - "ok", "cancel", "error"
+"message" - if status == error, then in this value contain message about error
+"image_uri" - uri of saved image file
+"image_width" - image width
+"image_height" - image height
+"image_format" - "png", "jpg"
+
+Get camera info:
+	:::ruby
+	Camera::get_camera_info(camera_type)
+
+camera_type - "default"(is the same with "main"), "main", "front"
+return Hash with camera info for selected camera type or NIL if this type is not supported.
+In returned hash :
+"max_resolution" - hash with "width" and "height" numeric values.
+
 
 ### Sample
 See controller and view in the /app/Image folder of the [ System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/Image/controller.rb) for more information.
