@@ -138,7 +138,7 @@ public class FileList extends BaseActivity implements OnClickListener{
 				dst = RhodesAppOptions.getBlobPath() + "/" + Utils.getBaseName(file);
 				Utils.copy(file, dst);
 			}
-			com.rhomobile.rhodes.camera.Camera.doCallback(callbackUrl, dst == null ? "" : dst);
+			com.rhomobile.rhodes.camera.Camera.doCallback(callbackUrl, dst == null ? "" : dst, 0, 0, "");
 		}
 		catch (IOException e) {
 			Logger.E(TAG, e);

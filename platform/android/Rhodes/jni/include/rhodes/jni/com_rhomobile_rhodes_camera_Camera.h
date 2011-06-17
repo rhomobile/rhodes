@@ -12,8 +12,8 @@ extern "C" {
  * Method:    callback
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V
  */
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_camera_Camera_callback
-  (JNIEnv *, jclass, jstring, jstring, jstring, jboolean);
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_camera_Camera_callback
+  (JNIEnv *env, jclass, jstring callback_url, jstring body);
 
 #ifdef __cplusplus
 }
