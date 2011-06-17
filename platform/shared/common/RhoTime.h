@@ -39,13 +39,16 @@ public:
         int nSize = 0;
         if ( ms )
         {
-#if !defined( OS_WINDOWS ) && !defined(OS_WINCE) && !defined(OS_SYMBIAN32)
+#if !defined( WINDOWS_PLATFORM )
             struct timeval tv;
             struct timezone tz;
             struct tm* locTime;
             gettimeofday( &tv, &tz );
+#ifdef OS_SYMBIAN
+            locTime = localtime((time_t*)&tv.tv_sec);
+#else
             locTime = localtime(&tv.tv_sec);
-
+#endif
             if (inFileFormat)
                 nSize = sprintf(timeBuf, "%02d%02d%04d%02d%02d%02d%03d", locTime->tm_mon+1, locTime->tm_mday, locTime->tm_year + 1900,
                         locTime->tm_hour, locTime->tm_min, locTime->tm_sec, (int)tv.tv_usec/1000 );
