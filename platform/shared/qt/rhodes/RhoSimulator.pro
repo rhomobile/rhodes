@@ -30,7 +30,8 @@ MainWindowCallback.h\
 QtMainWindow.h\
 QtNativeTabBar.h\
 QtWebInspector.h\
-impl/RhoClassFactoryImpl.h
+impl/RhoClassFactoryImpl.h\
+impl/MainWindowImpl.h
 
 SOURCES += main.cpp\
 ExternalWebView.cpp\
@@ -54,7 +55,8 @@ impl/RhoThreadImpl.cpp\
 impl/RingtoneManagerImpl.cpp\
 impl/SignatureImpl.cpp\
 impl/SystemImpl.cpp\
-impl/WebViewImpl.cpp
+impl/WebViewImpl.cpp\
+impl/MainWindowImpl.cpp
 
 FORMS += ExternalWebView.ui\
 QtMainWindow.ui\

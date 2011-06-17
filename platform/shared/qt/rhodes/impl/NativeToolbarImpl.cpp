@@ -5,19 +5,18 @@
 
 extern "C" {
 
-int rho_wmsys_has_touchscreen();
-
-void remove_native_toolbar();
+void remove_native_toolbar() 
+{
+    //TODO: getAppWindow().performOnUiThread(new CNativeToolbar::CRemoveTask() );
+}
 
 void create_native_toolbar(int bar_type, rho_param *p) 
 {
     if ( bar_type == NOBAR_TYPE )
         remove_native_toolbar();
-    else if ( bar_type == TOOLBAR_TYPE )
-    {
+    else if ( bar_type == TOOLBAR_TYPE ) {
         //TODO: getAppWindow().performOnUiThread(new CNativeToolbar::CCreateTask(p) );
-    }else
-    {
+    } else {
         RAWLOGC_ERROR("NativeBar", "Only Toolbar control is supported.");
     }
 }
@@ -26,11 +25,6 @@ void create_nativebar(int bar_type, rho_param *p)
 {
     RAWLOGC_INFO("NativeBar", "NativeBar.create() is DEPRECATED. Use Rho::NativeToolbar.create() or Rho::NativeTabbar.create().");
     create_native_toolbar(bar_type, p);
-}
-
-void remove_native_toolbar() 
-{
-    //TODO: getAppWindow().performOnUiThread(new CNativeToolbar::CRemoveTask() );
 }
 
 void remove_nativebar() 
@@ -88,6 +82,7 @@ void nativebar_set_tab_badge(int index,char* val)
 int native_tabbar_get_current_tab() 
 {
     //TODO: return getAppWindow().tabbarGetCurrent();
+    return 0;
 }
 
 void nativebar_switch_tab(int index)
@@ -99,14 +94,17 @@ void nativebar_switch_tab(int index)
 //NavBar - iphone only
 void create_navbar(rho_param *p)
 {
+    //TODO: create_navbar
 }
 
 void remove_navbar()
 {
+    //TODO: remove_navbar
 }
 
 VALUE navbar_started()
 {
+    //TODO: navbar_started
     return rho_ruby_create_boolean(0);
 }
 

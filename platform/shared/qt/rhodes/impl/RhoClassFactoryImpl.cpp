@@ -4,6 +4,7 @@
 //#include "RhoCryptImpl.h"
 
 static rho::common::CRhoClassFactory g_oRhoClassFactory;
+
 rho::common::IRhoClassFactory* rho_get_RhoClassFactory()
 {
     return &g_oRhoClassFactory;
