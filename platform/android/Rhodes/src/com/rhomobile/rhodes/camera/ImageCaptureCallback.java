@@ -36,12 +36,19 @@ public class ImageCaptureCallback implements PictureCallback {
 	private String callbackUrl;
 	private OutputStream osCommon;
 	private String filePath;
+	
+	private int mImgWidth;
+	private int mImgHeight;
+	private String mImgFormat;
 
-	public ImageCaptureCallback(ImageCapture owner, String u, OutputStream o, String f) {
+	public ImageCaptureCallback(ImageCapture owner, String u, OutputStream o, String f, int w, int h, String format) {
 		mOwner = owner;
 		callbackUrl = u;
 		osCommon = o;
 		filePath = f;
+		mImgWidth = w;
+		mImgHeight = h;
+		mImgFormat = format;
 	}
 
 	public void onPictureTaken(byte[] data, Camera camera) {
@@ -57,7 +64,7 @@ public class ImageCaptureCallback implements PictureCallback {
 			osOwn.flush();
 			osOwn.close();
 
-			com.rhomobile.rhodes.camera.Camera.doCallback(callbackUrl, filePath);
+			com.rhomobile.rhodes.camera.Camera.doCallback(callbackUrl, filePath, mImgWidth, mImgHeight, mImgFormat);
 			mOwner.finish();
 
 		} catch (Exception e) {
