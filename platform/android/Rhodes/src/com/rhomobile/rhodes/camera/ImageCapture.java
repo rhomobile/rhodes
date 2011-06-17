@@ -326,9 +326,12 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 			String dir = RhodesAppOptions.getBlobPath();
 			
 			OutputStream osCommon = getContentResolver().openOutputStream(uri);
-			iccb = new ImageCaptureCallback(this, callbackUrl, osCommon, dir + "/" + filename + ".jpg");
 			
 	        Camera.Parameters parameters = camera.getParameters();
+	        
+	        int imgW = 0;
+	        int imgH = 0;
+	        
             //int nOrient = RhodesService.getInstance().getScreenOrientation();
             int nCamRotate = 90;
             if ( (m_rotation > 45 && m_rotation < 135) || (m_rotation > 225 && m_rotation < 315) )
@@ -378,10 +381,35 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
     			}
     	        Logger.D(TAG, "    Selected size : " + String.valueOf(newW) + " x " + String.valueOf(newH) );
             	parameters.setPictureSize(newW, newH);
+            	imgW = newW;
+            	imgH = newH;
+            }
+            else {
+            	// detect camera resolution
+    			Camera.Parameters p = camera.getParameters();
+    			
+    			List<Size> sizes = p.getSupportedPictureSizes();
+    			Iterator<Size> iter = sizes.iterator();
+    			// find closest preview size
+    			float max_S = -1;
+    			int maxW = 0;
+    			int maxH = 0;
+    			while (iter.hasNext()) {
+    				Size s = iter.next();
+					float cur_S = ((float)s.width)*((float)s.height);
+					if (cur_S > max_S) {
+						max_S = cur_S;
+						maxW = s.width;
+						maxH = s.height;
+					}
+    			}
+    			imgW = maxW;
+    			imgH = maxH;
             }
             if (mSettings.getColorModel() == mSettings.CAMERA_COLOR_MODEL_GRAYSCALE) {
             	parameters.setColorEffect(Camera.Parameters.EFFECT_MONO);
             }
+			iccb = new ImageCaptureCallback(this, callbackUrl, osCommon, dir + "/" + filename + ".jpg", imgW, imgH, "jpg");
             camera.setParameters(parameters);
 
 		} catch (Exception ex) {

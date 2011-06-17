@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
+import com.rhomobile.rhodes.camera.Camera;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.mainview.SplashScreen;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
@@ -131,6 +132,8 @@ public class RhodesActivity extends BaseActivity {
 		uiThreadId = ct.getId();
 
 		sInstance = this;
+		
+		Camera.init_from_UI_Thread();
 
 		if (!RhodesService.isTitleEnabled()) {
 			requestWindowFeature(Window.FEATURE_NO_TITLE);

@@ -5,6 +5,7 @@
 //  Created by Vlad on 2/12/09.
 //  Copyright 2009 __MyCompanyName__. All rights reserved.
 //
+#include <sys/sysctl.h>
 
 #import "Rhodes.h"
 #import "PickImageDelegate.h"
@@ -242,6 +243,10 @@
          */
     }
     
+    int imageWidth = (int)img.size.width;
+    int imageHeight = (int)img.size.height;
+    
+    
     
     NSString *filename = nil; 	
     if (settings.format == CAMERA_SETTINGS_FORMAT_JPG) {
@@ -268,8 +273,34 @@
     }
     
     
-    rho_rhodesapp_callCameraCallback([postUrl UTF8String], [filename UTF8String],
-            isError ? "Can't write image to the storage." : "", 0 );
+	NSString* strBody = @"&rho_callback=1";
+    if (isError) {
+        strBody = [strBody stringByAppendingString:@"&status=error&message=Can't write image to the storage"];
+    }
+    else {
+        strBody = [strBody stringByAppendingString:@"&status=ok&image_uri=db%2Fdb-files%2F"];
+        strBody = [strBody stringByAppendingString:filename];
+        strBody = [strBody stringByAppendingString:@"&image_width="];
+        strBody = [strBody stringByAppendingString:[NSString stringWithFormat:@"%d", imageWidth]];
+        strBody = [strBody stringByAppendingString:@"&image_height="];
+        strBody = [strBody stringByAppendingString:[NSString stringWithFormat:@"%d", imageHeight]];
+        strBody = [strBody stringByAppendingString:@"&image_format="];
+        if (settings.format == CAMERA_SETTINGS_FORMAT_JPG) {
+            strBody = [strBody stringByAppendingString:@"jpg"];
+        }
+        else {
+            strBody = [strBody stringByAppendingString:@"png"];
+        }
+    }
+    
+	const char* cb = [postUrl UTF8String];
+	const char* b = [strBody UTF8String];
+	rho_net_request_with_data(rho_http_normalizeurl(cb), b);
+    
+    
+    
+    //rho_rhodesapp_callCameraCallback([postUrl UTF8String], [filename UTF8String],
+    //        isError ? "Can't write image to the storage." : "", 0 );
 } 
 
 - (void)imagePickerController:(UIImagePickerController *)picker 
@@ -336,5 +367,122 @@ void choose_picture(char* callback_url) {
 
 
 VALUE get_camera_info(const char* camera_type) {
-    return rho_ruby_get_NIL();
+    
+    int w = 0;
+    int h = 0;
+    BOOL isFront = strcmp(camera_type, "front") == 0;
+    
+	size_t size;
+    sysctlbyname("hw.machine", NULL, &size, NULL, 0);
+    char *answer = malloc(size);
+	sysctlbyname("hw.machine", answer, &size, NULL, 0);
+	NSString *platform = [NSString stringWithCString:answer encoding: NSUTF8StringEncoding];
+	free(answer);    
+    
+	if ([platform isEqualToString:@"iPhone1,1"]) {
+        // iPhone 1
+        if (!isFront) {
+            w = 1600;
+            h = 1200;
+        }
+    }
+	if ([platform isEqualToString:@"iPhone1,2"]) {
+        // iPhone 3G
+        if (!isFront) {
+            w = 1600;
+            h = 1200;
+        }
+    }
+	if ([platform hasPrefix:@"iPhone2"]) {
+        // iPhone 3GS
+        if (!isFront) {
+            w = 2048;
+            h = 1536;
+        }
+    }
+	if ([platform hasPrefix:@"iPhone3"]) {
+        // iPhone 4
+        if (!isFront) {
+            w = 2592;
+            h = 1936;
+        }
+        else {
+            w = 640;
+            h = 480;
+        }
+    }
+	if ([platform hasPrefix:@"iPhone4"]) {
+        // iPhone 5
+        if (!isFront) {
+            w = 2592;
+            h = 1936;
+        }
+        else {
+            w = 640;
+            h = 480;
+        }
+    }
+    
+	if ([platform isEqualToString:@"iPod1,1"]) {
+        // iPod Touch 1
+    }
+	if ([platform isEqualToString:@"iPod2,1"]) {
+        // iPod Touch 2
+    }
+	if ([platform isEqualToString:@"iPod3,1"]) {
+        // iPod Touch 3
+    }
+	if ([platform isEqualToString:@"iPod4,1"]) {
+        // iPod Touch 4
+        if (!isFront) {
+            w = 960;
+            h = 720;
+        }
+        else {
+            w = 640;
+            h = 480;
+        }
+    }
+	if ([platform isEqualToString:@"iPod5"]) {
+        // iPod Touch 5
+        if (!isFront) {
+            w = 960;
+            h = 720;
+        }
+        else {
+            w = 640;
+            h = 480;
+        }
+    }
+    
+	if ([platform isEqualToString:@"iPad1,1"])  {
+        // iPad
+    }
+	if ([platform isEqualToString:@"iPad2,1"])  {
+        // iPad 2
+        if (!isFront) {
+            w = 960;
+            h = 720;
+        }
+        else {
+            w = 640;
+            h = 480;
+        }
+    }
+    
+    if ((w <= 0) || (h <= 0)) {
+        return rho_ruby_get_NIL();
+    }
+    
+    VALUE hash = rho_ruby_createHash();
+    
+    VALUE hash_max_resolution = rho_ruby_createHash();
+    
+    rho_ruby_add_to_hash(hash_max_resolution, rho_ruby_create_string("width"), rho_ruby_create_integer(w));
+    rho_ruby_add_to_hash(hash_max_resolution, rho_ruby_create_string("height"), rho_ruby_create_integer(h));
+    
+    rho_ruby_add_to_hash(hash, rho_ruby_create_string("max_resolution"), hash_max_resolution);
+    
+    return hash;
+    
 }
