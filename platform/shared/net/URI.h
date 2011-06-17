@@ -33,8 +33,6 @@ public:
 	};*/
 
     static void parseCookie(const char* szCookie, String& cookie);
-	
-	static boolean isLocalHost(const String& strUrl);
 };
 
 }

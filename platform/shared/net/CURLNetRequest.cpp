@@ -177,7 +177,7 @@ INetResponse* CURLNetRequest::doRequest(const char *method, const String& strUrl
 CURLcode CURLNetRequest::doCURLPerform(const String& strUrl)
 {
 	CURLcode err = m_curl.perform();
-	if ( err !=  CURLE_OK && !net::URI::isLocalHost(strUrl.c_str()) )
+	if ( err !=  CURLE_OK && !RHODESAPP().isBaseUrl(strUrl.c_str()) )
 	{
 		long statusCode = 0;
 		curl_easy_getinfo(m_curl.curl(), CURLINFO_RESPONSE_CODE, &statusCode);
@@ -198,7 +198,7 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
     if (oFile)
         nStartFrom = oFile->size();
 
-	if( !net::URI::isLocalHost(strUrl.c_str()) )
+	if( !RHODESAPP().isBaseUrl(strUrl.c_str()) )
     {
         //Log every non localhost requests
         RAWLOG_INFO2("%s request (Pull): %s", method, strUrl.c_str());
@@ -260,7 +260,7 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
         break;
     }
 
-	if( !net::URI::isLocalHost(strUrl.c_str()) )		   
+	if( !RHODESAPP().isBaseUrl(strUrl.c_str()) )		   
 	   rho_net_impl_network_indicator(0);
 
     return makeResponse(respBody, nRespCode);
@@ -510,7 +510,7 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
         curl_easy_setopt(m_curl, CURLOPT_COOKIE, session.c_str());
     }
     
-    //curl_easy_setopt(m_curl, CURLOPT_TIMEOUT, timeout);
+    curl_easy_setopt(m_curl, CURLOPT_TIMEOUT, timeout);
     curl_easy_setopt(m_curl, CURLOPT_TCP_NODELAY, 0); //enable Nagle algorithm
     
     curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, (long)m_sslVerifyPeer);
@@ -518,7 +518,7 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
     // Set very large timeout in case of local requests
     // It is required because otherwise requests (especially requests to writing!)
     // could repeated twice or more times
-    //if (net::URI::isLocalHost(strUrl))
+    if (RHODESAPP().isBaseUrl(strUrl))
         curl_easy_setopt(m_curl, CURLOPT_TIMEOUT, 10*24*60*60);
     
     curl_slist *hdrs = NULL;
