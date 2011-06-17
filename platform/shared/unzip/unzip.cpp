@@ -67,6 +67,9 @@ typedef unsigned short WORD;
 #else
 #endif
 
+#if defined(WIN32) || defined(_WIN32_WCE)
+#define _tsprintf wsprintf
+#endif
 #else
 #define _tsprintf sprintf
 #endif

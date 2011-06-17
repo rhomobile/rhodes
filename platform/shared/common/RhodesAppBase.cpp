@@ -99,7 +99,7 @@ int rho_unzip_file(const char* szZipPath)
 {
     rho::common::CFilePath oPath(szZipPath);
     rho::String strBaseDir = oPath.getFolderName();
-#ifdef  UNICODE
+#if defined(UNICODE) && defined(WIN32)
     rho::StringW strZipPathW;
     rho::common::convertToStringW(szZipPath, strZipPathW);
     HZIP hz = OpenZipFile(strZipPathW.c_str(), "");
