@@ -5,6 +5,7 @@
 #include "common/RhoFilePath.h"
 #include "logging/RhoLog.h"
 #undef null
+#include <qglobal.h>
 #include <QWebPage>
 #include "QtMainWindow.h"
 
@@ -46,81 +47,86 @@ VALUE rho_sys_get_locale()
 int rho_sys_get_screen_width()
 {
     //TODO: return CMainWindow::getScreenWidth();
+    return 400;
 }
 
 int rho_sys_get_screen_height()
 {
     //TODO: return CMainWindow::getScreenHeight();
+    return 600;
 }
 
 int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 {
-    if (strcasecmp("webview_framework",szPropName) == 0)
-    {
+    if (strcasecmp("webview_framework",szPropName) == 0) {
         *resValue = rho_ruby_create_string("WEBKIT/" QTWEBKIT_VERSION_STR);
         return 1;
     }
 
-    if (strcasecmp("main_window_closed",szPropName) == 0) 
-        {*resValue = rho_ruby_create_boolean(
-        //TODO: CMainWindow::mainWindowClosed
-        0); return 1;}
+    if (strcasecmp("main_window_closed",szPropName) == 0) {
+        //TODO: "main_window_closed" (CMainWindow::mainWindowClosed)
+        *resValue = rho_ruby_create_boolean(0);
+        return 1;
+    }
 
-    if (strcasecmp("has_camera",szPropName) == 0) 
-        {*resValue = rho_ruby_create_boolean(has_camera()); return 1;}
+    if (strcasecmp("has_camera",szPropName) == 0) {
+        *resValue = rho_ruby_create_boolean(has_camera());
+        return 1;
+    }
 
-    if (strcasecmp("phone_number",szPropName) == 0)
-        {*resValue = phone_number();return 1;}
+    if (strcasecmp("phone_number",szPropName) == 0) {
+        *resValue = phone_number();
+        return 1;
+    }
 
-    if (strcasecmp("ppi_x",szPropName) == 0)
-        {*resValue = rho_ruby_create_double(get_screen_ppi_x()); return 1;}
+    if (strcasecmp("ppi_x",szPropName) == 0) {
+        *resValue = rho_ruby_create_double(get_screen_ppi_x());
+        return 1;
+    }
 
-    if (strcasecmp("ppi_y",szPropName) == 0)
-        {*resValue = rho_ruby_create_double(get_screen_ppi_y()); return 1; }
+    if (strcasecmp("ppi_y",szPropName) == 0) {
+        *resValue = rho_ruby_create_double(get_screen_ppi_y());
+        return 1;
+    }
 
-    if (strcasecmp("locale",szPropName) == 0)
-        {*resValue = rho_sys_get_locale(); return 1;}
+    if (strcasecmp("locale",szPropName) == 0) {
+        *resValue = rho_sys_get_locale();
+        return 1;
+    }
 
-    if (strcasecmp("country",szPropName) == 0)
-    {
+    if (strcasecmp("country",szPropName) == 0) {
         //TODO: "country"
         *resValue = rho_ruby_create_string("US");
         return 1;
     }
 
-    if (strcasecmp("device_name",szPropName) == 0)
-    {
-        *resValue = rho_ruby_create_string("Win32");
+    if (strcasecmp("device_name",szPropName) == 0) {
+        *resValue = rho_ruby_create_string("Qt");
         return 1;
     }
 
-    if (strcasecmp("os_version",szPropName) == 0)
-    {
+    if (strcasecmp("os_version",szPropName) == 0) {
         //TODO: "os_version"
+        *resValue = rho_ruby_create_string(QT_VERSION_STR);
         return 1;
     }
 
-    if (strcasecmp("is_emulator",szPropName) == 0)
-    {
-        bool bEmulator = false;
-        bEmulator = true;
-        *resValue = rho_ruby_create_boolean(bEmulator?1:0);
-        return 1;
-    }
-
-    if (strcasecmp("has_calendar",szPropName) == 0)
-    {
+    if (strcasecmp("is_emulator",szPropName) == 0) {
         *resValue = rho_ruby_create_boolean(1);
         return 1;
     }
 
-    if (strcasecmp("has_touchscreen",szPropName) == 0)
-    {
+    if (strcasecmp("has_calendar",szPropName) == 0) {
         *resValue = rho_ruby_create_boolean(1);
         return 1;
     }
-    if (strcasecmp("screen_orientation",szPropName) == 0)
-    {
+
+    if (strcasecmp("has_touchscreen",szPropName) == 0) {
+        *resValue = rho_ruby_create_boolean(1);
+        return 1;
+    }
+
+    if (strcasecmp("screen_orientation",szPropName) == 0) {
         if (rho_sys_get_screen_width() <= rho_sys_get_screen_height()) 
         {
             *resValue = rho_ruby_create_string("portrait");
