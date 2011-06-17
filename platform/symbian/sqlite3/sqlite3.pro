@@ -10,6 +10,7 @@ TARGET = sqlite3
 TEMPLATE = lib
 CONFIG += staticlib
 INCLUDEPATH += ../../shared/
+DEFINES += __BSD_VISIBLE=1
 
 SOURCES += \
     ../../shared/sqlite/sqlite3.c
