@@ -3,7 +3,7 @@
 
 #include "RhoDefs.h"
 
-#if defined( OS_WINDOWS ) || defined( OS_WINCE ) || defined(OS_SYMBIAN32)
+#if defined( WINDOWS_PLATFORM )
 
 #include <windows.h>
 #include <time.h>
@@ -83,6 +83,11 @@ typedef unsigned __int64 uint64;
 #  else
 #    include <wchar.h>
 #  endif // OS_ANDROID
+
+#if defined(OS_SYMBIAN)
+#    include <sys/select.h>
+#endif
+
 #  include <sys/types.h>
 #  include <sys/socket.h>
 #  include <netinet/in.h>
@@ -107,6 +112,10 @@ typedef unsigned __int64 uint64;
 //typedef uint32_t uint32;
 typedef long long int64;
 typedef unsigned long long uint64;
+
+#if defined(OS_SYMBIAN)
+#define M_PI 3.14159265358979323846
+#endif
 
 #endif 
 

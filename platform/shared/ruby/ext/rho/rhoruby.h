@@ -23,11 +23,13 @@ extern "C" {
 typedef unsigned long VALUE;
 #endif //!RUBY_RUBY_H
 	
-#if defined( OS_WINDOWS ) || defined( OS_WINCE ) || defined(OS_SYMBIAN32)
+#if defined( WINDOWS_PLATFORM )
 typedef unsigned __int64 uint64__;
 #else
 typedef unsigned long long uint64__;
-typedef unsigned long long __int64;	
+#ifndef OS_SYMBIAN
+typedef unsigned long long __int64;
+#endif
 #endif
 	
 void RhoRubyStart();

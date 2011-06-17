@@ -26,7 +26,6 @@ SOURCES += \
     ../../shared/common/RhodesApp.cpp \
     ../../shared/common/RhoConf.cpp \
     ../../shared/common/AppMenu.cpp \
-    ../../shared/common/app_build_configs.c \
     ../../shared/logging/RhoPlainLog.cpp \
     ../../shared/logging/RhoLogSink.cpp \
     ../../shared/logging/RhoLogConf.cpp \

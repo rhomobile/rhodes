@@ -5,6 +5,9 @@
 # define OS_SYMBIAN
 #if defined(WIN32)
 # define OS_SYMBIAN32
+#else
+# define OS_SYMBIANDEV
+# undef UNICODE
 #endif
 #elif defined(_WIN32_WCE)
 # define OS_WINCE _WIN32_WINCE

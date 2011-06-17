@@ -5,13 +5,15 @@
 extern "C" {
 #endif
 
-#if defined(UNICODE) && !defined(_UNICODE)
-#define _UNICODE
-#endif
-
 #if defined(WIN32) || defined(_WIN32_WCE)
 #else
 #define ZIP_STD
+
+#if defined(__SYMBIAN32__)
+# undef UNICODE
+# undef _UNICODE
+#endif
+
 #endif
 
 //
@@ -23,7 +25,9 @@ extern "C" {
 #define MAX_PATH 1024
 #endif
 typedef unsigned long DWORD;
+
 typedef char TCHAR;
+
 typedef FILE* HANDLE;
 typedef time_t FILETIME;
 #endif
