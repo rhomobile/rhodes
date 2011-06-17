@@ -59,7 +59,7 @@ public class PushListeningThread extends Thread {
     public static boolean isPushServiceEnabled()
     {
     	if ( !RhoConf.getInstance().isExist("push_options") )
-    		return true;
+    		return false;
     	
     	String strOptions = RhoConf.getInstance().getString("push_options");
     	
