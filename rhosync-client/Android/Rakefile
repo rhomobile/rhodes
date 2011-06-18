@@ -1,0 +1,102 @@
+#USE_TRACES = Rake.application.options.trace
+
+$basepath = File.dirname(__FILE__)
+$rootpath = File.join $basepath, '..', '..'
+
+$current_platform = 'android'
+$min_api_level = 4
+
+if RUBY_PLATFORM =~ /(win|w)32$/
+  $all_files_mask = "*.*"
+  $rubypath = "res/build-tools/RhoRuby.exe"
+  $bat_ext = ".bat"
+  $exe_ext = ".exe"
+  $path_separator = ";"
+else
+  $all_files_mask = "*"
+  $bat_ext = ""
+  $exe_ext = ""
+  $path_separator = ":"
+  if RUBY_PLATFORM =~ /darwin/
+    $rubypath = "res/build-tools/RubyMac"
+  else
+    $rubypath = "res/build-tools/rubylinux"
+  end
+end
+
+require File.join($basepath, 'android_sdk.rb')
+require File.join($rootpath, 'lib/build/jake.rb')
+
+$rootpath = Jake.get_absolute $rootpath
+$sharedpath = File.join $rootpath, 'platform', 'shared'
+$builddir = File.join $basepath, 'build'
+
+$libs = ["curl"]
+
+$libname = {"curl" => "libcurl"}
+$buildargs = {"curl" => ["-DHAVE_CONFIG_H",
+                            "-I#{File.join($sharedpath, "curl", "include")}",
+                            "-I#{File.join($sharedpath, "curl")}",
+                            "-I#{$sharedpath}"]
+             }
+
+#task :default => ["android:config"]
+
+namespace "android" do
+  namespace "config" do
+
+#    def get_yaml(name, default)
+#        value = $appconfig["android"][name] unless $appconfig["android"].nil?
+#        value = $rhoconfig["android"][name] if value.nil? and not $rhoconfig["android"].nil?
+#        value = default if value.nil?
+#    end
+
+    task :rhobuildyml do
+      rhobuildyml = File.join $rootpath, 'rhobuild.yml'
+      rhobuildyml = ENV["RHOBUILD"] unless ENV["RHOBUILD"].nil?
+
+      $rhoconfig = Jake.config(File.open(rhobuildyml))
+      $rhoconfig["platform"] = 'android'
+    end
+
+    task :buildyml do
+      buildyml = File.join $basepath, 'build.yml'
+      $appconfig = Jake.config(File.open(buildyml))
+    end
+
+    task :sdk do
+      $androidsdkpath = $rhoconfig["env"]["paths"]["android"]
+      sdk_level = setup_sdk $androidsdkpath, $min_api_level
+
+      $androidndkpath = $rhoconfig["env"]["paths"]["android-ndk"]
+      setup_ndk $androidndkpath, sdk_level
+    end
+
+  end # namespace "config"
+
+  task :config => [ "config:rhobuildyml", "config:buildyml", "config:sdk" ] do
+    $config = "debug"
+  end # task :config
+
+  namespace "build" do
+    task :libcurl => "android:config" do
+      # Steps to ge-DHAVE_CONFIG_Ht curl_config.h from fresh libcurl sources:
+      #export PATH=<ndkroot>/build/prebuilt/linux-x86/arm-eabi-4.2.1/bin:$PATH
+      #export CC=arm-eabi-gcc
+      #export CPP=arm-eabi-cpp
+      #export CFLAGS="--sysroot <ndkroot>/build/platforms/android-3/arch-arm -fPIC -mandroid -DANDROID -DOS_ANDROID"
+      #export CPPFLAGS="--sysroot <ndkroot>/build/platforms/android-3/arch-arm -fPIC -mandroid -DANDROID -DOS_ANDROID"
+      #./configure --without-ssl --without-ca-bundle --without-ca-path --without-libssh2 --without-libidn --disable-ldap --disable-ldaps --host=arm-eabi
+
+      lib = "curl"
+
+      buildpath = File.join($builddir, $config, $ndkabi, $ndkgccver)
+      libpath = File.join($builddir, $config, $ndkabi, $ndkgccver, $libname[lib] + '.a')
+
+      cc_build($libname[lib], buildpath, $buildargs[lib]) or exit 1
+      cc_ar(libpath, Dir.glob(buildpath + '/**/*.o')) or exit 1
+    end
+  end
+end # namespace "android"
+
+
