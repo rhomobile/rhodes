@@ -8,12 +8,6 @@ using namespace rho;
 
 extern "C" {
 
-const char* rho_native_rhopath() 
-{
-    //TODO: return _AtlModule.getRhoRootPath().c_str();
-    return "/Volumes/MacOSWork/Rhomobile/rhodes-system-api-samples/"; // "./rho/";
-}
-
 void rho_conf_show_log()
 {
     //TODO: ::PostMessage(getMainWnd(),WM_COMMAND,IDM_LOG,0);
