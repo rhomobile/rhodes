@@ -178,6 +178,7 @@ void CAsyncHttp::CHttpCommand::execute()
             resp = getNet().pushMultipartData( m_params.getString("url"), arMultipartItems, null, &m_mapHeaders );
             break;
         }
+    default: ;
     }
 
     if ( !m_NetRequest.isCancelled())

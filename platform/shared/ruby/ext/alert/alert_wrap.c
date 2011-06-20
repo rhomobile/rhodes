@@ -1825,7 +1825,7 @@ extern void alert_vibrate(void*);
 extern void alert_play_file(char* file_name, ...);
 #define play_file alert_play_file 
 
-extern void show_status(char* szTitle, char* szText, char* szHideLabel);
+extern void rho_alert_show_status(char* szTitle, char* szText, char* szHideLabel);
 #define show_status rho_alert_show_status
 
 

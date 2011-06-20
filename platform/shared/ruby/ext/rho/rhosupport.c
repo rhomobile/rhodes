@@ -13,6 +13,11 @@
 #include "common/RhodesApp.h"
 #include "common/RhoMutexLock.h"
 #include "logging/RhoLog.h"
+
+#ifdef RHODES_EMULATOR
+#include "common/RhoSimConf.h"
+#endif
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoRuby"
 

@@ -1814,7 +1814,7 @@ static VALUE mSignatureTool;
 #define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),(void**)(a)) 
 
 
-extern void take_signature(char* callback_url, char* image_format);
+extern void rho_signature_take_signature(char* callback_url, char* image_format);
 #define take_signature rho_signature_take_signature 
 
 
