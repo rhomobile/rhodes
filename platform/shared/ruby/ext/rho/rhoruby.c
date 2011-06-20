@@ -19,6 +19,11 @@
 #endif
 
 #include "logging/RhoLog.h"
+
+#ifdef RHODES_EMULATOR
+#include "common/RhoSimConf.h"
+#endif
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoRuby"
 extern void Init_strscan();
