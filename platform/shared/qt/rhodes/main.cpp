@@ -18,16 +18,22 @@ using namespace std;
 
 static String g_strCmdLine;
 
+static String m_strRootPath, m_strRhodesPath, m_logPort;
+static String m_strHttpProxy;
+
 extern "C" {
     void parseHttpProxyURI(const String &http_proxy);
     void rho_ringtone_manager_stop();
+
+    const char* rho_native_rhopath() 
+    {
+        return m_strRootPath.c_str();
+    }
 }
 
 int main(int argc, char *argv[])
 {
     CMainWindow m_appWindow;
-    String m_strRootPath, m_strRhodesPath, m_logPort;
-    String m_strHttpProxy;
 
     //TODO: ParseCommandLine
     m_logPort = String("11000"); // "log"
