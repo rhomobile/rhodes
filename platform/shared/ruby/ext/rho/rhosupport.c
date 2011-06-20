@@ -205,7 +205,7 @@ static VALUE check_extension(VALUE res, VALUE fname, int nAddExtName)
             rb_str_cat(res, RSTRING_PTR(fname), szSlash-RSTRING_PTR(fname));
     }
 
-    rb_str_cat2(res,"\\");
+    rb_str_cat2(res,"/");
     rb_str_append(res,fname);
     rb_str_cat2(res,RHO_RB_EXT);
 
@@ -275,13 +275,13 @@ static VALUE find_file(VALUE fname)
 #ifdef RHODES_EMULATOR
                 //check for extensions
                 res = rb_str_new2(rho_simconf_getRhodesPath() );
-                rb_str_cat2(res,"\\lib\\extensions\\");
+                rb_str_cat2(res,"/lib/extensions/");
 
                 res = check_extension(res, fname, 1);
                 if ( !res )
                 {
                     res = rb_str_new2(rho_native_rhopath() );
-                    rb_str_cat2(res,"\\extensions\\");
+                    rb_str_cat2(res,"/extensions/");
 
                     res = check_extension(res, fname,1);
                 }

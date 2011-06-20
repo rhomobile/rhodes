@@ -6,12 +6,15 @@
 #include "common/RhodesApp.h"
 #include "common/rhoparams.h"
 #include "../MainWindowCallback.h"
+#undef null
+#include <QObject>
 
-class CMainWindow : public IMainWindowCallback
+class CMainWindow : public QObject, IMainWindowCallback
 {
+    Q_OBJECT
     DEFINE_LOGCLASS;
 public:
-    CMainWindow();
+    explicit CMainWindow();
     ~CMainWindow();
     // IMainWindowCallback
     virtual void updateSizeProperties(int width, int height);
@@ -77,6 +80,10 @@ private:
     rho::Vector<rho::common::CAppMenuItem> m_arAppMenuItems;
     //TODO: CAlertDialog *m_alertDialog;
     //TODO: CSyncStatusDlg *m_SyncStatusDlg;
+
+signals:
+    void executeRunnable(rho::common::IRhoRunnable*);
+
 public:
     typedef struct _TNavigateData {
         int index;
