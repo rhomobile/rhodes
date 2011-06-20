@@ -7,7 +7,7 @@
 #undef null
 #include <qglobal.h>
 #include <QWebPage>
-#include "QtMainWindow.h"
+#include "MainWindowImpl.h"
 
 using namespace rho;
 using namespace rho::common;
@@ -46,14 +46,12 @@ VALUE rho_sys_get_locale()
 
 int rho_sys_get_screen_width()
 {
-    //TODO: return CMainWindow::getScreenWidth();
-    return 400;
+    return CMainWindow::getScreenWidth();
 }
 
 int rho_sys_get_screen_height()
 {
-    //TODO: return CMainWindow::getScreenHeight();
-    return 600;
+    return CMainWindow::getScreenHeight();
 }
 
 int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
@@ -64,8 +62,7 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
     }
 
     if (strcasecmp("main_window_closed",szPropName) == 0) {
-        //TODO: "main_window_closed" (CMainWindow::mainWindowClosed)
-        *resValue = rho_ruby_create_boolean(0);
+        *resValue = rho_ruby_create_boolean(CMainWindow::mainWindowClosed);
         return 1;
     }
 

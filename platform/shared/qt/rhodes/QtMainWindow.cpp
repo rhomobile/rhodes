@@ -474,3 +474,8 @@ void QtMainWindow::on_menuAction_triggered(bool checked)
     if (sender && (action = dynamic_cast<QAction*>(sender)) && cb)
         cb->onCustomMenuItemCommand(action->data().toInt());
 }
+
+void QtMainWindow::executeRunnable(rho::common::IRhoRunnable* pTask)
+{
+    pTask->runObject();
+}

@@ -84,6 +84,8 @@ private slots:
     void on_toolbarAction_triggered(bool);
     void on_menuAction_triggered(bool);
     void on_menuMain_aboutToShow();
+public slots:
+    void executeRunnable(rho::common::IRhoRunnable* pTask);
 protected:
     void resizeEvent(QResizeEvent *);
 };
