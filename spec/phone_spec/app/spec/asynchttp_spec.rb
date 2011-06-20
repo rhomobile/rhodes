@@ -19,7 +19,7 @@ describe "AsyncHttp" do
         #puts "res : #{res}"  
         
         res['status'].should == 'ok'
-        res['headers']['content-type'].should ==  'text/plain'
+        res['headers']['content-type'].should ==  'text/plain; charset=utf-8'
         res['body'].should_not be_nil
 
         # www.apache.org response with gzipped body if client declare 'Accept-Encoging: gzip'
