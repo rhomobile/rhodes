@@ -13,8 +13,9 @@
 #include <QHash>
 #include "../QtMainWindow.h"
 
-// Mac OS X hack
+#ifdef __APPLE__
 #define stricmp strcasecmp
+#endif
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 
@@ -29,6 +30,7 @@ int CMainWindow::m_screenHeight;
 bool CMainWindow::mainWindowClosed = false;
 
 CMainWindow::CMainWindow():
+    QObject(),
     m_started(true),
     qtApplication(NULL),
     qtMainWindow(NULL)
@@ -147,6 +149,9 @@ bool CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
     ((QtMainWindow*)qtMainWindow)->setWindowTitle(QString::fromWCharArray(title));
     ((QtMainWindow*)qtMainWindow)->setCallback(callback);
     ((QtMainWindow*)qtMainWindow)->show();
+
+    QObject::connect(this, SIGNAL(executeRunnable(rho::common::IRhoRunnable*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(executeRunnable(rho::common::IRhoRunnable*)) );
 
     return true;
 }
@@ -543,8 +548,7 @@ void CMainWindow::menuAddAction(const char* label, int item)
 
 void CMainWindow::performOnUiThread(rho::common::IRhoRunnable* pTask)
 {
-    //TODO: performOnUiThread
-    //PostMessage(WM_EXECUTE_RUNNABLE, 0, (LPARAM)pTask);
+    emit executeRunnable(pTask);
 }
 
 void CMainWindow::onActivate(int active)
