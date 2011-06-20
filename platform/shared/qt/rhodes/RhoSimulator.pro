@@ -3,7 +3,7 @@ QT += core gui webkit
 TARGET = RhoSimulator
 TEMPLATE = app
 
-# CONFIG += qt
+CONFIG += warn_on
 
 macx {
   DESTDIR = ../../../osx/build/RhoSimulator
@@ -20,6 +20,9 @@ macx {
 }
 
 DEFINES += RHODES_EMULATOR
+
+QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
 
 INCLUDEPATH += ../..\
 ../../ruby\

@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
     // Show the main application window
     //m_appWindow.ShowWindow();
 
-    rho_clientregister_create("win32_client");
+    rho_clientregister_create("qt_client");
 
     // RunMessageLoop:
     m_appWindow.messageLoop();

@@ -3,7 +3,7 @@ QT -= core
 TARGET = rholib
 TEMPLATE = lib
 
-CONFIG += staticlib
+CONFIG += staticlib warn_on
 
 macx {
   DESTDIR = ../../../osx/build/rholib
@@ -12,7 +12,11 @@ macx {
 
 DEFINES += RHODES_EMULATOR
 
-# CPLUSPLUSFLAGS: -fvisibility=hidden
+QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+
+# QMAKE_CFLAGS += -fvisibility=hidden
+# QMAKE_CXXFLAGS += -fvisibility=hidden
 
 INCLUDEPATH += ../..\
 ../../ruby\
