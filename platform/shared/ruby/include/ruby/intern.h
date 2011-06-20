@@ -782,13 +782,13 @@ VALUE rb_time_succ(VALUE);
 void rb_frame_pop(void);
 int rb_frame_method_id_and_class(ID *idp, VALUE *klassp);
 
+VALUE rb_str_chop_bang(VALUE str);
+
 #if defined(__cplusplus)
 #if 0
 { /* satisfy cc-mode */
 #endif
 }  /* extern "C" { */
 #endif
-
-VALUE rb_str_chop_bang(VALUE str);
 
 #endif /* RUBY_INTERN_H */
