@@ -82,8 +82,9 @@ public:
                 return "Download";
             case hcUpload:
                 return "Upload";
+            default:
+                return "Unknown";
             }
-            return "Unknown";
         }
 
         virtual void cancel()

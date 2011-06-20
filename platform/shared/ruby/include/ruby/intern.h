@@ -789,4 +789,6 @@ int rb_frame_method_id_and_class(ID *idp, VALUE *klassp);
 }  /* extern "C" { */
 #endif
 
+VALUE rb_str_chop_bang(VALUE str);
+
 #endif /* RUBY_INTERN_H */
