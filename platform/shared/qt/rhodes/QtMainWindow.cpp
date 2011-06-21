@@ -507,7 +507,7 @@ void QtMainWindow::refreshCommand(int tab_index)
     this->Refresh(tab_index);
 }
 
-void QtMainWindow::navigateCommand(CMainWindow::TNavigateData* nd)
+void QtMainWindow::navigateCommand(TNavigateData* nd)
 {
     if (nd) {
         if (nd->url) {

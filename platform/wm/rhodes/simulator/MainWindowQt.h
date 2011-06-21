@@ -148,11 +148,6 @@ private:
     rho::Vector<rho::common::CAppMenuItem> m_arAppMenuItems;
     CAlertDialog *m_alertDialog;
     CSyncStatusDlg *m_SyncStatusDlg;
-public:
-    typedef struct _TNavigateData {
-        int index;
-        const wchar_t* url;
-    } TNavigateData;
 };
 
 #if !defined(_WIN32_WCE)

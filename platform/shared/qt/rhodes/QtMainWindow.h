@@ -10,7 +10,7 @@
 #include "QtWebInspector.h"
 #include "MainWindowCallback.h"
 #include "common/IRhoThreadImpl.h"
-#include "impl/MainWindowImpl.h"
+#include "common/RhoNativeViewManager.h"
 
 namespace Ui {
     class QtMainWindow;
@@ -91,7 +91,7 @@ public slots:
     void navigateForwardCommand(void);
     void logCommand(void);
     void refreshCommand(int tab_index);
-    void navigateCommand(CMainWindow::TNavigateData* nd);
+    void navigateCommand(TNavigateData* nd);
     void takePicture(char* callbackUrl);
     void selectPicture(char* callbackUrl);
     void alertShowPopup(void *); // CAlertDialog::Params *
