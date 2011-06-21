@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
 #include "bits.h"
-#include "debug.h"
+#include "json_debug.h"
 #include "linkhash.h"
 #include "arraylist.h"
 #include "json_util.h"

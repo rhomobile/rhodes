@@ -22,7 +22,7 @@ SOURCES += \
     ../../shared/json/json_util.c \
     ../../shared/json/json_tokener.c \
     ../../shared/json/json_object.c \
-    ../../shared/json/debug.c \
+    ../../shared/json/json_debug.c \
     ../../shared/json/arraylist.c \
     ../../shared/sync/SyncThread.cpp \
     ../../shared/sync/SyncSource.cpp \
@@ -42,7 +42,7 @@ HEADERS += \
     ../../shared/json/json_object_private.h \
     ../../shared/json/json_object.h \
     ../../shared/json/json.h \
-    ../../shared/json/debug.h \
+    ../../shared/json/json_debug.h \
     ../../shared/json/config.h \
     ../../shared/json/bits.h \
     ../../shared/json/arraylist.h \

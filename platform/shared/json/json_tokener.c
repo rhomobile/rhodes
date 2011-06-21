@@ -30,7 +30,7 @@
 #endif
 
 #include "bits.h"
-#include "debug.h"
+#include "json_debug.h"
 #include "printbuf.h"
 #include "arraylist.h"
 #include "json_object.h"
