@@ -265,7 +265,7 @@ void CMainWindow::createToolbar(rho_param *p)
     int bar_type = TOOLBAR_TYPE;
 	std::auto_ptr<QColor> m_rgbBackColor (NULL);
     std::auto_ptr<QColor> m_rgbMaskColor (NULL);
-    int m_nHeight = 32; //TODO: CNativeToolbar::MIN_TOOLBAR_HEIGHT;
+    int m_nHeight = CNativeToolbar::MIN_TOOLBAR_HEIGHT;
 
     rho_param *params = NULL;
     switch (p->type) 

@@ -7,7 +7,7 @@ extern "C" {
 
 int rho_bluetooth_is_bluetooth_available()
 {
-	return 0;
+    return 0;
 }
 
 void rho_bluetooth_off_bluetooth()
