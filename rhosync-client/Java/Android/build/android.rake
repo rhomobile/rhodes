@@ -1,8 +1,6 @@
 
 #USE_TRACES = Rake.application.options.trace
 
-$basepath = File.dirname(__FILE__)
-$rootpath = File.join $basepath, '..', '..'
 
 $current_platform = 'android'
 $min_api_level = 4
@@ -24,17 +22,13 @@ else
     $rubypath = "res/build-tools/rubylinux"
   end
 end
+$basepath = File.expand_path File.dirname(__FILE__)
 
 require File.join($basepath, 'android_sdk.rb')
-require File.join($rootpath, 'lib/build/jake.rb')
 
-$rootpath = Jake.get_absolute $rootpath
-$sharedpath = File.join $rootpath, 'platform', 'shared'
 CONFIG = 'debug'
-BUILDPATH = File.join('build', CONFIG)
-LIBS = {'curl' => File.join(BUILDPATH, 'libcurl.a'),
-        'sqlite' => File.join(BUILDPATH, 'libsqlite.a')}
-LIBFN = FileList.new File.join(BUILDPATH, 'libcurl.a'), File.join(BUILDPATH, 'libsqlite.a')
+$buildroot = $appconfig['android']["build_path"]
+BUILDPATH = File.join($buildroot, CONFIG)
 
 $buildargs = {
               # Steps to ge-DHAVE_CONFIG_Ht curl_config.h from fresh libcurl sources:
@@ -54,19 +48,25 @@ $buildargs = {
 
 #task :default => ["android:config"]
 
-LIBS.each do |name, filename|
-  puts "lib: #{name} => #{filename}"
-end
-
 SRC = FileList.new
 OBJ = FileList.new
+LIBFN = FileList.new
 CLEAN = FileList.new
 
-SRC.include get_sources("libcurl")
-OBJ.include get_objects(get_sources("libcurl"), File.join(BUILDPATH, "libcurl"))
+LIBS = Hash.new
 
+LIBS['curl'] = File.join(BUILDPATH, 'libcurl.a')
+LIBS['sqlite'] = File.join(BUILDPATH, 'libsqlite.a')
+
+LIBS.each do |name, filename|
+  sources = get_sources("lib#{name}")
+  SRC.include sources
+  OBJ.include get_objects(sources, File.join(BUILDPATH, "lib#{name}"))
+  LIBFN.include filename
+end
+
+SRC.include get_sources("libcurl")
 SRC.include get_sources("libsqlite")
-OBJ.include get_objects(get_sources("libsqlite"), File.join(BUILDPATH, "libsqlite"))
 
 CLEAN.include OBJ
 CLEAN.include LIBFN
@@ -93,20 +93,7 @@ namespace "android" do
       end
     end
 
-    task :rhobuildyml do
-      rhobuildyml = File.join $rootpath, 'rhobuild.yml'
-      rhobuildyml = ENV["RHOBUILD"] unless ENV["RHOBUILD"].nil?
-
-      $rhoconfig = Jake.config(File.open(rhobuildyml))
-      $rhoconfig["platform"] = 'android'
-    end
-
-    task :buildyml do
-      buildyml = File.join $basepath, 'build.yml'
-      $appconfig = Jake.config(File.open(buildyml))
-    end
-
-    task :sdk => [:buildyml, :rhobuildyml] do
+    task :sdk do # => ["config:buildyml", "config:rhobuildyml"] do
       $androidsdkpath = $rhoconfig["env"]["paths"]["android"]
       sdk_level = setup_sdk $androidsdkpath, $min_api_level
 
@@ -116,9 +103,8 @@ namespace "android" do
 
   end # namespace "config"
 
-  task :config => "config:sdk" do
+  task :config => ["config:sdk"] do
     build_tree BUILDPATH
-    
   end # task :config
 
   namespace "build" do
@@ -138,10 +124,8 @@ namespace "android" do
   end
 end # namespace "android"
 
-    directory 'build'
-  
     directory BUILDPATH
-    file BUILDPATH => ["android:config", 'build']
+    file BUILDPATH => ["android:config"]
     
     directory File.join(BUILDPATH, 'libcurl')
     file File.join(BUILDPATH, 'libcurl') => BUILDPATH
@@ -151,7 +135,14 @@ end # namespace "android"
 
     def lib_objects(libfile)
       lib = File.basename(libfile).gsub(/\.a$/, "")
+
       sources = get_sources lib
+      if USE_TRACES
+        puts "#{lib} sources:"
+        sources.each do |src|
+            puts src
+        end
+      end
 
       objpath = File.join(BUILDPATH, lib)
 

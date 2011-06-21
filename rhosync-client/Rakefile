@@ -1,0 +1,19 @@
+
+$rootpath = File.expand_path '..'
+$sharedpath = File.join $rootpath, 'platform', 'shared'
+
+require File.join($rootpath, "lib", "build", "jake.rb")
+
+task :config
+
+rhobuildyml = File.join $rootpath, 'rhobuild.yml'
+rhobuildyml = ENV["RHOBUILD"] unless ENV["RHOBUILD"].nil?
+
+$rhoconfig = Jake.config(File.open(rhobuildyml))
+$rhoconfig["platform"] = 'android'
+
+$appconfig = Jake.config(File.open('build.yml'))
+
+load File.join("Java", "Android", "build", "android.rake")
+
+
