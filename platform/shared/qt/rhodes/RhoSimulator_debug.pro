@@ -6,11 +6,11 @@ TEMPLATE = app
 CONFIG += warn_on
 
 macx {
-  DESTDIR = ../../../osx/build/RhoSimulator
-  MOC_DIR = ../../../osx/build/RhoSimulator/generated_files
-  UI_DIR = ../../../osx/build/RhoSimulator/generated_files
-  OBJECTS_DIR = ../../../osx/build/RhoSimulator/tmp
-  RCC_DIR =  ../../../osx/build/RhoSimulator/resources
+  DESTDIR = ../../../osx/bin/RhoSimulator
+  MOC_DIR = ../../../osx/bin/RhoSimulator/generated_files
+  UI_DIR = ../../../osx/bin/RhoSimulator/generated_files
+  OBJECTS_DIR = ../../../osx/bin/RhoSimulator/tmp
+  RCC_DIR =  ../../../osx/bin/RhoSimulator/resources
   LIBS += -lcurl
   INCLUDEPATH += ../../ruby/iphone
   HEADERS += ../../ruby/iphone/ruby/config.h\

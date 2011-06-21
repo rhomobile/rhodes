@@ -6,8 +6,8 @@ TEMPLATE = lib
 CONFIG += staticlib warn_on
 
 macx {
-  DESTDIR = ../../../osx/build/syncengine
-  OBJECTS_DIR = ../../../osx/build/syncengine/tmp
+  DESTDIR = ../../../osx/bin/syncengine
+  OBJECTS_DIR = ../../../osx/bin/syncengine/tmp
 }
 
 DEFINES += RHODES_EMULATOR
