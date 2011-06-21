@@ -7,6 +7,8 @@
 #include "common/rhoparams.h"
 #include "common/RhoNativeViewManager.h"
 #include "../MainWindowCallback.h"
+#include "NativeToolbarImpl.h"
+#include "NativeTabbarImpl.h"
 #undef null
 #include <QObject>
 
@@ -29,8 +31,8 @@ public:
     // public methods:
     bool Initialize(const wchar_t* title);
     void DestroyUi(void);
-    //TODO: CNativeToolbar& getToolbar(){ return m_toolbar; }
-    //TODO: CNativeTabbar& getTabbar(){ return m_tabbar; }
+    CNativeToolbar& getToolbar(){ return m_toolbar; }
+    CNativeTabbar& getTabbar(){ return m_tabbar; }
     // for 'main_window_closed' System property
     static bool mainWindowClosed;
 
@@ -64,8 +66,8 @@ public:
 
 private:
     //TODO: CLogView m_logView;
-    //TODO: CNativeToolbar m_toolbar;
-    //TODO: CNativeTabbar m_tabbar;
+    CNativeToolbar m_toolbar;
+    CNativeTabbar m_tabbar;
     bool m_started;
     void* qtMainWindow;
     void* qtApplication;

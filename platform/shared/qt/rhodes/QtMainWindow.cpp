@@ -640,13 +640,18 @@ void QtMainWindow::dateTimePicker(void* msg) //TODO: CDateTimeMessage *
 
 void QtMainWindow::executeCommand(RhoNativeViewRunnable* runnable)
 {
-    if (runnable != NULL)
+    if (runnable) {
         runnable->run();
+        delete runnable;
+    }
 }
 
 void QtMainWindow::executeRunnable(rho::common::IRhoRunnable* pTask)
 {
-    pTask->runObject();
+    if (pTask) {
+        pTask->runObject();
+        delete pTask;
+    }
 }
 
 void QtMainWindow::takeSignature(void*) //TODO: Signature::Params*
