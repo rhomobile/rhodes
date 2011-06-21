@@ -56,7 +56,7 @@ extern char *strerror(int errno);
 #endif
 
 #include "bits.h"
-#include "debug.h"
+#include "json_debug.h"
 #include "printbuf.h"
 #include "json_object.h"
 #include "json_tokener.h"

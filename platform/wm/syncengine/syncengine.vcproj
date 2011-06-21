@@ -1660,11 +1660,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\json\debug.c"
+				RelativePath="..\..\shared\json\json_debug.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\json\debug.h"
+				RelativePath="..\..\shared\json\json_debug.h"
 				>
 			</File>
 			<File

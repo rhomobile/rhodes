@@ -102,7 +102,7 @@ impl/NativeTabbarImpl.h\
 ../../json/arraylist.h\
 ../../json/bits.h\
 ../../json/config.h\
-../../json/debug.h\
+../../json/json_debug.h\
 ../../json/json.h\
 ../../json/json_object.h\
 ../../json/json_object_private.h\
