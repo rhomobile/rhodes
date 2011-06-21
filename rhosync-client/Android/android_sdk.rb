@@ -309,9 +309,13 @@ def cc_run(command, args, chdir = nil)
   ret.success?
 end
 
+def get_object(source, dir)
+  return File.join dir, File.basename(source) + ".o"
+end
+
 def cc_compile(filename, objdir, additional = nil)
-  filename.chomp!
-  objname = File.join objdir, File.basename(filename) + ".o"
+  #filename.chomp!
+  objname = get_object filename, objdir
 
   return true if FileUtils.uptodate? objname, [filename] + cc_deps(filename, objdir, additional)
 
@@ -336,8 +340,15 @@ def get_sources(name)
     File.read(File.join($basepath, name + '_build.files')).split("\n")
 end
 
-def cc_build(name, buildpath, additional = nil)
-  sources = get_sources(name)
+def get_objects(sources, objdir)
+  objects = []
+  sources.each do |filename|
+    objects << get_object(filename, objdir)
+  end
+  objects
+end
+
+def cc_build(sources, buildpath, additional = nil)
 
   if $build_release
       $confdir = "release"
@@ -345,14 +356,11 @@ def cc_build(name, buildpath, additional = nil)
       $confdir = "debug"
   end
 
-  objdir = File.join(buildpath, name)
-  
-  
   # Ruby 1.8 has problems with Thread.join on Windows
   if RUBY_PLATFORM =~ /w(in)?32/ and RUBY_VERSION =~ /^1\.8\./
     sources.each do |src|
       f = File.join $rootpath, src
-      return false unless cc_compile f, objdir, additional
+      return false unless cc_compile f, buildpath, additional
     end
     true
   else
@@ -377,7 +385,7 @@ def cc_build(name, buildpath, additional = nil)
       ths << Thread.new do
         success = true
         src.each do |f|
-          success = cc_compile f, objdir, additional
+          success = cc_compile f, buildpath, additional
           break unless success
         end
         success
