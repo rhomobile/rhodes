@@ -6,17 +6,17 @@ TEMPLATE = app
 CONFIG += warn_on
 
 macx {
-  DESTDIR = ../../../osx/build/RhoSimulator
-  MOC_DIR = ../../../osx/build/RhoSimulator/generated_files
-  UI_DIR = ../../../osx/build/RhoSimulator/generated_files
-  OBJECTS_DIR = ../../../osx/build/RhoSimulator/tmp
-  RCC_DIR =  ../../../osx/build/RhoSimulator/resources
+  DESTDIR = ../../../osx/bin/RhoSimulator
+  MOC_DIR = ../../../osx/bin/RhoSimulator/generated_files
+  UI_DIR = ../../../osx/bin/RhoSimulator/generated_files
+  OBJECTS_DIR = ../../../osx/bin/RhoSimulator/tmp
+  RCC_DIR =  ../../../osx/bin/RhoSimulator/resources
   LIBS += -lcurl
-  # LIBS += -L../../../osx/build/curl -lcurl
-  LIBS += -L../../../osx/build/rubylib -lrubylib
-  LIBS += -L../../../osx/build/rholib -lrholib
-  LIBS += -L../../../osx/build/sqlite3 -lsqlite3
-  LIBS += -L../../../osx/build/syncengine -lsyncengine
+  # LIBS += -L../../../osx/bin/curl -lcurl
+  LIBS += -L../../../osx/bin/rubylib -lrubylib
+  LIBS += -L../../../osx/bin/rholib -lrholib
+  LIBS += -L../../../osx/bin/sqlite3 -lsqlite3
+  LIBS += -L../../../osx/bin/syncengine -lsyncengine
 }
 
 DEFINES += RHODES_EMULATOR
