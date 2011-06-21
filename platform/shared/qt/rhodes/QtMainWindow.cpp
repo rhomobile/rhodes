@@ -475,7 +475,186 @@ void QtMainWindow::on_menuAction_triggered(bool checked)
         cb->onCustomMenuItemCommand(action->data().toInt());
 }
 
+// slots:
+
+void QtMainWindow::exitCommand()
+{
+    this->close();
+}
+
+void QtMainWindow::navigateBackCommand()
+{
+    this->GoBack();
+}
+
+void QtMainWindow::navigateForwardCommand()
+{
+    this->GoForward();
+}
+
+void QtMainWindow::logCommand()
+{
+    //TODO: logCommand
+    //if ( !m_logView.IsWindow() ) {
+    //    LoadLibrary(_T("riched20.dll"));
+    //    m_logView.Create(NULL);
+    //}
+    //m_logView.ShowWindow(SW_SHOWNORMAL);
+}
+
+void QtMainWindow::refreshCommand(int tab_index)
+{
+    this->Refresh(tab_index);
+}
+
+void QtMainWindow::navigateCommand(CMainWindow::TNavigateData* nd)
+{
+    if (nd) {
+        if (nd->url) {
+            this->navigate(QString::fromWCharArray(nd->url), nd->index);
+            free(nd->url);
+        }
+        free(nd);
+    }
+}
+
+void QtMainWindow::takePicture(char* callbackUrl)
+{
+    //TODO: takePicture
+
+    //TCHAR image_uri[MAX_PATH];
+    //HRESULT status;
+
+    //TODO: show browse file dialog
+    //wsprintf( image_uri, L"%s", L"dashboard.PNG");
+    //status = S_OK;
+
+    //RHODESAPP().callCameraCallback( (const char*)lParam, rho::common::convertToStringA(image_uri),
+    //    (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
+
+    free(callbackUrl);
+}
+
+void QtMainWindow::selectPicture(char* callbackUrl)
+{
+    //TODO: selectPicture
+
+    //TCHAR image_uri[MAX_PATH];
+    //HRESULT status = S_OK;
+    //Camera camera;
+    //status = camera.selectPicture(this->m_hWnd,image_uri);
+
+    //RHODESAPP().callCameraCallback( (const char*)lParam, rho::common::convertToStringA(image_uri),
+    //    (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
+
+    free(callbackUrl);
+}
+
+void QtMainWindow::alertShowPopup(void* params) // CAlertDialog::Params *
+{
+    //TODO: alertShowPopup
+
+    //StringW strAppName = RHODESAPP().getAppNameW();
+    //CAlertDialog::Params *params = (CAlertDialog::Params *)lParam;
+
+    //if (params->m_dlgType == CAlertDialog::Params::DLG_STATUS) 
+    //{
+    //    if (m_SyncStatusDlg == NULL) 
+    //        m_SyncStatusDlg = new CSyncStatusDlg();
+    //    m_SyncStatusDlg->setStatusText(convertToStringW(params->m_message).c_str());
+    //    m_SyncStatusDlg->setTitle( convertToStringW(params->m_title).c_str() );
+    //    if ( !m_SyncStatusDlg->m_hWnd )
+    //        m_SyncStatusDlg->Create(m_hWnd, 0);
+    //    else
+    //    {
+    //        m_SyncStatusDlg->ShowWindow(SW_SHOW);
+    //        m_SyncStatusDlg->BringWindowToTop();
+    //    }
+    //} else if (params->m_dlgType == CAlertDialog::Params::DLG_DEFAULT) {
+    //    MessageBox(convertToStringW(params->m_message).c_str(), strAppName.c_str(), MB_ICONWARNING | MB_OK);
+    //} else if (params->m_dlgType == CAlertDialog::Params::DLG_CUSTOM) 
+    //{
+    //    if ( params->m_buttons.size() == 1 && strcasecmp(params->m_buttons[0].m_strCaption.c_str(), "ok") == 0)
+    //        MessageBox(convertToStringW(params->m_message).c_str(), convertToStringW(params->m_title).c_str(), MB_ICONWARNING | MB_OK);
+    //    else if (params->m_buttons.size() == 2 && strcasecmp(params->m_buttons[0].m_strCaption.c_str(), "ok") == 0 &&
+    //        strcasecmp(params->m_buttons[1].m_strCaption.c_str(), "cancel") == 0)
+    //    {
+    //        int nRes = MessageBox(convertToStringW(params->m_message).c_str(), convertToStringW(params->m_title).c_str(), 
+    //                MB_ICONWARNING | MB_OKCANCEL);
+    //        int nBtn = nRes == IDCANCEL ? 1 : 0;
+    //        RHODESAPP().callPopupCallback(params->m_callback, params->m_buttons[nBtn].m_strID, params->m_buttons[nBtn].m_strCaption);
+    //    }
+    //    else
+    //    {
+    //        if (m_alertDialog == NULL) 
+    //        {
+    //            m_alertDialog = new CAlertDialog(params);
+    //            m_alertDialog->DoModal();
+    //            delete m_alertDialog;
+    //            m_alertDialog = NULL;
+    //        } else {
+    //            LOG(WARNING) + "Trying to show alert dialog while it exists.";
+    //        }
+    //    }
+    //}
+
+    if(params)
+        free(params); //TODO: delete params;
+}
+
+void QtMainWindow::alertHidePopup()
+{
+    //TODO: alertHidePopup
+    //if (m_alertDialog != NULL) {
+    //    m_alertDialog->EndDialog(0);
+    //    m_alertDialog = NULL;
+    //}
+}
+
+void QtMainWindow::dateTimePicker(void* msg) //TODO: CDateTimeMessage *
+{
+    //TODO: dateTimePicker
+
+    //CDateTimeMessage *msg = (CDateTimeMessage *)lParam;
+    //int retCode    = -1;
+    //time_t ret_time = 0;
+
+    //if (msg->m_format == CDateTimeMessage::FORMAT_TIME) {
+    //    CTimePickerDialog timeDialog(msg);
+    //    retCode = timeDialog.DoModal(m_hWnd);
+    //    ret_time = timeDialog.GetTime();
+    //} else {
+    //    CDateTimePickerDialog dateTimeDialog(msg);
+    //    retCode = dateTimeDialog.DoModal(m_hWnd);
+    //    ret_time = dateTimeDialog.GetTime();
+    //}
+
+    //rho_rhodesapp_callDateTimeCallback( msg->m_callback, 
+    //                                    retCode == IDOK ? (long )ret_time : 0,
+    //                                    msg->m_data,
+    //                                    retCode == IDOK ? 0 : 1);
+
+    if (msg)
+        free(msg); //TODO: delete msg;
+}
+
+void QtMainWindow::executeCommand(RhoNativeViewRunnable* runnable)
+{
+    if (runnable != NULL)
+        runnable->run();
+}
+
 void QtMainWindow::executeRunnable(rho::common::IRhoRunnable* pTask)
 {
     pTask->runObject();
+}
+
+void QtMainWindow::takeSignature(void*) //TODO: Signature::Params*
+{
+    //TODO: takeSignature
+}
+
+void QtMainWindow::fullscreenCommand(int enable)
+{
+    //TODO: fullscreenCommand
 }

@@ -1,4 +1,5 @@
 #include "logging/RhoLog.h"
+#include "MainWindowImpl.h"
 
 //static char ourTitle[1024];
 
@@ -14,7 +15,8 @@ void  choose_datetime_with_range(char* callback, char* title,
     //    strcpy(ourTitle, title);
     //else
     //    strcpy(ourTitle, "");
-    //TODO: ::PostMessage(main_wnd, WM_DATETIME_PICKER, 0, (LPARAM)new CDateTimeMessage(callback, ourTitle, initial_time, format, data, min_time, max_time));
+    //TODO: msg = new CDateTimeMessage(callback, ourTitle, initial_time, format, data, min_time, max_time);
+    CMainWindow::getInstance()->dateTimePicker(0);
 }
 
 

@@ -7,7 +7,7 @@ extern "C" {
 
 void remove_native_toolbar() 
 {
-    //TODO: getAppWindow().performOnUiThread(new CNativeToolbar::CRemoveTask() );
+    //TODO: getAppWindow().executeRunnable(new CNativeToolbar::CRemoveTask() );
 }
 
 void create_native_toolbar(int bar_type, rho_param *p) 
@@ -15,7 +15,7 @@ void create_native_toolbar(int bar_type, rho_param *p)
     if ( bar_type == NOBAR_TYPE )
         remove_native_toolbar();
     else if ( bar_type == TOOLBAR_TYPE ) {
-        //TODO: getAppWindow().performOnUiThread(new CNativeToolbar::CCreateTask(p) );
+        //TODO: getAppWindow().executeRunnable(new CNativeToolbar::CCreateTask(p) );
     } else {
         RAWLOGC_ERROR("NativeBar", "Only Toolbar control is supported.");
     }
@@ -42,7 +42,7 @@ VALUE nativebar_started()
 //Tabbar
 void remove_native_tabbar()
 {
-    //TODO: getAppWindow().performOnUiThread(new CNativeTabbar::CRemoveTask() );
+    //TODO: getAppWindow().executeRunnable(new CNativeTabbar::CRemoveTask() );
 }
 
 void create_native_tabbar(int bar_type, rho_param *p)
@@ -56,7 +56,7 @@ void create_native_tabbar(int bar_type, rho_param *p)
         remove_native_tabbar();
     else if ( bar_type == TABBAR_TYPE )
     {
-        //TODO: getAppWindow().performOnUiThread(new CNativeTabbar::CCreateTask(bar_type, p) );
+        //TODO: getAppWindow().executeRunnable(new CNativeTabbar::CCreateTask(bar_type, p) );
     } else
     {
         RAWLOGC_ERROR("NativeTabbar", "Only Tabbar control is supported.");
@@ -65,12 +65,12 @@ void create_native_tabbar(int bar_type, rho_param *p)
 
 void native_tabbar_switch_tab(int index)
 {
-    //TODO: getAppWindow().performOnUiThread(new CNativeTabbar::CSwitchTask(index) );
+    //TODO: getAppWindow().executeRunnable(new CNativeTabbar::CSwitchTask(index) );
 }
 
 void native_tabbar_set_tab_badge(int index,char *val)
 {
-    //TODO: getAppWindow().performOnUiThread(new CNativeTabbar::CBadgeTask(index, val) );
+    //TODO: getAppWindow().executeRunnable(new CNativeTabbar::CBadgeTask(index, val) );
 }
 
 void nativebar_set_tab_badge(int index,char* val)

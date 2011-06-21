@@ -24,7 +24,7 @@ extern "C" {
 
 void rho_webview_refresh(int index) 
 {
-    //TODO: ::PostMessage( getMainWnd(), WM_COMMAND, IDM_REFRESH, (LPARAM)index );
+    CMainWindow::getInstance()->refreshCommand(index);
 }
 
 void rho_webview_navigate(const char* url, int index) 
@@ -37,22 +37,20 @@ void rho_webview_navigate(const char* url, int index)
 
     String strUrl = RHODESAPP().canonicalizeRhoUrl(url);
 
-    //TODO: rho_webview_navigate
-
     CMainWindow::TNavigateData* nd = (CMainWindow::TNavigateData*)malloc(sizeof(CMainWindow::TNavigateData));
     nd->index = index;
     nd->url = dup_wcs(convertToStringW(strUrl).c_str());
-    //::PostMessage( getMainWnd(), WM_COMMAND, IDM_NAVIGATE, (LPARAM)nd );
+    CMainWindow::getInstance()->navigateCommand(nd);
 }
 
 void rho_webview_navigate_back()
 {
-    //TODO: ::PostMessage( getMainWnd(), WM_COMMAND, IDM_NAVIGATE_BACK, (LPARAM)0 );
+    CMainWindow::getInstance()->navigateBackCommand();
 }
 
 void rho_webview_navigate_forward()
 {
-    //TODO: ::PostMessage( getMainWnd(), WM_COMMAND, IDM_NAVIGATE_FORWARD, (LPARAM)0 );
+    CMainWindow::getInstance()->navigateForwardCommand();
 }
 
 const char* rho_webview_execute_js(const char* js, int index) 
@@ -81,7 +79,7 @@ void rho_webview_set_menu_items(VALUE valMenu)
 
 void rho_webview_full_screen_mode(int enable)
 {
-    //TODO: ::PostMessage( getMainWnd(), WM_COMMAND, ID_FULLSCREEN, (LPARAM)enable );
+    CMainWindow::getInstance()->fullscreenCommand(enable);
 }
 
 void rho_webview_set_cookie(const char *url, const char *cookie)
