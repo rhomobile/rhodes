@@ -12,6 +12,11 @@
 #undef null
 #include <QObject>
 
+#ifdef __APPLE__
+#define stricmp strcasecmp
+#define strnicmp strncasecmp
+#endif
+
 class CMainWindow : public QObject, IMainWindowCallback
 {
     Q_OBJECT
