@@ -31,16 +31,86 @@ extern "C" {
     }
 }
 
+char* parseToken(const char* start)
+{
+    int len = strlen(start);
+    int nNameLen = 0;
+    while (*start==' ') { start++; len--; }
+
+    int i = 0;
+    for (i = 0; i < len; i++) {
+        if (start[i] == '=') {
+            if (i > 0) {
+                int s = i-1;
+                for (; s >= 0 && start[s]==' '; s--);
+                nNameLen = s+1;
+                break;
+            } else
+                break;
+        }
+    }
+
+    if ( nNameLen == 0 )
+        return NULL;
+
+    const char* szValue = start + i+1;
+    int nValueLen = 0;
+
+    while (*szValue==' ' || *szValue=='\'' || *szValue=='"' && nValueLen >= 0) { szValue++; }
+    while (szValue[nValueLen] && szValue[nValueLen] !='\'' && szValue[nValueLen] != '"') { nValueLen++; }
+
+    //while (nValueLen > 0 && (szValue[nValueLen-1]==' ' || szValue[nValueLen-1]=='\'' || szValue[nValueLen-1]=='"')) nValueLen--;
+
+    char* value = (char*) malloc(nValueLen+2);
+    strncpy(value, szValue, nValueLen);
+    value[nValueLen] = '\0';
+
+    return value;
+}
+
 int main(int argc, char *argv[])
 {
     CMainWindow* m_appWindow = CMainWindow::getInstance();
 
-    //TODO: ParseCommandLine
-    m_logPort = String("11000"); // "log"
-    m_strRootPath = String("/Volumes/MacOSWork/Rhomobile/rhodes-system-api-samples/"); // "approot"
-    m_strRhodesPath = String("/Volumes/MacOSWork/Rhomobile/rhodes"); // "rhodespath"
-    // m_strHttpProxy: "http_proxy_url"
-    // copy all arguments to: g_strCmdLine
+    m_logPort = String("11000");
+    for (int i=1; i<argc; ++i) {
+        g_strCmdLine += String(argv[i]) + " ";
+        if (strnicmp("-log",argv[i],4)==0) {
+            char* port = parseToken(argv[i]);
+            if (port) {
+                    String strLogPort = port;
+                    m_logPort = strLogPort;
+                    free(port);
+            }
+        } else if (strnicmp("-http_proxy_url",argv[i],15)==0) {
+            char *proxy = parseToken(argv[i]);
+            if (proxy) {
+                m_strHttpProxy = proxy;
+                free(proxy);
+            } else
+                LOG(WARNING) + "invalid value for \"http_proxy_url\" cmd parameter";
+        } else if (strnicmp("-approot",argv[i],8)==0) {
+            char* path = parseToken(argv[i]);
+            if (path) {
+                int len = strlen(path);
+                if (!(path[len-1]=='\\' || path[len-1]=='/')) {
+                    path[len] = '/';
+                    path[len+1]  = 0;
+                }
+                m_strRootPath = path;
+                free(path);
+            }
+        } else if (strnicmp("-rhodespath",argv[i],11)==0) {
+            char* path = parseToken(argv[i]);
+            if (path) {
+                m_strRhodesPath = path;
+                free(path);
+            }
+        } else {
+            String msg = String(argv[i]);
+            LOG(WARNING) + "wrong cmd parameter: " + msg;
+        }
+    }
 
     // PreMessageLoop:
     rho_logconf_Init(m_strRootPath.c_str(), m_logPort.c_str());
@@ -69,44 +139,6 @@ int main(int argc, char *argv[])
         RHOCONF().setString("debug_host", RHOSIMCONF().getString("debug_host"), false);
     if (RHOSIMCONF().getString("debug_port").length() > 0)
         RHOCONF().setString("debug_port", RHOSIMCONF().getString("debug_port"), false);
-
-    /*
-    //Check for bundle directory is exists.
-    HANDLE hFind;
-    WIN32_FIND_DATA wfd;
-        
-    // rootpath + "rho/"
-    if (m_strRootPath.at(m_strRootPath.length()-1) == '/') {
-        hFind = FindFirstFile(convertToStringW(m_strRootPath.substr(0, m_strRootPath.find_last_of('/'))).c_str(), &wfd);
-    } else if (m_strRootPath.at(m_strRootPath.length()-1) == '\\') {
-        //delete all '\' from the end of the pathname
-        int i = m_strRootPath.length();
-        for ( ; i != 1; i--) {
-            if (m_strRootPath.at(i-1) != '\\')
-                break;
-        }
-        hFind = FindFirstFile(convertToStringW(m_strRootPath.substr(0, i)).c_str(), &wfd);
-    }
-
-    if (INVALID_HANDLE_VALUE == hFind || !(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-        int last = 0, pre_last = 0;
-        last = getRhoRootPath().find_last_of('\\');
-        pre_last = getRhoRootPath().substr(0, last).find_last_of('\\');
-        String appName = getRhoRootPath().substr(pre_last + 1, last - pre_last - 1);
-
-        String messageText = "Bundle directory \"" + 
-            m_strRootPath.substr(0, m_strRootPath.find_last_of('/')) + 
-            "\" is  missing\n";
-
-        LOG(INFO) + messageText;
-        int msgboxID = MessageBox(NULL,
-            convertToStringW(messageText).c_str(),
-            convertToStringW(appName).c_str(),
-            MB_ICONERROR | MB_OK);
-
-        return 2;
-    }
-    */
 
     rho::common::CRhodesApp::Create(m_strRootPath);
 

@@ -13,10 +13,6 @@
 #include <QHash>
 #include "../QtMainWindow.h"
 
-#ifdef __APPLE__
-#define stricmp strcasecmp
-#endif
-
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 
 using namespace rho;
