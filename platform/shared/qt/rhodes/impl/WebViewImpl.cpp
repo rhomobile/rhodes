@@ -68,8 +68,7 @@ const char* rho_webview_current_location(int index)
 
 int rho_webview_active_tab() 
 {
-    //TODO: return getAppWindow().tabbarGetCurrent();
-    return 0;
+    return CMainWindow::getInstance()->tabbarGetCurrent();
 }
 
 void rho_webview_set_menu_items(VALUE valMenu) 

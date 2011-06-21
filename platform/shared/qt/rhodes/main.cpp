@@ -116,10 +116,7 @@ int main(int argc, char *argv[])
     RHODESAPP().startApp();
 
     // Navigate to the "loading..." page
-    m_appWindow->navigate(L"about:blank", -1 );
-
-    // Show the main application window
-    //m_appWindow->ShowWindow();
+    m_appWindow->navigate(L"about:blank", -1);
 
     rho_clientregister_create("qt_client");
 

@@ -35,6 +35,8 @@ QtNativeTabBar.h\
 QtWebInspector.h\
 impl/RhoClassFactoryImpl.h\
 impl/MainWindowImpl.h\
+impl/NativeToolbarImpl.h\
+impl/NativeTabbarImpl.h\
 ../../ruby/ext/rho/rhoruby.h\
 ../../ruby/ext/socket/addrinfo.h\
 ../../ruby/ext/socket/constants.h\
@@ -142,6 +144,7 @@ impl/SignatureImpl.cpp\
 impl/SystemImpl.cpp\
 impl/WebViewImpl.cpp\
 impl/MainWindowImpl.cpp\
+impl/NativeTabbarImpl.cpp\
 ../../ruby/ext/datetimepicker/datetimepicker_wrap.c\
 ../../ruby/ext/rhoconf/rhoconf_wrap.c\
 ../../ruby/ext/nativebar/nativebar_wrap.c\
