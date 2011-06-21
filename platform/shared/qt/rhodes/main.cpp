@@ -33,7 +33,7 @@ extern "C" {
 
 int main(int argc, char *argv[])
 {
-    CMainWindow m_appWindow;
+    CMainWindow* m_appWindow = CMainWindow::getInstance();
 
     //TODO: ParseCommandLine
     m_logPort = String("11000"); // "log"
@@ -111,24 +111,24 @@ int main(int argc, char *argv[])
     rho::common::CRhodesApp::Create(m_strRootPath);
 
     // Create the main application window
-    m_appWindow.Initialize(convertToStringW(RHOSIMCONF().getString("app_name")).c_str());
+    m_appWindow->Initialize(convertToStringW(RHOSIMCONF().getString("app_name")).c_str());
 
     RHODESAPP().startApp();
 
     // Navigate to the "loading..." page
-    m_appWindow.navigate(L"about:blank", -1 );
+    m_appWindow->navigate(L"about:blank", -1 );
 
     // Show the main application window
-    //m_appWindow.ShowWindow();
+    //m_appWindow->ShowWindow();
 
     rho_clientregister_create("qt_client");
 
     // RunMessageLoop:
-    m_appWindow.messageLoop();
+    m_appWindow->messageLoop();
 
     // stopping Rhodes application
     rho_ringtone_manager_stop();
-    m_appWindow.DestroyUi();
+    m_appWindow->DestroyUi();
     rho::common::CRhodesApp::Destroy();
     //TODO: net::CNetRequestImpl::deinitConnection();
 

@@ -5,6 +5,7 @@
 #include "common/RhoConf.h"
 #include "common/RhodesApp.h"
 #include "common/rhoparams.h"
+#include "common/RhoNativeViewManager.h"
 #include "../MainWindowCallback.h"
 #undef null
 #include <QObject>
@@ -13,9 +14,18 @@ class CMainWindow : public QObject, IMainWindowCallback
 {
     Q_OBJECT
     DEFINE_LOGCLASS;
+
 public:
+    typedef struct _TNavigateData {
+        int index;
+        wchar_t* url;
+    } TNavigateData;
+
+private:
     explicit CMainWindow();
+public:
     ~CMainWindow();
+    static CMainWindow* getInstance(void);
     // IMainWindowCallback
     virtual void updateSizeProperties(int width, int height);
     virtual void onActivate(int active);
@@ -26,7 +36,6 @@ public:
     // public methods:
     bool Initialize(const wchar_t* title);
     void DestroyUi(void);
-    void performOnUiThread(rho::common::IRhoRunnable* pTask);
     //TODO: CNativeToolbar& getToolbar(){ return m_toolbar; }
     //TODO: CNativeTabbar& getTabbar(){ return m_tabbar; }
     // for 'main_window_closed' System property
@@ -81,12 +90,37 @@ private:
     //TODO: CAlertDialog *m_alertDialog;
     //TODO: CSyncStatusDlg *m_SyncStatusDlg;
 
-signals:
-    void executeRunnable(rho::common::IRhoRunnable*);
-
 public:
-    typedef struct _TNavigateData {
-        int index;
-        const wchar_t* url;
-    } TNavigateData;
+    void exitCommand(void);
+    void navigateBackCommand(void);
+    void navigateForwardCommand(void);
+    void logCommand(void);
+    void refreshCommand(int);
+    void navigateCommand(TNavigateData*);
+    void takePicture(const char*);
+    void selectPicture(const char*);
+    void alertShowPopup(void *); // CAlertDialog::Params *
+    void alertHidePopup(void);
+    void dateTimePicker(void *); //TODO: CDateTimeMessage *
+    void executeCommand(RhoNativeViewRunnable*);
+    void executeRunnable(rho::common::IRhoRunnable*);
+    void takeSignature(void*); //TODO: Signature::Params*
+    void fullscreenCommand(int);
+
+signals:
+    void doExitCommand(void);
+    void doNavigateBackCommand(void);
+    void doNavigateForwardCommand(void);
+    void doLogCommand(void);
+    void doRefreshCommand(int);
+    void doNavigateCommand(TNavigateData*);
+    void doTakePicture(const char*);
+    void doSelectPicture(const char*);
+    void doAlertShowPopup(void *); // CAlertDialog::Params *
+    void doAlertHidePopup(void);
+    void doDateTimePicker(void *); //TODO: CDateTimeMessage *
+    void doExecuteCommand(RhoNativeViewRunnable*);
+    void doExecuteRunnable(rho::common::IRhoRunnable*);
+    void doTakeSignature(void*); //TODO: Signature::Params*
+    void doFullscreenCommand(int);
 };

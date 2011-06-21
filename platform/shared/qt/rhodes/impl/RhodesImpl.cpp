@@ -2,6 +2,7 @@
 #include "ext/rho/rhoruby.h"
 #include "common/RhoConf.h"
 #include "logging/RhoLog.h"
+#include "MainWindowImpl.h"
 
 using namespace std;
 using namespace rho;
@@ -10,7 +11,7 @@ extern "C" {
 
 void rho_conf_show_log()
 {
-    //TODO: ::PostMessage(getMainWnd(),WM_COMMAND,IDM_LOG,0);
+    CMainWindow::getInstance()->logCommand();
 }
 
 void rho_net_impl_network_indicator(int active)
