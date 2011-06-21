@@ -23,7 +23,7 @@ INCLUDEPATH += ../..
 HEADERS += ../../json/arraylist.h\
 ../../json/bits.h\
 ../../json/config.h\
-../../json/debug.h\
+../../json/json_debug.h\
 ../../json/json.h\
 ../../json/json_object.h\
 ../../json/json_object_private.h\
@@ -42,7 +42,7 @@ HEADERS += ../../json/arraylist.h\
 ../../sync/ClientRegister.h
 
 SOURCES += ../../json/arraylist.c\
-../../json/debug.c\
+../../json/json_debug.c\
 ../../json/json_object.c\
 ../../json/json_tokener.c\
 ../../json/json_util.c\

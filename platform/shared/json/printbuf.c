@@ -22,7 +22,7 @@
 #endif /* HAVE_STDARG_H */
 
 #include "bits.h"
-#include "debug.h"
+#include "json_debug.h"
 #include "printbuf.h"
 
 struct printbuf* printbuf_new()

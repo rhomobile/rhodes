@@ -11,8 +11,8 @@
 		46E9213D0E9BF40A00F14AC8 /* arraylist.h in Headers */ = {isa = PBXBuildFile; fileRef = 46E921280E9BF40A00F14AC8 /* arraylist.h */; };
 		46E9213E0E9BF40A00F14AC8 /* bits.h in Headers */ = {isa = PBXBuildFile; fileRef = 46E9212A0E9BF40A00F14AC8 /* bits.h */; };
 		46E9213F0E9BF40A00F14AC8 /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 46E9212B0E9BF40A00F14AC8 /* config.h */; };
-		46E921400E9BF40A00F14AC8 /* debug.c in Sources */ = {isa = PBXBuildFile; fileRef = 46E9212D0E9BF40A00F14AC8 /* debug.c */; };
-		46E921410E9BF40A00F14AC8 /* debug.h in Headers */ = {isa = PBXBuildFile; fileRef = 46E9212E0E9BF40A00F14AC8 /* debug.h */; };
+		46E921400E9BF40A00F14AC8 /* json_debug.c in Sources */ = {isa = PBXBuildFile; fileRef = 46E9212D0E9BF40A00F14AC8 /* json_debug.c */; };
+		46E921410E9BF40A00F14AC8 /* json_debug.h in Headers */ = {isa = PBXBuildFile; fileRef = 46E9212E0E9BF40A00F14AC8 /* json_debug.h */; };
 		46E921420E9BF40A00F14AC8 /* json.h in Headers */ = {isa = PBXBuildFile; fileRef = 46E921300E9BF40A00F14AC8 /* json.h */; };
 		46E921430E9BF40A00F14AC8 /* json_object.c in Sources */ = {isa = PBXBuildFile; fileRef = 46E921310E9BF40A00F14AC8 /* json_object.c */; };
 		46E921440E9BF40A00F14AC8 /* json_object.h in Headers */ = {isa = PBXBuildFile; fileRef = 46E921320E9BF40A00F14AC8 /* json_object.h */; };
@@ -53,8 +53,8 @@
 		46E9212A0E9BF40A00F14AC8 /* bits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bits.h; path = ../../shared/json/bits.h; sourceTree = SOURCE_ROOT; };
 		46E9212B0E9BF40A00F14AC8 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../../shared/json/config.h; sourceTree = SOURCE_ROOT; };
 		46E9212C0E9BF40A00F14AC8 /* COPYING */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = COPYING; path = ../../shared/json/COPYING; sourceTree = SOURCE_ROOT; };
-		46E9212D0E9BF40A00F14AC8 /* debug.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = debug.c; path = ../../shared/json/debug.c; sourceTree = SOURCE_ROOT; };
-		46E9212E0E9BF40A00F14AC8 /* debug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = debug.h; path = ../../shared/json/debug.h; sourceTree = SOURCE_ROOT; };
+		46E9212D0E9BF40A00F14AC8 /* json_debug.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = json_debug.c; path = ../../shared/json/json_debug.c; sourceTree = SOURCE_ROOT; };
+		46E9212E0E9BF40A00F14AC8 /* json_debug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = json_debug.h; path = ../../shared/json/json_debug.h; sourceTree = SOURCE_ROOT; };
 		46E9212F0E9BF40A00F14AC8 /* INSTALL */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = INSTALL; path = ../../shared/json/INSTALL; sourceTree = SOURCE_ROOT; };
 		46E921300E9BF40A00F14AC8 /* json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = json.h; path = ../../shared/json/json.h; sourceTree = SOURCE_ROOT; };
 		46E921310E9BF40A00F14AC8 /* json_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = json_object.c; path = ../../shared/json/json_object.c; sourceTree = SOURCE_ROOT; };
@@ -141,8 +141,8 @@
 				46E9212A0E9BF40A00F14AC8 /* bits.h */,
 				46E9212B0E9BF40A00F14AC8 /* config.h */,
 				46E9212C0E9BF40A00F14AC8 /* COPYING */,
-				46E9212D0E9BF40A00F14AC8 /* debug.c */,
-				46E9212E0E9BF40A00F14AC8 /* debug.h */,
+				46E9212D0E9BF40A00F14AC8 /* json_debug.c */,
+				46E9212E0E9BF40A00F14AC8 /* json_debug.h */,
 				46E9212F0E9BF40A00F14AC8 /* INSTALL */,
 				46E921300E9BF40A00F14AC8 /* json.h */,
 				46E921310E9BF40A00F14AC8 /* json_object.c */,
@@ -208,7 +208,7 @@
 				46E9213D0E9BF40A00F14AC8 /* arraylist.h in Headers */,
 				46E9213E0E9BF40A00F14AC8 /* bits.h in Headers */,
 				46E9213F0E9BF40A00F14AC8 /* config.h in Headers */,
-				46E921410E9BF40A00F14AC8 /* debug.h in Headers */,
+				46E921410E9BF40A00F14AC8 /* json_debug.h in Headers */,
 				46E921420E9BF40A00F14AC8 /* json.h in Headers */,
 				46E921440E9BF40A00F14AC8 /* json_object.h in Headers */,
 				46E921450E9BF40A00F14AC8 /* json_object_private.h in Headers */,
@@ -275,7 +275,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				46E9213C0E9BF40A00F14AC8 /* arraylist.c in Sources */,
-				46E921400E9BF40A00F14AC8 /* debug.c in Sources */,
+				46E921400E9BF40A00F14AC8 /* json_debug.c in Sources */,
 				46E921430E9BF40A00F14AC8 /* json_object.c in Sources */,
 				46E921460E9BF40A00F14AC8 /* json_tokener.c in Sources */,
 				46E921480E9BF40A00F14AC8 /* json_util.c in Sources */,

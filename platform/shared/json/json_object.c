@@ -20,7 +20,7 @@
 //#define strdup _strdup
 //#endif
 
-#include "debug.h"
+#include "json_debug.h"
 #include "printbuf.h"
 #include "linkhash.h"
 #include "arraylist.h"
