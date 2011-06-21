@@ -6,8 +6,8 @@ TEMPLATE = lib
 CONFIG += staticlib warn_on
 
 macx {
-  DESTDIR = ../../../osx/build/rubylib
-  OBJECTS_DIR = ../../../osx/build/rubylib/tmp
+  DESTDIR = ../../../osx/bin/rubylib
+  OBJECTS_DIR = ../../../osx/bin/rubylib/tmp
   INCLUDEPATH += ../../ruby/iphone
   HEADERS += ../../ruby/iphone/ruby/config.h\
 ../../ruby/iphone/crt_externs.h

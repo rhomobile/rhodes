@@ -6,8 +6,8 @@ TEMPLATE = lib
 CONFIG += staticlib warn_on
 
 macx {
-  DESTDIR = ../../../osx/build/sqlite3
-  OBJECTS_DIR = ../../../osx/build/sqlite3/tmp
+  DESTDIR = ../../../osx/bin/sqlite3
+  OBJECTS_DIR = ../../../osx/bin/sqlite3/tmp
 }
 
 DEFINES += RHODES_EMULATOR

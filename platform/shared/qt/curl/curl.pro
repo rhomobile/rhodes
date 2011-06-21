@@ -6,8 +6,8 @@ TEMPLATE = lib
 CONFIG += staticlib warn_on
 
 macx {
-  DESTDIR = ../../../osx/build/curl
-  OBJECTS_DIR = ../../../osx/build/curl/tmp
+  DESTDIR = ../../../osx/bin/curl
+  OBJECTS_DIR = ../../../osx/bin/curl/tmp
 }
 
 DEFINES += RHODES_EMULATOR
