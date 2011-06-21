@@ -14,13 +14,6 @@ class CMainWindow : public QObject, IMainWindowCallback
 {
     Q_OBJECT
     DEFINE_LOGCLASS;
-
-public:
-    typedef struct _TNavigateData {
-        int index;
-        wchar_t* url;
-    } TNavigateData;
-
 private:
     explicit CMainWindow();
 public:

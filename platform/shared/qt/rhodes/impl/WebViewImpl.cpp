@@ -37,7 +37,7 @@ void rho_webview_navigate(const char* url, int index)
 
     String strUrl = RHODESAPP().canonicalizeRhoUrl(url);
 
-    CMainWindow::TNavigateData* nd = (CMainWindow::TNavigateData*)malloc(sizeof(CMainWindow::TNavigateData));
+    TNavigateData* nd = (TNavigateData*)malloc(sizeof(TNavigateData));
     nd->index = index;
     nd->url = dup_wcs(convertToStringW(strUrl).c_str());
     CMainWindow::getInstance()->navigateCommand(nd);
