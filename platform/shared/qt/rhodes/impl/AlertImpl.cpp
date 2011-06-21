@@ -1,6 +1,7 @@
 #include "common/RhodesApp.h"
 #include "common/rhoparams.h"
 #include "common/RhoAppAdapter.h"
+#include "MainWindowImpl.h"
 
 extern "C" {
 
@@ -110,7 +111,7 @@ void alert_play_file(char* file_name, ...)
 
 void alert_hide_popup()
 {
-    //TODO: ::PostMessage(main_wnd, WM_ALERT_HIDE_POPUP, 0, 0);
+    CMainWindow::getInstance()->alertHidePopup();
 }
 
 } //extern "C"

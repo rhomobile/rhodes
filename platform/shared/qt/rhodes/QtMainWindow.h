@@ -10,6 +10,7 @@
 #include "QtWebInspector.h"
 #include "MainWindowCallback.h"
 #include "common/IRhoThreadImpl.h"
+#include "impl/MainWindowImpl.h"
 
 namespace Ui {
     class QtMainWindow;
@@ -85,7 +86,21 @@ private slots:
     void on_menuAction_triggered(bool);
     void on_menuMain_aboutToShow();
 public slots:
+    void exitCommand(void);
+    void navigateBackCommand(void);
+    void navigateForwardCommand(void);
+    void logCommand(void);
+    void refreshCommand(int tab_index);
+    void navigateCommand(CMainWindow::TNavigateData* nd);
+    void takePicture(char* callbackUrl);
+    void selectPicture(char* callbackUrl);
+    void alertShowPopup(void *); // CAlertDialog::Params *
+    void alertHidePopup(void);
+    void dateTimePicker(void *); //TODO: CDateTimeMessage *
+    void executeCommand(RhoNativeViewRunnable*);
     void executeRunnable(rho::common::IRhoRunnable* pTask);
+    void takeSignature(void*); //TODO: Signature::Params*
+    void fullscreenCommand(int);
 protected:
     void resizeEvent(QResizeEvent *);
 };

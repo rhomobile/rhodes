@@ -39,8 +39,22 @@ CMainWindow::CMainWindow():
 
 CMainWindow::~CMainWindow()
 {
+    //TODO: m_logView
+    LOGCONF().setLogView(NULL);
+
+    //TODO: m_alertDialog
+    //TODO: m_SyncStatusDlg
+
     if (qtMainWindow) delete (QtMainWindow*)qtMainWindow;
     if (qtApplication) delete (QApplication*)qtApplication;
+}
+
+CMainWindow* CMainWindow::getInstance(void)
+{
+    static CMainWindow* instance = 0;
+    if (instance==0)
+        instance = new CMainWindow();
+    return instance;
 }
 
 void CMainWindow::updateSizeProperties(int width, int height)
@@ -150,8 +164,38 @@ bool CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
     ((QtMainWindow*)qtMainWindow)->setCallback(callback);
     ((QtMainWindow*)qtMainWindow)->show();
 
-    QObject::connect(this, SIGNAL(executeRunnable(rho::common::IRhoRunnable*)),
+    QObject::connect(this, SIGNAL(doExitCommand(void)),
+        ((QtMainWindow*)qtMainWindow), SLOT(exitCommand(void)) );
+    QObject::connect(this, SIGNAL(doNavigateBackCommand(void)),
+        ((QtMainWindow*)qtMainWindow), SLOT(navigateBackCommand(void)) );
+    QObject::connect(this, SIGNAL(doNavigateForwardCommand(void)),
+        ((QtMainWindow*)qtMainWindow), SLOT(navigateForwardCommand(void)) );
+    QObject::connect(this, SIGNAL(doBackCommand(void)),
+        ((QtMainWindow*)qtMainWindow), SLOT(backCommand(void)) );
+    QObject::connect(this, SIGNAL(doLogCommand(void)),
+        ((QtMainWindow*)qtMainWindow), SLOT(logCommand(void)) );
+    QObject::connect(this, SIGNAL(doRefreshCommand(int)),
+        ((QtMainWindow*)qtMainWindow), SLOT(refreshCommand(int)) );
+    QObject::connect(this, SIGNAL(doNavigateCommand(TNavigateData*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(navigateCommand(TNavigateData*)) );
+    QObject::connect(this, SIGNAL(doTakePicture(const char*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(takePicture(const char*)) );
+    QObject::connect(this, SIGNAL(doSelectPicture(const char*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(selectPicture(const char*)) );
+    QObject::connect(this, SIGNAL(doAlertShowPopup(void*)), //TODO: CAlertDialog::Params*
+        ((QtMainWindow*)qtMainWindow), SLOT(alertShowPopup(void*)) );
+    QObject::connect(this, SIGNAL(doAlertHidePopup(void)),
+        ((QtMainWindow*)qtMainWindow), SLOT(alertHidePopup(void)) );
+    QObject::connect(this, SIGNAL(doDateTimePicker(void*)), //TODO: CDateTimeMessage*
+        ((QtMainWindow*)qtMainWindow), SLOT(dateTimePicker(void*)) );
+    QObject::connect(this, SIGNAL(doExecuteCommand(RhoNativeViewRunnable*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(executeCommand(RhoNativeViewRunnable*)) );
+    QObject::connect(this, SIGNAL(doExecuteRunnable(rho::common::IRhoRunnable*)),
         ((QtMainWindow*)qtMainWindow), SLOT(executeRunnable(rho::common::IRhoRunnable*)) );
+    QObject::connect(this, SIGNAL(doTakeSignature(void*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(takeSignature(void*)) );
+    QObject::connect(this, SIGNAL(doFullscreenCommand(int)),
+        ((QtMainWindow*)qtMainWindow), SLOT(fullscreenCommand(int)) );
 
     return true;
 }
@@ -546,14 +590,84 @@ void CMainWindow::menuAddAction(const char* label, int item)
     ((QtMainWindow*)qtMainWindow)->menuAddAction(QString(label), item);
 }
 
-void CMainWindow::performOnUiThread(rho::common::IRhoRunnable* pTask)
-{
-    emit executeRunnable(pTask);
-}
-
 void CMainWindow::onActivate(int active)
 {
     rho_rhodesapp_callAppActiveCallback(active);
     if (!active)
         rho_geoimpl_turngpsoff();
+}
+
+void CMainWindow::exitCommand()
+{
+    emit doExitCommand();
+}
+
+void CMainWindow::navigateBackCommand()
+{
+    emit doNavigateBackCommand();
+}
+
+void CMainWindow::navigateForwardCommand()
+{
+    emit doNavigateForwardCommand();
+}
+
+void CMainWindow::logCommand()
+{
+    emit doLogCommand();
+}
+
+void CMainWindow::refreshCommand(int tab_index)
+{
+    emit doRefreshCommand(tab_index);
+}
+
+void CMainWindow::navigateCommand(TNavigateData* nd)
+{
+    emit doNavigateCommand(nd);
+}
+
+void CMainWindow::takePicture(const char* callbackUrl)
+{
+    emit doTakePicture(callbackUrl);
+}
+
+void CMainWindow::selectPicture(const char* callbackUrl)
+{
+    emit doSelectPicture(callbackUrl);
+}
+
+void CMainWindow::alertShowPopup(void* params) // CAlertDialog::Params *
+{
+    emit doAlertShowPopup(params);
+}
+
+void CMainWindow::alertHidePopup()
+{
+    emit doAlertHidePopup();
+}
+
+void CMainWindow::dateTimePicker(void* msg) //TODO: CDateTimeMessage *
+{
+    emit doDateTimePicker(msg);
+}
+
+void CMainWindow::executeCommand(RhoNativeViewRunnable* runnable)
+{
+    emit doExecuteCommand(runnable);
+}
+
+void CMainWindow::executeRunnable(rho::common::IRhoRunnable* pTask)
+{
+    emit doExecuteRunnable(pTask);
+}
+
+void CMainWindow::takeSignature(void* params) //TODO: Signature::Params*
+{
+    emit doTakeSignature(params);
+}
+
+void CMainWindow::fullscreenCommand(int enable)
+{
+    emit doFullscreenCommand(enable);
 }

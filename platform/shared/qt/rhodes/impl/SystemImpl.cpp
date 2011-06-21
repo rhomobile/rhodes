@@ -156,7 +156,7 @@ VALUE rho_sys_has_network()
 
 void rho_sys_app_exit()
 {
-    //TODO: ::PostMessage(getMainWnd(), WM_COMMAND, MAKEWPARAM(IDM_EXIT,0), (LPARAM )0);
+    CMainWindow::getInstance()->exitCommand();
 }
 
 void rho_sys_open_url(const char* url)
