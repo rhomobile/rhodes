@@ -421,64 +421,17 @@ namespace "run" do
 
   
   namespace "win32" do
-	    
-	    desc "Run application on RhoSimulator"
-		task :rhosimulator => "config:common" do
-            $appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"] 
-    
-            if $config['env']['paths']['rhosimulator']
-		        path = File.join( $config['env']['paths']['rhosimulator'], "rhosimulator.exe")
-		    else
-		        path = File.join( $startdir, "platform/win32/RhoSimulator/rhosimulator.exe")
-		    end
-    		    
-            if !File.exists?(path)
-                puts "Cannot find RhoSimulator: '#{path}' does not exists"
-                puts "Install Rhodes gem OR"
-                puts "Install RhoSimulator and modify 'rhosimulator' section in '<rhodes>/rhobuild.yml'"
-                exit 1
-            end
-            
-            sim_conf = "rhodes_path='#{$startdir}'\r\n"
-            sim_conf += "app_name='#{$appname}'\r\n"
-            sim_conf += "debug_port=#{$debug_port}\r\n"
-            sim_conf += "debug_host='127.0.0.1'\r\n"
-            sim_conf += $rhosim_config if $rhosim_config
-            
-            #check gem extensions
-            $app_config["extensions"].each do |extname|
-                begin
-                    $rhodes_extensions = nil
-                    require extname
-                    extpath = $rhodes_extensions[0] unless $rhodes_extensions.nil?
-                    
-                    sim_conf += "ext_path='#{extpath}'\r\n" if extpath && extpath.length() > 0 
-                rescue Exception => e
-                end
-            end
-            
-            fdir = File.join($app_path, 'rhosimulator')
-            mkdir fdir unless File.exist?(fdir)
-            
-            fname = File.join(fdir, 'rhosimconfig.txt')
-            #puts "#{fname}"
-	        File.open(fname, "wb") do |fconf|
-	            fconf.write( sim_conf )
-	        end
-                        
-		    args = []
-		    args << "-approot='#{$app_path}'"
-		    
-		    Jake.run2 path, args, {:nowait => true}
-                
-		end
-		
+
+        task :rhosimulator => "config:common" do
+            $rhosim_config = "platform='wm'\r\n"
+            Rake::Task["run:rhosimulator"].invoke            
+        end
+
         task :rhosimulator_debug, :debug_port do |t, args|
-        
             puts "Args were: #{args}"
             $debug_port = args[:debug_port].to_i
-            Rake::Task["run:win32:rhosimulator"].invoke
-                    
+            $rhosim_config = "platform='wm'\r\n"
+            Rake::Task["run:rhosimulator"].invoke
         end		
   end
 
