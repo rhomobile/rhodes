@@ -147,90 +147,124 @@ Same procedure as for plug-in
 
     git clone git@github.com:rhomobile/rhodes.git
 
-1.CHANGELOG
+1. CHANGELOG
 
-2.Make sure the major.minor.patch version
+2. Make sure the major.minor.patch version
    match what you want to release:
 
-     $ rake get_version
+       $ rake get_version
 
    Use set_version to update if it is not correct:
 
-     $ rake set_version[2.3.1]
+       $ rake set_version[2.3.1]
 
-3.Edit rhodes.gemspec, set s.version :
+3. Edit rhodes.gemspec, set s.version :
 
-BETA:
-	s.version = "2.3.1.beta.1"
+    BETA:
+	   s.version = "2.3.1.beta.1"
 
-RELEASE:
-	s.version = Rhodes::VERSION
+    RELEASE:
+	   s.version = Rhodes::VERSION
 
-4.Build RhoSimulator:
+4. Build RhoSimulator:
 
     rake build:win32:rhosimulator
 
-4.1 Zip files in folder 'rhodes\platform\win32\RhoSimulator' and copy to :
-http://rhosimulator.s3.amazonaws.com/RhoSimulator
+    1. Zip files in folder 'rhodes\platform\win32\RhoSimulator' and copy to:
+    http://rhosimulator.s3.amazonaws.com/RhoSimulator
 
-5.Build IronRuby:
+5. Build IronRuby:
 
-    rake build:wp:ironruby
+	   rake build:wp:ironruby
 
-6.Push changes to git
-     git commit -m "bumping version for release"
-     git push
+6. Push changes to git
 
-7.Put tag:
+	   git commit -m "bumping version for release"
+	   git push
 
-    git tag -m "rhodes release" 2.3.1 0548dea055f0aa00642a66c18ea207bd7344dda7
-    git push --tags
+7. Put tag:
+
+	   git tag -m "rhodes release" 2.3.1 0548dea055f0aa00642a66c18ea207bd7344dda7
+	   git push --tags
 
 ### cijoe steps:
-1.Run commands:
-    ssh rhomobile@cijoe.rhomobile.com
 
-    cd ~/rhodes-release
+1. Run commands:
 
-    rm -rf * 
-    git reset --hard
-    git pull
+	   ssh rhomobile@cijoe.rhomobile.com
 
-2.Copy 'rhodes\platform\wp7\IronRuby\bin\Silverlight3Release' to cijoe from local computer
-3.Copy 'rhodes\platform\win32\RhoSimulator' to cijoe from local computer
+	   cd ~/rhodes-release
 
-4.Build and push gem:
+	   rm -rf * 
+	   git reset --hard
+	   git pull
+
+2. Copy 'rhodes\platform\wp7\IronRuby\bin\Silverlight3Release' to cijoe from local computer
+3. Copy 'rhodes\platform\win32\RhoSimulator' to cijoe from local computer
+
+4. Build and push gem:
     rake gem
     gem push rhodes-<version>.gem
 
 ##Build Eclipse plug-in
 
-0.download Eclipse for RAP/RPC developer
+0. download Eclipse for RAP/RPC developer
 
-1.download git repository (git@github.com:rhomobile/rhostudio.git)
+1. download git repository (git@github.com:rhomobile/rhostudio.git)
 
-2.Import project into Eclipse (File/Import/'Existing project into Workspace')
+2. Import project into Eclipse (File/Import/'Existing project into Workspace')
 
-3.Install DLTK 2.0
+3. Install DLTK 2.0
 
-4.Import into workspace next DLTK plugins
+4. Import into workspace next DLTK plugins
 
     org.eclipse.dltk.debug
     org.eclipse.dltk.ruby.ui
     org.eclipse.dltk.ui
 
-5.add imported plugins to java build paths (Project properties/Java build path/Libraries/Add JAR)
+5. add imported plugins to java build paths (Project properties/Java build path/Libraries/Add JAR)
 
-6.select imported plugins in Project properties/Java build path/Libraries/Order and Export 
+6. select imported plugins in Project properties/Java build path/Libraries/Order and Export 
 
-5.build and run Eclipse configuration
+5. build and run Eclipse configuration
 
 ##Build Rhodes Eclipse
 
-1.Install (http://www.eclipse.org/egit/)
+1. Install (http://www.eclipse.org/egit/)
 
-2.import plugin org.eclipse.platform
+2. import plugin org.eclipse.platform
 
-3.Start export product (File/Export/Plugin development/Eclipse product)
+3. Start export product (File/Export/Plugin development/Eclipse product)
 
-4.Select destination folder and export
+4. Select destination folder and export
+
+##Build &amp; test RhoSimulator for Mac
+
+1. Download and install Qt Libraries for Mac:
+
+   * Go to [http://qt.nokia.com/downloads](http://qt.nokia.com/downloads)
+   * Jump to `Qt libraries`
+   * Select [Qt libraries 4.7.3 for Mac](http://qt.nokia.com/downloads/qt-for-open-source-cpp-development-on-mac-os-x)
+   * Download [Cocoa: Mac binary package](http://get.qt.nokia.com/qt/source/qt-mac-opensource-4.7.3.dmg) (206 MB)
+   * Install Qt libraries for Mac
+
+2. Build RhoSimulator for Mac:
+
+	   $ cd <rhodes>/platform/shared/qt/rhodes
+	   $ qmake -o Makefile -spec macx-g++ RhoSimulator_debug.pro
+	   $ make all
+
+3. Test RhoSimulator for Mac:
+
+   * Use `rhodes-system-api-samples`
+   * Make sure you have an appropriate `rhosimulator/rhosimconfig.txt`, e.g.:
+
+	     rhodes_path='...full path to rhodes...'
+	     app_name='rhodes-system-api-samples'
+	     debug_port=9000
+	     debug_host='127.0.0.1'
+	     platform='APPLE'
+
+   * Run RhoSimulator for Mac from terminal enter command (on one line):
+     `<path-to-rhodes>/platform/osx/bin/RhoSimulator/RhoSimulator.app/Contents/MacOS/RhoSimulator
+     -approot='...full path to rhodes-system-api-samples...'`
