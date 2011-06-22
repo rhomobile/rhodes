@@ -265,6 +265,6 @@ Same procedure as for plug-in
 	     debug_host='127.0.0.1'
 	     platform='APPLE'
 
-   * Run RhoSimulator for Mac from terminal enter command (on one line):
+   * Run RhoSimulator for Mac:
      `<path-to-rhodes>/platform/osx/bin/RhoSimulator/RhoSimulator.app/Contents/MacOS/RhoSimulator
      -approot='...full path to rhodes-system-api-samples...'`
