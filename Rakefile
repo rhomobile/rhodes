@@ -981,3 +981,82 @@ namespace "build" do
         rm_rf bin_dir
     end
 end
+
+namespace "run" do
+
+    desc "Run application on RhoSimulator"
+    task :rhosimulator => "config:common" do
+        path = ""
+        if RUBY_PLATFORM =~ /(win|w)32$/
+            os_name = 'win32'
+            if $config['env']['paths']['rhosimulator'][os_name]
+                path = File.join( $config['env']['paths']['rhosimulator'][os_name], "rhosimulator.exe" )
+            else
+                path = File.join( $startdir, "platform/win32/RhoSimulator/rhosimulator.exe" )
+            end
+        elsif RUBY_PLATFORM =~ /darwin/
+            os_name = 'macosx'
+            if $config['env']['paths']['rhosimulator'][os_name]
+                path = File.join( $config['env']['paths']['rhosimulator'][os_name], "Contents/MacOS/RhoSimulator" )
+            else
+                path = File.join( $startdir, "platform/osx/bin/RhoSimulator/RhoSimulator.app/Contents/MacOS/RhoSimulator" )
+            end
+        else
+            os_name = 'linux'
+            if $config['env']['paths']['rhosimulator'][os_name]
+                # path = File.join( $config['env']['paths']['rhosimulator'][os_name], "RhoSimulator" )
+            else
+                # path = File.join( $startdir, "platform/linux/bin/RhoSimulator/RhoSimulator" )
+            end
+        end
+
+        $appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"]
+        if !File.exists?(path)
+            puts "Cannot find RhoSimulator: '#{path}' does not exists"
+            puts "Install Rhodes gem OR"
+            puts "Install RhoSimulator and modify 'rhosimulator:#{os_name}' section in '<rhodes>/rhobuild.yml'"
+            exit 1
+        end
+
+        sim_conf = "rhodes_path='#{$startdir}'\r\n"
+        sim_conf += "app_name='#{$appname}'\r\n"
+        sim_conf += "debug_port=#{$debug_port}\r\n"
+        sim_conf += "debug_host='127.0.0.1'\r\n"
+        sim_conf += $rhosim_config if $rhosim_config
+
+        #check gem extensions
+        $app_config["extensions"].each do |extname|
+            begin
+                $rhodes_extensions = nil
+                require extname
+                extpath = $rhodes_extensions[0] unless $rhodes_extensions.nil?
+                sim_conf += "ext_path='#{extpath}'\r\n" if extpath && extpath.length() > 0 
+            rescue Exception => e
+            end
+        end
+
+        fdir = File.join($app_path, 'rhosimulator')
+        mkdir fdir unless File.exist?(fdir)
+            
+        fname = File.join(fdir, 'rhosimconfig.txt')
+        #puts "#{fname}"
+        File.open(fname, "wb") do |fconf|
+            fconf.write( sim_conf )
+        end
+
+        args = []
+        args << "-approot='#{$app_path}'"
+
+        Jake.run2 path, args, {:nowait => true}
+    end
+
+
+    task :rhosimulator_debug, :debug_port do |t, args|
+
+        puts "Args were: #{args}"
+        $debug_port = args[:debug_port].to_i
+        Rake::Task["run:rhosimulator"].invoke
+
+    end		
+
+end

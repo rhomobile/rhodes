@@ -2,6 +2,7 @@
 
 #include <string>
 #include "logging/RhoLog.h"
+#include "common/RhoDefs.h"
 #include "common/RhoConf.h"
 #include "common/RhodesApp.h"
 #include "common/rhoparams.h"
@@ -12,7 +13,7 @@
 #undef null
 #include <QObject>
 
-#ifdef __APPLE__
+#ifdef OS_MACOSX
 #define stricmp strcasecmp
 #define strnicmp strncasecmp
 #endif

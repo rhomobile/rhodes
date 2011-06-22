@@ -1057,7 +1057,7 @@ namespace "run" do
 
         $rhosim_config += "os_version='#{$bbver}'\r\n"
         
-        Rake::Task["run:win32:rhosimulator"].invoke
+        Rake::Task["run:rhosimulator"].invoke
     end
 
   end
