@@ -238,7 +238,7 @@ Same procedure as for plug-in
 
 4. Select destination folder and export
 
-##Build &amp; test RhoSimulator for Mac
+##Build &amp; Test RhoSimulator for Mac
 
 1. Download and install Qt Libraries for Mac:
 
@@ -266,5 +266,6 @@ Same procedure as for plug-in
 	     platform='APPLE'
 
    * Run RhoSimulator for Mac:
-     `<path-to-rhodes>/platform/osx/bin/RhoSimulator/RhoSimulator.app/Contents/MacOS/RhoSimulator
-     -approot='...full path to rhodes-system-api-samples...'`
+
+	     cd <rhodes-system-api-samples>
+	     rake run:rhosimulator

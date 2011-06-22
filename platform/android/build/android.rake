@@ -1689,7 +1689,7 @@ namespace "run" do
         $rhosim_config = "platform='android'\r\n"
         $rhosim_config += "os_version='#{$emuversion}'\r\n" if $emuversion
         
-        Rake::Task["run:win32:rhosimulator"].invoke            
+        Rake::Task["run:rhosimulator"].invoke            
     end
 
     task :get_info => "config:android" do
