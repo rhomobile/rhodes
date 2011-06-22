@@ -799,8 +799,7 @@ const char* CRhodesApp::getFreeListeningPort()
 void CRhodesApp::initAppUrls() 
 {
     CRhodesAppBase::initAppUrls(); 
-    m_currentTabIndex = 0;
-
+    
 #if defined( OS_WINCE )
     m_strHomeUrl = "http://localhost:";
 #else
@@ -815,22 +814,66 @@ void CRhodesApp::initAppUrls()
 void CRhodesApp::keepLastVisitedUrl(String strUrl)
 {
     //LOG(INFO) + "Current URL: " + strUrl;
+    int nIndex = rho_webview_active_tab();
+    int nToAdd = nIndex - m_currentUrls.size();
+    for ( int i = 0; i <= nToAdd; i++ )
+    {
+        m_currentUrls.addElement("");
+    }
 
-    m_currentUrls[m_currentTabIndex] = canonicalizeRhoUrl(strUrl);
+    m_currentUrls[nIndex] = canonicalizeRhoUrl(strUrl);
+}
+
+const String& CRhodesApp::getCurrentUrl(int index)
+{ 
+    if ( index < m_currentUrls.size() )
+        return m_currentUrls[index]; 
+
+    return m_EmptyString;
+}
+
+const String& CRhodesApp::getAppBackUrl()
+{
+    int index = rho_webview_active_tab();
+
+    if ( index < m_arAppBackUrl.size() )
+        return m_arAppBackUrl[index]; 
+
+    return m_EmptyString;
 }
 
 void CRhodesApp::setAppBackUrl(const String& url)
 {
+    int nIndex = rho_webview_active_tab();
+    int nToAdd = nIndex - m_arAppBackUrl.size();
+    for ( int i = 0; i <= nToAdd; i++ )
+    {
+        m_arAppBackUrl.addElement("");
+        m_arAppBackUrlOrig.addElement("");
+    }
+
     if ( url.length() > 0 )
     {
-        m_strAppBackUrlOrig = url;
-        m_strAppBackUrl = canonicalizeRhoUrl(url);
+        m_arAppBackUrlOrig[nIndex] = url;
+        m_arAppBackUrl[nIndex] = canonicalizeRhoUrl(url);
     }
     else
     {
-        m_strAppBackUrlOrig = "";
-        m_strAppBackUrl = "";
+        m_arAppBackUrlOrig[nIndex] = "";
+        m_arAppBackUrl[nIndex] = "";
     }
+}
+
+void CRhodesApp::navigateBack()
+{
+    int nIndex = rho_webview_active_tab();
+
+    if ( nIndex < m_arAppBackUrlOrig.size() && m_arAppBackUrlOrig[nIndex].length() > 0 )
+        loadUrl(m_arAppBackUrlOrig[nIndex]);
+    else if ( strcasecmp(getCurrentUrl(nIndex).c_str(),getStartUrl().c_str()) != 0 )
+	{
+        rho_webview_navigate_back();
+	}
 }
 
 String CRhodesApp::getAppName()
@@ -911,11 +954,6 @@ const String& CRhodesApp::getOptionsUrl()
     return m_strOptionsUrl;
 }
 
-const String& CRhodesApp::getCurrentUrl(int /*index*/)
-{ 
-    return m_currentUrls[m_currentTabIndex]; 
-}
-
 const String& CRhodesApp::getRhobundleReloadUrl() 
 {
     m_strRhobundleReloadUrl = RHOCONF().getString("rhobundle_zip_url");
@@ -925,27 +963,6 @@ const String& CRhodesApp::getRhobundleReloadUrl()
 void CRhodesApp::navigateToUrl( const String& strUrl)
 {
     rho_webview_navigate(strUrl.c_str(), -1);
-}
-
-void CRhodesApp::navigateBack()
-{
-    //rho::String strAppUrl = getAppBackUrl();
-
-    if ( m_strAppBackUrlOrig.length() > 0 )
-        loadUrl(m_strAppBackUrlOrig);
-    else if ( strcasecmp(getCurrentUrl().c_str(),getStartUrl().c_str()) != 0 )
-	{
-/* Now JQTouch is fixed for back issue - we do not need make back by this hack
-#ifdef OS_MACOSX
-		if (RHOCONF().getBool("jqtouch_mode"))
-		{
-			rho_webview_execute_js("window.Rho.jqt.goBack()", 0);
-			return;
-		}
-#endif
-*/		
-        rho_webview_navigate_back();
-	}
 }
 
 boolean CRhodesApp::sendLog() 

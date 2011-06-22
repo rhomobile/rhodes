@@ -39,11 +39,11 @@ private:
     String m_strStartUrl, m_strOptionsUrl, m_strRhobundleReloadUrl;//, m_strFirstStartUrl;
     static String m_strStartParameters;
     String m_strRhoMessage;
+    String m_EmptyString;
 
-    int m_currentTabIndex;
-    String m_currentUrls[5];
+    Vector<String> m_currentUrls;
 
-    String m_strAppBackUrl, m_strAppBackUrlOrig;
+    Vector<String> m_arAppBackUrl, m_arAppBackUrlOrig;
     Vector<ICallbackObject*> m_arCallbackObjects;
 
     common::CMutex m_mxPushCallback;
@@ -87,7 +87,7 @@ public:
     static void setStartParameters(const char* szParams ){ m_strStartParameters = (szParams ? szParams : ""); }
     static const String& getStartParameters(){ return m_strStartParameters; }
 
-    const String& getAppBackUrl(){return m_strAppBackUrl;}
+    const String& getAppBackUrl();
     void setAppBackUrl(const String& url);
     String getAppTitle();
     String getAppName();
