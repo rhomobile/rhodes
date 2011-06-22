@@ -24,6 +24,7 @@ else
   end
 end
 $basepath = File.expand_path File.dirname(__FILE__)
+$androidpath = File.join $rootpath, "platform", "android"
 
 require File.join($basepath, 'android_sdk.rb')
 
@@ -46,7 +47,22 @@ $buildargs = {
               "sqlite" => ["-I#{File.join($sharedpath, "sqlite")}",
                            "-I#{$sharedpath}"],
               "json" =>   ["-I#{File.join($sharedpath, "json")}",
+                           "-I#{$sharedpath}"],
+              "unzip" =>  ["-I#{$sharedpath}"],
+              "rholog" => ["-I#{$sharedpath}"],
+              "rhocommon" => ["-I#{$sharedpath}",
+                           "-I#{File.join($sharedpath, "curl", "include")}"],
+              "rhodb" =>  ["-I#{File.join($sharedpath, "db")}",
+                           "-I#{$sharedpath}",
+                           "-I#{File.join($sharedpath, "sqlite")}"],
+              "rhosync" => ["-I#{File.join($sharedpath, "sync")}",
+                           "-I#{$sharedpath}",
+                           "-I#{File.join($sharedpath, "sqlite")}"],
+              "rhojni" => ["-DNO_RHO_RUBY",
+                           "-I#{File.join($androidpath, "Rhodes", "jni", "include")}",
+                           "-I#{File.join($sharedpath, "curl", "include")}",
                            "-I#{$sharedpath}"]
+
              }
 
 #task :default => ["android:config"]
@@ -58,11 +74,17 @@ CLEAN = FileList.new
 
 LIBS = Hash.new
 
-LIBS['curl'] = File.join(BUILDPATH, 'libcurl.a')
+LIBS['curl']   = File.join(BUILDPATH, 'libcurl.a')
 LIBS['sqlite'] = File.join(BUILDPATH, 'libsqlite.a')
-LIBS['json'] = File.join(BUILDPATH, 'libjson.a')
+LIBS['json']   = File.join(BUILDPATH, 'libjson.a')
+LIBS['unzip']  = File.join(BUILDPATH, 'libunzip.a')
+LIBS['rholog'] = File.join(BUILDPATH, 'librholog.a')
+LIBS['rhocommon'] = File.join(BUILDPATH, 'librhocommon.a')
+LIBS['rhodb']  = File.join(BUILDPATH, 'librhodb.a')
+LIBS['rhosync']  = File.join(BUILDPATH, 'librhosync.a')
+LIBS['rhojni']  = File.join(BUILDPATH, 'librhojni.a')
 
-CPPLIBS = ['json']
+CPPLIBS = ['json', 'rholog', 'rhocommon', 'rhodb', 'rhosync', 'rhojni']
 
 LIBS.each do |name, filename|
   sources = get_sources("lib#{name}")
@@ -135,13 +157,25 @@ namespace "android" do
 
   namespace "build" do
 
-    task :libraries => ["android:config", BUILDPATH, :libcurl, :libsqlite]
+    task :libraries => ["android:config", BUILDPATH, :libcurl, :libsqlite, :libjson, :libunzip, :librholog, :librhocommon, :librhodb, :librhosync]
 
     task :libsqlite => [File.join(BUILDPATH, 'libsqlite'), LIBS['sqlite'] ]
 
     task :libcurl => [File.join(BUILDPATH, 'libcurl'), LIBS['curl'] ]
 
     task :libjson => [File.join(BUILDPATH, 'libjson'), LIBS['json'] ]
+
+    task :libunzip => [File.join(BUILDPATH, 'libunzip'), LIBS['unzip'] ]
+
+    task :librholog => [File.join(BUILDPATH, 'librholog'), LIBS['rholog'] ]
+
+    task :librhocommon => [File.join(BUILDPATH, 'librhocommon'), LIBS['rhocommon'] ]
+
+    task :librhodb => [File.join(BUILDPATH, 'librhodb'), LIBS['rhodb'] ]
+
+    task :librhosync => [File.join(BUILDPATH, 'librhosync'), LIBS['rhosync'] ]
+
+    task :librhojni => [File.join(BUILDPATH, 'librhojni'), LIBS['rhojni'] ]
 
   end # namespace "build"
 
@@ -163,6 +197,24 @@ end # namespace "android"
 
     directory File.join(BUILDPATH, 'libjson')
     file File.join(BUILDPATH, 'libjson') => BUILDPATH
+
+    directory File.join(BUILDPATH, 'libunzip')
+    file File.join(BUILDPATH, 'libunzip') => BUILDPATH
+
+    directory File.join(BUILDPATH, 'librholog')
+    file File.join(BUILDPATH, 'librholog') => BUILDPATH
+
+    directory File.join(BUILDPATH, 'librhocommon')
+    file File.join(BUILDPATH, 'librhocommon') => BUILDPATH
+
+    directory File.join(BUILDPATH, 'librhodb')
+    file File.join(BUILDPATH, 'librhodb') => BUILDPATH
+
+    directory File.join(BUILDPATH, 'librhosync')
+    file File.join(BUILDPATH, 'librhosync') => BUILDPATH
+
+    directory File.join(BUILDPATH, 'librhojni')
+    file File.join(BUILDPATH, 'librhojni') => BUILDPATH
 
     def lib_objects(libfile)
       lib = File.basename(libfile).gsub(/\.a$/, "")
