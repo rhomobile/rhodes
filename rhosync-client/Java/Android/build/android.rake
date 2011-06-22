@@ -1,5 +1,6 @@
 
 #USE_TRACES = Rake.application.options.trace
+USE_OWN_STLPORT = false
 
 
 $current_platform = 'android'
@@ -38,11 +39,13 @@ $buildargs = {
               #export CFLAGS="--sysroot <ndkroot>/build/platforms/android-3/arch-arm -fPIC -mandroid -DANDROID -DOS_ANDROID"
               #export CPPFLAGS="--sysroot <ndkroot>/build/platforms/android-3/arch-arm -fPIC -mandroid -DANDROID -DOS_ANDROID"
               #./configure --without-ssl --without-ca-bundle --without-ca-path --without-libssh2 --without-libidn --disable-ldap --disable-ldaps --host=arm-eabi
-              "curl" => ["-DHAVE_CONFIG_H",
+              "curl" =>   ["-DHAVE_CONFIG_H",
                            "-I#{File.join($sharedpath, "curl", "include")}",
                            "-I#{File.join($sharedpath, "curl")}",
                            "-I#{$sharedpath}"],
               "sqlite" => ["-I#{File.join($sharedpath, "sqlite")}",
+                           "-I#{$sharedpath}"],
+              "json" =>   ["-I#{File.join($sharedpath, "json")}",
                            "-I#{$sharedpath}"]
              }
 
@@ -57,6 +60,9 @@ LIBS = Hash.new
 
 LIBS['curl'] = File.join(BUILDPATH, 'libcurl.a')
 LIBS['sqlite'] = File.join(BUILDPATH, 'libsqlite.a')
+LIBS['json'] = File.join(BUILDPATH, 'libjson.a')
+
+CPPLIBS = ['json']
 
 LIBS.each do |name, filename|
   sources = get_sources("lib#{name}")
@@ -64,9 +70,6 @@ LIBS.each do |name, filename|
   OBJ.include get_objects(sources, File.join(BUILDPATH, "lib#{name}"))
   LIBFN.include filename
 end
-
-SRC.include get_sources("libcurl")
-SRC.include get_sources("libsqlite")
 
 CLEAN.include OBJ
 CLEAN.include LIBFN
@@ -93,6 +96,20 @@ namespace "android" do
       end
     end
 
+    def build_args()
+      CPPLIBS.each do |lib|
+        unless $std_includes.nil?
+          puts "Use stl for #{lib}" if USE_TRACES
+          $buildargs[lib] << "-I#{$std_includes}"
+        end
+        if USE_OWN_STLPORT
+          puts "Use own stlport for #{lib}" if USE_TRACES
+          $buildargs[lib] << "-D__NEW__"
+          $buildargs[lib] << "-I#{$stlport_includes}"
+        end
+      end
+    end
+
     task :sdk do # => ["config:buildyml", "config:rhobuildyml"] do
       $androidsdkpath = $rhoconfig["env"]["paths"]["android"]
       sdk_level = setup_sdk $androidsdkpath, $min_api_level
@@ -101,10 +118,19 @@ namespace "android" do
       setup_ndk $androidndkpath, sdk_level
     end
 
+    task :stdlib => [:sdk] do
+      $std_includes = File.join $androidndkpath, "sources", "cxx-stl", "stlport", "stlport"
+      unless File.directory? $std_includes
+        $stlport_includes = File.join $sharedpath, "stlport", "stlport"
+        USE_OWN_STLPORT = true
+      end
+    end
+
   end # namespace "config"
 
-  task :config => ["config:sdk"] do
+  task :config => ["config:sdk", "config:stdlib"] do
     build_tree BUILDPATH
+    build_args
   end # task :config
 
   namespace "build" do
@@ -114,6 +140,8 @@ namespace "android" do
     task :libsqlite => [File.join(BUILDPATH, 'libsqlite'), LIBS['sqlite'] ]
 
     task :libcurl => [File.join(BUILDPATH, 'libcurl'), LIBS['curl'] ]
+
+    task :libjson => [File.join(BUILDPATH, 'libjson'), LIBS['json'] ]
 
   end # namespace "build"
 
@@ -132,6 +160,9 @@ end # namespace "android"
 
     directory File.join(BUILDPATH, 'libsqlite')
     file File.join(BUILDPATH, 'libsqlite') => BUILDPATH
+
+    directory File.join(BUILDPATH, 'libjson')
+    file File.join(BUILDPATH, 'libjson') => BUILDPATH
 
     def lib_objects(libfile)
       lib = File.basename(libfile).gsub(/\.a$/, "")
