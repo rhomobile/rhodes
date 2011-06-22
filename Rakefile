@@ -987,27 +987,33 @@ namespace "run" do
     desc "Run application on RhoSimulator"
     task :rhosimulator => "config:common" do
         path = ""
+        args = []
+        args << "-approot='#{$app_path}'"
         if RUBY_PLATFORM =~ /(win|w)32$/
             os_name = 'win32'
-            if $config['env']['paths']['rhosimulator'][os_name]
+            if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'][os_name]
                 path = File.join( $config['env']['paths']['rhosimulator'][os_name], "rhosimulator.exe" )
             else
                 path = File.join( $startdir, "platform/win32/RhoSimulator/rhosimulator.exe" )
             end
         elsif RUBY_PLATFORM =~ /darwin/
             os_name = 'macosx'
-            if $config['env']['paths']['rhosimulator'][os_name]
+            if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'][os_name]
                 path = File.join( $config['env']['paths']['rhosimulator'][os_name], "Contents/MacOS/RhoSimulator" )
             else
                 path = File.join( $startdir, "platform/osx/bin/RhoSimulator/RhoSimulator.app/Contents/MacOS/RhoSimulator" )
             end
+            args << ">/dev/null"
+            args << "2>/dev/null"
         else
             os_name = 'linux'
-            if $config['env']['paths']['rhosimulator'][os_name]
+            if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'][os_name]
                 # path = File.join( $config['env']['paths']['rhosimulator'][os_name], "RhoSimulator" )
             else
                 # path = File.join( $startdir, "platform/linux/bin/RhoSimulator/RhoSimulator" )
             end
+            args << ">/dev/null"
+            args << "2>/dev/null"
         end
 
         $appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"]
@@ -1043,9 +1049,6 @@ namespace "run" do
         File.open(fname, "wb") do |fconf|
             fconf.write( sim_conf )
         end
-
-        args = []
-        args << "-approot='#{$app_path}'"
 
         Jake.run2 path, args, {:nowait => true}
     end
