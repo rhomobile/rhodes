@@ -4485,13 +4485,14 @@ pipe_open(struct rb_exec_arg *eargp, VALUE prog, const char *modestr, int fmode,
     VALUE port;
     rb_io_t *write_fptr;
     VALUE write_port;
+    struct rb_exec_arg sarg;
 #if defined(HAVE_FORK)
     int status;
     struct popen_arg arg;
 #elif defined(_WIN32)
     volatile VALUE argbuf;
     char **args = NULL;
-    struct rb_exec_arg sarg;
+    //struct rb_exec_arg sarg;
     int pair[2], write_pair[2];
 #endif
     FILE *fp = 0;

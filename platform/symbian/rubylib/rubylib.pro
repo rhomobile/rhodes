@@ -6,14 +6,17 @@
 
 QT       -= gui
 DEFINES += __SYMBIAN32__=1
+DEFINES += HAVE_SOCKADDR_STORAGE=1
 
 TARGET = rubylib
 TEMPLATE = lib
 CONFIG += staticlib
 INCLUDEPATH += ../../shared
 INCLUDEPATH += ../../shared/ruby
+INCLUDEPATH += ../../shared/ruby/generated
 INCLUDEPATH += ../../shared/ruby/include
 INCLUDEPATH += ../../shared/ruby/symbian
+INCLUDEPATH += /epoc32/include/stdapis/glib-2.0
 
 
 SOURCES += \
