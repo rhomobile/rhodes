@@ -97,8 +97,8 @@ public:
     void logCommand(void);
     void refreshCommand(int);
     void navigateCommand(TNavigateData*);
-    void takePicture(const char*);
-    void selectPicture(const char*);
+    void takePicture(char*);
+    void selectPicture(char*);
     void alertShowPopup(void *); //TODO: CAlertDialog::Params *
     void alertHidePopup(void);
     void dateTimePicker(void *); //TODO: CDateTimeMessage *
@@ -114,8 +114,8 @@ signals:
     void doLogCommand(void);
     void doRefreshCommand(int);
     void doNavigateCommand(TNavigateData*);
-    void doTakePicture(const char*);
-    void doSelectPicture(const char*);
+    void doTakePicture(char*);
+    void doSelectPicture(char*);
     void doAlertShowPopup(void *); //TODO: CAlertDialog::Params *
     void doAlertHidePopup(void);
     void doDateTimePicker(void *); //TODO: CDateTimeMessage *
