@@ -94,7 +94,7 @@ public slots:
     void navigateCommand(TNavigateData* nd);
     void takePicture(char* callbackUrl);
     void selectPicture(char* callbackUrl);
-    void alertShowPopup(void *); // CAlertDialog::Params *
+    void alertShowPopup(void *); //TODO: CAlertDialog::Params *
     void alertHidePopup(void);
     void dateTimePicker(void *); //TODO: CDateTimeMessage *
     void executeCommand(RhoNativeViewRunnable*);
