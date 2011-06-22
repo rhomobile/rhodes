@@ -986,9 +986,10 @@ namespace "run" do
 
     desc "Run application on RhoSimulator"
     task :rhosimulator => "config:common" do
+        os_name = ''
         path = ""
-        args = []
-        args << "-approot='#{$app_path}'"
+        args = ["-approot='#{$app_path}'"]
+        cmd = nil
         if RUBY_PLATFORM =~ /(win|w)32$/
             os_name = 'win32'
             if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'][os_name]
@@ -999,12 +1000,12 @@ namespace "run" do
         elsif RUBY_PLATFORM =~ /darwin/
             os_name = 'macosx'
             if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'][os_name]
-                path = File.join( $config['env']['paths']['rhosimulator'][os_name], "Contents/MacOS/RhoSimulator" )
+                path = File.join( $config['env']['paths']['rhosimulator'][os_name], "RhoSimulator.app" )
             else
-                path = File.join( $startdir, "platform/osx/bin/RhoSimulator/RhoSimulator.app/Contents/MacOS/RhoSimulator" )
+                path = File.join( $startdir, "platform/osx/bin/RhoSimulator/RhoSimulator.app" )
             end
-            args << ">/dev/null"
-            args << "2>/dev/null"
+            cmd = 'open'
+            args.unshift(path, '--args')
         else
             os_name = 'linux'
             if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'][os_name]
@@ -1020,7 +1021,7 @@ namespace "run" do
         if !File.exists?(path)
             puts "Cannot find RhoSimulator: '#{path}' does not exists"
             puts "Install Rhodes gem OR"
-            puts "Install RhoSimulator and modify 'rhosimulator:#{os_name}' section in '<rhodes>/rhobuild.yml'"
+            puts "Install RhoSimulator and modify 'env:paths:rhosimulator:#{os_name}' section in '<rhodes>/rhobuild.yml'"
             exit 1
         end
 
@@ -1045,11 +1046,13 @@ namespace "run" do
         mkdir fdir unless File.exist?(fdir)
             
         fname = File.join(fdir, 'rhosimconfig.txt')
-        #puts "#{fname}"
         File.open(fname, "wb") do |fconf|
             fconf.write( sim_conf )
         end
 
+        if not cmd.nil?
+            path = cmd
+        end
         Jake.run2 path, args, {:nowait => true}
     end
 
