@@ -165,18 +165,16 @@ bool CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
         ((QtMainWindow*)qtMainWindow), SLOT(navigateBackCommand(void)) );
     QObject::connect(this, SIGNAL(doNavigateForwardCommand(void)),
         ((QtMainWindow*)qtMainWindow), SLOT(navigateForwardCommand(void)) );
-    QObject::connect(this, SIGNAL(doBackCommand(void)),
-        ((QtMainWindow*)qtMainWindow), SLOT(backCommand(void)) );
     QObject::connect(this, SIGNAL(doLogCommand(void)),
         ((QtMainWindow*)qtMainWindow), SLOT(logCommand(void)) );
     QObject::connect(this, SIGNAL(doRefreshCommand(int)),
         ((QtMainWindow*)qtMainWindow), SLOT(refreshCommand(int)) );
     QObject::connect(this, SIGNAL(doNavigateCommand(TNavigateData*)),
         ((QtMainWindow*)qtMainWindow), SLOT(navigateCommand(TNavigateData*)) );
-    QObject::connect(this, SIGNAL(doTakePicture(const char*)),
-        ((QtMainWindow*)qtMainWindow), SLOT(takePicture(const char*)) );
-    QObject::connect(this, SIGNAL(doSelectPicture(const char*)),
-        ((QtMainWindow*)qtMainWindow), SLOT(selectPicture(const char*)) );
+    QObject::connect(this, SIGNAL(doTakePicture(char*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(takePicture(char*)) );
+    QObject::connect(this, SIGNAL(doSelectPicture(char*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(selectPicture(char*)) );
     QObject::connect(this, SIGNAL(doAlertShowPopup(void*)), //TODO: CAlertDialog::Params*
         ((QtMainWindow*)qtMainWindow), SLOT(alertShowPopup(void*)) );
     QObject::connect(this, SIGNAL(doAlertHidePopup(void)),
@@ -622,12 +620,12 @@ void CMainWindow::navigateCommand(TNavigateData* nd)
     emit doNavigateCommand(nd);
 }
 
-void CMainWindow::takePicture(const char* callbackUrl)
+void CMainWindow::takePicture(char* callbackUrl)
 {
     emit doTakePicture(callbackUrl);
 }
 
-void CMainWindow::selectPicture(const char* callbackUrl)
+void CMainWindow::selectPicture(char* callbackUrl)
 {
     emit doSelectPicture(callbackUrl);
 }
