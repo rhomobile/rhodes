@@ -8,7 +8,7 @@
 #else
 
 //void assert( int expression );
-#include "logging/RhoPlainLog.h"
+//#include "logging/RhoPlainLog.h"
 
 #define assert(exp) RHO_ASSERT(exp)
 

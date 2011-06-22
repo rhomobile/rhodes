@@ -14,6 +14,7 @@
 #include "ruby/ruby.h"
 #include "ruby/st.h"
 #include "ruby/util.h"
+#include "common/RhoDefs.h"
 
 #ifdef __APPLE__
 #include <crt_externs.h>
@@ -1801,8 +1802,10 @@ rb_hash_compare_by_id_p(VALUE hash)
 static int path_tainted = -1;
 //RHO
 //static char **origenviron;
+#if !defined(OS_SYMBIAN32)
 static char * __environ = "";
 static char ** environ = &__environ;
+#endif
 #ifdef _WIN32
 #define GET_ENVIRON(e) ""//(e = rb_w32_get_environ())
 #define FREE_ENVIRON(e) //rb_w32_free_environ(e)

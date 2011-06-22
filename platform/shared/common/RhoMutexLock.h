@@ -8,7 +8,7 @@
 namespace rho{
 namespace common{
 
-#if defined(OS_WINDOWS) || defined(OS_WINCE) || defined(OS_SYMBIAN32)
+#if defined(WINDOWS_PLATFORM)
 typedef CRITICAL_SECTION MutexType;
 #else
 typedef pthread_mutex_t MutexType;
@@ -80,7 +80,7 @@ private:
 
 #else
 
-#if !defined(OS_WINCE) && !defined(OS_WINDOWS)
+#if !defined(WINDOWS_PLATFORM)
 
 #define RHO_INIT_LOCK(name)\
 static int __g_mutex_init_##name = 0;\
