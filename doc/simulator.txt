@@ -71,9 +71,8 @@ Follow these instructions to build your own customized version of RhoSimulator.
 * First build the Qt libraries for VS 2005:
     * Download the Qt source:
         * Go to [http://qt.nokia.com/downloads](http://qt.nokia.com/downloads)
-        * Choose the open source LGPL version
-        * Under the Framework Only section choose Qt libraries for Windows (VS 2008)
-        * Cancel automatically started download, and download the [source code](http://get.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.3.zip)
+        * Jump to `Qt libraries`
+        * Download the [source code as a zip](http://get.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.3.zip) (236 MB)
         * Extract the downloaded archive, e.g. into `C:\Qt\4.7.3-msvc2005`
     * Prepare to build the OpenSSL library:
         * Download [v0.9 source code](http://www.openssl.org/source/openssl-0.9.8r.tar.gz) from [www.openssl.org](http://www.openssl.org/) and extract the downloaded archive, e.g. into `C:\Qt\openssl-0.9.8r`
