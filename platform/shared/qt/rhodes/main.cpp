@@ -159,7 +159,6 @@ int main(int argc, char *argv[])
     rho_ringtone_manager_stop();
     m_appWindow->DestroyUi();
     rho::common::CRhodesApp::Destroy();
-    //TODO: net::CNetRequestImpl::deinitConnection();
 
     return 0;
 }

@@ -99,7 +99,7 @@ public:
     void navigateCommand(TNavigateData*);
     void takePicture(const char*);
     void selectPicture(const char*);
-    void alertShowPopup(void *); // CAlertDialog::Params *
+    void alertShowPopup(void *); //TODO: CAlertDialog::Params *
     void alertHidePopup(void);
     void dateTimePicker(void *); //TODO: CDateTimeMessage *
     void executeCommand(RhoNativeViewRunnable*);
@@ -116,7 +116,7 @@ signals:
     void doNavigateCommand(TNavigateData*);
     void doTakePicture(const char*);
     void doSelectPicture(const char*);
-    void doAlertShowPopup(void *); // CAlertDialog::Params *
+    void doAlertShowPopup(void *); //TODO: CAlertDialog::Params *
     void doAlertHidePopup(void);
     void doDateTimePicker(void *); //TODO: CDateTimeMessage *
     void doExecuteCommand(RhoNativeViewRunnable*);
