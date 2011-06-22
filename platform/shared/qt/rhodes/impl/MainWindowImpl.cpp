@@ -4,7 +4,6 @@
 #include "common/RhoConf.h"
 #include "common/StringConverter.h"
 #include "common/RhoFilePath.h"
-//#include "NativeToolbarQt.h"
 #include "rubyext/NativeToolbarExt.h"
 #undef null
 #include <QString>
