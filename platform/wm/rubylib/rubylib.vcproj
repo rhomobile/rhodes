@@ -2174,6 +2174,22 @@
 					<File
 						RelativePath="..\..\shared\ruby\ext\rho\extensions.c"
 						>
+						<FileConfiguration
+							Name="SimulatorDebug|Win32"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="SimulatorRelease|Win32"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\..\shared\ruby\ext\rho\rhoruby.c"
