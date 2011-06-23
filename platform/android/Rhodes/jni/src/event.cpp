@@ -1,4 +1,5 @@
 #include "rhodes/JNIRhodes.h"
+#include "rhodes/JNIRhoRuby.h"
 
 #include <ruby.h>
 #include <ruby/ext/calendar/event.h>

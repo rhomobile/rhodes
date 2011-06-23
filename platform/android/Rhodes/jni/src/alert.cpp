@@ -1,4 +1,5 @@
 #include "rhodes/JNIRhodes.h"
+#include "rhodes/JNIRhoRuby.h"
 
 #include "rhodes/jni/com_rhomobile_rhodes_alert_Alert.h"
 #include "rhodes/jni/com_rhomobile_rhodes_alert_PopupActivity.h"
