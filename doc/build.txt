@@ -231,7 +231,7 @@ Example of iPhone setting in build.yml of your application:
 
 In case if you are planning to work with native geo mapping (MapView interface), two things should be done:
 
-* Android Maps API key should be retrieved from Google. Follow these [instructions](http://code.google.com/intl/en/android/add-ons/google-apis/mapkey.html) to get it. When key received, put it in your application's `build.yml` or share it across all your applications by adding it to `rhobuild.yml`:
+* Android Maps API key should be retrieved from Google. Follow these [instructions](http://code.google.com/intl/en/android/add-ons/google-apis/mapkey.html) to get it. When key received, put it in your application's `build.yml` or share it across all your applications by adding it to `rhobuild.yml`. Note that the `apikey` value must match a sertificate used to sign an application (the key is different for debug and production signed build and debug key cannot be shared between different build computers).
 
 	android:
 	  apikey: "GOOGLE-API-KEY-FOR-ANDROID"
