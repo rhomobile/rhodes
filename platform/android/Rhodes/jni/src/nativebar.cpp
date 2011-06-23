@@ -1,4 +1,5 @@
 #include "rhodes/JNIRhodes.h"
+#include "rhodes/JNIRhoRuby.h"
 
 #include <common/rhoparams.h>
 #include "common/RhodesApp.h"

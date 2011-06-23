@@ -6,14 +6,11 @@
 
 #include <rhodes.h>
 
-#include <ruby.h>
-#include <ruby/ext/rho/rhoruby.h>
-
 #include <common/RhoDefs.h>
 #include <logging/RhoLogConf.h>
 #include <logging/RhoLog.h>
 
-#include <genconfig.h>
+//#include <genconfig.h>
 
 static int const RHO_FD_BASE = 512;
 
@@ -40,42 +37,6 @@ jmethodID getJNIClassStaticMethod(JNIEnv *env, jclass cls, const char *name, con
 #define RHO_LOG_CALLBACK RAWLOG_INFO1("Callback \"%s\" called", __PRETTY_FUNCTION__)
 #define RHO_LOG_JNI_CALL RAWLOG_INFO1("JNI method \"%s\" called", __PRETTY_FUNCTION__)
 
-class RhoValueConverter
-{
-private:
-    jclass clsHashMap;
-    jclass clsVector;
-
-    jmethodID midHashMapConstructor;
-    jmethodID midVectorConstructor;
-    jmethodID midPut;
-    jmethodID midAddElement;
-
-    JNIEnv *env;
-    bool init;
-
-public:
-    RhoValueConverter(JNIEnv *e);
-
-    jobject createObject(rho_param *p);
-};
-
-namespace details
-{
-
-template <>
-struct rho_cast_helper<VALUE, jobject>
-{
-    VALUE operator()(JNIEnv *env, jobject obj);
-};
-
-template <>
-struct rho_cast_helper<jobject, VALUE>
-{
-    jobject operator()(JNIEnv *env, VALUE value);
-};
-
-} // namespace details
 
 #endif // RHO_JNI_RHODES_57d3a700b706402190ead97fd1383bee
 
