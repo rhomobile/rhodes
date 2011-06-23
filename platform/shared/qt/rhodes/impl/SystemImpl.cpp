@@ -1,5 +1,6 @@
 #include <time.h>
 #include "ruby/ext/rho/rhoruby.h"
+#include "common/RhoDefs.h"
 #include "common/RhoPort.h"
 //#include "common/StringConverter.h"
 #include "common/RhoFilePath.h"
@@ -198,10 +199,12 @@ void rho_sys_app_uninstall(const char *appname)
     //TODO: rho_sys_app_uninstall
 }
 
+#ifndef OS_WINDOWS
 int rho_sys_set_sleeping(int sleeping)
 {
     //TODO: rho_sys_set_sleeping
     return 1;
 }
+#endif
 
 } //extern "C"

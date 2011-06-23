@@ -12,21 +12,73 @@ macx {
   OBJECTS_DIR = ../../../osx/bin/RhoSimulator/tmp
   RCC_DIR =  ../../../osx/bin/RhoSimulator/resources
   LIBS += -lcurl
-  INCLUDEPATH += ../../ruby/iphone
-  HEADERS += ../../ruby/iphone/ruby/config.h\
-../../ruby/iphone/crt_externs.h
+  INCLUDEPATH += ../../ruby/iphone\
+../../curl/include
+  HEADERS += ../../ruby/ext/socket/constants.h\
+../../ruby/iphone/ruby/config.h\
+../../ruby/iphone/crt_externs.h\
+../../common/PosixThreadImpl.h\
+../../net/CURLNetRequest.h\
+../../net/ssl.h\
+../../ruby/iseq.h\
+../../ruby/thread_pthread.h\
+../../sync/ISyncProtocol.h\
+../../sync/SyncProtocol_3.h
+  SOURCES += ../../common/PosixThreadImpl.cpp\
+../../net/CURLNetRequest.cpp\
+../../net/ssl.cpp\
+../../ruby/miniprelude.c\
+../../ruby/newline.c\
+../../ruby/thread_pthread.c\
+../../sqlite/crypto.c
+}
+
+win32 {
+  CONFIG += embed_manifest_exe
+  DESTDIR = ../../../win32/bin/RhoSimulator
+  MOC_DIR = ../../../win32/bin/RhoSimulator/generated_files
+  UI_DIR = ../../../win32/bin/RhoSimulator/generated_files
+  OBJECTS_DIR = ../../../win32/bin/RhoSimulator/tmp
+  RCC_DIR =  ../../../win32/bin/RhoSimulator/resources
+  DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS _UNICODE UNICODE QT_LARGEFILE_SUPPORT QT_NO_DEBUG QT_CORE_LIB QT_GUI_LIB QT_WEBKIT_LIB
+  LIBS += wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib gdiplus.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
+  INCLUDEPATH += ../../ruby/win32
+  HEADERS += ../../common/RhoMath.h\
+../../common/map/ESRIMapEngine.h\
+../../common/map/GoogleMapEngine.h\
+../../common/map/MapEngine.h\
+../../rubyext/WebView.h\
+../../ruby/win32/ruby/config.h\
+../../ruby/win32/dir.h
+  SOURCES += ../../ruby/missing/acosh.c\
+../../ruby/missing/cbrt.c\
+../../ruby/missing/crypt.c\
+../../ruby/missing/dup2.c\
+../../ruby/missing/erf.c\
+../../ruby/missing/hypot.c\
+../../ruby/missing/tgamma.c\
+../../ruby/missing/strlcpy.c\
+../../ruby/missing/strlcat.c\
+../../ruby/win32/miniprelude.c\
+../../ruby/win32/newline.c\
+../../ruby/win32/win32.c\
+../../common/RhoMath.cpp\
+../../common/map/ESRIMapEngine.cpp\
+../../common/map/GoogleMapEngine.cpp\
+../../common/map/MapEngine.cpp
 }
 
 DEFINES += RHODES_EMULATOR
 
-QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
-QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+!win32 {
+  QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+}
 
 INCLUDEPATH += ../..\
 ../../ruby\
 ../../ruby/include\
-../../ruby/generated\
-../../curl/include
+../../ruby/generated
 
 HEADERS +=ExternalWebView.h\
 MainWindowCallback.h\
@@ -39,7 +91,6 @@ impl/NativeToolbarImpl.h\
 impl/NativeTabbarImpl.h\
 ../../ruby/ext/rho/rhoruby.h\
 ../../ruby/ext/socket/addrinfo.h\
-../../ruby/ext/socket/constants.h\
 ../../ruby/ext/socket/sockport.h\
 ../../ruby/ext/calendar/event.h\
 ../../ruby/debug.h\
@@ -47,7 +98,6 @@ impl/NativeTabbarImpl.h\
 ../../ruby/eval_intern.h\
 ../../ruby/gc.h\
 ../../ruby/id.h\
-../../ruby/iseq.h\
 ../../ruby/regenc.h\
 ../../ruby/regint.h\
 ../../ruby/regparse.h\
@@ -56,7 +106,6 @@ impl/NativeTabbarImpl.h\
 ../../ruby/version.h\
 ../../ruby/vm_core.h\
 ../../ruby/vm_opts.h\
-../../ruby/thread_pthread.h\
 ../../common/RhoAppAdapter.h\
 ../../common/IRhoThreadImpl.h\
 ../../common/RhoThread.h\
@@ -89,13 +138,10 @@ impl/NativeTabbarImpl.h\
 ../../common/ThreadQueue.h\
 ../../net/URI.h\
 ../../common/AppMenu.h\
-../../common/PosixThreadImpl.h\
-../../net/CURLNetRequest.h\
 ../../net/INetRequest.h\
 ../../net/HttpServer.h\
 ../../common/SplashScreen.h\
 ../../common/rhoparams.h\
-../../net/ssl.h\
 ../../common/app_build_configs.h\
 ../../sqlite/sqlite3.h\
 ../../sqlite/sqlite3ext.h\
@@ -228,10 +274,7 @@ impl/NativeTabbarImpl.cpp\
 ../../ruby/ext/strscan/strscan.c\
 ../../ruby/ext/syncengine/syncengine_wrap.c\
 ../../ruby/generated/parse.c\
-../../ruby/thread_pthread.c\
-../../ruby/miniprelude.c\
 ../../ruby/missing/lgamma_r.c\
-../../ruby/newline.c\
 ../../ruby/ext/mapview/mapview_wrap.c\
 ../../ruby/ext/signature/signature_wrap.c\
 ../../ruby/ext/nativeviewmanager/nativeviewmanager_wrap.c\
@@ -259,14 +302,10 @@ impl/NativeTabbarImpl.cpp\
 ../../common/AppMenu.cpp\
 ../../common/rhoparams.cpp\
 ../../rubyext/System.cpp\
-../../common/PosixThreadImpl.cpp\
-../../net/CURLNetRequest.cpp\
 ../../net/HttpServer.cpp\
 ../../common/SplashScreen.cpp\
-../../net/ssl.cpp\
 ../../common/app_build_configs.c\
 ../../sqlite/sqlite3.c\
-../../sqlite/crypto.c\
 ../../json/arraylist.c\
 ../../json/json_debug.c\
 ../../json/json_object.c\
