@@ -8,19 +8,45 @@ CONFIG += staticlib warn_on
 macx {
   DESTDIR = ../../../osx/bin/rholib
   OBJECTS_DIR = ../../../osx/bin/rholib/tmp
+  INCLUDEPATH += ../../curl/include
+  HEADERS += ../../common/PosixThreadImpl.h\
+../../net/CURLNetRequest.h\
+../../net/ssl.h
+  SOURCES += ../../common/PosixThreadImpl.cpp\
+../../net/CURLNetRequest.cpp\
+../../net/ssl.cpp
+}
+
+win32 {
+  DESTDIR = ../../../win32/bin/rholib
+  OBJECTS_DIR = ../../../win32/bin/rholib/tmp
+  DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS _UNICODE UNICODE
+  HEADERS += ../../common/RhoMath.h\
+../../common/map/ESRIMapEngine.h\
+../../common/map/GoogleMapEngine.h\
+../../common/map/MapEngine.h\
+../../rubyext/WebView.h
+  SOURCES += ../../common/RhoMath.cpp\
+../../common/map/ESRIMapEngine.cpp\
+../../common/map/GoogleMapEngine.cpp\
+../../common/map/MapEngine.cpp
 }
 
 DEFINES += RHODES_EMULATOR
 
-QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
-QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
-
-# QMAKE_CFLAGS += -fvisibility=hidden
-# QMAKE_CXXFLAGS += -fvisibility=hidden
+!win32 {
+  QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  # QMAKE_CFLAGS += -fvisibility=hidden
+  # QMAKE_CXXFLAGS += -fvisibility=hidden
+}
+win32 {
+  QMAKE_CFLAGS_RELEASE += /O2
+  QMAKE_CXXFLAGS_RELEASE += /O2
+}
 
 INCLUDEPATH += ../..\
-../../ruby\
-../../curl/include
+../../ruby
 
 HEADERS += ../../common/RhoAppAdapter.h\
 ../../common/IRhoThreadImpl.h\
@@ -54,14 +80,10 @@ HEADERS += ../../common/RhoAppAdapter.h\
 ../../common/ThreadQueue.h\
 ../../net/URI.h\
 ../../common/AppMenu.h\
-../../sqlite/sqlite3.h\
-../../common/PosixThreadImpl.h\
-../../net/CURLNetRequest.h\
 ../../net/INetRequest.h\
 ../../net/HttpServer.h\
 ../../common/SplashScreen.h\
 ../../common/rhoparams.h\
-../../net/ssl.h\
 ../../common/app_build_configs.h
 
 SOURCES += ../../common/RhoTime.cpp\
@@ -85,12 +107,8 @@ SOURCES += ../../common/RhoTime.cpp\
 ../../net/INetRequest.cpp\
 ../../net/URI.cpp\
 ../../common/AppMenu.cpp\
-../../sqlite/sqlite3.c\
 ../../common/rhoparams.cpp\
 ../../rubyext/System.cpp\
-../../common/PosixThreadImpl.cpp\
-../../net/CURLNetRequest.cpp\
 ../../net/HttpServer.cpp\
 ../../common/SplashScreen.cpp\
-../../net/ssl.cpp\
 ../../common/app_build_configs.c
