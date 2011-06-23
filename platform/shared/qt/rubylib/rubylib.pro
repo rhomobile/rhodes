@@ -58,7 +58,6 @@ SOURCES += ../../ruby/ext/datetimepicker/datetimepicker_wrap.c\
 ../../ruby/ext/calendar/calendar_wrap.c\
 ../../ruby/ext/calendar/event_wrap.c\
 ../../ruby/ext/navbar/navbar_wrap.c\
-../../ruby/ext/rho/extensions.c\
 ../../ruby/ext/alert/alert_wrap.c\
 ../../ruby/ext/system/system_wrap.c\
 ../../ruby/ext/phonebook/phonebook_wrap.c\
