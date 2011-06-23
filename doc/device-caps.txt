@@ -1041,7 +1041,7 @@ There are two providers supported now - 'Google' and 'ESRI'. 'Google supported o
 
 For use ESRI maps in your projects on iPhone:
 
-* Install [http://resources.arcgis.com/content/arcgis-iphone/api  ESRI iOS SDK] - use default folders during installations !
+* Install [ESRI iOS SDK](http://resources.arcgis.com/content/arcgis-iphone/api) - use default folders during installations !
 * Add "esri" to your applications extensions list in build.yml file.
 
 Map settings:
@@ -1058,7 +1058,7 @@ Map settings:
 * zoom_enabled - true if zoom of the map is enabled
 * scroll_enabled - true if scrool of the map is enabled
 * shows_user_location - true if current user location is displayed on the map 
-* api_key - Google Maps API Key (sign up for it here: http://code.google.com/apis/maps/signup.html). Note that this parameter is ignored on Android! For Android you should get another key and specify it in the app's build.yml as described [[Building_Rhodes_on_Supported_Platforms#Prerequisites_5|here]]
+* api_key - Maps JavaScript API Key ([sign up for it here](http://code.google.com/apis/maps/signup.html)). Note that this parameter is ignored on Android! For Android you should get another key and specify it in the app's build.yml as described [here](build#Prerequisites_5)
 
 Annotations - array of map annotation objects (list of pins on the map). Annotation:
 
