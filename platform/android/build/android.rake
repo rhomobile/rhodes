@@ -1279,6 +1279,11 @@ namespace "build" do
 
       generate_rjava
 
+      mkdir_p File.join($app_rjava_dir, "R") if not File.exists? File.join($app_rjava_dir, "R")
+      buf = File.new(File.join($app_rjava_dir, "R.java"),"r").read.gsub(/^\s*package com\.rhomobile\..*;\s*$/,"\npackage com.rhomobile.rhodes;\n")
+      File.open(File.join($app_rjava_dir, "R", "R.java"),"w") { |f| f.write(buf) }
+
+
       srclist = File.join($builddir, "RhodesSRC_build.files")
       newsrclist = File.join($tmpdir, "RhodesSRC_build.files")
       lines = []
@@ -1299,6 +1304,7 @@ namespace "build" do
         end
       end
       lines << "\"" +File.join($app_rjava_dir, "R.java")+"\""
+      lines << "\"" +File.join($app_rjava_dir, "R", "R.java")+"\""
       lines << "\"" +$app_android_r+"\""
       lines << "\"" +$app_native_libs_java+"\""
       lines << "\"" +$app_capabilities_java+"\""

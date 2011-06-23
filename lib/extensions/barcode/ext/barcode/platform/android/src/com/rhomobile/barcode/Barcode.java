@@ -2,8 +2,11 @@ package com.rhomobile.barcode;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Hashtable;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -19,6 +22,7 @@ import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.Utils;
 import com.rhomobile.rhodes.file.RhoFileApi;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 
 public class Barcode {
@@ -59,5 +63,44 @@ public class Barcode {
 		return "";
      } 
 
+     private static String ourCallback = null;
+     
+     public static void take(String callback) {
+    	 ourCallback = callback;
+    	 
+    	 PerformOnUiThread.exec( new Runnable() {
+    		 public void run() {
+				RhodesActivity ra = RhodesActivity.getInstance();
+				Intent intent = new Intent(ra, com.google.zxing.client.android.CaptureActivity.class);
+				ra.startActivity(intent);
+    			 
+    		 }
+    	 });
+     }
+     
+   	 public static native void callback(String callbackUrl, String body);
+     
+     public static void callCancelCallback() {
+ 		StringBuffer body = new StringBuffer();
+		body.append("&rho_callback=1");
+		body.append("&status=cancel");
+		callback(ourCallback, body.toString());
+     }
+     
+     public static void callOKCallback(String barcode) {
+  		StringBuffer body = new StringBuffer();
+		body.append("&rho_callback=1");
+		body.append("&status=ok");
+		if (barcode != null) {
+			try {
+				String b = URLEncoder.encode(barcode, "utf-8");
+				body.append("&barcode=");
+				body.append(b);
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+		}
+		callback(ourCallback, body.toString());
+     }
 
 }

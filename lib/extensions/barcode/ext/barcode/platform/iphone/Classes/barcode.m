@@ -13,6 +13,10 @@ extern void rho_platform_image_free(void* image_pixels);
 
 static char strbuf[1024];
 
+void rho_barcode_take_barcode(const char* callback) {
+}
+
+
 const char* rho_barcode_barcode_recognize(const char* filename) {
     void* img_buf = 0;
     int img_width;
