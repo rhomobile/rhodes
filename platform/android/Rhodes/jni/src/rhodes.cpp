@@ -14,7 +14,10 @@
 #include <sys/resource.h>
 #include <pwd.h>
 
+#include <genconfig.h>
+
 #include "rhodes/JNIRhodes.h"
+#include "rhodes/JNIRhoRuby.h"
 #include "rhodes/RhoClassFactory.h"
 
 #undef DEFAULT_LOGCATEGORY

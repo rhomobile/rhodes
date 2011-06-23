@@ -49,18 +49,24 @@ $buildargs = {
               "json" =>   ["-I#{File.join($sharedpath, "json")}",
                            "-I#{$sharedpath}"],
               "unzip" =>  ["-I#{$sharedpath}"],
-              "rholog" => ["-I#{$sharedpath}"],
-              "rhocommon" => ["-I#{$sharedpath}",
+              "rholog" => ["-DRHO_NO_RUBY",
+                           "-I#{$sharedpath}"],
+              "rhocommon" => ["-DRHO_NO_RUBY",
+                           "-I#{$sharedpath}",
                            "-I#{File.join($sharedpath, "curl", "include")}"],
-              "rhodb" =>  ["-I#{File.join($sharedpath, "db")}",
+              "rhodb" =>  ["-DRHO_NO_RUBY",
+                           "-I#{File.join($sharedpath, "db")}",
                            "-I#{$sharedpath}",
                            "-I#{File.join($sharedpath, "sqlite")}"],
-              "rhosync" => ["-I#{File.join($sharedpath, "sync")}",
+              "rhosync" => ["-DRHO_NO_RUBY",
+                           "-I#{File.join($sharedpath, "sync")}",
                            "-I#{$sharedpath}",
                            "-I#{File.join($sharedpath, "sqlite")}"],
-              "rhojni" => ["-DNO_RHO_RUBY",
+              "rhoimpl" => ["-DRHO_NO_RUBY",
                            "-I#{File.join($androidpath, "Rhodes", "jni", "include")}",
                            "-I#{File.join($sharedpath, "curl", "include")}",
+                           "-I#{File.join($sharedpath, "common")}",
+                           "-I#{File.join($sharedpath, "sqlite")}",
                            "-I#{$sharedpath}"]
 
              }
@@ -82,9 +88,9 @@ LIBS['rholog'] = File.join(BUILDPATH, 'librholog.a')
 LIBS['rhocommon'] = File.join(BUILDPATH, 'librhocommon.a')
 LIBS['rhodb']  = File.join(BUILDPATH, 'librhodb.a')
 LIBS['rhosync']  = File.join(BUILDPATH, 'librhosync.a')
-LIBS['rhojni']  = File.join(BUILDPATH, 'librhojni.a')
+LIBS['rhoimpl']  = File.join(BUILDPATH, 'librhoimpl.a')
 
-CPPLIBS = ['json', 'rholog', 'rhocommon', 'rhodb', 'rhosync', 'rhojni']
+CPPLIBS = ['json', 'rholog', 'rhocommon', 'rhodb', 'rhosync', 'rhoimpl']
 
 LIBS.each do |name, filename|
   sources = get_sources("lib#{name}")
@@ -175,7 +181,7 @@ namespace "android" do
 
     task :librhosync => [File.join(BUILDPATH, 'librhosync'), LIBS['rhosync'] ]
 
-    task :librhojni => [File.join(BUILDPATH, 'librhojni'), LIBS['rhojni'] ]
+    task :librhoimpl => [File.join(BUILDPATH, 'librhoimpl'), LIBS['rhoimpl'] ]
 
   end # namespace "build"
 
@@ -213,8 +219,8 @@ end # namespace "android"
     directory File.join(BUILDPATH, 'librhosync')
     file File.join(BUILDPATH, 'librhosync') => BUILDPATH
 
-    directory File.join(BUILDPATH, 'librhojni')
-    file File.join(BUILDPATH, 'librhojni') => BUILDPATH
+    directory File.join(BUILDPATH, 'librhoimpl')
+    file File.join(BUILDPATH, 'librhoimpl') => BUILDPATH
 
     def lib_objects(libfile)
       lib = File.basename(libfile).gsub(/\.a$/, "")
