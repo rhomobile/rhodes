@@ -986,30 +986,26 @@ namespace "run" do
 
     desc "Run application on RhoSimulator"
     task :rhosimulator => "config:common" do
-        os_name = ''
         path = ""
         args = ["-approot='#{$app_path}'"]
         cmd = nil
         if RUBY_PLATFORM =~ /(win|w)32$/
-            os_name = 'win32'
-            if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'][os_name]
-                path = File.join( $config['env']['paths']['rhosimulator'][os_name], "rhosimulator.exe" )
+            if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator']
+                path = File.join( $config['env']['paths']['rhosimulator'], "rhosimulator.exe" )
             else
                 path = File.join( $startdir, "platform/win32/RhoSimulator/rhosimulator.exe" )
             end
         elsif RUBY_PLATFORM =~ /darwin/
-            os_name = 'macosx'
-            if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'][os_name]
-                path = File.join( $config['env']['paths']['rhosimulator'][os_name], "RhoSimulator.app" )
+            if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator']
+                path = File.join( $config['env']['paths']['rhosimulator'], "RhoSimulator.app" )
             else
                 path = File.join( $startdir, "platform/osx/bin/RhoSimulator/RhoSimulator.app" )
             end
             cmd = 'open'
             args.unshift(path, '--args')
         else
-            os_name = 'linux'
-            if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'][os_name]
-                # path = File.join( $config['env']['paths']['rhosimulator'][os_name], "RhoSimulator" )
+            if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator']
+                # path = File.join( $config['env']['paths']['rhosimulator'], "RhoSimulator" )
             else
                 # path = File.join( $startdir, "platform/linux/bin/RhoSimulator/RhoSimulator" )
             end
@@ -1021,7 +1017,7 @@ namespace "run" do
         if !File.exists?(path)
             puts "Cannot find RhoSimulator: '#{path}' does not exists"
             puts "Install Rhodes gem OR"
-            puts "Install RhoSimulator and modify 'env:paths:rhosimulator:#{os_name}' section in '<rhodes>/rhobuild.yml'"
+            puts "Install RhoSimulator and modify 'env:paths:rhosimulator' section in '<rhodes>/rhobuild.yml'"
             exit 1
         end
 
