@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.rhomobile.rhodes"
+    android:installLocation="auto"
+    android:versionCode="29"
+    android:versionName="2.3.3">
+
+  <application >
+
+    <activity android:name="com.google.zxing.client.android.CaptureActivity"
+              android:screenOrientation="landscape"
+              android:configChanges="orientation|keyboardHidden"
+              android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+              android:windowSoftInputMode="stateAlwaysHidden">
+      <intent-filter>
+        <action android:name="com.google.zxing.client.android.SCAN"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
+    </activity>
+    
+    </application >
+
+  <uses-permission android:name="android.permission.CAMERA"/>
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+</manifest> 
+

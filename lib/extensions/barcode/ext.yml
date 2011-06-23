@@ -1,3 +1,6 @@
 entry: Init_Barcode
 javaentry: com.rho.rubyext.BarcodeRecognizer
+android_manifest_changes: ext/barcode/platform/android/AndroidManifest.xml
+android_resources_addons: ext/barcode/platform/android/additional_files
+android_additional_sources_list: ext/barcode/platform/android/ext_build.files
 libraries: ["Barcode"]

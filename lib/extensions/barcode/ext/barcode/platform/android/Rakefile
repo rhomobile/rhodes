@@ -89,19 +89,19 @@ namespace "build" do
     build_extension('Barcode', $arch, src_files)
 
     #build java part
-    javafiles = []	
-    File.open('ext_build.files', "r") do |f|
-        while line = f.gets
-           javafiles << line
-        end
-    end
+    #javafiles = []	
+    #File.open('ext_build.files', "r") do |f|
+    #    while line = f.gets
+    #       javafiles << line
+    #    end
+    #end
 
-    flname = $targetdir + '/ext_build.files'
-    File.open(flname, "a") do |f|
-        javafiles.each do |j|
-            f.puts $barcodedir + '/' + j
-        end
-    end
+    #flname = $targetdir + '/ext_build.files'
+    #File.open(flname, "a") do |f|
+    #    javafiles.each do |j|
+    #        f.puts $barcodedir + '/' + j
+    #    end
+    #end
 
   end
 end
