@@ -9,14 +9,47 @@ macx {
   DESTDIR = ../../../osx/bin/rubylib
   OBJECTS_DIR = ../../../osx/bin/rubylib/tmp
   INCLUDEPATH += ../../ruby/iphone
-  HEADERS += ../../ruby/iphone/ruby/config.h\
-../../ruby/iphone/crt_externs.h
+  HEADERS += ../../ruby/ext/socket/constants.h\
+../../ruby/iphone/ruby/config.h\
+../../ruby/iphone/crt_externs.h\
+../../ruby/iseq.h\
+../../ruby/thread_pthread.h
+  SOURCES += ../../ruby/miniprelude.c\
+../../ruby/newline.c\
+../../ruby/thread_pthread.c
+}
+
+win32 {
+  DESTDIR = ../../../win32/bin/rubylib
+  OBJECTS_DIR = ../../../win32/bin/rubylib/tmp
+  INCLUDEPATH += ../../ruby/win32
+  DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS _LIB _UNICODE UNICODE BUFSIZ=512 TLS_OUT_OF_INDEXES=0xFFFFFFFF FILENAME_MAX=MAX_PATH STATIC_LINKED
+  HEADERS += ../../ruby/win32/ruby/config.h\
+../../ruby/win32/dir.h
+  SOURCES += ../../ruby/missing/acosh.c\
+../../ruby/missing/cbrt.c\
+../../ruby/missing/crypt.c\
+../../ruby/missing/dup2.c\
+../../ruby/missing/erf.c\
+../../ruby/missing/hypot.c\
+../../ruby/missing/tgamma.c\
+../../ruby/missing/strlcpy.c\
+../../ruby/missing/strlcat.c\
+../../ruby/win32/miniprelude.c\
+../../ruby/win32/newline.c\
+../../ruby/win32/win32.c
 }
 
 DEFINES += RHODES_EMULATOR
 
-QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
-QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+!win32 {
+  QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+}
+win32 {
+  QMAKE_CFLAGS_RELEASE += /O2
+  QMAKE_CXXFLAGS_RELEASE += /O2
+}
 
 INCLUDEPATH += ../..\
 ../../ruby\
@@ -25,7 +58,6 @@ INCLUDEPATH += ../..\
 
 HEADERS += ../../ruby/ext/rho/rhoruby.h\
 ../../ruby/ext/socket/addrinfo.h\
-../../ruby/ext/socket/constants.h\
 ../../ruby/ext/socket/sockport.h\
 ../../ruby/ext/calendar/event.h\
 ../../ruby/debug.h\
@@ -33,7 +65,6 @@ HEADERS += ../../ruby/ext/rho/rhoruby.h\
 ../../ruby/eval_intern.h\
 ../../ruby/gc.h\
 ../../ruby/id.h\
-../../ruby/iseq.h\
 ../../ruby/regenc.h\
 ../../ruby/regint.h\
 ../../ruby/regparse.h\
@@ -41,8 +72,7 @@ HEADERS += ../../ruby/ext/rho/rhoruby.h\
 ../../ruby/transcode_data.h\
 ../../ruby/version.h\
 ../../ruby/vm_core.h\
-../../ruby/vm_opts.h\
-../../ruby/thread_pthread.h
+../../ruby/vm_opts.h
 
 SOURCES += ../../ruby/ext/datetimepicker/datetimepicker_wrap.c\
 ../../ruby/ext/rhoconf/rhoconf_wrap.c\
@@ -127,10 +157,7 @@ SOURCES += ../../ruby/ext/datetimepicker/datetimepicker_wrap.c\
 ../../ruby/ext/strscan/strscan.c\
 ../../ruby/ext/syncengine/syncengine_wrap.c\
 ../../ruby/generated/parse.c\
-../../ruby/thread_pthread.c\
-../../ruby/miniprelude.c\
 ../../ruby/missing/lgamma_r.c\
-../../ruby/newline.c\
 ../../ruby/ext/mapview/mapview_wrap.c\
 ../../ruby/ext/signature/signature_wrap.c\
 ../../ruby/ext/nativeviewmanager/nativeviewmanager_wrap.c\

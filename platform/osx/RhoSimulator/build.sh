@@ -15,6 +15,6 @@ cd ../syncengine
 qmake -o Makefile -spec macx-g++ syncengine.pro
 make all
 cd ../rhodes
-qmake -o Makefile -spec macx-g++ RhoSimulator.pro
+qmake -o Makefile -spec macx-g++ rhodes.pro
 make all
 cd ../../../osx/

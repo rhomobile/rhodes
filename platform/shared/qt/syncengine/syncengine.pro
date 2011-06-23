@@ -10,15 +10,29 @@ macx {
   OBJECTS_DIR = ../../../osx/bin/syncengine/tmp
 }
 
+win32 {
+  DESTDIR = ../../../win32/bin/syncengine
+  OBJECTS_DIR = ../../../win32/bin/syncengine/tmp
+  DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS _LIB _UNICODE UNICODE
+  HEADERS += ../../sync/ISyncProtocol.h\
+../../sync/SyncProtocol_3.h
+}
+
 DEFINES += RHODES_EMULATOR
 
-QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
-QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+!win32 {
+  QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  # QMAKE_CFLAGS += -fvisibility=hidden
+  # QMAKE_CXXFLAGS += -fvisibility=hidden
+}
+win32 {
+  QMAKE_CFLAGS_RELEASE += /O2
+  QMAKE_CXXFLAGS_RELEASE += /O2
+}
 
-# QMAKE_CFLAGS += -fvisibility=hidden
-# QMAKE_CXXFLAGS += -fvisibility=hidden
-
-INCLUDEPATH += ../..
+INCLUDEPATH += ../..\
+../../json
 
 HEADERS += ../../json/arraylist.h\
 ../../json/bits.h\
