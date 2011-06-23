@@ -32,3 +32,19 @@ extern "C" const char* rho_barcode_barcode_recognize(const char* filename) {
     return barcode_result;
 }
 
+extern "C" void rho_barcode_take_barcode(const char* callback) {
+    JNIEnv *env = jnienv();
+    jclass cls = rho_find_class(env, "com/rhomobile/barcode/Barcode");
+    if (!cls) return;
+    jmethodID mid = env->GetStaticMethodID( cls, "take", "(Ljava/lang/String;)V");
+    if (!mid) return;
+
+    jstring objCallback = env->NewStringUTF(callback);
+    env->CallStaticObjectMethod(cls, mid, objCallback);
+    env->DeleteLocalRef(objCallback);
+}
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_barcode_Barcode_callback
+  (JNIEnv *env, jclass, jstring callback_url, jstring body) {
+    rho_net_request_with_data(rho_http_normalizeurl(rho_cast<std::string>(callback_url).c_str()), rho_cast<std::string>(body).c_str());
+}

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (C) 2008 ZXing authors
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="fill_parent"
+             android:layout_height="fill_parent">
+
+  <SurfaceView android:id="@+id/preview_view"
+               android:layout_width="fill_parent"
+               android:layout_height="fill_parent"
+               android:layout_centerInParent="true"/>
+
+  <com.google.zxing.client.android.ViewfinderView
+      android:id="@+id/viewfinder_view"
+      android:layout_width="fill_parent"
+      android:layout_height="fill_parent"
+      android:background="@color/transparent"/>
+
+  <LinearLayout android:id="@+id/result_view"
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="@color/result_view"
+                android:visibility="gone"
+                android:padding="4dip">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="top"
+        android:padding="12dip">
+
+      <LinearLayout
+          android:orientation="vertical"
+          android:layout_width="wrap_content"
+          android:layout_height="fill_parent"
+          android:gravity="right">
+
+        <ImageView android:id="@+id/barcode_image_view"
+                   android:layout_width="160dip"
+                   android:layout_height="wrap_content"
+                   android:maxWidth="160dip"
+                   android:maxHeight="160dip"
+                   android:layout_marginBottom="4dip"
+                   android:adjustViewBounds="true"
+                   android:scaleType="centerInside"/>
+
+
+      </LinearLayout>
+
+      <ScrollView
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content">
+
+        <TextView android:id="@+id/contents_text_view"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:textColor="@color/result_text"
+                  android:textColorLink="@color/result_text"
+                  android:textSize="22sp"
+                  android:paddingLeft="12dip"
+                  android:autoLink="web"/>
+
+      </ScrollView>
+
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/result_button_view"
+                  android:orientation="horizontal"
+                  android:layout_width="fill_parent"
+                  android:layout_height="wrap_content"
+                  android:gravity="center">
+
+      <Button android:id="@+id/cancel_button"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:drawableLeft="@drawable/cancel_icon"
+              android:drawablePadding="6dip"
+              android:visibility="gone"/>
+
+      <Button android:id="@+id/retake_button"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:drawableLeft="@drawable/retake_icon"
+              android:drawablePadding="6dip"
+              android:visibility="gone"/>
+
+      <Button android:id="@+id/ok_button"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:drawableLeft="@drawable/ok_icon"
+              android:drawablePadding="6dip"
+              android:visibility="gone"/>
+
+    </LinearLayout>
+
+  </LinearLayout>
+
+      <Button android:id="@+id/cancel_button_a"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="bottom|left"
+              android:drawableLeft="@drawable/cancel_icon"
+              android:drawablePadding="6dip"
+              android:visibility="gone"/>
+
+</FrameLayout>
