@@ -50,7 +50,7 @@ inline unsigned int CSystem::getThreadID(){
   return GetCurrentThreadId();
 #else
   // If none of the techniques above worked, we use pthread_self().
-  return (pid_t)pthread_self();
+    return (pid_t)(int64)pthread_self();
 #endif
     }
 
