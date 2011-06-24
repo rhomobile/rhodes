@@ -65,6 +65,7 @@ module Kernel
 
 	def eval_compiled_file(fname, bind)
 	    code = IO.read(fname)
+	    code.force_encoding('utf-8')
 		eval(code, bind)
 	end
 end
