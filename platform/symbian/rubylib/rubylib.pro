@@ -5,8 +5,10 @@
 #-------------------------------------------------
 
 QT       -= gui
-DEFINES += __SYMBIAN32__=1
-DEFINES += HAVE_SOCKADDR_STORAGE=1
+DEFINES += __SYMBIAN32__=1\
+           HAVE_SOCKADDR_STORAGE=1\
+           RHO_SYMBIAN=1\
+           _NDEBUG NDEBUG WIN32 _WINDOWS _LIB _UNICODE UNICODE BUFSIZ=512 STATIC_LINKED
 
 TARGET = rubylib
 TEMPLATE = lib
@@ -121,7 +123,10 @@ SOURCES += \
     ../../shared/ruby/ext/strscan/strscan.c \
     ../../shared/ruby/ext/syncengine/syncengine_wrap.c \
     ../../shared/ruby/ext/system/system_wrap.c \
-    ../../shared/ruby/ext/webview/webview_wrap.c
+    ../../shared/ruby/ext/webview/webview_wrap.c \
+    ../../shared/ruby/win32/win32.c \
+    ../../shared/ruby/strftime.c \
+    ../../shared/ruby/newline.c
 
 HEADERS += \
     ../../shared/ruby/id.h \
@@ -144,7 +149,8 @@ HEADERS += \
     ../../shared/ruby/regenc.h \
     ../../shared/ruby/symbian/ruby/config.h \
     ../../shared/ruby/symbian/symbian.h \
-    ../../shared/ruby/symbian/assert.h
+    ../../shared/ruby/symbian/assert.h \
+    ../../shared/ruby/win32/assert.h
 unix:!symbian {
     maemo5 {
         target.path = /opt/usr/lib
