@@ -18,6 +18,11 @@ INCLUDEPATH += ../../shared/ruby/include
 INCLUDEPATH += ../../shared/ruby/symbian
 INCLUDEPATH += /epoc32/include/stdapis/glib-2.0
 
+DESTDIR = ../bin/rubylib
+OBJECTS_DIR = ../bin/rubylib
+MOC_DIR = ../bin/rubylib
+UI_DIR = ../bin/rubylib
+RCC_DIR = ../bin/rubylib
 
 SOURCES += \
     ../../shared/ruby/enc/utf_8.c \

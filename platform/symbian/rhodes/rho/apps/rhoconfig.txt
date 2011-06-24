@@ -1,0 +1,43 @@
+# ESRI server URLs
+esri_map_url_roadmap = 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/'
+esri_map_url_satellite = 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/'
+
+# Startup page for your application
+start_path = '/app'
+
+# Path to the options page (in this case handled by javascript)
+options_path = '/app/Settings'
+
+# Location of bundle url (i.e. from rhohub.com)
+rhobundle_zip_url = ''
+
+# Optional password to access bundle (usually not required)
+rhobundle_zip_pwd = ''
+
+# Use Full Browser in Blackberry 4.6
+#use_bb_full_browser = 'touch'
+
+# Use Persistent Storage in Blackberry for storing files instead of SD card
+use_persistent_storage = 0
+
+# Rhodes runtime properties
+MinSeverity  = 1
+LogToOutput = 1
+LogCategories = *
+ExcludeLogCategories =
+KeepTrackOfLastVisitedPage = 0 
+LastVisitedPage = ''
+MaxLogFileSize=0
+
+syncserver = 'http://rhodes-samples-server.heroku.com/application'
+sync_poll_interval=0
+
+full_screen = 0
+
+logserver = 'http://rhologs.heroku.com'
+logname=sas
+
+# debug_host = '127.0.0.1'
+# debug_port = 9000
+
+app_version='1.0.7'

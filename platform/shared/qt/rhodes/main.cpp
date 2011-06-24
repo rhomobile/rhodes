@@ -114,12 +114,13 @@ int main(int argc, char *argv[])
 
     // PreMessageLoop:
     rho_logconf_Init(m_strRootPath.c_str(), m_logPort.c_str());
+#ifdef RHODES_EMULATOR
     RHOSIMCONF().setAppConfFilePath(CFilePath::join(m_strRootPath, RHO_EMULATOR_DIR"/rhosimconfig.txt").c_str());
     RHOSIMCONF().loadFromFile();
     if ( m_strRhodesPath.length() > 0 )
         RHOSIMCONF().setString("rhodes_path", m_strRhodesPath, false );
     RHOCONF().setString( "rhosim_platform", RHOSIMCONF().getString( "platform"), false);
-
+#endif
     if ( !rho_rhodesapp_canstartapp(g_strCmdLine.c_str(), " /-,") )
     {
         LOG(INFO) + "This is hidden app and can be started only with security key.";
@@ -134,16 +135,18 @@ int main(int argc, char *argv[])
             parseHttpProxyURI(RHOCONF().getString("http_proxy_url"));
         }
     }
-
+#ifdef RHODES_EMULATOR
     if (RHOSIMCONF().getString("debug_host").length() > 0)
         RHOCONF().setString("debug_host", RHOSIMCONF().getString("debug_host"), false);
     if (RHOSIMCONF().getString("debug_port").length() > 0)
         RHOCONF().setString("debug_port", RHOSIMCONF().getString("debug_port"), false);
-
+#endif
     rho::common::CRhodesApp::Create(m_strRootPath);
 
     // Create the main application window
+#ifdef RHODES_EMULATOR
     m_appWindow->Initialize(convertToStringW(RHOSIMCONF().getString("app_name")).c_str());
+#endif
 
     RHODESAPP().startApp();
 

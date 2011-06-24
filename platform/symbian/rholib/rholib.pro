@@ -12,6 +12,12 @@ CONFIG += staticlib
 DEFINES += __SYMBIAN32__=1
 INCLUDEPATH += ../../shared/
 
+DESTDIR = ../bin/rholib
+OBJECTS_DIR = ../bin/rholib
+MOC_DIR = ../bin/rholib
+UI_DIR = ../bin/rholib
+RCC_DIR = ../bin/rholib
+
 SOURCES += \
     ../../shared/common/Tokenizer.cpp \
     ../../shared/common/ThreadQueue.cpp \
