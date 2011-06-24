@@ -345,6 +345,19 @@ def get_objects(sources, objdir)
   sources.each do |filename|
     objects << get_object(filename, objdir)
   end
+
+  if USE_TRACES
+    puts "sources:"
+    sources.each do |src|
+      puts src
+    end
+    puts "objects:"
+    objects.each do |obj|
+      puts obj
+    end
+    puts ""
+  end
+
   objects
 end
 
@@ -401,8 +414,16 @@ def cc_ar(libname, objects)
 end
 
 def cc_link(outname, objects, additional = nil, deps = nil)
+  puts "linking #{outname}"
   dependencies = objects
-  dependencies += deps unless deps.nil?
+  unless deps.nil?
+    if USE_TRACES    
+      deps.each do |dep|
+        puts "link dep: #{dep}"
+      end
+    end
+    dependencies += deps
+  end
   return true if FileUtils.uptodate? outname, dependencies
   args = []
   if $ndkabi == "arm-eabi"

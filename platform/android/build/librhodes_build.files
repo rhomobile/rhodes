@@ -1,4 +1,5 @@
 platform/android/Rhodes/jni/src/RhoClassFactory.cpp
+platform/android/Rhodes/jni/src/JNIRhoRuby.cpp
 platform/android/Rhodes/jni/src/alert.cpp
 platform/android/Rhodes/jni/src/bluetooth.cpp
 platform/android/Rhodes/jni/src/callbacks.cpp
@@ -17,6 +18,7 @@ platform/android/Rhodes/jni/src/navbar.cpp
 platform/android/Rhodes/jni/src/phonebook.cpp
 platform/android/Rhodes/jni/src/rhoconf.cpp
 platform/android/Rhodes/jni/src/rhodes.cpp
+platform/android/Rhodes/jni/src/rhodesapp.cpp
 platform/android/Rhodes/jni/src/ringtones.cpp
 platform/android/Rhodes/jni/src/signature.cpp
 platform/android/Rhodes/jni/src/socketimpl.cpp
