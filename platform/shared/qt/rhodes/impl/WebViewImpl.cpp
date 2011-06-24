@@ -1,5 +1,4 @@
-#include <time.h>
-#include <wchar.h>
+#include "common/RhoPort.h"
 #include "ruby/ext/rho/rhoruby.h"
 #include "rubyext/WebView.h"
 #include "common/RhodesApp.h"

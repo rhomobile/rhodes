@@ -1,6 +1,6 @@
 #pragma once
 
-#include <time.h>
+#include "common/RhoPort.h"
 #include "common/RhoDefs.h"
 #include "common/IRhoClassFactory.h"
 #ifdef OS_WINDOWS
