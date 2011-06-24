@@ -379,7 +379,9 @@ void CMainWindow::createToolbar(rho_param *p)
                             strImagePath = "res/back_btn.wm.png";
                         else if ( strcasecmp(action, "forward")==0 )
                             strImagePath = "res/forward_btn.wm.png";
+#ifdef RHODES_EMULATOR
                         strImagePath = strImagePath.length() > 0 ? CFilePath::join( RHOSIMCONF().getRhodesPath(), "lib/framework/" + strImagePath) : String();
+#endif
                     }
 
                     ((QtMainWindow*)qtMainWindow)->toolbarAddAction(QIcon(QString(strImagePath.c_str())), QString(label), action, wasSeparator);

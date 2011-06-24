@@ -1,0 +1,21 @@
+CREATE TABLE object_attribs_to_delete(
+ "source_id" BIGINT default NULL,
+ "attrib" varchar(255) default NULL,
+ "object" varchar(255) default NULL,
+ "value" varchar default NULL);
+CREATE TABLE object_attribs_to_update(
+ "source_id" BIGINT default NULL,
+ "attrib" varchar(255) default NULL,
+ "object" varchar(255) default NULL,
+ "value" varchar default NULL);
+ 
+CREATE TRIGGER rhodeleteTrigger BEFORE DELETE ON object_values FOR EACH ROW 
+   BEGIN 
+       INSERT INTO object_attribs_to_delete(source_id, attrib, value) VALUES (OLD.source_id, OLD.attrib, OLD.value);   
+   END;
+;
+CREATE TRIGGER rhoupdateTrigger BEFORE UPDATE ON object_values FOR EACH ROW WHEN NEW.value != OLD.value
+   BEGIN 
+       INSERT INTO object_attribs_to_update(source_id, attrib, value) VALUES (OLD.source_id, OLD.attrib, OLD.value);
+   END;
+;   
