@@ -236,10 +236,12 @@ void rho_sync_stop()
 	}
 }
 
+#ifndef RHO_NO_RUBY
 unsigned long rho_sync_is_syncing()
 {
     return rho_ruby_create_boolean(CSyncThread::getSyncEngine().isSyncing());
 }
+#endif //RHO_NO_RUBY
 
 extern "C" void
 source_iter(const char* szName, void* parSources)

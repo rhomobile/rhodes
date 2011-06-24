@@ -32,7 +32,7 @@ CONFIG = 'debug'
 $buildroot = $appconfig['android']["build_path"]
 BUILDPATH = File.join($buildroot, CONFIG)
 
-$buildargs = {
+BUILDARGS = {
               # Steps to ge-DHAVE_CONFIG_Ht curl_config.h from fresh libcurl sources:
               #export PATH=<ndkroot>/build/prebuilt/linux-x86/arm-eabi-4.2.1/bin:$PATH
               #export CC=arm-eabi-gcc
@@ -67,8 +67,8 @@ $buildargs = {
                            "-I#{File.join($sharedpath, "curl", "include")}",
                            "-I#{File.join($sharedpath, "common")}",
                            "-I#{File.join($sharedpath, "sqlite")}",
-                           "-I#{$sharedpath}"]
-
+                           "-I#{$sharedpath}"],
+              "rhosyncclient" => ["-I#{$shareddir}"]
              }
 
 #task :default => ["android:config"]
@@ -89,8 +89,9 @@ LIBS['rhocommon'] = File.join(BUILDPATH, 'librhocommon.a')
 LIBS['rhodb']  = File.join(BUILDPATH, 'librhodb.a')
 LIBS['rhosync']  = File.join(BUILDPATH, 'librhosync.a')
 LIBS['rhoimpl']  = File.join(BUILDPATH, 'librhoimpl.a')
+LIBS['rhosyncclient']  = File.join(BUILDPATH, 'librhosyncclient.a')
 
-CPPLIBS = ['json', 'rholog', 'rhocommon', 'rhodb', 'rhosync', 'rhoimpl']
+CPPLIBS = ['json', 'rholog', 'rhocommon', 'rhodb', 'rhosync', 'rhoimpl', 'rhosyncclient']
 
 LIBS.each do |name, filename|
   sources = get_sources("lib#{name}")
@@ -128,12 +129,12 @@ namespace "android" do
       CPPLIBS.each do |lib|
         unless $std_includes.nil?
           puts "Use stl for #{lib}" if USE_TRACES
-          $buildargs[lib] << "-I#{$std_includes}"
+          BUILDARGS[lib] << "-I#{$std_includes}"
         end
         if USE_OWN_STLPORT
           puts "Use own stlport for #{lib}" if USE_TRACES
-          $buildargs[lib] << "-D__NEW__"
-          $buildargs[lib] << "-I#{$stlport_includes}"
+          BUILDARGS[lib] << "-D__NEW__"
+          BUILDARGS[lib] << "-I#{$stlport_includes}"
         end
       end
     end
@@ -163,7 +164,7 @@ namespace "android" do
 
   namespace "build" do
 
-    task :libraries => ["android:config", BUILDPATH, :libcurl, :libsqlite, :libjson, :libunzip, :librholog, :librhocommon, :librhodb, :librhosync]
+    task :libraries => [:libcurl, :libsqlite, :libjson, :libunzip, :librholog, :librhocommon, :librhodb, :librhosync]
 
     task :libsqlite => [File.join(BUILDPATH, 'libsqlite'), LIBS['sqlite'] ]
 
@@ -182,6 +183,8 @@ namespace "android" do
     task :librhosync => [File.join(BUILDPATH, 'librhosync'), LIBS['rhosync'] ]
 
     task :librhoimpl => [File.join(BUILDPATH, 'librhoimpl'), LIBS['rhoimpl'] ]
+
+    task :librhosyncclient => [File.join(BUILDPATH, 'librhosyncclient'), LIBS['rhosyncclient'] ]
 
   end # namespace "build"
 
@@ -222,6 +225,9 @@ end # namespace "android"
     directory File.join(BUILDPATH, 'librhoimpl')
     file File.join(BUILDPATH, 'librhoimpl') => BUILDPATH
 
+    directory File.join(BUILDPATH, 'librhosyncclient')
+    file File.join(BUILDPATH, 'librhosyncclient') => BUILDPATH
+
     def lib_objects(libfile)
       lib = File.basename(libfile).gsub(/\.a$/, "")
 
@@ -255,9 +261,10 @@ end # namespace "android"
       cc_ar(t.name, objects) or exit 1
     end
 
-    rule '.o' => lambda { |objfile| obj_source(objfile) } do |t|
+    rule '.o' => [lambda { |objfile| obj_source(objfile) }, "android:config"] do |t|
       lib = $obj_lib[t.name]
-      cc_compile(t.source, File.dirname(t.name), $buildargs[lib]) or exit 1
+      puts "#{lib}: building #{t.name} from #{t.source}. Args: #{BUILDARGS[lib]}" if USE_TRACES
+      cc_compile(t.source, File.dirname(t.name), BUILDARGS[lib]) or exit 1
     end
 
 

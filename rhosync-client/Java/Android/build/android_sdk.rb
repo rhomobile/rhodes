@@ -350,12 +350,6 @@ end
 
 def cc_build(sources, buildpath, additional = nil)
 
-  if $build_release
-      $confdir = "release"
-  else
-      $confdir = "debug"
-  end
-
   # Ruby 1.8 has problems with Thread.join on Windows
   if RUBY_PLATFORM =~ /w(in)?32/ and RUBY_VERSION =~ /^1\.8\./
     sources.each do |src|
