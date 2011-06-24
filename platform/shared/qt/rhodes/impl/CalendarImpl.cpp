@@ -1,4 +1,4 @@
-#include <time.h>
+#include "common/RhoPort.h"
 #include "ruby/ext/rho/rhoruby.h"
 
 extern "C" {

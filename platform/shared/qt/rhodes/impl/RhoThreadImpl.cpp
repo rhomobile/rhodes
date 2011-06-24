@@ -1,3 +1,4 @@
+#include "common/RhoPort.h"
 //#include <QThread>
 
 extern "C" {

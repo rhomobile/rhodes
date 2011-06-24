@@ -1,3 +1,5 @@
+#include "common/RhoPort.h"
+
 extern "C" {
 
 void delete_files_in_folder(const char *szFolderPath)

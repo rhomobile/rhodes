@@ -7,6 +7,10 @@
 
 #include <windows.h>
 #include <time.h>
+#ifdef _MSC_VER
+#pragma warning(disable:4100)
+#pragma warning(disable:4189)
+#endif
 
 #if defined(OS_PLATFORM_CE)
 #ifdef __cplusplus

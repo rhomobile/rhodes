@@ -30,7 +30,7 @@ win32 {
   UI_DIR = ../../../win32/bin/RhoSimulator/generated_files
   OBJECTS_DIR = ../../../win32/bin/RhoSimulator/tmp
   RCC_DIR =  ../../../win32/bin/RhoSimulator/resources
-  DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS _UNICODE UNICODE QT_LARGEFILE_SUPPORT QT_NO_DEBUG QT_CORE_LIB QT_GUI_LIB QT_WEBKIT_LIB _CRT_SECURE_NO_WARNINGS
+  DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS _UNICODE UNICODE QT_LARGEFILE_SUPPORT QT_NO_DEBUG QT_CORE_LIB QT_GUI_LIB QT_WEBKIT_LIB _CRT_SECURE_NO_WARNINGS _CRT_NON_CONFORMING_SWPRINTFS
   LIBS += ../../../win32/bin/rubylib/rubylib.lib\
 ../../../win32/bin/rholib/rholib.lib\
 ../../../win32/bin/sqlite3/sqlite3.lib\
@@ -49,6 +49,8 @@ DEFINES += RHODES_EMULATOR
   QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
 }
 win32 {
+  QMAKE_CFLAGS_WARN_ON += /wd4996 /wd4100
+  QMAKE_CXXFLAGS_WARN_ON += /wd4996 /wd4100
   QMAKE_CFLAGS_RELEASE += /O2
   QMAKE_CXXFLAGS_RELEASE += /O2
 }

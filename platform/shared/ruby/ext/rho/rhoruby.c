@@ -78,6 +78,10 @@ static char* rb_type_to_s(VALUE obj);
 //extern int native_mutex_lock(rb_thread_lock_t *);
 //extern void Init_native_thread2(rb_thread_t *th);
 
+#if defined(WIN32)
+extern void rb_w32_sysinit(int *argc, char ***argv);
+#endif
+
 /*rb_thread_t * __getCurrentThread()
 {
     rb_thread_t * res = ruby_thread_from_native();
