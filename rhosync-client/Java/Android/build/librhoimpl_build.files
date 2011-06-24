@@ -2,6 +2,7 @@
 ../platform/android/Rhodes/jni/src/logconf.cpp
 ../platform/android/Rhodes/jni/src/logger.cpp
 ../platform/android/Rhodes/jni/src/rhoconf.cpp
+../platform/android/Rhodes/jni/src/rhodes.cpp
 ../platform/android/Rhodes/jni/src/socketimpl.cpp
 ../platform/android/Rhodes/jni/src/sslimpl.cpp
 ../platform/android/Rhodes/jni/src/rhocryptimpl.cpp
