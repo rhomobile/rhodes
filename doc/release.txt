@@ -250,8 +250,8 @@ Same procedure as for plug-in
 
 2. Build RhoSimulator for Mac:
 
-	   $ cd <rhodes>/platform/shared/qt/rhodes
-	   $ qmake -o Makefile -spec macx-g++ RhoSimulator_debug.pro
+	   $ cd <rhodes>/platform/shared/qt
+	   $ qmake -o Makefile -r -spec macx-g++ RhoSimulator.pro
 	   $ make all
 
 3. Test RhoSimulator for Mac:
