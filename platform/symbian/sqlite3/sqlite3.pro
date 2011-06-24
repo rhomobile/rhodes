@@ -12,6 +12,9 @@ CONFIG += staticlib
 INCLUDEPATH += ../../shared/
 DEFINES += __BSD_VISIBLE=1
 
+DESTDIR = ../bin/sqlite3
+OBJECTS_DIR = ../bin/sqlite3
+
 SOURCES += \
     ../../shared/sqlite/sqlite3.c
 
