@@ -8,7 +8,7 @@ QT       -= gui
 
 TARGET = syncengine
 TEMPLATE = lib
-CONFIG += staticlib
+CONFIG += staticlib warn_on
 INCLUDEPATH += ../../shared/
 
 DESTDIR = ../bin/syncengine

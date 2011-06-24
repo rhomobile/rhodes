@@ -10,7 +10,7 @@ DEFINES += HAVE_SOCKADDR_STORAGE=1
 
 TARGET = rubylib
 TEMPLATE = lib
-CONFIG += staticlib
+CONFIG += staticlib warn_on
 INCLUDEPATH += ../../shared
 INCLUDEPATH += ../../shared/ruby
 INCLUDEPATH += ../../shared/ruby/generated
@@ -112,7 +112,6 @@ SOURCES += \
     ../../shared/ruby/ext/phonebook/phonebook_wrap.c \
     ../../shared/ruby/ext/rho/rhosupport.c \
     ../../shared/ruby/ext/rho/rhoruby.c \
-    ../../shared/ruby/ext/rho/extensions.c \
     ../../shared/ruby/ext/rhoconf/rhoconf_wrap.c \
     ../../shared/ruby/ext/ringtones/ringtones_wrap.c \
     ../../shared/ruby/ext/signature/signature_wrap.c \
