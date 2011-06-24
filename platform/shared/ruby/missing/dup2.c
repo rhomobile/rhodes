@@ -12,6 +12,7 @@
  */
 
 #include "ruby/config.h"
+#include "ruby/defines.h"
 
 #if defined(HAVE_FCNTL)
 # include <fcntl.h>

@@ -61,6 +61,10 @@ static VALUE gc_profile_result(void);
 
 int rb_io_fptr_finalize(struct rb_io_t*);
 
+#ifdef _DEBUG
+extern void rhoGCReport(VALUE valReport);
+#endif
+
 #define rb_setjmp(env) RUBY_SETJMP(env)
 #define rb_jmp_buf rb_jmpbuf_t
 
