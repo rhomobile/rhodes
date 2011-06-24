@@ -8,7 +8,7 @@ QT       -= gui
 
 TARGET = rholib
 TEMPLATE = lib
-CONFIG += staticlib
+CONFIG += staticlib warn_on
 DEFINES += __SYMBIAN32__=1
 INCLUDEPATH += ../../shared/
 

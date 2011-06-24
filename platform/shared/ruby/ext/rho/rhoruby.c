@@ -210,7 +210,7 @@ void RhoRubyStart()
     Init_RhoEvent();
     Init_Calendar();
 //TODO: RhoSimulator  - load extensions dll dynamically
-#ifndef RHODES_EMULATOR
+#if !defined(RHODES_EMULATOR) && !defined(OS_SYMBIAN)
     Init_Extensions();
 #endif //RHODES_EMULATOR
 
