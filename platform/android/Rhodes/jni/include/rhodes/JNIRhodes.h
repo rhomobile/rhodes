@@ -37,6 +37,28 @@ jmethodID getJNIClassStaticMethod(JNIEnv *env, jclass cls, const char *name, con
 #define RHO_LOG_CALLBACK RAWLOG_INFO1("Callback \"%s\" called", __PRETTY_FUNCTION__)
 #define RHO_LOG_JNI_CALL RAWLOG_INFO1("JNI method \"%s\" called", __PRETTY_FUNCTION__)
 
+namespace rho
+{
+namespace common
+{
+
+class AndroidLogSink : public ILogSink
+{
+public:
+    void writeLogMessage(String &strMsg);
+
+    int getCurPos()
+    {
+        return 0;
+    }
+
+    void clear() {}
+};
+
+
+} // namespace common
+} // namespace rho
+
 
 #endif // RHO_JNI_RHODES_57d3a700b706402190ead97fd1383bee
 
