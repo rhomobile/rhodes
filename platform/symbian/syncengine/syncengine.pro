@@ -34,7 +34,8 @@ SOURCES += \
     ../../shared/sync/SyncSource.cpp \
     ../../shared/sync/SyncNotify.cpp \
     ../../shared/sync/SyncEngine.cpp \
-    ../../shared/sync/ClientRegister.cpp
+    ../../shared/sync/ClientRegister.cpp \
+    ../../shared/common/app_build_configs.c
 
 HEADERS += \
     ../../shared/db/DBResult.h \
