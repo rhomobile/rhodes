@@ -25,7 +25,7 @@ class CRhoClassFactory : public common::IRhoClassFactory
 public:
     net::INetRequestImpl* createNetRequestImpl()
     {
-        return CRHOCRYPTIMPL;
+        return CNETREQUESTIMPL;
     }
 
     common::IRhoThreadImpl* createThreadImpl()
@@ -41,7 +41,7 @@ public:
 
     IRhoCrypt* createRhoCrypt()
     {
-        //TODO: createRhoCrypt on Mac OS X
+        //TODO: createRhoCrypt
         return CRHOCRYPTIMPL;
     }
 };
