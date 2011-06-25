@@ -5,8 +5,7 @@
 #-------------------------------------------------
 
 QT       -= gui
-DEFINES += __SYMBIAN32__=1\
-           HAVE_SOCKADDR_STORAGE=1\
+DEFINES += HAVE_SOCKADDR_STORAGE=1\
            RHO_SYMBIAN=1\
            _NDEBUG NDEBUG WIN32 _WINDOWS _LIB _UNICODE UNICODE BUFSIZ=512 STATIC_LINKED
 

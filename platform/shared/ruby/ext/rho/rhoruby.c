@@ -142,6 +142,10 @@ void rho_ruby_stop_threadidle()
     }
 }
 
+#if defined(RHO_SYMBIAN)
+int   daylight;
+#endif
+
 void RhoRubyStart()
 {
     const char* szRoot = rho_native_rhopath();

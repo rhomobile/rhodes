@@ -25,7 +25,7 @@ char *strerror(int errnum ){return "";}
 
 #endif
 
-#if defined(OS_WINDOWS) || defined(OS_WINCE) || defined(OS_SYMBIAN32)
+#if defined(WINDOWS_PLATFORM)
 typedef unsigned __int16 uint16_t;
 
 #  ifndef S_ISDIR

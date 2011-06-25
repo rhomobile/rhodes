@@ -28,7 +28,7 @@ private:
     MutexType m_nativeMutex;
 };
 
-#if defined(OS_WINDOWS) || defined(OS_WINCE) || defined(OS_SYMBIAN32)
+#if defined(WINDOWS_PLATFORM)
 CMutex::CMutex()             { InitializeCriticalSection(&m_nativeMutex); }
 CMutex::~CMutex()            { DeleteCriticalSection(&m_nativeMutex); }
 void CMutex::Lock()         { EnterCriticalSection(&m_nativeMutex); }
