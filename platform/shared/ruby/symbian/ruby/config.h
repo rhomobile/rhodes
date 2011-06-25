@@ -1,7 +1,4 @@
-#if !defined(WIN32)
-#define OS_SYMBIANDEV
-#endif
-#if !defined(OS_SYMBIANDEV)
+#if defined(WIN32)
 #include "../../win32/ruby/config.h"
 #else
 #pragma c99 on
