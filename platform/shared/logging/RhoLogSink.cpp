@@ -4,7 +4,7 @@
 #include "common/StringConverter.h"
 #include "net/RawSocket.h"
 
-#if defined( OS_SYMBIAN ) && !defined(OS_SYMBIAN32)
+#if defined( OS_SYMBIAN )
 #include <e32debug.h>
 #endif
 
@@ -121,7 +121,7 @@ void CLogOutputSink::writeLogMessage( String& strMsg )
 
 #if defined( OS_WINDOWS ) //|| defined( OS_WINCE )
 		::OutputDebugStringA(szMsg);
-#elif defined( OS_SYMBIAN ) && !defined(OS_SYMBIAN32)
+#elif defined( OS_SYMBIAN )
         TPtrC8 des((const TUint8*)szMsg);
       	RDebug::RawPrint(des);
         return;

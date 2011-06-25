@@ -3,7 +3,7 @@
 
 #include <algorithm>
 
-#if !defined(OS_WINDOWS) && !defined(OS_WINCE) && !defined(OS_SYMBIAN32)
+#if !defined(WINDOWS_PLATFORM)
 #include <arpa/inet.h>
 #endif
 

@@ -174,7 +174,7 @@ void CRhoFile::deleteFile( const char* szFilePath ){
 #if defined(OS_WINDOWS) || defined(OS_WINCE)
     StringW wFileName;
     common::convertToStringW(szFilePath,wFileName);
-    DeleteFile(wFileName.c_str());
+    DeleteFileW(wFileName.c_str());
 #else
     remove(szFilePath);
 #endif
@@ -216,7 +216,7 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
 
 /*static*/ void CRhoFile::createFolder(const char* szFolderPath)
 {
-#if defined(OS_WINDOWS) || defined(OS_WINCE) || defined(OS_SYMBIAN32)
+#if defined(WINDOWS_PLATFORM)
     _mkdir(szFolderPath);
 #else
     mkdir(szFolderPath, S_IRWXU);

@@ -3,7 +3,7 @@
 
 #include "RhoPort.h"
 
-#if defined(OS_SYMBIAN) && !defined(OS_SYMBIAN32)
+#if defined(OS_SYMBIAN)
 #include <e32std.h>
 #endif 
 
@@ -21,7 +21,7 @@ public:
         #elif defined (OS_WINCE)
             //NKDbgPrintfW ?
             DebugBreak();
-        #elif defined(OS_SYMBIAN) && !defined(OS_SYMBIAN32)
+        #elif defined(OS_SYMBIAN)
             User::Invariant();
 //            exit(-1);
         #elif defined(OS_MACOSX)

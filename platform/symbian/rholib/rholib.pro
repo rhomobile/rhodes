@@ -9,8 +9,10 @@ QT       -= gui
 TARGET = rholib
 TEMPLATE = lib
 CONFIG += staticlib warn_on
-DEFINES += __SYMBIAN32__=1
 INCLUDEPATH += ../../shared/
+
+DEFINES -= UNICODE
+DEFINES -= _UNICODE
 
 DESTDIR = ../bin/rholib
 OBJECTS_DIR = ../bin/rholib

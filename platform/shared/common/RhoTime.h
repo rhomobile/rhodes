@@ -3,7 +3,7 @@
 
 #include "RhoStd.h"
 
-#if !defined( OS_WINDOWS ) && !defined(OS_WINCE) && !defined(OS_SYMBIAN32)
+#if !defined( WINDOWS_PLATFORM )
 #include <sys/time.h>
 #endif
 
@@ -124,7 +124,7 @@ public:
     static CTimeInterval getCurrentTime(){
         CTimeInterval res;
 
-#if defined( OS_WINDOWS ) || defined(OS_WINCE) || defined(OS_SYMBIAN32)
+#if defined( WINDOWS_PLATFORM )
         res.m_nativeTime = GetTickCount();
 #else
         struct timeval tv;
