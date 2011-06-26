@@ -51,7 +51,9 @@
 #define NOINLINE(x) __attribute__ ((noinline)) x
 #define FUNC_STDCALL(x) __attribute__ ((stdcall)) x
 #define FUNC_CDECL(x) __attribute__ ((cdecl)) x
+#if !defined(__IA64__) && !defined(__x86_64__)
 #define FUNC_FASTCALL(x) __attribute__ ((fastcall)) x
+#endif
 #define RUBY_ALIAS_FUNCTION(old_prot, new_name, args) VALUE old_prot {return new_name args;}
 #define HAVE_DECL_SYS_NERR 1
 #define BROKEN_CRYPT 1
