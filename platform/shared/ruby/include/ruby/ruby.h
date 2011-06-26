@@ -462,16 +462,18 @@ VALUE rb_int2big(SIGNED_VALUE);
 static inline VALUE
 INT2NUM(int v)
 {
-    if (!FIXABLE(v))
-	return rb_int2big(v);
+    long vv = v;
+    if (!FIXABLE(vv))
+        return rb_int2big(v);
     return INT2FIX(v);
 }
 
 static inline VALUE
 UINT2NUM(unsigned int v)
 {
-    if (!POSFIXABLE(v))
-	return rb_uint2big(v);
+    unsigned long vv = v;
+    if (!POSFIXABLE(vv))
+        return rb_uint2big(v);
     return LONG2FIX(v);
 }
 #endif
