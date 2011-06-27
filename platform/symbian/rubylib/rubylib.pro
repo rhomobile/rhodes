@@ -6,7 +6,7 @@
 
 QT       -= gui
 DEFINES += HAVE_SOCKADDR_STORAGE=1\
-           RHO_SYMBIAN=1\
+           RHO_SYMBIAN _LIB STATIC_LINKED
 
 TARGET = rubylib
 TEMPLATE = lib
