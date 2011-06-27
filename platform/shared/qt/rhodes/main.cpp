@@ -67,7 +67,7 @@ char* parseToken(const char* start)
 
     return value;
 }
-
+#include <QDir>
 int main(int argc, char *argv[])
 {
     CMainWindow* m_appWindow = CMainWindow::getInstance();
@@ -121,6 +121,7 @@ int main(int argc, char *argv[])
         RHOSIMCONF().setString("rhodes_path", m_strRhodesPath, false );
     RHOCONF().setString( "rhosim_platform", RHOSIMCONF().getString( "platform"), false);
 #endif
+
     if ( !rho_rhodesapp_canstartapp(g_strCmdLine.c_str(), " /-,") )
     {
         LOG(INFO) + "This is hidden app and can be started only with security key.";
@@ -135,6 +136,7 @@ int main(int argc, char *argv[])
             parseHttpProxyURI(RHOCONF().getString("http_proxy_url"));
         }
     }
+
 #ifdef RHODES_EMULATOR
     if (RHOSIMCONF().getString("debug_host").length() > 0)
         RHOCONF().setString("debug_host", RHOSIMCONF().getString("debug_host"), false);
