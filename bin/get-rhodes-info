@@ -53,7 +53,7 @@ end
 
 requestVer = findParam(ARGV, params[0])
 
-if requestVer >= Rhodes::VERSION
+if requestVer <= Rhodes::VERSION
   puts 1
 else
   puts 0
