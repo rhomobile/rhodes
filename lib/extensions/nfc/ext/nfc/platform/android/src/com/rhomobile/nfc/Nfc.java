@@ -408,7 +408,7 @@ public class Nfc implements RhodesActivityListener {
 			}
 		}
 		if (mMifareUltralight != null) {
-			mTechs.put("MifareUltralight", mMifareClassic);
+			mTechs.put("MifareUltralight", mMifareUltralight);
 		}
 		if (mNdef != null) {
 			mTechs.put("Ndef", mNdef);
