@@ -3,6 +3,9 @@
 #include <wininet.h>
 #include "net/INetRequest.h"
 #include "logging/RhoLog.h"
+#if defined(RHO_SYMBIAN)
+#include <atlstr.h>
+#endif
 
 namespace rho {
 namespace common {

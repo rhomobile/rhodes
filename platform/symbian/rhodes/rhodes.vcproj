@@ -1,750 +1,385 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="rhodes"
-	ProjectGUID="{B87D7837-D1CA-39E5-B322-92C630BF92F9}"
-	Keyword="Qt4VSv1.0"
-	>
+	ProjectGUID="{8A55B0F1-5896-3F41-A5AA-5FC5228F3A78}"
+	Keyword="Qt4VSv1.0">
 	<Platforms>
 		<Platform
-			Name="Win32"
-		/>
+			Name="Win32" />
 	</Platforms>
-	<ToolFiles>
-	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\bin\rhodes"
-			IntermediateDirectory="..\bin\rhodes"
-			ConfigurationType="1"
-			UseOfMFC="0"
+			OutputDirectory="."
 			ATLMinimizesCRunTimeLibraryUsage="false"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				WarningLevel="0"
-				DefaultCharType="0"
-				EnableErrorChecks="1"
-			/>
+			ConfigurationType="1"
+			IntermediateDirectory="..\bin\rhodes\"
+			UseOfMfc="0">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="-Zm200 -w34100 -w34189"
-				Optimization="4"
 				AdditionalIncludeDirectories="&quot;$(QTDIR)\include\QtCore&quot;,&quot;$(QTDIR)\include\QtGui&quot;,&quot;$(QTDIR)\include\QtWebKit&quot;,&quot;$(QTDIR)\include&quot;,&quot;..\..\shared&quot;,&quot;..\..\wm\rhodes&quot;,&quot;..\..\shared\ruby&quot;,&quot;..\..\shared\ruby\generated&quot;,&quot;..\..\shared\ruby\include&quot;,&quot;..\..\shared\ruby\symbian&quot;,&quot;$(QTDIR)\include\ActiveQt&quot;,&quot;..\bin\rhodes&quot;,&quot;..\bin\rhodes&quot;,c:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default"
-				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,RHO_SYMBIAN=1,QT_DLL,QT_WEBKIT_LIB,QT_GUI_LIB,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT"
-				GeneratePreprocessedFile="0"
-				ExceptionHandling="1"
-				RuntimeLibrary="3"
-				BufferSecurityCheck="false"
-				TreatWChar_tAsBuiltInType="false"
-				RuntimeTypeInfo="true"
+				AdditionalOptions="-Zm200 -w34100 -w34189"
 				AssemblerListingLocation="..\bin\rhodes\"
-				ObjectFile="..\bin\rhodes\"
-				ProgramDataBaseFileName=".\"
-				WarningLevel="3"
-				SuppressStartupBanner="true"
+				BufferSecurityCheck="false"
 				DebugInformationFormat="3"
-			/>
+				ExceptionHandling="1"
+				GeneratePreprocessedFile="0"
+				ObjectFile="..\bin\rhodes\"
+				Optimization ="4"
+				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,RHO_SYMBIAN=1,QT_DLL,QT_WEBKIT_LIB,QT_GUI_LIB,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT"
+				ProgramDataBaseFileName=".\"
+				RuntimeLibrary="3"
+				RuntimeTypeInfo="true"
+				SuppressStartupBanner="true"
+				TreatWChar_tAsBuiltInType="false"
+				WarningLevel="3" />
 			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,RHO_SYMBIAN=1,QT_DLL,QT_WEBKIT_LIB,QT_GUI_LIB,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT,_DEBUG"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
+				Name="VCCustomBuildTool" />
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
-				AdditionalOptions="&quot;/MANIFESTDEPENDENCY:type=&apos;win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos; processorArchitecture=&apos;*&apos;&quot;"
-				AdditionalDependencies="qtmaind.lib ../bin/rubylib/rubylib.lib ../bin/rholib/rholib.lib ../bin/sqlite3/sqlite3.lib ../bin/syncengine/syncengine.lib wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib gdiplus.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib QtWebKitd4.lib QtGuid4.lib QtCored4.lib"
-				OutputFile="..\bin\rhodes\rhodes.exe"
-				SuppressStartupBanner="true"
+				AdditionalDependencies="$(QTDIR)\lib\qtmaind.lib ../bin/rubylib/rubylib.lib ../bin/rholib/rholib.lib ../bin/sqlite3/sqlite3.lib ../bin/syncengine/syncengine.lib wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib gdiplus.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib $(QTDIR)\lib\QtWebKitd4.lib $(QTDIR)\lib\QtGuid4.lib $(QTDIR)\lib\QtCored4.lib"
 				AdditionalLibraryDirectories="$(QTDIR)\lib,C:\OpenSSL-Win32_full\lib"
+				AdditionalOptions="&quot;/MANIFESTDEPENDENCY:type=&apos;win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos; processorArchitecture=&apos;*&apos;&quot;"
 				GenerateDebugInformation="true"
+				IgnoreImportLibrary="true"
+				LinkTimeCodeGeneration="0"
+				OutputFile="..\bin\rhodes\rhodes.exe"
 				ProgramDatabaseFile=""
 				SubSystem="2"
-				LinkTimeCodeGeneration="0"
-			/>
+				SuppressStartupBanner="true" />
 			<Tool
-				Name="VCALinkTool"
-			/>
+				Name="VCMIDLTool"
+				DefaultCharType="0"
+				EnableErrorChecks="1"
+				WarningLevel="0" />
 			<Tool
-				Name="VCManifestTool"
-			/>
+				Name="VCPostBuildEventTool" />
 			<Tool
-				Name="VCXDCMakeTool"
-			/>
+				Name="VCPreBuildEventTool" />
 			<Tool
-				Name="VCBscMakeTool"
-			/>
+				Name="VCPreLinkEventTool" />
 			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,RHO_SYMBIAN=1,QT_DLL,QT_WEBKIT_LIB,QT_GUI_LIB,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT,_DEBUG" />
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="."
-			IntermediateDirectory="..\bin\rhodes\"
-			ConfigurationType="1"
-			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				WarningLevel="0"
-				DefaultCharType="0"
-				EnableErrorChecks="1"
-			/>
+			ConfigurationType="1"
+			IntermediateDirectory="..\bin\rhodes\"
+			UseOfMfc="0">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="-Zm200 -w34100 -w34189"
-				Optimization="2"
 				AdditionalIncludeDirectories="&quot;$(QTDIR)\include\QtCore&quot;,&quot;$(QTDIR)\include\QtGui&quot;,&quot;$(QTDIR)\include\QtWebKit&quot;,&quot;$(QTDIR)\include&quot;,&quot;..\..\shared&quot;,&quot;..\..\wm\rhodes&quot;,&quot;..\..\shared\ruby&quot;,&quot;..\..\shared\ruby\generated&quot;,&quot;..\..\shared\ruby\include&quot;,&quot;..\..\shared\ruby\symbian&quot;,&quot;$(QTDIR)\include\ActiveQt&quot;,&quot;..\bin\rhodes&quot;,&quot;..\bin\rhodes&quot;,c:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default"
-				PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,RHO_SYMBIAN=1,QT_DLL,QT_NO_DEBUG,QT_WEBKIT_LIB,QT_GUI_LIB,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT,NDEBUG"
-				GeneratePreprocessedFile="0"
-				ExceptionHandling="1"
-				RuntimeLibrary="2"
-				BufferSecurityCheck="false"
-				TreatWChar_tAsBuiltInType="false"
-				RuntimeTypeInfo="true"
+				AdditionalOptions="-Zm200 -w34100 -w34189"
 				AssemblerListingLocation="..\bin\rhodes\"
-				ObjectFile="..\bin\rhodes\"
-				ProgramDataBaseFileName=".\"
-				WarningLevel="3"
-				SuppressStartupBanner="true"
+				BufferSecurityCheck="false"
 				DebugInformationFormat="0"
-			/>
+				ExceptionHandling="1"
+				GeneratePreprocessedFile="0"
+				ObjectFile="..\bin\rhodes\"
+				Optimization ="2"
+				PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,RHO_SYMBIAN=1,QT_DLL,QT_NO_DEBUG,QT_WEBKIT_LIB,QT_GUI_LIB,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT,NDEBUG"
+				ProgramDataBaseFileName=".\"
+				RuntimeLibrary="2"
+				RuntimeTypeInfo="true"
+				SuppressStartupBanner="true"
+				TreatWChar_tAsBuiltInType="false"
+				WarningLevel="3" />
 			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,RHO_SYMBIAN=1,QT_DLL,QT_NO_DEBUG,QT_WEBKIT_LIB,QT_GUI_LIB,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
+				Name="VCCustomBuildTool" />
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="true"
-				AdditionalOptions="&quot;/MANIFESTDEPENDENCY:type=&apos;win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos; processorArchitecture=&apos;*&apos;&quot;"
-				AdditionalDependencies="qtmain.lib ../bin/rubylib/rubylib.lib ../bin/rholib/rholib.lib ../bin/sqlite3/sqlite3.lib ../bin/syncengine/syncengine.lib wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib gdiplus.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib QtWebKit4.lib QtGui4.lib QtCore4.lib"
-				OutputFile="..\bin\rhodes\rhodes.exe"
-				LinkIncremental="1"
-				SuppressStartupBanner="true"
+				AdditionalDependencies="$(QTDIR)\lib\qtmain.lib ../bin/rubylib/rubylib.lib ../bin/rholib/rholib.lib ../bin/sqlite3/sqlite3.lib ../bin/syncengine/syncengine.lib wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib gdiplus.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib $(QTDIR)\lib\QtWebKit4.lib $(QTDIR)\lib\QtGui4.lib $(QTDIR)\lib\QtCore4.lib"
 				AdditionalLibraryDirectories="$(QTDIR)\lib,C:\OpenSSL-Win32_full\lib"
+				AdditionalOptions="&quot;/MANIFESTDEPENDENCY:type=&apos;win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos; processorArchitecture=&apos;*&apos;&quot;"
 				GenerateDebugInformation="false"
+				IgnoreImportLibrary="true"
+				LinkIncremental="1"
+				LinkTimeCodeGeneration="0"
+				OutputFile="..\bin\rhodes\rhodes.exe"
 				ProgramDatabaseFile=""
 				SubSystem="2"
-				LinkTimeCodeGeneration="0"
-			/>
+				SuppressStartupBanner="true" />
 			<Tool
-				Name="VCALinkTool"
-			/>
+				Name="VCMIDLTool"
+				DefaultCharType="0"
+				EnableErrorChecks="1"
+				WarningLevel="0" />
 			<Tool
-				Name="VCManifestTool"
-			/>
+				Name="VCPostBuildEventTool" />
 			<Tool
-				Name="VCXDCMakeTool"
-			/>
+				Name="VCPreBuildEventTool" />
 			<Tool
-				Name="VCBscMakeTool"
-			/>
+				Name="VCPreLinkEventTool" />
 			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,RHO_SYMBIAN=1,QT_DLL,QT_NO_DEBUG,QT_WEBKIT_LIB,QT_GUI_LIB,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT" />
 		</Configuration>
 	</Configurations>
-	<References>
-	</References>
 	<Files>
 		<Filter
 			Name="Source Files"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
-			>
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath="..\..\shared\qt\rhodes\impl\AlertImpl.cpp"
-				>
-			</File>
+				RelativePath="..\..\shared\qt\rhodes\impl\AlertImpl.cpp" />
 			<File
-				RelativePath="..\..\shared\qt\rhodes\impl\BluetoothImpl.cpp"
-				>
-			</File>
+				RelativePath="..\..\shared\qt\rhodes\impl\BluetoothImpl.cpp" />
 			<File
-				RelativePath="..\..\shared\qt\rhodes\impl\CalendarImpl.cpp"
-				>
-			</File>
+				RelativePath="..\..\shared\qt\rhodes\impl\CalendarImpl.cpp" />
 			<File
-				RelativePath="..\..\shared\qt\rhodes\impl\CameraImpl.cpp"
-				>
-			</File>
+				RelativePath="..\..\shared\qt\rhodes\impl\CameraImpl.cpp" />
 			<File
-				RelativePath="..\..\shared\qt\rhodes\impl\DateTimePickerImpl.cpp"
-				>
-			</File>
+				RelativePath="..\..\shared\qt\rhodes\impl\DateTimePickerImpl.cpp" />
 			<File
-				RelativePath="..\..\shared\qt\rhodes\ExternalWebView.cpp"
-				>
-			</File>
+				RelativePath="..\..\shared\qt\rhodes\ExternalWebView.cpp" />
 			<File
-				RelativePath="..\..\shared\qt\rhodes\impl\GeoLocationImpl.cpp"
-				>
-			</File>
+				RelativePath="..\..\shared\qt\rhodes\impl\GeoLocationImpl.cpp" />
 			<File
-				RelativePath="..\..\shared\qt\rhodes\main.cpp"
-				>
-			</File>
+				RelativePath="..\..\shared\qt\rhodes\impl\MainWindowImpl.cpp" />
 			<File
-				RelativePath="..\..\shared\qt\rhodes\impl\MainWindowImpl.cpp"
-				>
-			</File>
+				RelativePath="..\..\shared\qt\rhodes\impl\MapViewImpl.cpp" />
 			<File
-				RelativePath="..\..\shared\qt\rhodes\impl\MapViewImpl.cpp"
-				>
-			</File>
+				RelativePath="..\..\shared\qt\rhodes\impl\NativeTabbarImpl.cpp" />
 			<File
-				RelativePath="..\..\shared\qt\rhodes\impl\NativeTabbarImpl.cpp"
-				>
-			</File>
+				RelativePath="..\..\shared\qt\rhodes\impl\NativeToolbarImpl.cpp" />
 			<File
-				RelativePath="..\..\shared\qt\rhodes\impl\NativeToolbarImpl.cpp"
-				>
-			</File>
+				RelativePath="..\..\wm\rhodes\rho\net\NetRequestImpl.cpp" />
 			<File
-				RelativePath="..\..\shared\qt\rhodes\impl\PhonebookImpl.cpp"
-				>
-			</File>
+				RelativePath="..\..\shared\qt\rhodes\impl\PhonebookImpl.cpp" />
 			<File
-				RelativePath="..\..\shared\qt\rhodes\QtMainWindow.cpp"
-				>
-			</File>
+				RelativePath="..\..\shared\qt\rhodes\QtMainWindow.cpp" />
 			<File
-				RelativePath="..\..\shared\qt\rhodes\QtNativeTabBar.cpp"
-				>
-			</File>
+				RelativePath="..\..\shared\qt\rhodes\QtNativeTabBar.cpp" />
 			<File
-				RelativePath="..\..\shared\qt\rhodes\QtWebInspector.cpp"
-				>
-			</File>
+				RelativePath="..\..\shared\qt\rhodes\QtWebInspector.cpp" />
 			<File
-				RelativePath="..\..\shared\qt\rhodes\impl\RhoClassFactoryImpl.cpp"
-				>
-			</File>
+				RelativePath="..\..\shared\qt\rhodes\impl\RhoClassFactoryImpl.cpp" />
 			<File
-				RelativePath="..\..\shared\qt\rhodes\impl\RhodesImpl.cpp"
-				>
-			</File>
+				RelativePath="..\..\shared\qt\rhodes\impl\RhoFileImpl.cpp" />
 			<File
-				RelativePath="..\..\shared\qt\rhodes\impl\RhoFileImpl.cpp"
-				>
-			</File>
+				RelativePath="..\..\shared\qt\rhodes\impl\RhoNativeViewManagerImpl.cpp" />
 			<File
-				RelativePath="..\..\shared\qt\rhodes\impl\RhoNativeViewManagerImpl.cpp"
-				>
-			</File>
+				RelativePath="..\..\wm\rhodes\rho\common\RhoThreadImpl.cpp" />
 			<File
-				RelativePath="..\..\wm\rhodes\rho\common\RhoThreadImpl.cpp"
-				>
-			</File>
+				RelativePath="..\..\shared\qt\rhodes\impl\RhodesImpl.cpp" />
 			<File
-				RelativePath="..\..\shared\qt\rhodes\impl\RingtoneManagerImpl.cpp"
-				>
-			</File>
+				RelativePath="..\..\shared\qt\rhodes\impl\RingtoneManagerImpl.cpp" />
 			<File
-				RelativePath="..\..\shared\qt\rhodes\impl\SignatureImpl.cpp"
-				>
-			</File>
+				RelativePath="..\..\shared\qt\rhodes\impl\SignatureImpl.cpp" />
 			<File
-				RelativePath="..\..\shared\qt\rhodes\impl\SystemImpl.cpp"
-				>
-			</File>
+				RelativePath="..\..\shared\qt\rhodes\impl\SystemImpl.cpp" />
 			<File
-				RelativePath="..\..\shared\qt\rhodes\impl\WebViewImpl.cpp"
-				>
-			</File>
+				RelativePath="..\..\shared\qt\rhodes\impl\WebViewImpl.cpp" />
+			<File
+				RelativePath="..\..\shared\qt\rhodes\main.cpp" />
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
-			>
+			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath="..\..\shared\qt\rhodes\ExternalWebView.h"
-				>
+				RelativePath="..\..\shared\qt\rhodes\ExternalWebView.h">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;  -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DRHO_SYMBIAN=1 -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\..\..\shared&quot; &quot;-I.\..\..\wm\rhodes&quot; &quot;-I.\..\..\shared\ruby&quot; &quot;-I.\..\..\shared\ruby\generated&quot; &quot;-I.\..\..\shared\ruby\include&quot; &quot;-I.\..\..\shared\ruby\symbian&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default&quot;&#x0D;&#x0A;"
-						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
-						Outputs="&quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;"
-					/>
+						AdditionalDependencies="..\..\shared\qt\rhodes\ExternalWebView.h;_(QTDIR)\bin\moc.exe"
+						CommandLine="_(QTDIR)\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DRHO_SYMBIAN=1 -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;$(QTDIR)\include\QtWebKit&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;..\..\shared&quot; -I&quot;..\..\wm\rhodes&quot; -I&quot;..\..\shared\ruby&quot; -I&quot;..\..\shared\ruby\generated&quot; -I&quot;..\..\shared\ruby\include&quot; -I&quot;..\..\shared\ruby\symbian&quot; -I&quot;$(QTDIR)\include\ActiveQt&quot; -I&quot;..\bin\rhodes&quot; -I&quot;..\bin\rhodes&quot; -Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default -D_MSC_VER=1400 -DWIN32 ..\..\shared\qt\rhodes\ExternalWebView.h -o ..\bin\rhodes\moc_ExternalWebView.cpp"
+						Description="MOC ..\..\shared\qt\rhodes\ExternalWebView.h"
+						Outputs="..\bin\rhodes\moc_ExternalWebView.cpp"
+						Path="_(QTDIR)\bin" />
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;  -DQT_NO_DEBUG -DNDEBUG -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DRHO_SYMBIAN=1 -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\..\..\shared&quot; &quot;-I.\..\..\wm\rhodes&quot; &quot;-I.\..\..\shared\ruby&quot; &quot;-I.\..\..\shared\ruby\generated&quot; &quot;-I.\..\..\shared\ruby\include&quot; &quot;-I.\..\..\shared\ruby\symbian&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default&quot;&#x0D;&#x0A;"
-						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
-						Outputs="&quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;"
-					/>
+						AdditionalDependencies="..\..\shared\qt\rhodes\ExternalWebView.h;_(QTDIR)\bin\moc.exe"
+						CommandLine="_(QTDIR)\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DRHO_SYMBIAN=1 -DQT_DLL -DQT_NO_DEBUG -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;$(QTDIR)\include\QtWebKit&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;..\..\shared&quot; -I&quot;..\..\wm\rhodes&quot; -I&quot;..\..\shared\ruby&quot; -I&quot;..\..\shared\ruby\generated&quot; -I&quot;..\..\shared\ruby\include&quot; -I&quot;..\..\shared\ruby\symbian&quot; -I&quot;$(QTDIR)\include\ActiveQt&quot; -I&quot;..\bin\rhodes&quot; -I&quot;..\bin\rhodes&quot; -Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default -D_MSC_VER=1400 -DWIN32 ..\..\shared\qt\rhodes\ExternalWebView.h -o ..\bin\rhodes\moc_ExternalWebView.cpp"
+						Description="MOC ..\..\shared\qt\rhodes\ExternalWebView.h"
+						Outputs="..\bin\rhodes\moc_ExternalWebView.cpp"
+						Path="_(QTDIR)\bin" />
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\shared\qt\rhodes\MainWindowCallback.h"
-				>
+				RelativePath="..\..\shared\qt\rhodes\MainWindowCallback.h" />
+			<File
+				RelativePath="..\..\shared\qt\rhodes\impl\MainWindowImpl.h">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						Description="Performing Custom Build Step"
-						CommandLine=""
-						AdditionalDependencies=""
-						Outputs=""
-					/>
+						AdditionalDependencies="..\..\shared\qt\rhodes\impl\MainWindowImpl.h;_(QTDIR)\bin\moc.exe"
+						CommandLine="_(QTDIR)\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DRHO_SYMBIAN=1 -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;$(QTDIR)\include\QtWebKit&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;..\..\shared&quot; -I&quot;..\..\wm\rhodes&quot; -I&quot;..\..\shared\ruby&quot; -I&quot;..\..\shared\ruby\generated&quot; -I&quot;..\..\shared\ruby\include&quot; -I&quot;..\..\shared\ruby\symbian&quot; -I&quot;$(QTDIR)\include\ActiveQt&quot; -I&quot;..\bin\rhodes&quot; -I&quot;..\bin\rhodes&quot; -Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default -D_MSC_VER=1400 -DWIN32 ..\..\shared\qt\rhodes\impl\MainWindowImpl.h -o ..\bin\rhodes\moc_MainWindowImpl.cpp"
+						Description="MOC ..\..\shared\qt\rhodes\impl\MainWindowImpl.h"
+						Outputs="..\bin\rhodes\moc_MainWindowImpl.cpp"
+						Path="_(QTDIR)\bin" />
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						Description="Performing Custom Build Step"
-						CommandLine=""
-						AdditionalDependencies=""
-						Outputs=""
-					/>
+						AdditionalDependencies="..\..\shared\qt\rhodes\impl\MainWindowImpl.h;_(QTDIR)\bin\moc.exe"
+						CommandLine="_(QTDIR)\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DRHO_SYMBIAN=1 -DQT_DLL -DQT_NO_DEBUG -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;$(QTDIR)\include\QtWebKit&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;..\..\shared&quot; -I&quot;..\..\wm\rhodes&quot; -I&quot;..\..\shared\ruby&quot; -I&quot;..\..\shared\ruby\generated&quot; -I&quot;..\..\shared\ruby\include&quot; -I&quot;..\..\shared\ruby\symbian&quot; -I&quot;$(QTDIR)\include\ActiveQt&quot; -I&quot;..\bin\rhodes&quot; -I&quot;..\bin\rhodes&quot; -Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default -D_MSC_VER=1400 -DWIN32 ..\..\shared\qt\rhodes\impl\MainWindowImpl.h -o ..\bin\rhodes\moc_MainWindowImpl.cpp"
+						Description="MOC ..\..\shared\qt\rhodes\impl\MainWindowImpl.h"
+						Outputs="..\bin\rhodes\moc_MainWindowImpl.cpp"
+						Path="_(QTDIR)\bin" />
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\shared\qt\rhodes\impl\MainWindowImpl.h"
-				>
+				RelativePath="..\..\shared\qt\rhodes\impl\NativeTabbarImpl.h" />
+			<File
+				RelativePath="..\..\shared\qt\rhodes\impl\NativeToolbarImpl.h" />
+			<File
+				RelativePath="..\..\shared\qt\rhodes\QtMainWindow.h">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;  -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DRHO_SYMBIAN=1 -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\..\..\shared&quot; &quot;-I.\..\..\wm\rhodes&quot; &quot;-I.\..\..\shared\ruby&quot; &quot;-I.\..\..\shared\ruby\generated&quot; &quot;-I.\..\..\shared\ruby\include&quot; &quot;-I.\..\..\shared\ruby\symbian&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default&quot;&#x0D;&#x0A;"
-						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
-						Outputs="&quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;"
-					/>
+						AdditionalDependencies="..\..\shared\qt\rhodes\QtMainWindow.h;_(QTDIR)\bin\moc.exe"
+						CommandLine="_(QTDIR)\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DRHO_SYMBIAN=1 -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;$(QTDIR)\include\QtWebKit&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;..\..\shared&quot; -I&quot;..\..\wm\rhodes&quot; -I&quot;..\..\shared\ruby&quot; -I&quot;..\..\shared\ruby\generated&quot; -I&quot;..\..\shared\ruby\include&quot; -I&quot;..\..\shared\ruby\symbian&quot; -I&quot;$(QTDIR)\include\ActiveQt&quot; -I&quot;..\bin\rhodes&quot; -I&quot;..\bin\rhodes&quot; -Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default -D_MSC_VER=1400 -DWIN32 ..\..\shared\qt\rhodes\QtMainWindow.h -o ..\bin\rhodes\moc_QtMainWindow.cpp"
+						Description="MOC ..\..\shared\qt\rhodes\QtMainWindow.h"
+						Outputs="..\bin\rhodes\moc_QtMainWindow.cpp"
+						Path="_(QTDIR)\bin" />
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;  -DQT_NO_DEBUG -DNDEBUG -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DRHO_SYMBIAN=1 -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\..\..\shared&quot; &quot;-I.\..\..\wm\rhodes&quot; &quot;-I.\..\..\shared\ruby&quot; &quot;-I.\..\..\shared\ruby\generated&quot; &quot;-I.\..\..\shared\ruby\include&quot; &quot;-I.\..\..\shared\ruby\symbian&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default&quot;&#x0D;&#x0A;"
-						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
-						Outputs="&quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;"
-					/>
+						AdditionalDependencies="..\..\shared\qt\rhodes\QtMainWindow.h;_(QTDIR)\bin\moc.exe"
+						CommandLine="_(QTDIR)\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DRHO_SYMBIAN=1 -DQT_DLL -DQT_NO_DEBUG -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;$(QTDIR)\include\QtWebKit&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;..\..\shared&quot; -I&quot;..\..\wm\rhodes&quot; -I&quot;..\..\shared\ruby&quot; -I&quot;..\..\shared\ruby\generated&quot; -I&quot;..\..\shared\ruby\include&quot; -I&quot;..\..\shared\ruby\symbian&quot; -I&quot;$(QTDIR)\include\ActiveQt&quot; -I&quot;..\bin\rhodes&quot; -I&quot;..\bin\rhodes&quot; -Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default -D_MSC_VER=1400 -DWIN32 ..\..\shared\qt\rhodes\QtMainWindow.h -o ..\bin\rhodes\moc_QtMainWindow.cpp"
+						Description="MOC ..\..\shared\qt\rhodes\QtMainWindow.h"
+						Outputs="..\bin\rhodes\moc_QtMainWindow.cpp"
+						Path="_(QTDIR)\bin" />
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\shared\qt\rhodes\impl\NativeTabbarImpl.h"
-				>
+				RelativePath="..\..\shared\qt\rhodes\QtNativeTabBar.h" />
+			<File
+				RelativePath="..\..\shared\qt\rhodes\QtWebInspector.h">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						Description="Performing Custom Build Step"
-						CommandLine=""
-						AdditionalDependencies=""
-						Outputs=""
-					/>
+						AdditionalDependencies="..\..\shared\qt\rhodes\QtWebInspector.h;_(QTDIR)\bin\moc.exe"
+						CommandLine="_(QTDIR)\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DRHO_SYMBIAN=1 -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;$(QTDIR)\include\QtWebKit&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;..\..\shared&quot; -I&quot;..\..\wm\rhodes&quot; -I&quot;..\..\shared\ruby&quot; -I&quot;..\..\shared\ruby\generated&quot; -I&quot;..\..\shared\ruby\include&quot; -I&quot;..\..\shared\ruby\symbian&quot; -I&quot;$(QTDIR)\include\ActiveQt&quot; -I&quot;..\bin\rhodes&quot; -I&quot;..\bin\rhodes&quot; -Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default -D_MSC_VER=1400 -DWIN32 ..\..\shared\qt\rhodes\QtWebInspector.h -o ..\bin\rhodes\moc_QtWebInspector.cpp"
+						Description="MOC ..\..\shared\qt\rhodes\QtWebInspector.h"
+						Outputs="..\bin\rhodes\moc_QtWebInspector.cpp"
+						Path="_(QTDIR)\bin" />
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						Description="Performing Custom Build Step"
-						CommandLine=""
-						AdditionalDependencies=""
-						Outputs=""
-					/>
+						AdditionalDependencies="..\..\shared\qt\rhodes\QtWebInspector.h;_(QTDIR)\bin\moc.exe"
+						CommandLine="_(QTDIR)\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DRHO_SYMBIAN=1 -DQT_DLL -DQT_NO_DEBUG -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;$(QTDIR)\include\QtWebKit&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;..\..\shared&quot; -I&quot;..\..\wm\rhodes&quot; -I&quot;..\..\shared\ruby&quot; -I&quot;..\..\shared\ruby\generated&quot; -I&quot;..\..\shared\ruby\include&quot; -I&quot;..\..\shared\ruby\symbian&quot; -I&quot;$(QTDIR)\include\ActiveQt&quot; -I&quot;..\bin\rhodes&quot; -I&quot;..\bin\rhodes&quot; -Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default -D_MSC_VER=1400 -DWIN32 ..\..\shared\qt\rhodes\QtWebInspector.h -o ..\bin\rhodes\moc_QtWebInspector.cpp"
+						Description="MOC ..\..\shared\qt\rhodes\QtWebInspector.h"
+						Outputs="..\bin\rhodes\moc_QtWebInspector.cpp"
+						Path="_(QTDIR)\bin" />
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\shared\qt\rhodes\impl\NativeToolbarImpl.h"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Performing Custom Build Step"
-						CommandLine=""
-						AdditionalDependencies=""
-						Outputs=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Performing Custom Build Step"
-						CommandLine=""
-						AdditionalDependencies=""
-						Outputs=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\shared\qt\rhodes\QtMainWindow.h"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;  -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DRHO_SYMBIAN=1 -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\..\..\shared&quot; &quot;-I.\..\..\wm\rhodes&quot; &quot;-I.\..\..\shared\ruby&quot; &quot;-I.\..\..\shared\ruby\generated&quot; &quot;-I.\..\..\shared\ruby\include&quot; &quot;-I.\..\..\shared\ruby\symbian&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default&quot;&#x0D;&#x0A;"
-						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
-						Outputs="&quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;  -DQT_NO_DEBUG -DNDEBUG -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DRHO_SYMBIAN=1 -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\..\..\shared&quot; &quot;-I.\..\..\wm\rhodes&quot; &quot;-I.\..\..\shared\ruby&quot; &quot;-I.\..\..\shared\ruby\generated&quot; &quot;-I.\..\..\shared\ruby\include&quot; &quot;-I.\..\..\shared\ruby\symbian&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default&quot;&#x0D;&#x0A;"
-						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
-						Outputs="&quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\shared\qt\rhodes\QtNativeTabBar.h"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Performing Custom Build Step"
-						CommandLine=""
-						AdditionalDependencies=""
-						Outputs=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Performing Custom Build Step"
-						CommandLine=""
-						AdditionalDependencies=""
-						Outputs=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\shared\qt\rhodes\QtWebInspector.h"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;  -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DRHO_SYMBIAN=1 -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\..\..\shared&quot; &quot;-I.\..\..\wm\rhodes&quot; &quot;-I.\..\..\shared\ruby&quot; &quot;-I.\..\..\shared\ruby\generated&quot; &quot;-I.\..\..\shared\ruby\include&quot; &quot;-I.\..\..\shared\ruby\symbian&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default&quot;&#x0D;&#x0A;"
-						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
-						Outputs="&quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;  -DQT_NO_DEBUG -DNDEBUG -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DRHO_SYMBIAN=1 -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\..\..\shared&quot; &quot;-I.\..\..\wm\rhodes&quot; &quot;-I.\..\..\shared\ruby&quot; &quot;-I.\..\..\shared\ruby\generated&quot; &quot;-I.\..\..\shared\ruby\include&quot; &quot;-I.\..\..\shared\ruby\symbian&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default&quot;&#x0D;&#x0A;"
-						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
-						Outputs="&quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\shared\qt\rhodes\impl\RhoClassFactoryImpl.h"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Performing Custom Build Step"
-						CommandLine=""
-						AdditionalDependencies=""
-						Outputs=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Performing Custom Build Step"
-						CommandLine=""
-						AdditionalDependencies=""
-						Outputs=""
-					/>
-				</FileConfiguration>
-			</File>
+				RelativePath="..\..\shared\qt\rhodes\impl\RhoClassFactoryImpl.h" />
 		</Filter>
 		<Filter
 			Name="Generated Files"
 			Filter="cpp;c;cxx;moc;h;def;odl;idl;res;"
-			UniqueIdentifier="{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}"
-			>
+			UniqueIdentifier="{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}">
 			<File
-				RelativePath="..\bin\rhodes\moc_ExternalWebView.cpp"
-				>
-			</File>
+				RelativePath="..\bin\rhodes\moc_ExternalWebView.cpp" />
 			<File
-				RelativePath="..\bin\rhodes\moc_MainWindowImpl.cpp"
-				>
-			</File>
+				RelativePath="..\bin\rhodes\moc_MainWindowImpl.cpp" />
 			<File
-				RelativePath="..\bin\rhodes\moc_QtMainWindow.cpp"
-				>
-			</File>
+				RelativePath="..\bin\rhodes\moc_QtMainWindow.cpp" />
 			<File
-				RelativePath="..\bin\rhodes\moc_QtWebInspector.cpp"
-				>
-			</File>
+				RelativePath="..\bin\rhodes\moc_QtWebInspector.cpp" />
 			<File
-				RelativePath="..\bin\rhodes\ui_ExternalWebView.h"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Performing Custom Build Step"
-						CommandLine=""
-						AdditionalDependencies=""
-						Outputs=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Performing Custom Build Step"
-						CommandLine=""
-						AdditionalDependencies=""
-						Outputs=""
-					/>
-				</FileConfiguration>
-			</File>
+				RelativePath="..\bin\rhodes\ui_ExternalWebView.h" />
 			<File
-				RelativePath="..\bin\rhodes\ui_QtMainWindow.h"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Performing Custom Build Step"
-						CommandLine=""
-						AdditionalDependencies=""
-						Outputs=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Performing Custom Build Step"
-						CommandLine=""
-						AdditionalDependencies=""
-						Outputs=""
-					/>
-				</FileConfiguration>
-			</File>
+				RelativePath="..\bin\rhodes\ui_QtMainWindow.h" />
 			<File
-				RelativePath="..\bin\rhodes\ui_QtWebInspector.h"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Performing Custom Build Step"
-						CommandLine=""
-						AdditionalDependencies=""
-						Outputs=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Performing Custom Build Step"
-						CommandLine=""
-						AdditionalDependencies=""
-						Outputs=""
-					/>
-				</FileConfiguration>
-			</File>
+				RelativePath="..\bin\rhodes\ui_QtWebInspector.h" />
 		</Filter>
 		<Filter
 			Name="Form Files"
 			Filter="ui"
 			UniqueIdentifier="{99349809-55BA-4b9d-BF79-8FDBB0286EB3}"
-			ParseFiles="false"
-			>
+			ParseFiles="false">
 			<File
-				RelativePath="..\..\shared\qt\rhodes\ExternalWebView.ui"
-				>
+				RelativePath="..\..\shared\qt\rhodes\ExternalWebView.ui">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
+						AdditionalDependencies="..\..\shared\qt\rhodes\ExternalWebView.ui;_(QTDIR)\bin\uic.exe"
+						CommandLine="_(QTDIR)\bin\uic.exe ..\..\shared\qt\rhodes\ExternalWebView.ui -o ..\bin\rhodes\ui_ExternalWebView.h"
 						Description="UIC ..\..\shared\qt\rhodes\ExternalWebView.ui"
-						CommandLine="$(QTDIR)\bin\uic.exe ..\..\shared\qt\rhodes\ExternalWebView.ui -o ..\bin\rhodes\ui_ExternalWebView.h&#x0D;&#x0A;"
-						AdditionalDependencies="..\..\shared\qt\rhodes\ExternalWebView.ui;$(QTDIR)\bin\uic.exe"
 						Outputs="..\bin\rhodes\ui_ExternalWebView.h"
-					/>
+						Path="_(QTDIR)\bin" />
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
+						AdditionalDependencies="..\..\shared\qt\rhodes\ExternalWebView.ui;_(QTDIR)\bin\uic.exe"
+						CommandLine="_(QTDIR)\bin\uic.exe ..\..\shared\qt\rhodes\ExternalWebView.ui -o ..\bin\rhodes\ui_ExternalWebView.h"
 						Description="UIC ..\..\shared\qt\rhodes\ExternalWebView.ui"
-						CommandLine="$(QTDIR)\bin\uic.exe ..\..\shared\qt\rhodes\ExternalWebView.ui -o ..\bin\rhodes\ui_ExternalWebView.h&#x0D;&#x0A;"
-						AdditionalDependencies="..\..\shared\qt\rhodes\ExternalWebView.ui;$(QTDIR)\bin\uic.exe"
 						Outputs="..\bin\rhodes\ui_ExternalWebView.h"
-					/>
+						Path="_(QTDIR)\bin" />
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\shared\qt\rhodes\QtMainWindow.ui"
-				>
+				RelativePath="..\..\shared\qt\rhodes\QtMainWindow.ui">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
+						AdditionalDependencies="..\..\shared\qt\rhodes\QtMainWindow.ui;_(QTDIR)\bin\uic.exe"
+						CommandLine="_(QTDIR)\bin\uic.exe ..\..\shared\qt\rhodes\QtMainWindow.ui -o ..\bin\rhodes\ui_QtMainWindow.h"
 						Description="UIC ..\..\shared\qt\rhodes\QtMainWindow.ui"
-						CommandLine="$(QTDIR)\bin\uic.exe ..\..\shared\qt\rhodes\QtMainWindow.ui -o ..\bin\rhodes\ui_QtMainWindow.h&#x0D;&#x0A;"
-						AdditionalDependencies="..\..\shared\qt\rhodes\QtMainWindow.ui;$(QTDIR)\bin\uic.exe"
 						Outputs="..\bin\rhodes\ui_QtMainWindow.h"
-					/>
+						Path="_(QTDIR)\bin" />
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
+						AdditionalDependencies="..\..\shared\qt\rhodes\QtMainWindow.ui;_(QTDIR)\bin\uic.exe"
+						CommandLine="_(QTDIR)\bin\uic.exe ..\..\shared\qt\rhodes\QtMainWindow.ui -o ..\bin\rhodes\ui_QtMainWindow.h"
 						Description="UIC ..\..\shared\qt\rhodes\QtMainWindow.ui"
-						CommandLine="$(QTDIR)\bin\uic.exe ..\..\shared\qt\rhodes\QtMainWindow.ui -o ..\bin\rhodes\ui_QtMainWindow.h&#x0D;&#x0A;"
-						AdditionalDependencies="..\..\shared\qt\rhodes\QtMainWindow.ui;$(QTDIR)\bin\uic.exe"
 						Outputs="..\bin\rhodes\ui_QtMainWindow.h"
-					/>
+						Path="_(QTDIR)\bin" />
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\shared\qt\rhodes\QtWebInspector.ui"
-				>
+				RelativePath="..\..\shared\qt\rhodes\QtWebInspector.ui">
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
+					Name="Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
+						AdditionalDependencies="..\..\shared\qt\rhodes\QtWebInspector.ui;_(QTDIR)\bin\uic.exe"
+						CommandLine="_(QTDIR)\bin\uic.exe ..\..\shared\qt\rhodes\QtWebInspector.ui -o ..\bin\rhodes\ui_QtWebInspector.h"
 						Description="UIC ..\..\shared\qt\rhodes\QtWebInspector.ui"
-						CommandLine="$(QTDIR)\bin\uic.exe ..\..\shared\qt\rhodes\QtWebInspector.ui -o ..\bin\rhodes\ui_QtWebInspector.h&#x0D;&#x0A;"
-						AdditionalDependencies="..\..\shared\qt\rhodes\QtWebInspector.ui;$(QTDIR)\bin\uic.exe"
 						Outputs="..\bin\rhodes\ui_QtWebInspector.h"
-					/>
+						Path="_(QTDIR)\bin" />
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
+					Name="Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
+						AdditionalDependencies="..\..\shared\qt\rhodes\QtWebInspector.ui;_(QTDIR)\bin\uic.exe"
+						CommandLine="_(QTDIR)\bin\uic.exe ..\..\shared\qt\rhodes\QtWebInspector.ui -o ..\bin\rhodes\ui_QtWebInspector.h"
 						Description="UIC ..\..\shared\qt\rhodes\QtWebInspector.ui"
-						CommandLine="$(QTDIR)\bin\uic.exe ..\..\shared\qt\rhodes\QtWebInspector.ui -o ..\bin\rhodes\ui_QtWebInspector.h&#x0D;&#x0A;"
-						AdditionalDependencies="..\..\shared\qt\rhodes\QtWebInspector.ui;$(QTDIR)\bin\uic.exe"
 						Outputs="..\bin\rhodes\ui_QtWebInspector.h"
-					/>
+						Path="_(QTDIR)\bin" />
 				</FileConfiguration>
 			</File>
 		</Filter>
 	</Files>
 	<Globals>
-		<Global
-			Name="QtVersion Win32"
-			Value="msvc2005"
-		/>
-		<Global
-			Name="RccDir"
-			Value=".\GeneratedFiles"
-		/>
 	</Globals>
 </VisualStudioProject>
