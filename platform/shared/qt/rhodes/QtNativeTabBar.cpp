@@ -5,12 +5,15 @@
 
 // default badge style (badge is implemented as a QLabel)
 static const char* defaultStyle = "QTabBar::tab QLabel {color:white; border: 1px solid white; background:red}";
+// QTabBar::scroller - scroller panel; QTabBar QToolButton - scroller buttons
 
 QtNativeTabBar::QtNativeTabBar(QWidget* parent):
     QTabBar(parent)
 {
     this->setIconSize(QSize(32, 32));
+    this->setElideMode(Qt::ElideNone);
     this->setExpanding(true);
+    this->setUsesScrollButtons(true);
 }
 
 void QtNativeTabBar::clearStyleSheet(void)
@@ -20,7 +23,8 @@ void QtNativeTabBar::clearStyleSheet(void)
 
 QSize QtNativeTabBar::tabSizeHint(int) const
 {
-    return QSize(96, 56);
+    int width = (int)(this->width()/this->count());
+    return QSize((width > 96 ? width : 96), 56);
 }
 
 void QtNativeTabBar::paintEvent(QPaintEvent *)
@@ -42,7 +46,7 @@ void QtNativeTabBar::paintEvent(QPaintEvent *)
                     QString selected_color = tbrp["selected_color"].toString();
                     QString style = defaultStyle;
                     if (background_color.length()>0)
-                        style += "QTabBar::tab {background:"+background_color+"}";
+                        style += " QTabBar::tab {background:"+background_color+"}";
                     if (selected_color.length()>0)
                         style += " QTabBar::tab:selected, QTabBar::tab:hover {background:"+selected_color+"}";
                     if (style.length()>0) {
