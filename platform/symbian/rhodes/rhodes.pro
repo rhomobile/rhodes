@@ -1,11 +1,13 @@
 # Add files and directories to ship with the application 
 # by adapting the examples below.
 # file1.source = myfile
-QT += core gui webkit
 rho.source = rho
 DEPLOYMENTFOLDERS = rho
 
+
+QT += core gui webkit
 CONFIG += warn_on
+DEFINES += RHO_SYMBIAN=1
 
 symbian:TARGET.UID3 = 0xE17AE169
 
@@ -40,7 +42,6 @@ SOURCES += ../../shared/qt/rhodes/QtWebInspector.cpp \
     ../../shared/qt/rhodes/impl/SystemImpl.cpp \
     ../../shared/qt/rhodes/impl/SignatureImpl.cpp \
     ../../shared/qt/rhodes/impl/RingtoneManagerImpl.cpp \
-    ../../shared/qt/rhodes/impl/RhoThreadImpl.cpp \
     ../../shared/qt/rhodes/impl/RhoNativeViewManagerImpl.cpp \
     ../../shared/qt/rhodes/impl/RhoFileImpl.cpp \
     ../../shared/qt/rhodes/impl/RhodesImpl.cpp \
@@ -71,6 +72,7 @@ FORMS += \
     ../../shared/qt/rhodes/ExternalWebView.ui
 
 INCLUDEPATH += ../../shared
+INCLUDEPATH += ../../wm/rhodes
 INCLUDEPATH += ../../shared/ruby
 INCLUDEPATH += ../../shared/ruby/generated
 INCLUDEPATH += ../../shared/ruby/include
@@ -95,3 +97,9 @@ PRE_TARGETDEPS += ../bin/rubylib/rubylib.lib\
 # Please do not modify the following two lines. Required for deployment.
 include(deployment.pri)
 qtcAddDeployment()
+
+OTHER_FILES +=
+
+win32 {
+SOURCES +=  ../../wm/rhodes/rho/common/RhoThreadImpl.cpp
+}
