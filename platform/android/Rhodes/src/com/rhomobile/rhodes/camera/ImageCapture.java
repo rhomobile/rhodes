@@ -178,29 +178,14 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 	public void surfaceCreated(SurfaceHolder holder) {
 		Logger.D(TAG, "surfaceCreated");
 		try {
-			int sdkVersion = Integer.parseInt(Build.VERSION.SDK);
-			if (sdkVersion >= Build.VERSION_CODES.GINGERBREAD) {
-				if (mSettings.getCameraType() == mSettings.CAMERA_TYPE_FRONT) {
-					// find front camera
-					int camera_count = Camera.getNumberOfCameras();
-					int i;
-					for (i = 0 ; i < camera_count; i++) {
-						Camera.CameraInfo info = new Camera.CameraInfo();
-						Camera.getCameraInfo(i, info);
-						if (info.facing == info.CAMERA_FACING_FRONT) {
-							camera = Camera.open(i);
-							mIsFrontCamera = true;
-							break;
-						}
-					}
-				}
-				else {
-					camera = Camera.open();
-				}
+			
+			if (mSettings.getCameraType() == mSettings.CAMERA_TYPE_FRONT) {
+				camera = com.rhomobile.rhodes.camera.Camera.getCameraService().getFrontCamera();
 			}
 			else {
-				camera = Camera.open();
+				camera = com.rhomobile.rhodes.camera.Camera.getCameraService().getMainCamera();
 			}
+			
 		}
 		catch (Exception e) {
 			Logger.E(TAG, e.getMessage());
@@ -223,34 +208,10 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 			
 			int newW = (w >> 3) << 3;
 			int newH = (h >> 3) << 3;
-			List<Size> sizes = p.getSupportedPreviewSizes();
-			Iterator<Size> iter = sizes.iterator();
-			// find closest preview size
-			float min_r = -1;
-			int minW = 0;
-			int minH = 0;
-			while (iter.hasNext()) {
-				Size s = iter.next();
-				if (min_r < 0) {
-					min_r = (float)s.width*(float)s.width+(float)s.height*(float)s.height;
-					minW = s.width;
-					minH = s.height;
-				}
-				else {
-					float cur_r = ((float)newW-(float)s.width)*((float)newW-(float)s.width)+((float)newH-(float)s.height)*((float)newH-(float)s.height);
-					if (cur_r < min_r) {
-						min_r = cur_r;
-						minW = s.width;
-						minH = s.height;
-					}
-				}
-			}
-			if (min_r >= 0) {
-				newW = minW;
-				newH = minH;
-			}
+
+			CameraService.Size s = com.rhomobile.rhodes.camera.Camera.getCameraService().getClosestPreviewSize(camera, newW, newH);
 			
-			p.setPreviewSize(newW, newH);
+			p.setPreviewSize(s.width, s.height);
 			if (mSettings != null) {
 	            if ((mSettings.getWidth() > 0) && (mSettings.getHeight() > 0)) {
 	                p.setPictureSize(mSettings.getWidth(), mSettings.getHeight());
@@ -296,7 +257,6 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 		//String focus_mode = camera.getParameters().getFocusMode();
 		//if ((focus_mode != Camera.Parameters.FOCUS_MODE_FIXED) && (focus_mode != Camera.Parameters.FOCUS_MODE_INFINITY)) {
 		camera.autoFocus(new Camera.AutoFocusCallback() {
-			@Override
 			public void onAutoFocus(boolean success, Camera camera) {
 				takePicture();
 			}
@@ -344,67 +304,24 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
             parameters.set("rotation", nCamRotate );
             if ((mSettings.getWidth() > 0) && (mSettings.getHeight() > 0)) {
             
-    			Camera.Parameters p = camera.getParameters();
-    			
     			int newW = mSettings.getWidth();
     			int newH = mSettings.getHeight();
 
-    	        Logger.D(TAG, "Preferred size : " + String.valueOf(newW) + " x " + String.valueOf(newH) );
-   			
-    			List<Size> sizes = p.getSupportedPictureSizes();
-    			Iterator<Size> iter = sizes.iterator();
-    			// find closest preview size
-    			float min_r = -1;
-    			int minW = 0;
-    			int minH = 0;
-    	        Logger.D(TAG, "    Supported sizes : ");
-    			while (iter.hasNext()) {
-    				Size s = iter.next();
-        	        Logger.D(TAG, "         size : " + String.valueOf((int)s.width) + " x " + String.valueOf((int)s.height) );
-    				if (min_r < 0) {
-    					min_r = (float)s.width*(float)s.width+(float)s.height*(float)s.height;
-    					minW = s.width;
-    					minH = s.height;
-    				}
-    				else {
-    					float cur_r = ((float)newW-(float)s.width)*((float)newW-(float)s.width)+((float)newH-(float)s.height)*((float)newH-(float)s.height);
-    					if (cur_r < min_r) {
-    						min_r = cur_r;
-    						minW = s.width;
-    						minH = s.height;
-    					}
-    				}
+    			CameraService.Size s = com.rhomobile.rhodes.camera.Camera.getCameraService().getClosestPictureSize(camera, newW, newH);
+ 
+    			if ((s.width >= 0) && (s.height >= 0)) {
+    				newW = s.width;
+    				newH = s.height;
+    				parameters.setPictureSize(newW, newH);
     			}
-    			if (min_r >= 0) {
-    				newW = minW;
-    				newH = minH;
-    			}
-    	        Logger.D(TAG, "    Selected size : " + String.valueOf(newW) + " x " + String.valueOf(newH) );
-            	parameters.setPictureSize(newW, newH);
             	imgW = newW;
             	imgH = newH;
             }
             else {
             	// detect camera resolution
-    			Camera.Parameters p = camera.getParameters();
-    			
-    			List<Size> sizes = p.getSupportedPictureSizes();
-    			Iterator<Size> iter = sizes.iterator();
-    			// find closest preview size
-    			float max_S = -1;
-    			int maxW = 0;
-    			int maxH = 0;
-    			while (iter.hasNext()) {
-    				Size s = iter.next();
-					float cur_S = ((float)s.width)*((float)s.height);
-					if (cur_S > max_S) {
-						max_S = cur_S;
-						maxW = s.width;
-						maxH = s.height;
-					}
-    			}
-    			imgW = maxW;
-    			imgH = maxH;
+    			CameraService.Size s = com.rhomobile.rhodes.camera.Camera.getCameraService().getClosestPictureSize(camera, 10000, 10000);
+    			imgW = s.width;
+    			imgH = s.height;
             }
             if (mSettings.getColorModel() == mSettings.CAMERA_COLOR_MODEL_GRAYSCALE) {
             	parameters.setColorEffect(Camera.Parameters.EFFECT_MONO);
