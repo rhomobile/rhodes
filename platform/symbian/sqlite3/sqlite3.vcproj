@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="sqlite3"
-	ProjectGUID="{911787CF-3529-3744-9BEB-645804587B7B}"
+	ProjectGUID="{E5E3D9F8-93FC-3547-BBC7-0DA688CE61EC}"
 	Keyword="Qt4VSv1.0"
 	>
 	<Platforms>

@@ -1,7 +1,7 @@
 #ifndef _ASSERT_H_
 #define _ASSERT_H_
 
-#ifdef  NDEBUG
+#if defined( NDEBUG ) || !defined( DEBUG )
 
 #define assert(_Expression)     ((void)0)
 

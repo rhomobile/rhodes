@@ -1,46 +1,72 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rubylib", "C:/work/rhodes/platform/symbian/rubylib\rubylib.vcproj", "{C007005C-C04D-3191-9F2C-E6E33220117D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rubylib", "rubylib\rubylib.vcproj", "{F60DA674-EAB8-39F6-9BCB-34E457861E93}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rholib", "C:/work/rhodes/platform/symbian/rholib\rholib.vcproj", "{E544391D-E3DE-3B37-9EC3-B8CF0C982048}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rholib", "rholib\rholib.vcproj", "{7F67440E-1CD4-3D25-8179-CCA81DA5DCBB}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite3", "C:/work/rhodes/platform/symbian/sqlite3\sqlite3.vcproj", "{911787CF-3529-3744-9BEB-645804587B7B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite3", "sqlite3\sqlite3.vcproj", "{E5E3D9F8-93FC-3547-BBC7-0DA688CE61EC}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "syncengine", "C:/work/rhodes/platform/symbian/syncengine\syncengine.vcproj", "{D8F1EB35-9A82-3ACD-B331-61916160A37B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "syncengine", "syncengine\syncengine.vcproj", "{3DCFD349-5F2A-3808-BD61-A35C8CF128CE}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rhodes", "C:/work/rhodes/platform/symbian/rhodes\rhodes.vcproj", "{8A55B0F1-5896-3F41-A5AA-5FC5228F3A78}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rhodes", "rhodes\rhodes.vcproj", "{B87D7837-D1CA-39E5-B322-92C630BF92F9}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+	ProjectSection(ProjectDependencies) = postProject
+		{7F67440E-1CD4-3D25-8179-CCA81DA5DCBB} = {7F67440E-1CD4-3D25-8179-CCA81DA5DCBB}
+		{3DCFD349-5F2A-3808-BD61-A35C8CF128CE} = {3DCFD349-5F2A-3808-BD61-A35C8CF128CE}
+		{F60DA674-EAB8-39F6-9BCB-34E457861E93} = {F60DA674-EAB8-39F6-9BCB-34E457861E93}
+		{E5E3D9F8-93FC-3547-BBC7-0DA688CE61EC} = {E5E3D9F8-93FC-3547-BBC7-0DA688CE61EC}
+	EndProjectSection
 EndProject
 Global
-	GlobalSection(SolutionConfiguration) = preSolution
-		ConfigName.0 = Debug|Win32
-		ConfigName.1 = Release|Win32
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
 	EndGlobalSection
-	GlobalSection(ProjectDependencies) = postSolution
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F60DA674-EAB8-39F6-9BCB-34E457861E93}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F60DA674-EAB8-39F6-9BCB-34E457861E93}.Debug|Win32.Build.0 = Debug|Win32
+		{F60DA674-EAB8-39F6-9BCB-34E457861E93}.Release|Win32.ActiveCfg = Release|Win32
+		{F60DA674-EAB8-39F6-9BCB-34E457861E93}.Release|Win32.Build.0 = Release|Win32
+		{7F67440E-1CD4-3D25-8179-CCA81DA5DCBB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7F67440E-1CD4-3D25-8179-CCA81DA5DCBB}.Debug|Win32.Build.0 = Debug|Win32
+		{7F67440E-1CD4-3D25-8179-CCA81DA5DCBB}.Release|Win32.ActiveCfg = Release|Win32
+		{7F67440E-1CD4-3D25-8179-CCA81DA5DCBB}.Release|Win32.Build.0 = Release|Win32
+		{E5E3D9F8-93FC-3547-BBC7-0DA688CE61EC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E5E3D9F8-93FC-3547-BBC7-0DA688CE61EC}.Debug|Win32.Build.0 = Debug|Win32
+		{E5E3D9F8-93FC-3547-BBC7-0DA688CE61EC}.Release|Win32.ActiveCfg = Release|Win32
+		{E5E3D9F8-93FC-3547-BBC7-0DA688CE61EC}.Release|Win32.Build.0 = Release|Win32
+		{3DCFD349-5F2A-3808-BD61-A35C8CF128CE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3DCFD349-5F2A-3808-BD61-A35C8CF128CE}.Debug|Win32.Build.0 = Debug|Win32
+		{3DCFD349-5F2A-3808-BD61-A35C8CF128CE}.Release|Win32.ActiveCfg = Release|Win32
+		{3DCFD349-5F2A-3808-BD61-A35C8CF128CE}.Release|Win32.Build.0 = Release|Win32
+		{B87D7837-D1CA-39E5-B322-92C630BF92F9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B87D7837-D1CA-39E5-B322-92C630BF92F9}.Debug|Win32.Build.0 = Debug|Win32
+		{B87D7837-D1CA-39E5-B322-92C630BF92F9}.Release|Win32.ActiveCfg = Release|Win32
+		{B87D7837-D1CA-39E5-B322-92C630BF92F9}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
-	GlobalSection(ProjectConfiguration) = postSolution
-		{C007005C-C04D-3191-9F2C-E6E33220117D}.Debug|Win32.ActiveCfg = Debug|Win32
-		{C007005C-C04D-3191-9F2C-E6E33220117D}.Debug|Win32.Build.0 = Debug|Win32
-		{C007005C-C04D-3191-9F2C-E6E33220117D}.Release|Win32.ActiveCfg = Release|Win32
-		{C007005C-C04D-3191-9F2C-E6E33220117D}.Release|Win32.Build.0 = Release|Win32
-		{E544391D-E3DE-3B37-9EC3-B8CF0C982048}.Debug|Win32.ActiveCfg = Debug|Win32
-		{E544391D-E3DE-3B37-9EC3-B8CF0C982048}.Debug|Win32.Build.0 = Debug|Win32
-		{E544391D-E3DE-3B37-9EC3-B8CF0C982048}.Release|Win32.ActiveCfg = Release|Win32
-		{E544391D-E3DE-3B37-9EC3-B8CF0C982048}.Release|Win32.Build.0 = Release|Win32
-		{911787CF-3529-3744-9BEB-645804587B7B}.Debug|Win32.ActiveCfg = Debug|Win32
-		{911787CF-3529-3744-9BEB-645804587B7B}.Debug|Win32.Build.0 = Debug|Win32
-		{911787CF-3529-3744-9BEB-645804587B7B}.Release|Win32.ActiveCfg = Release|Win32
-		{911787CF-3529-3744-9BEB-645804587B7B}.Release|Win32.Build.0 = Release|Win32
-		{D8F1EB35-9A82-3ACD-B331-61916160A37B}.Debug|Win32.ActiveCfg = Debug|Win32
-		{D8F1EB35-9A82-3ACD-B331-61916160A37B}.Debug|Win32.Build.0 = Debug|Win32
-		{D8F1EB35-9A82-3ACD-B331-61916160A37B}.Release|Win32.ActiveCfg = Release|Win32
-		{D8F1EB35-9A82-3ACD-B331-61916160A37B}.Release|Win32.Build.0 = Release|Win32
-		{8A55B0F1-5896-3F41-A5AA-5FC5228F3A78}.Debug|Win32.ActiveCfg = Debug|Win32
-		{8A55B0F1-5896-3F41-A5AA-5FC5228F3A78}.Debug|Win32.Build.0 = Debug|Win32
-		{8A55B0F1-5896-3F41-A5AA-5FC5228F3A78}.Release|Win32.ActiveCfg = Release|Win32
-		{8A55B0F1-5896-3F41-A5AA-5FC5228F3A78}.Release|Win32.Build.0 = Release|Win32
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-	EndGlobalSection
-	GlobalSection(ExtensibilityAddIns) = postSolution
+		QtVersion = msvc2005
 	EndGlobalSection
 EndGlobal

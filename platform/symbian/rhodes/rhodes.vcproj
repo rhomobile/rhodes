@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="rhodes"
-	ProjectGUID="{8A55B0F1-5896-3F41-A5AA-5FC5228F3A78}"
+	ProjectGUID="{B87D7837-D1CA-39E5-B322-92C630BF92F9}"
 	Keyword="Qt4VSv1.0"
 	>
 	<Platforms>

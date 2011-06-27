@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="rholib"
-	ProjectGUID="{E544391D-E3DE-3B37-9EC3-B8CF0C982048}"
+	ProjectGUID="{7F67440E-1CD4-3D25-8179-CCA81DA5DCBB}"
 	Keyword="Qt4VSv1.0"
 	>
 	<Platforms>
