@@ -54,6 +54,7 @@ end
 
 
 def set_app_bundle_identifier(newname)
+  name_cleared = newname.downcase.split(/[^a-zA-Z0-9\.\-]/).map{|w| w.downcase}.join("")
   ret_value = ''
   fname = $config["build"]["iphonepath"] + "/Info.plist"
   nextline = false
@@ -62,8 +63,8 @@ def set_app_bundle_identifier(newname)
   File.new(fname,"r").read.each_line do |line|
     if nextline and not replaced
       ret_value = extract_value_from_strings(line)
-      return ret_value if line =~ /#{newname}/
-      buf << line.gsub(/<string>.*<\/string>/,"<string>#{newname}</string>")
+      return ret_value if line =~ /#{name_cleared}/
+      buf << line.gsub(/<string>.*<\/string>/,"<string>#{name_cleared}</string>")
       puts "set bundle identifier"
       replaced = true
     else
@@ -76,6 +77,7 @@ def set_app_bundle_identifier(newname)
 end
 
 def set_app_url_scheme(newname)
+  name_cleared = newname.downcase.split(/[^a-zA-Z0-9\.\-]/).map{|w| w.downcase}.join("")
   ret_value = ''
   fname = $config["build"]["iphonepath"] + "/Info.plist"
   nextline = false
@@ -85,8 +87,8 @@ def set_app_url_scheme(newname)
   File.new(fname,"r").read.each_line do |line|
     if nextline and not replaced
       ret_value = extract_value_from_strings(line)
-      return ret_value if line =~ /#{newname}/
-      buf << line.gsub(/<string>.*<\/string>/,"<string>#{newname}</string>")
+      return ret_value if line =~ /#{name_cleared}/
+      buf << line.gsub(/<string>.*<\/string>/,"<string>#{name_cleared}</string>")
       puts "set URL Scheme"
       replaced = true
     else
