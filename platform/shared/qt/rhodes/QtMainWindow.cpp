@@ -248,8 +248,9 @@ int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disa
         ui->tabBar->addTab(QIcon(QString(icon)), label);
     else
         ui->tabBar->addTab(label);
+    ui->tabBar->setTabToolTip(ui->tabBar->count()-1, label);
     if (disabled)
-		ui->tabBar->setTabEnabled(ui->tabBar->count()-1, false);
+        ui->tabBar->setTabEnabled(ui->tabBar->count()-1, false);
     cur_tbrp = 0;
 	ui->tabBar->setTabData(ui->tabBar->count()-1, tbrp);
 
