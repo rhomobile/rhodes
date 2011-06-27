@@ -79,6 +79,7 @@ public:
     const String& getOptionsUrl();
     const String& getCurrentUrl(int index = 0);
     boolean isOnStartPage();
+    boolean isBaseUrl(const String& strUrl);
 
 	const String& getLoadingPngPath(){return m_strLoadingPngPath;}
     const String& getLoadingPagePath(){return m_strLoadingPagePath; }
