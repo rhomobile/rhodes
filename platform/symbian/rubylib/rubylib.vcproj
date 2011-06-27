@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="rubylib"
-	ProjectGUID="{C007005C-C04D-3191-9F2C-E6E33220117D}"
+	ProjectGUID="{F60DA674-EAB8-39F6-9BCB-34E457861E93}"
 	Keyword="Qt4VSv1.0"
 	>
 	<Platforms>
@@ -44,8 +44,8 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="-Zm200 -w34100 -w34189"
 				Optimization="4"
-				AdditionalIncludeDirectories="&quot;$(QTDIR)\include\QtCore&quot;,&quot;$(QTDIR)\include&quot;,&quot;..\..\shared&quot;,&quot;..\..\shared\ruby&quot;,&quot;..\..\shared\ruby\generated&quot;,&quot;..\..\shared\ruby\include&quot;,&quot;..\..\shared\ruby\symbian&quot;,&quot;\epoc32\include\stdapis\glib-2.0&quot;,&quot;$(QTDIR)\include\ActiveQt&quot;,&quot;..\bin\rubylib&quot;,c:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default"
-				PreprocessorDefinitions="UNICODE,WIN32,QT_LARGEFILE_SUPPORT,HAVE_SOCKADDR_STORAGE=1,RHO_SYMBIAN=1,_NDEBUG,WIN32,_WINDOWS,_LIB,_UNICODE,UNICODE,BUFSIZ=512,STATIC_LINKED,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT"
+				AdditionalIncludeDirectories="&quot;$(QTDIR)\include\QtCore&quot;,&quot;$(QTDIR)\include&quot;,&quot;..\..\shared&quot;,&quot;..\..\shared\ruby&quot;,&quot;..\..\shared\ruby\generated&quot;,&quot;..\..\shared\ruby\include&quot;,&quot;\epoc32\include\stdapis\glib-2.0&quot;,&quot;..\..\shared\ruby\win32&quot;,&quot;$(QTDIR)\include\ActiveQt&quot;,&quot;..\bin\rubylib&quot;,c:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default"
+				PreprocessorDefinitions="UNICODE,WIN32,QT_LARGEFILE_SUPPORT,HAVE_SOCKADDR_STORAGE=1,RHO_SYMBIAN=1,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT"
 				GeneratePreprocessedFile="0"
 				ExceptionHandling="1"
 				RuntimeLibrary="3"
@@ -64,7 +64,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="UNICODE,WIN32,QT_LARGEFILE_SUPPORT,HAVE_SOCKADDR_STORAGE=1,RHO_SYMBIAN=1,_NDEBUG,NDEBUG,WIN32,_WINDOWS,_LIB,_UNICODE,UNICODE,BUFSIZ=512,STATIC_LINKED,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT,_DEBUG"
+				PreprocessorDefinitions="UNICODE,WIN32,QT_LARGEFILE_SUPPORT,HAVE_SOCKADDR_STORAGE=1,RHO_SYMBIAN=1,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT,_DEBUG"
 				ResourceOutputFileName="..\bin\rubylib\/$(InputName).res"
 			/>
 			<Tool
@@ -121,8 +121,8 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="-Zm200 -w34100 -w34189"
 				Optimization="2"
-				AdditionalIncludeDirectories="&quot;$(QTDIR)\include\QtCore&quot;,&quot;$(QTDIR)\include&quot;,&quot;..\..\shared&quot;,&quot;..\..\shared\ruby&quot;,&quot;..\..\shared\ruby\generated&quot;,&quot;..\..\shared\ruby\include&quot;,&quot;..\..\shared\ruby\symbian&quot;,&quot;\epoc32\include\stdapis\glib-2.0&quot;,&quot;$(QTDIR)\include\ActiveQt&quot;,&quot;..\bin\rubylib&quot;,c:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default"
-				PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,HAVE_SOCKADDR_STORAGE=1,RHO_SYMBIAN=1,_NDEBUG,NDEBUG,WIN32,_WINDOWS,_LIB,_UNICODE,UNICODE,BUFSIZ=512,STATIC_LINKED,QT_NO_DEBUG,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT,NDEBUG"
+				AdditionalIncludeDirectories="&quot;$(QTDIR)\include\QtCore&quot;,&quot;$(QTDIR)\include&quot;,&quot;..\..\shared&quot;,&quot;..\..\shared\ruby&quot;,&quot;..\..\shared\ruby\generated&quot;,&quot;..\..\shared\ruby\include&quot;,&quot;\epoc32\include\stdapis\glib-2.0&quot;,&quot;..\..\shared\ruby\win32&quot;,&quot;$(QTDIR)\include\ActiveQt&quot;,&quot;..\bin\rubylib&quot;,c:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default"
+				PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,HAVE_SOCKADDR_STORAGE=1,RHO_SYMBIAN=1,QT_NO_DEBUG,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT,NDEBUG"
 				GeneratePreprocessedFile="0"
 				ExceptionHandling="1"
 				RuntimeLibrary="2"
@@ -141,7 +141,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,HAVE_SOCKADDR_STORAGE=1,RHO_SYMBIAN=1,_NDEBUG,NDEBUG,WIN32,_WINDOWS,_LIB,_UNICODE,UNICODE,BUFSIZ=512,STATIC_LINKED,QT_NO_DEBUG,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT"
+				PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,HAVE_SOCKADDR_STORAGE=1,RHO_SYMBIAN=1,QT_NO_DEBUG,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT"
 				ResourceOutputFileName="..\bin\rubylib\/$(InputName).res"
 			/>
 			<Tool
