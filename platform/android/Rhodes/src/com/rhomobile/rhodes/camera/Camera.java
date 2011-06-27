@@ -46,6 +46,26 @@ public class Camera {
 	private static int mFrontCamera_max_Width = 0;
 	private static int mFrontCamera_max_Height = 0;
 	
+	private static CameraService ourCameraService = null;
+	
+	public static CameraService getCameraService() {
+		if (ourCameraService == null) {
+			int sdkVersion = Integer.parseInt(Build.VERSION.SDK);
+			if (sdkVersion >= Build.VERSION_CODES.GINGERBREAD) {
+				ourCameraService = new CameraNewService();
+			}
+			else {
+				if (sdkVersion >= Build.VERSION_CODES.ECLAIR) {
+					ourCameraService = new CameraSemiService();
+				}
+				else {
+					ourCameraService = new CameraOldService();
+				}
+			}
+		}
+		return ourCameraService;
+	}
+	
 	private static void reportFail(String name, Exception e) {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
 	}
@@ -159,30 +179,12 @@ public class Camera {
 	public static int[] getCameraResolution(String camera_type) {
 		android.hardware.Camera camera = null;
 		try {
-			int sdkVersion = Integer.parseInt(Build.VERSION.SDK);
-			if (sdkVersion >= Build.VERSION_CODES.GINGERBREAD) {
-				if ("front".equals(camera_type)) {
-					// find front camera
-					int camera_count = android.hardware.Camera.getNumberOfCameras();
-					int i;
-					for (i = 0 ; i < camera_count; i++) {
-						android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
-						android.hardware.Camera.getCameraInfo(i, info);
-						if (info.facing == info.CAMERA_FACING_FRONT) {
-							camera = android.hardware.Camera.open(i);
-							break;
-						}
-					}
-				}
-				else {
-					if ("default".equals(camera_type) || "main".equals(camera_type)) {
-						camera = android.hardware.Camera.open();
-					}
-				}
+			if ("front".equals(camera_type)) {
+				camera = getCameraService().getFrontCamera();
 			}
 			else {
 				if ("default".equals(camera_type) || "main".equals(camera_type)) {
-					camera = android.hardware.Camera.open();
+					camera = getCameraService().getMainCamera();
 				}
 			}
 		}
@@ -195,26 +197,14 @@ public class Camera {
 			int[] res = {0,0};
 			return res;
 		}
+
+		int maxW = 10000;
+		int maxH = 10000;
 		
-		android.hardware.Camera.Parameters p = camera.getParameters();
+		CameraService.Size s = getCameraService().getClosestPictureSize(camera, maxW, maxH);
 		
-		List<Size> sizes = p.getSupportedPictureSizes();
-		Iterator<Size> iter = sizes.iterator();
-		// find max size
-		float max_S = -1;
-		int maxW = 0;
-		int maxH = 0;
-		while (iter.hasNext()) {
-			Size s = iter.next();
-			float cur_S = ((float)s.width)*((float)s.height);
-			if (cur_S > max_S) {
-				max_S = cur_S;
-				maxW = s.width;
-				maxH = s.height;
-			}
-		}
 		camera.release();
-		int[] res = {maxW, maxH};
+		int[] res = {s.width, s.height};
 		return res;
 	}
 	
