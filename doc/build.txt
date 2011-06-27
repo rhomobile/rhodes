@@ -194,9 +194,10 @@ The build.yml settings for iphone are the following:
 * configuration: Debug/Release/Distribution
 * emulator: version of emulator for run application
 * emulatortarget: device family for simulator (iphone/ipad)
-* BundleIdentifier: bundle identifier - used in provisioning profile
+* BundleIdentifier: bundle identifier - used in provisioning profile 
 * BundleURLScheme: bundle URL scheme of your app (used for open your application from another application by using of custom URL scheme)
 
+** NOTE: BundleIdentifier and BundleURLScheme can contain only next symbols : "a"-"z", "A"-"Z", "0"-"9", "-", "." !
 
 Example of iPhone setting in build.yml of your application:
 
