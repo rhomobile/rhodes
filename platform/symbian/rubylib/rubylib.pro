@@ -7,7 +7,6 @@
 QT       -= gui
 DEFINES += HAVE_SOCKADDR_STORAGE=1\
            RHO_SYMBIAN=1\
-           _NDEBUG NDEBUG WIN32 _WINDOWS _LIB _UNICODE UNICODE BUFSIZ=512 STATIC_LINKED
 
 TARGET = rubylib
 TEMPLATE = lib
@@ -16,7 +15,6 @@ INCLUDEPATH += ../../shared
 INCLUDEPATH += ../../shared/ruby
 INCLUDEPATH += ../../shared/ruby/generated
 INCLUDEPATH += ../../shared/ruby/include
-INCLUDEPATH += ../../shared/ruby/symbian
 INCLUDEPATH += /epoc32/include/stdapis/glib-2.0
 
 DESTDIR = ../bin/rubylib
@@ -158,3 +156,12 @@ unix:!symbian {
     }
     INSTALLS += target
 }
+
+win32 {
+INCLUDEPATH += ../../shared/ruby/win32
+}
+
+symbian {
+INCLUDEPATH += ../../shared/ruby/symbian
+}
+
