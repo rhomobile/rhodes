@@ -661,16 +661,20 @@ end
 class NFCManager
  
 
-  # return true/false
+  # return true if current device supported NFC functionality
   def self.is_supported
        s = Nfc.is_supported
        return s != 0
   end
   
+  # enable NFC event processing (your nfc and nfc_tech callback executed only if Rhodes NFC enabled. 
+  # Also for Android when Rhodes NFC enabled and application activity on foreground - activity get high priority for NFC events - 
+  # in this case Android not show additional UI for select Activity for Tag processing - Tag processed by Rhodes application.
   def self.enable
       Nfc.enable(1)
   end
 
+  # disable NFC event processing
   def self.disable
       Nfc.enable(0)
   end
@@ -681,6 +685,7 @@ class NFCManager
       return e != 0
   end
 
+  # set callback for NFC NdefMessage events
   # in callback
   # @params['messages'] - array of messages (each message is hash)
   # message hash items : 
@@ -694,12 +699,11 @@ class NFCManager
   #                     'type' - array of bytes 
   #                     'payload_as_string' - string, payload prepared to string (support specail formats for URI, TEXT) 
   #                     'subrecords' - message hash (only for SMART_POSTER type)
-  
-  # set callback for tech events (Tag discovered/lost, tech special events)
   def self.set_nfc_callback(callback_url)
        Nfc.set_callback(callback_url)
   end
 
+  # set callback for NFC Tech events
   # in callback
   # @params['Tag_event'] - 'discovered'
   def self.set_nfc_tech_callback(callback_url)
