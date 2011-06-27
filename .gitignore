@@ -158,4 +158,5 @@ platform/shared/qt/rhodes/GeneratedFiles/*
 platform/shared/qt/*/Makefile*
 platform/shared/qt/Makefile*
 platform/osx/bin/*
-platform/shared/RhoSimulator-build*
+platform/shared/qtrhodes/generatedfiles/*
+platform/wm/rhodes/emulator/generatedfiles/*
