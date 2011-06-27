@@ -394,7 +394,7 @@ def init_extensions(startdir, dest)
           end
       end
         
-      if exists.sort! != extentries.sort!
+      if (exists.sort! != extentries.sort! ) || (!File.exists?(exts))
         File.open(exts, "w") do |f|
           puts "MODIFY : #{exts}"
           
