@@ -14,7 +14,6 @@ class CVibrate :  public CRhoThread
   public:
     static CVibrate& getCVibrate();
     
-    void toggle ();
     void toggle (int seconds);
     void untoggle ();
     
@@ -24,7 +23,7 @@ class CVibrate :  public CRhoThread
     
     virtual void run();
     
-    int m_nDuration;
+    int m_nDuration_ms;
     bool m_bToggled;
     
     static void createCVibrate();

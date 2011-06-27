@@ -10,7 +10,7 @@ IMPLEMENT_LOGCLASS(CVibrate, "Vibrate");
 CVibrate *CVibrate::m_pInstance = NULL;
 CMutex CVibrate::m_mxLocker;
 
-CVibrate::CVibrate () : CRhoThread(), m_nDuration(2), m_bToggled(false)
+CVibrate::CVibrate () : CRhoThread(), m_bToggled(false)
 {
 }
 
@@ -37,14 +37,9 @@ CVibrate &CVibrate::getCVibrate()
     return *m_pInstance;
 }
 
-void CVibrate::toggle()
+void CVibrate::toggle(int ms)
 {
-    toggle (m_nDuration);
-}
-
-void CVibrate::toggle(int seconds)
-{
-    m_nDuration = seconds;
+    m_nDuration_ms = ms;
     start(epNormal);
 }
 
@@ -70,7 +65,7 @@ void CVibrate::run()
         settings.OffOnBlink= 1;
         NLedSetDevice (NLED_SETTINGS_INFO_ID, &settings);
         m_bToggled = true;        
-        wait (m_nDuration);
+        wait (m_nDuration_ms/1000);
 		untoggle();
     }
 }

@@ -307,10 +307,10 @@ void alert_hide_popup() {
     [RhoAlert hidePopup];
 }
 
-void alert_vibrate(int duration) {
+void alert_vibrate(int duration_ms) {
     if (!rho_rhodesapp_check_mode())
         return;
-    [RhoAlert vibrate:duration];
+    [RhoAlert vibrate:duration_ms];
 }
 
 void alert_play_file(char* file_name, char* media_type) {
