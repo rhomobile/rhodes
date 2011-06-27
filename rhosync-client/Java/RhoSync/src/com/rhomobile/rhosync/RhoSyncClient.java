@@ -34,4 +34,8 @@ public class RhoSyncClient implements Closeable{
 	public void close() throws IOException {
 	}
 	
+	static {
+		System.loadLibrary("rhosyncclient");
+	}
+
 }
