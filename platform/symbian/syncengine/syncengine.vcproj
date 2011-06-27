@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="syncengine"
-	ProjectGUID="{D8F1EB35-9A82-3ACD-B331-61916160A37B}"
+	ProjectGUID="{3DCFD349-5F2A-3808-BD61-A35C8CF128CE}"
 	Keyword="Qt4VSv1.0"
 	>
 	<Platforms>
