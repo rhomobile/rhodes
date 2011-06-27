@@ -100,11 +100,11 @@ void alert_show_popup(rho_param *p)
     }
 }
 
-void alert_vibrate(void*) {
+void alert_vibrate(int duration_ms) {
     //TODO: alert_vibrate
 }
 
-void alert_play_file(char* file_name, ...)
+void alert_play_file(char* file_name, char *media_type)
 {
     //TODO: alert_play_file
 }

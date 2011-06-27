@@ -330,9 +330,9 @@ void CAlert::showPopup(CAlertDialog::Params *params)
 }
 
 #if _WIN32_WCE > 0x501 && !defined( OS_PLATFORM_CE )
-void CAlert::vibrate()
+void CAlert::vibrate(int duration_ms)
 {
-    CVibrate::getCVibrate().toggle();
+    CVibrate::getCVibrate().toggle(duration_ms);
 }
 
 void CAlert::playFile(String fileName)
@@ -459,13 +459,13 @@ extern "C" void alert_show_popup(rho_param *p)
 	}
 }
 
-extern "C" void alert_vibrate(void*) {
+extern "C" void alert_vibrate(int duration_ms) {
 #if _WIN32_WCE > 0x501 && !defined( OS_PLATFORM_CE )
-    CAlert::vibrate();
+    CAlert::vibrate(duration_ms);
 #endif
 }
 
-extern "C" void alert_play_file(char* file_name, ...) {
+extern "C" void alert_play_file(char* file_name, char* media_type) {
 #if _WIN32_WCE > 0x501 && !defined( OS_PLATFORM_CE )
     CAlert::playFile(file_name);
 #endif
