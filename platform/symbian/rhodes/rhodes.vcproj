@@ -44,8 +44,8 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="-Zm200 -w34100 -w34189"
 				Optimization="4"
-				AdditionalIncludeDirectories="&quot;$(QTDIR)\include\QtCore&quot;,&quot;$(QTDIR)\include\QtGui&quot;,&quot;$(QTDIR)\include\QtWebKit&quot;,&quot;$(QTDIR)\include&quot;,&quot;..\..\shared&quot;,&quot;..\..\shared\ruby&quot;,&quot;..\..\shared\ruby\generated&quot;,&quot;..\..\shared\ruby\include&quot;,&quot;..\..\shared\ruby\symbian&quot;,&quot;$(QTDIR)\include\ActiveQt&quot;,&quot;..\bin\rhodes&quot;,&quot;..\bin\rhodes&quot;,c:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default"
-				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_WEBKIT_LIB,QT_GUI_LIB,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT"
+				AdditionalIncludeDirectories="&quot;$(QTDIR)\include\QtCore&quot;,&quot;$(QTDIR)\include\QtGui&quot;,&quot;$(QTDIR)\include\QtWebKit&quot;,&quot;$(QTDIR)\include&quot;,&quot;..\..\shared&quot;,&quot;..\..\wm\rhodes&quot;,&quot;..\..\shared\ruby&quot;,&quot;..\..\shared\ruby\generated&quot;,&quot;..\..\shared\ruby\include&quot;,&quot;..\..\shared\ruby\symbian&quot;,&quot;$(QTDIR)\include\ActiveQt&quot;,&quot;..\bin\rhodes&quot;,&quot;..\bin\rhodes&quot;,c:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default"
+				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,RHO_SYMBIAN=1,QT_DLL,QT_WEBKIT_LIB,QT_GUI_LIB,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT"
 				GeneratePreprocessedFile="0"
 				ExceptionHandling="1"
 				RuntimeLibrary="3"
@@ -64,7 +64,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_WEBKIT_LIB,QT_GUI_LIB,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT,_DEBUG"
+				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,RHO_SYMBIAN=1,QT_DLL,QT_WEBKIT_LIB,QT_GUI_LIB,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT,_DEBUG"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -137,8 +137,8 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="-Zm200 -w34100 -w34189"
 				Optimization="2"
-				AdditionalIncludeDirectories="&quot;$(QTDIR)\include\QtCore&quot;,&quot;$(QTDIR)\include\QtGui&quot;,&quot;$(QTDIR)\include\QtWebKit&quot;,&quot;$(QTDIR)\include&quot;,&quot;..\..\shared&quot;,&quot;..\..\shared\ruby&quot;,&quot;..\..\shared\ruby\generated&quot;,&quot;..\..\shared\ruby\include&quot;,&quot;..\..\shared\ruby\symbian&quot;,&quot;$(QTDIR)\include\ActiveQt&quot;,&quot;..\bin\rhodes&quot;,&quot;..\bin\rhodes&quot;,c:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default"
-				PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_NO_DEBUG,QT_WEBKIT_LIB,QT_GUI_LIB,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT,NDEBUG"
+				AdditionalIncludeDirectories="&quot;$(QTDIR)\include\QtCore&quot;,&quot;$(QTDIR)\include\QtGui&quot;,&quot;$(QTDIR)\include\QtWebKit&quot;,&quot;$(QTDIR)\include&quot;,&quot;..\..\shared&quot;,&quot;..\..\wm\rhodes&quot;,&quot;..\..\shared\ruby&quot;,&quot;..\..\shared\ruby\generated&quot;,&quot;..\..\shared\ruby\include&quot;,&quot;..\..\shared\ruby\symbian&quot;,&quot;$(QTDIR)\include\ActiveQt&quot;,&quot;..\bin\rhodes&quot;,&quot;..\bin\rhodes&quot;,c:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default"
+				PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,RHO_SYMBIAN=1,QT_DLL,QT_NO_DEBUG,QT_WEBKIT_LIB,QT_GUI_LIB,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT,NDEBUG"
 				GeneratePreprocessedFile="0"
 				ExceptionHandling="1"
 				RuntimeLibrary="2"
@@ -157,7 +157,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_NO_DEBUG,QT_WEBKIT_LIB,QT_GUI_LIB,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT"
+				PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,RHO_SYMBIAN=1,QT_DLL,QT_NO_DEBUG,QT_WEBKIT_LIB,QT_GUI_LIB,QT_CORE_LIB,QT_HAVE_MMX,QT_HAVE_3DNOW,QT_HAVE_SSE,QT_HAVE_MMXEXT,QT_HAVE_SSE2,QT_THREAD_SUPPORT"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -291,7 +291,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\qt\rhodes\impl\RhoThreadImpl.cpp"
+				RelativePath="..\..\wm\rhodes\rho\common\RhoThreadImpl.cpp"
 				>
 			</File>
 			<File
@@ -325,7 +325,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;  -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\..\..\shared&quot; &quot;-I.\..\..\shared\ruby&quot; &quot;-I.\..\..\shared\ruby\generated&quot; &quot;-I.\..\..\shared\ruby\include&quot; &quot;-I.\..\..\shared\ruby\symbian&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;  -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DRHO_SYMBIAN=1 -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\..\..\shared&quot; &quot;-I.\..\..\wm\rhodes&quot; &quot;-I.\..\..\shared\ruby&quot; &quot;-I.\..\..\shared\ruby\generated&quot; &quot;-I.\..\..\shared\ruby\include&quot; &quot;-I.\..\..\shared\ruby\symbian&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;"
 					/>
@@ -336,7 +336,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;  -DQT_NO_DEBUG -DNDEBUG -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\..\..\shared&quot; &quot;-I.\..\..\shared\ruby&quot; &quot;-I.\..\..\shared\ruby\generated&quot; &quot;-I.\..\..\shared\ruby\include&quot; &quot;-I.\..\..\shared\ruby\symbian&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;  -DQT_NO_DEBUG -DNDEBUG -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DRHO_SYMBIAN=1 -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\..\..\shared&quot; &quot;-I.\..\..\wm\rhodes&quot; &quot;-I.\..\..\shared\ruby&quot; &quot;-I.\..\..\shared\ruby\generated&quot; &quot;-I.\..\..\shared\ruby\include&quot; &quot;-I.\..\..\shared\ruby\symbian&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;"
 					/>
@@ -377,7 +377,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;  -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\..\..\shared&quot; &quot;-I.\..\..\shared\ruby&quot; &quot;-I.\..\..\shared\ruby\generated&quot; &quot;-I.\..\..\shared\ruby\include&quot; &quot;-I.\..\..\shared\ruby\symbian&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;  -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DRHO_SYMBIAN=1 -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\..\..\shared&quot; &quot;-I.\..\..\wm\rhodes&quot; &quot;-I.\..\..\shared\ruby&quot; &quot;-I.\..\..\shared\ruby\generated&quot; &quot;-I.\..\..\shared\ruby\include&quot; &quot;-I.\..\..\shared\ruby\symbian&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;"
 					/>
@@ -388,7 +388,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;  -DQT_NO_DEBUG -DNDEBUG -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\..\..\shared&quot; &quot;-I.\..\..\shared\ruby&quot; &quot;-I.\..\..\shared\ruby\generated&quot; &quot;-I.\..\..\shared\ruby\include&quot; &quot;-I.\..\..\shared\ruby\symbian&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;  -DQT_NO_DEBUG -DNDEBUG -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DRHO_SYMBIAN=1 -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\..\..\shared&quot; &quot;-I.\..\..\wm\rhodes&quot; &quot;-I.\..\..\shared\ruby&quot; &quot;-I.\..\..\shared\ruby\generated&quot; &quot;-I.\..\..\shared\ruby\include&quot; &quot;-I.\..\..\shared\ruby\symbian&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;"
 					/>
@@ -455,7 +455,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;  -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\..\..\shared&quot; &quot;-I.\..\..\shared\ruby&quot; &quot;-I.\..\..\shared\ruby\generated&quot; &quot;-I.\..\..\shared\ruby\include&quot; &quot;-I.\..\..\shared\ruby\symbian&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;  -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DRHO_SYMBIAN=1 -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\..\..\shared&quot; &quot;-I.\..\..\wm\rhodes&quot; &quot;-I.\..\..\shared\ruby&quot; &quot;-I.\..\..\shared\ruby\generated&quot; &quot;-I.\..\..\shared\ruby\include&quot; &quot;-I.\..\..\shared\ruby\symbian&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;"
 					/>
@@ -466,7 +466,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;  -DQT_NO_DEBUG -DNDEBUG -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\..\..\shared&quot; &quot;-I.\..\..\shared\ruby&quot; &quot;-I.\..\..\shared\ruby\generated&quot; &quot;-I.\..\..\shared\ruby\include&quot; &quot;-I.\..\..\shared\ruby\symbian&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;  -DQT_NO_DEBUG -DNDEBUG -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DRHO_SYMBIAN=1 -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\..\..\shared&quot; &quot;-I.\..\..\wm\rhodes&quot; &quot;-I.\..\..\shared\ruby&quot; &quot;-I.\..\..\shared\ruby\generated&quot; &quot;-I.\..\..\shared\ruby\include&quot; &quot;-I.\..\..\shared\ruby\symbian&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;"
 					/>
@@ -507,7 +507,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;  -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\..\..\shared&quot; &quot;-I.\..\..\shared\ruby&quot; &quot;-I.\..\..\shared\ruby\generated&quot; &quot;-I.\..\..\shared\ruby\include&quot; &quot;-I.\..\..\shared\ruby\symbian&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;  -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DRHO_SYMBIAN=1 -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\..\..\shared&quot; &quot;-I.\..\..\wm\rhodes&quot; &quot;-I.\..\..\shared\ruby&quot; &quot;-I.\..\..\shared\ruby\generated&quot; &quot;-I.\..\..\shared\ruby\include&quot; &quot;-I.\..\..\shared\ruby\symbian&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;"
 					/>
@@ -518,7 +518,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;  -DQT_NO_DEBUG -DNDEBUG -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\..\..\shared&quot; &quot;-I.\..\..\shared\ruby&quot; &quot;-I.\..\..\shared\ruby\generated&quot; &quot;-I.\..\..\shared\ruby\include&quot; &quot;-I.\..\..\shared\ruby\symbian&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;  -DQT_NO_DEBUG -DNDEBUG -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DRHO_SYMBIAN=1 -DQT_DLL -DQT_WEBKIT_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\..\..\shared&quot; &quot;-I.\..\..\wm\rhodes&quot; &quot;-I.\..\..\shared\ruby&quot; &quot;-I.\..\..\shared\ruby\generated&quot; &quot;-I.\..\..\shared\ruby\include&quot; &quot;-I.\..\..\shared\ruby\symbian&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-I.\..\bin\rhodes&quot; &quot;-Ic:\QtSDK\Simulator\Qt\msvc2005\mkspecs\default&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\..\bin\rhodes\moc_$(InputName).cpp&quot;"
 					/>
