@@ -106,7 +106,7 @@ class CAlert {
     DEFINE_LOGCLASS;
   public:
 	static void showPopup(CAlertDialog::Params *params);
-    static void vibrate();
+    static void vibrate(int duration_ms);
     static void playFile(String fileName);
 };
 

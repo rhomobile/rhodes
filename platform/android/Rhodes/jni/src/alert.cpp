@@ -59,7 +59,7 @@ RHO_GLOBAL void alert_hide_popup()
     env->CallStaticVoidMethod(cls, mid);
 }
 
-RHO_GLOBAL void alert_vibrate(void *arg)
+RHO_GLOBAL void alert_vibrate(int duration_ms)
 {
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_ALERT);
@@ -67,10 +67,7 @@ RHO_GLOBAL void alert_vibrate(void *arg)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "vibrate", "(I)V");
     if (!mid) return;
 
-    jint duration = 2500;
-    if (arg)
-        duration = (jint)arg;
-    env->CallStaticVoidMethod(cls, mid, duration);
+    env->CallStaticVoidMethod(cls, mid, duration_ms);
 }
 
 RHO_GLOBAL void alert_play_file(char* file_name, char *media_type)
