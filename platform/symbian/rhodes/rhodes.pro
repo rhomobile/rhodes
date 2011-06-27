@@ -102,4 +102,5 @@ OTHER_FILES +=
 
 win32 {
 SOURCES +=  ../../wm/rhodes/rho/common/RhoThreadImpl.cpp
+SOURCES +=  ../../wm/rhodes/rho/net/NetRequestImpl.cpp
 }
