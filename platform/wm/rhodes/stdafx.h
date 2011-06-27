@@ -163,7 +163,7 @@ using namespace ATL;
 #include "logging/RhoLog.h"
 //#include <afxwin.h>
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS) && !defined(RHO_SYMBIAN)
 #include <atlapp.h>
 //#include <atlwin.h>
 //#include <atlcrack.h>

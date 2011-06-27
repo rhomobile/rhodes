@@ -4,8 +4,9 @@
 #include "common/RhoDefs.h"
 #include "common/IRhoClassFactory.h"
 #ifdef OS_WINDOWS
+#include "rho/common/RhoThreadImpl.h"
 #define CNETREQUESTIMPL NULL
-#define CRHOTHREADIMPL NULL
+#define CRHOTHREADIMPL new CRhoThreadImpl()
 #define CRHOCRYPTIMPL NULL
 #else
 #include "net/CURLNetRequest.h"
