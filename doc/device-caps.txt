@@ -7,7 +7,7 @@ Rhodes provide access to device specific capabilities such as GPS, PIM, camera, 
 <table class="device-caps">
 	<tr>
 		<th>Capability</th>
-		<th>iPhone</th>
+		<th>iOS</th>
 		<th>Windows Mobile</th>
 		<th>Windows Phone</th>
 		<th>BlackBerry</th>
