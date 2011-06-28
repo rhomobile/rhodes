@@ -10,6 +10,7 @@
 #include <QWebSettings>
 #include <QWebSecurityOrigin>
 #include <QWebHistory>
+#include <QMessageBox>
 #include <QLabel>
 #include "ext/rho/rhoruby.h"
 #include "common/RhoStd.h"
@@ -28,7 +29,9 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     ui(new Ui::QtMainWindow),
     webInspectorWindow(new QtWebInspector()),
     cb(NULL),
-    cur_tbrp(0)
+    cur_tbrp(0),
+    m_alertDialog(0)
+    //TODO: m_SyncStatusDlg
 {
     ui->setupUi(this);
 
@@ -62,6 +65,8 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
 QtMainWindow::~QtMainWindow()
 {
     tabbarRemoveAllTabs(false);
+    if (m_alertDialog) delete m_alertDialog;
+    //TODO: m_SyncStatusDlg
     delete webInspectorWindow;
     delete ui;
 }
@@ -551,15 +556,13 @@ void QtMainWindow::selectPicture(char* callbackUrl)
     free(callbackUrl);
 }
 
-void QtMainWindow::alertShowPopup(void* params) // CAlertDialog::Params *
+void QtMainWindow::alertShowPopup(AlertDialog::Params * params)
 {
     //TODO: alertShowPopup
 
-    //StringW strAppName = RHODESAPP().getAppNameW();
-    //CAlertDialog::Params *params = (CAlertDialog::Params *)lParam;
+    rho::StringW strAppName = RHODESAPP().getAppNameW();
 
-    //if (params->m_dlgType == CAlertDialog::Params::DLG_STATUS) 
-    //{
+    if (params->m_dlgType == AlertDialog::Params::DLG_STATUS) {
     //    if (m_SyncStatusDlg == NULL) 
     //        m_SyncStatusDlg = new CSyncStatusDlg();
     //    m_SyncStatusDlg->setStatusText(convertToStringW(params->m_message).c_str());
@@ -571,45 +574,43 @@ void QtMainWindow::alertShowPopup(void* params) // CAlertDialog::Params *
     //        m_SyncStatusDlg->ShowWindow(SW_SHOW);
     //        m_SyncStatusDlg->BringWindowToTop();
     //    }
-    //} else if (params->m_dlgType == CAlertDialog::Params::DLG_DEFAULT) {
-    //    MessageBox(convertToStringW(params->m_message).c_str(), strAppName.c_str(), MB_ICONWARNING | MB_OK);
-    //} else if (params->m_dlgType == CAlertDialog::Params::DLG_CUSTOM) 
-    //{
-    //    if ( params->m_buttons.size() == 1 && strcasecmp(params->m_buttons[0].m_strCaption.c_str(), "ok") == 0)
-    //        MessageBox(convertToStringW(params->m_message).c_str(), convertToStringW(params->m_title).c_str(), MB_ICONWARNING | MB_OK);
-    //    else if (params->m_buttons.size() == 2 && strcasecmp(params->m_buttons[0].m_strCaption.c_str(), "ok") == 0 &&
-    //        strcasecmp(params->m_buttons[1].m_strCaption.c_str(), "cancel") == 0)
-    //    {
-    //        int nRes = MessageBox(convertToStringW(params->m_message).c_str(), convertToStringW(params->m_title).c_str(), 
-    //                MB_ICONWARNING | MB_OKCANCEL);
-    //        int nBtn = nRes == IDCANCEL ? 1 : 0;
-    //        RHODESAPP().callPopupCallback(params->m_callback, params->m_buttons[nBtn].m_strID, params->m_buttons[nBtn].m_strCaption);
-    //    }
-    //    else
-    //    {
-    //        if (m_alertDialog == NULL) 
-    //        {
-    //            m_alertDialog = new CAlertDialog(params);
-    //            m_alertDialog->DoModal();
-    //            delete m_alertDialog;
-    //            m_alertDialog = NULL;
-    //        } else {
-    //            LOG(WARNING) + "Trying to show alert dialog while it exists.";
-    //        }
-    //    }
-    //}
+    } else if (params->m_dlgType == AlertDialog::Params::DLG_DEFAULT) {
+        QMessageBox::warning(0, QString::fromWCharArray(strAppName.c_str()),
+            QString::fromWCharArray(rho::common::convertToStringW(params->m_message).c_str()));
+    } else if (params->m_dlgType == AlertDialog::Params::DLG_CUSTOM) {
+        if ( params->m_buttons.size() == 1 && strcasecmp(params->m_buttons[0].m_strCaption.c_str(), "ok") == 0)
+            QMessageBox::warning(0, QString::fromWCharArray(rho::common::convertToStringW(params->m_title).c_str()),
+                QString::fromWCharArray(rho::common::convertToStringW(params->m_message).c_str()));
+        else if (params->m_buttons.size() == 2 && strcasecmp(params->m_buttons[0].m_strCaption.c_str(), "ok") == 0 &&
+            strcasecmp(params->m_buttons[1].m_strCaption.c_str(), "cancel") == 0)
+        {
+            QMessageBox::StandardButton response = QMessageBox::warning(0,
+                QString::fromWCharArray(rho::common::convertToStringW(params->m_title).c_str()),
+                QString::fromWCharArray(rho::common::convertToStringW(params->m_message).c_str()),
+                QMessageBox::Ok | QMessageBox::Cancel);
+              int nBtn = response == QMessageBox::Cancel ? 1 : 0;
+              RHODESAPP().callPopupCallback(params->m_callback, params->m_buttons[nBtn].m_strID, params->m_buttons[nBtn].m_strCaption);
+        } else if (m_alertDialog == NULL) {
+            m_alertDialog = new AlertDialog(params, 0);
+            m_alertDialog->exec();
+            delete m_alertDialog;
+            m_alertDialog = 0;
+        } else {
+            LOG(WARNING) + "Trying to show alert dialog while it exists.";
+        }
+    }
 
-    if(params)
-        free(params); //TODO: delete params;
+    if (params)
+        delete params;
 }
 
 void QtMainWindow::alertHidePopup()
 {
-    //TODO: alertHidePopup
-    //if (m_alertDialog != NULL) {
-    //    m_alertDialog->EndDialog(0);
-    //    m_alertDialog = NULL;
-    //}
+    if (m_alertDialog) {
+        m_alertDialog->done(QMessageBox::Accepted);
+        delete m_alertDialog;
+        m_alertDialog = 0;
+    }
 }
 
 void QtMainWindow::dateTimePicker(void* msg) //TODO: CDateTimeMessage *

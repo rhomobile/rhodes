@@ -11,6 +11,7 @@
 #include "MainWindowCallback.h"
 #include "common/IRhoThreadImpl.h"
 #include "common/RhoNativeViewManager.h"
+#include "AlertDialog.h"
 
 namespace Ui {
     class QtMainWindow;
@@ -55,8 +56,8 @@ public:
     void tabbarShow(void);
     void tabbarHide(void);
     int tabbarGetHeight(void);
-	void tabbarSwitch(int index);
-	int tabbarGetCurrent();
+    void tabbarSwitch(int index);
+    int tabbarGetCurrent();
     int tabbarAddTab(const QString& label, const char* icon, bool disabled, const QColor* web_bkg_color, QTabBarRuntimeParams& tbri);
     void tabbarSetBadge(int index, QString badge);
 private:
@@ -74,6 +75,8 @@ private:
     QWebInspector* cur_webInspector;
     QTabBarRuntimeParams* cur_tbrp;
     QtWebInspector* webInspectorWindow;
+    AlertDialog *m_alertDialog;
+    //TODO: CSyncStatusDlg *m_SyncStatusDlg;
 
 private slots:
     void on_webView_urlChanged(QUrl );
@@ -94,7 +97,7 @@ public slots:
     void navigateCommand(TNavigateData* nd);
     void takePicture(char* callbackUrl);
     void selectPicture(char* callbackUrl);
-    void alertShowPopup(void *); //TODO: CAlertDialog::Params *
+    void alertShowPopup(AlertDialog::Params *);
     void alertHidePopup(void);
     void dateTimePicker(void *); //TODO: CDateTimeMessage *
     void executeCommand(RhoNativeViewRunnable*);

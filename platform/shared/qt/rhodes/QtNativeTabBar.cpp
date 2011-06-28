@@ -33,7 +33,8 @@ void QtNativeTabBar::paintEvent(QPaintEvent *)
     bool isNotCustomized = true;
     for (int pass=0; pass<3; ++pass) {
         for (int i = 0; i < this->count(); ++i) {
-            if (((pass==1) && (this->currentIndex()!=i)) || (this->currentIndex()==i)) {
+            bool isCurrent = this->currentIndex()==i;
+            if (((pass==1) && (this->currentIndex()!=i)) || isCurrent) {
                 QStyleOptionTabV3 tab;
                 initStyleOption(&tab, i);
                 bool enabled = (tab.state & QStyle::State_Enabled);
@@ -74,7 +75,9 @@ void QtNativeTabBar::paintEvent(QPaintEvent *)
                     labelRect.setHeight(labelRect.height()-6);
                     labelRect.translate(0, 6);
                     // drawing
-                    painter.drawItemPixmap(iconRect, Qt::AlignCenter, tab.icon.pixmap(iSize));
+                    painter.drawItemPixmap(iconRect, Qt::AlignCenter,
+                        tab.icon.pixmap(iSize, (enabled ? QIcon::Normal : QIcon::Disabled), (isCurrent ? QIcon::On : QIcon::Off ))
+                    );
                     painter.drawItemText(labelRect, Qt::AlignHCenter | Qt::AlignTop, tab.palette, enabled, tab.text);
                 }
             }
