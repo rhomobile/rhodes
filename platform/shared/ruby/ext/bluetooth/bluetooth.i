@@ -1,20 +1,20 @@
 /* signature.i */
 %module RhoBluetooth
 %{
-extern int is_bluetooth_available();
-extern void off_bluetooth();
-extern void set_device_name(const char* device_name);
-extern const char* get_device_name();
-extern const char* get_last_error();
-extern const char* create_session(const char* role, const char* callback_url); 
+extern int rho_bluetooth_is_bluetooth_available();
+extern void rho_bluetooth_off_bluetooth();
+extern void rho_bluetooth_set_device_name(const char* device_name);
+extern const char* rho_bluetooth_get_device_name();
+extern const char* rho_bluetooth_get_last_error();
+extern const char* rho_bluetooth_create_session(const char* role, const char* callback_url); 
 
-extern void session_set_callback(const char* connected_device_name, const char* callback_url);
-extern void session_disconnect(const char* connected_device_name);
-extern int session_get_status(const char* connected_device_name);
-extern const char* session_read_string(const char* connected_device_name);
-extern void session_write_string(const char* connected_device_name, const char* str);
-extern VALUE session_read_data(const char* connected_device_name);
-extern void session_write_data(const char* connected_device_name, VALUE data);
+extern void rho_bluetooth_session_set_callback(const char* connected_device_name, const char* callback_url);
+extern void rho_bluetooth_session_disconnect(const char* connected_device_name);
+extern int rho_bluetooth_session_get_status(const char* connected_device_name);
+extern const char* rho_bluetooth_session_read_string(const char* connected_device_name);
+extern void rho_bluetooth_session_write_string(const char* connected_device_name, const char* str);
+extern VALUE rho_bluetooth_session_read_data(const char* connected_device_name);
+extern void rho_bluetooth_session_write_data(const char* connected_device_name, VALUE data);
 
 
 #define is_bluetooth_available rho_bluetooth_is_bluetooth_available
