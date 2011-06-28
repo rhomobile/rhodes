@@ -163,5 +163,6 @@ INCLUDEPATH += ../../shared/ruby/symbian
 HEADERS += ../../shared/ruby/symbian/ruby/config.h \
     ../../shared/ruby/symbian/symbian.h \
     ../../shared/ruby/symbian/assert.h
+SOURCES +=  ../../shared/ruby/ext/socket/getnameinfo.c \
+            ../../shared/ruby/ext/socket/getaddrinfo.c
 }
-

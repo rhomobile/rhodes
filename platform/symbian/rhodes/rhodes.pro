@@ -78,22 +78,6 @@ INCLUDEPATH += ../../shared/ruby/generated
 INCLUDEPATH += ../../shared/ruby/include
 INCLUDEPATH += ../../shared/ruby/symbian
 
-
-#LIBS += -lrholib -lrubylib -lsyncengine -lsqlite3
-LIBS += ../bin/rubylib/rubylib.lib\
-        ../bin/rholib/rholib.lib\
-        ../bin/sqlite3/sqlite3.lib\
-        ../bin/syncengine/syncengine.lib\
-        wininet.lib comsuppwd.lib ws2_32.lib\
-        Crypt32.lib gdiplus.lib kernel32.lib user32.lib\
-        gdi32.lib winspool.lib comdlg32.lib advapi32.lib\
-        shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
-
-PRE_TARGETDEPS += ../bin/rubylib/rubylib.lib\
-                  ../bin/rholib/rholib.lib\
-                  ../bin/sqlite3/sqlite3.lib\
-                  ../bin/syncengine/syncengine.lib
-
 # Please do not modify the following two lines. Required for deployment.
 include(deployment.pri)
 qtcAddDeployment()
@@ -103,4 +87,27 @@ OTHER_FILES +=
 win32 {
 SOURCES +=  ../../wm/rhodes/rho/common/RhoThreadImpl.cpp
 SOURCES +=  ../../wm/rhodes/rho/net/NetRequestImpl.cpp
+PRE_TARGETDEPS += ../bin/rubylib/rubylib.lib\
+                  ../bin/rholib/rholib.lib\
+                  ../bin/sqlite3/sqlite3.lib\
+                  ../bin/syncengine/syncengine.lib
+LIBS += ../bin/rubylib/rubylib.lib\
+        ../bin/rholib/rholib.lib\
+        ../bin/sqlite3/sqlite3.lib\
+        ../bin/syncengine/syncengine.lib\
+        wininet.lib comsuppwd.lib ws2_32.lib\
+        Crypt32.lib gdiplus.lib kernel32.lib user32.lib\
+        gdi32.lib winspool.lib comdlg32.lib advapi32.lib\
+        shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
+}
+
+symbian {
+INCLUDEPATH += ../../shared/curl/include
+SOURCES += ../../shared/common/PosixThreadImpl.cpp\
+           ../../shared/qt/rhodes/impl/RhoThreadImpl.cpp
+LIBS +=  -lcurl
+LIBS +=  -lrubylib
+LIBS +=  -lrholib
+LIBS +=  -lsyncengine
+LIBS +=  -lsqlite3
 }

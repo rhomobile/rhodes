@@ -106,3 +106,10 @@ unix:!symbian {
     }
     INSTALLS += target
 }
+
+
+symbian {
+INCLUDEPATH += ../../shared/curl/include
+HEADERS +=  ../../shared/net/CURLNetRequest.h
+SOURCES +=  ../../shared/net/CURLNetRequest.cpp
+}

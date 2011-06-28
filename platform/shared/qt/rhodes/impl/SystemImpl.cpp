@@ -198,7 +198,7 @@ void rho_sys_app_uninstall(const char *appname)
     //TODO: rho_sys_app_uninstall
 }
 
-#ifndef OS_WINDOWS
+#if !defined(OS_WINDOWS) && !defined(OS_SYMBIAN)
 int rho_sys_set_sleeping(int sleeping)
 {
     //TODO: rho_sys_set_sleeping
