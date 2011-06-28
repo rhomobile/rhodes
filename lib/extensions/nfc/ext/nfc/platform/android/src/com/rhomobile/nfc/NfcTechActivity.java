@@ -16,7 +16,6 @@ import android.util.Log;
 import com.rhomobile.rhodes.PushService;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
-import com.rhomobile.rhodes.Utils;
 
 public class NfcTechActivity  extends Activity {
 

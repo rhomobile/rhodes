@@ -1,7 +1,6 @@
 package com.rhomobile.nfc;
 
 import android.nfc.NdefMessage;
-import com.rhomobile.rhodes.Utils;
 
 public class NfcMessagePack {
 

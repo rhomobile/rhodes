@@ -38,7 +38,7 @@ import android.util.Log;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesActivityListener;
 import com.rhomobile.rhodes.RhodesService;
-import com.rhomobile.rhodes.Utils;
+import com.rhomobile.rhodes.util.Utils;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 public class Nfc implements RhodesActivityListener {

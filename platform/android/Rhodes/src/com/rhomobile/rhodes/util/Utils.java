@@ -1,4 +1,4 @@
-package com.rhomobile.rhodes;
+package com.rhomobile.rhodes.util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -186,22 +186,6 @@ public class Utils {
 		if (filePath == null)
 			return null;
 		return new File(filePath).getName();
-	}
-	
-	public static boolean isAppHashChanged() {
-		try {
-			RhodesService r = RhodesService.getInstance();
-			File hash = new File(r.getRootPath(), "hash");
-			if (!hash.exists())
-				return true;
-			
-			FileSource as = new AssetsSource(r.getResources().getAssets());
-			FileSource fs = new FileSource();
-			return !Utils.isContentsEquals(as, "hash", fs, hash.getPath());
-		}
-		catch (IOException e) {
-			return true;
-		}
 	}
 	
 	public static void platformLog(String tag, String message) {
