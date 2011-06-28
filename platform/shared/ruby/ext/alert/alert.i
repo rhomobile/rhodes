@@ -11,7 +11,7 @@ extern void alert_vibrate(int vibrate_duration_ms);
 extern void alert_play_file(char* file_name, char* media_type);
 #define play_file alert_play_file 
 
-extern void show_status(char* szTitle, char* szText, char* szHideLabel);
+extern void rho_alert_show_status(char* szTitle, char* szText, char* szHideLabel);
 #define show_status rho_alert_show_status
 
 %}
