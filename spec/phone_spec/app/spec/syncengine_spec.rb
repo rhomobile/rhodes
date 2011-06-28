@@ -558,6 +558,47 @@ end
         
   end
 
+  it "should rollback update-error" do
+    prod = getProduct.find(:first)
+    prod.should_not be_nil
+    prod_name = prod.name
+    prod_name.should_not be_nil
+    obj_id  = prod.object
+    
+    err_resp = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":0},{\"total_count\":0},{\"update-rollback\": {\"#{obj_id}\": {\"name\": \"OLD_NAME\"}},\"update-error\":{\"#{obj_id}\":{\"name\":\"wrongname\",\"an_attribute\":\"error update\"},\"#{obj_id}-error\":{\"message\":\"error update\"}}}]"
+    
+    SyncEngine.set_source_property(getProduct().get_source_id.to_i(), "rho_server_response", err_resp )    
+    res = ::Rho::RhoSupport::parse_query_parameters getProduct.sync( "/app/Settings/sync_notify")
+    puts "res : #{res}"
+    
+    res['server_errors'].should_not be_nil
+    res['server_errors']['update-error'].should_not be_nil
+    res['server_errors']['update-error'][obj_id].should_not be_nil    
+    res['server_errors']['update-error'][obj_id]['message'].should == "error update"
+    res['server_errors']['update-error'][obj_id]['attributes']['name'].should == "wrongname"    
+
+    res['server_errors']['update-rollback'].should_not be_nil
+    res['server_errors']['update-rollback'][obj_id].should_not be_nil    
+    res['server_errors']['update-rollback'][obj_id]['attributes']['name'].should == "OLD_NAME"
+
+    records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
+    records.length.should == 0
+    
+    prod = getProduct.find(obj_id)
+    prod.should_not be_nil
+    prod.name.should == prod_name
+    
+    getProduct.on_sync_update_error( res['server_errors']['update-error'], :rollback, res['server_errors']['update-rollback'] )
+
+    records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
+    records.length.should == 0
+
+    prod = getProduct.find(obj_id)
+    prod.should_not be_nil
+    prod.name.should == "OLD_NAME"
+
+  end
+
   it "should process delete-error" do    
     err_resp = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":0},{\"total_count\":0},{\"delete-error\":{\"broken_object_id\":{\"name\":\"wrongname\",\"an_attribute\":\"error delete\"},\"broken_object_id-error\":{\"message\":\"Error delete record\"}}}]"
     
@@ -733,7 +774,7 @@ end
     item2 = getProduct.find(item.object)
     item2.vars.should_not be_nil
   end
-          
+
   it "should logout" do
     SyncEngine.logout()
   
