@@ -540,7 +540,7 @@ void CSyncSource::syncServerChanges()
 //{"create-error":{"0_broken_object_id":{"name":"wrongname","an_attribute":"error create"},"0_broken_object_id-error":{"message":"error create"}}}
 boolean CSyncSource::processServerErrors(CJSONEntry& oCmds)
 {
-    const char* arErrTypes[] = {"source-error", "search-error", "create-error", "update-error", "delete-error", null};
+    const char* arErrTypes[] = {"source-error", "search-error", "create-error", "update-error", "delete-error", "update-rollback", null};
     boolean bRes = false;
     for( int i = 0; ; i++ )
     {
@@ -567,10 +567,9 @@ boolean CSyncSource::processServerErrors(CJSONEntry& oCmds)
 
                     m_strServerError += "server_errors[" + URI::urlEncode(strKey) + "][message]=" + URI::urlEncode(errIter.getCurValue().getString("message"));
                 }
-            }
-            else
+            }else
             {
-                //"create-error", "update-error", "delete-error"
+                //"create-error", "update-error", "delete-error", "update-rollback" 
                 String strObject = strKey;
 
                 if ( String_endsWith(strObject, "-error") )

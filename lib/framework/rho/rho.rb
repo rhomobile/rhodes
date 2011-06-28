@@ -1209,10 +1209,10 @@ module SyncEngine
         Object.const_get(src_name).on_sync_create_error(objects, action)
     end
 
-    def self.on_sync_update_error( src_name, objects, action )
+    def self.on_sync_update_error( src_name, objects, action, rollback_data = nil )
         raise ArgumentError, 'on_sync_update_error src_name should be string' unless src_name.is_a?(String)
     
-        Object.const_get(src_name).on_sync_update_error(objects, action)
+        Object.const_get(src_name).on_sync_update_error(objects, action, rollback_data)
     end
 
     def self.on_sync_delete_error( src_name, objects, action )
