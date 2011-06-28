@@ -142,7 +142,7 @@ void rho_ruby_stop_threadidle()
     }
 }
 
-#if defined(RHO_SYMBIAN) || defined (RHODES_EMULATOR)
+#if !defined(OS_SYMBIAN) && (defined(RHO_SYMBIAN) || defined (RHODES_EMULATOR))
 int   daylight;
 char *tzname[2];
 #endif

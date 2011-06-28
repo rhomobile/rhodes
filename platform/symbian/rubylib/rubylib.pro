@@ -121,7 +121,6 @@ SOURCES += \
     ../../shared/ruby/ext/syncengine/syncengine_wrap.c \
     ../../shared/ruby/ext/system/system_wrap.c \
     ../../shared/ruby/ext/webview/webview_wrap.c \
-    ../../shared/ruby/win32/win32.c \
     ../../shared/ruby/strftime.c \
     ../../shared/ruby/newline.c
 
@@ -143,11 +142,7 @@ HEADERS += \
     ../../shared/ruby/ext/socket/sockport.h \
     ../../shared/ruby/ext/socket/addrinfo.h \
     ../../shared/ruby/regint.h \
-    ../../shared/ruby/regenc.h \
-    ../../shared/ruby/symbian/ruby/config.h \
-    ../../shared/ruby/symbian/symbian.h \
-    ../../shared/ruby/symbian/assert.h \
-    ../../shared/ruby/win32/assert.h
+    ../../shared/ruby/regenc.h
 unix:!symbian {
     maemo5 {
         target.path = /opt/usr/lib
@@ -158,10 +153,15 @@ unix:!symbian {
 }
 
 win32 {
+SOURCES += ../../shared/ruby/win32/win32.c
+HEADERS += ../../shared/ruby/win32/assert.h
 INCLUDEPATH += ../../shared/ruby/win32
 }
 
 symbian {
 INCLUDEPATH += ../../shared/ruby/symbian
+HEADERS += ../../shared/ruby/symbian/ruby/config.h \
+    ../../shared/ruby/symbian/symbian.h \
+    ../../shared/ruby/symbian/assert.h
 }
 

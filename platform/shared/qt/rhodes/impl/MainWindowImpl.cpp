@@ -378,6 +378,8 @@ void CMainWindow::createToolbar(rho_param *p)
                             strImagePath = "res/forward_btn.wm.png";
 #ifdef RHODES_EMULATOR
                         strImagePath = strImagePath.length() > 0 ? CFilePath::join( RHOSIMCONF().getRhodesPath(), "lib/framework/" + strImagePath) : String();
+#else
+                        strImagePath = strImagePath.length() > 0 ? CFilePath::join( rho_native_rhopath() , "lib/" + strImagePath) : String();
 #endif
                     }
 
