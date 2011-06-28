@@ -299,7 +299,9 @@ end
 class IO
     def each
         while !eof
-          yield gets
+          str = gets
+          str.chomp! if str
+          yield str
         end
         close
     end
