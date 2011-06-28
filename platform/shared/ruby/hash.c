@@ -1802,7 +1802,7 @@ rb_hash_compare_by_id_p(VALUE hash)
 static int path_tainted = -1;
 //RHO
 //static char **origenviron;
-#ifndef RHO_SYMBIAN
+#if !defined(RHO_SYMBIAN) || defined(OS_SYMBIAN)
 static char * __environ = "";
 static char ** environ = &__environ;
 #endif
