@@ -10,6 +10,7 @@
 #include "../MainWindowCallback.h"
 #include "NativeToolbarImpl.h"
 #include "NativeTabbarImpl.h"
+#include "AlertDialog.h"
 #undef null
 #include <QObject>
 
@@ -21,7 +22,7 @@
 class CMainWindow : public QObject, IMainWindowCallback
 {
     Q_OBJECT
-    DEFINE_LOGCLASS;
+    DEFINE_LOGCLASS
 private:
     explicit CMainWindow();
 public:
@@ -88,8 +89,6 @@ public:
 
 private:
     rho::Vector<rho::common::CAppMenuItem> m_arAppMenuItems;
-    //TODO: CAlertDialog *m_alertDialog;
-    //TODO: CSyncStatusDlg *m_SyncStatusDlg;
 
 public:
     void exitCommand(void);
@@ -100,7 +99,7 @@ public:
     void navigateCommand(TNavigateData*);
     void takePicture(char*);
     void selectPicture(char*);
-    void alertShowPopup(void *); //TODO: CAlertDialog::Params *
+    void alertShowPopup(AlertDialog::Params *);
     void alertHidePopup(void);
     void dateTimePicker(void *); //TODO: CDateTimeMessage *
     void executeCommand(RhoNativeViewRunnable*);
@@ -117,7 +116,7 @@ signals:
     void doNavigateCommand(TNavigateData*);
     void doTakePicture(char*);
     void doSelectPicture(char*);
-    void doAlertShowPopup(void *); //TODO: CAlertDialog::Params *
+    void doAlertShowPopup(AlertDialog::Params *);
     void doAlertHidePopup(void);
     void doDateTimePicker(void *); //TODO: CDateTimeMessage *
     void doExecuteCommand(RhoNativeViewRunnable*);

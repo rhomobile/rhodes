@@ -1,5 +1,5 @@
-#ifndef NATIVETABBAR_H
-#define NATIVETABBAR_H
+#ifndef NATIVETABBARIMPL_H
+#define NATIVETABBARIMPL_H
 
 #include "logging/RhoLog.h"
 #include "common/IRhoThreadImpl.h"
@@ -67,4 +67,4 @@ private:
     void tabbarBadge(int index, char* badge);
 };
 
-#endif // NATIVETABBAR_H
+#endif // NATIVETABBARIMPL_H

@@ -6,6 +6,7 @@ TEMPLATE = app
 CONFIG += warn_on
 
 macx {
+  ICON = resources/rho.icns
   DESTDIR = ../../../osx/bin/RhoSimulator
   MOC_DIR = ../../../osx/bin/RhoSimulator/generated_files
   UI_DIR = ../../../osx/bin/RhoSimulator/generated_files
@@ -68,7 +69,8 @@ impl/RhoClassFactoryImpl.h\
 impl/MainWindowImpl.h\
 impl/NativeToolbarImpl.h\
 impl/NativeTabbarImpl.h\
-../../rubyext/NativeToolbarExt.h
+../../rubyext/NativeToolbarExt.h\
+AlertDialog.h
 
 SOURCES += main.cpp\
 ExternalWebView.cpp\
@@ -94,8 +96,10 @@ impl/SignatureImpl.cpp\
 impl/SystemImpl.cpp\
 impl/WebViewImpl.cpp\
 impl/MainWindowImpl.cpp\
-impl/NativeTabbarImpl.cpp
+impl/NativeTabbarImpl.cpp\
+AlertDialog.cpp
 
 FORMS += ExternalWebView.ui\
 QtMainWindow.ui\
-QtWebInspector.ui
+QtWebInspector.ui\
+AlertDialog.ui

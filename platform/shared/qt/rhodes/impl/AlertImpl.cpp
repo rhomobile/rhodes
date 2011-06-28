@@ -2,6 +2,9 @@
 #include "common/rhoparams.h"
 #include "common/RhoAppAdapter.h"
 #include "MainWindowImpl.h"
+#include "AlertDialog.h"
+
+using namespace rho;
 
 extern "C" {
 
@@ -9,20 +12,21 @@ void alert_show_status(const char* szTitle, const char* szMessage, const char* s
 {
     rho::String message = szMessage ? szMessage : "";
     rho::String title = szTitle ? szTitle : "";
-    //TODO: alert_show_status
-    //Vector<CAlertDialog::Params::CAlertButton> buttons;
-    //CAlert::showPopup(new CAlertDialog::Params(title, message, String(), String(), buttons, CAlertDialog::Params::DLG_STATUS ));
+    rho::String callback = "";
+    rho::String icon = "";
+    Vector<AlertDialog::Params::CAlertButton> buttons;
+    CMainWindow::getInstance()->alertShowPopup(new AlertDialog::Params(title, message, callback, icon, buttons, AlertDialog::Params::DLG_STATUS ));
 }
 
 void alert_show_popup(rho_param *p)
 {
     if (p->type == RHO_PARAM_STRING) {
-        //TODO: CAlert::showPopup(new CAlertDialog::Params(String(p->v.string)));
+        rho::String msg = rho::String(p->v.string);
+        CMainWindow::getInstance()->alertShowPopup(new AlertDialog::Params(msg));
     } else if (p->type == RHO_PARAM_HASH) {
-        rho::String title, message, callback, icon;
-        rho::String btnId, btnTitle;
-        //Hashtable<String, String> buttons;
-        //TODO: Vector<CAlertDialog::Params::CAlertButton> buttons;
+        String title, message, callback, icon;
+        String btnId, btnTitle;
+        Vector<AlertDialog::Params::CAlertButton> buttons;
 
         for (int i = 0, lim = p->v.hash->size; i < lim; ++i) {
             char *name = p->v.hash->name[i];
@@ -91,12 +95,11 @@ void alert_show_popup(rho_param *p)
                         continue;
                     }
 
-                    //TODO: buttons.addElement( CAlertDialog::Params::CAlertButton(btnTitle, btnId) );
+                    buttons.addElement( AlertDialog::Params::CAlertButton(btnTitle, btnId) );
                 }
             }//buttons
         }
-        
-        //TODO: CAlert::showPopup(new CAlertDialog::Params(title, message, icon, callback, buttons, CAlertDialog::Params::DLG_CUSTOM));
+        CMainWindow::getInstance()->alertShowPopup(new AlertDialog::Params(title, message, icon, callback, buttons, AlertDialog::Params::DLG_CUSTOM));
     }
 }
 
@@ -107,6 +110,30 @@ void alert_vibrate(int duration_ms) {
 void alert_play_file(char* file_name, char *media_type)
 {
     //TODO: alert_play_file
+
+    //String path = RHODESAPP().getRhoRootPath() + "apps" + fileName;
+
+    //HSOUND hSound;
+
+    //String::size_type pos = 0;
+    //while ( (pos = path.find('/', pos)) != String::npos ) {
+    //    path.replace( pos, 1, "\\");
+    //    pos++;
+    //}
+
+    //StringW strPathW = convertToStringW(path);
+    //HRESULT hr = SndOpen( strPathW.c_str(), &hSound);
+    //hr = SndPlayAsync (hSound, 0);
+
+    //if (hr != S_OK) {
+    //    LOG(WARNING) + "OnAlertPlayFile: failed to play file";
+    //}
+
+    //WaitForSingleObject(hSound, INFINITE);
+
+    //hr = SndClose(hSound);
+    //SndStop(SND_SCOPE_PROCESS, NULL);
+
 }
 
 void alert_hide_popup()
