@@ -606,7 +606,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\shared\ruby\win32\assert.h"
+				RelativePath="..\..\shared\ruby\symbian\assert.h"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -632,7 +632,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\shared\ruby\symbian\assert.h"
+				RelativePath="..\..\shared\ruby\win32\assert.h"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"

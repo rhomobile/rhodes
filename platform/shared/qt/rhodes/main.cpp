@@ -152,6 +152,8 @@ int main(int argc, char *argv[])
     // Create the main application window
 #ifdef RHODES_EMULATOR
     m_appWindow->Initialize(convertToStringW(RHOSIMCONF().getString("app_name")).c_str());
+#else
+    m_appWindow->Initialize(L"Rhodes");
 #endif
 
     RHODESAPP().startApp();
