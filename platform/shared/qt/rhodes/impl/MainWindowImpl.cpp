@@ -29,6 +29,7 @@ CMainWindow::CMainWindow():
     m_started(true),
     qtApplication(NULL),
     qtMainWindow(NULL)
+    //TODO: m_logView
 {
 }
 
@@ -36,9 +37,6 @@ CMainWindow::~CMainWindow()
 {
     //TODO: m_logView
     LOGCONF().setLogView(NULL);
-
-    //TODO: m_alertDialog
-    //TODO: m_SyncStatusDlg
 
     if (qtMainWindow) delete (QtMainWindow*)qtMainWindow;
     if (qtApplication) delete (QApplication*)qtApplication;
@@ -74,7 +72,6 @@ bool CMainWindow::Initialize(const wchar_t* title)
 void CMainWindow::createCustomMenu(void)
 {
     RHODESAPP().getAppMenu().copyMenuItems(m_arAppMenuItems);
-    //createCustomMenu();
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
     String strIndexPage = CFilePath::join(RHODESAPP().getStartUrl(),"index"RHO_ERB_EXT);
     if ( RHODESAPP().getCurrentUrl().compare(RHODESAPP().getStartUrl()) == 0 ||
@@ -175,8 +172,8 @@ bool CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
         ((QtMainWindow*)qtMainWindow), SLOT(takePicture(char*)) );
     QObject::connect(this, SIGNAL(doSelectPicture(char*)),
         ((QtMainWindow*)qtMainWindow), SLOT(selectPicture(char*)) );
-    QObject::connect(this, SIGNAL(doAlertShowPopup(void*)), //TODO: CAlertDialog::Params*
-        ((QtMainWindow*)qtMainWindow), SLOT(alertShowPopup(void*)) );
+    QObject::connect(this, SIGNAL(doAlertShowPopup(AlertDialog::Params*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(alertShowPopup(AlertDialog::Params*)) );
     QObject::connect(this, SIGNAL(doAlertHidePopup(void)),
         ((QtMainWindow*)qtMainWindow), SLOT(alertHidePopup(void)) );
     QObject::connect(this, SIGNAL(doDateTimePicker(void*)), //TODO: CDateTimeMessage*
@@ -185,7 +182,7 @@ bool CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
         ((QtMainWindow*)qtMainWindow), SLOT(executeCommand(RhoNativeViewRunnable*)) );
     QObject::connect(this, SIGNAL(doExecuteRunnable(rho::common::IRhoRunnable*)),
         ((QtMainWindow*)qtMainWindow), SLOT(executeRunnable(rho::common::IRhoRunnable*)) );
-    QObject::connect(this, SIGNAL(doTakeSignature(void*)),
+    QObject::connect(this, SIGNAL(doTakeSignature(void*)), //TODO: Signature::Params*
         ((QtMainWindow*)qtMainWindow), SLOT(takeSignature(void*)) );
     QObject::connect(this, SIGNAL(doFullscreenCommand(int)),
         ((QtMainWindow*)qtMainWindow), SLOT(fullscreenCommand(int)) );
@@ -535,7 +532,6 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
 
     ((QtMainWindow*)qtMainWindow)->tabbarShow();
 
-    //removeToolbar();
     m_started = true;
 }
 
@@ -592,6 +588,7 @@ void CMainWindow::onActivate(int active)
         rho_geoimpl_turngpsoff();
 }
 
+// Commands
 void CMainWindow::exitCommand()
 {
     emit doExitCommand();
@@ -632,7 +629,7 @@ void CMainWindow::selectPicture(char* callbackUrl)
     emit doSelectPicture(callbackUrl);
 }
 
-void CMainWindow::alertShowPopup(void* params) // CAlertDialog::Params *
+void CMainWindow::alertShowPopup(AlertDialog::Params *params)
 {
     emit doAlertShowPopup(params);
 }
