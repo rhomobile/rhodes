@@ -60,15 +60,20 @@ class RubyIOFileExecutor implements RubyIOExecutor {
 			}
             return true;
         } catch (FileNotFoundException e) {
-            return false;
+        	throw new RubyException(RubyRuntime.IOErrorClass, "No such file or directory");
+            //return false;
         } catch (IOException e) {
             file_ = null;
-            return false;
+            throw new RubyException(RubyRuntime.IOErrorClass, e.toString());
+            //return false;
         }
     }
 
     public boolean eof() {
         try {
+        	if (null == file_)
+        		return true;
+        		
             return file_.length() == file_.getFilePointer();
         } catch (IOException e) {
             throw new RubyException(RubyRuntime.IOErrorClass, e.toString());
