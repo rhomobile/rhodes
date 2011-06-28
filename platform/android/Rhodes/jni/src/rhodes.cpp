@@ -4,7 +4,6 @@
 #include "rhodes/jni/com_rhomobile_rhodes_RhodesAppOptions.h"
 
 #include <common/RhoConf.h>
-//#include <common/app_build_configs.h>
 #include <logging/RhoLogConf.h>
 #include <sync/SyncThread.h>
 #include <sync/ClientRegister.h>
@@ -21,7 +20,7 @@
 
 const char *rho_java_class[] = {
 #define RHODES_DEFINE_JAVA_CLASS(x, name) name,
-#include <rhodes/details/rhojava.inc>
+#include "rhojava.inc"
 #undef RHODES_DEFINE_JAVA_CLASS
 };
 
@@ -167,21 +166,3 @@ jhstring rho_cast_helper<jhstring, char const *>::operator()(JNIEnv *env, char c
 }
 
 } // namespace details
-
-
-RHO_GLOBAL char *rho_timezone()
-{
-    static char *tz = NULL;
-    if (!tz)
-    {
-        JNIEnv *env = jnienv();
-        jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
-        if (!cls) return NULL;
-        jmethodID mid = getJNIClassStaticMethod(env, cls, "getTimezoneStr", "()Ljava/lang/String;");
-        if (!mid) return NULL;
-        jstring s = (jstring)env->CallStaticObjectMethod(cls, mid);
-        std::string tzs = rho_cast<std::string>(env, s);
-        tz = strdup(tzs.c_str());
-    }
-    return tz;
-}

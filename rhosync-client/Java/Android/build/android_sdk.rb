@@ -466,6 +466,43 @@ def cc_clean(name)
   end
 end
 
+def jar_build(name, classpath, jarname, buildpath)
+  javac = File.join($rhoconfig["env"]["paths"]["java"], "javac" + $exe_ext)
+  jarbin = File.join($rhoconfig["env"]["paths"]["java"], "jar" + $exe_ext)
+
+  args = [
+      "-d", buildpath,
+      "-source", "1.6",
+      "-target", "1.6",
+      "-nowarn",
+      "-encoding", "latin1",
+      "-classpath", classpath,
+      "@#{File.join($basepath, name + '_build.files')}"
+  ]
+  cc_run(javac, args)
+  unless $?.success?
+    puts "Error compiling java code"
+    exit 1
+  end
+
+  files = []
+  Dir.glob(File.join(buildpath, "*")).each do |f|
+    relpath = Pathname.new(f).relative_path_from(Pathname.new(buildpath)).to_s
+    files << relpath
+  end
+  unless files.empty?
+    reljarpath = Pathname.new(jarname).relative_path_from(Pathname.new(buildpath)).to_s
+    args = ["cf", reljarpath]
+    args += files
+    cc_run(jarbin, args, buildpath)
+    unless $?.success?
+      puts "Error running jar"
+      exit 1
+    end
+  end
+
+end
+
 def apk_build(sdk, apk_name, res_name, dex_name, debug)
     puts "Building APK file..."
     prev_dir = Dir.pwd

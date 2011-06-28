@@ -19,7 +19,7 @@ void store_thr_jnienv(JNIEnv *env);
 
 enum rho_java_class_t {
 #define RHODES_DEFINE_JAVA_CLASS(x, name) x,
-#include <rhodes/details/rhojava.inc>
+#include "rhojava.inc"
 #undef RHODES_DEFINE_JAVA_CLASS
 };
 
@@ -61,4 +61,3 @@ public:
 
 
 #endif // RHO_JNI_RHODES_57d3a700b706402190ead97fd1383bee
-

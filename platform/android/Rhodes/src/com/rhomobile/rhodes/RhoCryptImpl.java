@@ -13,6 +13,7 @@ import java.nio.ByteBuffer;
 import android.content.Context;
 import android.content.SharedPreferences;
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.util.ContextFactory;
 
 public class RhoCryptImpl 
 {
@@ -26,7 +27,7 @@ public class RhoCryptImpl
 
     private void readKeyFromStorage()
     {
-        SharedPreferences settings = RhodesService.getInstance().getSharedPreferences( m_strPrefName, Context.MODE_PRIVATE);
+        SharedPreferences settings = ContextFactory.getContext().getSharedPreferences( m_strPrefName, Context.MODE_PRIVATE);
     	String strOldKey = settings.getString(m_strDBPartition, "");
     	if ( strOldKey != null && strOldKey.length() > 0 )
     	{
@@ -45,7 +46,7 @@ public class RhoCryptImpl
 
 	private void writeKeyToStorage()
 	{
-		SharedPreferences settings = RhodesService.getInstance().getSharedPreferences(m_strPrefName, Context.MODE_PRIVATE);		
+		SharedPreferences settings =  ContextFactory.getContext().getSharedPreferences(m_strPrefName, Context.MODE_PRIVATE);		
     	SharedPreferences.Editor editor = settings.edit();
     	String strKey = Base64.encodeToString(m_dbKeyData, false);//, Base64.DEFAULT);
     	editor.putString(m_strDBPartition, strKey );

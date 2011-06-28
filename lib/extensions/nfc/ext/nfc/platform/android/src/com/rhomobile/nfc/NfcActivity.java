@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import com.rhomobile.rhodes.RhodesActivity;
-import com.rhomobile.rhodes.Utils;
+import com.rhomobile.rhodes.util.Utils;
 
 public class NfcActivity  extends Activity {
 

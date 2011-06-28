@@ -1079,6 +1079,7 @@ namespace "build" do
       args = []
       args << "-I#{$appincdir}"
       args << "-I#{srcdir}/../include"
+      args << "-I#{srcdir}/../include/rhodes/details"
       args << "-I#{$shareddir}"
       args << "-I#{$shareddir}/common"
       args << "-I#{$shareddir}/sqlite"
