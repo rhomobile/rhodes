@@ -1176,29 +1176,41 @@ module Rhom
                     
                 end
 
-                def on_sync_update_error( objects, action )
-                    raise ArgumentError, 'on_sync_update_error action should be :retry' unless action == :retry
+                def on_sync_update_error( objects, action, rollback_data = nil )
+                    raise ArgumentError, 'on_sync_update_error action should be :retry or :rollback' unless action == :retry || action == :rollback
                     return  unless is_sync_source()
 
                     nSrcID = get_source_id()
                     db_partition = Rho::RhoConfig.sources[get_source_name]['partition'].to_s
+                    tableName = is_schema_source() ? get_schema_table_name : 'object_values'
                     
                     db = ::Rho::RHO.get_src_db(get_source_name)                            
                     db.start_transaction
 
                     begin                    
-                        objects.each do |obj, values|
-                          values['attributes'].each do |attrib, value|
-                          
-                              resUpdateType =  db.select_from_table('changed_values', 'update_type', 
-                                {"object"=>obj, "source_id"=>nSrcID, "attrib"=>attrib, 'sent'=>0})
-                              next if resUpdateType && resUpdateType.length > 0 
-                          
-                              attrib_type = SyncEngine.is_blob_attr(db_partition, nSrcID,attrib)  ? "blob.file" : ""
-                              db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, 
-                                "value"=>value, "update_type"=>'update', "attrib_type"=>attrib_type })
-                          end      
+                    
+                        if action == :rollback
+                            raise ArgumentError, 'on_sync_update_error with :rollback action should provide update-rollback parameter' unless rollback_data
+                            rollback_data.each do |obj, values|
+                              values['attributes'].each do |attrib, value|
+                                _insert_or_update_attr(db, is_schema_source(), tableName, nSrcID, obj, attrib, value)
+                              end
+                            end  
+                        else
+                    
+                            objects.each do |obj, values|
+                              values['attributes'].each do |attrib, value|
+                                  resUpdateType =  db.select_from_table('changed_values', 'update_type', 
+                                    {"object"=>obj, "source_id"=>nSrcID, "attrib"=>attrib, 'sent'=>0})
+                                  next if resUpdateType && resUpdateType.length > 0 
+                              
+                                  attrib_type = SyncEngine.is_blob_attr(db_partition, nSrcID,attrib)  ? "blob.file" : ""
+                                  db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, 
+                                    "value"=>value, "update_type"=>'update', "attrib_type"=>attrib_type })
+                              end      
+                            end
                         end
+                            
                         db.commit
                     rescue Exception => e
                         puts 'on_sync_update_error Exception: ' + e.inspect
@@ -1633,6 +1645,28 @@ module Rhom
                 
                 true
               end
+
+              def self._insert_or_update_attr(db, is_schema, tableName, nSrcID, obj, attrib, new_val)
+                  if is_schema
+                      result = db.select_from_table(tableName, 'object', {"object"=>obj})
+                    
+                      if result && result.length > 0 
+                        db.update_into_table(tableName, {attrib=>new_val}, {"object"=>obj})
+                      else
+                        db.insert_into_table(tableName, {"object"=>obj, attrib=>new_val})                          
+                      end    
+                    
+                  else  
+                      result = db.select_from_table(tableName, 'source_id', {"object"=>obj, "attrib"=>attrib, "source_id"=>nSrcID}) 
+                    
+                      if result && result.length > 0 
+                        db.update_into_table(tableName, {"value"=>new_val}, {"object"=>obj, "attrib"=>attrib, "source_id"=>nSrcID})
+                      else
+                        db.insert_into_table(tableName, {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, "value"=>new_val})                          
+                      end    
+                    
+                  end
+              end
               
               # updates the current record in the viewable list and adds
               # a sync operation to update
@@ -1682,25 +1716,7 @@ module Rhom
                       # if the object's value doesn't match the database record
                       # then we procede with update
                       if isModified
-                          if is_inst_schema_source() 
-                              result = db.select_from_table(tableName, 'object', {"object"=>obj})
-                            
-                              if result && result.length > 0 
-                                db.update_into_table(tableName, {attrib=>new_val}, {"object"=>obj})
-                              else
-                                db.insert_into_table(tableName, {"object"=>obj, attrib=>new_val})                          
-                              end    
-                            
-                          else  
-                              result = db.select_from_table(tableName, 'source_id', {"object"=>obj, "attrib"=>attrib, "source_id"=>nSrcID}) 
-                            
-                              if result && result.length > 0 
-                                db.update_into_table(tableName, {"value"=>new_val}, {"object"=>obj, "attrib"=>attrib, "source_id"=>nSrcID})
-                              else
-                                db.insert_into_table(tableName, {"source_id"=>self.get_inst_source_id, "object"=>obj, "attrib"=>attrib, "value"=>new_val})                          
-                              end    
-                            
-                          end
+                          self.class._insert_or_update_attr(db, is_inst_schema_source(), tableName, nSrcID, obj, attrib, new_val)
                           
                           unless ignore_changed_values
                           
