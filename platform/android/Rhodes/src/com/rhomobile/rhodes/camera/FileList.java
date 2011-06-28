@@ -30,7 +30,7 @@ import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.RhodesAppOptions;
 import com.rhomobile.rhodes.RhodesService;
-import com.rhomobile.rhodes.Utils;
+import com.rhomobile.rhodes.util.Utils;
 
 import android.database.Cursor;
 import android.graphics.Bitmap;

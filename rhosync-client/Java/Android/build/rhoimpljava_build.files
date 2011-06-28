@@ -1,0 +1,17 @@
+../platform/android/Rhodes/src/com/rhomobile/rhodes/HttpLog.java
+../platform/android/Rhodes/src/com/rhomobile/rhodes/Base64.java
+../platform/android/Rhodes/src/com/rhomobile/rhodes/Logger.java
+../platform/android/Rhodes/src/com/rhomobile/rhodes/NetworkConnectivityListener.java
+../platform/android/Rhodes/src/com/rhomobile/rhodes/NetworkStateTracker.java
+../platform/android/Rhodes/src/com/rhomobile/rhodes/RhoConf.java
+../platform/android/Rhodes/src/com/rhomobile/rhodes/RhoCryptImpl.java
+../platform/android/Rhodes/src/com/rhomobile/rhodes/RhoLogConf.java
+../platform/android/Rhodes/src/com/rhomobile/rhodes/util/Utils.java
+../platform/android/Rhodes/src/com/rhomobile/rhodes/socket/RhoSockAddr.java
+../platform/android/Rhodes/src/com/rhomobile/rhodes/socket/RhoSocket.java
+../platform/android/Rhodes/src/com/rhomobile/rhodes/socket/RhoSocketImpl.java
+../platform/android/Rhodes/src/com/rhomobile/rhodes/socket/SSLImpl.java
+../platform/android/Rhodes/src/com/rhomobile/rhodes/util/PhoneId.java
+Java/Android/src/com/rhomobile/rhodes/util/ContextFactory.java
+Java/Android/src/com/rhomobile/rhodes/Capabilities.java
+

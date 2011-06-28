@@ -37,6 +37,9 @@ import com.rhomobile.rhodes.uri.UriHandler;
 import com.rhomobile.rhodes.uri.VideoUriHandler;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.PhoneId;
+import com.rhomobile.rhodes.util.Utils;
+import com.rhomobile.rhodes.util.Utils.AssetsSource;
+import com.rhomobile.rhodes.util.Utils.FileSource;
 
 import android.app.AlertDialog;
 import android.app.Notification;
@@ -305,6 +308,20 @@ public class RhodesService extends Service {
 		}
 	}
 	
+	private boolean isAppHashChanged() {
+		try {
+			File hash = new File(this.getRootPath(), "hash");
+			if (!hash.exists())
+				return true;
+			
+			FileSource as = new AssetsSource(this.getResources().getAssets());
+			FileSource fs = new FileSource();
+			return !Utils.isContentsEquals(as, "hash", fs, hash.getPath());
+		}
+		catch (IOException e) {
+			return true;
+		}
+	}
 	public class LocalBinder extends Binder {
 		RhodesService getService() {
 			return RhodesService.this;
@@ -341,7 +358,7 @@ public class RhodesService extends Service {
 			return;
 		}
 		
-		if (Utils.isAppHashChanged()) {
+		if (this.isAppHashChanged()) {
 			try {
 				Log.i(TAG, "Application hash was changed");
 				

@@ -64,6 +64,7 @@ BUILDARGS = {
                            "-I#{File.join($sharedpath, "sqlite")}"],
               "librhoimpl" => ["-DRHO_NO_RUBY",
                            "-I#{File.join($androidpath, "Rhodes", "jni", "include")}",
+                           "-I#{File.join("Java", "RhoSync", "jni", "include")}",
                            "-I#{File.join($sharedpath, "curl", "include")}",
                            "-I#{File.join($sharedpath, "common")}",
                            "-I#{File.join($sharedpath, "sqlite")}",
@@ -73,6 +74,7 @@ BUILDARGS = {
                            "-I#{$sharedpath}",
                            "-I#{File.join($androidpath, "Rhodes", "jni", "include")}"]
              }
+
 
 SRC = FileList.new
 OBJ = FileList.new
@@ -111,7 +113,7 @@ CLEAN.include File.join(BUILDPATH, 'librhosyncclient.so')
 
 namespace "android" do
 
-  task :default => File.join(BUILDPATH, 'librhosyncclient.so')
+  task :default => [File.join(BUILDPATH, 'librhosyncclient.so'), File.join(BUILDPATH, "rhoimpl.jar")]
 
   namespace "config" do
 
@@ -242,6 +244,9 @@ end # namespace "android"
     directory File.join(BUILDPATH, 'rhosyncclient')
     file File.join(BUILDPATH, 'rhosyncclient') => BUILDPATH
 
+    directory File.join(BUILDPATH, 'RhoImplJava')
+    file File.join(BUILDPATH, 'RhoImplJava') => BUILDPATH
+
     def lib_objects(libfile)
       lib = File.basename(libfile).gsub(/\.a$/, "")
 
@@ -305,5 +310,17 @@ end # namespace "android"
       puts "pwd: #{Dir.pwd}" if USE_TRACES
       cc_compile(t.source, File.dirname(t.name), BUILDARGS[lib]) or exit 1
     end
+
+    file File.join(BUILDPATH, "rhoimpl.jar") => [File.join(BUILDPATH, 'RhoImplJava')].concat(get_sources("rhoimpljava")) do |t|
+      $androidjar = File.join($androidsdkpath, "platforms", $androidplatform, "android.jar")
+
+      classpath = $androidjar
+      classpath += $path_separator + BUILDPATH
+
+      jar_build("rhoimpljava", classpath, t.name, File.join(BUILDPATH, 'RhoImplJava'))
+    end
+
+#    rule '.class' => [lambda { |classfile| class_source(classfile) }] do |t|
+#    end
 
 

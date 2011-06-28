@@ -27,10 +27,10 @@ import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesAppOptions;
 import com.rhomobile.rhodes.RhodesService;
-import com.rhomobile.rhodes.Utils;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.nativeview.RhoNativeViewManager;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
+import com.rhomobile.rhodes.util.Utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;

@@ -8,7 +8,7 @@ import android.nfc.FormatException;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 
-import com.rhomobile.rhodes.Utils;
+//import com.rhomobile.rhodes.Utils;
 
 public class NfcRecord {
 

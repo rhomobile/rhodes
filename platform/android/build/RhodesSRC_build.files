@@ -21,7 +21,6 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesAppOptions.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesApplication.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesService.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RingtoneManager.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/Utils.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/WebView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/alert/Alert.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/alert/PopupActivity.java
@@ -87,6 +86,8 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/uri/UriHandler.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/uri/VideoUriHandler.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/util/PerformOnUiThread.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/util/PhoneId.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/util/Utils.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/util/ContextFactory.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/ChromeClientNew.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/ChromeClientOld.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebSettings.java
