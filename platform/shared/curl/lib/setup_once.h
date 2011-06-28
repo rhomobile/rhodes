@@ -58,7 +58,11 @@
 #endif
 
 #ifdef HAVE_SYS_STAT_H
+#if defined(__SYMBIAN32__)
+#include <sys/stat.h>
+#else
 #include <common/stat.h>
+#endif
 #endif
 
 #ifdef HAVE_SYS_TIME_H

@@ -14,6 +14,9 @@
 #pragma warn_illegal_instructions off
 #pragma suppress_warnings on 
 
+#define HAVE_INET_NTOP 1
+#define HAVE_INET_PTON 1
+#define HAVE_GAI_STRERROR 1
 #define PACKAGE_NAME ""
 #define PACKAGE_TARNAME ""
 #define PACKAGE_VERSION ""

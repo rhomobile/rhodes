@@ -3,6 +3,15 @@
 
 #include "RhoDefs.h"
 
+#ifdef OS_SYMBIAN
+#define strnicmp strncasecmp
+#define stricmp strcasecmp
+#endif
+
+#ifdef __SYMBIAN32__
+#include <arpa/inet.h>
+#endif
+
 #if defined( WINDOWS_PLATFORM )
 
 #include <windows.h>
