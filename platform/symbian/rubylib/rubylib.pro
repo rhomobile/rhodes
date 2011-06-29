@@ -6,7 +6,7 @@
 
 QT       -= gui
 DEFINES += HAVE_SOCKADDR_STORAGE=1\
-           RHO_SYMBIAN _LIB STATIC_LINKED
+           RHO_SYMBIAN _LIB STATIC_LINKED __BSD_VISIBLE
 
 TARGET = rubylib
 TEMPLATE = lib
@@ -164,5 +164,6 @@ HEADERS += ../../shared/ruby/symbian/ruby/config.h \
     ../../shared/ruby/symbian/symbian.h \
     ../../shared/ruby/symbian/assert.h
 SOURCES +=  ../../shared/ruby/ext/socket/getnameinfo.c \
-            ../../shared/ruby/ext/socket/getaddrinfo.c
+            ../../shared/ruby/ext/socket/getaddrinfo.c \
+            src/symbian_stubs.c
 }

@@ -3,8 +3,8 @@
 
 #include <sys/types.h>
 
-#define close _symbian_close
-#define fclose _symbian_fclose
+//#define close _symbian_close
+//#define fclose _symbian_fclose
 #define Sleep sleep
 
 extern void* alloca ( unsigned int size);// defined in ext/alloca
