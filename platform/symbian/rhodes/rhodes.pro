@@ -109,9 +109,9 @@ symbian {
 INCLUDEPATH += ../../shared/curl/include
 SOURCES += ../../shared/common/PosixThreadImpl.cpp\
            ../../shared/qt/rhodes/impl/RhoThreadImpl.cpp
-LIBS +=  -lcurl
-LIBS +=  -lrubylib
-LIBS +=  -lrholib
-LIBS +=  -lsyncengine
-LIBS +=  -lsqlite3
+LIBS +=  -lcurl.lib
+LIBS +=  -lrubylib.lib
+LIBS +=  -lrholib.lib
+LIBS +=  -lsyncengine.lib
+LIBS +=  -lsqlite3.lib
 }
