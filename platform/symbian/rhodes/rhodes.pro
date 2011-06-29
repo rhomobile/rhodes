@@ -56,7 +56,8 @@ SOURCES += ../../shared/qt/rhodes/QtWebInspector.cpp \
     ../../shared/qt/rhodes/impl/CameraImpl.cpp \
     ../../shared/qt/rhodes/impl/CalendarImpl.cpp \
     ../../shared/qt/rhodes/impl/BluetoothImpl.cpp \
-    ../../shared/qt/rhodes/impl/AlertImpl.cpp
+    ../../shared/qt/rhodes/impl/AlertImpl.cpp \
+    ../../shared/qt/rhodes/AlertDialog.cpp
 HEADERS += ../../shared/qt/rhodes/QtWebInspector.h \
     ../../shared/qt/rhodes/QtNativeTabBar.h \
     ../../shared/qt/rhodes/QtMainWindow.h \
@@ -65,15 +66,18 @@ HEADERS += ../../shared/qt/rhodes/QtWebInspector.h \
     ../../shared/qt/rhodes/impl/RhoClassFactoryImpl.h \
     ../../shared/qt/rhodes/impl/NativeToolbarImpl.h \
     ../../shared/qt/rhodes/impl/NativeTabbarImpl.h \
-    ../../shared/qt/rhodes/impl/MainWindowImpl.h
+    ../../shared/qt/rhodes/impl/MainWindowImpl.h \
+    ../../shared/qt/rhodes/AlertDialog.h
 FORMS += \
     ../../shared/qt/rhodes/QtWebInspector.ui \
     ../../shared/qt/rhodes/QtMainWindow.ui \
-    ../../shared/qt/rhodes/ExternalWebView.ui
+    ../../shared/qt/rhodes/ExternalWebView.ui \
+    ../../shared/qt/rhodes/AlertDialog.ui
 
 INCLUDEPATH += ../../shared
 INCLUDEPATH += ../../wm/rhodes
 INCLUDEPATH += ../../shared/ruby
+INCLUDEPATH += ../../shared/qt/rhodes
 INCLUDEPATH += ../../shared/ruby/generated
 INCLUDEPATH += ../../shared/ruby/include
 INCLUDEPATH += ../../shared/ruby/symbian
