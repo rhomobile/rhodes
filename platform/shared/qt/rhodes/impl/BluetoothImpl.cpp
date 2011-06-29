@@ -65,4 +65,19 @@ void rho_bluetooth_session_write_data(const char* connected_device_name, VALUE d
     //TODO: rho_bluetooth_session_write_data
 }
 
+const char* rho_bluetooth_create_custom_server_session(const char* client_name, const char* callback_url, int accept_any_device)
+{
+    return NULL;
+}
+
+const char* rho_bluetooth_create_custom_client_session(const char* server_name, const char* callback_url)
+{
+    return NULL;
+}
+
+const char* rho_bluetooth_stop_current_connection_process()
+{
+    return NULL;
+}
+
 } //extern "C"
