@@ -303,6 +303,12 @@ extern "C" const char* rho_bluetooth_get_last_error();
 
 extern "C" const char* rho_bluetooth_create_session(const char* role, const char* callback_url);
 
+extern "C" const char* rho_bluetooth_create_custom_server_session(const char* client_name, const char* callback_url, int accept_any_device);
+
+extern "C" const char* rho_bluetooth_create_custom_client_session(const char* server_name, const char* callback_url);
+
+extern "C" const char* rho_bluetooth_stop_current_connection_process();
+
 extern "C" void rho_bluetooth_session_set_callback(const char* connected_device_name, const char* callback_url);
 
 extern "C" void rho_bluetooth_session_disconnect(const char* connected_device_name);
