@@ -64,28 +64,43 @@ namespace rho
 namespace net
 {
 
+void SSLImpl::init()
+{
+    if(!sInitialized)
+    {
+        JNIEnv *env = jnienv();
+        if (!env)
+            return;
+
+        cls = getJNIClass(RHODES_JAVA_CLASS_SSLIMPL);
+        if (!cls) return;
+        midConstructor = getJNIClassMethod(env, cls, "<init>", "()V");
+        if (!midConstructor) return;
+        midConnect = getJNIClassMethod(env, cls, "connect", "(IZ)Z");
+        if (!midConnect) return;
+        midShutdown = getJNIClassMethod(env, cls, "shutdown", "()V");
+        if (!midShutdown) return;
+        midSend = getJNIClassMethod(env, cls, "send", "([B)Z");
+        if (!midSend) return;
+        midRecv = getJNIClassMethod(env, cls, "recv", "([B)I");
+        if (!midRecv) return;
+        fidSockFd = getJNIClassField(env, cls, "sockfd", "I");
+        if (!fidSockFd) return;
+
+        sInitialized = true;
+    }
+}
+
 SSLImpl::SSLImpl()
 {
-    JNIEnv *env = jnienv();
-    if (!env) {
-       return;
-    }
-    cls = getJNIClass(RHODES_JAVA_CLASS_SSLIMPL);
-    if (!cls) return;
-    midConstructor = getJNIClassMethod(env, cls, "<init>", "()V");
-    if (!midConstructor) return;
-    midConnect = getJNIClassMethod(env, cls, "connect", "(IZ)Z");
-    if (!midConnect) return;
-    midShutdown = getJNIClassMethod(env, cls, "shutdown", "()V");
-    if (!midShutdown) return;
-    midSend = getJNIClassMethod(env, cls, "send", "([B)Z");
-    if (!midSend) return;
-    midRecv = getJNIClassMethod(env, cls, "recv", "([B)I");
-    if (!midRecv) return;
+    init();
 }
 
 void* SSLImpl::createStorage()
 {
+    if (!sInitialized)
+        return 0;
+    
     JNIEnv *env = jnienv();
     jobject obj = env->NewObject(cls, midConstructor);
     jobject objG = env->NewGlobalRef(obj);
@@ -95,14 +110,14 @@ void* SSLImpl::createStorage()
 
 void SSLImpl::freeStorage(void *ptr)
 {
-    if (!ptr) return;
+    if (!sInitialized || !ptr) return;
     jobject obj = (jobject)ptr;
     jnienv()->DeleteGlobalRef(obj);
 }
 
 CURLcode SSLImpl::connect(int sockfd, int nonblocking, int *done, int ssl_verify_peer, void *storage)
 {
-    if (!storage) return CURLE_SSL_CONNECT_ERROR;
+    if (!sInitialized || !storage) return CURLE_SSL_CONNECT_ERROR;
 
     jobject obj = (jobject)storage;
     jboolean result = jnienv()->CallBooleanMethod(obj, midConnect, sockfd, (jboolean)ssl_verify_peer);
@@ -115,14 +130,14 @@ CURLcode SSLImpl::connect(int sockfd, int nonblocking, int *done, int ssl_verify
 
 void SSLImpl::shutdown(void *storage)
 {
-    if (!storage) return;
+    if (!sInitialized || !storage) return;
     jobject obj = (jobject)storage;
     jnienv()->CallVoidMethod(obj, midShutdown);
 }
 
 ssize_t SSLImpl::send(const void *mem, size_t len, void *storage)
 {
-    if (!storage) return -1;
+    if (!sInitialized || !storage) return -1;
 
     JNIEnv *env = jnienv();
     jholder<jbyteArray> array = jholder<jbyteArray>(env->NewByteArray(len));
@@ -141,16 +156,12 @@ ssize_t SSLImpl::send(const void *mem, size_t len, void *storage)
 ssize_t SSLImpl::recv(char *buf, size_t size, int *wouldblock, void *storage)
 {
     *wouldblock = 0;
-    if (!storage) return -1;
+    if (!sInitialized || !storage) return -1;
 
     jobject obj = (jobject)storage;
     JNIEnv *env = jnienv();
-    jclass cls = getJNIObjectClass(env, obj);
-    if (!cls) return -1;
-    jfieldID fid = getJNIClassField(env, cls, "sockfd", "I");
-    if (!fid) return -1;
 
-    jint sock = env->GetIntField(obj, fid);
+    jint sock = env->GetIntField(obj, fidSockFd);
 
     fd_set rfd;
     FD_ZERO(&rfd);
@@ -175,6 +186,16 @@ ssize_t SSLImpl::recv(char *buf, size_t size, int *wouldblock, void *storage)
     }
     return result;
 }
+
+bool SSLImpl::sInitialized = false;
+jclass SSLImpl::cls;
+jmethodID SSLImpl::midConstructor;
+jmethodID SSLImpl::midConnect;
+jmethodID SSLImpl::midShutdown;
+jmethodID SSLImpl::midSend;
+jmethodID SSLImpl::midRecv;
+jfieldID SSLImpl::fidSockFd;
+
 
 } // namespace net
 } // namespace rho

@@ -6,6 +6,8 @@
 #include <net/ssl.h>
 #include <common/IRhoThreadImpl.h>
 #include <common/IRhoCrypt.h>
+#include <common/RhoMutexLock.h>
+#include <common/AutoPointer.h>
 
 namespace rho
 {
@@ -14,6 +16,9 @@ namespace common
 
 class CRhoClassFactory : public IRhoClassFactory
 {
+    CMutex m_sslMutex;
+    common::CAutoPtr<net::ISSL> m_pSsl;
+    
 public:
     net::INetRequestImpl* createNetRequestImpl();
     IRhoThreadImpl *createThreadImpl();

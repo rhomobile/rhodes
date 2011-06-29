@@ -21,12 +21,15 @@ public:
     ssize_t recv(char *buf, size_t size, int *wouldblock, void *storage);
 
 private:
-    jclass cls;
-    jmethodID midConstructor;
-    jmethodID midConnect;
-    jmethodID midShutdown;
-    jmethodID midSend;
-    jmethodID midRecv;
+    static void init();
+    static bool sInitialized;
+    static jclass cls;
+    static jmethodID midConstructor;
+    static jmethodID midConnect;
+    static jmethodID midShutdown;
+    static jmethodID midSend;
+    static jmethodID midRecv;
+    static jfieldID fidSockFd;
 };
 
 }
