@@ -3,6 +3,8 @@
 #include "common/RhoAppAdapter.h"
 #include "MainWindowImpl.h"
 #include "AlertDialog.h"
+#undef null
+#include <QSound>
 
 using namespace rho;
 
@@ -109,31 +111,12 @@ void alert_vibrate(int duration_ms) {
 
 void alert_play_file(char* file_name, char *media_type)
 {
-    //TODO: alert_play_file
-
-    //String path = RHODESAPP().getRhoRootPath() + "apps" + fileName;
-
-    //HSOUND hSound;
-
-    //String::size_type pos = 0;
-    //while ( (pos = path.find('/', pos)) != String::npos ) {
-    //    path.replace( pos, 1, "\\");
-    //    pos++;
-    //}
-
-    //StringW strPathW = convertToStringW(path);
-    //HRESULT hr = SndOpen( strPathW.c_str(), &hSound);
-    //hr = SndPlayAsync (hSound, 0);
-
-    //if (hr != S_OK) {
-    //    LOG(WARNING) + "OnAlertPlayFile: failed to play file";
-    //}
-
-    //WaitForSingleObject(hSound, INFINITE);
-
-    //hr = SndClose(hSound);
-    //SndStop(SND_SCOPE_PROCESS, NULL);
-
+    String path = RHODESAPP().getRhoRootPath() + file_name;
+    if (QSound::isAvailable()) {
+        QSound::play(QString(path.c_str()));
+    } else {
+        LOG(WARNING) + "OnAlertPlayFile: failed to play file";
+    }
 }
 
 void alert_hide_popup()
