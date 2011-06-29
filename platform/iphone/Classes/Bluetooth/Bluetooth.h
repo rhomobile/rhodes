@@ -11,10 +11,13 @@
 #import <GameKit/GameKit.h>
 
 
-
+#define PEER_MODE 1
+#define SERVER_MODE 2
+#define CLIENT_MODE 3
+#define CONNECTED_MODE 5
 
 @interface RhoBluetoothManager : NSObject <GKPeerPickerControllerDelegate, GKSessionDelegate> {
-	GKSession		*session;
+	GKSession		*mysession;
 
 	NSString* connectionCallbackURL; 
 	NSString* sessionCallbackURL; 
@@ -24,15 +27,23 @@
 	NSString* connectedDeviceID;
 
 	NSMutableArray* packets;
+    
+    int mode;
+    NSString* custom_connect_client_name;
+    NSString* custom_connect_server_name;
+    
 }
 
-@property(nonatomic, retain) GKSession	 *session;
+@property(nonatomic, retain) GKSession	 *mysession;
 @property(nonatomic, copy)	 NSString	 *deviceName;
 @property(nonatomic, copy)	 NSString	 *connectedDeviceName;
 @property(nonatomic, copy)	 NSString	 *connectedDeviceID;
 @property (readwrite, copy) NSString *connectionCallbackURL;
 @property (readwrite, copy) NSString *sessionCallbackURL;
 @property(nonatomic, retain) NSMutableArray	 *packets;
+@property (readwrite, assign) int mode;
+@property(nonatomic, retain) NSString* custom_connect_client_name;
+@property(nonatomic, retain) NSString* custom_connect_server_name;
 
 
 + (RhoBluetoothManager*)sharedInstance;

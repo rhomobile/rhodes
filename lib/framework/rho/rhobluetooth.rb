@@ -1,4 +1,3 @@
-
 module Rho
  
 class BluetoothManager
@@ -6,6 +5,7 @@ class BluetoothManager
   OK = 'OK'
   CANCEL = 'CANCEL'
   ERROR = 'ERROR'
+  NOT_FOUND = 'NOT_FOUND'
  
   ROLE_SERVER = 'ROLE_SERVER'
   ROLE_CLIENT = 'ROLE_CLIENT'
@@ -32,6 +32,8 @@ class BluetoothManager
     return RhoBluetooth.get_last_error()
   end
  
+  # show UI for select other device to connect
+  # make BluetoothSession with selected device
   def self.create_session(role, callback_url)
     # return OK/ERROR
     #
@@ -42,6 +44,51 @@ class BluetoothManager
     RhoBluetooth.create_session(role, callback_url)
     return OK
   end
+
+  # make current device discoverable for other
+  # wait for client connection from other device
+  # incoming connections check for device_name - it should be equal with client_name parameter
+  # if you want accept any connections - set client_name to nil
+  # after connect BluetoothSession maked
+  def self.create_server_and_wait_for_connection(client_name, callback_url)
+    # return OK/ERROR
+    #
+    # in callback
+    # status - OK/ERROR/CANCEL
+    # connected_device_name
+    puts 'BluetoothManager.rb::create_server_and_wait_for_connection()'
+    accept_any_device = 1
+    accept_any_device = 0 unless client_name == nil 
+    RhoBluetooth.create_custom_server_session(client_name, callback_url, accept_any_device)
+    return OK
+  end
+
+  # Enumerate near BT devices and check its name for equal with server_name
+  # If server_name device founded - make client connection with it
+  # and make BluetoothSession
+  def self.create_client_connection_to_device(server_name, callback_url)
+    # return OK/ERROR
+    #
+    # in callback
+    # status - OK/ERROR/CANCEL
+    # connected_device_name
+    puts 'BluetoothManager.rb::create_client_connection_to_device()'
+    RhoBluetooth.create_custom_client_session(server_name, callback_url)
+    return OK
+  end
+
+  # stop current connection process started by 
+  # (before BluetoothSession was created = callabck was executed!):
+  # create_server_and_wait_for_connection()
+  # or
+  # create_client_connection_to_device()
+  def self.stop_current_connection_process	
+    # return OK/ERROR
+    puts 'BluetoothManager.rb::stop_current_custom_connections()'
+    RhoBluetooth.stop_current_connection_process
+    return OK
+  end
+
 end
  
  

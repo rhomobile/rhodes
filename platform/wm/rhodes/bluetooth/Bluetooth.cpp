@@ -1034,6 +1034,22 @@ const char* rho_bluetooth_create_session(const char* role, const char* callback_
 	return RhoBluetoothManager::getInstance()->rho_bluetooth_create_session(role, callback_url);
 }
 
+const char* rho_bluetooth_create_custom_server_session(const char* client_name, const char* callback_url, int accept_any_device) {
+
+    return NULL;
+}
+
+const char* rho_bluetooth_create_custom_client_session(const char* server_name, const char* callback_url) {
+
+    return NULL;
+}
+
+const char* rho_bluetooth_stop_current_connection_process() {
+    
+    return NULL;
+}
+
+
 void rho_bluetooth_session_set_callback(const char* connected_device_name, const char* callback_url) {
 	RhoBluetoothManager::getInstance()->rho_bluetooth_session_set_callback(connected_device_name, callback_url);
 }
@@ -1235,6 +1251,23 @@ const char* rho_bluetooth_get_last_error() {
 const char* rho_bluetooth_create_session(const char* role, const char* callback_url) {
 	return "ERROR";
 }
+
+const char* rho_bluetooth_create_custom_server_session(const char* client_name, const char* callback_url, int accept_any_device) {
+
+    return NULL;
+}
+
+const char* rho_bluetooth_create_custom_client_session(const char* server_name, const char* callback_url) {
+
+    return NULL;
+}
+
+const char* rho_bluetooth_stop_current_connection_process() {
+    
+    return NULL;
+}
+
+
 
 void rho_bluetooth_session_set_callback(const char* connected_device_name, const char* callback_url) {
 }
