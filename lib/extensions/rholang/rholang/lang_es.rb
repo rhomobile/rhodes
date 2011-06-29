@@ -110,6 +110,6 @@ end
 
 # Use the inflector below to pluralize "error" from
 # @@default_error_messages[:error_translation] above (if necessary)
- Inflector.inflections do |inflect|
-   inflect.plural /^(error)$/i, '\1es'
- end
+# Inflector.inflections do |inflect|
+#   inflect.plural /^(error)$/i, '\1es'
+# end

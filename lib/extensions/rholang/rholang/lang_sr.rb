@@ -115,9 +115,9 @@ end
 
 # Use the inflector below to pluralize "error" from
 # @@default_error_messages[:error_translation] above (if necessary)
-Inflector.inflections do |inflect|
+#Inflector.inflections do |inflect|
 #   inflect.plural /^(ox)$/i, '\1en'
 #   inflect.singular /^(ox)en/i, '\1'
-  inflect.irregular 'greška', 'greške'
+#  inflect.irregular 'greška', 'greške'
 #   inflect.uncountable %w( information )
-end
+#end
