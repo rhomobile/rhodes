@@ -611,7 +611,7 @@ namespace rho.sync
 	    //{"create-error":{"0_broken_object_id":{"name":"wrongname","an_attribute":"error create"},"0_broken_object_id-error":{"message":"error create"}}}
 	    boolean processServerErrors(JSONEntry oCmds)
 	    {
-	        String[] arErrTypes = {"source-error", "search-error", "create-error", "update-error", "delete-error", null};
+            String[] arErrTypes = { "source-error", "search-error", "create-error", "update-error", "delete-error", "update-rollback", null };
 	        boolean bRes = false;
 	        for( int i = 0; ; i++ )
 	        {
@@ -641,7 +641,7 @@ namespace rho.sync
 	                }
 	                else
 	                {
-	                    //"create-error", "update-error", "delete-error"
+                        //"create-error", "update-error", "delete-error", "update-rollback"
 	                    String strObject = strKey;
 
 	                    if ( strObject.endsWith("-error") )
