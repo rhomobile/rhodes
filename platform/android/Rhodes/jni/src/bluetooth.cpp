@@ -97,6 +97,26 @@ RHO_GLOBAL const char* rho_bluetooth_create_session(const char* role, const char
     return rho_cast<std::string>(res).c_str();
 }
 
+
+RHO_GLOBAL const char* rho_bluetooth_create_custom_server_session(const char* client_name, const char* callback_url, int accept_any_device) {
+
+    return NULL;
+}
+
+RHO_GLOBAL const char* rho_bluetooth_create_custom_client_session(const char* server_name, const char* callback_url) {
+
+    return NULL;
+}
+
+RHO_GLOBAL const char* rho_bluetooth_stop_current_connection_process() {
+    
+    return NULL;
+}
+
+
+
+
+
 RHO_GLOBAL void rho_bluetooth_session_set_callback(const char* connected_device_name, const char* callback_url) {
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHOBLUETOOTHMANAGER);
