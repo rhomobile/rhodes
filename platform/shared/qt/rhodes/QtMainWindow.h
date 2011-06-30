@@ -7,6 +7,7 @@
 #include <QtWebKit/QWebView>
 #include <QtWebKit/QWebInspector>
 #include <QAction>
+#include <QMessageBox>
 #include "QtWebInspector.h"
 #include "MainWindowCallback.h"
 #include "common/IRhoThreadImpl.h"
@@ -75,7 +76,7 @@ private:
     QWebInspector* cur_webInspector;
     QTabBarRuntimeParams* cur_tbrp;
     QtWebInspector* webInspectorWindow;
-    AlertDialog *m_alertDialog;
+    QMessageBox *m_alertDialog;
     //TODO: CSyncStatusDlg *m_SyncStatusDlg;
 
 private slots:
