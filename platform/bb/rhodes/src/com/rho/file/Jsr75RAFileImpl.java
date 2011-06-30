@@ -40,7 +40,7 @@ public class Jsr75RAFileImpl implements IRAFile {
 	public void open(String name, String mode) throws FileNotFoundException {
 		try {
 			int imode = Connector.READ;
-			if (mode.startsWith("rw") || mode.startsWith("w"))
+			if (mode.startsWith("rw") || mode.startsWith("w") || mode.startsWith("dw") )
 				imode = Connector.READ_WRITE;
 			m_file = (FileConnection)Connector.open(name, imode);
 			LOG.TRACE("Open file: " + name);
@@ -55,7 +55,7 @@ public class Jsr75RAFileImpl implements IRAFile {
 						m_file.create();  // create the file if it doesn't exist
 					}
 				}
-				else
+				else if ( !mode.startsWith("d")) //directory
 					throw new FileNotFoundException("File '" + name + "' not exists");
 	        }
 			

@@ -317,7 +317,7 @@ public class PersistRAFileImpl implements IRAFile {
 	
 	public void open(String name, String mode) throws FileNotFoundException {
 		m_mode = Connector.READ;
-		if (mode.startsWith("rw") || mode.startsWith("w"))
+		if (mode.startsWith("rw") || mode.startsWith("w") || mode.startsWith("dw"))
 			m_mode = Connector.READ_WRITE;
 		
 		if (debug)
@@ -329,7 +329,8 @@ public class PersistRAFileImpl implements IRAFile {
 			if (!info.exists()) {
 				if (isWritable())
 					info.m_exists = true;
-				else {
+				else  if ( !mode.startsWith("d")) //directory
+				{
 					//log("+++ File '" + name + "': not found");
 					throw new FileNotFoundException();
 				}
