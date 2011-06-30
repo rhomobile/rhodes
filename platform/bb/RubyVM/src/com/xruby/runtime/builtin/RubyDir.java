@@ -225,7 +225,8 @@ public class RubyDir extends RubyBasic {
     //@RubyLevelMethod(name="mkdir", singleton=true)
     public static RubyValue mkdir(RubyValue receiver, RubyValue arg) {
         String dir = arg.toStr();
-        File file = new File(dir, "rw");
+       	File file = new File(dir + (dir.endsWith("/") ? "" : "/"), "dw");
+        
         if (file.isDirectory() || file.mkdir()) {
             return ObjectFactory.FIXNUM0;
         }
