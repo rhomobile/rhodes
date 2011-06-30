@@ -5,10 +5,21 @@ import com.rhomobile.rhosync.RhoSyncClient;
 import android.test.AndroidTestCase;
 
 public class TestRhoSyncNativeLib extends AndroidTestCase {
+    RhoSyncClient mClient;
 
-	public void testLibraryLoaded()
-	{
-		RhoSyncClient client = new RhoSyncClient();
-	}
-	
+    @Override
+    protected void setUp()
+    {
+        mClient = new RhoSyncClient();
+    }
+
+    public void testLibraryLoaded()
+    {
+        mClient.setThreadedMode(true);
+        assertTrue(!mClient.getThreadedMode());
+
+        mClient.setThreadedMode(false);
+        assertTrue(!mClient.getThreadedMode());
+    }
+
 }
