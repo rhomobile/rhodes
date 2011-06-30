@@ -192,15 +192,23 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
   $_classname = classname;
   $_methodname = id;
   file = file.to_s.gsub('\\', '/')
+
   if file[0, $_app_path.length] == $_app_path
+
+    #$_s.write('[Debugger][1] step = ' + file.to_s + ' line = ' + line.to_s + "\n")
+
     if event =~ /^line/
 
       unhandled = true
       step_stop = ($_step > 0) and (($_step_level < 0) or ($_call_stack <= $_step_level))
       if (step_stop or ($_breakpoints_enabled and (not $_breakpoint.empty?)))
         filename = file[$_app_path.length, file.length-$_app_path.length]
+    
+        #$_s.write('[Debugger][2] step = ' + filename.to_s + ' line = ' + line.to_s + " BP List" + $_breakpoint.to_s + "\n")
+
         ln = line.to_i.to_s
         if (step_stop or ($_breakpoints_enabled and ($_breakpoint.has_key?(filename + ':' + ln))))
+          #$_s.write('[Debugger][3] step = ' + file.to_s + ' line = ' + line.to_s + "\n")
           fn = filename.gsub(/:/, '|')
           cl = classname.to_s.gsub(/:/,'#')
           $_s.write((step_stop ? DEBUGGER_STEP_TYPE[$_step-1] : "BP") + ":#{fn}:#{ln}:#{cl}:#{id}\n")
@@ -242,13 +250,22 @@ $_s = nil
 
 begin
   puts "[Debugger] Opening connection"
-  debug_host = (Rho::RhoConfig.debug_host.nil? or Rho::RhoConfig.debug_host == "") ? '127.0.0.1' : Rho::RhoConfig.debug_host
-  debug_port = (Rho::RhoConfig.debug_port.nil? or Rho::RhoConfig.debug_port == "") ? 9000 : Rho::RhoConfig.debug_port
+  debug_host_env = ENV['RHOHOST']
+  debug_port_env = ENV['RHOPORT']
+  debug_path_env = ENV['ROOT_PATH']
+
+  debug_host = (debug_host_env.nil? or debug_host_env == "") ? '127.0.0.1' : debug_host_env 
+  debug_port = (debug_port_env.nil? or debug_port_env == "") ? 9000 : debug_port_env  
+
+  puts "host=" + debug_host_env.to_s
+  puts "port=" + debug_port_env.to_s
+  puts "path=" + debug_path_env.to_s
+
   $_s = timeout(30) { TCPSocket.open(debug_host, debug_port) }
 
   puts "[Debugger] Connected: " + $_s.to_s
-  $_s.write("CONNECT\n")
-
+  $_s.write("CONNECT\nHOST=" + debug_host.to_s + "\nPORT=" + debug_port.to_s + "\n")
+ 
   $_breakpoint = Hash.new
   $_breakpoints_enabled = true
   $_step = 0
@@ -256,7 +273,10 @@ begin
   $_call_stack = 0
   $_resumed = false
   $_cmd = ""
-  $_app_path = File.join(Rho::RhoApplication::get_base_app_path(), 'app/').gsub('\\', '/')
+  $_app_path = ""
+
+  $_app_path = (debug_path_env.nil? or debug_path_env == "") ? "" : debug_path_env  
+  $_s.write("DEBUG PATH=" + $_app_path.to_s + "\n")
 
   at_exit {
     $_s.write("QUIT\n") if (not $_s.nil?)
