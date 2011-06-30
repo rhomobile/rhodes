@@ -3,15 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry exported="true" kind="lib" path="/RhoSync/bin/com/rhomobile/rhosync/RhomModel.class"/>
-	<classpathentry exported="true" kind="lib" path="/RhoSync/bin/com/rhomobile/rhosync/RhoSyncClient.class"/>
-	<classpathentry exported="true" kind="lib" path="/RhoSync/bin/com/rhomobile/rhosync/RhoSyncNotify.class"/>
-	<classpathentry exported="true" kind="lib" path="/RhoSync/bin/com/rhomobile/rhosync/RhoSyncObjectNotify.class"/>
 	<classpathentry kind="lib" path="rhoimpl.jar"/>
-	<classpathentry kind="src" path="/RhoSync">
-		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="/home/lexis/rhomobile/rhodes/rhosync-client/build/android/debug"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="lib" path="/RhoSync/bin"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
