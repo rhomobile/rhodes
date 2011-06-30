@@ -394,7 +394,7 @@ public class RhoConnection implements IHttpConnection {
 			
 			String res = strPath.substring(nStart, nEnd);
 			nStart = nEnd+1;
-			return res;
+			return URI.urlDecode(res).trim();
 		}
 	
 	}
