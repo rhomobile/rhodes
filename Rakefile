@@ -884,7 +884,7 @@ end
 
 task :gem do
   puts "Removing old gem"
-  rm_rf Dir.glob("*.gem")
+  rm_rf Dir.glob("rhodes*.gem")
   puts "Copying Rakefile"
   cp "Rakefile", "rakefile.rb"
   
@@ -901,6 +901,39 @@ task :gem do
 
   puts "Building gem"
   gemfile = Gem::Builder.new(spec).build
+end
+
+namespace "rhomobile-debug" do
+    task :gem do
+      puts "Removing old gem"
+      rm_rf Dir.glob("rhomobile-debug*.gem")
+      rm_rf "rhomobile-debug"
+      
+      mkdir_p "rhomobile-debug"
+      mkdir_p "rhomobile-debug/lib"
+      cp 'lib/extensions/debugger/debugger.rb', "rhomobile-debug/lib", :preserve => true
+      cp 'lib/extensions/debugger/README.md', "rhomobile-debug", :preserve => true
+      cp 'lib/extensions/debugger/LICENSE', "rhomobile-debug", :preserve => true
+      cp 'lib/extensions/debugger/CHANGELOG', "rhomobile-debug", :preserve => true
+      
+      cp 'rhomobile-debug.gemspec', "rhomobile-debug", :preserve => true
+      
+      startdir = pwd
+      chdir 'rhomobile-debug'
+      
+      puts "Loading gemspec"
+      spec = Gem::Specification.load('rhomobile-debug.gemspec')
+
+      puts "Building gem"
+      gemfile = Gem::Builder.new(spec).build
+      
+      Dir.glob("rhomobile-debug*.gem").each do |f|
+        cp f, startdir, :preserve => true      
+      end
+
+      chdir startdir
+      rm_rf "rhomobile-debug"
+    end
 end
 
 task :tasks do
