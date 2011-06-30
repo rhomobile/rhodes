@@ -22,7 +22,8 @@ public:
         enum CAlertType {DLG_DEFAULT, DLG_CUSTOM, DLG_STATUS};
         struct CAlertButton
         {
-            rho::String m_strCaption, m_strID;
+            rho::String m_strCaption;
+            rho::String m_strID;
             CAlertButton ( const rho::String& strCaption, const rho::String& strID ): m_strCaption(strCaption), m_strID(strID){}
         };
 

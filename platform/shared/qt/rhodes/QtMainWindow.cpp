@@ -10,7 +10,6 @@
 #include <QWebSettings>
 #include <QWebSecurityOrigin>
 #include <QWebHistory>
-#include <QMessageBox>
 #include <QLabel>
 #include "ext/rho/rhoruby.h"
 #include "common/RhoStd.h"
@@ -18,6 +17,11 @@
 #include "rubyext/WebView.h"
 #include "rubyext/NativeToolbarExt.h"
 #undef null
+
+#ifdef OS_MACOSX
+#define stricmp strcasecmp
+#define strnicmp strncasecmp
+#endif
 
 extern "C" {
     extern VALUE rb_thread_main(void);
@@ -558,8 +562,6 @@ void QtMainWindow::selectPicture(char* callbackUrl)
 
 void QtMainWindow::alertShowPopup(AlertDialog::Params * params)
 {
-    //TODO: alertShowPopup
-
     rho::StringW strAppName = RHODESAPP().getAppNameW();
 
     if (params->m_dlgType == AlertDialog::Params::DLG_STATUS) {
@@ -588,13 +590,38 @@ void QtMainWindow::alertShowPopup(AlertDialog::Params * params)
                 QString::fromWCharArray(rho::common::convertToStringW(params->m_title).c_str()),
                 QString::fromWCharArray(rho::common::convertToStringW(params->m_message).c_str()),
                 QMessageBox::Ok | QMessageBox::Cancel);
-              int nBtn = response == QMessageBox::Cancel ? 1 : 0;
-              RHODESAPP().callPopupCallback(params->m_callback, params->m_buttons[nBtn].m_strID, params->m_buttons[nBtn].m_strCaption);
+            int nBtn = response == QMessageBox::Cancel ? 1 : 0;
+            RHODESAPP().callPopupCallback(params->m_callback, params->m_buttons[nBtn].m_strID, params->m_buttons[nBtn].m_strCaption);
         } else if (m_alertDialog == NULL) {
-            m_alertDialog = new AlertDialog(params, 0);
+            QMessageBox::Icon icon = QMessageBox::NoIcon;
+            if (stricmp(params->m_icon.c_str(),"alert")==0) {
+                icon = QMessageBox::Warning;
+            } else if (stricmp(params->m_icon.c_str(),"question")==0) {
+                icon = QMessageBox::Question;
+            } else if (stricmp(params->m_icon.c_str(),"info")==0) {
+                icon = QMessageBox::Information;
+            }
+            m_alertDialog = new QMessageBox(icon, //new AlertDialog(params, 0);
+                QString::fromWCharArray(rho::common::convertToStringW(params->m_title).c_str()),
+                QString::fromWCharArray(rho::common::convertToStringW(params->m_message).c_str()));
+            m_alertDialog->setStandardButtons(0);
+            for (int i = 0; i < (int)params->m_buttons.size(); i++) {
+                m_alertDialog->addButton(QString::fromWCharArray(rho::common::convertToStringW(params->m_buttons[i].m_strCaption).c_str()), QMessageBox::ActionRole);
+            }
             m_alertDialog->exec();
-            delete m_alertDialog;
-            m_alertDialog = 0;
+            if (m_alertDialog) {
+                const QAbstractButton* btn = m_alertDialog->clickedButton();
+                if (btn) {
+                    for (int i = 0; i < m_alertDialog->buttons().count(); ++i) {
+                        if (btn == m_alertDialog->buttons().at(i)) {
+                            RHODESAPP().callPopupCallback(params->m_callback, params->m_buttons[i].m_strID, params->m_buttons[i].m_strCaption);
+                            break;
+                        }
+                    }
+                }
+                delete m_alertDialog;
+                m_alertDialog = 0;
+            }
         } else {
             LOG(WARNING) + "Trying to show alert dialog while it exists.";
         }
