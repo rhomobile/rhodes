@@ -104,7 +104,7 @@ CAppCallbacksQueue::CAppCallbacksQueue()
     :CThreadQueue(), m_expected(local_server_started)
 {
     CThreadQueue::setLogCategory(getLogCategory());
-    //setPollInterval(1);
+    setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
     start(epNormal);
 }
 
