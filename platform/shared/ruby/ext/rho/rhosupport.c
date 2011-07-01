@@ -259,7 +259,7 @@ static VALUE find_file(VALUE fname)
                 VALUE dir = RARRAY_PTR(load_path)[i];
 
 #ifdef RHODES_EMULATOR
-                res = check_app_file_exist(dir, fname1, rho_simconf_getstring("platform"));
+                res = check_app_file_exist(dir, fname1, rho_simconf_getString("platform"));
 #endif
                 if ( !res )
                     res = check_app_file_exist(dir, fname1, 0 );
@@ -288,7 +288,7 @@ static VALUE find_file(VALUE fname)
 
                 if ( !res )
                 {
-                    res = rb_str_new2( rho_simconf_getstring("ext_path") );
+                    res = rb_str_new2( rho_simconf_getString("ext_path") );
                     res = check_extension(res, fname, 0);
                 }
 
@@ -411,8 +411,11 @@ VALUE require_compiled(VALUE fname, VALUE* result)
         GET_VM()->src_encoding_index = rb_utf8_encindex();
         rb_load(path, 0);
 
-        if ( strncmp( RSTRING_PTR(path), rho_native_rhopath(), strlen(rho_native_rhopath()) ) == 0 )
-            rb_ary_delete(GET_VM()->loaded_features, fname);
+        if( !rho_simconf_getBool("do_not_reload_app_changes") )
+        {
+            if ( strncmp( RSTRING_PTR(path), rho_native_rhopath(), strlen(rho_native_rhopath()) ) == 0 )
+                rb_ary_delete(GET_VM()->loaded_features, fname);
+        }
 #else
         rb_gc_disable();
         seq = loadISeqFromFile(path);

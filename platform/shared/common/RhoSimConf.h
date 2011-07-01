@@ -26,7 +26,8 @@ extern "C"{
 #endif //__cplusplus
 
 const char* rho_simconf_getRhodesPath();
-const char* rho_simconf_getstring(const char* name);
+const char* rho_simconf_getString(const char* name);
+const int rho_simconf_getBool(const char* name);
 
 #ifdef __cplusplus
 }
