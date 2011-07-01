@@ -25,7 +25,8 @@ net::ISSL *CRhoClassFactory::createSSLEngine()
     if(!m_pSsl)
     {
         CMutexLock lock(m_sslMutex);
-        m_pSsl = new net::SSLImpl();
+        if(!m_pSsl)
+            m_pSsl = new net::SSLImpl();
     }
     return m_pSsl;
 }
