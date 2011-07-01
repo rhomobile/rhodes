@@ -81,6 +81,7 @@ public class RhoBluetoothSession {
         	RhoBluetoothManager.sharedInstance().onSessionConnectedOK();
             break;
         case RhoBluetoothSession.STATE_LISTEN:
+        	break;
         case RhoBluetoothSession.STATE_NONE:
         	//fireSessionCallback(mConnectedDeviceName, mSession.BT_SESSION_DISCONNECT);
         	mCallbackUrl = null;
@@ -202,7 +203,7 @@ public class RhoBluetoothSession {
      */
     private void connectionFailed() {
         if (D) Log.d(TAG, "connectionFailed()");
-        setState(STATE_LISTEN);
+        setState(STATE_NONE);
 
         // Send a failure message back to the Activity
         //Message msg = mHandler.obtainMessage(RhoBluetoothManager.MESSAGE_TOAST);
@@ -218,7 +219,7 @@ public class RhoBluetoothSession {
      */
     public void connectionLost() {
         if (D) Log.d(TAG, "connectionLost()");
-        setState(STATE_LISTEN);
+        setState(STATE_NONE);
 
         // Send a failure message back to the Activity
         //Message msg = mHandler.obtainMessage(RhoBluetoothManager.MESSAGE_TOAST);
