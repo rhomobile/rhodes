@@ -90,4 +90,16 @@ public class RhoBluetoothManagerOld implements IRhoBluetoothManager {
 	public void session_write_data(String connected_device_name, byte[] buf, int length) {
 	}
 
+	public void create_custom_server_session(String client_name, String callback_url) {
+		return;
+	}
+
+	public void create_custom_client_session(String server_name, String callback_url) {
+		return;
+	}
+	
+	public void stop_current_connection_process() {
+		return;
+	}
+	
 }

@@ -59,4 +59,11 @@ public interface IRhoBluetoothManager {
     
     public void setDeviceName(String device_name);
     
+	public void create_custom_server_session(String client_name, String callback_url);
+
+	public void create_custom_client_session(String server_name, String callback_url);
+	
+	public void stop_current_connection_process();
+    
+    
 }

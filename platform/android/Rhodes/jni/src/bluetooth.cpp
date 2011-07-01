@@ -99,21 +99,38 @@ RHO_GLOBAL const char* rho_bluetooth_create_session(const char* role, const char
 
 
 RHO_GLOBAL const char* rho_bluetooth_create_custom_server_session(const char* client_name, const char* callback_url, int accept_any_device) {
-
-    return NULL;
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHOBLUETOOTHMANAGER);
+    if (!cls) return 0;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "create_custom_server_session", "(Ljava/lang/String;Ljava/lang/String;)V");
+    if (!mid) return 0;
+    jhstring objStr1 = rho_cast<jhstring>(client_name);
+    jhstring objStr2 = rho_cast<jhstring>(callback_url);
+    env->CallStaticObjectMethod(cls, mid, objStr1.get(), objStr2.get());
+    return "OK";
 }
 
 RHO_GLOBAL const char* rho_bluetooth_create_custom_client_session(const char* server_name, const char* callback_url) {
-
-    return NULL;
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHOBLUETOOTHMANAGER);
+    if (!cls) return 0;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "create_custom_client_session", "(Ljava/lang/String;Ljava/lang/String;)V");
+    if (!mid) return 0;
+    jhstring objStr1 = rho_cast<jhstring>(server_name);
+    jhstring objStr2 = rho_cast<jhstring>(callback_url);
+    env->CallStaticObjectMethod(cls, mid, objStr1.get(), objStr2.get());
+    return "OK";
 }
 
 RHO_GLOBAL const char* rho_bluetooth_stop_current_connection_process() {
-    
-    return NULL;
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHOBLUETOOTHMANAGER);
+    if (!cls) return 0;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "stop_current_connection_process", "()V");
+    if (!mid) return 0;
+    env->CallStaticObjectMethod(cls, mid);
+    return "OK";
 }
-
-
 
 
 
