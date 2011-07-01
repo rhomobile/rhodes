@@ -1,5 +1,0 @@
-BarcodeRecognizer/barcode_recognizer
-Blob/blob
-Image/image
-SignatureUtil/signature_util
-UIFormDemo/u_i_form_demo
