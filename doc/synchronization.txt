@@ -593,6 +593,8 @@ Call search on the RhoSync application with given parameters.  See the [search s
 	#
 	# :progress_step	(optional) Define how often search callback 
 	#					will be executed with 'in_progress' state. 
+	# :sync_changes     (optional)  - true or false(default). Define should client changes send to server before search.
+	
 	Contact.search(
 	  :from => 'search',
 	  :search_params => { 
@@ -603,7 +605,8 @@ Call search on the RhoSync application with given parameters.  See the [search s
 	  :offset => page * page_size,
 	  :max_results => page_size,
 	  :callback => url_for(:action => :search_callback),
-	  :callback_param => ""
+	  :callback_param => "",
+	  :sync_changes => false
 	)
 
 ### `search(*args) (multiple sources)`
@@ -623,7 +626,8 @@ For example:
 	  :offset => page * page_size,
 	  :max_results => page_size,
 	  :callback => url_for(:action => :search_callback),
-	  :callback_param => ""
+	  :callback_param => "",
+	  :sync_changes => false
 	)
 
 
