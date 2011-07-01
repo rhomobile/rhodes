@@ -1,6 +1,9 @@
 package com.rhomobile.rhodes.bluetooth;
 
 
+import java.util.Iterator;
+import java.util.Set;
+
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -306,6 +309,9 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 		            Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
 		            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
 		            RhodesService.getInstance().startActivity(discoverableIntent);
+		            if (mSession != null) {
+		            	mSession.start();
+		            }
 		        }
 			}
 		},false);
@@ -467,5 +473,46 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 	}
 
 
+	public void create_custom_server_session(String client_name, String callback_url) {
+		sharedInstance().startServer();
+	}
 
+	public void create_custom_client_session(String server_name, String callback_url) {
+		final String sname = server_name;
+		sharedInstance().mCreateSessionCallback = callback_url;
+		PerformOnUiThread.exec( new Runnable() {
+			public void run() {
+		    	if(D) Log.i(TAG, "create_custom_client_session");
+		    	BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+				Set<BluetoothDevice> devices = adapter.getBondedDevices();
+				Iterator<BluetoothDevice> it = devices.iterator();
+				while (it.hasNext()) {
+					BluetoothDevice device = it.next();
+					String name = device.getName();
+			    	if(D) Log.i(TAG, "        paired device : "+name);
+					if (sname.equals(name)) {
+						if (mSession != null) {
+					    	if(D) Log.i(TAG, "        try to connect.");
+							mSession.connect(device);
+							return;
+						}
+					}
+				}
+			}
+		},false);
+	}
+	
+	public void stop_current_connection_process() {
+		if (!mBluetoothIsEnabled) return;
+		if(D) Log.i(TAG, "stop_current_connection_process");
+		//TODO
+		if (sharedInstance().getSession() != null) {
+			sharedInstance().getSession().stop();
+		}
+	}
+
+	
+	
+	
+	
 }

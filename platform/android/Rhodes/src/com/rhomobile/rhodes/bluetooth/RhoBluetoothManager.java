@@ -116,6 +116,17 @@ public class RhoBluetoothManager {
 		sharedInstance().session_write_data(connected_device_name, buf, length);
 	}
 
+	
+	public static void create_custom_server_session(String client_name, String callback_url) {
+		sharedInstance().create_custom_server_session(client_name, callback_url);
+	}
 
+	public static void create_custom_client_session(String server_name, String callback_url) {
+		sharedInstance().create_custom_client_session(server_name, callback_url);
+	}
+	
+	public static void stop_current_connection_process() {
+		sharedInstance().stop_current_connection_process();
+	}
 
 }
