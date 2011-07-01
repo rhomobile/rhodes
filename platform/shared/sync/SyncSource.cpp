@@ -332,19 +332,20 @@ void CSyncSource::doSyncClientChanges()
                 m_strError = resp.getCharData();
             }
         }
-    }
 
-    for( i = 0; i < 3 && m_nErrCode == RhoAppAdapter.ERR_NONE; i++ )
-    {
-        if ( arUpdateSent[i] )
+        for( i = 0; i < 3 && m_nErrCode == RhoAppAdapter.ERR_NONE; i++ )
         {
-            //oo conflicts
-            if ( i < 1 &&  !getSync().getSourceOptions().getBoolProperty(getID(), "pass_through") ) //create
-                getDB().executeSQL("UPDATE changed_values SET sent=2 WHERE source_id=? and update_type=? and sent=1", getID(), arUpdateTypes[i] );
-            else
-            //
-                getDB().executeSQL("DELETE FROM changed_values WHERE source_id=? and update_type=? and sent=1", getID(), arUpdateTypes[i] );
+            if ( arUpdateSent[i] )
+            {
+                //oo conflicts
+                if ( i < 1 &&  !getSync().getSourceOptions().getBoolProperty(getID(), "pass_through") ) //create
+                    getDB().executeSQL("UPDATE changed_values SET sent=2 WHERE source_id=? and update_type=? and sent=1", getID(), arUpdateTypes[i] );
+                else
+                //
+                    getDB().executeSQL("DELETE FROM changed_values WHERE source_id=? and update_type=? and sent=1", getID(), arUpdateTypes[i] );
+            }
         }
+
     }
 
     m_arMultipartItems.removeAllElements();
