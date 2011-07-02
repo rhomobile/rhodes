@@ -172,12 +172,12 @@ bool CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
         ((QtMainWindow*)qtMainWindow), SLOT(takePicture(char*)) );
     QObject::connect(this, SIGNAL(doSelectPicture(char*)),
         ((QtMainWindow*)qtMainWindow), SLOT(selectPicture(char*)) );
-    QObject::connect(this, SIGNAL(doAlertShowPopup(AlertDialog::Params*)),
-        ((QtMainWindow*)qtMainWindow), SLOT(alertShowPopup(AlertDialog::Params*)) );
+    QObject::connect(this, SIGNAL(doAlertShowPopup(CAlertParams*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(alertShowPopup(CAlertParams*)) );
     QObject::connect(this, SIGNAL(doAlertHidePopup(void)),
         ((QtMainWindow*)qtMainWindow), SLOT(alertHidePopup(void)) );
-    QObject::connect(this, SIGNAL(doDateTimePicker(void*)), //TODO: CDateTimeMessage*
-        ((QtMainWindow*)qtMainWindow), SLOT(dateTimePicker(void*)) );
+    QObject::connect(this, SIGNAL(doDateTimePicker(CDateTimeMessage*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(dateTimePicker(CDateTimeMessage*)) );
     QObject::connect(this, SIGNAL(doExecuteCommand(RhoNativeViewRunnable*)),
         ((QtMainWindow*)qtMainWindow), SLOT(executeCommand(RhoNativeViewRunnable*)) );
     QObject::connect(this, SIGNAL(doExecuteRunnable(rho::common::IRhoRunnable*)),
@@ -631,7 +631,7 @@ void CMainWindow::selectPicture(char* callbackUrl)
     emit doSelectPicture(callbackUrl);
 }
 
-void CMainWindow::alertShowPopup(AlertDialog::Params *params)
+void CMainWindow::alertShowPopup(CAlertParams *params)
 {
     emit doAlertShowPopup(params);
 }
@@ -641,7 +641,7 @@ void CMainWindow::alertHidePopup()
     emit doAlertHidePopup();
 }
 
-void CMainWindow::dateTimePicker(void* msg) //TODO: CDateTimeMessage *
+void CMainWindow::dateTimePicker(CDateTimeMessage * msg)
 {
     emit doDateTimePicker(msg);
 }
