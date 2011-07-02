@@ -12,7 +12,8 @@
 #include "MainWindowCallback.h"
 #include "common/IRhoThreadImpl.h"
 #include "common/RhoNativeViewManager.h"
-#include "AlertDialog.h"
+#include "impl/AlertImpl.h"
+#include "impl/DateTimePickerImpl.h"
 
 namespace Ui {
     class QtMainWindow;
@@ -98,9 +99,9 @@ public slots:
     void navigateCommand(TNavigateData* nd);
     void takePicture(char* callbackUrl);
     void selectPicture(char* callbackUrl);
-    void alertShowPopup(AlertDialog::Params *);
+    void alertShowPopup(CAlertParams *);
     void alertHidePopup(void);
-    void dateTimePicker(void *); //TODO: CDateTimeMessage *
+    void dateTimePicker(CDateTimeMessage *);
     void executeCommand(RhoNativeViewRunnable*);
     void executeRunnable(rho::common::IRhoRunnable* pTask);
     void takeSignature(void*); //TODO: Signature::Params*

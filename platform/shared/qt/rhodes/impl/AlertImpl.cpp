@@ -16,19 +16,19 @@ void alert_show_status(const char* szTitle, const char* szMessage, const char* s
     rho::String title = szTitle ? szTitle : "";
     rho::String callback = "";
     rho::String icon = "";
-    Vector<AlertDialog::Params::CAlertButton> buttons;
-    CMainWindow::getInstance()->alertShowPopup(new AlertDialog::Params(title, message, callback, icon, buttons, AlertDialog::Params::DLG_STATUS ));
+    Vector<CAlertParams::CAlertButton> buttons;
+    CMainWindow::getInstance()->alertShowPopup(new CAlertParams(title, message, callback, icon, buttons, CAlertParams::DLG_STATUS ));
 }
 
 void alert_show_popup(rho_param *p)
 {
     if (p->type == RHO_PARAM_STRING) {
         rho::String msg = rho::String(p->v.string);
-        CMainWindow::getInstance()->alertShowPopup(new AlertDialog::Params(msg));
+        CMainWindow::getInstance()->alertShowPopup(new CAlertParams(msg));
     } else if (p->type == RHO_PARAM_HASH) {
         String title, message, callback, icon;
         String btnId, btnTitle;
-        Vector<AlertDialog::Params::CAlertButton> buttons;
+        Vector<CAlertParams::CAlertButton> buttons;
 
         for (int i = 0, lim = p->v.hash->size; i < lim; ++i) {
             char *name = p->v.hash->name[i];
@@ -97,11 +97,11 @@ void alert_show_popup(rho_param *p)
                         continue;
                     }
 
-                    buttons.addElement( AlertDialog::Params::CAlertButton(btnTitle, btnId) );
+                    buttons.addElement( CAlertParams::CAlertButton(btnTitle, btnId) );
                 }
             }//buttons
         }
-        CMainWindow::getInstance()->alertShowPopup(new AlertDialog::Params(title, message, icon, callback, buttons, AlertDialog::Params::DLG_CUSTOM));
+        CMainWindow::getInstance()->alertShowPopup(new CAlertParams(title, message, icon, callback, buttons, CAlertParams::DLG_CUSTOM));
     }
 }
 

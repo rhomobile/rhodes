@@ -10,7 +10,8 @@
 #include "../MainWindowCallback.h"
 #include "NativeToolbarImpl.h"
 #include "NativeTabbarImpl.h"
-#include "AlertDialog.h"
+#include "AlertImpl.h"
+#include "DateTimePickerImpl.h"
 #undef null
 #include <QObject>
 
@@ -99,9 +100,9 @@ public:
     void navigateCommand(TNavigateData*);
     void takePicture(char*);
     void selectPicture(char*);
-    void alertShowPopup(AlertDialog::Params *);
+    void alertShowPopup(CAlertParams *);
     void alertHidePopup(void);
-    void dateTimePicker(void *); //TODO: CDateTimeMessage *
+    void dateTimePicker(CDateTimeMessage *);
     void executeCommand(RhoNativeViewRunnable*);
     void executeRunnable(rho::common::IRhoRunnable*);
     void takeSignature(void*); //TODO: Signature::Params*
@@ -116,9 +117,9 @@ signals:
     void doNavigateCommand(TNavigateData*);
     void doTakePicture(char*);
     void doSelectPicture(char*);
-    void doAlertShowPopup(AlertDialog::Params *);
+    void doAlertShowPopup(CAlertParams *);
     void doAlertHidePopup(void);
-    void doDateTimePicker(void *); //TODO: CDateTimeMessage *
+    void doDateTimePicker(CDateTimeMessage *);
     void doExecuteCommand(RhoNativeViewRunnable*);
     void doExecuteRunnable(rho::common::IRhoRunnable*);
     void doTakeSignature(void*); //TODO: Signature::Params*
