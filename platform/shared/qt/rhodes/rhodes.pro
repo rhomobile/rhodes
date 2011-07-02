@@ -70,7 +70,9 @@ impl/MainWindowImpl.h\
 impl/NativeToolbarImpl.h\
 impl/NativeTabbarImpl.h\
 ../../rubyext/NativeToolbarExt.h\
-AlertDialog.h
+AlertDialog.h\
+impl/DateTimePickerImpl.h\
+impl/AlertImpl.h
 
 SOURCES += main.cpp\
 ExternalWebView.cpp\

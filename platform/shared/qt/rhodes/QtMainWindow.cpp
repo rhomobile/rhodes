@@ -17,6 +17,7 @@
 #include "rubyext/WebView.h"
 #include "rubyext/NativeToolbarExt.h"
 #undef null
+#include "AlertDialog.h"
 
 #ifdef OS_MACOSX
 #define stricmp strcasecmp
@@ -560,11 +561,11 @@ void QtMainWindow::selectPicture(char* callbackUrl)
     free(callbackUrl);
 }
 
-void QtMainWindow::alertShowPopup(AlertDialog::Params * params)
+void QtMainWindow::alertShowPopup(CAlertParams * params)
 {
     rho::StringW strAppName = RHODESAPP().getAppNameW();
 
-    if (params->m_dlgType == AlertDialog::Params::DLG_STATUS) {
+    if (params->m_dlgType == CAlertParams::DLG_STATUS) {
     //    if (m_SyncStatusDlg == NULL) 
     //        m_SyncStatusDlg = new CSyncStatusDlg();
     //    m_SyncStatusDlg->setStatusText(convertToStringW(params->m_message).c_str());
@@ -576,10 +577,10 @@ void QtMainWindow::alertShowPopup(AlertDialog::Params * params)
     //        m_SyncStatusDlg->ShowWindow(SW_SHOW);
     //        m_SyncStatusDlg->BringWindowToTop();
     //    }
-    } else if (params->m_dlgType == AlertDialog::Params::DLG_DEFAULT) {
+    } else if (params->m_dlgType == CAlertParams::DLG_DEFAULT) {
         QMessageBox::warning(0, QString::fromWCharArray(strAppName.c_str()),
             QString::fromWCharArray(rho::common::convertToStringW(params->m_message).c_str()));
-    } else if (params->m_dlgType == AlertDialog::Params::DLG_CUSTOM) {
+    } else if (params->m_dlgType == CAlertParams::DLG_CUSTOM) {
         if ( params->m_buttons.size() == 1 && strcasecmp(params->m_buttons[0].m_strCaption.c_str(), "ok") == 0)
             QMessageBox::warning(0, QString::fromWCharArray(rho::common::convertToStringW(params->m_title).c_str()),
                 QString::fromWCharArray(rho::common::convertToStringW(params->m_message).c_str()));
@@ -640,31 +641,24 @@ void QtMainWindow::alertHidePopup()
     }
 }
 
-void QtMainWindow::dateTimePicker(void* msg) //TODO: CDateTimeMessage *
+void QtMainWindow::dateTimePicker(CDateTimeMessage* msg)
 {
     //TODO: dateTimePicker
+    if (msg) {
+        int retCode    = -1;
+        time_t ret_time = 0;
 
-    //CDateTimeMessage *msg = (CDateTimeMessage *)lParam;
-    //int retCode    = -1;
-    //time_t ret_time = 0;
+        AlertDialog timeDialog(msg, this);
+        retCode = timeDialog.exec();
+        ret_time = 0; // timeDialog.GetTime();
 
-    //if (msg->m_format == CDateTimeMessage::FORMAT_TIME) {
-    //    CTimePickerDialog timeDialog(msg);
-    //    retCode = timeDialog.DoModal(m_hWnd);
-    //    ret_time = timeDialog.GetTime();
-    //} else {
-    //    CDateTimePickerDialog dateTimeDialog(msg);
-    //    retCode = dateTimeDialog.DoModal(m_hWnd);
-    //    ret_time = dateTimeDialog.GetTime();
-    //}
+        rho_rhodesapp_callDateTimeCallback( msg->m_callback,
+            retCode == QDialog::Accepted ? (long )ret_time : 0,
+            msg->m_data,
+            retCode == QDialog::Accepted ? 0 : 1);
 
-    //rho_rhodesapp_callDateTimeCallback( msg->m_callback, 
-    //                                    retCode == IDOK ? (long )ret_time : 0,
-    //                                    msg->m_data,
-    //                                    retCode == IDOK ? 0 : 1);
-
-    if (msg)
-        free(msg); //TODO: delete msg;
+        delete msg;
+    }
 }
 
 void QtMainWindow::executeCommand(RhoNativeViewRunnable* runnable)
