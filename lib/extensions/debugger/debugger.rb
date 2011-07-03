@@ -13,6 +13,8 @@ def debug_read_cmd(io,wait)
       cmd = io.read_nonblock(4096)
       $_cmd << cmd if cmd !~ /^\s*$/
     end
+
+    $_s.write("get data from front end" + $_cmd.to_s + "\n")
   rescue
     # puts $!.inspect
   end
@@ -35,6 +37,8 @@ def execute_cmd(cmd, advanced)
 end
 
 def get_variables(scope)
+  $_s.write("get_variables start\n")
+
   if (scope =~ /^GVARS/)
    cmd = "global_variables"
    prefix = ""
@@ -66,6 +70,7 @@ def get_variables(scope)
         begin
           result = eval(v,$_binding).inspect
         rescue Exception => exc
+          $_s.write("get var exception\n")
           result = "#{$!}".inspect
         end
         $_s.write("V:#{vartype}:#{v}:#{result}\n")
@@ -81,9 +86,13 @@ def log_command(cmd)
 end
 
 def debug_handle_cmd(inline)
+
+  $_s.write("start of debug_handle_cmd wait=" + inline.to_s + "\n")
+
   cmd = $_cmd.match(/^([^\n\r]*)([\n\r]+|$)/)[0]
   processed = false
   wait = inline
+
   if cmd != ""
     if cmd =~/^CONNECTED/
       log_command(cmd)
@@ -117,6 +126,7 @@ def debug_handle_cmd(inline)
       puts "[Debugger] Breakpoints disabled"
       processed = true
     elsif inline and (cmd =~ /^STEPOVER/)
+      $_s.write("STEPOVER start\n")
       log_command(cmd)
       $_step = 2
       $_step_level = $_call_stack
@@ -168,9 +178,11 @@ def debug_handle_cmd(inline)
     elsif inline and (cmd =~ /^EVL?:/)
       log_command(cmd)
       processed = true
+      puts "[Debugger] Calc evaluation..."
       execute_cmd cmd.sub(/^EVL?:/,""), (cmd =~ /^EVL:/ ? true : false)
-    elsif inline and (cmd =~ /^[GLCI]VARS/)
+    elsif  inline and (cmd =~ /^[GLCI]VARS/)
       log_command(cmd)
+      puts "[Debugger] Get variables..."
       get_variables cmd
       processed = true
     elsif inline
@@ -179,10 +191,14 @@ def debug_handle_cmd(inline)
       processed = true
     end
   end
+
   if processed
     $_cmd = $_cmd.sub(/^([^\n\r]*)([\n\r]+(.*)|)$/, "\\3")
     $_wait = wait if inline
   end
+
+  $_s.write("end of debug_handle_cmd wait=" + $_wait.to_s + "cmd=" + cmd + "\n")
+
   processed
 end
 
@@ -195,20 +211,21 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
 
   if file[0, $_app_path.length] == $_app_path
 
-    #$_s.write('[Debugger][1] step = ' + file.to_s + ' line = ' + line.to_s + "\n")
-
     if event =~ /^line/
 
       unhandled = true
       step_stop = ($_step > 0) and (($_step_level < 0) or ($_call_stack <= $_step_level))
+
+      a = step_stop.to_s
+      $_s.write('[Debugger][2] file = ' + file.to_s + ' step = ' + a.to_s + "\n")
+
       if (step_stop or ($_breakpoints_enabled and (not $_breakpoint.empty?)))
         filename = file[$_app_path.length, file.length-$_app_path.length]
-    
-        #$_s.write('[Debugger][2] step = ' + filename.to_s + ' line = ' + line.to_s + " BP List" + $_breakpoint.to_s + "\n")
 
         ln = line.to_i.to_s
         if (step_stop or ($_breakpoints_enabled and ($_breakpoint.has_key?(filename + ':' + ln))))
-          #$_s.write('[Debugger][3] step = ' + file.to_s + ' line = ' + line.to_s + "\n")
+          $_s.write('[Debugger][3] step = ' + file.to_s + ' line = ' + line.to_s + "\n")
+
           fn = filename.gsub(/:/, '|')
           cl = classname.to_s.gsub(/:/,'#')
           $_s.write((step_stop ? DEBUGGER_STEP_TYPE[$_step-1] : "BP") + ":#{fn}:#{ln}:#{cl}:#{id}\n")
@@ -216,14 +233,19 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
           $_step = 0
           $_step_level = -1
 
+          $_s.write("start waiting\n")
+
           $_wait = true
           while $_wait
             while debug_handle_cmd(true) do end
-            if System::get_property('main_window_closed')
-              $_wait = false
-            end
-            sleep if $_wait
+            #if System::get_property('main_window_closed')
+            #  $_wait = false
+            #end
+            sleep(0.1) if $_wait
           end
+
+          $_s.write("end waiting\n")
+
           unhandled = false
         end
       end
@@ -289,6 +311,7 @@ begin
       debug_read_cmd($_s,true)
       while debug_handle_cmd(false) do end
       if ($_cmd !~ /^\s*$/) and (Thread.main.stop?)
+        $_s.write("[manage thread] set wait = true\n")
         $_wait = true
         Thread.main.wakeup
       end
