@@ -201,6 +201,9 @@ namespace "config" do
       end
     end
 
+    ENV["ROOT_PATH"] = $app_path.to_s + '/app/'
+    ENV["APP_TYPE"] = "rhodes"
+
     $app_config = Jake.config(File.open(File.join($app_path, "build.yml")))
 
     Jake.set_bbver($app_config["bbver"].to_s)
