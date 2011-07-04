@@ -646,14 +646,12 @@ void QtMainWindow::dateTimePicker(CDateTimeMessage* msg)
     //TODO: dateTimePicker
     if (msg) {
         int retCode    = -1;
-        time_t ret_time = 0;
 
         AlertDialog timeDialog(msg, this);
         retCode = timeDialog.exec();
-        ret_time = 0; // timeDialog.GetTime();
 
         rho_rhodesapp_callDateTimeCallback( msg->m_callback,
-            retCode == QDialog::Accepted ? (long )ret_time : 0,
+            retCode == QDialog::Accepted ? (long) timeDialog.getUnixTime() : 0,
             msg->m_data,
             retCode == QDialog::Accepted ? 0 : 1);
 
