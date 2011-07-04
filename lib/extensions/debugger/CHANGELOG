@@ -1,3 +1,7 @@
+## 1.0.2
+* Change debug port parameter name
+* Fix issue with run from Rhosync
+
 ## 1.0.1
 * Fix issue with Windows 7 and Ruby 1.8.7
 * Add support for RhoSync debug
