@@ -70,7 +70,7 @@ impl/MainWindowImpl.h\
 impl/NativeToolbarImpl.h\
 impl/NativeTabbarImpl.h\
 ../../rubyext/NativeToolbarExt.h\
-AlertDialog.h\
+DateTimeDialog.h\
 impl/DateTimePickerImpl.h\
 impl/AlertImpl.h
 
@@ -99,9 +99,9 @@ impl/SystemImpl.cpp\
 impl/WebViewImpl.cpp\
 impl/MainWindowImpl.cpp\
 impl/NativeTabbarImpl.cpp\
-AlertDialog.cpp
+DateTimeDialog.cpp
 
 FORMS += ExternalWebView.ui\
 QtMainWindow.ui\
 QtWebInspector.ui\
-AlertDialog.ui
+DateTimeDialog.ui
