@@ -1,2 +1,6 @@
-## 1.0
+## 1.0.1
+* Fix issue with Windows 7 and Ruby 1.8.7
+* Add support for RhoSync debug
+
+## 1.0.0
 * RhoStudio customization to support debugger
