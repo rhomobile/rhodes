@@ -3,6 +3,7 @@ package com.rhomobile.rhosync_client_test;
 import java.io.File;
 
 import com.rhomobile.rhosync.RhoSyncClient;
+import com.rhomobile.rhosync.RhomModel;
 
 import android.content.pm.ApplicationInfo;
 import android.test.AndroidTestCase;
@@ -10,9 +11,8 @@ import android.util.Log;
 
 public class TestRhoSyncNativeLib extends AndroidTestCase {
     private static final String TAG = TestRhoSyncNativeLib.class.getSimpleName();
-	RhoSyncClient mClient;
 	
-	protected void setUp()
+	public void testLibraryLoaded()
 	{
 		ApplicationInfo appInfo = this.getContext().getApplicationInfo();
 		String dataDir = appInfo.dataDir;
@@ -31,17 +31,19 @@ public class TestRhoSyncNativeLib extends AndroidTestCase {
 		f.mkdirs();
 		RhoSyncClient.nativeInit(rootPath, sqliteJournals);
 
-		mClient = new RhoSyncClient();
-		mClient.setThreadedMode(false);
-	}
-	
-	public void testLibraryLoaded()
-	{
-		//mClient.setPollInterval(60);
-		//assertEquals(mClient.getPollInterval(), 60);
+		RhoSyncClient client = new RhoSyncClient();
+		RhomModel models[] = {
+				new RhomModel("Customer", RhomModel.SYNC_TYPE_INCREMENTAL),
+				new RhomModel("Product", RhomModel.SYNC_TYPE_INCREMENTAL)
+			};
 
-		//mClient.setPollInterval(0);
-		//assertEquals(mClient.getPollInterval(), 0);
+		client.initialize(models);
+		client.setThreadedMode(false);
+		client.setPollInterval(60);
+		assertEquals(client.getPollInterval(), 60);
+
+		client.setPollInterval(0);
+		assertEquals(client.getPollInterval(), 0);
 	}
 	
 	

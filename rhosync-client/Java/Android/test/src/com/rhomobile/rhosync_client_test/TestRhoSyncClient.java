@@ -6,7 +6,8 @@ import android.content.pm.ApplicationInfo;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
-import com.rhomobile.rhosync.*;
+import com.rhomobile.rhosync.RhoSyncClient;
+import com.rhomobile.rhosync.RhomModel;
 
 public class TestRhoSyncClient extends AndroidTestCase {
     private static final String TAG = TestRhoSyncClient.class.getSimpleName();
@@ -14,6 +15,7 @@ public class TestRhoSyncClient extends AndroidTestCase {
 	private final String SYNC_URL = "http://rhodes-store-server.heroku.com/application";
 
     RhoSyncClient mClient;
+    RhomModel mModels[];
 
     @Override
     protected void setUp()
@@ -36,9 +38,17 @@ public class TestRhoSyncClient extends AndroidTestCase {
 		RhoSyncClient.nativeInit(rootPath, sqliteJournals);
     	
     	mClient = new RhoSyncClient();
-//        mClient.setThreadedMode(false);
-//        mClient.setSyncServer(SYNC_URL);
-//        mClient.loginWithUser("", "");
+
+    	mModels = new RhomModel[]{
+				new RhomModel("Customer", RhomModel.SYNC_TYPE_INCREMENTAL),
+				new RhomModel("Product", RhomModel.SYNC_TYPE_INCREMENTAL)
+			};
+
+		mClient.initialize(mModels);
+        mClient.setThreadedMode(false);
+        mClient.setPollInterval(0);
+        mClient.setSyncServer(SYNC_URL);
+        mClient.loginWithUser("", "");
     }
 
     public void testLogin()
