@@ -277,7 +277,7 @@ $_s = nil
 begin
   puts "[Debugger] Opening connection"
   debug_host_env = ENV['RHOHOST']
-  debug_port_env = ENV['RHOPORT']
+  debug_port_env = ENV['rho_debug_port']
   debug_path_env = ENV['ROOT_PATH']
 
   debug_host = (debug_host_env.nil? or debug_host_env == "") ? '127.0.0.1' : debug_host_env 
@@ -315,7 +315,7 @@ begin
       debug_read_cmd($_s,true)
       while debug_handle_cmd(false) do end
       if ($_cmd !~ /^\s*$/) and (Thread.main.stop?)
-        $_s.write("[manage thread] set wait = true\n")
+        #$_s.write("[manage thread] set wait = true\n")
         $_wait = true
         Thread.main.wakeup
       end
