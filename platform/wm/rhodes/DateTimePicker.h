@@ -4,6 +4,9 @@
 #include "OkCancelModalDialog.h"
 #include "resource.h"
 
+#ifdef RHODES_EMULATOR
+#include "qt/rhodes/impl/DateTimePickerImpl.h"
+#else
 //TODO: delegates
 class CDateTimeMessage 
 {
@@ -41,6 +44,7 @@ public:
 	long  m_min_time;
 	long  m_max_time;
 };
+#endif
 
 class CDateTimePickerDialog : public 
 #if defined(OS_WINDOWS)
