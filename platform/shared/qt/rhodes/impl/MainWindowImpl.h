@@ -107,6 +107,7 @@ public:
     void executeRunnable(rho::common::IRhoRunnable*);
     void takeSignature(void*); //TODO: Signature::Params*
     void fullscreenCommand(int);
+    void setCookie(const char*, const char*);
 
 signals:
     void doExitCommand(void);
@@ -124,4 +125,5 @@ signals:
     void doExecuteRunnable(rho::common::IRhoRunnable*);
     void doTakeSignature(void*); //TODO: Signature::Params*
     void doFullscreenCommand(int);
+    void doSetCookie(const char*, const char*);
 };

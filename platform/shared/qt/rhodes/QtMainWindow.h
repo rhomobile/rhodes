@@ -106,6 +106,7 @@ public slots:
     void executeRunnable(rho::common::IRhoRunnable* pTask);
     void takeSignature(void*); //TODO: Signature::Params*
     void fullscreenCommand(int);
+    void setCookie(const char* url, const char* cookie);
 protected:
     void resizeEvent(QResizeEvent *);
 };

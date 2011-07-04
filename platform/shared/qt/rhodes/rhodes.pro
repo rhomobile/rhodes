@@ -1,4 +1,4 @@
-QT += core gui webkit
+QT += core gui network webkit
 
 TARGET = RhoSimulator
 TEMPLATE = app
