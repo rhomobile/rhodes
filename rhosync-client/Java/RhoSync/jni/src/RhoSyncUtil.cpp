@@ -34,7 +34,7 @@ RHO_GLOBAL void delete_files_in_folder(const char *szFolderPath)
 //    env->CallStaticVoidMethod(cls, mid, objFolderPath.get());
 }
 
-RHO_GLOBAL rho::String rho_sysimpl_get_phone_id()
+rho::String rho_sysimpl_get_phone_id()
 {
     return "";
 }
