@@ -19,6 +19,8 @@ DateTimeDialog::DateTimeDialog(CDateTimeMessage* msg, QWidget *parent) :
             m_dte->setMaximumDate(QDateTime::fromTime_t(msg->m_max_time).date());
         if (msg->m_initialTime)
             m_dte->setDate(QDateTime::fromTime_t(msg->m_initialTime).date());
+        m_dte->setCalendarPopup(true);
+        //m_dte->setDisplayFormat(QLocale::system().dateFormat(QLocale::ShortFormat));
         break;
     case CDateTimeMessage::FORMAT_TIME:
         m_dte = new QTimeEdit(this);
@@ -28,6 +30,7 @@ DateTimeDialog::DateTimeDialog(CDateTimeMessage* msg, QWidget *parent) :
             m_dte->setMaximumTime(QDateTime::fromTime_t(msg->m_max_time).time());
         if (msg->m_initialTime)
             m_dte->setTime(QDateTime::fromTime_t(msg->m_initialTime).time());
+        //m_dte->setDisplayFormat(QLocale::system().timeFormat(QLocale::ShortFormat));
         break;
     default: //case CDateTimeMessage::FORMAT_DATE_TIME:
         m_dte = new QDateTimeEdit(this);
@@ -37,8 +40,9 @@ DateTimeDialog::DateTimeDialog(CDateTimeMessage* msg, QWidget *parent) :
             m_dte->setMaximumDateTime(QDateTime::fromTime_t(msg->m_max_time));
         if (msg->m_initialTime)
             m_dte->setDateTime(QDateTime::fromTime_t(msg->m_initialTime));
+        m_dte->setCalendarPopup(true);
+        //m_dte->setDisplayFormat(QLocale::system().dateTimeFormat(QLocale::ShortFormat));
     }
-
     m_dte->move(20, 20);
 }
 
