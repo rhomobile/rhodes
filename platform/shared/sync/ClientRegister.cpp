@@ -3,7 +3,7 @@
 #include "common/RhoConf.h"
 #include "common/RhodesApp.h"
 
-extern "C" rho::String rho_sysimpl_get_phone_id();
+rho::String rho_sysimpl_get_phone_id();
 
 namespace rho{
 namespace sync{
