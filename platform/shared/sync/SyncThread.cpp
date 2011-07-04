@@ -9,6 +9,9 @@
 #include "sync/ClientRegister.h"
 #include "common/RhoAppAdapter.h"
 
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "SyncThread"
+
 namespace rho {
 namespace sync {
 

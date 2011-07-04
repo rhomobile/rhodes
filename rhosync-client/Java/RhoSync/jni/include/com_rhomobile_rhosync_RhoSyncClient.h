@@ -9,6 +9,14 @@ extern "C" {
 #endif
 /*
  * Class:     com_rhomobile_rhosync_RhoSyncClient
+ * Method:    initialize
+ * Signature: ([Lcom/rhomobile/rhosync/RhomModel;)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_initialize
+  (JNIEnv *, jobject, jobjectArray);
+
+/*
+ * Class:     com_rhomobile_rhosync_RhoSyncClient
  * Method:    setSyncServer
  * Signature: (Ljava/lang/String;)V
  */
@@ -121,7 +129,7 @@ JNIEXPORT jobject JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_syncAll
 
 /*
  * Class:     com_rhomobile_rhosync_RhoSyncClient
- * Method:    initPath
+ * Method:    nativeInit
  * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_nativeInit
