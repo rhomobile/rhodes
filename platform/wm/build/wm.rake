@@ -418,23 +418,7 @@ namespace "run" do
             puts "log_file=" + File.join($app_path, "rhosimulator", $log_file)
     end
   end
-
   
-  namespace "win32" do
-
-        task :rhosimulator => "config:common" do
-            $rhosim_config = "platform='wm'\r\n"
-            Rake::Task["run:rhosimulator"].invoke            
-        end
-
-        task :rhosimulator_debug, :debug_port do |t, args|
-            puts "Args were: #{args}"
-            $debug_port = args[:debug_port].to_i
-            $rhosim_config = "platform='wm'\r\n"
-            Rake::Task["run:rhosimulator"].invoke
-        end		
-  end
-
   namespace "wm" do    
     task :rhosimulator => "config:common" do    
        $rhosim_config = "platform='wm'\r\n"
