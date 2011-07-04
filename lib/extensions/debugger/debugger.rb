@@ -234,13 +234,12 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
 
           #$_s.write("start waiting\n")
 
-          puts ">> " + ENV["APP_TYPE"].to_s
-
+          app_type = ENV["APP_TYPE"]
           $_wait = true
           while $_wait
             while debug_handle_cmd(true) do end
 
-            if ENV["APP_TYPE"] == "rhodes"
+            if app_type.eql? "rhodes"
               if System::get_property('main_window_closed')
                  $_wait = false
               end
