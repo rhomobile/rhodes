@@ -10,12 +10,6 @@
 
 extern "C" void rho_webview_navigate(const char* url, int index);
 
-static rho::common::CRhoClassFactory g_oRhoClassFactory;
-rho::common::IRhoClassFactory* rho_get_RhoClassFactory()
-{
-    return &g_oRhoClassFactory;
-}
-
 RHO_GLOBAL void rho_map_location(char* query)
 {
     rho::String url = "http://maps.google.com/?";
@@ -71,20 +65,7 @@ RHO_GLOBAL int rho_net_ping_network(const char* szHost)
 	return (int)env->CallStaticBooleanMethod(cls, mid, rho_cast<jhstring>(szHost).get());
 }
 
-RHO_GLOBAL void *rho_nativethread_start()
-{
-    JNIEnv *env;
-    jvm()->AttachCurrentThread(&env, NULL);
-    store_thr_jnienv(env);
-    return NULL;
-}
-
-RHO_GLOBAL void rho_nativethread_end(void *)
-{
-    jvm()->DetachCurrentThread();
-}
-
-rho::String rho_sysimpl_get_phone_id()
+RHO_GLOBAL rho::String rho_sysimpl_get_phone_id()
 {
     JNIEnv *env = jnienv();
 

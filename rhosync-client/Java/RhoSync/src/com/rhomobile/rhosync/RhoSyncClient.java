@@ -7,7 +7,7 @@ public class RhoSyncClient implements Closeable{
 	public native void setSyncServer(String url);
 
 	public native void setThreadedMode(boolean mode);
-	public native boolean getThreadedMode();
+	//public native boolean getThreadedMode();
 
 	public native void setPollInterval(int interval);
 	public native int getPollInterval();
@@ -29,6 +29,8 @@ public class RhoSyncClient implements Closeable{
 	/*TODO:
 	RhoSyncNotify search(...);
 	*/
+	
+	public static native void nativeInit(String root, String sqliteJournals);
 	
 	@Override
 	public void close() throws IOException {

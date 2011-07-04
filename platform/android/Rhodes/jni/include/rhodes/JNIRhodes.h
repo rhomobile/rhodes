@@ -7,15 +7,19 @@
 #include <rhodes.h>
 
 #include <common/RhoDefs.h>
+#include <common/RhoStd.h>
 #include <logging/RhoLogConf.h>
 #include <logging/RhoLog.h>
-
-//#include <genconfig.h>
 
 static int const RHO_FD_BASE = 512;
 
 JavaVM *jvm();
 void store_thr_jnienv(JNIEnv *env);
+
+extern "C" {
+  void android_set_path(const rho::String& root, const rho::String& sqlite);
+  void android_setup(JNIEnv *env);
+}
 
 enum rho_java_class_t {
 #define RHODES_DEFINE_JAVA_CLASS(x, name) x,

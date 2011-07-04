@@ -424,6 +424,11 @@ void rho_sync_set_pagesize(int nPageSize)
 
 void rho_sync_set_threaded_mode(int b)
 {
+    if(!CSyncThread::getInstance())
+    {
+        RAWLOG_ERROR("No SyncThread instance!");
+    }
+    
     CSyncThread::getInstance()->setNonThreadedMode(b==0);
     CSyncThread::getSyncEngine().setNonThreadedMode(b==0);
 }
