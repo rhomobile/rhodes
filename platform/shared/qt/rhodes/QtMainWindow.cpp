@@ -11,6 +11,7 @@
 #include <QWebSecurityOrigin>
 #include <QWebHistory>
 #include <QLabel>
+#include <QtNetwork/QNetworkCookie>
 #include "ext/rho/rhoruby.h"
 #include "common/RhoStd.h"
 #include "common/RhodesApp.h"
@@ -683,4 +684,12 @@ void QtMainWindow::takeSignature(void*) //TODO: Signature::Params*
 void QtMainWindow::fullscreenCommand(int enable)
 {
     //TODO: fullscreenCommand
+}
+
+void QtMainWindow::setCookie(const char* url, const char* cookie)
+{
+    if (url && cookie) {
+        QNetworkCookieJar* cj = ui->webView->page()->networkAccessManager()->cookieJar();
+        cj->setCookiesFromUrl(QNetworkCookie::parseCookies(QByteArray(cookie)), QUrl(QString::fromUtf8(url)));
+    }
 }
