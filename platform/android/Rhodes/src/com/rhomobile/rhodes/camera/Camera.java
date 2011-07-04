@@ -50,17 +50,22 @@ public class Camera {
 	
 	public static CameraService getCameraService() {
 		if (ourCameraService == null) {
-			int sdkVersion = Integer.parseInt(Build.VERSION.SDK);
-			if (sdkVersion >= Build.VERSION_CODES.GINGERBREAD) {
-				ourCameraService = new CameraNewService();
-			}
-			else {
-				if (sdkVersion >= Build.VERSION_CODES.ECLAIR) {
-					ourCameraService = new CameraSemiService();
+			if (Capabilities.CAMERA_ENABLED) {
+				int sdkVersion = Integer.parseInt(Build.VERSION.SDK);
+				if (sdkVersion >= Build.VERSION_CODES.GINGERBREAD) {
+					ourCameraService = new CameraNewService();
 				}
 				else {
-					ourCameraService = new CameraOldService();
+					if (sdkVersion >= Build.VERSION_CODES.ECLAIR) {
+						ourCameraService = new CameraSemiService();
+					}
+					else {
+						ourCameraService = new CameraOldService();
+					}
 				}
+			}
+			else {
+				Logger.I(TAG, "Camera capability is not enabled !");
 			}
 		}
 		return ourCameraService;
@@ -179,12 +184,14 @@ public class Camera {
 	public static int[] getCameraResolution(String camera_type) {
 		android.hardware.Camera camera = null;
 		try {
-			if ("front".equals(camera_type)) {
-				camera = getCameraService().getFrontCamera();
-			}
-			else {
-				if ("default".equals(camera_type) || "main".equals(camera_type)) {
-					camera = getCameraService().getMainCamera();
+			if (getCameraService() != null) {
+				if ("front".equals(camera_type)) {
+					camera = getCameraService().getFrontCamera();
+				}
+				else {
+					if ("default".equals(camera_type) || "main".equals(camera_type)) {
+						camera = getCameraService().getMainCamera();
+					}
 				}
 			}
 		}
