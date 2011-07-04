@@ -5,6 +5,12 @@
 #include "rhodes/sslimpl.h"
 #include "rhodes/rhocryptimpl.h"
 
+static rho::common::CRhoClassFactory g_rhoClassFactory;
+rho::common::IRhoClassFactory* rho_get_RhoClassFactory()
+{
+    return &g_rhoClassFactory;
+}
+
 namespace rho
 {
 namespace common

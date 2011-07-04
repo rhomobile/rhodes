@@ -25,14 +25,6 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_setThreadedMode
 
 /*
  * Class:     com_rhomobile_rhosync_RhoSyncClient
- * Method:    getThreadedMode
- * Signature: ()Z
- */
-JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_getThreadedMode
-  (JNIEnv *, jobject);
-
-/*
- * Class:     com_rhomobile_rhosync_RhoSyncClient
  * Method:    setPollInterval
  * Signature: (I)V
  */
@@ -126,6 +118,14 @@ JNIEXPORT jobject JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_loginWithUser
  */
 JNIEXPORT jobject JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_syncAll
   (JNIEnv *, jobject);
+
+/*
+ * Class:     com_rhomobile_rhosync_RhoSyncClient
+ * Method:    initPath
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_nativeInit
+  (JNIEnv *, jclass, jstring, jstring);
 
 #ifdef __cplusplus
 }

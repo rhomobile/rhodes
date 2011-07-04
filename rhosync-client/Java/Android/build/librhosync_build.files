@@ -3,3 +3,4 @@
 ../platform/shared/sync/SyncNotify.cpp
 ../platform/shared/sync/SyncSource.cpp
 ../platform/shared/sync/SyncThread.cpp
+../platform/shared/SyncClient/SyncClient.cpp

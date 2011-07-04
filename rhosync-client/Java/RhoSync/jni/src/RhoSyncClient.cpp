@@ -1,4 +1,5 @@
 #include "rhodes/JNIRhodes.h"
+#include "sync/SyncThread.h"
 
 #include "com_rhomobile_rhosync_RhoSyncClient.h"
 
@@ -8,25 +9,28 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_setSyncServer
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_setThreadedMode
-  (JNIEnv *, jobject, jboolean)
+  (JNIEnv *, jobject, jboolean jmode)
 {
+    bool mode = jmode;
+    rho_sync_set_threaded_mode(mode ? 1 : 0);
 }
 
-RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_getThreadedMode
-  (JNIEnv *, jobject)
-{
-    return (jboolean)false;
-}
+//RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_getThreadedMode
+//  (JNIEnv *, jobject)
+//{
+//    return (jboolean)(rho_sync_get_threaded_mode() != 0);
+//}
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_setPollInterval
-  (JNIEnv *, jobject, jint)
+  (JNIEnv *, jobject, jint time)
 {
+    rho_sync_set_pollinterval(time);
 }
 
 RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_getPollInterval
   (JNIEnv *, jobject)
 {
-    return (jint)0;
+    return (jint)rho_sync_get_pollinterval();
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_setBulkSyncState
@@ -85,3 +89,9 @@ RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_syncAll
     return (jobject)NULL;
 }
 
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_nativeInit
+  (JNIEnv * env, jclass, jstring root, jstring sqliteJournals)
+{
+    android_set_path(rho_cast<rho::String>(root), rho_cast<rho::String>(sqliteJournals));
+    android_setup(env);
+}

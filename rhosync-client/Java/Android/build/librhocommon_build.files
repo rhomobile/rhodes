@@ -1,4 +1,3 @@
-../platform/shared/common/RhodesApp.cpp
 ../platform/shared/common/RhodesAppBase.cpp
 ../platform/shared/common/PosixThreadImpl.cpp
 ../platform/shared/common/RhoConf.cpp

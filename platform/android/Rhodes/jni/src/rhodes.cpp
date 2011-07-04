@@ -110,14 +110,6 @@ jmethodID getJNIClassStaticMethod(JNIEnv *env, jclass cls, const char *name, con
     return mid;
 }
 
-std::string rho_cur_path()
-{
-    char buf[PATH_MAX];
-    if (::getcwd(buf, sizeof(buf)) == NULL)
-        return "";
-    return buf;
-}
-
 jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
 {
     g_jvm = vm;
