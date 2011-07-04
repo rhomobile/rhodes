@@ -1022,6 +1022,9 @@ namespace "run" do
 
     desc "Run application on RhoSimulator"
     task :rhosimulator => "config:common" do
+        puts "rho_debug_port : #{ENV['rho_debug_port']}"
+        puts "rho_reload_app_changes : #{ENV['rho_reload_app_changes']}"
+    
         path = ""
         args = ["-approot='#{$app_path}'"]
         cmd = nil
@@ -1059,8 +1062,9 @@ namespace "run" do
 
         sim_conf = "rhodes_path='#{$startdir}'\r\n"
         sim_conf += "app_name='#{$appname}'\r\n"
-        sim_conf += "debug_port=#{$debug_port}\r\n"
+        sim_conf += "debug_port=#{ENV['rho_debug_port']}\r\n"
         sim_conf += "debug_host='127.0.0.1'\r\n"
+        sim_conf += "reload_app_changes=#{ENV['rho_reload_app_changes']}\r\n"        
         sim_conf += $rhosim_config if $rhosim_config
 
         #check gem extensions
@@ -1089,12 +1093,14 @@ namespace "run" do
     end
 
 
-    task :rhosimulator_debug, :debug_port do |t, args|
+    #task :rhosimulator_debug do #, :debug_port do |t, args|
 
-        puts "Args were: #{args}"
-        $debug_port = args[:debug_port].to_i
-        Rake::Task["run:rhosimulator"].invoke
+        #puts "Args were: #{args}"
+        #puts "rho_debug_port : #{ENV['rho_debug_port']}"
+        #puts "rho_reload_app_changes : #{ENV['rho_reload_app_changes']}"
+        #$debug_port = args[:debug_port].to_i
+        #Rake::Task["run:rhosimulator"].invoke
 
-    end		
+    #end		
 
 end

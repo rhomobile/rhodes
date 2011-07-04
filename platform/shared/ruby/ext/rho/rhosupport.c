@@ -411,7 +411,7 @@ VALUE require_compiled(VALUE fname, VALUE* result)
         GET_VM()->src_encoding_index = rb_utf8_encindex();
         rb_load(path, 0);
 
-        if( !rho_simconf_getBool("do_not_reload_app_changes") )
+        if( rho_simconf_getBool("reload_app_changes") )
         {
             if ( strncmp( RSTRING_PTR(path), rho_native_rhopath(), strlen(rho_native_rhopath()) ) == 0 )
                 rb_ary_delete(GET_VM()->loaded_features, fname);
