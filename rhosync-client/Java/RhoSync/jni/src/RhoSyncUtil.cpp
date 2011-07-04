@@ -1,3 +1,5 @@
+#include <android/native_activity.h>
+
 #include "rhodes/JNIRhodes.h"
 
 RHO_GLOBAL void delete_files_in_folder(const char *szFolderPath)
@@ -11,3 +13,16 @@ RHO_GLOBAL void delete_files_in_folder(const char *szFolderPath)
 //    env->CallStaticVoidMethod(cls, mid, objFolderPath.get());
 }
 
+RHO_GLOBAL rho::String rho_sysimpl_get_phone_id()
+{
+    return "";
+}
+
+RHO_GLOBAL void rho_free_callbackdata(void* pData)
+{
+}
+
+RHO_GLOBAL int rho_net_ping_network(const char* szHost)
+{
+    return 1;
+}

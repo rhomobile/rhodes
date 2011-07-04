@@ -145,6 +145,7 @@ void rho_sync_logout();
 void rho_sync_set_notification(int source_id, const char *url, char* params);
 void rho_sync_clear_notification(int source_id);
 int rho_sync_set_pollinterval(int nInterval);
+int rho_sync_get_pollinterval();
 void rho_sync_set_syncserver(const char* syncserver);
 void rho_sync_setobjectnotify_url(const char* szUrl);
 void rho_sync_clear_object_notification();    
@@ -172,5 +173,3 @@ void rho_sync_stop();
 #ifdef __cplusplus
 };
 #endif //__cplusplus
-
-

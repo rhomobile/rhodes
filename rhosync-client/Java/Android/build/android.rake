@@ -40,17 +40,6 @@ BUILDARGS = {
               #export CFLAGS="--sysroot <ndkroot>/build/platforms/android-3/arch-arm -fPIC -mandroid -DANDROID -DOS_ANDROID"
               #export CPPFLAGS="--sysroot <ndkroot>/build/platforms/android-3/arch-arm -fPIC -mandroid -DANDROID -DOS_ANDROID"
               #./configure --without-ssl --without-ca-bundle --without-ca-path --without-libssh2 --without-libidn --disable-ldap --disable-ldaps --host=arm-eabi
-              "libcurl" =>   ["-DHAVE_CONFIG_H",
-                           "-I#{File.join($sharedpath, "curl", "include")}",
-                           "-I#{File.join($sharedpath, "curl")}",
-                           "-I#{$sharedpath}"],
-              "libsqlite" => ["-I#{File.join($sharedpath, "sqlite")}",
-                           "-I#{$sharedpath}"],
-              "libjson" =>   ["-I#{File.join($sharedpath, "json")}",
-                           "-I#{$sharedpath}"],
-              "libunzip" =>  ["-I#{$sharedpath}"],
-              "librholog" => ["-DRHO_NO_RUBY",
-                           "-I#{$sharedpath}"],
               "librhocommon" => ["-DRHO_NO_RUBY",
                            "-I#{$sharedpath}",
                            "-I#{File.join($sharedpath, "curl", "include")}"],
@@ -72,7 +61,19 @@ BUILDARGS = {
               "rhosyncclient" => ["-DRHO_NO_RUBY",
                            "-I#{File.join("Java", "RhoSync", "jni", "include")}",
                            "-I#{$sharedpath}",
-                           "-I#{File.join($androidpath, "Rhodes", "jni", "include")}"]
+                           "-I#{File.join($androidpath, "Rhodes", "jni", "include")}"],
+              "libcurl" =>   ["-DHAVE_CONFIG_H",
+                           "-I#{File.join($sharedpath, "curl", "include")}",
+                           "-I#{File.join($sharedpath, "curl")}",
+                           "-I#{$sharedpath}"],
+              "libsqlite" => ["-I#{File.join($sharedpath, "sqlite")}",
+                           "-I#{$sharedpath}"],
+              "libjson" =>   ["-DRHO_NO_RUBY",
+                           "-I#{File.join($sharedpath, "json")}",
+                           "-I#{$sharedpath}"],
+              "libunzip" =>  ["-I#{$sharedpath}"],
+              "librholog" => ["-DRHO_NO_RUBY",
+                           "-I#{$sharedpath}"]
              }
 
 
@@ -282,13 +283,18 @@ end # namespace "android"
       end
       args = ["-L#{BUILDPATH}"]
 
-      libs = ["-llog"]
+      libs = []
       LIBFN.each do |lib|
         libs << "-l" + File.basename(lib).gsub(/^lib/,"").gsub(/\.(a|so)$/,"")
       end
+      libs << "-llog"
+      libs << "-ldl"
+      libs << "-lz"
 
       args += libs
+      args += libs.reverse
       args += libs
+      args += libs.reverse
 
       cc_link(t.name, objects, args) or exit 1
     end

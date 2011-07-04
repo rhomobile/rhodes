@@ -1,5 +1,3 @@
-#include <android/log.h>
-
 #include "rhodes/jni/com_rhomobile_rhodes_RhodesService.h"
 #include "rhodes/jni/com_rhomobile_rhodes_RhodesAppOptions.h"
 
@@ -10,10 +8,6 @@
 #include <common/AutoPointer.h>
 #include <sync/SyncThread.h>
 #include <sync/ClientRegister.h>
-
-#include <sys/stat.h>
-#include <sys/resource.h>
-#include <pwd.h>
 
 #include <genconfig.h>
 
@@ -40,20 +34,8 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_makeLink
         env->ThrowNew(getJNIClass(RHODES_JAVA_CLASS_RUNTIME_EXCEPTION), "Can not create symlink");
 }
 
-static std::string g_root_path;
-static std::string g_sqlite_journals_path;
 static std::string g_apk_path;
-static rho::common::CAutoPtr<rho::common::AndroidLogSink> g_androidLogSink(new rho::common::AndroidLogSink());
-
-std::string const &rho_root_path()
-{
-    return g_root_path;
-}
-
-const char* rho_native_rhopath()
-{
-    return rho_root_path().c_str();
-}
+//static rho::common::CAutoPtr<rho::common::AndroidLogSink> g_androidLogSink(new rho::common::AndroidLogSink());
 
 std::string const &rho_apk_path()
 {
@@ -86,60 +68,6 @@ static bool set_capabilities(JNIEnv *env)
     return true;
 }
 
-static bool set_posix_environment(JNIEnv *env, jclass clsRE)
-{
-    // Set USER variable
-    struct passwd *pwd = ::getpwuid(::getuid());
-    if (!pwd)
-    {
-        env->ThrowNew(clsRE, "Can't find user name for current user");
-        return false;
-    }
-
-    size_t len = ::strlen(pwd->pw_name) + 16;
-    char *buf = (char *)::malloc(len + 1);
-    buf[len] = '\0';
-    ::snprintf(buf, len, "USER=%s", pwd->pw_name);
-    int e = ::putenv(buf);
-    ::free(buf);
-    if (e != 0)
-    {
-        env->ThrowNew(clsRE, "Can't set USER environment variable");
-        return false;
-    }
-
-    // Set HOME variable
-    std::string root_path = rho_root_path();
-    if (!root_path.empty() && root_path[root_path.size() - 1] == '/')
-        root_path.erase(root_path.size() - 1);
-    len = root_path.size() + 16;
-    buf = (char *)::malloc(len + 1);
-    buf[len] = '\0';
-    ::snprintf(buf, len, "HOME=%s", root_path.c_str());
-    e = ::putenv(buf);
-    ::free(buf);
-    if (e != 0)
-    {
-        env->ThrowNew(clsRE, "Can't set HOME environment variable");
-        return false;
-    }
-
-    // Set TMP variable
-    len = root_path.size() + 32;
-    buf = (char *)::malloc(len + 1);
-    buf[len] = '\0';
-    ::snprintf(buf, len, "TMP=%s/tmp", root_path.c_str());
-    e = ::putenv(buf);
-    ::free(buf);
-    if (e != 0)
-    {
-        env->ThrowNew(clsRE, "Can't set TMP environment variable");
-        return false;
-    }
-
-    return true;
-}
-
 static jobject g_classLoader = NULL;
 static jmethodID g_loadClass = NULL;
 
@@ -162,66 +90,19 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_initClassLoader
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_nativeInitPath
   (JNIEnv *env, jobject, jstring root_path, jstring sqlite_journals_path, jstring apk_path)
 {
-    g_root_path = rho_cast<std::string>(env, root_path);
-    g_sqlite_journals_path = rho_cast<std::string>(env, sqlite_journals_path);
+    android_set_path(rho_cast<std::string>(env, root_path), rho_cast<std::string>(env, sqlite_journals_path));
     g_apk_path = rho_cast<std::string>(env, apk_path);
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesApplication_createRhodesApp
   (JNIEnv *env, jclass)
 {
-    jclass clsRE = getJNIClass(RHODES_JAVA_CLASS_RUNTIME_EXCEPTION);
-    if (!clsRE)
-        return;
-
-    struct rlimit rlim;
-    if (getrlimit(RLIMIT_NOFILE, &rlim) == -1)
-    {
-        env->ThrowNew(clsRE, "Can not get maximum number of open files");
-        return;
-    }
-    if (rlim.rlim_max < (unsigned long)RHO_FD_BASE)
-    {
-        env->ThrowNew(clsRE, "Current limit of open files is less then RHO_FD_BASE");
-        return;
-    }
-    if (rlim.rlim_cur > (unsigned long)RHO_FD_BASE)
-    {
-        rlim.rlim_cur = RHO_FD_BASE;
-        rlim.rlim_max = RHO_FD_BASE;
-        if (setrlimit(RLIMIT_NOFILE, &rlim) == -1)
-        {
-            env->ThrowNew(clsRE, "Can not set maximum number of open files");
-            return;
-        }
-    }
-
-    if (!set_posix_environment(env, clsRE)) return;
-
-    if (::chdir(rho_root_path().c_str()) == -1)
-    {
-        env->ThrowNew(clsRE, "Can not chdir to HOME directory");
-        return;
-    }
+    android_setup(env);
 
     if (!set_capabilities(env)) return;
 
-    // Init SQLite temp directory
-    sqlite3_temp_directory = (char*)g_sqlite_journals_path.c_str();
-
-    const char* szRootPath = rho_native_rhopath();
-
-    // Init logconf
-    rho_logconf_Init(szRootPath, "");
-
-    // Disable log to stdout as on android all stdout redirects to /dev/null
-    RHOCONF().setBool("LogToOutput", false, true);
-    LOGCONF().setLogToOutput(false);
-    // Add android system log sink
-    LOGCONF().setLogView(g_androidLogSink);
-
     // Start Rhodes application
-    rho_rhodesapp_create(szRootPath);
+    rho_rhodesapp_create(rho_native_rhopath());
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesApplication_startRhodesApp
@@ -422,4 +303,15 @@ RHO_GLOBAL char *rho_timezone()
         tz = strdup(tzs.c_str());
     }
     return tz;
+}
+
+RHO_GLOBAL void rho_conf_show_log()
+{
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "showLogView", "()V");
+    if (!mid) return;
+
+    env->CallStaticVoidMethod(cls, mid);
 }
