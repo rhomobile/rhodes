@@ -14,7 +14,7 @@ def debug_read_cmd(io,wait)
       $_cmd << cmd if cmd !~ /^\s*$/
     end
 
-    $_s.write("get data from front end" + $_cmd.to_s + "\n")
+    #$_s.write("get data from front end" + $_cmd.to_s + "\n")
   rescue
     # puts $!.inspect
   end
@@ -37,7 +37,7 @@ def execute_cmd(cmd, advanced)
 end
 
 def get_variables(scope)
-  $_s.write("get_variables start\n")
+  #$_s.write("get_variables start\n")
 
   if (scope =~ /^GVARS/)
    cmd = "global_variables"
@@ -86,8 +86,7 @@ def log_command(cmd)
 end
 
 def debug_handle_cmd(inline)
-
-  $_s.write("start of debug_handle_cmd wait=" + inline.to_s + "\n")
+  #$_s.write("start of debug_handle_cmd wait=" + inline.to_s + "\n")
 
   cmd = $_cmd.match(/^([^\n\r]*)([\n\r]+|$)/)[0]
   processed = false
@@ -197,7 +196,7 @@ def debug_handle_cmd(inline)
     $_wait = wait if inline
   end
 
-  $_s.write("end of debug_handle_cmd wait=" + $_wait.to_s + "cmd=" + cmd + "\n")
+  #$_s.write("end of debug_handle_cmd wait=" + $_wait.to_s + "cmd=" + cmd + "\n")
 
   processed
 end
@@ -217,14 +216,14 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
       step_stop = ($_step > 0) and (($_step_level < 0) or ($_call_stack <= $_step_level))
 
       a = step_stop.to_s
-      $_s.write('[Debugger][2] file = ' + file.to_s + ' step = ' + a.to_s + "\n")
+      #$_s.write('[Debugger][2] file = ' + file.to_s + ' step = ' + a.to_s + "\n")
 
       if (step_stop or ($_breakpoints_enabled and (not $_breakpoint.empty?)))
         filename = file[$_app_path.length, file.length-$_app_path.length]
 
         ln = line.to_i.to_s
         if (step_stop or ($_breakpoints_enabled and ($_breakpoint.has_key?(filename + ':' + ln))))
-          $_s.write('[Debugger][3] step = ' + file.to_s + ' line = ' + line.to_s + "\n")
+          #$_s.write('[Debugger][3] step = ' + file.to_s + ' line = ' + line.to_s + "\n")
 
           fn = filename.gsub(/:/, '|')
           cl = classname.to_s.gsub(/:/,'#')
@@ -233,18 +232,24 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
           $_step = 0
           $_step_level = -1
 
-          $_s.write("start waiting\n")
+          #$_s.write("start waiting\n")
+
+          puts ">> " + ENV["APP_TYPE"].to_s
 
           $_wait = true
           while $_wait
             while debug_handle_cmd(true) do end
-            #if System::get_property('main_window_closed')
-            #  $_wait = false
-            #end
+
+            if ENV["APP_TYPE"] == "rhodes"
+              if System::get_property('main_window_closed')
+                 $_wait = false
+              end
+            end
+
             sleep(0.1) if $_wait
           end
 
-          $_s.write("end waiting\n")
+          #$_s.write("end waiting\n")
 
           unhandled = false
         end
