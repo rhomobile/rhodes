@@ -1,7 +1,7 @@
 #include "RhoLog.h"
 
 extern "C"{
-const char* __rawDefaultCategory = "";
+const char* _rawDefaultCategory = "";
 
 static rho::common::CMutex g_plainBufferLock;
 static char g_plainBuffer[2000];
