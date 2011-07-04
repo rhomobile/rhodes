@@ -186,7 +186,8 @@ bool CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
         ((QtMainWindow*)qtMainWindow), SLOT(takeSignature(void*)) );
     QObject::connect(this, SIGNAL(doFullscreenCommand(int)),
         ((QtMainWindow*)qtMainWindow), SLOT(fullscreenCommand(int)) );
-
+    QObject::connect(this, SIGNAL(doSetCookie(const char*, const char*)),
+        ((QtMainWindow*)qtMainWindow), SLOT(setCookie(const char*, const char*)) );
     return true;
 }
 
@@ -664,4 +665,9 @@ void CMainWindow::takeSignature(void* params) //TODO: Signature::Params*
 void CMainWindow::fullscreenCommand(int enable)
 {
     emit doFullscreenCommand(enable);
+}
+
+void CMainWindow::setCookie(const char* url, const char* cookie)
+{
+    emit doSetCookie(url, cookie);
 }
