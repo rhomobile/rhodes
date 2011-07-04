@@ -65,7 +65,7 @@ RHO_GLOBAL int rho_net_ping_network(const char* szHost)
 	return (int)env->CallStaticBooleanMethod(cls, mid, rho_cast<jhstring>(szHost).get());
 }
 
-RHO_GLOBAL rho::String rho_sysimpl_get_phone_id()
+rho::String rho_sysimpl_get_phone_id()
 {
     JNIEnv *env = jnienv();
 
