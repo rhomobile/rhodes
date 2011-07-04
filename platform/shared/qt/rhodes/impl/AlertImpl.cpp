@@ -2,7 +2,7 @@
 #include "common/rhoparams.h"
 #include "common/RhoAppAdapter.h"
 #include "MainWindowImpl.h"
-#include "AlertDialog.h"
+#include "DateTimeDialog.h"
 #undef null
 #include <QSound>
 

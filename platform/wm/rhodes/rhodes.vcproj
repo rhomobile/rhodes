@@ -3562,7 +3562,7 @@
 			Name="qtrhodes"
 			>
 			<File
-				RelativePath="..\..\shared\qt\rhodes\AlertDialog.cpp"
+				RelativePath="..\..\shared\qt\rhodes\DateTimeDialog.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -3694,7 +3694,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\shared\qt\rhodes\AlertDialog.h"
+				RelativePath="..\..\shared\qt\rhodes\DateTimeDialog.h"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -3774,7 +3774,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WEBKIT_LIB &quot;-I.&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;..\..\shared\qt\rhodes\AlertDialog.h&quot; -o &quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WEBKIT_LIB &quot;-I.&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;..\..\shared\qt\rhodes\DateTimeDialog.h&quot; -o &quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -3809,7 +3809,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WEBKIT_LIB  &quot;-I..\..\shared\qt\rhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I.&quot; &quot;..\..\shared\qt\rhodes\AlertDialog.h&quot; -o &quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WEBKIT_LIB  &quot;-I..\..\shared\qt\rhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I.&quot; &quot;..\..\shared\qt\rhodes\DateTimeDialog.h&quot; -o &quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -3832,7 +3832,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\shared\qt\rhodes\AlertDialog.ui"
+				RelativePath="..\..\shared\qt\rhodes\DateTimeDialog.ui"
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -5590,7 +5590,7 @@
 				SourceControlFiles="false"
 				>
 				<File
-					RelativePath="..\..\shared\qt\rhodes\GeneratedFiles\ui_AlertDialog.h"
+					RelativePath="..\..\shared\qt\rhodes\GeneratedFiles\ui_DateTimeDialog.h"
 					>
 					<FileConfiguration
 						Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -6113,7 +6113,7 @@
 					Name="Debug"
 					>
 					<File
-						RelativePath="..\..\shared\qt\rhodes\GeneratedFiles\SimulatorDebug\moc_AlertDialog.cpp"
+						RelativePath="..\..\shared\qt\rhodes\GeneratedFiles\SimulatorDebug\moc_DateTimeDialog.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -6717,7 +6717,7 @@
 					Name="Release"
 					>
 					<File
-						RelativePath="..\..\shared\qt\rhodes\GeneratedFiles\SimulatorRelease\moc_AlertDialog.cpp"
+						RelativePath="..\..\shared\qt\rhodes\GeneratedFiles\SimulatorRelease\moc_DateTimeDialog.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"

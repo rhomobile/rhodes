@@ -1,9 +1,9 @@
-#include "AlertDialog.h"
-#include "ui_AlertDialog.h"
+#include "DateTimeDialog.h"
+#include "ui_DateTimeDialog.h"
 
-AlertDialog::AlertDialog(CDateTimeMessage* msg, QWidget *parent) :
+DateTimeDialog::DateTimeDialog(CDateTimeMessage* msg, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::AlertDialog)
+    ui(new Ui::DateTimeDialog)
 {
     ui->setupUi(this);
 
@@ -42,13 +42,13 @@ AlertDialog::AlertDialog(CDateTimeMessage* msg, QWidget *parent) :
     m_dte->move(20, 20);
 }
 
-AlertDialog::~AlertDialog()
+DateTimeDialog::~DateTimeDialog()
 {
     delete m_dte;
     delete ui;
 }
 
-time_t AlertDialog::getUnixTime(void)
+time_t DateTimeDialog::getUnixTime(void)
 {
     switch (m_type) {
     case CDateTimeMessage::FORMAT_DATE:

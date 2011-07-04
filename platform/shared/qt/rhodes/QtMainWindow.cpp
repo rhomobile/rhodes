@@ -17,7 +17,7 @@
 #include "rubyext/WebView.h"
 #include "rubyext/NativeToolbarExt.h"
 #undef null
-#include "AlertDialog.h"
+#include "DateTimeDialog.h"
 
 #ifdef OS_MACOSX
 #define stricmp strcasecmp
@@ -602,7 +602,7 @@ void QtMainWindow::alertShowPopup(CAlertParams * params)
             } else if (stricmp(params->m_icon.c_str(),"info")==0) {
                 icon = QMessageBox::Information;
             }
-            m_alertDialog = new QMessageBox(icon, //new AlertDialog(params, 0);
+            m_alertDialog = new QMessageBox(icon, //new DateTimeDialog(params, 0);
                 QString::fromWCharArray(rho::common::convertToStringW(params->m_title).c_str()),
                 QString::fromWCharArray(rho::common::convertToStringW(params->m_message).c_str()));
             m_alertDialog->setStandardButtons(0);
@@ -647,7 +647,7 @@ void QtMainWindow::dateTimePicker(CDateTimeMessage* msg)
     if (msg) {
         int retCode    = -1;
 
-        AlertDialog timeDialog(msg, this);
+        DateTimeDialog timeDialog(msg, this);
         retCode = timeDialog.exec();
 
         rho_rhodesapp_callDateTimeCallback( msg->m_callback,
