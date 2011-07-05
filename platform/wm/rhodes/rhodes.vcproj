@@ -967,7 +967,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;&quot;..\..\shared\qt\rhodes\GeneratedFiles&quot;;&quot;$(QTDIR)\include&quot;;&quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtWebKit&quot;"
-				PreprocessorDefinitions="_DEBUG;DEBUG;WIN32;_WINDOWS;RHODES_EMULATOR;UNICODE;QT_LARGEFILE_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_WEBKIT_LIB"
+				PreprocessorDefinitions="_DEBUG;DEBUG;WIN32;_WINDOWS;RHODES_EMULATOR;UNICODE;QT_LARGEFILE_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_WEBKIT_LIB"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
 				TreatWChar_tAsBuiltInType="false"
@@ -993,7 +993,7 @@
 				RegisterOutput="false"
 				IgnoreImportLibrary="true"
 				UseUnicodeResponseFiles="false"
-				AdditionalDependencies="wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib gdiplus.lib qtmaind.lib QtCored4.lib QtGuid4.lib QtWebKitd4.lib"
+				AdditionalDependencies="wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib gdiplus.lib qtmaind.lib QtCored4.lib QtGuid4.lib QtNetworkd4.lib QtWebKitd4.lib"
 				OutputFile="$(OutDir)/rhosimulator.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(OutDir)&quot;;&quot;$(QTDIR)\lib&quot;"
@@ -1368,7 +1368,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;&quot;..\..\shared\qt\rhodes\GeneratedFiles&quot;;&quot;$(QTDIR)\include&quot;;&quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtWebKit&quot;"
-				PreprocessorDefinitions="_NDEBUG;NDEBUG;WIN32;_WINDOWS;RHODES_EMULATOR;UNICODE;QT_LARGEFILE_SUPPORT;QT_NO_DEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_WEBKIT_LIB"
+				PreprocessorDefinitions="_NDEBUG;NDEBUG;WIN32;_WINDOWS;RHODES_EMULATOR;UNICODE;QT_LARGEFILE_SUPPORT;QT_NO_DEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_WEBKIT_LIB"
 				RuntimeLibrary="0"
 				TreatWChar_tAsBuiltInType="false"
 				UsePrecompiledHeader="2"
@@ -1393,7 +1393,7 @@
 				RegisterOutput="false"
 				IgnoreImportLibrary="true"
 				UseUnicodeResponseFiles="false"
-				AdditionalDependencies="wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib gdiplus.lib qtmain.lib QtCore4.lib QtGui4.lib QtWebKit4.lib"
+				AdditionalDependencies="wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib gdiplus.lib qtmain.lib QtCore4.lib QtGui4.lib QtNetwork4.lib QtWebKit4.lib"
 				OutputFile="$(OutDir)/rhosimulator.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(OutDir)&quot;;&quot;$(QTDIR)\lib&quot;"
@@ -3774,7 +3774,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WEBKIT_LIB &quot;-I.&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;..\..\shared\qt\rhodes\DateTimeDialog.h&quot; -o &quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WEBKIT_LIB &quot;-I.&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;..\..\shared\qt\rhodes\DateTimeDialog.h&quot; -o &quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -3809,7 +3809,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WEBKIT_LIB  &quot;-I..\..\shared\qt\rhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I.&quot; &quot;..\..\shared\qt\rhodes\DateTimeDialog.h&quot; -o &quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WEBKIT_LIB  &quot;-I..\..\shared\qt\rhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I.&quot; &quot;..\..\shared\qt\rhodes\DateTimeDialog.h&quot; -o &quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -4182,7 +4182,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WEBKIT_LIB &quot;-I.&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;..\..\shared\qt\rhodes\ExternalWebView.h&quot; -o &quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WEBKIT_LIB &quot;-I.&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;..\..\shared\qt\rhodes\ExternalWebView.h&quot; -o &quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -4217,7 +4217,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WEBKIT_LIB  &quot;-I..\..\shared\qt\rhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I.&quot; &quot;..\..\shared\qt\rhodes\ExternalWebView.h&quot; -o &quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WEBKIT_LIB  &quot;-I..\..\shared\qt\rhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I.&quot; &quot;..\..\shared\qt\rhodes\ExternalWebView.h&quot; -o &quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -4720,7 +4720,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WEBKIT_LIB &quot;-I.&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;..\..\shared\qt\rhodes\QtMainWindow.h&quot; -o &quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WEBKIT_LIB &quot;-I.&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;..\..\shared\qt\rhodes\QtMainWindow.h&quot; -o &quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -4755,7 +4755,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WEBKIT_LIB  &quot;-I..\..\shared\qt\rhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I.&quot; &quot;..\..\shared\qt\rhodes\QtMainWindow.h&quot; -o &quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WEBKIT_LIB  &quot;-I..\..\shared\qt\rhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I.&quot; &quot;..\..\shared\qt\rhodes\QtMainWindow.h&quot; -o &quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -5390,7 +5390,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WEBKIT_LIB &quot;-I.&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;..\..\shared\qt\rhodes\QtWebInspector.h&quot; -o &quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WEBKIT_LIB &quot;-I.&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;..\..\shared\qt\rhodes\QtWebInspector.h&quot; -o &quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -5425,7 +5425,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WEBKIT_LIB  &quot;-I..\..\shared\qt\rhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I.&quot; &quot;..\..\shared\qt\rhodes\QtWebInspector.h&quot; -o &quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot; -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WEBKIT_LIB  &quot;-I..\..\shared\qt\rhodes\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\qtmain&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtWebKit&quot; &quot;-I.&quot; &quot;..\..\shared\qt\rhodes\QtWebInspector.h&quot; -o &quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
