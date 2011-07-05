@@ -18,12 +18,13 @@ public class RhoBluetoothSession {
 	// events for listener
 	public static String BT_SESSION_INPUT_DATA_RECEIVED = "SESSION_INPUT_DATA_RECEIVED";
 	public static String BT_SESSION_DISCONNECT = "SESSION_DISCONNECT";
+	public static String BT_SESSION_ERROR = "ERROR";
+	
 	
 	
     // Debugging
     private static final String TAG = "RhoBluetoothSession";
-    private static final boolean D = true;
-
+ 
     // Name for the SDP record when creating server socket
     private static final String NAME = "btspp";
 
@@ -69,22 +70,25 @@ public class RhoBluetoothSession {
      * @param state  An integer defining the current connection state
      */
     private synchronized void setState(int state) {
-        if (D) Log.d(TAG, "setState() " + mState + " -> " + state);
+    	RhoBluetoothManager.logi(TAG, "setState() " + mState + " -> " + state);
         mState = state;
 
         // Give the new state to the Handler so the UI Activity can update
         //mHandler.obtainMessage(RhoBluetoothManager.MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
         switch (mState) {
         case RhoBluetoothSession.STATE_CONNECTED:
+        	RhoBluetoothManager.logi(TAG, "     STATE_CONNECTED");
             //fireCreateSessionCallback(BTC_OK, mConnectedDeviceName);
         	mCallbackUrl = null;
         	RhoBluetoothManager.sharedInstance().onSessionConnectedOK();
             break;
         case RhoBluetoothSession.STATE_LISTEN:
+        	RhoBluetoothManager.logi(TAG, "     STATE_LISTEN");
         	break;
         case RhoBluetoothSession.STATE_NONE:
         	//fireSessionCallback(mConnectedDeviceName, mSession.BT_SESSION_DISCONNECT);
         	mCallbackUrl = null;
+        	RhoBluetoothManager.logi(TAG, "     STATE_NONE");
         	RhoBluetoothManager.sharedInstance().onSessionDisconnected();
             break;
         }
@@ -100,7 +104,7 @@ public class RhoBluetoothSession {
      * Start the chat service. Specifically start AcceptThread to begin a
      * session in listening (server) mode. Called by the Activity onResume() */
     public synchronized void start() {
-        if (D) Log.d(TAG, "start");
+    	RhoBluetoothManager.logi(TAG, "start()");
 
         // Cancel any thread attempting to make a connection
         if (mConnectThread != null) {mConnectThread.cancel(); mConnectThread = null;}
@@ -121,7 +125,7 @@ public class RhoBluetoothSession {
      * @param device  The BluetoothDevice to connect
      */
     public synchronized void connect(BluetoothDevice device) {
-        if (D) Log.d(TAG, "connect to: " + device);
+    	RhoBluetoothManager.logi(TAG, "connect() to: " + device.getName());
 
         // Cancel any thread attempting to make a connection
         if (mState == STATE_CONNECTING) {
@@ -143,7 +147,7 @@ public class RhoBluetoothSession {
      * @param device  The BluetoothDevice that has been connected
      */
     public synchronized void connected(BluetoothSocket socket, BluetoothDevice device) {
-        if (D) Log.d(TAG, "connected");
+    	RhoBluetoothManager.logi(TAG, "connected()");
 
         // Cancel the thread that completed the connection
         if (mConnectThread != null) {mConnectThread.cancel(); mConnectThread = null;}
@@ -174,7 +178,7 @@ public class RhoBluetoothSession {
      * Stop all threads
      */
     public synchronized void stop() {
-        if (D) Log.d(TAG, "stop");
+    	RhoBluetoothManager.logi(TAG, "stop()");
         if (mConnectThread != null) {mConnectThread.cancel(); mConnectThread = null;}
         if (mConnectedThread != null) {mConnectedThread.cancel(); mConnectedThread = null;}
         if (mAcceptThread != null) {mAcceptThread.cancel(); mAcceptThread = null;}
@@ -187,6 +191,7 @@ public class RhoBluetoothSession {
      * @see ConnectedThread#write(byte[])
      */
     public void write(byte[] out) {
+    	RhoBluetoothManager.logi(TAG, "write()");
         // Create temporary object
         ConnectedThread r;
         // Synchronize a copy of the ConnectedThread
@@ -202,7 +207,7 @@ public class RhoBluetoothSession {
      * Indicate that the connection attempt failed and notify the UI Activity.
      */
     private void connectionFailed() {
-        if (D) Log.d(TAG, "connectionFailed()");
+    	RhoBluetoothManager.logi(TAG, "connectionFailed()");
         setState(STATE_NONE);
 
         // Send a failure message back to the Activity
@@ -218,7 +223,7 @@ public class RhoBluetoothSession {
      * Indicate that the connection was lost and notify the UI Activity.
      */
     public void connectionLost() {
-        if (D) Log.d(TAG, "connectionLost()");
+    	RhoBluetoothManager.logi(TAG, "connectionLost()");
         setState(STATE_NONE);
 
         // Send a failure message back to the Activity
@@ -252,7 +257,7 @@ public class RhoBluetoothSession {
         }
 
         public void run() {
-            if (D) Log.d(TAG, "BEGIN mAcceptThread" + this);
+        	RhoBluetoothManager.logi(TAG, "BEGIN mAcceptThread" + this);
             setName("AcceptThread");
             BluetoothSocket socket = null;
 
@@ -289,11 +294,11 @@ public class RhoBluetoothSession {
                     }
                 }
             }
-            if (D) Log.i(TAG, "END mAcceptThread");
+            RhoBluetoothManager.logi(TAG, "END mAcceptThread");
         }
 
         public void cancel() {
-            if (D) Log.d(TAG, "cancel " + this);
+        	RhoBluetoothManager.logi(TAG, "CANCEL mAcceptThread");
             try {
                 mmServerSocket.close();
             } catch (IOException e) {
@@ -327,7 +332,7 @@ public class RhoBluetoothSession {
         }
 
         public void run() {
-            Log.i(TAG, "BEGIN mConnectThread");
+        	RhoBluetoothManager.logi(TAG, "BEGIN mConnectThread");
             setName("ConnectThread");
 
             // Always cancel discovery because it will slow down a connection
@@ -344,10 +349,11 @@ public class RhoBluetoothSession {
                 try {
                     mmSocket.close();
                 } catch (IOException e2) {
-                    Log.e(TAG, "unable to close() socket during connection failure", e2);
+                	RhoBluetoothManager.loge(TAG, "unable to close() socket during connection failure");
                 }
                 // Start the service over to restart listening mode
                 RhoBluetoothSession.this.start();
+                RhoBluetoothManager.logi(TAG, "END mConnectThread");
                 return;
             }
 
@@ -358,13 +364,15 @@ public class RhoBluetoothSession {
 
             // Start the connected thread
             connected(mmSocket, mmDevice);
+            RhoBluetoothManager.logi(TAG, "END mConnectThread");
         }
 
         public void cancel() {
+        	RhoBluetoothManager.logi(TAG, "CAMCEL mConnectThread");
             try {
                 mmSocket.close();
             } catch (IOException e) {
-                Log.e(TAG, "close() of connect socket failed", e);
+            	RhoBluetoothManager.loge(TAG, "close() of connect socket failed");
             }
         }
     }
@@ -379,7 +387,7 @@ public class RhoBluetoothSession {
         private final OutputStream mmOutStream;
 
         public ConnectedThread(BluetoothSocket socket) {
-            Log.d(TAG, "create ConnectedThread");
+        	RhoBluetoothManager.logi(TAG, "create mConnectedThread");
             mmSocket = socket;
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
@@ -389,7 +397,7 @@ public class RhoBluetoothSession {
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
             } catch (IOException e) {
-                Log.e(TAG, "temp sockets not created", e);
+            	RhoBluetoothManager.loge(TAG, "temp sockets not created");
             }
 
             mmInStream = tmpIn;
@@ -397,7 +405,7 @@ public class RhoBluetoothSession {
         }
 
         public void run() {
-            Log.i(TAG, "BEGIN mConnectedThread");
+        	RhoBluetoothManager.logi(TAG, "BEGIN mConnectedThread");
             byte[] buffer = new byte[1024];
             int bytes;
 
@@ -413,11 +421,12 @@ public class RhoBluetoothSession {
                     byte[] buf_for_send = buffer.clone();
                     RhoBluetoothManager.sharedInstance().onSessionReadMessage(buf_for_send, bytes);
                 } catch (IOException e) {
-                    Log.e(TAG, "disconnected", e);
+                	RhoBluetoothManager.loge(TAG, "disconnected");
                     connectionLost();
                     break;
                 }
             }
+        	RhoBluetoothManager.logi(TAG, "END mConnectedThread");
         }
 
         /**
@@ -432,15 +441,16 @@ public class RhoBluetoothSession {
                 //mHandler.obtainMessage(RhoBluetoothManager.MESSAGE_WRITE, -1, -1, buffer)
                 //        .sendToTarget();
             } catch (IOException e) {
-                Log.e(TAG, "Exception during write", e);
+            	RhoBluetoothManager.loge(TAG, "Exception during write");
             }
         }
 
         public void cancel() {
+        	RhoBluetoothManager.logi(TAG, "CANCEL mConnectedThread");
             try {
                 mmSocket.close();
             } catch (IOException e) {
-                Log.e(TAG, "close() of connect socket failed", e);
+            	RhoBluetoothManager.loge(TAG, "close() of connect socket failed");
             }
         }
     }	

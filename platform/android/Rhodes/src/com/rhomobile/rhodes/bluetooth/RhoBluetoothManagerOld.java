@@ -6,10 +6,9 @@ import android.util.Log;
 public class RhoBluetoothManagerOld implements IRhoBluetoothManager {
 
     private static final String TAG = "RhoBluetoothManagerOld";
-    private static final boolean D = true;
 
 	public RhoBluetoothManagerOld () {
-		if(D) Log.d(TAG, "RhoBluetoothManagerOld()");
+		RhoBluetoothManager.logi(TAG, "RhoBluetoothManagerOld()");
 	}
 	
 	public void init() {}
@@ -91,10 +90,12 @@ public class RhoBluetoothManagerOld implements IRhoBluetoothManager {
 	}
 
 	public void create_custom_server_session(String client_name, String callback_url) {
+		fireCreateSessionCallback(RhoBluetoothManager.BTC_ERROR, "");
 		return;
 	}
 
 	public void create_custom_client_session(String server_name, String callback_url) {
+		fireCreateSessionCallback(RhoBluetoothManager.BTC_ERROR, "");
 		return;
 	}
 	
