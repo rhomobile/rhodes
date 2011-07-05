@@ -493,7 +493,7 @@ int rho_bluetooth_session_get_status(const char* connected_device_name) {
 
 VALUE rho_bluetooth_session_read_string(const char* connected_device_name) {
 	NSString* s = [[RhoBluetoothManager sharedInstance] readString];
-	return     return rho_ruby_create_string([s UTF8String]);
+	return rho_ruby_create_string([s UTF8String]);
 }
 
 void rho_bluetooth_session_write_string(const char* connected_device_name, const char* str) {
