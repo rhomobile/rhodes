@@ -1,3 +1,5 @@
+#define close _symbian_close
+#define fclose _symbian_fclose
 #if defined(WIN32)
 #include "../../win32/ruby/config.h"
 #else
@@ -169,7 +171,7 @@
 #define HAVE_TM_ZONE 1
 #define HAVE_STRUCT_TM_TM_GMTOFF 1
 #define NEGATIVE_TIME_T 1
-#define POSIX_SIGNAL 1
+//#define POSIX_SIGNAL 1
 #define RSHIFT(x,y) ((x)>>(int)y)
 #define FILE_COUNT _r
 #define FILE_READPTR _p

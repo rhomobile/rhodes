@@ -14,12 +14,6 @@ INCLUDEPATH += ../../shared/
 DEFINES -= UNICODE
 DEFINES -= _UNICODE
 
-DESTDIR = ../bin/rholib
-OBJECTS_DIR = ../bin/rholib
-MOC_DIR = ../bin/rholib
-UI_DIR = ../bin/rholib
-RCC_DIR = ../bin/rholib
-
 SOURCES += \
     ../../shared/common/Tokenizer.cpp \
     ../../shared/common/ThreadQueue.cpp \
@@ -106,7 +100,6 @@ unix:!symbian {
     }
     INSTALLS += target
 }
-
 
 symbian {
 INCLUDEPATH += ../../shared/curl/include

@@ -11,12 +11,6 @@ TEMPLATE = lib
 CONFIG += staticlib warn_on
 INCLUDEPATH += ../../shared/
 
-DESTDIR = ../bin/syncengine
-OBJECTS_DIR = ../bin/syncengine
-MOC_DIR = ../bin/syncengine
-UI_DIR = ../bin/syncengine
-RCC_DIR = ../bin/syncengine
-
 SOURCES += \
     ../../shared/db/DBResult.cpp \
     ../../shared/db/DBAttrManager.cpp \

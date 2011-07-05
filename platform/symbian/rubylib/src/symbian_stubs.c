@@ -10,7 +10,7 @@ char **environ = 0;
 
 typedef void (*sighandler_t)(int);
 
-sighandler_t signal(int signum, sighandler_t handler)
+/*sighandler_t signal(int signum, sighandler_t handler)
 {
 	return (sighandler_t)0;
 }
@@ -43,14 +43,14 @@ int kill(pid_t pid, int sig)
 int pthread_sigmask(int how, const sigset_t * set, sigset_t * oset)
 {
 	return -1;
-}	
+}*/
 
 int pthread_kill(pthread_t thread, int sig)
 {
 	return -1;
 }
 
-int sigmask(int signum) {
+/*int sigmask(int signum) {
 	return -1;
 }
 
@@ -60,7 +60,7 @@ int sigblock(int mask) {
 
 int sigsetmask(int mask) {
 	return -1;
-}
+}*/
 
 int fchown(int fildes, uid_t owner, gid_t group)
 {
