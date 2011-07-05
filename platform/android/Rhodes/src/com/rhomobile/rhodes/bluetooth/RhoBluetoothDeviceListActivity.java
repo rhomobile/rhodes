@@ -32,7 +32,6 @@ import android.widget.AdapterView.OnItemClickListener;
 public class RhoBluetoothDeviceListActivity extends Activity {
     // Debugging
     private static final String TAG = "RhoBluetoothDeviceListActivity";
-    private static final boolean D = true;
 
     // Return Intent extra
     public static String EXTRA_DEVICE_ADDRESS = "device_address";
@@ -47,6 +46,7 @@ public class RhoBluetoothDeviceListActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        RhoBluetoothManager.logi(TAG, "onCreate()");
 
         // Setup the window
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
@@ -98,10 +98,13 @@ public class RhoBluetoothDeviceListActivity extends Activity {
         // If there are paired devices, add each one to the ArrayAdapter
         if (pairedDevices.size() > 0) {
             findViewById(AndroidR.id.title_paired_devices).setVisibility(View.VISIBLE);
+            RhoBluetoothManager.logi(TAG, "   List of paired device :");
             for (BluetoothDevice device : pairedDevices) {
                 mPairedDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+                RhoBluetoothManager.logi(TAG, "       - name["+device.getName()+"] adress["+device.getAddress()+"]");
             }
         } else {
+            RhoBluetoothManager.logi(TAG, "   no any paired device found !");
             String noDevices = getResources().getText(AndroidR.string.none_paired).toString();
             mPairedDevicesArrayAdapter.add(noDevices);
         }
@@ -109,6 +112,7 @@ public class RhoBluetoothDeviceListActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        RhoBluetoothManager.logi(TAG, "onDestroy()");
         super.onDestroy();
 
         // Make sure we're not doing discovery anymore
@@ -131,7 +135,7 @@ public class RhoBluetoothDeviceListActivity extends Activity {
      * Start device discover with the BluetoothAdapter
      */
     private void doDiscovery() {
-        if (D) Log.d(TAG, "doDiscovery()");
+    	RhoBluetoothManager.logi(TAG, "doDiscovery()");
 
         // Indicate scanning in the title
         setProgressBarIndeterminateVisibility(true);
@@ -167,6 +171,7 @@ public class RhoBluetoothDeviceListActivity extends Activity {
             // Set result and finish this Activity
             //setResult(Activity.RESULT_OK, intent);
             //RhoBluetoothManager.sharedInstance().onDeviceListActivityFinished(true, address);
+            RhoBluetoothManager.logi(TAG, "item selected - address["+mReturnAdress+"]");
             finish();
         }
     };
@@ -180,11 +185,13 @@ public class RhoBluetoothDeviceListActivity extends Activity {
 
             // When discovery finds a device
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                RhoBluetoothManager.logi(TAG, "found devices (exclude already bonded :");
                 // Get the BluetoothDevice object from the Intent
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 // If it's already paired, skip it, because it's been listed already
                 if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
                     mNewDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+                    RhoBluetoothManager.logi(TAG, "       - name["+device.getName()+"] adress["+device.getAddress()+"]");
                 }
             // When discovery is finished, change the Activity title
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
