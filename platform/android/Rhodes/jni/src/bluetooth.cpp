@@ -165,15 +165,17 @@ RHO_GLOBAL int rho_bluetooth_session_get_status(const char* connected_device_nam
     return env->CallStaticIntMethod(cls, mid, objStr1.get());
 }
 
-RHO_GLOBAL const char* rho_bluetooth_session_read_string(const char* connected_device_name) {
+RHO_GLOBAL VALUE rho_bluetooth_session_read_string(const char* connected_device_name) {
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHOBLUETOOTHMANAGER);
     if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "session_read_string", "(Ljava/lang/String;)Ljava/lang/String;");
     if (!mid) return 0;
     jhstring objStr1 = rho_cast<jhstring>(connected_device_name);
-    jhstring res = jhstring((jstring)env->CallStaticObjectMethod(cls, mid, objStr1.get()));
-    return rho_cast<std::string>(res).c_str();
+    jstring res = (jstring)env->CallStaticObjectMethod(cls, mid, objStr1.get());
+    const char* msg = env->GetStringUTFChars((jstring)res,0);
+    return rho_ruby_create_string(msg);
+    //return rho_cast<std::string>(res).c_str();
 }
 
 RHO_GLOBAL void rho_bluetooth_session_write_string(const char* connected_device_name, const char* str) {
