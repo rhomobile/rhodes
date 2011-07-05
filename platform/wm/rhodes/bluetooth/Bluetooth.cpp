@@ -1062,8 +1062,8 @@ int rho_bluetooth_session_get_status(const char* connected_device_name) {
 	return RhoBluetoothManager::getInstance()->rho_bluetooth_session_get_status(connected_device_name); 
 }
 
-const char* rho_bluetooth_session_read_string(const char* connected_device_name) {
-	return RhoBluetoothManager::getInstance()->rho_bluetooth_session_read_string(connected_device_name);
+VALUE rho_bluetooth_session_read_string(const char* connected_device_name) {
+	return rho_ruby_create_string(RhoBluetoothManager::getInstance()->rho_bluetooth_session_read_string(connected_device_name));
 }
 
 void rho_bluetooth_session_write_string(const char* connected_device_name, const char* str) {
@@ -1279,8 +1279,8 @@ int rho_bluetooth_session_get_status(const char* connected_device_name) {
 	return -1; 
 }
 
-const char* rho_bluetooth_session_read_string(const char* connected_device_name) {
-	return "ERROR";
+VALUE rho_bluetooth_session_read_string(const char* connected_device_name) {
+	return  rho_ruby_create_string("ERROR");
 }
 
 void rho_bluetooth_session_write_string(const char* connected_device_name, const char* str) {

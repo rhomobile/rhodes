@@ -1560,7 +1560,7 @@ extern const char* rho_bluetooth_stop_current_connection_process();
 extern void rho_bluetooth_session_set_callback(const char* connected_device_name, const char* callback_url);
 extern void rho_bluetooth_session_disconnect(const char* connected_device_name);
 extern int rho_bluetooth_session_get_status(const char* connected_device_name);
-extern const char* rho_bluetooth_session_read_string(const char* connected_device_name);
+extern VALUE rho_bluetooth_session_read_string(const char* connected_device_name);
 extern void rho_bluetooth_session_write_string(const char* connected_device_name, const char* str);
 extern VALUE rho_bluetooth_session_read_data(const char* connected_device_name);
 extern void rho_bluetooth_session_write_data(const char* connected_device_name, VALUE data);
@@ -2056,7 +2056,7 @@ fail:
 SWIGINTERN VALUE
 _wrap_session_read_string(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
-  char *result = 0 ;
+  VALUE result;
   int res1 ;
   char *buf1 = 0 ;
   int alloc1 = 0 ;
@@ -2070,8 +2070,8 @@ _wrap_session_read_string(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "session_read_string" "', argument " "1"" of type '" "char const *""'");
   }
   arg1 = (char *)(buf1);
-  result = (char *)session_read_string((char const *)arg1);
-  vresult = SWIG_FromCharPtr((const char *)result);
+  result = (VALUE)session_read_string((char const *)arg1);
+  vresult = result;
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return vresult;
 fail:

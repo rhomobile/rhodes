@@ -315,7 +315,7 @@ extern "C" void rho_bluetooth_session_disconnect(const char* connected_device_na
 
 extern "C" int rho_bluetooth_session_get_status(const char* connected_device_name);
 
-extern "C" const char* rho_bluetooth_session_read_string(const char* connected_device_name);
+extern "C" VALUE rho_bluetooth_session_read_string(const char* connected_device_name);
 
 extern "C" void rho_bluetooth_session_write_string(const char* connected_device_name, const char* str);
 
