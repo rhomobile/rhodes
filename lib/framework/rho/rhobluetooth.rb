@@ -47,10 +47,8 @@ class BluetoothManager
 
   # make current device discoverable for other
   # wait for client connection from other device
-  # incoming connections check for device_name - it should be equal with client_name parameter
-  # if you want accept any connections - set client_name to nil
   # after connect BluetoothSession maked
-  def self.create_server_and_wait_for_connection(client_name, callback_url)
+  def self.create_server_and_wait_for_connection(callback_url)
     # return OK/ERROR
     #
     # in callback
@@ -58,8 +56,7 @@ class BluetoothManager
     # connected_device_name
     puts 'BluetoothManager.rb::create_server_and_wait_for_connection()'
     accept_any_device = 1
-    accept_any_device = 0 unless client_name == nil 
-    RhoBluetooth.create_custom_server_session(client_name, callback_url, accept_any_device)
+    RhoBluetooth.create_custom_server_session('', callback_url, accept_any_device)
     return OK
   end
 

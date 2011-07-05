@@ -3,6 +3,8 @@ package com.rhomobile.rhodes.bluetooth;
 import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
+
+import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 public class RhoBluetoothManager {
@@ -15,14 +17,22 @@ public class RhoBluetoothManager {
 	public static String BT_ROLE_CLIENT = "ROLE_CLIENT";
 	
     private static final String TAG = "RhoBluetoothManager";
-    private static final boolean D = true;
 	
 
+	public static void loge(String tag, String msg) {
+		Logger.E(tag, msg);
+	}
+
+	public static void logi(String tag, String msg) {
+		Logger.I(tag, msg);
+	}
+    
+    
 	// public only for external debug !!!
 	public static IRhoBluetoothManager ourInstance = null;
 	
 	public RhoBluetoothManager () {
-		if(D) Log.d(TAG, "RhoBluetoothManager()");
+		RhoBluetoothManager.logi(TAG, "RhoBluetoothManager()");
 	}
 	
     public static void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -37,10 +47,11 @@ public class RhoBluetoothManager {
 		if (ourInstance == null) {
 			PerformOnUiThread.exec( new Runnable() {
 				public void run() {
+					RhoBluetoothManager.logi(TAG, "make IRhoBluetoothManager instance");
 					String className = "RhoBluetoothManagerNew";
 					int sdkVersion = Integer.parseInt(Build.VERSION.SDK);
 					if (sdkVersion < Build.VERSION_CODES.ECLAIR) {
-						if(D) Log.d(TAG, "sharedInstance - old version of System - NO Bluetooth !");
+						RhoBluetoothManager.logi(TAG, "sharedInstance - old version of System - NO Bluetooth !");
 						className = "RhoBluetoothManagerOld";
 					}
 					try {
@@ -52,6 +63,7 @@ public class RhoBluetoothManager {
 						ourInstance.init();
 					}
 					catch (Exception e) {
+						RhoBluetoothManager.loge(TAG, "exception during make IRhoBluetoothManager instance: "+e.getMessage());
 						throw new IllegalStateException(e);
 					}
 				}

@@ -216,12 +216,12 @@ static RhoBluetoothManager *instance = NULL;
 - (void)session:(GKSession *)session didReceiveConnectionRequestFromPeer:(NSString *)peerID {
     NSError* error;
     BOOL accept = YES;
-    NSString* device_name = [session displayNameForPeer:peerID];
-    if (self.custom_connect_client_name != nil) {
-        if (!([self.custom_connect_client_name compare:device_name] == NSOrderedSame)) {
-            accept = NO;
-        }
-    }
+    //NSString* device_name = [session displayNameForPeer:peerID];
+    //if (self.custom_connect_client_name != nil) {
+    //    if (!([self.custom_connect_client_name compare:device_name] == NSOrderedSame)) {
+    //        accept = NO;
+    //    }
+    //}
     if (accept) {
         [session acceptConnectionFromPeer:peerID error:&error];
     }
