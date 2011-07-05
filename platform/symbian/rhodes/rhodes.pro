@@ -9,7 +9,11 @@ QT += core gui webkit
 CONFIG += warn_on
 DEFINES += RHO_SYMBIAN=1
 
-symbian:TARGET.UID3 = 0xE17AE169
+symbian:TARGET.UID3 = 0xE271409B
+#0xE17AE169
+#symbian:TARGET.UID3 = 0x20047C9A
+#0xA00100C8
+#0x20047C9A
 
 # Smart Installer package's UID
 # This UID is from the protected range 
@@ -21,17 +25,14 @@ symbian:TARGET.UID3 = 0xE17AE169
 # Allow network access on Symbian
 symbian:TARGET.CAPABILITY += NetworkServices
 
+symbian:TARGET.EPOCSTACKSIZE = 80000
+symbian:TARGET.EPOCHEAPSIZE = 0x100000 0x2400000
+
 # If your application uses the Qt Mobility libraries, uncomment
 # the following lines and add the respective components to the 
 # MOBILITY variable. 
 # CONFIG += mobility
 # MOBILITY +=
-
-DESTDIR = ../bin/rhodes
-OBJECTS_DIR = ../bin/rhodes
-MOC_DIR = ../bin/rhodes
-UI_DIR = ../bin/rhodes
-RCC_DIR = ../bin/rhodes
 
 SOURCES += ../../shared/qt/rhodes/QtWebInspector.cpp \
     ../../shared/qt/rhodes/QtNativeTabBar.cpp \
@@ -91,14 +92,14 @@ OTHER_FILES +=
 win32 {
 SOURCES +=  ../../wm/rhodes/rho/common/RhoThreadImpl.cpp
 SOURCES +=  ../../wm/rhodes/rho/net/NetRequestImpl.cpp
-PRE_TARGETDEPS += ../bin/rubylib/rubylib.lib\
-                  ../bin/rholib/rholib.lib\
-                  ../bin/sqlite3/sqlite3.lib\
-                  ../bin/syncengine/syncengine.lib
-LIBS += ../bin/rubylib/rubylib.lib\
-        ../bin/rholib/rholib.lib\
-        ../bin/sqlite3/sqlite3.lib\
-        ../bin/syncengine/syncengine.lib\
+PRE_TARGETDEPS += ../rubylib/debug/rubylib.lib\
+                  ../rholib/debug/rholib.lib\
+                  ../sqlite3/debug/sqlite3.lib\
+                  ../syncengine/debug/syncengine.lib
+LIBS += ../rubylib/debug/rubylib.lib\
+        ../rholib/debug/rholib.lib\
+        ../sqlite3/debug/sqlite3.lib\
+        ../syncengine/debug/syncengine.lib\
         wininet.lib comsuppwd.lib ws2_32.lib\
         Crypt32.lib gdiplus.lib kernel32.lib user32.lib\
         gdi32.lib winspool.lib comdlg32.lib advapi32.lib\

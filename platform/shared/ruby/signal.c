@@ -409,7 +409,7 @@ static struct {
 #endif
 
 typedef RETSIGTYPE (*sighandler_t)(int);
-#ifdef SA_SIGINFO
+#if defined SA_SIGINFO && !defined __SYMBIAN32__
 typedef void ruby_sigaction_t(int, siginfo_t*, void*);
 #define SIGINFO_ARG , siginfo_t *info, void *ctx
 #else
@@ -458,7 +458,7 @@ ruby_signal(int signum, sighandler_t handler)
 #endif
 
     sigemptyset(&sigact.sa_mask);
-#ifdef SA_SIGINFO
+#if defined SA_SIGINFO && !defined __SYMBIAN32__
     sigact.sa_sigaction = (ruby_sigaction_t*)handler;
     sigact.sa_flags = SA_SIGINFO;
 #else
@@ -476,7 +476,7 @@ ruby_signal(int signum, sighandler_t handler)
 #endif
     if (sigaction(signum, &sigact, &old) < 0) {
 	if (errno != 0 && errno != EINVAL) {
-	    rb_bug("sigaction error.\n");
+            rb_bug("sigaction error.\n");
 	}
     }
     return old.sa_handler;
@@ -534,7 +534,7 @@ static int trap_last_mask;
 void
 rb_disable_interrupt(void)
 {
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__SYMBIAN32__)
     sigset_t mask;
     sigfillset(&mask);
     sigdelset(&mask, SIGVTALRM);
@@ -546,7 +546,7 @@ rb_disable_interrupt(void)
 void
 rb_enable_interrupt(void)
 {
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__SYMBIAN32__)
     sigset_t mask;
     sigemptyset(&mask);
     pthread_sigmask(SIG_SETMASK, &mask, NULL);
