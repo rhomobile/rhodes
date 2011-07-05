@@ -614,10 +614,12 @@ class NFCTag
       return @techlist
   end  
 
+  # return byte[]
   def get_ID
       return Nfc.tag_get_id
   end    
     
+  # return instance of coresponded tech (based on NFCTagTechnology)
   def  get_tech(tech_name)
       if @techlist.include?(tech_name)
           if tech_name == 'MifareClassic'
