@@ -467,7 +467,10 @@ Do not forget add special "bluetooth" capability into your application's build.y
 There are two steps to make connection and start using of Bluetooth :
 
 * Make connection session: execute `Rho::BluetoothManager.create_session` and setup callback where you receive result of connection. That callback will get events related to making connection(connect ok, canceled by user, error). Connection provided by platform specific UI.
+* For make connection without UI, you should execute `Rho::BluetoothManager.create_server_and_wait_for_connection` on server and `Rho::BluetoothManager.create_client_connection_to_device` on client. On client you should specify server name(display name - not Bluetooth ID!) for connect. Specify callback - callback have the same parameters with `Rho::BluetoothManager.create_session`.  You can cancel connection process by `Rho::BluetoothManager.stop_current_connection_process`
 * After receiving successful result and name of connected device in create_session_callback you should setup session_callback by `Rho::BluetoothSession.set_callback` to process incoming session events from connected device (data received) or event related to this session connection(disconnect, errors).
+
+**NOTE: Connection without UI worked only on iOS and Android platforms only !
 
 ### Bluetooth API
 
@@ -503,6 +506,27 @@ Creates Bluetooth session. Return OK/ERROR:
 * callback_url - this url will be called after session was created or canceled. Parameters received in the callback:
 	* status - OK / ERROR / CANCEL
 	* connected_device_name - name of the connected device
+
+Connect without UI: make current device discoverable for other,  wait for client connection from other device
+	:::ruby
+	Rho::BluetoothManager.create_server_and_wait_for_connection(callback_url)
+
+* callback_url - this url will be called after session was created or canceled. Parameters received in the callback:
+	* status - OK / ERROR / CANCEL
+	* connected_device_name - name of the connected device
+
+Connect without UI: make client connection to device:
+	:::ruby
+	Rho::BluetoothManager.create_client_connection_to_device(server_name, callback_url)
+
+* server_name - name of other device. If you make connect with UI, you receive that name as connected_device_name
+* callback_url - this url will be called after session was created or canceled. Parameters received in the callback:
+	* status - OK / ERROR / CANCEL
+	* connected_device_name - name of the connected device
+
+Connect without UI: cancel current connection:
+	:::ruby
+	Rho::BluetoothManager.stop_current_connection_process
 
 
 #### BluetoothSession

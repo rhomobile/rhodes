@@ -417,7 +417,7 @@ Example of construct NdefMessage for P2P send:
 	  def get_tech_list
 	  end  
 	
-	# return byte[]
+	  # return byte[]
 	  def get_ID
 	  end    
 	    
