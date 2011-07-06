@@ -50,5 +50,6 @@ excludedirs:
     - public/themes
     - "**/jquery*.js"
     - "**/*.db"
-  
+    - public/images/android
+    - public/images/iphone
 
