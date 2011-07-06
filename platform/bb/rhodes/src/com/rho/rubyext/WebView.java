@@ -50,6 +50,18 @@ public class WebView
 				}
 			}
 		});
+		klass.getSingletonClass().defineMethod("navigate_back", new RubyNoArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyBlock block) 
+			{
+				try {
+					RhodesApplication.getInstance().navigateBack();
+					return RubyConstant.QNIL;
+				} catch(Exception e) {
+					LOG.ERROR("navigate_back failed.", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+			}
+		});		
 		klass.getSingletonClass().defineMethod("current_location", new RubyNoOrOneArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyBlock block) 
 			{

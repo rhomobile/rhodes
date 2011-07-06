@@ -20,6 +20,9 @@ extern void rho_webview_full_screen_mode(int enable);
 extern void rho_webview_set_cookie(const char* url, const char* cookie);
 #define set_cookie rho_webview_set_cookie
 
+extern void rho_webview_navigate_back();
+#define navigate_back rho_webview_navigate_back
+
 %}
 
 %typemap(default) int index {
@@ -34,3 +37,4 @@ extern void set_menu_items(VALUE argv);
 extern int active_tab();
 extern void full_screen_mode(int enable);
 extern void set_cookie(const char* url, const char* cookie);
+extern void navigate_back();
