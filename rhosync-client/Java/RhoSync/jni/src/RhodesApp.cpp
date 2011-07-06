@@ -16,3 +16,8 @@ const String& CRhodesApp::getBaseUrl()
 }
 
 }}
+
+RHO_GLOBAL int rho_conf_send_log()
+{
+    return 0;//RHODESAPP().sendLog();
+}

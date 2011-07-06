@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 #undef com_rhomobile_rhodes_RhodesService_DEBUG
-#define com_rhomobile_rhodes_RhodesService_DEBUG 1L
+#define com_rhomobile_rhodes_RhodesService_DEBUG 0L
 #undef com_rhomobile_rhodes_RhodesService_DOWNLOAD_PACKAGE_ID
 #define com_rhomobile_rhodes_RhodesService_DOWNLOAD_PACKAGE_ID 1L
 /*
@@ -66,14 +66,6 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_loadUrl
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_navigateBack
   (JNIEnv *, jclass);
-
-/*
- * Class:     com_rhomobile_rhodes_RhodesService
- * Method:    nativeInitPath
- * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
- */
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_nativeInitPath
-  (JNIEnv *, jobject, jstring, jstring, jstring);
 
 /*
  * Class:     com_rhomobile_rhodes_RhodesService

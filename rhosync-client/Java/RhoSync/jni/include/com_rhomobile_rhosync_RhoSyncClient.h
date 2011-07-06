@@ -133,7 +133,7 @@ JNIEXPORT jobject JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_syncAll
  * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_nativeInit
-  (JNIEnv *, jclass, jstring, jstring);
+  (JNIEnv *, jclass/*, jstring, jstring*/);
 
 #ifdef __cplusplus
 }

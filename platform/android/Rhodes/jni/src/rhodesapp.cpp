@@ -34,16 +34,6 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_makeLink
         env->ThrowNew(getJNIClass(RHODES_JAVA_CLASS_RUNTIME_EXCEPTION), "Can not create symlink");
 }
 
-static std::string g_apk_path;
-//static rho::common::CAutoPtr<rho::common::AndroidLogSink> g_androidLogSink(new rho::common::AndroidLogSink());
-
-std::string const &rho_apk_path()
-{
-    return g_apk_path;
-}
-
-
-
 static bool set_capabilities(JNIEnv *env)
 {
     char const *caps[] = {
@@ -85,13 +75,6 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_initClassLoader
     g_classLoader = env->NewGlobalRef(cl);
     jclass javaLangClassLoader = env->FindClass("java/lang/ClassLoader");
     g_loadClass = env->GetMethodID(javaLangClassLoader, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
-}
-
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_nativeInitPath
-  (JNIEnv *env, jobject, jstring root_path, jstring sqlite_journals_path, jstring apk_path)
-{
-    android_set_path(rho_cast<std::string>(env, root_path), rho_cast<std::string>(env, sqlite_journals_path));
-    g_apk_path = rho_cast<std::string>(env, apk_path);
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesApplication_createRhodesApp
