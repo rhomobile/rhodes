@@ -209,9 +209,9 @@ public :
 		}
 #ifdef RHODES_EMULATOR
         if (RHOSIMCONF().getString("debug_host").length() > 0)
-		    RHOCONF().setString("debug_host", RHOSIMCONF().getString("debug_host"), false);
+            SetEnvironmentVariableA("RHOHOST", RHOSIMCONF().getString("debug_host").c_str() );
         if (RHOSIMCONF().getString("debug_port").length() > 0)
-            RHOCONF().setString("debug_port", RHOSIMCONF().getString("debug_port"), false);
+            SetEnvironmentVariableA("rho_debug_port", RHOSIMCONF().getString("debug_port").c_str() );
 #endif
 
 #endif
