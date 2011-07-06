@@ -1833,6 +1833,9 @@ extern void rho_webview_full_screen_mode(int enable);
 extern void rho_webview_set_cookie(const char* url, const char* cookie);
 #define set_cookie rho_webview_set_cookie
 
+extern void rho_webview_navigate_back();
+#define navigate_back rho_webview_navigate_back
+
 
 
 #include <limits.h>
@@ -1852,7 +1855,7 @@ SWIG_ruby_failed(void)
 } 
 
 
-/*@SWIG:/usr/local/share/swig/2.0.4/ruby/rubyprimtypes.swg,19,%ruby_aux_method@*/
+/*@SWIG:C:\Install\swigwin-2.0.4\Lib\ruby\rubyprimtypes.swg,19,%ruby_aux_method@*/
 SWIGINTERN VALUE SWIG_AUX_NUM2LONG(VALUE *args)
 {
   VALUE obj = args[0];
@@ -2203,6 +2206,18 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_navigate_back(int argc, VALUE *argv, VALUE self) {
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  navigate_back();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -2484,5 +2499,6 @@ SWIGEXPORT void Init_WebView(void) {
   rb_define_module_function(mWebView, "active_tab", _wrap_active_tab, -1);
   rb_define_module_function(mWebView, "full_screen_mode", _wrap_full_screen_mode, -1);
   rb_define_module_function(mWebView, "set_cookie", _wrap_set_cookie, -1);
+  rb_define_module_function(mWebView, "navigate_back", _wrap_navigate_back, -1);
 }
 
