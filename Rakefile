@@ -23,6 +23,7 @@ load File.join(pwd, 'platform/iphone/rbuild/iphone.rake')
 load File.join(pwd, 'platform/wm/build/wm.rake')
 load File.join(pwd, 'platform/linux/tasks/linux.rake')
 load File.join(pwd, 'platform/wp7/build/wp.rake')
+load File.join(pwd, 'platform/osx/build/osx.rake')
 
 def get_dir_hash(dir, init = nil)
   hash = init
@@ -1112,4 +1113,17 @@ namespace "run" do
         end
     end
 
+end
+
+namespace "build" do
+    task :rhosimulator => "config:common" do
+        if RUBY_PLATFORM =~ /(win|w)32$/
+            Rake::Task["build:win32:rhosimulator"].invoke
+        elsif RUBY_PLATFORM =~ /darwin/
+            Rake::Task["build:osx:rhosimulator"].invoke
+        else
+            puts "Sorry, at this time RhoSimulator can be built for Windows and Mac OS X only"
+            exit 1
+        end
+    end
 end
