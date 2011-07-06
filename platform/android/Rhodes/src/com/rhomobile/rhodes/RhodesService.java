@@ -239,7 +239,6 @@ public class RhodesService extends Service {
 	public static native void navigateBack();
 	
 	private String mRootPath;
-	private native void nativeInitPath(String rootPath, String sqliteJournalsPath, String apkPath);
 	
 	public static native void onScreenOrientationChanged(int width, int height, int angle);
 	
@@ -267,35 +266,10 @@ public class RhodesService extends Service {
 	    return phoneId;
 	}
 	
-    // TODO: Move these methods to RhodesApplication class
-	private void initRootPath() {
-		ApplicationInfo appInfo = getAppInfo();
-		String dataDir = appInfo.dataDir;
-		
-		mRootPath = dataDir + "/rhodata/";
-		Log.d(TAG, "Root path: " + mRootPath);
-		
-		String sqliteJournalsPath = dataDir + "/sqlite_stmt_journals/";
-		Log.d(TAG, "Sqlite journals path: " + sqliteJournalsPath);
-		
-		File f = new File(mRootPath);
-		f.mkdirs();
-		f = new File(f, "db/db-files");
-		f.mkdirs();
-		f = new File(sqliteJournalsPath);
-		f.mkdirs();
-		f = new File(mRootPath, "tmp");
-		f.mkdirs();
-		
-		String apkPath = appInfo.sourceDir;
-		
-		nativeInitPath(mRootPath, sqliteJournalsPath, apkPath);
-	}
-	
 	public String getRootPath() {
-		return mRootPath;
-	}
-	
+	    return mRootPath;
+    }
+
     // TODO: Move these methods to RhodesApplication class
 	private ApplicationInfo getAppInfo() {
 		Context context = this;
@@ -349,9 +323,13 @@ public class RhodesService extends Service {
 		
 		initClassLoader(context.getClassLoader());
 		
+		ApplicationInfo appInfo = getAppInfo();
+
+		Log.d(TAG, "Root path: " + mRootPath);
+
 		try {
-			initRootPath();
-			RhoFileApi.init();
+			mRootPath = RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir);
+			RhoFileApi.init(this);
 		} catch (IOException e) {
 			Log.e(TAG, e.getMessage());
 			exit();
@@ -373,8 +351,8 @@ public class RhodesService extends Service {
 				
 				LocalFileProvider.revokeUriPermissions(context);
 
-				initRootPath();
-				RhoFileApi.init();
+				mRootPath = RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir);
+				RhoFileApi.init(this);
 				RhoFileApi.copy("hash");
 			} catch (IOException e) {
 				Log.e(TAG, e.getMessage());

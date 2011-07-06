@@ -174,6 +174,13 @@ static func_scandir_t real_scandir;
 
 struct stat librhodes_st;
 
+static std::string g_apk_path;
+
+std::string const &rho_apk_path()
+{
+    return g_apk_path;
+}
+
 static bool has_pending_exception()
 {
     JNIEnv *env = jnienv();
@@ -214,6 +221,13 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_updateStatTabl
         RHO_LOG("updateStatTable: create dir: %s", fpath.c_str());
         mkdir(fpath.c_str(), S_IRWXU);
     }
+}
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInitPath
+  (JNIEnv *env, jclass, jstring root_path, jstring sqlite_journals_path, jstring apk_path)
+{
+    android_set_path(rho_cast<std::string>(env, root_path), rho_cast<std::string>(env, sqlite_journals_path));
+    g_apk_path = (apk_path != NULL) ? rho_cast<std::string>(env, apk_path) : std::string();
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
@@ -279,11 +293,15 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
 
     // This is just to get typical stat of file
     std::string librhodes = rho_root_path() + "../lib/librhodes.so";
+    RHO_LOG("Native library: %s", librhodes.c_str());
+
     real_stat(librhodes.c_str(), &librhodes_st);
     librhodes_st.st_mode = S_IFREG|S_IRWXU;
     librhodes_st.st_nlink = 1;
     librhodes_st.st_uid = getuid();
     librhodes_st.st_gid = getgid();
+
+    RHO_LOG("Library stat (mode: %d, uid: %d, gid: %d)", librhodes_st.st_mode, librhodes_st.st_uid, librhodes_st.st_gid);
 }
 
 static std::string normalize_path(std::string path)
@@ -360,7 +378,7 @@ static std::string make_full_path(std::string const &path)
 static std::string make_rel_path(std::string const &fpath)
 {
     std::string const &root_path = rho_root_path();
-    return fpath.substr(root_path.size());
+    return (fpath.find(root_path) == 0) ? fpath.substr(root_path.size()) : fpath;
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_makeRelativePath

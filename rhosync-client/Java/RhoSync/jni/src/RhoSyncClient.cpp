@@ -102,8 +102,9 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_initialize
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_setSyncServer
-  (JNIEnv *, jobject, jstring)
+  (JNIEnv * env, jobject, jstring host)
 {
+    rho_sync_set_syncserver(rho_cast<std::string>(env, host).c_str());
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_setThreadedMode
@@ -172,12 +173,15 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_databaseFullRes
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_isLoggedIn
   (JNIEnv *, jobject)
 {
-    return (jboolean)false;
+    return (jboolean)rho_sync_logged_in() == 1;
 }
 
 RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_loginWithUser
-  (JNIEnv *, jobject, jstring, jstring)
+  (JNIEnv * env, jobject, jstring juser, jstring jpass)
 {
+    unsigned long res = rho_sync_login(rho_cast<std::string>(env, juser).c_str(),
+                                       rho_cast<std::string>(env, jpass).c_str(),
+                                       "");
     return (jobject)NULL;
 }
 
@@ -188,8 +192,8 @@ RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_syncAll
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_nativeInit
-  (JNIEnv * env, jclass, jstring root, jstring sqliteJournals)
+  (JNIEnv * env, jclass/*, jstring root, jstring sqliteJournals*/)
 {
-    android_set_path(rho_cast<rho::String>(root), rho_cast<rho::String>(sqliteJournals));
+    //android_set_path(rho_cast<rho::String>(root), rho_cast<rho::String>(sqliteJournals));
     android_setup(env);
 }

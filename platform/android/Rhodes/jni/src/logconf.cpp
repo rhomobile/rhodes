@@ -2,12 +2,14 @@
 
 #include "rhodes/jni/com_rhomobile_rhodes_RhoLogConf.h"
 
-#include <common/RhodesApp.h>
+#include <logging/RhoLogConf.h>
+
+extern "C" int rho_conf_send_log();
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getEnabledCategories
   (JNIEnv *env, jobject)
 {
-    return rho_cast<jhstring>(LOGCONF().getEnabledCategories().c_str()).release();
+    return rho_cast<jhstring>(env, LOGCONF().getEnabledCategories().c_str()).release();
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setEnabledCategories
@@ -15,13 +17,13 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setEnabledCategorie
 {
     if (value == NULL)
         return;
-    LOGCONF().setEnabledCategories(rho_cast<std::string>(value).c_str());
+    LOGCONF().setEnabledCategories(rho_cast<std::string>(env, value).c_str());
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getDisabledCategories
   (JNIEnv *env, jobject)
 {
-    return rho_cast<jhstring>(LOGCONF().getDisabledCategories().c_str()).release();
+    return rho_cast<jhstring>(env, LOGCONF().getDisabledCategories().c_str()).release();
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setDisabledCategories
@@ -29,7 +31,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setDisabledCategori
 {
     if (value == NULL)
         return;
-    LOGCONF().setDisabledCategories(rho_cast<std::string>(value).c_str());
+    LOGCONF().setDisabledCategories(rho_cast<std::string>(env, value).c_str());
 }
 
 RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getMinSeverity
@@ -61,7 +63,7 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogText
 {
     rho::String logText;
     LOGCONF().getLogText(logText);
-    return rho_cast<jhstring>(logText.c_str()).release();
+    return rho_cast<jhstring>(env, logText.c_str()).release();
 }
 
 RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogTextPos

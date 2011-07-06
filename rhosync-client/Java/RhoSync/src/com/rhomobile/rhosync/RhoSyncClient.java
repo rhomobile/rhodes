@@ -25,6 +25,7 @@ import java.io.IOException;
 
 public class RhoSyncClient implements Closeable {
 	public native void initialize(RhomModel models[]);
+	public native void destroy();
 	
 	public native void setSyncServer(String url);
 
@@ -52,14 +53,14 @@ public class RhoSyncClient implements Closeable {
 	RhoSyncNotify search(...);
 	*/
 	
-	public static native void nativeInit(String root, String sqliteJournals);
+	public static native void nativeInit(/*String root, String sqliteJournals*/);
 	
 	@Override
 	public void close() throws IOException {
+		destroy();
 	}
 	
-	static {
-		System.loadLibrary("rhosyncclient");
-	}
+//	static {
+//	}
 
 }
