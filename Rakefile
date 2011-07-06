@@ -1021,30 +1021,29 @@ end
 namespace "run" do
 
     desc "Run application on RhoSimulator"
-    task :rhosimulator_base => "config:common" do
-        puts "rho_debug_port : #{ENV['rho_debug_port']}"
+    task :rhosimulator => "config:common" do
         puts "rho_reload_app_changes : #{ENV['rho_reload_app_changes']}"
         $path = ""
         $args = ["-approot='#{$app_path}'"]
         cmd = nil
 
         if RUBY_PLATFORM =~ /(win|w)32$/
-            if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator']
-                $path = File.join( $config['env']['paths']['rhosimulator'], "rhosimulator.exe" )
+            if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'].length() > 0
+                path = File.join( $config['env']['paths']['rhosimulator'], "rhosimulator.exe" )
             else
                 $path = File.join( $startdir, "platform/win32/RhoSimulator/rhosimulator.exe" )
             end
         elsif RUBY_PLATFORM =~ /darwin/
-            if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator']
-                $path = File.join( $config['env']['paths']['rhosimulator'], "RhoSimulator.app" )
+            if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'].length() > 0
+                path = File.join( $config['env']['paths']['rhosimulator'], "RhoSimulator.app" )
             else
                 $path = File.join( $startdir, "platform/osx/bin/RhoSimulator/RhoSimulator.app" )
             end
             cmd = 'open'
             $args.unshift(path, '--args')
         else
-            if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator']
-                # $path = File.join( $config['env']['paths']['rhosimulator'], "RhoSimulator" )
+            if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'].length() > 0
+                # path = File.join( $config['env']['paths']['rhosimulator'], "RhoSimulator" )
             else
                 # $path = File.join( $startdir, "platform/linux/bin/RhoSimulator/RhoSimulator" )
             end
@@ -1062,9 +1061,20 @@ namespace "run" do
 
         sim_conf = "rhodes_path='#{$startdir}'\r\n"
         sim_conf += "app_name='#{$appname}'\r\n"
-        sim_conf += "debug_port=#{ENV['rho_debug_port']}\r\n"
-        sim_conf += "debug_host='127.0.0.1'\r\n"
         sim_conf += "reload_app_changes=#{ENV['rho_reload_app_changes']}\r\n"        
+        
+        if $config['debug']
+            sim_conf += "debug_port=#{$config['debug']['port']}\r\n"
+        else
+            sim_conf += "debug_port=\r\n"
+        end    
+        
+        if $config['debug'] && $config['debug']['host'] && $config['debug']['host'].length() > 0
+            sim_conf += "debug_host='#{$config['debug']['host']}'\r\n"        
+        else    
+            sim_conf += "debug_host='127.0.0.1'\r\n"
+        end
+        
         sim_conf += $rhosim_config if $rhosim_config
 
         #check gem extensions
