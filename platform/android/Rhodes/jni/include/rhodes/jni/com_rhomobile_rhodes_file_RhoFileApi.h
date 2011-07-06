@@ -11,6 +11,14 @@ extern "C" {
 #define com_rhomobile_rhodes_file_RhoFileApi_MAX_SIZE 2097152L
 /*
  * Class:     com_rhomobile_rhodes_file_RhoFileApi
+ * Method:    nativeInitPath
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInitPath
+  (JNIEnv *, jclass, jstring, jstring, jstring);
+
+/*
+ * Class:     com_rhomobile_rhodes_file_RhoFileApi
  * Method:    nativeInit
  * Signature: ()V
  */

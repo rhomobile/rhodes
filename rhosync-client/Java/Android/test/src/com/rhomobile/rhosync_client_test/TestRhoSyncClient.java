@@ -4,8 +4,9 @@ import java.io.File;
 
 import android.content.pm.ApplicationInfo;
 import android.test.AndroidTestCase;
-import android.util.Log;
 
+import com.rhomobile.rhodes.RhoLogConf;
+import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhosync.RhoSyncClient;
 import com.rhomobile.rhosync.RhomModel;
 
@@ -16,27 +17,29 @@ public class TestRhoSyncClient extends AndroidTestCase {
 
     RhoSyncClient mClient;
     RhomModel mModels[];
+    RhoLogConf mLogConf;
 
     @Override
     protected void setUp()
     {
-		ApplicationInfo appInfo = this.getContext().getApplicationInfo();
-		String dataDir = appInfo.dataDir;
+		System.loadLibrary("rhosyncclient");
+		mLogConf = new RhoLogConf();
 		
-		String rootPath = dataDir + "/rhodata/";
-		Log.d(TAG, "Root path: " + rootPath);
+		//String resources[] = {"db/syncdb.schema", "db/syncdb.triggers", "db/syncdb_java.triggers"};
+
+    	ApplicationInfo appInfo = this.getContext().getApplicationInfo();
+		try {
+			RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir);
+			RhoFileApi.init(this.getContext());
+			
+			//mLogConf.setMinSeverity(0);
+			//mLogConf.setEnabledCategories("*");
+			
+			RhoSyncClient.nativeInit();
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 		
-		String sqliteJournals = dataDir + "/sqlite_stmt_journals/";
-		Log.d(TAG, "Sqlite journals path: " + sqliteJournals);
-		
-		File f = new File(rootPath);
-		f.mkdirs();
-		f = new File(f, "db/db-files");
-		f.mkdirs();
-		f = new File(sqliteJournals);
-		f.mkdirs();
-		RhoSyncClient.nativeInit(rootPath, sqliteJournals);
-    	
     	mClient = new RhoSyncClient();
 
     	mModels = new RhomModel[]{
@@ -50,7 +53,7 @@ public class TestRhoSyncClient extends AndroidTestCase {
         mClient.setSyncServer(SYNC_URL);
         mClient.loginWithUser("", "");
     }
-
+    
     public void testLogin()
     {
         assertTrue(mClient.isLoggedIn());

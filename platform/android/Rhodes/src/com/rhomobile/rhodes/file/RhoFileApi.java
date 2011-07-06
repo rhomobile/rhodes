@@ -14,10 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.RhodesService;
 
+import android.content.Context;
 import android.content.res.AssetManager;
 import android.os.ParcelFileDescriptor;
+import android.util.Log;
 
 public class RhoFileApi {
 	
@@ -26,7 +27,9 @@ public class RhoFileApi {
 	private static final int MAX_SIZE = 2*1024*1024;
 	
 	private static AssetManager am;
+	private static String root;
 	
+	private static native void nativeInitPath(String rootPath, String sqliteJournalsPath, String apkPath);
 	private static native void nativeInit();
 	private static native void updateStatTable(String path, String type, long size, long mtime);
 	
@@ -72,26 +75,63 @@ public class RhoFileApi {
 		}
 	}
 	
-	public static void init() throws IOException
+	private static void copyAssets(String assets[])
+	{
+		for(String asset: assets)
+		{
+			Log.i(TAG, "Forsing file: " + asset);
+			forceFile(asset);
+		}
+	}
+
+	public static String initRootPath(String dataDir, String sourceDir) {
+		
+		root = dataDir + "/rhodata/";
+		String sqliteJournals = dataDir + "/sqlite_stmt_journals/";
+		Log.d(TAG, "App root path: " + root);
+		Log.d(TAG, "Sqlite journals path: " + sqliteJournals);
+		
+		File f = new File(root);
+		f.mkdirs();
+		f = new File(f, "db/db-files");
+		f.mkdirs();
+		f = new File(sqliteJournals);
+		f.mkdirs();
+		f = new File(root, "tmp");
+		f.mkdirs();
+		
+		String apkPath = sourceDir;
+		
+		nativeInitPath(root, sqliteJournals, apkPath);
+		return root;
+	}
+	
+	public static void init(Context ctx) throws IOException
 	{
 		nativeInit();
 	
-		am = RhodesService.getInstance().getAssets();
+		am = ctx.getAssets();
 
 		fillStatTable();
 	}
 	
+	public static void initCopy(Context ctx, String assets[])
+	{
+		am = ctx.getAssets();
+		copyAssets(assets);
+	}
+	
 	public static boolean copy(String path)
 	{
-		//Log.d(TAG, "Copy " + path + " to FS");
+		Log.d(TAG, "Copy " + path + " to FS");
 		InputStream is = null;
 		OutputStream os = null;
 		try {
-			RhodesService r = RhodesService.getInstance();
+			//RhodesService r = RhodesService.getInstance();
 			
 			is = am.open(path);
 			
-			File dst = new File(r.getRootPath(), path);
+			File dst = new File(root, path);
 			File parent = dst.getParentFile();
 			if (parent == null)
 				return false;
@@ -103,11 +143,11 @@ public class RhoFileApi {
 			while((len = is.read(buf)) > 0)
 				os.write(buf, 0, len);
 			
-			//Log.d(TAG, "File " + path + " copied");
+			Log.d(TAG, "File " + path + " copied");
 			return true;
 		}
 		catch (Exception e) {
-			//Log.e(TAG, "Can not copy " + path + " to FS");
+			Log.e(TAG, "Can not copy " + path + " to FS");
 			return false;
 		}
 		finally {
@@ -232,7 +272,7 @@ public class RhoFileApi {
 		try {
 			// Merge children from both packed assets and file system 
 			String[] list1 = am.list(path);
-			File f = new File(RhodesService.getInstance().getRootPath(), path);
+			File f = new File(root, path);
 			String[] list2 = f.list();
 			
 			List<String> list = new ArrayList<String>();
