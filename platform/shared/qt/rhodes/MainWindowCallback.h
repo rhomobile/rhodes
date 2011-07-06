@@ -17,6 +17,7 @@ public:
     virtual void createCustomMenu(void) = 0;
     virtual void onCustomMenuItemCommand(int nItemPos) = 0;
     virtual void onWindowClose(void) = 0;
+    virtual void onWebViewUrlChanged(const ::std::string& url) = 0;
 protected:
     virtual ~IMainWindowCallback() {};
 };

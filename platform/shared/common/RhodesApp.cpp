@@ -815,6 +815,7 @@ void CRhodesApp::keepLastVisitedUrl(String strUrl)
 {
     //LOG(INFO) + "Current URL: " + strUrl;
     int nIndex = rho_webview_active_tab();
+    if (nIndex < 0) nIndex = 0;
     int nToAdd = nIndex - m_currentUrls.size();
     for ( int i = 0; i <= nToAdd; i++ )
     {
@@ -826,6 +827,8 @@ void CRhodesApp::keepLastVisitedUrl(String strUrl)
 
 const String& CRhodesApp::getCurrentUrl(int index)
 { 
+    if (index < 0) index = rho_webview_active_tab();
+    if (index < 0) index = 0;
     if ( index < m_currentUrls.size() )
         return m_currentUrls[index]; 
 
