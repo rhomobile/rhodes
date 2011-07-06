@@ -12,6 +12,7 @@
 #include <QWebHistory>
 #include <QLabel>
 #include <QtNetwork/QNetworkCookie>
+#include <QFileDialog>
 #include "ext/rho/rhoruby.h"
 #include "common/RhoStd.h"
 #include "common/RhodesApp.h"
@@ -532,32 +533,42 @@ void QtMainWindow::navigateCommand(TNavigateData* nd)
 
 void QtMainWindow::takePicture(char* callbackUrl)
 {
-    //TODO: takePicture
-
-    //TCHAR image_uri[MAX_PATH];
-    //HRESULT status;
-
-    //TODO: show browse file dialog
-    //wsprintf( image_uri, L"%s", L"dashboard.PNG");
-    //status = S_OK;
-
-    //RHODESAPP().callCameraCallback( (const char*)lParam, rho::common::convertToStringA(image_uri),
-    //    (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
-
-    free(callbackUrl);
+    selectPicture(callbackUrl);
 }
 
 void QtMainWindow::selectPicture(char* callbackUrl)
 {
-    //TODO: selectPicture
+    bool wasError = false;
+    rho::StringW strBlobRoot = rho::common::convertToStringW( RHODESAPP().getBlobsDirPath() );
+    QString fileName = QFileDialog::getOpenFileName(this, "Open Image", QString::fromStdWString(strBlobRoot), "Image Files (*.png *.jpg *.gif *.bmp)");
+    char image_uri[4096];
+    image_uri[0] = '\0';
 
-    //TCHAR image_uri[MAX_PATH];
-    //HRESULT status = S_OK;
-    //Camera camera;
-    //status = camera.selectPicture(this->m_hWnd,image_uri);
+    if (!fileName.isNull()) {
 
-    //RHODESAPP().callCameraCallback( (const char*)lParam, rho::common::convertToStringA(image_uri),
-    //    (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
+        int ixExt = fileName.lastIndexOf('.');
+        QString szExt = (ixExt >= 0) && (fileName.lastIndexOf('/') < ixExt) ? fileName.right(fileName.length()-ixExt) : "";
+        QDateTime now = QDateTime::currentDateTimeUtc();
+        int tz = (int)(now.secsTo(QDateTime::currentDateTime())/3600);
+
+        char file_name[4096];
+        ::sprintf(file_name, "Image_%02i-%02i-%0004i_%02i.%02i.%02i_%c%03i%s",
+            now.date().month(), now.date().day(), now.date().year(),
+            now.time().hour(), now.time().minute(), now.time().second(),
+            tz>0?'_':'-',abs(tz),szExt.toStdString().c_str());
+
+        QString full_name = QString::fromStdWString(strBlobRoot);
+        full_name.append("/");
+        full_name.append(file_name);
+
+        if (QFile::copy(fileName,full_name))
+            strcpy( image_uri, file_name );
+        else
+            wasError = true;
+    }
+
+    RHODESAPP().callCameraCallback( (const char*)callbackUrl, rho::common::convertToStringA(image_uri),
+        (wasError ? "Error" : ""), fileName.isNull());
 
     free(callbackUrl);
 }
