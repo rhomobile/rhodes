@@ -36,6 +36,7 @@ public:
     virtual void createCustomMenu(void);
     virtual void onCustomMenuItemCommand(int nItemPos);
     virtual void onWindowClose(void);
+    virtual void onWebViewUrlChanged(const ::std::string& url);
     // public methods:
     bool Initialize(const wchar_t* title);
     void DestroyUi(void);

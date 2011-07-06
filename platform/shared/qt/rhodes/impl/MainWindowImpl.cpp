@@ -62,6 +62,11 @@ void CMainWindow::logEvent(const ::std::string& message)
     LOG(INFO) + message;
 }
 
+void CMainWindow::onWebViewUrlChanged(const ::std::string& url)
+{
+    RHODESAPP().keepLastVisitedUrl(url);
+}
+
 bool CMainWindow::Initialize(const wchar_t* title)
 {
     bool ok = init(this, title);
