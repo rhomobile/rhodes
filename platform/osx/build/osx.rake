@@ -19,26 +19,6 @@ end
 namespace "build" do
   namespace "osx" do
     task :rhosimulator => ["config:set_osx_platform", "config:osx"] do
-        if not File.directory?($build_dir)
-          Dir.mkdir($build_dir)
-        end
-
-        dirs = ['rubylib/', 'rholib/', 'sqlite3/', 'syncengine/', 'RhoSimulator/']
-        dirs.each {|dir|
-          dir_path = File.join( $build_dir, dir )
-          if not File.directory?(dir_path)
-            Dir.mkdir(dir_path)
-          end
-          tmp_path = File.join( dir_path, 'tmp/' )
-          if not File.directory?(tmp_path)
-            Dir.mkdir(tmp_path)
-          end
-        }
-        gen_path = File.join( $build_dir, 'RhoSimulator/generated_files/' )
-        if not File.directory?(gen_path)
-          Dir.mkdir(gen_path)
-        end
-
         app_path = File.join( $build_dir, 'RhoSimulator/RhoSimulator.app' )
         puts Jake.run($remove,['-R', app_path ])
 
