@@ -134,8 +134,10 @@ void QtMainWindow::on_webView_linkClicked(const QUrl& url)
     } else if (ui->webView) {
         sUrl.remove(QRegExp("#+$"));
         if (sUrl.compare(ui->webView->url().toString())!=0) {
+#ifdef OS_MACOSX
             if (cb && !sUrl.startsWith("javascript:", Qt::CaseInsensitive))
                 cb->onWebViewUrlChanged(sUrl.toStdString());
+#endif
             ui->webView->load(QUrl(sUrl));
         }
     }
@@ -150,16 +152,22 @@ void QtMainWindow::on_webView_loadFinished(bool ok)
 {
     if (cb) {
         cb->logEvent((ok?"WebView: loaded ":"WebView: failed "));
+#ifdef OS_MACOSX
         if (ok) cb->onWebViewUrlChanged(ui->webView->url().toString().toStdString());
+#endif
     }
 }
 
 void QtMainWindow::on_webView_urlChanged(QUrl url)
 {
     if (cb) {
+#ifdef OS_MACOSX
         ::std::string sUrl = url.toString().toStdString();
         cb->logEvent("WebView: URL changed to " + sUrl);
         cb->onWebViewUrlChanged(sUrl);
+#else
+        cb->logEvent("WebView: URL changed");
+#endif
     }
 }
 
@@ -177,7 +185,9 @@ void QtMainWindow::navigate(QString url, int index)
             wv->stop();
             wv->page()->mainFrame()->evaluateJavaScript(url);
         } else {
+#ifdef OS_MACOSX
             if (cb) cb->onWebViewUrlChanged(url.toStdString());
+#endif
             wv->load(QUrl(url));
         }
     }
@@ -199,7 +209,9 @@ void QtMainWindow::Refresh(int index)
 {
     QWebView* wv = (index < tabViews.size()) && (index >= 0) ? tabViews[index] : ui->webView;
     if (wv) {
+#ifdef OS_MACOSX
         if (cb) cb->onWebViewUrlChanged(wv->url().toString().toStdString());
+#endif
         wv->reload();
     }
 }
