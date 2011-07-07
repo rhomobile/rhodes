@@ -149,6 +149,27 @@ public class WebView
 				}
 			}
 		});
+		klass.getSingletonClass().defineMethod("get_cookie", new RubyOneArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
+				try {
+					final String url = arg1.toString();
+					
+					RhodesApplication.getInstance().invokeLater( new Runnable() { 
+			            public void run() 
+			            {
+							RhodesApplication.getInstance().getCookie(RhodesApp.getInstance().canonicalizeRhoUrl(url));
+			            }
+			        } );
+					
+					return RubyConstant.QNIL;
+				}
+				catch (Exception e) {
+					LOG.ERROR("get_cookie failed.", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+			}
+		});
+		
 	}
 	
 }
