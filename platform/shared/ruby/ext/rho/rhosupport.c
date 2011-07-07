@@ -340,7 +340,7 @@ VALUE require_compiled(VALUE fname, VALUE* result)
         //*result = rb_funcall(seq, rb_intern("eval"), 0 );
         *result = rb_iseq_eval(seq);
         rb_gc_enable();
-#endif
+
         goto RCompExit;
     }
 
