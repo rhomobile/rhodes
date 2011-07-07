@@ -47,6 +47,7 @@ public:
     virtual void createCustomMenu(void);
     virtual void onCustomMenuItemCommand(int nItemPos);
 	virtual void onWindowClose(void);
+    virtual void onWebViewUrlChanged(const ::std::string& url);
     // public methods:
     void Navigate2(BSTR URL, int index);
     HWND Initialize(const wchar_t* title);
