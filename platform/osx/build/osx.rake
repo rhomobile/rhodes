@@ -45,18 +45,15 @@ namespace "build" do
         chdir $qt_project_dir
         args = ['-o', 'Makefile', '-r', '-spec', 'macx-g++', 'RhoSimulator.pro']
         puts Jake.run($qmake,args)
-        args = ['clean']
-        puts Jake.run($make,args)
-        args = ['all']
-        puts Jake.run($make,args)
+        puts Jake.run($make, ['clean'])
+        puts Jake.run($make, ['all'])
 
         unless $? == 0
           puts "Error building"
           exit 1
         end
 
-        args = [app_path]
-        puts Jake.run($macdeployqt,args)
+        puts Jake.run($macdeployqt, [app_path])
 
         exe_path = File.join( app_path, 'Contents/MacOS/RhoSimulator' )
         frm_path = File.join( app_path, 'Contents/Frameworks/' )
@@ -69,16 +66,17 @@ namespace "build" do
           puts Jake.run($name_tool,args)
         }
 
+        puts Jake.run($remove,['-R', File.join(frm_path, 'QtDBus.framework' )])
         puts Jake.run($remove,['-R', File.join(frm_path, 'QtDeclarative.framework' )])
         puts Jake.run($remove,['-R', File.join(frm_path, 'QtOpenGL.framework' )])
         puts Jake.run($remove,['-R', File.join(frm_path, 'QtScript.framework' )])
         puts Jake.run($remove,['-R', File.join(frm_path, 'QtSql.framework' )])
         puts Jake.run($remove,['-R', File.join(frm_path, 'QtSvg.framework' )])
+        puts Jake.run($remove,['-R', File.join(frm_path, 'QtXml.framework' )])
         puts Jake.run($remove,['-R', File.join(frm_path, 'QtXmlPatterns.framework' )])
 
         chdir $qt_project_dir
-        args = ['clean']
-        puts Jake.run($make,args)
+        puts Jake.run($make, ['clean'])
     end
   end
 end

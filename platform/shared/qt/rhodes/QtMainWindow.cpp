@@ -125,6 +125,7 @@ void QtMainWindow::on_actionBack_triggered()
 
 bool QtMainWindow::internalUrlProcessing(const QUrl& url)
 {
+    int ipos;
     QString sUrl = url.toString();
     if (sUrl.startsWith("mailto:")) {
         QDesktopServices::openUrl(url);
@@ -132,12 +133,14 @@ bool QtMainWindow::internalUrlProcessing(const QUrl& url)
     }
     if (sUrl.startsWith("tel:")) {
         sUrl.remove(0, 4);
+        if ((ipos = sUrl.indexOf('?')) >= 0) sUrl = sUrl.left(ipos);
         QMessageBox::information(0, "Phone call", "Call to " + sUrl);
         return true;
     }
     if (sUrl.startsWith("sms:")) {
         sUrl.remove(0, 4);
-        QMessageBox::information(0, "SMS", "SMS to " + sUrl);
+        if ((ipos = sUrl.indexOf('?')) >= 0) sUrl = sUrl.left(ipos);
+        QMessageBox::information(0, "SMS", "Send SMS to " + sUrl);
         return true;
     }
     return false;
