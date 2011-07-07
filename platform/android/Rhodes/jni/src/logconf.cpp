@@ -7,13 +7,13 @@
 extern "C" int rho_conf_send_log();
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getEnabledCategories
-  (JNIEnv *env, jobject)
+  (JNIEnv *env, jclass)
 {
     return rho_cast<jhstring>(env, LOGCONF().getEnabledCategories().c_str()).release();
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setEnabledCategories
-  (JNIEnv *env, jobject, jstring value)
+  (JNIEnv *env, jclass, jstring value)
 {
     if (value == NULL)
         return;
@@ -21,13 +21,13 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setEnabledCategorie
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getDisabledCategories
-  (JNIEnv *env, jobject)
+  (JNIEnv *env, jclass)
 {
     return rho_cast<jhstring>(env, LOGCONF().getDisabledCategories().c_str()).release();
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setDisabledCategories
-  (JNIEnv *env, jobject, jstring value)
+  (JNIEnv *env, jclass, jstring value)
 {
     if (value == NULL)
         return;
@@ -35,31 +35,31 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setDisabledCategori
 }
 
 RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getMinSeverity
-  (JNIEnv *, jobject)
+  (JNIEnv *, jclass)
 {
     return LOGCONF().getMinSeverity();
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setMinSeverity
-  (JNIEnv *, jobject, jint severity)
+  (JNIEnv *, jclass, jint severity)
 {
     LOGCONF().setMinSeverity(severity);
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_saveToFile
-  (JNIEnv *, jobject)
+  (JNIEnv *, jclass)
 {
     LOGCONF().saveToFile();
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_clearLog
-  (JNIEnv *, jobject)
+  (JNIEnv *, jclass)
 {
     LOGCONF().clearLog();
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogText
-  (JNIEnv *env, jobject)
+  (JNIEnv *env, jclass)
 {
     rho::String logText;
     LOGCONF().getLogText(logText);
@@ -67,13 +67,13 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogText
 }
 
 RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogTextPos
-  (JNIEnv *, jobject)
+  (JNIEnv *, jclass)
 {
     return LOGCONF().getLogTextPos();
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_sendLog
-  (JNIEnv *, jobject)
+  (JNIEnv *, jclass)
 {
     rho_conf_send_log();
 }
