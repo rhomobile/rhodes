@@ -1062,7 +1062,12 @@ namespace "run" do
 
         sim_conf = "rhodes_path='#{$startdir}'\r\n"
         sim_conf += "app_name='#{$appname}'\r\n"
-        sim_conf += "reload_app_changes=#{ENV['rho_reload_app_changes']}\r\n"        
+        if ( ENV['rho_reload_app_changes'] )
+            sim_conf += "reload_app_changes=#{ENV['rho_reload_app_changes']}\r\n"        
+        else
+            sim_conf += "reload_app_changes=1\r\n"                    
+        end
+            
         
         if $config['debug']
             sim_conf += "debug_port=#{$config['debug']['port']}\r\n"
