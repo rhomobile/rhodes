@@ -68,6 +68,7 @@ private:
     void tabbarWebViewRestore(bool reload);
     void tabbarConnectWebView(QWebView* webView, QWebInspector* webInspector);
     void tabbarDisconnectWebView(QWebView* webView, QWebInspector* webInspector);
+    bool internalUrlProcessing(const QUrl& url);
 
 private:
     Ui::QtMainWindow *ui;
