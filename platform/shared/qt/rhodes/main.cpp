@@ -143,9 +143,9 @@ int main(int argc, char *argv[])
 
 #ifdef RHODES_EMULATOR
     if (RHOSIMCONF().getString("debug_host").length() > 0)
-        RHOCONF().setString("debug_host", RHOSIMCONF().getString("debug_host"), false);
+        setenv("RHOHOST", RHOSIMCONF().getString("debug_host").c_str(), 1 );
     if (RHOSIMCONF().getString("debug_port").length() > 0)
-        RHOCONF().setString("debug_port", RHOSIMCONF().getString("debug_port"), false);
+        setenv("rho_debug_port", RHOSIMCONF().getString("debug_port").c_str(), 1 );
 #endif
     rho::common::CRhodesApp::Create(m_strRootPath);
 
