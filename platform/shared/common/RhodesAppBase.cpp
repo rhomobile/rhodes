@@ -41,7 +41,7 @@ void CRhodesAppBase::initAppUrls()
 
 String CRhodesAppBase::resolveDBFilesPath(const String& strFilePath)
 {
-    if ( String_startsWith(strFilePath, getRhoRootPath()) )
+    if ( strFilePath.length() == 0 || String_startsWith(strFilePath, getRhoRootPath()) )
         return strFilePath;
 
     return CFilePath::join(getRhoRootPath(), strFilePath);
