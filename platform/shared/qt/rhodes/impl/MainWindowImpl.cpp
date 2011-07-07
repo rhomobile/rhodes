@@ -219,6 +219,16 @@ void CMainWindow::Refresh(int index)
     ((QtMainWindow*)qtMainWindow)->Refresh(index);
 }
 
+int CMainWindow::getLogicalDpiX()
+{
+    return ((QtMainWindow*)qtMainWindow)->getLogicalDpiX();
+}
+
+int CMainWindow::getLogicalDpiY()
+{
+    return ((QtMainWindow*)qtMainWindow)->getLogicalDpiY();
+}
+
 bool CMainWindow::isStarted()
 {
     return ((QtMainWindow*)qtMainWindow)->isStarted();

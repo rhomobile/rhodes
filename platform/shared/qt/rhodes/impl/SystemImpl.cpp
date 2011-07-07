@@ -7,6 +7,7 @@
 #undef null
 #include <qglobal.h>
 #include <QWebPage>
+#include <QLocale>
 #include "MainWindowImpl.h"
 
 using namespace rho;
@@ -21,27 +22,22 @@ VALUE phone_number()
 
 static int has_camera()
 {
-    return 0;
+    return 1;
 }
 
 static double get_screen_ppi_x()
 {
-    //TODO: get_screen_ppi_x
-    double ret = 96.;
-    return ret;
+    return CMainWindow::getInstance()->getLogicalDpiX();
 }
 
 static double get_screen_ppi_y()
 {
-    //TODO: get_screen_ppi_y
-    double ret = 96.;
-    return ret;
+    return CMainWindow::getInstance()->getLogicalDpiY();
 }
 
 VALUE rho_sys_get_locale()
 {
-    //TODO: rho_sys_get_locale
-    return rho_ruby_create_string("en");
+    return rho_ruby_create_string(QLocale::system().name().left(2).toStdString().c_str());
 }
 
 int rho_sys_get_screen_width()
@@ -92,19 +88,12 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
     }
 
     if (strcasecmp("country",szPropName) == 0) {
-        //TODO: "country"
-        *resValue = rho_ruby_create_string("US");
+        *resValue = rho_ruby_create_string(QLocale::system().name().right(2).toStdString().c_str());
         return 1;
     }
 
     if (strcasecmp("device_name",szPropName) == 0) {
         *resValue = rho_ruby_create_string("Qt");
-        return 1;
-    }
-
-    if (strcasecmp("os_version",szPropName) == 0) {
-        //TODO: "os_version"
-        *resValue = rho_ruby_create_string(QT_VERSION_STR);
         return 1;
     }
 
