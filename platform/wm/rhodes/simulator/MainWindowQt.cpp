@@ -61,6 +61,12 @@ void CMainWindow::logEvent(const ::std::string& message)
     LOG(INFO) + message;
 }
 
+void CMainWindow::onWebViewUrlChanged(const ::std::string& url)
+{
+    rho::String sUrl = url;
+    RHODESAPP().keepLastVisitedUrl(sUrl);
+}
+
 void CMainWindow::Navigate2(BSTR URL, int index) {
     String cleared_url = convertToStringA(OLE2CT(URL));
     if (!cleared_url.empty()) {
