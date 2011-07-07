@@ -1,7 +1,5 @@
 package com.rhomobile.rhosync_client_test;
 
-import java.io.File;
-
 import android.content.pm.ApplicationInfo;
 import android.test.AndroidTestCase;
 
@@ -23,16 +21,13 @@ public class TestRhoSyncClient extends AndroidTestCase {
     protected void setUp()
     {
 		System.loadLibrary("rhosyncclient");
-		mLogConf = new RhoLogConf();
 		
-		//String resources[] = {"db/syncdb.schema", "db/syncdb.triggers", "db/syncdb_java.triggers"};
-
     	ApplicationInfo appInfo = this.getContext().getApplicationInfo();
 		try {
 			RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir);
 			RhoFileApi.init(this.getContext());
 			
-			//mLogConf.setMinSeverity(0);
+			RhoLogConf.setMinSeverity(0);
 			//mLogConf.setEnabledCategories("*");
 			
 			RhoSyncClient.nativeInit();

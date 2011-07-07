@@ -22,20 +22,20 @@ package com.rhomobile.rhodes;
 
 public class RhoLogConf {
 
-	public native String getEnabledCategories();
-	public native void setEnabledCategories(String c);
+	public static native String getEnabledCategories();
+	public static native void setEnabledCategories(String c);
 	
-	public native String getDisabledCategories();
-	public native void setDisabledCategories(String c);
+	public static native String getDisabledCategories();
+	public static native void setDisabledCategories(String c);
 	
-	public native int getMinSeverity();
-	public native void setMinSeverity(int s);
+	public static native int getMinSeverity();
+	public static native void setMinSeverity(int s);
 	
-	public native void saveToFile();
-	public native void clearLog();
+	public static native void saveToFile();
+	public static native void clearLog();
 	
-	public native String getLogText();
-	public native int getLogTextPos();
+	public static native String getLogText();
+	public static native int getLogTextPos();
 	
-	public native void sendLog();
+	public static native void sendLog();
 }
