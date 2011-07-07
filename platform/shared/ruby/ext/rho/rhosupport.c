@@ -44,13 +44,19 @@ VALUE __rhoGetRhodesDir(void)
 VALUE
 rb_f_eval_compiled(int argc, VALUE *argv, VALUE self)
 {
-    VALUE scope, fname, iseqval;
+    VALUE scope, fname, iseqval, res;
     const char *file = 0;
 
+    rb_gc_disable();
     rb_scan_args(argc, argv, "11", &fname, &scope);
 
+    //RAWLOG_INFO1("eval_compiled: %s", RSTRING_PTR(fname));
+    
     iseqval = loadISeqFromFile(RhoPreparePath(fname));
-    return eval_string_with_cref( self, iseqval, scope, 0, file, 1 );
+    res = eval_string_with_cref( self, iseqval, scope, 0, file, 1 );
+    rb_gc_enable();
+    
+    return res;
     //return eval_iseq_with_scope(self, scope, iseqval );
 }   
 
@@ -419,10 +425,12 @@ VALUE require_compiled(VALUE fname, VALUE* result)
 #else
         rb_gc_disable();
         seq = loadISeqFromFile(path);
-        rb_gc_enable();
+        
 
         //*result = rb_funcall(seq, rb_intern("eval"), 0 );
         *result = rb_iseq_eval(seq);
+        
+        rb_gc_enable();
 #endif
         goto RCompExit;
     }
