@@ -8,6 +8,7 @@
 #include <qglobal.h>
 #include <QWebPage>
 #include <QLocale>
+#include <QDesktopServices>
 #include "MainWindowImpl.h"
 
 using namespace rho;
@@ -150,7 +151,9 @@ void rho_sys_app_exit()
 
 void rho_sys_open_url(const char* url)
 {
-    //TODO: rho_sys_open_url
+    QString sUrl = QString::fromUtf8(url);
+    if (sUrl.startsWith("/")) sUrl.prepend("file://");
+    QDesktopServices::openUrl(QUrl(sUrl));
 }
 
 void rho_sys_run_app(const char *appname, VALUE params)

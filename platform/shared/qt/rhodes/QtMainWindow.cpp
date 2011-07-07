@@ -13,6 +13,7 @@
 #include <QLabel>
 #include <QtNetwork/QNetworkCookie>
 #include <QFileDialog>
+#include <QDesktopServices>
 #include "ext/rho/rhoruby.h"
 #include "common/RhoStd.h"
 #include "common/RhodesApp.h"
@@ -122,6 +123,26 @@ void QtMainWindow::on_actionBack_triggered()
         ui->webView->back();
 }
 
+bool QtMainWindow::internalUrlProcessing(const QUrl& url)
+{
+    QString sUrl = url.toString();
+    if (sUrl.startsWith("mailto:")) {
+        QDesktopServices::openUrl(url);
+        return true;
+    }
+    if (sUrl.startsWith("tel:")) {
+        sUrl.remove(0, 4);
+        QMessageBox::information(0, "Phone call", "Call to " + sUrl);
+        return true;
+    }
+    if (sUrl.startsWith("sms:")) {
+        sUrl.remove(0, 4);
+        QMessageBox::information(0, "SMS", "SMS to " + sUrl);
+        return true;
+    }
+    return false;
+}
+
 void QtMainWindow::on_webView_linkClicked(const QUrl& url)
 {
     QString sUrl = url.toString();
@@ -132,13 +153,15 @@ void QtMainWindow::on_webView_linkClicked(const QUrl& url)
         externalWebView->show();
         externalWebView->activateWindow();
     } else if (ui->webView) {
-        sUrl.remove(QRegExp("#+$"));
-        if (sUrl.compare(ui->webView->url().toString())!=0) {
+        if (!internalUrlProcessing(url)) {
+            sUrl.remove(QRegExp("#+$"));
+            if (sUrl.compare(ui->webView->url().toString())!=0) {
 #ifdef OS_MACOSX
-            if (cb && !sUrl.startsWith("javascript:", Qt::CaseInsensitive))
-                cb->onWebViewUrlChanged(sUrl.toStdString());
+                if (cb && !sUrl.startsWith("javascript:", Qt::CaseInsensitive))
+                    cb->onWebViewUrlChanged(sUrl.toStdString());
 #endif
-            ui->webView->load(QUrl(sUrl));
+                ui->webView->load(QUrl(sUrl));
+            }
         }
     }
 }
@@ -184,7 +207,7 @@ void QtMainWindow::navigate(QString url, int index)
             url.remove(0,11);
             wv->stop();
             wv->page()->mainFrame()->evaluateJavaScript(url);
-        } else {
+        } else if (!internalUrlProcessing(url)) {
 #ifdef OS_MACOSX
             if (cb) cb->onWebViewUrlChanged(url.toStdString());
 #endif
