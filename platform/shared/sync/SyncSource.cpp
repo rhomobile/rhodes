@@ -398,7 +398,7 @@ void CSyncSource::makePushBody_Ver3(String& strBody, const String& strUpdateType
         if ( m_hashIgnorePushObjects.containsKey(strObject) )
             continue;
 
-        if ( attribType.compare("blob.file") == 0 )
+        if ( attribType.compare("blob.file") == 0 && value.length() > 0 )
         {
             CMultipartItem* pItem = new CMultipartItem();
             CMultipartItem& oItem = *pItem;

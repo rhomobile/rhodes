@@ -72,7 +72,7 @@ String CRhodesAppBase::resolveDBFilesPath(const String& strFilePath)
     String strDbFileRoot = getRhoRootPath() + RHO_EMULATOR_DIR;
 #endif
 
-    if ( String_startsWith(strFilePath, strDbFileRoot) )
+    if ( strFilePath.length() == 0 || String_startsWith(strFilePath, strDbFileRoot) )
         return strFilePath;
 
     return CFilePath::join(strDbFileRoot, strFilePath);
