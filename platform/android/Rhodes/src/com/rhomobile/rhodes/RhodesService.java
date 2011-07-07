@@ -141,11 +141,6 @@ public class RhodesService extends Service {
 		return mGeoLocationInactivityTimeout;
 	}
 	
-	private RhoLogConf m_rhoLogConf = new RhoLogConf();
-	public RhoLogConf getLogConf() {
-		return m_rhoLogConf;
-	}
-	
 	private boolean mNeedGeoLocationRestart = false;
 	
 	class PowerWakeLock {

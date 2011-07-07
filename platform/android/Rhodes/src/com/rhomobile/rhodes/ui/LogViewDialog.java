@@ -68,21 +68,17 @@ public class LogViewDialog extends Dialog implements OnClickListener {
 		loadLogText();
 	}
 	
-	private RhoLogConf getLogConf() {
-		return RhodesService.getInstance().getLogConf();
-	}
-
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case AndroidR.id.logviewRefreshButton:
 			loadLogText();
 			break;
 		case AndroidR.id.logviewClearButton:
-			getLogConf().clearLog();
+			RhoLogConf.clearLog();
 			loadLogText();
 			break;
 		case AndroidR.id.logviewSendButton:
-			getLogConf().sendLog();
+			RhoLogConf.sendLog();
 			break;
 		case AndroidR.id.logviewCloseButton:
 			cancel();
@@ -91,14 +87,14 @@ public class LogViewDialog extends Dialog implements OnClickListener {
 	}
 
 	private void loadLogText(){
-        String strLog = getLogConf().getLogText();
+        String strLog = RhoLogConf.getLogText();
         findCurLine(strLog);
         
         logContent.setText(strLog);
 	}
 	
 	void findCurLine(String strLog){
-        int nPos = getLogConf().getLogTextPos();
+        int nPos = RhoLogConf.getLogTextPos();
         curLine = 0;
         
         for ( int nEndLine = strLog.indexOf('\n'); nEndLine >= 0 && nEndLine<nPos; 

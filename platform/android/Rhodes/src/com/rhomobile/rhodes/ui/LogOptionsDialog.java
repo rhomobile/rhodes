@@ -61,15 +61,13 @@ public class LogOptionsDialog extends Dialog implements OnClickListener {
 		saveButton.setOnClickListener(this);
 		closeButton.setOnClickListener(this);
 
-		RhoLogConf logConf = RhodesService.getInstance().getLogConf();
-		
 		includeClasses = (EditText) this.findViewById(AndroidR.id.includeClasses);
 		
-		includeClasses.setText( logConf.getEnabledCategories() );
+		includeClasses.setText( RhoLogConf.getEnabledCategories() );
 		
 		excludeClasses = (EditText) this.findViewById(AndroidR.id.excludeClasses);
 		
-		excludeClasses.setText( logConf.getDisabledCategories() );
+		excludeClasses.setText( RhoLogConf.getDisabledCategories() );
 		
 		logLevel = (Spinner) this.findViewById(AndroidR.id.loglevel);
 
@@ -79,18 +77,17 @@ public class LogOptionsDialog extends Dialog implements OnClickListener {
 		
 		logLevel.setAdapter(spinnerArrayAdapter);
 		
-		logLevel.setSelection( logConf.getMinSeverity() );
+		logLevel.setSelection( RhoLogConf.getMinSeverity() );
 	}
 
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case AndroidR.id.logoptsSaveButton:
-			RhoLogConf logConf = RhodesService.getInstance().getLogConf();
-			logConf.setMinSeverity(logLevel.getSelectedItemPosition());
-			logConf.setEnabledCategories(includeClasses.getText().toString());
-			logConf.setDisabledCategories(excludeClasses.getText().toString());
+			RhoLogConf.setMinSeverity(logLevel.getSelectedItemPosition());
+			RhoLogConf.setEnabledCategories(includeClasses.getText().toString());
+			RhoLogConf.setDisabledCategories(excludeClasses.getText().toString());
 			
-			logConf.saveToFile();
+			RhoLogConf.saveToFile();
 			
 			dismiss();
 			break;

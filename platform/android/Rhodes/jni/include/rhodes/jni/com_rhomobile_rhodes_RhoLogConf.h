@@ -13,7 +13,7 @@ extern "C" {
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getEnabledCategories
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass);
 
 /*
  * Class:     com_rhomobile_rhodes_RhoLogConf
@@ -21,7 +21,7 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getEnabledCategor
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setEnabledCategories
-  (JNIEnv *, jobject, jstring);
+  (JNIEnv *, jclass, jstring);
 
 /*
  * Class:     com_rhomobile_rhodes_RhoLogConf
@@ -29,7 +29,7 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setEnabledCategories
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getDisabledCategories
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass);
 
 /*
  * Class:     com_rhomobile_rhodes_RhoLogConf
@@ -37,7 +37,7 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getDisabledCatego
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setDisabledCategories
-  (JNIEnv *, jobject, jstring);
+  (JNIEnv *, jclass, jstring);
 
 /*
  * Class:     com_rhomobile_rhodes_RhoLogConf
@@ -45,7 +45,7 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setDisabledCategorie
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getMinSeverity
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass);
 
 /*
  * Class:     com_rhomobile_rhodes_RhoLogConf
@@ -53,7 +53,7 @@ JNIEXPORT jint JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getMinSeverity
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setMinSeverity
-  (JNIEnv *, jobject, jint);
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     com_rhomobile_rhodes_RhoLogConf
@@ -61,7 +61,7 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setMinSeverity
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_saveToFile
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass);
 
 /*
  * Class:     com_rhomobile_rhodes_RhoLogConf
@@ -69,7 +69,7 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_saveToFile
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_clearLog
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass);
 
 /*
  * Class:     com_rhomobile_rhodes_RhoLogConf
@@ -77,7 +77,7 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_clearLog
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogText
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass);
 
 /*
  * Class:     com_rhomobile_rhodes_RhoLogConf
@@ -85,7 +85,7 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogText
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogTextPos
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass);
 
 /*
  * Class:     com_rhomobile_rhodes_RhoLogConf
@@ -93,7 +93,7 @@ JNIEXPORT jint JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogTextPos
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_sendLog
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass);
 
 #ifdef __cplusplus
 }
