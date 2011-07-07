@@ -257,7 +257,7 @@ source_iter(const char* szName, void* parSources)
 unsigned long rho_sync_doSearch(unsigned long ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, 
     const char* callback, const char* callback_params)
 {
-    //rho_sync_stop();
+    rho_sync_stop();
     if ( callback && *callback )
         CSyncThread::getSyncEngine().getNotify().setSearchNotification( new CSyncNotification( callback, callback_params ? callback_params : "", true) );
 
@@ -273,7 +273,7 @@ unsigned long rho_sync_doSearch(unsigned long ar_sources, const char *from, cons
 unsigned long rho_sync_doSearchByNames(unsigned long ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, 
     /*RHOC_CALLBACK*/void* callback, void* callback_data)
 {
-    //rho_sync_stop();
+    rho_sync_stop();
     if ( callback )
         CSyncThread::getSyncEngine().getNotify().setSearchNotification( new CSyncNotification( (RHOC_CALLBACK)callback, callback_data, true ) );
 
