@@ -33,6 +33,8 @@ public:
     virtual void showEvent(QShowEvent *);
     virtual void closeEvent(QCloseEvent *);
     void setCallback(IMainWindowCallback* callback);
+    int getLogicalDpiX();
+    int getLogicalDpiY();
     // webview
     void navigate(QString url, int index);
     void GoBack(void);

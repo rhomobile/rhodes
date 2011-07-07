@@ -216,6 +216,16 @@ void QtMainWindow::Refresh(int index)
     }
 }
 
+int QtMainWindow::getLogicalDpiX()
+{
+    return this->logicalDpiX();
+}
+
+int QtMainWindow::getLogicalDpiY()
+{
+    return this->logicalDpiY();
+}
+
 
 // Tabbar:
 

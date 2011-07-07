@@ -53,6 +53,8 @@ public:
     void GoBack(void);
     void GoForward(void);
     void Refresh(int index);
+    int getLogicalDpiX();
+    int getLogicalDpiY();
     // toolbar/tabbar
     bool isStarted();
     // toolbar proxy
