@@ -77,14 +77,14 @@ Open a command line window and navigate to the director of your Rhodes applicati
 Now tell Rhodes where to build from. This changes your rhobuild.yml in the Rhodes SDK folder to point to your application.
 
 	:::term
-	$ rake switch-app
+	$ rake switch_app
 
 Then tell Rhodes to set up from XCode:
 
 	:::term
 	rake build:iphone:setup_xcode_project
 
-Then in the Rhodes SDK (the path in the build.yml file), navigate to the /platform/iphone and open the rrhorunner.xcodeproj.
+Then in the Rhodes SDK (the path in the build.yml file), navigate to the /platform/iphone folder and open the rrhorunner.xcodeproj.
 
 After you edit your application code, run the XCode 'Build and Go' command to build your project in XCode and run it in the simulator.
 
