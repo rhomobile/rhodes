@@ -73,7 +73,12 @@ CURLcode SSLImpl::connect(int sockfd, int nonblocking, int *done, int ssl_verify
         RAWLOG_ERROR("SSL connection error");
         return CURLE_SSL_CONNECT_ERROR;
     }
-    
+    CFReadStreamScheduleWithRunLoop(    data->readStream,
+                                        CFRunLoopGetCurrent(),
+                                        kCFRunLoopCommonModes);
+    CFWriteStreamScheduleWithRunLoop(    data->writeStream,
+                                    CFRunLoopGetCurrent(),
+                                    kCFRunLoopCommonModes);
     *done = 1;
     return CURLE_OK;
 }
@@ -83,7 +88,12 @@ void SSLImpl::shutdown(void *storage)
     ssl_data_t *data = (ssl_data_t*)storage;
     if (!data)
         return;
-    
+    CFReadStreamScheduleWithRunLoop(    data->readStream,
+                                    CFRunLoopGetCurrent(),
+                                    kCFRunLoopCommonModes);
+    CFWriteStreamScheduleWithRunLoop(    data->writeStream,
+                                     CFRunLoopGetCurrent(),
+                                     kCFRunLoopCommonModes);
     if (data->readStream) {
         CFReadStreamRef readStream = (CFReadStreamRef)data->readStream;
         CFReadStreamClose(readStream);
