@@ -200,6 +200,8 @@ INetResponse* CNetRequestImpl::doRequest( const char* method, const String& strU
             }
         }
         writeHeaders(m_pHeaders);
+        if ( isError() )
+            break;
 
         if ( !HttpSendRequest( m_hRequest, NULL, 0, const_cast<char*>(strBody.c_str()), strBody.length() ) )
         {
