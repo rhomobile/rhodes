@@ -494,7 +494,7 @@ public class SyncSource
 	        if ( m_hashIgnorePushObjects.containsKey(strObject) )
 	        	continue;
 	        
-	        if ( attribType.compareTo("blob.file") == 0 )
+	        if ( attribType.compareTo("blob.file") == 0 && value.length() > 0 )
 	        {
 	            MultipartItem oItem = new MultipartItem();
 	            oItem.m_strFilePath = RhodesApp.getInstance().resolveDBFilesPath(value);

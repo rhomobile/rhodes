@@ -252,7 +252,7 @@ namespace rho.common
 
         public String resolveDBFilesPath(String strFilePath)
         {
-            if (strFilePath.startsWith(getRhoRootPath()))
+            if (strFilePath.length() == 0 || strFilePath.startsWith(getRhoRootPath()))
                 return strFilePath;
 
             return CFilePath.join(getRhoRootPath(), strFilePath);
