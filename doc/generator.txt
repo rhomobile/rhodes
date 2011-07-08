@@ -2,22 +2,22 @@
 
 Rhodes utility is a generator which the user uses to create Rhodes applications, models, and tests (specs). 
 
-## Generate application
+## Generating an Application
 
-App name is passed in as a parameter. Utility will generate default directory structure for your application, with reasonable defaults.
+You pass your application name to the rhodes app command as a parameter. The Rhodes utility will generate a default directory structure for your application, with default code for the generated files.
 
-	Usage: rhodes app [options] [args]
+	Usage: rhodes app name [options] [args]
 
 	Generate a new rhodes application.
 
 	Required:
 	  name        - application name
-  
-	Optional:
+
+	args (optional):
 	  syncserver  - url to the source adapter (i.e. "" or "http://myacct.rhohub.com/apps/myapp/sources/")
 	  zip_url     - optional url to zipfile download of bundle (this can be your RhoHub Bundle URL)
 
-	General options:
+	options:
 	    -p, --pretend                    Run, but do not make any changes.
 	    -f, --force                      Overwrite files that already exist.
 	    -s, --skip                       Skip files that already exist.
@@ -26,12 +26,12 @@ App name is passed in as a parameter. Utility will generate default directory st
 	    -h, --help                       Show this message
 	        --debug                      Do not catch errors
 
-For example:
+For example, the following command generates an application named myspace.
 
 	:::term
 	$ rhodes app myspace
 
-generates:
+The generated application has the following directory structure and files.
 
 	myspace/
 		Rakefile
@@ -70,19 +70,19 @@ generates:
 	./public/js:
 	   	<default js libraries>
 
-## Add new model
+## Adding a Model to Your Application
 
-Generate a new model:
+Once you have generated your application, you can add a model to it, and the model can have attributes. For example, if you have a store application, you can add a model named product, and attributes like brand, name, price, and quantity.
 
 	Usage: rhodes model [options] [args]
 
 	Generate a new model for a rhodes application.
 
-	Required:
+	args:
 	  name        - model name
-	  attributes  - list of one or more string attributes (i.e. name,industry,progress), NO spaces between attributes
+	  attributes  - list of one or more attributes (i.e. name,industry,progress), NO spaces between attributes
   
-	General options:
+	options:
 	    -p, --pretend                    Run, but do not make any changes.
 	    -f, --force                      Overwrite files that already exist.
 	    -s, --skip                       Skip files that already exist.
@@ -91,13 +91,13 @@ Generate a new model:
 	    -h, --help                       Show this message
 	        --debug                      Do not catch errors
 
-For example:
+For example, here is the command to generate a model named account, with the attributes name and industry.
 
 	:::term
 	$ cd myspace
 	$ rhodes model account name,industry
 
-This will generate the following files in  the folder app/Account:
+This will generate the following files in the folder app/Account:
 
 * app/Account/index.erb - the template to display the list of objects
 * app/Account/edit.erb - the template to edit an object
@@ -110,13 +110,13 @@ This will generate the following files in  the folder app/Account:
 * app/Account/account_controller.rb - contains the basic CRUD actions: index, new, create, edit, update and delete.
 * app/Account/account.rb - contains Account model definition
 
-Placeholder for Account test specs will be generated in the app/test folder:
+A placeholder for Account test specs will be generated in the app/test folder:
 
 * app/test/account_spec.rb - placeholder for Account test specs
 
 ## Add test framework
 
-Add test framework to the app:
+To add a test framework to the application:
 
 	Usage: rhodes spec
 
@@ -136,6 +136,6 @@ This will generate the following files in the app folder:
 * mspec.rb - contain all mspec required files
 * spec_runner.rb - contain spec framework initialization and generate list of spec files
 
-If you are going to use mspec then add mspec and fileutils extensions to build.yml:
+If you are going to use mspec, then add mspec and fileutils extensions to your application's build.yml file:
 
 	extensions: ["mspec", "fileutils"]

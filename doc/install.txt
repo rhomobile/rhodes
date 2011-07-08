@@ -1,9 +1,21 @@
 # Install Rhodes
 
 ## Instant Rhodes (Windows)
-The easiest way to install Rhodes on Windows is to use the [Instant Rhodes installer](http://rhomobile.com/instant-rhodes).  This will install Ruby, Rubygems, Redis, Rhodes and Rhosync gems and dependencies.
+The easiest way to install Rhodes on Windows is to use the [Instant Rhodes installer](http://rhomobile.com/instant-rhodes). This will install Ruby, Rubygems, Redis, Rhodes and Rhosync gems and dependencies.
 
 Once the installer has completed, you can skip to the [Setup Rhodes section](#setup-rhodes).
+
+## Java Development Kit
+
+You need to have the Java Development Kit (JDK) installed.
+
+If you are planning to build for Blackberry or Android, make sure you have JDK version 1.6.0_2 or higher installed. The recommended version is 6.0 update 11.
+
+For Macintosh, JDK version 1.6.0_24 for Mac OSX 10.6 is available [here](http://support.apple.com/downloads/DL1360/en_US/JavaForMacOSX10.6Update4.dmg). Install it and then run "Java Preferences" utility to change default version.
+
+The Sun JDK for Windows or Linux is available [here](http://java.sun.com/javase/downloads/index.jsp). The 32-bit Windows version of the JDK is required for Blackberry tools. 
+
+You will want to have your JAVA_HOME variable set; have JAVA_HOME/bin set on your path.
 
 ## Rhodes Gem
 To install the Rhodes gem, you will need the following tools installed:
@@ -11,15 +23,14 @@ To install the Rhodes gem, you will need the following tools installed:
 * [Ruby](http://www.ruby-lang.org/en/) (On Windows, [RubyInstaller](http://rubyinstaller.org) is a convenient way to install Ruby)
 * [RubyGems](http://docs.rubygems.org/) (RubyGems offers a .tgz, a .zip, and a .gem download. You want the .zip.)
 
-NOTE: Windows doesn't come with the necessary build tools to install gems ('make', for example). There are various ways to get these tools, but the [GnuWin32](http://gnuwin32.sourceforge.net/) project provides the tools, and can be conveniently installed via the [GetGnuWin32](http://sourceforge.net/projects/getgnuwin32/files/) installer.
+NOTE: Windows doesn't come with the necessary build tools to install gems ('make', for example). There are various ways to get these tools, but the GnuWin32 project at http://gnuwin32.sourceforge.net/ provides the tools, and can be conveniently installed via the GetGnuWin32 installer at http://sourceforge.net/projects/getgnuwin32/files/.
 
 The first step in using Rhodes is to install the Rhodes gem (you may want to put "sudo" in the front of this command on OS X):
 
     :::term
     $ gem install rhodes
 
-
-NOTE: If you get any "`no such file to load -- something`" messages while running the rake tasks or rhodes commands, this can usually be resolved by running '[sudo] gem install something'.
+NOTE: If you get any `no such file to load -- something` messages while running the rake tasks or rhodes commands, this can usually be resolved by putting "sudo" in front of the command, as in `sudo gem install something`.
 
 ## Setup Rhodes
 
