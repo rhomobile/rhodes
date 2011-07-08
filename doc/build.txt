@@ -26,7 +26,7 @@ Checkout the branch you are interested in (if not the master branch):
 	:::term
 	$ git checkout -f -b <branchname> --track origin/<branchname>
 
-To keep the branch up to date, use the git pull command:
+To keep your branch up to date, use the git pull command:
 
 	:::term
 	$ git pull
