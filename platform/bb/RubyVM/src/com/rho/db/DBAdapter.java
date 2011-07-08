@@ -848,6 +848,9 @@ public class DBAdapter extends RubyBasic
                 IDBResult res2 = executeSQL( "SELECT * FROM " + strTableName + " where object=?", arObj.elementAt(i) );
                 for( int j = 0; j < res2.getColCount(); j ++)
                 {
+                	if ( res2.isNullByIdx(j) )
+                		continue;
+                	
                     String strAttrib = res2.getColName(j);
                     String value = res2.getStringByIdx(j);
                     String attribType = getAttrMgr().isBlobAttr((Integer)arSrcID.elementAt(i), strAttrib) ? "blob.file" : "";
@@ -862,6 +865,9 @@ public class DBAdapter extends RubyBasic
 
     	        for( ; !res2.isEnd(); res2.next() )
     	        {
+    	        	if ( res2.isNullByIdx(1) )
+    	        		continue;
+    	        	
     	            String strAttrib = res2.getStringByIdx(0);
     	            String value = res2.getStringByIdx(1);
     	            String attribType = getAttrMgr().isBlobAttr((Integer)arSrcID.elementAt(i), strAttrib) ? "blob.file" : "";
