@@ -618,6 +618,12 @@ CURLcode CURLNetRequest::CURLHolder::perform()
     
     CURLcode result;
     for(;;) {
+        {
+        common::CMutexLock guard(m_lock);
+        if (m_active <= 0) {
+            return CURLE_COULDNT_CONNECT;   
+        }
+    
         int running;
         CURLMcode err = curl_multi_perform(m_curlm, &running);
         if (err == CURLM_CALL_MULTI_PERFORM)
@@ -671,6 +677,7 @@ CURLcode CURLNetRequest::CURLHolder::perform()
         else
             RAWLOG_ERROR2("Operation finished with error %d: %s", (int)result, curl_easy_strerror(result));
         break;
+        }
     }
 
     deactivate();
