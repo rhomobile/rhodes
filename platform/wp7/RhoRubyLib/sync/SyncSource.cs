@@ -463,7 +463,7 @@ namespace rho.sync
                 if ( m_hashIgnorePushObjects.containsKey(strObject) )
     	        	continue;
 
-	            if ( attribType.compareTo("blob.file") == 0 )
+                if (attribType.compareTo("blob.file") == 0 && value.length() > 0)
 	            {
 	                NetRequest.MultipartItem oItem = new NetRequest.MultipartItem();
 	                oItem.m_strFilePath = RHODESAPP().resolveDBFilesPath(value);
