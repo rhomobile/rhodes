@@ -38,9 +38,7 @@ Configure your environment by running the rhodes-setup script. This will attempt
 	:::term
 	$ rhodes-setup
 
-### Building rhodes gem from source
-
-ZZZZZZZ Why are they doing this?
+## Building rhodes gem from source
 
 You don't have to do it if you cloned sources, but if you want to build rhodes gem then do the following:
 
@@ -48,7 +46,7 @@ You don't have to do it if you cloned sources, but if you want to build rhodes g
   	$ rake gem
   	$ gem install rhodes-[version].gem
 
-Setting Up build.yml
+## Setting Up build.yml
 
 To build your application from Rhodes source code, set the sdk: property in the build.yml file (this file is in the root folder of your application) to the Rhodes source code root folder. For example:
 
@@ -120,7 +118,7 @@ To run your Rhodes application in the iPhone simulator, run this rake command:
 
 After you have modified and debugged your Rhodes application, you can prepare your application to install to your iOS device. 
 
-#### Modifying the build.yml for 
+#### Modifying the build.yml
 
 First, in your application's build.yml file, change sdk to iphoneos instead of iphonesimulator, configuration to Release instead of Debug, and add information such as codesignidentity.
 
