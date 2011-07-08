@@ -6,171 +6,133 @@ This page describes how to build Rhodes Application on all of our supported plat
 
 ### Required Software
 
-For Windows use [Instant Rhodes](install#install-on-windows). On Mac, Linux, and Windows (if you didn't use Instant Rhodes) make sure you have following software installed:
+You should check to see that the required software in installed on your computer, such as Ruby and RubyGems. See the
+[installation instructions](install).
 
-* Ruby 1.8.6 or 1.8.7. Load it from [here](http://www.ruby-lang.org/en/downloads/).
-* RubyGems v1.3.7 or higher. Load it from [here](http://rubygems.org/).
-* GNU make 3.80 or higher (required by gem). Probably you already have it installed if you are running Mac OS X or Linux. On Windows, download it from [here](http://gnuwin32.sourceforge.net/packages/make.htm) and install it somewhere on your system. Ensure you have location where it installed in your PATH environment variable.
-* Rhodes gem. Run `[sudo] gem install rhodes` to install the latest rhodes gem.
-**NOTE: If you get any "no such file to load -- something" messages while running the rake tasks or rhogen commands, this can usually be resolved by running '[sudo] gem install something'. **
+## Setting Up Rhodes Source Code
 
-For Windows setup HOME environment variable:
+If you planning to modify or [extend](extensions) Rhodes, you will need the Rhodes source code. It is distributed under MIT license. You don't need it if you are not planning to modify/extend Rhodes.
 
-	C:\Documents and Settings\<account_name>
+Rhodes source code is available on github.com. You will need Git to get it. If you used [Instant Rhodes](install#install-on-windows) you probably already have Git installed on your system. Otherwise, load it from [here](http://git-scm.com).
 
-If you are planning to build for Blackberry or Android, make sure you have JDK version 1.6.0_2 or higher installed. Recommended version 6.0 update 11.
-
-* Version 1.6.0_24 for Mac OSX 10.6 available [here](http://support.apple.com/downloads/DL1360/en_US/JavaForMacOSX10.6Update4.dmg). Install it and then run "Java Preferences" utility to change default version.
-* Sun JDK for Windows or Linux is available [here](http://java.sun.com/javase/downloads/index.jsp). The 32-bit Windows version is required for Blackberry tools. 
-
-Make sure you set JAVA_HOME and that JAVA_HOME/bin is on your path.
-
-## Setup Rhodes Source Code
-
-If you planning to modify or [extend](extensions) Rhodes, you will need Rhodes source code. It is distributed under MIT license and it is perfectly all right for you to hack it if you want to. But you don't need it otherwise, having Rhodes gem installed is enough.
-
-Rhodes source code is available on github.com and you will need Git to get it from there. If you used [Instant Rhodes](install#install-on-windows) you probably already have it installed on your system. Otherwise, load it from [here](http://git-scm.com).
-
-To clone Rhodes, execute following from the command line:
+To clone Rhodes to your local computer, execute git clone from the command line:
 	
 	:::term
 	$ git clone git://github.com/rhomobile/rhodes.git
 	$ cd rhodes
 
-Checkout the branch you are interested in (if not master):
+Checkout the branch you are interested in (if not the master branch):
 
 	:::term
 	$ git checkout -f -b <branchname> --track origin/<branchname>
 
-Make sure you're up-to-date on the branch:
+To keep the branch up to date, use the git pull command:
 
 	:::term
 	$ git pull
 
-Add the bin folder to your path. On Linux/Mac it is typically done via the .profile. On windows it is done via the system control panel.
+Add the bin folder of this clone to your path. On Linux/Mac it is typically done in the .profile file. On Windows, it is done using the Control Panel.
 
-Configure your environment by running the rhodes-setup script. This will attempt to auto-detect installed SDK's and will prompt you to verify them or enter ones that cannot be detected.
+Configure your environment by running the rhodes-setup script. This will attempt to auto-detect installed SDKs. It will prompt you to verify the SDK paths or enter paths for SDKs that cannot be detected.
 
 	:::term
 	$ rhodes-setup
 
-### Build rhodes gem from source
+### Building rhodes gem from source
 
-You don't have to do it if you cloned sources, but if you want to build rhodes gem then do following:
+ZZZZZZZ Why are they doing this?
+
+You don't have to do it if you cloned sources, but if you want to build rhodes gem then do the following:
 
 	:::term
-	$ git clone git://github.com/rhomobile/rhodes.git
-  	$ cd rhodes
   	$ rake gem
   	$ gem install rhodes-[version].gem
 
-### Build from Rhodes sources directly without gem
+Setting Up build.yml
 
-To build your application from Rhodes source code just set sdk: property in the build.yml (it is in the root folder of your app) to the Rhodes source code root folder.
+To build your application from Rhodes source code, set the sdk: property in the build.yml file (this file is in the root folder of your application) to the Rhodes source code root folder. For example:
 
-## Build for iPhone/iPad
+	:::term
+	sdk: /Library/Ruby/Gems/1.8/gems/rhodes-3.0.2
 
-iPhone/iPad versions of Rhodes Apps have to be built on Mac machines or could be build on [rhohub.com](http://rhohub.com). The instructions below describe how to do this from either the XCode development environment or from the command line on your local Mac. 
+## Building a Rhodes Application for iPhone/iPad
+
+iPhone/iPad versions of Rhodes apps must be built on Macintosh computers or on [rhohub.com](http://rhohub.com). The instructions below describe how to do this from either the Macintosh XCode development environment or from the command line on your local Macintosh. 
 
 ### Prerequisites
 
-To build for iPhone/iPad you will need following software installed:
+To build for iPhone/iPad using you will need the following software installed:
 
-* Mac OS X 10.5 (Leopard) or greater (Snow Leopard)
+* Mac OS X 10.6 or greater
 * Follow [All Platforms Prerequisites](#all-platforms-prerequisites)
 * iPhone SDK. We recommend the latest stable version available from the [iPhone Dev Center](http://developer.apple.com/iphone/index.action)
 
-### Build Application with XCode
+### Build a Rhodes Application with XCode
 
-To build for iPhone/iPad follow these steps:
+To build for iPhone/iPad using an XCode project, follow these steps:
 
-Note the 'sdk:' value in your build.yml.  You will use this in the next step.
-
-Inside the <sdk directory from previous step>/platform/iphone directory is an iPhone XCode project, double-click on it to open XCode.
-
-Open up a command window and switch to your application's directory. Run: 
-	
-	:::term
-	$ rake switch_app
-	
-This changes your rhobuild.yml in the SDK folder to point to your application.
-
-Prepare XCode rrhorunner.xcodeproj and other files for current application :
+Open a command line window and navigate to the director of your Rhodes application. Then set up your project to refer to your local Rhodes SDK with the following command:
 
 	:::term
-  	rake build:iphone:setup_xcode_project
+	$ set-rhodes-sdk
 
-Restore original XCode rrhorunner.xcodeproj and other files :
+Now tell Rhodes where to build from. This changes your rhobuild.yml in the Rhodes SDK folder to point to your application.
 
 	:::term
-  	rake build:iphone:restore_xcode_project
+	$ rake switch-app
 
-After you change application code just run 'Build and Go' command in XCode to build for the simulator.
+Then tell Rhodes to set up from XCode:
 
-If you want to build for the device, open the 'rhorunner' target and select your code signing information that you installed from the apple developer site and change your active sdk to a device.
+	:::term
+	rake build:iphone:setup_xcode_project
 
-* Tip: after you make changes and want to see them reflected on the device, reset the simulator and repeat #2.
-* Tip: to see a log of what is happening on the device, type command-shift-r in xcode to bring up the rhorunner console.
+Then in the Rhodes SDK (the path in the build.yml file), navigate to the /platform/iphone and open the rrhorunner.xcodeproj.
+
+After you edit your application code, run the XCode 'Build and Go' command to build your project in XCode and run it in the simulator.
+
+If you want to build for an iOS device, open the 'rhorunner' target, select your code signing information that you installed from the apple developer site, and change your active sdk to your iOS device.
 
 Result application package (*.app) located in <sdk directory>/platform/iphone/build/[Debug/Release]-[iphoneos/iphonesimulator]/rhorunner.app
 
-### Build and Release on App Store
+### Building and Releasing on App Store
 
 Once you have the application building with XCode as described above, it is treated as any other iPhone application when it comes to [signing and distributing to the app store](http://developer.apple.com/iphone/appstore/). 
 
-### Build Application from Command Line
+### Restoring rrhorunner.xcodeproj
 
-Unlike building the application from the XCode GUI, you build the application from command line via the rake command inside the directory of the app you had just generated with rhogen.
+To restore the XCode rrhorunner.xcodeproj and other files to their original state:
 
-Change directory to your rhodes application.
+	:::term
+  	$ rake build:iphone:restore_xcode_project
 
-Look at the contents of build.yml and verify the following setting `applog`. Do not enter full path here, this file will be in your app directory:
+### Building iPhone Application from the Command Line
 
-	applog: rholog.txt
+Unlike building the application from the XCode GUI, when you build the application from the command line, use the rake command from the directory of the application that you had just generated with rhogen.
 
-Run:
+From the command line, navigate to the folder for your Rhodes application.
+
+To run your Rhodes application in the iPhone simulator, run this rake command:
   
 	:::term
 	$ rake run:iphone
 
-Modify your application code. Exit application in simulator and run:
+### Building the Application for the iOS Device
 
-	:::term
-  	$ rake run:iphone
+After you have modified and debugged your Rhodes application, you can prepare your application to install to your iOS device. 
 
-### Build application for device
+#### Modifying the build.yml for 
 
-Modify build.yml:
+First, in your application's build.yml file, change sdk to iphoneos instead of iphonesimulator, configuration to Release instead of Debug, and add information such as codesignidentity.
 
 	iphone:
-		sdk: iphoneos4.2
+		sdk: iphoneos4.3
 		configuration: Release
 		codesignidentity: "iPhone Developer"
 		entitlements: ""
 
-Run:
+#### build.yml settings
 
-	:::term
-  	rake device:iphone:production
-
-Result package named <b>your application name.app</b> will be placed to `<your application folder>/bin/target/iOS/[sdkname]/[configuration]/[your application name].app` if you using Rhodes from 2.2.4 version.
-
-Result package named <b>rhorunner.app</b> will be placed to `<sdk directory>/platform/iphone/build/[Debug/Release/Distribution]-[iphoneos/iphonesimulator]/rhorunner.app` if you using Rhodes before 2.2.4 version.
-
-### Install Application to device
-Use <b>iTunes</b> for install you application package (your application name.app) to device:
- 
-* open iTunes
-* select <b>Apps</b>, drag your application package and drop it to Apps screen
-* connect your device to iTunes
-* select you device in iTunes
-* select <b>Apps</b> tab in your device screen
-* check your application for install to device
-* do Sync for install your application to device
-
-### build.yml settings
-
-The build.yml settings for iphone are the following:
+The default build.yml settings generated for iphone are:
 
 	name: myapp
 	version: 1.0
@@ -195,11 +157,11 @@ The build.yml settings for iphone are the following:
 * emulator: version of emulator for run application
 * emulatortarget: device family for simulator (iphone/ipad)
 * BundleIdentifier: bundle identifier - used in provisioning profile 
-* BundleURLScheme: bundle URL scheme of your app (used for open your application from another application by using of custom URL scheme)
+* BundleURLScheme: bundle URL scheme of your app (used for opening your application from another application by using custom URL scheme)
 
 ** NOTE: BundleIdentifier and BundleURLScheme can contain only next symbols : "a"-"z", "A"-"Z", "0"-"9", "-", "." !
 
-Example of iPhone setting in build.yml of your application:
+Here is an example of the iPhone settings in build.yml for a finished application:
 
 	name: JS App
 	version: 1.0
@@ -214,6 +176,28 @@ Example of iPhone setting in build.yml of your application:
 	  BundleIdentifier: com.johnsmithcompany.jsapp
 	  BundleURLScheme: jsapp
 
+### Creating Your Application Package
+
+Now you can create your .app file with this rake command:
+
+	:::term
+  	$ rake device:iphone:production
+
+The package named <b>your application name.app</b> will be placed to `<your application folder>/bin/target/iOS/[sdkname]/[configuration]/[your application name].app` if you are using Rhodes from 2.2.4 version.
+
+Result package named <b>rhorunner.app</b> will be placed to `<sdk directory>/platform/iphone/build/[Debug/Release/Distribution]-[iphoneos/iphonesimulator]/rhorunner.app` if you are using Rhodes before 2.2.4 version.
+
+### Installing Your Application Package to Your iOS Device
+Use <b>iTunes</b> for installing your application package (your_application_name.app) to the iOS device:
+ 
+* Open iTunes.
+* Under Library, select <b>Apps</b>.
+* Drag and drop your application package into the Apps screen.
+* Connect your device to iTunes.
+* Under Library, select your device.
+* Select the <b>Apps</b> tab in your iTunes device screen.
+* In the Sync Apps list, check your application.
+* Perform a sync. Your application is installed to your device.
 
 ## Build for Android
 
@@ -232,7 +216,7 @@ Example of iPhone setting in build.yml of your application:
 
 In case if you are planning to work with native geo mapping (MapView interface), two things should be done:
 
-* Android Maps API key should be retrieved from Google. Follow these [instructions](http://code.google.com/intl/en/android/add-ons/google-apis/mapkey.html) to get it. When key received, put it in your application's `build.yml` or share it across all your applications by adding it to `rhobuild.yml`. Note that the `apikey` value must match a sertificate used to sign an application (the key is different for debug and production signed build and debug key cannot be shared between different build computers).
+* Android Maps API key should be retrieved from Google. Follow these [instructions](http://code.google.com/intl/en/android/add-ons/google-apis/mapkey.html) to get it. When key received, put it in your application's `build.yml` or share it across all your applications by adding it to `rhobuild.yml`. Note that the `apikey` value must match a certificate used to sign an application (the key is different for debug and production signed build and debug key cannot be shared between different build computers).
 
 	android:
 	  apikey: "GOOGLE-API-KEY-FOR-ANDROID"
