@@ -38,9 +38,7 @@ Configure your environment by running the rhodes-setup script. This will attempt
 	:::term
 	$ rhodes-setup
 
-## Building rhodes gem from source
-
-You don't have to do it if you cloned sources, but if you want to build rhodes gem then do the following:
+You don't have to do it if you cloned sources, but if you want to build a Rhodes gem, do the following:
 
 	:::term
   	$ rake gem
@@ -48,14 +46,21 @@ You don't have to do it if you cloned sources, but if you want to build rhodes g
 
 ## Setting Up build.yml
 
-To build your application from Rhodes source code, set the sdk: property in the build.yml file (this file is in the root folder of your application) to the Rhodes source code root folder. For example:
+Before you build your application from Rhodes source code, its build.yml file must have the sdk set to your Rhodes source code root folder. For example, your build.yml file could have the following line:
 
 	:::term
 	sdk: /Library/Ruby/Gems/1.8/gems/rhodes-3.0.2
 
+This line in build.yml has likely already been set when you generated your Rhodes application. However, you can also open a command line window, navigate to the directory of your Rhodes application, and set it by running the following command:
+
+	:::term
+	$ set-rhodes-sdk
+
+The set-rhodes-sdk command will set the sdk line in your build.yml file to point to your Rhodes source code root folder.
+
 ## Building a Rhodes Application for iPhone/iPad
 
-iPhone/iPad versions of Rhodes apps must be built on Macintosh computers or on [rhohub.com](http://rhohub.com). The instructions below describe how to do this from either the Macintosh XCode development environment or from the command line on your local Macintosh. 
+iPhone/iPad versions of Rhodes apps must be built on Macintosh computers or on [rhohub.com](http://rhohub.com). The instructions below describe how to do this from either the Macintosh Xcode development environment or from the command line on your local Macintosh. 
 
 ### Prerequisites
 
@@ -65,47 +70,68 @@ To build for iPhone/iPad using you will need the following software installed:
 * Follow [All Platforms Prerequisites](#all-platforms-prerequisites)
 * iPhone SDK. We recommend the latest stable version available from the [iPhone Dev Center](http://developer.apple.com/iphone/index.action)
 
-### Build a Rhodes Application with XCode
+### Build a Rhodes Application with Xcode
 
-To build for iPhone/iPad using an XCode project, follow these steps:
+If you wish to run your Rhodes application on an iOS device, you need to build and run it using an Xcode project.
 
-Open a command line window and navigate to the director of your Rhodes application. Then set up your project to refer to your local Rhodes SDK with the following command:
-
-	:::term
-	$ set-rhodes-sdk
-
-Now tell Rhodes where to build from. This changes your rhobuild.yml in the Rhodes SDK folder to point to your application.
+Tell Rhodes where to build from your Rhodes application.
 
 	:::term
 	$ rake switch_app
 
-Then tell Rhodes to set up from XCode:
+The switch_app command changes the rhobuild.yml in the Rhodes source code folder to point to your application, as in the following example for a Rhodes application named Store in the user's home folder:
 
 	:::term
-	rake build:iphone:setup_xcode_project
+	env: 
+	  app: /Users/NameOfUser/Store
 
-Then in the Rhodes SDK (the path in the build.yml file), navigate to the /platform/iphone folder and open the rrhorunner.xcodeproj.
+Note that the switch_app command is only used when you run a Rhodes application within an IDE, such as Xcode: you run switch_app for each Rhodes application that you run in Xcode. The switch_app command does not affect Rhodes applications that you build and run on the command line.
 
-After you edit your application code, run the XCode 'Build and Go' command to build your project in XCode and run it in the simulator.
+Now run the following command to tell Rhodes to set up the Xcode environment for your Rhodes application:
 
-If you want to build for an iOS device, open the 'rhorunner' target, select your code signing information that you installed from the apple developer site, and change your active sdk to your iOS device.
+	:::term
+	$ rake build:iphone:setup_xcode_project
 
-Result application package (*.app) located in <sdk directory>/platform/iphone/build/[Debug/Release]-[iphoneos/iphonesimulator]/rhorunner.app
+Then in the Rhodes source code folder (the path in your Rhodes application build.yml file), navigate to the /platform/iphone folder and open rrhorunner.xcodeproj. This will open your Rhodes application in Xcode.
+
+In the Xcode Scheme menu, select the proper scheme before you build and run your project. Click on the Scheme menu.
+
+<img src="http://rhodocs.s3.amazonaws.com/build-rhodes-app/rhorunner-xcode-scheme.png" alt="xcode scheme" />
+
+Select the Scheme for your project under rrhorunner. You can select to run in the simulator.
+
+<img src="http://rhodocs.s3.amazonaws.com/build-rhodes-app/rhorunner-xcode-scheme-simulator.png" alt="xcode scheme simulator" />
+
+Now you can build and run in Xcode to run your project in the iOS simulator.
+
+If you are an Apple developer, you can run your Rhodes application on your iOS device. In Xcode, select your rhorunner target, click on the Build Settings tab, and see that your code signing information that you installed as an Apple developer is set up and selected.
+
+<img src="http://rhodocs.s3.amazonaws.com/build-rhodes-app/rhorunner-xcode-build-device.png" alt="xcode build settings" />
+
+Plug in your iOS device. In Xcode, under Scheme, select iOS device under rhorunner. Then build and run.
+
+<img src="http://rhodocs.s3.amazonaws.com/build-rhodes-app/rhorunner-xcode-scheme-device.png" alt="xcode scheme device" />
+
+For more information on running on your iOS device from Xcode, go to the [Apple developer site](http://developer.apple.com/), go to the iOS Developer Library, and search on "managing devices", or "run applications on a device," or similar.
+
+You can edit your Rhodes code for your Rhodes application in a text editor, save your changes, and then rebuild and run your project from Xcode.
+
+The resulting application package (*.app) is located in your Rhodes source code folder under /platform/iphone/build/, in a folder named like [Debug/Release]-[iphoneos/iphonesimulator]/rhorunner.app.
 
 ### Building and Releasing on App Store
 
-Once you have the application building with XCode as described above, it is treated as any other iPhone application when it comes to [signing and distributing to the app store](http://developer.apple.com/iphone/appstore/). 
+Once you have the application building with Xcode as described above, it is treated as any other iPhone application when it comes to [signing and distributing to the app store](http://developer.apple.com/iphone/appstore/). 
 
 ### Restoring rrhorunner.xcodeproj
 
-To restore the XCode rrhorunner.xcodeproj and other files to their original state:
+To restore the Xcode rrhorunner.xcodeproj to its original state:
 
 	:::term
   	$ rake build:iphone:restore_xcode_project
 
 ### Building iPhone Application from the Command Line
 
-Unlike building the application from the XCode GUI, when you build the application from the command line, use the rake command from the directory of the application that you had just generated with rhogen.
+Unlike building the application from the Xcode GUI, when you build the application from the command line, use the rake command from the directory of the application that you had just generated with rhogen.
 
 From the command line, navigate to the folder for your Rhodes application.
 
