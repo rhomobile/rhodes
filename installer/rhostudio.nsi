@@ -61,6 +61,7 @@ section
     # create the uninstaller
     writeUninstaller "$INSTDIR\uninstall.exe"
  
+    SetOutPath "$SMPROGRAMS\RhoStudio"
     # create a shortcut named "new shortcut" in the start menu programs directory
     # point the new shortcut at the program uninstaller
     createShortCut "$SMPROGRAMS\RhoStudio\Uninstall RhoStudio.lnk" "$INSTDIR\uninstall.exe"
@@ -74,7 +75,7 @@ section "uninstall"
     delete "$INSTDIR\uninstall.exe"
  
     # second, remove the link from the start menu
-    delete "$SMPROGRAMS\Uninstall RhoStudio.lnk"
+    delete "$SMPROGRAMS\RhoStudio\Uninstall RhoStudio.lnk"
     delete "$SMPROGRAMS\RhoStudio\RhoStudio.lnk"
 
     # remove env vars
