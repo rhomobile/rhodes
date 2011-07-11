@@ -10,7 +10,7 @@ void  choose_datetime_with_range(char* callback, char* title,
                                  long initial_time, int format, char* data,
                                  long min_time, long max_time)
 {
-    LOG(INFO) + __FUNCTION__ + "callback = " + callback + " title = " + title;
+    RAWLOGC_INFO3("DateTimePicker", "%s callback = %s title = %s", __FUNCTION__, callback, title);
 
     if (title != NULL)
         strcpy(ourTitle, title);

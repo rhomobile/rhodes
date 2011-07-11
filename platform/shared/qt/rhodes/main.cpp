@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
                 m_strHttpProxy = proxy;
                 free(proxy);
             } else
-                LOG(WARNING) + "invalid value for \"http_proxy_url\" cmd parameter";
+                RAWLOGC_INFO("Main", "invalid value for \"http_proxy_url\" cmd parameter");
         } else if (strnicmp("-approot",argv[i],8)==0) {
             char* path = parseToken(argv[i]);
             if (path) {
@@ -107,8 +107,7 @@ int main(int argc, char *argv[])
                 free(path);
             }
         } else {
-            String msg = String(argv[i]);
-            LOG(WARNING) + "wrong cmd parameter: " + msg;
+            RAWLOGC_INFO1("Main", "wrong cmd parameter: %s", argv[i]);
         }
     }
 
@@ -128,11 +127,11 @@ int main(int argc, char *argv[])
 
     if ( !rho_rhodesapp_canstartapp(g_strCmdLine.c_str(), " /-,") )
     {
-        LOG(INFO) + "This is hidden app and can be started only with security key.";
+        RAWLOGC_INFO("Main", "This is hidden app and can be started only with security key.");
         return 1;
     }
 
-    LOG(INFO) + "Rhodes started";
+    RAWLOGC_INFO("Main", "Rhodes started");
     if (m_strHttpProxy.length() > 0) {
         parseHttpProxyURI(m_strHttpProxy);
     } else {

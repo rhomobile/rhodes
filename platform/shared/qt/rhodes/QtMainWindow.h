@@ -12,6 +12,7 @@
 #include "MainWindowCallback.h"
 #include "common/IRhoThreadImpl.h"
 #include "common/RhoNativeViewManager.h"
+#include "logging/RhoLog.h"
 #include "impl/AlertImpl.h"
 #include "impl/DateTimePickerImpl.h"
 
@@ -22,7 +23,7 @@ namespace Ui {
 class QtMainWindow : public QMainWindow
 {
     Q_OBJECT
-
+    DEFINE_LOGCLASS
 public:
     typedef QHash<QString, QVariant> QTabBarRuntimeParams;
 
@@ -35,6 +36,7 @@ public:
     void setCallback(IMainWindowCallback* callback);
     int getLogicalDpiX();
     int getLogicalDpiY();
+    void bringToFront();
     // webview
     void navigate(QString url, int index);
     void GoBack(void);

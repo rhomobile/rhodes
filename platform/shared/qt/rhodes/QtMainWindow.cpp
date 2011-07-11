@@ -27,6 +27,8 @@
 #define strnicmp strncasecmp
 #endif
 
+IMPLEMENT_LOGCLASS(QtMainWindow,"MainWindow");
+
 extern "C" {
     extern VALUE rb_thread_main(void);
     extern VALUE rb_thread_wakeup(VALUE thread);
@@ -757,6 +759,7 @@ void QtMainWindow::takeSignature(void*) //TODO: Signature::Params*
 void QtMainWindow::fullscreenCommand(int enable)
 {
     //TODO: fullscreenCommand
+    LOG(INFO) + (enable ? "Switched to Fullscreen mode" : "Switched to Normal mode" );
 }
 
 void QtMainWindow::setCookie(const char* url, const char* cookie)
@@ -765,4 +768,11 @@ void QtMainWindow::setCookie(const char* url, const char* cookie)
         QNetworkCookieJar* cj = ui->webView->page()->networkAccessManager()->cookieJar();
         cj->setCookiesFromUrl(QNetworkCookie::parseCookies(QByteArray(cookie)), QUrl(QString::fromUtf8(url)));
     }
+}
+
+void QtMainWindow::bringToFront()
+{
+    this->show();
+    this->raise();
+    this->activateWindow();
 }

@@ -111,6 +111,7 @@ public:
     void takeSignature(void*); //TODO: Signature::Params*
     void fullscreenCommand(int);
     void setCookie(const char*, const char*);
+    void bringToFront();
 
 signals:
     void doExitCommand(void);
@@ -129,4 +130,5 @@ signals:
     void doTakeSignature(void*); //TODO: Signature::Params*
     void doFullscreenCommand(int);
     void doSetCookie(const char*, const char*);
+    void doBringToFront(void);
 };

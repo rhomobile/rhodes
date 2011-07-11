@@ -686,3 +686,8 @@ void CMainWindow::setCookie(const char* url, const char* cookie)
 {
     emit doSetCookie(url, cookie);
 }
+
+void CMainWindow::bringToFront()
+{
+    emit doBringToFront();
+}
