@@ -208,6 +208,10 @@ Since 1.2.2 WebView.navigate supports an optional index parameter (defaults to 0
 	:::ruby
 	WebView.navigate(url, index)
 
+Force WebView navigate to previouse page using Browser back
+	:::ruby
+	WebView.navigate_back
+
 Get location (url) of the currently displayed page
 	:::ruby
 	WebView.current_location 
