@@ -1469,7 +1469,7 @@ int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
     String strCmdLine = szCmdLine ? szCmdLine : "";
 
     CRhodesApp::setStartParameters(szCmdLine);
-    LOG(INFO) + "New start params: " + strCmdLine;
+    RAWLOGC_INFO1("RhodesApp", "New start params: %s", strCmdLine.c_str());
 
 	const char* szAppSecToken = get_app_build_config_item("security_token");
     if ( !szAppSecToken || !*szAppSecToken)
