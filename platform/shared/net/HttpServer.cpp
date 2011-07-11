@@ -406,8 +406,10 @@ bool CHttpServer::run()
                 }
 
                 RAWTRACE("Connection accepted, process it...");
+                VALUE val = rho_ruby_disable_gc();
                 bProcessed = process(conn);
-
+                rho_ruby_enable_gc(val);
+                
                 RAWTRACE("Close connected socket");
                 closesocket(conn);
             }
@@ -420,7 +422,7 @@ bool CHttpServer::run()
             return false;
         }
 
-        if ( bProcessed )
+        //if ( bProcessed )
             rb_gc();
     }
 }
