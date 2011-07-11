@@ -115,7 +115,7 @@ void alert_play_file(char* file_name, char *media_type)
     if (QSound::isAvailable()) {
         QSound::play(QString(path.c_str()));
     } else {
-        LOG(WARNING) + "OnAlertPlayFile: failed to play file";
+        RAWLOGC_INFO("AlertImpl", "OnAlertPlayFile: failed to play file");
     }
 }
 

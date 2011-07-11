@@ -158,24 +158,26 @@ void rho_sys_open_url(const char* url)
 void rho_sys_run_app(const char *appname, VALUE params)
 {
     //TODO: rho_sys_run_app
+    RAWLOGC_INFO("SystemImpl", "rho_sys_run_app() has no implementation in RhoSimulator.");
 }
 
 void rho_sys_bring_to_front()
 {
     // TODO: rho_sys_bring_to_front
-    LOG(INFO) + "rho_sys_bring_to_front() has no implementation in RhoSimulator.";
+    return CMainWindow::getInstance()->bringToFront();
 }
 
 void rho_sys_report_app_started()
 {
     // TODO: rho_sys_report_app_started
-    LOG(INFO) + "rho_sys_report_app_started() has no implementation in RhoSimulator.";
+    RAWLOGC_INFO("SystemImpl", "rho_sys_report_app_started() has no implementation in RhoSimulator.");
 }
 
 int rho_sys_is_app_installed(const char *appname)
 {
     int nRet = 0;
     //TODO: rho_sys_is_app_installed
+    RAWLOGC_INFO("SystemImpl", "rho_sys_is_app_installed() has no implementation in RhoSimulator.");
     return nRet;
 }
 
@@ -187,6 +189,7 @@ void rho_sys_app_install(const char *url)
 void rho_sys_app_uninstall(const char *appname)
 {
     //TODO: rho_sys_app_uninstall
+    RAWLOGC_INFO("SystemImpl", "rho_sys_app_uninstall() has no implementation in RhoSimulator.");
 }
 
 #if !defined(OS_WINDOWS) && !defined(OS_SYMBIAN)

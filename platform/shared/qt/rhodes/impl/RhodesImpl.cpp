@@ -1,5 +1,6 @@
 #include "common/RhoPort.h"
 #include "ext/rho/rhoruby.h"
+#include "rubyext/WebView.h"
 #include "common/RhoConf.h"
 #include "logging/RhoLog.h"
 #include "MainWindowImpl.h"
@@ -17,21 +18,26 @@ void rho_conf_show_log()
 void rho_net_impl_network_indicator(int active)
 {
     //TODO: rho_net_impl_network_indicator
+    RAWLOGC_INFO("RhodesImpl", "rho_net_impl_network_indicator() has no implementation in RhoSimulator.");
 }
 
 void rho_map_location(char* query)
 {
-    //TODO: rho_map_location
+    String url = "http://maps.google.com/?";
+    url += query;
+    rho_webview_navigate(url.c_str(), 0);
 }
 
 void rho_appmanager_load( void* httpContext, char* szQuery)
 {
     //TODO: rho_appmanager_load
+    RAWLOGC_INFO("RhodesImpl", "rho_appmanager_load() has no implementation in RhoSimulator.");
 }
 
 int rho_net_ping_network(const char* szHost)
 {
     //TODO: rho_net_ping_network
+    RAWLOGC_INFO("RhodesImpl", "rho_net_ping_network() has no implementation in RhoSimulator.");
     return 1;
 }
 
@@ -41,13 +47,13 @@ void parseHttpProxyURI(const rho::String &http_proxy)
     const char *default_port = "8080";
 
     if (http_proxy.length() < 8) {
-        LOG(ERROR) + "invalid http proxy url";
+        RAWLOGC_ERROR("RhodesImpl", "invalid http proxy url");
         return;
     }
 
     int index = http_proxy.find("http://", 0, 7);
     if (index == string::npos) {
-        LOG(ERROR) + "http proxy url should starts with \"http://\"";
+        RAWLOGC_ERROR("RhodesImpl", "http proxy url should starts with \"http://\"");
         return;
     }
     index = 7;
@@ -133,12 +139,12 @@ void parseHttpProxyURI(const rho::String &http_proxy)
         }
     }
 
-    LOG(INFO) + "Setting up HTTP proxy:";
-    LOG(INFO) + "URI: " + http_proxy;
-    LOG(INFO) + "HTTP proxy login    = " + login;
-    LOG(INFO) + "HTTP proxy password = " + password;
-    LOG(INFO) + "HTTP proxy host     = " + host;
-    LOG(INFO) + "HTTP proxy port     = " + port;
+    RAWLOGC_INFO("RhodesImpl", "Setting up HTTP proxy:");
+    RAWLOGC_INFO1("RhodesImpl", "URI: %s", http_proxy.c_str());
+    RAWLOGC_INFO1("RhodesImpl", "HTTP proxy login    = %s", login.c_str());
+    RAWLOGC_INFO1("RhodesImpl", "HTTP proxy password = %s", password.c_str());
+    RAWLOGC_INFO1("RhodesImpl", "HTTP proxy host     = %s", host.c_str());
+    RAWLOGC_INFO1("RhodesImpl", "HTTP proxy port     = %s", port.c_str());
     
     if (host.length()) {
         RHOCONF().setString ("http_proxy_host", host, false);
@@ -146,7 +152,7 @@ void parseHttpProxyURI(const rho::String &http_proxy)
         if (port.length()){
             RHOCONF().setString ("http_proxy_port", port, false);
         } else {
-            LOG(WARNING) + "there is no proxy port defined";
+            RAWLOGC_INFO("RhodesImpl", "there is no proxy port defined");
         }
 
         if (login.length())
@@ -154,7 +160,7 @@ void parseHttpProxyURI(const rho::String &http_proxy)
         if (password.length())
             RHOCONF().setString ("http_proxy_password", password, false);
     } else {
-        LOG(ERROR) + "empty host name in HTTP-proxy URL";
+        RAWLOGC_ERROR("RhodesImpl", "empty host name in HTTP-proxy URL");
     }
 }
 
