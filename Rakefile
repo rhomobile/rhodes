@@ -1021,39 +1021,39 @@ end
 namespace "run" do
 
     desc "Run application on RhoSimulator"
-    task :rhosimulator => "config:common" do
+    task :rhosimulator_base => "config:common" do
         puts "rho_debug_port : #{ENV['rho_debug_port']}"
         puts "rho_reload_app_changes : #{ENV['rho_reload_app_changes']}"
-    
-        path = ""
-        args = ["-approot='#{$app_path}'"]
+        $path = ""
+        $args = ["-approot='#{$app_path}'"]
         cmd = nil
+
         if RUBY_PLATFORM =~ /(win|w)32$/
             if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator']
-                path = File.join( $config['env']['paths']['rhosimulator'], "rhosimulator.exe" )
+                $path = File.join( $config['env']['paths']['rhosimulator'], "rhosimulator.exe" )
             else
-                path = File.join( $startdir, "platform/win32/RhoSimulator/rhosimulator.exe" )
+                $path = File.join( $startdir, "platform/win32/RhoSimulator/rhosimulator.exe" )
             end
         elsif RUBY_PLATFORM =~ /darwin/
             if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator']
-                path = File.join( $config['env']['paths']['rhosimulator'], "RhoSimulator.app" )
+                $path = File.join( $config['env']['paths']['rhosimulator'], "RhoSimulator.app" )
             else
-                path = File.join( $startdir, "platform/osx/bin/RhoSimulator/RhoSimulator.app" )
+                $path = File.join( $startdir, "platform/osx/bin/RhoSimulator/RhoSimulator.app" )
             end
             cmd = 'open'
-            args.unshift(path, '--args')
+            $args.unshift(path, '--args')
         else
             if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator']
-                # path = File.join( $config['env']['paths']['rhosimulator'], "RhoSimulator" )
+                # $path = File.join( $config['env']['paths']['rhosimulator'], "RhoSimulator" )
             else
-                # path = File.join( $startdir, "platform/linux/bin/RhoSimulator/RhoSimulator" )
+                # $path = File.join( $startdir, "platform/linux/bin/RhoSimulator/RhoSimulator" )
             end
-            args << ">/dev/null"
-            args << "2>/dev/null"
+            $args << ">/dev/null"
+            $args << "2>/dev/null"
         end
 
         $appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"]
-        if !File.exists?(path)
+        if !File.exists?($path)
             puts "Cannot find RhoSimulator: '#{path}' does not exists"
             puts "Install Rhodes gem OR"
             puts "Install RhoSimulator and modify 'env:paths:rhosimulator' section in '<rhodes>/rhobuild.yml'"
@@ -1087,20 +1087,19 @@ namespace "run" do
         end
 
         if not cmd.nil?
-            path = cmd
+            $path = cmd
         end
-        Jake.run2 path, args, {:nowait => true}
     end
 
+    task :rhosimulator => "run:rhosimulator_base" do
+        puts 'start rhosimulator'
+        Jake.run2 $path, $args, {:nowait => true}
+    end
 
-    #task :rhosimulator_debug do #, :debug_port do |t, args|
-
-        #puts "Args were: #{args}"
-        #puts "rho_debug_port : #{ENV['rho_debug_port']}"
-        #puts "rho_reload_app_changes : #{ENV['rho_reload_app_changes']}"
-        #$debug_port = args[:debug_port].to_i
-        #Rake::Task["run:rhosimulator"].invoke
-
-    #end		
+    task :rhosimulator_debug => "run:rhosimulator_base" do
+        puts 'start rhosimulator debug'
+        Jake.run2 $path, $args, {:nowait => true} do |line|
+        end
+    end
 
 end
