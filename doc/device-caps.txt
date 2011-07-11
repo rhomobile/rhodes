@@ -425,10 +425,13 @@ The Barcode API allows to try recognize barcode on an image:
 
 Barcode recognition functionality realized as Rhode Native extension. You should add "Barcode" to extension list in build.yml located in your application folder. `Barcode.barcode_recognize(image_file_full_path)` return string with recognized code or emty string if not any recognized barcodes on the image. You can combine Camera for get picture with Barcode recognition for process barcode data - see sample below.
 
-For barcode recognition we use Zbar library (iPhone, Android and Windows Mobile platforms) and ZXing library (BlackBerry platform). In this case we support next barcode types :
+For barcode recognition we use Zbar library (iPhone, and Windows Mobile platforms) and ZXing library (Android and BlackBerry platforms). In this case we support next barcode types :
 
 * iPhone, Android and WM platforms: UPC-A, UPC-E, EAN-8, EAN-13, Code 39, Code 128, .
 * BlackBerry platform: UPC-A, UPC-E, EAN-8, EAN-13, Code 39, Code 128, Code 93, QR Code, ITF, Codabar
+
+**NOTE: We are very sorry, but we are removed ZBar source code from our project by ZBar license requirements. For build Barcode extension for WM, you should download ZBar sources from http://zbar.sourceforge.net/ and copy to [rhodes root]/lib/extensions/barcode/ext/barcode/shared/zbar/zbar/ folder "include" and "zbar" folders from ZBar sources. Also you should fix ZBar sources for building by Microsoft Visual Studio (move define of inner function variables to begin of functions, etc.)
+
 
 ### Sample
 See controller and view in the /app/BarcodeRecognizer folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/BarcodeRecognizer/controller.rb) for more information.
