@@ -1,5 +1,7 @@
 package com.rhomobile.rhodes.webview;
 
+import com.rhomobile.rhodes.RhoConf;
+
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -12,8 +14,12 @@ public class RhoWebSettingsOld implements RhoWebSettings {
 		webSettings.setJavaScriptEnabled(true);
 		webSettings.setJavaScriptCanOpenWindowsAutomatically(false);
 		webSettings.setSupportZoom(false);
-		//webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-		webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+		
+		if(RhoConf.getBool("disable_cache"))
+			webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+		else
+			webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+		
 		webSettings.setSupportMultipleWindows(false);
 		// webSettings.setLoadsImagesAutomatically(true);
 
