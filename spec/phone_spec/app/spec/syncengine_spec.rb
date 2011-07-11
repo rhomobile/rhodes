@@ -381,13 +381,13 @@ end
     res['server_errors']['create-error'][item.object]['attributes']['name'].should == "wrongname"
 
     records2 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
-    records2.length.should == ($spec_settings[:schema_model] ? 7 : 3)
+    records2.length.should == ($spec_settings[:schema_model] ? 3 : 3)
     records2[0]['attrib'].should_not == 'object'        
     records2[0]['sent'].should == 2
 
     item.update_attributes({:price => "456"})
     records2 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
-    records2.length.should == ($spec_settings[:schema_model] ? 7 : 3)
+    records2.length.should == ($spec_settings[:schema_model] ? 3 : 3)
     records2[0]['attrib'].should_not == 'object'        
     records2[0]['sent'].should == 2
     records2 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
@@ -431,13 +431,13 @@ end
     res['server_errors']['create-error'][item.object]['attributes']['name'].should == "wrongname"
 
     records2 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
-    records2.length.should == ($spec_settings[:schema_model] ? 7 : 3)
+    records2.length.should == ($spec_settings[:schema_model] ? 3 : 3)
     records2[0]['attrib'].should_not == 'object'        
     records2[0]['sent'].should == 2
 
     item.update_attributes({:price => "456"})
     records2 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
-    records2.length.should == ($spec_settings[:schema_model] ? 7 : 3)
+    records2.length.should == ($spec_settings[:schema_model] ? 3 : 3)
     records2[0]['attrib'].should_not == 'object'        
     records2[0]['sent'].should == 2
     records2 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
@@ -484,13 +484,13 @@ end
     res['server_errors']['create-error'][item.object]['attributes']['name'].should == "wrongname"
 
     records2 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
-    records2.length.should == ($spec_settings[:schema_model] ? 7 : 3)
+    records2.length.should == ($spec_settings[:schema_model] ? 3 : 3)
     records2[0]['attrib'].should_not == 'object'        
     records2[0]['sent'].should == 2
 
     item.destroy
     records2 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
-    records2.length.should == ($spec_settings[:schema_model] ? 7 : 3)
+    records2.length.should == ($spec_settings[:schema_model] ? 3 : 3)
     records2[0]['attrib'].should_not == 'object'        
     records2[0]['sent'].should == 2
     records2 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'delete')
@@ -693,7 +693,7 @@ end
     item.update_attributes({:price => "123"})
 
     records2 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'create')
-    records2.length.should == ($spec_settings[:schema_model] ? 7 : 2)
+    records2.length.should == ($spec_settings[:schema_model] ? 2 : 2)
 
     records2 = getTestDB().select_from_table('changed_values','*', {'update_type' => 'create', "sent"=>0})
     records2.length.should == 0
