@@ -1,7 +1,6 @@
 #include "common/RhoPort.h"
 #include "ruby/ext/rho/rhoruby.h"
 #include "common/RhoDefs.h"
-//#include "common/StringConverter.h"
 #include "common/RhoFilePath.h"
 #include "logging/RhoLog.h"
 #undef null
