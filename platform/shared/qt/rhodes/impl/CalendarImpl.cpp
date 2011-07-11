@@ -5,12 +5,12 @@ extern "C" {
 
 VALUE event_fetch(VALUE start_date, VALUE end_date)
 {
-    return  rho_ruby_create_array();
+    return rho_ruby_create_array();
 }
 
 VALUE event_fetch_by_id(const char *eid)
 {
-    return  rho_ruby_get_NIL();
+    return rho_ruby_get_NIL();
 }
 
 const char* event_save(VALUE rEvent)
