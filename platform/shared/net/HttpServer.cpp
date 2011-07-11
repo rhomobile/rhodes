@@ -356,7 +356,7 @@ bool CHttpServer::init()
         return false;
     }
     
-    RAWTRACE1("Listen for connections on port %d", m_port);
+    RAWLOG_INFO1("Listen for connections on port %d", m_port);
     return true;
 }
 
