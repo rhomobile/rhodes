@@ -1023,7 +1023,6 @@ namespace "run" do
 
     desc "Run application on RhoSimulator"
     task :rhosimulator_base => "config:common" do
-        puts "rho_debug_port : #{ENV['rho_debug_port']}"
         puts "rho_reload_app_changes : #{ENV['rho_reload_app_changes']}"
         $path = ""
         $args = ["-approot='#{$app_path}'"]
@@ -1042,7 +1041,7 @@ namespace "run" do
                 $path = File.join( $startdir, "platform/osx/bin/RhoSimulator/RhoSimulator.app" )
             end
             cmd = 'open'
-            $args.unshift(path, '--args')
+            $args.unshift($path, '--args')
         else
             if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'].length() > 0
                 # $path = File.join( $config['env']['paths']['rhosimulator'], "RhoSimulator" )
@@ -1055,7 +1054,7 @@ namespace "run" do
 
         $appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"]
         if !File.exists?($path)
-            puts "Cannot find RhoSimulator: '#{path}' does not exists"
+            puts "Cannot find RhoSimulator: '#{$path}' does not exists"
             puts "Install Rhodes gem OR"
             puts "Install RhoSimulator and modify 'env:paths:rhosimulator' section in '<rhodes>/rhobuild.yml'"
             exit 1
@@ -1068,8 +1067,7 @@ namespace "run" do
         else
             sim_conf += "reload_app_changes=1\r\n"                    
         end
-            
-        
+
         if $config['debug']
             sim_conf += "debug_port=#{$config['debug']['port']}\r\n"
         else
