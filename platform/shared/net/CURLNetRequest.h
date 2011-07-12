@@ -48,6 +48,10 @@ class CURLNetRequest : public INetRequestImpl
         boolean m_bTraceCalls;
         long timeout;
         boolean m_sslVerifyPeer;
+        
+        String mStrMethod;
+        String mStrUrl;
+        String mStrBody;
     };
     
 public:
