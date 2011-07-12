@@ -84,10 +84,6 @@ RHO_GLOBAL void nativebar_switch_tab(int index)
 
 
 
-RHO_GLOBAL void nativebar_set_tab_badge(int index,char *val) {
-	RAWLOG_INFO("NativeBar.set_tab_badge() is DEPRECATED API ! Please use Rho::NativeTabbar.set_tab_badge().");
-}
-
 RHO_GLOBAL void create_native_toolbar(int bar_type, rho_param *p) {
 	create_nativebar_inner( bar_type, p);
 }

@@ -309,12 +309,6 @@ void nativebar_switch_tab(int index) {
 	nativebar_switch_tab_innner(index);
 }
 
-void nativebar_set_tab_badge(int index, char *val)
-{
-	RAWLOG_INFO("NativeBar.set_tab_badge() is DEPRECATED. Use Rho::NativeTabbar.set_tab_badge().");
-	nativebar_set_tab_badge_innner(index, val);
-}
-
 
 void create_native_toolbar(int bar_type, rho_param *p) {
 	create_nativebar_innner(bar_type, p);
