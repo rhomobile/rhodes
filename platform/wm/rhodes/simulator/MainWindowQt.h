@@ -32,6 +32,11 @@ static UINT WM_EXECUTE_RUNNABLE        = ::RegisterWindowMessage(L"RHODES_WM_EXE
 #define ID_CUSTOM_TOOLBAR_ITEM_FIRST (ID_CUSTOM_MENU_ITEM_LAST+1)
 #define ID_CUSTOM_TOOLBAR_ITEM_LAST  (ID_CUSTOM_TOOLBAR_ITEM_FIRST + 20 - 1)
 
+typedef struct _TCookieData {
+    char* url;
+    char* cookie;
+} TCookieData;
+
 class CMainWindow :
     public CWindowImpl<CMainWindow, CWindow, CWinTraits<WS_BORDER | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_CLIPSIBLINGS> >,
     public IMainWindowCallback
@@ -98,6 +103,7 @@ public:
         COMMAND_ID_HANDLER(IDM_LOG,OnLogCommand)
         COMMAND_ID_HANDLER(IDM_REFRESH, OnRefreshCommand)
         COMMAND_ID_HANDLER(IDM_NAVIGATE, OnNavigateCommand)
+        COMMAND_ID_HANDLER(ID_SETCOOKIE, OnSetCookieCommand)
         MESSAGE_HANDLER(WM_TAKEPICTURE, OnTakePicture)
         MESSAGE_HANDLER(WM_SELECTPICTURE, OnSelectPicture)
         MESSAGE_HANDLER(WM_ALERT_SHOW_POPUP, OnAlertShowPopup)
@@ -120,6 +126,7 @@ private:
     LRESULT OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/);
     LRESULT OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/);
+    LRESULT OnSetCookieCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
     LRESULT OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);

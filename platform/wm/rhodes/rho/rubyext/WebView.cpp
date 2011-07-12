@@ -91,6 +91,12 @@ void rho_webview_full_screen_mode(int enable)
 
 void rho_webview_set_cookie(const char *url, const char *cookie)
 {
+#ifdef RHODES_EMULATOR
+    TCookieData* cd = (TCookieData*)malloc(sizeof(TCookieData));
+    cd->url = strdup(url);
+    cd->cookie = strdup(cookie);
+    ::PostMessage( getMainWnd(), WM_COMMAND, ID_SETCOOKIE, (LPARAM)cd );
+#else
 	URL_COMPONENTSA uri;
 	::memset(&uri, 0, sizeof(uri));
 	uri.dwStructSize = sizeof(uri);
@@ -117,7 +123,7 @@ void rho_webview_set_cookie(const char *url, const char *cookie)
 			break;
 		for (c = s + 1; *c == ' '; ++c);
 	}
-	
+#endif	
 }
 
 }
