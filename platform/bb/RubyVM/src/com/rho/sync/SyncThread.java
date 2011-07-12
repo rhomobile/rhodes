@@ -315,6 +315,8 @@ public class SyncThread extends ThreadQueue
 		
 		if ( getSyncEngine().isSyncing() )
 		{
+			LOG.INFO("STOP sync in progress.");
+			
 			getSyncEngine().stopSyncByUser();
 			getInstance().stopWait();
 			
