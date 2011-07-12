@@ -687,6 +687,20 @@ LRESULT CMainWindow::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
     return 0;
 }
 
+LRESULT CMainWindow::OnSetCookieCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
+{
+    TCookieData* cd = (TCookieData*)hWndCtl;
+    if (cd) {
+        if (cd->url && cd->cookie) {
+            ((QtMainWindow*)qtMainWindow)->setCookie(cd->url, cd->cookie);
+            if (cd->url) free(cd->url);
+            if (cd->cookie) free(cd->cookie);
+        }
+        free(cd);
+    }
+    return 0;
+}
+
 LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
 {
     TCHAR image_uri[MAX_PATH];

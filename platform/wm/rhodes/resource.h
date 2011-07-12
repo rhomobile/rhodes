@@ -82,6 +82,7 @@
 #define ID_Menu                         40028
 #define ID_FULLSCREEN                   40029
 #define ID_CANCEL                       40030
+#define ID_SETCOOKIE                    40032
 
 // Next default values for new objects
 // 
