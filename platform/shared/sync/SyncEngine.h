@@ -82,7 +82,7 @@ public:
     ESyncState getState()const{ return m_syncState; }
     boolean isSearch()const{ return m_bIsSearch; }
     boolean isContinueSync()const{ return m_syncState != esExit && m_syncState != esStop; }
-	boolean isSyncing()const{ return m_syncState == esSyncAllSources || m_syncState == esSyncSource; }
+	boolean isSyncing()const{ return m_syncState == esSyncAllSources || m_syncState == esSyncSource || m_syncState == esSearch; }
     void stopSync(){ if (isContinueSync()){ setState(esStop); m_NetRequest.cancel();m_NetRequestClientID.cancel();} }
     void stopSyncByUser(){ m_bStopByUser = true; stopSync(); }
     void exitSync(){ setState(esExit); m_NetRequest.cancel(); m_NetRequestClientID.cancel();}
