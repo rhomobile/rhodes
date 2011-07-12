@@ -96,7 +96,11 @@ public :
 				if (path) {
 					int len = strlen(path);
 					if (!(path[len-1]=='\\' || path[len-1]=='/')) {
+#ifdef RHODES_EMULATOR
+						path[len] = '/';
+#else
 						path[len] = '\\';
+#endif
 						path[len+1]  = 0;
 					}
 					m_strRootPath = path;
