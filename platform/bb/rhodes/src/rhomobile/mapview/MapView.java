@@ -65,6 +65,10 @@ public class MapView extends RubyBasic {
 			});
 		}
 		
+		public void onChildClosed() {
+			screen = null;
+		}
+		
 		public boolean closed() {
 			return screen == null;
 		}
@@ -79,12 +83,6 @@ public class MapView extends RubyBasic {
 			if (screen == null)
 				return 0.0;
 			return screen.getCenterLongitude();
-		}
-		
-		public void childClosed() {
-			if (screen != null) {
-				screen = null;
-			}
 		}
 		
 	};
