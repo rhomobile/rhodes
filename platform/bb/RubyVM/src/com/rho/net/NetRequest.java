@@ -157,6 +157,11 @@ public class NetRequest
 		try{
 			m_mxNet.Lock();
 			closeConnection();
+			
+			LOG.INFO("GC start.");
+			System.gc();
+			LOG.INFO("GC stop.");
+			
 			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, m_bIgnoreSuffixOnSim);
 			LOG.INFO("connection done");
 			
