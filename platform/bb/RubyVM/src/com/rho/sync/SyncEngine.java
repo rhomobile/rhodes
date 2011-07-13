@@ -131,7 +131,7 @@ public class SyncEngine implements NetRequest.IRhoSession
     int getState(){ return m_syncState; }
     boolean isSearch(){ return m_bIsSearch; }
     boolean isContinueSync(){ return m_syncState != esExit && m_syncState != esStop; }
-	boolean isSyncing(){ return m_syncState == esSyncAllSources || m_syncState == esSyncSource; }
+	boolean isSyncing(){ return m_syncState == esSyncAllSources || m_syncState == esSyncSource || m_syncState == esSearch; }
     void stopSync()
     { 
     	if (isContinueSync())

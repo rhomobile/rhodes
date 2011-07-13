@@ -56,6 +56,11 @@ void CPosixThreadImpl::start(IRhoRunnable *pRunnable, IRhoRunnable::EPriority eP
         return_val = pthread_attr_setschedparam (&attr, &param);
     }
 
+    #ifdef __SYMBIAN32__
+        size_t stacksize = 80000;
+        pthread_attr_setstacksize(&attr, stacksize);
+    #endif
+
     int thread_error = pthread_create(&m_thread, &attr, &runProc, pRunnable);
     return_val = pthread_attr_destroy(&attr);
     RHO_ASSERT(!return_val);

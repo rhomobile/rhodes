@@ -765,7 +765,7 @@ thread_timer(void *dummy)
 	}
 	else rb_bug("thread_timer/timedwait: %d", err);
 
-#ifndef __CYGWIN__
+#if !defined(__CYGWIN__) && !defined(__SYMBIAN32__)
 	if (signal_thread_list_anchor.next) {
 	    FGLOCK(&signal_thread_list_lock, {
 		struct signal_thread_list *list;
