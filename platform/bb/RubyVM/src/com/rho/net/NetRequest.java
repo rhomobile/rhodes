@@ -148,110 +148,112 @@ public class NetRequest
 	Mutex m_mxNet = new Mutex();
 	public NetResponse doRequest(String strMethod, String strUrl, String strBody, IRhoSession oSession, Hashtable headers ) throws Exception
     {
+		m_bCancel = false;
+		int nTry = 0;
 		String strRespBody = null;
-		InputStream is = null;
-		OutputStream os = null;
 		int code = -1;
 		
-		m_bCancel = false;
-		try{
-			m_mxNet.Lock();
-			closeConnection();
+		do
+		{
+			InputStream is = null;
+			OutputStream os = null;
 			
-			LOG.INFO("GC start.");
-			System.gc();
-			LOG.INFO("GC stop.");
-			
-			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, m_bIgnoreSuffixOnSim);
-			LOG.INFO("connection done");
-			
-			handleCookie(oSession);
-			//m_connection.setRequestProperty("Connection", "keep-alive");
-			//m_connection.setRequestProperty("Accept", "application/x-www-form-urlencoded,application/json,text/html");
-			
-			if ( strBody != null && strBody.length() > 0 )
-			{
-				if ( oSession != null )
-					m_connection.setRequestProperty("Content-Type", oSession.getContentType());
-				else
-					m_connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
-				writeHeaders(headers);
-				LOG.INFO("writeHeaders done");
-				//m_connection.setRequestMethod(IHttpConnection.POST);
-				m_connection.setRequestMethod(strMethod);
+			try{
+				//m_mxNet.Lock();
+				closeConnection();
 				
-				os = m_connection.openOutputStream();
-				os.write(strBody.getBytes(), 0, strBody.length());
-				LOG.INFO("write body done");
-			}else
-			{
-				writeHeaders(headers);
-				LOG.INFO("writeHeaders done");
-				m_connection.setRequestMethod(strMethod);
-			}
-
-			LOG.INFO("Start openInputStream");
-			try
-			{
+				//LOG.INFO("GC start.");
+				//System.gc();
+				//LOG.INFO("GC stop.");
+				
+				m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, m_bIgnoreSuffixOnSim);
+				LOG.INFO("connection done");
+				
+				handleCookie(oSession);
+				//m_connection.setRequestProperty("Connection", "keep-alive");
+				//m_connection.setRequestProperty("Accept", "application/x-www-form-urlencoded,application/json,text/html");
+				
+				if ( strBody != null && strBody.length() > 0 )
+				{
+					if ( oSession != null )
+						m_connection.setRequestProperty("Content-Type", oSession.getContentType());
+					else
+						m_connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+	
+					writeHeaders(headers);
+					LOG.INFO("writeHeaders done");
+					//m_connection.setRequestMethod(IHttpConnection.POST);
+					m_connection.setRequestMethod(strMethod);
+					
+					os = m_connection.openOutputStream();
+					os.write(strBody.getBytes(), 0, strBody.length());
+					LOG.INFO("write body done");
+				}else
+				{
+					writeHeaders(headers);
+					LOG.INFO("writeHeaders done");
+					m_connection.setRequestMethod(strMethod);
+				}
+	
 				is = m_connection.openInputStream();
+				LOG.INFO("openInputStream done");
+				
+				code = m_connection.getResponseCode();
+				LOG.INFO("getResponseCode : " + code);
+				
+				readHeaders(headers);
+				copyHashtable(m_OutHeaders, headers);
+				
+				if ( code >= 400 ) 
+				{
+					LOG.ERROR("Error retrieving data: " + code);
+					if (code == IHttpConnection.HTTP_UNAUTHORIZED && oSession != null)
+					{
+						LOG.ERROR("Unauthorize error.Client will be logged out");
+						oSession.logout();
+					}
+					
+					//if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
+					{
+						strRespBody = readFully(is, getResponseEncoding());
+						LOG.TRACE("Response body: " + strRespBody );
+					}
+				}else
+				{
+					long len = m_connection.getLength();
+					LOG.INFO("fetchRemoteData data size:" + len );
+			
+					strRespBody = readFully(is, getResponseEncoding());
+					
+					LOG.INFO("fetchRemoteData data readFully.");
+				}
+				
+				break;
 			}catch(IOException exc)
 			{
 				String strError = exc.getMessage();
 				LOG.INFO("openInputStream failed: " + strError);
 				if ( strError != null && strError.indexOf("General socket error") >= 0)
 				{
-					LOG.INFO("Start openInputStream second time.");
-					is = m_connection.openInputStream();
+					LOG.INFO("Try connect one more time.");
 				}else
 					throw exc;
-				
 			}
-			LOG.INFO("openInputStream done");
-			
-			code = m_connection.getResponseCode();
-			LOG.INFO("getResponseCode : " + code);
-			
-			readHeaders(headers);
-			copyHashtable(m_OutHeaders, headers);
-			
-			if ( code >= 400 ) 
+			finally
 			{
-				LOG.ERROR("Error retrieving data: " + code);
-				if (code == IHttpConnection.HTTP_UNAUTHORIZED && oSession != null)
-				{
-					LOG.ERROR("Unauthorize error.Client will be logged out");
-					oSession.logout();
-				}
+				if ( is != null )
+					try{ is.close(); }catch(IOException exc){}
+				if ( os != null )
+					try{ os.close(); }catch(IOException exc){}
 				
-				//if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
-				{
-					strRespBody = readFully(is, getResponseEncoding());
-					LOG.TRACE("Response body: " + strRespBody );
-				}
-			}else
-			{
-				long len = m_connection.getLength();
-				LOG.INFO("fetchRemoteData data size:" + len );
-		
-				strRespBody = readFully(is, getResponseEncoding());
+				closeConnection();
 				
-				LOG.INFO("fetchRemoteData data readFully.");
+				m_bIgnoreSuffixOnSim = true;
+				
+				//m_mxNet.Unlock();			
 			}
-
-		}finally
-		{
-			if ( is != null )
-				try{ is.close(); }catch(IOException exc){}
-			if ( os != null )
-				try{ os.close(); }catch(IOException exc){}
-			
-			closeConnection();
-			
-			m_bIgnoreSuffixOnSim = true;
-			
-			m_mxNet.Unlock();			
-		}
+			nTry++;
+		}while( !m_bCancel && nTry <= 3 );
 		
 		return makeResponse(strRespBody, code );
     }
