@@ -1006,20 +1006,44 @@ See CustomUri of [system API sample application](http://github.com/rhomobile/rho
 ## Run rhodes application from browser
 
 ### Android
-On Android it is possible to start rhodes app by http link from browser. It is also possible to register custom URI scheme for the app.
-By default the http://com.vendor.appname URI format is used. If custom URI scheme is set up in build.yml then this scheme is used followed by any string.
+On Android it is possible to start rhodes app from browser by http link or redirect response. It is also possible to register custom URI scheme for the app.
+At Android the URI must strictly follow standard URI rules. Additionally Android Chrome browser makes additional restriction: the host part of the URI must be resolvable.
+By default the http://rhomobile.com/com.vendor.appname URI format is used by Rhodes. You can add additional path and query parameters to the URI and handle it by application code.
+It is possible to customize the URI with build.yml settings. Default Rhodes URI contains four parts:
+- scheme
+- host name
+- path prefix
+- optional path and query
+You can customize sheme and host name parts with following build.yml parameters:
+    :::ruby
+    android:
+        URIScheme: myapp
+        URIHost: www.myhost.com
+In case if URIHost is specified no path prefix will be used. If no custom URIHost then default one is used (rhomobile.com) and path prefix must contain java package name of your application.
+Optional path and query just passed to your application for further processing.
+
+NOTE: Google recommends to always use common scheme such as 'http', 'https', 'ftp', etc.
 
 http scheme example:
     :::html
-    <a href="http://com.rhomobile.rhodessystemapisamples">Open System API Samples</a>
+    <a href="http://rhomobile.com/com.rhomobile.rhodessystemapisamples">Open System API Samples</a>
 
-Custom scheme example:
+Custom scheme examples:
     :::ruby
     android:
-        BundleURLScheme: rhodes
+        URLScheme: rho
 
     :::html
-    <a href="rhodes://any_string_here">Open System API Samples</a>
+    <a href="rho://rhomobile.com/com.rhomobile.rhodessystemapisamples">Open System API Samples</a>
+
+
+    :::ruby
+    android:
+        URLScheme: rho-sas
+        URLHost: rhomobile.com
+
+    :::html
+    <a href="rho-sas://rhomobile.com">Open System API Samples</a>
 
 ### iPhone
 On iOS devices it is possible to start rhodes app by link with special registered URI scheme from browser. You should register custom URI scheme for the app.

@@ -198,11 +198,12 @@ def set_app_name_android(newname)
             browsable_filter = true if cat_name.to_s =~ /\.BROWSABLE$/
           end
           if default_filter and browsable_filter
-            if $uri_custom.nil?
-              filter.add_element "data", { "android:scheme" => $uri_scheme }
-            else
-              filter.add_element( "data", { "android:scheme" => $uri_scheme, "android:host" => $uri_custom } )
+            filter.elements.each("data") do |d|
+              filter.delete d
             end
+            uri_params = {"android:scheme" => $uri_scheme, "android:host" => $uri_host}
+            uri_params["android:pathPrefix"] = $uri_path_prefix unless $uri_path_prefix.nil?
+            filter.add_element "data", uri_params
           end
         end
       end
@@ -280,8 +281,10 @@ namespace "config" do
     $emuversion = $app_config["android"]["version"] unless $app_config["android"].nil?
     $emuversion = $config["android"]["version"] if $emuversion.nil? and !$config["android"].nil?
 
-    $uri_scheme = $app_config["android"]["BundleURLScheme"] unless $app_config["android"].nil?
-    $uri_scheme = $config["android"]["BundleURLScheme"] if $uri_scheme.nil? and not $config["android"].nil?
+    $uri_scheme = $app_config["android"]["URIScheme"] unless $app_config["android"].nil?
+    $uri_scheme = "http" if $uri_scheme.nil?
+
+    $uri_host = $app_config["android"]["URIHost"] unless $app_config["android"].nil?
 
     $min_sdk_level = $app_config["android"]["minSDK"] unless $app_config["android"].nil?
     $min_sdk_level = $config["android"]["minSDK"] if $min_sdk_level.nil? and not $config["android"].nil?
@@ -340,9 +343,9 @@ namespace "config" do
     $app_package_name = "com.#{$vendor}." + $appname.downcase.gsub(/[^A-Za-z_0-9]/, '') unless $app_package_name
     $app_package_name.gsub!(/\.[\d]/, "._")
 
-    if $uri_scheme.nil?
-      $uri_custom = $app_package_name 
-      $uri_scheme = "http"
+    if $uri_host.nil?
+      $uri_host = "rhomobile.com"
+      $uri_path_prefix = "/#{$app_package_name}"
     end
 
     $rhomanifest = File.join $androidpath, "Rhodes", "AndroidManifest.xml"
