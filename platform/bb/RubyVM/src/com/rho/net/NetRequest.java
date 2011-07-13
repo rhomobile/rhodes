@@ -192,7 +192,21 @@ public class NetRequest
 			}
 
 			LOG.INFO("Start openInputStream");
-			is = m_connection.openInputStream();
+			try
+			{
+				is = m_connection.openInputStream();
+			}catch(IOException exc)
+			{
+				String strError = exc.getMessage();
+				LOG.INFO("openInputStream failed: " + strError);
+				if ( strError != null && strError.indexOf("General socket error") >= 0)
+				{
+					LOG.INFO("Start openInputStream second time.");
+					is = m_connection.openInputStream();
+				}else
+					throw exc;
+				
+			}
 			LOG.INFO("openInputStream done");
 			
 			code = m_connection.getResponseCode();
