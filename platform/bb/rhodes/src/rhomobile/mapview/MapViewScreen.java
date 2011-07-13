@@ -41,7 +41,7 @@ public class MapViewScreen extends RhoMainScreen {
 		new ESRIMapProvider()
 	};
 	
-	private MapViewParent parent;
+	private MapViewParent mapParent;
 	private MapProvider mapProvider;
 	private RhoMapField mapField;
 	private GeoCoding mapGeoCoding;
@@ -119,7 +119,6 @@ public class MapViewScreen extends RhoMainScreen {
 		mapGeoCoding.stop();
 		mapParent.onChildClosed();
 		super.close();
-		parent.childClosed();
 	}
 	
 	private void setMode(int m) {

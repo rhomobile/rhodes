@@ -27,7 +27,7 @@ namespace rho.db
         private boolean m_bNeedProcessCallback = false;
         private IDBCallback m_dbCallback;
 
-        public void open(string strPath, string strSqlScript, string strEncryptionInfo)
+        public void close()
         {
             lock (m_db)
             {
@@ -72,7 +72,7 @@ namespace rho.db
             CRhoFile.deleteFile(strPath + "-journal");
         }
 
-        public IDBResult executeSQL(string strStatement, object[] values, common.boolean bReportNonUnique)
+        public void executeBatchSQL(String strStatement)
         {
             lock (m_db)
             {
@@ -119,7 +119,7 @@ namespace rho.db
 
         }
 
-        public IDBResult createResult()
+        public string[] getAllTableNames()
         {
             IDBResult res = executeSQL("SELECT name FROM sqlite_master WHERE type='table'", null, false, false);
 
@@ -151,14 +151,14 @@ namespace rho.db
 		    return bRes;
         }
 
-        public void startTransaction()
+        public void onBeforeCommit()
         {
             if (!m_bNeedProcessCallback)
                 return;
             processCallbackData();
         }
 
-        public void commit()
+        public void open(String strPath, String strSqlScript, String strEncryptionInfo)
         {
             try
             {
@@ -223,12 +223,12 @@ namespace rho.db
             }
         }
 
-        public void onBeforeCommit()
+        public void setDbCallback(IDBCallback callback)
         {
             m_dbCallback = callback;
         }
 
-        public void setDbCallback(IDBCallback callback)
+        public void startTransaction()
         {
             lock (m_db)
             {
@@ -249,9 +249,6 @@ namespace rho.db
 
         private void createSchema(String strSqlScript)
         {
-            //String strSqlScript;
-            //strSqlScript = CRhoFile.readStringFromFile(RHODESAPP().canonicalizeRhoUrl("db/syncdb.schema"));
-
             if ( strSqlScript.length() == 0 )
             {
                 LOG.ERROR("createSchema failed. Cannot read schema: " + strSqlScript);

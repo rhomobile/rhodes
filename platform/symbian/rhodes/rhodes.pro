@@ -1,11 +1,13 @@
 # Add files and directories to ship with the application 
 # by adapting the examples below.
 # file1.source = myfile
-rho.source = rho
-DEPLOYMENTFOLDERS = rho
+apps.source = apps
+db.source = db
+lib.source = lib
+DEPLOYMENTFOLDERS = apps db lib
 
 
-QT += core gui webkit
+QT += core gui network webkit
 CONFIG += warn_on
 DEFINES += RHO_SYMBIAN=1
 
@@ -23,7 +25,7 @@ symbian:TARGET.UID3 = 0xE271409B
 #symbian:DEPLOYMENT.installer_header = 0x2002CCCF
 
 # Allow network access on Symbian
-symbian:TARGET.CAPABILITY += NetworkServices
+symbian:TARGET.CAPABILITY += NetworkServices #LocalServices NetworkServices ReadUserData UserEnvironment WriteUserData
 
 symbian:TARGET.EPOCSTACKSIZE = 80000
 symbian:TARGET.EPOCHEAPSIZE = 0x100000 0x2400000
@@ -58,7 +60,7 @@ SOURCES += ../../shared/qt/rhodes/QtWebInspector.cpp \
     ../../shared/qt/rhodes/impl/CalendarImpl.cpp \
     ../../shared/qt/rhodes/impl/BluetoothImpl.cpp \
     ../../shared/qt/rhodes/impl/AlertImpl.cpp \
-    ../../shared/qt/rhodes/AlertDialog.cpp
+    ../../shared/qt/rhodes/DateTimeDialog.cpp
 HEADERS += ../../shared/qt/rhodes/QtWebInspector.h \
     ../../shared/qt/rhodes/QtNativeTabBar.h \
     ../../shared/qt/rhodes/QtMainWindow.h \
@@ -68,12 +70,12 @@ HEADERS += ../../shared/qt/rhodes/QtWebInspector.h \
     ../../shared/qt/rhodes/impl/NativeToolbarImpl.h \
     ../../shared/qt/rhodes/impl/NativeTabbarImpl.h \
     ../../shared/qt/rhodes/impl/MainWindowImpl.h \
-    ../../shared/qt/rhodes/AlertDialog.h
+    ../../shared/qt/rhodes/DateTimeDialog.h
 FORMS += \
     ../../shared/qt/rhodes/QtWebInspector.ui \
     ../../shared/qt/rhodes/QtMainWindow.ui \
     ../../shared/qt/rhodes/ExternalWebView.ui \
-    ../../shared/qt/rhodes/AlertDialog.ui
+    ../../shared/qt/rhodes/DateTimeDialog.ui
 
 INCLUDEPATH += ../../shared
 INCLUDEPATH += ../../wm/rhodes
@@ -115,4 +117,5 @@ LIBS +=  -lrubylib.lib
 LIBS +=  -lrholib.lib
 LIBS +=  -lsyncengine.lib
 LIBS +=  -lsqlite3.lib
+LIBS += -lefsrv -lcharconv -lbafl
 }
