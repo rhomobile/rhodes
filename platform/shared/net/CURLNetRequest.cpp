@@ -579,8 +579,8 @@ CURLNetRequest::CURLHolder::CURLHolder()
         timeout = 30; // 30 seconds by default
     m_sslVerifyPeer = true;
     
-    m_curlm = curl_multi_init();
     m_curl = curl_easy_init();
+    m_curlm = curl_multi_init();
     curl_easy_setopt(m_curl, CURLOPT_ERRORBUFFER, &errbuf);
 }
 

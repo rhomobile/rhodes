@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
     }
 
 #if defined(RHO_SYMBIAN)
-    m_strRootPath = (QDir::currentPath()+"/rho/").toUtf8().data();
+    m_strRootPath = (QDir::currentPath()+"/").toUtf8().data();
 #endif
 
     // PreMessageLoop:
