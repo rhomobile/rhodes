@@ -17,6 +17,25 @@ extern "C" {
 #endif
 #endif
 
+#if defined(__BEOS__) && !defined(__HAIKU__) && !defined(BONE)
+
+#include <net/socket.h>
+/* intern.h needs fd_set definition */
+
+#elif defined (__SYMBIAN32__) && defined (HAVE_SYS_SELECT_H)
+
+#include <sys/select.h>
+
+#endif
+
+#ifdef __SYMBIAN32__
+
+#define FALSE 0
+
+#define TRUE 1
+
+#endif
+
 #define RUBY
 
 #include <stdlib.h>

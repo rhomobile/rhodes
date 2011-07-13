@@ -222,6 +222,12 @@ static VALUE check_app_file_exist(VALUE dir, VALUE fname1, const char* szPlatfor
 {
     //RAWLOG_INFO1("find_file: check dir %s", RSTRING_PTR(dir));
     VALUE res = rb_str_dup(dir);
+
+    #ifdef __SYMBIAN32__
+        if(*RSTRING_PTR(res) == '/')
+            res = rb_str_substr(res,1,RSTRING_LEN(res) - 1);
+    #endif
+
     rb_str_cat(res,"/",1);
     rb_str_cat(res,RSTRING_PTR(fname1),RSTRING_LEN(fname1));
     if (szPlatform)
