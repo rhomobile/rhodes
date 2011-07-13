@@ -73,7 +73,7 @@ RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogTextPos
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_sendLog
   (JNIEnv *, jobject)
 {
-    rho_conf_send_log();
+    rho_conf_send_log("");
 }
 
 RHO_GLOBAL void rho_conf_show_log()
