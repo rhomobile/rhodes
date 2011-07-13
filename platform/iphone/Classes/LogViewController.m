@@ -9,7 +9,7 @@
 #import "LogViewController.h"
 #import "logging/RhoLogConf.h"
 
-extern void rho_conf_send_log();
+extern void rho_conf_send_log(const char*);
 
 @implementation LogViewController
 
@@ -124,7 +124,7 @@ extern void rho_conf_send_log();
 
 - (void)actionSend:(id)sender
 {
-    rho_conf_send_log();
+    rho_conf_send_log("");
 }
 
 - (void)actionSettings:(id)sender

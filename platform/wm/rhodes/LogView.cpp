@@ -290,7 +290,7 @@ LRESULT CLogView::OnOptions(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHan
 
 LRESULT CLogView::OnSendLog(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    rho_conf_send_log();
+    rho_conf_send_log("");
 
 	return 0;
 }
