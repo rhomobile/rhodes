@@ -10,7 +10,7 @@
 	extern void rho_conf_show_log();
 	#define show_log rho_conf_show_log
 
-	extern int rho_conf_send_log();
+	extern int rho_conf_send_log(const char* callback_url);
 	#define send_log rho_conf_send_log
 
 	extern void rho_conf_clean_log();
@@ -30,11 +30,15 @@
 %typemap(default) int limit {
  $1 = 0;
 }
+
+%typemap(default) const char* callback_url  {
+ $1 = "";
+}
  
 extern void set_property_by_name(char* name, char* value);
 extern VALUE get_property_by_name(char* name);
 extern void show_log();
-extern int send_log();
+extern int send_log(const char* callback_url);
 extern void clean_log();
 extern VALUE read_log(int limit);
 extern int is_property_exists(char* name);
