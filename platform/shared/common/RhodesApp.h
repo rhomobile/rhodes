@@ -107,7 +107,8 @@ public:
     CSplashScreen& getSplashScreen(){return m_oSplashScreen;}
     CRhoTimer&     getTimer(){ return m_oTimer; }
 
-    boolean sendLog();
+    boolean sendLog(String& callback_url);
+    void sendLogFromCommandQue(String callback_url);
 
     String addCallbackObject(ICallbackObject* pCallbackObject, String strName);
     unsigned long getCallbackObject(int nIndex);
@@ -190,7 +191,7 @@ int rho_rhodesapp_callPushCallback(const char* szData);
 void rho_rhodesapp_callScreenRotationCallback(int width, int height, int degrees);
 void rho_rhodesapp_callPopupCallback(const char *strCallbackUrl, const char *id, const char *title);
 
-int rho_conf_send_log();
+int rho_conf_send_log(const char* callback_url);
 
 void rho_net_request(const char *url);
 void rho_net_request_with_data(const char *url, const char *str_body);

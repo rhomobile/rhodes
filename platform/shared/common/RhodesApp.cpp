@@ -50,7 +50,8 @@ public:
         local_server_restart,
         local_server_started,
         ui_created,
-        app_activated
+        app_activated,
+        send_log
     };
 
 public:
@@ -67,6 +68,14 @@ public:
 
         boolean equals(IQueueCommand const &) {return false;}
         String toString() {return CAppCallbacksQueue::toString(type);}
+    };
+    struct SendLogCommand : public Command
+    {
+        String callback_url;
+        SendLogCommand(String& _callback_url):Command(send_log){
+            callback_url = _callback_url;
+        }
+        
     };
 
 private:
@@ -95,10 +104,14 @@ char const *CAppCallbacksQueue::toString(int type)
         return "APP-DEACTIVATED";
     case local_server_restart:
         return "LOCAL-SERVER-RESTART";
+    case send_log:
+        return "SEND_LOG";
     default:
         return "UNKNOWN";
     }
 }
+    
+    
 
 CAppCallbacksQueue::CAppCallbacksQueue()
     :CThreadQueue(), m_expected(local_server_started)
@@ -122,6 +135,13 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
     Command *cmd = (Command *)pCmd;
     if (!cmd)
         return;
+    
+    if (cmd->type == send_log) {
+        // send log
+        SendLogCommand* slc = (SendLogCommand*)cmd;
+        RHODESAPP().sendLogFromCommandQue(slc->callback_url);
+        return;
+    }
 /*
     if (cmd->type < m_expected)
     {
@@ -937,37 +957,56 @@ void CRhodesApp::navigateBack()
 	}
 }
 
-boolean CRhodesApp::sendLog() 
-{
+    
+ 
+    
+    
+boolean CRhodesApp::sendLog(String& callback_url) {
+        
+    CAppCallbacksQueue::SendLogCommand* command = new CAppCallbacksQueue::SendLogCommand(callback_url); 
+    m_appCallbacksQueue->addQueueCommand(command);
+    return true;
+}
+    
+    
+void CRhodesApp::sendLogFromCommandQue(String callback_url) {
     String strDevicePin = rho::sync::CClientRegister::getInstance() ? rho::sync::CClientRegister::getInstance()->getDevicePin() : "";
 	String strClientID = rho::sync::CSyncThread::getSyncEngine().readClientID();
-
+    
     String strLogUrl = RHOCONF().getPath("logserver");
     if ( strLogUrl.length() == 0 )
         strLogUrl = RHOCONF().getPath("syncserver");
-
+    
 	String strQuery = strLogUrl + "client_log?" +
-	    "client_id=" + strClientID + "&device_pin=" + strDevicePin + "&log_name=" + RHOCONF().getString("logname");
-
+    "client_id=" + strClientID + "&device_pin=" + strDevicePin + "&log_name=" + RHOCONF().getString("logname");
+    
     net::CMultipartItem oItem;
     oItem.m_strFilePath = LOGCONF().getLogFilePath();
     oItem.m_strContentType = "application/octet-stream";
-
+    
     boolean bOldSaveToFile = LOGCONF().isLogToFile();
     LOGCONF().setLogToFile(false);
     NetRequest oNetRequest;
     oNetRequest.setSslVerifyPeer(false);
-
+    
     NetResponse resp = getNetRequest(&oNetRequest).pushMultipartData( strQuery, oItem, &(rho::sync::CSyncThread::getSyncEngine()), null );
     LOGCONF().setLogToFile(bOldSaveToFile);
-
+    
+    boolean isOK = true;
+    
     if ( !resp.isOK() )
     {
         LOG(ERROR) + "send_log failed : network error - " + resp.getRespCode() + "; Body - " + resp.getCharData();
-        return false;
+        isOK = false;
     }
-
-    return true;
+    if (callback_url.length() > 0) {
+        String url = callback_url;
+        String body = "&rho_callback=1&status=ok";
+        if (!isOK) {
+            body = "&rho_callback=1&status=error";
+        }
+        rho_net_request_with_data(rho_http_normalizeurl(url.c_str()), body.c_str());
+    }
 }
 
 String CRhodesApp::addCallbackObject(ICallbackObject* pCallbackObject, String strName)
@@ -1373,9 +1412,13 @@ int rho_rhodesapp_isrubycompiler()
     return 0;
 }
 
-int rho_conf_send_log()
+int rho_conf_send_log(const char* callback_url)
 {
-    return RHODESAPP().sendLog();
+    rho::String s_callback_url = "";
+    if (callback_url != NULL) {
+        s_callback_url = callback_url;
+    }
+    return RHODESAPP().sendLog(s_callback_url);
 }
 
 void rho_net_request(const char *url)
