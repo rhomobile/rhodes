@@ -1007,7 +1007,7 @@ See CustomUri of [system API sample application](http://github.com/rhomobile/rho
 
 ### Android
 On Android it is possible to start rhodes app from browser by http link or redirect response. It is also possible to register custom URI scheme for the app.
-At Android the URI must strictly follow standatd URI rules. Additionally Android Chrome browser makes additional restriction: the host part of the URI must be resolvable.
+At Android the URI must strictly follow standard URI rules. Additionally Android Chrome browser makes additional restriction: the host part of the URI must be resolvable.
 By default the http://rhomobile.com/com.vendor.appname URI format is used by Rhodes. You can add additional path and query parameters to the URI and handle it by application code.
 It is possible to customize the URI with build.yml settings. Default Rhodes URI contains four parts:
 - scheme
@@ -1026,7 +1026,7 @@ NOTE: Google recommends to always use common scheme such as 'http', 'https', 'ft
 
 http scheme example:
     :::html
-    <a href="http://com.rhomobile.rhodessystemapisamples">Open System API Samples</a>
+    <a href="http://rhomobile.com/com.rhomobile.rhodessystemapisamples">Open System API Samples</a>
 
 Custom scheme examples:
     :::ruby
