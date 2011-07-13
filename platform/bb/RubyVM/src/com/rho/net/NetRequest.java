@@ -10,6 +10,7 @@ import com.rho.RhoClassFactory;
 //import com.rho.RhoConf;
 import com.rho.FilePath;
 import com.rho.IRhoRubyHelper;
+import com.rho.Mutex;
 import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
@@ -144,6 +145,7 @@ public class NetRequest
 		}
 	}
 	
+	Mutex m_mxNet = new Mutex();
 	public NetResponse doRequest(String strMethod, String strUrl, String strBody, IRhoSession oSession, Hashtable headers ) throws Exception
     {
 		String strRespBody = null;
@@ -153,6 +155,7 @@ public class NetRequest
 		
 		m_bCancel = false;
 		try{
+			m_mxNet.Lock();
 			closeConnection();
 			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, m_bIgnoreSuffixOnSim);
 			LOG.INFO("connection done");
@@ -227,6 +230,8 @@ public class NetRequest
 			closeConnection();
 			
 			m_bIgnoreSuffixOnSim = true;
+			
+			m_mxNet.Unlock();			
 		}
 		
 		return makeResponse(strRespBody, code );
