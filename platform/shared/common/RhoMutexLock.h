@@ -82,9 +82,19 @@ private:
 
 #if !defined(WINDOWS_PLATFORM)
 
+#ifdef OS_SYMBIAN
+
 #define RHO_INIT_LOCK(name)\
 static int __g_mutex_init_##name = 0;\
 pthread_mutex_t __g_mutex_##name = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+
+#else
+
+#define RHO_INIT_LOCK(name)\
+static int __g_mutex_init_##name = 0;\
+pthread_mutex_t __g_mutex_##name = PTHREAD_MUTEX_INITIALIZER;
+
+#endif
 
 #define RHO_LOCK(name) {if(!__g_mutex_init_##name){\
   pthread_mutexattr_t attr;\
