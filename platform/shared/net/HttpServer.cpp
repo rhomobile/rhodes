@@ -926,6 +926,7 @@ static bool parse_range(HttpHeaderList const &hdrs, size_t *pbegin, size_t *pend
 bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
 {
     String fullPath = CFilePath::normalizePath(path);
+
     if (String_startsWith(fullPath,"/app/db/db-files") )
         fullPath = CFilePath::join( RHODESAPP().getRhoRootPath(), path.substr(4) );
     else if (fullPath.find(m_root) != 0 && fullPath.find(m_strRhoRoot) != 0)
@@ -978,7 +979,7 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
     //headers.push_back(Header("Cache-Control", "max-age=2592000") );
 
     // Content length
-    char buf[FILE_BUF_SIZE];
+    char* buf = new char[FILE_BUF_SIZE];
     
     String start_line;
     
@@ -1000,6 +1001,7 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
         if (fseek(fp, range_begin, SEEK_SET) == -1) {
             RAWLOG_ERROR1("Can not seek to specified range start: %lu", (unsigned long)range_begin);
             fclose(fp);
+            delete buf;
             return false;
         }
         
@@ -1017,6 +1019,7 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
     if (!send_response(create_response(start_line, headers))) {
         RAWLOG_ERROR1("Can not send headers while sending file %s", path.c_str());
         fclose(fp);
+        delete buf;
         return false;
     }
     
@@ -1032,11 +1035,13 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
         if (n < 0) {
             RAWLOG_ERROR2("Can not read part of file (at position %lu): %s", (unsigned long)start, strerror(errno));
             fclose(fp);
+            delete buf;
             return false;
         }
         if (n == 0) {
             RAWLOG_ERROR1("End of file reached, but we expect data (%lu bytes)", (unsigned long)need_to_read);
             fclose(fp);
+            delete buf;
             return false;
         }
         
@@ -1045,11 +1050,13 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
         if (!send_response_body(String(buf, n))) {
             RAWLOG_ERROR1("Can not send part of data while sending file %s", path.c_str());
             fclose(fp);
+            delete buf;
             return false;
         }
     }
-    
+
     fclose(fp);
+    delete buf;
     if (verbose) RAWTRACE1("File %s was sent successfully", path.c_str());
     return true;
 }
