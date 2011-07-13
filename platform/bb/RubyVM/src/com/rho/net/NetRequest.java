@@ -179,9 +179,11 @@ public class NetRequest
 			}else
 			{
 				writeHeaders(headers);
+				LOG.INFO("writeHeaders done");
 				m_connection.setRequestMethod(strMethod);
 			}
 
+			LOG.INFO("Start openInputStream");
 			is = m_connection.openInputStream();
 			LOG.INFO("openInputStream done");
 			
