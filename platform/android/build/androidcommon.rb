@@ -43,7 +43,7 @@ def setup_ndk(ndkpath,apilevel)
   $ndktools = nil
   $ndkabi = "unknown"
   $ndkgccver = "unknown"
-  ["arm-eabi-4.4.0", "arm-eabi-4.2.1"].each do |abi|
+  ["arm-linux-androideabi-4.4.3", "arm-eabi-4.4.0", "arm-eabi-4.2.1"].each do |abi|
     variants = []
     variants << File.join(ndkpath, "toolchains", abi, "prebuilt", $ndkhost)
     variants << File.join(ndkpath, "build/prebuilt", $ndkhost, abi)
@@ -62,7 +62,6 @@ def setup_ndk(ndkpath,apilevel)
 
   variants = []
   variants << "platforms"
-  #variants << "build/platforms"
   variants << File.join("build", "platforms")
 
   api_levels = Array.new
@@ -312,8 +311,9 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args += objects
   args += additional if additional.is_a? Array and not additional.empty?
   unless USE_OWN_STLPORT
-    stlportlib = File.join($androidndkpath, "sources/cxx-stl/stlport/libs/armeabi/libstlport_static.a")
-    args << stlportlib if File.exists? stlportlib
+    args << "-L#{File.join($androidndkpath, "sources","cxx-stl","stlport","libs","armeabi")}"
+    args << "-L#{File.join($androidndkpath, "tmp","ndk-digit","build","install","sources","cxx-stl","stlport","libs","armeabi")}"
+    args << "-lstlport_static"
   end
   args << "-L#{$ndksysroot}/usr/lib"
   args << "-Wl,-rpath-link=#{$ndksysroot}/usr/lib"
