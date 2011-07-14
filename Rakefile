@@ -1113,7 +1113,11 @@ namespace "run" do
 
     task :rhosimulator_debug => "run:rhosimulator_base" do
         puts 'start rhosimulator debug'
-        Jake.run2 $path, $args, {:nowait => true} do |line|
+        Jake.run2 $path, $args, {:nowait => true}
+
+        if RUBY_PLATFORM =~ /darwin/
+	  while 1
+          end     
         end
     end
 
