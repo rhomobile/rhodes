@@ -380,5 +380,28 @@ end
     buffer.should == []
     buffer.length.should == 0
   end
+
+  it "should parse xml date"  do
+
+    now_at = "2011-02-05T21:10:11.123T001"
+
+    date = now_at.split("T")
+    date[1]["Z"] = "" if date[1]["Z"]
+    day = date[0].split("-")
+    time = date[1].split(":")
     
+    day[0].should == '2011'
+    day[1].should == '02'
+    day[2].should == '05'
+    time[0].should == '21'
+    time[1].should == '10'
+    time[2].should == "11.123"
+    
+    var_time= Time.local(day[0],day[1],day[2],time[0],time[1],time[2])
+    res = var_time.strftime("%b %d, %y, %I:%M%p")
+    
+    res.should == "Feb 05, 11, 09:10PM"
+  
+  end
+        
 end
