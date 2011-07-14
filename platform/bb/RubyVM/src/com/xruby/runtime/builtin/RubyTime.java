@@ -273,7 +273,7 @@ public class RubyTime extends RubyBasic {
         }
 
         int i = 0;
-        int year = ((RubyFixnum) args.get(i++)).toInt();
+        int year = args.get(i++).toInt();
         int month = 0;
         if ( args.size() > i )
         {
@@ -282,22 +282,52 @@ public class RubyTime extends RubyBasic {
         		month = ((RubyFixnum) mon).toInt();
         	else if ( mon instanceof RubyString )
         	{
-        		String strMon = mon.toStr();
-        		for ( int m = 0; m < month_shorts.length; m++ )
-        			if ( month_shorts[m].equalsIgnoreCase(strMon) )
-        			{
-        				month = m+1;
-        				break;
-        			}
+        		month = -1;
+        		try{
+        			month = mon.toInt();        		
+        		}catch(Exception exc){
+        			
+        		}
+        		
+        		if ( month == -1 )
+        		{
+	        		String strMon = mon.toStr();
+	        		for ( int m = 0; m < month_shorts.length; m++ )
+	        			if ( month_shorts[m].equalsIgnoreCase(strMon) )
+	        			{
+	        				month = m+1;
+	        				break;
+	        			}
+        		}
         	}
         }
         
-        int day = (args.size() <= i) ? 0 : ((RubyFixnum) args.get(i++)).toInt();
-        int hour = (args.size() <= i) ? 0 : ((RubyFixnum) args.get(i++)).toInt();
-        int min = (args.size() <= i) ? 0 : ((RubyFixnum) args.get(i++)).toInt();
-        int sec = (args.size() <= i) ? 0 : ((RubyFixnum) args.get(i++)).toInt();
+        int day = (args.size() <= i) ? 0 : args.get(i++).toInt();
+        int hour = (args.size() <= i) ? 0 : args.get(i++).toInt();
+        int min = (args.size() <= i) ? 0 : args.get(i++).toInt();
+        
+        int sec = 0;
+        int millis = 0;
+        
+        if ( args.size() > i )
+        {
+        	RubyValue sec_fract = args.get(i++);
+        	if ( sec_fract instanceof RubyFixnum)
+        		sec = sec_fract.toInt();
+        	else if ( sec_fract instanceof RubyString )
+        	{
+        		String strSec = sec_fract.toStr();
+        		int nDot = strSec.indexOf('.');
+        		if ( nDot >= 0 )
+        		{
+        			sec = Integer.parseInt(strSec.substring(0, nDot));
+        			millis = Integer.parseInt(strSec.substring(nDot+1));
+        		}else
+        			sec = sec_fract.toInt();
+        	}
+        }
         Calendar calendar = Calendar.getInstance(zone);
-        CalendarMe.set(calendar, year, month - 1, day, hour, min, sec);
+        CalendarMe.set(calendar, year, month - 1, day, hour, min, sec, millis);
         return new RubyTime(calendar);
     }
 

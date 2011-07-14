@@ -4,7 +4,7 @@ import java.util.Calendar;
 
 public class CalendarMe {
     public static void set(Calendar clndThis, int year, int month, int date, int hourOfDay, int minute,
-            int second)
+            int second, int millis)
 	{
     	clndThis.set(Calendar.YEAR, year);
     	clndThis.set(Calendar.MONTH, month);
@@ -12,6 +12,7 @@ public class CalendarMe {
     	clndThis.set(Calendar.HOUR_OF_DAY, hourOfDay);
     	clndThis.set(Calendar.MINUTE, minute);
     	clndThis.set(Calendar.SECOND, second);
+    	clndThis.set(Calendar.MILLISECOND, millis);
 	}
 
 }
