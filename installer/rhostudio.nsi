@@ -54,7 +54,11 @@
 
 # start default section
 section
- 
+
+    ReadRegStr $0 HKEY_LOCAL_MACHINE "SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\javaws.exe" "Path"
+              
+    StrCmp $0 "" jreCheck   
+     
     # set the installation directory as the destination for the following actions
     setOutPath $INSTDIR
  
@@ -66,6 +70,14 @@ section
     # point the new shortcut at the program uninstaller
     createShortCut "$SMPROGRAMS\RhoStudio\Uninstall RhoStudio.lnk" "$INSTDIR\uninstall.exe"
     createShortCut "$SMPROGRAMS\RhoStudio\RhoStudio.lnk" "$INSTDIR\eclipse\RhoStudio.exe"
+    
+    Goto finishSection
+    
+    jreCheck:
+        MessageBox MB_OK|MB_ICONINFORMATION|MB_DEFBUTTON1 "Java Runtime Environment could be found on your computer. Please install Java Runtime Environment before RhoStudio."
+        Quit 
+
+    finishSection: 
 sectionEnd
  
 # uninstaller section start
@@ -74,9 +86,10 @@ section "uninstall"
     # first, delete the uninstaller
     delete "$INSTDIR\uninstall.exe"
  
-    # second, remove the link from the start menu
+    # second, remove the link from the start menu    
     delete "$SMPROGRAMS\RhoStudio\Uninstall RhoStudio.lnk"
     delete "$SMPROGRAMS\RhoStudio\RhoStudio.lnk"
+    delete "$SMPROGRAMS\RhoStudio"
 
     # remove env vars
     Push "PATH" 
@@ -109,7 +122,6 @@ section "uninstall"
 
     # remove $INSTDIR
     RMDir /r /REBOOTOK $INSTDIR
- 
 
 # uninstaller section end
 sectionEnd
