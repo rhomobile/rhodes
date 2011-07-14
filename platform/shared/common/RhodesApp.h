@@ -56,6 +56,7 @@ private:
     //int m_activateCounter;
 
     common::CAutoPtr<common::CThreadQueue> m_appCallbacksQueue;
+    boolean m_bSendingLog;
 
 public:
     ~CRhodesApp(void);
@@ -107,8 +108,7 @@ public:
     CSplashScreen& getSplashScreen(){return m_oSplashScreen;}
     CRhoTimer&     getTimer(){ return m_oTimer; }
 
-    boolean sendLog(String& callback_url);
-    void sendLogFromCommandQue(String callback_url);
+    boolean sendLog(const String& strCallbackUrl);
 
     String addCallbackObject(ICallbackObject* pCallbackObject, String strName);
     unsigned long getCallbackObject(int nIndex);
@@ -128,6 +128,7 @@ public:
     void notifyLocalServerStarted();
     const char* getFreeListeningPort();
 
+    void setSendingLog(boolean bSending){m_bSendingLog = bSending; }
 protected:
     virtual void run();
 
