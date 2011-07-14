@@ -29,6 +29,8 @@ public class RhoSocketImpl extends SocketImpl {
 	private native void setOptionImpl(int sock, int option, Object value);
 	
 	public RhoSocketImpl(int s, RhoSockAddr rem) {
+		Logger.D(TAG, "New socket wrapper. fd: " + s + ", host: " + rem.host + ", port: " + rem.port);
+		
 		sockfd = s;
 		remote = rem;
 		initImpl(sockfd);
