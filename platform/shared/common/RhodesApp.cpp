@@ -1015,7 +1015,7 @@ public:
 
         if (m_strCallback.length() > 0) 
         {
-            String body = isOK ? "&rho_callback=1&status=ok" : "&rho_callback=1&status=error";
+            String body = isOK ? "rho_callback=1&status=ok" : "rho_callback=1&status=error";
 
             rho_net_request_with_data(rho_http_normalizeurl(m_strCallback.c_str()), body.c_str());
         }
