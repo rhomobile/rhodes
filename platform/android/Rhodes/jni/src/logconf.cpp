@@ -4,8 +4,6 @@
 
 #include <logging/RhoLogConf.h>
 
-extern "C" int rho_conf_send_log(const char* callback_url);
-
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getEnabledCategories
   (JNIEnv *env, jclass)
 {

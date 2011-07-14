@@ -28,7 +28,7 @@ public class TestRhoSyncClient extends AndroidTestCase {
 			RhoFileApi.init(this.getContext());
 			
 			RhoLogConf.setMinSeverity(0);
-			//mLogConf.setEnabledCategories("*");
+			RhoLogConf.setEnabledCategories("*");
 			
 			RhoSyncClient.nativeInit();
 		} catch (Exception e) {
