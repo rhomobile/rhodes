@@ -706,7 +706,7 @@ namespace "build" do
 
       ENV['RHO_PLATFORM'] = 'android'
       ENV["ANDROID_NDK"] = $androidndkpath
-      ENV["ANDROID_API_LEVEL"] = $min_sdk_level.to_s
+      ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
       ENV["TARGET_TEMP_DIR"] = $extensionsdir
       ENV["RHO_ROOT"] = $startdir
       ENV["BUILD_DIR"] ||= $startdir + "/platform/android/build"
