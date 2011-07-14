@@ -25,6 +25,7 @@ public class NetRequest
 {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("Net");
+	private final int MAX_RECONNECT_COUNT = 3;
 	
 	boolean m_bCancel = false;
 	boolean m_sslVerifyPeer = true;
@@ -253,7 +254,7 @@ public class NetRequest
 				//m_mxNet.Unlock();			
 			}
 			nTry++;
-		}while( !m_bCancel && nTry <= 3 );
+		}while( !m_bCancel && nTry <= MAX_RECONNECT_COUNT );
 		
 		return makeResponse(strRespBody, code );
     }
@@ -376,114 +377,129 @@ public class NetRequest
     public NetResponse pushMultipartData(String strUrl, Vector/*Ptr<CMultipartItem*>&*/ arItems, IRhoSession oSession, Hashtable/*<String,String>**/ headers)throws Exception
     {
 		String strRespBody = null;
-		InputStream is = null;
-		OutputStream os = null;
 		int code  = -1;
+		int nTry = 0;
 		
 		m_bCancel = false;
     	
-		try{
-			closeConnection();
-			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, false);
+		do
+		{
+			InputStream is = null;
+			OutputStream os = null;
 			
-			handleCookie(oSession);
-
-			m_connection.setRequestProperty("Connection", "keep-alive");
-			m_connection.setRequestProperty("content-type", szMultipartContType);
-			writeHeaders(headers);
-			m_connection.setRequestMethod(IHttpConnection.POST);
-			
-			//PUSH specific
-			processMultipartItems( arItems );
-			os = m_connection.openOutputStream();
-	        //write all items
-	        for( int i = 0; i < (int)arItems.size(); i++ )
-	        {
-	            MultipartItem oItem = (MultipartItem)arItems.elementAt(i); 
-    			os.write(oItem.m_strDataPrefix.getBytes(), 0, oItem.m_strDataPrefix.length());
-
-	            if ( oItem.m_strFilePath.length() > 0 )
-	            {
-
-		        	SimpleFile file = null;
-		    		InputStream fis = null;
-		        	
-		    		try{
-		    			file = RhoClassFactory.createFile();
-		    			file.open(oItem.m_strFilePath, true, true);
-		        		
-		    			if ( !file.isOpened() ){
-		    				LOG.ERROR("File not found: " + oItem.m_strFilePath);
-		    				throw new RuntimeException("File not found:" + oItem.m_strFilePath);
-		    			}
+			try{
+				closeConnection();
+				m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, false);
+				
+				handleCookie(oSession);
+	
+				m_connection.setRequestProperty("Connection", "keep-alive");
+				m_connection.setRequestProperty("content-type", szMultipartContType);
+				writeHeaders(headers);
+				m_connection.setRequestMethod(IHttpConnection.POST);
+				
+				//PUSH specific
+				processMultipartItems( arItems );
+				os = m_connection.openOutputStream();
+		        //write all items
+		        for( int i = 0; i < (int)arItems.size(); i++ )
+		        {
+		            MultipartItem oItem = (MultipartItem)arItems.elementAt(i); 
+	    			os.write(oItem.m_strDataPrefix.getBytes(), 0, oItem.m_strDataPrefix.length());
+	
+		            if ( oItem.m_strFilePath.length() > 0 )
+		            {
+	
+			        	SimpleFile file = null;
+			    		InputStream fis = null;
+			        	
+			    		try{
+			    			file = RhoClassFactory.createFile();
+			    			file.open(oItem.m_strFilePath, true, true);
+			        		
+			    			if ( !file.isOpened() ){
+			    				LOG.ERROR("File not found: " + oItem.m_strFilePath);
+			    				throw new RuntimeException("File not found:" + oItem.m_strFilePath);
+			    			}
+			    			
+			    			fis = file.getInputStream();
+			    			byte[]  byteBuffer = new byte[1024*4]; 
+			    			int nRead = 0;
+			        		do{
+			        			nRead = fis.read(byteBuffer);	    			
+			        			if ( nRead > 0 )
+			        				os.write(byteBuffer, 0, nRead);
+			        		}while( nRead > 0 );
+			    		}finally{
+							if (fis != null)
+								try{ fis.close(); }catch(IOException e){}
+			    			
+			    			if ( file != null )
+			    				try{ file.close(); }catch(IOException e){}
+			    		}
 		    			
-		    			fis = file.getInputStream();
-		    			byte[]  byteBuffer = new byte[1024*4]; 
-		    			int nRead = 0;
-		        		do{
-		        			nRead = fis.read(byteBuffer);	    			
-		        			if ( nRead > 0 )
-		        				os.write(byteBuffer, 0, nRead);
-		        		}while( nRead > 0 );
-		    		}finally{
-						if (fis != null)
-							try{ fis.close(); }catch(IOException e){}
-		    			
-		    			if ( file != null )
-		    				try{ file.close(); }catch(IOException e){}
-		    		}
-	    			
-	            }else
-	            {
-	    			os.write(oItem.m_strBody.getBytes(), 0, oItem.m_strBody.length());
-	            }
-	        }
-			os.write(szMultipartPostfix.getBytes(), 0, szMultipartPostfix.length());
-			//os.flush();
-			//PUSH specific
+		            }else
+		            {
+		    			os.write(oItem.m_strBody.getBytes(), 0, oItem.m_strBody.length());
+		            }
+		        }
+				os.write(szMultipartPostfix.getBytes(), 0, szMultipartPostfix.length());
+				//os.flush();
+				//PUSH specific
+				
+				is = m_connection.openInputStream();
+				code = m_connection.getResponseCode();
 			
-			is = m_connection.openInputStream();
-			code = m_connection.getResponseCode();
-		
-			LOG.INFO("getResponseCode : " + code);
-
-			readHeaders(headers);
-			copyHashtable(m_OutHeaders, headers);
-			
-			if (code >= 400 ) 
-			{
-				LOG.ERROR("Error retrieving data: " + code);
-				if (code == IHttpConnection.HTTP_UNAUTHORIZED)
+				LOG.INFO("getResponseCode : " + code);
+	
+				readHeaders(headers);
+				copyHashtable(m_OutHeaders, headers);
+				
+				if (code >= 400 ) 
 				{
-					LOG.ERROR("Unauthorize error.Client will be logged out");
-					oSession.logout();
+					LOG.ERROR("Error retrieving data: " + code);
+					if (code == IHttpConnection.HTTP_UNAUTHORIZED)
+					{
+						LOG.ERROR("Unauthorize error.Client will be logged out");
+						oSession.logout();
+					}
+					
+					//if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
+						strRespBody = readFully(is, getResponseEncoding());
+						LOG.TRACE("Response body: " + strRespBody );
+					
+				}else
+				{
+					long len = m_connection.getLength();
+					LOG.INFO("fetchRemoteData data size:" + len );
+			
+					strRespBody = readFully(is, getResponseEncoding());
+					
+					LOG.INFO("fetchRemoteData data readFully.");
 				}
 				
-				//if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
-					strRespBody = readFully(is, getResponseEncoding());
-					LOG.TRACE("Response body: " + strRespBody );
-				
-			}else
+				break;
+			}catch(IOException exc)
 			{
-				long len = m_connection.getLength();
-				LOG.INFO("fetchRemoteData data size:" + len );
-		
-				strRespBody = readFully(is, getResponseEncoding());
-				
-				LOG.INFO("fetchRemoteData data readFully.");
+				String strError = exc.getMessage();
+				LOG.INFO("openInputStream failed: " + strError);
+				if ( strError != null && strError.indexOf("General socket error") >= 0)
+				{
+					LOG.INFO("Try connect one more time.");
+				}else
+					throw exc;
+			}finally{
+				try{
+					if ( is != null )
+						is.close();
+					if (os != null)
+						os.close();
+					
+					closeConnection();
+					
+				}catch(IOException exc2){}
 			}
-			
-		}finally{
-			try{
-				if ( is != null )
-					is.close();
-				if (os != null)
-					os.close();
-				
-				closeConnection();
-				
-			}catch(IOException exc2){}
-		}
+		}while( !m_bCancel && nTry <= MAX_RECONNECT_COUNT );
 		
 		return makeResponse(strRespBody, code );
     }
@@ -535,85 +551,101 @@ public class NetRequest
 	NetResponse pullFile1( String strUrl, IRAFile file, long nStartPos, IRhoSession oSession, Hashtable headers )throws Exception
 	{
 		String strRespBody = null;
-		InputStream is = null;
 		int code = -1;
+		int nTry = 0;
 		
-		try{
-			closeConnection();
-			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, true);
+		do
+		{
+			InputStream is = null;
 			
-			handleCookie(oSession);
-
-			m_connection.setRequestProperty("Connection", "keep-alive");
-			
-			if ( nStartPos > 0 || m_nMaxPacketSize > 0 )
-			{
-				if ( m_nMaxPacketSize > 0 )
-					m_connection.setRequestProperty("Range", "bytes="+nStartPos+"-" + (nStartPos + m_nMaxPacketSize-1));
-				else
-					m_connection.setRequestProperty("Range", "bytes="+nStartPos+"-");
-			}
-			writeHeaders(headers);
-			
-			m_connection.setRequestMethod(IHttpConnection.GET);
-			
-			is = m_connection.openInputStream();
-			
-			code = m_connection.getResponseCode();
-			
-			LOG.INFO("getResponseCode : " + code);
-			
-			m_nCurDownloadSize = 0;
-			readHeaders(headers);
-
-			if ( code == IHttpConnection.HTTP_OK )
-				file.seek(0);
-			
-			if ( code == IHttpConnection.HTTP_RANGENOTSATISFY )
-				code = IHttpConnection.HTTP_PARTIAL_CONTENT;
-			else
-			{
-				if (code >= 400 && code != IHttpConnection.HTTP_PARTIAL_CONTENT ) 
+			try{
+				closeConnection();
+				m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, true);
+				
+				handleCookie(oSession);
+	
+				m_connection.setRequestProperty("Connection", "keep-alive");
+				
+				if ( nStartPos > 0 || m_nMaxPacketSize > 0 )
 				{
-					LOG.ERROR("Error retrieving data: " + code);
-					if (code == IHttpConnection.HTTP_UNAUTHORIZED)
+					if ( m_nMaxPacketSize > 0 )
+						m_connection.setRequestProperty("Range", "bytes="+nStartPos+"-" + (nStartPos + m_nMaxPacketSize-1));
+					else
+						m_connection.setRequestProperty("Range", "bytes="+nStartPos+"-");
+				}
+				writeHeaders(headers);
+				
+				m_connection.setRequestMethod(IHttpConnection.GET);
+				
+				is = m_connection.openInputStream();
+				
+				code = m_connection.getResponseCode();
+				
+				LOG.INFO("getResponseCode : " + code);
+				
+				m_nCurDownloadSize = 0;
+				readHeaders(headers);
+	
+				if ( code == IHttpConnection.HTTP_OK )
+					file.seek(0);
+				
+				if ( code == IHttpConnection.HTTP_RANGENOTSATISFY )
+					code = IHttpConnection.HTTP_PARTIAL_CONTENT;
+				else
+				{
+					if (code >= 400 && code != IHttpConnection.HTTP_PARTIAL_CONTENT ) 
 					{
-						LOG.ERROR("Unauthorize error.Client will be logged out");
-						oSession.logout();
+						LOG.ERROR("Error retrieving data: " + code);
+						if (code == IHttpConnection.HTTP_UNAUTHORIZED)
+						{
+							LOG.ERROR("Unauthorize error.Client will be logged out");
+							oSession.logout();
+						}
+						
+						strRespBody = readFully(is, getResponseEncoding());
+					}else
+					{
+						int nRead = 0;
+						
+						byte[]  byteBuffer = new byte[1024*20]; 
+	
+			    		do{
+			    			nRead = /*bufferedReadByByte(m_byteBuffer, is);*/is.read(byteBuffer);
+			    			if ( nRead > 0 )
+			    			{
+			    				file.write(byteBuffer, 0, nRead);
+			    				
+			    				if (m_bFlushFileAfterWrite)
+			    					file.sync();
+	
+			    				m_nCurDownloadSize += nRead;
+			    			}
+			    		}while( !m_bCancel && nRead >= 0 );
+			    		
+			    		if ( code == IHttpConnection.HTTP_OK || (code == IHttpConnection.HTTP_PARTIAL_CONTENT && isFinishDownload()) )
+			    			m_nCurDownloadSize = 0;
 					}
 					
-					strRespBody = readFully(is, getResponseEncoding());
-				}else
-				{
-					int nRead = 0;
-					
-					byte[]  byteBuffer = new byte[1024*20]; 
-
-		    		do{
-		    			nRead = /*bufferedReadByByte(m_byteBuffer, is);*/is.read(byteBuffer);
-		    			if ( nRead > 0 )
-		    			{
-		    				file.write(byteBuffer, 0, nRead);
-		    				
-		    				if (m_bFlushFileAfterWrite)
-		    					file.sync();
-
-		    				m_nCurDownloadSize += nRead;
-		    			}
-		    		}while( !m_bCancel && nRead >= 0 );
-		    		
-		    		if ( code == IHttpConnection.HTTP_OK || (code == IHttpConnection.HTTP_PARTIAL_CONTENT && isFinishDownload()) )
-		    			m_nCurDownloadSize = 0;
 				}
 				
+				break;
+			}catch(IOException exc)
+			{
+				String strError = exc.getMessage();
+				LOG.INFO("openInputStream failed: " + strError);
+				if ( strError != null && strError.indexOf("General socket error") >= 0)
+				{
+					LOG.INFO("Try connect one more time.");
+				}else
+					throw exc;
+			}finally
+			{
+				if ( is != null )
+					try{ is.close(); }catch(IOException exc){}
+				
+				closeConnection();
 			}
-		}finally
-		{
-			if ( is != null )
-				try{ is.close(); }catch(IOException exc){}
-			
-			closeConnection();
-		}
+		}while( !m_bCancel && nTry <= MAX_RECONNECT_COUNT );
 		
 		return makeResponse(strRespBody != null ? strRespBody : "", code );
 	}
