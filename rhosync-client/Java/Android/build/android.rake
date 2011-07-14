@@ -283,6 +283,10 @@ end # namespace "android"
       end
       args = ["-L#{BUILDPATH}"]
 
+      args << "-Wl,--whole-archive"
+      args << "-lrhoimpl"
+      args << "-Wl,--no-whole-archive"
+
       libs = []
       LIBFN.each do |lib|
         libs << "-l" + File.basename(lib).gsub(/^lib/,"").gsub(/\.(a|so)$/,"")
@@ -295,7 +299,7 @@ end # namespace "android"
       args += libs.reverse
       args += libs
       args += libs.reverse
-
+      
       cc_link(t.name, objects, args) or exit 1
     end
 
