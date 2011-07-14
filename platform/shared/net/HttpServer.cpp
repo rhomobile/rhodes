@@ -994,7 +994,7 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
             range_begin = range_end - 1;
         content_size = range_end - range_begin + 1;
         
-        snprintf(buf, sizeof(buf), "bytes %lu-%lu/%lu", (unsigned long)range_begin,
+        snprintf(buf, FILE_BUF_SIZE, "bytes %lu-%lu/%lu", (unsigned long)range_begin,
                  (unsigned long)range_end, (unsigned long)file_size);
         headers.push_back(Header("Content-Range", buf));
         
@@ -1012,7 +1012,7 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
     }
 
     
-    snprintf(buf, sizeof(buf), "%lu", (unsigned long)content_size);
+    snprintf(buf, FILE_BUF_SIZE, "%lu", (unsigned long)content_size);
     headers.push_back(Header("Content-Length", buf));
     
     // Send headers
@@ -1029,9 +1029,9 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
         if (need_to_read == 0)
             break;
         
-        if (need_to_read > sizeof(buf))
-            need_to_read = sizeof(buf);
-        size_t n = fread(buf, 1, need_to_read, fp);
+        if (need_to_read > FILE_BUF_SIZE)
+            need_to_read = FILE_BUF_SIZE;
+        size_t n = fread(buf, 1, need_to_read, fp);//fread(buf, 1, need_to_read, fp);
         if (n < 0) {
             RAWLOG_ERROR2("Can not read part of file (at position %lu): %s", (unsigned long)start, strerror(errno));
             fclose(fp);
