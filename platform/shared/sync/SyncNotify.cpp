@@ -314,7 +314,8 @@ void CSyncNotify::showStatusPopup(const String& status)
     if ( m_strStatusHide.length() == 0 )
         m_strStatusHide = RhoAppAdapter.getMessageText("hide");
 
-    alert_show_status("", status.c_str(), m_strStatusHide.c_str());
+    if ( status.length() > 0 )
+        alert_show_status("", status.c_str(), m_strStatusHide.c_str());
 }
 
 void CSyncNotify::reportSyncStatus(String status, int error, String strDetails) 
