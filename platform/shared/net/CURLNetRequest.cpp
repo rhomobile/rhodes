@@ -695,7 +695,6 @@ CURLcode CURLNetRequest::CURLHolder::perform()
             RAWLOG_ERROR3("  CURLNetRequest: METHOD = [%s] URL = [%s] BODY = [%s]", mStrMethod.c_str(), mStrUrl.c_str(), mStrBody.c_str());
         }
         break;
-        }
     }
 
     RAWLOG_INFO3("Deactivate CURLNetRequest: METHOD = [%s] URL = [%s] BODY = [%s]", mStrMethod.c_str(), mStrUrl.c_str(), mStrBody.c_str());
