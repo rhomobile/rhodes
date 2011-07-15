@@ -604,6 +604,13 @@ void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
 {
     PROF_START("Data1");
 
+    if ( oJsonArr.isEnd() )
+    {
+        getSync().stopSync();
+        m_nErrCode = RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE;
+        return;
+    }
+
     int nVersion = 0;
     if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("version") )
     {
