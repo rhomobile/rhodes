@@ -177,7 +177,7 @@ INetResponse* CURLNetRequest::doRequest(const char *method, const String& strUrl
 CURLcode CURLNetRequest::doCURLPerform(const String& strUrl)
 {
 	CURLcode err = m_curl.perform();
-	if ( err !=  CURLE_OK && !RHODESAPP().isBaseUrl(strUrl.c_str()) )
+	if ( err !=  CURLE_OK && !RHODESAPP().isBaseUrl(strUrl.c_str()) && err != CURLE_OBSOLETE4 )
 	{
 		long statusCode = 0;
 		curl_easy_getinfo(m_curl.curl(), CURLINFO_RESPONSE_CODE, &statusCode);
@@ -646,7 +646,7 @@ CURLcode CURLNetRequest::CURLHolder::perform()
         if (m_active <= 0) {
             RAWLOG_INFO("CURLNetRequest: request was canceled from another thread !");
             RAWLOG_INFO3("   CURLNetRequest: METHOD = [%s] URL = [%s] BODY = [%s]", mStrMethod.c_str(), mStrUrl.c_str(), mStrBody.c_str());
-           return CURLE_COULDNT_CONNECT;   
+           return CURLE_OBSOLETE4;   
         }
         int running;
         
