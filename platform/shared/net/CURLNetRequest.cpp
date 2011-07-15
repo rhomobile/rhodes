@@ -394,6 +394,9 @@ int CURLNetRequest::getResponseCode(CURLcode err, char const *body, size_t bodys
                 oSession->logout();
     }
     else {
+        if (err != CURLE_OK)
+            statusCode = 500;
+
         RAWTRACE1("RESPONSE----- (%d bytes)", bodysize);
         RAWTRACE(body);
         RAWTRACE("END RESPONSE-----");
