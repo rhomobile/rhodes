@@ -3,6 +3,8 @@ package com.rhomobile.rhodes.camera;
 import java.util.Iterator;
 import java.util.List;
 
+import com.rhomobile.rhodes.camera.CameraService.Size;
+
 import android.hardware.Camera;
 
 
@@ -32,8 +34,17 @@ class CameraNewService implements CameraService {
 		int newh = h;
 		
 		Camera.Parameters p = camera.getParameters();
+		if (p == null) {
+			return null;
+		}
 		List<android.hardware.Camera.Size> sizes = p.getSupportedPictureSizes();
+		if (sizes == null) {
+			return null;
+		}
 		Iterator<android.hardware.Camera.Size> iter = sizes.iterator();
+		if (iter == null) {
+			return null;
+		}
 		// find closest preview size
 		float min_r = -1;
 		int minW = 0;
@@ -57,6 +68,9 @@ class CameraNewService implements CameraService {
 		if (min_r >= 0) {
 			neww = minW;
 			newh = minH;
+		}
+		else {
+			return null;
 		}
 		return new Size(neww, newh);
 	}
@@ -67,8 +81,17 @@ class CameraNewService implements CameraService {
 		int newh = h;
 		
 		Camera.Parameters p = camera.getParameters();
+		if (p == null) {
+			return null;
+		}
 		List<android.hardware.Camera.Size> sizes = p.getSupportedPreviewSizes();
+		if (sizes == null) {
+			return null;
+		}
 		Iterator<android.hardware.Camera.Size> iter = sizes.iterator();
+		if (iter == null) {
+			return null;
+		}
 		// find closest preview size
 		float min_r = -1;
 		int minW = 0;
@@ -92,6 +115,9 @@ class CameraNewService implements CameraService {
 		if (min_r >= 0) {
 			neww = minW;
 			newh = minH;
+		}
+		else {
+			return null;
 		}
 		return new Size(neww, newh);
 	}
