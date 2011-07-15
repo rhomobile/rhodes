@@ -489,6 +489,15 @@ static int curl_trace(CURL *curl, curl_infotype type, char *data, size_t size, v
 curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const String& strUrl, const String& strBody,
                              IRhoSession* pSession, Hashtable<String,String>* pHeaders)
 {
+    if (method != NULL) {
+        mStrMethod = method;
+    }
+    else {
+        mStrMethod = "NULL";
+    }
+    mStrUrl = strUrl;
+    mStrBody = strBody;
+    
     curl_easy_setopt(m_curl, CURLOPT_BUFFERSIZE, CURL_MAX_WRITE_SIZE-1);
 
     if (strcasecmp(method, "GET") == 0)
@@ -614,17 +623,20 @@ void CURLNetRequest::CURLHolder::deactivate()
 CURLcode CURLNetRequest::CURLHolder::perform()
 {
     activate();
+    RAWLOG_INFO3("   Activate CURLNetRequest: METHOD = [%s] URL = [%s] BODY = [%s]", mStrMethod.c_str(), mStrUrl.c_str(), mStrBody.c_str());
     
     int const CHUNK = 1;
     
     long noactivity = 0;
     
     CURLcode result;
-    for(;;) {
-        {
+    for(;;)
+    {
         common::CMutexLock guard(m_lock);
         if (m_active <= 0) {
-            return CURLE_COULDNT_CONNECT;   
+            RAWLOG_INFO("CURLNetRequest: request was canceled from another thread !");
+            RAWLOG_INFO3("   CURLNetRequest: METHOD = [%s] URL = [%s] BODY = [%s]", mStrMethod.c_str(), mStrUrl.c_str(), mStrBody.c_str());
+           return CURLE_COULDNT_CONNECT;   
         }
     
         int running;
@@ -675,15 +687,20 @@ CURLcode CURLNetRequest::CURLHolder::perform()
             result = msg->data.result;
         if (result == CURLE_OK && noactivity >= timeout)
             result = CURLE_OPERATION_TIMEDOUT;
-        if (result == CURLE_OK || result == CURLE_PARTIAL_FILE)
+        if (result == CURLE_OK || result == CURLE_PARTIAL_FILE) {
             RAWTRACE("Operation completed successfully");
-        else
+        }
+        else {
             RAWLOG_ERROR2("Operation finished with error %d: %s", (int)result, curl_easy_strerror(result));
+            RAWLOG_ERROR3("  CURLNetRequest: METHOD = [%s] URL = [%s] BODY = [%s]", mStrMethod.c_str(), mStrUrl.c_str(), mStrBody.c_str());
+        }
         break;
         }
     }
 
+    RAWLOG_INFO3("Deactivate CURLNetRequest: METHOD = [%s] URL = [%s] BODY = [%s]", mStrMethod.c_str(), mStrUrl.c_str(), mStrBody.c_str());
     deactivate();
+    RAWLOG_INFO("     Deactivation is DONE");
     return result;
 }
 
