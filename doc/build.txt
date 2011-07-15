@@ -74,7 +74,7 @@ To build for iPhone/iPad using you will need the following software installed:
 
 If you wish to run your Rhodes application on an iOS device, you need to build and run it using an Xcode project.
 
-Tell Rhodes where to build from your Rhodes application.
+Tell Rhodes to build from your Rhodes application.
 
 	:::term
 	$ rake switch_app
@@ -114,7 +114,7 @@ Plug in your iOS device. In Xcode, under Scheme, select iOS device under rhorunn
 
 For more information on running on your iOS device from Xcode, go to the [Apple developer site](http://developer.apple.com/), go to the iOS Developer Library, and search on "managing devices", or "run applications on a device," or similar.
 
-You can edit your Rhodes code for your Rhodes application in a text editor, save your changes, and then rebuild and run your project from Xcode.
+You can edit your Rhodes code for your Rhodes application in a text editor, save your changes, do a Clean in Xcode so that your changes will register in Xcode, and then rebuild and run your project from Xcode.
 
 The resulting application package (*.app) is located in your Rhodes source code folder under /platform/iphone/build/, in a folder named like [Debug/Release]-[iphoneos/iphonesimulator]/rhorunner.app.
 
@@ -253,7 +253,7 @@ In case if you are planning to work with native geo mapping (MapView interface),
 If you are using Eclipse (Optional) please follow [these instructions](http://source.android.com/source/using-eclipse.html) on how to increase Java memory space to use Android.
 
 
-Please check you applications and change the way how you include css files into html pages.
+Please check your applications and change how you include css files into html pages.
 
 For example, you will need to replace 
 
