@@ -9,7 +9,7 @@
 #import "LogViewController.h"
 #import "logging/RhoLogConf.h"
 
-extern void rho_conf_send_log(const char* callback_url);
+extern int rho_conf_send_log(const char*);
 
 @implementation LogViewController
 
