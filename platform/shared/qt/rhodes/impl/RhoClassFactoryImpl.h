@@ -4,7 +4,11 @@
 #include "common/RhoDefs.h"
 #include "common/IRhoClassFactory.h"
 #ifdef OS_WINDOWS
+#ifdef RHO_SYMBIAN
 #include "rho/common/RhoThreadImpl.h"
+#else // RHO_SYMBIAN
+#include "RhoThreadImpl.h"
+#endif // RHO_SYMBIAN
 #include "rho/net/NetRequestImpl.h"
 #define CNETREQUESTIMPL new net::CNetRequestImpl()
 #define CRHOTHREADIMPL new CRhoThreadImpl()

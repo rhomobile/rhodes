@@ -36,12 +36,9 @@ win32 {
   OBJECTS_DIR = ../../../win32/bin/RhoSimulator/tmp
   RCC_DIR =  ../../../win32/bin/RhoSimulator/resources
   HEADERS += ../../../wm/rhodes/rho/net/NetRequestImpl.h\
-../../../wm/rhodes/rho/common/RhoThreadImpl.h\
-../../../wm/rhodes/stdafx.h
-  SOURCES += ../../../wm/rhodes/rho/net/NetRequestImpl.cpp\
-../../../wm/rhodes/rho/common/RhoThreadImpl.cpp
-  INCLUDEPATH += ../../../wm/rhodes\
-../../wtl80/include
+impl/RhoThreadImpl.h
+  SOURCES += ../../../wm/rhodes/rho/net/NetRequestImpl.cpp
+  INCLUDEPATH += ../../../wm/rhodes
   DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS _UNICODE UNICODE QT_LARGEFILE_SUPPORT QT_NO_DEBUG QT_CORE_LIB QT_GUI_LIB QT_WEBKIT_LIB _CRT_SECURE_NO_WARNINGS _CRT_NON_CONFORMING_SWPRINTFS
   LIBS += ../../../win32/bin/rubylib/rubylib.lib\
 ../../../win32/bin/rholib/rholib.lib\
@@ -99,7 +96,7 @@ impl/RhoClassFactoryImpl.cpp\
 impl/RhodesImpl.cpp\
 impl/RhoFileImpl.cpp\
 impl/RhoNativeViewManagerImpl.cpp\
-impl/RhoThreadImplQt.cpp\
+impl/RhoThreadImpl.cpp\
 impl/RingtoneManagerImpl.cpp\
 impl/SignatureImpl.cpp\
 impl/SystemImpl.cpp\
