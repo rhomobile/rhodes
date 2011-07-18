@@ -395,7 +395,7 @@ void CSyncSource::makePushBody_Ver3(String& strBody, const String& strUpdateType
         String value = res.getStringByIdx(2);
         String attribType = res.getStringByIdx(3);
 
-        if ( m_hashIgnorePushObjects.containsKey(strObject) )
+        if ( m_hashIgnorePushObjects.containsKey(strObject) || strObject.length() == 0 )
             continue;
 
         if ( attribType.compare("blob.file") == 0 && value.length() > 0 )
