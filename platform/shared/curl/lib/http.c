@@ -108,6 +108,10 @@
 /* Default proxy timeout in milliseconds */
 #define PROXY_TIMEOUT (3600*1000)
 
+#include <logging/RhoLog.h>
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "Curl"
+
 /*
  * Forward declarations.
  */
@@ -1754,6 +1758,8 @@ CURLcode Curl_http_connect(struct connectdata *conn, bool *done)
 {
   struct SessionHandle *data;
   CURLcode result;
+
+  RAWTRACE1("Curl_http_connect, host %s", conn->host.name);
 
   data=conn->data;
 

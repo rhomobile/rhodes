@@ -19,9 +19,14 @@
  ============================================================================
  */
 
-#include <android/native_activity.h>
+//#include <android/native_activity.h>
 
 #include "rhodes/JNIRhodes.h"
+
+#include "logging/RhoLogConf.h"
+
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "RhoSyncUtil"
 
 RHO_GLOBAL void delete_files_in_folder(const char *szFolderPath)
 {
@@ -45,5 +50,6 @@ RHO_GLOBAL void rho_free_callbackdata(void* pData)
 
 RHO_GLOBAL int rho_net_ping_network(const char* szHost)
 {
+    RAWTRACE1("Ping host: %s", szHost);
     return 1;
 }
