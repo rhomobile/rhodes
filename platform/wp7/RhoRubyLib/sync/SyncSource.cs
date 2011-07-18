@@ -460,7 +460,7 @@ namespace rho.sync
 	            String value = res.getStringByIdx(2);
 	            String attribType = res.getStringByIdx(3);
 
-                if ( m_hashIgnorePushObjects.containsKey(strObject) )
+                if (m_hashIgnorePushObjects.containsKey(strObject) || strObject.length() == 0)
     	        	continue;
 
                 if (attribType.compareTo("blob.file") == 0 && value.length() > 0)
