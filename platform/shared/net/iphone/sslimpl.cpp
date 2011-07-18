@@ -100,11 +100,13 @@ void SSLImpl::shutdown(void *storage)
     if (data->readStream) {
         CFReadStreamRef readStream = (CFReadStreamRef)data->readStream;
         CFReadStreamClose(readStream);
+        CFRelease(readStream);
         data->readStream = NULL;
     }
     if (data->writeStream) {
         CFWriteStreamRef writeStream = (CFWriteStreamRef)data->writeStream;
         CFWriteStreamClose(writeStream);
+        CFRelease(writeStream);
         data->writeStream = NULL;
     }
 }
