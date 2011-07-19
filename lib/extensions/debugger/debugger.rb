@@ -70,7 +70,7 @@ def get_variables(scope)
         begin
           result = eval(v,$_binding).inspect
         rescue Exception => exc
-          $_s.write("get var exception\n")
+          #$_s.write("get var exception\n")
           result = "#{$!}".inspect
         end
         $_s.write("V:#{vartype}:#{v}:#{result}\n")
@@ -241,6 +241,7 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
 
             if app_type.eql? "rhodes"
               if System::get_property('main_window_closed')
+                 $_s.write("QUIT\n") if (not $_s.nil?)
                  $_wait = false
               end
             end
