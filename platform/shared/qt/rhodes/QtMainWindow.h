@@ -84,6 +84,8 @@ private:
     QtWebInspector* webInspectorWindow;
     QMessageBox *m_alertDialog;
     //TODO: CSyncStatusDlg *m_SyncStatusDlg;
+    int m_LogicalDpiX;
+    int m_LogicalDpiY;
 
 private slots:
     void on_webView_urlChanged(QUrl );
@@ -92,9 +94,10 @@ private slots:
     void on_webView_linkClicked(const QUrl&);
     void on_actionBack_triggered();
     void on_tabBar_currentChanged(int index);
-    void on_toolbarAction_triggered(bool);
-    void on_menuAction_triggered(bool);
     void on_menuMain_aboutToShow();
+private slots:
+    void toolbarActionEvent(bool);
+    void menuActionEvent(bool);
 public slots:
     void exitCommand(void);
     void navigateBackCommand(void);

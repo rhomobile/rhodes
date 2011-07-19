@@ -38,7 +38,8 @@ win32 {
   HEADERS += ../../../wm/rhodes/rho/net/NetRequestImpl.h\
 impl/RhoThreadImpl.h
   SOURCES += ../../../wm/rhodes/rho/net/NetRequestImpl.cpp
-  INCLUDEPATH += ../../../wm/rhodes
+  INCLUDEPATH += ../../../wm/rhodes\
+../../wtl80/include
   DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS _UNICODE UNICODE QT_LARGEFILE_SUPPORT QT_NO_DEBUG QT_CORE_LIB QT_GUI_LIB QT_WEBKIT_LIB _CRT_SECURE_NO_WARNINGS _CRT_NON_CONFORMING_SWPRINTFS
   LIBS += ../../../win32/bin/rubylib/rubylib.lib\
 ../../../win32/bin/rholib/rholib.lib\
