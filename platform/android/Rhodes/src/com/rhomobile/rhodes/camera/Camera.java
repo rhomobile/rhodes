@@ -209,7 +209,10 @@ public class Camera {
 		int maxH = 10000;
 		
 		CameraService.Size s = getCameraService().getClosestPictureSize(camera, maxW, maxH);
-		
+		if (s == null) {
+			int[] ress = {0, 0};
+			return ress;
+		}
 		camera.release();
 		int[] res = {s.width, s.height};
 		return res;

@@ -395,7 +395,7 @@ void CSyncSource::makePushBody_Ver3(String& strBody, const String& strUpdateType
         String value = res.getStringByIdx(2);
         String attribType = res.getStringByIdx(3);
 
-        if ( m_hashIgnorePushObjects.containsKey(strObject) )
+        if ( m_hashIgnorePushObjects.containsKey(strObject) || strObject.length() == 0 )
             continue;
 
         if ( attribType.compare("blob.file") == 0 && value.length() > 0 )
@@ -603,6 +603,13 @@ boolean CSyncSource::processServerErrors(CJSONEntry& oCmds)
 void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
 {
     PROF_START("Data1");
+
+    if ( oJsonArr.isEnd() )
+    {
+        getSync().stopSync();
+        m_nErrCode = RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE;
+        return;
+    }
 
     int nVersion = 0;
     if ( !oJsonArr.isEnd() && oJsonArr.getCurItem().hasName("version") )

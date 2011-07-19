@@ -82,6 +82,11 @@
 #define USE_ALARM_TIMEOUT
 #endif
 
+#include <logging/RhoLog.h>
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "Curl"
+
+
 /*
  * hostip.c explained
  * ==================
@@ -421,6 +426,8 @@ int Curl_resolv(struct connectdata *conn,
   /* If we can't create the entry id, fail */
   if(!entry_id)
     return rc;
+
+  RAWTRACE1("Curl_resolv host: cache_id: %s", entry_id);
 
   entry_len = strlen(entry_id);
 
