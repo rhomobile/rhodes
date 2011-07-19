@@ -40,7 +40,9 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     webInspectorWindow(new QtWebInspector()),
     cb(NULL),
     cur_tbrp(0),
-    m_alertDialog(0)
+    m_alertDialog(0),
+    m_LogicalDpiX(0),
+    m_LogicalDpiY(0)
     //TODO: m_SyncStatusDlg
 {
     ui->setupUi(this);
@@ -107,8 +109,10 @@ void QtMainWindow::closeEvent(QCloseEvent *ce)
 
 void QtMainWindow::resizeEvent(QResizeEvent *event)
 {
+    m_LogicalDpiX = this->logicalDpiY();
+    m_LogicalDpiY = this->logicalDpiY();
     if (cb)
-        cb->updateSizeProperties(event->size().width(), event->size().height()); // ui->webView
+        cb->updateSizeProperties(event->size().width(), event->size().height());
 }
 
 bool QtMainWindow::isStarted(void)
@@ -246,12 +250,12 @@ void QtMainWindow::Refresh(int index)
 
 int QtMainWindow::getLogicalDpiX()
 {
-    return this->logicalDpiX();
+    return m_LogicalDpiX;
 }
 
 int QtMainWindow::getLogicalDpiY()
 {
-    return this->logicalDpiY();
+    return m_LogicalDpiY;
 }
 
 
@@ -479,7 +483,7 @@ void QtMainWindow::toolbarAddAction(const QString & text)
     ui->toolBar->addAction(text);
 }
 
-void QtMainWindow::on_toolbarAction_triggered(bool checked)
+void QtMainWindow::toolbarActionEvent(bool checked)
 {
     QObject* sender = QObject::sender();
     QAction* action;
@@ -496,7 +500,7 @@ void QtMainWindow::toolbarAddAction(const QIcon & icon, const QString & text, co
 {
     QAction* qAction = new QAction(icon, text, ui->toolBar);
     qAction->setData(QVariant(action));
-    QObject::connect(qAction, SIGNAL(triggered(bool)), this, SLOT(on_toolbarAction_triggered(bool)) );
+    QObject::connect(qAction, SIGNAL(triggered(bool)), this, SLOT(toolbarActionEvent(bool)) );
     if (rightAlign)
         ui->toolBarRight->insertAction( (ui->toolBarRight->actions().size() > 0 ? ui->toolBarRight->actions().last() : 0), qAction);
     else
@@ -530,7 +534,7 @@ void QtMainWindow::menuAddAction(const QString & text, int item)
 {
     QAction* qAction = new QAction(text, ui->toolBar);
     qAction->setData(QVariant(item));
-    QObject::connect(qAction, SIGNAL(triggered(bool)), this, SLOT(on_menuAction_triggered(bool)) );
+    QObject::connect(qAction, SIGNAL(triggered(bool)), this, SLOT(menuActionEvent(bool)) );
     ui->menuMain->addAction(qAction);
 }
 
@@ -544,7 +548,7 @@ void QtMainWindow::menuAddSeparator()
     ui->menuMain->addSeparator();
 }
 
-void QtMainWindow::on_menuAction_triggered(bool checked)
+void QtMainWindow::menuActionEvent(bool checked)
 {
     QObject* sender = QObject::sender();
     QAction* action;

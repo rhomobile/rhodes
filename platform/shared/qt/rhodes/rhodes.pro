@@ -5,6 +5,10 @@ TEMPLATE = app
 
 CONFIG += warn_on
 
+INCLUDEPATH += ../..\
+../../ruby\
+../../ruby/include
+
 macx {
   ICON = resources/rho.icns
   DESTDIR = ../../../osx/bin/RhoSimulator
@@ -31,6 +35,11 @@ win32 {
   UI_DIR = ../../../win32/bin/RhoSimulator/generated_files
   OBJECTS_DIR = ../../../win32/bin/RhoSimulator/tmp
   RCC_DIR =  ../../../win32/bin/RhoSimulator/resources
+  HEADERS += ../../../wm/rhodes/rho/net/NetRequestImpl.h\
+impl/RhoThreadImpl.h
+  SOURCES += ../../../wm/rhodes/rho/net/NetRequestImpl.cpp
+  INCLUDEPATH += ../../../wm/rhodes\
+../../wtl80/include
   DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS _UNICODE UNICODE QT_LARGEFILE_SUPPORT QT_NO_DEBUG QT_CORE_LIB QT_GUI_LIB QT_WEBKIT_LIB _CRT_SECURE_NO_WARNINGS _CRT_NON_CONFORMING_SWPRINTFS
   LIBS += ../../../win32/bin/rubylib/rubylib.lib\
 ../../../win32/bin/rholib/rholib.lib\
@@ -56,11 +65,7 @@ win32 {
   QMAKE_CXXFLAGS_RELEASE += /O2
 }
 
-INCLUDEPATH += ../..\
-../../ruby\
-../../ruby/include
-
-HEADERS +=ExternalWebView.h\
+HEADERS += ExternalWebView.h\
 MainWindowCallback.h\
 QtMainWindow.h\
 QtNativeTabBar.h\
