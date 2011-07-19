@@ -142,10 +142,18 @@ int main(int argc, char *argv[])
 
 #ifdef RHODES_EMULATOR
     if (RHOSIMCONF().getString("debug_host").length() > 0)
+#ifdef OS_WINDOWS
+        SetEnvironmentVariableA("RHOHOST", RHOSIMCONF().getString("debug_host").c_str() );
+#else // OS_WINDOWS
         setenv("RHOHOST", RHOSIMCONF().getString("debug_host").c_str(), 1 );
+#endif // OS_WINDOWS
     if (RHOSIMCONF().getString("debug_port").length() > 0)
+#ifdef OS_WINDOWS
+        SetEnvironmentVariableA("rho_debug_port", RHOSIMCONF().getString("debug_port").c_str() );
+#else // RHODES_EMULATOR
         setenv("rho_debug_port", RHOSIMCONF().getString("debug_port").c_str(), 1 );
-#endif
+#endif // OS_WINDOWS
+#endif // RHODES_EMULATOR
     rho::common::CRhodesApp::Create(m_strRootPath);
 
     // Create the main application window

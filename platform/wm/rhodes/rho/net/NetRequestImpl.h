@@ -3,7 +3,7 @@
 #include <wininet.h>
 #include "net/INetRequest.h"
 #include "logging/RhoLog.h"
-#if defined(RHO_SYMBIAN)
+#if defined(RHO_SYMBIAN) || defined(RHODES_EMULATOR)
 #include <atlstr.h>
 #endif
 

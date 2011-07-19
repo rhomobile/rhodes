@@ -210,8 +210,12 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 			int newH = (h >> 3) << 3;
 
 			CameraService.Size s = com.rhomobile.rhodes.camera.Camera.getCameraService().getClosestPreviewSize(camera, newW, newH);
-			
-			p.setPreviewSize(s.width, s.height);
+			if (s == null) {
+				p.setPreviewSize(newW, newH);
+			}
+			else {
+				p.setPreviewSize(s.width, s.height);
+			}
 			if (mSettings != null) {
 	            if ((mSettings.getWidth() > 0) && (mSettings.getHeight() > 0)) {
 	                p.setPictureSize(mSettings.getWidth(), mSettings.getHeight());
@@ -309,10 +313,12 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 
     			CameraService.Size s = com.rhomobile.rhodes.camera.Camera.getCameraService().getClosestPictureSize(camera, newW, newH);
  
-    			if ((s.width >= 0) && (s.height >= 0)) {
-    				newW = s.width;
-    				newH = s.height;
-    				parameters.setPictureSize(newW, newH);
+    			if (s != null) {
+    				if ((s.width >= 0) && (s.height >= 0)) {
+    					newW = s.width;
+    					newH = s.height;
+    					parameters.setPictureSize(newW, newH);
+    				}
     			}
             	imgW = newW;
             	imgH = newH;
@@ -320,8 +326,14 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
             else {
             	// detect camera resolution
     			CameraService.Size s = com.rhomobile.rhodes.camera.Camera.getCameraService().getClosestPictureSize(camera, 10000, 10000);
-    			imgW = s.width;
-    			imgH = s.height;
+    			if (s != null) {
+    				imgW = s.width;
+    				imgH = s.height;
+    			}
+    			else {
+    				imgW = 0;
+    				imgH = 0;
+    			}
             }
             if (mSettings.getColorModel() == mSettings.CAMERA_COLOR_MODEL_GRAYSCALE) {
             	parameters.setColorEffect(Camera.Parameters.EFFECT_MONO);

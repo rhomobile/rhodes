@@ -12,11 +12,11 @@ class CameraOldService implements CameraService {
 	}
 	
 	public Size getClosestPictureSize(android.hardware.Camera camera, int w, int h) {
-		return new Size(-1, -1);
+		return null;
 	}
 	
 	public Size getClosestPreviewSize(android.hardware.Camera camera, int w, int h) {
-		return new Size(w,h);
+		return null;
 	}
 	
 	
