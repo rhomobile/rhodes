@@ -24,7 +24,8 @@ class NativeTabbar
   end
 
   def self.get_current_tab
-      if System::get_property('platform') == 'APPLE' or System::get_property('platform') == 'ANDROID'
+      webview = System::get_property('webview_framework')
+      if System::get_property('platform') == 'APPLE' or System::get_property('platform') == 'ANDROID' or (!webview.nil? and webview.start_with?('WEBKIT'))
           return NativeBar.native_tabbar_get_current_tab
       else 
           return 0
