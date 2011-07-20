@@ -19,6 +19,7 @@
 package com.rho.sync;
 
 import com.rho.RhoClassFactory;
+import com.rho.RhoConf;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoEmptyProfiler;
 import com.rho.RhoLogger;
@@ -44,7 +45,9 @@ public class SyncSource
 	
 	private static final RhoProfiler PROF = RhoProfiler.RHO_STRIP_PROFILER ? new RhoEmptyProfiler() : 
 		new RhoProfiler();
-
+	
+	RhoConf RHOCONF(){ return RhoConf.getInstance(); }
+	
 	static class CAttrValue
 	{
 		String m_strAttrib = "";
@@ -407,7 +410,8 @@ public class SyncSource
 	    if ( bSend && getSync().isContinueSync() )
 	    {
 	        LOG.INFO( "Push client changes to server. Source: " + getName() + "Size :" + strBody.length() );
-	        LOG.TRACE("Push body: " + strBody);		
+	        if ( !RHOCONF().getBool("log_skip_post") )	        
+	        	LOG.TRACE("Push body: " + strBody);		
 
 	        try{
 		        if ( m_arMultipartItems.size() > 0 )
