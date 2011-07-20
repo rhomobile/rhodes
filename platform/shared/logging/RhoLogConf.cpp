@@ -4,6 +4,8 @@
 #include "common/RhoFile.h"
 #include "common/RhoFilePath.h"
 #include "common/RhoConf.h"
+#include "common/Tokenizer.h"
+
 #ifndef RHO_NO_RUBY
 #include "ruby/ext/rho/rhoruby.h"
 #endif //RHO_NO_RUBY
@@ -88,7 +90,8 @@ void LogSettings::saveToFile(){
     RHOCONF().setString("ExcludeLogCategories", getDisabledCategories(), true );
 }
 
-void LogSettings::loadFromConf(rho::common::RhoSettings& oRhoConf){
+void LogSettings::loadFromConf(rho::common::RhoSettings& oRhoConf)
+{
     if ( oRhoConf.isExist( "MinSeverity" ) )
         setMinSeverity( oRhoConf.getInt("MinSeverity") );
     if ( oRhoConf.isExist( "LogToOutput") )
@@ -105,6 +108,8 @@ void LogSettings::loadFromConf(rho::common::RhoSettings& oRhoConf){
         setDisabledCategories( oRhoConf.getString("ExcludeLogCategories").c_str() );
 	if ( oRhoConf.isExist( "LogToSocket") )
 		setLogToSocket( oRhoConf.getBool("LogToSocket") );
+	if ( oRhoConf.isExist( "log_exclude_filter") )
+        setExcludeFilter( oRhoConf.getString("log_exclude_filter") );
 }
 
 void LogSettings::setLogFilePath(const char* szLogFilePath){ 
@@ -175,6 +180,24 @@ void LogSettings::setDisabledCategories( const char* szCatList ){
     	m_strDisabledCategories = szCatList;
     else
     	m_strDisabledCategories = "";
+}
+
+void LogSettings::setExcludeFilter( const String& strExcludeFilter )
+{
+    if ( strExcludeFilter.length() > 0 )
+    {
+        rho::common::CTokenizer oTokenizer( strExcludeFilter, "," );
+	    while (oTokenizer.hasMoreTokens()) 
+        {
+            String tok = rho::String_trim(oTokenizer.nextToken());
+		    if (tok.length() == 0)
+			    continue;
+
+            m_arExcludeAttribs.addElement( "\"" + tok + "\"=>\"" );
+        }    	
+    }
+    else
+    	m_arExcludeAttribs.removeAllElements();
 }
 
 }

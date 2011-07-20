@@ -526,7 +526,7 @@ void rhoRubyLogWithSeverity(int severity, VALUE category, VALUE str) {
     szStr = RSTRING_PTR(str);
     //Skip just newline string
     if ( strcmp(szStr,"\r\n") != 0 && strcmp(szStr,"\n") != 0 )
-        rhoPlainLog("",0,severity,catStr,RSTRING_PTR(str));
+        rhoPlainLog_Secure("",0,severity,catStr,RSTRING_PTR(str));
 
 }
 

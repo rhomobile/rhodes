@@ -389,7 +389,10 @@ int CURLNetRequest::getResponseCode(CURLcode err, char const *body, size_t bodys
             statusCode = 500;
 
         RAWTRACE1("RESPONSE----- (%d bytes)", bodysize);
-        RAWTRACE(body);
+        if ( !rho_conf_getBool("log_skip_post") )
+        {
+            RAWTRACE(body);
+        }
         RAWTRACE("END RESPONSE-----");
     }
 
@@ -585,7 +588,7 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
 CURLNetRequest::CURLHolder::CURLHolder()
     :m_active(0)
 {
-    m_bTraceCalls = rho_conf_getBool("net_trace");
+    m_bTraceCalls = rho_conf_getBool("net_trace") && !rho_conf_getBool("log_skip_post");
     timeout = rho_conf_getInt("net_timeout");
     if (timeout == 0)
         timeout = 30; // 30 seconds by default
