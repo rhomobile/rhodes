@@ -86,6 +86,14 @@ Turn on local http server traces, off by default
 
 	net_trace = 0
 
+Skip http package body from log(for security reasons), off by default
+
+	log_skip_post = 1
+
+Define exclude parameters log filter(for security reasons) - parameter names separated by comma, empty by default. 
+
+	log_exclude_filter = 'login, password'
+
 Timeout of network requests in seconds (30 by default)
 	
 	net_timeout = 60
