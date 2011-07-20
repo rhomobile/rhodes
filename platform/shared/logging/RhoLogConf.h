@@ -30,6 +30,7 @@ class LogSettings{
     bool        m_bLogPrefix;
 
     String      m_strEnabledCategories, m_strDisabledCategories;
+    Vector<String>     m_arExcludeAttribs;
 
     ILogSink*   m_pFileSink;
     ILogSink*   m_pOutputSink;
@@ -68,6 +69,9 @@ public:
     const String& getEnabledCategories(){ return m_strEnabledCategories; }
     const String& getDisabledCategories(){ return m_strDisabledCategories; }
     bool isCategoryEnabled(const LogCategory& cat)const;
+
+    void setExcludeFilter( const String& strExcludeFilter );
+    Vector<String>& getExcludeAttribs(){ return m_arExcludeAttribs; }
 
     void sinkLogMessage( String& strMsg );
 
