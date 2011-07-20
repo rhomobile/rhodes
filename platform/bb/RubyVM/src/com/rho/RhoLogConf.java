@@ -2,6 +2,7 @@ package com.rho;
 
 import java.io.IOException;
 import com.rho.file.SimpleFile;
+import java.util.Vector;
 
 public class RhoLogConf {
     int         m_nMinSeverity = 0;
@@ -14,7 +15,8 @@ public class RhoLogConf {
     boolean     m_bLogPrefix = false;
 
     String      m_strEnabledCategories = "", m_strDisabledCategories = "";
-
+    Vector/*<String>*/  m_arExcludeAttribs = new Vector(); 
+    
     IRhoLogSink   m_pFileSink = null;
     IRhoLogSink   m_pOutputSink = null;
 
@@ -55,6 +57,8 @@ public class RhoLogConf {
             setEnabledCategories( oRhoConf.getString("LogCategories") );
         if (oRhoConf.isExist( "ExcludeLogCategories") )
             setDisabledCategories( oRhoConf.getString("ExcludeLogCategories") );
+        if ( oRhoConf.isExist( "log_exclude_filter") )
+        	setExcludeFilter( oRhoConf.getString("log_exclude_filter") );        
     }
 	
     public int getMinSeverity(){ return m_nMinSeverity; }
@@ -108,6 +112,26 @@ public class RhoLogConf {
         return m_strEnabledCategories.equals("*") || m_strEnabledCategories.indexOf(cat) >= 0;
     }
 
+    Vector/*<String>&*/ getExcludeAttribs(){ return m_arExcludeAttribs; }    
+    
+    void setExcludeFilter( String strExcludeFilter )
+    {
+        if ( strExcludeFilter != null && strExcludeFilter.length() > 0 )
+        {
+            com.rho.Tokenizer oTokenizer = new com.rho.Tokenizer( strExcludeFilter, "," );
+    	    while (oTokenizer.hasMoreTokens()) 
+            {
+                String tok = oTokenizer.nextToken().trim();
+    		    if (tok.length() == 0)
+    			    continue;
+
+                m_arExcludeAttribs.addElement( "\"" + tok + "\"=>\"" );
+            }    	
+        }
+        else
+        	m_arExcludeAttribs.removeAllElements();
+    }
+    
     void sinkLogMessage( String strMsg, boolean bOutputOnly ){
         if ( !bOutputOnly && isLogToFile() )
             m_pFileSink.writeLogMessage(strMsg);

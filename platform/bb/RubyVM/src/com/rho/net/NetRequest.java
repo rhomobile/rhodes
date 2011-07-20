@@ -25,6 +25,8 @@ public class NetRequest
 {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("Net");
+	RhoConf RHOCONF(){ return RhoConf.getInstance(); }
+	
 	private final int MAX_RECONNECT_COUNT = 3;
 	
 	boolean m_bCancel = false;
@@ -217,7 +219,8 @@ public class NetRequest
 					//if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
 					{
 						strRespBody = readFully(is, getResponseEncoding());
-						LOG.TRACE("Response body: " + strRespBody );
+				        if ( !RHOCONF().getBool("log_skip_post") )	        
+				        	LOG.TRACE("Response body: " + strRespBody );
 					}
 				}else
 				{
@@ -466,7 +469,9 @@ public class NetRequest
 					
 					//if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
 						strRespBody = readFully(is, getResponseEncoding());
-						LOG.TRACE("Response body: " + strRespBody );
+						
+				        if ( !RHOCONF().getBool("log_skip_post") )	        
+				        	LOG.TRACE("Response body: " + strRespBody );
 					
 				}else
 				{
