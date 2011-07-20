@@ -186,6 +186,9 @@ void rhoPlainLogArgW(const char* file, int line, int severity, const char* szCat
 
 int rhoPlainLog(const char* file, int line, LogSeverity severity, const char* szCategory,
                   const char* msg );
+int rhoPlainLog_Secure(const char* file, int line, LogSeverity severity, const char* szCategory,
+                  const char* msg );
+
 int rhoPlainLogData(const char* file, int line, LogSeverity severity, const char* szCategory,
                     const void* data, int len );
 

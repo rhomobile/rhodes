@@ -97,7 +97,12 @@ module Rho
             params.merge!(parse_query_parameters(req['request-body']))
           end	
         end
-        puts "Params: " + params.to_s unless params.empty?
+        
+        skip_params = Rho::RhoConfig.log_skip_post
+        if skip_params.to_s != 'true' && skip_params.to_s != '1'
+            puts "Params: " + params.to_s unless params.empty?
+        end
+            
         params
       end
     end

@@ -9,6 +9,7 @@
 #include "common/RhoFilePath.h"
 #include "common/RhoFile.h"
 #include "common/RhoAppAdapter.h"
+#include "common/RhoConf.h"
 #include "json/JSONIterator.h"
 #include "statistic/RhoProfiler.h"
 #include "net/URI.h"
@@ -304,7 +305,8 @@ void CSyncSource::doSyncClientChanges()
     if ( bSend && getSync().isContinueSync())
     {
         LOG(INFO) + "Push client changes to server. Source: " + getName() + "Size :" + strBody.length();
-        LOG(TRACE) + "Push body: " + strBody;		
+        if ( !RHOCONF().getBool("log_skip_post") )
+            LOG(TRACE) + "Push body: " + strBody;		
 
         if ( m_arMultipartItems.size() > 0 )
         {
