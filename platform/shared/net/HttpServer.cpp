@@ -510,7 +510,8 @@ bool CHttpServer::receive_request(ByteVector &request)
     
     if (!r.empty()) {
         request.insert(request.end(), r.begin(), r.end());
-        RAWTRACE1("Received request:\n%s", &request[0]);
+        if ( !rho_conf_getBool("log_skip_post") )
+            RAWTRACE1("Received request:\n%s", &request[0]);
     }
     return true;
 }
@@ -567,8 +568,9 @@ bool CHttpServer::send_response_impl(String const &data, bool continuation)
     //RAWTRACE2("Sent response:\n%s%s", dbg_response.c_str(), response.size() > 100 ? "..." : "   ");
     if (continuation)
         RAWTRACE1("Sent response body: %d bytes", data.size());
-    else
+    else if ( !rho_conf_getBool("log_skip_post") )
         RAWTRACE1("Sent response (only headers displayed):\n%s", data.c_str());
+
     return true;
 }
 
