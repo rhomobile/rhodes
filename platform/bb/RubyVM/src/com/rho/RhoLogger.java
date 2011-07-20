@@ -3,6 +3,7 @@ package com.rho;
 import java.util.Calendar;
 
 import net.rim.device.api.system.EventLogger;
+import java.util.Vector;
 
 public class RhoLogger {
 	public static final boolean RHO_STRIP_LOG = false;
@@ -194,6 +195,56 @@ public class RhoLogger {
 	    	processFatalError();
 	}
 
+	private void logMessage_secure( int severity, String strMsg )
+	{
+	    Vector/*<String>&*/ arSecure = getLogConf().getExcludeAttribs();
+	    if ( arSecure.size() == 0 )
+	    {
+	    	logMessage(severity, strMsg, null, false );
+	    }else
+	    {
+	        StringBuffer strRes = new StringBuffer(strMsg.length());
+	        for ( int i = 0; i < strMsg.length(); i++ )
+	        {
+	        	boolean bFound = false;
+	            for ( int j = 0; j < arSecure.size(); j++ )
+	            {
+	                String strExclude = (String)arSecure.elementAt(j);
+	                if ( strMsg.toString().startsWith( strExclude, i) )
+	                {	                
+	                	strRes.append(strExclude);
+	                	
+	                    boolean bSlash = false;
+	                    int nRemoveStart = i + strExclude.length(); 
+	                    for ( int nFill = nRemoveStart; nFill < strMsg.length(); nFill++ )
+	                    {
+	                        if ( strMsg.charAt(nFill) == '\\' )
+	                            bSlash = true;
+	                        else
+	                        {
+	                            if ( strMsg.charAt(nFill) == '"' && !bSlash )
+	                            {
+	                                i = nFill;
+	                                bFound = true;
+	                                break;
+	                            }
+
+	                            bSlash = false;
+	                        }
+	                    }
+	                }
+	                
+	                if ( bFound )
+	                    break;
+	            }
+	            
+	            strRes.append(strMsg.charAt(i));
+	        }
+	
+	        logMessage(severity, strRes.toString(), null, false );
+	    }
+	}
+	
 	static boolean isSimulator()
 	{
 		return m_sysInfo.isSimulator();
@@ -216,6 +267,11 @@ public class RhoLogger {
 	public void INFO(String message) {
 		logMessage( L_INFO, message);
 	}
+
+	public void INFO_SECURE(String message) 
+	{
+		logMessage_secure( L_INFO, message);
+	}
 	
 	public void INFO_OUT(String message) {
 		logMessage( L_INFO, message, null, true);
@@ -234,6 +290,10 @@ public class RhoLogger {
 	public void ERROR(String message) {
 		logMessage( L_ERROR, message);
 	}
+	public void ERROR_SECURE(String message) {
+		logMessage_secure( L_ERROR, message);
+	}
+	
 	public void ERROR(Throwable e) {
 		logMessage( L_ERROR, "", e );
 	}

@@ -24,6 +24,7 @@ public class RhoConnection implements IHttpConnection {
 
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RhoConnection");
+	RhoConf RHOCONF(){ return RhoConf.getInstance(); }
 	
 	/** Request URI **/
 	URI uri, uri_orig;
@@ -773,8 +774,10 @@ public class RhoConnection implements IHttpConnection {
 		reqHash.setProperty("request-uri", uri.getPath());
 		reqHash.setProperty("request-query", uri.getQueryString());
 		
-		if ( postData != null && postData.size() > 0 ){
-			LOG.TRACE(postData.toString());
+		if ( postData != null && postData.size() > 0 )
+		{
+	        if ( !RHOCONF().getBool("log_skip_post") )	        
+	        	LOG.TRACE(postData.toString());
 			reqHash.setProperty("request-body", postData.toString());
 		}
 		
@@ -842,8 +845,9 @@ public class RhoConnection implements IHttpConnection {
 			
 			if ( resBody != null && resBody != RubyConstant.QNIL )
 				strBody = resBody.toRubyString().toString();
-				
-			LOG.TRACE(strBody);
+			
+	        if ( !RHOCONF().getBool("log_skip_post") )	        
+	        	LOG.TRACE(strBody);
 			
 			try{
 				responseData = new ByteArrayInputStream(strBody.getBytes("UTF-8"));

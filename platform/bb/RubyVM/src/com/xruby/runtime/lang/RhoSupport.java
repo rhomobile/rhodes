@@ -77,7 +77,7 @@ public class RhoSupport {
 	    public RubyValue rhoLog_Write(RubyValue arg) 
 	    {
 	        String msg = arg.toStr();
-	        APPLOG.INFO(msg);
+	        APPLOG.INFO_SECURE(msg);
 	        return RubyConstant.QNIL;
 	    }
 		
@@ -89,7 +89,7 @@ public class RhoSupport {
 			RhoLogger logger = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 				new RhoLogger(cat);
 	        
-			logger.INFO(msg);
+			logger.INFO_SECURE(msg);
 	        return RubyConstant.QNIL;
 	    }
 	    
@@ -100,7 +100,7 @@ public class RhoSupport {
 			RhoLogger logger = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 				new RhoLogger(cat);
 	        
-			logger.ERROR(msg);
+			logger.ERROR_SECURE(msg);
 	        return RubyConstant.QNIL;
 	    }
 	    
