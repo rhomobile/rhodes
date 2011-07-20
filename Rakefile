@@ -1,7 +1,6 @@
 require 'find'
 require 'erb'
-require 'rake/rdoctask'
-#require 'rdoc/task'
+require 'rdoc/task'
 require 'digest/sha2'
 require 'rexml/document'
 
