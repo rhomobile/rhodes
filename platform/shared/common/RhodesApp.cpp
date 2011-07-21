@@ -845,7 +845,8 @@ const String& CRhodesApp::getCurrentUrl(int index)
 const String& CRhodesApp::getAppBackUrl()
 {
     int index = rho_webview_active_tab();
-
+    if (index < 0)
+        index = 0;
     if ( index < m_arAppBackUrl.size() )
         return m_arAppBackUrl[index]; 
 
@@ -855,6 +856,8 @@ const String& CRhodesApp::getAppBackUrl()
 void CRhodesApp::setAppBackUrl(const String& url)
 {
     int nIndex = rho_webview_active_tab();
+    if (nIndex < 0)
+        nIndex = 0;
     int nToAdd = nIndex - m_arAppBackUrl.size();
     for ( int i = 0; i <= nToAdd; i++ )
     {
