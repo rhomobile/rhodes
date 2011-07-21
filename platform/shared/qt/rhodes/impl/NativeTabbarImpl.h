@@ -46,8 +46,8 @@ public:
         int m_index;
                 char* m_badge;
     public:
-        CBadgeTask(int idx, char* badge) : m_index(idx), m_badge(badge) { }
-        ~CBadgeTask(){ }
+        CBadgeTask(int idx, char* badge) : m_index(idx), m_badge(strdup(badge)) { }
+        ~CBadgeTask(){ free(m_badge); }
         virtual void runObject(){
             CNativeTabbar::getInstance().tabbarBadge(m_index, m_badge);
         }
