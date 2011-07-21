@@ -914,6 +914,12 @@ static BOOL makeHiddenUntilLoadContent = YES;
     self.navbar = nil;
 }
 
+
+-(void)setTabBarBadge:(NSString*)badge_text tab_index:(int)tab_index {
+    // nothing
+}
+
+
 // UIWebViewDelegate imlementation
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
