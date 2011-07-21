@@ -5,6 +5,9 @@ TEMPLATE = lib
 
 CONFIG += staticlib warn_on
 
+INCLUDEPATH += ../..\
+../../json
+
 macx {
   DESTDIR = ../../../osx/bin/syncengine
   OBJECTS_DIR = ../../../osx/bin/syncengine/tmp
@@ -32,9 +35,6 @@ win32 {
   QMAKE_CFLAGS_RELEASE += /O2
   QMAKE_CXXFLAGS_RELEASE += /O2
 }
-
-INCLUDEPATH += ../..\
-../../json
 
 HEADERS += ../../json/arraylist.h\
 ../../json/bits.h\

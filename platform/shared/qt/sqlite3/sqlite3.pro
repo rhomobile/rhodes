@@ -5,6 +5,8 @@ TEMPLATE = lib
 
 CONFIG += staticlib warn_on
 
+INCLUDEPATH += ../..
+
 macx {
   DESTDIR = ../../../osx/bin/sqlite3
   OBJECTS_DIR = ../../../osx/bin/sqlite3/tmp
@@ -26,8 +28,6 @@ win32 {
   QMAKE_CFLAGS_WARN_ON += /wd4101
   QMAKE_CFLAGS_RELEASE += /O2
 }
-
-INCLUDEPATH += ../..
 
 HEADERS += ../../sqlite/sqlite3.h\
 ../../sqlite/sqlite3ext.h
