@@ -723,7 +723,6 @@ void QtMainWindow::alertHidePopup()
 
 void QtMainWindow::dateTimePicker(CDateTimeMessage* msg)
 {
-    //TODO: dateTimePicker
     if (msg) {
         int retCode    = -1;
 
