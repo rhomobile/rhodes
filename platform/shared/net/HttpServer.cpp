@@ -2,7 +2,7 @@
 #include "common/RhodesApp.h"
 #include "common/RhoFilePath.h"
 #include "net/URI.h"
-#include "common\RhoConf.h"
+#include "common/RhoConf.h"
 #include "ruby/ext/rho/rhoruby.h"
 
 #include <algorithm>
