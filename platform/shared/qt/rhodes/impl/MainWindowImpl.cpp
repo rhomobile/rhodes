@@ -575,12 +575,12 @@ void CMainWindow::tabbarSwitch(int index)
 
 void CMainWindow::tabbarBadge(int index, char* badge)
 {
-    ((QtMainWindow*)qtMainWindow)->tabbarSetBadge(index, QString(badge ? badge : ""));
+    ((QtMainWindow*)qtMainWindow)->tabbarSetBadge(index, badge);
 }
 
 int CMainWindow::tabbarGetCurrent()
 {
-	return ((QtMainWindow*)qtMainWindow)->tabbarGetCurrent();
+    return ((QtMainWindow*)qtMainWindow)->tabbarGetCurrent();
 }
 
 // Menu
