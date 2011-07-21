@@ -471,6 +471,8 @@ public class RhoConnection implements IHttpConnection {
 			return "image/gif";
 		else if ( strExt.equals("html") || strExt.equals("htm") )
 			return "text/html";
+		else if ( strExt.equals("txt") )
+			return "text/plain";
 		
 		return "";
 	}
@@ -801,21 +803,28 @@ public class RhoConnection implements IHttpConnection {
 			}else
 			{
 				String strContType = getContentType();
-				if ( this.method.equals("POST") || strContType.length() == 0 ||
-						strContType.indexOf("application/x-www-form-urlencoded") >= 0)
-				{
-					if ( dispatch() )
-					{
-						requestProcessed = true;
-						return;
-					}
-				}
 				
-				if ( /*this.method == "GET" &&*/ httpGetFile(strContType) ){
+				if ( uri.getPath().startsWith("/apps/public"))
+				{
+					httpServeFile(strContType);
+				}else
+				{
+					if ( this.method.equals("POST") || strContType.length() == 0 ||
+							strContType.indexOf("application/x-www-form-urlencoded") >= 0)
+					{
+						if ( dispatch() )
+						{
+							requestProcessed = true;
+							return;
+						}
+					}
 					
-				//}else if ( dispatch() ){
-				}else{
-					respondNotFound(strErr);
+					if ( /*this.method == "GET" &&*/ httpGetFile(strContType) ){
+						
+					//}else if ( dispatch() ){
+					}else{
+						respondNotFound(strErr);
+					}
 				}
 			}			
 			requestProcessed = true;
