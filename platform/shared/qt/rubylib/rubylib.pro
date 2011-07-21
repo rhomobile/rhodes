@@ -5,6 +5,11 @@ TEMPLATE = lib
 
 CONFIG += staticlib warn_on
 
+INCLUDEPATH += ../..\
+../../ruby\
+../../ruby/include\
+../../ruby/generated
+
 macx {
   DESTDIR = ../../../osx/bin/rubylib
   OBJECTS_DIR = ../../../osx/bin/rubylib/tmp
@@ -49,11 +54,6 @@ win32 {
   QMAKE_CFLAGS_WARN_ON += /wd4244 /wd4133 /wd4996 /wd4554 /wd4018 /wd4101 /wd4005 /wd4146 /wd4047 /wd4100 /wd4189 /wd4646 /wd4645
   QMAKE_CFLAGS_RELEASE += /O2
 }
-
-INCLUDEPATH += ../..\
-../../ruby\
-../../ruby/include\
-../../ruby/generated
 
 HEADERS += ../../ruby/ext/rho/rhoruby.h\
 ../../ruby/ext/socket/addrinfo.h\

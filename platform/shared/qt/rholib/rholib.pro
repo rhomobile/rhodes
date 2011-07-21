@@ -5,6 +5,9 @@ TEMPLATE = lib
 
 CONFIG += staticlib warn_on
 
+INCLUDEPATH += ../..\
+../../ruby
+
 macx {
   DESTDIR = ../../../osx/bin/rholib
   OBJECTS_DIR = ../../../osx/bin/rholib/tmp
@@ -46,9 +49,6 @@ win32 {
   QMAKE_CFLAGS_RELEASE += /O2
   QMAKE_CXXFLAGS_RELEASE += /O2
 }
-
-INCLUDEPATH += ../..\
-../../ruby
 
 HEADERS += ../../common/RhoAppAdapter.h\
 ../../common/IRhoThreadImpl.h\

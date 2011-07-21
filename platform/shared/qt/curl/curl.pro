@@ -5,6 +5,8 @@ TEMPLATE = lib
 
 CONFIG += staticlib warn_on
 
+INCLUDEPATH += ../..
+
 macx {
   DESTDIR = ../../../osx/bin/curl
   OBJECTS_DIR = ../../../osx/bin/curl/tmp
@@ -16,8 +18,6 @@ DEFINES += RHODES_EMULATOR
   QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
   QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
 }
-
-INCLUDEPATH += ../..
 
 HEADERS += ../../curl/lib/arpa_telnet.h\
 ../../curl/lib/connect.h\
