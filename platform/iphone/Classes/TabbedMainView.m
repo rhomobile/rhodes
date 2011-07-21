@@ -658,4 +658,21 @@
 	}
 }
 
+
+
+-(void)setTabBarBadge:(NSString*)badge_text tab_index:(int)tab_index {
+    
+    SimpleMainView* subview = [self subView:tab_index]; 
+    if (subview != nil) {
+        if ([badge_text length] > 0) {
+            subview.tabBarItem.badgeValue = badge_text;
+        }
+        else {
+            subview.tabBarItem.badgeValue = nil;
+        }
+    }
+
+}
+
+
 @end

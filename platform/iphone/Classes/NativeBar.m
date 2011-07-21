@@ -112,6 +112,24 @@ static int started = 0;
 }
 @end
 
+#define BADGE_TEXT @"badge_text"
+#define TAB_INDEX @"tab_index"
+
+@interface RhoNativeTabBarSetBadgeTask : NSObject {}
++ (void)run:(NSDictionary*)params;
+@end
+
+@implementation RhoNativeTabBarSetBadgeTask
++ (void)run:(NSDictionary*)params {
+    NSValue* ns_tab_index  = [params objectForKey:TAB_INDEX];
+    int tab_index = 0;
+    [ns_tab_index getValue:&tab_index];
+    NSString* badge_text = (NSString*)[params objectForKey:BADGE_TEXT];
+
+    [[[Rhodes sharedInstance] mainView] setTabBarBadge:badge_text tab_index:tab_index];
+}
+@end
+
 
 void create_nativebar_innner(int bar_type, rho_param *p)
 {
@@ -330,7 +348,20 @@ void native_tabbar_switch_tab(int index) {
 	nativebar_switch_tab_innner(index);
 }
 
+
+
 void native_tabbar_set_tab_badge(int index,char *val) {
+    NSString* badge_text = [NSString stringWithUTF8String:val];
+    
+    NSMutableDictionary* params = [NSMutableDictionary dictionaryWithCapacity:2];
+    NSValue* tab_index = [NSValue valueWithBytes:&index objCType:@encode(int)];
+    [params setObject:tab_index forKey:TAB_INDEX];	
+    [params setObject:badge_text forKey:BADGE_TEXT];	
+    
+    id runnable = [RhoNativeTabBarSetBadgeTask class];
+    id arg = params;
+    [Rhodes performOnUiThread:runnable arg:arg wait:NO];
+    
 }
 
 int native_tabbar_get_current_tab() {

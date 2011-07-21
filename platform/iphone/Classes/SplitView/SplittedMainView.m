@@ -270,5 +270,9 @@
 	return [rvc getWebView:tab_index];
 }
  
+-(void)setTabBarBadge:(NSString*)badge_text tab_index:(int)tab_index {
+    // nothing
+}
+
 
 @end
