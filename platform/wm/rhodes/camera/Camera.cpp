@@ -23,6 +23,8 @@ static LPTSTR get_file_name(LPTSTR from, LPTSTR to);
 static LPTSTR generate_filename(LPTSTR filename, LPCTSTR szExt );
 static void create_folder(LPTSTR Path);
 
+IMPLEMENT_LOGCLASS(Camera,"Camera");
+
 Camera::Camera(void) {
 }
 
@@ -69,8 +71,13 @@ HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename)
 			StringCchCopy(pszFilename, MAX_PATH, fname);
 			free(fname);
 		} else {
+            LOG(ERROR) + "takePicture error get file: " + shcc.szFile;
+
 			hResult = E_INVALIDARG;
 		}
+    }else
+    {
+        LOG(ERROR) + "takePicture failed with code: " + LOGFMT("0x%X") + hResult;
     }
 #endif //_WIN32_WCE
 
