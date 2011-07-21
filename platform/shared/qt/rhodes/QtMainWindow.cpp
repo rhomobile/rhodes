@@ -406,9 +406,9 @@ int QtMainWindow::tabbarGetCurrent()
     return tabViews.size() > 0 ? ui->tabBar->currentIndex() : 0;
 }
 
-void QtMainWindow::tabbarSetBadge(int index, QString badge)
+void QtMainWindow::tabbarSetBadge(int index, char* badge)
 {
-    ui->tabBar->setTabButton(index, QTabBar::RightSide, (badge.length() > 0 ? new QLabel(badge) : 0));
+    ui->tabBar->setTabButton(index, QTabBar::RightSide, (badge && (*badge != '\0') ? new QLabel(badge) : 0));
 }
 
 void QtMainWindow::on_tabBar_currentChanged(int index)

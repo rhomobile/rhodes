@@ -65,7 +65,7 @@ public:
     void tabbarSwitch(int index);
     int tabbarGetCurrent();
     int tabbarAddTab(const QString& label, const char* icon, bool disabled, const QColor* web_bkg_color, QTabBarRuntimeParams& tbri);
-    void tabbarSetBadge(int index, QString badge);
+    void tabbarSetBadge(int index, char* badge);
 private:
     void tabbarWebViewRestore(bool reload);
     void tabbarConnectWebView(QWebView* webView, QWebInspector* webInspector);

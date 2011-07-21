@@ -80,12 +80,12 @@ void native_tabbar_switch_tab(int index)
     CMainWindow::getInstance()->executeRunnable(new CNativeTabbar::CSwitchTask(index) );
 }
 
-void native_tabbar_set_tab_badge(int index,char *val)
+void native_tabbar_set_tab_badge(int index, char *val)
 {
     CMainWindow::getInstance()->executeRunnable(new CNativeTabbar::CBadgeTask(index, val) );
 }
 
-void nativebar_set_tab_badge(int index,char* val)
+void nativebar_set_tab_badge(int index, char* val)
 {
     RAWLOGC_INFO("NativeBar", "NativeBar.set_tab_badge() is DEPRECATED. Use Rho::NativeTabbar.set_tab_badge().");
     native_tabbar_set_tab_badge(index, val);
