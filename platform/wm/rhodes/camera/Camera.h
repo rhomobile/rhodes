@@ -1,7 +1,11 @@
 #pragma once
 
+#include "logging/RhoLog.h"
+
 class Camera
 {
+    DEFINE_LOGCLASS;
+
 public:
 	Camera(void);
 	virtual ~Camera(void);
