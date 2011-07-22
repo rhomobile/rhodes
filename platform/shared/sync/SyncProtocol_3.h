@@ -3,6 +3,7 @@
 #include "ISyncProtocol.h"
 #include "common/StringConverter.h"
 #include "common/RhoFilePath.h"
+#include "json/JSONIterator.h"
 
 namespace rho {
 namespace sync {
@@ -26,7 +27,7 @@ struct CSyncProtocol_3 : public ISyncProtocol
 
     String getLoginBody( const String& name, const String& password)
     {
-        return "{\"login\":\"" + name + "\",\"password\":\"" + password + "\",\"remember_me\":1}";
+        return "{\"login\":" + json::CJSONEntry::quoteValue(name) + ",\"password\":" + json::CJSONEntry::quoteValue(password) + ",\"remember_me\":1}";
     }
 
     String getClientCreateUrl()
@@ -41,11 +42,11 @@ struct CSyncProtocol_3 : public ISyncProtocol
 
     String getClientRegisterBody( const String& strClientID, const String& strPin, int nPort, const String& strType, const String& strPhoneID )
     {
-        return "{\"client_id\":\"" + strClientID + 
-            "\",\"device_pin\":\"" + strPin +
-            ( strPhoneID.length() > 0 ? "\",\"phone_id\":\"" + strPhoneID : "") +
-            "\",\"device_port\":\"" + common::convertToStringA(nPort) +
-            "\",\"device_type\":\"" + strType + "\"}";
+        return "{\"client_id\":" + json::CJSONEntry::quoteValue(strClientID) + 
+            ",\"device_pin\":" + json::CJSONEntry::quoteValue(strPin) +
+            ( strPhoneID.length() > 0 ? ",\"phone_id\":" + json::CJSONEntry::quoteValue(strPhoneID) : "") +
+            ",\"device_port\":" + json::CJSONEntry::quoteValue(common::convertToStringA(nPort)) +
+            ",\"device_type\":" + json::CJSONEntry::quoteValue(strType) + "}";
     }
 
     String getClientResetUrl(const String& strClientID)
