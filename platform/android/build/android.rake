@@ -665,7 +665,7 @@ namespace "build" do
 
     end
 #    desc "Build RhoBundle for android"
-    task :rhobundle => ["config:android","build:bundle:noxruby",:extensions,:librhodes] do
+    task :rhobundle => ["config:android","build:bundle:noxruby",:extensions] do
 #      Rake::Task["build:bundle:noxruby"].execute
 
       assets = File.join(Jake.get_absolute($androidpath), "Rhodes", "assets")
@@ -1153,7 +1153,7 @@ namespace "build" do
     end
 
  #   desc "Build Rhodes for android"
-    task :rhodes => :rhobundle do
+    task :rhodes => [:rhobundle, :librhodes] do
       javac = $config["env"]["paths"]["java"] + "/javac" + $exe_ext
 
 
