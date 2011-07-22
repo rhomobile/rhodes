@@ -81,55 +81,6 @@ int rhoPlainLog(const char* file, int line, LogSeverity severity, const char* sz
     return 1;
 }
 
-int rhoPlainLog_Secure(const char* file, int line, LogSeverity severity, const char* szCategory,
-                  const char* msg )
-{
-    Vector<String>& arSecure = LOGCONF().getExcludeAttribs();
-    if ( arSecure.size() == 0 )
-    {
-        LogMessage(file, line, severity, LOGCONF(), LogCategory(szCategory) ) + msg;
-    }else
-    {
-        String strMsg = msg;
-        for ( int i = 0; i < strMsg.length(); i++ )
-        {
-            rho::boolean bFound = false;
-            for ( int j = 0; j < arSecure.size(); j++ )
-            {
-                const String& strExclude = arSecure.elementAt(j);
-                if ( strncmp(strMsg.c_str() + i, strExclude.c_str(), strExclude.length()) == 0 )
-                {
-                    rho::boolean bSlash = false;
-                    int nRemoveStart = i + strExclude.length(); 
-                    for ( int nFill = nRemoveStart; nFill < strMsg.length(); nFill++ )
-                    {
-                        if ( strMsg[nFill] == '\\' )
-                            bSlash = true;
-                        else
-                        {
-                            if ( strMsg[nFill] == '"' && !bSlash )
-                            {
-                                strMsg.erase(nRemoveStart, nFill-nRemoveStart );
-                                i += strExclude.length();
-                                bFound = true;
-                                break;
-                            }
-
-                            bSlash = false;
-                        }
-                    }
-                }
-                if ( bFound )
-                    break;
-            }
-        }
-
-        LogMessage(file, line, severity, LOGCONF(), LogCategory(szCategory) ) + strMsg;
-    }
-
-    return 1;
-}
-
 int rhoPlainLogData(const char* file, int line, LogSeverity severity, const char* szCategory,
 				const void* data, int len ){
 		

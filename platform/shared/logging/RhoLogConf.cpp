@@ -173,7 +173,8 @@ void LogSettings::setExcludeFilter( const String& strExcludeFilter )
 		    if (tok.length() == 0)
 			    continue;
 
-            m_arExcludeAttribs.addElement( "\"" + tok + "\"=>\"" );
+            //m_arExcludeAttribs.addElement( "\"" + tok + "\"=>\"" );
+            m_arExcludeAttribs.addElement( tok );
         }    	
     }
     else

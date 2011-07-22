@@ -71,7 +71,8 @@ public:
 
     LogSeverity getSeverity()const{ return m_severity; }
 
-    void addMessage(String strMesage){ m_strMessage+=strMesage; }
+    void applyExcludeFilter(String& strMesage);
+    void addMessage(String strMesage){ applyExcludeFilter(strMesage); m_strMessage+=strMesage; }
     void addRawString(const char* data, int nLen){ m_strMessage.append(data, nLen); }
 
     const String& getLastFmt()const{ return m_lastFmt.m_strFmt; } 
@@ -185,8 +186,6 @@ void rhoPlainLogArgW(const char* file, int line, int severity, const char* szCat
                  const wchar_t* format, va_list ap );
 
 int rhoPlainLog(const char* file, int line, LogSeverity severity, const char* szCategory,
-                  const char* msg );
-int rhoPlainLog_Secure(const char* file, int line, LogSeverity severity, const char* szCategory,
                   const char* msg );
 
 int rhoPlainLogData(const char* file, int line, LogSeverity severity, const char* szCategory,
