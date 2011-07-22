@@ -78,6 +78,7 @@ private:
 private:
     callback_t m_expected;
     Vector<int> m_commands;
+    boolean m_bFirstServerStart;
 };
 IMPLEMENT_LOGCLASS(CAppCallbacksQueue,"AppCallbacks");
 
@@ -103,7 +104,7 @@ char const *CAppCallbacksQueue::toString(int type)
     
 
 CAppCallbacksQueue::CAppCallbacksQueue()
-    :CThreadQueue(), m_expected(local_server_started)
+    :CThreadQueue(), m_expected(local_server_started), m_bFirstServerStart(true)
 {
     CThreadQueue::setLogCategory(getLogCategory());
     setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
@@ -140,7 +141,11 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
 
     if ( m_expected == local_server_restart )
     {
-        RHODESAPP().restartLocalServer(*this);
+        if ( cmd->type != local_server_started )
+            RHODESAPP().restartLocalServer(*this);
+        else
+            LOG(INFO) + "Local server restarted before activate.Do not restart it again.";
+
         m_expected = local_server_started;
     }
 
@@ -169,6 +174,9 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
         return;
     }
 
+    if ( cmd->type == app_deactivated )
+        m_commands.clear();
+
     m_commands.insert(m_commands.begin(), cmd->type);
     for (Vector<int>::const_iterator it = m_commands.begin(), lim = m_commands.end(); it != lim; ++it)
     {
@@ -185,7 +193,14 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
             break;
 
         case local_server_started:
-            m_expected = ui_created;
+            if ( m_bFirstServerStart )
+            {
+                m_expected = ui_created;
+                m_bFirstServerStart = false;
+            }
+            else
+                m_expected = app_activated;
+
             rho_sys_report_app_started();
             break;
         case ui_created:
