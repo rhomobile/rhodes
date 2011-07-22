@@ -125,7 +125,8 @@ public class RhoLogConf {
     		    if (tok.length() == 0)
     			    continue;
 
-                m_arExcludeAttribs.addElement( "\"" + tok + "\"=>\"" );
+                //m_arExcludeAttribs.addElement( "\"" + tok + "\"=>\"" );
+    		    m_arExcludeAttribs.addElement( tok );
             }    	
         }
         else

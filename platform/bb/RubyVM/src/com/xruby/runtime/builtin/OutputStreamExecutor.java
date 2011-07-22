@@ -30,9 +30,9 @@ public class OutputStreamExecutor implements RubyIOExecutor {
 	public int write(String s) {
 //		this.ps.print(s);
 		if ( m_bError )
-			LOG.ERROR_SECURE(s);
+			LOG.ERROR(s);
 		else
-			LOG.INFO_SECURE(s);
+			LOG.INFO(s);
 		
 		return s.length();
 	}
