@@ -22,7 +22,7 @@ public class SyncProtocol_3 implements ISyncProtocol
 
     public String getLoginBody( String name, String password)
     {
-        return "{\"login\":\"" + name + "\",\"password\":\"" + password + "\",\"remember_me\":1}";
+        return "{\"login\":" + JSONEntry.quoteValue(name) + ",\"password\":" + JSONEntry.quoteValue(password) + ",\"remember_me\":1}";
     }
 
     public String getClientCreateUrl()
@@ -37,10 +37,10 @@ public class SyncProtocol_3 implements ISyncProtocol
 
     public String getClientRegisterBody( String strClientID, String strPin, int nPort, String strType )
     {
-        return "{\"client_id\":\"" + strClientID +
-        	"\",\"device_pin\":\"" + strPin +
-            "\",\"device_port\":\"" + nPort +
-            "\",\"device_type\":\"" + strType + "\"}";
+        return "{\"client_id\":" + JSONEntry.quoteValue(strClientID) +
+        	",\"device_pin\":" + JSONEntry.quoteValue(strPin) +
+            ",\"device_port\":\"" + nPort +
+            "\",\"device_type\":" + JSONEntry.quoteValue(strType) + "}";
     }
 
     public String getClientResetUrl(String strClientID)

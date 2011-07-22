@@ -155,7 +155,7 @@ public class RhoLogger {
 	        addPrefix();
 		
 	    if ( msg != null )
-	    	m_strMessage += msg;
+	    	m_strMessage += applyExcludeFilter(msg);
 	    
 	    if ( e != null )
 	    {
@@ -195,54 +195,85 @@ public class RhoLogger {
 	    	processFatalError();
 	}
 
-	private void logMessage_secure( int severity, String strMsg )
+	private String applyExcludeFilter( String strMsg )
 	{
 	    Vector/*<String>&*/ arSecure = getLogConf().getExcludeAttribs();
 	    if ( arSecure.size() == 0 )
-	    {
-	    	logMessage(severity, strMsg, null, false );
-	    }else
-	    {
-	        StringBuffer strRes = new StringBuffer(strMsg.length());
-	        for ( int i = 0; i < strMsg.length(); i++ )
-	        {
-	        	boolean bFound = false;
-	            for ( int j = 0; j < arSecure.size(); j++ )
-	            {
-	                String strExclude = (String)arSecure.elementAt(j);
-	                if ( strMsg.toString().startsWith( strExclude, i) )
-	                {	                
-	                	strRes.append(strExclude);
-	                	
-	                    boolean bSlash = false;
-	                    int nRemoveStart = i + strExclude.length(); 
-	                    for ( int nFill = nRemoveStart; nFill < strMsg.length(); nFill++ )
-	                    {
-	                        if ( strMsg.charAt(nFill) == '\\' )
-	                            bSlash = true;
-	                        else
-	                        {
-	                            if ( strMsg.charAt(nFill) == '"' && !bSlash )
-	                            {
-	                                i = nFill;
-	                                bFound = true;
-	                                break;
-	                            }
+	    	return strMsg;
+	    
+        StringBuffer strRes = new StringBuffer(strMsg.length());
+        for ( int i = 0; i < strMsg.length(); i++ )
+        {
+        	boolean bFound = false;
+            for ( int j = 0; j < arSecure.size(); j++ )
+            {
+                String strExclude = (String)arSecure.elementAt(j);
+                if ( strMsg.startsWith( strExclude, i) )
+                {	                
+                    boolean bSlash = false;
+                    int nRemoveStart = i + strExclude.length();
+                    
+                    int nEndSep = '"';
 
-	                            bSlash = false;
-	                        }
-	                    }
-	                }
-	                
-	                if ( bFound )
-	                    break;
-	            }
-	            
-	            strRes.append(strMsg.charAt(i));
-	        }
-	
-	        logMessage(severity, strRes.toString(), null, false );
-	    }
+                    if ( strMsg.startsWith( "\":\"", nRemoveStart) )
+                    {
+                    	strRes.append(strExclude);
+                    	strRes.append("\":\"");
+                        nRemoveStart += 3;
+                    }
+                    else if ( strMsg.startsWith( "\"=>\"", nRemoveStart ) )
+                    {
+                    	strRes.append(strExclude);
+                    	strRes.append("\"=>\"");
+                        nRemoveStart += 4;
+                    }
+                    else if ( strMsg.startsWith( "=", nRemoveStart)  )
+                    {
+                    	strRes.append(strExclude);
+                    	strRes.append("=");
+                        nRemoveStart += 1;
+                        nEndSep = '&';
+                    }
+                    else
+                        break;
+
+                	
+                    int nFill = nRemoveStart;
+                    for ( ; nFill < strMsg.length(); nFill++ )
+                    {
+                        if ( bSlash && strMsg.charAt(nFill) == '\\' ) 
+                        {
+                            bSlash = false;
+                            continue;
+                        }
+                        else if ( nEndSep != '&' && strMsg.charAt(nFill) == '\\' )
+                            bSlash = true;
+                        else
+                        {
+                            if ( strMsg.charAt(nFill) == nEndSep && !bSlash )
+                            {
+                                //i = nFill;
+                                //bFound = true;
+                                break;
+                            }
+
+                            bSlash = false;
+                        }
+                    }
+                    
+                    i = nFill;
+                    bFound = true;
+                }
+                
+                if ( bFound )
+                    break;
+            }
+            
+            if ( i < strMsg.length() )
+            	strRes.append(strMsg.charAt(i));
+        }
+
+        return strRes.toString();
 	}
 	
 	static boolean isSimulator()
@@ -268,11 +299,6 @@ public class RhoLogger {
 		logMessage( L_INFO, message);
 	}
 
-	public void INFO_SECURE(String message) 
-	{
-		logMessage_secure( L_INFO, message);
-	}
-	
 	public void INFO_OUT(String message) {
 		logMessage( L_INFO, message, null, true);
 	}
@@ -289,9 +315,6 @@ public class RhoLogger {
 	}
 	public void ERROR(String message) {
 		logMessage( L_ERROR, message);
-	}
-	public void ERROR_SECURE(String message) {
-		logMessage_secure( L_ERROR, message);
 	}
 	
 	public void ERROR(Throwable e) {
