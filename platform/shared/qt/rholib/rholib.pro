@@ -23,7 +23,8 @@ macx {
 win32 {
   DESTDIR = ../../../win32/bin/rholib
   OBJECTS_DIR = ../../../win32/bin/rholib/tmp
-  DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS _UNICODE UNICODE
+  DEFINES -= _UNICODE UNICODE
+  DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS
   HEADERS += ../../common/RhoMath.h\
 ../../common/map/ESRIMapEngine.h\
 ../../common/map/GoogleMapEngine.h\
