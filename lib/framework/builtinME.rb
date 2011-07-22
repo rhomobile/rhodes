@@ -743,7 +743,8 @@ class String
     end
 
     def inspect
-        '"' + gsub("\"", "\\\"") + '"'
+        s = gsub("\\", "\\\\")
+        '"' + s.gsub("\"", "\\\"") + '"'
     end
 
 	#from rubinius
