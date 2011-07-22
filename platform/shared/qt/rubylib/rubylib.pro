@@ -28,7 +28,8 @@ win32 {
   DESTDIR = ../../../win32/bin/rubylib
   OBJECTS_DIR = ../../../win32/bin/rubylib/tmp
   INCLUDEPATH += ../../ruby/win32
-  DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS _LIB _UNICODE UNICODE BUFSIZ=512 STATIC_LINKED
+  DEFINES -= _UNICODE UNICODE
+  DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS _LIB BUFSIZ=512 STATIC_LINKED
   HEADERS += ../../ruby/win32/ruby/config.h\
 ../../ruby/win32/dir.h
   SOURCES += ../../ruby/missing/acosh.c\
