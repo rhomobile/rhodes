@@ -247,6 +247,12 @@ See controller and view in the /app/GeoLocation folder of the [ System API Sampl
 
 Rhodes provides access to the device's local phone book and stored contacts via the Ruby class RhoContact.
 
+To allow read/modify personal information and contacts enable the pim capability. This is done by adding the following lines to build.yml:
+
+	:::yaml
+	capabilities:
+	  - pim
+
 The following methods are available in the RhoContact class:
 
 Return hash of hashes of all contacts stored in the phonebook (index):
@@ -304,6 +310,12 @@ For examples on how to use the API provided by this class, see the view and cont
 ## PIM Calendar/Events
 Rhodes provides access to the device's local calendar and stored events via the Ruby class RhoEvent.
 
+To allow read/modify calendar information enable the calendar capability. This is done by adding the following lines to build.yml:
+
+	:::yaml
+	capabilities:
+	  - calendar
+
 Check if the device has a calendar:
 	:::ruby
 	System::get_property('has_calendar')
@@ -360,6 +372,12 @@ Recurrence properties:
 For examples on how to use the API provided by this class, see the view and controller in the /app/Calendar folder in the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/Calendar/controller.rb).
 
 ## Camera
+
+You need to enable the Camera capability. This is done by adding the following lines to build.yml:
+
+	:::yaml
+	capabilities:
+	  - camera
 
 ### Main API
 
@@ -455,6 +473,12 @@ See controller and view in the /app/SignatureUtil folder of the [System API Samp
 
 Bluetooth API provide access to Bluetooth serial port connection between phone and another phone, phone and PC, phone and external Bluetooth device (for example external Bluetooth GPS device).
 
+To allow Bluetooth enable the bluetooth capability. This is done by adding the following lines to build.yml:
+
+	:::yaml
+	capabilities:
+	  - bluetooth
+
 Currently Bluetooth support have following limitations:
 
 * on Apple device (iPhone, iPad etc.) you can connect only to another Apple device
@@ -464,8 +488,6 @@ Currently Bluetooth support have following limitations:
 * you can not see another device name, when you using server connection on BlackBerry
 * only one connection session can created and using on any device in this time. You should close current session before make another session.
 * one-to-few peers connection scheme is unsupported now.
-
-Do not forget add special "bluetooth" capability into your application's build.yml config - it critical for Android.
 
 There are two steps to make connection and start using of Bluetooth :
 
@@ -875,8 +897,15 @@ alert - bring app upfront and show specified message
 	alert = "Some message"
 
 vibrate - vibrate for the specified number of milliseconds, up to 25500; if 0 or no duration is specified, it will vibrate for 2500 millisecond.
-	:::ruby
-	vibrate = 2000 #=> duration in milliseconds
+
+    To enable vibrate in your rhodes application in build.yml:
+
+	    capabilities:
+	      - vibrate
+    	  
+    Example of vibrate call:
+     
+	    vibrate = 2000 #=> duration in milliseconds
 
 sound - play specified file if media type supported by the phone. iPhone will ignore media-type parameter.
 	:::ruby
@@ -1206,6 +1235,12 @@ See app\Media of [System API Sample application](http://github.com/rhomobile/rho
 ## Using Hyperlinks for Email, Phone Dialing, SMS and others
 
 You can allow your users to send email messages, call phone numbers and send SMS messages using the hyperlink (`<a href="...">`) syntax. Please note not all of these examples could work on simulators! Use real devices for test. Examples are shown below. 
+
+To make phone calls enable the phone capability. This is done by adding the following lines to build.yml:
+
+	:::yaml
+	capabilities:
+	  - phone
 
 **mailto**
 	:::html
