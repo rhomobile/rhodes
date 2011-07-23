@@ -36,8 +36,6 @@
 		5C0D0867121CFE6E0022E83C /* arraylist.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C0D0852121CFE6E0022E83C /* arraylist.h */; };
 		5C0D0868121CFE6E0022E83C /* bits.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C0D0853121CFE6E0022E83C /* bits.h */; };
 		5C0D0869121CFE6E0022E83C /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C0D0854121CFE6E0022E83C /* config.h */; };
-		5C0D086A121CFE6E0022E83C /* debug.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D0855121CFE6E0022E83C /* debug.c */; };
-		5C0D086B121CFE6E0022E83C /* debug.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C0D0856121CFE6E0022E83C /* debug.h */; };
 		5C0D086C121CFE6E0022E83C /* json_object_private.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C0D0857121CFE6E0022E83C /* json_object_private.h */; };
 		5C0D086D121CFE6E0022E83C /* json_object.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D0858121CFE6E0022E83C /* json_object.c */; };
 		5C0D086E121CFE6E0022E83C /* json_object.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C0D0859121CFE6E0022E83C /* json_object.h */; };
@@ -238,8 +236,6 @@
 		5C0D0BCC121D2EF20022E83C /* ssl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D0BCA121D2EF20022E83C /* ssl.cpp */; };
 		5C0D0BCD121D2EF20022E83C /* ssl.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C0D0BCB121D2EF20022E83C /* ssl.h */; };
 		5C0D0C05121D33160022E83C /* RhoThreadImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C0D0C04121D33160022E83C /* RhoThreadImpl.m */; };
-		5C40D1E812282E3B007298DA /* SyncClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C40D1E612282E3B007298DA /* SyncClient.cpp */; };
-		5C40D1E912282E3B007298DA /* SyncClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C40D1E712282E3B007298DA /* SyncClient.h */; };
 		5C40D1F012282E4D007298DA /* RhomModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C40D1EA12282E4D007298DA /* RhomModel.h */; };
 		5C40D1F112282E4D007298DA /* RhomModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C40D1EB12282E4D007298DA /* RhomModel.m */; };
 		5C40D1F212282E4D007298DA /* RhoConnectClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C40D1EC12282E4D007298DA /* RhoConnectClient.h */; };
@@ -254,6 +250,9 @@
 		5C5CD3C013620579006DD4C5 /* RhoConnectObjectNotify.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5CD3BE13620579006DD4C5 /* RhoConnectObjectNotify.h */; };
 		5C5CD3C113620579006DD4C5 /* RhoConnectObjectNotify.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5CD3BF13620579006DD4C5 /* RhoConnectObjectNotify.m */; };
 		5C83677A134660310008F198 /* INetRequest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C836779134660310008F198 /* INetRequest.cpp */; };
+		5CCB15A013DB5549001337D6 /* RhoError.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CCB159D13DB5549001337D6 /* RhoError.h */; };
+		5CCB15A113DB5549001337D6 /* RhoConnectClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CCB159E13DB5549001337D6 /* RhoConnectClient.h */; };
+		5CCB15A213DB5549001337D6 /* RhoConnectClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CCB159F13DB5549001337D6 /* RhoConnectClient.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -286,8 +285,6 @@
 		5C0D0852121CFE6E0022E83C /* arraylist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = arraylist.h; path = ../../platform/shared/json/arraylist.h; sourceTree = SOURCE_ROOT; };
 		5C0D0853121CFE6E0022E83C /* bits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bits.h; path = ../../platform/shared/json/bits.h; sourceTree = SOURCE_ROOT; };
 		5C0D0854121CFE6E0022E83C /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../../platform/shared/json/config.h; sourceTree = SOURCE_ROOT; };
-		5C0D0855121CFE6E0022E83C /* debug.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = debug.c; path = ../../platform/shared/json/debug.c; sourceTree = SOURCE_ROOT; };
-		5C0D0856121CFE6E0022E83C /* debug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = debug.h; path = ../../platform/shared/json/debug.h; sourceTree = SOURCE_ROOT; };
 		5C0D0857121CFE6E0022E83C /* json_object_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = json_object_private.h; path = ../../platform/shared/json/json_object_private.h; sourceTree = SOURCE_ROOT; };
 		5C0D0858121CFE6E0022E83C /* json_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = json_object.c; path = ../../platform/shared/json/json_object.c; sourceTree = SOURCE_ROOT; };
 		5C0D0859121CFE6E0022E83C /* json_object.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = json_object.h; path = ../../platform/shared/json/json_object.h; sourceTree = SOURCE_ROOT; };
@@ -488,8 +485,6 @@
 		5C0D0BCA121D2EF20022E83C /* ssl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ssl.cpp; path = ../../platform/shared/net/ssl.cpp; sourceTree = SOURCE_ROOT; };
 		5C0D0BCB121D2EF20022E83C /* ssl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ssl.h; path = ../../platform/shared/net/ssl.h; sourceTree = SOURCE_ROOT; };
 		5C0D0C04121D33160022E83C /* RhoThreadImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RhoThreadImpl.m; path = ../../platform/shared/common/iphone/RhoThreadImpl.m; sourceTree = SOURCE_ROOT; };
-		5C40D1E612282E3B007298DA /* SyncClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SyncClient.cpp; path = ../../platform/shared/syncclient/SyncClient.cpp; sourceTree = SOURCE_ROOT; };
-		5C40D1E712282E3B007298DA /* SyncClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SyncClient.h; path = ../../platform/shared/syncclient/SyncClient.h; sourceTree = SOURCE_ROOT; };
 		5C40D1EA12282E4D007298DA /* RhomModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhomModel.h; sourceTree = "<group>"; };
 		5C40D1EB12282E4D007298DA /* RhomModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhomModel.m; sourceTree = "<group>"; };
 		5C40D1EC12282E4D007298DA /* RhoConnectClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoConnectClient.h; sourceTree = "<group>"; };
@@ -504,7 +499,10 @@
 		5C5CD3BE13620579006DD4C5 /* RhoConnectObjectNotify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RhoConnectObjectNotify.h; sourceTree = "<group>"; };
 		5C5CD3BF13620579006DD4C5 /* RhoConnectObjectNotify.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RhoConnectObjectNotify.m; sourceTree = "<group>"; };
 		5C836779134660310008F198 /* INetRequest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = INetRequest.cpp; path = ../../platform/shared/net/INetRequest.cpp; sourceTree = SOURCE_ROOT; };
-		D2AAC07E0554694100DB518D /* libSyncClient.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSyncClient.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		5CCB159D13DB5549001337D6 /* RhoError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoError.h; path = ../../platform/shared/RhoConnectClient/RhoError.h; sourceTree = "<group>"; };
+		5CCB159E13DB5549001337D6 /* RhoConnectClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoConnectClient.h; path = ../../platform/shared/RhoConnectClient/RhoConnectClient.h; sourceTree = "<group>"; };
+		5CCB159F13DB5549001337D6 /* RhoConnectClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoConnectClient.cpp; path = ../../platform/shared/RhoConnectClient/RhoConnectClient.cpp; sourceTree = "<group>"; };
+		D2AAC07E0554694100DB518D /* libRhoConnectClient.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRhoConnectClient.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -521,7 +519,7 @@
 		034768DFFF38A50411DB9C8B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D2AAC07E0554694100DB518D /* libSyncClient.a */,
+				D2AAC07E0554694100DB518D /* libRhoConnectClient.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -563,18 +561,19 @@
 				5C0D083F121CFE060022E83C /* logging */,
 				5C0D0833121CFD860022E83C /* net */,
 				5C0D0815121CFC730022E83C /* sync */,
-				5C0D0810121CFC3F0022E83C /* SyncClient */,
+				5C0D0810121CFC3F0022E83C /* RhoConnectClient */,
 			);
 			name = Shared;
 			sourceTree = "<group>";
 		};
-		5C0D0810121CFC3F0022E83C /* SyncClient */ = {
+		5C0D0810121CFC3F0022E83C /* RhoConnectClient */ = {
 			isa = PBXGroup;
 			children = (
-				5C40D1E612282E3B007298DA /* SyncClient.cpp */,
-				5C40D1E712282E3B007298DA /* SyncClient.h */,
+				5CCB159D13DB5549001337D6 /* RhoError.h */,
+				5CCB159E13DB5549001337D6 /* RhoConnectClient.h */,
+				5CCB159F13DB5549001337D6 /* RhoConnectClient.cpp */,
 			);
-			name = SyncClient;
+			name = RhoConnectClient;
 			sourceTree = "<group>";
 		};
 		5C0D0815121CFC730022E83C /* sync */ = {
@@ -634,8 +633,6 @@
 				5C0D0852121CFE6E0022E83C /* arraylist.h */,
 				5C0D0853121CFE6E0022E83C /* bits.h */,
 				5C0D0854121CFE6E0022E83C /* config.h */,
-				5C0D0855121CFE6E0022E83C /* debug.c */,
-				5C0D0856121CFE6E0022E83C /* debug.h */,
 				5C0D0857121CFE6E0022E83C /* json_object_private.h */,
 				5C0D0858121CFE6E0022E83C /* json_object.c */,
 				5C0D0859121CFE6E0022E83C /* json_object.h */,
@@ -917,7 +914,6 @@
 				5C0D0867121CFE6E0022E83C /* arraylist.h in Headers */,
 				5C0D0868121CFE6E0022E83C /* bits.h in Headers */,
 				5C0D0869121CFE6E0022E83C /* config.h in Headers */,
-				5C0D086B121CFE6E0022E83C /* debug.h in Headers */,
 				5C0D086C121CFE6E0022E83C /* json_object_private.h in Headers */,
 				5C0D086E121CFE6E0022E83C /* json_object.h in Headers */,
 				5C0D0870121CFE6E0022E83C /* json_tokener.h in Headers */,
@@ -1020,7 +1016,6 @@
 				5C0D0BAD121D2B860022E83C /* urldata.h in Headers */,
 				5C0D0BBF121D2E8B0022E83C /* sslimpl.h in Headers */,
 				5C0D0BCD121D2EF20022E83C /* ssl.h in Headers */,
-				5C40D1E912282E3B007298DA /* SyncClient.h in Headers */,
 				5C40D1F012282E4D007298DA /* RhomModel.h in Headers */,
 				5C40D1F212282E4D007298DA /* RhoConnectClient.h in Headers */,
 				5C40D1F412282E4D007298DA /* RhoConnectNotify.h in Headers */,
@@ -1028,6 +1023,8 @@
 				5C59ACDC12E82C0E00ED4A1E /* RhoCryptImpl.h in Headers */,
 				5C59ACEF12E82C5700ED4A1E /* sqlite3.h in Headers */,
 				5C5CD3C013620579006DD4C5 /* RhoConnectObjectNotify.h in Headers */,
+				5CCB15A013DB5549001337D6 /* RhoError.h in Headers */,
+				5CCB15A113DB5549001337D6 /* RhoConnectClient.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1049,7 +1046,7 @@
 			);
 			name = SyncClient;
 			productName = SyncClient;
-			productReference = D2AAC07E0554694100DB518D /* libSyncClient.a */;
+			productReference = D2AAC07E0554694100DB518D /* libRhoConnectClient.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -1057,7 +1054,7 @@
 /* Begin PBXProject section */
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "SyncClient" */;
+			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "RhoConnectClient" */;
 			compatibilityVersion = "Xcode 3.1";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -1104,7 +1101,6 @@
 				5C0D084D121CFE2B0022E83C /* RhoLogSink.cpp in Sources */,
 				5C0D084F121CFE2B0022E83C /* RhoPlainLog.cpp in Sources */,
 				5C0D0866121CFE6E0022E83C /* arraylist.c in Sources */,
-				5C0D086A121CFE6E0022E83C /* debug.c in Sources */,
 				5C0D086D121CFE6E0022E83C /* json_object.c in Sources */,
 				5C0D086F121CFE6E0022E83C /* json_tokener.c in Sources */,
 				5C0D0871121CFE6E0022E83C /* json_util.c in Sources */,
@@ -1203,7 +1199,6 @@
 				5C0D0BBE121D2E8B0022E83C /* sslimpl.cpp in Sources */,
 				5C0D0BCC121D2EF20022E83C /* ssl.cpp in Sources */,
 				5C0D0C05121D33160022E83C /* RhoThreadImpl.m in Sources */,
-				5C40D1E812282E3B007298DA /* SyncClient.cpp in Sources */,
 				5C40D1F112282E4D007298DA /* RhomModel.m in Sources */,
 				5C40D1F312282E4D007298DA /* RhoConnectClient.m in Sources */,
 				5C40D1F512282E4D007298DA /* RhoConnectNotify.m in Sources */,
@@ -1211,6 +1206,7 @@
 				5C59ACEE12E82C5700ED4A1E /* sqlite3.c in Sources */,
 				5C83677A134660310008F198 /* INetRequest.cpp in Sources */,
 				5C5CD3C113620579006DD4C5 /* RhoConnectObjectNotify.m in Sources */,
+				5CCB15A213DB5549001337D6 /* RhoConnectClient.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1223,7 +1219,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				COPY_PHASE_STRIP = NO;
-				DSTROOT = /tmp/SyncClient.dst;
+				DSTROOT = /tmp/RhoConnectClient.dst;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -1243,7 +1239,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
-				PRODUCT_NAME = SyncClient;
+				PRODUCT_NAME = RhoConnectClient;
 				RHO_NO_RUBY = 1;
 				SDKROOT = iphoneos;
 				SYMROOT = ../build;
@@ -1256,7 +1252,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				DSTROOT = /tmp/SyncClient.dst;
+				DSTROOT = /tmp/RhoConnectClient.dst;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
@@ -1273,7 +1269,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
-				PRODUCT_NAME = SyncClient;
+				PRODUCT_NAME = RhoConnectClient;
 				RHO_NO_RUBY = 1;
 				SDKROOT = iphoneos;
 				SYMROOT = ../build;
@@ -1320,7 +1316,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "SyncClient" */ = {
+		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "RhoConnectClient" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1DEB922308733DC00010E9CD /* Debug */,

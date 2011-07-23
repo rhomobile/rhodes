@@ -6,14 +6,14 @@
 //  Copyright 2010 __MyCompanyName__. All rights reserved.
 //
 
-#import "syncEngine.h"
+#import "RhoConnectEngine.h"
 
-@implementation SyncEngine
+@implementation RhoConnectEngine
 
 @synthesize loginState;
 @synthesize product;
 
-static SyncEngine *sharedInst = nil;
+static RhoConnectEngine *sharedInst = nil;
 
 + (void)create
 {
