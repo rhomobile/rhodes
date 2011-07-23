@@ -10,7 +10,7 @@
 #import "RhomModel.h"
 #import "RhoConnectNotify.h"
 #import "RhoConnectObjectNotify.h"
-#include "SyncClient/SyncClient.h"
+#include "RhoConnectClient/RhoConnectClient.h"
 
 @interface RhoConnectClient : NSObject {
 }

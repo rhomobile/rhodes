@@ -7,7 +7,7 @@
 //
 
 #import "RootViewController.h"
-#import "SyncEngine.h"
+#import "RhoConnectEngine.h"
 
 #define ROW_HEIGHT 40
 #define CELL_WIDTH 320.0
@@ -93,7 +93,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section 
 {
 	if (!arItems)
-		arItems = [[SyncEngine sharedInstance].product find_all:nil];
+		arItems = [[RhoConnectEngine sharedInstance].product find_all:nil];
 	
 	//warning here because this may be dictionary or an array when called.
     return (NSUInteger)[arItems count];

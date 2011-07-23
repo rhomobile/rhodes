@@ -7,7 +7,7 @@
 //
 
 #import "RhomModel.h"
-#import "SyncClient/SyncClient.h"
+#import "RhoConnectClient/RhoConnectClient.h"
 #include "sync/SyncThread.h"
 #import "RhoConnectClient.h"
 
