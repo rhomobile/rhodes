@@ -966,11 +966,6 @@ boolean CRhodesApp::isOnStartPage()
 
 }
 
-boolean CRhodesApp::isBaseUrl(const String& strUrl)
-{
-    return String_startsWith(strUrl, m_strHomeUrl);
-}
-
 const String& CRhodesApp::getBaseUrl()
 {
     return m_strHomeUrl;

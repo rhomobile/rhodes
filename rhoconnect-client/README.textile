@@ -1,0 +1,23 @@
+h1. RhoConnect-Client
+
+The "RhoConnect-Client":http://github.com/rhomobile/rhodes/rhoconnect-client is a framework for building client application for RhoConnect.
+
+RhoConnect-Client is available as an open source product under the MIT license.  For developers interested a commercial license is still "available":http://rhomobile.com/products/rhodes/license/.
+
+h2. INTRODUCTION  
+
+
+h2. STARTING A RhoConnect-Client APPLICATION
+
+Install RhoConnect-Client:
+
+  Download rhoconnect-client-x.x.x.zip from http://github.com/rhomobile/rhodes/downloads and follow instructions: http://docs.rhomobile.com/rhosync/client
+
+h2. MORE RESOURCES
+
+The "RhoConnect-Client Developer Reference": http://docs.rhomobile.com/rhosync/client
+
+For further questions "email us":mailto:info@rhomobile.com or join the "Google Group":http://groups.google.com/group/rhomobile.
+
+For questions on licensing contact "our sales team":mailto:sales@rhomobile.com
+

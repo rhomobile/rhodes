@@ -3,7 +3,7 @@
 #include "NetRequestImpl.h"
 #include "common/RhoFile.h"
 #include "common/RhoFilePath.h"
-#include "common/RhodesApp.h"
+#include "common/RhodesAppBase.h"
 #include "common/StringConverter.h"
 #include "net/URI.h"
 #include "common/RhoConf.h"
@@ -54,7 +54,7 @@ void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession
     LOG(INFO) + "Method: " + method + ";Url: " + strUrl;
     do 
     {
-        if ( !initConnection(RHODESAPP().isBaseUrl(strUrl.c_str()), strUrlW) )
+        if ( !initConnection(RHODESAPPBASE().isBaseUrl(strUrl.c_str()), strUrlW) )
             break;
 
         DWORD dwUrlLength = 1024;
