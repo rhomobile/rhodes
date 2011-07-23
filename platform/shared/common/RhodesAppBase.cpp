@@ -90,6 +90,12 @@ String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl)
     return strUrl;
 }
 
+boolean CRhodesAppBase::isBaseUrl(const String& strUrl)
+{
+    return String_startsWith(strUrl, m_strHomeUrl);
+}
+
+
 } //namespace common
 } //namespace rho
 
