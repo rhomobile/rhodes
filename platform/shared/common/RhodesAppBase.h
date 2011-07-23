@@ -41,6 +41,7 @@ public:
     const String& getHomeUrl(){ return m_strHomeUrl; }
 
     String canonicalizeRhoUrl(const String& strUrl) ;
+    boolean isBaseUrl(const String& strUrl);
 
 protected:
     virtual void run(){}

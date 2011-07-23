@@ -895,7 +895,7 @@ task :gem do
   out = ""
   Dir.glob("**/*") do |fname| 
     # TODO: create exclusion list
-    out << fname + "\n" if File.file? fname and not fname =~ /rhosync-client/
+    out << fname + "\n" if File.file? fname and not fname =~ /rhoconnect-client/
   end
   File.open("Manifest.txt",'w') {|f| f.write(out)}
 
@@ -972,29 +972,30 @@ task :rdocpush => :rdoc do
 end
 
 namespace "build" do
-    #    desc "Build rhosync-client package"
-    task :rhosync_client do
+    #    desc "Build rhoconnect-client package"
+    task :rhoconnect_client do
 
-        ver = File.read("rhosync-client/version").chomp #.gsub(".", "_")
-        zip_name = "rhosync-client-"+ver+".zip"
+        ver = File.read("rhoconnect-client/version").chomp #.gsub(".", "_")
+        zip_name = "rhoconnect-client-"+ver+".zip"
 
-        bin_dir = "rhosync-client-bin"
-        src_dir = bin_dir + "/rhosync-client-"+ver #"/src"        
+        bin_dir = "rhoconnect-client-bin"
+        src_dir = bin_dir + "/rhoconnect-client-"+ver #"/src"        
         shared_dir = src_dir + "/platform/shared"        
         rm_rf bin_dir
         rm    zip_name if File.exists? zip_name
         mkdir_p bin_dir
         mkdir_p src_dir
 
-        cp_r 'rhosync-client', src_dir, :preserve => true
+        cp_r 'rhoconnect-client', src_dir, :preserve => true
         
-        mv src_dir+"/rhosync-client/license", src_dir
-        mv src_dir+"/rhosync-client/README.textile", src_dir
-        mv src_dir+"/rhosync-client/version", src_dir
-        mv src_dir+"/rhosync-client/changelog", src_dir
+        mv src_dir+"/rhoconnect-client/license", src_dir
+        mv src_dir+"/rhoconnect-client/README.textile", src_dir
+        mv src_dir+"/rhoconnect-client/version", src_dir
+        mv src_dir+"/rhoconnect-client/changelog", src_dir
                 
-        Dir.glob(src_dir+"/rhosync-client/**/*").each do |f|
+        Dir.glob(src_dir+"/rhoconnect-client/**/*").each do |f|
 		    #puts f
+		    
             rm_rf f if f.index("/build/") || f.index(".DS_Store")         
  
         end
@@ -1003,8 +1004,7 @@ namespace "build" do
         
         Dir.glob("platform/shared/*").each do |f|
             next if f == "platform/shared/ruby" || f == "platform/shared/rubyext" || f == "platform/shared/xruby" || f == "platform/shared/shttpd" ||
-                f == "platform/shared/stlport"        
- 
+                f == "platform/shared/stlport"  || f == "platform/shared/qt"
             #puts f                
             cp_r f, shared_dir #, :preserve => true                        
         end
