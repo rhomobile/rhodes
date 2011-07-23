@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "SyncClient/SyncClient.h"
+#include "RhoConnectClient/RhoConnectClient.h"
 
 @interface RhoConnectNotify : NSObject {
 }

@@ -7,13 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "Classes/SyncEngine.h"
+#import "Classes/RhoConnectEngine.h"
 
 int main(int argc, char *argv[]) {
     
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 	
-	[SyncEngine create];// init SyncEngine singleton
+	[RhoConnectEngine create];// init RhoConnectEngine singleton
 	
     int retVal = UIApplicationMain(argc, argv, nil, nil);
 	

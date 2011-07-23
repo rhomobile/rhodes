@@ -8,7 +8,7 @@
 
 #import "storeAppDelegate.h"
 #import "RootViewController.h"
-#import "SyncEngine.h"
+#import "RhoConnectEngine.h"
 
 @implementation storeAppDelegate
 
@@ -63,7 +63,7 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application 
 {
-	[SyncEngine destroy];	
+	[RhoConnectEngine destroy];	
 }
 
 

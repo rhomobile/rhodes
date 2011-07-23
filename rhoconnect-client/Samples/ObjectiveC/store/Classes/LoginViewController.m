@@ -6,7 +6,7 @@
 //  Copyright 2010 __MyCompanyName__. All rights reserved.
 //
 
-#import "SyncEngine.h"
+#import "RhoConnectEngine.h"
 #import "LoginViewController.h"
 
 
@@ -16,7 +16,7 @@
 
 - (void)viewDidLoad 
 {
-	if ( [SyncEngine sharedInstance].loginState == logged_in )
+	if ( [RhoConnectEngine sharedInstance].loginState == logged_in )
 		[[self navigationController] pushViewController:indexPage animated:YES];
 	else
 		[super viewDidLoad];
@@ -25,10 +25,10 @@
 
 - (void)loginComplete:(RhoConnectNotify*) notify
 {
-	if ( notify.error_code != RHO_ERR_NONE || ![[SyncEngine sharedInstance].syncClient is_logged_in]) 
-		[SyncEngine sharedInstance].loginState = failed;	
+	if ( notify.error_code != RHO_ERR_NONE || ![[RhoConnectEngine sharedInstance].syncClient is_logged_in]) 
+		[RhoConnectEngine sharedInstance].loginState = failed;	
 	else
-		[SyncEngine sharedInstance].loginState = logged_in;	
+		[RhoConnectEngine sharedInstance].loginState = logged_in;	
 	 
 	[waitPage loginComplete: [notify error_message] ];	
 	
@@ -37,10 +37,10 @@
 
 - (IBAction)doLogin:(id)sender 
 {
-	[SyncEngine sharedInstance].loginState = in_progress;	
+	[RhoConnectEngine sharedInstance].loginState = in_progress;	
 	[[self navigationController] pushViewController:waitPage animated:YES];
 	
-	[ [SyncEngine sharedInstance].syncClient loginWithUser:txtLogin.text pwd:txtPassword.text callback:@selector(loginComplete:) target:self];	
+	[ [RhoConnectEngine sharedInstance].syncClient loginWithUser:txtLogin.text pwd:txtPassword.text callback:@selector(loginComplete:) target:self];	
 }
 
 /*

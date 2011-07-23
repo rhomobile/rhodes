@@ -16,7 +16,7 @@ enum LoginState {
 	failed
 };
 
-@interface SyncEngine : NSObject {
+@interface RhoConnectEngine : NSObject {
 	enum LoginState loginState;
 	
 	RhomModel* customer;	
@@ -27,7 +27,7 @@ enum LoginState {
 + (void)create;
 + (void)destroy;
 
-+ (SyncEngine *)sharedInstance;
++ (RhoConnectEngine *)sharedInstance;
 
 @property enum LoginState loginState;
 

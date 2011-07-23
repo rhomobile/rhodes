@@ -6,7 +6,7 @@
 //  Copyright 2010 __MyCompanyName__. All rights reserved.
 //
 
-#import "SyncEngine.h"
+#import "RhoConnectEngine.h"
 #import "WaitLoginController.h"
 
 @implementation WaitLoginController
@@ -21,7 +21,7 @@
 	}else if ([notify.status compare:@"complete"] == 0)
 	{
 		[[self navigationController] pushViewController:homePage animated:YES];
-		[ [SyncEngine sharedInstance].syncClient clearNotification];		
+		[ [RhoConnectEngine sharedInstance].syncClient clearNotification];		
 	}else if ([notify.status compare:@"error"] == 0)
 	{
 	}
@@ -31,10 +31,10 @@
 {
 	NSLog(@"Login error message: \"%@\"", errorMessage);
 	[indicator stopAnimating];
-	if ([SyncEngine sharedInstance].loginState == logged_in) 
+	if ([RhoConnectEngine sharedInstance].loginState == logged_in) 
 	{
-		[ [SyncEngine sharedInstance].syncClient setNotification: @selector(syncAllComplete:) target:self];
-		[ [SyncEngine sharedInstance].syncClient syncAll];
+		[ [RhoConnectEngine sharedInstance].syncClient setNotification: @selector(syncAllComplete:) target:self];
+		[ [RhoConnectEngine sharedInstance].syncClient syncAll];
 	} else {
 		lblMessage.text = errorMessage;
 		self.navigationItem.hidesBackButton = false;
@@ -43,7 +43,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	self.navigationItem.title = @"Wait";
-	if ([SyncEngine sharedInstance].loginState == in_progress) {
+	if ([RhoConnectEngine sharedInstance].loginState == in_progress) {
 		[indicator startAnimating];
 		lblMessage.text = @"Working";
 		self.navigationItem.hidesBackButton = true;
