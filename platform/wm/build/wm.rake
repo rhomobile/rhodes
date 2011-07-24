@@ -422,7 +422,7 @@ namespace "run" do
   namespace "wm" do    
     task :rhosimulator => "config:common" do    
        $rhosim_config = "platform='wm'\r\n"
-       Rake::Task["run:win32:rhosimulator"].invoke            
+       Rake::Task["run:rhosimulator"].invoke            
     end
   end
 
