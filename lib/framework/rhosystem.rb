@@ -141,6 +141,11 @@ class RhoLog
 	def error(cat, msg)
 		puts "ERROR:" + cat + ":" + msg
 	end
+	
+	def debug(cat, msg)
+		puts "DEBUG:" + cat + ":" + msg
+	end
+	
 	def flush
 	end
 	def fileno
