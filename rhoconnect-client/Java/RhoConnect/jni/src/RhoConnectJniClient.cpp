@@ -146,25 +146,39 @@ RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_getPollIn
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_setBulkSyncState
   (JNIEnv *, jobject, jint)
 {
+    rho_conf_setInt("bulksync_state", state);
 }
 
 RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_getBulkSyncState
   (JNIEnv *, jobject)
 {
-    return (jint)0;
+    return rho_conf_getInt("bulksync_state");
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_setConfigString
-  (JNIEnv *, jobject, jstring, jstring)
+  (JNIEnv *, jobject, jstring jname, jstring jvalue)
 {
+    std::string name = rho_cast<std::string>(env, jname);
+    std::string value = rho_cast<std::string>(env, jvalue);
+    if (name.compare("MinSeverity") == 0) {
+        int severity;
+        rho::common::convertFromStringA(value.c_str(), severity);
+        rho_logconf_setSeverity(severity);
+    } else
+        rho_conf_setString(name.c_str(), value.c_str());
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_getConfigString
-  (JNIEnv * env, jobject, jstring)
+  (JNIEnv * env, jobject, jstring jname)
 {
-    const char* cs = "";
-    return rho_cast<jhstring>(env, cs).release();
-}
+    std::string name = rho_cast<std::string>(env, jname);
+    const char* value = rho_conf_getString(name.c_str());
+
+    jhstring jhvalue = rho_cast<jhstring>(env, value ? value : "");
+    if (value)
+        rho_conf_freeString(const_cast<char*>(value));
+
+    return jhvalue.release();}
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_initDatabase
   (JNIEnv *, jobject)
@@ -174,6 +188,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_initDatab
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_databaseFullResetAndLogout
   (JNIEnv *, jobject)
 {
+    rho_syncclient_database_full_reset_and_logout();
 }
 
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_isLoggedIn
