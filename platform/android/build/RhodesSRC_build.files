@@ -6,8 +6,6 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/LocalFileProvider.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/Logger.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/NativeBar.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/NavBar.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/NetworkConnectivityListener.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/NetworkStateTracker.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/PushReceiver.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/PushService.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhoConf.java
