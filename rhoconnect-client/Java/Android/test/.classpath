@@ -4,6 +4,6 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="lib" path="rhoimpl.jar"/>
-	<classpathentry kind="lib" path="rhosync.jar"/>
+	<classpathentry kind="lib" path="rhoconnectclient.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
