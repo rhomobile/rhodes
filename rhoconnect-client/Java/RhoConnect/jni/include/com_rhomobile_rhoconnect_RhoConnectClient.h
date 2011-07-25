@@ -10,10 +10,18 @@ extern "C" {
 /*
  * Class:     com_rhomobile_rhoconnect_RhoConnectClient
  * Method:    initialize
- * Signature: ([Lcom/rhomobile/rhosync/RhomModel;)V
+ * Signature: ([Lcom/rhomobile/rhoconnect/RhomModel;)V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_initialize
   (JNIEnv *, jobject, jobjectArray);
+
+/*
+ * Class:     com_rhomobile_rhoconnect_RhoConnectClient
+ * Method:    destroy
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_destroy
+  (JNIEnv *, jobject);
 
 /*
  * Class:     com_rhomobile_rhoconnect_RhoConnectClient
@@ -106,7 +114,7 @@ JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_isLogg
 /*
  * Class:     com_rhomobile_rhoconnect_RhoConnectClient
  * Method:    loginWithUser
- * Signature: (Ljava/lang/String;Ljava/lang/String;)Lcom/rhomobile/rhosync/RhoSyncNotify;
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)Lcom/rhomobile/rhoconnect/RhoConnectNotify;
  */
 JNIEXPORT jobject JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_loginWithUser
   (JNIEnv *, jobject, jstring, jstring);
@@ -114,7 +122,7 @@ JNIEXPORT jobject JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_loginWi
 /*
  * Class:     com_rhomobile_rhoconnect_RhoConnectClient
  * Method:    syncAll
- * Signature: ()Lcom/rhomobile/rhosync/RhoSyncNotify;
+ * Signature: ()Lcom/rhomobile/rhoconnect/RhoConnectNotify;
  */
 JNIEXPORT jobject JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_syncAll
   (JNIEnv *, jobject);
@@ -122,10 +130,10 @@ JNIEXPORT jobject JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_syncAll
 /*
  * Class:     com_rhomobile_rhoconnect_RhoConnectClient
  * Method:    nativeInit
- * Signature: (Ljava/lang/String;Ljava/lang/String;)V
+ * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_nativeInit
-  (JNIEnv *, jclass/*, jstring, jstring*/);
+  (JNIEnv *, jclass);
 
 #ifdef __cplusplus
 }
