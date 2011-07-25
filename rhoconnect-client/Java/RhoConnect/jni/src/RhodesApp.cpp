@@ -31,10 +31,10 @@
 namespace rho {
 namespace common {
 
-boolean CRhodesApp::isBaseUrl(const String& strUrl)
-{
-    return String_startsWith(strUrl, getBaseUrl());
-}
+//boolean CRhodesApp::isBaseUrl(const String& strUrl)
+//{
+//    return String_startsWith(strUrl, getBaseUrl());
+//}
 
 const String& CRhodesApp::getBaseUrl()
 {
