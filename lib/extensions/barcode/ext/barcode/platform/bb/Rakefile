@@ -10,7 +10,7 @@ def build_extension
 	#vsrclist = #rhoroot + "/lib/extensions/barcode/ext/barcode/platform/bb/barcode.files"
         
 	vsrclist = "Barcode.files"
-        vsrclist = "Barcode6.files" if ($bbver == '6.0')
+        vsrclist = "Barcode6.files" if ($bbver[0].to_i >= 6 )
 
         args = []
         args << "-g"
