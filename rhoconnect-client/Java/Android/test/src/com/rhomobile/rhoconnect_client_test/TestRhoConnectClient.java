@@ -1,26 +1,26 @@
-package com.rhomobile.rhosync_client_test;
+package com.rhomobile.rhoconnect_client_test;
 
 import android.content.pm.ApplicationInfo;
 import android.test.AndroidTestCase;
 
 import com.rhomobile.rhodes.RhoLogConf;
 import com.rhomobile.rhodes.file.RhoFileApi;
-import com.rhomobile.rhosync.RhoSyncClient;
-import com.rhomobile.rhosync.RhomModel;
+import com.rhomobile.rhoconnect.RhoConnectClient;
+import com.rhomobile.rhoconnect.RhomModel;
+import com.rhomobile.rhoconnect.RhoConnectNotify;
 
-public class TestRhoSyncClient extends AndroidTestCase {
-    private static final String TAG = TestRhoSyncClient.class.getSimpleName();
+public class TestRhoConnectClient extends AndroidTestCase {
+    private static final String TAG = TestRhoConnectClient.class.getSimpleName();
 
 	private final String SYNC_URL = "http://rhodes-store-server.heroku.com/application";
 
-    RhoSyncClient mClient;
+    RhoConnectClient mClient;
     RhomModel mModels[];
-    RhoLogConf mLogConf;
 
     @Override
     protected void setUp()
     {
-		System.loadLibrary("rhosyncclient");
+		System.loadLibrary("rhoconnectclient");
 		
     	ApplicationInfo appInfo = this.getContext().getApplicationInfo();
 		try {
@@ -30,14 +30,15 @@ public class TestRhoSyncClient extends AndroidTestCase {
 			RhoLogConf.setMinSeverity(0);
 			RhoLogConf.setEnabledCategories("*");
 			
-			RhoSyncClient.nativeInit();
+			RhoConnectClient.nativeInit();
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
 		
-    	mClient = new RhoSyncClient();
+    	mClient = new RhoConnectClient();
 
     	mModels = new RhomModel[]{
+    			new RhomModel("Perftest", RhomModel.SYNC_TYPE_NONE),
 				new RhomModel("Customer", RhomModel.SYNC_TYPE_INCREMENTAL),
 				new RhomModel("Product", RhomModel.SYNC_TYPE_INCREMENTAL)
 			};
@@ -46,11 +47,24 @@ public class TestRhoSyncClient extends AndroidTestCase {
         mClient.setThreadedMode(false);
         mClient.setPollInterval(0);
         mClient.setSyncServer(SYNC_URL);
-        mClient.loginWithUser("", "");
+        mClient.setBulkSyncState(1);
+        mClient.databaseFullResetAndLogout();
     }
     
+    @Override
+    protected void tearDown()
+    {
+    	mClient.destroy();
+    }
+    
+    public void testInitiallyLoggedOut()
+    {
+    	assertFalse(mClient.isLoggedIn());
+    }
     public void testLogin()
     {
+        RhoConnectNotify notify = mClient.loginWithUser("", "");
+        assertEquals(notify.getErrorCode(), 0);
         assertTrue(mClient.isLoggedIn());
     }
 

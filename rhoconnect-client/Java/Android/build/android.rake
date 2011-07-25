@@ -47,19 +47,19 @@ BUILDARGS = {
                            "-I#{File.join($sharedpath, "db")}",
                            "-I#{$sharedpath}",
                            "-I#{File.join($sharedpath, "sqlite")}"],
-              "librhosync" => ["-DRHO_NO_RUBY",
+              "libsync" => ["-DRHO_NO_RUBY",
                            "-I#{File.join($sharedpath, "sync")}",
                            "-I#{$sharedpath}",
                            "-I#{File.join($sharedpath, "sqlite")}"],
               "librhoimpl" => ["-DRHO_NO_RUBY",
                            "-I#{File.join($androidpath, "Rhodes", "jni", "include")}",
-                           "-I#{File.join("Java", "RhoSync", "jni", "include")}",
+                           "-I#{File.join("Java", "RhoConnect", "jni", "include")}",
                            "-I#{File.join($sharedpath, "curl", "include")}",
                            "-I#{File.join($sharedpath, "common")}",
                            "-I#{File.join($sharedpath, "sqlite")}",
                            "-I#{$sharedpath}"],
-              "rhosyncclient" => ["-DRHO_NO_RUBY",
-                           "-I#{File.join("Java", "RhoSync", "jni", "include")}",
+              "rhoconnectclient" => ["-DRHO_NO_RUBY",
+                           "-I#{File.join("Java", "RhoConnect", "jni", "include")}",
                            "-I#{$sharedpath}",
                            "-I#{File.join($androidpath, "Rhodes", "jni", "include")}"],
               "libcurl" =>   ["-DHAVE_CONFIG_H",
@@ -91,11 +91,10 @@ LIBS['libunzip']  = File.join(BUILDPATH, 'libunzip.a')
 LIBS['librholog'] = File.join(BUILDPATH, 'librholog.a')
 LIBS['librhocommon'] = File.join(BUILDPATH, 'librhocommon.a')
 LIBS['librhodb']  = File.join(BUILDPATH, 'librhodb.a')
-LIBS['librhosync']  = File.join(BUILDPATH, 'librhosync.a')
+LIBS['libsync']  = File.join(BUILDPATH, 'libsync.a')
 LIBS['librhoimpl']  = File.join(BUILDPATH, 'librhoimpl.a')
-#LIBS['rhosyncclient']  = File.join(BUILDPATH, 'librhosyncclient.a')
 
-CPPLIBS = ['libjson', 'librholog', 'librhocommon', 'librhodb', 'librhosync', 'librhoimpl', 'rhosyncclient']
+CPPLIBS = ['libjson', 'librholog', 'librhocommon', 'librhodb', 'libsync', 'librhoimpl', 'rhoconnectclient']
 
 LIBS.each do |name, filename|
   sources = get_sources(name)
@@ -104,17 +103,17 @@ LIBS.each do |name, filename|
   LIBFN.include filename
 end
 
-librhosyncclient_src = get_sources "rhosyncclient"
-SRC.include librhosyncclient_src
-OBJ.include get_objects(librhosyncclient_src, File.join(BUILDPATH, "rhosyncclient"))
+librhoconnectclient_src = get_sources "rhoconnectclient"
+SRC.include librhoconnectclient_src
+OBJ.include get_objects(librhoconnectclient_src, File.join(BUILDPATH, "rhoconnectclient"))
 
 CLEAN.include OBJ
 CLEAN.include LIBFN
-CLEAN.include File.join(BUILDPATH, 'librhosyncclient.so')
+CLEAN.include File.join(BUILDPATH, 'librhoconnectclient.so')
 
 namespace "android" do
 
-  task :default => [File.join(BUILDPATH, 'librhosyncclient.so'), File.join(BUILDPATH, "rhoimpl.jar")]
+  task :default => [File.join(BUILDPATH, 'librhoconnectclient.so'), File.join(BUILDPATH, "rhoimpl.jar")]
 
   namespace "config" do
 
@@ -139,7 +138,7 @@ namespace "android" do
       LIBS.each do |name, filename|
         fill_obj_src_lib name, buildpath
       end
-      fill_obj_src_lib "rhosyncclient", buildpath
+      fill_obj_src_lib "rhoconnectclient", buildpath
     end
 
     def build_args()
@@ -181,7 +180,7 @@ namespace "android" do
 
   namespace "build" do
 
-    task :libraries => [:libcurl, :libsqlite, :libjson, :libunzip, :librholog, :librhocommon, :librhodb, :librhosync, :librhoimpl]
+    task :libraries => [:libcurl, :libsqlite, :libjson, :libunzip, :librholog, :librhocommon, :librhodb, :libsync, :librhoimpl]
 
     task :libsqlite => [File.join(BUILDPATH, 'libsqlite'), LIBS['libsqlite'] ]
 
@@ -197,11 +196,11 @@ namespace "android" do
 
     task :librhodb => [File.join(BUILDPATH, 'librhodb'), LIBS['librhodb'] ]
 
-    task :librhosync => [File.join(BUILDPATH, 'librhosync'), LIBS['librhosync'] ]
+    task :libsync => [File.join(BUILDPATH, 'libsync'), LIBS['libsync'] ]
 
     task :librhoimpl => [File.join(BUILDPATH, 'librhoimpl'), LIBS['librhoimpl'] ]
 
-    task :rhosyncclient => [File.join(BUILDPATH, 'librhosyncclient.so')]
+    task :rhoconnectclient => [File.join(BUILDPATH, 'librhoconnectclient.so')]
 
   end # namespace "build"
 
@@ -236,14 +235,14 @@ end # namespace "android"
     directory File.join(BUILDPATH, 'librhodb')
     file File.join(BUILDPATH, 'librhodb') => BUILDPATH
 
-    directory File.join(BUILDPATH, 'librhosync')
-    file File.join(BUILDPATH, 'librhosync') => BUILDPATH
+    directory File.join(BUILDPATH, 'libsync')
+    file File.join(BUILDPATH, 'libsync') => BUILDPATH
 
     directory File.join(BUILDPATH, 'librhoimpl')
     file File.join(BUILDPATH, 'librhoimpl') => BUILDPATH
 
-    directory File.join(BUILDPATH, 'rhosyncclient')
-    file File.join(BUILDPATH, 'rhosyncclient') => BUILDPATH
+    directory File.join(BUILDPATH, 'rhoconnectclient')
+    file File.join(BUILDPATH, 'rhoconnectclient') => BUILDPATH
 
     directory File.join(BUILDPATH, 'RhoImplJava')
     file File.join(BUILDPATH, 'RhoImplJava') => BUILDPATH
@@ -273,7 +272,7 @@ end # namespace "android"
       src
     end
 
-    file File.join(BUILDPATH, 'librhosyncclient.so') => ["android:build:libraries"].concat(get_objects(get_sources('rhosyncclient'),File.join(BUILDPATH, "rhosyncclient"))) do |t|
+    file File.join(BUILDPATH, 'librhoconnectclient.so') => ["android:build:libraries"].concat(get_objects(get_sources('rhoconnectclient'),File.join(BUILDPATH, "rhoconnectclient"))) do |t|
       objects = t.prerequisites
       objects.delete_at(objects.index("android:build:libraries"))
       if USE_TRACES

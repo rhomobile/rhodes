@@ -18,12 +18,12 @@
  ============================================================================
  */
 
-package com.rhomobile.rhosync;
+package com.rhomobile.rhoconnect;
 
 import java.io.Closeable;
 import java.io.IOException;
 
-public class RhoSyncClient implements Closeable {
+public class RhoConnectClient implements Closeable {
 	public native void initialize(RhomModel models[]);
 	public native void destroy();
 	
@@ -42,15 +42,14 @@ public class RhoSyncClient implements Closeable {
 	public native String getConfigString(String name);
 
 	public native void initDatabase();
-	public native void addModels(RhomModel[] models);
 	public native void databaseFullResetAndLogout();
 	public native boolean isLoggedIn();
 	
-	public native RhoSyncNotify loginWithUser(String user, String pass);
-	public native RhoSyncNotify syncAll();
+	public native RhoConnectNotify loginWithUser(String user, String pass);
+	public native RhoConnectNotify syncAll();
 
 	/*TODO:
-	RhoSyncNotify search(...);
+	RhoConnectNotify search(...);
 	*/
 	
 	public static native void nativeInit(/*String root, String sqliteJournals*/);

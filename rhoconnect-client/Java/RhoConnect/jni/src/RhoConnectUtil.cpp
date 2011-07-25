@@ -31,7 +31,7 @@
 #include "logging/RhoLogConf.h"
 
 #undef DEFAULT_LOGCATEGORY
-#define DEFAULT_LOGCATEGORY "RhoSyncUtil"
+#define DEFAULT_LOGCATEGORY "RhoConnectUtil"
 
 RHO_GLOBAL void delete_files_in_folder(const char *szFolderPath)
 {

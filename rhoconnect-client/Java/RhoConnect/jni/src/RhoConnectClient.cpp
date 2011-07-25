@@ -29,18 +29,18 @@
 #include "common/RhoStd.h"
 #include "rhodes/JNIRhodes.h"
 #include "sync/SyncThread.h"
-#include "SyncClient/SyncClient.h"
+#include "RhoConnectClient/RhoConnectClient.h"
 
-#include "com_rhomobile_rhosync_RhoSyncClient.h"
-#include "com_rhomobile_rhosync_RhomModel.h"
+#include "com_rhomobile_rhoconnect_RhoConnectClient.h"
+#include "com_rhomobile_rhoconnect_RhomModel.h"
 
 typedef std::vector<RHOM_MODEL> model_vector;
 typedef std::vector<rho::String> string_vector;
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhosync_RhomModel_init
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhomModel_init
   (JNIEnv * env, jobject jmodel)
 {
-    jclass clsmodel = getJNIClass(RHOSYNC_JAVA_CLASS_RHOMMODEL);
+    jclass clsmodel = getJNIClass(RHOCONNECT_JAVA_CLASS_RHOMMODEL);
     if (!clsmodel) return;
 
     jmethodID midmodeltype = getJNIClassMethod(env, clsmodel, "setModelType", "(I)V");
@@ -53,7 +53,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhosync_RhomModel_init
     if (!midpart) return;
 
     RHOM_MODEL model;
-    rho_syncclient_initmodel(&model);
+    rho_connectclient_initmodel(&model);
 
     env->CallVoidMethod(jmodel, midmodeltype, model.type);
     env->CallVoidMethod(jmodel, midsynctype, model.sync_type);
@@ -62,10 +62,10 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhosync_RhomModel_init
 }
 
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_initialize
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_initialize
   (JNIEnv * env, jobject, jobjectArray jmodels)
 {
-    jclass clsmodel = getJNIClass(RHOSYNC_JAVA_CLASS_RHOMMODEL);
+    jclass clsmodel = getJNIClass(RHOCONNECT_JAVA_CLASS_RHOMMODEL);
     if (!clsmodel) return;
     jmethodID midname = getJNIClassMethod(env, clsmodel, "getName", "()Ljava/lang/String;");
     if (!midname) return;
@@ -103,85 +103,85 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_initialize
         model.partition = const_cast<char*>(partition.c_str());
     }
 
-    rho_syncclient_init(&models.front(), models.size());
+    rho_connectclient_init(&models.front(), models.size());
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_setSyncServer
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_setSyncServer
   (JNIEnv * env, jobject, jstring host)
 {
     rho_sync_set_syncserver(rho_cast<std::string>(env, host).c_str());
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_setThreadedMode
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_setThreadedMode
   (JNIEnv *, jobject, jboolean jmode)
 {
     bool mode = jmode;
     rho_sync_set_threaded_mode(mode ? 1 : 0);
 }
 
-//RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_getThreadedMode
+//RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_getThreadedMode
 //  (JNIEnv *, jobject)
 //{
 //    return (jboolean)(rho_sync_get_threaded_mode() != 0);
 //}
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_setPollInterval
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_setPollInterval
   (JNIEnv *, jobject, jint time)
 {
     rho_sync_set_pollinterval(time);
 }
 
-RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_getPollInterval
+RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_getPollInterval
   (JNIEnv *, jobject)
 {
     return (jint)rho_sync_get_pollinterval();
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_setBulkSyncState
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_setBulkSyncState
   (JNIEnv *, jobject, jint)
 {
 }
 
-RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_getBulkSyncState
+RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_getBulkSyncState
   (JNIEnv *, jobject)
 {
     return (jint)0;
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_setConfigString
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_setConfigString
   (JNIEnv *, jobject, jstring, jstring)
 {
 }
 
-RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_getConfigString
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_getConfigString
   (JNIEnv * env, jobject, jstring)
 {
     const char* cs = "";
     return rho_cast<jhstring>(env, cs).release();
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_initDatabase
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_initDatabase
   (JNIEnv *, jobject)
 {
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_addModels
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_addModels
   (JNIEnv *, jobject, jobjectArray)
 {
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_databaseFullResetAndLogout
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_databaseFullResetAndLogout
   (JNIEnv *, jobject)
 {
 }
 
-RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_isLoggedIn
+RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_isLoggedIn
   (JNIEnv *, jobject)
 {
     return (jboolean)rho_sync_logged_in() == 1;
 }
 
-RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_loginWithUser
+RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_loginWithUser
   (JNIEnv * env, jobject, jstring juser, jstring jpass)
 {
     unsigned long res = rho_sync_login(rho_cast<std::string>(env, juser).c_str(),
@@ -190,13 +190,13 @@ RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_loginWithUse
     return (jobject)NULL;
 }
 
-RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_syncAll
+RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_syncAll
   (JNIEnv *, jobject)
 {
     return (jobject)NULL;
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhosync_RhoSyncClient_nativeInit
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_nativeInit
   (JNIEnv * env, jclass/*, jstring root, jstring sqliteJournals*/)
 {
     //android_set_path(rho_cast<rho::String>(root), rho_cast<rho::String>(sqliteJournals));
