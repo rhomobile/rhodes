@@ -95,6 +95,7 @@ static char* rb_type_to_s(VALUE obj);
 //extern int ruby_thread_set_native(rb_thread_t *th);
 //extern int native_mutex_lock(rb_thread_lock_t *);
 //extern void Init_native_thread2(rb_thread_t *th);
+extern int rho_conf_getBool(const char* szName);
 
 #if defined(WIN32)
 extern void rb_w32_sysinit(int *argc, char ***argv);
