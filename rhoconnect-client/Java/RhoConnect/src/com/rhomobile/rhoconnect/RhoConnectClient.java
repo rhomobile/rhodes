@@ -52,7 +52,7 @@ public class RhoConnectClient implements Closeable {
 	RhoConnectNotify search(...);
 	*/
 	
-	public static native void nativeInit(/*String root, String sqliteJournals*/);
+	public static native void nativeInit();
 	
 	@Override
 	public void close() throws IOException {
