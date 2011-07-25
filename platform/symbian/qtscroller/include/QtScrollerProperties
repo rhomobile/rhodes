@@ -1,0 +1,5 @@
+#include <QtGlobal>
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 8, 0))
+#  error "Please do not use the QtScroller solution with Qt > 4.7 - use the internal QScroller class instead"
+#endif
+#include "../src/qtscrollerproperties.h"
