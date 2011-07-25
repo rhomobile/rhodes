@@ -18,7 +18,7 @@
  ============================================================================
  */
 
-package com.rhomobile.rhosync;
+package com.rhomobile.rhoconnect;
 
 public class RhomModel {
 	public final static int MODEL_TYPE_PROPERTY_BAG = 0;
@@ -54,7 +54,7 @@ public class RhomModel {
     public String getPartition() { return mPartition; }
     public void setPartition(String part) { mPartition = part; }
 	
-	//RhoSyncNotify sync() {}
+	//RhoConnectNotify sync() {}
 	/* TODO:
 	create();
 	find(String text);

@@ -8,6 +8,6 @@
 ../platform/android/Rhodes/jni/src/sslimpl.cpp
 ../platform/android/Rhodes/jni/src/rhocryptimpl.cpp
 ../platform/android/Rhodes/jni/src/fileapi.cpp
-Java/RhoSync/jni/src/RhoSyncUtil.cpp
-Java/RhoSync/jni/src/RhodesApp.cpp
+Java/RhoConnect/jni/src/RhoConnectUtil.cpp
+Java/RhoConnect/jni/src/RhodesApp.cpp
 

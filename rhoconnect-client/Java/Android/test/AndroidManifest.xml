@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="com.rhomobile.rhosync_client_test"
+      package="com.rhomobile.rhoconnect_client_test"
       android:versionCode="1"
       android:versionName="1.0">
     <uses-sdk android:minSdkVersion="7" />
-    <instrumentation android:targetPackage="com.rhomobile.rhosync_client_test" android:name="android.test.InstrumentationTestRunner" />
+    <instrumentation android:targetPackage="com.rhomobile.rhoconnect_client_test" android:name="android.test.InstrumentationTestRunner" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
     <application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true">

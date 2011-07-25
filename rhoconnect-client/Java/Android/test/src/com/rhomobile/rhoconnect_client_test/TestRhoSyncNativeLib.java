@@ -1,7 +1,7 @@
-package com.rhomobile.rhosync_client_test;
+package com.rhomobile.rhoconnect_client_test;
 
 import com.rhomobile.rhodes.file.RhoFileApi;
-import com.rhomobile.rhosync.RhoSyncClient;
+import com.rhomobile.rhosync.RhoConnectClient;
 import com.rhomobile.rhosync.RhomModel;
 
 import android.content.pm.ApplicationInfo;
