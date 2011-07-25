@@ -53,6 +53,11 @@
 #define strnicmp strncasecmp
 #endif
 
+#ifdef OS_SYMBIAN
+#include "qwebviewselectionsuppressor.h"
+#include "qwebviewkineticscroller.h"
+#endif
+
 IMPLEMENT_LOGCLASS(QtMainWindow,"MainWindow");
 
 extern "C" {
@@ -97,6 +102,13 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
 
     // connecting WebInspector
     main_webInspector->setPage(ui->webView->page());
+
+#ifdef OS_SYMBIAN
+    QWebViewKineticScroller *newScroller = new QWebViewKineticScroller();
+    newScroller->setWidget(this->ui->webView);
+    QWebViewSelectionSuppressor* suppressor = new QWebViewSelectionSuppressor(this->ui->webView);
+#endif
+
     webInspectorWindow->show();
 }
 
