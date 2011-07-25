@@ -27,40 +27,15 @@
 #include <vector>
 
 #include "common/RhoStd.h"
+#include "common/RhoConf.h"
 #include "rhodes/JNIRhodes.h"
 #include "sync/SyncThread.h"
 #include "RhoConnectClient/RhoConnectClient.h"
 
 #include "com_rhomobile_rhoconnect_RhoConnectClient.h"
-#include "com_rhomobile_rhoconnect_RhomModel.h"
 
 typedef std::vector<RHOM_MODEL> model_vector;
 typedef std::vector<rho::String> string_vector;
-
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhomModel_init
-  (JNIEnv * env, jobject jmodel)
-{
-    jclass clsmodel = getJNIClass(RHOCONNECT_JAVA_CLASS_RHOMMODEL);
-    if (!clsmodel) return;
-
-    jmethodID midmodeltype = getJNIClassMethod(env, clsmodel, "setModelType", "(I)V");
-    if (!midmodeltype) return;
-    jmethodID midsynctype = getJNIClassMethod(env, clsmodel, "setSyncType", "(I)V");
-    if (!midsynctype) return;
-    jmethodID midsyncpri = getJNIClassMethod(env, clsmodel, "setSyncPriority", "(I)V");
-    if (!midsyncpri) return;
-    jmethodID midpart = getJNIClassMethod(env, clsmodel, "setPartition", "(Ljava/lang/String;)V");
-    if (!midpart) return;
-
-    RHOM_MODEL model;
-    rho_connectclient_initmodel(&model);
-
-    env->CallVoidMethod(jmodel, midmodeltype, model.type);
-    env->CallVoidMethod(jmodel, midsynctype, model.sync_type);
-    env->CallVoidMethod(jmodel, midsyncpri, model.sync_priority);
-    env->CallVoidMethod(jmodel, midpart, rho_cast<jhstring>(env, model.partition).get());
-}
-
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_initialize
   (JNIEnv * env, jobject, jobjectArray jmodels)
@@ -144,7 +119,7 @@ RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_getPollIn
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_setBulkSyncState
-  (JNIEnv *, jobject, jint)
+  (JNIEnv *, jobject, jint state)
 {
     rho_conf_setInt("bulksync_state", state);
 }
@@ -156,7 +131,7 @@ RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_getBulkSy
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_setConfigString
-  (JNIEnv *, jobject, jstring jname, jstring jvalue)
+  (JNIEnv * env, jobject, jstring jname, jstring jvalue)
 {
     std::string name = rho_cast<std::string>(env, jname);
     std::string value = rho_cast<std::string>(env, jvalue);
@@ -188,7 +163,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_initDatab
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_databaseFullResetAndLogout
   (JNIEnv *, jobject)
 {
-    rho_syncclient_database_full_reset_and_logout();
+    rho_connectclient_database_full_reset_and_logout();
 }
 
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_isLoggedIn
