@@ -20,6 +20,7 @@ DEFINES += __SYMBIAN32__
 
 INCLUDEPATH += ../..
 INCLUDEPATH += ../../shared/curl/include
+INCLUDEPATH += ../../shared
 
 HEADERS += ../../shared/curl/lib/arpa_telnet.h\
 ../../shared/curl/lib/connect.h\

@@ -25,7 +25,7 @@ symbian:TARGET.UID3 = 0xE271409B
 #symbian:DEPLOYMENT.installer_header = 0x2002CCCF
 
 # Allow network access on Symbian
-symbian:TARGET.CAPABILITY += NetworkServices #LocalServices NetworkServices ReadUserData UserEnvironment WriteUserData
+symbian:TARGET.CAPABILITY += NetworkServices LocalServices ReadUserData UserEnvironment WriteUserData
 
 symbian:TARGET.EPOCSTACKSIZE = 80000
 symbian:TARGET.EPOCHEAPSIZE = 0x100000 0x2400000
@@ -49,7 +49,6 @@ SOURCES += ../../shared/qt/rhodes/QtWebInspector.cpp \
     ../../shared/qt/rhodes/impl/RhoFileImpl.cpp \
     ../../shared/qt/rhodes/impl/RhodesImpl.cpp \
     ../../shared/qt/rhodes/impl/RhoClassFactoryImpl.cpp \
-    ../../shared/qt/rhodes/impl/PhonebookImpl.cpp \
     ../../shared/qt/rhodes/impl/NativeToolbarImpl.cpp \
     ../../shared/qt/rhodes/impl/NativeTabbarImpl.cpp \
     ../../shared/qt/rhodes/impl/MapViewImpl.cpp \
@@ -70,7 +69,11 @@ HEADERS += ../../shared/qt/rhodes/QtWebInspector.h \
     ../../shared/qt/rhodes/impl/NativeToolbarImpl.h \
     ../../shared/qt/rhodes/impl/NativeTabbarImpl.h \
     ../../shared/qt/rhodes/impl/MainWindowImpl.h \
-    ../../shared/qt/rhodes/DateTimeDialog.h
+    ../../shared/qt/rhodes/DateTimeDialog.h \
+    src/qwebviewselectionsuppressor.h \
+    src/qwebviewkineticscroller.h \
+    src/qkineticscroller_p.h \
+    src/qkineticscroller.h
 FORMS += \
     ../../shared/qt/rhodes/QtWebInspector.ui \
     ../../shared/qt/rhodes/QtMainWindow.ui \
@@ -110,12 +113,19 @@ LIBS += ../rubylib/debug/rubylib.lib\
 
 symbian {
 INCLUDEPATH += ../../shared/curl/include
+INCLUDEPATH += src
+INCLUDEPATH += ../../shared/ruby/ext/rho
 SOURCES += ../../shared/common/PosixThreadImpl.cpp\
-           ../../shared/qt/rhodes/impl/RhoThreadImpl.cpp
+           src/qwebviewkineticscroller.cpp \
+           src/phonebook/ruby_phonebook.cpp \
+           src/phonebook/Phonebook.cpp \
+           src/qkineticscroller.cpp \
+           src/RhoThreadImpl.cpp
 LIBS +=  -lcurl.lib
 LIBS +=  -lrubylib.lib
 LIBS +=  -lrholib.lib
 LIBS +=  -lsyncengine.lib
 LIBS +=  -lsqlite3.lib
-LIBS += -lefsrv -lcharconv -lbafl
+LIBS +=  -lqtscroller.lib
+LIBS += -lefsrv -lcharconv -lbafl -lcntmodel
 }
