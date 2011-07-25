@@ -37,6 +37,7 @@ public class RhomModel {
     private String mPartition;
 
     private native void init();
+    private static native RhoConnectNotify syncByName(String name);
 
     public RhomModel(String name, int syncType) {
     	init();
@@ -54,7 +55,7 @@ public class RhomModel {
     public String getPartition() { return mPartition; }
     public void setPartition(String part) { mPartition = part; }
 	
-	//RhoConnectNotify sync() {}
+	public RhoConnectNotify sync() { return syncByName(mName); }
 	/* TODO:
 	create();
 	find(String text);

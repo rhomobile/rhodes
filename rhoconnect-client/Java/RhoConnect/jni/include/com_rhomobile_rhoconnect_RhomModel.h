@@ -25,6 +25,14 @@ extern "C" {
 JNIEXPORT void JNICALL Java_com_rhomobile_rhoconnect_RhomModel_init
   (JNIEnv *, jobject);
 
+/*
+ * Class:     com_rhomobile_rhoconnect_RhomModel
+ * Method:    syncByName
+ * Signature: (Ljava/lang/String;)Lcom/rhomobile/rhoconnect/RhoConnectNotify;
+ */
+JNIEXPORT jobject JNICALL Java_com_rhomobile_rhoconnect_RhomModel_syncByName
+  (JNIEnv *, jclass, jstring);
+
 #ifdef __cplusplus
 }
 #endif
