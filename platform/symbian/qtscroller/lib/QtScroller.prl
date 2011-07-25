@@ -1,0 +1,5 @@
+QMAKE_PRL_BUILD_DIR = C:/work/rhomobile/rhodes/platform/symbian/qtscroller/src
+QMAKE_PRO_INPUT = src.pro
+QMAKE_PRL_TARGET = QtScroller
+QMAKE_PRL_CONFIG = lex yacc warn_on debug uic resources qt warn_on release incremental link_prl sis_targets run_on_phone debug stl exceptions rtti def_files staticlib create_prl static staticlib qtmain moc thread
+QMAKE_PRL_LIBS = -llibstdcpp.dll -lQtWebKit -lQtGui -lQtCore -llibpthread  
