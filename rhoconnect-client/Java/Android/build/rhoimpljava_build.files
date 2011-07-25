@@ -1,8 +1,6 @@
 ../platform/android/Rhodes/src/com/rhomobile/rhodes/HttpLog.java
 ../platform/android/Rhodes/src/com/rhomobile/rhodes/Base64.java
 ../platform/android/Rhodes/src/com/rhomobile/rhodes/Logger.java
-../platform/android/Rhodes/src/com/rhomobile/rhodes/NetworkConnectivityListener.java
-../platform/android/Rhodes/src/com/rhomobile/rhodes/NetworkStateTracker.java
 ../platform/android/Rhodes/src/com/rhomobile/rhodes/RhoConf.java
 ../platform/android/Rhodes/src/com/rhomobile/rhodes/RhoCryptImpl.java
 ../platform/android/Rhodes/src/com/rhomobile/rhodes/RhoLogConf.java
