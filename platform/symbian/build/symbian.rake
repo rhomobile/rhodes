@@ -88,7 +88,7 @@ namespace "build" do
 
      mkdir_p $targetdir if not File.exists? $targetdir
      #TODO mv out_dir + $appname + ".xap", $targetdir
-     mv $startdir + "/"+$config["build"]["symbianpath"] + "/rhodes.sis", $targetdir
+     mv $startdir + "/"+$config["build"]["symbianpath"] + "/rhodes/rhodes.sis", $targetdir
 
      chdir $startdir
     end
