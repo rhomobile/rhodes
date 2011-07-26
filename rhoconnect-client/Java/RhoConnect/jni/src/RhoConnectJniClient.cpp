@@ -34,6 +34,8 @@
 
 #include "com_rhomobile_rhoconnect_RhoConnectClient.h"
 
+#include "RhoConnectJniNotify.h"
+
 typedef std::vector<RHOM_MODEL> model_vector;
 typedef std::vector<rho::String> string_vector;
 
@@ -175,39 +177,19 @@ RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_isLog
 RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_loginWithUser
   (JNIEnv * env, jobject, jstring juser, jstring jpass)
 {
-    RHO_CONNECT_NOTIFY notify;
-    memset(&notify, 0, sizeof(notify));
-
-    char* res = reinterpret_cast<char*>(
-                            rho_sync_login(rho_cast<std::string>(env, juser).c_str(),
-                            rho_cast<std::string>(env, jpass).c_str(), ""));
-
-    rho_connectclient_parsenotify(res, &notify);
-    rho_sync_free_string(res);
-
-    jclass clsNotify = getJNIClass(RHOCONNECT_JAVA_CLASS_NOTIFY);
-    if (!clsNotify) return NULL;
-
-    jmethodID midNotify = getJNIClassMethod(env, clsNotify, "<init>", "()V");
-    if (!midNotify) return NULL;
-    jfieldID fidErrorCode = getJNIClassField(env, clsNotify, "mErrorCode", "I");
-    if (!fidErrorCode) return NULL;
-
-    jhobject jhNotify = jhobject(env->NewObject(clsNotify, midNotify));
-    if (!jhNotify) return NULL;
-
-    env->SetIntField(jhNotify.get(), fidErrorCode, notify.error_code);
-
-    rho_connectclient_free_syncnotify(&notify);
-
-    return jhNotify.release();
+    return rhoconnect_call(env, rho::connect_jni::make_bind<unsigned long, const char*, const char*, const char*>(
+                                                    rho_sync_login,
+                                                    rho_cast<std::string>(env, juser).c_str(),
+                                                    rho_cast<std::string>(env, jpass).c_str(),
+                                                    ""));
 }
 
 RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_syncAll
-  (JNIEnv *, jobject)
+  (JNIEnv * env, jobject)
 {
-    rho_sync_doSyncAllSources(false);
-    return (jobject)NULL;
+    return rhoconnect_call(env, rho::connect_jni::make_bind<unsigned long, int>(
+                                                                    rho_sync_doSyncAllSources,
+                                                                    0));
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_nativeInit

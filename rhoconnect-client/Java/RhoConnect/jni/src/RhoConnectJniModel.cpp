@@ -30,8 +30,7 @@
 
 #include "com_rhomobile_rhoconnect_RhomModel.h"
 
-//typedef std::vector<RHOM_MODEL> model_vector;
-//typedef std::vector<rho::String> string_vector;
+#include "RhoConnectJniNotify.h"
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhomModel_init
   (JNIEnv * env, jobject jmodel)
@@ -61,30 +60,8 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhomModel_init
 RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhoconnect_RhomModel_syncByName
   (JNIEnv * env, jclass, jstring jname)
 {
-    RHO_CONNECT_NOTIFY notify;
-    memset(&notify, 0, sizeof(notify));
-
-    char* res = reinterpret_cast<char*>(rho_sync_doSyncSourceByName(rho_cast<std::string>(env, jname).c_str()));
-
-    rho_connectclient_parsenotify(res, &notify);
-    rho_sync_free_string(res);
-
-    jclass clsNotify = getJNIClass(RHOCONNECT_JAVA_CLASS_NOTIFY);
-    if (!clsNotify) return NULL;
-
-    jmethodID midNotify = getJNIClassMethod(env, clsNotify, "<init>", "()V");
-    if (!midNotify) return NULL;
-    jfieldID fidErrorCode = getJNIClassField(env, clsNotify, "mErrorCode", "I");
-    if (!fidErrorCode) return NULL;
-
-    jhobject jhNotify = jhobject(env->NewObject(clsNotify, midNotify));
-    if (!jhNotify) return NULL;
-
-    env->SetIntField(jhNotify.get(), fidErrorCode, notify.error_code);
-
-    rho_connectclient_free_syncnotify(&notify);
-
-    return jhNotify.release();
-
+    return rhoconnect_call(env, rho::connect_jni::make_bind<unsigned long, const char*>(
+                                                                    rho_sync_doSyncSourceByName,
+                                                                    rho_cast<std::string>(env, jname).c_str()));
 }
 //----------------------------------------------------------------------------------------------------------------------
