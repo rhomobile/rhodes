@@ -48,6 +48,7 @@ load File.join(pwd, 'platform/iphone/rbuild/iphone.rake')
 load File.join(pwd, 'platform/wm/build/wm.rake')
 load File.join(pwd, 'platform/linux/tasks/linux.rake')
 load File.join(pwd, 'platform/wp7/build/wp.rake')
+load File.join(pwd, 'platform/symbian/build/symbian.rake')
 load File.join(pwd, 'platform/osx/build/osx.rake')
 
 def get_dir_hash(dir, init = nil)
