@@ -53,6 +53,7 @@ public class TestRhoConnectClient extends AndroidTestCase {
     @Override
     protected void tearDown()
     {
+        mClient.databaseFullResetAndLogout();
     	mClient.close();
     }
     
@@ -71,6 +72,13 @@ public class TestRhoConnectClient extends AndroidTestCase {
     {
     	testLogin();
     	RhoConnectNotify notify = mModels[2].sync();
+    	assertEquals(notify.getErrorCode(), 0);
+    }
+    
+    public void testSyncAll()
+    {
+    	testLogin();
+    	RhoConnectNotify notify = mClient.syncAll();
     	assertEquals(notify.getErrorCode(), 0);
     }
 
