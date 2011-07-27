@@ -31,5 +31,9 @@ public class RhoConnectNotify {
 	public String getSyncType() { return mSyncType; }
 	public String getErrorMessage() { return new String(); /*TODO: make implementation */}
 	public String getCallbackParams() { return mParams; }
+	
+	public static interface IDelegate {
+		public void call(RhoConnectNotify notify); 
+	}
 
 }

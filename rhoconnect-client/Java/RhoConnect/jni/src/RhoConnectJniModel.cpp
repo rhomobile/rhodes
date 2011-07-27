@@ -35,16 +35,16 @@
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhomModel_init
   (JNIEnv * env, jobject jmodel)
 {
-    jclass clsmodel = getJNIClass(RHOCONNECT_JAVA_CLASS_RHOMMODEL);
+    static jclass clsmodel = getJNIClass(RHOCONNECT_JAVA_CLASS_RHOMMODEL);
     if (!clsmodel) return;
 
-    jmethodID midmodeltype = getJNIClassMethod(env, clsmodel, "setModelType", "(I)V");
+    static jmethodID midmodeltype = getJNIClassMethod(env, clsmodel, "setModelType", "(I)V");
     if (!midmodeltype) return;
-    jmethodID midsynctype = getJNIClassMethod(env, clsmodel, "setSyncType", "(I)V");
+    static jmethodID midsynctype = getJNIClassMethod(env, clsmodel, "setSyncType", "(I)V");
     if (!midsynctype) return;
-    jmethodID midsyncpri = getJNIClassMethod(env, clsmodel, "setSyncPriority", "(I)V");
+    static jmethodID midsyncpri = getJNIClassMethod(env, clsmodel, "setSyncPriority", "(I)V");
     if (!midsyncpri) return;
-    jmethodID midpart = getJNIClassMethod(env, clsmodel, "setPartition", "(Ljava/lang/String;)V");
+    static jmethodID midpart = getJNIClassMethod(env, clsmodel, "setPartition", "(Ljava/lang/String;)V");
     if (!midpart) return;
 
     RHOM_MODEL model;
@@ -60,8 +60,9 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhomModel_init
 RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhoconnect_RhomModel_syncByName
   (JNIEnv * env, jclass, jstring jname)
 {
-    return rhoconnect_call(env, rho::connect_jni::make_bind<unsigned long, const char*>(
-                                                                    rho_sync_doSyncSourceByName,
-                                                                    rho_cast<std::string>(env, jname).c_str()));
+    char* res = reinterpret_cast<char*>(rho_sync_doSyncSourceByName(rho_cast<std::string>(env, jname).c_str()));
+    jhobject jhNotify = rho::connect_jni::rhoconnect_jni_parsenotify(env, res);
+    rho_sync_free_string(res);
+    return jhNotify.release();
 }
 //----------------------------------------------------------------------------------------------------------------------

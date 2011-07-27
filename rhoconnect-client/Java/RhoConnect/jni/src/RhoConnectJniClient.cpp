@@ -31,6 +31,7 @@
 #include "rhodes/JNIRhodes.h"
 #include "sync/SyncThread.h"
 #include "RhoConnectClient/RhoConnectClient.h"
+#include "logging/RhoLog.h"
 
 #include "com_rhomobile_rhoconnect_RhoConnectClient.h"
 
@@ -42,17 +43,17 @@ typedef std::vector<rho::String> string_vector;
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_initialize
   (JNIEnv * env, jobject, jobjectArray jmodels)
 {
-    jclass clsmodel = getJNIClass(RHOCONNECT_JAVA_CLASS_RHOMMODEL);
+    static jclass clsmodel = getJNIClass(RHOCONNECT_JAVA_CLASS_RHOMMODEL);
     if (!clsmodel) return;
-    jmethodID midname = getJNIClassMethod(env, clsmodel, "getName", "()Ljava/lang/String;");
+    static jmethodID midname = getJNIClassMethod(env, clsmodel, "getName", "()Ljava/lang/String;");
     if (!midname) return;
-    jmethodID midmodeltype = getJNIClassMethod(env, clsmodel, "getModelType", "()I");
+    static jmethodID midmodeltype = getJNIClassMethod(env, clsmodel, "getModelType", "()I");
     if (!midmodeltype) return;
-    jmethodID midsynctype = getJNIClassMethod(env, clsmodel, "getSyncType", "()I");
+    static jmethodID midsynctype = getJNIClassMethod(env, clsmodel, "getSyncType", "()I");
     if (!midsynctype) return;
-    jmethodID midsyncpri = getJNIClassMethod(env, clsmodel, "getSyncPriority", "()I");
+    static jmethodID midsyncpri = getJNIClassMethod(env, clsmodel, "getSyncPriority", "()I");
     if (!midsyncpri) return;
-    jmethodID midpart = getJNIClassMethod(env, clsmodel, "getPartition", "()Ljava/lang/String;");
+    static jmethodID midpart = getJNIClassMethod(env, clsmodel, "getPartition", "()Ljava/lang/String;");
     if (!midpart) return;
 
     size_t cnt = static_cast<model_vector::size_type>(env->GetArrayLength(jmodels));
@@ -174,22 +175,66 @@ RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_isLog
     return (jboolean)rho_sync_logged_in() == 1;
 }
 
-RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_loginWithUser
+RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_loginWithUserSync
   (JNIEnv * env, jobject, jstring juser, jstring jpass)
 {
-    return rhoconnect_call(env, rho::connect_jni::make_bind<unsigned long, const char*, const char*, const char*>(
-                                                    rho_sync_login,
-                                                    rho_cast<std::string>(env, juser).c_str(),
-                                                    rho_cast<std::string>(env, jpass).c_str(),
-                                                    ""));
+    char* res = reinterpret_cast<char*>(rho_sync_login(rho_cast<std::string>(env, juser).c_str(),
+                                                       rho_cast<std::string>(env, jpass).c_str(),
+                                                       ""));
+    jhobject jhNotify = rho::connect_jni::rhoconnect_jni_parsenotify(env, res);
+    rho_sync_free_string(res);
+    return jhNotify.release();
+}
+
+int raw_login_callback(const char* res, void* data)
+{
+    LOG(TRACE) + "raw_login_callback, res: " + res + ", data: " + (int)data;
+
+    if (data == 0) {
+        LOG(ERROR) + "Data pointer is NULL, cannot call Java callback";
+        return 1;
+    }
+
+    jobject jNotifyDelegate = reinterpret_cast<jobject>(data);
+
+    static jclass clsDelegate = getJNIClass(RHOCONNECT_JAVA_CLASS_NOTIFY_DELEGATE);
+    if (!clsDelegate) return 1;
+    
+    JNIEnv * env = jnienv();
+    static jmethodID midCall = getJNIClassMethod(env, clsDelegate, "call", "(Lcom/rhomobile/rhoconnect/RhoConnectNotify;)V");
+    if (!midCall) return 1;
+
+    jhobject jhNotify = rho::connect_jni::rhoconnect_jni_parsenotify(env, res);
+
+    LOG(TRACE) + "Calling Java callback";
+
+    env->CallVoidMethod(jNotifyDelegate, midCall, jhNotify.get());
+    env->DeleteGlobalRef(jNotifyDelegate);
+
+    return 0;
+}
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_loginWithUserAsync
+  (JNIEnv * env, jobject, jstring jUser, jstring jPass, jobject jref)
+{
+    jobject jNotifyDelegate = env->NewGlobalRef(jref);
+//    env->DeleteLocalRef(jref);
+
+    rho_sync_login_c(rho_cast<std::string>(env, jUser).c_str(),
+                     rho_cast<std::string>(env, jPass).c_str(),
+                     reinterpret_cast<void*>(raw_login_callback), jNotifyDelegate);
 }
 
 RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_syncAll
   (JNIEnv * env, jobject)
 {
-    return rhoconnect_call(env, rho::connect_jni::make_bind<unsigned long, int>(
-                                                                    rho_sync_doSyncAllSources,
-                                                                    0));
+    char* res = reinterpret_cast<char*>(rho_sync_doSyncAllSources(0));
+    jhobject jhNotify = rho::connect_jni::rhoconnect_jni_parsenotify(env, res);
+    rho_sync_free_string(res);
+    return jhNotify.release();
+//    return rhoconnect_call(env, rho::connect_jni::make_bind<unsigned long, int>(
+//                                                                    rho_sync_doSyncAllSources,
+//                                                                    0)).release();
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_nativeInit
