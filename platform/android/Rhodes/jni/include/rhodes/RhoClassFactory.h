@@ -33,6 +33,12 @@
 #include <common/IRhoThreadImpl.h>
 #include <common/IRhoCrypt.h>
 
+#include <common/RhoMutexLock.h>
+#include <common/AutoPointer.h>
+
+#include "rhodes/sslimpl.h"
+
+
 namespace rho
 {
 namespace common
@@ -43,8 +49,21 @@ class CRhoClassFactory : public IRhoClassFactory
 public:
     net::INetRequestImpl* createNetRequestImpl();
     IRhoThreadImpl *createThreadImpl();
-    net::ISSL *createSSLEngine();
     IRhoCrypt* createRhoCrypt();
+
+    net::ISSL* createSSLEngine()
+    {
+        if(!m_pSsl)
+        {
+            CMutexLock lock(m_sslMutex);
+            m_pSsl = new net::SSLImpl();
+        }
+        return m_pSsl;
+    }
+
+private:    
+    CMutex m_sslMutex;
+    common::CAutoPtr<net::ISSL> m_pSsl;    
 };
 
 } // namespace common
