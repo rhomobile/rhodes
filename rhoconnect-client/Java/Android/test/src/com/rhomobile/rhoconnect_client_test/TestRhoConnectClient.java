@@ -64,7 +64,7 @@ public class TestRhoConnectClient extends AndroidTestCase {
     }
     public void testLogin()
     {
-        RhoConnectNotify notify = mClient.loginWithUser("", "");
+        RhoConnectNotify notify = mClient.loginWithUserSync("", "");
         assertEquals(notify.getErrorCode(), 0);
         assertTrue(mClient.isLoggedIn());
     }
