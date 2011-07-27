@@ -49,8 +49,10 @@ public class RhoConnectClient{
 	public native void databaseFullResetAndLogout();
 	public native boolean isLoggedIn();
 	
-	public native RhoConnectNotify loginWithUser(String user, String pass);
+	public native RhoConnectNotify loginWithUserSync(String user, String pass);
 	public native RhoConnectNotify syncAll();
+
+	public native void loginWithUserAsync(String user, String pass, RhoConnectNotify.IDelegate callback);
 
 	/*TODO:
 	RhoConnectNotify search(...);
