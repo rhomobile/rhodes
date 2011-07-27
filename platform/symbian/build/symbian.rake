@@ -1,10 +1,10 @@
 
 namespace "config" do
         task :set_sym_platform do
-                $current_platform = "sym" unless $current_platform
+                $current_platform = "symbian" unless $current_platform
         end
 
-        task :sym => [:set_sym_platform, "config:common"] do
+        task :symbian => [:set_sym_platform, "config:common"] do
                 $rubypath = "res/build-tools/RhoRuby.exe"
                 $zippath = "res/build-tools/7za.exe"
                 $appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"]
@@ -23,18 +23,18 @@ namespace "config" do
 end
 
 namespace "build" do
-  namespace "sym" do
-    task :extensions => "config:sym" do
+  namespace "symbian" do
+    task :extensions => "config:symbian" do
       $app_config["extensions"].each do |ext|
         $app_config["extpaths"].each do |p|
           extpath = File.join(p, ext, 'ext')
           next unless File.exists? File.join(extpath, "build.bat")
 
-          ENV['RHO_PLATFORM'] = 'sym'
+          ENV['RHO_PLATFORM'] = 'symbian'
           ENV['PWD'] = $startdir
           ENV['RHO_ROOT'] = ENV['PWD']
-          ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "sym", "bin", $sdk, "rhodes", "Release")
-          ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "sym", "bin", $sdk, "extensions", ext)
+          ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "symbian", "bin", $sdk, "rhodes", "Release")
+          ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "symbian", "bin", $sdk, "extensions", ext)
           ENV['VCBUILD'] = $vcbuild
           ENV['SDK'] = $sdk
 
@@ -44,16 +44,20 @@ namespace "build" do
       end
     end
 
-    desc "Build sym rhobundle"
-    task :rhobundle => ["config:sym"] do
+    desc "Build symbian rhobundle"
+    task :rhobundle => ["config:symbian"] do
       Rake::Task["build:bundle:noxruby"].execute
 
+      rm_r $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes/apps"
+      rm_r $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes/db"
+      rm_r $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes/lib"
       cp_r $srcdir + "/apps", $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes"
       cp_r $srcdir + "/db", $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes"
       cp_r $srcdir + "/lib", $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes"
+      cp $app_path + "/icon/icon.svg", $config["build"]["symbianpath"]+"/rhodes/rhodes.svg"
     end
 
-   task :rhodesdev => ["config:sym"] do
+   task :rhodesdev => ["config:symbian"] do
      #implement app icon support
      ENV['EPOCROOT'] = $epocroot
      chdir $config["build"]["symbianpath"]
@@ -87,8 +91,8 @@ namespace "build" do
      end
 
      mkdir_p $targetdir if not File.exists? $targetdir
-     #TODO mv out_dir + $appname + ".xap", $targetdir
-     mv $startdir + "/"+$config["build"]["symbianpath"] + "/rhodes/rhodes.sis", $targetdir
+     rm $targetdir+"/"+$appname+".sis" if File.exists? $targetdir+"/"+$appname+".sis"
+     mv $startdir + "/"+$config["build"]["symbianpath"] + "/rhodes/rhodes.sis", $targetdir+"/"+$appname+".sis"
 
      chdir $startdir
     end
@@ -96,10 +100,7 @@ namespace "build" do
 end
 
 namespace "clean" do
-  desc "Clean symbian"
-  task :sym => "clean:sym:all"
-  namespace "sym" do
-    task :rhodes => ["config:sym"] do
+    task :rhodes => ["config:symbian"] do
         ENV['EPOCROOT'] = $epocroot
         chdir $config["build"]["symbianpath"]
         ENV['PATH'] = $sdkprefix+"/epoc32/tools;"+$symbiandir+"/tools/perl/bin;C:/Windows/system32;"+$sdkprefix+"/epoc32/gcc/bin;"+$symbiandir+"/tools/gcce4/bin;"+$sdkprefix+"/bin;"+$sdkprefix+"/mkspecs/default;"+$symbiandir+"/tools/gcce4/arm-none-symbianelf/bin;"
@@ -116,14 +117,14 @@ namespace "clean" do
 
         rm_rf $targetdir
     end
-    task :all => "clean:sym:rhodes"
-  end
+    task :symbian => "clean:rhodes" do
+    end
 end
 
 namespace "device" do
-  namespace "sym" do
+  namespace "symbian" do
     desc "Build production for device"
-    task :production => ["config:sym","build:sym:rhobundle","build:sym:rhodesdev"] do
+    task :production => ["config:symbian","build:symbian:rhobundle","build:symbian:rhodesdev"] do
 
 
 
