@@ -1,0 +1,19 @@
+# Rhodes runtime properties
+#MinSeverity  = 0
+#LogToOutput = 1
+#LogCategories = *
+#ExcludeLogCategories =
+
+# Sync server url. Typically this will look like 'http://<hostname>:<port>/application'
+# For example: 'http://localhost:9292/application'
+#syncserver = 'http://localhost:9292/application'
+#syncserver = 'http://rhodes-store-server.heroku.com/application'
+#sync_poll_interval=0
+
+#syncserver = 'http://store-bulk.rhohub.com/application'
+#bulksync_state=0
+
+#logserver = 'http://rhologs.heroku.com?id=1234'
+#logname='store'
+
+#net_trace=1
