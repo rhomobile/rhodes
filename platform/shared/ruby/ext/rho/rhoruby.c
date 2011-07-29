@@ -250,7 +250,11 @@ void RhoRubyStart()
     require_compiled(rb_str_new2("rhoframework"), &framework );
     framework = rb_const_get(rb_cObject,rb_intern("RHO_FRAMEWORK"));
 #else
-    require_compiled(rb_str_new2("rhoframework"), &framework );
+    {
+        VALUE res = rho_ruby_disable_gc();
+        require_compiled(rb_str_new2("rhoframework"), &framework );
+        rho_ruby_enable_gc(res);
+    }
 #endif //RHODES_EMULATOR
 
     if ( framework == 0 || framework == Qnil )

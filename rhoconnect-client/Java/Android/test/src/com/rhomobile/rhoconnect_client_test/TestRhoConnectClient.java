@@ -1,5 +1,8 @@
 package com.rhomobile.rhoconnect_client_test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import android.content.pm.ApplicationInfo;
 import android.test.AndroidTestCase;
 
@@ -16,13 +19,13 @@ public class TestRhoConnectClient extends AndroidTestCase {
 
     RhoConnectClient mClient;
     RhomModel mModels[];
-
+    
     @Override
     protected void setUp()
     {
 		System.loadLibrary("rhoconnectclient");
-		
-    	ApplicationInfo appInfo = this.getContext().getApplicationInfo();
+
+		ApplicationInfo appInfo = this.getContext().getApplicationInfo();
 		try {
 			RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir);
 			RhoFileApi.init(this.getContext());
@@ -48,24 +51,56 @@ public class TestRhoConnectClient extends AndroidTestCase {
         mClient.setPollInterval(0);
         mClient.setSyncServer(SYNC_URL);
         mClient.setBulkSyncState(1);
-        mClient.databaseFullResetAndLogout();
     }
     
     @Override
     protected void tearDown()
     {
-    	mClient.destroy();
+        mClient.databaseFullResetAndLogout();
+    	mClient.close();
     }
     
     public void testInitiallyLoggedOut()
     {
+        mClient.databaseFullResetAndLogout();
     	assertFalse(mClient.isLoggedIn());
     }
     public void testLogin()
     {
-        RhoConnectNotify notify = mClient.loginWithUser("", "");
+        RhoConnectNotify notify = mClient.loginWithUserSync("", "");
         assertEquals(notify.getErrorCode(), 0);
         assertTrue(mClient.isLoggedIn());
+    }
+    public void testSyncProductByName()
+    {
+    	testLogin();
+    	RhoConnectNotify notify = mModels[2].sync();
+    	assertEquals(notify.getErrorCode(), 0);
+    }
+    
+    public void testSyncAll()
+    {
+    	testLogin();
+    	RhoConnectNotify notify = mClient.syncAll();
+    	assertEquals(notify.getErrorCode(), 0);
+    }
+    
+    public void testCreateNewProduct()
+    {
+    	Map<String, String> item = new HashMap<String, String>();
+    	item.put("name", "AndroidTest");
+    	
+    	mModels[2].create(item);
+    	
+    	assertTrue(item.containsKey("object"));
+    	assertTrue(item.containsKey("source_id"));
+    	
+    	Map<String, String> item2 = mModels[2].find(item.get("object"));
+    	assertTrue(item2 != null);
+    	assertEquals(item.get("name"), item2.get("name"));
+    	
+    	//testSyncProductByName();
+    	
     }
 
 }

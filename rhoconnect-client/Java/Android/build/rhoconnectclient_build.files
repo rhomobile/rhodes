@@ -1,2 +1,3 @@
 Java/RhoConnect/jni/src/RhoConnectJniClient.cpp
-
+Java/RhoConnect/jni/src/RhoConnectJniModel.cpp
+Java/RhoConnect/jni/src/RhoConnectJniNotify.cpp
