@@ -680,6 +680,11 @@ Add path to Qt SDK to rhobuild.yml in the Rhodes folder:
 
 	:::term
 	$ rake device:symbian:production
+	
+### To clean all binaries run:
+
+	:::term
+	$rake clean:symbian	
 
 ## Build for Windows Mobile
 
