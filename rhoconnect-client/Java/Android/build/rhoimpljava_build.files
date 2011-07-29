@@ -1,8 +1,6 @@
 ../platform/android/Rhodes/src/com/rhomobile/rhodes/HttpLog.java
 ../platform/android/Rhodes/src/com/rhomobile/rhodes/Base64.java
 ../platform/android/Rhodes/src/com/rhomobile/rhodes/Logger.java
-../platform/android/Rhodes/src/com/rhomobile/rhodes/NetworkConnectivityListener.java
-../platform/android/Rhodes/src/com/rhomobile/rhodes/NetworkStateTracker.java
 ../platform/android/Rhodes/src/com/rhomobile/rhodes/RhoConf.java
 ../platform/android/Rhodes/src/com/rhomobile/rhodes/RhoCryptImpl.java
 ../platform/android/Rhodes/src/com/rhomobile/rhodes/RhoLogConf.java
@@ -15,4 +13,8 @@
 ../platform/android/Rhodes/src/com/rhomobile/rhodes/file/RhoFileApi.java
 Java/Android/src/com/rhomobile/rhodes/util/ContextFactory.java
 Java/Android/src/com/rhomobile/rhodes/Capabilities.java
+Java/RhoConnect/src/com/rhomobile/rhoconnect/RhomModel.java
+Java/RhoConnect/src/com/rhomobile/rhoconnect/RhoConnectClient.java
+Java/RhoConnect/src/com/rhomobile/rhoconnect/RhoConnectNotify.java
+Java/RhoConnect/src/com/rhomobile/rhoconnect/RhoConnectObjectNotify.java
 

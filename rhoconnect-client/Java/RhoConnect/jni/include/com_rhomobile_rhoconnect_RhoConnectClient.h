@@ -113,10 +113,10 @@ JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_isLogg
 
 /*
  * Class:     com_rhomobile_rhoconnect_RhoConnectClient
- * Method:    loginWithUser
+ * Method:    loginWithUserSync
  * Signature: (Ljava/lang/String;Ljava/lang/String;)Lcom/rhomobile/rhoconnect/RhoConnectNotify;
  */
-JNIEXPORT jobject JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_loginWithUser
+JNIEXPORT jobject JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_loginWithUserSync
   (JNIEnv *, jobject, jstring, jstring);
 
 /*
@@ -126,6 +126,14 @@ JNIEXPORT jobject JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_loginWi
  */
 JNIEXPORT jobject JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_syncAll
   (JNIEnv *, jobject);
+
+/*
+ * Class:     com_rhomobile_rhoconnect_RhoConnectClient
+ * Method:    loginWithUserAsync
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Lcom/rhomobile/rhoconnect/RhoConnectNotify/IDelegate;)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_loginWithUserAsync
+  (JNIEnv *, jobject, jstring, jstring, jobject);
 
 /*
  * Class:     com_rhomobile_rhoconnect_RhoConnectClient

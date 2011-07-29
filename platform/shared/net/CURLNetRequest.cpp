@@ -743,7 +743,7 @@ CURLcode CURLNetRequest::CURLHolder::perform()
         RAWTRACE1("Deactivate CURLNetRequest: METHOD = [%s]", mStrMethod.c_str() );
 
     deactivate();
-    RAWLOG_INFO("     Deactivation is DONE");
+    RAWTRACE("     Deactivation is DONE");
     return result;
 }
 

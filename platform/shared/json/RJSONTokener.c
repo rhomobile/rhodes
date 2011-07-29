@@ -583,9 +583,9 @@ VALUE rho_json_parse(VALUE v,VALUE str)
     char* szError = 0;
     VALUE res;
 
-    rb_gc_disable();
+    VALUE oldGC = rho_ruby_disable_gc();
     res = rjson_tokener_parse(getStringFromValue(str), &szError);
-    rb_gc_enable();
+    rho_ruby_enable_gc(oldGC);
 
     if ( res != 0 )
         return res;

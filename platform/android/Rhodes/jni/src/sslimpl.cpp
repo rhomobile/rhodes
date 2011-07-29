@@ -174,6 +174,7 @@ ssize_t SSLImpl::recv(char *buf, size_t size, int *wouldblock, void *storage)
     jclass cls = getJNIObjectClass(env, obj);
     if (!cls) return -1;
     jfieldID fid = getJNIClassField(env, cls, "sockfd", "I");
+    env->DeleteLocalRef(cls);
     if (!fid) return -1;
 
     jint sock = env->GetIntField(obj, fid);
