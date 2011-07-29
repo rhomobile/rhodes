@@ -66,3 +66,57 @@ RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhoconnect_RhomModel_syncByName
     return jhNotify.release();
 }
 //----------------------------------------------------------------------------------------------------------------------
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhomModel_createByName
+  (JNIEnv * env, jclass, jstring jModelName, jobjectArray jKeys, jobjectArray jVals)
+{
+    unsigned long item = rho_connectclient_hash_create();
+
+    unsigned n = env->GetArrayLength(jKeys);
+    for(unsigned i = 0; i < n; ++i)
+    {
+        jhstring jkey = static_cast<jstring>(env->GetObjectArrayElement(jKeys, i));
+        jhstring jval = static_cast<jstring>(env->GetObjectArrayElement(jVals, i));
+    }
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+int java_map_inserter(const char* key, const char* val, void* pThis)
+{
+    JNIEnv * env = jnienv();
+    jobject jMap = reinterpret_cast<jobject>(pThis);
+
+    static jclass jMapClass = getJNIClass(RHODES_JAVA_CLASS_MAP);
+    if (!jMapClass) return 0;
+
+    static jmethodID midPut = getJNIClassMethod(env, jMapClass, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+    if (!midPut) return 0;
+
+    jhstring jhKey = rho_cast<jhstring>(env, key);
+    jhstring jhVal = rho_cast<jhstring>(env, val);
+    env->CallObjectMethod(jMap, midPut, jhKey.get(), jhVal.get());
+
+    return 1;
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhoconnect_RhomModel_findByName
+  (JNIEnv * env, jclass, jstring jModelName, jstring jItemId)
+{
+    std::string modelName = rho_cast<std::string>(env, jModelName);
+    std::string itemId = rho_cast<std::string>(env, jItemId);
+
+    unsigned long item = rho_connectclient_find(modelName.c_str(), itemId.c_str());
+    if (item == 0) return NULL;
+
+    static jclass jMapClass = getJNIClass(RHODES_JAVA_CLASS_HASHMAP);
+    if (!jMapClass) return 0;
+
+    static jmethodID midHashMap = getJNIClassMethod(env, jMapClass, "<init>", "()V");
+    if (!midHashMap) return 0;
+
+    jobject jMap = env->NewObject(jMapClass, midHashMap);
+    rho_connectclient_hash_enumerate(item, java_map_inserter, jMap);
+    return jMap;
+}
+//----------------------------------------------------------------------------------------------------------------------
