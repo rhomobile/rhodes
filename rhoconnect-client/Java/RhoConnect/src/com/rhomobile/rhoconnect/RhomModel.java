@@ -40,7 +40,7 @@ public class RhomModel {
 
     private native void init();
     private static native RhoConnectNotify syncByName(String modelName);
-    private static native void createByName(String modelName, String keys[], String values[]);
+    private static native Map<String, String> createByName(String modelName, String keys[], String values[]);
     private static native Map<String, String> findByName(String modelName, String objectId);
     
 
@@ -70,7 +70,12 @@ public class RhomModel {
 			vals[n] = item.get(key);
 			++n;
 		}
-		createByName(mName, keys, vals);
+		Map<String, String> created = createByName(mName, keys, vals);
+		
+		if (created != null) {
+			item.clear();
+			item.putAll(created);
+		}
 	}
 	public Map<String, String> find(String objectId) { return findByName(mName, objectId); }
 

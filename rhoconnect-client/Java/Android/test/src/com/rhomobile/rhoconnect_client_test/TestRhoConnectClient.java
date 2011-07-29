@@ -90,13 +90,17 @@ public class TestRhoConnectClient extends AndroidTestCase {
     	Map<String, String> item = new HashMap<String, String>();
     	item.put("name", "AndroidTest");
     	
-    	testSyncProductByName();
-    	
     	mModels[2].create(item);
     	
-    	//assertEquals();
+    	assertTrue(item.containsKey("object"));
+    	assertTrue(item.containsKey("source_id"));
     	
-    	//mModels[2].	
+    	Map<String, String> item2 = mModels[2].find(item.get("object"));
+    	assertTrue(item2 != null);
+    	assertEquals(item.get("name"), item2.get("name"));
+    	
+    	//testSyncProductByName();
+    	
     }
 
 }

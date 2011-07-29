@@ -13,4 +13,8 @@
 ../platform/android/Rhodes/src/com/rhomobile/rhodes/file/RhoFileApi.java
 Java/Android/src/com/rhomobile/rhodes/util/ContextFactory.java
 Java/Android/src/com/rhomobile/rhodes/Capabilities.java
+Java/RhoConnect/src/com/rhomobile/rhoconnect/RhomModel.java
+Java/RhoConnect/src/com/rhomobile/rhoconnect/RhoConnectClient.java
+Java/RhoConnect/src/com/rhomobile/rhoconnect/RhoConnectNotify.java
+Java/RhoConnect/src/com/rhomobile/rhoconnect/RhoConnectObjectNotify.java
 

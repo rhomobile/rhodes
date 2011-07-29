@@ -38,7 +38,7 @@ JNIEXPORT jobject JNICALL Java_com_rhomobile_rhoconnect_RhomModel_syncByName
  * Method:    createByName
  * Signature: (Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_com_rhomobile_rhoconnect_RhomModel_createByName
+JNIEXPORT jobject JNICALL Java_com_rhomobile_rhoconnect_RhomModel_createByName
   (JNIEnv *, jclass, jstring, jobjectArray, jobjectArray);
 
 /*
