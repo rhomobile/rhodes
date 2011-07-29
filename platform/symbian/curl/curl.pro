@@ -15,12 +15,14 @@ DEFINES += __SYMBIAN32__
 
 !win32 {
   QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
+  QMAKE_CFLAGS_WARN_OFF += -Wno-ctor-dtor-privacy
   QMAKE_CXXFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
 }
 
 INCLUDEPATH += ../..
 INCLUDEPATH += ../../shared/curl/include
 INCLUDEPATH += ../../shared
+INCLUDEPATH += ../../shared/common
 
 HEADERS += ../../shared/curl/lib/arpa_telnet.h\
 ../../shared/curl/lib/connect.h\

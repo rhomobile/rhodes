@@ -20,12 +20,16 @@
 
 package com.rhomobile.rhoconnect;
 
-import java.io.Closeable;
-import java.io.IOException;
-
-public class RhoConnectClient implements Closeable {
+public class RhoConnectClient{
+	private static RhoConnectClient sInstance;
+	private synchronized void createInstance() {
+		if (sInstance != null)
+			throw new java.lang.IllegalStateException("RhoConnectClient instance already initialized.");
+		sInstance = this;
+	}  
+	
 	public native void initialize(RhomModel models[]);
-	public native void destroy();
+	private native void destroy();
 	
 	public native void setSyncServer(String url);
 
@@ -45,18 +49,22 @@ public class RhoConnectClient implements Closeable {
 	public native void databaseFullResetAndLogout();
 	public native boolean isLoggedIn();
 	
-	public native RhoConnectNotify loginWithUser(String user, String pass);
+	public native RhoConnectNotify loginWithUserSync(String user, String pass);
 	public native RhoConnectNotify syncAll();
+
+	public native void loginWithUserAsync(String user, String pass, RhoConnectNotify.IDelegate callback);
 
 	/*TODO:
 	RhoConnectNotify search(...);
 	*/
 	
 	public static native void nativeInit();
+
+	public RhoConnectClient() { createInstance(); }
 	
-	@Override
-	public void close() throws IOException {
+	public synchronized void close(){
 		destroy();
+		sInstance = null;
 	}
 	
 //	static {
