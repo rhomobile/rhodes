@@ -210,23 +210,32 @@ Same procedure as for plug-in
 
 0. download Eclipse for RAP/RPC developer
 
-1. download git repository (git@github.com:rhomobile/rhostudio.git)
+1. clone git repository (git@github.com:rhomobile/rhostudio.git)
 
 2. Import project into Eclipse (File/Import/'Existing project into Workspace')
 
 3. Install DLTK 2.0
 
-4. Import into workspace next DLTK plugins
+4. Import into workspace DLTK plugins
+
+    Select 'Pluigns and Fragments' item in Import Dialog and going to 'Selection' page. 
+    In left list of plugins select items with names:
 
     org.eclipse.dltk.debug
     org.eclipse.dltk.ruby.ui
     org.eclipse.dltk.ui
+    org.eclipse.dltk.console.ui
+    org.eclipse.dltk.console
+    org.eclipse.dltk.core
+    org.eclipse.dltk.debug.ui
 
-5. add imported plugins to java build paths (Project properties/Java build path/Libraries/Add JAR)
+    After import procedure in workspace should appears seven plugin projects.
 
-6. select imported plugins in Project properties/Java build path/Libraries/Order and Export 
+5. Add imported plugins to java build paths (Project properties/Java build path/Libraries/Add JAR).
 
-5. build and run Eclipse configuration
+6. Select imported plugins in Project properties/Java build path/Libraries/Order and Export 
+
+5. Build and run Eclipse configuration
 
 ##Build Rhodes Eclipse
 
