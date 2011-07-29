@@ -1,5 +1,8 @@
 package com.rhomobile.rhoconnect_client_test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import android.content.pm.ApplicationInfo;
 import android.test.AndroidTestCase;
 
@@ -80,6 +83,20 @@ public class TestRhoConnectClient extends AndroidTestCase {
     	testLogin();
     	RhoConnectNotify notify = mClient.syncAll();
     	assertEquals(notify.getErrorCode(), 0);
+    }
+    
+    public void testCreateNewProduct()
+    {
+    	Map<String, String> item = new HashMap<String, String>();
+    	item.put("name", "AndroidTest");
+    	
+    	testSyncProductByName();
+    	
+    	mModels[2].create(item);
+    	
+    	//assertEquals();
+    	
+    	//mModels[2].	
     }
 
 }

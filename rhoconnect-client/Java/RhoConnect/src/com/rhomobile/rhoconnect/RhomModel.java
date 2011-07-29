@@ -20,6 +20,8 @@
 
 package com.rhomobile.rhoconnect;
 
+import java.util.Map;
+
 public class RhomModel {
 	public final static int MODEL_TYPE_PROPERTY_BAG = 0;
 	public final static int MODEL_TYPE_FIXED_SCHEMA = 1;
@@ -37,7 +39,10 @@ public class RhomModel {
     private String mPartition;
 
     private native void init();
-    private static native RhoConnectNotify syncByName(String name);
+    private static native RhoConnectNotify syncByName(String modelName);
+    private static native void createByName(String modelName, String keys[], String values[]);
+    private static native Map<String, String> findByName(String modelName, String objectId);
+    
 
     public RhomModel(String name, int syncType) {
     	init();
@@ -56,9 +61,20 @@ public class RhomModel {
     public void setPartition(String part) { mPartition = part; }
 	
 	public RhoConnectNotify sync() { return syncByName(mName); }
+	public void create(Map<String, String> item) {
+		String keys[] = new String[item.size()];
+		String vals[] = new String[item.size()];
+		int n = 0;
+		for (String key : item.keySet()) {
+			keys[n] = key;
+			vals[n] = item.get(key);
+			++n;
+		}
+		createByName(mName, keys, vals);
+	}
+	public Map<String, String> find(String objectId) { return findByName(mName, objectId); }
+
 	/* TODO:
-	create();
-	find(String text);
 	findFirst();
 	findAll();
 	save();
