@@ -45,14 +45,20 @@ public class RhoConnectClient{
 	public native void setConfigString(String name, String param);
 	public native String getConfigString(String name);
 
-	public native void initDatabase();
 	public native void databaseFullResetAndLogout();
 	public native boolean isLoggedIn();
 	
+	public native void setObjectNotification(RhoConnectObjectNotify.IDelegate callback);
+	public native void clearObjectNotification();
+	public native void addObjectNotify(int stcId, String object);
+	
+	public native void setNotification(RhoConnectNotify.IDelegate callback);
+	public native void clearNotification();
+
 	public native RhoConnectNotify loginWithUserSync(String user, String pass);
+	public native void loginWithUserAsync(String user, String pass, RhoConnectNotify.IDelegate callback);
 	public native RhoConnectNotify syncAll();
 
-	public native void loginWithUserAsync(String user, String pass, RhoConnectNotify.IDelegate callback);
 
 	/*TODO:
 	RhoConnectNotify search(...);

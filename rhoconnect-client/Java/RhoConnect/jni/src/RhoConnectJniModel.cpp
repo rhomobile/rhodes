@@ -27,10 +27,14 @@
 #include "rhodes/JNIRhodes.h"
 #include "sync/SyncThread.h"
 #include "RhoConnectClient/RhoConnectClient.h"
+#include "logging/RhoLog.h"
 
 #include "com_rhomobile_rhoconnect_RhomModel.h"
 
 #include "RhoConnectJniNotify.h"
+
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "RhomModelJNI"
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhomModel_init
   (JNIEnv * env, jobject jmodel)
@@ -60,7 +64,11 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhomModel_init
 RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhoconnect_RhomModel_syncByName
   (JNIEnv * env, jclass, jstring jname)
 {
-    char* res = reinterpret_cast<char*>(rho_sync_doSyncSourceByName(rho_cast<std::string>(env, jname).c_str()));
+    std::string name = rho_cast<std::string>(env, jname);
+
+    LOG(INFO) + "Syncing model: " + name;
+
+    char* res = reinterpret_cast<char*>(rho_sync_doSyncSourceByName(name.c_str()));
     jhobject jhNotify = rho::connect_jni::rhoconnect_jni_parsenotify(env, res);
     rho_sync_free_string(res);
     return jhNotify.release();

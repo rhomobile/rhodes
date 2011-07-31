@@ -89,14 +89,6 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_getConf
 
 /*
  * Class:     com_rhomobile_rhoconnect_RhoConnectClient
- * Method:    initDatabase
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_initDatabase
-  (JNIEnv *, jobject);
-
-/*
- * Class:     com_rhomobile_rhoconnect_RhoConnectClient
  * Method:    databaseFullResetAndLogout
  * Signature: ()V
  */
@@ -113,6 +105,46 @@ JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_isLogg
 
 /*
  * Class:     com_rhomobile_rhoconnect_RhoConnectClient
+ * Method:    setObjectNotification
+ * Signature: (Lcom/rhomobile/rhoconnect/RhoConnectObjectNotify/IDelegate;)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_setObjectNotification
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     com_rhomobile_rhoconnect_RhoConnectClient
+ * Method:    clearObjectNotification
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_clearObjectNotification
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_rhomobile_rhoconnect_RhoConnectClient
+ * Method:    addObjectNotify
+ * Signature: (ILjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_addObjectNotify
+  (JNIEnv *, jobject, jint, jstring);
+
+/*
+ * Class:     com_rhomobile_rhoconnect_RhoConnectClient
+ * Method:    setNotification
+ * Signature: (Lcom/rhomobile/rhoconnect/RhoConnectNotify/IDelegate;)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_setNotification
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     com_rhomobile_rhoconnect_RhoConnectClient
+ * Method:    clearNotification
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_clearNotification
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_rhomobile_rhoconnect_RhoConnectClient
  * Method:    loginWithUserSync
  * Signature: (Ljava/lang/String;Ljava/lang/String;)Lcom/rhomobile/rhoconnect/RhoConnectNotify;
  */
@@ -121,19 +153,19 @@ JNIEXPORT jobject JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_loginWi
 
 /*
  * Class:     com_rhomobile_rhoconnect_RhoConnectClient
- * Method:    syncAll
- * Signature: ()Lcom/rhomobile/rhoconnect/RhoConnectNotify;
- */
-JNIEXPORT jobject JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_syncAll
-  (JNIEnv *, jobject);
-
-/*
- * Class:     com_rhomobile_rhoconnect_RhoConnectClient
  * Method:    loginWithUserAsync
  * Signature: (Ljava/lang/String;Ljava/lang/String;Lcom/rhomobile/rhoconnect/RhoConnectNotify/IDelegate;)V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_loginWithUserAsync
   (JNIEnv *, jobject, jstring, jstring, jobject);
+
+/*
+ * Class:     com_rhomobile_rhoconnect_RhoConnectClient
+ * Method:    syncAll
+ * Signature: ()Lcom/rhomobile/rhoconnect/RhoConnectNotify;
+ */
+JNIEXPORT jobject JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_syncAll
+  (JNIEnv *, jobject);
 
 /*
  * Class:     com_rhomobile_rhoconnect_RhoConnectClient
