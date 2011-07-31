@@ -40,6 +40,9 @@
 typedef std::vector<RHOM_MODEL> model_vector;
 typedef std::vector<rho::String> string_vector;
 
+static jobject s_jNotifyDelegate = 0;
+static jobject s_jObjectNotifyDelegate = 0;
+
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_initialize
   (JNIEnv * env, jobject, jobjectArray jmodels)
 {
@@ -158,11 +161,6 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_getCon
 
     return jhvalue.release();}
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_initDatabase
-  (JNIEnv *, jobject)
-{
-}
-
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_databaseFullResetAndLogout
   (JNIEnv *, jobject)
 {
@@ -181,49 +179,100 @@ RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_loginW
     char* res = reinterpret_cast<char*>(rho_sync_login(rho_cast<std::string>(env, juser).c_str(),
                                                        rho_cast<std::string>(env, jpass).c_str(),
                                                        ""));
-    jhobject jhNotify = rho::connect_jni::rhoconnect_jni_parsenotify(env, res);
+    jobject jNotify = rho::connect_jni::rhoconnect_jni_parsenotify(env, res);
     rho_sync_free_string(res);
-    return jhNotify.release();
+    return jNotify;
 }
+//----------------------------------------------------------------------------------------------------------------------
 
-int raw_login_callback(const char* res, void* data)
+template <int JAVACLASS>
+int rhoconnect_jni_callback(const char* res,
+                            jobject jNotifyDelegate,
+                            jobject (*parse_notify)(JNIEnv*, const char*),
+                            const char* param_sig)
 {
-    LOG(TRACE) + "raw_login_callback, res: " + res + ", data: " + (int)data;
-
-    if (data == 0) {
-        LOG(ERROR) + "Data pointer is NULL, cannot call Java callback";
+    static jclass clsDelegate = getJNIClass(JAVACLASS);
+    if (!clsDelegate) {
+        LOG(ERROR) + "Cannot get Java delegate class";
+        return 1;
+    }
+    
+    JNIEnv * env = jnienv();
+    static jmethodID midCall = getJNIClassMethod(env, clsDelegate, "call", param_sig);
+    if (!midCall) {
+        LOG(ERROR) + "Cannot get Java delegate 'call' method, param signature: " + param_sig;
         return 1;
     }
 
-    jobject jNotifyDelegate = reinterpret_cast<jobject>(data);
-
-    static jclass clsDelegate = getJNIClass(RHOCONNECT_JAVA_CLASS_NOTIFY_DELEGATE);
-    if (!clsDelegate) return 1;
-    
-    JNIEnv * env = jnienv();
-    static jmethodID midCall = getJNIClassMethod(env, clsDelegate, "call", "(Lcom/rhomobile/rhoconnect/RhoConnectNotify;)V");
-    if (!midCall) return 1;
-
-    jhobject jhNotify = rho::connect_jni::rhoconnect_jni_parsenotify(env, res);
+    jobject jNotify = parse_notify(env, res);
+    if (!jNotify) {
+        LOG(ERROR) + "Parsing notify object failed";
+        return 1;
+    }
 
     LOG(TRACE) + "Calling Java callback";
-
-    env->CallVoidMethod(jNotifyDelegate, midCall, jhNotify.get());
-    env->DeleteGlobalRef(jNotifyDelegate);
+    env->CallVoidMethod(jNotifyDelegate, midCall, jNotify);
 
     return 0;
 }
+//----------------------------------------------------------------------------------------------------------------------
+
+int login_callback(const char* res, void* data)
+{
+    using namespace rho::connect_jni;
+    LOG(TRACE) + "login_callback, res: " + res + ", data: " + (int)data;
+    if (data == 0) {
+        LOG(ERROR) + "notify_callback: data is NULL, cannot call Java callback";
+        return 1;
+    }
+    jobject jNotifyDelegate = reinterpret_cast<jobject>(data);
+    int result = rhoconnect_jni_callback<(int)RHOCONNECT_JAVA_CLASS_NOTIFY_DELEGATE>(res, jNotifyDelegate,
+                                                                          &rhoconnect_jni_parsenotify,
+                                                                          "(Lcom/rhomobile/rhoconnect/RhoConnectNotify;)V");
+    JNIEnv * env = jnienv();
+    env->DeleteGlobalRef(jNotifyDelegate);
+    return result;
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+int notify_callback(const char* res, void* data)
+{
+    using namespace rho::connect_jni;
+    LOG(TRACE) + "notify_callback, res: " + res + ", data: " + (int)data;
+    if (data == 0) {
+        LOG(ERROR) + "notify_callback: data is NULL, cannot call Java callback";
+        return 1;
+    }
+    return rhoconnect_jni_callback<(int)RHOCONNECT_JAVA_CLASS_NOTIFY_DELEGATE>(res, reinterpret_cast<jobject>(data),
+                                                                          &rhoconnect_jni_parsenotify,
+                                                                          "(Lcom/rhomobile/rhoconnect/RhoConnectNotify;)V");
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+int object_notify_callback(const char* res, void* data)
+{
+    using namespace rho::connect_jni;
+    LOG(TRACE) + "object_notify_callback, res: " + res + ", data: " + (int)data;
+    if (data == 0) {
+        LOG(ERROR) + "object_notify_callback: data is NULL, cannot call Java callback";
+        return 1;
+    }
+    return rhoconnect_jni_callback<RHOCONNECT_JAVA_CLASS_OBJECTNOTIFY_DELEGATE>(res, reinterpret_cast<jobject>(data),
+                                                                                rhoconnect_jni_parseobjectnotify,
+                                                                                "(Lcom/rhomobile/rhoconnect/RhoConnectObjectNotify;)V");
+}
+//----------------------------------------------------------------------------------------------------------------------
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_loginWithUserAsync
   (JNIEnv * env, jobject, jstring jUser, jstring jPass, jobject jref)
 {
     jobject jNotifyDelegate = env->NewGlobalRef(jref);
-//    env->DeleteLocalRef(jref);
 
     rho_sync_login_c(rho_cast<std::string>(env, jUser).c_str(),
                      rho_cast<std::string>(env, jPass).c_str(),
-                     reinterpret_cast<void*>(raw_login_callback), jNotifyDelegate);
+                     reinterpret_cast<void*>(login_callback), jNotifyDelegate);
 }
+//----------------------------------------------------------------------------------------------------------------------
 
 RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_syncAll
   (JNIEnv * env, jobject)
@@ -232,14 +281,64 @@ RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_syncAl
     jhobject jhNotify = rho::connect_jni::rhoconnect_jni_parsenotify(env, res);
     rho_sync_free_string(res);
     return jhNotify.release();
-//    return rhoconnect_call(env, rho::connect_jni::make_bind<unsigned long, int>(
-//                                                                    rho_sync_doSyncAllSources,
-//                                                                    0)).release();
 }
+//----------------------------------------------------------------------------------------------------------------------
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_setObjectNotification
+  (JNIEnv * env, jobject, jobject jref)
+{
+    if(s_jObjectNotifyDelegate)
+        env->DeleteGlobalRef(s_jObjectNotifyDelegate);
+
+    s_jObjectNotifyDelegate = env->NewGlobalRef(jref);
+    rho_sync_setobjectnotify_url_c(reinterpret_cast<void*>(object_notify_callback), s_jObjectNotifyDelegate);
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_clearObjectNotification
+  (JNIEnv * env, jobject)
+{
+    rho_sync_clear_object_notification();
+    if(s_jObjectNotifyDelegate)
+    {
+        env->DeleteGlobalRef(s_jObjectNotifyDelegate);
+        s_jObjectNotifyDelegate = 0;
+    }
+}
+//----------------------------------------------------------------------------------------------------------------------
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_addObjectNotify
+  (JNIEnv * env, jobject, jint jSrcId, jstring jObject)
+{
+    std::string object = rho_cast<std::string>(env, jObject);
+    rho_sync_addobjectnotify(jSrcId, object.c_str());
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_setNotification
+  (JNIEnv * env, jobject, jobject jref)
+{
+    if(s_jNotifyDelegate)
+        env->DeleteGlobalRef(s_jNotifyDelegate);
+
+    s_jNotifyDelegate = env->NewGlobalRef(jref);
+    rho_sync_set_notification_c(-1, reinterpret_cast<void*>(notify_callback), s_jNotifyDelegate);
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_clearNotification
+  (JNIEnv * env, jobject)
+{
+    rho_sync_clear_notification(-1);
+    if(s_jNotifyDelegate)
+    {
+        env->DeleteGlobalRef(s_jNotifyDelegate);
+        s_jNotifyDelegate = 0;
+    }
+}
+//----------------------------------------------------------------------------------------------------------------------
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_nativeInit
   (JNIEnv * env, jclass)
 {
-    //android_set_path(rho_cast<rho::String>(root), rho_cast<rho::String>(sqliteJournals));
     android_setup(env);
 }
