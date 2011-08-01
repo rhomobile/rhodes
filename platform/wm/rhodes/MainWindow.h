@@ -57,6 +57,7 @@ static UINT WM_TAKEPICTURE             = ::RegisterWindowMessage(L"RHODES_WM_TAK
 static UINT WM_SELECTPICTURE           = ::RegisterWindowMessage(L"RHODES_WM_SELECTPICTURE");
 static UINT WM_TAKESIGNATURE           = ::RegisterWindowMessage(L"RHODES_WM_TAKESIGNATURE");
 static UINT WM_CONNECTIONSNETWORKCOUNT = ::RegisterWindowMessage(L"RHODES_WM_CONNECTIONSNETWORKCOUNT");
+static UINT WM_CONNECTIONSNETWORKCELL  = ::RegisterWindowMessage(L"RHODES_WM_CONNECTIONSNETWORKCELL");
 static UINT WM_ALERT_SHOW_POPUP        = ::RegisterWindowMessage(L"RHODES_WM_ALERT_SHOW_POPUP");
 static UINT WM_ALERT_HIDE_POPUP        = ::RegisterWindowMessage(L"RHODES_WM_ALERT_HIDE_POPUP");
 static UINT WM_DATETIME_PICKER         = ::RegisterWindowMessage(L"RHODES_WM_DATETIME_PICKER");
@@ -140,6 +141,7 @@ public:
 		MESSAGE_HANDLER(WM_SELECTPICTURE, OnSelectPicture)
 		MESSAGE_HANDLER(WM_TAKESIGNATURE, OnTakeSignature)
 		MESSAGE_HANDLER(WM_CONNECTIONSNETWORKCOUNT, OnConnectionsNetworkCount)
+        MESSAGE_HANDLER(WM_CONNECTIONSNETWORKCELL, OnConnectionsNetworkCell)
         MESSAGE_HANDLER(WM_ALERT_SHOW_POPUP, OnAlertShowPopup)
 		MESSAGE_HANDLER(WM_ALERT_HIDE_POPUP, OnAlertHidePopup);
 		MESSAGE_HANDLER(WM_DATETIME_PICKER, OnDateTimePicker);
@@ -182,6 +184,7 @@ private:
 	LRESULT OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnTakeSignature(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnConnectionsNetworkCount(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+    LRESULT OnConnectionsNetworkCell(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnAlertHidePopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnDateTimePicker (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
