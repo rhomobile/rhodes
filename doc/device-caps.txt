@@ -320,7 +320,7 @@ Check if the device has a calendar:
 	:::ruby
 	System::get_property('has_calendar')
 
-The following methods are available in the RhoContact class:
+The following methods are available in the RhoEvent class:
 
 Return hash of hashes of all events stored in the calendar (index):
 	:::ruby
