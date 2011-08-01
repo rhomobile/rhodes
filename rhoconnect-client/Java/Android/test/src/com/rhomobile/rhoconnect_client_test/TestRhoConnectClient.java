@@ -144,4 +144,31 @@ public class TestRhoConnectClient extends AndroidTestCase {
     	assertEquals(createdObjects[0], item.get("object"));
     }
 
+    
+    public void testModifyProduct()
+    {
+    	Map<String, String> cond = new HashMap<String, String>();
+    	cond.put("name", "AndroidTest2");
+
+    	Map<String,String> item = mProduct.findFirst(cond);
+    	
+    	assertNotNull(item);
+    	assertTrue(item.size() > 0);
+    	
+    	String object = item.get("object");
+
+    	item.put("sku", item.get("sku") + "_TEST");
+    	mProduct.save(item);
+    	
+    	//RhoConnectNotify res = mProduct.sync();
+    	//assertEquals(res.getErrorCode(), 0);
+    	testSyncProductByName();
+    	
+    	Map<String,String> foundItem = mProduct.find(object);
+
+    	assertNotNull(foundItem);
+    	assertTrue(foundItem.size() > 0);
+    	
+    	assertEquals(item.get("sku"), foundItem.get("sku"));
+    }
 }
