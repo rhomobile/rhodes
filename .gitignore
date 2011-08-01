@@ -52,6 +52,7 @@ rhoconnect-client/build/*
 rhoconnect-client/Samples/ObjectiveC/store/build/*
 rhoconnect-client/C++/Tests/Win32/bin/*
 rhoconnect-client/Java/Android/.metadata/*
+rhoconnect-client/Java/Android/test/bin
 
 spec/bin/*
 spec/**/bin/*
