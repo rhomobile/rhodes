@@ -35,6 +35,30 @@ JNIEXPORT jobject JNICALL Java_com_rhomobile_rhoconnect_RhomModel_syncByName
 
 /*
  * Class:     com_rhomobile_rhoconnect_RhomModel
+ * Method:    findByName
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)Ljava/util/Map;
+ */
+JNIEXPORT jobject JNICALL Java_com_rhomobile_rhoconnect_RhomModel_findByName
+  (JNIEnv *, jclass, jstring, jstring);
+
+/*
+ * Class:     com_rhomobile_rhoconnect_RhomModel
+ * Method:    findFirstByName
+ * Signature: (Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;)Ljava/util/Map;
+ */
+JNIEXPORT jobject JNICALL Java_com_rhomobile_rhoconnect_RhomModel_findFirstByName
+  (JNIEnv *, jclass, jstring, jobjectArray, jobjectArray);
+
+/*
+ * Class:     com_rhomobile_rhoconnect_RhomModel
+ * Method:    findAllByName
+ * Signature: (Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;)Ljava/util/Collection;
+ */
+JNIEXPORT jobject JNICALL Java_com_rhomobile_rhoconnect_RhomModel_findAllByName
+  (JNIEnv *, jclass, jstring, jobjectArray, jobjectArray);
+
+/*
+ * Class:     com_rhomobile_rhoconnect_RhomModel
  * Method:    createByName
  * Signature: (Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;)Ljava/util/Map;
  */
@@ -43,11 +67,35 @@ JNIEXPORT jobject JNICALL Java_com_rhomobile_rhoconnect_RhomModel_createByName
 
 /*
  * Class:     com_rhomobile_rhoconnect_RhomModel
- * Method:    findByName
- * Signature: (Ljava/lang/String;Ljava/lang/String;)Ljava/util/Map;
+ * Method:    saveByName
+ * Signature: (Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;)V
  */
-JNIEXPORT jobject JNICALL Java_com_rhomobile_rhoconnect_RhomModel_findByName
-  (JNIEnv *, jclass, jstring, jstring);
+JNIEXPORT void JNICALL Java_com_rhomobile_rhoconnect_RhomModel_saveByName
+  (JNIEnv *, jclass, jstring, jobjectArray, jobjectArray);
+
+/*
+ * Class:     com_rhomobile_rhoconnect_RhomModel
+ * Method:    destroyByName
+ * Signature: (Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhoconnect_RhomModel_destroyByName
+  (JNIEnv *, jclass, jstring, jobjectArray, jobjectArray);
+
+/*
+ * Class:     com_rhomobile_rhoconnect_RhomModel
+ * Method:    startBulkUpdateByName
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhoconnect_RhomModel_startBulkUpdateByName
+  (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     com_rhomobile_rhoconnect_RhomModel
+ * Method:    stopBulkUpdateByName
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhoconnect_RhomModel_stopBulkUpdateByName
+  (JNIEnv *, jclass, jstring);
 
 #ifdef __cplusplus
 }
