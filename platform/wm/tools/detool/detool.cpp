@@ -243,6 +243,45 @@ bool wceConnect (void)
     //_tprintf( TEXT("Success\n"));
 
 	return true;
+
+	/*
+	RAPIINIT riCopy = {sizeof(RAPIINIT), 0, 0};
+    bool fInitialized = false;
+	DWORD dwTimeOut = 5000;
+
+    CeRapiUninit();
+
+    hRapiResult = CeRapiInitEx(&riCopy);
+
+	if (FAILED(hRapiResult)) {
+		return false;
+	}
+
+    DWORD dwRapiInit = 0;
+
+    dwRapiInit = WaitForSingleObject(
+		riCopy.heRapiInit,
+		dwTimeOut);
+
+    if (WAIT_OBJECT_0 == dwRapiInit) {
+        // heRapiInit signaled:
+        // set return error code to return value of RAPI Init function
+        hRapiResult = riCopy.hrRapiInit;  
+    } else if (WAIT_TIMEOUT == dwRapiInit) {
+        // timed out: device is probably not connected
+        // or not responding
+        hRapiResult = HRESULT_FROM_WIN32(ERROR_TIMEOUT);
+    } else {
+        // WaitForSingleObject failed
+        hRapiResult = HRESULT_FROM_WIN32(GetLastError());
+    }
+
+	if (FAILED(hRapiResult)) {
+        CeRapiUninit();
+		return false;
+	}
+	return true;
+	*/
 }
 
 void wceDisconnect(void)
@@ -510,7 +549,7 @@ int copyBundle (TCHAR *parent_dir, TCHAR *file, TCHAR *app_dir)
 {
 	HANDLE           fileHandle;
 	WIN32_FIND_DATAW findData;
-	DWORD			 dwError;
+	//DWORD			 dwError;
 	TCHAR			 new_app_item[MAX_PATH];
 	TCHAR			 host_file[MAX_PATH];
 	HANDLE hFind;
@@ -661,7 +700,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	TCHAR *log_file = NULL;
 	TCHAR *log_port = NULL;
 	TCHAR params_buf[MAX_PATH + 16];
-	WIN32_FIND_DATAW findData;
+	//WIN32_FIND_DATAW findData;
 	int new_copy = 0;
 	int deploy_type;
 
