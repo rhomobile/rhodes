@@ -46,6 +46,25 @@ win32 {
 ../../ruby/win32/win32.c
 }
 
+unix {
+  DESTDIR = ../../../linux/bin/rubylib
+  OBJECTS_DIR = ../../../linux/bin/rubylib/tmp
+  INCLUDEPATH += ../../ruby/linux
+  HEADERS += ../../ruby/linux/ruby/config.h
+  SOURCES += ../../ruby/miniprelude.c\
+../../ruby/missing/acosh.c\
+../../ruby/missing/cbrt.c\
+../../ruby/missing/crypt.c\
+../../ruby/missing/dup2.c\
+../../ruby/missing/erf.c\
+../../ruby/missing/hypot.c\
+../../ruby/missing/stdlib.c\
+../../ruby/missing/strlcat.c\
+../../ruby/missing/strlcpy.c\
+../../ruby/missing/tgamma.c\
+../../ruby/newline.c
+}
+
 DEFINES += RHODES_EMULATOR
 
 !win32 {
