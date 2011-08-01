@@ -8,7 +8,7 @@ bbver: 4.6
 wmsdk: "Windows Mobile 6 Professional SDK (ARMV4I)"
 applog: rholog.txt
 iphone:
-  configuration: Debug
+  configuration: Release
   sdk: iphonesimulator4.3
   provisionprofile:
   codesignidentity:
