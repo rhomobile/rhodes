@@ -19,6 +19,11 @@ win32 {
   DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS _LIB _UNICODE UNICODE
 }
 
+unix {
+  DESTDIR = ../../../linux/bin/sqlite3
+  OBJECTS_DIR = ../../../linux/bin/sqlite3/tmp
+}
+
 DEFINES += RHODES_EMULATOR
 
 !win32 {
