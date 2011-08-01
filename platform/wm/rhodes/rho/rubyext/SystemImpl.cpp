@@ -39,6 +39,7 @@
 #if defined( OS_WINCE ) && !defined( OS_PLATFORM_CE )
 #include <cfgmgrapi.h>
 #include <getdeviceuniqueid.h>
+#include <wininet.h>
 #endif
 
 #ifdef OS_WINCE__
@@ -561,16 +562,21 @@ VALUE rho_sys_makephonecall(const char* callname, int nparams, char** param_name
 	return rho_ruby_get_NIL();
 }
 
-static int g_rho_has_network = 1;
+static int g_rho_has_network = 1, g_rho_has_cellnetwork = 0;
 
 void rho_sysimpl_sethas_network(int nValue)
 {
-    g_rho_has_network = nValue;
+    g_rho_has_network = nValue > 1 ? 1 : 0;
+}
+
+void rho_sysimpl_sethas_cellnetwork(int nValue)
+{
+    g_rho_has_cellnetwork = nValue;
 }
 
 VALUE rho_sys_has_network()
 {
-	return rho_ruby_create_boolean(g_rho_has_network!=0);
+	return rho_ruby_create_boolean( g_rho_has_cellnetwork != 0 || g_rho_has_network!=0);
 }
 
 void rho_sys_app_exit()
