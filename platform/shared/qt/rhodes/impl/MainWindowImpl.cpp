@@ -408,8 +408,10 @@ void CMainWindow::createToolbar(rho_param *p)
                     if ( icon && *icon )
                         strImagePath = rho::common::CFilePath::join( RHODESAPP().getRhoRootPath(), icon );
                     else {
-#ifdef RHODES_EMULATOR
+#if defined(RHODES_EMULATOR)
 #define RHODES_EMULATOR_PLATFORM_STR ".wm"
+#elif defined(RHO_SYMBIAN)
+#define RHODES_EMULATOR_PLATFORM_STR ".sym"
 #else
 #define RHODES_EMULATOR_PLATFORM_STR
 #endif
