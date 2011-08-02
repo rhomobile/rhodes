@@ -1,32 +1,31 @@
-<div id="pageTitle">
+<div data-role="page">
+
+  <div data-role="header" data-position="inline">
     <h1>Settings</h1>
-</div>
+  </div>
 
-<div id="content">
-    <% if @msg %>
-      <div class="alert" align="center"><%= @msg %></div>
-    <% end %>
+  <div data-role="content">
+    <ul data-role="listview">
+      <% if @msg %>
+          <li class="error-message"><%= @msg %></li>
+      <% end %>
 
-    <ul>
-        <li>
-            <p>Client ID: <span class="cid"><%= Rhom::Rhom::client_id %></span></p>
-        </li>
-        <li>
-            <%= link_to "Reset Database", :action => :reset %>
-        </li>
-        <li>
-            <%= link_to "Sync", :action => :do_sync %>
-        </li>
+      <li>
+        <div class="itemLabel">
+          <span class="title">Client ID:</span>
+        </div>
+        <div class="itemValue">
+          <span class="clientID"><%= Rhom::Rhom::client_id %></span>
+        </div>
+      </li>
 
-    	<% if SyncEngine::logged_in > 0 %>		
-    	    <li>
-    	        <%= link_to "Logout", :action => :logout %>
-    	    </li>
-    	<% else %>
-    	    <li>
-    	        <%= link_to "Login", :action => :login %>
-    	    </li>
-    	<% end %>
+      <li><a href="<%= url_for :action => :reset %>">Reset Database</a></li>
+      <li><a href="<%= url_for :action => :do_sync %>">Perform Sync</a></li>
+      <% if SyncEngine::logged_in > 0 %>
+          <li><a href="<%= url_for :action => :logout %>">Logout</a></li>
+      <% else %>
+          <li><a href="<%= url_for :action => :login %>">Login</a></li>
+      <% end %>
     </ul>
-    
+  </div>
 </div>

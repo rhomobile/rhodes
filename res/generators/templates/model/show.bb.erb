@@ -1,15 +1,12 @@
-<div id="pageTitle">
-	<h1><%%= @<%= name.downcase %>.<%= attributes[0] %>%></h1>
-</div>
+<div data-role="page" data-add-back-btn="true">
 
-<div id="toolbar">
-        <%%= link_to "Back", :action => :index %>
-        <%%= link_to "Edit", :action => :edit, :id => @<%= name.downcase %>.object %>
-</div>
+  <div data-role="header" data-position="inline">
+    <%%= link_to "Back", :action => :index %>
+    <h1><%%= @<%= name.downcase %>.<%= attributes[0] %> %></h1>
+    <%%= link_to "Edit", :action => :edit, :id => @<%= name.downcase %>.object %>
+  </div>
 
-
-<div id="content">
-
+  <div data-role="content">
     <table>
       <% attributes.each do |attribute| %>
       <tr>
@@ -18,4 +15,6 @@
       </tr>
       <% end %>
     </table>
+  </div>
+
 </div>

@@ -113,3 +113,8 @@ div#content table tr td.itemLabel {
 div#content table tr td.itemValue {
     width:50%;
 }
+
+.errorMessage {
+    color: red;
+    text-align: center
+}

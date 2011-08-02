@@ -1,24 +1,23 @@
-<div id="pageTitle">
-    <h1>New <%= class_name.camelize %></h1>
-</div>
+<div data-role="page">
 
-<div id="toolbar">
+  <div data-role="header" data-position="inline">
     <%%= link_to "Back", :action => :index %>
-</div>
+    <h1>New <%= class_name.camelize %></h1>
+  </div>
 
-
-<div id="content">
-
+  <div data-role="content">
     <form method="POST" action="<%%= url_for :action => :create %>">
-	    <input type="hidden" name="id" value="<%%= @<%= name.downcase %>.object %>"/>
-        <table>
-    		<% attributes.each do |attribute| %>
-    		  <tr>
-    			  <td class="itemLabel"><%= humanize(attribute) %>: </td>
-    			  <td class="itemValue"><input type="text" name="<%= name.downcase %>[<%= attribute %>]"/></td>
-    		  </tr>
-    		<% end %>
-        </table>
-        <input type="submit" class="standardButton" value="Create" />
+      <input type="hidden" name="id" value="<%%= @<%= name.downcase %>.object %>"/>
+      <table>
+          <% attributes.each do |attribute| %>
+            <tr>
+                <td class="itemLabel"><%= humanize(attribute) %>: </td>
+                <td class="itemValue"><input type="text" name="<%= name.downcase %>[<%= attribute %>]"/></td>
+            </tr>
+          <% end %>
+      </table>
+      <input type="submit" value="Create"/>
     </form>
+  </div>
+
 </div>
