@@ -20,7 +20,7 @@ namespace "config" do
                 $qmake = $sdkprefix+"/bin/qmake.exe"
                 $make = $sdkprefix+"/epoc32/tools/make.exe"
                 $qmake_emu = $sdkprefix_emu+"/bin/qmake.exe"
-                $symbiandir = $config["env"]["paths"]["qtsymbian-sdk"]
+                $symbiandir = $config["env"]["paths"]["qtsymbian-sdk"]+"/Symbian"
                 $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
                 $msvs = $config["env"]["paths"]["msvs2005"]
         end
