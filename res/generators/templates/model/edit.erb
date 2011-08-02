@@ -1,27 +1,22 @@
-<div class="pageTitle">
-  <h1>Edit <%%= @<%= name.downcase %>.<%= attributes[0] %> %></h1>
-</div>
+<div data-role="page">
 
-<div class="toolbar">
-  <div class="leftItem backButton">
-    <a href="<%%= url_for :action => :show, :id => @<%= name.downcase %>.object %>">Cancel</a>
+  <div data-role="header" data-position="inline">
+    <h1>Edit <%%= @<%= name.downcase %>.<%= attributes[0] %> %></h1>
+    <a href="<%%= url_for :action => :show, :id => @<%= name.downcase %>.object %>" class="ui-btn-left" data-icon="back" data-direction="reverse">Cancel</a>
+    <a href="<%%= url_for :action => :delete, :id => @<%= name.downcase %>.object %>" class="ui-btn-right" data-icon="delete" data-direction="reverse">Delete</a>
   </div>
-  <div class="rightItem regularButton">
-    <a class="button" href="<%%= url_for :action => :delete, :id => @<%= name.downcase %>.object %>">Delete</a>
-  </div>
-</div>
 
-<div class="content">
-  <form method="POST" action="<%%= url_for :action => :update %>">
-    <input type="hidden" name="id" value="<%%= @<%= name.downcase %>.object %>"/>
-    <ul>
+  <div data-role="content">
+    <form method="POST" action="<%%= url_for :action => :update %>">
+      <input type="hidden" name="id" value="<%%= @<%= name.downcase %>.object %>"/>
       <% attributes.each do |attribute| %>
-          <li>
+          <div data-role="fieldcontain">
             <label for="<%= name.downcase %>[<%= attribute %>]" class="fieldLabel"><%= humanize(attribute) %></label>
             <input type="text" name="<%= name.downcase %>[<%= attribute %>]" value="<%%= @<%= name.downcase %>.<%= attribute %> %>" <%%= placeholder( "<%= humanize(attribute) %>" ) %> />
-          </li>
+          </div>
       <% end %>
-    </ul>
-    <input type="submit" class="standardButton" value="Update"/>
-  </form>
+      <input type="submit" value="Update"/>
+    </form>
+  </div>
+
 </div>

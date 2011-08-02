@@ -1,25 +1,23 @@
-<div class="pageTitle">
-  <h1>New <%%= @<%= name.downcase %>.title %></h1>
-</div>
+<div data-role="page">
 
-<div class="toolbar">
-  <div class="leftItem backButton">
-    <a class="cancel" href="<%%= url_for :action => :index %>">Cancel</a>
+  <div data-role="header" data-position="inline">
+    <h1>New <%%= @<%= name.downcase %>.title %></h1>
+    <a href="<%%= url_for :action => :index %>" class="ui-btn-left" data-icon="back" data-direction="reverse">Cancel</a>
   </div>
-</div>
 
-<div class="content">
-  <form method="POST" action="<%%= url_for :action => :create %>">
-    <input type="hidden" name="id" value="<%%= @<%= name.downcase %>.object %>"/>
-    <ul>
+  <div data-role="content">
+    <form method="POST" action="<%%= url_for :action => :create %>">
+      <input type="hidden" name="id" value="<%%= @<%= name.downcase %>.object %>"/>
+
       <% attributes.each do |attribute| %>
-          <li>
+          <div data-role="fieldcontain">
             <label for="<%= name.downcase %>[<%= attribute %>]" class="fieldLabel"><%= humanize(attribute) %></label>
-            <input type="text" name="<%= name.downcase %>[<%= attribute %>]" <%%=
-            placeholder("<%= humanize(attribute) %>") %> />
-          </li>
+            <input type="text" name="<%= name.downcase %>[<%= attribute %>]" <%%= placeholder("<%= humanize(attribute) %>") %> />
+          </div>
       <% end %>
-    </ul>
-    <input type="submit" class="standardButton" value="Create"/>
-  </form>
+
+      <input type="submit" value="Create"/>
+    </form>
+  </div>
+
 </div>
