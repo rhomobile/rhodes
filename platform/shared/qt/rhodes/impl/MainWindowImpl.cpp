@@ -446,7 +446,7 @@ void CMainWindow::createToolbar(rho_param *p)
 
 bool charToBool(const char* str)
 {
-    return str && ((stricmp(str,"true")==0) || (stricmp(str,"yes")==0) || (atoi(str)==1));
+    return str && ((strcasecmp(str,"true")==0) || (strcasecmp(str,"yes")==0) || (atoi(str)==1));
 }
 
 void CMainWindow::createTabbar(int bar_type, rho_param *p)

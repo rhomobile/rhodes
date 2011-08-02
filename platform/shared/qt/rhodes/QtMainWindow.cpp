@@ -48,7 +48,7 @@
 #undef null
 #include "DateTimeDialog.h"
 
-#ifdef OS_MACOSX
+#if defined(OS_MACOSX) || defined(OS_LINUX)
 #define stricmp strcasecmp
 #define strnicmp strncasecmp
 #endif

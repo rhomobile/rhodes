@@ -21,6 +21,12 @@ win32 {
 ../../sync/SyncProtocol_3.h
 }
 
+unix {
+  DESTDIR = ../../../linux/bin/syncengine
+  OBJECTS_DIR = ../../../linux/bin/syncengine/tmp
+  DEFINES += _GNU_SOURCE
+}
+
 DEFINES += RHODES_EMULATOR
 
 !win32 {
