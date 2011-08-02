@@ -57,6 +57,8 @@ public:
         enable();
     }
 
+    ~QWebViewSelectionSuppressor() {}
+
     inline void enable()
     {
         if (enabled)
