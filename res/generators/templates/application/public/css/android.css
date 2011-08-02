@@ -329,3 +329,8 @@ h1 {
 .content ul.settings li.alertMessage span.message {
     color: red;
 }
+
+.errorMessage {
+    color: red;
+    text-align: center
+}

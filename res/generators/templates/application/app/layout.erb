@@ -5,27 +5,54 @@
 <head>
 
     <title><%= class_name %></title>
-    
+
     <%% is_bb6 = System::get_property('platform') == 'Blackberry' && (System::get_property('os_version').split('.')[0].to_i >= 6) %>
 
-    <%% if is_bb6 %>    
+    <%% if is_bb6 %>
         <meta name="viewport" content="width=device-width; height=device-height; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
-    <%% else %>        
-        <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>        
+    <%% else %>
+        <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
     <%% end %>
 
-    <%% if System::get_property('platform') == 'WP7' %>    
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>     
-    <%% end %>    
-    
+    <%% if System::get_property('platform') == 'WP7' %>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <%% end %>
+
     <%% if System::get_property('platform') == 'APPLE' || System::get_property('platform') == 'ANDROID' || is_bb6 || ( System::get_property('platform') == 'UNKNOWN' && System::get_property('webview_framework') =~ /^WEBKIT/) %>
-        <script src="/public/jqtouch/jquery.1.3.2.min.js" type="text/javascript"></script>
-        <script src="/public/jqtouch/jqtouch.js" type="text/javascript"></script>
-        <link href="/public/jqtouch/jqtouch.css" type="text/css" rel="stylesheet"/>
+        <script src="/public/jquery/jquery-1.6.2.min.js" type="text/javascript"></script>
+
+        <link rel="stylesheet" href="/public/jqmobile/jquery.mobile-1.0b1.min.css">
         <%% if System::get_property('platform') == 'APPLE' %>
-            <link href="/public/jqtouch/jqtouch-iphone.css" type="text/css" rel="stylesheet"/>
+            <link href="/public/jqmobile/jquery.mobile.iphone.css" type="text/css" rel="stylesheet"/>
         <%% end %>
-        <script>jQT = $.jQTouch();</script>
+
+        <script type="text/javascript">
+            // Rho: Android 2.2 doesn't define WebKitTransitionEvent, though animations
+            // still work
+            if (navigator.userAgent.indexOf("Android 2") != -1) {
+                //$.support.WebKitAnimationEvent = true;
+                $.support.cssTransitions = true;
+            }
+
+            // Set to 30 seconds; Ajax request doesn't come back if >= 60
+            $.ajaxSetup({
+                timeout: 30000,
+                headers: {
+                    'Transition-Enabled': true
+                }
+            });
+
+            $(document).bind("mobileinit", function(){
+                // jQuery-Mobile init options initialization goes here. For example, you may
+                // enable automatically generated 'Back' buttons on headers this way:
+                //$.mobile.page.prototype.options.addBackBtn = true;
+                // Look for other init options here:
+                // http://jquerymobile.com/demos/1.0b1/#/demos/1.0b1/docs/api/globalconfig.html
+            });
+        </script>
+        <script type="text/javascript" charset="utf-8" src="/public/jqmobile/jquery.mobile-1.0b1.min.js"></script>
+        <script type="text/javascript" charset="utf-8" src="/public/js/jqmobile-patch.js"></script>
+
     <%% end %>
 
     <%% if System::get_property('platform') == 'APPLE' %>
@@ -37,7 +64,6 @@
     <%% elsif System::get_property('platform') == 'Blackberry' %>
         <link href="/public/css/blackberry.css" type="text/css" rel="stylesheet"/>
     <%% elsif System::get_property('platform') == 'WP7' %>
-        <script src="/public/js/wp7.js" type="text/javascript"></script>
 	    <link href="/public/css/windows_mobile.css" type="text/css" rel="stylesheet"/>
     <%% elsif System::get_property('platform') == 'WINDOWS' %>
 	    <link href="/public/css/windows_mobile.css" type="text/css" rel="stylesheet"/>
@@ -46,11 +72,11 @@
     <%% end %>
 </head>
 
-<%% if System::get_property('platform') == 'WP7' %>
-	<body onload="wp7_change_forms_action_to_get()">
-<%% else %>
-	<body>
+<body
+<%% if System::get_property('platform') == 'WP7' || is_bb6 %>
+	data-do-fix-forms="true"
 <%% end %>
+	>
     <%%= @content %>
 </body>
 

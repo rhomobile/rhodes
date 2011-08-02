@@ -1,23 +1,23 @@
-<div id="pageTitle">
-	<h1><%= class_name.camelize.pluralize %></h1>
-</div>
+<div data-role="page">
 
-
-<div id="toolbar">
+  <div data-role="header" data-position="inline">
     <%%= link_to "New", :action => :new %>
+    <h1><%= class_name.camelize.pluralize %></h1>
     <%%= link_to "Home", RhoConfig::start_path %>
-</div>
+  </div>
 
-<div id="content">
-  <table>
-    <tr>
-    <%% @<%= name.downcase.pluralize %>.each do |obj| %>
-    	<% if self.attributes? %>
-    	    <td class="recordLabel"><%%= link_to "#{obj.<%= attributes[0] %>}", :action => :show, :id => obj.object %></td>
-    	<% else %>
-    	    <td class="recordLabel">Some list entry...</td>
-    	<% end %>
-    <%% end %>
-    </tr>
-  </table>
+  <div data-role="content">
+    <table>
+      <tr>
+      <%% @<%= name.downcase.pluralize %>.each do |obj| %>
+        <% if self.attributes? %>
+            <td class="recordLabel"><%%= link_to "#{obj.<%= attributes[0] %>}", :action => :show, :id => obj.object %></td>
+        <% else %>
+            <td class="recordLabel">Some list entry...</td>
+        <% end %>
+      <%% end %>
+      </tr>
+    </table>
+  </div>
+
 </div>
