@@ -34,6 +34,10 @@
 #define stricmp strcasecmp
 #endif
 
+#ifdef OS_WINDOWS
+#define strncasecmp _strnicmp
+#endif
+
 #ifdef __SYMBIAN32__
 #include <arpa/inet.h>
 #endif
