@@ -36,6 +36,27 @@ win32 {
 ../../common/map/MapEngine.cpp
 }
 
+unix {
+  DESTDIR = ../../../linux/bin/rholib
+  OBJECTS_DIR = ../../../linux/bin/rholib/tmp
+  INCLUDEPATH += ../../curl/include
+  DEFINES += _GNU_SOURCE
+  HEADERS += ../../common/PosixThreadImpl.h\
+../../common/RhoMath.h\
+../../common/map/ESRIMapEngine.h\
+../../common/map/GoogleMapEngine.h\
+../../common/map/MapEngine.h\
+../../net/CURLNetRequest.h\
+../../net/ssl.h
+  SOURCES += ../../common/PosixThreadImpl.cpp\
+../../common/RhoMath.cpp\
+../../common/map/ESRIMapEngine.cpp\
+../../common/map/GoogleMapEngine.cpp\
+../../common/map/MapEngine.cpp\
+../../net/CURLNetRequest.cpp\
+../../net/ssl.cpp
+}
+
 DEFINES += RHODES_EMULATOR
 
 !win32 {
