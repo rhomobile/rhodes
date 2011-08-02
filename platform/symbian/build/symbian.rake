@@ -58,7 +58,7 @@ namespace "build" do
       cp_r $srcdir + "/apps", $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes"
       cp_r $srcdir + "/db", $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes"
       cp_r $srcdir + "/lib", $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes"
-      cp $app_path + "/icon/icon.svg", $config["build"]["symbianpath"]+"/rhodes/rhodes.svg"
+      cp $app_path + "/icon/icon.svg", $config["build"]["symbianpath"]+"/rhodes/rhodes.svg" if File.exists? $app_path + "/icon/icon.svg"
     end
 
    task :rhodesdev => ["config:symbian"] do
@@ -135,6 +135,8 @@ namespace "build" do
      mv "rhodes/apps", pwd
      mv "rhodes/db", pwd
      mv "rhodes/lib", pwd
+
+     cp "rhodes/release/rhodes.exe", pwd if File.exists? "rhodes/release/rhodes.exe"
 
      puts Jake.run("rhodes.exe",[])
    end
