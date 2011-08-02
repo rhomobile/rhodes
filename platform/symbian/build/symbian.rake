@@ -52,9 +52,9 @@ namespace "build" do
     task :rhobundle => ["config:symbian"] do
       Rake::Task["build:bundle:noxruby"].execute
 
-      rm_r $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes/apps"
-      rm_r $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes/db"
-      rm_r $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes/lib"
+      rm_r $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes/apps" if File.exists? $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes/apps"
+      rm_r $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes/db" if File.exists? $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes/db"
+      rm_r $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes/lib" if File.exists? $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes/lib"
       cp_r $srcdir + "/apps", $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes"
       cp_r $srcdir + "/db", $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes"
       cp_r $srcdir + "/lib", $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes"
