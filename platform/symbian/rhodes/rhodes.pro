@@ -1,15 +1,16 @@
 # Add files and directories to ship with the application 
 # by adapting the examples below.
 # file1.source = myfile
-apps.source = apps
-db.source = db
-lib.source = lib
-DEPLOYMENTFOLDERS = apps db lib
 
 
 QT += core gui network webkit
 CONFIG += warn_on
 DEFINES += RHO_SYMBIAN=1
+
+apps.source = apps
+db.source = db
+lib.source = lib
+DEPLOYMENTFOLDERS = apps db lib
 
 symbian:TARGET.UID3 = 0xE271409B
 #0xE17AE169
@@ -69,11 +70,7 @@ HEADERS += ../../shared/qt/rhodes/QtWebInspector.h \
     ../../shared/qt/rhodes/impl/NativeToolbarImpl.h \
     ../../shared/qt/rhodes/impl/NativeTabbarImpl.h \
     ../../shared/qt/rhodes/impl/MainWindowImpl.h \
-    ../../shared/qt/rhodes/DateTimeDialog.h \
-    src/qwebviewselectionsuppressor.h \
-    src/qwebviewkineticscroller.h \
-    src/qkineticscroller_p.h \
-    src/qkineticscroller.h
+    ../../shared/qt/rhodes/DateTimeDialog.h
 FORMS += \
     ../../shared/qt/rhodes/QtWebInspector.ui \
     ../../shared/qt/rhodes/QtMainWindow.ui \
@@ -95,16 +92,24 @@ qtcAddDeployment()
 OTHER_FILES +=
 
 win32 {
+DESTDIR = ../../rhodes-symbian-emulator-build
+HEADERS += ../../wm/rhodes/rho/net/NetRequestImpl.h\
+             ../../wm/rhodes/rho/common/impl/RhoThreadImpl.h
+SOURCES += ../../wm/rhodes/rho/net/NetRequestImpl.cpp
+INCLUDEPATH += ../../wm/rhodes\
+                 ../../shared/wtl80/include
 SOURCES +=  ../../wm/rhodes/rho/common/RhoThreadImpl.cpp
-SOURCES +=  ../../wm/rhodes/rho/net/NetRequestImpl.cpp
-PRE_TARGETDEPS += ../rubylib/debug/rubylib.lib\
-                  ../rholib/debug/rholib.lib\
-                  ../sqlite3/debug/sqlite3.lib\
-                  ../syncengine/debug/syncengine.lib
-LIBS += ../rubylib/debug/rubylib.lib\
-        ../rholib/debug/rholib.lib\
-        ../sqlite3/debug/sqlite3.lib\
-        ../syncengine/debug/syncengine.lib\
+SOURCES +=  ../../wm/rhodes/rho/net/NetRequestImpl.cpp \
+            ../../shared/qt/rhodes/impl/PhonebookImpl.cpp
+#PRE_TARGETDEPS += ../../rhodes-symbian-emulator-build/rubylib/release/rubylib.lib\
+#                  ../../rhodes-symbian-emulator-build/rholib/release/rholib.lib\
+#                  ../../rhodes-symbian-emulator-build/sqlite3/release/sqlite3.lib\
+#                  ../../rhodes-symbian-emulator-build/syncengine/release/syncengine.lib
+LIBS += -L../rubylib/release -L../rholib/release -L../sqlite3/release -L../syncengine/release
+LIBS += rubylib.lib\
+        rholib.lib\
+        sqlite3.lib\
+        syncengine.lib\
         wininet.lib comsuppwd.lib ws2_32.lib\
         Crypt32.lib gdiplus.lib kernel32.lib user32.lib\
         gdi32.lib winspool.lib comdlg32.lib advapi32.lib\
@@ -120,7 +125,11 @@ SOURCES += ../../shared/common/PosixThreadImpl.cpp\
            src/phonebook/ruby_phonebook.cpp \
            src/phonebook/Phonebook.cpp \
            src/qkineticscroller.cpp \
-           src/RhoThreadImpl.cpp
+           src/RhoThreadImpl.cpp \
+ HEADERS +=    src/qwebviewselectionsuppressor.h \
+               src/qwebviewkineticscroller.h \
+               src/qkineticscroller_p.h \
+               src/qkineticscroller.h
 LIBS +=  -lcurl.lib
 LIBS +=  -lrubylib.lib
 LIBS +=  -lrholib.lib
