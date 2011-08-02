@@ -20,7 +20,7 @@ namespace "config" do
                 $qmake = $sdkprefix+"/bin/qmake.exe"
                 $make = $sdkprefix+"/epoc32/tools/make.exe"
                 $qmake_emu = $sdkprefix_emu+"/bin/qmake.exe"
-                $symbiandir = $config["env"]["paths"]["qtsymbian-sdk"]
+                $symbiandir = $config["env"]["paths"]["qtsymbian-sdk"]+"/Symbian"
                 $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
                 $msvs = $config["env"]["paths"]["msvs2005"]
         end
@@ -58,7 +58,7 @@ namespace "build" do
       cp_r $srcdir + "/apps", $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes"
       cp_r $srcdir + "/db", $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes"
       cp_r $srcdir + "/lib", $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes"
-      cp $app_path + "/icon/icon.svg", $config["build"]["symbianpath"]+"/rhodes/rhodes.svg"
+      cp $app_path + "/icon/icon.svg", $config["build"]["symbianpath"]+"/rhodes/rhodes.svg" if File.exists? $app_path + "/icon/icon.svg"
     end
 
    task :rhodesdev => ["config:symbian"] do
@@ -135,6 +135,8 @@ namespace "build" do
      mv "rhodes/apps", pwd
      mv "rhodes/db", pwd
      mv "rhodes/lib", pwd
+
+     cp "rhodes/release/rhodes.exe", pwd if File.exists? "rhodes/release/rhodes.exe"
 
      puts Jake.run("rhodes.exe",[])
    end
