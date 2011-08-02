@@ -666,15 +666,37 @@ Note that Symbian versions of your Rhodes app must be built in a Windows environ
 ### Prerequisites
 
 * Follow [All Platforms Prerequisites](#all-platforms-prerequisites)
+* Visual Studio 2005 Service Pack 1 installed
 * [Qt SDK](http://qt.nokia.com/downloads/sdk-windows-cpp-offline)
+
+If you want to build for Symbian device you have to install QT and QT Mobility for Symbian on your device.
+You can find installation files in QT SDK folder like below:
+
+	QT - C:/QtSDK/Symbian/sis/Symbian1/Qt/4.7.3/qt.sis
+	QT Mobility - C:/QtSDK/Symbian/sis/Symbian1/QtMobility/1.1.3/qtmobility.sis
+
+Then open file - C:/QtSDK/Symbian/SDKs/Symbian1Qt473/epoc32/include/cntdb.h and replace below two strings:
+    CContactConverter& CContactDatabase::ConverterL(const TUid& aFormat);
+    CContactConverter& CContactDatabase::ConverterL(const TUid& aFormat, const TInt64 aContactFieldFilter, MConverterCallBack* aCallback, const TVCardVersion aVersion,const TBool aExportTel);
+with these strings:
+    CContactConverter& ConverterL(const TUid& aFormat);
+    CContactConverter& ConverterL(const TUid& aFormat, const TInt64 aContactFieldFilter, MConverterCallBack* aCallback, const TVCardVersion aVersion,const TBool aExportTel);
+
+
 
 ### Build application from the command line
 
-Add path to Qt SDK to rhobuild.yml in the Rhodes folder:
+Add pathes to Qt SDK and MS Visual Studio 2005 to rhobuild.yml in the Rhodes folder:
 
         env:
           paths:
             qtsymbian-sdk: C:/QtSDK
+            msvs2005: C:/Program Files/Microsoft Visual Studio 8
+
+### To build and run application on emulator(Visual Studio 2005 only) :
+
+	:::term
+	$ rake run:symbian
 
 ### To build application sis-file for the device:
 

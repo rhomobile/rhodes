@@ -11,11 +11,21 @@ close(PRO);
 
 open(VCPROJ,$ARGV[1]);
 while($line=<VCPROJ>) {
- if ($line =~ /^\s*RelativePath\s*=\s*\"([\w+\\\.]+\.(h|c|cpp))\"\s*$/) {
-  $filepath = $1;
-  $filepath =~ s/\.\.\\\.\.\\shared\\/\.\.\/\.\.\//;
-  $filepath =~ s/\\/\//g;
-  $filepath =~ s/\.\.\/\.\.\/qt\/rhodes\///;
+ if ($ARGV[1] =~ /\.vcproj$/) {
+  if ($line =~ /^\s*RelativePath\s*=\s*\"([\w+\\\.]+\.(h|c|cpp))\"\s*$/) {
+   $filepath = $1;
+   $filepath =~ s/\.\.\\\.\.\\shared\\/\.\.\/\.\.\//;
+   $filepath =~ s/\\/\//g;
+   $filepath =~ s/\.\.\/\.\.\/qt\/rhodes\///;
+  } else {
+   $filepath = undef;
+  }
+ } elsif ($ARGV[1] =~ /\.files$/) {
+  $filepath = $line;
+  $filepath =~ s/\s+$//;
+  $filepath =~ s/platform\/shared\//..\/..\//;
+ }
+ if ($filepath ne '') {
   $type = ($filepath =~ /\.h$/ ? 0 : 1);
   if (!$FILES{lc($filepath)}) {
    $NEW[$type]{$filepath} = 1;

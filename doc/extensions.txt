@@ -43,7 +43,7 @@ In case of several extensions, insert space after extension name and comma:
 
 Create utf-8 encoded file in app `<app_folder>/app/lang/lang_<lang_id>_<country_id>.rb` or `<app_folder>/app/lang/lang_<lang_id>.rb`. This file will be automatically loaded by rhodes based on current locale.
 
-For Example create lang_en.eb:
+For Example create lang_en.rb:
 	:::ruby
 	module Localization
 		Views = {
