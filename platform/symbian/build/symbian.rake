@@ -13,12 +13,16 @@ namespace "config" do
                 $srcdir =  $bindir + "/RhoBundle"
                 $targetdir = $bindir + "/target/sym"
                 $tmpdir =  $bindir +"/tmp"
-                $sdkprefix = $config["env"]["paths"]["qtsymbian-sdk"]+"/SDKs/Symbian1Qt473"
+                $jom = $config["env"]["paths"]["qtsymbian-sdk"]  + "/QtCreator/bin/jom.exe"
+                $sdkprefix = $config["env"]["paths"]["qtsymbian-sdk"]+"/Symbian/SDKs/Symbian1Qt473"
+                $sdkprefix_emu = $config["env"]["paths"]["qtsymbian-sdk"]+"/Simulator/Qt/msvc2005"
                 $epocroot = "/QtSDK/Symbian/SDKs/Symbian1Qt473/"
                 $qmake = $sdkprefix+"/bin/qmake.exe"
                 $make = $sdkprefix+"/epoc32/tools/make.exe"
+                $qmake_emu = $sdkprefix_emu+"/bin/qmake.exe"
                 $symbiandir = $config["env"]["paths"]["qtsymbian-sdk"]
                 $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
+                $msvs = $config["env"]["paths"]["msvs2005"]
         end
 end
 
@@ -58,7 +62,6 @@ namespace "build" do
     end
 
    task :rhodesdev => ["config:symbian"] do
-     #implement app icon support
      ENV['EPOCROOT'] = $epocroot
      chdir $config["build"]["symbianpath"]
      ENV['PATH'] = $sdkprefix+"/epoc32/tools;"+$symbiandir+"/tools/perl/bin;C:/Windows/system32;"+$sdkprefix+"/epoc32/gcc/bin;"+$symbiandir+"/tools/gcce4/bin;"+$sdkprefix+"/bin;"+$sdkprefix+"/mkspecs/default;"+$symbiandir+"/tools/gcce4/arm-none-symbianelf/bin;"
@@ -95,7 +98,46 @@ namespace "build" do
      mv $startdir + "/"+$config["build"]["symbianpath"] + "/rhodes/rhodes.sis", $targetdir+"/"+$appname+".sis"
 
      chdir $startdir
-    end
+   end
+
+   task :rhodesemu => ["config:symbian"] do
+     chdir $config["build"]["symbianpath"]
+     ENV['DEFALT_MKSPEC_PATH']=$sdkprefix_emu+"/mkspecs/default"
+     ENV['QTDIR']=$sdkprefix_emu+"/bin"
+     ENV['QMAKESPEC']=$sdkprefix_emu+"/mkspecs/default"
+     ENV['INCLUDE'] = $msvs+"/VC/include;"+$msvs+"/VC/PlatformSDK/Include;"+$msvs+"/VC/atlmfc/include"
+     ENV['LIB'] = $msvs+"/VC/lib;"+$msvs+"/VC/PlatformSDK/Lib;"+$msvs+"/VC/atlmfc/lib"
+     ENV['PATH'] = $sdkprefix_emu+"/bin;"+$msvs+"/VC/bin;C:/Windows/system32;"+$msvs+"/Common7/IDE"
+
+     chdir "../"
+     mkdir "rhodes-symbian-emulator-build" if not File.exists? "rhodes-symbian-emulator-build"
+     chdir "rhodes-symbian-emulator-build"
+
+     args = ['../symbian/rhodes_win32.pro', '-r','-spec', 'win32-msvc2005', "\"CONFIG+=release\""]
+     puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
+     puts Jake.run( $qmake_emu,args)
+     unless $? == 0
+       puts "Error building"
+       exit 1
+     end
+
+     args = ['-nologo', '-j', '2', '-f', 'Makefile']
+     puts Jake.run($jom,args)
+     unless $? == 0
+       puts "Error building"
+       exit 1
+     end
+
+     rm_r "apps" if File.exists? "apps"
+     rm_r "db" if File.exists? "db"
+     rm_r "lib" if File.exists? "lib"
+
+     mv "rhodes/apps", pwd
+     mv "rhodes/db", pwd
+     mv "rhodes/lib", pwd
+
+     puts Jake.run("rhodes.exe",[])
+   end
   end
 end
 
@@ -110,11 +152,12 @@ namespace "clean" do
 
         args = ['distclean']
         puts Jake.run($make,args)
-        unless $? == 0
-        puts "Error cleaning"
-            exit 1
-        end
+        #unless $? == 0
+        #puts "Error cleaning"
+        #    exit 1
+        #end
 
+        rm_rf "../rhodes-symbian-emulator-build"
         rm_rf $targetdir
     end
     task :symbian => "clean:rhodes" do
@@ -130,4 +173,12 @@ namespace "device" do
 
     end
   end
+end
+
+namespace "run" do
+    task :symbian => ["config:symbian","build:symbian:rhobundle","build:symbian:rhodesemu"] do
+
+
+
+    end
 end
