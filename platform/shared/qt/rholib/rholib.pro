@@ -36,7 +36,7 @@ win32 {
 ../../common/map/MapEngine.cpp
 }
 
-unix {
+unix:!macx {
   DESTDIR = ../../../linux/bin/rholib
   OBJECTS_DIR = ../../../linux/bin/rholib/tmp
   INCLUDEPATH += ../../curl/include

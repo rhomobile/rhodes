@@ -19,7 +19,7 @@ win32 {
   DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS _LIB _UNICODE UNICODE
 }
 
-unix {
+unix:!macx {
   DESTDIR = ../../../linux/bin/sqlite3
   OBJECTS_DIR = ../../../linux/bin/sqlite3/tmp
 }

@@ -1,6 +1,6 @@
 TEMPLATE = subdirs
 SUBDIRS = rubylib rholib sqlite3 syncengine
-unix {
+unix:!macx {
  # SUBDIRS += curl
 }
 CONFIG += ordered

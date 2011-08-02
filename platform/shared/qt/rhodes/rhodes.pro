@@ -53,7 +53,7 @@ wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib gdiplus.lib kernel32.lib user32
 ../../../win32/bin/syncengine/syncengine.lib
 }
 
-unix {
+unix:!macx {
   DESTDIR = ../../../linux/bin/RhoSimulator
   MOC_DIR = ../../../linux/bin/RhoSimulator/generated_files
   UI_DIR = ../../../linux/bin/RhoSimulator/generated_files
