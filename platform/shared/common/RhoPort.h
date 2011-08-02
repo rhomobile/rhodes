@@ -113,7 +113,7 @@ typedef unsigned __int64 uint64;
 #define FMTI64 "%lli"
 #define FMTU64 "%llu"
 
-#  if defined(OS_ANDROID)
+#  if defined(OS_ANDROID) || defined(OS_LINUX)
 // Needed for va_list on Android
 #    include <stdarg.h>
 #    include <sys/select.h>
@@ -132,7 +132,7 @@ typedef unsigned __int64 uint64;
 #  include <netinet/in.h>
 #  include <unistd.h>
 #  include <errno.h>
-#  if defined(OS_MACOSX)
+#  if defined(OS_MACOSX) || defined(OS_LINUX)
 #    include <sys/time.h>
 #  endif
 #  include <stdlib.h>
@@ -152,7 +152,7 @@ typedef unsigned __int64 uint64;
 typedef long long int64;
 typedef unsigned long long uint64;
 
-#if defined(OS_SYMBIAN)
+#if defined(OS_SYMBIAN) || defined(OS_LINUX)
 #define M_PI 3.14159265358979323846
 #endif
 
