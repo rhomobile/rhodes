@@ -101,21 +101,21 @@ int main(int argc, char *argv[])
     m_logPort = String("11000");
     for (int i=1; i<argc; ++i) {
         g_strCmdLine += String(argv[i]) + " ";
-        if (strnicmp("-log",argv[i],4)==0) {
+        if (strncasecmp("-log",argv[i],4)==0) {
             char* port = parseToken(argv[i]);
             if (port) {
                     String strLogPort = port;
                     m_logPort = strLogPort;
                     free(port);
             }
-        } else if (strnicmp("-http_proxy_url",argv[i],15)==0) {
+        } else if (strncasecmp("-http_proxy_url",argv[i],15)==0) {
             char *proxy = parseToken(argv[i]);
             if (proxy) {
                 m_strHttpProxy = proxy;
                 free(proxy);
             } else
                 RAWLOGC_INFO("Main", "invalid value for \"http_proxy_url\" cmd parameter");
-        } else if (strnicmp("-approot",argv[i],8)==0) {
+        } else if (strncasecmp("-approot",argv[i],8)==0) {
             char* path = parseToken(argv[i]);
             if (path) {
                 int len = strlen(path);
@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
                 m_strRootPath = path;
                 free(path);
             }
-        } else if (strnicmp("-rhodespath",argv[i],11)==0) {
+        } else if (strncasecmp("-rhodespath",argv[i],11)==0) {
             char* path = parseToken(argv[i]);
             if (path) {
                 m_strRhodesPath = path;

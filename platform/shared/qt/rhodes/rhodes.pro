@@ -53,6 +53,26 @@ wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib gdiplus.lib kernel32.lib user32
 ../../../win32/bin/syncengine/syncengine.lib
 }
 
+unix {
+  DESTDIR = ../../../linux/bin/RhoSimulator
+  MOC_DIR = ../../../linux/bin/RhoSimulator/generated_files
+  UI_DIR = ../../../linux/bin/RhoSimulator/generated_files
+  OBJECTS_DIR = ../../../linux/bin/RhoSimulator/tmp
+  RCC_DIR =  ../../../linux/bin/RhoSimulator/resources
+  # INCLUDEPATH += ../../curl/include
+  LIBS += -lcurl
+  # LIBS += -L../../../osx/bin/curl -lcurl
+  LIBS += -L../../../linux/bin/rubylib -lrubylib
+  LIBS += -L../../../linux/bin/rholib -lrholib
+  LIBS += -L../../../linux/bin/sqlite3 -lsqlite3
+  LIBS += -L../../../linux/bin/syncengine -lsyncengine
+  PRE_TARGETDEPS += ../../../linux/bin/curl/libcurl.a\
+../../../linux/bin/rubylib/librubylib.a\
+../../../linux/bin/rholib/librholib.a\
+../../../linux/bin/sqlite3/libsqlite3.a\
+../../../linux/bin/syncengine/libsyncengine.a
+}
+
 DEFINES += RHODES_EMULATOR=1
 
 !win32 {
