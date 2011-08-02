@@ -152,7 +152,7 @@ void CRhoFile::movePosToEnd(){
         return;
 
     int nRes = fseek(m_file,0,SEEK_END);
-    fpos_t pos = 0;
+    fpos_t pos;
     int nRes2 = fgetpos(m_file, &pos );
 
     if ( !nRes2 )
