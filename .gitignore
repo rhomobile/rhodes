@@ -45,6 +45,9 @@ platform/wp7/WPApplication/Bin/*
 platform/wp7/*.sdf
 platform/wp7/rhodes/obj/*
 platform/wp7/**/obj/*
+platform/symbian/rhodes/apps/*
+platform/symbian/rhodes/db/*
+platform/symbian/rhodes/lib/*
 rhoconnect-client/ObjectiveC/Tests/RhoConnectClientTest/build/*
 rhoconnect-client/ObjectiveC/Tests/build/*
 rhoconnect-client/ObjectiveC/build/*
