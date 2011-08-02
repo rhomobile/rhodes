@@ -320,7 +320,7 @@ Check if the device has a calendar:
 	:::ruby
 	System::get_property('has_calendar')
 
-The following methods are available in the RhoContact class:
+The following methods are available in the RhoEvent class:
 
 Return hash of hashes of all events stored in the calendar (index):
 	:::ruby
@@ -450,6 +450,13 @@ For barcode recognition we use Zbar library (iPhone, and Windows Mobile platform
 
 **NOTE: We are very sorry, but we are removed ZBar source code from our project by ZBar license requirements. For build Barcode extension for WM, you should download ZBar sources from http://zbar.sourceforge.net/ and copy to [rhodes root]/lib/extensions/barcode/ext/barcode/shared/zbar/zbar/ folder "include" and "zbar" folders from ZBar sources. Also you should fix ZBar sources for building by Microsoft Visual Studio (move define of inner function variables to begin of functions, etc.)
 
+On Android now supported real-time barcode recognizing:
+	:::ruby
+	Barcode.take_barcode(url_for :action => :take_callback)
+This code open special UI for real-time barcode recognizing from camera. If any barcode found recognizing stopped and user can select - confirm recognizing barcode or continue recognizig. If user confirmed or cancelled the callback will be called.
+In callback:
+* "status" - "ok" or "cancel"
+* "barcode" - recognized barcode string
 
 ### Sample
 See controller and view in the /app/BarcodeRecognizer folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/BarcodeRecognizer/controller.rb) for more information.

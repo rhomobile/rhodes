@@ -20,6 +20,7 @@
 
 package com.rhomobile.rhoconnect;
 
+import java.util.Collection;
 import java.util.Map;
 
 public class RhomModel {
@@ -40,10 +41,15 @@ public class RhomModel {
 
     private native void init();
     private static native RhoConnectNotify syncByName(String modelName);
-    private static native Map<String, String> createByName(String modelName, String keys[], String values[]);
     private static native Map<String, String> findByName(String modelName, String objectId);
+    private static native Map<String, String> findFirstByName(String modelName, String condKeys[], String condVals[]);
+    private static native Collection<Map<String, String> > findAllByName(String modelName, String condKeys[], String condVals[]);
+    private static native Map<String, String> createByName(String modelName, String keys[], String values[]);
+    private static native void saveByName(String modelName, String keys[], String values[]);
+    private static native void destroyByName(String modelName, String keys[], String values[]);
+    private static native void startBulkUpdateByName(String modelName);
+    private static native void stopBulkUpdateByName(String modelName);
     
-
     public RhomModel(String name, int syncType) {
     	init();
     	mName = name;
@@ -61,15 +67,44 @@ public class RhomModel {
     public void setPartition(String part) { mPartition = part; }
 	
 	public RhoConnectNotify sync() { return syncByName(mName); }
-	public void create(Map<String, String> item) {
-		String keys[] = new String[item.size()];
-		String vals[] = new String[item.size()];
+
+	private void mapToArrays(Map<String, String> item,
+						String[] keys, String[] vals)
+	{
 		int n = 0;
 		for (String key : item.keySet()) {
 			keys[n] = key;
 			vals[n] = item.get(key);
 			++n;
 		}
+	}
+	
+	public Map<String, String> find(String objectId) { return findByName(mName, objectId); }
+    public Map<String, String> findFirst(Map<String, String> condition)
+    {
+		String keys[] = new String[condition.size()];
+		String vals[] = new String[condition.size()];
+		mapToArrays(condition, keys, vals);
+		return findFirstByName(mName, keys, vals);
+    }
+    public Collection<Map<String, String> > findAll(Map<String, String> condition)
+    {
+		String keys[];
+		String vals[];
+    	if (condition != null) {
+			keys = new String[condition.size()];
+			vals = new String[condition.size()];
+			mapToArrays(condition, keys, vals);
+    	} else {
+    		keys = vals = new String[0];
+    	}
+		return findAllByName(mName, keys, vals);
+    }
+	
+	public void create(Map<String, String> item) {
+		String keys[] = new String[item.size()];
+		String vals[] = new String[item.size()];
+		mapToArrays(item, keys, vals);
 		Map<String, String> created = createByName(mName, keys, vals);
 		
 		if (created != null) {
@@ -77,15 +112,20 @@ public class RhomModel {
 			item.putAll(created);
 		}
 	}
-	public Map<String, String> find(String objectId) { return findByName(mName, objectId); }
+	public void save(Map<String, String> item) {
+		String keys[] = new String[item.size()];
+		String vals[] = new String[item.size()];
+		mapToArrays(item, keys, vals);
+		saveByName(mName, keys, vals);
+	}
+	public void destroy(Map<String, String> item) {
+		String keys[] = new String[item.size()];
+		String vals[] = new String[item.size()];
+		mapToArrays(item, keys, vals);
+		destroyByName(mName, keys, vals);
+	}
 
-	/* TODO:
-	findFirst();
-	findAll();
-	save();
-	destroy();
-	*/
-	void startBulkUpdate() {}
-	void stopBulkUpdate() {}
+	public void startBulkUpdate() { startBulkUpdateByName(mName); }
+	public void stopBulkUpdate() { stopBulkUpdateByName(mName); }
 
 }

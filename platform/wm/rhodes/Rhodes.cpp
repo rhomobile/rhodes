@@ -48,18 +48,23 @@ typedef unsigned long VALUE;
 char* parseToken( const char* start, int len );
 
 extern "C" void rho_ringtone_manager_stop();
+extern "C" void rho_sysimpl_sethas_network(int nValue);
+extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue);
 
 #if defined(_WIN32_WCE)
 #include <regext.h>
 
 // Global Notification Handle
-HREGNOTIFY g_hNotify = NULL;
+HREGNOTIFY g_hNotify = NULL, g_hNotifyCell = NULL;
 
 // ConnectionsNetworkCount
 // Gets a value indicating the number of network connections that are currently connected.
 #define SN_CONNECTIONSNETWORKCOUNT_ROOT HKEY_LOCAL_MACHINE
-#define SN_CONNECTIONSNETWORKCOUNT_PATH TEXT("System\\State\\Connections\\Network")
-#define SN_CONNECTIONSNETWORKCOUNT_VALUE TEXT("Count")
+#define SN_CONNECTIONSNETWORKCOUNT_PATH TEXT("System\\State\\Hardware")
+#define SN_CONNECTIONSNETWORKCOUNT_VALUE TEXT("WiFi")
+
+#define SN_CELLSYSTEMCONNECTED_PATH TEXT("System\\State\\Phone")
+#define SN_CELLSYSTEMCONNECTED_VALUE TEXT("Cellular System Connected")
 
 #endif
 
@@ -315,6 +320,23 @@ public :
         m_appWindow.ShowWindow(nShowCmd);
 
 #if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
+
+        DWORD dwConnCount = 0;
+        hr = RegistryGetDWORD( SN_CONNECTIONSNETWORKCOUNT_ROOT,
+			SN_CONNECTIONSNETWORKCOUNT_PATH, 
+			SN_CONNECTIONSNETWORKCOUNT_VALUE, 
+            &dwConnCount
+        );
+        rho_sysimpl_sethas_network(dwConnCount);
+
+        DWORD dwCellConnected = 0;
+        hr = RegistryGetDWORD( SN_CONNECTIONSNETWORKCOUNT_ROOT,
+			SN_CELLSYSTEMCONNECTED_PATH, 
+			SN_CELLSYSTEMCONNECTED_VALUE, 
+            &dwCellConnected
+        );
+        rho_sysimpl_sethas_cellnetwork(dwCellConnected);
+
 		// Register for changes in the number of network connections
 		hr = RegistryNotifyWindow(SN_CONNECTIONSNETWORKCOUNT_ROOT,
 			SN_CONNECTIONSNETWORKCOUNT_PATH, 
@@ -324,6 +346,16 @@ public :
 			0, 
 			NULL, 
 			&g_hNotify);
+
+		hr = RegistryNotifyWindow(SN_CONNECTIONSNETWORKCOUNT_ROOT,
+			SN_CELLSYSTEMCONNECTED_PATH, 
+			SN_CELLSYSTEMCONNECTED_VALUE, 
+			m_appWindow.m_hWnd, 
+			WM_CONNECTIONSNETWORKCELL, 
+			0, 
+			NULL, 
+			&g_hNotifyCell);
+
 #else
 		rho_clientregister_create("win32_client");
 #endif
@@ -368,6 +400,12 @@ public :
 #endif
 
 #if defined(OS_WINCE)&& !defined( OS_PLATFORM_CE )
+        if (g_hNotify)
+            RegistryCloseNotification(g_hNotify);
+
+        if ( g_hNotifyCell )
+            RegistryCloseNotification(g_hNotifyCell);
+
         CGPSController* pGPS = CGPSController::Instance();
         pGPS->DeleteInstance();
 #endif

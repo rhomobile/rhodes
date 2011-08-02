@@ -9,6 +9,7 @@ import android.test.AndroidTestCase;
 import com.rhomobile.rhodes.RhoLogConf;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhoconnect.RhoConnectClient;
+import com.rhomobile.rhoconnect.RhoConnectObjectNotify;
 import com.rhomobile.rhoconnect.RhomModel;
 import com.rhomobile.rhoconnect.RhoConnectNotify;
 
@@ -16,9 +17,19 @@ public class TestRhoConnectClient extends AndroidTestCase {
     private static final String TAG = TestRhoConnectClient.class.getSimpleName();
 
 	private final String SYNC_URL = "http://rhodes-store-server.heroku.com/application";
+	
+	class ObjectNotifyDelegate implements RhoConnectObjectNotify.IDelegate
+	{
+		RhoConnectObjectNotify mNotify;
+		@Override
+		public void call(RhoConnectObjectNotify notify) {
+			mNotify = notify;
+		}
+	}
 
     RhoConnectClient mClient;
     RhomModel mModels[];
+    RhomModel mProduct;
     
     @Override
     protected void setUp()
@@ -45,6 +56,7 @@ public class TestRhoConnectClient extends AndroidTestCase {
 				new RhomModel("Customer", RhomModel.SYNC_TYPE_INCREMENTAL),
 				new RhomModel("Product", RhomModel.SYNC_TYPE_INCREMENTAL)
 			};
+    	mProduct = mModels[2];
 
 		mClient.initialize(mModels);
         mClient.setThreadedMode(false);
@@ -74,7 +86,7 @@ public class TestRhoConnectClient extends AndroidTestCase {
     public void testSyncProductByName()
     {
     	testLogin();
-    	RhoConnectNotify notify = mModels[2].sync();
+    	RhoConnectNotify notify = mProduct.sync();
     	assertEquals(notify.getErrorCode(), 0);
     }
     
@@ -90,7 +102,7 @@ public class TestRhoConnectClient extends AndroidTestCase {
     	Map<String, String> item = new HashMap<String, String>();
     	item.put("name", "AndroidTest");
     	
-    	mModels[2].create(item);
+    	mProduct.create(item);
     	
     	assertTrue(item.containsKey("object"));
     	assertTrue(item.containsKey("source_id"));
@@ -99,8 +111,64 @@ public class TestRhoConnectClient extends AndroidTestCase {
     	assertTrue(item2 != null);
     	assertEquals(item.get("name"), item2.get("name"));
     	
-    	//testSyncProductByName();
+    }
+    
+    public void testCreateObjectNotify()
+    {
+    	Map<String, String> item = new HashMap<String, String>();
+    	item.put("name", "AndroidTest2");
     	
+    	mProduct.create(item);
+    	
+    	assertTrue(item.containsKey("object"));
+    	assertTrue(item.containsKey("source_id"));
+    	
+    	Map<String, String> item2 = mModels[2].find(item.get("object"));
+    	assertNotNull(item2);
+    	assertEquals(item.get("name"), item2.get("name"));
+    	
+    	ObjectNotifyDelegate objectCallback = new ObjectNotifyDelegate();
+    	mClient.setObjectNotification(objectCallback);
+    	mClient.addObjectNotify(Integer.parseInt(item.get("source_id")), item.get("object"));
+    	
+    	testSyncProductByName();
+    	
+    	assertNotNull(objectCallback.mNotify);
+    	
+    	String[] createdObjects = objectCallback.mNotify.getCreatedObjects();
+    	assertNotNull(createdObjects);
+    	
+    	int[] createdSourceIds = objectCallback.mNotify.getCreatedSourceIds();
+    	assertNotNull(createdSourceIds);
+    	
+    	assertEquals(createdObjects[0], item.get("object"));
     }
 
+    
+    public void testModifyProduct()
+    {
+    	Map<String, String> cond = new HashMap<String, String>();
+    	cond.put("name", "AndroidTest2");
+
+    	Map<String,String> item = mProduct.findFirst(cond);
+    	
+    	assertNotNull(item);
+    	assertTrue(item.size() > 0);
+    	
+    	String object = item.get("object");
+
+    	item.put("sku", item.get("sku") + "_TEST");
+    	mProduct.save(item);
+    	
+    	//RhoConnectNotify res = mProduct.sync();
+    	//assertEquals(res.getErrorCode(), 0);
+    	testSyncProductByName();
+    	
+    	Map<String,String> foundItem = mProduct.find(object);
+
+    	assertNotNull(foundItem);
+    	assertTrue(foundItem.size() > 0);
+    	
+    	assertEquals(item.get("sku"), foundItem.get("sku"));
+    }
 }
