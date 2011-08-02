@@ -61,10 +61,11 @@ public class ImageCaptureCallback implements PictureCallback {
 		try {
 			Logger.D(TAG, "PICTURE CALLBACK JPEG: " + data.length + " bytes");
 
-			osCommon.write(data);
-			osCommon.flush();
-			osCommon.close();
-			
+			if (osCommon != null) {
+				osCommon.write(data);
+				osCommon.flush();
+				osCommon.close();
+			}
 			OutputStream osOwn = new FileOutputStream(filePath);
 			osOwn.write(data);
 			osOwn.flush();
