@@ -46,7 +46,7 @@ win32 {
 ../../ruby/win32/win32.c
 }
 
-unix {
+unix:!macx {
   DESTDIR = ../../../linux/bin/rubylib
   OBJECTS_DIR = ../../../linux/bin/rubylib/tmp
   INCLUDEPATH += ../../ruby/linux
