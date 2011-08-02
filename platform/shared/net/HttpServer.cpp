@@ -891,15 +891,15 @@ bool CHttpServer::dispatch(String const &uri, Route &route)
         if(tmpstr[i] >= 'A' && tmpstr[i] <= 'Z') {
             if(i == 0) {
                 tmp[0] = tmpstr[i] + 0x20;
-                tmp[1] = NULL;
+                tmp[1] = '\0';
             } else {
                 tmp[0] = '_';
                 tmp[1] = tmpstr[i] + 0x20;
-                tmp[2] = NULL;
+                tmp[2] = '\0';
             }
         } else {
             tmp[0] = tmpstr[i];
-            tmp[1] = NULL;
+            tmp[1] = '\0';
         }
         controllerName += tmp;
     }
