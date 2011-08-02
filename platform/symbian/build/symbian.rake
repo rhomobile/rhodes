@@ -16,7 +16,8 @@ namespace "config" do
                 $jom = $config["env"]["paths"]["qtsymbian-sdk"]  + "/QtCreator/bin/jom.exe"
                 $sdkprefix = $config["env"]["paths"]["qtsymbian-sdk"]+"/Symbian/SDKs/Symbian1Qt473"
                 $sdkprefix_emu = $config["env"]["paths"]["qtsymbian-sdk"]+"/Simulator/Qt/msvc2005"
-                $epocroot = "/QtSDK/Symbian/SDKs/Symbian1Qt473/"
+                $epocroot = $config["env"]["paths"]["qtsymbian-sdk"]+"/Symbian/SDKs/Symbian1Qt473/"
+                $epocroot = $epocroot[2,$epocroot.length()]
                 $qmake = $sdkprefix+"/bin/qmake.exe"
                 $make = $sdkprefix+"/epoc32/tools/make.exe"
                 $qmake_emu = $sdkprefix_emu+"/bin/qmake.exe"
