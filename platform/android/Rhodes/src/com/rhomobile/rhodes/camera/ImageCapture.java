@@ -227,7 +227,7 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 	                p.setPictureSize(mSettings.getWidth(), mSettings.getHeight());
 	            }
 	            if (mSettings.getColorModel() == mSettings.CAMERA_COLOR_MODEL_GRAYSCALE) {
-	            	p.setColorEffect(Camera.Parameters.EFFECT_MONO);
+	            	p.set("effect", Camera.Parameters.EFFECT_MONO);//p.setColorEffect(Camera.Parameters.EFFECT_MONO);
 	            }
 			}
 			camera.setParameters(p);
@@ -291,13 +291,39 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 			values.put(Media.MIME_TYPE, "image/jpeg");
 			values.put(Media.DESCRIPTION, "Image capture by camera");
 
-			Uri uri = getContentResolver().insert(Media.EXTERNAL_CONTENT_URI, values);
+			Uri uri = null;
+			try {
+				uri = getContentResolver().insert(Media.EXTERNAL_CONTENT_URI, values);
+			}
+			catch (Exception ex) {
+				uri = null;
+				Logger.E(TAG, ex.getMessage());
+			}
+			try {
+				if (uri == null) {
+					uri = getContentResolver().insert(Media.INTERNAL_CONTENT_URI, values);
+				}
+			}
+			catch (Exception ex) {
+				uri = null;
+				Logger.E(TAG, ex.getMessage());
+			}
 			// String filename = timeStampFormat.format(new Date());
 			String dir = RhodesAppOptions.getBlobPath();
+
 			
-			OutputStream osCommon = getContentResolver().openOutputStream(uri);
-			
-	        Camera.Parameters parameters = camera.getParameters();
+			OutputStream osCommon = null;
+			try {
+				if (uri != null) {
+					osCommon = getContentResolver().openOutputStream(uri);
+				}
+			}
+			catch (Exception ex) {
+				uri = null;
+				Logger.E(TAG, ex.getMessage());
+			}
+
+			Camera.Parameters parameters = camera.getParameters();
 	        
 	        int imgW = 0;
 	        int imgH = 0;
@@ -308,7 +334,7 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
                 nCamRotate = 0;
             if (mIsFrontCamera) {
                 nCamRotate = 0;
-                parameters.setRotation(270);
+                parameters.set("rotation", nCamRotate );//.setRotation(270);
             }
 	        Logger.D(TAG, "Camera rotation: " + nCamRotate );
             parameters.set("rotation", nCamRotate );
@@ -342,7 +368,7 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
     			}
             }
             if (mSettings.getColorModel() == mSettings.CAMERA_COLOR_MODEL_GRAYSCALE) {
-            	parameters.setColorEffect(Camera.Parameters.EFFECT_MONO);
+            	parameters.set("effect", Camera.Parameters.EFFECT_MONO);//setColorEffect(Camera.Parameters.EFFECT_MONO);
             }
 			iccb = new ImageCaptureCallback(this, callbackUrl, osCommon, dir + "/" + filename + ".jpg", imgW, imgH, "jpg");
             camera.setParameters(parameters);
