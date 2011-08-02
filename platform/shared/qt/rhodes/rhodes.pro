@@ -53,7 +53,7 @@ wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib gdiplus.lib kernel32.lib user32
 ../../../win32/bin/syncengine/syncengine.lib
 }
 
-DEFINES += RHODES_EMULATOR
+DEFINES += RHODES_EMULATOR=1
 
 !win32 {
   QMAKE_CFLAGS_WARN_ON += -Wno-extra -Wno-unused -Wno-sign-compare -Wno-format -Wno-parentheses
