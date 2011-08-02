@@ -21,7 +21,7 @@ win32 {
 ../../sync/SyncProtocol_3.h
 }
 
-unix {
+unix:!macx {
   DESTDIR = ../../../linux/bin/syncengine
   OBJECTS_DIR = ../../../linux/bin/syncengine/tmp
   DEFINES += _GNU_SOURCE
