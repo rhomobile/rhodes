@@ -5,11 +5,22 @@ TEMPLATE = lib
 
 CONFIG += staticlib warn_on
 
-INCLUDEPATH += ../..
+INCLUDEPATH += ../..\
+../../curl/include
 
 macx {
   DESTDIR = ../../../osx/bin/curl
   OBJECTS_DIR = ../../../osx/bin/curl/tmp
+  DEFINES += USE_RHOSSL
+SOURCES += ../../curl/lib/http_ntlm.c\
+../../curl/lib/qssl.c\
+../../curl/lib/ssluse.c
+}
+
+unix {
+  DESTDIR = ../../../linux/bin/curl
+  OBJECTS_DIR = ../../../linux/bin/curl/tmp
+  DEFINES += HAVE_CONFIG_H USE_RHOSSL
 }
 
 DEFINES += RHODES_EMULATOR
@@ -125,7 +136,6 @@ SOURCES += ../../curl/lib/amigaos.c\
 ../../curl/lib/http_chunks.c\
 ../../curl/lib/http_digest.c\
 ../../curl/lib/http_negotiate.c\
-../../curl/lib/http_ntlm.c\
 ../../curl/lib/if2ip.c\
 ../../curl/lib/inet_ntop.c\
 ../../curl/lib/inet_pton.c\
@@ -144,7 +154,6 @@ SOURCES += ../../curl/lib/amigaos.c\
 ../../curl/lib/nwos.c\
 ../../curl/lib/parsedate.c\
 ../../curl/lib/progress.c\
-../../curl/lib/qssl.c\
 ../../curl/lib/rawstr.c\
 ../../curl/lib/security.c\
 ../../curl/lib/select.c\
@@ -158,7 +167,6 @@ SOURCES += ../../curl/lib/amigaos.c\
 ../../curl/lib/splay.c\
 ../../curl/lib/ssh.c\
 ../../curl/lib/sslgen.c\
-../../curl/lib/ssluse.c\
 ../../curl/lib/strdup.c\
 ../../curl/lib/strequal.c\
 ../../curl/lib/strerror.c\

@@ -143,7 +143,7 @@ void rho_sys_unzip_file(const char *url)
     rho_unzip_file(url);
 }
 
-#if defined(OS_MACOSX) || defined(OS_ANDROID)
+#if defined(OS_MACOSX) || defined(OS_ANDROID) || defined(OS_LINUX)
   // implemented in platform code
 #else
 int rho_sys_set_sleeping(int sleeping)
