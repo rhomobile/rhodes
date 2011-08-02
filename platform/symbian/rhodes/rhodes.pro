@@ -92,7 +92,7 @@ qtcAddDeployment()
 OTHER_FILES +=
 
 win32 {
-DESTDIR = ../../rhodes-symbian-emulator-build
+#DESTDIR = ../../rhodes-symbian-emulator-build
 HEADERS += ../../wm/rhodes/rho/net/NetRequestImpl.h\
              ../../wm/rhodes/rho/common/impl/RhoThreadImpl.h
 SOURCES += ../../wm/rhodes/rho/net/NetRequestImpl.cpp
@@ -125,8 +125,8 @@ SOURCES += ../../shared/common/PosixThreadImpl.cpp\
            src/phonebook/ruby_phonebook.cpp \
            src/phonebook/Phonebook.cpp \
            src/qkineticscroller.cpp \
-           src/RhoThreadImpl.cpp \
- HEADERS +=    src/qwebviewselectionsuppressor.h \
+           src/RhoThreadImpl.cpp
+HEADERS +=    src/qwebviewselectionsuppressor.h \
                src/qwebviewkineticscroller.h \
                src/qkineticscroller_p.h \
                src/qkineticscroller.h
