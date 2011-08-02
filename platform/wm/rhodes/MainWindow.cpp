@@ -64,6 +64,7 @@ extern HREGNOTIFY g_hNotify;
 #include "DateTimePicker.h"
 
 extern "C" void rho_sysimpl_sethas_network(int nValue);
+extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue);
 extern "C" void rho_geoimpl_turngpsoff();
 
 using namespace rho::common;
@@ -703,7 +704,17 @@ LRESULT CMainWindow::OnConnectionsNetworkCount(UINT /*uMsg*/, WPARAM wParam, LPA
 {
 #if defined (_WIN32_WCE)
 
-	rho_sysimpl_sethas_network( (int)wParam );
+	rho_sysimpl_sethas_network( wParam );
+
+#endif
+	return 0;
+}
+
+LRESULT CMainWindow::OnConnectionsNetworkCell(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) 
+{
+#if defined (_WIN32_WCE)
+
+	rho_sysimpl_sethas_cellnetwork( (int)wParam );
 
 #endif
 	return 0;

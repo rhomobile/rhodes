@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="detool"
 	ProjectGUID="{92691F2A-E212-4D72-B09B-0A03DEE43C9D}"
 	RootNamespace="detool"
@@ -64,6 +64,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="rapi.lib Ws2_32.lib"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="C:\Program Files\Windows Mobile 6 SDK\Activesync\Lib"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
