@@ -706,7 +706,7 @@ Add pathes to Qt SDK and MS Visual Studio 2005 to rhobuild.yml in the Rhodes fol
 ### To clean all binaries run:
 
 	:::term
-	$rake clean:symbian	
+	$ rake clean:symbian	
 
 ## Build for Windows Mobile
 
