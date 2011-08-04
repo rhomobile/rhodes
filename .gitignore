@@ -48,6 +48,16 @@ platform/wp7/**/obj/*
 platform/symbian/rhodes/apps/*
 platform/symbian/rhodes/db/*
 platform/symbian/rhodes/lib/*
+platform/symbian/rhodes/bld.inf
+platform/symbian/rhodes/Makefile
+platform/symbian/rhodes/Makefile_rhodes_exe.mk
+platform/symbian/rhodes/rhodes.loc
+platform/symbian/rhodes/rhodes.rss
+platform/symbian/rhodes/rhodes_exe.mmp
+platform/symbian/rhodes/rhodes_installer.pkg
+platform/symbian/rhodes/rhodes_reg.rss
+platform/symbian/rhodes/rhodes_stub.pkg
+platform/symbian/rhodes/rhodes_template.pkg
 platform/symbian/Makefile
 platform/symbian/bld.inf
 platform/symbian/curl/Makefile
@@ -76,6 +86,7 @@ platform/symbian/syncengine/Makefile
 platform/symbian/syncengine/Makefile_syncengine_lib.mk
 platform/symbian/syncengine/bld.inf
 platform/symbian/syncengine/syncengine_l
+platform/symbian/syncengine/syncengine_lib.mmp
 platform/symbian/qtscroller/lib/QtScroller.prl
 platform/rhodes-symbian-emulator-build/*
 rhoconnect-client/ObjectiveC/Tests/RhoConnectClientTest/build/*
