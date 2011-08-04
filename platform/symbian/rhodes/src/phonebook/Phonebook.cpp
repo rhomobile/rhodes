@@ -40,7 +40,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <rhodes.rsg>
+//#include <rhodes.rsg>
 
 //IMPLEMENT_LOGCLASS(CPhonebook,"Phonebook");
 

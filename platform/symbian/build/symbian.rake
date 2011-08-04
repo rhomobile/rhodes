@@ -24,6 +24,21 @@ namespace "config" do
                 $symbiandir = $config["env"]["paths"]["qtsymbian-sdk"]+"/Symbian"
                 $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
                 $msvs = $config["env"]["paths"]["msvs2005"]
+
+            if !$app_config["symbian"] || !$app_config["symbian"]["uid"]
+                puts "Add symbian:uid to application build.yml"
+                puts "You can find more information about UID here - http://docs.rhomobile.com/rhodes/build#build-for-symbian"
+                exit 1
+            end
+
+            content = File.open($startdir + "/"+$config["build"]["symbianpath"] + "/rhodes/rhodes.pro").map { |line| line}
+            content[14] = "symbian:TARGET = "+$appname+"\n"
+            content[15] = "symbian:TARGET.UID3 = "+$app_config["symbian"]["uid"]+"\n"
+
+            File.open($startdir + "/"+$config["build"]["symbianpath"] + "/rhodes/rhodes.pro", "w") {
+            |f| f.write(content.join()) ;
+            f.close
+            }
         end
 end
 

@@ -12,6 +12,7 @@ db.source = db
 lib.source = lib
 DEPLOYMENTFOLDERS = apps db lib
 
+symbian:TARGET = Rhodes
 symbian:TARGET.UID3 = 0xE271409B
 #0xE17AE169
 #symbian:TARGET.UID3 = 0x20047C9A
