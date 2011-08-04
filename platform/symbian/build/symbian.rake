@@ -74,7 +74,7 @@ namespace "build" do
       cp_r $srcdir + "/apps", $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes"
       cp_r $srcdir + "/db", $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes"
       cp_r $srcdir + "/lib", $startdir + "/"+$config["build"]["symbianpath"]+"/rhodes"
-      cp $app_path + "/icon/icon.svg", $config["build"]["symbianpath"]+"/rhodes/rhodes.svg" if File.exists? $app_path + "/icon/icon.svg"
+      cp $app_path + "/icon/icon.svg", $config["build"]["symbianpath"]+"/rhodes/"+$appname+".svg" if File.exists? $app_path + "/icon/icon.svg"
     end
 
    task :rhodesdev => ["config:symbian"] do
