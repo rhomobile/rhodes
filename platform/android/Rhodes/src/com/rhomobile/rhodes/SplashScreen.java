@@ -7,6 +7,12 @@ import java.util.Map;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.mainview.SimpleMainView;
 
+import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.RhodesActivity;
+import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
+
+
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -34,11 +40,14 @@ public class SplashScreen implements MainView {
 	private native void nativeHide();
 	private native int howLongWaitMs();
 	
+	private boolean mFirstNavigate = true;
+	
 	public SplashScreen(Context context) {
 		AssetManager am = context.getResources().getAssets();
 		mContentView = createImageView(context, am);
 		if (mContentView == null)
 			mContentView = createHtmlView(context, am);
+		mFirstNavigate = true;
 	}
 	
 	private View createImageView(Context context, AssetManager am) {
@@ -125,15 +134,39 @@ public class SplashScreen implements MainView {
 	
 	@Override
 	public void navigate(String url, int index) {
+
+		final String _url = url;
+		final int _index = index;
 		if (DEBUG)
 			Log.d(TAG, "navigate: url=" + url);
+ 
+		PerformOnUiThread.exec(new Runnable() {
+			private String mUrl = _url;
+			private int mIndex = _index;
+			public void run() {
+				if (mFirstNavigate) {
+					mFirstNavigate = false;
+			        RhodesService r = RhodesService.getInstance();
+					MainView mainView = r.getMainView();
+					SimpleMainView v = new SimpleMainView(mainView);
+					r.setMainView(v);		
+					//getWebView(0).loadUrl(url);
+					v.navigate(mUrl,0);
+				}
+				else {
+			        RhodesService r = RhodesService.getInstance();
+					MainView mainView = r.getMainView();
+					if (mainView != null) {
+						mainView.navigate(mUrl,mIndex);
+					}
+				}
+			}
+			
+		}, howLongWaitMs());
+		
+		//nativeHide();
+		
 
-        RhodesService r = RhodesService.getInstance();
-		MainView mainView = r.getMainView();
-		SimpleMainView v = new SimpleMainView(mainView);
-		r.setMainView(v);		
-		//getWebView(0).loadUrl(url);
-		v.navigate(url,0);
 	}
 	
 	@Override
