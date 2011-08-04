@@ -21,11 +21,17 @@ public class ExtrasHolder {
 		
 		public boolean getBoolean(String key) {
 			String value = getString(key);
+			if (value == null) {
+				return false;
+			}
 			return Boolean.parseBoolean(value);
 		}
 		
 		public int getInt(String key) {
 			String value = getString(key);
+			if (value == null) {
+				return 0;
+			}
 			return Integer.parseInt(value);
 		}
 
