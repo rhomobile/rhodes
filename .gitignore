@@ -77,6 +77,7 @@ platform/symbian/syncengine/Makefile_syncengine_lib.mk
 platform/symbian/syncengine/bld.inf
 platform/symbian/syncengine/syncengine_l
 platform/symbian/qtscroller/lib/QtScroller.prl
+platform/rhodes-symbian-emulator-build/*
 rhoconnect-client/ObjectiveC/Tests/RhoConnectClientTest/build/*
 rhoconnect-client/ObjectiveC/Tests/build/*
 rhoconnect-client/ObjectiveC/build/*
