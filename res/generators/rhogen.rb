@@ -62,6 +62,7 @@ module Rhogen
       puuid = UUID.new
       generated_uuid = puuid.generate
       @productid = generated_uuid
+      @uid = '0x'+(0xE0000000 + rand(0xFFFFFFF)).to_s(16)
       template.source = 'build.yml'
       template.destination = "#{name}/build.yml"
     end

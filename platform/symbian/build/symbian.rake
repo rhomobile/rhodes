@@ -111,7 +111,7 @@ namespace "build" do
 
      mkdir_p $targetdir if not File.exists? $targetdir
      rm $targetdir+"/"+$appname+".sis" if File.exists? $targetdir+"/"+$appname+".sis"
-     mv $startdir + "/"+$config["build"]["symbianpath"] + "/rhodes/rhodes.sis", $targetdir+"/"+$appname+".sis"
+     mv $startdir + "/"+$config["build"]["symbianpath"] + "/rhodes/"+$appname+".sis", $targetdir+"/"+$appname+".sis"
 
      chdir $startdir
    end
