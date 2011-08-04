@@ -682,6 +682,7 @@ with these strings:
     CContactConverter& ConverterL(const TUid& aFormat);
     CContactConverter& ConverterL(const TUid& aFormat, const TInt64 aContactFieldFilter, MConverterCallBack* aCallback, const TVCardVersion aVersion,const TBool aExportTel);
 
+NOTE: You have to install Rhodes on the same local disk with QtSDK!
 
 
 ### Build application from the command line
@@ -692,6 +693,7 @@ Add pathes to Qt SDK and MS Visual Studio 2005 to rhobuild.yml in the Rhodes fol
           paths:
             qtsymbian-sdk: C:/QtSDK
             msvs2005: C:/Program Files/Microsoft Visual Studio 8
+			
 
 ### To build and run application on emulator(Visual Studio 2005 only) :
 
@@ -707,6 +709,11 @@ Add pathes to Qt SDK and MS Visual Studio 2005 to rhobuild.yml in the Rhodes fol
 
 	:::term
 	$ rake clean:symbian	
+	
+NOTE: If the clean rake task doesn't respond long time while it is being executed then stop it and delete folder like this: C:/QtSDK/Symbian/SDKs/Symbian1Qt473/epoc32/BUILD/.../rhodes
+
+NOTE: If You want to use your own UID for application you can redefine it in build.yml. You can find information about UID here - http://www.developer.nokia.com/Community/Wiki/UID_Q&As_(Symbian_Signed)
+
 
 ## Build for Windows Mobile
 
@@ -981,3 +988,6 @@ Place your image to use as an icon in a folder called `icon` in your application
 ### Windows Mobile
 Windows Mobile Shell program caches program icons. This cache is cleared only when device or simulator is restarted.
 So if you change icon of application, you have to restart device/simulator(uninstall/install is not enough).
+
+### Symbian
+You can change icon for your Symbian application replacing icon.svg which is in your application icon folder with a new one.
