@@ -51,7 +51,6 @@ class Hash
 end
   
 class Jake
-  include Rake::DSL
 
   def self.config(configfile)
     conf = YAML::load(configfile)
@@ -216,7 +215,7 @@ class Jake
   def self.process_spec_results(start)
     finish = Time.now
   
-    rm_rf $app_path + "/faillog.txt"
+    FileUtils.rm_rf $app_path + "/faillog.txt"
     File.open($app_path + "/faillog.txt", "w") { |io| $faillog.each {|x| io << x }  } if $failed.to_i > 0
     
     puts "************************"
