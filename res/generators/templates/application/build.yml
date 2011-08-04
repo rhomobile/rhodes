@@ -17,5 +17,7 @@ iphone:
   BundleURLScheme: <%=@app_name_cleared%>
 wp:
   productid: '<%=@productid%>'
+symbian:
+    uid: '<%=@uid%>'
 
 extensions: ["json", "another-extension"]
