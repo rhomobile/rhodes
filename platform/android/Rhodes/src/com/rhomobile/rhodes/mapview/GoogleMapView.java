@@ -73,6 +73,9 @@ public class GoogleMapView extends MapActivity {
 	
 	private Vector<Annotation> annotations;
 	
+	
+	static private ExtrasHolder mHolder = null;
+	
 	private static class Coordinates {
 		public double latitude;
 		public double longitude;
@@ -119,7 +122,10 @@ public class GoogleMapView extends MapActivity {
 		setContentView(layout, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		
 		// Extrace parameters
-		Bundle extras = getIntent().getExtras();
+		//Bundle extras = getIntent().getExtras();
+		
+		ExtrasHolder extras = mHolder;
+		
 		apiKey = extras.getString(SETTINGS_PREFIX + "api_key");
 		
 		// Extract settings
@@ -232,6 +238,8 @@ public class GoogleMapView extends MapActivity {
 			}
 		}
 		
+		mHolder.clear();
+
 		view.preLoad();
 		
 		Thread geocoding = new Thread(new Runnable() {
@@ -309,8 +317,11 @@ public class GoogleMapView extends MapActivity {
 	
 	@SuppressWarnings("unchecked")
 	public static void create(String gapiKey, Map<String, Object> params) {
+		mHolder = new ExtrasHolder();
 		try {
-			Intent intent = new Intent(RhodesActivity.getContext(), GoogleMapView.class);
+			Intent intent_obj = new Intent(RhodesActivity.getContext(), GoogleMapView.class);
+			mHolder.clear();
+			ExtrasHolder intent = mHolder;
 			intent.putExtra(SETTINGS_PREFIX + "api_key", gapiKey);
 			
 			Object settings = params.get("settings");
@@ -407,7 +418,7 @@ public class GoogleMapView extends MapActivity {
 				}
 			}
 			
-			RhodesService.getInstance().startActivity(intent);
+			RhodesService.getInstance().startActivity(intent_obj);
 		}
 		catch (Exception e) {
 			reportFail("create", e);
