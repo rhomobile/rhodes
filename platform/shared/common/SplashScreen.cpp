@@ -42,6 +42,9 @@ void CSplashScreen::start()
 
 long CSplashScreen::howLongWaitMs()
 {
+   if (m_nDelay <= 0) {
+       return 0;
+   }
    CTimeInterval endTime = CTimeInterval::getCurrentTime();
    long nTimeElapsed = endTime.minus(m_startTime).toULong();
    
