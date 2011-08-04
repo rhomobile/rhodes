@@ -1,3 +1,29 @@
+/*------------------------------------------------------------------------
+* (The MIT License)
+* 
+* Copyright (c) 2008-2011 Rhomobile, Inc.
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+* 
+* http://rhomobile.com
+*------------------------------------------------------------------------*/
+
 package com.rhomobile.rhoconnect_client_test;
 
 import java.util.HashMap;
@@ -68,7 +94,7 @@ public class TestRhoConnectClient extends AndroidTestCase {
     @Override
     protected void tearDown()
     {
-        mClient.databaseFullResetAndLogout();
+        //mClient.databaseFullResetAndLogout();
     	mClient.close();
     }
     
@@ -115,6 +141,8 @@ public class TestRhoConnectClient extends AndroidTestCase {
     
     public void testCreateObjectNotify()
     {
+    	testLogin();
+    	
     	Map<String, String> item = new HashMap<String, String>();
     	item.put("name", "AndroidTest2");
     	
@@ -131,7 +159,8 @@ public class TestRhoConnectClient extends AndroidTestCase {
     	mClient.setObjectNotification(objectCallback);
     	mClient.addObjectNotify(Integer.parseInt(item.get("source_id")), item.get("object"));
     	
-    	testSyncProductByName();
+    	RhoConnectNotify notify = mProduct.sync();
+    	assertEquals(notify.getErrorCode(), 0);
     	
     	assertNotNull(objectCallback.mNotify);
     	
@@ -147,6 +176,8 @@ public class TestRhoConnectClient extends AndroidTestCase {
     
     public void testModifyProduct()
     {
+    	testLogin();
+    	
     	Map<String, String> cond = new HashMap<String, String>();
     	cond.put("name", "AndroidTest2");
 
@@ -160,9 +191,8 @@ public class TestRhoConnectClient extends AndroidTestCase {
     	item.put("sku", item.get("sku") + "_TEST");
     	mProduct.save(item);
     	
-    	//RhoConnectNotify res = mProduct.sync();
-    	//assertEquals(res.getErrorCode(), 0);
-    	testSyncProductByName();
+    	RhoConnectNotify notify = mProduct.sync();
+    	assertEquals(notify.getErrorCode(), 0);
     	
     	Map<String,String> foundItem = mProduct.find(object);
 
