@@ -58,6 +58,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/MapView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/MultiTouchHandler.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/OneTouchHandler.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/TouchHandler.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/ExtrasHolder.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/nativeview/RhoNativeViewManager.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/Contact.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/ContactAccessor.java
