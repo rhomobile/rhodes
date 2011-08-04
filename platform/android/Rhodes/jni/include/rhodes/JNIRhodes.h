@@ -37,6 +37,8 @@
 #include <logging/RhoLogConf.h>
 #include <logging/RhoLog.h>
 
+#include <genconfig.h>
+
 static int const RHO_FD_BASE = 512;
 
 JavaVM *jvm();
