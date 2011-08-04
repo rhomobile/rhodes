@@ -51,7 +51,7 @@ class Hash
 end
   
 class Jake
-
+  include Rake::DSL
 
   def self.config(configfile)
     conf = YAML::load(configfile)
