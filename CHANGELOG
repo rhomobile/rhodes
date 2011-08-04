@@ -1,3 +1,17 @@
+## 3.1
+* Symbian support
+* Android: support latest SDK and NDK r6
+* Blackberry 7.0 support
+* Barcode: real time barcode reader for Android
+* Barcode: support QR codes for Android, iPhone and Windows Mobile
+* Improve Android NFC support
+* Improve Bluetooth on Android and iPhone
+* Support jQueryMobile
+* Camera: support parameters for Android and iPhone
+* Fix https issues on iPhone and Android
+* Fix Device Push issues on iPhone and Android
+* Fix customer issues
+
 ## 3.0.1
 * Fix customer issues
 * Android: fix push issues
