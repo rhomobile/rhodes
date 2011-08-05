@@ -349,13 +349,8 @@ namespace "run" do
 	  puts "\nStarting application on the WM6 emulator\n\n"
 	  log_file = gelLogPath
 
-	  Thread.new { 
-            Jake.run(detool,['log', log_file, $port])
-          }
-
-	  # Thread.new {
-            Jake.run(detool,args)
-          # }
+	  Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
+	  Jake.run2( detool, args, {:nowait => false})
     end
 
   namespace "wm" do
@@ -376,13 +371,8 @@ namespace "run" do
 	  puts "Please, connect you device via ActiveSync.\n\n"
 	  log_file = gelLogPath
 
-	  Thread.new { 
-            Jake.run(detool,['log', log_file, $port])
-          }
-
-	  # Thread.new { 
-            Jake.run(detool, args)
-          # }
+	  Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
+	  Jake.run2( detool, args, {:nowait => false})
     end
 
     namespace "device" do
@@ -398,10 +388,7 @@ namespace "run" do
 	    puts "Please, connect you device via ActiveSync.\n\n"
 	    log_file = gelLogPath
 
-   	    Thread.new { 
-               Jake.run(detool,['log', log_file, $port])
-            }
-
+	    Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
 	    Jake.run(detool,args)
         end
     end
@@ -416,9 +403,7 @@ namespace "run" do
 	  args   = ['emucab', '"Windows Mobile 6 Professional Emulator"', $targetdir + '/' +  $appname + ".cab", $appname, $port]
 	  log_file = gelLogPath
 
-	  Thread.new { 
-            Jake.run(detool,['log', log_file, $port])
-          }
+	  Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
 
 	  puts "\nStarting application on the WM6 emulator\n\n"
 	  Jake.run(detool,args)
