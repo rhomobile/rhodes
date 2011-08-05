@@ -162,7 +162,14 @@ public class SplashScreen implements MainView {
 		final int _index = index;
 		if (DEBUG)
 			Log.d(TAG, "navigate: url=" + url);
- 
+		
+		int delay = howLongWaitMs();
+		if (delay < 0) {
+			delay = 0;
+		}
+		
+		Utils.platformLog(TAG, "$$$$$$$$$$$$$$$$$$$$$$$     DELAY for SplashScreen = "+String.valueOf(delay));
+
 		PerformOnUiThread.exec(new Runnable() {
 			private String mUrl = _url;
 			private int mIndex = _index;
@@ -185,7 +192,7 @@ public class SplashScreen implements MainView {
 				}
 			}
 			
-		}, howLongWaitMs());
+		}, delay);
 		
 		//nativeHide();
 		
