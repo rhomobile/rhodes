@@ -99,6 +99,7 @@ public class GoogleMapView extends MapActivity {
 			mServiceConnection = null;
 		}
 		super.onDestroy();
+		mc = null;
 	}
 	
 	@Override
