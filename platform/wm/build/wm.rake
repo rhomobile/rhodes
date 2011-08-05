@@ -345,7 +345,7 @@ namespace "run" do
 
    	  cd $startdir + "/res/build-tools"
 	  detool = "detool.exe"    
-	  args   = [ 'emu', '"Windows Mobile 6 Professional Emulator"', $appname, $srcdir, $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe" , $port]
+	  args   = [ 'emu', '"Windows Mobile 6 Professional Emulator"', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port]
 	  puts "\nStarting application on the WM6 emulator\n\n"
 	  log_file = gelLogPath
 
@@ -353,9 +353,9 @@ namespace "run" do
             Jake.run(detool,['log', log_file, $port])
           }
 
-	  Thread.new { 
+	  # Thread.new {
             Jake.run(detool,args)
-          }
+          # }
     end
 
   namespace "wm" do
@@ -371,7 +371,7 @@ namespace "run" do
 
    	  cd $startdir + "/res/build-tools"
 	  detool = "detool.exe"    
-	  args   = [ 'dev', $appname, $srcdir, $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe", $port ]
+	  args   = [ 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port ]
 	  puts "\nStarting application on the device"
 	  puts "Please, connect you device via ActiveSync.\n\n"
 	  log_file = gelLogPath
@@ -380,9 +380,9 @@ namespace "run" do
             Jake.run(detool,['log', log_file, $port])
           }
 
-	  Thread.new { 
+	  # Thread.new { 
             Jake.run(detool, args)
-          }
+          # }
     end
 
     namespace "device" do
