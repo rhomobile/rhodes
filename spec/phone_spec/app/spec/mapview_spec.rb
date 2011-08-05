@@ -9,7 +9,7 @@ describe "MapView" do
     MapView.create :settings => {:map_type => 'roadmap', :region => [37, -122, 10, 10]}
     w = 5
     #w = 5 if System::get_property('platform') == 'ANDROID'
-    sleep 20
+    sleep 60
 
     state = MapView.state
     state.should_not be_nil
@@ -25,12 +25,13 @@ describe "MapView" do
     state.should be_nil
   end
 
-  it "should create 500 annotations" do
+
+  it "should create 250 annotations" do
     state = MapView.state
     state.should be_nil
 
      myannotations = []
-     500.times do |j|
+     250.times do |j|
           annotation = {:latitude => '37.349691', :longitude => '-121.983261', :title => "Test Location", :subtitle => "test", :url => "/app/GeoLocation/show?city=Current Location"}	
           myannotations << annotation
      end
@@ -40,7 +41,7 @@ describe "MapView" do
 
      map_params = {
           :settings => {:map_type => "roadmap", :region => [37, -122, 10, 10],
-                        :zoom_enabled => true, :scroll_enabled => true, :shows_user_location => true, :api_key => '0tLch9tZSX1G7PQRWwmqvINECUGtJ8ReArpPJxw'},
+                        :zoom_enabled => true, :scroll_enabled => true, :shows_user_location => true },
           :annotations => myannotations
      }
 
@@ -48,7 +49,7 @@ describe "MapView" do
 
     w = 5
     #w = 5 if System::get_property('platform') == 'ANDROID'
-    sleep 40
+    sleep 60
 
     state = MapView.state
     state.should_not be_nil
