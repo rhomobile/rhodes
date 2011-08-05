@@ -201,8 +201,9 @@ Same procedure as for plug-in
 
 2. Copy 'rhodes\platform\wp7\IronRuby\bin\Silverlight3Release' to cijoe from local computer
 3. Copy 'rhodes\platform\win32\RhoSimulator' to cijoe from local computer
+4. Copy 'rhodes\platform\osx\bin\RhoSimulator\Rhosimulator.app
 
-4. Build and push gem:
+5. Build and push gem:
     rake gem
     gem push rhodes-<version>.gem
 
