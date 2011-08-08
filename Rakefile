@@ -26,7 +26,7 @@
 
 require 'find'
 require 'erb'
-require 'rdoc/task'
+#require 'rdoc/task'
 require 'digest/sha2'
 require 'rexml/document'
 
@@ -985,18 +985,18 @@ task :switch_app => "config:common" do
 end
 
 
-Rake::RDocTask.new do |rd|
+#Rake::RDocTask.new do |rd|
 #RDoc::Task.new do |rd|
-  rd.main = "README.textile"
-  rd.rdoc_files.include("README.textile", "lib/framework/**/*.rb")
-end
-Rake::Task["rdoc"].comment=nil
-Rake::Task["rerdoc"].comment=nil
+#  rd.main = "README.textile"
+#  rd.rdoc_files.include("README.textile", "lib/framework/**/*.rb")
+#end
+#Rake::Task["rdoc"].comment=nil
+#Rake::Task["rerdoc"].comment=nil
 
-task :rdocpush => :rdoc do
-  puts "Pushing RDOC. This may take a while"
-  `scp -r html/* dev@dev.rhomobile.com:dev.rhomobile.com/rhodes/`
-end
+#task :rdocpush => :rdoc do
+#  puts "Pushing RDOC. This may take a while"
+#  `scp -r html/* dev@dev.rhomobile.com:dev.rhomobile.com/rhodes/`
+#end
 
 namespace "build" do
     #    desc "Build rhoconnect-client package"
