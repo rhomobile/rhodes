@@ -727,7 +727,7 @@ RHO_GLOBAL double google_mapview_state_center_lon()
 
 
 
-static bool ourIsOldGoogleEngineUsed = false;
+static bool ourIsOldGoogleEngineUsed = true;
 
 
 
