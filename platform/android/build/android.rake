@@ -442,7 +442,7 @@ namespace "config" do
 
     android_api_levels.sort!
 
-    $emuversion = get_market_version($found_api_level) if $emuversion.nil?
+    $emuversion = get_market_version($min_sdk_level) if $emuversion.nil?
     requested_api_level = get_api_level($emuversion)
 
     if USE_TRACES
