@@ -148,6 +148,7 @@ RHO_GLOBAL int native_tabbar_get_current_tab() {
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mainview_TabbedMainView_onTabBarChangeTabCallback
   (JNIEnv *env, jclass, jstring callback, jstring body)
 {
-        rho_net_request_with_data(rho_http_normalizeurl(rho_cast<std::string>(callback).c_str()), rho_cast<std::string>(body).c_str());
-
+    rho_net_request_with_data(
+            RHODESAPP().canonicalizeRhoUrl(rho_cast<std::string>(env, callback)).c_str(),
+            rho_cast<std::string>(env, body).c_str());
 }

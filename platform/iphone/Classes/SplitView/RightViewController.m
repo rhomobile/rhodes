@@ -180,7 +180,9 @@
         strBody = [strBody stringByAppendingString:[NSString stringWithFormat:@"%d",new_index]];
         const char* cb = [self.on_change_tab_callback UTF8String];
         const char* b = [strBody UTF8String];
-        rho_net_request_with_data(rho_http_normalizeurl(cb), b);
+        char* norm_url = rho_http_normalizeurl(cb);
+        rho_net_request_with_data(norm_url, b);
+        rho_http_free(norm_url);
     }
 }
 

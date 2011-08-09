@@ -46,8 +46,8 @@ RHO_GLOBAL void rho_webview_navigate(const char* url, int index)
         return;
     }
 
-    char *normUrl = rho_http_normalizeurl(url);
-    jhstring objNormUrl = rho_cast<jhstring>(normUrl);
+    std::string normUrl = RHODESAPP().canonicalizeRhoUrl(url);
+    jhstring objNormUrl = rho_cast<jhstring>(env, normUrl);
     env->CallStaticVoidMethod(cls, mid, objNormUrl.get(), index);
 }
 

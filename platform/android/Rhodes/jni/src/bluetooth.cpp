@@ -42,21 +42,17 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Bluetooth"
 
-
 #include "rhodes/jni/com_rhomobile_rhodes_bluetooth_RhoBluetoothManager.h"
 
 #include <common/RhodesApp.h>
 #include "ruby/ext/rho/rhoruby.h"
 
-
-
-
-
-
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_bluetooth_RhoBluetoothManager_onCallback
-  (JNIEnv *env, jclass, jstring callback_url, jstring body) {
-
-    rho_net_request_with_data(rho_http_normalizeurl(rho_cast<std::string>(callback_url).c_str()), rho_cast<std::string>(body).c_str());
+  (JNIEnv *env, jclass, jstring callback_url, jstring body)
+{
+    rho_net_request_with_data(
+            RHODESAPP().canonicalizeRhoUrl(rho_cast<std::string>(env, callback_url)).c_str(),
+            rho_cast<std::string>(env, body).c_str());
 }
 
 
