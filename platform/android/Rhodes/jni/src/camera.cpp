@@ -34,20 +34,13 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Camera"
 
-//RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_camera_Camera_callback
-//  (JNIEnv *env, jclass, jstring callback, jstring filePath, jstring error, jboolean cancelled)
-//{
-//    rho_rhodesapp_callCameraCallback(rho_cast<std::string>(callback).c_str(),
-//        rho_cast<std::string>(filePath).c_str(), rho_cast<std::string>(error).c_str(), cancelled);
-//}
-
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_camera_Camera_callback
-  (JNIEnv *env, jclass, jstring callback_url, jstring body) {
-    rho_net_request_with_data(rho_http_normalizeurl(rho_cast<std::string>(callback_url).c_str()), rho_cast<std::string>(body).c_str());
+  (JNIEnv *env, jclass, jstring callback_url, jstring body)
+{
+    rho_net_request_with_data(
+            RHODESAPP().canonicalizeRhoUrl(rho_cast<std::string>(env, callback_url)).c_str(),
+            rho_cast<std::string>(env, body).c_str());
 }
-
-
-
 
 RHO_GLOBAL void take_picture(char* callback_url, rho_param *options_hash )
 {

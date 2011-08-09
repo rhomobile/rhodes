@@ -313,9 +313,9 @@
     
 	const char* cb = [postUrl UTF8String];
 	const char* b = [strBody UTF8String];
-	rho_net_request_with_data(rho_http_normalizeurl(cb), b);
-    
-    
+    char* norm_url = rho_http_normalizeurl(cb);
+    rho_net_request_with_data(norm_url, b);
+    rho_http_free(norm_url);
     
     //rho_rhodesapp_callCameraCallback([postUrl UTF8String], [filename UTF8String],
     //        isError ? "Can't write image to the storage." : "", 0 );

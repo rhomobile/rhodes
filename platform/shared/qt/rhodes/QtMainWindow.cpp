@@ -477,10 +477,9 @@ void QtMainWindow::on_tabBar_currentChanged(int index)
         if (tbrp["on_change_tab_callback"].toString().length() > 0) {
             QString body = QString("&rho_callback=1&tab_index=") + QVariant(index).toString();
             rho::String* cbStr = new rho::String(tbrp["on_change_tab_callback"].toString().toStdString());
-            const char* cb = cbStr->c_str();
             rho::String* bStr = new rho::String(body.toStdString());
             const char* b = bStr->c_str();
-            rho_net_request_with_data(rho_http_normalizeurl(cb), b);
+            rho_net_request_with_data(RHODESAPP().canonicalizeRhoUrl(*cbStr).c_str(), b);
         }
 
         if (tbrp["reload"].toBool() || (ui->webView && (ui->webView->history()->count()==0))) {

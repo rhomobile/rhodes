@@ -392,7 +392,9 @@ void RhoBluetoothManager::fireSessionCallBack(const char* connected_device_name,
 
 void RhoBluetoothManager::fireRhodeCallback(const char* callback_url, const char* body) {
 	LOG(INFO)  + "RhoBluetoothManager::fireRhodeCallback( "+callback_url+", "+body+")";
-	rho_net_request_with_data(rho_http_normalizeurl(callback_url), body);
+	char* norm_url = rho_http_normalizeurl(callback_url);
+	rho_net_request_with_data(norm_url, body);
+	rho_http_free(norm_url);
 	//rho_rhodesapp_callBluetoothCallback(callback_url, body);
 	/*
 	HWND main_wnd = getMainWnd();

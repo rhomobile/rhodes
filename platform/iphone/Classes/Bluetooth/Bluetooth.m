@@ -257,7 +257,9 @@ static RhoBluetoothManager *instance = NULL;
 	strBody = [strBody stringByAppendingString:status];
 	strBody = [strBody stringByAppendingString:@"&connected_device_name="];
 	strBody = [strBody stringByAppendingString:connected_device_name];
-	rho_net_request_with_data(rho_http_normalizeurl([connectionCallbackURL UTF8String]), [strBody UTF8String]);
+    char* norm_url = rho_http_normalizeurl([connectionCallbackURL UTF8String]);
+	rho_net_request_with_data(norm_url, [strBody UTF8String]);
+    rho_http_free(norm_url);
 }
 
 - (void)fireSessionCallback:(NSString*)connected_device_name event_type:(NSString*)event_type {
@@ -269,7 +271,9 @@ static RhoBluetoothManager *instance = NULL;
 	strBody = [strBody stringByAppendingString:connected_device_name];
 	strBody = [strBody stringByAppendingString:@"&event_type="];
 	strBody = [strBody stringByAppendingString:event_type];
-	rho_net_request_with_data(rho_http_normalizeurl([sessionCallbackURL UTF8String]), [strBody UTF8String]);
+    char* norm_url = rho_http_normalizeurl([sessionCallbackURL UTF8String]);
+	rho_net_request_with_data(norm_url, [strBody UTF8String]);
+    rho_http_free(norm_url);
 }
 
 
