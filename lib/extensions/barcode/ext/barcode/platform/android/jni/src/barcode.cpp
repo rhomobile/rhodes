@@ -60,7 +60,7 @@ extern "C" void rho_barcode_take_barcode(const char* callback) {
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_barcode_Barcode_callback
   (JNIEnv *env, jclass, jstring callback_url, jstring body) {
-    char* url = rho_http_normalizeurl(rho_cast<std::string>(callback_url).c_str());
-    rho_net_request_with_data(url, rho_cast<std::string>(body).c_str());
-    //free(url);
+    char* url = rho_http_normalizeurl(rho_cast<std::string>(env, callback_url).c_str());
+    rho_net_request_with_data(url, rho_cast<std::string>(env, body).c_str());
+    rho_http_free(url);
 }

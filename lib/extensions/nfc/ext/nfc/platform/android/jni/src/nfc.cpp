@@ -1318,13 +1318,10 @@ extern "C" VALUE rho_nfc_tech_NfcV_transceive(VALUE data) {
 extern "C" void JNICALL Java_com_rhomobile_nfc_Nfc_callTechCallback
 (JNIEnv *env, jclass, jstring js_callback_url, jstring js_event)
 {
-	char url[2048];
-	char body[2048];
+    char body[2048];
 
-	const char* jurl = env->GetStringUTFChars(js_callback_url,0);
-	const char* jevent = env->GetStringUTFChars(js_event,0);
-	strcpy(url, jurl);
-	env->ReleaseStringUTFChars(js_callback_url, jurl);
+    std::string url = rho_cast<std::string>(env, js_callback_url);
+    const char* jevent = env->GetStringUTFChars(js_event,0);
 
 	strcpy(body, "&rho_callback=1");
 	strcat(body, "&");
@@ -1332,7 +1329,7 @@ extern "C" void JNICALL Java_com_rhomobile_nfc_Nfc_callTechCallback
 	strcat(body, jevent);
 	env->ReleaseStringUTFChars(js_event, jevent);
 
-	rho_net_request_with_data(rho_http_normalizeurl(url), body);
+    rho_net_request_with_data(RHODESAPP().canonicalizeRhoUrl(url).c_str(), body);
 }
 
 //  private native void callTechCallback(String callback_url, String event);
@@ -1356,24 +1353,20 @@ extern "C" void JNICALL Java_com_rhomobile_nfc_Nfc_logNative
 extern "C" void JNICALL Java_com_rhomobile_nfc_Nfc_callCallback
 (JNIEnv *env, jclass, jstring js_callback_url, jobject jo_msgpack)
 {
-	logi("native callback START");
+    logi("native callback START");
 
     initJavaIds(env);
-    
-	CNFCMessagePack* messagePack = new CNFCMessagePack(env, jo_msgpack);
 
-	char url[2048];
-	char body[2048];
+    CNFCMessagePack* messagePack = new CNFCMessagePack(env, jo_msgpack);
 
-	const char* jurl = env->GetStringUTFChars(js_callback_url,0);
-	strcpy(url, jurl);
-	env->ReleaseStringUTFChars(js_callback_url, jurl);
+    std::string url = rho_cast<std::string>(env, js_callback_url);
+    char body[2048];
 
 	strcpy(body, "&rho_callback=1");
 	strcat(body, "&");
 	strcat(body, (RHODESAPP().addCallbackObject( new RhoCallbackNFCContainer(messagePack), "messages")).c_str());
 
-	rho_net_request_with_data(rho_http_normalizeurl(url), body);
+    rho_net_request_with_data(RHODESAPP().canonicalizeRhoUrl(url).c_str(), body);
 
 }
 
