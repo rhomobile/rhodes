@@ -22,6 +22,7 @@ import com.google.zxing.ResultMetadataType;
 import com.google.zxing.ResultPoint;
 import com.google.zxing.client.android.camera.CameraManager;
 
+import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.R;
 
 import android.app.Activity;
@@ -80,7 +81,7 @@ import java.util.Vector;
  * @author dswitkin@google.com (Daniel Switkin)
  * @author Sean Owen
  */
-public final class CaptureActivity extends Activity implements SurfaceHolder.Callback {
+public final class CaptureActivity extends BaseActivity implements SurfaceHolder.Callback {
 
   private static final String TAG = CaptureActivity.class.getSimpleName();
 
