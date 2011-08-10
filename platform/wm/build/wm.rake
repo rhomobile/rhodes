@@ -89,7 +89,7 @@ namespace "config" do
     $cabwiz = "cabwiz" if $cabwiz.nil?
     $sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
     $sdk = $app_config["wmsdk"] unless $app_config["wmsdk"].nil?
-    $startdir = $app_config["sdk"]
+    #$startdir = $app_config["sdk"]
 
     if $app_config["wm"].nil?
       $port = "11000"
