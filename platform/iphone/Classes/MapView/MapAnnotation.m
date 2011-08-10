@@ -61,7 +61,7 @@
     char *norm_url = rho_http_normalizeurl(surl);
     [url release];
     url = [[NSString stringWithUTF8String:norm_url] copy];
-    rho_http_free(norm_url)
+    rho_http_free(norm_url);
 }
 
 @end
