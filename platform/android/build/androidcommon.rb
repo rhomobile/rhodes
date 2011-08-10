@@ -155,7 +155,12 @@ def cc_def_args
     args << $ndksysroot
     #args << "-fvisibility=hidden"
     args << "-fPIC"
+    args << "-fstrict-aliasing"
+    args << "-Wall"
+    args << "-Wextra"
     args << "-Wno-psabi" if $ndkgccver != "4.2.1"
+    args << "-Wstrict-aliasing"
+    args << "-Wno-sign-compare"
     args << "-mandroid"
     args << "-DANDROID"
     args << "-DOS_ANDROID"
@@ -166,8 +171,14 @@ def cc_def_args
       args << "-O2"
       args << "-DNDEBUG"
     else
-      args << "-O0"
+      args << "-O1"
+      args << "-fstack-protector-all"
       args << "-D_DEBUG"
+      args << "-Winit-self"
+      args << "-Wshadow"
+      args << "-Wcast-align"
+      args << "-Wvla"
+      args << "-Wstack-protector"
     end
     $cc_def_args_val = args
   end
