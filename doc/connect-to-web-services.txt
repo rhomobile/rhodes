@@ -198,7 +198,13 @@ Below, a product model is created using the response from the web service and th
 	  end
 	end
 
-**NOTE: For disable jQTouch caching (by default jQTouch cached your async HTTP request result and will show saved content instead of new requested content), change creation of jQTouch object in layout.erb to next line : <script>jQT = $.jQTouch({cacheGetRequests: false});</script>**
+**NOTE: To disable jQuery Mobile page caching (by default jQuery Mobile cachepages in the DOM) globally, look for cache control options in jQuery Mobile documentation**
+
+You can disable page caching globally by using jQuery Mobile initialization option in layout.erb file:
+
+    $.mobile.page.prototype.options.domCache = true;
+
+Also, you can disable caching on exact page transition with `data-dom-cache` attribute, like that: *<a href="foo/bar/baz" data-dom-cache="false">link text</a>*
 
 
 ### Note About Animated Transitions

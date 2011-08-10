@@ -4,7 +4,7 @@
 
 The Rhodes framework includes stylesheets customized for each device to give your applications a native look and feel. These stylesheets are included by default in all generated Rhodes applications (public/css/), and are included in the application layout file (app/layout.erb).
 
-The default styles will automatically be applied to all supported content found in the "toolbar", "pageTitle", and "content" divs.  If you prefer using different names for any of these divs, you will need to update your stylesheets to reflect the new names in order to retain native styling.  Conversely, if you prefer not to use any of the customized styles in your applications, you can either delete the links to the default stylesheets from your application, or simply place any content you wish to create custom styles for in a div that does not descend from "toolbar", "pageTitle", or "content".
+The default styles will automatically be applied to all supported content found in the ["header", "footer", and "content"](standard-css) divs.  If you prefer using different names for any of these divs, you will need to update your stylesheets to reflect the new names in order to retain native styling.  Conversely, if you prefer not to use any of the customized styles in your applications, you can either delete the links to the default stylesheets from your application, or simply place any content you wish to create custom styles for in a div that does not descend from "header", "footer", or "content".
 
 
 ## On designing for multiple browsers... 
@@ -76,7 +76,7 @@ Please refer to [Blackberry HTML and CSS](bb-css) for a discussion of the styles
 
 ## Standard Smartphone CSS/HTML Architecture
 
-With the exception of the <code>pageTitle</code> div, the following sections describe the styles available on iPhone, Android and Windows Mobile devices, which will generally be referred to as standard smartphones. 
+With the exception of the <code>header</code> div, the following sections describe the styles available on iPhone, Android and Windows Mobile devices, which will generally be referred to as standard smartphones.
 
 Please refer to [Standard Smartphone CSS/HTML Architecture](standard-css) for a discussion of the html markup and styles available for standard smartphones.
 
@@ -86,7 +86,7 @@ If you prefer to generate your own custom styles for your application, you can d
 
 <ol type="A">
 
-<li><p>Locate content outside of the pageTitle, toolbar and content divs.</p>  With the exception of some styles applied to the body, h1 and a tags,  the platform-specific stylesheets only apply style to content inside the pageTitle, toolbar and content divs.
+<li><p>Locate content outside of the header, footer and content divs.</p>  With the exception of some styles applied to the body, h1 and a tags,  the platform-specific stylesheets only apply style to content inside the header, footer and content divs.
 This option provides the most flexibility in the event you wish to eventually use some of the pre-defined styles.</li>
 
 <li><p>Create custom stylesheets </p> You can create custom stylesheets for your application which override some or all of the predefined styles in the generated stylesheets.  Make sure these stylesheets are included in the layout after the generated stylesheets to ensure that they fall last in the chain of inheritance.</li>
