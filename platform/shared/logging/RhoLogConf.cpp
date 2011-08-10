@@ -332,9 +332,7 @@ void rho_conf_clean_log()
 #ifndef RHO_NO_RUBY
 VALUE rho_conf_get_property_by_name(char* name)
 {
-	char* szValue = rho_conf_getString(name);
-
-    return rho_ruby_create_string(szValue);
+    return rho_ruby_create_string(RHOCONF().getString(name).c_str());
 }
 
 VALUE rho_conf_get_conflicts()
