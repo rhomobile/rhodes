@@ -18,21 +18,20 @@
         }
     });
 
-    //shared page enhancements
-	function enhancePage( $page, role ) {
-		// If a role was specified, make sure the data-role attribute
-		// on the page element is in sync.
-		if( role ) {
-			$page.attr( "data-" + $.mobile.ns + "role", role );
-		}
+    // Rho: Android 2.2 doesn't define WebKitTransitionEvent, though animations
+    // still work
+    if (navigator.userAgent.indexOf("Android 2") != -1) {
+        //$.support.WebKitAnimationEvent = true;
+        $.support.cssTransitions = true;
+    }
 
-		//run page plugin
-		$page.page();
-	}
-
-    var path = $.mobile.path;
-
-    var original_loadPage = $.mobile.loadPage;
+    // Set to 30 seconds; Ajax request doesn't come back if >= 60
+    $.ajaxSetup({
+        timeout: 30000,
+        headers: {
+            'Transition-Enabled': true
+        }
+    });
 
     $.ajaxPrefilter(function(options, originalOptions, jqXHR){
         var origSuccess = options.success;
@@ -46,6 +45,21 @@
         }
 
     });
+
+    //shared page enhancements
+	function enhancePage( $page, role ) {
+		// If a role was specified, make sure the data-role attribute
+		// on the page element is in sync.
+		if( role ) {
+			$page.attr( "data-" + $.mobile.ns + "role", role );
+		}
+
+		//run page plugin
+		$page.page();
+	}
+
+    var path = $.mobile.path;
+    var original_loadPage = $.mobile.loadPage;
 
     $.mobile.loadPage = function( url, options ) {
 

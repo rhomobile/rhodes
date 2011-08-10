@@ -27,21 +27,6 @@
         <%% end %>
 
         <script type="text/javascript">
-            // Rho: Android 2.2 doesn't define WebKitTransitionEvent, though animations
-            // still work
-            if (navigator.userAgent.indexOf("Android 2") != -1) {
-                //$.support.WebKitAnimationEvent = true;
-                $.support.cssTransitions = true;
-            }
-
-            // Set to 30 seconds; Ajax request doesn't come back if >= 60
-            $.ajaxSetup({
-                timeout: 30000,
-                headers: {
-                    'Transition-Enabled': true
-                }
-            });
-
             $(document).bind("mobileinit", function(){
                 // jQuery-Mobile init options initialization goes here. For example, you may
                 // enable automatically generated 'Back' buttons on headers this way:
