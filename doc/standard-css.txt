@@ -2,23 +2,24 @@
 
 ## HTML Structure 
 
-### pageTitle (\<div id="pageTitle"\>)
+### header and toolbar (\<div data-role="header"\>)
 
-The pageTitle div contains the title of the current page, wrapped in an <code>h1</code> tag.  The page title will be displayed in the appropriate location for each device. 
+The header div contains the title of the current page, wrapped in an <code>h1</code> tag and toolbar as set of <code>a</code> tags.  The page title will be displayed in the appropriate location for each device.
 
-The pageTitle div is not displayed on Windows Mobile devices.
+The header div is not displayed on Windows Mobile devices.
+
 	:::html
-	<div id="pageTitle">
-          <h1>Things</h1>
-	</div>
+    <div data-role="header" data-position="inline">
+        <h1>Things</h1>
+        <a href="#" class="ui-btn-left">Left button</a>
+        <a href="#" class="ui-btn-right">Right button</a>
+    </div>
 
-### toolbar (\<div id="toolbar"\>)
+The toolbar contains interaction elements that allow users to perform actions and navigate through the application.  Most frequently, these elements are links styled as buttons.
+The toolbar <code>div</code> is displayed at the top of the page on standard smartphones.
 
-The toolbar <code>div</code> contains contains interaction elements that allow users to perform actions and navigate through the application.  Most frequently, these elements are links styled as buttons.  
-
-The toolbar <code>div</code> is displayed at the top of the page on standard smartphones.  
 <ul>
-<li>On the iPhone, the content of the toolbar is overlaid on top of the <code>pageTitle</code> div.</li>
+<li>On the iPhone, the content of the toolbar is overlaid on top of the <code>header</code> div.</li>
 <li>On Android, the application toolbar is typically displayed at the bottom of the screen.  However, the <code>position:fixed</code> attribute does not exhibit the expected behavior in webkit-based mobile browsers.  To ensure that the view is rendered at the appropriate resolution, mobile webkit-based browsers use a viewport to determine which content is displayed. </li>
 </ul>
 
@@ -32,12 +33,12 @@ You can read more about the conflict between viewports and fixed positioning at 
 
 The toolbar div supports three positions:
 <ul>
-<li><code>#leftItem</code></li>
-<li><code>#rightItem</code></li>
-<li><code>#centerItem</code></li>
+<li><code>class="ui-btn-left"</code></li>
+<li><code>class="ui-btn-center"</code></li>
+<li><code>class="ui-btn-right"</code></li>
 </ul>
 
-Note that placing an item in the <code>#centerItem</code> div will prevent the page title from being displayed on the iPhone, and is not in compliance with Apple's human interface guidelines.
+Note that placing an item as the <code><a class="ui-btn-center>"</code> tag will prevent the page title from being displayed on the iPhone, and is not in compliance with Apple's human interface guidelines.
 If you wish to include more than two items in an application targeting iPhone, you may wish to add a secondary toolbar directly below the application toolbar.
 
 #### Toolbar Button Styles
@@ -80,7 +81,7 @@ Four button styles are supported for the toolbar.  Note that variation in height
 
 **NOTE: the variation in width of the buttons for Android is due to the length of the text in the button, and should not be attributed to the classes described in this section. **
 
-### Content (\<div id="content"\>)
+### Content (\<div data-role="content"\>)
  
 The features described below are only accessible when used inside the content div.  
 
@@ -105,32 +106,6 @@ Sample: no current example
 	   	<li><%= link_to :controller => :Inventory %></li>
 	   	<li><%= link_to :controller => :Location %></li>
 	   	<li><%= link_to :controller => :Purchase %></li>
-	</ul>
-
-Sample: none
-
-##### List with disclosure indicators (">")
-
-	:::html
-	<ul>            
-	   <li>
-	      <a href="<%= url_for :action => :show, :id => obj.object %>">
-	         <span class="title">Product</span>
-	         <span class="disclosure_indicator"></span>
-	      </a>
-	   </li>
-	   <li>
-	      <a href="<%= url_for :action => :show, :id => obj.object %>">
-	         <span class="title"> Inventory </span>
-	         <span class="disclosure_indicator"></span>
-	      </a>
-	   </li>
-	   <li>
-	      <a href="<%= url_for :action => :show, :id => obj.object %>">
-	         <span class="title"> Location </span>
-	         <span class="disclosure_indicator"></span>
-	      </a>
-	   </li>
 	</ul>
 
 Sample: generated application index.erb page

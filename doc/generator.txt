@@ -65,8 +65,10 @@ The generated application has the following directory structure and files.
 	   	<default set of css for different platforms>
 	./public/images:
 		<default images used by js libraries>
-	./public/jqtouch:
-		<jqtouch js script with some rhomobile fixes>
+	./public/jquery:
+		<jQuery js script with some rhomobile fixes>
+	./public/jqmobile:
+		<jQuery Mobile js script with some rhomobile fixes>
 	./public/js:
 	   	<default js libraries>
 

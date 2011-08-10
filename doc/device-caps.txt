@@ -135,7 +135,7 @@ as more precise data.
 
 The Rhodes framework provides a simple HTML tag for accessing Geolocation information. To use it, include the appropriate javascript library on your page:
 
-* For iPhone, Android: `/public/js/jquery-1.2.6.min.js` and `/public/js/rhogeolocation.js`
+* For iPhone, Android: `/public/jquery/jquery-1.6.2.min.js` and `/public/js/rhogeolocation.js`
 * For Windows Mobile: `/public/js/rhogeolocation-wm.js`
 * For BlackBerry: Unsupported. The BlackBerry webview control doesn't support Ajax. 
 
@@ -1032,7 +1032,7 @@ Use System.open_url : you can provide any url with any schema(http, file etc), d
 	:::ruby
 	System.open_url('http://www.rhomobile.com')
 
-Use rho_open_target=_blank in html link. Note that jqtouch or other javascript library may disable this attribute.
+Use rho_open_target=_blank in html link. Note that jQuery Mobile or other javascript library may disable this attribute.
 	:::html
 	<a href="http://www.google.com/?rho_open_target=_blank">Open Google in external browser</a>
 
@@ -1275,8 +1275,8 @@ Open link in external application (browser for http:// links):
 
 Open appstore on iphone: [http://wiki.akosma.com/IPhone_URL_Schemes#App_Store](http://wiki.akosma.com/IPhone_URL_Schemes#App_Store)
 
-### jQuery/JQtouch
-When using jQuery/JQtouch in application code, you cannot use usual html links for hyperlinks. You need to call controller action and call WebView.navigate from there:
+### jQuery/jQuery Mobile
+When using jQuery and/or jQuery Mobile in application code, you cannot use usual html links for hyperlinks. You need to call controller action and call WebView.navigate from there:
 
     #Ajax call of controller method:
     $.get("/app/TestController/send_mail",function(data) {});
