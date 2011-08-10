@@ -111,7 +111,7 @@ public:
 
     String getColName(int nCol)
     {
-        return sqlite3_column_name(m_dbStatement,nCol);;
+        return sqlite3_column_name(m_dbStatement,nCol);
     }
 
 };

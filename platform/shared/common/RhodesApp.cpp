@@ -675,10 +675,10 @@ static void callback_getrhomessage(void *arg, String const &strQuery)
         strMsg = rho_ruby_internal_getErrorText(nError);
     }else
     {
-        size_t nErrorPos = strQuery.find("msgid=");
-        if ( nErrorPos != String::npos )
+        size_t nMsgIdPos = strQuery.find("msgid=");
+        if ( nMsgIdPos != String::npos )
         {
-            String strName = strQuery.substr(nErrorPos+6);
+            String strName = strQuery.substr(nMsgIdPos+6);
             strMsg = rho_ruby_internal_getMessageText(strName.c_str());
         }
     }
@@ -736,9 +736,9 @@ void CRhodesApp::initHttpServer()
 const char* CRhodesApp::getFreeListeningPort()
 {
     int sockfd = -1;
-	struct sockaddr_in serv_addr = {0};
+    sockaddr_in serv_addr = sockaddr_in();
     int noerrors = 1;
-    
+
 	if ( m_strListeningPorts.length() > 0 )
 		return m_strListeningPorts.c_str();
 	
@@ -877,7 +877,7 @@ const String& CRhodesApp::getCurrentUrl(int index)
 { 
     if (index < 0) index = rho_webview_active_tab();
     if (index < 0) index = 0;
-    if ( index < m_currentUrls.size() )
+    if ( index < static_cast<int>(m_currentUrls.size()) )
         return m_currentUrls[index]; 
 
     return m_EmptyString;
@@ -888,7 +888,7 @@ const String& CRhodesApp::getAppBackUrl()
     int index = rho_webview_active_tab();
     if (index < 0)
         index = 0;
-    if ( index < m_arAppBackUrl.size() )
+    if ( index < static_cast<int>(m_arAppBackUrl.size()) )
         return m_arAppBackUrl[index]; 
 
     return m_EmptyString;
@@ -922,12 +922,15 @@ void CRhodesApp::navigateBack()
 {
     int nIndex = rho_webview_active_tab();
 
-    if ( nIndex < m_arAppBackUrlOrig.size() && m_arAppBackUrlOrig[nIndex].length() > 0 )
+    if((nIndex < static_cast<int>(m_arAppBackUrlOrig.size()))
+        && (m_arAppBackUrlOrig[nIndex].length() > 0))
+    {
         loadUrl(m_arAppBackUrlOrig[nIndex]);
-    else if ( strcasecmp(getCurrentUrl(nIndex).c_str(),getStartUrl().c_str()) != 0 )
-	{
+    }
+    else if(strcasecmp(getCurrentUrl(nIndex).c_str(),getStartUrl().c_str()) != 0)
+    {
         rho_webview_navigate_back();
-	}
+    }
 }
 
 String CRhodesApp::getAppName()

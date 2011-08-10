@@ -1387,15 +1387,16 @@ RHO_GLOBAL DIR *opendir(const char *dirpath)
     DIR *dirp = NULL;
     if (emulate)
     {
-        struct stat st;
-        if (::stat(fpath.c_str(), &st) == -1)
-            return NULL;
-        if (!S_ISDIR(st.st_mode))
         {
-            errno = ENOTDIR;
-            return NULL;
+            struct stat st;
+            if (::stat(fpath.c_str(), &st) == -1)
+                return NULL;
+            if (!S_ISDIR(st.st_mode))
+            {
+                errno = ENOTDIR;
+                return NULL;
+            }
         }
-
         std::vector<std::string> children;
         children.push_back(".");
         children.push_back("..");
