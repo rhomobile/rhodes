@@ -313,7 +313,7 @@ void AndroidMapDevice::setMapView(IMapView *mv)
 
         m_mapview->setPinImage(m_pin_image.get(), pin_info);
 
-		PIN_INFO pin_info1 = {0};
+		PIN_INFO pin_info1 = PIN_INFO();
 		pin_info1.x_offset = 5;
 
         mv->setPinCalloutImage(m_pin_calloutimage.get(), pin_info1);
@@ -349,10 +349,9 @@ void AndroidMapDevice::setPinCalloutImage(JNIEnv *env, jobject bitmap)
     RHO_MAP_TRACE("AndroidMapDevice: setPinCalloutImage: start");
     m_pin_calloutimage.reset(new AndroidImage(bitmap));
     IMapView *mv = mapView();
-    if (mv) {
-
-		PIN_INFO pin_info = {0};
-		pin_info.x_offset = 5;
+    if (mv){
+        PIN_INFO pin_info = PIN_INFO();
+        pin_info.x_offset = 5;
 
         mv->setPinCalloutImage(m_pin_calloutimage.get(), pin_info);
     }
@@ -365,9 +364,8 @@ void AndroidMapDevice::setPinCalloutLinkImage(JNIEnv *env, jobject bitmap)
     m_pin_calloutlinkimage.reset(new AndroidImage(bitmap));
     IMapView *mv = mapView();
     if (mv) {
-
-		PIN_INFO pin_info = {0};
-		pin_info.x_offset = 5;
+        PIN_INFO pin_info = PIN_INFO();
+        pin_info.x_offset = 5;
 
         mv->setPinCalloutLinkImage(m_pin_calloutlinkimage.get(), pin_info);
     }
@@ -789,7 +787,7 @@ RHO_GLOBAL void mapview_create(rho_param *p)
     ourIsOldGoogleEngineUsed = false;
 
     // detect engine
-    char* engine = "Google";
+    const char* engine = "Google";
     if (p && p->type == RHO_PARAM_HASH) {
 	rho_param *eng_p = NULL;
         for (int i = 0, lim = p->v.hash->size; i < lim; ++i) {
