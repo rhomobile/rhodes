@@ -1,26 +1,21 @@
-<div id="pageTitle">
+<div data-role="page">
+
+  <div data-role="header" data-position="inline">
     <h1><%= class_name.camelize %></h1>
-</div>
-
-<div id="toolbar">
+    <%% if SyncEngine::logged_in > 0 %>
         <%%= link_to "Sync", :controller => :Settings, :action => :do_sync %>
-    	<%% if SyncEngine::logged_in > 0 %>
-    	    <%%= link_to "Logout", :controller => :Settings, :action => :logout %>
-    	<%% else %>
-            <%%= link_to "Login", :controller => :Settings, :action => :login %>
-    	<%% end %>
-</div>
+        <%%= link_to "Logout", :controller => :Settings, :action => :logout %>
+    <%% else %>
+        <%%= link_to "Login", :controller => :Settings, :action => :login %>
+    <%% end %>
+  </div>
 
-
-<div id="content">
+  <div data-role="content">
     <table>
       <tr>
         <td class="recordLabel">Add links here...</td>
       </tr>
     </table>
+  </div>
+
 </div>
-
-
-
-
-
