@@ -1580,9 +1580,9 @@ more_char(rb_io_t *fptr)
             return 0;
 
         if (res == econv_finished) {
-        	clear_readconv(fptr);
+	    clear_readconv(fptr);
             return -1;
-        }
+	}
 
         if (res == econv_source_buffer_empty) {
             if (fptr->rbuf_len == 0) {
@@ -8251,8 +8251,7 @@ argf_each_byte(VALUE argf)
 	rb_block_call(ARGF.current_file, rb_intern("each_byte"), 0, 0, rb_yield, 0);
 	ARGF.next_p = 1;
     }
-    return Qnil;
-}
+
 
 static VALUE
 argf_each_char(VALUE argf)
@@ -8263,7 +8262,6 @@ argf_each_char(VALUE argf)
 	rb_block_call(ARGF.current_file, rb_intern("each_char"), 0, 0, rb_yield, 0);
 	ARGF.next_p = 1;
     }
-    return Qnil;
 }
 
 static VALUE
