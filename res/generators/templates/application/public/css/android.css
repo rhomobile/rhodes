@@ -330,6 +330,15 @@ h1 {
     color: red;
 }
 
+.ui-content ul li div.itemLabel {
+    display: inline-block;
+}
+
+.ui-content ul li div.itemValue {
+    display: inline-block;
+    float: right;
+}
+
 .errorMessage {
     color: red;
     text-align: center
