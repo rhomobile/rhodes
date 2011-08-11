@@ -462,49 +462,58 @@ h1 {
 	font-size:smaller;
 }
 
-	/* Include the .ls-button style on each button div. */
-	.switcher .ls-button {
-		background: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgb(171,185,202)), color-stop(0.5, rgb(130,151,175)), color-stop(0.51, rgb(118,139,167)), color-stop(1, rgb(120,141,169)));
-		width:80px;  /* NOTE: If you only want to use 2 buttons, increase width to something more like 125px, and change margin to 0 -3px. */
-		height:15px;
-		display:inline-block;
-		padding-bottom:8px;
-		margin:0 -2px;
-		border:1px solid #000;
-		text-align:center;
-	}
+/* Include the .ls-button style on each button div. */
+.switcher .ls-button {
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgb(171,185,202)), color-stop(0.5, rgb(130,151,175)), color-stop(0.51, rgb(118,139,167)), color-stop(1, rgb(120,141,169)));
+    width:80px;  /* NOTE: If you only want to use 2 buttons, increase width to something more like 125px, and change margin to 0 -3px. */
+    height:15px;
+    display:inline-block;
+    padding-bottom:8px;
+    margin:0 -2px;
+    border:1px solid #000;
+    text-align:center;
+}
 
-	/* Indicates the currently active (pressed) button. */
-	.switcher .ls-pressed {
-		background: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgb(142,164,193)), color-stop(0.5, rgb(88,119,162)), color-stop(0.51, rgb(71,105,153)), color-stop(1, rgb(74,108,152)));
-	}
+/* Indicates the currently active (pressed) button. */
+.switcher .ls-pressed {
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgb(142,164,193)), color-stop(0.5, rgb(88,119,162)), color-stop(0.51, rgb(71,105,153)), color-stop(1, rgb(74,108,152)));
+}
 
-	.switcher .ls-left {
-		-webkit-border-top-left-radius: 4px;
-		-webkit-border-bottom-left-radius: 4px;
-	}
+.switcher .ls-left {
+    -webkit-border-top-left-radius: 4px;
+    -webkit-border-bottom-left-radius: 4px;
+}
 
-	.switcher .ls-center {
-		border-right:none;
-		border-left:none;
-	}
+.switcher .ls-center {
+    border-right:none;
+    border-left:none;
+}
 
-	.switcher .ls-right {
-		-webkit-border-top-right-radius: 4px;
-		-webkit-border-bottom-right-radius: 4px;
-	}
+.switcher .ls-right {
+    -webkit-border-top-right-radius: 4px;
+    -webkit-border-bottom-right-radius: 4px;
+}
 
-	/* If an option should not be available, you can use the .ls-disabled class to gray it out. */
-	.switcher .ls-disabled {
-		background:-webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(158,158,158)), color-stop(0.95, rgb(204,204,204)))
-	}
+/* If an option should not be available, you can use the .ls-disabled class to gray it out. */
+.switcher .ls-disabled {
+    background:-webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(158,158,158)), color-stop(0.95, rgb(204,204,204)))
+}
 
-	/* However, even with disabled classes you must still include an <a> tag. Just have it go href="#" */
-	.switcher .ls-disabled a {
-		color:#f0f0f0;
-	}
+/* However, even with disabled classes you must still include an <a> tag. Just have it go href="#" */
+.switcher .ls-disabled a {
+    color:#f0f0f0;
+}
 
-    .errorMessage {
-        color: red;
-        text-align: center
-    }
+.ui-content ul li div.itemLabel {
+    display: inline-block;
+}
+
+.ui-content ul li div.itemValue {
+    display: inline-block;
+    float: right;
+}
+
+.errorMessage {
+    color: red;
+    text-align: center
+}
