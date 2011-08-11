@@ -8251,7 +8251,7 @@ argf_each_byte(VALUE argf)
 	rb_block_call(ARGF.current_file, rb_intern("each_byte"), 0, 0, rb_yield, 0);
 	ARGF.next_p = 1;
     }
-
+}
 
 static VALUE
 argf_each_char(VALUE argf)
