@@ -12,7 +12,7 @@
       <% attributes.each do |attribute| %>
           <div data-role="fieldcontain">
             <label for="<%= name.downcase %>[<%= attribute %>]" class="fieldLabel"><%= humanize(attribute) %></label>
-            <input type="text" name="<%= name.downcase %>[<%= attribute %>]" value="<%%= @<%= name.downcase %>.<%= attribute %> %>" <%%= placeholder( "<%= humanize(attribute) %>" ) %> />
+            <input type="text" id="<%= name.downcase %>[<%= attribute %>]" name="<%= name.downcase %>[<%= attribute %>]" value="<%%= @<%= name.downcase %>.<%= attribute %> %>" <%%= placeholder( "<%= humanize(attribute) %>" ) %> />
           </div>
       <% end %>
       <input type="submit" value="Update"/>
