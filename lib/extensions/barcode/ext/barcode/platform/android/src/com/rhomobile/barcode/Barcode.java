@@ -68,14 +68,13 @@ public class Barcode {
      public static void take(String callback) {
     	 ourCallback = callback;
     	 
-    	 PerformOnUiThread.exec( new Runnable() {
-    		 public void run() {
-				RhodesActivity ra = RhodesActivity.getInstance();
+//    	 PerformOnUiThread.exec( new Runnable() {
+//    		 public void run() {
+				RhodesActivity ra = RhodesActivity.safeGetInstance();
 				Intent intent = new Intent(ra, com.google.zxing.client.android.CaptureActivity.class);
 				ra.startActivity(intent);
-    			 
-    		 }
-    	 });
+//    		 }
+//    	 });
      }
      
    	 public static native void callback(String callbackUrl, String body);
