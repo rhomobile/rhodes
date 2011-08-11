@@ -163,7 +163,9 @@ public class MapView extends BaseActivity implements MapTouch {
 			@Override
 			protected void dispatchDraw(Canvas canvas) {
 				//super.dispatchDraw(canvas);
-				paint(mNativeDevice, canvas);
+				if (mNativeDevice != 0) {
+					paint(mNativeDevice, canvas);
+				}
 			}
 			
 			@Override
@@ -208,8 +210,8 @@ public class MapView extends BaseActivity implements MapTouch {
 	
 	@Override
 	protected void onStop() {
-		destroy(mNativeDevice);
 		mNativeDevice = 0;
+		destroy(mNativeDevice);
 		mc = null;
 		finish();
 		super.onStop();
@@ -316,6 +318,10 @@ public class MapView extends BaseActivity implements MapTouch {
 		bm.recycle();
 	}
 
+	public void destroyDevice() {
+		mNativeDevice = 0;
+	}
+	
 	@Override
 	public void touchClick(Touch touch) {
 		click(mNativeDevice, (int)touch.x, (int)touch.y);
