@@ -98,7 +98,8 @@ impl/NativeTabbarImpl.h\
 ../../rubyext/NativeToolbarExt.h\
 DateTimeDialog.h\
 impl/DateTimePickerImpl.h\
-impl/AlertImpl.h
+impl/AlertImpl.h\
+RhoSimulator.h
 
 SOURCES += main.cpp\
 ExternalWebView.cpp\
