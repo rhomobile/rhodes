@@ -121,6 +121,7 @@ private slots:
     void on_actionBack_triggered();
     void on_tabBar_currentChanged(int index);
     void on_menuMain_aboutToShow();
+    void on_actionAbout_triggered();
 private slots:
     void toolbarActionEvent(bool);
     void menuActionEvent(bool);
