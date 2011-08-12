@@ -322,7 +322,7 @@ extern "C" void rho_bluetooth_off_bluetooth();
 
 extern "C" void rho_bluetooth_set_device_name(const char* device_name);
 
-extern "C" const char* rho_bluetooth_get_device_name();
+extern "C" VALUE rho_bluetooth_get_device_name();
 
 extern "C" const char* rho_bluetooth_get_last_error();
 

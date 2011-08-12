@@ -1050,8 +1050,8 @@ void rho_bluetooth_set_device_name(const char* device_name) {
 	RhoBluetoothManager::getInstance()->rho_bluetooth_set_device_name(device_name);
 }
 
-const char* rho_bluetooth_get_device_name() {
-	return RhoBluetoothManager::getInstance()->rho_bluetooth_get_device_name();
+VALUE rho_bluetooth_get_device_name() {
+	return rho_ruby_create_string(RhoBluetoothManager::getInstance()->rho_bluetooth_get_device_name());
 }
 
 const char* rho_bluetooth_get_last_error() {
@@ -1268,8 +1268,8 @@ void rho_bluetooth_off_bluetooth() {
 void rho_bluetooth_set_device_name(const char* device_name) {
 }
 
-const char* rho_bluetooth_get_device_name() {
-	return "ERROR";
+VALUE rho_bluetooth_get_device_name() {
+	return rho_ruby_create_string("ERROR");
 }
 
 const char* rho_bluetooth_get_last_error() {
