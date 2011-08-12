@@ -85,12 +85,18 @@
 			// page is loaded off the network.
 			dupCachedPage = null,
 
+			// determine the current base url
+			findBaseWithDefault = function(){
+				var closestBase = ( $.mobile.activePage && getClosestBaseUrl( $.mobile.activePage ) );
+				return closestBase || documentBase.hrefNoHash;
+			},
+
             /*
 			// The absolute version of the URL passed into the function. This
 			// version of the URL may contain dialog/subpage params in it.
-			absUrl = path.makeUrlAbsolute( url, documentBase.hrefNoHash );
+			absUrl = path.makeUrlAbsolute( url, findBaseWithDefault() );
             */
-        absUrl = "";
+            absUrl = "";
 
 		// If the caller provided data, and we're using "get" request,
 		// append the data to the URL.
@@ -138,9 +144,23 @@
 		}
         */
 
-		if ( settings.showLoadMsg ) {
-			$.mobile.showPageLoadingMsg();
-		}
+        if ( settings.showLoadMsg ) {
+
+            // This configurable timeout allows cached pages a brief delay to load without showing a message
+            var loadMsgDelay = setTimeout(function(){
+                    $.mobile.showPageLoadingMsg();
+                }, settings.loadMsgDelay ),
+
+                // Shared logic for clearing timeout and removing message.
+                hideMsg = function(){
+
+                    // Stop message show timer
+                    clearTimeout( loadMsgDelay );
+
+                    // Hide loading message
+                    $.mobile.hidePageLoadingMsg();
+                };
+        }
 
         setHtml(options.html);
 
@@ -165,6 +185,11 @@
                     && RegExp.$1 ) {
                 url = fileUrl = path.getFilePath( RegExp.$1 );
             }
+            /*
+            else{
+
+            }
+            */
 
             /*
             if ( base ) {
@@ -175,6 +200,11 @@
             //workaround to allow scripts to execute when included in page divs
             all.get( 0 ).innerHTML = html;
             page = all.find( ":jqmData(role='page'), :jqmData(role='dialog')" ).first();
+
+            //if page elem couldn't be found, create one and insert the body element's contents
+            if( !page.length ){
+                page = $( "<div data-" + $.mobile.ns + "role='page'>" + html.split( /<\/?body[^>]*>/gmi )[1] + "</div>" );
+            }
 
             if ( newPageTitle && !page.jqmData( "title" ) ) {
                 page.jqmData( "title", newPageTitle );
@@ -204,6 +234,17 @@
                 .attr( "data-" + $.mobile.ns + "url", path.convertUrlToDataUrl( fileUrl ) )
                 .appendTo( settings.pageContainer );
 
+            // wait for page creation to leverage options defined on widget
+            page.one('pagecreate', function(){
+
+                // when dom caching is not enabled bind to remove the page on hide
+                if( !page.data("page").options.domCache ){
+                    page.bind( "pagehide.remove", function(){
+                        $(this).remove();
+                    });
+                }
+            });
+
             enhancePage( page, settings.role );
 
             // Enhancing the page may result in new dialogs/sub pages being inserted
@@ -213,9 +254,11 @@
                 page = settings.pageContainer.children( ":jqmData(url='" + dataUrl + "')" );
             }
 
+            //bind pageHide to removePage after it's hidden, if the page options specify to do so
+
             // Remove loading message.
             if ( settings.showLoadMsg ) {
-                $.mobile.hidePageLoadingMsg();
+                hideMsg();
             }
 
             deferred.resolve( absUrl, options, page, dupCachedPage );
