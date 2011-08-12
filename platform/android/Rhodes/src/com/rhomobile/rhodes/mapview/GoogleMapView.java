@@ -51,6 +51,7 @@ import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
+import com.rhomobile.rhodes.util.Utils;
 
 public class GoogleMapView extends MapActivity {
 
@@ -264,13 +265,15 @@ public class GoogleMapView extends MapActivity {
 	}
 	
 	private void doGeocoding() {
+		Vector<Annotation> anns = new Vector<Annotation>();
+		
 		Context context = RhodesActivity.getContext();
 		
 		for (int i = 0, lim = annotations.size(); i < lim; ++i) {
 			Annotation ann = annotations.elementAt(i);
 			if (ann.latitude == 10000 || ann.longitude == 10000)
 				continue;
-			annOverlay.addAnnotation(ann);
+			anns.addElement(ann);
 		}
 		
 		for (int i = 0, lim = annotations.size(); i < lim; ++i) {
@@ -296,19 +299,47 @@ public class GoogleMapView extends MapActivity {
 					center.longitude = ann.longitude;
 					controller.setCenter(new GeoPoint((int)(ann.latitude*1000000), (int)(ann.longitude*1000000)));
 					controller.zoomToSpan((int)(spanLat*1000000), (int)(spanLon*1000000));
+					PerformOnUiThread.exec(new Runnable() {
+						public void run() {
+							view.invalidate();
+						}
+					}, false);
 				}
 				else
-					annOverlay.addAnnotation(ann);
+					anns.addElement(ann);
 			} catch (IOException e) {
 				Logger.E(TAG, "GeoCoding request failed: " + e.getMessage());
 			}
 			
-			PerformOnUiThread.exec(new Runnable() {
-				public void run() {
-					view.invalidate();
-				}
-			}, false);
 		}
+		addAnnotationsInUIThread(annOverlay, anns, view);
+		
+		PerformOnUiThread.exec(new Runnable() {
+			public void run() {
+				view.invalidate();
+			}
+		}, false);
+	}
+	
+	private class AddAnnotationsCommand implements Runnable {
+		public AddAnnotationsCommand(AnnotationsOverlay overlay, Vector<Annotation> annotations, com.google.android.maps.MapView view) {
+			mOverlay = overlay;
+			mAnnotations = annotations;
+			mView = view;
+		}
+		public void run() {
+			//Utils.platformLog(TAG, "add Annotation !");
+			mOverlay.addAnnotations(mAnnotations);
+			mView.invalidate();
+		}
+		private AnnotationsOverlay mOverlay;
+		private Vector<Annotation> mAnnotations;
+		private com.google.android.maps.MapView mView;
+	}
+	
+	private void addAnnotationsInUIThread(AnnotationsOverlay overlay, Vector<Annotation> annotations, com.google.android.maps.MapView view) {
+		//Utils.platformLog(TAG, "perform add Annotations !");
+		PerformOnUiThread.exec(new AddAnnotationsCommand(overlay, annotations, view), false);
 	}
 
 	@Override

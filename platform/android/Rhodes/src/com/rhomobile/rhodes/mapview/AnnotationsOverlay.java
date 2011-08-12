@@ -52,6 +52,14 @@ public class AnnotationsOverlay extends ItemizedOverlay<OverlayItem> {
 		populate();
 	}
 	
+	public void addAnnotations(Vector<Annotation> anns) {
+		int i;
+		for (i = 0; i < anns.size(); i++) {
+			annotations.addElement(anns.elementAt(i));
+		}
+		populate();
+	}
+	
 	@Override
 	protected OverlayItem createItem(int i) {
 		Annotation ann = annotations.elementAt(i);
