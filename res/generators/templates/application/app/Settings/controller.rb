@@ -39,6 +39,7 @@ class SettingsController < Rho::RhoController
     if @params['login'] and @params['password']
       begin
         SyncEngine.login(@params['login'], @params['password'], (url_for :action => :login_callback) )
+        @response['headers']['Wait-Page'] = 'true'
         render :action => :wait
       rescue Rho::RhoError => e
         @msg = e.message
