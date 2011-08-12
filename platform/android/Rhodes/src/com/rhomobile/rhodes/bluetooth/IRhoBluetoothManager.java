@@ -40,9 +40,9 @@ public interface IRhoBluetoothManager {
 
 	public String get_device_name();
 	
-	public String get_last_error();
+	public int get_last_error();
 	
-	public String create_session(String role, String callback_url);
+	public int create_session(String role, String callback_url);
 	
 	public void session_set_callback(String connected_device_name, String callback_url);
 	

@@ -35,12 +35,16 @@ import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 public class RhoBluetoothManager {
 
-	public static String BTC_OK = "OK";
-	public static String BTC_CANCEL = "CANCEL";
-	public static String BTC_ERROR = "ERROR";
+	public static final int BTC_OK = 0; //"OK";
+	public static final int BTC_CANCEL = 2; //"CANCEL";
+	public static final int BTC_ERROR = 3; //"ERROR";
 
-	public static String BT_ROLE_SERVER = "ROLE_SERVER";
-	public static String BT_ROLE_CLIENT = "ROLE_CLIENT";
+	public static final String BTC_OK_STRING = "OK";
+	public static final String BTC_CANCEL_STRING = "CANCEL";
+	public static final String BTC_ERROR_STRING = "ERROR";
+
+	public static final String BT_ROLE_SERVER = "ROLE_SERVER";
+	public static final String BT_ROLE_CLIENT = "ROLE_CLIENT";
 	
     private static final String TAG = "RhoBluetoothManager";
 	
@@ -71,7 +75,7 @@ public class RhoBluetoothManager {
 	   
 	public static IRhoBluetoothManager sharedInstance() {
 		if (ourInstance == null) {
-			PerformOnUiThread.exec( new Runnable() {
+			PerformOnUiThread.sync_exec( new Runnable() {
 				public void run() {
 					RhoBluetoothManager.logi(TAG, "make IRhoBluetoothManager instance");
 					String className = "RhoBluetoothManagerNew";
@@ -93,7 +97,7 @@ public class RhoBluetoothManager {
 						throw new IllegalStateException(e);
 					}
 				}
-		   },true);
+		   });
 		}
 		return ourInstance;
 	}
@@ -115,11 +119,11 @@ public class RhoBluetoothManager {
 		return sharedInstance().get_device_name();
 	}
 	
-	public static String get_last_error() {
+	public static int get_last_error() {
 		return sharedInstance().get_last_error();
 	}
 	
-	public static String create_session(String role, String callback_url) {
+	public static int create_session(String role, String callback_url) {
 		return sharedInstance().create_session(role, callback_url);
 	}
 	
