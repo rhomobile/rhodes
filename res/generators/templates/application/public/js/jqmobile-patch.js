@@ -58,8 +58,11 @@
 		$page.page();
 	}
 
+    // hijack $.mobile.loadPage function
     var path = $.mobile.path;
     var original_loadPage = $.mobile.loadPage;
+    // introduce custom initialization parameter support
+    original_loadPage.defaults.loadMsgDelay = $.mobile.loadingMessageDelay || original_loadPage.defaults.loadMsgDelay;
 
     $.mobile.loadPage = function( url, options ) {
 
@@ -266,12 +269,14 @@
 
 		return deferred.promise();
 	};
+    // copy original defaults
+    $.mobile.loadPage.defaults = original_loadPage.defaults;
 
     function insertAsyncPage(data) {
-        setTimeout(function(){
-            /*$('.waiting').remove();*/
-            $.mobile.hidePageLoadingMsg();
-        },450);
+        //setTimeout(function(){
+        //    /*$('.waiting').remove();*/
+        //    $.mobile.hidePageLoadingMsg();
+        //},450);
 
         $.mobile.loadPage("inline://", {html: data})
             .done(function( url, options, newPage, dupCachedPage ) {
