@@ -2,6 +2,22 @@
 
 ## HTML Structure 
 
+### page (\<div data-role="page"\>)
+
+The page div contain other divs for header, footer and content. For custom attributes used by jQuery Mobile look at [jQuery Mobile documentation](http://jquerymobile.com).
+
+    :::html
+    <div data-role="page">
+        <!-- page parts here -->
+    </div>
+
+For pages which you will refer by links with controller name only and without action name, you have to use **data-url** attribute with the trailing slash in the value. Here is the sample for default start page, which is addressed by '/app' URL:
+
+    :::html
+    <div data-role="page" data-url="<%= Rho::RhoConfig.start_path %>/">
+        <!-- page parts here -->
+    </div>
+
 ### header and toolbar (\<div data-role="header"\>)
 
 The header div contains the title of the current page, wrapped in an <code>h1</code> tag and toolbar as set of <code>a</code> tags.  The page title will be displayed in the appropriate location for each device.
