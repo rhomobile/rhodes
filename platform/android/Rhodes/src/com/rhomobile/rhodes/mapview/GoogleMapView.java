@@ -26,6 +26,8 @@ import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
+import com.rhomobile.rhodes.Utils;
+
 public class GoogleMapView extends MapActivity {
 
 	private static final String TAG = "GoogleMapView";
@@ -46,6 +48,8 @@ public class GoogleMapView extends MapActivity {
 	private String apiKey;
 	
 	private Vector<Annotation> annotations;
+
+	static private ExtrasHolder mHolder = null;
 	
 	private static class Coordinates {
 		public double latitude;
@@ -93,7 +97,9 @@ public class GoogleMapView extends MapActivity {
 		setContentView(layout, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		
 		// Extrace parameters
-		Bundle extras = getIntent().getExtras();
+		//Bundle extras = getIntent().getExtras();
+		ExtrasHolder extras = mHolder;
+
 		apiKey = extras.getString(SETTINGS_PREFIX + "api_key");
 		
 		// Extract settings
@@ -206,6 +212,7 @@ public class GoogleMapView extends MapActivity {
 			}
 		}
 		
+		mHolder.clear();
 		view.preLoad();
 		
 		Thread geocoding = new Thread(new Runnable() {
@@ -229,13 +236,16 @@ public class GoogleMapView extends MapActivity {
 	}
 	
 	private void doGeocoding() {
+
+		Vector<Annotation> anns = new Vector<Annotation>();
+
 		Context context = RhodesActivity.getContext();
 		
 		for (int i = 0, lim = annotations.size(); i < lim; ++i) {
 			Annotation ann = annotations.elementAt(i);
 			if (ann.latitude == 10000 || ann.longitude == 10000)
 				continue;
-			annOverlay.addAnnotation(ann);
+			anns.addElement(ann);
 		}
 		
 		for (int i = 0, lim = annotations.size(); i < lim; ++i) {
@@ -261,19 +271,47 @@ public class GoogleMapView extends MapActivity {
 					center.longitude = ann.longitude;
 					controller.setCenter(new GeoPoint((int)(ann.latitude*1000000), (int)(ann.longitude*1000000)));
 					controller.zoomToSpan((int)(spanLat*1000000), (int)(spanLon*1000000));
+					PerformOnUiThread.exec(new Runnable() {
+						public void run() {
+							view.invalidate();
+						}
+					}, false);
 				}
 				else
-					annOverlay.addAnnotation(ann);
+					anns.addElement(ann);
 			} catch (IOException e) {
 				Logger.E(TAG, "GeoCoding request failed: " + e.getMessage());
 			}
 			
-			PerformOnUiThread.exec(new Runnable() {
-				public void run() {
-					view.invalidate();
-				}
-			}, false);
 		}
+		addAnnotationsInUIThread(annOverlay, anns, view);
+		
+		PerformOnUiThread.exec(new Runnable() {
+			public void run() {
+				view.invalidate();
+			}
+		}, false);
+	}
+
+	private class AddAnnotationsCommand implements Runnable {
+		public AddAnnotationsCommand(AnnotationsOverlay overlay, Vector<Annotation> annotations, com.google.android.maps.MapView view) {
+			mOverlay = overlay;
+			mAnnotations = annotations;
+			mView = view;
+		}
+		public void run() {
+			//Utils.platformLog(TAG, "add Annotation !");
+			mOverlay.addAnnotations(mAnnotations);
+			mView.invalidate();
+		}
+		private AnnotationsOverlay mOverlay;
+		private Vector<Annotation> mAnnotations;
+		private com.google.android.maps.MapView mView;
+	}
+	
+	private void addAnnotationsInUIThread(AnnotationsOverlay overlay, Vector<Annotation> annotations, com.google.android.maps.MapView view) {
+		//Utils.platformLog(TAG, "perform add Annotations !");
+		PerformOnUiThread.exec(new AddAnnotationsCommand(overlay, annotations, view), false);
 	}
 
 	@Override
@@ -283,8 +321,12 @@ public class GoogleMapView extends MapActivity {
 	
 	@SuppressWarnings("unchecked")
 	public static void create(String gapiKey, Map<String, Object> params) {
+		mHolder = new ExtrasHolder();
 		try {
-			Intent intent = new Intent(RhodesActivity.getContext(), GoogleMapView.class);
+			Intent intent_obj = new Intent(RhodesActivity.getContext(), GoogleMapView.class);
+			mHolder.clear();
+			ExtrasHolder intent = mHolder;
+
 			intent.putExtra(SETTINGS_PREFIX + "api_key", gapiKey);
 			
 			Object settings = params.get("settings");
@@ -381,7 +423,7 @@ public class GoogleMapView extends MapActivity {
 				}
 			}
 			
-			RhodesService.getInstance().startActivity(intent);
+			RhodesService.getInstance().startActivity(intent_obj);
 		}
 		catch (Exception e) {
 			reportFail("create", e);
