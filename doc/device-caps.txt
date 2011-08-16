@@ -408,14 +408,17 @@ Take a picture:
 	Camera::take_picture('/app/model/camera_callback', options_hash)
 
 options_has - hash contain additional parameters :
+
 * "camera_type" - "default"(is the same with "main"), "main", "front". Default value = "default"
 * "desired_width" - number, desired width in pixels. Default value = max camera width
 * "desired_height" - number, desired height in pixels. Default value = max camera height
 * "color_model" "RGB", "Grayscale". Default value = "RGB"
 * "format" "jpg", "png". Default value = "jpg"
 * "enable_editing" - boolean, enable post photo capture image customize (supported only on iPhone !). Default value = true. If you enable this, image will captured reduced to screen size (not full size)!
+* "flash_mode" - string, supported only on Android ! Values : "off", "on", "auto", "red-eye", "torch".
 
 Additional parameters in camera callback :
+
 * "status" - "ok", "cancel", "error"
 * "message" - if status == error, then in this value contain message about error
 * "image_uri" - uri of saved image file
