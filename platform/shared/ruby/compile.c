@@ -5290,9 +5290,11 @@ iseq_build_body(rb_iseq_t *iseq, LINK_ANCHOR *anchor,
 #define CHECK_SYMBOL(v)  rb_convert_type(v, T_SYMBOL, "Symbol", "to_sym")
 static inline VALUE CHECK_INTEGER(VALUE v) {NUM2LONG(v); return v;}
 
+//RHO : misc
 VALUE
 rb_iseq_build_from_ary(rb_iseq_t *iseq, VALUE locals, VALUE args,
-			 VALUE exception, VALUE body)
+			 VALUE exception, VALUE body, VALUE misc)
+//RHO
 {
     int i;
     ID *tbl;
@@ -5304,8 +5306,10 @@ rb_iseq_build_from_ary(rb_iseq_t *iseq, VALUE locals, VALUE args,
 
     iseq->local_table_size = RARRAY_LEN(locals);
     iseq->local_table = tbl = (ID *)ALLOC_N(ID *, iseq->local_table_size);
-    iseq->local_size = iseq->local_table_size + 1;
-
+    //RHO
+    iseq->local_size = FIX2INT(rb_hash_aref(misc, ID2SYM(rb_intern("local_size"))));
+    //iseq->local_size = iseq->local_table_size + 1;
+    //RHO
     for (i=0; i<RARRAY_LEN(locals); i++) {
 	VALUE lv = RARRAY_PTR(locals)[i];
 	tbl[i] = FIXNUM_P(lv) ? FIX2INT(lv) : SYM2ID(CHECK_SYMBOL(lv));
