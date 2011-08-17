@@ -59,10 +59,10 @@ module Rho
 			end
 
 			def create!(properties, phonebook = nil)
-                                pb = phonebook
-                                if phonebook == nil
+				pb = phonebook
+				if phonebook == nil
 					pb = Phonebook::openPhonebook
-                                end 
+				end 
 				unless pb.nil?
 					record = Phonebook::createRecord(pb)
 					if record.nil?
@@ -95,6 +95,7 @@ module Rho
 						Phonebook::closePhonebook(pb)
 					end
 				end
+				return record
 			end
 
 			def update_attributes(properties, phonebook = nil)
