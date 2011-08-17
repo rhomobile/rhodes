@@ -229,6 +229,10 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 	            if (mSettings.getColorModel() == mSettings.CAMERA_COLOR_MODEL_GRAYSCALE) {
 	            	p.set("effect", Camera.Parameters.EFFECT_MONO);//p.setColorEffect(Camera.Parameters.EFFECT_MONO);
 	            }
+	            if (mSettings.getFlashMode() != null) {
+	            	p.set("flash-mode", mSettings.getFlashMode());
+	            	
+	            }
 			}
 			camera.setParameters(p);
 			camera.setPreviewDisplay(holder);
@@ -338,7 +342,7 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
             }
 	        Logger.D(TAG, "Camera rotation: " + nCamRotate );
             parameters.set("rotation", nCamRotate );
-            if ((mSettings.getWidth() > 0) && (mSettings.getHeight() > 0)) {
+            if ((mSettings != null) && (mSettings.getWidth() > 0) && (mSettings.getHeight() > 0)) {
             
     			int newW = mSettings.getWidth();
     			int newH = mSettings.getHeight();
@@ -367,8 +371,14 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
     				imgH = 0;
     			}
             }
-            if (mSettings.getColorModel() == mSettings.CAMERA_COLOR_MODEL_GRAYSCALE) {
-            	parameters.set("effect", Camera.Parameters.EFFECT_MONO);//setColorEffect(Camera.Parameters.EFFECT_MONO);
+            if (mSettings != null) {
+	            if (mSettings.getColorModel() == mSettings.CAMERA_COLOR_MODEL_GRAYSCALE) {
+	            	parameters.set("effect", Camera.Parameters.EFFECT_MONO);//setColorEffect(Camera.Parameters.EFFECT_MONO);
+	            }
+	            if (mSettings.getFlashMode() != null) {
+	            	parameters.set("flash-mode", mSettings.getFlashMode());
+	            	
+	            }
             }
 			iccb = new ImageCaptureCallback(this, callbackUrl, osCommon, dir + "/" + filename + ".jpg", imgW, imgH, "jpg");
             camera.setParameters(parameters);
