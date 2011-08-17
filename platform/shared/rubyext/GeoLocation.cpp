@@ -87,10 +87,13 @@ void CGeoLocation::callGeoCallback(boolean bError, boolean bRunInThread)
 
 void CGeoLocation::setGeoCallback(const char *url, char* params, int timeout_sec, boolean bView)
 {
-    if ( bView)
-        m_ViewNotify = CGeoNotification(url?url:"",params?params:"");
-    else
-        m_Notify = CGeoNotification(url?url:"",params?params:"");
+    synchronized(m_mxNotify)
+    {
+        if ( bView)
+            m_ViewNotify = CGeoNotification(url?url:"",params?params:"");
+        else
+            m_Notify = CGeoNotification(url?url:"",params?params:"");
+    }
 
     if ( url && *url )
     {
