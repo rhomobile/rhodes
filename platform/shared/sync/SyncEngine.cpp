@@ -883,8 +883,10 @@ void CSyncEngine::login(String name, String password, const CSyncNotification& o
     PROF_STOP("Login");
 
     if ( CClientRegister::getInstance() != null )
+    {
+        getUserDB().executeSQL("UPDATE client_info SET token_sent=?", 0 );
         CClientRegister::getInstance()->startUp();
-
+    }
 	//}catch(Exception exc)
 	//{
 	//	LOG.ERROR("Login failed.", exc);
