@@ -40,6 +40,7 @@ public class GeoLocationImpl {
 	private boolean available = false;
 	private double longitude = 0;
 	private double latitude = 0;
+	private float  accuracy = 0;
 	private boolean determined = false;
 	
 	private RhoLocationListener mGpsListener = new RhoLocationListener();
@@ -94,7 +95,7 @@ public class GeoLocationImpl {
 						public void run() {
 							geoCallbackError();
 						}
-					}, false);
+					});
 				}
 				timeout = 2147483647;
 			}
@@ -163,6 +164,7 @@ public class GeoLocationImpl {
 			if (location != null) {
 				longitude = location.getLongitude();
 				latitude = location.getLatitude();
+				accuracy = location.getAccuracy();
 				determined = true;
 			}
 			else {
@@ -202,9 +204,11 @@ public class GeoLocationImpl {
 		if (!determined)
 			log.append(" not");
 		log.append(" determined");
-		if (determined)
-			log.append(": longitude=" + Double.toString(longitude) +
-					", latitude=" + Double.toString(latitude));
+		if (determined) {
+			log.append(": longitude=").append(Double.toString(longitude));
+			log.append(", latitude=").append(Double.toString(latitude));
+			log.append(", accuracy=").append(Float.toString(accuracy));
+		}
 		Logger.T(TAG, log.toString());
 	}
 	
@@ -234,6 +238,10 @@ public class GeoLocationImpl {
 
 	public synchronized double getLongitude() {
 		return longitude;
+	}
+	
+	public synchronized float getAccuracy() {
+		return accuracy;
 	}
 
 	public synchronized boolean isKnownPosition() {
