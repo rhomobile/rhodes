@@ -253,6 +253,10 @@ double rho_geo_longitude() {
 	geo_update();
 	return [[LocationController sharedInstance] getLongitude];
 }
+
+float rho_geo_accuracy() {
+	return 0.0;
+}
 	
 int rho_geo_known_position() {
 	geo_update();
