@@ -35,7 +35,8 @@
 extern "C" {
 double rho_geo_latitude();
 double rho_geo_longitude();
-int rho_geo_known_position();	
+float  rho_geo_accuracy();
+int rho_geo_known_position();
 void rho_geoimpl_settimeout(int nTimeoutSec);
 int rho_geo_is_available();
 }
@@ -85,6 +86,7 @@ void CGeoLocation::callGeoCallback(const CGeoNotification& oNotify, boolean bErr
 	strBody += "&known_position=" + convertToStringA(rho_geo_known_position());
 	strBody += "&latitude=" + convertToStringA(rho_geo_latitude());
 	strBody += "&longitude=" + convertToStringA(rho_geo_longitude());
+	strBody += "&accuracy=" + convertToStringA(rho_geo_accuracy());
 
     if ( oNotify.m_strParams.length() > 0 )
         strBody += "&" + oNotify.m_strParams;
@@ -111,10 +113,13 @@ void CGeoLocation::callGeoCallback(boolean bError, boolean bRunInThread)
 
 void CGeoLocation::setGeoCallback(const char *url, char* params, int timeout_sec, boolean bView)
 {
-    if ( bView)
-        m_ViewNotify = CGeoNotification(url?url:"",params?params:"");
-    else
-        m_Notify = CGeoNotification(url?url:"",params?params:"");
+    synchronized(m_mxNotify)
+    {
+        if ( bView)
+            m_ViewNotify = CGeoNotification(url?url:"",params?params:"");
+        else
+            m_Notify = CGeoNotification(url?url:"",params?params:"");
+    }
 
     if ( url && *url )
     {
