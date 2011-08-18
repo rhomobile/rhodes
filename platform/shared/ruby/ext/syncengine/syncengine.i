@@ -69,6 +69,9 @@
 
 	extern VALUE rho_sync_is_syncing();
 	#define is_syncing rho_sync_is_syncing
+
+    extern VALUE rho_sync_register_push();
+	#define register_push rho_sync_register_push	
 	
 	#if !defined(bool)
 	#define bool int
@@ -106,3 +109,4 @@ extern void  set_source_property(int nSrcID, const char* szPropName, const char*
 extern void  set_ssl_verify_peer(bool b);
 extern void  update_blob_attribs(const char* szPartition, int source_id);
 extern VALUE is_syncing();
+extern void  register_push();
