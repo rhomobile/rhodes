@@ -487,4 +487,15 @@ void rho_sync_set_ssl_verify_peer(int b)
     CSyncThread::getSyncEngine().setSslVerifyPeer(b == 0 ? false : true);
 }
 
+
+void rho_sync_register_push()
+{
+    if ( CClientRegister::getInstance() != null )
+    {
+        rho::db::CDBAdapter::getUserDB().executeSQL("UPDATE client_info SET token_sent=?", 0 );
+        CClientRegister::getInstance()->startUp();
+    }
+
+}
+
 }

@@ -1882,6 +1882,9 @@ static VALUE mSyncEngine;
 
 	extern VALUE rho_sync_is_syncing();
 	#define is_syncing rho_sync_is_syncing
+
+    extern VALUE rho_sync_register_push();
+	#define register_push rho_sync_register_push	
 	
 	#if !defined(bool)
 	#define bool int
@@ -1907,7 +1910,7 @@ SWIG_ruby_failed(void)
 } 
 
 
-/*@SWIG:/usr/local/share/swig/2.0.4/ruby/rubyprimtypes.swg,19,%ruby_aux_method@*/
+/*@SWIG:C:\Install\swigwin-2.0.4\Lib\ruby\rubyprimtypes.swg,19,%ruby_aux_method@*/
 SWIGINTERN VALUE SWIG_AUX_NUM2LONG(VALUE *args)
 {
   VALUE obj = args[0];
@@ -2754,6 +2757,18 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_register_push(int argc, VALUE *argv, VALUE self) {
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  register_push();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -3053,5 +3068,6 @@ SWIGEXPORT void Init_SyncEngine(void) {
   rb_define_module_function(mSyncEngine, "set_ssl_verify_peer", _wrap_set_ssl_verify_peer, -1);
   rb_define_module_function(mSyncEngine, "update_blob_attribs", _wrap_update_blob_attribs, -1);
   rb_define_module_function(mSyncEngine, "is_syncing", _wrap_is_syncing, -1);
+  rb_define_module_function(mSyncEngine, "register_push", _wrap_register_push, -1);
 }
 
