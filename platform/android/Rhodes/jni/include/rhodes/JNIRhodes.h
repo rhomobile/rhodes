@@ -37,7 +37,9 @@
 #include <logging/RhoLogConf.h>
 #include <logging/RhoLog.h>
 
+#ifndef RHO_NO_RUBY
 #include <genconfig.h>
+#endif
 
 static int const RHO_FD_BASE = 512;
 
