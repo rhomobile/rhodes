@@ -36,6 +36,9 @@
     NSString *type;
     NSString *title, *subtitle, *address, *url;
     NSString *coordinateString,*resolvedAddress; 
+    NSString* image;
+    int image_x_offset;
+    int image_y_offset;
     CLLocationCoordinate2D coordinate;
 }
 
@@ -47,6 +50,9 @@
 @property (nonatomic,copy) NSString *coordinateString;
 @property (nonatomic,copy) NSString *resolvedAddress;
 @property (nonatomic,assign) CLLocationCoordinate2D coordinate;
+@property (nonatomic,copy) NSString *image;
+@property (nonatomic,assign) int image_x_offset;
+@property (nonatomic,assign) int image_y_offset;
 
 @end
 
