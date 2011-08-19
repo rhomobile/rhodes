@@ -253,6 +253,10 @@ static MapViewController *mc = nil;
             NSString *subtitle = nil;
             NSString *url = nil;
             
+            NSString *image = nil;
+            int image_x_offset = 0;
+            int image_y_offset = 0;
+            
             for (int j = 0, limm = ann->v.hash->size; j < limm; ++j) {
                 char *name = ann->v.hash->name[j];
                 rho_param *value = ann->v.hash->value[j];
@@ -280,6 +284,15 @@ static MapViewController *mc = nil;
                 else if (strcasecmp(name, "url") == 0) {
                     url = [NSString stringWithUTF8String:v];
                 }
+                else if (strcasecmp(name, "image") == 0) {
+                    image = [NSString stringWithUTF8String:v];
+                }
+                else if (strcasecmp(name, "image_x_offset") == 0) {
+                    image_x_offset = (int)strtod(v, NULL);
+                }
+                else if (strcasecmp(name, "image_y_offset") == 0) {
+                    image_y_offset = (int)strtod(v, NULL);
+                }
             }
             
             MapAnnotation *annObj = [[MapAnnotation alloc] init];
@@ -288,6 +301,9 @@ static MapViewController *mc = nil;
             if (title) [annObj setTitle:title];
             if (subtitle) [annObj setSubtitle:subtitle];
             if (url) [annObj setUrl:url];
+            if (image) [annObj setImage:image];
+            [annObj setImage_x_offset:image_x_offset];
+            [annObj setImage_y_offset:image_y_offset];
             [annotations addObject:annObj];
             [annObj release];
         }
@@ -466,17 +482,45 @@ static MapViewController *mc = nil;
 }
 
 - (MKAnnotationView *) mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>) annotation{
-    MKPinAnnotationView *annView = [[[MKPinAnnotationView alloc]
-                                     initWithAnnotation:annotation reuseIdentifier:@"currentloc"] autorelease];
-    annView.animatesDrop = TRUE;
-    annView.canShowCallout = YES;
+    
+    MKAnnotationView *annView = nil;
+    
     if ([annotation isKindOfClass:[MapAnnotation class]]) {
         MapAnnotation* ann = (MapAnnotation*)annotation;
         NSString* url = [ann url];
+        if (ann.image != nil) {
+            UIImage *img = nil;
+            if ([ann.image length] > 0) {
+                NSString *imagePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:ann.image];
+                img = [UIImage imageWithContentsOfFile:imagePath];
+            }
+            if (img != nil) {
+                annView = [[[MKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"currentloc"] autorelease];
+                annView.image = img;
+                int w = (int)img.size.width;
+                int h = (int)img.size.height;
+                CGPoint offset;
+                offset.x = w/2 - ann.image_x_offset;
+                offset.y = h/2 - ann.image_y_offset;
+                annView.centerOffset = offset;
+            }
+        }
+        if (annView == nil) {
+            annView = [[[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"currentloc"] autorelease];
+        }
         if ([url length] > 0) {
             [annView setRightCalloutAccessoryView:[UIButton buttonWithType:UIButtonTypeDetailDisclosure]];
         }
     }
+    else {
+        annView = [[[MKPinAnnotationView alloc]
+                                         initWithAnnotation:annotation reuseIdentifier:@"currentloc"] autorelease];
+    }
+    if ([annView isKindOfClass:[MKPinAnnotationView class]]) {
+        MKPinAnnotationView* annPinView = (MKPinAnnotationView*)annView;
+        annPinView.animatesDrop = TRUE;
+    }
+    annView.canShowCallout = YES;
     return annView;
 }
 

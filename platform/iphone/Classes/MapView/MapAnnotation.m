@@ -31,7 +31,7 @@
 
 @implementation MapAnnotation
 
-@synthesize type, title, subtitle, address, url, coordinateString, resolvedAddress, coordinate;
+@synthesize type, title, subtitle, address, url, coordinateString, resolvedAddress, coordinate, image, image_x_offset, image_y_offset;
 
 -(id) init {
     [super init];
@@ -42,6 +42,9 @@
     coordinateString = [[NSMutableString alloc] initWithFormat:@""]; 
     resolvedAddress = [[NSMutableString alloc] initWithFormat:@""];
     url = [[NSString alloc] initWithFormat:@""];
+    image = nil;
+    image_x_offset = 0;
+    image_y_offset = 0;
     return self;
 }
 
@@ -53,6 +56,7 @@
     [coordinateString release];
     [resolvedAddress release];
     [url release];
+    [image release];
     [super dealloc];
 }
 
