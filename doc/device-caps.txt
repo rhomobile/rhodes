@@ -1162,6 +1162,9 @@ Annotations - array of map annotation objects (list of pins on the map). Annotat
 * title - title of the annotation callout
 * subtitle - subtitle of the annotation callout
 * url - url to follow when user click on the callout button
+* image - image file name
+* image_x_offset - int horizontal coordinate of image anchor (ancor point placed to annotation point on map) . Set to image width/2 for center
+* image_y_offset - int vertical coordinate of image anchor (ancor point placed to annotation point on map). Set image height/2 for center
 
 ### Sample
 See GeoLocation/controller.rb of [system API sample application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/GeoLocation/controller.rb) for some of the examples of how to use MapView class.
