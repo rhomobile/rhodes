@@ -172,6 +172,11 @@ public class GoogleMapView extends MapActivity {
 			ann.url = extras.getString(prefix + "url");
 			if (ann.url != null)
 				ann.url = RhodesService.getInstance().normalizeUrl(ann.url);
+			
+			ann.image = extras.getString(prefix+"image");
+			ann.image_x_offset = extras.getInt(prefix + "image_x_offset");
+			ann.image_y_offset = extras.getInt(prefix + "image_y_offset");
+			
 			annotations.addElement(ann);
 		}
 		
@@ -447,6 +452,18 @@ public class GoogleMapView extends MapActivity {
 					Object url = ann.get("url");
 					if (url != null && (url instanceof String))
 						intent.putExtra(prefix + "url", (String)url);
+
+					Object image = ann.get("image");
+					if (image != null && (image instanceof String))
+						intent.putExtra(prefix + "image", (String)image);
+
+					Object image_x_offset = ann.get("image_x_offset");
+					if (image_x_offset != null && (image_x_offset instanceof String))
+						intent.putExtra(prefix + "image_x_offset", (String)image_x_offset);
+					
+					Object image_y_offset = ann.get("image_y_offset");
+					if (image_y_offset != null && (image_y_offset instanceof String))
+						intent.putExtra(prefix + "image_y_offset", (String)image_y_offset);
 				}
 			}
 			

@@ -34,4 +34,7 @@ public class Annotation {
 	public String title = null;
 	public String subtitle = null;
 	public String url = null;
+	public String image = null;
+	public int image_x_offset = 0;
+	public int image_y_offset = 0;
 }
