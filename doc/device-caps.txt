@@ -449,8 +449,9 @@ Barcode recognition functionality realized as Rhode Native extension. You should
 
 For barcode recognition we use Zbar library (iPhone, and Windows Mobile platforms) and ZXing library (Android and BlackBerry platforms). In this case we support next barcode types :
 
-* iPhone, Android and WM platforms: UPC-A, UPC-E, EAN-8, EAN-13, Code 39, Code 128, .
-* BlackBerry platform: UPC-A, UPC-E, EAN-8, EAN-13, Code 39, Code 128, Code 93, QR Code, ITF, Codabar
+* WM platform: UPC-A, UPC-E, EAN-8, EAN-13, Code 39, Code 128 .
+* iPhone platform: UPC-A, UPC-E, EAN-8, EAN-13, Code 39, Code 128, QR Code .
+* Android and BlackBerry platforms: UPC-A, UPC-E, EAN-8, EAN-13, Code 39, Code 128, Code 93, QR Code, ITF, Codabar
 
 **NOTE: We are very sorry, but we are removed ZBar source code from our project by ZBar license requirements. For build Barcode extension for WM, you should download ZBar sources from http://zbar.sourceforge.net/ and copy to [rhodes root]/lib/extensions/barcode/ext/barcode/shared/zbar/zbar/ folder "include" and "zbar" folders from ZBar sources. Also you should fix ZBar sources for building by Microsoft Visual Studio (move define of inner function variables to begin of functions, etc.)
 
