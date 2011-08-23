@@ -996,7 +996,7 @@ Status window will close after clicking on hide button.
 * status_text - text to be displayed in status window
 * hide_button_label - label of hide button
 
-For example you can use Alert.show_status in sync notification callback:
+<a id="alert-show-status-ex"></a>For example you can use Alert.show_status in sync notification callback:
 	:::ruby
 	def sync_notify
 	  status = @params['status'] ? @params['status'] : ""
