@@ -60,7 +60,7 @@ Example of synchronous call:
 
 
 ### `post(:url, :headers, :body, :callback, :callback_param)`
-Perform HTTP POST request to the specified `:url`.  As with `get`, you can specify optional arguments:
+Perform HTTP POST request to the specified <code>:url</code>.  As with <code>get</code>, you can specify optional arguments:<a id="asynchttp-post-ex" />
 
 	:::ruby
 	# :post				HTTP POST body to send with request.
