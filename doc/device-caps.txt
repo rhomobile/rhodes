@@ -617,7 +617,8 @@ Write string
 
 ### Example of Controller with using Bluetooth API
 
-It is not complete example (link to complete example see below). This code just show how you can make connection and send/receive strings. 
+This is not a complete example (for a link to a complete example, see below). This code just shows how you can make a connection and send/receive strings.<a id="bluetooth-ex" />
+
 	:::ruby
 	require 'rho/rhocontroller'
 	require 'rho/rhobluetooth'
@@ -945,7 +946,7 @@ You can also customize popup window's title, icon, buttons and specify callback 
 		:icon => '/public/images/icon.png',
 	    :buttons => ["Yes", "No", 
 			{:id => 'cancel', :title => 'Cancel all'}],
-	    :callback => url_for(:action => :on_dissmiss_popup) } )
+	    :callback => url_for(:action => :on_dismiss_popup) } )
 
 Popup window always close after clicking on any button.
 
