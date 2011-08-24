@@ -617,7 +617,7 @@ Write string
 
 ### Example of Controller with using Bluetooth API
 
-This is not a complete example (for a link to a complete example, see below). This code just shows how you can make a connection and send/receive strings.<a id="bluetooth-ex" />
+This is not a complete example (for a link to a complete example, see the link below this example). This code just shows how you can make a connection and send/receive strings.<a id="bluetooth-ex" />
 
 	:::ruby
 	require 'rho/rhocontroller'
