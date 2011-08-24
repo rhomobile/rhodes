@@ -211,3 +211,5 @@ platform/shared/RhoSimulator-build*
 platform/shared/ruby/ext/rho/extensions.c
 platform/linux/bin/*
 platform/iphone/project_bakup
+
+spec/phone_spec/rhosimulator/*
