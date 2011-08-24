@@ -907,8 +907,8 @@ module Rhom
                               #it is more effective to use old find here
                               if attribs && attribs != '*' && attribs.length() != 0 && !args[1][:dont_ignore_missed_attribs]
                                   sql << "SELECT object FROM object_values WHERE attrib=? AND source_id=?"
-                                  values << nSrcID
                                   values << attribs[0]
+                                  values << nSrcID
                               else 
                                   if  limit == 1 && offset == 0 
                                     sql = "SELECT object FROM object_values WHERE source_id=?"
