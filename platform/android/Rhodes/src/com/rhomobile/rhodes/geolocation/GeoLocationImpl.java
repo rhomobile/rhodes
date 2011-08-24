@@ -95,7 +95,7 @@ public class GeoLocationImpl {
 						public void run() {
 							geoCallbackError();
 						}
-					});
+					}, false);
 				}
 				timeout = 2147483647;
 			}
