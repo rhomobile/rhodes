@@ -92,15 +92,34 @@ public class ContactAccessorOld implements ContactAccessor {
 		}
 	}
 
-	public Map<String, Contact> getAll() throws Exception {
+	@Override
+	public int getCount() {
+		Cursor cursor = cr.query(People.CONTENT_URI, null, null, null, null);
+		int count = -1;
+		try {
+			count = cursor.getCount();
+		} finally {
+			cursor.close();
+		}
+		return count;
+	}
+
+	@Override
+	public Map<String, Contact> getContacts(int offset, int max_results) throws Exception {
 		Map<String, Contact> contacts = new HashMap<String, Contact>();
 		
 		Cursor cursor = cr.query(People.CONTENT_URI, null, null, null, null);
 		try {
-			if (!cursor.moveToFirst())
+			if (!cursor.moveToPosition(offset))
 				return contacts;
+			if (max_results == -1) {
+				max_results = cursor.getCount() - offset;
+			}
 			
 			do {
+				if(contacts.size() >= max_results) {
+					break;
+				}
 				Contact contact = new Contact();
 	
 				String id = cursor.getString(cursor.getColumnIndex(People._ID));
@@ -187,6 +206,12 @@ public class ContactAccessorOld implements ContactAccessor {
 		}
 		
 		return contacts;
+	}
+
+	
+	@Override
+	public Map<String, Contact> getAll() throws Exception {
+		return getContacts(0, -1);
 	}
 
 	public void save(Contact contact) throws Exception {
