@@ -194,18 +194,39 @@ public class ContactAccessorNew implements ContactAccessor {
 			cursor.close();
 		}
 	}
+	
+	@Override
+	public int getCount() {
+		Cursor cursor = cr.query(RawContacts.CONTENT_URI,
+				new String[] {RawContacts._ID},
+				RawContacts.DELETED + "=0", null, null);
+		int count = -1;
+		try {
+			count = cursor.getCount();
+		} finally {
+			cursor.close();
+		}
+		return count;
+	}
 
-	public Map<String, Contact> getAll() throws Exception {
+	@Override
+	public Map<String, Contact> getContacts(int offset, int max_results) throws Exception {
 		Map<String, Contact> contacts = new HashMap<String, Contact>();
 		
 		Cursor cursor = cr.query(RawContacts.CONTENT_URI,
 				new String[] {RawContacts._ID},
 				RawContacts.DELETED + "=0", null, null);
 		try {
-			if (!cursor.moveToFirst())
+			if (!cursor.moveToPosition(offset))
 				return contacts;
+			if (max_results == -1) {
+				max_results = cursor.getCount() - offset;
+			}
 			
 			do {
+				if(contacts.size() >= max_results) {
+					break;
+				}
 				Contact contact = new Contact();
 				contact.setAccessor(this);
 				
@@ -219,6 +240,7 @@ public class ContactAccessorNew implements ContactAccessor {
 				contact.makeAllFilled();
 				
 				contacts.put(contact.getField(Phonebook.PB_I_ID), contact);
+				
 			} while (cursor.moveToNext());
 		}
 		finally {
@@ -226,6 +248,11 @@ public class ContactAccessorNew implements ContactAccessor {
 		}
 		
 		return contacts;
+	}
+	
+	@Override
+	public Map<String, Contact> getAll() throws Exception {
+		return getContacts(0, -1);
 	}
 	
 	public Contact getContactByID(String id) {
