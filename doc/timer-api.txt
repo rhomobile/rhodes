@@ -1,0 +1,39 @@
+# Timer API - Use a Timer
+
+The [Timer Class API](http://docs.rhomobile.com/rhodes/device-caps#timer) lets the device use a timer.
+
+## Timer.start(interval_milliseconds, callback_url, callback_data)
+
+Start the timer and call the callback when the timer has run.
+
+### Returns
+
+None.
+
+### Parameters
+
+interval_milliseconds - Duration of timer in milliseconds.
+callback_url - callback to call at end of timer duration.
+callback_data - data for callback.
+
+### Example
+
+	:::ruby
+	Rho::Timer.start(5000, (url_for :action => :timer_callback), "test")
+
+## Timer.stop(callback_url)
+
+Stop the timer by callback.
+
+### Returns
+
+None.
+
+### Parameters
+
+callback_url - the callback_url for this timer; stopped by this method.
+
+
+
+
+
