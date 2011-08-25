@@ -41,6 +41,16 @@ void  closePhonebook(void* pb)
     }
 }
 
+int getPhonebookRecordCount(void* pb)
+{
+    return 0;
+}
+
+VALUE getPhonebookRecords(void* pb, int offset, int max_results)
+{
+	return rho_ruby_get_NIL();	
+}
+
 VALUE getallPhonebookRecords(void* pb) 
 {
 	if ( pb )
