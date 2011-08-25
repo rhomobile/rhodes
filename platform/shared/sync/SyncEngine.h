@@ -68,8 +68,8 @@ public:
     static CSourceOptions& getSourceOptions(){ return m_oSourceOptions; }
     net::CNetRequestWrapper getNet(){ return getNetRequest(&m_NetRequest); }
 
-    void doSyncAllSources();
-    void doSyncSource(const CSourceID& oSrcID);
+    void doSyncAllSources(const String& strQueryParams);
+    void doSyncSource(const CSourceID& oSrcID, const String& strQueryParams);
     void doSearch(rho::Vector<rho::String>& arSources, String strParams, String strAction, boolean bSearchSyncChanges, int nProgressStep);
 
     void login(String name, String password, const CSyncNotification& oNotify);
@@ -136,8 +136,8 @@ private:
     void processServerSources(String strSources);
     void checkSourceAssociations();
 
-    boolean syncOneSource(int i);
-    void syncAllSources();
+    boolean syncOneSource(int i, const String& strQueryParams);
+    void syncAllSources(const String& strQueryParams);
 
     friend class CSyncSource;
 };

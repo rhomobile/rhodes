@@ -3,9 +3,9 @@
 %{
 /* Put header files here or function declarations like below */
 	#define dosync rho_sync_doSyncAllSources
-	extern VALUE rho_sync_doSyncAllSources(int show_status_popup);
+	extern VALUE rho_sync_doSyncAllSources(int show_status_popup, const char * query_params);
 	#define dosync_source rho_sync_doSyncSource
-	extern VALUE rho_sync_doSyncSource(VALUE source_id,int show_status_popup);
+	extern VALUE rho_sync_doSyncSource(VALUE source_id,int show_status_popup, const char * query_params);
 	#define dosearch rho_sync_doSearch
 	extern VALUE rho_sync_doSearch(VALUE ar_sources, const char *from, const char *params, int sync_changes, int nProgressStep, const char* callback, const char* callback_params);
 	extern VALUE rho_sync_login(const char *login, const char *password, const char* callback);
@@ -83,8 +83,13 @@
 %typemap(default) bool show_status_popup {
  $1 = 1;
 }
-extern VALUE dosync(bool show_status_popup);
-extern VALUE dosync_source(VALUE source_id, bool show_status_popup);
+
+%typemap(default) const char * query_params {
+ $1 = 0;
+}
+
+extern VALUE dosync(bool show_status_popup, const char * query_params);
+extern VALUE dosync_source(VALUE source_id, bool show_status_popup, const char * query_params);
 extern VALUE dosearch(VALUE ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, const char* callback, const char* callback_params);
 extern VALUE login(const char *login, const char *password, const char* callback);
 extern int logged_in();

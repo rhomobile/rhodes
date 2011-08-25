@@ -501,6 +501,9 @@ void CSyncSource::syncServerChanges()
         if ( !m_bTokenFromDB && getToken() > 1 )
             strQuery += "&token=" + convertToStringA(getToken());
 
+        if ( m_strQueryParams.length() > 0 )
+            strQuery += "&" + m_strQueryParams; 
+
 		LOG(INFO) + "Pull changes from server. Url: " + (strUrl+strQuery);
         PROF_START("Net");	    
         NetResponse resp = getNet().pullData(strUrl+strQuery, &getSync());
