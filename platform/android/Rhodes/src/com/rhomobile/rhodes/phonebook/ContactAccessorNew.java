@@ -213,20 +213,21 @@ public class ContactAccessorNew implements ContactAccessor {
 	public Map<String, Contact> getContacts(int offset, int max_results) throws Exception {
 		Map<String, Contact> contacts = new HashMap<String, Contact>();
 		
+		StringBuilder sortMode = new StringBuilder();
+		sortMode.append(RawContacts.SORT_KEY_PRIMARY).append(" ASC");
+		if (max_results > 0)
+			sortMode.append(" LIMIT ").append(max_results);
+		if (offset > 0)
+			sortMode.append(" OFFSET ").append(offset);
+		
 		Cursor cursor = cr.query(RawContacts.CONTENT_URI,
 				new String[] {RawContacts._ID},
-				RawContacts.DELETED + "=0", null, null);
+				RawContacts.DELETED + "=0", null, sortMode.toString());
 		try {
-			if (!cursor.moveToPosition(offset))
+			if (!cursor.moveToFirst())
 				return contacts;
-			if (max_results == -1) {
-				max_results = cursor.getCount() - offset;
-			}
 			
 			do {
-				if(contacts.size() >= max_results) {
-					break;
-				}
 				Contact contact = new Contact();
 				contact.setAccessor(this);
 				
