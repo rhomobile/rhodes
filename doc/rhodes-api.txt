@@ -1,0 +1,150 @@
+# Rhodes API Reference
+
+This API reference contains links to all the Rhodes classes. It first lists them by function, and then alphabetically.
+
+## Application Classes
+
+The [Model Controller Class](/rhodes/application#modelviewcontroller)  contains several generated methods that perform basic CRUD on the Application Model object. The generated code is in the modelname_controller.rb file.
+
+The [AppApplication Class](/rhodes/application#appapplication-class) contains methods that coordinate the startup of a Rhodes application. You place these methods in the application.rb file.
+
+The [Application Helpers](/rhodes/application#application-helpers) are helper methods for the model view (.erb) files.
+
+The [RhoSupport Class](/rhodes/application#rhosupport-class) has methods to encode and decode URLs. 
+
+## User Interface Classes
+
+The [WebView Class](/rhodes/ui#control-webview-from-controller-actions) lets you call on the WebView directly from your model controller files.
+
+The [Application Menu methods](/rhodes/ui#application-menu) lets you change the native application menu items. You can write these methods in the application.rb file.
+
+The [user defined menu-toolbar-tabbar actions](/rhodes/ui#user-defined-menutoolbartabbar-actions) lets you perform such actions as back, forward, home, and close with user define menus, toolbars, and tabbars.
+
+The [NativeToolbar Class](/rhodes/ui#native-toolbar-control) let you create and remove toolbars at runtime.
+
+The [Navigation bar for the iPhone](/rhodes/ui#navigation-bar) supports a title, a back button, and a right button.
+
+The [DateTimePicker Class](/rhodes/ui#datetime-picker) allow the user to choose date or time.
+
+## Rhodes Configuration Properties Class
+
+The [RhoConfig Class](/rhodes/configuration#run-time-configuration) allow access to the configuration properties in rhoconfig.txt.
+
+## Device Capabilities Classes
+
+The [System Class](/rhodes/device-caps#system-class) provides access to system information.
+
+The [GeoLocation Class](/rhodes/device-caps#geolocation) allows you to access geological information using Ruby calls in your controller.
+
+The [RhoContact Class](/rhodes/device-caps#pim-contacts) provides access to a device's phone book and contacts.
+
+The [RhoEvent Class](/rhodes/device-caps#pim-calendarevents) provides access to a device's calendar and events.
+
+The [Camera Class](/rhodes/device-caps#camera) lets you take a picture and choose a picture from an album.
+
+The [Barcode Class](/rhodes/device-caps#barcode) allows the device to recognize a barcode.
+
+The [SignatureTool Class](/rhodes/device-caps#signature-capture) allows the device to take a signature and save it as an image with the method take_signature.
+
+The [BluetoothManager Class](/rhodes/device-caps#bluetooth) makes a connection between your Bluetooth-equipped device and another Bluetooth-equipped device.
+
+The [BluetoothSession Class](/rhodes/device-caps#bluetooth) controls the session between your Bluetooth-equipped device and another Bluetooth-equipped device.
+
+The [NFC Classes](/rhodes/nfc) provide access to Near Field Communication functionality, which is currently only supported on Android.
+
+ZZZ Filled in
+The [RingtoneManager Class](/rhodes/ringtonemanager-api) allows you to view and play a device's ringtones.
+
+ZZZZ Filled in
+The [Alert Class](/rhodes/alert-api) lets you call system alert methods for popup, vibrate, or playing audio files.
+
+ZZZZ Filled in
+The [Timer Class](/rhodes/timer-api) lets the device use a timer.
+
+The [MapView Class](/rhodes/device-caps#mapview) provides an embeddable map interface with the create method and various settings and annotations depending on the map provider (such as Google).
+
+The [File Class](/rhodes/device-caps#file-system-access) allows access to the Rhodes file structure.
+
+## Rhom and Database Classes
+
+The [Rhom Class](/rhodes/rhom#rhom-api) allows access to the Rhodes mini database object mapper, performing database operation on Rho model objects.
+
+The [RhomSource Class](/rhodes/rhom#accessing-sync-info-with-rhomsource) exposes sync information, which you can use for alerts, status pages, and so on.
+
+The [Rhom database functions](/rhodes/rhom#resetting-the-database) allow you to reset the Rhom database.
+
+## SyncEngine Class - Sync the Rhodes Model with the RhoSync Server
+
+The [SyncEngine Class](/rhodes/synchronization#syncengine-api) allows you to synchronize data for the Rhodes model and handle updates between the Rhodes application and the RhoSync server.
+
+## Logging, Testing, Error Classes
+
+The logging Ruby class, RhoLog, has the methods info and error which take 2 strings and writes them to the rholog.txt file. The first string is the category, the second string is the message.
+
+The [RhoError Class](/rhodes/test-log-debug#logging) accesses error messages.
+
+## Alphabetical List Of Classes and Function Types
+
+The [Alert Class](/rhodes/device-caps#alerts) lets you call system alert methods for popup, vibrate, or playing audio files.
+
+The [AppApplication Class](/rhodes/application#appapplication-class) contains methods that coordinate the startup of a Rhodes application. You place these methods in the application.rb file.
+
+The [Application Helpers](/rhodes/application#application-helpers) are helper methods for the model view (.erb) files.
+
+The [Barcode Class](/rhodes/device-caps#barcode) allows the device to recognize a barcode.
+
+The [BluetoothManager Class](/rhodes/device-caps#bluetooth) makes a connection between your Bluetooth-equipped device and another Bluetooth-equipped device.
+
+The [BluetoothSession Class](/rhodes/device-caps#bluetooth) controls the session between your Bluetooth-equipped device and another Bluetooth-equipped device.
+
+The [Camera Class](/rhodes/device-caps#camera) lets you take a picture and choose a picture from an album.
+
+The [DateTimePicker Class](/rhodes/ui#datetime-picker) allow the user to choose date or time.
+
+The [File Class](/rhodes/device-caps#file-system-access) allows access to the Rhodes file structure.
+
+The [GeoLocation Class](/rhodes/device-caps#geolocation) allows you to access geological information using Ruby calls in your controller.
+
+The [MapView Class](/rhodes/device-caps#mapview) provides an embeddable map interface with the create method and various settings and annotations depending on the map provider (such as Google).
+
+The [Model Controller Class](/rhodes/application#modelviewcontroller)  contains several generated methods that perform basic CRUD on the Application Model object. The generated code is in the modelname_controller.rb file.
+
+The [Menu methods for Applications](/rhodes/ui#application-menu) lets you change the native application menu items. You can write these methods in the application.rb file.
+
+The [menu-toolbar-tabbar user defined actions](/rhodes/ui#user-defined-menutoolbartabbar-actions) lets you perform such actions as back, forward, home, and close with user define menus, toolbars, and tabbars.
+
+The [NativeToolbar Class](/rhodes/ui#native-toolbar-control) let you create and remove toolbars at runtime.
+
+The [NFC Classes](/rhodes/nfc) provide access to Near Field Communication functionality, which is currently only supported on Android.
+
+The [Navigation bar for the iPhone](/rhodes/ui#navigation-bar) supports a title, a back button, and a right button.
+
+The [RhoConfig Class](/rhodes/configuration#run-time-configuration) allow access to the configuration properties in rhoconfig.txt.
+
+The [RhoContact Class](/rhodes/device-caps#pim-contacts) provides access to a device's phone book and contacts.
+
+The [RhoError Class](/rhodes/test-log-debug#logging) accesses error messages.
+
+The [RhoEvent Class](/rhodes/device-caps#pim-calendarevents) provides access to a device's calendar and events.
+
+The logging Ruby class, RhoLog, has the methods info and error which take 2 strings and writes them to the rholog.txt file. The first string is the category, the second string is the message.
+
+The [Rhom Class](/rhodes/rhom#rhom-api) allows access to the Rhodes mini database object mapper, performing database operation on Rho model objects.
+
+The [Rhom database functions](/rhodes/rhom#resetting-the-database) allow you to reset the Rhom database.
+
+The [RhomSource Class](/rhodes/rhom#accessing-sync-info-with-rhomsource) exposes sync information, which you can use for alerts, status pages, and so on.
+
+The [RhoSupport Class](/rhodes/application#rhosupport-class) has methods to encode and decode URLs. 
+
+The [RingtoneManager Class](/rhodes/device-caps#ringtone-manager) allows you to view and play a device's ringtones.
+
+The [SignatureTool Class](/rhodes/device-caps#signature-capture) allows the device to take a signature and save it as an image with the method take_signature.
+
+The [SyncEngine Class](/rhodes/synchronization#syncengine-api) allows you to synchronize data for the Rhodes model and handle updates between the Rhodes application and the RhoSync server.
+
+The [System Class](/rhodes/device-caps#system-class) provides access to system information.
+
+The [Timer Class](/rhodes/device-caps#timer) lets the device use a timer.
+
+The [WebView Class](/rhodes/ui#control-webview-from-controller-actions) lets you call on the WebView directly from your model controller files.
