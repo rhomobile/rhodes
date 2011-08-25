@@ -1041,7 +1041,10 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    	getNotify().callLoginCallback(oNotify, RhoAppAdapter.ERR_NONE, "" );
 		    
 	    	if ( ClientRegister.getInstance() != null )
-	    		ClientRegister.getInstance().startUp();	    	
+	    	{
+	    		getUserDB().executeSQL("UPDATE client_info SET token_sent=?", 0 );
+	    		ClientRegister.getInstance().startUp();
+	    	}
 	    	
 		}catch(Exception exc)
 		{
