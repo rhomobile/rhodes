@@ -1239,8 +1239,8 @@ end
 
   it "should include only selected column without order" do
     @accts = getAccount.find(:all, :select => ['name'] )
-    
-    @accts[0].name.should == "Aeroprise"
+
+    @accts[0].name.should_not be_nil
     @accts[0].industry.should be_nil
     @accts[0].vars.length.should == 3
   end
