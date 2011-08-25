@@ -138,7 +138,7 @@ int CSyncThread::getLastPollInterval()
 void CSyncThread::onTimeout()//throws Exception
 {
     if ( isNoCommands() && getPollInterval()>0 )
-        addQueueCommandInt(new CSyncCommand(scSyncAll,false));
+        addQueueCommandInt(new CSyncCommand(scSyncAll,false,""));
 }
 
 void CSyncThread::checkShowStatus(CSyncCommand& oSyncCmd)
@@ -157,12 +157,12 @@ void CSyncThread::processCommand(IQueueCommand* pCmd)
     {
     case scSyncAll:
         checkShowStatus(oSyncCmd);
-        m_oSyncEngine.doSyncAllSources();
+        m_oSyncEngine.doSyncAllSources(oSyncCmd.m_strQueryParams);
         break;
     case scSyncOne:
         {
 			checkShowStatus(oSyncCmd);
-            m_oSyncEngine.doSyncSource(CSyncEngine::CSourceID(oSyncCmd.m_nCmdParam,oSyncCmd.m_strCmdParam));
+            m_oSyncEngine.doSyncSource(CSyncEngine::CSourceID(oSyncCmd.m_nCmdParam,oSyncCmd.m_strCmdParam), oSyncCmd.m_strQueryParams );
         }
         break;
     case scSearchOne:
@@ -220,30 +220,30 @@ extern "C" {
 using namespace rho::sync;
 using namespace rho::db;
 	
-unsigned long rho_sync_doSyncAllSources(int show_status_popup)
+unsigned long rho_sync_doSyncAllSources(int show_status_popup, const char * query_params/* = 0*/)
 {
-    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncAll,show_status_popup!=0));
+    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncAll,show_status_popup!=0,query_params));
 
     return CSyncThread::getInstance()->getRetValue();
 }
 
-unsigned long rho_sync_doSyncSourceByID(int nSrcID)
+unsigned long rho_sync_doSyncSourceByID(int nSrcID, const char * query_params/* = 0*/)
 {
-    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, "", nSrcID, false ) );
+    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, "", nSrcID, false, query_params ) );
     return CSyncThread::getInstance()->getRetValue();
 }
 
-unsigned long rho_sync_doSyncSourceByName(const char* szSrcName)
+unsigned long rho_sync_doSyncSourceByName(const char* szSrcName, const char * query_params/* = 0*/)
 {
-    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, szSrcName, 0, false ) );
+    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, szSrcName, 0, false, query_params ) );
     return CSyncThread::getInstance()->getRetValue();
 }
 
 #ifndef RHO_NO_RUBY
-unsigned long rho_sync_doSyncSource(unsigned long nSrcID,int show_status_popup)
+unsigned long rho_sync_doSyncSource(unsigned long nSrcID,int show_status_popup, const char * query_params/* = 0*/)
 {
     CRhoRubyStringOrInt oSrcID = rho_ruby_getstringorint(nSrcID);
-    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, oSrcID.m_szStr, (int)oSrcID.m_nInt, show_status_popup!=0 ) );
+    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, oSrcID.m_szStr, (int)oSrcID.m_nInt, show_status_popup!=0, query_params ) );
 
     return CSyncThread::getInstance()->getRetValue();
 }	
