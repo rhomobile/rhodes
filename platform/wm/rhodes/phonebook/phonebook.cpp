@@ -95,6 +95,15 @@ VALUE getallPhonebookRecords(void* pb) {
 	return rho_ruby_get_NIL();	
 }
 
+int getPhonebookRecordCount(void* pb) {
+    return 0;
+}
+
+VALUE getPhonebookRecords(void* pb, int offset, int max_results) {
+	return rho_ruby_get_NIL();	
+}
+
+
 VALUE getPhonebookRecord(void* pb, char* id) {
 #if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 	if (pb && id) {
