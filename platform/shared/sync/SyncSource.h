@@ -94,6 +94,7 @@ private:
 public:
     int m_nErrCode;
     String m_strError, m_strServerError;
+    String m_strQueryParams;
 
 public:
     CSyncSource(int id, const String& strName, const String& strSyncType, db::CDBAdapter& db, CSyncEngine& syncEngine );
