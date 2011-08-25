@@ -67,7 +67,7 @@ public class Phonebook {
 	private Map<String, Contact> contactList;
 	private ContactAccessor accessor;
 	private Iterator<Contact> iter = null;
-	private boolean mIsFullListReceived = false;
+	private boolean mIsContactsFilled = false;
 
 	private boolean checkState() {
 		if (!Capabilities.PIM_ENABLED)
@@ -108,14 +108,28 @@ public class Phonebook {
 		}
 	}
 	
-	public void prepareFullList() {
+	public int queryContactCount() {
+		int res = 0;
+		if (checkState()) {
+			try {
+				res = accessor.getCount();
+			} catch (Exception e) {
+				Logger.E(TAG, e);
+			}
+		}
+		return res;
+	}
+	
+	public void queryAllContacts() { queryContacts(0, -1); }
+
+	public void queryContacts(int offset, int max_results) {
 		if (!checkState())
 			return;
 		try {
-			if (!mIsFullListReceived) {
+			if (!mIsContactsFilled) {
 				Logger.I(TAG, "Phonebook.prepareFullList()");
-				contactList = accessor.getAll();
-				mIsFullListReceived = true;
+				contactList = accessor.getContacts(offset, max_results);
+				mIsContactsFilled = true;
 			}
 			//moveToBegin();
 		}
@@ -140,9 +154,9 @@ public class Phonebook {
 		try {
 			if (!checkState())
 				return;
-			if (!mIsFullListReceived) {
-				prepareFullList();
-			}	
+//			if (!mIsContactsFilled) {
+//				prepareFullList();
+//			}	
 			iter = contactList.values().iterator();
 		}
 		catch (Exception e) {
@@ -154,7 +168,7 @@ public class Phonebook {
 		try {
 			if (!checkState())
 				return false;
-			//if (!mIsFullListReceived) {
+			//if (!mIsContactsFilled) {
 			//	prepareFullList();
 			//}	
 			
@@ -170,7 +184,7 @@ public class Phonebook {
 		try {
 			if (!checkState())
 				return null;
-			//if (!mIsFullListReceived) {
+			//if (!mIsContactsFilled) {
 			//	prepareFullList();
 			//}	
 			
@@ -186,7 +200,7 @@ public class Phonebook {
 		try {
 			if (!checkState())
 				return null;
-			//if (!mIsFullListReceived) {
+			//if (!mIsContactsFilled) {
 			//	prepareFullList();
 			//}	
 			
@@ -205,7 +219,7 @@ public class Phonebook {
 		try {
 			if (!checkState())
 				return null;
-			//if (!mIsFullListReceived) {
+			//if (!mIsContactsFilled) {
 			//	prepareFullList();
 			//}	
 			
@@ -245,8 +259,8 @@ public class Phonebook {
 			}
 			else {
 				if (logging_enable) Logger.I(TAG, "Phonebook.getRecord() old accessor class");
-				if (!mIsFullListReceived) {
-					prepareFullList();
+				if (!mIsContactsFilled) {
+					queryAllContacts();
 				}	
 			}
 			Contact cc = contactList.get(idd);

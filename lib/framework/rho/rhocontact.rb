@@ -36,26 +36,34 @@ module Rho
                         	Phonebook::closePhonebook(phonebook)
                         end  
 			def find(param, properties_list = nil, phonebook = nil)
-                                pb = phonebook
-                                if phonebook == nil
-					pb = Phonebook::openPhonebook
-                                end 
-				if pb.nil?
-					puts "Can't open phonebook"
-					return nil
-				elsif param == :all or param == 'all'
-					records = Phonebook::getallPhonebookRecords(pb)
-					if phonebook == nil
-						Phonebook::closePhonebook(pb)
-					end
-					return records
-				else
-					record = Phonebook::getPhonebookRecord(pb,param)
-					if phonebook == nil
-						Phonebook::closePhonebook(pb)
-					end
-					return record
-				end
+                result = nil
+                pb = phonebook
+                pb = Phonebook::openPhonebook if phonebook.nil?
+
+                if pb.nil?
+                    puts "Can't open phonebook"
+                elsif param.is_a?(Hash)
+                    if param[:max_results].nil?
+                        max_results = -1
+                    else
+                        max_results = param[:max_results]
+                    end
+                    if param[:offset].nil?
+                        offset = 0
+                    else
+                        offset = param[:offset]
+                    end
+                    result = Phonebook::getPhonebookRecords(pb, offset, max_results)
+                elsif param == :all or param == 'all'
+                    result = Phonebook::getallPhonebookRecords(pb)
+				elsif param == :count or param == 'count'
+                    result = Phonebook::getPhonebookRecordCount(pb)
+                else
+                    result = Phonebook::getPhonebookRecord(pb,param)
+                end
+
+                Phonebook::closePhonebook(pb) if phonebook.nil?
+                result
 			end
 
 			def create!(properties, phonebook = nil)

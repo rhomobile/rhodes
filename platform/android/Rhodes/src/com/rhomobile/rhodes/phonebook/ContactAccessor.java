@@ -30,6 +30,8 @@ import java.util.Map;
 
 public interface ContactAccessor {
 	
+	public int getCount();
+	public Map<String, Contact> getContacts(int offset, int max_results) throws Exception;
 	public Map<String, Contact> getAll() throws Exception;
 	public void save(Contact contact) throws Exception;
 	public void remove(Contact contact);

@@ -97,6 +97,10 @@ rhoconnect-client/Samples/ObjectiveC/store/build/*
 rhoconnect-client/C++/Tests/Win32/bin/*
 rhoconnect-client/Java/Android/.metadata/*
 rhoconnect-client/Java/Android/test/bin
+rhoconnect-client/Java/Android/test/gen
+rhoconnect-client/Java/RhoConnect/bin
+rhoconnect-client/Samples/Java/android_store/bin
+rhoconnect-client/Samples/Java/android_store/gen
 
 spec/bin/*
 spec/**/bin/*
@@ -148,6 +152,7 @@ platform/android/.metadata/*
 platform/android/Rhodes/assets
 platform/android/Rhodes/bin
 platform/android/Rhodes/libs
+platform/android/Rhodes/obj
 platform/android/**/bin
 platform/android/bin
 platform/android/target

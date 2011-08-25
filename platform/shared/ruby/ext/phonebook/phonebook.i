@@ -4,6 +4,8 @@
 extern void* openPhonebook();
 extern void  closePhonebook(void* pb);
 extern VALUE getallPhonebookRecords(void* pb);
+extern int getPhonebookRecordCount(void* pb);
+extern VALUE getPhonebookRecords(void* pb, int offset, int max_results);
 extern void* openPhonebookRecord(void* pb, char* id);
 extern VALUE getPhonebookRecord(void* pb, char* id);
 extern VALUE getfirstPhonebookRecord(void* pb);
@@ -18,6 +20,8 @@ extern int deleteRecord(void* pb, void* record);
 extern void* openPhonebook();
 extern void  closePhonebook(void* pb);
 extern VALUE getallPhonebookRecords(void* pb);
+extern int getPhonebookRecordCount(void* pb);
+extern VALUE getPhonebookRecords(void* pb, int offset, int max_results);
 extern void* openPhonebookRecord(void* pb, char* id);
 extern VALUE getPhonebookRecord(void* pb, char* id);
 extern VALUE getfirstPhonebookRecord(void* pb);
