@@ -190,7 +190,7 @@ int _ExecuteApp(HttpContextRef context, RouteRef route) {
 			if (route->_model && !strcmp(route->_model,"geolocation")) {
 				return HTTPSendReply(context,GeoGetLocation()); 	
 			} else if (route->_model && !strcmp(route->_model,"syncdb")) {
-				rho_sync_doSyncAllSources(TRUE);
+				rho_sync_doSyncAllSources(TRUE, "");
 				return HTTPSendReply(context,"OK"); 	
 			} else if (route->_model && !strcmp(route->_model,"redirect_to")) {
 				if (context->_request->_query && !strncmp("url=",context->_request->_query,4)) {

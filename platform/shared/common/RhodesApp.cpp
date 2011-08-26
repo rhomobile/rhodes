@@ -598,7 +598,7 @@ void CRhodesApp::callPopupCallback(String strCallbackUrl, const String &id, cons
 
 static void callback_syncdb(void *arg, String const &/*query*/ )
 {
-    rho_sync_doSyncAllSources(1);
+    rho_sync_doSyncAllSources(1,"");
     rho_http_sendresponse(arg, "");
 }
 
@@ -1160,7 +1160,7 @@ void CRhodesApp::loadUrl(String url)
         return;
     }else if ( strcasecmp(url.c_str(), "sync")==0 )
     {
-        rho_sync_doSyncAllSources(1);
+        rho_sync_doSyncAllSources(1,"");
         return;
     }
 

@@ -553,7 +553,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesApplication_stopRhodesAp
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doSyncAllSources
   (JNIEnv *, jobject, jboolean show_status_popup)
 {
-    rho_sync_doSyncAllSources(show_status_popup);
+    rho_sync_doSyncAllSources(show_status_popup,"");
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doSyncSource

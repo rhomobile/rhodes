@@ -3,7 +3,7 @@
 #include "ruby/ext/rho/rhoruby.h"
 #include "rubyext/WebView.h"
 
-extern "C" void rho_sync_doSyncAllSources(int show_status_popup);
+extern "C" void rho_sync_doSyncAllSources(int show_status_popup, const char* query_params);
 extern "C" void rho_conf_show_log();
 extern "C" void rho_sys_app_exit();
 
@@ -87,7 +87,7 @@ boolean CAppMenuItem::processCommand()
         rho_webview_refresh(0);
         break;
     case CAppMenuItem::emtSync:
-        rho_sync_doSyncAllSources(1);
+        rho_sync_doSyncAllSources(1, "");
         break;
     case CAppMenuItem::emtLog:
         rho_conf_show_log();

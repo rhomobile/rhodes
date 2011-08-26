@@ -198,15 +198,15 @@ unsigned long rho_sync_doSyncAllSources(int show_status_popup, const char * quer
     return CSyncThread::getInstance()->getRetValue();
 }
 
-unsigned long rho_sync_doSyncSourceByID(int nSrcID, const char * query_params/* = 0*/)
+unsigned long rho_sync_doSyncSourceByID(int nSrcID)
 {
-    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, "", nSrcID, false, query_params ) );
+    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, "", nSrcID, false, "" ) );
     return CSyncThread::getInstance()->getRetValue();
 }
 
-unsigned long rho_sync_doSyncSourceByName(const char* szSrcName, const char * query_params/* = 0*/)
+unsigned long rho_sync_doSyncSourceByName(const char* szSrcName)
 {
-    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, szSrcName, 0, false, query_params ) );
+    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, szSrcName, 0, false, "" ) );
     return CSyncThread::getInstance()->getRetValue();
 }
 
