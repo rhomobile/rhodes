@@ -163,10 +163,10 @@ private:
 extern "C" {
 #endif //__cplusplus
 	
-unsigned long rho_sync_doSyncAllSources(int show_status_popup, const char * query_params = 0);
-unsigned long rho_sync_doSyncSource(unsigned long nSrcID,int show_status_popup, const char * query_params = 0);
-unsigned long rho_sync_doSyncSourceByID(int nSrcID, const char * query_params = 0);
-unsigned long rho_sync_doSyncSourceByName(const char* szSrcName, const char * query_params = 0);
+unsigned long rho_sync_doSyncAllSources(int show_status_popup, const char * query_params);
+unsigned long rho_sync_doSyncSource(unsigned long nSrcID,int show_status_popup, const char * query_params);
+unsigned long rho_sync_doSyncSourceByID(int nSrcID);
+unsigned long rho_sync_doSyncSourceByName(const char* szSrcName);
 
 unsigned long rho_sync_doSearch(unsigned long ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, const char* callback, const char* callback_params);
 
