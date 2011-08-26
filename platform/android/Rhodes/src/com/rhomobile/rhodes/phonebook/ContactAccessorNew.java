@@ -61,8 +61,8 @@ public class ContactAccessorNew implements ContactAccessor {
 		
 		Account[] accounts = AccountManager.get(ctx).getAccounts();
 		if (accounts.length == 0) {
-			accName = "rhodes@rhomobile.com";
-			accType = "com.rhomobile";
+			//accName = "rhodes@rhomobile.com";
+			//accType = "com.rhomobile";
 		}
 		else {
 			Account acnt = accounts[0];
@@ -214,7 +214,7 @@ public class ContactAccessorNew implements ContactAccessor {
 		Map<String, Contact> contacts = new HashMap<String, Contact>();
 		
 		StringBuilder sortMode = new StringBuilder();
-		sortMode.append(RawContacts.SORT_KEY_PRIMARY).append(" ASC");
+		sortMode.append(RawContacts._ID).append(" ASC");
 		if (max_results > 0)
 			sortMode.append(" LIMIT ").append(max_results);
 		if (offset > 0)
@@ -293,8 +293,10 @@ public class ContactAccessorNew implements ContactAccessor {
 		
 		if (id == null || id.length() == 0) {
 			ContentValues values = new ContentValues();
-			values.put(RawContacts.ACCOUNT_NAME, accName);
-			values.put(RawContacts.ACCOUNT_TYPE, accType);
+			if (accName != null && accName.length() > 0) {
+				values.put(RawContacts.ACCOUNT_NAME, accName);
+				values.put(RawContacts.ACCOUNT_TYPE, accType);
+			}
 			values.put(RawContacts.AGGREGATION_MODE, RawContacts.AGGREGATION_MODE_DISABLED);
 			Uri uri = cr.insert(RawContacts.CONTENT_URI, values);
 			id = String.valueOf(ContentUris.parseId(uri));
