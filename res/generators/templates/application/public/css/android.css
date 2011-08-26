@@ -464,7 +464,8 @@ li.ui-btn-up-c {
     background: 			#f73923;
     font-weight: bold;
     color: 					#000;
-    text-shadow: 0 -1px 1px #fff;
+    text-shadow: none;
+    /*text-shadow: 0 -1px 1px #fff;*/
 /*
     background: 			#F76922;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#F76922), to(#F73932));
@@ -479,14 +480,15 @@ li.ui-btn-up-c {
 */
 }
 .ui-btn-hover-c a.ui-link-inherit {
-	color: 					#fff;
+	color: 					#000;
 }
 .ui-btn-down-c {
     border: 1px solid 		#000;
     background: 			#f76933;
     font-weight: bold;
     color: 					#000;
-    text-shadow: 0 -1px 1px #fff;
+    text-shadow: none;
+    /*text-shadow: 0 -1px 1px #fff;*/
 /*
     background-image: -webkit-gradient(linear, left top, left bottom, from(#F76922), to(#fadb4e));
 */
@@ -508,7 +510,7 @@ li.ui-btn-up-c {
 	background-image: -webkit-gradient(linear, left top, left bottom, from(#333), to(#5a5a5a));
 }
 .ui-btn-down-c a.ui-link-inherit {
-	color: 					#fff;
+	color: 					#000;
 }
 .ui-btn-up-c,
 .ui-btn-hover-c,
