@@ -243,7 +243,7 @@ void rho_free_callbackdata(void* pData)
 
 - (RhoConnectNotify*) syncAll
 {
-    char* res = (char*)rho_sync_doSyncAllSources(0);
+    char* res = (char*)rho_sync_doSyncAllSources(0, "");
 	
     RHO_CONNECT_NOTIFY oNotify = {0};
     rho_connectclient_parsenotify(res, &oNotify);
