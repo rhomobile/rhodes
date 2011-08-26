@@ -44,6 +44,7 @@ public class SyncNotify {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("Sync");
 
+	final int MAX_SERVER_ERROR_LEN = 1000;
     public static class SyncNotification
     {
         String m_strUrl ="", m_strParams="";
@@ -537,14 +538,34 @@ public class SyncNotify {
 						    strBody += "&error_code=" + nErrCode;
 						    
 						    if ( strError != null && strError.length() > 0 )
+						    {
+							    if ( strError.length() > MAX_SERVER_ERROR_LEN )
+							    	strError = strError.substring(0, MAX_SERVER_ERROR_LEN);
+						    	
 						    	strBody += "&error_message=" + URI.urlEncode(strError);
-						    else  if ( src != null )
+						    }
+						    else  if ( src != null && src.m_strError != null)
+						    {
+							    if ( src.m_strError.length() > MAX_SERVER_ERROR_LEN )
+							    	src.m_strError = src.m_strError.substring(0, MAX_SERVER_ERROR_LEN);
+						    	
 						    	strBody += "&error_message=" + URI.urlEncode(src.m_strError);
+						    }
 						    
 						    if ( strServerError != null && strServerError.length() > 0 )
+						    {
+							    if ( strServerError.length() > MAX_SERVER_ERROR_LEN )
+							    	strServerError = strServerError.substring(0, MAX_SERVER_ERROR_LEN);
+						    	
 						    	strBody += "&" + strServerError;
+						    }
 						    else if ( src != null && src.m_strServerError != null && src.m_strServerError.length() > 0  )
-						    	strBody += "&" + src.m_strServerError;						    
+						    {
+							    if ( src.m_strServerError.length() > MAX_SERVER_ERROR_LEN )
+							    	src.m_strServerError = src.m_strServerError.substring(0, MAX_SERVER_ERROR_LEN);
+						    	
+						    	strBody += "&" + src.m_strServerError;
+						    }
 				        }
 				        
 		                if ( src != null )
@@ -671,6 +692,9 @@ public class SyncNotify {
 				return;
 			
 		    String strBody = "error_code=" + nErrCode;
+		    if ( strMessage != null&& strMessage.length() > MAX_SERVER_ERROR_LEN )
+		    	strMessage = strMessage.substring(0, MAX_SERVER_ERROR_LEN);
+		    	
 	        strBody += "&error_message=" + URI.urlEncode(strMessage != null? strMessage : "");
 	        strBody += "&rho_callback=1";
 	        
