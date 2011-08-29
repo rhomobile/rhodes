@@ -330,41 +330,7 @@ h1 {
     color: red;
 }
 
-div.itemLabel {
-    font-weight: bold;
-}
-div.itemValue {
-    font-weight: normal;
-}
-
-/*
-.ui-page,
-.ui-content,
-.ui-content ul li,
-.ui-content form,
-.ui-btn a.ui-link-inherit {
-    font-family: "Droid", sans-serif;
-    background: black;
-    color: white;
-}
-
-.ui-header h1 {
-    font-size: 2em;
-
-}
-
-.ui-header {
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #2B2B2B), color-stop(0.2, #585858), color-stop(1.0, #2B2B2B));
-}
-
-.ui-header h1 {
-    color: white;
-    line-height: 25px;
-    text-shadow: 1px 1px 1px #000;
-}
-
-*/
-
+/* ---------- JQM theme customization ------------- */
 
 .ui-bar-a {
 	border: 1px solid 		#2A2A2A;
@@ -712,6 +678,14 @@ li.ui-btn-up-c {
 	border-radius: 						5px;
 }
 
+/* ---------- Custom fixes ------------- */
+
+div.itemLabel {
+    font-weight: bold;
+}
+div.itemValue {
+    font-weight: normal;
+}
 
 @media all and (min-width: 320px){
     .ui-content ul li div.itemLabel {
