@@ -841,7 +841,7 @@ RHO_GLOBAL void mapview_create(rho_param *p)
 	}
     }
     if (strcasecmp(engine, "Google") == 0) {
-        //ourIsOldGoogleEngineUsed = true;
+        ourIsOldGoogleEngineUsed = true;
     }
 
     if (ourIsOldGoogleEngineUsed) {

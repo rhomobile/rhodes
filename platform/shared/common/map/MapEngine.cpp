@@ -51,7 +51,7 @@ MapProvider::MapProvider()
     // Initialize predefined engines
     //registerMapEngine("google", new GoogleMapEngine());
     registerMapEngine("esri", new ESRIMapEngine());
-    registerMapEngine("google", new GoogleMapEngine());
+    registerMapEngine("rhogoogle", new GoogleMapEngine());
 }
 
 void MapProvider::registerMapEngine(String const &id, IMapEngine *engine)
