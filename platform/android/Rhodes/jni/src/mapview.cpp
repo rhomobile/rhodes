@@ -36,7 +36,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "AndroidMapEngine"
 
-#define RHO_MAP_DISABLE_TRACE
+//#define RHO_MAP_DISABLE_TRACE
 #ifdef RHO_MAP_DISABLE_TRACE
 
 #   ifdef RHO_MAP_TRACE
@@ -65,6 +65,8 @@
 #   define RHO_MAP_TRACE4(...)
 
 #endif /* #ifdef RHO_MAP_DISABLE_TRACE */
+
+static bool ourIsCachingEnabled = false;
 
 namespace rho
 {
@@ -131,6 +133,7 @@ public:
     void setPinCalloutImage(JNIEnv *env, jobject bitmap);
     void setPinCalloutLinkImage(JNIEnv *env, jobject bitmap);
     void setESRILogoImage(JNIEnv *env, jobject bitmap);
+    void setGoogleLogoImage(JNIEnv *env, jobject bitmap);
  
 	rho_param *params() const {return m_params;}
 
@@ -139,6 +142,8 @@ public:
 
     IDrawingImage* createImage(String const &path, bool useAlpha);
     IDrawingImage* createImage(void const *p, size_t s, bool useAlpha);
+    IDrawingImage* createImageEx(void const *p, size_t s, int x, int y, int w, int h, bool useAlpha);
+
     IDrawingImage* cloneImage(IDrawingImage *image);
     void destroyImage(IDrawingImage* image);
 
@@ -154,6 +159,7 @@ private:
     std::auto_ptr<IDrawingImage> m_pin_calloutimage;
     std::auto_ptr<IDrawingImage> m_pin_calloutlinkimage;
     std::auto_ptr<IDrawingImage> m_esriLogo_image;
+    std::auto_ptr<IDrawingImage> m_googleLogo_image;
 };
 
 AndroidImage::AndroidImage(jobject bitmap)
@@ -319,6 +325,9 @@ void AndroidMapDevice::setMapView(IMapView *mv)
         mv->setPinCalloutImage(m_pin_calloutimage.get(), pin_info1);
         mv->setPinCalloutLinkImage(m_pin_calloutlinkimage.get(), pin_info1);
 		mv->setESRILogoImage(m_esriLogo_image.get());
+		mv->setGoogleLogoImage(m_googleLogo_image.get());
+        
+        mv->set_file_caching_enable((int)ourIsCachingEnabled);
 
     }
     RHO_MAP_TRACE("AndroidMapDevice: setMapView: finish");
@@ -382,6 +391,15 @@ void AndroidMapDevice::setESRILogoImage(JNIEnv *env, jobject bitmap) {
     RHO_MAP_TRACE("AndroidMapDevice: setESRILogoImage: finish");
 }
 
+void AndroidMapDevice::setGoogleLogoImage(JNIEnv *env, jobject bitmap) {
+        RHO_MAP_TRACE("AndroidMapDevice: setGoogleLogoImage: start");
+        m_googleLogo_image.reset(new AndroidImage(bitmap));
+        IMapView *mv = mapView();
+        if (mv) {
+            mv->setGoogleLogoImage(m_googleLogo_image.get());
+        }
+        RHO_MAP_TRACE("AndroidMapDevice: setGoogleLogoImage: finish");
+}
 
 
 IDrawingImage *AndroidMapDevice::createImage(String const &path, bool useAlpha)
@@ -422,6 +440,26 @@ IDrawingImage *AndroidMapDevice::createImage(void const *p, size_t size, bool us
     return image;
 }
 
+    IDrawingImage *AndroidMapDevice::createImageEx(void const *p, size_t size, int x, int y, int w, int h, bool useAlpha) {
+        RHO_MAP_TRACE2("createImageEx: p=%p, size=%llu", p, (unsigned long long)size);
+        
+        JNIEnv *env = jnienv();
+        jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+        if (!cls) return NULL;
+        jmethodID mid = getJNIClassStaticMethod(env, cls, "createImageEx", "([BIIII)Landroid/graphics/Bitmap;");
+        if (!mid) return NULL;
+        
+        jholder<jbyteArray> data = jholder<jbyteArray>(env->NewByteArray(size));
+        if (!data) return NULL;
+        env->SetByteArrayRegion(data.get(), 0, size, (jbyte const *)p);
+        
+        jobject bitmap = env->CallStaticObjectMethod(cls, mid, data.get(), x, y, w, h);
+        IDrawingImage *image = new AndroidImage(bitmap);
+        
+        RHO_MAP_TRACE1("createImage: return image=%p", image);
+        return image;
+    }
+    
 IDrawingImage *AndroidMapDevice::cloneImage(IDrawingImage *image)
 {
     RHO_MAP_TRACE1("cloneImage: image=%p", image);
@@ -552,6 +590,15 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setESRILogoIma
     rhomap::AndroidMapDevice *d = device(env, nativeDevice);
     d->setESRILogoImage(env, bitmap);
     RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setESRILogoImage: finish");
+}
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setGoogleLogoImage
+(JNIEnv *env, jobject, jlong nativeDevice, jobject bitmap)
+{
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setGoogleLogoImage: start");
+    rhomap::AndroidMapDevice *d = device(env, nativeDevice);
+    d->setGoogleLogoImage(env, bitmap);
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setGoogleLogoImage: finish");
 }
 
 
@@ -794,7 +841,7 @@ RHO_GLOBAL void mapview_create(rho_param *p)
 	}
     }
     if (strcasecmp(engine, "Google") == 0) {
-        ourIsOldGoogleEngineUsed = true;
+        //ourIsOldGoogleEngineUsed = true;
     }
 
     if (ourIsOldGoogleEngineUsed) {
@@ -843,4 +890,12 @@ RHO_GLOBAL double mapview_state_center_lon()
 		return s_mapdevice->mapView()->longitude();
 	}
 }
+
+RHO_GLOBAL void mapview_set_file_caching_enable(int enable) {
+    ourIsCachingEnabled = (enable != 0);
+    if (!s_mapdevice)
+        return;
+    return s_mapdevice->mapView()->set_file_caching_enable(enable);
+}
+
 
