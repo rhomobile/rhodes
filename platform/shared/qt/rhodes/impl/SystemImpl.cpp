@@ -123,6 +123,28 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
         return 1;
     }
 
+#if defined(__SYMBIAN32__)
+    if (strcasecmp("platform",szPropName) == 0) {
+        *resValue = rho_ruby_create_string("Symbian");
+        return 1;
+    }
+
+     if (strcasecmp("os_version",szPropName) == 0) {
+        *resValue = rho_ruby_create_string("");
+        return 1;
+    }
+#elif defined(RHO_SYMBIAN)
+    if (strcasecmp("platform",szPropName) == 0) {
+        *resValue = rho_ruby_create_string("Qt Emulator");
+        return 1;
+    }
+
+     if (strcasecmp("os_version",szPropName) == 0) {
+        *resValue = rho_ruby_create_string("");
+        return 1;
+    }
+#endif
+
     if (strcasecmp("is_emulator",szPropName) == 0) {
         *resValue = rho_ruby_create_boolean(1);
         return 1;

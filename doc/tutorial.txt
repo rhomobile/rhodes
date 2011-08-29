@@ -64,7 +64,7 @@ You can edit the generated ERB files to customize the HTML as you see fit.  Typi
 
 
     :::ruby
-    <div data-role="page">
+    <div data-role="page" data-url="<%= Rho::RhoConfig.start_path %>/">
 
       <div data-role="header" data-position="inline">
         <h1>Storemanager</h1>

@@ -61,8 +61,8 @@ public class ContactAccessorNew implements ContactAccessor {
 		
 		Account[] accounts = AccountManager.get(ctx).getAccounts();
 		if (accounts.length == 0) {
-			accName = "rhodes@rhomobile.com";
-			accType = "com.rhomobile";
+			//accName = "rhodes@rhomobile.com";
+			//accType = "com.rhomobile";
 		}
 		else {
 			Account acnt = accounts[0];
@@ -194,13 +194,35 @@ public class ContactAccessorNew implements ContactAccessor {
 			cursor.close();
 		}
 	}
-
-	public Map<String, Contact> getAll() throws Exception {
-		Map<String, Contact> contacts = new HashMap<String, Contact>();
-		
+	
+	@Override
+	public int getCount() {
 		Cursor cursor = cr.query(RawContacts.CONTENT_URI,
 				new String[] {RawContacts._ID},
 				RawContacts.DELETED + "=0", null, null);
+		int count = -1;
+		try {
+			count = cursor.getCount();
+		} finally {
+			cursor.close();
+		}
+		return count;
+	}
+
+	@Override
+	public Map<String, Contact> getContacts(int offset, int max_results) throws Exception {
+		Map<String, Contact> contacts = new HashMap<String, Contact>();
+		
+		StringBuilder sortMode = new StringBuilder();
+		sortMode.append(RawContacts._ID).append(" ASC");
+		if (max_results > 0)
+			sortMode.append(" LIMIT ").append(max_results);
+		if (offset > 0)
+			sortMode.append(" OFFSET ").append(offset);
+		
+		Cursor cursor = cr.query(RawContacts.CONTENT_URI,
+				new String[] {RawContacts._ID},
+				RawContacts.DELETED + "=0", null, sortMode.toString());
 		try {
 			if (!cursor.moveToFirst())
 				return contacts;
@@ -219,6 +241,7 @@ public class ContactAccessorNew implements ContactAccessor {
 				contact.makeAllFilled();
 				
 				contacts.put(contact.getField(Phonebook.PB_I_ID), contact);
+				
 			} while (cursor.moveToNext());
 		}
 		finally {
@@ -226,6 +249,11 @@ public class ContactAccessorNew implements ContactAccessor {
 		}
 		
 		return contacts;
+	}
+	
+	@Override
+	public Map<String, Contact> getAll() throws Exception {
+		return getContacts(0, -1);
 	}
 	
 	public Contact getContactByID(String id) {
@@ -265,8 +293,10 @@ public class ContactAccessorNew implements ContactAccessor {
 		
 		if (id == null || id.length() == 0) {
 			ContentValues values = new ContentValues();
-			values.put(RawContacts.ACCOUNT_NAME, accName);
-			values.put(RawContacts.ACCOUNT_TYPE, accType);
+			if (accName != null && accName.length() > 0) {
+				values.put(RawContacts.ACCOUNT_NAME, accName);
+				values.put(RawContacts.ACCOUNT_TYPE, accType);
+			}
 			values.put(RawContacts.AGGREGATION_MODE, RawContacts.AGGREGATION_MODE_DISABLED);
 			Uri uri = cr.insert(RawContacts.CONTENT_URI, values);
 			id = String.valueOf(ContentUris.parseId(uri));

@@ -907,8 +907,8 @@ module Rhom
                               #it is more effective to use old find here
                               if attribs && attribs != '*' && attribs.length() != 0 && !args[1][:dont_ignore_missed_attribs]
                                   sql << "SELECT object FROM object_values WHERE attrib=? AND source_id=?"
-                                  values << nSrcID
                                   values << attribs[0]
+                                  values << nSrcID
                               else 
                                   if  limit == 1 && offset == 0 
                                     sql = "SELECT object FROM object_values WHERE source_id=?"
@@ -1111,13 +1111,13 @@ module Rhom
                     SyncEngine.search(args)
                 end
 
-                def sync(callback=nil, callback_data="", show_status_popup=nil)
+                def sync(callback=nil, callback_data="", show_status_popup=nil, query_params="")
                   src_id = get_source_id.to_i()
                   SyncEngine.set_notification(src_id, callback, callback_data) if callback
                   if !show_status_popup.nil?
-                    SyncEngine.dosync_source(src_id, show_status_popup)
+                    SyncEngine.dosync_source(src_id, show_status_popup, query_params)
                   else
-                    SyncEngine.dosync_source(src_id)
+                    SyncEngine.dosync_source(src_id, 1, query_params)
                   end
                     
                 end

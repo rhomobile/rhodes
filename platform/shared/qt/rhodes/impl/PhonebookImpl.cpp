@@ -46,6 +46,18 @@ VALUE getallPhonebookRecords(void* pb)
     return rho_ruby_get_NIL();    
 }
 
+int getPhonebookRecordCount(void* pb)
+{
+    //TODO: getPhonebookRecordCount
+    return 0;
+}
+
+VALUE getPhonebookRecords(void* pb, int offset, int max_results)
+{
+    //TODO: getPhonebookRecords
+	return rho_ruby_get_NIL();	
+}
+
 VALUE getPhonebookRecord(void* pb, char* id)
 {
     //TODO: getPhonebookRecord

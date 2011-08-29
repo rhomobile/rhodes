@@ -252,7 +252,7 @@ public class SyncEngine implements NetRequest.IRhoSession
         stopSync();
     }
     
-    void doSyncAllSources()
+    void doSyncAllSources(String strQueryParams)
     {
 	    try
 	    {
@@ -268,7 +268,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 			    PROF.CREATE_COUNTER("Pull");
 			    PROF.START("Sync");
 	
-	            syncAllSources();
+	            syncAllSources(strQueryParams);
 	
 			    PROF.DESTROY_COUNTER("Net");	    
 			    PROF.DESTROY_COUNTER("Parse");
@@ -462,7 +462,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    
     }
 
-    void doSyncSource(SourceID oSrcID)
+    void doSyncSource(SourceID oSrcID, String strQueryParams)
     {
         SyncSource src = null;
 
@@ -477,6 +477,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	            {
 		            LOG.INFO("Started synchronization of the data source: " + src.getName() );
 	
+		            src.m_strQueryParams = strQueryParams;
 	                src.sync();
 	
 				    getNotify().fireSyncNotification(src, true, src.m_nErrCode, src.m_nErrCode == RhoAppAdapter.ERR_NONE ? RhoAppAdapter.getMessageText("sync_completed") : "");
@@ -928,7 +929,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    return -1;
 	}
 */
-	void syncOneSource(int i)throws Exception
+	void syncOneSource(int i, String strQueryParams)throws Exception
 	{
     	SyncSource src = null;
     	//boolean bError = false;
@@ -938,8 +939,11 @@ public class SyncEngine implements NetRequest.IRhoSession
 		        return;
 	
 		    if ( isSessionExist() && getState() != esStop )
+		    {
+		    	src.m_strQueryParams = strQueryParams;
 		        src.sync();
-	
+		    }
+		    
 		    //getNotify().onSyncSourceEnd(i, m_sources);
     	}catch(Exception exc)
     	{
@@ -957,7 +961,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    //return !bError;
 	}
 	
-	void syncAllSources()throws Exception
+	void syncAllSources(String strQueryParams)throws Exception
 	{
 //	    boolean bError = false;
 
@@ -968,7 +972,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    //TODO: do not stop on error source
 	    for( int i = 0; i < (int)m_sources.size() && isContinueSync(); i++ )
 	    {
-	        /*bError = !*/syncOneSource(i);
+	        /*bError = !*/syncOneSource(i, strQueryParams);
 	    }
 
 	    if ( !isSchemaChanged() )
@@ -1041,7 +1045,10 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    	getNotify().callLoginCallback(oNotify, RhoAppAdapter.ERR_NONE, "" );
 		    
 	    	if ( ClientRegister.getInstance() != null )
-	    		ClientRegister.getInstance().startUp();	    	
+	    	{
+	    		getUserDB().executeSQL("UPDATE client_info SET token_sent=?", 0 );
+	    		ClientRegister.getInstance().startUp();
+	    	}
 	    	
 		}catch(Exception exc)
 		{

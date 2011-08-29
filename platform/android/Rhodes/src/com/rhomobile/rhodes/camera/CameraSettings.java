@@ -51,6 +51,7 @@ class CameraSettings implements Serializable {
 		mWidth = 0;
 		mHeight = 0;
 		mColorModel = CAMERA_COLOR_MODEL_RGB;
+		mFlashMode = null;
 		
 		if (obj != null) {
 			if (obj instanceof Map<?,?>) {
@@ -61,6 +62,7 @@ class CameraSettings implements Serializable {
 				Object widthObj = settings.get("desired_width");
 				Object heightObj = settings.get("desired_height");
 				Object cmodelObj = settings.get("color_model");
+				Object flashModeObj = settings.get("flash_mode");
 				
 				if (typeObj != null && (typeObj instanceof String)) {
 					String typeStr = (String)typeObj;
@@ -70,6 +72,10 @@ class CameraSettings implements Serializable {
 					if (typeStr.equals("front")) {
 						mCameraType = CAMERA_TYPE_FRONT;
 					}
+				}
+
+				if (flashModeObj != null && (flashModeObj instanceof String)) {
+					mFlashMode = (String)flashModeObj;
 				}
 				
 				if (formatObj != null && (formatObj instanceof String)) {
@@ -138,10 +144,15 @@ class CameraSettings implements Serializable {
 		return mColorModel;
 	}
 	
+	String getFlashMode() {
+		return mFlashMode;
+	}
+	
 	
 	private int mCameraType;
 	private int mFormat;
 	private int mWidth;
 	private int mHeight;
 	private int mColorModel;
+	private String mFlashMode;
 }

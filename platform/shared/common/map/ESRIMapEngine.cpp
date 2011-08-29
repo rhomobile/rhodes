@@ -473,8 +473,11 @@ ESRIMapView::ESRIMapView(IDrawingDevice *device)
 
 ESRIMapView::~ESRIMapView()
 {
-    if ( m_map_fetch.get() != 0)
+    if ( m_map_fetch.get() != 0) {
+        m_map_fetch->cancel();
+    
         m_map_fetch->stop(2000);
+    }
 
     if ( m_cache_update.get() != 0)
         m_cache_update->stop(2000);

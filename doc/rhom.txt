@@ -234,13 +234,7 @@ Below is a full list of options available to fixed schema models:
 	  property :mycustomproperty, 'hello'
 	end
 
-## Data Migrations
-To clean all client data at startup - change `app_db_version` in `rhoconfig.txt`.
-This scenario will work for Property Bag and Fixed Schema models.
-
-**NOTE: All local client changes will be lost **
-
-### Fixed Schema Data Migrations
+## Fixed Schema Data Migrations
 Rhom provides an application hook to migrate the data manually.  You can also use this hook to run business logic related to updating the database.  For example, your application may want to display a customized alert notifying the user that a migration is in progress and it may take a few moments.
 
 To use this hook, first we need to track the `:schema_version` in our model:
@@ -286,7 +280,12 @@ Return `false` to run the custom sql specified by the new_src['schema']['sql'] s
 
 **NOTE: For sync sources, you cannot just recreate table without data copy. Because server will not send this data at sync time. **
 
-	
+## Property Bag Data Migrations
+No data migration required, since all attributes are dynamic. 
+If you want to remove all local data when upgrading to new application version: change `app_db_version` in `rhoconfig.txt`.
+
+This scenario will work for Property Bag and Fixed Schema models.
+
 ## Rhom API
 Below is the full list of methods available to Rhom models:
 
@@ -442,11 +441,13 @@ Calls `find` with a limit on the # of records.  This emulates rails' classic pag
 	  :order => 'name'
 	) #=> you can have :conditions and :order as well
 
-### `sync(callback = nil, callback_data = "", show_status_popup = nil)`
+### `sync(callback = nil, callback_data = "", show_status_popup = nil, query_params = "")`
 Start the sync process for a model. If the callback is set, `SyncEngine.set_notification` is called before `SyncEngine.dosync`.
+query_params will pass to sync server
 	
 	:::ruby
 	Account.sync( url_for(:action => :sync_callback) )
+	Account.sync( url_for(:action => :sync_callback), "", false, "param1=123&param2=abc" )
 
 ### `set_notification(url, params = nil)`
 Set a notification to be called when the sync is complete for this model.  This is useful for example if you want to refresh the current list page or display an alert when new data is synchronized. See the [sync notification docs](/rhodes/synchronization#notifications) for more information.

@@ -31,6 +31,7 @@
 #include "QtMainWindow.h"
 #include "ui_QtMainWindow.h"
 #include "ExternalWebView.h"
+#include "RhoSimulator.h"
 #include <QResizeEvent>
 #include <QWebFrame>
 #include <QWebSettings>
@@ -591,6 +592,11 @@ void QtMainWindow::menuActionEvent(bool checked)
     QAction* action;
     if (sender && (action = dynamic_cast<QAction*>(sender)) && cb)
         cb->onCustomMenuItemCommand(action->data().toInt());
+}
+
+void QtMainWindow::on_actionAbout_triggered()
+{
+    QMessageBox::about(this, RHOSIMULATOR_NAME, RHOSIMULATOR_NAME " v" RHOSIMULATOR_VERSION);
 }
 
 // slots:

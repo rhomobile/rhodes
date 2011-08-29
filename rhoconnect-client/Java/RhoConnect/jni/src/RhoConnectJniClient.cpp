@@ -277,7 +277,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_loginWith
 RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_syncAll
   (JNIEnv * env, jobject)
 {
-    char* res = reinterpret_cast<char*>(rho_sync_doSyncAllSources(0));
+    char* res = reinterpret_cast<char*>(rho_sync_doSyncAllSources(0, ""));
     jhobject jhNotify = rho::connect_jni::rhoconnect_jni_parsenotify(env, res);
     rho_sync_free_string(res);
     return jhNotify.release();

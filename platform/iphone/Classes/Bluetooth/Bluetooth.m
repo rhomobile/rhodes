@@ -460,8 +460,8 @@ void rho_bluetooth_set_device_name(const char* device_name) {
 	[RhoBluetoothManager sharedInstance].deviceName = newname;
 }
 
-const char* rho_bluetooth_get_device_name() {
-	return [[RhoBluetoothManager sharedInstance].deviceName UTF8String];
+VALUE rho_bluetooth_get_device_name() {
+	return rho_ruby_create_string([[RhoBluetoothManager sharedInstance].deviceName UTF8String]);
 }
 
 const char* rho_bluetooth_get_last_error() {

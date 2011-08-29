@@ -75,12 +75,12 @@ public class RhoBluetoothManagerOld implements IRhoBluetoothManager {
 		return "";
 	}
 	
-	public String get_last_error() {
+	public int get_last_error() {
 		return RhoBluetoothManager.BTC_ERROR;
 	}
 	
-	public String create_session(String role, String callback_url) {
-		fireCreateSessionCallback(RhoBluetoothManager.BTC_ERROR, "");
+	public int create_session(String role, String callback_url) {
+		fireCreateSessionCallback(RhoBluetoothManager.BTC_ERROR_STRING, "");
 		return RhoBluetoothManager.BTC_ERROR;
 	}
 	
@@ -116,12 +116,12 @@ public class RhoBluetoothManagerOld implements IRhoBluetoothManager {
 	}
 
 	public void create_custom_server_session(String client_name, String callback_url) {
-		fireCreateSessionCallback(RhoBluetoothManager.BTC_ERROR, "");
+		fireCreateSessionCallback(RhoBluetoothManager.BTC_ERROR_STRING, "");
 		return;
 	}
 
 	public void create_custom_client_session(String server_name, String callback_url) {
-		fireCreateSessionCallback(RhoBluetoothManager.BTC_ERROR, "");
+		fireCreateSessionCallback(RhoBluetoothManager.BTC_ERROR_STRING, "");
 		return;
 	}
 	

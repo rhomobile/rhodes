@@ -214,7 +214,7 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 	   mInputBufferSize = 0;
        PerformOnUiThread.exec( new Runnable() {
 			public void run() {
-				fireCreateSessionCallback(RhoBluetoothManager.BTC_OK, mConnectedDeviceName);
+				fireCreateSessionCallback(RhoBluetoothManager.BTC_OK_STRING, mConnectedDeviceName);
 			}
 	   });
    }
@@ -224,7 +224,7 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 	   PerformOnUiThread.exec( new Runnable() {
 			public void run() {
 				if (sharedInstance().getSession().getCallbackURL() == null) {
-					fireCreateSessionCallback(RhoBluetoothManager.BTC_ERROR, "");
+					fireCreateSessionCallback(RhoBluetoothManager.BTC_ERROR_STRING, "");
 				}
 				else {
 					fireSessionCallback(mConnectedDeviceName, RhoBluetoothSession.BT_SESSION_DISCONNECT);
@@ -310,7 +310,7 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
                 //finish();
          	   PerformOnUiThread.exec( new Runnable() {
          		   public void run() {
-     					fireCreateSessionCallback(RhoBluetoothManager.BTC_ERROR, "");
+     					fireCreateSessionCallback(RhoBluetoothManager.BTC_ERROR_STRING, "");
          		   }
          	   });
             }
@@ -341,7 +341,7 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 		    	}
 		    	else {
 		    		RhoBluetoothManager.logi(TAG, "   mBluetoothAdapter == null");
-		    		sharedInstance().fireCreateSessionCallback(RhoBluetoothManager.BTC_ERROR, "");
+		    		sharedInstance().fireCreateSessionCallback(RhoBluetoothManager.BTC_ERROR_STRING, "");
 		    	}
 			}
 		});
@@ -368,7 +368,7 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 		    	}
 		    	else {
 		    		RhoBluetoothManager.logi(TAG, "   mBluetoothAdapter == null");
-		    		sharedInstance().fireCreateSessionCallback(RhoBluetoothManager.BTC_ERROR, "");
+		    		sharedInstance().fireCreateSessionCallback(RhoBluetoothManager.BTC_ERROR_STRING, "");
 		    	}
 			}
 		});
@@ -400,12 +400,12 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 		return sharedInstance().mDeviceName;
 	}
 	
-	public String get_last_error() {
+	public int get_last_error() {
 		if (!mBluetoothIsEnabled) return RhoBluetoothManager.BTC_ERROR;
 		return RhoBluetoothManager.BTC_OK;
 	}
 	
-	public String create_session(String role, String callback_url) {
+	public int create_session(String role, String callback_url) {
 		if (!mBluetoothIsEnabled) return RhoBluetoothManager.BTC_ERROR;
 		RhoBluetoothManager.logi(TAG, "create_session("+role+", "+callback_url+");");
 
@@ -469,7 +469,7 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 	}
 
 	public String session_read_string(String connected_device_name) {
-		if (!mBluetoothIsEnabled) return RhoBluetoothManager.BTC_ERROR;
+		if (!mBluetoothIsEnabled) return RhoBluetoothManager.BTC_ERROR_STRING;
 		RhoBluetoothManager.logi(TAG, "session_read_string");
     	//String t = sharedInstance().mInput.toString();
     	//sharedInstance().mInput.setLength(0);
@@ -576,7 +576,7 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
 						}
 					}
 		    	}
-		    	sharedInstance().fireCreateSessionCallback(RhoBluetoothManager.BTC_ERROR, "");
+		    	sharedInstance().fireCreateSessionCallback(RhoBluetoothManager.BTC_ERROR_STRING, "");
 			}
 		});
 	}

@@ -9,6 +9,9 @@ extern double rho_geo_latitude();
 #define longitude rho_geo_longitude
 extern double rho_geo_longitude();
 
+#define accuracy rho_geo_accuracy
+extern float rho_geo_accuracy();
+
 #define known_position rho_geo_known_position
 extern int rho_geo_known_position();
 
@@ -33,7 +36,9 @@ extern double rho_geo_haversine_distance(double lat1, double lon1, double lat2, 
 
 extern double latitude();
 extern double longitude();
+extern float  accuracy();
 extern int    known_position();
 extern void   set_view_notification( const char *url, char* params, int timeout_sec);
 extern void   set_notification( const char *url, char* params, int timeout_sec);
 extern double haversine_distance(double lat1, double lon1, double lat2, double lon2);
+

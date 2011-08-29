@@ -67,6 +67,16 @@ RHO_GLOBAL double rho_geo_longitude()
     return env->CallStaticDoubleMethod(cls, mid);
 }
 
+RHO_GLOBAL float rho_geo_accuracy()
+{
+    JNIEnv *env = jnienv();
+    static jclass cls = getJNIClass(RHODES_JAVA_CLASS_GEO_LOCATION);
+    if (!cls) return 0;
+    static jmethodID mid = getJNIClassStaticMethod(env, cls, "getAccuracy", "()F");
+    if (!mid) return 0;
+    return env->CallStaticFloatMethod(cls, mid);
+}
+
 RHO_GLOBAL int rho_geo_known_position()
 {
     JNIEnv *env = jnienv();

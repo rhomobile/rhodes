@@ -1631,11 +1631,9 @@ namespace "run" do
         log_name  = $app_path + '/RhoLogSpec.txt'
         File.delete(log_name) if File.exist?(log_name)
 
-        device_flag = '-e'
-
-        AndroidTools.logclear(device_flag)
-        run_emulator( :hidden => true ) if device_flag == '-e'
-        do_uninstall(device_flag)
+        AndroidTools.logclear($device_flag)
+        run_emulator( :hidden => true ) if $device_flag == '-e'
+        do_uninstall($device_flag)
         
         # Failsafe to prevent eternal hangs
         Thread.new {
@@ -1643,8 +1641,8 @@ namespace "run" do
           AndroidTools.kill_adb_and_emulator
         }
 
-        load_app_and_run(device_flag)
-        AndroidTools.logcat(device_flag, log_name)
+        load_app_and_run($device_flag)
+        AndroidTools.logcat($device_flag, log_name)
 
         Jake.before_run_spec
         start = Time.now
@@ -1652,8 +1650,8 @@ namespace "run" do
         puts "waiting for application"
 
         for i in 0..60
-            if AndroidTools.application_running(device_flag, $app_package_name)
-		break
+            if AndroidTools.application_running($device_flag, $app_package_name)
+                break
             else
                 sleep(1)
             end
@@ -1661,7 +1659,7 @@ namespace "run" do
 
         puts "waiting for log: " + log_name
         
-        for i in 0..60
+        for i in 0..120
 			if !File.exist?(log_name)
 				sleep(1)
 			else
@@ -1688,28 +1686,47 @@ namespace "run" do
             end
             io.close
             
-            break unless AndroidTools.application_running(device_flag, $app_package_name)
+            break unless AndroidTools.application_running($device_flag, $app_package_name)
             sleep(5) unless end_spec
         end
 
         Jake.process_spec_results(start)        
         
         # stop app
-        do_uninstall(device_flag)
+        do_uninstall($device_flag)
         kill_adb
 
         $stdout.flush
-        
     end
 
-    task :phone_spec do
-      exit Jake.run_spec_app('android','phone_spec')
+    task :phone_spec => "phone_spec:emulator"
+
+    task :framework_spec => "framework_spec:emulator"
+
+    namespace "phone_spec" do
+      task :device do
+        $device_flag = "-d"
+        exit Jake.run_spec_app('android','phone_spec')
+      end
+
+      task :emulator do
+        $device_flag = "-e"
+        exit Jake.run_spec_app('android','phone_spec')
+      end
     end
 
-    task :framework_spec do
-      exit Jake.run_spec_app('android','framework_spec')
+    namespace "framework_spec" do
+      task :device do
+        $device_flag = "-d"
+        exit Jake.run_spec_app('android','framework_spec')
+      end
+
+      task :emulator do
+        $device_flag = "-e"
+        exit Jake.run_spec_app('android','framework_spec')
+      end
     end
-    
+
     task :emulator => "device:android:debug" do
         run_emulator
         load_app_and_run
