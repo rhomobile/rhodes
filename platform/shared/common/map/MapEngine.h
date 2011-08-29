@@ -69,6 +69,7 @@ public:
 
     virtual IDrawingImage* createImage(String const &path, bool useAlpha) = 0;
     virtual IDrawingImage* createImage(void const *p, size_t s, bool useAlpha) = 0;
+    virtual IDrawingImage* createImageEx(void const *p, size_t s, int x, int y, int w, int h, bool useAlpha) = 0;
     virtual IDrawingImage* cloneImage(IDrawingImage *image) = 0;
     virtual void destroyImage(IDrawingImage* image) = 0;
 
@@ -182,6 +183,9 @@ public:
     virtual void setPinCalloutImage(IDrawingImage *pinCallout, PIN_INFO pin_callout_info) = 0;
     virtual void setPinCalloutLinkImage(IDrawingImage *pinCallout, PIN_INFO pin_callout_info) = 0;
     virtual void setESRILogoImage(IDrawingImage *esriLogoImg) = 0;
+    virtual void setGoogleLogoImage(IDrawingImage *googleLogoImg) = 0;
+
+    virtual void set_file_caching_enable(int enable) = 0;
 
 };
 

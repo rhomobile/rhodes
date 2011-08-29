@@ -67,6 +67,7 @@ public class MapView extends BaseActivity implements MapTouch {
 	public native void setPinCalloutImage(long nativeDevice, Bitmap pin);
 	public native void setPinCalloutLinkImage(long nativeDevice, Bitmap pin);
 	public native void setESRILogoImage(long nativeDevice, Bitmap esriLogo);
+	public native void setGoogleLogoImage(long nativeDevice, Bitmap googleLogo);
 	
 	public native int minZoom(long nativeDevice);
 	public native int maxZoom(long nativeDevice);
@@ -148,9 +149,12 @@ public class MapView extends BaseActivity implements MapTouch {
 		setPinCalloutImage(mNativeDevice, pinCallout );
 		Bitmap pinCalloutLink = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.callout_link);
 		setPinCalloutLinkImage(mNativeDevice, pinCalloutLink );
+		
 		Bitmap esriLogo = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.esri);
 		setESRILogoImage(mNativeDevice, esriLogo);
 
+		Bitmap googleLogo = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.google);
+		setGoogleLogoImage(mNativeDevice, googleLogo);
 		
 		mTouchHandler = createTouchHandler();
 		mTouchHandler.setMapTouch(this);
@@ -268,7 +272,7 @@ public class MapView extends BaseActivity implements MapTouch {
 		Paint paint = new Paint();
 		canvas.drawBitmap(bm, x, y, paint);
 	}
-	
+
 	public void drawText(Canvas canvas, int x, int y, int width, int height, String text, int color) 
 	{
 		//Logger.I(TAG, "drawText: " + text);
@@ -312,6 +316,11 @@ public class MapView extends BaseActivity implements MapTouch {
 	
 	public static Bitmap createImage(byte[] data) {
 		return BitmapFactory.decodeByteArray(data, 0, data.length);
+	}
+	
+	public static Bitmap createImageEx(byte[] data, int x, int y, int w, int h) {
+		Bitmap b = BitmapFactory.decodeByteArray(data, 0, data.length);
+		return Bitmap.createBitmap(b, x, y, w, h);
 	}
 	
 	public static void destroyImage(Bitmap bm) {
