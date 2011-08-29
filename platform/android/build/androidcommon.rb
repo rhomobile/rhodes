@@ -155,11 +155,9 @@ def cc_def_args
     args << $ndksysroot
     #args << "-fvisibility=hidden"
     args << "-fPIC"
-    args << "-fstrict-aliasing"
     args << "-Wall"
     args << "-Wextra"
     args << "-Wno-psabi" if $ndkgccver != "4.2.1"
-    args << "-Wstrict-aliasing"
     args << "-Wno-sign-compare"
     args << "-mandroid"
     args << "-DANDROID"

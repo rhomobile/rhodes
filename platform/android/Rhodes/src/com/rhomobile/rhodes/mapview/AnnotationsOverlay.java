@@ -28,14 +28,22 @@ package com.rhomobile.rhodes.mapview;
 
 import java.util.Vector;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.DisplayMetrics;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.OverlayItem;
 import com.rhomobile.rhodes.WebView;
+import com.rhomobile.rhodes.file.RhoFileApi;
+import com.rhomobile.rhodes.util.Utils;
 
 public class AnnotationsOverlay extends ItemizedOverlay<OverlayItem> {
+	
+	public static final String TAG = "AnnotationOverlay";
 
 	private GoogleMapView mainView;
 	private Vector<Annotation> annotations;
@@ -52,11 +60,35 @@ public class AnnotationsOverlay extends ItemizedOverlay<OverlayItem> {
 		populate();
 	}
 	
+	public void addAnnotations(Vector<Annotation> anns) {
+		int i;
+		for (i = 0; i < anns.size(); i++) {
+			annotations.addElement(anns.elementAt(i));
+		}
+		populate();
+	}
+	
 	@Override
 	protected OverlayItem createItem(int i) {
 		Annotation ann = annotations.elementAt(i);
 		GeoPoint pnt = new GeoPoint((int)(ann.latitude*1000000), (int)(ann.longitude*1000000));
-		return new OverlayItem(pnt, ann.title, ann.subtitle);
+		OverlayItem item = new OverlayItem(pnt, ann.title, ann.subtitle);
+		if (ann.image != null) {
+			String imagePath = "apps/" + ann.image;
+			imagePath = RhoFileApi.normalizePath(imagePath);
+			Bitmap bitmap = BitmapFactory.decodeStream(RhoFileApi.open(imagePath));
+			if (bitmap != null) {
+				//Utils.platformLog(TAG, "$$$$$$$$$$$$    Bitmap is ["+imagePath+"]");
+				//Utils.platformLog(TAG, "$$$$$$$$$$$$           is ["+String.valueOf(bitmap.getWidth())+"x"+String.valueOf(bitmap.getHeight())+"]");
+				bitmap.setDensity(DisplayMetrics.DENSITY_MEDIUM);
+				BitmapDrawable bd = new BitmapDrawable(bitmap);
+				bd.setTargetDensity(DisplayMetrics.DENSITY_MEDIUM);
+				bd.setVisible(true, true);
+				bd.setBounds(-ann.image_x_offset, -ann.image_y_offset, bitmap.getWidth()-ann.image_x_offset, bitmap.getHeight()-ann.image_y_offset);
+				item.setMarker(bd);
+			}
+		}
+		return item;
 	}
 
 	@Override

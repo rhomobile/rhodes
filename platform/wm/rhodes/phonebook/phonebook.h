@@ -38,6 +38,8 @@ extern "C" {
 void* openPhonebook();
 void  closePhonebook(void* pb);
 VALUE getallPhonebookRecords(void* pb);
+int getPhonebookRecordCount(void* pb);
+VALUE getPhonebookRecords(void* pb, int offset, int max_results);
 VALUE getPhonebookRecord(void* pb, char* id);
 
 VALUE getfirstPhonebookRecord(void* pb);

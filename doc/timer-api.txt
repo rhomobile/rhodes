@@ -21,7 +21,7 @@ callback_data - data for callback.
 	:::ruby
 	Rho::Timer.start(5000, (url_for :action => :timer_callback), "test")
 
-## stop(callback_url)
+## Timer.stop(callback_url)
 
 Stop the timer by callback.
 

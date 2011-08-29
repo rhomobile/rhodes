@@ -13,26 +13,27 @@ Rhodes provide access to device specific capabilities such as GPS, PIM, camera, 
 		<th>BlackBerry</th>
 		<th>Android</th>
 		<th>RhoSimulator</th>
+		<th>Symbian</th>
 	</tr>
-	<tr><td class='cap'>GeoLocation</td><td>0.3</td><td>0.3</td><td class='tbd'>TBD</td><td>0.3</td><td>1.0</td><td class='tbd'>3.5</td></tr>
-	<tr><td class='cap'>PIM Contacts</td><td>0.3</td><td>0.3</td><td class='tbd'>TBD</td><td>0.3</td><td>1.0</td><td class='tbd'>3.5</td></tr>
-	<tr><td class='cap'>PIM Calendar</td><td>2.2</td><td>2.2</td><td class='tbd'>TBD</td><td>2.2</td><td>2.2</td><td class='tbd'>3.5</td></tr>
-	<tr><td class='cap'>Camera</td><td>1.0</td><td>1.0</td><td class='tbd'>TBD</td><td>1.0</td><td>1.0</td><td>3.0</td></tr>
-	<tr><td class='cap'>Barcode</td><td>2.1</td><td>2.1</td><td class='tbd'>TBD</td><td>2.1</td><td>2.1</td><td class='tbd'>4.0</td></tr>
-	<tr><td class='cap'>Date/Time picker</td><td>1.2.2</td><td>2.0</td><td class='tbd'>TBD</td><td>1.2</td><td>1.2</td><td>3.0</td></tr>
-	<tr><td class='cap'>Menu</td><td>1.2.2</td><td>2.0</td><td>3.0</td><td>1.2</td><td>1.5</td><td>3.0</td></tr>
-	<tr><td class='cap'>Toolbar</td><td>1.2.2</td><td>2.3</td><td>3.0</td><td class='tbd'>n/a</td><td>1.5</td><td>3.0</td></tr>
-	<tr><td class='cap'>Tab Bar</td><td>1.2.2</td><td class='tbd'>3.5</td><td class='tbd'>TBD</td><td class='tbd'>n/a</td><td>1.5</td><td class='tbd'>3.5</td></tr>
-	<tr><td class='cap'>Nav Bar</td><td>2.0</td><td class='tbd'>3.5</td><td class='tbd'>TBD</td><td class='tbd'>n/a</td><td>2.0</td><td class='tbd'>4.0</td></tr>
-	<tr><td class='cap'>Signature Capture</td><td>2.1</td><td>3.0</td><td class='tbd'>TBD</td><td class='tbd'>3.5</td><td>2.1</td><td class='tbd'>4.0</td></tr>
-	<tr class='tbd'><td class='cap'>Audio/Video capture</td><td>4.0</td><td>4.0</td><td class='tbd'>TBD</td><td>4.0</td><td>4.0</td><td>4.0</td></tr>
-	<tr><td class='cap'>Bluetooth</td><td>2.2</td><td>2.2</td><td class='tbd'>TBD</td><td>2.2</td><td>2.2</td><td class='tbd'>4.0</td></tr>
-	<tr><td class='cap'>NFC</td><td class='tbd'>TBD</td><td class='tbd'>TBD</td><td class='tbd'>TBD</td><td class='tbd'>TBD</td><td>3.0</td><td class='tbd'>4.0</td></tr>
-	<tr><td class='cap'>Push</td><td>1.2</td><td class='tbd'>4.0</td><td class='tbd'>TBD</td><td>1.2</td><td>2.2</td><td class='tbd'>3.5</td></tr>
-	<tr><td class='cap'>Screen rotation</td><td>2.1</td><td class='tbd'>3.5</td><td class='tbd'>TBD</td><td>2.0</td><td>2.1</td><td class='tbd'>3.5</td></tr>
-	<tr><td class='cap'>Native Maps</td><td>1.4</td><td class='tbd'>3.5</td><td class='tbd'>TBD</td><td>1.4</td><td>1.5</td><td class='tbd'>3.5</td></tr>
-	<tr><td class='cap'>Alerts/Audio File Playback</td><td>1.2</td><td>1.5</td><td class='tbd'>TBD</td><td>1.2</td><td>1.2</td><td class='tbd'>3.5</td></tr>
-	<tr><td class='cap'>Ringtones</td><td>3.5</td><td>1.5</td><td class='tbd'>TBD</td><td>1.5</td><td>1.5</td><td class='tbd'>3.5</td></tr>
+	<tr><td class='cap'>GeoLocation</td><td>0.3</td><td>0.3</td><td class='tbd'>TBD</td><td>0.3</td><td>1.0</td><td class='tbd'>3.5</td><td class='tbd'>TBD</td></tr>
+	<tr><td class='cap'>PIM Contacts</td><td>0.3</td><td>0.3</td><td class='tbd'>TBD</td><td>0.3</td><td>1.0</td><td class='tbd'>3.5</td><td>3.1</td></tr>
+	<tr><td class='cap'>PIM Calendar</td><td>2.2</td><td>2.2</td><td class='tbd'>TBD</td><td>2.2</td><td>2.2</td><td class='tbd'>3.5</td><td class='tbd'>TBD</td></tr>
+	<tr><td class='cap'>Camera</td><td>1.0</td><td>1.0</td><td class='tbd'>TBD</td><td>1.0</td><td>1.0</td><td>3.0</td><td class='tbd'>TBD</td></tr>
+	<tr><td class='cap'>Barcode</td><td>2.1</td><td>2.1</td><td class='tbd'>TBD</td><td>2.1</td><td>2.1</td><td class='tbd'>4.0</td><td class='tbd'>TBD</td></tr>
+	<tr><td class='cap'>Date/Time picker</td><td>1.2.2</td><td>2.0</td><td class='tbd'>TBD</td><td>1.2</td><td>1.2</td><td>3.0</td><td class='tbd'>TBD</td></tr>
+	<tr><td class='cap'>Menu</td><td>1.2.2</td><td>2.0</td><td>3.0</td><td>1.2</td><td>1.5</td><td>3.0</td><td>3.1</td></tr>
+	<tr><td class='cap'>Toolbar</td><td>1.2.2</td><td>2.3</td><td>3.0</td><td class='tbd'>n/a</td><td>1.5</td><td>3.0</td><td>3.1</td></tr>
+	<tr><td class='cap'>Tab Bar</td><td>1.2.2</td><td class='tbd'>3.5</td><td>3.0</td><td class='tbd'>n/a</td><td>1.5</td><td>3.1</td><td>3.1</td></tr>
+	<tr><td class='cap'>Nav Bar</td><td>2.0</td><td class='tbd'>3.5</td><td class='tbd'>TBD</td><td class='tbd'>n/a</td><td>2.0</td><td class='tbd'>4.0</td><td class='tbd'>TBD</td></tr>
+	<tr><td class='cap'>Signature Capture</td><td>2.1</td><td>3.0</td><td class='tbd'>TBD</td><td class='tbd'>3.5</td><td>2.1</td><td class='tbd'>4.0</td><td class='tbd'>TBD</td></tr>
+	<tr class='tbd'><td class='cap'>Audio/Video capture</td><td>4.0</td><td>4.0</td><td class='tbd'>TBD</td><td>4.0</td><td>4.0</td><td>4.0</td><td class='tbd'>TBD</td></tr>
+	<tr><td class='cap'>Bluetooth</td><td>2.2</td><td>2.2</td><td class='tbd'>TBD</td><td>2.2</td><td>2.2</td><td class='tbd'>4.0</td><td class='tbd'>TBD</td></tr>
+	<tr><td class='cap'>NFC</td><td class='tbd'>TBD</td><td class='tbd'>TBD</td><td class='tbd'>TBD</td><td class='tbd'>TBD</td><td>3.0</td><td class='tbd'>4.0</td><td class='tbd'>TBD</td></tr>
+	<tr><td class='cap'>Push</td><td>1.2</td><td class='tbd'>4.0</td><td class='tbd'>TBD</td><td>1.2</td><td>2.2</td><td class='tbd'>3.5</td><td class='tbd'>TBD</td></tr>
+	<tr><td class='cap'>Screen rotation</td><td>2.1</td><td class='tbd'>3.5</td><td class='tbd'>TBD</td><td>2.0</td><td>2.1</td><td class='tbd'>3.5</td><td class='tbd'>TBD</td></tr>
+	<tr><td class='cap'>Native Maps</td><td>1.4</td><td class='tbd'>3.5</td><td class='tbd'>TBD</td><td>1.4</td><td>1.5</td><td class='tbd'>3.5</td><td class='tbd'>TBD</td></tr>
+	<tr><td class='cap'>Alerts/Audio File Playback</td><td>1.2</td><td>1.5</td><td class='tbd'>TBD</td><td>1.2</td><td>1.2</td><td>3.1</td><td class='tbd'>TBD</td></tr>
+	<tr><td class='cap'>Ringtones</td><td>3.5</td><td>1.5</td><td class='tbd'>TBD</td><td>1.5</td><td>1.5</td><td class='tbd'>3.5</td><td class='tbd'>TBD</td></tr>
 </table>	
 
 ## System class
@@ -342,7 +343,7 @@ Return hash of all properties of the events found by specified parameters (index
 	* 'occurring' searches for events that have any part of the event occurring during the period specified by start_date and end_date. 
 * include_repeating -  if false then only search based on an Event's START and END values and do not calculate repeating occurrences of the event; if true then repeating occurrences of an Event are included during the search. 
  
-Create new event in the calendar, set properties of the event from passed as parameter hash, and save created calendar event (create), also return hash of all properties of the created event(include 'id' property):
+Create new event in the calendar, set properties of the event(excluding 'id', which is generated) from passed as parameter hash, and save created calendar event (create), also return hash of all properties of the created event(include 'id' property):
 	:::ruby
 	created_event = Rho::RhoEvent.create!(@params['event'])
 
@@ -407,14 +408,17 @@ Take a picture:
 	Camera::take_picture('/app/model/camera_callback', options_hash)
 
 options_has - hash contain additional parameters :
+
 * "camera_type" - "default"(is the same with "main"), "main", "front". Default value = "default"
 * "desired_width" - number, desired width in pixels. Default value = max camera width
 * "desired_height" - number, desired height in pixels. Default value = max camera height
 * "color_model" "RGB", "Grayscale". Default value = "RGB"
 * "format" "jpg", "png". Default value = "jpg"
 * "enable_editing" - boolean, enable post photo capture image customize (supported only on iPhone !). Default value = true. If you enable this, image will captured reduced to screen size (not full size)!
+* "flash_mode" - string, supported only on Android ! Values : "off", "on", "auto", "red-eye", "torch".
 
 Additional parameters in camera callback :
+
 * "status" - "ok", "cancel", "error"
 * "message" - if status == error, then in this value contain message about error
 * "image_uri" - uri of saved image file
@@ -445,8 +449,9 @@ Barcode recognition functionality realized as Rhode Native extension. You should
 
 For barcode recognition we use Zbar library (iPhone, and Windows Mobile platforms) and ZXing library (Android and BlackBerry platforms). In this case we support next barcode types :
 
-* iPhone, Android and WM platforms: UPC-A, UPC-E, EAN-8, EAN-13, Code 39, Code 128, .
-* BlackBerry platform: UPC-A, UPC-E, EAN-8, EAN-13, Code 39, Code 128, Code 93, QR Code, ITF, Codabar
+* WM platform: UPC-A, UPC-E, EAN-8, EAN-13, Code 39, Code 128 .
+* iPhone platform: UPC-A, UPC-E, EAN-8, EAN-13, Code 39, Code 128, QR Code .
+* Android and BlackBerry platforms: UPC-A, UPC-E, EAN-8, EAN-13, Code 39, Code 128, Code 93, QR Code, ITF, Codabar
 
 **NOTE: We are very sorry, but we are removed ZBar source code from our project by ZBar license requirements. For build Barcode extension for WM, you should download ZBar sources from http://zbar.sourceforge.net/ and copy to [rhodes root]/lib/extensions/barcode/ext/barcode/shared/zbar/zbar/ folder "include" and "zbar" folders from ZBar sources. Also you should fix ZBar sources for building by Microsoft Visual Studio (move define of inner function variables to begin of functions, etc.)
 
@@ -612,7 +617,8 @@ Write string
 
 ### Example of Controller with using Bluetooth API
 
-It is not complete example (link to complete example see below). This code just show how you can make connection and send/receive strings. 
+This is not a complete example (for a link to a complete example, see the link below this example). This code just shows how you can make a connection and send/receive strings.<a id="bluetooth-ex" />
+
 	:::ruby
 	require 'rho/rhocontroller'
 	require 'rho/rhobluetooth'
@@ -940,7 +946,7 @@ You can also customize popup window's title, icon, buttons and specify callback 
 		:icon => '/public/images/icon.png',
 	    :buttons => ["Yes", "No", 
 			{:id => 'cancel', :title => 'Cancel all'}],
-	    :callback => url_for(:action => :on_dissmiss_popup) } )
+	    :callback => url_for(:action => :on_dismiss_popup) } )
 
 Popup window always close after clicking on any button.
 
@@ -991,7 +997,7 @@ Status window will close after clicking on hide button.
 * status_text - text to be displayed in status window
 * hide_button_label - label of hide button
 
-For example you can use Alert.show_status in sync notification callback:
+For example you can use Alert.show_status in sync notification callback:<a id="alert-show-status-ex" />
 	:::ruby
 	def sync_notify
 	  status = @params['status'] ? @params['status'] : ""
@@ -1158,6 +1164,9 @@ Annotations - array of map annotation objects (list of pins on the map). Annotat
 * title - title of the annotation callout
 * subtitle - subtitle of the annotation callout
 * url - url to follow when user click on the callout button
+* image - image file name
+* image_x_offset - int horizontal coordinate of image anchor (ancor point placed to annotation point on map) . Set to image width/2 for center
+* image_y_offset - int vertical coordinate of image anchor (ancor point placed to annotation point on map). Set image height/2 for center
 
 ### Sample
 See GeoLocation/controller.rb of [system API sample application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/GeoLocation/controller.rb) for some of the examples of how to use MapView class.

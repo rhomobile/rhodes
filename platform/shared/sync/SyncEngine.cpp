@@ -160,7 +160,7 @@ void CSyncEngine::prepareSync(ESyncState eState, const CSourceID* oSrcID)
     stopSync();
 }
 
-void CSyncEngine::doSyncAllSources()
+void CSyncEngine::doSyncAllSources(const String& strQueryParams)
 {
     prepareSync(esSyncAllSources, null);
 
@@ -174,7 +174,7 @@ void CSyncEngine::doSyncAllSources()
 	    PROF_CREATE_COUNTER("Pull");
 	    PROF_START("Sync");
 
-        syncAllSources();
+        syncAllSources(strQueryParams);
 
 	    PROF_DESTROY_COUNTER("Net");	    
 	    PROF_DESTROY_COUNTER("Parse");
@@ -359,7 +359,7 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
         setState(esNone);
 }
 
-void CSyncEngine::doSyncSource(const CSourceID& oSrcID)
+void CSyncEngine::doSyncSource(const CSourceID& oSrcID, const String& strQueryParams)
 {
     prepareSync(esSyncSource, &oSrcID);
 
@@ -370,7 +370,7 @@ void CSyncEngine::doSyncSource(const CSourceID& oSrcID)
         {
             CSyncSource& src = *pSrc;
             LOG(INFO) +"Started synchronization of the data source: " + src.getName();
-
+            src.m_strQueryParams = strQueryParams;
             src.sync();
 
             getNotify().fireSyncNotification(&src, true, src.m_nErrCode, src.m_nErrCode == RhoAppAdapter.ERR_NONE ? RhoAppAdapter.getMessageText("sync_completed") : "");
@@ -810,21 +810,24 @@ int CSyncEngine::getStartSource()
     return -1;
 }*/
 
-void CSyncEngine::syncOneSource(int i)
+void CSyncEngine::syncOneSource(int i, const String& strQueryParams)
 {
     CSyncSource& src = *m_sources.elementAt(i);
     if ( src.getSyncType().compare("bulk_sync_only")==0 )
         return;
 
     if ( isSessionExist() && getState() != esStop )
+    {
+        src.m_strQueryParams = strQueryParams;
         src.sync();
+    }
 
     getNotify().onSyncSourceEnd(i, m_sources);
 
 //    return src.m_nErrCode == RhoAppAdapter.ERR_NONE;
 }
 
-void CSyncEngine::syncAllSources()
+void CSyncEngine::syncAllSources(const String& strQueryParams)
 {
 //    boolean bError = false;
 
@@ -834,7 +837,7 @@ void CSyncEngine::syncAllSources()
 
     for( int i = 0; i < (int)m_sources.size() && isContinueSync(); i++ )
     {
-        /*bError = !*/syncOneSource(i);
+        /*bError = !*/syncOneSource(i, strQueryParams);
     }
 
     if ( !isSchemaChanged() )
@@ -908,8 +911,10 @@ void CSyncEngine::login(String name, String password, const CSyncNotification& o
     PROF_STOP("Login");
 
     if ( CClientRegister::getInstance() != null )
+    {
+        getUserDB().executeSQL("UPDATE client_info SET token_sent=?", 0 );
         CClientRegister::getInstance()->startUp();
-
+    }
 	//}catch(Exception exc)
 	//{
 	//	LOG.ERROR("Login failed.", exc);

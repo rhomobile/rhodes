@@ -432,9 +432,9 @@ iseq_load(VALUE self, VALUE data, VALUE parent, VALUE opt)
     make_compile_option(&option, opt);
     prepare_iseq_build(iseq, name, filename,
 		       parent, iseq_type, 0, &option);
-
-    rb_iseq_build_from_ary(iseq, locals, args, exception, body);
-
+//RHO : misc
+    rb_iseq_build_from_ary(iseq, locals, args, exception, body, misc);
+//RHO
     cleanup_iseq_build(iseq);
     return iseqval;
 }

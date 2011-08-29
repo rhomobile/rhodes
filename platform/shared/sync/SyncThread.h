@@ -53,41 +53,46 @@ public:
     public:
 	    int m_nCmdCode;
 	    int m_nCmdParam;
-	    String m_strCmdParam;
+	    String m_strCmdParam, m_strQueryParams;
    		boolean m_bShowStatus;
 
-	    CSyncCommand(int nCode, int nParam, boolean bShowStatus)
+	    CSyncCommand(int nCode, int nParam, boolean bShowStatus, const char * query_params)
 	    {
 		    m_nCmdCode = nCode;
 		    m_nCmdParam = nParam;
             m_bShowStatus = bShowStatus;
+            m_strQueryParams = query_params ? query_params : "";
 	    }
-	    CSyncCommand(int nCode, String strParam, boolean bShowStatus)
+	    CSyncCommand(int nCode, String strParam, boolean bShowStatus, const char * query_params)
 	    {
 		    m_nCmdCode = nCode;
 		    m_strCmdParam = strParam;
             m_bShowStatus = bShowStatus;
+            m_strQueryParams = query_params ? query_params : "";
 	    }
-	    CSyncCommand(int nCode, String strParam, int nCmdParam, boolean bShowStatus)
+	    CSyncCommand(int nCode, String strParam, int nCmdParam, boolean bShowStatus, const char * query_params)
 	    {
 		    m_nCmdCode = nCode;
 		    m_strCmdParam = strParam;
             m_nCmdParam = nCmdParam;
             m_bShowStatus = bShowStatus;
+            m_strQueryParams = query_params ? query_params : "";
 	    }
 
-	    CSyncCommand(int nCode, boolean bShowStatus)
+	    CSyncCommand(int nCode, boolean bShowStatus, const char * query_params)
 	    {
 		    m_nCmdCode = nCode;
 		    m_nCmdParam = 0;
             m_bShowStatus = bShowStatus;
+            m_strQueryParams = query_params ? query_params : "";
 	    }
 
 	    boolean equals(const IQueueCommand& cmd)
 	    {
             const CSyncCommand& oSyncCmd = (const CSyncCommand&)cmd;
 		    return m_nCmdCode == oSyncCmd.m_nCmdCode && m_nCmdParam == oSyncCmd.m_nCmdParam &&
-			    m_strCmdParam == oSyncCmd.m_strCmdParam;
+			    m_strCmdParam == oSyncCmd.m_strCmdParam &&
+                m_strQueryParams == oSyncCmd.m_strQueryParams;
 	    }
 
         virtual String toString();
@@ -115,7 +120,7 @@ public:
         boolean m_bSyncChanges;
         rho::Vector<rho::String> m_arSources;
 
-        CSyncSearchCommand(String from, String params, rho::Vector<rho::String>& arSources, boolean sync_changes, int nProgressStep) : CSyncCommand(CSyncThread::scSearchOne,params,nProgressStep, false)
+        CSyncSearchCommand(String from, String params, rho::Vector<rho::String>& arSources, boolean sync_changes, int nProgressStep) : CSyncCommand(CSyncThread::scSearchOne,params,nProgressStep, false, "")
 	    {
 		    m_strFrom = from;
             m_bSyncChanges = sync_changes;
@@ -158,8 +163,8 @@ private:
 extern "C" {
 #endif //__cplusplus
 	
-unsigned long rho_sync_doSyncAllSources(int show_status_popup);
-unsigned long rho_sync_doSyncSource(unsigned long nSrcID,int show_status_popup);
+unsigned long rho_sync_doSyncAllSources(int show_status_popup, const char * query_params);
+unsigned long rho_sync_doSyncSource(unsigned long nSrcID,int show_status_popup, const char * query_params);
 unsigned long rho_sync_doSyncSourceByID(int nSrcID);
 unsigned long rho_sync_doSyncSourceByName(const char* szSrcName);
 

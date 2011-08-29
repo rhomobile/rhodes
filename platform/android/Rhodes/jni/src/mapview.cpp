@@ -188,8 +188,6 @@ void AndroidImage::init(JNIEnv *env)
     m_width = env->CallIntMethod(*m_bitmap, midWidth);
     m_height = env->CallIntMethod(*m_bitmap, midHeight);
     
-    /////
-    env->DeleteLocalRef(cls);
 }
 
 AndroidImage::~AndroidImage()
@@ -205,9 +203,6 @@ AndroidImage::~AndroidImage()
             env->CallStaticVoidMethod(cls, mid, *m_bitmap);
 
         env->DeleteGlobalRef(*m_bitmap);
-
-        /////
-        env->DeleteLocalRef(cls);
 
         delete m_bitmap;
         delete m_count;
@@ -273,9 +268,6 @@ AndroidMapDevice::AndroidMapDevice(rho_param *p)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "create", "(J)V");
     if (!mid) return;
     env->CallStaticVoidMethod(cls, mid, (jlong)this);
-
-    /////
-    env->DeleteLocalRef(cls);
     
     RHO_MAP_TRACE("AndroidMapDevice: ctor finish");
 }
@@ -285,8 +277,16 @@ AndroidMapDevice::~AndroidMapDevice()
     RHO_MAP_TRACE("AndroidMapDevice: dtor start");
     rho_param_free(m_params);
     JNIEnv *env = jnienv();
-    if (m_jdevice)
+    if (m_jdevice) {
+        JNIEnv *env = jnienv();
+        jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+        if (!cls) return;
+        jmethodID mid = getJNIClassMethod(env, cls, "destroyDevice", "()V");
+        if (!mid) return;
+        env->CallVoidMethod(m_jdevice, mid);
+
         env->DeleteGlobalRef(m_jdevice);
+    }
     RHO_MAP_TRACE("AndroidMapDevice: dtor finish");
 }
 
@@ -396,9 +396,6 @@ IDrawingImage *AndroidMapDevice::createImage(String const &path, bool useAlpha)
 
     jobject bitmap = env->CallStaticObjectMethod(cls, mid, rho_cast<jhstring>(path).get());
     IDrawingImage *image = new AndroidImage(bitmap);
-
-    /////
-    env->DeleteLocalRef(cls);
     
     RHO_MAP_TRACE1("createImage: return image=%p", image);
     return image;
@@ -420,9 +417,6 @@ IDrawingImage *AndroidMapDevice::createImage(void const *p, size_t size, bool us
 
     jobject bitmap = env->CallStaticObjectMethod(cls, mid, data.get());
     IDrawingImage *image = new AndroidImage(bitmap);
-
-    /////
-    env->DeleteLocalRef(cls);
     
     RHO_MAP_TRACE1("createImage: return image=%p", image);
     return image;
@@ -456,9 +450,6 @@ void AndroidMapDevice::requestRedraw()
         if (!mid) return;
         env->CallVoidMethod(m_jdevice, mid);
 
-        /////
-        env->DeleteLocalRef(cls);
-    
     }
 
     RHO_MAP_TRACE("requestRedraw done");

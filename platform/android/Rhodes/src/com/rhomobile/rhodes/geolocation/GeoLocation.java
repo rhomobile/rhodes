@@ -127,6 +127,19 @@ public class GeoLocation {
 		
 		return 0.0;
 	}
+	
+	public static float getAccuracy() {
+		try {
+			checkState();
+			Logger.T(TAG, "getAccuracy");
+			return getImpl().getAccuracy();
+		}
+		catch (Exception e) {
+			reportFail("getAccuracy", e);
+		}
+		
+		return 0;
+	}
 
 	public static boolean isKnownPosition() {
 		try {

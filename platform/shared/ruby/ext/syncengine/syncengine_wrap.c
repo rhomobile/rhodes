@@ -1816,9 +1816,9 @@ static VALUE mSyncEngine;
 
 /* Put header files here or function declarations like below */
 	#define dosync rho_sync_doSyncAllSources
-	extern VALUE rho_sync_doSyncAllSources(int show_status_popup);
+	extern VALUE rho_sync_doSyncAllSources(int show_status_popup, const char * query_params);
 	#define dosync_source rho_sync_doSyncSource
-	extern VALUE rho_sync_doSyncSource(VALUE source_id,int show_status_popup);
+	extern VALUE rho_sync_doSyncSource(VALUE source_id,int show_status_popup, const char * query_params);
 	#define dosearch rho_sync_doSearch
 	extern VALUE rho_sync_doSearch(VALUE ar_sources, const char *from, const char *params, int sync_changes, int nProgressStep, const char* callback, const char* callback_params);
 	extern VALUE rho_sync_login(const char *login, const char *password, const char* callback);
@@ -1882,6 +1882,9 @@ static VALUE mSyncEngine;
 
 	extern VALUE rho_sync_is_syncing();
 	#define is_syncing rho_sync_is_syncing
+
+    extern VALUE rho_sync_register_push();
+	#define register_push rho_sync_register_push	
 	
 	#if !defined(bool)
 	#define bool int
@@ -1907,7 +1910,7 @@ SWIG_ruby_failed(void)
 } 
 
 
-/*@SWIG:/usr/local/share/swig/2.0.4/ruby/rubyprimtypes.swg,19,%ruby_aux_method@*/
+/*@SWIG:C:\Install\swigwin-2.0.4\Lib\ruby\rubyprimtypes.swg,19,%ruby_aux_method@*/
 SWIGINTERN VALUE SWIG_AUX_NUM2LONG(VALUE *args)
 {
   VALUE obj = args[0];
@@ -2038,15 +2041,22 @@ SWIG_From_int  (int value)
 SWIGINTERN VALUE
 _wrap_dosync(int argc, VALUE *argv, VALUE self) {
   bool arg1 ;
+  char *arg2 = (char *) 0 ;
   bool val1 ;
   int ecode1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
   VALUE result;
   VALUE vresult = Qnil;
   
   {
     arg1 = 1;
   }
-  if ((argc < 0) || (argc > 1)) {
+  {
+    arg2 = 0;
+  }
+  if ((argc < 0) || (argc > 2)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
   }
   if (argc > 0) {
@@ -2056,10 +2066,19 @@ _wrap_dosync(int argc, VALUE *argv, VALUE self) {
     } 
     arg1 = (bool)(val1);
   }
-  result = (VALUE)dosync(arg1);
+  if (argc > 1) {
+    res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","dosync", 2, argv[1] ));
+    }
+    arg2 = (char *)(buf2);
+  }
+  result = (VALUE)dosync(arg1,(char const *)arg2);
   vresult = result;
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return vresult;
 fail:
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return Qnil;
 }
 
@@ -2068,15 +2087,22 @@ SWIGINTERN VALUE
 _wrap_dosync_source(int argc, VALUE *argv, VALUE self) {
   VALUE arg1 = (VALUE) 0 ;
   bool arg2 ;
+  char *arg3 = (char *) 0 ;
   bool val2 ;
   int ecode2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
   VALUE result;
   VALUE vresult = Qnil;
   
   {
     arg2 = 1;
   }
-  if ((argc < 1) || (argc > 2)) {
+  {
+    arg3 = 0;
+  }
+  if ((argc < 1) || (argc > 3)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
   }
   arg1 = argv[0];
@@ -2087,10 +2113,19 @@ _wrap_dosync_source(int argc, VALUE *argv, VALUE self) {
     } 
     arg2 = (bool)(val2);
   }
-  result = (VALUE)dosync_source(arg1,arg2);
+  if (argc > 2) {
+    res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "char const *","dosync_source", 3, argv[2] ));
+    }
+    arg3 = (char *)(buf3);
+  }
+  result = (VALUE)dosync_source(arg1,arg2,(char const *)arg3);
   vresult = result;
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return vresult;
 fail:
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return Qnil;
 }
 
@@ -2754,6 +2789,18 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_register_push(int argc, VALUE *argv, VALUE self) {
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  register_push();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -3053,5 +3100,6 @@ SWIGEXPORT void Init_SyncEngine(void) {
   rb_define_module_function(mSyncEngine, "set_ssl_verify_peer", _wrap_set_ssl_verify_peer, -1);
   rb_define_module_function(mSyncEngine, "update_blob_attribs", _wrap_update_blob_attribs, -1);
   rb_define_module_function(mSyncEngine, "is_syncing", _wrap_is_syncing, -1);
+  rb_define_module_function(mSyncEngine, "register_push", _wrap_register_push, -1);
 }
 

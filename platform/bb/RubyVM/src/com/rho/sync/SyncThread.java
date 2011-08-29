@@ -41,6 +41,7 @@ import com.rho.db.DBAdapter;
 import com.rho.db.IDBResult;
 import com.xruby.runtime.builtin.*;
 import com.xruby.runtime.lang.*;
+
 import java.util.Vector;
 
 public class SyncThread extends ThreadQueue
@@ -58,34 +59,38 @@ public class SyncThread extends ThreadQueue
    	{
    		int m_nCmdCode;
    		int m_nCmdParam;
-   		String m_strCmdParam;
+   		String m_strCmdParam, m_strQueryParams;
    		boolean m_bShowStatus;
    		
-   		SyncCommand(int nCode, int nParam, boolean bShowStatus)
+   		SyncCommand(int nCode, int nParam, boolean bShowStatus, String query_params)
    		{
    			m_nCmdCode = nCode;
    			m_nCmdParam = nParam;
    			m_bShowStatus = bShowStatus;
+   			m_strQueryParams = query_params != null? query_params : "";
    		}
-   		SyncCommand(int nCode, String strParam, boolean bShowStatus)
+   		SyncCommand(int nCode, String strParam, boolean bShowStatus, String query_params)
    		{
    			m_nCmdCode = nCode;
    			m_strCmdParam = strParam;
    			m_bShowStatus = bShowStatus;
+   			m_strQueryParams = query_params != null? query_params : "";
    		}
-	    SyncCommand(int nCode, String strParam, int nCmdParam, boolean bShowStatus)
+	    SyncCommand(int nCode, String strParam, int nCmdParam, boolean bShowStatus, String query_params)
 	    {
 		    m_nCmdCode = nCode;
 		    m_strCmdParam = strParam;
             m_nCmdParam = nCmdParam;
             m_bShowStatus = bShowStatus;
+            m_strQueryParams = query_params != null? query_params : "";
 	    }
    		
-   		SyncCommand(int nCode, boolean bShowStatus)
+   		SyncCommand(int nCode, boolean bShowStatus, String query_params)
    		{
    			m_nCmdCode = nCode;
    			m_nCmdParam = 0;
    			m_bShowStatus = bShowStatus;
+   			m_strQueryParams = query_params != null? query_params : "";
    		}
    		
    		public boolean equals(IQueueCommand obj)
@@ -93,7 +98,9 @@ public class SyncThread extends ThreadQueue
    			SyncCommand oSyncCmd = (SyncCommand)obj;
    			return m_nCmdCode == oSyncCmd.m_nCmdCode && m_nCmdParam == oSyncCmd.m_nCmdParam &&
    				(m_strCmdParam == oSyncCmd.m_strCmdParam ||
-   				(m_strCmdParam != null && oSyncCmd.m_strCmdParam != null && m_strCmdParam.equals(oSyncCmd.m_strCmdParam)));  		
+   				(m_strCmdParam != null && oSyncCmd.m_strCmdParam != null && m_strCmdParam.equals(oSyncCmd.m_strCmdParam)))&&
+   				(m_strQueryParams == oSyncCmd.m_strQueryParams ||
+   				(m_strQueryParams != null && oSyncCmd.m_strQueryParams != null && m_strQueryParams.equals(oSyncCmd.m_strQueryParams)));  		
    		}
    		
    		public String toString()
@@ -125,7 +132,7 @@ public class SyncThread extends ThreadQueue
    		/*common::CAutoPtr<C*/SyncNotify.SyncNotification/*>*/ m_pNotify;
    		public SyncLoginCommand(String name, String password, String callback, SyncNotify.SyncNotification pNotify)
    		{
-   			super(scLogin,callback,false);
+   			super(scLogin,callback,false,"");
    			
    			m_strName = name;
    			m_strPassword = password;
@@ -140,7 +147,7 @@ public class SyncThread extends ThreadQueue
 	    
         public SyncSearchCommand(String from, String params, Vector arSources, boolean sync_changes, int nProgressStep)
 	    {
-        	super(scSearchOne,params,nProgressStep, false);
+        	super(scSearchOne,params,nProgressStep, false, "");
 		    m_strFrom = from;
 		    m_bSyncChanges = sync_changes;
 		    m_arSources = arSources;
@@ -239,7 +246,7 @@ public class SyncThread extends ThreadQueue
 	public void onTimeout()//throws Exception
 	{
 	    if ( isNoCommands() && getPollInterval()>0 )
-	        addQueueCommandInt(new SyncCommand(scSyncAll,false));
+	        addQueueCommandInt(new SyncCommand(scSyncAll,false, ""));
 	}
 	
 	void checkShowStatus(SyncCommand oSyncCmd)
@@ -257,12 +264,12 @@ public class SyncThread extends ThreadQueue
 	    {
 	    case scSyncAll:
 	    	checkShowStatus(oSyncCmd);
-	        m_oSyncEngine.doSyncAllSources();
+	        m_oSyncEngine.doSyncAllSources(oSyncCmd.m_strQueryParams);
 	        break;
         case scSyncOne:
 	        {
 				checkShowStatus(oSyncCmd);
-	            m_oSyncEngine.doSyncSource(new SyncEngine.SourceID(oSyncCmd.m_nCmdParam,oSyncCmd.m_strCmdParam));
+	            m_oSyncEngine.doSyncSource(new SyncEngine.SourceID(oSyncCmd.m_nCmdParam,oSyncCmd.m_strCmdParam), oSyncCmd.m_strQueryParams);
 	        }
 	        break;
 	        
@@ -306,7 +313,7 @@ public class SyncThread extends ThreadQueue
 	
 	public static void doSyncAllSources(boolean bShowStatus)
 	{
-		getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncAll,bShowStatus));
+		getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncAll,bShowStatus, ""));
 	}
 	
 	public static void doSyncSourceByName(String strSrcName, boolean bShowStatus)
@@ -314,7 +321,7 @@ public class SyncThread extends ThreadQueue
 		if (bShowStatus&&(m_statusListener != null)) {
 			m_statusListener.createStatusPopup(RhoAppAdapter.getMessageText("syncronizing_data"));
 		}
-	    getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncOne, strSrcName, (int)0, bShowStatus ) );		
+	    getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncOne, strSrcName, (int)0, bShowStatus, "") );		
 	}
 	
 	public static void stopSync()throws Exception
@@ -352,24 +359,22 @@ public class SyncThread extends ThreadQueue
 	}
 	
 	public static void initMethods(RubyModule klass) {
-		klass.getSingletonClass().defineMethod("dosync", new RubyNoOrOneArgMethod(){ 
-			protected RubyValue run(RubyValue receiver, RubyBlock block )
+		klass.getSingletonClass().defineMethod("dosync", new RubyVarArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block )
 			{
-				try {
-					getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncAll,true));
+				try 
+				{
+					boolean bShowStatus = true;
+					String query_params = "";
+					if ( args != null && args.size() > 0 )
+					{
+						String str = args.get(0).asString();
+						bShowStatus = args.get(0).equals(RubyConstant.QTRUE)||"true".equalsIgnoreCase(str);
+					}
+					if ( args != null &&  args.size() > 1 )
+						query_params = args.get(1).asString();
 					
-				} catch(Exception e) {
-					LOG.ERROR("dosync failed", e);
-					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-				}
-				return getInstance().getRetValue();
-			}
-			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
-			{
-				try {
-					String str = arg.asString();
-					boolean show = arg.equals(RubyConstant.QTRUE)||"true".equalsIgnoreCase(str);
-					getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncAll,show));
+					getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncAll,bShowStatus, query_params));
 				} catch(Exception e) {
 					LOG.ERROR("dosync failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
@@ -377,38 +382,29 @@ public class SyncThread extends ThreadQueue
 				return getInstance().getRetValue();
 			}
 		});		
-		klass.getSingletonClass().defineMethod("dosync_source", new RubyOneOrTwoArgMethod(){ 
-			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
+		klass.getSingletonClass().defineMethod("dosync_source", new RubyVarArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block )
 			{
 				try {
 					int nSrcID = 0;
 					String strName = "";
-					if ( arg instanceof RubyFixnum )
-						nSrcID = arg.toInt();
+					if ( args.get(0) instanceof RubyFixnum )
+						nSrcID = args.get(0).toInt();
 					else
-						strName = arg.toStr();
+						strName = args.get(0).toStr();
+
+					boolean bShowStatus = true;
+					String query_params = "";
+					if ( args.size() > 1 )
+					{
+						String str = args.get(0).asString();
+						bShowStatus = args.get(0).equals(RubyConstant.QTRUE)||"true".equalsIgnoreCase(str);
+					}
 					
-					getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncOne, strName, nSrcID, true) );
-				} catch(Exception e) {
-					LOG.ERROR("dosync_source failed", e);
-					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
-				}
-				return getInstance().getRetValue();
-			}
-			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block )
-			{
-				try {
-					String str = arg1.asString();
-					boolean show = arg1.equals(RubyConstant.QTRUE)||"true".equalsIgnoreCase(str);
+					if ( args.size() > 2 )
+						query_params = args.get(2).asString();
 					
-					int nSrcID = 0;
-					String strName = "";
-					if ( arg0 instanceof RubyFixnum )
-						nSrcID = arg0.toInt();
-					else
-						strName = arg0.toStr();
-					
-					getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncOne, strName, nSrcID, show) );
+					getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncOne, strName, nSrcID, bShowStatus, query_params) );
 				} catch(Exception e) {
 					LOG.ERROR("dosync_source failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));

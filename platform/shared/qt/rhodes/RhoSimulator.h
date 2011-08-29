@@ -24,16 +24,10 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
-package com.rhomobile.rhodes.phonebook;
+#ifndef RHOSIMULATOR_H
+#define RHOSIMULATOR_H
 
-import java.util.Map;
+#define RHOSIMULATOR_NAME "RhoSimulator"
+#define RHOSIMULATOR_VERSION "3.1.0"
 
-public interface ContactAccessor {
-	
-	public int getCount();
-	public Map<String, Contact> getContacts(int offset, int max_results) throws Exception;
-	public Map<String, Contact> getAll() throws Exception;
-	public void save(Contact contact) throws Exception;
-	public void remove(Contact contact);
-	
-}
+#endif // RHOSIMULATOR_H

@@ -114,6 +114,26 @@ div[data-role="content"] table tr td.itemValue {
     width:50%;
 }
 
+div.itemLabel {
+    font-weight: bold;
+}
+div.itemValue {
+    font-weight: normal;
+}
+
+@media all and (min-width: 320px){
+    .ui-content ul li div.itemLabel {
+        display: inline-block;
+        width: 50%;
+        overflow: hidden;
+    }
+
+    .ui-content ul li div.itemValue {
+        display: inline-block;
+        overflow: hidden;
+    }
+}
+
 .errorMessage {
     color: red;
     text-align: center

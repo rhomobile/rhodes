@@ -457,6 +457,11 @@ double rho_geo_longitude()
 #endif
 }
 
+float rho_geo_accuracy() 
+{
+	return 0.0;
+}
+
 int rho_geo_known_position() 
 {
 #if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )

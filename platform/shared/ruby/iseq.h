@@ -15,9 +15,10 @@
 /* compile.c */
 VALUE rb_iseq_compile_node(VALUE self, NODE *node);
 int rb_iseq_translate_threaded_code(rb_iseq_t *iseq);
+//RHO : misc
 VALUE rb_iseq_build_from_ary(rb_iseq_t *iseq, VALUE locals, VALUE args,
-			     VALUE exception, VALUE body);
-
+			     VALUE exception, VALUE body, VALUE misc);
+//RHO
 /* iseq.c */
 VALUE ruby_iseq_load(VALUE data, VALUE parent, VALUE opt);
 struct st_table *ruby_insn_make_insn_table(void);
