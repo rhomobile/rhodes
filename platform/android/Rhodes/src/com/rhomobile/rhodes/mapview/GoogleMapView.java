@@ -212,7 +212,7 @@ public class GoogleMapView extends MapActivity {
 			}
 		}
 		
-		mHolder.clear();
+		//mHolder.clear();
 		view.preLoad();
 		
 		Thread geocoding = new Thread(new Runnable() {
