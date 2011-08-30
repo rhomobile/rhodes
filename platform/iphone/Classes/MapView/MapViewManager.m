@@ -190,3 +190,6 @@ double mapview_state_center_lon() {
     return 0;
 #endif
 }
+
+void mapview_set_file_caching_enable(int enable) {
+}
