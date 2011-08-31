@@ -514,7 +514,7 @@ void GoogleGeoCoding::processCommand(IQueueCommand *pCmd)
         
         // Make url
         char buf[1024];
-        snprintf(buf, sizeof(buf), "http://maps.google.com/maps/api/staticmap?center=%f,%f&zoom=%d&size=256x280&maptype=roadmap&format=png&sensor=false", center_latitude, center_longitude, zoom);
+        snprintf(buf, sizeof(buf), "http://maps.googleapis.com/maps/api/staticmap?center=%f,%f&zoom=%d&size=256x280&scale=1&maptype=roadmap&format=png&sensor=false&mobile=true", center_latitude, center_longitude, zoom);
         
         /*
          StringBuffer url = new StringBuffer();
@@ -592,8 +592,11 @@ void GoogleGeoCoding::processCommand(IQueueCommand *pCmd)
         void *data;
         size_t datasize;
         
-        if (!getMapTile(zoom, row, column, &data, &datasize))
+        if (!getMapTile(zoom, row, column, &data, &datasize)) {
+            
+            addQueueCommandToFront(new Command(cmd->baseUrl, zoom, latitude, longitude));
             return;
+        }
         
         IDrawingDevice *device = m_mapview->drawingDevice();
         
