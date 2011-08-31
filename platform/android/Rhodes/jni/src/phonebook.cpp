@@ -33,7 +33,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Phonebook"
 
-#define logging_enable false
+#define logging_enable true
 
 
 #define PB_FIELDS_COUNT 8
@@ -103,9 +103,9 @@ static VALUE createHashFromContact(jobject contactObj)
     return contactHash;
 }
 
-RHO_GLOBAL VALUE getallPhonebookRecords(void* pb)
+RHO_GLOBAL VALUE getPhonebookRecords(void* pb, int offset, int max_results)
 {
-    if (logging_enable) RAWLOG_INFO("getallPhonebookRecords() START");
+    if (logging_enable) RAWLOG_INFO2("getPhonebookRecords(%d, %d) START", offset, max_results);
     jobject phonebookObj = (jobject)pb;
 
     JNIEnv *env = jnienv();
@@ -115,8 +115,8 @@ RHO_GLOBAL VALUE getallPhonebookRecords(void* pb)
     jclass contactCls = getJNIClass(RHODES_JAVA_CLASS_CONTACT);
     if (!contactCls) return Qnil;
 
-    jmethodID phonebookPrepareFullListMID = getJNIClassMethod(env, phonebookCls, "prepareFullList", "()V");
-    if (!phonebookPrepareFullListMID) return Qnil;
+    jmethodID queryMID = getJNIClassMethod(env, phonebookCls, "queryContacts", "(II)V");
+    if (!queryMID) return Qnil;
 
     jmethodID phonebookMoveToBeginMID = getJNIClassMethod(env, phonebookCls, "moveToBegin", "()V");
     if (!phonebookMoveToBeginMID) return Qnil;
@@ -127,15 +127,11 @@ RHO_GLOBAL VALUE getallPhonebookRecords(void* pb)
     jmethodID contactIdMID = getJNIClassMethod(env, contactCls, "id", "()Ljava/lang/String;");
     if (!contactIdMID) return Qnil;
 
-	jmethodID contactGetFieldMID = getJNIClassMethod(env, contactCls, "getField", "(I)Ljava/lang/String;");
-	if (!contactGetFieldMID) return Qnil;
+    jmethodID contactGetFieldMID = getJNIClassMethod(env, contactCls, "getField", "(I)Ljava/lang/String;");
+    if (!contactGetFieldMID) return Qnil;
 
-
-    env->CallVoidMethod(phonebookObj, phonebookPrepareFullListMID);
-
-    // pb.moveToBegin();
+    env->CallVoidMethod(phonebookObj, queryMID, offset, max_results);
     env->CallVoidMethod(phonebookObj, phonebookMoveToBeginMID);
-
 
     VALUE valGc = rho_ruby_disable_gc();
     CHoldRubyValue hash(rho_ruby_createHash());
@@ -150,27 +146,54 @@ RHO_GLOBAL VALUE getallPhonebookRecords(void* pb)
         if (!idObj) return Qnil;
 
         //addHashToHash(hash, rho_cast<std::string>(idObj).c_str(), createHashFromContact(contactObj));
-		CHoldRubyValue contactHash(rho_ruby_createHash());
-		// contact.moveToBegin();
+        CHoldRubyValue contactHash(rho_ruby_createHash());
+        // contact.moveToBegin();
 
-		int i;
-		for (i = 0; i < PB_FIELDS_COUNT; i++) {
-			jstring value = (jstring)env->CallObjectMethod(contactObj, contactGetFieldMID, i);
-			if (value != NULL) {
-				addStrToHash(contactHash, field_names[i], rho_cast<std::string>(value).c_str());
-				env->DeleteLocalRef(value);
-			}
-		}
+        int i;
+        for (i = 0; i < PB_FIELDS_COUNT; i++) {
+            jstring value = (jstring)env->CallObjectMethod(contactObj, contactGetFieldMID, i);
+            if (value != NULL) {
+                addStrToHash(contactHash, field_names[i], rho_cast<std::string>(value).c_str());
+                env->DeleteLocalRef(value);
+            }
+        }
 
-		addHashToHash(hash, rho_cast<std::string>(idObj).c_str(), contactHash);
+        addHashToHash(hash, rho_cast<std::string>(idObj).c_str(), contactHash);
 
         env->DeleteLocalRef(idObj);
         env->DeleteLocalRef(contactObj);
     }
 
     rho_ruby_enable_gc(valGc);
-    if (logging_enable) RAWLOG_INFO("getallPhonebookRecords() FINISH");
+    if (logging_enable) RAWLOG_INFO("getPhonebookRecords() FINISH");
     return hash;
+}
+
+RHO_GLOBAL int getPhonebookRecordCount(void* pb)
+{
+    if (logging_enable) RAWLOG_INFO("getPhonebookRecordCount() START");
+    jobject phonebookObj = static_cast<jobject>(pb);
+
+    JNIEnv *env = jnienv();
+
+    jclass phonebookCls = getJNIClass(RHODES_JAVA_CLASS_PHONEBOOK);
+    if (!phonebookCls) return 0;
+
+    jmethodID queryMID = getJNIClassMethod(env, phonebookCls, "queryContactCount", "()I");
+    if (!queryMID) return 0;
+
+    int contactCount =  env->CallIntMethod(phonebookObj, queryMID);
+
+    if (logging_enable) RAWLOG_INFO("getPhonebookRecordCount() FINISH");
+    return contactCount;
+}
+
+RHO_GLOBAL VALUE getallPhonebookRecords(void* pb)
+{
+    if (logging_enable) RAWLOG_INFO("getallPhonebookRecords() START");
+    VALUE res = getPhonebookRecords(pb, 0, -1);
+    if (logging_enable) RAWLOG_INFO("getallPhonebookRecords() FINISH");
+    return res;
 }
 
 RHO_GLOBAL void* openPhonebookRecord(void* pb, char* id)

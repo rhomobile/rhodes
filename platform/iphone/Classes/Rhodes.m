@@ -654,7 +654,7 @@ static Rhodes *instance = NULL;
 		}
 		
 		if (sync_all) {
-			rho_sync_doSyncAllSources(TRUE);
+			rho_sync_doSyncAllSources(TRUE,"");
 		}
 	}
 }

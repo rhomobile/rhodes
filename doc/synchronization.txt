@@ -443,15 +443,20 @@ Returns 1 if the `SyncEngine` currently has a user session, 0 if not.
 	  render :action => :login
 	end
 
-### `dosync(show_sync_status = true)`
+### `dosync(show_sync_status = true, query_params = "")`
 Start the `SyncEngine` process and display an optional status popup (defaults to true).
+query_params will pass to sync server
 
 	:::ruby
 	SyncEngine.dosync(false)
 	  #=> no status popups are displayed
 
-### `dosync_source(source_id_or_name, show_sync_status = true)`
+	SyncEngine.dosync(false, "param1=12&param2=abc")
+	  #=> no status popups are displayed and parameters will pass to sync server
+
+### `dosync_source(source_id_or_name, show_sync_status = true, query_params = "")`
 Star the `SyncEngine` process for a given source id or source name and display an optional status popup (defaults to true).
+query_params will pass to sync server
 
 	:::ruby
 	SyncEngine.dosync_source(Product.get_source_id.to_i, false) #sync by source id

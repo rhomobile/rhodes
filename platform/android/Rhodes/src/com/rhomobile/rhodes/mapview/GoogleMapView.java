@@ -245,7 +245,7 @@ public class GoogleMapView extends MapActivity {
 			}
 		}
 		
-		mHolder.clear();
+		//mHolder.clear();
 
 		view.preLoad();
 		
