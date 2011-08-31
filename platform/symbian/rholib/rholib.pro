@@ -101,6 +101,10 @@ unix:!symbian {
     INSTALLS += target
 }
 
+win32 {
+#DESTDIR = ../../rhodes-symbian-emulator-build
+}
+
 symbian {
 INCLUDEPATH += ../../shared/curl/include
 HEADERS +=  ../../shared/net/CURLNetRequest.h
