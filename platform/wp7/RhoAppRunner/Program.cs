@@ -49,9 +49,9 @@ namespace RhoAppRunner
                 useEmulator = false;
 
             if (useEmulator)
-                WP7Device = WP7SDK.GetDevices().First(d => d.Name.StartsWith("Windows Phone Emulator"));
+                WP7Device = WP7SDK.GetDevices().First(d => d.Name.StartsWith("Windows Phone Emulator") || d.Name.StartsWith("Windows Phone 7 Emulator"));
             else
-                WP7Device = WP7SDK.GetDevices().First(d => d.Name.StartsWith("Windows Phone Device"));
+                WP7Device = WP7SDK.GetDevices().First(d => d.Name.StartsWith("Windows Phone Device") || d.Name.StartsWith("Windows Phone 7 Device"));
 
             Console.WriteLine("Connecting to Windows Phone 7 Emulator/Device...");
             WP7Device.Connect();
