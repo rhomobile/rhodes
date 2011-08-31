@@ -213,6 +213,10 @@ public:
     void setPinCalloutImage(IDrawingImage *pinCallout, PIN_INFO pin_callout_info);
     void setPinCalloutLinkImage(IDrawingImage *pinCallout, PIN_INFO pin_callout_info);
     void setESRILogoImage(IDrawingImage *esriLogoImg);
+    void setGoogleLogoImage(IDrawingImage *googleLogoImg) {}
+    
+    void set_file_caching_enable(int enable) {}
+
 
 
 private:

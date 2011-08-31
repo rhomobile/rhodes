@@ -343,7 +343,7 @@ Return hash of all properties of the events found by specified parameters (index
 	* 'occurring' searches for events that have any part of the event occurring during the period specified by start_date and end_date. 
 * include_repeating -  if false then only search based on an Event's START and END values and do not calculate repeating occurrences of the event; if true then repeating occurrences of an Event are included during the search. 
  
-Create new event in the calendar, set properties of the event from passed as parameter hash, and save created calendar event (create), also return hash of all properties of the created event(include 'id' property):
+Create new event in the calendar, set properties of the event(excluding 'id', which is generated) from passed as parameter hash, and save created calendar event (create), also return hash of all properties of the created event(include 'id' property):
 	:::ruby
 	created_event = Rho::RhoEvent.create!(@params['event'])
 
@@ -449,8 +449,9 @@ Barcode recognition functionality realized as Rhode Native extension. You should
 
 For barcode recognition we use Zbar library (iPhone, and Windows Mobile platforms) and ZXing library (Android and BlackBerry platforms). In this case we support next barcode types :
 
-* iPhone, Android and WM platforms: UPC-A, UPC-E, EAN-8, EAN-13, Code 39, Code 128, .
-* BlackBerry platform: UPC-A, UPC-E, EAN-8, EAN-13, Code 39, Code 128, Code 93, QR Code, ITF, Codabar
+* WM platform: UPC-A, UPC-E, EAN-8, EAN-13, Code 39, Code 128 .
+* iPhone platform: UPC-A, UPC-E, EAN-8, EAN-13, Code 39, Code 128, QR Code .
+* Android and BlackBerry platforms: UPC-A, UPC-E, EAN-8, EAN-13, Code 39, Code 128, Code 93, QR Code, ITF, Codabar
 
 **NOTE: We are very sorry, but we are removed ZBar source code from our project by ZBar license requirements. For build Barcode extension for WM, you should download ZBar sources from http://zbar.sourceforge.net/ and copy to [rhodes root]/lib/extensions/barcode/ext/barcode/shared/zbar/zbar/ folder "include" and "zbar" folders from ZBar sources. Also you should fix ZBar sources for building by Microsoft Visual Studio (move define of inner function variables to begin of functions, etc.)
 
@@ -616,7 +617,8 @@ Write string
 
 ### Example of Controller with using Bluetooth API
 
-It is not complete example (link to complete example see below). This code just show how you can make connection and send/receive strings. 
+This is not a complete example (for a link to a complete example, see the link below this example). This code just shows how you can make a connection and send/receive strings.<a id="bluetooth-ex" />
+
 	:::ruby
 	require 'rho/rhocontroller'
 	require 'rho/rhobluetooth'
@@ -944,7 +946,7 @@ You can also customize popup window's title, icon, buttons and specify callback 
 		:icon => '/public/images/icon.png',
 	    :buttons => ["Yes", "No", 
 			{:id => 'cancel', :title => 'Cancel all'}],
-	    :callback => url_for(:action => :on_dissmiss_popup) } )
+	    :callback => url_for(:action => :on_dismiss_popup) } )
 
 Popup window always close after clicking on any button.
 
@@ -995,7 +997,7 @@ Status window will close after clicking on hide button.
 * status_text - text to be displayed in status window
 * hide_button_label - label of hide button
 
-For example you can use Alert.show_status in sync notification callback:
+For example you can use Alert.show_status in sync notification callback:<a id="alert-show-status-ex" />
 	:::ruby
 	def sync_notify
 	  status = @params['status'] ? @params['status'] : ""

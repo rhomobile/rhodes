@@ -26,7 +26,7 @@
 
 
 def kill_detool
-  if RUBY_PLATFORM =~ /windows|cygwin|mingw/
+  if RUBY_PLATFORM =~ /(win|w)32$/
     # Windows
     `taskkill /F /IM detool.exe`
   else

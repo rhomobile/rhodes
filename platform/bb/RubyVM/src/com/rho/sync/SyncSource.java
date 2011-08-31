@@ -88,6 +88,7 @@ public class SyncSource
     boolean m_bGetAtLeastOnePage = false;
     int m_nErrCode = RhoAppAdapter.ERR_NONE;
     String m_strError = "", m_strServerError = "";
+    String m_strQueryParams = "";
     
     int m_nRefreshTime = 0;
     int m_nProgressStep = -1;
@@ -606,6 +607,9 @@ public class SyncSource
 	        if ( !m_bTokenFromDB && getToken() > 1 )
 	            strQuery += "&token=" + getToken();
 
+	        if ( m_strQueryParams.length() > 0 )
+	        	strQuery += "&" + m_strQueryParams;
+	        
 			LOG.INFO( "Pull changes from server. Url: " + (strUrl+strQuery) );
 			
 			NetResponse resp = null;

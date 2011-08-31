@@ -15,6 +15,7 @@ public class ClientRegister extends RhoThread
 {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("ClientRegister");
+	RhoConf RHOCONF(){ return RhoConf.getInstance(); }
 	
 	private static final int WAIT_BEFOREKILL_SECONDS  = 3;
 	private static final int POLL_INTERVAL_SECONDS = 60;
@@ -121,8 +122,8 @@ public class ClientRegister extends RhoThread
 		IDBResult res = DBAdapter.getUserDB().executeSQL("SELECT token,token_sent from client_info");
         if ( !res.isEnd() ) {
 			String token = res.getStringByIdx(0); 
-			int token_sent = res.getIntByIdx(1);
-			if ( m_strDevicePin.equals(token) && token_sent > 0 ) 
+			boolean token_sent = res.getIntByIdx(1)>0 && !RHOCONF().getBool("register_push_at_startup");
+			if ( m_strDevicePin.equals(token) && token_sent ) 
 			{
 				//token in db same as new one and it was already send to the server
 				//so we do nothing

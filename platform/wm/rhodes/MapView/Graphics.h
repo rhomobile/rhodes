@@ -147,6 +147,11 @@ public:
 		return new DrawingImageImpl(p, s, useAlpha);
 	}
 
+	virtual IDrawingImage* createImageEx(void const *p, size_t s, int x, int y, int w, int h, bool useAlpha) {
+		return new DrawingImageImpl(p, s, useAlpha);
+	}
+
+
 	virtual IDrawingImage* cloneImage(IDrawingImage *image) {
 		if (image == NULL) {
 			return NULL;
