@@ -115,9 +115,7 @@
 #define HAVE_BASENAME 1
 
 /* Define to 1 if bool is an available type. */
-#ifdef SYMBIAN_3
 #define HAVE_BOOL_T 1
-#endif
 
 /* Define to 1 if you have the clock_gettime function and monotonic timer. */
 #ifdef OS_ANDROID
