@@ -161,12 +161,6 @@ public class RhodesService extends Service {
 	synchronized
 	public static boolean isRhodesActivityStarted() { return sRhodesActivityStarted; }
 	
-	private static int mGeoLocationInactivityTimeout;
-
-	public static int getGeoLocationInactivityTimeout() {
-		return mGeoLocationInactivityTimeout;
-	}
-	
 	private boolean mNeedGeoLocationRestart = false;
 	
 	class PowerWakeLock {
@@ -416,10 +410,6 @@ public class RhodesService extends Service {
 		
 		// TODO: detect camera availability
 		mCameraAvailable = true;
-		
-		mGeoLocationInactivityTimeout = RhoConf.getInt("geo_location_inactivity_timeout");
-		if (mGeoLocationInactivityTimeout == 0)
-			mGeoLocationInactivityTimeout = 25*1000; // 25s
 		
 		// Register custom uri handlers here
 		mUriHandlers.addElement(new ExternalHttpHandler(context));

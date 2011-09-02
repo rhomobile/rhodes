@@ -266,3 +266,10 @@ int rho_geo_known_position() {
 void rho_geoimpl_settimeout(int nTimeoutSec)
 {
 }
+
+void rho_geoimpl_turngpsoff()
+{
+	RAWLOG_INFO("Explicit request to stop location controller");
+	[[LocationController sharedInstance] stop];
+}
+

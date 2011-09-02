@@ -25,8 +25,12 @@
 *------------------------------------------------------------------------*/
 package com.rhomobile.rhodes.geolocation;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 import android.content.Context;
@@ -40,165 +44,275 @@ import android.os.Looper;
 public class GeoLocationImpl {
 
 	private static final String TAG = "GeoLocationImpl";
+	private static final long TIMEOUT_STOP = -1;
 	
 	private LocationManager locationManager = null;
-	private boolean available = false;
-	private double longitude = 0;
-	private double latitude = 0;
-	private float  accuracy = 0;
-	private boolean determined = false;
+	private volatile int available = 0;
+	private volatile Location lastLocation;
+	private long invalidateLocationPeriod;
+	private volatile long pingTimeout = Long.MAX_VALUE; // 1 minute
 	
-	private RhoLocationListener mGpsListener = new RhoLocationListener();
-	private RhoLocationListener mNetworkListener = new RhoLocationListener();
+	private List<RhoLocationListener> mListeners = new LinkedList<RhoLocationListener>();
 	
-	class RhoLocationListener implements LocationListener {
+	public class RhoLocationListener implements LocationListener {
+		private String providerName;
+		private LocationManager manager;
+		private LocationProvider provider;
+		private long updatePeriod = 0;
+		
+		RhoLocationListener(String providerName, LocationManager manager) {
+			this.manager = manager;
+			this.providerName = providerName;
+		}
+		
+		String getProviderName() { return this.providerName; }
+		
+		synchronized boolean register(long updatePeriod) {
+			Logger.T(TAG, "Registering location listener for '" + this.providerName + "'.");
+			if (this.provider != null) {
+				this.manager.removeUpdates(this);
+			} else {
+				this.provider = this.manager.getProvider(this.providerName);
+			}
+			if(this.provider != null) {
+				this.updatePeriod = updatePeriod;
+				this.manager.requestLocationUpdates(providerName, this.updatePeriod, 0, this, Looper.getMainLooper());
+				return this.manager.isProviderEnabled(this.providerName);
+			}
+			return false;
+		}
+		
+		synchronized boolean unregister() {
+			if (this.provider != null && this.manager != null) {
+				Logger.T(TAG, "Unregistering location listener for '" + this.providerName + "'.");
+				this.manager.removeUpdates(this);
+				this.provider = null;
+				return true;
+			}
+			this.provider = null;
+			return false;
+		}
+		
+		void requestLastLocation() {
+			if (this.provider != null && this.manager != null) {
+				Location location = this.manager.getLastKnownLocation(this.providerName);
+				if (location != null) {
+					long time = location.getTime();
+					StringBuilder message = new StringBuilder();
+					message.append("Last known location from ").append(location.getProvider());
+					if((System.currentTimeMillis() - time) > (errorTimeout(this.updatePeriod))) {
+						message.append(" time is very old: ").append(location.getTime());
+					} else {
+						onLocationChanged(location);
+						message.append(" time os ok: ").append(location.getTime());
+					}
+					message.append(". Current time: ").append(System.currentTimeMillis());
+					message.append(". Inactivity timeout: ").append(this.updatePeriod * 5).append(".");
+					Logger.T(TAG,  message.toString());
+				}
+			}
+		}
+		
 		@Override
 		public void onStatusChanged(String provider, int status, Bundle extras) {
 			Logger.T(TAG, "onStatusChanged: provider=" + provider + ", status=" + status);
-			setCurrentGpsLocation(null);
+			//setCurrentGpsLocation(null);
 		}
 		
 		@Override
 		public void onProviderEnabled(String provider) {
 			Logger.T(TAG, "onProviderEnabled: provider=" + provider);
-			setCurrentGpsLocation(null);
+			checkProviderEnabled(this);
 		}
 		
 		@Override
 		public void onProviderDisabled(String provider) {
 			Logger.T(TAG, "onProviderDisabled: provider=" + provider);
-			setCurrentGpsLocation(null);
+			checkProviderDisabled(this);
 		}
 		
 		@Override
 		public void onLocationChanged(Location location) {
 			Logger.T(TAG, "onLocationChanged");
-			setCurrentGpsLocation(location);
+			setLocation(location);
 		}
 	};
 	
-	private static int TIMEOUT_STOP = -1;
-	
-	private int timeout = 10*60*1000; // 10 minutes
-	private Thread thCancel = new Thread(new Runnable() {
+	private Thread thWatchdog = new Thread(new Runnable() {
 		public void run() {
-			Logger.T(TAG, "\"cancel\" thread started");
+			Logger.I(TAG, "\"watchdog\" thread started");
 			for (;;) {
-				if (timeout < 0)
+				if (pingTimeout < 0)
 					break;
 				try {
-					Logger.T(TAG, "Waiting (" + timeout + "ms)...");
-					Thread.sleep(timeout);
+					long curTimeout = errorTimeout(pingTimeout);
+					// Sleep double ping time (to do not interfere with real location updates)
+					Logger.T(TAG, "\"watchdog\" thread waits (" + curTimeout + "ms)...");
+					Thread.sleep(curTimeout);
 				}
 				catch (InterruptedException e) {
-					Logger.T(TAG, "\"cancel\" thread interrupted");
+					Logger.T(TAG, "\"watchdog\" thread interrupted");
 					continue;
 				}
-				if (!isKnownPosition()) {
+				if (isKnownPosition()) {
+					Logger.T(TAG, "Position became very old, invalidate and inform about this");
+					
+				} else {
 					Logger.T(TAG, "Position is still unknown, inform about this");
-					PerformOnUiThread.exec(new Runnable() {
-						public void run() {
-							geoCallbackError();
-						}
-					});
 				}
-				timeout = 2147483647;
+				lastLocation = null;
+				PerformOnUiThread.exec(new Runnable() {
+					public void run() {
+						geoCallbackError();
+					}
+				});
 			}
-			Logger.T(TAG, "\"cancel\" thread stopped");
+			PerformOnUiThread.exec(new Runnable() { public void run() { geoCallbackStop();} });
+			Logger.I(TAG, "\"watchdog\" thread stopped");
 		}
 	});
 	
-	private native void geoCallback();
-	private native void geoCallbackError();
+	private static long errorTimeout(long time) { return time * 5; } 
 	
-	public GeoLocationImpl() {
+	private static native void geoCallback();
+	private static native void geoCallbackError();
+	private static native void geoCallbackStop();
+	
+	GeoLocationImpl(long invalidateLocationPeriod) {
+		this.invalidateLocationPeriod = invalidateLocationPeriod; 
 		Logger.T(TAG, "GeoLocationImpl instance created");
-		setCurrentGpsLocation(null);
-		thCancel.start();
+		Context ctx = ContextFactory.getContext();
+		locationManager = (LocationManager)ctx.getSystemService(Context.LOCATION_SERVICE);
+		createListeners();
+		thWatchdog.start();
 	}
+	
+	private void createListeners() {
+		List<String> providers = locationManager.getAllProviders();
+		Iterator<String> it = providers.iterator();
+		
+		synchronized (mListeners) {
+			while (it.hasNext()) {
+				String provider = it.next();
+				if (provider.equals(LocationManager.PASSIVE_PROVIDER))
+					continue;
+				
+				RhoLocationListener listener = new RhoLocationListener(provider, locationManager);
+				mListeners.add(listener);
+			}
+		}
+		
+	}
+	private void registerListeners() {
+		Iterator<RhoLocationListener> it;
+		synchronized (mListeners) {
+			available = 0;
+			it = mListeners.iterator();
+			while (it.hasNext()) {
+				available++;
+				it.next().register(invalidateLocationPeriod);
+			}
+		}
+		// Request last location after every listener has registered
+		// because last location from GPS will force other listeners to unregister
+		it = mListeners.iterator();
+		while (it.hasNext()) {
+			it.next().requestLastLocation();
+		}
+	}
+	
+	private void unregisterListeners(String skipProvider) {
+		synchronized (mListeners) {
+			Iterator<RhoLocationListener> it = mListeners.iterator();
+			while (it.hasNext()) {
+				RhoLocationListener listener = it.next(); 
+				if ((skipProvider != null) && listener.getProviderName().equals(skipProvider))
+					continue;
+				if (listener.unregister())
+					available--;
+			}
+		}
+	}
+	
+	private void checkProviderEnabled(RhoLocationListener listener) {
+		available++;
+	}
+	
+	private void checkProviderDisabled(RhoLocationListener listener) {
+		// Register all listeners back
+		// if GPS provider becomes disabled
+		if (LocationManager.GPS_PROVIDER.equals(listener.getProviderName())) {
+			Logger.T(TAG, "GPS provider has disabled, register others back.");
+			registerListeners();
+		} else {
+			available--;
+			Logger.T(TAG, "Provider is disabled: " + listener.getProviderName() + ", available=" + available);
+		}
+	}
+	
+	private static boolean isLocationsEqual(Location prev, Location current) {
+		if (prev == null && current != null)
+			return false;
+		if (prev != null && current == null)
+			return true;
 
-	private void setCurrentGpsLocation(Location location) {
+		do {
+			if (prev.getLatitude() != current.getLatitude() ||
+				prev.getLongitude() == current.getLongitude())
+				break;
+			
+			if(current.hasAccuracy()) {
+				if(!prev.hasAccuracy())
+					break;
+				if (prev.getAccuracy() != current.getAccuracy())
+					break;
+			}
+			return true;
+		} while(false);
+		return false;
+	}
+	
+	private synchronized void setLocation(Location location) {
 		Logger.T(TAG, "setCurrentGpsLocation: location=" + location);
 		try {
-			// This array MUST be sorted in order "most-priority-first" meaning
-			// that we'll don't ask next provider if previous returned non-null value
-			final String[] providers = {LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER};
-			final LocationListener[] listeners = {mGpsListener, mNetworkListener};
-			
-			if (locationManager == null) {
-				Context ctx = RhodesService.getContext();
-				locationManager = (LocationManager)ctx.getSystemService(Context.LOCATION_SERVICE);
-				for (int i = 0; i < providers.length; ++i) {
-					final String providerName = providers[i];
-					LocationProvider provider = locationManager.getProvider(providerName);
-					if (!available)
-						available = provider != null && locationManager.isProviderEnabled(providerName);
-					locationManager.requestLocationUpdates(providerName, 0, 0, listeners[i], Looper.getMainLooper());
-				}
-			}
-			
-			if (location != null) {
-				// We've received location update
-				Logger.T(TAG, "Received location update from \"" + location.getProvider() + "\" provider");
+			// We've received location update
+			Logger.T(TAG, "Received location update from \"" + location.getProvider() + "\" provider");
 				
-				// If we've received fix from GPS, stop updates from Network location manager
-				// as we don't need it anymore
-				if (LocationManager.GPS_PROVIDER.equals(location.getProvider())) {
-					Logger.T(TAG, "Stop \"" + LocationManager.NETWORK_PROVIDER + "\" provider");
-					locationManager.removeUpdates(mNetworkListener);
-				}
-			}
-			else {
-				// Ask providers for last known position and use first non-null value
-				// That's why important place provider names in providers array in order
-				// "most-priority-first"
-				for (int i = 0; i < providers.length; ++i) {
-					final String providerName = providers[i];
-					location = locationManager.getLastKnownLocation(providerName);
-					if (location != null) {
-						Logger.T(TAG, "Use last known location from \"" + location.getProvider() + "\" provider");
-						break;
-					}
-				}
+			// If we've received fix from GPS, stop updates from all other providers
+			// as we don't need it anymore
+			if (LocationManager.GPS_PROVIDER.equals(location.getProvider())) {
+					unregisterListeners(LocationManager.GPS_PROVIDER);
 			}
 			
-			boolean prevDetermined = determined;
-			double prevLat = latitude;
-			double prevLon = longitude;
-			
-			if (location != null) {
-				longitude = location.getLongitude();
-				latitude = location.getLatitude();
-				accuracy = location.getAccuracy();
-				determined = true;
-			}
-			else {
-				determined = false;
-			}
+			dumpStatus(locationManager.getAllProviders());
 
-			dumpStatus(providers);
-			
-			if (determined != prevDetermined || latitude != prevLat || longitude != prevLon) {
+			if (!isLocationsEqual(lastLocation, location)) {
 				Logger.T(TAG, "Geo location information changed, notify about that");
-				geoCallback();
+				lastLocation = location;
+				PerformOnUiThread.exec(new Runnable() { public void run() { geoCallback();} }, 10);
 			}
 			
 		} catch (Exception e) {
-			determined = false;
+			lastLocation = null;
 			Logger.E(TAG, e.getMessage());
 		}
 	}
 	
-	private void dumpStatus(final String[] providers) {
+	private void dumpStatus(List<String> providers) {
 		StringBuffer log = new StringBuffer();
 		log.append("Status of location providers: ");
-		for (int i = 0; i < providers.length; ++i) {
-			if (i > 0)
+		Iterator<String> it = providers.iterator();
+		boolean first = true;
+		while (it.hasNext()) {
+			String provider = it.next();
+			if (first) 
+				first = false;
+			else
 				log.append(", ");
 			log.append("\"");
-			log.append(providers[i]);
+			log.append(provider);
 			log.append("\" - ");
-			if (locationManager.isProviderEnabled(providers[i]))
+			if (locationManager.isProviderEnabled(provider))
 				log.append("enabled");
 			else
 				log.append("disabled");
@@ -206,55 +320,77 @@ public class GeoLocationImpl {
 		Logger.T(TAG, log.toString());
 		log = new StringBuffer();
 		log.append("location is");
-		if (!determined)
-			log.append(" not");
-		log.append(" determined");
-		if (determined) {
-			log.append(": longitude=").append(Double.toString(longitude));
-			log.append(", latitude=").append(Double.toString(latitude));
-			log.append(", accuracy=").append(Float.toString(accuracy));
+		if (lastLocation == null) {
+			log.append(" not determined");
+		} else {
+			log.append(" determined");
+			log.append(": longitude=").append(Double.toString(lastLocation.getLongitude()));
+			log.append(", latitude=").append(Double.toString(lastLocation.getLatitude()));
+			if (lastLocation.hasAccuracy())
+				log.append(", accuracy=").append(Float.toString(lastLocation.getAccuracy()));
+			if (lastLocation.hasSpeed())
+				log.append(", speed=").append(Float.toString(lastLocation.getSpeed()));
+			if (lastLocation.hasAltitude())
+				log.append(", altitude=").append(Double.toString(lastLocation.getAltitude()));
 		}
 		Logger.T(TAG, log.toString());
 	}
 	
-	public synchronized void stop() {
+	void start() {
+		registerListeners();
+	}
+	
+	
+	synchronized void stop() {
 		// Stop thCancel thread
-		timeout = TIMEOUT_STOP;
-		thCancel.interrupt();
+		pingTimeout = TIMEOUT_STOP;
+		thWatchdog.interrupt();
 		
 		if (locationManager == null)
 			return;
-		
-		Logger.T(TAG, "Stop \"" + LocationManager.NETWORK_PROVIDER + "\" provider");
-		locationManager.removeUpdates(mNetworkListener);
-		Logger.T(TAG, "Stop \"" + LocationManager.GPS_PROVIDER + "\" provider");
-		locationManager.removeUpdates(mGpsListener);
+
+		unregisterListeners(null);
 		
 		locationManager = null;
 	}
 
-	public synchronized boolean isAvailable() {
-		return available;
+	synchronized boolean isAvailable() {
+		return available > 0;
 	}
 	
-	public synchronized double getLatitude() {
-		return latitude;
+	synchronized double getLatitude() {
+		return lastLocation != null ? lastLocation.getLatitude() : 0;
 	}
 
-	public synchronized double getLongitude() {
-		return longitude;
+	synchronized double getLongitude() {
+		return lastLocation != null ? lastLocation.getLongitude() : 0;
 	}
 	
-	public synchronized float getAccuracy() {
-		return accuracy;
+	synchronized float getAccuracy() {
+		return (lastLocation != null && lastLocation.hasAccuracy()) ? lastLocation.getAccuracy() : 0;
 	}
 
-	public synchronized boolean isKnownPosition() {
-		return determined;
+	synchronized long getTime() {
+		return lastLocation != null ? lastLocation.getTime() : 0;
 	}
 
-	public synchronized void setTimeout(int nsec) {
-		timeout = nsec*1000;
-		thCancel.interrupt();
+	synchronized float getSpeed() {
+		return (lastLocation != null && lastLocation.hasSpeed()) ? lastLocation.getSpeed() : 0;
+	}
+
+	synchronized double getAltitude() {
+		return (lastLocation != null && lastLocation.hasAltitude()) ? lastLocation.getAltitude() : 0;
+	}
+
+	synchronized boolean isKnownPosition() {
+		return lastLocation != null;
+	}
+
+	synchronized void setTimeout(int nsec) {
+		pingTimeout = nsec*1000;
+		thWatchdog.interrupt();
+		registerListeners();// do reregister for new timeout
+		Logger.T(TAG, "Set new ping timeout: " + pingTimeout + "ms");
+		
 	}
 }
