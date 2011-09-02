@@ -1,3 +1,29 @@
+/*------------------------------------------------------------------------
+* (The MIT License)
+* 
+* Copyright (c) 2008-2011 Rhomobile, Inc.
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+* 
+* http://rhomobile.com
+*------------------------------------------------------------------------*/
+
 package com.rhomobile.rhodes.mapview;
 
 import java.io.IOException;
@@ -25,7 +51,6 @@ import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
-
 import com.rhomobile.rhodes.Utils;
 
 public class GoogleMapView extends MapActivity {
@@ -41,6 +66,7 @@ public class GoogleMapView extends MapActivity {
 	
 	private com.google.android.maps.MapView view;
 	private AnnotationsOverlay annOverlay;
+	private CalloutOverlay mCalloutOverlay;
 	
 	private double spanLat = 0;
 	private double spanLon = 0;
@@ -48,7 +74,8 @@ public class GoogleMapView extends MapActivity {
 	private String apiKey;
 	
 	private Vector<Annotation> annotations;
-
+	
+	
 	static private ExtrasHolder mHolder = null;
 	
 	private static class Coordinates {
@@ -74,6 +101,11 @@ public class GoogleMapView extends MapActivity {
 			mServiceConnection = null;
 		}
 		super.onDestroy();
+		mc = null;
+	}
+	
+	public void selectAnnotation(Annotation ann) {
+		mCalloutOverlay.selectAnnotation(ann);
 	}
 	
 	@Override
@@ -98,8 +130,9 @@ public class GoogleMapView extends MapActivity {
 		
 		// Extrace parameters
 		//Bundle extras = getIntent().getExtras();
+		
 		ExtrasHolder extras = mHolder;
-
+		
 		apiKey = extras.getString(SETTINGS_PREFIX + "api_key");
 		
 		// Extract settings
@@ -144,6 +177,11 @@ public class GoogleMapView extends MapActivity {
 			ann.url = extras.getString(prefix + "url");
 			if (ann.url != null)
 				ann.url = RhodesService.getInstance().normalizeUrl(ann.url);
+			
+			ann.image = extras.getString(prefix+"image");
+			ann.image_x_offset = extras.getInt(prefix + "image_x_offset");
+			ann.image_y_offset = extras.getInt(prefix + "image_y_offset");
+			
 			annotations.addElement(ann);
 		}
 		
@@ -155,7 +193,11 @@ public class GoogleMapView extends MapActivity {
 		Drawable marker = getResources().getDrawable(AndroidR.drawable.marker);
 		marker.setBounds(0, 0, marker.getIntrinsicWidth(), marker.getIntrinsicHeight());
 		annOverlay = new AnnotationsOverlay(this, marker);
+		
+		mCalloutOverlay = new CalloutOverlay(this, marker);
+		
 		view.getOverlays().add(annOverlay);
+		view.getOverlays().add(mCalloutOverlay);
 		
 		// Apply extracted parameters
 		view.setBuiltInZoomControls(zoom_enabled);
@@ -213,6 +255,7 @@ public class GoogleMapView extends MapActivity {
 		}
 		
 		//mHolder.clear();
+
 		view.preLoad();
 		
 		Thread geocoding = new Thread(new Runnable() {
@@ -236,9 +279,8 @@ public class GoogleMapView extends MapActivity {
 	}
 	
 	private void doGeocoding() {
-
 		Vector<Annotation> anns = new Vector<Annotation>();
-
+		
 		Context context = RhodesActivity.getContext();
 		
 		for (int i = 0, lim = annotations.size(); i < lim; ++i) {
@@ -292,7 +334,7 @@ public class GoogleMapView extends MapActivity {
 			}
 		}, false);
 	}
-
+	
 	private class AddAnnotationsCommand implements Runnable {
 		public AddAnnotationsCommand(AnnotationsOverlay overlay, Vector<Annotation> annotations, com.google.android.maps.MapView view) {
 			mOverlay = overlay;
@@ -326,7 +368,6 @@ public class GoogleMapView extends MapActivity {
 			Intent intent_obj = new Intent(RhodesActivity.getContext(), GoogleMapView.class);
 			mHolder.clear();
 			ExtrasHolder intent = mHolder;
-
 			intent.putExtra(SETTINGS_PREFIX + "api_key", gapiKey);
 			
 			Object settings = params.get("settings");
@@ -420,6 +461,18 @@ public class GoogleMapView extends MapActivity {
 					Object url = ann.get("url");
 					if (url != null && (url instanceof String))
 						intent.putExtra(prefix + "url", (String)url);
+
+					Object image = ann.get("image");
+					if (image != null && (image instanceof String))
+						intent.putExtra(prefix + "image", (String)image);
+
+					Object image_x_offset = ann.get("image_x_offset");
+					if (image_x_offset != null && (image_x_offset instanceof String))
+						intent.putExtra(prefix + "image_x_offset", (String)image_x_offset);
+					
+					Object image_y_offset = ann.get("image_y_offset");
+					if (image_y_offset != null && (image_y_offset instanceof String))
+						intent.putExtra(prefix + "image_y_offset", (String)image_y_offset);
 				}
 			}
 			

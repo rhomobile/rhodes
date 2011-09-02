@@ -1,3 +1,29 @@
+/*------------------------------------------------------------------------
+* (The MIT License)
+* 
+* Copyright (c) 2008-2011 Rhomobile, Inc.
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+* 
+* http://rhomobile.com
+*------------------------------------------------------------------------*/
+
 package com.rhomobile.rhodes.mapview;
 
 import android.content.Intent;
@@ -41,6 +67,7 @@ public class MapView extends BaseActivity implements MapTouch {
 	public native void setPinCalloutImage(long nativeDevice, Bitmap pin);
 	public native void setPinCalloutLinkImage(long nativeDevice, Bitmap pin);
 	public native void setESRILogoImage(long nativeDevice, Bitmap esriLogo);
+	public native void setGoogleLogoImage(long nativeDevice, Bitmap googleLogo);
 	
 	public native int minZoom(long nativeDevice);
 	public native int maxZoom(long nativeDevice);
@@ -122,9 +149,12 @@ public class MapView extends BaseActivity implements MapTouch {
 		setPinCalloutImage(mNativeDevice, pinCallout );
 		Bitmap pinCalloutLink = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.callout_link);
 		setPinCalloutLinkImage(mNativeDevice, pinCalloutLink );
+		
 		Bitmap esriLogo = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.esri);
 		setESRILogoImage(mNativeDevice, esriLogo);
 
+		Bitmap googleLogo = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.google);
+		setGoogleLogoImage(mNativeDevice, googleLogo);
 		
 		mTouchHandler = createTouchHandler();
 		mTouchHandler.setMapTouch(this);
@@ -137,7 +167,9 @@ public class MapView extends BaseActivity implements MapTouch {
 			@Override
 			protected void dispatchDraw(Canvas canvas) {
 				//super.dispatchDraw(canvas);
-				paint(mNativeDevice, canvas);
+				if (mNativeDevice != 0) {
+					paint(mNativeDevice, canvas);
+				}
 			}
 			
 			@Override
@@ -182,8 +214,8 @@ public class MapView extends BaseActivity implements MapTouch {
 	
 	@Override
 	protected void onStop() {
-		destroy(mNativeDevice);
 		mNativeDevice = 0;
+		destroy(mNativeDevice);
 		mc = null;
 		finish();
 		super.onStop();
@@ -240,12 +272,12 @@ public class MapView extends BaseActivity implements MapTouch {
 		Paint paint = new Paint();
 		canvas.drawBitmap(bm, x, y, paint);
 	}
-	
+
 	public void drawText(Canvas canvas, int x, int y, int width, int height, String text, int color) 
 	{
 		//Logger.I(TAG, "drawText: " + text);
 
-		String [] lines = text.split("\r\n");
+		String [] lines = text.split("\n");
 
 		canvas.save();
 		Rect rcClip = new Rect( x, y, x+width, y+height);
@@ -264,6 +296,9 @@ public class MapView extends BaseActivity implements MapTouch {
 			y += nTextHeight + nTextHeight/3;
 			canvas.drawText(lines[i], x, y, paint);
 
+			if (i == 0) {
+				y += nTextHeight;
+			}
 			paint.setTextSize(18);
 		}
 
@@ -286,10 +321,19 @@ public class MapView extends BaseActivity implements MapTouch {
 		return BitmapFactory.decodeByteArray(data, 0, data.length);
 	}
 	
+	public static Bitmap createImageEx(byte[] data, int x, int y, int w, int h) {
+		Bitmap b = BitmapFactory.decodeByteArray(data, 0, data.length);
+		return Bitmap.createBitmap(b, x, y, w, h);
+	}
+	
 	public static void destroyImage(Bitmap bm) {
 		bm.recycle();
 	}
 
+	public void destroyDevice() {
+		mNativeDevice = 0;
+	}
+	
 	@Override
 	public void touchClick(Touch touch) {
 		click(mNativeDevice, (int)touch.x, (int)touch.y);

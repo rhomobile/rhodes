@@ -1557,9 +1557,75 @@ extern double mapview_state_center_lat();
 #define state_center_lat mapview_state_center_lat
 extern double mapview_state_center_lon();
 #define state_center_lon mapview_state_center_lon
+extern void mapview_set_file_caching_enable(int enable);
+#define set_file_caching_enable mapview_set_file_caching_enable
 
 
   #define SWIG_From_double   rb_float_new 
+
+
+#include <limits.h>
+#ifndef LLONG_MIN
+# define LLONG_MIN	LONG_LONG_MIN
+#endif
+#ifndef LLONG_MAX
+# define LLONG_MAX	LONG_LONG_MAX
+#endif
+#ifndef ULLONG_MAX
+# define ULLONG_MAX	ULONG_LONG_MAX
+#endif
+
+
+SWIGINTERN VALUE
+SWIG_ruby_failed(void)
+{
+  return Qnil;
+} 
+
+
+/*@SWIG:%ruby_aux_method@*/
+SWIGINTERN VALUE SWIG_AUX_NUM2LONG(VALUE *args)
+{
+  VALUE obj = args[0];
+  VALUE type = TYPE(obj);
+  long *res = (long *)(args[1]);
+  *res = type == T_FIXNUM ? NUM2LONG(obj) : rb_big2long(obj);
+  return obj;
+}
+/*@SWIG@*/
+
+SWIGINTERN int
+SWIG_AsVal_long (VALUE obj, long* val)
+{
+  VALUE type = TYPE(obj);
+  if ((type == T_FIXNUM) || (type == T_BIGNUM)) {
+    long v;
+    VALUE a[2];
+    a[0] = obj;
+    a[1] = (VALUE)(&v);
+    if (rb_rescue(RUBY_METHOD_FUNC(SWIG_AUX_NUM2LONG), (VALUE)a, RUBY_METHOD_FUNC(SWIG_ruby_failed), 0) != Qnil) {
+      if (val) *val = v;
+      return SWIG_OK;
+    }
+  }
+  return SWIG_TypeError;
+}
+
+
+SWIGINTERN int
+SWIG_AsVal_int (VALUE obj, int *val)
+{
+  long v;
+  int res = SWIG_AsVal_long (obj, &v);
+  if (SWIG_IsOK(res)) {
+    if ((v < INT_MIN || v > INT_MAX)) {
+      return SWIG_OverflowError;
+    } else {
+      if (val) *val = (int)(v);
+    }
+  }  
+  return res;
+}
 
 SWIGINTERN VALUE
 _wrap_create(int argc, VALUE *argv, VALUE self) {
@@ -1639,6 +1705,27 @@ _wrap_state_center_lon(int argc, VALUE *argv, VALUE self) {
   result = (double)state_center_lon();
   vresult = SWIG_From_double((double)(result));
   return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_set_file_caching_enable(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "set_file_caching_enable" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = (int)(val1);
+  set_file_caching_enable(arg1);
+  return Qnil;
 fail:
   return Qnil;
 }
@@ -1915,5 +2002,6 @@ SWIGEXPORT void Init_MapView(void) {
   rb_define_module_function(mMapView, "state_started", _wrap_state_started, -1);
   rb_define_module_function(mMapView, "state_center_lat", _wrap_state_center_lat, -1);
   rb_define_module_function(mMapView, "state_center_lon", _wrap_state_center_lon, -1);
+  rb_define_module_function(mMapView, "set_file_caching_enable", _wrap_set_file_caching_enable, -1);
 }
 
