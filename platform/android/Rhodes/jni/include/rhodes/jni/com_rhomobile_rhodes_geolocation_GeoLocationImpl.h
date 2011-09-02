@@ -7,13 +7,15 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef com_rhomobile_rhodes_geolocation_GeoLocationImpl_TIMEOUT_STOP
+#define com_rhomobile_rhodes_geolocation_GeoLocationImpl_TIMEOUT_STOP -1LL
 /*
  * Class:     com_rhomobile_rhodes_geolocation_GeoLocationImpl
  * Method:    geoCallback
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_geolocation_GeoLocationImpl_geoCallback
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass);
 
 /*
  * Class:     com_rhomobile_rhodes_geolocation_GeoLocationImpl
@@ -21,7 +23,15 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_geolocation_GeoLocationImpl_geo
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_geolocation_GeoLocationImpl_geoCallbackError
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     com_rhomobile_rhodes_geolocation_GeoLocationImpl
+ * Method:    geoCallbackStop
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_geolocation_GeoLocationImpl_geoCallbackStop
+  (JNIEnv *, jclass);
 
 #ifdef __cplusplus
 }
