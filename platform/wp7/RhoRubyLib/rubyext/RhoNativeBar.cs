@@ -49,34 +49,11 @@ namespace rho.rubyext
         #region Private Instance & Singleton Methods
 
         [RubyMethodAttribute("create", RubyMethodAttributes.PublicSingleton)]
-        public static void Create(RubyModule/*!*/ self, int barType, RubyArray args)
+        public static void Create(RubyModule/*!*/ self, int barType, Object args)
         {
             try
             {
-                if (args != null && args.Count > 0)
-                    RhodesApp.createToolBar(barType, (Object)args);
-
-                if (barType == 2)
-                    RhodesApp.removeToolBar();
-            }
-            catch (Exception ex)
-            {
-                Exception rubyEx = self.Context.CurrentException;
-                if (rubyEx == null)
-                {
-                    rubyEx = RubyExceptionData.InitializeException(new RuntimeError(ex.Message.ToString()), ex.Message);
-                }
-                LOG.ERROR("create", ex);
-                throw rubyEx;
-            }
-        }
-
-        [RubyMethodAttribute("create", RubyMethodAttributes.PublicSingleton)]
-        public static void Create(RubyModule/*!*/ self, int barType, Hash args)
-        {
-            try
-            {
-                if (args != null && args.Count > 0)
+                if (args != null) 
                     RhodesApp.createToolBar(barType, (Object)args);
 
                 if (barType == 2)
@@ -148,26 +125,7 @@ namespace rho.rubyext
         }
 
         [RubyMethodAttribute("create_native_toolbar", RubyMethodAttributes.PublicSingleton)]
-        public static void createNativeToolBar(RubyModule/*!*/ self, int barType, RubyArray args)
-        {
-            try
-            {
-                Create(self, barType, args);
-            }
-            catch (Exception ex)
-            {
-                Exception rubyEx = self.Context.CurrentException;
-                if (rubyEx == null)
-                {
-                    rubyEx = RubyExceptionData.InitializeException(new RuntimeError(ex.Message.ToString()), ex.Message);
-                }
-                LOG.ERROR("create_native_toolbar", ex);
-                throw rubyEx;
-            }
-        }
-
-        [RubyMethodAttribute("create_native_toolbar", RubyMethodAttributes.PublicSingleton)]
-        public static void createNativeToolBar(RubyModule/*!*/ self, int barType, Hash args)
+        public static void createNativeToolBar(RubyModule/*!*/ self, int barType, Object args)
         {
             try
             {
@@ -205,37 +163,11 @@ namespace rho.rubyext
         }
 
         [RubyMethodAttribute("create_native_tabbar", RubyMethodAttributes.PublicSingleton)]
-        public static void createNativeTabBar(RubyModule/*!*/ self, int barType, Hash args)
+        public static void createNativeTabBar(RubyModule/*!*/ self, int barType, Object args)
         {
             try
             {
-                if (args != null && args.Count > 0)
-                {
-                    RhodesApp.removeTabBar();
-                    RhodesApp.createTabBar(barType, (Object)args);
-                }
-
-                if (barType == 2)
-                    RhodesApp.removeTabBar();
-            }
-            catch (Exception ex)
-            {
-                Exception rubyEx = self.Context.CurrentException;
-                if (rubyEx == null)
-                {
-                    rubyEx = RubyExceptionData.InitializeException(new RuntimeError(ex.Message.ToString()), ex.Message);
-                }
-                LOG.ERROR("create_native_tabbar", ex);
-                throw rubyEx;
-            }
-        }
-
-        [RubyMethodAttribute("create_native_tabbar", RubyMethodAttributes.PublicSingleton)]
-        public static void createNativeTabBar(RubyModule/*!*/ self, int barType, RubyArray args)
-        {
-            try
-            {
-                if (args != null && args.Count > 0)
+                if (args != null)
                 {
                     RhodesApp.removeTabBar();
                     RhodesApp.createTabBar(barType, (Object)args);
