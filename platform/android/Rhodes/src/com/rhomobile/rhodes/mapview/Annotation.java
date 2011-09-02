@@ -37,4 +37,7 @@ public class Annotation {
 	public String image = null;
 	public int image_x_offset = 0;
 	public int image_y_offset = 0;
+	
+	public int callout_x_offset = 0;
+	public int callout_y_offset = 0;
 }

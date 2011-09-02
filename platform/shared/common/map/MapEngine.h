@@ -72,6 +72,8 @@ public:
     virtual IDrawingImage* createImageEx(void const *p, size_t s, int x, int y, int w, int h, bool useAlpha) = 0;
     virtual IDrawingImage* cloneImage(IDrawingImage *image) = 0;
     virtual void destroyImage(IDrawingImage* image) = 0;
+    
+    virtual IDrawingImage* createCalloutImage(String const &title, String const &subtitle, String const& url, int* x_offset, int* y_offset) = 0;
 
     virtual void requestRedraw() = 0;
 };

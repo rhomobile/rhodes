@@ -147,6 +147,9 @@ public:
     IDrawingImage* cloneImage(IDrawingImage *image);
     void destroyImage(IDrawingImage* image);
 
+    IDrawingImage* createCalloutImage(String const &title, String const &subtitle, String const& url, int* x_offset, int* y_offset);
+    
+    
     void requestRedraw();
 
     void paint(jobject canvas);
@@ -439,6 +442,31 @@ IDrawingImage *AndroidMapDevice::createImage(void const *p, size_t size, bool us
     RHO_MAP_TRACE1("createImage: return image=%p", image);
     return image;
 }
+    
+IDrawingImage* AndroidMapDevice::createCalloutImage(String const &title, String const &subtitle, String const& url, int* x_offset, int* y_offset)
+{
+    
+    JNIEnv *env = jnienv();
+    jclass cls = env->FindClass("com/rhomobile/rhodes/mapview/Callout");//getJNIClass("com/rhomobile/rhodes/mapview/Callout");
+    if (!cls) return NULL;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "makeCallout", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/rhomobile/rhodes/mapview/Callout;");
+    if (!mid) return NULL;
+    
+    jobject jo_callout = env->CallStaticObjectMethod(cls, mid, rho_cast<jhstring>(title).get(), rho_cast<jhstring>(subtitle).get(), rho_cast<jhstring>(url).get());
+    
+    jmethodID mid_bitmap = env->GetMethodID( cls, "getResultBitmap", "()Landroid/graphics/Bitmap;");
+    jmethodID mid_x_off = env->GetMethodID( cls, "getXOffset", "()I");
+    jmethodID mid_y_off = env->GetMethodID( cls, "getYOffset", "()I");
+    
+    jobject bitmap = env->CallObjectMethod(jo_callout, mid_bitmap);
+    IDrawingImage *image = new AndroidImage(bitmap);
+    
+    *x_offset = env->CallIntMethod(jo_callout, mid_x_off);
+    *y_offset = env->CallIntMethod(jo_callout, mid_y_off);
+    
+    return image;
+}
+    
 
     IDrawingImage *AndroidMapDevice::createImageEx(void const *p, size_t size, int x, int y, int w, int h, bool useAlpha) {
         RHO_MAP_TRACE2("createImageEx: p=%p, size=%llu", p, (unsigned long long)size);
