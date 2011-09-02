@@ -163,5 +163,10 @@ public:
 		delete image;
 	};
 
+
+    	virtual IDrawingImage* createCalloutImage(String const &title, String const &subtitle, String const& url, int* x_offset, int* y_offset)  {
+		return NULL;
+	}
+
 	virtual void requestRedraw(){}
 };

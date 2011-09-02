@@ -277,7 +277,7 @@ public class MapView extends BaseActivity implements MapTouch {
 	{
 		//Logger.I(TAG, "drawText: " + text);
 
-		String [] lines = text.split("\r\n");
+		String [] lines = text.split("\n");
 
 		canvas.save();
 		Rect rcClip = new Rect( x, y, x+width, y+height);
@@ -296,6 +296,9 @@ public class MapView extends BaseActivity implements MapTouch {
 			y += nTextHeight + nTextHeight/3;
 			canvas.drawText(lines[i], x, y, paint);
 
+			if (i == 0) {
+				y += nTextHeight;
+			}
 			paint.setTextSize(18);
 		}
 

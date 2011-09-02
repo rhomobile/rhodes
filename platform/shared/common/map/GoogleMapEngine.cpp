@@ -795,14 +795,14 @@ void GoogleGeoCoding::processCommand(IQueueCommand *pCmd)
                 m_zoom_enabled(true), m_scroll_enabled(true), m_maptype("roadmap"),
                 m_zoom(MIN_ZOOM), m_latitude(degreesToPixelsY(0, MAX_ZOOM)), m_longitude(degreesToPixelsX(0, MAX_ZOOM)),
                 m_selected_annotation_index(-1),
-                m_pinCallout(0), m_pinCalloutLink(0), m_pin(0), m_GoogleLogo(0), mEnableFileCaching(0)
+                m_pinCallout(0), m_pinCalloutLink(0), m_pin(0), m_GoogleLogo(0), mEnableFileCaching(0), m_Callout(0), m_CalloutAnnotation(0)
                 {
-                    String url = RHOCONF().getString("Google_map_url_roadmap");
+                    String url = RHOCONF().getString("ESRI_map_url_roadmap");
                     if (url.empty())
                         url = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/";
                     m_map_urls.put("roadmap", url);
                     
-                    url = RHOCONF().getString("Google_map_url_satellite");
+                    url = RHOCONF().getString("ESRI_map_url_satellite");
                     if (url.empty())
                         url = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/";
                     m_map_urls.put("satellite", url);
@@ -818,6 +818,23 @@ void GoogleGeoCoding::processCommand(IQueueCommand *pCmd)
                     
                     if ( m_cache_update.get() != 0)
                         m_cache_update->stop(2000);
+                    /*
+                    if (m_pin != NULL) {
+                        m_drawing_device->destroyImage(m_pin);
+                    }
+                    if (m_pinCallout != NULL) {
+                        m_drawing_device->destroyImage(m_pinCallout);
+                    }
+                    if (m_pinCalloutLink != NULL) {
+                        m_drawing_device->destroyImage(m_pinCalloutLink);
+                    }
+                    if (m_GoogleLogo != NULL) {
+                        m_drawing_device->destroyImage(m_GoogleLogo);
+                    }
+                    if (m_Callout != NULL) {
+                        m_drawing_device->destroyImage(m_Callout);
+                    }
+                    */
                 }
                 
                 void GoogleMapView::setSize(int width, int height)
@@ -1229,24 +1246,40 @@ void GoogleGeoCoding::processCommand(IQueueCommand *pCmd)
                 
                 bool GoogleMapView::isClickOnCallout(int x, int y, Annotation const &ann)
                 {
+                    
+                    
                     //TODO: remove this method. use m_rcCallout
                     if (!m_pinCallout || !m_pin)
                         return false;
                     
-                    int pinCalloutWidth = m_pinCallout->width();
-                    int pinCalloutHeight = m_pinCallout->height();
+                    IDrawingImage* img = m_pinCallout;
+                    if ((m_Callout != NULL) && (((Annotation*)&ann) == m_CalloutAnnotation)) {
+                        img = m_Callout;
+                        
+                        int64 xLoc = toScreenCoordinateX(ann.longitude());
+                        int64 yLoc = toScreenCoordinateY(ann.latitude());
+
+                        int pinCalloutWidth = img->width();
+                        int pinCalloutHeight = img->height();
+
+                        int64 xCallout = xLoc + m_CalloutInfo.x_offset;
+                        int64 yCallout = yLoc + m_pin_info.y_offset + m_CalloutInfo.y_offset;//- m_pin_info.y_offset;
+                        
+                        return (x > xCallout) && (x < (xCallout + pinCalloutWidth)) && (y > yCallout) && (y < (yCallout + pinCalloutHeight));
+                    }
+                    else {
                     
-                    int64 xLoc = toScreenCoordinateX(ann.longitude());
-                    int64 yLoc = toScreenCoordinateY(ann.latitude());
+                        int pinCalloutWidth = img->width();
+                        int pinCalloutHeight = img->height();
                     
-                    int64 xCallout = xLoc - pinCalloutWidth/2;
-                    //int64 yCallout = yLoc - pinCalloutHeight + m_pin_info.y_offset;
-                    int64 yCallout = yLoc + m_pin_info.y_offset - pinCalloutHeight;//- m_pin_info.y_offset;
-#ifndef OS_ANDROID
-                    //yCallout -= m_pin_info.y_offset;
-#endif
+                        int64 xLoc = toScreenCoordinateX(ann.longitude());
+                        int64 yLoc = toScreenCoordinateY(ann.latitude());
                     
-                    return x > xCallout && x < xCallout + pinCalloutWidth && y > yCallout && y < yCallout + pinCalloutHeight;
+                        int64 xCallout = xLoc - pinCalloutWidth/2;
+                        int64 yCallout = yLoc + m_pin_info.y_offset - pinCalloutHeight;//- m_pin_info.y_offset;
+                    
+                        return x > xCallout && x < xCallout + pinCalloutWidth && y > yCallout && y < yCallout + pinCalloutHeight;
+                    }
                 }
                 
                 void GoogleMapView::paintCallout(IDrawingContext *context, Annotation const &ann)
@@ -1254,46 +1287,74 @@ void GoogleGeoCoding::processCommand(IQueueCommand *pCmd)
                     if (!m_pinCallout || !m_pin)
                         return;
                     
-                    //TODO: create m_rcCallout
-                    int pinCalloutWidth = m_pinCallout->width();
-                    int pinCalloutHeight = m_pinCallout->height();
                     
-                    int64 xLoc = toScreenCoordinateX(ann.longitude());
-                    int64 yLoc = toScreenCoordinateY(ann.latitude());
+                    if (((Annotation*)&ann) != m_CalloutAnnotation) {
+                        if (m_Callout != NULL) {
+                            m_drawing_device->destroyImage(m_Callout);
+                        }
+                        
+                        int x_off = 0;
+                        int y_off = 0;
+                        m_CalloutAnnotation = (Annotation*)&ann;
+                        m_Callout = m_drawing_device->createCalloutImage(ann.title(), ann.subtitle(), ann.url(), &x_off, &y_off);
+                        if (m_Callout != NULL) {
+                            m_CalloutInfo.x_offset = x_off;
+                            m_CalloutInfo.y_offset = y_off + m_pin_info.y_offset;
+                        }
+                    }
                     
-                    int64 xCallout = xLoc - pinCalloutWidth/2;
-                    int64 yCallout = yLoc + m_pin_info.y_offset - pinCalloutHeight;//- m_pin->height() - pinCalloutHeight;
-#ifndef OS_ANDROID
-                    //yCallout -= m_pin_info.y_offset;
-#endif
                     
-                    int reduceTextWidth = 0;
-                    if (ann.url().size() > 0) {
-                        context->drawImage((int)xCallout, (int)yCallout, m_pinCalloutLink);
-                        reduceTextWidth = 32;
+                    if (m_Callout != NULL) {
+                        int x = 0;
+                        int y = 0;
+                        
+                        int64 xLoc = toScreenCoordinateX(ann.longitude());
+                        int64 yLoc = toScreenCoordinateY(ann.latitude());
+
+                        x = (int)xLoc + m_CalloutInfo.x_offset;
+                        y = (int)yLoc + m_CalloutInfo.y_offset;
+                        
+                        context->drawImage(x, y, m_Callout);          
                     }
                     else {
-                        context->drawImage((int)xCallout, (int)yCallout, m_pinCallout);
-                    }
-                    String strText;
-                    if ( ann.title().length() > 0 )
-                        strText += ann.title();
+                        //TODO: create m_rcCallout
+                        int pinCalloutWidth = m_pinCallout->width();
+                        int pinCalloutHeight = m_pinCallout->height();
                     
-                    if ( ann.subtitle().length() > 0 )
-                    {
-                        if ( strText.length() > 0 )
-                            strText += "\r\n";
+                        int64 xLoc = toScreenCoordinateX(ann.longitude());
+                        int64 yLoc = toScreenCoordinateY(ann.latitude());
+                    
+                        int64 xCallout = xLoc - pinCalloutWidth/2;
+                        int64 yCallout = yLoc + m_pin_info.y_offset - pinCalloutHeight;//- m_pin->height() - pinCalloutHeight;
+                    
+                        int reduceTextWidth = 0;
+                        if (ann.url().size() > 0) {
+                            context->drawImage((int)xCallout, (int)yCallout, m_pinCalloutLink);
+                            reduceTextWidth = 32;
+                        }
+                        else {
+                            context->drawImage((int)xCallout, (int)yCallout, m_pinCallout);
+                        }
+                        String strText;
+                        if ( ann.title().length() > 0 )
+                            strText += ann.title();
+                    
+                        if ( ann.subtitle().length() > 0 )
+                        {
+                            if ( strText.length() > 0 )
+                                strText += "\r\n";
                         
-                        strText += ann.subtitle();
+                            strText += ann.subtitle();
+                        }
+                    
+                        int nTextX = (int)xCallout + m_pin_callout_info.x_offset;
+                        int nTextY = (int)yCallout + m_pin_callout_info.y_offset;
+                        int nTextWidth = pinCalloutWidth - m_pin_callout_info.x_offset*2 - reduceTextWidth;
+                        int nTextHeight = pinCalloutHeight - m_pin_callout_info.y_offset*2;
+                    
+                        if ( strText.length() > 0 )
+                            context->drawText( nTextX, nTextY, nTextWidth, nTextHeight, strText, CALLOUT_TEXT_COLOR);
                     }
-                    
-                    int nTextX = (int)xCallout + m_pin_callout_info.x_offset;
-                    int nTextY = (int)yCallout + m_pin_callout_info.y_offset;
-                    int nTextWidth = pinCalloutWidth - m_pin_callout_info.x_offset*2 - reduceTextWidth;
-                    int nTextHeight = pinCalloutHeight - m_pin_callout_info.y_offset*2;
-                    
-                    if ( strText.length() > 0 )
-                        context->drawText( nTextX, nTextY, nTextWidth, nTextHeight, strText, CALLOUT_TEXT_COLOR);
                 }
     
     
