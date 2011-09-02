@@ -28,7 +28,7 @@ public class PerformOnUiThread implements Runnable {
 		}
 	}
 	
-	public static void exec(final Runnable r, final int delay) {
+	public static void exec(final Runnable r, final long delay) {
         RhodesApplication.runWhen(
                 RhodesApplication.UiState.MainActivityCreated,
                 new RhodesApplication.StateHandler(true) {

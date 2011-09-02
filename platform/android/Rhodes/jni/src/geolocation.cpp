@@ -5,28 +5,35 @@
 #include "rubyext/GeoLocation.h"
 
 #undef DEFAULT_LOGCATEGORY
-#define DEFAULT_LOGCATEGORY "GeoLocation"
+#define DEFAULT_LOGCATEGORY "GeoLocationJNI"
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_geolocation_GeoLocationImpl_geoCallback
-  (JNIEnv *, jobject)
+  (JNIEnv *, jclass)
 {
     RAWTRACE("Call geo callback");
     rho_geo_callcallback();
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_geolocation_GeoLocationImpl_geoCallbackError
-  (JNIEnv *, jobject)
+  (JNIEnv *, jclass)
 {
     RAWTRACE("Call geo callback error");
     rho_geo_callcallback_error();
 }
 
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_geolocation_GeoLocationImpl_geoCallbackStop
+  (JNIEnv *, jclass)
+{
+    RAWTRACE("Call geo callback stop");
+    rho_geo_callcallback_stop();
+}
+
 RHO_GLOBAL double rho_geo_latitude()
 {
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_GEO_LOCATION);
+    static jclass cls = getJNIClass(RHODES_JAVA_CLASS_GEO_LOCATION);
     if (!cls) return 0;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "getLatitude", "()D");
+    static jmethodID mid = getJNIClassStaticMethod(env, cls, "getLatitude", "()D");
     if (!mid) return 0;
     return env->CallStaticDoubleMethod(cls, mid);
 }
@@ -34,9 +41,9 @@ RHO_GLOBAL double rho_geo_latitude()
 RHO_GLOBAL double rho_geo_longitude()
 {
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_GEO_LOCATION);
+    static jclass cls = getJNIClass(RHODES_JAVA_CLASS_GEO_LOCATION);
     if (!cls) return 0;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "getLongitude", "()D");
+    static jmethodID mid = getJNIClassStaticMethod(env, cls, "getLongitude", "()D");
     if (!mid) return 0;
     return env->CallStaticDoubleMethod(cls, mid);
 }
@@ -54,9 +61,9 @@ RHO_GLOBAL float rho_geo_accuracy()
 RHO_GLOBAL int rho_geo_known_position()
 {
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_GEO_LOCATION);
+    static jclass cls = getJNIClass(RHODES_JAVA_CLASS_GEO_LOCATION);
     if (!cls) return 0;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "isKnownPosition", "()Z");
+    static jmethodID mid = getJNIClassStaticMethod(env, cls, "isKnownPosition", "()Z");
     if (!mid) return 0;
     return env->CallStaticBooleanMethod(cls, mid);
 }
@@ -64,9 +71,9 @@ RHO_GLOBAL int rho_geo_known_position()
 RHO_GLOBAL void rho_geoimpl_settimeout(int nTimeoutSec)
 {
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_GEO_LOCATION);
+    static jclass cls = getJNIClass(RHODES_JAVA_CLASS_GEO_LOCATION);
     if (!cls) return;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "setTimeout", "(I)V");
+    static jmethodID mid = getJNIClassStaticMethod(env, cls, "setTimeout", "(I)V");
     if (!mid) return;
     return env->CallStaticVoidMethod(cls, mid, nTimeoutSec);
 }
@@ -74,10 +81,22 @@ RHO_GLOBAL void rho_geoimpl_settimeout(int nTimeoutSec)
 RHO_GLOBAL int rho_geo_is_available()
 {
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_GEO_LOCATION);
+    static jclass cls = getJNIClass(RHODES_JAVA_CLASS_GEO_LOCATION);
     if (!cls) return 0;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "isAvailable", "()Z");
+    static jmethodID mid = getJNIClassStaticMethod(env, cls, "isAvailable", "()Z");
     if (!mid) return 0;
 
     return env->CallStaticBooleanMethod(cls, mid);
 }
+
+RHO_GLOBAL void rho_geoimpl_turngpsoff()
+{
+    JNIEnv *env = jnienv();
+    static jclass cls = getJNIClass(RHODES_JAVA_CLASS_GEO_LOCATION);
+    if (!cls) return;
+    static jmethodID mid = getJNIClassStaticMethod(env, cls, "stop", "()V");
+    if (!mid) return;
+
+    return env->CallStaticVoidMethod(cls, mid);
+}
+
