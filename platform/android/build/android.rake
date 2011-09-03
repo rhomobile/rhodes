@@ -1123,6 +1123,7 @@ namespace "build" do
 		  if !$use_geomapping
 			next if line == "platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/GoogleMapView.java"
 			next if line == "platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/AnnotationsOverlay.java"
+            next if line == "platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/CalloutOverlay.java"
 		  end
 
           #next if !$use_geomapping and line =~ /\/GoogleMapView\//
