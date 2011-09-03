@@ -95,14 +95,16 @@ public class GeoLocationImpl {
 					long time = location.getTime();
 					StringBuilder message = new StringBuilder();
 					message.append("Last known location from ").append(location.getProvider());
-					if((System.currentTimeMillis() - time) > (errorTimeout(this.updatePeriod))) {
+					if((System.currentTimeMillis() - time) > invalidateLocationPeriod) {
 						message.append(" time is very old: ").append(location.getTime());
+						message.append(". Current time: ").append(System.currentTimeMillis());
+						message.append(". Inactivity timeout: ").append(invalidateLocationPeriod).append(".");
 					} else {
-						onLocationChanged(location);
 						message.append(" time os ok: ").append(location.getTime());
+						message.append(". Current time: ").append(System.currentTimeMillis());
+						message.append(". Inactivity timeout: ").append(invalidateLocationPeriod).append(".");
+						onLocationChanged(location);
 					}
-					message.append(". Current time: ").append(System.currentTimeMillis());
-					message.append(". Inactivity timeout: ").append(this.updatePeriod * 5).append(".");
 					Logger.T(TAG,  message.toString());
 				}
 			}
@@ -111,7 +113,6 @@ public class GeoLocationImpl {
 		@Override
 		public void onStatusChanged(String provider, int status, Bundle extras) {
 			Logger.T(TAG, "onStatusChanged: provider=" + provider + ", status=" + status);
-			//setCurrentGpsLocation(null);
 		}
 		
 		@Override
@@ -141,7 +142,6 @@ public class GeoLocationImpl {
 					break;
 				try {
 					long curTimeout = errorTimeout(pingTimeout);
-					// Sleep double ping time (to do not interfere with real location updates)
 					Logger.T(TAG, "\"watchdog\" thread waits (" + curTimeout + "ms)...");
 					Thread.sleep(curTimeout);
 				}
@@ -150,12 +150,15 @@ public class GeoLocationImpl {
 					continue;
 				}
 				if (isKnownPosition()) {
-					Logger.T(TAG, "Position became very old, invalidate and inform about this");
+					if (System.currentTimeMillis() - getTime() > invalidateLocationPeriod) {
+						Logger.T(TAG, "Position became very old, invalidate and inform about this");
+						clearLocation();
+					}
 					
 				} else {
 					Logger.T(TAG, "Position is still unknown, inform about this");
 				}
-				lastLocation = null;
+				
 				PerformOnUiThread.exec(new Runnable() {
 					public void run() {
 						geoCallbackError();
@@ -167,6 +170,7 @@ public class GeoLocationImpl {
 		}
 	});
 	
+	// Sleep greater then ping time to do not interfere with real location updates
 	private static long errorTimeout(long time) { return time * 5; } 
 	
 	private static native void geoCallback();
@@ -379,6 +383,10 @@ public class GeoLocationImpl {
 
 	synchronized boolean isKnownPosition() {
 		return lastLocation != null;
+	}
+	
+	synchronized void clearLocation() {
+		lastLocation = null;
 	}
 
 	synchronized void setTimeout(int nsec) {
