@@ -263,6 +263,7 @@
 
 //RHO
 #define RUBY_EXPORT 1
+#define HAVE_GETADDRINFO 1  
 #define HAVE_SOCKADDR_STORAGE 1
 //RHO
 
