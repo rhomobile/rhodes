@@ -440,7 +440,11 @@ public :
             }
 
             m_strRootPath = rootpath;
-            m_strRootPath += "rho/";
+            m_strRootPath += "rho\\";
+
+            for( int i = 0; i < m_strRootPath.length(); i++ )
+                if ( m_strRootPath.at(i) == '\\' )
+                    m_strRootPath[i] = '/';
         }
 
         return m_strRootPath; 
@@ -627,6 +631,16 @@ CMainWindow* Rhodes_getMainWindow() {
 	return _AtlModule.GetMainWindowObject();
 }
 
+static inline char *
+translate_char(char *p, int from, int to)
+{
+    while (*p) {
+	if ((unsigned char)*p == from)
+	    *p = to;
+	p = CharNextA(p);
+    }
+    return p;
+}
 
 extern "C" const char* rho_native_rhopath() 
 {

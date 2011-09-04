@@ -1,4 +1,4 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "ENV.fetch" do
 
@@ -26,4 +26,9 @@ describe "ENV.fetch" do
     end.should complain(/block supersedes default value argument/)
   end
 
+  ruby_version_is "1.9" do
+    it "uses the locale encoding" do
+      ENV.fetch(ENV.keys.first).encoding.should == Encoding.find('locale')
+    end
+  end
 end

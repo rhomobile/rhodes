@@ -1,15 +1,19 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "Fixnum#/" do
   it "returns self divided by the given argument" do
     (2 / 2).should == 1
     (3 / 2).should == 1
   end
-  
+
+  it "supports dividing negative numbers" do
+    (-1 / 10).should == -1
+  end
+
   it "raises a ZeroDivisionError if the given argument is zero and not a Float" do
     lambda { 1 / 0 }.should raise_error(ZeroDivisionError)
   end
-  
+
   it "does NOT raise ZeroDivisionError if the given argument is zero and is a Float" do
     (1 / 0.0).to_s.should == 'Infinity'
     (-1 / 0.0).to_s.should == '-Infinity'

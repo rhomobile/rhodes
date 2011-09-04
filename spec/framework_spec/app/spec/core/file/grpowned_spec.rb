@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../shared/file/grpowned'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../../../shared/file/grpowned', __FILE__)
 
 describe "File.grpowned?" do
   it_behaves_like :file_grpowned, :grpowned?, File

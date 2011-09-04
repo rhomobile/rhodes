@@ -19,7 +19,7 @@
 
 extern int _errno;
 #define map_errno rb_w32_map_errno
-
+#if 0
 int rb_w32_rename(const char *oldname, const char *newname)
 {
 	wchar_t *wold, *wnew;
@@ -40,12 +40,13 @@ int rb_w32_rename(const char *oldname, const char *newname)
 
 	return ret;
 }
+#endif
 
 int _rename(const char *oldname, const char *newname)
 {
     return rb_w32_rename(oldname, newname);
 }
-
+#if 0
 int rb_w32_unlink(const char *path)
 {
 	wchar_t *wfile = wce_mbtowc(path);
@@ -66,6 +67,7 @@ int rb_w32_unlink(const char *path)
 	free(wfile);
     return ret;
 }
+#endif
 
 int _unlink(const char *file)
 {
@@ -140,8 +142,17 @@ HANDLE get_OSHandleByFileNumber(int fNumber)
     return res;
 }
 
-/* replace "open" with "CreateFile", etc. */
 int _open(const char *path, int oflag, va_list arg)
+{
+    wchar_t *wfile = wce_mbtowc(path);
+    int nRet = _wopen(wfile, oflag, arg);
+    free(wfile);
+
+    return nRet;
+}
+
+/* replace "open" with "CreateFile", etc. */
+int _wopen(const wchar_t *path, int oflag, va_list arg)
 {
     DWORD fileaccess = 0;               /* OS file access (requested) */
     DWORD fileshare = 0;                /* OS file sharing mode */
@@ -150,7 +161,6 @@ int _open(const char *path, int oflag, va_list arg)
     SECURITY_ATTRIBUTES SecurityAttributes;
     HANDLE osfh;
     DWORD lasterror = 0;
-    wchar_t *wfile = 0;
     int fNumber = -1;
 
     SecurityAttributes.nLength = sizeof( SecurityAttributes );
@@ -231,8 +241,7 @@ int _open(const char *path, int oflag, va_list arg)
         return -1;
     }
 
-    wfile = wce_mbtowc(path);
-    if ( (osfh = CreateFileW( wfile,
+    if ( (osfh = CreateFileW( path,
                              fileaccess,
                              fileshare,
                              &SecurityAttributes,
@@ -244,7 +253,7 @@ int _open(const char *path, int oflag, va_list arg)
                 (oflag & _O_WRONLY))
         {
             fileaccess &= ~GENERIC_READ;
-            osfh = CreateFileW( wfile,
+            osfh = CreateFileW( path,
                      fileaccess,
                      fileshare,
                      &SecurityAttributes,
@@ -254,7 +263,6 @@ int _open(const char *path, int oflag, va_list arg)
     }
 
     lasterror = GetLastError();
-    free(wfile);
 
     if ( osfh != INVALID_HANDLE_VALUE  )
     {

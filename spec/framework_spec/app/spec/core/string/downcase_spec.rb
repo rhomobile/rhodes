@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes.rb'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes.rb', __FILE__)
 
 describe "String#downcase" do
   it "returns a copy of self with all uppercase letters downcased" do
@@ -27,7 +27,7 @@ describe "String#downcase" do
   end
 
   it "returns a subclass instance for subclasses" do
-    StringSpecs::MyString.new("FOObar").downcase.class.should == StringSpecs::MyString
+    StringSpecs::MyString.new("FOObar").downcase.should be_kind_of(StringSpecs::MyString)
   end
 end
 
@@ -44,17 +44,17 @@ describe "String#downcase!" do
     a.should == "hello"
   end
 
-  ruby_version_is ""..."1.9" do 
+  ruby_version_is ""..."1.9" do
     it "raises a TypeError when self is frozen" do
       lambda { "HeLlo".freeze.downcase! }.should raise_error(TypeError)
       lambda { "hello".freeze.downcase! }.should raise_error(TypeError)
     end
   end
 
-  ruby_version_is "1.9" do 
+  ruby_version_is "1.9" do
     it "raises a RuntimeError when self is frozen" do
       lambda { "HeLlo".freeze.downcase! }.should raise_error(RuntimeError)
       lambda { "hello".freeze.downcase! }.should raise_error(RuntimeError)
     end
-  end  
+  end
 end

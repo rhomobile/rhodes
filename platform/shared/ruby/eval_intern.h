@@ -97,9 +97,7 @@ NORETURN(void _longjmp(jmp_buf, int));
 #include <sys/param.h>
 #endif
 
-/* RHO BEGIN */
-#include <common/stat.h>
-/* RHO END */
+#include <sys/stat.h>
 
 #define SAVE_ROOT_JMPBUF(th, stmt) do \
   if (ruby_setjmp((th)->root_jmpbuf) == 0) { \
@@ -159,7 +157,7 @@ enum ruby_tag_type {
 #define TAG_MASK	RUBY_TAG_MASK
 
 #define NEW_THROW_OBJECT(val, pt, st) \
-  ((VALUE)NEW_NODE(NODE_LIT, (val), (pt), (st)))
+  ((VALUE)rb_node_newnode(NODE_LIT, (VALUE)(val), (VALUE)(pt), (VALUE)(st)))
 #define SET_THROWOBJ_CATCH_POINT(obj, val) \
   (RNODE((obj))->u2.value = (val))
 #define SET_THROWOBJ_STATE(obj, val) \
@@ -174,7 +172,7 @@ enum ruby_tag_type {
 #define SCOPE_SET(f)   (rb_vm_cref()->nd_visi = (f))
 
 #define CHECK_STACK_OVERFLOW(cfp, margin) do \
-  if (((VALUE *)(cfp)->sp) + (margin) + sizeof(rb_control_frame_t) >= ((VALUE *)cfp)) { \
+  if ((VALUE *)((char *)(((VALUE *)(cfp)->sp) + (margin)) + sizeof(rb_control_frame_t)) >= ((VALUE *)cfp)) { \
       rb_exc_raise(sysstack_error); \
   } \
 while (0)
@@ -187,8 +185,8 @@ enum {
     RAISED_STACKOVERFLOW = 2,
     RAISED_NOMEMORY = 4
 };
-int rb_thread_set_raised(rb_thread_t *th);
-int rb_thread_reset_raised(rb_thread_t *th);
+int rb_threadptr_set_raised(rb_thread_t *th);
+int rb_threadptr_reset_raised(rb_thread_t *th);
 #define rb_thread_raised_set(th, f)   ((th)->raised_flag |= (f))
 #define rb_thread_raised_reset(th, f) ((th)->raised_flag &= ~(f))
 #define rb_thread_raised_p(th, f)     (((th)->raised_flag & (f)) != 0)
@@ -207,11 +205,28 @@ NORETURN(void rb_raise_method_missing(rb_thread_t *th, int argc, VALUE *argv,
 
 VALUE rb_vm_make_jump_tag_but_local_jump(int state, VALUE val);
 NODE *rb_vm_cref(void);
-VALUE rb_obj_is_proc(VALUE);
-VALUE rb_vm_call_cfunc(VALUE recv, VALUE (*func)(VALUE), VALUE arg, const rb_block_t *blockptr, VALUE filename);
+VALUE rb_vm_call_cfunc(VALUE recv, VALUE (*func)(VALUE), VALUE arg, const rb_block_t *blockptr, VALUE filename, VALUE filepath);
+void rb_vm_set_progname(VALUE filename);
 void rb_thread_terminate_all(void);
 VALUE rb_vm_top_self();
 VALUE rb_vm_cbase(void);
+int rb_vm_get_sourceline(const rb_control_frame_t *);
 void rb_trap_restore_mask(void);
+
+#ifndef CharNext		/* defined as CharNext[AW] on Windows. */
+#define CharNext(p) ((p) + mblen(p, RUBY_MBCHAR_MAXSIZE))
+#endif
+
+#if defined DOSISH || defined __CYGWIN__
+static inline void
+translit_char(char *p, int from, int to)
+{
+    while (*p) {
+	if ((unsigned char)*p == from)
+	    *p = to;
+	p = CharNext(p);
+    }
+}
+#endif
 
 #endif /* RUBY_EVAL_INTERN_H */

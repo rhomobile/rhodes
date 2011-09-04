@@ -1,10 +1,10 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 context "Creating UnboundMethods" do
   specify "there is no difference between Method#unbind and Module#instance_method" do
-    UnboundMethodSpecs::Methods.instance_method(:foo).class.should == UnboundMethod
-    UnboundMethodSpecs::Methods.new.method(:foo).unbind.class.should == UnboundMethod
+    UnboundMethodSpecs::Methods.instance_method(:foo).should be_kind_of(UnboundMethod)
+    UnboundMethodSpecs::Methods.new.method(:foo).unbind.should be_kind_of(UnboundMethod)
   end
 end
 

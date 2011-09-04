@@ -1837,6 +1837,9 @@ extern void rho_geo_set_notification( const char *url, char* params, int timeout
 #define haversine_distance rho_geo_haversine_distance
 extern double rho_geo_haversine_distance(double lat1, double lon1, double lat2, double lon2);
 
+#define turnoff rho_geoimpl_turngpsoff
+extern void rho_geoimpl_turngpsoff();
+
 
 
   #define SWIG_From_double   rb_float_new 
@@ -2211,6 +2214,18 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_turnoff(int argc, VALUE *argv, VALUE self) {
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  turnoff();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -2491,5 +2506,6 @@ SWIGEXPORT void Init_GeoLocation(void) {
   rb_define_module_function(mGeoLocation, "set_view_notification", _wrap_set_view_notification, -1);
   rb_define_module_function(mGeoLocation, "set_notification", _wrap_set_notification, -1);
   rb_define_module_function(mGeoLocation, "haversine_distance", _wrap_haversine_distance, -1);
+  rb_define_module_function(mGeoLocation, "turnoff", _wrap_turnoff, -1);
 }
 

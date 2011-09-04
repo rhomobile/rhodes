@@ -57,4 +57,8 @@ double mapview_state_center_lon()
     return 0.;
 }
 
+void mapview_set_file_caching_enable(int enable)
+{
+}
+
 } //extern "C"

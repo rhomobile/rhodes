@@ -1,6 +1,6 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/shared/quote'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../shared/quote', __FILE__)
 
-describe "Range.quote" do
+describe "Regexp.quote" do
   it_behaves_like(:regexp_quote, :quote)
 end

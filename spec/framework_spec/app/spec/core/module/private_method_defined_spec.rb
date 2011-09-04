@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Module#private_method_defined?" do
   it "returns true if the named private method is defined by module or its ancestors" do
@@ -31,10 +31,20 @@ describe "Module#private_method_defined?" do
     ModuleSpecs::CountsMixin.private_method_defined?(:private_3).should == true
   end
 
-  it "raises an ArgumentError if passed a Fixnum" do
-    lambda {
-      ModuleSpecs::CountsMixin.private_method_defined?(1)
-    }.should raise_error(ArgumentError)
+  ruby_version_is ""..."1.9" do
+    it "raises an ArgumentError if passed a Fixnum" do
+      lambda {
+        ModuleSpecs::CountsMixin.private_method_defined?(1)
+      }.should raise_error(ArgumentError)
+    end
+  end
+
+  ruby_version_is "1.9" do
+    it "raises an TypeError if passed a Fixnum" do
+      lambda {
+        ModuleSpecs::CountsMixin.private_method_defined?(1)
+      }.should raise_error(TypeError)
+    end
   end
 
   it "raises a TypeError if passed nil" do

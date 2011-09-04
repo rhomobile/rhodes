@@ -1,22 +1,26 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
-describe "Kernel#chop" do
-  it "is a private method" do
-    Kernel.should have_private_instance_method(:chop)
+# FIXME: These methods exist on 1.9 only when the -n or -p option is passed to
+# ruby, but we currently don't have a way of specifying that.
+ruby_version_is ""..."1.9" do
+  describe "Kernel#chop" do
+    it "is a private method" do
+      Kernel.should have_private_instance_method(:chop)
+    end
   end
-end
 
-describe "Kernel#chop!" do
-  it "is a private method" do
-    Kernel.should have_private_instance_method(:chop!)
+  describe "Kernel#chop!" do
+    it "is a private method" do
+      Kernel.should have_private_instance_method(:chop!)
+    end
   end
-end
 
-describe "Kernel.chop" do
-  it "needs to be reviewed for spec completeness"
-end
+  describe "Kernel.chop" do
+    it "needs to be reviewed for spec completeness"
+  end
 
-describe "Kernel.chop!" do
-  it "needs to be reviewed for spec completeness"
+  describe "Kernel.chop!" do
+    it "needs to be reviewed for spec completeness"
+  end
 end

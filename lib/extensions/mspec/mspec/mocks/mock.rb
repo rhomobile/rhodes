@@ -1,8 +1,17 @@
 require 'mspec/expectations/expectations'
+require 'mspec/helpers/singleton_class'
+
+class Object
+  alias_method :__mspec_object_id__, :object_id
+end
 
 module Mock
   def self.reset
-    @mocks = @stubs = nil
+    @mocks = @stubs = @objects = nil
+  end
+
+  def self.objects
+    @objects ||= {}
   end
 
   def self.mocks
@@ -14,35 +23,51 @@ module Mock
   end
 
   def self.replaced_name(obj, sym)
-    :"__ms_#{obj.__id__}_#{sym}__"
+    :"__mspec_#{obj.__mspec_object_id__}_#{sym}__"
   end
 
   def self.replaced_key(obj, sym)
-    [replaced_name(obj, sym), obj, sym]
+    [replaced_name(obj, sym), sym]
   end
 
-  def self.replaced?(key)
-    !!(mocks.keys + stubs.keys).find { |k| k.first == key.first }
+  def self.has_key?(keys, sym)
+    !!keys.find { |k| k.first == sym }
+  end
+
+  def self.replaced?(sym)
+    has_key?(mocks.keys, sym) or has_key?(stubs.keys, sym)
+  end
+
+  def self.clear_replaced(key)
+    mocks.delete key
+    stubs.delete key
+  end
+
+  def self.mock_respond_to?(obj, sym)
+    name = replaced_name(obj, :respond_to?)
+    if replaced? name
+      obj.__send__ name, sym
+    else
+      obj.respond_to? sym
+    end
   end
 
   def self.install_method(obj, sym, type=nil)
-    meta = class << obj; self; end
+    meta = obj.singleton_class
 
     key = replaced_key obj, sym
-    if (sym.to_sym == :respond_to? or obj.respond_to?(sym)) and !replaced?(key)
-      meta.__send__ :alias_method, key.first, sym.to_sym
+    sym = sym.to_sym
+
+    if (sym == :respond_to? or mock_respond_to?(obj, sym)) and !replaced?(key.first)
+      meta.__send__ :alias_method, key.first, sym
     end
-    
-    # LB: We don't support String eval, using define_method approach instead
-    # meta.class_eval <<-END
-    #   def #{sym}(*args, &block)
-    #     Mock.verify_call self, :#{sym}, *args, &block
-    #   end
-    # END
-    meta.class_eval do
-      define_method(sym.to_sym) { |*args, &block| Mock.verify_call self, sym.to_sym, *args, &block }
-    end
-        
+
+    meta.class_eval <<-END
+      def #{sym}(*args, &block)
+        Mock.verify_call self, :#{sym}, *args, &block
+      end
+    END
+
     proxy = MockProxy.new type
 
     if proxy.mock?
@@ -55,6 +80,7 @@ module Mock
     else
       mocks[key] << proxy
     end
+    objects[key] = obj
 
     proxy
   end
@@ -65,7 +91,7 @@ module Mock
 
   def self.verify_count
     mocks.each do |key, proxies|
-      replaced, obj, sym = *key
+      obj = objects[key]
       proxies.each do |proxy|
         qualifier, count = proxy.count
         pass = case qualifier
@@ -81,8 +107,8 @@ module Mock
           false
         end
         unless pass
-          Expectation.fail_with(
-            "Mock '#{name_or_inspect obj}' expected to receive '#{sym}' " \
+          SpecExpectation.fail_with(
+            "Mock '#{name_or_inspect obj}' expected to receive '#{key.last}' " \
             "#{qualifier.to_s.sub('_', ' ')} #{count} times",
             "but received it #{proxy.calls} times")
         end
@@ -92,68 +118,84 @@ module Mock
 
   def self.verify_call(obj, sym, *args, &block)
     compare = *args
-    if RUBY_VERSION >= '1.9'
+    behaves_like_ruby_1_9 = *[]
+    if (behaves_like_ruby_1_9)
       compare = compare.first if compare.length <= 1
     end
 
     key = replaced_key obj, sym
-    proxies = mocks[key] + stubs[key]
-    proxies.each do |proxy|
-      pass = case proxy.arguments
-      when :any_args
-        true
-      when :no_args
-        compare.nil?
-      else
-        proxy.arguments == compare
-      end
-
-      if proxy.yielding?
-        if block
-          proxy.yielding.each do |args_to_yield|
-            if block.arity == -1 || block.arity == args_to_yield.size
-              block.call(*args_to_yield)
-            else
-              Expectation.fail_with(
-                "Mock '#{name_or_inspect obj}' asked to yield " \
-                "|#{proxy.yielding.join(', ')}| on #{sym}\n",
-                "but a block with arity #{block.arity} was passed")
-            end
-          end
+    [mocks, stubs].each do |proxies|
+      proxies[key].each do |proxy|
+        pass = case proxy.arguments
+        when :any_args
+          true
+        when :no_args
+          compare.nil?
         else
-          Expectation.fail_with(
-            "Mock '#{name_or_inspect obj}' asked to yield " \
-            "|[#{proxy.yielding.join('], [')}]| on #{sym}\n",
-            "but no block was passed")
+          proxy.arguments == compare
         end
-      end
 
-      if pass
-        proxy.called
-        return proxy.returning
+        if proxy.yielding?
+          if block
+            proxy.yielding.each do |args_to_yield|
+              if block.arity == -1 || block.arity == args_to_yield.size
+                block.call(*args_to_yield)
+              else
+                SpecExpectation.fail_with(
+                  "Mock '#{name_or_inspect obj}' asked to yield " \
+                  "|#{proxy.yielding.join(', ')}| on #{sym}\n",
+                  "but a block with arity #{block.arity} was passed")
+              end
+            end
+          else
+            SpecExpectation.fail_with(
+              "Mock '#{name_or_inspect obj}' asked to yield " \
+              "|[#{proxy.yielding.join('], [')}]| on #{sym}\n",
+              "but no block was passed")
+          end
+        end
+
+        if pass
+          proxy.called
+
+          if proxy.raising?
+            raise proxy.raising
+          else
+            return proxy.returning
+          end
+        end
       end
     end
 
     if sym.to_sym == :respond_to?
-      return obj.__send__(replaced_name(obj, sym), compare)
+      mock_respond_to? obj, compare
     else
-      Expectation.fail_with("Mock '#{name_or_inspect obj}': method #{sym}\n",
+      SpecExpectation.fail_with("Mock '#{name_or_inspect obj}': method #{sym}\n",
                             "called with unexpected arguments (#{Array(compare).join(' ')})")
     end
   end
 
   def self.cleanup
-    symbols = mocks.keys + stubs.keys
-    symbols.uniq.each do |replaced, obj, sym|
-      meta = class << obj; self; end
+    objects.each do |key, obj|
+      if obj.kind_of? MockIntObject
+        clear_replaced key
+        next
+      end
 
-      if meta.instance_methods.include?(replaced.to_s)
-        meta.__send__ :alias_method, sym.to_sym, replaced
+      replaced = key.first
+      sym = key.last
+      meta = obj.singleton_class
+
+      if mock_respond_to? obj, replaced
+        meta.__send__ :alias_method, sym, replaced
         meta.__send__ :remove_method, replaced
       else
-        meta.__send__ :remove_method, sym.to_sym
+        meta.__send__ :remove_method, sym
       end
+
+      clear_replaced key
     end
+  ensure
     reset
   end
 end

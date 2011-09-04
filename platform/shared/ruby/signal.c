@@ -34,7 +34,7 @@ typedef int rb_atomic_t;
 # define ATOMIC_DEC(var) (--(var))
 #endif
 
-#ifdef __BEOS__
+#if defined(__BEOS__) || defined(__HAIKU__)
 #undef SIGBUS
 #endif
 
@@ -217,10 +217,11 @@ ruby_signal_name(int no)
 
 /*
  * call-seq:
- *    SignalException.new(sig)   =>  signal_exception
+ *    SignalException.new(sig_name)              ->  signal_exception
+ *    SignalException.new(sig_number [, name])   ->  signal_exception
  *
- *  Construct a new SignalException object.  +sig+ should be a known
- *  signal name, or a signal number.
+ *  Construct a new SignalException object.  +sig_name+ should be a known
+ *  signal name.
  */
 
 static VALUE
@@ -275,7 +276,7 @@ esignal_init(int argc, VALUE *argv, VALUE self)
 
 /*
  * call-seq:
- *    signal_exception.signo   =>  num
+ *    signal_exception.signo   ->  num
  *
  *  Returns a signal number.
  */
@@ -286,6 +287,7 @@ esignal_signo(VALUE self)
     return rb_iv_get(self, "signo");
 }
 
+/* :nodoc: */
 static VALUE
 interrupt_init(int argc, VALUE *argv, VALUE self)
 {
@@ -305,15 +307,15 @@ ruby_default_signal(int sig)
 
 /*
  *  call-seq:
- *     Process.kill(signal, pid, ...)    => fixnum
- *  
+ *     Process.kill(signal, pid, ...)    -> fixnum
+ *
  *  Sends the given signal to the specified process id(s), or to the
  *  current process if _pid_ is zero. _signal_ may be an
  *  integer signal number or a POSIX signal name (either with or without
  *  a +SIG+ prefix). If _signal_ is negative (or starts
  *  with a minus sign), kills process groups instead of
  *  processes. Not all signals are available on all platforms.
- *     
+ *
  *     pid = fork do
  *        Signal.trap("HUP") { puts "Ouch!"; exit }
  *        # ... do some work ...
@@ -321,10 +323,20 @@ ruby_default_signal(int sig)
  *     # ...
  *     Process.kill("HUP", pid)
  *     Process.wait
- *     
+ *
  *  <em>produces:</em>
- *     
+ *
  *     Ouch!
+ *
+ *  If _signal_ is an integer but wrong for signal,
+ *  <code>Errno::EINVAL</code> or +RangeError+ will be raised.
+ *  Otherwise unless _signal_ is a +String+ or a +Symbol+, and a known
+ *  signal name, +ArgumentError+ will be raised.
+ *
+ *  Also, <code>Errno::ESRCH</code> or +RangeError+ for invalid _pid_,
+ *  <code>Errno::EPERM</code> when failed because of no privilege,
+ *  will be raised.  In these cases, signals may have been sent to
+ *  preceding processes.
  */
 
 VALUE
@@ -340,7 +352,7 @@ rb_f_kill(int argc, VALUE *argv)
 
     rb_secure(2);
     if (argc < 2)
-	rb_raise(rb_eArgError, "wrong number of arguments -- kill(sig, pid...)");
+	rb_raise(rb_eArgError, "wrong number of arguments (%d for at least 2)", argc);
     switch (TYPE(argv[0])) {
       case T_FIXNUM:
 	sig = FIX2INT(argv[0]);
@@ -409,7 +421,7 @@ static struct {
 #endif
 
 typedef RETSIGTYPE (*sighandler_t)(int);
-#if defined SA_SIGINFO && !defined __SYMBIAN32__
+#ifdef USE_SIGALTSTACK
 typedef void ruby_sigaction_t(int, siginfo_t*, void*);
 #define SIGINFO_ARG , siginfo_t *info, void *ctx
 #else
@@ -418,9 +430,6 @@ typedef RETSIGTYPE ruby_sigaction_t(int);
 #endif
 
 #ifdef POSIX_SIGNAL
-#if defined(SIGSEGV) && defined(HAVE_SIGALTSTACK)
-#define USE_SIGALTSTACK
-#endif
 
 #ifdef USE_SIGALTSTACK
 #ifdef SIGSTKSZ
@@ -429,18 +438,17 @@ typedef RETSIGTYPE ruby_sigaction_t(int);
 #define ALT_STACK_SIZE (4*1024)
 #endif
 /* alternate stack for SIGSEGV */
-static void
-register_sigaltstack(void)
+void
+rb_register_sigaltstack(rb_thread_t *th)
 {
-    static void *altstack = 0;
     stack_t newSS, oldSS;
 
-    if (altstack) return;
+    if (th->altstack) return;
 
-    newSS.ss_sp = altstack = malloc(ALT_STACK_SIZE);
+    newSS.ss_sp = th->altstack = malloc(ALT_STACK_SIZE);
     if (newSS.ss_sp == NULL)
 	/* should handle error */
-	rb_bug("register_sigaltstack. malloc error\n");
+	rb_bug("rb_register_sigaltstack. malloc error\n");
     newSS.ss_size = ALT_STACK_SIZE;
     newSS.ss_flags = 0;
 
@@ -458,7 +466,7 @@ ruby_signal(int signum, sighandler_t handler)
 #endif
 
     sigemptyset(&sigact.sa_mask);
-#if defined SA_SIGINFO && !defined __SYMBIAN32__
+#ifdef SA_SIGINFO
     sigact.sa_sigaction = (ruby_sigaction_t*)handler;
     sigact.sa_flags = SA_SIGINFO;
 #else
@@ -476,7 +484,7 @@ ruby_signal(int signum, sighandler_t handler)
 #endif
     if (sigaction(signum, &sigact, &old) < 0) {
 	if (errno != 0 && errno != EINVAL) {
-            rb_bug("sigaction error.\n");
+	    rb_bug_errno("sigaction", errno);
 	}
     }
     return old.sa_handler;
@@ -514,7 +522,7 @@ sighandler(int sig)
 }
 
 int
-rb_signal_buff_size()
+rb_signal_buff_size(void)
 {
     return signal_buff.size;
 }
@@ -534,7 +542,7 @@ static int trap_last_mask;
 void
 rb_disable_interrupt(void)
 {
-#if !defined(_WIN32) && !defined(__SYMBIAN32__)
+#if USE_TRAP_MASK
     sigset_t mask;
     sigfillset(&mask);
     sigdelset(&mask, SIGVTALRM);
@@ -546,7 +554,7 @@ rb_disable_interrupt(void)
 void
 rb_enable_interrupt(void)
 {
-#if !defined(_WIN32) && !defined(__SYMBIAN32__)
+#if USE_TRAP_MASK
     sigset_t mask;
     sigemptyset(&mask);
     pthread_sigmask(SIG_SETMASK, &mask, NULL);
@@ -595,7 +603,7 @@ sigsegv(int sig SIGINFO_ARG)
     }
 #endif
     if (segv_received) {
-	fprintf(stderr, "SEGV recieved in SEGV handler\n");
+	fprintf(stderr, "SEGV received in SEGV handler\n");
 	exit(EXIT_FAILURE);
     }
     else {
@@ -664,12 +672,12 @@ rb_signal_exec(rb_thread_t *th, int sig)
 #ifdef SIGUSR2
 	  case SIGUSR2:
 #endif
-	    rb_thread_signal_raise(th, sig);
+	    rb_threadptr_signal_raise(th, sig);
 	    break;
 	}
     }
     else if (cmd == Qundef) {
-	rb_thread_signal_exit(th);
+	rb_threadptr_signal_exit(th);
     }
     else {
 	signal_exec(cmd, safe, sig);
@@ -724,7 +732,7 @@ default_handler(int sig)
       case SIGSEGV:
         func = (sighandler_t)sigsegv;
 # ifdef USE_SIGALTSTACK
-        register_sigaltstack();
+        rb_register_sigaltstack(GET_THREAD());
 # endif
         break;
 #endif
@@ -876,11 +884,7 @@ static VALUE
 trap_ensure(struct trap_arg *arg)
 {
     /* enable interrupt */
-#ifdef HAVE_SIGPROCMASK
-    sigprocmask(SIG_SETMASK, &arg->mask, NULL);
-#else
-    sigsetmask(arg->mask);
-#endif
+    pthread_sigmask(SIG_SETMASK, &arg->mask, NULL);
     trap_last_mask = arg->mask;
     return 0;
 }
@@ -890,18 +894,14 @@ void
 rb_trap_restore_mask(void)
 {
 #if USE_TRAP_MASK
-# ifdef HAVE_SIGPROCMASK
-    sigprocmask(SIG_SETMASK, &trap_last_mask, NULL);
-# else
-    sigsetmask(trap_last_mask);
-# endif
+    pthread_sigmask(SIG_SETMASK, &trap_last_mask, NULL);
 #endif
 }
 
 /*
  * call-seq:
- *   Signal.trap( signal, command ) => obj
- *   Signal.trap( signal ) {| | block } => obj
+ *   Signal.trap( signal, command ) -> obj
+ *   Signal.trap( signal ) {| | block } -> obj
  *
  * Specifies the handling of signals. The first parameter is a signal
  * name (a string such as ``SIGALRM'', ``SIGUSR1'', and so on) or a
@@ -935,8 +935,8 @@ sig_trap(int argc, VALUE *argv)
     struct trap_arg arg;
 
     rb_secure(2);
-    if (argc == 0 || argc > 2) {
-	rb_raise(rb_eArgError, "wrong number of arguments -- trap(sig, cmd)/trap(sig){...}");
+    if (argc < 1 || argc > 2) {
+	rb_raise(rb_eArgError, "wrong number of arguments (%d for 1..2)", argc);
     }
 
     arg.sig = trap_signm(argv[0]);
@@ -944,7 +944,7 @@ sig_trap(int argc, VALUE *argv)
 	arg.cmd = rb_block_proc();
 	arg.func = sighandler;
     }
-    else if (argc == 2) {
+    else {
 	arg.cmd = argv[1];
 	arg.func = trap_handler(&arg.cmd, arg.sig);
     }
@@ -953,15 +953,15 @@ sig_trap(int argc, VALUE *argv)
 	rb_raise(rb_eSecurityError, "Insecure: tainted signal trap");
     }
 #if USE_TRAP_MASK
-    /* disable interrupt */
-# ifdef HAVE_SIGPROCMASK
-    sigfillset(&arg.mask);
-    sigprocmask(SIG_BLOCK, &arg.mask, &arg.mask);
-# else
-    arg.mask = sigblock(~0);
-# endif
+    {
+      sigset_t fullmask;
 
-    return rb_ensure(trap, (VALUE)&arg, trap_ensure, (VALUE)&arg);
+      /* disable interrupt */
+      sigfillset(&fullmask);
+      pthread_sigmask(SIG_BLOCK, &fullmask, &arg.mask);
+      
+      return rb_ensure(trap, (VALUE)&arg, trap_ensure, (VALUE)&arg);
+    }
 #else
     return trap(&arg);
 #endif
@@ -969,7 +969,7 @@ sig_trap(int argc, VALUE *argv)
 
 /*
  * call-seq:
- *   Signal.list => a_hash
+ *   Signal.list -> a_hash
  *
  * Returns a list of signal names mapped to the corresponding
  * underlying signal numbers.
@@ -1007,19 +1007,17 @@ init_sigchld(int sig)
 #if USE_TRAP_MASK
 # ifdef HAVE_SIGPROCMASK
     sigset_t mask;
+    sigset_t fullmask;
 # else
     int mask;
+    int fullmask;
 # endif
 #endif
 
 #if USE_TRAP_MASK
     /* disable interrupt */
-# ifdef HAVE_SIGPROCMASK
-    sigfillset(&mask);
-    sigprocmask(SIG_BLOCK, &mask, &mask);
-# else
-    mask = sigblock(~0);
-# endif
+    sigfillset(&fullmask);
+    pthread_sigmask(SIG_BLOCK, &fullmask, &mask);
 #endif
 
     oldfunc = ruby_signal(sig, SIG_DFL);
@@ -1030,20 +1028,15 @@ init_sigchld(int sig)
     }
 
 #if USE_TRAP_MASK
-#ifdef HAVE_SIGPROCMASK
     sigdelset(&mask, sig);
-    sigprocmask(SIG_SETMASK, &mask, NULL);
-#else
-    mask &= ~sigmask(sig);
-    sigsetmask(mask);
-#endif
+    pthread_sigmask(SIG_SETMASK, &mask, NULL);
     trap_last_mask = mask;
 #endif
 }
 #endif
 
 void
-ruby_sig_finalize()
+ruby_sig_finalize(void)
 {
     sighandler_t oldfunc;
 
@@ -1138,7 +1131,7 @@ Init_signal(void)
 #endif
 #ifdef SIGSEGV
 # ifdef USE_SIGALTSTACK
-    register_sigaltstack();
+    rb_register_sigaltstack(GET_THREAD());
 # endif
     install_sighandler(SIGSEGV, (sighandler_t)sigsegv);
 #endif

@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 module KernelSpecs::M
   def self.extend_object(o)
@@ -9,6 +9,11 @@ module KernelSpecs::M
 
   def self.extended(o)
     ScratchPad << "extended"
+    super
+  end
+
+  def self.append_features(o)
+    ScratchPad << "append_features"
     super
   end
 end
@@ -24,6 +29,12 @@ describe "Kernel#extend" do
     ScratchPad.recorded.include?("extend_object").should == true
   end
 
+  it "does not calls append_features on arguments metaclass" do
+    o = mock('o')
+    o.extend KernelSpecs::M
+    ScratchPad.recorded.include?("append_features").should == false
+  end
+
   it "calls extended on argument" do
     o = mock('o')
     o.extend KernelSpecs::M
@@ -37,11 +48,22 @@ describe "Kernel#extend" do
     (C.kind_of? KernelSpecs::M).should == true
   end
 
-  it "raises a TypeError if self is frozen" do
-    module KernelSpecs::Mod; end
-    o = mock('o')
-    o.freeze
-    lambda { o.extend KernelSpecs::Mod }.should raise_error(TypeError)
+  ruby_version_is ""..."1.9" do
+    it "raises a TypeError if self is frozen" do
+      module KernelSpecs::Mod; end
+      o = mock('o')
+      o.freeze
+      lambda { o.extend KernelSpecs::Mod }.should raise_error(TypeError)
+    end
+  end
+
+  ruby_version_is "1.9" do
+    it "raises a RuntimeError if self is frozen" do
+      module KernelSpecs::Mod; end
+      o = mock('o')
+      o.freeze
+      lambda { o.extend KernelSpecs::Mod }.should raise_error(RuntimeError)
+    end
   end
 end
 

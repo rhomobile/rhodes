@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Thread#key?" do
   before :each do
@@ -16,8 +16,19 @@ describe "Thread#key?" do
     @th.key?(:stanley.to_s).should == false
   end
 
-  it "raises exceptions on the wrong type of keys" do
-    lambda { Thread.current.key? nil }.should raise_error(TypeError)
-    lambda { Thread.current.key? 5 }.should raise_error(ArgumentError)
+  quarantine! do
+    ruby_version_is ""..."1.9" do
+      it "raises exceptions on the wrong type of keys" do
+        lambda { Thread.current.key? nil }.should raise_error(TypeError)
+        lambda { Thread.current.key? 5 }.should raise_error(ArgumentError)
+      end
+    end
+  end
+
+  ruby_version_is "1.9" do
+    it "raises exceptions on the wrong type of keys" do
+      lambda { Thread.current.key? nil }.should raise_error(TypeError)
+      lambda { Thread.current.key? 5 }.should raise_error(TypeError)
+    end
   end
 end

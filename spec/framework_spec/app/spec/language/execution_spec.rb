@@ -1,19 +1,17 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../spec_helper'
+require File.expand_path('../../spec_helper', __FILE__)
 
+=begin
 describe "``" do
-  platform_is_not :android do
-    it "returns the output of the executed sub-process" do
-      ip = 'world'
-      `echo disc #{ip}`.should == "disc world\n"
-    end
+  it "returns the output of the executed sub-process" do
+    ip = 'world'
+    `echo disc #{ip}`.should == "disc world\n"
   end
 end
 
 describe "%x" do
-  platform_is_not :android do
-    it "is the same as ``" do
-      ip = 'world'
-      %x(echo disc #{ip}).should == "disc world\n"
-    end
+  it "is the same as ``" do
+    ip = 'world'
+    %x(echo disc #{ip}).should == "disc world\n"
   end
 end
+=end

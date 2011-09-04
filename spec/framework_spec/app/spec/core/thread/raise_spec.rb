@@ -1,6 +1,6 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../shared/kernel/raise'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
+require File.expand_path('../../../shared/kernel/raise', __FILE__)
 
 describe "Thread#raise" do
   it "ignores dead threads" do
@@ -31,48 +31,57 @@ describe "Thread#raise on a sleeping thread" do
   it "raises the given exception" do
     @thr.raise Exception
     Thread.pass while @thr.status
-    ScratchPad.recorded.class.should == Exception
+    ScratchPad.recorded.should be_kind_of(Exception)
   end
 
   it "raises the given exception with the given message" do
     @thr.raise Exception, "get to work"
     Thread.pass while @thr.status
-    ScratchPad.recorded.class.should == Exception
+    ScratchPad.recorded.should be_kind_of(Exception)
     ScratchPad.recorded.message.should == "get to work"
   end
 
-  it "can go unhandled" do
+  it "is captured and raised by Thread#value" do
     t = Thread.new do
       sleep
     end
 
+    ThreadSpecs.spin_until_sleeping(t)
+
     t.raise
-    lambda {t.value}.should raise_error(RuntimeError)
+    lambda { t.value }.should raise_error(RuntimeError)
   end
 
-  it "re-raises active exception" do
-    t = Thread.new do
-      begin
-        1/0
-      rescue ZeroDivisionError
-        sleep 3
+  ruby_version_is "1.9" do
+    it "raises a RuntimeError when called with no arguments" do
+      t = Thread.new do
+        begin
+          1/0
+        rescue ZeroDivisionError
+          sleep 3
+        end
       end
+      begin
+        raise RangeError
+      rescue
+        ThreadSpecs.spin_until_sleeping(t)
+        t.raise
+      end
+      lambda {t.value}.should raise_error(RuntimeError)
+      t.kill
     end
-
-    Thread.pass while t.status and t.status != "sleep"
-    t.raise
-    lambda {t.value}.should raise_error(ZeroDivisionError)
-    t.kill
   end
 end
-
+=begin
 describe "Thread#raise on a running thread" do
   before :each do
     ScratchPad.clear
+    ThreadSpecs.clear_state
+
     @thr = ThreadSpecs.running_thread
-    Thread.pass while @thr.status and @thr.status != "run"
+    Thread.pass until ThreadSpecs.state == :running
   end
-  
+
   after :each do
     @thr.kill
   end
@@ -86,13 +95,13 @@ describe "Thread#raise on a running thread" do
   it "raises the given exception" do
     @thr.raise Exception
     Thread.pass while @thr.status
-    ScratchPad.recorded.class.should == Exception
+    ScratchPad.recorded.should be_kind_of(Exception)
   end
 
   it "raises the given exception with the given message" do
     @thr.raise Exception, "get to work"
     Thread.pass while @thr.status
-    ScratchPad.recorded.class.should == Exception
+    ScratchPad.recorded.should be_kind_of(Exception)
     ScratchPad.recorded.message.should == "get to work"
   end
 
@@ -105,7 +114,7 @@ describe "Thread#raise on a running thread" do
     lambda {t.value}.should raise_error(RuntimeError)
   end
 
-  it "re-raises active exception" do
+  it "raise the given argument even when there is an active exception" do
     raised = false
     t = Thread.new do
       begin
@@ -115,12 +124,17 @@ describe "Thread#raise on a running thread" do
         loop { }
       end
     end
-
-    Thread.pass until raised || !t.alive?
-    t.raise
-    lambda {t.value}.should raise_error(ZeroDivisionError)
+    begin
+      raise "Create an active exception for the current thread too"
+    rescue
+      Thread.pass until raised || !t.alive?
+      t.raise RangeError
+      lambda {t.value}.should raise_error(RangeError)
+    end
   end
+
 end
+=end
 
 describe "Thread#raise on same thread" do
   it_behaves_like :kernel_raise, :raise, Thread.current

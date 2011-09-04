@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Method#unbind" do
   before(:each) do
@@ -11,7 +11,7 @@ describe "Method#unbind" do
   end
 
   it "returns an UnboundMethod" do
-    @normal_um.class.should == UnboundMethod
+    @normal_um.should be_kind_of(UnboundMethod)
   end
 
   it "returns a String containing 'UnboundMethod'" do

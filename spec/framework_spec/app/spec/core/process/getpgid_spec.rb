@@ -1,11 +1,11 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "Process.getpgid" do
-  it "requires one argument" do
-    lambda { Process.getpgid }.should raise_error(ArgumentError)
-  end
-
   platform_is_not :windows do
+    it "coerces the argument to an Integer" do
+      Process.getpgid(mock_int(Process.pid)).should == Process.getpgrp
+    end
+
     it "returns the process group ID for the given process id" do
       Process.getpgid(Process.pid).should == Process.getpgrp
     end

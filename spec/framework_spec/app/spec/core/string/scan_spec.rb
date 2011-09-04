@@ -1,7 +1,16 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes.rb'
+# -*- encoding: utf-8 -*-
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes.rb', __FILE__)
 
 describe "String#scan" do
+  before :each do
+    @kcode = $KCODE
+  end
+
+  after :each do
+    $KCODE = @kcode
+  end
+
   it "returns an array containing all matches" do
     "cruel world".scan(/\w+/).should == ["cruel", "world"]
     "cruel world".scan(/.../).should == ["cru", "el ", "wor"]
@@ -9,6 +18,15 @@ describe "String#scan" do
     # Edge case
     "hello".scan(//).should == ["", "", "", "", "", ""]
     "".scan(//).should == [""]
+  end
+
+  it "respects $KCODE when the pattern collapses to nothing" do
+    str = "こにちわ"
+    reg = %r!!
+
+    $KCODE = "utf-8"
+
+    str.scan(reg).should == ["", "", "", "", ""]
   end
 
   it "stores groups as arrays in the returned arrays" do
@@ -56,21 +74,26 @@ describe "String#scan" do
     lambda { "cruel world".scan(mock('x')) }.should raise_error(TypeError)
   end
 
-  # Note: MRI taints for tainted regexp patterns,
-  # but not for tainted string patterns.
-  # TODO: Report to ruby-core.
-  it "taints the match strings if self is tainted, unless the taint happens in the method call" do
-    a = "hello hello hello".scan("hello".taint)
-    a.each { |m| m.tainted?.should == false }
+  ruby_bug "#4087", "1.9.2.135" do
+    it "taints the results if the String argument is tainted" do
+      a = "hello hello hello".scan("hello".taint)
+      a.each { |m| m.tainted?.should be_true }
+    end
+  end
 
+  it "taints the results when passed a String argument if self is tainted" do
     a = "hello hello hello".taint.scan("hello")
-    a.each { |m| m.tainted?.should == true }
+    a.each { |m| m.tainted?.should be_true }
+  end
 
+  it "taints the results if the Regexp argument is tainted" do
     a = "hello".scan(/./.taint)
-    a.each { |m| m.tainted?.should == true }
+    a.each { |m| m.tainted?.should be_true }
+  end
 
+  it "taints the results when passed a Regexp argument if self is tainted" do
     a = "hello".taint.scan(/./)
-    a.each { |m| m.tainted?.should == true }
+    a.each { |m| m.tainted?.should be_true }
   end
 end
 
@@ -134,7 +157,7 @@ describe "String#scan with pattern and block" do
         "x"
       end
 
-      $~.should == old_md
+      $~[0].should == old_md[0]
       $~.string.should == "hello"
     end
   end
@@ -154,19 +177,21 @@ describe "String#scan with pattern and block" do
     $~.should == nil
   end
 
-  # Note: MRI taints for tainted regexp patterns,
-  # but not for tainted string patterns.
-  # TODO: Report to ruby-core.
-  it "taints the match strings if self is tainted, unless the tain happens inside the scan" do
-    "hello hello hello".scan("hello".taint) { |m| m.tainted?.should == false }
-
-    deviates_on :rubinius do
-      "hello hello hello".scan("hello".taint) { |m| m.tainted?.should == true }
+  ruby_bug "#4087", "1.9.2.135" do
+    it "taints the results if the String argument is tainted" do
+      "hello hello hello".scan("hello".taint).each { |m| m.tainted?.should be_true }
     end
+  end
 
-    "hello hello hello".taint.scan("hello") { |m| m.tainted?.should == true }
+  it "taints the results when passed a String argument if self is tainted" do
+    "hello hello hello".taint.scan("hello").each { |m| m.tainted?.should be_true }
+  end
 
-    "hello".scan(/./.taint) { |m| m.tainted?.should == true }
-    "hello".taint.scan(/./) { |m| m.tainted?.should == true }
+  it "taints the results if the Regexp argument is tainted" do
+    "hello".scan(/./.taint).each { |m| m.tainted?.should be_true }
+  end
+
+  it "taints the results when passed a Regexp argument if self is tainted" do
+    "hello".taint.scan(/./).each { |m| m.tainted?.should be_true }
   end
 end

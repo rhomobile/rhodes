@@ -1,6 +1,6 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes.rb'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/shared/equal_value.rb'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes.rb', __FILE__)
+require File.expand_path('../shared/equal_value.rb', __FILE__)
 
 describe "String#==" do
   it_behaves_like(:string_equal_value, :==)
@@ -23,5 +23,9 @@ describe "String#==" do
     obj.should_receive(:==).and_return(true)
 
     ('hello' == obj).should ==  true
+  end
+
+  it "is not fooled by NUL characters" do
+    "abc\0def".should_not == "abc\0xyz"
   end
 end

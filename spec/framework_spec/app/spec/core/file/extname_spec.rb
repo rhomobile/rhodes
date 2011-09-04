@@ -1,4 +1,4 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "File.extname" do
   it "returns the extension (the portion of file name in path after the period)." do
@@ -25,6 +25,12 @@ describe "File.extname" do
 
   it "returns only the last extension of a file with several dots" do
     File.extname("a.b.c.d.e").should == ".e"
+  end
+
+  ruby_version_is "1.9" do
+    it "accepts an object that has a #to_path method" do
+      File.extname(mock_to_path("a.b.c.d.e")).should == ".e"
+    end
   end
 
   it "raises a TypeError if not passed a String type" do

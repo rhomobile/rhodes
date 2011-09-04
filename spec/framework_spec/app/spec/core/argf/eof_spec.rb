@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/shared/eof'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../shared/eof', __FILE__)
 
 describe "ARGF.eof" do
   it_behaves_like :argf_eof, :eof

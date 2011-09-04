@@ -1,29 +1,29 @@
-#define RUBY_VERSION "1.9.1"
-#define RUBY_RELEASE_DATE "2009-05-12"
-#define RUBY_PATCHLEVEL 129
-
+#define RUBY_VERSION "1.9.2"
+#define RUBY_PATCHLEVEL 290
 #define RUBY_VERSION_MAJOR 1
 #define RUBY_VERSION_MINOR 9
 #define RUBY_VERSION_TEENY 1
-#define RUBY_RELEASE_YEAR 2009
-#define RUBY_RELEASE_MONTH 5
-#define RUBY_RELEASE_DAY 12
 
-#ifdef RUBY_EXTERN
-RUBY_EXTERN const char ruby_version[];
-RUBY_EXTERN const char ruby_release_date[];
-RUBY_EXTERN const char ruby_platform[];
-RUBY_EXTERN const int ruby_patchlevel;
-RUBY_EXTERN const char ruby_description[];
-RUBY_EXTERN const char ruby_copyright[];
+#define RUBY_RELEASE_YEAR 2011
+#define RUBY_RELEASE_MONTH 7
+#define RUBY_RELEASE_DAY 9
+#define RUBY_RELEASE_DATE "2011-07-09"
+
+#include "ruby/version.h"
+
+#if !defined RUBY_LIB_VERSION && defined RUBY_LIB_VERSION_STYLE
+# if RUBY_LIB_VERSION_STYLE == 3
+#   define RUBY_LIB_VERSION STRINGIZE(RUBY_VERSION_MAJOR)"."STRINGIZE(RUBY_VERSION_MINOR)"."STRINGIZE(RUBY_VERSION_TEENY)
+# elif RUBY_LIB_VERSION_STYLE == 2
+#   define RUBY_LIB_VERSION STRINGIZE(RUBY_VERSION_MAJOR)"."STRINGIZE(RUBY_VERSION_MINOR)
+# endif
 #endif
 
-#define RUBY_AUTHOR "Yukihiro Matsumoto"
-#define RUBY_BIRTH_YEAR 1993
-#define RUBY_BIRTH_MONTH 2
-#define RUBY_BIRTH_DAY 24
-
+#if RUBY_PATCHLEVEL == -1
+#define RUBY_PATCHLEVEL_STR "dev"
+#else
 #define RUBY_PATCHLEVEL_STR "p"STRINGIZE(RUBY_PATCHLEVEL)
+#endif
 
 #ifndef RUBY_REVISION
 # include "revision.h"

@@ -22,7 +22,16 @@ describe :env_each, :shared => true do
 
   ruby_version_is "1.8.7" do
     it "returns an Enumerator if called without a block" do
-      ENV.send(@method).should be_kind_of(enumerator_class)
+      ENV.send(@method).should be_an_instance_of(enumerator_class)
+    end
+  end
+
+  ruby_version_is "1.9" do
+    it "uses the locale encoding" do
+      ENV.send(@method) do |key, value|
+        key.encoding.should == Encoding.find('locale')
+        value.encoding.should == Encoding.find('locale')
+      end
     end
   end
 end

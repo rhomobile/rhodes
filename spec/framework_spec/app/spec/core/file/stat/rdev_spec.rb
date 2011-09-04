@@ -1,7 +1,15 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../../spec_helper'
+require File.expand_path('../../../../spec_helper', __FILE__)
 
 describe 'File::Stat#rdev' do
+  before :each do
+    @name = tmp("file.txt")
+    touch(@name)
+  end
+  after :each do
+    rm_r @name
+  end
+
   it "returns the number of the device this file represents which the file exists" do
-    File.stat('/dev/null').rdev.should be_kind_of(Integer)
+    File.stat(@name).rdev.should be_kind_of(Integer)
   end
 end

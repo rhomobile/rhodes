@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Hash#default_proc" do
   it "returns the block passed to Hash.new" do
@@ -14,7 +14,7 @@ describe "Hash#default_proc" do
 end
 
 describe "Hash#default_proc=" do
-  ruby_version_is "1.9" do
+  ruby_version_is "1.8.8" do
     it "replaces the block passed to Hash.new" do
       h = new_hash { |i| 'Paris' }
       h.default_proc = Proc.new { 'Montreal' }
@@ -37,9 +37,29 @@ describe "Hash#default_proc=" do
       h.default_proc.call.should == 6
     end
 
-    it "raise an error if passed stuff not convertible to procs" do
+    it "raises an error if passed stuff not convertible to procs" do
       lambda{new_hash.default_proc = nil}.should raise_error(TypeError)
       lambda{new_hash.default_proc = 42}.should raise_error(TypeError)
     end
+
+    it "accepts a lambda with an arity of 2" do
+      h = new_hash
+      lambda do
+        h.default_proc = lambda {|a,b| }
+      end.should_not raise_error(TypeError)
+    end
+
+    ruby_version_is "1.9" do
+      it "raises a TypeError if passed a lambda with an arity other than 2" do
+        h = new_hash
+        lambda do
+          h.default_proc = lambda {|a| }
+        end.should raise_error(TypeError)
+        lambda do
+          h.default_proc = lambda {|a,b,c| }
+        end.should raise_error(TypeError)
+      end
+    end
+
   end
 end

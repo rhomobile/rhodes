@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Module#<=" do
   it "returns true if self is a subclass of, the same as or includes the given module" do
@@ -12,14 +12,14 @@ describe "Module#<=" do
     (ModuleSpecs::Basic  <= ModuleSpecs::Basic).should == true
     (ModuleSpecs::Super  <= ModuleSpecs::Super).should == true
   end
-  
+
   it "returns nil if self is not related to the given module" do
     (ModuleSpecs::Parent <= ModuleSpecs::Basic).should == nil
     (ModuleSpecs::Parent <= ModuleSpecs::Super).should == nil
     (ModuleSpecs::Basic  <= ModuleSpecs::Parent).should == nil
     (ModuleSpecs::Super  <= ModuleSpecs::Parent).should == nil
   end
-  
+
   it "returns false if self is a superclass of or is included by the given module" do
     (ModuleSpecs::Parent <= ModuleSpecs::Child).should == false
     (ModuleSpecs::Basic  <= ModuleSpecs::Child).should == false

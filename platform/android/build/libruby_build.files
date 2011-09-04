@@ -1,6 +1,5 @@
 platform/shared/ruby/array.c
 platform/shared/ruby/bignum.c
-platform/shared/ruby/blockinlining.c
 platform/shared/ruby/class.c
 platform/shared/ruby/compar.c
 platform/shared/ruby/compile.c
@@ -9,6 +8,7 @@ platform/shared/ruby/cont.c
 platform/shared/ruby/debug.c
 platform/shared/ruby/dir.c
 platform/shared/ruby/dln.c
+platform/shared/ruby/dln_find.c
 platform/shared/ruby/dmyencoding.c
 platform/shared/ruby/dmyext.c
 platform/shared/ruby/enc/ascii.c
@@ -68,6 +68,7 @@ platform/shared/ruby/missing/strlcat.c
 platform/shared/ruby/missing/strlcpy.c
 platform/shared/ruby/missing/tgamma.c
 platform/shared/ruby/newline.c
+platform/shared/ruby/node.c
 platform/shared/ruby/numeric.c
 platform/shared/ruby/object.c
 platform/shared/ruby/pack.c

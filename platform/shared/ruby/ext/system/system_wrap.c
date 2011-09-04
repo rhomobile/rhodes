@@ -1953,7 +1953,7 @@ SWIG_ruby_failed(void)
 } 
 
 
-/*@SWIG:/usr/local/share/swig/2.0.4/ruby/rubyprimtypes.swg,19,%ruby_aux_method@*/
+/*@SWIG:C:\Install\swigwin-2.0.4\Lib\ruby\rubyprimtypes.swg,19,%ruby_aux_method@*/
 SWIGINTERN VALUE SWIG_AUX_NUM2LONG(VALUE *args)
 {
   VALUE obj = args[0];
@@ -2089,8 +2089,8 @@ _wrap_syscall(int argc, VALUE *argv, VALUE self) {
         val2 = rb_hash_aref(argv[1], key2);
         Check_Type(key2, T_STRING);
         Check_Type(val2, T_STRING);
-        arg3[i2] = STR2CSTR(key2);
-        arg4[i2] = STR2CSTR(val2);
+        arg3[i2] = StringValuePtr(key2);
+        arg4[i2] = StringValuePtr(val2);
       }
     }
   }

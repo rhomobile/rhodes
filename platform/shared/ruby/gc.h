@@ -2,8 +2,10 @@
 #ifndef RUBY_GC_H
 #define RUBY_GC_H 1
 
-#if defined(__i386) && defined(__GNUC__)
-#define SET_MACHINE_STACK_END(p) __asm__("mov %%esp, %0" : "=r" (*p))
+#if defined(__x86_64__) && defined(__GNUC__)
+#define SET_MACHINE_STACK_END(p) __asm__("movq\t%%rsp, %0" : "=r" (*p))
+#elif defined(__i386) && defined(__GNUC__)
+#define SET_MACHINE_STACK_END(p) __asm__("movl\t%%esp, %0" : "=r" (*p))
 #else
 NOINLINE(void rb_gc_set_stack_end(VALUE **stack_end_p));
 #define SET_MACHINE_STACK_END(p) rb_gc_set_stack_end(p)
@@ -26,7 +28,7 @@ rb_gc_debug_indent(void)
 }
 
 static void
-rb_gc_debug_body(char *mode, char *msg, int st, void *ptr)
+rb_gc_debug_body(const char *mode, const char *msg, int st, void *ptr)
 {
     if (st == 0) {
 	ruby_gc_debug_indent--;
@@ -56,7 +58,7 @@ rb_gc_debug_body(char *mode, char *msg, int st, void *ptr)
 #endif
 
 #define RUBY_MARK_UNLESS_NULL(ptr) if(RTEST(ptr)){rb_gc_mark(ptr);}
-#define RUBY_FREE_UNLESS_NULL(ptr) if(ptr){ruby_xfree(ptr);}
+#define RUBY_FREE_UNLESS_NULL(ptr) if(ptr){ruby_xfree(ptr);(ptr)=NULL;}
 
 #if STACK_GROW_DIRECTION > 0
 # define STACK_UPPER(x, a, b) a
@@ -64,7 +66,7 @@ rb_gc_debug_body(char *mode, char *msg, int st, void *ptr)
 # define STACK_UPPER(x, a, b) b
 #else
 RUBY_EXTERN int ruby_stack_grow_direction;
-int ruby_get_stack_grow_direction(VALUE *addr);
+int ruby_get_stack_grow_direction(volatile VALUE *addr);
 # define stack_growup_p(x) (			\
 	(ruby_stack_grow_direction ?		\
 	 ruby_stack_grow_direction :		\

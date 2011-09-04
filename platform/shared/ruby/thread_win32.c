@@ -3,7 +3,7 @@
 
   thread_win32.c -
 
-  $Author: yugui $
+  $Author: mame $
 
   Copyright (C) 2004-2007 Koichi Sasada
 
@@ -12,26 +12,28 @@
 #ifdef THREAD_SYSTEM_DEPENDENT_IMPLEMENTATION
 
 #include <process.h>
-//#define THREAD_DEBUG 1
 
 #define WIN32_WAIT_TIMEOUT 10	/* 10 ms */
 #undef Sleep
 
+//RHO
 #define native_thread_yield() Sleep(10)
+//RHO
 #define remove_signal_thread_list(th)
 
 static volatile DWORD ruby_native_thread_key = TLS_OUT_OF_INDEXES;
-
+//RHO
 /*static*/ int native_mutex_lock(rb_thread_lock_t *);
 /*static*/ int native_mutex_unlock(rb_thread_lock_t *);
+//RHO
 static int native_mutex_trylock(rb_thread_lock_t *);
-void native_mutex_initialize(rb_thread_lock_t *);
+static void native_mutex_initialize(rb_thread_lock_t *);
 
 static void native_cond_signal(rb_thread_cond_t *cond);
 static void native_cond_broadcast(rb_thread_cond_t *cond);
 static void native_cond_wait(rb_thread_cond_t *cond, rb_thread_lock_t *mutex);
 static void native_cond_initialize(rb_thread_cond_t *cond);
-void native_cond_destroy(rb_thread_cond_t *cond);
+static void native_cond_destroy(rb_thread_cond_t *cond);
 
 static rb_thread_t *
 ruby_thread_from_native(void)
@@ -45,7 +47,7 @@ ruby_thread_set_native(rb_thread_t *th)
     return TlsSetValue(ruby_native_thread_key, th);
 }
 
-static void
+void
 Init_native_thread(void)
 {
     rb_thread_t *th = GET_THREAD();
@@ -65,7 +67,7 @@ Init_native_thread(void)
 }
 
 static void
-w32_error(void)
+w32_error(const char *func)
 {
     LPVOID lpMsgBuf = 0;
     int nError = GetLastError();
@@ -77,16 +79,16 @@ w32_error(void)
 		  MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 		  (LPTSTR) & lpMsgBuf, 0, NULL);
     if ( lpMsgBuf )
-        rb_bug("%s;Error code: %d", (char*)lpMsgBuf, nError);
+        rb_bug("%s;Error code: %d; Func: %s", (char*)lpMsgBuf, nError, func);
     else
-        rb_bug("Error code: %d", nError);
+        rb_bug("Error code: %d; Func: %s", nError, func);
 }
 
 static void
 w32_set_event(HANDLE handle)
 {
     if (SetEvent(handle) == 0) {
-	w32_error();
+	w32_error("w32_set_event");
     }
 }
 
@@ -94,7 +96,7 @@ static void
 w32_reset_event(HANDLE handle)
 {
     if (ResetEvent(handle) == 0) {
-	w32_error();
+	w32_error("w32_reset_event");
     }
 }
 
@@ -108,16 +110,20 @@ w32_wait_events(HANDLE *events, int count, DWORD timeout, rb_thread_t *th)
     thread_debug("  w32_wait_events events:%p, count:%d, timeout:%ld, th:%p\n",
 		 events, count, timeout, th);
     if (th && (intr = th->native_thread_data.interrupt_event)) {
-	w32_reset_event(intr);
-	if (RUBY_VM_INTERRUPTED(th)) {
-	    w32_set_event(intr);
+	native_mutex_lock(&th->vm->global_vm_lock);
+	if (intr == th->native_thread_data.interrupt_event) {
+	    w32_reset_event(intr);
+	    if (RUBY_VM_INTERRUPTED(th)) {
+		w32_set_event(intr);
+	    }
+
+	    targets = ALLOCA_N(HANDLE, count + 1);
+	    memcpy(targets, events, sizeof(HANDLE) * count);
+
+	    targets[count++] = intr;
+	    thread_debug("  * handle: %p (count: %d, intr)\n", intr, count);
 	}
-
-	targets = ALLOCA_N(HANDLE, count + 1);
-	memcpy(targets, events, sizeof(HANDLE) * count);
-
-	targets[count++] = intr;
-	thread_debug("  * handle: %p (count: %d, intr)\n", intr, count);
+	native_mutex_unlock(&th->vm->global_vm_lock);
     }
 
     thread_debug("  WaitForMultipleObjects start (count: %d)\n", count);
@@ -161,7 +167,7 @@ static void
 w32_close_handle(HANDLE handle)
 {
     if (CloseHandle(handle) == 0) {
-	w32_error();
+	w32_error("w32_close_handle");
     }
 }
 
@@ -169,11 +175,11 @@ static void
 w32_resume_thread(HANDLE handle)
 {
     if (ResumeThread(handle) == -1) {
-	w32_error();
+	w32_error("w32_resume_thread");
     }
 }
 
-#if defined _MSC_VER && !defined(_WIN32_WCE)
+#if defined( _MSC_VER) && !defined(_WIN32_WCE)
 #define HAVE__BEGINTHREADEX 1
 #else
 #undef HAVE__BEGINTHREADEX
@@ -181,9 +187,11 @@ w32_resume_thread(HANDLE handle)
 
 #ifdef HAVE__BEGINTHREADEX
 #define start_thread (HANDLE)_beginthreadex
+#define thread_errno errno
 typedef unsigned long (_stdcall *w32_thread_start_func)(void*);
 #else
 #define start_thread CreateThread
+#define thread_errno rb_w32_map_errno(GetLastError())
 typedef LPTHREAD_START_ROUTINE w32_thread_start_func;
 #endif
 
@@ -251,7 +259,9 @@ native_sleep(rb_thread_t *th, struct timeval *tv)
     GVL_UNLOCK_END();
 }
 
+//RHO
 /*static*/ int
+//RHO
 native_mutex_lock(rb_thread_lock_t *lock)
 {
 #if USE_WIN32_MUTEX
@@ -287,7 +297,9 @@ native_mutex_lock(rb_thread_lock_t *lock)
 #endif
 }
 
+//RHO
 /*static*/ int
+//RHO
 native_mutex_unlock(rb_thread_lock_t *lock)
 {
 #if USE_WIN32_MUTEX
@@ -319,13 +331,13 @@ native_mutex_trylock(rb_thread_lock_t *lock)
 #endif
 }
 
-void
+static void
 native_mutex_initialize(rb_thread_lock_t *lock)
 {
 #if USE_WIN32_MUTEX
     *lock = CreateMutex(NULL, FALSE, NULL);
     if (*lock == NULL) {
-	w32_error();
+	w32_error("native_mutex_initialize");
     }
     /* thread_debug("initialize mutex: %p\n", *lock); */
 #else
@@ -333,7 +345,9 @@ native_mutex_initialize(rb_thread_lock_t *lock)
 #endif
 }
 
-void
+#define native_mutex_reinitialize_atfork(lock) (void)(lock)
+
+static void
 native_mutex_destroy(rb_thread_lock_t *lock)
 {
 #if USE_WIN32_MUTEX
@@ -385,8 +399,8 @@ static void
 native_cond_wait(rb_thread_cond_t *cond, rb_thread_lock_t *mutex)
 {
     DWORD r;
-    DWORD dwErr = 0;
     struct cond_event_entry entry;
+//RHO	
     //WinMo BUG: in release mode CreateEventW without name inside non-main thread does not work
     static int nCounter = 0;
     wchar_t buf[20];
@@ -395,8 +409,7 @@ native_cond_wait(rb_thread_cond_t *cond, rb_thread_lock_t *mutex)
 
     entry.next = 0;
     entry.event = CreateEventW(0, FALSE, FALSE, buf);
-//    dwErr = GetLastError();
-//    printf("CreateEvent: %d; %d", entry.event, dwErr);
+//RHO
 
     /* cond is guarded by mutex */
     if (cond->next) {
@@ -434,7 +447,7 @@ native_cond_destroy(rb_thread_cond_t *cond)
 }
 
 void
-ruby_init_stack(VALUE *addr)
+ruby_init_stack(volatile VALUE *addr)
 {
 }
 
@@ -459,15 +472,20 @@ native_thread_init_stack(rb_thread_t *th)
     th->machine_stack_maxsize = size - space;
 }
 
+#ifndef InterlockedExchangePointer
+#define InterlockedExchangePointer(t, v) \
+    (void *)InterlockedExchange((long *)(t), (long)(v))
+#endif
 static void
 native_thread_destroy(rb_thread_t *th)
 {
-    HANDLE intr = th->native_thread_data.interrupt_event;
+    HANDLE intr = InterlockedExchangePointer(&th->native_thread_data.interrupt_event, 0);
     native_mutex_destroy(&th->interrupt_lock);
     thread_debug("close handle - intr: %p, thid: %p\n", intr, th->thread_id);
-    th->native_thread_data.interrupt_event = 0;
+//RHO
     if ( intr )
         w32_close_handle(intr);
+//RHO		
 }
 
 static unsigned long _stdcall
@@ -501,7 +519,7 @@ static int
 native_thread_create(rb_thread_t *th)
 {
     size_t stack_size = 4 * 1024; /* 4KB */
-
+//RHO
     th->native_thread_data.interrupt_event = CreateEvent(0, TRUE, FALSE, 0);
 
     if ( !th->native_thread_data.interrupt_event)
@@ -509,16 +527,15 @@ native_thread_create(rb_thread_t *th)
         DWORD dwErr = GetLastError();
         thread_debug("thread interrupt_event error: %d\n", dwErr );
     }
-
+//RHO
     th->thread_id = w32_create_thread(stack_size, thread_start_func_1, th);
 
     if ((th->thread_id) == 0) {
-	    st_delete_wrap(th->vm->living_threads, th->self);
-
-        if ( th->native_thread_data.interrupt_event )
+//RHO
+		if ( th->native_thread_data.interrupt_event )
             w32_close_handle(th->native_thread_data.interrupt_event);
-
-	    rb_raise(rb_eThreadError, "can't create Thread (%d)", errno);
+//RHO				
+		return thread_errno;
     }
 
     w32_resume_thread(th->thread_id);
@@ -535,7 +552,7 @@ native_thread_create(rb_thread_t *th)
 static void
 native_thread_join(HANDLE th)
 {
-    w32_wait_events(&th, 1, 0, 0);
+    w32_wait_events(&th, 1, INFINITE, 0);
 }
 
 #if USE_NATIVE_THREAD_PRIORITY
@@ -562,7 +579,6 @@ native_thread_apply_priority(rb_thread_t *th)
 static void
 ubf_handle(void *ptr)
 {
-    typedef BOOL (WINAPI *cancel_io_func_t)(HANDLE);
     rb_thread_t *th = (rb_thread_t *)ptr;
     thread_debug("ubf_handle: %p\n", th);
 
@@ -587,6 +603,7 @@ timer_thread_func(void *dummy)
 static void
 rb_thread_create_timer_thread(void)
 {
+//RHO
 /*    if (timer_thread_id == 0) {
 	if (!timer_thread_lock) {
 	    timer_thread_lock = CreateEvent(0, TRUE, FALSE, 0);
@@ -595,11 +612,13 @@ rb_thread_create_timer_thread(void)
 					    timer_thread_func, 0);
 	w32_resume_thread(timer_thread_id);
     }*/
+//RHO	
 }
 
 static int
 native_stop_timer_thread(void)
 {
+//RHO
     return 1;
 /*    int stopped = --system_working <= 0;
     if (stopped) {
@@ -607,6 +626,19 @@ native_stop_timer_thread(void)
 	timer_thread_lock = 0;
     }
     return stopped;  */
+//RHO
+}
+
+static void
+native_reset_timer_thread(void)
+{
+//RHO
+/*    if (timer_thread_id) {
+	CloseHandle(timer_thread_id);
+	timer_thread_id = 0;
+    }
+*/	
+//RHO	
 }
 
 #endif /* THREAD_SYSTEM_DEPENDENT_IMPLEMENTATION */

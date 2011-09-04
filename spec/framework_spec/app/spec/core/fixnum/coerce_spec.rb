@@ -1,4 +1,4 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "Fixnum#coerce when given a Fixnum" do
   it "returns an array containing two Fixnums" do
@@ -26,7 +26,7 @@ describe "Fixnum#coerce" do
   it "tries to convert the given Object into a Float by using #to_f" do
     (obj = mock('1.0')).should_receive(:to_f).and_return(1.0)
     2.coerce(obj).should == [1.0, 2.0]
-    
+
     (obj = mock('0')).should_receive(:to_f).and_return('0')
     lambda { 2.coerce(obj).should == [1.0, 2.0] }.should raise_error(TypeError)
   end

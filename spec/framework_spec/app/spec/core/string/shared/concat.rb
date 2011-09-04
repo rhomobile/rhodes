@@ -26,6 +26,7 @@ describe :string_concat, :shared => true do
       lambda { a.send(@method, "test") }.should raise_error(TypeError)
     end
   end
+
   ruby_version_is "1.9" do
     it "raises a RuntimeError when self is frozen" do
       a = "hello"
@@ -34,13 +35,15 @@ describe :string_concat, :shared => true do
       lambda { a.send(@method, "")     }.should raise_error(RuntimeError)
       lambda { a.send(@method, "test") }.should raise_error(RuntimeError)
     end
-  end
 
-  ruby_version_is "1.9" do
-    it "raises ArgumentError for negative length argument" do
+    it "raises RangeError for negative length argument" do
       lambda do
-        'glark'.force_encoding('UTF-8').send(@method, -200) 
-      end.should raise_error(ArgumentError)
+        'glark'.force_encoding('UTF-8').send(@method, -200)
+      end.should raise_error(RangeError)
+
+      lambda do
+        'glark'.force_encoding('UTF-8').send(@method, -2**64)
+      end.should raise_error(RangeError)
     end
   end
 
@@ -100,5 +103,5 @@ describe :string_concat_fixnum, :shared => true do
       lambda { a.send(@method, 0)  }.should raise_error(RuntimeError)
       lambda { a.send(@method, 33) }.should raise_error(RuntimeError)
     end
-  end    
+  end
 end

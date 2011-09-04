@@ -1,12 +1,12 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Method#owner" do
   ruby_version_is '1.8.7' do
     it "returns the owner of the method" do
       "abc".method(:upcase).owner.should == String
     end
-    
+
     it "returns the name even when aliased" do
       obj = MethodSpecs::Methods.new
       obj.method(:foo).owner.should == MethodSpecs::Methods

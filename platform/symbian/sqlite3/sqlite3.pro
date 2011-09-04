@@ -15,7 +15,8 @@ symbian {
 DEFINES += __BSD_VISIBLE=1 \
            SQLITE_OS_UNIX=1 \
            HAVE_LOCALTIME_R=1 \
-           OS_SYMBIAN=1
+           OS_SYMBIAN=1\
+           SYMBIAN_ENABLE_PUBLIC_PLATFORM_HEADER_SPLIT=1
 
 SOURCES += \
     src/sqlite3.c \

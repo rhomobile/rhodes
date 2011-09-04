@@ -2,7 +2,7 @@
 
   util.h -
 
-  $Author: yugui $
+  $Author: naruse $
   created at: Thu Mar  9 11:55:53 JST 1995
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -40,16 +40,16 @@ extern "C" {
 #endif
 #endif
 
-#define scan_oct ruby_scan_oct
-unsigned long ruby_scan_oct(const char *, int, int *);
-#define scan_hex ruby_scan_hex
-unsigned long ruby_scan_hex(const char *, int, int *);
+#define scan_oct(s,l,e) (int)ruby_scan_oct(s,l,e)
+unsigned long ruby_scan_oct(const char *, size_t, size_t *);
+#define scan_hex(s,l,e) (int)ruby_scan_hex(s,l,e)
+unsigned long ruby_scan_hex(const char *, size_t, size_t *);
 
 #if defined(__CYGWIN32__) || defined(_WIN32)
 void ruby_add_suffix(VALUE str, const char *suffix);
 #endif
 
-void ruby_qsort(void *, const int, const int,
+void ruby_qsort(void *, const size_t, const size_t,
 		int (*)(const void *, const void *, void *), void *);
 
 void ruby_setenv(const char *, const char *);
@@ -69,6 +69,14 @@ char *ruby_getcwd(void);
 double ruby_strtod(const char *, char **);
 #undef strtod
 #define strtod(s,e) ruby_strtod(s,e)
+
+#if defined _MSC_VER && _MSC_VER >= 1300
+#pragma warning(push)
+#pragma warning(disable:4723)
+#endif
+#if defined _MSC_VER && _MSC_VER >= 1300
+#pragma warning(pop)
+#endif
 
 void ruby_each_words(const char *, void (*)(const char*, int, void*), void *);
 

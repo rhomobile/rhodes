@@ -2,7 +2,7 @@
 
   iseq.h -
 
-  $Author: yugui $
+  $Author: mame $
   created at: 04/01/01 23:36:57 JST
 
   Copyright (C) 2004-2008 Koichi Sasada
@@ -20,7 +20,7 @@ VALUE rb_iseq_build_from_ary(rb_iseq_t *iseq, VALUE locals, VALUE args,
 			     VALUE exception, VALUE body, VALUE misc);
 //RHO
 /* iseq.c */
-VALUE ruby_iseq_load(VALUE data, VALUE parent, VALUE opt);
+VALUE rb_iseq_load(VALUE data, VALUE parent, VALUE opt);
 struct st_table *ruby_insn_make_insn_table(void);
 
 #define ISEQ_TYPE_TOP    INT2FIX(1)
@@ -33,12 +33,12 @@ struct st_table *ruby_insn_make_insn_table(void);
 #define ISEQ_TYPE_MAIN   INT2FIX(8)
 #define ISEQ_TYPE_DEFINED_GUARD INT2FIX(9)
 
-#define CATCH_TYPE_RESCUE INT2FIX(1)
-#define CATCH_TYPE_ENSURE INT2FIX(2)
-#define CATCH_TYPE_RETRY  INT2FIX(3)
-#define CATCH_TYPE_BREAK  INT2FIX(4)
-#define CATCH_TYPE_REDO   INT2FIX(5)
-#define CATCH_TYPE_NEXT   INT2FIX(6)
+#define CATCH_TYPE_RESCUE ((int)INT2FIX(1))
+#define CATCH_TYPE_ENSURE ((int)INT2FIX(2))
+#define CATCH_TYPE_RETRY  ((int)INT2FIX(3))
+#define CATCH_TYPE_BREAK  ((int)INT2FIX(4))
+#define CATCH_TYPE_REDO   ((int)INT2FIX(5))
+#define CATCH_TYPE_NEXT   ((int)INT2FIX(6))
 
 struct iseq_insn_info_entry {
     unsigned short position;
@@ -75,14 +75,15 @@ struct iseq_compile_data {
     struct iseq_label_data *end_label;
     struct iseq_label_data *redo_label;
     VALUE current_block;
-    VALUE loopval_popped;	/* used by NODE_BREAK */
     VALUE ensure_node;
     VALUE for_iseq;
     struct iseq_compile_data_ensure_node_stack *ensure_node_stack;
+    int loopval_popped;	/* used by NODE_BREAK */
     int cached_const;
     struct iseq_compile_data_storage *storage_head;
     struct iseq_compile_data_storage *storage_current;
     int last_line;
+    int last_coverable_line;
     int flip_cnt;
     int label_no;
     int node_level;

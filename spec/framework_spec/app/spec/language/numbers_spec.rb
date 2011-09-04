@@ -1,4 +1,4 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../spec_helper'
+require File.expand_path('../../spec_helper', __FILE__)
 
 describe "Ruby numbers in various ways" do
 
@@ -14,11 +14,10 @@ describe "Ruby numbers in various ways" do
     4.35.should == 4.35
   end
 
-# XXX eval not supported
-#  it "with decimals but no integer part should be a SyntaxError" do
-#    lambda { eval(".75")  }.should raise_error(SyntaxError)
-#    lambda { eval("-.75") }.should raise_error(SyntaxError)
-#  end
+  it "with decimals but no integer part should be a SyntaxError" do
+    lambda { eval(".75")  }.should raise_error(SyntaxError)
+    lambda { eval("-.75") }.should raise_error(SyntaxError)
+  end
 
   # TODO : find a better description
   it "using the e expression" do

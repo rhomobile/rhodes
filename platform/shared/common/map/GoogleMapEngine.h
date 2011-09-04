@@ -325,6 +325,10 @@ private:
         PIN_INFO m_pin_calloutlink_info;
         IDrawingImage *m_GoogleLogo;
         
+        IDrawingImage *m_Callout;
+        PIN_INFO m_CalloutInfo;
+        Annotation* m_CalloutAnnotation;
+        
     };
     
     class GoogleMapEngine : public IMapEngine

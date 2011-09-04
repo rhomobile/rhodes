@@ -1,9 +1,3 @@
-      case NODE_METHOD:
-	return "NODE_METHOD";
-      case NODE_FBODY:
-	return "NODE_FBODY";
-      case NODE_CFUNC:
-	return "NODE_CFUNC";
       case NODE_SCOPE:
 	return "NODE_SCOPE";
       case NODE_BLOCK:
@@ -180,8 +174,6 @@
 	return "NODE_FLIP2";
       case NODE_FLIP3:
 	return "NODE_FLIP3";
-      case NODE_ATTRSET:
-	return "NODE_ATTRSET";
       case NODE_SELF:
 	return "NODE_SELF";
       case NODE_NIL:
