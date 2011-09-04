@@ -24,6 +24,9 @@ extern void rho_geo_set_notification( const char *url, char* params, int timeout
 #define haversine_distance rho_geo_haversine_distance
 extern double rho_geo_haversine_distance(double lat1, double lon1, double lat2, double lon2);
 
+#define turnoff rho_geoimpl_turngpsoff
+extern void rho_geoimpl_turngpsoff();
+
 %}
 
 %predicate known_position();
@@ -41,4 +44,5 @@ extern int    known_position();
 extern void   set_view_notification( const char *url, char* params, int timeout_sec);
 extern void   set_notification( const char *url, char* params, int timeout_sec);
 extern double haversine_distance(double lat1, double lon1, double lat2, double lon2);
+extern void   turnoff();
 

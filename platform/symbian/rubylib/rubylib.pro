@@ -147,6 +147,7 @@ unix:!symbian {
 }
 
 win32 {
+#DESTDIR = ../../rhodes-symbian-emulator-build
 SOURCES += ../../shared/ruby/win32/win32.c
 HEADERS += ../../shared/ruby/win32/assert.h
 INCLUDEPATH += ../../shared/ruby/win32

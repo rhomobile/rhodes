@@ -8,15 +8,21 @@ namespace "config" do
                 $rubypath = "res/build-tools/RhoRuby.exe"
                 $zippath = "res/build-tools/7za.exe"
                 $appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"]
+                $ver = $app_config["symbianver"].nil? ? "9.4" : $app_config["symbianver"]
+                $symver = "Symbian1Qt473"
+                if($ver == "9.5")
+                    $symver = "Symbian3Qt473"
+                end
+
                 $bindir = $app_path + "/bin"
                 $rhobundledir =  $app_path + "/RhoBundle"
                 $srcdir =  $bindir + "/RhoBundle"
                 $targetdir = $bindir + "/target/sym"
                 $tmpdir =  $bindir +"/tmp"
                 $jom = $config["env"]["paths"]["qtsymbian-sdk"]  + "/QtCreator/bin/jom.exe"
-                $sdkprefix = $config["env"]["paths"]["qtsymbian-sdk"]+"/Symbian/SDKs/Symbian1Qt473"
+                $sdkprefix = $config["env"]["paths"]["qtsymbian-sdk"]+"/Symbian/SDKs/"+$symver
                 $sdkprefix_emu = $config["env"]["paths"]["qtsymbian-sdk"]+"/Simulator/Qt/msvc2005"
-                $epocroot = $config["env"]["paths"]["qtsymbian-sdk"]+"/Symbian/SDKs/Symbian1Qt473/"
+                $epocroot = $config["env"]["paths"]["qtsymbian-sdk"]+"/Symbian/SDKs/"+$symver+"/"
                 $epocroot = $epocroot[2,$epocroot.length()]
                 $qmake = $sdkprefix+"/bin/qmake.exe"
                 $make = $sdkprefix+"/epoc32/tools/make.exe"
@@ -80,14 +86,19 @@ namespace "build" do
    task :rhodesdev => ["config:symbian"] do
      ENV['EPOCROOT'] = $epocroot
      chdir $config["build"]["symbianpath"]
-     ENV['PATH'] = $sdkprefix+"/epoc32/tools;"+$symbiandir+"/tools/perl/bin;C:/Windows/system32;"+$sdkprefix+"/epoc32/gcc/bin;"+$symbiandir+"/tools/gcce4/bin;"+$sdkprefix+"/bin;"+$sdkprefix+"/mkspecs/default;"+$symbiandir+"/tools/gcce4/arm-none-symbianelf/bin;"
+     ENV['PATH'] = $sdkprefix+"/epoc32/tools;"+$symbiandir+"/tools/perl/bin;"+$symbiandir+"/tools/sbs/bin;"+$symbiandir+"/tools/sbs/win32/python27;C:/Windows/system32;"+$sdkprefix+"/epoc32/gcc/bin;"+$symbiandir+"/tools/gcce4/bin;"+$sdkprefix+"/bin;"+$sdkprefix+"/mkspecs/default;"+$symbiandir+"/tools/gcce4/arm-none-symbianelf/bin;"
      ENV['GCCPATH']= $symbiandir+"/tools/gcce4"
      ENV['DEFALT_MKSPEC_PATH']=$sdkprefix+"/mkspecs/default"
      ENV['QMAKE_PATH']=$sdkprefix+"/bin"
 
 
+     if($ver == "9.4")
      args = ['rhodes.pro', '-r','-spec', 'symbian-abld', "\"CONFIG+=release\"", '-after', "\"OBJECTS_DIR=obj\"", "\"MOC_DIR=moc\"", "\"UI_DIR=ui\"", "\"RCC_DIR=rcc\"", '-after', "\"OBJECTS_DIR=obj\"",
              "\"MOC_DIR=moc\"", "\"UI_DIR=ui\"", "\"RCC_DIR=rcc\""]
+     else
+     args = ['rhodes.pro', '-r','-spec', 'symbian-sbsv2', "\"CONFIG+=release symbian3\"", '-after', "\"OBJECTS_DIR=obj\"", "\"MOC_DIR=moc\"", "\"UI_DIR=ui\"", "\"RCC_DIR=rcc\"", '-after', "\"OBJECTS_DIR=obj\"",
+             "\"MOC_DIR=moc\"", "\"UI_DIR=ui\"", "\"RCC_DIR=rcc\""]
+     end
      puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
      puts Jake.run($qmake,args)
      unless $? == 0
@@ -96,12 +107,16 @@ namespace "build" do
      end
 
      args = ['release-gcce', '-w']
+     #args = ['release-winscw', '-w']
      puts Jake.run($make,args)
      unless $? == 0
        puts "Error building"
        exit 1
      end
 
+     #chdir "rhodes"
+
+     #args = ['installer_sis']
      args = ['sis']
      puts Jake.run($make,args)
      unless $? == 0
@@ -109,9 +124,17 @@ namespace "build" do
         exit 1
      end
 
+     #chdir "rhodes"
+     #args = ['ok_installer_sis']
+     #puts Jake.run($make,args)
+     #unless $? == 0
+     #puts "Error building"
+     #   exit 1
+     #end
+
      mkdir_p $targetdir if not File.exists? $targetdir
      rm $targetdir+"/"+$appname+".sis" if File.exists? $targetdir+"/"+$appname+".sis"
-     mv $startdir + "/"+$config["build"]["symbianpath"] + "/rhodes/"+$appname+".sis", $targetdir+"/"+$appname+".sis"
+     cp $startdir + "/"+$config["build"]["symbianpath"] + "/rhodes/"+$appname+".sis", $targetdir+"/"+$appname+".sis"
 
      chdir $startdir
    end
@@ -163,7 +186,7 @@ namespace "clean" do
     task :rhodes => ["config:symbian"] do
         ENV['EPOCROOT'] = $epocroot
         chdir $config["build"]["symbianpath"]
-        ENV['PATH'] = $sdkprefix+"/epoc32/tools;"+$symbiandir+"/tools/perl/bin;C:/Windows/system32;"+$sdkprefix+"/epoc32/gcc/bin;"+$symbiandir+"/tools/gcce4/bin;"+$sdkprefix+"/bin;"+$sdkprefix+"/mkspecs/default;"+$symbiandir+"/tools/gcce4/arm-none-symbianelf/bin;"
+        ENV['PATH'] = $sdkprefix+"/epoc32/tools;"+$symbiandir+"/tools/perl/bin;"+$symbiandir+"/tools/sbs/bin;"+$symbiandir+"/tools/sbs/win32/python27;C:/Windows/system32;"+$sdkprefix+"/epoc32/gcc/bin;"+$symbiandir+"/tools/gcce4/bin;"+$sdkprefix+"/bin;"+$sdkprefix+"/mkspecs/default;"+$symbiandir+"/tools/gcce4/arm-none-symbianelf/bin;"
         ENV['GCCPATH']= $symbiandir+"/tools/gcce4"
         ENV['DEFALT_MKSPEC_PATH']=$sdkprefix+"/mkspecs/default"
         ENV['QMAKE_PATH']=$sdkprefix+"/bin"
@@ -188,6 +211,34 @@ namespace "device" do
     task :production => ["config:symbian","build:symbian:rhobundle","build:symbian:rhodesdev"] do
 
 
+
+    end
+
+    task :run => ["config:symbian","production"] do
+        ENV['EPOCROOT'] = $epocroot
+        chdir $config["build"]["symbianpath"]
+        ENV['PATH'] = $sdkprefix+"/epoc32/tools;"+$symbiandir+"/tools/perl/bin;C:/Windows/system32;"+$sdkprefix+"/epoc32/gcc/bin;"+$symbiandir+"/tools/gcce4/bin;"+$sdkprefix+"/bin;"+$sdkprefix+"/mkspecs/default;"+$symbiandir+"/tools/gcce4/arm-none-symbianelf/bin;"
+        ENV['GCCPATH']= $symbiandir+"/tools/gcce4"
+        ENV['DEFALT_MKSPEC_PATH']=$sdkprefix+"/mkspecs/default"
+        ENV['QMAKE_PATH']=$sdkprefix+"/bin"
+
+        chdir "rhodes"
+
+        args = ['deploy']
+        puts Jake.run($make,args)
+        unless $? == 0
+        puts "Error starting"
+            exit 1
+        end
+
+        chdir "rhodes"
+
+        args = ['runonphone']
+        puts Jake.run($make,args)
+        unless $? == 0
+        puts "Error starting"
+            exit 1
+        end
 
     end
   end

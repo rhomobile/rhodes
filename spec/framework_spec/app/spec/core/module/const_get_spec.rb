@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../fixtures/constants'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../../../fixtures/constants', __FILE__)
 
 describe "Module#const_get" do
   it "accepts a String or Symbol name" do
@@ -59,6 +59,18 @@ describe "Module#const_get" do
     lambda do
       ConstantSpecs::ContainerA::ChildA.const_get(:CS_CONST5)
     end.should raise_error(NameError)
+  end
+
+  ruby_version_is "1.9" do
+    it "raises a NameError if the constant is defined in the receiver's supperclass and the inherit flag is false" do
+      lambda do
+        ConstantSpecs::ContainerA::ChildA.const_get(:CS_CONST4, false)
+      end.should raise_error(NameError)
+    end
+
+    it "searches into the receiver superclasses if the inherit flag is true" do
+      ConstantSpecs::ContainerA::ChildA.const_get(:CS_CONST4, true).should == :const4
+    end
   end
 
   describe "with statically assigned constants" do

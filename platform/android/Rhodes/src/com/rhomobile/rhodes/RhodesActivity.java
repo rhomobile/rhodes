@@ -360,7 +360,7 @@ public class RhodesActivity extends BaseActivity {
 		mHandler.post(r);
 	}
 	
-	public void post(Runnable r, int delay) {
+	public void post(Runnable r, long delay) {
 		mHandler.postDelayed(r, delay);
 	}
 	

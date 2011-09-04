@@ -9,6 +9,7 @@
 
 /* global for chdir, getcwd */
 char _currentdir[MAX_PATH+1];
+WCHAR _wcurrentdir[MAX_PATH+1];
 
 
 char *getcwd(char* buffer, int maxlen)
@@ -24,6 +25,20 @@ int _chdir(const char * dirname)
 
 	strcpy( _currentdir, dirname );
 	return 0;
+}
+
+int _wchdir(const WCHAR * dirname)
+{
+	if( MAX_PATH < wcslen(dirname) )
+		return -1;
+
+	strcpy( _wcurrentdir, dirname );
+	return 0;
+}
+
+int _wchmod(const wchar_t * _Filename, int _Mode)
+{
+    return 0;
 }
 
 int _rmdir(const char * dir)
@@ -51,8 +66,9 @@ int _mkdir(const char * dir)
 
 	return rc==TRUE ? 0 : -1;
 }
-
+#if 0
 int rb_w32_mkdir(const char *path, int mode)
 {
     return _mkdir(path);
 }
+#endif 

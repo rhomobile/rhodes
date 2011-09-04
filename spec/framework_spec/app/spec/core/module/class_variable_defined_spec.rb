@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Module#class_variable_defined?" do
   it "returns true if a class variable with the given name is defined in self" do
@@ -15,6 +15,19 @@ describe "Module#class_variable_defined?" do
     ModuleSpecs::CVars.class_variable_defined?("@@meta").should == true
   end
 
+  it "returns true if the class variable is defined in a metaclass" do
+    obj = mock("metaclass class variable")
+    meta = obj.singleton_class
+    meta.send :class_variable_set, :@@var, 1
+    meta.send(:class_variable_defined?, :@@var).should be_true
+  end
+
+  it "returns false if the class variable is not defined in a metaclass" do
+    obj = mock("metaclass class variable")
+    meta = obj.singleton_class
+    meta.class_variable_defined?(:@@var).should be_false
+  end
+
   it "returns true if a class variables with the given name is defined in an included module" do
     c = Class.new { include ModuleSpecs::MVars }
     c.class_variable_defined?("@@mvar").should == true
@@ -26,11 +39,13 @@ describe "Module#class_variable_defined?" do
     c.class_variable_defined?("@@mvar").should == false
   end
 
-  not_compliant_on :rubinius do
-    it "accepts Fixnums for class variables" do
-      c = Class.new { class_variable_set :@@class_var, "test" }
-      c.class_variable_defined?(:@@class_var.to_i).should == true
-      c.class_variable_defined?(:@@no_class_var.to_i).should == false
+  ruby_version_is ""..."1.9" do
+    not_compliant_on :rubinius do
+      it "accepts Fixnums for class variables" do
+        c = Class.new { class_variable_set :@@class_var, "test" }
+        c.class_variable_defined?(:@@class_var.to_i).should == true
+        c.class_variable_defined?(:@@no_class_var.to_i).should == false
+      end
     end
   end
 

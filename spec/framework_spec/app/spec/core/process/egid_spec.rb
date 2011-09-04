@@ -1,4 +1,4 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "Process.egid" do
   it "returns the effective group ID for this process" do
@@ -12,4 +12,8 @@ describe "Process.egid" do
   it "also goes by Process::Sys.getegid" do
     Process::Sys.getegid.should == Process.egid
   end
+end
+
+describe "Process.egid=" do
+  it "needs to be reviewed for spec completeness"
 end

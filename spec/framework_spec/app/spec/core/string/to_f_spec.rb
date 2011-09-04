@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes.rb'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes.rb', __FILE__)
 
 # src.scan(/[+-]?[\d_]+\.[\d_]+(e[+-]?[\d_]+)?\b|[+-]?[\d_]+e[+-]?[\d_]+\b/i)
 
@@ -12,22 +12,14 @@ describe "String#to_f" do
 
    ".5".to_f.should == 0.5
    ".5e1".to_f.should == 5.0
+   "5e".to_f.should == 5.0
+   "5E".to_f.should == 5.0
   end
 
-  not_compliant_on :jruby do
-    it "treats special float value strings as characters" do
-      "NaN".to_f.should == 0
-      "Infinity".to_f.should == 0
-      "-Infinity".to_f.should == 0
-    end
-  end
-
-  deviates_on :jruby do
-    it "creates special float values from string representations" do
-      "NaN".to_f.nan?.should == true
-      "Infinity".to_f.infinite?.should == 1
-      "-Infinity".to_f.infinite?.should == -1
-    end
+  it "treats special float value strings as characters" do
+    "NaN".to_f.should == 0
+    "Infinity".to_f.should == 0
+    "-Infinity".to_f.should == 0
   end
 
   it "allows for varying case" do

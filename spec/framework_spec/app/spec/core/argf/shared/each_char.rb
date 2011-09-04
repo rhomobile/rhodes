@@ -1,7 +1,7 @@
 describe :argf_each_char, :shared => true do
   before :each do
-    @file1_name = fixture File.join(__rhoGetCurrentDir(), __FILE__), "file1.txt"
-    @file2_name = fixture File.join(__rhoGetCurrentDir(), __FILE__), "file2.txt"
+    @file1_name = fixture __FILE__, "file1.txt"
+    @file2_name = fixture __FILE__, "file2.txt"
 
     @chars = []
     File.read(@file1_name).each_char { |c| @chars << c }
@@ -9,7 +9,7 @@ describe :argf_each_char, :shared => true do
   end
 
   after :each do
-    ARGF.close
+    ARGF.close unless ARGF.closed?
   end
 
   it "yields each char of all streams to the passed block" do

@@ -60,8 +60,14 @@ class NameMap
     MSpecScript
     MkSpec
     DTracer
+    Etc
+    FileUtils
+    MSpecOption
+    MSpecOptions
     NameMap
     OptionParser
+    RbConfig
+    SpecVersion
     YAML
   ]
 
@@ -96,11 +102,12 @@ class NameMap
       next unless m and not @seen[m]
       @seen[m] = true
 
-      ms = m.methods false
+      ms = m.methods(false).map { |x| x.to_s }
       hash["#{name}."] = ms.sort unless ms.empty?
 
       ms = m.public_instance_methods(false) +
            m.protected_instance_methods(false)
+      ms.map! { |x| x.to_s }
       hash["#{name}#"] = ms.sort unless ms.empty?
 
       map hash, m.constants, name

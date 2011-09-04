@@ -1,18 +1,16 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "File.link" do
   before :each do
-    @file = "test.txt"
-    @link = "test.lnk"
-    File.delete(@link) if File.exist?(@link)
-    File.delete(@file) if File.exist?(@file)
-    File.open(@file,"w+")
+    @file = tmp("file_link.txt")
+    @link = tmp("file_link.lnk")
+
+    rm_r @link
+    touch @file
   end
 
   after :each do
-    File.unlink(@link) if File.exist?(@link)
-    File.delete(@file) if File.exist?(@file)
-    @link = nil
+    rm_r @link, @file
   end
 
   platform_is_not :windows do

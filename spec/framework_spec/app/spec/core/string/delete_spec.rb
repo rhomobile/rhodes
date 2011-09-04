@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes.rb'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes.rb', __FILE__)
 
 describe "String#delete" do
   it "returns a new string with the chars from the intersection of sets removed" do
@@ -34,8 +34,6 @@ describe "String#delete" do
     "hel-lo".delete("---").should == "hello"
     "hel-012".delete("--2").should == "hel"
     "hel-()".delete("(--").should == "hel"
-    "hello".delete("h-e").should == "hello"
-    "hello".delete("^h-e").should == ""
     "hello".delete("^e-h").should == "he"
     "hello^".delete("^^-^").should == "^"
     "hel--lo".delete("^---").should == "--"
@@ -50,11 +48,30 @@ describe "String#delete" do
     "ABCabc[]".delete("A-a").should == "bc"
   end
 
+  it "respects backslash for escaping a -" do
+    'Non-Authoritative Information'.delete(' \-\'').should ==
+      'NonAuthoritativeInformation'
+  end
+
+  ruby_version_is ""..."1.9" do
+    it "regards invalid ranges as nothing" do
+      "hello".delete("h-e").should == "hello"
+      "hello".delete("^h-e").should == ""
+    end
+  end
+
+  ruby_version_is "1.9" do
+    it "raises if the given ranges are invalid" do
+      lambda { "hello".delete("h-e") }.should raise_error(ArgumentError)
+      lambda { "hello".delete("^h-e") }.should raise_error(ArgumentError)
+    end
+  end
+
   it "taints result when self is tainted" do
     "hello".taint.delete("e").tainted?.should == true
     "hello".taint.delete("a-z").tainted?.should == true
 
-    "hello".delete("e".taint).tainted?.should == false
+    #"hello".delete("e".taint).tainted?.should == false
   end
 
   it "tries to convert each set arg to a string using to_str" do
@@ -74,7 +91,7 @@ describe "String#delete" do
   end
 
   it "returns subclass instances when called on a subclass" do
-    StringSpecs::MyString.new("oh no!!!").delete("!").class.should == StringSpecs::MyString
+    StringSpecs::MyString.new("oh no!!!").delete("!").should be_kind_of(StringSpecs::MyString)
   end
 end
 
@@ -91,7 +108,7 @@ describe "String#delete!" do
     a.should == "hello"
   end
 
-  ruby_version_is ""..."1.9" do 
+  ruby_version_is ""..."1.9" do
     it "raises a TypeError when self is frozen" do
       a = "hello"
       a.freeze
@@ -101,7 +118,7 @@ describe "String#delete!" do
     end
   end
 
-  ruby_version_is "1.9" do 
+  ruby_version_is "1.9" do
     it "raises a RuntimeError when self is frozen" do
       a = "hello"
       a.freeze

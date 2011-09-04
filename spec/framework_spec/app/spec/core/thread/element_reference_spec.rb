@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Thread#[]" do
   it "gives access to thread local values" do
@@ -37,8 +37,17 @@ describe "Thread#[]" do
     t2["value"].should == 2
   end
 
-  it "raises exceptions on the wrong type of keys" do
-    lambda { Thread.current[nil] }.should raise_error(TypeError)
-    lambda { Thread.current[5] }.should raise_error(ArgumentError)
+  ruby_version_is ""..."1.9" do
+    it "raises exceptions on the wrong type of keys" do
+      lambda { Thread.current[nil] }.should raise_error(TypeError)
+      lambda { Thread.current[5] }.should raise_error(ArgumentError)
+    end
+  end
+
+  ruby_version_is "1.9" do
+    it "raises exceptions on the wrong type of keys" do
+      lambda { Thread.current[nil] }.should raise_error(TypeError)
+      lambda { Thread.current[5] }.should raise_error(TypeError)
+    end
   end
 end

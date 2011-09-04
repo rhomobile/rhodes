@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/shared/each_line'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../shared/each_line', __FILE__)
 
 describe "ARGF.each" do
   it_behaves_like :argf_each_line, :each

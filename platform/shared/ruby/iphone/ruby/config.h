@@ -1,10 +1,5 @@
-#define PACKAGE_NAME ""
-#define PACKAGE_TARNAME ""
-#define PACKAGE_VERSION ""
-#define PACKAGE_STRING ""
-#define PACKAGE_BUGREPORT ""
+/* confdefs.h */
 #define CANONICALIZATION_FOR_MATHN 1
-#define USE_BUILTIN_FRAME_ADDRESS 1
 #define STDC_HEADERS 1
 #define HAVE_SYS_TYPES_H 1
 #define HAVE_SYS_STAT_H 1
@@ -31,16 +26,27 @@
 #define SIZEOF_VOIDP 4
 #define SIZEOF_FLOAT 4
 #define SIZEOF_DOUBLE 8
-#define SIZEOF_TIME_T 4
+#define SIZEOF_TIME_T 8
 #define rb_pid_t pid_t
-#define PIDT2NUM(v) LONG2NUM(v)
-#define NUM2PIDT(v) NUM2LONG(v)
+#define PIDT2NUM(v) INT2NUM(v)
+#define NUM2PIDT(v) NUM2INT(v)
+#define PRI_PIDT_PREFIX ""
 #define rb_uid_t uid_t
-#define UIDT2NUM(v) ULONG2NUM(v)
-#define NUM2UIDT(v) NUM2ULONG(v)
+#define UIDT2NUM(v) UINT2NUM(v)
+#define NUM2UIDT(v) NUM2UINT(v)
+#define PRI_UIDT_PREFIX ""
 #define rb_gid_t gid_t
-#define GIDT2NUM(v) ULONG2NUM(v)
-#define NUM2GIDT(v) NUM2ULONG(v)
+#define GIDT2NUM(v) UINT2NUM(v)
+#define NUM2GIDT(v) NUM2UINT(v)
+#define PRI_GIDT_PREFIX ""
+#define rb_time_t time_t
+#define TIMET2NUM(v) LONG2NUM(v)
+#define NUM2TIMET(v) NUM2LONG(v)
+#define PRI_TIMET_PREFIX "l"
+#define rb_dev_t dev_t
+#define DEVT2NUM(v) INT2NUM(v)
+#define NUM2DEVT(v) NUM2INT(v)
+#define PRI_DEVT_PREFIX ""
 #define HAVE_PROTOTYPES 1
 #define TOKEN_PASTE(x,y) x##y
 #define STRINGIZE(expr) STRINGIZE0(expr)
@@ -49,16 +55,12 @@
 #define NORETURN(x) __attribute__ ((noreturn)) x
 #define DEPRECATED(x) __attribute__ ((deprecated)) x
 #define NOINLINE(x) __attribute__ ((noinline)) x
-#define FUNC_STDCALL(x) __attribute__ ((stdcall)) x
-#define FUNC_CDECL(x) __attribute__ ((cdecl)) x
-#if !defined(__IA64__) && !defined(__x86_64__)
-#define FUNC_FASTCALL(x) __attribute__ ((fastcall)) x
-#endif
-#define RUBY_ALIAS_FUNCTION(old_prot, new_name, args) VALUE old_prot {return new_name args;}
 #define HAVE_DECL_SYS_NERR 1
 #define BROKEN_CRYPT 1
 #define HAVE_LIBDL 1
 #define HAVE_DIRENT_H 1
+#define HAVE__BOOL 1
+#define HAVE_STDBOOL_H 1
 #define HAVE_SYS_WAIT_H 1
 #define HAVE_LIMITS_H 1
 #define HAVE_SYS_FILE_H 1
@@ -74,38 +76,51 @@
 #define HAVE_GRP_H 1
 #define HAVE_UTIME_H 1
 #define HAVE_SYS_RESOURCE_H 1
-//#define HAVE_NETINET_IN_SYSTM_H 1
+#define HAVE_NETINET_IN_SYSTM_H 1
 #define HAVE_FLOAT_H 1
-#define HAVE_PTHREAD_H 1
 #define HAVE_LANGINFO_H 1
 #define HAVE_LOCALE_H 1
 #define HAVE_TIME_H 1
 #define HAVE_SYS_SOCKET_H 1
 #define SIZEOF_RLIM_T 8
-#define SIZEOF_SIZE_T 4
-#define SIZEOF_PTRDIFF_T 4
+#define SIZEOF_SIZE_T 8
+#define SIZEOF_PTRDIFF_T 8
 #define HAVE_STRUCT_STAT_ST_BLKSIZE 1
 #define HAVE_ST_BLKSIZE 1
 #define HAVE_STRUCT_STAT_ST_BLOCKS 1
 #define HAVE_ST_BLOCKS 1
 #define HAVE_STRUCT_STAT_ST_RDEV 1
 #define HAVE_ST_RDEV 1
+#define SIZEOF_STRUCT_STAT_ST_SIZE SIZEOF_LONG
+#define SIZEOF_STRUCT_STAT_ST_BLOCKS SIZEOF_LONG
 #define HAVE_STRUCT_STAT_ST_ATIMESPEC 1
 #define HAVE_STRUCT_STAT_ST_MTIMESPEC 1
 #define HAVE_STRUCT_STAT_ST_CTIMESPEC 1
 #define HAVE_STRUCT_TIMESPEC 1
+#define HAVE_STRUCT_TIMEZONE 1
 #define HAVE_RB_FD_INIT 1
 #define HAVE_INT8_T 1
+#define SIZEOF_INT8_T 1
 #define HAVE_UINT8_T 1
+#define SIZEOF_UINT8_T 1
 #define HAVE_INT16_T 1
+#define SIZEOF_INT16_T 2
 #define HAVE_UINT16_T 1
+#define SIZEOF_UINT16_T 2
 #define HAVE_INT32_T 1
+#define SIZEOF_INT32_T 4
 #define HAVE_UINT32_T 1
+#define SIZEOF_UINT32_T 4
 #define HAVE_INT64_T 1
+#define SIZEOF_INT64_T 8
 #define HAVE_UINT64_T 1
+#define SIZEOF_UINT64_T 8
 #define HAVE_INTPTR_T 1
+#define SIZEOF_INTPTR_T 8
 #define HAVE_UINTPTR_T 1
+#define SIZEOF_UINTPTR_T 8
 #define HAVE_SSIZE_T 1
+#define SIZEOF_SSIZE_T 8
 #define GETGROUPS_T gid_t
 #define RETSIGTYPE void
 #define HAVE_ALLOCA_H 1
@@ -117,17 +132,18 @@
 #define HAVE_STRSTR 1
 #define HAVE_CRYPT 1
 #define HAVE_FLOCK 1
-#define HAVE_VSNPRINTF 1
 #define HAVE_ISNAN 1
-//#define HAVE_FINITE 1
+#define HAVE_FINITE 1
 #define HAVE_ISINF 1
 #define HAVE_HYPOT 1
 #define HAVE_ACOSH 1
 #define HAVE_ERF 1
 #define HAVE_TGAMMA 1
+#define HAVE_LGAMMA_R 1
 #define HAVE_CBRT 1
 #define HAVE_STRLCPY 1
 #define HAVE_STRLCAT 1
+#define HAVE_SIGNBIT 1
 #define HAVE_FMOD 1
 #define HAVE_KILLPG 1
 #define HAVE_WAIT4 1
@@ -135,18 +151,22 @@
 #define HAVE_FORK 1
 #define HAVE_SYSCALL 1
 #define HAVE_CHROOT 1
-#define HAVE_FSYNC 1
 #define HAVE_GETCWD 1
 #define HAVE_TRUNCATE 1
 #define HAVE_FTRUNCATE 1
+#define HAVE_FTELLO 1
 #define HAVE_TIMES 1
 #define HAVE_UTIMES 1
 #define HAVE_FCNTL 1
 #define HAVE_LOCKF 1
 #define HAVE_LSTAT 1
+#define HAVE_FSEEKO 1
 #define HAVE_LINK 1
 #define HAVE_SYMLINK 1
 #define HAVE_READLINK 1
+#define HAVE_READDIR_R 1
+#define HAVE_FSYNC 1
+#define HAVE_FCHOWN 1
 #define HAVE_SETITIMER 1
 #define HAVE_SETRUID 1
 #define HAVE_SETEUID 1
@@ -170,13 +190,13 @@
 #define HAVE_GETRLIMIT 1
 #define HAVE_SETRLIMIT 1
 #define HAVE_SYSCONF 1
+#define HAVE_CLOSE 1
 #define HAVE_DLOPEN 1
 #define HAVE_SIGPROCMASK 1
 #define HAVE_SIGACTION 1
 #define HAVE_SIGSETJMP 1
 #define HAVE__SETJMP 1
 #define HAVE__LONGJMP 1
-#define HAVE_SNPRINTF 1
 #define HAVE_SETSID 1
 #define HAVE_TELLDIR 1
 #define HAVE_SEEKDIR 1
@@ -213,9 +233,10 @@
 #define POSIX_SIGNAL 1
 #define GETPGRP_VOID 1
 #define SETPGRP_VOID 1
-#define RSHIFT(x,y) ((x)>>(int)y)
+#define RSHIFT(x,y) ((x)>>(int)(y))
 #define FILE_COUNT _r
 #define FILE_READPTR _p
+#define SIZEOF_STRUCT_STAT_ST_INO SIZEOF_LONG
 #define HAVE__SC_CLK_TCK 1
 #define STACK_GROW_DIRECTION -1
 #define _REENTRANT 1
@@ -224,27 +245,26 @@
 #define HAVE_NANOSLEEP 1
 #define HAVE_SCHED_YIELD 1
 #define HAVE_PTHREAD_ATTR_SETINHERITSCHED 1
+#define HAVE_PTHREAD_ATTR_GETSTACK 1
+#define HAVE_PTHREAD_GET_STACKADDR_NP 1
+#define HAVE_PTHREAD_GET_STACKSIZE_NP 1
 #define HAVE_BACKTRACE 1
 #define DLEXT_MAXLEN 7
 #define DLEXT ".bundle"
+#define HAVE_PTHREAD_H 1
+#define RUBY_LIB_VERSION_STYLE 3	/* full */
+#define RUBY_EXEC_PREFIX "/usr/local"
+//RHO
+#define RUBY_LIB_PREFIX "" //RUBY_EXEC_PREFIX"/lib/ruby"
+//RHO
+#define RUBY_SITE_LIB RUBY_LIB_PREFIX"/site_ruby"
+#define RUBY_VENDOR_LIB RUBY_LIB_PREFIX"/vendor_ruby"
+#define RUBY_PLATFORM "x86_64-darwin10.7.0"
 
-#define LOAD_RELATIVE 1
-
-#define RUBY_LIB "/lib"
-#define RUBY_SITE_LIB "/apps"
-#define RUBY_SITE_LIB2 "/apps/app"
-#define RUBY_VENDOR_LIB "/lib"
-#define RUBY_VENDOR_LIB2 "/lib"
-#define RUBY_PLATFORM "i386-darwin9.5.0"
-#define RUBY_ARCHLIB "/lib"
-#define RUBY_SITE_ARCHLIB "/lib"
-#define RUBY_VENDOR_ARCHLIB "/lib"
-
-#define HAVE_GETADDRINFO 1
+//RHO
+#define RUBY_EXPORT 1
+#define HAVE_GETADDRINFO 1  
 #define HAVE_SOCKADDR_STORAGE 1
-#define HAVE_GAI_STRERROR 1
+#define LOAD_RELATIVE 1
+//RHO
 
-#define HAVE_GETHOSTNAME 1
-#define HAVE_UNAME 1
-
-#include "tcmalloc/rhomem.h"

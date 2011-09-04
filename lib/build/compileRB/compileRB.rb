@@ -31,7 +31,9 @@ dir = File.dirname(fselfname)
 
 ext = ".rb"
 
-startdir = Dir.pwd
+#startdir = Dir.pwd
+
+#puts "dir : #{dir}"
 Dir.chdir dir
 
 Find.find(dir) do |path| 
@@ -56,4 +58,5 @@ Find.find(dir) do |path|
   end
 end
 
-Dir.chdir startdir			  
+#puts "startdir : #{startdir}"
+#Dir.chdir startdir	

@@ -66,6 +66,7 @@ public class GoogleMapView extends MapActivity {
 	
 	private com.google.android.maps.MapView view;
 	private AnnotationsOverlay annOverlay;
+	private CalloutOverlay mCalloutOverlay;
 	
 	private double spanLat = 0;
 	private double spanLon = 0;
@@ -101,6 +102,10 @@ public class GoogleMapView extends MapActivity {
 		}
 		super.onDestroy();
 		mc = null;
+	}
+	
+	public void selectAnnotation(Annotation ann) {
+		mCalloutOverlay.selectAnnotation(ann);
 	}
 	
 	@Override
@@ -188,7 +193,11 @@ public class GoogleMapView extends MapActivity {
 		Drawable marker = getResources().getDrawable(AndroidR.drawable.marker);
 		marker.setBounds(0, 0, marker.getIntrinsicWidth(), marker.getIntrinsicHeight());
 		annOverlay = new AnnotationsOverlay(this, marker);
+		
+		mCalloutOverlay = new CalloutOverlay(this, marker);
+		
 		view.getOverlays().add(annOverlay);
+		view.getOverlays().add(mCalloutOverlay);
 		
 		// Apply extracted parameters
 		view.setBuiltInZoomControls(zoom_enabled);
@@ -245,7 +254,7 @@ public class GoogleMapView extends MapActivity {
 			}
 		}
 		
-		mHolder.clear();
+		//mHolder.clear();
 
 		view.preLoad();
 		

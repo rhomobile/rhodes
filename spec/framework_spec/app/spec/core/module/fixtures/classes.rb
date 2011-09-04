@@ -7,6 +7,9 @@ module ModuleSpecs
   class SubclassSpec
   end
 
+  class RemoveClassVariable
+  end
+
   module LookupModInMod
     INCS = :ethereal
   end
@@ -32,6 +35,9 @@ module ModuleSpecs
 
     def undefed_method() end
     undef_method :undefed_method
+
+    def parent_method; end
+    def another_parent_method; end
 
     # For public_class_method spec
     private
@@ -69,6 +75,8 @@ module ModuleSpecs
     private
     def private_super_module() end
 
+    def super_included_method; end
+
     class SuperChild
     end
   end
@@ -88,11 +96,18 @@ module ModuleSpecs
 
     def public_child() end
 
+    undef_method :parent_method
+    undef_method :another_parent_method
+
     protected
     def protected_child() end
 
     private
     def private_child() end
+  end
+
+  class Grandchild < Child
+    undef_method :super_included_method
   end
 
   class Child2 < Parent
@@ -308,7 +323,89 @@ module ModuleSpecs
   module M2; end
 
   module Autoload
+    def self.use_ex1
+      begin
+        begin
+          raise "test exception"
+        rescue ModuleSpecs::Autoload::EX1
+        end
+      rescue RuntimeError
+        return :good
+      end
+    end
   end
+
+  # This class isn't inherited from or included in anywhere. It exists to test
+  # 1.9's constant scoping rules
+  class Detached
+    DETATCHED_CONSTANT = :d
+  end
+
+  class ParentPrivateMethodRedef
+    private
+    def private_method_redefined
+      :before_redefinition
+    end
+  end
+
+  class ChildPrivateMethodMadePublic < ParentPrivateMethodRedef
+    public :private_method_redefined
+  end
+
+  class ParentPrivateMethodRedef
+    def private_method_redefined
+      :after_redefinition
+    end
+  end
+
+  module CyclicAppendA
+  end
+
+  module CyclicAppendB
+    include CyclicAppendA
+  end
+
+  module ExtendObject
+    C = :test
+    def test_method
+      "hello test"
+    end
+  end
+
+  module ExtendObjectPrivate
+    class << self
+      def extend_object(obj)
+        ScratchPad.record :extended
+      end
+      private :extend_object
+    end
+  end
+end
+
+class Object
+  def module_specs_public_method_on_object; end
+
+  def module_specs_private_method_on_object; end
+  private :module_specs_private_method_on_object
+
+  def module_specs_protected_method_on_object; end
+  protected :module_specs_private_method_on_object
+
+  def module_specs_private_method_on_object_for_kernel_public; end
+  private :module_specs_private_method_on_object_for_kernel_public
+
+  def module_specs_public_method_on_object_for_kernel_protected; end
+  def module_specs_public_method_on_object_for_kernel_private; end
+end
+
+module Kernel
+  def module_specs_public_method_on_kernel; end
+
+  alias_method :module_specs_alias_on_kernel, :module_specs_public_method_on_object
+
+  public :module_specs_private_method_on_object_for_kernel_public
+  protected :module_specs_public_method_on_object_for_kernel_protected
+  private :module_specs_public_method_on_object_for_kernel_private
 end
 
 ModuleSpecs::Nesting[:root_level] = Module.nesting

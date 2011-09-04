@@ -1,4 +1,4 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "Regexp#inspect" do
   it "returns a formatted string that would eval to the same regexp" do
@@ -16,5 +16,13 @@ describe "Regexp#inspect" do
 
   it "doesn't over escape forward slashes" do
     /\/foo\/bar/.inspect.should == '/\/foo\/bar/'
+  end
+
+  it "escapes 2 slashes in a row properly" do
+    Regexp.new("//").inspect.should == '/\/\//'
+  end
+
+  it "does not over escape" do
+    Regexp.new('\\\/').inspect.should == "/\\\\\\//"
   end
 end

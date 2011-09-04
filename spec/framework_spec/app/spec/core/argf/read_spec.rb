@@ -1,10 +1,10 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "ARGF.read" do
   before :each do
-    @file1_name = fixture File.join(__rhoGetCurrentDir(), __FILE__), "file1.txt"
-    @file2_name = fixture File.join(__rhoGetCurrentDir(), __FILE__), "file2.txt"
-    @stdin_name = fixture File.join(__rhoGetCurrentDir(), __FILE__), "stdin.txt"
+    @file1_name = fixture __FILE__, "file1.txt"
+    @file2_name = fixture __FILE__, "file2.txt"
+    @stdin_name = fixture __FILE__, "stdin.txt"
 
     @file1 = File.read @file1_name
     @file2 = File.read @file2_name
@@ -12,7 +12,7 @@ describe "ARGF.read" do
   end
 
   after :each do
-    ARGF.close
+    ARGF.close unless ARGF.closed?
   end
 
   it "reads the contents of a file" do
@@ -74,23 +74,22 @@ describe "ARGF.read" do
       ARGF.read(2+5).should == @file1[-2..-1] + @file2[0,5]
     end
   end
+=begin
+  it "reads the contents of stdin" do
+    stdin = ruby_exe("print ARGF.read", :args => "< #{@stdin_name}")
+    stdin.should == @stdin
+  end
 
-# XXX We dont have a ruby interpreter
-#  it "reads the contents of stdin" do
-#    stdin = ruby_exe("print ARGF.read", :args => "< #{@stdin_name}")
-#    stdin.should == @stdin
-#  end
-#
-#  it "reads a number of bytes from stdin" do
-#    stdin = ruby_exe("print ARGF.read(10)", :args => "< #{@stdin_name}")
-#    stdin.should == @stdin[0,10]
-#  end
-#
-#  it "reads the contents of one file and stdin" do
-#    stdin = ruby_exe("print ARGF.read", :args => "#{@file1_name} - < #{@stdin_name}")
-#    stdin.should == @file1 + @stdin
-#  end
+  it "reads a number of bytes from stdin" do
+    stdin = ruby_exe("print ARGF.read(10)", :args => "< #{@stdin_name}")
+    stdin.should == @stdin[0,10]
+  end
 
+  it "reads the contents of one file and stdin" do
+    stdin = ruby_exe("print ARGF.read", :args => "#{@file1_name} - < #{@stdin_name}")
+    stdin.should == @file1 + @stdin
+  end
+=end
   it "reads the contents of the same file twice" do
     argv [@file1_name, @file1_name] do
       ARGF.read.should == @file1 + @file1

@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Module#instance_method" do
   before :all do
@@ -9,17 +9,17 @@ describe "Module#instance_method" do
   end
 
   it "returns an UnboundMethod corresponding to the given name" do
-    @parent_um.class.should == UnboundMethod
+    @parent_um.should be_kind_of(UnboundMethod)
     @parent_um.bind(ModuleSpecs::InstanceMeth.new).call.should == :foo
   end
 
   it "returns an UnboundMethod corresponding to the given name from a superclass" do
-    @child_um.class.should == UnboundMethod
+    @child_um.should be_kind_of(UnboundMethod)
     @child_um.bind(ModuleSpecs::InstanceMethChild.new).call.should == :foo
   end
 
   it "returns an UnboundMethod corresponding to the given name from an included Module" do
-    @mod_um.class.should == UnboundMethod
+    @mod_um.should be_kind_of(UnboundMethod)
     @mod_um.bind(ModuleSpecs::InstanceMethChild.new).call.should == :bar
   end
 
@@ -35,8 +35,17 @@ describe "Module#instance_method" do
     @mod_um.inspect.should    =~ /\bModuleSpecs::InstanceMethChild\b/
   end
 
-  it "raises an ArgumentError if passed a Fixnum that is not a symbol" do
-    lambda { Object.instance_method(0) }.should raise_error(ArgumentError)
+  ruby_version_is ""..."1.9" do
+    it "raises an ArgumentError if passed a Fixnum that is not a symbol" do
+      lambda { Object.instance_method(0) }.should raise_error(ArgumentError)
+    end
+  end
+
+  ruby_version_is "1.9" do
+    it "raises a TypeError if not passed a symbol" do
+      lambda { Object.instance_method([]) }.should raise_error(TypeError)
+      lambda { Object.instance_method(0)  }.should raise_error(TypeError)
+    end
   end
 
   it "raises a TypeError if the given name is not a string/symbol" do

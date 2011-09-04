@@ -1,8 +1,8 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Struct#size" do
   it "is a synonym for length" do
-    Struct::Car.new.size.should == Struct::Car.new.length
+    StructClasses::Car.new.size.should == StructClasses::Car.new.length
   end
 end

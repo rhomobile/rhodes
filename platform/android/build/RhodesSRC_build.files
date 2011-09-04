@@ -51,6 +51,8 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/mainview/SplashScreen.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mainview/SimpleMainView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mainview/TabbedMainView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/Annotation.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/Callout.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/CalloutOverlay.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/AnnotationsOverlay.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/GoogleMapView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/MapTouch.java

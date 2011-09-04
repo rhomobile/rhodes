@@ -1,10 +1,10 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "Bignum#|" do
   before(:each) do
-    @bignum = bignum_value(11) 
+    @bignum = bignum_value(11)
   end
-  
+
   it "returns self bitwise OR other" do
     (@bignum | 2).should == 9223372036854775819
     (@bignum | 9).should == 9223372036854775819
@@ -43,11 +43,11 @@ describe "Bignum#|" do
     (obj = mock('2')).should_receive(:to_int).and_return(2)
     (@bignum | obj).should == 9223372036854775819
   end
-  
+
   it "raises a TypeError when the given argument can't be converted to Integer" do
     obj = mock('asdf')
     lambda { @bignum | obj }.should raise_error(TypeError)
-    
+
     obj.should_receive(:to_int).and_return("asdf")
     lambda { @bignum | obj }.should raise_error(TypeError)
   end

@@ -1,6 +1,6 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/methods'
-
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/methods', __FILE__)
+=begin
 describe "Time#zone" do
   it "returns the time zone used for time" do
     # Testing with Asia/Kuwait here because it doesn't have DST.
@@ -9,3 +9,4 @@ describe "Time#zone" do
     end
   end
 end
+=end

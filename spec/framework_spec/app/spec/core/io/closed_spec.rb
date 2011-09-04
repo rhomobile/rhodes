@@ -1,14 +1,22 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
-describe "IO##{}closed?" do
+if System.get_property('platform') != 'ANDROID'  
+describe "IO#closed?" do
+  before :each do
+    @io = IOSpecs.io_fixture "lines.txt"
+  end
+
+  after :each do
+    @io.close
+  end
+
   it "returns true on closed stream" do
-    IOSpecs.closed_file.closed?.should == true
+    IOSpecs.closed_io.closed?.should be_true
   end
 
   it "returns false on open stream" do
-    File.open(File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/gets.txt', 'r') { |io|
-      io.closed?.should == false
-    }
+    @io.closed?.should be_false
   end
+end
 end

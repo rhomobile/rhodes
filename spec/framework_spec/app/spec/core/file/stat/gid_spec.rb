@@ -1,17 +1,17 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../../spec_helper'
+require File.expand_path('../../../../spec_helper', __FILE__)
 
 describe "File::Stat#gid" do
   before :each do
     @file = tmp('i_exist')
-    File.open(@file,'w'){|f| f.write 'rubinius'}
+    touch(@file) { |f| f.write "rubinius" }
     File.chown(nil, Process.gid, @file)
   end
 
   after :each do
-    File.delete(@file) if File.exist?(@file)
+    rm_r @file
   end
-  
-  it "should be able to determine the group owner through a File::Stat object" do
+
+  it "returns the group owner attribute of a File::Stat object" do
     st = File.stat(@file)
     st.gid.is_a?(Integer).should == true
     st.gid.should == Process.gid

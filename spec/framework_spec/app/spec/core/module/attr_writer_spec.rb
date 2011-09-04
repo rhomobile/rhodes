@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Module#attr_writer" do
   it "creates a setter for each given attribute name" do
@@ -24,18 +24,29 @@ describe "Module#attr_writer" do
     o.instance_variable_get(:@test2).should == "test_2 updated"
   end
 
-  not_compliant_on :rubinius do
-    it "creates a setter for an attribute name given as a Fixnum" do
-      c = Class.new do
-        attr_writer :test1.to_i
+  it "allows for adding an attr_writer to an immediate" do
+    class Integer
+      attr_writer :spec_attr_writer
+    end
+
+    1.spec_attr_writer = "a"
+    1.instance_variable_get("@spec_attr_writer").should == "a"
+  end
+
+  ruby_version_is ""..."1.9" do
+    not_compliant_on :rubinius do
+      it "creates a setter for an attribute name given as a Fixnum" do
+        c = Class.new do
+          attr_writer :test1.to_i
+        end
+
+        o = c.new
+        o.respond_to?("test1").should == false
+        o.respond_to?("test1=").should == true
+
+        o.test1 = "test_1"
+        o.instance_variable_get(:@test1).should == "test_1"
       end
-
-      o = c.new
-      o.respond_to?("test1").should == false
-      o.respond_to?("test1=").should == true
-
-      o.test1 = "test_1"
-      o.instance_variable_get(:@test1).should == "test_1"
     end
   end
 

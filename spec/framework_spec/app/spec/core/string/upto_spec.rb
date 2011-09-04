@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes.rb'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes.rb', __FILE__)
 
 describe "String#upto" do
   it "passes successive values, starting at self and ending at other_string, to the block" do
@@ -14,14 +14,24 @@ describe "String#upto" do
     a.should == ["abc"]
   end
 
-  # This is weird but MRI behaves like that
-  it "upto calls block with self even if self is less than stop but stop length is less than self length" do
-    a = []
-    "25".upto("5") { |s| a << s }
-    a.should == ["25"]
+  # This is weird (in 1.8), but MRI behaves like that
+  ruby_version_is '' ... '1.9' do
+    it "calls block with self even if self is less than stop but stop length is less than self length" do
+	   a = []
+	   "25".upto("5") { |s| a << s }
+	   a.should == ["25"]
+    end
   end
 
-  it "upto doesn't call block if stop is less than self and stop length is less than self length" do
+  ruby_version_is '1.9' do
+    it "doesn't call block with self even if self is less than stop but stop length is less than self length" do
+      a = []
+      "25".upto("5") { |s| a << s }
+      a.should == []
+    end
+  end
+
+  it "doesn't call block if stop is less than self and stop length is less than self length" do
     a = []
     "25".upto("1") { |s| a << s }
     a.should == []
@@ -76,13 +86,13 @@ describe "String#upto" do
   end
 
   ruby_version_is '1.9' do
-    it "works with symbols to" do
-      "a".upto(:c).to_a.should == ["a", "b", "c"]
+    it "does not work with symbols" do
+      lambda { "a".upto(:c).to_a }.should raise_error(TypeError)
     end
 
     it "returns an enumerator when no block given" do
       enum = "aaa".upto("baa", true)
-      enum.should be_kind_of(enumerator_class)
+      enum.should be_an_instance_of(enumerator_class)
       enum.count.should == 26**2
     end
 

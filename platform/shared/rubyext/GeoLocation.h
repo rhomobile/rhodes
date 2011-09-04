@@ -67,10 +67,10 @@ public:
 
     static CGeoLocation* Create();
     static void Destroy();
-    static CGeoLocation* getInstance(){ return m_pInstance; }
+    static CGeoLocation* getInstance();
 
-    void setGeoCallback(const char *url, char* params, int timeout_sec, boolean bView);
-    void callGeoCallback(boolean bError, boolean bRunInThread=false);
+    void setGeoCallback(const char *url, const char* params, int timeout_sec, boolean bView);
+    void callGeoCallback(const char* pszError = 0, boolean bRunInThread=false);
     int getGeoTimeoutSec();
 
 
@@ -79,7 +79,7 @@ private:
 
     int getDefaultPingTimeoutSec();
     void setPingTimeoutSec( int nTimeout );
-    void callGeoCallback(const CGeoNotification& oNotify, boolean bError, boolean bRunInThread);
+    void callGeoCallback(const CGeoNotification& oNotify, const char* pszError, boolean bRunInThread);
 
     net::CNetRequestWrapper getNet(){ return getNetRequest(&m_NetRequest); }
 };
@@ -98,6 +98,7 @@ void rho_geo_set_view_notification( const char *url, char* params, int timeout_s
 
 void rho_geo_callcallback();
 void rho_geo_callcallback_error();
+void rho_geo_callcallback_stop();
 int rho_geo_gettimeout_sec();
 
 double rho_geo_haversine_distance(double lat1, double lon1, double lat2, double lon2);

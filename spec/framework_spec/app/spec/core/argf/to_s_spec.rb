@@ -1,13 +1,13 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "ARGF.to_s" do
   before :each do
-    @file1 = fixture File.join(__rhoGetCurrentDir(), __FILE__), "file1.txt"
-    @file2 = fixture File.join(__rhoGetCurrentDir(), __FILE__), "file2.txt"
+    @file1 = fixture __FILE__, "file1.txt"
+    @file2 = fixture __FILE__, "file2.txt"
   end
 
   after :each do
-    ARGF.close
+    ARGF.close unless ARGF.closed?
   end
 
   it "returns 'ARGF'" do

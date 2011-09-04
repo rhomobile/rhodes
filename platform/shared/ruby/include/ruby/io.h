@@ -2,7 +2,7 @@
 
   rubyio.h -
 
-  $Author: yugui $
+  $Author: nobu $
   created at: Fri Nov 12 16:47:09 JST 1993
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto
@@ -92,15 +92,15 @@ typedef struct rb_io_t {
 #define FMODE_WSPLIT_INITIALIZED    0x00000400
 #define FMODE_TRUNC                 0x00000800
 #define FMODE_TEXTMODE              0x00001000
-#define FMODE_EOF                   0x00002000
 /* #define FMODE_PREP               0x00010000 */
+#define FMODE_SETENC_BY_BOM         0x00100000
 
 #define GetOpenFile(obj,fp) rb_io_check_closed((fp) = RFILE(rb_io_taint_check(obj))->fptr)
 
 #define MakeOpenFile(obj, fp) do {\
     if (RFILE(obj)->fptr) {\
 	rb_io_close(obj);\
-	free(RFILE(obj)->fptr);\
+	rb_io_fptr_finalize(RFILE(obj)->fptr);\
 	RFILE(obj)->fptr = 0;\
     }\
     fp = 0;\
@@ -163,7 +163,7 @@ NORETURN(void rb_eof_error(void));
 
 void rb_io_read_check(rb_io_t*);
 int rb_io_read_pending(rb_io_t*);
-void rb_read_check(FILE*);
+DEPRECATED(void rb_read_check(FILE*));
 
 #if defined(__cplusplus)
 #if 0

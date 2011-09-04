@@ -1,12 +1,8 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/marshal_data'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/marshal_data', __FILE__)
 
 mv = [Marshal::MAJOR_VERSION].pack 'C'
 nv = [Marshal::MINOR_VERSION].pack 'C'
-
-class UserDefinedBad
-  def _dump(depth); 10; end
-end
 
 # TODO: these need to be reviewed and cleaned up
 describe "Marshal.dump" do
@@ -59,7 +55,7 @@ describe "Marshal.dump" do
   end
 
   it "raises a TypeError if _dump returns a non-string" do
-    lambda { Marshal.dump(UserDefinedBad.new) }.should raise_error(TypeError)
+    lambda { Marshal.dump(MarshalSpec::Bad_Dump.new) }.should raise_error(TypeError)
   end
 
   it "dumps an Object" do
@@ -70,17 +66,40 @@ describe "Marshal.dump" do
     Marshal.dump(Object.new.extend(Meths)).should == "#{mv+nv}e:\x0AMethso:\x0BObject\x00"
   end
 
-  it "dumps an object having ivar" do
-    s = 'hi'
-    obj = Object.new
-    obj.instance_variable_set(:@str, [:so, :so, s, s])
-    Marshal.dump(obj).should == "#{mv+nv}o:\x0BObject\x06:\x09@str[\x09:\x07so;\x07\"\x07hi@\x07"
+  ruby_version_is ""..."1.9" do
+    it "dumps an object having ivar" do
+      s = 'hi'
+      obj = Object.new
+      obj.instance_variable_set(:@str, [:so, :so, s, s])
+      Marshal.dump(obj).should == "#{mv+nv}o:\x0BObject\x06:\x09@str[\x09:\x07so;\x07\"\x07hi@\x07"
+    end
   end
 
-  it "dumps an extended_user_regexp having ivar" do
-    r = UserRegexp.new('').extend(Meths)
-    r.instance_variable_set(:@noise, 'much')
-    Marshal.dump(r).should == "#{mv+nv}Ie:\x0AMethsC:\x0FUserRegexp/\x00\x00\x06:\x0B@noise\"\x09much"
+  ruby_version_is "1.9" do
+    #it "dumps an object having ivar" do
+    #  s = 'hi'
+    #  obj = Object.new
+    #  obj.instance_variable_set(:@str, [:so, :so, s, s])
+    #  Marshal.dump(obj).should ==
+    #    "#{mv+nv}o:\vObject\x06:\t@str[\t:\aso;\aI\"\ahi\x06:\x06EF@\a"
+    #end
+  end
+
+  ruby_version_is ""..."1.9" do
+    it "dumps an extended_user_regexp having ivar" do
+      r = UserRegexp.new('').extend(Meths)
+      r.instance_variable_set(:@noise, 'much')
+      Marshal.dump(r).should == "#{mv+nv}Ie:\x0AMethsC:\x0FUserRegexp/\x00\x00\x06:\x0B@noise\"\x09much"
+    end
+  end
+
+  ruby_version_is "1.9" do
+    #it "dumps an extended_user_regexp having ivar" do
+    #  r = UserRegexp.new('').extend(Meths)
+    #  r.instance_variable_set(:@noise, 'much')
+    #  Marshal.dump(r).should ==
+    #    "#{mv+nv}Ie:\nMethsC:\x0FUserRegexp/\x00\x00\a:\x06EF:\v@noiseI\"\tmuch\x06;\aF"
+    #end
   end
 
   it "raises a TypeError with hash having default proc" do
@@ -97,57 +116,159 @@ describe "Marshal.dump" do
 
   it "raises a TypeError if dumping a IO/File instance" do
     lambda { Marshal.dump(STDIN) }.should raise_error(TypeError)
-    lambda { File.open(File.join(__rhoGetCurrentDir(), __FILE__).gsub(/\.rb/,".iseq")) { |f| Marshal.dump(f) } }.should raise_error(TypeError)
+    #lambda { File.open(__FILE__) { |f| Marshal.dump(f) } }.should raise_error(TypeError)
   end
 
   it "raises a TypeError if dumping a MatchData instance" do
-    lambda { "foo" =~ /(.)/; Marshal.dump($~) }.should raise_error(TypeError)
+    lambda { Marshal.dump /(.)/.match("foo") }.should raise_error(TypeError)
   end
 
-  it "dumps an extended_user_hash_default" do
-    h = UserHash.new(:Meths).extend(Meths)
-    h['three'] = 3
-    Marshal.dump(h).should == "#{mv+nv}e:\x0AMethsC:\x0DUserHash}\x06\"\x0Athreei\x08;\x00"
+  ruby_version_is ""..."1.9" do
+    it "dumps an extended_user_hash_default" do
+      h = UserHash.new("The default value").extend(Meths)
+      h['three'] = 3
+      Marshal.dump(h).should == "#{mv+nv}e:\x0AMethsC:\x0DUserHash}\x06\"\x0Athreei\x08\"\026The default value"
+    end
   end
 
-  it "dumps an extended_user_hash with a parameter to initialize" do
-    h = UserHashInitParams.new(:abc).extend(Meths)
-    h['three'] = 3
-    Marshal.dump(h).should == "\004\bIe:\nMethsC:\027UserHashInitParams{\006\"\nthreei\b\006:\a@a:\babc"
+  #ruby_version_is "1.9" do
+  #  it "dumps an extended_user_hash_default" do
+  #    h = UserHash.new(:Meths).extend(Meths)
+  #    h['three'] = 3
+  #    Marshal.dump(h).should ==
+  #      "\x04\be:\nMethsC:\rUserHash}\x06I\"\nthree\x06:\x06EFi\b;\x00"
+  #  end
+  #end
+
+  ruby_version_is ""..."1.9" do
+    it "dumps an extended_user_hash with a parameter to initialize" do
+      h = UserHashInitParams.new(:abc).extend(Meths)
+      h['three'] = 3
+      Marshal.dump(h).should == "\004\bIe:\nMethsC:\027UserHashInitParams{\006\"\nthreei\b\006:\a@a:\babc"
+    end
   end
 
-  it "dumps an array containing objects having _dump method" do
-    o1 = UserDefined.new
-    o2 = UserDefinedWithIvar.new
-    a = [o1, o2, o1, o2]
-    Marshal.dump(a).should ==
-      "#{mv+nv}[\tu:\020UserDefined\022\004\b[\a\"\nstuff@\006u:\030UserDefinedWithIvar5\004\b[\bI\"\nstuff\006:\t@foo:\030UserDefinedWithIvar\"\tmore@\a@\006@\a"
+  #ruby_version_is "1.9" do
+  #  it "dumps an extended_user_hash with a parameter to initialize" do
+  #    h = UserHashInitParams.new(:abc).extend(Meths)
+  #    h['three'] = 3
+  #    Marshal.dump(h).should ==
+  #      "\x04\bIe:\nMethsC:\x17UserHashInitParams{\x06I\"\nthree\x06:\x06EFi\b\x06:\a@a:\babc"
+  #  end
+  #end
+
+  ruby_version_is ""..."1.9" do
+    it "dumps an array containing objects having _dump method" do
+      o1 = UserDefined.new
+      o2 = UserDefinedWithIvar.new
+      a = [o1, o2, o1, o2]
+      Marshal.dump(a).should ==
+        "#{mv+nv}[\tu:\020UserDefined\022\004\b[\a\"\nstuff@\006u:\030UserDefinedWithIvar5\004\b[\bI\"\nstuff\006:\t@foo:\030UserDefinedWithIvar\"\tmore@\a@\006@\a"
+    end
   end
 
-  it "dumps an array containing objects having marshal_dump method" do
-    o1 = UserMarshal.new
-    o2 = UserMarshalWithIvar.new
-    a = [o1, o2, o1, o2]
-    Marshal.dump(a).should ==
-      "#{mv+nv}[\tU:\020UserMarshal\"\nstuffU:\030UserMarshalWithIvar[\006\"\fmy data@\006@\b"
+  #ruby_version_is "1.9" do
+  #  it "dumps an array containing objects having _dump method" do
+  #    o1 = UserDefined.new
+  #    o2 = UserDefinedWithIvar.new
+  #    a = [o1, o2, o1, o2]
+  #    Marshal.dump(a).should ==
+  #      "#{mv+nv}[\tu:\x10UserDefined\x18\x04\b[\aI\"\nstuff\x06:\x06EF@\x06u:\x18UserDefinedWithIvar>\x04\b[\bI\"\nstuff\a:\x06EF:\t@foo:\x18UserDefinedWithIvarI\"\tmore\x06;\x00F@\a@\x06@\a"
+  #  end
+  #end
+
+  ruby_version_is ""..."1.9" do
+    it "dumps an array containing objects having marshal_dump method" do
+      o1 = UserMarshal.new
+      o2 = UserMarshalWithIvar.new
+      a = [o1, o2, o1, o2]
+      Marshal.dump(a).should ==
+        "#{mv+nv}[\tU:\020UserMarshal\"\nstuffU:\030UserMarshalWithIvar[\006\"\fmy data@\006@\b"
+    end
   end
 
-  it "dumps an array containing the same objects" do
-    s = 'oh'; b = 'hi'; r = //; d = [b, :no, s, :go]; c = String
-    a = [:so, 'hello', 100, :so, :so, d, :so, :so, :no, :go, c, nil,
-          :go, :no, s, b, r, :so, 'huh', true, b, b, 99, r, b, s, :so, c, :no, d]
-    Marshal.dump(a).should ==
-      "#{mv+nv}[\x23:\x07so\"\x0Ahelloi\x69;\x00;\x00[\x09\"\x07hi:\x07no\"\x07oh:\x07go;\x00;\x00;\x06;\x07c\x0BString0;\x07;\x06@\x09@\x08/\x00\x00;\x00\"\x08huhT@\x08@\x08i\x68@\x0B@\x08@\x09;\x00@\x0A;\x06@\x07"
+  #ruby_version_is "1.9" do
+  #  it "dumps an array containing objects having marshal_dump method" do
+  #    o1 = UserMarshal.new
+  #    o2 = UserMarshalWithIvar.new
+  #    a = [o1, o2, o1, o2]
+  #    Marshal.dump(a).should ==
+  #      "#{mv+nv}[\tU:\x10UserMarshalI\"\nstuff\x06:\x06EFU:\x18UserMarshalWithIvar[\x06I\"\fmy data\x06;\x06F@\x06@\b"
+  #  end
+  #end
+
+  it "favors marshal_dump over _dump" do
+    m = mock("marshaled")
+    m.should_receive(:marshal_dump).and_return(0)
+    m.should_not_receive(:_dump)
+
+    Marshal.dump(m)
   end
 
-  it "dumps an extended_array having ivar" do
-    s = 'well'
-    s.instance_variable_set(:@foo, 10)
-    a = ['5', s, 'hi'].extend(Meths, MethsMore)
-    a.instance_variable_set(:@mix, s)
-    Marshal.dump(a).should ==
-      "#{mv+nv}Ie:\x0AMethse:\x0EMethsMore[\x08\"\x065I\"\x09well\x06:\x09@fooi\x0F\"\x07hi\x06:\x09@mix@\x07"
+  it "does not use Class#name when using marshal_dump" do
+    u = UserMarshalWithClassName.new
+
+    m = Marshal.dump(u)
+    m.index(u.class.name).should be_nil
   end
+
+  ruby_version_is ""..."1.9" do
+    it "dumps an array containing the same objects" do
+      s = 'oh'
+      b = 'hi'
+      r = //
+      d = [b, :no, s, :go]
+      c = String
+
+      a = [:so, 'hello', 100, :so, :so, d, :so, :so, :no, :go, c, nil,
+           :go, :no, s, b, r, :so, 'huh', true, b, b, 99, r, b, s, :so, c, :no, d]
+
+      Marshal.dump(a).should ==
+        "#{mv+nv}[\x23:\x07so\"\x0Ahelloi\x69;\x00;\x00[\x09\"\x07hi:\x07no\"\x07oh:\x07go;\x00;\x00;\x06;\x07c\x0BString0;\x07;\x06@\x09@\x08/\x00\x00;\x00\"\x08huhT@\x08@\x08i\x68@\x0B@\x08@\x09;\x00@\x0A;\x06@\x07"
+    end
+  end
+
+  #ruby_version_is "1.9" do
+  #  it "dumps an array containing the same objects" do
+  #    s = 'oh'
+  ##    b = 'hi'
+  #    r = //
+  #    d = [b, :no, s, :go]
+  #    c = String
+  #
+  #    a = [:so, 'hello', 100, :so, :so, d, :so, :so, :no, :go, c, nil,
+  #         :go, :no, s, b, r, :so, 'huh', true, b, b, 99, r, b, s, :so, c, :no, d]
+  #
+  #    Marshal.dump(a).should ==
+  #      "#{mv+nv}[#:\asoI\"\nhello\x06:\x06EFii;\x00;\x00[\tI\"\ahi\x06;\x06F:\anoI\"\aoh\x06;\x06F:\ago;\x00;\x00;\a;\bc\vString0;\b;\a@\t@\bI/\x00\x00\x06;\x06F;\x00I\"\bhuh\x06;\x06FT@\b@\bih@\v@\b@\t;\x00@\n;\a@\a"
+  #  end
+  #end
+
+  ruby_version_is ""..."1.9" do
+    it "dumps an extended_array having ivar" do
+      s = 'well'
+      s.instance_variable_set(:@foo, 10)
+
+      a = ['5', s, 'hi'].extend(Meths, MethsMore)
+      a.instance_variable_set(:@mix, s)
+
+      Marshal.dump(a).should ==
+        "#{mv+nv}Ie:\x0AMethse:\x0EMethsMore[\x08\"\x065I\"\x09well\x06:\x09@fooi\x0F\"\x07hi\x06:\x09@mix@\x07"
+    end
+  end
+
+  #ruby_version_is "1.9" do
+  #  it "dumps an extended_array having ivar" do
+  #    s = 'well'
+  #    s.instance_variable_set(:@foo, 10)
+  #
+  #    a = ['5', s, 'hi'].extend(Meths, MethsMore)
+  #    a.instance_variable_set(:@mix, s)
+  #
+  #    Marshal.dump(a).should ==
+  #      "#{mv+nv}Ie:\nMethse:\x0EMethsMore[\bI\"\x065\x06:\x06EFI\"\twell\a;\aF:\t@fooi\x0FI\"\ahi\x06;\aF\x06:\t@mix@\a"
+  #  end
+  #end
 
   it "dumps a struct having ivar" do
     st = Struct.new("Thick").new
@@ -159,29 +280,152 @@ describe "Marshal.dump" do
     Marshal.dump(Struct.new("Ure1", :a, :b).new).should == "#{mv+nv}S:\x11Struct::Ure1\x07:\x06a0:\x06b0"
   end
 
-  it "dumps an extended_struct having fields with same objects" do
-    s = 'hi'
-    st = Struct.new("Ure2", :a, :b).new.extend(Meths)
-    st.a = [:a, s]; st.b = [:Meths, s]
-    Marshal.dump(st).should ==
-      "#{mv+nv}e:\x0AMethsS:\x11Struct::Ure2\x07:\x06a[\x07;\x07\"\x07hi:\x06b[\x07;\x00@\x07"
-  end
-end
+  ruby_version_is ""..."1.9" do
+    it "dumps an extended_struct having fields with same objects" do
+      s = 'hi'
+      st = Struct.new("Ure2", :a, :b).new.extend(Meths)
+      st.a = [:a, s]
+      st.b = [:Meths, s]
 
-describe "Marshal.dump" do
-  MarshalSpec::DATA.each do |description, (object, marshal, attributes)|
-    it "dumps a #{description}" do
-      unless attributes then
-        Marshal.dump(object).should == marshal
-      else
-        # these objects have non-deterministic field order in the
-        # marshal stream, so they need a round trip and independent
-        # verification.
-        object = Marshal.load(Marshal.dump(object))
-        attributes.each do |attr, val|
-          object.send(attr).should == val
+      Marshal.dump(st).should ==
+        "#{mv+nv}e:\x0AMethsS:\x11Struct::Ure2\x07:\x06a[\x07;\x07\"\x07hi:\x06b[\x07;\x00@\x07"
+    end
+  end
+
+  #ruby_version_is "1.9" do
+  #  it "dumps an extended_struct having fields with same objects" do
+  #    s = 'hi'
+  #    st = Struct.new("Ure2", :a, :b).new.extend(Meths)
+  #    st.a = [:a, s]
+  #    st.b = [:Meths, s]
+  #
+  #    Marshal.dump(st).should ==
+  #      "#{mv+nv}e:\nMethsS:\x11Struct::Ure2\a:\x06a[\a;\aI\"\ahi\x06:\x06EF:\x06b[\a;\x00@\a"
+  #  end
+  #end
+
+  it "returns an untainted string if object is untainted" do
+    m = Marshal.dump(Object.new)
+    m.tainted?.should be_false
+  end
+
+  it "returns a tainted string if object is tainted" do
+    obj = Object.new
+    obj.taint
+    m = Marshal.dump(obj)
+    m.tainted?.should be_true
+  end
+
+  it "returns a tainted string if object is tainted deep in nested structure" do
+    obj = Object.new
+    a = [[obj]]
+    obj.taint
+    m = Marshal.dump(a)
+    # a is not tainted, but its serialization is
+    a.tainted?.should be_false
+    m.tainted?.should be_true
+  end
+
+  ruby_version_is "1.9" do
+    it "returns a trusted string if object is trusted" do
+      x = Object.new
+      s = Marshal.dump(x)
+      s.untrusted?.should be_false
+    end
+
+    it "returns an untrusted string if object is untrusted" do
+      x = Object.new
+      x.untrust
+      s = Marshal.dump(x)
+      s.untrusted?.should be_true
+    end
+
+    it "returns an untrusted string if object is untrusted deep in nested structure" do
+      x = Object.new
+      a = [[x]]
+      x.untrust
+      s = Marshal.dump(a)
+      a.untrusted?.should be_false
+      s.untrusted?.should be_true
+    end
+  end
+
+  ruby_version_is ""..."1.9" do
+    MarshalSpec::DATA.each do |description, (object, marshal, attributes)|
+      it "dumps a #{description}" do
+        if attributes
+          # these objects have non-deterministic field order in the
+          # marshal stream, so they need a round trip and independent
+          # verification.
+          object = Marshal.load(Marshal.dump(object))
+          attributes.each do |attr, val|
+            object.send(attr).should == val
+          end
+        else
+          Marshal.dump(object).should == marshal
         end
       end
     end
   end
+=begin
+  ruby_version_is "1.9" do
+    MarshalSpec::DATA_19.each do |description, (object, marshal, attributes)|
+      it "dumps a #{description}" do
+        if attributes
+          # these objects have non-deterministic field order in the
+          # marshal stream, so they need a round trip and independent
+          # verification.
+          object = Marshal.load(Marshal.dump(object))
+          attributes.each do |attr, val|
+            object.send(attr).should == val
+          end
+        else
+          Marshal.dump(object).should == marshal
+        end
+      end
+    end
+  end
+=end
+  ruby_version_is "1.9" do
+    it "dumps a BasicObject subclass if it defines respond_to?" do
+      obj = MarshalSpec::BasicObjectSubWithRespondToFalse.new
+      Marshal.dump(obj).should == "\x04\bo:2MarshalSpec::BasicObjectSubWithRespondToFalse\x00"
+    end
+  end
+
+  describe "for an Integer" do
+    it "dumps an Integer 8" do
+      Marshal.dump(8).should == "\004\bi\r"
+    end
+
+    it "dumps and Integer -8" do
+      Marshal.dump(-8).should == "\004\bi\363"
+    end
+
+    it "dumps an Integer 1234" do
+      Marshal.dump(1234).should == "\004\bi\002\322\004"
+    end
+
+    it "dumps an Integer -1234" do
+      Marshal.dump(-1234).should == "\004\bi\376.\373"
+    end
+
+    it "dumps an Integer 4611686018427387903" do
+      Marshal.dump(4611686018427387903).should == "\004\bl+\t\377\377\377\377\377\377\377?"
+    end
+
+    it "dumps an Integer -4611686018427387903" do
+      Marshal.dump(-4611686018427387903).should == "\004\bl-\t\377\377\377\377\377\377\377?"
+    end
+
+    it "dumps an Integer 2361183241434822606847" do
+      Marshal.dump(2361183241434822606847).should == "\004\bl+\n\377\377\377\377\377\377\377\377\177\000"
+    end
+
+    it "dumps an Integer -2361183241434822606847" do
+      Marshal.dump(-2361183241434822606847).should == "\004\bl-\n\377\377\377\377\377\377\377\377\177\000"
+    end
+
+  end
+
 end

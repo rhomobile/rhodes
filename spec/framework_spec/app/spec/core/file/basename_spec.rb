@@ -1,19 +1,9 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
+# TODO: Fix these
 describe "File.basename" do
-  before :each do
-    @name = tmp("test.txt")
-    File.delete(@name) if File.exist? @name
-    @file = File.open(@name, "w+")
-  end
-
-  after :each do
-    @file.close
-    File.delete(@name) if File.exist?(@name)
-  end
-
   it "return the basename of a path (basic cases)" do
-    File.basename(@name).should == "test.txt"
+    File.basename("/Some/path/to/test.txt").should == "test.txt"
     File.basename(File.join("/tmp")).should == "tmp"
     File.basename(File.join(*%w( g f d s a b))).should == "b"
     File.basename("/tmp", ".*").should == "tmp"
@@ -24,7 +14,6 @@ describe "File.basename" do
     File.basename("/tmp.cpp", ".*").should == "tmp"
     File.basename("/tmp.cpp", ".???").should == "tmp.cpp"
     File.basename("/tmp.o", ".c").should == "tmp.o"
-    #Version.greater_or_equal("1.8.0") do
     File.basename(File.join("/tmp/")).should == "tmp"
     File.basename("/").should == "/"
     File.basename("//").should == "/"
@@ -38,7 +27,6 @@ describe "File.basename" do
     File.basename("dir//base/", ".c").should == "base"
     File.basename("dir//base.c/", ".c").should == "base"
     File.basename("dir//base.c/", ".*").should == "base"
-    #end
   end
 
   it "return the last component of the filename" do
@@ -53,7 +41,7 @@ describe "File.basename" do
   end
 
   it "return an string" do
-    File.basename("foo").class.should == String
+    File.basename("foo").should be_kind_of(String)
   end
 
   it "return the basename for unix format" do
@@ -74,9 +62,16 @@ describe "File.basename" do
     File.basename("").should == ""
     File.basename(".").should == "."
     File.basename("..").should == ".."
-    File.basename("//foo/").should == "foo" unless System.get_property('platform') == 'WINDOWS'
-    File.basename("//foo//").should == "foo" unless System.get_property('platform') == 'WINDOWS'
+    platform_is_not :windows do
+      File.basename("//foo/").should == "foo"
+      File.basename("//foo//").should == "foo"
+    end
     File.basename("foo/").should == "foo"
+  end
+
+  it "ignores a trailing directory separator" do
+    File.basename("foo.rb/", '.rb').should == "foo"
+    File.basename("bar.rb///", '.*').should == "bar"
   end
 
   it "return the basename for unix suffix" do
@@ -102,6 +97,12 @@ describe "File.basename" do
     lambda { File.basename(true)         }.should raise_error(TypeError)
   end
 
+  ruby_version_is "1.9" do
+    it "accepts an object that has a #to_path method" do
+      File.basename(mock_to_path("foo.txt"))
+    end
+  end
+
   it "raises an ArgumentError if passed more than two arguments" do
     lambda { File.basename('bar.txt', '.txt', '.txt') }.should raise_error(ArgumentError)
   end
@@ -110,25 +111,23 @@ describe "File.basename" do
   platform_is :windows do
     it "return the basename for windows" do
       File.basename("C:\\foo\\bar\\baz.txt").should == "baz.txt"
-      File.basename("C:\\foo\\bar").should == "baz" unless System.get_property('platform') == 'WINDOWS'
-      File.basename("C:\\foo\\bar\\").should == "baz" unless System.get_property('platform') == 'WINDOWS'
+      File.basename("C:\\foo\\bar").should == "bar"
+      File.basename("C:\\foo\\bar\\").should == "bar"
       File.basename("C:\\foo").should == "foo"
-      File.basename("C:\\").should == "C:\\" unless System.get_property('platform') == 'WINDOWS'
+      File.basename("C:\\").should == "\\"
     end
 
     it "return basename windows unc" do
       File.basename("\\\\foo\\bar\\baz.txt").should == "baz.txt"
       File.basename("\\\\foo\\bar\\baz").should =="baz"
-      File.basename("\\\\foo").should == "\\\\foo" unless System.get_property('platform') == 'WINDOWS'
-      File.basename("\\\\foo\\bar").should == "\\\\foo\\bar" unless System.get_property('platform') == 'WINDOWS'
     end
 
     it "return basename windows forward slash" do
-      File.basename("C:/").should == "C:/" unless System.get_property('platform') == 'WINDOWS'
+      File.basename("C:/").should == "/"
       File.basename("C:/foo").should == "foo"
       File.basename("C:/foo/bar").should == "bar"
-      File.basename("C:/foo/bar/").should "bar" unless System.get_property('platform') == 'WINDOWS'
-      File.basename("C:/foo/bar//").shouldl == "bar" unless System.get_property('platform') == 'WINDOWS'
+      File.basename("C:/foo/bar/").should == "bar"
+      File.basename("C:/foo/bar//").should == "bar"
     end
 
     it "return basename with windows suffix" do

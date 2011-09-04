@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Module#class_variable_get" do
   it "returns the value of the class variable with the given name" do
@@ -11,6 +11,12 @@ describe "Module#class_variable_get" do
   it "returns the value of a class variable with the given name defined in an included module" do
     c = Class.new { include ModuleSpecs::MVars }
     c.send(:class_variable_get, "@@mvar").should == :mvar
+  end
+
+  it "allows '@@' to be a valid class variable name" do
+    c = Class.new { class_variable_set '@@', :foo }
+    c.send(:class_variable_get, "@@").should == :foo
+    c.send(:class_variable_get, :"@@").should == :foo
   end
 
   it "raises a NameError for a class variables with the given name defined in an extended module" do
@@ -33,17 +39,26 @@ describe "Module#class_variable_get" do
     ModuleSpecs::CVars.new.meta.should == :meta
   end
 
-  not_compliant_on :rubinius do
-    it "accepts Fixnums for class variables" do
-      c = Class.new { class_variable_set :@@class_var, "test" }
-      c.send(:class_variable_get, :@@class_var.to_i).should == "test"
-    end
+  it "returns a class variable defined in a metaclass" do
+    obj = mock("metaclass class variable")
+    meta = obj.singleton_class
+    meta.send :class_variable_set, :@@var, :cvar_value
+    meta.send(:class_variable_get, :@@var).should == :cvar_value
+  end
 
-    it "raises a NameError when a Fixnum for an uninitialized class variable is given" do
-      c = Class.new
-      lambda {
-        c.send :class_variable_get, :@@no_class_var.to_i
-      }.should raise_error(NameError)
+  ruby_version_is ""..."1.9" do
+    not_compliant_on :rubinius do
+      it "accepts Fixnums for class variables" do
+        c = Class.new { class_variable_set :@@class_var, "test" }
+        c.send(:class_variable_get, :@@class_var.to_i).should == "test"
+      end
+
+      it "raises a NameError when a Fixnum for an uninitialized class variable is given" do
+        c = Class.new
+        lambda {
+          c.send :class_variable_get, :@@no_class_var.to_i
+        }.should raise_error(NameError)
+      end
     end
   end
 

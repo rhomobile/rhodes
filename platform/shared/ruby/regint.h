@@ -4,7 +4,7 @@
   regint.h -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2007  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2008  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -352,7 +352,7 @@ typedef unsigned char  Bits;
 typedef Bits           BitSet[BITSET_SIZE];
 typedef Bits*          BitSetRef;
 
-#define SIZE_BITSET        sizeof(BitSet)
+#define SIZE_BITSET        (int)sizeof(BitSet)
 
 #define BITSET_CLEAR(bs) do {\
   int i;\
@@ -582,15 +582,15 @@ typedef short int StateCheckNumType;
 typedef void* PointerType;
 
 #define SIZE_OPCODE           1
-#define SIZE_RELADDR          sizeof(RelAddrType)
-#define SIZE_ABSADDR          sizeof(AbsAddrType)
-#define SIZE_LENGTH           sizeof(LengthType)
-#define SIZE_MEMNUM           sizeof(MemNumType)
-#define SIZE_STATE_CHECK_NUM  sizeof(StateCheckNumType)
-#define SIZE_REPEATNUM        sizeof(RepeatNumType)
-#define SIZE_OPTION           sizeof(OnigOptionType)
-#define SIZE_CODE_POINT       sizeof(OnigCodePoint)
-#define SIZE_POINTER          sizeof(PointerType)
+#define SIZE_RELADDR          (int)sizeof(RelAddrType)
+#define SIZE_ABSADDR          (int)sizeof(AbsAddrType)
+#define SIZE_LENGTH           (int)sizeof(LengthType)
+#define SIZE_MEMNUM           (int)sizeof(MemNumType)
+#define SIZE_STATE_CHECK_NUM  (int)sizeof(StateCheckNumType)
+#define SIZE_REPEATNUM        (int)sizeof(RepeatNumType)
+#define SIZE_OPTION           (int)sizeof(OnigOptionType)
+#define SIZE_CODE_POINT       (int)sizeof(OnigCodePoint)
+#define SIZE_POINTER          (int)sizeof(PointerType)
 
 
 #define GET_RELADDR_INC(addr,p)    PLATFORM_GET_INC(addr,   p, RelAddrType)
@@ -716,7 +716,7 @@ typedef struct {
   BBuf*  mbuf;   /* multi-byte info or NULL */
 } CClassNode;
 
-typedef long OnigStackIndex;
+typedef intptr_t OnigStackIndex;
 
 typedef struct _OnigStackType {
   unsigned int type;
@@ -760,7 +760,7 @@ typedef struct _OnigStackType {
 
 typedef struct {
   void* stack_p;
-  int   stack_n;
+  size_t stack_n;
   OnigOptionType options;
   OnigRegion*    region;
   const UChar* start;   /* search start position (for \G: BEGIN_POSITION) */
@@ -788,7 +788,7 @@ typedef struct {
 
 extern OnigOpInfoType OnigOpInfo[];
 
-extern void onig_print_compiled_byte_code P_((FILE* f, UChar* bp, UChar** nextp, OnigEncoding enc));
+/* extern void onig_print_compiled_byte_code P_((FILE* f, UChar* bp, UChar* bpend, UChar** nextp, OnigEncoding enc)); */
 
 #ifdef ONIG_DEBUG_STATISTICS
 extern void onig_statistics_init P_((void));
@@ -799,8 +799,7 @@ extern void onig_print_statistics P_((FILE* f));
 extern UChar* onig_error_code_to_format P_((int code));
 extern void  onig_snprintf_with_pattern PV_((UChar buf[], int bufsize, OnigEncoding enc, UChar* pat, UChar* pat_end, const UChar *fmt, ...));
 extern int  onig_bbuf_init P_((BBuf* buf, int size));
-extern int  onig_alloc_init P_((regex_t** reg, OnigOptionType option, OnigCaseFoldType case_fold_flag, OnigEncoding enc, const OnigSyntaxType* syntax));
-extern int  onig_compile P_((regex_t* reg, const UChar* pattern, const UChar* pattern_end, OnigErrorInfo* einfo));
+extern int  onig_compile P_((regex_t* reg, const UChar* pattern, const UChar* pattern_end, OnigErrorInfo* einfo, const char *sourcefile, int sourceline));
 extern void onig_chain_reduce P_((regex_t* reg));
 extern void onig_chain_link_add P_((regex_t* to, regex_t* add));
 extern void onig_transfer P_((regex_t* to, regex_t* from));
@@ -816,7 +815,7 @@ typedef st_data_t hash_data_type;
 typedef unsigned long hash_data_type;
 #endif
 
-extern hash_table_type* onig_st_init_strend_table_with_size P_((int size));
+extern hash_table_type* onig_st_init_strend_table_with_size P_((st_index_t size));
 extern int onig_st_lookup_strend P_((hash_table_type* table, const UChar* str_key, const UChar* end_key, hash_data_type *value));
 extern int onig_st_insert_strend P_((hash_table_type* table, const UChar* str_key, const UChar* end_key, hash_data_type value));
 

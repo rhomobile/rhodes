@@ -1,22 +1,38 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/shared/stat'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../shared/stat', __FILE__)
 
 describe "File.stat" do
   it_behaves_like :file_stat, :stat
 end
-
+if ( System.get_property('platform') != 'WINDOWS' )
 describe "File.stat" do
 
   before :each do
     @file = tmp('i_exist')
     @link = tmp('i_am_a_symlink')
-    File.open(@file,'w'){|f| f.write 'rubinius'}
+    touch(@file) { |f| f.write "rubinius" }
     File.symlink(@file, @link)
   end
 
   after :each do
-    File.delete(@link) if File.exist?(@link)
-    File.delete(@file) if File.exist?(@file)
+    rm_r @link, @file
+  end
+
+  it "returns information for a file that has been deleted but is still open" do
+    File.open(@file) do |f|
+      rm_r @link, @file
+
+      st = f.stat
+
+      st.file?.should == true
+      st.zero?.should == false
+      st.size.should == 8
+      st.size?.should == 8
+      st.blksize.should > 0
+      st.atime.should be_kind_of(Time)
+      st.ctime.should be_kind_of(Time)
+      st.mtime.should be_kind_of(Time)
+    end
   end
 
   platform_is_not :windows do
@@ -27,4 +43,5 @@ describe "File.stat" do
       st.symlink?.should == false
     end
   end
+end
 end
