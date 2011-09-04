@@ -1,8 +1,7 @@
 require 'mspec/runner/context'
 require 'mspec/runner/exception'
 require 'mspec/runner/tag'
-require 'mspec/fileutils'
-require 'mspec/pp'
+require 'fileutils'
 
 module MSpec
   @count = 0
@@ -24,13 +23,14 @@ module MSpec
   @modes   = []
   @shared  = {}
   @guarded = []
+  @features     = {}
   @exception    = nil
   @randomize    = nil
   @expectation  = nil
   @expectations = false
-  @backtrace = false
+  @backtrace = false  
   @file_count = 0
-  
+
   def self.exc_count
     @exc_count
   end
@@ -38,11 +38,11 @@ module MSpec
   def self.count
     @count
   end
-  
+
   def self.file_count
     @file_count
   end
-  
+
   def self.backtrace=(backtrace)
     @backtrace = backtrace
   end
@@ -62,7 +62,7 @@ module MSpec
     files
     actions :finish
   end
-  
+
   def self.files
     return unless files = retrieve(:files)
 
@@ -90,8 +90,11 @@ module MSpec
     rescue SystemExit
       raise
     rescue Exception => exc
+      #RHO
       puts "FAIL: #{current} - #{exc.message}\n" + (@backtrace ? exc.backtrace.join("\n") : "")
       @exc_count+=1
+      #RHO
+      
       register_exit 1
       actions :exception, ExceptionState.new(current && current.state, location, exc)
       return false
@@ -184,6 +187,18 @@ module MSpec
   # Returns +true+ if +mode+ is registered.
   def self.mode?(mode)
     retrieve(:modes).include? mode
+  end
+
+  def self.enable_feature(feature)
+    retrieve(:features)[feature] = true
+  end
+
+  def self.disable_feature(feature)
+    retrieve(:features)[feature] = false
+  end
+
+  def self.feature_enabled?(feature)
+    retrieve(:features)[feature] || false
   end
 
   def self.retrieve(symbol)
@@ -289,14 +304,12 @@ module MSpec
     tags = []
     file = tags_file
     if File.exist? file
-      File.open(file, "r") do |f|
-        unless File.directory?(f)
-          f.each_line do |line|
-            line.chomp!
-            next if line.empty?
-            tag = SpecTag.new line.chomp
-            tags << tag if keys.include? tag.tag
-          end
+      File.open(file, "rb") do |f|
+        f.each_line do |line|
+          line.chomp!
+          next if line.empty?
+          tag = SpecTag.new line.chomp
+          tags << tag if keys.include? tag.tag
         end
       end
     end
@@ -309,7 +322,7 @@ module MSpec
     file = tags_file
     path = File.dirname file
     FileUtils.mkdir_p path unless File.exist? path
-    File.open(file, "w") do |f|
+    File.open(file, "wb") do |f|
       tags.each { |t| f.puts t }
     end
   end
@@ -322,11 +335,11 @@ module MSpec
     path = File.dirname file
     FileUtils.mkdir_p path unless File.exist? path
     if File.exist? file
-      File.open(file, "r") do |f|
+      File.open(file, "rb") do |f|
         f.each_line { |line| return false if line.chomp == string }
       end
     end
-    File.open(file, "a") { |f| f.puts string }
+    File.open(file, "ab") { |f| f.puts string }
     return true
   end
 
@@ -339,7 +352,7 @@ module MSpec
     file = tags_file
     if File.exist? file
       lines = IO.readlines(file)
-      File.open(file, "w") do |f|
+      File.open(file, "wb") do |f|
         lines.each do |line|
           unless pattern =~ line.chomp
             f.puts line unless line.empty?

@@ -1,4 +1,4 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../fixtures/methods'
+require File.expand_path('../../fixtures/methods', __FILE__)
 
 describe :time_isdst, :shared => true do
   it "dst? returns whether time is during daylight saving time" do

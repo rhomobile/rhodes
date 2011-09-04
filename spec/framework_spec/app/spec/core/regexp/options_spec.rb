@@ -1,9 +1,9 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "Regexp#options" do
   it "returns a Fixnum bitvector of regexp options for the Regexp object" do
-    /cat/.options.class.should == Fixnum
-    /cat/ix.options.class.should == Fixnum
+    /cat/.options.should be_kind_of(Fixnum)
+    /cat/ix.options.should be_kind_of(Fixnum)
   end
 
   it "allows checking for presence of a certain option with bitwise &" do

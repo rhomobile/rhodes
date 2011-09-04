@@ -1,10 +1,10 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../spec_helper'
+require File.expand_path('../../spec_helper', __FILE__)
 
 class AliasObject
   attr :foo
   attr_reader :bar
   attr_accessor :baz
-  
+
   def prep; @foo = 3; @bar = 4; end
   def value; 5; end
   def false_value; 6; end
@@ -81,7 +81,7 @@ describe "The alias keyword" do
     @obj.baz = 5
     @obj.abaz.should == 5
   end
-  
+
   it "operates on methods with splat arguments" do
     class AliasObject2;end
     AliasObject2.class_eval do
@@ -96,7 +96,7 @@ describe "The alias keyword" do
     end
     AliasObject2.new.test(1,2,3,4,5).should == 4
   end
-  
+
   it "operates on methods with splat arguments on eigenclasses" do
     @meta.class_eval do
       def test(*args)
@@ -128,20 +128,33 @@ describe "The alias keyword" do
     end
     Sub3.new.test(1,2,3,4,5).should == 4
   end
-# XXX eval not supported
-# 
-#  it "operates on methods with splat arguments defined in a superclass using text block for class eval" do
-#    class Sub < AliasObject;end
-#    AliasObject.class_eval <<-code
-#      def test(*args)
-#        4
-#      end
-#      def test_with_check(*args)
-#        test_without_check(*args)
-#      end
-#      alias test_without_check test
-#      alias test test_with_check
-#    code
-#    Sub.new.test("testing").should == 4
-#  end
+
+  it "operates on methods with splat arguments defined in a superclass using text block for class eval" do
+    class Sub < AliasObject;end
+    AliasObject.class_eval <<-code
+      def test(*args)
+        4
+      end
+      def test_with_check(*args)
+        test_without_check(*args)
+      end
+      alias test_without_check test
+      alias test test_with_check
+    code
+    Sub.new.test("testing").should == 4
+  end
+
+  it "is not allowed against Fixnum or String instances" do
+    lambda do
+      1.instance_eval do
+        alias :foo :to_s
+      end
+    end.should raise_error(TypeError)
+
+    lambda do
+      :blah.instance_eval do
+        alias :foo :to_s
+      end
+    end.should raise_error(TypeError)
+  end
 end

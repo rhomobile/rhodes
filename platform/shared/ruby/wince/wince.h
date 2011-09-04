@@ -6,6 +6,22 @@
 #include <winsock2.h>
 #include "tcmalloc/rhomem.h"
 
+#ifndef _OFF_T_DEFINED
+
+typedef long _off_t;                    /* file offset value */
+
+#if     !__STDC__
+/* Non-ANSI name for compatibility */
+typedef long off_t;
+#endif
+
+#define _OFF_T_DEFINED
+#endif
+
+# define AreFileApisANSI() 1
+
+#define rb_w32_wopen _wopen
+
 /* unique difinition in wince platform. */
 
 //#ifndef _MIPS_

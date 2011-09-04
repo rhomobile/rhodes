@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Kernel#clone" do
   before :each do
@@ -43,5 +43,11 @@ describe "Kernel#clone" do
     class << clone
       CLONE.should == :clone
     end
+  end
+
+  it "raises TypeError when called on nil" do
+    lambda {
+      nil.clone
+    }.should raise_error(TypeError)
   end
 end

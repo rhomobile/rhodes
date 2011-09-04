@@ -83,8 +83,8 @@ extern void rho_sys_stop_timer( const char *url );
  val = rb_hash_aref($input, key);
  Check_Type(key, T_STRING);
  Check_Type(val, T_STRING);
- $2[i] = STR2CSTR(key);
- $3[i] = STR2CSTR(val);
+ $2[i] = StringValuePtr(key);
+ $3[i] = StringValuePtr(val);
 }
 }
 }

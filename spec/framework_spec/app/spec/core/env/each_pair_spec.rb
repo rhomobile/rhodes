@@ -1,7 +1,6 @@
-# XXX This crashes rhodes too
-#require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-#require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/shared/each.rb'
-#
-#describe "ENV.each_pair" do
-#  it_behaves_like(:env_each, :each_pair)
-#end
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../shared/each.rb', __FILE__)
+
+describe "ENV.each_pair" do
+  it_behaves_like(:env_each, :each_pair)
+end

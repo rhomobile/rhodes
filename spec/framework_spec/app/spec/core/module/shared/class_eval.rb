@@ -2,16 +2,6 @@ describe :module_class_eval, :shared => true do
   # TODO: This should probably be replaced with a "should behave like" that uses
   # the many scoping/binding specs from kernel/eval_spec, since most of those
   # behaviors are the same for instance_eval. See also module_eval/class_eval.
-  it "shares a scope across sibling evals" do
-    a, b = Object.new, Object.new
-
-    result = nil
-    a.instance_eval "x = 1"
-    lambda do
-      b.instance_eval "result = x"
-    end.should_not raise_error
-    result.should == 1
-  end
 
   it "evaluates a given string in the context of self" do
     ModuleSpecs.send(@method, "self").should == ModuleSpecs
@@ -31,14 +21,24 @@ describe :module_class_eval, :shared => true do
     ModuleSpecs.send(@method, "module NewEvaluatedModule;end")
     ModuleSpecs.const_defined?(:NewEvaluatedModule).should == true
   end
-  
+
   it "evaluates a given block in the context of self" do
     ModuleSpecs.send(@method) { self }.should == ModuleSpecs
     ModuleSpecs.send(@method) { 1 + 1 }.should == 2
   end
-  
+
   it "uses the optional filename and lineno parameters for error messages" do
-    ModuleSpecs.send(@method, "[File.join(__rhoGetCurrentDir(), __FILE__), __LINE__]", "test", 102).should == ["test", 102]
+    ModuleSpecs.send(@method, "[__FILE__, __LINE__]", "test", 102).should == ["test", 102]
+  end
+
+  it "converts a non-string filename to a string using to_str" do
+    (file = mock(__FILE__)).should_receive(:to_str).and_return(__FILE__)
+    ModuleSpecs.send(@method, "1+1", file)
+  end
+
+  it "raises a TypeError when the given filename can't be converted to string using to_str" do
+    (file = mock('123')).should_receive(:to_str).and_return(123)
+    lambda { ModuleSpecs.send(@method, "1+1", file) }.should raise_error(TypeError)
   end
 
   it "converts non string eval-string to string using to_str" do
@@ -49,7 +49,7 @@ describe :module_class_eval, :shared => true do
   it "raises a TypeError when the given eval-string can't be converted to string using to_str" do
     o = mock('x')
     lambda { ModuleSpecs.send(@method, o) }.should raise_error(TypeError)
-  
+
     (o = mock('123')).should_receive(:to_str).and_return(123)
     lambda { ModuleSpecs.send(@method, o) }.should raise_error(TypeError)
   end
@@ -68,5 +68,27 @@ describe :module_class_eval, :shared => true do
     lambda {
       ModuleSpecs.send(@method, "1 + 1") { 1 + 1 }
     }.should raise_error(ArgumentError)
+  end
+
+  # This case was found because Rubinius was caching the compiled
+  # version of the string and not duping the methods within the
+  # eval, causing the method addition to change the static scope
+  # of the shared CompiledMethod.
+  it "adds methods respecting the lexical constant scope" do
+    code = "def self.attribute; C; end"
+
+    a = Class.new do
+      self::C = "A"
+    end
+
+    b = Class.new do
+      self::C = "B"
+    end
+
+    a.class_eval code
+    b.class_eval code
+
+    a.attribute.should == "A"
+    b.attribute.should == "B"
   end
 end

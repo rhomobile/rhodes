@@ -13,7 +13,7 @@ def build_extension(name, arch)
       args << "-I../../../../platform/shared"
 
     if $android
-      args << "-I../../../../platform/shared/ruby/linux"
+      args << "-I../../../../platform/shared/ruby/android"
       args << "-I../../../../platform/shared/ruby/generated"
       cc_compile f, $tempdir, args or exit 1
 

@@ -1,11 +1,11 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/methods'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/methods', __FILE__)
 
 describe "Time#succ" do
   it "returns a new time one second later than time" do
     Time.at(100).succ.should == Time.at(101)
   end
-  
+
   it "returns a new instance" do
     t1 = Time.at(100)
     t2 = t1.succ

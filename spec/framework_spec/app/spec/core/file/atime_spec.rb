@@ -1,13 +1,13 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "File.atime" do
   before :each do
     @file = tmp('test.txt')
-    File.open(@file, "w") {} # touch
+    touch @file
   end
 
   after :each do
-    File.delete(@file) if File.exist?(@file)
+    rm_r @file
   end
 
   it "returns the last access time for the named file as a Time object" do
@@ -18,11 +18,17 @@ describe "File.atime" do
   it "raises an Errno::ENOENT exception if the file is not found" do
     lambda { File.atime('a_fake_file') }.should raise_error(Errno::ENOENT)
   end
-end
 
+  ruby_version_is "1.9" do
+    it "accepts an object that has a #to_path method" do
+      File.atime(mock_to_path(@file))
+    end
+  end
+end
+=begin
 describe "File#atime" do
   before :each do
-    @name = File.expand_path(File.join(__rhoGetCurrentDir(), __FILE__)).gsub(/\.rb/,".iseq")
+    @name = File.expand_path(__FILE__)
     @file = File.open(@name)
   end
 
@@ -35,3 +41,4 @@ describe "File#atime" do
     @file.atime.should be_kind_of(Time)
   end
 end
+=end

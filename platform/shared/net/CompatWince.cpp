@@ -420,6 +420,7 @@ Snprintf(char *buf, size_t buflen, const char *fmt, ...)
 	return (n);
 }
 
+#undef snprintf
 #define snprintf Snprintf
 
 /* from libc/include/_ansi.h */

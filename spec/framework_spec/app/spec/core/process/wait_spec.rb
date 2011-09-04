@@ -1,9 +1,11 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
-=begin
 describe "Process.wait" do
   before :all do
-    Process.waitall
+    begin
+      Process.waitall
+    rescue NotImplementedError
+    end
   end
 
   it "raises a Errno::ECHILD if there are no child processes" do
@@ -19,7 +21,7 @@ describe "Process.wait" do
     it "sets $? to a Process::Status" do
       pid = Process.fork { Process.exit! }
       Process.wait
-      $?.class.should == Process::Status
+      $?.should be_kind_of(Process::Status)
       $?.pid.should == pid
     end
 
@@ -36,6 +38,12 @@ describe "Process.wait" do
       Process.wait(pid1).should == pid1
       lambda { Process.kill(0, pid1) }.should raise_error(Errno::ESRCH)
       lambda { Process.kill(0, pid2) }.should raise_error(Errno::ESRCH)
+    end
+
+    it "coerces the pid to an Integer" do
+      pid1 = Process.fork { Process.exit! }
+      Process.wait(mock_int(pid1)).should == pid1
+      lambda { Process.kill(0, pid1) }.should raise_error(Errno::ESRCH)
     end
 
     # This spec is probably system-dependent.
@@ -68,8 +76,17 @@ describe "Process.wait" do
 
     # This spec is probably system-dependent.
     it "doesn't block if no child is available when WNOHANG is used" do
-      pid = Process.fork { 10.times { sleep(1) }; Process.exit! }
-      Process.wait(pid, Process::WNOHANG).should == nil
+      pid = Process.fork do
+        Signal.trap("TERM") { Process.exit! }
+        10.times { sleep(1) }
+        Process.exit!
+      end
+
+      Process.wait(pid, Process::WNOHANG).should be_nil
+
+      # sleep slightly to allow the child to at least start up and
+      # setup it's TERM handler
+      sleep 0.25
       Process.kill("TERM", pid)
       Process.wait.should == pid
     end
@@ -81,4 +98,3 @@ describe "Process.wait" do
     end
   end
 end
-=end

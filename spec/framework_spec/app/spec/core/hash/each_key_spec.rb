@@ -1,6 +1,6 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/shared/iteration'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
+require File.expand_path('../shared/iteration', __FILE__)
 
 describe "Hash#each_key" do
   it "calls block once for each key, passing key" do

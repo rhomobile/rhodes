@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Thread.stop" do
   it "causes the current thread to sleep indefinitely" do
@@ -10,12 +10,14 @@ describe "Thread.stop" do
     t.value.should == 5
   end
 
-  it "resets Thread.critical to false" do
-    t = Thread.new { Thread.critical = true; Thread.stop }
-    Thread.pass while t.status and t.status != 'sleep'
-    Thread.critical.should == false
-    t.run
-    t.join
+  ruby_version_is ""..."1.9" do
+    it "resets Thread.critical to false" do
+      t = Thread.new { Thread.critical = true; Thread.stop }
+      Thread.pass while t.status and t.status != 'sleep'
+      Thread.critical.should == false
+      t.run
+      t.join
+    end
   end
 end
 
@@ -56,7 +58,9 @@ describe "Thread#stop?" do
     ThreadSpecs.status_of_dying_sleeping_thread.stop?.should == true
   end
 
+  quarantine! do
   it "reports aborting on a killed thread" do
     ThreadSpecs.status_of_aborting_thread.stop?.should == false
+  end
   end
 end

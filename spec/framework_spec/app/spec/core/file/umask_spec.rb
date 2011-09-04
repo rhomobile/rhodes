@@ -1,32 +1,33 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "File.umask" do
   before :each do
     @orig_umask = File.umask
-    @file = 'test.txt'
-    File.open(@file, 'w') {}
+    @file = tmp('test.txt')
+    touch @file
   end
 
   after :each do
-    File.delete(@file) if File.exists?(@file)
-    @file = nil
+    rm_r @file
     File.umask(@orig_umask)
   end
 
   it "return a Fixnum" do
-    File.umask.class.should == Fixnum
+    File.umask.should be_kind_of(Fixnum)
   end
 
-  it "umask should return the current umask value for the process" do
-    File.umask(022)
-    File.umask(006).should == 022
-    File.umask.should == 006
-  end
+  platform_is_not :windows do
+    it "returns the current umask value for the process" do
+      File.umask(022)
+      File.umask(006).should == 022
+      File.umask.should == 006
+    end
 
-  it "invokes to_int on non-integer argument" do
-    (obj = mock(022)).should_receive(:to_int).any_number_of_times.and_return(022)
-    File.umask(obj)
-    File.umask(obj).should == 022
+    it "invokes to_int on non-integer argument" do
+      (obj = mock(022)).should_receive(:to_int).any_number_of_times.and_return(022)
+      File.umask(obj)
+      File.umask(obj).should == 022
+    end
   end
 
   it "always succeeds with any integer values" do
@@ -42,18 +43,16 @@ describe "File.umask" do
   end
 
   platform_is :windows do
-    it "Returns the current umask value for this process. (basic)" do
+    it "returns the current umask value for this process (basic)" do
       File.umask.should == 0
+      File.umask(022).should == 0
+      File.umask(044).should == 0
     end
 
     # The value used here is the value of _S_IWRITE.
-    it "Returns the current umask value for this process." do
+    it "returns the current umask value for this process" do
       File.umask(0000200)
       File.umask.should == 0000200
-    end
-
-    # FIXME: wtf?
-    it "raises an exception if the arguments are wrong type or are the incorect number of arguments " do
       File.umask(0006)
       File.umask.should == 0
     end

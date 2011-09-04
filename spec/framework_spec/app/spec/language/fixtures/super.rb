@@ -9,7 +9,7 @@ module Super
         a << "A#bar"
       end
     end
-    class B < A    
+    class B < A
       def foo(a)
         a << "B#foo"
         super(a)
@@ -65,7 +65,7 @@ module Super
       end
     end
   end
-  
+
   module S4
     class A
       def foo(a)
@@ -107,7 +107,7 @@ module Super
       def foo(a)
         a << "ModA#foo"
         bar(a)
-      end      
+      end
       def bar(a)
         a << "ModA#bar"
       end
@@ -121,7 +121,7 @@ module Super
         super(a)
       end
     end
-    class B < A    
+    class B < A
       def foo(a)
         a << "B#foo"
         super(a)
@@ -129,7 +129,7 @@ module Super
       include ModB
     end
   end
-  
+
   module MS2
     class A
       def baz(a)
@@ -152,7 +152,7 @@ module Super
       end
     end
   end
-  
+
   module MS3
     module ModA
       def foo(a)
@@ -181,7 +181,7 @@ module Super
         super(a)
       end
     end
-  end  
+  end
 
   module MS4
     module Layer1
@@ -259,4 +259,35 @@ module Super
     # Otherwise, Alias2 is next, which is where name was to begin with,
     # causing the wrong #name method to be called.
   end
+
+  module AliasWithSuper
+    module AS1
+      def foo
+        :a
+      end
+    end
+
+    module BS1
+      def foo
+        [:b, super]
+      end
+    end
+
+    class Base
+      extend AS1
+      extend BS1
+    end
+
+    class Trigger < Base
+      class << self
+        def foo_quux
+          foo_baz
+        end
+
+        alias_method :foo_baz, :foo
+        alias_method :foo, :foo_quux
+      end
+    end
+  end
+
 end

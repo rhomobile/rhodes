@@ -1,16 +1,16 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "ARGF.rewind" do
   before :each do
-    @file1_name = fixture File.join(__rhoGetCurrentDir(), __FILE__), "file1.txt"
-    @file2_name = fixture File.join(__rhoGetCurrentDir(), __FILE__), "file2.txt"
+    @file1_name = fixture __FILE__, "file1.txt"
+    @file2_name = fixture __FILE__, "file2.txt"
 
     @file1 = File.readlines @file1_name
     @file2 = File.readlines @file2_name
   end
 
   after :each do
-    ARGF.close
+    ARGF.close unless ARGF.closed?
   end
 
   # NOTE: this test assumes that fixtures files have two lines each
@@ -25,6 +25,20 @@ describe "ARGF.rewind" do
       ARGF.gets
       ARGF.rewind
       ARGF.gets.should == @file2.first
+    end
+  end
+
+  # This fails on all versions as reported in bug #1693. If it's deemed not to
+  # be a bug, this guard can be removed
+  ruby_bug "#1693", "1.8.7.302" do
+    it "resets ARGF.lineno to 0" do
+      argv [@file2_name] do
+        ARGF.lineno = 0
+        ARGF.gets;
+        ARGF.lineno.should > 0
+        ARGF.rewind;
+        ARGF.lineno.should == 0
+      end
     end
   end
 

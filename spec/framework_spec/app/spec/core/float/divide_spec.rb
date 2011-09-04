@@ -1,4 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/coerce.rb', __FILE__)
 
 describe "Float#/" do
   it "returns self divided by other" do
@@ -7,7 +8,10 @@ describe "Float#/" do
     (91.1 / -0xffffffff).should be_close(-2.12108716418061e-08, TOLERANCE)
   end
 
-# XXX we dont have BigDecimal library
+  it "properly coerces objects" do
+    (5.0 / FloatSpecs::CanCoerce.new(5)).should be_close(0, TOLERANCE)
+  end
+
 #  it "properly handles BigDecimal argument" do
 #    require 'bigdecimal'
 #    (2.0 / BigDecimal.new('5.0')).should be_close(0.4, TOLERANCE)
@@ -17,7 +21,7 @@ describe "Float#/" do
 #    (2.0 / BigDecimal.new('-0.0')).infinite?.should == -1
 #    (2.0 / BigDecimal.new('NaN')).nan?.should == true
 #  end
-  
+
   it "does NOT raise ZeroDivisionError if other is zero" do
     (1.0 / 0.0).to_s.should == 'Infinity'
     (-1.0 / 0.0).to_s.should == '-Infinity'

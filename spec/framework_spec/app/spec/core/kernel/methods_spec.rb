@@ -1,158 +1,173 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
+require File.expand_path('../../../fixtures/reflection', __FILE__)
 
-module KernelSpecs
-  class MethodsUndefd
-    def all; end
-  end
-
-  class MethodsUndefdParent
-    def parent_method; end
-  end
-
-  class MethodsUndefdChild < MethodsUndefdParent
-    undef_method :parent_method
-  end
-end
-
+# TODO: rewrite
 # On Ruby < 1.9 #methods returns an Array of Strings
 ruby_version_is ""..."1.9" do
   describe "Kernel#methods" do
-
-    it "picks up methods added via self.meth" do
+    it "returns singleton methods defined by obj.meth" do
       KernelSpecs::Methods.methods(false).should include("ichi")
     end
 
-    it "picks up methods added inside 'class << self'" do
+    it "returns singleton methods defined in 'class << self'" do
       KernelSpecs::Methods.methods(false).should include("san")
     end
 
-    it "picks up private methods added via self.meth" do
+    it "returns private singleton methods defined by obj.meth" do
       KernelSpecs::Methods.methods(false).should include("shi")
     end
 
-    it "picks up methods added inside 'class << self' after private" do
+    it "returns singleton methods defined in 'class << self' when it follows 'private'" do
       KernelSpecs::Methods.methods(false).should include("roku")
     end
 
-    it "doesn't pick up methods added inside 'class << self; private'" do
+    it "does not return private singleton methods defined in 'class << self'" do
       KernelSpecs::Methods.methods(false).should_not include("shichi")
     end
 
-    it "returns a list of the names of publicly accessible methods in the object" do
+    it "returns the publicly accessible methods of the object" do
       meths =  KernelSpecs::Methods.methods(false)
-
-      ["hachi", "ichi", "juu", "juu_ichi", "juu_ni", "roku", "san", "shi"].each do|m|
-        meths.should include(m)
-      end
+      meths.should include("hachi", "ichi", "juu", "juu_ichi",
+                           "juu_ni", "roku", "san", "shi")
 
       KernelSpecs::Methods.new.methods(false).should == []
     end
 
-    it "returns a list of the names of publicly accessible methods in the object and its ancestors and mixed-in modules" do
+    it "returns the publicly accessible methods in the object, its ancestors and mixed-in modules" do
       meths = KernelSpecs::Methods.methods(false) & KernelSpecs::Methods.methods
-      ["hachi", "ichi", "juu", "juu_ichi", "juu_ni", "roku", "san", "shi"].each do |m|
-        meths.should include(m)
-      end
+      meths.should include("hachi", "ichi", "juu", "juu_ichi",
+                           "juu_ni", "roku", "san", "shi")
 
-      m = KernelSpecs::Methods.new.methods
-      m.should include('ku')
-      m.should include('ni')
-      m.should include('juu_san')
+      KernelSpecs::Methods.new.methods.should include("ku", "ni", "juu_san")
     end
 
-    it "does not include any .undef'd methods" do
-      o = KernelSpecs::MethodsUndefd.new
+    it "returns methods added to the metaclass through extend" do
+      meth = KernelSpecs::Methods.new
+      meth.methods.should_not include("peekaboo")
+      meth.extend(KernelSpecs::Methods::MetaclassMethods)
+      meth.methods.should include("peekaboo")
+    end
 
+    it "does not return undefined singleton methods defined by obj.meth" do
+      o = KernelSpecs::Child.new
       def o.single; end
-
-      o.methods.should include("all")
       o.methods.should include("single")
 
-      KernelSpecs::MethodsUndefd.send :undef_method, :all
-
-      o.methods.should_not include("all")
-
       class << o; self; end.send :undef_method, :single
-
       o.methods.should_not include("single")
     end
 
-    it "does not include any .undef'd methods even if method is inherited" do
-      o = KernelSpecs::MethodsUndefdChild.new
-      o.methods.should_not include("inh")
+    it "does not return superclass methods undefined in the object's class" do
+      KernelSpecs::Child.new.methods.should_not include("parent_method")
     end
 
+    it "does not return superclass methods undefined in a superclass" do
+      KernelSpecs::Grandchild.new.methods.should_not include("parent_method")
+    end
+
+    it "does not return included module methods undefined in the object's class" do
+      KernelSpecs::Grandchild.new.methods.should_not include("parent_mixin_method")
+    end
   end
 end
 
 # On MRI >= 1.9 #methods returns an Array of Symbols.
 ruby_version_is "1.9" do
   describe "Kernel#methods" do
-
-    it "picks up methods added via self.meth" do
+    it "returns singleton methods defined by obj.meth" do
       KernelSpecs::Methods.methods(false).should include(:ichi)
     end
 
-    it "picks up methods added inside 'class << self'" do
+    it "returns singleton methods defined in 'class << self'" do
       KernelSpecs::Methods.methods(false).should include(:san)
     end
 
-    it "picks up private methods added via self.meth" do
+    it "returns private singleton methods defined by obj.meth" do
       KernelSpecs::Methods.methods(false).should include(:shi)
     end
 
-    it "picks up methods added inside 'class << self' after private" do
+    it "returns singleton methods defined in 'class << self' when it follows 'private'" do
       KernelSpecs::Methods.methods(false).should include(:roku)
     end
 
-    it "doesn't pick up methods added inside 'class << self; private'" do
+    it "does not return private singleton methods defined in 'class << self'" do
       KernelSpecs::Methods.methods(false).should_not include(:shichi)
     end
 
-    it "returns a list of the names of publicly accessible methods in the object" do
+    it "returns the publicly accessible methods of the object" do
       meths =  KernelSpecs::Methods.methods(false)
-
-      [:hachi, :ichi, :juu, :juu_ichi, :juu_ni, :roku, :san, :shi].each do|m|
-        meths.should include(m)
-      end
+      meths.should include(:hachi, :ichi, :juu, :juu_ichi,
+                           :juu_ni, :roku, :san, :shi)
 
       KernelSpecs::Methods.new.methods(false).should == []
     end
 
-    it "returns a list of the names of publicly accessible methods in the object and its ancestors and mixed-in modules" do
+    it "returns the publicly accessible methods in the object, its ancestors and mixed-in modules" do
       meths = KernelSpecs::Methods.methods(false) & KernelSpecs::Methods.methods
-      [:hachi, :ichi, :juu, :juu_ichi, :juu_ni, :roku, :san, :shi].each do |m|
-        meths.should include(m)
-      end
+      meths.should include(:hachi, :ichi, :juu, :juu_ichi,
+                           :juu_ni, :roku, :san, :shi)
 
-      m = KernelSpecs::Methods.new.methods
-      m.should include(:ku)
-      m.should include(:ni)
-      m.should include(:juu_san)
+      KernelSpecs::Methods.new.methods.should include(:ku, :ni, :juu_san)
     end
 
-    it "does not include any .undef'd methods" do
-      o = KernelSpecs::MethodsUndefd.new
+    it "returns methods added to the metaclass through extend" do
+      meth = KernelSpecs::Methods.new
+      meth.methods.should_not include(:peekaboo)
+      meth.extend(KernelSpecs::Methods::MetaclassMethods)
+      meth.methods.should include(:peekaboo)
+    end
 
+    it "does not return undefined singleton methods defined by obj.meth" do
+      o = KernelSpecs::Child.new
       def o.single; end
-
-      o.methods.should include(:all)
       o.methods.should include(:single)
 
-      KernelSpecs::MethodsUndefd.send :undef_method, :all
-
-      o.methods.should_not include(:all)
-
       class << o; self; end.send :undef_method, :single
-
       o.methods.should_not include(:single)
     end
 
-    it "does not include any .undef'd methods even if method is inherited" do
-      o = KernelSpecs::MethodsUndefdChild.new
-      o.methods.should_not include(:inh)
+    it "does not return superclass methods undefined in the object's class" do
+      KernelSpecs::Child.new.methods.should_not include(:parent_method)
     end
 
+    it "does not return superclass methods undefined in a superclass" do
+      KernelSpecs::Grandchild.new.methods.should_not include(:parent_method)
+    end
+
+    it "does not return included module methods undefined in the object's class" do
+      KernelSpecs::Grandchild.new.methods.should_not include(:parent_mixin_method)
+    end
+  end
+end
+
+describe :kernel_methods_supers, :shared => true do
+  before :all do
+    @ms = [stasy(:pro), stasy(:pub)]
+  end
+
+  it "returns a unique list for an object extended by a module" do
+    m = ReflectSpecs.oed.methods(*@object)
+    m.select { |x| @ms.include? x }.sort.should == @ms
+  end
+
+  it "returns a unique list for a class including a module" do
+    m = ReflectSpecs::D.new.methods(*@object)
+    m.select { |x| @ms.include? x }.sort.should == @ms
+  end
+
+  it "returns a unique list for a subclass of a class that includes a module" do
+    m = ReflectSpecs::E.new.methods(*@object)
+    m.select { |x| @ms.include? x }.sort.should == @ms
+  end
+end
+
+describe "Kernel#methods" do
+  describe "when not passed an argument" do
+    it_behaves_like :kernel_methods_supers, nil, []
+  end
+
+  describe "when passed true" do
+    it_behaves_like :kernel_methods_supers, nil, true
   end
 end

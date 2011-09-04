@@ -192,7 +192,7 @@ typedef struct {
   AbsAddrType    call_addr;
   /* for multiple call reference */
   OnigDistance min_len; /* min length (byte) */
-  OnigDistance max_len; /* max length (byte) */ 
+  OnigDistance max_len; /* max length (byte) */
   int char_len;         /* character length  */
   int opt_count;        /* referenced count in optimize_node_left() */
 } EncloseNode;
@@ -306,6 +306,9 @@ typedef struct {
   int curr_max_regnum;
   int has_recursion;
 #endif
+  int warnings_flag;
+  const char* sourcefile;
+  int sourceline;
 } ScanEnv;
 
 

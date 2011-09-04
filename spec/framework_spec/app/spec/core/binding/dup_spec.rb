@@ -1,8 +1,7 @@
-# XXX eval not supported
-#require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-#require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
-#require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/shared/clone'
-#
-#describe "Binding#dup" do
-#  it_behaves_like(:binding_clone, :dup)
-#end
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
+require File.expand_path('../shared/clone', __FILE__)
+
+describe "Binding#dup" do
+  it_behaves_like(:binding_clone, :dup)
+end

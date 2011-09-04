@@ -1,4 +1,4 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../spec_helper'
+require File.expand_path('../../spec_helper', __FILE__)
 
 describe "The redo statement" do
   it "restarts block execution if used within block" do
@@ -62,4 +62,4 @@ describe "The redo statement" do
   end
 end
 
-language_version File.join(__rhoGetCurrentDir(), __FILE__), "redo"
+language_version __FILE__, "redo"

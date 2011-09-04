@@ -11,6 +11,7 @@
 
 #include "ruby/ruby.h"
 #include "ruby/st.h"
+#include "ruby/encoding.h"
 #include "vm_core.h"
 
 #include <stdio.h>
@@ -18,6 +19,8 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+#include <errno.h>
+
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0
 #endif
@@ -33,6 +36,17 @@ int rhoRubyVFPrintf(FILE *, const char *, va_list);
 //RHO
 
 extern const char ruby_description[];
+
+static const char *
+rb_strerrno(int err)
+{
+#define defined_error(name, num) if (err == num) return name;
+#define undefined_error(name)
+#include "known_errors.inc"
+#undef defined_error
+#undef undefined_error
+    return NULL;
+}
 
 static int
 err_position_0(char *buf, long len, const char *file, int line)
@@ -109,7 +123,7 @@ compile_warn_print(const char *file, int line, const char *fmt, va_list args)
     int len;
 
     compile_snprintf(buf, BUFSIZ, file, line, fmt, args);
-    len = strlen(buf);
+    len = (int)strlen(buf);
     buf[len++] = '\n';
     rb_write_error2(buf, len);
 }
@@ -152,7 +166,7 @@ warn_print(const char *fmt, va_list args)
     int len;
 
     err_snprintf(buf, BUFSIZ, fmt, args);
-    len = strlen(buf);
+    len = (int)strlen(buf);
     buf[len++] = '\n';
     rb_write_error2(buf, len);
 }
@@ -190,7 +204,7 @@ rb_warning(const char *fmt, ...)
 
 /*
  * call-seq:
- *    warn(msg)   => nil
+ *    warn(msg)   -> nil
  *
  * Display the given message (followed by a newline) on STDERR unless
  * warnings are disabled (for example with the <code>-W0</code> flag).
@@ -225,8 +239,9 @@ report_bug(const char *file, int line, const char *fmt, va_list args)
 
     rb_vm_bugreport();
 
-/*    if (fwrite(buf, 1, len, out) == len ||
-	fwrite(buf, 1, len, (out = stdout)) == len) {
+/*    
+    if ((ssize_t)fwrite(buf, 1, len, out) == (ssize_t)len ||
+	(ssize_t)fwrite(buf, 1, len, (out = stdout)) == (ssize_t)len) {
 
 	fputs("[BUG] ", out);
 	vfprintf(out, fmt, args);
@@ -236,9 +251,12 @@ report_bug(const char *file, int line, const char *fmt, va_list args)
 
 	fprintf(out,
 		"[NOTE]\n"
-		"You may encounter a bug of Ruby interpreter. Bug reports are welcome.\n"
+		"You may have encountered a bug in the Ruby interpreter"
+		" or extension libraries.\n"
+		"Bug reports are welcome.\n"
 		"For details: http://www.ruby-lang.org/bugreport.html\n\n");
-    }*/
+    }
+*/
 //RHO
 }
 
@@ -251,7 +269,25 @@ rb_bug(const char *fmt, ...)
     report_bug(rb_sourcefile(), rb_sourceline(), fmt, args);
     va_end(args);
 
+#if defined(_WIN32) && defined(RT_VER) && RT_VER >= 80
+    _set_abort_behavior( 0, _CALL_REPORTFAULT);
+#endif
+
     abort();
+}
+
+void
+rb_bug_errno(const char *mesg, int errno_arg)
+{
+    if (errno_arg == 0)
+        rb_bug("%s: errno == 0 (NOERROR)", mesg);
+    else {
+        const char *errno_str = rb_strerrno(errno_arg);
+        if (errno_str)
+            rb_bug("%s: %s (%s)", mesg, strerror(errno_arg), errno_str);
+        else
+            rb_bug("%s: %s (%d)", mesg, strerror(errno_arg), errno_arg);
+    }
 }
 
 void
@@ -301,12 +337,14 @@ rb_check_type(VALUE x, int t)
     const struct types *type = builtin_types;
     const struct types *const typeend = builtin_types +
 	sizeof(builtin_types) / sizeof(builtin_types[0]);
+    int xt;
 
     if (x == Qundef) {
 	rb_bug("undef leaked to the Ruby space");
     }
 
-    if (TYPE(x) != t) {
+    xt = TYPE(x);
+    if (xt != t || (xt == T_DATA && RTYPEDDATA_P(x))) {
 	while (type < typeend) {
 	    if (type->type == t) {
 		const char *etype;
@@ -321,7 +359,8 @@ rb_check_type(VALUE x, int t)
 		    etype = "Symbol";
 		}
 		else if (rb_special_const_p(x)) {
-		    etype = RSTRING_PTR(rb_obj_as_string(x));
+		    x = rb_obj_as_string(x);
+		    etype = StringValuePtr(x);
 		}
 		else {
 		    etype = rb_obj_classname(x);
@@ -335,9 +374,37 @@ rb_check_type(VALUE x, int t)
     }
 }
 
-/* exception classes */
-#include <errno.h>
+int
+rb_typeddata_is_kind_of(VALUE obj, const rb_data_type_t *data_type)
+{
+    if (SPECIAL_CONST_P(obj) || BUILTIN_TYPE(obj) != T_DATA ||
+	!RTYPEDDATA_P(obj) || RTYPEDDATA_TYPE(obj) != data_type) {
+	return 0;
+    }
+    return 1;
+}
 
+void *
+rb_check_typeddata(VALUE obj, const rb_data_type_t *data_type)
+{
+    const char *etype;
+    static const char mesg[] = "wrong argument type %s (expected %s)";
+
+    if (SPECIAL_CONST_P(obj) || BUILTIN_TYPE(obj) != T_DATA) {
+	Check_Type(obj, T_DATA);
+    }
+    if (!RTYPEDDATA_P(obj)) {
+	etype = rb_obj_classname(obj);
+	rb_raise(rb_eTypeError, mesg, etype, data_type->wrap_struct_name);
+    }
+    else if (RTYPEDDATA_TYPE(obj) != data_type) {
+	etype = RTYPEDDATA_TYPE(obj)->wrap_struct_name;
+	rb_raise(rb_eTypeError, mesg, etype, data_type->wrap_struct_name);
+    }
+    return DATA_PTR(obj);
+}
+
+/* exception classes */
 VALUE rb_eException;
 VALUE rb_eSystemExit;
 VALUE rb_eInterrupt;
@@ -367,6 +434,8 @@ VALUE rb_eSystemCallError;
 VALUE rb_mErrno;
 static VALUE rb_eNOERROR;
 
+#undef rb_exc_new2
+
 VALUE
 rb_exc_new(VALUE etype, const char *ptr, long len)
 {
@@ -388,9 +457,9 @@ rb_exc_new3(VALUE etype, VALUE str)
 
 /*
  * call-seq:
- *    Exception.new(msg = nil)   =>  exception
+ *    Exception.new(msg = nil)   ->  exception
  *
- *  Construct a new Exception object, optionally passing in 
+ *  Construct a new Exception object, optionally passing in
  *  a message.
  */
 
@@ -410,13 +479,13 @@ exc_initialize(int argc, VALUE *argv, VALUE exc)
  *  Document-method: exception
  *
  *  call-seq:
- *     exc.exception(string) -> an_exception or exc
- *  
+ *     exc.exception(string)  ->  an_exception or exc
+ *
  *  With no argument, or if the argument is the same as the receiver,
  *  return the receiver. Otherwise, create a new
  *  exception object of the same class as the receiver, but with a
  *  message equal to <code>string.to_str</code>.
- *     
+ *
  */
 
 static VALUE
@@ -434,7 +503,7 @@ exc_exception(int argc, VALUE *argv, VALUE self)
 
 /*
  * call-seq:
- *   exception.to_s   =>  string
+ *   exception.to_s   ->  string
  *
  * Returns exception's message (or the name of the exception if
  * no message is set).
@@ -452,7 +521,7 @@ exc_to_s(VALUE exc)
 
 /*
  * call-seq:
- *   exception.message   =>  string
+ *   exception.message   ->  string
  *
  * Returns the result of invoking <code>exception.to_s</code>.
  * Normally this returns the exception's message or name. By
@@ -468,7 +537,7 @@ exc_message(VALUE exc)
 
 /*
  * call-seq:
- *   exception.inspect   => string
+ *   exception.inspect   -> string
  *
  * Return this exception's class name an message
  */
@@ -496,28 +565,28 @@ exc_inspect(VALUE exc)
 
 /*
  *  call-seq:
- *     exception.backtrace    => array
- *  
+ *     exception.backtrace    -> array
+ *
  *  Returns any backtrace associated with the exception. The backtrace
  *  is an array of strings, each containing either ``filename:lineNo: in
  *  `method''' or ``filename:lineNo.''
- *     
+ *
  *     def a
  *       raise "boom"
  *     end
- *     
+ *
  *     def b
  *       a()
  *     end
- *     
+ *
  *     begin
  *       b()
  *     rescue => detail
  *       print detail.backtrace.join("\n")
  *     end
- *     
+ *
  *  <em>produces:</em>
- *     
+ *
  *     prog.rb:2:in `a'
  *     prog.rb:6:in `b'
  *     prog.rb:10
@@ -556,12 +625,12 @@ rb_check_backtrace(VALUE bt)
 
 /*
  *  call-seq:
- *     exc.set_backtrace(array)   =>  array
- *  
+ *     exc.set_backtrace(array)   ->  array
+ *
  *  Sets the backtrace information associated with <i>exc</i>. The
  *  argument must be an array of <code>String</code> objects in the
  *  format described in <code>Exception#backtrace</code>.
- *     
+ *
  */
 
 static VALUE
@@ -572,10 +641,10 @@ exc_set_backtrace(VALUE exc, VALUE bt)
 
 /*
  *  call-seq:
- *     exc == obj   => true or false
- *  
+ *     exc == obj   -> true or false
+ *
  *  Equality---If <i>obj</i> is not an <code>Exception</code>, returns
- *  <code>false</code>. Otherwise, returns <code>true</code> if <i>exc</i> and 
+ *  <code>false</code>. Otherwise, returns <code>true</code> if <i>exc</i> and
  *  <i>obj</i> share same class, messages, and backtrace.
  */
 
@@ -593,13 +662,10 @@ exc_equal(VALUE exc, VALUE obj)
 	CONST_ID(id_message, "message");
 	CONST_ID(id_backtrace, "backtrace");
 
-	if (rb_respond_to(obj, id_message) && rb_respond_to(obj, id_backtrace)) {
-	    mesg = rb_funcall(obj, id_message, 0, 0);
-	    backtrace = rb_funcall(obj, id_backtrace, 0, 0);
-	}
-	else {
-	    return Qfalse;
-	}
+	mesg = rb_check_funcall(obj, id_message, 0, 0);
+	if (mesg == Qundef) return Qfalse;
+	backtrace = rb_check_funcall(obj, id_backtrace, 0, 0);
+	if (backtrace == Qundef) return Qfalse;
     }
     else {
 	mesg = rb_attr_get(obj, id_mesg);
@@ -615,7 +681,7 @@ exc_equal(VALUE exc, VALUE obj)
 
 /*
  * call-seq:
- *   SystemExit.new(status=0)   => system_exit
+ *   SystemExit.new(status=0)   -> system_exit
  *
  * Create a new +SystemExit+ exception with the given status.
  */
@@ -636,7 +702,7 @@ exit_initialize(int argc, VALUE *argv, VALUE exc)
 
 /*
  * call-seq:
- *   system_exit.status   => fixnum
+ *   system_exit.status   -> fixnum
  *
  * Return the status value associated with this system exit.
  */
@@ -650,7 +716,7 @@ exit_status(VALUE exc)
 
 /*
  * call-seq:
- *   system_exit.success?  => true or false
+ *   system_exit.success?  -> true or false
  *
  * Returns +true+ if exiting successful, +false+ if not.
  */
@@ -681,7 +747,7 @@ rb_name_error(ID id, const char *fmt, ...)
 
 /*
  * call-seq:
- *   NameError.new(msg [, name])  => name_error
+ *   NameError.new(msg [, name])  -> name_error
  *
  * Construct a new NameError exception. If given the <i>name</i>
  * parameter may subsequently be examined using the <code>NameError.name</code>
@@ -701,7 +767,7 @@ name_err_initialize(int argc, VALUE *argv, VALUE self)
 
 /*
  *  call-seq:
- *    name_error.name    =>  string or nil
+ *    name_error.name    ->  string or nil
  *
  *  Return the name associated with this NameError exception.
  */
@@ -714,7 +780,7 @@ name_err_name(VALUE self)
 
 /*
  * call-seq:
- *  name_error.to_s   => string
+ *  name_error.to_s   -> string
  *
  * Produce a nicely-formatted string representing the +NameError+.
  */
@@ -736,7 +802,7 @@ name_err_to_s(VALUE exc)
 
 /*
  * call-seq:
- *   NoMethodError.new(msg, name [, args])  => no_method_error
+ *   NoMethodError.new(msg, name [, args])  -> no_method_error
  *
  * Construct a NoMethodError exception for a method of the given name
  * called with the given arguments. The name may be accessed using
@@ -754,22 +820,45 @@ nometh_err_initialize(int argc, VALUE *argv, VALUE self)
 }
 
 /* :nodoc: */
+#define NAME_ERR_MESG_COUNT 3
+
 static void
-name_err_mesg_mark(VALUE *ptr)
+name_err_mesg_mark(void *p)
 {
-    rb_gc_mark_locations(ptr, ptr+3);
+    VALUE *ptr = p;
+    rb_gc_mark_locations(ptr, ptr+NAME_ERR_MESG_COUNT);
 }
 
-/* :nodoc: */
-static VALUE
-name_err_mesg_new(VALUE obj, VALUE mesg, VALUE recv, VALUE method)
+#define name_err_mesg_free RUBY_TYPED_DEFAULT_FREE
+
+static size_t
+name_err_mesg_memsize(const void *p)
 {
-    VALUE *ptr = ALLOC_N(VALUE, 3);
+    return p ? (NAME_ERR_MESG_COUNT * sizeof(VALUE)) : 0;
+}
+
+static const rb_data_type_t name_err_mesg_data_type = {
+    "name_err_mesg",
+    name_err_mesg_mark,
+    name_err_mesg_free,
+    name_err_mesg_memsize,
+};
+
+/* :nodoc: */
+VALUE
+rb_name_err_mesg_new(VALUE obj, VALUE mesg, VALUE recv, VALUE method)
+{
+    VALUE *ptr = ALLOC_N(VALUE, NAME_ERR_MESG_COUNT);
+    VALUE result;
 
     ptr[0] = mesg;
     ptr[1] = recv;
     ptr[2] = method;
-    return Data_Wrap_Struct(rb_cNameErrorMesg, name_err_mesg_mark, -1, ptr);
+    result = TypedData_Wrap_Struct(rb_cNameErrorMesg, &name_err_mesg_data_type, ptr);
+    RB_GC_GUARD(mesg);
+    RB_GC_GUARD(recv);
+    RB_GC_GUARD(method);
+    return result;
 }
 
 /* :nodoc: */
@@ -783,9 +872,9 @@ name_err_mesg_equal(VALUE obj1, VALUE obj2)
     if (rb_obj_class(obj2) != rb_cNameErrorMesg)
 	return Qfalse;
 
-    Data_Get_Struct(obj1, VALUE, ptr1);
-    Data_Get_Struct(obj2, VALUE, ptr2);
-    for (i=0; i<3; i++) {
+    TypedData_Get_Struct(obj1, VALUE, &name_err_mesg_data_type, ptr1);
+    TypedData_Get_Struct(obj2, VALUE, &name_err_mesg_data_type, ptr2);
+    for (i=0; i<NAME_ERR_MESG_COUNT; i++) {
 	if (!rb_equal(ptr1[i], ptr2[i]))
 	    return Qfalse;
     }
@@ -797,13 +886,13 @@ static VALUE
 name_err_mesg_to_str(VALUE obj)
 {
     VALUE *ptr, mesg;
-    Data_Get_Struct(obj, VALUE, ptr);
+    TypedData_Get_Struct(obj, VALUE, &name_err_mesg_data_type, ptr);
 
     mesg = ptr[0];
     if (NIL_P(mesg)) return Qnil;
     else {
 	const char *desc = 0;
-	VALUE d = 0, args[3];
+	VALUE d = 0, args[NAME_ERR_MESG_COUNT];
 
 	obj = ptr[1];
 	switch (TYPE(obj)) {
@@ -825,14 +914,14 @@ name_err_mesg_to_str(VALUE obj)
 	    break;
 	}
 	if (desc && desc[0] != '#') {
-	    d = rb_str_new2(desc);
+	    d = d ? rb_str_dup(d) : rb_str_new2(desc);
 	    rb_str_cat2(d, ":");
 	    rb_str_cat2(d, rb_obj_classname(obj));
 	}
 	args[0] = mesg;
 	args[1] = ptr[2];
 	args[2] = d;
-	mesg = rb_f_sprintf(3, args);
+	mesg = rb_f_sprintf(NAME_ERR_MESG_COUNT, args);
     }
     if (OBJ_TAINTED(obj)) OBJ_TAINT(mesg);
     return mesg;
@@ -847,7 +936,7 @@ name_err_mesg_load(VALUE klass, VALUE str)
 
 /*
  * call-seq:
- *   no_method_error.args  => obj
+ *   no_method_error.args  -> obj
  *
  * Return the arguments passed in as the third parameter to
  * the constructor.
@@ -862,12 +951,12 @@ nometh_err_args(VALUE self)
 void
 rb_invalid_str(const char *str, const char *type)
 {
-    VALUE s = rb_str_inspect(rb_str_new2(str));
+    volatile VALUE s = rb_str_inspect(rb_str_new2(str));
 
     rb_raise(rb_eArgError, "invalid value for %s: %s", type, RSTRING_PTR(s));
 }
 
-/* 
+/*
  *  Document-module: Errno
  *
  *  Ruby exception objects are subclasses of <code>Exception</code>.
@@ -877,21 +966,21 @@ rb_invalid_str(const char *str, const char *type)
  *  number generating its own subclass of <code>SystemCallError</code>.
  *  As the subclass is created in module <code>Errno</code>, its name
  *  will start <code>Errno::</code>.
- *     
+ *
  *  The names of the <code>Errno::</code> classes depend on
  *  the environment in which Ruby runs. On a typical Unix or Windows
  *  platform, there are <code>Errno</code> classes such as
  *  <code>Errno::EACCES</code>, <code>Errno::EAGAIN</code>,
  *  <code>Errno::EINTR</code>, and so on.
- *     
+ *
  *  The integer operating system error number corresponding to a
  *  particular error is available as the class constant
  *  <code>Errno::</code><em>error</em><code>::Errno</code>.
- *     
+ *
  *     Errno::EACCES::Errno   #=> 13
  *     Errno::EAGAIN::Errno   #=> 11
  *     Errno::EINTR::Errno    #=> 4
- *     
+ *
  *  The full list of operating system errors on your particular platform
  *  are available as the constants of <code>Errno</code>.
  *
@@ -932,7 +1021,7 @@ get_syserr(int n)
 
 /*
  * call-seq:
- *   SystemCallError.new(msg, errno)  => system_call_error_subclass
+ *   SystemCallError.new(msg, errno)  -> system_call_error_subclass
  *
  * If _errno_ corresponds to a known system error code, constructs
  * the appropriate <code>Errno</code> class for that error, otherwise
@@ -968,7 +1057,7 @@ syserr_initialize(int argc, VALUE *argv, VALUE self)
 	rb_scan_args(argc, argv, "01", &mesg);
 	error = rb_const_get(klass, rb_intern("Errno"));
     }
-    if (!NIL_P(error)) err = strerror(NUM2LONG(error));
+    if (!NIL_P(error)) err = strerror(NUM2INT(error));
     else err = "unknown error";
     if (!NIL_P(mesg)) {
 	VALUE str = mesg;
@@ -980,6 +1069,7 @@ syserr_initialize(int argc, VALUE *argv, VALUE self)
     else {
 	mesg = rb_str_new2(err);
     }
+    rb_enc_associate(mesg, rb_locale_encoding());
     rb_call_super(1, &mesg);
     rb_iv_set(self, "errno", error);
     return self;
@@ -987,7 +1077,7 @@ syserr_initialize(int argc, VALUE *argv, VALUE self)
 
 /*
  * call-seq:
- *   system_call_error.errno   => fixnum
+ *   system_call_error.errno   -> fixnum
  *
  * Return this SystemCallError's error number.
  */
@@ -1000,10 +1090,10 @@ syserr_errno(VALUE self)
 
 /*
  * call-seq:
- *   system_call_error === other  => true or false
+ *   system_call_error === other  -> true or false
  *
  * Return +true+ if the receiver is a generic +SystemCallError+, or
- * if the error numbers _self_ and _other_ are the same.
+ * if the error numbers +self+ and _other_ are the same.
  */
 
 static VALUE
@@ -1029,14 +1119,304 @@ syserr_eqq(VALUE self, VALUE exc)
     return Qfalse;
 }
 
+
+/*
+ *  Document-class: StandardError
+ *
+ *  The most standard error types are subclasses of StandardError. A
+ *  rescue clause without an explicit Exception class will rescue all
+ *  StandardErrors (and only those).
+ *
+ *     def foo
+ *       raise "Oups"
+ *     end
+ *     foo rescue "Hello"   #=> "Hello"
+ *
+ *  On the other hand:
+ *
+ *     require 'does/not/exist' rescue "Hi"
+ *
+ *  <em>raises the exception:</em>
+ *
+ *     LoadError: no such file to load -- does/not/exist
+ *
+ */
+
+/*
+ *  Document-class: SystemExit
+ *
+ *  Raised by +exit+ to initiate the termination of the script.
+ */
+
+/*
+ *  Document-class: SignalException
+ *
+ *  Raised when a signal is received.
+ *
+ *     begin
+ *       Process.kill('HUP',Process.pid)
+ *     rescue SignalException => e
+ *       puts "received Exception #{e}"
+ *     end
+ *
+ *  <em>produces:</em>
+ *
+ *     received Exception SIGHUP
+ */
+
+/*
+ *  Document-class: Interrupt
+ *
+ *  Raised with the interrupt signal is received, typically because the
+ *  user pressed on Control-C (on most posix platforms). As such, it is a
+ *  subclass of +SignalException+.
+ *
+ *     begin
+ *       puts "Press ctrl-C when you get bored"
+ *       loop {}
+ *     rescue Interrupt => e
+ *       puts "Note: You will typically use Signal.trap instead."
+ *     end
+ *
+ *  <em>produces:</em>
+ *
+ *     Press ctrl-C when you get bored
+ *
+ *  <em>then waits until it is interrupted with Control-C and then prints:</em>
+ *
+ *     Note: You will typically use Signal.trap instead.
+ */
+
+/*
+ *  Document-class: TypeError
+ *
+ *  Raised when encountering an object that is not of the expected type.
+ *
+ *     [1, 2, 3].first("two")
+ *
+ *  <em>raises the exception:</em>
+ *
+ *     TypeError: can't convert String into Integer
+ *
+ */
+
+/*
+ *  Document-class: ArgumentError
+ *
+ *  Raised when the arguments are wrong and there isn't a more specific
+ *  Exception class.
+ *
+ *  Ex: passing the wrong number of arguments
+ *
+ *     [1, 2, 3].first(4, 5)
+ *
+ *  <em>raises the exception:</em>
+ *
+ *     ArgumentError: wrong number of arguments (2 for 1)
+ *
+ *  Ex: passing an argument that is not acceptable:
+ *
+ *     [1, 2, 3].first(-4)
+ *
+ *  <em>raises the exception:</em>
+ *
+ *     ArgumentError: negative array size
+ */
+
+/*
+ *  Document-class: IndexError
+ *
+ *  Raised when the given index is invalid.
+ *
+ *     a = [:foo, :bar]
+ *     a.fetch(0)   #=> :foo
+ *     a[4]         #=> nil
+ *     a.fetch(4)   #=> IndexError: index 4 outside of array bounds: -2...2
+ *
+ */
+
+/*
+ *  Document-class: KeyError
+ *
+ *  Raised when the specified key is not found. It is a subclass of
+ *  IndexError.
+ *
+ *     h = {"foo" => :bar}
+ *     h.fetch("foo") #=> :bar
+ *     h.fetch("baz") #=> KeyError: key not found: "baz"
+ *
+ */
+
+/*
+ *  Document-class: RangeError
+ *
+ *  Raised when a given numerical value is out of range.
+ *
+ *     [1, 2, 3].drop(1 << 100)
+ *
+ *  <em>raises the exception:</em>
+ *
+ *     RangeError: bignum too big to convert into `long'
+ */
+
+/*
+ *  Document-class: ScriptError
+ *
+ *  ScriptError is the superclass for errors raised when a script
+ *  can not be executed because of a +LoadError+,
+ *  +NotImplementedError+ or a +SyntaxError+. Note these type of
+ *  +ScriptErrors+ are not +StandardError+ and will not be
+ *  rescued unless it is specified explicitly (or its ancestor
+ *  +Exception+).
+ */
+
+/*
+ *  Document-class: SyntaxError
+ *
+ *  Raised when encountering Ruby code with an invalid syntax.
+ *
+ *     eval("1+1=2")
+ *
+ *  <em>raises the exception:</em>
+ *
+ *     SyntaxError: (eval):1: syntax error, unexpected '=', expecting $end
+ */
+
+/*
+ *  Document-class: LoadError
+ *
+ *  Raised when a file required (a Ruby script, extension library, ...)
+ *  fails to load.
+ *
+ *     require 'this/file/does/not/exist'
+ *
+ *  <em>raises the exception:</em>
+ *
+ *     LoadError: no such file to load -- this/file/does/not/exist
+ */
+
+/*
+ *  Document-class: NotImplementedError
+ *
+ *  Raised when a feature is not implemented on the current platform. For
+ *  example, methods depending on the +fsync+ or +fork+ system calls may
+ *  raise this exception if the underlying operating system or Ruby
+ *  runtime does not support them.
+ *
+ *  Note that if +fork+ raises a +NotImplementedError+, then
+ *  <code>respond_to?(:fork)</code> returns +false+.
+ */
+
+/*
+ *  Document-class: NameError
+ *
+ *  Raised when a given name is invalid or undefined.
+ *
+ *     puts foo
+ *
+ *  <em>raises the exception:</em>
+ *
+ *     NameError: undefined local variable or method `foo' for main:Object
+ *
+ *  Since constant names must start with a capital:
+ *
+ *     Fixnum.const_set :answer, 42
+ *
+ *  <em>raises the exception:</em>
+ *
+ *     NameError: wrong constant name answer
+ */
+
+/*
+ *  Document-class: NoMethodError
+ *
+ *  Raised when a method is called on a receiver which doesn't have it
+ *  defined and also fails to respond with +method_missing+.
+ *
+ *     "hello".to_ary
+ *
+ *  <em>raises the exception:</em>
+ *
+ *     NoMethodError: undefined method `to_ary' for "hello":String
+ */
+
+/*
+ *  Document-class: RuntimeError
+ *
+ *  A generic error class raised when an invalid operation is attempted.
+ *
+ *     [1, 2, 3].freeze << 4
+ *
+ *  <em>raises the exception:</em>
+ *
+ *     RuntimeError: can't modify frozen array
+ *
+ *  Kernel.raise will raise a RuntimeError if no Exception class is
+ *  specified.
+ *
+ *     raise "ouch"
+ *
+ *  <em>raises the exception:</em>
+ *
+ *     RuntimeError: ouch
+ */
+
+/*
+ *  Document-class: SecurityError
+ *
+ *  Raised when attempting a potential unsafe operation, typically when
+ *  the $SAFE level is raised above 0.
+ *
+ *     foo = "bar"
+ *     proc = Proc.new do
+ *       $SAFE = 4
+ *       foo.gsub! "a", "*"
+ *     end
+ *     proc.call
+ *
+ *  <em>raises the exception:</em>
+ *
+ *     SecurityError: Insecure: can't modify string
+ */
+
+/*
+ *  Document-class: NoMemoryError
+ *
+ *  Raised when memory allocation fails.
+ */
+
+/*
+ *  Document-class: SystemCallError
+ *
+ *  SystemCallError is the base class for all low-level
+ *  platform-dependent errors.
+ *
+ *  The errors available on the current platform are subclasses of
+ *  SystemCallError and are defined in the Errno module.
+ *
+ *     File.open("does/not/exist")
+ *
+ *  <em>raises the exception:</em>
+ *
+ *     Errno::ENOENT: No such file or directory - does/not/exist
+ */
+
+/*
+ *  Document-class: Encoding::CompatibilityError
+ *
+ *  Raised by Encoding and String methods when the source encoding is
+ *  incompatible with the target encoding.
+ */
+
 /*
  *  Descendants of class <code>Exception</code> are used to communicate
  *  between <code>raise</code> methods and <code>rescue</code>
  *  statements in <code>begin/end</code> blocks. <code>Exception</code>
  *  objects carry information about the exception---its type (the
  *  exception's class name), an optional descriptive string, and
- *  optional traceback information. Programs may subclass 
- *  <code>Exception</code> to add additional information.
+ *  optional traceback information. Programs may subclass
+ *  <code>Exception</code>, or more typically <code>StandardError</code>
+ *  to provide custom classes and add additional information.
  */
 
 void
@@ -1079,7 +1459,7 @@ Init_Exception(void)
     rb_define_method(rb_eNameError, "name", name_err_name, 0);
     rb_define_method(rb_eNameError, "to_s", name_err_to_s, 0);
     rb_cNameErrorMesg = rb_define_class_under(rb_eNameError, "message", rb_cData);
-    rb_define_singleton_method(rb_cNameErrorMesg, "!", name_err_mesg_new, 3);
+    rb_define_singleton_method(rb_cNameErrorMesg, "!", rb_name_err_mesg_new, NAME_ERR_MESG_COUNT);
     rb_define_method(rb_cNameErrorMesg, "==", name_err_mesg_equal, 1);
     rb_define_method(rb_cNameErrorMesg, "to_str", name_err_mesg_to_str, 0);
     rb_define_method(rb_cNameErrorMesg, "_dump", name_err_mesg_to_str, 1);
@@ -1124,7 +1504,7 @@ rb_loaderror(const char *fmt, ...)
     VALUE mesg;
 
     va_start(args, fmt);
-    mesg = rb_vsprintf(fmt, args);
+    mesg = rb_enc_vsprintf(rb_locale_encoding(), fmt, args);
     va_end(args);
     rb_exc_raise(rb_exc_new3(rb_eLoadError, mesg));
 }
@@ -1150,8 +1530,8 @@ rb_fatal(const char *fmt, ...)
     rb_exc_fatal(rb_exc_new3(rb_eFatal, mesg));
 }
 
-void
-rb_sys_fail(const char *mesg)
+static VALUE
+make_errno_exc(const char *mesg)
 {
     int n = errno;
     VALUE arg;
@@ -1162,7 +1542,21 @@ rb_sys_fail(const char *mesg)
     }
 
     arg = mesg ? rb_str_new2(mesg) : Qnil;
-    rb_exc_raise(rb_class_new_instance(1, &arg, get_syserr(n)));
+    return rb_class_new_instance(1, &arg, get_syserr(n));
+}
+
+void
+rb_sys_fail(const char *mesg)
+{
+    rb_exc_raise(make_errno_exc(mesg));
+}
+
+void
+rb_mod_sys_fail(VALUE mod, const char *mesg)
+{
+    VALUE exc = make_errno_exc(mesg);
+    rb_extend_object(exc, mod);
+    rb_exc_raise(exc);
 }
 
 void
@@ -1203,10 +1597,15 @@ rb_check_frozen(VALUE obj)
     if (OBJ_FROZEN(obj)) rb_error_frozen(rb_obj_classname(obj));
 }
 
-void Init_syserr(void)
+void
+Init_syserr(void)
 {
     rb_eNOERROR = set_syserr(0, "NOERROR");
+#define defined_error(name, num) set_syserr(num, name);
+#define undefined_error(name) set_syserr(0, name);
 #include "known_errors.inc"
+#undef defined_error
+#undef undefined_error
 }
 
 static void

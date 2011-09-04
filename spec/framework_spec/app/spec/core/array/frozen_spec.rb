@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Array#frozen?" do
   it "returns true if array is frozen" do
@@ -9,22 +9,24 @@ describe "Array#frozen?" do
     a.frozen?.should == true
   end
 
-  ruby_version_is "" .. "1.9" do
-    it "returns true for an array being sorted by #sort!" do
-      a = [1, 2, 3]
-      a.sort! { |x,y| a.frozen?.should == true; x <=> y }
+  not_compliant_on :rubinius do
+    ruby_version_is "" .. "1.9" do
+      it "returns true for an array being sorted by #sort!" do
+        a = [1, 2, 3]
+        a.sort! { |x,y| a.frozen?.should == true; x <=> y }
+      end
     end
-  end
 
-  ruby_version_is "1.9" do
-    it "returns false for an array being sorted by #sort!" do
-      a = [1, 2, 3]
-      a.sort! { |x,y| a.frozen?.should == false; x <=> y }
+    ruby_version_is "1.9" do
+      it "returns false for an array being sorted by #sort!" do
+        a = [1, 2, 3]
+        a.sort! { |x,y| a.frozen?.should == false; x <=> y }
+      end
     end
-  end
 
-  it "returns false for an array being sorted by #sort" do
-    a = [1, 2, 3]
-    a.sort { |x,y| a.frozen?.should == false; x <=> y }
+    it "returns false for an array being sorted by #sort" do
+      a = [1, 2, 3]
+      a.sort { |x,y| a.frozen?.should == false; x <=> y }
+    end
   end
 end

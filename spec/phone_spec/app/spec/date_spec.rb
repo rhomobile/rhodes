@@ -3,6 +3,18 @@ require 'time'
 
 describe "DateTime" do
 
+  it "should parse date after 2038" do
+    res = Time.strptime("20400804",'%Y%m%d')
+    res.year.should == 2040
+    res.month.should == 8
+    res.day.should == 4
+    
+    res1 = Time.parse("08/04/2040")
+    res1.year.should == 2040
+    res1.month.should == 4
+    res1.day.should == 8
+  end
+
   it "should parse datetime" do
     str = "2010-07-08T12:14:20Z"
     

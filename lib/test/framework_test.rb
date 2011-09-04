@@ -11,7 +11,7 @@ class SpecRunner < MSpecScript
     config[:files] = []
 
     # turn on exception backtrace
-    MSpec.backtrace = false
+    #MSpec.backtrace = false
 
     #Run all the framework specs we can from the spec app
     spec_folder = File.expand_path(File.dirname(__FILE__) + "/../../spec/framework_spec/app/spec")

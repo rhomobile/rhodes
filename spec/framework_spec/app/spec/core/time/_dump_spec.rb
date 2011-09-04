@@ -1,8 +1,9 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/methods'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/methods', __FILE__)
 
 describe "Time#_dump" do
   before :each do
+    @local = Time.at(946812800)
     @t = Time.at(946812800)
     @t = @t.gmtime
     @s = @t._dump
@@ -13,6 +14,10 @@ describe "Time#_dump" do
       @t.gmt?.should == true
       dump = @t._dump.unpack("VV").first
       ((dump >> 30) & 0x1).should == 1
+
+      @local.gmt?.should == false
+      dump = @local._dump.unpack("VV").first
+      ((dump >> 30) & 0x1).should == 0
     end
 
     it "dumps a Time object to a bytestring" do
@@ -37,6 +42,12 @@ describe "Time#_dump" do
            @t.sec  << 20 |
            @t.usec
     low.should == @s.unpack("VV").last
+  end
+
+  it "dumps like MRI's marshaled time format" do
+    t = Time.utc(2000, 1, 15, 20, 1, 1, 203).localtime
+
+    t._dump.should == "\364\001\031\200\313\000\020\004"
   end
 end
 

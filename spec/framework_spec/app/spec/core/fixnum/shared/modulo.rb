@@ -5,15 +5,15 @@ describe :fixnum_modulo, :shared => true do
 
     13.send(@method, 4.0).should == 1
     4.send(@method, 13.0).should == 4
-    
+
     (-200).send(@method, 256).should == 56
     (-1000).send(@method, 512).should == 24
-    
+
     (-200).send(@method, -256).should == -200
     (-1000).send(@method, -512).should == -488
 
     (200).send(@method, -256).should == -56
-    (1000).send(@method, -512).should == -24    
+    (1000).send(@method, -512).should == -24
 
     1.send(@method, 2.0).should == 1.0
     200.send(@method, bignum_value).should == 200
@@ -25,10 +25,20 @@ describe :fixnum_modulo, :shared => true do
     lambda { -10.send(@method, 0) }.should raise_error(ZeroDivisionError)
   end
 
-  it "does not raise a FloatDomainError when the given argument is 0 and a Float" do
-    0.send(@method, 0.0).to_s.should == "NaN" 
-    10.send(@method, 0.0).to_s.should == "NaN" 
-    -10.send(@method, 0.0).to_s.should == "NaN" 
+  ruby_version_is ""..."1.9" do
+    it "does not raise a FloatDomainError when the given argument is 0 and a Float" do
+      0.send(@method, 0.0).to_s.should == "NaN"
+      10.send(@method, 0.0).to_s.should == "NaN"
+      -10.send(@method, 0.0).to_s.should == "NaN"
+    end
+  end
+
+  ruby_version_is "1.9" do
+    it "raises a ZeroDivisionError when the given argument is 0 and a Float" do
+      lambda { 0.send(@method, 0.0) }.should raise_error(ZeroDivisionError)
+      lambda { 10.send(@method, 0.0) }.should raise_error(ZeroDivisionError)
+      lambda { -10.send(@method, 0.0) }.should raise_error(ZeroDivisionError)
+    end
   end
 
   it "raises a TypeError when given a non-Integer" do

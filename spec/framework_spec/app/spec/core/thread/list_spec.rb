@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Thread::list" do
   it "includes the current and main thread" do
@@ -17,10 +17,15 @@ describe "Thread::list" do
     c = Channel.new
     t = Thread.new { c.receive }
     begin
+      Thread.pass while t.status and t.status != 'sleep'
       Thread.list.should include(t)
     ensure
       c << nil
       t.join
     end
   end
+end
+
+describe "Thread.list" do
+  it "needs to be reviewed for spec completeness"
 end

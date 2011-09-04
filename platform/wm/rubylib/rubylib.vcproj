@@ -208,7 +208,7 @@
 				ExecutionBucket="7"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\shared\ruby\.;..\..\shared\ruby\include;..\..\shared\ruby\wince;..\..\shared\ruby\wince\sys;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\shared\ruby\rhoruby;..\..\shared"
-				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);BUFSIZ=512;TLS_OUT_OF_INDEXES=0xFFFFFFFF;FILENAME_MAX=MAX_PATH;STATIC_LINKED"
+				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);BUFSIZ=512;TLS_OUT_OF_INDEXES=0xFFFFFFFF;FILENAME_MAX=MAX_PATH;STATIC_LINKED;RUBY_EXPORT"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
@@ -282,7 +282,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\shared\ruby\.;..\..\shared\ruby\include;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\shared"
-				PreprocessorDefinitions="_DEBUG;DEBUG;WIN32;_WINDOWS;_LIB;BUFSIZ=512;TLS_OUT_OF_INDEXES=0xFFFFFFFF;FILENAME_MAX=MAX_PATH;STATIC_LINKED"
+				PreprocessorDefinitions="_DEBUG;DEBUG;WIN32;_WINDOWS;_LIB;BUFSIZ=512;TLS_OUT_OF_INDEXES=0xFFFFFFFF;FILENAME_MAX=MAX_PATH;STATIC_LINKED;RUBY_EXPORT"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
@@ -495,7 +495,7 @@
 				ExecutionBucket="7"
 				Optimization="2"
 				AdditionalIncludeDirectories="..\..\shared\ruby\.;..\..\shared\ruby\include;..\..\shared\ruby\wince;..\..\shared\ruby\wince\sys;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\shared\ruby\rhoruby;..\..\shared"
-				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);BUFSIZ=512;TLS_OUT_OF_INDEXES=0xFFFFFFFF;FILENAME_MAX=MAX_PATH;STATIC_LINKED"
+				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);BUFSIZ=512;TLS_OUT_OF_INDEXES=0xFFFFFFFF;FILENAME_MAX=MAX_PATH;STATIC_LINKED;RUBY_EXPORT"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="0"
@@ -568,7 +568,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				AdditionalIncludeDirectories="..\..\shared\ruby\.;..\..\shared\ruby\include;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\shared"
-				PreprocessorDefinitions="_NDEBUG;NDEBUG;WIN32;_WINDOWS;_LIB;BUFSIZ=512;TLS_OUT_OF_INDEXES=0xFFFFFFFF;FILENAME_MAX=MAX_PATH;STATIC_LINKED"
+				PreprocessorDefinitions="_NDEBUG;NDEBUG;WIN32;_WINDOWS;_LIB;BUFSIZ=512;TLS_OUT_OF_INDEXES=0xFFFFFFFF;FILENAME_MAX=MAX_PATH;STATIC_LINKED;RUBY_EXPORT"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="0"
@@ -859,7 +859,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\shared\ruby\.;..\..\shared\ruby\include;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\shared"
-				PreprocessorDefinitions="RHODES_EMULATOR;_DEBUG;DEBUG;WIN32;_WINDOWS;_LIB;BUFSIZ=512;TLS_OUT_OF_INDEXES=0xFFFFFFFF;FILENAME_MAX=MAX_PATH;STATIC_LINKED"
+				PreprocessorDefinitions="RHODES_EMULATOR;_DEBUG;DEBUG;WIN32;_WINDOWS;_LIB;BUFSIZ=512;TLS_OUT_OF_INDEXES=0xFFFFFFFF;FILENAME_MAX=MAX_PATH;STATIC_LINKED;RUBY_EXPORT"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
 				TreatWChar_tAsBuiltInType="false"
@@ -1149,7 +1149,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				AdditionalIncludeDirectories="..\..\shared\ruby\.;..\..\shared\ruby\include;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\shared"
-				PreprocessorDefinitions="RHODES_EMULATOR;_NDEBUG;NDEBUG;WIN32;_WINDOWS;_LIB;BUFSIZ=512;TLS_OUT_OF_INDEXES=0xFFFFFFFF;FILENAME_MAX=MAX_PATH;STATIC_LINKED"
+				PreprocessorDefinitions="RHODES_EMULATOR;_NDEBUG;NDEBUG;WIN32;_WINDOWS;_LIB;BUFSIZ=512;TLS_OUT_OF_INDEXES=0xFFFFFFFF;FILENAME_MAX=MAX_PATH;STATIC_LINKED;RUBY_EXPORT"
 				RuntimeLibrary="0"
 				TreatWChar_tAsBuiltInType="false"
 				UsePrecompiledHeader="0"
@@ -1654,10 +1654,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\ruby\blockinlining.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\shared\ruby\class.c"
 				>
 			</File>
@@ -1695,6 +1691,10 @@
 			</File>
 			<File
 				RelativePath="..\..\shared\ruby\dln.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\ruby\dln_find.c"
 				>
 			</File>
 			<File
@@ -1767,6 +1767,10 @@
 			</File>
 			<File
 				RelativePath="..\..\shared\ruby\math.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\ruby\node.c"
 				>
 			</File>
 			<File
@@ -2106,6 +2110,10 @@
 				>
 				<File
 					RelativePath="..\..\shared\ruby\enc\ascii.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\shared\ruby\enc\iso_8859_9.c"
 					>
 				</File>
 				<File

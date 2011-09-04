@@ -1,7 +1,7 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/shared/write'
-
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
+require File.expand_path('../shared/write', __FILE__)
+=begin
 describe "IO#write_nonblock on a file" do
   before :each do
     @filename = tmp("IO_syswrite_file") + $$.to_s
@@ -15,7 +15,7 @@ describe "IO#write_nonblock on a file" do
   after :each do
     @file.close
     @readonly_file.close
-    File.delete(@filename)
+    rm_r @filename
   end
 
   it "writes all of the string's bytes but does not buffer them" do
@@ -37,3 +37,4 @@ end
 describe "IO#write_nonblock" do
   it_behaves_like :io_write, :write_nonblock
 end
+=end

@@ -1,8 +1,8 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../../spec_helper'
+require File.expand_path('../../../../spec_helper', __FILE__)
 
 require 'digest/md5'
 
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/shared/constants'
+require File.expand_path('../shared/constants', __FILE__)
 
 describe "Digest::MD5#to_s" do
 

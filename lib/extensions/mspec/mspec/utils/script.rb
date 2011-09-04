@@ -141,6 +141,7 @@ class MSpecScript
   def signals
     if config[:abort]
       Signal.trap "INT" do
+        MSpec.actions :abort
         puts "\nProcess aborted!"
         exit! 1
       end
@@ -161,10 +162,9 @@ class MSpecScript
   #
   # If unable to resolve +partial+, returns <tt>Dir[partial]</tt>.
   def entries(partial)
-    file = partial + "_spec.iseq"
+    file = partial + "_spec.rb"
     patterns = [partial]
     patterns << file
-    puts "file: #{file}"
     if config[:prefix]
       patterns << File.join(config[:prefix], partial)
       patterns << File.join(config[:prefix], file)
@@ -172,9 +172,9 @@ class MSpecScript
 
     patterns.each do |pattern|
       expanded = File.expand_path(pattern)
-      return [pattern] if File.file?(expanded)
+      return [expanded] if File.file?(expanded)
 
-      specs = File.join(pattern, "/**/*_spec.iseq")
+      specs = File.join(pattern, "/**/*_spec.rb")
       specs = File.expand_path(specs) rescue specs
       return Dir[specs].sort if File.directory?(expanded)
     end

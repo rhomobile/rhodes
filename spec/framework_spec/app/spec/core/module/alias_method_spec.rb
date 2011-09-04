@@ -1,12 +1,12 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Module#alias_method" do
   before(:each) do
     @class = Class.new(ModuleSpecs::Aliasing)
-    @object = @class.new 
+    @object = @class.new
   end
-  
+
   it "makes a copy of the method" do
     @class.make_alias :uno, :public_one
     @class.make_alias :double, :public_two
@@ -23,12 +23,18 @@ describe "Module#alias_method" do
     @class.make_alias :protected_ichi, :protected_one
     lambda { @object.protected_ichi }.should raise_error(NameError)
   end
-  
+
+  it "handles aliasing a stub that changes visibility" do
+    @class.__send__ :public, :private_one
+    @class.make_alias :was_private_one, :private_one
+    @object.was_private_one.should == 1
+  end
+
   it "fails if origin method not found" do
     lambda { @class.make_alias :ni, :san }.should raise_error(NameError)
   end
 
-  it "converts a non string/symbol/fixnum name to string using to_str" do
+  it "converts the names using #to_str" do
     @class.make_alias "un", "public_one"
     @class.make_alias :deux, "public_one"
     @class.make_alias "trois", :public_one
@@ -50,10 +56,16 @@ describe "Module#alias_method" do
   it "works in module" do
     ModuleSpecs::Allonym.new.publish.should == :report
   end
-  
+
   it "works on private module methods in a module that has been reopened" do
     ModuleSpecs::ReopeningModule.foo.should == true
     lambda { ModuleSpecs::ReopeningModule.foo2 }.should_not raise_error(NoMethodError)
   end
-  
+
+  it "accesses a method defined on Object from Kernel" do
+    Kernel.should_not have_public_instance_method(:module_specs_public_method_on_object)
+
+    Kernel.should have_public_instance_method(:module_specs_alias_on_kernel)
+    Object.should have_public_instance_method(:module_specs_alias_on_kernel)
+  end
 end

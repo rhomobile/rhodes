@@ -1,6 +1,16 @@
+#ifdef _WIN32_WCE
+#ifndef CONFIG_RUBY_H
+#include "../../wince/ruby/config.h"
+#endif
+#else
+#ifndef CONFIG_RUBY_H
+#define CONFIG_RUBY_H 1
+
 #if !((_MSC_VER == 1400)||(_MSC_VER == 1500))
 #error MSC version unmatch: _MSC_VER: 1400 or 1500 is expected.
 #endif
+//#define WIN95 0
+#define RT_VER 80
 #define STDC_HEADERS 1
 #define HAVE_SYS_TYPES_H 1
 #define HAVE_SYS_STAT_H 1
@@ -20,9 +30,13 @@
 #define SIZEOF_FLOAT 4
 #define SIZEOF_DOUBLE 8
 #define SIZEOF_TIME_T 8
+#define TIMET2NUM(v) LL2NUM(v)
+#define NUM2TIMET(v) NUM2LL(v)
 #define SIZEOF_RLIM_T 0
 #define SIZEOF_SIZE_T 4
 #define SIZEOF_PTRDIFF_T 4
+#define SIZEOF_INTPTR_T 4
+#define SIZEOF_UINTPTR_T 4
 #define HAVE_PROTOTYPES 1
 #define TOKEN_PASTE(x,y) x##y
 #define HAVE_STDARG_PROTOTYPES 1
@@ -32,7 +46,9 @@
 #define FUNC_STDCALL(x) __stdcall x
 #define FUNC_CDECL(x) __cdecl x
 #define FUNC_FASTCALL(x) __fastcall x
+//RHO
 #define RUBY_EXTERN //extern __declspec(dllimport)
+//RHO
 #define HAVE_DECL_SYS_NERR 1
 #define HAVE_LIMITS_H 1
 #define HAVE_FCNTL_H 1
@@ -43,27 +59,49 @@
 #define rb_uid_t int
 #define HAVE_STRUCT_STAT_ST_RDEV 1
 #define HAVE_ST_RDEV 1
+#define HAVE_INT8_T 1
 #define int8_t signed char
 #define HAVE_UINT8_T 1
 #define uint8_t unsigned char
+#define SIZEOF_INT8_T 1
+#define SIZEOF_UINT8_T 1
+#define INT8_MIN _I8_MIN
+#define INT8_MAX _I8_MAX
+#define UINT8_MAX _UI8_MAX
 #define HAVE_INT16_T 1
 #define int16_t short
 #define HAVE_UINT16_T 1
 #define uint16_t unsigned short
+#define SIZEOF_INT16_T 2
+#define SIZEOF_UINT16_T 2
+#define INT16_MIN _I16_MIN
+#define INT16_MAX _I16_MAX
+#define UINT16_MAX _UI16_MAX
 #define HAVE_INT32_T 1
 #define int32_t int
 #define HAVE_UINT32_T 1
 #define uint32_t unsigned int
-#define HAVE_INT64_T HAVE_LONG_LONG
+#define SIZEOF_INT32_T 4
+#define SIZEOF_UINT32_T 4
+#define INT32_MIN _I32_MIN
+#define INT32_MAX _I32_MAX
+#define UINT32_MAX _UI32_MAX
+#define HAVE_INT64_T 1
 #define int64_t __int64
-#define HAVE_UINT64_T HAVE_LONG_LONG
+#define HAVE_UINT64_T 1
 #define uint64_t unsigned __int64
+#define SIZEOF_INT64_T 8
+#define SIZEOF_UINT64_T 8
+#define INT64_MIN _I64_MIN
+#define INT64_MAX _I64_MAX
+#define UINT64_MAX _UI64_MAX
 #define HAVE_INTPTR_T 1
 #define HAVE_UINTPTR_T 1
 #define HAVE_SSIZE_T 1
 #define ssize_t int
 #define GETGROUPS_T int
 #define RETSIGTYPE void
+#define TYPEOF_TIMEVAL_TV_SEC long
 #define HAVE_ALLOCA 1
 #define HAVE_DUP2 1
 #define HAVE_MEMCMP 1
@@ -102,6 +140,7 @@
 #define HAVE_COSH 1
 #define HAVE_SINH 1
 #define HAVE_TANH 1
+#define HAVE_SIGNBIT 1
 #define HAVE_TZNAME 1
 #define HAVE_DAYLIGHT 1
 #define SETPGRP_VOID 1
@@ -117,28 +156,27 @@
 #define STACK_GROW_DIRECTION -1
 #define CANONICALIZATION_FOR_MATHN 1
 #define DEFAULT_KCODE KCODE_NONE
+#define LOAD_RELATIVE 1
 #define DLEXT ".so"
-#define RUBY_LIB "/lib"
-#define RUBY_SITE_LIB "/apps"
-#define RUBY_SITE_LIB2 "/apps/app"
-#define RUBY_VENDOR_LIB "/lib"
-#define RUBY_VENDOR_LIB2 "/lib"
+#define EXECUTABLE_EXTS ".exe",".com",".cmd",".bat"
+#define RUBY_LIB_VERSION_STYLE 3	/* full */
+//RHO
+#define RUBY_LIB_PREFIX "" //"/lib/ruby"
+//RHO
 #define RUBY_PLATFORM "i386-mswin32_80"
-#define RUBY_ARCHLIB "/lib"
-#define RUBY_SITE_ARCHLIB "/lib"
-#define RUBY_VENDOR_ARCHLIB "/lib"
-#define LIBRUBY_SO "msvcr80-ruby190.dll"
-
-#define HAVE_GETADDRINFO 1
-#define RUBY_EXPORT 1
-//#define CPDEBUG 2
-#define HAVE_SOCKADDR_STORAGE 1
-#define HAVE_GAI_STRERROR 1
-
-#include "tcmalloc/rhomem.h"
-
+#define RUBY_SITEARCH "i386-msvcr80"
+#define RUBY_COREDLL "msvcr80"
+#define LIBRUBY_SO "msvcr80-ruby191.dll"
 #if 0
 !if "msvcr80-ruby191"!="$(RUBY_SO_NAME)" || "i386-mswin32_80"!="$(ARCH)-$(PLATFORM)"
 config.h: nul
 !endif
+#endif
+
+//RHO
+#define RUBY_EXPORT 1
+#define HAVE_SOCKADDR_STORAGE 1
+#define HAVE_GETADDRINFO 1
+//RHO
+#endif
 #endif

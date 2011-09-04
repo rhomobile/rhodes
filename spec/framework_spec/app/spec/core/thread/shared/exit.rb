@@ -13,7 +13,7 @@ describe :thread_exit, :shared => true do
     sleeping_thread.join
     ScratchPad.recorded.should == nil
   end
-  
+
   it "kills current thread" do
     thread = Thread.new do
       Thread.current.send(@method)
@@ -22,7 +22,7 @@ describe :thread_exit, :shared => true do
     thread.join
     ScratchPad.recorded.should == nil
   end
-  
+
   it "runs ensure clause" do
     thread = ThreadSpecs.dying_thread_ensures(@method) { ScratchPad.record :in_ensure_clause }
     thread.join
@@ -54,13 +54,13 @@ describe :thread_exit, :shared => true do
     ScratchPad.recorded.should include(:inner_ensure_clause)
     ScratchPad.recorded.should include(:outer_ensure_clause)
   end
-  
+
   it "does not set $!" do
     thread = ThreadSpecs.dying_thread_ensures(@method) { ScratchPad.record $! }
     thread.join
     ScratchPad.recorded.should == nil
   end
-   
+
   it "cannot be rescued" do
     thread = Thread.new do
       begin
@@ -70,19 +70,23 @@ describe :thread_exit, :shared => true do
       end
      ScratchPad.record :end_of_thread_block
     end
-    
+
     thread.join
     ScratchPad.recorded.should == nil
   end
-  
-  it "killing dying sleeping thread wakes up thread" do
-    t = ThreadSpecs.dying_thread_ensures { Thread.stop; ScratchPad.record :after_stop }
-    Thread.pass while t.status and t.status != "sleep"
-    t.send(@method)
-    t.join
-    ScratchPad.recorded.should == :after_stop
+
+  ruby_version_is "" ... "1.9" do
+    it "killing dying sleeping thread wakes up thread" do
+      t = ThreadSpecs.dying_thread_ensures { Thread.stop; ScratchPad.record :after_stop }
+      Thread.pass while t.status and t.status != "sleep"
+      t.send(@method)
+      t.join
+      ScratchPad.recorded.should == :after_stop
+    end
   end
-  
+
+  # This spec is a mess. It fails randomly, it hangs on MRI, it needs to be removed
+  quarantine! do
   it "killing dying running does nothing" do
     in_ensure_clause = false
     exit_loop = true
@@ -91,29 +95,33 @@ describe :thread_exit, :shared => true do
       loop { if exit_loop then break end }
       ScratchPad.record :after_stop
     end
-    
+
     Thread.pass until in_ensure_clause == true
     10.times { t.send(@method); Thread.pass }
     exit_loop = true
     t.join
     ScratchPad.recorded.should == :after_stop
   end
-  
-  it "propogates inner exception to Thread.join if there is an outer ensure clause" do
-    thread = ThreadSpecs.dying_thread_with_outer_ensure(@method) { }
-    lambda { thread.join }.should raise_error(RuntimeError, "In dying thread")
   end
-  
-  it "runs all outer ensure clauses even if inner ensure clause raises exception" do
-    thread = ThreadSpecs.join_dying_thread_with_outer_ensure(@method) { ScratchPad.record :in_outer_ensure_clause }
-    ScratchPad.recorded.should == :in_outer_ensure_clause
+
+  quarantine! do
+
+    it "propogates inner exception to Thread.join if there is an outer ensure clause" do
+      thread = ThreadSpecs.dying_thread_with_outer_ensure(@method) { }
+      lambda { thread.join }.should raise_error(RuntimeError, "In dying thread")
+    end
+
+    it "runs all outer ensure clauses even if inner ensure clause raises exception" do
+      thread = ThreadSpecs.join_dying_thread_with_outer_ensure(@method) { ScratchPad.record :in_outer_ensure_clause }
+      ScratchPad.recorded.should == :in_outer_ensure_clause
+    end
+
+    it "sets $! in outer ensure clause if inner ensure clause raises exception" do
+      thread = ThreadSpecs.join_dying_thread_with_outer_ensure(@method) { ScratchPad.record $! }
+      ScratchPad.recorded.to_s.should == "In dying thread"
+    end
   end
-  
-  it "sets $! in outer ensure clause if inner ensure clause raises exception" do
-    thread = ThreadSpecs.join_dying_thread_with_outer_ensure(@method) { ScratchPad.record $! }
-    ScratchPad.recorded.to_s.should == "In dying thread"
-  end
-  
+
   it "can be rescued by outer rescue clause when inner ensure clause raises exception" do
     thread = Thread.new do
       begin
@@ -131,7 +139,7 @@ describe :thread_exit, :shared => true do
     thread.value.should == :end_of_thread_block
     ScratchPad.recorded.to_s.should == "In dying thread"
   end
-  
+
   it "is deferred if ensure clause does Thread.stop" do
     ThreadSpecs.wakeup_dying_sleeping_thread(@method) { Thread.stop; ScratchPad.record :after_sleep }
     ScratchPad.recorded.should == :after_sleep
@@ -147,7 +155,7 @@ describe :thread_exit, :shared => true do
     end
   end
   end
-  
+
   # This case occurred in JRuby where native threads are used to provide
   # the same behavior as MRI green threads. Key to this issue was the fact
   # that the thread which called #exit in its block was also being explicitly

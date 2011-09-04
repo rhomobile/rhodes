@@ -13,6 +13,8 @@
 #define RHO_MEMORY__
 #include "ruby.h"
 #include "debug.h"
+
+#include "ruby/ext/rho/rhoruby.h"
 //#include <sqlite3.h>
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
@@ -110,6 +112,8 @@ __rho_compile( VALUE obj, VALUE src)
 
     th->parse_in_eval++;
     result = rb_iseq_compile(src, rb_str_new2("(eval)"), INT2FIX(1));
+
+    //result = rb_iseq_compile_with_option(src, rb_str_new2("(eval)"), Qnil, INT2FIX(1), Qtrue );
     th->parse_in_eval--;
 
     return result;
@@ -238,3 +242,101 @@ int rhoPlainLog(const char* file, int line, int severity, const char* szCategory
                   const char* msg ){
     return 1;
 }
+
+VALUE rho_conf_get_conflicts()
+{
+    return 0;
+}
+
+rho_param* rho_param_array(int size)
+{
+    return 0;
+}
+
+rho_param *rho_param_str(char *s)
+{
+    return 0;
+}
+
+rho_param *rho_param_hash(int size)
+{
+    return 0;
+}
+
+int rho_conf_getBool(const char* szName) {
+    return  0;
+}
+
+void rho_file_recursive_createdir(const char* szPath, const char* szBasePath)
+{
+}
+
+VALUE rho_json_quote_value(VALUE v,VALUE str)
+{
+    return 0;
+}
+
+void rho_param_free(rho_param *p)
+{
+}
+
+void create_navbar(rho_param *p)
+{
+}
+
+void remove_navbar()
+{
+}
+
+VALUE navbar_started()
+{
+    return rho_ruby_create_boolean(0);
+}
+
+int rho_native_view_manager_create_native_view(const char* viewtype, int tab_index, VALUE params) {
+	return -1;
+}
+
+void rho_native_view_manager_navigate_native_view(int native_view_id, const char* url) {
+}
+
+void rho_native_view_manager_destroy_native_view(int native_view_id) {
+}
+
+int rho_bluetooth_is_bluetooth_available(){return 0;}
+
+void rho_bluetooth_off_bluetooth(){}
+
+void rho_bluetooth_set_device_name(const char* device_name){}
+
+VALUE rho_bluetooth_get_device_name(){return 0;}
+
+const char* rho_bluetooth_get_last_error(){return 0;}
+
+void rho_signature_take_signature(char* callback_url, char* image_format){}
+
+const char* rho_bluetooth_create_session(const char* role, const char* callback_url){return 0;}
+
+const char* rho_bluetooth_create_custom_server_session(const char* client_name, const char* callback_url, int accept_any_device){return 0;}
+
+const char* rho_bluetooth_create_custom_client_session(const char* server_name, const char* callback_url){return 0;}
+
+const char* rho_bluetooth_stop_current_connection_process(){return 0;}
+
+void rho_bluetooth_session_set_callback(const char* connected_device_name, const char* callback_url){}
+
+void rho_bluetooth_session_disconnect(const char* connected_device_name){}
+
+int rho_bluetooth_session_get_status(const char* connected_device_name){return 0;}
+
+VALUE rho_bluetooth_session_read_string(const char* connected_device_name){return 0;}
+
+void rho_bluetooth_session_write_string(const char* connected_device_name, const char* str){}
+
+VALUE rho_bluetooth_session_read_data(const char* connected_device_name){return 0;}
+
+void rho_bluetooth_session_write_data(const char* connected_device_name, VALUE data){}
+
+VALUE rho_asynchttp_request(const char* command, rho_param *p){return 0;}
+
+void rho_asynchttp_cancel(const char* cancel_callback){}

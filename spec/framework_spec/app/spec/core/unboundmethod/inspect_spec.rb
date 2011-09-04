@@ -1,6 +1,6 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + "/fixtures/classes"
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/shared/to_s'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
+require File.expand_path('../shared/to_s', __FILE__)
 
 describe "UnboundMethod#inspect" do
   it_behaves_like(:unboundmethod_to_s, :inspect)

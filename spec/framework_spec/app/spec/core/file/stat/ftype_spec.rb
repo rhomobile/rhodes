@@ -1,10 +1,10 @@
-require "#{File.dirname(File.join(__rhoGetCurrentDir(), __FILE__))}/../../../spec_helper"
-require "#{File.dirname(File.join(__rhoGetCurrentDir(), __FILE__))}/../fixtures/file_types.rb"
-
+require File.expand_path('../../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
+=begin
 describe "File::Stat#ftype" do
   it "returns a String " do
     FileSpecs.normal_file do |file|
-      File.lstat(file).ftype.class.should == String
+      File.lstat(file).ftype.should be_kind_of(String)
     end
   end
 
@@ -26,7 +26,7 @@ describe "File::Stat#ftype" do
     end
   end
 
-  platform_is_not :freebsd, :android do  # FreeBSD does not have block devices
+  platform_is_not :freebsd do  # FreeBSD does not have block devices
     it "returns 'blockSpecial' when the file is a block" do
       FileSpecs.block_device do |block|
         File.lstat(block).ftype.should == 'blockSpecial'
@@ -40,11 +40,9 @@ describe "File::Stat#ftype" do
     end
   end
 
-  platform_is_not :android do
-    it "returns fifo when the file is a fifo" do
-      FileSpecs.fifo do |fifo|
-        File.lstat(fifo).ftype.should == 'fifo'
-      end
+  it "returns fifo when the file is a fifo" do
+    FileSpecs.fifo do |fifo|
+      File.lstat(fifo).ftype.should == 'fifo'
     end
   end
 
@@ -52,11 +50,10 @@ describe "File::Stat#ftype" do
   # can be found. However, if you are running X, there is
   # a good chance that if nothing else, at least the X
   # Server socket exists.
-#  XXX We dont support these sockets
-#  it "returns 'socket' when the file is a socket" do
-#    FileSpecs.socket do |socket|
-#      File.lstat(socket).ftype.should == 'socket'
-#    end
-#  end
+  it "returns 'socket' when the file is a socket" do
+    FileSpecs.socket do |socket|
+      File.lstat(socket).ftype.should == 'socket'
+    end
+  end
 end
-
+=end
