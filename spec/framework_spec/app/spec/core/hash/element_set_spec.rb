@@ -1,8 +1,7 @@
-# XXX Crashes
-#require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-#require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
-#require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/shared/store'
-#
-#describe "Hash#[]=" do
-#  it_behaves_like(:hash_store, :[]=)
-#end
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
+require File.expand_path('../shared/store', __FILE__)
+
+describe "Hash#[]=" do
+  it_behaves_like(:hash_store, :[]=)
+end

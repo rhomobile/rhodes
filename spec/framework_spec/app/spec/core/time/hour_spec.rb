@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/methods'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/methods', __FILE__)
 
 describe "Time#hour" do
   it "returns the hour of the day (0..23) for time" do

@@ -765,6 +765,8 @@ void CDBAdapter::close()
 
     m_ptrCrypt = 0;
     m_strCryptKey = "";
+
+    m_mxRuby.close();
 }
 
 int CDBAdapter::prepareSqlStatement(const char* szSql, int nByte, sqlite3_stmt **ppStmt)
@@ -1158,8 +1160,16 @@ CRubyMutex::CRubyMutex(boolean bIgnore) : m_nLockCount(0), m_valThread(0), m_val
 
 CRubyMutex::~CRubyMutex()
 {
+    close();    
+}
+
+void CRubyMutex::close()
+{
     if ( m_valMutex )
+    {
         rho_ruby_destroy_mutex(m_valMutex);
+        m_valMutex = 0;
+    }
 }
 
 boolean CRubyMutex::isMainRubyThread()

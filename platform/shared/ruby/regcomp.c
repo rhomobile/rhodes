@@ -2,7 +2,7 @@
   regcomp.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2007  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2008  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ static unsigned char PadBuf[WORD_ALIGNMENT_SIZE];
 static UChar*
 str_dup(UChar* s, UChar* end)
 {
-  int len = end - s;
+  ptrdiff_t len = end - s;
 
   if (len > 0) {
     UChar* r = (UChar* )xmalloc(len + 1);
@@ -73,7 +73,7 @@ swap_node(Node* a, Node* b)
   if (NTYPE(a) == NT_STR) {
     StrNode* sn = NSTR(a);
     if (sn->capa == 0) {
-      int len = sn->end - sn->s;
+      size_t len = sn->end - sn->s;
       sn->s   = sn->buf;
       sn->end = sn->s + len;
     }
@@ -82,7 +82,7 @@ swap_node(Node* a, Node* b)
   if (NTYPE(b) == NT_STR) {
     StrNode* sn = NSTR(b);
     if (sn->capa == 0) {
-      int len = sn->end - sn->s;
+      size_t len = sn->end - sn->s;
       sn->s   = sn->buf;
       sn->end = sn->s + len;
     }
@@ -416,7 +416,7 @@ compile_tree_n_times(Node* node, int n, regex_t* reg)
 }
 
 static int
-add_compile_string_length(UChar* s ARG_UNUSED, int mb_len, int str_len,
+add_compile_string_length(UChar* s ARG_UNUSED, int mb_len, OnigDistance str_len,
                           regex_t* reg ARG_UNUSED, int ignore_case)
 {
   int len;
@@ -1794,6 +1794,20 @@ noname_disable_map(Node** plink, GroupNumRemap* map, int* counter)
     }
     break;
 
+  case NT_ANCHOR:
+    {
+      AnchorNode* an = NANCHOR(node);
+      switch (an->type) {
+      case ANCHOR_PREC_READ:
+      case ANCHOR_PREC_READ_NOT:
+      case ANCHOR_LOOK_BEHIND:
+      case ANCHOR_LOOK_BEHIND_NOT:
+	r = noname_disable_map(&(an->target), map, counter);
+	break;
+      }
+    }
+    break;
+
   default:
     break;
   }
@@ -1850,6 +1864,20 @@ renumber_by_map(Node* node, GroupNumRemap* map)
 
   case NT_BREF:
     r = renumber_node_backref(node, map);
+    break;
+
+  case NT_ANCHOR:
+    {
+      AnchorNode* an = NANCHOR(node);
+      switch (an->type) {
+      case ANCHOR_PREC_READ:
+      case ANCHOR_PREC_READ_NOT:
+      case ANCHOR_LOOK_BEHIND:
+      case ANCHOR_LOOK_BEHIND_NOT:
+	r = renumber_by_map(an->target, map);
+	break;
+      }
+    }
     break;
 
   default:
@@ -2555,7 +2583,7 @@ is_not_included(Node* x, Node* y, regex_t* reg)
 	  }
 	}
 	break;
-	
+
       default:
 	break;
       }
@@ -3294,7 +3322,7 @@ expand_case_fold_string_alt(int item_num, OnigCaseFoldCodeItem items[],
   for (i = 0; i < item_num; i++) {
     snode = onig_node_new_str(NULL, NULL);
     if (IS_NULL(snode)) goto mem_err;
-    
+
     for (j = 0; j < items[i].code_len; j++) {
       len = ONIGENC_CODE_TO_MBC(reg->enc, items[i].code[j], buf);
       if (len < 0) {
@@ -4004,15 +4032,15 @@ distance_value(MinMaxLen* mm)
 {
   /* 1000 / (min-max-dist + 1) */
   static const short int dist_vals[] = {
-    1000,  500,  333,  250,  200,  167,  143,  125,  111,  100, 
-      91,   83,   77,   71,   67,   63,   59,   56,   53,   50, 
-      48,   45,   43,   42,   40,   38,   37,   36,   34,   33, 
-      32,   31,   30,   29,   29,   28,   27,   26,   26,   25, 
-      24,   24,   23,   23,   22,   22,   21,   21,   20,   20, 
-      20,   19,   19,   19,   18,   18,   18,   17,   17,   17, 
-      16,   16,   16,   16,   15,   15,   15,   15,   14,   14, 
-      14,   14,   14,   14,   13,   13,   13,   13,   13,   13, 
-      12,   12,   12,   12,   12,   12,   11,   11,   11,   11, 
+    1000,  500,  333,  250,  200,  167,  143,  125,  111,  100,
+      91,   83,   77,   71,   67,   63,   59,   56,   53,   50,
+      48,   45,   43,   42,   40,   38,   37,   36,   34,   33,
+      32,   31,   30,   29,   29,   28,   27,   26,   26,   25,
+      24,   24,   23,   23,   22,   22,   21,   21,   20,   20,
+      20,   19,   19,   19,   18,   18,   18,   17,   17,   17,
+      16,   16,   16,   16,   15,   15,   15,   15,   14,   14,
+      14,   14,   14,   14,   13,   13,   13,   13,   13,   13,
+      12,   12,   12,   12,   12,   12,   11,   11,   11,   11,
       11,   11,   11,   11,   11,   10,   10,   10,   10,   10
   };
 
@@ -4792,7 +4820,7 @@ optimize_node_left(Node* node, NodeOptInfo* opt, OptEnv* env)
 	  copy_node_opt_info(opt, &nopt);
 	  if (nopt.exb.len > 0) {
 	    if (nopt.exb.reach_end) {
-	      for (i = 2; i < qn->lower &&
+	      for (i = 2; i <= qn->lower &&
 		          ! is_full_opt_exact_info(&opt->exb); i++) {
 		concat_opt_exact_info(&opt->exb, &nopt.exb, env->enc);
 	      }
@@ -4899,7 +4927,7 @@ set_optimize_exact_info(regex_t* reg, OptExactInfo* e)
     reg->exact = str_dup(e->s, e->s + e->len);
     CHECK_NULL_RETURN_MEMERR(reg->exact);
     reg->exact_end = reg->exact + e->len;
- 
+
     allow_reverse =
 	ONIGENC_IS_ALLOWED_REVERSE_MATCH(reg->enc, reg->exact, reg->exact_end);
 
@@ -5046,7 +5074,7 @@ static void print_enc_string(FILE* fp, OnigEncoding enc,
 	fputc((int )code, fp);
       }
 
-      p += enclen(enc, p);
+      p += enclen(enc, p, end);
     }
   }
   else {
@@ -5178,19 +5206,21 @@ print_optimize_info(FILE* f, regex_t* reg)
 #endif /* ONIG_DEBUG */
 
 
-static void
+extern void
 onig_free_body(regex_t* reg)
 {
-  if (IS_NOT_NULL(reg->p))                xfree(reg->p);
-  if (IS_NOT_NULL(reg->exact))            xfree(reg->exact);
-  if (IS_NOT_NULL(reg->int_map))          xfree(reg->int_map);
-  if (IS_NOT_NULL(reg->int_map_backward)) xfree(reg->int_map_backward);
-  if (IS_NOT_NULL(reg->repeat_range))     xfree(reg->repeat_range);
-  if (IS_NOT_NULL(reg->chain))            onig_free(reg->chain);
+  if (IS_NOT_NULL(reg)) {
+    if (IS_NOT_NULL(reg->p))                xfree(reg->p);
+    if (IS_NOT_NULL(reg->exact))            xfree(reg->exact);
+    if (IS_NOT_NULL(reg->int_map))          xfree(reg->int_map);
+    if (IS_NOT_NULL(reg->int_map_backward)) xfree(reg->int_map_backward);
+    if (IS_NOT_NULL(reg->repeat_range))     xfree(reg->repeat_range);
+    if (IS_NOT_NULL(reg->chain))            onig_free(reg->chain);
 
 #ifdef USE_NAMED_GROUP
-  onig_names_free(reg);
+    onig_names_free(reg);
 #endif
+  }
 }
 
 extern void
@@ -5200,6 +5230,20 @@ onig_free(regex_t* reg)
     onig_free_body(reg);
     xfree(reg);
   }
+}
+
+size_t
+onig_memsize(regex_t *reg)
+{
+    size_t size = sizeof(regex_t);
+    if (IS_NOT_NULL(reg->p))                size += reg->alloc;
+    if (IS_NOT_NULL(reg->exact))            size += reg->exact_end - reg->exact;
+    if (IS_NOT_NULL(reg->int_map))          size += sizeof(int) * ONIG_CHAR_TABLE_SIZE;
+    if (IS_NOT_NULL(reg->int_map_backward)) size += sizeof(int) * ONIG_CHAR_TABLE_SIZE;
+    if (IS_NOT_NULL(reg->repeat_range))     size += reg->repeat_range_alloc * sizeof(OnigRepeatRange);
+    if (IS_NOT_NULL(reg->chain))            size += onig_memsize(reg->chain);
+
+    return size;
 }
 
 #define REGEX_TRANSFER(to,from) do {\
@@ -5250,84 +5294,6 @@ onig_chain_reduce(regex_t* reg)
   }
 }
 
-#if 0
-extern int
-onig_clone(regex_t** to, regex_t* from)
-{
-  int r, size;
-  regex_t* reg;
-
-#ifdef USE_MULTI_THREAD_SYSTEM
-  if (ONIG_STATE(from) >= ONIG_STATE_NORMAL) {
-    ONIG_STATE_INC(from);
-    if (IS_NOT_NULL(from->chain) && ONIG_STATE(reg) == ONIG_STATE_NORMAL) {
-      onig_chain_reduce(from);
-      ONIG_STATE_INC(from);
-    }
-  }
-  else {
-    int n = 0;
-    while (ONIG_STATE(from) < ONIG_STATE_NORMAL) {
-      if (++n > THREAD_PASS_LIMIT_COUNT)
-	return ONIGERR_OVER_THREAD_PASS_LIMIT_COUNT;
-      THREAD_PASS;
-    }
-    ONIG_STATE_INC(from);
-  }
-#endif /* USE_MULTI_THREAD_SYSTEM */
-
-  r = onig_alloc_init(&reg, ONIG_OPTION_NONE, ONIGENC_CASE_FOLD_DEFAULT,
-                      from->enc, ONIG_SYNTAX_DEFAULT);
-  if (r != 0) {
-    ONIG_STATE_DEC(from);
-    return r;
-  }
-
-  xmemcpy(reg, from, sizeof(onig_t));
-  reg->chain = (regex_t* )NULL;
-  reg->state = ONIG_STATE_NORMAL;
-
-  if (from->p) {
-    reg->p = (UChar* )xmalloc(reg->alloc);
-    if (IS_NULL(reg->p)) goto mem_error;
-    xmemcpy(reg->p, from->p, reg->alloc);
-  }
-
-  if (from->exact) {
-    reg->exact = (UChar* )xmalloc(from->exact_end - from->exact);
-    if (IS_NULL(reg->exact)) goto mem_error;
-    reg->exact_end = reg->exact + (from->exact_end - from->exact);
-    xmemcpy(reg->exact, from->exact, reg->exact_end - reg->exact);
-  }
-
-  if (from->int_map) {
-    size = sizeof(int) * ONIG_CHAR_TABLE_SIZE;
-    reg->int_map = (int* )xmalloc(size);
-    if (IS_NULL(reg->int_map)) goto mem_error;
-    xmemcpy(reg->int_map, from->int_map, size);
-  }
-
-  if (from->int_map_backward) {
-    size = sizeof(int) * ONIG_CHAR_TABLE_SIZE;
-    reg->int_map_backward = (int* )xmalloc(size);
-    if (IS_NULL(reg->int_map_backward)) goto mem_error;
-    xmemcpy(reg->int_map_backward, from->int_map_backward, size);
-  }
-
-#ifdef USE_NAMED_GROUP
-  reg->name_table = names_clone(from); /* names_clone is not implemented */
-#endif
-
-  ONIG_STATE_DEC(from);
-  *to = reg;
-  return 0;
-
- mem_error:
-  ONIG_STATE_DEC(from);
-  return ONIGERR_MEMORY;
-}
-#endif
-
 #ifdef ONIG_DEBUG
 static void print_compiled_byte_code_list P_((FILE* f, regex_t* reg));
 #endif
@@ -5337,17 +5303,21 @@ static void print_tree P_((FILE* f, Node* node));
 
 extern int
 onig_compile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
-	      OnigErrorInfo* einfo)
+	      OnigErrorInfo* einfo, const char *sourcefile, int sourceline)
 {
 #define COMPILE_INIT_SIZE  20
 
   int r, init_size;
   Node*  root;
-  ScanEnv  scan_env;
+  ScanEnv  scan_env = {0};
 #ifdef USE_SUBEXP_CALL
   UnsetAddrList  uslist;
 #endif
 
+  if (IS_NOT_NULL(einfo)) einfo->par = (UChar* )NULL;
+
+  scan_env.sourcefile = sourcefile;
+  scan_env.sourceline = sourceline;
   reg->state = ONIG_STATE_COMPILING;
 
 #ifdef ONIG_DEBUG
@@ -5545,12 +5515,15 @@ onig_recompile(regex_t* reg, const UChar* pattern, const UChar* pattern_end,
 static int onig_inited = 0;
 
 extern int
-onig_alloc_init(regex_t** reg, OnigOptionType option,
-		OnigCaseFoldType case_fold_flag,
-                OnigEncoding enc, const OnigSyntaxType* syntax)
+onig_reg_init(regex_t* reg, OnigOptionType option,
+	      OnigCaseFoldType case_fold_flag,
+	      OnigEncoding enc, const OnigSyntaxType* syntax)
 {
   if (! onig_inited)
     onig_init();
+
+  if (IS_NULL(reg))
+    return ONIGERR_INVALID_ARGUMENT;
 
   if (ONIGENC_IS_UNDEF(enc))
     return ONIGERR_DEFAULT_ENCODING_IS_NOT_SETTED;
@@ -5560,9 +5533,7 @@ onig_alloc_init(regex_t** reg, OnigOptionType option,
     return ONIGERR_INVALID_COMBINATION_OF_OPTIONS;
   }
 
-  *reg = (regex_t* )xmalloc(sizeof(regex_t));
-  if (IS_NULL(*reg)) return ONIGERR_MEMORY;
-  (*reg)->state = ONIG_STATE_MODIFY;
+  (reg)->state = ONIG_STATE_MODIFY;
 
   if ((option & ONIG_OPTION_NEGATE_SINGLELINE) != 0) {
     option |= syntax->options;
@@ -5571,22 +5542,36 @@ onig_alloc_init(regex_t** reg, OnigOptionType option,
   else
     option |= syntax->options;
 
-  (*reg)->enc              = enc;
-  (*reg)->options          = option;
-  (*reg)->syntax           = syntax;
-  (*reg)->optimize         = 0;
-  (*reg)->exact            = (UChar* )NULL;
-  (*reg)->int_map          = (int* )NULL;
-  (*reg)->int_map_backward = (int* )NULL;
-  (*reg)->chain            = (regex_t* )NULL;
+  (reg)->enc              = enc;
+  (reg)->options          = option;
+  (reg)->syntax           = syntax;
+  (reg)->optimize         = 0;
+  (reg)->exact            = (UChar* )NULL;
+  (reg)->int_map          = (int* )NULL;
+  (reg)->int_map_backward = (int* )NULL;
+  (reg)->chain            = (regex_t* )NULL;
 
-  (*reg)->p                = (UChar* )NULL;
-  (*reg)->alloc            = 0;
-  (*reg)->used             = 0;
-  (*reg)->name_table       = (void* )NULL;
+  (reg)->p                = (UChar* )NULL;
+  (reg)->alloc            = 0;
+  (reg)->used             = 0;
+  (reg)->name_table       = (void* )NULL;
 
-  (*reg)->case_fold_flag   = case_fold_flag;
+  (reg)->case_fold_flag   = case_fold_flag;
   return 0;
+}
+
+extern int
+onig_new_without_alloc(regex_t* reg, const UChar* pattern,
+          const UChar* pattern_end, OnigOptionType option, OnigEncoding enc,
+          OnigSyntaxType* syntax, OnigErrorInfo* einfo)
+{
+  int r;
+
+  r = onig_reg_init(reg, option, ONIGENC_CASE_FOLD_DEFAULT, enc, syntax);
+  if (r) return r;
+
+  r = onig_compile(reg, pattern, pattern_end, einfo, NULL, 0);
+  return r;
 }
 
 extern int
@@ -5596,19 +5581,21 @@ onig_new(regex_t** reg, const UChar* pattern, const UChar* pattern_end,
 {
   int r;
 
-  if (IS_NOT_NULL(einfo)) einfo->par = (UChar* )NULL;
+  *reg = (regex_t* )xmalloc(sizeof(regex_t));
+  if (IS_NULL(*reg)) return ONIGERR_MEMORY;
 
-  r = onig_alloc_init(reg, option, ONIGENC_CASE_FOLD_DEFAULT,
-                      enc, syntax);
-  if (r) return r;
+  r = onig_reg_init(*reg, option, ONIGENC_CASE_FOLD_DEFAULT, enc, syntax);
+  if (r) goto err;
 
-  r = onig_compile(*reg, pattern, pattern_end, einfo);
+  r = onig_compile(*reg, pattern, pattern_end, einfo, NULL, 0);
   if (r) {
+  err:
     onig_free(*reg);
     *reg = NULL;
   }
   return r;
 }
+
 
 extern int
 onig_init(void)
@@ -5869,7 +5856,7 @@ p_len_string(FILE* f, LengthType len, int mb_len, UChar* s)
 }
 
 extern void
-onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp,
+onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar* bpend, UChar** nextp,
                               OnigEncoding enc)
 {
   int i, n, arg_type;
@@ -5938,7 +5925,7 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp,
       p_len_string(f, len, 1, bp);
       bp += len;
       break;
-    
+
     case OP_EXACTMB2N1:
       p_string(f, 2, bp); bp += 2; break;
     case OP_EXACTMB2N2:
@@ -5958,7 +5945,7 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp,
     case OP_EXACTMBN:
       {
 	int mb_len;
-      
+
 	GET_LENGTH_INC(mb_len, bp);
 	GET_LENGTH_INC(len, bp);
 	fprintf(f, ":%d:%d:", mb_len, len);
@@ -5968,7 +5955,7 @@ onig_print_compiled_byte_code(FILE* f, UChar* bp, UChar** nextp,
       break;
 
     case OP_EXACT1_IC:
-      len = enclen(enc, bp);
+      len = enclen(enc, bp, bpend);
       p_string(f, len, bp);
       bp += len;
       break;
@@ -6130,7 +6117,7 @@ print_compiled_byte_code_list(FILE* f, regex_t* reg)
       else
 	fputs(" ", f);
     }
-    onig_print_compiled_byte_code(f, bp, &bp, reg->enc);
+    onig_print_compiled_byte_code(f, bp, end, &bp, reg->enc);
   }
 
   fprintf(f, "\n");

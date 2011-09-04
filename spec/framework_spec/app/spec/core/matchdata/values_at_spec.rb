@@ -1,4 +1,4 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "MatchData#values_at" do
   it "returns an array of the matching value" do

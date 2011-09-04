@@ -1,16 +1,16 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "ARGF.seek" do
   before :each do
-    @file1_name = fixture File.join(__rhoGetCurrentDir(), __FILE__), "file1.txt"
-    @file2_name = fixture File.join(__rhoGetCurrentDir(), __FILE__), "file2.txt"
+    @file1_name = fixture __FILE__, "file1.txt"
+    @file2_name = fixture __FILE__, "file2.txt"
 
     @file1 = File.readlines @file1_name
     @file2 = File.readlines @file2_name
   end
 
   after :each do
-    ARGF.close
+    ARGF.close unless ARGF.closed?
   end
 
   it "sets the absolute position relative to beginning of file" do
@@ -45,11 +45,13 @@ describe "ARGF.seek" do
       ARGF.gets.should == @file1.first
       ARGF.seek -6, IO::SEEK_END
       ARGF.gets.should == @file1.last[-6..-1]
+if ( System.get_property('platform') != 'ANDROID' )      
       ARGF.seek -4, IO::SEEK_END
       ARGF.gets.should == @file1.last[4..-1]
       ARGF.gets.should == @file2.first
       ARGF.seek -6, IO::SEEK_END
       ARGF.gets.should == @file2.last[-6..-1]
+end      
     end
   end
 

@@ -1,4 +1,4 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "Symbol#to_i" do
   ruby_version_is ""..."1.9" do
@@ -15,5 +15,5 @@ describe "Symbol#to_i" do
     it "has been removed as deprecated" do
       :ruby.should_not respond_to(:to_i)
     end
-  end 
+  end
 end

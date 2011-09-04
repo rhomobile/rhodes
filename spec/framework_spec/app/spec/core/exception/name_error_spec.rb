@@ -1,4 +1,4 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "NameError" do
   it "is a superclass of NoMethodError" do
@@ -9,5 +9,5 @@ end
 describe "NameError.new" do
   it "NameError.new should take optional name argument" do
     NameError.new("msg","name").name.should == "name"
-  end  
+  end
 end

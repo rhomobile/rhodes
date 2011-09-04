@@ -1,13 +1,14 @@
 describe :file_stat, :shared => true do
   before :each do
-    @file = tmp('/i_exist')
-    File.open(@file,'w'){|f| f.write 'rubinius'}
+    @file = tmp('i_exist')
+    touch(@file) { |f| f.write 'rubinius' }
   end
 
   after :each do
-    File.delete(@file) if File.exist?(@file)
+    rm_r @file
   end
 
+  # TODO: Fix
   it "returns a File::Stat object if the given file exists" do
     st = File.send(@method, @file)
 
@@ -15,23 +16,36 @@ describe :file_stat, :shared => true do
     st.zero?.should == false
     st.size.should == 8
     st.size?.should == 8
-    st.blksize.should > 0 unless System.get_property('platform') == 'WINDOWS'
-    st.atime.class.should == Time
-    st.ctime.class.should == Time
-    st.mtime.class.should == Time
+if ( System.get_property('platform') != 'WINDOWS' )    
+    st.blksize.should > 0
+end    
+    st.atime.should be_kind_of(Time)
+    st.ctime.should be_kind_of(Time)
+    st.mtime.should be_kind_of(Time)
   end
 
-  it "should be able to use the instance methods" do
-    st = File.new(@file).send(@method)
+  # TODO: Fix
+  it "returns a File::Stat objecw when called on an instance of File" do
+    File.open(@file) do |f|
+      st = f.send(@method)
 
-    st.file?.should == true
-    st.zero?.should == false
-    st.size.should == 8
-    st.size?.should == 8
-    st.blksize.should > 0 unless System.get_property('platform') == 'WINDOWS'
-    st.atime.class.should == Time
-    st.ctime.class.should == Time
-    st.mtime.class.should == Time
+      st.file?.should == true
+      st.zero?.should == false
+      st.size.should == 8
+      st.size?.should == 8
+if ( System.get_property('platform') != 'WINDOWS' )      
+      st.blksize.should > 0
+end      
+      st.atime.should be_kind_of(Time)
+      st.ctime.should be_kind_of(Time)
+      st.mtime.should be_kind_of(Time)
+    end
+  end
+
+  ruby_version_is "1.9" do
+    it "accepts an object that has a #to_path method" do
+      File.send(@method, mock_to_path(@file))
+    end
   end
 
   it "raises an Errno::ENOENT if the file does not exist" do

@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../fixtures/class'
+require File.expand_path('../../spec_helper', __FILE__)
+require File.expand_path('../../fixtures/class', __FILE__)
 
 describe "self in a metaclass body (class << obj)" do
   it "is TrueClass for true" do
@@ -26,18 +26,6 @@ describe "self in a metaclass body (class << obj)" do
     cls = class << mock('x'); self; end
     cls.is_a?(Class).should == true
     cls.should_not equal(Object)
-  end
-  
-  deviates_on(:rubinius) do 
-    it "is a MetaClass instance" do
-      cls = class << mock('x'); self; end
-      cls.is_a?(MetaClass).should == true
-    end
-
-    it "has the object's class as superclass" do
-      cls = class << "blah"; self; end
-      cls.superclass.should == String
-    end
   end
 end
 
@@ -89,19 +77,32 @@ describe "A constant on a metaclass" do
     class << @object
       CONST = 100
     end
-    
+
     lambda do
       @object::CONST
     end.should raise_error(NameError)
   end
 
-  it "appears in the metaclass constant list" do
-    constants = class << @object; constants; end 
-    constants.should include(:CONST)
+  ruby_version_is ""..."1.9" do
+    it "appears in the metaclass constant list" do
+      constants = class << @object; constants; end
+      constants.should include("CONST")
+    end
+
+    it "does not appear in the object's class constant list" do
+      @object.class.constants.should_not include("CONST")
+    end
   end
 
-  it "does not appear in the object's class constant list" do
-    @object.class.constants.should_not include(:CONST)
+  ruby_version_is "1.9" do
+    it "appears in the metaclass constant list" do
+      constants = class << @object; constants; end
+      constants.should include(:CONST)
+    end
+
+    it "does not appear in the object's class constant list" do
+      @object.class.constants.should_not include(:CONST)
+    end
   end
 
   it "is not preserved when the object is duped" do
@@ -120,7 +121,3 @@ describe "A constant on a metaclass" do
     end
   end
 end
-
-
-
-

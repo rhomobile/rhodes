@@ -1,4 +1,4 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 as_superuser do
   describe "File.lchown" do
@@ -6,15 +6,15 @@ as_superuser do
       before :each do
         @fname = tmp('file_chown_test')
         @lname = @fname + '.lnk'
-        File.delete @fname rescue nil
-        File.delete @lname rescue nil
-        File.open(@fname, 'w') { |f| f.chown 501, 501 }
+
+        touch(@fname) { |f| f.chown 501, 501 }
+
+        rm_r @lname
         File.symlink @fname, @lname
       end
 
       after :each do
-        File.delete @fname if File.exist? @fname
-        File.delete @lname if File.exist? @lname
+        rm_r @lname, @fname
       end
 
       it "changes the owner id of the file" do
@@ -55,5 +55,11 @@ as_superuser do
         File.lchown(nil, nil, @lname, @lname).should == 2
       end
     end
+  end
+end
+
+ruby_version_is "1.9" do
+  describe "File.lchown" do
+    it "needs to be reviewed for spec completeness"
   end
 end

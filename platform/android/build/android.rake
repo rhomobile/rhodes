@@ -837,7 +837,7 @@ namespace "build" do
       libname = $libname["ruby"]
       args = []
       args << "-I#{srcdir}/include"
-      args << "-I#{srcdir}/linux"
+      args << "-I#{srcdir}/android"
       args << "-I#{srcdir}/generated"
       args << "-I#{srcdir}"
       args << "-I#{srcdir}/.."
@@ -923,7 +923,7 @@ namespace "build" do
       args << "-I#{$shareddir}"
       args << "-I#{$shareddir}/curl/include"
       args << "-I#{$shareddir}/ruby/include"
-      args << "-I#{$shareddir}/ruby/linux"
+      args << "-I#{$shareddir}/ruby/android"
       args << "-I#{$std_includes}" unless $std_includes.nil?
       args << "-D__NEW__" if USE_OWN_STLPORT
       args << "-I#{$stlport_includes}" if USE_OWN_STLPORT
@@ -1112,7 +1112,7 @@ namespace "build" do
       args << "-I#{$shareddir}/sqlite"
       args << "-I#{$shareddir}/curl/include"
       args << "-I#{$shareddir}/ruby/include"
-      args << "-I#{$shareddir}/ruby/linux"
+      args << "-I#{$shareddir}/ruby/android"
       args << "-I#{$std_includes}" unless $std_includes.nil?
       args << "-D__SGI_STL_INTERNAL_PAIR_H" if USE_OWN_STLPORT
       args << "-D__NEW__" if USE_OWN_STLPORT

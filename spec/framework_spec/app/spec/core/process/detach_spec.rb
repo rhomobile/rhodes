@@ -1,15 +1,10 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
-=begin
-describe "Process#detach" do
+describe "Process.detach" do
   platform_is_not :windows do
-    it "requires one argument" do
-      lambda { Process.detach }.should raise_error(ArgumentError)
-    end
-
     it "returns a thread" do
       p1 = Process.fork { Process.exit! }
-      Process.detach(p1).class.should == Thread
+      Process.detach(p1).should be_kind_of(Thread)
     end
 
     platform_is_not :openbsd do
@@ -27,4 +22,3 @@ describe "Process#detach" do
     end
   end
 end
-=end

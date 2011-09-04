@@ -1,36 +1,7 @@
-# format.rb: Written by Tadayoshi Funaba 1999-2008
+# format.rb: Written by Tadayoshi Funaba 1999-2009
 # $Id: format.rb,v 2.43 2008-01-17 20:16:31+09 tadf Exp $
 
-if defined? RHO_ME
-	require 'rationalME'
-elsif defined? RHO_WP7
-	require 'rational18'
-else	
-    require 'rational'
-end
-
 class Date
-
-  #SECONDS_IN_DAY = 60*60*24
-  #SECONDS_IN_DAY         = Rational(1, 86400)
-  
-#From date.rb:
-  # Full month names, in English.  Months count from 1 to 12; a
-  # month's numerical representation indexed into this array
-  # gives the name of that month (hence the first element is nil).
-  MONTHNAMES = [nil] + %w(January February March April May June July
-			  August September October November December)
-
-  # Full names of days of the week, in English.  Days of the week
-  # count from 0 to 6 (except in the commercial week); a day's numerical
-  # representation indexed into this array gives the name of that day.
-  DAYNAMES = %w(Sunday Monday Tuesday Wednesday Thursday Friday Saturday)
-
-  # Abbreviated month names, in English.
-  ABBR_MONTHNAMES = [nil] + %w(Jan Feb Mar Apr May Jun
-			       Jul Aug Sep Oct Nov Dec)
-  # Abbreviated day names, in English.
-  ABBR_DAYNAMES = %w(Sun Mon Tue Wed Thu Fri Sat)
 
   module Format # :nodoc:
 
@@ -308,7 +279,7 @@ class Date
           when 'r'; emit_a(strftime('%I:%M:%S %p'), 0, f)
           when 'S', 'OS'; emit_n(sec(), 2, f)
           when 's'
-	        s = ((ajd - UNIX_EPOCH_IN_AJD) / Rational(1, 86400)).round
+	        s = ((ajd - UNIX_EPOCH_IN_AJD) / SECONDS_IN_DAY).round
 	        emit_sn(s, 1, f)
           when 'T'
 	        if m == '%T'
@@ -332,7 +303,7 @@ class Date
 	        t = $1.size
 	        sign = if offset < 0 then -1 else +1 end
 	        fr = offset.abs
-	        ss = fr.div(Rational(1, 86400)) # 4p
+	        ss = fr.div(SECONDS_IN_DAY) # 4p
 	        hh, ss = ss.divmod(3600)
 	        mm, ss = ss.divmod(60)
 	        if t == 3
@@ -592,8 +563,8 @@ class Date
 	end
       else
 	case c
-	when /\A[\s\v]/
-	  str.sub!(/\A[\s\v]+/, '')
+	when /\A\s/
+	  str.sub!(/\A\s+/, '')
 	else
 	  return unless str.sub!(Regexp.new('\\A' + Regexp.quote(a)), '')
 	end
@@ -1062,7 +1033,7 @@ class Date
   def self._parse(str, comp=true)
     str = str.dup
 
-    e = Date::Format::Bag.new
+    e = Format::Bag.new
 
     e._comp = comp
 
@@ -1274,8 +1245,8 @@ class Date
       else
 	dst = zone.sub!(/\s+dst\z/, '')
       end
-      if Date::Format::ZONES.include?(zone)
-	offset = Date::Format::ZONES[zone]
+      if Format::ZONES.include?(zone)
+	offset = Format::ZONES[zone]
 	offset += 3600 if dst
       elsif zone.sub!(/\A(?:gmt|utc?)?([-+])/, '')
 	sign = $1

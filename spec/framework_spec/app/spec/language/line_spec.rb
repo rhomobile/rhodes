@@ -1,20 +1,45 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../spec_helper'
+require File.expand_path('../../spec_helper', __FILE__)
+require File.expand_path('../../fixtures/code_loading', __FILE__)
+require File.expand_path('../shared/__LINE__', __FILE__)
 
-describe "The __LINE__ constant" do
-  it "increments for each line" do    
-    cline = __LINE__
-    __LINE__.should == cline + 1
-    # comment is at cline + 2
-    __LINE__.should == cline + 3
+describe "The __LINE__ pseudo-variable" do
+  it "raises a SyntaxError if assigned to" do
+    lambda { eval("__LINE__ = 1") }.should raise_error(SyntaxError)
   end
 
-# XXX eval not supported
-#  it "is eval aware" do
-#    eval("__LINE__").should == 1
-#    cmd =<<EOF
-## comment at line 1
-#__LINE__
-#EOF
-#    eval(cmd).should == 2
-#  end
+  before :each do
+    ScratchPad.record []
+  end
+
+  after :each do
+    ScratchPad.clear
+  end
+
+  it "equals the line number of the text inside an eval" do
+    eval <<-EOC
+ScratchPad << __LINE__
+
+# line 3
+
+ScratchPad << __LINE__
+    EOC
+
+    ScratchPad.recorded.should == [1, 5]
+  end
+end
+
+describe "The __LINE__ pseudo-variable" do
+  it_behaves_like :language___LINE__, :require, CodeLoadingSpecs::Method.new
+end
+
+describe "The __LINE__ pseudo-variable" do
+  it_behaves_like :language___LINE__, :require, Kernel
+end
+
+describe "The __LINE__ pseudo-variable" do
+  it_behaves_like :language___LINE__, :load, CodeLoadingSpecs::Method.new
+end
+
+describe "The __LINE__ pseudo-variable" do
+  it_behaves_like :language___LINE__, :load, Kernel
 end

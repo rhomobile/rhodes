@@ -1,4 +1,4 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/caller_fixture2'
+require File.expand_path('../caller_fixture2', __FILE__)
 2 + 2
 3 + 3
 CallerFixture.capture do

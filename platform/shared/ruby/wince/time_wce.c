@@ -17,10 +17,15 @@
 
 /* globals */
 const __int64 _onesec_in100ns = (__int64)10000000;
-int   timezone, _timezone, altzone;
-int   daylight;
-char *tzname[2];
+//int   _timezone, altzone;
+//int   daylight;
+//char *tzname[2];
 
+static char Standard_Name[32] = "GMT";
+static char Daylight_Name[32] = "GMT";
+char *tzname[2] = {Standard_Name, Daylight_Name};
+long timezone = 0;
+int daylight = 0;
 
 /* __int64 <--> FILETIME */
 static __int64 wce_FILETIME2int64(FILETIME f)
@@ -250,13 +255,51 @@ char *asctime(const struct tm *pt)
 		pt->tm_hour, pt->tm_min, pt->tm_sec, pt->tm_year+1900 );
 	return buf;
 }
-
+/*
 void tzset()
 {
 	daylight = 1;
 	_timezone = 28800;
 	timezone = 28800;
+}*/
+
+void tzset(void)
+{
+	TIME_ZONE_INFORMATION Info;
+	int Result;
+
+	/*
+	 *	Get our current timezone information
+	 */
+	Result = GetTimeZoneInformation(&Info);
+	switch(Result) {
+		/*
+		 *	We are on standard time
+		 */
+		case TIME_ZONE_ID_STANDARD:
+			daylight = 0;
+			break;
+		/*
+		 *	We are on daylight savings time
+		 */
+		case TIME_ZONE_ID_DAYLIGHT:
+			daylight = 1;
+			break;
+		/*
+		 *	We don't know the timezone information (leave it GMT)
+		 */
+		default: return;
+	}
+	/*
+	 *	Extract the timezone information
+	 */
+	timezone = Info.Bias * 60;
+	if (Info.StandardName[0])
+		WideCharToMultiByte(CP_ACP, 0, Info.StandardName, -1, Standard_Name, sizeof(Standard_Name) - 1, NULL, NULL);
+	if (Info.DaylightName[0])
+		WideCharToMultiByte(CP_ACP, 0, Info.DaylightName, -1, Daylight_Name, sizeof(Daylight_Name) - 1, NULL, NULL);
 }
+
 
 int clock(void)
 {

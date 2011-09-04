@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Array#+" do
   it "concatenates two arrays" do
@@ -32,16 +32,16 @@ describe "Array#+" do
   end
 
   it "does return subclass instances with Array subclasses" do
-    (ArraySpecs::MyArray[1, 2, 3] + []).class.should == Array
-    (ArraySpecs::MyArray[1, 2, 3] + ArraySpecs::MyArray[]).class.should == Array
-    ([1, 2, 3] + ArraySpecs::MyArray[]).class.should == Array
+    (ArraySpecs::MyArray[1, 2, 3] + []).should be_kind_of(Array)
+    (ArraySpecs::MyArray[1, 2, 3] + ArraySpecs::MyArray[]).should be_kind_of(Array)
+    ([1, 2, 3] + ArraySpecs::MyArray[]).should be_kind_of(Array)
   end
 
   it "does not call to_ary on array subclasses" do
     ([5, 6] + ArraySpecs::ToAryArray[1, 2]).should == [5, 6, 1, 2]
   end
 
-  it "does not infected even if an original array is tainted" do
+  it "does not get infected even if an original array is tainted" do
     ([1, 2] + [3, 4]).tainted?.should be_false
     ([1, 2].taint + [3, 4]).tainted?.should be_false
     ([1, 2] + [3, 4].taint).tainted?.should be_false

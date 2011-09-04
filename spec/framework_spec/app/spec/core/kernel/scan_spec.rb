@@ -1,12 +1,14 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
-describe "Kernel#scan" do
-  it "is a private method" do
-    Kernel.should have_private_instance_method(:scan)
+ruby_version_is ""..."1.9" do
+  describe "Kernel#scan" do
+    it "is a private method" do
+      Kernel.should have_private_instance_method(:scan)
+    end
   end
-end
 
-describe "Kernel.scan" do
-  it "needs to be reviewed for spec completeness"
+  describe "Kernel.scan" do
+    it "needs to be reviewed for spec completeness"
+  end
 end

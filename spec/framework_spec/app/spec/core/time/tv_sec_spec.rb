@@ -1,6 +1,6 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/methods'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/shared/to_i'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/methods', __FILE__)
+require File.expand_path('../shared/to_i', __FILE__)
 
 describe "Time#tv_sec" do
   it_behaves_like(:time_to_i, :tv_sec)

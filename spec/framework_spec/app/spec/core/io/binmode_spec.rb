@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "IO#binmode" do
   before :each do
@@ -11,13 +11,29 @@ describe "IO#binmode" do
     @file.close
     File.unlink @filename
   end
-  
-  it "does not raise any errors on closed stream" do
-    lambda { IOSpecs.closed_file.binmode }.should_not raise_error()
+
+  ruby_version_is ""..."1.9" do
+    ruby_bug "#2046", "1.8.7.174" do
+      it "raises an IOError on closed stream" do
+        lambda { IOSpecs.closed_io.binmode }.should raise_error(IOError)
+      end
+    end
   end
+
+  #ruby_version_is "1.9" do
+  #  it "raises an IOError on closed stream" do
+  #    lambda { IOSpecs.closed_io.binmode }.should raise_error(IOError)
+  #  end
+  #end
 
   # Even if it does nothing in Unix it should not raise any errors.
   it "puts a stream in binary mode" do
     lambda { @file.binmode }.should_not raise_error
+  end
+end
+
+ruby_version_is "1.9" do
+  describe "IO#binmode?" do
+    it "needs to be reviewed for spec completeness"
   end
 end

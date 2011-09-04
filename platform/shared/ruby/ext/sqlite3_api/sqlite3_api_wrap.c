@@ -66,8 +66,8 @@ static VALUE db_init(int argc, VALUE *argv, VALUE self)
 		rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc);
 	
 	Data_Get_Struct(self, void *, ppDB);
-	szDbName = STR2CSTR(argv[0]);
-    szDbPartition = STR2CSTR(argv[1]);
+	szDbName = StringValuePtr(argv[0]);
+    szDbPartition = StringValuePtr(argv[1]);
 	
 	result = (int)rho_db_open(szDbName, szDbPartition, ppDB);//sqlite3_open(szDbName,ppDB);
 	if ( result != SQLITE_OK )

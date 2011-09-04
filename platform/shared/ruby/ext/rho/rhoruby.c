@@ -160,8 +160,8 @@ void rho_ruby_stop_threadidle()
         g_th_stored = 0;
     }
 }
-
-#if !defined(OS_SYMBIAN) && (defined(RHO_SYMBIAN) || defined (RHODES_EMULATOR))
+               
+#if !defined(OS_SYMBIAN) && (defined(RHO_SYMBIAN))// || defined (RHODES_EMULATOR))
 int   daylight;
 char *tzname[2];
 #endif
@@ -299,7 +299,7 @@ int rho_ruby_is_enabled_eval()
 #ifdef RHODES_EMULATOR
     return 1;
 #else
-    return 0;
+    return 1;
 #endif
 }
 
@@ -640,7 +640,7 @@ rho_param *rho_param_fromvalue(VALUE v)
             for (i = 0; i < size; ++i) {
                 VALUE key = rb_ary_entry(keys, i);
                 VALUE value = rb_hash_aref(v, key);
-                p->v.hash->name[i] = strdup(StringValuePtr(key));
+                p->v.hash->name[i] = strdup(RSTRING_PTR(rb_String(key)));
                 p->v.hash->value[i] = rho_param_fromvalue(value);
             }
             return p;
@@ -886,3 +886,7 @@ rb_type_to_s(VALUE obj)
     }
 }
 
+int rho_is_eval_disabled()
+{
+    return !rho_conf_getBool("enable_eval");
+}

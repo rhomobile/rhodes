@@ -417,7 +417,7 @@ VALUE require_compiled(VALUE fname, VALUE* result)
 
     if ( strcmp("strscan",szName1)==0 || strcmp("enumerator",szName1)==0 ||
         strcmp("stringio",szName1)==0 || strcmp("socket",szName1)==0 ||
-        strcmp("digest.so",szName1)==0 ||
+        strcmp("digest.so",szName1)==0 || 
         strcmp("fcntl",szName1)==0 || strcmp("digest/md5",szName1)==0 ||
         strcmp("digest/sha1",szName1)==0 )
         return Qtrue;

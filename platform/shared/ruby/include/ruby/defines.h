@@ -2,7 +2,7 @@
 
   defines.h -
 
-  $Author: yugui $
+  $Author: naruse $
   created at: Wed May 18 00:21:44 JST 1994
 
 ************************************************/
@@ -15,25 +15,6 @@ extern "C" {
 #if 0
 } /* satisfy cc-mode */
 #endif
-#endif
-
-#if defined(__BEOS__) && !defined(__HAIKU__) && !defined(BONE)
-
-#include <net/socket.h>
-/* intern.h needs fd_set definition */
-
-#elif defined (__SYMBIAN32__) && defined (HAVE_SYS_SELECT_H)
-
-#include <sys/select.h>
-
-#endif
-
-#ifdef __SYMBIAN32__
-
-#define FALSE 0
-
-#define TRUE 1
-
 #endif
 
 #define RUBY
@@ -118,6 +99,22 @@ void xfree(void*);
 # define BDIGIT_DBL_SIGNED long
 #endif
 
+#ifdef INFINITY
+# define HAVE_INFINITY
+#else
+/** @internal */
+extern const unsigned char rb_infinity[];
+# define INFINITY (*(float *)rb_infinity)
+#endif
+
+#ifdef NAN
+# define HAVE_NAN
+#else
+/** @internal */
+extern const unsigned char rb_nan[];
+# define NAN (*(float *)rb_nan)
+#endif
+
 #ifdef __CYGWIN__
 #undef _WIN32
 #endif
@@ -127,10 +124,7 @@ void xfree(void*);
 # define DOSISH_DRIVE_LETTER
 #endif
 
-#if defined(__NeXT__) || defined(__APPLE__)
-/* Do not trust WORDS_BIGENDIAN from configure since -arch compiler flag may
-   result in a different endian.  Instead trust __BIG_ENDIAN__ and
-   __LITTLE_ENDIAN__ which are set correctly by -arch. */
+#ifdef AC_APPLE_UNIVERSAL_BUILD
 #undef WORDS_BIGENDIAN
 #ifdef __BIG_ENDIAN__
 #define WORDS_BIGENDIAN
@@ -207,17 +201,36 @@ void xfree(void*);
 #endif /* __APPLE__ */
 #endif /* NeXT */
 
-#if defined(_WIN32)
+#ifdef _WIN32
 #include "ruby/win32.h"
 #endif
 
 #if defined(__BEOS__) && !defined(__HAIKU__) && !defined(BONE)
 #include <net/socket.h> /* intern.h needs fd_set definition */
+#elif defined (__SYMBIAN32__) && defined (HAVE_SYS_SELECT_H)
+# include <sys/select.h>
 #endif
 
-//#ifdef RUBY_EXPORT
+#ifdef __SYMBIAN32__
+# define FALSE 0
+# define TRUE 1
+#endif
+
+#ifdef RUBY_EXPORT
 #undef RUBY_EXTERN
-//#endif
+
+#ifndef FALSE
+# define FALSE 0
+#elif FALSE
+# error FALSE must be false
+#endif
+#ifndef TRUE
+# define TRUE 1
+#elif !TRUE
+# error TRUE must be true
+#endif
+
+#endif
 
 #ifndef RUBY_EXTERN
 #define RUBY_EXTERN extern
@@ -285,9 +298,17 @@ void rb_ia64_flushrs(void);
 #define RUBY_PLATFORM "unknown-unknown"
 #endif
 
+#ifndef RUBY_ALIAS_FUNCTION_TYPE
+#define RUBY_ALIAS_FUNCTION_TYPE(type, prot, name, args) \
+    type prot {return name args;}
+#endif
+#ifndef RUBY_ALIAS_FUNCTION_VOID
+#define RUBY_ALIAS_FUNCTION_VOID(prot, name, args) \
+    void prot {name args;}
+#endif
 #ifndef RUBY_ALIAS_FUNCTION
-#define RUBY_ALIAS_FUNCTION(old_prot, new_name, args) \
-    VALUE old_prot {return new_name args;}
+#define RUBY_ALIAS_FUNCTION(prot, name, args) \
+    RUBY_ALIAS_FUNCTION_TYPE(VALUE, prot, name, args)
 #endif
 
 #if defined(__cplusplus)

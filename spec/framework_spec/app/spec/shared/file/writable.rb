@@ -4,17 +4,20 @@ describe :file_writable, :shared => true do
   end
 
   after :each do
-    File.delete(@file) if File.exists?(@file)
+    rm_r @file
   end
 
   it "returns true if named file is writable by the effective user id of the process, otherwise false" do
-    platform_is_not :android do
-      @object.send(@method, '/etc/passwd').should == false
-    end
-    platform_is :android do
-      @object.send(@method, '/etc/hosts').should == false
-    end
+    #platform_is_not :windows do
+    #  @object.send(@method, "/etc/passwd").should == false
+    #end
     File.open(@file,'w') { @object.send(@method, @file).should == true }
+  end
+
+  ruby_version_is "1.9" do
+    it "accepts an object that has a #to_path method" do
+      File.open(@file,'w') { @object.send(@method, mock_to_path(@file)).should == true }
+    end
   end
 end
 

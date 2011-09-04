@@ -1,1 +1,1 @@
-ScratchPad.record File.join(__rhoGetCurrentDir(), __FILE__)
+ScratchPad.record __FILE__

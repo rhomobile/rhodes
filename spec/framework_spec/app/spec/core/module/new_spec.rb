@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Module.new" do
   it "creates a new anonymous Module" do
@@ -23,7 +23,7 @@ describe "Module.new" do
       def hello() "hello" end
       def bye()   "bye"   end
     end
-    
+
     (o = mock('x')).extend(fred)
     o.hello.should == "hello"
     o.bye.should   == "bye"

@@ -1,8 +1,16 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/common'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/shared/pos'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/common', __FILE__)
+require File.expand_path('../shared/pos', __FILE__)
 
 describe "Dir#seek" do
+  before :all do
+    DirSpecs.create_mock_dirs
+  end
+
+  after :all do
+    DirSpecs.delete_mock_dirs
+  end
+
   it "returns the Dir instance" do
     @dir.seek(@dir.pos).should == @dir
   end

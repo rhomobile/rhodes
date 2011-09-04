@@ -32,9 +32,15 @@ class ContextState
     @parents  = [self]
     @children = []
 
-    @mock_verify         = lambda { Mock.verify_count }
-    @mock_cleanup        = lambda { Mock.cleanup }
-    @expectation_missing = lambda { raise ExpectationNotFoundError }
+    @mock_verify         = Proc.new { Mock.verify_count }
+    @mock_cleanup        = Proc.new { Mock.cleanup }
+    @expectation_missing = Proc.new { raise SpecExpectationNotFoundError }
+  end
+
+  # Remove caching when a ContextState is dup'd for shared specs.
+  def initialize_copy(other)
+    @pre  = {}
+    @post = {}
   end
 
   # Returns true if this is a shared +ContextState+. Essentially, when
@@ -47,13 +53,19 @@ class ContextState
   # the +parents+ list.
   def parent=(parent)
     @description = nil
-    @parent = parent
-    parent.child self if parent and not shared?
 
-    state = parent
-    while state
-      parents.unshift state
-      state = state.parent
+    if shared?
+      @parent = nil
+    else
+      @parent = parent
+      parent.child self if parent
+
+      @parents = [self]
+      state = parent
+      while state
+        @parents.unshift state
+        state = state.parent
+      end
     end
   end
 
@@ -61,6 +73,29 @@ class ContextState
   # describe blocks.
   def child(child)
     @children << child
+  end
+
+  # Adds a nested ContextState in a shared ContextState to a containing
+  # ContextState.
+  #
+  # Normal adoption is from the parent's perspective. But adopt is a good
+  # verb and it's reasonable for the child to adopt the parent as well. In
+  # this case, manipulating state from inside the child avoids needlessly
+  # exposing the state to manipulate it externally in the dup. (See
+  # #it_should_behave_like)
+  def adopt(parent)
+    self.parent = parent
+
+    @examples = @examples.map do |example|
+      example = example.dup
+      example.context = self
+      example
+    end
+
+    children = @children
+    @children = []
+
+    children.each { |child| child.dup.adopt self }
   end
 
   # Returns a list of all before(+what+) blocks from self and any parents.
@@ -92,7 +127,9 @@ class ContextState
   # Creates an ExampleState instance for the block and stores it
   # in a list of examples to evaluate unless the example is filtered.
   def it(desc, &block)
+    #RHO
     puts "- it \"#{desc}\""
+    #RHO
     example = ExampleState.new(self, desc, block)
     MSpec.actions :add, example
     return if MSpec.guarded?
@@ -101,7 +138,6 @@ class ContextState
 
   # Evaluates the block and resets the toplevel +ContextState+ to #parent.
   def describe(&block)
-    puts "describe \"#{self.to_s}\""
     @parsed = protect @to_s, block, false
     MSpec.register_current parent
     MSpec.register_shared self if shared?
@@ -109,7 +145,7 @@ class ContextState
 
   # Returns a description string generated from self and all parents
   def description
-    @description ||= parents.map { |p| p.to_s }.join(" ")
+    @description ||= parents.map { |p| p.to_s }.compact.join(" ")
   end
 
   # Injects the before/after blocks and examples from the shared
@@ -121,11 +157,20 @@ class ContextState
       raise Exception, "Unable to find shared 'describe' for #{desc}"
     end
 
-    state.examples.each { |ex| ex.context = self; @examples << ex }
     state.before(:all).each { |b| before :all, &b }
     state.before(:each).each { |b| before :each, &b }
     state.after(:each).each { |b| after :each, &b }
     state.after(:all).each { |b| after :all, &b }
+
+    state.examples.each do |example|
+      example = example.dup
+      example.context = self
+      @examples << example
+    end
+
+    state.children.each do |child|
+      child.dup.adopt self
+    end
   end
 
   # Evaluates each block in +blocks+ using the +MSpec.protect+ method
@@ -164,7 +209,7 @@ class ContextState
             if example
               passed = protect nil, example
               MSpec.actions :example, state, example
-              protect nil, @expectation_missing unless MSpec.expectation? or not passed
+              #protect nil, @expectation_missing unless MSpec.expectation? or not passed
             end
             protect "after :each", post(:each)
             protect "Mock.verify_count", @mock_verify

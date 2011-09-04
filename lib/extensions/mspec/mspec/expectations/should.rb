@@ -1,25 +1,26 @@
 class Object
-  def should(matcher=nil)
+  NO_MATCHER_GIVEN = Object.new
+  def should(matcher=NO_MATCHER_GIVEN)
     MSpec.expectation
     MSpec.actions :expectation, MSpec.current.state
-    if matcher
+    unless matcher.equal?(NO_MATCHER_GIVEN)
       unless matcher.matches?(self)
-        Expectation.fail_with(*matcher.failure_message)
+        SpecExpectation.fail_with(*matcher.failure_message)
       end
     else
-      PositiveOperatorMatcher.new(self)
+      SpecPositiveOperatorMatcher.new(self)
     end
   end
 
-  def should_not(matcher=nil)
+  def should_not(matcher=NO_MATCHER_GIVEN)
     MSpec.expectation
     MSpec.actions :expectation, MSpec.current.state
-    if matcher
+    unless matcher.equal?(NO_MATCHER_GIVEN)
       if matcher.matches?(self)
-        Expectation.fail_with(*matcher.negative_failure_message)
+        SpecExpectation.fail_with(*matcher.negative_failure_message)
       end
     else
-      NegativeOperatorMatcher.new(self)
+      SpecNegativeOperatorMatcher.new(self)
     end
   end
 end

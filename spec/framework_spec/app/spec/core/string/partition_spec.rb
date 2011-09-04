@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes.rb'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes.rb', __FILE__)
 
 ruby_version_is '1.8.7' do
   describe "String#partition with String" do
@@ -27,6 +27,10 @@ ruby_version_is '1.8.7' do
     it "raises error if not convertible to string" do
       lambda{ "hello".partition(5) }.should raise_error(TypeError)
       lambda{ "hello".partition(nil) }.should raise_error(TypeError)
+    end
+
+    it "takes precedence over a given block" do
+      "hello world".partition("o") { true }.should == ["hell", "o", " world"]
     end
   end
 end

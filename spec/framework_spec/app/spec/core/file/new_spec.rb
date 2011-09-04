@@ -1,39 +1,39 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../shared/open', __FILE__)
 
 describe "File.new" do
   before :each do
     @file = tmp('test.txt')
     @fh = nil
     @flags = File::CREAT | File::TRUNC | File::WRONLY
-    File.open(@file, "w") {} # touch
+    touch @file
   end
 
   after :each do
-   @fh.close if @fh 
-    File.delete(@file) if File.exists?(@file)
-    @fh    = nil
-    @file  = nil
-    @flags = nil
+    @fh.close if @fh
+    rm_r @file
   end
 
-  it "return a new File with mode string" do
+  it "returns a new File with mode string" do
     @fh = File.new(@file, 'w')
-    @fh.class.should == File
+    @fh.should be_kind_of(File)
     File.exists?(@file).should == true
   end
 
-  it "return a new File with mode num" do
+  it "returns a new File with mode num" do
     @fh = File.new(@file, @flags)
-    @fh.class.should == File
+    @fh.should be_kind_of(File)
     File.exists?(@file).should == true
   end
 
-  it "return a new File with modus num and permissions" do
+  it "returns a new File with modus num and permissions" do
     File.delete(@file)
     File.umask(0011)
     @fh = File.new(@file, @flags, 0755)
-    @fh.class.should == File
-    File.stat(@file).mode.to_s(8).should == "100744"
+    @fh.should be_kind_of(File)
+    platform_is_not :windows do
+      File.stat(@file).mode.to_s(8).should == "100744"
+    end
     File.exists?(@file).should == true
   end
 
@@ -61,17 +61,18 @@ describe "File.new" do
     ensure
       f.close
     end
+if ( System.get_property('platform') != 'WINDOWS' )    
     File.stat(@file).mode.to_s(8).should == orig_perms
-
+end
     # it should be still possible to read from the file
     File.read(@file).should == "test\n"
   end
 
-  it "return a new File with modus fd " do
+  it "returns a new File with modus fd " do
     begin
       @fh_orig = File.new(@file)
       @fh = File.new(@fh_orig.fileno)
-      @fh.class.should == File
+      @fh.should be_kind_of(File)
       File.exists?(@file).should == true
     ensure
       @fh.close rescue nil if @fh
@@ -81,9 +82,9 @@ describe "File.new" do
     end
   end
 
-  it "create a new file when use File::EXCL mode " do
+  it "creates a new file when use File::EXCL mode " do
     @fh = File.new(@file, File::EXCL)
-    @fh.class.should == File
+    @fh.should be_kind_of(File)
     File.exists?(@file).should == true
   end
 
@@ -91,59 +92,74 @@ describe "File.new" do
     lambda { @fh = File.new(@file, File::CREAT|File::EXCL) }.should raise_error(Errno::EEXIST)
   end
 
-  it "create a new file when use File::WRONLY|File::APPEND mode" do
+  it "creates a new file when use File::WRONLY|File::APPEND mode" do
     @fh = File.new(@file, File::WRONLY|File::APPEND)
-    @fh.class.should == File
+    @fh.should be_kind_of(File)
     File.exists?(@file).should == true
   end
 
-  # RHO TODO: uncomment it when mainline ruby 1.9 will behave the same
-  # Right now it works the same - don't throw exceptions
-=begin
-  it "raises an Errno::EINVAL error with File::APPEND" do
-    lambda { @fh = File.new(@file, File::APPEND) }.should raise_error(Errno::EINVAL)
+  ruby_bug "[ruby-dev:40397]", "1.8.8" do
+    it "returns a new File when use File::APPEND mode" do
+      @fh = File.new(@file, File::APPEND)
+      @fh.should be_kind_of(File)
+      File.exists?(@file).should == true
+    end
+
+    it "returns a new File when use File::RDONLY|File::APPEND mode" do
+      @fh = File.new(@file, File::RDONLY|File::APPEND)
+      @fh.should be_kind_of(File)
+      File.exists?(@file).should == true
+    end
   end
 
-  it "raises an Errno::EINVAL error with File::RDONLY|File::APPEND" do
-    lambda { @fh = File.new(@file, File::RDONLY|File::APPEND) }.should raise_error(Errno::EINVAL)
-  end
-=end
-
-  it "raises an Errno::EINVAL error with File::RDONLY|File::WRONLY" do
+  it "returns a new File when use File::RDONLY|File::WRONLY mode" do
     @fh = File.new(@file, File::RDONLY|File::WRONLY)
-    @fh.class.should == File
+    @fh.should be_kind_of(File)
     File.exists?(@file).should == true
   end
 
 
-  it "create a new file when use File::WRONLY|File::TRUNC mode" do
+  it "creates a new file when use File::WRONLY|File::TRUNC mode" do
     @fh = File.new(@file, File::WRONLY|File::TRUNC)
-    @fh.class.should == File
+    @fh.should be_kind_of(File)
     File.exists?(@file).should == true
   end
 
   it "coerces filename using to_str" do
     name = mock("file")
     name.should_receive(:to_str).and_return(@file)
-    File.new(name, "w") { }
+    @fh = File.new(name, "w")
     File.exists?(@file).should == true
   end
 
-  specify  "expected errors " do
-    lambda { File.new(true)  }.should raise_error(TypeError)
-    lambda { File.new(false) }.should raise_error(TypeError)
-    lambda { File.new(nil)   }.should raise_error(TypeError)
-    lambda { File.new(-1) }.should raise_error(Errno::EBADF)
-    lambda { File.new(@file, File::CREAT, 0755, 'test') }.should raise_error(ArgumentError)
+  ruby_version_is "1.9" do
+    it "coerces filename using #to_path" do
+      name = mock("file")
+      name.should_receive(:to_path).and_return(@file)
+      @fh = File.new(name, "w")
+      File.exists?(@file).should == true
+    end
   end
 
-  # RHO TODO: mainline ruby 1.9 does not pass this test
-=begin
-  # You can't alter mode or permissions when opening a file descriptor
-  #
+  it "raises a TypeError if the first parameter can't be coerced to a string" do
+    lambda { File.new(true) }.should raise_error(TypeError)
+    lambda { File.new(false) }.should raise_error(TypeError)
+  end
+
+  it "raises a TypeError if the first parameter is nil" do
+    lambda { File.new(nil) }.should raise_error(TypeError)
+  end
+
+  it "raises an Errno::EBADF if the first parameter is an invalid file descriptor" do
+    lambda { File.new(-1) }.should raise_error(Errno::EBADF)
+  end
+
+if ( System.get_property('platform') != 'WINDOWS' )
   it "can't alter mode or permissions when opening a file" do
     @fh = File.new(@file)
     lambda { File.new(@fh.fileno, @flags) }.should raise_error(Errno::EINVAL)
   end
-=end
+end
+
+  it_behaves_like :open_directory, :new
 end

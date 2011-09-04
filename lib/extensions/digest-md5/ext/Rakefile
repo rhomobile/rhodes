@@ -15,7 +15,7 @@ def build_extension(name, arch)
     args << "-I#{$rhoroot}/platform/shared"
 
     if ENV['RHO_PLATFORM'] == 'android'
-      args << "-I#{$rhoroot}/platform/shared/ruby/linux"
+      args << "-I#{$rhoroot}/platform/shared/ruby/android"
       args << "-I#{$rhoroot}/platform/shared/ruby/generated"
       cc_compile f, $tempdir, args or exit 1
 

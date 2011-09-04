@@ -32,6 +32,9 @@ module UnboundMethodSpecs
 
   class Parent
     def foo; end
+    def self.class_method
+      "I am #{name}"
+    end
   end
 
   class Child1 < Parent; end
@@ -39,7 +42,7 @@ module UnboundMethodSpecs
 
   class A
     def baz(a, b)
-      return [File.join(__rhoGetCurrentDir(), __FILE__), self.class]
+      return [__FILE__, self.class]
     end
   end
 

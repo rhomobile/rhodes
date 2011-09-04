@@ -14,6 +14,8 @@ class DottedFormatter
     else
       @out = File.open out, "w"
     end
+
+    @current_state = nil
   end
 
   # Creates the +TimerAction+ and +TallyAction+ instances and
@@ -28,6 +30,13 @@ class DottedFormatter
     MSpec.register :before,    self
     MSpec.register :after,     self
     MSpec.register :finish,    self
+    MSpec.register :abort,     self
+  end
+
+  def abort
+    if @current_state
+      puts " aborting example: #{@current_state.description}"
+    end
   end
 
   # Returns true if any exception is raised while running
@@ -47,7 +56,8 @@ class DottedFormatter
 
   # Callback for the MSpec :before event. Resets the
   # +#exception?+ and +#failure+ flags.
-  def before(state = nil)
+  def before(state=nil)
+    @current_state = state
     @failure = @exception = false
   end
 
@@ -65,9 +75,11 @@ class DottedFormatter
   # Callback for the MSpec :after event. Prints an indicator
   # for the result of evaluating this example as follows:
   #   . = No failure or error
-  #   F = An ExpectationNotMetError was raised
-  #   E = Any exception other than ExpectationNotMetError
+  #   F = An SpecExpectationNotMetError was raised
+  #   E = Any exception other than SpecExpectationNotMetError
   def after(state = nil)
+    @current_state = nil
+
     unless exception?
       print "."
     else

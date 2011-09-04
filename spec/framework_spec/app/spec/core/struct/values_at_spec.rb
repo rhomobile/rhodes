@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Struct#values_at" do
   it "returns an array of values" do
@@ -10,7 +10,7 @@ describe "Struct#values_at" do
   end
 
   it "fails when passed unsupported types" do
-    car = Struct::Car.new('Ford', 'Ranger')
+    car = StructClasses::Car.new('Ford', 'Ranger')
     lambda { car.values_at('make') }.should raise_error(TypeError)
   end
 end

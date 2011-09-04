@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/methods'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/methods', __FILE__)
 
 describe "Time#dup" do
   it "returns a Time object that represents the same time" do
@@ -17,5 +17,13 @@ describe "Time#dup" do
 	  t.gmtime
 
 	  t2.gmt?.should == false
+  end
+
+  it "returns a subclass instance" do
+    c = Class.new(Time)
+    t = c.now
+
+    t.should be_kind_of(c)
+    t.dup.should be_kind_of(c)
   end
 end

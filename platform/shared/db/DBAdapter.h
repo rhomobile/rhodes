@@ -45,6 +45,8 @@ public:
     boolean isMainRubyThread();
     void Lock();
     void Unlock();
+
+    void close();
 };
 }
 
