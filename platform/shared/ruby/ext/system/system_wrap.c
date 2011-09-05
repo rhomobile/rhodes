@@ -1874,6 +1874,10 @@ extern void rho_sys_start_timer( int interval, const char *url, const char* para
 #define stop_timer rho_sys_stop_timer
 extern void rho_sys_stop_timer( const char *url );
 
+#define set_application_icon_badge rho_sys_set_application_icon_badge
+extern void rho_sys_set_application_icon_badge(int badge_number);
+
+
 	#if !defined(bool)
 	#define bool int
 	#define true  1
@@ -1953,7 +1957,7 @@ SWIG_ruby_failed(void)
 } 
 
 
-/*@SWIG:C:\Install\swigwin-2.0.4\Lib\ruby\rubyprimtypes.swg,19,%ruby_aux_method@*/
+/*@SWIG:/usr/local/share/swig/2.0.4/ruby/rubyprimtypes.swg,19,%ruby_aux_method@*/
 SWIGINTERN VALUE SWIG_AUX_NUM2LONG(VALUE *args)
 {
   VALUE obj = args[0];
@@ -2553,6 +2557,27 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_set_application_icon_badge(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), Ruby_Format_TypeError( "", "int","set_application_icon_badge", 1, argv[0] ));
+  } 
+  arg1 = (int)(val1);
+  set_application_icon_badge(arg1);
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -2850,5 +2875,6 @@ SWIGEXPORT void Init_System(void) {
   rb_define_module_function(mSystem, "app_uninstall", _wrap_app_uninstall, -1);
   rb_define_module_function(mSystem, "start_timer", _wrap_start_timer, -1);
   rb_define_module_function(mSystem, "stop_timer", _wrap_stop_timer, -1);
+  rb_define_module_function(mSystem, "set_application_icon_badge", _wrap_set_application_icon_badge, -1);
 }
 

@@ -696,6 +696,13 @@ void rho_appmanager_load( void* httpContext, const char* szQuery)
 	return;
 }
 
+
+void rho_sys_set_application_icon_badge(int badge_number) {
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:badge_number];
+}
+
+
+
 /*
 #define MAX_ACTIONS 4
 const static struct {

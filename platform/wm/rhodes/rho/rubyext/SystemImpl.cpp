@@ -747,4 +747,9 @@ void rho_sys_app_uninstall(const char *appname)
 #endif
 }
 
+void rho_sys_set_application_icon_badge(int badge_number) {
+    //unsupported on WM
+}
+
+
 } //extern "C"
