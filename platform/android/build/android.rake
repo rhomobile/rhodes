@@ -1707,25 +1707,49 @@ namespace "run" do
     namespace "phone_spec" do
       task :device do
         $device_flag = "-d"
-        exit Jake.run_spec_app('android','phone_spec')
+        Jake.run_spec_app('android','phone_spec')
+        exit $failed.to_i unless $dont_exit_on_failure
       end
 
       task :emulator do
         $device_flag = "-e"
-        exit Jake.run_spec_app('android','phone_spec')
+        Jake.run_spec_app('android','phone_spec')
+        exit $failed.to_i unless $dont_exit_on_failure
       end
     end
 
     namespace "framework_spec" do
       task :device do
         $device_flag = "-d"
-        exit Jake.run_spec_app('android','framework_spec')
+        Jake.run_spec_app('android','framework_spec')
+        exit $failed.to_i unless $dont_exit_on_failure
       end
 
       task :emulator do
         $device_flag = "-e"
-        exit Jake.run_spec_app('android','framework_spec')
+        Jake.run_spec_app('android','framework_spec')
+        exit $failed.to_i unless $dont_exit_on_failure
       end
+    end
+
+    task :allspecs do
+      $dont_exit_on_failure = true
+      Rake::Task['run:android:phone_spec'].invoke
+      Rake::Task['run:android:framework_spec'].invoke
+      failure_output = ""
+      if $failed.to_i > 0
+        failure_output = ""
+        failure_output += "phone_spec failures:\n\n" + File.open(app_expanded_path('phone_spec') + "/faillog.txt").read if
+          File.exist?(app_expanded_path('phone_spec') + "/faillog.txt")
+        failure_output += "framework_spec failures:\n\n" + File.open(app_expanded_path('framework_spec') + "/faillog.txt").read if
+          File.exist?(app_expanded_path('framework_spec') + "/faillog.txt")
+        chdir basedir
+        File.open("faillog.txt", "w") { |io| failure_output.each {|x| io << x }  }
+      end
+      puts "Agg Total: #{$total}"
+      puts "Agg Passed: #{$passed}"
+      puts "Agg Failed: #{$failed}"
+      exit $failed.to_i
     end
 
     task :emulator => "device:android:debug" do
