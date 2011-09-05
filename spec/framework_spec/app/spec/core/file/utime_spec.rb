@@ -1,5 +1,6 @@
 require File.expand_path('../../../spec_helper', __FILE__)
 
+if System.get_property('platform') != 'APPLE'
 describe "File.utime" do
   before :each do
     @atime = Time.now
@@ -35,4 +36,5 @@ describe "File.utime" do
       File.utime(@atime, @mtime, mock_to_path(@file1), mock_to_path(@file2))
     end
   end
+end
 end
