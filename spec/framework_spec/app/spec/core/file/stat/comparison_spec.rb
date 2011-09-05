@@ -13,7 +13,7 @@ describe "File::Stat#<=>" do
     @file2.close unless @file2.closed?
     rm_r @name1, @name2
   end
-if ( System.get_property('platform') != 'WINDOWS' )
+if ( System.get_property('platform') != 'WINDOWS' && System.get_property('platform') != 'APPLE' )
   it "is able to compare files by the same modification times" do
     now = Time.now
     File.utime(now, now, @name1)

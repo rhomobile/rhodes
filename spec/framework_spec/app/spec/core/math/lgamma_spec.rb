@@ -1,5 +1,6 @@
 require File.expand_path('../../../spec_helper', __FILE__)
 
+if System.get_property('platform') != 'APPLE'
 ruby_version_is "1.9" do
   describe "Math.lgamma" do
     it "returns [Infinity, 1] when passed 0" do
@@ -82,4 +83,5 @@ ruby_version_is "1.9" do
       Math.lgamma(nan_value)[1].should == 1
     end
   end
+end
 end
