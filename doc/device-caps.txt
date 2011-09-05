@@ -109,6 +109,10 @@ Return command line parameters as a string. Worked only on iPhone now. Resetting
 	:::ruby
 	System.get_start_params() 
 
+Set application icon badge (number) - only for iPhone. set badge to 0 (zero) for remove badge.
+	:::ruby
+	System.set_application_icon_badge(badge_number)
+
 ### Sample
 See layout.erb of [System API Sample application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/layout.erb)  for some of the examples of how to use System class. There is also [system test](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/SystemTest/controller.rb) which demonstrate System class usage.
 
