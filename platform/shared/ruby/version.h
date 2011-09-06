@@ -9,8 +9,11 @@
 #define RUBY_RELEASE_DAY 9
 #define RUBY_RELEASE_DATE "2011-07-09"
 
+#ifdef RHO_SYMBIAN
+#include "include/ruby/version.h"
+#else
 #include "ruby/version.h"
-
+#endif
 #if !defined RUBY_LIB_VERSION && defined RUBY_LIB_VERSION_STYLE
 # if RUBY_LIB_VERSION_STYLE == 3
 #   define RUBY_LIB_VERSION STRINGIZE(RUBY_VERSION_MAJOR)"."STRINGIZE(RUBY_VERSION_MINOR)"."STRINGIZE(RUBY_VERSION_TEENY)
