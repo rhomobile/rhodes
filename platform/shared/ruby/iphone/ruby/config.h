@@ -133,7 +133,9 @@
 #define HAVE_CRYPT 1
 #define HAVE_FLOCK 1
 #define HAVE_ISNAN 1
-#define HAVE_FINITE 1
+//RHO
+//#define HAVE_FINITE 1
+//RHO
 #define HAVE_ISINF 1
 #define HAVE_HYPOT 1
 #define HAVE_ACOSH 1
