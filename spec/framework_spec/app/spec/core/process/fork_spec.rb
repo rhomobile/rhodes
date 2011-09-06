@@ -1,5 +1,6 @@
 require File.expand_path('../../../spec_helper', __FILE__)
 
+if System.get_property('platform') != 'APPLE'
 describe "Process.fork" do
   # As of 1.9 Process.respond_to?(:fork) returns false on platforms that do
   # not implement it.
@@ -43,4 +44,5 @@ describe "Process.fork" do
       end
     end
   end
+end
 end

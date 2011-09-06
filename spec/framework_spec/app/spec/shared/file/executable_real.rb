@@ -13,6 +13,7 @@ describe :file_executable_real, :shared => true do
     rm_r @file1, @file2
   end
 
+if System.get_property('platform') != 'APPLE'    
   platform_is_not :windows do
     it "returns true if the file its an executable" do
       @object.send(@method, @file1).should == true
@@ -25,8 +26,9 @@ describe :file_executable_real, :shared => true do
       end
     end
   end
-  
-if ( System.get_property('platform') != 'WINDOWS' )
+end
+    
+if ( System.get_property('platform') != 'WINDOWS' && System.get_property('platform') != 'APPLE')
   it "returns true if named file is readable by the real user id of the process, otherwise false" do
     @object.send(@method, @file1).should == true
   end

@@ -1,5 +1,6 @@
 require File.expand_path('../../../spec_helper', __FILE__)
 
+if System.get_property('platform') != 'APPLE'
 # if run indirectly (eg via CI), kills the runner. TODO: needs guard
 describe "Process.kill" do
   it "raises an ArgumentError for unknown signals" do
@@ -146,3 +147,4 @@ describe "Process.kill" do
     end
   end
 end
+end    

@@ -2,6 +2,7 @@ require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "Process.setpriority" do
   # Needs a valid version written for Linux
+  if System.get_property('platform') != 'APPLE'  
   platform_is :os => :darwin do
     it "sets the scheduling priority for a specified process" do
       p = Process.getpriority(Process::PRIO_PROCESS, 0)
@@ -18,7 +19,7 @@ describe "Process.setpriority" do
       end
     end
   end
-
+  end
   # Darwin and FreeBSD don't seem to handle these at all, getting all out of
   # whack with either permission errors or just the wrong value
   platform_is_not :os => [:darwin, :freebsd, :windows] do

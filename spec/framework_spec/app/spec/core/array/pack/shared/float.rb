@@ -55,7 +55,7 @@ describe :array_pack_float_le, :shared => true do
   it "encodes negative Infinity" do
     [-infinity_value].pack(pack_format).should == "\x00\x00\x80\xff"
   end
-if ( System.get_property('platform') != 'ANDROID' )
+if ( System.get_property('platform') != 'ANDROID' && System.get_property('platform') != 'APPLE')
   it "encodes NaN" do
     [nan_value].pack(pack_format).should == "\x00\x00\xc0\xff"
   end
@@ -124,7 +124,7 @@ describe :array_pack_float_be, :shared => true do
   it "encodes negative Infinity" do
     [-infinity_value].pack(pack_format).should == "\xff\x80\x00\x00"
   end
-if ( System.get_property('platform') != 'ANDROID' )
+if ( System.get_property('platform') != 'ANDROID' && System.get_property('platform') != 'APPLE')
   it "encodes NaN" do
     [nan_value].pack(pack_format).should == "\xff\xc0\x00\x00"
   end
@@ -193,7 +193,7 @@ describe :array_pack_double_le, :shared => true do
   it "encodes negative Infinity" do
     [-infinity_value].pack(pack_format).should == "\x00\x00\x00\x00\x00\x00\xf0\xff"
   end
-if ( System.get_property('platform') != 'ANDROID' )
+if ( System.get_property('platform') != 'ANDROID' && System.get_property('platform') != 'APPLE')
   it "encodes NaN" do
     [nan_value].pack(pack_format).should == "\x00\x00\x00\x00\x00\x00\xf8\xff"
   end
@@ -262,7 +262,7 @@ describe :array_pack_double_be, :shared => true do
   it "encodes negative Infinity" do
     [-infinity_value].pack(pack_format).should == "\xff\xf0\x00\x00\x00\x00\x00\x00"
   end
-if ( System.get_property('platform') != 'ANDROID' )
+if ( System.get_property('platform') != 'ANDROID' && System.get_property('platform') != 'APPLE' )
   it "encodes NaN" do
     [nan_value].pack(pack_format).should == "\xff\xf8\x00\x00\x00\x00\x00\x00"
   end

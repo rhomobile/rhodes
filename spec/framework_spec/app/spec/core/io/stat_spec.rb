@@ -1,6 +1,7 @@
 require File.expand_path('../../../spec_helper', __FILE__)
 require File.expand_path('../fixtures/classes', __FILE__)
 
+if System.get_property('platform') != 'APPLE'
 describe "IO#stat" do
   before :each do
     @io = IO.popen 'cat', "r+"
@@ -21,4 +22,5 @@ describe "IO#stat" do
   it "can stat pipes" do
     @io.stat.should be_an_instance_of(File::Stat)
   end
+end
 end

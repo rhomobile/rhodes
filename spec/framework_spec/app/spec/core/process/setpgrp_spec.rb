@@ -1,5 +1,6 @@
 require File.expand_path('../../../spec_helper', __FILE__)
 
+if System.get_property('platform') != 'APPLE'
 # TODO: put these in the right files.
 describe "Process.setpgrp and Process.getpgrp" do
   platform_is_not :windows do
@@ -40,4 +41,5 @@ describe "Process.setpgrp and Process.getpgrp" do
       end
     end
   end
+end
 end

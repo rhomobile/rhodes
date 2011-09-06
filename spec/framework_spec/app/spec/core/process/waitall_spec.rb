@@ -15,7 +15,7 @@ describe "Process.waitall" do
   it "takes no arguments" do
     lambda { Process.waitall(0) }.should raise_error(ArgumentError)
   end
-
+if System.get_property('platform') != 'APPLE'
   platform_is_not :windows do
     it "waits for all children" do
       pids = []
@@ -45,4 +45,5 @@ describe "Process.waitall" do
       }
     end
   end
+end    
 end
