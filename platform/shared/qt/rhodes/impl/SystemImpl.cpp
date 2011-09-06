@@ -248,4 +248,8 @@ int rho_sys_set_sleeping(int sleeping)
 }
 #endif
 
+void rho_sys_set_application_icon_badge(int badge_number) {
+    //unsupported on WM
+}
+
 } //extern "C"
