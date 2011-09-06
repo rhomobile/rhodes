@@ -254,6 +254,10 @@ rb_genrand_real(void)
     return genrand_real(mt);
 }
 
+#ifndef SIZEOF_BDIGITS
+#define SIZEOF_BDIGITS SIZEOF_INT
+#endif
+
 #define BDIGITS(x) (RBIGNUM_DIGITS(x))
 #define BITSPERDIG (SIZEOF_BDIGITS*CHAR_BIT)
 #define BIGRAD ((BDIGIT_DBL)1 << BITSPERDIG)

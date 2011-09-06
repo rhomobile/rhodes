@@ -304,6 +304,10 @@ rb_int2inum(SIGNED_VALUE n)
     return rb_int2big(n);
 }
 
+#ifndef SIZEOF_BDIGITS
+#define SIZEOF_BDIGITS SIZEOF_INT
+#endif
+
 #if SIZEOF_LONG % SIZEOF_BDIGITS != 0
 # error unexpected SIZEOF_LONG : SIZEOF_BDIGITS ratio
 #endif
