@@ -31,7 +31,7 @@
 #include <ruby/ext/calendar/event.h>
 
 #undef DEFAULT_LOGCATEGORY
-#define DEFAULT_LOGCATEGORY "Event"
+#define DEFAULT_LOGCATEGORY "EventJNI"
 
 #ifdef RHO_TRACE
 #undef RHO_TRACE
@@ -139,6 +139,8 @@ static jfieldID fidLastModified;
 static jfieldID fidLocation;
 static jfieldID fidNotes;
 static jfieldID fidPrivacy;
+static jfieldID fidFrequency;
+static jfieldID fidInterval;
 
 static bool init_event_stuff(JNIEnv *env)
 {
@@ -164,6 +166,10 @@ static bool init_event_stuff(JNIEnv *env)
     if (!fidNotes) return false;
     fidPrivacy = getJNIClassField(env, clsEvent, "privacy", "Ljava/lang/String;");
     if (!fidPrivacy) return false;
+    fidFrequency = getJNIClassField(env, clsEvent, "frequency", "Ljava/lang/String;");
+    if (!fidFrequency) return false;
+    fidInterval = getJNIClassField(env, clsEvent, "interval", "I");
+    if (!fidInterval) return false;
 
     initialized = true;
     return true;
@@ -242,6 +248,29 @@ jobject event_cast<jobject, VALUE>(VALUE rEvent)
         env->SetObjectField(jEvent, fidPrivacy, rho_cast<jhstring>(RSTRING_PTR(rPrivacy)).get());
     }
 
+    RHO_TRACE("eventFromRuby (11)");
+    VALUE rRecurrence = rb_hash_aref(rEvent, rb_str_new2(RUBY_EV_RECURRENCE));
+    if (!NIL_P(rRecurrence)) {
+        Check_Type(rRecurrence, T_HASH);
+
+        VALUE rFrequency = rb_hash_aref(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_FREQUENCY));
+        Check_Type(rFrequency, T_STRING);
+        const char *frequency = RSTRING_PTR(rFrequency);
+        if (   strcasecmp(frequency, RUBY_EV_RECURRENCE_FREQUENCY_DAILY) != 0
+        	&& strcasecmp(frequency, RUBY_EV_RECURRENCE_FREQUENCY_WEEKLY) != 0
+        	&& strcasecmp(frequency, RUBY_EV_RECURRENCE_FREQUENCY_MONTHLY) != 0
+        	&& strcasecmp(frequency, RUBY_EV_RECURRENCE_FREQUENCY_YEARLY) != 0)
+        {
+        	rb_raise(rb_eArgError, "Wrong recurrence frequency: %s", frequency);
+        }
+        env->SetObjectField(jEvent, fidFrequency, rho_cast<jhstring>(RSTRING_PTR(rFrequency)).get());
+
+        VALUE rInterval = rb_hash_aref(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_INTERVAL));
+        rInterval = rb_funcall(rInterval, rb_intern("to_i"), 0);
+        int interval = NUM2INT(rInterval);
+        env->SetIntField(jEvent, fidInterval, interval);
+    }
+
     RHO_TRACE("eventFromRuby: return");
     return jEvent;
 }
@@ -315,6 +344,36 @@ VALUE event_cast<VALUE, jobject>(jobject jEvent)
         s = rho_cast<std::string>(env, jPrivacy);
         env->DeleteLocalRef(jPrivacy);
         rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_PRIVACY), rb_str_new2(s.c_str()));
+    }
+
+    RHO_TRACE("eventToRuby (11)");
+    jstring jFrequency = (jstring)env->GetObjectField(jEvent, fidFrequency);
+    if (jFrequency)
+    {
+        VALUE rRecurrence = rb_hash_new();
+
+        jboolean isCopy;
+        const char* str = env->GetStringUTFChars (jFrequency, &isCopy);
+        if (   strcasecmp(str, RUBY_EV_RECURRENCE_FREQUENCY_DAILY) == 0
+        	|| strcasecmp(str, RUBY_EV_RECURRENCE_FREQUENCY_WEEKLY) == 0
+        	|| strcasecmp(str, RUBY_EV_RECURRENCE_FREQUENCY_MONTHLY) == 0
+        	|| strcasecmp(str, RUBY_EV_RECURRENCE_FREQUENCY_YEARLY) == 0)
+        {
+        	s = rho_cast<std::string>(env, jFrequency);
+        } else {
+        	s = "undefined";
+            // rb_raise(rb_eArgError, "Wrong recurrence frequency: %s", frequency);
+        }
+        if (isCopy == JNI_TRUE) {
+           env->ReleaseStringUTFChars (jFrequency, str);
+        }
+        rb_hash_aset(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_FREQUENCY), rb_str_new2(s.c_str()));
+        env->DeleteLocalRef(jFrequency);
+
+        jint jInterval = (jint)env->GetIntField(jEvent, fidInterval);
+        rb_hash_aset(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_INTERVAL), INT2FIX((int)jInterval));
+
+        rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_RECURRENCE), rRecurrence);
     }
 
     RHO_TRACE("eventToRuby: return");

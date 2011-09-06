@@ -30,6 +30,11 @@ import java.util.Date;
 
 public class Event {
 	
+	public static final String FREQUENCY_DAILY = "daily";
+	public static final String FREQUENCY_WEEKLY = "weekly";
+	public static final String FREQUENCY_MONTHLY = "monthly";
+	public static final String FREQUENCY_YEARLY = "yearly";
+	
 	public Event(String eid) {
 		id = eid;
 	}
@@ -42,4 +47,6 @@ public class Event {
 	public String location;
 	public String notes;
 	public String privacy;
+	public String frequency;
+	public int interval;
 }
