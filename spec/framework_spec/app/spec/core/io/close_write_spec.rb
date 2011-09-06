@@ -1,6 +1,7 @@
 require File.expand_path('../../../spec_helper', __FILE__)
 require File.expand_path('../fixtures/classes', __FILE__)
 
+if System.get_property('platform') != 'APPLE'
 describe "IO#close_write" do
   before :each do
     @io = IO.popen 'cat', 'r+'
@@ -62,4 +63,5 @@ describe "IO#close_write" do
 
   #  lambda { @io.close_write }.should raise_error(IOError)
   #end
+end
 end

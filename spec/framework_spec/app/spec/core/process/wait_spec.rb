@@ -1,5 +1,6 @@
 require File.expand_path('../../../spec_helper', __FILE__)
 
+if System.get_property('platform') != 'APPLE'
 describe "Process.wait" do
   before :all do
     begin
@@ -98,3 +99,4 @@ describe "Process.wait" do
     end
   end
 end
+end    

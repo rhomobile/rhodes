@@ -1,5 +1,6 @@
 require File.expand_path('../../../spec_helper', __FILE__)
 
+if System.get_property('platform') != 'APPLE'
 describe "Process.detach" do
   platform_is_not :windows do
     it "returns a thread" do
@@ -22,3 +23,4 @@ describe "Process.detach" do
     end
   end
 end
+end    

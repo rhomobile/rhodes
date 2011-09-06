@@ -27,7 +27,7 @@ describe "Kernel#open" do
     @output = open(@name, "r") { |f| f.gets }
     @output.should == "This is a test"
   end
-
+if System.get_property('platform') != 'APPLE'
   platform_is_not :windows do
     it "opens an io when path starts with a pipe" do
       @io = open("|date")
@@ -39,7 +39,7 @@ describe "Kernel#open" do
       @output.should_not == ''
     end
   end
-
+end
   platform_is :windows do
     it "opens an io when path starts with a pipe" do
       @io = open("|date /t")

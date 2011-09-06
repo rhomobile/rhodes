@@ -9,7 +9,7 @@ describe "Process.wait2" do
     rescue NotImplementedError
     end
   end
-
+if System.get_property('platform') != 'APPLE'
   platform_is_not :windows do
     it "returns the pid and status of child process" do
       pidf = Process.fork { Process.exit! 99 }
@@ -20,7 +20,7 @@ describe "Process.wait2" do
       status.exitstatus.should == 99
     end
   end
-
+end
   it "raises a StandardError if no child processes exist" do
     lambda { Process.wait2 }.should raise_error(Errno::ECHILD)
     lambda { Process.wait2 }.should raise_error(StandardError)

@@ -1,5 +1,6 @@
 require File.expand_path('../../../spec_helper', __FILE__)
 
+if System.get_property('platform') != 'APPLE'
 describe "Process.initgroups" do
   platform_is_not :windows do
     it "initializes the supplemental group access list" do
@@ -17,4 +18,5 @@ describe "Process.initgroups" do
       end
     end
   end
+end
 end

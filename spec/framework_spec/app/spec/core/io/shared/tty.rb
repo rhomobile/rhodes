@@ -1,6 +1,8 @@
 require File.expand_path('../../fixtures/classes', __FILE__)
 
+
 describe :io_tty, :shared => true do
+if System.get_property('platform') != 'APPLE'    
   with_tty do
     # Yeah, this will probably break.
     it "returns true if this stream is a terminal device (TTY)" do
@@ -16,3 +18,4 @@ describe :io_tty, :shared => true do
   #  lambda { IOSpecs.closed_io.send @method }.should raise_error(IOError)
   #end
 end
+end    
