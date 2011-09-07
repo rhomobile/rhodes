@@ -226,6 +226,26 @@ void Init_System()
 {
 }
 
+void Init_AsyncHttp()
+{
+}
+
+void Init_SignatureTool()
+{
+}
+
+void Init_RhoBluetooth()
+{
+}
+
+void Init_RhodesNativeViewManager()
+{
+}
+
+void Init_NavBar()
+{
+}
+
 VALUE has_network(){
     return Qfalse;
 }
