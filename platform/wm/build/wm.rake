@@ -73,6 +73,8 @@ namespace "config" do
   
 
   task :wm => [:set_wm_platform, "config:common"] do    
+    puts " $current_platform : #{$current_platform}"
+    
     $rubypath = "res/build-tools/RhoRuby.exe" #path to RubyMac
     $builddir = $config["build"]["wmpath"] + "/build"
     $vcbindir = $config["build"]["wmpath"] + "/bin"
@@ -115,7 +117,7 @@ namespace "build" do
           extpath = File.join(p, ext, 'ext')
           next unless File.exists? File.join(extpath, "build.bat")
 
-          ENV['RHO_PLATFORM'] = 'wm'
+          ENV['RHO_PLATFORM'] = $current_platform
           ENV['PWD'] = $startdir
           ENV['RHO_ROOT'] = ENV['PWD']
           ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", $sdk, "rhodes", "Release")
@@ -153,7 +155,7 @@ namespace "build" do
     end
   
   namespace "win32" do
-
+=begin
     task :extensions => "config:wm" do
       $app_config["extensions"].each do |ext|
         $app_config["extpaths"].each do |p|
@@ -173,9 +175,9 @@ namespace "build" do
         end
       end
     end
-
+=end
 #    desc "Build win32 rhobundle"
-    task :rhobundle => ["config:wm", :extensions] do
+    task :rhobundle => ["config:wm", "build:wm:extensions"] do
       Rake::Task["build:bundle:noxruby"].execute
     end
 
