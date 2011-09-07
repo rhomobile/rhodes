@@ -22,6 +22,9 @@ require 'rho/rhoutils'
 
 USE_HSQLDB = !System.get_property('has_sqlite')
 USE_COPY_FILES = !defined? RHO_ME && !defined? RHO_WP7
+if ( System.get_property('platform') == 'WINDOWS' && System.get_property('device_name') != 'Win32' )
+    USE_COPY_FILES = false
+end
 
 def getAccount
     return Account_s if $spec_settings[:schema_model]
