@@ -1623,7 +1623,7 @@ open_dir_handle(const WCHAR *filename, WIN32_FIND_DATAW *fd)
     static const WCHAR wildcard[] = L"\\*";
     WCHAR *scanname;
     WCHAR *p;
-    int len;
+    int len, i;
 
     //
     // Create the search pattern
@@ -1637,12 +1637,23 @@ open_dir_handle(const WCHAR *filename, WIN32_FIND_DATAW *fd)
     else
 	lstrcatW(scanname, wildcard);
 
+    for( i = 0; scanname[i]; i++)
+    {
+        if ( scanname[i] == L'/' )
+            scanname[i] = L'\\';
+    }
+
     //
     // do the FindFirstFile call
     //
     fh = FindFirstFileW(scanname, fd);
-    if (fh == INVALID_HANDLE_VALUE) {
-	errno = map_errno(GetLastError());
+    if (fh == INVALID_HANDLE_VALUE) 
+    {
+        DWORD dwErr = GetLastError();
+        if ( dwErr == 18)
+            fh = 0;
+        else
+	        errno = map_errno(GetLastError());
     }
     return fh;
 }
