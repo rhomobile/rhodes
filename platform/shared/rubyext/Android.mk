@@ -10,6 +10,6 @@ LOCAL_SRC_FILES := \
 LOCAL_C_INCLUDES := \
     $(SHARED_PATH_INC) \
     $(SHARED_PATH_INC)/ruby/include \
-    $(SHARED_PATH_INC)/ruby/linux
+    $(SHARED_PATH_INC)/ruby/android
 
 include $(BUILD_STATIC_LIBRARY)
