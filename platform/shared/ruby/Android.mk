@@ -6,7 +6,6 @@ LOCAL_MODULE    := ruby
 LOCAL_SRC_FILES := \
     array.c \
     bignum.c \
-    blockinlining.c \
     class.c \
     compar.c \
     compile.c \
@@ -15,6 +14,7 @@ LOCAL_SRC_FILES := \
     debug.c \
     dir.c \
     dln.c \
+    dln_find.c \
     dmyencoding.c \
     dmyext.c \
     enc/ascii.c \
@@ -74,6 +74,7 @@ LOCAL_SRC_FILES := \
     missing/strlcpy.c \
     missing/tgamma.c \
     newline.c \
+    node.c \
     numeric.c \
     object.c \
     pack.c \
@@ -108,7 +109,7 @@ LOCAL_SRC_FILES := \
 
 LOCAL_C_INCLUDES := \
     $(LOCAL_PATH)/include \
-    $(LOCAL_PATH)/linux \
+    $(LOCAL_PATH)/android \
     $(LOCAL_PATH)/generated \
     $(LOCAL_PATH) \
     $(SHARED_PATH_INC) \

@@ -44,14 +44,15 @@ LOCAL_C_INCLUDES := \
     $(SHARED_PATH_INC) \
     $(SHARED_PATH_INC)/common \
     $(SHARED_PATH_INC)/ruby/include \
-    $(SHARED_PATH_INC)/ruby/linux \
+    $(SHARED_PATH_INC)/ruby/android \
     $(SHARED_PATH_INC)/curl/include \
     $(SHARED_PATH_INC)/sqlite
 
 LOCAL_STATIC_LIBRARIES := \
 	ruby rhorubyext json rhomain rhocommon rhodb rhoconnect rhonet curl sqlite rholog \
 	rhocommon rhonet rhostat rhorubyext \
-	unzip barcode nfc
+	unzip
+#barcode nfc
 
 LOCAL_LDLIBS := -llog -ldl -lz
 
@@ -72,5 +73,5 @@ $(call import-module,statistic)
 $(call import-module,unzip)
 $(call import-module,db)
 $(call import-module,sync)
-$(call import-module,barcode)
-$(call import-module,nfc)
+#$(call import-module,barcode)
+#$(call import-module,nfc)
