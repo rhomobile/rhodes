@@ -86,13 +86,15 @@ void rho_connectclient_processmodels(RHOM_MODEL* pModels, int nModels)
 
         if ( !res.isEnd() )
         {
-            oUserDB.executeSQL("UPDATE sources SET sync_priority=?, sync_type=?, partition=?, schema_version=?, associations=?, blob_attribs=? WHERE name=?",
-                model.sync_priority, getSyncTypeName(model.sync_type), model.partition, "", "", "", model.name );
+            oUserDB.executeSQL("UPDATE sources SET sync_priority=?, sync_type=?, partition=?, schema=?, schema_version=?, associations=?, blob_attribs=? WHERE name=?",
+                model.sync_priority, getSyncTypeName(model.sync_type), model.partition, 
+                (model.type == RMT_PROPERTY_FIXEDSCHEMA ? "schema_model" : ""), "", "", model.name );
                 
         }else //new model
         {
-            oUserDB.executeSQL("INSERT INTO sources (source_id,name,sync_priority, sync_type, partition, schema_version, associations, blob_attribs) values (?,?,?,?,?,?,?,?) ",
-                nStartModelID, model.name, model.sync_priority, getSyncTypeName(model.sync_type), model.partition, "", "", "" );
+            oUserDB.executeSQL("INSERT INTO sources (source_id,name,sync_priority, sync_type, partition, schema,schema_version, associations, blob_attribs) values (?,?,?,?,?,?,?,?,?) ",
+                nStartModelID, model.name, model.sync_priority, getSyncTypeName(model.sync_type), model.partition, 
+                (model.type == RMT_PROPERTY_FIXEDSCHEMA ? "schema_model" : ""), "", "", "" );
 
             nStartModelID++;
         }
@@ -241,7 +243,10 @@ unsigned long rhom_make_object(IDBResult& res1, int nSrcID, bool isSchemaSrc)
     }else
     {
         for (int i = 0; i < res1.getColCount(); i++ )
-            rho_connectclient_hash_put(item, res1.getColName(i).c_str(), res1.getStringByIdx(i).c_str() );
+        {
+            if ( !res1.isNullByIdx(i))
+                rho_connectclient_hash_put(item, res1.getColName(i).c_str(), res1.getStringByIdx(i).c_str() );
+        }
     }
 
     return item;
@@ -260,7 +265,7 @@ unsigned long rhom_load_item_by_object(db::CDBAdapter& db, const String& src_nam
             rho_connectclient_hash_put(item, "object", szObject.c_str() );
     }else
     {
-        String sql = "SELECT * FROM " + src_name + " WHERE object=? OFFSET 0 LIMIT 1";
+        String sql = "SELECT * FROM " + src_name + " WHERE object=? LIMIT 1 OFFSET 0";
         IDBResult res1 = db.executeSQL(sql.c_str(), szObject);
         item = rhom_make_object(res1, nSrcID, isSchemaSrc);
     }
@@ -629,10 +634,21 @@ void rho_connectclient_create_object(const char* szModel, unsigned long hash)
     hashObject.put("object", obj);
 
     db.startTransaction();
+
+    if ( isSyncSrc )
+    {
+        Hashtable<String,String> fields;
+        fields.put("source_id", convertToStringA(nSrcID));
+        fields.put("object", obj);
+        fields.put("attrib", "object");
+        fields.put("update_type", "create");
+
+        db_insert_into_table(db, "changed_values", fields ); 
+    }
+
     if ( isSchemaSrc )
         db_insert_into_table(db, tableName, hashObject, "source_id");
-                        
-    if ( isSyncSrc || !isSchemaSrc )
+    else                    
     {
         for ( Hashtable<String,String>::iterator it = hashObject.begin();  it != hashObject.end(); ++it )
         {
@@ -642,25 +658,13 @@ void rho_connectclient_create_object(const char* szModel, unsigned long hash)
             if ( rhom_method_name_isreserved(key) )
                 continue;
 
-            // add rows excluding object, source_id and update_type
             Hashtable<String,String> fields;
             fields.put("source_id", convertToStringA(nSrcID));
             fields.put("object", obj);
             fields.put("attrib", key);
             fields.put("value", val);
-            fields.put("update_type", update_type);
 
-            if ( db::CDBAdapter::getDB(db_partition.c_str()).getAttrMgr().isBlobAttr(nSrcID, key.c_str()) )
-                fields.put( "attrib_type", "blob.file");
-
-            if ( isSyncSrc )
-                db_insert_into_table(db, "changed_values", fields);
-
-            fields.remove("update_type");
-            fields.remove("attrib_type");
-
-            if ( !isSchemaSrc )
-                db_insert_into_table(db, tableName, fields);
+            db_insert_into_table(db, tableName, fields);
         }
     }
                         
