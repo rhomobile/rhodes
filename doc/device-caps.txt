@@ -809,10 +809,10 @@ This is the same address used by RhoSync to retrieve authtoken. See [here](/rhos
 NOTE: **WARNING** This e-mail address MUST NOT be the same as origin of google account on phone! This mean that google account registered on your phone/emulator MUST NOT be push-app@gmail.com; it MUST be another one. This is known bug in Android C2DM implementation - if sender and receiver are the same, underlying android service crash and lose message. More details [here](http://groups.google.com/group/android-c2dm/browse_thread/thread/128790789c4e9d6a/67aca1e1764724d4). This is actual not for all Android versions.
 
 At Android it is possible to set up status bar notifications for PUSH messages. In this case push message is handled by application only after user has opened the notification.
-There is two modes available for push notifications:
+There are two modes available for push notifications:
  - <i>always</i> - push notification is shown always
  - <i>background</i> - push notification is shown only if application is backgrounded (not started)
-If no push notification mode is specified in build.yml then no any notifications are shown at all.
+If no push notification mode is specified in build.yml then no notifications are shown at all.
 
 	:::yaml
 	android:
