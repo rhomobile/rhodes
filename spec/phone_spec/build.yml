@@ -23,8 +23,8 @@ android:
   extensions: ["barcode"]
   version: 2.3.3
 
-wm:
-  extensions: ["barcode"]
+#wm:
+#  extensions: ["barcode"]
   
 bb:
   extensions: ["barcode"]

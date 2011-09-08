@@ -1,14 +1,6 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../shared/equal', __FILE__)
 
 describe "Proc#==" do
-  it "returns true when the given value is self or a copy of self" do
-    a = lambda { "hello" }
-    
-    a.should == a
-    a.should == a.dup
-    
-    a.should_not == lambda { "hello" }
-    a.should_not == Proc.new {}
-    a.should_not == nil
-  end
+  it_behaves_like(:proc_equal, :==)
 end

@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/private'
+require File.expand_path('../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/private', __FILE__)
 
 describe "The private keyword" do
   ruby_version_is ""..."1.9" do
@@ -80,10 +80,10 @@ describe "The private keyword" do
       end
     }.should raise_error(NoMethodError)
   end
-  
+
   it "changes the visibility of the existing method in the subclass" do
     ::Private::A.new.foo.should == 'foo'
-    lambda {::Private::H.new.foo}.should raise_error(NoMethodError) 
+    lambda {::Private::H.new.foo}.should raise_error(NoMethodError)
     ::Private::H.new.send(:foo).should == 'foo'
   end
 end

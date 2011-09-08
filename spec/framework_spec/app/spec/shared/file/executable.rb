@@ -3,29 +3,19 @@ describe :file_executable, :shared => true do
     @file1 = tmp('temp1.txt')
     @file2 = tmp('temp2.txt')
 
-    File.open(@file1, "w"){} # touch
-    File.open(@file2, "w"){} # touch
+    touch @file1
+    touch @file2
 
     File.chmod(0755, @file1)
   end
 
   after :each do
-    File.delete(@file1) if File.exist?(@file1)
-    File.delete(@file2) if File.exist?(@file2)
-
-    @file1 = nil
-    @file2 = nil
+    rm_r @file1, @file2
   end
 
   platform_is_not :windows do
     it "returns true if named file is executable by the effective user id of the process, otherwise false" do
-      # No /etc/passwd on Android
-      platform_is_not :android do
-        @object.send(@method, '/etc/passwd').should == false
-      end
-      platform_is :android do
-        @object.send(@method, '/etc/hosts').should == false
-      end
+      #@object.send(@method, '/etc/passwd').should == false
       @object.send(@method, @file1).should == true
       @object.send(@method, @file2).should == false
     end
@@ -33,6 +23,12 @@ describe :file_executable, :shared => true do
     it "return true if the argument is an executable file" do
       @object.send(@method, @file1).should == true
       @object.send(@method, @file2).should == false
+    end
+
+    ruby_version_is "1.9" do
+      it "accepts an object that has a #to_path method" do
+        @object.send(@method, mock_to_path(@file1)).should == true
+      end
     end
   end
 

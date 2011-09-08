@@ -62,3 +62,7 @@ unix:!symbian {
     }
     INSTALLS += target
 }
+
+win32 {
+#DESTDIR = ../../rhodes-symbian-emulator-build
+}

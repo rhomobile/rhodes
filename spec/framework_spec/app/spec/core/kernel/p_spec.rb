@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Kernel#p" do
   before :all do
@@ -13,7 +13,8 @@ describe "Kernel#p" do
   it "is a private method" do
     Kernel.should have_private_instance_method(:p)
   end
-  
+
+  # TODO: fix
   it "flushes output if receiver is a File" do
     filename = tmp("Kernel_p_flush") + $$.to_s
     begin
@@ -31,34 +32,33 @@ describe "Kernel#p" do
         end
       end
     ensure
-      File.delete(filename) rescue nil
+      rm_r filename
     end
   end
 
-# XXX STDOUT is not the same
-#  it "prints obj.inspect followed by system record separator for each argument given" do
-#    o = mock("Inspector Gadget")
-#    o.should_receive(:inspect).any_number_of_times.and_return "Next time, Gadget, NEXT TIME!"
-#
-#    lambda { p(o) }.should output("Next time, Gadget, NEXT TIME!\n")
-#    lambda { p(*[o]) }.should output("Next time, Gadget, NEXT TIME!\n")
-#    lambda { p(*[o, o]) }.should output("Next time, Gadget, NEXT TIME!\nNext time, Gadget, NEXT TIME!\n")
-#    lambda { p([o])}.should output("[#{o.inspect}]\n")
-#  end
+  it "prints obj.inspect followed by system record separator for each argument given" do
+    o = mock("Inspector Gadget")
+    o.should_receive(:inspect).any_number_of_times.and_return "Next time, Gadget, NEXT TIME!"
 
-#  it "is not affected by setting $\\, $/ or $," do
-#    o = mock("Inspector Gadget")
-#    o.should_receive(:inspect).any_number_of_times.and_return "Next time, Gadget, NEXT TIME!"
-#
-#    $, = " *helicopter sound*\n"
-#    lambda { p(o) }.should output_to_fd("Next time, Gadget, NEXT TIME!\n")
-#
-#    $\ = " *helicopter sound*\n"
-#    lambda { p(o) }.should output_to_fd("Next time, Gadget, NEXT TIME!\n")
-#
-#    $/ = " *helicopter sound*\n"
-#    lambda { p(o) }.should output_to_fd("Next time, Gadget, NEXT TIME!\n")
-#  end
+    lambda { p(o) }.should output("Next time, Gadget, NEXT TIME!\n")
+    lambda { p(*[o]) }.should output("Next time, Gadget, NEXT TIME!\n")
+    lambda { p(*[o, o]) }.should output("Next time, Gadget, NEXT TIME!\nNext time, Gadget, NEXT TIME!\n")
+    lambda { p([o])}.should output("[#{o.inspect}]\n")
+  end
+
+  it "is not affected by setting $\\, $/ or $," do
+    o = mock("Inspector Gadget")
+    o.should_receive(:inspect).any_number_of_times.and_return "Next time, Gadget, NEXT TIME!"
+
+    $, = " *helicopter sound*\n"
+    #lambda { p(o) }.should output_to_fd("Next time, Gadget, NEXT TIME!\n")
+
+    $\ = " *helicopter sound*\n"
+    #lambda { p(o) }.should output_to_fd("Next time, Gadget, NEXT TIME!\n")
+
+    $/ = " *helicopter sound*\n"
+    #lambda { p(o) }.should output_to_fd("Next time, Gadget, NEXT TIME!\n")
+  end
 
   it "prints nothing if no argument is given" do
     lambda { p }.should output("")
@@ -68,9 +68,9 @@ describe "Kernel#p" do
     lambda { p(*[]) }.should output("")
   end
 
-=begin Not sure how to spec this, but wanted to note the behavior here  
+=begin Not sure how to spec this, but wanted to note the behavior here
   it "does not flush if receiver is not a TTY or a File" do
-  end 
+  end
 =end
 end
 

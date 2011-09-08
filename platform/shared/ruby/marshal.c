@@ -30,7 +30,7 @@
 #if SIZEOF_SHORT == SIZEOF_BDIGITS
 #define SHORTLEN(x) (x)
 #else
-static int
+static long
 shortlen(long len, BDIGIT *ds)
 {
     BDIGIT num;
@@ -131,16 +131,16 @@ rb_marshal_define_compat(VALUE newclass, VALUE oldclass, VALUE (*dumper)(VALUE),
     st_insert(compat_allocator_tbl, (st_data_t)allocator, (st_data_t)compat);
 }
 
+#define MARSHAL_INFECTION (FL_TAINT|FL_UNTRUSTED)
+typedef char ruby_check_marshal_viral_flags[MARSHAL_INFECTION == (int)MARSHAL_INFECTION ? 1 : -1];
+
 struct dump_arg {
-    VALUE obj;
     VALUE str, dest;
     st_table *symbols;
     st_table *data;
-    int taint;
-    int untrust;
     st_table *compat_tbl;
-    VALUE wrapper;
     st_table *encodings;
+    int infection;
 };
 
 struct dump_call_arg {
@@ -152,49 +152,82 @@ struct dump_call_arg {
 static void
 check_dump_arg(struct dump_arg *arg, ID sym)
 {
-    if (!DATA_PTR(arg->wrapper)) {
+    if (!arg->symbols) {
         rb_raise(rb_eRuntimeError, "Marshal.dump reentered at %s",
 		 rb_id2name(sym));
     }
 }
 
+static void clear_dump_arg(struct dump_arg *arg);
+
 static void
 mark_dump_arg(void *ptr)
 {
     struct dump_arg *p = ptr;
-    if (!ptr)
+    if (!p->symbols)
         return;
     rb_mark_set(p->data);
     rb_mark_hash(p->compat_tbl);
+    rb_gc_mark(p->str);
+}
+
+static void
+free_dump_arg(void *ptr)
+{
+    clear_dump_arg(ptr);
+    xfree(ptr);
+}
+
+static size_t
+memsize_dump_arg(const void *ptr)
+{
+    return ptr ? sizeof(struct dump_arg) : 0;
+}
+
+static const rb_data_type_t dump_arg_data = {
+    "dump_arg",
+    mark_dump_arg, free_dump_arg, memsize_dump_arg
+};
+
+static const char *
+must_not_be_anonymous(const char *type, VALUE path)
+{
+    char *n = RSTRING_PTR(path);
+
+    if (!rb_enc_asciicompat(rb_enc_get(path))) {
+	/* cannot occur? */
+	rb_raise(rb_eTypeError, "can't dump non-ascii %s name", type);
+    }
+    if (n[0] == '#') {
+	rb_raise(rb_eTypeError, "can't dump anonymous %s %.*s", type,
+		 (int)RSTRING_LEN(path), n);
+    }
+    return n;
 }
 
 static VALUE
 class2path(VALUE klass)
 {
     VALUE path = rb_class_path(klass);
-    char *n = RSTRING_PTR(path);
+    const char *n;
 
-    if (n[0] == '#') {
-	rb_raise(rb_eTypeError, "can't dump anonymous %s %s",
-		 (TYPE(klass) == T_CLASS ? "class" : "module"),
-		 n);
-    }
-    if (rb_path2class(n) != rb_class_real(klass)) {
-	rb_raise(rb_eTypeError, "%s can't be referred", n);
+    n = must_not_be_anonymous((TYPE(klass) == T_CLASS ? "class" : "module"), path);
+    if (rb_path_to_class(path) != rb_class_real(klass)) {
+	rb_raise(rb_eTypeError, "%s can't be referred to", n);
     }
     return path;
 }
 
 static void w_long(long, struct dump_arg*);
+static void w_encoding(VALUE obj, long num, struct dump_call_arg *arg);
 
 static void
-w_nbyte(const char *s, int n, struct dump_arg *arg)
+w_nbyte(const char *s, long n, struct dump_arg *arg)
 {
     VALUE buf = arg->str;
     rb_str_buf_cat(buf, s, n);
+    RBASIC(buf)->flags |= arg->infection;
     if (arg->dest && RSTRING_LEN(buf) >= BUFSIZ) {
-	if (arg->taint) OBJ_TAINT(buf);
-	if (arg->untrust) OBJ_UNTRUST(buf);
 	rb_io_write(arg->dest, buf);
 	rb_str_resize(buf, 0);
     }
@@ -207,7 +240,7 @@ w_byte(char c, struct dump_arg *arg)
 }
 
 static void
-w_bytes(const char *s, int n, struct dump_arg *arg)
+w_bytes(const char *s, long n, struct dump_arg *arg)
 {
     w_long(n, arg);
     w_nbyte(s, n, arg);
@@ -245,8 +278,8 @@ w_long(long x, struct dump_arg *arg)
 	w_byte((char)((x - 5)&0xff), arg);
 	return;
     }
-    for (i=1;i<sizeof(long)+1;i++) {
-	buf[i] = x & 0xff;
+    for (i=1;i<(int)sizeof(long)+1;i++) {
+	buf[i] = (char)(x & 0xff);
 	x = RSHIFT(x,8);
 	if (x == 0) {
 	    buf[0] = i;
@@ -290,15 +323,15 @@ save_mantissa(double d, char *buf)
 	    d = modf(ldexp(d, MANT_BITS), &n);
 	    m = (unsigned long)n;
 #if MANT_BITS > 24
-	    buf[i++] = m >> 24;
+	    buf[i++] = (char)(m >> 24);
 #endif
 #if MANT_BITS > 16
-	    buf[i++] = m >> 16;
+	    buf[i++] = (char)(m >> 16);
 #endif
 #if MANT_BITS > 8
-	    buf[i++] = m >> 8;
+	    buf[i++] = (char)(m >> 8);
 #endif
-	    buf[i++] = m;
+	    buf[i++] = (char)m;
 	} while (d > 0);
 	while (!buf[i - 1]) --i;
     }
@@ -306,8 +339,9 @@ save_mantissa(double d, char *buf)
 }
 
 static double
-load_mantissa(double d, const char *buf, int len)
+load_mantissa(double d, const char *buf, long len)
 {
+    if (!len) return d;
     if (--len > 0 && !*buf++) {	/* binary mantissa mark */
 	int e, s = d < 0, dig = 0;
 	unsigned long m;
@@ -363,7 +397,7 @@ w_float(double d, struct dump_arg *arg)
 	else           strcpy(buf, "0");
     }
     else {
-	int len;
+	size_t len;
 
 	/* xxx: should not use system's sprintf(3) */
 	snprintf(buf, sizeof(buf), "%.*g", FLOAT_DIG, d);
@@ -377,31 +411,44 @@ w_float(double d, struct dump_arg *arg)
 static void
 w_symbol(ID id, struct dump_arg *arg)
 {
-    const char *sym;
+    VALUE sym;
     st_data_t num;
+    int encidx = -1;
 
     if (st_lookup(arg->symbols, id, &num)) {
 	w_byte(TYPE_SYMLINK, arg);
 	w_long((long)num, arg);
     }
     else {
-	sym = rb_id2name(id);
+	sym = rb_id2str(id);
 	if (!sym) {
 	    rb_raise(rb_eTypeError, "can't dump anonymous ID %ld", id);
 	}
+	encidx = rb_enc_get_index(sym);
+	if (encidx == rb_usascii_encindex() ||
+	    rb_enc_str_coderange(sym) == ENC_CODERANGE_7BIT) {
+	    encidx = -1;
+	}
+	else {
+	    w_byte(TYPE_IVAR, arg);
+	}
 	w_byte(TYPE_SYMBOL, arg);
-	w_bytes(sym, strlen(sym), arg);
+	w_bytes(RSTRING_PTR(sym), RSTRING_LEN(sym), arg);
 	st_add_direct(arg->symbols, id, arg->symbols->num_entries);
+	if (encidx != -1) {
+	    struct dump_call_arg c_arg;
+	    c_arg.limit = 1;
+	    c_arg.arg = arg;
+	    w_encoding(sym, 0, &c_arg);
+	}
     }
 }
 
 static void
-w_unique(const char *s, struct dump_arg *arg)
+w_unique(VALUE s, struct dump_arg *arg)
 {
-    if (s[0] == '#') {
-	rb_raise(rb_eTypeError, "can't dump anonymous class %s", s);
-    }
-    w_symbol(rb_intern(s), arg);
+    must_not_be_anonymous("class", s);
+    w_symbol(rb_intern_str(s), arg);
 }
 
 static void w_object(VALUE,struct dump_arg*,int);
@@ -417,8 +464,6 @@ hash_each(VALUE key, VALUE value, struct dump_call_arg *arg)
 static void
 w_extended(VALUE klass, struct dump_arg *arg, int check)
 {
-    const char *path;
-
     if (check && FL_TEST(klass, FL_SINGLETON)) {
 	if (RCLASS_M_TBL(klass)->num_entries ||
 	    (RCLASS_IV_TBL(klass) && RCLASS_IV_TBL(klass)->num_entries > 1)) {
@@ -427,7 +472,7 @@ w_extended(VALUE klass, struct dump_arg *arg, int check)
 	klass = RCLASS_SUPER(klass);
     }
     while (BUILTIN_TYPE(klass) == T_ICLASS) {
-	path = rb_class2name(RBASIC(klass)->klass);
+	VALUE path = rb_class_name(RBASIC(klass)->klass);
 	w_byte(TYPE_EXTENDED, arg);
 	w_unique(path, arg);
 	klass = RCLASS_SUPER(klass);
@@ -437,8 +482,7 @@ w_extended(VALUE klass, struct dump_arg *arg, int check)
 static void
 w_class(char type, VALUE obj, struct dump_arg *arg, int check)
 {
-    volatile VALUE p;
-    char *path;
+    VALUE path;
     st_data_t real_obj;
     VALUE klass;
 
@@ -448,8 +492,7 @@ w_class(char type, VALUE obj, struct dump_arg *arg, int check)
     klass = CLASS_OF(obj);
     w_extended(klass, arg, check);
     w_byte(type, arg);
-    p = class2path(rb_class_real(klass));
-    path = RSTRING_PTR(p);
+    path = class2path(rb_class_real(klass));
     w_unique(path, arg);
 }
 
@@ -458,11 +501,11 @@ w_uclass(VALUE obj, VALUE super, struct dump_arg *arg)
 {
     VALUE klass = CLASS_OF(obj);
 
-    w_extended(klass, arg, Qtrue);
+    w_extended(klass, arg, TRUE);
     klass = rb_class_real(klass);
     if (klass != super) {
 	w_byte(TYPE_UCLASS, arg);
-	w_unique(RSTRING_PTR(class2path(klass)), arg);
+	w_unique(class2path(klass), arg);
     }
 }
 
@@ -470,6 +513,7 @@ static int
 w_obj_each(ID id, VALUE value, struct dump_call_arg *arg)
 {
     if (id == rb_id_encoding()) return ST_CONTINUE;
+    if (id == rb_intern("E")) return ST_CONTINUE;
     w_symbol(id, arg->arg);
     w_object(value, arg->arg, arg->limit);
     return ST_CONTINUE;
@@ -487,6 +531,19 @@ w_encoding(VALUE obj, long num, struct dump_call_arg *arg)
 	return;
     }
     w_long(num + 1, arg->arg);
+
+    /* special treatment for US-ASCII and UTF-8 */
+    if (encidx == rb_usascii_encindex()) {
+	w_symbol(rb_intern("E"), arg->arg);
+	w_object(Qfalse, arg->arg, arg->limit + 1);
+	return;
+    }
+    else if (encidx == rb_utf8_encindex()) {
+	w_symbol(rb_intern("E"), arg->arg);
+	w_object(Qtrue, arg->arg, arg->limit + 1);
+	return;
+    }
+
     w_symbol(rb_id_encoding(), arg->arg);
     do {
 	if (!arg->arg->encodings)
@@ -496,7 +553,7 @@ w_encoding(VALUE obj, long num, struct dump_call_arg *arg)
 	name = (st_data_t)rb_str_new2(rb_enc_name(enc));
 	st_insert(arg->arg->encodings, (st_data_t)rb_enc_name(enc), name);
     } while (0);
-    w_object(name, arg->arg, arg->limit);
+    w_object(name, arg->arg, arg->limit + 1);
 }
 
 static void
@@ -583,22 +640,21 @@ w_object(VALUE obj, struct dump_arg *arg, int limit)
 	w_symbol(SYM2ID(obj), arg);
     }
     else {
-	if (OBJ_TAINTED(obj)) arg->taint = Qtrue;
-	if (OBJ_UNTRUSTED(obj)) arg->untrust = Qtrue;
+	arg->infection |= (int)FL_TEST(obj, MARSHAL_INFECTION);
 
-	if (RBASIC(obj)->klass && rb_respond_to(obj, s_mdump)) {
+	if (rb_respond_to(obj, s_mdump)) {
 	    volatile VALUE v;
 
             st_add_direct(arg->data, obj, arg->data->num_entries);
 
 	    v = rb_funcall(obj, s_mdump, 0, 0);
 	    check_dump_arg(arg, s_mdump);
-	    w_class(TYPE_USRMARSHAL, obj, arg, Qfalse);
+	    w_class(TYPE_USRMARSHAL, obj, arg, FALSE);
 	    w_object(v, arg, limit);
-	    if (hasiv) w_ivar(obj, 0, &c_arg);
+	    if (hasiv) w_ivar(obj, ivtbl, &c_arg);
 	    return;
 	}
-	if (RBASIC(obj)->klass && rb_respond_to(obj, s_dump)) {
+	if (rb_respond_to(obj, s_dump)) {
 	    VALUE v;
             st_table *ivtbl2 = 0;
             int hasiv2;
@@ -611,7 +667,7 @@ w_object(VALUE obj, struct dump_arg *arg, int limit)
 	    if ((hasiv2 = has_ivars(v, ivtbl2)) != 0 && !hasiv) {
 		w_byte(TYPE_IVAR, arg);
 	    }
-	    w_class(TYPE_USERDEF, obj, arg, Qfalse);
+	    w_class(TYPE_USERDEF, obj, arg, FALSE);
 	    w_bytes(RSTRING_PTR(v), RSTRING_LEN(v), arg);
             if (hasiv2) {
 		w_ivar(v, ivtbl2, &c_arg);
@@ -625,7 +681,6 @@ w_object(VALUE obj, struct dump_arg *arg, int limit)
 
         st_add_direct(arg->data, obj, arg->data->num_entries);
 
-        if (RBASIC(obj)->klass)
         {
             st_data_t compat_data;
             rb_alloc_func_t allocator = rb_get_alloc_func(RBASIC(obj)->klass);
@@ -638,7 +693,6 @@ w_object(VALUE obj, struct dump_arg *arg, int limit)
                 st_insert(arg->compat_tbl, (st_data_t)obj, (st_data_t)real_obj);
             }
         }
-
 
 	switch (BUILTIN_TYPE(obj)) {
 	  case T_CLASS:
@@ -693,18 +747,12 @@ w_object(VALUE obj, struct dump_arg *arg, int limit)
 	    break;
 
 	  case T_STRING:
-        if (!RBASIC(obj)->klass)
-            RBASIC(obj)->klass = rb_cString;
-
 	    w_uclass(obj, rb_cString, arg);
 	    w_byte(TYPE_STRING, arg);
 	    w_bytes(RSTRING_PTR(obj), RSTRING_LEN(obj), arg);
 	    break;
 
 	  case T_REGEXP:
-            if (!RBASIC(obj)->klass)
-                RBASIC(obj)->klass = rb_cRegexp;
-
             w_uclass(obj, rb_cRegexp, arg);
             w_byte(TYPE_REGEXP, arg);
             {
@@ -715,9 +763,6 @@ w_object(VALUE obj, struct dump_arg *arg, int limit)
 	    break;
 
 	  case T_ARRAY:
-        if (!RBASIC(obj)->klass)
-            RBASIC(obj)->klass = rb_cArray;
-
 	    w_uclass(obj, rb_cArray, arg);
 	    w_byte(TYPE_ARRAY, arg);
 	    {
@@ -734,11 +779,8 @@ w_object(VALUE obj, struct dump_arg *arg, int limit)
 	    break;
 
 	  case T_HASH:
-        if (!RBASIC(obj)->klass)
-            RBASIC(obj)->klass = rb_cHash;
-
 	    w_uclass(obj, rb_cHash, arg);
-	    if (NIL_P(RHASH(obj)->ifnone)) {
+	    if (NIL_P(RHASH_IFNONE(obj))) {
 		w_byte(TYPE_HASH, arg);
 	    }
 	    else if (FL_TEST(obj, FL_USER2)) {
@@ -750,13 +792,13 @@ w_object(VALUE obj, struct dump_arg *arg, int limit)
 	    }
 	    w_long(RHASH_SIZE(obj), arg);
 	    rb_hash_foreach(obj, hash_each, (st_data_t)&c_arg);
-	    if (!NIL_P(RHASH(obj)->ifnone)) {
-		w_object(RHASH(obj)->ifnone, arg, limit);
+	    if (!NIL_P(RHASH_IFNONE(obj))) {
+		w_object(RHASH_IFNONE(obj), arg, limit);
 	    }
 	    break;
 
 	  case T_STRUCT:
-	    w_class(TYPE_STRUCT, obj, arg, Qtrue);
+	    w_class(TYPE_STRUCT, obj, arg, TRUE);
 	    {
 		long len = RSTRUCT_LEN(obj);
 		VALUE mem;
@@ -772,7 +814,7 @@ w_object(VALUE obj, struct dump_arg *arg, int limit)
 	    break;
 
 	  case T_OBJECT:
-	    w_class(TYPE_OBJECT, obj, arg, Qtrue);
+	    w_class(TYPE_OBJECT, obj, arg, TRUE);
 	    w_objivar(obj, &c_arg);
 	    break;
 
@@ -787,7 +829,7 @@ w_object(VALUE obj, struct dump_arg *arg, int limit)
 		}
 		v = rb_funcall(obj, s_dump_data, 0);
 		check_dump_arg(arg, s_dump_data);
-		w_class(TYPE_DATA, obj, arg, Qtrue);
+		w_class(TYPE_DATA, obj, arg, TRUE);
 		w_object(v, arg, limit);
 	    }
 	    break;
@@ -803,41 +845,27 @@ w_object(VALUE obj, struct dump_arg *arg, int limit)
     }
 }
 
-static VALUE
-dump(struct dump_call_arg *arg)
+static void
+clear_dump_arg(struct dump_arg *arg)
 {
-    w_object(arg->obj, arg->arg, arg->limit);
-    if (arg->arg->dest) {
-	rb_io_write(arg->arg->dest, arg->arg->str);
-	rb_str_resize(arg->arg->str, 0);
-    }
-    return 0;
-}
-
-static VALUE
-dump_ensure(struct dump_arg *arg)
-{
-    if (!DATA_PTR(arg->wrapper)) return 0;
+    if (!arg->symbols) return;
     st_free_table(arg->symbols);
+    arg->symbols = 0;
     st_free_table(arg->data);
+    arg->data = 0;
     st_free_table(arg->compat_tbl);
-    if (arg->encodings) st_free_table(arg->encodings);
-    DATA_PTR(arg->wrapper) = 0;
-    arg->wrapper = 0;
-    if (arg->taint) {
-	OBJ_TAINT(arg->str);
+    arg->compat_tbl = 0;
+    if (arg->encodings) {
+	st_free_table(arg->encodings);
+	arg->encodings = 0;
     }
-    if (arg->untrust) {
-	OBJ_UNTRUST(arg->str);
-    }
-    return 0;
 }
 
 /*
  * call-seq:
- *      dump( obj [, anIO] , limit=--1 ) => anIO
+ *      dump( obj [, anIO] , limit=--1 ) -> anIO
  *
- * Serializes obj and all descendent objects. If anIO is
+ * Serializes obj and all descendant objects. If anIO is
  * specified, the serialized data will be written to it, otherwise the
  * data will be returned as a String. If limit is specified, the
  * traversal of subobjects will be limited to that depth. If limit is
@@ -858,14 +886,22 @@ dump_ensure(struct dump_arg *arg)
  *     data = Marshal.dump(o)
  *     obj = Marshal.load(data)
  *     obj.sayHello   #=> "hello\n"
+ *
+ * Marshal can't dump following objects:
+ * * anonymous Class/Module.
+ * * objects which related to its system (ex: Dir, File::Stat, IO, File, Socket
+ *   and so on)
+ * * an instance of MatchData, Data, Method, UnboundMethod, Proc, Thread,
+ *   ThreadGroup, Continuation
+ * * objects which defines singleton methods
  */
 static VALUE
 marshal_dump(int argc, VALUE *argv)
 {
     VALUE obj, port, a1, a2;
     int limit = -1;
-    struct dump_arg arg;
-    struct dump_call_arg c_arg;
+    struct dump_arg *arg;
+    volatile VALUE wrapper;
 
     port = Qnil;
     rb_scan_args(argc, argv, "12", &obj, &a1, &a2);
@@ -879,40 +915,39 @@ marshal_dump(int argc, VALUE *argv)
 	else if (NIL_P(a1)) goto type_error;
 	else port = a1;
     }
-    arg.dest = 0;
-    arg.symbols = st_init_numtable();
-    arg.data    = st_init_numtable();
-    arg.taint   = Qfalse;
-    arg.untrust = Qfalse;
-    arg.compat_tbl = st_init_numtable();
-    arg.encodings = 0;
-    arg.str = rb_str_buf_new(0);
-    RBASIC(arg.str)->klass = 0;
-    arg.wrapper = Data_Wrap_Struct(rb_cData, mark_dump_arg, 0, &arg);
+    wrapper = TypedData_Make_Struct(rb_cData, struct dump_arg, &dump_arg_data, arg);
+    arg->dest = 0;
+    arg->symbols = st_init_numtable();
+    arg->data    = st_init_numtable();
+    arg->infection = 0;
+    arg->compat_tbl = st_init_numtable();
+    arg->encodings = 0;
+    arg->str = rb_str_buf_new(0);
     if (!NIL_P(port)) {
 	if (!rb_respond_to(port, s_write)) {
 	  type_error:
 	    rb_raise(rb_eTypeError, "instance of IO needed");
 	}
-	arg.dest = port;
+	arg->dest = port;
 	if (rb_respond_to(port, s_binmode)) {
 	    rb_funcall2(port, s_binmode, 0, 0);
-	    check_dump_arg(&arg, s_binmode);
+	    check_dump_arg(arg, s_binmode);
 	}
     }
     else {
-	port = arg.str;
+	port = arg->str;
     }
 
-    c_arg.obj   = obj;
-    c_arg.arg   = &arg;
-    c_arg.limit = limit;
+    w_byte(MARSHAL_MAJOR, arg);
+    w_byte(MARSHAL_MINOR, arg);
 
-    w_byte(MARSHAL_MAJOR, &arg);
-    w_byte(MARSHAL_MINOR, &arg);
-
-    rb_ensure(dump, (VALUE)&c_arg, dump_ensure, (VALUE)&arg);
-    RBASIC(arg.str)->klass = rb_cString;
+    w_object(obj, arg, limit);
+    if (arg->dest) {
+	rb_io_write(arg->dest, arg->str);
+	rb_str_resize(arg->str, 0);
+    }
+    clear_dump_arg(arg);
+    RB_GC_GUARD(wrapper);
 
     return port;
 }
@@ -923,34 +958,63 @@ struct load_arg {
     st_table *symbols;
     st_table *data;
     VALUE proc;
-    int taint;
-    int untrust;
     st_table *compat_tbl;
-    VALUE wrapper;
+    int infection;
 };
 
 static void
 check_load_arg(struct load_arg *arg, ID sym)
 {
-    if (!DATA_PTR(arg->wrapper)) {
+    if (!arg->symbols) {
         rb_raise(rb_eRuntimeError, "Marshal.load reentered at %s",
 		 rb_id2name(sym));
     }
 }
 
+static void clear_load_arg(struct load_arg *arg);
+
 static void
 mark_load_arg(void *ptr)
 {
     struct load_arg *p = ptr;
-    if (!ptr)
+    if (!p->symbols)
         return;
     rb_mark_tbl(p->data);
     rb_mark_hash(p->compat_tbl);
 }
 
-static VALUE r_entry(VALUE v, struct load_arg *arg);
+static void
+free_load_arg(void *ptr)
+{
+    clear_load_arg(ptr);
+    xfree(ptr);
+}
+
+static size_t
+memsize_load_arg(const void *ptr)
+{
+    return ptr ? sizeof(struct load_arg) : 0;
+}
+
+static const rb_data_type_t load_arg_data = {
+    "load_arg",
+    mark_load_arg, free_load_arg, memsize_load_arg
+};
+
+#define r_entry(v, arg) r_entry0(v, (arg)->data->num_entries, arg)
+static VALUE r_entry0(VALUE v, st_index_t num, struct load_arg *arg);
 static VALUE r_object(struct load_arg *arg);
-static VALUE path2class(const char *path);
+static ID r_symbol(struct load_arg *arg);
+static VALUE path2class(VALUE path);
+
+static st_index_t
+r_prepare(struct load_arg *arg)
+{
+    st_index_t idx = arg->data->num_entries;
+
+    st_insert(arg->data, (st_data_t)idx, (st_data_t)Qundef);
+    return idx;
+}
 
 static int
 r_byte(struct load_arg *arg)
@@ -1002,7 +1066,7 @@ r_long(struct load_arg *arg)
 	if (4 < c && c < 128) {
 	    return c - 5;
 	}
-	if (c > sizeof(long)) long_toobig(c);
+	if (c > (int)sizeof(long)) long_toobig(c);
 	x = 0;
 	for (i=0;i<c;i++) {
 	    x |= (long)r_byte(arg) << (8*i);
@@ -1013,7 +1077,7 @@ r_long(struct load_arg *arg)
 	    return c + 5;
 	}
 	c = -c;
-	if (c > sizeof(long)) long_toobig(c);
+	if (c > (int)sizeof(long)) long_toobig(c);
 	x = -1;
 	for (i=0;i<c;i++) {
 	    x &= ~((long)0xff << (8*i));
@@ -1049,10 +1113,24 @@ r_bytes0(long len, struct load_arg *arg)
 	if (NIL_P(str)) goto too_short;
 	StringValue(str);
 	if (RSTRING_LEN(str) != len) goto too_short;
-	if (OBJ_TAINTED(str)) arg->taint = Qtrue;
-	if (OBJ_UNTRUSTED(str)) arg->untrust = Qtrue;
+	arg->infection |= (int)FL_TEST(str, MARSHAL_INFECTION);
     }
     return str;
+}
+
+static int
+id2encidx(ID id, VALUE val)
+{
+    if (id == rb_id_encoding()) {
+	int idx = rb_enc_find_index(StringValueCStr(val));
+	return idx;
+    }
+    else if (id == rb_intern("E")) {
+	if (val == Qfalse) return rb_usascii_encindex();
+	else if (val == Qtrue) return rb_utf8_encindex();
+	/* bogus ignore */
+    }
+    return -1;
 }
 
 static ID
@@ -1068,12 +1146,25 @@ r_symlink(struct load_arg *arg)
 }
 
 static ID
-r_symreal(struct load_arg *arg)
+r_symreal(struct load_arg *arg, int ivar)
 {
     volatile VALUE s = r_bytes(arg);
-    ID id = rb_intern(RSTRING_PTR(s));
+    ID id;
+    int idx = -1;
+    st_index_t n = arg->symbols->num_entries;
 
-    st_insert(arg->symbols, arg->symbols->num_entries, id);
+    st_insert(arg->symbols, (st_data_t)n, (st_data_t)0);
+    if (ivar) {
+	long num = r_long(arg);
+	while (num-- > 0) {
+	    id = r_symbol(arg);
+	    idx = id2encidx(id, r_object(arg));
+	}
+    }
+    if (idx < 0) idx = rb_usascii_encindex();
+    rb_enc_associate_index(s, idx);
+    id = rb_intern_str(s);
+    st_insert(arg->symbols, (st_data_t)n, (st_data_t)id);
 
     return id;
 }
@@ -1081,23 +1172,30 @@ r_symreal(struct load_arg *arg)
 static ID
 r_symbol(struct load_arg *arg)
 {
-    int type;
+    int type, ivar = 0;
 
+  again:
     switch ((type = r_byte(arg))) {
+      case TYPE_IVAR:
+	ivar = 1;
+	goto again;
       case TYPE_SYMBOL:
-	return r_symreal(arg);
+	return r_symreal(arg, ivar);
       case TYPE_SYMLINK:
+	if (ivar) {
+	    rb_raise(rb_eArgError, "dump format error (symlink with encoding)");
+	}
 	return r_symlink(arg);
       default:
-	rb_raise(rb_eArgError, "dump format error(0x%x)", type);
+	rb_raise(rb_eArgError, "dump format error for symbol(0x%x)", type);
 	break;
     }
 }
 
-static const char*
+static VALUE
 r_unique(struct load_arg *arg)
 {
-    return rb_id2name(r_symbol(arg));
+    return rb_id2str(r_symbol(arg));
 }
 
 static VALUE
@@ -1107,24 +1205,19 @@ r_string(struct load_arg *arg)
 }
 
 static VALUE
-r_entry(VALUE v, struct load_arg *arg)
+r_entry0(VALUE v, st_index_t num, struct load_arg *arg)
 {
     st_data_t real_obj = (VALUE)Qundef;
     if (st_lookup(arg->compat_tbl, v, &real_obj)) {
-        st_insert(arg->data, arg->data->num_entries, (st_data_t)real_obj);
+        st_insert(arg->data, num, (st_data_t)real_obj);
     }
     else {
-        st_insert(arg->data, arg->data->num_entries, (st_data_t)v);
+        st_insert(arg->data, num, (st_data_t)v);
     }
-    if (arg->taint) {
-        OBJ_TAINT(v);
-        if ((VALUE)real_obj != Qundef)
-            OBJ_TAINT((VALUE)real_obj);
-    }
-    if (arg->untrust) {
-        OBJ_UNTRUST(v);
-        if ((VALUE)real_obj != Qundef)
-            OBJ_UNTRUST((VALUE)real_obj);
+    if (arg->infection) {
+	FL_SET(v, arg->infection);
+	if ((VALUE)real_obj != Qundef)
+	    FL_SET((VALUE)real_obj, arg->infection);
     }
     return v;
 }
@@ -1152,50 +1245,53 @@ r_leave(VALUE v, struct load_arg *arg)
 }
 
 static void
-r_ivar(VALUE obj, struct load_arg *arg)
+r_ivar(VALUE obj, int *has_encoding, struct load_arg *arg)
 {
     long len;
 
     len = r_long(arg);
     if (len > 0) {
-	while (len--) {
+	do {
 	    ID id = r_symbol(arg);
 	    VALUE val = r_object(arg);
-	    if (id == rb_id_encoding()) {
-		int idx = rb_enc_find_index(StringValueCStr(val));
-		if (idx > 0) rb_enc_associate_index(obj, idx);
+	    int idx = id2encidx(id, val);
+	    if (idx >= 0) {
+		rb_enc_associate_index(obj, idx);
+		if (has_encoding) *has_encoding = TRUE;
 	    }
 	    else {
 		rb_ivar_set(obj, id, val);
 	    }
-	}
+	} while (--len > 0);
     }
 }
 
 static VALUE
-path2class(const char *path)
+path2class(VALUE path)
 {
-    VALUE v = rb_path2class(path);
+    VALUE v = rb_path_to_class(path);
 
     if (TYPE(v) != T_CLASS) {
-	rb_raise(rb_eArgError, "%s does not refer class", path);
+	rb_raise(rb_eArgError, "%.*s does not refer to class",
+		 (int)RSTRING_LEN(path), RSTRING_PTR(path));
     }
     return v;
 }
 
 static VALUE
-path2module(const char *path)
+path2module(VALUE path)
 {
-    VALUE v = rb_path2class(path);
+    VALUE v = rb_path_to_class(path);
 
     if (TYPE(v) != T_MODULE) {
-	rb_raise(rb_eArgError, "%s does not refer module", path);
+	rb_raise(rb_eArgError, "%.*s does not refer to module",
+		 (int)RSTRING_LEN(path), RSTRING_PTR(path));
     }
     return v;
 }
 
 static VALUE
-obj_alloc_by_path(const char *path, struct load_arg *arg)
+obj_alloc_by_path(VALUE path, struct load_arg *arg)
 {
     VALUE klass;
     st_data_t data;
@@ -1238,10 +1334,10 @@ r_object0(struct load_arg *arg, int *ivp, VALUE extmod)
 
       case TYPE_IVAR:
         {
-	    int ivar = Qtrue;
+	    int ivar = TRUE;
 
 	    v = r_object0(arg, &ivar, extmod);
-	    if (ivar) r_ivar(v, arg);
+	    if (ivar) r_ivar(v, NULL, arg);
 	}
 	break;
 
@@ -1306,18 +1402,18 @@ r_object0(struct load_arg *arg, int *ivp, VALUE extmod)
 
       case TYPE_FLOAT:
 	{
-	    double d, t = 0.0;
+	    double d;
 	    VALUE str = r_bytes(arg);
 	    const char *ptr = RSTRING_PTR(str);
 
 	    if (strcmp(ptr, "nan") == 0) {
-		d = t / t;
+		d = NAN;
 	    }
 	    else if (strcmp(ptr, "inf") == 0) {
-		d = 1.0 / t;
+		d = INFINITY;
 	    }
 	    else if (strcmp(ptr, "-inf") == 0) {
-		d = -1.0 / t;
+		d = -INFINITY;
 	    }
 	    else {
 		char *e;
@@ -1385,8 +1481,34 @@ r_object0(struct load_arg *arg, int *ivp, VALUE extmod)
 	{
 	    volatile VALUE str = r_bytes(arg);
 	    int options = r_byte(arg);
-	    v = r_entry(rb_reg_new_str(str, options), arg);
-            v = r_leave(v, arg);
+	    int has_encoding = FALSE;
+	    st_index_t idx = r_prepare(arg);
+
+	    if (ivp) {
+		r_ivar(str, &has_encoding, arg);
+		*ivp = FALSE;
+	    }
+	    if (!has_encoding) {
+		/* 1.8 compatibility; remove escapes undefined in 1.8 */
+		char *ptr = RSTRING_PTR(str), *dst = ptr, *src = ptr;
+		long len = RSTRING_LEN(str);
+		long bs = 0;
+		for (; len-- > 0; *dst++ = *src++) {
+		    switch (*src) {
+		      case '\\': bs++; break;
+		      case 'g': case 'h': case 'i': case 'j': case 'k': case 'l':
+		      case 'm': case 'o': case 'p': case 'q': case 'u': case 'y':
+		      case 'E': case 'F': case 'H': case 'I': case 'J': case 'K':
+		      case 'L': case 'N': case 'O': case 'P': case 'Q': case 'R':
+		      case 'S': case 'T': case 'U': case 'V': case 'X': case 'Y':
+			if (bs & 1) --dst;
+		      default: bs = 0; break;
+		    }
+		}
+		rb_str_set_len(str, dst - ptr);
+	    }
+	    v = r_entry0(rb_reg_new_str(str, options), idx, arg);
+	    v = r_leave(v, arg);
 	}
 	break;
 
@@ -1416,7 +1538,7 @@ r_object0(struct load_arg *arg, int *ivp, VALUE extmod)
 		rb_hash_aset(v, key, value);
 	    }
 	    if (type == TYPE_HASH_DEF) {
-		RHASH(v)->ifnone = r_object(arg);
+		RHASH_IFNONE(v) = r_object(arg);
 	    }
             v = r_leave(v, arg);
 	}
@@ -1424,14 +1546,12 @@ r_object0(struct load_arg *arg, int *ivp, VALUE extmod)
 
       case TYPE_STRUCT:
 	{
-	    VALUE klass, mem;
-            VALUE values;
+	    VALUE mem, values;
 	    volatile long i;	/* gcc 2.7.2.3 -O2 bug?? */
-	    long len;
 	    ID slot;
-
-	    klass = path2class(r_unique(arg));
-	    len = r_long(arg);
+	    st_index_t idx = r_prepare(arg);
+	    VALUE klass = path2class(r_unique(arg));
+	    long len = r_long(arg);
 
             v = rb_obj_alloc(klass);
 	    if (TYPE(v) != T_STRUCT) {
@@ -1443,7 +1563,7 @@ r_object0(struct load_arg *arg, int *ivp, VALUE extmod)
                          rb_class2name(klass));
             }
 
-	    v = r_entry(v, arg);
+	    v = r_entry0(v, idx, arg);
 	    values = rb_ary_new2(len);
 	    for (i=0; i<len; i++) {
 		slot = r_symbol(arg);
@@ -1472,8 +1592,8 @@ r_object0(struct load_arg *arg, int *ivp, VALUE extmod)
 	    }
 	    data = r_string(arg);
 	    if (ivp) {
-		r_ivar(data, arg);
-		*ivp = Qfalse;
+		r_ivar(data, NULL, arg);
+		*ivp = FALSE;
 	    }
 	    v = rb_funcall(klass, s_load, 1, data);
 	    check_load_arg(arg, s_load);
@@ -1508,12 +1628,13 @@ r_object0(struct load_arg *arg, int *ivp, VALUE extmod)
 
       case TYPE_OBJECT:
 	{
+	    st_index_t idx = r_prepare(arg);
             v = obj_alloc_by_path(r_unique(arg), arg);
 	    if (TYPE(v) != T_OBJECT) {
 		rb_raise(rb_eArgError, "dump format error");
 	    }
-	    v = r_entry(v, arg);
-	    r_ivar(v, arg);
+	    v = r_entry0(v, idx, arg);
+	    r_ivar(v, NULL, arg);
 	    v = r_leave(v, arg);
 	}
 	break;
@@ -1522,10 +1643,10 @@ r_object0(struct load_arg *arg, int *ivp, VALUE extmod)
        {
            VALUE klass = path2class(r_unique(arg));
            if (rb_respond_to(klass, s_alloc)) {
-	       static int warn = Qtrue;
+	       static int warn = TRUE;
 	       if (warn) {
 		   rb_warn("define `allocate' instead of `_alloc'");
-		   warn = Qfalse;
+		   warn = FALSE;
 	       }
 	       v = rb_funcall(klass, s_alloc, 0);
 	       check_load_arg(arg, s_alloc);
@@ -1552,7 +1673,7 @@ r_object0(struct load_arg *arg, int *ivp, VALUE extmod)
         {
 	    volatile VALUE str = r_bytes(arg);
 
-	    v = rb_path2class(RSTRING_PTR(str));
+	    v = rb_path_to_class(str);
 	    v = r_entry(v, arg);
             v = r_leave(v, arg);
 	}
@@ -1562,7 +1683,7 @@ r_object0(struct load_arg *arg, int *ivp, VALUE extmod)
         {
 	    volatile VALUE str = r_bytes(arg);
 
-	    v = path2class(RSTRING_PTR(str));
+	    v = path2class(str);
 	    v = r_entry(v, arg);
             v = r_leave(v, arg);
 	}
@@ -1572,14 +1693,20 @@ r_object0(struct load_arg *arg, int *ivp, VALUE extmod)
         {
 	    volatile VALUE str = r_bytes(arg);
 
-	    v = path2module(RSTRING_PTR(str));
+	    v = path2module(str);
 	    v = r_entry(v, arg);
             v = r_leave(v, arg);
 	}
 	break;
 
       case TYPE_SYMBOL:
-	v = ID2SYM(r_symreal(arg));
+	if (ivp) {
+	    v = ID2SYM(r_symreal(arg, *ivp));
+	    *ivp = FALSE;
+	}
+	else {
+	    v = ID2SYM(r_symreal(arg, 0));
+	}
 	v = r_leave(v, arg);
 	break;
 
@@ -1600,29 +1727,23 @@ r_object(struct load_arg *arg)
     return r_object0(arg, 0, Qnil);
 }
 
-static VALUE
-load(struct load_arg *arg)
+static void
+clear_load_arg(struct load_arg *arg)
 {
-    return r_object(arg);
-}
-
-static VALUE
-load_ensure(struct load_arg *arg)
-{
-    if (!DATA_PTR(arg->wrapper)) return 0;
+    if (!arg->symbols) return;
     st_free_table(arg->symbols);
+    arg->symbols = 0;
     st_free_table(arg->data);
+    arg->data = 0;
     st_free_table(arg->compat_tbl);
-    DATA_PTR(arg->wrapper) = 0;
-    arg->wrapper = 0;
-    return 0;
+    arg->compat_tbl = 0;
 }
 
 /*
  * call-seq:
- *     load( source [, proc] ) => obj
- *     restore( source [, proc] ) => obj
- * 
+ *     load( source [, proc] ) -> obj
+ *     restore( source [, proc] ) -> obj
+ *
  * Returns the result of converting the serialized data in source into a
  * Ruby object (possibly with associated subordinate objects). source
  * may be either an instance of IO or an object that responds to
@@ -1633,37 +1754,39 @@ static VALUE
 marshal_load(int argc, VALUE *argv)
 {
     VALUE port, proc;
-    int major, minor;
+    int major, minor, infection = 0;
     VALUE v;
-    struct load_arg arg;
+    volatile VALUE wrapper;
+    struct load_arg *arg;
 
     rb_scan_args(argc, argv, "11", &port, &proc);
     v = rb_check_string_type(port);
     if (!NIL_P(v)) {
-	arg.taint = OBJ_TAINTED(port); /* original taintedness */
+	infection = (int)FL_TEST(port, MARSHAL_INFECTION); /* original taintedness */
 	port = v;
     }
     else if (rb_respond_to(port, s_getbyte) && rb_respond_to(port, s_read)) {
 	if (rb_respond_to(port, s_binmode)) {
 	    rb_funcall2(port, s_binmode, 0, 0);
 	}
-	arg.taint = Qtrue;
+	infection = (int)(FL_TAINT | FL_TEST(port, FL_UNTRUSTED));
     }
     else {
 	rb_raise(rb_eTypeError, "instance of IO needed");
     }
-    arg.untrust = OBJ_UNTRUSTED(port);
-    arg.src = port;
-    arg.offset = 0;
-    arg.symbols = st_init_numtable();
-    arg.data    = st_init_numtable();
-    arg.compat_tbl = st_init_numtable();
-    arg.proc = 0;
-    arg.wrapper = Data_Wrap_Struct(rb_cData, mark_load_arg, 0, &arg);
+    wrapper = TypedData_Make_Struct(rb_cData, struct load_arg, &load_arg_data, arg);
+    arg->infection = infection;
+    arg->src = port;
+    arg->offset = 0;
+    arg->symbols = st_init_numtable();
+    arg->data    = st_init_numtable();
+    arg->compat_tbl = st_init_numtable();
+    arg->proc = 0;
 
-    major = r_byte(&arg);
-    minor = r_byte(&arg);
+    major = r_byte(arg);
+    minor = r_byte(arg);
     if (major != MARSHAL_MAJOR || minor > MARSHAL_MINOR) {
+	clear_load_arg(arg);
 	rb_raise(rb_eTypeError, "incompatible marshal file format (can't be read)\n\
 \tformat version %d.%d required; %d.%d given",
 		 MARSHAL_MAJOR, MARSHAL_MINOR, major, minor);
@@ -1674,8 +1797,10 @@ marshal_load(int argc, VALUE *argv)
 		MARSHAL_MAJOR, MARSHAL_MINOR, major, minor);
     }
 
-    if (!NIL_P(proc)) arg.proc = proc;
-    v = rb_ensure(load, (VALUE)&arg, load_ensure, (VALUE)&arg);
+    if (!NIL_P(proc)) arg->proc = proc;
+    v = r_object(arg);
+    clear_load_arg(arg);
+    RB_GC_GUARD(wrapper);
 
     return v;
 }
@@ -1685,6 +1810,7 @@ marshal_load(int argc, VALUE *argv)
  * byte stream, allowing them to be stored outside the currently
  * active script. This data may subsequently be read and the original
  * objects reconstituted.
+ *
  * Marshaled data has major and minor version numbers stored along
  * with the object information. In normal use, marshaling can only
  * load data written with the same major version number and an equal
@@ -1702,16 +1828,78 @@ marshal_load(int argc, VALUE *argv)
  * Some objects cannot be dumped: if the objects to be dumped include
  * bindings, procedure or method objects, instances of class IO, or
  * singleton objects, a TypeError will be raised.
+ *
  * If your class has special serialization needs (for example, if you
  * want to serialize in some specific format), or if it contains
  * objects that would otherwise not be serializable, you can implement
- * your own serialization strategy by defining two methods, _dump and
- * _load:
- * The instance method _dump should return a String object containing
- * all the information necessary to reconstitute objects of this class
- * and all referenced objects up to a maximum depth given as an integer
- * parameter (a value of -1 implies that you should disable depth checking).
- * The class method _load should take a String and return an object of this class.
+ * your own serialization strategy.
+ *
+ * There are two methods of doing this, your object can define either
+ * marshal_dump and marshal_load or _dump and _load.  marshal_dump will take
+ * precedence over _dump if both are defined.  marshal_dump may result in
+ * smaller Marshal strings.
+ *
+ * == marshal_dump and marshal_load
+ *
+ * When dumping an object the method marshal_dump will be called.
+ * marshal_dump must return a result containing the information necessary for
+ * marshal_load to reconstitute the object.  The result can be any object.
+ *
+ * When loading an object dumped using marshal_dump the object is first
+ * allocated then marshal_load is called with the result from marshal_dump.
+ * marshal_load must recreate the object from the information in the result.
+ *
+ * Example:
+ *
+ *   class MyObj
+ *     def initialize name, version, data
+ *       @name    = name
+ *       @version = version
+ *       @data    = data
+ *     end
+ *
+ *     def marshal_dump
+ *       [@name, @version]
+ *     end
+ *
+ *     def marshal_load array
+ *       @name, @version = array
+ *     end
+ *   end
+ *
+ * == _dump and _load
+ *
+ * Use _dump and _load when you need to allocate the object you're restoring
+ * yourself.
+ *
+ * When dumping an object the instance method _dump is called with an Integer
+ * which indicates the maximum depth of objects to dump (a value of -1 implies
+ * that you should disable depth checking).  _dump must return a String
+ * containing the information necessary to reconstitute the object.
+ *
+ * The class method _load should take a String and use it to return an object
+ * of the same class.
+ *
+ * Example:
+ *
+ *   class MyObj
+ *     def initialize name, version, data
+ *       @name    = name
+ *       @version = version
+ *       @data    = data
+ *     end
+ *
+ *     def _dump level
+ *       [@name, @version].join ':'
+ *     end
+ *
+ *     def self._load args
+ *       new(*args.split(':'))
+ *     end
+ *   end
+ *
+ * Since Marhsal.dump outputs a string you can have _dump return a Marshal
+ * string which is Marshal.loaded in _load for complex objects.
  */
 void
 Init_marshal(void)

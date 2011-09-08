@@ -2,7 +2,7 @@
 
   acosh.c -
 
-  $Author: usa $
+  $Author: akr $
   created at: Fri Apr 12 00:34:17 JST 2002
 
   public domain rewrite of acosh(3), asinh(3) and atanh(3)
@@ -81,10 +81,10 @@ atanh(double x)
     z = log(z > 1 ? -1 : (1 + z) / (1 - z)) / 2;
     if (neg) z = -z;
     if (isinf(z))
-#if defined(EDOM)
-	errno = EDOM;
-#elif defined(ERANGE)
+#if defined(ERANGE)
 	errno = ERANGE;
+#elif defined(EDOM)
+	errno = EDOM;
 #else
 	;
 #endif

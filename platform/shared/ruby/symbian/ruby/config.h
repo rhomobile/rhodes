@@ -38,7 +38,6 @@
 #define HAVE_LONG_LONG 1
 #define HAVE_OFF_T 1
 #define SIZEOF_INT 4
-#define SIZEOF_PTRDIFF_T 4
 #define SIZEOF_SHORT 2
 #define SIZEOF_LONG 4
 #define SIZEOF_LONG_LONG 8
@@ -48,6 +47,10 @@
 #define SIZEOF_FLOAT 4
 #define SIZEOF_DOUBLE 8
 #define SIZEOF_TIME_T 4
+#define TIMET2NUM(v) LONG2NUM(v)
+#define NUM2TIMET(v) NUM2LONG(v)
+#define SIZEOF_SIZE_T 4
+#define SIZEOF_PTRDIFF_T 4
 #define rb_pid_t pid_t
 #define PIDT2NUM(v) LONG2NUM(v)
 #define NUM2PIDT(v) NUM2LONG(v)
@@ -61,7 +64,9 @@
 #define TOKEN_PASTE(x,y) x##y
 #define STRINGIZE(expr) STRINGIZE0(expr)
 #define HAVE_STDARG_PROTOTYPES 1
-#define HAVE_VA_ARGS_MACRO 0
+#define NORETURN(x) __attribute__ ((noreturn)) x
+#define DEPRECATED(x) __attribute__ ((deprecated)) x
+#define NOINLINE(x) __attribute__ ((noinline)) x
 #define FUNC_STDCALL(x) x
 #define FUNC_CDECL(x) x
 #define FUNC_FASTCALL(x) x
@@ -89,21 +94,33 @@
 #define HAVE_PTHREAD_H 1
 #define HAVE_LANGINFO_H 1
 #define HAVE_LOCALE_H 1
-#define SIZEOF_RLIM_T 0
 #define HAVE_STRUCT_STAT_ST_BLKSIZE 1
 #define HAVE_ST_BLKSIZE 1
 #define HAVE_STRUCT_STAT_ST_BLOCKS 1
 #define HAVE_ST_BLOCKS 1
 #define HAVE_STRUCT_STAT_ST_RDEV 1
 #define HAVE_ST_RDEV 1
+#define HAVE_INT8_T 1
+#define HAVE_UINT8_T 1
+#define SIZEOF_INT8_T 1
+#define HAVE_INT16_T 1
+#define HAVE_UINT16_T 1
+#define SIZEOF_INT16_T 2
+#define HAVE_INT32_T 1
+#define HAVE_UINT32_T 1
+#define SIZEOF_INT32_T 4
+#define HAVE_INT64_T 1
+#define HAVE_UINT64_T 1
+#define SIZEOF_INT64_T 8
 #define HAVE_STRUCT_STAT_ST_ATIMESPEC 1
 #define HAVE_STRUCT_STAT_ST_MTIMESPEC 1
 #define HAVE_STRUCT_STAT_ST_CTIMESPEC 1
 #define HAVE_STRUCT_TIMESPEC 1
+#define HAVE_STRUCT_TIMEZONE 1
 #define HAVE_RB_FD_INIT 1
 #define GETGROUPS_T gid_t
 #define RETSIGTYPE void
-#define HAVE_ALLOCA 1
+#define C_ALLOCA 1
 #define HAVE_DUP2 1
 #define HAVE_MEMMOVE 1
 #define HAVE_STRCASECMP 1
@@ -164,6 +181,7 @@
 #define HAVE_SETGID 1
 #define HAVE_SETENV 1
 #define HAVE_UNSETENV 1
+#define VOID_UNSETENV 1
 #define HAVE_MKTIME 1
 #define HAVE_CLOCK_GETTIME 1
 #define HAVE_GETTIMEOFDAY 1
@@ -171,8 +189,12 @@
 #define HAVE_TM_ZONE 1
 #define HAVE_STRUCT_TM_TM_GMTOFF 1
 #define NEGATIVE_TIME_T 1
-//#define POSIX_SIGNAL 1
 #define RSHIFT(x,y) ((x)>>(int)y)
+#define DOSISH 1
+#define DOSISH_DRIVE_LETTER
+#define RUBY_JMP_BUF jmp_buf
+#define RUBY_SETJMP(env) _setjmp(env)
+#define RUBY_LONGJMP(env,val) _longjmp(env,val)
 #define FILE_COUNT _r
 #define FILE_READPTR _p
 #define HAVE__SC_CLK_TCK 1
@@ -182,25 +204,29 @@
 #define HAVE_LIBPTHREAD 1
 #define HAVE_NANOSLEEP 1
 #define USE_ELF 1
-#define DLEXT_MAXLEN 3
-#define DLEXT ".so"
-#define RUBY_LIB "/lib"
-#define RUBY_SITE_LIB "/apps"
-#define RUBY_SITE_LIB2 "/apps/app"
-#define RUBY_VENDOR_LIB "/lib"
-#define RUBY_VENDOR_LIB2 "/lib"
+#define MANGLED_PATH 1
+#define DLEXT_MAXLEN 4
+#define DLEXT ".dll"
+#define EXECUTABLE_EXTS ".exe",".com",".cmd",".bat"
+#define RUBY_EXEC_PREFIX ""
+#define DLN_NEEDS_ALT_SEPARATOR '\\'
+#define RUBY_LIB_VERSION_STYLE 3
+//RHO
+#define RUBY_LIB_PREFIX "" //RUBY_EXEC_PREFIX"/lib/ruby"
+//RHO
+
+#define RUBY_SITE_LIB "E:/Data/Ruby/lib"
+#define RUBY_VENDOR_LIB "F:/Data/Ruby/lib"
 #define RUBY_PLATFORM "arm-symbianelf"
-#define RUBY_ARCHLIB "/lib"
-#define RUBY_SITE_ARCHLIB "/lib"
-#define RUBY_VENDOR_ARCHLIB "/lib"
-#define RUBY_JMP_BUF jmp_buf
-#define RUBY_SETJMP(env) setjmp(env)
-#define RUBY_LONGJMP(env,val) longjmp(env,val)
-#define HAVE_SYS_FILE_H 0
+
+//#define RUBY_JMP_BUF jmp_buf
+//#define RUBY_SETJMP(env) setjmp(env)
+//#define RUBY_LONGJMP(env,val) longjmp(env,val)
+//#define HAVE_SYS_FILE_H 0
 //#define SA_SIGINFO 0
-#define HAVE_SIGSETJMP 1
-#define HAVE__SETJMP 1
-#define HAVE__LONGJMP 1
+//#define HAVE_SIGSETJMP 1
+//#define HAVE__SETJMP 1
+//#define HAVE__LONGJMP 1
 //#define ENABLE_RUBY_VM_STAT 1
 
 #ifdef __GCCE__
@@ -209,6 +235,11 @@
 #undef FALSE
 #undef TRUE
 #endif //__GCCE32__
-
-#include "tcmalloc/rhomem.h"
+//RHO
+//#define HAVE_PTHREAD_H 1
+#define RUBY_EXPORT 1
+#define HAVE_GETADDRINFO 1  
+#define HAVE_SOCKADDR_STORAGE 1
+#define LOAD_RELATIVE 1
+//RHO
 #endif

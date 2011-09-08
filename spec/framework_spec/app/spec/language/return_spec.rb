@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/return'
+require File.expand_path('../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/return', __FILE__)
 
 describe "The return keyword" do
   it "returns any object directly" do
@@ -253,6 +253,11 @@ describe "The return keyword" do
       ScratchPad.recorded.should == :before_return
     end
 
+    it "causes the method to return even when the immediate parent has already returned" do
+      ReturnSpecs::SavedInnerBlock.new.start.should == :return_value
+      ScratchPad.recorded.should == :before_return
+    end
+
   end
 
   describe "within two blocks" do
@@ -265,6 +270,10 @@ describe "The return keyword" do
   end
 
   describe "within define_method" do
+    it "goes through the method via a closure" do
+      ReturnSpecs::ThroughDefineMethod.new.outer.should == :good
+    end
+
     it "stops at the method when the return is used directly" do
       ReturnSpecs::DefineMethod.new.outer.should == :good
     end

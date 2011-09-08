@@ -147,6 +147,11 @@ public:
 		return new DrawingImageImpl(p, s, useAlpha);
 	}
 
+	virtual IDrawingImage* createImageEx(void const *p, size_t s, int x, int y, int w, int h, bool useAlpha) {
+		return new DrawingImageImpl(p, s, useAlpha);
+	}
+
+
 	virtual IDrawingImage* cloneImage(IDrawingImage *image) {
 		if (image == NULL) {
 			return NULL;
@@ -157,6 +162,11 @@ public:
 	virtual void destroyImage(IDrawingImage* image) {
 		delete image;
 	};
+
+
+    	virtual IDrawingImage* createCalloutImage(String const &title, String const &subtitle, String const& url, int* x_offset, int* y_offset)  {
+		return NULL;
+	}
 
 	virtual void requestRedraw(){}
 };

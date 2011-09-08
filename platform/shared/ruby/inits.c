@@ -2,7 +2,7 @@
 
   inits.c -
 
-  $Author: yugui $
+  $Author: akr $
   created at: Tue Dec 28 16:01:58 JST 1993
 
   Copyright (C) 1993-2007 Yukihiro Matsumoto

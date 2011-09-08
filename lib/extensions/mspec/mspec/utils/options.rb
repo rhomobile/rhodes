@@ -102,8 +102,10 @@ class MSpecOptions
       if option.arg?
         arg = argv.shift if arg.nil?
         raise ParseError, "No argument provided for #{opt}" unless arg
+        option.block[arg] if option.block
+      else
+        option.block[] if option.block
       end
-      option.block[arg] if option.block
     end
     option
   end
@@ -205,7 +207,7 @@ class MSpecOptions
 
   def targets
     on("-t", "--target", "TARGET",
-       "Implementation to run the specs, where:") do |t|
+       "Implementation to run the specs, where TARGET is:") do |t|
       case t
       when 'r', 'ruby'
         config[:target] = 'ruby'
@@ -213,24 +215,30 @@ class MSpecOptions
         config[:target] = 'ruby1.9'
       when 'x', 'rubinius'
         config[:target] = './bin/rbx'
+      when 'x19', 'rubinius19'
+        config[:target] = './bin/rbx -X19'
       when 'X', 'rbx'
         config[:target] = 'rbx'
       when 'j', 'jruby'
         config[:target] = 'jruby'
       when 'i','ironruby'
         config[:target] = 'ir'
+      when 'm','maglev'
+        config[:target] = 'maglev-ruby'
       else
         config[:target] = t
       end
     end
 
     doc ""
-    doc "     r or ruby              invokes ruby in PATH"
-    doc "     r19, ruby19 or ruby1.9 invokes ruby1.9 in PATH"
-    doc "     x or rubinius          invokes ./bin/rbx"
-    doc "     X or rbx               invokes rbx in PATH"
-    doc "     j or jruby             invokes jruby in PATH"
-    doc "     i or ironruby          invokes ir in PATH\n"
+    doc "     r or ruby        invokes ruby in PATH"
+    doc "     r19, ruby19      invokes ruby1.9 in PATH"
+    doc "     x or rubinius    invokes ./bin/rbx"
+    doc "     X or rbx         invokes rbx in PATH"
+    doc "     j or jruby       invokes jruby in PATH"
+    doc "     i or ironruby    invokes ir in PATH"
+    doc "     m or maglev      invokes maglev-ruby in PATH"
+    doc "     full path to EXE invokes EXE directly\n"
 
     on("-T", "--target-opt", "OPT",
        "Pass OPT as a flag to the target implementation") do |t|
@@ -270,6 +278,8 @@ class MSpecOptions
         config[:formatter] = MethodFormatter
       when 'y', 'yaml'
         config[:formatter] = YamlFormatter
+      when 'p', 'profile'
+        config[:formatter] = ProfileFormatter
       else
         puts "Unknown format: #{o}"
         puts @parser
@@ -436,6 +446,13 @@ class MSpecOptions
     on("--spec-gdb",
        "Invoke Gdb when a spec description matches (see -K, -S)") do
       config[:gdb] = true
+    end
+  end
+
+  def debug
+    on("-d", "--debug",
+       "Set MSpec debugging flag for more verbose output") do
+      $MSPEC_DEBUG = true
     end
   end
 end

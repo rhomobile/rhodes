@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes.rb'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes.rb', __FILE__)
 
 describe "String#sum" do
   it "returns a basic n-bit checksum of the characters in self" do
@@ -13,5 +13,10 @@ describe "String#sum" do
     obj.should_receive(:to_int).and_return(8)
 
     "hello".sum(obj).should == "hello".sum(8)
+  end
+
+  it "returns sum of the bytes in self if n less or equal to zero" do
+    "xyz".sum(0).should == 363
+    "xyz".sum(-10).should == 363
   end
 end

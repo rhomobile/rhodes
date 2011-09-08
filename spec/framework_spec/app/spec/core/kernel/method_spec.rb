@@ -1,44 +1,42 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../shared/method', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Kernel#method" do
-  it "returns a method object for a valid method" do
-    class KernelSpecs::Foo; def bar; 'done'; end; end
-    KernelSpecs::Foo.new.method(:bar).class.should == Method
+  it_behaves_like(:kernel_method, :method)
+
+  before(:each) do
+    @obj = KernelSpecs::A.new
   end
 
-  it "returns a method object for a valid singleton method" do
-    class KernelSpecs::Foo; def self.bar; 'done'; end; end
-    KernelSpecs::Foo.method(:bar).class.should == Method
+  # The following examples are to clarify the difference between #method and
+  # #public_method on 1.9
+  it "can be called on a private method" do
+    @obj.send(:private_method).should == :private_method
+    @obj.method(:private_method).should be_an_instance_of(Method)
   end
 
-  it "raises a NameError for an invalid method name" do
-    class KernelSpecs::Foo; def bar; 'done'; end; end
-    lambda {
-      KernelSpecs::Foo.new.method(:invalid_and_silly_method_name)
-    }.should raise_error(NameError)
+  it "raises a NameError when called on a protected method" do
+    @obj.send(:protected_method).should == :protected_method
+    @obj.method(:protected_method).should be_an_instance_of(Method)
   end
 
-  it "raises a NameError for an invalid singleton method name" do
-    class KernelSpecs::Foo; def self.bar; 'done'; end; end
-    lambda { KernelSpecs::Foo.method(:baz) }.should raise_error(NameError)
+  it "will see an alias of the original method as == when in a derived class" do
+    obj = KernelSpecs::B.new
+    obj.method(:aliased_pub_method).should == obj.method(:pub_method)
   end
 
-  # This may be a bug; see http://redmine.ruby-lang.org/issues/show/1151
-  ruby_version_is "" ... "1.9" do
-    it "changes the method called for super on a target aliased method" do
-      c1 = Class.new do
-        def a; 'a'; end
-        def b; 'b'; end
-      end
-      c2 = Class.new(c1) do
-        def a; super; end
-        alias b a
-      end
+  it "can call methods created with define_method" do
+    m = @obj.method(:defined_method)
+    m.call.should == :defined
+  end
 
-      c2.new.a.should == 'a'
-      c2.new.b.should == 'a'
-      c2.new.method(:b).call.should == 'b'
+  ruby_version_is "1.9" do
+    it "can be called even if we only repond_to_missing? method, true" do
+      m = KernelSpecs::RespondViaMissing.new.method(:handled_privately)
+      m.should be_an_instance_of(Method)
+      #m.call(1, 2, 3).should == "Done handled_privately([1, 2, 3])"
     end
   end
+
 end

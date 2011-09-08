@@ -1,11 +1,7 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
+if System.get_property('platform') != 'APPLE'
 describe "Process.initgroups" do
-  it "requires two arguments" do
-    lambda { Process.initgroups }.should raise_error(ArgumentError)
-    lambda { Process.initgroups("root") }.should raise_error(ArgumentError)
-  end
-
   platform_is_not :windows do
     it "initializes the supplemental group access list" do
       name = `id -un`.strip
@@ -22,4 +18,5 @@ describe "Process.initgroups" do
       end
     end
   end
+end
 end

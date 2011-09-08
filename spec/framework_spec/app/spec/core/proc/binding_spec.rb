@@ -1,21 +1,21 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "Proc#binding" do
   it "returns a Binding instance" do
     [Proc.new{}, lambda {}, proc {}].each { |p|
-      p.binding.class.should == Binding
+      p.binding.should be_kind_of(Binding)
     }
   end
-# XXX eval not supported
-#  it "returns the binding associated wiht self" do
-#    obj = mock('binding')
-#    def obj.test_binding(some, params)
-#      lambda {}
-#    end
-#
-#    lambdas_binding = obj.test_binding(1, 2).binding
-#
-#    eval("some", lambdas_binding).should == 1
-#    eval("params", lambdas_binding).should == 2
-#  end
+
+  it "returns the binding associated with self" do
+    obj = mock('binding')
+    def obj.test_binding(some, params)
+      lambda {}
+    end
+
+    lambdas_binding = obj.test_binding(1, 2).binding
+
+    eval("some", lambdas_binding).should == 1
+    eval("params", lambdas_binding).should == 2
+  end
 end

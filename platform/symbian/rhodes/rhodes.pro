@@ -12,8 +12,8 @@ db.source = db
 lib.source = lib
 DEPLOYMENTFOLDERS = apps db lib
 
-symbian:TARGET = Rhodes
-symbian:TARGET.UID3 = 0xE271409B
+symbian:TARGET = Yookos
+symbian:TARGET.UID3 = 0xE15AE169
 #0xE17AE169
 #symbian:TARGET.UID3 = 0x20047C9A
 #0xA00100C8
@@ -24,7 +24,16 @@ symbian:TARGET.UID3 = 0xE271409B
 # and therefore the package will fail to install if self-signed
 # By default qmake uses the unprotected range value if unprotected UID is defined for the application
 # and 0x2002CCCF value if protected UID is given to the application
-#symbian:DEPLOYMENT.installer_header = 0x2002CCCF
+#symbian:DEPLOYMENT.installer_header = 0xA000D7CE
+
+#symbian:DEPLOYMENT.installer_header=0xA000D7CE
+
+#symbian:vendorinfo = \
+#      "%{\"CustomVendor-EN\"}" \
+#      ":\"CustomVendor\""
+
+#symbian:my_deployment.pkg_prerules = symbian:vendorinfo
+#DEPLOYMENT +=  symbian:my_deployment
 
 # Allow network access on Symbian
 symbian:TARGET.CAPABILITY += NetworkServices LocalServices ReadUserData UserEnvironment WriteUserData
@@ -119,6 +128,7 @@ LIBS += rubylib.lib\
 
 symbian {
 INCLUDEPATH += ../../shared/curl/include
+INCLUDEPATH += /epoc32/include/app
 INCLUDEPATH += src
 INCLUDEPATH += ../../shared/ruby/ext/rho
 SOURCES += ../../shared/common/PosixThreadImpl.cpp\
@@ -131,11 +141,13 @@ HEADERS +=    src/qwebviewselectionsuppressor.h \
                src/qwebviewkineticscroller.h \
                src/qkineticscroller_p.h \
                src/qkineticscroller.h
-LIBS +=  -lcurl.lib
+
+
 LIBS +=  -lrubylib.lib
 LIBS +=  -lrholib.lib
 LIBS +=  -lsyncengine.lib
 LIBS +=  -lsqlite3.lib
 LIBS +=  -lqtscroller.lib
+LIBS +=  -lcurl.lib
 LIBS += -lefsrv -lcharconv -lbafl -lcntmodel
 }

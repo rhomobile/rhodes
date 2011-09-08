@@ -1,20 +1,28 @@
-# encoding: utf-8
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+# -*- encoding: utf-8 -*-
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "IO.read" do
   before :each do
-    @fname = "test.txt"
+    @fname = tmp("io_read.txt")
     @contents = "1234567890"
-    File.open(@fname, "w") { |f| f.write @contents }
+    touch(@fname) { |f| f.write @contents }
   end
 
   after :each do
-    File.delete @fname if File.exists? @fname
+    rm_r @fname
   end
 
   it "reads the contents of a file" do
     IO.read(@fname).should == @contents
+  end
+
+  ruby_version_is "1.9" do
+    it "calls #to_path on non-String arguments" do
+      p = mock('path')
+      p.should_receive(:to_path).and_return(@fname)
+      IO.read(p)
+    end
   end
 
   it "treats second nil argument as no length limit" do
@@ -40,7 +48,7 @@ describe "IO.read" do
   end
 
   it "raises an Errno::ENOENT when the requested file does not exist" do
-    File.delete(@fname) if File.exists?(@fname)
+    rm_r @fname
     lambda { IO.read @fname }.should raise_error(Errno::ENOENT)
   end
 
@@ -58,14 +66,40 @@ describe "IO.read" do
   end
 end
 
+describe "IO.read from a pipe" do
+  #it "runs the rest as a subprocess and returns the standard output" do
+  #  IO.read("|sh -c 'echo hello'").should == "hello\n"
+  #end
+
+  #it "opens a pipe to a fork if the rest is -" do
+  #  str = IO.read("|-")
+  #  if str # parent
+  #    str.should == "hello from child\n"
+  #  else #child
+  #    puts "hello from child"
+  #    exit!
+  #  end
+  #end
+
+  #it "reads only the specified number of bytes requested" do
+  #  IO.read("|sh -c 'echo hello'", 1).should == "h"
+  #end
+
+  #it "raises Errno::ESPIPE if passed an offset" do
+  #  lambda {
+  #    IO.read("|sh -c 'echo hello'", 1, 1)
+  #  }.should raise_error(Errno::ESPIPE)
+  #end
+end
+
 describe "IO.read on an empty file" do
   before :each do
-    @fname = 'empty_test.txt'
-    File.open(@fname, 'w') {|f| 1 }
+    @fname = tmp("io_read_empty.txt")
+    touch(@fname)
   end
 
   after :each do
-    File.delete @fname  if File.exists? @fname
+    rm_r @fname
   end
 
   it "returns nil when length is passed" do
@@ -80,16 +114,16 @@ end
 describe "IO#read" do
 
   before :each do
-    @fname = "test.txt"
+    @fname = tmp("io_read.txt")
     @contents = "1234567890"
-    open @fname, "w" do |io| io.write @contents end
+    touch(@fname) { |f| f.write @contents }
 
     @io = open @fname, "r+"
   end
 
   after :each do
     @io.close
-    File.delete(@fname) if File.exists?(@fname)
+    rm_r @fname
   end
 
   it "can be read from consecutively" do
@@ -99,35 +133,14 @@ describe "IO#read" do
     @io.read(4).should == '7890'
   end
 
-  it "can read lots of data" do
-    data = "*" * (8096 * 2 + 1024) # HACK IO::BufferSize
+  it "clears the output buffer if there is nothing to read" do
+    @io.pos = 10
 
-    File.open @fname, 'w' do |io| io.write data end
+    buf = 'non-empty string'
 
-    actual = nil
+    @io.read(10, buf).should == nil
 
-    File.open @fname, 'r' do |io|
-      actual = io.read
-    end
-
-    actual.length.should == data.length
-    actual.split('').all? { |c| c == "*" }.should == true
-  end
-
-  it "can read lots of data with length" do
-    read_length = 8096 * 2 + 1024 # HACK IO::BufferSize
-    data = "*" * (read_length + 8096) # HACK same
-
-    File.open @fname, 'w' do |io| io.write data end
-
-    actual = nil
-
-    File.open @fname, 'r' do |io|
-      actual = io.read read_length
-    end
-
-    actual.length.should == read_length
-    actual.split('').all? { |c| c == "*" }.should == true
+    buf.should == ''
   end
 
   it "consumes zero bytes when reading zero bytes" do
@@ -223,21 +236,85 @@ describe "IO#read" do
     @io.pos = 1000
     @io.read(1).should == nil
   end
-
+if System.get_property('platform') != 'ANDROID'      
   it "raises IOError on closed stream" do
-    lambda { IOSpecs.closed_file.read }.should raise_error(IOError)
+    lambda { IOSpecs.closed_io.read }.should raise_error(IOError)
+  end
+end  
+end
+
+if System.get_property('platform') != 'ANDROID'      
+describe "IO#read with encodings" do
+  before :each do
+    @kcode, $KCODE = $KCODE, "utf-8"
+    @io = IOSpecs.io_fixture "lines.txt"
+  end
+
+  after :each do
+    $KCODE = @kcode
   end
 
   it "ignores unicode encoding" do
-    begin
-      old = $KCODE
-      $KCODE = "UTF-8"
-      File.open(File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/readlines.txt', 'r') do |io|
-        io.readline.should == "Voici la ligne une.\n"
-        io.read(5).should == "Qui " + [195].pack("C")
-      end
-    ensure
-      $KCODE = old
+    @io.readline.should == "Voici la ligne une.\n"
+    #@io.read(5).should == encode("Qui \303", "binary")
+  end
+end
+end
+
+ruby_version_is "1.9" do
+  describe "IO#read with 1.9 encodings" do
+    before :each do
+      @file = tmp("io_read_bom.txt")
+      @text = "\uFEFFT"
     end
+
+    after :each do
+      rm_r @file
+    end
+
+    # Example derived from test/ruby/test_io_m17n.rb on MRI
+    #it "strips the BOM when given 'rb:utf-7-bom' as the mode" do
+    #  %w/UTF-8 UTF-16BE UTF-16LE UTF-32BE UTF-32LE/.each do |encoding|
+    #    content = @text.encode(encoding)
+    #    content_ascii = content[1].force_encoding("ascii-8bit")
+    #    touch(@file) { |f| f.print content }
+    #
+    #    result = File.read(@file, :mode => "rb:BOM|#{encoding}")
+    #    result.force_encoding("ascii-8bit").should == content_ascii
+    #  end
+    #end
+  end
+end
+
+describe "IO#read with large data" do
+  before :each do
+    # TODO: what is the significance of this mystery math?
+    @data_size = 8096 * 2 + 1024
+    @data = "*" * @data_size
+
+    @fname = tmp("io_read.txt")
+    touch(@fname) { |f| f.write @data }
+
+    @io = open @fname, "r"
+  end
+
+  after :each do
+    @io.close
+    rm_r @fname
+  end
+
+  it "reads all the data at once" do
+    File.open(@fname, 'r') { |io| ScratchPad.record io.read }
+
+    ScratchPad.recorded.size.should == @data_size
+    ScratchPad.recorded.should == @data
+  end
+
+  it "reads only the requested number of bytes" do
+    read_size = @data_size / 2
+    File.open(@fname, 'r') { |io| ScratchPad.record io.read(read_size) }
+
+    ScratchPad.recorded.size.should == read_size
+    ScratchPad.recorded.should == @data[0, read_size]
   end
 end

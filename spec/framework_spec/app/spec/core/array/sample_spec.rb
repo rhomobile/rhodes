@@ -1,14 +1,8 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Array#sample" do
-  ruby_version_is "" ... "1.9" do
-    it "is not defined" do
-      lambda { [].sample }.should raise_error(NoMethodError)
-    end
-  end
-
-  ruby_version_is "1.9" do
+  ruby_version_is "1.8.8" do
     it "selects a random value from the array" do
       a = [1, 2, 3, 4]
       10.times {
@@ -59,7 +53,7 @@ describe "Array#sample" do
       end
 
       it "does not return subclass instances with Array subclass" do
-        ArraySpecs::MyArray[1, 2, 3].sample(2).class.should == Array
+        ArraySpecs::MyArray[1, 2, 3].sample(2).should be_kind_of(Array)
       end
     end
   end

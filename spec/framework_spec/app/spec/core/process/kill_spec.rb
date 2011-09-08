@@ -1,12 +1,8 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
+if System.get_property('platform') != 'APPLE'
 # if run indirectly (eg via CI), kills the runner. TODO: needs guard
 describe "Process.kill" do
-  it "requires at least two arguments" do
-    lambda { Process.kill }.should raise_error(ArgumentError)
-    lambda { Process.kill(0) }.should raise_error(ArgumentError)
-  end
-
   it "raises an ArgumentError for unknown signals" do
     lambda { Process.kill("FOO", 0) }.should raise_error(ArgumentError)
   end
@@ -15,13 +11,19 @@ describe "Process.kill" do
     lambda { Process.kill("hup", 0) }.should raise_error(ArgumentError)
   end
 
-  it "doesn't tolerate leading or trailing spaces in signal names" do
-    lambda { Process.kill(" HUP", 0) }.should raise_error(ArgumentError)
-    lambda { Process.kill("HUP ", 0) }.should raise_error(ArgumentError)
-  end
-
-=begin
   platform_is_not :windows do
+    it "accepts symbols as signal names" do
+      begin
+        flag = false
+        @saved_trap = Signal.trap("HUP") { flag = true }
+        Process.kill(:HUP, Process.pid).should == 1
+        sleep 0.5
+        flag.should == true
+      ensure
+        Signal.trap("HUP", @saved_trap)
+      end
+    end
+
     it "tests for the existence of a process without sending a signal" do
       Process.kill(0, 0).should == 1
       pid = Process.fork {
@@ -42,10 +44,9 @@ describe "Process.kill" do
       lambda { Process.kill(0, pid) }.should raise_error(Errno::ESRCH)
     end
   end
-=end
 
-  it "raises an EPERM if permission is denied" do
-    if Process.uid != 0
+  if Process.uid != 0
+    it "raises an EPERM if permission is denied" do
       lambda { Process.kill(1, 1) }.should raise_error(Errno::EPERM)
     end
   end
@@ -93,11 +94,14 @@ describe "Process.kill" do
       it "accepts POSIX signal names with 'SIG' prefix" do
         Process.kill("SIGHUP", 0).should == 1
       end
+
+      it "coerces the pid to an Integer" do
+        Process.kill(1, mock_int(0)).should == 1
+      end
     end
   end
 end
 
-=begin
 describe "Process.kill" do
   platform_is_not :windows do
     before :each do
@@ -143,4 +147,4 @@ describe "Process.kill" do
     end
   end
 end
-=end
+end    

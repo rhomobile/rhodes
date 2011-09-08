@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Enumerable#any?" do
   before :each do
@@ -26,11 +26,6 @@ describe "Enumerable#any?" do
     lambda { @empty.any?(1) }.should raise_error(ArgumentError)
     lambda { @enum1.any?(1) {} }.should raise_error(ArgumentError)
     lambda { @enum2.any?(1, 2, 3) {} }.should raise_error(ArgumentError)
-  end
-
-  it "raises NoMethodError if there is no #each method defined" do
-    lambda { EnumerableSpecs::NoEach.new.any? }.should raise_error(NoMethodError)
-    lambda { EnumerableSpecs::NoEach.new.any? {} }.should raise_error(NoMethodError)
   end
 
   it "does not hide exceptions out of #each" do

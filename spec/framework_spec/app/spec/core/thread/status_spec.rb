@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Thread#status" do
   it "can check it's own status" do
@@ -30,15 +30,19 @@ describe "Thread#status" do
     ThreadSpecs.status_of_thread_with_uncaught_exception.status.should == nil
   end
 
-  it "describes a dying running thread" do
-    ThreadSpecs.status_of_dying_running_thread.status.should == 'aborting'
+  ruby_version_is ""..."1.9" do
+    it "describes a dying running thread" do
+      ThreadSpecs.status_of_dying_running_thread.status.should == 'aborting'
+    end
   end
 
   it "describes a dying sleeping thread" do
     ThreadSpecs.status_of_dying_sleeping_thread.status.should == 'sleep'
   end
 
+  quarantine! do
   it "reports aborting on a killed thread" do
     ThreadSpecs.status_of_aborting_thread.status.should == 'aborting'
+  end
   end
 end

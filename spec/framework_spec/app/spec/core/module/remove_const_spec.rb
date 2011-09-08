@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../fixtures/constants'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../../../fixtures/constants', __FILE__)
 
 describe "Module#remove_const" do
   it "removes the constant specified by a String or Symbol from the receiver's constant table" do
@@ -21,9 +21,16 @@ describe "Module#remove_const" do
     ConstantSpecs::ModuleM.send(:remove_const, :CS_CONST254).should == :const254
   end
 
-  it "raises a NameError if the constant is not defined directly in the module" do
+  it "raises a NameError and does not call #const_missing if the constant is not defined" do
+    ConstantSpecs.should_not_receive(:const_missing)
+    lambda { ConstantSpecs.send(:remove_const, :Nonexistent) }.should raise_error(NameError)
+  end
+
+  it "raises a NameError and does not call #const_missing if the constant is not defined directly in the module" do
     ConstantSpecs::ModuleM::CS_CONST255 = :const255
     ConstantSpecs::ContainerA::CS_CONST255.should == :const255
+    ConstantSpecs::ContainerA.should_not_receive(:const_missing)
+
     lambda do
       ConstantSpecs::ContainerA.send :remove_const, :CS_CONST255
     end.should raise_error(NameError)

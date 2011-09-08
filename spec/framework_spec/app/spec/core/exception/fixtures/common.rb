@@ -15,4 +15,36 @@ end
 
 module ExceptionSpecs
   class Exceptional < Exception; end
-end  
+
+  class Backtrace
+    def self.backtrace
+      begin
+        raise
+      rescue RuntimeError => e
+        e.backtrace
+      end
+    end
+  end
+
+  class UnExceptional < Exception
+    def backtrace
+      nil
+    end
+    def message
+      nil
+    end
+  end
+
+  class ConstructorException < Exception
+
+    def initialize
+    end
+
+  end
+
+  class OverrideToS < RuntimeError
+    def to_s
+      "this is from #to_s"
+    end
+  end
+end

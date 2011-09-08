@@ -58,11 +58,11 @@ describe :file_fnmatch, :shared => true do
     end
   end
 
-#  platform_is :windows do
-#    it "matches case sensitive characters on platfroms with case insensitive paths, when flags include FNM_SYSCASE" do
-#      File.send(@method, 'cat', 'CAT', Filee::FNM_SYSCASE).should == true
-#    end
-#  end
+  platform_is :windows do
+    it "matches case sensitive characters on platfroms with case insensitive paths, when flags include FNM_SYSCASE" do
+      File.send(@method, 'cat', 'CAT', File::FNM_SYSCASE).should == true
+    end
+  end
 
   it "does not match '/' characters with ? or * when flags includes FNM_PATHNAME" do
     File.send(@method, '?', '/', File::FNM_PATHNAME).should == false
@@ -158,6 +158,12 @@ describe :file_fnmatch, :shared => true do
     File.send(@method, pattern, '/a/b/c/foo', File::FNM_PATHNAME).should be_true
     File.send(@method, pattern, 'c:/a/b/c/foo', File::FNM_PATHNAME).should be_true
     File.send(@method, pattern, 'a/.b/c/foo', File::FNM_PATHNAME | File::FNM_DOTMATCH).should be_true
+  end
+
+  ruby_version_is "1.9" do
+    it "accepts an object that has a #to_path method" do
+      File.send(@method, '\*', mock_to_path('a')).should == false
+    end
   end
 
   it "raises a TypeError if the first and second arguments are not string-like" do

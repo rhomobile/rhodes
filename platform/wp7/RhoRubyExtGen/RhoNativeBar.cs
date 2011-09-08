@@ -44,13 +44,7 @@ namespace rho.rubyext
         #region Private Instance & Singleton Methods
 
         [RubyMethodAttribute("create", RubyMethodAttributes.PublicSingleton)]
-        public static void Create(RubyModule/*!*/ self, int barType, RubyArray args)
-        {
-
-        }
-
-        [RubyMethodAttribute("create", RubyMethodAttributes.PublicSingleton)]
-        public static void Create(RubyModule/*!*/ self, int barType, Hash args)
+        public static void Create(RubyModule/*!*/ self, int barType, Object args)
         {
 
         }
@@ -80,16 +74,11 @@ namespace rho.rubyext
         }
 
         [RubyMethodAttribute("create_native_toolbar", RubyMethodAttributes.PublicSingleton)]
-        public static void createNativeToolBar(RubyModule/*!*/ self, int barType, RubyArray args)
+        public static void createNativeToolBar(RubyModule/*!*/ self, int barType, Object args)
         {
 
         }
 
-        [RubyMethodAttribute("create_native_toolbar", RubyMethodAttributes.PublicSingleton)]
-        public static void createNativeToolBar(RubyModule/*!*/ self, int barType, Hash args)
-        {
-
-        }
 
         [RubyMethodAttribute("remove_native_toolbar", RubyMethodAttributes.PublicSingleton)]
         public static void removeNativeToolBar(RubyModule/*!*/ self)
@@ -98,13 +87,7 @@ namespace rho.rubyext
         }
 
         [RubyMethodAttribute("create_native_tabbar", RubyMethodAttributes.PublicSingleton)]
-        public static void createNativeTabBar(RubyModule/*!*/ self, int barType, Hash args)
-        {
-
-        }
-
-        [RubyMethodAttribute("create_native_tabbar", RubyMethodAttributes.PublicSingleton)]
-        public static void createNativeTabBar(RubyModule/*!*/ self, int barType, RubyArray args)
+        public static void createNativeTabBar(RubyModule/*!*/ self, int barType, Object args)
         {
 
         }

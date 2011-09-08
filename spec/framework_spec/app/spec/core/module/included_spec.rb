@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Module#included" do
   it "is invoked when self is included in another module or class" do
@@ -33,7 +33,15 @@ describe "Module#included" do
     c.test.should == :passed
   end
 
-  it "is private in its default implementation" do
-    Module.new.private_methods.should include(:included)
+  ruby_version_is ""..."1.9" do
+    it "is private in its default implementation" do
+      Module.new.private_methods.should include("included")
+    end
+  end
+
+  ruby_version_is "1.9" do
+    it "is private in its default implementation" do
+      Module.new.private_methods.should include(:included)
+    end
   end
 end

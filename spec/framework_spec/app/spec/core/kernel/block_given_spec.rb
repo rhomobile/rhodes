@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe :kernel_block_given, :shared => true do
   it "returns true if and only if a block is supplied" do
@@ -42,7 +42,7 @@ describe "self.send(:block_given?)" do
       KernelSpecs::SelfBlockGiven.defined_block {}.should == false
     end
   end
-  
+
   ruby_version_is "1.9" do
     it_behaves_like :kernel_block_given, :block_given?, KernelSpecs::SelfBlockGiven
   end

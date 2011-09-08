@@ -1,13 +1,15 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
-=begin
 describe "Process.wait2" do
   before :all do
     # HACK: this kludge is temporarily necessary because some
     # misbehaving spec somewhere else does not clear processes
-    Process.waitall
+    begin
+      Process.waitall
+    rescue NotImplementedError
+    end
   end
-
+if System.get_property('platform') != 'APPLE'
   platform_is_not :windows do
     it "returns the pid and status of child process" do
       pidf = Process.fork { Process.exit! 99 }
@@ -18,10 +20,9 @@ describe "Process.wait2" do
       status.exitstatus.should == 99
     end
   end
-
+end
   it "raises a StandardError if no child processes exist" do
     lambda { Process.wait2 }.should raise_error(Errno::ECHILD)
     lambda { Process.wait2 }.should raise_error(StandardError)
   end
 end
-=end

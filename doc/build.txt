@@ -724,11 +724,11 @@ Note that Windows Mobile versions of your Rhodes app must be built in a Windows 
 * Follow [All Platforms Prerequisites](#all-platforms-prerequisites)
 * .NET Compact Framework
 * Windows Mobile 6 Professional SDK(s) 
-* Microsoft Active Sync 4.5
+* Microsoft Active Sync 4.5 for Windows XP; Windows Mobile Device Center and Microsoft Device Emulator 3.0 for Windows Vista or higher
 * Visual Studio 2005 Service Pack 1 installed or Visual Studio 2008. 
 * [7-zip](http://www.7-zip.org/)
 
-Open ActiveSync main window, go to the File -> Connection Settings, select checkbox "Allow connections to one of the following" and select "DMA" from the list box. It is required to work with emulator.
+On Windows XP, open ActiveSync main window and open the File menu; on Windows Vista and above, open Windows Mobile Device Center and click Mobile Device Settings. Select Connection Settings, select checkbox "Allow connections to one of the following" and select "DMA" from the list box. It is required to work with emulator.
 
 ### Build application from the command line
 
@@ -739,7 +739,14 @@ Add path to vcbuild.exe and CabWiz.exe to rhobuild.yml in the Rhodes folder:
 	    vcbuild: 'C:/Program Files/Microsoft Visual Studio 8/VC/vcpackages/vcbuild.exe'
 	    cabwiz: 'C:/Program Files/Windows Mobile 6 SDK/Tools/CabWiz'
 
-### To run application on device or emulator(Visual Studio 2008 only) :
+On 64-bit installations:
+
+	env:
+	  paths:
+	    vcbuild: 'C:/Program Files (x86)/Microsoft Visual Studio 8/VC/vcpackages/vcbuild.exe'
+	    cabwiz: 'C:/Program Files (x86)/Windows Mobile 6 SDK/Tools/CabWiz'
+
+### To run application on device or emulator (Visual Studio 2008 only):
 
 To build and run application on emulator, run (fastest way):
 	
@@ -750,6 +757,8 @@ To build cab-file, install it and run application on emulator, run:
 
 	:::term
 	$ rake run:wm:cab 
+
+If you want to run the application on your Windows Mobile device, first connect your device via USB cable. Then check that your device is connected with ActiveSync on Windows XP or Windows Mobile Device Center on Windows Vista or above.
 
 To build and run application on device, run (fastest way):
 
@@ -770,11 +779,11 @@ If you want the application to be signed automaticly during the build process, p
 
 	wmsign: <disk:/path/MySign.pfx>
 
-More information about  Windows Mobile code signing you could find at:
-http://msdn.microsoft.com/en-us/windowsmobile/dd569132.aspx
+You can find more information about Windows Mobile code signing at:
+[http://msdn.microsoft.com/en-us/windowsmobile/dd569132.aspx](http://msdn.microsoft.com/en-us/windowsmobile/dd569132.aspx)
 
 ### To deploy application on device
-First connect your device to computer. You can use USB-cable, bluetooth or any other method. To use computer internet you have to start ActiveSync.
+First connect your device to computer. You can use USB-cable, bluetooth or any other method. To use computer internet you have to start ActiveSync or Windows Mobile Device Center.
 
 * You can use rake tasks. See 'Build application from the command line' section. Device should be connected via USB-cable. 
 * You can manually copy .cab file to device, for example to Temp folder and click on cab-file on the device using File Explorer. Installation process will be started. After finish you should see app icon on the device

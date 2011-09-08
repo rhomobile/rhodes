@@ -1,6 +1,6 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/shared/slice'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
+require File.expand_path('../shared/slice', __FILE__)
 
 describe "Array#[]" do
   it_behaves_like(:array_slice, :[])
@@ -23,8 +23,32 @@ describe "Array.[]" do
     Array[1, 2, *splatted_array].should == [1, 2, 3, 4, 5]
   end
 
-  it "returns an instance of the subtype when called on an Array subclass" do
-    ArraySub = Class.new Array
-    ArraySub[1,2].class.should == ArraySub
+  ruby_version_is '1.9' do
+    it 'can unpack 2 or more nested referenced array' do
+      splatted_array = Array[3, 4, 5]
+      splatted_array2 = Array[6, 7, 8]
+      eval("Array[1, 2, *splatted_array, *splatted_array2]").should == [1, 2, 3, 4, 5, 6, 7, 8]
+    end
+
+    it 'constructs a nested Hash for tailing key-value pairs' do
+      eval(<<-EOS).should == [1, 2, { 3=> 4, 5 => 6 }]
+        Array[1, 2, 3 => 4, 5 => 6]
+      EOS
+    end
+  end
+
+  describe "with a subclass of Array" do
+    before :each do
+      ScratchPad.clear
+    end
+
+    it "returns an instance of the subclass" do
+      ArraySpecs::MyArray[1, 2, 3].should be_an_instance_of(ArraySpecs::MyArray)
+    end
+
+    it "does not call #initialize on the subclass instance" do
+      ArraySpecs::MyArray[1, 2, 3].should == [1, 2, 3]
+      ScratchPad.recorded.should be_nil
+    end
   end
 end

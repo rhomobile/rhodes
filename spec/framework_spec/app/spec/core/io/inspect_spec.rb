@@ -1,19 +1,8 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "IO#inspect" do
-  before :each do
-    @file = File.open(tmp("inspect_spec"), "w") 
-  end
-
-  after :each do
-    @file.close
-    File.unlink(tmp("inspect_spec"))
-  end
-
-  it "returns a string describing a stream" do
-    # don't hardcode the tmp path 
-    @file.inspect.should =~ /#<File.*inspect_spec>/
-    IO.new(@file.to_i).inspect.should =~ /<IO:[\w\d]+>/
+  it "returns a String describing a stream" do
+    STDOUT.inspect.should be_kind_of(String)
   end
 end

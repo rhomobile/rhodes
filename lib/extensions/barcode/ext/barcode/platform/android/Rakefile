@@ -25,7 +25,7 @@ def build_extension(name, arch, src_files)
     args << "-D__NEW__" if use_own_stlport
     args << "-I#{$stlport_includes}" if use_own_stlport
     
-    args << "-I#{$rootdir}/platform/shared/ruby/linux"
+    args << "-I#{$rootdir}/platform/shared/ruby/android"
     args << "-I#{$rootdir}/platform/shared/ruby/generated"
     args << "-I#{$rootdir}/platform/android/Rhodes/jni/include"
 

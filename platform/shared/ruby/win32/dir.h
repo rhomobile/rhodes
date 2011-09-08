@@ -17,8 +17,8 @@ struct direct
     char d_isrep; /* reparse point */
 };
 typedef struct {
-    char *start;
-    char *curr;
+    WCHAR *start;
+    WCHAR *curr;
     long size;
     long nfiles;
     long loc;  /* [0, nfiles) */
@@ -29,8 +29,9 @@ typedef struct {
 
 DIR*           rb_w32_opendir(const char*);
 struct direct* rb_w32_readdir(DIR *);
-off_t          rb_w32_telldir(DIR *);
-void           rb_w32_seekdir(DIR *, off_t);
+struct direct* rb_w32_readdir_with_enc(DIR *, rb_encoding *);
+long           rb_w32_telldir(DIR *);
+void           rb_w32_seekdir(DIR *, long);
 void           rb_w32_rewinddir(DIR *);
 void           rb_w32_closedir(DIR *);
 

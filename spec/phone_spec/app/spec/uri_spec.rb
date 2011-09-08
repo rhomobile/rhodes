@@ -11,7 +11,9 @@ describe "URI" do
     end
 
     after(:all) do
+unless System.get_property('platform') == 'WINDOWS'  && System.get_property('device_name') != 'Win32'
         File.delete(@@file_name) if File.exists?(@@file_name)
+end        
     end
 
     it "test navigate local page" do

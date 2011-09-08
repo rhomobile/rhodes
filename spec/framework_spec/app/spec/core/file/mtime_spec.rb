@@ -1,17 +1,17 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "File.mtime" do
   before :each do
     @filename = tmp('i_exist')
-    File.open(@filename, 'w') { @mtime = Time.now }
+    touch(@filename) { @mtime = Time.now }
   end
 
   after :each do
-    File.delete(@filename) if File.exist?(@filename)
+    rm_r @filename
   end
 
   it "returns the modification Time of the file" do
-    File.mtime(@filename).class.should == Time
+    File.mtime(@filename).should be_kind_of(Time)
     File.mtime(@filename).should be_close(@mtime, 2.0)
   end
 
@@ -27,11 +27,12 @@ describe "File#mtime" do
   end
 
   after :each do
-    File.delete(@filename) if File.exist?(@filename)
+    @f.close
+    rm_r @filename
   end
 
   it "returns the modification Time of the file" do
-    @f.mtime.class.should == Time
+    @f.mtime.should be_kind_of(Time)
   end
 
 end

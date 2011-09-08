@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Thread#alive?" do
   it "can check it's own status" do
@@ -38,7 +38,21 @@ describe "Thread#alive?" do
     ThreadSpecs.status_of_dying_sleeping_thread.alive?.should == true
   end
 
-  it "reports aborting on a killed thread" do
-    ThreadSpecs.status_of_aborting_thread.alive?.should == true
+  it "return true for a killed but still running thread" do
+    exit = false
+    t = Thread.new do
+      begin
+        sleep
+      ensure
+        true while !exit # spin until told to exit
+      end
+    end
+
+    ThreadSpecs.spin_until_sleeping(t)
+
+    t.kill
+    t.alive?.should == true
+    exit = true
+    t.join
   end
 end

@@ -1,8 +1,8 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
+if System.get_property('platform') != 'APPLE'
 describe "IO#close_write" do
-
   before :each do
     @io = IO.popen 'cat', 'r+'
     @path = tmp('io.close.txt')
@@ -50,19 +50,18 @@ describe "IO#close_write" do
     File.unlink @path
   end
 
-  it "flushes and closes the write stream" do
-    @io.puts '12345'
+  #it "flushes and closes the write stream" do
+  #  @io.puts '12345'
 
-    @io.close_write
+  #  @io.close_write
 
-    @io.read.should == "12345\n"
-  end
+  # @io.read.should == "12345\n"
+  #end
 
-  it "raises IOError on closed stream" do
-    @io.close
+  #it "raises IOError on closed stream" do
+  #  @io.close
 
-    lambda { @io.close_write }.should raise_error(IOError)
-  end
-
+  #  lambda { @io.close_write }.should raise_error(IOError)
+  #end
 end
-
+end

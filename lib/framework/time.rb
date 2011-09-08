@@ -213,7 +213,7 @@ class Time
     # If a block is given, the year described in +date+ is converted by the
     # block.  For example:
     #
-    #     Time.parse(...) {|y| y < 100 ? (y >= 69 ? y + 1900 : y + 2000) : y}
+    #     Time.parse(...) {|y| 0 <= y && y < 100 ? (y >= 69 ? y + 1900 : y + 2000) : y}
     #
     # If the upper components of the given time are broken or missing, they are
     # supplied with those of +now+.  For the lower components, the minimum
@@ -221,9 +221,11 @@ class Time
     #
     #     # Suppose it is "Thu Nov 29 14:33:20 GMT 2001" now and
     #     # your timezone is GMT:
-    #     Time.parse("16:30")     #=> Thu Nov 29 16:30:00 GMT 2001
-    #     Time.parse("7/23")      #=> Mon Jul 23 00:00:00 GMT 2001
-    #     Time.parse("Aug 31")    #=> Fri Aug 31 00:00:00 GMT 2001
+    #     now = Time.parse("Thu Nov 29 14:33:20 GMT 2001")
+    #     Time.parse("16:30", now)     #=> 2001-11-29 16:30:00 +0900
+    #     Time.parse("7/23", now)      #=> 2001-07-23 00:00:00 +0900
+    #     Time.parse("Aug 31", now)    #=> 2001-08-31 00:00:00 +0900
+    #     Time.parse("Aug 2000", now)  #=> 2000-08-01 00:00:00 +0900
     #
     # Since there are numerous conflicts among locally defined timezone
     # abbreviations all over the world, this method is not made to
@@ -257,10 +259,18 @@ class Time
     #
     # A failure for Time.parse should be checked, though.
     #
+    # time library should be required to use this method as follows.
+    #
+    #     require 'time'
+    #
     def parse(date, now=self.now)
-      d = Date._parse(date, false)
+      comp = !block_given?
+      d = Date._parse(date, comp)
+      if !d[:year] && !d[:mon] && !d[:mday] && !d[:hour] && !d[:min] && !d[:sec] && !d[:sec_fraction]
+        raise ArgumentError, "no time information in #{date.inspect}"
+      end
       year = d[:year]
-      year = yield(year) if year && block_given?
+      year = yield(year) if year && !comp
       make_time(year, d[:mon], d[:mday], d[:hour], d[:min], d[:sec], d[:sec_fraction], d[:zone], now)
     end
 
@@ -293,6 +303,10 @@ class Time
     # or Time class cannot represent specified date.
     #
     # See #rfc2822 for more information on this format.
+    #
+    # time library should be required to use this method as follows.
+    #
+    #     require 'time'
     #
     def rfc2822(date)
       if /\A\s*
@@ -343,6 +357,10 @@ class Time
     #
     # See #httpdate for more information on this format.
     #
+    # time library should be required to use this method as follows.
+    #
+    #     require 'time'
+    #
     def httpdate(date)
       if /\A\s*
           (?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),\x20
@@ -390,6 +408,10 @@ class Time
     #
     # See #xmlschema for more information on this format.
     #
+    # time library should be required to use this method as follows.
+    #
+    #     require 'time'
+    #
     def xmlschema(date)
       if /\A\s*
           (-?\d+)-(\d\d)-(\d\d)
@@ -432,10 +454,14 @@ class Time
   #
   # If +self+ is a UTC time, -0000 is used as zone.
   #
+  # time library should be required to use this method as follows.
+  #
+  #     require 'time'
+  #
   def rfc2822
-    sprintf('%s, %02d %s %d %02d:%02d:%02d ',
+    sprintf('%s, %02d %s %0*d %02d:%02d:%02d ',
       RFC2822_DAY_NAME[wday()],
-      day(), RFC2822_MONTH_NAME[mon()-1], year(),
+      day(), RFC2822_MONTH_NAME[mon()-1], year() < 0 ? 5 : 4, year(),
       hour(), min(), sec() ) +
     if utc?
       '-0000'
@@ -463,12 +489,16 @@ class Time
   #
   # Note that the result is always UTC (GMT).
   #
+  # time library should be required to use this method as follows.
+  #
+  #     require 'time'
+  #
   def httpdate
     t = dup.utc
-    sprintf('%s, %02d %s %d %02d:%02d:%02d GMT',
+    sprintf('%s, %02d %s %0*d %02d:%02d:%02d GMT',
       RFC2822_DAY_NAME[t.wday],
-      t.day, RFC2822_MONTH_NAME[t.mon-1], t.year,
-      t.hour, t.min, t.sec)
+      t.day(), RFC2822_MONTH_NAME[t.mon-1], t.year() < 0 ? 5 : 4, t.year(),
+      t.hour(), t.min(), t.sec())
   end
 
   #
@@ -485,15 +515,17 @@ class Time
   # +fractional_seconds+ specifies a number of digits of fractional seconds.
   # Its default value is 0.
   #
+  # time library should be required to use this method as follows.
+  #
+  #     require 'time'
+  #
   def xmlschema(fraction_digits=0)
-    sprintf('%d-%02d-%02dT%02d:%02d:%02d',
-      year, mon, day, hour, min, sec) +
+    sprintf('%0*d-%02d-%02dT%02d:%02d:%02d',
+      year() < 0 ? 5 : 4, year(), mon(), day(), hour(), min(), sec() ) +
     if fraction_digits == 0
       ''
-    elsif fraction_digits <= 9
-      '.' + sprintf('%09d', nsec)[0, fraction_digits]
     else
-      '.' + sprintf('%09d', nsec) + '0' * (fraction_digits - 9)
+      '.' + sprintf('%0*d', fraction_digits, (subsec * 10**fraction_digits).floor)
     end +
     if utc?
       'Z'

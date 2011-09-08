@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Struct.new" do
   it "creates a constant in Struct namespace with string as first argument" do
@@ -26,23 +26,41 @@ describe "Struct.new" do
     struct.name.should == "Struct::Foo"
   end
 
-  it "creates a new anonymous class with nil first argument" do
-    struct = Struct.new(nil, :foo)
-    struct.new("bar").foo.should == "bar"
-    struct.class.should == Class
-    struct.name.should == ""
+  ruby_version_is ""..."1.9" do
+    it "creates a new anonymous class with nil first argument" do
+      struct = Struct.new(nil, :foo)
+      struct.new("bar").foo.should == "bar"
+      struct.should be_kind_of(Class)
+      struct.name.should == ""
+    end
+
+    it "creates a new anonymous class with symbol arguments" do
+      struct = Struct.new(:make, :model)
+      struct.should be_kind_of(Class)
+      struct.name.should == ""
+    end
+  end
+
+  ruby_version_is "1.9" do
+    it "creates a new anonymous class with nil first argument" do
+      struct = Struct.new(nil, :foo)
+      struct.new("bar").foo.should == "bar"
+      struct.should be_kind_of(Class)
+      struct.name.should be_nil
+    end
+
+    it "creates a new anonymous class with symbol arguments" do
+      struct = Struct.new(:make, :model)
+      struct.should be_kind_of(Class)
+      struct.name.should == nil
+    end
   end
 
   it "does not create a constant with symbol as first argument" do
-    struct = Struct.new(:Animal, :name, :legs, :eyeballs)
-    struct.should_not == Struct::Animal
+    struct = Struct.new(:Animal2, :name, :legs, :eyeballs)
+    Struct.const_defined?("Animal2").should be_false
   end
 
-  it "creates a new anonymous class with symbol arguments" do
-    struct = Struct.new(:make, :model)
-    struct.class.should == Class
-    struct.name.should == ""
-  end
 
   it "fails with invalid constant name as first argument" do
     lambda { Struct.new('animal', :name, :legs, :eyeballs) }.should raise_error(NameError)
@@ -66,43 +84,54 @@ describe "Struct.new" do
   end
 
   not_compliant_on :rubinius do
-    it "accepts Fixnums as Symbols unless fixnum.to_sym.nil?" do
-      num = :foo.to_i
-      Struct.new(nil, num).new("bar").foo.should == "bar"
-    end
+    ruby_version_is ""..."1.9" do
+      it "accepts Fixnums as Symbols unless fixnum.to_sym.nil?" do
+        num = :foo.to_i
+        Struct.new(nil, num).new("bar").foo.should == "bar"
+      end
 
-    it "raises an ArgumentError if fixnum#to_sym is nil" do
-      num = 10000
-      num.to_sym.should == nil  # if this fails, we need a new Fixnum to test
-      lambda { Struct.new(:animal, num) }.should raise_error(ArgumentError)
+      it "raises an ArgumentError if fixnum#to_sym is nil" do
+        num = 10000
+        num.to_sym.should == nil  # if this fails, we need a new Fixnum to test
+        lambda { Struct.new(:animal, num) }.should raise_error(ArgumentError)
+      end
     end
   end
 
-  it "instance_eval's a passed block" do
-    klass = Struct.new(:something) { @something_else = 'something else entirely!' }
-    klass.instance_variables.should include(:@something_else)
+  ruby_version_is ""..."1.9" do
+    it "processes passed block with instance_eval" do
+      klass = Struct.new(:something) { @something_else = 'something else entirely!' }
+      klass.instance_variables.should include('@something_else')
+    end
+  end
+
+  ruby_version_is "1.9" do
+    it "processes passed block with instance_eval" do
+      klass = Struct.new(:something) { @something_else = 'something else entirely!' }
+      klass.instance_variables.should include(:@something_else)
+    end
   end
 
   it "creates a constant in subclass' namespace" do
-    struct = Apple.new('Computer', :size)
-    struct.should == Apple::Computer
+    struct = StructClasses::Apple.new('Computer', :size)
+    struct.should == StructClasses::Apple::Computer
   end
 
   it "creates an instance" do
-    Struct::Ruby.new.kind_of?(Struct::Ruby).should == true
+    StructClasses::Ruby.new.kind_of?(StructClasses::Ruby).should == true
   end
 
   it "creates reader methods" do
-    Struct::Ruby.new.should have_method(:version)
-    Struct::Ruby.new.should have_method(:platform)
+    StructClasses::Ruby.new.should have_method(:version)
+    StructClasses::Ruby.new.should have_method(:platform)
   end
 
   it "creates writer methods" do
-    Struct::Ruby.new.should have_method(:version=)
-    Struct::Ruby.new.should have_method(:platform=)
+    StructClasses::Ruby.new.should have_method(:version=)
+    StructClasses::Ruby.new.should have_method(:platform=)
   end
 
   it "fails with too many arguments" do
-    lambda { Struct::Ruby.new('2.0', 'i686', true) }.should raise_error(ArgumentError)
+    lambda { StructClasses::Ruby.new('2.0', 'i686', true) }.should raise_error(ArgumentError)
   end
 end

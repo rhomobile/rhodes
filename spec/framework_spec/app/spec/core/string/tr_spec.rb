@@ -1,5 +1,6 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes.rb'
+# -*- encoding: utf-8 -*-
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes.rb', __FILE__)
 
 describe "String#tr" do
   it "returns a new string with the characters from from_string replaced by the ones in to_string" do
@@ -18,6 +19,26 @@ describe "String#tr" do
   it "pads to_str with its last char if it is shorter than from_string" do
     "this".tr("this", "x").should == "xxxx"
     "hello".tr("a-z", "A-H.").should == "HE..."
+  end
+
+  ruby_version_is '' ... '1.9.2' do
+    it "treats a descending range in the replacement as containing just the start character" do
+      "hello".tr("a-y", "z-b").should == "zzzzz"
+    end
+
+    it "treats a descending range in the source as empty" do
+      "hello".tr("l-a", "z").should == "hello"
+    end
+  end
+
+  ruby_version_is '1.9.2' do
+    it "raises a ArgumentError a descending range in the replacement as containing just the start character" do
+      lambda { "hello".tr("a-y", "z-b") }.should raise_error(ArgumentError)
+    end
+
+    it "raises a ArgumentError a descending range in the source as empty" do
+      lambda { "hello".tr("l-a", "z") }.should raise_error(ArgumentError)
+    end
   end
 
   it "translates chars not in from_string when it starts with a ^" do
@@ -45,7 +66,7 @@ describe "String#tr" do
   end
 
   it "returns subclass instances when called on a subclass" do
-    StringSpecs::MyString.new("hello").tr("e", "a").class.should == StringSpecs::MyString
+    StringSpecs::MyString.new("hello").tr("e", "a").should be_kind_of(StringSpecs::MyString)
   end
 
   it "taints the result when self is tainted" do
@@ -54,8 +75,19 @@ describe "String#tr" do
 
       tainted_str.tr("e", "a").tainted?.should == true
 
-      str.tr("e".taint, "a").tainted?.should == false
-      str.tr("e", "a".taint).tainted?.should == false
+      #str.tr("e".taint, "a").tainted?.should == false
+      #str.tr("e", "a".taint).tainted?.should == false
+    end
+  end
+
+  with_feature :encoding do
+    # http://redmine.ruby-lang.org/issues/show/1839
+    it "can replace a 7-bit ASCII character with a multibyte one" do
+      a = "uber"
+      a.encoding.should == Encoding::UTF_8
+      b = a.tr("u","ü")
+      b.should == "über"
+      b.encoding.should == Encoding::UTF_8
     end
   end
 end

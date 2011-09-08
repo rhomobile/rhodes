@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/shared/pos'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../shared/pos', __FILE__)
 
 describe "ARGF.pos" do
   it_behaves_like :argf_pos, :pos
@@ -7,15 +7,15 @@ end
 
 describe "ARGF.pos=" do
   before :each do
-    @file1_name = fixture File.join(__rhoGetCurrentDir(), __FILE__), "file1.txt"
-    @file2_name = fixture File.join(__rhoGetCurrentDir(), __FILE__), "file2.txt"
+    @file1_name = fixture __FILE__, "file1.txt"
+    @file2_name = fixture __FILE__, "file2.txt"
 
     @file1 = File.readlines @file1_name
     @file2 = File.readlines @file2_name
   end
 
   after :each do
-    ARGF.close
+    ARGF.close unless ARGF.closed?
   end
 
   # NOTE: this test assumes that fixtures files have two lines each

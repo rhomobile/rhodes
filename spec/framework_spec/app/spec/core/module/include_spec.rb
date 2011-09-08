@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Module#include" do
   it "calls #append_features(self) in reversed order on each module" do
@@ -43,10 +43,20 @@ describe "Module#include" do
     lambda { ModuleSpecs::SubclassSpec.send(:include, ModuleSpecs::Subclass.new) }.should_not raise_error(TypeError)
   end
 
-  it "imports constants to modules and classes" do
-    ModuleSpecs::A.constants.should include(:CONSTANT_A)
-    ModuleSpecs::B.constants.should include(:CONSTANT_A,:CONSTANT_B)
-    ModuleSpecs::C.constants.should include(:CONSTANT_A,:CONSTANT_B)
+  ruby_version_is ""..."1.9" do
+    it "imports constants to modules and classes" do
+      ModuleSpecs::A.constants.should include("CONSTANT_A")
+      ModuleSpecs::B.constants.should include("CONSTANT_A","CONSTANT_B")
+      ModuleSpecs::C.constants.should include("CONSTANT_A","CONSTANT_B")
+    end
+  end
+
+  ruby_version_is "1.9" do
+    it "imports constants to modules and classes" do
+      ModuleSpecs::A.constants.should include(:CONSTANT_A)
+      ModuleSpecs::B.constants.should include(:CONSTANT_A, :CONSTANT_B)
+      ModuleSpecs::C.constants.should include(:CONSTANT_A, :CONSTANT_B)
+    end
   end
 
   it "does not override existing constants in modules and classes" do
@@ -55,24 +65,45 @@ describe "Module#include" do
     ModuleSpecs::C::OVERRIDE.should == :c
   end
 
-  it "imports instance methods to modules and classes" do
-    ModuleSpecs::A.instance_methods.should include(:ma)
-    ModuleSpecs::B.instance_methods.should include(:ma,:mb)
-    ModuleSpecs::C.instance_methods.should include(:ma,:mb)
+  ruby_version_is ""..."1.9" do
+    it "imports instance methods to modules and classes" do
+      ModuleSpecs::A.instance_methods.should include("ma")
+      ModuleSpecs::B.instance_methods.should include("ma","mb")
+      ModuleSpecs::C.instance_methods.should include("ma","mb")
+    end
   end
 
-# XXX eval not supported
-#  it "imports constants to the toplevel" do
-#    eval "include ModuleSpecs::Z", TOPLEVEL_BINDING
-#    MODULE_SPEC_TOPLEVEL_CONSTANT.should == 1
-#  end
+  ruby_version_is "1.9" do
+    it "imports instance methods to modules and classes" do
+      ModuleSpecs::A.instance_methods.should include(:ma)
+      ModuleSpecs::B.instance_methods.should include(:ma,:mb)
+      ModuleSpecs::C.instance_methods.should include(:ma,:mb)
+    end
+  end
 
-  it "does not import methods to modules and classes" do
-    ModuleSpecs::A.methods.include?(:cma).should == true
-    ModuleSpecs::B.methods.include?(:cma).should == false
-    ModuleSpecs::B.methods.include?(:cmb).should == true
-    ModuleSpecs::C.methods.include?(:cma).should == false
-    ModuleSpecs::C.methods.include?(:cmb).should == false
+  it "imports constants to the toplevel" do
+    eval "include ModuleSpecs::Z", TOPLEVEL_BINDING
+    MODULE_SPEC_TOPLEVEL_CONSTANT.should == 1
+  end
+
+  ruby_version_is ""..."1.9" do
+    it "does not import methods to modules and classes" do
+      ModuleSpecs::A.methods.include?("cma").should == true
+      ModuleSpecs::B.methods.include?("cma").should == false
+      ModuleSpecs::B.methods.include?("cmb").should == true
+      ModuleSpecs::C.methods.include?("cma").should == false
+      ModuleSpecs::C.methods.include?("cmb").should == false
+    end
+  end
+
+  ruby_version_is "1.9" do
+    it "does not import methods to modules and classes" do
+      ModuleSpecs::A.methods.include?(:cma).should == true
+      ModuleSpecs::B.methods.include?(:cma).should == false
+      ModuleSpecs::B.methods.include?(:cmb).should == true
+      ModuleSpecs::C.methods.include?(:cma).should == false
+      ModuleSpecs::C.methods.include?(:cmb).should == false
+    end
   end
 
   it "attaches the module as the caller's immediate ancestor" do
@@ -97,13 +128,13 @@ describe "Module#include" do
       module M; end
       class A; include M; end
       class B < A; include M; end
-      
+
       all = [A,B,M]
-      
+
       (B.ancestors & all).should == [B, A, M]
     end
   end
-  
+
   it "recursively includes new mixins" do
     module ModuleSpecs::M1
       module U; end
@@ -113,27 +144,118 @@ describe "Module#include" do
       module Y; end
       class A; include X; end;
       class B < A; include U, V, W; end;
-      
-      all = [U,V,W,X,Y,A,B]
-      
+
       # update V
       module V; include X, U, Y; end
-      
-      (B.ancestors & all).should == [B, U, V, W, A, X]
-      
+
+      # This code used to use Array#& and then compare 2 arrays, but
+      # the ordering from Array#& is undefined, as it uses Hash internally.
+      #
+      # Loop is more verbose, but more explicit in what we're testing.
+
+      anc = B.ancestors
+      [B, U, V, W, A, X].each do |i|
+        anc.include?(i).should be_true
+      end
+
       class B; include V; end
-      
+
       # the only new module is Y, it is added after U since it follows U in V mixin list:
-      (B.ancestors & all).should == [B, U, Y, V, W, A, X]
+      anc = B.ancestors
+      [B, U, Y, V, W, A, X].each do |i|
+        anc.include?(i).should be_true
+      end
     end
   end
-  
+
+  it "preserves ancestor order" do
+    module ModuleSpecs::M2
+      module M1; end
+      module M2; end
+      module M3; include M2; end
+
+      module M2; include M1; end
+      module M3; include M2; end
+
+      M3.ancestors.should == [M3, M2, M1]
+
+    end
+  end
+
   it "detects cyclic includes" do
     lambda {
       module ModuleSpecs::M
         include ModuleSpecs::M
       end
     }.should raise_error(ArgumentError)
+  end
+
+  it "accepts no-arguments" do
+    lambda {
+      Module.new do
+        include
+      end
+    }.should_not raise_error
+  end
+
+  it "returns the class it's included into" do
+    m = Module.new
+    r = nil
+    c = Class.new { r = include m }
+    r.should == c
+  end
+
+  it "ignores modules it has already included via module mutual inclusion" do
+    module ModuleSpecs::AlreadyInc
+      module M0
+      end
+
+      module M
+        include M0
+      end
+
+      class K
+        include M
+        include M
+      end
+
+      K.ancestors[0].should == K
+      K.ancestors[1].should == M
+      K.ancestors[2].should == M0
+    end
+  end
+
+  it "clears any caches" do
+    module ModuleSpecs::M3
+      module M1
+        def foo
+          :m1
+        end
+      end
+
+      module M2
+        def foo
+          :m2
+        end
+      end
+
+      class C
+        include M1
+
+        def get
+          foo
+        end
+      end
+
+      c = C.new
+      c.get.should == :m1
+
+      class C
+        include M2
+      end
+
+      c.get.should == :m2
+    end
   end
 end
 
@@ -146,6 +268,10 @@ describe "Module#include?" do
 
     ModuleSpecs::Parent.include?(ModuleSpecs::Basic).should == false
     ModuleSpecs::Basic.include?(ModuleSpecs::Super).should == false
+  end
+
+  it "returns false if given module is equal to self" do
+    ModuleSpecs.include?(ModuleSpecs).should == false
   end
 
   it "raises a TypeError when no module was given" do
