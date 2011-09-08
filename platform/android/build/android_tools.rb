@@ -43,6 +43,7 @@ end
 module_function :get_app_log  
 
 def is_emulator_running
+  system("\"#{$adb}\" start-server")
   `"#{$adb}" devices`.split("\n")[1..-1].each do |line|
     return true if line =~ /^emulator/
   end
@@ -51,6 +52,7 @@ end
 module_function :is_emulator_running
 
 def is_device_running
+  system("\"#{$adb}\" start-server")
   `"#{$adb}" devices`.split("\n")[1..-1].each do |line|
     return true if line !~ /^emulator/
   end
@@ -74,6 +76,7 @@ module_function :run_application
 
 def application_running(flag, pkgname)
   pkg = pkgname.gsub(/\./, '\.')
+  system("\"#{$adb}\" start-server")
   `"#{$adb}" #{flag} shell ps`.split.each do |line|
     return true if line =~ /#{pkg}/
   end
