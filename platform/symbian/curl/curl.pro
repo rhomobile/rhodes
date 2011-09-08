@@ -178,6 +178,6 @@ SOURCES += ../../shared/curl/lib/amigaos.c\
 ../../shared/curl/lib/version.c\
 ../../shared/curl/lib/rhossl.c
 
-symbian: {
+symbian3: {
     DEFINES += SYMBIAN_3
 }

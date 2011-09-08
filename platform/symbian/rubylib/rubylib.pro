@@ -33,6 +33,7 @@ SOURCES += \
     ../../shared/ruby/missing/crypt.c \
     ../../shared/ruby/missing/cbrt.c \
     ../../shared/ruby/missing/acosh.c \
+    ../../shared/ruby/missing/signbit.c \
     ../../shared/ruby/regexec.c \
     ../../shared/ruby/regerror.c \
     ../../shared/ruby/regenc.c \
@@ -137,6 +138,7 @@ HEADERS += \
     ../../shared/ruby/ext/socket/sockport.h \
     ../../shared/ruby/ext/socket/addrinfo.h \
     ../../shared/ruby/regint.h \
+    ../../shared/ruby/eval_intern.h \
     ../../shared/ruby/regenc.h
 unix:!symbian {
     maemo5 {
