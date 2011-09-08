@@ -239,7 +239,10 @@ unsigned long rhom_make_object(IDBResult& res1, int nSrcID, bool isSchemaSrc)
     if (!isSchemaSrc)
     {
         for ( ; !res1.isEnd(); res1.next() )
-            rho_connectclient_hash_put(item, res1.getStringByIdx(0).c_str(), res1.getStringByIdx(1).c_str() );
+        {
+            if ( !res1.isNullByIdx(1) )
+                rho_connectclient_hash_put(item, res1.getStringByIdx(0).c_str(), res1.getStringByIdx(1).c_str() );
+        }
     }else
     {
         for (int i = 0; i < res1.getColCount(); i++ )
