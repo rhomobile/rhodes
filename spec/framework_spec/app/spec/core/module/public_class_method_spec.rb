@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Module#public_class_method" do
   before(:each) do
@@ -35,7 +35,7 @@ describe "Module#public_class_method" do
     lambda { ModuleSpecs::Parent.public_method_3 }.should raise_error(NameError)
 
     ModuleSpecs::Child.public_class_method :public_method_1, :public_method_2, :public_method_3
-    
+
     ModuleSpecs::Child.public_method_1.should == nil
     ModuleSpecs::Child.public_method_2.should == nil
     ModuleSpecs::Child.public_method_3.should == nil

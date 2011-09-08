@@ -1,26 +1,29 @@
 describe :file_readable, :shared => true do
   before :each do
-    if System.get_property('platform') == 'ANDROID'
-      @file = "#{ENV['TMP']}/i_exist"
-    elsif System.get_property('platform') == 'WINDOWS'
-      @file = "c:/Temp/i_exist"    
-    else
-      @file = "/tmp/i_exist"
+    @file = tmp('i_exist')
+    platform_is :windows do
+      @file2 = "C:\\windows\\notepad.exe"
+    end
+    platform_is_not :windows do
+      @file2 = "/etc/passwd"
     end
   end
 
   after :each do
-    File.delete(@file) if File.exists?(@file)
+    rm_r @file
   end
+if System.get_property('platform') != 'ANDROID'
   it "returns true if named file is readable by the effective user id of the process, otherwise false" do
-    platform_is_not :windows, :android do
-      @object.send(@method, '/etc/passwd').should == true
-    end
-    platform_is :android do
-      @object.send(@method, '/etc/hosts').should == true
-    end
+    @object.send(@method, @file2).should == true
     File.open(@file,'w') { @object.send(@method, @file).should == true }
   end
+
+  ruby_version_is "1.9" do
+    it "accepts an object that has a #to_path method" do
+      @object.send(@method, mock_to_path(@file2)).should == true
+    end
+  end
+end  
 end
 
 describe :file_readable_missing, :shared => true do

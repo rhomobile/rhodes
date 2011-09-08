@@ -1,10 +1,9 @@
-
-/* A Bison parser, made by GNU Bison 2.4.1.  */
+/* A Bison parser, made by GNU Bison 2.4.3.  */
 
 /* Skeleton interface for Bison's Yacc-like parsers in C
    
-      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
-   Free Software Foundation, Inc.
+      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006,
+   2009, 2010 Free Software Foundation, Inc.
    
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -150,14 +149,13 @@
      idRespond_to = 366,
      idIFUNC = 367,
      idCFUNC = 368,
-     idThrowState = 369,
-     id_core_set_method_alias = 370,
-     id_core_set_variable_alias = 371,
-     id_core_undef_method = 372,
-     id_core_define_method = 373,
-     id_core_define_singleton_method = 374,
-     id_core_set_postexe = 375,
-     tLAST_TOKEN = 376
+     id_core_set_method_alias = 369,
+     id_core_set_variable_alias = 370,
+     id_core_undef_method = 371,
+     id_core_define_method = 372,
+     id_core_define_singleton_method = 373,
+     id_core_set_postexe = 374,
+     tLAST_TOKEN = 375
    };
 #endif
 
@@ -167,16 +165,17 @@
 typedef union YYSTYPE
 {
 
-/* Line 1676 of yacc.c  */
+/* Line 1685 of yacc.c  */
 
     VALUE val;
     NODE *node;
     ID id;
     int num;
+    const struct vtable *vars;
 
 
 
-/* Line 1676 of yacc.c  */
+/* Line 1685 of yacc.c  */
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

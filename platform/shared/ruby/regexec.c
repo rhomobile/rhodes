@@ -2,7 +2,7 @@
   regexec.c -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2007  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2008  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -220,13 +220,13 @@ static int
 onig_region_resize_clear(OnigRegion* region, int n)
 {
   int r;
-  
+
   r = onig_region_resize(region, n);
   if (r != 0) return r;
   onig_region_clear(region);
   return 0;
 }
-    
+
 extern int
 onig_region_set(OnigRegion* region, int at, int beg, int end)
 {
@@ -236,7 +236,7 @@ onig_region_set(OnigRegion* region, int at, int beg, int end)
     int r = onig_region_resize(region, at + 1);
     if (r < 0) return r;
   }
-  
+
   region->beg[at] = beg;
   region->end[at] = end;
   return 0;
@@ -413,7 +413,7 @@ onig_region_copy(OnigRegion* to, OnigRegion* from)
 #define STACK_SAVE do{\
   if (stk_base != stk_alloc) {\
     msa->stack_p = stk_base;\
-    msa->stack_n = stk_end - stk_base;\
+    msa->stack_n = stk_end - stk_base; /* TODO: check overflow */\
   };\
 } while(0)
 
@@ -436,7 +436,7 @@ static int
 stack_double(OnigStackType** arg_stk_base, OnigStackType** arg_stk_end,
 	     OnigStackType** arg_stk, OnigStackType* stk_alloc, OnigMatchArg* msa)
 {
-  unsigned int n;
+  size_t n;
   OnigStackType *x, *stk_base, *stk_end, *stk;
 
   stk_base = *arg_stk_base;
@@ -879,7 +879,7 @@ stack_double(OnigStackType** arg_stk_base, OnigStackType** arg_stk_end,
             }\
             k++;\
           }\
-  	  break;\
+	  break;\
         }\
       }\
     }\
@@ -920,7 +920,7 @@ stack_double(OnigStackType** arg_stk_base, OnigStackType** arg_stk_end,
               }\
               k++;\
             }\
-  	    break;\
+	    break;\
           }\
         }\
         else {\
@@ -1242,7 +1242,7 @@ typedef struct {
 
 /* match data(str - end) from position (sstart). */
 /* if sstart == str then set sprev to NULL. */
-static int
+static long
 match_at(regex_t* reg, const UChar* str, const UChar* end,
 #ifdef USE_MATCH_RANGE_MUST_BE_INSIDE_OF_SPECIFIED_RANGE
 	 const UChar* right_range,
@@ -1300,13 +1300,13 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
   s = (UChar* )sstart;
   while (1) {
 #ifdef ONIG_DEBUG_MATCH
-    {
+    if (s) {
       UChar *q, *bp, buf[50];
       int len;
       fprintf(stderr, "%4d> \"", (int )(s - str));
       bp = buf;
       for (i = 0, q = s; i < 7 && q < end; i++) {
-	len = enclen(encode, q);
+	len = enclen(encode, q, end);
 	while (len-- > 0) *bp++ = *q++;
       }
       if (q < end) { xmemcpy(bp, "...\"", 4); bp += 4; }
@@ -1878,7 +1878,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 	if (scv) goto fail;
 
 	STACK_PUSH_ALT_WITH_STATE_CHECK(p, s, sprev, mem);
-	n = enclen(encode, s);
+	n = enclen(encode, s, end);
         DATA_ENSURE(n);
         if (ONIGENC_IS_MBC_NEWLINE(encode, s, end))  goto fail;
         sprev = s;
@@ -1896,7 +1896,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 	if (scv) goto fail;
 
 	STACK_PUSH_ALT_WITH_STATE_CHECK(p, s, sprev, mem);
-	n = enclen(encode, s);
+	n = enclen(encode, s, end);
 	if (n > 1) {
 	  DATA_ENSURE(n);
 	  sprev = s;
@@ -2149,7 +2149,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 	int len;
 	UChar *pstart, *pend;
 
-	/* if you want to remove following line, 
+	/* if you want to remove following line,
 	   you should check in parse and compile time. */
 	if (mem > num_mem) goto fail;
 	if (mem_end_stk[mem]   == INVALID_STACK_INDEX) goto fail;
@@ -2181,7 +2181,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 	int len;
 	UChar *pstart, *pend;
 
-	/* if you want to remove following line, 
+	/* if you want to remove following line,
 	   you should check in parse and compile time. */
 	if (mem > num_mem) goto fail;
 	if (mem_end_stk[mem]   == INVALID_STACK_INDEX) goto fail;
@@ -2310,7 +2310,7 @@ match_at(regex_t* reg, const UChar* str, const UChar* end,
 	MOP_OUT;
 	continue;
       }
-      
+
       break;
 #endif
 
@@ -2914,11 +2914,10 @@ bm_search_notrev(regex_t* reg, const UChar* target, const UChar* target_end,
     while (s < end) {
       p = se = s + tlen1;
       t = tail;
-      while (t >= target && *p == *t) {
-        p--; t--;
+      while (*p == *t) {
+	if (t == target) return (UChar* )s;
+	p--; t--;
       }
-      if (t < target) return (UChar* )s;
-
       skip = reg->map[*se];
       t = s;
       do {
@@ -2930,11 +2929,10 @@ bm_search_notrev(regex_t* reg, const UChar* target, const UChar* target_end,
     while (s < end) {
       p = se = s + tlen1;
       t = tail;
-      while (t >= target && *p == *t) {
-        p--; t--;
+      while (*p == *t) {
+	if (t == target) return (UChar* )s;
+	p--; t--;
       }
-      if (t < target) return (UChar* )s;
-
       skip = reg->int_map[*se];
       t = s;
       do {
@@ -2963,10 +2961,10 @@ bm_search(regex_t* reg, const UChar* target, const UChar* target_end,
     while (s < end) {
       p = s;
       t = tail;
-      while (t >= target && *p == *t) {
+      while (*p == *t) {
+	if (t == target) return (UChar* )p;
 	p--; t--;
       }
-      if (t < target) return (UChar* )(p + 1);
       s += reg->map[*s];
     }
   }
@@ -2974,10 +2972,10 @@ bm_search(regex_t* reg, const UChar* target, const UChar* target_end,
     while (s < end) {
       p = s;
       t = tail;
-      while (t >= target && *p == *t) {
+      while (*p == *t) {
+	if (t == target) return (UChar* )p;
 	p--; t--;
       }
-      if (t < target) return (UChar* )(p + 1);
       s += reg->int_map[*s];
     }
   }
@@ -2987,7 +2985,7 @@ bm_search(regex_t* reg, const UChar* target, const UChar* target_end,
 static int
 set_bm_backward_skip(UChar* s, UChar* end, OnigEncoding enc ARG_UNUSED,
 		     int** skip)
-		     
+
 {
   int i, len;
 
@@ -3064,11 +3062,11 @@ map_search_backward(OnigEncoding enc, UChar map[],
   return (UChar* )NULL;
 }
 
-extern int
+extern long
 onig_match(regex_t* reg, const UChar* str, const UChar* end, const UChar* at, OnigRegion* region,
 	    OnigOptionType option)
 {
-  int r;
+  long r;
   UChar *prev;
   OnigMatchArg msa;
 
@@ -3260,7 +3258,7 @@ static int set_bm_backward_skip P_((UChar* s, UChar* end, OnigEncoding enc,
 
 #define BM_BACKWARD_SEARCH_LENGTH_THRESHOLD   100
 
-static int
+static long
 backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
 		      UChar* s, const UChar* range, UChar* adjrange,
 		      UChar** low, UChar** high)
@@ -3365,7 +3363,7 @@ backward_search_range(regex_t* reg, const UChar* str, const UChar* end,
 }
 
 
-extern int
+extern long
 onig_search(regex_t* reg, const UChar* str, const UChar* end,
 	    const UChar* start, const UChar* range, OnigRegion* region, OnigOptionType option)
 {
@@ -3638,11 +3636,6 @@ onig_search(regex_t* reg, const UChar* str, const UChar* end,
             MATCH_AND_RETURN_CHECK(orig_range);
             prev = s;
             s += enclen(reg->enc, s, end);
-
-            while (!ONIGENC_IS_MBC_NEWLINE(reg->enc, prev, end) && s < range) {
-              prev = s;
-              s += enclen(reg->enc, s, end);
-            }
           } while (s < range);
           goto mismatch;
         }

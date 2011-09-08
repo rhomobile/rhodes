@@ -555,6 +555,24 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
     }
 }
 
+void CRhodesApp::callBarcodeCallback(String strCallbackUrl, const String& strBarcode, bool isError) 
+{
+    strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
+    String strBody;
+    strBody = "barcode=" + strBarcode;
+
+    if (isError)
+    {
+        strBody += "&status=ok";
+    }
+    else
+    {
+        strBody += "&status=fail";
+    }
+
+    getNetRequest().pushData( strCallbackUrl, strBody, null );
+}
+
 void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImagePath, 
     const String& strError, boolean bCancel ) 
 {

@@ -1243,7 +1243,7 @@
 				RHO_NO_RUBY = 1;
 				SDKROOT = iphoneos;
 				SYMROOT = ../build;
-				USER_HEADER_SEARCH_PATHS = "";
+				USER_HEADER_SEARCH_PATHS = "../../platform/shared ../../platform/shared/curl/include";
 			};
 			name = Debug;
 		};
@@ -1273,6 +1273,7 @@
 				RHO_NO_RUBY = 1;
 				SDKROOT = iphoneos;
 				SYMROOT = ../build;
+				USER_HEADER_SEARCH_PATHS = "../../platform/shared ../../platform/shared/curl/include";
 			};
 			name = Release;
 		};

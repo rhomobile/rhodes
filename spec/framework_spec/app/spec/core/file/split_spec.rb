@@ -1,4 +1,4 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "File.split" do
   before :each do
@@ -20,11 +20,10 @@ describe "File.split" do
     File.split("").should == [".", ""]
   end
 
-unless System.get_property('platform') == 'WINDOWS'
-  it "collapses multiple '/' characters and strips trailing ones" do
-    File.split("//foo////").should == ["/", "foo"]
-  end
-end
+  #it "collapses multiple '/' characters and strips trailing ones" do
+  #  File.split("//foo////").should == ["/", "foo"]
+  #end
+=begin
   platform_is_not :os => :windows do
     not_compliant_on :jruby do
       it "does not split a string that contains '\\'" do
@@ -53,7 +52,7 @@ end
       File.split(@backslash_ext).should ==  ["C:\\foo\\bar", "baz.rb"]
     end
   end
-
+=end
   it "raises an ArgumentError when not passed a single argument" do
     lambda { File.split }.should raise_error(ArgumentError)
     lambda { File.split('string', 'another string') }.should raise_error(ArgumentError)
@@ -66,5 +65,11 @@ end
   it "coerces the argument with to_str if it is not a String type" do
     class C; def to_str; "/rubinius/better/than/ruby"; end; end
     File.split(C.new).should == ["/rubinius/better/than", "ruby"]
+  end
+
+  ruby_version_is "1.9" do
+    it "accepts an object that has a #to_path method" do
+      File.split(mock_to_path("")).should == [".", ""]
+    end
   end
 end

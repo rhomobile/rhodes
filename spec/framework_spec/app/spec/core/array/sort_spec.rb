@@ -1,47 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
-
-module ArraySpecs
-  class SortSame
-    def <=>(other); 0; end
-    def ==(other); true; end
-  end
-
-  class UFOSceptic
-    def <=>(other); raise "N-uh, UFO:s do not exist!"; end
-  end
-
-  class MockForCompared
-    @@count = 0
-    @@compared = false
-    def initialize
-      @@compared = false
-      @order = (@@count += 1)
-    end
-    def <=>(rhs)
-      @@compared = true
-      return rhs.order <=> self.order
-    end
-    def self.compared?
-      @@compared
-    end
-
-    protected
-    attr_accessor :order
-  end
-  
-  class ComparableWithFixnum
-    include Comparable
-    def initialize(num)
-      @num = num
-    end
-
-    def <=>(fixnum)
-      @num <=> fixnum
-    end
-  end
-end
-
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Array#sort" do
   it "returns a new array sorted based on comparing elements with <=>" do
@@ -113,30 +71,29 @@ describe "Array#sort" do
     a.sort {|x, y| y <=> x}.should == [5, 4, 3, 2, 1]
   end
 
+  it "raises an error when a given block returns nil" do
+    lambda { [1, 2].sort {} }.should raise_error(ArgumentError)
+  end
+
   it "does not call #<=> on contained objects when invoked with a block" do
     a = Array.new(25)
     (0...25).each {|i| a[i] = ArraySpecs::UFOSceptic.new }
 
-    a.sort { -1 }.class.should == Array
+    a.sort { -1 }.should be_kind_of(Array)
   end
 
   it "does not call #<=> on elements when invoked with a block even if Array is large (Rubinius #412)" do
     a = Array.new(1500)
     (0...1500).each {|i| a[i] = ArraySpecs::UFOSceptic.new }
 
-    a.sort { -1 }.class.should == Array
+    a.sort { -1 }.should be_kind_of(Array)
   end
 
   it "completes when supplied a block that always returns the same result" do
     a = [2, 3, 5, 1, 4]
-    a.sort {  1 }.class.should == Array
-    a.sort {  0 }.class.should == Array
-    a.sort { -1 }.class.should == Array
-  end
-
-  it "returns subclass instance on Array subclasses" do
-    ary = ArraySpecs::MyArray[1, 2, 3]
-    ary.sort.class.should == ArraySpecs::MyArray
+    a.sort {  1 }.should be_kind_of(Array)
+    a.sort {  0 }.should be_kind_of(Array)
+    a.sort { -1 }.should be_kind_of(Array)
   end
 
   it "does not freezes self during being sorted" do
@@ -147,7 +104,24 @@ describe "Array#sort" do
   it "returns the specified value when it would break in the given block" do
     [1, 2, 3].sort{ break :a }.should == :a
   end
-  
+
+  it "uses the sign of Bignum block results as the sort result" do
+    a = [1, 2, 5, 10, 7, -4, 12]
+    begin
+      class Bignum;
+        alias old_spaceship <=>
+        def <=>(other)
+          raise
+        end
+      end
+      a.sort {|n, m| (n - m) * (2 ** 200)}.should == [-4, 1, 2, 5, 7, 10, 12]
+    ensure
+      class Bignum
+        alias <=> old_spaceship
+      end
+    end
+  end
+
   it "compares values returned by block with 0" do
     a = [1, 2, 5, 10, 7, -4, 12]
     a.sort { |n, m| n - m }.should == [-4, 1, 2, 5, 7, 10, 12]
@@ -158,7 +132,31 @@ describe "Array#sort" do
       a.sort { |n, m| (n - m).to_s }
     }.should raise_error(ArgumentError)
   end
-  
+
+  it "raises an error if objects can't be compared" do
+    a=[ArraySpecs::Uncomparable.new, ArraySpecs::Uncomparable.new]
+    lambda {a.sort}.should raise_error(ArgumentError)
+  end
+
+  # From a strange Rubinius bug
+  it "handles a large array that has been pruned" do
+    pruned = ArraySpecs::LargeArray.dup.delete_if { |n| n !~ /^test./ }
+    pruned.sort.should == ArraySpecs::LargeTestArraySorted
+  end
+
+  ruby_version_is "" ... "1.9.3" do
+    it "returns subclass instance on Array subclasses" do
+      ary = ArraySpecs::MyArray[1, 2, 3]
+      ary.sort.should be_kind_of(ArraySpecs::MyArray)
+    end
+  end
+
+  ruby_version_is "1.9.3" do
+    it "does not return subclass instance on Array subclasses" do
+      ary = ArraySpecs::MyArray[1, 2, 3]
+      ary.sort.should be_kind_of(Array)
+    end
+  end
 end
 
 describe "Array#sort!" do
@@ -207,21 +205,21 @@ describe "Array#sort!" do
     a = Array.new(25)
     (0...25).each {|i| a[i] = ArraySpecs::UFOSceptic.new }
 
-    a.sort! { -1 }.class.should == Array
+    a.sort! { -1 }.should be_kind_of(Array)
   end
 
   it "does not call #<=> on elements when invoked with a block even if Array is large (Rubinius #412)" do
     a = Array.new(1500)
     (0...1500).each {|i| a[i] = ArraySpecs::UFOSceptic.new }
 
-    a.sort! { -1 }.class.should == Array
+    a.sort! { -1 }.should be_kind_of(Array)
   end
 
   it "completes when supplied a block that always returns the same result" do
     a = [2, 3, 5, 1, 4]
-    a.sort!{  1 }.class.should == Array
-    a.sort!{  0 }.class.should == Array
-    a.sort!{ -1 }.class.should == Array
+    a.sort!{  1 }.should be_kind_of(Array)
+    a.sort!{  0 }.should be_kind_of(Array)
+    a.sort!{ -1 }.should be_kind_of(Array)
   end
 
   ruby_version_is '' ... '1.9' do
@@ -229,10 +227,12 @@ describe "Array#sort!" do
       lambda { ArraySpecs.frozen_array.sort! }.should raise_error(TypeError)
     end
 
-    it "temporarily freezes self and recovers after sorted" do
-      a = [1, 2, 3]
-      a.sort! { |x,y| a.frozen?.should == true; x <=> y }
-      a.frozen?.should == false
+    not_compliant_on :rubinius do
+      it "temporarily freezes self and recovers after sorted" do
+        a = [1, 2, 3]
+        a.sort! { |x,y| a.frozen?.should == true; x <=> y }
+        a.frozen?.should == false
+      end
     end
   end
 

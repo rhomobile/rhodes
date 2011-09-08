@@ -1,29 +1,21 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "File.truncate" do
   before :each do
-    @name = "test.txt"
-    @file  = File.open(@name, 'w')
-    File.open(@name,"w") { |f| f.write("1234567890") }
+    @name = tmp("test.txt")
+    touch(@name) { |f| f.write("1234567890") }
   end
 
   after :each do
-    @file.close
-    File.delete(@name) if File.exist?(@name)
-    @name = nil
+    rm_r @name
   end
 
   it "truncates a file" do
-    File.open(@name, "w") { |f| f.puts "123456789" }
-    platform_is :windows do
-      File.size(@name).should == 11
-    end
+    File.size(@name).should == 10
 
-    platform_is_not :windows do
-      File.size(@name).should == 10
-    end
     File.truncate(@name, 5)
     File.size(@name).should == 5
+
     File.open(@name, "r") do |f|
       f.read(99).should == "12345"
       f.eof?.should == true
@@ -55,6 +47,7 @@ describe "File.truncate" do
   end
 
   it "raises an Errno::ENOENT if the file does not exist" do
+    # TODO: missing_file
     not_existing_file = "file-does-not-exist-for-sure.txt"
 
     # make sure it doesn't exist for real
@@ -86,17 +79,9 @@ describe "File.truncate" do
     lambda { File.truncate(@name, nil) }.should raise_error(TypeError)
   end
 
-  platform_is_not :windows do
-    it "truncates an absolute pathname file" do
-      if System.get_property('platform') == 'ANDROID'
-        absolute_pathname_file = "#{ENV['TMP']}/#{@name}"
-      else
-        absolute_pathname_file = "/tmp/#{@name}"
-      end
-      File.open(absolute_pathname_file,"w") { |f| f.write("1234567890") }
-      File.truncate(absolute_pathname_file, 5)
-      File.size(absolute_pathname_file).should == 5
-      File.delete(absolute_pathname_file) if File.exist?(absolute_pathname_file)
+  ruby_version_is "1.9" do
+    it "accepts an object that has a #to_path method" do
+      File.truncate(mock_to_path(@name), 0).should == 0
     end
   end
 end
@@ -104,26 +89,35 @@ end
 
 describe "File#truncate" do
   before :each do
-    @name = "test.txt"
-    @file  = File.open(@name, 'w')
-    File.open(@name,"w") { |f| f.write("1234567890") }
+    @name = tmp("test.txt")
+    @file = File.open @name, 'w'
+    @file.write "1234567890"
+    @file.flush
   end
 
   after :each do
     @file.close unless @file.closed?
-    File.delete(@name) if File.exist?(@name)
-    @name = nil
+    rm_r @name
+  end
+
+  it "does not move the file write pointer to the specified byte offset" do
+    @file.truncate(3)
+    @file.write "abc"
+    @file.close
+    @name.should have_data("123\x00\x00\x00\x00\x00\x00\x00abc")
+  end
+
+  it "does not move the file read pointer to the specified byte offset" do
+    File.open(@name, "r+") do |f|
+      f.read(1).should == "1"
+      f.truncate(0)
+      f.read(1).should == nil
+    end
   end
 
   it "truncates a file" do
-    File.open(@name, "w") { |f| f.puts "123456789" }
-    platform_is :windows do
-      File.size(@name).should == 11
-    end
+    File.size(@name).should == 10
 
-    platform_is_not :windows do
-      File.size(@name).should == 10
-    end
     @file.truncate(5)
     File.size(@name).should == 5
     File.open(@name, "r") do |f|
@@ -172,8 +166,9 @@ describe "File#truncate" do
   end
 
   it "raises an IOError if file is not opened for writing" do
-    file = File.new(@name, 'r')
-    lambda { file.truncate(42) }.should raise_error(IOError)
+    File.open(@name, 'r') do |file|
+      lambda { file.truncate(42) }.should raise_error(IOError)
+    end
   end
 
   it "raises a TypeError if not passed an Integer type for the for the argument" do

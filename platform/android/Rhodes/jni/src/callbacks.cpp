@@ -273,3 +273,7 @@ RHO_GLOBAL void rho_sys_app_uninstall(const char *appname)
     if (!mid) return;
     env->CallStaticVoidMethod(cls, mid, rho_cast<jhstring>(appname).get());
 }
+
+RHO_GLOBAL void rho_sys_set_application_icon_badge(int badge_number) {
+    //unsupported on Android
+}

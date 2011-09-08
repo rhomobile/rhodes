@@ -1,8 +1,11 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "Process.waitall" do
   before :all do
-    Process.waitall
+    begin
+      Process.waitall
+    rescue NotImplementedError
+    end
   end
 
   it "returns an empty array when there are no children" do
@@ -12,8 +15,7 @@ describe "Process.waitall" do
   it "takes no arguments" do
     lambda { Process.waitall(0) }.should raise_error(ArgumentError)
   end
-
-=begin
+if System.get_property('platform') != 'APPLE'
   platform_is_not :windows do
     it "waits for all children" do
       pids = []
@@ -32,16 +34,16 @@ describe "Process.waitall" do
       pids << Process.fork { Process.exit! 1 }
       pids << Process.fork { Process.exit! 0 }
       a = Process.waitall
-      a.class.should == Array
+      a.should be_kind_of(Array)
       a.size.should == 3
       pids.each { |pid|
         pid_status = a.assoc(pid)
-        pid_status.class.should == Array
+        pid_status.should be_kind_of(Array)
         pid_status.size.should == 2
         pid_status.first.should == pid
-        pid_status.last.class.should == Process::Status
+        pid_status.last.should be_kind_of(Process::Status)
       }
     end
   end
-=end
+end    
 end

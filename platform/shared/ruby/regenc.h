@@ -4,7 +4,7 @@
   regenc.h -  Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2007  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2008  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -96,11 +96,12 @@ typedef struct {
 
 
 typedef struct {
-  UChar    *name;
+  const UChar *name;
   int       ctype;
   short int len;
 } PosixBracketEntryType;
 
+#define PosixBracketEntryInit(name, ctype) {(const UChar *)name, ctype, (short int)(sizeof(name) - 1)}
 
 /* #define USE_CRNL_AS_LINE_TERMINATOR */
 #define USE_UNICODE_PROPERTIES
@@ -152,6 +153,9 @@ ONIG_EXTERN int onigenc_unicode_mbc_case_fold P_((OnigEncoding enc, OnigCaseFold
 ONIG_EXTERN int onigenc_unicode_apply_all_case_fold P_((OnigCaseFoldType flag, OnigApplyAllCaseFoldFunc f, void* arg, OnigEncoding enc));
 
 
+#define UTF16_IS_SURROGATE_FIRST(c)    (((c) & 0xfc) == 0xd8)
+#define UTF16_IS_SURROGATE_SECOND(c)   (((c) & 0xfc) == 0xdc)
+
 #define ONIGENC_ISO_8859_1_TO_LOWER_CASE(c) \
   OnigEncISO_8859_1_ToLowerCaseTable[c]
 #define ONIGENC_ISO_8859_1_TO_UPPER_CASE(c) \
@@ -181,7 +185,7 @@ ONIG_EXTERN const unsigned short OnigEncAsciiCtypeTable[];
 #define ONIGENC_IS_ASCII_CODE_CASE_AMBIG(code) \
  (ONIGENC_IS_ASCII_CODE_CTYPE(code, ONIGENC_CTYPE_UPPER) ||\
   ONIGENC_IS_ASCII_CODE_CTYPE(code, ONIGENC_CTYPE_LOWER))
-   
+
 #ifdef ONIG_ENC_REGISTER
 extern int ONIG_ENC_REGISTER(const char *, OnigEncodingType*);
 #define OnigEncodingName(n) encoding_##n

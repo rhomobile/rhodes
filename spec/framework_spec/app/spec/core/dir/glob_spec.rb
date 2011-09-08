@@ -1,24 +1,48 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/common'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/shared/glob'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/common', __FILE__)
+require File.expand_path('../shared/glob', __FILE__)
 
 describe "Dir.glob" do
+  before :all do
+    DirSpecs.create_mock_dirs
+  end
+
+  after :all do
+    DirSpecs.delete_mock_dirs
+  end
+
   it_behaves_like :dir_glob, :glob
 end
 
 describe "Dir.glob" do
+  before :all do
+    DirSpecs.create_mock_dirs
+  end
+
+  after :all do
+    DirSpecs.delete_mock_dirs
+  end
+
   it_behaves_like :dir_glob_recursive, :[]
 end
 
 describe "Dir.glob" do
-  before(:all) do
-    @cwd = Dir.pwd
+  before :all do
+    DirSpecs.create_mock_dirs
 
+    @cwd = Dir.pwd
     Dir.chdir DirSpecs.mock_dir
   end
 
-  after(:all) do
+  after :all do
     Dir.chdir @cwd
+
+    DirSpecs.delete_mock_dirs
+  end
+
+  it "can take an array of patterns" do
+    Dir.glob(["file_o*", "file_t*"]).should ==
+               %w!file_one.ext file_two.ext!
   end
 
   it "matches both dot and non-dotfiles with '*' and option File::FNM_DOTMATCH" do
@@ -33,9 +57,10 @@ describe "Dir.glob" do
     Dir.glob('**', File::FNM_DOTMATCH).sort.should == DirSpecs.expected_paths
   end
 
-  it "recursively matches any subdirectories except './' or '../' with '**/' and option File::FNM_DOTMATCH" do
+  it "recursively matches any subdirectories except './' or '../' with '**/' from the current directory and option File::FNM_DOTMATCH" do
     expected = %w[
       .dotsubdir/
+      brace/
       deeply/
       deeply/nested/
       deeply/nested/directory/
@@ -48,7 +73,34 @@ describe "Dir.glob" do
 
     Dir.glob('**/', File::FNM_DOTMATCH).sort.should == expected
   end
-  
+
+  # This is a seperate case to check **/ coming after a constant
+  # directory as well.
+  it "recursively matches any subdirectories except './' or '../' with '**/' and option File::FNM_DOTMATCH" do
+    expected = %w[
+      ./
+      ./.dotsubdir/
+      ./brace/
+      ./deeply/
+      ./deeply/nested/
+      ./deeply/nested/directory/
+      ./deeply/nested/directory/structure/
+      ./dir/
+      ./special/
+      ./subdir_one/
+      ./subdir_two/
+    ]
+
+    Dir.glob('./**/', File::FNM_DOTMATCH).sort.should == expected
+  end
+
+  it "accepts a block and yields it with each elements" do
+    ary = []
+    ret = Dir.glob(["file_o*", "file_t*"]) { |t| ary << t }
+    ret.should be_nil
+    ary.should == %w!file_one.ext file_two.ext!
+  end
+
   platform_is_not(:windows) do
     it "matches the literal character '\\' with option File::FNM_NOESCAPE" do
       Dir.mkdir 'foo?bar'

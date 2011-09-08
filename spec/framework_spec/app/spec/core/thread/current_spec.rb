@@ -1,10 +1,10 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Thread.current" do
   it "returns a thread" do
     current = Thread.current
-    current.class.should == Thread
+    current.should be_kind_of(Thread)
   end
 
   it "returns the current thread" do

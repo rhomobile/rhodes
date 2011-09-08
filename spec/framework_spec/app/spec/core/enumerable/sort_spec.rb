@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Enumerable#sort" do
   it "sorts by the natural order as defined by <=> " do
@@ -13,10 +13,20 @@ describe "Enumerable#sort" do
     EnumerableSpecs::Numerous.new(2,0,1,3,4).sort { |n, m| -(n <=> m) }.should == [4,3,2,1,0]
   end
 
-  it "sort should throw a NoMethodError if elements do not define <=>" do
-    lambda {
-      EnumerableSpecs::Numerous.new(Object.new, Object.new, Object.new).sort
-    }.should raise_error(NoMethodError)
+  ruby_version_is ""..."1.9" do
+    it "raises a NoMethodError if elements do not define <=>" do
+      lambda {
+        EnumerableSpecs::Numerous.new(Object.new, Object.new, Object.new).sort
+      }.should raise_error(NoMethodError)
+    end
+  end
+
+  ruby_version_is "1.9" do
+    it "raises a NoMethodError if elements do not define <=>" do
+      lambda do
+        EnumerableSpecs::Numerous.new(BasicObject.new, BasicObject.new, BasicObject.new).sort
+      end.should raise_error(NoMethodError)
+    end
   end
 
   it "sorts enumerables that contain nils" do
@@ -27,7 +37,7 @@ describe "Enumerable#sort" do
       x <=> y
     }.should == [true, true, nil, nil, nil, nil, nil, false, false]
   end
-  
+
   it "compare values returned by block with 0" do
     EnumerableSpecs::Numerous.new.sort { |n, m| -(n+m) * (n <=> m) }.should == [6, 5, 4, 3, 2, 1]
     EnumerableSpecs::Numerous.new.sort { |n, m|
@@ -37,6 +47,9 @@ describe "Enumerable#sort" do
       EnumerableSpecs::Numerous.new.sort { |n, m| (n <=> m).to_s }
     }.should raise_error(ArgumentError)
   end
-  
-end
 
+  it "raises an error if objects can't be compared" do
+    a=EnumerableSpecs::Numerous.new(EnumerableSpecs::Uncomparable.new, EnumerableSpecs::Uncomparable.new)
+    lambda {a.sort}.should raise_error(ArgumentError)
+  end
+end

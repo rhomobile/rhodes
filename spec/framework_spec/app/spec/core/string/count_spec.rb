@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes.rb'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes.rb', __FILE__)
 
 describe "String#count" do
   it "counts occurrences of chars from the intersection of the specified sets" do
@@ -11,7 +11,7 @@ describe "String#count" do
     s.count("l").should == 3
     s.count("\n").should == 1
     s.count("\x00").should == 2
-    
+
     s.count("").should == 0
     "".count("").should == 0
 
@@ -27,7 +27,7 @@ describe "String#count" do
 
   it "negates sets starting with ^" do
     s = "^hello\nworld\x00\x00"
-    
+
     s.count("^").should == 1 # no negation, counts ^
 
     s.count("^leh").should == 9
@@ -35,14 +35,14 @@ describe "String#count" do
 
     s.count("helo", "^el").should == s.count("ho")
     s.count("aeiou", "^e").should == s.count("aiou")
-    
+
     "^_^".count("^^").should == 1
     "oa^_^o".count("a^").should == 3
   end
 
   it "counts all chars in a sequence" do
     s = "hel-[()]-lo012^"
-    
+
     s.count("\x00-\xFF").should == s.size
     s.count("ej-m").should == 3
     s.count("e-h").should == 2
@@ -53,15 +53,11 @@ describe "String#count" do
     s.count("-h").should == s.count("h") + s.count("-")
 
     s.count("---").should == s.count("-")
-    
+
     # see an ASCII table for reference
     s.count("--2").should == s.count("-./012")
     s.count("(--").should == s.count("()*+,-")
     s.count("A-a").should == s.count("A-Z[\\]^_`a")
-    
-    # empty sequences (end before start)
-    s.count("h-e").should == 0
-    s.count("^h-e").should == s.size
 
     # negated sequences
     s.count("^e-h").should == s.size - s.count("e-h")
@@ -74,6 +70,25 @@ describe "String#count" do
 
     "abcde".count("ac-e").should == 4
     "abcde".count("^ac-e").should == 1
+  end
+
+  ruby_version_is ""..."1.9" do
+    it "regards invaid sequences as empty" do
+      s = "hel-[()]-lo012^"
+
+      # empty sequences (end before start)
+      s.count("h-e").should == 0
+      s.count("^h-e").should == s.size
+    end
+  end
+
+  ruby_version_is "1.9" do
+    it "raises if the given sequences are invaid" do
+      s = "hel-[()]-lo012^"
+
+      lambda { s.count("h-e") }.should raise_error(ArgumentError)
+      lambda { s.count("^h-e") }.should raise_error(ArgumentError)
+    end
   end
 
   it "calls #to_str to convert each set arg to a String" do

@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes.rb'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes.rb', __FILE__)
 
 describe "String#+" do
   it "returns a new string containing the given string concatenated to self" do
@@ -22,13 +22,13 @@ describe "String#+" do
   end
 
   it "doesn't return subclass instances" do
-    (StringSpecs::MyString.new("hello") + "").class.should == String
-    (StringSpecs::MyString.new("hello") + "foo").class.should == String
-    (StringSpecs::MyString.new("hello") + StringSpecs::MyString.new("foo")).class.should == String
-    (StringSpecs::MyString.new("hello") + StringSpecs::MyString.new("")).class.should == String
-    (StringSpecs::MyString.new("") + StringSpecs::MyString.new("")).class.should == String
-    ("hello" + StringSpecs::MyString.new("foo")).class.should == String
-    ("hello" + StringSpecs::MyString.new("")).class.should == String
+    (StringSpecs::MyString.new("hello") + "").should be_kind_of(String)
+    (StringSpecs::MyString.new("hello") + "foo").should be_kind_of(String)
+    (StringSpecs::MyString.new("hello") + StringSpecs::MyString.new("foo")).should be_kind_of(String)
+    (StringSpecs::MyString.new("hello") + StringSpecs::MyString.new("")).should be_kind_of(String)
+    (StringSpecs::MyString.new("") + StringSpecs::MyString.new("")).should be_kind_of(String)
+    ("hello" + StringSpecs::MyString.new("foo")).should be_kind_of(String)
+    ("hello" + StringSpecs::MyString.new("")).should be_kind_of(String)
   end
 
   it "taints the result when self or other is tainted" do

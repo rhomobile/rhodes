@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/methods'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/methods', __FILE__)
 
 describe "Time#_load" do
   ruby_bug("http://redmine.ruby-lang.org/issues/show/627", "1.8.7") do
@@ -32,4 +32,26 @@ describe "Time#_load" do
 
     Time._load([high, low].pack("VV")).should == t
   end
+
+  ruby_version_is ''...'1.9' do
+    it "loads MRI's marshaled time format" do
+      t = Marshal.load("\004\bu:\tTime\r\320\246\e\200\320\001\r\347")
+      t.utc
+
+      t.to_s.should == "Fri Oct 22 16:57:48 UTC 2010"
+    end
+  end
+
+  ruby_version_is '1.9' do
+    it "loads MRI's marshaled time format" do
+      t = Marshal.load("\004\bu:\tTime\r\320\246\e\200\320\001\r\347")
+      t.utc
+
+      t.to_s.should == "2010-10-22 16:57:48 UTC"
+    end
+  end
+end
+
+describe "Time._load" do
+  it "needs to be reviewed for spec completeness"
 end

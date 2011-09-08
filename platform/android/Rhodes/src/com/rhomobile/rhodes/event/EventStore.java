@@ -39,6 +39,7 @@ import android.os.Build;
 import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.event.Event;
 
 public class EventStore {
 	
@@ -47,13 +48,21 @@ public class EventStore {
 	private static final String AUTHORITY = Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO ? "com.android.calendar" : "calendar";
 	private static final Uri EVENTS_URI = Uri.parse("content://" + AUTHORITY + "/events");
 	
+	private static final String EVENTS_ID = "_id";
 	private static final String EVENTS_TITLE = "title";
 	private static final String EVENTS_START_DATE = "dtstart";
 	private static final String EVENTS_END_DATE = "dtend";
 	private static final String EVENTS_LOCATION = "eventLocation";
 	private static final String EVENTS_NOTES = "description";
 	private static final String EVENTS_PRIVACY = "visibility";
+	private static final String EVENTS_DELETED = "deleted";
+	private static final String EVENTS_BEGIN = "begin";
+	private static final String EVENTS_END = "end";
+	private static final String EVENTS_RRULE = "rrule";
 	
+	private static final String EVENTS_RPARAM_FREQ = "FREQ";
+	private static final String EVENTS_RPARAM_INTERVAL = "INTERVAL";
+
 	private static void reportFail(String name, Exception e) {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e != null ? e.getMessage() : "null exception");
 		if ( e != null )
@@ -78,7 +87,7 @@ public class EventStore {
 		}
 		final Cursor calendarCursor = getContentResolver().query(
 				Uri.parse("content://" + AUTHORITY + "/calendars"),
-				new String[] {"_id"},
+				new String[] {EVENTS_ID},
 				null, null, null);
 		try {
 			if (calendarCursor != null) {
@@ -101,7 +110,7 @@ public class EventStore {
 	private static long getDefaultCalendarId() {
 		final Cursor calendarCursor = getContentResolver().query(
 				Uri.parse("content://" + AUTHORITY + "/calendars"),
-				new String[] {"_id"},
+				new String[] {EVENTS_ID},
 				null, null, null);
 		try {
 			if (!calendarCursor.moveToFirst())
@@ -112,6 +121,29 @@ public class EventStore {
 		finally {
 			calendarCursor.close();
 		}
+	}
+	
+	private static Event parseRepetition(Cursor cursor, Event event) {
+		try {
+			String rrule = cursor.getString(cursor.getColumnIndex(EVENTS_RRULE));
+			rrule = (null == rrule) ? "" : rrule;
+			String[] rparams = rrule.split(";");
+
+			for (int i=0; i<rparams.length; i++) {
+				String[] nameVal = rparams[i].split("=");
+				if (0 == nameVal[0].compareToIgnoreCase(EVENTS_RPARAM_FREQ)) {
+					event.frequency = nameVal[1].toLowerCase();
+					continue;
+				}
+				if (0 == nameVal[0].compareToIgnoreCase(EVENTS_RPARAM_INTERVAL)) {
+					event.interval = Integer.parseInt(nameVal[1]);
+				}
+			}
+		} catch (Exception ex) {
+			reportFail("parseRepetition(cursor, event)", ex);
+		}
+		
+		return event;
 	}
 	
 	public static Object fetch(Date startDate, Date endDate, boolean includeRepeating) {
@@ -131,8 +163,8 @@ public class EventStore {
 				ContentUris.appendId(builder, endDate.getTime());
 				
 				eventCursor = r.query(builder.build(),
-						new String[] {"event_id", EVENTS_TITLE, "begin", "end", EVENTS_LOCATION,
-							EVENTS_NOTES, EVENTS_PRIVACY, "deleted"},
+						new String[] {"event_id", EVENTS_TITLE, EVENTS_BEGIN, EVENTS_END, EVENTS_LOCATION,
+							EVENTS_NOTES, EVENTS_PRIVACY, EVENTS_DELETED, EVENTS_RRULE},
 						null, //"Calendars._id=" + id,
 						null, "startDay ASC, startMinute ASC");
 			}
@@ -142,8 +174,8 @@ public class EventStore {
 				String start = Long.toString(startDate.getTime());
 				String end = Long.toString(endDate.getTime());
 				eventCursor = r.query(EVENTS_URI,
-					new String[] {"_id", EVENTS_TITLE, EVENTS_START_DATE, EVENTS_END_DATE,
-						EVENTS_LOCATION, EVENTS_NOTES, EVENTS_PRIVACY, "deleted"},
+					new String[] {EVENTS_ID, EVENTS_TITLE, EVENTS_START_DATE, EVENTS_END_DATE,
+						EVENTS_LOCATION, EVENTS_NOTES, EVENTS_PRIVACY, EVENTS_DELETED, EVENTS_RRULE},
 					where, new String[] {start, end, start, end},
 					null);
 			}
@@ -152,7 +184,7 @@ public class EventStore {
 			try {
 				while (eventCursor.moveToNext()) {
 
-					int deleted_index = eventCursor.getColumnIndex("deleted");
+					int deleted_index = eventCursor.getColumnIndex(EVENTS_DELETED);
 					if (deleted_index >= 0) {
 						long is_deleted = eventCursor.getLong(deleted_index);
 						if (is_deleted != 0) {
@@ -184,11 +216,14 @@ public class EventStore {
 					case 2: event.privacy = "private"; break;
 					case 3: event.privacy = "public"; break;
 					}
+					parseRepetition(eventCursor, event);
 					
 					Logger.D(TAG, "Event: id: " + event.id +
 							", title: " + event.title +
 							", begin: " + dateToString(event.startDate) +
-							", end: " + dateToString(event.endDate));
+							", end: " + dateToString(event.endDate) +
+							", freq: " + event.frequency +
+							", interval: " + Integer.toString(event.interval));
 					
 					ret.add(event);
 				}
@@ -217,7 +252,7 @@ public class EventStore {
 			Uri uri = ContentUris.withAppendedId(EVENTS_URI, Long.parseLong(id));
 			final Cursor eventCursor = r.query(uri,
 					new String[] {EVENTS_TITLE, EVENTS_START_DATE, EVENTS_END_DATE,
-						EVENTS_LOCATION, EVENTS_NOTES, EVENTS_PRIVACY},
+						EVENTS_LOCATION, EVENTS_NOTES, EVENTS_PRIVACY, EVENTS_RRULE},
 					null, null, null);
 			if (eventCursor == null)
 				throw new RuntimeException("Calendar provider not found");
@@ -239,11 +274,14 @@ public class EventStore {
 				case 2: event.privacy = "private"; break;
 				case 3: event.privacy = "public"; break;
 				}
+				parseRepetition(eventCursor, event);
 				
 				Logger.D(TAG, "Event: id: " + event.id +
 						", title: " + event.title +
 						", begin: " + dateToString(event.startDate) +
-						", end: " + dateToString(event.endDate));
+						", end: " + dateToString(event.endDate) +
+						", freq: " + event.frequency +
+						", interval: " + Integer.toString(event.interval));
 				
 				return event;
 			}
@@ -284,6 +322,21 @@ public class EventStore {
 					privacy = 3;
 				values.put(EVENTS_PRIVACY, privacy);
 			}
+			if (null != event.frequency && 0 < event.frequency.length()) {
+				String rrule = EVENTS_RPARAM_FREQ + "=" + event.frequency.toUpperCase();
+				if (0 < event.interval) {
+					rrule = rrule + ";" + EVENTS_RPARAM_INTERVAL + "=" + Integer.toString(event.interval);
+				}
+				values.put(EVENTS_RRULE, rrule);
+			}
+
+			Logger.D(TAG, "Event: id: " + event.id +
+					", title: " + event.title +
+					", begin: " + dateToString(event.startDate) +
+					", end: " + dateToString(event.endDate) +
+					", freq: " + event.frequency +
+					", interval: " + Integer.toString(event.interval) +
+					", rrule: " + values.get(EVENTS_RRULE));
 
 			long calendarId = getDefaultCalendarId();
 			values.put("calendar_id", calendarId);
@@ -333,7 +386,7 @@ public class EventStore {
 				//int idn = Integer.decode(id).intValue();
 				Uri du = Uri.withAppendedPath(EVENTS_URI, id);
 				rows = r.delete(du, null, null);
-				//rows = r.delete(EVENTS_URI, "_id=?", new String[] {id});
+				//rows = r.delete(EVENTS_URI, EVENTS_ID+"=?", new String[] {id});
 				r.notifyChange(EVENTS_URI, null);
 			}
 			Logger.D(TAG, String.format("%d rows deleted", rows));

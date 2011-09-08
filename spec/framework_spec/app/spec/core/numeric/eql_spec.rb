@@ -1,9 +1,9 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe "Numeric#eql?" do
   before(:each) do
-    @obj = NumericSub.new
+    @obj = NumericSpecs::Subclass.new
   end
 
   it "returns false if self's and other's types don't match" do
@@ -12,9 +12,9 @@ describe "Numeric#eql?" do
     @obj.should_not eql(bignum_value)
     @obj.should_not eql(:sym)
   end
-  
+
   it "returns the result of calling self#== with other when self's and other's types match" do
-    other = NumericSub.new
+    other = NumericSpecs::Subclass.new
     @obj.should_receive(:==).with(other).and_return("result", nil)
     @obj.should eql(other)
     @obj.should_not eql(other)

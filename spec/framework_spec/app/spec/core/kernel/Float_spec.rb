@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe :kernel_float, :shared => true do
   it "returns the identical Float for numeric Floats" do
@@ -14,13 +14,13 @@ describe :kernel_float, :shared => true do
   end
 
   it "returns a Float for Bignums" do
-    @object.send(:Float, 1000000000000).should == 1000000000000.0    
+    @object.send(:Float, 1000000000000).should == 1000000000000.0
   end
 
   it "raises an ArgumentError for nil" do
     lambda { @object.send(:Float, nil) }.should raise_error(TypeError)
   end
-  
+
   it "returns the identical NaN for NaN" do
     nan = 0.0/0.0
     nan.nan?.should be_true
@@ -46,7 +46,7 @@ describe :kernel_float, :shared => true do
     @object.send(:Float, "10.0").should == 10.0
   end
 
-  it "raises and ArgumentError for a String of word characters" do
+  it "raises an ArgumentError for a String of word characters" do
     lambda { @object.send(:Float, "float") }.should raise_error(ArgumentError)
   end
 
@@ -54,12 +54,17 @@ describe :kernel_float, :shared => true do
     lambda { @object.send(:Float, "10.0.0") }.should raise_error(ArgumentError)
   end
 
-  it "raises and ArgumentError for a String of numbers followed by word characters" do
+  it "raises an ArgumentError for a String of numbers followed by word characters" do
     lambda { @object.send(:Float, "10D") }.should raise_error(ArgumentError)
   end
 
-  it "raises and ArgumentError for a String of word characters followed by numbers" do
+  it "raises an ArgumentError for a String of word characters followed by numbers" do
     lambda { @object.send(:Float, "D10") }.should raise_error(ArgumentError)
+  end
+
+  it "is strict about the string form even across newlines" do
+    lambda { @object.send(:Float, "not a number\n10") }.should raise_error(ArgumentError)
+    lambda { @object.send(:Float, "10\nnot a number") }.should raise_error(ArgumentError)
   end
 
   it "converts String subclasses to floats without calling #to_f" do
@@ -133,7 +138,7 @@ describe :kernel_float, :shared => true do
   it "returns a value for a String with a trailing space" do
     @object.send(:Float, "1 ").should == 1.0
   end
-  
+
   %w(e E).each do |e|
     it "raises an ArgumentError if #{e} is the trailing character" do
       lambda { @object.send(:Float, "2#{e}") }.should raise_error(ArgumentError)
@@ -142,7 +147,7 @@ describe :kernel_float, :shared => true do
     it "raises an ArgumentError if #{e} is the leading character" do
       lambda { @object.send(:Float, "#{e}2") }.should raise_error(ArgumentError)
     end
-    
+
     it "returns Infinity for '2#{e}1000'" do
       @object.send(:Float, "2#{e}1000").should == (1.0/0)
     end
@@ -168,7 +173,7 @@ describe :kernel_float, :shared => true do
     end
 
     it "raises an exception if there's a trailing _ on either side of the '#{e}'" do
-      lambda { @object.send(:Float, "20_#{e}100") }.should raise_error(ArgumentError)    
+      lambda { @object.send(:Float, "20_#{e}100") }.should raise_error(ArgumentError)
       lambda { @object.send(:Float, "20#{e}100_") }.should raise_error(ArgumentError)
     end
 
@@ -219,15 +224,15 @@ describe :kernel_float, :shared => true do
   it "raises a TypeError if #to_f is not provided" do
     lambda { @object.send(:Float, mock('x')) }.should raise_error(TypeError)
   end
-  
+
   it "raises a TypeError if #to_f returns a String" do
     (obj = mock('ha!')).should_receive(:to_f).once.and_return('ha!')
     lambda { @object.send(:Float, obj) }.should raise_error(TypeError)
   end
-  
+
   it "raises a TypeError if #to_f returns an Integer" do
     (obj = mock('123')).should_receive(:to_f).once.and_return(123)
-    lambda { @object.send(:Float, obj) }.should raise_error(TypeError)    
+    lambda { @object.send(:Float, obj) }.should raise_error(TypeError)
   end
 end
 

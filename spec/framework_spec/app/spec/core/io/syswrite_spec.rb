@@ -1,6 +1,6 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/shared/write'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
+require File.expand_path('../shared/write', __FILE__)
 
 describe "IO#syswrite on a file" do
   before :each do
@@ -15,7 +15,7 @@ describe "IO#syswrite on a file" do
   after :each do
     @file.close
     @readonly_file.close
-    File.delete(@filename)
+    rm_r @filename
   end
 
   it "writes all of the string's bytes but does not buffer them" do
@@ -30,10 +30,10 @@ describe "IO#syswrite on a file" do
   end
 
   not_compliant_on :rubinius do
-    it "warns if called immediately after a buffered IO#write" do
-      @file.write("abcde")
-      lambda { @file.syswrite("fghij") }.should complain(/syswrite/)
-    end
+    #it "warns if called immediately after a buffered IO#write" do
+    #  @file.write("abcde")
+    #  lambda { @file.syswrite("fghij") }.should complain(/syswrite/)
+    #end
   end
 
   it "does not warn if called after IO#write with intervening IO#sysread" do
@@ -50,7 +50,8 @@ describe "IO#syswrite on a file" do
     end
   end
 end
-
+if System.get_property('platform') != 'ANDROID'      
 describe "IO#syswrite" do
   it_behaves_like :io_write, :syswrite
+end
 end

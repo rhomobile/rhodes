@@ -1,4 +1,18 @@
 describe :string_each_line, :shared => true do
+  it "splits using default newline separator when none is specified" do
+    a = []
+    "one\ntwo\r\nthree".send(@method) { |s| a << s }
+    a.should == ["one\n", "two\r\n", "three"]
+
+    b = []
+    "hello\n\n\nworld".send(@method) { |s| b << s }
+    b.should == ["hello\n", "\n", "\n", "world"]
+
+    c = []
+    "\n\n\n\n\n".send(@method) {|s| c << s}
+    c.should == ["\n", "\n", "\n", "\n", "\n"]
+  end
+
   it "splits self using the supplied record separator and passes each substring to the block" do
     a = []
     "one\ntwo\r\nthree".send(@method, "\n") { |s| a << s }
@@ -16,7 +30,7 @@ describe :string_each_line, :shared => true do
   it "taints substrings that are passed to the block if self is tainted" do
     "one\ntwo\r\nthree".taint.send(@method) { |s| s.tainted?.should == true }
 
-    "x.y.".send(@method, ".".taint) { |s| s.tainted?.should == false }
+    #"x.y.".send(@method, ".".taint) { |s| s.tainted?.should == false }
   end
 
   it "passes self as a whole to the block if the separator is nil" do
@@ -25,10 +39,14 @@ describe :string_each_line, :shared => true do
     a.should == ["one\ntwo\r\nthree"]
   end
 
-  it "appends multiple successive newlines together when the separator is an empty string" do
+  it "yields paragraphs (broken by 2 or more successive newlines) when passed ''" do
     a = []
     "hello\nworld\n\n\nand\nuniverse\n\n\n\n\n".send(@method, '') { |s| a << s }
     a.should == ["hello\nworld\n\n\n", "and\nuniverse\n\n\n\n\n"]
+
+    a = []
+    "hello\nworld\n\n\nand\nuniverse\n\n\n\n\ndog".send(@method, '') { |s| a << s }
+    a.should == ["hello\nworld\n\n\n", "and\nuniverse\n\n\n\n\n", "dog"]
   end
 
   it "uses $/ as the separator when none is given" do
@@ -82,7 +100,7 @@ describe :string_each_line, :shared => true do
   end
 
   ruby_version_is '1.9' do
-    it "not care if the string is modified while substituting" do
+    it "does not care if the string is modified while substituting" do
       str = "hello\nworld."
       out = []
       str.send(@method){|x| out << x; str[-1] = '!' }.should == "hello\nworld!"
@@ -103,16 +121,19 @@ describe :string_each_line, :shared => true do
   end
 
   ruby_version_is '1.9' do
-    it "accept string-like separator" do
+    it "accept string separator" do
       "hello world".send(@method, ?o).to_a.should == ["hello", " wo", "rld"]
-      "hello world".send(@method, :o).to_a.should == ["hello", " wo", "rld"]
+    end
+
+    it "raises a TypeError when the separator is a symbol" do
+      lambda { "hello world".send(@method, :o).to_a }.should raise_error(TypeError)
     end
   end
 
   ruby_version_is "1.8.7" do
     it "returns an enumerator when no block given" do
       enum = "hello world".send(@method, ' ')
-      enum.should be_kind_of(enumerator_class)
+      enum.should be_an_instance_of(enumerator_class)
       enum.to_a.should == ["hello ", "world"]
     end
   end

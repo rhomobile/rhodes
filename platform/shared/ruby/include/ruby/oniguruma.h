@@ -4,7 +4,7 @@
   oniguruma.h - Oniguruma (regular expression library)
 **********************************************************************/
 /*-
- * Copyright (c) 2002-2007  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
+ * Copyright (c) 2002-2008  K.Kosako  <sndgk393 AT ybb DOT ne DOT jp>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ extern "C" {
 #define ONIGURUMA
 #define ONIGURUMA_VERSION_MAJOR   5
 #define ONIGURUMA_VERSION_MINOR   9
-#define ONIGURUMA_VERSION_TEENY   1
+#define ONIGURUMA_VERSION_TEENY   2
 
 #ifdef __cplusplus
 # ifndef  HAVE_PROTOTYPES
@@ -106,7 +106,7 @@ extern "C" {
 typedef unsigned char  OnigUChar;
 typedef unsigned int  OnigCodePoint;
 typedef unsigned int   OnigCtype;
-typedef unsigned int   OnigDistance;
+typedef size_t         OnigDistance;
 
 #define ONIG_INFINITE_DISTANCE  ~((OnigDistance )0)
 
@@ -146,7 +146,7 @@ typedef struct {
   OnigCodePoint one_or_more_time;
   OnigCodePoint anychar_anytime;
 } OnigMetaCharTableType;
-  
+
 typedef int (*OnigApplyAllCaseFoldFunc)(OnigCodePoint from, OnigCodePoint* to, int to_len, void* arg);
 
 typedef struct OnigEncodingTypeST {
@@ -200,6 +200,14 @@ ONIG_EXTERN OnigEncodingType OnigEncodingASCII;
 #define ONIGENC_CTYPE_ALNUM    13  /* alpha || digit */
 #define ONIGENC_CTYPE_ASCII    14
 #define ONIGENC_MAX_STD_CTYPE  ONIGENC_CTYPE_ASCII
+#define ONIGENC_CTYPE_SPECIAL_MASK        128
+#define ONIGENC_CTYPE_S            /* [\t\n\v\f\r\s] */ \
+    ONIGENC_CTYPE_SPECIAL_MASK | ONIGENC_CTYPE_SPACE
+#define ONIGENC_CTYPE_D            /* [0-9] */ \
+    ONIGENC_CTYPE_SPECIAL_MASK | ONIGENC_CTYPE_DIGIT
+#define ONIGENC_CTYPE_W            /* [0-9A-Za-z_] */ \
+    ONIGENC_CTYPE_SPECIAL_MASK | ONIGENC_CTYPE_WORD
+#define ONIGENC_CTYPE_SPECIAL_P(ctype) ((ctype) & ONIGENC_CTYPE_SPECIAL_MASK)
 
 
 #define onig_enc_len(enc,p,e)                ONIGENC_MBC_ENC_LEN(enc, p, e)
@@ -466,6 +474,7 @@ ONIG_EXTERN const OnigSyntaxType*   OnigDefaultSyntax;
 /* syntax (behavior) warning */
 #define ONIG_SYN_WARN_CC_OP_NOT_ESCAPED          (1U<<24) /* [,-,] */
 #define ONIG_SYN_WARN_REDUNDANT_NESTED_REPEAT    (1U<<25) /* (?:a*)+ */
+#define ONIG_SYN_WARN_CC_DUP                     (1U<<26) /* [aa] */
 
 /* meta character specifiers (onig_set_meta_char()) */
 #define ONIG_META_CHAR_ESCAPE               0
@@ -495,7 +504,7 @@ ONIG_EXTERN const OnigSyntaxType*   OnigDefaultSyntax;
 #define ONIGERR_DEFAULT_ENCODING_IS_NOT_SETTED                -21
 #define ONIGERR_SPECIFIED_ENCODING_CANT_CONVERT_TO_WIDE_CHAR  -22
 /* general error */
-#define ONIGERR_INVALID_ARGUMENT                              -30 
+#define ONIGERR_INVALID_ARGUMENT                              -30
 /* syntax error */
 #define ONIGERR_END_PATTERN_AT_LEFT_BRACE                    -100
 #define ONIGERR_END_PATTERN_AT_LEFT_BRACKET                  -101
@@ -684,17 +693,23 @@ void onig_set_verb_warn_func P_((OnigWarnFunc f));
 ONIG_EXTERN
 int onig_new P_((OnigRegex*, const OnigUChar* pattern, const OnigUChar* pattern_end, OnigOptionType option, OnigEncoding enc, const OnigSyntaxType* syntax, OnigErrorInfo* einfo));
 ONIG_EXTERN
+int  onig_reg_init P_((regex_t* reg, OnigOptionType option, OnigCaseFoldType case_fold_flag, OnigEncoding enc, const OnigSyntaxType* syntax));
+ONIG_EXTERN
+int onig_new_without_alloc P_((OnigRegex, const OnigUChar* pattern, const OnigUChar* pattern_end, OnigOptionType option, OnigEncoding enc, OnigSyntaxType* syntax, OnigErrorInfo* einfo));
+ONIG_EXTERN
 int onig_new_deluxe P_((OnigRegex* reg, const OnigUChar* pattern, const OnigUChar* pattern_end, OnigCompileInfo* ci, OnigErrorInfo* einfo));
 ONIG_EXTERN
 void onig_free P_((OnigRegex));
+ONIG_EXTERN
+void onig_free_body P_((OnigRegex));
 ONIG_EXTERN
 int onig_recompile P_((OnigRegex, const OnigUChar* pattern, const OnigUChar* pattern_end, OnigOptionType option, OnigEncoding enc, OnigSyntaxType* syntax, OnigErrorInfo* einfo));
 ONIG_EXTERN
 int onig_recompile_deluxe P_((OnigRegex reg, const OnigUChar* pattern, const OnigUChar* pattern_end, OnigCompileInfo* ci, OnigErrorInfo* einfo));
 ONIG_EXTERN
-int onig_search P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigRegion* region, OnigOptionType option));
+long onig_search P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* start, const OnigUChar* range, OnigRegion* region, OnigOptionType option));
 ONIG_EXTERN
-int onig_match P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* at, OnigRegion* region, OnigOptionType option));
+long onig_match P_((OnigRegex, const OnigUChar* str, const OnigUChar* end, const OnigUChar* at, OnigRegion* region, OnigOptionType option));
 ONIG_EXTERN
 OnigRegion* onig_region_new P_((void));
 ONIG_EXTERN

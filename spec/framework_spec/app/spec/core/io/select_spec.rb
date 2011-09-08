@@ -1,4 +1,4 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "IO.select" do
   before :each do
@@ -14,7 +14,7 @@ describe "IO.select" do
     timeout = 0.5
     start = Time.now
     IO.select [@rd], nil, nil, timeout
-    (Time.now - start).should be_close(timeout, 0.5)
+    (Time.now - start).should be_close(timeout, 2.0)
   end
 
   it "returns immediately all objects that are ready for I/O when timeout is 0" do
@@ -29,8 +29,17 @@ describe "IO.select" do
   end
 
   it "returns supplied objects when they are ready for I/O" do
-    Thread.new { sleep 0.5; @wr.write "be ready" }
+    t = Thread.new { sleep 0.5; @wr.write "be ready" }
+    t.abort_on_exception = true
     result = IO.select [@rd], nil, nil, nil
+    result.should == [[@rd], [], []]
+  end
+
+  it "leaves out IO objects for which there is no I/O ready" do
+    @wr.write "be ready"
+    # Order matters here. We want to see that @wr doesn't expand the size
+    # of the returned array, so it must be 1st.
+    result = IO.select [@wr, @rd], nil, nil, nil
     result.should == [[@rd], [], []]
   end
 
@@ -40,10 +49,10 @@ describe "IO.select" do
     result = IO.select [io], [io], nil, 0
     result.should == [[io], [io], []]
     io.close
-    File.delete(filename)
+    rm_r filename
   end
 
-  it "invokes to_io on supplied objects that are not IO" do
+  it "invokes to_io on supplied objects that are not IO and returns the supplied objects" do
     # make some data available
     @wr.write("foobar")
 
@@ -77,11 +86,29 @@ describe "IO.select" do
     lambda { IO.select(nil, nil, Object.new)}.should raise_error(TypeError)
   end
 
-  it "does not raise errors if the first three arguments are nil" do
-    lambda { IO.select(nil, nil, nil, 0)}.should_not raise_error
+  it "sleeps the specified timeout if all streams are nil" do
+    start = Time.now
+    IO.select(nil, nil, nil, 0.1)
+    (Time.now - start).should >= 0.1
   end
 
   it "does not accept negative timeouts" do
     lambda { IO.select(nil, nil, nil, -5)}.should raise_error(ArgumentError)
+  end
+  
+  it "sleeps forever for nil timeout" do
+    started = false
+    finished = false
+    t = Thread.new do
+      started = true
+      IO.select(nil, nil, nil, nil)
+      finished = false
+    end
+    
+    Thread.pass until t.status == "sleep"
+    started.should == true
+    t.kill
+    t.join
+    finished.should == false
   end
 end

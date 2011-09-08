@@ -1,27 +1,51 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/common'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/common', __FILE__)
+require File.expand_path('../shared/chroot', __FILE__)
 
-# Need special perms to run chroot
-# describe "Dir.chroot" do
-#   it 'Dir.chroot can be used to change the process\' root directory, see chroot(2)' do
-#     example do
-#      Kernel.fork {
-#        begin
-#          ret = Dir.chroot mock_dir
-#          File.open('/root_contents.txt', 'wb') {|f| f.puts ret; f.puts Dir.entries('/').sort}
-#          FileUtils.chmod 0777, '/root_contents.txt'
-#        rescue SystemCallError
-#          warn '**WARN: Insufficient permissions to test Dir.chroot! (Not a huge problem.)'
-#        end
-#      }
-# 
-#      Process.waitall
-# 
-#      contents = File.read "#{mock_dir}/root_contents.txt"
-#      FileUtils.rm "#{mock_dir}/root_contents.txt"
-# 
-#      # Should have the return value + the filenames
-#      contents.split("\n").sort
-#     end.should == %w|0 . .. .dotfile .dotsubdir subdir_one subdir_two deeply nondotfile file_one.ext file_two.ext root_contents.txt|.sort
-#   end
-# end
+platform_is_not :windows do
+  not_supported_on :jruby do
+    as_superuser do
+      describe "Dir.chroot as root" do
+        it_behaves_like :dir_chroot_as_root, :chroot
+      end
+    end
+
+    platform_is_not :os => :cygwin do
+      as_user do
+        describe "Dir.chroot as regular user" do
+          before :all do
+            DirSpecs.create_mock_dirs
+          end
+
+          after :all do
+            DirSpecs.delete_mock_dirs
+          end
+if ( System.get_property('platform') != 'ANDROID' )
+          it "raises an Errno::EPERM exception if the directory exists" do
+            lambda { Dir.chroot('.') }.should raise_error(Errno::EPERM)
+          end
+end
+          it "raises a SystemCallError if the directory doesn't exist" do
+            lambda { Dir.chroot('xgwhwhsjai2222jg') }.should raise_error(SystemCallError)
+          end
+
+          ruby_version_is "1.9" do
+            it "calls #to_path on non-String argument" do
+              p = mock('path')
+              p.should_receive(:to_path).and_return('.')
+              lambda { Dir.chroot(p) }.should raise_error
+            end
+          end
+        end
+      end
+    end
+
+    platform_is :os => :cygwin do
+      as_user do
+        describe "Dir.chroot as regular user" do
+          it_behaves_like :dir_chroot_as_root, :chroot
+        end
+      end
+    end
+  end
+end

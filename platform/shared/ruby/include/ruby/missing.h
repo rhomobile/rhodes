@@ -3,7 +3,7 @@
   missing.h - prototype for *.c in ./missing, and
   	      for missing timeval struct
 
-  $Author: yugui $
+  $Author: mame $
   created at: Sat May 11 23:46:03 JST 2002
 
 ************************************************/
@@ -35,6 +35,13 @@ struct timeval {
 struct timespec {
     time_t tv_sec;	/* seconds */
     long tv_nsec;	/* nanoseconds */
+};
+#endif
+
+#if !defined(HAVE_STRUCT_TIMEZONE)
+struct timezone {
+    int tz_minuteswest;
+    int tz_dsttime;
 };
 #endif
 
@@ -105,8 +112,10 @@ RUBY_EXTERN int isinf(double);
 # endif
 #endif
 
-#ifndef HAVE_ISNAN
+#ifndef isnan
+# ifndef HAVE_ISNAN
 RUBY_EXTERN int isnan(double);
+# endif
 #endif
 
 /*
@@ -144,28 +153,29 @@ RUBY_EXTERN long strtol(const char *, char **, int);
 #endif
 */
 
-#if defined HAVE_VSNPRINTF || defined HAVE_SNPRINTF
-# include <stdarg.h>
-#endif
-#ifndef HAVE_SNPRINTF
-RUBY_EXTERN int snprintf(char *, size_t n, char const *, ...);
-#endif
-#ifndef HAVE_VSNPRINTF
-# if _MSC_VER >= 1300
-#  pragma warning(disable: 4273)
-# endif
-RUBY_EXTERN int vsnprintf(char *, size_t n, char const *, va_list);
-# if _MSC_VER >= 1300
-#  pragma warning(default: 4273)
-# endif
-#endif
-
 #ifndef HAVE_STRLCPY
 RUBY_EXTERN size_t strlcpy(char *, const char*, size_t);
 #endif
 
 #ifndef HAVE_STRLCAT
 RUBY_EXTERN size_t strlcat(char *, const char*, size_t);
+#endif
+
+#ifndef HAVE_SIGNBIT
+RUBY_EXTERN int signbit(double x);
+#endif
+
+#ifndef HAVE_FFS
+RUBY_EXTERN int ffs(int);
+#endif
+
+#ifdef BROKEN_CLOSE
+#include <sys/types.h>
+#include <sys/socket.h>
+RUBY_EXTERN int ruby_getpeername(int, struct sockaddr *, socklen_t *);
+RUBY_EXTERN int ruby_getsockname(int, struct sockaddr *, socklen_t *);
+RUBY_EXTERN int ruby_shutdown(int, int);
+RUBY_EXTERN int ruby_close(int);
 #endif
 
 #if defined(__cplusplus)

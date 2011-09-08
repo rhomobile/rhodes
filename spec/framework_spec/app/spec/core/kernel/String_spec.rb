@@ -1,5 +1,5 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/fixtures/classes'
+require File.expand_path('../../../spec_helper', __FILE__)
+require File.expand_path('../fixtures/classes', __FILE__)
 
 describe :kernel_String, :shared => true do
   it "converts nil to a String" do
@@ -26,37 +26,69 @@ describe :kernel_String, :shared => true do
     @object.send(@method, obj).should == "test"
   end
 
-# XXX does not work because eval is not supported
-#  it "raises a TypeError if #to_s does not exist" do
-#    obj = mock('to_s')
-#    obj.undefine(:to_s)
-#
-#    lambda { @object.send(@method, obj) }.should raise_error(TypeError)
-#  end
-#
-#  it "raises a TypeError if respond_to? returns false for #to_s" do
-#    obj = mock("to_s")
-#    obj.does_not_respond_to(:to_s)
-#
-#    lambda { @object.send(@method, obj) }.should raise_error(TypeError)
-#  end
-#
-#  it "raises a NoMethodError if #to_s is not defined but #respond_to?(:to_s) returns true" do
-#    # cannot use a mock because of how RSpec affects #method_missing
-#    obj = Object.new
-#    obj.undefine(:to_s)
-#    obj.responds_to(:to_s)
-#
-#    lambda { @object.send(@method, obj) }.should raise_error(NoMethodError)
-#  end
-#
-#  it "calls #to_s if #respond_to?(:to_s) returns true" do
-#    obj = mock('to_s')
-#    obj.undefine(:to_s)
-#    obj.fake!(:to_s, "test")
-#
-#    @object.send(@method, obj).should == "test"
-#  end
+  it "raises a TypeError if #to_s does not exist" do
+    obj = mock('to_s')
+    obj.undefine(:to_s)
+
+    lambda { @object.send(@method, obj) }.should raise_error(TypeError)
+  end
+
+  ruby_version_is ""..."1.9" do
+    it "raises a TypeError if respond_to? returns false for #to_s" do
+      obj = mock("to_s")
+      obj.does_not_respond_to(:to_s)
+
+      lambda { @object.send(@method, obj) }.should raise_error(TypeError)
+    end
+  end
+
+  ruby_version_is "1.9"..."1.9.4" do
+    it "doesn't raise a TypeError even if respond_to? returns false for #to_s" do
+      obj = mock("to_s")
+      obj.does_not_respond_to(:to_s)
+
+      lambda { @object.send(@method, obj) }.should_not raise_error(TypeError)
+    end
+  end
+
+  ruby_version_is "1.9.4" do
+    it "raises a TypeError if respond_to? returns false for #to_s" do
+      obj = mock("to_s")
+      obj.does_not_respond_to(:to_s)
+
+      lambda { @object.send(@method, obj) }.should raise_error(TypeError)
+    end
+  end
+
+  ruby_version_is ""..."1.9" do
+    it "raises a NoMethodError if #to_s is not defined but #respond_to?(:to_s) returns true" do
+      # cannot use a mock because of how RSpec affects #method_missing
+      obj = Object.new
+      obj.undefine(:to_s)
+      obj.responds_to(:to_s)
+
+      lambda { @object.send(@method, obj) }.should raise_error(NoMethodError)
+    end
+  end
+
+  ruby_version_is "1.9" do
+    it "raises a TypeError if #to_s is not defined, even though #respond_to?(:to_s) returns true" do
+      # cannot use a mock because of how RSpec affects #method_missing
+      obj = Object.new
+      obj.undefine(:to_s)
+      obj.responds_to(:to_s)
+
+      lambda { @object.send(@method, obj) }.should raise_error(TypeError)
+    end
+  end
+
+  it "calls #to_s if #respond_to?(:to_s) returns true" do
+    obj = mock('to_s')
+    obj.undefine(:to_s)
+    obj.fake!(:to_s, "test")
+
+    @object.send(@method, obj).should == "test"
+  end
 
   it "raises a TypeError if #to_s does not return a String" do
     (obj = mock('123')).should_receive(:to_s).and_return(123)

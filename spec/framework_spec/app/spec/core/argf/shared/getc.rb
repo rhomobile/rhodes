@@ -1,14 +1,14 @@
 describe :argf_getc, :shared => true do
   before :each do
-    @file1 = fixture File.join(__rhoGetCurrentDir(), __FILE__), "file1.txt"
-    @file2 = fixture File.join(__rhoGetCurrentDir(), __FILE__), "file2.txt"
+    @file1 = fixture __FILE__, "file1.txt"
+    @file2 = fixture __FILE__, "file2.txt"
 
     @chars  = File.read @file1
     @chars += File.read @file2
   end
 
   after :each do
-    ARGF.close
+    ARGF.close unless ARGF.closed?
   end
 
   it "reads each char of files" do

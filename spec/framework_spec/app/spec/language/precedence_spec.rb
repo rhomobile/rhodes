@@ -1,4 +1,4 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../spec_helper'
+require File.expand_path('../../spec_helper', __FILE__)
 
 # Specifying the behavior of operators in combination could
 # lead to combinatorial explosion. A better way seems to be
@@ -258,27 +258,27 @@ describe "Operators" do
       (1 <=> 5 <= 1).should == nil
       (1 <=> 5 >  1).should == nil
       (1 <=> 5 >= 1).should == nil
-  
+
       (1 == 5 <  1).should == false
       (1 == 5 <= 1).should == false
       (1 == 5 >  1).should == false
       (1 == 5 >= 1).should == false
-  
+
       (1 === 5 <  1).should == false
       (1 === 5 <= 1).should == false
       (1 === 5 >  1).should == false
       (1 === 5 >= 1).should == false
-  
+
       (1 != 5 <  1).should == true
       (1 != 5 <= 1).should == true
       (1 != 5 >  1).should == true
       (1 != 5 >= 1).should == true
-  
+
       (1 =~ 5 <  1).should == false
       (1 =~ 5 <= 1).should == false
       (1 =~ 5 >  1).should == false
       (1 =~ 5 >= 1).should == false
-  
+
       (1 !~ 5 <  1).should == true
       (1 !~ 5 <= 1).should == true
       (1 !~ 5 >  1).should == true
@@ -286,15 +286,14 @@ describe "Operators" do
     end
   end
 
-# XXX eval not supported
-#  it "<=> == === != =~ !~ are non-associative" do
-#    lambda { eval("1 <=> 2 <=> 3")  }.should raise_error(SyntaxError)
-#    lambda { eval("1 == 2 == 3")  }.should raise_error(SyntaxError)
-#    lambda { eval("1 === 2 === 3")  }.should raise_error(SyntaxError)
-#    lambda { eval("1 != 2 != 3")  }.should raise_error(SyntaxError)
-#    lambda { eval("1 =~ 2 =~ 3")  }.should raise_error(SyntaxError)
-#    lambda { eval("1 !~ 2 !~ 3")  }.should raise_error(SyntaxError)
-#  end
+  it "<=> == === != =~ !~ are non-associative" do
+    lambda { eval("1 <=> 2 <=> 3")  }.should raise_error(SyntaxError)
+    lambda { eval("1 == 2 == 3")  }.should raise_error(SyntaxError)
+    lambda { eval("1 === 2 === 3")  }.should raise_error(SyntaxError)
+    lambda { eval("1 != 2 != 3")  }.should raise_error(SyntaxError)
+    lambda { eval("1 =~ 2 =~ 3")  }.should raise_error(SyntaxError)
+    lambda { eval("1 !~ 2 !~ 3")  }.should raise_error(SyntaxError)
+  end
 
   it "<=> == === != =~ !~ have higher precedence than &&" do
     (false && 2 <=> 3).should == false
@@ -326,11 +325,10 @@ describe "Operators" do
     (1...false||10).should == (1...10)
   end
 
-# XXX eval not supported
-#  it ".. ... are non-associative" do
-#    lambda { eval("1..2..3")  }.should raise_error(SyntaxError)
-#    lambda { eval("1...2...3")  }.should raise_error(SyntaxError)
-#  end
+  it ".. ... are non-associative" do
+    lambda { eval("1..2..3")  }.should raise_error(SyntaxError)
+    lambda { eval("1...2...3")  }.should raise_error(SyntaxError)
+  end
 
 # XXX: this is commented now due to a bug in compiler, which cannot
 # distinguish between range and flip-flop operator so far. zenspider is
@@ -430,19 +428,19 @@ describe "Operators" do
   end
 
   it "= %= /= -= += |= &= >>= <<= *= &&= ||= **= have higher precedence than defined? operator" do
-    (defined? a =   10).should_not == nil
-    (defined? a %=  10).should_not == nil
-    (defined? a /=  10).should_not == nil
-    (defined? a -=  10).should_not == nil
-    (defined? a +=  10).should_not == nil
-    (defined? a |=  10).should_not == nil
-    (defined? a &=  10).should_not == nil
-    (defined? a >>= 10).should_not == nil
-    (defined? a <<= 10).should_not == nil
-    (defined? a *=  10).should_not == nil
-    (defined? a &&= 10).should_not == nil
-    (defined? a ||= 10).should_not == nil
-    (defined? a **= 10).should_not == nil
+    (defined? a =   10).should == "assignment"
+    (defined? a %=  10).should == "assignment"
+    (defined? a /=  10).should == "assignment"
+    (defined? a -=  10).should == "assignment"
+    (defined? a +=  10).should == "assignment"
+    (defined? a |=  10).should == "assignment"
+    (defined? a &=  10).should == "assignment"
+    (defined? a >>= 10).should == "assignment"
+    (defined? a <<= 10).should == "assignment"
+    (defined? a *=  10).should == "assignment"
+    (defined? a &&= 10).should == "assignment"
+    (defined? a ||= 10).should == "assignment"
+    (defined? a **= 10).should == "assignment"
   end
 
   # XXX: figure out how to test it

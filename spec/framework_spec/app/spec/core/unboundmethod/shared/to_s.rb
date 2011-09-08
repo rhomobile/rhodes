@@ -1,5 +1,5 @@
-require "#{File.dirname File.join(__rhoGetCurrentDir(), __FILE__)}/../../../spec_helper"
-require "#{File.dirname File.join(__rhoGetCurrentDir(), __FILE__)}/../fixtures/classes"
+require File.expand_path('../../../../spec_helper', __FILE__)
+require File.expand_path('../../fixtures/classes', __FILE__)
 
 describe :unboundmethod_to_s, :shared => true do
   before :each do
@@ -8,8 +8,8 @@ describe :unboundmethod_to_s, :shared => true do
   end
 
   it "returns a String" do
-    @from_module.send(@method).class.should == String
-    @from_method.send(@method).class.should == String
+    @from_module.send(@method).should be_kind_of(String)
+    @from_method.send(@method).should be_kind_of(String)
   end
 
   it "the String reflects that this is an UnboundMethod object" do

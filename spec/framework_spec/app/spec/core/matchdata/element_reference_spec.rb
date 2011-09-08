@@ -1,4 +1,4 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../spec_helper'
+require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "MatchData#[]" do
   it "acts as normal array indexing [index]" do
@@ -16,3 +16,5 @@ describe "MatchData#[]" do
     /(.)(.)(\d+)(\d)/.match("THX1138.")[1..3].should == %w|H X 113|
   end
 end
+
+language_version __FILE__, "element_reference"

@@ -1,7 +1,7 @@
 #
 # date.rb - date and time library
 #
-# Author: Tadayoshi Funaba 1998-2008
+# Author: Tadayoshi Funaba 1998-2011
 #
 # Documentation: William Webber <william@williamwebber.com>
 #
@@ -598,7 +598,7 @@ end
     # +sg+ specifies the Day of Calendar Reform.
     def _valid_ordinal? (y, d, sg=GREGORIAN) # :nodoc:
       if d < 0
-	j = find_ldoy(y, sg)
+	return unless j = find_ldoy(y, sg)
 	ny, nd = jd_to_ordinal(j + d + 1, sg)
 	return unless ny == y
 	d = nd
@@ -625,7 +625,7 @@ end
 	m += 13
       end
       if d < 0
-	j = find_ldom(y, m, sg)
+	return unless j = find_ldom(y, m, sg)
 	ny, nm, nd = jd_to_civil(j + d + 1, sg)
 	return unless [ny, nm] == [y, m]
 	d = nd
@@ -936,7 +936,7 @@ end
 	  elem[e] = d.__send__(e)
 	end
 	elem[:wnum1] ||= 0
-	elem[:wday]  ||= 0
+	elem[:wday]  ||= 1
       end
     end
 
@@ -1110,16 +1110,18 @@ end
   class << self
 
     def once(*ids) # :nodoc: -- restricted
+=begin    
       for id in ids
-	module_eval <<-"end;"
-	  alias_method :__#{id.object_id}__, :#{id.to_s}
-	  private :__#{id.object_id}__
-	  def #{id.to_s}(*args)
-	    @__ca__[#{id.object_id}] ||= __#{id.object_id}__(*args)
-	  end
-	end;
+	    module_eval <<-"end;"
+	    alias_method :__#{id.object_id}__, :#{id.to_s}
+	    private :__#{id.object_id}__
+	    def #{id.to_s}(*args)
+	     @__ca__[#{id.object_id}] ||= __#{id.object_id}__(*args)
+	     end
+	    end;
       end
-    end
+=end      
+    end # <<dummy
 
     private :once
 
@@ -1155,7 +1157,7 @@ end
   # Get the date as an Astronomical Modified Julian Day Number.
   def amjd() ajd_to_amjd(@ajd) end
 
-  #trv once :amjd
+  once :amjd
 
   # Get the date as a Julian Day Number.
   def jd() ajd_to_jd(@ajd, @of)[0] end
@@ -1170,7 +1172,7 @@ end
   # Reform (in Italy and the Catholic countries).
   def ld() jd_to_ld(jd) end
 
-  #trv once :jd, :day_fraction, :mjd, :ld
+  once :jd, :day_fraction, :mjd, :ld
 
   # Get the date as a Civil Date, [year, month, day_of_month]
   def civil() jd_to_civil(jd(), @sg) end # :nodoc:
@@ -1184,7 +1186,7 @@ end
   def weeknum0() jd_to_weeknum(jd, 0, @sg) end # :nodoc:
   def weeknum1() jd_to_weeknum(jd, 1, @sg) end # :nodoc:
 
-  #trv once :civil, :ordinal, :commercial, :weeknum0, :weeknum1
+  once :civil, :ordinal, :commercial, :weeknum0, :weeknum1
   private :civil, :ordinal, :commercial, :weeknum0, :weeknum1
 
   # Get the year of this date.
@@ -1215,7 +1217,7 @@ end
   # fraction_of_a_second]
   def time() day_fraction_to_time(day_fraction) end # :nodoc:
 
-  #trv once :time
+  once :time
   private :time
 
   # Get the hour of this date.
@@ -1256,7 +1258,7 @@ end
   # Saturday is day-of-week 6.
   def wday() jd_to_wday(jd) end
 
-  #trv once :wday
+  once :wday
 
 =begin
   MONTHNAMES.each_with_index do |n, i|
@@ -1282,7 +1284,7 @@ end
   # Is the current date new-style (Gregorian Calendar)?
   def gregorian? () !julian? end
 
-  #trv once :julian?, :gregorian?
+  once :julian?, :gregorian?
 
   def fix_style # :nodoc:
     if julian?
@@ -1298,7 +1300,7 @@ end
 		fix_style)[-1] == 29
   end
 
-  #trv once :leap?
+  once :leap?
 
   # When is the Day of Calendar Reform for this Date object?
   def start() @sg end
@@ -1380,6 +1382,12 @@ end
     case other
     when Numeric; return @ajd <=> other
     when Date;    return @ajd <=> other.ajd
+    else
+      begin
+        l, r = other.coerce(self)
+        return l <=> r
+      rescue NoMethodError
+      end
     end
     nil
   end
@@ -1394,6 +1402,12 @@ end
     case other
     when Numeric; return jd == other
     when Date;    return jd == other.jd
+    else
+      begin
+	l, r = other.coerce(self)
+	return l === r
+      rescue NoMethodError
+      end
     end
     false
   end
@@ -1416,7 +1430,10 @@ end
     y, m = (year * 12 + (mon - 1) + n).divmod(12)
     m,   = (m + 1)                    .divmod(1)
     d = mday
-    d -= 1 until jd2 = _valid_civil?(y, m, d, @sg)
+    until jd2 = _valid_civil?(y, m, d, @sg)
+      d -= 1
+      raise ArgumentError, 'invalid date' unless d > 0
+    end
     self + (jd2 - jd)
   end
 
@@ -1784,8 +1801,8 @@ class Time
   def to_datetime
     jd = DateTime.__send__(:civil_to_jd, year(), mon(), mday(), DateTime::ITALY)
     fr = DateTime.__send__(:time_to_day_fraction, hour(), min(), [sec(), 59].min) +
-      Rational(nsec, 86400_000_000_000)
-    of = Rational(utc_offset, 86400)
+       Rational(subsec(), 86400)
+    of = Rational(utc_offset(), 86400)
     DateTime.new!(DateTime.__send__(:jd_to_ajd, jd, fr, of),
 		  of, DateTime::ITALY)
   end
@@ -1814,7 +1831,7 @@ class Date
     t = Time.now
     jd = civil_to_jd(t.year(), t.mon(), t.mday(), sg)
     fr = time_to_day_fraction(t.hour(), t.min(), [t.sec(), 59].min()) +
-      Rational(t.nsec(), 86400_000_000_000)
+      Rational(t.subsec, 86400)
     of = Rational(t.utc_offset(), 86400)
     new!(jd_to_ajd(jd, fr, of), of, sg)
   end

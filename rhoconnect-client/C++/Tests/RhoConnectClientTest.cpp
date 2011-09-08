@@ -40,6 +40,7 @@
 
 using namespace rho;
 using namespace rho::common;
+const char* g_szProduct = "Product";
 
 #ifdef WIN32
 int _tmain(int argc, _TCHAR* argv[])
@@ -51,16 +52,29 @@ extern "C" int runSyncClientTests()
 	char** argv = 0;
 #endif
 
-    RHOM_MODEL models[2] = {0};
+    RHOM_MODEL models[1] = {0};
     rho_connectclient_initmodel(&models[0]);
-    models[0].name = "Customer";
+    models[0].name = g_szProduct;
+    //models[0].type = RMT_PROPERTY_FIXEDSCHEMA;
+    //For schema model - add this create to rhoconnect-client\C++\Tests\win32\bin\Win32\RhoConnectClientTest\Debug\rho\db\syncdb.schema:
+    /*
+    CREATE TABLE "Product_s" ( 
+        "brand" varchar default null,
+        "created_at" varchar default null,
+        "name" varchar default null,
+        "price" varchar default null,
+        "quantity" varchar default null,
+        "sku" varchar default null,
+        "updated_at" varchar default null,
+        "object" varchar(255) PRIMARY KEY );
+    */
     models[0].sync_type = RST_INCREMENTAL;
 
-    rho_connectclient_initmodel(&models[1]);
-    models[1].name = "Product";
-    models[1].sync_type = RST_INCREMENTAL;
+    //rho_connectclient_initmodel(&models[1]);
+    //models[1].name = "Product";
+    //models[1].sync_type = RST_INCREMENTAL;
 
-    rho_connectclient_init(models, 2);
+    rho_connectclient_init(models, 1);
 
     rho_sync_set_threaded_mode(0);
     rho_sync_set_pollinterval(0);
@@ -101,7 +115,7 @@ TEST(SyncClient, shouldNotSyncWithoutLogin)
 {
     EXPECT_EQ(rho_sync_logged_in(), 0);
 
-    char* szRes = (char*)rho_sync_doSyncSourceByName("Product");
+    char* szRes = (char*)rho_sync_doSyncSourceByName(g_szProduct);
     RHO_CONNECT_NOTIFY oNotify = {0};
     rho_connectclient_parsenotify(szRes, &oNotify);
 
@@ -132,7 +146,7 @@ TEST(SyncClient, shouldSyncProductByName)
 {
     EXPECT_EQ(rho_sync_logged_in(), 1);
 
-    char* szRes = (char*)rho_sync_doSyncSourceByName("Product");
+    char* szRes = (char*)rho_sync_doSyncSourceByName(g_szProduct);
     RHO_CONNECT_NOTIFY oNotify = {0};
     rho_connectclient_parsenotify(szRes, &oNotify);
 
@@ -149,7 +163,7 @@ TEST(SyncClient, shouldSearchProduct)
     EXPECT_EQ(rho_sync_logged_in(), 1);
 
     unsigned long ar_sources = rho_connectclient_strarray_create();
-    rho_connectclient_strarray_add(ar_sources, "Product");
+    rho_connectclient_strarray_add(ar_sources, g_szProduct);
 
     String strParams = "offset=0&max_results=10&filterData=Test&search_id=" + 
         convertToStringA( CLocalTime().toULong() );
@@ -175,19 +189,19 @@ TEST(SyncClient, shouldCreateNewProduct)
 
     unsigned long item = rho_connectclient_hash_create();
     rho_connectclient_hash_put(item, "name", "Test");
-    rho_connectclient_create_object("Product", item);
+    rho_connectclient_create_object(g_szProduct, item);
 
-    unsigned long item2 = rho_connectclient_find("Product", rho_connectclient_hash_get(item, "object") );
+    unsigned long item2 = rho_connectclient_find(g_szProduct, rho_connectclient_hash_get(item, "object") );
     EXPECT_EQ( rho_connectclient_hash_equal(item2, item), 1 );
 
-    char* szRes = (char*)rho_sync_doSyncSourceByName("Product");
+    char* szRes = (char*)rho_sync_doSyncSourceByName(g_szProduct);
     RHO_CONNECT_NOTIFY oNotify = {0};
     rho_connectclient_parsenotify(szRes, &oNotify);
 
     EXPECT_EQ(String(oNotify.status), "ok");
     EXPECT_EQ(oNotify.error_code, RHO_ERR_NONE);
 
-    unsigned long item3 = rho_connectclient_find("Product", rho_connectclient_hash_get(item, "object") );
+    unsigned long item3 = rho_connectclient_find(g_szProduct, rho_connectclient_hash_get(item, "object") );
     EXPECT_EQ( item3, 0 );
 
     rho_connectclient_hash_delete(item);
@@ -204,7 +218,7 @@ TEST(SyncClient, shouldModifyProduct)
     unsigned long cond = rho_connectclient_hash_create();
     rho_connectclient_hash_put(cond, "name", "Test");
 
-    unsigned long item = rho_connectclient_find_first("Product", cond );
+    unsigned long item = rho_connectclient_find_first(g_szProduct, cond );
     rho_connectclient_hash_delete(cond);
 
     EXPECT_NE( item, 0 );
@@ -215,16 +229,16 @@ TEST(SyncClient, shouldModifyProduct)
     new_sku += "_TEST";
 
     rho_connectclient_hash_put(item, "sku", new_sku.c_str());
-    rho_connectclient_save( "Product", item );
+    rho_connectclient_save( g_szProduct, item );
 
-    char* szRes = (char*)rho_sync_doSyncSourceByName("Product");
+    char* szRes = (char*)rho_sync_doSyncSourceByName(g_szProduct);
     RHO_CONNECT_NOTIFY oNotify = {0};
     rho_connectclient_parsenotify(szRes, &oNotify);
 
     EXPECT_EQ(String(oNotify.status), "ok");
     EXPECT_EQ(oNotify.error_code, RHO_ERR_NONE);
 
-    unsigned long item3 = rho_connectclient_find("Product", saved_obj.c_str() );
+    unsigned long item3 = rho_connectclient_find(g_szProduct, saved_obj.c_str() );
     //EXPECT_EQ( rho_connectclient_hash_equal(item3, item), 1 );
 
     rho_connectclient_hash_delete(item);
@@ -242,22 +256,22 @@ TEST(SyncClient, shouldDeleteAllTestProduct)
     unsigned long cond = rho_connectclient_hash_create();
     rho_connectclient_hash_put(cond, "name", "Test");
 
-    unsigned long items = rho_connectclient_find_all("Product", cond );
+    unsigned long items = rho_connectclient_find_all(g_szProduct, cond );
     EXPECT_NE( items, 0 );
   
     for ( int i = 0; i < rho_connectclient_strhasharray_size(items); i++ )
     {
-        rho_connectclient_itemdestroy("Product", rho_connectclient_strhasharray_get(items, i));
+        rho_connectclient_itemdestroy(g_szProduct, rho_connectclient_strhasharray_get(items, i));
     }
 
-    char* szRes = (char*)rho_sync_doSyncSourceByName("Product");
+    char* szRes = (char*)rho_sync_doSyncSourceByName(g_szProduct);
     RHO_CONNECT_NOTIFY oNotify = {0};
     rho_connectclient_parsenotify(szRes, &oNotify);
 
     EXPECT_EQ(String(oNotify.status), "ok");
     EXPECT_EQ(oNotify.error_code, RHO_ERR_NONE);
 
-    unsigned long item2 = rho_connectclient_find_first("Product", cond );
+    unsigned long item2 = rho_connectclient_find_first(g_szProduct, cond );
     EXPECT_EQ(item2, 0);
 
     rho_connectclient_hash_delete(cond);

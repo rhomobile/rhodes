@@ -12,9 +12,9 @@ TARGET = rubylib
 TEMPLATE = lib
 CONFIG += staticlib warn_on
 INCLUDEPATH += ../../shared
+INCLUDEPATH += ../../shared/ruby/include
 INCLUDEPATH += ../../shared/ruby
 INCLUDEPATH += ../../shared/ruby/generated
-INCLUDEPATH += ../../shared/ruby/include
 INCLUDEPATH += /epoc32/include/stdapis/glib-2.0
 
 SOURCES += \
@@ -62,6 +62,8 @@ SOURCES += \
     ../../shared/ruby/dmyext.c \
     ../../shared/ruby/dmyencoding.c \
     ../../shared/ruby/dln.c \
+    ../../shared/ruby/dln_find.c \
+    ../../shared/ruby/node.c \
     ../../shared/ruby/dir.c \
     ../../shared/ruby/debug.c \
     ../../shared/ruby/cont.c \
@@ -69,7 +71,6 @@ SOURCES += \
     ../../shared/ruby/compile.c \
     ../../shared/ruby/compar.c \
     ../../shared/ruby/class.c \
-    ../../shared/ruby/blockinlining.c \
     ../../shared/ruby/bignum.c \
     ../../shared/ruby/array.c \
     ../../shared/ruby/vm_dump.c \
@@ -147,6 +148,7 @@ unix:!symbian {
 }
 
 win32 {
+#DESTDIR = ../../rhodes-symbian-emulator-build
 SOURCES += ../../shared/ruby/win32/win32.c
 HEADERS += ../../shared/ruby/win32/assert.h
 INCLUDEPATH += ../../shared/ruby/win32

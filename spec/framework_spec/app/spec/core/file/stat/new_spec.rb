@@ -1,15 +1,15 @@
-require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/../../../spec_helper'
+require File.expand_path('../../../../spec_helper', __FILE__)
 
 describe "File::Stat#initialize" do
 
   before :each do
     @file = tmp('i_exist')
-    File.open(@file,'w'){|f| f.write 'rubinius'}
+    touch(@file) { |f| f.write "rubinius" }
     File.chmod(0755, @file)
   end
 
   after :each do
-    File.delete(@file) if File.exist?(@file)
+    rm_r @file
   end
 
   it "raises an exception if the file doesn't exist" do
@@ -18,8 +18,15 @@ describe "File::Stat#initialize" do
 
   it "creates a File::Stat object for the given file" do
     st = File::Stat.new(@file)
-    st.class.should == File::Stat
+    st.should be_kind_of(File::Stat)
     st.ftype.should == 'file'
   end
 
+  ruby_version_is "1.9" do
+    it "calls #to_path on non-String arguments" do
+      p = mock('path')
+      p.should_receive(:to_path).and_return @file
+      File::Stat.new p
+    end
+  end
 end

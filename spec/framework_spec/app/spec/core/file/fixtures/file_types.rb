@@ -5,7 +5,7 @@ module FileSpecs
     @dir    = Dir.pwd
     @fifo   = tmp("test_fifo")
 
-    platform_is_not :windows, :android do
+    platform_is_not :windows do
       @block  = `find /dev /devices -type b 2> /dev/null`.split("\n").first
       @char   = `find /dev /devices -type c 2> /dev/null`.split("\n").last
 
@@ -16,12 +16,6 @@ module FileSpecs
         break
       end
 
-    end
-
-    platform_is :android do
-      @block = nil
-      @char = "/dev/ashmem"
-      @link = "/etc"
     end
   end
 
@@ -62,10 +56,10 @@ module FileSpecs
   def self.socket()
     require 'socket'
     name = tmp("ftype_socket.socket")
-    File.delete name if File.exist? name
+    rm_r name
     socket = UNIXServer.new name
     yield name
     socket.close
-    File.delete name if File.exist? name
+    rm_r name
   end
 end

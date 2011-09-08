@@ -86,12 +86,13 @@ JNIEnv *jnienv()
 
 std::vector<jclass> g_classes;
 
-jclass getJNIClass(int n)
+jclass& getJNIClass(int n)
 {
+    static jclass jcNull = 0;
     if (n < 0 || (size_t)n >= g_classes.size())
     {
         RAWLOG_ERROR1("Illegal index when call getJNIClass: %d", n);
-        return NULL;
+        return jcNull;
     }
     return g_classes[n];
 }
@@ -153,8 +154,11 @@ jint JNI_OnLoad(JavaVM* vm, void* /*reserved*/)
         jclass cls = env->FindClass(className);
         if (!cls)
             return -1;
-        g_classes.push_back((jclass)env->NewGlobalRef(cls));
+        jclass globalCls = static_cast<jclass>(env->NewGlobalRef(cls));
+        if (!globalCls)
+            return -1;
         env->DeleteLocalRef(cls);
+        g_classes.push_back(globalCls);
     }
 
     return jversion;

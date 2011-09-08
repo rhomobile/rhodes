@@ -17,6 +17,9 @@
 		5C7652830FD3E3E000CB43FD /* stringio.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C7652820FD3E3E000CB43FD /* stringio.c */; };
 		5C79894D113BD1D0005F8736 /* geolocation_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C79894C113BD1D0005F8736 /* geolocation_wrap.c */; };
 		5C8EE86511220ED30005C20D /* asynchttp_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C8EE86411220ED30005C20D /* asynchttp_wrap.c */; };
+		5CE99AE71413BECA000DD51D /* dln_find.c in Sources */ = {isa = PBXBuildFile; fileRef = 5CE99AE61413BECA000DD51D /* dln_find.c */; };
+		5CE99AEA1413BEE7000DD51D /* node.c in Sources */ = {isa = PBXBuildFile; fileRef = 5CE99AE81413BEE7000DD51D /* node.c */; };
+		5CE99AEB1413BEE7000DD51D /* node.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CE99AE91413BEE7000DD51D /* node.h */; };
 		5CF8DBC610B1D45C00247AB4 /* addrinfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CF8DBC010B1D45C00247AB4 /* addrinfo.h */; };
 		5CF8DBC710B1D45C00247AB4 /* constants.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CF8DBC110B1D45C00247AB4 /* constants.h */; };
 		5CF8DBCA10B1D45C00247AB4 /* socket.c in Sources */ = {isa = PBXBuildFile; fileRef = 5CF8DBC410B1D45C00247AB4 /* socket.c */; };
@@ -34,7 +37,6 @@
 		F5C61CAA0F3CFE7800207621 /* webview_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F5C61CA90F3CFE7800207621 /* webview_wrap.c */; };
 		F5E360690EB6A62A00226287 /* array.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360220EB6A62A00226287 /* array.c */; };
 		F5E3606A0EB6A62A00226287 /* bignum.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360230EB6A62A00226287 /* bignum.c */; };
-		F5E3606B0EB6A62A00226287 /* blockinlining.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360240EB6A62A00226287 /* blockinlining.c */; };
 		F5E3606C0EB6A62A00226287 /* class.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360250EB6A62A00226287 /* class.c */; };
 		F5E3606D0EB6A62A00226287 /* compar.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360260EB6A62A00226287 /* compar.c */; };
 		F5E3606E0EB6A62A00226287 /* compile.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360270EB6A62A00226287 /* compile.c */; };
@@ -134,6 +136,9 @@
 		5C7652820FD3E3E000CB43FD /* stringio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = stringio.c; path = ext/stringio/stringio.c; sourceTree = "<group>"; };
 		5C79894C113BD1D0005F8736 /* geolocation_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = geolocation_wrap.c; path = ext/geolocation/geolocation_wrap.c; sourceTree = "<group>"; };
 		5C8EE86411220ED30005C20D /* asynchttp_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = asynchttp_wrap.c; path = ext/asynchttp/asynchttp_wrap.c; sourceTree = "<group>"; };
+		5CE99AE61413BECA000DD51D /* dln_find.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dln_find.c; sourceTree = "<group>"; };
+		5CE99AE81413BEE7000DD51D /* node.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = node.c; sourceTree = "<group>"; };
+		5CE99AE91413BEE7000DD51D /* node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = node.h; sourceTree = "<group>"; };
 		5CF8DBC010B1D45C00247AB4 /* addrinfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = addrinfo.h; path = ext/socket/addrinfo.h; sourceTree = "<group>"; };
 		5CF8DBC110B1D45C00247AB4 /* constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = constants.h; path = ext/socket/constants.h; sourceTree = "<group>"; };
 		5CF8DBC410B1D45C00247AB4 /* socket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = socket.c; path = ext/socket/socket.c; sourceTree = "<group>"; };
@@ -152,7 +157,6 @@
 		F5C61CA90F3CFE7800207621 /* webview_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = webview_wrap.c; path = ../../shared/ruby/ext/webview/webview_wrap.c; sourceTree = SOURCE_ROOT; };
 		F5E360220EB6A62A00226287 /* array.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = array.c; path = ../../shared/ruby/array.c; sourceTree = SOURCE_ROOT; };
 		F5E360230EB6A62A00226287 /* bignum.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bignum.c; path = ../../shared/ruby/bignum.c; sourceTree = SOURCE_ROOT; };
-		F5E360240EB6A62A00226287 /* blockinlining.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = blockinlining.c; path = ../../shared/ruby/blockinlining.c; sourceTree = SOURCE_ROOT; };
 		F5E360250EB6A62A00226287 /* class.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = class.c; path = ../../shared/ruby/class.c; sourceTree = SOURCE_ROOT; };
 		F5E360260EB6A62A00226287 /* compar.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = compar.c; path = ../../shared/ruby/compar.c; sourceTree = SOURCE_ROOT; };
 		F5E360270EB6A62A00226287 /* compile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = compile.c; path = ../../shared/ruby/compile.c; sourceTree = SOURCE_ROOT; };
@@ -402,7 +406,6 @@
 				F5E360B00EB6A63B00226287 /* ext */,
 				F5E360220EB6A62A00226287 /* array.c */,
 				F5E360230EB6A62A00226287 /* bignum.c */,
-				F5E360240EB6A62A00226287 /* blockinlining.c */,
 				F5E360250EB6A62A00226287 /* class.c */,
 				F5E360260EB6A62A00226287 /* compar.c */,
 				F5E360270EB6A62A00226287 /* compile.c */,
@@ -412,6 +415,7 @@
 				F5E3602B0EB6A62A00226287 /* debug.h */,
 				F5E3602C0EB6A62A00226287 /* dir.c */,
 				F5E3602D0EB6A62A00226287 /* dln.c */,
+				5CE99AE61413BECA000DD51D /* dln_find.c */,
 				F5E3602E0EB6A62A00226287 /* dln.h */,
 				F5E3602F0EB6A62A00226287 /* dmyencoding.c */,
 				F5E360300EB6A62A00226287 /* dmyext.c */,
@@ -434,6 +438,8 @@
 				F5E360410EB6A62A00226287 /* math.c */,
 				F5E362FE0EB79F0200226287 /* miniprelude.c */,
 				F5E363070EB7A0DB00226287 /* newline.c */,
+				5CE99AE81413BEE7000DD51D /* node.c */,
+				5CE99AE91413BEE7000DD51D /* node.h */,
 				F5E360420EB6A62A00226287 /* numeric.c */,
 				F5E360430EB6A62A00226287 /* object.c */,
 				F5E360440EB6A62A00226287 /* pack.c */,
@@ -663,6 +669,7 @@
 				5CF8DBC710B1D45C00247AB4 /* constants.h in Headers */,
 				5CF8DBCB10B1D45C00247AB4 /* sockport.h in Headers */,
 				BD807BC41259E37900A4E4B2 /* event.h in Headers */,
+				5CE99AEB1413BEE7000DD51D /* node.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -717,7 +724,6 @@
 			files = (
 				F5E360690EB6A62A00226287 /* array.c in Sources */,
 				F5E3606A0EB6A62A00226287 /* bignum.c in Sources */,
-				F5E3606B0EB6A62A00226287 /* blockinlining.c in Sources */,
 				F5E3606C0EB6A62A00226287 /* class.c in Sources */,
 				F5E3606D0EB6A62A00226287 /* compar.c in Sources */,
 				F5E3606E0EB6A62A00226287 /* compile.c in Sources */,
@@ -807,6 +813,8 @@
 				BD807BB01259E25A00A4E4B2 /* calendar_wrap.c in Sources */,
 				BD807BC31259E37900A4E4B2 /* event_wrap.c in Sources */,
 				FA522E5112DEA22800AB55CC /* nativeviewmanager_wrap.c in Sources */,
+				5CE99AE71413BECA000DD51D /* dln_find.c in Sources */,
+				5CE99AEA1413BEE7000DD51D /* node.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -817,6 +825,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -843,6 +852,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 1;
@@ -907,6 +917,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 1;
