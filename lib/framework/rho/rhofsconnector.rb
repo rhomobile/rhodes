@@ -61,7 +61,14 @@ end
 if defined?( RHODES_EMULATOR )                        
         File.join(__rhoGetCurrentDir(), RHO_EMULATOR_DIR + '/db/db-files')
 else
-        File.join(__rhoGetCurrentDir(), 'db/db-files')
+        if defined? RHO_ME
+            res = '/'
+        else
+            res = ''
+        end    
+        
+        res += File.join(__rhoGetCurrentDir(), 'db/db-files')
+        res
 end        
       end
 
