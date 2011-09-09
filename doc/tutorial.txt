@@ -27,7 +27,7 @@ The default home screen of the app is defined in the storemanager/app/index.erb 
     $ cd storemanager
     $ rake run:iphone
 
-<img src="http://img.skitch.com/20100512-px2wrmj1bj7yixjy7fp2d31yw6.png"/>
+<img src="https://s3.amazonaws.com/rhodocs/rhodes-jquerymobile-tutorial/jquerymobile-index-iphone.png" heigth='300' width='200'/>
 
 To build for other platforms/simulators, you execute the appropriate rake tasks, such as "rake run:bb" to run it on the BlackBerry emulator. To see all possible rake tasks:
 
@@ -98,7 +98,7 @@ To provide a link to the Product model's index page and templates you can replac
         <a href="Product">Products</a>
     </li>
 
-<img src="http://img.skitch.com/20100512-grk9ymqwj66jypdckthmm5484n.png"/>
+<img src="https://s3.amazonaws.com/rhodocs/rhodes-jquerymobile-tutorial/ipod.png" heigth='300' width='200' />
 
 
 **NOTE:** You can edit this top level page or any of the other pages with any arbitrary HTML you wish.   We don't attempt to teach you HTML or Ruby here but there are many good external references for both topics.
