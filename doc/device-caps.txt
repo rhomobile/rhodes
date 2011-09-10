@@ -1140,7 +1140,12 @@ NOTE: in order to use it on Android, you need to install Google Add-on API and r
 
 Provider:
 
-There are two providers supported now - 'Google' and 'ESRI'. 'Google supported on iPhone, Android and BB. 'ESRI' supported on iPhone, Android, BB and WM. 
+There are two providers supported now - 'Google', 'ESRI', "RhoGoogle" and "OSM". 
+
+* 'Google' supported on iPhone, Android and BB. 
+* 'ESRI' supported on iPhone, Android, BB and WM. 
+* 'RhoGoogle' own GoogleMap provider based on Google Static Map API. Have additional features (offline caching for example).  Supported on Android and WM
+* 'OSM' - Open Street Map, support only 'roadmap' map type.   Supported on Android and WM
 
 For use ESRI maps in your projects on iPhone:
 
@@ -1173,6 +1178,28 @@ Annotations - array of map annotation objects (list of pins on the map). Annotat
 * image - image file name
 * image_x_offset - int horizontal coordinate of image anchor (ancor point placed to annotation point on map) . Set to image width/2 for center
 * image_y_offset - int vertical coordinate of image anchor (ancor point placed to annotation point on map). Set image height/2 for center
+
+Enable file caching for map tiles - file cache can use for offline map browsing:
+	:::ruby
+	MapView.set_file_caching_enable(1)
+
+Preload map tiles for region (0<=zoom<=18):
+	:::ruby
+	  def preload_callback
+	       puts '@@@@@@@@@      Preload Callback       STATUS['+@params['status']+']   PROGRESS['+@params['progress']+']'
+	  end
+	
+	  def preload_map
+	      min_zoom = 3
+	      max_zoom = 13
+	      top_latitude = 60.1
+	      left_longitude = 30.0
+	      bottom_latitude = 59.7
+	      right_longitude = 30.6
+	      total_tiles_for_preload_count = MapView.preload_map_tiles('OSM', 'roadmap', top_latitude, left_longitude, bottom_latitude, right_longitude, min_zoom, max_zoom, url_for(:action => :preload_callback))    
+	      redirect :action => :index
+	  end
+
 
 ### Sample
 See GeoLocation/controller.rb of [system API sample application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/GeoLocation/controller.rb) for some of the examples of how to use MapView class.
