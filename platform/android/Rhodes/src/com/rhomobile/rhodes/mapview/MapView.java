@@ -34,6 +34,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -47,7 +48,9 @@ import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
+import com.rhomobile.rhodes.util.Utils;
 
 public class MapView extends BaseActivity implements MapTouch {
 	
@@ -93,6 +96,8 @@ public class MapView extends BaseActivity implements MapTouch {
 	private ZoomButtonsController mZoomController;
 	
 	private long mNativeDevice;
+	
+	private static int ourDensity = Bitmap.DENSITY_NONE;//DisplayMetrics.DENSITY_DEFAULT;
 	
 	private TouchHandler createTouchHandler() {
 		String className;
@@ -143,8 +148,15 @@ public class MapView extends BaseActivity implements MapTouch {
 		if (mNativeDevice == 0)
 			throw new IllegalArgumentException();
 		
-		Bitmap pin = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.marker);
+		BitmapFactory.Options opt = new BitmapFactory.Options();
+		opt.inScaled = false;
+		Bitmap pin = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.marker, opt);
+
+		//ourDensity = pin.getDensity();
+		pin.setDensity(Bitmap.DENSITY_NONE);
 		setPinImage(mNativeDevice, pin);
+		
+		
 		Bitmap pinCallout = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.callout);
 		setPinCalloutImage(mNativeDevice, pinCallout );
 		Bitmap pinCalloutLink = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.callout_link);
@@ -177,6 +189,7 @@ public class MapView extends BaseActivity implements MapTouch {
 				super.onSizeChanged(w, h, oldW, oldH);
 				if (w != oldW || h != oldH)
 					setSize(MapView.this, mNativeDevice, w, h);
+				setZoom(mNativeDevice, zoom(mNativeDevice));
 			}
 			
 			@Override
@@ -314,7 +327,25 @@ public class MapView extends BaseActivity implements MapTouch {
 	}
 	
 	public static Bitmap createImage(String path) {
-		return BitmapFactory.decodeFile(path);
+		//Utils.platformLog(TAG, "##################    createBitmap("+path+")");
+		Bitmap b = BitmapFactory.decodeFile(path);
+		if (b == null) {
+			//Utils.platformLog(TAG, "##################2    createBitmap("+RhoFileApi.normalizePath("apps/" + path)+")");
+			b = BitmapFactory.decodeStream(RhoFileApi.open(RhoFileApi.normalizePath("apps/" + path)));
+			if (b != null) {
+				//Utils.platformLog(TAG, "##################    OK !");
+			}
+			else {
+				//Utils.platformLog(TAG, "##################    FALSE !");
+			}
+		}
+		else {
+			//Utils.platformLog(TAG, "##################    OK !");
+		}
+		if (b != null) {
+			b.setDensity(ourDensity);
+		}
+		return b;
 	}
 	
 	public static Bitmap createImage(byte[] data) {

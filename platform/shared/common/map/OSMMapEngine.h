@@ -24,16 +24,21 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
-#include "common/map/ESRIMapEngine.h"
+#ifndef _RHOOSMMAPENGINE_H_
+#define _RHOOSMMAPENGINE_H_
+
+#include "common/map/MapEngine.h"
 #include "common/map/GeocodingMapEngine.h"
-#include "common/RhoMath.h"
-#include "common/RhoConf.h"
-#include "common/IRhoClassFactory.h"
-#include "common/RhodesApp.h"
+#include "common/map/BaseMapEngine.h"
+#include "common/ThreadQueue.h"
 #include "net/INetRequest.h"
 
-#undef DEFAULT_LOGCATEGORY
-#define DEFAULT_LOGCATEGORY "ESRIMapEngine"
+#include "common/RhoThread.h"
+
+#include <list>
+
+
+
 
 namespace rho
 {
@@ -41,64 +46,37 @@ namespace common
 {
 namespace map
 {
-
     
-    ESRIMapView::ESRIMapView(IDrawingDevice *device)
-    :BaseMapView(device, "esri")
+    class OSMMapView : public BaseMapView
     {
+    public:
+        OSMMapView(IDrawingDevice *device);
+      
+        virtual int getMapTile(uint64 p_zoom, uint64 p_row, uint64 p_column, void** p_data, size_t* p_size);
         
-    }
-    
-    int ESRIMapView::getMapTile(uint64 p_zoom, uint64 p_row, uint64 p_column, void** p_data, size_t* p_size) {
+        virtual void setESRILogoImage(IDrawingImage *ESRILogoImg) {}
+        virtual void setGoogleLogoImage(IDrawingImage *GoogleLogoImg) {}
         
-        
-        void *data = NULL;
-        size_t datasize = 0;
-
-        String url = getMapUrl();
-        if (url.empty())
-        {
-            RAWLOG_ERROR("MapFetch::processCommand: passed empty base url");
-            return 0;
-        }
-        // Append last '/' if not exist
-        if (url[url.size() - 1] != '/')
-            url.push_back('/');
-        
-        
-        // Make url
-        
-        char buf[1024];
-        snprintf(buf, sizeof(buf), "MapServer/tile/%d/%d/%d", (int)p_zoom, (int)p_row, (int)p_column);
-        
-        url += buf;
-        
-        if (!fetchData(url, &data, &datasize))
-            return 0;
-        
-        *p_data = data;
-        *p_size = datasize;
-        
-        return 1;
-        
-    }
+    };
     
     
-    
-    
-    
-    IMapView *ESRIMapEngine::createMapView(IDrawingDevice *device)
+    class OSMMapEngine : public IMapEngine
     {
-        return new ESRIMapView(device);
-    }
+    public:
+        IMapView *createMapView(IDrawingDevice *device);
+        void destroyMapView(IMapView *view);
+    };
     
-    void ESRIMapEngine::destroyMapView(IMapView *view)
-    {
-        delete view;
-    }
+    
+    
+    
+    
+    
     
     
 
 } // namespace map
 } // namespace common
 } // namespace rho
+
+#endif
