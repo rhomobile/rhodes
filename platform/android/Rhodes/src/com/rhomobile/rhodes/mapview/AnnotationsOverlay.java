@@ -52,12 +52,15 @@ public class AnnotationsOverlay extends ItemizedOverlay<OverlayItem> {
 	private int base_callout_x_offset = 0;
 	private int base_callout_y_offset = 0;
 	
-	public AnnotationsOverlay(GoogleMapView view, Drawable marker) {
+	private int myDensity = DisplayMetrics.DENSITY_DEFAULT;
+	
+	public AnnotationsOverlay(GoogleMapView view, Drawable marker, int density) {
 		super(boundCenterBottom(marker));
 		base_callout_x_offset = 0;
 		base_callout_y_offset = -(marker.copyBounds().bottom - marker.copyBounds().top);
 		mainView = view;
 		annotations = new Vector<Annotation>();
+		myDensity = density;
 		populate();
 	}
 	
@@ -88,7 +91,7 @@ public class AnnotationsOverlay extends ItemizedOverlay<OverlayItem> {
 			if (bitmap != null) {
 				//Utils.platformLog(TAG, "$$$$$$$$$$$$    Bitmap is ["+imagePath+"]");
 				//Utils.platformLog(TAG, "$$$$$$$$$$$$           is ["+String.valueOf(bitmap.getWidth())+"x"+String.valueOf(bitmap.getHeight())+"]");
-				bitmap.setDensity(DisplayMetrics.DENSITY_MEDIUM);
+				bitmap.setDensity(myDensity);//DisplayMetrics.DENSITY_MEDIUM);
 				BitmapDrawable bd = new BitmapDrawable(bitmap);
 				//bd.setTargetDensity(DisplayMetrics.DENSITY_MEDIUM);
 				bd.setVisible(true, true);
@@ -122,8 +125,8 @@ public class AnnotationsOverlay extends ItemizedOverlay<OverlayItem> {
 	@Override
 	protected boolean onTap(int i) {
 		Annotation ann = annotations.elementAt(i);
-		if (ann.url == null)
-			return false;
+		//if (ann.url == null)
+		//	return false;
 		mainView.selectAnnotation(ann);
 		//WebView.navigate(ann.url, WebView.activeTab());
 		//mainView.finish();

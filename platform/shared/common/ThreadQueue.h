@@ -57,6 +57,7 @@ public:
     IQueueCommand* getCurCommand(){ return m_pCurCmd; }
     LinkedListPtr<IQueueCommand*>& getCommands(){ return m_stackCommands; }
 
+    int getCommandsCount();	
 protected:
     virtual int getLastPollInterval(){ return 0;}
     virtual void processCommand(IQueueCommand* pCmd) = 0;

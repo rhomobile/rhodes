@@ -48,7 +48,9 @@
             android:name="com.rhomobile.rhodes.datetime.DateTimePickerScreen" />
         
         <activity
-            android:name="com.rhomobile.rhodes.mapview.MapView" />
+            android:name="com.rhomobile.rhodes.mapview.MapView" 
+            android:configChanges="orientation"
+         />
         
         <activity
             android:name="com.rhomobile.rhodes.mapview.GoogleMapView" />
