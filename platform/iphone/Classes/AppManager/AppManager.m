@@ -511,6 +511,17 @@ static const double RHO_IPHONE4_PPI = 326.0;
 // http://www.apple.com/ipad/specs/
 static const double RHO_IPAD_PPI = 132.0;
 
+static float get_scale() {
+    float scales = 1;//[[UIScreen mainScreen] scale];
+#ifdef __IPHONE_4_0
+    if ( [[UIScreen mainScreen] respondsToSelector:@selector(scale)] ) {
+        scales = [[UIScreen mainScreen] scale];
+    }
+#endif
+    return scales;
+}
+
+
 int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 {
     if (strcasecmp("platform", szPropName) == 0)
@@ -527,6 +538,17 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
         {*resValue = rho_ruby_create_integer(rho_sys_get_screen_width()); return 1; }
     else if (strcasecmp("screen_height", szPropName) == 0)
         {*resValue = rho_ruby_create_integer(rho_sys_get_screen_height()); return 1; }
+    else if (strcasecmp("real_screen_height", szPropName) == 0)
+    {
+        
+        *resValue = rho_ruby_create_integer((int)(rho_sys_get_screen_height()*get_scale())); 
+        return 1; 
+    }
+    else if (strcasecmp("real_screen_width", szPropName) == 0)
+    {
+        *resValue = rho_ruby_create_integer((int)(rho_sys_get_screen_width()*get_scale())); 
+        return 1; 
+    }
     else if (strcasecmp("screen_orientation", szPropName) == 0) {
         UIInterfaceOrientation current_orientation = [[UIApplication sharedApplication] statusBarOrientation];
         if ((current_orientation == UIInterfaceOrientationLandscapeLeft) || (current_orientation == UIInterfaceOrientationLandscapeRight)) {
