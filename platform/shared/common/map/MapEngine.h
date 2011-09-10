@@ -101,27 +101,36 @@ typedef struct {
 class Annotation
 {
 public:
+    
+    virtual ~Annotation() {}
+    
     Annotation(String const &title, String const &subtitle,
         double latitude, double longitude, String const &address,
         String const &url)
         :m_title(title), m_subtitle(subtitle), m_resolved(true),
         m_latitude(latitude), m_longitude(longitude),
-        m_address(address), m_url(url)
+        m_address(address), m_url(url), m_x_off(0), m_y_off(0), m_data(NULL)
     {}
 
     Annotation(String const &title, String const &subtitle,
         double latitude, double longitude, String const &url)
         :m_title(title), m_subtitle(subtitle), m_resolved(true),
         m_latitude(latitude), m_longitude(longitude),
-        m_address(make_address(latitude, longitude)), m_url(url)
+        m_address(make_address(latitude, longitude)), m_url(url), m_x_off(0), m_y_off(0), m_data(NULL)
     {}
 
     Annotation(String const &title, String const &subtitle,
         String const &address, String const &url)
         :m_title(title), m_subtitle(subtitle), m_resolved(false),
         m_latitude(0), m_longitude(0),
-        m_address(address), m_url(url)
+        m_address(address), m_url(url), m_x_off(0), m_y_off(0), m_data(NULL)
     {}
+    
+    void setImageFileName(String const &imageFileName, int x_off, int y_off) {
+        mImageFileName = imageFileName;
+        m_x_off = x_off;
+        m_y_off = y_off;
+    }
 
     String const &title() const {return m_title;}
     String const &subtitle() const {return m_subtitle;}
@@ -130,7 +139,13 @@ public:
     double longitude() const {return m_longitude;}
     String const &address() const {return m_address;}
     String const &url() const {return m_url;}
-
+    String const &imageFileName() const {return mImageFileName;}
+    int x_offset() const {return m_x_off;}
+    int y_offset() const {return m_y_off;}
+    void* data() const {return m_data;}
+    void setData(void* p) {
+        m_data = p;
+    }
 private:
     static String make_address(double latitude, double longitude);
 
@@ -142,6 +157,10 @@ private:
     double m_longitude;
     String m_address;
     String m_url;
+    String mImageFileName;
+    int m_x_off;
+    int m_y_off;
+    void* m_data;
 };
 
 class IMapView
@@ -174,7 +193,7 @@ public:
     virtual double latitude() const = 0;
     virtual double longitude() const = 0;
 
-    virtual void addAnnotation(Annotation const &ann) = 0;
+    virtual void addAnnotation(Annotation &ann) = 0;
 
     // Return true if this MapView need to be closed
     virtual bool handleClick(int x, int y) = 0;
@@ -189,6 +208,11 @@ public:
 
     virtual void set_file_caching_enable(int enable) = 0;
 
+    
+    // return count of tiles to download
+    virtual int preloadMapTiles(double top_latitude, double left_longitude, double bottom_latitude, double right_longitude, int min_zoom, int max_zoom) = 0;
+    virtual int getCountOfTilesToDownload() = 0;
+    
 };
 
 class GeoCodingCallback
@@ -246,6 +270,14 @@ rho::common::map::IMapView *rho_map_create(rho_param *p, rho::common::map::IDraw
 void rho_map_destroy(rho::common::map::IMapView *mapview);
 // check param for valid - now check only :provider (must be supported)
 bool rho_map_check_param(rho_param *p);
+
+
+
+
+
+
+extern "C" int mapview_preload_map_tiles(const char* engine, const char* map_type, double top_latitude, double left_longitude, double bottom_latitude, double right_longitude, int min_zoom, int max_zoom, const char* callback);
+
 
 #endif
 

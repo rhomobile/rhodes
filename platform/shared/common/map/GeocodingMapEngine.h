@@ -24,16 +24,19 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
-#ifndef _RHOESRIMAPENGINE_H_
-#define _RHOESRIMAPENGINE_H_
+#ifndef _RHOGEOCODINGMAPENGINE_H_
+#define _RHOGEOCODINGMAPENGINE_H_
 
 #include "common/map/MapEngine.h"
-#include "common/map/BaseMapEngine.h"
-#include "common/RhoThread.h"
 #include "common/ThreadQueue.h"
 #include "net/INetRequest.h"
 
+#include "common/RhoThread.h"
+
 #include <list>
+
+
+
 
 namespace rho
 {
@@ -41,24 +44,40 @@ namespace common
 {
 namespace map
 {
-    class ESRIMapView : public BaseMapView
+
+class GoogleGeoCoding : public IGeoCoding, public CThreadQueue
+{
+    DEFINE_LOGCLASS;
+private:
+    struct Command : public IQueueCommand
     {
-    public:
-        ESRIMapView(IDrawingDevice *device);
-        
-        virtual int getMapTile(uint64 p_zoom, uint64 p_row, uint64 p_column, void** p_data, size_t* p_size);
-        
-        virtual void setGoogleLogoImage(IDrawingImage *GoogleLogoImg) {}
-        
+        String address;
+        std::auto_ptr<GeoCodingCallback> callback;
+
+        Command(String const &a, GeoCodingCallback *cb)
+            :address(a), callback(cb)
+        {}
+
+        bool equals(IQueueCommand const &) {return false;}
+        String toString();
     };
+
+public:
+    GoogleGeoCoding();
+    ~GoogleGeoCoding();
+
+    //void stop();
+    void resolve(String const &address, GeoCodingCallback *cb);
+
+private:
+    bool fetchData(String const &url, void **data, size_t *datasize);
+
+    void processCommand(IQueueCommand* cmd);
+    net::CNetRequestWrapper getNet(){ return getNetRequest(&m_NetRequest); }
+private:
+    NetRequest              m_NetRequest;
+};
     
-    
-    class ESRIMapEngine : public IMapEngine
-    {
-    public:
-        IMapView *createMapView(IDrawingDevice *device);
-        void destroyMapView(IMapView *view);
-    };
 
 } // namespace map
 } // namespace common

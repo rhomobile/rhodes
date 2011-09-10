@@ -35,6 +35,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
@@ -105,7 +107,12 @@ public class GoogleMapView extends MapActivity {
 	}
 	
 	public void selectAnnotation(Annotation ann) {
-		mCalloutOverlay.selectAnnotation(ann);
+		final Annotation fann = ann;
+		PerformOnUiThread.exec(new Runnable() {
+			public void run() {
+				mCalloutOverlay.selectAnnotation(fann);
+			}
+		}, false);
 	}
 	
 	@Override
@@ -190,9 +197,11 @@ public class GoogleMapView extends MapActivity {
 		view.setClickable(true);
 		layout.addView(view);
 		
+		Bitmap pin = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.marker);
+		
 		Drawable marker = getResources().getDrawable(AndroidR.drawable.marker);
 		marker.setBounds(0, 0, marker.getIntrinsicWidth(), marker.getIntrinsicHeight());
-		annOverlay = new AnnotationsOverlay(this, marker);
+		annOverlay = new AnnotationsOverlay(this, marker, pin.getDensity());
 		
 		mCalloutOverlay = new CalloutOverlay(this, marker);
 		

@@ -25,8 +25,11 @@
 *------------------------------------------------------------------------*/
 
 #include "common/map/MapEngine.h"
+#include "common/map/GeocodingMapEngine.h"
 #include "common/map/GoogleMapEngine.h"
 #include "common/map/ESRIMapEngine.h"
+#include "common/map/OSMMapEngine.h"
+#include "common/RhodesApp.h"
 
 #include <algorithm>
 
@@ -52,6 +55,7 @@ MapProvider::MapProvider()
     //registerMapEngine("google", new GoogleMapEngine());
     registerMapEngine("esri", new ESRIMapEngine());
     registerMapEngine("rhogoogle", new GoogleMapEngine());
+    registerMapEngine("osm", new OSMMapEngine());
 }
 
 void MapProvider::registerMapEngine(String const &id, IMapEngine *engine)
@@ -110,6 +114,27 @@ String Annotation::make_address(double latitude, double longitude)
     return buf;
 }
 
+    
+    
+    class EmptyDrawingDevice : public IDrawingDevice
+    {
+    public:
+        virtual ~EmptyDrawingDevice(){}
+        
+        IDrawingImage* createImage(String const &path, bool useAlpha) {return NULL;}
+        IDrawingImage* createImage(void const *p, size_t s, bool useAlpha) {return NULL;}
+        IDrawingImage* createImageEx(void const *p, size_t s, int x, int y, int w, int h, bool useAlpha) {return NULL;}
+        IDrawingImage* cloneImage(IDrawingImage *image) {return NULL;}
+        void destroyImage(IDrawingImage* image){}
+        
+        IDrawingImage* createCalloutImage(String const &title, String const &subtitle, String const& url, int* x_offset, int* y_offset) {return NULL;}
+        
+        void requestRedraw() {}
+    };
+    
+    
+    
+    
 } // namespace map
 } // namespace common
 } // namespace rho
@@ -177,7 +202,7 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
     }
     std::transform(providerId.begin(), providerId.end(), providerId.begin(), &::tolower);
 
-    char *map_type = NULL;
+    char *map_type = "roadmap";
     bool use_center_radius = false;
     double latitude = 0;
     double longitude = 0;
@@ -205,6 +230,9 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
                 if (value->type != RHO_PARAM_STRING)
                     rho_ruby_raise_argerror("Wrong 'map_type' value (expect String)");
                 map_type = value->v.string;
+                if (strcasecmp(map_type,"standard") == 0) {
+                    map_type = "roadmap";
+                }
             }
             else if (strcasecmp(name, "region") == 0)
             {
@@ -294,6 +322,9 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
             char const *title = "";
             char const *subtitle = "";
             char const *url = "";
+            char const *image = NULL;
+            int x_off = 0;
+            int y_off = 0;
 
             for (int j = 0, limm = ann->v.hash->size; j < limm; ++j)
             {
@@ -324,12 +355,30 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
                     subtitle = v;
                 else if (strcasecmp(name, "url") == 0)
                     url = v;
-            }
+                else if (strcasecmp(name, "image") == 0)
+                    image = v;
+                else if (strcasecmp(name, "image_x_offset") == 0) {
+                    x_off = (int)strtod(v, NULL);
+                }
+                else if (strcasecmp(name, "image_y_offset") == 0) {
+                    y_off = (int)strtod(v, NULL);
+                }
+             }
 
-            if (latitude_set && longitude_set)
-                ann_list.push_back(ann_t(title, subtitle, latitude, longitude, url));
-            else
-                ann_list.push_back(ann_t(title, subtitle, address, url));
+            if (latitude_set && longitude_set) {
+                ann_t ann(title, subtitle, latitude, longitude, url);
+                if (image != NULL) {
+                    ann.setImageFileName(image, x_off, y_off);
+                }
+                ann_list.push_back(ann);
+            }
+            else {
+                ann_t ann(title, subtitle, address, url);
+                if (image != NULL) {
+                    ann.setImageFileName(image, x_off, y_off);
+                }
+                ann_list.push_back(ann);
+            }
         }
     }
 
@@ -357,7 +406,7 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
     mapview->setScrollEnabled(scroll_enabled);
 
     for (ann_list_t::const_iterator it = ann_list.begin(), lim = ann_list.end(); it != lim; ++it)
-        mapview->addAnnotation(*it);
+        mapview->addAnnotation(*((ann_t*)it));
 
     return mapview;
 }
@@ -366,3 +415,91 @@ void rho_map_destroy(rho::common::map::IMapView *mapview)
 {
     RHOMAPPROVIDER().destroyMapView(mapview);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+static void callPreloadCallback(const char* callback, const char* status, int progress) {
+    char body[2048];
+
+    snprintf(body, sizeof(body), "&rho_callback=1&status=%s&progress=%d", status, progress);
+    rho_net_request_with_data(RHODESAPP().canonicalizeRhoUrl(callback).c_str(), body);    
+}
+
+
+
+class CheckProgress : public rho::common::CRhoThread
+{
+    
+public:
+    CheckProgress(rhomap::IMapView *view, rho::String callback, int initial_count) {
+        m_mapview = view;
+        m_callback = callback;
+        m_initial_count = initial_count;
+    }
+    virtual ~CheckProgress() {
+        RHOMAPPROVIDER().destroyMapView(m_mapview);
+    }
+    
+    
+    virtual void run()
+    {
+        sleep(100);
+        int count = m_mapview->getCountOfTilesToDownload();
+        while (count > 0) {
+            callPreloadCallback(m_callback.c_str(), "PROGRESS", ((m_initial_count - count)*100)/m_initial_count);
+            sleep(100);
+            count = m_mapview->getCountOfTilesToDownload();
+        }
+        callPreloadCallback(m_callback.c_str(), "DONE", 100);
+        stop(500);
+    }
+    
+private:
+    rhomap::IMapView *m_mapview;
+    rho::String m_callback;
+    int m_initial_count;
+};
+
+
+
+
+int mapview_preload_map_tiles(const char* engine, const char* map_type, double top_latitude, double left_longitude, double bottom_latitude, double right_longitude, int min_zoom, int max_zoom, const char* callback) {
+    
+    rhomap::EmptyDrawingDevice empty_device;
+    
+    
+    std::string providerId = engine;
+    std::transform(providerId.begin(), providerId.end(), providerId.begin(), &::tolower);    
+    
+    rhomap::IMapView *mapview = RHOMAPPROVIDER().createMapView(providerId, &empty_device);
+    
+    if (mapview == NULL) {
+        RAWLOG_ERROR1("Can not create MapView for provider=%s", engine);
+        return 0;
+    }
+
+    mapview->setMapType(map_type);
+    mapview->set_file_caching_enable(true);
+    
+    int count = mapview->preloadMapTiles(top_latitude, left_longitude, bottom_latitude, right_longitude, min_zoom, max_zoom);
+     
+    CheckProgress* cp = new CheckProgress(mapview, callback, count);    
+    
+    cp->start(rho::common::IRhoRunnable::epNormal);
+    
+    return count; 
+}
+

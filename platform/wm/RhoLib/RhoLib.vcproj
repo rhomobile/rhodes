@@ -1841,6 +1841,30 @@
 				Name="map"
 				>
 				<File
+					RelativePath="..\..\shared\common\map\OSMMapEngine.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\shared\common\map\OSMMapEngine.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\shared\common\map\GeocodingMapEngine.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\shared\common\map\GeocodingMapEngine.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\shared\common\map\BaseMapEngine.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\shared\common\map\BaseMapEngine.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\shared\common\map\ESRIMapEngine.cpp"
 					>
 				</File>
