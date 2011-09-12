@@ -405,8 +405,8 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
     mapview->setZoomEnabled(zoom_enabled);
     mapview->setScrollEnabled(scroll_enabled);
 
-    for (ann_list_t::const_iterator it = ann_list.begin(), lim = ann_list.end(); it != lim; ++it)
-        mapview->addAnnotation(*((ann_t*)it));
+    for (ann_list_t::iterator it = ann_list.begin(), lim = ann_list.end(); it != lim; ++it)
+        mapview->addAnnotation(*it);
 
     return mapview;
 }

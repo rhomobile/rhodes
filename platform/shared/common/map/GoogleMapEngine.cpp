@@ -66,7 +66,7 @@ namespace map
         int zoom = (int)p_zoom;
         
         
-        int pow2 = rho_math_pow2(zoom);
+        uint64 pow2 = rho_math_pow2(zoom);
         
         double current_width_in_pixels = pow2 * (TILE_SIZE);
         double current_height_in_pixels = pow2 * (TILE_SIZE);
