@@ -272,12 +272,10 @@ void rho_map_destroy(rho::common::map::IMapView *mapview);
 bool rho_map_check_param(rho_param *p);
 
 
-
-
-
-
-extern "C" int mapview_preload_map_tiles(const char* engine, const char* map_type, double top_latitude, double left_longitude, double bottom_latitude, double right_longitude, int min_zoom, int max_zoom, const char* callback);
-
+#ifdef __cplusplus
+extern "C"
+#endif //__cplusplus
+int mapview_preload_map_tiles(const char* engine, const char* map_type, double top_latitude, double left_longitude, double bottom_latitude, double right_longitude, int min_zoom, int max_zoom, const char* callback);
 
 #endif
 
