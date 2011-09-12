@@ -34,7 +34,7 @@ public class GeoLocation {
 
 	private static final String TAG = "GeoLocation";
 	private static final String inactivityTimeoutName = "geo_location_inactivity_timeout"; 
-	private static final String updatePeriodName = "geo_location_inactivity_timeout"; 
+	private static final String updatePeriodName = "gps_ping_timeout_sec"; 
 	private static volatile GeoLocationImpl locImpl = null;
 	private static volatile int inactivityTimerId = 0;
 	private static long updatePeriod = -1;
