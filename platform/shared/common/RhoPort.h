@@ -128,7 +128,7 @@ typedef unsigned __int64 uint64;
 #  endif // OS_ANDROID
 
 #if defined(OS_SYMBIAN)
-#    include <sys/select.h>
+#  include <sys/select.h>
 #endif
 
 #  include <sys/types.h>
@@ -156,7 +156,7 @@ typedef unsigned __int64 uint64;
 typedef long long int64;
 typedef unsigned long long uint64;
 
-#if defined(OS_SYMBIAN) || defined(OS_LINUX)
+#if defined(OS_SYMBIAN) || defined(OS_LINUX) || defined(OS_MACOSX)
 #define M_PI 3.14159265358979323846
 #endif
 

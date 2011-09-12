@@ -5,10 +5,10 @@ TEMPLATE = lib
 
 CONFIG += staticlib warn_on
 
-INCLUDEPATH += ../..\
+INCLUDEPATH += ../../ruby/include\
 ../../ruby\
-../../ruby/include\
-../../ruby/generated
+../../ruby/generated\
+../..
 
 macx {
   DESTDIR = ../../../osx/bin/rubylib
@@ -84,6 +84,7 @@ HEADERS += ../../ruby/ext/rho/rhoruby.h\
 ../../ruby/eval_intern.h\
 ../../ruby/gc.h\
 ../../ruby/id.h\
+../../ruby/node.h\
 ../../ruby/regenc.h\
 ../../ruby/regint.h\
 ../../ruby/regparse.h\
@@ -114,7 +115,6 @@ SOURCES += ../../ruby/ext/datetimepicker/datetimepicker_wrap.c\
 ../../ruby/ext/webview/webview_wrap.c\
 ../../ruby/array.c\
 ../../ruby/bignum.c\
-../../ruby/blockinlining.c\
 ../../ruby/class.c\
 ../../ruby/compar.c\
 ../../ruby/compile.c\
@@ -123,6 +123,7 @@ SOURCES += ../../ruby/ext/datetimepicker/datetimepicker_wrap.c\
 ../../ruby/debug.c\
 ../../ruby/dir.c\
 ../../ruby/dln.c\
+../../ruby/dln_find.c\
 ../../ruby/dmyencoding.c\
 ../../ruby/dmyext.c\
 ../../ruby/enum.c\
@@ -138,6 +139,7 @@ SOURCES += ../../ruby/ext/datetimepicker/datetimepicker_wrap.c\
 ../../ruby/load.c\
 ../../ruby/marshal.c\
 ../../ruby/math.c\
+../../ruby/node.c\
 ../../ruby/numeric.c\
 ../../ruby/object.c\
 ../../ruby/pack.c\
@@ -170,6 +172,7 @@ SOURCES += ../../ruby/ext/datetimepicker/datetimepicker_wrap.c\
 ../../ruby/vm.c\
 ../../ruby/vm_dump.c\
 ../../ruby/enc/ascii.c\
+../../ruby/enc/iso_8859_9.c\
 ../../ruby/enc/unicode.c\
 ../../ruby/enc/us_ascii.c\
 ../../ruby/enc/utf_8.c\
