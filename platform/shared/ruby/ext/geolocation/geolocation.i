@@ -31,7 +31,7 @@ extern void rho_geoimpl_turngpsoff();
 
 %predicate known_position();
 %typemap(default) int timeout_sec {
- $1 = 0;
+ $1 = -1;
 }
 %typemap(default) char* params {
  $1 = 0;

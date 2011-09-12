@@ -2078,7 +2078,7 @@ _wrap_set_view_notification(int argc, VALUE *argv, VALUE self) {
     arg2 = 0;
   }
   {
-    arg3 = 0;
+    arg3 = -1;
   }
   if ((argc < 1) || (argc > 3)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
@@ -2131,7 +2131,7 @@ _wrap_set_notification(int argc, VALUE *argv, VALUE self) {
     arg2 = 0;
   }
   {
-    arg3 = 0;
+    arg3 = -1;
   }
   if ((argc < 1) || (argc > 3)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;

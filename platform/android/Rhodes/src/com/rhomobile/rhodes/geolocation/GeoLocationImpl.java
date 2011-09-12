@@ -42,10 +42,9 @@ public class GeoLocationImpl {
 	private static final long TIMEOUT_STOP = -1;
 	
 	private LocationManager locationManager = null;
-	private volatile int available = 0;
 	private volatile Location lastLocation;
 	private long invalidateLocationPeriod;
-	private volatile long pingTimeout = Long.MAX_VALUE; // 1 minute
+	private volatile long pingTimeout = Long.MAX_VALUE;
 	
 	private List<RhoLocationListener> mListeners = new LinkedList<RhoLocationListener>();
 	
@@ -54,6 +53,9 @@ public class GeoLocationImpl {
 		private LocationManager manager;
 		private LocationProvider provider;
 		private long updatePeriod = 0;
+		private boolean available = false;
+		
+		boolean isAvailable() { return available; }
 		
 		RhoLocationListener(String providerName, LocationManager manager) {
 			this.manager = manager;
@@ -72,12 +74,13 @@ public class GeoLocationImpl {
 			if(this.provider != null) {
 				this.updatePeriod = updatePeriod;
 				this.manager.requestLocationUpdates(providerName, this.updatePeriod, 0, this, Looper.getMainLooper());
-				return this.manager.isProviderEnabled(this.providerName);
+				available = this.manager.isProviderEnabled(this.providerName);
 			}
-			return false;
+			return available;
 		}
 		
 		synchronized boolean unregister() {
+			available = false;
 			if (this.provider != null && this.manager != null) {
 				Logger.T(TAG, "Unregistering location listener for '" + this.providerName + "'.");
 				this.manager.removeUpdates(this);
@@ -117,13 +120,15 @@ public class GeoLocationImpl {
 		
 		@Override
 		public void onProviderEnabled(String provider) {
-			Logger.T(TAG, "onProviderEnabled: provider=" + provider);
+			Logger.I(TAG, "onProviderEnabled: provider=" + provider);
+			available = true; 
 			checkProviderEnabled(this);
 		}
 		
 		@Override
 		public void onProviderDisabled(String provider) {
-			Logger.T(TAG, "onProviderDisabled: provider=" + provider);
+			Logger.I(TAG, "onProviderDisabled: provider=" + provider);
+			available = false;
 			checkProviderDisabled(this);
 		}
 		
@@ -149,14 +154,16 @@ public class GeoLocationImpl {
 					Logger.T(TAG, "\"watchdog\" thread interrupted");
 					continue;
 				}
+				Logger.I(TAG, "Watchdog timed out.");
 				if (isKnownPosition()) {
 					if (System.currentTimeMillis() - getTime() > invalidateLocationPeriod) {
-						Logger.T(TAG, "Position became very old, invalidate and inform about this");
+						Logger.T(TAG, "Position became very old. Invalidate and call back to inform.");
 						clearLocation();
+					} else {
+						Logger.I(TAG, "Lost signal but position still up to date. Call back with error to inform.");
 					}
-					
 				} else {
-					Logger.T(TAG, "Position is still unknown, inform about this");
+					Logger.T(TAG, "Position is still unknown. Call back to inform.");
 				}
 				
 				PerformOnUiThread.exec(new Runnable() {
@@ -205,11 +212,9 @@ public class GeoLocationImpl {
 	private void registerListeners() {
 		Iterator<RhoLocationListener> it;
 		synchronized (mListeners) {
-			available = 0;
 			it = mListeners.iterator();
 			while (it.hasNext()) {
-				available++;
-				it.next().register(invalidateLocationPeriod);
+				it.next().register(pingTimeout);
 			}
 		}
 		// Request last location after every listener has registered
@@ -227,14 +232,12 @@ public class GeoLocationImpl {
 				RhoLocationListener listener = it.next(); 
 				if ((skipProvider != null) && listener.getProviderName().equals(skipProvider))
 					continue;
-				if (listener.unregister())
-					available--;
+				listener.unregister();
 			}
 		}
 	}
 	
 	private void checkProviderEnabled(RhoLocationListener listener) {
-		available++;
 	}
 	
 	private void checkProviderDisabled(RhoLocationListener listener) {
@@ -244,8 +247,7 @@ public class GeoLocationImpl {
 			Logger.T(TAG, "GPS provider has disabled, register others back.");
 			registerListeners();
 		} else {
-			available--;
-			Logger.T(TAG, "Provider is disabled: " + listener.getProviderName() + ", available=" + available);
+			Logger.T(TAG, "Provider is disabled: " + listener.getProviderName());
 		}
 	}
 	
@@ -354,6 +356,15 @@ public class GeoLocationImpl {
 	}
 
 	synchronized boolean isAvailable() {
+		Iterator<RhoLocationListener> it;
+		int available = 0;
+		synchronized (mListeners) {
+			it = mListeners.iterator();
+			while (it.hasNext()) {
+				if (it.next().isAvailable())
+					available++;
+			}
+		}
 		return available > 0;
 	}
 	
@@ -389,8 +400,8 @@ public class GeoLocationImpl {
 		lastLocation = null;
 	}
 
-	synchronized void setTimeout(int nsec) {
-		pingTimeout = nsec*1000;
+	synchronized void setTimeout(long msec) {
+		pingTimeout = msec;
 		thWatchdog.interrupt();
 		registerListeners();// do reregister for new timeout
 		Logger.T(TAG, "Set new ping timeout: " + pingTimeout + "ms");
