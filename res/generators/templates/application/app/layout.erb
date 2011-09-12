@@ -63,6 +63,7 @@
         <link href="/public/css/blackberry.css" type="text/css" rel="stylesheet"/>
     <%% elsif System::get_property('platform') == 'WP7' %>
 	    <link href="/public/css/windows_mobile.css" type="text/css" rel="stylesheet"/>
+		<script src="/public/js/wp7.js" type="text/javascript"></script>
     <%% elsif System::get_property('platform') == 'WINDOWS' %>
 	    <link href="/public/css/windows_mobile.css" type="text/css" rel="stylesheet"/>
     <%% elsif System::get_property('webview_framework') =~ /^WEBKIT/ %>
@@ -71,8 +72,10 @@
 </head>
 
 <body
-<%% if System::get_property('platform') == 'WP7' || is_bb6 %>
+<%% if is_bb6 %>
 	data-do-fix-forms="true"
+<%% elsif System::get_property('platform') == 'WP7' %>
+	onload="wp7_change_forms_action_to_get()"
 <%% end %>
 	>
     <%%= @content %>
