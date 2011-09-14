@@ -547,70 +547,25 @@ void CSyncEngine::processServerSources(String strSources)
 
 boolean CSyncEngine::resetClientIDByNet(const String& strClientID)//throws Exception
 {
-    //TODO: send client register info in client reset 
-    //String strBody = "";
-    //if ( CClientRegister::getInstance() != null )
-    //    strBody += CClientRegister::getInstance()->getRegisterBody();
-
     NetResponse resp = getNetClientID().pullData(getProtocol().getClientResetUrl(strClientID), this);
-
-
-/*    processServerSources("{\"server_sources\":[{\"name\":\"Product\",\"partition\":\"application\",\"source_id\":\"2\",\"sync_priority\":\"0\","
-        "\"schema_version\":\"7.0\",\"schema\":{"
-        "\"columns\":[\'brand\',\'created_at\',\'name\',\'price\',\'quantity\',\'sku\',\'updated_at\']"*/
-/*        "\"sql\":\"CREATE TABLE Product ( "
-        "brand varchar default NULL,"
-        "created_at varchar default NULL,"
-        "name varchar default NULL,"
-        "price varchar default NULL,"
-        "quantity int default NULL,"
-        "sku varchar default NULL,"
-        "updated_at varchar default NULL,"
-        "test varchar default NULL,"
-        "object varchar(255) PRIMARY KEY )\"*/
-        //"}}]}"); 
-
     if ( !resp.isOK() )
     {
         m_nErrCode = RhoAppAdapter.getErrorFromResponse(resp);
         m_strError = resp.getCharData();
-    }
-    /*else
-    {
-        processServerSources(resp.getCharData());
-    } */
+    }else
+        RHOCONF().setString("reset_models", "", true);
 
     return resp.isOK();
 }
 
 String CSyncEngine::requestClientIDByNet()
 {
-    //TODO: send client register info in client create 
-    //String strBody = "";
-    //if ( CClientRegister::getInstance() != null )
-    //    strBody += CClientRegister::getInstance()->getRegisterBody();
-
     NetResponse resp = getNetClientID().pullData(getProtocol().getClientCreateUrl(), this);
     if ( resp.isOK() && resp.getCharData() != null )
     {
         const char* szData = resp.getCharData();
-        /*
-        "{\"client\":{\"client_id\":\"vasy\"},\"server_sources\":[{\"name\":\"Product\",\"partition\":\"application\",\"source_id\":\"2\",\"sync_priority\":\"0\","
-        "\"schema\":{\"version\":\"1.0\","
-        "\"sql\":\"CREATE TABLE Product ( "
-        "brand varchar default NULL,"
-        "created_at varchar default NULL,"
-        "name varchar default NULL,"
-        "price varchar default NULL,"
-        "quantity int default NULL,"
-        "sku varchar default NULL,"
-        "updated_at varchar default NULL,"
-        "object varchar(255) PRIMARY KEY )\"}}]}";*/
 
         CJSONEntry oJsonEntry(szData);
-
-        //if (oJsonEntry.hasName("sources") )
-        //    processServerSources(szData);
 
         CJSONEntry oJsonObject = oJsonEntry.getEntry("client");
         if ( !oJsonObject.isEmpty() )

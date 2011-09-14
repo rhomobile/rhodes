@@ -51,7 +51,12 @@ struct CSyncProtocol_3 : public ISyncProtocol
 
     String getClientResetUrl(const String& strClientID)
     {
-        return RHOCONF().getPath("syncserver") + "clientreset?client_id=" + strClientID;
+        String strUrl = RHOCONF().getPath("syncserver") + "clientreset?client_id=" + strClientID;
+        String strSources = RHOCONF().getString("reset_models");
+        if ( strSources.length() > 0 )
+            strUrl += strSources;
+
+        return strUrl;
     }
 
     String getClientChangesUrl()
