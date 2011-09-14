@@ -40,6 +40,9 @@
 #include "RhoNativeViewManagerWM.h"
 #include "SyncStatusDlg.h"
 #include "rho/rubyext/NativeToolbar.h"
+#ifdef INTEGRATED_WEBKIT
+#include "webkit/PBCore/Eng.h"
+#endif
 
 #if defined(OS_WINDOWS)
 #include "menubar.h"
@@ -98,6 +101,7 @@ public:
 							String nativeViewType);
 	void closeNativeView();
 
+    static HINSTANCE rhoApplicationHINSTANCE;
 
 #if defined(OS_WINDOWS)
     DECLARE_WND_CLASS(TEXT("Rhodes.MainWindow"))
@@ -243,10 +247,15 @@ private:
     // "AtlAxWin" window. (AtlAxWin is a window class that ATL uses to support 
     // containment of controls in windows.)
     CAxWindow m_browser;
-	bool mIsBrowserViewHided;
+    bool mIsBrowserViewHided;
 
     // cached copy of hosted control's IWebBrowser2 interface pointer
     CComPtr<IWebBrowser2> m_spIWebBrowser2;
+
+#ifdef INTEGRATED_WEBKIT
+    bool m_useWebKit;
+    CWebKitEngine* m_wkengine;
+#endif
 
 #if defined(_WIN32_WCE)
     // main menu bar for application

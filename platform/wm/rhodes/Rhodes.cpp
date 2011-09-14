@@ -442,7 +442,7 @@ public :
             m_strRootPath = rootpath;
             m_strRootPath += "rho\\";
 
-            for( int i = 0; i < m_strRootPath.length(); i++ )
+            for(unsigned int i = 0; i < m_strRootPath.length(); i++ )
                 if ( m_strRootPath.at(i) == '\\' )
                     m_strRootPath[i] = '/';
         }
@@ -588,7 +588,6 @@ private:
 };
 
 CRhodesModule _AtlModule;
-HINSTANCE rhoApplicationHINSTANCE = 0;
 //
 bool g_restartOnExit = false;
 //
@@ -597,7 +596,7 @@ extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/
 {
 	INITCOMMONCONTROLSEX ctrl;
 
-	rhoApplicationHINSTANCE = hInstance;
+    CMainWindow::rhoApplicationHINSTANCE = hInstance;
 	
 	//Required to use datetime picker controls.
 	ctrl.dwSize = sizeof(ctrl);
