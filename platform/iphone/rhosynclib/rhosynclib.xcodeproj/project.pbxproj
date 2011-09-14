@@ -308,7 +308,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				HEADER_SEARCH_PATHS = ../../shared;
 				INSTALL_PATH = /usr/local/lib;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-fvisibility=hidden",
@@ -327,7 +327,7 @@
 				GCC_MODEL_TUNING = G5;
 				HEADER_SEARCH_PATHS = ../../shared;
 				INSTALL_PATH = /usr/local/lib;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-fvisibility=hidden",
@@ -392,7 +392,7 @@
 				GCC_MODEL_TUNING = G5;
 				HEADER_SEARCH_PATHS = ../../shared;
 				INSTALL_PATH = /usr/local/lib;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-fvisibility=hidden",
