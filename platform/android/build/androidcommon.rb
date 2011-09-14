@@ -341,6 +341,8 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "-Wl,-z,defs"
   args << "-fPIC"
   args << "-Wl,-soname,#{File.basename(outname)}"
+  args << "--sysroot"
+  args << $ndksysroot
   args << "-o"
   args << outname
   args += objects
