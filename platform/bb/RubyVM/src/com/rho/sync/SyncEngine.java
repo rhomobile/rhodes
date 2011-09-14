@@ -689,28 +689,14 @@ public class SyncEngine implements NetRequest.IRhoSession
 	
 	boolean resetClientIDByNet(String strClientID)throws Exception
 	{
-        String strBody = "";
-        //TODO: send client register info in client reset 
-//        if ( ClientRegister.getInstance() != null )
-//            strBody += ClientRegister.getInstance().getRegisterBody();
-
 	    NetResponse resp = getNetClientID().pullData(getProtocol().getClientResetUrl(strClientID), this);
-/*	    
-	    processServerSources("{\"server_sources\":[{\"name\":\"Product\",\"partition\":\"application\",\"source_id\":\"2\",\"sync_priority\":\"0\","+
-	    	    "\"schema_version\":\"7.0\",\"schema\":{"+
-	    	    "\"columns\":[\'brand\',\'created_at\',\'name\',\'price\',\'quantity\',\'sku\',\'updated_at\']"+
-	    	    "}}]}"); 
-*/	    				
 	    
 	    if ( !resp.isOK() )
 	    {
 	    	m_nErrCode = RhoAppAdapter.getErrorFromResponse(resp);
 	    	m_strError = resp.getCharData();
-	    }
-	    /*else
-    	{
-    		processServerSources(resp.getCharData());
-    	}*/
+	    }else
+	        RHOCONF().setString("reset_models", "", true);
 	    
 	    return resp.isOK();
 	}
