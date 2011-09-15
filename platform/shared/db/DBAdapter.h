@@ -37,11 +37,12 @@ class CRubyMutex
 {
     int m_nLockCount;
     unsigned long m_valThread, m_valMutex;
-
+    boolean m_bIgnore;
 public:
     CRubyMutex(boolean bIgnore);
     ~CRubyMutex();
 
+    void create();
     boolean isMainRubyThread();
     void Lock();
     void Unlock();
