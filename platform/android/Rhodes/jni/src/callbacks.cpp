@@ -210,8 +210,8 @@ RHO_GLOBAL void rho_sys_run_app(const char *appname, VALUE params)
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "runApplication", "(Ljava/lang/String;Ljava/lang/Object;)V");
     if (!mid) return;
-    jobject jParams = rho_cast<jobject>(env, params);
-    env->CallStaticVoidMethod(cls, mid, rho_cast<jhstring>(appname).get(), jParams);
+    jhobject jhParams = rho_cast<jobject>(env, params);
+    env->CallStaticVoidMethod(cls, mid, rho_cast<jhstring>(env, appname).get(), jhParams.get());
 }
 
 RHO_GLOBAL void rho_sys_bring_to_front()
