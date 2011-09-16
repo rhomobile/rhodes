@@ -137,6 +137,17 @@ void CMainWindow::Navigate(BSTR URL) {
 	}
 }
 
+static LRESULT GetEngineConfig(int iInstID, LPCTSTR tcSetting, TCHAR* tcValue)
+{
+//	LPCTSTR tcValueRead;
+//	tcValueRead = g_pConfig->GetAppSettingPtr(iInstID, tcSetting, L"Value");
+//	if (tcValueRead != NULL)
+//		wcscpy(tcValue, tcValueRead);
+//	else
+		tcValue = NULL;
+	return S_OK;
+} 
+
 // **************************************************************************
 //
 // WM_xxx handlers
@@ -170,8 +181,10 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
         // TODO: complete implementation of WebKit engine initialization
         m_wkengine = new CWebKitEngine(m_hWnd, rhoApplicationHINSTANCE);
     	if(m_wkengine->Init(L"PBEngine_WK.dll"))
-        	//m_wkengine->InitEngine(0,&HTMLWndProc,&m_pApp[0]->m_OwnerProc,m_pApp[0]->m_bScrollBarsEnabled, &GetEngineConfig))
-            ;
+        	m_wkengine->InitEngine(0,
+              //&HTMLWndProc, &m_pApp[0]->m_OwnerProc, 
+              0, 0,
+              SETTING_ON, &GetEngineConfig );
     } else
 # endif
         m_browser.Create(m_hWnd,
