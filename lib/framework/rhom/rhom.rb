@@ -94,10 +94,73 @@ module Rhom
         ::Rho::RHO.init_schema_sources(hash_migrate) 
         
       end
+
+      def database_full_reset_ex(*args)
+        puts "database_full_reset_ex #{args}"
+        
+        if (args.count == 0 || !args[0][:models])
+        
+            database_full_reset( 
+              args.count > 0 && !args[0][:reset_client_info].nil?() ? args[0][:reset_client_info] : false, 
+              args.count > 0 && !args[0][:reset_local_models].nil?() ? args[0][:reset_local_models] : true )
+            
+            return    
+        end
+
+        raise ArgumentError, "reset_client_info should not be true if reset selected models" if args.count > 0 && args[0][:reset_client_info]
+        
+		#load all partitions
+		Rho::RHO.load_all_sources
+
+        old_interval = SyncEngine.set_pollinterval(0)
+        SyncEngine.stop_sync
+        
+        ::Rho::RHO.get_user_db().execute_sql("UPDATE client_info SET reset=1")
+        
+        Rho::RhoConfig.reset_models = ""
+        
+        args[0][:models].each do |src_name|
+            db = ::Rho::RHO.get_src_db(src_name)
+            src_partition = Rho::RhoConfig.sources[src_name]['partition']
+            is_schema_source = !Rho::RhoConfig.sources[src_name]['schema'].nil?
+            
+            next if !args[0][:reset_local_models] && src_partition == 'local'        
+
+            if (src_partition != 'local')
+                Rho::RhoConfig.reset_models += "&sources[][name]=#{src_name}"
+            end
+                
+            begin
+              db.start_transaction
+              db.execute_sql("UPDATE sources SET token=0 WHERE name = ?", src_name )
+                      
+              if is_schema_source
+                db.execute_sql("DELETE FROM #{src_name}")
+              else
+                db.execute_sql("DELETE FROM object_values WHERE source_id=?", Rho::RhoConfig.sources[src_name]['source_id'].to_i)
+              end
+              
+              db.commit
+ 
+            rescue Exception => e
+              puts 'database_full_reset_ex Exception: ' + e.inspect
+              db.rollback
+              
+              raise    
+            end    
+        
+        end
+
+        #hash_migrate = {}
+        #::Rho::RHO.init_schema_sources(hash_migrate) 
+        
+        SyncEngine.set_pollinterval(old_interval)
+                        
+      end
       
       def database_full_reset(reset_client_info=false, reset_local_models=true)
         puts "database_full_reset : reset_client_info=#{reset_client_info}, reset_local_models=#{reset_local_models}"
-
+        
 		#load all partitions
 		Rho::RHO.load_all_sources
 

@@ -31,3 +31,4 @@ logserver = 'http://rhologs.heroku.com'
 logname=phone_spec
 
 bb_sim_use_deviceside=1
+enable_gc_while_request=1

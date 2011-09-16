@@ -15,12 +15,14 @@
 
 @synthesize name;
 @synthesize sync_type;
+@synthesize model_type;
 
 - (id) init
 {
 	self = [super init];
 	sync_type = RST_INCREMENTAL;
-	
+	model_type = RMT_PROPERTY_BAG;
+    
 	return self;
 }
 

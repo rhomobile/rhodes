@@ -18,10 +18,54 @@ body {
     border-bottom: 1px solid gray;
 }
 
+div[data-role="header"] {
+    width: 100%;
+    height: 30px;
+    background: black;
+    border-bottom: 1px solid gray;
+}
+
+div[data-role="header"] h1 {
+    color: #d3d3d3;
+    font-size: 22px;
+    display: inline;
+    margin-left: 10px;
+}
+
 .toolbar a {
     text-decoration: none;
     color: white;
     font-weight: bold;
+}
+
+div[data-role="header"] a {
+    margin-top: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 1px 4px 1px 4px;
+    border: 1px solid;
+}
+
+div[data-role="header"] a {
+    color: white;
+    background-color: #797979;
+    border-color: #aaa;
+}
+
+div[data-role="header"] a:hover,
+div[data-role="header"] a:focus {
+    background-color: #999;
+    border-color: #ccc;
+}
+
+div[data-role="header"] a.ui-btn-right {
+    float: right;
+    margin-right: 4px;
+}
+
+div[data-role="header"] a.ui-btn-left {
+    float: left;
+    margin-left: 4px;
 }
 
 .toolbar .leftItem, .toolbar .rightItem {
@@ -70,7 +114,24 @@ body {
     width: 100%;
 }
 
+div[data-role="content"] ul[data-role="listview"] {
+    margin: 3px 0 0 0;
+    padding: 0;
+    width: 100%;
+}
+
 .content ul li {
+    list-style-type: none;
+    height: 30px;
+    width: 100%;
+    border-bottom: 1px solid black;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    clear: both;
+}
+
+div[data-role="content"] ul[data-role="listview"] li {
     list-style-type: none;
     height: 30px;
     width: 100%;
@@ -99,6 +160,24 @@ body {
     line-height: 30px;
 }
 
+div[data-role="content"] ul[data-role="listview"] li a {
+    margin: 0 5px 0 5px;
+    padding: 0;
+    font-size: 14px;
+    font-weight: bold;
+
+    text-decoration: none;
+    display: block;
+    color: black;
+    height: 30px;
+    line-height: 30px;
+}
+
+div[data-role="content"] ul[data-role="listview"] li:hover,
+div[data-role="content"] ul[data-role="listview"] li:focus {
+    background-color: #ccc;
+}
+
 .content ul li a span.disclosure_indicator {
     display: none;
     height: 0;
@@ -121,6 +200,41 @@ body {
     text-align: right;
 }
 
+ul[data-role="listview"] li div.itemLabel,
+ul[data-role="listview"] li div.itemValue {
+    display: block;
+}
+
+ul[data-role="listview"] li div.itemValue {
+    position: absolute;
+    right: 10px;
+    margin-top: -1.1em;
+    font-weight: bold;
+}
+
+
+div[data-role="fieldcontain"] {
+    margin-bottom: 6px;
+}
+
+div[data-role="fieldcontain"] input,
+div[data-role="fieldcontain"] select,
+div[data-role="fieldcontain"] textarea {
+    position: absolute;
+    right: 10px;
+    width: 60%;
+}
+
+div[data-role="content"] div.error-message {
+    color: red;
+    font-weight: bold;
+    margin: 6px;
+}
+
+
+div[data-role="content"] form {
+    padding: 6px;
+}
 /* Settings */
 
 .content ul.settings li {

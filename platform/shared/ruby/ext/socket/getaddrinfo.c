@@ -38,6 +38,10 @@
  * - PF_UNSPEC case would be handled in getipnodebyname() with the AI_ALL flag.
  */
 
+#ifndef EAI_NODATA
+#define	EAI_NODATA 7
+#endif
+
 #include "ruby/config.h"
 #ifdef RUBY_EXTCONF_H
 #include RUBY_EXTCONF_H

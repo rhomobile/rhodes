@@ -874,23 +874,20 @@ public class RhodesService extends Service {
 			if (params != null) {
 				Bundle startParams = new Bundle();
 				if (params instanceof String) {
-					startParams.putString(RhodesActivity.RHO_START_PARAMS_KEY, (String)params);
-				}
-				/*
-				else if (params instanceof List<?>) {
-					for (Object obj : (List<?>)params) {
-						startParams.putInt(obj.toString(), 1);
+					if (!((String)params).isEmpty()) {
+						String[] paramStrings = ((String)params).split("&");
+						for(int i = 0; i < paramStrings.length; ++i) {
+							String key = paramStrings[i];
+							String value = "";
+							int splitIdx = key.indexOf('=');
+							if (splitIdx != -1) {
+								value = key.substring(splitIdx + 1); 
+								key = key.substring(0, splitIdx);
+							}
+							startParams.putString(key, value);
+						}
 					}
 				}
-				else if (params instanceof Map<?,?>) {
-					Map<?,?> mp = (Map<?,?>)params;
-					for (Iterator<?> it = mp.keySet().iterator(); it.hasNext();) {
-						Object key = it.next();
-						Object value = mp.get(key);
-						startParams.putString(key.toString(), value == null ? null : value.toString());
-					}
-				}
-				*/
 				else
 					throw new IllegalArgumentException("Unknown type of incoming parameter");
 

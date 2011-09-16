@@ -25,15 +25,7 @@ win32 {
   OBJECTS_DIR = ../../../win32/bin/rholib/tmp
   DEFINES -= _UNICODE UNICODE
   DEFINES += _NDEBUG NDEBUG WIN32 _WINDOWS
-  HEADERS += ../../common/RhoMath.h\
-../../common/map/ESRIMapEngine.h\
-../../common/map/GoogleMapEngine.h\
-../../common/map/MapEngine.h\
-../../rubyext/WebView.h
-  SOURCES += ../../common/RhoMath.cpp\
-../../common/map/ESRIMapEngine.cpp\
-../../common/map/GoogleMapEngine.cpp\
-../../common/map/MapEngine.cpp
+  HEADERS += ../../rubyext/WebView.h
 }
 
 unix:!macx {
@@ -42,17 +34,9 @@ unix:!macx {
   INCLUDEPATH += ../../curl/include
   DEFINES += _GNU_SOURCE
   HEADERS += ../../common/PosixThreadImpl.h\
-../../common/RhoMath.h\
-../../common/map/ESRIMapEngine.h\
-../../common/map/GoogleMapEngine.h\
-../../common/map/MapEngine.h\
 ../../net/CURLNetRequest.h\
 ../../net/ssl.h
   SOURCES += ../../common/PosixThreadImpl.cpp\
-../../common/RhoMath.cpp\
-../../common/map/ESRIMapEngine.cpp\
-../../common/map/GoogleMapEngine.cpp\
-../../common/map/MapEngine.cpp\
 ../../net/CURLNetRequest.cpp\
 ../../net/ssl.cpp
 }
@@ -108,7 +92,11 @@ HEADERS += ../../common/RhoAppAdapter.h\
 ../../net/HttpServer.h\
 ../../common/SplashScreen.h\
 ../../common/rhoparams.h\
-../../common/app_build_configs.h
+../../common/app_build_configs.h\
+../../common/RhoMath.h\
+../../common/map/ESRIMapEngine.h\
+../../common/map/GoogleMapEngine.h\
+../../common/map/MapEngine.h
 
 SOURCES += ../../common/RhoTime.cpp\
 ../../rubyext/RhoAppAdapter.cpp\
@@ -135,4 +123,11 @@ SOURCES += ../../common/RhoTime.cpp\
 ../../rubyext/System.cpp\
 ../../net/HttpServer.cpp\
 ../../common/SplashScreen.cpp\
-../../common/app_build_configs.c
+../../common/app_build_configs.c\
+../../common/map/OSMMapEngine.cpp\
+../../common/map/GeocodingMapEngine.cpp\
+../../common/map/BaseMapEngine.cpp\
+../../common/RhoMath.cpp\
+../../common/map/ESRIMapEngine.cpp\
+../../common/map/GoogleMapEngine.cpp\
+../../common/map/MapEngine.cpp

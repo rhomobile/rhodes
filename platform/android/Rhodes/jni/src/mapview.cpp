@@ -416,6 +416,9 @@ IDrawingImage *AndroidMapDevice::createImage(String const &path, bool useAlpha)
     if (!mid) return NULL;
 
     jobject bitmap = env->CallStaticObjectMethod(cls, mid, rho_cast<jhstring>(path).get());
+    if (bitmap == NULL) {
+        return NULL;
+    }
     IDrawingImage *image = new AndroidImage(bitmap);
     
     RHO_MAP_TRACE1("createImage: return image=%p", image);

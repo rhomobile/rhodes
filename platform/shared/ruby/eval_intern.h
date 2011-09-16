@@ -217,7 +217,7 @@ void rb_trap_restore_mask(void);
 #define CharNext(p) ((p) + mblen(p, RUBY_MBCHAR_MAXSIZE))
 #endif
 
-#if defined DOSISH || defined __CYGWIN__
+#if defined __SYMBIAN32__ || defined DOSISH || defined __CYGWIN__
 static inline void
 translit_char(char *p, int from, int to)
 {

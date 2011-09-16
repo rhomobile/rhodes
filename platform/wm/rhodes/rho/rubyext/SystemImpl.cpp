@@ -542,7 +542,7 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 
         if ( SUCCEEDED(hr) )
         {
-            for( int i = 0; i < cbDeviceId; i++)
+            for(unsigned int i = 0; i < cbDeviceId; i++)
             {
                 toHexString( rgDeviceId[i], strDeviceID, 16);
             }

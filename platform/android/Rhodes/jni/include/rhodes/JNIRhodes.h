@@ -59,7 +59,7 @@ enum rho_java_class_t {
 
 extern const char *rho_java_class[];
 
-jclass getJNIClass(int n);
+jclass& getJNIClass(int n);
 jclass getJNIObjectClass(JNIEnv *env, jobject obj);
 jfieldID getJNIClassField(JNIEnv *env, jclass cls, const char *name, const char *signature);
 jfieldID getJNIClassStaticField(JNIEnv *env, jclass cls, const char *name, const char *signature);

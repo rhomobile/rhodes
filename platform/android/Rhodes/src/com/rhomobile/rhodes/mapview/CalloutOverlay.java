@@ -50,6 +50,7 @@ import com.google.android.maps.OverlayItem;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.WebView;
 import com.rhomobile.rhodes.file.RhoFileApi;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
 
 public class CalloutOverlay extends ItemizedOverlay<OverlayItem> {
@@ -115,8 +116,11 @@ public class CalloutOverlay extends ItemizedOverlay<OverlayItem> {
 		if (mSelectedAnnotation == null) {
 			return false;
 		}
-		WebView.navigate(mSelectedAnnotation.url, WebView.activeTab());
-		mainView.finish();
+		if ((mSelectedAnnotation.url != null) && (mSelectedAnnotation.url.length() > 0)) {
+			WebView.navigate(mSelectedAnnotation.url, WebView.activeTab());
+			mainView.finish();
+			return true;
+		}
 		return true;
 	}
 
@@ -124,8 +128,14 @@ public class CalloutOverlay extends ItemizedOverlay<OverlayItem> {
 	public boolean onTap(GeoPoint p, com.google.android.maps.MapView mapView) {
 		boolean result = super.onTap(p, mapView);
 		if (!result) {
-			mSelectedAnnotation = null;
-			populate();
+			if (mSelectedAnnotation != null) {
+				PerformOnUiThread.exec(new Runnable() {
+					public void run() {
+						mSelectedAnnotation = null;
+						populate();
+					}
+				}, false);
+			}
 		}
 		return result;
 	}

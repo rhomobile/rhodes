@@ -36,7 +36,7 @@ if !defined?(RHO_WP7)
     # Disable events specs on Android because emulator doesn't contain Calendar provider
     config[:files] << "spec/events_spec"  unless System.get_property('device_name') == 'Win32' or (System.get_property('platform') == 'ANDROID' and System.get_property('is_emulator'))
 
-    config[:files] << "spec/barcode_spec" unless System.get_property('device_name') == 'Win32'            
+    config[:files] << "spec/barcode_spec" unless System.get_property('platform') == 'WINDOWS'
     config[:files] << "spec/mapview_spec"  unless System.get_property('platform') == 'WINDOWS'    
 end
     config[:files] << "spec/nativebar_spec" if System.get_property('platform') != 'Blackberry'
