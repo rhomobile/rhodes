@@ -43,8 +43,8 @@ typedef struct _RHOM_MODEL
     int  sync_priority;
 
     const char* partition;
-    //TODO: scema model parameters
 
+    unsigned long associations; //hash string to string: rho_connectclient_hash_create
 }RHOM_MODEL;
 
 typedef struct _RHO_CONNECT_NOTIFY

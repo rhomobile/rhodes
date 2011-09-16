@@ -66,6 +66,7 @@ void rho_connectclient_initmodel(RHOM_MODEL* model)
     model->sync_type = RST_NONE;
     model->sync_priority = 1000;
     model->partition = "user";
+    model->associations = 0;
 }
 
 void rho_connectclient_processmodels(RHOM_MODEL* pModels, int nModels)
@@ -78,23 +79,46 @@ void rho_connectclient_processmodels(RHOM_MODEL* pModels, int nModels)
             nStartModelID = res.getIntByIdx(0)+2;
     }
 
+    //create associations string
+    Hashtable<String, String> hashSrcAssoc;
+    for ( int i = 0; i < nModels; i++ )
+    { 
+        RHOM_MODEL& model = pModels[i];
+        if ( !model.associations )
+            continue;
+
+        Hashtable<String, String>& assocHash = *((Hashtable<String, String>*)model.associations);
+        for ( Hashtable<String,String>::iterator itAssoc = assocHash.begin();  itAssoc != assocHash.end(); ++itAssoc )
+        {
+            String strAssoc = hashSrcAssoc[itAssoc->second];
+            if (strAssoc.length() > 0 )
+                strAssoc += ",";
+
+            strAssoc += model.name;
+            strAssoc += "," + itAssoc->first;
+            hashSrcAssoc[itAssoc->second] = strAssoc;
+        }
+    }
+
     for ( int i = 0; i < nModels; i++ )
     { 
         RHOM_MODEL& model = pModels[i];
         IDBResult res = oUserDB.executeSQL("SELECT sync_priority,source_id,partition, sync_type, schema_version, associations, blob_attribs FROM sources WHERE name=?",
             model.name);
 
+        String strAssoc = hashSrcAssoc[model.name]; 
+
         if ( !res.isEnd() )
         {
             oUserDB.executeSQL("UPDATE sources SET sync_priority=?, sync_type=?, partition=?, schema=?, schema_version=?, associations=?, blob_attribs=? WHERE name=?",
                 model.sync_priority, getSyncTypeName(model.sync_type), model.partition, 
-                (model.type == RMT_PROPERTY_FIXEDSCHEMA ? "schema_model" : ""), "", "", model.name );
+                (model.type == RMT_PROPERTY_FIXEDSCHEMA ? "schema_model" : ""), "", strAssoc.c_str(), "", model.name );
                 
         }else //new model
         {
             oUserDB.executeSQL("INSERT INTO sources (source_id,name,sync_priority, sync_type, partition, schema,schema_version, associations, blob_attribs) values (?,?,?,?,?,?,?,?,?) ",
                 nStartModelID, model.name, model.sync_priority, getSyncTypeName(model.sync_type), model.partition, 
-                (model.type == RMT_PROPERTY_FIXEDSCHEMA ? "schema_model" : ""), "", "", "" );
+                (model.type == RMT_PROPERTY_FIXEDSCHEMA ? "schema_model" : ""), "", strAssoc.c_str(), "" );
 
             nStartModelID++;
         }
