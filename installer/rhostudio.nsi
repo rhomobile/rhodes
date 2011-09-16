@@ -8,8 +8,8 @@
 ;======================================================
 ; Installer Information
  
-  Name "RhoStudio"
-  OutFile "rhostudio.exe"
+  Name "RhoInstaller"
+  OutFile "RhoInstaller.exe"
   InstallDir C:\RhoStudio
   BrandingText " "
 ;======================================================
@@ -30,12 +30,13 @@
 ; Pages
  
   !insertmacro MUI_PAGE_WELCOME
-  !define MUI_PAGE_HEADER_TEXT "RhoSync License Agreement"
-  !define MUI_PAGE_HEADER_SUBTEXT "Please review the RhoSync license terms before installing Instant Rhodes."
-  !insertmacro MUI_PAGE_LICENSE "RHOSYNC-LICENSE.txt"
+  !define MUI_PAGE_HEADER_TEXT "RhoStudio License Agreement"
+  !define MUI_PAGE_HEADER_SUBTEXT "Please review the RhoStudio license terms before installing."
+  !insertmacro MUI_PAGE_LICENSE "RHOSTUDIO-LICENSE.txt"
   !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
+  Page custom customerConfig
   !insertmacro MUI_PAGE_FINISH
  
 ;======================================================
@@ -46,9 +47,15 @@
 ;======================================================
 ; Reserve Files
  
-  ;ReserveFile "configUi.ini"
-  ;!insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
- 
+  ReserveFile "configUi.ini"
+  !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
+
+;======================================================
+; Variables
+  var varApacheEmail
+  var varApachePort
+  var varDbPass
+
 ;======================================================
 ; Sections
 
@@ -66,10 +73,12 @@ section
     writeUninstaller "$INSTDIR\uninstall.exe"
  
     SetOutPath "$SMPROGRAMS\RhoStudio"
+    
     # create a shortcut named "new shortcut" in the start menu programs directory
     # point the new shortcut at the program uninstaller
     createShortCut "$SMPROGRAMS\RhoStudio\Uninstall RhoStudio.lnk" "$INSTDIR\uninstall.exe"
     createShortCut "$SMPROGRAMS\RhoStudio\RhoStudio.lnk" "$INSTDIR\eclipse\RhoStudio.exe"
+    createShortCut "$SMPROGRAMS\RhoStudio\Samples.lnk" "$INSTDIR\sas\"
     
     Goto finishSection
     
@@ -90,6 +99,17 @@ section "uninstall"
     delete "$SMPROGRAMS\RhoStudio\Uninstall RhoStudio.lnk"
     delete "$SMPROGRAMS\RhoStudio\RhoStudio.lnk"
     delete "$SMPROGRAMS\RhoStudio"
+
+    ExecWait 'net stop apache2.2'
+    ExecWait 'net stop redis'
+    ExecWait 'net stop rhosync-1'
+    ExecWait 'net stop rhosync-2'
+    ExecWait 'net stop rhosync-3'
+    ExecWait 'sc delete apache2.2'
+    ExecWait 'sc delete redis'
+    ExecWait 'sc delete rhosync-1'
+    ExecWait 'sc delete rhosync-2'
+    ExecWait 'sc delete rhosync-3'
 
     # remove env vars
     Push "PATH" 
@@ -113,12 +133,7 @@ section "uninstall"
     Call un.EnvVarUpdate
     Pop $R0
 
-    Push "REDIS_HOME" 
-    Push "R" 
-    Push "HKLM" 
-    Push "$INSTDIR\redis-2.2.2"
-    Call un.EnvVarUpdate
-    Pop $R0
+    DeleteRegValue HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment" REDIS_HOME
 
     # remove $INSTDIR
     RMDir /r /REBOOTOK $INSTDIR
@@ -126,14 +141,48 @@ section "uninstall"
 # uninstaller section end
 sectionEnd
 
+Section "Apache" apache2Section
+ 
+  SetOutPath $INSTDIR
+ 
+  File /r "apache2"
+
+  Push $INSTDIR
+  Push "\"
+  Call StrSlash
+  Pop $R0
+  
+  Push SERVERROOT
+  Push $R0/apache2
+  Push all
+  Push all
+  Push $INSTDIR\apache2\conf\httpd.conf
+  Call AdvReplaceInFile 
+ 
+  Push DOCROOT
+  Push $R0/apache2/htdocs
+  Push all
+  Push all
+  Push $INSTDIR\apache2\conf\httpd.conf
+  Call AdvReplaceInFile 
+
+  Push CGIBIN
+  Push $R0/apache2/cgi-bin
+  Push all
+  Push all
+  Push $INSTDIR\apache2\conf\httpd.conf
+  Call AdvReplaceInFile 
+SectionEnd
+
 Section "Ruby, Rubygems, Rhodes, and RhoSync" rubySection
  
   SetOutPath $INSTDIR
  
   File /r "ruby"
   File /r "make-3.81"
+  File /r "rhosync"
   File "README.html"
-  File "RHOSYNC-LICENSE.txt"
+  File "RHOSTUDIO-LICENSE.txt"
  
   ;add to path here
 
@@ -162,9 +211,19 @@ Section "Ruby, Rubygems, Rhodes, and RhoSync" rubySection
   Call FixScriptFilesInDir
   Pop $R0
 
+
+  ExecWait '$INSTDIR\rhosync\services\rhosync-service1.exe install' $0
+  ExecWait '$INSTDIR\rhosync\services\rhosync-service2.exe install' $0
+  ExecWait '$INSTDIR\rhosync\services\rhosync-service3.exe install' $0
+ 
+  ExecWait 'net start rhosync-1'
+  ExecWait 'net start rhosync-2'
+  ExecWait 'net start rhosync-3'
+
   delete "$INSTDIR\binfileoutput.txt"
   delete "$INSTDIR\binfileoutput1.txt"
   delete "$INSTDIR\binfileoutput2.txt"
+
 
 SectionEnd
 
@@ -238,30 +297,98 @@ Section "RhoStudio" studioSection
   File /r "eclipse"
 
 SectionEnd
+
+Section "Samples" samplesSection
+ 
+  SetOutPath $INSTDIR
+ 
+  File /r "sas"
+
+SectionEnd
+
+Section "DevKit" devkitSection
+ 
+  SetOutPath $INSTDIR
+ 
+  File /r "devkit"
+
+  Push "PATH" 
+  Push "P" 
+  Push "HKLM" 
+  Push "$INSTDIR\devkit\mingw\bin"
+  Call EnvVarUpdate
+  Pop $R0
+
+  Push "PATH" 
+  Push "P" 
+  Push "HKLM" 
+  Push "$INSTDIR\devkit\bin"
+  Call EnvVarUpdate
+  Pop $R0
+  
+SectionEnd
 ;======================================================
 ;Descriptions
  
   ;Language strings
   LangString DESC_InstallRhostudio ${LANG_ENGLISH} "This installs Eclipse with RhoStudio."
+  LangString DESC_InstallApache ${LANG_ENGLISH} "This installs the Apache 2.2 webserver"
   LangString DESC_InstallRuby ${LANG_ENGLISH} "This installs ruby 1.8.7, rubygems 1.3.7, Rhodes and RhoSync gems."
   LangString DESC_InstallRedis ${LANG_ENGLISH} "This installs redis 2.2.2 (required to run RhoSync)."
   LangString DESC_InstallGit ${LANG_ENGLISH} "This installs Git (which includes the Git Bash)."
   LangString DESC_InstallGnuMake ${LANG_ENGLISH} "This installs GNU Make (sometimes required to update gems)."
+  LangString DESC_InstallSamples ${LANG_ENGLISH} "This installs samples for rhodes."
+  LangString DESC_InstallDevKit ${LANG_ENGLISH} "This installs samples for rhodes."
 #  LangString DESC_InstallJava ${LANG_ENGLISH} "This installs Java SE Runtime Environment."
   
   
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${studioSection} $(DESC_InstallRhostudio)
+  !insertmacro MUI_DESCRIPTION_TEXT ${apache2Section} $(DESC_InstallApache)
   !insertmacro MUI_DESCRIPTION_TEXT ${rubySection} $(DESC_InstallRuby) 
   !insertmacro MUI_DESCRIPTION_TEXT ${redisSection} $(DESC_InstallRedis)
   !insertmacro MUI_DESCRIPTION_TEXT ${gitSection} $(DESC_InstallGit)
   !insertmacro MUI_DESCRIPTION_TEXT ${gnumakeSection} $(DESC_InstallGnuMake)
+  !insertmacro MUI_DESCRIPTION_TEXT ${devkitSection} $(DESC_InstallDevKit)
+  !insertmacro MUI_DESCRIPTION_TEXT ${samplesSection} $(DESC_InstallSamples)
 #  !insertmacro MUI_DESCRIPTION_TEXT ${javaSection} $(DESC_InstallJava)    
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;======================================================
 ;Functions
+ 
+Function .onInit
+    !insertmacro MUI_INSTALLOPTIONS_EXTRACT "configUi.ini"
+FunctionEnd 
+
+LangString TEXT_IO_TITLE ${LANG_ENGLISH} "Configuration page"
+LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "This page will update application files based on your system configuration."
+
+Function customerConfig
+   !insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
+   !insertmacro MUI_INSTALLOPTIONS_DISPLAY "configUi.ini"
+   !insertmacro MUI_INSTALLOPTIONS_READ $varApacheEmail "configUi.ini" "Field 3" "State"
+   !insertmacro MUI_INSTALLOPTIONS_READ $varApachePort "configUi.ini" "Field 4" "State"
+
+   Push SERVERADMIN
+   Push $varApacheEmail
+   Push all
+   Push all
+   Push $INSTDIR\apache2\conf\httpd.conf
+   Call AdvReplaceInFile
+ 
+   Push SERVERPORT
+   Push $varApachePort
+   Push all
+   Push all
+   Push $INSTDIR\apache2\conf\httpd.conf
+   Call AdvReplaceInFile
+
+   ExecWait '"$INSTDIR\apache2\bin\httpd.exe" -k install'
+   ExecWait 'net start Apache2.2'
+
+FunctionEnd
 
 Function FixScriptFilesInDir
 Exch $R0 #path
