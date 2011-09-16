@@ -1,8 +1,11 @@
 platform/shared/common/app_build_configs.c
 platform/shared/common/AppMenu.cpp
 platform/shared/common/AppMenu.cpp
+platform/shared/common/map/BaseMapEngine.cpp
+platform/shared/common/map/GeocodingMapEngine.cpp
 platform/shared/common/map/ESRIMapEngine.cpp
 platform/shared/common/map/GoogleMapEngine.cpp
+platform/shared/common/map/OSMMapEngine.cpp
 platform/shared/common/map/MapEngine.cpp
 platform/shared/common/PosixThreadImpl.cpp
 platform/shared/common/RhoConf.cpp

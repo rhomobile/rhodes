@@ -88,6 +88,12 @@ VALUE rho_sys_get_property(char* szPropName)
 	if (strcasecmp("screen_height",szPropName) == 0) 
         return rho_ruby_create_integer(rho_sys_get_screen_height());
 
+	if (strcasecmp("real_screen_width",szPropName) == 0) 
+        return rho_ruby_create_integer(rho_sys_get_screen_width());
+    
+	if (strcasecmp("real_screen_height",szPropName) == 0) 
+        return rho_ruby_create_integer(rho_sys_get_screen_height());
+
 	if (strcasecmp("device_id",szPropName) == 0) 
     {
         rho::String strDeviceID = "";

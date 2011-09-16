@@ -33,15 +33,35 @@ import com.rhomobile.rhodes.util.PerformOnUiThread;
 public class GeoLocation {
 
 	private static final String TAG = "GeoLocation";
+	private static final String inactivityTimeoutName = "geo_location_inactivity_timeout"; 
+	private static final String updatePeriodName = "gps_ping_timeout_sec"; 
 	private static volatile GeoLocationImpl locImpl = null;
 	private static volatile int inactivityTimerId = 0;
+	private static long updatePeriod = -1;
 	
 	static long getInactivityTimeout() {
-		int sec = RhoConf.getInt("geo_location_inactivity_timeout");
-		if (sec == 0)
-			return 600000; //10 min
-		else
-			return sec*1000;
+		long upd = getUpdatePeriod();
+		long ret = 0;
+		if (RhoConf.isExist(inactivityTimeoutName))
+			ret = RhoConf.getInt(inactivityTimeoutName) * 1000;
+
+		if (ret <= upd) {
+			ret = upd*10;
+			Logger.W(TAG, "Inactivity time out less then position update period, override configured value: " + ret);
+		}
+		
+		return ret;
+	}
+	
+	static long getUpdatePeriod() {
+		if (updatePeriod != -1) {
+			return updatePeriod; 
+		}
+		if (RhoConf.isExist(updatePeriodName)) {
+			long ret = RhoConf.getInt(updatePeriodName) * 1000;
+			return ret;
+		} else
+			return 30000; // 30 sec
 	}
 	
 	private static void reportFail(String name, Exception e) {
@@ -72,11 +92,11 @@ public class GeoLocation {
 		if (locImpl == null) {
 			synchronized (GeoLocation.class) {
 				if (locImpl == null) {
-					Logger.T(TAG, "Creating GeoLocationImpl instance >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-					locImpl = new GeoLocationImpl(getInactivityTimeout());
-					Logger.T(TAG, "GeoLocationImpl instance has created <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+					Logger.T(TAG, "Creating GeoLocationImpl instance.");
+					locImpl = new GeoLocationImpl(getUpdatePeriod());
+					Logger.T(TAG, "GeoLocationImpl instance has created.");
 					locImpl.start();
-					Logger.T(TAG, "GeoLocation has started ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+					Logger.T(TAG, "GeoLocation has started.");
 				}
 			}
 		}
@@ -175,7 +195,8 @@ public class GeoLocation {
 			
 			checkState();
 			Logger.T(TAG, "setTimeout: " + nsec + "s");
-			getImpl().setTimeout(nsec);
+			updatePeriod = nsec * 1000;
+			getImpl().setTimeout(updatePeriod);
 		}
 		catch (Exception e) {
 			reportFail("setTimeout", e);

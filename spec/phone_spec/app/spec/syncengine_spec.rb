@@ -82,6 +82,67 @@ describe "SyncEngine_test" do
     ::Rho::RHO.get_user_db().delete_all_from_table('changed_values')
     
   end
+  
+  it "should database_full_reset_ex raise an exception" do  
+    exc = false
+    begin
+        Rhom::Rhom.database_full_reset_ex( :models => [getProduct_str], :reset_client_info => true )    
+    rescue => e
+        exc = true
+    end
+    
+    exc.should be_true
+  end
+
+  it "should database_full_reset_ex support different parameters" do  
+    Rhom::Rhom.database_full_reset_ex()
+    Rhom::Rhom.database_full_reset_ex( :reset_client_info => true )
+    Rhom::Rhom.database_full_reset_ex( :reset_local_models => true )
+    Rhom::Rhom.database_full_reset_ex( :reset_local_models => true, :reset_client_info => false )
+  end
+
+  it "should database_full_reset_ex support models" do  
+  
+    getProduct.create({:name=> 'prod1'})
+    getCustomer.create({:city => 'SPB'})
+
+    res = getProduct().find(:all)
+    res.length.should > 0
+    
+    res = getCustomer().find(:count)
+    res.should > 0    
+    
+    Rhom::Rhom.database_full_reset_ex( :models => [getProduct_str(), getCustomer_str] )
+    Rho::RhoConfig.reset_models.should == "&sources[][name]=#{getProduct_str}&sources[][name]=#{getCustomer_str}"
+    
+    res = getProduct().find(:all)
+    res.length.should == 0
+    
+    res = getCustomer().find(:count)
+    res.should == 0    
+  end
+
+  it "should database_full_reset_ex support one model" do  
+  
+    getProduct.create({:name=> 'prod1'})
+    getCustomer.create({:city => 'SPB'})
+
+    res = getProduct().find(:all)
+    res.length.should > 0
+    
+    res = getCustomer().find(:count)
+    res.should > 0    
+  
+    Rhom::Rhom.database_full_reset_ex( :models => [getProduct_str] )
+    Rho::RhoConfig.reset_models.should == "&sources[][name]=#{getProduct_str}"
+    
+    res = getProduct().find(:all)
+    res.length.should == 0
+    
+    res = getCustomer().find(:count)
+    res.should > 0    
+  end
+
 if !defined?(RHO_WP7)    
   it "should update syncserver at runtime" do
   

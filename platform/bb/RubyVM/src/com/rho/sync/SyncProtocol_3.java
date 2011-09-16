@@ -71,7 +71,12 @@ public class SyncProtocol_3 implements ISyncProtocol
 
     public String getClientResetUrl(String strClientID)
     {
-        return RhoConf.getInstance().getPath("syncserver") + "clientreset?client_id=" + strClientID;
+        String strUrl = RhoConf.getInstance().getPath("syncserver") + "clientreset?client_id=" + strClientID;
+        String strSources = RhoConf.getInstance().getString("reset_models");
+        if ( strSources.length() > 0 )
+            strUrl += strSources;
+
+        return strUrl;
     }
 
     public String getClientChangesUrl()

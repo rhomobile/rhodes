@@ -29,6 +29,7 @@ package com.rhomobile.rhodes;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Set;
 
 import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
 import com.rhomobile.rhodes.camera.Camera;
@@ -69,9 +70,6 @@ public class RhodesActivity extends BaseActivity {
 	public static boolean ENABLE_LOADING_INDICATION = true;
 	
 	public static int MAX_PROGRESS = 10000;
-	
-	static final String RHO_START_PARAMS_KEY = "RhoStartParams";
-	static final String RHO_URL_START_KEY = "RhoUrlStart";
 	
 	private static RhodesActivity sInstance = null;
 	
@@ -480,24 +478,49 @@ public class RhodesActivity extends BaseActivity {
 
     private void handleStartParams(Intent intent)
     {
-        String strUri = (intent.getData() != null) ? intent.toUri(0) : "";
-        StringBuilder startParams = new StringBuilder(); 
-
-        if(strUri.length() > 0)
-        {
-            Uri uri = Uri.parse(strUri);
-            String authority = uri.getAuthority();
-            String path = uri.getPath();
-            String query = uri.getQuery();
-
-            if (authority != null)
-                startParams.append(authority);
-            if (path != null)
-                startParams.append(path);
-            if (query != null)
-                startParams.append('?').append(query);
+        StringBuilder startParams = new StringBuilder();
+        boolean firstParam = true;
+        if (intent.getData() != null) {
+	    	String strUri = intent.toUri(0);
+	        
+	        if(strUri.length() > 0)
+	        {
+	            Uri uri = Uri.parse(strUri);
+	            String authority = uri.getAuthority();
+	            String path = uri.getPath();
+	            String query = uri.getQuery();
+	
+	            if (authority != null)
+	                startParams.append(authority);
+	            if (path != null)
+	                startParams.append(path);
+	            if (query != null) {
+	                startParams.append('?').append(query);
+	                firstParam = false;
+	            }
+	        }
         }
-        if(!RhodesApplication.canStart(startParams.toString()))
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+	        Set<String> keys = extras.keySet();
+	
+	        for (String key : keys) {
+	            Object value = extras.get(key);
+	            if (firstParam) {
+	            	startParams.append("?");
+	            	firstParam = false;
+	            } else
+	            	startParams.append("&");
+	            startParams.append(key);
+	            if (value != null) {
+	            	startParams.append("=");
+	            	startParams.append(value.toString());
+	            }
+	        }
+        }
+        String paramString = startParams.toString();
+        Logger.I(TAG, "New start parameters: " + paramString);
+        if(!RhodesApplication.canStart(paramString))
         {
             Logger.E(TAG, "This is hidden app and can be started only with security key.");
             RhodesService.exit();

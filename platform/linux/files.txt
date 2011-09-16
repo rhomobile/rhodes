@@ -1,6 +1,5 @@
 ruby/array
 ruby/bignum
-ruby/blockinlining
 ruby/class
 ruby/compar
 ruby/compile
@@ -9,6 +8,7 @@ ruby/cont
 ruby/debug
 ruby/dir
 ruby/dln
+ruby/dln_find
 ruby/dmyencoding
 ruby/dmyext
 ruby/enc/ascii
@@ -22,7 +22,6 @@ ruby/eval
 ruby/ext/rho/rhoruby
 ruby/ext/rho/rhosupport
 ruby/ext/strscan/strscan
-ruby/ext/system/system_properties
 ruby/file
 ruby/gc
 ruby/generated/parse
@@ -46,6 +45,7 @@ ruby/missing/strlcat
 ruby/missing/strlcpy
 ruby/missing/tgamma
 ruby/newline
+ruby/node
 ruby/numeric
 ruby/object
 ruby/pack

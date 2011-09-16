@@ -48,10 +48,10 @@ public:
     jholder(T obj) :m_object(obj) {}
 
     jholder(jholder const &c)
-        :m_object(c.m_object)
+        : m_object(NULL)
     {
-        if (m_object)
-            jnienv()->NewLocalRef(m_object);
+        if (c.m_object)
+            m_object = static_cast<T>(jnienv()->NewLocalRef(c.m_object));
     }
 
     ~jholder()

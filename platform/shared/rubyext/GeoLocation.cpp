@@ -174,17 +174,16 @@ void CGeoLocation::setGeoCallback(const char *url, const char* params, int timeo
 
 int CGeoLocation::getDefaultPingTimeoutSec()
 {
-	int nPingTimeoutSec = RHOCONF().getInt("gps_ping_timeout_sec");
-	if (nPingTimeoutSec==0)
-		nPingTimeoutSec = 10;
-	
-	return nPingTimeoutSec;
+    if (RHOCONF().isExist("gps_ping_timeout_sec"))
+        return RHOCONF().getInt("gps_ping_timeout_sec");
+    else 
+        return 0;
 }
 
 void CGeoLocation::setPingTimeoutSec( int nTimeout )
 {
 	int nNewTimeout = nTimeout;
-	if (nNewTimeout == 0)
+	if (nNewTimeout == -1)
 		nNewTimeout = getDefaultPingTimeoutSec();
 	
 	m_nGeoPingTimeoutSec = nNewTimeout;
@@ -193,7 +192,7 @@ void CGeoLocation::setPingTimeoutSec( int nTimeout )
 
 int CGeoLocation::getGeoTimeoutSec()
 {
-	if (m_nGeoPingTimeoutSec==0)
+	if (m_nGeoPingTimeoutSec==-1)
 		m_nGeoPingTimeoutSec = getDefaultPingTimeoutSec();
 	
 	return m_nGeoPingTimeoutSec;

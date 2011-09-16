@@ -110,7 +110,7 @@ public class Callout {
 		paint.setTextSize(DETAILS_FONT_SIZE);
 		for (i = 0; i < lines.length; i++) {
 		    Rect rcLine2 = new Rect();
-			paint.getTextBounds( lines[i], 0, lines[i].length()-1, rcLine2 );
+			paint.getTextBounds( lines[i], 0, lines[i].length(), rcLine2 );
 			if (details_width < rcLine2.right) {
 				details_width = rcLine2.right;
 			}

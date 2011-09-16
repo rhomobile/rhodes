@@ -31,10 +31,12 @@
 @interface RhomModel : NSObject {
 	NSString* name;
 	int       sync_type; 
+    int       model_type;
 }
 
 @property(assign) NSString* name;
-@property int       sync_type;
+@property(assign) int       sync_type;
+@property(assign) int       model_type;
 
 - (id) init;
 

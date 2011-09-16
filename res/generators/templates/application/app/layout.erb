@@ -19,9 +19,9 @@
     <%% end %>
 
     <%% if System::get_property('platform') == 'APPLE' || System::get_property('platform') == 'ANDROID' || is_bb6 || ( System::get_property('platform') == 'UNKNOWN' && System::get_property('webview_framework') =~ /^WEBKIT/) %>
-        <script src="/public/jquery/jquery-1.6.2.min.js" type="text/javascript"></script>
+        <script src="/public/jquery/jquery-1.6.3.min.js" type="text/javascript"></script>
 
-        <link rel="stylesheet" href="/public/jqmobile/jquery.mobile-1.0b2.min.css">
+        <link rel="stylesheet" href="/public/jqmobile/jquery.mobile-1.0b3.min.css">
         <link rel="stylesheet" href="/public/css/jqmobile-patch.css">
         <%% if System::get_property('platform') == 'APPLE' %>
             <link href="/public/jqmobile/jquery.mobile.iphone.css" type="text/css" rel="stylesheet"/>
@@ -38,7 +38,7 @@
                 //$.mobile.loadingMessage = "loading"; // it is default value
 
                 // For documented init options look here:
-                // http://jquerymobile.com/demos/1.0b2/#/demos/1.0b2/docs/api/globalconfig.html
+                // http://jquerymobile.com/demos/1.0b3/#/demos/1.0b3/docs/api/globalconfig.html
 
                 // For poorly documented options search for ".prototype.options"
                 // in the jQuery Mobile source code
@@ -48,7 +48,7 @@
                 $.mobile.loadingMessageDelay = 300; // in ms
             });
         </script>
-        <script type="text/javascript" charset="utf-8" src="/public/jqmobile/jquery.mobile-1.0b2.min.js"></script>
+        <script type="text/javascript" charset="utf-8" src="/public/jqmobile/jquery.mobile-1.0b3.min.js"></script>
         <script type="text/javascript" charset="utf-8" src="/public/js/jqmobile-patch.js"></script>
 
     <%% end %>
@@ -63,6 +63,7 @@
         <link href="/public/css/blackberry.css" type="text/css" rel="stylesheet"/>
     <%% elsif System::get_property('platform') == 'WP7' %>
 	    <link href="/public/css/windows_mobile.css" type="text/css" rel="stylesheet"/>
+		<script src="/public/js/wp7.js" type="text/javascript"></script>
     <%% elsif System::get_property('platform') == 'WINDOWS' %>
 	    <link href="/public/css/windows_mobile.css" type="text/css" rel="stylesheet"/>
     <%% elsif System::get_property('webview_framework') =~ /^WEBKIT/ %>
@@ -71,8 +72,10 @@
 </head>
 
 <body
-<%% if System::get_property('platform') == 'WP7' || is_bb6 %>
+<%% if is_bb6 %>
 	data-do-fix-forms="true"
+<%% elsif System::get_property('platform') == 'WP7' %>
+	onload="wp7_change_forms_action_to_get()"
 <%% end %>
 	>
     <%%= @content %>

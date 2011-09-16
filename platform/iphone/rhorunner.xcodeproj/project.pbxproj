@@ -1050,6 +1050,7 @@
 					"$(SRCROOT)",
 					"$(SRCROOT)/build/Debug-iphonesimulator",
 				);
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRODUCT_NAME = rhorunner;
@@ -1081,7 +1082,7 @@
 					"$(SRCROOT)",
 					"$(SRCROOT)/build/Release-iphoneos",
 				);
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRODUCT_NAME = rhorunner;
@@ -1154,7 +1155,7 @@
 					"$(SRCROOT)/build/Debug-iphonesimulator",
 					"$(SRCROOT)/openssl/build",
 				);
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRODUCT_NAME = rhorunner;

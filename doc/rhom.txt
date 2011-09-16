@@ -659,6 +659,18 @@ Reset only local(non-sync-enabled) models.
 	:::ruby
 	Rhom::Rhom.database_local_reset
 
+### `Rhom::Rhom.database_full_reset_ex( :models => [model_name1, model_name2], :reset_client_info=>false, :reset_local_models => true)` 
+Deletes all records from the property bag and model tables, if models are set then reset only selected models
+	
+	:::ruby
+	# models                Array of models names to reset
+	# reset_client_info 	If set to true, client_info 
+	#						table will be cleaned.
+	#
+	# reset_local_models 	If set to true, local(non-synced models) 
+	#						will be cleaned.
+	Rhom::Rhom.database_full_reset_ex(:models => ['Product', 'Customer'])
+
 ## Seeding the Database
 If your application requires seeding some initial data, you can use the following function:
 

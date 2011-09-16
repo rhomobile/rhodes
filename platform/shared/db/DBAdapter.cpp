@@ -139,6 +139,7 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
     LOG(INFO) + "Open DB: " + strDbPath;
     close();
 
+    m_mxRuby.create();
     m_strDbPath = strDbPath;
     if ( !bTemp )
     {
@@ -1154,7 +1155,12 @@ namespace common{
 #ifndef RHO_NO_RUBY
 CRubyMutex::CRubyMutex(boolean bIgnore) : m_nLockCount(0), m_valThread(0), m_valMutex(null)
 {
-    if ( !bIgnore )
+    m_bIgnore = bIgnore || RHOCONF().getBool("no_ruby_threads");
+}
+
+void CRubyMutex::create()
+{
+    if ( !m_bIgnore )
         m_valMutex = rho_ruby_create_mutex();
 }
 
@@ -1229,6 +1235,14 @@ void CRubyMutex::Unlock()
 {
 }
 
+void CRubyMutex::close()
+{
+}
+
+void CRubyMutex::create()
+    {
+        
+    }
 #endif //RHO_NO_RUBY
 }
 }

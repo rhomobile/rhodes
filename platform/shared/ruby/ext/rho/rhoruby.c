@@ -750,7 +750,7 @@ VALUE rho_ruby_main_thread()
 
 VALUE rho_ruby_current_thread()
 {
-    if ( ruby_native_thread_p() != Qtrue )
+    if ( ruby_native_thread_p() != 1 )
         return 0;
 
     return rb_thread_current();

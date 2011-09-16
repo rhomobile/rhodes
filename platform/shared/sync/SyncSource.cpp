@@ -1103,7 +1103,9 @@ String CSyncSource::makeFileName(const CAttrValue& value)//throws Exception
     else if ( strExt.at(0) != '.' )    
         strExt = "." + strExt;
 
-    String fName = RHODESAPPBASE().getBlobsDirPath() + "/id_" + CLocalTime().toString(true,true) + strExt;
+    static int g_nBlobCounter = 0;
+    String fName = RHODESAPPBASE().getBlobsDirPath() + "/id_" + CLocalTime().toString(true,true) + convertToStringA(g_nBlobCounter) + strExt;
+    g_nBlobCounter++;
 	
 	return  fName;
 }

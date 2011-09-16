@@ -16,6 +16,7 @@
 #pragma warn_illegal_instructions off
 #pragma suppress_warnings on 
 
+#define HAVE_SIGNBIT 1
 #define HAVE_INET_NTOP 1
 #define HAVE_INET_PTON 1
 #define HAVE_GAI_STRERROR 1
@@ -190,7 +191,7 @@
 #define HAVE_STRUCT_TM_TM_GMTOFF 1
 #define NEGATIVE_TIME_T 1
 #define RSHIFT(x,y) ((x)>>(int)y)
-#define DOSISH 1
+//#define DOSISH 1
 #define DOSISH_DRIVE_LETTER
 #define RUBY_JMP_BUF jmp_buf
 #define RUBY_SETJMP(env) _setjmp(env)

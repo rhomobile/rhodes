@@ -61,6 +61,11 @@ boolean CThreadQueue::isAlreadyExist(IQueueCommand *pCmd)
     return bExist;
 }
 
+int CThreadQueue::getCommandsCount() {
+    synchronized(m_mxStackCommands);
+    return (int)m_stackCommands.size();
+}
+    
 void CThreadQueue::addQueueCommandInt(IQueueCommand* pCmd)
 {
     LOG(INFO) + "addCommand: " + pCmd->toString();
