@@ -56,6 +56,7 @@ public class EventStore {
 	private static final String EVENTS_NOTES = "description";
 	private static final String EVENTS_PRIVACY = "visibility";
 	private static final String EVENTS_DELETED = "deleted";
+	private static final String EVENTS_DURATION = "duration";
 	private static final String EVENTS_BEGIN = "begin";
 	private static final String EVENTS_END = "end";
 	private static final String EVENTS_RRULE = "rrule";
@@ -70,6 +71,7 @@ public class EventStore {
 	}
 	
 	private static String dateToString(Date date) {
+		if (null == date) return "null";
 		return String.format("%04d-%02d-%02d %02d:%02d:%02d",
 				date.getYear() + 1900, date.getMonth() + 1, date.getDate(),
 				date.getHours(), date.getMinutes(), date.getSeconds());
@@ -150,7 +152,8 @@ public class EventStore {
 		try {
 			checkCapabilities();
 			
-			Logger.D(TAG, "fetch(start, end), start: " + dateToString(startDate) + ", end: " + dateToString(endDate));
+			Logger.D(TAG, "fetch(start, end), start: " + dateToString(startDate) + ", end: " + dateToString(endDate)
+					+ ", includeRepeating: " +includeRepeating);
 			
 			Vector<Event> ret = new Vector<Event>();
 			
@@ -192,29 +195,34 @@ public class EventStore {
 						}
 					}
 					
-					String eid = eventCursor.getString(0);
+					String eid = eventCursor.getString(eventCursor.getColumnIndex(EVENTS_ID));
 					Event event = new Event(eid);
 					
-					Date eventStartDate = new Date(eventCursor.getLong(2));
-					Date eventEndDate = new Date(eventCursor.getLong(3));
-					if (eventStartDate.after(eventEndDate)) {
+					long longDtStart = eventCursor.getLong(eventCursor.getColumnIndex(EVENTS_START_DATE));
+					long longDtEnd = eventCursor.getLong(eventCursor.getColumnIndex(EVENTS_END_DATE));
+					
+					Date eventStartDate = 0 < longDtStart ? new Date(longDtStart) : null;
+					Date eventEndDate = 0 < longDtEnd ? new Date(longDtEnd) : null;
+					
+					if (null != eventStartDate && null != eventEndDate && eventStartDate.after(eventEndDate)) {
 						Date tmp = eventStartDate;
 						eventStartDate = eventEndDate;
 						eventEndDate = tmp;
 					}
 					
-					if (eventEndDate.before(startDate) || eventStartDate.after(endDate))
+					if (null != eventStartDate && null != eventEndDate
+							&& (eventEndDate.before(startDate) || eventStartDate.after(endDate)))
 						continue;
 					
-					event.title = eventCursor.getString(1);
+					event.title = eventCursor.getString(eventCursor.getColumnIndex(EVENTS_TITLE));
 					event.startDate = eventStartDate;
 					event.endDate = eventEndDate;
-					event.location = eventCursor.getString(4);
-					event.notes = eventCursor.getString(5);
-					switch (eventCursor.getInt(6)) {
-					case 1: event.privacy = "confidential"; break;
-					case 2: event.privacy = "private"; break;
-					case 3: event.privacy = "public"; break;
+					event.location = eventCursor.getString(eventCursor.getColumnIndex(EVENTS_LOCATION));
+					event.notes = eventCursor.getString(eventCursor.getColumnIndex(EVENTS_NOTES));
+					switch (eventCursor.getInt(eventCursor.getColumnIndex(EVENTS_PRIVACY))) {
+						case 1: event.privacy = "confidential"; break;
+						case 2: event.privacy = "private"; break;
+						case 3: event.privacy = "public"; break;
 					}
 					parseRepetition(eventCursor, event);
 					
@@ -224,7 +232,7 @@ public class EventStore {
 							", end: " + dateToString(event.endDate) +
 							", freq: " + event.frequency +
 							", interval: " + Integer.toString(event.interval));
-					
+
 					ret.add(event);
 				}
 			}
@@ -263,13 +271,25 @@ public class EventStore {
 					return null;
 				}
 				
+				long longDtStart = eventCursor.getLong(eventCursor.getColumnIndex(EVENTS_START_DATE));
+				long longDtEnd = eventCursor.getLong(eventCursor.getColumnIndex(EVENTS_END_DATE));
+				
+				Date eventStartDate = 0 < longDtStart ? new Date(longDtStart) : null;
+				Date eventEndDate = 0 < longDtEnd ? new Date(longDtEnd) : null;
+				
+				if (null != eventStartDate && null != eventEndDate && eventStartDate.after(eventEndDate)) {
+					Date tmp = eventStartDate;
+					eventStartDate = eventEndDate;
+					eventEndDate = tmp;
+				}
+				
 				Event event = new Event(id);
-				event.title = eventCursor.getString(0);
-				event.startDate = new Date(eventCursor.getLong(1));
-				event.endDate = new Date(eventCursor.getLong(2));
-				event.location = eventCursor.getString(3);
-				event.notes = eventCursor.getString(4);
-				switch (eventCursor.getInt(5)) {
+				event.title = eventCursor.getString(eventCursor.getColumnIndex(EVENTS_TITLE));
+				event.startDate = eventStartDate;
+				event.endDate = eventEndDate;
+				event.location = eventCursor.getString(eventCursor.getColumnIndex(EVENTS_LOCATION));
+				event.notes = eventCursor.getString(eventCursor.getColumnIndex(EVENTS_NOTES));
+				switch (eventCursor.getInt(eventCursor.getColumnIndex(EVENTS_PRIVACY))) {
 				case 1: event.privacy = "confidential"; break;
 				case 2: event.privacy = "private"; break;
 				case 3: event.privacy = "public"; break;
@@ -305,14 +325,24 @@ public class EventStore {
 			
 			ContentValues values = new ContentValues();
 			values.put(EVENTS_TITLE, event.title);
-			values.put(EVENTS_START_DATE, event.startDate.getTime());
-			values.put(EVENTS_END_DATE, event.endDate.getTime());
-			if (event.location != null)
+			
+			if (null != event.startDate) {
+				values.put(EVENTS_START_DATE, event.startDate.getTime());
+			}
+			
+			if (null != event.endDate) {
+				values.put(EVENTS_END_DATE, event.endDate.getTime());
+			}
+			
+			if (event.location != null) {
 				values.put(EVENTS_LOCATION, event.location);
-			if (event.notes !=  null)
+			}
+
+			if (event.notes !=  null) {
 				values.put(EVENTS_NOTES, event.notes);
-			if (event.privacy != null)
-			{
+			}
+
+			if (event.privacy != null) {
 				int privacy = 0;
 				if (event.privacy.equalsIgnoreCase("confidential"))
 					privacy = 1;
@@ -322,18 +352,25 @@ public class EventStore {
 					privacy = 3;
 				values.put(EVENTS_PRIVACY, privacy);
 			}
+			
 			if (null != event.frequency && 0 < event.frequency.length()) {
 				String rrule = EVENTS_RPARAM_FREQ + "=" + event.frequency.toUpperCase();
 				if (0 < event.interval) {
 					rrule = rrule + ";" + EVENTS_RPARAM_INTERVAL + "=" + Integer.toString(event.interval);
 				}
 				values.put(EVENTS_RRULE, rrule);
+				long duration = 0;
+				if (null != event.startDate && null != event.startDate ) {
+					duration = (event.endDate.getTime() - event.startDate.getTime()) / 1000 /*ms in sec*/;
+				}
+				
+				values.put(EVENTS_DURATION, "P" + Long.toString(duration) + "S");
 			}
 
 			Logger.D(TAG, "Event: id: " + event.id +
 					", title: " + event.title +
-					", begin: " + dateToString(event.startDate) +
-					", end: " + dateToString(event.endDate) +
+					", begin: " + dateToString(new Date(values.getAsLong(EVENTS_START_DATE).longValue())) +
+					", end: " + dateToString(new Date(values.getAsLong(EVENTS_END_DATE).longValue())) +
 					", freq: " + event.frequency +
 					", interval: " + Integer.toString(event.interval) +
 					", rrule: " + values.get(EVENTS_RRULE));
