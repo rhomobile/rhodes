@@ -194,6 +194,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
     // set up connection point
     hr = AtlAdviseSinkMap(this, true);
+
     CHR(hr);
 
     // set initial properties for the control
