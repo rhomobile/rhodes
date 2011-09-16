@@ -67,6 +67,11 @@ module Rhogen
       template.destination = "#{name}/build.yml"
     end
     
+    template :gitignore do |template|
+      template.source = 'gitignore'
+      template.destination = "#{name}/.gitignore"
+    end
+    
     template :application do |template|
       template.source = 'app/application.rb'
       template.destination = "#{name}/app/application.rb"
