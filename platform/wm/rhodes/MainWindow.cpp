@@ -213,11 +213,11 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 #endif
 
 #ifdef INTEGRATED_WEBKIT
-    if (m_useWebKit)
         CBR(m_wkengine != NULL);
-    else
-#endif
+#else
         CBR(m_browser.m_hWnd != NULL);
+#endif
+     
 
 #ifdef INTEGRATED_WEBKIT
     if (!m_useWebKit) {
@@ -225,13 +225,14 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
         // cache IWebBrowser2 interface pointer
         hr = m_browser.QueryControl(&m_spIWebBrowser2);
         CHR(hr);
+
+        // set up connection point
+        hr = AtlAdviseSinkMap(this, true);
+        CHR(hr);
+
 #ifdef INTEGRATED_WEBKIT
     }
 #endif
-
-    // set up connection point
-    hr = AtlAdviseSinkMap(this, true);
-    CHR(hr);
 
     // set initial properties for the control
 #ifdef INTEGRATED_WEBKIT
