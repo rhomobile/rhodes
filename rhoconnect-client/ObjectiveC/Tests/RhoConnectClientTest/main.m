@@ -84,7 +84,8 @@ int shouldSearchProduct()
 int shouldCreateNewProduct()
 {
 	NSMutableDictionary* item = [[NSMutableDictionary alloc] init];
-	[item setValue:@"Test" forKey:@"name"];							 
+	[item setValue:@"Test" forKey:@"name"];	
+    [item setValue:@"123" forKey:@"sku"];	
 	[product create:item];
 	if ( [item objectForKey:@"object"] == NULL || [item objectForKey:@"source_id"] == NULL ) 
 		return 0;
@@ -134,7 +135,11 @@ int shouldModifyProduct()
 	
 	NSString* saved_object = [NSString stringWithString: [item valueForKey:@"object"]];
 	NSMutableString* new_sku = [[NSMutableString alloc]init];
-	[new_sku appendString:[item valueForKey:@"sku"]];
+    if ( [item valueForKey:@"sku"] != nil)
+    {
+        [new_sku appendString:[item valueForKey:@"sku"]];
+    }
+    
 	[new_sku appendString: @"_TEST"];
 	
 	[item setValue:new_sku forKey:@"sku"];
@@ -225,7 +230,21 @@ int runObjCClientTest()
 	
 	product = [[RhomModel alloc] init];
 	product.name = @"Product";
-
+    
+    //product.name = @"Product_s";
+    //product.model_type = RMT_PROPERTY_FIXEDSCHEMA;    
+    //add to schema:
+    /*CREATE TABLE "Product_s" ( 
+                              "brand" varchar default null,
+                              "created_at" varchar default null,
+                              "name" varchar default null,
+                              "price" varchar default null,
+                              "quantity" varchar default null,
+                              "sku" varchar default null,
+                              "updated_at" varchar default null,
+                              "object" varchar(255) PRIMARY KEY );
+    
+    */
 	perftest = [[RhomModel alloc] init];
 	perftest.name = @"Perftest";
 	perftest.sync_type = RST_NONE;

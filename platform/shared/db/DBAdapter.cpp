@@ -1239,6 +1239,10 @@ void CRubyMutex::close()
 {
 }
 
+void CRubyMutex::create()
+    {
+        
+    }
 #endif //RHO_NO_RUBY
 }
 }
