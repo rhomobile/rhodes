@@ -1153,9 +1153,9 @@ namespace rho{
 namespace common{
 
 #ifndef RHO_NO_RUBY
-CRubyMutex::CRubyMutex(boolean bIgnore) : m_nLockCount(0), m_valThread(0), m_valMutex(null),
-    m_bIgnore(bIgnore)
+CRubyMutex::CRubyMutex(boolean bIgnore) : m_nLockCount(0), m_valThread(0), m_valMutex(null)
 {
+    m_bIgnore = bIgnore || RHOCONF().getBool("no_ruby_threads");
 }
 
 void CRubyMutex::create()
