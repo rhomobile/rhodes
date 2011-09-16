@@ -19,7 +19,21 @@
 		5C581124122E4EDB00264A98 /* libstdc++.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C581123122E4EDB00264A98 /* libstdc++.6.dylib */; };
 		5C581133122E4F4E00264A98 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C581132122E4F4E00264A98 /* QuartzCore.framework */; };
 		5C8367CE134660EE0008F198 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C8367CD134660EE0008F198 /* Security.framework */; };
+		5CBE0A4A14232FE20046B337 /* libRhoConnectClient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CBE0A4914232FE20046B337 /* libRhoConnectClient.a */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		5C640F3114232F8200D2E157 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
+		};
+		5CBE0A4C142330040046B337 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -37,6 +51,7 @@
 		5C581123122E4EDB00264A98 /* libstdc++.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.dylib"; path = "usr/lib/libstdc++.6.dylib"; sourceTree = SDKROOT; };
 		5C581132122E4F4E00264A98 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		5C8367CD134660EE0008F198 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		5CBE0A4914232FE20046B337 /* libRhoConnectClient.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRhoConnectClient.a; sourceTree = SOURCE_ROOT; };
 		8D1107310486CEB800E47090 /* RhoConnectClientTest-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "RhoConnectClientTest-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -45,6 +60,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5CBE0A4A14232FE20046B337 /* libRhoConnectClient.a in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
@@ -71,6 +87,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				5CBE0A4914232FE20046B337 /* libRhoConnectClient.a */,
 				5C2CE4F6122C3090005EDBC4 /* db */,
 				5C2CE323122AF5A4005EDBC4 /* RhoConnectClient.xcodeproj */,
 				5C0D093C121D0C330022E83C /* shared */,
@@ -137,6 +154,8 @@
 			buildRules = (
 			);
 			dependencies = (
+				5CBE0A4D142330040046B337 /* PBXTargetDependency */,
+				5C640F3214232F8200D2E157 /* PBXTargetDependency */,
 			);
 			name = SyncClientTest;
 			productName = SyncClientTest;
@@ -190,6 +209,17 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		5C640F3214232F8200D2E157 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			targetProxy = 5C640F3114232F8200D2E157 /* PBXContainerItemProxy */;
+		};
+		5CBE0A4D142330040046B337 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			targetProxy = 5CBE0A4C142330040046B337 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -205,6 +235,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../build/Debug-iphonesimulator\"",
+					"\"$(SRCROOT)\"",
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-lRhoConnectClient";
@@ -224,7 +255,10 @@
 				GCC_PREFIX_HEADER = RhoConnectClientTest_Prefix.pch;
 				HEADER_SEARCH_PATHS = ../../../../platform/shared;
 				INFOPLIST_FILE = "RhoConnectClientTest-Info.plist";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-lRhoConnectClient";
 				PRODUCT_NAME = RhoConnectClientTest;
@@ -244,6 +278,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = ../../../shared;
+				OTHER_LDFLAGS = "-lRhoConnectClient";
 				PREBINDING = NO;
 				SDKROOT = iphoneos4.0;
 				SYMROOT = ../../../build;
@@ -260,6 +295,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = ../../../shared;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				OTHER_LDFLAGS = "-lRhoConnectClient";
 				PREBINDING = NO;
 				SDKROOT = iphoneos4.0;
 				SYMROOT = ../../../build;
