@@ -127,6 +127,25 @@ void CMainWindow::Navigate(BSTR URL) {
 //
 // **************************************************************************
 
+#ifdef INTEGRATED_WEBKIT
+LRESULT CALLBACK CMainWindow::WK_HTMLWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    //return DefWindowProc(hwnd, message, wParam, lParam);
+    return (message == 0xF) ? 1 : 0;
+}
+
+LRESULT CALLBACK CMainWindow::WK_GetEngineConfig(int iInstID, LPCTSTR tcSetting, TCHAR* tcValue)
+{
+    //LPCTSTR tcValueRead;
+    //tcValueRead = g_pConfig->GetAppSettingPtr(iInstID, tcSetting, L"Value");
+    //if (tcValueRead != NULL)
+    //  wcscpy(tcValue, tcValueRead);
+    //else
+    tcValue = NULL;
+    return S_OK;
+} 
+#endif
+
 LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     HRESULT hr = S_OK;
