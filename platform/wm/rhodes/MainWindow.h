@@ -73,6 +73,7 @@ static UINT WM_BLUETOOTH_DISCOVERED    = ::RegisterWindowMessage(L"RHODES_WM_BLU
 static UINT WM_BLUETOOTH_CALLBACK	   = ::RegisterWindowMessage(L"RHODES_WM_BLUETOOTH_CALLBACK");
 static UINT WM_EXECUTE_COMMAND		   = ::RegisterWindowMessage(L"RHODES_WM_EXECUTE_COMMAND");
 static UINT WM_EXECUTE_RUNNABLE		   = ::RegisterWindowMessage(L"RHODES_WM_EXECUTE_RUNNABLE");
+static UINT WM_BROWSER_ONDOCUMENTCOMPLETE   = ::RegisterWindowMessage(L"RHODES_WM_BROWSER_ONDOCUMENTCOMPLETE");
 
 class CMainWindow :
 #if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
@@ -155,6 +156,7 @@ public:
 		MESSAGE_HANDLER(WM_BLUETOOTH_CALLBACK, OnBluetoothCallback);
 		MESSAGE_HANDLER(WM_EXECUTE_COMMAND, OnExecuteCommand);
         MESSAGE_HANDLER(WM_EXECUTE_RUNNABLE, OnExecuteRunnable);
+        MESSAGE_HANDLER(WM_BROWSER_ONDOCUMENTCOMPLETE, OnBrowserDocumentComplete);
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
         MESSAGE_RANGE_HANDLER(PB_NAVIGATETAB, PB_NEWGPSDATA, OnWebKitMessages)
@@ -203,6 +205,7 @@ private:
 	LRESULT OnBluetoothCallback (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnExecuteCommand (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnExecuteRunnable (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+    LRESULT OnBrowserDocumentComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnWebKitMessages (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 
 public:
@@ -232,6 +235,8 @@ private:
 	void ShowLoadingPage();
 
 	void createCustomMenu(void);
+
+    void ProcessDocumentComplete(LPCTSTR url);
 
 	// return cleared URL or empty string
 	String processForNativeView(String url);
