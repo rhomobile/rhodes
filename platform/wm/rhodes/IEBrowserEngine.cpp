@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "IEBrowserEngine.h"
 #include "common/RhoConf.h"
 #include "MainWindow.h"
