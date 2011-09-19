@@ -172,7 +172,14 @@ describe "Xml" do
         @events.size.should == 1
     end
     
-    #def generate_test
-        #TODO: generate_test
-    #end
+    it "should generate XML text" do
+        dc = REXML::Document.new()
+        FirstKey = REXML::Element.new "FirstKey"
+        FirstKey.add_attribute "Key1", "Value1"
+        FirstKey.add_attribute "Key2", "Value2"
+        dc.add_element FirstKey
+        
+        puts "dc: #{dc.inspect}"
+        puts "FirstKey : #{FirstKey.inspect}"
+    end
 end    
