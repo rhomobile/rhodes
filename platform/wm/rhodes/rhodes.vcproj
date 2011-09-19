@@ -7255,7 +7255,7 @@
 	</Files>
 	<Globals>
 		<Global
-			Name="RESOURCE_FILE"
+			Name="RESOURCE_FILE" 
 			Value="Rhodes.rc"
 		/>
 	</Globals>
