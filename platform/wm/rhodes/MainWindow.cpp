@@ -154,6 +154,25 @@ static LRESULT GetEngineConfig(int iInstID, LPCTSTR tcSetting, TCHAR* tcValue)
 //
 // **************************************************************************
 
+#ifdef INTEGRATED_WEBKIT
+LRESULT CALLBACK CMainWindow::WK_HTMLWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    //return DefWindowProc(hwnd, message, wParam, lParam);
+    return (message == 0xF) ? 1 : 0;
+}
+
+LRESULT CALLBACK CMainWindow::WK_GetEngineConfig(int iInstID, LPCTSTR tcSetting, TCHAR* tcValue)
+{
+    //LPCTSTR tcValueRead;
+    //tcValueRead = g_pConfig->GetAppSettingPtr(iInstID, tcSetting, L"Value");
+    //if (tcValueRead != NULL)
+    //  wcscpy(tcValue, tcValueRead);
+    //else
+    tcValue = NULL;
+    return S_OK;
+} 
+#endif
+
 LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     HRESULT hr = S_OK;
@@ -180,11 +199,14 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     if (m_useWebKit) {
         // TODO: complete implementation of WebKit engine initialization
         m_wkengine = new CWebKitEngine(m_hWnd, rhoApplicationHINSTANCE);
-    	if(m_wkengine->Init(L"PBEngine_WK.dll"))
-        	m_wkengine->InitEngine(0,
-              //&HTMLWndProc, &m_pApp[0]->m_OwnerProc, 
-              0, 0,
-              SETTING_ON, &GetEngineConfig );
+        if(m_wkengine->Init(L"PBEngine_WK.dll")) {
+            //MessageBox(L"PBEngine_WK.dll loaded OK!", L"Rhodes", MB_ICONINFORMATION | MB_OK);
+            if (m_wkengine->InitEngine(0, &WK_HTMLWndProc, NULL, SETTING_OFF, &WK_GetEngineConfig)) {
+                MessageBox(L"Engine initialized!", L"Rhodes", MB_ICONINFORMATION | MB_OK);
+            } else {
+                MessageBox(L"Unable to initialize engine", L"Rhodes", MB_ICONWARNING | MB_OK);
+            }
+        }
     } else
 # endif
         m_browser.Create(m_hWnd,
