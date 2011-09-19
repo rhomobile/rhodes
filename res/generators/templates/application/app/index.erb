@@ -3,8 +3,12 @@
   <div data-role="header" data-position="inline">
     <h1><%= class_name %></h1>
     <%% if SyncEngine::logged_in > 0 %>
-        <a href="<%%= url_for :controller => :Settings, :action => :do_sync %>" class="ui-btn-left" data-icon="refresh">Sync</a>
-        <a href="<%%= url_for :controller => :Settings, :action => :logout %>" class="ui-btn-right" data-icon="star">Logout</a>
+    <a href="<%%= url_for :controller => :Settings, :action => :do_sync %>" class="ui-btn-left" data-icon="refresh">
+      Sync
+    </a>
+    <a href="<%%= url_for :controller => :Settings, :action => :logout %>" class="ui-btn-right" data-icon="star">
+	    Logout
+	  </a>
     <%% else %>
         <a href="<%%= url_for :controller => :Settings, :action => :login %>" class="ui-btn-right" data-icon="star">Login</a>
     <%% end %>
