@@ -26,14 +26,13 @@
 
 #pragma once
 
-//#define INTEGRATED_WEBKIT 1
-
 #ifndef RHODES_EMULATOR
 
 #if !defined(_WIN32_WCE) || defined( OS_PLATFORM_CE )
 #include <exdispid.h>
 #include <exdisp.h>
 #endif
+
 #include "resource.h"
 #include "logging/RhoLog.h"
 #include "common/RhoConf.h"
@@ -42,11 +41,17 @@
 #include "RhoNativeViewManagerWM.h"
 #include "SyncStatusDlg.h"
 #include "rho/rubyext/NativeToolbar.h"
+#include "IBrowserEngine.h"
+#include "common/app_build_capabilities.h"
 
 #if defined(OS_WINDOWS)
 #include "menubar.h"
 #endif
 #include "LogView.h"
+
+#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+#include "webkit/PBCore/Eng.h"
+#endif
 
 #define ID_CUSTOM_MENU_ITEM_FIRST (WM_APP+3)
 #define ID_CUSTOM_MENU_ITEM_LAST  (ID_CUSTOM_MENU_ITEM_FIRST + (APP_MENU_ITEMS_MAX) - 1)
@@ -90,8 +95,6 @@ public:
     CNativeToolbar& getToolbar(){ return m_toolbar; }
     void performOnUiThread(rho::common::IRhoRunnable* pTask);
 	
-	//char* GetCurrentLocation() { return m_current_url; }
-
     // Required to forward messages to the PIEWebBrowser control
     BOOL TranslateAccelerator(MSG* pMsg);
 
@@ -99,8 +102,8 @@ public:
 							NativeView* nativeView,
 							String nativeViewType);
 	void closeNativeView();
-
-
+    rho::IBrowserEngine* getWebKitEngine(){return m_pBrowserEng; }
+    
 #if defined(OS_WINDOWS)
     DECLARE_WND_CLASS(TEXT("Rhodes.MainWindow"))
 #else
@@ -152,6 +155,11 @@ public:
 		MESSAGE_HANDLER(WM_BLUETOOTH_CALLBACK, OnBluetoothCallback);
 		MESSAGE_HANDLER(WM_EXECUTE_COMMAND, OnExecuteCommand);
         MESSAGE_HANDLER(WM_EXECUTE_RUNNABLE, OnExecuteRunnable);
+
+#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+        MESSAGE_RANGE_HANDLER(PB_NAVIGATETAB, PB_NEWGPSDATA, OnWebKitMessages)
+#endif
+
     END_MSG_MAP()
 	
 private:
@@ -195,7 +203,8 @@ private:
 	LRESULT OnBluetoothCallback (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnExecuteCommand (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnExecuteRunnable (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-	
+    LRESULT OnWebKitMessages (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+
 public:
     BEGIN_SINK_MAP(CMainWindow)
         SINK_ENTRY(ID_BROWSER, DISPID_BEFORENAVIGATE2, &CMainWindow::OnBeforeNavigate2)
@@ -220,7 +229,7 @@ private:
     BOOL SetMenuItemEnabled      (UINT uMenuItemID, BOOL bEnable);
 	BOOL SetToolbarButtonEnabled (UINT uTbbID, BOOL bEnable);
 	
-	void ShowLoadingPage(LPDISPATCH pDisp, VARIANT* URL);
+	void ShowLoadingPage();
 
 	void createCustomMenu(void);
 
@@ -240,15 +249,9 @@ private:
 
 
 private:
-    // Represents the PIEWebBrowser control contained in the main application.
-    // window. m_browser is used to manage the control and its associated 
-    // "AtlAxWin" window. (AtlAxWin is a window class that ATL uses to support 
-    // containment of controls in windows.)
-    CAxWindow m_browser;
-	bool mIsBrowserViewHided;
+    bool mIsBrowserViewHided;
 
-    // cached copy of hosted control's IWebBrowser2 interface pointer
-    CComPtr<IWebBrowser2> m_spIWebBrowser2;
+    rho::IBrowserEngine* m_pBrowserEng;
 
 #if defined(_WIN32_WCE)
     // main menu bar for application
