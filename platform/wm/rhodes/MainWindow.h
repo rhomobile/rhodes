@@ -26,6 +26,8 @@
 
 #pragma once
 
+//#define INTEGRATED_WEBKIT 1
+
 #ifndef RHODES_EMULATOR
 
 #if !defined(_WIN32_WCE) || defined( OS_PLATFORM_CE )
