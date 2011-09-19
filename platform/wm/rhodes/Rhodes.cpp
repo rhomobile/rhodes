@@ -544,6 +544,11 @@ extern "C" HINSTANCE rho_wmimpl_get_appinstance()
     return _AtlModule.GetModuleInstance();
 }
 
+extern "C" HWND rho_wmimpl_get_mainwnd() 
+{
+	return _AtlModule.GetMainWindow();
+}
+
 extern "C" void rho_conf_show_log()
 {
     ::PostMessage(getMainWnd(),WM_COMMAND,IDM_LOG,0);
