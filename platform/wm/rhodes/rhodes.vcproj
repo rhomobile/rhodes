@@ -2235,6 +2235,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\IEBrowserEngine.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\LogOptionsDlg.cpp"
 				>
 			</File>
@@ -2490,6 +2494,14 @@
 			</File>
 			<File
 				RelativePath=".\DateTimePicker.h"
+				>
+			</File>
+			<File
+				RelativePath=".\IBrowserEngine.h"
+				>
+			</File>
+			<File
+				RelativePath=".\IEBrowserEngine.h"
 				>
 			</File>
 			<File
@@ -7526,6 +7538,30 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\webkit\RhoWKBrowserEngine.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\webkit\RhoWKBrowserEngine.h"
+				>
 			</File>
 			<Filter
 				Name="PBCore"
