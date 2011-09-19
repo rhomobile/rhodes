@@ -2,8 +2,12 @@
 
   <div data-role="header" data-position="inline">
     <h1><%%= @<%= name.downcase %>.<%= attributes[0] %> %></h1>
-    <a href="<%%= url_for :action => :index %>" class="ui-btn-left" data-icon="arrow-l" data-direction="reverse">Back</a>
-    <a href="<%%= url_for :action => :edit, :id => @<%= name.downcase %>.object %>" class="ui-btn-right" data-icon="star">Edit</a>
+    <a href="<%%= url_for :action => :index %>" class="ui-btn-left" data-icon="arrow-l" data-direction="reverse">
+      Back
+    </a>
+    <a href="<%%= url_for :action => :edit, :id => @<%= name.downcase %>.object %>" class="ui-btn-right" data-icon="star">
+      Edit
+    </a>
   </div>
 
   <div data-role="content">
