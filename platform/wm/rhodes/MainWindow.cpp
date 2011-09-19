@@ -405,6 +405,12 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	return 0;
 }
 
+LRESULT CMainWindow::OnBrowserDocumentComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+    ProcessDocumentComplete( (LPCTSTR)lParam );
+    return 0;
+}
+
 LRESULT CMainWindow::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     return m_pBrowserEng->OnWebKitMessages(uMsg, wParam, lParam, bHandled);
@@ -954,8 +960,13 @@ void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtUR
 {
     USES_CONVERSION;
 	
-	LPCTSTR url = OLE2CT(V_BSTR(pvtURL));
-	if (m_bLoading && wcscmp(url,_T("about:blank"))==0) {
+	ProcessDocumentComplete( OLE2CT(V_BSTR(pvtURL)) );
+}
+
+void CMainWindow::ProcessDocumentComplete(LPCTSTR url)
+{
+	if (m_bLoading && wcscmp(url,_T("about:blank"))==0) 
+    {
 		LOG(TRACE) + "Show loading page";
 		ShowLoadingPage();
 		m_bLoading = false; //show loading page only once
