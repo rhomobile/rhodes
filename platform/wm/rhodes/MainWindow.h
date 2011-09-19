@@ -26,6 +26,8 @@
 
 #pragma once
 
+//#define INTEGRATED_WEBKIT 1
+
 #ifndef RHODES_EMULATOR
 
 #if !defined(_WIN32_WCE) || defined( OS_PLATFORM_CE )
@@ -255,6 +257,8 @@ private:
 #ifdef INTEGRATED_WEBKIT
     bool m_useWebKit;
     CWebKitEngine* m_wkengine;
+    static LRESULT CALLBACK WK_HTMLWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+    static LRESULT CALLBACK WK_GetEngineConfig(int iInstID, LPCTSTR tcSetting, TCHAR* tcValue);
 #endif
 
 #if defined(_WIN32_WCE)
