@@ -3,6 +3,11 @@
 
 #include "logging/RhoLog.h"
 
+#if defined (_WIN32_WCE) && !defined( OS_PLATFORM_CE )
+#include <pvdispid.h>
+#include <piedocvw.h>
+#endif
+
 class CIEBrowserEngine :  public rho::IBrowserEngine
 {
     // Represents the PIEWebBrowser control contained in the main application.
@@ -23,7 +28,7 @@ public:
     virtual BOOL ResizeOnTab(int iInstID,RECT rcNewSize);
     virtual BOOL BackOnTab(int iInstID,int iPagesBack = 1);
     virtual BOOL ForwardOnTab(int iInstID);
-    virtual BOOL Reload(bool bFromCache);
+    virtual BOOL ReloadOnTab(bool bFromCache, UINT iTab);
     virtual BOOL NavigateToHtml(LPCTSTR szHtml);
     virtual LRESULT OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     virtual void RunMessageLoop(CMainWindow& mainWnd);
