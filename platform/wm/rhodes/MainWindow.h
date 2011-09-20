@@ -50,7 +50,7 @@
 #include "LogView.h"
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-#include "webkit/PBCore/Eng.h"
+#include "webkit/rhoelements/PBCore/PBCore/Eng.h"
 #endif
 
 #define ID_CUSTOM_MENU_ITEM_FIRST (WM_APP+3)
