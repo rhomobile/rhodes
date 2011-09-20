@@ -51,6 +51,11 @@
 #include "MetaHandler.h"
 #include <hash_map>
 
+#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+#include "webkit/RhoWKBrowserEngine.h"
+#include "webkit/rhoelements/PBCore/PBCore/PBCore.h"
+#endif
+
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 
 #if defined(_WIN32_WCE)
@@ -155,8 +160,16 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     // In one step, create an "AtlAxWin" window for the PIEWebBrowser control,
     // and also create the control itself. (AtlAxWin is a window class that
     // ATL uses to support containment of controls in windows.)
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE)    
     m_pBrowserEng = rho_wmimpl_createBrowserEngine(m_hWnd);
+    
+#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+    CRhoWKBrowserEngine *pEngine = static_cast<CRhoWKBrowserEngine*>(m_pBrowserEng);
+    if (!Initialise(_T(""), GetModuleHandle(0), (HWND)GetParent(), pEngine->getWebKitEngine()))
+    {
+        LOG(ERROR)  + "Failed initialize PB engine";
+    }
+#endif
 #else
 	LOGCONF().setLogView(&m_logView);
 

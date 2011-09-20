@@ -2,8 +2,12 @@
 
   <div data-role="header" data-position="inline">
     <h1>Edit <%%= @<%= name.downcase %>.<%= attributes[0] %> %></h1>
-    <a href="<%%= url_for :action => :show, :id => @<%= name.downcase %>.object %>" class="ui-btn-left" data-icon="back" data-direction="reverse">Cancel</a>
-    <a href="<%%= url_for :action => :delete, :id => @<%= name.downcase %>.object %>" class="ui-btn-right" data-icon="delete" data-direction="reverse">Delete</a>
+    <a href="<%%= url_for :action => :show, :id => @<%= name.downcase %>.object %>" class="ui-btn-left" data-icon="back" data-direction="reverse">
+      Cancel
+    </a>
+    <a href="<%%= url_for :action => :delete, :id => @<%= name.downcase %>.object %>" class="ui-btn-right" data-icon="delete" data-direction="reverse">
+      Delete
+    </a>
   </div>
 
   <div data-role="content">
