@@ -64,7 +64,7 @@ BOOL CIEBrowserEngine::ForwardOnTab(int iInstID)
     return m_spIWebBrowser2->GoForward() == S_OK;
 }
 
-BOOL CIEBrowserEngine::Reload(bool bFromCache)
+BOOL CIEBrowserEngine::ReloadOnTab(bool bFromCache, UINT iTab)
 {
     return m_spIWebBrowser2->Refresh() == S_OK;
 }

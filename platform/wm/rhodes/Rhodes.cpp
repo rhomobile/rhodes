@@ -38,7 +38,7 @@
 #include "common/app_build_capabilities.h"
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-#include "webkit/RhoWKBrowserEngine.h"
+#include "rhoelements/RhoWKBrowserEngine.h"
 #else
 #include "IEBrowserEngine.h"
 #endif
@@ -113,10 +113,19 @@ HINSTANCE CRhodesModule::m_hInstance;
 CRhodesModule _AtlModule;
 bool g_restartOnExit = false;
 
+//extern CEng*  rho_elements_Initialise(LPCTSTR lpCmdLine, HINSTANCE hInst, HWND parentWnd );
+
 rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
 {
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-    return new CRhoWKBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
+    CRhoWKBrowserEngine* pEngine = new CRhoWKBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
+
+    //CEng* pEng = rho_elements_Initialise( convertToStringW(g_strCmdLine).c_str(), rho_wmimpl_get_appinstance(), (HWND)hwndParent );
+    //{
+    //    LOG(ERROR)  + "Failed initialize PB engine";
+    //}
+
+    return pEngine;
 #else
     return new CIEBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
 #endif

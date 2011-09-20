@@ -129,10 +129,10 @@
 //---   ---
 #endif
 
-#if defined (_WIN32_WCE) && !defined( OS_PLATFORM_CE )
-#include <pvdispid.h>
-#include <piedocvw.h>
-#endif
+//#if defined (_WIN32_WCE) && !defined( OS_PLATFORM_CE )
+//#include <pvdispid.h>
+//#include <piedocvw.h>
+//#endif
 
 
 #include "Macros.h"
