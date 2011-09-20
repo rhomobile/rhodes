@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "common/app_build_capabilities.h"
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 
