@@ -355,3 +355,4 @@ CEng* CRhoWKBrowserEngine::getWebKitEngine() const
 
 }
 
+#endif
