@@ -463,8 +463,8 @@ namespace map
         unsigned column = (unsigned)((longitude - ts/2)/ts);
         
         if ( (cmd->latitude == 0) && (cmd->longitude == 0)) {
-            row = cmd->row;
-            column = cmd->column;
+            row = (unsigned int)cmd->row;
+            column = (unsigned int)cmd->column;
         }
         
         void *data;
@@ -1353,8 +1353,8 @@ namespace map
             int row;
             int column;
             
-            for (row = top; row <= bottom; row++) {
-                for (column = left; column <= right; column++) {
+            for (row = (int)top; row <= bottom; row++) {
+                for (column = (int)left; column <= right; column++) {
                     m_map_fetch->fetchTile(cur_zoom, row, column);   
                     count++;
                 }

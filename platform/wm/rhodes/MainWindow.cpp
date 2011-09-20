@@ -53,6 +53,11 @@
 #endif
 #include <hash_map>
 
+//#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+//#include "rhoelements/RhoWKBrowserEngine.h"
+//#include "rhoelements/PBCore/PBCore/PBCore.h"
+//#endif
+
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 
 #if defined(_WIN32_WCE)
@@ -81,12 +86,12 @@ int CMainWindow::m_screenHeight;
 
 CMainWindow::CMainWindow()
 {
-	mIsBrowserViewHided = false;
-	mNativeView = NULL;
-	mNativeViewFactory = NULL;
-	mNativeViewType = "";
+    mIsBrowserViewHided = false;
+    mNativeView = NULL;
+    mNativeViewFactory = NULL;
+    mNativeViewType = "";
 
-	mIsOpenedByURL = false;
+    mIsOpenedByURL = false;
 
     m_bLoading = true;
     //m_spIWebBrowser2 = NULL;
@@ -94,7 +99,7 @@ CMainWindow::CMainWindow()
     memset(&m_sai, 0, sizeof(m_sai));
     m_sai.cbSize = sizeof(m_sai);
 #endif
-	m_pageCounter = 0;
+    m_pageCounter = 0;
 }
 
 CMainWindow::~CMainWindow()
@@ -157,7 +162,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     // In one step, create an "AtlAxWin" window for the PIEWebBrowser control,
     // and also create the control itself. (AtlAxWin is a window class that
     // ATL uses to support containment of controls in windows.)
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE)    
     m_pBrowserEng = rho_wmimpl_createBrowserEngine(m_hWnd);
 #else
 	LOGCONF().setLogView(&m_logView);

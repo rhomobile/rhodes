@@ -345,7 +345,6 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }
 
     rho::common::CRhodesApp::Create(m_strRootPath );
-    //RHODESAPP().setRhodesPath(m_strRhodesPath);
 
     DWORD dwStyle = WS_VISIBLE;
 
@@ -462,23 +461,9 @@ const rho::String& CRhodesModule::getRhoRootPath()
             strcpy(rootpath,".");
         else
         {
-            char rootpath[MAX_PATH];
-            int len;
-            if ( (len = GetModuleFileNameA(NULL,rootpath,MAX_PATH)) == 0 )
-                strcpy(rootpath,".");
-            else
-            {
-                while( !(rootpath[len] == '\\'  || rootpath[len] == '/') )
-                  len--;
-                rootpath[len+1]=0;
-            }
-
-            m_strRootPath = rootpath;
-            m_strRootPath += "rho\\";
-
-            for( int i = 0; i < m_strRootPath.length(); i++ )
-                if ( m_strRootPath.at(i) == '\\' )
-                    m_strRootPath[i] = '/';
+            while( !(rootpath[len] == '\\'  || rootpath[len] == '/') )
+              len--;
+            rootpath[len+1]=0;
         }
 
         m_strRootPath = rootpath;
@@ -497,7 +482,7 @@ extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/
 {
 	INITCOMMONCONTROLSEX ctrl;
 
-	
+
 	//Required to use datetime picker controls.
 	ctrl.dwSize = sizeof(ctrl);
 	ctrl.dwICC = ICC_DATE_CLASSES|ICC_BAR_CLASSES;

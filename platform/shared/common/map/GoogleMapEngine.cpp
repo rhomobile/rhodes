@@ -68,14 +68,14 @@ namespace map
         
         uint64 pow2 = rho_math_pow2(zoom);
         
-        double current_width_in_pixels = pow2 * (TILE_SIZE);
-        double current_height_in_pixels = pow2 * (TILE_SIZE);
+        double current_width_in_pixels = (double)(pow2 * (TILE_SIZE));
+        double current_height_in_pixels = (double)(pow2 * (TILE_SIZE));
         
-        double tile_center_x_in_pixels = p_column*(TILE_SIZE)+((TILE_SIZE)/2);
-        double tile_center_y_in_pixels = p_row*(TILE_SIZE)+((TILE_SIZE)/2);
+        double tile_center_x_in_pixels = (double)(p_column*(TILE_SIZE)+((TILE_SIZE)/2));
+        double tile_center_y_in_pixels = (double)(p_row*(TILE_SIZE)+((TILE_SIZE)/2));
         
-        double center_latitude = pixelsToDegreesY(tile_center_y_in_pixels, zoom);//((double)-90.0) + ((current_height_in_pixels - tile_center_y_in_pixels)/(current_height_in_pixels))*((double)180.0);
-        double center_longitude = pixelsToDegreesX(tile_center_x_in_pixels, zoom);//((double)-180.0) + ((tile_center_x_in_pixels)/(current_width_in_pixels))*((double)360.0);
+        double center_latitude = pixelsToDegreesY((uint64)tile_center_y_in_pixels, zoom);//((double)-90.0) + ((current_height_in_pixels - tile_center_y_in_pixels)/(current_height_in_pixels))*((double)180.0);
+        double center_longitude = pixelsToDegreesX((uint64)tile_center_x_in_pixels, zoom);//((double)-180.0) + ((tile_center_x_in_pixels)/(current_width_in_pixels))*((double)360.0);
         
         
         // Make url
