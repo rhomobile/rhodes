@@ -59,6 +59,7 @@ int CMainWindow::m_screenWidth;
 int CMainWindow::m_screenHeight;
 
 bool CMainWindow::mainWindowClosed = false;
+HINSTANCE CMainWindow::rhoApplicationHINSTANCE = 0;
 
 CMainWindow::CMainWindow():
     m_started(true),

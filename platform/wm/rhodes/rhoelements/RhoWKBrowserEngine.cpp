@@ -355,4 +355,3 @@ CEng* CRhoWKBrowserEngine::getWebKitEngine() const
 
 }
 
-#endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER

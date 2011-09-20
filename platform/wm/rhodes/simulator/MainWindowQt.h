@@ -89,6 +89,8 @@ public:
 	// for 'main_window_closed' System property
 	static bool mainWindowClosed;
 
+    static HINSTANCE rhoApplicationHINSTANCE;
+
     // proxy methods:
     void* init(IMainWindowCallback* callback, const wchar_t* title);
     void setCallback(IMainWindowCallback* callback);
