@@ -9,14 +9,16 @@
 #include "rhoelements/PBCore/PBCore/Eng.h"
 
 extern "C" HWND rho_wmimpl_get_mainwnd();
+extern CEng* rho_wmimpl_get_webkitbrowser();
+LRESULT CALLBACK rho_elements_WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 namespace rho
 {
-WNDPROC CRhoWKBrowserEngine::m_WebKitOwnerProc;
-CConfig* CRhoWKBrowserEngine::g_pConfig = new CConfig();
-WCHAR CRhoWKBrowserEngine::g_szConfigFilePath[MAX_PATH + 1];
-WCHAR CRhoWKBrowserEngine::g_szInstallDirectory[MAX_PATH + 1];
-
+//WNDPROC CRhoWKBrowserEngine::m_WebKitOwnerProc;
+//CConfig* CRhoWKBrowserEngine::g_pConfig = new CConfig();
+//WCHAR CRhoWKBrowserEngine::g_szConfigFilePath[MAX_PATH + 1];
+//WCHAR CRhoWKBrowserEngine::g_szInstallDirectory[MAX_PATH + 1];
+/*
 LRESULT CALLBACK onTopmostWnd(EngineEventID eeID, LPARAM value, int tabIndex)
 {
 	// The engine needs to navigate to a page before it can provide the topmost window.
@@ -24,10 +26,11 @@ LRESULT CALLBACK onTopmostWnd(EngineEventID eeID, LPARAM value, int tabIndex)
 	// If all of the instances have been loaded then the meta event and navigate event will be registered 
 	
 	return PostMessage(rho_wmimpl_get_mainwnd(),PB_ONTOPMOSTWINDOW,(LPARAM)tabIndex,(WPARAM)value);
-}
+} */
 
 CRhoWKBrowserEngine::CRhoWKBrowserEngine(HWND hParentWnd, HINSTANCE hInstance) : m_pEngine(NULL)
 {
+/*
     if(GetModuleFileName(NULL, g_szInstallDirectory, MAX_PATH)){
         //trim the file name off the end
         WCHAR* pStr = wcsrchr(g_szInstallDirectory,L'\\');
@@ -42,17 +45,19 @@ CRhoWKBrowserEngine::CRhoWKBrowserEngine(HWND hParentWnd, HINSTANCE hInstance) :
 		MessageBox(NULL,szConfigErrorMsg, L"Config Error", MB_OK);
 		delete[] szConfigErrorMsg;
 	}
+
     m_pEngine = new CEng(hParentWnd, hInstance);
     if (m_pEngine->Init(L"PBEngine_WK.dll")) 
     {
         m_pEngine->InitEngine(0, &WK_HTMLWndProc, &m_WebKitOwnerProc, SETTING_OFF, &WK_GetEngineConfig);
         m_pEngine->RegisterForEvent(EEID_TOPMOSTHWNDAVAILABLE, onTopmostWnd);
-    }
+    }*/
+    m_pEngine = rho_wmimpl_get_webkitbrowser();
 }
 
 CRhoWKBrowserEngine::~CRhoWKBrowserEngine(void)
 {
-    m_pEngine->DeInitEngine();
+    //m_pEngine->DeInitEngine();
     //TODO: delete engine - now it crash when delete
     //delete m_pEngine;
 }
@@ -94,7 +99,7 @@ BOOL CRhoWKBrowserEngine::NavigateToHtml(LPCTSTR szHtml)
 
     return FALSE;
 }
-
+#if 0
 LRESULT CALLBACK CRhoWKBrowserEngine::WK_HTMLWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT result;
@@ -308,6 +313,13 @@ LRESULT CRhoWKBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM l
 
     return 0;
 }
+#endif
+
+LRESULT CRhoWKBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    bHandled = true;
+    return rho_elements_WndProc( rho_wmimpl_get_mainwnd(), uMsg, wParam, lParam );    
+}
 
 void CRhoWKBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 {
@@ -347,6 +359,7 @@ void CRhoWKBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 
     }
 }
+
 
 CEng* CRhoWKBrowserEngine::getWebKitEngine() const
 {

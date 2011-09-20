@@ -114,7 +114,9 @@ public:
 	HWND getWebViewHWND();
     CNativeToolbar& getToolbar(){ return m_toolbar; }
     void performOnUiThread(rho::common::IRhoRunnable* pTask);
-	
+
+    LRESULT InitMainWindow();
+
     // Required to forward messages to the PIEWebBrowser control
     BOOL TranslateAccelerator(MSG* pMsg);
 

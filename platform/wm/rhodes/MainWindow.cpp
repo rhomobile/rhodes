@@ -143,6 +143,11 @@ void CMainWindow::Navigate(BSTR URL)
 
 LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+    return S_OK;
+}
+
+LRESULT CMainWindow::InitMainWindow()
+{
     HRESULT hr = S_OK;
 #if defined(_WIN32_WCE)
     SHMENUBARINFO mbi = { sizeof(mbi), 0 };
