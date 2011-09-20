@@ -10,16 +10,16 @@ namespace rho
 
 class CRhoWKBrowserEngine :  public rho::IBrowserEngine
 {
-    static WNDPROC m_WebKitOwnerProc;
-    static CConfig* g_pConfig;
-    static WCHAR CRhoWKBrowserEngine::g_szConfigFilePath[MAX_PATH + 1];
-    static WCHAR CRhoWKBrowserEngine::g_szInstallDirectory[MAX_PATH + 1];
+    //static WNDPROC m_WebKitOwnerProc;
+    //static CConfig* g_pConfig;
+    //static WCHAR CRhoWKBrowserEngine::g_szConfigFilePath[MAX_PATH + 1];
+    //static WCHAR CRhoWKBrowserEngine::g_szInstallDirectory[MAX_PATH + 1];
     CEng* m_pEngine;
 
-    static LRESULT CALLBACK WK_HTMLWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
-    static LRESULT CALLBACK WK_GetEngineConfig(int iInstID, LPCTSTR tcSetting, TCHAR* tcValue);
+    //static LRESULT CALLBACK WK_HTMLWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+    //static LRESULT CALLBACK WK_GetEngineConfig(int iInstID, LPCTSTR tcSetting, TCHAR* tcValue);
 
-    LRESULT ProcessOnTopMostWnd(HWND hWnd, int tabIndex);
+    //LRESULT ProcessOnTopMostWnd(HWND hWnd, int tabIndex);
 public:
     CRhoWKBrowserEngine(HWND hParentWnd, HINSTANCE hInstance);
     virtual ~CRhoWKBrowserEngine(void);

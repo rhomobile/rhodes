@@ -39,6 +39,7 @@
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 #include "rhoelements/RhoWKBrowserEngine.h"
+extern CEng* rho_elements_Initialise( LPCTSTR szCmdLine, HINSTANCE hInst, HWND hwndParent );
 #else
 #include "IEBrowserEngine.h"
 #endif
@@ -115,16 +116,18 @@ bool g_restartOnExit = false;
 
 //extern CEng*  rho_elements_Initialise(LPCTSTR lpCmdLine, HINSTANCE hInst, HWND parentWnd );
 
+#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+CEng* g_pWebKitEngine = 0;
+CEng* rho_wmimpl_get_webkitbrowser()
+{
+    return g_pWebKitEngine;
+}
+#endif
+
 rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
 {
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     CRhoWKBrowserEngine* pEngine = new CRhoWKBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
-
-    //CEng* pEng = rho_elements_Initialise( convertToStringW(g_strCmdLine).c_str(), rho_wmimpl_get_appinstance(), (HWND)hwndParent );
-    //{
-    //    LOG(ERROR)  + "Failed initialize PB engine";
-    //}
-
     return pEngine;
 #else
     return new CIEBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
@@ -357,6 +360,12 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #else
     String strTitle = RHODESAPP().getAppTitle();
     m_appWindow.Create(NULL, CWindow::rcDefault, convertToStringW(strTitle).c_str(), dwStyle);
+#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+    g_pWebKitEngine = rho_elements_Initialise( convertToStringW(g_strCmdLine).c_str(), rho_wmimpl_get_appinstance(), 
+        (HWND)m_appWindow.m_hWnd );
+#endif
+
+    m_appWindow.InitMainWindow();
 #endif
     if (NULL == m_appWindow.m_hWnd)
     {
