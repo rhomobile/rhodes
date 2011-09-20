@@ -363,6 +363,10 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     g_pWebKitEngine = rho_elements_Initialise( convertToStringW(g_strCmdLine).c_str(), rho_wmimpl_get_appinstance(), 
         (HWND)m_appWindow.m_hWnd );
+    if (!g_pWebKitEngine) {
+        MessageBox(NULL, L"Failed to initialize WebKit engine.", convertToStringW(strTitle).c_str(), MB_ICONERROR | MB_OK);
+	    return S_FALSE;
+    }
 #endif
 
     m_appWindow.InitMainWindow();
