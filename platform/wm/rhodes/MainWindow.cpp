@@ -48,13 +48,15 @@
 #include "common/RhoFilePath.h"
 #include "common/RhoFile.h"
 #include "bluetooth/Bluetooth.h"
+#ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 #include "MetaHandler.h"
+#endif
 #include <hash_map>
 
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-#include "webkit/RhoWKBrowserEngine.h"
-#include "webkit/rhoelements/PBCore/PBCore/PBCore.h"
-#endif
+//#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+//#include "rhoelements/RhoWKBrowserEngine.h"
+//#include "rhoelements/PBCore/PBCore/PBCore.h"
+//#endif
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 
@@ -162,14 +164,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     // ATL uses to support containment of controls in windows.)
 #if defined(_WIN32_WCE)    
     m_pBrowserEng = rho_wmimpl_createBrowserEngine(m_hWnd);
-    
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-    CRhoWKBrowserEngine *pEngine = static_cast<CRhoWKBrowserEngine*>(m_pBrowserEng);
-    if (!Initialise(_T(""), GetModuleHandle(0), (HWND)GetParent(), pEngine->getWebKitEngine()))
-    {
-        LOG(ERROR)  + "Failed initialize PB engine";
-    }
-#endif
+   
 #else
 	LOGCONF().setLogView(&m_logView);
 
@@ -203,7 +198,6 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 #ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     // set up connection point
     hr = AtlAdviseSinkMap(this, true);
-    CHR(hr);
 #endif
 
 #if defined(_WIN32_WCE) && !defined( OS_PLATFORM_CE )
@@ -212,7 +206,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     mbi.hwndParent = m_hWnd;
     mbi.nToolBarId = IDR_MAIN_MENUBAR; // ID of toolbar resource
     mbi.hInstRes   = _AtlBaseModule.GetResourceInstance();
-    CBR(SHCreateMenuBar(&mbi));
+    SHCreateMenuBar(&mbi);
 	m_hWndCECommandBar = mbi.hwndMB;
 	m_menuBar = m_hWndCECommandBar;
 
@@ -257,8 +251,6 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	RHO_ASSERT(SUCCEEDED(hr));
 
 	rho_rhodesapp_callUiCreatedCallback();
-
-Error:
 
     return SUCCEEDED(hr) ? 0 : -1;
 }
@@ -330,8 +322,10 @@ LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	LOGCONF().setLogView(NULL);
 #endif
 
+#ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     // Tear down connection points while controls are still alive.
     RHO_ASSERT(SUCCEEDED(AtlAdviseSinkMap(this, false)));
+#endif
 
     delete m_pBrowserEng;
     m_pBrowserEng = NULL;
@@ -658,7 +652,7 @@ LRESULT CMainWindow::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT CMainWindow::OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    m_pBrowserEng->Reload(false);
+    m_pBrowserEng->ReloadOnTab(false, 0);
     return 0;
 }
 

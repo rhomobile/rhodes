@@ -50,7 +50,24 @@
 #include "LogView.h"
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-#include "webkit/rhoelements/PBCore/PBCore/Eng.h"
+//#include "rhoelements/PBCore/PBCore/Eng.h"
+#define PB_NAVIGATETAB					WM_USER	+ 1
+#define PB_GEN_ACTIVEX					WM_USER	+ 2
+#define PB_GEN_QUIT						WM_USER + 3
+#define PB_INIT							WM_USER	+ 4
+#define PB_SETPLG_PROPERTY				WM_USER	+ 5
+#define PB_CALLPLG_METHOD				WM_USER + 6
+#define PB_DEFTAGS						WM_USER + 7
+#define PB_ONMETA						WM_USER + 8
+#define PB_ONTOPMOSTWINDOW				WM_USER + 9
+#define PB_WINDOW_RESTORE				WM_USER + 10
+#define PB_SCREEN_ORIENTATION_CHANGED	WM_USER + 11
+#define PB_NEWGPSDATA					WM_USER + 12
+#else
+#if defined (_WIN32_WCE) && !defined( OS_PLATFORM_CE )
+#include <pvdispid.h>
+#include <piedocvw.h>
+#endif
 #endif
 
 #define ID_CUSTOM_MENU_ITEM_FIRST (WM_APP+3)
@@ -78,11 +95,13 @@ static UINT WM_BROWSER_ONDOCUMENTCOMPLETE   = ::RegisterWindowMessage(L"RHODES_W
 class CMainWindow :
 #if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
 	public CFrameWindowImpl<CMainWindow>, 
-	public CFullScreenFrame<CMainWindow>,
+	public CFullScreenFrame<CMainWindow>
 #else
-    public CWindowImpl<CMainWindow, CWindow, CWinTraits<WS_BORDER | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_CLIPSIBLINGS> >,
+    public CWindowImpl<CMainWindow, CWindow, CWinTraits<WS_BORDER | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_CLIPSIBLINGS> >
 #endif
-    public IDispEventImpl<ID_BROWSER, CMainWindow>
+#ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+    ,public IDispEventImpl<ID_BROWSER, CMainWindow>
+#endif
 {
     DEFINE_LOGCLASS;
 public:
@@ -209,6 +228,7 @@ private:
     LRESULT OnWebKitMessages (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 
 public:
+#ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     BEGIN_SINK_MAP(CMainWindow)
         SINK_ENTRY(ID_BROWSER, DISPID_BEFORENAVIGATE2, &CMainWindow::OnBeforeNavigate2)
         SINK_ENTRY(ID_BROWSER, DISPID_TITLECHANGE, &CMainWindow::OnBrowserTitleChange)
@@ -216,6 +236,7 @@ public:
         SINK_ENTRY(ID_BROWSER, DISPID_DOCUMENTCOMPLETE, &CMainWindow::OnDocumentComplete)
         SINK_ENTRY(ID_BROWSER, DISPID_COMMANDSTATECHANGE, &CMainWindow::OnCommandStateChange)
     END_SINK_MAP()
+#endif
 
 private:
     // event handlers
