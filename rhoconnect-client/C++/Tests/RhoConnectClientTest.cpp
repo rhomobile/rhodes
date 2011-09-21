@@ -159,6 +159,10 @@ TEST(SyncClient, shouldSyncProductByName)
     EXPECT_EQ(String(oNotify.status), "ok");
     EXPECT_EQ(oNotify.error_code, RHO_ERR_NONE);
 
+    unsigned long cond = rho_connectclient_hash_create();
+    unsigned long items = rho_connectclient_find_all(g_szProduct, cond );
+    EXPECT_NE( rho_connectclient_strhasharray_size(items), 0 );
+
     rho_connectclient_free_syncnotify(&oNotify);
     rho_sync_free_string(szRes);
 
