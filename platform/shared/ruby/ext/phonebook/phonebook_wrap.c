@@ -1790,9 +1790,10 @@ int SWIG_Ruby_arity( VALUE proc, int minimal )
 /* -------- TYPES TABLE (BEGIN) -------- */
 
 #define SWIGTYPE_p_char swig_types[0]
-#define SWIGTYPE_p_void swig_types[1]
-static swig_type_info *swig_types[3];
-static swig_module_info swig_module = {swig_types, 2, 0, 0, 0, 0};
+#define SWIGTYPE_p_rho_param swig_types[1]
+#define SWIGTYPE_p_void swig_types[2]
+static swig_type_info *swig_types[4];
+static swig_module_info swig_module = {swig_types, 3, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1815,20 +1816,37 @@ static VALUE mPhonebook;
 #define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),(void**)(a)) 
 
 
+#include "ext/rho/rhoruby.h"
 extern void* openPhonebook();
 extern void  closePhonebook(void* pb);
+
 extern VALUE getallPhonebookRecords(void* pb);
-extern int getPhonebookRecordCount(void* pb);
-extern VALUE getPhonebookRecords(void* pb, int offset, int max_results);
+#define allRecords getallPhonebookRecords
+
+extern int getPhonebookRecordCount(void* pb, int offset, int limit);
+#define countRecords getPhonebookRecordCount
+
+extern VALUE getPhonebookRecords(void* pb, int offset, int limit, rho_param* select_param);
+#define getRecords getPhonebookRecords
+
 extern void* openPhonebookRecord(void* pb, char* id);
+#define openRecord openPhonebookRecord
+
 extern VALUE getPhonebookRecord(void* pb, char* id);
+#define getRecord getPhonebookRecord
+
 extern VALUE getfirstPhonebookRecord(void* pb);
+#define firstRecord getfirstPhonebookRecord
+
 extern VALUE getnextPhonebookRecord(void* pb);
+#define nextRecord getnextPhonebookRecord
+
 extern void* createRecord(void* pb);
 extern int setRecordValue(void* record, char* property, char* value);
 extern int addRecord(void* pb, void* record);
 extern int saveRecord(void* pb, void* record);
 extern int deleteRecord(void* pb, void* record);
+
 
 
 #include <limits.h>
@@ -1839,16 +1857,6 @@ extern int deleteRecord(void* pb, void* record);
 #   define ULLONG_MAX (LLONG_MAX * 2ULL + 1ULL)
 # endif
 #endif
-
-
-  #define SWIG_From_long   LONG2NUM 
-
-
-SWIGINTERNINLINE VALUE
-SWIG_From_int  (int value)
-{    
-  return SWIG_From_long  (value);
-}
 
 
 SWIGINTERN VALUE
@@ -1900,6 +1908,16 @@ SWIG_AsVal_int (VALUE obj, int *val)
     }
   }  
   return res;
+}
+
+
+  #define SWIG_From_long   LONG2NUM 
+
+
+SWIGINTERNINLINE VALUE
+SWIG_From_int  (int value)
+{    
+  return SWIG_From_long  (value);
 }
 
 
@@ -1992,7 +2010,7 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_getallPhonebookRecords(int argc, VALUE *argv, VALUE self) {
+_wrap_allRecords(int argc, VALUE *argv, VALUE self) {
   void *arg1 = (void *) 0 ;
   int res1 ;
   VALUE result;
@@ -2003,9 +2021,9 @@ _wrap_getallPhonebookRecords(int argc, VALUE *argv, VALUE self) {
   }
   res1 = SWIG_ConvertPtr(argv[0],SWIG_as_voidptrptr(&arg1), 0, 0);
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "void *","getallPhonebookRecords", 1, argv[0] )); 
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "void *","allRecords", 1, argv[0] )); 
   }
-  result = (VALUE)getallPhonebookRecords(arg1);
+  result = (VALUE)allRecords(arg1);
   vresult = result;
   return vresult;
 fail:
@@ -2014,29 +2032,7 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_getPhonebookRecordCount(int argc, VALUE *argv, VALUE self) {
-  void *arg1 = (void *) 0 ;
-  int res1 ;
-  int result;
-  VALUE vresult = Qnil;
-  
-  if ((argc < 1) || (argc > 1)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
-  }
-  res1 = SWIG_ConvertPtr(argv[0],SWIG_as_voidptrptr(&arg1), 0, 0);
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "void *","getPhonebookRecordCount", 1, argv[0] )); 
-  }
-  result = (int)getPhonebookRecordCount(arg1);
-  vresult = SWIG_From_int((int)(result));
-  return vresult;
-fail:
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_getPhonebookRecords(int argc, VALUE *argv, VALUE self) {
+_wrap_countRecords(int argc, VALUE *argv, VALUE self) {
   void *arg1 = (void *) 0 ;
   int arg2 ;
   int arg3 ;
@@ -2045,7 +2041,7 @@ _wrap_getPhonebookRecords(int argc, VALUE *argv, VALUE self) {
   int ecode2 = 0 ;
   int val3 ;
   int ecode3 = 0 ;
-  VALUE result;
+  int result;
   VALUE vresult = Qnil;
   
   if ((argc < 3) || (argc > 3)) {
@@ -2053,20 +2049,20 @@ _wrap_getPhonebookRecords(int argc, VALUE *argv, VALUE self) {
   }
   res1 = SWIG_ConvertPtr(argv[0],SWIG_as_voidptrptr(&arg1), 0, 0);
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "void *","getPhonebookRecords", 1, argv[0] )); 
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "void *","countRecords", 1, argv[0] )); 
   }
   ecode2 = SWIG_AsVal_int(argv[1], &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","getPhonebookRecords", 2, argv[1] ));
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","countRecords", 2, argv[1] ));
   } 
   arg2 = (int)(val2);
   ecode3 = SWIG_AsVal_int(argv[2], &val3);
   if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "int","getPhonebookRecords", 3, argv[2] ));
+    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "int","countRecords", 3, argv[2] ));
   } 
   arg3 = (int)(val3);
-  result = (VALUE)getPhonebookRecords(arg1,arg2,arg3);
-  vresult = result;
+  result = (int)countRecords(arg1,arg2,arg3);
+  vresult = SWIG_From_int((int)(result));
   return vresult;
 fail:
   return Qnil;
@@ -2074,7 +2070,60 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_openPhonebookRecord(int argc, VALUE *argv, VALUE self) {
+_wrap_getRecords(int argc, VALUE *argv, VALUE self) {
+  void *arg1 = (void *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  rho_param *arg4 = (rho_param *) 0 ;
+  int res1 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  {
+    arg4 = NULL;
+  }
+  if ((argc < 3) || (argc > 4)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 3)",argc); SWIG_fail;
+  }
+  res1 = SWIG_ConvertPtr(argv[0],SWIG_as_voidptrptr(&arg1), 0, 0);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "void *","getRecords", 1, argv[0] )); 
+  }
+  ecode2 = SWIG_AsVal_int(argv[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","getRecords", 2, argv[1] ));
+  } 
+  arg2 = (int)(val2);
+  ecode3 = SWIG_AsVal_int(argv[2], &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "int","getRecords", 3, argv[2] ));
+  } 
+  arg3 = (int)(val3);
+  if (argc > 3) {
+    {
+      arg4 = rho_param_fromvalue(argv[3]);
+    }
+  }
+  result = (VALUE)getRecords(arg1,arg2,arg3,arg4);
+  vresult = result;
+  {
+    rho_param_free(arg4);
+  }
+  return vresult;
+fail:
+  {
+    rho_param_free(arg4);
+  }
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_openRecord(int argc, VALUE *argv, VALUE self) {
   void *arg1 = (void *) 0 ;
   char *arg2 = (char *) 0 ;
   int res1 ;
@@ -2089,14 +2138,14 @@ _wrap_openPhonebookRecord(int argc, VALUE *argv, VALUE self) {
   }
   res1 = SWIG_ConvertPtr(argv[0],SWIG_as_voidptrptr(&arg1), 0, 0);
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "void *","openPhonebookRecord", 1, argv[0] )); 
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "void *","openRecord", 1, argv[0] )); 
   }
   res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char *","openPhonebookRecord", 2, argv[1] ));
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char *","openRecord", 2, argv[1] ));
   }
   arg2 = (char *)(buf2);
-  result = (void *)openPhonebookRecord(arg1,arg2);
+  result = (void *)openRecord(arg1,arg2);
   vresult = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_void, 0 |  0 );
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return vresult;
@@ -2107,7 +2156,7 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_getPhonebookRecord(int argc, VALUE *argv, VALUE self) {
+_wrap_getRecord(int argc, VALUE *argv, VALUE self) {
   void *arg1 = (void *) 0 ;
   char *arg2 = (char *) 0 ;
   int res1 ;
@@ -2122,14 +2171,14 @@ _wrap_getPhonebookRecord(int argc, VALUE *argv, VALUE self) {
   }
   res1 = SWIG_ConvertPtr(argv[0],SWIG_as_voidptrptr(&arg1), 0, 0);
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "void *","getPhonebookRecord", 1, argv[0] )); 
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "void *","getRecord", 1, argv[0] )); 
   }
   res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char *","getPhonebookRecord", 2, argv[1] ));
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char *","getRecord", 2, argv[1] ));
   }
   arg2 = (char *)(buf2);
-  result = (VALUE)getPhonebookRecord(arg1,arg2);
+  result = (VALUE)getRecord(arg1,arg2);
   vresult = result;
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return vresult;
@@ -2140,7 +2189,7 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_getfirstPhonebookRecord(int argc, VALUE *argv, VALUE self) {
+_wrap_firstRecord(int argc, VALUE *argv, VALUE self) {
   void *arg1 = (void *) 0 ;
   int res1 ;
   VALUE result;
@@ -2151,9 +2200,9 @@ _wrap_getfirstPhonebookRecord(int argc, VALUE *argv, VALUE self) {
   }
   res1 = SWIG_ConvertPtr(argv[0],SWIG_as_voidptrptr(&arg1), 0, 0);
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "void *","getfirstPhonebookRecord", 1, argv[0] )); 
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "void *","firstRecord", 1, argv[0] )); 
   }
-  result = (VALUE)getfirstPhonebookRecord(arg1);
+  result = (VALUE)firstRecord(arg1);
   vresult = result;
   return vresult;
 fail:
@@ -2162,7 +2211,7 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_getnextPhonebookRecord(int argc, VALUE *argv, VALUE self) {
+_wrap_nextRecord(int argc, VALUE *argv, VALUE self) {
   void *arg1 = (void *) 0 ;
   int res1 ;
   VALUE result;
@@ -2173,9 +2222,9 @@ _wrap_getnextPhonebookRecord(int argc, VALUE *argv, VALUE self) {
   }
   res1 = SWIG_ConvertPtr(argv[0],SWIG_as_voidptrptr(&arg1), 0, 0);
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "void *","getnextPhonebookRecord", 1, argv[0] )); 
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "void *","nextRecord", 1, argv[0] )); 
   }
-  result = (VALUE)getnextPhonebookRecord(arg1);
+  result = (VALUE)nextRecord(arg1);
   vresult = result;
   return vresult;
 fail:
@@ -2337,18 +2386,22 @@ fail:
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_rho_param = {"_p_rho_param", "rho_param *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_void = {"_p_void", "void *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_char,
+  &_swigt__p_rho_param,
   &_swigt__p_void,
 };
 
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_rho_param[] = {  {&_swigt__p_rho_param, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_void[] = {  {&_swigt__p_void, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_char,
+  _swigc__p_rho_param,
   _swigc__p_void,
 };
 
@@ -2612,13 +2665,13 @@ SWIGEXPORT void Init_Phonebook(void) {
   SWIG_RubyInitializeTrackings();
   rb_define_module_function(mPhonebook, "openPhonebook", _wrap_openPhonebook, -1);
   rb_define_module_function(mPhonebook, "closePhonebook", _wrap_closePhonebook, -1);
-  rb_define_module_function(mPhonebook, "getallPhonebookRecords", _wrap_getallPhonebookRecords, -1);
-  rb_define_module_function(mPhonebook, "getPhonebookRecordCount", _wrap_getPhonebookRecordCount, -1);
-  rb_define_module_function(mPhonebook, "getPhonebookRecords", _wrap_getPhonebookRecords, -1);
-  rb_define_module_function(mPhonebook, "openPhonebookRecord", _wrap_openPhonebookRecord, -1);
-  rb_define_module_function(mPhonebook, "getPhonebookRecord", _wrap_getPhonebookRecord, -1);
-  rb_define_module_function(mPhonebook, "getfirstPhonebookRecord", _wrap_getfirstPhonebookRecord, -1);
-  rb_define_module_function(mPhonebook, "getnextPhonebookRecord", _wrap_getnextPhonebookRecord, -1);
+  rb_define_module_function(mPhonebook, "allRecords", _wrap_allRecords, -1);
+  rb_define_module_function(mPhonebook, "countRecords", _wrap_countRecords, -1);
+  rb_define_module_function(mPhonebook, "getRecords", _wrap_getRecords, -1);
+  rb_define_module_function(mPhonebook, "openRecord", _wrap_openRecord, -1);
+  rb_define_module_function(mPhonebook, "getRecord", _wrap_getRecord, -1);
+  rb_define_module_function(mPhonebook, "firstRecord", _wrap_firstRecord, -1);
+  rb_define_module_function(mPhonebook, "nextRecord", _wrap_nextRecord, -1);
   rb_define_module_function(mPhonebook, "createRecord", _wrap_createRecord, -1);
   rb_define_module_function(mPhonebook, "setRecordValue", _wrap_setRecordValue, -1);
   rb_define_module_function(mPhonebook, "addRecord", _wrap_addRecord, -1);
