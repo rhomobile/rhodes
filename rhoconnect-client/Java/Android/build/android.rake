@@ -135,6 +135,7 @@ OBJ.include get_objects(librhoconnectclient_src, File.join(BUILDPATH, "rhoconnec
 CLEAN.include OBJ
 CLEAN.include LIBFN
 CLEAN.include File.join(BUILDPATH, 'librhoconnectclient.so')
+CLEAN.include File.join(BUILDPATH, 'rhoimpl.jar')
 
 namespace "android" do
 
