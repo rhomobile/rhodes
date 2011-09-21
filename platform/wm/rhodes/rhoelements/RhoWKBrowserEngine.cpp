@@ -64,7 +64,9 @@ CRhoWKBrowserEngine::~CRhoWKBrowserEngine(void)
 
 BOOL CRhoWKBrowserEngine::Navigate(LPCTSTR szURL)
 {
-    return m_pEngine->Navigate(szURL);
+    BOOL res = m_pEngine->Navigate(szURL);
+    InvalidateRect(m_pEngine->GetHTMLWND(0), NULL, FALSE);
+    return res;
 }
 
 HWND CRhoWKBrowserEngine::GetHTMLWND()
