@@ -26,8 +26,10 @@
 
 package com.rhomobile.rhodes.phonebook;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import android.os.Build;
@@ -39,9 +41,10 @@ import com.rhomobile.rhodes.Logger;
 public class Phonebook {
 
 	private static final String TAG = "Phonebook";
-	private static final boolean logging_enable = false;
+	private static final boolean logging_enable = true;
 	
 	public static final String PB_ID = "id";
+	public static final String PB_DISPLAY_NAME = "display_name";
 	public static final String PB_FIRST_NAME = "first_name";
 	public static final String PB_LAST_NAME = "last_name";
 	public static final String PB_MOBILE_NUMBER = "mobile_number";
@@ -50,24 +53,9 @@ public class Phonebook {
 	public static final String PB_EMAIL_ADDRESS = "email_address";
 	public static final String PB_COMPANY_NAME = "company_name";
 	
-	public static final int PB_FIELDS_COUNT = 8;
-	public static final int PB_I_ID = 0;
-	public static final int PB_I_FIRST_NAME = 1;
-	public static final int PB_I_LAST_NAME = 2;
-	public static final int PB_I_MOBILE_NUMBER = 3;
-	public static final int PB_I_HOME_NUMBER = 4;
-	public static final int PB_I_BUSINESS_NUMBER = 5;
-	public static final int PB_I_EMAIL_ADDRESS = 6;
-	public static final int PB_I_COMPANY_NAME = 7;
-	
-	
-	
-	
-	
 	private Map<String, Contact> contactList;
 	private ContactAccessor accessor;
 	private Iterator<Contact> iter = null;
-	private boolean mIsContactsFilled = false;
 
 	private boolean checkState() {
 		if (!Capabilities.PIM_ENABLED)
@@ -108,11 +96,11 @@ public class Phonebook {
 		}
 	}
 	
-	public int queryContactCount() {
+	public int queryContactCount(int offset, int limit) {
 		int res = 0;
 		if (checkState()) {
 			try {
-				res = accessor.getCount();
+				res = accessor.getCount(offset, limit);
 			} catch (Exception e) {
 				Logger.E(TAG, e);
 			}
@@ -120,18 +108,26 @@ public class Phonebook {
 		return res;
 	}
 	
-	public void queryAllContacts() { queryContacts(0, -1); }
+	public void queryAllContacts() {
+		String[] allColumns = new String[] {
+			PB_ID,
+			PB_DISPLAY_NAME,
+			PB_FIRST_NAME,
+			PB_LAST_NAME,
+			PB_MOBILE_NUMBER,
+			PB_HOME_NUMBER,
+			PB_BUSINESS_NUMBER,
+			PB_EMAIL_ADDRESS,
+			PB_COMPANY_NAME };
+		queryContacts(0, -1, Arrays.asList(allColumns));
+	}
 
-	public void queryContacts(int offset, int max_results) {
+	public void queryContacts(int offset, int max_results, List<String> select) {
 		if (!checkState())
 			return;
 		try {
-			if (!mIsContactsFilled) {
-				Logger.I(TAG, "Phonebook.prepareFullList()");
-				contactList = accessor.getContacts(offset, max_results);
-				mIsContactsFilled = true;
-			}
-			//moveToBegin();
+			Logger.I(TAG, "queryContacts()");
+			contactList = accessor.getContacts(offset, max_results, select);
 		}
 		catch (Exception e) {
 			Logger.E(TAG, e);
@@ -154,9 +150,6 @@ public class Phonebook {
 		try {
 			if (!checkState())
 				return;
-//			if (!mIsContactsFilled) {
-//				prepareFullList();
-//			}	
 			iter = contactList.values().iterator();
 		}
 		catch (Exception e) {
@@ -168,10 +161,7 @@ public class Phonebook {
 		try {
 			if (!checkState())
 				return false;
-			//if (!mIsContactsFilled) {
-			//	prepareFullList();
-			//}	
-			
+
 			return iter.hasNext();
 		}
 		catch (Exception e) {
@@ -184,9 +174,6 @@ public class Phonebook {
 		try {
 			if (!checkState())
 				return null;
-			//if (!mIsContactsFilled) {
-			//	prepareFullList();
-			//}	
 			
 			return iter.next();
 		}
@@ -200,9 +187,6 @@ public class Phonebook {
 		try {
 			if (!checkState())
 				return null;
-			//if (!mIsContactsFilled) {
-			//	prepareFullList();
-			//}	
 			
 			moveToBegin();
 			if (!iter.hasNext())
@@ -219,9 +203,6 @@ public class Phonebook {
 		try {
 			if (!checkState())
 				return null;
-			//if (!mIsContactsFilled) {
-			//	prepareFullList();
-			//}	
 			
 			return iter.next();
 		}
@@ -234,42 +215,13 @@ public class Phonebook {
 	public Contact getRecord(String idd) {
 		if (logging_enable) Logger.I(TAG, "Phonebook.getRecord("+idd+")");
 		try {
-			//if (!checkState())
-			//	return null;
-			if (contactList == null) {
-				if (logging_enable) Logger.I(TAG, "Phonebook.getRecord() contackList is null !");
-			}
-			if ((accessor != null) && (accessor instanceof ContactAccessorNew)) {
-			//if (false) {
-				if (logging_enable) Logger.I(TAG, "Phonebook.getRecord() new accessor !");
-				Contact c = contactList.get(idd);
-				if (c != null) {
-					if (logging_enable) Logger.I(TAG, "Phonebook.getRecord() found in list");
-					return c;
-				}
-				c = ((ContactAccessorNew)accessor).getContactByID(Contact.convertRhodeIDtoPlatformID(idd));
-				if (c != null) {
-					if (logging_enable) Logger.I(TAG, "Phonebook.getRecord() found in system");
-					contactList.put(c.getField(Phonebook.PB_I_ID), c);
-				}
-				else {
-					if (logging_enable) Logger.I(TAG, "Phonebook.getRecord() not found in system");
-				}
-				return c;
-			}
-			else {
-				if (logging_enable) Logger.I(TAG, "Phonebook.getRecord() old accessor class");
-				if (!mIsContactsFilled) {
-					queryAllContacts();
-				}	
-			}
-			Contact cc = contactList.get(idd);
-			if (cc != null) {
-				if (logging_enable) Logger.I(TAG, "Phonebook.getRecord() return record");
-			}
-			else {
-				if (logging_enable) Logger.I(TAG, "Phonebook.getRecord() return NULL");
-			}
+			if (!checkState())
+				return null;
+
+			Contact cc = accessor.getContact(idd);
+			if (cc == null)
+				Logger.W(TAG, "Phonebook.getRecord() contact record not found.");
+				
 			return cc;
 		}
 		catch (Exception e) {
@@ -284,7 +236,7 @@ public class Phonebook {
 				return;
 			
 			accessor.remove(contact);
-			contactList.remove(contact.getField(Phonebook.PB_I_ID));
+			contactList.remove(contact.getField(Phonebook.PB_ID));
 		}
 		catch (Exception e) {
 			Logger.E(TAG, e);
@@ -297,11 +249,10 @@ public class Phonebook {
 				return;
 			
 			accessor.save(contact);
-			contactList.put(contact.getField(Phonebook.PB_I_ID), contact);
+			contactList.put(contact.getField(Phonebook.PB_ID), contact);
 		}
 		catch (Exception e) {
 			Logger.E(TAG, e);
 		}
 	}
-
 }

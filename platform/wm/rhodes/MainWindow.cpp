@@ -48,8 +48,15 @@
 #include "common/RhoFilePath.h"
 #include "common/RhoFile.h"
 #include "bluetooth/Bluetooth.h"
+#ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 #include "MetaHandler.h"
+#endif
 #include <hash_map>
+
+//#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+//#include "rhoelements/RhoWKBrowserEngine.h"
+//#include "rhoelements/PBCore/PBCore/PBCore.h"
+//#endif
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 
@@ -66,6 +73,7 @@ extern HREGNOTIFY g_hNotify;
 extern "C" void rho_sysimpl_sethas_network(int nValue);
 extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue);
 extern "C" void rho_geoimpl_turngpsoff();
+rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent);
 
 using namespace rho::common;
 using namespace rho;
@@ -76,13 +84,7 @@ int CMainWindow::m_screenWidth;
 int CMainWindow::m_screenHeight;
 #endif
 
-HINSTANCE CMainWindow::rhoApplicationHINSTANCE = 0;
-
 CMainWindow::CMainWindow()
-#ifdef INTEGRATED_WEBKIT
- :m_wkengine(NULL),
-  m_useWebKit(true)
-#endif
 {
     mIsBrowserViewHided = false;
     mNativeView = NULL;
@@ -92,7 +94,7 @@ CMainWindow::CMainWindow()
     mIsOpenedByURL = false;
 
     m_bLoading = true;
-    m_spIWebBrowser2 = NULL;
+    //m_spIWebBrowser2 = NULL;
 #if defined(_WIN32_WCE)
     memset(&m_sai, 0, sizeof(m_sai));
     m_sai.cbSize = sizeof(m_sai);
@@ -109,31 +111,27 @@ CMainWindow::~CMainWindow()
 //        free(m_szStartPage);
 }
 
-void CMainWindow::Navigate2(BSTR URL) {
+void CMainWindow::Navigate2(BSTR URL) 
+{
 	String cleared_url = processForNativeView(convertToStringA(OLE2CT(URL)));
-	if (!cleared_url.empty()) {
+	if (!cleared_url.empty()) 
+    {
 		StringW cw = convertToStringW(cleared_url);
-		BSTR cleared_url_bstr = SysAllocString(cw.c_str());
-#ifdef INTEGRATED_WEBKIT
-        if (m_useWebKit)
-            m_wkengine->Navigate(cleared_url_bstr);
-        else
-#endif
-		    m_spIWebBrowser2->Navigate2(&CComVariant(cleared_url_bstr), NULL, &CComVariant(L"_self"), NULL, NULL);
+		//BSTR cleared_url_bstr = SysAllocString(cw.c_str());
+	    //m_spIWebBrowser2->Navigate2(&CComVariant(cleared_url_bstr), NULL, &CComVariant(L"_self"), NULL, NULL);
+        m_pBrowserEng->Navigate(cw.c_str());
 	}
 }
 
-void CMainWindow::Navigate(BSTR URL) {
+void CMainWindow::Navigate(BSTR URL) 
+{
 	String cleared_url = processForNativeView(convertToStringA(OLE2CT(URL)));
-	if (!cleared_url.empty()) {
+	if (!cleared_url.empty()) 
+    {
 		StringW cw = convertToStringW(cleared_url);
-		BSTR cleared_url_bstr = SysAllocString(cw.c_str());
-#ifdef INTEGRATED_WEBKIT
-        if (m_useWebKit)
-            m_wkengine->Navigate(cleared_url_bstr);
-        else
-#endif
-		    m_spIWebBrowser2->Navigate(cleared_url_bstr, NULL, &CComVariant(L"_self"), NULL, NULL);
+		//BSTR cleared_url_bstr = SysAllocString(cw.c_str());
+	    //m_spIWebBrowser2->Navigate(cleared_url_bstr, NULL, &CComVariant(L"_self"), NULL, NULL);
+        m_pBrowserEng->Navigate(cw.c_str());
 	}
 }
 
@@ -144,6 +142,11 @@ void CMainWindow::Navigate(BSTR URL) {
 // **************************************************************************
 
 LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+    return S_OK;
+}
+
+LRESULT CMainWindow::InitMainWindow()
 {
     HRESULT hr = S_OK;
 #if defined(_WIN32_WCE)
@@ -164,21 +167,8 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     // In one step, create an "AtlAxWin" window for the PIEWebBrowser control,
     // and also create the control itself. (AtlAxWin is a window class that
     // ATL uses to support containment of controls in windows.)
-#if defined(_WIN32_WCE)
-# ifdef INTEGRATED_WEBKIT
-    if (m_useWebKit) {
-        // TODO: complete implementation of WebKit engine initialization
-        m_wkengine = new CWebKitEngine(m_hWnd, rhoApplicationHINSTANCE);
-    	if(m_wkengine->Init(L"PBEngine_WK.dll"))
-        	//m_wkengine->InitEngine(0,&HTMLWndProc,&m_pApp[0]->m_OwnerProc,m_pApp[0]->m_bScrollBarsEnabled, &GetEngineConfig))
-            ;
-    } else
-# endif
-        m_browser.Create(m_hWnd,
-                         CWindow::rcDefault, // proper sizing is done in CMainWindow::OnSize
-			    		 TEXT("Microsoft.PIEDocView"), // ProgID of the control
-                         WS_CHILD, 0,
-                         ID_BROWSER);
+#if defined(_WIN32_WCE)    
+    m_pBrowserEng = rho_wmimpl_createBrowserEngine(m_hWnd);
 #else
 	LOGCONF().setLogView(&m_logView);
 
@@ -198,11 +188,8 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
         height = rcMainWindow.bottom;
 	rcMainWindow.bottom = rcMainWindow.top+height;
 
-	m_browser.Create(m_hWnd,
-                     CWindow::rcDefault, // proper sizing is done in CMainWindow::OnSize
-					 TEXT("Shell.Explorer"), // ProgID of the control
-                     WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, 0,
-                     ID_BROWSER);
+    m_pBrowserEng = rho_wmimpl_createBrowserEngine(m_hWnd);
+
 	m_menuBar.Create(m_hWnd,CWindow::rcDefault);
 
 	SystemParametersInfo ( SPI_GETNONCLIENTMETRICS, 0, &ncm, false );
@@ -212,54 +199,18 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	rcMainWindow.right += ncm.iBorderWidth*6;
 #endif
 
-#ifdef INTEGRATED_WEBKIT
-    if (m_useWebKit)
-        CBR(m_wkengine != NULL);
-    else
-#endif
-        CBR(m_browser.m_hWnd != NULL);
-
-#ifdef INTEGRATED_WEBKIT
-    if (!m_useWebKit) {
-#endif
-        // cache IWebBrowser2 interface pointer
-        hr = m_browser.QueryControl(&m_spIWebBrowser2);
-        CHR(hr);
-#ifdef INTEGRATED_WEBKIT
-    }
-#endif
-
+#ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     // set up connection point
     hr = AtlAdviseSinkMap(this, true);
-    CHR(hr);
-
-    // set initial properties for the control
-#ifdef INTEGRATED_WEBKIT
-    if (m_useWebKit)
-        // TODO: implement by WebKit method
-        m_wkengine;
-    else
 #endif
-        //m_spIWebBrowser2->put_AddressBar(VARIANT_TRUE);
-        m_spIWebBrowser2->put_AddressBar(VARIANT_FALSE);
 
-    if ( !RHOCONF().getBool("wm_show_statusbar") )
-#ifdef INTEGRATED_WEBKIT
-        if (m_useWebKit)
-            // TODO: implement by WebKit method
-            m_wkengine;
-        else
-#endif
-            m_spIWebBrowser2->put_StatusBar(VARIANT_FALSE);
-
-    //m_spIWebBrowser2->put_Offline(VARIANT_TRUE);
 #if defined(_WIN32_WCE) && !defined( OS_PLATFORM_CE )
     // Create a menubar
     // (mbi was initialized above)
     mbi.hwndParent = m_hWnd;
     mbi.nToolBarId = IDR_MAIN_MENUBAR; // ID of toolbar resource
     mbi.hInstRes   = _AtlBaseModule.GetResourceInstance();
-    CBR(SHCreateMenuBar(&mbi));
+    SHCreateMenuBar(&mbi);
 	m_hWndCECommandBar = mbi.hwndMB;
 	m_menuBar = m_hWndCECommandBar;
 
@@ -305,8 +256,6 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 	rho_rhodesapp_callUiCreatedCallback();
 
-Error:
-
     return SUCCEEDED(hr) ? 0 : -1;
 }
 
@@ -345,36 +294,20 @@ LRESULT CMainWindow::OnNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
     return 1;
 }
 
-HWND CMainWindow::getWebViewHWND() {
-    return 
-#ifdef INTEGRATED_WEBKIT
-        m_useWebKit ? m_wkengine->GetHTMLWND() :
-#endif
-        m_browser.m_hWnd;
+HWND CMainWindow::getWebViewHWND() 
+{
+    return m_pBrowserEng->GetHTMLWND();
 }
 
-void CMainWindow::hideWebView() {
-	//::ShowWindow(m_browser.m_hWnd, SW_HIDE);
-#ifdef INTEGRATED_WEBKIT
-    if (m_useWebKit)
-        // TODO: implement by WebKit method
-        m_wkengine;
-    else
-#endif
-        m_browser.ShowWindow(SW_HIDE);
+void CMainWindow::hideWebView() 
+{
+    ::ShowWindow( m_pBrowserEng->GetHTMLWND(), SW_HIDE );
 	mIsBrowserViewHided = true;
-	//m_browser.DestroyWindow();
 }
 
-void CMainWindow::showWebView() {
-	//::ShowWindow(m_browser.m_hWnd, SW_SHOW);
-#ifdef INTEGRATED_WEBKIT
-    if (m_useWebKit)
-        // TODO: implement by WebKit method
-        m_wkengine;
-    else
-#endif
-    	m_browser.ShowWindow(SW_SHOW);
+void CMainWindow::showWebView() 
+{
+    ::ShowWindow( m_pBrowserEng->GetHTMLWND(), SW_SHOW );
 	mIsBrowserViewHided = false;
 }
 
@@ -393,21 +326,13 @@ LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	LOGCONF().setLogView(NULL);
 #endif
 
+#ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     // Tear down connection points while controls are still alive.
     RHO_ASSERT(SUCCEEDED(AtlAdviseSinkMap(this, false)));
+#endif
 
-#ifdef INTEGRATED_WEBKIT
-    if (m_useWebKit) {
-        m_wkengine->DeInitEngine();
-        delete m_wkengine;
-        m_wkengine = NULL;
-    } else {
-#endif
-        m_spIWebBrowser2 = NULL;
-        m_browser = NULL;
-#ifdef INTEGRATED_WEBKIT
-    }
-#endif
+    delete m_pBrowserEng;
+    m_pBrowserEng = NULL;
 
     PostQuitMessage(0);
 
@@ -417,38 +342,33 @@ LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 LRESULT CMainWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-#ifdef INTEGRATED_WEBKIT
-    if (m_useWebKit) {
-        // TODO: complete implementation by WebKit methods
-        RECT rect = {0, 0, LOWORD(lParam), HIWORD(lParam)- m_toolbar.getHeight()};
-        m_wkengine->ResizeOnTab (0, rect);
-    } else {
-#endif
-        if ( !m_browser.m_hWnd )
-            return 0;
+    if ( !m_pBrowserEng->GetHTMLWND() )
+        return 0;
 
 #if defined(OS_WINDOWS)
-    	USES_CONVERSION;
-	    LOG(TRACE) + "Seting browser client area size to: " + (int)LOWORD(lParam) + " x " + (int)(HIWORD(lParam)-m_menuBarHeight-m_toolbar.getHeight());
-	    m_browser.MoveWindow(0, 0, LOWORD(lParam), HIWORD(lParam)-m_menuBarHeight-m_toolbar.getHeight());
-	    if (m_menuBar.m_hWnd) {
-    		m_menuBar.MoveWindow(0, HIWORD(lParam)-m_menuBarHeight, LOWORD(lParam), m_menuBarHeight);
-	    }
-        if ( m_toolbar.m_hWnd )
-	        m_toolbar.MoveWindow(0, HIWORD(lParam)-m_menuBarHeight-m_toolbar.getHeight(), LOWORD(lParam), m_toolbar.getHeight());
-#else
-        LOG(INFO)  + "OnSize: x=" + (int)(LOWORD(lParam)) + ";y=" + (int)(HIWORD(lParam));
+	USES_CONVERSION;
+    LOG(TRACE) + "Seting browser client area size to: " + (int)LOWORD(lParam) + " x " + (int)(HIWORD(lParam)-m_menuBarHeight-m_toolbar.getHeight());
+    //m_browser.MoveWindow(0, 0, LOWORD(lParam), HIWORD(lParam)-m_menuBarHeight-m_toolbar.getHeight());
+    RECT rect = {0, 0, LOWORD(lParam), HIWORD(lParam)-m_menuBarHeight-m_toolbar.getHeight()};
+    m_pBrowserEng->ResizeOnTab(0, rect);
 
-	    m_browser.MoveWindow(0, 0, LOWORD(lParam), HIWORD(lParam)- m_toolbar.getHeight());
-
-        if ( m_toolbar.m_hWnd )
-            m_toolbar.MoveWindow(0, HIWORD(lParam)-m_toolbar.getHeight(), LOWORD(lParam), m_toolbar.getHeight());
-#endif
-#ifdef INTEGRATED_WEBKIT
+    if (m_menuBar.m_hWnd) {
+		m_menuBar.MoveWindow(0, HIWORD(lParam)-m_menuBarHeight, LOWORD(lParam), m_menuBarHeight);
     }
+    if ( m_toolbar.m_hWnd )
+        m_toolbar.MoveWindow(0, HIWORD(lParam)-m_menuBarHeight-m_toolbar.getHeight(), LOWORD(lParam), m_toolbar.getHeight());
+#else
+    LOG(INFO)  + "OnSize: x=" + (int)(LOWORD(lParam)) + ";y=" + (int)(HIWORD(lParam));
+
+    //m_browser.MoveWindow(0, 0, LOWORD(lParam), HIWORD(lParam)- m_toolbar.getHeight());
+    RECT rect = {0, 0, LOWORD(lParam), HIWORD(lParam)- m_toolbar.getHeight()};
+    m_pBrowserEng->ResizeOnTab(0, rect);
+
+    if ( m_toolbar.m_hWnd )
+        m_toolbar.MoveWindow(0, HIWORD(lParam)-m_toolbar.getHeight(), LOWORD(lParam), m_toolbar.getHeight());
 #endif
 
-	return 0;
+    return 0;
 }
 
 LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -496,10 +416,22 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	return 0;
 }
 
+LRESULT CMainWindow::OnBrowserDocumentComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+    ProcessDocumentComplete( (LPCTSTR)lParam );
+    return 0;
+}
+
+LRESULT CMainWindow::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    return m_pBrowserEng->OnWebKitMessages(uMsg, wParam, lParam, bHandled);
+}
+
 LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
     int fActive = LOWORD(wParam);
-	rho_rhodesapp_callAppActiveCallback(fActive);
+	//rho_rhodesapp_callAppActiveCallback(fActive);
+
 #if defined(_WIN32_WCE)
     // Notify shell of our WM_ACTIVATE message
     SHHandleWMActivate(m_hWnd, wParam, lParam, &m_sai, 0);
@@ -680,31 +612,14 @@ LRESULT CMainWindow::OnExitCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 LRESULT CMainWindow::OnNavigateBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	restoreWebView();
-
-/*    bool bStartPage = RHODESAPP().isOnStartPage();
-
-    if ( bStartPage )
-        ShowWindow(SW_MINIMIZE);
-    else*/
-#ifdef INTEGRATED_WEBKIT
-        if (m_useWebKit)
-            m_wkengine->BackOnTab(0, 1);
-        else
-#endif
-            m_spIWebBrowser2->GoBack();
-
+    m_pBrowserEng->BackOnTab(0, 1);
     return 0;
 }
 
 LRESULT CMainWindow::OnNavigateForwardCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	restoreWebView();
-#ifdef INTEGRATED_WEBKIT
-    if (m_useWebKit)
-        m_wkengine->ForwardOnTab(0);
-    else
-#endif
-        m_spIWebBrowser2->GoForward();
+    m_pBrowserEng->ForwardOnTab(0);
 
     return 0;
 }
@@ -741,13 +656,7 @@ LRESULT CMainWindow::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT CMainWindow::OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-#ifdef INTEGRATED_WEBKIT
-    if (m_useWebKit)
-        m_wkengine->Reload(false);
-    else
-#endif
-        if (m_spIWebBrowser2)
-            m_spIWebBrowser2->Refresh();
+    m_pBrowserEng->ReloadOnTab(false, 0);
     return 0;
 }
 
@@ -1031,21 +940,15 @@ void __stdcall CMainWindow::OnBrowserTitleChange(BSTR bstrTitleText)
 void __stdcall CMainWindow::OnNavigateComplete2(IDispatch* pDisp, VARIANT * pvtURL)
 {
     USES_CONVERSION;
-	if (!m_bLoading)
-		if (!mIsBrowserViewHided) 
-#ifdef INTEGRATED_WEBKIT
-            if (m_useWebKit)
-                // TODO: implement by WebKit method
-                m_wkengine;
-            else
-#endif
-			    m_browser.ShowWindow(SW_SHOW);
+	if ( !m_bLoading && !mIsBrowserViewHided )
+        ::ShowWindow(m_pBrowserEng->GetHTMLWND(), SW_SHOW);
+
     LOG(TRACE) + "OnNavigateComplete2: " + OLE2CT(V_BSTR(pvtURL));
 }
 
-BSTR loadLoadingHtml()
+void CMainWindow::ShowLoadingPage()
 {
-	rho::String fname = RHODESAPP().getLoadingPagePath();
+	String fname = RHODESAPP().getLoadingPagePath();
 
 	size_t pos = fname.find("file://");
 	if (pos == 0 && pos != std::string::npos)
@@ -1061,76 +964,22 @@ BSTR loadLoadingHtml()
 		strTextW = L"<html><head><title>Loading...</title></head><body><h1>Loading...</h1></body></html>";
     }
 
-    return SysAllocString(strTextW.c_str());
-}
-
-void writeToTheDoc (
-#if defined(_WIN32_WCE) && !defined( OS_PLATFORM_CE )
-					IPIEHTMLDocument2 *document
-#else
-					IHTMLDocument2 *document
-#endif
-					)
-{
-	HRESULT hresult = S_OK;
-	VARIANT *param;
-	SAFEARRAY *sfArray;
-	//std::wstring html;
-	BSTR bstr = loadLoadingHtml();
-
-	// Creates a new one-dimensional array
-	sfArray = SafeArrayCreateVector(VT_VARIANT, 0, 1);
-
-	if (sfArray == NULL || document == NULL) {
-		goto cleanup;
-	}
-
-	hresult = SafeArrayAccessData(sfArray,(LPVOID*) & param);
-	param->vt = VT_BSTR;
-	param->bstrVal = bstr;
-	hresult = SafeArrayUnaccessData(sfArray);
-	hresult = document->write(sfArray);
-
-cleanup:
-	SysFreeString(bstr);
-	if (sfArray != NULL) {
-		SafeArrayDestroy(sfArray);
-	}
-}
-
-void CMainWindow::ShowLoadingPage(LPDISPATCH pDisp, VARIANT* URL)
-{
-	HRESULT hr;
-	IDispatch* pHtmlDoc = NULL;
-
-    // Retrieve the document object.
-    hr = m_spIWebBrowser2->get_Document( &pHtmlDoc );
-    if ( SUCCEEDED(hr) )
-    {
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
-		IPIEHTMLDocument2* pDoc;
-		hr = pHtmlDoc->QueryInterface(__uuidof(IPIEHTMLDocument2),  (void**)&pDoc );
-#else
-		IHTMLDocument2* pDoc;
-		hr = pHtmlDoc->QueryInterface(__uuidof(IHTMLDocument2),  (void**)&pDoc );
-#endif
-        if ( SUCCEEDED(hr) )
-        {
-			// Write to the document
-			writeToTheDoc(pDoc);
-			pDoc->Release();
-        }
-    }
+    m_pBrowserEng->NavigateToHtml(strTextW.c_str());
 }
 
 void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtURL)
 {
     USES_CONVERSION;
 	
-	LPCTSTR url = OLE2CT(V_BSTR(pvtURL));
-	if (m_bLoading && wcscmp(url,_T("about:blank"))==0) {
+	ProcessDocumentComplete( OLE2CT(V_BSTR(pvtURL)) );
+}
+
+void CMainWindow::ProcessDocumentComplete(LPCTSTR url)
+{
+	if (m_bLoading && wcscmp(url,_T("about:blank"))==0) 
+    {
 		LOG(TRACE) + "Show loading page";
-		ShowLoadingPage(pDisp, pvtURL);
+		ShowLoadingPage();
 		m_bLoading = false; //show loading page only once
     }else
     {
@@ -1276,7 +1125,7 @@ void CMainWindow::createCustomMenu()
 	CMenu sub;
 	CMenu popup;
 	
-    if (!m_browser.m_hWnd)
+    if (!m_pBrowserEng->GetHTMLWND())
         return;
 
 	VERIFY(menu.CreateMenu());
