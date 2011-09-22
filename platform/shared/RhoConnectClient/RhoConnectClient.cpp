@@ -380,16 +380,14 @@ unsigned long rhom_find(const char* szModel, unsigned long hash, int nCount )
 
     if ( nCount == 1 )
     {
-        return isSchemaSrc ? rhom_make_object(res1, nSrcID, isSchemaSrc) :
-                 rhom_load_item_by_object(db, src_name, nSrcID, res1.getStringByIdx(0), isSchemaSrc);
+        return rhom_load_item_by_object(db, src_name, nSrcID, res1.getStringByIdx(0), isSchemaSrc);
     }
 
     unsigned long items = rho_connectclient_strhasharray_create();
     for ( ; !res1.isEnd(); res1.next() )
     {
         rho_connectclient_strhasharray_add(items, 
-            isSchemaSrc ? rhom_make_object(res1, nSrcID, isSchemaSrc) :
-                rhom_load_item_by_object(db, src_name, nSrcID, res1.getStringByIdx(0), isSchemaSrc) );
+            rhom_load_item_by_object(db, src_name, nSrcID, res1.getStringByIdx(0), isSchemaSrc) );
     }
 
     return items;

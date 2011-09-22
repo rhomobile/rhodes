@@ -66,8 +66,9 @@ class Jake
   end
     
   def self.get_absolute_ex(path, currentdir)
-    return File.expand_path(path) if File.exists?(path)
-    
+    ret_path = File.expand_path(path, currentdir)
+    return ret_path  if File.exists?(ret_path)
+
     path = currentdir + "/" + path
   
     patharray = path.split(/\//)

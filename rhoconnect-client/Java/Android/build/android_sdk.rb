@@ -453,7 +453,7 @@ def cc_link(outname, objects, additional = nil, deps = nil)
     dependencies += deps
   end
   #return true if FileUtils.uptodate? outname, dependencies
-  args = ["-g"]
+  args = ["-g", "--sysroot", $ndksysroot]
   if $ndkabi == "arm-eabi"
     args << "-nostdlib"
     args << "-Wl,-shared,-Bsymbolic"
