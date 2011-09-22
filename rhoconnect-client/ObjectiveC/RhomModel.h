@@ -32,11 +32,13 @@
 	NSString* name;
 	int       sync_type; 
     int       model_type;
+    NSDictionary* associations;
 }
 
 @property(assign) NSString* name;
 @property(assign) int       sync_type;
 @property(assign) int       model_type;
+@property(assign) NSDictionary* associations;
 
 - (id) init;
 
