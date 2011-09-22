@@ -230,6 +230,7 @@ int runObjCClientTest()
 	
 	product = [[RhomModel alloc] init];
 	product.name = @"Product";
+    product.associations = [NSDictionary dictionaryWithObjectsAndKeys: @"Customer", @"quantity", @"Customer", @"sku", nil];
     
     //product.name = @"Product_s";
     //product.model_type = RMT_PROPERTY_FIXEDSCHEMA;    
