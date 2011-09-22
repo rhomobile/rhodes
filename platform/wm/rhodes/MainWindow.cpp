@@ -58,6 +58,13 @@
 //#include "rhoelements/PBCore/PBCore/PBCore.h"
 //#endif
 
+#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+UINT WM_BROWSER_ONDOCUMENTCOMPLETE = ::RegisterWindowMessage(L"RHODES_WM_BROWSER_ONDOCUMENTCOMPLETE");
+//UINT WM_BROWSER_ONBEFORENAVIGATE   = ::RegisterWindowMessage(L"RHODES_WM_BROWSER_ONBEFORENAVIGATE");
+UINT WM_BROWSER_ONNAVIGATECOMPLETE = ::RegisterWindowMessage(L"RHODES_WM_BROWSER_ONNAVIGATECOMPLETE");
+UINT WM_BROWSER_ONTITLECHANGE      = ::RegisterWindowMessage(L"RHODES_WM_BROWSER_ONTITLECHANGE");
+#endif
+
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 
 #if defined(_WIN32_WCE)
@@ -416,9 +423,28 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	return 0;
 }
 
+#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 LRESULT CMainWindow::OnBrowserDocumentComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     ProcessDocumentComplete( (LPCTSTR)lParam );
+    return 0;
+}
+
+//LRESULT CMainWindow::OnBeforeNavigate (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+//{
+//    Rhodes_WM_ProcessBeforeNavigate( (LPCTSTR)lParam );
+//    return 0;
+//}
+
+LRESULT CMainWindow::OnNavigateComplete(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+    ProcessNavigateComplete( (LPCTSTR)lParam );
+    return 0;
+}
+
+LRESULT CMainWindow::OnTitleChange (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+    ProcessTitleChange( (LPCTSTR)lParam );
     return 0;
 }
 
@@ -426,6 +452,7 @@ LRESULT CMainWindow::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 {
     return m_pBrowserEng->OnWebKitMessages(uMsg, wParam, lParam, bHandled);
 }
+#endif
 
 LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
@@ -884,6 +911,26 @@ LRESULT CMainWindow::OnDateTimePicker (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 // **************************************************************************
 extern "C" void rho_wmsys_run_app(const char* szPath, const char* szParams );
 
+bool Rhodes_WM_ProcessBeforeNavigate(LPCTSTR url)
+{
+    LOG(TRACE) + "OnBeforeNavigate2: " + url;
+
+    const wchar_t *to_remove;
+    if ( (to_remove = wcsstr(url, L"rho_open_target=_blank")) != 0)
+    {
+        wcscpy((wchar_t*)to_remove, (wchar_t*)to_remove+22);
+
+        LOG(INFO) + "Open external browser: " + url;
+#ifdef OS_WINCE
+        rho_wmsys_run_app(convertToStringA(url).c_str(), 0 );
+#else
+        rho_wmsys_run_app(convertToStringA(url).c_str(), 0 );
+#endif
+        return true;
+    }
+    return false;
+}
+
 void __stdcall CMainWindow::OnBeforeNavigate2(IDispatch* pDisp, VARIANT * pvtURL,
                                               VARIANT * /*pvtFlags*/, VARIANT * pvtTargetFrameName,
                                               VARIANT * /*pvtPostData*/, VARIANT * /*pvtHeaders*/,
@@ -892,21 +939,8 @@ void __stdcall CMainWindow::OnBeforeNavigate2(IDispatch* pDisp, VARIANT * pvtURL
     USES_CONVERSION;
     LPCTSTR szURL = OLE2CT(V_BSTR(pvtURL));
 
-    LOG(TRACE) + "OnBeforeNavigate2: " + szURL;
-
-    const wchar_t *to_remove;
-    if ( (to_remove = wcsstr(szURL, L"rho_open_target=_blank")) != 0)
-    {
-        wcscpy((wchar_t*)to_remove, (wchar_t*)to_remove+22);
-
-        LOG(INFO) + "Open external browser: " + szURL;
-#ifdef OS_WINCE
-        rho_wmsys_run_app(convertToStringA(szURL).c_str(), 0 );
-#else
-        rho_wmsys_run_app(convertToStringA(szURL).c_str(), 0 );
-#endif
+    if (Rhodes_WM_ProcessBeforeNavigate(szURL))
         *pvbCancel = VARIANT_TRUE;
-    }
 
 /*
     String strTitle = RHOCONF().getString("title_text");
@@ -921,14 +955,19 @@ void __stdcall CMainWindow::OnBeforeNavigate2(IDispatch* pDisp, VARIANT * pvtURL
 void __stdcall CMainWindow::OnBrowserTitleChange(BSTR bstrTitleText)
 {
     USES_CONVERSION;
-    LOG(TRACE) + "OnBrowserTitleChange: " + OLE2CT(bstrTitleText);
-    return;
+    ProcessTitleChange(OLE2CT(bstrTitleText));
+}
+
+void CMainWindow::ProcessTitleChange(LPCTSTR title)
+{
+    LOG(TRACE) + "OnBrowserTitleChange: " + title;
+    //return;
     String strTitle = RHOCONF().getString("title_text");
     if ( strTitle.length() > 0 )
         SetWindowText(convertToStringW(strTitle).c_str());
     else
     {
-        LPCTSTR szTitle = OLE2CT(bstrTitleText);
+        LPCTSTR szTitle = title;
         if ( szTitle && 
             (_tcsncmp(szTitle, _T("http:"), 5) == 0 || _tcscmp(szTitle, _T("about:blank"))==0 ))
             return;
@@ -940,10 +979,15 @@ void __stdcall CMainWindow::OnBrowserTitleChange(BSTR bstrTitleText)
 void __stdcall CMainWindow::OnNavigateComplete2(IDispatch* pDisp, VARIANT * pvtURL)
 {
     USES_CONVERSION;
+    ProcessNavigateComplete( OLE2CT(V_BSTR(pvtURL)) );
+}
+
+void CMainWindow::ProcessNavigateComplete(LPCTSTR url)
+{
 	if ( !m_bLoading && !mIsBrowserViewHided )
         ::ShowWindow(m_pBrowserEng->GetHTMLWND(), SW_SHOW);
 
-    LOG(TRACE) + "OnNavigateComplete2: " + OLE2CT(V_BSTR(pvtURL));
+    LOG(TRACE) + "OnNavigateComplete2: " + url;
 }
 
 void CMainWindow::ShowLoadingPage()
