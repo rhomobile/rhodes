@@ -14,9 +14,12 @@ LOCAL_MODULE    := rhocommon
 LOCAL_SRC_FILES := \
     app_build_configs.c \
     AppMenu.cpp \
+    map/BaseMapEngine.cpp \
     map/ESRIMapEngine.cpp \
     map/GoogleMapEngine.cpp \
+    map/OSMMapEngine.cpp \
     map/MapEngine.cpp \
+    map/GeocodingMapEngine.cpp \
     PosixThreadImpl.cpp \
     RhoConf.cpp \
     RhoFile.cpp \

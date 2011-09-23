@@ -169,12 +169,29 @@ void rho_free_callbackdata(void* pData)
 
 		rhom_models[nModel].sync_type = model.sync_type;
         rhom_models[nModel].type = model.model_type;
-		
+        
+        if (model.associations != NULL)
+        {
+            unsigned long hashAssoc = rho_connectclient_hash_create();
+            
+            for (NSString* key in model.associations) 
+            {
+                rho_connectclient_hash_put(hashAssoc, 
+                                           [key cStringUsingEncoding:[NSString defaultCStringEncoding]], 
+                                           [[model.associations objectForKey:key] cStringUsingEncoding:[NSString defaultCStringEncoding]]
+                                           );
+            }	
+            rhom_models[nModel].associations = hashAssoc;
+        }
 		nModel++;
 	}
 	
     rho_connectclient_init(rhom_models, models.count);	
 	
+    for (int i = 0; i < models.count; i++) 
+        rho_connectclient_hash_delete(rhom_models[i].associations);
+	
+    
     [self setThreadedMode:FALSE];
 	[self setPollInterval: 0];
 }

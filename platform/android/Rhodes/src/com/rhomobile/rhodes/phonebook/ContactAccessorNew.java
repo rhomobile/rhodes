@@ -27,6 +27,7 @@
 package com.rhomobile.rhodes.phonebook;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.rhomobile.rhodes.Logger;
@@ -46,11 +47,12 @@ import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.CommonDataKinds.StructuredName;
 import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.RawContacts;
+import android.provider.ContactsContract.Contacts;
 
 public class ContactAccessorNew implements ContactAccessor {
 	
 	private static final String TAG = "ContactsAccessorNew";
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	
 	private ContentResolver cr;
 	private String accName;
@@ -61,8 +63,8 @@ public class ContactAccessorNew implements ContactAccessor {
 		
 		Account[] accounts = AccountManager.get(ctx).getAccounts();
 		if (accounts.length == 0) {
-			//accName = "rhodes@rhomobile.com";
-			//accType = "com.rhomobile";
+			accName = "rhodes@rhomobile.com";
+			accType = "com.rhomobile";
 		}
 		else {
 			Account acnt = accounts[0];
@@ -77,18 +79,18 @@ public class ContactAccessorNew implements ContactAccessor {
 		if (DEBUG)
 			Logger.D(TAG, "fillName("+id+")");
 		
-		contact.setFieldInner(Phonebook.PB_I_FIRST_NAME, "");
-		contact.setFieldInner(Phonebook.PB_I_LAST_NAME, "");
+		contact.setField(Phonebook.PB_FIRST_NAME, "");
+		contact.setField(Phonebook.PB_LAST_NAME, "");
 		
 		Cursor cursor = cr.query(Data.CONTENT_URI,
-				new String[] {StructuredName.GIVEN_NAME, StructuredName.FAMILY_NAME, StructuredName.DISPLAY_NAME},
-				Data.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
-				new String[] {id, StructuredName.CONTENT_ITEM_TYPE},
+				new String[] { StructuredName.GIVEN_NAME, StructuredName.FAMILY_NAME, StructuredName.DISPLAY_NAME },
+				Data.CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
+				new String[] { id, StructuredName.CONTENT_ITEM_TYPE },
 				null);
 		try {
 			if (!cursor.moveToFirst()) {
 				if (DEBUG)
-					Logger.D(TAG, "fillName() not found record with ID");
+					Logger.D(TAG, "No name data records are found.");
 				return;
 			}
 			
@@ -99,9 +101,9 @@ public class ContactAccessorNew implements ContactAccessor {
 					Logger.D(TAG, "fillName() firstName=" + firstName + ", lastName=" + lastName);
 				
 				if (firstName != null)
-					contact.setFieldInner(Phonebook.PB_I_FIRST_NAME, firstName);
+					contact.setField(Phonebook.PB_FIRST_NAME, firstName);
 				if (lastName != null)
-					contact.setFieldInner(Phonebook.PB_I_LAST_NAME, lastName);
+					contact.setField(Phonebook.PB_LAST_NAME, lastName);
 			}
 			else {
 				String displayName = cursor.getString(cursor.getColumnIndex(StructuredName.DISPLAY_NAME));
@@ -111,11 +113,11 @@ public class ContactAccessorNew implements ContactAccessor {
 				if (displayName != null) {
 					String[] names = displayName.split(" ");
 					if (names.length == 1) {
-						contact.setFieldInner(Phonebook.PB_I_FIRST_NAME, names[0]);
+						contact.setField(Phonebook.PB_FIRST_NAME, names[0]);
 					}
 					else if (names.length > 1) {
-						contact.setFieldInner(Phonebook.PB_I_FIRST_NAME, names[0]);
-						contact.setFieldInner(Phonebook.PB_I_LAST_NAME, names[1]);
+						contact.setField(Phonebook.PB_FIRST_NAME, names[0]);
+						contact.setField(Phonebook.PB_LAST_NAME, names[1]);
 					}
 				}
 				else {
@@ -144,13 +146,13 @@ public class ContactAccessorNew implements ContactAccessor {
 			do {
 				switch (cursor.getInt(typeColumn)) {
 				case Phone.TYPE_HOME:
-					contact.setFieldInner(Phonebook.PB_I_HOME_NUMBER, cursor.getString(numColumn));
+					contact.setField(Phonebook.PB_HOME_NUMBER, cursor.getString(numColumn));
 					break;
 				case Phone.TYPE_WORK:
-					contact.setFieldInner(Phonebook.PB_I_BUSINESS_NUMBER, cursor.getString(numColumn));
+					contact.setField(Phonebook.PB_BUSINESS_NUMBER, cursor.getString(numColumn));
 					break;
 				case Phone.TYPE_MOBILE:
-					contact.setFieldInner(Phonebook.PB_I_MOBILE_NUMBER, cursor.getString(numColumn));
+					contact.setField(Phonebook.PB_MOBILE_NUMBER, cursor.getString(numColumn));
 					break;
 				}
 			} while (cursor.moveToNext());
@@ -171,7 +173,7 @@ public class ContactAccessorNew implements ContactAccessor {
 				return;
 			
 			String data = cursor.getString(cursor.getColumnIndex(Email.DATA));
-			contact.setFieldInner(Phonebook.PB_I_EMAIL_ADDRESS, data);
+			contact.setField(Phonebook.PB_EMAIL_ADDRESS, data);
 		}
 		finally {
 			cursor.close();
@@ -188,7 +190,7 @@ public class ContactAccessorNew implements ContactAccessor {
 			if (!cursor.moveToFirst())
 				return;
 			String company = cursor.getString(cursor.getColumnIndex(Organization.COMPANY));
-			contact.setFieldInner(Phonebook.PB_I_COMPANY_NAME, company);
+			contact.setField(Phonebook.PB_COMPANY_NAME, company);
 		}
 		finally {
 			cursor.close();
@@ -196,10 +198,19 @@ public class ContactAccessorNew implements ContactAccessor {
 	}
 	
 	@Override
-	public int getCount() {
-		Cursor cursor = cr.query(RawContacts.CONTENT_URI,
-				new String[] {RawContacts._ID},
-				RawContacts.DELETED + "=0", null, null);
+	public int getCount(int offset, int max_results) {
+		StringBuilder sortMode = new StringBuilder();
+		if (max_results > 0 || offset > 0) {
+			sortMode.append(Contacts._ID).append(" ASC");
+			if (max_results > 0)
+				sortMode.append(" LIMIT ").append(max_results);
+			if (offset > 0)
+				sortMode.append(" OFFSET ").append(offset);
+		}
+
+		Cursor cursor = cr.query(Contacts.CONTENT_URI,
+				new String[] {Contacts._ID},
+				null, null, sortMode.toString());
 		int count = -1;
 		try {
 			count = cursor.getCount();
@@ -210,37 +221,51 @@ public class ContactAccessorNew implements ContactAccessor {
 	}
 
 	@Override
-	public Map<String, Contact> getContacts(int offset, int max_results) throws Exception {
+	public Map<String, Contact> getContacts(int offset, int max_results, List<String> select) throws Exception {
 		Map<String, Contact> contacts = new HashMap<String, Contact>();
 		
 		StringBuilder sortMode = new StringBuilder();
-		sortMode.append(RawContacts._ID).append(" ASC");
+		sortMode.append(Contacts.DISPLAY_NAME);//.append(" ASC");
 		if (max_results > 0)
 			sortMode.append(" LIMIT ").append(max_results);
 		if (offset > 0)
 			sortMode.append(" OFFSET ").append(offset);
 		
-		Cursor cursor = cr.query(RawContacts.CONTENT_URI,
-				new String[] {RawContacts._ID},
-				RawContacts.DELETED + "=0", null, sortMode.toString());
+		Cursor cursor = cr.query(Contacts.CONTENT_URI,
+				new String[] {Contacts._ID, Contacts.LOOKUP_KEY, Contacts.DISPLAY_NAME},
+				null, null, sortMode.toString());
 		try {
 			if (!cursor.moveToFirst())
 				return contacts;
 			
 			do {
-				Contact contact = new Contact();
-				contact.setAccessor(this);
 				
-				String id = cursor.getString(cursor.getColumnIndex(RawContacts._ID));
-				contact.setId(id);
+				String key = cursor.getString(cursor.getColumnIndex(Contacts.LOOKUP_KEY));
+				String id = cursor.getString(cursor.getColumnIndex(Contacts._ID));
+				String displayName = cursor.getString(cursor.getColumnIndex(Contacts.DISPLAY_NAME));
+				Contact contact = new Contact(this, key, displayName);
 				
-				fillName(id, contact);
-				fillPhones(id, contact);
-				fillEmails(id, contact);
-				fillCompany(id, contact);
-				contact.makeAllFilled();
+				if (select != null) {
+					Logger.D(TAG, "Processing 'select' param.");
+					if (select.contains(Phonebook.PB_FIRST_NAME) ||
+					    select.contains(Phonebook.PB_LAST_NAME)) {
+						fillName(id, contact);
+					}
+					if (select.contains(Phonebook.PB_MOBILE_NUMBER) ||
+					    select.contains(Phonebook.PB_HOME_NUMBER) ||
+					    select.contains(Phonebook.PB_BUSINESS_NUMBER)) {
+						fillPhones(id, contact);
+					}
+					if (select.contains(Phonebook.PB_EMAIL_ADDRESS)) {
+						fillEmails(id, contact);
+					}
+					if (select.contains(Phonebook.PB_COMPANY_NAME)) {
+						fillCompany(id, contact);
+					}
+				}
 				
-				contacts.put(contact.getField(Phonebook.PB_I_ID), contact);
+				Logger.D(TAG, "Filling contact with ID: " + id);
+				contacts.put(contact.id(), contact);
 				
 			} while (cursor.moveToNext());
 		}
@@ -251,34 +276,31 @@ public class ContactAccessorNew implements ContactAccessor {
 		return contacts;
 	}
 	
-	@Override
-	public Map<String, Contact> getAll() throws Exception {
-		return getContacts(0, -1);
-	}
-	
-	public Contact getContactByID(String id) {
+	public Contact getContact(String lookupKey) throws Exception {
 		if (DEBUG)
-			Logger.D(TAG, "getContactByID("+id+")");
+			Logger.D(TAG, "getContact(lookupKey="+lookupKey+")");
 		
 		Contact contact = null; 
 		
-		Cursor cursor = cr.query(Data.CONTENT_URI,
-				new String[] {RawContacts._ID},
-				Data.RAW_CONTACT_ID + "=?",
-				new String[] {id},
-				null);		
+		Cursor cursor = cr.query(Contacts.CONTENT_URI,
+				new String[] {Contacts.DISPLAY_NAME, Contacts._ID},
+				Contacts.LOOKUP_KEY + "=?",
+				new String[] {lookupKey}, null);		
 		
 		try {
 			if (!cursor.moveToFirst()) {
-				if (DEBUG)
-					Logger.D(TAG, "getContactByID() not found");
+				Logger.D(TAG, "getContact() not found");
 				return null;
 			}
-			contact = new Contact();
-			contact.setAccessor(this);
-			
-			//String idd = cursor.getString(cursor.getColumnIndex(RawContacts._ID));
-			contact.setId(id);
+			contact = new Contact(this, lookupKey, cursor.getString(cursor.getColumnIndex(Contacts.DISPLAY_NAME)));
+
+			String id = cursor.getString(cursor.getColumnIndex(Contacts._ID));
+			Logger.D(TAG, "Contact id: " + id);
+
+			fillName(id, contact);
+			fillPhones(id, contact);
+			fillEmails(id, contact);
+			fillCompany(id, contact);
 		}
 		finally {
 			cursor.close();
@@ -301,49 +323,115 @@ public class ContactAccessorNew implements ContactAccessor {
 			Uri uri = cr.insert(RawContacts.CONTENT_URI, values);
 			id = String.valueOf(ContentUris.parseId(uri));
 			contact.setId(id);
-			contact.setAccessor(this);
-			contact.makeAllFilled();
+//			contact.setAccessor(this);
+//			contact.makeAllFilled();
 		}
 	}
 	
 	private void saveData(Contact contact, ContentValues values, String where, String[] whereValues) throws Exception {
-		String id = contact.id();
-		values.put(Data.RAW_CONTACT_ID, Long.parseLong(id));
+		Cursor cursor = cr.query(Contacts.CONTENT_URI,
+				new String[] {Contacts._ID},
+				Contacts.LOOKUP_KEY + "=?",
+				new String[] {contact.id()}, null);		
 		
-		// Search is there is already record with the same raw_contact_id and mimetype
-		long dataId = 0;
-		
-		StringBuilder w = new StringBuilder();
-		w.append(Data.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?");
-		if (where != null)
-			w.append(" AND " + where);
-		where = w.toString();
-		
-		String mimetype = (String)values.get(Data.MIMETYPE);
-		int wvSize = 2;
-		if (whereValues != null)
-			wvSize += whereValues.length;
-		String[] wv = new String[wvSize];
-		wv[0] = id;
-		wv[1] = mimetype;
-		if (whereValues != null)
-			System.arraycopy(whereValues, 0, wv, 2, whereValues.length);
-		
-		Cursor cursor = cr.query(Data.CONTENT_URI, new String[] {Data._ID}, where, wv, null);
+		long contactId = 0;
 		try {
 			if (cursor.moveToFirst())
-				dataId = cursor.getLong(cursor.getColumnIndex(Data._ID));
+				contactId = cursor.getLong(cursor.getColumnIndex(Contacts._ID));
 		}
 		finally {
 			cursor.close();
 		}
+		if (contactId == 0) {
+			Logger.D(TAG, "No contact record found for contact: " + contact.id());
+		}
 		
+		StringBuilder w0 = new StringBuilder();
+		w0.append(Data.CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?");
+		if (where != null)
+			w0.append(" AND " + where);
+		//where = w0.toString();
+
+		String mimetype = (String)values.get(Data.MIMETYPE);
+		int wvSize0 = 2;
+		if (whereValues != null)
+			wvSize0 += whereValues.length;
+		String[] wv0 = new String[wvSize0];
+		wv0[0] = String.valueOf(contactId);
+		wv0[1] = mimetype;
+		if (whereValues != null)
+			System.arraycopy(whereValues, 0, wv0, 2, whereValues.length);
+		//whereValues = wv0;
+
+		cursor = cr.query(Data.CONTENT_URI,
+				new String[] {Data._ID, Data.RAW_CONTACT_ID},
+				w0.toString(),
+				wv0, null);		
+
+		long rawDataId = 0;
+		//long rawContactId = 0;
+		try {
+			if (cursor.moveToFirst()) {
+				rawDataId = cursor.getLong(cursor.getColumnIndex(Data._ID));
+				//rawContactId = cursor.getLong(cursor.getColumnIndex(Data.RAW_CONTACT_ID));
+			}
+		}
+		finally {
+			cursor.close();
+		}
+		if (rawDataId == 0) {
+			Logger.D(TAG, "No data records found for contact: " + contact.id());
+		}
+
 		// Do update if found, insert otherwise
-		if (dataId != 0)
-			cr.update(Data.CONTENT_URI, values,
-					Data._ID + "=?", new String[] {String.valueOf(dataId)});
-		else
+		if (rawDataId != 0) {
+
+			// Search is there is already record with the same raw_contact_id and mimetype
+
+			StringBuilder w1 = new StringBuilder();
+			w1.append(Data._ID + "=? AND " + Data.MIMETYPE + "=?");
+			if (where != null)
+				w1.append(" AND " + where);
+			//where = w1.toString();
+
+			int wvSize = 2;
+			if (whereValues != null)
+				wvSize += whereValues.length;
+			String[] wv1 = new String[wvSize];
+			wv1[0] = String.valueOf(rawDataId);
+			wv1[1] = mimetype;
+			if (whereValues != null)
+				System.arraycopy(whereValues, 0, wv1, 2, whereValues.length);
+			//whereValues = wv1;
+			
+			Logger.D(TAG, "Updating contact: " + values.toString());
+			Logger.D(TAG, "Updating contact: " + w1 + "; " + wv1);
+			int res = cr.update(Data.CONTENT_URI, values, w1.toString(), wv1);
+			Logger.D(TAG, "Contact updated (id:" + contactId + ",dataId:" + rawDataId + "): " + res + " rows.");
+		} else {
+			cursor = cr.query(RawContacts.CONTENT_URI,
+							  new String[] { RawContacts._ID },
+							  RawContacts.CONTACT_ID + "=?",
+							  new String[] { String.valueOf(contactId) }, null);
+			
+			long rawContactId = 0;
+			try {
+				if (cursor.moveToFirst()) {
+					rawContactId = cursor.getLong(cursor.getColumnIndex(RawContacts._ID));
+					//rawContactId = cursor.getLong(cursor.getColumnIndex(Data.RAW_CONTACT_ID));
+				}
+			}
+			finally {
+				cursor.close();
+			}
+			if (rawContactId == 0) {
+				Logger.D(TAG, "No raw contact records found for contact: " + contact.id());
+			}
+			
+			values.put(Data.RAW_CONTACT_ID, rawContactId);
 			cr.insert(Data.CONTENT_URI, values);
+			Logger.D(TAG, "New data record has created fo raw contact: " + rawContactId); 
+		}
 	}
 	
 	private void saveData(Contact contact, ContentValues values) throws Exception {
@@ -351,8 +439,8 @@ public class ContactAccessorNew implements ContactAccessor {
 	}
 	
 	private void updateName(Contact contact) throws Exception {
-		String firstName = contact.getField(Phonebook.PB_I_FIRST_NAME);
-		String lastName = contact.getField(Phonebook.PB_I_LAST_NAME);
+		String firstName = contact.getField(Phonebook.PB_FIRST_NAME);
+		String lastName = contact.getField(Phonebook.PB_LAST_NAME);
 
 		ContentValues values = new ContentValues();
 		values.put(Data.MIMETYPE, StructuredName.CONTENT_ITEM_TYPE);
@@ -363,12 +451,11 @@ public class ContactAccessorNew implements ContactAccessor {
 	}
 	
 	private void updatePhones(Contact contact) throws Exception {
-		int[] phones = {Phonebook.PB_I_MOBILE_NUMBER, Phonebook.PB_I_HOME_NUMBER, Phonebook.PB_I_BUSINESS_NUMBER};
+		String[] phones = {Phonebook.PB_MOBILE_NUMBER, Phonebook.PB_HOME_NUMBER, Phonebook.PB_BUSINESS_NUMBER};
 		int[] types = {Phone.TYPE_MOBILE, Phone.TYPE_HOME, Phone.TYPE_WORK};
 		
 		for (int i = 0; i < phones.length; ++i) {
-			int phName = phones[i];
-			String value = contact.getField(phName);
+			String value = contact.getField(phones[i]);
 			if (value == null || value.length() == 0)
 				continue;
 			
@@ -381,7 +468,7 @@ public class ContactAccessorNew implements ContactAccessor {
 	}
 	
 	private void updateEmails(Contact contact) throws Exception {
-		String value = contact.getField(Phonebook.PB_I_EMAIL_ADDRESS);
+		String value = contact.getField(Phonebook.PB_EMAIL_ADDRESS);
 		if (value == null || value.length() == 0)
 			return;
 		
@@ -392,7 +479,7 @@ public class ContactAccessorNew implements ContactAccessor {
 	}
 	
 	private void updateCompany(Contact contact) throws Exception {
-		String value = contact.getField(Phonebook.PB_I_COMPANY_NAME);
+		String value = contact.getField(Phonebook.PB_COMPANY_NAME);
 		if (value == null || value.length() == 0)
 			return;
 		
@@ -409,7 +496,7 @@ public class ContactAccessorNew implements ContactAccessor {
 		updatePhones(contact);
 		updateEmails(contact);
 		updateCompany(contact);
-		contact.makeAllFilled();
+//		contact.makeAllFilled();
 	}
 	
 	public void remove(Contact contact) {

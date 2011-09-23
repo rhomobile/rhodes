@@ -27,6 +27,9 @@
 package com.rhomobile.rhodes.phonebook;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.rhomobile.rhodes.Logger;
 
 public class Contact {
@@ -36,139 +39,34 @@ public class Contact {
 	
 	private String id = null;
 	
-	//private Map<String, ContactField> fields = new HashMap<String, ContactField>();
-	//private Iterator<ContactField> iter = null;
-	private ContactAccessor mAccessor = null;
+	private Map<String, String> mFields = new HashMap<String, String>();
+	
+	public Contact() { }
 
-	private boolean mIsNameFilled = false;
-	private boolean mIsPhoneFilled = false;
-	private boolean mIsEmailsFilled = false;
-	private boolean mIsCompanyFilled = false;
-	
-	private String mFields[] = new String[Phonebook.PB_FIELDS_COUNT];
-	
-	
-	public Contact() {
-		//moveToBegin();
+	public Contact(ContactAccessor accessor, String id, String displayName) {
+		this.id = id;
+		mFields.put(Phonebook.PB_ID, id);
+		mFields.put(Phonebook.PB_DISPLAY_NAME, displayName);
 	}
 	
-	public void setAccessor(ContactAccessor accessor) {
-		mAccessor = accessor;		
-	}
-	
-	public void makeAllFilled() {
-		mIsNameFilled = true;
-		mIsPhoneFilled = true;
-		mIsEmailsFilled = true;
-		mIsCompanyFilled = true;
-	}
-	
-	/*
-	private boolean isFullFilled() {
-		return (mIsNameFilled && mIsPhoneFilled && mIsEmailsFilled && mIsCompanyFilled);
-	}
-	*/
-
-	
-	public void setFieldInner(int key, String value) {
-		if ((key >= 0) && (key < Phonebook.PB_FIELDS_COUNT)) {
-			mFields[key] = value;
-		}
-		else {
-			Logger.E(TAG, "Invalid field index !");
-		}
-	}
-	
-	
-	private void prepareField(int key) {
-		if ((mAccessor != null) && (mAccessor instanceof ContactAccessorNew)) {
-			
-			if ((!mIsNameFilled) && ((key == Phonebook.PB_I_FIRST_NAME) || (key == Phonebook.PB_I_LAST_NAME))) {
-				((ContactAccessorNew)mAccessor).fillName(id, this);
-				mIsNameFilled = true;
-			}
-			else {
-				if ((!mIsPhoneFilled) && ((key == Phonebook.PB_I_MOBILE_NUMBER) || (key == Phonebook.PB_I_HOME_NUMBER) || (key == Phonebook.PB_I_BUSINESS_NUMBER))) {
-					((ContactAccessorNew)mAccessor).fillPhones(id, this);
-					mIsPhoneFilled = true;
-				}
-				else {
-					if ((!mIsEmailsFilled) && (key == Phonebook.PB_I_EMAIL_ADDRESS)) {
-						((ContactAccessorNew)mAccessor).fillEmails(id, this);
-						mIsEmailsFilled = true;
-					}
-					else {
-						if ((mIsCompanyFilled) && (key == Phonebook.PB_I_COMPANY_NAME)) {
-							((ContactAccessorNew)mAccessor).fillCompany(id, this);
-							mIsCompanyFilled = true;
-						}
-					}
-				}
-			}	
-		}
-	}
-	
-	public void setField(int key, String value)
+	public void setField(String key, String value)
 	{
-		if ((key >= 0) && (key < Phonebook.PB_FIELDS_COUNT)) {
-			prepareField(key);
-			setFieldInner(key, value);
-		}
-		else {
-			Logger.E(TAG, "Invalid field index !");
-		}
+		Logger.D(TAG, new StringBuilder("Set contact (id:").append(id).append(") field: ").append(key).append(" -> ").append(value).toString());
+		mFields.put(key,value);
 	}
 	
-	public String getField(int key)
+	public String getField(String key)
 	{
-		if ((key >= 0) && (key < Phonebook.PB_FIELDS_COUNT)) {
-			prepareField(key);
-			return mFields[key];
-		}
-		return null;
+		return mFields.get(key);
 	}
 	
-	public void setId(String v) {
-		id = v;
-		setFieldInner(Phonebook.PB_I_ID, convertPlatformIDtoRhodeID(v));
-	}
-	
-	public static String convertPlatformIDtoRhodeID(String id) {
-		return "{" + id + "}";
-	}
-
-	public static String convertRhodeIDtoPlatformID(String id) {
-		return id.substring(1, id.length()-1);
+	public void setId(String id) {
+		this.id = id;
+		setField(Phonebook.PB_ID, id);
 	}
 	
 	public String id() {
 		return id;
 	}
 
-	/*
-	private void fillAll() {
-		if (!isFullFilled()) {
-			int i;
-			for (i = 0; i < Phonebook.PB_FIELDS_COUNT; i++) {
-				prepareField(i);
-			}
-		}
-	}
-	*/
-	
-
-	/*
-	public void moveToBegin() {
-		fillAll();
-		iter = fields.values().iterator();
-	}
-	
-	public boolean hasNext() {
-		return iter.hasNext();
-	}
-	
-	public Object next() {
-		return iter.next();
-	}
-	*/
 }
