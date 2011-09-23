@@ -36,9 +36,6 @@
 #define DEFAULT_LOGCATEGORY "GeoLocation"
 
 extern "C" {
-double rho_geo_latitude();
-double rho_geo_longitude();
-float  rho_geo_accuracy();
 int rho_geo_known_position();
 void rho_geoimpl_settimeout(int nTimeoutSec);
 int rho_geo_is_available();

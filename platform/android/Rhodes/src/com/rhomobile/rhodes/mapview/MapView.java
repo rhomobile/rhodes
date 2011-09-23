@@ -71,6 +71,7 @@ public class MapView extends BaseActivity implements MapTouch {
 	public native void setPinCalloutLinkImage(long nativeDevice, Bitmap pin);
 	public native void setESRILogoImage(long nativeDevice, Bitmap esriLogo);
 	public native void setGoogleLogoImage(long nativeDevice, Bitmap googleLogo);
+	public native void setMyLocationImage(long nativeDevice, Bitmap pin);
 	
 	public native int minZoom(long nativeDevice);
 	public native int maxZoom(long nativeDevice);
@@ -167,6 +168,9 @@ public class MapView extends BaseActivity implements MapTouch {
 
 		Bitmap googleLogo = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.google);
 		setGoogleLogoImage(mNativeDevice, googleLogo);
+		
+		Bitmap pinMyLocation = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.marker, opt);
+		setMyLocationImage(mNativeDevice, pinMyLocation);
 		
 		mTouchHandler = createTouchHandler();
 		mTouchHandler.setMapTouch(this);
@@ -323,7 +327,7 @@ public class MapView extends BaseActivity implements MapTouch {
 			public void run() {
 				mSurface.invalidate();
 			}
-		}, false);
+		});
 	}
 	
 	public static Bitmap createImage(String path) {

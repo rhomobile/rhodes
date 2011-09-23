@@ -93,7 +93,7 @@ public class Callout {
 		paint.setColor(TITLE_COLOR);
 		paint.setTextSize(TITLE_FONT_SIZE);
 	    Rect rcLine = new Rect();
-		paint.getTextBounds( mTitle, 0, mTitle.length()-1, rcLine );
+		paint.getTextBounds( mTitle, 0, mTitle.length(), rcLine );
 		title_width = rcLine.right;
 		paint.getTextBounds( "WWW", 0, 2, rcLine );
 		title_height = rcLine.bottom - rcLine.top;
