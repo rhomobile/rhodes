@@ -17,6 +17,7 @@
 @synthesize sync_type;
 @synthesize model_type;
 @synthesize associations;
+@synthesize blob_attribs;
 
 - (id) init
 {
@@ -24,6 +25,7 @@
 	sync_type = RST_INCREMENTAL;
 	model_type = RMT_PROPERTY_BAG;
     associations = NULL;
+    blob_attribs = [[NSMutableString alloc] init];
     
 	return self;
 }
@@ -45,6 +47,23 @@
 
 	rho_sync_doSyncSourceByName([name cStringUsingEncoding:[NSString defaultCStringEncoding]]);	 
 }
+
+
+- (void) add_blob_attribute: (NSString *) attr_name
+{
+    [self add_blob_attribute: attr_name overwrite: NO];
+}
+
+- (void) add_blob_attribute: (NSString *) attr_name overwrite: (BOOL) attr_overwrite
+{
+    if (0 < [blob_attribs length]) {
+        [blob_attribs appendString: @","];
+    }
+    [blob_attribs appendString: attr_name];
+    [blob_attribs appendString: @","];
+    [blob_attribs appendString: attr_overwrite ? @"1" : @"0"];
+}
+
 
 - (void) create: (NSMutableDictionary *) data
 {

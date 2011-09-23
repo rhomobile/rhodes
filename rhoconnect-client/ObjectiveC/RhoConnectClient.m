@@ -183,6 +183,10 @@ void rho_free_callbackdata(void* pData)
             }	
             rhom_models[nModel].associations = hashAssoc;
         }
+        
+        if (0 < [model.blob_attribs length]) {
+            rhom_models[nModel].blob_attribs = [model.blob_attribs cStringUsingEncoding:[NSString defaultCStringEncoding]];
+        }
 		nModel++;
 	}
 	
