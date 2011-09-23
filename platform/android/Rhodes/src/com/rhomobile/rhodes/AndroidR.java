@@ -36,6 +36,7 @@ public final class AndroidR {
         public static final int icon=R.drawable.icon;
         public static final int info=R.drawable.info;
         public static final int marker=R.drawable.marker;
+        public static final int location=R.drawable.location;
         public static final int callout_a1=R.drawable.callout_a1;
         public static final int callout_a2=R.drawable.callout_a2;
         public static final int callout_a3=R.drawable.callout_a3;
