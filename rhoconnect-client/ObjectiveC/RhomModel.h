@@ -33,17 +33,22 @@
 	int       sync_type; 
     int       model_type;
     NSDictionary* associations;
+    NSMutableString* blob_attribs;
 }
 
 @property(assign) NSString* name;
 @property(assign) int       sync_type;
 @property(assign) int       model_type;
 @property(assign) NSDictionary* associations;
+@property(readonly) NSString* blob_attribs;
 
 - (id) init;
 
 - (RhoConnectNotify*) sync;
 - (void) sync: (SEL) callback target:(id)target;
+
+- (void) add_blob_attribute: (NSString *) attr_name;
+- (void) add_blob_attribute: (NSString *) attr_name overwrite: (BOOL) attr_overwrite;
 
 - (void) create: (NSMutableDictionary *) data;
 - (NSMutableDictionary *) find: (NSString*)object_id;
