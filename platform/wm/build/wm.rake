@@ -273,8 +273,11 @@ namespace "device" do
       cp  out_dir + "rhodes.exe", out_dir + $appname + ".exe" 
 	
       chdir $builddir
-      
-      args = ['build_inf.js', $appname + ".inf", 'wm6', '"' + $app_config["name"] +'"', $app_config["vendor"], '"' + $srcdir + '"', $hidden_app]
+
+              
+      build_platform = 'wm6'
+      build_platform = 'ce5' if $sdk != "Windows Mobile 6 Professional SDK (ARMV4I)"
+      args = ['build_inf.js', $appname + ".inf", build_platform, '"' + $app_config["name"] +'"', $app_config["vendor"], '"' + $srcdir + '"', $hidden_app]
       puts Jake.run('cscript',args)
       unless $? == 0
         puts "Error running build_inf"

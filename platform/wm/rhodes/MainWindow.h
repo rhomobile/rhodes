@@ -28,7 +28,7 @@
 
 #ifndef RHODES_EMULATOR
 
-#if !defined(_WIN32_WCE) || defined( OS_PLATFORM_CE )
+#if !defined(_WIN32_WCE) || defined( OS_PLATFORM_MOTCE )
 #include <exdispid.h>
 #include <exdisp.h>
 #endif
@@ -64,7 +64,7 @@
 #define PB_SCREEN_ORIENTATION_CHANGED	WM_USER + 11
 #define PB_NEWGPSDATA					WM_USER + 12
 #else
-#if defined (_WIN32_WCE) && !defined( OS_PLATFORM_CE )
+#if defined (_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
 #include <pvdispid.h>
 #include <piedocvw.h>
 #endif
