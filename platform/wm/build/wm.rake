@@ -70,7 +70,12 @@ namespace "config" do
   task :set_win32_platform do
     $current_platform = "win32" unless $current_platform
   end
-  
+
+  task :set_motce_platform do
+    $current_platform = "wm" unless $current_platform
+    $build_solution = 'rhoelements.sln' unless $build_solution
+    $sdk = "MC3000c50b (ARMV4I)"
+  end
 
   task :wm => [:set_wm_platform, "config:common"] do    
     puts " $current_platform : #{$current_platform}"
@@ -89,8 +94,9 @@ namespace "config" do
     $vcbuild = "vcbuild" if $vcbuild.nil?
     $cabwiz = File.join($config["env"]["paths"]["cabwiz"], "cabwiz.exe") if $config["env"]["paths"]["cabwiz"]
     $cabwiz = "cabwiz" if $cabwiz.nil?
-    $sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
+    $sdk = "Windows Mobile 6 Professional SDK (ARMV4I)" unless $sdk
     $sdk = $app_config["wmsdk"] unless $app_config["wmsdk"].nil?
+    $build_solution = 'rhodes.sln' unless $build_solution
     #$startdir = $app_config["sdk"]
 
     if $app_config["wm"].nil?
@@ -141,7 +147,7 @@ namespace "build" do
 
       cp $app_path + "/icon/icon.ico", "rhodes/resources" if File.exists? $app_path + "/icon/icon.ico"
 
-      args = ['/M4', 'rhodes.sln', "\"Release|#{$sdk}\""]
+      args = ['/M4', $build_solution, "\"Release|#{$sdk}\""]
       puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
       puts Jake.run($vcbuild,args)
       unless $? == 0
@@ -212,7 +218,7 @@ namespace "build" do
           exit 1
         end
 
-        args = ['/M4', 'rhodes.sln', '"SimulatorRelease|win32"']
+        args = ['/M4', $build_solution, '"SimulatorRelease|win32"']
         puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
         puts Jake.run($vcbuild,args)
 
@@ -251,7 +257,7 @@ namespace "build" do
   task :win32 => ["config:set_win32_platform", "config:wm", "build:win32:devrhobundle"] do
     chdir $config["build"]["wmpath"]
 
-    args = ['/M4', 'rhodes.sln', '"debug|win32"']
+    args = ['/M4', $build_solution, '"debug|win32"']
     puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
     puts Jake.run($vcbuild,args)
     
@@ -265,6 +271,13 @@ namespace "build" do
 end
 
 namespace "device" do
+
+  namespace "motce" do
+    desc "Build production for Motorola device"
+    task :production => ["config:set_motce_platform", "device:wm:production"] do
+    end
+  end
+    
   namespace "wm" do
     desc "Build production for device or emulator"
     task :production => ["config:wm","build:wm:rhobundle","build:wm:rhodes"] do
@@ -319,8 +332,14 @@ end
 
 namespace "clean" do
 
+  desc "Clean Motorola device build"
+  task :motce => ["config:set_motce_platform", "clean:wm:all"] do
+  end
+    
   desc "Clean wm"
-  task :wm => "clean:wm:all"
+  task :wm => "clean:wm:all" do
+  end
+      
   namespace "wm" do
     task :rhodes => ["config:wm"] do
       rm_rf $vcbindir + "/#{$sdk}"
