@@ -45,6 +45,8 @@ typedef struct _RHOM_MODEL
     const char* partition;
 
     unsigned long associations; //hash string to string: rho_connectclient_hash_create
+
+    const char* blob_attribs;
 }RHOM_MODEL;
 
 typedef struct _RHO_CONNECT_NOTIFY
