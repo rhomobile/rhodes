@@ -473,7 +473,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;."
+				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;&quot;../../../../Motorola-Extensions&quot;"
 				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;DEBUG;UNICODE;_UNICODE;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
@@ -500,7 +500,7 @@
 				IgnoreImportLibrary="true"
 				UseUnicodeResponseFiles="false"
 				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
-				AdditionalDependencies="aygshell.lib Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppwd.lib pimstore.lib bthutil.lib"
+				AdditionalDependencies="aygshell.lib Ws2.lib Ceshell.lib wininet.lib comsuppwd.lib"
 				OutputFile="$(OutDir)/rhodes.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(OutDir)"
@@ -971,8 +971,8 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="2"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;."
-				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
+				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;&quot;../../../../Motorola-Extensions&quot;"
+				PreprocessorDefinitions="OS_PLATFORM_MOTCE=5;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -996,15 +996,15 @@
 				RegisterOutput="false"
 				IgnoreImportLibrary="true"
 				UseUnicodeResponseFiles="false"
-				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
-				AdditionalDependencies="Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppw.lib pimstore.lib bthutil.lib"
+				AdditionalOptions=" /subsystem:windowsce,5.00"
+				AdditionalDependencies="Ws2.lib Ceshell.lib wininet.lib  comsuppw.lib"
 				OutputFile="$(OutDir)/rhodes.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(OutDir)"
 				GenerateDebugInformation="true"
 				SubSystem="0"
-				StackReserveSize="196608"
-				StackCommitSize="4096"
+				StackReserveSize="262144"
+				StackCommitSize="262144"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				ImportLibrary="$(OutDir)/Rhodes.lib"
@@ -3125,7 +3125,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|MC3000c50b (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3161,7 +3177,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|MC3000c50b (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool

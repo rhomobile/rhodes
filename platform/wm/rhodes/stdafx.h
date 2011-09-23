@@ -87,9 +87,14 @@
 
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS  // some CString constructors will be explicit
 
+#ifndef OS_PLATFORM_MOTCE
 // CE COM has no single threaded apartment (everything runs in the MTA).
 // Hence we declare we're not concerned about thread safety issues:
 #define _CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA
+
+#else
+#define SHELL_AYGSHELL
+#endif
 
 #include <atlbase.h>
 #include <atlcom.h>
@@ -118,6 +123,12 @@
 #if defined(WIN32_PLATFORM_WFSP) && !defined(_TPCSHELL_H_)
 #include <tpcshell.h>
 #endif
+
+#if defined(_WIN32_WCE)
+#include <aygshell.h>
+#pragma comment(lib, "aygshell.lib") 
+//#include <tpcshell.h> // Required for SHSendBackToFocusWindow
+#endif // SHELL_AYGSHELL
 
 #ifndef OS_PLATFORM_CE
 #define _WTL_CE_NO_ZOOMSCROLL
@@ -149,11 +160,12 @@
 
 using namespace ATL;
 
-#ifdef SHELL_AYGSHELL
+/*#ifdef SHELL_AYGSHELL
 #include <aygshell.h>
 #pragma comment(lib, "aygshell.lib") 
 #include <tpcshell.h> // Required for SHSendBackToFocusWindow
 #endif // SHELL_AYGSHELL
+*/
 
 // TODO: temporary code, until the CE compilers correctly implement the /MT[d], /MD[d] switches, and MFCCE fixes some #pragma issues
 #ifdef _DLL // /MD

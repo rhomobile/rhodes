@@ -34,7 +34,7 @@
 #include "net/URI.h"
 #include "common/RhoConf.h"
 
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
+#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
 #include <connmgr.h>
 #endif
 
@@ -899,7 +899,7 @@ bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
         InternetCloseHandle(m_hInternet);
     m_hInternet = NULL;
 
-#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
+#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
     if ( m_hWceConnMgrConnection )
         ConnMgrReleaseConnection(m_hWceConnMgrConnection, FALSE);
 
@@ -910,7 +910,7 @@ bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
 
 bool CNetRequestImpl::SetupInternetConnection(LPCTSTR url)
 {
-#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
+#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
 	int iNetwork;
 	HRESULT hResult = E_FAIL;
 	DWORD   dwStatus;

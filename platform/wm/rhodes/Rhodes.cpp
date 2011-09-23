@@ -60,7 +60,7 @@ extern "C" void rho_sysimpl_sethas_network(int nValue);
 extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue);
 extern "C" HINSTANCE rho_wmimpl_get_appinstance();
 
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE) && !defined(OS_PLATFORM_MOTCE)
 #include <regext.h>
 
 // Global Notification Handle
@@ -387,7 +387,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     // Show the main application window
     m_appWindow.ShowWindow(nShowCmd);
 
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
+#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
 
     DWORD dwConnCount = 0;
     hr = RegistryGetDWORD( SN_CONNECTIONSNETWORKCOUNT_ROOT,
@@ -439,7 +439,7 @@ void CRhodesModule::RunMessageLoop( ) throw( )
     m_appWindow.getWebKitEngine()->RunMessageLoop(m_appWindow);
 #endif
 
-#if defined(OS_WINCE)&& !defined( OS_PLATFORM_CE )
+#if defined(OS_WINCE)&& !defined( OS_PLATFORM_MOTCE )
     if (g_hNotify)
         RegistryCloseNotification(g_hNotify);
 
@@ -711,7 +711,7 @@ char* wce_wctomb(const wchar_t* w)
 
 #endif
 
-#if defined( OS_PLATFORM_CE )
+#if defined( OS_PLATFORM_MOTCE )
 HBITMAP SHLoadImageFile(  LPCTSTR pszFileName )
 {
     if ( !pszFileName || !*pszFileName )

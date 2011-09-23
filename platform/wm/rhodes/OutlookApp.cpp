@@ -27,7 +27,7 @@
 #include "StdAfx.h"
 #include "OutlookApp.h"
 
-#if defined( _WIN32_WCE ) && !defined( OS_PLATFORM_CE )
+#if defined( _WIN32_WCE ) && !defined( OS_PLATFORM_MOTCE )
 #define INITGUID
 #include <pimstore.h>
 #endif //_WIN32_WCE
@@ -56,7 +56,7 @@ COutlookApp::COutlookApp(void)
 {
     HRESULT hr = CoInitializeEx( NULL, 0);
 
-#if defined( _WIN32_WCE ) && !defined( OS_PLATFORM_CE )
+#if defined( _WIN32_WCE ) && !defined( OS_PLATFORM_MOTCE )
     IUnknown* pUnknown = NULL;
     hr = CoCreateInstance(__uuidof(Application),//CLSID_Application, 
         NULL, CLSCTX_INPROC_SERVER, 
@@ -88,7 +88,7 @@ COutlookApp::COutlookApp(void)
 
 COutlookApp::~COutlookApp(void)
 {
-#if defined( _WIN32_WCE ) && !defined( OS_PLATFORM_CE )
+#if defined( _WIN32_WCE ) && !defined( OS_PLATFORM_MOTCE )
 	if(m_outlookApp) 
 		m_outlookApp->Release();
 #endif //_WIN32_WCE

@@ -70,7 +70,7 @@ BOOL CIEBrowserEngine::ReloadOnTab(bool bFromCache, UINT iTab)
 }
 
 static void writeHtmlToTheDoc (
-#if defined(_WIN32_WCE) && !defined( OS_PLATFORM_CE )
+#if defined(_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
 					IPIEHTMLDocument2 *document
 #else
 					IHTMLDocument2 *document
@@ -110,7 +110,7 @@ BOOL CIEBrowserEngine::NavigateToHtml(LPCTSTR szHtml)
     hr = m_spIWebBrowser2->get_Document( &pHtmlDoc );
     if ( SUCCEEDED(hr) )
     {
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
+#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
 		IPIEHTMLDocument2* pDoc;
 		hr = pHtmlDoc->QueryInterface(__uuidof(IPIEHTMLDocument2),  (void**)&pDoc );
 #else

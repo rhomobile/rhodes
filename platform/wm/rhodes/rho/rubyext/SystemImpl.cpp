@@ -36,7 +36,7 @@
 #endif
 #include "MainWindow.h"
 
-#if defined( OS_WINCE ) && !defined( OS_PLATFORM_CE )
+#if defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
 #include <cfgmgrapi.h>
 #include <getdeviceuniqueid.h>
 #include <wininet.h>
@@ -526,7 +526,7 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
         return 1;
     }
 
-#if defined( OS_WINCE )&& !defined( OS_PLATFORM_CE )
+#if defined( OS_WINCE )&& !defined( OS_PLATFORM_MOTCE )
     if (strcasecmp("device_id",szPropName) == 0) 
     {
         rho::String strDeviceID = "";
@@ -694,7 +694,7 @@ int rho_sys_is_app_installed(const char *appname)
     strRequest += convertToStringW(strAppName) + L"\"/>"
         L"</characteristic></wap-provisioningdoc>"; 
 
-#if defined( OS_WINCE ) && !defined( OS_PLATFORM_CE )
+#if defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
     HRESULT hr         = E_FAIL;
     LPWSTR wszOutput   = NULL;
     hr = DMProcessConfigXML(strRequest.c_str(), CFGFLAG_PROCESS, &wszOutput);
@@ -732,7 +732,7 @@ void rho_sys_app_uninstall(const char *appname)
         L"</characteristic>"
         L"</characteristic></wap-provisioningdoc>";
 
-#if defined( OS_WINCE )&& !defined( OS_PLATFORM_CE )
+#if defined( OS_WINCE )&& !defined( OS_PLATFORM_MOTCE )
     HRESULT hr         = E_FAIL;
     LPWSTR wszOutput   = NULL;
     hr = DMProcessConfigXML(strRequest.c_str(), CFGFLAG_PROCESS, &wszOutput);
