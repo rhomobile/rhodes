@@ -8,8 +8,8 @@
 ;======================================================
 ; Installer Information
  
-  Name "RhoInstaller"
-  OutFile "RhoInstaller.exe"
+  Name "RhoStudio Installer"
+  OutFile "RhoStudioInstaller.exe"
   InstallDir C:\RhoStudio
   BrandingText " "
 ;======================================================
@@ -23,7 +23,7 @@
   !define MUI_HEADERIMAGE_BITMAP_NOSTRETCH
   !define MUI_FINISHPAGE_SHOWREADME $INSTDIR\README.html
   !define MUI_FINISHPAGE
-  !define MUI_FINISHPAGE_TEXT "Thank you for installing Rhodes, RhoSync and RhoStudio. \r\n\n\n"
+  !define MUI_FINISHPAGE_TEXT "Thank you for installing Rhodes, Rhoconnect and RhoStudio. \r\n\n\n"
  
  
 ;======================================================
@@ -102,14 +102,14 @@ section "uninstall"
 
     ExecWait 'net stop apache2.2'
     ExecWait 'net stop redis'
-    ExecWait 'net stop rhosync-1'
-    ExecWait 'net stop rhosync-2'
-    ExecWait 'net stop rhosync-3'
+    #ExecWait 'net stop rhosync-1'
+    #ExecWait 'net stop rhosync-2'
+    #ExecWait 'net stop rhosync-3'
     ExecWait 'sc delete apache2.2'
     ExecWait 'sc delete redis'
-    ExecWait 'sc delete rhosync-1'
-    ExecWait 'sc delete rhosync-2'
-    ExecWait 'sc delete rhosync-3'
+    #ExecWait 'sc delete rhosync-1'
+    #ExecWait 'sc delete rhosync-2'
+    #ExecWait 'sc delete rhosync-3'
 
     # remove env vars
     Push "PATH" 
@@ -212,17 +212,17 @@ Section "Ruby, Rubygems, Rhodes, and RhoSync" rubySection
   Pop $R0
 
 
-  ExecWait '$INSTDIR\rhosync\services\rhosync-service1.exe install' $0
-  ExecWait '$INSTDIR\rhosync\services\rhosync-service2.exe install' $0
-  ExecWait '$INSTDIR\rhosync\services\rhosync-service3.exe install' $0
+  #ExecWait '$INSTDIR\rhosync\services\rhosync-service1.exe install' $0
+  #ExecWait '$INSTDIR\rhosync\services\rhosync-service2.exe install' $0
+  #ExecWait '$INSTDIR\rhosync\services\rhosync-service3.exe install' $0
  
-  ExecWait 'net start rhosync-1'
-  ExecWait 'net start rhosync-2'
-  ExecWait 'net start rhosync-3'
+  #ExecWait 'net start rhosync-1'
+  #ExecWait 'net start rhosync-2'
+  #ExecWait 'net start rhosync-3'
 
-  delete "$INSTDIR\binfileoutput.txt"
-  delete "$INSTDIR\binfileoutput1.txt"
-  delete "$INSTDIR\binfileoutput2.txt"
+  #delete "$INSTDIR\binfileoutput.txt"
+  #delete "$INSTDIR\binfileoutput1.txt"
+  #delete "$INSTDIR\binfileoutput2.txt"
 
 
 SectionEnd
