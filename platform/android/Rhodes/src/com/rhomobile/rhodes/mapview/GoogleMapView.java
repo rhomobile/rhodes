@@ -48,6 +48,7 @@ import android.widget.RelativeLayout;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
+import com.google.android.maps.MyLocationOverlay;
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
@@ -69,6 +70,7 @@ public class GoogleMapView extends MapActivity {
 	private com.google.android.maps.MapView view;
 	private AnnotationsOverlay annOverlay;
 	private CalloutOverlay mCalloutOverlay;
+	private MyLocationOverlay mMyLocationOverlay;
 	
 	private double spanLat = 0;
 	private double spanLon = 0;
@@ -149,7 +151,7 @@ public class GoogleMapView extends MapActivity {
 		
 		boolean zoom_enabled = extras.getBoolean(SETTINGS_PREFIX + "zoom_enabled");
 		//boolean scroll_enabled = extras.getBoolean(SETTINGS_PREFIX + "scroll_enabled");
-		//boolean shows_user_location = extras.getBoolean(SETTINGS_PREFIX + "shows_user_location");
+		boolean shows_user_location = extras.getBoolean(SETTINGS_PREFIX + "shows_user_location");
 		
 		// Extract annotations
 		int size = extras.getInt(ANNOTATIONS_PREFIX + "size") + 1;
@@ -205,8 +207,14 @@ public class GoogleMapView extends MapActivity {
 		
 		mCalloutOverlay = new CalloutOverlay(this, marker);
 		
+		if (shows_user_location) {
+			mMyLocationOverlay = new MyLocationOverlay(this, view);
+			view.getOverlays().add(mMyLocationOverlay);
+		}
+
 		view.getOverlays().add(annOverlay);
 		view.getOverlays().add(mCalloutOverlay);
+		
 		
 		// Apply extracted parameters
 		view.setBuiltInZoomControls(zoom_enabled);
@@ -279,6 +287,22 @@ public class GoogleMapView extends MapActivity {
 	protected void onStart() {
 		super.onStart();
 		RhodesService.activityStarted();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (mMyLocationOverlay != null)
+			mMyLocationOverlay.enableMyLocation();
+
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if (mMyLocationOverlay != null)
+			mMyLocationOverlay.disableMyLocation();
+
 	}
 	
 	@Override

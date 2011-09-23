@@ -134,8 +134,9 @@ public:
     void setPinCalloutLinkImage(JNIEnv *env, jobject bitmap);
     void setESRILogoImage(JNIEnv *env, jobject bitmap);
     void setGoogleLogoImage(JNIEnv *env, jobject bitmap);
- 
-	rho_param *params() const {return m_params;}
+    void setPinMyLocationImage(JNIEnv *env, jobject bitmap);
+
+    rho_param *params() const { return m_params; }
 
     void setMapView(IMapView *mv);
     IMapView *mapView() const {return m_mapview;}
@@ -163,6 +164,7 @@ private:
     std::auto_ptr<IDrawingImage> m_pin_calloutlinkimage;
     std::auto_ptr<IDrawingImage> m_esriLogo_image;
     std::auto_ptr<IDrawingImage> m_googleLogo_image;
+    std::auto_ptr<IDrawingImage> m_pin_myLocation_image;
 };
 
 AndroidImage::AndroidImage(jobject bitmap)
@@ -404,6 +406,16 @@ void AndroidMapDevice::setGoogleLogoImage(JNIEnv *env, jobject bitmap) {
         RHO_MAP_TRACE("AndroidMapDevice: setGoogleLogoImage: finish");
 }
 
+void AndroidMapDevice::setPinMyLocationImage(JNIEnv *env, jobject bitmap) {
+        RHO_MAP_TRACE("AndroidMapDevice: setPinMyLocationImage: start");
+        m_pin_myLocation_image.reset(new AndroidImage(bitmap));
+        IMapView *mv = mapView();
+        if (mv) {
+            mv->setPinMyLocationImage(m_pin_myLocation_image.get());
+        }
+        RHO_MAP_TRACE("AndroidMapDevice: setGoogleLogoImage: finish");
+}
+
 
 IDrawingImage *AndroidMapDevice::createImage(String const &path, bool useAlpha)
 {
@@ -630,6 +642,15 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setGoogleLogoI
     rhomap::AndroidMapDevice *d = device(env, nativeDevice);
     d->setGoogleLogoImage(env, bitmap);
     RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setGoogleLogoImage: finish");
+}
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setMyLocationImage
+(JNIEnv *env, jobject, jlong nativeDevice, jobject bitmap)
+{
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setMyLocationImage: start");
+    rhomap::AndroidMapDevice *d = device(env, nativeDevice);
+    d->setPinMyLocationImage(env, bitmap);
+    RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setMyLocationImage: finish");
 }
 
 
