@@ -1090,7 +1090,7 @@ http scheme example:
 Custom scheme examples:
     :::ruby
     android:
-        URLScheme: rho
+        URIScheme: rho
 
     :::html
     <a href="rho://rhomobile.com/com.rhomobile.rhodessystemapisamples">Open System API Samples</a>
@@ -1098,8 +1098,8 @@ Custom scheme examples:
 
     :::ruby
     android:
-        URLScheme: rho-sas
-        URLHost: rhomobile.com
+        URIScheme: rho-sas
+        URIHost: rhomobile.com
 
     :::html
     <a href="rho-sas://rhomobile.com">Open System API Samples</a>

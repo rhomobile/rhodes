@@ -29,37 +29,48 @@ require 'bsearch'
 module Rho
 	class RhoContact
 		class << self
-                        def open_phonebook()
-                        	return Phonebook::openPhonebook
-                        end 
-                        def close_phonebook(phonebook)
-                        	Phonebook::closePhonebook(phonebook)
-                        end  
-			def find(param, properties_list = nil, phonebook = nil)
+            def open_phonebook()
+                return Phonebook::openPhonebook
+            end
+            def close_phonebook(phonebook)
+                Phonebook::closePhonebook(phonebook)
+            end  
+            def find(*args)
                 result = nil
-                pb = phonebook
+                phonebook = args[1][:phonebook] if args[1]
                 pb = Phonebook::openPhonebook if phonebook.nil?
 
                 if pb.nil?
                     puts "Can't open phonebook"
-                elsif param.is_a?(Hash)
-                    if param[:max_results].nil?
-                        max_results = -1
-                    else
-                        max_results = param[:max_results]
+                elsif args.first.nil? or args.length == 0
+                    puts "There are no arguments to find contacts"
+                elsif args.first == :all or args.first == :first or args.first == :count
+                    #conditions = args[1][:conditions] if args[1] && args[1][:conditions] && args[1][:conditions].is_a?(Hash)
+
+                    limit = -1
+                    offset = 0
+                    select = []
+
+                    if args[1]
+                        #if args[1][:conditions]
+                        #    condition_str = convertSqlConditionToStr(args[1][:conditions], args[1][:op])
+                    
+                        if args[1][:per_page] #and args[1][:offset]
+                            limit = args[1][:per_page].to_i
+                            offset = args[1][:offset] ? args[1][:offset].to_i : 0
+                        end
+
+                        select = args[1][:select] if args[1][:select]
                     end
-                    if param[:offset].nil?
-                        offset = 0
-                    else
-                        offset = param[:offset]
+                    limit = 1 if args.first == :first
+
+                    if args.first == :all or args.first == :first
+                        result = Phonebook::getRecords(pb, offset, limit, select)
+				    elsif args.first == :count
+                        result = Phonebook::countRecords(pb, offset, limit)
                     end
-                    result = Phonebook::getPhonebookRecords(pb, offset, max_results)
-                elsif param == :all or param == 'all'
-                    result = Phonebook::getallPhonebookRecords(pb)
-				elsif param == :count or param == 'count'
-                    result = Phonebook::getPhonebookRecordCount(pb)
                 else
-                    result = Phonebook::getPhonebookRecord(pb,param)
+                    result = Phonebook::getRecord(pb, args.first)
                 end
 
                 Phonebook::closePhonebook(pb) if phonebook.nil?
@@ -89,11 +100,11 @@ module Rho
 
 			def destroy(recordId, phonebook = nil)
                                 pb = phonebook
-                                if phonebook == nil
-					pb = Phonebook::openPhonebook
-                                end 
+                if phonebook == nil
+                    pb = Phonebook::openPhonebook
+                end
 				unless pb.nil?
-					record = Phonebook::openPhonebookRecord(pb,recordId)
+					record = Phonebook::openRecord(pb,recordId)
 					if record.nil?
 						puts "Can't find record " + recordId
 					else
@@ -112,7 +123,7 @@ module Rho
 					pb = Phonebook::openPhonebook
                                 end 
 				unless pb.nil?
-					record = Phonebook::openPhonebookRecord(pb,properties['id'])
+					record = Phonebook::openRecord(pb, "{#{properties['id']}}")
 					if record.nil?
 						puts "Can't find record " + properties['id']
 					else

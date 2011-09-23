@@ -26,13 +26,14 @@
 
 package com.rhomobile.rhodes.phonebook;
 
+import java.util.List;
 import java.util.Map;
 
 public interface ContactAccessor {
 	
-	public int getCount();
-	public Map<String, Contact> getContacts(int offset, int max_results) throws Exception;
-	public Map<String, Contact> getAll() throws Exception;
+	public int getCount(int offset, int limit) throws Exception;;
+	public Map<String, Contact> getContacts(int offset, int max_results, List<String> select) throws Exception;
+	public Contact getContact(String id) throws Exception;
 	public void save(Contact contact) throws Exception;
 	public void remove(Contact contact);
 	
