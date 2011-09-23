@@ -67,14 +67,6 @@ UINT WM_BROWSER_ONTITLECHANGE      = ::RegisterWindowMessage(L"RHODES_WM_BROWSER
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 
-#if defined(_WIN32_WCE)
-#include <regext.h>
-
-// Global Notification Handle
-extern HREGNOTIFY g_hNotify;
-
-#endif
-
 #include "DateTimePicker.h"
 
 extern "C" void rho_sysimpl_sethas_network(int nValue);
@@ -211,7 +203,7 @@ LRESULT CMainWindow::InitMainWindow()
     hr = AtlAdviseSinkMap(this, true);
 #endif
 
-#if defined(_WIN32_WCE) && !defined( OS_PLATFORM_CE )
+#if defined(_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
     // Create a menubar
     // (mbi was initialized above)
     mbi.hwndParent = m_hWnd;
@@ -253,7 +245,7 @@ LRESULT CMainWindow::InitMainWindow()
 
     MoveWindow(&rcMainWindow);
 
-#if defined(_WIN32_WCE) && !defined( OS_PLATFORM_CE )
+#if defined(_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
 	//Set fullscreen after window resizing
 	if ( RHOCONF().getBool("full_screen"))
    	    SetFullScreen(true);
@@ -627,11 +619,6 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 
 LRESULT CMainWindow::OnExitCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
-	if ( g_hNotify )
-		RegistryCloseNotification(g_hNotify);
-#endif
-
     SendMessage(WM_CLOSE);
     return 0;
 }
@@ -675,7 +662,7 @@ LRESULT CMainWindow::OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 LRESULT CMainWindow::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND hwnd, BOOL& /*bHandled*/)
 {
-#if defined (_WIN32_WCE) && !defined( OS_PLATFORM_CE )
+#if defined (_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
 	SetFullScreen(!m_bFullScreen);
 #endif
 	return 0;
@@ -846,7 +833,7 @@ LRESULT CMainWindow::OnAlertHidePopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 }
 
 LRESULT CMainWindow::OnBluetoothDiscover (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-#if defined( OS_WINCE) && !defined( OS_PLATFORM_CE )
+#if defined( OS_WINCE) && !defined( OS_PLATFORM_MOTCE )
 	RhoDiscoverDlg* dlg = RhoBluetoothManager::getInstance()->getDiscoverDlg();
 	dlg->openDialog(RhoBluetoothManager::getInstance());
 #endif // OS_WINDOWS
@@ -854,7 +841,7 @@ LRESULT CMainWindow::OnBluetoothDiscover (UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
 }
 
 LRESULT CMainWindow::OnBluetoothDiscovered (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-#if defined( OS_WINCE) && !defined( OS_PLATFORM_CE )
+#if defined( OS_WINCE) && !defined( OS_PLATFORM_MOTCE )
 	RhoDiscoveredDlg* dlg = RhoBluetoothManager::getInstance()->getDiscoveredDlg();
 	dlg->openDialog(RhoBluetoothManager::getInstance());
 #endif // OS_WINDOWS
@@ -1092,7 +1079,7 @@ BOOL CMainWindow::SetToolbarButtonEnabled(UINT uTbbID, BOOL bEnable)
 // **************************************************************************
 BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
 {
-#if defined( OS_WINCE) && !defined( OS_PLATFORM_CE )
+#if defined( OS_WINCE) && !defined( OS_PLATFORM_MOTCE )
 	if (pMsg->message == WM_CONTEXTMENU){
 		/*
 		CMenuHandle menu;

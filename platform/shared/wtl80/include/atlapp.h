@@ -144,6 +144,7 @@ inline int MulDiv(IN int nNumber, IN int nNumerator, IN int nDenominator)
 #define FreeResource(x)
 #define UnlockResource(x)
 
+#ifndef OS_PLATFORM_MOTCE
 namespace ATL
 {
   inline HRESULT CComModule::RegisterClassObjects(DWORD /*dwClsContext*/, DWORD /*dwFlags*/) throw()
@@ -151,6 +152,7 @@ namespace ATL
   inline HRESULT CComModule::RevokeClassObjects() throw()
   { return E_NOTIMPL; }
 }; // namespace ATL
+#endif //_CE_DCOM
 
 #ifndef lstrlenW
   #define lstrlenW	(int)ATL::lstrlenW

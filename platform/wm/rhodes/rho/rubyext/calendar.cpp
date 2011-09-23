@@ -27,7 +27,7 @@
 #include "stdafx.h"
 
 #include "ruby/ext/rho/rhoruby.h"
-#if defined(OS_WINCE)&& !defined( OS_PLATFORM_CE )
+#if defined(OS_WINCE)&& !defined( OS_PLATFORM_MOTCE )
 #include "ruby/ext/calendar/event.h"
 #include "OutlookApp.h"
 #include "common/StringConverter.h"

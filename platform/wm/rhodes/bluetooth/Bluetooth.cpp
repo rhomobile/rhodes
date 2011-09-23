@@ -26,9 +26,6 @@
 
 #include "stdafx.h"
 
-#if defined(_WIN32_WCE)
-#include <aygshell.h>
-#endif
 #include <atltime.h>
 #include "ext/rho/rhoruby.h"
 #include "../MainWindow.h"
@@ -39,7 +36,7 @@
 
 #include "../Utils.h"
 
-#if defined( OS_WINCE ) && !defined( OS_PLATFORM_CE )
+#if defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
 
 #ifdef _MSC_VER
 // warning C4800: 'int' : forcing to bool 'true' or 'false' (performance warning)

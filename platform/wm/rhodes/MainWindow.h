@@ -99,7 +99,7 @@ extern "C" bool Rhodes_WM_ProcessBeforeNavigate(LPCTSTR url);
 #endif
 
 class CMainWindow :
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_CE )
+#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
 	public CFrameWindowImpl<CMainWindow>, 
 	public CFullScreenFrame<CMainWindow>
 #else
@@ -334,7 +334,7 @@ private:
     CSyncStatusDlg m_SyncStatusDlg;
 };
 
-#if !defined(_WIN32_WCE) || defined( OS_PLATFORM_CE ) 
+#if !defined(_WIN32_WCE) || defined( OS_PLATFORM_MOTCE ) 
 HBITMAP SHLoadImageFile (  LPCTSTR pszFileName );
 #endif
 

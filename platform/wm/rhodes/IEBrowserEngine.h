@@ -3,7 +3,7 @@
 
 #include "logging/RhoLog.h"
 
-#if defined (_WIN32_WCE) && !defined( OS_PLATFORM_CE )
+#if defined (_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
 #include <pvdispid.h>
 #include <piedocvw.h>
 #endif

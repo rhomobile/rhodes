@@ -28,7 +28,7 @@
 
 #include <windows.h>
 
-#if defined( OS_WINCE) && !defined( OS_PLATFORM_CE )
+#if defined( OS_WINCE) && !defined( OS_PLATFORM_MOTCE )
 
 #include <winsock2.h>
 #include <ws2bth.h>
