@@ -67,6 +67,7 @@ void rho_connectclient_initmodel(RHOM_MODEL* model)
     model->sync_priority = 1000;
     model->partition = "user";
     model->associations = 0;
+    model->blob_attribs = "";
 }
 
 void rho_connectclient_processmodels(RHOM_MODEL* pModels, int nModels)
@@ -112,13 +113,13 @@ void rho_connectclient_processmodels(RHOM_MODEL* pModels, int nModels)
         {
             oUserDB.executeSQL("UPDATE sources SET sync_priority=?, sync_type=?, partition=?, schema=?, schema_version=?, associations=?, blob_attribs=? WHERE name=?",
                 model.sync_priority, getSyncTypeName(model.sync_type), model.partition, 
-                (model.type == RMT_PROPERTY_FIXEDSCHEMA ? "schema_model" : ""), "", strAssoc.c_str(), "", model.name );
+                (model.type == RMT_PROPERTY_FIXEDSCHEMA ? "schema_model" : ""), "", strAssoc.c_str(), model.blob_attribs, model.name );
                 
         }else //new model
         {
             oUserDB.executeSQL("INSERT INTO sources (source_id,name,sync_priority, sync_type, partition, schema,schema_version, associations, blob_attribs) values (?,?,?,?,?,?,?,?,?) ",
                 nStartModelID, model.name, model.sync_priority, getSyncTypeName(model.sync_type), model.partition, 
-                (model.type == RMT_PROPERTY_FIXEDSCHEMA ? "schema_model" : ""), "", strAssoc.c_str(), "" );
+                (model.type == RMT_PROPERTY_FIXEDSCHEMA ? "schema_model" : ""), "", strAssoc.c_str(), model.blob_attribs );
 
             nStartModelID++;
         }
