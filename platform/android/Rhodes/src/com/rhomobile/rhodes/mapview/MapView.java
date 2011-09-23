@@ -169,7 +169,7 @@ public class MapView extends BaseActivity implements MapTouch {
 		Bitmap googleLogo = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.google);
 		setGoogleLogoImage(mNativeDevice, googleLogo);
 		
-		Bitmap pinMyLocation = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.marker, opt);
+		Bitmap pinMyLocation = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.location, opt);
 		setMyLocationImage(mNativeDevice, pinMyLocation);
 		
 		mTouchHandler = createTouchHandler();
@@ -327,7 +327,7 @@ public class MapView extends BaseActivity implements MapTouch {
 			public void run() {
 				mSurface.invalidate();
 			}
-		});
+		}, false);
 	}
 	
 	public static Bitmap createImage(String path) {
