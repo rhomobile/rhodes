@@ -255,7 +255,8 @@ namespace map
         void setPinCalloutLinkImage(IDrawingImage *pinCallout, PIN_INFO pin_callout_info);
         virtual void setESRILogoImage(IDrawingImage *ESRILogoImg);
         virtual void setGoogleLogoImage(IDrawingImage *GoogleLogoImg);
-        
+        virtual void setPinMyLocationImage(IDrawingImage *img);
+
         void set_file_caching_enable(int enable);
 
         int mEnableFileCaching;
@@ -327,6 +328,7 @@ namespace map
         PIN_INFO m_pin_calloutlink_info;
         IDrawingImage *m_ESRILogo;
         IDrawingImage *m_GoogleLogo;
+        IDrawingImage *m_pinMyLocation;
         
         IDrawingImage *m_Callout;
         PIN_INFO m_CalloutInfo;

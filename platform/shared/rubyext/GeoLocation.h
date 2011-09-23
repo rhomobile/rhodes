@@ -67,6 +67,10 @@ private:
 extern "C" {
 #endif //__cplusplus
 
+double rho_geo_latitude();
+double rho_geo_longitude();
+float  rho_geo_accuracy();
+
 void rho_geo_set_notification( const char *url, char* params, int timeout_sec);
 void rho_geo_set_view_notification( const char *url, char* params, int timeout_sec);
 

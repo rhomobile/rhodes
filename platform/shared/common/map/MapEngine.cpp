@@ -30,6 +30,7 @@
 #include "common/map/ESRIMapEngine.h"
 #include "common/map/OSMMapEngine.h"
 #include "common/RhodesApp.h"
+#include "rubyext/GeoLocation.h"
 
 #include <algorithm>
 
@@ -212,6 +213,7 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
     double radius = 0;
     bool zoom_enabled = true;
     bool scroll_enabled = true;
+    bool shows_user_location = true;
 
     if (settings)
     {
@@ -220,10 +222,12 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
 
         for (int i = 0, lim = settings->v.hash->size; i < lim; ++i)
         {
-            char *name = settings->v.hash->name[i];
+            const char *name = settings->v.hash->name[i];
             rho_param *value = settings->v.hash->value[i];
             if (!name || !value)
                 continue;
+
+            RAWTRACE1("Processing map parameter: %s", name);
 
             if (strcasecmp(name, "map_type") == 0)
             {
@@ -295,6 +299,12 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
                 if (value->type != RHO_PARAM_STRING)
                     rho_ruby_raise_argerror("Wrong 'scroll_enabled' value (expect boolean)");
                 scroll_enabled = strcasecmp(value->v.string, "true") == 0;
+            }
+            else if (strcasecmp(name, "shows_user_location") == 0)
+            {
+                if (value->type != RHO_PARAM_STRING)
+                    rho_ruby_raise_argerror("Wrong 'shows_user_location' value (expect boolean)");
+                shows_user_location = strcasecmp(value->v.string, "true") == 0;
             }
         }
     }
@@ -407,6 +417,12 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
 
     for (ann_list_t::iterator it = ann_list.begin(), lim = ann_list.end(); it != lim; ++it)
         mapview->addAnnotation(*it);
+
+    if (shows_user_location)
+    {
+        ann_t user_location("", "", rho_geo_latitude(), rho_geo_longitude(), "");
+        mapview->addAnnotation(user_location);
+    }
 
     return mapview;
 }

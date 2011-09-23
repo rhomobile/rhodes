@@ -205,6 +205,7 @@ public:
     virtual void setPinCalloutLinkImage(IDrawingImage *pinCallout, PIN_INFO pin_callout_info) = 0;
     virtual void setESRILogoImage(IDrawingImage *esriLogoImg) = 0;
     virtual void setGoogleLogoImage(IDrawingImage *googleLogoImg) = 0;
+    virtual void setPinMyLocationImage(IDrawingImage *img) = 0;
 
     virtual void set_file_caching_enable(int enable) = 0;
 
