@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -46,12 +46,7 @@
 #   define RHO_MAP_TRACE4(fmt, arg1, arg2, arg3, arg4)
 #endif
 
-namespace rho
-{
-namespace common
-{
-namespace map
-{
+namespace rho { namespace common { namespace map {
 
 class IDrawingImage
 {
@@ -65,14 +60,14 @@ public:
 class IDrawingDevice
 {
 public:
-    virtual ~IDrawingDevice(){}
+    virtual ~IDrawingDevice() {}
 
     virtual IDrawingImage* createImage(String const &path, bool useAlpha) = 0;
     virtual IDrawingImage* createImage(void const *p, size_t s, bool useAlpha) = 0;
     virtual IDrawingImage* createImageEx(void const *p, size_t s, int x, int y, int w, int h, bool useAlpha) = 0;
     virtual IDrawingImage* cloneImage(IDrawingImage *image) = 0;
     virtual void destroyImage(IDrawingImage* image) = 0;
-    
+
     virtual IDrawingImage* createCalloutImage(String const &title, String const &subtitle, String const& url, int* x_offset, int* y_offset) = 0;
 
     virtual void requestRedraw() = 0;
@@ -81,69 +76,105 @@ public:
 class IDrawingContext
 {
 public:
-    virtual ~IDrawingContext(){}
+    virtual ~IDrawingContext() {}
 
     virtual void drawImage(int x, int y, IDrawingImage *image) = 0;
     virtual void drawText(int x, int y, int width, int height, String const &text, int color) = 0;
-	virtual void fillRect(int x, int y, int width, int height, int color) = 0;
+    virtual void fillRect(int x, int y, int width, int height, int color) = 0;
 };
 
-typedef struct {
-	int x_offset;
-	int y_offset;
-	int click_rect_x;
-	int click_rect_y;
-	int click_rect_width;
-	int click_rect_height;
-}PIN_INFO;
+typedef struct
+{
+    int x_offset;
+    int y_offset;
+    int click_rect_x;
+    int click_rect_y;
+    int click_rect_width;
+    int click_rect_height;
+} PIN_INFO;
 
 
 class Annotation
 {
 public:
-    
+
     virtual ~Annotation() {}
-    
+
     Annotation(String const &title, String const &subtitle,
-        double latitude, double longitude, String const &address,
-        String const &url)
+               double latitude, double longitude, String const &address,
+               String const &url)
         :m_title(title), m_subtitle(subtitle), m_resolved(true),
-        m_latitude(latitude), m_longitude(longitude),
-        m_address(address), m_url(url), m_x_off(0), m_y_off(0), m_data(NULL)
+         m_latitude(latitude), m_longitude(longitude),
+         m_address(address), m_url(url), m_x_off(0), m_y_off(0), m_data(NULL)
     {}
 
     Annotation(String const &title, String const &subtitle,
-        double latitude, double longitude, String const &url)
+               double latitude, double longitude, String const &url)
         :m_title(title), m_subtitle(subtitle), m_resolved(true),
-        m_latitude(latitude), m_longitude(longitude),
-        m_address(make_address(latitude, longitude)), m_url(url), m_x_off(0), m_y_off(0), m_data(NULL)
+         m_latitude(latitude), m_longitude(longitude),
+         m_address(make_address(latitude, longitude)), m_url(url), m_x_off(0), m_y_off(0), m_data(NULL)
     {}
 
     Annotation(String const &title, String const &subtitle,
-        String const &address, String const &url)
+               String const &address, String const &url)
         :m_title(title), m_subtitle(subtitle), m_resolved(false),
-        m_latitude(0), m_longitude(0),
-        m_address(address), m_url(url), m_x_off(0), m_y_off(0), m_data(NULL)
+         m_latitude(0), m_longitude(0),
+         m_address(address), m_url(url), m_x_off(0), m_y_off(0), m_data(NULL)
     {}
-    
-    void setImageFileName(String const &imageFileName, int x_off, int y_off) {
+
+    void setImageFileName(String const &imageFileName, int x_off, int y_off)
+    {
         mImageFileName = imageFileName;
         m_x_off = x_off;
         m_y_off = y_off;
     }
 
-    String const &title() const {return m_title;}
-    String const &subtitle() const {return m_subtitle;}
-    bool resolved() const {return m_resolved;}
-    double latitude() const {return m_latitude;}
-    double longitude() const {return m_longitude;}
-    String const &address() const {return m_address;}
-    String const &url() const {return m_url;}
-    String const &imageFileName() const {return mImageFileName;}
-    int x_offset() const {return m_x_off;}
-    int y_offset() const {return m_y_off;}
-    void* data() const {return m_data;}
-    void setData(void* p) {
+    String const &title() const
+    {
+        return m_title;
+    }
+    String const &subtitle() const
+    {
+        return m_subtitle;
+    }
+    bool resolved() const
+    {
+        return m_resolved;
+    }
+    double latitude() const
+    {
+        return m_latitude;
+    }
+    double longitude() const
+    {
+        return m_longitude;
+    }
+    String const &address() const
+    {
+        return m_address;
+    }
+    String const &url() const
+    {
+        return m_url;
+    }
+    String const &imageFileName() const
+    {
+        return mImageFileName;
+    }
+    int x_offset() const
+    {
+        return m_x_off;
+    }
+    int y_offset() const
+    {
+        return m_y_off;
+    }
+    void* data() const
+    {
+        return m_data;
+    }
+    void setData(void* p)
+    {
         m_data = p;
     }
 private:
@@ -194,6 +225,7 @@ public:
     virtual double longitude() const = 0;
 
     virtual void addAnnotation(Annotation &ann) = 0;
+    virtual void setMyLocation(Annotation &ann) = 0;
 
     // Return true if this MapView need to be closed
     virtual bool handleClick(int x, int y) = 0;
@@ -209,11 +241,10 @@ public:
 
     virtual void set_file_caching_enable(int enable) = 0;
 
-    
     // return count of tiles to download
     virtual int preloadMapTiles(double top_latitude, double left_longitude, double bottom_latitude, double right_longitude, int min_zoom, int max_zoom) = 0;
     virtual int getCountOfTilesToDownload() = 0;
-    
+
 };
 
 class GeoCodingCallback
@@ -251,7 +282,7 @@ public:
     void registerMapEngine(String const &id, IMapEngine *engine);
     void unregisterMapEngine(String const &id);
 
-	bool isRegisteredMapEngine(String const &id);
+    bool isRegisteredMapEngine(String const &id);
 
     IMapView *createMapView(String const &id, IDrawingDevice *device);
     void destroyMapView(IMapView *view);
@@ -265,13 +296,15 @@ private:
 } // namespace common
 } // namespace rho
 
-inline rho::common::map::MapProvider &RHOMAPPROVIDER() {return rho::common::map::MapProvider::getInstance();}
+inline rho::common::map::MapProvider &RHOMAPPROVIDER()
+{
+    return rho::common::map::MapProvider::getInstance();
+}
 
 rho::common::map::IMapView *rho_map_create(rho_param *p, rho::common::map::IDrawingDevice *device, int width, int height);
 void rho_map_destroy(rho::common::map::IMapView *mapview);
 // check param for valid - now check only :provider (must be supported)
 bool rho_map_check_param(rho_param *p);
-
 
 #ifdef __cplusplus
 extern "C"

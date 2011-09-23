@@ -37,12 +37,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "MapEngine"
 
-namespace rho
-{
-namespace common
-{
-namespace map
-{
+namespace rho { namespace common { namespace map {
 
 MapProvider &MapProvider::getInstance()
 {
@@ -115,8 +110,6 @@ String Annotation::make_address(double latitude, double longitude)
     return buf;
 }
 
-    
-    
     class EmptyDrawingDevice : public IDrawingDevice
     {
     public:
@@ -132,9 +125,6 @@ String Annotation::make_address(double latitude, double longitude)
         
         void requestRedraw() {}
     };
-    
-    
-    
     
 } // namespace map
 } // namespace common
@@ -421,7 +411,7 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
     if (shows_user_location)
     {
         ann_t user_location("", "", rho_geo_latitude(), rho_geo_longitude(), "");
-        mapview->addAnnotation(user_location);
+        mapview->setMyLocation(user_location);
     }
 
     return mapview;
@@ -432,29 +422,12 @@ void rho_map_destroy(rho::common::map::IMapView *mapview)
     RHOMAPPROVIDER().destroyMapView(mapview);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 static void callPreloadCallback(const char* callback, const char* status, int progress) {
     char body[2048];
 
     snprintf(body, sizeof(body), "&rho_callback=1&status=%s&progress=%d", status, progress);
     rho_net_request_with_data(RHODESAPP().canonicalizeRhoUrl(callback).c_str(), body);    
 }
-
-
 
 class CheckProgress : public rho::common::CRhoThread
 {
@@ -490,16 +463,11 @@ private:
 };
 
 
-
-
-int mapview_preload_map_tiles(const char* engine, const char* map_type, double top_latitude, double left_longitude, double bottom_latitude, double right_longitude, int min_zoom, int max_zoom, const char* callback) {
-    
+int mapview_preload_map_tiles(const char* engine, const char* map_type, double top_latitude, double left_longitude, double bottom_latitude, double right_longitude, int min_zoom, int max_zoom, const char* callback)
+{
     rhomap::EmptyDrawingDevice empty_device;
-    
-    
     std::string providerId = engine;
     std::transform(providerId.begin(), providerId.end(), providerId.begin(), &::tolower);    
-    
     rhomap::IMapView *mapview = RHOMAPPROVIDER().createMapView(providerId, &empty_device);
     
     if (mapview == NULL) {
