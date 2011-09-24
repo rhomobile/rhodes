@@ -56,13 +56,12 @@ int OSMMapView::getMapTile(uint64 p_zoom, uint64 p_row, uint64 p_column, void** 
     void *data = NULL;
     size_t datasize = 0;
     String url = "";//cmd->baseUrl;
-    int zoom = (int)p_zoom;
 
     // Make url
     char buf[1024];
 
     // Open Street Map
-    snprintf(buf, sizeof(buf), "http://a.tah.openstreetmap.org/Tiles/tile/%d/%d/%d.png", zoom, (int)p_column, (int)p_row);
+    snprintf(buf, sizeof(buf), "http://a.tah.openstreetmap.org/Tiles/tile/%d/%d/%d.png", (int)p_zoom, (int)p_column, (int)p_row);
 
     url += buf;
 

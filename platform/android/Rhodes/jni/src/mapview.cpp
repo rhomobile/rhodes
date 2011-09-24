@@ -167,19 +167,19 @@ private:
     std::auto_ptr<IDrawingImage> m_pin_myLocation_image;
 };
 
-AndroidImage::AndroidImage(jobject bitmap)
-    :m_count(new int(1)), m_bitmap(new jobject(bitmap))
+AndroidImage::AndroidImage(jobject jbitmap)
+    :m_count(new int(1)), m_bitmap(new jobject(0))
 {
     RHO_MAP_TRACE("AndroidImage: ctor start");
     JNIEnv *env = jnienv();
-    env->NewGlobalRef(bitmap);
-    env->DeleteLocalRef(bitmap);
+    *m_bitmap = env->NewGlobalRef(jbitmap);
+    env->DeleteLocalRef(jbitmap);
     init(env);
     RHO_MAP_TRACE("AndroidImage: ctor finish");
 }
 
-AndroidImage::AndroidImage(int *count, jobject *bitmap)
-    :m_count(count), m_bitmap(bitmap)
+AndroidImage::AndroidImage(int *count, jobject *pjbitmap)
+    :m_count(count), m_bitmap(pjbitmap)
 {
     RHO_MAP_TRACE("AndroidImage: private ctor start");
     ++*m_count;
@@ -189,7 +189,7 @@ AndroidImage::AndroidImage(int *count, jobject *bitmap)
 
 void AndroidImage::init(JNIEnv *env)
 {
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_BITMAP);
+    jclass& cls = getJNIClass(RHODES_JAVA_CLASS_BITMAP);
     if (!cls) return;
     jmethodID midWidth = getJNIClassMethod(env, cls, "getWidth", "()I");
     if (!midWidth) return;
@@ -207,7 +207,7 @@ AndroidImage::~AndroidImage()
     if (--*m_count == 0)
     {
         JNIEnv *env = jnienv();
-        jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+        jclass& cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
         jmethodID mid = getJNIClassStaticMethod(env, cls, "destroyImage", "(Landroid/graphics/Bitmap;)V");
 
         if (cls && mid)
@@ -274,7 +274,7 @@ AndroidMapDevice::AndroidMapDevice(rho_param *p)
 {
     RHO_MAP_TRACE("AndroidMapDevice: ctor start");
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+    jclass& cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "create", "(J)V");
     if (!mid) return;
@@ -289,8 +289,7 @@ AndroidMapDevice::~AndroidMapDevice()
     rho_param_free(m_params);
     JNIEnv *env = jnienv();
     if (m_jdevice) {
-        JNIEnv *env = jnienv();
-        jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+        jclass& cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
         if (!cls) return;
         jmethodID mid = getJNIClassMethod(env, cls, "destroyDevice", "()V");
         if (!mid) return;
@@ -423,7 +422,7 @@ IDrawingImage *AndroidMapDevice::createImage(String const &path, bool useAlpha)
     RHO_MAP_TRACE1("createImage: %s", path.c_str());
 
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+    jclass& cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
     if (!cls) return NULL;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "createImage", "(Ljava/lang/String;)Landroid/graphics/Bitmap;");
     if (!mid) return NULL;
@@ -443,7 +442,7 @@ IDrawingImage *AndroidMapDevice::createImage(void const *p, size_t size, bool us
     RHO_MAP_TRACE2("createImage: p=%p, size=%llu", p, (unsigned long long)size);
 
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+    jclass& cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
     if (!cls) return NULL;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "createImage", "([B)Landroid/graphics/Bitmap;");
     if (!mid) return NULL;
@@ -461,7 +460,6 @@ IDrawingImage *AndroidMapDevice::createImage(void const *p, size_t size, bool us
     
 IDrawingImage* AndroidMapDevice::createCalloutImage(String const &title, String const &subtitle, String const& url, int* x_offset, int* y_offset)
 {
-    
     JNIEnv *env = jnienv();
     jclass cls = env->FindClass("com/rhomobile/rhodes/mapview/Callout");//getJNIClass("com/rhomobile/rhodes/mapview/Callout");
     if (!cls) return NULL;
@@ -488,7 +486,7 @@ IDrawingImage* AndroidMapDevice::createCalloutImage(String const &title, String 
         RHO_MAP_TRACE2("createImageEx: p=%p, size=%llu", p, (unsigned long long)size);
         
         JNIEnv *env = jnienv();
-        jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+        jclass& cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
         if (!cls) return NULL;
         jmethodID mid = getJNIClassStaticMethod(env, cls, "createImageEx", "([BIIII)Landroid/graphics/Bitmap;");
         if (!mid) return NULL;
@@ -526,7 +524,7 @@ void AndroidMapDevice::requestRedraw()
     if (m_jdevice)
     {
         JNIEnv *env = jnienv();
-        jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+        jclass& cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
         if (!cls) return;
         jmethodID mid = getJNIClassMethod(env, cls, "redraw", "()V");
         if (!mid) return;
@@ -762,7 +760,7 @@ RHO_GLOBAL void google_mapview_create(rho_param *p)
 {
 #ifdef RHO_GOOGLE_API_KEY
     JNIEnv *env = jnienv();
-    jclass clsMapView = getJNIClass(RHODES_JAVA_CLASS_GOOGLEMAPVIEW);
+    jclass& clsMapView = getJNIClass(RHODES_JAVA_CLASS_GOOGLEMAPVIEW);
     if (!clsMapView) return;
     jmethodID midCreate = getJNIClassStaticMethod(env, clsMapView, "create", "(Ljava/lang/String;Ljava/util/Map;)V");
     if (!midCreate) return;
@@ -784,7 +782,7 @@ RHO_GLOBAL void google_mapview_close()
 {
 #ifdef RHO_GOOGLE_API_KEY
     JNIEnv *env = jnienv();
-    jclass clsMapView = getJNIClass(RHODES_JAVA_CLASS_GOOGLEMAPVIEW);
+    jclass& clsMapView = getJNIClass(RHODES_JAVA_CLASS_GOOGLEMAPVIEW);
     if (!clsMapView) return;
     jmethodID midClose = getJNIClassStaticMethod(env, clsMapView, "close", "()V");
     if (!midClose) return;
@@ -798,7 +796,7 @@ RHO_GLOBAL VALUE google_mapview_state_started()
 #ifdef RHO_GOOGLE_API_KEY
     VALUE nil = rho_ruby_get_NIL();
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_GOOGLEMAPVIEW);
+    jclass& cls = getJNIClass(RHODES_JAVA_CLASS_GOOGLEMAPVIEW);
     if (!cls) return nil;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "isStarted", "()Z");
     if (!mid) return nil;
@@ -813,7 +811,7 @@ RHO_GLOBAL double google_mapview_state_center_lat()
 {
 #ifdef RHO_GOOGLE_API_KEY
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_GOOGLEMAPVIEW);
+    jclass& cls = getJNIClass(RHODES_JAVA_CLASS_GOOGLEMAPVIEW);
     if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "getCenterLatitude", "()D");
     if (!mid) return 0;
@@ -828,7 +826,7 @@ RHO_GLOBAL double google_mapview_state_center_lon()
 {
 #ifdef RHO_GOOGLE_API_KEY
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_GOOGLEMAPVIEW);
+    jclass& cls = getJNIClass(RHODES_JAVA_CLASS_GOOGLEMAPVIEW);
     if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "getCenterLongitude", "()D");
     if (!mid) return 0;
@@ -862,7 +860,7 @@ RHO_GLOBAL void mapview_close()
 		s_mapdevice = NULL;
 
 	JNIEnv *env = jnienv();
-    	jclass cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+    	jclass& cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
     	if (!cls) return;
     	jmethodID mid = getJNIClassStaticMethod(env, cls, "destroy", "()V");
     	if (!mid) return;

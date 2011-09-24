@@ -100,40 +100,40 @@ public:
 
     virtual ~Annotation() {}
 
-    Annotation(String const &title, String const &subtitle,
-               double latitude, double longitude, String const &address,
-               String const &url)
-        :m_title(title), m_subtitle(subtitle), m_resolved(true),
-         m_latitude(latitude), m_longitude(longitude),
-         m_address(address), m_url(url), m_x_off(0), m_y_off(0), m_data(NULL)
+    Annotation(String const &str_title, String const &str_subtitle,
+               double lat, double lon, String const &addr,
+               String const &str_url)
+        :m_title(str_title), m_subtitle(str_subtitle), m_resolved(true),
+         m_latitude(lat), m_longitude(lon),
+         m_address(addr), m_url(str_url), m_x_off(0), m_y_off(0), m_data(NULL)
     {
         if (m_title.empty())
             m_title = m_address;
     }
 
-    Annotation(String const &title, String const &subtitle,
-               double latitude, double longitude, String const &url)
-        :m_title(title), m_subtitle(subtitle), m_resolved(true),
-         m_latitude(latitude), m_longitude(longitude),
-         m_address(make_address(latitude, longitude)), m_url(url), m_x_off(0), m_y_off(0), m_data(NULL)
+    Annotation(String const &str_title, String const &str_subtitle,
+               double lat, double lon, String const &str_url)
+        :m_title(str_title), m_subtitle(str_subtitle), m_resolved(true),
+         m_latitude(lat), m_longitude(lon),
+         m_address(make_address(lat, lon)), m_url(str_url), m_x_off(0), m_y_off(0), m_data(NULL)
     {
         if (m_title.empty())
             m_title = m_address;
     }
 
-    Annotation(String const &title, String const &subtitle,
-               String const &address, String const &url)
-        :m_title(title), m_subtitle(subtitle), m_resolved(false),
+    Annotation(String const &str_title, String const &str_subtitle,
+               String const &addr, String const &str_url)
+        :m_title(str_title), m_subtitle(str_subtitle), m_resolved(false),
          m_latitude(0), m_longitude(0),
-         m_address(address), m_url(url), m_x_off(0), m_y_off(0), m_data(NULL)
+         m_address(addr), m_url(str_url), m_x_off(0), m_y_off(0), m_data(NULL)
     {
         if (m_title.empty())
             m_title = m_address;
     }
 
-    void setImageFileName(String const &imageFileName, int x_off, int y_off)
+    void setImageFileName(String const &filename, int x_off, int y_off)
     {
-        mImageFileName = imageFileName;
+        mImageFileName = filename;
         m_x_off = x_off;
         m_y_off = y_off;
     }

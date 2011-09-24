@@ -642,17 +642,17 @@ private:
 // BaseMapView implementation
 
 BaseMapView::BaseMapView(IDrawingDevice *device, const char* name)
-    : mEnableFileCaching(0),
+    : m_isJustDownloadMode(false), mEnableFileCaching(0),
       m_drawing_device(device), m_geo_coding(new GoogleGeoCoding()),
       m_map_fetch(new MapFetch(this)), m_cache_update(new CacheUpdate(this)),
       m_width(0), m_height(0),
       m_zoom_enabled(true), m_scroll_enabled(true), m_maptype("roadmap"),
+      m_name(name),
       m_zoom(MIN_ZOOM), m_latitude(degreesToPixelsY(0, MAX_ZOOM)), m_longitude(degreesToPixelsX(0, MAX_ZOOM)),
       m_selected_annotation_index(-1),
       m_pin(0), m_pinCallout(0), m_pinCalloutLink(0), m_ESRILogo(0), m_GoogleLogo(0),
       m_pinMyLocation(0), m_myLocationAnnotation(0),
-      m_Callout(0), m_CalloutAnnotation(0),
-      m_name(name), m_isJustDownloadMode(false)
+      m_Callout(0), m_CalloutAnnotation(0)
 {
     String url = RHOCONF().getString("ESRI_map_url_roadmap");
     if (url.empty())
