@@ -314,23 +314,24 @@ void AndroidMapDevice::setMapView(IMapView *mv)
     m_mapview = mv;
     if (m_mapview && m_pin_image.get()) {
 
-	PIN_INFO pin_info;
-	pin_info.x_offset = -10;
-	pin_info.y_offset = -35;
-	pin_info.click_rect_x = -10;
-	pin_info.click_rect_y = -35;
-	pin_info.click_rect_width = 20;
-	pin_info.click_rect_height = 30;
+        PIN_INFO pin_info;
+        pin_info.x_offset = -10;
+        pin_info.y_offset = -35;
+        pin_info.click_rect_x = -10;
+        pin_info.click_rect_y = -35;
+        pin_info.click_rect_width = 20;
+        pin_info.click_rect_height = 30;
 
         m_mapview->setPinImage(m_pin_image.get(), pin_info);
 
-		PIN_INFO pin_info1 = PIN_INFO();
-		pin_info1.x_offset = 5;
+        PIN_INFO pin_info1 = PIN_INFO();
+        pin_info1.x_offset = 5;
 
         mv->setPinCalloutImage(m_pin_calloutimage.get(), pin_info1);
         mv->setPinCalloutLinkImage(m_pin_calloutlinkimage.get(), pin_info1);
-		mv->setESRILogoImage(m_esriLogo_image.get());
-		mv->setGoogleLogoImage(m_googleLogo_image.get());
+        mv->setESRILogoImage(m_esriLogo_image.get());
+        mv->setGoogleLogoImage(m_googleLogo_image.get());
+        mv->setPinMyLocationImage(m_pin_myLocation_image.get());
         
         mv->set_file_caching_enable((int)ourIsCachingEnabled);
 
@@ -343,15 +344,15 @@ void AndroidMapDevice::setPinImage(JNIEnv *env, jobject bitmap)
     RHO_MAP_TRACE("AndroidMapDevice: setPinImage: start");
     m_pin_image.reset(new AndroidImage(bitmap));
     IMapView *mv = mapView();
-    if (mv) {
-
-	PIN_INFO pin_info;
-	pin_info.x_offset = -10;
-	pin_info.y_offset = -35;
-	pin_info.click_rect_x = -10;
-	pin_info.click_rect_y = -35;
-	pin_info.click_rect_width = 20;
-	pin_info.click_rect_height = 30;
+    if (mv)
+    {
+        PIN_INFO pin_info;
+        pin_info.x_offset = -10;
+        pin_info.y_offset = -35;
+        pin_info.click_rect_x = -10;
+        pin_info.click_rect_y = -35;
+        pin_info.click_rect_width = 20;
+        pin_info.click_rect_height = 30;
 
         mv->setPinImage(m_pin_image.get(), pin_info);
     }

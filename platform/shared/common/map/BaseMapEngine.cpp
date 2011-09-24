@@ -649,7 +649,9 @@ BaseMapView::BaseMapView(IDrawingDevice *device, const char* name)
       m_zoom_enabled(true), m_scroll_enabled(true), m_maptype("roadmap"),
       m_zoom(MIN_ZOOM), m_latitude(degreesToPixelsY(0, MAX_ZOOM)), m_longitude(degreesToPixelsX(0, MAX_ZOOM)),
       m_selected_annotation_index(-1),
-      m_pin(0), m_pinCallout(0), m_pinCalloutLink(0), m_ESRILogo(0), m_GoogleLogo(0), m_pinMyLocation(0), m_Callout(0), m_CalloutAnnotation(0),
+      m_pin(0), m_pinCallout(0), m_pinCalloutLink(0), m_ESRILogo(0), m_GoogleLogo(0),
+      m_pinMyLocation(0), m_myLocationAnnotation(0),
+      m_Callout(0), m_CalloutAnnotation(0),
       m_name(name), m_isJustDownloadMode(false)
 {
     String url = RHOCONF().getString("ESRI_map_url_roadmap");
@@ -846,10 +848,18 @@ void BaseMapView::addAnnotation(Annotation &ann)
         RAWLOG_ERROR("Attempt to add annotation with empty address");
 }
 
-void BaseMapView::setMyLocation(Annotation &ann)
+void BaseMapView::setMyLocation(double lat, double lon)
 {
+    RAWTRACE1("Make my location anotation, image: 0x%.8X.", m_pinMyLocation);
+
+    Annotation ann("", "", lat, lon, "");
     ann.setData(m_pinMyLocation);
-    addAnnotation(ann);
+    synchronized(m_annotations_mtx);
+    {
+        m_annotations.push_back(ann);
+        m_myLocationAnnotation = &m_annotations.back();
+    }
+    redraw();
 }
 
 int BaseMapView::getAnnotation(int x, int y)
@@ -937,7 +947,13 @@ void BaseMapView::setGoogleLogoImage(IDrawingImage *GoogleLogoImg)
 
 void BaseMapView::setPinMyLocationImage(IDrawingImage *pImg)
 {
+    RAWTRACE("Setting my location PIN image.");
     m_pinMyLocation = pImg;
+    if(m_myLocationAnnotation != 0) {
+        RAWTRACE("Annotation already created, set data and redraw.");
+        m_myLocationAnnotation->setData(pImg);
+        redraw();
+    }
 }
 
 void BaseMapView::setPinCalloutImage(IDrawingImage *pinCallout, PIN_INFO pin_callout_info)
@@ -1361,19 +1377,6 @@ int BaseMapView::getCountOfTilesToDownload()
 {
     return m_map_fetch->getCommandsCount();
 }
-
-/*
-
- BaseMapView *BaseMapEngine::createMapView(IDrawingDevice *device)
- {
- return new BaseMapView(device);
- }
-
- void GoogleMapEngine::destroyMapView(IMapView *view)
- {
- delete view;
- }
- */
 
 } // namespace map
 } // namespace common
