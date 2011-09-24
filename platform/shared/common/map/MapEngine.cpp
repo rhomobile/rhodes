@@ -193,7 +193,7 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
     }
     std::transform(providerId.begin(), providerId.end(), providerId.begin(), &::tolower);
 
-    char *map_type = "roadmap";
+    const char *map_type = "roadmap";
     bool use_center_radius = false;
     double latitude = 0;
     double longitude = 0;
@@ -308,16 +308,16 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
             rho_ruby_raise_argerror("Wrong 'annotations' value (expect Array)");
         for (int i = 0, lim = annotations->v.array->size; i < lim; ++i)
         {
-            rho_param *ann = annotations->v.array->value[i];
-            if (!ann)
+            rho_param *ann_params = annotations->v.array->value[i];
+            if (!ann_params)
                 continue;
-            if (ann->type != RHO_PARAM_HASH)
+            if (ann_params->type != RHO_PARAM_HASH)
                 rho_ruby_raise_argerror("Wrong annotation value found (expect Hash)");
 
             bool latitude_set = false;
-            double latitude = 0;
+            double cur_lat = 0;
             bool longitude_set = false;
-            double longitude = 0;
+            double cur_lon = 0;
             char const *address = "";
             char const *title = "";
             char const *subtitle = "";
@@ -326,10 +326,10 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
             int x_off = 0;
             int y_off = 0;
 
-            for (int j = 0, limm = ann->v.hash->size; j < limm; ++j)
+            for (int j = 0, limm = ann_params->v.hash->size; j < limm; ++j)
             {
-                char *name = ann->v.hash->name[j];
-                rho_param *value = ann->v.hash->value[j];
+                char *name = ann_params->v.hash->name[j];
+                rho_param *value = ann_params->v.hash->value[j];
                 if (!name || !value)
                     continue;
 
@@ -339,12 +339,12 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
                 char *v = value->v.string;
                 if (strcasecmp(name, "latitude") == 0)
                 {
-                    latitude = strtod(v, NULL);
+                    cur_lat = strtod(v, NULL);
                     latitude_set = true;
                 }
                 else if (strcasecmp(name, "longitude") == 0)
                 {
-                    longitude = strtod(v, NULL);
+                    cur_lon = strtod(v, NULL);
                     longitude_set = true;
                 }
                 else if (strcasecmp(name, "street_address") == 0)
@@ -366,7 +366,7 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
              }
 
             if (latitude_set && longitude_set) {
-                ann_t ann(title, subtitle, latitude, longitude, url);
+                ann_t ann(title, subtitle, cur_lat, cur_lon, url);
                 if (image != NULL) {
                     ann.setImageFileName(image, x_off, y_off);
                 }
