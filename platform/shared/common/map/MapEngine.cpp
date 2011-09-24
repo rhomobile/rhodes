@@ -410,8 +410,7 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
 
     if (shows_user_location)
     {
-        ann_t user_location("", "", rho_geo_latitude(), rho_geo_longitude(), "");
-        mapview->setMyLocation(user_location);
+        mapview->setMyLocation(rho_geo_latitude(), rho_geo_longitude());
     }
 
     return mapview;

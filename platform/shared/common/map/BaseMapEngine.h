@@ -257,7 +257,7 @@ public:
     uint64 longitudeInt() const { return m_longitude; }
 
     void addAnnotation(Annotation &ann);
-    void setMyLocation(Annotation &ann);
+    void setMyLocation(double lat, double lon);
 
     bool handleClick(int x, int y);
 
@@ -341,7 +341,9 @@ private:
     PIN_INFO m_pin_calloutlink_info;
     IDrawingImage *m_ESRILogo;
     IDrawingImage *m_GoogleLogo;
+
     IDrawingImage *m_pinMyLocation;
+    Annotation* m_myLocationAnnotation;
 
     IDrawingImage *m_Callout;
     PIN_INFO m_CalloutInfo;
