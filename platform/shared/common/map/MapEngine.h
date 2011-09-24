@@ -106,21 +106,30 @@ public:
         :m_title(title), m_subtitle(subtitle), m_resolved(true),
          m_latitude(latitude), m_longitude(longitude),
          m_address(address), m_url(url), m_x_off(0), m_y_off(0), m_data(NULL)
-    {}
+    {
+        if (m_title.empty())
+            m_title = m_address;
+    }
 
     Annotation(String const &title, String const &subtitle,
                double latitude, double longitude, String const &url)
         :m_title(title), m_subtitle(subtitle), m_resolved(true),
          m_latitude(latitude), m_longitude(longitude),
          m_address(make_address(latitude, longitude)), m_url(url), m_x_off(0), m_y_off(0), m_data(NULL)
-    {}
+    {
+        if (m_title.empty())
+            m_title = m_address;
+    }
 
     Annotation(String const &title, String const &subtitle,
                String const &address, String const &url)
         :m_title(title), m_subtitle(subtitle), m_resolved(false),
          m_latitude(0), m_longitude(0),
          m_address(address), m_url(url), m_x_off(0), m_y_off(0), m_data(NULL)
-    {}
+    {
+        if (m_title.empty())
+            m_title = m_address;
+    }
 
     void setImageFileName(String const &imageFileName, int x_off, int y_off)
     {
@@ -189,7 +198,7 @@ public:
     virtual double longitude() const = 0;
 
     virtual void addAnnotation(Annotation &ann) = 0;
-    virtual void setMyLocation(Annotation &ann) = 0;
+    virtual void setMyLocation(double latitude, double longitude) = 0;
 
     // Return true if this MapView need to be closed
     virtual bool handleClick(int x, int y) = 0;
