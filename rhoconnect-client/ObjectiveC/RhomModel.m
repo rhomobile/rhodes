@@ -30,6 +30,14 @@
 	return self;
 }
 
+- (void) dealloc;
+{
+    [name release];
+    if (associations) [associations release];
+    [blob_attribs release];
+    [super dealloc];
+}
+
 - (RhoConnectNotify*) sync
 {
     char* res = (char*)rho_sync_doSyncSourceByName([name cStringUsingEncoding:[NSString defaultCStringEncoding]]);
@@ -38,7 +46,7 @@
     rho_connectclient_parsenotify(res, &oNotify);
 	rho_sync_free_string(res);
 	
-	return [[RhoConnectNotify alloc] init: &oNotify];
+	return [[[RhoConnectNotify alloc] init: &oNotify] autorelease];
 }
 
 - (void) sync: (SEL) callback target:(id)target
@@ -112,7 +120,7 @@ int enum_func(const char* szKey, const char* szValue, void* pThis)
 	NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
 	rho_connectclient_hash_enumerate(item, &enum_func, data );
 
-	return data;
+	return [data autorelease];
 }
 
 - (NSMutableDictionary *) find_first: (NSDictionary *)cond
@@ -134,7 +142,7 @@ int enum_func(const char* szKey, const char* szValue, void* pThis)
 	NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
 	rho_connectclient_hash_enumerate(item, &enum_func, data );
 	
-	return data;
+	return [data autorelease];
 }
 
 - (NSMutableArray *) find_all: (NSDictionary *)cond
@@ -164,10 +172,11 @@ int enum_func(const char* szKey, const char* szValue, void* pThis)
 		NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
 		rho_connectclient_hash_enumerate(rho_connectclient_strhasharray_get(items, i), &enum_func, data );
 			
-		[arRes addObject:data];
+		[arRes addObject: data];
+        [data release];
     }
 	
-	return arRes;
+	return [arRes autorelease];
 }
 
 - (void) save: (NSDictionary *)data

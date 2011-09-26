@@ -36,13 +36,14 @@
     NSMutableString* blob_attribs;
 }
 
-@property(assign) NSString* name;
+@property(retain) NSString* name;
 @property(assign) int       sync_type;
 @property(assign) int       model_type;
-@property(assign) NSDictionary* associations;
-@property(readonly) NSString* blob_attribs;
+@property(retain) NSDictionary* associations;
+@property(retain, readonly) NSString* blob_attribs;
 
 - (id) init;
+- (void) dealloc;
 
 - (RhoConnectNotify*) sync;
 - (void) sync: (SEL) callback target:(id)target;
