@@ -30,7 +30,7 @@ int shouldNotSyncWithoutLogin()
 
 int shouldLogin()
 {
-	RhoConnectNotify* res = [sclient loginWithUser:@"" pwd:@""];
+	RhoConnectNotify* res = [[sclient loginWithUser:@"" pwd:@""] retain];
 	int nErr = res.error_code;
 	[res release];
 	if ( nErr!= RHO_ERR_NONE || ![sclient is_logged_in]) {
@@ -42,7 +42,7 @@ int shouldLogin()
 
 int shouldSyncProductByName()
 {
-	RhoConnectNotify* res = [product sync];
+	RhoConnectNotify* res = [[product sync] retain];
 	int	nErr = res.error_code;
 	[res release];
 	if ( nErr!= RHO_ERR_NONE ) {
@@ -90,18 +90,18 @@ int shouldCreateNewProduct()
 	if ( [item objectForKey:@"object"] == NULL || [item objectForKey:@"source_id"] == NULL ) 
 		return 0;
 
-	NSDictionary* item2 = [product find:[item valueForKey:@"object"]];
+	NSDictionary* item2 = [[product find:[item valueForKey:@"object"]] retain];
 	if ( ![item2 isEqualToDictionary: item])
 		return 0;
 
     CObjectCallback* pObjectCallback = [[ CObjectCallback alloc] init];
     [sclient addObjectNotify: [[item objectForKey:@"source_id"] intValue] szObject:[item valueForKey:@"object"] ];
      
-	RhoConnectNotify* res = [product sync];
+	RhoConnectNotify* res = [[product sync] retain];
 	if ( res.error_code!= RHO_ERR_NONE )
 		return 0;
 
-	NSDictionary* item3 = [product find:[item valueForKey:@"object"]];
+	NSDictionary* item3 = [[product find:[item valueForKey:@"object"]] retain];
 	if ( item3 )
 		return 0;
 
@@ -129,7 +129,7 @@ int shouldModifyProduct()
 	NSMutableDictionary* cond = [[NSMutableDictionary alloc] init];
 	[cond setValue:@"Test" forKey:@"name"];							 
 	
-	NSMutableDictionary* item = [product find_first:cond];	
+	NSMutableDictionary* item = [[product find_first:cond] retain];
 	if ( !item )
 		return 0;
 	
@@ -145,11 +145,11 @@ int shouldModifyProduct()
 	[item setValue:new_sku forKey:@"sku"];
 	[product save: item];
 	
-	RhoConnectNotify* res = [product sync];
+	RhoConnectNotify* res = [[product sync] retain];
 	if ( res.error_code!= RHO_ERR_NONE )
 		return 0;
 	
-	NSDictionary* item3 = [product find:saved_object];
+	NSDictionary* item3 = [[product find:saved_object] retain];
 	if ( !item3 )
 		return 0;
 	
@@ -170,7 +170,7 @@ int shouldDeleteAllTestProduct()
 	NSMutableDictionary* cond = [[NSMutableDictionary alloc] init];
 	[cond setValue:@"Test" forKey:@"name"];							 
 	
-	NSMutableArray* items = [product find_all:cond];	
+	NSMutableArray* items = [[product find_all:cond] retain];	
 	if ( !items )
 		return 0;
 	
@@ -179,7 +179,7 @@ int shouldDeleteAllTestProduct()
 		[product destroy: item];
 	}
 	
-	RhoConnectNotify* res = [product sync];
+	RhoConnectNotify* res = [[product sync] retain];
 	if ( res.error_code!= RHO_ERR_NONE )
 		return 0;
 
@@ -209,7 +209,7 @@ int shouldPerfomanceTest_create(int nCount)
 
 int shouldPerfomanceTest_delete()
 {
-	NSMutableArray* items = [perftest find_all:NULL];	
+	NSMutableArray* items = [perftest find_all:NULL];
 	if ( !items )
 		return 0;
 	
@@ -231,6 +231,8 @@ int runObjCClientTest()
 	product = [[RhomModel alloc] init];
 	product.name = @"Product";
     product.associations = [NSDictionary dictionaryWithObjectsAndKeys: @"Customer", @"quantity", @"Customer", @"sku", nil];
+    [product add_blob_attribute: @"image_front"];
+    [product add_blob_attribute: @"image_back" overwrite: YES];
     
     //product.name = @"Product_s";
     //product.model_type = RMT_PROPERTY_FIXEDSCHEMA;    
@@ -252,9 +254,9 @@ int runObjCClientTest()
 	
 	sclient = [[RhoConnectClient alloc] init];
 	models = [NSArray arrayWithObjects:customer, product, perftest, nil];	
-	[product release];
-	[perftest release];
-	[customer release];
+//	[product release];
+//	[perftest release];
+//	[customer release];
 	
 	[sclient addModels:models];
 	
@@ -262,38 +264,56 @@ int runObjCClientTest()
     //sclient.threaded_mode = FALSE;
 	//sclient.poll_interval = 0;
 	
-	if ( !ResetAndLogout() )
-		return 0;
-
-    sclient.sync_server = @"http://rhodes-store-server.heroku.com/application";
- 
-	if ( !shouldNotSyncWithoutLogin() )
-		return 0;
-
-	if ( !shouldLogin() )
-		return 0;
-	
-	if ( !shouldSyncProductByName() )
-		return 0;
-
-	if ( !shouldSearchProduct() )
-		return 0;
-	
-	if ( !shouldCreateNewProduct() )
-		return 0;
-	
-	if ( !shouldModifyProduct() )
-		return 0;
-	
-	if ( !shouldDeleteAllTestProduct() )
-		return 0;
-
-	if ( !shouldPerfomanceTest_create(100) )
-		return 0;
-	if ( !shouldPerfomanceTest_delete() )
-		return 0;
-	
-	return 1;
+    // exception to throw on test failure
+    NSException *e = [NSException
+                      exceptionWithName: @"NSException"
+                      reason: @"test faled"
+                      userInfo: nil];
+    int result = 1;
+    @try {
+        if ( !ResetAndLogout() )
+            @throw e;
+        
+        sclient.sync_server = @"http://rhodes-store-server.heroku.com/application";
+        
+        if ( !shouldNotSyncWithoutLogin() )
+            @throw e;
+        
+        if ( !shouldLogin() )
+            @throw e;
+        
+        if ( !shouldSyncProductByName() )
+            @throw e;
+        
+        if ( !shouldSearchProduct() )
+            @throw e;
+        
+        if ( !shouldCreateNewProduct() )
+            @throw e;
+        
+        if ( !shouldModifyProduct() )
+            @throw e;
+        
+        if ( !shouldDeleteAllTestProduct() )
+            @throw e;
+        
+        if ( !shouldPerfomanceTest_create(100) )
+            @throw e;
+        
+        if ( !shouldPerfomanceTest_delete() )
+            @throw e;
+        
+    } @catch( NSException* e) {
+        result = 0;
+    } @finally {
+        [customer release];
+        [product release];
+        [perftest release];
+        //[models release];
+        //[sclient release];
+    }
+    
+    return result;
 }
 
 int runSyncClientTests();
@@ -308,7 +328,7 @@ int main(int argc, char *argv[]) {
     //int retVal = runSyncClientTests();
 	int retVal = runObjCClientTest();
 	
-	[models release];
+//	[models release];
 //	[product release];
 //	[perftest release];
 	[sclient release];
@@ -317,6 +337,6 @@ int main(int argc, char *argv[]) {
 	else
 		NSLog(@"FAILURE");
 	
-    [pool release];
+    [pool drain];
     return retVal;
 }

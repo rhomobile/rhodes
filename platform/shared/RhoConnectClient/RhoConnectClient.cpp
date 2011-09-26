@@ -66,8 +66,17 @@ void rho_connectclient_initmodel(RHOM_MODEL* model)
     model->sync_type = RST_NONE;
     model->sync_priority = 1000;
     model->partition = "user";
-    model->associations = 0;
-    model->blob_attribs = "";
+    model->associations = rho_connectclient_hash_create();
+    model->blob_attribs = NULL;
+}
+
+void rho_connectclient_destroymodel(RHOM_MODEL* model)
+{
+    // foolproof, user may forget to do init
+    if (0 != model->associations) {
+        rho_connectclient_hash_delete(model->associations);
+    }
+    memset( model, 0, sizeof(RHOM_MODEL) );
 }
 
 void rho_connectclient_processmodels(RHOM_MODEL* pModels, int nModels)
