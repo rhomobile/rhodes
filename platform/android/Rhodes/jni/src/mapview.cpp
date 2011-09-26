@@ -330,7 +330,17 @@ void AndroidMapDevice::setMapView(IMapView *mv)
         mv->setPinCalloutLinkImage(m_pin_calloutlinkimage.get(), pin_info1);
         mv->setESRILogoImage(m_esriLogo_image.get());
         mv->setGoogleLogoImage(m_googleLogo_image.get());
-        mv->setPinMyLocationImage(m_pin_myLocation_image.get());
+
+        
+        
+        pin_info.x_offset = -2;
+        pin_info.y_offset = -31;
+        pin_info.click_rect_x = -2;
+        pin_info.click_rect_y = -31;
+        pin_info.click_rect_width = 32;
+        pin_info.click_rect_height = 32;
+        
+        mv->setPinMyLocationImage(m_pin_myLocation_image.get(), pin_info);
         
         mv->set_file_caching_enable((int)ourIsCachingEnabled);
 
@@ -411,7 +421,18 @@ void AndroidMapDevice::setPinMyLocationImage(JNIEnv *env, jobject bitmap) {
         m_pin_myLocation_image.reset(new AndroidImage(bitmap));
         IMapView *mv = mapView();
         if (mv) {
-            mv->setPinMyLocationImage(m_pin_myLocation_image.get());
+            
+            PIN_INFO pin_info;
+
+            pin_info.x_offset = -2;
+            pin_info.y_offset = -31;
+            pin_info.click_rect_x = -2;
+            pin_info.click_rect_y = -31;
+            pin_info.click_rect_width = 32;
+            pin_info.click_rect_height = 32;
+            
+            
+            mv->setPinMyLocationImage(m_pin_myLocation_image.get(), pin_info);
         }
         RHO_MAP_TRACE("AndroidMapDevice: setGoogleLogoImage: finish");
 }
