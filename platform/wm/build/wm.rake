@@ -26,12 +26,12 @@
 
 
 def kill_detool
-  if RUBY_PLATFORM =~ /(win|w)32$/
+  #if RUBY_PLATFORM =~ /(win|w)32$/
     # Windows
     `taskkill /F /IM detool.exe`
-  else
-    `killall -9 detool`
-  end
+  #else
+  #  `killall -9 detool`
+  #end
 end
 
 def sign (cabfile)	
