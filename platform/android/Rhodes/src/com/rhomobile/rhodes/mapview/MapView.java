@@ -170,6 +170,7 @@ public class MapView extends BaseActivity implements MapTouch {
 		setGoogleLogoImage(mNativeDevice, googleLogo);
 		
 		Bitmap pinMyLocation = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.location, opt);
+		pinMyLocation.setDensity(Bitmap.DENSITY_NONE);
 		setMyLocationImage(mNativeDevice, pinMyLocation);
 		
 		mTouchHandler = createTouchHandler();

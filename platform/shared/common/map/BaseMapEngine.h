@@ -268,7 +268,7 @@ public:
     void setPinCalloutLinkImage(IDrawingImage *pinCallout, PIN_INFO pin_callout_info);
     virtual void setESRILogoImage(IDrawingImage *ESRILogoImg);
     virtual void setGoogleLogoImage(IDrawingImage *GoogleLogoImg);
-    virtual void setPinMyLocationImage(IDrawingImage *img);
+    virtual void setPinMyLocationImage(IDrawingImage *img, PIN_INFO pin_info);
 
     void set_file_caching_enable(int enable);
 
@@ -343,6 +343,7 @@ private:
     IDrawingImage *m_GoogleLogo;
 
     IDrawingImage *m_pinMyLocation;
+    PIN_INFO m_mylocation_pin_info;
     Annotation* m_myLocationAnnotation;
 
     IDrawingImage *m_Callout;

@@ -94,6 +94,12 @@ typedef struct
 } PIN_INFO;
 
 
+typedef enum 
+{
+    SIMPLE,
+    MY_LOCATION
+} ANNOTATION_TYPE;
+    
 class Annotation
 {
 public:
@@ -105,17 +111,29 @@ public:
                String const &str_url)
         :m_title(str_title), m_subtitle(str_subtitle), m_resolved(true),
          m_latitude(lat), m_longitude(lon),
-         m_address(addr), m_url(str_url), m_x_off(0), m_y_off(0), m_data(NULL)
+         m_address(addr), m_url(str_url), m_x_off(0), m_y_off(0), m_data(NULL), m_type(SIMPLE)
     {
         if (m_title.empty())
             m_title = m_address;
     }
 
     Annotation(String const &str_title, String const &str_subtitle,
+               double lat, double lon, String const &addr,
+               String const &str_url, ANNOTATION_TYPE _type)
+    :m_title(str_title), m_subtitle(str_subtitle), m_resolved(true),
+    m_latitude(lat), m_longitude(lon),
+    m_address(addr), m_url(str_url), m_x_off(0), m_y_off(0), m_data(NULL), m_type(_type)
+    {
+        if (m_title.empty())
+            m_title = m_address;
+    }
+    
+    
+    Annotation(String const &str_title, String const &str_subtitle,
                double lat, double lon, String const &str_url)
         :m_title(str_title), m_subtitle(str_subtitle), m_resolved(true),
          m_latitude(lat), m_longitude(lon),
-         m_address(make_address(lat, lon)), m_url(str_url), m_x_off(0), m_y_off(0), m_data(NULL)
+         m_address(make_address(lat, lon)), m_url(str_url), m_x_off(0), m_y_off(0), m_data(NULL), m_type(SIMPLE)
     {
         if (m_title.empty())
             m_title = m_address;
@@ -125,7 +143,7 @@ public:
                String const &addr, String const &str_url)
         :m_title(str_title), m_subtitle(str_subtitle), m_resolved(false),
          m_latitude(0), m_longitude(0),
-         m_address(addr), m_url(str_url), m_x_off(0), m_y_off(0), m_data(NULL)
+         m_address(addr), m_url(str_url), m_x_off(0), m_y_off(0), m_data(NULL), m_type(SIMPLE)
     {
         if (m_title.empty())
             m_title = m_address;
@@ -170,6 +188,10 @@ public:
     {
         return mImageFileName;
     }
+    ANNOTATION_TYPE type() const
+    {
+        return m_type;
+    }
     int x_offset() const
     {
         return m_x_off;
@@ -201,6 +223,7 @@ private:
     int m_x_off;
     int m_y_off;
     void* m_data;
+    ANNOTATION_TYPE m_type;
 };
 
 class IMapView
@@ -246,7 +269,7 @@ public:
     virtual void setPinCalloutLinkImage(IDrawingImage *pinCallout, PIN_INFO pin_callout_info) = 0;
     virtual void setESRILogoImage(IDrawingImage *esriLogoImg) = 0;
     virtual void setGoogleLogoImage(IDrawingImage *googleLogoImg) = 0;
-    virtual void setPinMyLocationImage(IDrawingImage *img) = 0;
+    virtual void setPinMyLocationImage(IDrawingImage *img, PIN_INFO pin_info) = 0;
 
     virtual void set_file_caching_enable(int enable) = 0;
 

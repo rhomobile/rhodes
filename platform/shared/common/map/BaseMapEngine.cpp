@@ -852,7 +852,7 @@ void BaseMapView::setMyLocation(double lat, double lon)
 {
     RAWTRACE1("Make my location anotation, image: 0x%.8X.", m_pinMyLocation);
 
-    Annotation ann("", "", lat, lon, "");
+    Annotation ann("Current Location", "", lat, lon, "", "", MY_LOCATION);
     ann.setData(m_pinMyLocation);
     synchronized(m_annotations_mtx);
     {
@@ -945,15 +945,16 @@ void BaseMapView::setGoogleLogoImage(IDrawingImage *GoogleLogoImg)
     m_GoogleLogo = GoogleLogoImg;
 }
 
-void BaseMapView::setPinMyLocationImage(IDrawingImage *pImg)
+void BaseMapView::setPinMyLocationImage(IDrawingImage *pImg, PIN_INFO pin_info)
 {
     RAWTRACE("Setting my location PIN image.");
     m_pinMyLocation = pImg;
-    if(m_myLocationAnnotation != 0) {
-        RAWTRACE("Annotation already created, set data and redraw.");
-        m_myLocationAnnotation->setData(pImg);
-        redraw();
-    }
+    m_mylocation_pin_info = pin_info;
+    //if(m_myLocationAnnotation != 0) {
+    //    RAWTRACE("Annotation already created, set data and redraw.");
+    //    m_myLocationAnnotation->setData(pImg);
+    //    redraw();
+    //}
 }
 
 void BaseMapView::setPinCalloutImage(IDrawingImage *pinCallout, PIN_INFO pin_callout_info)
@@ -1137,8 +1138,16 @@ void BaseMapView::paintAnnotation(IDrawingContext *context, Annotation &ann)
         return;
 
     IDrawingImage* img = m_pin;
+    PIN_INFO* pin_info = &m_pin_info;
 
 
+    if (ann.type() == MY_LOCATION) {
+        if (m_pinMyLocation != NULL) {
+            img = m_pinMyLocation;
+            pin_info = &m_mylocation_pin_info;
+        }
+    }
+    
     if (ann.data() != NULL)
     {
         img = (IDrawingImage*)ann.data();
