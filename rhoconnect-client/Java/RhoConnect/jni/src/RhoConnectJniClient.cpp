@@ -46,7 +46,7 @@ static jobject s_jObjectNotifyDelegate = 0;
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_initialize
   (JNIEnv * env, jobject, jobjectArray jmodels)
 {
-    static jclass clsmodel = getJNIClass(RHOCONNECT_JAVA_CLASS_RHOMMODEL);
+    jclass& clsmodel = getJNIClass(RHOCONNECT_JAVA_CLASS_RHOMMODEL);
     if (!clsmodel) return;
     static jmethodID midname = getJNIClassMethod(env, clsmodel, "getName", "()Ljava/lang/String;");
     if (!midname) return;
@@ -58,11 +58,14 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_initializ
     if (!midsyncpri) return;
     static jmethodID midpart = getJNIClassMethod(env, clsmodel, "getPartition", "()Ljava/lang/String;");
     if (!midpart) return;
+    static jmethodID midblobattribs = getJNIClassMethod(env, clsmodel, "getBlobAttribsAsString", "()Ljava/lang/String;");
+    if (!midblobattribs) return;
 
     size_t cnt = static_cast<model_vector::size_type>(env->GetArrayLength(jmodels));
     model_vector models(cnt);
     string_vector names(cnt);
     string_vector partitions(cnt);
+    string_vector blob_attribs(cnt);
 
     for(model_vector::size_type i = 0, cnt = models.size(); i < cnt; ++i)
     {
@@ -70,10 +73,11 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_initializ
         RHOM_MODEL& model = models[i];
         rho::String& name = names[i];
         rho::String& partition = partitions[i];
-        
+        rho::String& cur_blob_attribs = blob_attribs[i];
+
         jhobject jname = env->CallObjectMethod(jmodel, midname);
         name = rho_cast<rho::String>(env, static_cast<jstring>(jname.get()));
-        model.name = const_cast<char*>(name.c_str());
+        model.name = /*const_cast<char*>*/(name.c_str());
 
         model.type = static_cast<RHOM_MODEL_TYPE>(env->CallIntMethod(jmodel, midmodeltype));
         model.sync_type = static_cast<RHOM_SYNC_TYPE>(env->CallIntMethod(jmodel, midsynctype));
@@ -81,7 +85,11 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_initializ
 
         jhobject jpart = env->CallObjectMethod(jmodel, midpart);
         partition = rho_cast<rho::String>(env, static_cast<jstring>(jpart.get()));
-        model.partition = const_cast<char*>(partition.c_str());
+        model.partition = /*const_cast<char*>*/(partition.c_str());
+
+        jhobject jattribs = env->CallObjectMethod(jmodel, midblobattribs);
+        cur_blob_attribs = rho_cast<rho::String>(env, static_cast<jstring>(jattribs.get()));
+        model.blob_attribs = cur_blob_attribs.c_str();
     }
 
     rho_connectclient_init(&models.front(), models.size());

@@ -28,7 +28,10 @@
 package com.rhomobile.rhoconnect;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 public class RhomModel {
 	public final static int MODEL_TYPE_PROPERTY_BAG = 0;
@@ -45,6 +48,7 @@ public class RhomModel {
     private int mSyncPriority;
 
     private String mPartition;
+    private Map<String, String> mBlobAttribs = new TreeMap<String, String>();
 
     private native void init();
     private static native RhoConnectNotify syncByName(String modelName);
@@ -72,6 +76,23 @@ public class RhomModel {
     public void setSyncPriority(int prio) { mSyncPriority = prio; }
     public String getPartition() { return mPartition; }
     public void setPartition(String part) { mPartition = part; }
+    public Map<String, String> getBlobAttribs() { return mBlobAttribs; }
+    public String getBlobAttribsAsString()
+    {
+        Set<Map.Entry<String, String> > entries = mBlobAttribs.entrySet();
+        Iterator<Map.Entry<String, String> > entryIt = entries.iterator();
+        StringBuilder blobAttribs = new StringBuilder();
+    
+        while(entryIt.hasNext()) {
+            Map.Entry<String, String> entry = entryIt.next();
+    
+            if(blobAttribs.length() > 0)
+                blobAttribs.append(',');
+
+            blobAttribs.append(entry.getKey()).append(',').append(entry.getValue());
+        }
+        return blobAttribs.toString();
+    }
 	
 	public RhoConnectNotify sync() { return syncByName(mName); }
 
