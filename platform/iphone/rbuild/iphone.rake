@@ -502,7 +502,9 @@ namespace "build" do
       set_app_bundle_identifier(bundle_identifier)
 
       set_app_name(appname)
-      
+
+      set_app_version($app_config["version"]) unless $app_config["version"].nil?
+
       set_app_url_scheme($app_config["iphone"]["BundleURLScheme"]) unless $app_config["iphone"]["BundleURLScheme"].nil?
       set_app_url_name(bundle_identifier)
 
