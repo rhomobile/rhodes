@@ -64,8 +64,15 @@ CRhoWKBrowserEngine::~CRhoWKBrowserEngine(void)
 
 BOOL CRhoWKBrowserEngine::Navigate(LPCTSTR szURL)
 {
-    BOOL res = m_pEngine->Navigate(szURL);
-    InvalidateRect(m_pEngine->GetHTMLWND(0), NULL, FALSE);
+    BOOL res;
+    if (wcslen(szURL) >= wcslen(L"javascript:") && wcsnicmp(szURL, L"javascript:", 11) == 0) {
+        res = m_pEngine->StopOnTab(0);
+        if (res)
+            res = m_pEngine->JavaScriptInvoke(0,szURL+11);
+    } else {
+        res = m_pEngine->Navigate(szURL);
+        InvalidateRect(m_pEngine->GetHTMLWND(0), NULL, FALSE);
+    }
     return res;
 }
 
