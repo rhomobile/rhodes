@@ -341,7 +341,7 @@ LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 LRESULT CMainWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    if ( !m_pBrowserEng->GetHTMLWND() )
+    if ( (!m_pBrowserEng) || (!m_pBrowserEng->GetHTMLWND()) )
         return 0;
 
 #if defined(OS_WINDOWS)
@@ -475,6 +475,19 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     return 0;
 }
 
+LRESULT CMainWindow::OnSetCookieCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
+{
+    TCookieData* cd = (TCookieData*)hWndCtl;
+    if (cd) {
+        if (cd->url && cd->cookie) {
+            m_pBrowserEng->SetCookie(cd->url, cd->cookie);
+            if (cd->url) free(cd->url);
+            if (cd->cookie) free(cd->cookie);
+        }
+        free(cd);
+    }
+    return 0;
+}
 
 void CMainWindow::openNativeView(	NativeViewFactory* nativeViewFactory, 
 					NativeView* nativeView,
