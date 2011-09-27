@@ -30,6 +30,7 @@
 #include "common/StringConverter.h"
 #include "common/RhoFilePath.h"
 #include "ruby/ext/rho/rhoruby.h"
+#include "common/app_build_capabilities.h"
 #ifdef RHODES_EMULATOR
 #undef null
 #include <QWebPage>
@@ -418,6 +419,8 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 	{
 #ifdef RHODES_EMULATOR
 		*resValue = rho_ruby_create_string("WEBKIT/" QTWEBKIT_VERSION_STR);
+#elif defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
+		*resValue = rho_ruby_create_string("WEBKIT");
 #else
 		rho::String msieVer = "IE";
 		get_msie_version(msieVer);
