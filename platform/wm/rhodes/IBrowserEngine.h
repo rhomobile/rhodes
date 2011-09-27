@@ -18,6 +18,7 @@ public:
     virtual BOOL NavigateToHtml(LPCTSTR szHtml) = 0;
     virtual LRESULT OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) = 0;
     virtual void RunMessageLoop(CMainWindow& mainWnd) = 0;
+    virtual void SetCookie(char* url, char* cookie) = 0;
 };
 
 }

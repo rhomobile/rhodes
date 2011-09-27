@@ -98,6 +98,11 @@ extern "C" UINT WM_BROWSER_ONTITLECHANGE;
 extern "C" bool Rhodes_WM_ProcessBeforeNavigate(LPCTSTR url);
 #endif
 
+typedef struct _TCookieData {
+    char* url;
+    char* cookie;
+} TCookieData;
+
 class CMainWindow :
 #if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
 	public CFrameWindowImpl<CMainWindow>, 
@@ -164,6 +169,7 @@ public:
 		COMMAND_ID_HANDLER(IDM_NAVIGATE, OnNavigateCommand)
         COMMAND_ID_HANDLER(IDM_LOG,OnLogCommand)
 		COMMAND_ID_HANDLER(ID_FULLSCREEN, OnFullscreenCommand)
+        COMMAND_ID_HANDLER(ID_SETCOOKIE, OnSetCookieCommand)
 		COMMAND_RANGE_HANDLER(ID_CUSTOM_MENU_ITEM_FIRST, ID_CUSTOM_MENU_ITEM_LAST, OnCustomMenuItemCommand)
 		COMMAND_RANGE_HANDLER(ID_CUSTOM_TOOLBAR_ITEM_FIRST, ID_CUSTOM_TOOLBAR_ITEM_LAST, OnCustomToolbarItemCommand)
 #if defined(OS_WINDOWS)
@@ -216,6 +222,7 @@ private:
     LRESULT OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnSetCookieCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCustomMenuItemCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnCustomToolbarItemCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 

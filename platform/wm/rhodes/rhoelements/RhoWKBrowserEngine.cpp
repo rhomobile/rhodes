@@ -369,6 +369,10 @@ void CRhoWKBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
     }
 }
 
+void CRhoWKBrowserEngine::SetCookie(char* url, char* cookie)
+{
+    // can't implement: no webkit method exposed!
+}
 
 CEng* CRhoWKBrowserEngine::getWebKitEngine() const
 {

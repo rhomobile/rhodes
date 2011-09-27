@@ -117,42 +117,10 @@ void rho_webview_full_screen_mode(int enable)
 
 void rho_webview_set_cookie(const char *url, const char *cookie)
 {
-#ifdef RHODES_EMULATOR
     TCookieData* cd = (TCookieData*)malloc(sizeof(TCookieData));
     cd->url = strdup(url);
     cd->cookie = strdup(cookie);
     ::PostMessage( getMainWnd(), WM_COMMAND, ID_SETCOOKIE, (LPARAM)cd );
-#else
-	URL_COMPONENTSA uri;
-	::memset(&uri, 0, sizeof(uri));
-	uri.dwStructSize = sizeof(uri);
-	uri.dwSchemeLength = 1;
-	uri.dwHostNameLength = 1;
-	uri.dwUrlPathLength = 1;
-	if (!::InternetCrackUrlA(url, ::strlen(url), 0, &uri)) {
-		RAWLOG_ERROR1("WebView.set_cookie: can not parse url: %s", url);
-		return;
-	}
-
-	std::string nurl(uri.lpszScheme, uri.dwSchemeLength);
-	nurl += "://";
-	nurl += std::string(uri.lpszHostName, uri.dwHostNameLength);
-	nurl += std::string(uri.lpszUrlPath, uri.dwUrlPathLength);
-
-	for (const char *c = cookie;;) {
-		const char *s = c;
-		for (; *s != ';' && *s != '\0'; ++s);
-		std::string c1(c, s - c);
-		if (!::InternetSetCookieA(nurl.c_str(), NULL, c1.c_str()))
-			RAWLOG_ERROR1("WebView.set_cookie: can not set cookie for url %s", nurl.c_str());
-		if (*s == '\0')
-			break;
-		for (c = s + 1; *c == ' '; ++c);
-	}
-#endif	
 }
 
 }
-
-
-
