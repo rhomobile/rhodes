@@ -91,6 +91,7 @@ static LocationController *sharedLC = nil;
 		self.onUpdateLocation = @selector(doUpdateLocation);	
 		_dLatitude = 0;
 		_dLongitude = 0;
+        _dAccuracy = 0;
 		_bKnownPosition = false;
 		
     	RAWLOG_INFO("init");
@@ -131,6 +132,7 @@ static LocationController *sharedLC = nil;
 	
 		_dLatitude = newLocation.coordinate.latitude;
 		_dLongitude = newLocation.coordinate.longitude;
+        _dAccuracy = newLocation.horizontalAccuracy;//sqrt(newLocation.horizontalAccuracy*newLocation.horizontalAccuracy + newLocation.verticalAccuracy*newLocation.verticalAccuracy);
 		_bKnownPosition = true;	
 	}
 	
@@ -143,6 +145,15 @@ static LocationController *sharedLC = nil;
 	double res = 0; 
 	@synchronized(self){
 		res = _dLatitude;
+	}
+	
+	return res;
+}
+
+- (double) getAccuracy {
+	double res = 0; 
+	@synchronized(self){
+		res = _dAccuracy;
 	}
 	
 	return res;
@@ -255,7 +266,8 @@ double rho_geo_longitude() {
 }
 
 float rho_geo_accuracy() {
-	return 0.0;
+	geo_update();
+	return (float)[[LocationController sharedInstance] getAccuracy ];
 }
 	
 int rho_geo_known_position() {

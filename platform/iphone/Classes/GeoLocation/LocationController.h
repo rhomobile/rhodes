@@ -31,7 +31,7 @@
 	CFRunLoopTimerRef  _timer;
 	
 @public	
-	double _dLatitude, _dLongitude;
+	double _dLatitude, _dLongitude, _dAccuracy;
 	bool _bKnownPosition;
 	
 	SEL onUpdateLocation;	
@@ -45,6 +45,7 @@
 
 - (double) getLatitude;
 - (double) getLongitude;
+- (double) getAccuracy;
 - (bool) isKnownPosition;
 - (bool) isAvailable;
 
