@@ -32,7 +32,7 @@
         for ( int i = 0; i < data->deleted_count; i++ )
         {
             [deleted_objects addObject:[NSString stringWithUTF8String:data->deleted_objects[i]]];
-            [deleted_source_ids addObject: [[NSNumber alloc] initWithInt:data->deleted_source_ids[i]]];
+            [deleted_source_ids addObject: [NSNumber numberWithInt:data->deleted_source_ids[i]]];
         }
     }
 
@@ -44,7 +44,7 @@
         for ( int i = 0; i < data->updated_count; i++ )
         {
             [updated_objects addObject:[NSString stringWithUTF8String:data->updated_objects[i]]];
-            [updated_source_ids addObject: [[NSNumber alloc] initWithInt:data->updated_source_ids[i]]];
+            [updated_source_ids addObject: [NSNumber numberWithInt:data->updated_source_ids[i]]];
         }
     }
 
@@ -56,7 +56,7 @@
         for ( int i = 0; i < data->created_count; i++ )
         {
             [created_objects addObject:[NSString stringWithUTF8String:data->created_objects[i]]];
-            [created_source_ids addObject: [[NSNumber alloc] initWithInt:data->created_source_ids[i]]];
+            [created_source_ids addObject: [NSNumber numberWithInt:data->created_source_ids[i]]];
         }
     }
 	
