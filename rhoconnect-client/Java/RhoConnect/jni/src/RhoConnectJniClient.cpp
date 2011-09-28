@@ -25,6 +25,7 @@
 *------------------------------------------------------------------------*/
 
 #include <vector>
+#include <algorithm>
 
 #include "common/RhoStd.h"
 #include "common/RhoConf.h"
@@ -43,6 +44,74 @@ typedef std::vector<rho::String> string_vector;
 static jobject s_jNotifyDelegate = 0;
 static jobject s_jObjectNotifyDelegate = 0;
 
+static jclass clsString = 0;
+static jclass clsMap = 0;
+static jclass clsSet = 0;
+static jclass clsIterator = 0;
+static jmethodID midMapGet;
+static jmethodID midMapKeySet;
+static jmethodID midSetIterator;
+static jmethodID midIteratorHasNext;
+static jmethodID midIteratorNext;
+
+static bool initMapConvert(JNIEnv *env)
+{
+    static bool initialized = false;
+
+    if (initialized) return initialized;
+
+    clsString = getJNIClass(RHODES_JAVA_CLASS_STRING);
+    if (!clsString) return false;
+    clsMap = getJNIClass(RHODES_JAVA_CLASS_MAP);
+    if (!clsMap) return false;
+    clsSet = getJNIClass(RHODES_JAVA_CLASS_SET);
+    if (!clsSet) return false;
+    clsIterator = getJNIClass(RHODES_JAVA_CLASS_ITERATOR);
+    if (!clsIterator) return false;
+
+    midMapGet = getJNIClassMethod(env, clsMap, "get", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    if (!midMapGet) return false;
+    midMapKeySet = getJNIClassMethod(env, clsMap, "keySet", "()Ljava/util/Set;");
+    if (!midMapKeySet) return false;
+    midSetIterator = getJNIClassMethod(env, clsSet, "iterator", "()Ljava/util/Iterator;");
+    if (!midSetIterator) return false;
+    midIteratorHasNext = getJNIClassMethod(env, clsIterator, "hasNext", "()Z");
+    if (!midIteratorHasNext) return false;
+    midIteratorNext = getJNIClassMethod(env, clsIterator, "next", "()Ljava/lang/Object;");
+    if (!midIteratorNext) return false;
+
+    return initialized = true;
+}
+
+static unsigned long convertMap(JNIEnv *env, jobject objMap)
+{
+    if (!initMapConvert(env))
+        return 0;
+    
+    jobject objSet = env->CallObjectMethod(objMap, midMapKeySet);
+    if (!objSet) return 0;
+    jobject objIterator = env->CallObjectMethod(objSet, midSetIterator);
+    if (!objIterator) return 0;
+                                  
+    unsigned long retval = rho_connectclient_hash_create();
+    while(env->CallBooleanMethod(objIterator, midIteratorHasNext))
+    {
+        jstring objKey = (jstring)env->CallObjectMethod(objIterator, midIteratorNext);
+        if (!objKey) return 0;
+        jstring objValue = (jstring)env->CallObjectMethod(objMap, midMapGet, objKey);
+        if (!objValue) return 0;
+
+        std::string const &strKey = rho_cast<std::string>(objKey);
+        std::string const &strValue = rho_cast<std::string>(objValue);
+        rho_connectclient_hash_put(retval, strKey.c_str(), strValue.c_str());
+
+        env->DeleteLocalRef(objKey);
+        env->DeleteLocalRef(objValue);
+    }
+    return retval;
+}
+
+
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_initialize
   (JNIEnv * env, jobject, jobjectArray jmodels)
 {
@@ -59,6 +128,8 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_initializ
     static jmethodID midpart = getJNIClassMethod(env, clsmodel, "getPartition", "()Ljava/lang/String;");
     if (!midpart) return;
     static jmethodID midblobattribs = getJNIClassMethod(env, clsmodel, "getBlobAttribsAsString", "()Ljava/lang/String;");
+    if (!midblobattribs) return;
+    static jmethodID midassocs = getJNIClassMethod(env, clsmodel, "getAssociations", "()Ljava/util/Map;");
     if (!midblobattribs) return;
 
     size_t cnt = static_cast<model_vector::size_type>(env->GetArrayLength(jmodels));
@@ -90,9 +161,17 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_initializ
         jhobject jattribs = env->CallObjectMethod(jmodel, midblobattribs);
         cur_blob_attribs = rho_cast<rho::String>(env, static_cast<jstring>(jattribs.get()));
         model.blob_attribs = cur_blob_attribs.c_str();
+
+        jhobject jhassociations = env->CallObjectMethod(jmodel, midassocs);
+        model.associations = convertMap(env, jhassociations.get());
     }
 
     rho_connectclient_init(&models.front(), models.size());
+
+    for(model_vector::size_type i = 0, cnt = models.size(); i < cnt; ++i)
+    {
+        rho_connectclient_destroymodel(&models[i]);
+    }
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_destroy
