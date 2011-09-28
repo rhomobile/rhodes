@@ -55,6 +55,7 @@ int callback_impl(const char* szNotify, void* data)
 	//[notify release];
 	//[callbackObj release];
 	
+    [notify autorelease];
 	return 0;
 }
 
@@ -75,13 +76,14 @@ int callback_object_impl(const char* szNotify, void* data)
 	//[notify release];
 	//[callbackObj release];
 	
+    [notify autorelease];
 	return 0;
 }
 
 void rho_free_callbackdata(void* pData)
 {
-	CCallbackData* callbackObj = pData;
-	[callbackObj release];
+	//CCallbackData* callbackObj = pData;
+	//[callbackObj release];
 }
 
 @implementation RhoConnectClient
@@ -215,27 +217,27 @@ void rho_free_callbackdata(void* pData)
     rho_connectclient_parsenotify(res, &oNotify);
 	rho_sync_free_string(res);
 	
-	return [[RhoConnectNotify alloc] init: &oNotify];
+	return [[[RhoConnectNotify alloc] init: &oNotify] autorelease];
 }
 
 - (void) loginWithUser: (NSString*) user pwd:(NSString*) pwd callback:(SEL) callback target:(id)target
 {
 	rho_sync_login_c( [user cStringUsingEncoding:[NSString defaultCStringEncoding]],
 					[pwd cStringUsingEncoding:[NSString defaultCStringEncoding]], 
-					 callback_impl, [[ CCallbackData alloc] init: callback target: target thread:[NSThread currentThread] ] 
+					 callback_impl, [[[CCallbackData alloc] init: callback target: target thread:[NSThread currentThread]] autorelease] 
 				   );
 }
 
 + (void) setNotification: (SEL) callback target:(id)target
 {
 	rho_sync_set_notification_c(-1, callback_impl, 
-      [[ CCallbackData alloc] init: callback target: target thread:[NSThread currentThread] ] );
+      [[[CCallbackData alloc] init: callback target: target thread:[NSThread currentThread]] autorelease] );
 }
 
 - (void) setNotification: (SEL) callback target:(id)target
 {
 	rho_sync_set_notification_c(-1, callback_impl, 
-	  [[ CCallbackData alloc] init: callback target: target thread:[NSThread currentThread] ] );
+	  [[[CCallbackData alloc] init: callback target: target thread:[NSThread currentThread]] autorelease] );
 }
 
 - (void) clearNotification
@@ -246,7 +248,7 @@ void rho_free_callbackdata(void* pData)
 - (void) setObjectNotification: (SEL) callback target:(id)target
 {
 	rho_sync_setobjectnotify_url_c( callback_object_impl, 
-                                [[ CCallbackData alloc] init: callback target: target thread:[NSThread currentThread] ] );
+                                [[[ CCallbackData alloc] init: callback target: target thread:[NSThread currentThread]] autorelease] );
 }
 
 - (void) clearObjectNotification
@@ -267,7 +269,7 @@ void rho_free_callbackdata(void* pData)
     rho_connectclient_parsenotify(res, &oNotify);
 	rho_sync_free_string(res);
 	
-	return [[RhoConnectNotify alloc] init: &oNotify];
+	return [[[RhoConnectNotify alloc] init: &oNotify] autorelease];
 }
 
 - (RhoConnectNotify*) search: (NSArray*)models from: (NSString*) from params: (NSString*)params sync_changes: (BOOL) sync_changes progress_step: (int) progress_step
@@ -290,7 +292,7 @@ void rho_free_callbackdata(void* pData)
     rho_connectclient_parsenotify(res, &oNotify);
 	rho_sync_free_string(res);
 	
-	return [[RhoConnectNotify alloc] init: &oNotify];
+	return [[[RhoConnectNotify alloc] init: &oNotify] autorelease];
 }
 
 void copyFromMainBundle( NSFileManager* fileManager,  NSString * source, NSString * target, BOOL remove );
@@ -364,7 +366,7 @@ int rho_net_ping_network(const char* szHost)
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
 	NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
-	NSString *linkString = [[NSString alloc] initWithUTF8String:szHost];
+	NSString *linkString = [NSString stringWithUTF8String: szHost];
 	
 	[request setURL:[NSURL URLWithString:linkString]];
 	[request setTimeoutInterval:10];

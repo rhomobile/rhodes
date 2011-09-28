@@ -10,6 +10,7 @@
 #import "../../RhoConnectClient.h"
 
 RhoConnectClient* sclient;
+RhomModel* customer;
 RhomModel* product;
 RhomModel* perftest;
 NSArray* models;
@@ -223,13 +224,109 @@ int shouldPerfomanceTest_delete()
 	return 1;
 }
 
+int shouldCreateNewProductWithCustomers()
+{
+    NSMutableDictionary* cust1;
+    NSMutableDictionary* cust2;
+    NSMutableDictionary* cust11;
+    NSMutableDictionary* cust22;
+    NSMutableDictionary* item;
+    NSMutableDictionary* prod;
+    
+    // exception to throw on test failure
+    NSException *e = [NSException
+                      exceptionWithName: @"NSException"
+                      reason: @"test faled"
+                      userInfo: nil];
+
+    int result = 1;
+    @try {
+
+        cust1 = [[NSMutableDictionary alloc] init];
+        [cust1 setValue: @"CustTest1" forKey: @"first"];	
+        [customer create:cust1];
+
+        cust2 = [[NSMutableDictionary alloc] init];
+        [cust2 setValue: @"CustTest2" forKey: @"first"];	
+        [customer create:cust2];
+
+        item = [[NSMutableDictionary alloc] init];
+        [item setValue: [NSString stringWithFormat: @"%f", [[NSDate date] timeIntervalSince1970]] forKey:@"name"];	
+        [item setValue: [cust1 objectForKey: @"object"] forKey:@"quantity"];	
+        [item setValue: [cust2 objectForKey: @"object"] forKey:@"sku"];	
+        [product create: item];
+        
+        RhoConnectNotify* res = [[sclient syncAll] retain];
+        if (   res.error_code != RHO_ERR_NONE
+            || NO == [@"complete" isEqualToString: res.status] ) {
+            @throw e;
+        }
+        [res release];
+        
+        NSMutableDictionary* cond = [[NSMutableDictionary alloc] init];
+        [cond setValue: [item objectForKey: @"name"] forKey:@"name"];							 
+        prod = [[product find_first: cond] retain];
+        [cond release];
+        
+        if ( !prod )
+            @throw e;
+        
+        // we shoud have all object id changed after sync performed
+        if (   [prod objectForKey: @"object"] == [item objectForKey: @"object"]
+            || [prod objectForKey: @"quantity"] == [cust1 objectForKey: @"object"]
+            || [prod objectForKey: @"sku"] == [cust2 objectForKey: @"object"]
+            )
+            @throw e;
+
+        cust11 = [[customer find: [prod objectForKey: @"quantity"]] retain];
+        if ( !cust11
+            || NO == [[cust11 objectForKey: @"first"] isEqualToString: [cust1 objectForKey: @"first"]] )
+            @throw e;
+        
+        
+        cust22 = [[customer find: [prod objectForKey: @"sku"]] retain];
+        if ( !cust22
+            || NO == [[cust22 objectForKey: @"first"] isEqualToString: [cust2 objectForKey: @"first"]] )
+            @throw e;
+
+    } @catch( NSException* e) {
+        result = 0;
+    } @finally {
+        if (cust1) {
+            [customer destroy: cust1];
+        }
+        if (cust2) {
+            [customer destroy: cust2];
+        }
+        if (item) {
+            [product destroy: item];
+        }
+        [cust1 release];
+        [cust2 release];
+        [cust11 release];
+        [cust22 release];
+        [item release];
+        [prod release];
+    }
+
+    return result;
+}
+
 int runObjCClientTest()
 {
-	RhomModel* customer = [[RhomModel alloc] init];
+	customer = [[RhomModel alloc] init];
 	customer.name = @"Customer";
 	
 	product = [[RhomModel alloc] init];
 	product.name = @"Product";
+    /*
+     IMPORTANT NOTE:
+     Here is no any real meaning to associate product with customer via "quantity" or "sku" attribute,
+     it has been used just to test it works from the technical point of view.
+     Please, don't consider it as some real application logic sample. It demonstrates just an API capabilities.
+     In a real world application it looks like you will need additional model named Order to refer Product and
+     Customer models.
+     */
     product.associations = [NSDictionary dictionaryWithObjectsAndKeys: @"Customer", @"quantity", @"Customer", @"sku", nil];
     [product add_blob_attribute: @"image_front"];
     [product add_blob_attribute: @"image_back" overwrite: YES];
@@ -295,6 +392,9 @@ int runObjCClientTest()
             @throw e;
         
         if ( !shouldDeleteAllTestProduct() )
+            @throw e;
+        
+        if ( !shouldCreateNewProductWithCustomers() )
             @throw e;
         
         if ( !shouldPerfomanceTest_create(100) )
