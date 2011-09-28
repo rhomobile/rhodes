@@ -49,6 +49,7 @@ public class RhomModel {
 
     private String mPartition;
     private Map<String, String> mBlobAttribs = new TreeMap<String, String>();
+    private Map<String, String> mAssociations = new TreeMap<String, String>();
 
     private native void init();
     private static native RhoConnectNotify syncByName(String modelName);
@@ -93,7 +94,8 @@ public class RhomModel {
         }
         return blobAttribs.toString();
     }
-	
+    public Map<String, String> getAssociations() { return mAssociations; }
+
 	public RhoConnectNotify sync() { return syncByName(mName); }
 
 	private void mapToArrays(Map<String, String> item,
