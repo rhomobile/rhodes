@@ -250,6 +250,32 @@ int rhoPlainLogData(const char* file, int line, LogSeverity severity, const char
 #define RAWLOG_INFO6(msg,arg1,arg2,arg3,arg4,arg5,arg6) RAWLOG_NONE
 #endif
 
+#if RHO_STRIP_LOG <= L_WARNING
+#define RAWLOGC_WARNING(category,msg) rhoPlainLog(__FILE__, __LINE__, L_WARNING, category, msg )
+#define RAWLOGC_WARNING1(category,msg,arg1) rhoPlainLogVar(__FILE__, __LINE__, L_WARNING, category, msg, arg1 )
+#define RAWLOGC_WARNING2(category,msg,arg1,arg2) rhoPlainLogVar(__FILE__, __LINE__, L_WARNING, category, msg, arg1,arg2 )
+#define RAWLOGC_WARNING3(category,msg,arg1,arg2,arg3) rhoPlainLogVar(__FILE__, __LINE__, L_WARNING, category, msg, arg1,arg2,arg3 )
+#define RAWLOGC_WARNING4(category,msg,arg1,arg2,arg3,arg4) rhoPlainLogVar(__FILE__, __LINE__, L_WARNING, category, msg, arg1,arg2,arg3,arg4 )
+
+#define RAWLOG_WARNING(msg) RAWLOGC_WARNING( DEFAULT_LOGCATEGORY, msg )
+#define RAWLOG_WARNING1(msg,arg1) RAWLOGC_WARNING1( DEFAULT_LOGCATEGORY, msg, arg1 )
+#define RAWLOG_WARNING2(msg,arg1,arg2) RAWLOGC_WARNING2( DEFAULT_LOGCATEGORY, msg, arg1,arg2 )
+#define RAWLOG_WARNING3(msg,arg1,arg2,arg3) RAWLOGC_WARNING3( DEFAULT_LOGCATEGORY, msg, arg1,arg2,arg3 )
+#define RAWLOG_WARNING4(msg,arg1,arg2,arg3,arg4) RAWLOGC_WARNING4( DEFAULT_LOGCATEGORY, msg, arg1,arg2,arg3,arg4 )
+#else
+#define RAWLOGC_WARNING(category,msg) RAWLOG_NONE
+#define RAWLOGC_WARNING1(category,msg,arg1) RAWLOG_NONE
+#define RAWLOGC_WARNING2(category,msg,arg1,arg2) RAWLOG_NONE
+#define RAWLOGC_WARNING3(category,msg,arg1,arg2,arg3) RAWLOG_NONE
+#define RAWLOGC_WARNING4(category,msg,arg1,arg2,arg3,arg4) RAWLOG_NONE
+
+#define RAWLOG_WARNING(msg) RAWLOG_NONE
+#define RAWLOG_WARNING1(msg,arg1) RAWLOG_NONE
+#define RAWLOG_WARNING2(msg,arg1,arg2) RAWLOG_NONE
+#define RAWLOG_WARNING3(msg,arg1,arg2,arg3) RAWLOG_NONE
+#define RAWLOG_WARNING4(msg,arg1,arg2,arg3,arg4) RAWLOG_NONE
+#endif
+
 #if RHO_STRIP_LOG <= L_ERROR
 #define RAWLOGC_ERROR(category,msg) rhoPlainLog(__FILE__, __LINE__, L_ERROR, category, msg )
 #define RAWLOGC_ERROR1(category,msg,arg1) rhoPlainLogVar(__FILE__, __LINE__, L_ERROR, category, msg, arg1 )

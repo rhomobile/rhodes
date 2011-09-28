@@ -218,3 +218,4 @@ platform/linux/bin/*
 platform/iphone/project_bakup
 
 spec/phone_spec/rhosimulator/*
+*.pro.user.*
