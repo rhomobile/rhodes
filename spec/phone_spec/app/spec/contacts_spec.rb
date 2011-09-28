@@ -22,7 +22,7 @@ describe "Contacts" do
     last_name = 'Newbie'
     mobile_number = '+1222333444'
 
-    contacts = Rho::RhoContact.find(:all)
+    contacts = Rho::RhoContact.find(:all, :select => ['first_name', 'last_name', 'mobile_number'])
     #puts "contacts: #{contacts.inspect.to_s}"
     contacts.should_not be_nil
 
@@ -32,7 +32,7 @@ describe "Contacts" do
     contact['mobile_number'] = mobile_number
     Rho::RhoContact.create!(contact)
 
-    newcontacts = Rho::RhoContact.find(:all)
+    newcontacts = Rho::RhoContact.find(:all, :select => ['first_name', 'last_name', 'mobile_number'])
     #puts "newcontacts: #{newcontacts.inspect.to_s}"
     newcontacts.should_not be_nil
 
@@ -40,12 +40,15 @@ describe "Contacts" do
     diff.size.should == 1 
     diff.keys.size.should ==  1 
     c = diff[diff.keys.first]
+
+    puts c.inspect
+
     c['first_name'].should ==  first_name 
     c['last_name'].should ==  last_name 
     c['mobile_number'].should == mobile_number 
 
     @id = c['id']
-    #puts "id: #{@id}"
+    puts "Contact created, id: #{@id}."
   end
 
   it "should update" do
@@ -67,12 +70,13 @@ describe "Contacts" do
 if System.get_property('platform') != 'Blackberry' || System.get_property('os_version')[0].to_i() < 5
   it "should remove" do
     contacts = Rho::RhoContact.find(:all)
-    puts "contacts: #{contacts.inspect.to_s}"
+    puts "contacts: #{contacts.inspect}"
     contacts.should_not be_nil
     contacts.size.should >= 1 
 
     size = contacts.size
 
+    puts "Removing previosly created contact, id: #{@id}."
     Rho::RhoContact.destroy(@id)
 
     contacts = Rho::RhoContact.find(:all)

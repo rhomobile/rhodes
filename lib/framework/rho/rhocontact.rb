@@ -123,7 +123,7 @@ module Rho
 					pb = Phonebook::openPhonebook
                                 end 
 				unless pb.nil?
-					record = Phonebook::openRecord(pb, "{#{properties['id']}}")
+					record = Phonebook::openRecord(pb, properties['id'])
 					if record.nil?
 						puts "Can't find record " + properties['id']
 					else
