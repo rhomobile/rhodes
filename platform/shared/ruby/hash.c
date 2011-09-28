@@ -1948,7 +1948,7 @@ static int path_tainted = -1;
 static char **origenviron;
 
 //RHO
-#if !defined(RHO_SYMBIAN) || defined(OS_SYMBIAN)
+#if (!defined(RHO_SYMBIAN) || defined(OS_SYMBIAN)) && !defined(_WIN32)
 static char * __environ = "";
 static char ** environ = &__environ;
 #endif
