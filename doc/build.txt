@@ -370,11 +370,11 @@ If you want to build production version, edit your application's build.yml as be
 
 	android:
 	  production:
-	    certificate: /full/path/to/your/developer/certificate
+	    certificate: path/to/your/developer/certificate
 	    password: "password-of-the-certificate"
 	    alias: "keystore.alias"
 
-This will use specified certificate to sign application. If certificate is not found, it will be auto-generated. In this case you'll be prompted with several questions like your name, organization etc. If you don't want to use auto-generated certificate, refer to the [these instructions](http://developer.android.com/guide/publishing/app-signing.html) on how to create it manually.
+This will use specified certificate to sign application. If certificate is not found, it will be auto-generated. In this case you'll be prompted with several questions like your name, organization etc. The path to certificate may be absolute or relative to your app directory. If you don't want to use auto-generated certificate, refer to the [these instructions](http://developer.android.com/guide/publishing/app-signing.html) on how to create it manually.
 
 After that run:
 
