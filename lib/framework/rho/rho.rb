@@ -257,31 +257,32 @@ end
     
     # Return the directories where we need to load configuration files
     def process_model_dirs(app_manifest_filename=nil)
-      File.open(app_manifest_filename).each do |line|
-        str = line.chomp
-        if str != nil and str.length > 0 
-            #puts "model file: #{str}"
-            modelName = File.basename(File.dirname(str))
-            Rhom::RhomObjectFactory.init_object(modelName)
-            require str
+      File.open(app_manifest_filename) do |f|
+        f.each do |line|
+            str = line.chomp
+            if str != nil and str.length > 0 
+                #puts "model file: #{str}"
+                modelName = File.basename(File.dirname(str))
+                Rhom::RhomObjectFactory.init_object(modelName)
+                require str
 
-            puts "model name: #{modelName}"            
+                puts "model name: #{modelName}"            
 
-            modelClass = nil 
-            modelClass = Object.const_get(modelName) if Object.const_defined?(modelName)
-            if modelClass
-                puts "model class found"                            
-                if modelClass.respond_to?( :get_model_params )
-                    Rho::RhoConfig::add_loaded_source(modelName,modelClass.get_model_params())
-                    modelClass.reset_model_params()
+                modelClass = nil 
+                modelClass = Object.const_get(modelName) if Object.const_defined?(modelName)
+                if modelClass
+                    puts "model class found"                            
+                    if modelClass.respond_to?( :get_model_params )
+                        Rho::RhoConfig::add_loaded_source(modelName,modelClass.get_model_params())
+                        modelClass.reset_model_params()
+                    else
+                        puts "ERROR: Invalid model definition. Add 'include Rhom::PropertyBag' or 'include Rhom::FixedSchema' to model class"
+                    end    
                 else
-                    puts "ERROR: Invalid model definition. Add 'include Rhom::PropertyBag' or 'include Rhom::FixedSchema' to model class"
+                    puts "ERROR: cannot load model : #{modelClass}"
                 end    
-            else
-                puts "ERROR: cannot load model : #{modelClass}"
-            end    
-        end
-        
+            end
+        end        
       end
     end
     
@@ -289,26 +290,28 @@ end
 =begin
     def self.process_rhoconfig
       begin
-        File.open(Rho::RhoFSConnector.get_rhoconfig_filename).each do |line|
-          # Skip empty or commented out lines
-          next if line =~ /^\s*(#|$)/
-          parts = line.chomp.split('=', 2)
-          key = parts[0]
-          value = nil
-          if key and defined? RHO_ME
-            value = rho_get_app_property(key.strip)
-          end
-          
-          if !value
-            value = parts[1] if parts[1]
-          end
-            
-          if key and value
-            val = value.strip.gsub(/\'|\"/,'')
-            val = val == 'nil' ? nil : val
-            puts "rhoconfig: #{key} => #{val}"
-            Rho::RhoConfig.add_config(key.strip,val)
-          end  
+        File.open(Rho::RhoFSConnector.get_rhoconfig_filename) do |f|
+          f.each do |line|
+              # Skip empty or commented out lines
+              next if line =~ /^\s*(#|$)/
+              parts = line.chomp.split('=', 2)
+              key = parts[0]
+              value = nil
+              if key and defined? RHO_ME
+                value = rho_get_app_property(key.strip)
+              end
+              
+              if !value
+                value = parts[1] if parts[1]
+              end
+                
+              if key and value
+                val = value.strip.gsub(/\'|\"/,'')
+                val = val == 'nil' ? nil : val
+                puts "rhoconfig: #{key} => #{val}"
+                Rho::RhoConfig.add_config(key.strip,val)
+              end  
+          end                
         end
       rescue Exception => e
         puts "Error opening rhoconfig.txt: #{e}, using defaults."

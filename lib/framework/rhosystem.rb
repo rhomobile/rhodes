@@ -108,31 +108,33 @@ class RhoConf
 
 	  @@config = {}
       begin
-        File.open(Rho::RhoFSConnector.get_rhoconfig_filename).each do |line|
-          # Skip empty or commented out lines
-		  line.strip!
+        File.open(Rho::RhoFSConnector.get_rhoconfig_filename) do |f|
+          f.each do |line|
+              # Skip empty or commented out lines
+		      line.strip!
 
-          #next if line =~ /^\s*(#|$)/
-		  next if line.start_with?('#') || line.start_with?('$')
+              #next if line =~ /^\s*(#|$)/
+		      next if line.start_with?('#') || line.start_with?('$')
 
-          parts = line.chomp.split('=', 2)
-          key = parts[0]
-          value = nil
-          
-          if !value
-            value = parts[1] if parts[1]
-          end
-            
-          if key and value
-			key.strip!
-			value.strip!
+              parts = line.chomp.split('=', 2)
+              key = parts[0]
+              value = nil
+              
+              if !value
+                value = parts[1] if parts[1]
+              end
+                
+              if key and value
+			    key.strip!
+			    value.strip!
 
-            val = value.gsub(/\'|\"/,'')
-            val = val == 'nil' ? nil : val
+                val = value.gsub(/\'|\"/,'')
+                val = val == 'nil' ? nil : val
 
-            puts "rhoconfig: #{key} => #{val}"
-            @@config[key] = val if key # allow nil value
-          end  
+                puts "rhoconfig: #{key} => #{val}"
+                @@config[key] = val if key # allow nil value
+              end  
+          end      
         end
       rescue Exception => e
         puts "Error opening rhoconfig.txt: #{e}, using defaults."
