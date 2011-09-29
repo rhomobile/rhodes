@@ -179,6 +179,7 @@ def set_app_name_android(newname)
   
   element = REXML::Element.new('uses-sdk')
   element.add_attribute('android:minSdkVersion', $min_sdk_level.to_s)
+  element.add_attribute('android:maxSdkVersion', $max_sdk_level.to_s) unless $max_sdk_level.nil?  
   manifest.add element
 
   # Remove category LAUNCHER from all activities if hidden_app is set
@@ -314,7 +315,8 @@ namespace "config" do
     $min_sdk_level = $config["android"]["minSDK"] if $min_sdk_level.nil? and not $config["android"].nil?
     $min_sdk_level = $min_sdk_level.to_i unless $min_sdk_level.nil?
     $min_sdk_level = ANDROID_SDK_LEVEL if $min_sdk_level.nil?
-
+    
+    $max_sdk_level = $app_config["android"]["maxSDK"] unless $app_config["android"].nil?
 
     # Here is switch between release/debug configuration used for
     # building native libraries
