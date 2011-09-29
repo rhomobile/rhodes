@@ -483,9 +483,11 @@ void CDBAdapter::destroy_tables(const rho::Vector<rho::String>& arIncludeTables,
     //Copy all tables
 
     Vector<String> vecTables;
-    IDBResult res = executeSQL( "SELECT name FROM sqlite_master WHERE type='table' " );
-    for ( ; !res.isEnd(); res.next() )
-        vecTables.addElement(res.getStringByIdx(0));
+    {
+        IDBResult res = executeSQL( "SELECT name FROM sqlite_master WHERE type='table' " );
+        for ( ; !res.isEnd(); res.next() )
+            vecTables.addElement(res.getStringByIdx(0));
+    }
 
     db.startTransaction();
     for ( int i = 0; i < (int)vecTables.size(); i++ )
