@@ -291,6 +291,8 @@ namespace "config" do
     $gapikey = '' unless $gapikey.is_a? String
     $gapikey = nil if $gapikey.empty?
 
+    $android_orientation = $app_config["android"]["orientation"] unless $app_config["android"].nil? 
+
     $use_geomapping = $app_config["android"]["mapping"] unless $app_config["android"].nil?
     $use_geomapping = $config["android"]["mapping"] if $use_geomapping.nil? and not $config["android"].nil?
     $use_geomapping = 'false' if $use_geomapping.nil?
@@ -1198,12 +1200,17 @@ namespace "build" do
       dst_manifest =  manifest_orig_doc.elements["manifest"]
       dst_application =  manifest_orig_doc.elements["manifest/application"]
       dst_main_activity = nil
-      puts '$$$$$$$$$$$$$$ try to found MainActivity'
+      puts '$$$ try to found MainActivity'
       dst_application.elements.each("activity") do |a|
-        puts '$$$$$$$$ activity with attr = '+a.attribute('name','android').to_s
+        puts '$$$ activity with attr = '+a.attribute('name','android').to_s
         if a.attribute('name','android').to_s == 'com.rhomobile.rhodes.RhodesActivity'
             puts '          $$$ FOUND !'
             dst_main_activity = a
+        end
+        if $android_orientation != nil
+            if a.attribute('screenOrientation','android').to_s == 'unspecified'
+                a.add_attribute('android:screenOrientation', $android_orientation)
+            end
         end
       end
 
@@ -1222,7 +1229,7 @@ namespace "build" do
           if src_application != nil
               puts 'Extension Manifest process application item :'
               src_application.elements.each do |e|
-                  puts '$$$$$$$$ process element with attr = '+e.attribute('name','android').to_s
+                  puts '$$$ process element with attr = '+e.attribute('name','android').to_s
                   if e.attribute('name','android').to_s == 'com.rhomobile.rhodes.RhodesActivity'
                     e.elements.each do |sube|
                       puts '         add item to MainActivity['+sube.xpath+']'
