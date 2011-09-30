@@ -107,7 +107,6 @@ unsigned long rhoconnect_jni_make_object_hash(JNIEnv * env, jobjectArray jKeys, 
         std::string key = rho_cast<std::string>(env, jkey);
         std::string val = rho_cast<std::string>(env, jval);
 
-        LOG(TRACE) + "Add to hash: " + key + "/" + val;
         rho_connectclient_hash_put(item, key.c_str(), val.c_str());
     }
     return item;

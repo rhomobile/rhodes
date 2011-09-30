@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import com.rhomobile.rhodes.AndroidR;
+import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.file.RhoFileApi;
@@ -59,7 +60,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class PopupActivity extends Activity {
+public class PopupActivity extends BaseActivity {
 	
 	private static final String TAG = PopupActivity.class.getSimpleName();
 	

@@ -27,7 +27,7 @@
 #ifndef RHOCONNECTJNINOTIFY_H_INCLUDED
 #define RHOCONNECTJNINOTIFY_H_INCLUDED
 
-#include "rhodes/JNIRhodes.h"
+#include <jni.h>
 
 namespace rho { namespace connect_jni {
 
