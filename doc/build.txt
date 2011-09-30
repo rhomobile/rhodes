@@ -318,6 +318,11 @@ Disable Android title in application :
 	android:
 	  android_title: 0
 
+Setup fixed screen orientation for application (writed to Manifest, possible values: "portrait", "landscape") :
+
+	android:
+	  orientation: portrait
+
 If the rake command gets stuck you can kill the command window, open another window, run:
 
   	:::term
