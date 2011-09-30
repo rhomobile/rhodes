@@ -29,6 +29,7 @@
 
 #include <jni.h>
 #include <string>
+#include <memory>
 
 JNIEnv *jnienv();
 
@@ -91,6 +92,16 @@ private:
 typedef jholder<jobject> jhobject;
 typedef jholder<jstring> jhstring;
 
+namespace rho {
+    template <typename K, typename V> class Hashtable;
+}
+typedef std::auto_ptr<rho::Hashtable<std::string, std::string> > hashtableholder;
+
+template <typename T, typename U> T rho_cast(JNIEnv *env, U u);
+template <typename T, typename U> T rho_cast(U u);
+template <typename T, typename U> T rho_cast(JNIEnv *env, U keys, U vals);
+template <typename T, typename U> T rho_cast(U keys, U vals);
+
 namespace details
 {
 
@@ -133,6 +144,45 @@ struct rho_cast_helper<jhstring, std::string>
     jhstring operator()(JNIEnv *env, std::string const &s) {return rho_cast_helper<jhstring, char const *>()(env, s.c_str());}
 };
 
+struct RhoMapConvertor
+{
+    static jclass clsString;
+    static jclass clsMap;
+    static jclass clsSet;
+    static jclass clsIterator;
+    static jmethodID midMapGet;
+    static jmethodID midMapKeySet;
+    static jmethodID midSetIterator;
+    static jmethodID midIteratorHasNext;
+    static jmethodID midIteratorNext;
+
+    static bool initConvertor(JNIEnv *env);
+};
+
+template <>
+struct rho_cast_helper<std::auto_ptr<rho::Hashtable<std::string,std::string> >, jobject>: public RhoMapConvertor
+{
+    typedef rho::Hashtable<std::string,std::string> element_type;
+    typedef std::auto_ptr<element_type> value_type;
+
+    value_type operator()(JNIEnv *env, jobject jObj);
+};
+
+template <>
+struct rho_cast_helper<std::auto_ptr<rho::Hashtable<std::string, std::string> >, jhobject>
+{
+    typedef std::auto_ptr<rho::Hashtable<std::string,std::string> > value_type;
+    value_type operator()(JNIEnv *env, jhobject h) { return rho_cast_helper<value_type, jobject>()(env, h.get()); }
+};
+
+template <>
+struct rho_cast_helper<std::auto_ptr<rho::Hashtable<std::string,std::string> >, jobjectArray>
+{
+    typedef rho::Hashtable<std::string,std::string> element_type;
+    typedef std::auto_ptr<element_type> value_type;
+    value_type operator()(JNIEnv *env, jobjectArray jKeys, jobjectArray jVals);
+};
+
 } // namespace details
 
 template <typename T, typename U>
@@ -145,6 +195,18 @@ template <typename T, typename U>
 T rho_cast(U u)
 {
     return details::rho_cast_helper<T, U>()(jnienv(), u);
+}
+
+template <typename T, typename U>
+T rho_cast(JNIEnv *env, U keys, U vals)
+{
+    return details::rho_cast_helper<T, U>()(env, keys, vals);
+}
+
+template <typename T, typename U>
+T rho_cast(U keys, U vals)
+{
+    return details::rho_cast_helper<T, U>()(jnienv(), keys, vals);
 }
 
 #endif // _RHODES_H_D9BFC7B4FD394BECAF7EC535453253CC
