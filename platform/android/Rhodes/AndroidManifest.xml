@@ -18,6 +18,7 @@
             android:name="com.rhomobile.rhodes.RhodesActivity"
             android:label="@string/app_name"
             android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="unspecified"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,31 +34,54 @@
         
         <activity
             android:name="com.rhomobile.rhodes.alert.PopupActivity"
-            android:theme="@style/PopupTheme" />
+            android:theme="@style/PopupTheme"
+            android:screenOrientation="unspecified"
+            android:configChanges="orientation"
+         />
+
         
         <activity
-            android:name="com.rhomobile.rhodes.camera.FileList" />
+            android:name="com.rhomobile.rhodes.camera.FileList"
+            android:screenOrientation="unspecified"
+            android:configChanges="orientation"
+         />
+
         
         <activity
             android:name="com.rhomobile.rhodes.camera.ImageCapture"
             android:screenOrientation="landscape" />
         
         <activity
-            android:name="com.rhomobile.rhodes.signature.ImageCapture" />
+            android:name="com.rhomobile.rhodes.signature.ImageCapture"
+            android:screenOrientation="unspecified"
+            android:configChanges="orientation"
+         />
+
         
         <activity
-            android:name="com.rhomobile.rhodes.datetime.DateTimePickerScreen" />
-        
-        <activity
-            android:name="com.rhomobile.rhodes.mapview.MapView" 
+            android:name="com.rhomobile.rhodes.datetime.DateTimePickerScreen"
+            android:screenOrientation="unspecified"
             android:configChanges="orientation"
          />
         
         <activity
-            android:name="com.rhomobile.rhodes.mapview.GoogleMapView" />
+            android:name="com.rhomobile.rhodes.mapview.MapView" 
+            android:screenOrientation="unspecified"
+            android:configChanges="orientation"
+         />
         
         <activity
-            android:name="com.rhomobile.rhodes.bluetooth.RhoBluetoothDeviceListActivity" />
+            android:name="com.rhomobile.rhodes.mapview.GoogleMapView"
+            android:screenOrientation="unspecified"
+            android:configChanges="orientation"
+         />
+        
+        <activity
+            android:name="com.rhomobile.rhodes.bluetooth.RhoBluetoothDeviceListActivity"
+            android:screenOrientation="unspecified"
+            android:configChanges="orientation"
+         />
+
         
         <receiver
             android:name="com.rhomobile.rhodes.PushReceiver"
