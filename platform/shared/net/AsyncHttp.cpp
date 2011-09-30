@@ -248,8 +248,12 @@ void CAsyncHttp::CHttpCommand::callNotify(NetResponse& resp, int nError )
     	m_strResBody += "error&error_code=" + nError;
     }else
     {
-        if ( resp.isOK() )
+        if ( resp.isSuccess() )
+        {
     	    m_strResBody += "ok";
+            if ( resp.isResponseRecieved())
+	            m_strResBody += "&http_error=" + convertToStringA(resp.getRespCode());
+        }
         else
         {
     	    m_strResBody += "error&error_code=";
@@ -285,7 +289,7 @@ CAsyncHttp::CAsyncHttpResponse::~CAsyncHttpResponse(){}
 extern "C" VALUE rjson_tokener_parse(const char *str, char** pszError );
 unsigned long CAsyncHttp::CAsyncHttpResponse::getObjectValue()
 {
-    if (m_NetResponse.isOK())
+    if (m_NetResponse.isSuccess())
     {
         if ( m_strContentType.find("application/json") != String::npos )
         {

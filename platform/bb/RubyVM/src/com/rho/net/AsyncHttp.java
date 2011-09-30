@@ -174,7 +174,7 @@ public class AsyncHttp extends ThreadQueue
 
     	void processResponse(NetResponse resp )
     	{
-    	    if (resp.isOK() && m_mapHeaders != null)
+    	    if (resp.isSuccess() && m_mapHeaders != null)
     	    {
     	    	String strContType = (String)m_mapHeaders.get("content-type");
     	    	if ( strContType != null && strContType.indexOf("application/json") >=0 )
@@ -300,8 +300,12 @@ public class AsyncHttp extends ThreadQueue
             	m_strResBody += "error&error_code=" + nError;
             }else
             {
-                if ( resp.isOK() )
+                if ( resp.isSuccess() )
+                {
             	    m_strResBody += "ok";
+                    //if ( resp.isResponseRecieved())
+            	    	m_strResBody += "&http_error=" + resp.getRespCode();
+                }
                 else
                 {
             	    m_strResBody += "error&error_code=";
