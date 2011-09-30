@@ -4,7 +4,12 @@ require 'time'
 describe "DateTime" do
 
   it "should parse date after 2038" do
+if !defined? RHO_ME
     res = Time.strptime("20400804",'%Y%m%d')
+else
+    res = Time.strptime("08/04/2040 04:13 PM","%m/%d/%Y %I:%M %p")
+end
+    
     res.year.should == 2040
     res.month.should == 8
     res.day.should == 4

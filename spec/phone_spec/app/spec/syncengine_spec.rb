@@ -306,7 +306,8 @@ if !defined?(RHO_WP7)
     Rho::RhoConfig.syncserver = 'http://rhodes-store-server.heroku2.com/application'
     res = ::Rho::RhoSupport::parse_query_parameters getCustomer.sync
     res['status'].should == 'error'
-    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NETWORK
+    res['error_code'].to_i.should >  ::Rho::RhoError::ERR_NONE
+    res['error_code'].to_i.should <  ::Rho::RhoError::ERR_RUNTIME
 
     records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*')
     records.length.should_not == 0

@@ -399,15 +399,15 @@ class Date
       if s
 	case s
 	when 'A', 'a'
-	  return unless str.sub!(/\A(#{Format::DAYS.keys.join('|')})/io, '') ||
-			str.sub!(/\A(#{Format::ABBR_DAYS.keys.join('|')})/io, '')
-	  val = Format::DAYS[$1.downcase] || Format::ABBR_DAYS[$1.downcase]
+	  return unless str.sub!(/\A(#{Date::Format::DAYS.keys.join('|')})/io, '') ||
+			str.sub!(/\A(#{Date::Format::ABBR_DAYS.keys.join('|')})/io, '')
+	  val = Date::Format::DAYS[$1.downcase] || Date::Format::ABBR_DAYS[$1.downcase]
 	  return unless val
 	  e.wday = val
 	when 'B', 'b', 'h'
-	  return unless str.sub!(/\A(#{Format::MONTHS.keys.join('|')})/io, '') ||
-			str.sub!(/\A(#{Format::ABBR_MONTHS.keys.join('|')})/io, '')
-	  val = Format::MONTHS[$1.downcase] || Format::ABBR_MONTHS[$1.downcase]
+	  return unless str.sub!(/\A(#{Date::Format::MONTHS.keys.join('|')})/io, '') ||
+			str.sub!(/\A(#{Date::Format::ABBR_MONTHS.keys.join('|')})/io, '')
+	  val = Date::Format::MONTHS[$1.downcase] || Date::Format::ABBR_MONTHS[$1.downcase]
 	  return unless val
 	  e.mon = val
 	when 'C', 'EC'
@@ -538,6 +538,7 @@ class Date
 				 else /\A([-+]?\d{1,})/
 				 end, '')
 	  val = $1.to_i
+	  puts "val: #{val}"
 	  e.year = val
 	when 'y', 'Ey', 'Oy'
 	  return unless str.sub!(/\A(\d{1,2})/, '')
@@ -576,7 +577,7 @@ class Date
 
   def self._strptime(str, fmt='%F')
     str = str.dup
-    e = Format::Bag.new
+    e = Date::Format::Bag.new
     return unless _strptime_i(str, fmt, e)
 
     if e._cent
@@ -672,8 +673,8 @@ class Date
   private_class_method :s3e
 
   def self._parse_day(str, e) # :nodoc:
-    if str.sub!(/\b(#{Format::ABBR_DAYS.keys.join('|')})[^-\d\s]*/io, ' ')
-      e.wday = Format::ABBR_DAYS[$1.downcase]
+    if str.sub!(/\b(#{Date::Format::ABBR_DAYS.keys.join('|')})[^-\d\s]*/io, ' ')
+      e.wday = Date::Format::ABBR_DAYS[$1.downcase]
       true
 =begin
     elsif str.sub!(/\b(?!\dth)(su|mo|tu|we|th|fr|sa)\b/i, ' ')
@@ -761,7 +762,7 @@ class Date
     if str.sub!(
 		/'?(\d+)[^-\d\s]*
 		 \s*
-		 (#{Format::ABBR_MONTHS.keys.join('|')})[^-\d\s']*
+		 (#{Date::Format::ABBR_MONTHS.keys.join('|')})[^-\d\s']*
 		 (?:
 		   \s*
 		   (c(?:e|\.e\.)|b(?:ce|\.c\.e\.)|a(?:d|\.d\.)|b(?:c|\.c\.))?
@@ -770,7 +771,7 @@ class Date
 		 )?
 		/iox,
 		' ') # '
-      s3e(e, $4, Format::ABBR_MONTHS[$2.downcase], $1,
+      s3e(e, $4, Date::Format::ABBR_MONTHS[$2.downcase], $1,
 	  $3 && $3[0,1].downcase == 'b')
       true
     end
@@ -778,7 +779,7 @@ class Date
 
   def self._parse_us(str, e) # :nodoc:
     if str.sub!(
-		/\b(#{Format::ABBR_MONTHS.keys.join('|')})[^-\d\s']*
+		/\b(#{Date::Format::ABBR_MONTHS.keys.join('|')})[^-\d\s']*
 		 \s*
 		 ('?\d+)[^-\d\s']*
 		 (?:
@@ -789,7 +790,7 @@ class Date
 		 )?
 		/iox,
 		' ') # '
-      s3e(e, $4, Format::ABBR_MONTHS[$1.downcase], $2,
+      s3e(e, $4, Date::Format::ABBR_MONTHS[$1.downcase], $2,
 	  $3 && $3[0,1].downcase == 'b')
       true
     end
@@ -846,13 +847,13 @@ class Date
   end
 
   def self._parse_vms(str, e) # :nodoc:
-    if str.sub!(/('?-?\d+)-(#{Format::ABBR_MONTHS.keys.join('|')})[^-]*
+    if str.sub!(/('?-?\d+)-(#{Date::Format::ABBR_MONTHS.keys.join('|')})[^-]*
 		-('?-?\d+)/iox, ' ')
-      s3e(e, $3, Format::ABBR_MONTHS[$2.downcase], $1)
+      s3e(e, $3, Date::Format::ABBR_MONTHS[$2.downcase], $1)
       true
-    elsif str.sub!(/\b(#{Format::ABBR_MONTHS.keys.join('|')})[^-]*
+    elsif str.sub!(/\b(#{Date::Format::ABBR_MONTHS.keys.join('|')})[^-]*
 		-('?-?\d+)(?:-('?-?\d+))?/iox, ' ')
-      s3e(e, $3, Format::ABBR_MONTHS[$1.downcase], $2)
+      s3e(e, $3, Date::Format::ABBR_MONTHS[$1.downcase], $2)
       true
     end
   end
@@ -879,8 +880,8 @@ class Date
   end
 
   def self._parse_mon(str, e) # :nodoc:
-    if str.sub!(/\b(#{Format::ABBR_MONTHS.keys.join('|')})\S*/io, ' ')
-      e.mon = Format::ABBR_MONTHS[$1.downcase]
+    if str.sub!(/\b(#{Date::Format::ABBR_MONTHS.keys.join('|')})\S*/io, ' ')
+      e.mon = Date::Format::ABBR_MONTHS[$1.downcase]
       true
     end
   end
@@ -1033,7 +1034,7 @@ class Date
   def self._parse(str, comp=true)
     str = str.dup
 
-    e = Format::Bag.new
+    e = Date::Format::Bag.new
 
     e._comp = comp
 
@@ -1135,7 +1136,7 @@ class Date
 	(?:t
 	  (\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?)?
 	(z|[-+]\d{2}:\d{2})?\s*\z/ix =~ str
-      e = Format::Bag.new
+      e = Date::Format::Bag.new
       e.year = $1.to_i
       e.mon = $2.to_i if $2
       e.mday = $3.to_i if $3
@@ -1150,7 +1151,7 @@ class Date
       e.to_hash
     elsif /\A\s*(\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?
 	(z|[-+]\d{2}:\d{2})?\s*\z/ix =~ str
-      e = Format::Bag.new
+      e = Date::Format::Bag.new
       e.hour = $1.to_i if $1
       e.min = $2.to_i if $2
       e.sec = $3.to_i if $3
@@ -1162,7 +1163,7 @@ class Date
       e.to_hash
     elsif /\A\s*(?:--(\d{2})(?:-(\d{2}))?|---(\d{2}))
 	(z|[-+]\d{2}:\d{2})?\s*\z/ix =~ str
-      e = Format::Bag.new
+      e = Date::Format::Bag.new
       e.mon = $1.to_i if $1
       e.mday = $2.to_i if $2
       e.mday = $3.to_i if $3
@@ -1175,9 +1176,9 @@ class Date
   end
 
   def self._rfc2822(str) # :nodoc:
-    if /\A\s*(?:(?:#{Format::ABBR_DAYS.keys.join('|')})\s*,\s+)?
+    if /\A\s*(?:(?:#{Date::Format::ABBR_DAYS.keys.join('|')})\s*,\s+)?
 	\d{1,2}\s+
-	(?:#{Format::ABBR_MONTHS.keys.join('|')})\s+
+	(?:#{Date::Format::ABBR_MONTHS.keys.join('|')})\s+
 	-?(\d{2,})\s+ # allow minus, anyway
 	\d{2}:\d{2}(:\d{2})?\s*
 	(?:[-+]\d{4}|ut|gmt|e[sd]t|c[sd]t|m[sd]t|p[sd]t|[a-ik-z])\s*\z/iox =~ str
@@ -1196,22 +1197,22 @@ class Date
   class << self; alias_method :_rfc822, :_rfc2822 end
 
   def self._httpdate(str) # :nodoc:
-    if /\A\s*(#{Format::ABBR_DAYS.keys.join('|')})\s*,\s+
+    if /\A\s*(#{Date::Format::ABBR_DAYS.keys.join('|')})\s*,\s+
 	\d{2}\s+
-	(#{Format::ABBR_MONTHS.keys.join('|')})\s+
+	(#{Date::Format::ABBR_MONTHS.keys.join('|')})\s+
 	-?\d{4}\s+ # allow minus, anyway
 	\d{2}:\d{2}:\d{2}\s+
 	gmt\s*\z/iox =~ str
       _rfc2822(str)
-    elsif /\A\s*(#{Format::DAYS.keys.join('|')})\s*,\s+
+    elsif /\A\s*(#{Date::Format::DAYS.keys.join('|')})\s*,\s+
 	\d{2}\s*-\s*
-	(#{Format::ABBR_MONTHS.keys.join('|')})\s*-\s*
+	(#{Date::Format::ABBR_MONTHS.keys.join('|')})\s*-\s*
 	\d{2}\s+
 	\d{2}:\d{2}:\d{2}\s+
 	gmt\s*\z/iox =~ str
       _parse(str)
-    elsif /\A\s*(#{Format::ABBR_DAYS.keys.join('|')})\s+
-	(#{Format::ABBR_MONTHS.keys.join('|')})\s+
+    elsif /\A\s*(#{Date::Format::ABBR_DAYS.keys.join('|')})\s+
+	(#{Date::Format::ABBR_MONTHS.keys.join('|')})\s+
 	\d{1,2}\s+
 	\d{2}:\d{2}:\d{2}\s+
 	\d{4}\s*\z/iox =~ str
@@ -1245,8 +1246,8 @@ class Date
       else
 	dst = zone.sub!(/\s+dst\z/, '')
       end
-      if Format::ZONES.include?(zone)
-	offset = Format::ZONES[zone]
+      if Date::Format::ZONES.include?(zone)
+	offset = Date::Format::ZONES[zone]
 	offset += 3600 if dst
       elsif zone.sub!(/\A(?:gmt|utc?)?([-+])/, '')
 	sign = $1
