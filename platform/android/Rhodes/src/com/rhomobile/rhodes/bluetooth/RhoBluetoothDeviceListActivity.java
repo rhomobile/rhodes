@@ -29,6 +29,7 @@ package com.rhomobile.rhodes.bluetooth;
 import java.util.Set;
 
 import com.rhomobile.rhodes.AndroidR;
+import com.rhomobile.rhodes.BaseActivity;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -55,7 +56,7 @@ import android.widget.AdapterView.OnItemClickListener;
  * by the user, the MAC address of the device is sent back to the parent
  * Activity in the result Intent.
  */
-public class RhoBluetoothDeviceListActivity extends Activity {
+public class RhoBluetoothDeviceListActivity extends BaseActivity {
     // Debugging
     private static final String TAG = "RhoBluetoothDeviceListActivity";
 
