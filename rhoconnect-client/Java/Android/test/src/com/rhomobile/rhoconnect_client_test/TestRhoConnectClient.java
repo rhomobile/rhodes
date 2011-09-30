@@ -26,6 +26,8 @@
 
 package com.rhomobile.rhoconnect_client_test;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,7 +42,7 @@ import com.rhomobile.rhoconnect.RhomModel;
 import com.rhomobile.rhoconnect.RhoConnectNotify;
 
 public class TestRhoConnectClient extends AndroidTestCase {
-    private static final String TAG = TestRhoConnectClient.class.getSimpleName();
+    //private static final String TAG = TestRhoConnectClient.class.getSimpleName();
 
 	private final String SYNC_URL = "http://rhodes-store-server.heroku.com/application";
 	
@@ -56,6 +58,7 @@ public class TestRhoConnectClient extends AndroidTestCase {
     RhoConnectClient mClient;
     RhomModel mModels[];
     RhomModel mProduct;
+    RhomModel mCustomer;
     
     @Override
     protected void setUp()
@@ -82,9 +85,13 @@ public class TestRhoConnectClient extends AndroidTestCase {
 				new RhomModel("Customer", RhomModel.SYNC_TYPE_INCREMENTAL),
 				new RhomModel("Product", RhomModel.SYNC_TYPE_INCREMENTAL)
 			};
-    	mProduct = mModels[2];
+        mCustomer = mModels[1];
+        mProduct  = mModels[2];
 
-		mClient.initialize(mModels);
+        mProduct.getAssociations().put("quantity", "Customer");
+        mProduct.getAssociations().put("sku", "Customer");
+
+        mClient.initialize(mModels);
         mClient.setThreadedMode(false);
         mClient.setPollInterval(0);
         mClient.setSyncServer(SYNC_URL);
@@ -95,7 +102,7 @@ public class TestRhoConnectClient extends AndroidTestCase {
     protected void tearDown()
     {
         //mClient.databaseFullResetAndLogout();
-    	mClient.close();
+        mClient.close();
     }
     
     public void testInitiallyLoggedOut()
@@ -111,38 +118,100 @@ public class TestRhoConnectClient extends AndroidTestCase {
     }
     public void testSyncProductByName()
     {
-    	testLogin();
-    	RhoConnectNotify notify = mProduct.sync();
-    	assertEquals(notify.getErrorCode(), 0);
+        RhoConnectNotify notify = mClient.loginWithUserSync("", "");
+        assertEquals(notify.getErrorCode(), 0);
+        assertTrue(mClient.isLoggedIn());
+
+        notify = mCustomer.sync();
+        assertEquals(0, notify.getErrorCode());
     }
     
     public void testSyncAll()
     {
-    	testLogin();
-    	RhoConnectNotify notify = mClient.syncAll();
-    	assertEquals(notify.getErrorCode(), 0);
+        RhoConnectNotify notify = mClient.loginWithUserSync("", "");
+        assertEquals(notify.getErrorCode(), 0);
+        assertTrue(mClient.isLoggedIn());
+
+        notify = mClient.syncAll();
+        assertEquals(notify.getErrorCode(), 0);
     }
-    
+
     public void testCreateNewProduct()
     {
-    	Map<String, String> item = new HashMap<String, String>();
-    	item.put("name", "AndroidTest");
-    	
-    	mProduct.create(item);
-    	
-    	assertTrue(item.containsKey("object"));
-    	assertTrue(item.containsKey("source_id"));
-    	
-    	Map<String, String> item2 = mModels[2].find(item.get("object"));
-    	assertTrue(item2 != null);
-    	assertEquals(item.get("name"), item2.get("name"));
-    	
+        Map<String, String> item = new HashMap<String, String>();
+        item.put("name", "AndroidTest");
+
+        mProduct.create(item);
+
+        assertTrue(item.containsKey("object"));
+        assertTrue(item.containsKey("source_id"));
+
+        Map<String, String> item2 = mProduct.find(item.get("object"));
+        assertTrue(item2 != null);
+        assertEquals(item.get("name"), item2.get("name"));
+
+        mProduct.sync();
+
+        Map<String, String> cond = new HashMap<String, String>();
+        cond.put("name", "AndroidTest");
+        Map<String, String> item3 = mProduct.findFirst(cond);
+        assertNotNull(item3);
+        assertFalse(item3.isEmpty());
+        assertEquals(item.get("name"), item3.get("name"));
+    }
+
+    public void testCreateNewProductWithCustomer()
+    {
+        RhoConnectNotify notify = mClient.loginWithUserSync("", "");
+        assertEquals(notify.getErrorCode(), 0);
+        assertTrue(mClient.isLoggedIn());
+
+        Map<String, String> cust1 = new HashMap<String, String>();
+        cust1.put("first", "CustTest1");
+        mCustomer.create(cust1);
+
+        Map<String, String> cust2 = new HashMap<String, String>();
+        cust2.put("first", "CustTest2");
+        mCustomer.create(cust2);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        String prodName = dateFormat.format(new Date());
+
+        Map<String, String> item = new HashMap<String, String>();
+        item.put("name", prodName);
+        item.put("quantity", cust1.get("object"));
+        item.put("sku", cust2.get("object"));
+        mProduct.create(item);
+
+        notify = mClient.syncAll();
+        assertEquals(notify.getErrorMessage(), 0, notify.getErrorCode());
+
+        Map<String, String> prodCondition = new HashMap<String, String>();
+        prodCondition.put("name", prodName);
+
+        Map<String, String> prod = mProduct.findFirst(prodCondition);
+
+        assertFalse(prod.isEmpty());
+        assertFalse(item.get("object").equals(prod.get("object")));
+        assertFalse(prod.get("quantity").equals(cust1.get("object")));
+        assertFalse(prod.get("sku").equals(cust2.get("object")));
+
+        Map<String, String> cust11 = mCustomer.find(prod.get("quantity"));
+        assertFalse(cust11.isEmpty());
+        assertEquals(cust11.get("first"), cust1.get("first"));
+
+        Map<String, String> cust22 = mCustomer.find(prod.get("sku"));
+        assertFalse(cust22.isEmpty());
+        assertEquals(cust22.get("first"), cust2.get("first"));
+
     }
     
     public void testCreateObjectNotify()
     {
-    	testLogin();
-    	
+        RhoConnectNotify notify = mClient.loginWithUserSync("", "");
+        assertEquals(notify.getErrorCode(), 0);
+        assertTrue(mClient.isLoggedIn());
+
     	Map<String, String> item = new HashMap<String, String>();
     	item.put("name", "AndroidTest2");
     	
@@ -151,16 +220,16 @@ public class TestRhoConnectClient extends AndroidTestCase {
     	assertTrue(item.containsKey("object"));
     	assertTrue(item.containsKey("source_id"));
     	
-    	Map<String, String> item2 = mModels[2].find(item.get("object"));
+    	Map<String, String> item2 = mProduct.find(item.get("object"));
     	assertNotNull(item2);
     	assertEquals(item.get("name"), item2.get("name"));
     	
     	ObjectNotifyDelegate objectCallback = new ObjectNotifyDelegate();
     	mClient.setObjectNotification(objectCallback);
     	mClient.addObjectNotify(Integer.parseInt(item.get("source_id")), item.get("object"));
-    	
-    	RhoConnectNotify notify = mProduct.sync();
-    	assertEquals(notify.getErrorCode(), 0);
+
+        notify = mProduct.sync();
+    	assertEquals(notify.getErrorMessage(), 0, notify.getErrorCode());
     	
     	assertNotNull(objectCallback.mNotify);
     	
@@ -173,32 +242,41 @@ public class TestRhoConnectClient extends AndroidTestCase {
     	assertEquals(createdObjects[0], item.get("object"));
     }
 
-    
     public void testModifyProduct()
     {
-    	testLogin();
-    	
-    	Map<String, String> cond = new HashMap<String, String>();
-    	cond.put("name", "AndroidTest2");
+        RhoConnectNotify notify = mClient.loginWithUserSync("", "");
+        assertEquals(notify.getErrorCode(), 0);
+        assertTrue(mClient.isLoggedIn());
 
-    	Map<String,String> item = mProduct.findFirst(cond);
-    	
-    	assertNotNull(item);
-    	assertTrue(item.size() > 0);
-    	
-    	String object = item.get("object");
+        notify = mProduct.sync();
+        assertEquals(notify.getErrorMessage(), notify.getErrorCode(), 0);
 
-    	item.put("sku", item.get("sku") + "_TEST");
-    	mProduct.save(item);
-    	
-    	RhoConnectNotify notify = mProduct.sync();
-    	assertEquals(notify.getErrorCode(), 0);
-    	
-    	Map<String,String> foundItem = mProduct.find(object);
+        Map<String, String> cond = new HashMap<String, String>();
+        cond.put("name", "AndroidTest");
 
-    	assertNotNull(foundItem);
-    	assertTrue(foundItem.size() > 0);
-    	
-    	assertEquals(item.get("sku"), foundItem.get("sku"));
+        Map<String,String> item = mProduct.findFirst(cond);
+
+        if(item == null || item.isEmpty()) {
+            testCreateNewProduct();
+            item = mProduct.findFirst(cond);
+        }
+
+        assertNotNull(item);
+        assertTrue(item.size() > 0);
+
+        String object = item.get("object");
+
+        item.put("sku", item.get("sku") + "_TEST");
+        mProduct.save(item);
+
+        notify = mProduct.sync();
+        assertEquals(notify.getErrorMessage(), 0, notify.getErrorCode());
+
+        Map<String,String> foundItem = mProduct.find(object);
+
+        assertNotNull(foundItem);
+        assertFalse(foundItem.isEmpty());
+
+        assertEquals(item.get("sku"), foundItem.get("sku"));
     }
 }
