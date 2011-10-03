@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Rhodes is a framework for building locally executing, device-optimized mobile applications. These applications are optimized to interact with transactional enterprise application backends. They are also designed to work with synced local data using a local database, such as SQLite or HSQLDB, and a generic backend synchronization framework, such as [RhoSync](../rhosync) (another open source component available from [Rhomobile](http://rhomobile.com)). Rhodes is available for iPhone, Research in Motion (Blackberry), Windows Mobile, and Android phones.
+Rhodes is a framework for building locally executing, device-optimized mobile applications. These applications are optimized to interact with transactional enterprise application backends. They are also designed to work with synced local data using a local database, such as SQLite or HSQLDB, and a generic backend synchronization framework, such as [RhoConnect](../rhoconnect) (another open source component available from [Rhomobile](http://rhomobile.com)). Rhodes is available for iPhone, Research in Motion (Blackberry), Windows Mobile, and Android phones.
 
 The [Tutorial](tutorial) describes how to install Rhodes and build your apps. The rest of this Developer Reference covers all Rhodes features.
 
