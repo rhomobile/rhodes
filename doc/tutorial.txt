@@ -1,6 +1,6 @@
 Rhodes Tutorial
 ========
-This tutorial describes how to use Rhodes and RhoSync to build native mobile apps for all shipping smartphones.  Specifically it describes how to write Rhodes controllers and templates and how to write RhoSync source adapters to sync data from backend apps to the device. The architecture of this is shown [here](https://img.skitch.com/20110111-1snnuchj3ph1hu41cafkb23jng.png).
+This tutorial describes how to use Rhodes and RhoConnect to build native mobile apps for all shipping smartphones.  Specifically it describes how to write Rhodes controllers and templates and how to write RhoConnect source adapters to sync data from backend apps to the device. The architecture of this is shown [here](https://img.skitch.com/20110111-1snnuchj3ph1hu41cafkb23jng.png).
 
 Install Rhodes
 --------------
@@ -14,7 +14,7 @@ The first step is to generate the application and base files.  First we will gen
     :::term
     $ rhodes app storemanager http://localhost:9292/application
 
-This will generate an application directory called "storemanager" with several files.  Note also that the third argument above is the URL to the RhoSync server data source (required if you want to do synchronized data as we describe in the next section).  Specifically it will set the rhoconfig.txt file to have the following option:
+This will generate an application directory called "storemanager" with several files.  Note also that the third argument above is the URL to the RhoConnect server data source (required if you want to do synchronized data as we describe in the next section).  Specifically it will set the rhoconfig.txt file to have the following option:
 
     syncserver = 'http://localhost:9292/application'
 
@@ -115,11 +115,11 @@ You should take a look at the [Rhodes 2.0 training webinar](http://vimeo.com/cha
 
 There is a [technical FAQ](/faq) that describes how to perform certain specific tasks in Rhodes.
 
-The following sections describe how to add synchronized data to our app with RhoSync.
+The following sections describe how to add synchronized data to our app with RhoConnect.
 
-Adding Synchronized Data to Your App with RhoSync
--------------------------------------------------
-To add synchronized data to your application, see the [Rhosync Tutorial](/rhosync/tutorial).  Also check out the [RhoSync training video](http://vimeo.com/channels/rhomobile#12218913).
+Adding Synchronized Data to Your App with RhoConnect
+----------------------------------------------------
+To add synchronized data to your application, see the [RhoConnect Tutorial](/rhoconnect/tutorial).  Also check out the [RhoConnect training video](http://vimeo.com/channels/rhomobile#28789274).
 
 More Info
 ---------
