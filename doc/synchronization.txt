@@ -1,11 +1,11 @@
 Synchronization with Rhodes
 ===
-As we've shown in the [Rhom section](/rhodes/rhom), adding synchronized data via [RhoSync](/rhosync/introduction) to your Rhodes application is as simple as generating a model and enabling a `:sync` flag.  This triggers the internal Rhodes sync system called the **`SyncEngine`** to synchronize data for the model and transparently handle bi-directional updates between the Rhodes application and the RhoSync server.
+As we've shown in the [Rhom section](/rhodes/rhom), adding synchronized data via [RhoConnect](/rhoconnect/introduction) to your Rhodes application is as simple as generating a model and enabling a `:sync` flag.  This triggers the internal Rhodes sync system called the **`SyncEngine`** to synchronize data for the model and transparently handle bi-directional updates between the Rhodes application and the RhoConnect server.
 
 This section covers in detail how the `SyncEngine` works in Rhodes and how you can use its flexible APIs to build data-rich native applications.
 
 ## Sync Workflow
-The `SyncEngine` interacts with RhoSync over http(s) using [JSON](http://www.json.org/) as a data exchange format.  With the exception of [bulk sync](/rhosync/bulk-sync), pages of synchronized data, or "sync pages" as we will refer to them here, are sent as JSON from RhoSync to the `SyncEngine`.  
+The `SyncEngine` interacts with RhoConnect over http(s) using [JSON](http://www.json.org/) as a data exchange format.  With the exception of [bulk sync](/rhoconnect/bulk-sync), pages of synchronized data, or "sync pages" as we will refer to them here, are sent as JSON from RhoConnect to the `SyncEngine`.  
 
 Below is a simplified diagram of the `SyncEngine` workflow:
 
@@ -13,18 +13,18 @@ Below is a simplified diagram of the `SyncEngine` workflow:
 
 This workflow consists of the following steps:
 
-* `SyncEngine` sends authentication request to RhoSync via [`SyncEngine.login`](#syncengine-api).  RhoSync calls [`Application.authenticate`](/rhosync/authentication) with supplied credentials and returns `true` or `false`.
+* `SyncEngine` sends authentication request to RhoConnect via [`SyncEngine.login`](#syncengine-api).  RhoConnect calls [`Application.authenticate`](/rhoconnect/authentication) with supplied credentials and returns `true` or `false`.
 
-* If this is a new client (i.e. fresh install or reset), the `SyncEngine` will initialize with RhoSync:
+* If this is a new client (i.e. fresh install or reset), the `SyncEngine` will initialize with RhoConnect:
 
-	* It requests a new unique id (client id) from RhoSync.  This id will be referenced throughout the sync process.
+	* It requests a new unique id (client id) from RhoConnect.  This id will be referenced throughout the sync process.
 
-	* It will register platform information with RhoSync.  If this is a [push-enabled application](/rhodes/device-caps#push-notifications) application, the `SyncEngine` will send additional information like device push pin.
+	* It will register platform information with RhoConnect.  If this is a [push-enabled application](/rhodes/device-caps#push-notifications) application, the `SyncEngine` will send additional information like device push pin.
 
-* `SyncEngine` requests sync pages from RhoSync, one model(or [Rhom](/rhodes/rhom) model) at a time.  The order the models are synchronized is determined by the model's [`:sync_priority`](/rhodes/rhom#property-bag), or determined automatically by the `SyncEngine`.
+* `SyncEngine` requests sync pages from RhoConnect, one model(or [Rhom](/rhodes/rhom) model) at a time.  The order the models are synchronized is determined by the model's [`:sync_priority`](/rhodes/rhom#property-bag), or determined automatically by the `SyncEngine`.
 
 ## Sync Authentication
-When you generate a Rhodes application, you'll notice there is an included directory called `app/Settings`.  This contains a default `settings_controller.rb` and some views to manage authentication with [RhoSync](/rhosync/introduction).
+When you generate a Rhodes application, you'll notice there is an included directory called `app/Settings`.  This contains a default `settings_controller.rb` and some views to manage authentication with [RhoConnect](/rhoconnect/introduction).
 
 ### `login`
 In `settings_controller.rb#do_login`, the `SyncEngine.login` method is called:
@@ -139,7 +139,7 @@ These parameters are included in all notifications.
 * `@params["status"]` - Status of the current sync process: "in_progress", "error", "ok", "complete", "schema-changed"
 
 #### "in_progress" - incremental sync
-* `@params["total_count"]` - Total number of records that exist for this RhoSync source.
+* `@params["total_count"]` - Total number of records that exist for this RhoConnect source.
 * `@params["processed_count"]` - Number of records included in the sync page.
 * `@params["cumulative_count"]` - Number of records the `SyncEngine` has processed so far for this source.
 
@@ -148,9 +148,9 @@ These parameters are included in all notifications.
 
 
 #### "error"
-* `@params["error_code"]` - HTTP response code of the RhoSync server error: 401, 500, 404, etc.
+* `@params["error_code"]` - HTTP response code of the RhoConnect server error: 401, 500, 404, etc.
 * `@params["error_message"]` - Response body (if any)
-* `@params["server_errors"]` - Hash of Type objects of RhoSync adapter error (if exists): "login-error", "query-error", "create-error", "update-error", "delete-error", "logoff-error"
+* `@params["server_errors"]` - Hash of Type objects of RhoConnect adapter error (if exists): "login-error", "query-error", "create-error", "update-error", "delete-error", "logoff-error"
 
 For "login-error", "query-error", "logoff-error": Type object is hash contains 'message'  from server: @params["server_errors"]["query-error"]['message']
 
@@ -159,7 +159,7 @@ For "create-error", "update-error", "delete-error": Type object is hash each con
 **NOTE: "create-error" has to be handled in sync callback. Otherwise sync will stop on this model. To fix create errors you should call Model.on_sync_create_error or SyncEngine.on_sync_create_error**
 
 #### "ok"
-* `@params["total_count"]` - Total number of records that exist for this RhoSync source.
+* `@params["total_count"]` - Total number of records that exist for this RhoConnect source.
 * `@params["processed_count"]` - Number of records included in the last sync page.
 * `@params["cumulative_count"]` - Number of records the `SyncEngine` has processed so far for this source.
 
@@ -167,7 +167,7 @@ For "create-error", "update-error", "delete-error": Type object is hash each con
 This status returns only when the `SyncEngine` process is complete.
 
 #### "schema-changed"
-This status returns for bulk-sync models that use [`FixedSchema`](/rhom#fixed-schema) when the schema has changed in the RhoSync server.  
+This status returns for bulk-sync models that use [`FixedSchema`](/rhom#fixed-schema) when the schema has changed in the RhoConnect server.  
 
 **NOTE: In this scenario the sync callback should notify the user with a wait screen and start the bulk sync process.**
 
@@ -320,12 +320,12 @@ Next, in your controller action that displays the object(s), add the object noti
 The object notification callback receives three arrays of hashes: "deleted", "updated" and "created".  Each hash contains values for the keys "object" and "source_id" so you can display which records were changed.
 
 ## Binary Data and Blob Sync
-Synchronizing images or binary objects between RhoSync and the `SyncEngine` is declared by having a 'blob attribute' on the [Rhom model](/rhodes/rhom).  Please see the [blob sync section](/rhosync/blob-sync) for more information.
+Synchronizing images or binary objects between RhoConnect and the `SyncEngine` is declared by having a 'blob attribute' on the [Rhom model](/rhodes/rhom).  Please see the [blob sync section](/rhoconnect/blob-sync) for more information.
 
 ## Filtering Datasets with Search
 If you have a large dataset in your backend service, you don't have to synchronize everything with the `SyncEngine`.  Instead you can filter the synchronized dataset using the `SyncEngine`'s `search` function.
 
-Like everything else with the `SyncEngine`, `search` requires a defined callback which is executed when the `search` results are retrieved from RhoSync.
+Like everything else with the `SyncEngine`, `search` requires a defined callback which is executed when the `search` results are retrieved from RhoConnect.
 
 ### Using Search
 First, call `search` from your controller action:
@@ -412,13 +412,13 @@ If you want to stop or cancel the search, return "stop" in your callback:
 	  end
 	end
 	
-Finally, you will need to implement the `search` method in your source adapter.  See the [RhoSync search method](/rhosync/source-adapters#source-adapter-api) for more details.
+Finally, you will need to implement the `search` method in your source adapter.  See the [RhoConnect search method](/rhoconnect/source-adapters#source-adapter-api) for more details.
 
 ## SyncEngine API
 Below is the full list of methods available on the `SyncEngine`:
 
 ### `login(login, password, callback)`
-Authenticates the user with RhoSync.  The callback will be executed when it is finished.  See the [authentication section](/rhodes/synchronization#sync-authentication) for details.
+Authenticates the user with RhoConnect.  The callback will be executed when it is finished.  See the [authentication section](/rhodes/synchronization#sync-authentication) for details.
 
 	:::ruby
 	SyncEngine.login(
@@ -428,7 +428,7 @@ Authenticates the user with RhoSync.  The callback will be executed when it is f
 	)
 
 ### `logout`
-Logout the user from the RhoSync server.  This removes the local user session.  See the [authentication section](/rhodes/synchronization#sync-authentication) for details.
+Logout the user from the RhoConnect server.  This removes the local user session.  See the [authentication section](/rhodes/synchronization#sync-authentication) for details.
 
 	:::ruby
 	SyncEngine.logout
@@ -524,14 +524,14 @@ Clears the sync notification for a given source id.
 * action - May be :retry - will push delete object operation to server again at next sync.
 
 ### `set_pollinterval(interval)`
-Update the `SyncEngine` poll interval. Setting this to 0 will disable polling-based sync.  However, you may still use [push-based-sync](/rhosync/push).
+Update the `SyncEngine` poll interval. Setting this to 0 will disable polling-based sync.  However, you may still use [push-based-sync](/rhoconnect/push).
 
 	:::ruby
 	SyncEngine.set_pollinterval(20)'
 	  #=> now polls every 20 seconds
 
 ### `set_syncserver(server_url)`
-Sets the RhoSync server address and stores it in [`rhoconfig.txt`](/rhodes/configuration).
+Sets the RhoConnect server address and stores it in [`rhoconfig.txt`](/rhodes/configuration).
 
 	:::ruby
 	SyncEngine.set_syncserver("http://myapp.com/application")
@@ -564,7 +564,7 @@ Enable or disable show status popup. True by default for Blackberry, false for o
 	SyncEngine.enable_status_popup(true)
 
 ### `set_ssl_verify_peer(true)`
-Enable or disable verification of RhoSync ssl certificates, true by default.
+Enable or disable verification of RhoConnect ssl certificates, true by default.
 
 	:::ruby
 	# using a self-signed cert
@@ -578,10 +578,10 @@ Returns current username of the `SyncEngine` session if `logged_in` is true, oth
 	  #=> "testuser"
 
 ### `search(*args)`
-Call search on the RhoSync application with given parameters.  See the [search section](#filtering-datasets-with-search) for more details.
+Call search on the RhoConnect application with given parameters.  See the [search section](#filtering-datasets-with-search) for more details.
 
 	:::ruby
-	# :from 			Sets the RhoSync path that records 
+	# :from 			Sets the RhoConnect path that records 
 	#					will be fetched with (optional).
 	#					Default is 'search'.
 	#
@@ -615,7 +615,7 @@ Call search on the RhoSync application with given parameters.  See the [search s
 	)
 
 ### `search(*args) (multiple sources)`
-Call search on the RhoSync application with multiple source names.  This is useful if your `search` spans across multiple models.
+Call search on the RhoConnect application with multiple source names.  This is useful if your `search` spans across multiple models.
 
 For example:
 
@@ -638,4 +638,4 @@ For example:
 
 Parameters are the same as for ModelName.search with an additional parameter:
 
-* `:source_names` - Sends a list of source adapter names to RhoSync to search across.
+* `:source_names` - Sends a list of source adapter names to RhoConnect to search across.

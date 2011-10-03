@@ -722,7 +722,7 @@ See controller and view in the /app/Ringtones folder of the [System API Samples 
 ## PUSH Notifications
 Push notification support is currently available for Android, Blackberry and iPhone. 
 
-Testing push is a little more involved than some other features because it requires additional setup on both the RhoSync application and Rhodes application. Please refer to [RhoSync Device Push](/rhosync/push) for more information.
+Testing push is a little more involved than some other features because it requires additional setup on both the RhoConnect application and Rhodes application. Please refer to [RhoConnect Device Push](/rhoconnect/push) for more information.
 
 ### Setup
 
@@ -733,7 +733,7 @@ First, enable push in your rhodes application in build.yml:
 	  - push
 	  - vibrate #=> if you want to enable vibrate in your push messages
 
-Next, your RhoSync application should be running on a network that is accessible to your device. For example, you might have your RhoSync application running on a LAN with IP 192.168.1.10, PORT 9292. Then make sure your device is connected to the same LAN and setup your application [rhoconfig.txt](configuration#run-time-configuration) syncserver as follows:
+Next, your RhoConnect application should be running on a network that is accessible to your device. For example, you might have your RhoConnect application running on a LAN with IP 192.168.1.10, PORT 9292. Then make sure your device is connected to the same LAN and setup your application [rhoconfig.txt](configuration#run-time-configuration) syncserver as follows:
 
 	syncserver = 'http://192.168.1.10:9292/application'
 
@@ -772,7 +772,7 @@ Automatic push message parameters handling takes its place in case no custom pus
 
 
 ### iPhone
-iPhone PUSH support uses the Apple Push Notification Service (APNS) introduced in iPhone SDK 3.0.  In order to use the service, you will need to obtain a push-enabled provisioning profile and a server-side push certificate used for encrypting RhoSync->APNS traffic.
+iPhone PUSH support uses the Apple Push Notification Service (APNS) introduced in iPhone SDK 3.0.  In order to use the service, you will need to obtain a push-enabled provisioning profile and a server-side push certificate used for encrypting RhoConnect->APNS traffic.
 
 NOTE: For testing push, you will need to build and deploy your application to a physical iPhone (or iPad) device. Apple does not support testing push on simulators.
 
@@ -780,15 +780,15 @@ NOTE: For testing push, you will need to build and deploy your application to a 
 The first step to setting up your environment is to create an APNS push certificate. To create the SSL certificate, follow the "Creating the SSL Certificate and Keys" section on the 
 [developer site](https://developer.apple.com/iphone/library/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/ProvisioningDevelopment/ProvisioningDevelopment.html#//apple_ref/doc/uid/TP40008194-CH104-SW4).
 
-Once you have the certificate, you will need to export it to a .pem format using [these instructions](https://developer.apple.com/iphone/library/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/ProvisioningDevelopment/ProvisioningDevelopment.html#//apple_ref/doc/uid/TP40008194-CH104-SW6). Make sure to name the output file 'apple_push_cert.pem' file from these instructions, since this is what we configured in our RhoSync application.
+Once you have the certificate, you will need to export it to a .pem format using [these instructions](https://developer.apple.com/iphone/library/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/ProvisioningDevelopment/ProvisioningDevelopment.html#//apple_ref/doc/uid/TP40008194-CH104-SW6). Make sure to name the output file 'apple_push_cert.pem' file from these instructions, since this is what we configured in our RhoConnect application.
 
-Once you have this file, copy it to your RhoSync application directory under the settings folder:
+Once you have this file, copy it to your RhoConnect application directory under the settings folder:
 
 	:::term
-	$ cd myrhosyncapp
+	$ cd myrhoconnectapp
 	$ cp /path/to/apple_push_cert.pem settings/apple_push_cert.pem
 
-Now your RhoSync application is ready to send APNS messages.
+Now your RhoConnect application is ready to send APNS messages.
 
 #### Setup Provisioning Profile
 Next, you can setup your Apple Push Provisioning Profile using Apple's [developer site instructions](https://developer.apple.com/iphone/library/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/ProvisioningDevelopment/ProvisioningDevelopment.html#//apple_ref/doc/uid/TP40008194-CH104-SW5).  Once you have the profile installed in XCode and on your test device, you are ready to test push.
@@ -798,7 +798,7 @@ Setting up the device is the same process as [building any normal Rhodes applica
 
 	2010-08-19 10:14:22.627 rhorunner[1486:307] Device token is <10fd92ab fa8ee481 55d9af6e 73290863 22b323fd 0d18fdbd 19e92d03 c0fef7c8>
 
-This confirms that your application is running with push enabled. Once you login to the RhoSync application and sync, you will see the device registered on the RhoSync console under the user id you used to login. Now you are ready to [test push from your RhoSync application](/rhosync/push#testing-push-in-the-web-console).
+This confirms that your application is running with push enabled. Once you login to the RhoConnect application and sync, you will see the device registered on the RhoConnect console under the user id you used to login. Now you are ready to [test push from your RhoConnect application](/rhoconnect/push#testing-push-in-the-web-console).
 
 ### Android
 Android PUSH support uses the Android Cloud to Device Messaging (AC2DM) system introduced in Android 2.2 (Froyo). In order to use the service, you will need to register your role-based google account (or use existing one) and then register this account in [Google C2DM program](http://code.google.com/android/c2dm/signup.html).
@@ -821,7 +821,7 @@ Then modify your application's build.yml and specify there google account used t
 	    sender: push-app@gmail.com
         
 
-This is the same address used by RhoSync to retrieve authtoken. See [here](/rhosync/push#android) for more information.
+This is the same address used by RhoConnect to retrieve authtoken. See [here](/rhoconnect/push#android) for more information.
 
 NOTE: **WARNING** This e-mail address MUST NOT be the same as origin of google account on phone! This mean that google account registered on your phone/emulator MUST NOT be push-app@gmail.com; it MUST be another one. This is known bug in Android C2DM implementation - if sender and receiver are the same, underlying android service crash and lose message. More details [here](http://groups.google.com/group/android-c2dm/browse_thread/thread/128790789c4e9d6a/67aca1e1764724d4). This is actual not for all Android versions.
 
@@ -860,7 +860,7 @@ To listen for incoming messages on BlackBerry, the Rhodes application will start
 
 NOTE: For testing push, the BlackBerry simulator requires a 'kickstart' process.  When the simulator starts, open the web browser on the simulator and navigate to any web page (i.e. http://m.google.com/).  Now your simulator is ready to receive push messages.
 
-Now you are ready to [testing Push in the RhoSync Web Console](/rhosync/push#testing-push-in-the-web-console).
+Now you are ready to [testing Push in the RhoConnect Web Console](/rhoconnect/push#testing-push-in-the-web-console).
 
 #### Setup BlackBerry Device
 To test push on a BlackBerry device, you will need to use a device that is configured with a BES server. Then, all you need to do is [build your Rhodes application for the device](build#build-for-blackberry).
@@ -880,7 +880,7 @@ These parameters from [PushApplicationDescriptor](http://www.blackberry.com/deve
 	push_service_type = 'BPAS'
 
 ### Push Callback
-Rhodes applications can also handle PUSH notifications that didn't come from a RhoSync application. 
+Rhodes applications can also handle PUSH notifications that didn't come from a RhoConnect application. 
 
 In this example, we will get the device ID so we can register the device with some push server:
 	:::ruby

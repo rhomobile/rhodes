@@ -64,7 +64,7 @@ There are several features you can enable or disable in the model, below is a co
 	class SomeModel
 	  include Rhom::PropertyBag
 
-	  # rhosync settings
+	  # rhoconnect settings
 	  # Enable sync for this model.
 	  # Default is disabled.
 	  enable :sync 
@@ -81,12 +81,12 @@ There are several features you can enable or disable in the model, below is a co
 	  set :sync_priority, 1     
 
 	  # Instruct Rhom to send all attributes
-	  # to RhoSync when an object is updated.
+	  # to RhoConnect when an object is updated.
 	  # Default is disabled, only changed attributes
 	  # are sent.
 	  enable :full_update 
 
-      # RhoSync provides a simple way to keep data out of redis. 
+      # RhoConnect provides a simple way to keep data out of redis. 
       # If you have sensitive data that you do not want saved in redis, 
       # add the pass_through option in settings/settings.yml for each source.
       # Add pass_through to client model definition
@@ -98,7 +98,7 @@ There are several features you can enable or disable in the model, below is a co
       # For synced models default is :user. 
       # For non-synced models default is :local
       # If you have an :app partition
-	  # for your RhoSync source adapter and use bulk sync,
+	  # for your RhoConnect source adapter and use bulk sync,
 	  # set this to :app also.
 	  set :partition, :app
 
@@ -107,7 +107,7 @@ There are several features you can enable or disable in the model, below is a co
 	  #
 	  # :overwrite		(optional) Overwrite client copy 
 	  #					of blob with new copy from server.
-	  #                 This is useful when RhoSync modifies
+	  #                 This is useful when RhoConnect modifies
 	  # 				images sent from Rhodes, for example 
 	  #					zooming or cropping.
 	  property :image_url, :blob, :overwrite 
@@ -165,7 +165,7 @@ Below is a full list of options available to fixed schema models:
 	class SomeModel
 	  include Rhom::FixedSchema
 
-	  # rhosync settings
+	  # rhoconnect settings
 	  # Enable sync for this model.
 	  # Default is disabled.
 	  enable :sync 
@@ -182,12 +182,12 @@ Below is a full list of options available to fixed schema models:
 	  set :sync_priority, 1     
 
 	  # Instruct Rhom to send all attributes
-	  # to RhoSync when an object is updated.
+	  # to RhoConnect when an object is updated.
 	  # Default is disabled, only changed attributes
 	  # are sent.
 	  enable :full_update 
 
-      # RhoSync provides a simple way to keep data out of redis. 
+      # RhoConnect provides a simple way to keep data out of redis. 
       # If you have sensitive data that you do not want saved in redis, 
       # add the pass_through option in settings/settings.yml for each source.
       # Add pass_through to client model definition
@@ -197,7 +197,7 @@ Below is a full list of options available to fixed schema models:
 
 	  # Define how data is partitioned for this model.
       # Default is :user.  If you have an :app partition
-	  # for your RhoSync source adapter and use bulk sync,
+	  # for your RhoConnect source adapter and use bulk sync,
 	  # set this to :app also.
 	  set :partition, :app
 
@@ -225,7 +225,7 @@ Below is a full list of options available to fixed schema models:
 	  #
 	  # :overwrite		(optional) Overwrite client copy 
 	  #					of blob with new copy from server.
-	  #                 This is useful when RhoSync modifies
+	  #                 This is useful when RhoConnect modifies
 	  # 				images sent from Rhodes, for example 
 	  #					zooming or cropping.
 	  property :image_url, :blob, :overwrite
@@ -481,7 +481,7 @@ Saves the current rhom object to the database.
 	@account.save
 
 ### `can_modify`
-Before displaying an edit page for an object, your application can check if the object is currently being accessed by the sync process.  If it is, you should disable editing of the object.  `can_modify` could return true, for example, on a new local record that was created and sent to the RhoSync application, but no response has been received yet.
+Before displaying an edit page for an object, your application can check if the object is currently being accessed by the sync process.  If it is, you should disable editing of the object.  `can_modify` could return true, for example, on a new local record that was created and sent to the RhoConnect application, but no response has been received yet.
 
 	:::ruby
   	def edit
@@ -620,7 +620,7 @@ Number of records for this source.
 	  #=> 837
 
 ## Resetting the Database
-Rhodes provides the following functions for recovering the database from a bad or corrupt state, or if the RhoSync server returns errors.
+Rhodes provides the following functions for recovering the database from a bad or corrupt state, or if the RhoConnect server returns errors.
 
 ### `Rhom::Rhom.database_full_reset(reset_client_info=false, reset_local_models=true)` 
 Deletes all records from the property bag and model tables.
@@ -634,7 +634,7 @@ Deletes all records from the property bag and model tables.
 	Rhom::Rhom.database_full_reset(false,true)
 	
 ### `Rhom::Rhom.database_full_reset_and_logout` 
-Perform a full reset and then logout the RhoSync client.
+Perform a full reset and then logout the RhoConnect client.
 
 	:::ruby
 	Rhom::Rhom.database_full_reset_and_logout
@@ -645,7 +645,7 @@ Equivalent to `Rhom::Rhom.database_full_reset(true)` followed by `SyncEngine.log
 	:::ruby
 	Rhom::Rhom.database_fullclient_reset_and_logout
 	
-**NOTE: If you receive a sync error "Unknown client" message in your sync callback, this means that the RhoSync server no longer knows about the client and a `Rhom::Rhom.database_fullclient_reset_and_logout` is recommended.  This error requires proper intervention in your app so you can handle the state before resetting the client.  For example, your sync notification could contain the following:**
+**NOTE: If you receive a sync error "Unknown client" message in your sync callback, this means that the RhoConnect server no longer knows about the client and a `Rhom::Rhom.database_fullclient_reset_and_logout` is recommended.  This error requires proper intervention in your app so you can handle the state before resetting the client.  For example, your sync notification could contain the following:**
 
 	:::ruby
 	if @params['error_message'].downcase == 'unknown client'
