@@ -389,7 +389,7 @@ int getPhonebookRecordCount(void* pb) {
 	return 0;
 }
 
-VALUE getPhonebookRecords(void* pb, int offset, int max_results) {
+VALUE getPhonebookRecords(void* pb, int offset, int max_results, rho_param* select_param) {
 	if (pb) {
 		if (logging_enable) RAWLOG_INFO("phonebook :: getallPhonebookRecords START");
 		LocalPhonebook* phonebook = pb;

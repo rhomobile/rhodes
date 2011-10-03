@@ -51,7 +51,6 @@ public class Contact {
 	
 	public void setField(String key, String value)
 	{
-		Logger.D(TAG, new StringBuilder("Set contact (id:").append(id).append(") field: ").append(key).append(" -> ").append(value).toString());
 		mFields.put(key,value);
 	}
 	

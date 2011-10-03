@@ -52,7 +52,7 @@ import android.provider.ContactsContract.Contacts;
 public class ContactAccessorNew implements ContactAccessor {
 	
 	private static final String TAG = "ContactsAccessorNew";
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	
 	private ContentResolver cr;
 	private String accName;
@@ -63,8 +63,8 @@ public class ContactAccessorNew implements ContactAccessor {
 		
 		Account[] accounts = AccountManager.get(ctx).getAccounts();
 		if (accounts.length == 0) {
-			accName = "rhodes@rhomobile.com";
-			accType = "com.rhomobile";
+			accName = null;//"rhodes@rhomobile.com";
+			accType = null;//"com.rhomobile";
 		}
 		else {
 			Account acnt = accounts[0];
@@ -77,7 +77,7 @@ public class ContactAccessorNew implements ContactAccessor {
 	
 	public void fillName(String id, Contact contact) {
 		if (DEBUG)
-			Logger.D(TAG, "fillName("+id+")");
+			Logger.I(TAG, "fillName("+id+")");
 		
 		contact.setField(Phonebook.PB_FIRST_NAME, "");
 		contact.setField(Phonebook.PB_LAST_NAME, "");
@@ -246,7 +246,6 @@ public class ContactAccessorNew implements ContactAccessor {
 				Contact contact = new Contact(this, key, displayName);
 				
 				if (select != null) {
-					Logger.D(TAG, "Processing 'select' param.");
 					if (select.contains(Phonebook.PB_FIRST_NAME) ||
 					    select.contains(Phonebook.PB_LAST_NAME)) {
 						fillName(id, contact);
@@ -264,7 +263,7 @@ public class ContactAccessorNew implements ContactAccessor {
 					}
 				}
 				
-				Logger.D(TAG, "Filling contact with ID: " + id);
+				if (DEBUG) Logger.D(TAG, "Filling contact with ID: " + key);
 				contacts.put(contact.id(), contact);
 				
 			} while (cursor.moveToNext());
@@ -309,78 +308,120 @@ public class ContactAccessorNew implements ContactAccessor {
 			Logger.D(TAG, "getContactByID() found");
 		return contact;
 	}
-	
-	private void create(Contact contact) throws Exception {
-		String id = contact.id();
+
+    private String queryContactId(String key)
+    {
+        Cursor cursor = cr.query(Contacts.CONTENT_URI,
+                new String[] {Contacts._ID},
+                Contacts.LOOKUP_KEY + "=?",
+                new String[] {key}, null);
+        
+        long contactId = 0;
+        try {
+            if (cursor.moveToFirst())
+                contactId = cursor.getLong(cursor.getColumnIndex(Contacts._ID));
+        }
+        finally {
+            cursor.close();
+        }
+        if (contactId == 0) {
+            Logger.D(TAG, "No contact found for key: " + key);
+        }
+        return String.valueOf(contactId);
+    }
+
+	private String create(Contact contact) throws Exception {
+		String key = contact.id();
 		
-		if (id == null || id.length() == 0) {
+		if (key == null || key.length() == 0) {
+		    
+		    // Create RawContact
 			ContentValues values = new ContentValues();
 			if (accName != null && accName.length() > 0) {
 				values.put(RawContacts.ACCOUNT_NAME, accName);
 				values.put(RawContacts.ACCOUNT_TYPE, accType);
 			}
-			values.put(RawContacts.AGGREGATION_MODE, RawContacts.AGGREGATION_MODE_DISABLED);
+			//values.put(RawContacts.AGGREGATION_MODE, RawContacts.AGGREGATION_MODE_DISABLED);
 			Uri uri = cr.insert(RawContacts.CONTENT_URI, values);
-			id = String.valueOf(ContentUris.parseId(uri));
-			contact.setId(id);
-//			contact.setAccessor(this);
-//			contact.makeAllFilled();
-		}
+			String id = String.valueOf(ContentUris.parseId(uri));
+
+			//Query Contact ID
+			Cursor cursor = cr.query(RawContacts.CONTENT_URI,
+			        new String[] {RawContacts.CONTACT_ID},
+			        RawContacts._ID + "=?",
+			        new String[] {id}, null);
+
+            String contactId = new String();
+            try {
+                if (cursor.moveToFirst())
+                    contactId = String.valueOf(cursor.getLong(cursor.getColumnIndex(RawContacts.CONTACT_ID)));
+            }
+            finally {
+                cursor.close();
+            }
+            if (contactId.isEmpty()) {
+                Logger.D(TAG, "No raw contact found for new raw id: " + id);
+            }
+
+            // Query lookup key
+            cursor = cr.query(Contacts.CONTENT_URI,
+                    new String[] {Contacts.LOOKUP_KEY},
+                    Contacts._ID + "=?",
+                    new String[] {String.valueOf(contactId)}, null);
+
+            try {
+                if (cursor.moveToFirst())
+                    key = cursor.getString(cursor.getColumnIndex(Contacts.LOOKUP_KEY));
+            }
+            finally {
+                cursor.close();
+            }
+            if (key == null || key.isEmpty()) {
+                Logger.D(TAG, "No contact found for new contact id: " + contactId);
+            }
+
+            contact.setId(key);
+
+            Logger.I(TAG, "New contact id: " + contactId);
+
+            return contactId;
+        }
+        return queryContactId(key);
 	}
 	
-	private void saveData(Contact contact, ContentValues values, String where, String[] whereValues) throws Exception {
-		Cursor cursor = cr.query(Contacts.CONTENT_URI,
-				new String[] {Contacts._ID},
-				Contacts.LOOKUP_KEY + "=?",
-				new String[] {contact.id()}, null);		
-		
-		long contactId = 0;
-		try {
-			if (cursor.moveToFirst())
-				contactId = cursor.getLong(cursor.getColumnIndex(Contacts._ID));
-		}
-		finally {
-			cursor.close();
-		}
-		if (contactId == 0) {
-			Logger.D(TAG, "No contact record found for contact: " + contact.id());
-		}
-		
+	private void saveData(String contactId, ContentValues values, String where, String[] whereValues) throws Exception
+	{
 		StringBuilder w0 = new StringBuilder();
 		w0.append(Data.CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?");
 		if (where != null)
 			w0.append(" AND " + where);
-		//where = w0.toString();
 
 		String mimetype = (String)values.get(Data.MIMETYPE);
 		int wvSize0 = 2;
 		if (whereValues != null)
 			wvSize0 += whereValues.length;
 		String[] wv0 = new String[wvSize0];
-		wv0[0] = String.valueOf(contactId);
+		wv0[0] = contactId;
 		wv0[1] = mimetype;
 		if (whereValues != null)
 			System.arraycopy(whereValues, 0, wv0, 2, whereValues.length);
-		//whereValues = wv0;
 
-		cursor = cr.query(Data.CONTENT_URI,
+		Cursor cursor = cr.query(Data.CONTENT_URI,
 				new String[] {Data._ID, Data.RAW_CONTACT_ID},
 				w0.toString(),
 				wv0, null);		
 
 		long rawDataId = 0;
-		//long rawContactId = 0;
 		try {
 			if (cursor.moveToFirst()) {
 				rawDataId = cursor.getLong(cursor.getColumnIndex(Data._ID));
-				//rawContactId = cursor.getLong(cursor.getColumnIndex(Data.RAW_CONTACT_ID));
 			}
 		}
 		finally {
 			cursor.close();
 		}
 		if (rawDataId == 0) {
-			Logger.D(TAG, "No data records found for contact: " + contact.id());
+			Logger.D(TAG, "No data records found for contact: " + contactId);
 		}
 
 		// Do update if found, insert otherwise
@@ -425,20 +466,20 @@ public class ContactAccessorNew implements ContactAccessor {
 				cursor.close();
 			}
 			if (rawContactId == 0) {
-				Logger.D(TAG, "No raw contact records found for contact: " + contact.id());
+				Logger.D(TAG, "No raw contact records found for contact: " + contactId);
 			}
 			
 			values.put(Data.RAW_CONTACT_ID, rawContactId);
-			cr.insert(Data.CONTENT_URI, values);
-			Logger.D(TAG, "New data record has created fo raw contact: " + rawContactId); 
+			Uri uri = cr.insert(Data.CONTENT_URI, values);
+			Logger.D(TAG, "New data record has inserved for raw contact: " + rawContactId + ", URI: " + uri);
 		}
 	}
 	
-	private void saveData(Contact contact, ContentValues values) throws Exception {
-		saveData(contact, values, null, null);
+	private void saveData(String contactId, ContentValues values) throws Exception {
+		saveData(contactId, values, null, null);
 	}
 	
-	private void updateName(Contact contact) throws Exception {
+	private void updateName(String contactId, Contact contact) throws Exception {
 		String firstName = contact.getField(Phonebook.PB_FIRST_NAME);
 		String lastName = contact.getField(Phonebook.PB_LAST_NAME);
 
@@ -447,10 +488,10 @@ public class ContactAccessorNew implements ContactAccessor {
 		values.put(StructuredName.DISPLAY_NAME, firstName + " " + lastName);
 		values.put(StructuredName.GIVEN_NAME, firstName);
 		values.put(StructuredName.FAMILY_NAME, lastName);
-		saveData(contact, values);
+		saveData(contactId, values);
 	}
 	
-	private void updatePhones(Contact contact) throws Exception {
+	private void updatePhones(String contactId, Contact contact) throws Exception {
 		String[] phones = {Phonebook.PB_MOBILE_NUMBER, Phonebook.PB_HOME_NUMBER, Phonebook.PB_BUSINESS_NUMBER};
 		int[] types = {Phone.TYPE_MOBILE, Phone.TYPE_HOME, Phone.TYPE_WORK};
 		
@@ -463,11 +504,11 @@ public class ContactAccessorNew implements ContactAccessor {
 			values.put(Data.MIMETYPE, Phone.CONTENT_ITEM_TYPE);
 			values.put(Phone.NUMBER, value);
 			values.put(Phone.TYPE, types[i]);
-			saveData(contact, values, Phone.TYPE + "=?", new String[] {String.valueOf(types[i])});
+			saveData(contactId, values, Phone.TYPE + "=?", new String[] {String.valueOf(types[i])});
 		}
 	}
 	
-	private void updateEmails(Contact contact) throws Exception {
+	private void updateEmails(String contactId, Contact contact) throws Exception {
 		String value = contact.getField(Phonebook.PB_EMAIL_ADDRESS);
 		if (value == null || value.length() == 0)
 			return;
@@ -475,10 +516,10 @@ public class ContactAccessorNew implements ContactAccessor {
 		ContentValues values = new ContentValues();
 		values.put(Data.MIMETYPE, Email.CONTENT_ITEM_TYPE);
 		values.put(Email.DATA, value);
-		saveData(contact, values);
+		saveData(contactId, values);
 	}
 	
-	private void updateCompany(Contact contact) throws Exception {
+	private void updateCompany(String contactId, Contact contact) throws Exception {
 		String value = contact.getField(Phonebook.PB_COMPANY_NAME);
 		if (value == null || value.length() == 0)
 			return;
@@ -486,24 +527,30 @@ public class ContactAccessorNew implements ContactAccessor {
 		ContentValues values = new ContentValues();
 		values.put(Data.MIMETYPE, Organization.CONTENT_ITEM_TYPE);
 		values.put(Organization.COMPANY, value);
-		saveData(contact, values);
+		saveData(contactId, values);
 	}
 
 	public void save(Contact contact) throws Exception {
-		create(contact);
+		String contactId = create(contact);
 		
-		updateName(contact);
-		updatePhones(contact);
-		updateEmails(contact);
-		updateCompany(contact);
+		updateName(contactId, contact);
+		updatePhones(contactId, contact);
+		updateEmails(contactId, contact);
+		updateCompany(contactId, contact);
 //		contact.makeAllFilled();
 	}
-	
-	public void remove(Contact contact) {
-		String id = contact.id();
-		if (id == null || id.length() == 0)
-			return;
-		cr.delete(RawContacts.CONTENT_URI, RawContacts._ID + "=?", new String[] {id});
-	}
 
+    public void remove(Contact contact) {
+        String key = contact.id();
+        if (key == null || key.length() == 0)
+            return;
+
+        String id = queryContactId(contact.id());
+        if (id == null || id.length() == 0)
+            return;
+
+        Logger.D(TAG, "Removing contact: " + id);
+
+        cr.delete(RawContacts.CONTENT_URI, RawContacts.CONTACT_ID + "=?", new String[] {id});
+    }
 }

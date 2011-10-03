@@ -52,7 +52,7 @@ int getPhonebookRecordCount(void* pb)
     return 0;
 }
 
-VALUE getPhonebookRecords(void* pb, int offset, int max_results)
+VALUE getPhonebookRecords(void* pb, int offset, int max_results, rho_param* select_param)
 {
     //TODO: getPhonebookRecords
 	return rho_ruby_get_NIL();	
