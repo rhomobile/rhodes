@@ -41,7 +41,7 @@ import com.rhomobile.rhodes.Logger;
 public class Phonebook {
 
 	private static final String TAG = "Phonebook";
-	private static final boolean logging_enable = true;
+	private static final boolean logging_enable = false;
 	
 	public static final String PB_ID = "id";
 	public static final String PB_DISPLAY_NAME = "display_name";

@@ -33,7 +33,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "PhonebookJNI"
 
-#define logging_enable true
+#define logging_enable false
 
 static const char* field_names[] = {
 "id", // 0
@@ -95,7 +95,11 @@ static VALUE createHashFromContact(jobject contactObj)
         jhstring jhFieldName = rho_cast<jhstring>(env, field_names[i]);
         jhstring jhField(static_cast<jstring>(env->CallObjectMethod(contactObj, contactGetFieldMID, jhFieldName.get())));
         if (jhField.get() != 0) {
-            addStrToHash(contactHash, field_names[i], rho_cast<std::string>(env, jhField).c_str());
+            rho::String field = rho_cast<rho::String>(env, jhField);
+            if(i == 0) {// add braces {id}
+                addStrToHash(contactHash, field_names[i], rho::String("{}").insert(1, field).c_str());
+            } else 
+                addStrToHash(contactHash, field_names[i], field.c_str());
         }
     }
     if (logging_enable) RAWLOG_INFO("createHashFromContact() FINISH");
@@ -144,28 +148,16 @@ RHO_GLOBAL VALUE getPhonebookRecords(void* pb, int offset, int max_results, rho_
     while(env->CallBooleanMethod(phonebookObj, hasNextMID))
     {
         // Contact contact = (Contact)pb.next();
-        jobject contactObj = env->CallObjectMethod(phonebookObj, nextMID);
+        jhobject contactObj = env->CallObjectMethod(phonebookObj, nextMID);
         if (!contactObj) return Qnil;
+
         // String id = contact.id();
-        jstring idObj = (jstring)env->CallObjectMethod(contactObj, contactIdMID);
+        jhstring idObj = static_cast<jstring>(env->CallObjectMethod(contactObj.get(), contactIdMID));
         if (!idObj) return Qnil;
 
-        //addHashToHash(hash, rho_cast<std::string>(idObj).c_str(), createHashFromContact(contactObj));
-        CHoldRubyValue contactHash(rho_ruby_createHash());
-        // contact.moveToBegin();
+        CHoldRubyValue contactHash(createHashFromContact(contactObj.get()));
 
-        for (unsigned i = 0; i < PB_FIELDS_COUNT; ++i) {
-            jhstring jhFieldName = rho_cast<jhstring>(env, field_names[i]);
-            jhstring jhField(static_cast<jstring>(env->CallObjectMethod(contactObj, contactGetFieldMID, jhFieldName.get())));
-            if (jhField.get() != 0) {
-                addStrToHash(contactHash, field_names[i], rho_cast<std::string>(env, jhField).c_str());
-            }
-        }
-
-        addHashToHash(hash, rho_cast<std::string>(idObj).c_str(), contactHash);
-
-        env->DeleteLocalRef(idObj);
-        env->DeleteLocalRef(contactObj);
+        addHashToHash(hash, rho_cast<std::string>(idObj.get()).c_str(), contactHash);
     }
 
     rho_ruby_enable_gc(valGc);
@@ -205,10 +197,15 @@ RHO_GLOBAL void* openPhonebookRecord(void* pb, char* id)
     if (logging_enable) RAWLOG_INFO("openPhonebookRecord() START");
     JNIEnv *env = jnienv();
     jobject obj = (jobject)pb;
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_PHONEBOOK);
+    static jclass& cls = getJNIClass(RHODES_JAVA_CLASS_PHONEBOOK);
     if (!cls) return NULL;
-    jmethodID mid = getJNIClassMethod(env, cls, "getRecord", "(Ljava/lang/String;)Lcom/rhomobile/rhodes/phonebook/Contact;");
+    static jmethodID mid = getJNIClassMethod(env, cls, "getRecord", "(Ljava/lang/String;)Lcom/rhomobile/rhodes/phonebook/Contact;");
     if (!mid) return NULL;
+
+    if(!id || (strlen(id) <= 2))
+        return NULL;
+
+    if (logging_enable) RAWLOG_INFO1("Opening contact, id: %s", id);
 
     std::string rawId(id+1, strlen(id)-2);
     jhstring jhId = rho_cast<jhstring>(env, rawId.c_str());
@@ -297,6 +294,8 @@ RHO_GLOBAL int setRecordValue(void* record, char* property, char* value)
     if (!contactCls) return 0;
     jmethodID mid = getJNIClassMethod(env, contactCls, "setField", "(Ljava/lang/String;Ljava/lang/String;)V");
     if (!mid) return 0;
+
+    if (logging_enable) RAWLOG_INFO2("setRecordValue(%s, %s)", property, value);
 
     jhstring jhName = rho_cast<jhstring>(env, property);
     jhstring jhValue = rho_cast<jhstring>(env, value);

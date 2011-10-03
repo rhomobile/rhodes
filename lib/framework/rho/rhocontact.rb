@@ -65,7 +65,11 @@ module Rho
                     limit = 1 if args.first == :first
 
                     if args.first == :all or args.first == :first
-                        result = Phonebook::getRecords(pb, offset, limit, select)
+                        if System::get_property('platform') == "ANDROID"
+                            result = Phonebook::getRecords(pb, offset, limit, select)
+                        else
+                            result = Phonebook::allRecords(pb)
+                        end
 				    elsif args.first == :count
                         result = Phonebook::countRecords(pb, offset, limit)
                     end
