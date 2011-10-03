@@ -359,7 +359,7 @@ public class ContactAccessorNew implements ContactAccessor {
             finally {
                 cursor.close();
             }
-            if (contactId.isEmpty()) {
+            if (contactId.length() == 0) {
                 Logger.D(TAG, "No raw contact found for new raw id: " + id);
             }
 
@@ -376,7 +376,7 @@ public class ContactAccessorNew implements ContactAccessor {
             finally {
                 cursor.close();
             }
-            if (key == null || key.isEmpty()) {
+            if (key == null || key.length() == 0) {
                 Logger.D(TAG, "No contact found for new contact id: " + contactId);
             }
 
