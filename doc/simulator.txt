@@ -5,12 +5,13 @@ RhoSimulator allows to [run](#run-application-in-rhosimulator) Rhodes applicatio
 ## Install RhoSimulator
 
 If you have [Rhodes gem](install#rhodes-gem), then RhoSimulator is installed already.
-(Note: if you're going to use RhoSimulator from rhodes-3.1.0 gem on Mac, you need to put missing Qt libraries
+(Note: If you're going to use RhoSimulator from rhodes-3.1.0 gem on Mac, you need to put missing Qt libraries
 (QtDBus.framework and QtXml.framework) from [RhoSimulator31Mac_fix.zip](http://rhosimulator.s3.amazonaws.com/RhoSimulator31Mac_fix.zip)
 to 'platform/osx/bin/RhoSimulator/RhoSimulator.app/Contents/Frameworks' folder within rhodes SDK home directory,
 e.g. '/Library/Ruby/Gems/1.8/gems/rhodes-3.1.0/')
 
-If you would like to run RhoSimulator without Rhodes gem, [download it](http://rhosimulator.s3.amazonaws.com/RhoSimulator.zip), unzip and specify path to `rhosimulator.exe` at `rhodes/rhobuild.yml`:
+If you would like to run RhoSimulator without Rhodes gem, download [Windows](http://rhosimulator.s3.amazonaws.com/RhoSimulator.zip) or
+[Mac OS X](http://rhosimulator.s3.amazonaws.com/RhoSimulatorMac.zip) version, unzip and specify path to `rhosimulator.exe` or `RhoSimulator.app` respectively at `rhodes/rhobuild.yml`:
 
         env: 
            paths:    
