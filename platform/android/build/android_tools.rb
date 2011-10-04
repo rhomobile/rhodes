@@ -84,13 +84,26 @@ def application_running(flag, pkgname)
 end
 module_function :application_running
 
+def  kill_adb
+    # stop app
+    if RUBY_PLATFORM =~ /(win|w)32$/
+        # Windows
+        `taskkill /F /IM adb.exe`
+    else
+        `killall -9 adb`
+    end
+end
+module_function :kill_adb
+
 def kill_adb_and_emulator
   if RUBY_PLATFORM =~ /windows|cygwin|mingw/
     # Windows
     `taskkill /F /IM adb.exe`
+    `taskkill /F /IM emulator-arm.exe`
     `taskkill /F /IM emulator.exe`
   else
     `killall -9 adb`
+    `killall -9 emulator-arm`
     `killall -9 emulator`
   end
 end
