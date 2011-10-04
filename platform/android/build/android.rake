@@ -1648,8 +1648,12 @@ namespace "run" do
         
         # Failsafe to prevent eternal hangs
         Thread.new {
-          sleep 2000
-          AndroidTools.kill_adb_and_emulator
+            sleep 2000
+            if $device_flag == '-e'
+                AndroidTools.kill_adb_and_emulator
+            else
+                AndroidTools.kill_adb
+            end
         }
 
         load_app_and_run($device_flag)
@@ -1705,7 +1709,11 @@ namespace "run" do
         
         # stop app
         do_uninstall($device_flag)
-        kill_adb
+        if $device_flag == '-e'
+            AndroidTools.kill_adb_and_emulator
+        else
+            AndroidTools.kill_adb
+        end
 
         $stdout.flush
     end
@@ -1820,20 +1828,10 @@ namespace "run" do
 
     end
 
-    def  kill_adb
-        # stop app
-        if RUBY_PLATFORM =~ /(win|w)32$/
-          # Windows
-          `taskkill /F /IM adb.exe`
-        else
-          `killall -9 adb`
-        end
-    end
-
     def  run_emulator(options = {})
       apkfile = Jake.get_absolute $targetdir + "/" + $appname + "-debug.apk"
 
-      kill_adb
+      AndroidTools.kill_adb
       Jake.run($adb, ['start-server'], nil, true)
       puts 'Sleep for 5 sec. waiting for "adb start-server"'
       sleep 5
@@ -1880,7 +1878,7 @@ namespace "run" do
             if (now - startedWaiting) > (60 * adbRestarts)
               # Restart the adb server every 60 seconds to prevent eternal waiting
               puts "Appears hung, restarting adb server"
-              kill_adb
+              AndroidTools.kill_adb
               Jake.run($adb, ['start-server'], nil, true)
               adbRestarts += 1
 
