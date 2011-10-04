@@ -28,6 +28,6 @@
 #define RHOSIMULATOR_H
 
 #define RHOSIMULATOR_NAME "RhoSimulator"
-#define RHOSIMULATOR_VERSION "3.1.0"
+#define RHOSIMULATOR_VERSION "3.2.0.beta1"
 
 #endif // RHOSIMULATOR_H
