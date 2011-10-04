@@ -1,0 +1,507 @@
+# Scanner API - Use a Scanner
+
+The [Scanner Class API](http://docs.rhomobile.com/rhodes/scanner) provides access to control the functionality of the device's scanner.
+
+## Scanner.enumerate(callback_url)
+
+Returns into callback a list of scanners present on the device
+
+### Parameters
+
+callback_url - callback to call
+
+## Scanner.enable
+
+Enables the default scanner if no scanner is currently enabled
+
+## Scanner.disable
+
+Disables the currently enabled scanner. This reverts the scanner to its default state
+and flushes any current decoder settings
+
+## Scanner.setProperties(params)
+
+Sets multiple properties
+
+### Parameters
+
+params - hash array of properties and values
+
+[list of possible properties which can be set](http://docs.rhomobile.com/rhodes/scanner#propereties)
+
+## Scanner.setPropertyByName(name, val)
+
+Sets property by name
+
+### Parameters
+
+name - property's name
+
+val - property's value
+
+[list of possible properties which can be set](http://docs.rhomobile.com/rhodes/scanner#propereties)
+
+## Scanner.start(callback_url)
+
+Performs a soft trigger start
+
+### Returns(into callback)
+
+data - The data decoded by the scanner or imaging device
+
+source - The source device and human readable decoder type of the decoded barcode or symbol 
+
+type - Hex value representing the decoder type 
+
+time - The time at which the decode occurred (hh:mm:ss) 
+
+length - The length of the decoded barcode or symbol 
+
+event - The type of event which has occurred at the scanner.
+This field will be either 'Decode' for barcode scanning or a message from a Bluetooth scanner.
+
+### Parameters
+
+callback_url - callback to call
+
+## Scanner.stop
+
+Performs a soft trigger stop
+
+
+## Propereties
+Items listed in this section indicate parameters, or attributes which can be set.
+
+####enabled
+Enables the specified scanner.
+
+Possible Values:ID of Scanner, obtained via EnumScanner. 
+
+Default: SCN1 
+
+####Decoder Name
+Sets each Decoders' parameters. Refer to the "Decoders" Section of this help file to know available 
+decoders and Their Parameters.
+
+Possible Values:Decoder Property. 
+
+Default: Refer to the "Decoders" Section 
+
+####autoEnter
+If "enabled" then automatically append an Enter to the end of any barcodes scanned.
+This feature is only available when a decodeEvent is not specified and is useful for submitting forms.
+
+Possible Values:'enabled' / 'disabled'. 
+
+Default: 'Disabled' 
+
+####autoTab
+If "enabled" then automatically appends a Tab to the end of any barcodes scanned. 
+This feature is only available when a decodeEvent is not specified and is useful for advancing to the next 
+input field. 
+
+Possible Values:'enabled' / 'disabled'. 
+
+Default: Disabled 
+
+####linearSecurityLevel
+Describes the linear security level used during decoding. 
+
+Possible values: 
+
+redundancyAndLength:
+  Two times redundancy based on redundancy flags and code length.
+
+shortOrCodabar:
+  Two times redundancy if short barcode or Codabar.
+
+longAndShort:
+  Two times redundancy for long barcodes, three times for short barcodes.
+
+allTwice:
+  Two times redundancy for all barcodes.  
+
+allThrice:
+  Three times redundancy for all barcodes.
+
+Applicable scanner types: Laser and Imager
+
+Default: Device specific 
+
+####scanTimeout
+Maximum time in milliseconds that laser scanners will emit a beam or imager scanners will enable the imager. A value of 0 indicates an infinite timeout. This parameter is compatibile with aimType:trigger, aimType:timedHold, aimType:timedRelease and aimType:pressAndRelease
+
+Possible Values:milliseconds
+
+Applicable scanner types: Laser and Imager
+
+Default: 5000 
+
+####rasterMode
+Describes the type of vertical rastering to use. 
+
+Possible Values:
+
+none:
+  No vertical rastering.
+
+openAlways:
+  Vertical rastering is always full open.  To adjust the rastering height use the rasterHeight property.
+
+smart:
+  Vertical rastering mode is 'Smart'.
+
+cyclone:
+  Vertical rastering mode is 'Cyclone'.
+
+Applicable scanner types: Laser Only
+
+Default: Device specific 
+
+####rasterHeight
+Vertical rastering height to use, as a percentage, when rasterMode:openAlways is applied.
+
+Possible Values:0 - 100
+
+Applicable scanner types: Laser Only
+
+Default: Device specific 
+
+####aimType
+Describes the type of aiming to use. 
+
+Possible values:
+
+trigger:
+  Standard trigger mode.  Holding the trigger will start a decoding session.  
+  The decoding session ends when a barcode is decoded, scanTimeout occurs or the trigger is released.
+
+timedHold:
+  Aiming lasts for the time specified by 'timedAimDuration' before decoding.  
+  The decode will last until the barcode is decoded or scanTimeout occurs.
+
+timedRelease:
+  Aiming lasts until trigger is released.  
+  If the timedAimDuration has expired when the trigger is released then a decode session is started
+  until a barcode is decoded or for the remaining time equal to the scanTimeout value.
+
+presentation:
+  Only applicable to Kiosk devices, the scanner illuminates when movement is detected 
+  in the range of the scanner window.  The scanner must be initiated with a softscan
+  using the scanner.start() method.  
+
+pressAndRelease:
+  Scan will continue after the trigger is released until scanTimeout occurs.
+
+continuousRead:	
+  Once the trigger is pulled barcodes will continue to be scanned whilst the trigger
+  is held, enabling rapid scanning, to be used in conjunction with sameSymbolTimeout 
+  and differentSymbolTimeout.  This value is ignored if viewfinderMode is set to 
+  'dynamicReticle'
+
+Applicable scanner types: Laser and Imager
+
+Default: Device specific 
+
+####timedAimDuration
+Duration in milliseconds for aimType:timedHold and aimType:timedRelease
+
+Possible Values:milliseconds
+
+Applicable scanner types: Laser and Imager
+
+Default: Device specific 
+
+####sameSymbolTimeout
+When the aimType:continuousRead property is applied this value defines the interval between which the same barcode can be decoded twice. The value is specified in milliseconds, use 0 to indicate no interval between successive reads. Use this value to prevent accidental duplicate scans.
+
+Possible Values:milliseconds
+
+Applicable scanner types: Laser and Imager
+
+Default: 2500 
+
+differentSymbolTimeout:[Value]  When the aimType:continuousRead property is applied this value defines the interval between which different barcodes can be scanned. The value is specified in milliseconds, use 0 to indicate no interval between successive reads. Use this setting to allow time for the operator to reaim the device between successive scans.
+
+Possible Values:milliseconds
+
+Applicable scanner types: Laser and Imager
+
+Default: 500 
+
+####aimMode
+Describes the aiming mode to used. 
+
+Possible values:
+
+none:
+  No Aiming (Can be overridden by picklistMode).  
+
+dot:
+  Laser barcode readers will show a dot for aiming.
+
+slab:
+  Laser barcode readers will show a slab for aiming.
+
+reticle:
+  Imager barcode readers will show a reticle for aiming
+
+Applicable scanner types: Laser and Imager
+
+Default: Device specific 
+
+####picklistMode
+Allows the imager to decode only the barcode that is directly under the cross-hair / center of the reticle. This feature is most useful in applications where multiple barcodes may appear in the field of view during a decode session and only one of them is targeted for decode. When enabled picklistMode will override aimMode if no aiming is chosen and use aimMode:reticle. This mode will also interact with viewfinderMode, see the EMDK for C help file for more information. Enabling picklist mode may adversely affect overall decoding performance. 
+
+Possible values:
+
+disabled:
+  Disables picklist mode so any barcode within the field of view can be decoded.
+
+hardwareReticle:
+  Enables picklist mode so that only the barcode under the projected reticle can 
+  be decoded.  If the imager does not support a projected reticle then the 
+  behaviour is the same as softwareReticle.
+
+softwareReticle:
+  Enables picklist mode so that only the barcode in the center of the image is 
+  decoded.  This is most useful when used in conjunction with static and 
+  dynamic reticle viewfinder modes.
+
+Applicable scanner types: Imager Only
+
+Default: Device specific 
+
+####viewfinderMode
+Configures the mode of the scanner viewfinder window. This attribute is not supported on all Scanners 
+and will interact with the picklistMode parameter, see the EMDK for C help file for more information.
+
+Possible values:
+
+enabled:
+  Only the viewfinder is enabled (not the reticle).  Displays a viewfinder on the
+  screen showing the image being captured by the camera.
+
+disabled:
+  The viewfinder will not be displayed during aiming or scanning.
+
+staticReticle:
+  Displays the viewfinder as well as draws a red reticle in the center of the image
+  which helps with tracking the barcode.
+
+dynamicReticle:
+  Displays the viewfinder as well as draws a red reticle in the center of the image.
+  If the barcode in the image is 'decodable' the reticle turns green to indicate
+  this.  This mode requires a second trigger press to decode the barcode after the
+  reticle turns green.
+
+Applicable scanner types: Imager Only
+
+Default: Device specific 
+
+####viewfinderX
+When scanning a barcode using an imager scanner the viewfinder preview window will appear this number of pixels from the left hand side of the screen. The images displayed in the viewfinder will be scaled as appropriate.
+
+Possible Values:pixels
+
+Applicable scanner types: Imager Only
+
+Default: Device specific 
+
+####viewfinderY
+When scanning a barcode using an imager scanner the viewfinder preview window will appear this number 
+of pixels from the top of the screen. The images displayed in the viewfinder will be scaled as appropriate.
+
+Possible Values:pixels
+
+Applicable scanner types: Imager Only
+
+Default: Device specific 
+
+####viewfinderWidth
+When scanning a barcode using an imager scanner the viewfinder preview window will be this number of pixels wide. The images displayed in the viewfinder will be scaled as appropriate.
+
+Possible Values:pixels
+
+Applicable scanner types: Imager Only
+
+Default: Device specific 
+
+####viewfinderHeight
+When scanning a barcode using an imager scanner the viewfinder preview window will be this number of pixels high. The images displayed in the viewfinder will be scaled as appropriate.
+
+Possible Values:pixels
+
+Applicable scanner types: Imager Only
+
+Default: Device specific 
+
+####viewfinderFeedback
+Configures the feedback given after a successful scan in milliseconds. This value is ignored if aimType is set to continuousRead and no feedback will be given.
+
+Possible values:
+
+disabled:
+  No feedback is given after a successful decode.
+
+enabled:
+  The last image that was successfully decoded is displayed.  The time for which
+  the image is displayed can be configured by the viewfinderFeedbackTime parameter.
+
+reticle:
+  The last image that was successfully decoded is displayed along with a red reticle 
+  in the center of the image.  The time for which the image is displayed can be 
+  configured by the viewfinderFeedbackTime parameter.
+
+Applicable scanner types: Imager Only
+
+Default: Device specific 
+
+####viewfinderFeedbackTime
+If the viewfinderFeedback:enabled or viewfinderFeedback:reticle are applied then the decoded barcode will remain on the screen for this duration.
+
+Possible Values:milliseconds
+
+Applicable scanner types: Imager Only
+
+Default: Device specific 
+
+####focusMode
+Sets the focus mode in use. 
+
+Possible values:
+
+fixed:
+  Use fixed focus.
+
+auto:
+  Use auto focus.
+
+Applicable scanner types: Imager Only
+
+Default: Device specific 
+
+####illuminationMode
+Selects the illumination mode to use. 
+
+Possible values:
+
+auto:
+  Auto-exposure algorithms will decide whether illumination is required or not.
+
+alwaysOn:
+  External illumination is always on.
+
+alwaysOff:
+  External illumination is always off.
+
+Applicable scanner types: Imager Only
+
+Default: Device specific 
+
+####dpmMode
+Allows Direct Part Marking (DPM) barcodes to be read when true but may adversely affect overall decoding performance. DPM is a way of stamping barcodes directly on physical objects and is only available on DPM terminals.
+
+Possible Values:true / false
+
+Applicable scanner types: Imager Only
+
+Default: Device specific 
+
+####inverse1dMode
+Allows the user to select inverse 1D barcodes for decoding. 
+
+Possible values:
+
+enabled:
+  Inverse 1D symbology decoding is enabled.
+
+disabled:
+  Inverse 1D symbology decoding is disabled.
+
+auto:  
+  Allows decoding of both positive and inverse 1D symbologies
+
+Applicable scanner types: Imager Only
+
+Default: Device specific 
+
+####poorQuality1dMode
+Allows poor quality 1D barcodes to be read when true but this will adversely affect the overall decoding performance.
+
+Possible Values:true / false
+
+Applicable scanner types: Imager Only
+
+Default: Device specific 
+
+####narrowBeam
+Enables or disables narrow beam width.
+
+Possible Values:true / false
+
+Applicable scanner types: Laser Only
+
+Default: Device specific 
+
+####dbpMode
+Describes the type of Digital Bar Pulse (DBP) being produced by the scan engine. 
+
+Possible values:
+
+normal:
+  Tells the engine to produce normal DBP.
+
+composite:
+  Tells the engine to produce composite DBP, which is 2 different sets of DBP data 
+  multiplexed together for better decode performance.  In order to enable this mode 
+  it must be supported by the scanner.
+
+Applicable scanner types: Laser Only
+
+Default: Device specific 
+
+####klasseEins
+Enables or disables the Klasse Eins laser on time function.
+
+Possible Values:true / false
+
+Applicable scanner types: Laser Only
+
+Default: Device specific 
+
+####adaptiveScanning
+Enables or disables adaptive scanning. When set to true, the scan engine will automatically toggle between 2 scan angles, wide and narrow, allowing the scan engine to decode barcodes both in close proximity and far away (~100 inches). Adaptive scanning is only supported in high performance, long working range scan engines such as SE960.
+
+Possible Values:true / false
+
+Applicable scanner types: Laser Only
+
+Default: Device specific 
+
+####bidirectionalRedundancy
+Enables or disables bidirectional redundancy.
+
+Possible Values:true / false
+
+Applicable scanner types: Laser Only
+
+Default: Device specific 
+
+####connectionIdleTimeout
+Specifies the time, in seconds, that an external scanner will be allowed to remain idle before the connection is terminated to conserve power.
+
+Possible Values:seconds
+
+Applicable scanner types: Bluetooth Only
+
+Default: Device specific 
+
+####disconnectBtOnDisable
+Forces the scanner to disconnect from the terminal when it is 'disabled'. Since the scanner is disabled when you navigate to a new page, set this value to false if you want to maintain the bluetooth connection to your remote scanner.
+
+Possible Values:true / false
+
+Applicable scanner types: Bluetooth Only
+
+Default: false 
