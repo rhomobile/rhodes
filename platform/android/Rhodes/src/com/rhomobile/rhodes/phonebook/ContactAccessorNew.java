@@ -134,7 +134,7 @@ public class ContactAccessorNew implements ContactAccessor {
 	public void fillPhones(String id, Contact contact) {
 		Cursor cursor = cr.query(Data.CONTENT_URI,
 				new String[] {Phone.NUMBER, Phone.TYPE},
-				Data.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
+				Data.CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] {id, Phone.CONTENT_ITEM_TYPE},
 				null);
 		try {
@@ -165,7 +165,7 @@ public class ContactAccessorNew implements ContactAccessor {
 	public void fillEmails(String id, Contact contact) {
 		Cursor cursor = cr.query(Data.CONTENT_URI,
 				new String[] {Email.DATA},
-				Data.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
+				Data.CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] {id, Email.CONTENT_ITEM_TYPE},
 				null);
 		try {
@@ -183,7 +183,7 @@ public class ContactAccessorNew implements ContactAccessor {
 	public void fillCompany(String id, Contact contact) {
 		Cursor cursor = cr.query(Data.CONTENT_URI,
 				new String[] {Organization.COMPANY},
-				Data.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
+				Data.CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
 				new String[] {id, Organization.CONTENT_ITEM_TYPE},
 				null);
 		try {
