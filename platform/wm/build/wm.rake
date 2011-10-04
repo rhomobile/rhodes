@@ -69,6 +69,7 @@ namespace "config" do
   
   task :set_win32_platform do
     $current_platform = "win32" unless $current_platform
+    $sdk = "Win32"
   end
 
   task :set_motce_platform do
@@ -126,7 +127,8 @@ namespace "build" do
           ENV['RHO_PLATFORM'] = $current_platform
           ENV['PWD'] = $startdir
           ENV['RHO_ROOT'] = ENV['PWD']
-          ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", $sdk, "rhodes", "Release")
+          
+          ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", $sdk, "rhodes", $current_platform == 'wm' ? "Release" : "Debug")
           ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", $sdk, "extensions", ext)
           ENV['VCBUILD'] = $vcbuild
           ENV['SDK'] = $sdk

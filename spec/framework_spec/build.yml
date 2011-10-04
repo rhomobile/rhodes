@@ -6,7 +6,7 @@ applog: rholog.txt
 version: 1.0.0
 vendor: rhomobile
 sdkversion: 1.4
-wmsdk: "Windows Mobile 6 Professional SDK (ARMV4I)"
+#wmsdk: "Windows Mobile 6 Professional SDK (ARMV4I)"
 iphone: 
   sdk: iphonesimulator4.3
   entitlements: ""
