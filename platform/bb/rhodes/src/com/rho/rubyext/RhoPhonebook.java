@@ -399,37 +399,37 @@ public class RhoPhonebook extends RubyBasic {
 					
 			}
 		});
-		klass.getSingletonClass().defineMethod("getallPhonebookRecords", new RubyOneArgMethod() {
+		klass.getSingletonClass().defineMethod("allRecords", new RubyOneArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) 
 			{
 				try {
 					return RhoPhonebook.getallPhonebookRecords(arg0);
 				} catch(Exception e) {
-					LOG.ERROR("getallPhonebookRecords failed", e);
+					LOG.ERROR("allRecords failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
 					
 			}
 		});
-		klass.getSingletonClass().defineMethod("openPhonebookRecord", new RubyTwoArgMethod() {
+		klass.getSingletonClass().defineMethod("openRecord", new RubyTwoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) 
 			{
 				try {
 					return RhoPhonebook.openPhonebookRecord(arg0, arg1);
 				} catch(Exception e) {
-					LOG.ERROR("openPhonebookRecord failed", e);
+					LOG.ERROR("openRecord failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
 					
 			}
 		});
-		klass.getSingletonClass().defineMethod("getPhonebookRecord", new RubyTwoArgMethod() {
+		klass.getSingletonClass().defineMethod("getRecord", new RubyTwoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) 
 			{
 				try {
 					return RhoPhonebook.getPhonebookRecord(arg0, arg1);
 				} catch(Exception e) {
-					LOG.ERROR("getPhonebookRecord failed", e);
+					LOG.ERROR("getRecord failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
 					
