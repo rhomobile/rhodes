@@ -1201,13 +1201,16 @@ Preload map tiles for region (0<=zoom<=18):
 	  end
 	
 	  def preload_map
-	      min_zoom = 3
-	      max_zoom = 13
-	      top_latitude = 60.1
-	      left_longitude = 30.0
-	      bottom_latitude = 59.7
-	      right_longitude = 30.6
-	      total_tiles_for_preload_count = MapView.preload_map_tiles('OSM', 'roadmap', top_latitude, left_longitude, bottom_latitude, right_longitude, min_zoom, max_zoom, url_for(:action => :preload_callback))    
+	      options = { :engine => 'OSM',
+	          :map_type => 'roadmap',
+	          :top_latitude => 60.1,
+	          :left_longitude => 30.0,
+	          :bottom_latitude => 59.7,
+	          :right_longitude => 30.6,
+	          :min_zoom => 9,
+	          :max_zoom => 11
+	        }
+	      total_tiles_for_preload_count = MapView.preload_map_tiles(options, url_for(:action => :preload_callback))    
 	      redirect :action => :index
 	  end
 
