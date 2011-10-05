@@ -64,4 +64,13 @@
 - (void) setConfigString: (NSString*)name param: (NSString*) param;
 - (NSString*) getConfigString: (NSString*)name;
 
++ (NSString*) storagePath;
++ (NSString*) pathForStorageFile: (NSString*) file;
+
++ (NSString*) blobFolder;
++ (NSString*) blobPath;
++ (NSString*) pathForBlob: (NSString*) uri;
+
++ (void) fromMainBundle: (NSFileManager*) fileManager copyFile: (NSString*) source toStorage: (NSString*) target forceRemove: (BOOL) remove;
+
 @end

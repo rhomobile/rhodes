@@ -10,10 +10,13 @@
 #import "../../RhoConnectClient.h"
 
 RhoConnectClient* sclient;
+
 RhomModel* customer;
 RhomModel* product;
 RhomModel* perftest;
-NSArray* models;
+RhomModel* blobTest;
+
+NSFileManager* fileManager;
 
 int ResetAndLogout()
 {
@@ -31,9 +34,8 @@ int shouldNotSyncWithoutLogin()
 
 int shouldLogin()
 {
-	RhoConnectNotify* res = [[sclient loginWithUser:@"" pwd:@""] retain];
+	RhoConnectNotify* res = [sclient loginWithUser:@"" pwd:@""];
 	int nErr = res.error_code;
-	[res release];
 	if ( nErr!= RHO_ERR_NONE || ![sclient is_logged_in]) {
 		return 0;
 	}
@@ -43,9 +45,8 @@ int shouldLogin()
 
 int shouldSyncProductByName()
 {
-	RhoConnectNotify* res = [[product sync] retain];
+	RhoConnectNotify* res = [product sync];
 	int	nErr = res.error_code;
-	[res release];
 	if ( nErr!= RHO_ERR_NONE ) {
 		return 0;
 	}
@@ -91,18 +92,18 @@ int shouldCreateNewProduct()
 	if ( [item objectForKey:@"object"] == NULL || [item objectForKey:@"source_id"] == NULL ) 
 		return 0;
 
-	NSDictionary* item2 = [[product find:[item valueForKey:@"object"]] retain];
+	NSDictionary* item2 = [product find:[item valueForKey:@"object"]];
 	if ( ![item2 isEqualToDictionary: item])
 		return 0;
 
     CObjectCallback* pObjectCallback = [[ CObjectCallback alloc] init];
     [sclient addObjectNotify: [[item objectForKey:@"source_id"] intValue] szObject:[item valueForKey:@"object"] ];
      
-	RhoConnectNotify* res = [[product sync] retain];
+	RhoConnectNotify* res = [product sync];
 	if ( res.error_code!= RHO_ERR_NONE )
 		return 0;
 
-	NSDictionary* item3 = [[product find:[item valueForKey:@"object"]] retain];
+	NSDictionary* item3 = [product find:[item valueForKey:@"object"]];
 	if ( item3 )
 		return 0;
 
@@ -115,10 +116,6 @@ int shouldCreateNewProduct()
 	if ( [[pObjectCallback.m_pNotify.created_objects objectAtIndex:0] compare: [item valueForKey:@"object"]] != 0 )
         return 0;
     
-	[res release];
-
-	[item3 release];
-	[item2 release];
 	[item release];
 	[pObjectCallback release];
     
@@ -130,7 +127,7 @@ int shouldModifyProduct()
 	NSMutableDictionary* cond = [[NSMutableDictionary alloc] init];
 	[cond setValue:@"Test" forKey:@"name"];							 
 	
-	NSMutableDictionary* item = [[product find_first:cond] retain];
+	NSMutableDictionary* item = [product find_first: cond];
 	if ( !item )
 		return 0;
 	
@@ -146,11 +143,11 @@ int shouldModifyProduct()
 	[item setValue:new_sku forKey:@"sku"];
 	[product save: item];
 	
-	RhoConnectNotify* res = [[product sync] retain];
+	RhoConnectNotify* res = [product sync];
 	if ( res.error_code!= RHO_ERR_NONE )
 		return 0;
 	
-	NSDictionary* item3 = [[product find:saved_object] retain];
+	NSDictionary* item3 = [product find: saved_object];
 	if ( !item3 )
 		return 0;
 	
@@ -158,9 +155,6 @@ int shouldModifyProduct()
 		return 0;
 	
 	[cond release];
-	[item release];	
-	[item3 release];	
-	[res release];		
 	[new_sku release];				
 	
 	return 1;
@@ -171,7 +165,7 @@ int shouldDeleteAllTestProduct()
 	NSMutableDictionary* cond = [[NSMutableDictionary alloc] init];
 	[cond setValue:@"Test" forKey:@"name"];							 
 	
-	NSMutableArray* items = [[product find_all:cond] retain];	
+	NSMutableArray* items = [product find_all:cond];	
 	if ( !items )
 		return 0;
 	
@@ -180,17 +174,15 @@ int shouldDeleteAllTestProduct()
 		[product destroy: item];
 	}
 	
-	RhoConnectNotify* res = [[product sync] retain];
+	RhoConnectNotify* res = [product sync];
 	if ( res.error_code!= RHO_ERR_NONE )
 		return 0;
 
 	NSMutableDictionary* item = [product find_first:cond];	
 	if ( item )
 		return 0;
-
-	[items release];
-	[res release];
-	
+    
+    [cond release];
 	return 1;
 }
 
@@ -228,10 +220,8 @@ int shouldCreateNewProductWithCustomers()
 {
     NSMutableDictionary* cust1;
     NSMutableDictionary* cust2;
-    NSMutableDictionary* cust11;
-    NSMutableDictionary* cust22;
     NSMutableDictionary* item;
-    NSMutableDictionary* prod;
+    ;
     
     // exception to throw on test failure
     NSException *e = [NSException
@@ -256,16 +246,15 @@ int shouldCreateNewProductWithCustomers()
         [item setValue: [cust2 objectForKey: @"object"] forKey:@"sku"];	
         [product create: item];
         
-        RhoConnectNotify* res = [[sclient syncAll] retain];
+        RhoConnectNotify* res = [sclient syncAll];
         if (   res.error_code != RHO_ERR_NONE
             || NO == [@"complete" isEqualToString: res.status] ) {
             @throw e;
         }
-        [res release];
         
         NSMutableDictionary* cond = [[NSMutableDictionary alloc] init];
         [cond setValue: [item objectForKey: @"name"] forKey:@"name"];							 
-        prod = [[product find_first: cond] retain];
+        NSMutableDictionary* prod = [product find_first: cond];
         [cond release];
         
         if ( !prod )
@@ -278,13 +267,13 @@ int shouldCreateNewProductWithCustomers()
             )
             @throw e;
 
-        cust11 = [[customer find: [prod objectForKey: @"quantity"]] retain];
+        NSMutableDictionary* cust11 = [customer find: [prod objectForKey: @"quantity"]];
         if ( !cust11
             || NO == [[cust11 objectForKey: @"first"] isEqualToString: [cust1 objectForKey: @"first"]] )
             @throw e;
         
         
-        cust22 = [[customer find: [prod objectForKey: @"sku"]] retain];
+        NSMutableDictionary* cust22 = [customer find: [prod objectForKey: @"sku"]];
         if ( !cust22
             || NO == [[cust22 objectForKey: @"first"] isEqualToString: [cust2 objectForKey: @"first"]] )
             @throw e;
@@ -292,21 +281,12 @@ int shouldCreateNewProductWithCustomers()
     } @catch( NSException* e) {
         result = 0;
     } @finally {
-        if (cust1) {
-            [customer destroy: cust1];
-        }
-        if (cust2) {
-            [customer destroy: cust2];
-        }
-        if (item) {
-            [product destroy: item];
-        }
+        [customer destroy: cust1];
+        [customer destroy: cust2];
+        [product destroy: item];
         [cust1 release];
         [cust2 release];
-        [cust11 release];
-        [cust22 release];
         [item release];
-        [prod release];
     }
 
     return result;
@@ -328,36 +308,31 @@ int runObjCClientTest()
      Customer models.
      */
     product.associations = [NSDictionary dictionaryWithObjectsAndKeys: @"Customer", @"quantity", @"Customer", @"sku", nil];
-    [product add_blob_attribute: @"image_front"];
-    [product add_blob_attribute: @"image_back" overwrite: YES];
     
     //product.name = @"Product_s";
     //product.model_type = RMT_PROPERTY_FIXEDSCHEMA;    
     //add to schema:
     /*CREATE TABLE "Product_s" ( 
-                              "brand" varchar default null,
-                              "created_at" varchar default null,
-                              "name" varchar default null,
-                              "price" varchar default null,
-                              "quantity" varchar default null,
-                              "sku" varchar default null,
-                              "updated_at" varchar default null,
-                              "object" varchar(255) PRIMARY KEY );
-    
-    */
+     "brand" varchar default null,
+     "created_at" varchar default null,
+     "name" varchar default null,
+     "price" varchar default null,
+     "quantity" varchar default null,
+     "sku" varchar default null,
+     "updated_at" varchar default null,
+     "object" varchar(255) PRIMARY KEY );
+     
+     */
 	perftest = [[RhomModel alloc] init];
 	perftest.name = @"Perftest";
 	perftest.sync_type = RST_NONE;
 	
+	[RhoConnectClient initDatabase];
 	sclient = [[RhoConnectClient alloc] init];
-	models = [NSArray arrayWithObjects:customer, product, perftest, nil];	
-//	[product release];
-//	[perftest release];
-//	[customer release];
+    NSArray* models = [NSArray arrayWithObjects:customer, product, perftest, nil];	
 	
 	[sclient addModels:models];
 	
-	//[models release];
     //sclient.threaded_mode = FALSE;
 	//sclient.poll_interval = 0;
 	
@@ -405,38 +380,308 @@ int runObjCClientTest()
         
     } @catch( NSException* e) {
         result = 0;
-    } @finally {
-        [customer release];
-        [product release];
-        [perftest release];
-        //[models release];
-        //[sclient release];
     }
+    
+    [customer release];
+    [product release];
+    [perftest release];
+    [sclient release];
     
     return result;
 }
 
-int runSyncClientTests();
+
+int shouldSupportBlobType()
+{
+    NSString* blobUri = [[RhoConnectClient blobFolder] stringByAppendingString: @"MyText123.txt"];
+    NSString* blobContent = [@"Blob test at " stringByAppendingString: [[NSDate date] description]];
+    NSString* fileName = [RhoConnectClient pathForBlob: blobUri];
+    
+    NSError* error;
+    
+    //  verify file file doesn't exist
+    if ([fileManager fileExistsAtPath: fileName]) {
+        [fileManager removeItemAtPath: fileName error: &error];
+    }
+    if ([fileManager fileExistsAtPath: fileName])
+        return 0;
+    
+    // create file with content
+    [blobContent writeToFile: fileName atomically: YES encoding: NSUTF8StringEncoding error: &error];
+    if ( ![fileManager fileExistsAtPath: fileName] )
+        return 0;
+    
+    // create item with blob attribute value
+    NSMutableDictionary* item = [[NSMutableDictionary alloc] init];
+    [item setValue: [NSString stringWithFormat: @"%f", [[NSDate date] timeIntervalSince1970]] forKey:@"name"];	
+    [item setValue: blobUri forKey:@"image_uri"];	
+    [blobTest create: item];
+
+    // blob attribute still contain the same value
+    if ( ![blobUri isEqualToString: [item valueForKey: @"image_uri"]] )
+        return 0;
+    // file should still in place
+    if ( ![fileManager fileExistsAtPath: fileName] )
+        return 0;
+    
+    // ensure item has been destroyed
+    [blobTest destroy: item];
+    NSMutableDictionary* cond = [[NSMutableDictionary alloc] init];
+    [cond setValue: [item objectForKey: @"name"] forKey:@"name"];							 
+    NSMutableDictionary* item2 = [blobTest find_first: cond];
+    [cond release];
+    if ( item2 )
+        return 0;
+    
+    // file should be destroyed too
+    if ( [fileManager fileExistsAtPath: fileName] )
+        return 0;
+    
+    [item release];
+
+    return 1;
+}
+
+int shouldSyncBlobTest()
+{
+    // should be logged in
+    if ( ![sclient is_logged_in] )
+        return 0;
+    
+	RhoConnectNotify* res = [blobTest sync];
+	int	nErr = res.error_code;
+	if ( nErr!= RHO_ERR_NONE
+        || NO == [@"ok" isEqualToString: res.status] ) {
+		return 0;
+	}
+    
+	return 1;
+}
+
+int shouldDeleteAllBlobTestObjects()
+{
+    // should be logged in
+    if ( ![sclient is_logged_in] )
+        return 0;
+    
+    // find all blob items
+    NSMutableArray* items = [blobTest find_all:nil];	
+    if ( !items )
+        return 0;
+    
+    // check blob files for items and destroy them
+    NSMutableDictionary* item;
+    for( item in items ) {
+        // blob file name for item
+        NSString* fileName = [RhoConnectClient pathForBlob: [item objectForKey: @"image_uri"]];
+        // file should be in place
+        if ( ![fileManager fileExistsAtPath: fileName] )
+            return 0;
+        // item destroy
+        [blobTest destroy: item];
+        // file should be destroyed too
+        if ( [fileManager fileExistsAtPath: fileName] )
+            return 0;
+    }
+    
+    // sync to push items destroy to the server
+    RhoConnectNotify* res = [blobTest sync];
+    int	nErr = res.error_code;
+    if ( nErr!= RHO_ERR_NONE
+        || NO == [@"ok" isEqualToString: res.status] ) {
+        return 0;
+    }
+    
+    // there shuld be no items anymore
+    item = [blobTest find_first: nil];
+    if ( item )
+        return 0;
+
+    return 1;
+}
+
+int shouldCreateNewBlobTestObject()
+{
+    NSString* fileName = @"test.png";
+    NSString* filePath = [RhoConnectClient pathForStorageFile: fileName];
+    
+    // should be logged in
+    if ( ![sclient is_logged_in] )
+        return 0;
+    
+    // copy test.png file from bundle to blob directory
+    [RhoConnectClient fromMainBundle: fileManager copyFile: fileName toStorage: fileName forceRemove: YES];
+    if ( ![fileManager fileExistsAtPath: filePath] )
+        return 0;
+    
+    NSError* err;
+    NSNumber* fileSize = [[fileManager attributesOfItemAtPath: filePath error: &err] objectForKey: NSFileSize];
+    NSData* fileContent = [NSData dataWithContentsOfFile: filePath];
+    
+    // create item with blob attribute value
+    NSMutableDictionary* item = [[NSMutableDictionary alloc] init];
+    //[item setValue: [NSString stringWithFormat: @"%f", [[NSDate date] timeIntervalSince1970]] forKey:@"name"];	
+    [item setValue: fileName forKey:@"image_uri"];
+    [blobTest create: item];
+    [blobTest save: item];
+    
+    // sync to push items to the server
+    RhoConnectNotify* res = [blobTest sync];
+    int	nErr = res.error_code;
+    if ( nErr!= RHO_ERR_NONE
+        || NO == [@"ok" isEqualToString: res.status] ) {
+        return 0;
+    }
+    
+    // find all blob items, there should be exact one
+    NSMutableArray* items = [blobTest find_all:nil];	
+    if ( !items || 1 != [items count])
+        return 0;
+    
+    // the only item should have image_uri changed
+    NSString* newFileName = [[items objectAtIndex: 0] objectForKey:@"image_uri"];
+    if ( [fileName isEqualToString: newFileName] )
+        return 0;
+    
+    // but file size should be the same
+    NSString* newFilePath = [RhoConnectClient pathForStorageFile: newFileName];
+    NSNumber* newFileSize = [[fileManager attributesOfItemAtPath: newFilePath error: &err] objectForKey: NSFileSize];
+    if ( ![newFileSize isEqualToNumber: fileSize] )
+        return 0;
+    
+    // file content should be the same too
+    NSData* newFileContent = [NSData dataWithContentsOfFile: newFilePath];
+    if ( ![newFileContent isEqualToData: fileContent] )
+        return 0;
+    
+    [item release];
+
+    return 1;
+}
+
+int shouldModifyBlobTestObject()
+{
+    NSString* fileName = @"test2.png";
+    NSString* filePath = [RhoConnectClient pathForStorageFile: fileName];
+    
+    // should be logged in
+    if ( ![sclient is_logged_in] )
+        return 0;
+    
+    // at least one item should exist
+    NSMutableDictionary* item = [blobTest find_first: nil];
+    if ( !item )
+        return 0;
+    NSString* savedId = [item objectForKey: @"object"];
+
+    // copy test2.png file from bundle to blob directory
+    [RhoConnectClient fromMainBundle: fileManager copyFile: fileName toStorage: fileName forceRemove: YES];
+    if ( ![fileManager fileExistsAtPath: filePath] )
+        return 0;
+    
+    // save old and set new file value
+    NSString* oldFileName = [item objectForKey: @"image_uri"];
+    [item setObject: fileName forKey: @"image_uri"];
+    [blobTest save: item];
+    
+    // old file should be removed
+    if ( [fileManager fileExistsAtPath: [RhoConnectClient pathForStorageFile: oldFileName]] )
+        return 0;
+    
+    // sync to push items to the server
+    RhoConnectNotify* res = [blobTest sync];
+    int	nErr = res.error_code;
+    if ( nErr!= RHO_ERR_NONE
+        || NO == [@"ok" isEqualToString: res.status] ) {
+        return 0;
+    }
+    
+    // readn item back, it should still present
+    NSMutableDictionary* item2 = [blobTest find: savedId];
+    if ( !item2 )
+        return 0;
+    
+    // file name should keep new value
+    if ( ![fileName isEqualToString: [item2 objectForKey: @"image_uri"]] )
+        return 0;
+    
+    return 1;
+}
+
+int runObjCClientBlobTest()
+{
+	blobTest = [[RhomModel alloc] init];
+	blobTest.name = @"BlobTest";
+    // BlobTest is not very good class name for the model, but
+    // it should be the same as the Source name on server side
+    [blobTest add_blob_attribute: @"image_uri"];
+	
+	[RhoConnectClient initDatabase];
+	sclient = [[RhoConnectClient alloc] init];
+    NSArray* models = [NSArray arrayWithObjects: blobTest, nil];	
+	[sclient addModels:models];
+	
+    //sclient.threaded_mode = FALSE;
+	//sclient.poll_interval = 0;
+	
+    // exception to throw on test failure
+    NSException *e = [NSException
+                      exceptionWithName: @"NSException"
+                      reason: @"test faled"
+                      userInfo: nil];
+    int result = 1;
+    @try {
+        if ( !ResetAndLogout() )
+            @throw e;
+        
+        sclient.sync_server = @"http://rhodes-samples-server.heroku.com/application";
+        
+        if ( !shouldNotSyncWithoutLogin() )
+            @throw e;
+        
+        if ( !shouldLogin() )
+            @throw e;
+        
+        if ( !shouldSupportBlobType() )
+            @throw e;
+        
+        if( !shouldSyncBlobTest() )
+            @throw e;
+        
+        if( !shouldDeleteAllBlobTestObjects() )
+            @throw e;
+        
+        if( !shouldCreateNewBlobTestObject() )
+            @throw e;
+        
+        if( !shouldModifyBlobTestObject() )
+            @throw e;
+        
+    } @catch( NSException* e) {
+        result = 0;
+    }
+    
+    [blobTest release];
+    [sclient release];
+    
+    return result;
+}
+
 int main(int argc, char *argv[]) {
     
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+    fileManager = [NSFileManager defaultManager];
 	
-	[RhoConnectClient initDatabase];
-	
-//    int retVal = UIApplicationMain(argc, argv, nil, nil);
-	
-    //int retVal = runSyncClientTests();
 	int retVal = runObjCClientTest();
+    if (0 < retVal)
+        retVal = runObjCClientBlobTest();
 	
-//	[models release];
-//	[product release];
-//	[perftest release];
-	[sclient release];
 	if (retVal)
 		NSLog(@"SUCCESS");
 	else
 		NSLog(@"FAILURE");
 	
     [pool drain];
+
     return retVal;
 }

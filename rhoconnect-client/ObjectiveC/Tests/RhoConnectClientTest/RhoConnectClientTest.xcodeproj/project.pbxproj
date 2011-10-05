@@ -20,6 +20,8 @@
 		5C581133122E4F4E00264A98 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C581132122E4F4E00264A98 /* QuartzCore.framework */; };
 		5C8367CE134660EE0008F198 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C8367CD134660EE0008F198 /* Security.framework */; };
 		5CBE0A4A14232FE20046B337 /* libRhoConnectClient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CBE0A4914232FE20046B337 /* libRhoConnectClient.a */; };
+		CE0C2856143D053C009ACAFE /* test2.png in Resources */ = {isa = PBXBuildFile; fileRef = CE0C2855143D053C009ACAFE /* test2.png */; };
+		CEF12656143A1CB000D30DBB /* test.png in Resources */ = {isa = PBXBuildFile; fileRef = CEF12655143A1CB000D30DBB /* test.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +55,8 @@
 		5C8367CD134660EE0008F198 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		5CBE0A4914232FE20046B337 /* libRhoConnectClient.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRhoConnectClient.a; sourceTree = SOURCE_ROOT; };
 		8D1107310486CEB800E47090 /* RhoConnectClientTest-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "RhoConnectClientTest-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		CE0C2855143D053C009ACAFE /* test2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test2.png; sourceTree = "<group>"; };
+		CEF12655143A1CB000D30DBB /* test.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +91,8 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				CEF12655143A1CB000D30DBB /* test.png */,
+				CE0C2855143D053C009ACAFE /* test2.png */,
 				5CBE0A4914232FE20046B337 /* libRhoConnectClient.a */,
 				5C2CE4F6122C3090005EDBC4 /* db */,
 				5C2CE323122AF5A4005EDBC4 /* RhoConnectClient.xcodeproj */,
@@ -193,6 +199,8 @@
 			files = (
 				28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */,
 				5C2CE4FA122C3090005EDBC4 /* db in Resources */,
+				CEF12656143A1CB000D30DBB /* test.png in Resources */,
+				CE0C2856143D053C009ACAFE /* test2.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
