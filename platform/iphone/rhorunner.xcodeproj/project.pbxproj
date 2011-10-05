@@ -86,6 +86,7 @@
 		FA52317B12E7511700AB55CC /* esri.png in Resources */ = {isa = PBXBuildFile; fileRef = FA52317412E7511700AB55CC /* esri.png */; };
 		FA52317C12E7511700AB55CC /* esri@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FA52317512E7511700AB55CC /* esri@2x.png */; };
 		FA52330112E9204300AB55CC /* BluePushpin@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FA52330012E9204300AB55CC /* BluePushpin@2x.png */; };
+		FAC6EE6D143B3AF100B8E352 /* RhoMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC6EE6C143B3AF100B8E352 /* RhoMapViewController.m */; };
 		FACA4C781270AC0900777CFF /* LeftViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FACA4C711270AC0900777CFF /* LeftViewController.m */; };
 		FACA4C791270AC0900777CFF /* RightViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FACA4C731270AC0900777CFF /* RightViewController.m */; };
 		FACA4C7A1270AC0900777CFF /* SplittedMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = FACA4C751270AC0900777CFF /* SplittedMainView.m */; };
@@ -287,6 +288,8 @@
 		FA52317412E7511700AB55CC /* esri.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = esri.png; path = ESRI/esri.png; sourceTree = "<group>"; };
 		FA52317512E7511700AB55CC /* esri@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "esri@2x.png"; path = "ESRI/esri@2x.png"; sourceTree = "<group>"; };
 		FA52330012E9204300AB55CC /* BluePushpin@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "BluePushpin@2x.png"; path = "ESRI/BluePushpin@2x.png"; sourceTree = "<group>"; };
+		FAC6EE6B143B3AF100B8E352 /* RhoMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoMapViewController.h; path = MapView/RhoMapViewController.h; sourceTree = "<group>"; };
+		FAC6EE6C143B3AF100B8E352 /* RhoMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RhoMapViewController.m; path = MapView/RhoMapViewController.m; sourceTree = "<group>"; };
 		FACA4C701270AC0900777CFF /* LeftViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LeftViewController.h; path = SplitView/LeftViewController.h; sourceTree = "<group>"; };
 		FACA4C711270AC0900777CFF /* LeftViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LeftViewController.m; path = SplitView/LeftViewController.m; sourceTree = "<group>"; };
 		FACA4C721270AC0900777CFF /* RightViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RightViewController.h; path = SplitView/RightViewController.h; sourceTree = "<group>"; };
@@ -581,6 +584,8 @@
 		F5425BCD1060539A000CCA8C /* MapView */ = {
 			isa = PBXGroup;
 			children = (
+				FAC6EE6B143B3AF100B8E352 /* RhoMapViewController.h */,
+				FAC6EE6C143B3AF100B8E352 /* RhoMapViewController.m */,
 				FA52300B12E4BBC700AB55CC /* MapViewManager.h */,
 				FA52300C12E4BBC700AB55CC /* MapViewManager.m */,
 				F5128C2A106C1FF3002F00E5 /* GoogleGeocoder.h */,
@@ -996,6 +1001,7 @@
 				FA522E8012DEA7B300AB55CC /* NVViewController.m in Sources */,
 				FA522E8112DEA7B300AB55CC /* RhoNativeViewManager.mm in Sources */,
 				FA52300D12E4BBC700AB55CC /* MapViewManager.m in Sources */,
+				FAC6EE6D143B3AF100B8E352 /* RhoMapViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

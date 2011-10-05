@@ -76,6 +76,20 @@
 		BDFCB13E112EE2B500AE3724 /* ssl.h in Headers */ = {isa = PBXBuildFile; fileRef = BDFCB13C112EE2B500AE3724 /* ssl.h */; };
 		FA5F58DF12ADDA6D00C7613A /* app_build_configs.c in Sources */ = {isa = PBXBuildFile; fileRef = FA5F58DD12ADDA6D00C7613A /* app_build_configs.c */; };
 		FA5F58E012ADDA6D00C7613A /* app_build_configs.h in Headers */ = {isa = PBXBuildFile; fileRef = FA5F58DE12ADDA6D00C7613A /* app_build_configs.h */; };
+		FAC6EE5B143B1FC800B8E352 /* BaseMapEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAC6EE4F143B1FC800B8E352 /* BaseMapEngine.cpp */; };
+		FAC6EE5C143B1FC800B8E352 /* BaseMapEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC6EE50143B1FC800B8E352 /* BaseMapEngine.h */; };
+		FAC6EE5D143B1FC800B8E352 /* ESRIMapEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAC6EE51143B1FC800B8E352 /* ESRIMapEngine.cpp */; };
+		FAC6EE5E143B1FC800B8E352 /* ESRIMapEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC6EE52143B1FC800B8E352 /* ESRIMapEngine.h */; };
+		FAC6EE5F143B1FC800B8E352 /* GeocodingMapEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAC6EE53143B1FC800B8E352 /* GeocodingMapEngine.cpp */; };
+		FAC6EE60143B1FC800B8E352 /* GeocodingMapEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC6EE54143B1FC800B8E352 /* GeocodingMapEngine.h */; };
+		FAC6EE61143B1FC800B8E352 /* GoogleMapEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAC6EE55143B1FC800B8E352 /* GoogleMapEngine.cpp */; };
+		FAC6EE62143B1FC800B8E352 /* GoogleMapEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC6EE56143B1FC800B8E352 /* GoogleMapEngine.h */; };
+		FAC6EE63143B1FC800B8E352 /* MapEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAC6EE57143B1FC800B8E352 /* MapEngine.cpp */; };
+		FAC6EE64143B1FC800B8E352 /* MapEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC6EE58143B1FC800B8E352 /* MapEngine.h */; };
+		FAC6EE65143B1FC800B8E352 /* OSMMapEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAC6EE59143B1FC800B8E352 /* OSMMapEngine.cpp */; };
+		FAC6EE66143B1FC800B8E352 /* OSMMapEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC6EE5A143B1FC800B8E352 /* OSMMapEngine.h */; };
+		FAC6EE69143B20B600B8E352 /* RhoMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAC6EE67143B20B600B8E352 /* RhoMath.cpp */; };
+		FAC6EE6A143B20B600B8E352 /* RhoMath.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC6EE68143B20B600B8E352 /* RhoMath.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -149,6 +163,20 @@
 		D2AAC046055464E500DB518D /* librholib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librholib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA5F58DD12ADDA6D00C7613A /* app_build_configs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = app_build_configs.c; path = ../../shared/common/app_build_configs.c; sourceTree = SOURCE_ROOT; };
 		FA5F58DE12ADDA6D00C7613A /* app_build_configs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = app_build_configs.h; path = ../../shared/common/app_build_configs.h; sourceTree = SOURCE_ROOT; };
+		FAC6EE4F143B1FC800B8E352 /* BaseMapEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BaseMapEngine.cpp; path = ../../shared/common/map/BaseMapEngine.cpp; sourceTree = "<group>"; };
+		FAC6EE50143B1FC800B8E352 /* BaseMapEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseMapEngine.h; path = ../../shared/common/map/BaseMapEngine.h; sourceTree = "<group>"; };
+		FAC6EE51143B1FC800B8E352 /* ESRIMapEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ESRIMapEngine.cpp; path = ../../shared/common/map/ESRIMapEngine.cpp; sourceTree = "<group>"; };
+		FAC6EE52143B1FC800B8E352 /* ESRIMapEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ESRIMapEngine.h; path = ../../shared/common/map/ESRIMapEngine.h; sourceTree = "<group>"; };
+		FAC6EE53143B1FC800B8E352 /* GeocodingMapEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GeocodingMapEngine.cpp; path = ../../shared/common/map/GeocodingMapEngine.cpp; sourceTree = "<group>"; };
+		FAC6EE54143B1FC800B8E352 /* GeocodingMapEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GeocodingMapEngine.h; path = ../../shared/common/map/GeocodingMapEngine.h; sourceTree = "<group>"; };
+		FAC6EE55143B1FC800B8E352 /* GoogleMapEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GoogleMapEngine.cpp; path = ../../shared/common/map/GoogleMapEngine.cpp; sourceTree = "<group>"; };
+		FAC6EE56143B1FC800B8E352 /* GoogleMapEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GoogleMapEngine.h; path = ../../shared/common/map/GoogleMapEngine.h; sourceTree = "<group>"; };
+		FAC6EE57143B1FC800B8E352 /* MapEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MapEngine.cpp; path = ../../shared/common/map/MapEngine.cpp; sourceTree = "<group>"; };
+		FAC6EE58143B1FC800B8E352 /* MapEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MapEngine.h; path = ../../shared/common/map/MapEngine.h; sourceTree = "<group>"; };
+		FAC6EE59143B1FC800B8E352 /* OSMMapEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OSMMapEngine.cpp; path = ../../shared/common/map/OSMMapEngine.cpp; sourceTree = "<group>"; };
+		FAC6EE5A143B1FC800B8E352 /* OSMMapEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OSMMapEngine.h; path = ../../shared/common/map/OSMMapEngine.h; sourceTree = "<group>"; };
+		FAC6EE67143B20B600B8E352 /* RhoMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoMath.cpp; path = ../../shared/common/RhoMath.cpp; sourceTree = "<group>"; };
+		FAC6EE68143B20B600B8E352 /* RhoMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoMath.h; path = ../../shared/common/RhoMath.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -215,6 +243,9 @@
 		5C7162600F8B7DEE0096B6AA /* common */ = {
 			isa = PBXGroup;
 			children = (
+				FAC6EE67143B20B600B8E352 /* RhoMath.cpp */,
+				FAC6EE68143B20B600B8E352 /* RhoMath.h */,
+				FAC6EE4C143B1F1E00B8E352 /* map */,
 				5C0F94DE132979140093FA1B /* RhoTime.cpp */,
 				FA5F58DD12ADDA6D00C7613A /* app_build_configs.c */,
 				FA5F58DE12ADDA6D00C7613A /* app_build_configs.h */,
@@ -319,6 +350,25 @@
 			name = Documentation;
 			sourceTree = "<group>";
 		};
+		FAC6EE4C143B1F1E00B8E352 /* map */ = {
+			isa = PBXGroup;
+			children = (
+				FAC6EE4F143B1FC800B8E352 /* BaseMapEngine.cpp */,
+				FAC6EE50143B1FC800B8E352 /* BaseMapEngine.h */,
+				FAC6EE51143B1FC800B8E352 /* ESRIMapEngine.cpp */,
+				FAC6EE52143B1FC800B8E352 /* ESRIMapEngine.h */,
+				FAC6EE53143B1FC800B8E352 /* GeocodingMapEngine.cpp */,
+				FAC6EE54143B1FC800B8E352 /* GeocodingMapEngine.h */,
+				FAC6EE55143B1FC800B8E352 /* GoogleMapEngine.cpp */,
+				FAC6EE56143B1FC800B8E352 /* GoogleMapEngine.h */,
+				FAC6EE57143B1FC800B8E352 /* MapEngine.cpp */,
+				FAC6EE58143B1FC800B8E352 /* MapEngine.h */,
+				FAC6EE59143B1FC800B8E352 /* OSMMapEngine.cpp */,
+				FAC6EE5A143B1FC800B8E352 /* OSMMapEngine.h */,
+			);
+			name = map;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -366,6 +416,13 @@
 				5C2CE255122AEC87005EDBC4 /* RhoAppAdapter.h in Headers */,
 				FA5F58E012ADDA6D00C7613A /* app_build_configs.h in Headers */,
 				5CE03CCD12DB7E990058B474 /* sqlite3.h in Headers */,
+				FAC6EE5C143B1FC800B8E352 /* BaseMapEngine.h in Headers */,
+				FAC6EE5E143B1FC800B8E352 /* ESRIMapEngine.h in Headers */,
+				FAC6EE60143B1FC800B8E352 /* GeocodingMapEngine.h in Headers */,
+				FAC6EE62143B1FC800B8E352 /* GoogleMapEngine.h in Headers */,
+				FAC6EE64143B1FC800B8E352 /* MapEngine.h in Headers */,
+				FAC6EE66143B1FC800B8E352 /* OSMMapEngine.h in Headers */,
+				FAC6EE6A143B20B600B8E352 /* RhoMath.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -447,6 +504,13 @@
 				5CE03CCC12DB7E990058B474 /* sqlite3.c in Sources */,
 				5CB821AE1312487100778441 /* INetRequest.cpp in Sources */,
 				5C0F94DF132979140093FA1B /* RhoTime.cpp in Sources */,
+				FAC6EE5B143B1FC800B8E352 /* BaseMapEngine.cpp in Sources */,
+				FAC6EE5D143B1FC800B8E352 /* ESRIMapEngine.cpp in Sources */,
+				FAC6EE5F143B1FC800B8E352 /* GeocodingMapEngine.cpp in Sources */,
+				FAC6EE61143B1FC800B8E352 /* GoogleMapEngine.cpp in Sources */,
+				FAC6EE63143B1FC800B8E352 /* MapEngine.cpp in Sources */,
+				FAC6EE65143B1FC800B8E352 /* OSMMapEngine.cpp in Sources */,
+				FAC6EE69143B20B600B8E352 /* RhoMath.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
