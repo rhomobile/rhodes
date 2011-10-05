@@ -3,6 +3,7 @@
 * Support reset selected models
 * Support native JQueryMobile css-styles
 * Support latest Android NDK
+* Support Offline map on Android
 
 ## 3.1
 * Symbian support(Beta)
