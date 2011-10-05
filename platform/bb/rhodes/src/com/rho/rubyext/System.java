@@ -58,7 +58,7 @@ public class System {
 	
 	private static RhodesApp RHODESAPP(){ return RhodesApp.getInstance(); }
 	
-	public static void initMethods(RubyClass klass){
+	public static void initMethods(RubyModule klass){
 		klass.getSingletonClass().defineMethod( "get_property", new RubyOneArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
 			{

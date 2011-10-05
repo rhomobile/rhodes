@@ -57,5 +57,5 @@ module Rho
   end # RhoError
 end # Rho
 
-require 'rholang/localization_simplified'
-LocalizationSimplified.requre_loc('rholang/rhoerror_',false)
+#require 'rholang/localization_simplified'
+#LocalizationSimplified.requre_loc('rholang/rhoerror_',false)

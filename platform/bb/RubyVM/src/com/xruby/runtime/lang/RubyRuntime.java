@@ -98,7 +98,7 @@ public class RubyRuntime
     public static RubyClass EVRecordClass;    
     public static RubyClass GeoLocationClass;
     public static RubyModule AsyncHttpModule;
-    public static RubyClass SystemClass;
+    public static RubyModule SystemClass;
     public static RubyModule JSONClass;
     public static RubyClass CameraClass;
     public static RubyClass RhoBluetoothClass;
@@ -311,7 +311,7 @@ public class RubyRuntime
         EVRecordClass = RubyAPI.defineClass("EVRecord", RubyRuntime.ObjectClass);        
         GeoLocationClass = RubyAPI.defineClass("GeoLocation", RubyRuntime.ObjectClass);
         AsyncHttpModule = rhoModule.defineModule("AsyncHttp");
-		SystemClass = RubyAPI.defineClass("System", RubyRuntime.ObjectClass);
+		SystemClass = RubyAPI.defineModule("System");//, RubyRuntime.ObjectClass);
         JSONClass = rhoModule.defineModule("JSON" );//, RubyRuntime.ObjectClass);
         CameraClass = RubyAPI.defineClass("Camera", RubyRuntime.ObjectClass);
         RhoBluetoothClass = RubyAPI.defineClass("RhoBluetooth", RubyRuntime.ObjectClass);

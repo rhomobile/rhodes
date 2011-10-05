@@ -57,6 +57,9 @@ And use this string in the view:
 		<li><%= Localization::Views[:greeting] %></li>
 	</ul> 
 
+To switch locale at runtime use:
+	:::ruby
+    System::set_locale('es') #set current locale to Spanish
 #### Details:
 
 All non-ascii symbols should be utf-8 encoded
