@@ -362,6 +362,16 @@ public class MapView extends RubyBasic {
 			}
 			
 		});
+
+        klass.getSingletonClass().defineMethod("set_file_caching_enable", new RubyOneArgMethod()
+        {
+            protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block)
+            {
+                //TODO: set_file_caching_enable
+                return RubyConstant.QNIL;
+            }
+        });
+
 	}
 	
 }
