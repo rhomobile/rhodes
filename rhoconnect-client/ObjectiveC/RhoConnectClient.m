@@ -10,6 +10,7 @@
 
 #include "sync/SyncThread.h"
 #include "common/RhoConf.h"
+#import "common/RhodesAppBase.h"
 #include "logging/RhoLogConf.h"
 #import "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
@@ -96,7 +97,6 @@ void rho_free_callbackdata(void* pData)
 - (id) init
 {
 	self = [super init];
-	
 	return self;
 }
 
@@ -296,6 +296,7 @@ void rho_free_callbackdata(void* pData)
 }
 
 void copyFromMainBundle( NSFileManager* fileManager,  NSString * source, NSString * target, BOOL remove );
+void createFolder( NSFileManager* fileManager,  NSString * target, BOOL remove );
 const char* rho_native_rhopath() ;
 + (void) initDatabase
 {
@@ -309,6 +310,38 @@ const char* rho_native_rhopath() ;
 					   [bundleRoot stringByAppendingPathComponent:dirs[0]],
 					   [rhoRoot stringByAppendingPathComponent:dirs[0]],
 					   NO);
+    createFolder( fileManager, [self blobPath], NO );
+}
+
++ (NSString*) storagePath
+{
+    return [NSString stringWithUTF8String:rho_native_rhopath()];
+}
+
++ (NSString*) pathForStorageFile: (NSString*) file
+{
+    return [[self storagePath] stringByAppendingString: file];
+}
+
++ (NSString*) blobFolder
+{
+    return @"db/db-files/";
+}
+
++ (NSString*) blobPath
+{
+    return [[self storagePath] stringByAppendingString: [self blobFolder]];
+}
+
++ (NSString*) pathForBlob: (NSString*) uri
+{
+    return [[self storagePath] stringByAppendingString: uri];
+}
+
++ (void) fromMainBundle: (NSFileManager*) fileManager copyFile: (NSString*) source toStorage: (NSString*) target forceRemove: (BOOL) remove
+{
+	NSString *bundleRoot = [[NSBundle mainBundle] resourcePath];
+    copyFromMainBundle(fileManager, [bundleRoot stringByAppendingPathComponent: source], [self pathForStorageFile: target], remove);
 }
 
 @end
@@ -342,8 +375,8 @@ void copyFromMainBundle( NSFileManager* fileManager,  NSString * source, NSStrin
 		
 		NSDirectoryEnumerator *enumerator = [fileManager enumeratorAtPath:source];
 		NSString *child;
-		while (child = [enumerator nextObject]) {
-			copyFromMainBundle( fileManager, [source stringByAppendingPathComponent:child],
+		while (nil != (child = [enumerator nextObject])) {
+			copyFromMainBundle( fileManager, [source stringByAppendingPathComponent: child],
 							   [target stringByAppendingPathComponent:child], NO );
 		}
 	}
@@ -358,6 +391,26 @@ void copyFromMainBundle( NSFileManager* fileManager,  NSString * source, NSStrin
 			return;
 		}
 	}
+}
+
+void createFolder( NSFileManager* fileManager,  NSString * target, BOOL remove )
+{
+	BOOL dir;
+    [fileManager fileExistsAtPath:target isDirectory:&dir];
+	if (!remove && dir) {
+        return;
+    }
+    
+    NSError* error;
+    if (remove) {
+        if (![fileManager removeItemAtPath:target error:&error]) {
+            return;
+        }
+    }
+    
+    if (![fileManager createDirectoryAtPath:target withIntermediateDirectories:YES attributes:nil error:&error]) {
+        return;
+    }
 }
 
 int rho_net_ping_network(const char* szHost)
