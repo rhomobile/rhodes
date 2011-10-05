@@ -874,7 +874,7 @@ public class RhodesService extends Service {
 			if (params != null) {
 				Bundle startParams = new Bundle();
 				if (params instanceof String) {
-					if (!((String)params).isEmpty()) {
+					if (((String)params).length() != 0) {
 						String[] paramStrings = ((String)params).split("&");
 						for(int i = 0; i < paramStrings.length; ++i) {
 							String key = paramStrings[i];
