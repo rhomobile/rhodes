@@ -106,6 +106,8 @@ end
 
 class Date
 
+  SECONDS_IN_DAY         = Rational(1, 86400) # :nodoc:
+
   def self.today
     Date.new( Time.now )
   end

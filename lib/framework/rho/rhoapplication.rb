@@ -44,7 +44,8 @@ module Rho
       {:action => :home}, {:action => :refresh}, {:action => :options} ]
     	
     def initialize
-      LocalizationSimplified.requre_loc(Rho::RhoFSConnector::get_app_path('app') + 'lang/lang_',true)
+      #LocalizationSimplified.requre_loc(Rho::RhoFSConnector::get_app_path('app') + 'lang/lang_',true)
+      ::System::set_locale(nil, nil)
       
       unless @rhom
         @rhom = Rhom::Rhom.new

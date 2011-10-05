@@ -6,7 +6,8 @@
 
 module LocalizationSimplified
   @@ignore = "\xFF\xFF\xFF\xFF" # %% == Literal "%" character
-  @@cur_locale = 'en'
+  @@cur_locale = nil #'en'
+  @@cur_country = nil #'en'
   # substitute all daynames and monthnames with localized names
   # from RUtils plugin
   def self.localize_strftime(date='%d.%m.%Y', time='')
@@ -22,12 +23,24 @@ module LocalizationSimplified
     @@cur_locale  
   end
   
-    def self.requre_loc(file,check_exist)
-        curLocale = System::get_locale().downcase
-        curCountry = System::get_property("country").downcase
+  def self.set_cur_locale(loc, country)
+    @@cur_locale = loc
+    @@cur_country = country  
+  end
+  
+    def self.init_current_locale
+        return if @@cur_locale
+        
+        @@cur_locale = System::get_locale().downcase
+        @@cur_locale = 'en' unless @@cur_locale
+        @@cur_country = System::get_property("country").downcase
 
-        puts "Current locale: #{curLocale}; Country code: #{curCountry}"
-        @@cur_locale = curLocale
+        puts "Current locale: #{@@cur_locale}; Country code: #{@@cur_country}"
+                
+    end
+    
+    def self.requre_loc(file,check_exist)
+        init_current_locale()
 
         unless check_exist
 if defined?( RHODES_EMULATOR )        
@@ -38,13 +51,15 @@ end
             puts "file: #{file}"
         end
       
-        if curCountry && curCountry.length() > 0 && Rho::file_exist?(file + curLocale + '_' + curCountry + RHO_RB_EXT) 
-            require file + curLocale + '_' + curCountry
-        elsif Rho::file_exist?(file + curLocale + RHO_RB_EXT)
-            require file + curLocale
+      puts "Current locale: #{@@cur_locale}; Country code: #{@@cur_country}"
+      
+        if @@cur_country && @@cur_country.length() > 0 && Rho::file_exist?(file + @@cur_locale + '_' + @@cur_country + RHO_RB_EXT) 
+            require file + @@cur_locale + '_' + @@cur_country
+        elsif Rho::file_exist?(file + @@cur_locale + RHO_RB_EXT)
+            require file + @@cur_locale
         else    
-            puts 'Could not find resources for locale: ' + curLocale.to_s + ";file: #{file}"if curLocale != 'en'
-            if curLocale != 'en' && Rho::file_exist?(file + 'en' + RHO_RB_EXT)
+            puts 'Could not find resources for locale: ' + @@cur_locale.to_s + ";file: #{file}" if @@cur_locale != 'en'
+            if @@cur_locale != 'en' && Rho::file_exist?(file + 'en' + RHO_RB_EXT)
                 puts 'Load english resources.'
                 require file + 'en'
             end    
@@ -53,7 +68,18 @@ end
   
 end
 
-LocalizationSimplified.requre_loc('rholang/lang_',false)
+#LocalizationSimplified.requre_loc('rholang/lang_',false)
+
+module System
+    def self.set_locale(locale_code, country_code = nil)
+        LocalizationSimplified::set_cur_locale(locale_code, country_code)
+        
+        LocalizationSimplified.requre_loc('rholang/lang_',false)
+        LocalizationSimplified.requre_loc(Rho::RhoFSConnector::get_app_path('app') + 'lang/lang_',true)
+        LocalizationSimplified.requre_loc('rholang/rhoerror_',false)
+        LocalizationSimplified.requre_loc('rholang/rhomsg_',false)    
+    end
+end
 
 class Hash
     def reverse_merge(other_hash)

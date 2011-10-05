@@ -32,5 +32,5 @@ module Rho
   end # RhoMessages
 end # Rho
 
-require 'rholang/localization_simplified'
-LocalizationSimplified.requre_loc('rholang/rhomsg_',false)
+#require 'rholang/localization_simplified'
+#LocalizationSimplified.requre_loc('rholang/rhomsg_',false)
