@@ -1,3 +1,9 @@
+## 3.2
+* Migrate to Ruby 1.9.2
+* Support reset selected models
+* Support native JQueryMobile css-styles
+* Support latest Android NDK
+
 ## 3.1
 * Symbian support(Beta)
 * Android: support latest SDK and NDK r6
