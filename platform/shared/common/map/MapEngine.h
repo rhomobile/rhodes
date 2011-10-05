@@ -341,7 +341,7 @@ bool rho_map_check_param(rho_param *p);
 #ifdef __cplusplus
 extern "C"
 #endif //__cplusplus
-int mapview_preload_map_tiles(const char* engine, const char* map_type, double top_latitude, double left_longitude, double bottom_latitude, double right_longitude, int min_zoom, int max_zoom, const char* callback);
+int mapview_preload_map_tiles(rho_param* p, const char* callback);
 
 #endif
 

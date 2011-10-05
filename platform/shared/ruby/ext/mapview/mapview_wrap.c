@@ -1828,7 +1828,7 @@ extern double mapview_state_center_lon();
 #define state_center_lon mapview_state_center_lon
 extern void mapview_set_file_caching_enable(int enable);
 #define set_file_caching_enable mapview_set_file_caching_enable
-extern int mapview_preload_map_tiles(const char* engine, const char* map_type, double top_latitude, double left_longitude, double bottom_latitude, double right_longitude, int min_zoom, int max_zoom, const char* callback);
+extern int mapview_preload_map_tiles(rho_param* p, const char* callback);
 #define preload_map_tiles mapview_preload_map_tiles
 
 
@@ -1951,35 +1951,6 @@ SWIG_AsCharPtrAndSize(VALUE obj, char** cptr, size_t* psize, int *alloc)
 
 
 
-/*@SWIG:/usr/local/share/swig/2.0.4/ruby/rubyprimtypes.swg,19,%ruby_aux_method@*/
-SWIGINTERN VALUE SWIG_AUX_NUM2DBL(VALUE *args)
-{
-  VALUE obj = args[0];
-  VALUE type = TYPE(obj);
-  double *res = (double *)(args[1]);
-  *res = NUM2DBL(obj);
-  return obj;
-}
-/*@SWIG@*/
-
-SWIGINTERN int
-SWIG_AsVal_double (VALUE obj, double *val)
-{
-  VALUE type = TYPE(obj);
-  if ((type == T_FLOAT) || (type == T_FIXNUM) || (type == T_BIGNUM)) {
-    double v;
-    VALUE a[2];
-    a[0] = obj;
-    a[1] = (VALUE)(&v);
-    if (rb_rescue(RUBY_METHOD_FUNC(SWIG_AUX_NUM2DBL), (VALUE)a, RUBY_METHOD_FUNC(SWIG_ruby_failed), 0) != Qnil) {
-      if (val) *val = v;
-      return SWIG_OK;
-    }
-  }
-  return SWIG_TypeError;
-}
-
-
   #define SWIG_From_long   LONG2NUM 
 
 
@@ -2095,97 +2066,37 @@ fail:
 
 SWIGINTERN VALUE
 _wrap_preload_map_tiles(int argc, VALUE *argv, VALUE self) {
-  char *arg1 = (char *) 0 ;
+  rho_param *arg1 = (rho_param *) 0 ;
   char *arg2 = (char *) 0 ;
-  double arg3 ;
-  double arg4 ;
-  double arg5 ;
-  double arg6 ;
-  int arg7 ;
-  int arg8 ;
-  char *arg9 = (char *) 0 ;
-  int res1 ;
-  char *buf1 = 0 ;
-  int alloc1 = 0 ;
   int res2 ;
   char *buf2 = 0 ;
   int alloc2 = 0 ;
-  double val3 ;
-  int ecode3 = 0 ;
-  double val4 ;
-  int ecode4 = 0 ;
-  double val5 ;
-  int ecode5 = 0 ;
-  double val6 ;
-  int ecode6 = 0 ;
-  int val7 ;
-  int ecode7 = 0 ;
-  int val8 ;
-  int ecode8 = 0 ;
-  int res9 ;
-  char *buf9 = 0 ;
-  int alloc9 = 0 ;
   int result;
   VALUE vresult = Qnil;
   
-  if ((argc < 9) || (argc > 9)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 9)",argc); SWIG_fail;
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
   }
-  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","preload_map_tiles", 1, argv[0] ));
+  {
+    arg1 = rho_param_fromvalue(argv[0]);
   }
-  arg1 = (char *)(buf1);
   res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","preload_map_tiles", 2, argv[1] ));
   }
   arg2 = (char *)(buf2);
-  ecode3 = SWIG_AsVal_double(argv[2], &val3);
-  if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "double","preload_map_tiles", 3, argv[2] ));
-  } 
-  arg3 = (double)(val3);
-  ecode4 = SWIG_AsVal_double(argv[3], &val4);
-  if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), Ruby_Format_TypeError( "", "double","preload_map_tiles", 4, argv[3] ));
-  } 
-  arg4 = (double)(val4);
-  ecode5 = SWIG_AsVal_double(argv[4], &val5);
-  if (!SWIG_IsOK(ecode5)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode5), Ruby_Format_TypeError( "", "double","preload_map_tiles", 5, argv[4] ));
-  } 
-  arg5 = (double)(val5);
-  ecode6 = SWIG_AsVal_double(argv[5], &val6);
-  if (!SWIG_IsOK(ecode6)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode6), Ruby_Format_TypeError( "", "double","preload_map_tiles", 6, argv[5] ));
-  } 
-  arg6 = (double)(val6);
-  ecode7 = SWIG_AsVal_int(argv[6], &val7);
-  if (!SWIG_IsOK(ecode7)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode7), Ruby_Format_TypeError( "", "int","preload_map_tiles", 7, argv[6] ));
-  } 
-  arg7 = (int)(val7);
-  ecode8 = SWIG_AsVal_int(argv[7], &val8);
-  if (!SWIG_IsOK(ecode8)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode8), Ruby_Format_TypeError( "", "int","preload_map_tiles", 8, argv[7] ));
-  } 
-  arg8 = (int)(val8);
-  res9 = SWIG_AsCharPtrAndSize(argv[8], &buf9, NULL, &alloc9);
-  if (!SWIG_IsOK(res9)) {
-    SWIG_exception_fail(SWIG_ArgError(res9), Ruby_Format_TypeError( "", "char const *","preload_map_tiles", 9, argv[8] ));
-  }
-  arg9 = (char *)(buf9);
-  result = (int)preload_map_tiles((char const *)arg1,(char const *)arg2,arg3,arg4,arg5,arg6,arg7,arg8,(char const *)arg9);
+  result = (int)preload_map_tiles(arg1,(char const *)arg2);
   vresult = SWIG_From_int((int)(result));
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  {
+    rho_param_free(arg1);
+  }
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  if (alloc9 == SWIG_NEWOBJ) free((char*)buf9);
   return vresult;
 fail:
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  {
+    rho_param_free(arg1);
+  }
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  if (alloc9 == SWIG_NEWOBJ) free((char*)buf9);
   return Qnil;
 }
 

@@ -462,8 +462,63 @@ private:
 };
 
 
-int mapview_preload_map_tiles(const char* engine, const char* map_type, double top_latitude, double left_longitude, double bottom_latitude, double right_longitude, int min_zoom, int max_zoom, const char* callback)
+int mapview_preload_map_tiles(rho_param* p, const char* callback)
 {
+    if (p == NULL) {
+        return 0;
+    }
+    if (p->type != RHO_PARAM_HASH) {
+        RAWLOG_ERROR("preload_map_tiles: first params must be HASH!");
+        return 0;
+        
+    }
+    
+    char* engine = NULL;
+    char* map_type = NULL;
+    double top_latitude = 0;
+    double left_longitude = 0;
+    double bottom_latitude = 0;
+    double right_longitude = 0;
+    int min_zoom = 0;
+    int max_zoom = 0;
+    
+
+    for (int j = 0, limm = p->v.hash->size; j < limm; ++j) {
+        char *name = p->v.hash->name[j];
+        rho_param *value = p->v.hash->value[j];
+        if (!name || !value)
+            continue;
+        if (value->type != RHO_PARAM_STRING)
+            continue;
+        char *v = value->v.string;
+        
+        if (strcasecmp(name, "engine") == 0) {
+            engine = v;
+        }
+        else if (strcasecmp(name, "map_type") == 0) {
+            map_type = v;
+        }
+        else if (strcasecmp(name, "top_latitude") == 0) {
+            top_latitude = strtod(v, NULL);
+        }
+        else if (strcasecmp(name, "left_longitude") == 0) {
+            left_longitude = strtod(v, NULL);
+        }
+        else if (strcasecmp(name, "bottom_latitude") == 0) {
+            bottom_latitude = strtod(v, NULL);
+        }
+        else if (strcasecmp(name, "right_longitude") == 0) {
+            right_longitude = strtod(v, NULL);
+        }
+        else if (strcasecmp(name, "min_zoom") == 0) {
+            min_zoom = (int)strtod(v, NULL);
+        }
+        else if (strcasecmp(name, "max_zoom") == 0) {
+            max_zoom = (int)strtod(v, NULL);
+        }
+    }
+    
+    
     rhomap::EmptyDrawingDevice empty_device;
     std::string providerId = engine;
     std::transform(providerId.begin(), providerId.end(), providerId.begin(), &::tolower);    
