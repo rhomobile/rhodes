@@ -77,7 +77,8 @@ end
         if cur_dir && cur_dir.length()>0
             File.join(cur_dir, relative_path)
         else
-            "/" + relative_path
+            relative_path.start_with?('/') ? relative_path : "/" + relative_path
+            
         end    
       end
       

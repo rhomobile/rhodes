@@ -94,5 +94,12 @@ public class Camera extends RubyBasic {
 				return Camera.choose_picture(arg0);
 			}
 		});		
+		klass.getSingletonClass().defineMethod("get_camera_info", new RubyOneArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) {
+                //TODO: get_camera_info
+                return RubyConstant.QNIL;
+			}
+		});		
+
 	}
 }
