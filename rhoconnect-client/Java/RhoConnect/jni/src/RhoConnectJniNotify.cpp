@@ -24,6 +24,7 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
+#include "rhodes/JNIRhodes.h"
 #include "sync/SyncThread.h"
 #include "RhoConnectClient/RhoConnectClient.h"
 #include "logging/RhoLog.h"
