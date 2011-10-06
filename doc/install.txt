@@ -1,7 +1,8 @@
 # Install Rhodes
 
-## Instant Rhodes (Windows)
-The easiest way to install Rhodes on Windows is to use the [Instant Rhodes installer](http://rhomobile.com/instant-rhodes). This will install Ruby, Rubygems, Redis, Rhodes and Rhosync gems and dependencies.
+## Windows
+
+If you're running Windows, download the latest [RhoStudio for Windows](http://rhomobile.com/rhostudio-windows). This installs the [Ruby stack](http://www.ruby-lang.org/en/), [Redis](http://redis.io/), [RhoConnect](/rhoconnect/introduction) and [Rhodes](/rhodes/introduction).
 
 Once the installer has completed, and you have installed the Java Development Kit, you can skip to the [Setup Rhodes section](#setup-rhodes).
 

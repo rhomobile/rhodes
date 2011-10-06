@@ -13,7 +13,7 @@ You should check to see that the required software in installed on your computer
 
 If you planning to modify or [extend](extensions) Rhodes, you will need the Rhodes source code. It is distributed under MIT license. You don't need it if you are not planning to modify/extend Rhodes.
 
-Rhodes source code is available on github.com. You will need Git to get it. If you used [Instant Rhodes](install#install-on-windows) you probably already have Git installed on your system. Otherwise, load it from [here](http://git-scm.com).
+Rhodes source code is available on github.com. You will need Git to get it. If you used [RhoStudio for Windows](http://rhomobile.com/rhostudio-windows) you probably already have Git installed on your system. Otherwise, load it from [here](http://git-scm.com).
 
 To clone Rhodes to your local computer, execute git clone from the command line:
 	
