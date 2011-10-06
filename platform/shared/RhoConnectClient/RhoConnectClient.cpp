@@ -413,6 +413,45 @@ unsigned long rho_connectclient_find_first(const char* szModel, unsigned long ha
     return rhom_find( szModel, hash, 1 );
 }
 
+unsigned long rho_connectclient_findbysql(const char* szModel, const char* szSql, unsigned long arParams )
+{
+    String src_name = szModel;
+
+    IDBResult  res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name);
+    if ( res.isEnd())
+    {
+        //TODO: report error - unknown source
+        return 0;
+    }
+
+    int nSrcID = res.getIntByIdx(0);
+    String db_partition = res.getStringByIdx(1);
+    bool isSchemaSrc = res.getStringByIdx(2).length() > 0;
+    db::CDBAdapter& db = db::CDBAdapter::getDB(db_partition.c_str());
+
+    unsigned long items = rho_connectclient_strhasharray_create();
+
+    IDBResult res1 = !arParams ? db.executeSQL(szSql) : db.executeSQLEx( szSql, *((Vector<String>*) arParams) );
+    if ( res1.isEnd() )
+        return items;
+
+    for ( ; !res1.isEnd(); res1.next() )
+    {
+        unsigned long item = rho_connectclient_hash_create();
+
+        for (int i = 0; i < res1.getColCount(); i++ )
+        {
+            if ( !res1.isNullByIdx(i))
+                rho_connectclient_hash_put(item, res1.getColName(i).c_str(), res1.getStringByIdx(i).c_str() );
+        }
+
+        rho_connectclient_strhasharray_add(items, item ); 
+    }
+
+    return items;
+
+}
+
 void rho_connectclient_start_bulkupdate(const char* szModel)
 {
     String src_name = szModel;

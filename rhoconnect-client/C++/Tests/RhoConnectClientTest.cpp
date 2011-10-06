@@ -94,6 +94,26 @@ extern "C" int runSyncClientTests()
 	return 0;
 }
 
+TEST(SyncClient, shouldFindProductBySql) 
+{
+    unsigned long items = rho_connectclient_findbysql(g_szProduct, "SELECT * FROM sources", 0 );
+    EXPECT_NE( items, 0 );
+    EXPECT_EQ(rho_connectclient_strhasharray_size(items), 2 );
+    rho_connectclient_strhasharray_delete(items);
+
+
+    unsigned long params = rho_connectclient_strarray_create();
+    rho_connectclient_strarray_add(params, g_szProduct);
+
+    unsigned long items2 = rho_connectclient_findbysql(g_szProduct, "SELECT * FROM sources WHERE name=?", params );
+    EXPECT_NE( items2, 0 );
+    EXPECT_EQ(rho_connectclient_strhasharray_size(items2), 1 );
+
+    rho_connectclient_strarray_delete(params);
+    rho_connectclient_strhasharray_delete(items2);
+
+}
+
 TEST(SyncClient, ResetAndLogout) 
 {
     rho_sync_set_syncserver("http://rhodes-store-server.heroku.com/application");
