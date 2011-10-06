@@ -31,6 +31,8 @@ require 'rho/rhomsg'
 require 'rho/rhotabbar'
 require 'rho/rhotoolbar'
 
+::System::set_locale(nil, nil)
+
 module Rho
   class RhoApplication
   	attr_accessor :default_menu
@@ -45,7 +47,6 @@ module Rho
     	
     def initialize
       #LocalizationSimplified.requre_loc(Rho::RhoFSConnector::get_app_path('app') + 'lang/lang_',true)
-      ::System::set_locale(nil, nil)
       
       unless @rhom
         @rhom = Rhom::Rhom.new
