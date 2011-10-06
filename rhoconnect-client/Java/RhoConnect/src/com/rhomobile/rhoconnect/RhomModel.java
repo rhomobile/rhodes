@@ -48,7 +48,7 @@ public class RhomModel {
     private int mSyncPriority;
 
     private String mPartition;
-    private Map<String, String> mBlobAttribs = new TreeMap<String, String>();
+    private Map<String, Boolean> mBlobAttribs = new TreeMap<String, Boolean>();
     private Map<String, String> mAssociations = new TreeMap<String, String>();
 
     private native void init();
@@ -77,20 +77,20 @@ public class RhomModel {
     public void setSyncPriority(int prio) { mSyncPriority = prio; }
     public String getPartition() { return mPartition; }
     public void setPartition(String part) { mPartition = part; }
-    public Map<String, String> getBlobAttribs() { return mBlobAttribs; }
+    public Map<String, Boolean> getBlobAttribs() { return mBlobAttribs; }
     public String getBlobAttribsAsString()
     {
-        Set<Map.Entry<String, String> > entries = mBlobAttribs.entrySet();
-        Iterator<Map.Entry<String, String> > entryIt = entries.iterator();
+        Set<Map.Entry<String, Boolean> > entries = mBlobAttribs.entrySet();
+        Iterator<Map.Entry<String, Boolean> > entryIt = entries.iterator();
         StringBuilder blobAttribs = new StringBuilder();
     
         while(entryIt.hasNext()) {
-            Map.Entry<String, String> entry = entryIt.next();
+            Map.Entry<String, Boolean> entry = entryIt.next();
     
             if(blobAttribs.length() > 0)
                 blobAttribs.append(',');
 
-            blobAttribs.append(entry.getKey()).append(',').append(entry.getValue());
+            blobAttribs.append(entry.getKey()).append(',').append(entry.getValue()?'1':'0');
         }
         return blobAttribs.toString();
     }
