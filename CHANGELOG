@@ -4,6 +4,7 @@
 * Support native JQueryMobile css-styles
 * Support latest Android NDK
 * Support Offline map on Android
+* RhoSimulator for OSX Lion
 
 ## 3.1
 * Symbian support(Beta)
