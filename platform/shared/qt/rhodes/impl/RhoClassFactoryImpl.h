@@ -67,7 +67,11 @@ public:
 
     net::ISSL* createSSLEngine()
     {
+#ifdef OS_WINDOWS
+        return NULL;
+#else
         return new net::SSLImpl();
+#endif
     }
 
     IRhoCrypt* createRhoCrypt()
