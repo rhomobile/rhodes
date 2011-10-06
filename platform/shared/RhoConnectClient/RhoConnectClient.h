@@ -106,6 +106,8 @@ void rho_connectclient_create_object(const char* szModel, unsigned long hash);
 unsigned long rho_connectclient_find(const char* szModel,const char* szObject );
 unsigned long rho_connectclient_find_first(const char* szModel, unsigned long hashCond );
 unsigned long rho_connectclient_find_all(const char* szModel, unsigned long hashCond );
+unsigned long rho_connectclient_findbysql(const char* szModel, const char* szSql, unsigned long arParams );
+
 void rho_connectclient_save( const char* szModel, unsigned long hash );
 void rho_connectclient_itemdestroy( const char* szModel, unsigned long hash );
 
