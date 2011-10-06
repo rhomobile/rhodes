@@ -28,6 +28,23 @@
 		F503FF0C122C77410052508A /* RhoConnectEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = F503FF0B122C77410052508A /* RhoConnectEngine.m */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		65358CB4143D98E800151348 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5C84C0F2122D0DA100B0873C /* RhoConnectClient.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC07E0554694100DB518D;
+			remoteInfo = SyncClient;
+		};
+		65358CB7143D998100151348 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5C84C0F2122D0DA100B0873C /* RhoConnectClient.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
+			remoteInfo = SyncClient;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* storeAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = storeAppDelegate.h; sourceTree = "<group>"; };
@@ -48,7 +65,7 @@
 		5C84C12D122D0FF600B0873C /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		5C84C15B122D105400B0873C /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		5C84C15F122D107900B0873C /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = ../../../../platform/shared/db/res/db; sourceTree = SOURCE_ROOT; };
-		5C95B3181233EAD8008E7E7E /* libRhoConnectClient.a */ = {isa = PBXFileReference; name = libRhoConnectClient.a; path = "/Users/evgeny/Projects/rhodes/rhosync-client/build/Debug-iphonesimulator/libRhoConnectClient.a"; sourceTree = "<absolute>"; };
+		5C95B3181233EAD8008E7E7E /* libRhoConnectClient.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRhoConnectClient.a; path = "/Users/evgeny/Projects/rhodes/rhosync-client/build/Debug-iphonesimulator/libRhoConnectClient.a"; sourceTree = "<absolute>"; };
 		8D1107310486CEB800E47090 /* store-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "store-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		D343E07D125E3A95005588D0 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
 		F503FEA1122C67740052508A /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
@@ -156,6 +173,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		65358CB1143D98E800151348 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				65358CB5143D98E800151348 /* libRhoConnectClient.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -170,6 +195,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				65358CB8143D998100151348 /* PBXTargetDependency */,
 			);
 			name = store;
 			productName = store;
@@ -194,12 +220,28 @@
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 65358CB1143D98E800151348 /* Products */;
+					ProjectRef = 5C84C0F2122D0DA100B0873C /* RhoConnectClient.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				1D6058900D05DD3D006BFB54 /* store */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		65358CB5143D98E800151348 /* libRhoConnectClient.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRhoConnectClient.a;
+			remoteRef = 65358CB4143D98E800151348 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		1D60588D0D05DD3D006BFB54 /* Resources */ = {
@@ -232,6 +274,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		65358CB8143D998100151348 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SyncClient;
+			targetProxy = 65358CB7143D998100151348 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		1D6058940D05DD3E006BFB54 /* Debug */ = {

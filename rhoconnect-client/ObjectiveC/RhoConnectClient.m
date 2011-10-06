@@ -51,11 +51,13 @@ int callback_impl(const char* szNotify, void* data)
 	
 	CCallbackData* callbackObj = data;
 	
-	[ callbackObj.targetObject performSelector:callbackObj.targetMethod onThread:callbackObj.targetThread withObject:notify waitUntilDone:FALSE];
+    if ( callbackObj.targetThread != [NSThread currentThread] )
+        [ callbackObj.targetObject performSelector:callbackObj.targetMethod onThread:callbackObj.targetThread withObject:notify waitUntilDone:TRUE];
+    else
+        [ callbackObj.targetObject performSelector:callbackObj.targetMethod withObject:notify];
 
-	//[notify release];
-	//[callbackObj release];
-	
+
+	[callbackObj autorelease];
     [notify autorelease];
 	return 0;
 }
@@ -70,13 +72,11 @@ int callback_object_impl(const char* szNotify, void* data)
 	CCallbackData* callbackObj = data;
 	
     if ( callbackObj.targetThread != [NSThread currentThread] )
-        [ callbackObj.targetObject performSelector:callbackObj.targetMethod onThread:callbackObj.targetThread withObject:notify waitUntilDone:FALSE];
+        [ callbackObj.targetObject performSelector:callbackObj.targetMethod onThread:callbackObj.targetThread withObject:notify waitUntilDone:TRUE];
     else
         [ callbackObj.targetObject performSelector:callbackObj.targetMethod withObject:notify];
     
-	//[notify release];
-	//[callbackObj release];
-	
+	[callbackObj autorelease];
     [notify autorelease];
 	return 0;
 }
@@ -224,20 +224,20 @@ void rho_free_callbackdata(void* pData)
 {
 	rho_sync_login_c( [user cStringUsingEncoding:[NSString defaultCStringEncoding]],
 					[pwd cStringUsingEncoding:[NSString defaultCStringEncoding]], 
-					 callback_impl, [[[CCallbackData alloc] init: callback target: target thread:[NSThread currentThread]] autorelease] 
+					 callback_impl, [[CCallbackData alloc] init: callback target: target thread:[NSThread currentThread]] 
 				   );
 }
 
 + (void) setNotification: (SEL) callback target:(id)target
 {
 	rho_sync_set_notification_c(-1, callback_impl, 
-      [[[CCallbackData alloc] init: callback target: target thread:[NSThread currentThread]] autorelease] );
+      [[CCallbackData alloc] init: callback target: target thread:[NSThread currentThread]] );
 }
 
 - (void) setNotification: (SEL) callback target:(id)target
 {
 	rho_sync_set_notification_c(-1, callback_impl, 
-	  [[[CCallbackData alloc] init: callback target: target thread:[NSThread currentThread]] autorelease] );
+	  [[CCallbackData alloc] init: callback target: target thread:[NSThread currentThread]] );
 }
 
 - (void) clearNotification
@@ -248,7 +248,7 @@ void rho_free_callbackdata(void* pData)
 - (void) setObjectNotification: (SEL) callback target:(id)target
 {
 	rho_sync_setobjectnotify_url_c( callback_object_impl, 
-                                [[[ CCallbackData alloc] init: callback target: target thread:[NSThread currentThread]] autorelease] );
+                                [[ CCallbackData alloc] init: callback target: target thread:[NSThread currentThread]] );
 }
 
 - (void) clearObjectNotification
