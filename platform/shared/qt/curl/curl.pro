@@ -12,12 +12,13 @@ macx {
   DESTDIR = ../../../osx/bin/curl
   OBJECTS_DIR = ../../../osx/bin/curl/tmp
   DEFINES += USE_RHOSSL
+  HEADERS += ../../curl/lib/config-mac.h
 SOURCES += ../../curl/lib/http_ntlm.c\
 ../../curl/lib/qssl.c\
 ../../curl/lib/ssluse.c
 }
 
-unix {
+unix:!macx {
   DESTDIR = ../../../linux/bin/curl
   OBJECTS_DIR = ../../../linux/bin/curl/tmp
   DEFINES += HAVE_CONFIG_H USE_RHOSSL
