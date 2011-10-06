@@ -28,6 +28,10 @@
  * This header should only be needed to get included by sslgen.c and ssluse.c
  */
 
+#ifdef USE_RHOSSL
+#include "rhossl.h"
+#else
+
 #include "urldata.h"
 CURLcode Curl_ossl_connect(struct connectdata *conn, int sockindex);
 CURLcode Curl_ossl_connect_nonblocking(struct connectdata *conn,
@@ -69,7 +73,9 @@ ssize_t Curl_ossl_recv(struct connectdata *conn, /* connection data */
 
 size_t Curl_ossl_version(char *buffer, size_t size);
 int Curl_ossl_check_cxn(struct connectdata *cxn);
+#endif // USE_RHOSSL
 int Curl_ossl_seed(struct SessionHandle *data);
+#ifndef USE_RHOSSL
 
 int Curl_ossl_shutdown(struct connectdata *conn, int sockindex);
 bool Curl_ossl_data_pending(const struct connectdata *conn,
@@ -93,5 +99,6 @@ bool Curl_ossl_data_pending(const struct connectdata *conn,
 #define curlssl_check_cxn Curl_ossl_check_cxn
 #define curlssl_data_pending(x,y) Curl_ossl_data_pending(x,y)
 
+#endif /* USE_RHOSSL */
 #endif /* USE_SSLEAY */
 #endif /* __SSLUSE_H */
