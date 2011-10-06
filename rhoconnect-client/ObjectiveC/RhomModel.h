@@ -55,6 +55,8 @@
 - (NSMutableDictionary *) find: (NSString*)object_id;
 - (NSMutableDictionary *) find_first: (NSDictionary *)cond;
 - (NSMutableArray *) find_all: (NSDictionary *)cond;
+- (NSMutableArray *) find_bysql: (NSString*)sql args: (NSArray*) sql_args;
+
 - (void) save: (NSDictionary *)data;
 - (void) destroy: (NSDictionary *)data;
 

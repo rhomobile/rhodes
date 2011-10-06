@@ -179,6 +179,41 @@ int enum_func(const char* szKey, const char* szValue, void* pThis)
 	return [arRes autorelease];
 }
 
+- (NSMutableArray *) find_bysql: (NSString*)sql  args: (NSArray*) sql_args
+{
+    unsigned long ar_params = 0;
+    if (sql_args != NULL && [sql_args count] > 0 )
+    {
+        ar_params = rho_connectclient_strarray_create();
+        for (NSString* param in sql_args)
+        {
+            rho_connectclient_strarray_add(ar_params, [param cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+        }
+    }
+    
+    unsigned long items = rho_connectclient_findbysql(
+                                                [name cStringUsingEncoding:[NSString defaultCStringEncoding]],
+                                                [sql cStringUsingEncoding:[NSString defaultCStringEncoding]],
+                                                ar_params );
+	
+	if ( items == 0 )
+		return NULL;
+    
+	int nSize = rho_connectclient_strhasharray_size(items);
+	NSMutableArray* arRes = [[NSMutableArray alloc] initWithCapacity:nSize];
+    for ( int i = 0; i < nSize; i++ )
+    {
+		NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
+		rho_connectclient_hash_enumerate(rho_connectclient_strhasharray_get(items, i), &enum_func, data );
+        
+		[arRes addObject: data];
+        [data release];
+    }
+	
+	return [arRes autorelease];
+
+}
+
 - (void) save: (NSDictionary *)data
 {
     unsigned long item = rho_connectclient_hash_create();

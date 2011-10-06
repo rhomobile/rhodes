@@ -32,6 +32,26 @@ int shouldNotSyncWithoutLogin()
 	return 1;
 }
 
+int shouldFindBySql()
+{
+	NSMutableArray* items = [product find_bysql:@"SELECT * FROM sources" args: nil];	
+	if ( !items )
+		return 0;
+    
+    if ( [items count] != 4 )
+        return 0;
+    
+    NSArray* params = [NSArray arrayWithObjects: product.name, nil];
+	NSMutableArray* items2 = [product find_bysql:@"SELECT * FROM sources WHERE name=?" args: params];	
+	if ( !items2 )
+		return 0;
+    
+    if ( [items2 count] != 1 )
+        return 0;
+    
+    return 1;
+}
+
 int shouldLogin()
 {
 	RhoConnectNotify* res = [sclient loginWithUser:@"" pwd:@""];
@@ -347,6 +367,9 @@ int runObjCClientTest()
             @throw e;
         
         sclient.sync_server = @"http://rhodes-store-server.heroku.com/application";
+
+        if ( !shouldFindBySql() )
+            @throw e;
         
         if ( !shouldNotSyncWithoutLogin() )
             @throw e;
