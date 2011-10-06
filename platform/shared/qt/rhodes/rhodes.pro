@@ -16,6 +16,8 @@ macx {
   UI_DIR = ../../../osx/bin/RhoSimulator/generated_files
   OBJECTS_DIR = ../../../osx/bin/RhoSimulator/tmp
   RCC_DIR =  ../../../osx/bin/RhoSimulator/resources
+  HEADERS += impl/SSLImpl.h
+  SOURCES += impl/SSLImpl.cpp
   LIBS += -lcrypto -lssl -lz -lldap
   LIBS += -L../../../osx/bin/curl -lcurl
   LIBS += -L../../../osx/bin/rubylib -lrubylib

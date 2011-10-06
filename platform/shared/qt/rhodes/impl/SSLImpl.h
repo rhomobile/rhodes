@@ -26,56 +26,24 @@
 
 #pragma once
 
-#include "common/RhoPort.h"
-#include "common/RhoDefs.h"
-#include "common/IRhoClassFactory.h"
-#ifdef OS_WINDOWS
-#ifdef RHO_SYMBIAN
-#include "rho/common/RhoThreadImpl.h"
-#else // RHO_SYMBIAN
-#include "RhoThreadImpl.h"
-#endif // RHO_SYMBIAN
-#include "rho/net/NetRequestImpl.h"
-#define CNETREQUESTIMPL new net::CNetRequestImpl()
-#define CRHOTHREADIMPL new CRhoThreadImpl()
-#define CRHOCRYPTIMPL NULL
-#else
-#include "net/CURLNetRequest.h"
-#include "common/PosixThreadImpl.h"
-#include "SSLImpl.h"
-#define CNETREQUESTIMPL new net::CURLNetRequest()
-#define CRHOTHREADIMPL new CPosixThreadImpl()
-#define CRHOCRYPTIMPL NULL
-#endif
-// #include "RhoCryptImpl.h"
+#include "net/ssl.h"
 
-namespace rho {
-namespace common {
-		
-class CRhoClassFactory : public common::IRhoClassFactory
+namespace rho
+{
+namespace net
+{
+
+class SSLImpl : public ISSL
 {
 public:
-    net::INetRequestImpl* createNetRequestImpl()
-    {
-        return CNETREQUESTIMPL;
-    }
-
-    common::IRhoThreadImpl* createThreadImpl()
-    {
-        return CRHOTHREADIMPL;
-    }
-
-    net::ISSL* createSSLEngine()
-    {
-        return new net::SSLImpl();
-    }
-
-    IRhoCrypt* createRhoCrypt()
-    {
-        //TODO: createRhoCrypt
-        return CRHOCRYPTIMPL;
-    }
+    void *createStorage();
+    void freeStorage(void *ptr);
+    
+    CURLcode connect(int sockfd, int nonblocking, int *done, int ssl_verify_peer, void *storage);
+    void shutdown(void *storage);
+    ssize_t send(const void *mem, size_t len, void *storage);
+    ssize_t recv(char *buf, size_t size, int *wouldblock, void *storage);
 };
 
-}
-}
+} // namespace net
+} // namespace rho

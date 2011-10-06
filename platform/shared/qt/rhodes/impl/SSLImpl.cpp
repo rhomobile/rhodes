@@ -24,58 +24,46 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
-#pragma once
-
-#include "common/RhoPort.h"
-#include "common/RhoDefs.h"
-#include "common/IRhoClassFactory.h"
-#ifdef OS_WINDOWS
-#ifdef RHO_SYMBIAN
-#include "rho/common/RhoThreadImpl.h"
-#else // RHO_SYMBIAN
-#include "RhoThreadImpl.h"
-#endif // RHO_SYMBIAN
-#include "rho/net/NetRequestImpl.h"
-#define CNETREQUESTIMPL new net::CNetRequestImpl()
-#define CRHOTHREADIMPL new CRhoThreadImpl()
-#define CRHOCRYPTIMPL NULL
-#else
-#include "net/CURLNetRequest.h"
-#include "common/PosixThreadImpl.h"
 #include "SSLImpl.h"
-#define CNETREQUESTIMPL new net::CURLNetRequest()
-#define CRHOTHREADIMPL new CPosixThreadImpl()
-#define CRHOCRYPTIMPL NULL
-#endif
-// #include "RhoCryptImpl.h"
 
-namespace rho {
-namespace common {
-		
-class CRhoClassFactory : public common::IRhoClassFactory
+#import "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "SSL"
+
+namespace rho
 {
-public:
-    net::INetRequestImpl* createNetRequestImpl()
-    {
-        return CNETREQUESTIMPL;
-    }
+namespace net
+{
 
-    common::IRhoThreadImpl* createThreadImpl()
-    {
-        return CRHOTHREADIMPL;
-    }
-
-    net::ISSL* createSSLEngine()
-    {
-        return new net::SSLImpl();
-    }
-
-    IRhoCrypt* createRhoCrypt()
-    {
-        //TODO: createRhoCrypt
-        return CRHOCRYPTIMPL;
-    }
-};
-
+void * SSLImpl::createStorage()
+{
+    return NULL;
 }
+
+void SSLImpl::freeStorage(void *ptr)
+{
+    if (ptr)
+        free(ptr);
 }
+    
+CURLcode SSLImpl::connect(int sockfd, int nonblocking, int *done, int ssl_verify_peer, void *storage)
+{
+    return CURLE_OK;
+}
+
+void SSLImpl::shutdown(void *storage)
+{
+}
+
+ssize_t SSLImpl::send(const void *mem, size_t len, void *storage)
+{
+    return 0;
+}
+
+ssize_t SSLImpl::recv(char *buf, size_t size, int *wouldblock, void *storage)
+{
+    return -1;
+}
+
+} // namespace net
+} // namespace rho
