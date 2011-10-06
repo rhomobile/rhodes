@@ -32,8 +32,11 @@ SOURCES += \
     ../../shared/logging/RhoLogSink.cpp \
     ../../shared/logging/RhoLogConf.cpp \
     ../../shared/logging/RhoLog.cpp \
+    ../../shared/common/map/BaseMapEngine.cpp \
     ../../shared/common/map/MapEngine.cpp \
+    ../../shared/common/map/OSMMapEngine.cpp \
     ../../shared/common/map/GoogleMapEngine.cpp \
+    ../../shared/common/map/GeocodingMapEngine.cpp \
     ../../shared/common/map/ESRIMapEngine.cpp \
     ../../shared/net/URI.cpp \
     ../../shared/net/RawSocket.cpp \
@@ -79,8 +82,11 @@ HEADERS += \
     ../../shared/logging/RhoLogCat.h \
     ../../shared/logging/RhoLog.h \
     ../../shared/logging/RhoATLTrace.h \
+    ../../shared/common/map/BaseMapEngine.h \
     ../../shared/common/map/MapEngine.h \
+    ../../shared/common/map/OSMMapEngine.h \
     ../../shared/common/map/GoogleMapEngine.h \
+    ../../shared/common/map/GeocodingMapEngine.h \
     ../../shared/common/map/ESRIMapEngine.h \
     ../../shared/net/URI.h \
     ../../shared/net/RawSocket.h \
