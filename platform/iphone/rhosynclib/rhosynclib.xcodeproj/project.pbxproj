@@ -26,8 +26,8 @@
 		46E9214C0E9BF40A00F14AC8 /* printbuf.c in Sources */ = {isa = PBXBuildFile; fileRef = 46E9213A0E9BF40A00F14AC8 /* printbuf.c */; };
 		46E9214D0E9BF40A00F14AC8 /* printbuf.h in Headers */ = {isa = PBXBuildFile; fileRef = 46E9213B0E9BF40A00F14AC8 /* printbuf.h */; };
 		5C329221112C748F00FD3F13 /* RJSONTokener.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C329220112C748F00FD3F13 /* RJSONTokener.c */; };
-		5C5335AC0FC2F3AB00F268F0 /* syncthread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5335AA0FC2F3AB00F268F0 /* syncthread.cpp */; };
-		5C5335AD0FC2F3AB00F268F0 /* syncthread.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5335AB0FC2F3AB00F268F0 /* syncthread.h */; };
+		5C5335AC0FC2F3AB00F268F0 /* SyncThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5335AA0FC2F3AB00F268F0 /* SyncThread.cpp */; };
+		5C5335AD0FC2F3AB00F268F0 /* SyncThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5335AB0FC2F3AB00F268F0 /* SyncThread.h */; };
 		5C74058A1064AA4900163569 /* DBAttrManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C7405881064AA4900163569 /* DBAttrManager.cpp */; };
 		5C74058B1064AA4900163569 /* DBAttrManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C7405891064AA4900163569 /* DBAttrManager.h */; };
 		5C7405F2106CF7F400163569 /* SyncNotify.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C7405F0106CF7F400163569 /* SyncNotify.cpp */; };
@@ -69,8 +69,8 @@
 		46E9213A0E9BF40A00F14AC8 /* printbuf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = printbuf.c; path = ../../shared/json/printbuf.c; sourceTree = SOURCE_ROOT; };
 		46E9213B0E9BF40A00F14AC8 /* printbuf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = printbuf.h; path = ../../shared/json/printbuf.h; sourceTree = SOURCE_ROOT; };
 		5C329220112C748F00FD3F13 /* RJSONTokener.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = RJSONTokener.c; sourceTree = "<group>"; };
-		5C5335AA0FC2F3AB00F268F0 /* syncthread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = syncthread.cpp; path = ../../shared/sync/syncthread.cpp; sourceTree = SOURCE_ROOT; };
-		5C5335AB0FC2F3AB00F268F0 /* syncthread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = syncthread.h; path = ../../shared/sync/syncthread.h; sourceTree = SOURCE_ROOT; };
+		5C5335AA0FC2F3AB00F268F0 /* SyncThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SyncThread.cpp; path = ../../shared/sync/SyncThread.cpp; sourceTree = SOURCE_ROOT; };
+		5C5335AB0FC2F3AB00F268F0 /* SyncThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SyncThread.h; path = ../../shared/sync/SyncThread.h; sourceTree = SOURCE_ROOT; };
 		5C7405881064AA4900163569 /* DBAttrManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DBAttrManager.cpp; path = ../../shared/db/DBAttrManager.cpp; sourceTree = SOURCE_ROOT; };
 		5C7405891064AA4900163569 /* DBAttrManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DBAttrManager.h; path = ../../shared/db/DBAttrManager.h; sourceTree = SOURCE_ROOT; };
 		5C7405F0106CF7F400163569 /* SyncNotify.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SyncNotify.cpp; path = ../../shared/sync/SyncNotify.cpp; sourceTree = SOURCE_ROOT; };
@@ -168,8 +168,8 @@
 				5C7405F1106CF7F400163569 /* SyncNotify.h */,
 				5CE294091009D8B7009A75F6 /* ClientRegister.cpp */,
 				5CE2940A1009D8B7009A75F6 /* ClientRegister.h */,
-				5C5335AA0FC2F3AB00F268F0 /* syncthread.cpp */,
-				5C5335AB0FC2F3AB00F268F0 /* syncthread.h */,
+				5C5335AA0FC2F3AB00F268F0 /* SyncThread.cpp */,
+				5C5335AB0FC2F3AB00F268F0 /* SyncThread.h */,
 				5C9817260FBC4F41002597A5 /* SyncEngine.cpp */,
 				5C9817270FBC4F41002597A5 /* SyncEngine.h */,
 				5C9817280FBC4F41002597A5 /* SyncSource.cpp */,
@@ -221,7 +221,7 @@
 				5C98172D0FBC4F41002597A5 /* SyncSource.h in Headers */,
 				5C9817340FBC4F70002597A5 /* DBAdapter.h in Headers */,
 				5C9817360FBC4F70002597A5 /* DBResult.h in Headers */,
-				5C5335AD0FC2F3AB00F268F0 /* syncthread.h in Headers */,
+				5C5335AD0FC2F3AB00F268F0 /* SyncThread.h in Headers */,
 				5CE2940C1009D8B7009A75F6 /* ClientRegister.h in Headers */,
 				5C74058B1064AA4900163569 /* DBAttrManager.h in Headers */,
 				5C7405F3106CF7F400163569 /* SyncNotify.h in Headers */,
@@ -286,7 +286,7 @@
 				5C98172C0FBC4F41002597A5 /* SyncSource.cpp in Sources */,
 				5C9817330FBC4F70002597A5 /* DBAdapter.cpp in Sources */,
 				5C9817350FBC4F70002597A5 /* DBResult.cpp in Sources */,
-				5C5335AC0FC2F3AB00F268F0 /* syncthread.cpp in Sources */,
+				5C5335AC0FC2F3AB00F268F0 /* SyncThread.cpp in Sources */,
 				5CE2940B1009D8B7009A75F6 /* ClientRegister.cpp in Sources */,
 				5C74058A1064AA4900163569 /* DBAttrManager.cpp in Sources */,
 				5C7405F2106CF7F400163569 /* SyncNotify.cpp in Sources */,

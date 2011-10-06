@@ -30,7 +30,7 @@
 #import "ParamsWrapper.h"
 
 #include "sync/ClientRegister.h"
-#include "sync/syncthread.h"
+#include "sync/SyncThread.h"
 #include "logging/RhoLogConf.h"
 #include "logging/RhoLog.h"
 #include "common/RhoConf.h"
