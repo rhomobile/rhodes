@@ -22,8 +22,8 @@ int snprintf( char *buffer, int buff_size, const char *format, ... ){
 
 #ifdef _WIN32_WCE
 
-char* strdup (const char *src) {
-	return 0;
-}
+//char* strdup (const char *src) {
+//	return 0;
+//}
 
 #endif

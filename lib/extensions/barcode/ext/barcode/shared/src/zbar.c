@@ -17,6 +17,13 @@ void rho_barcode_take_barcode(const char* callback) {
 }
 
 
+#define zbar_fourcc(a, b, c, d)                 \
+        ((unsigned long)(a) |                   \
+         ((unsigned long)(b) << 8) |            \
+         ((unsigned long)(c) << 16) |           \
+         ((unsigned long)(d) << 24))
+
+
 const char* rho_barcode_barcode_recognize(const char* filename) {
   void* img_buf = 0;
   int img_width;
