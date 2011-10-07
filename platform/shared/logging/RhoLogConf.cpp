@@ -258,7 +258,7 @@ void rho_logconf_Init(const char* szRootPath, const char* szLogPort){
 
     LOGCONF().setLogPrefix(true);
 
-    rho::String logPath = oLogPath.makeFullPath("RhoLog.txt");
+    rho::String logPath = oLogPath.makeFullPath("rholog.txt");
     LOGCONF().setLogToFile(true);
     LOGCONF().setLogFilePath( logPath.c_str() );
     LOGCONF().setMaxLogFileSize(1024*50);
