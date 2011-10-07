@@ -172,7 +172,7 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 			camera = Camera.open();
 		}
 		catch (Exception e) {
-			Logger.E(TAG, e.getMessage());
+			Logger.E(TAG, e);
 			finish();
 		}
 	}

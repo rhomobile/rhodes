@@ -62,7 +62,6 @@ public class ImageCaptureCallback implements PictureCallback {
 
 		} catch (Exception e) {
 			Logger.E(TAG, e);
-			e.printStackTrace();
 		}
 	}
 	
