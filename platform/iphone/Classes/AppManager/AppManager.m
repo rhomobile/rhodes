@@ -210,9 +210,9 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 
 	NSString *filePathNew = [bundleRoot stringByAppendingPathComponent:@"name"];
 	NSString *filePathOld = [rhoRoot stringByAppendingPathComponent:@"name"];
-#ifndef RHO_DONT_COPY_ON_START
+//#ifndef RHO_DONT_COPY_ON_START
     BOOL hasOldName = [fileManager fileExistsAtPath:filePathOld];
-#endif
+//#endif
     BOOL nameChanged = ![self isContentsEqual:fileManager first:filePathNew second:filePathOld];
 
     BOOL contentChanged;
@@ -260,7 +260,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
         [fileManager removeItemAtPath:dst error:&error];
         [fileManager createSymbolicLinkAtPath:dst withDestinationPath:src error:&error];
         
-        NSString *dirs[] = {@"apps", @"db"};
+        NSString *dirs[] = {@"apps"};
         for (int i = 0, lim = sizeof(dirs)/sizeof(dirs[0]); i < lim; ++i) {
             // Create directory
             src = [bundleRoot stringByAppendingPathComponent:dirs[i]];
@@ -275,9 +275,9 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
             for (int i = 0, lim = [subelements count]; i < lim; ++i) {
                 NSString *child = [subelements objectAtIndex:i];
                 NSString *fchild = [src stringByAppendingPathComponent:child];
-                NSLog(@"src: %@", fchild);
+                NSLog(@" .. src: %@", fchild);
                 NSString *target = [dst stringByAppendingPathComponent:child];
-                NSLog(@"dst: %@", target);
+                NSLog(@" .. dst: %@", target);
                 [fileManager removeItemAtPath:target error:&error];
                 if ([child isEqualToString:@"rhoconfig.txt"]) {
                     [fileManager setDelegate:nil];
@@ -295,13 +295,25 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
         if (myDelegate != nil) {
             [myDelegate release];
         }
+        // copy "db"
+        NSString *copy_dirs[] = {@"db"};
+        for (int i = 0, lim = sizeof(copy_dirs)/sizeof(copy_dirs[0]); i < lim; ++i) {
+            BOOL remove = nameChanged;
+            if ([copy_dirs[i] isEqualToString:@"db"] && !hasOldName)
+                remove = NO;
+            NSString *src = [bundleRoot stringByAppendingPathComponent:copy_dirs[i]];
+            NSLog(@"copy src: %@", src);
+            NSString *dst = [rhoRoot stringByAppendingPathComponent:copy_dirs[i]];
+            NSLog(@"copy dst: %@", dst);
+            [self copyFromMainBundle:fileManager fromPath:src toPath:dst remove:remove];
+        }
         // Finally, copy "hash" and "name" files
         NSString *items[] = {@"hash", @"name"};
         for (int i = 0, lim = sizeof(items)/sizeof(items[0]); i < lim; ++i) {
             NSString *src = [bundleRoot stringByAppendingPathComponent:items[i]];
-            NSLog(@"src: %@", src);
+            NSLog(@"copy src: %@", src);
             NSString *dst = [rhoRoot stringByAppendingPathComponent:items[i]];
-            NSLog(@"dst: %@", dst);
+            NSLog(@"copy dst: %@", dst);
             [fileManager removeItemAtPath:dst error:&error];
             [fileManager copyItemAtPath:src toPath:dst error:&error];
         }
