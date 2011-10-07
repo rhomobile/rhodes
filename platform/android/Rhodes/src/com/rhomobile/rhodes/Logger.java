@@ -26,6 +26,10 @@
 
 package com.rhomobile.rhodes;
 
+import java.io.CharArrayWriter;
+import java.io.PrintWriter;
+import java.io.Writer;
+
 public class Logger {
 
 	// Errors
@@ -40,7 +44,16 @@ public class Logger {
 	public native static void T(String tag, String msg);
 	
 	public static void E(String tag, Throwable e) {
-		E(tag, e.getMessage());
+	    Writer bufWriter = new CharArrayWriter(256);
+	    PrintWriter writer = new PrintWriter(bufWriter);
+	    e.printStackTrace(writer);
+
+	    if (writer.checkError()) {
+	        E(tag, e.getMessage());
+	        E("Logger", "Cannot print stack trace");
+	    }
+
+		E(tag, bufWriter.toString());
 	}
 	
 	public static void W(String tag, Throwable e) {
