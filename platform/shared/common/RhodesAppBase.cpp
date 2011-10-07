@@ -191,6 +191,9 @@ const char* rho_rhodesapp_getplatform()
     if ( strPlatform.compare("iphone") == 0 )
         return "APPLE";
 
+    if ( strPlatform.compare("symbian") == 0 )
+        return "SYMBIAN";
+
     return "UNKNOWN";
 }    
 #else
