@@ -250,4 +250,12 @@ namespace "run" do
 
 
     end
+    
+  namespace "symbian" do    
+    task :rhosimulator => "config:common" do    
+       $rhosim_config = "platform='symbian'\r\n"
+       Rake::Task["run:rhosimulator"].invoke            
+    end
+  end
+    
 end
