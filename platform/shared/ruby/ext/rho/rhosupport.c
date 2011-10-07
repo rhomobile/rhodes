@@ -220,7 +220,7 @@ static VALUE checkRhoBundleInPath(VALUE fname)
 
     return rb_str_new2(slash1+1);
 }
-
+/*
 static VALUE check_extension(VALUE res, VALUE fname, int nAddExtName)
 {
     if ( nAddExtName )
@@ -240,6 +240,7 @@ static VALUE check_extension(VALUE res, VALUE fname, int nAddExtName)
 
     return eaccess(RSTRING_PTR(res), R_OK) == 0 ? res : 0;
 }
+*/
 
 static VALUE check_app_file_exist(VALUE dir, VALUE fname1, const char* szPlatform)
 {
@@ -309,7 +310,7 @@ static VALUE find_file(VALUE fname)
             {
 #ifdef RHODES_EMULATOR
                 //check for extensions
-                res = rb_str_new2(rho_simconf_getRhodesPath() );
+/*                res = rb_str_new2(rho_simconf_getRhodesPath() );
                 rb_str_cat2(res,"/lib/extensions/");
 
                 res = check_extension(res, fname, 1);
@@ -325,6 +326,24 @@ static VALUE find_file(VALUE fname)
                 {
                     res = rb_str_new2( rho_simconf_getString("ext_path") );
                     res = check_extension(res, fname, 0);
+                }
+*/
+                const char* szPaths = rho_simconf_getString("ext_path");
+                const char* szPath = szPaths;
+                const char* szSep = strchr(szPath, ';');
+                res = 0;
+                for( ; szSep; szSep = strchr(szPath, ';') )
+                {
+                    res = rb_str_new( szPath, szSep-szPath);
+                    rb_str_cat2(res,"/");
+                    rb_str_append(res,fname);
+                    rb_str_cat2(res,RHO_RB_EXT);
+
+                    if ( eaccess(RSTRING_PTR(res), R_OK) == 0 )
+                        break;
+
+                    res = 0;
+                    szPath = szSep+1;
                 }
 
                 if( res )

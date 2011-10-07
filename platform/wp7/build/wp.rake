@@ -408,7 +408,7 @@ namespace "run" do
 				end
 			end
 
-            task :rhosimulator do    
+            task :rhosimulator => ["config:set_wp_platform", "config:common"] do    
                 $rhosim_config = "platform='wp'\r\n"
                 Rake::Task["run:rhosimulator"].invoke            
             end

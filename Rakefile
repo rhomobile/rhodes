@@ -1051,7 +1051,7 @@ namespace "run" do
     task :rhosimulator_base => "config:common" do
         puts "rho_reload_app_changes : #{ENV['rho_reload_app_changes']}"
         $path = ""
-        $args = ["-approot='#{$app_path}'"]
+        $args = ["-approot='#{$app_path}'", "-rhodespath='#{$startdir}'"]
         cmd = nil
 
         if RUBY_PLATFORM =~ /(win|w)32$/
@@ -1109,16 +1109,40 @@ namespace "run" do
         sim_conf += $rhosim_config if $rhosim_config
 
         #check gem extensions
+        config_ext_paths = ""
+        extpaths = $app_config["extpaths"]        
         $app_config["extensions"].each do |extname|
-            begin
-                $rhodes_extensions = nil
-                require extname
-                extpath = $rhodes_extensions[0] unless $rhodes_extensions.nil?
-                sim_conf += "ext_path='#{extpath}'\r\n" if extpath && extpath.length() > 0 
-            rescue Exception => e
+        
+            extpath = nil
+            extpaths.each do |p|
+              ep = File.join(p, extname)
+              if File.exists? ep
+                extpath = ep
+                break
+              end
             end
+
+            if extpath.nil?
+                begin
+                    $rhodes_extensions = nil
+                    require extname
+                    extpath = $rhodes_extensions[0] unless $rhodes_extensions.nil?
+                    config_ext_paths += "#{extpath};" if extpath && extpath.length() > 0 
+                rescue Exception => e
+                end
+            else
+            
+                if $config["platform"] != "bb"
+                    extyml = File.join(extpath, "ext.yml")
+                    next if File.file? extyml
+                end
+                
+                config_ext_paths += "#{extpath};" if extpath && extpath.length() > 0                     
+            end    
         end
 
+        sim_conf += "ext_path=#{config_ext_paths}\r\n" if config_ext_paths && config_ext_paths.length() > 0 
+        
         fdir = File.join($app_path, 'rhosimulator')
         mkdir fdir unless File.exist?(fdir)
             

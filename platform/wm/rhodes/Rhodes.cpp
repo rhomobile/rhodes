@@ -285,6 +285,9 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     if ( m_strRhodesPath.length() > 0 )
         RHOSIMCONF().setString("rhodes_path", m_strRhodesPath, false );
     RHOCONF().setString( "rhosim_platform", RHOSIMCONF().getString( "platform"), false);
+    RHOSIMCONF().setString( "ext_path", RHOSIMCONF().getString( "ext_path") + CFilePath::join( m_strRhodesPath, "/lib/extensions/debugger;"), false);
+    RHOSIMCONF().setString( "ext_path", RHOSIMCONF().getString( "ext_path") + CFilePath::join( m_strRhodesPath, "/lib/extensions/uri;"), false);
+    RHOSIMCONF().setString( "ext_path", RHOSIMCONF().getString( "ext_path") + CFilePath::join( m_strRhodesPath, "/lib/extensions/timeout;"), false);
 #endif
 
     if ( !rho_rhodesapp_canstartapp(g_strCmdLine.c_str(), " /-,") )
