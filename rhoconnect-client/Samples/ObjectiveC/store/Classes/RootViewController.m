@@ -93,7 +93,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section 
 {
 	if (!arItems)
-		arItems = [[RhoConnectEngine sharedInstance].product find_all:nil];
+		[self setArItems: [[RhoConnectEngine sharedInstance].product find_all:nil]];
 	
 	//warning here because this may be dictionary or an array when called.
     return (NSUInteger)[arItems count];
