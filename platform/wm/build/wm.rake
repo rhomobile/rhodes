@@ -460,7 +460,7 @@ namespace "run" do
   end
   
   namespace "wm" do    
-    task :rhosimulator => "config:common" do    
+    task :rhosimulator => ["config:set_wm_platform", "config:common"] do    
        $rhosim_config = "platform='wm'\r\n"
        Rake::Task["run:rhosimulator"].invoke            
     end
