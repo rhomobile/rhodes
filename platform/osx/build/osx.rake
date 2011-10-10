@@ -31,9 +31,7 @@ namespace "config" do
   end
   
   task :osx => [:set_osx_platform, "config:common"] do
-    $qmake = "qmake"
     $make = "make"
-    $macdeployqt = "macdeployqt"
     $name_tool = "install_name_tool"
     $move = "mv"
     $remove = "rm"
@@ -44,7 +42,7 @@ end
 
 namespace "build" do
   namespace "osx" do
-    task :rhosimulator => ["config:set_osx_platform", "config:osx"] do
+    task :rhosimulator => ["config:set_osx_platform", "config:osx", "config:qt"] do
         app_path = File.join( $build_dir, 'RhoSimulator/RhoSimulator.app' )
         puts Jake.run($remove,['-R', app_path ])
 
@@ -61,6 +59,7 @@ namespace "build" do
 
         puts Jake.run($macdeployqt, [app_path])
 
+        # Last version of macdeployqt correctly handles these paths, so in the future this code can be removed:
         exe_path = File.join( app_path, 'Contents/MacOS/RhoSimulator' )
         frm_path = File.join( app_path, 'Contents/Frameworks/' )
         fw_path = ['@executable_path/../Frameworks/', '.framework/Versions/Current', '.framework/Versions/4']
@@ -71,6 +70,7 @@ namespace "build" do
           args = [ '-change', fw_path[0] + lib + fw_path[1] + '/' + lib, fw_path[0] + lib + fw_path[2] + '/' + lib, exe_path]
           puts Jake.run($name_tool,args)
         }
+        # end of the depricated macdeployqt fix code
 
         puts Jake.run($remove,['-R', File.join(frm_path, 'QtDeclarative.framework' )])
         puts Jake.run($remove,['-R', File.join(frm_path, 'QtOpenGL.framework' )])

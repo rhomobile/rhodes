@@ -284,6 +284,16 @@ namespace "config" do
 
   end
 
+  task :qt do
+    $qtdir = ENV['QTDIR']
+    unless (!$qtdir.nil?) and ($qtdir !~/^\s*$/) and File.directory?($qtdir)
+      puts "\nPlease, set QTDIR environment variable to Qt root directory path"
+      exit 1
+    end
+    $qmake = File.join($qtdir, 'bin/qmake')
+    $macdeployqt = File.join($qtdir, 'bin/macdeployqt')
+  end
+
   out = `javac -version 2>&1`
   puts "\n\nYour java bin folder does not appear to be on your path.\nThis is required to use rhodes.\n\n" unless $? == 0
 end
