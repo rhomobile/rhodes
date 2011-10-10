@@ -6,11 +6,11 @@ This page describes why you may need to transit your legacy application from usi
 
 [jQuery Mobile](http://jquerymobile.com/) may be considered as an advanced successor of [jQTouch library](http://jqtouch.com/). At the moment jQuery Mobile have more development progress, provides better support, supports more platforms and performs pretty reliable. Rhodes has been ported to jQuery Mobile and have no jQTouch out of box support anymore.
 
-### Platform Prerequisites
+## Platform Prerequisites
 
 Target platform should be [supported by jQuery Mobile framework](http://jquerymobile.com/gbs/).
 
-### Transition steps
+## Transition steps
 
 You need to use [Rhodes application template code](https://github.com/rhomobile/rhodes/tree/master/res/generators/templates/application/) as the source of files to copy from.
 
