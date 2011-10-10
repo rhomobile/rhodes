@@ -100,9 +100,11 @@ Rhodes 2.0+ includes an improved [CSS Framework](css-framework) which takes adva
 To implement advanced UI for your Rhodes View you may consider using such JavaScript UI frameworks as [Sencha](http://www.sencha.com/). Place one of these libraries in public/js folder of your application, load it in your [layout.erb](#layout), and you are ready to go.
 [Jquery Mobile](http://jquerymobile.com/) is supported out of the box.
 
+Rhodes support for [jQTouch library](http://jqtouch.com/) has been dropped, here you can find instructions on [how to transit your legacy Rhodes application fom jQTouch to jQuery Mobile](jqt-jqm-transition).
+
 ### jQuery Mobile modifications
 
-By default, Rhodes framework uses a original version of jQuery Mobile version 1, beta 2. But it is modified on the fly upon a page load event. The following is a list of modifications to the jQuery Mobile library:
+By default, Rhodes framework uses a original version of jQuery Mobile version 1. But it is modified on the fly upon a page load event. The following is a list of modifications to the jQuery Mobile library:
 
 * $.support.WebKitAnimationEvent is set to true if the device is Android 2.x. The default implementation sets this to false.
 * A default timeout has been set for Ajax requests to 30 seconds.
@@ -115,7 +117,7 @@ By default, Rhodes framework uses a original version of jQuery Mobile version 1,
 ### Submit form
 Be careful, using expressions like **$('#form_id').submit();** with jQuery Mobile it lead to an incorrect result!
 
-If you need to submit form programmatically, please use the expression like **$('.current form.yourFormClass').submit();**. To specify the exact form on the page it is recommended to use **class** instead of **id**. It is important to use *.current* class name to ddress elements on current active page.
+If you need to submit form programmatically, please use the expression like **$('div.ui-page-active form.yourFormClass').submit();**. To specify the exact form on the page it is recommended to use **class** instead of **id**. It is important to use *ui-page-active* class name to address elements on current active page.
 
 ## Loading screen
 
