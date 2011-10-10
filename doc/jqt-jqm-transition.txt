@@ -32,6 +32,7 @@ For detailed description on how to do advanced jQuery Mobile pages, forms and co
 
 Here is just a sample on how to change jQTouch application page to meet jQuery Mobile format. Let you have this jQTouch page code:
 
+    :::html
     <div class="pageTitle">
       <h1>Edit <%= @product.name %></h1>
     </div>
@@ -67,6 +68,7 @@ Here is just a sample on how to change jQTouch application page to meet jQuery M
 
 To use it with jQuery Mobile it should be converted this way:
 
+    :::html
     <div data-role="page">
 
       <div data-role="header" data-position="inline">
