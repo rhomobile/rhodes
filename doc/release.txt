@@ -236,7 +236,12 @@ Same procedure as for plug-in
 
 6. Select imported plugins in Project properties/Java build path/Libraries/Order and Export 
 
-5. Build and run Eclipse configuration
+7. Build and run Eclipse configuration
+
+8. Export. Select File/Export/Plugin Development
+
+8.1 For update site need select - Deployable features
+8.2 For installer (or for export only Rhostudio plugin) need select Deplyable plugin and fragments
 
 ##Build Rhodes Eclipse
 
