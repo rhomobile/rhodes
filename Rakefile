@@ -1175,6 +1175,10 @@ end
 
 namespace "build" do
     task :rhosimulator => "config:common" do
+        version = File.read(File.join($startdir,'version')).chomp
+        File.open(File.join($startdir, 'platform/shared/qt/rhodes/RhoSimulatorVersion.h'), "wb") do |fversion|
+            fversion.write( "#define RHOSIMULATOR_VERSION \"#{version}\"\n" )
+        end
         if RUBY_PLATFORM =~ /(win|w)32$/
             Rake::Task["build:win32:rhosimulator"].invoke
         elsif RUBY_PLATFORM =~ /darwin/
