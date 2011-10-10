@@ -108,6 +108,11 @@
 			settings.data = undefined;
 		}
 
+		// If the caller is using a "post" request, reloadPage must be true
+		if(  settings.data && settings.type === "post" ){
+			settings.reloadPage = true;
+		}
+
 			// The absolute version of the URL minus any dialog/subpage params.
 			// In otherwords the real URL of the page to be loaded.
 		var fileUrl = path.getFilePath( absUrl ),
@@ -124,6 +129,21 @@
 
 		// Check to see if the page already exists in the DOM.
 		page = settings.pageContainer.children( ":jqmData(url='" + dataUrl + "')" );
+
+		// If we failed to find the page, check to see if the url is a
+		// reference to an embedded page. If so, it may have been dynamically
+		// injected by a developer, in which case it would be lacking a data-url
+		// attribute and in need of enhancement.
+		if ( page.length === 0 && !path.isPath( dataUrl ) ) {
+			page = settings.pageContainer.children( "#" + dataUrl )
+				.attr( "data-" + $.mobile.ns + "url", dataUrl )
+		}
+
+		// If we failed to find a page in the DOM, check the URL to see if it
+		// refers to the first page in the application.
+		if ( page.length === 0 && $.mobile.firstPage && path.isFirstPageUrl( absUrl ) ) {
+			page = $( $.mobile.firstPage );
+		}
 
         /*
 		// Reset base to the default document base.
@@ -146,6 +166,18 @@
 			dupCachedPage = page;
 		}
         */
+
+        var mpc = settings.pageContainer,
+            pblEvent = new $.Event( "pagebeforeload" ),
+            triggerData = { url: url, absUrl: absUrl, dataUrl: dataUrl, deferred: deferred, options: settings };
+
+        // Let listeners know we're about to load a page.
+        mpc.trigger( pblEvent, triggerData );
+
+        // If the default behavior is prevented, stop here!
+        if( pblEvent.isDefaultPrevented() ){
+            return deferred.promise();
+        }
 
         if ( settings.showLoadMsg ) {
 
@@ -176,7 +208,7 @@
                     newPageTitle = html.match( /<title[^>]*>([^<]*)/ ) && RegExp.$1,
 
                     // TODO handle dialogs again
-                    pageElemRegex = new RegExp( ".*(<[^>]+\\bdata-" + $.mobile.ns + "role=[\"']?page[\"']?[^>]*>).*" ),
+                    pageElemRegex = new RegExp( "(<[^>]+\\bdata-" + $.mobile.ns + "role=[\"']?page[\"']?[^>]*>)" ),
                     dataUrlRegex = new RegExp( "\\bdata-" + $.mobile.ns + "url=[\"']?([^\"'>]*)[\"']?" );
 
 
@@ -233,11 +265,18 @@
             }
 
             //append to page and enhance
+            // TODO taging a page with external to make sure that embedded pages aren't removed
+            //      by the various page handling code is bad. Having page handling code in many
+            //      places is bad. Solutions post 1.0
             page
                 .attr( "data-" + $.mobile.ns + "url", path.convertUrlToDataUrl( fileUrl ) )
+                .attr( "data-" + $.mobile.ns + "external-page", true )
                 .appendTo( settings.pageContainer );
 
             // wait for page creation to leverage options defined on widget
+            page.one( 'pagecreate', $.mobile._bindPageRemove );
+
+/*
             page.one('pagecreate', function(){
 
                 // when dom caching is not enabled bind to remove the page on hide
@@ -247,6 +286,7 @@
                     });
                 }
             });
+*/
 
             enhancePage( page, settings.role );
 
@@ -263,6 +303,12 @@
             if ( settings.showLoadMsg ) {
                 hideMsg();
             }
+
+            // Add the page reference to our triggerData.
+            triggerData.page = page;
+
+            // Let listeners know the page loaded successfully.
+            settings.pageContainer.trigger( "pageload", triggerData );
 
             deferred.resolve( absUrl, options, page, dupCachedPage );
         }
