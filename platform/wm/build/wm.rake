@@ -211,14 +211,8 @@ namespace "build" do
         
     end
     
-    task :rhosimulator => ["config:set_win32_platform", "config:wm"] do
+    task :rhosimulator => ["config:set_win32_platform", "config:wm", "config:qt"] do
         chdir $config["build"]["wmpath"]
-
-        qtdir = ENV['QTDIR']
-        unless (qtdir !~/^\s*$/) and File.directory?(qtdir)
-          puts "\nPlease, set QTDIR environment variable to Qt root directory path"
-          exit 1
-        end
 
         args = ['/M4', $build_solution, '"SimulatorRelease|win32"']
         puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
@@ -237,20 +231,20 @@ namespace "build" do
         end
         cp File.join($startdir, $vcbindir, "win32/rhodes/SimulatorRelease/rhosimulator.exe"), target_path
 
-        cp File.join(qtdir, "bin/QtCore4.dll"), target_path
-        cp File.join(qtdir, "bin/QtGui4.dll"), target_path
-        cp File.join(qtdir, "bin/QtNetwork4.dll"), target_path
-        cp File.join(qtdir, "bin/QtWebKit4.dll"), target_path
+        cp File.join($qtdir, "bin/QtCore4.dll"), target_path
+        cp File.join($qtdir, "bin/QtGui4.dll"), target_path
+        cp File.join($qtdir, "bin/QtNetwork4.dll"), target_path
+        cp File.join($qtdir, "bin/QtWebKit4.dll"), target_path
         target_if_path = File.join(target_path, 'imageformats/')
         if not File.directory?(target_if_path)
           Dir.mkdir(target_if_path)
         end
-        cp File.join(qtdir, "plugins/imageformats/qgif4.dll"), target_if_path
-        cp File.join(qtdir, "plugins/imageformats/qico4.dll"), target_if_path
-        cp File.join(qtdir, "plugins/imageformats/qjpeg4.dll"), target_if_path
-        cp File.join(qtdir, "plugins/imageformats/qmng4.dll"), target_if_path
-        cp File.join(qtdir, "plugins/imageformats/qsvg4.dll"), target_if_path
-        cp File.join(qtdir, "plugins/imageformats/qtiff4.dll"), target_if_path
+        cp File.join($qtdir, "plugins/imageformats/qgif4.dll"), target_if_path
+        cp File.join($qtdir, "plugins/imageformats/qico4.dll"), target_if_path
+        cp File.join($qtdir, "plugins/imageformats/qjpeg4.dll"), target_if_path
+        cp File.join($qtdir, "plugins/imageformats/qmng4.dll"), target_if_path
+        cp File.join($qtdir, "plugins/imageformats/qsvg4.dll"), target_if_path
+        cp File.join($qtdir, "plugins/imageformats/qtiff4.dll"), target_if_path
     end
 
   end
