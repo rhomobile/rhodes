@@ -1,5 +1,17 @@
 # Install Rhodes
 
+## Macintosh
+
+If you're running Macintosh, download the latest [RhoStudio for Macintosh](http://rhomobile.com/rhostudio-mac). This contains the [Ruby stack](http://www.ruby-lang.org/en/), [Redis](http://redis.io/), [RhoConnect](/rhoconnect/introduction) and [Rhodes](/rhodes/introduction).
+
+Click on the RhoStudioInstaller .dmg download file to open it. You will get a window similar to this:
+
+<img src="http://rhodocs.s3.amazonaws.com/rhodes-devel/rhostudio-mac-install.png" alt="RhoStudioInstaller Mac" />
+
+Run the install gems script (double-click on install gems). A terminal window will open; wait for the gems install process to complete.
+
+Then drag RhoStudio to the Applications folder.
+
 ## Windows
 
 If you're running Windows, download the latest [RhoStudio for Windows](http://rhomobile.com/rhostudio-windows). This installs the [Ruby stack](http://www.ruby-lang.org/en/), [Redis](http://redis.io/), [RhoConnect](/rhoconnect/introduction) and [Rhodes](/rhodes/introduction).
