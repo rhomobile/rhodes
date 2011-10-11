@@ -204,8 +204,6 @@ void* CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
     QCoreApplication::setOrganizationName("Rhomobile");
     QCoreApplication::setApplicationName("RhoSimulator");
     qtApplication = (void*)new QApplication(argc, 0);
-    QPixmap icon(":/images/rho.png");
-    ((QApplication*)qtApplication)->setWindowIcon(icon);
     qtMainWindow = (void*)new QtMainWindow();
     ((QtMainWindow*)qtMainWindow)->setWindowTitle(QString::fromWCharArray(title));
     ((QtMainWindow*)qtMainWindow)->setCallback(callback);
