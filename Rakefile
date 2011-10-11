@@ -256,6 +256,13 @@ namespace "config" do
        $app_config[$config["platform"]]["extensions"] and $app_config[$config["platform"]]["extensions"].is_a? Array
     $app_config["extensions"] = extensions
     
+    capabilities = []
+    capabilities += $app_config["capabilities"] if $app_config["capabilities"] and
+       $app_config["capabilities"].is_a? Array
+    capabilities += $app_config[$config["platform"]]["capabilities"] if $app_config[$config["platform"]] and
+       $app_config[$config["platform"]]["capabilities"] and $app_config[$config["platform"]]["capabilities"].is_a? Array
+    $app_config["capabilities"] = capabilities
+    
     $hidden_app = $app_config["hidden_app"].nil?() ? "0" : $app_config["hidden_app"]
     
 
