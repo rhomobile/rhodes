@@ -528,12 +528,12 @@ namespace "config" do
     $storealias = $config["android"]["production"]["alias"] if $storealias.nil? and !$config["android"].nil? and !$config["android"]["production"].nil?
     $storealias = "rhomobile.keystore" if $storealias.nil?
 
-    $app_config["capabilities"] = [] if $app_config["capabilities"].nil?
-    $app_config["capabilities"] = [] unless $app_config["capabilities"].is_a? Array
-    if $app_config["android"] and $app_config["android"]["capabilities"]
-      $app_config["capabilities"] += $app_config["android"]["capabilities"]
-      $app_config["android"]["capabilities"] = nil
-    end
+#    $app_config["capabilities"] = [] if $app_config["capabilities"].nil?
+#    $app_config["capabilities"] = [] unless $app_config["capabilities"].is_a? Array
+#    if $app_config["android"] and $app_config["android"]["capabilities"]
+#      $app_config["capabilities"] += $app_config["android"]["capabilities"]
+#      $app_config["android"]["capabilities"] = nil
+#    end
     $app_config["capabilities"] += ANDROID_CAPS_ALWAYS_ENABLED
     $app_config["capabilities"].map! { |cap| cap.is_a?(String) ? cap : nil }.delete_if { |cap| cap.nil? }
     $use_google_addon_api = true unless $app_config["capabilities"].index("push").nil?
