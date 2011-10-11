@@ -1,0 +1,394 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// RCDATA
+//
+
+IDR_MAIN_MENUBAR RCDATA 
+BEGIN
+    0x0069, 0x0002, 0xfffe, 0x9c41, 0x0004, 0x0010, 0x2711, 0x0000, 0xffff, 
+    0xfffe, 0x9c42, 0x0004, 0x0018, 0x2712, 0x0000, 0x0000
+END
+
+IDR_GETURL_MENUBAR RCDATA 
+BEGIN
+    0x0000, 0x0002, 0xfffe, 0x0001, 0x0004, 0x0010, 0x2713, 0x0000, 0xffff, 
+    0xfffe, 0x0002, 0x0004, 0x0010, 0x2714, 0x0000, 0xffff
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAIN_MENU MENU 
+BEGIN
+    POPUP ""
+    BEGIN
+        MENUITEM "Refresh",                     IDM_REFRESH
+        MENUITEM "Options",                     IDM_OPTIONS
+        MENUITEM "Log...",                      IDM_LOG
+        MENUITEM "Fullscreen",                  ID_FULLSCREEN
+        MENUITEM "Exit",                        IDM_EXIT
+    END
+END
+
+IDR_LOGMENUBAR MENU 
+BEGIN
+    MENUITEM "Back",                        IDM_BACK
+    POPUP "Menu"
+    BEGIN
+        MENUITEM "Options",                     IDM_OPTIONS
+        MENUITEM "Refresh",                     IDM_REFRESH
+        MENUITEM "Clear",                       IDM_CLEAR
+    END
+END
+
+IDR_LOGOPTIONSMENUBAR MENU 
+BEGIN
+    MENUITEM "OK",                          IDOK
+    MENUITEM "Cancel",                      IDCANCEL
+END
+
+IDR_LOGVIEW_MENU MENU 
+BEGIN
+    POPUP "Menu"
+    BEGIN
+        MENUITEM "Copy",                        ID_MENU_COPY
+        MENUITEM "Select All",                  ID_MENU_SELECTALL
+        MENUITEM SEPARATOR
+        MENUITEM "Find...",                     ID_MENU_FIND
+        MENUITEM SEPARATOR
+        MENUITEM "Send log",                    IDM_SENDLOG
+        MENUITEM "Options...",                  IDM_OPTIONS
+        MENUITEM "Clear Log",                   IDM_CLEAR
+    END
+END
+
+IDR_MENU_PC MENU 
+BEGIN
+    MENUITEM "Close",                       IDOK
+END
+
+IDR_MAPVIEW MENU 
+BEGIN
+    MENUITEM "Close",                       IDOK
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_GETURLDIALOG DIALOG  0, 0, 156, 129
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE 0x80000000L
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Enter URL, full path, or UNC location:",IDC_STATIC_PROMPT,4,4,92,20
+    EDITTEXT        IDC_EDIT_URL,4,24,92,12,ES_AUTOHSCROLL
+END
+
+IDD_LOGVIEW DIALOG  0, 0, 156, 129
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE 0x80000000L
+CAPTION "Log"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_LOGEDIT,7,7,120,106,ES_MULTILINE | ES_READONLY | WS_VSCROLL | WS_HSCROLL
+END
+
+IDD_SIMULATOR_LOGVIEW DIALOG  0, 0, 158, 129
+STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+EXSTYLE 0x80000000L
+CAPTION "Log"
+MENU IDR_LOGVIEW_MENU
+FONT 10, "Courier"
+BEGIN
+    CONTROL         "",IDC_LOGEDIT,"RichEdit20W",WS_BORDER | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP | 0x9c4,3,4,137,110
+END
+
+IDD_LOGVIEW_WIDE DIALOG  0, 0, 210, 129
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION
+CAPTION "Dialog"
+FONT 8, "MS Sans Serif"
+BEGIN
+END
+
+IDD_LOGOPTIONS DIALOG  0, 0, 187, 94
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Log options"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "Level:",IDC_STATIC,7,4,39,8
+    COMBOBOX        IDC_CBXLEVELS,59,4,69,57,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_MSGCLASSES,7,34,173,14,ES_AUTOHSCROLL
+    LTEXT           "Message classes(* for all):",IDC_STATIC,7,23,173,8
+    LTEXT           "Exclude message classes:",IDC_STATIC,7,53,86,8
+    EDITTEXT        IDC_MSGEXCLUDE,7,66,173,14,ES_AUTOHSCROLL
+END
+
+IDD_SIMULATOR_LOGOPTIONS DIALOG  0, 0, 187, 108
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Log options"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "Level:",IDC_STATIC,7,4,39,8
+    COMBOBOX        IDC_CBXLEVELS,59,4,69,57,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_MSGCLASSES,7,34,173,14,ES_AUTOHSCROLL
+    LTEXT           "Message classes(* for all):",IDC_STATIC,7,23,173,8
+    LTEXT           "Exclude message classes:",IDC_STATIC,7,53,86,8
+    EDITTEXT        IDC_MSGEXCLUDE,7,66,173,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "Ok",IDOK,40,87,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,97,87,50,14
+END
+
+IDD_DATETIME_PICKER DIALOGEX 0, 0, 172, 186
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "DateTime Picker"
+FONT 8, "Microsoft Sans Serif"
+BEGIN
+    CONTROL         "",IDC_TIME_CTRL,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,7,54,143,15
+    CONTROL         "",IDC_DATE_CTRL,"SysDateTimePick32",DTS_RIGHTALIGN | WS_TABSTOP,7,29,143,15
+    LTEXT           "Time:",IDC_TIME_STATIC,7,44,25,10
+    LTEXT           "Date:",IDC_DATE_STATIC,7,21,27,8
+    LTEXT           "DateTime Picker",ID_DATETIME_CAPTION,9,6,141,8
+END
+
+IDD_TIME_PICKER DIALOGEX 0, 0, 172, 186
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_SYSMENU
+FONT 8, "MS Shell Dlg"
+BEGIN
+    CONTROL         "",IDC_TIME_CTRL,"SysDateTimePick32",DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,7,29,143,15
+    LTEXT           "Time:",IDC_TIME_STATIC,7,21,27,8
+    LTEXT           "Time Picker",ID_TIME_CAPTION,9,6,142,8
+END
+
+IDD_BLUETOOTH_DISCOVER DIALOG  0, 0, 172, 186
+STYLE DS_SETFONT | WS_POPUP | WS_SYSMENU
+FONT 8, "Microsoft Sans Serif"
+BEGIN
+    LISTBOX         IDC_BT_LIST,7,34,145,77,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    CTEXT           "Please wait while searching devices ...",IDC_BT_STATIC,7,19,144,8
+END
+
+IDD_BLUETOOTH_DISCOVERED DIALOG  0, 0, 172, 186
+STYLE DS_SETFONT | WS_POPUP | WS_SYSMENU
+FONT 8, "Microsoft Sans Serif"
+BEGIN
+    CTEXT           "Wait for connection ...",IDC_STATIC,10,49,130,16
+END
+
+IDD_SYNCSTATUS DIALOG  2, 50, 157, 44
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+FONT 8, "MS Shell Dlg"
+BEGIN
+    CTEXT           "Static",IDC_SYNCSTATUS,7,7,143,24
+END
+
+IDD_MAPVIEW DIALOG  0, 0, 172, 186
+STYLE DS_SETFONT | WS_POPUP | WS_SYSMENU
+FONT 8, "Microsoft Sans Serif"
+BEGIN
+    CONTROL         "",IDC_SLIDER_ZOOM,"msctls_trackbar32",TBS_AUTOTICKS | TBS_VERT | TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,18,17,61
+    PUSHBUTTON      "+",IDC_BUTTON_ZOOM_IN,7,3,15,14
+    PUSHBUTTON      "-",IDC_BUTTON_ZOOM_OUT,7,81,15,14
+END
+
+IDD_TAKE_SIGNATURE DIALOG  0, 0, 135, 105
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_SYSMENU
+FONT 8, "MS Shell Dlg"
+BEGIN
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_GETURLDIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 149
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 122
+    END
+
+    IDD_LOGVIEW, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 151
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 122
+    END
+
+    IDD_LOGVIEW_WIDE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 203
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 122
+    END
+
+    IDD_LOGOPTIONS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 87
+    END
+
+    IDD_SIMULATOR_LOGOPTIONS, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 94
+    END
+
+    IDD_DATETIME_PICKER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 164
+        TOPMARGIN, 3
+        BOTTOMMARGIN, 179
+    END
+
+    IDD_TIME_PICKER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 162
+        TOPMARGIN, 1
+    END
+
+    IDD_BLUETOOTH_DISCOVER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 164
+        TOPMARGIN, 3
+        BOTTOMMARGIN, 179
+    END
+
+    IDD_BLUETOOTH_DISCOVERED, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 164
+        TOPMARGIN, 3
+        BOTTOMMARGIN, 179
+    END
+
+    IDD_SYNCSTATUS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 37
+    END
+
+    IDD_MAPVIEW, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 164
+        TOPMARGIN, 3
+        BOTTOMMARGIN, 179
+    END
+
+    IDD_TAKE_SIGNATURE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 128
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 98
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON                ICON                    "..\\..\\shared\\qt\\rhodes\\resources\\rho.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_EXIT                "Back"
+    IDS_MENU                "Menu"
+    IDS_OK                  "OK"
+    IDS_CANCEL              "Cancel"
+    IDS_WND_CLASS           "Rhodes.MainWindow"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

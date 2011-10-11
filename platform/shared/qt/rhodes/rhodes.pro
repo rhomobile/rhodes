@@ -40,6 +40,7 @@ win32 {
   HEADERS += ../../../wm/rhodes/rho/net/NetRequestImpl.h\
 impl/RhoThreadImpl.h
   SOURCES += ../../../wm/rhodes/rho/net/NetRequestImpl.cpp
+  RESOURCES += resources/simulator.qrc
   INCLUDEPATH += ../../../wm/rhodes\
 ../../wtl80/include
   DEFINES -= _UNICODE
