@@ -1,7 +1,7 @@
 package com.rhomobile.rhoconnect_client_test;
 
 import java.io.File;
-import java.io.FileDescriptor;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -20,7 +20,6 @@ import android.test.AndroidTestCase;
 
 public class TestRhoConnectClientBlobs extends AndroidTestCase
 {
-
     private final String SYNC_URL = "http://rhodes-samples-server.heroku.com/application";
     private final String TEST_FILENAME = "blobtest.txt";
     private final String TEST_BLOB_CONTENT = "Blob tets at" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
@@ -152,22 +151,14 @@ public class TestRhoConnectClientBlobs extends AndroidTestCase
     public void test5CreateNewBlobObject()
     {
         String fileName = "androidtest.png";
-        String filePath = new File(RhoFileApi.getDbFilesUriPath(), fileName).getPath();
+        String filePath = new File("apps", fileName).getPath();
 
         RhoConnectNotify notify = mClient.loginWithUserSync("", "");
         assertEquals(notify.getErrorCode(), 0);
         assertTrue(mClient.isLoggedIn());
 
-        String files[] = new String[] {"apps/" + fileName };
-        RhoFileApi.initCopy(this.getContext(), files);
-        File initFile = new File(RhoFileApi.absolutePath(files[0]));
-        File blobFile = new File(RhoFileApi.absolutePath(filePath));
-        initFile.renameTo(blobFile);
-        assertTrue(blobFile.isFile());
-        
         Map<String, String> item = new HashMap<String, String>();
-        item.put("image_uri", filePath);
-        item.put("overwrite", "0");
+        item.put("image_uri", "apps/" + fileName);
 
         mBlobTest.create(item);
         mBlobTest.save(item);
@@ -180,7 +171,47 @@ public class TestRhoConnectClientBlobs extends AndroidTestCase
         assertEquals(1, items.size());
 
         Map<String, String> newItem = items.iterator().next();
-        assertEquals(filePath, newItem.get("image_uri"));
+        assertFalse(filePath.equals(newItem.get("image_uri")));
+
+        String files[] = new String[] {"apps/" + fileName };
+        RhoFileApi.initCopy(this.getContext(), files);
+
+        File file = new File(RhoFileApi.absolutePath(filePath));
+        File newFile = new File(RhoFileApi.absolutePath(newItem.get("image_uri")));
+
+        assertTrue(file.isFile());
+        assertEquals(file.length(), newFile.length());
+
+        FileInputStream fileStream = null;
+        FileInputStream newFileStream = null;
+        int b1 = 0;
+        int b2 = 0;
+        try {
+            fileStream = new FileInputStream(file);
+            newFileStream = new FileInputStream(newFile);
+
+            do {
+                b1 = fileStream.read();
+                b2 = newFileStream.read();
+            } while (b1 == b2 && (b1 != -1 && b2 != -1));
+
+        } catch (Throwable e){
+            try {
+                if (fileStream != null)
+                    fileStream.close();
+            } catch (Throwable e1){}
+            try {
+                if (newFileStream != null)
+                    newFileStream.close();
+            } catch (Throwable e1){}
+
+            fail(e.getMessage());
+        }
+
+        // Check both streams reach end
+        assertTrue(b1 == -1 && b2 == -1);
+
+        file.delete();
     }
 
 }
