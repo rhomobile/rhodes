@@ -56,7 +56,7 @@ namespace "build" do
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleGetInfoString</key>
-	<string>RhoSimulator #{$rhodes_version}, Copyright © 2010-2011 Rhomobile, Inc.</string>
+	<string>RhoSimulator #{$rhodes_version}, Copyright Â© 2010-2011 Rhomobile, Inc.</string>
 	<key>CFBundleSignature</key>
 	<string>@TYPEINFO@</string>
 	<key>CFBundleExecutable</key>
