@@ -11,6 +11,7 @@ INCLUDEPATH += ../..\
 
 macx {
   ICON = resources/rho.icns
+  QMAKE_INFO_PLIST = resources/Info.plist
   DESTDIR = ../../../osx/bin/RhoSimulator
   MOC_DIR = ../../../osx/bin/RhoSimulator/generated_files
   UI_DIR = ../../../osx/bin/RhoSimulator/generated_files

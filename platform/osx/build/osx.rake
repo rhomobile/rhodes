@@ -46,6 +46,28 @@ namespace "build" do
         app_path = File.join( $build_dir, 'RhoSimulator/RhoSimulator.app' )
         puts Jake.run($remove,['-R', app_path ])
 
+        File.open(File.join($startdir, 'platform/shared/qt/rhodes/resources/Info.plist'), "wb") do |fversion|
+            fversion.write( %{<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">
+<plist version="0.9">
+<dict>
+	<key>CFBundleIconFile</key>
+	<string>@ICON@</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleGetInfoString</key>
+	<string>RhoSimulator #{$rhodes_version}, Copyright © 2010-2011 Rhomobile, Inc.</string>
+	<key>CFBundleSignature</key>
+	<string>@TYPEINFO@</string>
+	<key>CFBundleExecutable</key>
+	<string>@EXECUTABLE@</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.rhomobile.@EXECUTABLE@</string>
+</dict>
+</plist>
+})
+        end
+
         chdir $qt_project_dir
         args = ['-o', 'Makefile', '-r', '-spec', 'macx-g++', 'RhoSimulator.pro']
         puts Jake.run($qmake,args)
