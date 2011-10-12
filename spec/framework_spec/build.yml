@@ -17,4 +17,4 @@ iphone:
 android:    
   version: 2.3.3
 
-extensions: ["mspec", "fileutils", "digest", "digest-md5", "test-libs", "set", "thread"]
+extensions: ["mspec", "fileutils", "digest", "digest-md5", "test-libs", "set", "thread", "timeout", "uri", "net-http", "fcntl", "rexml" ]

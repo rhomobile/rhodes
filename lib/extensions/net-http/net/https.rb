@@ -1,6 +1,6 @@
 =begin
 
-= $RCSfile$ -- SSL/TLS enhancement for Net::HTTP.
+= net/https -- SSL/TLS enhancement for Net::HTTP.
 
 == Info
   'OpenSSL for Ruby 2' project
@@ -10,16 +10,6 @@
 == Licence
   This program is licenced under the same licence as Ruby.
   (See the file 'LICENCE'.)
-
-== Requirements
-  This program requires Net 1.2.0 or higher version.
-  You can get it from RAA or Ruby's CVS repository.
-
-== Version
-  $Id: https.rb 18512 2008-08-12 05:20:09Z aamine $
-  
-  2001-11-06: Contiributed to Ruby/OpenSSL project.
-  2004-03-06: Some code is merged in to net/http.
 
 == Example
 
@@ -73,7 +63,7 @@ It can be replaced by the following code:
 
 : ca_file, ca_file=((|path|))
     Sets path of a CA certification file in PEM format.
-    The file can contrain several CA certificats.
+    The file can contrain several CA certificates.
 
 : ca_path, ca_path=((|path|))
     Sets path of a CA certification directory containing certifications
@@ -81,7 +71,7 @@ It can be replaced by the following code:
 
 : verify_mode, verify_mode=((|mode|))
     Sets the flags for server the certification verification at
-    begining of SSL/TLS session.
+    beginning of SSL/TLS session.
     OpenSSL::SSL::VERIFY_NONE or OpenSSL::SSL::VERIFY_PEER is acceptable.
 
 : verify_callback, verify_callback=((|proc|))

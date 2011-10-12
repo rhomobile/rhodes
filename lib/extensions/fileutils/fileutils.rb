@@ -215,7 +215,7 @@ module FileUtils
       stack.reverse_each do |dir|
         begin
           fu_mkdir dir, options[:mode]
-        rescue SystemCallError => err
+        rescue SystemCallError
           raise unless File.directory?(dir)
         end
       end
@@ -427,6 +427,8 @@ module FileUtils
     fu_check_options options, OPT_TABLE['cp_r']
     fu_output_message "cp -r#{options[:preserve] ? 'p' : ''}#{options[:remove_destination] ? ' --remove-destination' : ''} #{[src,dest].flatten.join ' '}" if options[:verbose]
     return if options[:noop]
+    options = options.dup
+    options[:dereference_root] = true unless options.key?(:dereference_root)
     fu_each_src_dest(src, dest) do |s, d|
       copy_entry s, d, options[:preserve], options[:dereference_root], options[:remove_destination]
     end
@@ -665,10 +667,10 @@ module FileUtils
   # removing directories.  This requires the current process is the
   # owner of the removing whole directory tree, or is the super user (root).
   #
-  # WARNING: You must ensure that *ALL* parent directories are not
-  # world writable.  Otherwise this method does not work.
-  # Only exception is temporary directory like /tmp and /var/tmp,
-  # whose permission is 1777.
+  # WARNING: You must ensure that *ALL* parent directories cannot be
+  # moved by other untrusted users.  For example, parent directories
+  # should not be owned by untrusted users, and should not be world
+  # writable except when the sticky bit set.
   #
   # WARNING: Only the owner of the removing directory tree, or Unix super
   # user (root) should invoke this method.  Otherwise this method does not
@@ -711,6 +713,11 @@ module FileUtils
       end
       f.chown euid, -1
       f.chmod 0700
+      unless fu_stat_identical_entry?(st, File.lstat(fullpath))
+        # TOC-to-TOU attack?
+        File.unlink fullpath
+        return
+      end
     }
     # ---- tree root is frozen ----
     root = Entry_.new(path)
@@ -840,10 +847,9 @@ module FileUtils
     fu_check_options options, OPT_TABLE['install']
     fu_output_message "install -c#{options[:preserve] && ' -p'}#{options[:mode] ? (' -m 0%o' % options[:mode]) : ''} #{[src,dest].flatten.join ' '}" if options[:verbose]
     return if options[:noop]
-    fu_each_src_dest(src, dest) do |s, d|
+    fu_each_src_dest(src, dest) do |s, d, st|
       unless File.exist?(d) and compare_file(s, d)
         remove_file d, true
-        st = File.stat(s) if options[:preserve]
         copy_file s, d
         File.utime st.atime, st.mtime, d if options[:preserve]
         File.chmod options[:mode], d if options[:mode]
@@ -977,20 +983,26 @@ module FileUtils
 
     def fu_get_uid(user)   #:nodoc:
       return nil unless user
-      user = user.to_s
-      if /\A\d+\z/ =~ user
-      then user.to_i
-      else Etc.getpwnam(user).uid
+      case user
+      when Integer
+        user
+      when /\A\d+\z/
+        user.to_i
+      else
+        Etc.getpwnam(user).uid
       end
     end
     private_module_function :fu_get_uid
 
     def fu_get_gid(group)   #:nodoc:
       return nil unless group
-      group = group.to_s
-      if /\A\d+\z/ =~ group
-      then group.to_i
-      else Etc.getgrnam(group).gid
+      case group
+      when Integer
+        group
+      when /\A\d+\z/
+        group.to_i
+      else
+        Etc.getgrnam(group).gid
       end
     end
     private_module_function :fu_get_gid
@@ -1169,7 +1181,9 @@ module FileUtils
     end
 
     def entries
-      Dir.entries(path())\
+      opts = {}
+      opts[:encoding] = "UTF-8" if /mswin|mignw/ =~ RUBY_PLATFORM
+      Dir.entries(path(), opts)\
           .reject {|n| n == '.' or n == '..' }\
           .map {|n| Entry_.new(prefix(), join(rel(), n.untaint)) }
     end
@@ -1231,7 +1245,7 @@ module FileUtils
       when file?
         copy_file dest
       when directory?
-        if !File.exist?(dest) and /^#{Regexp.quote(path)}/ =~ File.dirname(dest)
+        if !File.exist?(dest) and descendant_diretory?(dest, path)
           raise ArgumentError, "cannot copy directory %s to itself %s" % [path, dest]
         end
         begin
@@ -1261,7 +1275,11 @@ module FileUtils
     end
 
     def copy_file(dest)
-      IO.copy_stream(path(),  dest)
+      File.open(path()) do |s|
+        File.open(dest, 'wb') do |f|
+          IO.copy_stream(s, f)
+        end
+      end
     end
 
     def copy_metadata(path)
@@ -1381,6 +1399,17 @@ module FileUtils
       return File.path(base) if not dir or dir == '.'
       File.join(dir, base)
     end
+
+    if File::ALT_SEPARATOR
+      DIRECTORY_TERM = "(?=[/#{Regexp.quote(File::ALT_SEPARATOR)}]|\\z)".freeze
+    else
+      DIRECTORY_TERM = "(?=/|\\z)".freeze
+    end
+    SYSCASE = File::FNM_SYSCASE.nonzero? ? "-i" : ""
+
+    def descendant_diretory?(descendant, ascendant)
+      /\A(?#{SYSCASE}:#{Regexp.quote(ascendant)})#{DIRECTORY_TERM}/ =~ File.dirname(descendant)
+    end
   end   # class Entry_
 
   def fu_list(arg)   #:nodoc:
@@ -1391,7 +1420,7 @@ module FileUtils
   def fu_each_src_dest(src, dest)   #:nodoc:
     fu_each_src_dest0(src, dest) do |s, d|
       raise ArgumentError, "same file: #{s} and #{d}" if fu_same?(s, d)
-      yield s, d
+      yield s, d, File.stat(s)
     end
   end
   private_module_function :fu_each_src_dest
@@ -1414,22 +1443,9 @@ module FileUtils
   private_module_function :fu_each_src_dest0
 
   def fu_same?(a, b)   #:nodoc:
-    if fu_have_st_ino?
-      st1 = File.stat(a)
-      st2 = File.stat(b)
-      st1.dev == st2.dev and st1.ino == st2.ino
-    else
-      File.expand_path(a) == File.expand_path(b)
-    end
-  rescue Errno::ENOENT
-    return false
+    File.identical?(a, b)
   end
   private_module_function :fu_same?
-
-  def fu_have_st_ino?   #:nodoc:
-    not fu_windows?
-  end
-  private_module_function :fu_have_st_ino?
 
   def fu_check_options(options, optdecl)   #:nodoc:
     h = options.dup
@@ -1508,6 +1524,12 @@ module FileUtils
     OPT_TABLE.keys.select {|m| OPT_TABLE[m].include?(opt) }
   end
 
+  LOW_METHODS = singleton_methods(false) - collect_method(:noop).map(&:intern)
+  module LowMethods
+    module_eval("private\n" + ::FileUtils::LOW_METHODS.map {|name| "def #{name}(*)end"}.join("\n"),
+                __FILE__, __LINE__)
+  end
+
   METHODS = singleton_methods() - [:private_module_function,
       :commands, :options, :have_option?, :options_of, :collect_method]
 #RHO does not support eval of ruby text only block      
@@ -1544,6 +1566,7 @@ module FileUtils
   # 
   module NoWrite
     include FileUtils
+    include LowMethods
     @fileutils_output  = $stderr
     @fileutils_label   = ''
     ::FileUtils.collect_method(:noop).each do |name|
@@ -1570,6 +1593,7 @@ module FileUtils
   # 
   module DryRun
     include FileUtils
+    include LowMethods
     @fileutils_output  = $stderr
     @fileutils_label   = ''
     ::FileUtils.collect_method(:noop).each do |name|
