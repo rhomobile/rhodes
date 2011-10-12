@@ -36,10 +36,10 @@ describe "File.expand_path" do
 =end
 
   it "converts a pathname to an absolute pathname, using a complete path" do
-    File.expand_path("", "#{@tmpdir}").should == "#{@tmpdir}"
-    File.expand_path("a", "#{@tmpdir}").should =="#{@tmpdir}/a"
-    File.expand_path("../a", "#{@tmpdir}/xxx").should == "#{@tmpdir}/a"
-    File.expand_path(".", "#{@rootdir}").should == "#{@rootdir}"
+    File.expand_path("", "#{@tmpdir}").downcase.should == "#{@tmpdir}"
+    File.expand_path("a", "#{@tmpdir}").downcase.should =="#{@tmpdir}/a"
+    File.expand_path("../a", "#{@tmpdir}/xxx").downcase.should == "#{@tmpdir}/a"
+    File.expand_path(".", "#{@rootdir}").downcase.should == "#{@rootdir}"
   end
 =begin
   # FIXME: do not use conditionals like this around #it blocks

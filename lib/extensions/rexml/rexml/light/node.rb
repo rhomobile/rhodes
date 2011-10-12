@@ -1,5 +1,4 @@
 require 'rexml/xmltokens'
-require 'rexml/light/node'
 
 # [ :element, parent, name, attributes, children* ]
   # a = Node.new
@@ -163,7 +162,7 @@ module REXML
       private
 
       def namesplit
-        return if defined? @name
+        return if @name.defined?
         at(2) =~ NAMESPLIT
         @prefix = '' || $1
         @name = $2

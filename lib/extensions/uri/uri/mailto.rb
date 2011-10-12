@@ -3,7 +3,7 @@
 #
 # Author:: Akira Yamada <akira@ruby-lang.org>
 # License:: You can redistribute it and/or modify it under the same term as Ruby.
-# Revision:: $Id: mailto.rb 19495 2008-09-23 18:16:08Z drbrain $
+# Revision:: $Id: mailto.rb 27831 2010-05-16 11:35:59Z yugui $
 #
 
 require 'uri/generic'
@@ -38,7 +38,7 @@ module URI
     # hvalue     =  *urlc
     # header     =  hname "=" hvalue
     HEADER_PATTERN = "(?:[^?=&]*=[^?=&]*)".freeze
-    HEADER_REGEXP  = Regexp.new(HEADER_PATTERN, 'N').freeze
+    HEADER_REGEXP  = Regexp.new(HEADER_PATTERN).freeze
     # headers    =  "?" header *( "&" header )
     # to         =  #mailbox
     # mailtoURL  =  "mailto:" [ to ] [ headers ]
@@ -159,7 +159,7 @@ module URI
       return true unless v
       return true if v.size == 0
 
-      if @parser.regexp[:OPAQUE] !~ v || /\A#{MAILBOX_PATTERN}*\z/o !~ v
+      if parser.regexp[:OPAQUE] !~ v || /\A#{MAILBOX_PATTERN}*\z/o !~ v
         raise InvalidComponentError,
           "bad component(expected opaque component): #{v}"
       end
@@ -183,7 +183,7 @@ module URI
       return true unless v
       return true if v.size == 0
 
-      if @parser.regexp[:OPAQUE] !~ v || 
+      if parser.regexp[:OPAQUE] !~ v ||
           /\A(#{HEADER_PATTERN}(?:\&#{HEADER_PATTERN})*)\z/o !~ v
         raise InvalidComponentError,
           "bad component(expected opaque component): #{v}"
@@ -239,18 +239,18 @@ module URI
     #   # => "To: ruby-list@ruby-lang.org\nSubject: subscribe\nCc: myaddr\n\n\n"
     #
     def to_mailtext
-      to = @parser.unescape(@to)
+      to = parser.unescape(@to)
       head = ''
       body = ''
       @headers.each do |x|
         case x[0]
         when 'body'
-          body = @parser.unescape(x[1])
+          body = parser.unescape(x[1])
         when 'to'
-          to << ', ' + @parser.unescape(x[1])
+          to << ', ' + parser.unescape(x[1])
         else
-          head << @parser.unescape(x[0]).capitalize + ': ' +
-            @parser.unescape(x[1])  + "\n"
+          head << parser.unescape(x[0]).capitalize + ': ' +
+            parser.unescape(x[1])  + "\n"
         end
       end
 

@@ -22,8 +22,8 @@
 # http://www.ruby-lang.org/ja/man/html/net_http.html
 # 
 #--
-# $Id: http.rb 18805 2008-08-24 03:21:36Z naruse $
-#++ 
+# $Id: http.rb 30571 2011-01-16 12:35:11Z yugui $
+#++
 
 require 'net/protocol'
 require 'uri'
@@ -39,7 +39,7 @@ module Net   #:nodoc:
   # 
   # This library provides your program functions to access WWW
   # documents via HTTP, Hyper Text Transfer Protocol version 1.1.
-  # For details of HTTP, refer [RFC2616]
+  # For details of HTTP, refer to [RFC2616]
   # (http://www.ietf.org/rfc/rfc2616.txt).
   # 
   # == Examples
@@ -220,7 +220,7 @@ module Net   #:nodoc:
   #       HTTPUnknownResponse
   #       HTTPInformation                    # 1xx
   #           HTTPContinue                       # 100
-  #           HTTPSwitchProtocl                  # 101
+  #           HTTPSwitchProtocol                 # 101
   #       HTTPSuccess                        # 2xx
   #           HTTPOK                             # 200
   #           HTTPCreated                        # 201
@@ -284,7 +284,7 @@ module Net   #:nodoc:
   class HTTP < Protocol
 
     # :stopdoc:
-    Revision = %q$Revision: 18805 $.split[1]
+    Revision = %q$Revision: 30571 $.split[1]
     HTTPVersion = '1.1'
     @newimpl = true
     begin
@@ -446,15 +446,51 @@ module Net   #:nodoc:
       BufferedIO
     end
 
-    # creates a new Net::HTTP object and opens its TCP connection and 
-    # HTTP session.  If the optional block is given, the newly 
-    # created Net::HTTP object is passed to it and closed when the 
+    # call-seq:
+    #   HTTP.start(address, port, p_addr, p_port, p_user, p_pass, &block)
+    #   HTTP.start(address, port=nil, p_addr=nil, p_port=nil, p_user=nil, p_pass=nil, opt, &block)
+    #
+    # creates a new Net::HTTP object and opens its TCP connection and
+    # HTTP session.
+    #
+    # Argments are following:
+    # _address_ :: hostname or IP address of the server
+    # _port_    :: port of the server
+    # _p_addr_  :: address of proxy
+    # _p_port_  :: port of proxy
+    # _p_user_  :: user of proxy
+    # _p_pass_  :: pass of proxy
+    # _opt_     :: optional hash
+    #
+    # _opt_ sets following values by its accessor.
+    # The keys are ca_file, ca_path, cert, cert_store, ciphers,
+    # close_on_empty_response, key, open_timeout, read_timeout, ssl_timeout,
+    # ssl_version, use_ssl, verify_callback, verify_depth and verify_mode.
+    # If you set :use_ssl as true, you can use https and default value of
+    # verify_mode is set as OpenSSL::SSL::VERIFY_PEER.
+    #
+    # If the optional block is given, the newly
+    # created Net::HTTP object is passed to it and closed when the
     # block finishes.  In this case, the return value of this method
     # is the return value of the block.  If no block is given, the
     # return value of this method is the newly created Net::HTTP object
     # itself, and the caller is responsible for closing it upon completion.
-    def HTTP.start(address, port = nil, p_addr = nil, p_port = nil, p_user = nil, p_pass = nil, &block) # :yield: +http+
-      new(address, port, p_addr, p_port, p_user, p_pass).start(&block)
+    def HTTP.start(address, *arg, &block) # :yield: +http+
+      arg.pop if opt = Hash.try_convert(arg[-1])
+      port, p_addr, p_port, p_user, p_pass = *arg
+      port = https_default_port if !port && opt && opt[:use_ssl]
+      http = new(address, port, p_addr, p_port, p_user, p_pass)
+
+      #if opt
+      #  opt = {verify_mode: OpenSSL::SSL::VERIFY_PEER}.update(opt) if opt[:use_ssl]
+      #  http.methods.grep(/\A(\w+)=\z/) do |meth|
+      #    key = $1.to_sym
+      #    opt.key?(key) or next
+      #    http.__send__(meth, opt[key])
+      #  end
+     # end
+
+      http.start(&block)
     end
 
     class << HTTP
@@ -589,8 +625,11 @@ module Net   #:nodoc:
       end
       if use_ssl?
         ssl_parameters = Hash.new
+        iv_list = instance_variables
         SSL_ATTRIBUTES.each do |name|
-          if value = instance_variable_get("@#{name}")
+          ivname = "@#{name}".intern
+          if iv_list.include?(ivname) and
+             value = instance_variable_get(ivname)
             ssl_parameters[name] = value
           end
         end
@@ -607,23 +646,27 @@ module Net   #:nodoc:
       @socket.read_timeout = @read_timeout
       @socket.debug_output = @debug_output
       if use_ssl?
-        if proxy?
-          @socket.writeline sprintf('CONNECT %s:%s HTTP/%s',
-                                    @address, @port, HTTPVersion)
-          @socket.writeline "Host: #{@address}:#{@port}"
-          if proxy_user
-            credential = ["#{proxy_user}:#{proxy_pass}"].pack('m')
-            credential.delete!("\r\n")
-            @socket.writeline "Proxy-Authorization: Basic #{credential}"
+        begin
+          if proxy?
+            @socket.writeline sprintf('CONNECT %s:%s HTTP/%s',
+                                      @address, @port, HTTPVersion)
+            @socket.writeline "Host: #{@address}:#{@port}"
+            if proxy_user
+              credential = ["#{proxy_user}:#{proxy_pass}"].pack('m')
+              credential.delete!("\r\n")
+              @socket.writeline "Proxy-Authorization: Basic #{credential}"
+            end
+            @socket.writeline ''
+            HTTPResponse.read_new(@socket).value
           end
-          @socket.writeline ''
-          HTTPResponse.read_new(@socket).value
-        end
-        if platform != 'Blackberry'
-          s.connect
+          timeout(@open_timeout) { s.connect }
           if @ssl_context.verify_mode != OpenSSL::SSL::VERIFY_NONE
             s.post_connection_check(@address)
           end
+        rescue => exception
+          D "Conn close because of connect error #{exception}"
+          @socket.close if @socket and not @socket.closed?
+          raise exception
         end
       end
       on_connect
@@ -821,7 +864,9 @@ module Net   #:nodoc:
       res = nil
       if HAVE_ZLIB
         unless  initheader.keys.any?{|k| k.downcase == "accept-encoding"}
-          initheader["accept-encoding"] = "gzip;q=1.0,deflate;q=0.6,identity;q=0.3"
+          initheader = initheader.merge({
+            "accept-encoding" => "gzip;q=1.0,deflate;q=0.6,identity;q=0.3"
+          })
           @compression = true
         end
       end
@@ -831,7 +876,7 @@ module Net   #:nodoc:
           the_body = r.read_body dest, &block
           case r["content-encoding"]
           when "gzip"
-            r.body= Zlib::GzipReader.new(StringIO.new(the_body)).read
+            r.body= Zlib::GzipReader.new(StringIO.new(the_body), encoding: "ASCII-8BIT").read
             r.delete("content-encoding")
           when "deflate"
             r.body= Zlib::Inflate.inflate(the_body);
@@ -1135,6 +1180,10 @@ module Net   #:nodoc:
       }
       end_transport req, res
       res
+    rescue => exception
+      D "Conn close because of error #{exception}"
+      @socket.close if @socket and not @socket.closed?
+      raise exception
     end
 
     def begin_transport(req)
@@ -1303,8 +1352,9 @@ module Net   #:nodoc:
     end
 
     # Returns the header field corresponding to the case-insensitive key.
-    # Returns the default value +args+, or the result of the block, or nil,
-    # if there's no header field named key.  See Hash#fetch
+    # Returns the default value +args+, or the result of the block, or
+    # raises an IndexErrror if there's no header field named +key+
+    # See Hash#fetch
     def fetch(key, *args, &block)   #:yield: +key+
       a = @header.fetch(key.downcase, *args, &block)
       a.kind_of?(Array) ? a.join(', ') : a
@@ -1321,9 +1371,9 @@ module Net   #:nodoc:
     alias each each_header
 
     # Iterates for each header names.
-    def each_name   #:yield: +key+
+    def each_name(&block)   #:yield: +key+
       block_given? or return enum_for(__method__)
-      @header.each_key { |key| yield key }
+      @header.each_key(&block)
     end
 
     alias each_key each_name
@@ -1463,13 +1513,13 @@ module Net   #:nodoc:
       return nil unless @header['content-range']
       m = %r<bytes\s+(\d+)-(\d+)/(\d+|\*)>i.match(self['Content-Range']) or
           raise HTTPHeaderSyntaxError, 'wrong Content-Range format'
-      m[1].to_i .. m[2].to_i + 1
+      m[1].to_i .. m[2].to_i
     end
 
     # The length of the range represented in Content-Range: header.
     def range_length
       r = content_range() or return nil
-      r.end - r.begin
+      r.end - r.begin + 1
     end
 
     # Returns a content type string such as "text/html".
@@ -1605,7 +1655,6 @@ module Net   #:nodoc:
       initialize_http_header initheader
       self['Accept'] ||= '*/*'
       self['User-Agent'] ||= 'Ruby'
-      self['Connection'] ||= 'Close'
       @body = nil
       @body_stream = nil
     end
@@ -2165,13 +2214,20 @@ module Net   #:nodoc:
       end
 
       def each_response_header(sock)
+        key = value = nil
         while true
           line = sock.readuntil("\n", true).sub(/\s+\z/, '')
           break if line.empty?
-          m = /\A([^:]+):\s*/.match(line) or
-              raise HTTPBadResponse, 'wrong header line format'
-          yield m[1], m.post_match
+          if line[0] == ?\s or line[0] == ?\t and value
+            value << ' ' unless value.empty?
+            value << line.strip
+          else
+            yield key, value if key
+            key, value = line.strip.split(/\s*:\s*/, 2)
+            raise HTTPBadResponse, 'wrong header line format' if value.nil?
+          end
         end
+        yield key, value if key
       end
     end
 
@@ -2370,8 +2426,12 @@ module Net   #:nodoc:
             raise HTTPBadResponse, "wrong chunk size line: #{line}"
         len = hexlen.hex
         break if len == 0
-        @socket.read len, dest; total += len
-        @socket.read 2   # \r\n
+        begin
+          @socket.read len, dest
+        ensure
+          total += len
+          @socket.read 2   # \r\n
+        end
       end
       until @socket.readline.empty?
         # none

@@ -3,7 +3,7 @@
 #
 # Author:: Akira Yamada <akira@ruby-lang.org>
 # License:: You can redistribute it and/or modify it under the same term as Ruby.
-# Revision:: $Id: generic.rb 20258 2008-11-18 16:46:16Z yugui $
+# Revision:: $Id: generic.rb 31804 2011-05-29 22:50:20Z yugui $
 #
 
 require 'uri/common'
@@ -73,7 +73,7 @@ module URI
         if args.kind_of?(Array)
           return self.build(args.collect{|x| 
             if x
-              @parser.escape(x)
+              parser.escape(x)
             else
               x
             end
@@ -82,7 +82,7 @@ module URI
           tmp = {}
           args.each do |key, value|
             tmp[key] = if value
-                @parser.escape(value)
+                parser.escape(value)
               else
                 value
               end
@@ -121,7 +121,7 @@ module URI
         "expected Array of or Hash of components of #{self.class} (#{self.class.component.join(', ')})"
       end
 
-      tmp << DEFAULT_PARSER
+      tmp << nil
       tmp << true
       return self.new(*tmp)
     end
@@ -172,7 +172,7 @@ module URI
       @opaque = nil
       @registry = nil
       @fragment = nil
-      @parser = parser
+      @parser = parser == DEFAULT_PARSER ? nil : parser
 
       if arg_check
         self.scheme = scheme
@@ -212,7 +212,14 @@ module URI
     attr_reader :query
     attr_reader :opaque
     attr_reader :fragment
-    attr_reader :parser
+
+    def parser
+      if !defined?(@parser) || !@parser
+        DEFAULT_PARSER
+      else
+        @parser || DEFAULT_PARSER
+      end
+    end
 
     # replace self by other URI object
     def replace!(oth)
@@ -231,7 +238,7 @@ module URI
     end
 
     def check_scheme(v)
-      if v && @parser.regexp[:SCHEME] !~ v
+      if v && parser.regexp[:SCHEME] !~ v
         raise InvalidComponentError,
           "bad component(expected scheme component): #{v}"
       end
@@ -270,7 +277,7 @@ module URI
 
       return v unless v
 
-      if @parser.regexp[:USERINFO] !~ v
+      if parser.regexp[:USERINFO] !~ v
         raise InvalidComponentError,
           "bad component(expected userinfo component or user component): #{v}"
       end
@@ -291,7 +298,7 @@ module URI
           "password component depends user component"
       end
 
-      if @parser.regexp[:USERINFO] !~ v
+      if parser.regexp[:USERINFO] !~ v
         raise InvalidComponentError,
           "bad component(expected user component): #{v}"
       end
@@ -356,7 +363,7 @@ module URI
     private :split_userinfo
 
     def escape_userpass(v)
-      v = @parser.escape(v, /[@:\/]/o) # RFC 1738 section 3.1 #/
+      v = parser.escape(v, /[@:\/]/o) # RFC 1738 section 3.1 #/
     end
     private :escape_userpass
 
@@ -384,7 +391,7 @@ module URI
       if @registry || @opaque
         raise InvalidURIError, 
           "can not set host with registry or opaque"
-      elsif @parser.regexp[:HOST] !~ v
+      elsif parser.regexp[:HOST] !~ v
         raise InvalidComponentError,
           "bad component(expected host component): #{v}"
       end
@@ -410,7 +417,7 @@ module URI
       if @registry || @opaque
         raise InvalidURIError, 
           "can not set port with registry or opaque"
-      elsif !v.kind_of?(Fixnum) && @parser.regexp[:PORT] !~ v
+      elsif !v.kind_of?(Fixnum) && parser.regexp[:PORT] !~ v
         raise InvalidComponentError,
           "bad component(expected port component): #{v}"
       end
@@ -446,7 +453,7 @@ module URI
       if @host || @port || @user # userinfo = @user + ':' + @password
         raise InvalidURIError, 
           "can not set registry with host, port, or userinfo"
-      elsif v && @parser.regexp[:REGISTRY] !~ v
+      elsif v && parser.regexp[:REGISTRY] !~ v
         raise InvalidComponentError,
           "bad component(expected registry component): #{v}"
       end
@@ -475,14 +482,16 @@ module URI
           "path conflicts with opaque"
       end
 
-      if @scheme
-        if v && v != '' && @parser.regexp[:ABS_PATH] !~ v
-          raise InvalidComponentError, 
+      # If scheme is ftp, path may be relative.
+      # See RFC 1738 section 3.2.2, and RFC 2396.
+      if @scheme && @scheme != "ftp"
+        if v && v != '' && parser.regexp[:ABS_PATH] !~ v
+          raise InvalidComponentError,
             "bad component(expected absolute path component): #{v}"
         end
       else
-        if v && v != '' && @parser.regexp[:ABS_PATH] !~ v && @parser.regexp[:REL_PATH] !~ v
-          raise InvalidComponentError, 
+        if v && v != '' && parser.regexp[:ABS_PATH] !~ v && parser.regexp[:REL_PATH] !~ v
+          raise InvalidComponentError,
             "bad component(expected relative path component): #{v}"
         end
       end
@@ -513,8 +522,8 @@ module URI
           "query conflicts with opaque"
       end
 
-      if v && v != '' && @parser.regexp[:QUERY] !~ v
-          raise InvalidComponentError, 
+      if v && v != '' && parser.regexp[:QUERY] !~ v
+          raise InvalidComponentError,
             "bad component(expected query component): #{v}"
       end
 
@@ -542,7 +551,7 @@ module URI
       if @host || @port || @user || @path  # userinfo = @user + ':' + @password
         raise InvalidURIError, 
           "can not set opaque with host, port, userinfo or path"
-      elsif v && @parser.regexp[:OPAQUE] !~ v
+      elsif v && parser.regexp[:OPAQUE] !~ v
         raise InvalidComponentError,
           "bad component(expected opaque component): #{v}"
       end
@@ -565,8 +574,8 @@ module URI
     def check_fragment(v)
       return v unless v
 
-      if v && v != '' && @parser.regexp[:FRAGMENT] !~ v
-        raise InvalidComponentError, 
+      if v && v != '' && parser.regexp[:FRAGMENT] !~ v
+        raise InvalidComponentError,
           "bad component(expected fragment component): #{v}"
       end
 
@@ -777,7 +786,7 @@ module URI
       case oth
       when Generic
       when String
-        oth = @parser.parse(oth)
+        oth = parser.parse(oth)
       else
         raise ArgumentError,
           "bad argument(expected URI object or URI string)"
@@ -804,30 +813,26 @@ module URI
     private :merge0
 
     def route_from_path(src, dst)
-      # RFC2396, Section 4.2
-      return '' if src == dst
-
-      src_path = split_path(src)
-      dst_path = split_path(dst)
-
-      # hmm... dst has abnormal absolute path, 
-      # like "/./", "/../", "/x/../", ...
-      if dst_path.include?('..') ||
-          dst_path.include?('.')
+      case dst
+      when src
+        # RFC2396, Section 4.2
+        return ''
+      when %r{(?:\A|/)\.\.?(?:/|\z)}
+        # dst has abnormal absolute path,
+        # like "/./", "/../", "/x/../", ...
         return dst.dup
       end
 
-      src_path.pop
+      src_path = src.scan(%r{(?:\A|[^/]+)/})
+      dst_path = dst.scan(%r{(?:\A|[^/]+)/?})
 
       # discard same parts
-      while dst_path.first == src_path.first
-        break if dst_path.empty?
-
+      while !dst_path.empty? && dst_path.first == src_path.first
         src_path.shift
         dst_path.shift
       end
 
-      tmp = dst_path.join('/')
+      tmp = dst_path.join
 
       # calculate
       if src_path.empty?
@@ -848,7 +853,7 @@ module URI
       case oth
       when Generic
       when String
-        oth = @parser.parse(oth)
+        oth = parser.parse(oth)
       else
         raise ArgumentError,
           "bad argument(expected URI object or URI string)"
@@ -869,7 +874,7 @@ module URI
       rel = URI::Generic.new(nil, # it is relative URI
                              self.userinfo, self.host, self.port, 
                              self.registry, self.path, self.opaque,
-                             self.query, self.fragment, @parser)
+                             self.query, self.fragment, parser)
 
       if rel.userinfo != oth.userinfo ||
           rel.host.to_s.downcase != oth.host.to_s.downcase ||
@@ -960,7 +965,7 @@ module URI
       case oth
       when Generic
       when String
-        oth = @parser.parse(oth)
+        oth = parser.parse(oth)
       else
         raise ArgumentError,
           "bad argument(expected URI object or URI string)"
@@ -984,6 +989,9 @@ module URI
     def normalize!
       if path && path == ''
         set_path('/')
+      end
+      if scheme && scheme != scheme.downcase
+        set_scheme(self.scheme.downcase)
       end
       if host && host != host.downcase
         set_host(self.host.downcase)
@@ -1059,7 +1067,8 @@ module URI
     end
 
     def eql?(oth)
-      @parser == oth.parser &&
+      self.class == oth.class &&
+      parser == oth.parser &&
       self.component_ary.eql?(oth.component_ary)
     end
 
@@ -1117,7 +1126,7 @@ module URI
     def coerce(oth)
       case oth
       when String
-        oth = @parser.parse(oth)
+        oth = parser.parse(oth)
       else
         super
       end
