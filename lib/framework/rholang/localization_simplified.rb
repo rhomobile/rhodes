@@ -31,10 +31,12 @@ module LocalizationSimplified
     def self.init_current_locale
         return if @@cur_locale
         
-        @@cur_locale = System::get_locale().downcase
+        @@cur_locale = System::get_locale()
+        @@cur_locale = @@cur_locale.downcase if @@cur_locale
         @@cur_locale = 'en' unless @@cur_locale
-        @@cur_country = System::get_property("country").downcase
-
+        @@cur_country = System::get_property("country")
+        @@cur_country = @@cur_country.downcase if @@cur_country
+        
         puts "Current locale: #{@@cur_locale}; Country code: #{@@cur_country}"
                 
     end
