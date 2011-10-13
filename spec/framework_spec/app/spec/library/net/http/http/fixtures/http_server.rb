@@ -54,8 +54,8 @@ module NetHTTPSpecs
     def start_server
       unless @server
         server_config = {
-          :BindAddress => "localhost",
-          :Port => 3333,
+          :BindAddress => "127.0.0.1",
+          :Port => 3454,
           :Logger => WEBrick::Log.new(NullWriter.new),
           :AccessLog => [],
           :ShutdownSocketWithoutClose => true,

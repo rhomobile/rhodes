@@ -8,7 +8,7 @@ describe :net_ftp_request_get, :shared => true do
   end
 
   before(:each) do
-    @http = Net::HTTP.start("localhost", 3333)
+    @http = Net::HTTP.start("127.0.0.1", 3454)
   end
 
   describe "when passed no block" do

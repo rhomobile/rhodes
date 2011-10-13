@@ -3,7 +3,7 @@ require 'net/http'
 
 describe "Net::HTTP#use_ssl?" do
   it "returns false" do
-    http = Net::HTTP.new("localhost")
+    http = Net::HTTP.new("127.0.0.1")
     http.use_ssl?.should be_false
   end
 end

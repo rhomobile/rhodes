@@ -12,24 +12,24 @@ describe "Net::HTTP.start" do
   end
 
   it "returns a new Net::HTTP object for the passed address and port" do
-    net = Net::HTTP.start("localhost", 3333)
+    net = Net::HTTP.start("127.0.0.1", 3454)
     net.should be_kind_of(Net::HTTP)
-    net.address.should == "localhost"
-    net.port.should == 3333
+    net.address.should == "127.0.0.1"
+    net.port.should == 3454
   end
 
   it "opens the tcp connection" do
-    Net::HTTP.start("localhost", 3333).started?.should be_true
+    Net::HTTP.start("127.0.0.1", 3454).started?.should be_true
   end
 
   describe "when passed a block" do
     it "returns the blocks return value" do
-      Net::HTTP.start("localhost", 3333) { :test }.should == :test
+      Net::HTTP.start("127.0.0.1", 3454) { :test }.should == :test
     end
 
     it "yields the new Net::HTTP object to the block" do
       yielded = false
-      Net::HTTP.start("localhost", 3333) do |net|
+      Net::HTTP.start("127.0.0.1", 3454) do |net|
         yielded = true
         net.should be_kind_of(Net::HTTP)
       end
@@ -37,12 +37,12 @@ describe "Net::HTTP.start" do
     end
 
     it "opens the tcp connection before yielding" do
-      Net::HTTP.start("localhost", 3333) { |http| http.started?.should be_true }
+      Net::HTTP.start("127.0.0.1", 3454) { |http| http.started?.should be_true }
     end
 
     it "closes the tcp connection after yielding" do
       net = nil
-      Net::HTTP.start("localhost", 3333) { |x| net = x }
+      Net::HTTP.start("127.0.0.1", 3454) { |x| net = x }
       net.started?.should be_false
     end
   end
@@ -58,7 +58,7 @@ describe "Net::HTTP#start" do
   end
 
   before(:each) do
-    @http = Net::HTTP.new("localhost", 3333)
+    @http = Net::HTTP.new("127.0.0.1", 3454)
   end
 
   it "returns self" do

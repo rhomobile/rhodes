@@ -9,11 +9,11 @@ describe "Net::HTTP#initialize" do
   describe "when passed address" do
     before(:each) do
       @net = Net::HTTP.allocate
-      @net.send(:initialize, "localhost")
+      @net.send(:initialize, "127.0.0.1")
     end
 
     it "sets the new Net::HTTP instance's address to the passed address" do
-      @net.address.should == "localhost"
+      @net.address.should == "127.0.0.1"
     end
 
     it "sets the new Net::HTTP instance's port to the default HTTP port" do
@@ -28,15 +28,15 @@ describe "Net::HTTP#initialize" do
   describe "when passed address, port" do
     before(:each) do
       @net = Net::HTTP.allocate
-      @net.send(:initialize, "localhost", 3333)
+      @net.send(:initialize, "127.0.0.1", 3454)
     end
 
     it "sets the new Net::HTTP instance's address to the passed address" do
-      @net.address.should == "localhost"
+      @net.address.should == "127.0.0.1"
     end
 
     it "sets the new Net::HTTP instance's port to the passed port" do
-      @net.port.should eql(3333)
+      @net.port.should eql(3454)
     end
 
     it "does not start the new Net::HTTP instance" do
