@@ -504,8 +504,12 @@ namespace rho.net
 	    private NetResponse makeResponse(String strRespBody, int nErrorCode)
 	    {
 		    NetResponse pResp = new NetResponse(strRespBody != null ? strRespBody : "", nErrorCode );
-		    if (pResp.isSuccess())
+            if (pResp.isSuccess())
+            {
+                if (m_strCookies == "" && m_strRespBody.Contains("rhoconnect_session"))
+                    m_strCookies = m_strRespBody;
                 pResp.setCookies(m_strCookies);
+            }
 		
 		    return pResp;
 	    }
