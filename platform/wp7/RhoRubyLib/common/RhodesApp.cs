@@ -224,13 +224,19 @@ namespace rho.common
                     if (m_tabControl != null && m_tabControl.Items.Count > 0)
                     {
                         ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.IsScriptEnabled = true;
-                        ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(new Uri(strUrl, UriKind.Relative));
+                        if (isExternalUrl(strUrl))
+                            ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(new Uri(strUrl, UriKind.Absolute));
+                        else
+                            ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(new Uri(strUrl, UriKind.Relative));
                     }
                 }
                 else
                 {
                     m_webBrowser.IsScriptEnabled = true;
-                    m_webBrowser.Navigate(new Uri(strUrl, UriKind.Relative));
+                    if (isExternalUrl(strUrl))
+                        m_webBrowser.Navigate(new Uri(strUrl, UriKind.Absolute));
+                    else
+                        m_webBrowser.Navigate(new Uri(strUrl, UriKind.Relative));
                 }
             });
         }
