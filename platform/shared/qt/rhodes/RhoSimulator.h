@@ -28,6 +28,8 @@
 #define RHOSIMULATOR_H
 
 #define RHOSIMULATOR_NAME "RhoSimulator"
+#ifndef RHO_SYMBIAN
 #include "RhoSimulatorVersion.h"
+#endif
 
 #endif // RHOSIMULATOR_H
