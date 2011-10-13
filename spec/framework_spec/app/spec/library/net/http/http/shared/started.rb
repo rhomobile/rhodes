@@ -8,7 +8,7 @@ describe :net_http_started_p, :shared => true do
   end
 
   before(:each) do
-    @net = Net::HTTP.new("localhost", 3333)
+    @net = Net::HTTP.new("127.0.0.1", 3454)
   end
 
   it "returns true when self has been started" do

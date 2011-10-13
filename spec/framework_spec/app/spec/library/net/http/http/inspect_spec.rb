@@ -12,15 +12,15 @@ describe "Net::HTTP#inspect" do
   end
 
   before(:each) do
-    @net = Net::HTTP.new("localhost", 3333)
+    @net = Net::HTTP.new("127.0.0.1", 3454)
   end
 
   it "returns a String representation of self" do
-    net = Net::HTTP.new("localhost", 3333)
+    net = Net::HTTP.new("127.0.0.1", 3454)
     net.inspect.should be_kind_of(String)
-    net.inspect.should == "#<Net::HTTP localhost:3333 open=false>"
+    net.inspect.should == "#<Net::HTTP 127.0.0.1:3454 open=false>"
 
     net.start
-    net.inspect.should == "#<Net::HTTP localhost:3333 open=true>"
+    net.inspect.should == "#<Net::HTTP 127.0.0.1:3454 open=true>"
   end
 end
