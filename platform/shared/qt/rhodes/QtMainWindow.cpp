@@ -601,7 +601,9 @@ void QtMainWindow::menuActionEvent(bool checked)
 
 void QtMainWindow::on_actionAbout_triggered()
 {
+    #ifndef RHO_SYMBIAN
     QMessageBox::about(this, RHOSIMULATOR_NAME, RHOSIMULATOR_NAME " v" RHOSIMULATOR_VERSION);
+    #endif
 }
 
 // slots:

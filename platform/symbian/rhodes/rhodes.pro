@@ -12,8 +12,8 @@ db.source = db
 lib.source = lib
 DEPLOYMENTFOLDERS = apps db lib
 
-symbian:TARGET = AgendaSalute
-symbian:TARGET.UID3 = 3780829545
+symbian:TARGET = testmy
+symbian:TARGET.UID3 = 3959687259
 #0xE17AE169
 #symbian:TARGET.UID3 = 0x20047C9A
 #0xA00100C8
@@ -64,7 +64,6 @@ SOURCES += ../../shared/qt/rhodes/QtWebInspector.cpp \
     ../../shared/qt/rhodes/impl/NativeTabbarImpl.cpp \
     ../../shared/qt/rhodes/impl/MapViewImpl.cpp \
     ../../shared/qt/rhodes/impl/MainWindowImpl.cpp \
-    ../../shared/qt/rhodes/impl/SSLImpl.cpp \
     ../../shared/qt/rhodes/impl/GeoLocationImpl.cpp \
     ../../shared/qt/rhodes/impl/DateTimePickerImpl.cpp \
     ../../shared/qt/rhodes/impl/CameraImpl.cpp \
@@ -133,6 +132,7 @@ INCLUDEPATH += /epoc32/include/app
 INCLUDEPATH += src
 INCLUDEPATH += ../../shared/ruby/ext/rho
 SOURCES += ../../shared/common/PosixThreadImpl.cpp\
+           ../../shared/qt/rhodes/impl/SSLImpl.cpp \
            src/qwebviewkineticscroller.cpp \
            src/phonebook/ruby_phonebook.cpp \
            src/phonebook/Phonebook.cpp \
