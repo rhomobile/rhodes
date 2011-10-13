@@ -11,7 +11,7 @@ describe "Net::FTP#storlines" do
     @tmp_file = tmp("textfile", false)
 
     @ftp = Net::FTP.new
-    @ftp.connect("localhost", 9921)
+    @ftp.connect("127.0.0.1", 9876)
   end
 
   after(:each) do

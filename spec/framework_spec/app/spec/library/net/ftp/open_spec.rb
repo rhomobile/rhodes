@@ -9,12 +9,12 @@ describe "Net::FTP.open" do
 
   describe "when passed no block" do
     it "returns a new Net::FTP instance" do
-      Net::FTP.open("localhost").should equal(@ftp)
+      Net::FTP.open("127.0.0.1").should equal(@ftp)
     end
 
     it "passes the passed arguments down to Net::FTP.new" do
-      Net::FTP.should_receive(:new).with("localhost", "user", "password", "account")
-      Net::FTP.open("localhost", "user", "password", "account")
+      Net::FTP.should_receive(:new).with("127.0.0.1", "user", "password", "account")
+      Net::FTP.open("127.0.0.1", "user", "password", "account")
     end
   end
 
@@ -25,7 +25,7 @@ describe "Net::FTP.open" do
 
     it "yields a new Net::FTP instance to the passed block" do
       yielded = false
-      Net::FTP.open("localhost") do |ftp|
+      Net::FTP.open("127.0.0.1") do |ftp|
         yielded = true
         ftp.should equal(@ftp)
       end
@@ -33,14 +33,14 @@ describe "Net::FTP.open" do
     end
 
     it "closes the Net::FTP instance after yielding" do
-      Net::FTP.open("localhost") do |ftp|
+      Net::FTP.open("127.0.0.1") do |ftp|
         ftp.should_receive(:close)
       end
     end
 
     it "closes the Net::FTP instance even if an exception is raised while yielding" do
       begin
-        Net::FTP.open("localhost") do |ftp|
+        Net::FTP.open("127.0.0.1") do |ftp|
           ftp.should_receive(:close)
           raise ArgumentError, "some exception"
         end
@@ -49,7 +49,7 @@ describe "Net::FTP.open" do
     end
 
     it "returns the block's return value" do
-      Net::FTP.open("localhost") { :test }.should == :test
+      Net::FTP.open("127.0.0.1") { :test }.should == :test
     end
   end
 end
