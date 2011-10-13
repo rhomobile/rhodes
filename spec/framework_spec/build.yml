@@ -12,7 +12,7 @@ iphone:
   entitlements: ""
   codesignidentity: ""
   configuration: Release
-  extensions: ["fcntl", "digest-sha1"]   
+  extensions: ["digest-sha1"]   
   
 android:    
   version: 2.3.3
