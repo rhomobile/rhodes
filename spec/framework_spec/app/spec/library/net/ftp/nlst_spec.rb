@@ -9,7 +9,7 @@ describe "Net::FTP#nlst" do
 
     @ftp = Net::FTP.new
     @ftp.passive = false
-    @ftp.connect("localhost", 9921)
+    @ftp.connect("127.0.0.1", 9876)
   end
 
   after(:each) do

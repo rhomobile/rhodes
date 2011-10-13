@@ -3,8 +3,8 @@ module NetFTPSpecs
     attr_accessor :connect_message
     attr_reader :login_user, :login_pass, :login_acct
 
-    def initialize(port = 9921)
-      @server = TCPServer.new("localhost", port)
+    def initialize(port = 9876)
+      @server = TCPServer.new("127.0.0.1", port)
 
       @handlers = {}
       @commands = []

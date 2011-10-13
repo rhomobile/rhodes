@@ -7,7 +7,7 @@ describe :net_ftp_getbinaryfile, :shared => :true do
     @server.serve_once
 
     @ftp = Net::FTP.new
-    @ftp.connect("localhost", 9921)
+    @ftp.connect("127.0.0.1", 9876)
     @ftp.binary = @binary_mode
   end
 
