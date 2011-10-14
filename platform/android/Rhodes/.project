@@ -7,7 +7,6 @@
 	<buildSpec>
 		<buildCommand>
 			<name>org.eclipse.cdt.managedbuilder.core.genmakebuilder</name>
-			<triggers>clean,full,incremental,</triggers>
 			<arguments>
 				<dictionary>
 					<key>?name?</key>
@@ -107,12 +106,12 @@
 		<link>
 			<name>extensions</name>
 			<type>2</type>
-			<location>/home/lexis/rhomobile/rhodes/lib/extensions</location>
+			<locationURI>PARENT-3-PROJECT_LOC/lib/extensions</locationURI>
 		</link>
 		<link>
 			<name>shared</name>
 			<type>2</type>
-			<location>/home/lexis/rhomobile/rhodes/platform/shared</location>
+			<locationURI>PARENT-2-PROJECT_LOC/shared</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
