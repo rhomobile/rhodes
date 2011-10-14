@@ -194,6 +194,12 @@ Add to build.yml:
 
 See details [here](device-caps#barcode).
 
+### net/http
+
+Add to build.yml:
+	
+	extensions: ["net-http", "thread", "timeout", "uri"]
+
 ### FileUtils
 
 Add to build.yml:
