@@ -45,7 +45,7 @@ public class PerformOnUiThread implements Runnable {
 			runnable.run();
 		}
 		catch (Exception e) {
-			Logger.E(TAG, "Operation failed: " + e.getMessage());
+			Logger.E(TAG, e);
 		}
 		finally {
 			synchronized (runnable) {
@@ -64,7 +64,7 @@ public class PerformOnUiThread implements Runnable {
                             RhodesActivity.safeGetInstance().post(r, delay);
                         }
                         catch (Exception e) {
-                            Logger.E(TAG, "exec failed: " + e.getMessage());
+                            Logger.E(TAG, e);
                             setError(e);
                         }
                     }
@@ -88,7 +88,7 @@ public class PerformOnUiThread implements Runnable {
                         try {
                             RhodesActivity.safeGetInstance().post(r);
                         } catch (Exception e) {
-                            Logger.E(TAG, "exec failed: " + e.getMessage());
+                            Logger.E(TAG, e);
                             setError(e);
                         }
                     }
@@ -117,8 +117,7 @@ public class PerformOnUiThread implements Runnable {
                 }
             }
         } catch (Exception e) {
-            Logger.E(TAG, "exec failed: " + e.getMessage());
-            Thread.dumpStack();
+            Logger.E(TAG, e);
         }
     }
 };
