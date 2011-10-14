@@ -1,5 +1,6 @@
 require File.expand_path('../../../../../spec_helper', __FILE__)
 require 'net/http'
+require File.expand_path('../fixtures/http_server', __FILE__)
 
 describe "Net::HTTP.Proxy" do
   it "returns a new subclass of Net::HTTP" do

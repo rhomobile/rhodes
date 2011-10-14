@@ -61,7 +61,7 @@ module NetHTTPSpecs
         @server_port = System::get_property('free_server_port')
         server_config = {
           :BindAddress => "127.0.0.1",
-          :Port => @server_port, #3454,
+          :Port => @server_port, #NetHTTPSpecs.server_port,
           :Logger => WEBrick::Log.new(NullWriter.new),
           :AccessLog => [],
           :ShutdownSocketWithoutClose => true,
