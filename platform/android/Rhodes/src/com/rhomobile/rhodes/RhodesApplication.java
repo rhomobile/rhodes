@@ -37,15 +37,50 @@ public class RhodesApplication extends Application{
 	
     private static final String TAG = RhodesApplication.class.getSimpleName();
     private static Handler mHandler;
-	static {
-		NativeLibraries.load();
-	}
+    static {
+        NativeLibraries.load();
+    }
+    
+    @Override
+    public void onCreate(){
+        super.onCreate();
+
+        RhodesApplication.runWhen(
+                UiState.MainActivityStarted,
+                new StateHandler(false) {
+                    @Override
+                    public void run() {
+                        rhodesActivityStarted(true);
+                    }
+                });
+        RhodesApplication.runWhen(
+                UiState.MainActivityPaused,
+                new StateHandler(false) {
+                    @Override
+                    public void run() {
+                        if (isRhodesActivityStarted()) {
+                            Logger.T(TAG, "callUiDestroyedCallback");
+                            rhodesActivityStarted(false);
+                            RhodesService.callUiDestroyedCallback();
+                        }
+                    }
+                });
+    }
+    private static boolean sRhodesActivityStarted = false;
+
+    synchronized
+    static void rhodesActivityStarted(boolean started) {
+        sRhodesActivityStarted = started;
+    }
+
+    synchronized
+    public static boolean isRhodesActivityStarted() { return sRhodesActivityStarted; }
 
     private native static void createRhodesApp();
     private native static void startRhodesApp();
     private native static void stopRhodesApp();
     private native static boolean canStartApp(String strCmdLine, String strSeparators);
-	
+
     public static void create()
     {
         if (sAppState != AppState.Undefined) {
@@ -56,13 +91,13 @@ public class RhodesApplication extends Application{
     }
 
     public static void start()
-	{
+    {
         if (sAppState != AppState.Undefined) {
             Logger.E(TAG, "Cannot start application it is already started!!!");
             return;
         }
-	    startRhodesApp();
-	}
+        startRhodesApp();
+    }
 
 	public static boolean canStart(String strCmdLine)
 	{
@@ -70,14 +105,23 @@ public class RhodesApplication extends Application{
 	}
 	
     public static void stop() {
-        
+        Logger.T(TAG, "Stopping application");
         mHandler = new Handler();
         mHandler.postDelayed(new Runnable() {
             public void run() {
+                Logger.T(TAG, "do stopRhodesApp");
                 stopRhodesApp();
+                try {
+                    Logger.T(TAG, "do RhodesActivity.finish()");
+                    RhodesActivity.safeGetInstance().finish();
+                } catch (Throwable e) {
+                    // Just postpone
+                }
+                Logger.T(TAG, "send quit signal");
                 Process.sendSignal(Process.myPid(), Process.SIGNAL_QUIT);
                 mHandler.postDelayed(new Runnable() {
                     public void run() {
+                        Logger.T(TAG, "send kill signal");
                         Process.killProcess(Process.myPid());
                     }
                 }, 500);
