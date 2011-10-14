@@ -12,7 +12,7 @@ describe "Net::HTTP#proppatch" do
   end
 
   before(:each) do
-    @http = Net::HTTP.start("127.0.0.1", 3454)
+    @http = Net::HTTP.start("127.0.0.1", NetHTTPSpecs.server_port)
   end
 
   it "sends an proppatch request to the passed path and returns the response" do

@@ -112,6 +112,9 @@ VALUE rho_sys_get_property(char* szPropName)
 	if (strcasecmp("rhodes_port",szPropName) == 0) 
         return rho_ruby_create_integer(atoi(RHODESAPP().getFreeListeningPort()));
 
+	if (strcasecmp("free_server_port",szPropName) == 0) 
+        return rho_ruby_create_integer(RHODESAPP().determineFreeListeningPort());
+
 	if (strcasecmp("is_emulator",szPropName) == 0) 
         return rho_ruby_create_boolean(0);
 

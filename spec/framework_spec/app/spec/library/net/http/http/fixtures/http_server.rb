@@ -50,12 +50,18 @@ module NetHTTPSpecs
 
   class << self
     @server = nil
-
+    @server_port = 0
+    
+    def server_port
+        @server_port
+    end
+    
     def start_server
       unless @server
+        @server_port = System::get_property('free_server_port')
         server_config = {
           :BindAddress => "127.0.0.1",
-          :Port => 3454,
+          :Port => @server_port, #3454,
           :Logger => WEBrick::Log.new(NullWriter.new),
           :AccessLog => [],
           :ShutdownSocketWithoutClose => true,

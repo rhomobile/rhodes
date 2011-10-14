@@ -3,7 +3,7 @@ require 'net/http'
 
 describe "Net::HTTP#port" do
   it "returns the current port number" do
-    net = Net::HTTP.new("127.0.0.1", 3454)
-    net.port.should eql(3454)
+    net = Net::HTTP.new("127.0.0.1", NetHTTPSpecs.server_port)
+    net.port.should eql(NetHTTPSpecs.server_port)
   end
 end

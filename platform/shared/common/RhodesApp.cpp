@@ -753,13 +753,23 @@ void CRhodesApp::initHttpServer()
 
 const char* CRhodesApp::getFreeListeningPort()
 {
-    int sockfd = -1;
-    sockaddr_in serv_addr = sockaddr_in();
-    int noerrors = 1;
-
 	if ( m_strListeningPorts.length() > 0 )
 		return m_strListeningPorts.c_str();
-	
+
+    int nFreePort = determineFreeListeningPort();
+    m_strListeningPorts = convertToStringA(nFreePort);
+
+	LOG(INFO) + "Free listening port: " + m_strListeningPorts;
+
+    return m_strListeningPorts.c_str();
+}
+
+int CRhodesApp::determineFreeListeningPort()
+{
+    int sockfd = -1;
+    sockaddr_in serv_addr = sockaddr_in();
+    int nFreePort = 0, noerrors = 1;
+
 	LOG(INFO) + "Trying to get free listening port.";
 	
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -837,13 +847,12 @@ const char* CRhodesApp::getFreeListeningPort()
         if (getsockname( sockfd, (struct sockaddr *)&serv_addr, &length ) != 0)
         {
             LOG(WARNING) + "Can not get socket info";
-            noerrors = 0;
+            nFreePort = 0;
         }
         else
         {
-            sprintf(buf, "%d", (int)ntohs(serv_addr.sin_port));
-            LOG(INFO) + "Got port to bind on: " + buf;
-            m_strListeningPorts = buf;
+            nFreePort = (int)ntohs(serv_addr.sin_port);
+            LOG(INFO) + "Got port to bind on: " + nFreePort;
         }
     }
     
@@ -854,12 +863,7 @@ const char* CRhodesApp::getFreeListeningPort()
     closesocket(sockfd);
 #endif
 	
-	if ( !noerrors )
-		m_strListeningPorts = "0";
-	
-	LOG(INFO) + "Free listening port: " + m_strListeningPorts;
-	
-	return m_strListeningPorts.c_str();
+	return nFreePort;
 }
 	
 void CRhodesApp::initAppUrls() 

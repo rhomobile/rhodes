@@ -27,7 +27,7 @@ describe "Net::HTTP.new" do
 
   describe "when passed address, port" do
     before(:each) do
-      @http = Net::HTTP.new("127.0.0.1", 3454)
+      @http = Net::HTTP.new("127.0.0.1", NetHTTPSpecs.server_port)
     end
 
     it "returns a Net::HTTP instance" do
@@ -40,7 +40,7 @@ describe "Net::HTTP.new" do
     end
 
     it "sets the new Net::HTTP instance's port to the passed port" do
-      @http.port.should eql(3454)
+      @http.port.should eql(NetHTTPSpecs.server_port)
     end
 
     it "does not start the new Net::HTTP instance" do
@@ -50,32 +50,32 @@ describe "Net::HTTP.new" do
 
   describe "when passed address, port, *proxy_options" do
     it "returns a Net::HTTP instance" do
-      http = Net::HTTP.new("127.0.0.1", 3454, "127.0.0.1")
+      http = Net::HTTP.new("127.0.0.1", NetHTTPSpecs.server_port, "127.0.0.1")
       http.proxy?.should be_true
       http.instance_of?(Net::HTTP).should be_false
       http.should be_kind_of(Net::HTTP)
     end
 
     it "correctly sets the passed Proxy options" do
-      http = Net::HTTP.new("127.0.0.1", 3454, "127.0.0.1")
+      http = Net::HTTP.new("127.0.0.1", NetHTTPSpecs.server_port, "127.0.0.1")
       http.proxy_address.should == "127.0.0.1"
       http.proxy_port.should eql(80)
       http.proxy_user.should be_nil
       http.proxy_pass.should be_nil
 
-      http = Net::HTTP.new("127.0.0.1", 3454, "127.0.0.1", 1234)
+      http = Net::HTTP.new("127.0.0.1", NetHTTPSpecs.server_port, "127.0.0.1", 1234)
       http.proxy_address.should == "127.0.0.1"
       http.proxy_port.should eql(1234)
       http.proxy_user.should be_nil
       http.proxy_pass.should be_nil
 
-      http = Net::HTTP.new("127.0.0.1", 3454, "127.0.0.1", 1234, "rubyspec")
+      http = Net::HTTP.new("127.0.0.1", NetHTTPSpecs.server_port, "127.0.0.1", 1234, "rubyspec")
       http.proxy_address.should == "127.0.0.1"
       http.proxy_port.should eql(1234)
       http.proxy_user.should == "rubyspec"
       http.proxy_pass.should be_nil
 
-      http = Net::HTTP.new("127.0.0.1", 3454, "127.0.0.1", 1234, "rubyspec", "rocks")
+      http = Net::HTTP.new("127.0.0.1", NetHTTPSpecs.server_port, "127.0.0.1", 1234, "rubyspec", "rocks")
       http.proxy_address.should == "127.0.0.1"
       http.proxy_port.should eql(1234)
       http.proxy_user.should == "rubyspec"
