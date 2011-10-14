@@ -12,7 +12,7 @@ describe "Net::HTTP#request" do
   end
 
   before(:each) do
-    @http = Net::HTTP.start("127.0.0.1", 3454)
+    @http = Net::HTTP.start("127.0.0.1", NetHTTPSpecs.server_port)
   end
 
   describe "when passed request_object" do

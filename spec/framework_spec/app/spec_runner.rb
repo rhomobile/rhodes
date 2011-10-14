@@ -92,7 +92,7 @@ class SpecRunner < MSpecScript
         file.gsub!(app_folder,"")
         file.gsub!(/\.iseq/,"")
  
-        config[:files] << file
+        #config[:files] << file
       end
     end
     

@@ -14,7 +14,7 @@ describe "Net::HTTP.get_print" do
   describe "when passed URI" do
     it "it prints the body of the specified uri to $stdout" do
       lambda do
-        Net::HTTP.get_print URI.parse('http://127.0.0.1:3454/')
+        Net::HTTP.get_print URI.parse("http://127.0.0.1:#{NetHTTPSpecs.server_port}/")
       end.should output(/This is the index page\./)
     end
   end
@@ -22,7 +22,7 @@ describe "Net::HTTP.get_print" do
   describe "when passed host, path, port" do
     it "it prints the body of the specified uri to $stdout" do
       lambda do
-        Net::HTTP.get_print '127.0.0.1', "/", 3454
+        Net::HTTP.get_print '127.0.0.1', "/", NetHTTPSpecs.server_port
       end.should output(/This is the index page\./)
     end
   end

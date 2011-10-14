@@ -13,13 +13,13 @@ describe "Net::HTTP.get when passed URI" do
 
   describe "when passed URI" do
     it "returns the body of the specified uri" do
-      Net::HTTP.get(URI.parse('http://127.0.0.1:3454/')).should == "This is the index page."
+      Net::HTTP.get(URI.parse("http://127.0.0.1:#{NetHTTPSpecs.server_port}/")).should == "This is the index page."
     end
   end
 
   describe "when passed host, path, port" do
     it "returns the body of the specified host-path-combination" do
-      Net::HTTP.get('127.0.0.1', "/", 3454).should == "This is the index page."
+      Net::HTTP.get('127.0.0.1', "/", NetHTTPSpecs.server_port).should == "This is the index page."
     end
   end
 
@@ -27,7 +27,7 @@ describe "Net::HTTP.get when passed URI" do
     describe "when passed path in version 1.1 mode" do
       before(:each) do
         Net::HTTP.version_1_1
-        @http = Net::HTTP.start("127.0.0.1", 3454)
+        @http = Net::HTTP.start("127.0.0.1", NetHTTPSpecs.server_port)
       end
 
       after(:each) do

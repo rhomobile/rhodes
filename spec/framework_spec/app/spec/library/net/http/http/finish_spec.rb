@@ -12,7 +12,7 @@ describe "Net::HTTP#finish" do
   end
 
   before(:each) do
-    @http = Net::HTTP.new("127.0.0.1", 3454)
+    @http = Net::HTTP.new("127.0.0.1", NetHTTPSpecs.server_port)
   end
 
   describe "when self has been started" do

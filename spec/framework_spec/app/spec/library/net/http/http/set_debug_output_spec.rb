@@ -13,7 +13,7 @@ describe "Net::HTTP#set_debug_output when passed io" do
   end
 
   before(:each) do
-    @http = Net::HTTP.new("127.0.0.1", 3454)
+    @http = Net::HTTP.new("127.0.0.1", NetHTTPSpecs.server_port)
   end
 
   it "sets the passed io as output stream for debugging" do
