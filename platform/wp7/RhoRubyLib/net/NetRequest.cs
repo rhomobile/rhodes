@@ -29,6 +29,8 @@ using System.Net;
 using rho.common;
 using System.Threading;
 using System.Text;
+using IronRuby.Runtime;
+using IronRuby.Builtins;
 using System.IO;
 
 namespace rho.net
@@ -507,7 +509,13 @@ namespace rho.net
             if (pResp.isSuccess())
             {
                 if (m_strCookies == "" && m_strRespBody.Contains("rhoconnect_session"))
-                    m_strCookies = m_strRespBody;
+                {
+                    m_strRespBody = m_strRespBody.Replace('{', ' ');
+                    m_strRespBody = m_strRespBody.Replace('}', ' ');
+                    m_strRespBody = m_strRespBody.Replace('"', ' ');
+                    string[] cookies = m_strRespBody.Split(':');
+                    m_strCookies = cookies[1].Trim();
+                }
                 pResp.setCookies(m_strCookies);
             }
 		
