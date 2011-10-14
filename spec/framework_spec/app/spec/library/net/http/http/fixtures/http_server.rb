@@ -49,45 +49,45 @@ module NetHTTPSpecs
   end
 
   class << self
-    @server = nil
-    @server_port = 0
+    @@server = nil
+    @@server_port = 0
     
     def server_port
-        @server_port
+        @@server_port
     end
     
     def start_server
-      unless @server
-        @server_port = System::get_property('free_server_port')
+      unless @@server
+        @@server_port = System::get_property('free_server_port')
         server_config = {
           :BindAddress => "127.0.0.1",
-          :Port => @server_port, #NetHTTPSpecs.server_port,
+          :Port => @@server_port, #NetHTTPSpecs.server_port,
           :Logger => WEBrick::Log.new(NullWriter.new),
           :AccessLog => [],
           :ShutdownSocketWithoutClose => true,
           :ServerType => Thread
         }
 
-        @server = WEBrick::HTTPServer.new(server_config)
+        @@server = WEBrick::HTTPServer.new(server_config)
 
-        @server.mount_proc('/') do |req, res|
+        @@server.mount_proc('/') do |req, res|
           res.content_type = "text/plain"
           res.body = "This is the index page."
         end
-        @server.mount('/request', RequestServlet)
-        @server.mount("/request/body", RequestBodyServlet)
-        @server.mount("/request/header", RequestHeaderServlet)
+        @@server.mount('/request', RequestServlet)
+        @@server.mount("/request/body", RequestBodyServlet)
+        @@server.mount("/request/header", RequestHeaderServlet)
 
-        @server.start
+        @@server.start
       end
 
       # On initial startup or if we re-enter, we wait until the
       # server is really running.
-      Thread.pass until @server.status == :Running
+      Thread.pass until @@server.status == :Running
     end
 
     def shutdown_server
-      @server.shutdown if @server
+      @@server.shutdown if @@server
     end
 
     def stop_server
