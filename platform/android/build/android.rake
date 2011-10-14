@@ -279,6 +279,8 @@ namespace "config" do
     $current_platform = "android"
   end
 
+  task :common => :set_android_platform
+
   task :android => [:set_android_platform, "config:common"] do
 
     $ext_android_rhodes_activity_listener = []

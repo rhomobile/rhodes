@@ -151,15 +151,6 @@ public class RhodesService extends Service {
 	private static boolean mCameraAvailable;
 	
 	private static int sActivitiesActive;
-	private static boolean sRhodesActivityStarted = false;
-	
-	synchronized
-	static void rhodesActivityStarted(boolean started) {
-	    sRhodesActivityStarted = started;
-	}
-	
-	synchronized
-	public static boolean isRhodesActivityStarted() { return sRhodesActivityStarted; }
 	
 	private boolean mNeedGeoLocationRestart = false;
 	
@@ -614,22 +605,24 @@ public class RhodesService extends Service {
 	}
 
 	public static void exit() {
+        Logger.I(TAG, "Exit application");
         try {
-            RhodesActivity activity = RhodesActivity.getInstance();
-            if (activity != null)
-                activity.finish();
-            
+            // Do this fake state change in order to make processing before server is stopped
+            RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityPaused);
+
             RhodesService service = RhodesService.getInstance();
             if (service != null)
             {
+                Logger.T(TAG, "stop RhodesService");
                 service.wakeLock.reset();
                 service.stopSelf();
             }
             
+            Logger.T(TAG, "stop RhodesApplication");
             RhodesApplication.stop();
         }
         catch (Exception e) {
-            Logger.E(TAG, e.getMessage());
+            Logger.E(TAG, e);
         }
 	}
 	
@@ -1430,7 +1423,7 @@ public class RhodesService extends Service {
 	}
 
     public static void bringToFront() {
-        if (isRhodesActivityStarted()) {
+        if (RhodesApplication.isRhodesActivityStarted()) {
             Logger.T(TAG, "Main activity is already at front, do nothing");
             return;
         }
