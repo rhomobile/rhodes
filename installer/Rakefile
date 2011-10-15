@@ -5,7 +5,7 @@ require 'fileutils'
 require 'jake.rb'
 
 $majorVer = "1"
-$minorVer = "1"
+$minorVer = "2"
 $miniVer  = "0"
 $betaVer  = "7"
 
@@ -16,6 +16,7 @@ $isAdapterBeta = false
 $nsisPath        = "C:/Program Files (x86)/NSIS/makensis.exe"
 $rubyPath        = "C:/Android/RhoSync/ruby"
 $rubyInstallPath = "C:/Android/Installer/ruby"
+$macImage        = "/Users/antonvisnevski/rho/RhoStudioDMG.dmg"
 $installScript   = "rhostudio.nsi"
 $commonName      = "RhoStudioInstaller"
 $extWinExe       = '.exe'
@@ -24,24 +25,38 @@ $extOsxExe       = '.dmg'
 namespace "installer" do
 
     def renameInstaller(installerPrefix)
-       puts 'add version to build file'
-       installerName = ""
-       currTime = Time.now
-       currDate = currTime.strftime("%d%m%Y%H%M")
+      installerName = ""
+      currTime = Time.now
+      currDate = currTime.strftime("%d%m%Y%H%M")
 
-       installerName = $commonName + $majorVer.to_s + "." + $minorVer.to_s + "." + $miniVer +  installerPrefix + $extWinExe
-
-       puts 'new installer file name: ' + installerName
-       File.rename($commonName + $extWinExe, installerName) 
+      if RUBY_PLATFORM =~ /(win|w)32$/
+        # Windows
+        installerName = $commonName + $majorVer.to_s + "." + $minorVer.to_s + "." + $miniVer +  installerPrefix + $extWinExe
+        puts 'new installer file name: ' + installerName
+        File.rename($commonName + $extWinExe, installerName) 
+      else
+        installerName = $commonName + $majorVer.to_s + "." + $minorVer.to_s + "." + $miniVer +  installerPrefix + $extOsxExe  
+        puts 'new installer file name: ' + installerName
+        Jake.run2 "hdiutil", ["convert", $macImage, "-format", "UDZO", "-o", installerName], {:nowait => false} 
+      end
     end
 
     def changeRubyFolder()
+      if RUBY_PLATFORM =~ /(win|w)32$/
         #copy ruby folder
         FileUtils.rm_rf $rubyInstallPath      
         FileUtils.cp_r $rubyPath, $rubyInstallPath
+      else
+        return
+      end
     end
 
     def installGems(isRhodesBeta, isConnBeta, isAdapterBeta)
+        if RUBY_PLATFORM =~ /(win|w)32$/
+        else
+          return
+        end
+
         Jake.run2 "gem", ["uninstall", "rhomobile-debug", "-a"], {:nowait => false} 
         Jake.run2 "gem", ["uninstall", "rhodes", "-a"], {:nowait => false} 
         Jake.run2 "gem", ["uninstall", "rhoconnect", "-a"], {:nowait => false}       
@@ -70,15 +85,23 @@ namespace "installer" do
         changeRubyFolder()
     end
 
+    def runInstallerScript
+        if RUBY_PLATFORM =~ /(win|w)32$/
+          puts 'start build nsis script: ' +  $installScript
+          Jake.run2 $nsisPath, [$installScript], {:nowait => false}
+        else
+          return
+        end
+    end
+
     namespace "release" do
       task :gems do
         puts 'release - reinstall gems task'
-        installGems(true, true, true)
+        installGems(false, false, false)
       end
 
       task :nsis => "gems" do 
-        puts 'release - start build nsis script: ' +  $installScript
-        Jake.run2 $nsisPath, [$installScript], {:nowait => false}
+        runInstallerScript
       end
 
       task :rename => "nsis" do
@@ -91,12 +114,11 @@ namespace "installer" do
     namespace "beta" do
 
       task :gems do
-        installGems(false, false, false)
+        installGems(true, true, true)
       end
 
       task :nsis => "gems" do 
-        puts 'start build nsis script: ' +  $installScript
-        Jake.run2 $nsisPath, [$installScript], {:nowait => false}
+        runInstallerScript
       end
 
       task :rename => "nsis" do
@@ -110,9 +132,8 @@ namespace "installer" do
         installGems($isRhodesBeta, $isConnBeta, $isAdapterBeta)
       end
 
-      task :nsis do #=> "gems" do 
-        puts 'start build nsis script: ' +  $installScript
-        Jake.run2 $nsisPath, [$installScript], {:nowait => false}
+      task :nsis => "gems" do 
+        runInstallerScript
       end
 
       task :rename => "nsis" do
