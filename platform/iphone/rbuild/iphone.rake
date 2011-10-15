@@ -589,13 +589,13 @@ namespace "run" do
  	
       # Run local http server
       $iphonespec = true
-      httpserver = false
-      httpserver = true if File.exist? "#{$app_path}/app/spec/library/net/http/http/fixtures/http_server.rb"
+      #httpserver = false
+      #httpserver = true if File.exist? "#{$app_path}/app/spec/library/net/http/http/fixtures/http_server.rb"
 
-      if httpserver
-        require "#{$app_path}/app/spec/library/net/http/http/fixtures/http_server"
-        NetHTTPSpecs.start_server
-      end
+      #if httpserver
+      #  require "#{$app_path}/app/spec/library/net/http/http/fixtures/http_server"
+      #  NetHTTPSpecs.start_server
+      #end
 
       Jake.before_run_spec
 
@@ -658,7 +658,7 @@ namespace "run" do
 
       $stdout.flush
 
-      NetHTTPSpecs.stop_server if httpserver
+      #NetHTTPSpecs.stop_server if httpserver
 
       exit $failed.to_i unless $dont_exit_on_failure
  
