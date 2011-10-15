@@ -172,6 +172,7 @@ config.h: nul
 #define RUBY_EXPORT 1
 #define HAVE_SOCKADDR_STORAGE 1
 #define HAVE_GETADDRINFO 1
+#define HAVE_GETHOSTNAME 1
 //RHO
 
 #endif //CONFIG_RUBY_H

@@ -70,7 +70,7 @@ template <typename TYPE, typename PTRTYPE=TYPE*>
 class CAutoPtr : public CBaseAutoPointer<PTRTYPE>
 {
 public:
-    CAutoPtr( PTRTYPE ptr ){ Set(ptr); }
+    CAutoPtr( PTRTYPE ptr ){   CBaseAutoPointer<PTRTYPE>::Set(ptr); }
     CAutoPtr(){}
     ~CAutoPtr(){ CBaseAutoPointer<PTRTYPE>::Close(); }
 

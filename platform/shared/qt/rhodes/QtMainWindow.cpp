@@ -77,6 +77,11 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     m_LogicalDpiY(0)
     //TODO: m_SyncStatusDlg
 {
+#ifdef OS_WINDOWS
+    QPixmap icon(":/images/rho.png");
+    QApplication::setWindowIcon(icon);
+#endif
+
     ui->setupUi(this);
 
     QWebSettings* qs = QWebSettings::globalSettings(); //this->ui->webView->settings();
@@ -596,7 +601,9 @@ void QtMainWindow::menuActionEvent(bool checked)
 
 void QtMainWindow::on_actionAbout_triggered()
 {
+    #ifndef RHO_SYMBIAN
     QMessageBox::about(this, RHOSIMULATOR_NAME, RHOSIMULATOR_NAME " v" RHOSIMULATOR_VERSION);
+    #endif
 }
 
 // slots:

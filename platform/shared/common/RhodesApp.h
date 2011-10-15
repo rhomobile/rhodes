@@ -153,6 +153,7 @@ public:
 
     void notifyLocalServerStarted();
     const char* getFreeListeningPort();
+    int determineFreeListeningPort();
 
     void setSendingLog(boolean bSending){m_bSendingLog = bSending; }
 protected:

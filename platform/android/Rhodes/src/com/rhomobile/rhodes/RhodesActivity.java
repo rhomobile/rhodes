@@ -247,7 +247,6 @@ public class RhodesActivity extends BaseActivity {
 	@Override
 	public void onStart() {
 		super.onStart();
-	    RhodesService.rhodesActivityStarted(true);
 
         Log.d(TAG, "RhodesActivity.onStart()");
         mIsInsideStartStop = true;
@@ -278,15 +277,11 @@ public class RhodesActivity extends BaseActivity {
         		iterator.next().onPause(this);
         	}
         }
-    	
-        RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityPaused);
-
-        RhodesService.rhodesActivityStarted(false);
 
         super.onPause();
         Log.d(TAG, "RhodesActivity.onPause()");
 
-        RhodesService.callUiDestroyedCallback();
+        RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityPaused);
     }
 
     @Override

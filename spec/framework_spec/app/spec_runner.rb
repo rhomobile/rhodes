@@ -99,7 +99,7 @@ class SpecRunner < MSpecScript
     # LIBRARIES
     specs = app_folder + "spec/library/**/*_spec.iseq"
     Dir.glob(specs) do |file|
-      next if file =~ /sha1/      
+      #next if file =~ /sha1/      
     
       file.gsub!(app_folder,"")
       file.gsub!(/\.iseq/,"")

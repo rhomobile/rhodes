@@ -107,7 +107,7 @@ public:
 
     void addElement(const Type& item)
     {
-        push_back(item);
+        std::vector<Type>::push_back(item);
     }
 
     boolean isEmpty()
@@ -131,7 +131,7 @@ public:
         {
             if ( *it == item )
             {
-                it = erase(it);    
+                it = std::vector<Type>::erase(it);    
             }else
                 it++;
         }
@@ -158,8 +158,8 @@ public:
         Vector<Type>::clear();
     }
 
-    typename std::vector<Type>::reference elementAt(typename std::vector<Type>::size_type i){ return at(i);}
-    typename std::vector<Type>::const_reference elementAt(typename std::vector<Type>::size_type i) const{ return at(i); }
+    typename std::vector<Type>::reference elementAt(typename std::vector<Type>::size_type i){ return std::vector<Type>::at(i);}
+    typename std::vector<Type>::const_reference elementAt(typename std::vector<Type>::size_type i) const{ return std::vector<Type>::at(i); }
 };
 
 template<class Type>
@@ -183,7 +183,7 @@ public:
             if ( *it == item )
             {
                 delete *it;
-                it = erase(it);    
+                it = std::vector<Type>::erase(it);    
             }else
                 it++;
         }
@@ -204,7 +204,7 @@ public:
 
     void add(const Type& item)
     {
-        addElement(item);
+        VectorPtr<Type>::addElement(item);
     }
 
     void addToFront(const Type& item)
@@ -247,7 +247,7 @@ public:
 
     void remove(const TKEY& key)
     {
-        erase(key);
+        std::map<TKEY,TVALUE>::erase(key);
     }
 
     TVALUE get(const TKEY& key)
@@ -260,7 +260,7 @@ public:
 
     boolean containsKey(const TKEY& key)
     {
-        return find(key) != std::map<TKEY,TVALUE>::end();
+        return std::map<TKEY,TVALUE>::find(key) != std::map<TKEY,TVALUE>::end();
     }
 };
 
@@ -282,11 +282,11 @@ public:
 
     void remove(const TKEY& key)
     {
-        typename std::map<TKEY,TVALUE>::iterator it = find(key);
+        typename std::map<TKEY,TVALUE>::iterator it = Hashtable<TKEY,TVALUE>::find(key);
         if ( it != Hashtable<TKEY,TVALUE>::end() )
             delete it->second;
 
-        erase(key);
+        Hashtable<TKEY,TVALUE>::erase(key);
     }
 
 };

@@ -220,3 +220,4 @@ platform/iphone/project_bakup
 spec/phone_spec/rhosimulator/*
 *.pro.user.*
 platform/shared/qt/rhodes/RhoSimulatorVersion.h
+platform/shared/qt/rhodes/resources/Info.plist

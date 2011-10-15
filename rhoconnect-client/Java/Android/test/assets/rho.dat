@@ -1,6 +1,7 @@
 apps	dir	4096	1309959201
 apps/rhoconfig.txt	file	1091	1309958873
 apps/rhoconfig.txt.timestamp	file	16	1309958873
+apps/androidtest.png	file	338349	1318264089
 db	dir	4096	1309959201
 db/syncdb.schema	file	1609	1309958874
 db/syncdb.triggers	file	380	1309958874

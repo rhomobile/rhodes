@@ -36,7 +36,8 @@ module REXML
           when Range
             [item.first, '-'.ord, item.last].pack('UUU').force_encoding('utf-8')
           end
-        }.join + ']*$')
+        }.join +
+      ']*$')
     else
       VALID_XML_CHARS = /^(
            [\x09\x0A\x0D\x20-\x7E]            # ASCII
@@ -87,17 +88,16 @@ module REXML
     #   Text.new( "sean russell", false, nil, true, ["s"] ) #-> "sean russell"
     # In the last example, the +entity_filter+ argument is ignored.
     #
-    # +pattern+ INTERNAL USE ONLY
-    def initialize(arg, respect_whitespace=false, parent=nil, raw=nil, 
+    # +illegal+ INTERNAL USE ONLY
+    def initialize(arg, respect_whitespace=false, parent=nil, raw=nil,
       entity_filter=nil, illegal=NEEDS_A_SECOND_CHECK )
 
       @raw = false
+      @parent = nil
 
       if parent
         super( parent )
-        @raw = parent.raw 
-      else
-        @parent = nil
+        @raw = parent.raw
       end
 
       @raw = raw unless raw.nil?
@@ -105,20 +105,18 @@ module REXML
       @normalized = @unnormalized = nil
 
       if arg.kind_of? String
-        @string = arg.clone
+        @string = arg.dup
         @string.squeeze!(" \n\t") unless respect_whitespace
-      else  
-          if arg.kind_of? Text
-            @string = arg.to_s
-            @raw = arg.raw
-          else
-            raise "Illegal argument of type #{arg.type} for Text constructor (#{arg})"
-          end
+      elsif arg.kind_of? Text
+        @string = arg.to_s
+        @raw = arg.raw
+      elsif
+        raise "Illegal argument of type #{arg.type} for Text constructor (#{arg})"
       end
-      
+
       @string.gsub!( /\r\n?/, "\n" )
 
-      Text.check(@string, NEEDS_A_SECOND_CHECK, doctype) if @raw and @parent
+      Text.check(@string, illegal, doctype) if @raw
     end
 
     def parent= parent
@@ -161,10 +159,11 @@ module REXML
             else
               raise "Illegal character '#{$1}' in raw string \"#{string}\""
             end
-          elsif $3 and !SUBSTITUTES.include?($1)
-            if !doctype or !doctype.entities.has_key?($3)
-              raise "Undeclared entity '#{$1}' in raw string \"#{string}\""
-            end
+          # FIXME: below can't work but this needs API change.
+          # elsif @parent and $3 and !SUBSTITUTES.include?($1)
+          #   if !doctype or !doctype.entities.has_key?($3)
+          #     raise "Undeclared entity '#{$1}' in raw string \"#{string}\""
+          #   end
           end
         end
       end
@@ -276,7 +275,7 @@ module REXML
     def indent_text(string, level=1, style="\t", indentfirstline=true)
       return string if level < 0
       new_string = ''
-      string.each { |line|
+      string.each_line { |line|
         indent_string = style * level
         new_line = (indent_string + line).sub(/[\s]+$/,'')
         new_string << new_line

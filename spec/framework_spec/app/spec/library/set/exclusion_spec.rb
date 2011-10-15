@@ -12,7 +12,7 @@ describe "Set#^" do
   end
 
   it "raises an ArgumentError when passed a non-Enumerable" do
-    lambda { @set ^ 3 }.should raise_error(NoMethodError)
-    lambda { @set ^ Object.new }.should raise_error(NoMethodError)
+    lambda { @set ^ 3 }.should raise_error(ArgumentError)
+    lambda { @set ^ Object.new }.should raise_error(ArgumentError)
   end
 end

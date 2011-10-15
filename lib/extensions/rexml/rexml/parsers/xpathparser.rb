@@ -17,6 +17,7 @@ module REXML
       end
 
       def parse path
+        path = path.dup
         path.gsub!(/([\(\[])\s+/, '\1') # Strip ignorable spaces
         path.gsub!( /\s+([\]\)])/, '\1' )
         parsed = []
@@ -551,7 +552,7 @@ module REXML
           end
         end
         #puts "BEFORE WITH '#{rest}'"
-        rest = LocationPath(rest, n) if rest =~ /\A[\/\.\@\[\w_*]/
+        rest = LocationPath(rest, n) if rest =~ /\A[\/\.\@\[\w*]/
         parsed.concat(n)
         return rest
       end

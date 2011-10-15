@@ -256,6 +256,13 @@ namespace "config" do
        $app_config[$config["platform"]]["extensions"] and $app_config[$config["platform"]]["extensions"].is_a? Array
     $app_config["extensions"] = extensions
     
+    capabilities = []
+    capabilities += $app_config["capabilities"] if $app_config["capabilities"] and
+       $app_config["capabilities"].is_a? Array
+    capabilities += $app_config[$config["platform"]]["capabilities"] if $app_config[$config["platform"]] and
+       $app_config[$config["platform"]]["capabilities"] and $app_config[$config["platform"]]["capabilities"].is_a? Array
+    $app_config["capabilities"] = capabilities
+    
     $hidden_app = $app_config["hidden_app"].nil?() ? "0" : $app_config["hidden_app"]
     
 
@@ -1091,6 +1098,12 @@ namespace "run" do
         $appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"]
         if !File.exists?($path)
             puts "Cannot find RhoSimulator: '#{$path}' does not exists"
+            puts "Check sdk path in build.yml - it should point to latest rhodes (run set-rhodes-sdk in application folder) OR"
+
+            if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'].length() > 0
+                puts "Check 'env:paths:rhosimulator' path in '<rhodes>/rhobuild.yml' OR"
+            end
+            
             puts "Install Rhodes gem OR"
             puts "Install RhoSimulator and modify 'env:paths:rhosimulator' section in '<rhodes>/rhobuild.yml'"
             exit 1
@@ -1185,9 +1198,9 @@ end
 
 namespace "build" do
     task :rhosimulator => "config:common" do
-        version = File.read(File.join($startdir,'version')).chomp
+        $rhodes_version = File.read(File.join($startdir,'version')).chomp
         File.open(File.join($startdir, 'platform/shared/qt/rhodes/RhoSimulatorVersion.h'), "wb") do |fversion|
-            fversion.write( "#define RHOSIMULATOR_VERSION \"#{version}\"\n" )
+            fversion.write( "#define RHOSIMULATOR_VERSION \"#{$rhodes_version}\"\n" )
         end
         if RUBY_PLATFORM =~ /(win|w)32$/
             Rake::Task["build:win32:rhosimulator"].invoke
