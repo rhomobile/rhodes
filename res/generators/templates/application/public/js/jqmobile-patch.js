@@ -54,7 +54,7 @@
 
     $(document).bind( "pagebeforechange", function(e, data) {
         // We only want to handle changePage() calls where the caller is
-        // asking us to load a page by URL.
+        // providing us already loaded page.
         if ( !(typeof data.toPage === "string") ) {
             var pageDiv = data.toPage[0];
             if ("true" === pageDiv.getAttribute("data-rho-wait-page")) {
