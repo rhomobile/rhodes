@@ -38,13 +38,33 @@
 
         options.success = function(html, textStatus, jqXHR) {
             if (jqXHR.getResponseHeader('Wait-Page')) {
-                // do nothing
+                // We cannot just do nothing on wait-page being received, because
+                // at this moment jQM already have isPageTransitioning lock is set.
+                // Due to this lock is private part of jQM we have no control on it.
+                // So we are going to tag Wait-Page HTML content by some HTML attribute
+                // to detect it in "pagebeforechange" event handler and then perform
+                // preventDefault() to let jQM to release isPageTransitioning lock.
+                origSuccess('<div data-role="page" data-rho-wait-page="true"><!-- intentionally empty --></div>');
             } else {
                 origSuccess(html);
             }
         }
 
     });
+
+    $(document).bind( "pagebeforechange", function(e, data) {
+        // We only want to handle changePage() calls where the caller is
+        // asking us to load a page by URL.
+        if ( !(typeof data.toPage === "string") ) {
+            var pageDiv = data.toPage[0];
+            if ("true" === pageDiv.getAttribute("data-rho-wait-page")) {
+                //Make sure to tell changePage() we've handled this call so it doesn't
+                //have to do anything. So jQM can release isPageTransitioning lock
+                e.preventDefault();
+            }
+        }
+    });
+
 
     //shared page enhancements
 	function enhancePage( $page, role ) {
@@ -134,14 +154,14 @@
 		// reference to an embedded page. If so, it may have been dynamically
 		// injected by a developer, in which case it would be lacking a data-url
 		// attribute and in need of enhancement.
-		if ( page.length === 0 && !path.isPath( dataUrl ) ) {
+		if ( page.length === 0 && dataUrl && !path.isPath( dataUrl ) ) {
 			page = settings.pageContainer.children( "#" + dataUrl )
 				.attr( "data-" + $.mobile.ns + "url", dataUrl )
 		}
 
 		// If we failed to find a page in the DOM, check the URL to see if it
 		// refers to the first page in the application.
-		if ( page.length === 0 && $.mobile.firstPage && path.isFirstPageUrl( absUrl ) ) {
+		if ( page.length === 0 && $.mobile.firstPage && absUrl && path.isFirstPageUrl( absUrl ) ) {
 			page = $( $.mobile.firstPage );
 		}
 
@@ -276,18 +296,6 @@
             // wait for page creation to leverage options defined on widget
             page.one( 'pagecreate', $.mobile._bindPageRemove );
 
-/*
-            page.one('pagecreate', function(){
-
-                // when dom caching is not enabled bind to remove the page on hide
-                if( !page.data("page").options.domCache ){
-                    page.bind( "pagehide.remove", function(){
-                        $(this).remove();
-                    });
-                }
-            });
-*/
-
             enhancePage( page, settings.role );
 
             // Enhancing the page may result in new dialogs/sub pages being inserted
@@ -319,11 +327,6 @@
     $.mobile.loadPage.defaults = original_loadPage.defaults;
 
     function insertAsyncPage(data) {
-        //setTimeout(function(){
-        //    /*$('.waiting').remove();*/
-        //    $.mobile.hidePageLoadingMsg();
-        //},450);
-
         $.mobile.loadPage("inline://", {html: data})
             .done(function( url, options, newPage, dupCachedPage ) {
                 options.duplicateCachedPage = dupCachedPage;
