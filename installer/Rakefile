@@ -1,0 +1,135 @@
+# rake script
+
+require 'date'
+require 'fileutils'
+require 'jake.rb'
+
+$majorVer = "1"
+$minorVer = "1"
+$miniVer  = "0"
+$betaVer  = "7"
+
+$isRhodesBeta = true
+$isConnBeta = false
+$isAdapterBeta = false
+
+$nsisPath        = "C:/Program Files (x86)/NSIS/makensis.exe"
+$rubyPath        = "C:/Android/RhoSync/ruby"
+$rubyInstallPath = "C:/Android/Installer/ruby"
+$installScript   = "rhostudio.nsi"
+$commonName      = "RhoStudioInstaller"
+$extWinExe       = '.exe'
+$extOsxExe       = '.dmg'
+
+namespace "installer" do
+
+    def renameInstaller(installerPrefix)
+       puts 'add version to build file'
+       installerName = ""
+       currTime = Time.now
+       currDate = currTime.strftime("%d%m%Y%H%M")
+
+       installerName = $commonName + $majorVer.to_s + "." + $minorVer.to_s + "." + $miniVer +  installerPrefix + $extWinExe
+
+       puts 'new installer file name: ' + installerName
+       File.rename($commonName + $extWinExe, installerName) 
+    end
+
+    def changeRubyFolder()
+        #copy ruby folder
+        FileUtils.rm_rf $rubyInstallPath      
+        FileUtils.cp_r $rubyPath, $rubyInstallPath
+    end
+
+    def installGems(isRhodesBeta, isConnBeta, isAdapterBeta)
+        Jake.run2 "gem", ["uninstall", "rhomobile-debug", "-a"], {:nowait => false} 
+        Jake.run2 "gem", ["uninstall", "rhodes", "-a"], {:nowait => false} 
+        Jake.run2 "gem", ["uninstall", "rhoconnect", "-a"], {:nowait => false}       
+        Jake.run2 "gem", ["uninstall", "rhoconnect-adapters", "-a"], {:nowait => false} 
+
+        Jake.run2 "gem", ["install", "rhomobile-debug"], {:nowait => false} 
+
+	if isRhodesBeta == false
+          Jake.run2 "gem", ["install", "rhodes"], {:nowait => false} 
+        else
+          Jake.run2 "gem", ["install", "rhodes", "--pre"], {:nowait => false} 
+        end
+
+	if $isConnBeta == false
+          Jake.run2 "gem", ["install", "rhoconnect"], {:nowait => false}       
+        else
+          Jake.run2 "gem", ["install", "rhoconnect", "--pre"], {:nowait => false}       
+        end
+
+        if $isAdapterBeta == false
+          Jake.run2 "gem", ["install", "rhoconnect-adapters"], {:nowait => false} 
+        else
+          Jake.run2 "gem", ["install", "rhoconnect-adapters", "--pre"], {:nowait => false} 
+        end
+
+        changeRubyFolder()
+    end
+
+    namespace "release" do
+      task :gems do
+        puts 'release - reinstall gems task'
+        installGems(true, true, true)
+      end
+
+      task :nsis => "gems" do 
+        puts 'release - start build nsis script: ' +  $installScript
+        Jake.run2 $nsisPath, [$installScript], {:nowait => false}
+      end
+
+      task :rename => "nsis" do
+        puts 'release - start rename task'
+        renameInstaller("")
+      end
+
+    end
+
+    namespace "beta" do
+
+      task :gems do
+        installGems(false, false, false)
+      end
+
+      task :nsis => "gems" do 
+        puts 'start build nsis script: ' +  $installScript
+        Jake.run2 $nsisPath, [$installScript], {:nowait => false}
+      end
+
+      task :rename => "nsis" do
+        renameInstaller(".beta" + $betaVer)
+      end
+
+    end
+
+    namespace "user" do
+      task :gems do
+        installGems($isRhodesBeta, $isConnBeta, $isAdapterBeta)
+      end
+
+      task :nsis do #=> "gems" do 
+        puts 'start build nsis script: ' +  $installScript
+        Jake.run2 $nsisPath, [$installScript], {:nowait => false}
+      end
+
+      task :rename => "nsis" do
+        renameInstaller(".beta" + $betaVer)
+      end
+
+    end
+
+    ########################################################
+
+    task :release => "release:rename" do
+    end
+
+    task :beta => "beta:rename" do
+    end
+
+    task :user => "user:rename" do
+    end
+
+end
