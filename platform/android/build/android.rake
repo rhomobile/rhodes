@@ -279,9 +279,9 @@ namespace "config" do
     $current_platform = "android"
   end
 
-  task :common => :set_android_platform
-
-  task :android => [:set_android_platform, "config:common"] do
+  task :android => :set_android_platform do
+  
+    Rake::Task["config:common"].invoke
 
     $ext_android_rhodes_activity_listener = []
     $ext_android_manifest_changes= []
