@@ -1,0 +1,121 @@
+# Legacy application transition from jQTouch to jQuery Mobile
+
+This page describes why you may need to transit your legacy application from using jQTouch to jQuery Mobile and steps you need to perform.
+
+## Why to use jQuery Mobile?
+
+[jQuery Mobile](http://jquerymobile.com/) may be considered as an advanced successor of [jQTouch library](http://jqtouch.com/). At the moment jQuery Mobile have more development progress, provides better support, supports more platforms and performs pretty reliable. Rhodes has been ported to jQuery Mobile and have no jQTouch out of box support anymore.
+
+## Platform Prerequisites
+
+Target platform should be [supported by jQuery Mobile framework](http://jquerymobile.com/gbs/).
+
+## Transition steps
+
+You need to use [Rhodes application template code](https://github.com/rhomobile/rhodes/tree/master/res/generators/templates/application/) (*rhodes_root_dir/res/generators/templates/application*) as the source of files to copy from.
+
+1. Backup your application as it is before any changes.
+1. Copy all content of *public/jquery* directory to the *public/jquery* directory of your application.
+1. Copy all content of *public/jqmobile* directory to the *public/jqmobile* directory of your application.
+1. Copy all content of *public/css* directory to the *public/css* directory of your application.
+1. Copy all content of *public/js* directory to the *public/js* directory of your application.
+1. Rename your *app/layout.erb* to some other name, say *app/layout-legacy.erb*.
+1. Copy *app/layout.erb* file to the *app* directory of your application.
+1. Replace all instances of **'<%%'** symbol combination in the new *app/layout.erb* to the **'<%'** combination.
+1. Use your *app/layout-legacy.erb* as reference to implement needed customization and styling in the *app/layout.erb* file.
+1. Change the HTML structure of all application pages so they will meet jQuery Mobile requirements (see below).
+
+### Application pages structure changes
+
+The most notable difference between jQTouch and jQuery Mobile is last one using HTML5 conforming custom *data-<i>something</i>* attributes instead of jQTouch classes.
+Structure of a page with jQuery Mobile is pretty similar to the jQTouch, but have significant differences. For example no distinct *div* for title and toolbar, everything goes to the common header *div*.
+For detailed description on how to do advanced jQuery Mobile pages, forms and controls mastering look at [jQuery Mobile documentation](http://jquerymobile.com/) please.
+
+Here is just a sample on how to change jQTouch application page to meet jQuery Mobile format. Let you have this jQTouch page code:
+
+    :::html
+    <div class="pageTitle">
+      <h1>Edit <%= @product.name %></h1>
+    </div>
+
+    <div class="toolbar">
+      <div class="leftItem backButton">
+        <a href="<%= url_for :action => :show, :id => @product.object %>">Cancel</a>
+      </div>
+      <div class="rightItem regularButton">
+        <a href="<%= url_for :action => :delete, :id => @product.object %>">Delete</a>
+      </div>
+    </div>
+
+    <div class="content">
+      <form method="POST" action="<%= url_for :action => :update %>">
+        <input type="hidden" name="id" value="<%= @product.object %>"/>
+        <ul>
+
+          <li>
+            <label for="product[name]" class="fieldLabel">Name</label>
+            <input type="text" name="product[name]" value="<%= @product.name %>" <%= placeholder("Name") %> />
+          </li>
+
+          <li>
+            <label for="product[brand]" class="fieldLabel">Brand</label>
+            <input type="text" name="product[brand]" value="<%= @product.brand %>" <%= placeholder("Brand") %> />
+          </li>
+
+        </ul>
+        <input type="submit" class="standardButton" value="Update"/>
+      </form>
+    </div>
+
+To use it with jQuery Mobile the page should be converted this way:
+
+    :::html
+    <div data-role="page">
+
+      <div data-role="header" data-position="inline">
+        <h1>Edit <%= @product.name %></h1>
+        <a href="<%= url_for :action => :show, :id => @product.object %>" class="ui-btn-left" data-icon="back" data-direction="reverse">Cancel</a>
+        <a href="<%= url_for :action => :delete, :id => @product.object %>" class="ui-btn-right" data-icon="delete" data-direction="reverse">Delete</a>
+      </div>
+
+      <div data-role="content">
+        <form method="POST" action="<%= url_for :action => :update %>">
+          <input type="hidden" name="id" value="<%= @product.object %>"/>
+
+          <div data-role="fieldcontain">
+            <label for="product[name]" class="fieldLabel">Name</label>
+            <input type="text" id="product[name]" name="product[name]" value="<%= @product.name %>" <%= placeholder( "Name" ) %> />
+          </div>
+
+          <div data-role="fieldcontain">
+            <label for="product[brand]" class="fieldLabel">Brand</label>
+            <input type="text" id="product[brand]" name="product[brand]" value="<%= @product.brand %>" <%= placeholder( "Brand" ) %> />
+          </div>
+
+          <input type="submit" value="Update"/>
+        </form>
+      </div>
+
+    </div>
+
+Pay attention on following page code parts please:
+
+* Wide usage of *data-role* attribute to define page parts.
+* Usage of *data-icon*, *data-direction* and *class* attributes to set header toolbar buttons style, behavior and position. Look [jQuery Mobile documentation](http://jquerymobile.com/) for more details on buttons.
+* Usage of *data-role="fieldcontain"* to define form field container *div*. Without this container *div* jQuery Mobile will be unable to make your fields automatically formatted and styled.
+
+### Tips and tricks
+
+* Use RhoSimulator to investigate application pages structure as they becomes loaded and enhanced by jQuery Mobile. It may improve your understanding of jQuery Mobile very much. It's very good tool to debug any UI issues.
+* [jQuery Mobile documentation](http://jquerymobile.com/) is just excellent. There are a lot of useful details and samples.
+* Don't be afraid with rich CSS styles and themes in jQuery Mobile, use RhoSimulator to hack your pages and you will be able to implement your own themes.
+* jQuire Mobile team promised to release Theme Roller tool with jQuery Mobile 1.0. It should make CSS and themes mastering much more easy.
+
+## Important note!
+
+With jQuery Mobile as well with jQTouch it is wrong to select HTML elements in the DOM tree by their *id* attribute value. Due to the way such kind of frameworks performs page caching the *id* attribute values aren't unique anymore. DOM tree may have **multiple instances of the same page**, so you can't rely on *id* value. The reliable way to select some exact element with jQuery is:
+
+    // this code will return exact span element from the current active page
+    var errMsgElement = $("div.ui-page-active span.errorMessageTop");
+
+Also, it is recommended to avoid using of *id* attribute as much as possible and to use *class* names for elements selection instead of *id* values. It may prevent DOM engine in the browser from some glitches with *id* value duplication.

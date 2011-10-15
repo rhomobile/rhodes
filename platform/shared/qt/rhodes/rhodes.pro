@@ -11,6 +11,7 @@ INCLUDEPATH += ../..\
 
 macx {
   ICON = resources/rho.icns
+  QMAKE_INFO_PLIST = resources/Info.plist
   DESTDIR = ../../../osx/bin/RhoSimulator
   MOC_DIR = ../../../osx/bin/RhoSimulator/generated_files
   UI_DIR = ../../../osx/bin/RhoSimulator/generated_files
@@ -40,6 +41,7 @@ win32 {
   HEADERS += ../../../wm/rhodes/rho/net/NetRequestImpl.h\
 impl/RhoThreadImpl.h
   SOURCES += ../../../wm/rhodes/rho/net/NetRequestImpl.cpp
+  RESOURCES += resources/simulator.qrc
   INCLUDEPATH += ../../../wm/rhodes\
 ../../wtl80/include
   DEFINES -= _UNICODE

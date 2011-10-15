@@ -129,11 +129,11 @@ module WEBrick
         when /^\s+(.*?)\s*\z/om
           value = $1
           unless field
-            raise "bad header '#{line.inspect}'."
+            raise HTTPStatus::BadRequest, "bad header '#{line}'."
           end
           header[field][-1] << " " << value
         else
-          raise "bad header '#{line.inspect}'."
+          raise HTTPStatus::BadRequest, "bad header '#{line}'."
         end
       }
       header.each{|key, values|
@@ -305,7 +305,7 @@ module WEBrick
     module_function :parse_query
 
     def parse_form_data(io, boundary)
-      boundary_regexp = /\A--#{boundary}(--)?#{CRLF}\z/
+      boundary_regexp = /\A--#{Regexp.quote(boundary)}(--)?#{CRLF}\z/
       form_data = Hash.new
       return form_data unless io
       data = nil

@@ -2,8 +2,8 @@
 # ssl.rb -- SSL/TLS enhancement for GenericServer
 #
 # Copyright (c) 2003 GOTOU Yuuzou All rights reserved.
-# 
-# $Id: ssl.rb 11708 2007-02-12 23:01:19Z shyouhei $
+#
+# $Id: ssl.rb 26334 2010-01-17 05:31:52Z nobu $
 
 require 'webrick'
 require 'openssl'
@@ -83,6 +83,7 @@ module WEBrick
       @ssl_context ||= nil
     end
 
+    undef listen
     def listen(address, port)
       listeners = Utils::create_listeners(address, port, @logger)
       if @config[:SSLEnable]

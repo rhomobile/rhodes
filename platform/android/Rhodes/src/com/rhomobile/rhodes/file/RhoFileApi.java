@@ -54,7 +54,9 @@ public class RhoFileApi {
 	
 	private static AssetManager am;
 	private static String root;
-	
+    private static final String DB_FILES_FOLDER = "db/db-files";
+    private static final String TMP_FOLDER = "tmp";
+
 	private static native void nativeInitPath(String rootPath, String sqliteJournalsPath, String apkPath);
 	private static native void nativeInit();
 	private static native void updateStatTable(String path, String type, long size, long mtime);
@@ -117,13 +119,13 @@ public class RhoFileApi {
 		Log.d(TAG, "App root path: " + root);
 		Log.d(TAG, "Sqlite journals path: " + sqliteJournals);
 		
-		File f = new File(root);
+		File f = new File(getRootPath());
 		f.mkdirs();
-		f = new File(f, "db/db-files");
+		f = new File(getDbFilesPath());
 		f.mkdirs();
 		f = new File(sqliteJournals);
 		f.mkdirs();
-		f = new File(root, "tmp");
+		f = new File(getTempPath());
 		f.mkdirs();
 		
 		String apkPath = sourceDir;
@@ -131,7 +133,12 @@ public class RhoFileApi {
 		nativeInitPath(root, sqliteJournals, apkPath);
 		return root;
 	}
-	
+
+    public static String getRootPath() { return root; }
+    public static String getDbFilesUriPath() { return DB_FILES_FOLDER; }
+    public static String getDbFilesPath() { return new File(getRootPath(), DB_FILES_FOLDER).getAbsolutePath(); }
+    public static String getTempPath() { return new File(getRootPath(), TMP_FOLDER).getAbsolutePath(); }
+
 	public static void init(Context ctx) throws IOException
 	{
 		nativeInit();

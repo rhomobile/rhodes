@@ -5,6 +5,8 @@
 * Support latest Android NDK
 * Support Offline map on Android
 * RhoSimulator for OSX Lion
+* iOS 5 support
+* Fix Symbian emulator build
 
 ## 3.1
 * Symbian support(Beta)

@@ -76,10 +76,10 @@ module REXML
 
     def encoding=( enc )
       if enc.nil?
-        @@old_enc = "UTF-8"
+        self.old_enc = "UTF-8"
         @writeencoding = false
       else
-        @@old_enc = enc
+        self.old_enc = enc
         @writeencoding = true
       end
       self.dowrite

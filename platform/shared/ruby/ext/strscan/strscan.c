@@ -1,5 +1,5 @@
 /*
-    $Id: strscan.c 18968 2008-08-31 02:43:17Z akr $
+    $Id: strscan.c 27437 2010-04-22 08:04:13Z nobu $
 
     Copyright (c) 1999-2006 Minero Aoki
 
@@ -29,7 +29,7 @@ struct strscanner
 
     /* the string to scan */
     VALUE str;
-    
+
     /* scan pointers */
     long prev;   /* legal only when MATCHED_P(s) */
     long curr;   /* always legal */
@@ -173,7 +173,7 @@ static VALUE
 strscan_s_allocate(VALUE klass)
 {
     struct strscanner *p;
-    
+
     p = ALLOC(struct strscanner);
     MEMZERO(p, struct strscanner, 1);
     CLEAR_MATCH_STATUS(p);
@@ -321,8 +321,7 @@ strscan_set_string(VALUE self, VALUE str)
 
     Data_Get_Struct(self, struct strscanner, p);
     StringValue(str);
-    p->str = rb_str_dup(str);
-    rb_obj_freeze(p->str);
+    p->str = str;
     p->curr = 0;
     CLEAR_MATCH_STATUS(p);
     return str;
@@ -354,9 +353,9 @@ strscan_concat(VALUE self, VALUE str)
 }
 
 /*
- * Returns the position of the scan pointer.  In the 'reset' position, this
+ * Returns the byte position of the scan pointer.  In the 'reset' position, this
  * value is zero.  In the 'terminated' position (i.e. the string is exhausted),
- * this value is the length of the string.
+ * this value is the bytesize of the string.
  *
  * In short, it's a 0-based index into the string.
  *
@@ -379,7 +378,7 @@ strscan_get_pos(VALUE self)
 /*
  * call-seq: pos=(n)
  *
- * Modify the scan pointer.
+ * Set the byte position of the scan pointer.
  *
  *   s = StringScanner.new('test string')
  *   s.pos = 7            # -> 7
@@ -610,7 +609,7 @@ strscan_exist_p(VALUE self, VALUE re)
  *
  *   s = StringScanner.new("Fri Dec 12 1975 14:39")
  *   s.skip_until /12/           # -> 10
- *   s                           # 
+ *   s                           #
  */
 static VALUE
 strscan_skip_until(VALUE self, VALUE re)
@@ -894,7 +893,7 @@ strscan_matched_p(VALUE self)
 
 /*
  * Returns the last matched string.
- * 
+ *
  *   s = StringScanner.new('test string')
  *   s.match?(/\w+/)     # -> 4
  *   s.matched           # -> "test"
@@ -931,17 +930,6 @@ strscan_matched_size(VALUE self)
 }
 
 /*
- * Equivalent to #matched_size.
- * This method is obsolete; use #matched_size instead.
- */
-static VALUE
-strscan_matchedsize(VALUE self)
-{
-    rb_warning("StringScanner#matchedsize is obsolete; use #matched_size instead");
-    return strscan_matched_size(self);
-}
-
-/*
  * call-seq: [](n)
  *
  * Return the n-th subgroup in the most recent match.
@@ -963,7 +951,7 @@ strscan_aref(VALUE self, VALUE idx)
 
     GET_SCANNER(self, p);
     if (! MATCHED_P(p))        return Qnil;
-    
+
     i = NUM2LONG(idx);
     if (i < 0)
         i += p->regs.num_regs;
@@ -1153,20 +1141,20 @@ inspect2(struct strscanner *p)
 
 /*
  * Document-class: StringScanner
- * 
+ *
  * StringScanner provides for lexical scanning operations on a String.  Here is
  * an example of its usage:
  *
  *   s = StringScanner.new('This is an example string')
  *   s.eos?               # -> false
- *   
+ *
  *   p s.scan(/\w+/)      # -> "This"
  *   p s.scan(/\w+/)      # -> nil
  *   p s.scan(/\s+/)      # -> " "
  *   p s.scan(/\s+/)      # -> nil
  *   p s.scan(/\w+/)      # -> "is"
  *   s.eos?               # -> false
- *   
+ *
  *   p s.scan(/\s+/)      # -> " "
  *   p s.scan(/\w+/)      # -> "an"
  *   p s.scan(/\s+/)      # -> " "
@@ -1174,7 +1162,7 @@ inspect2(struct strscanner *p)
  *   p s.scan(/\s+/)      # -> " "
  *   p s.scan(/\w+/)      # -> "string"
  *   s.eos?               # -> true
- *   
+ *
  *   p s.scan(/\s+/)      # -> nil
  *   p s.scan(/\w+/)      # -> nil
  *
@@ -1203,7 +1191,7 @@ inspect2(struct strscanner *p)
  * the string without actually scanning.  You can access the most recent match.
  * You can modify the string being scanned, reset or terminate the scanner,
  * find out or change the position of the scan pointer, skip ahead, and so on.
- * 
+ *
  * === Advancing the Scan Pointer
  *
  * - #getch
@@ -1234,7 +1222,7 @@ inspect2(struct strscanner *p)
  * - #reset
  * - #terminate
  * - #pos=
- * 
+ *
  * === Match Data
  *
  * - #matched
@@ -1268,10 +1256,10 @@ Init_strscan()
     tmp = rb_str_new2(STRSCAN_VERSION);
     rb_obj_freeze(tmp);
     rb_const_set(StringScanner, rb_intern("Version"), tmp);
-    tmp = rb_str_new2("$Id: strscan.c 18968 2008-08-31 02:43:17Z akr $");
+    tmp = rb_str_new2("$Id: strscan.c 27437 2010-04-22 08:04:13Z nobu $");
     rb_obj_freeze(tmp);
     rb_const_set(StringScanner, rb_intern("Id"), tmp);
-    
+
     rb_define_alloc_func(StringScanner, strscan_s_allocate);
     rb_define_private_method(StringScanner, "initialize", strscan_initialize, -1);
     rb_define_private_method(StringScanner, "initialize_copy", strscan_init_copy, 1);
@@ -1317,7 +1305,6 @@ Init_strscan()
     rb_define_method(StringScanner, "matched?",    strscan_matched_p,   0);
     rb_define_method(StringScanner, "matched",     strscan_matched,     0);
     rb_define_method(StringScanner, "matched_size", strscan_matched_size, 0);
-    rb_define_method(StringScanner, "matchedsize", strscan_matchedsize, 0);
     rb_define_method(StringScanner, "[]",          strscan_aref,        1);
     rb_define_method(StringScanner, "pre_match",   strscan_pre_match,   0);
     rb_define_method(StringScanner, "post_match",  strscan_post_match,  0);

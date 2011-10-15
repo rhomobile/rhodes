@@ -38,6 +38,9 @@
 
 #include "RhoConnectJniNotify.h"
 
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "RhoConnectClientJNI"
+
 typedef std::vector<RHOM_MODEL> model_vector;
 typedef std::vector<rho::String> string_vector;
 
@@ -83,6 +86,8 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_initializ
         name = rho_cast<rho::String>(env, static_cast<jstring>(jname.get()));
         model.name = /*const_cast<char*>*/(name.c_str());
 
+        RAWTRACE1("Model name: %s", name.c_str());
+
         model.type = static_cast<RHOM_MODEL_TYPE>(env->CallIntMethod(jmodel, midmodeltype));
         model.sync_type = static_cast<RHOM_SYNC_TYPE>(env->CallIntMethod(jmodel, midsynctype));
         model.sync_priority = env->CallIntMethod(jmodel, midsyncpri);
@@ -91,9 +96,13 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhoconnect_RhoConnectClient_initializ
         partition = rho_cast<rho::String>(env, static_cast<jstring>(jpart.get()));
         model.partition = /*const_cast<char*>*/(partition.c_str());
 
+        RAWTRACE1("Model partition: %s", partition.c_str());
+
         jhobject jattribs = env->CallObjectMethod(jmodel, midblobattribs);
         cur_blob_attribs = rho_cast<rho::String>(env, static_cast<jstring>(jattribs.get()));
         model.blob_attribs = cur_blob_attribs.c_str();
+
+        RAWTRACE1("Model blob attributes: %s", cur_blob_attribs.c_str());
 
         jhobject jhassociations = env->CallObjectMethod(jmodel, midassocs);
         hashtableholder assocs = rho_cast<hashtableholder>(env, jhassociations.get());
