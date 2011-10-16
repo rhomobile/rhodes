@@ -1,34 +1,11 @@
 #!/usr/bin/env ruby
 
-require 'rubygems'
-require 'templater'
-require File.join(File.dirname(__FILE__), '..', 'res', 'generators', 'rhogen')
+if ARGV && ARGV.size > 0 && ARGV[0] == "--rhodes-path"
+    puts File.dirname(__FILE__)
+    exit(0)    
+end
+
 require File.join(File.dirname(__FILE__), '..', 'lib', 'rhodes')
-
-# Stub this method to force 1.8 compatibility (come on templater!)
-class Encoding
-  def find
-    "utf-8"
-  end
-
-  def dummy?
-    false
-  end
-end
-
-class String
-  def force_encoding(enc)
-    return self
-  end
-
-  def encoding
-    if RUBY_VERSION =~ /1\.8/ and Encoding.responds_to?('new')
-      Encoding.new
-    else
-      Encoding.default_external
-    end
-  end
-end
 
 params = ["--rhodes-ver"]
 
