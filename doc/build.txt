@@ -46,17 +46,23 @@ You don't have to do it if you cloned sources, but if you want to build a Rhodes
 
 ## Setting Up build.yml
 
-Before you build your application from Rhodes source code, its build.yml file must have the sdk set to your Rhodes source code root folder. For example, your build.yml file could have the following line:
+By default application use latest Rhodes gem installed on computer. 
+
+If you wish to use special version of Rhodes or use Rhodes git sources :
 
 	:::term
 	sdk: /Library/Ruby/Gems/1.8/gems/rhodes-3.0.2
+ 
+    OR for Rhodes sources:
+    
+    sdk: ~/Projects/rhodes
 
-This line in build.yml has likely already been set when you generated your Rhodes application. However, you can also open a command line window, navigate to the directory of your Rhodes application, and set it by running the following command:
+After installing new Rhodes gem(3.2.x over any version less then 3.2.x), you can also open a command line window, navigate to the directory of your Rhodes application, and run the following command:
 
 	:::term
 	$ set-rhodes-sdk
 
-The set-rhodes-sdk command will set the sdk line in your build.yml file to point to your Rhodes source code root folder.
+The set-rhodes-sdk command will remove sdk line from your build.yml to use latest Rhodes gem, it also upgrade application Rakefile.
 
 ## Building a Rhodes Application for iPhone/iPad
 

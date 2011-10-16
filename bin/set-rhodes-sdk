@@ -9,10 +9,13 @@ if File.exists? "build.yml"
   $app_config = YAML::load_file("build.yml")
 
   unless $app_config["sdk"].nil?
-    $app_config["sdk"] = File.expand_path(File.dirname(__FILE__) + "/../")
+    $app_config["sdk"] = nil
 
     File.open(  'build.yml', 'w' ) do |out|
       YAML.dump( $app_config, out )
     end
+
+    rakefilepath = File.join( File.dirname(`get-rhodes-info --rhodes-path`), 'res/generators/templates/application/Rakefile' )
+    cp rakefilepath, '.'
   end
 end
