@@ -13,8 +13,12 @@ if ENV["RHO_HOME"].nil?
   if $app_config["sdk"] 
     rakefilepath = "#{$app_config["sdk"]}/Rakefile"
   else
-    rakefilepath = File.dirname(`get-rhodes-info --rhodes-path`)
-    rakefilepath  = File.join(rakefilepath, "Rakefile")
+    begin
+      rakefilepath = File.dirname(`get-rhodes-info --rhodes-path`)
+      rakefilepath  = File.join(rakefilepath, "Rakefile")
+    rescue
+      rakefilepath  = ""	
+    end
   end  
 else
   rakefilepath = "#{ENV["RHO_HOME"]}/Rakefile"
