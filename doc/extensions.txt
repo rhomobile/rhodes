@@ -200,6 +200,26 @@ Add to build.yml:
 	
 	extensions: ["net-http", "thread", "timeout", "uri"]
 
+### hmac
+
+Add to build.yml:
+	
+	extensions: ["hmac", "digest", "digest-sha1"]
+
+Example:
+	:::ruby	
+    require 'base64'
+    require 'hmac-sha1'
+
+    def test_hmac
+      key = '1234'
+      signature = 'abcdef'
+      hmac = HMAC::SHA1.new(key)
+      hmac.update(signature)
+   
+      puts Rho::RhoSupport.url_encode(Base64.encode64("#{hmac.digest}\n"))
+    end
+    
 ### FileUtils
 
 Add to build.yml:
