@@ -90,7 +90,7 @@ namespace "build" do
      ENV['GCCPATH']= $symbiandir+"/tools/gcce4"
      ENV['DEFALT_MKSPEC_PATH']=$sdkprefix+"/mkspecs/default"
      ENV['QMAKE_PATH']=$sdkprefix+"/bin"
-     ENV['QT_SIS_OPTIONS']="-u -o"
+     ENV['QT_SIS_OPTIONS']="-u"
 
 
      if($ver == "9.4")
@@ -136,6 +136,9 @@ namespace "build" do
      mkdir_p $targetdir if not File.exists? $targetdir
      rm $targetdir+"/"+$appname+"_unsigned.sis" if File.exists? $targetdir+"/"+$appname+"_unsigned.sis"
      cp $startdir + "/"+$config["build"]["symbianpath"] + "/rhodes/"+$appname+"_unsigned.sis", $targetdir+"/"+$appname+"_unsigned.sis"
+
+     rm $targetdir+"/"+$appname+".sis" if File.exists? $targetdir+"/"+$appname+".sis"
+     cp $startdir + "/"+$config["build"]["symbianpath"] + "/rhodes/"+$appname+".sis", $targetdir+"/"+$appname+".sis"
 
      chdir $startdir
    end
