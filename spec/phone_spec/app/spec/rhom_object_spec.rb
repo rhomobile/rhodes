@@ -721,6 +721,20 @@ end
     @accts[0].industry.should == "Technology"
   end
 
+  it "should find with advanced OR conditions with order" do
+    query = '%IND%'    
+    @accts = getAccount.find( :all, 
+       :conditions => { 
+        {:func=>'UPPER', :name=>'name', :op=>'LIKE'} => query, 
+        {:func=>'UPPER', :name=>'industry', :op=>'LIKE'} => query}, 
+        :op => 'OR', :select => ['name','industry'],
+        :order=>'name', :orderdir=>'DESC' )
+  
+    @accts.length.should == 1
+    @accts[0].name.should == "Mobio India"
+    @accts[0].industry.should == "Technology"
+  end
+
   it "should NOT find with advanced OR conditions" do
     query = '%IND33%'    
     @accts = getAccount.find( :all, 
@@ -742,6 +756,23 @@ end
        }, 
        :op => 'AND', 
        :select => ['name','industry'])
+  
+    @accts.length.should == 1
+    @accts[0].name.should == "Mobio India"
+    @accts[0].industry.should == "Technology"
+  end
+
+  it "should find with advanced AND conditions with order" do
+    query = '%IND%'    
+    query2 = '%chnolo%' #LIKE is case insensitive by default   
+    @accts = getAccount.find( :all, 
+       :conditions => { 
+        {:func=>'UPPER', :name=>'name', :op=>'LIKE'} => query,
+        {:func=>'UPPER', :name=>'industry', :op=>'LIKE'} => query2
+       }, 
+       :op => 'AND', 
+       :select => ['name','industry'],
+       :order=>'name', :orderdir=>'DESC')
   
     @accts.length.should == 1
     @accts[0].name.should == "Mobio India"
@@ -1323,7 +1354,16 @@ end
     @accts[0].name.should == "Mobio India"
     @accts[0].industry.should == "Technology"
   end
-  
+
+  it "should support sql conditions single filter with order" do
+    return if USE_HSQLDB
+    
+    @accts = getAccount.find(:all, :conditions => ["name like ?", "'Mob%'"], :select => ['name', 'industry'], :order=>'name', :orderdir => 'DESC' )
+    @accts.length.should == 1
+    @accts[0].name.should == "Mobio India"
+    @accts[0].industry.should == "Technology"
+  end
+
   it "should support sql conditions with multiple filters" do
     @accts = getAccount.find(:all, :conditions => ["name like ? and industry like ?", "'Mob%'", "'Tech%'"], :select => ['name', 'industry'])
     @accts.length.should == 1
@@ -1334,6 +1374,7 @@ end
 
   it "should return records when order by is nil for some records" do
     return if USE_HSQLDB
+    
     @accts = getAccount.find(:all, :order => 'shipping_address_country', :dont_ignore_missed_attribs => true, :select => ['name'])
     @accts.length.should == 2
     
@@ -1499,7 +1540,7 @@ end
     accts.length.should == 0
     
   end          
-  
+#=end  
 end
 #=begin
 describe "Rhom#paginate" do
