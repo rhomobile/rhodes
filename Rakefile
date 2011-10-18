@@ -944,6 +944,7 @@ task :gem do
   File.open("Manifest.txt",'w') {|f| f.write(out)}
 
   puts "Loading gemspec"
+  require 'rubygems'
   spec = Gem::Specification.load('rhodes.gemspec')
 
   puts "Building gem"
