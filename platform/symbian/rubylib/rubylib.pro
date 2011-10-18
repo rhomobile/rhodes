@@ -8,6 +8,9 @@ QT       -= gui
 DEFINES += HAVE_SOCKADDR_STORAGE=1\
            RHO_SYMBIAN _LIB STATIC_LINKED __BSD_VISIBLE
 
+DEFINES -= UNICODE
+DEFINES -= _UNICODE
+
 TARGET = rubylib
 TEMPLATE = lib
 CONFIG += staticlib warn_on
