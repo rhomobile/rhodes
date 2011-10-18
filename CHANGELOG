@@ -8,6 +8,8 @@
 * iOS 5 support
 * Fix Symbian emulator build
 * Make sdk in application build.yml optional, use latest Rhodes by default
+* Add hmac ruby extension
+* Symbian: build unsigned sis-file
 
 ## 3.1
 * Symbian support(Beta)
