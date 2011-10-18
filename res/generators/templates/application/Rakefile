@@ -14,7 +14,7 @@ if ENV["RHO_HOME"].nil?
     rakefilepath = "#{$app_config["sdk"]}/Rakefile"
   else
     begin
-      rakefilepath = File.dirname(`get-rhodes-info --rhodes-path`)
+      rakefilepath = `get-rhodes-info --rhodes-path`.chomp
       rakefilepath  = File.join(rakefilepath, "Rakefile")
     rescue
       rakefilepath  = ""	
