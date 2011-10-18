@@ -34,8 +34,10 @@
     });
 
     $.ajaxPrefilter(function(options, originalOptions, jqXHR){
-        var origSuccess = options.success;
+        // we may have no explicit success handler!
+        if (!options.success) return;
 
+        var origSuccess = options.success;
         options.success = function(html, textStatus, jqXHR) {
             if (jqXHR.getResponseHeader('Wait-Page')) {
                 // We cannot just do nothing on wait-page being received, because
