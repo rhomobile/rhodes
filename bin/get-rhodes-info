@@ -1,7 +1,10 @@
 #!/usr/bin/env ruby
 
 if ARGV && ARGV.size > 0 && ARGV[0] == "--rhodes-path"
-    puts File.dirname(__FILE__)
+    currDir = File.dirname(__FILE__)
+    Dir.chdir(currDir)
+    Dir.chdir("..")
+    puts Dir.pwd
     exit(0)    
 end
 
