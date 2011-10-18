@@ -175,9 +175,13 @@ namespace "build" do
      rm_r "db" if File.exists? "db"
      rm_r "lib" if File.exists? "lib"
 
-     mv "rhodes/apps", pwd
-     mv "rhodes/db", pwd
-     mv "rhodes/lib", pwd
+     #mv "rhodes/apps", pwd
+     #mv "rhodes/db", pwd
+     #mv "rhodes/lib", pwd
+
+     cp_r $srcdir + "/apps", pwd
+     cp_r $srcdir + "/db", pwd
+     cp_r $srcdir + "/lib", pwd
 
      cp "rhodes/release/rhodes.exe", pwd if File.exists? "rhodes/release/rhodes.exe"
 
@@ -212,7 +216,7 @@ end
 namespace "device" do
   namespace "symbian" do
     desc "Build production for device"
-    task :production => ["config:symbian","build:symbian:rhobundle","build:symbian:rhodesdev"] do
+    task :production => ["build:symbian:rhobundle","build:symbian:rhodesdev"] do
 
 
 
@@ -249,7 +253,7 @@ namespace "device" do
 end
 
 namespace "run" do
-    task :symbian => ["config:symbian","build:symbian:rhobundle","build:symbian:rhodesemu"] do
+    task :symbian => ["build:symbian:rhobundle","build:symbian:rhodesemu"] do
 
 
 
