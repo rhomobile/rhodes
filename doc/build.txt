@@ -715,6 +715,9 @@ Add pathes to Qt SDK and MS Visual Studio 2005 to rhobuild.yml in the Rhodes fol
 
 	:::term
 	$ rake device:symbian:production
+
+NOTE: This command creates two sis-files: signed for testing and unsigned for production signing. See <app_root>/bin/target/sym folder for sis-files.
+
 	
 ### To clean all binaries run:
 
