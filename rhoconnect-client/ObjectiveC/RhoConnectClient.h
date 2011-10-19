@@ -40,6 +40,7 @@
 
 + (void) initDatabase;
 + (void) setNotification: (SEL) callback target:(id)target;
++ (void) setModelNotification: (int) nSrcID callback: (SEL) callback target:(id)target;
 
 - (void) setObjectNotification: (SEL) callback target:(id)target;
 - (void) clearObjectNotification;
@@ -48,8 +49,9 @@
 - (id) init;
 - (void)dealloc;
 
-- (void) addModels:(NSArray*)models;
+- (void) addModels:(NSMutableArray*)models;
 - (void) database_full_reset_and_logout;
+- (void) database_client_reset;
 - (BOOL) is_logged_in;
 
 - (RhoConnectNotify*) loginWithUser: (NSString*) user pwd:(NSString*) pwd;

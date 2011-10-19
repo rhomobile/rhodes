@@ -38,7 +38,8 @@ typedef struct _RHOM_MODEL
 {
     const char* name;
     RHOM_MODEL_TYPE type;
-
+    int source_id; //generated when insert to database
+    
     RHOM_SYNC_TYPE sync_type;
     int  sync_priority;
 

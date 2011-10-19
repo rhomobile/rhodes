@@ -123,13 +123,16 @@ void rho_connectclient_processmodels(RHOM_MODEL* pModels, int nModels)
             oUserDB.executeSQL("UPDATE sources SET sync_priority=?, sync_type=?, partition=?, schema=?, schema_version=?, associations=?, blob_attribs=? WHERE name=?",
                 model.sync_priority, getSyncTypeName(model.sync_type), model.partition, 
                 (model.type == RMT_PROPERTY_FIXEDSCHEMA ? "schema_model" : ""), "", strAssoc.c_str(), model.blob_attribs, model.name );
-                
+            
+            model.source_id = res.getIntByIdx(1);
+            
         }else //new model
         {
             oUserDB.executeSQL("INSERT INTO sources (source_id,name,sync_priority, sync_type, partition, schema,schema_version, associations, blob_attribs) values (?,?,?,?,?,?,?,?,?) ",
                 nStartModelID, model.name, model.sync_priority, getSyncTypeName(model.sync_type), model.partition, 
                 (model.type == RMT_PROPERTY_FIXEDSCHEMA ? "schema_model" : ""), "", strAssoc.c_str(), model.blob_attribs );
 
+            model.source_id = nStartModelID;
             nStartModelID++;
         }
     }
@@ -922,7 +925,7 @@ void rho_connectclient_free_sync_objectnotify(RHO_CONNECT_OBJECT_NOTIFY* pNotify
         free(pNotify->created_objects);
     }
     
-    memset( pNotify, 0, sizeof(RHO_CONNECT_NOTIFY) );        
+    memset( pNotify, 0, sizeof(RHO_CONNECT_OBJECT_NOTIFY) );        
 }
     
 unsigned long rho_connectclient_strarray_create()

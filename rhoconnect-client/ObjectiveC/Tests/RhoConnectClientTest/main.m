@@ -38,7 +38,7 @@ int shouldFindBySql()
 	if ( !items )
 		return 0;
     
-    if ( [items count] != 4 )
+    if ( [items count] != 3 )
         return 0;
     
     NSArray* params = [NSArray arrayWithObjects: product.name, nil];
@@ -349,7 +349,7 @@ int runObjCClientTest()
 	
 	[RhoConnectClient initDatabase];
 	sclient = [[RhoConnectClient alloc] init];
-    NSArray* models = [NSArray arrayWithObjects:customer, product, perftest, nil];	
+    NSMutableArray* models = [NSMutableArray arrayWithObjects:customer, product, perftest, nil];	
 	
 	[sclient addModels:models];
 	
@@ -367,6 +367,7 @@ int runObjCClientTest()
             @throw e;
         
         sclient.sync_server = @"http://rhodes-store-server.heroku.com/application";
+        //sclient.sync_server = @"http://192.168.0.103:9292/application";
 
         if ( !shouldFindBySql() )
             @throw e;

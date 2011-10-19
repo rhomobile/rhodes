@@ -160,7 +160,7 @@ void rho_free_callbackdata(void* pData)
 	return ret;
 }
 
-- (void) addModels: (NSArray*)models
+- (void) addModels: (NSMutableArray*)models
 {
 	RHOM_MODEL rhom_models[models.count];
 	int nModel = 0;
@@ -189,10 +189,13 @@ void rho_free_callbackdata(void* pData)
 	
     rho_connectclient_init(rhom_models, models.count);	
 	
-    for (int i = 0; i < models.count; i++) {
+    int i = 0;
+    for (RhomModel* model in models) 
+	{
+        model.source_id = rhom_models[i].source_id; 
         rho_connectclient_destroymodel(&rhom_models[i]);
+        i++;
     }
-	
     
     [self setThreadedMode:FALSE];
 	[self setPollInterval: 0];
@@ -201,6 +204,11 @@ void rho_free_callbackdata(void* pData)
 - (void) database_full_reset_and_logout
 {
 	rho_connectclient_database_full_reset_and_logout();	
+}
+
+- (void) database_client_reset
+{
+	rho_connectclient_database_full_reset(true);	
 }
 
 - (BOOL) is_logged_in
@@ -238,6 +246,12 @@ void rho_free_callbackdata(void* pData)
 {
 	rho_sync_set_notification_c(-1, callback_impl, 
 	  [[CCallbackData alloc] init: callback target: target thread:[NSThread currentThread]] );
+}
+
++ (void) setModelNotification: (int) nSrcID callback: (SEL) callback target:(id)target
+{
+    rho_sync_set_notification_c(nSrcID, callback_impl, 
+                                [[CCallbackData alloc] init: callback target: target thread:[NSThread currentThread]] );    
 }
 
 - (void) clearNotification
