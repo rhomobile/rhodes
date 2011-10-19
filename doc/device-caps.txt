@@ -299,6 +299,8 @@ Remove contact identified by the provided id from the phonebook. (delete)
 
 On all devices, properties currently supported are: "id","first_name","last_name","mobile_number","home_number","business_number","email_address","company_name"
 
+### iPhone
+
 On iPhone, additional contact properties are supported. 
 
 General: 
@@ -325,6 +327,38 @@ Phone numbers:
 
 Home pages: 
 "home_page"
+
+### Android
+
+On Android extended RhoContact::find functionality is implemented.
+In addition to common usage described above it is allowed to pass additional parameter values:
+
+* :all - get all contacts as usual 
+* :first - find first contact from list
+* :count - returns count of contacts
+
+For these selectors an additional params hash may be used. The next keys and values are recognized in additional params:
+
+* :per_page - max count if contacts returned by find
+* :offset - offset from begin of contacts' list
+These two parameters are used to paginate contacts list. If used with :count exact number of returned contacts can be determined (for example for last page).
+* :select - list of contact properties have to be selected from phonebook (Use it to enchance query performance)
+
+On Android the nexts contact properties are supported (every of them may be used in :select list):
+
+General:
+"id", "display_name", "first_name", "last_name"
+
+Phone numbers:
+"mobile_number", "home_number", "business_number"
+
+E-mails:
+"email_address"
+
+Company:
+"company_name"
+
+**NOTE: In most cases the result of RhoContact::find query may return more contact properties the defined in :select**
 
 ### Sample
 For examples on how to use the API provided by this class, see the view and controller in the /app/Contacts folder in the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/Contacts/controller.rb).
