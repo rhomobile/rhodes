@@ -15,7 +15,8 @@ if File.exists? "build.yml"
       YAML.dump( $app_config, out )
     end
 
-    rakefilepath = File.join( File.dirname(`get-rhodes-info --rhodes-path`), 'res/generators/templates/application/Rakefile' )
+    rakefilepath = File.join( `get-rhodes-info --rhodes-path`.chomp(), 'res/generators/templates/application/Rakefile' )
+    puts "Application Rakefile has been updated to use latest Rhodes gem."
     cp rakefilepath, '.'
   end
 end
