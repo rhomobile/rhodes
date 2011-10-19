@@ -66,7 +66,10 @@ describe "url_for and link_to" do
 
     it "should generate urls for create or index actions" do
       @c.url_for(:action => :index, :id => '{12}').should == '/application/model'
-if !defined?(RHO_WP7)    
+      
+is_bb6 = System::get_property('platform') == 'Blackberry' && (System::get_property('os_version').split('.')[0].to_i >= 6)    
+      
+if !defined?(RHO_WP7) && !is_bb6
       @c.url_for(:action => :create).should == '/application/model'
 else
       @c.url_for(:action => :create).should == '/application/model/create'
@@ -90,7 +93,8 @@ end
     end
 
     it "should generate urls with a query" do
-if !defined?(RHO_WP7)    
+is_bb6 = System::get_property('platform') == 'Blackberry' && (System::get_property('os_version').split('.')[0].to_i >= 6)    
+if !defined?(RHO_WP7) && !is_bb6
       @c.url_for(:action => :create, :query => {:name => 'John Smith', 
         'address' => "http://john.smith.com"}).should == '/application/model?name=John%20Smith&address=http%3A%2F%2Fjohn.smith.com'
 else
