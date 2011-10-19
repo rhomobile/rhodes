@@ -21,12 +21,13 @@ def debug_read_cmd(io,wait)
 end
 
 def execute_cmd(cmd, advanced)
+  #$_s.write("execute_cmd start\n")
   cmd = URI.unescape(cmd.gsub(/\+/,' ')) if advanced
   puts "[Debugger] Executing: #{cmd.inspect}"
   result = ""
   error = '0';
   begin
-    result = eval(cmd, $_binding).inspect
+    result = eval(cmd.to_s, $_binding).inspect
   rescue Exception => exc
     error = '1';
     result = "#{$!}".inspect
@@ -34,6 +35,7 @@ def execute_cmd(cmd, advanced)
   
   cmd = URI.escape(cmd.sub(/[\n\r]+$/, ''), Regexp.new("[^#{URI::PATTERN::UNRESERVED}]")) if advanced
   $_s.write("EV" + (advanced ? "L:#{error}:#{cmd}:" : ':'+(error.to_i != 0 ? 'ERROR: ':'')) + result + "\n")
+  #$_s.write("execute_cmd end\n")
 end
 
 def get_variables(scope)
@@ -68,9 +70,9 @@ def get_variables(scope)
     vars.each do |v|
       if v !~ /^\$(=|KCODE)$/
         begin
-          result = eval(v,$_binding).inspect
+          result = eval(v.to_s, $_binding).inspect
         rescue Exception => exc
-          #$_s.write("get var exception\n")
+          $_s.write("get var exception\n")
           result = "#{$!}".inspect
         end
         $_s.write("V:#{vartype}:#{v}:#{result}\n")
