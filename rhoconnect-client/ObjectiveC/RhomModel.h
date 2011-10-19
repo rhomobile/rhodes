@@ -32,12 +32,15 @@
 	NSString* name;
 	int       sync_type; 
     int       model_type;
+    int       source_id; //generated when insert to database
+    
     NSDictionary* associations;
     NSMutableString* blob_attribs;
 }
 
 @property(retain) NSString* name;
 @property(assign) int       sync_type;
+@property(assign) int       source_id;
 @property(assign) int       model_type;
 @property(retain) NSDictionary* associations;
 @property(retain, readonly) NSString* blob_attribs;
@@ -47,6 +50,9 @@
 
 - (RhoConnectNotify*) sync;
 - (void) sync: (SEL) callback target:(id)target;
+
+- (void) setNotification: (SEL) callback target:(id)target;
+- (void) clearNotification;
 
 - (void) add_blob_attribute: (NSString *) attr_name;
 - (void) add_blob_attribute: (NSString *) attr_name overwrite: (BOOL) attr_overwrite;

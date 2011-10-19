@@ -15,6 +15,7 @@
 
 @synthesize name;
 @synthesize sync_type;
+@synthesize source_id;
 @synthesize model_type;
 @synthesize associations;
 @synthesize blob_attribs;
@@ -24,6 +25,7 @@
 	self = [super init];
 	sync_type = RST_INCREMENTAL;
 	model_type = RMT_PROPERTY_BAG;
+    source_id = 0;
     associations = NULL;
     blob_attribs = [[NSMutableString alloc] init];
     
@@ -56,6 +58,16 @@
 	rho_sync_doSyncSourceByName([name cStringUsingEncoding:[NSString defaultCStringEncoding]]);	 
 }
 
+- (void) setNotification: (SEL) callback target:(id)target
+{
+    [RhoConnectClient setModelNotification:source_id callback:callback target:target];
+
+}
+
+- (void) clearNotification
+{
+	rho_sync_clear_notification(source_id);
+}
 
 - (void) add_blob_attribute: (NSString *) attr_name
 {
