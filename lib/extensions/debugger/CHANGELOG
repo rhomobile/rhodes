@@ -1,3 +1,6 @@
+## 1.0.3
+* Fix working with Ruby 1.9.2
+
 ## 1.0.2
 * Change debug port parameter name
 * Fix issue with run from Rhosync
