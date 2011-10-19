@@ -94,7 +94,7 @@ describe "RhoFile" do
     it "should isfileexist" do
         File.exist?(Rho::RhoApplication::get_model_path('app', 'spec')).should == true if System.get_property('platform') != 'Blackberry'
         File.exist?(Rho::RhoApplication::get_blob_folder()).should ==  true 
-        File.exist?( File.join( __rhoGetCurrentDir(), 'RhoLog.txt')).should ==  true 
+        File.exist?( File.join( __rhoGetCurrentDir(), 'rholog.txt')).should ==  true 
         
         bExc = false
         begin
