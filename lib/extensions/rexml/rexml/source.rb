@@ -60,7 +60,7 @@ module REXML
       else
         @to_utf = false
         if @buffer.respond_to? :force_encoding
-          @buffer.force_encoding Encoding::UTF_8
+          @buffer.force_encoding "UTF-8" #Encoding::UTF_8
         end
       end
     end
@@ -166,7 +166,7 @@ module REXML
       if !@to_utf and
           @buffer.respond_to?(:force_encoding) and
           @source.respond_to?(:external_encoding) and
-          @source.external_encoding != ::Encoding::UTF_8
+          @source.external_encoding != "UTF-8" #::Encoding::UTF_8
         @force_utf8 = true
       else
         @force_utf8 = false
@@ -261,7 +261,7 @@ module REXML
       if @to_utf
         decode(str)
       else
-        str.force_encoding(::Encoding::UTF_8) if @force_utf8
+        str.force_encoding("UTF-8") if @force_utf8
         str
       end
     end
