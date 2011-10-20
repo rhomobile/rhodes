@@ -217,14 +217,6 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 
     BOOL restoreSymLinks_only = NO;
 
-    {
-        NSString* testName = [rhoRoot stringByAppendingPathComponent:@"lib"];
-        if (![fileManager fileExistsAtPath:testName]) {
-            restoreSymLinks_only = YES;
-        }
-        restoreSymLinks_only = NO;
-    }
-    
     BOOL contentChanged;
     if (nameChanged)
         contentChanged = YES;
