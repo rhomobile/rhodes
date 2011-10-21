@@ -800,6 +800,9 @@ void rho_connectclient_free_syncnotify(RHO_CONNECT_NOTIFY* pNotify)
     if ( pNotify->source_name != null )
         free(pNotify->source_name);
     
+    if ( pNotify->sync_type != null )
+        free(pNotify->sync_type);
+    
     if ( pNotify->status != null )
         free(pNotify->status);
     
