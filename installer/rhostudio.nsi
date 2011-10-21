@@ -204,7 +204,7 @@ Section "Ruby, Rubygems, Rhodes, Rhoconnect and adapters" rubySection
   Call EnvVarUpdate
   Pop $R0
   
-  ExecWait "$INSTDIR\ruby\bin\rake.bat dtach:install"  
+  #ExecWait "$INSTDIR\ruby\bin\rake.bat dtach:install"  
 
 SectionEnd
 
