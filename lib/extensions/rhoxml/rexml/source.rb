@@ -60,7 +60,7 @@ module REXML
       else
         @to_utf = false
         if @buffer.respond_to? :force_encoding
-          @buffer.force_encoding Encoding::UTF_8
+          @buffer.force_encoding "UTF-8" #Encoding::UTF_8
         end
       end
     end
@@ -197,7 +197,7 @@ module REXML
         str = decode(str) if @to_utf and str 
         @buffer << str
         if not @to_utf and @buffer.respond_to? :force_encoding
-          @buffer.force_encoding Encoding::UTF_8
+          @buffer.force_encoding "UTF-8" #Encoding::UTF_8
         end
       rescue Exception, NameError
         @source = nil

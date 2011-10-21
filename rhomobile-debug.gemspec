@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = "rhomobile-debug"
-  s.version = "1.0.3"
+  s.version = "1.0.5"
   s.authors = ["Rhomobile"]
   s.date    = Time.now.strftime('%Y-%m-%d')
   s.description = %q{Rhomobile debugger extension}

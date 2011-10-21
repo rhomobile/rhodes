@@ -4,6 +4,21 @@ require 'timeout'
 DEBUGGER_STEP_TYPE = ['STEP','STOVER','STRET','SUSP']
 DEBUGGER_STEP_COMMENT = ['Stepped into','Stepped over','Stepped return','Suspended']
 
+DEBUGGER_LOG_LEVEL_DEBUG  = 0
+DEBUGGER_LOG_LEVEL_INFO  = 1
+DEBUGGER_LOG_LEVEL_WARN  = 2
+DEBUGGER_LOG_LEVEL_ERROR = 3
+
+def debugger_log(level, msg)
+  if (level >= DEBUGGER_LOG_LEVEL_WARN)
+    puts "[Debugger] #{msg}"
+  end
+end
+
+def log_command(cmd)
+  debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Received command: #{cmd}")
+end
+
 def debug_read_cmd(io,wait)
   begin
     if wait
@@ -13,8 +28,7 @@ def debug_read_cmd(io,wait)
       cmd = io.read_nonblock(4096)
       $_cmd << cmd if cmd !~ /^\s*$/
     end
-
-    #$_s.write("get data from front end" + $_cmd.to_s + "\n")
+    # $_s.write("get data from front end" + $_cmd.to_s + "\n")
   rescue
     # puts $!.inspect
   end
@@ -23,7 +37,7 @@ end
 def execute_cmd(cmd, advanced)
   #$_s.write("execute_cmd start\n")
   cmd = URI.unescape(cmd.gsub(/\+/,' ')) if advanced
-  puts "[Debugger] Executing: #{cmd.inspect}"
+  debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Executing: #{cmd.inspect}")
   result = ""
   error = '0';
   begin
@@ -68,7 +82,7 @@ def get_variables(scope)
     vars = eval(prefix + cmd, $_binding)
     $_s.write("VSTART:#{vartype}\n")
     vars.each do |v|
-      if v !~ /^\$(=|KCODE)$/
+      if v !~ /^\$(=|KCODE|-K)$/
         begin
           result = eval(v.to_s, $_binding).inspect
         rescue Exception => exc
@@ -83,10 +97,6 @@ def get_variables(scope)
   end
 end
 
-def log_command(cmd)
-  # puts "[Debugger] Received command: #{cmd}"
-end
-
 def debug_handle_cmd(inline)
   #$_s.write("start of debug_handle_cmd wait=" + inline.to_s + "\n")
 
@@ -97,7 +107,7 @@ def debug_handle_cmd(inline)
   if cmd != ""
     if cmd =~/^CONNECTED/
       log_command(cmd)
-      puts "[Debugger] Connected to debugger"
+      debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Connected to debugger")
       processed = true
     elsif cmd =~/^(BP|RM):/
       log_command(cmd)
@@ -105,26 +115,26 @@ def debug_handle_cmd(inline)
       bp = ary[1].gsub(/\|/,':') + ':' + ary[2].chomp
       if (cmd =~/^RM:/)
         $_breakpoint.delete(bp)
-        puts "[Debugger] Breakpoint removed: #{bp}"
+        debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoint removed: #{bp}")
       else
         $_breakpoint.store(bp,1)
-        puts "[Debugger] Breakpoint added: #{bp}"
+        debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoint added: #{bp}")
       end
       processed = true
     elsif cmd =~ /^RMALL/
       log_command(cmd)
       $_breakpoint.clear
-      puts "[Debugger] All breakpoints removed"
+      debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "All breakpoints removed")
       processed = true
     elsif cmd =~ /^ENABLE/
       log_command(cmd)
       $_breakpoints_enabled = true
-      puts "[Debugger] Breakpoints enabled"
+      debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoints enabled")
       processed = true
     elsif cmd =~ /^DISABLE/
       log_command(cmd)
       $_breakpoints_enabled = false
-      puts "[Debugger] Breakpoints disabled"
+      debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoints disabled")
       processed = true
     elsif inline and (cmd =~ /^STEPOVER/)
       $_s.write("STEPOVER start\n")
@@ -133,7 +143,7 @@ def debug_handle_cmd(inline)
       $_step_level = $_call_stack
       $_resumed = true
       wait = false
-      puts "[Debugger] Step over"
+      debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Step over")
       processed = true
     elsif inline and (cmd =~ /^STEPRET/)
       log_command(cmd)
@@ -147,7 +157,7 @@ def debug_handle_cmd(inline)
       end
       $_resumed = true
       wait = false
-      puts "[Debugger] Step return" + comment
+      debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Step return" + comment)
       processed = true
     elsif inline and (cmd =~ /^STEP/)
       log_command(cmd)
@@ -155,40 +165,40 @@ def debug_handle_cmd(inline)
       $_step_level = -1
       $_resumed = true
       wait = false
-      puts "[Debugger] Step into"
+      debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Step into")
       processed = true
     elsif inline and (cmd =~ /^CONT/)
       log_command(cmd)
       wait = false
       $_step = 0
       $_resumed = true
-      puts "[Debugger] Resuming"
+      debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Resuming")
       processed = true
     elsif cmd =~ /^SUSP/
       log_command(cmd)
       $_step = 4
       $_step_level = -1
       wait = true
-      puts "[Debugger] Suspend"
+      debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Suspend")
       processed = true
     elsif cmd =~ /^KILL/
       log_command(cmd)
-      puts "[Debugger] Terminating..."
+      debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Terminating...")
       processed = true
       System.exit
     elsif inline and (cmd =~ /^EVL?:/)
       log_command(cmd)
       processed = true
-      puts "[Debugger] Calc evaluation..."
+      debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Calc evaluation...")
       execute_cmd cmd.sub(/^EVL?:/,""), (cmd =~ /^EVL:/ ? true : false)
     elsif  inline and (cmd =~ /^[GLCI]VARS/)
       log_command(cmd)
-      puts "[Debugger] Get variables..."
+      debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Get variables...")
       get_variables cmd
       processed = true
     elsif inline
       log_command(cmd)
-      puts "[Debugger] Unknown command"
+      debugger_log(DEBUGGER_LOG_LEVEL_WARN, "Unknown command")
       processed = true
     end
   end
@@ -230,7 +240,7 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
           fn = filename.gsub(/:/, '|')
           cl = classname.to_s.gsub(/:/,'#')
           $_s.write((step_stop ? DEBUGGER_STEP_TYPE[$_step-1] : "BP") + ":#{fn}:#{ln}:#{cl}:#{id}\n")
-          puts "[Debugger] " + (step_stop ? DEBUGGER_STEP_COMMENT[$_step-1] : "Breakpoint") + " in #{fn} at #{ln}"
+          debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, (step_stop ? DEBUGGER_STEP_COMMENT[$_step-1] : "Breakpoint") + " in #{fn} at #{ln}")
           $_step = 0
           $_step_level = -1
 
@@ -278,7 +288,7 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
 $_s = nil
 
 begin
-  puts "[Debugger] Opening connection"
+  debugger_log(DEBUGGER_LOG_LEVEL_INFO, "Opening connection")
   debug_host_env = ENV['RHOHOST']
   debug_port_env = ENV['rho_debug_port']
   debug_path_env = ENV['ROOT_PATH']
@@ -286,13 +296,13 @@ begin
   debug_host = (debug_host_env.nil? or debug_host_env == "") ? '127.0.0.1' : debug_host_env 
   debug_port = (debug_port_env.nil? or debug_port_env == "") ? 9000 : debug_port_env  
 
-  puts "host=" + debug_host_env.to_s
-  puts "port=" + debug_port_env.to_s
-  puts "path=" + debug_path_env.to_s
+  debugger_log(DEBUGGER_LOG_LEVEL_INFO, "host=" + debug_host_env.to_s)
+  debugger_log(DEBUGGER_LOG_LEVEL_INFO, "port=" + debug_port_env.to_s)
+  debugger_log(DEBUGGER_LOG_LEVEL_INFO, "path=" + debug_path_env.to_s)
 
   $_s = timeout(30) { TCPSocket.open(debug_host, debug_port) }
 
-  puts "[Debugger] Connected: " + $_s.to_s
+  debugger_log(DEBUGGER_LOG_LEVEL_WARN, "Connected: " + $_s.to_s)
   $_s.write("CONNECT\nHOST=" + debug_host.to_s + "\nPORT=" + debug_port.to_s + "\n")
  
   $_breakpoint = Hash.new
@@ -326,6 +336,6 @@ begin
   }
 
 rescue
-  puts "[Debugger] Unable to open connection to debugger: " + $!.inspect
+  debugger_log(DEBUGGER_LOG_LEVEL_ERROR, "Unable to open connection to debugger: " + $!.inspect)
   $_s = nil
 end

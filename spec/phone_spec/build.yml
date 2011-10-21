@@ -1,7 +1,7 @@
 --- 
 name: phone_spec
 bbver: 6.0
-sdk: /Users/crystax/work/rhomobile/rhodes
+sdk: ../../
 #applog: rholog.txt
 version: 1.0.0
 vendor: rhomobile

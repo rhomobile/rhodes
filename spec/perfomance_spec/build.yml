@@ -1,7 +1,7 @@
 --- 
 name: perfomance_spec
 bbver: 5.0
-sdk: /Users/crystax/work/rhomobile/rhodes
+sdk: ../../
 applog: rholog.txt
 version: 1.0.0
 vendor: rhomobile
