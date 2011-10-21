@@ -391,7 +391,7 @@ int getPhonebookRecordCount(void* pb, rho_param* params) {
 
 VALUE getPhonebookRecords(void* pb, rho_param* params) {
 	if (pb) {
-		if (logging_enable) RAWLOG_INFO("phonebook :: getallPhonebookRecords START");
+		if (logging_enable) RAWLOG_INFO("phonebook :: getPhonebookRecords START");
 		LocalPhonebook* phonebook = pb;
 		
 		VALUE hash = rho_ruby_createHash();
@@ -402,8 +402,8 @@ VALUE getPhonebookRecords(void* pb, rho_param* params) {
 		VALUE record; char buf[128];
 		
 		_getAllPeople(phonebook);
-        int top_index = (offset + max_results) > phonebook->_len ? phonebook->_len : offset + max_results;
-		for (int index = offset; index < top_index ; index++) {
+        int top_index = phonebook->_len;//(offset + max_results) > phonebook->_len ? phonebook->_len : offset + max_results;
+		for (int index = 0/*offset*/; index < top_index ; index++) {
 			record = _getRecordByIndex(phonebook->_people, index, &recordId);
 			snprintf(buf, sizeof(buf), "{%d}", recordId);
 			addHashToHash(hash, buf, record);
@@ -412,7 +412,7 @@ VALUE getPhonebookRecords(void* pb, rho_param* params) {
         rho_ruby_releaseValue(hash);		
         
         rho_ruby_enable_gc(valGc);
-		if (logging_enable) RAWLOG_INFO("phonebook :: getallPhonebookRecords FINISH");
+		if (logging_enable) RAWLOG_INFO("phonebook :: getPhonebookRecords FINISH");
 		return hash; 
 	}
 	return rho_ruby_get_NIL();	
