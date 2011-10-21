@@ -970,6 +970,7 @@ namespace "rhomobile-debug" do
       chdir 'rhomobile-debug'
       
       puts "Loading gemspec"
+      require 'rubygems'
       spec = Gem::Specification.load('rhomobile-debug.gemspec')
 
       puts "Building gem"

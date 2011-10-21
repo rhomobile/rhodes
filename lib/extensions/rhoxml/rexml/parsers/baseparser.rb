@@ -257,7 +257,7 @@ module REXML
             md = @source.match(/\s*/um, true)
             if @source.encoding == "UTF-8"
               if @source.buffer.respond_to? :force_encoding
-                @source.buffer.force_encoding(Encoding::UTF_8)
+                @source.buffer.force_encoding("UTF-8") #Encoding::UTF_8)
               end
             end
           end

@@ -162,7 +162,7 @@ public class XMLParser extends RubyBasic {
 	
     private void parse(String strXML)throws Exception 
     {
-		InputStream in = new ByteArrayInputStream(strXML.getBytes());
+		InputStream in = new ByteArrayInputStream(strXML.getBytes("UTF-8"));
 		
 		parse(in);
     }

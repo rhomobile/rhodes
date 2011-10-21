@@ -744,13 +744,13 @@ module URI
     end
     str = str.to_s
     if HTML5ASCIIINCOMPAT.include?(str.encoding)
-      str = str.encode(Encoding::UTF_8)
+      str = str.encode("UTF-8") #Encoding::UTF_8)
     else
       str = str.dup
     end
-    str.force_encoding(Encoding::ASCII_8BIT)
+    str.force_encoding("ASCII-8BIT") #Encoding::ASCII_8BIT)
     str.gsub!(/[^*\-.0-9A-Z_a-z]/, TBLENCWWWCOMP_)
-    str.force_encoding(Encoding::US_ASCII)
+    str.force_encoding("US-ASCII") #Encoding::US_ASCII)
   end
 
   # Decode given +str+ of URL-encoded form data.
@@ -758,7 +758,7 @@ module URI
   # This decods + to SP.
   #
   # See URI.encode_www_form_component, URI.decode_www_form
-  def self.decode_www_form_component(str, enc=Encoding::UTF_8)
+  def self.decode_www_form_component(str, enc="UTF-8") #Encoding::UTF_8)
     if TBLDECWWWCOMP_.empty?
       tbl = {}
       256.times do |i|
@@ -833,7 +833,7 @@ module URI
   # p Hash[ary]            # => {"a"=>"2", "b"=>"3"}
   #
   # See URI.decode_www_form_component, URI.encode_www_form
-  def self.decode_www_form(str, enc=Encoding::UTF_8)
+  def self.decode_www_form(str, enc="UTF-8") #Encoding::UTF_8)
     return [] if str.empty?
     unless /\A#{WFKV_}*=#{WFKV_}*(?:[;&]#{WFKV_}*=#{WFKV_}*)*\z/o =~ str
       raise ArgumentError, "invalid data of application/x-www-form-urlencoded (#{str})"
