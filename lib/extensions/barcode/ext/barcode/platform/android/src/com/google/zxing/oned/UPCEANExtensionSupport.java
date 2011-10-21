@@ -99,7 +99,7 @@ final class UPCEANExtensionSupport {
     if (extensionChecksum(resultString.toString()) != checkDigit) {
       throw NotFoundException.getNotFoundInstance();
     }
-    
+
     return rowOffset;
   }
 

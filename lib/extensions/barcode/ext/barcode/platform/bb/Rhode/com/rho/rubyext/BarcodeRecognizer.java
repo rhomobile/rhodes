@@ -32,13 +32,13 @@ import com.xruby.runtime.builtin.RubyString;
 import com.xruby.runtime.lang.*;
 
 public class BarcodeRecognizer extends RubyOneArgMethod implements Runnable {
-	
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("BarcodeRecognizer");
 
-	public static RubyClass BarcodeClass;    
+	public static RubyClass BarcodeClass;
 
-	
+
 	public String doBarcodeRecognize( String filename ) {
 	      InputStream is = null;
 	      Image capturedImage = null;
@@ -51,22 +51,22 @@ public class BarcodeRecognizer extends RubyOneArgMethod implements Runnable {
  	    	  is = RhoRuby.loadFile(filename);
  	    	  if ( is != null )
  	    	  {
-	 	    	   try{ 
+	 	    	   try{
 		 	    	   capturedImage = Image.createImage(is);
-	 	    		   if ( is != null ) 
-	 	    			   is.close(); 
+	 	    		   if ( is != null )
+	 	    			   is.close();
 	 	    	   }
 	 	    	   catch(java.io.IOException exc){
 	 	    		  LOG.ERROR("IO Exception during close image file stream ["+filename+"] !",exc);
 	 	    	   }
  	    	  }
  	    	  else {
- 
+
 				 SimpleFile oFile = null;
 				 try{
 					 oFile = RhoClassFactory.createFile();
 					 oFile.open( filename, true, false);
-				 
+
 					 if ( oFile.isOpened() )
 					 {
 						 is = oFile.getInputStream();
@@ -78,20 +78,20 @@ public class BarcodeRecognizer extends RubyOneArgMethod implements Runnable {
 				 {
 					 if ( oFile != null ) {
 						 try{
-							 oFile.close(); 
+							 oFile.close();
 						 }catch(IOException exc2){
 			 	    		  LOG.ERROR("IO Exception during close image file stream 2 ["+filename+"] !",exc2);
 						 }
 					 }
 				 }
- 	    	  }  
- 	    	  
- 	    	/*  
+ 	    	  }
+
+ 	    	/*
 			if ( filename.startsWith("/apps")) {
 		    	URI uri = new URI("file://"+filename);
 		    	RhoConnection rho_connection = new RhoConnection(uri);
 		    	rho_connection.setRequestMethod(IHttpConnection.GET);
-		    	is = rho_connection.openInputStream(); 
+		    	is = rho_connection.openInputStream();
 			}
 			else {
 				FileConnection file = null;
@@ -101,10 +101,10 @@ public class BarcodeRecognizer extends RubyOneArgMethod implements Runnable {
 			}
 	        capturedImage = Image.createImage(is);
 	        */
-	      /*	
+	      /*
 	      } catch (IOException e) {
 	    	// error while create image from file
-	    	LOG.ERROR("IO Exception during open image file ["+filename+"] !",e);  
+	    	LOG.ERROR("IO Exception during open image file ["+filename+"] !",e);
 	        return "";
 	      } finally {
 	        try {
@@ -129,8 +129,8 @@ public class BarcodeRecognizer extends RubyOneArgMethod implements Runnable {
 				  readerHints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
 				  result = reader.decode(bitmap, readerHints);
 	        } catch (ReaderException e) {
-	          // image not decoded - not found any barcodes	
-	          LOG.INFO("Barcode not found in image ["+filename+"] !");	
+	          // image not decoded - not found any barcodes
+	          LOG.INFO("Barcode not found in image ["+filename+"] !");
 	          return "";
 	        }
 	        if (result != null) {
@@ -140,21 +140,21 @@ public class BarcodeRecognizer extends RubyOneArgMethod implements Runnable {
 	          return resultText;
 	        }
 	      }
-	    LOG.ERROR("Unrecognized Error during process file ["+filename+"] !");	      
+	    LOG.ERROR("Unrecognized Error during process file ["+filename+"] !");
 		return "";
 	}
-	
+
 
 
 	public void run() {
    	  // register Ruby class
-          BarcodeClass = RubyAPI.defineClass("Barcode", RubyRuntime.ObjectClass);        
+          BarcodeClass = RubyAPI.defineClass("Barcode", RubyRuntime.ObjectClass);
 	  // register Ruby method
           BarcodeClass.getSingletonClass().defineMethod("barcode_recognize", this);
-		
+
 	}
-	
-	protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) 
+
+	protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block)
 	{
 		try {
 			if ( arg0 instanceof RubyString )
@@ -172,6 +172,6 @@ public class BarcodeRecognizer extends RubyOneArgMethod implements Runnable {
 			throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 		}
 		//return RubyConstant.QNIL;
-	}	
+	}
 
 }

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -44,37 +44,37 @@ public class RhoConf {
     private Hashtable m_mapValues = new Hashtable();
     Hashtable/*<String,String>*/ m_mapChangedValues = new Hashtable();
     Hashtable/*Ptr<String,Vector<String>* >*/ m_mapConflictedValues = new Hashtable();
-    
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("RhoConf");
-    
+
     private static RhoConf m_Instance;
 	private static final String CONF_FILENAME = "apps/rhoconfig.txt";
 	private static final String CONF_CHANGES = ".changes";
 	private static final String CONF_TIMESTAMP = ".timestamp";
 	private static final String CONF_TIMESTAMP_PROP = "rho_conf_timestamp";
-	
+
     public static RhoConf getInstance(){return m_Instance;}
-    
+
 	void setConfFilePath(String path){ m_strConfFilePath = path; }
 	String getConfFilePath(){ return m_strConfFilePath; }
-    
+
 	void setRhoRootPath(String szRootPath){ m_strRhoRootPath = szRootPath;}
 	public String getRhoRootPath(){ return m_strRhoRootPath;}
-	
+
 	Hashtable/*Ptr<String,Vector<String>* >&*/ getConflicts(){ return m_mapConflictedValues;}
-	
+
     private void saveToFile(String szName)
     {
     	m_mapChangedValues.put(szName, getString(szName) );
-    	
+
         String strData = saveChangesToString();
     	SimpleFile oFile = null;
 
     	try{
 	        oFile = RhoClassFactory.createFile();
 	        oFile.delete(getConfFilePath()+CONF_CHANGES);
-	        
+
         	oFile.open( getConfFilePath()+CONF_CHANGES, false, false);
 	        oFile.write( 0, strData.getBytes() );
 	        oFile.close();
@@ -82,23 +82,23 @@ public class RhoConf {
     		if ( oFile != null )
     			try{ oFile.close(); }catch(IOException exc2){}
     	}
-        
+
     }
 
     void checkConflicts()
     {
         m_mapConflictedValues.clear();
-        
+
     	Enumeration enValues = m_mapChangedValues.elements();
     	Enumeration enKeys = m_mapChangedValues.keys();
-		while (enValues.hasMoreElements()) 
+		while (enValues.hasMoreElements())
 		{
 			String key = (String)enKeys.nextElement();
 			String valueChanged = (String)enValues.nextElement();
-			
+
 			if ( !m_mapValues.containsKey(key) )
 				continue;
-			
+
             String strValue = (String)m_mapValues.get(key);
             if ( strValue.compareTo(valueChanged) != 0 )
             {
@@ -116,11 +116,11 @@ public class RhoConf {
             return;
 
         String strTimestamp = RhoFile.readStringFromJarFile(CONF_FILENAME+CONF_TIMESTAMP, this);
-        
+
         setString(CONF_TIMESTAMP_PROP, strTimestamp, true);
         m_mapConflictedValues.clear();
     }
-    
+
     void readChanges()
     {
         String strTimestamp = RhoFile.readStringFromJarFile(CONF_FILENAME+CONF_TIMESTAMP, this);
@@ -133,17 +133,17 @@ public class RhoConf {
             String strOldTimestamp = "";
             if ( m_mapChangedValues.containsKey(CONF_TIMESTAMP_PROP) )
                 strOldTimestamp = (String)m_mapChangedValues.get(CONF_TIMESTAMP_PROP);
-            
+
             if ( strTimestamp.compareTo(strOldTimestamp) != 0 )
                 checkConflicts();
-            
-            loadFromString( strSettings, m_mapValues );            
+
+            loadFromString( strSettings, m_mapValues );
         }else
         {
             m_mapChangedValues.put(CONF_TIMESTAMP_PROP,strTimestamp);
         }
     }
-    
+
     void loadFromString(String szSettings, Hashtable/*<String,String>&*/ mapValues)
     {
 		Tokenizer stringtokenizer = new Tokenizer(szSettings, "\n");
@@ -153,10 +153,10 @@ public class RhoConf {
 			if (tok.length() == 0) {
 				continue;
 			}
-			
+
 			if ( tok.length() > 0 && tok.charAt(0) == '#' )
 				continue;
-			
+
 			int i = tok.indexOf('=');
 			String name;
 			String value;
@@ -169,11 +169,11 @@ public class RhoConf {
 			}
 			name = name.trim();
 			value = value.trim();
-			
+
 			if (value.startsWith("\'") && value.endsWith("\'")) {
 				value = value.substring(1,value.length()-1);
 			}
-				
+
 			setPropertyByName(name,value,mapValues);
 		}
 	}
@@ -182,7 +182,7 @@ public class RhoConf {
     {
     	mapValues.put(name,value);
     }
-	
+
     String saveChangesToString()
     {
     	String strData = "";
@@ -191,13 +191,13 @@ public class RhoConf {
 		while (enValues.hasMoreElements()) {
 			String key = (String)enKeys.nextElement();
 			String value = (String)enValues.nextElement();
-			
+
             strData += key;
             strData += "=\'";
             strData += value;
             strData += "\'\n";
 		}
-		
+
     	return strData;
     }
 
@@ -217,7 +217,7 @@ public class RhoConf {
 
         return FilePath.join(strPath, "/");
     }
-    
+
     public int getInt(String szName){
     	String value = (String)m_mapValues.get(szName);
     	if ( value != null && value.length() > 0 )
@@ -232,36 +232,36 @@ public class RhoConf {
 
     public void setString(String szName, String str, boolean bSaveToFile){
     	m_mapValues.put(szName,str);
-    	
+
     	if ( bSaveToFile )
-    		saveToFile(szName);    	
+    		saveToFile(szName);
     }
 
     public void setInt(String szName, int nVal, boolean bSaveToFile){
     	m_mapValues.put(szName,Integer.toString(nVal));
-    	
+
     	if ( bSaveToFile )
-    		saveToFile(szName);    	
+    		saveToFile(szName);
     }
 
     public void setBool(String szName, boolean bVal, boolean bSaveToFile)
     {
         setInt(szName, bVal ? 1 : 0, bSaveToFile );
     }
-    
+
     public boolean isExist(String szName){
     	return m_mapValues.containsKey(szName);
     }
-    
+
     public static void InitRhoConf(){
         m_Instance = new RhoConf();
-    	
+
     	String szRootPath = "";
     	try{
     		szRootPath = RhoClassFactory.createFile().getDirPath("");
     	}catch(Exception exc){}
 
-    	
+
     	m_Instance.setConfFilePath(szRootPath + CONF_FILENAME);
     	m_Instance.setRhoRootPath(szRootPath);
     }
@@ -272,7 +272,7 @@ public class RhoConf {
         m_mapChangedValues.clear();
 
     	loadFromJar();
-        
+
     	readChanges();
 
     	loadFromJad();
@@ -283,7 +283,7 @@ public class RhoConf {
     	String strSettings = RhoFile.readStringFromJarFile(CONF_FILENAME, this);
 		loadFromString(strSettings, m_mapValues);
    }
-    
+
    void loadFromJad()
    {
 		try{
@@ -291,16 +291,16 @@ public class RhoConf {
 			Enumeration keysEnum = m_mapValues.keys();
 			while( keysEnum.hasMoreElements() )
 			{
-				String name = (String)keysEnum.nextElement(); 
+				String name = (String)keysEnum.nextElement();
 				String strValue = systemInfo.getAppProperty(name);
 				if ( strValue != null && strValue.length() > 0 )
 					m_mapValues.put(name, strValue);
 			}
 		}catch(Exception exc){
-			 
+
 		}
    }
-   
+
    private static long readToBuffer(java.io.InputStream is, byte[] buf, StringBuffer res, long limit)throws Exception
    {
 	   long nTotal = 0;
@@ -310,39 +310,39 @@ public class RhoConf {
 			if ( nRead < 0 )
 				break;
 			if ( nTotal + nRead > limit )
-				nRead = limit - nTotal; 
-					
-			nTotal += nRead; 
+				nRead = limit - nTotal;
+
+			nTotal += nRead;
 			res.append(new String(buf,0,(int)nRead));
 	   }
-	   
+
 	   return nTotal;
    }
-   
+
    public RubyHash getRubyConflicts()
    {
 	   RubyHash hashConflicts = ObjectFactory.createHash();
-	   
+
 		Hashtable/*Ptr<String,Vector<String>* >&*/ mapConflicts = RhoConf.getInstance().getConflicts();
     	Enumeration enValues = mapConflicts.elements();
     	Enumeration enKeys = mapConflicts.keys();
 		while (enValues.hasMoreElements()) {
 			String key = (String)enKeys.nextElement();
 			Vector/*<String>&*/ values = (Vector)enValues.nextElement();
-			
+
 		    RubyArray arValues = new RubyArray(values.size());
 		    for( int i = 0; i < (int)values.size(); i++)
 		    	arValues.add(ObjectFactory.createString((String)values.elementAt(i)));
-		
+
 		    hashConflicts.add(ObjectFactory.createString(key), arValues);
 		}
-	   
+
 	   return hashConflicts;
    }
-   
+
    static RubyString getLogText_ruby(long limit)throws Exception
 	{
-		StringBuffer res = new StringBuffer(); 
+		StringBuffer res = new StringBuffer();
     	SimpleFile oFile = null;
     	RhoLogConf logConf = RhoLogger.getLogConf();
 	    boolean bOldSaveToFile = logConf.isLogToFile();
@@ -351,12 +351,12 @@ public class RhoConf {
     	try{
 	        oFile = RhoClassFactory.createFile();
 	        oFile.open( logConf.getLogFilePath(), true, false);
-	        
+
 	        if ( oFile.isOpened() )
 	        {
 	            long nFileSize = oFile.length();
 	            long nPos = logConf.getLogTextPos();
-	            long nMaxSize = nFileSize > nPos ? nFileSize : nPos; 
+	            long nMaxSize = nFileSize > nPos ? nFileSize : nPos;
 	            if ( limit <= 0 || limit > nMaxSize)
 	                limit = nMaxSize;
 
@@ -371,32 +371,32 @@ public class RhoConf {
 	            {
 	            	is.skip(nFileSize-(limit-nPos));
 	                long nRead = readToBuffer(is, buf, res, limit);
-	                
+
 	                oFile.close();
 	                oFile.open( logConf.getLogFilePath(), true, false);
 	                is = oFile.getInputStream();
 	                readToBuffer(is, buf, res, limit-nRead);
 	            }
-	            
+
 	        }
-	        
+
     	}finally
     	{
     		if ( oFile != null )
     			try{ oFile.close(); }catch(IOException exc2){}
-    		
+
     		logConf.setLogToFile(bOldSaveToFile);
     	}
-		
+
 		return ObjectFactory.createString(res);
 	}
-   
+
    public static boolean sendLog()
    {
 		com.rho.net.NetRequest nq = RhoClassFactory.createNetRequest();
 		String strDevicePin = "";
 		String strClientID = "";
-		
+
 		try{
 			IRhoRubyHelper sysInfo = RhoClassFactory.createRhoRubyHelper();
 			strDevicePin = sysInfo.getDeviceId();
@@ -411,21 +411,21 @@ public class RhoConf {
 		{
 			LOG.ERROR("send_log:readClientID failed", exc);
 		}
-		
+
 	    String strLogUrl = RhoConf.getInstance().getPath("logserver");
 	    if ( strLogUrl.length() == 0 )
 	        strLogUrl = RhoConf.getInstance().getPath("syncserver");
 
 		String strQuery = strLogUrl + "client_log?" +
 		    "client_id=" + strClientID + "&device_pin=" + strDevicePin + "&log_name=" + RhoConf.getInstance().getString("logname");
-		
+
 	    MultipartItem oItem = new MultipartItem();
 	    oItem.m_strFilePath = RhoLogger.getLogConf().getLogFilePath();
 	    oItem.m_strContentType = "application/octet-stream";
-		
+
 	    boolean bOldSaveToFile = RhoLogger.getLogConf().isLogToFile();
 	    RhoLogger.getLogConf().setLogToFile(false);
-		
+
 		NetResponse resp = null;
 		try{
 			nq.sslVerifyPeer(false);
@@ -435,23 +435,23 @@ public class RhoConf {
 			LOG.ERROR("send_log failed.", exc);
 		}
 		RhoLogger.getLogConf().setLogToFile(bOldSaveToFile);
-		
+
 		if ( resp == null || !resp.isOK() )
 		{
 	        LOG.ERROR("send_log failed : network error - " +  ( resp == null ? "" : resp.getRespCode() + "; Body - " + resp.getCharData()));
-			
+
 			return false;
 		}
-		
+
 		return true;
    }
-   
+
    public static void initMethods(RubyClass klass) {
 	   klass.getSingletonClass().defineMethod("set_property_by_name", new RubyTwoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) {
 				try {
 					RhoConf.getInstance().setString(arg0.toString(), arg1.toString(), true);
-					
+
 					RhoLogger.getLogConf().loadFromConf(RhoConf.getInstance());
 				} catch (Exception e) {
 					LOG.ERROR("set_property_by_name failed", e);
@@ -472,12 +472,12 @@ public class RhoConf {
 				}
 			}
 		});
-	   
+
 	   klass.getSingletonClass().defineMethod("is_property_exists", new RubyOneArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) {
 				try {
 					boolean bRes = RhoConf.getInstance().isExist(arg0.toString());
-					
+
 					return ObjectFactory.createBoolean(bRes);
 				} catch (Exception e) {
 					LOG.ERROR("is_property_exists failed", e);
@@ -485,7 +485,7 @@ public class RhoConf {
 				}
 			}
 		});
-	   
+
 		klass.getSingletonClass().defineMethod("show_log",	new RubyNoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyBlock block) {
 				try{
@@ -497,7 +497,7 @@ public class RhoConf {
 					LOG.ERROR("show_log failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
-			    
+
 			}
 		});
 
@@ -511,7 +511,7 @@ public class RhoConf {
 					LOG.ERROR("send_log failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
-			    
+
 			}
 		});
 
@@ -525,7 +525,7 @@ public class RhoConf {
 					LOG.ERROR("clean_log failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
-			    
+
 			}
 		});
 
@@ -538,9 +538,9 @@ public class RhoConf {
 					LOG.ERROR("read_log failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
-			    
+
 			}
-			
+
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block) {
 				try{
 					return getLogText_ruby(arg.toInt());
@@ -549,9 +549,9 @@ public class RhoConf {
 					LOG.ERROR("read_log failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
-			    
+
 			}
 		});
-		
+
 	}
 }

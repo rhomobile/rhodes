@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -44,7 +44,7 @@
 
 extern "C" HWND getMainWnd();
 
-//TODO: 
+//TODO:
 //      - review for memory leaks
 //		- expose generic functions to utility class
 
@@ -134,41 +134,41 @@ Signature::Signature(void) {
 Signature::~Signature(void) {
 }
 HBITMAP Signature::getScreenHBITMAP() {
-	// get screen rectangle 
-	RECT windowRect; 
-	GetWindowRect(getMainWnd(), &windowRect); 
+	// get screen rectangle
+	RECT windowRect;
+	GetWindowRect(getMainWnd(), &windowRect);
 
-	// bitmap dimensions 
-	int bitmap_dx = windowRect.right - windowRect.left; 
-	int bitmap_dy = windowRect.bottom - windowRect.top; 
+	// bitmap dimensions
+	int bitmap_dx = windowRect.right - windowRect.left;
+	int bitmap_dy = windowRect.bottom - windowRect.top;
 
-	// create bitmap info header 
-	BITMAPINFOHEADER infoHeader; 
-	infoHeader.biSize          = sizeof(infoHeader); 
-	infoHeader.biWidth         = bitmap_dx; 
-	infoHeader.biHeight        = bitmap_dy; 
-	infoHeader.biPlanes        = 1; 
+	// create bitmap info header
+	BITMAPINFOHEADER infoHeader;
+	infoHeader.biSize          = sizeof(infoHeader);
+	infoHeader.biWidth         = bitmap_dx;
+	infoHeader.biHeight        = bitmap_dy;
+	infoHeader.biPlanes        = 1;
 	infoHeader.biBitCount      = 24;
-	infoHeader.biCompression   = BI_RGB; 
+	infoHeader.biCompression   = BI_RGB;
 	infoHeader.biSizeImage     = 0;
 	infoHeader.biXPelsPerMeter = 0;
 	infoHeader.biYPelsPerMeter = 0;
 	infoHeader.biClrUsed       = 0;
 	infoHeader.biClrImportant  = 0;
 
-	// dibsection information 
-	BITMAPINFO info; 
-	info.bmiHeader = infoHeader; 
-	HDC winDC = GetWindowDC(getMainWnd()); 
-	HDC memDC = CreateCompatibleDC(winDC); 
-	BYTE* memory = 0; 
-	HBITMAP bitmap = CreateDIBSection(winDC, &info, DIB_RGB_COLORS, (void**)&memory, 0, 0); 
-	HBITMAP old_selected = (HBITMAP)SelectObject(memDC, bitmap); 
+	// dibsection information
+	BITMAPINFO info;
+	info.bmiHeader = infoHeader;
+	HDC winDC = GetWindowDC(getMainWnd());
+	HDC memDC = CreateCompatibleDC(winDC);
+	BYTE* memory = 0;
+	HBITMAP bitmap = CreateDIBSection(winDC, &info, DIB_RGB_COLORS, (void**)&memory, 0, 0);
+	HBITMAP old_selected = (HBITMAP)SelectObject(memDC, bitmap);
 	// Copies screen upside down (as it is already upside down) - if need normal layout, change to BitBlt function call
-	StretchBlt(memDC, 0, 0, bitmap_dx, bitmap_dy, winDC, 0, bitmap_dy, bitmap_dx, bitmap_dy * -1, SRCCOPY); 
+	StretchBlt(memDC, 0, 0, bitmap_dx, bitmap_dy, winDC, 0, bitmap_dy, bitmap_dx, bitmap_dy * -1, SRCCOPY);
 	SelectObject(memDC, old_selected);
-	DeleteDC(memDC); 
-	ReleaseDC(getMainWnd(), winDC); 
+	DeleteDC(memDC);
+	ReleaseDC(getMainWnd(), winDC);
 
 	return bitmap;
 }
@@ -181,14 +181,14 @@ HRESULT Signature::takeSignature(HWND hwndOwner,LPTSTR pszFilename,LPCWSTR szFor
 	}
 
 	HRESULT hResult = S_OK;
-	
+
 	TCHAR pszFullName[MAX_PATH];
 	prepare_filesystem(pszFilename, szFormat, pszFullName);
 
 	HBITMAP bitmap = Signature::getScreenHBITMAP();
 	hResult = Imaging_SaveToFile(bitmap, pszFullName, szFormat);
 	DeleteObject(bitmap);
-	
+
 	return hResult;
 }
 // TODO: move to some general utility class
@@ -205,7 +205,7 @@ void prepare_filesystem(LPTSTR pszFilename, LPCWSTR szFormat, LPTSTR pszFullName
 	wsprintf(full_name,L"%s\\%s",strBlobRoot.c_str(),filename);
 
 	create_folder(pszFilename);
-	
+
 	wcscpy(pszFullName, full_name);
 	wcscpy(pszFilename, filename);
 
@@ -217,7 +217,7 @@ void create_folder(LPTSTR Path)
 {
 	TCHAR DirName[256];
 	LPTSTR p = Path;
-	LPTSTR q = DirName; 
+	LPTSTR q = DirName;
 	while(*p)
 	{
 		if (('\\' == *p) || ('/' == *p))
@@ -243,8 +243,8 @@ LPTSTR generate_filename(LPTSTR filename, LPCTSTR szExt) {
 	time.GetGmtTm(&tg);
 	int tz = tl.tm_hour-tg.tm_hour; //TBD: fix tz
 
-    wsprintf(filename, L"Image_%02i-%02i-%0004i_%02i.%02i.%02i_%c%03i.%s", 
-		tg.tm_mon, tg.tm_mday, 1900+tg.tm_year, tg.tm_hour, tg.tm_min, tg.tm_sec,  
+    wsprintf(filename, L"Image_%02i-%02i-%0004i_%02i.%02i.%02i_%c%03i.%s",
+		tg.tm_mon, tg.tm_mday, 1900+tg.tm_year, tg.tm_hour, tg.tm_min, tg.tm_sec,
         tz>0?'_':'-',abs(tz),(szExt?szExt:L""));
 
 	return filename;
@@ -294,12 +294,12 @@ HRESULT Imaging_SaveToFile(HBITMAP handle, LPTSTR filename, LPCTSTR format)
 					factory->Release();
 					CoUninitialize();
 					return S_FALSE;
-      			} 
+      			}
 				IImageEncoder* imageEncoder=NULL;
 				if (factory->CreateImageEncoderToFile(&encoderClassId, filename, &imageEncoder) == S_OK) {
 					IImageSink* imageSink = NULL;
 					res = imageEncoder->GetEncodeSink(&imageSink);
-					
+
 					if (res != S_OK) {
 						imageEncoder->TerminateEncoder();
 						imageEncoder->Release();
@@ -333,7 +333,7 @@ HRESULT Imaging_SaveToFile(HBITMAP handle, LPTSTR filename, LPCTSTR format)
 							break;
 						}
 					}
-							
+
 					BitmapData* bmData = new BitmapData();
 					bmData->Height = bm.bmHeight;
 					bmData->Width = bm.bmWidth;
@@ -349,7 +349,7 @@ HRESULT Imaging_SaveToFile(HBITMAP handle, LPTSTR filename, LPCTSTR format)
 					IBitmapImage* pBitmap;
 					factory->CreateBitmapFromBuffer(bmData, &pBitmap);
 					IImage* pImage;
-					pBitmap->QueryInterface(IID_IImage, (void**)&pImage); 
+					pBitmap->QueryInterface(IID_IImage, (void**)&pImage);
 					res = pImage->PushIntoSink(imageSink);
 					if (res != S_OK) {
 						delete bmData;
@@ -364,7 +364,7 @@ HRESULT Imaging_SaveToFile(HBITMAP handle, LPTSTR filename, LPCTSTR format)
 						CoUninitialize();
 						return res;
 					}
-					
+
 					delete bmData;
 					pBitmap->Release();
 					pImage->Release();

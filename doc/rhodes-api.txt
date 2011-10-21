@@ -10,7 +10,7 @@ The [AppApplication Class](/rhodes/application#appapplication-class) contains me
 
 The [Application Helpers](/rhodes/application#application-helpers) are helper methods for the model view (.erb) files.
 
-The [RhoSupport Class](/rhodes/application#rhosupport-class) has methods to encode and decode URLs. 
+The [RhoSupport Class](/rhodes/application#rhosupport-class) has methods to encode and decode URLs.
 
 ## User Interface Classes
 
@@ -135,7 +135,7 @@ The [Rhom database functions](/rhodes/rhom#resetting-the-database) allow you to 
 
 The [RhomSource Class](/rhodes/rhom#accessing-sync-info-with-rhomsource) exposes sync information, which you can use for alerts, status pages, and so on.
 
-The [RhoSupport Class](/rhodes/application#rhosupport-class) has methods to encode and decode URLs. 
+The [RhoSupport Class](/rhodes/application#rhosupport-class) has methods to encode and decode URLs.
 
 The [RingtoneManager Class](/rhodes/device-caps#ringtone-manager) allows you to view and play a device's ringtones.
 

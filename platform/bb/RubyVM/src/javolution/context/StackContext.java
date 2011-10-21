@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2006 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -17,19 +17,19 @@ import javolution.util.FastTable;
 /**
  * <p> This class represents a stack {@link AllocatorContext allocator context};
  *     (using thread-local pools or RTSJ <code>ScopedMemory</code>).</p>
- *       
- * <p> Stacks allocations reduce heap memory allocation and often result in 
+ *
+ * <p> Stacks allocations reduce heap memory allocation and often result in
  *     faster execution time for almost all objects but the smallest one.</p>
- *     
- * <p> Stack allocated objects should never be assigned to static members 
- *     (see {@link ImmortalContext}). Also, methods entering/exiting stack 
+ *
+ * <p> Stack allocated objects should never be assigned to static members
+ *     (see {@link ImmortalContext}). Also, methods entering/exiting stack
  *     contexts should ensure that stack allocated objects do not escape from
- *     their context scope. If necessary, stack objects can be exported using 
+ *     their context scope. If necessary, stack objects can be exported using
  *     {@link #outerExecute} or {@link #outerCopy}:[code]
  *     public class LargeInteger implements ValueType, Realtime {
  *         public LargeInteger sqrt() {
- *             StackContext.enter(); 
- *             try { 
+ *             StackContext.enter();
+ *             try {
  *                 LargeInteger result = ZERO;
  *                 LargeInteger k = this.shiftRight(this.bitLength() / 2)); // First approximation.
  *                 while (true) { // Newton Iteration.
@@ -37,13 +37,13 @@ import javolution.util.FastTable;
  *                     if (result.equals(k)) return StackContext.outerCopy(result); // Exports result.
  *                     k = result;
  *                 }
- *             } finally { 
- *                 StackContext.exit(); 
+ *             } finally {
+ *                 StackContext.exit();
  *             }
  *         }
  *     }[/code]</p>
- *     
- * <p> It should be noted that future versions of the JVM may provide some 
+ *
+ * <p> It should be noted that future versions of the JVM may provide some
  *     limited support for stack allocation through escape analysis.
  *     Users can always {@link #DISABLED turn-off} stack allocation to
  *     revert to standard heap allocation.</p>
@@ -55,7 +55,7 @@ public abstract class StackContext extends AllocatorContext {
 
     /**
      * Holds the default implementation. This implementation uses thread-local
-     * pools. RTSJ alternative implementations could use 
+     * pools. RTSJ alternative implementations could use
      * <code>ScopedMemory</code> for their stack allocations.
      */
     public static final Configurable/*<Class<? extends StackContext>>*/DEFAULT = new Configurable(
@@ -74,7 +74,7 @@ public abstract class StackContext extends AllocatorContext {
 
     /**
      * Enters the {@link #DEFAULT} stack context.
-     * 
+     *
      * @return the statck context being entered.
      */
     public static StackContext enter() {
@@ -85,7 +85,7 @@ public abstract class StackContext extends AllocatorContext {
 
     /**
      * Exits the current stack context.
-     * 
+     *
      * @return the stack context being exited.
      * @throws ClassCastException if the context is not a stack context.
      */
@@ -94,9 +94,9 @@ public abstract class StackContext extends AllocatorContext {
     }
 
     /**
-     * Performs a copy of the specified value allocated outside of the 
+     * Performs a copy of the specified value allocated outside of the
      * current stack context.
-     * 
+     *
      * @param value the value to be copied.
      * @return a copy allocated using the outer allocator.
      */
@@ -111,8 +111,8 @@ public abstract class StackContext extends AllocatorContext {
     }
 
    /**
-     * Performs a copy of the specified values outside of the 
-     * current stack context (convenience methode). This method is 
+     * Performs a copy of the specified values outside of the
+     * current stack context (convenience methode). This method is
      * equivalent to:[code]
      *  StackContext.outerExecute(new Runnable() {
      *      public void run() {
@@ -135,8 +135,8 @@ public abstract class StackContext extends AllocatorContext {
 
      /**
      * Executes the specified logic outside of the current stack context.
-     * 
-     * @param logic the logic to be executed outside of the current stack 
+     *
+     * @param logic the logic to be executed outside of the current stack
      *        context.
      */
     public static void outerExecute(Runnable logic) {
@@ -148,7 +148,7 @@ public abstract class StackContext extends AllocatorContext {
     }
 
     /**
-     * Indicates if this stack context is disabled.  When disabled, allocation 
+     * Indicates if this stack context is disabled.  When disabled, allocation
      * are performed using the outer {@link AllocatorContext}.
      */
     public final boolean isDisabled() {
@@ -156,8 +156,8 @@ public abstract class StackContext extends AllocatorContext {
     }
 
     /**
-     * Enables/disables this stack context. 
-     * 
+     * Enables/disables this stack context.
+     *
      * @param isDisabled <code>true</code> if disabled; <code>false</code>
      *        otherwise.
      */
@@ -172,7 +172,7 @@ public abstract class StackContext extends AllocatorContext {
     }
 
     /**
-     * Default implementation. 
+     * Default implementation.
      */
     private static final class Default extends StackContext {
 
@@ -183,22 +183,22 @@ public abstract class StackContext extends AllocatorContext {
                 return new FastMap();
             }
         };
-        
+
         private final ThreadLocal _activeAllocators = new ThreadLocal() {
             protected Object initialValue() {
                 return new FastTable();
             }
         };
-        
-        // All allocators which have been used by the owner  
+
+        // All allocators which have been used by the owner
         // (no synchronization required).
-        private final FastTable _ownerUsedAllocators = new FastTable(); 
-        
-        // All allocators which have been used by the concurrent threads 
+        private final FastTable _ownerUsedAllocators = new FastTable();
+
+        // All allocators which have been used by the concurrent threads
         // (synchronization required).
-        private final FastTable _nonOwnerUsedAllocators = new FastTable(); 
-        
-        
+        private final FastTable _nonOwnerUsedAllocators = new FastTable();
+
+
         protected void deactivate() {
             FastTable allocators = (FastTable) _activeAllocators.get();
             for (int i = 0, n = allocators.size(); i < n;) {
@@ -208,9 +208,9 @@ public abstract class StackContext extends AllocatorContext {
         }
 
         protected Allocator getAllocator(ObjectFactory factory) {
-        	if (isDisabled()) // Forwards to outer. 
+        	if (isDisabled()) // Forwards to outer.
         		return getOuter().getAllocatorContext().getAllocator(factory);
-        	
+
             FastMap factoryToAllocator = (FastMap) _factoryToAllocator.get();
             StackAllocator allocator = (StackAllocator) factoryToAllocator.get(factory);
             if (allocator == null) {
@@ -226,12 +226,12 @@ public abstract class StackContext extends AllocatorContext {
             	allocator._inUse = true;
             	if (Thread.currentThread() == getOwner()) {
             		_ownerUsedAllocators.add(allocator);
-            	} else {            	
+            	} else {
             	   synchronized (_nonOwnerUsedAllocators) {
-                  		_nonOwnerUsedAllocators.add(allocator);           	            		   
-            	   }            		 
+                  		_nonOwnerUsedAllocators.add(allocator);
+            	   }
             	}
-            }	            
+            }
             return allocator;
         }
 
@@ -241,7 +241,7 @@ public abstract class StackContext extends AllocatorContext {
 
         protected void exitAction() {
             this.deactivate();
-            
+
             // Resets all allocators used.
             for (int i=0; i < _ownerUsedAllocators.size(); i++) {
             	StackAllocator allocator = (StackAllocator) _ownerUsedAllocators.get(i);
@@ -252,24 +252,24 @@ public abstract class StackContext extends AllocatorContext {
             	StackAllocator allocator = (StackAllocator) _nonOwnerUsedAllocators.get(i);
             	allocator.reset();
             }
-            _nonOwnerUsedAllocators.clear();            
+            _nonOwnerUsedAllocators.clear();
         }
     }
-    
+
     // Holds stack allocator implementation.
     private static final class StackAllocator extends Allocator {
 
     	  private final ObjectFactory _factory;
-    	  
+
     	  private boolean _inUse;
-    	  
+
     	  private int _queueLimit;
-    	  
+
     	  public StackAllocator(ObjectFactory factory) {
     		   this._factory = factory;
     		   keepInQueue = true;
     	  }
-    	      	  
+
           protected Object allocate() {
         	  if (_queueLimit >= queue.length) resize();
               Object obj = _factory.create();
@@ -308,7 +308,7 @@ public abstract class StackContext extends AllocatorContext {
     }
 
 
-    // Allows instances of private classes to be factory produced. 
+    // Allows instances of private classes to be factory produced.
     static {
         ObjectFactory.setInstance(new ObjectFactory() {
             protected Object create() {

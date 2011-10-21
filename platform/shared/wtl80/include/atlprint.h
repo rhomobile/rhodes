@@ -601,7 +601,7 @@ public:
 	}
 
 	bool StartPrintJob(bool bBackground, HANDLE hPrinter, DEVMODE* pDefaultDevMode,
-			IPrintJobInfo* pInfo, LPCTSTR lpszDocName, 
+			IPrintJobInfo* pInfo, LPCTSTR lpszDocName,
 			unsigned long nStartPage, unsigned long nEndPage,
 			bool bPrintToFile = false, LPCTSTR lpstrOutputFile = NULL)
 	{
@@ -658,7 +658,7 @@ public:
 		dcPrinter.Attach(m_printer.CreatePrinterDC(m_pDefDevMode));
 		if (dcPrinter.IsNull())
 			return false;
-			
+
 		m_nJobID = ::StartDoc(dcPrinter, &m_docinfo);
 		if (m_nJobID <= 0)
 			return false;
@@ -748,8 +748,8 @@ public:
 			m_pCurDevMode = m_pDefDevMode;
 		CDC dcPrinter = m_printer.CreatePrinterDC(m_pCurDevMode);
 
-		int iWidth = dcPrinter.GetDeviceCaps(PHYSICALWIDTH); 
-		int iHeight = dcPrinter.GetDeviceCaps(PHYSICALHEIGHT); 
+		int iWidth = dcPrinter.GetDeviceCaps(PHYSICALWIDTH);
+		int iHeight = dcPrinter.GetDeviceCaps(PHYSICALHEIGHT);
 		int nLogx = dcPrinter.GetDeviceCaps(LOGPIXELSX);
 		int nLogy = dcPrinter.GetDeviceCaps(LOGPIXELSY);
 
@@ -757,7 +757,7 @@ public:
 
 		m_sizeCurPhysOffset.cx = dcPrinter.GetDeviceCaps(PHYSICALOFFSETX);
 		m_sizeCurPhysOffset.cy = dcPrinter.GetDeviceCaps(PHYSICALOFFSETY);
-		
+
 		CEnhMetaFileDC dcMeta(dcPrinter, &rcMM);
 		m_pInfo->PrePrintPage(nPage, dcMeta);
 		m_pInfo->PrintPage(nPage, dcMeta);
@@ -835,7 +835,7 @@ public:
 	{ }
 
 // Operations
-	void SetPrintPreviewInfo(HANDLE hPrinter, DEVMODE* pDefaultDevMode, 
+	void SetPrintPreviewInfo(HANDLE hPrinter, DEVMODE* pDefaultDevMode,
 		IPrintJobInfo* pji, int nMinPage, int nMaxPage)
 	{
 		CPrintPreview::SetPrintPreviewInfo(hPrinter, pDefaultDevMode, pji);
@@ -943,16 +943,16 @@ class ATL_NO_VTABLE CZoomPrintPreviewWindowImpl : public CPrintPreviewWindowImpl
 public:
 	bool m_bSized;
 
-	CZoomPrintPreviewWindowImpl()  
+	CZoomPrintPreviewWindowImpl()
 	{
 		SetScrollExtendedStyle(SCRL_DISABLENOSCROLL);
 		InitZoom();
 	}
 
-	// should be called to reset data members before recreating window 
+	// should be called to reset data members before recreating window
 	void InitZoom()
 	{
-		m_bSized = false;	
+		m_bSized = false;
 		m_nZoomMode = ZOOMMODE_OFF;
 		m_fZoomScaleMin = 1.0;
 		m_fZoomScale = 1.0;
@@ -989,7 +989,7 @@ public:
 		COMMAND_ID_HANDLER(ID_SCROLL_ALL_LEFT, CScrollImpl< T >::OnScrollAllLeft)
 		COMMAND_ID_HANDLER(ID_SCROLL_ALL_RIGHT, CScrollImpl< T >::OnScrollAllRight)
 	END_MSG_MAP()
-	
+
 	LRESULT OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		SIZE sizeClient = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};

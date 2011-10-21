@@ -49,14 +49,14 @@ public final class CodaBarReader extends OneDReader {
   // this check has been added to reduce the number of false positive on other formats
   // until the cause for this behaviour has been determined
   // under normal circumstances this should be set to 3
-  private static final int minCharacterLength = 6; 
-  
+  private static final int minCharacterLength = 6;
+
   // multiple start/end patterns
   // official start and end patterns
   private static final char[] STARTEND_ENCODING = {'E', '*', 'A', 'B', 'C', 'D', 'T', 'N'};
   // some codabar generator allow the codabar string to be closed by every character
   //private static final char[] STARTEND_ENCODING = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '$', ':', '/', '.', '+', 'A', 'B', 'C', 'D', 'T', 'N'};
-  
+
   // some industries use a checksum standard but this is not part of the original codabar standard
   // for more information see : http://www.mecsw.com/specs/codabar.html
 
@@ -114,33 +114,33 @@ public final class CodaBarReader extends OneDReader {
 	{
 		throw NotFoundException.getNotFoundInstance();
 	}
-	
+
 	char startchar = result.charAt(0);
 	if (!arrayContains(STARTEND_ENCODING, startchar))
 	{
 		//invalid start character
 		throw NotFoundException.getNotFoundInstance();
 	}
-    
+
 	// find stop character
-    for (int k = 1;k < result.length() ;k++) 
+    for (int k = 1;k < result.length() ;k++)
 	{
-      if (result.charAt(k) == startchar) 
+      if (result.charAt(k) == startchar)
 	  {
         // found stop character -> discard rest of the string
 		if ((k+1) != result.length())
 		{
 			result.delete(k+1,result.length()-1);
 			k = result.length();// break out of loop
-		} 
+		}
 	  }
     }
 
     // remove stop/start characters character and check if a string longer than 5 characters is contained
-    if (result.length() > minCharacterLength) 
-	{ 
-		result.deleteCharAt(result.length()-1); 
-		result.deleteCharAt(0); 
+    if (result.length() > minCharacterLength)
+	{
+		result.deleteCharAt(result.length()-1);
+		result.deleteCharAt(0);
 	}
 	else
 	{

@@ -8,7 +8,7 @@ ruby_version_is "1.9" do
       :abcdef.casecmp(:abcdefg).should == -1
       :abcdef.casecmp(:ABCDEF).should == 0
     end
-=begin    
+=begin
     # Broken in MRI 1.8.4
     it "doesn't consider non-ascii characters equal that aren't" do
       # -- Latin-1 --
@@ -59,7 +59,7 @@ ruby_version_is "1.9" do
       lower_a_umlaut.casecmp(upper_a_umlaut).should == 1
 
     end
-=end            
+=end
   end
 
 end

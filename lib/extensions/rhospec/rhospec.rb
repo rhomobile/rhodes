@@ -8,27 +8,27 @@ class MSpecScript
     @config ||= {
     }
   end
-  
+
   def config
     MSpecScript.config
   end
-  
+
 end
 
 class RhoSpecModule
     attr_accessor :before, :after, :tests, :spec_name
-    
+
     def initialize(spec_name, spec_body)
         @before = {}
         @after = {}
         @tests = {}
-        
+
         @env = Object.new
-        
+
         @spec_name = spec_name
         @spec_body = spec_body
     end
-    
+
     def run_spec
         setting_str = $spec_settings.length()>0  ? ";#{$spec_settings}" : ""
         puts "TEST: #{@spec_name}" + setting_str
@@ -43,33 +43,33 @@ end
 
 class MSpec
     VERSION = "RhoSpec 1.0"
-    
+
     attr_reader :exc_count, :count, :errorMessages, :code, :is_network_available
     @@spec_modules = []
     @@spec_index = 0
     @@spec_files = []
     @@instance = nil
-    
+
     def self.exit_code
-        @@instance.code   
+        @@instance.code
     end
 
     def self.exc_count
-        @@instance.exc_count   
+        @@instance.exc_count
     end
 
     def self.count
-        @@instance.count   
+        @@instance.count
     end
 
     def self.errorMessages
-        @@instance.errorMessages   
+        @@instance.errorMessages
     end
-    
+
     def self.is_network_available
         @@instance.is_network_available
     end
-    
+
     def self.current
         @@spec_modules[@@spec_index]
     end
@@ -77,35 +77,35 @@ class MSpec
     def self.register_files(spec_files)
         @@spec_files = spec_files
     end
-    
+
     def self.process
-        @@instance = MSpec.new        
-        @@instance.start        
+        @@instance = MSpec.new
+        @@instance.start
     end
-    
+
     def start
         @exc_count = 0
         @count = 0
         @errorMessages = ""
         @is_network_available = System.get_property('has_network')
         $is_network_available = @is_network_available
-        
+
         @@spec_files.each do |spec_file|
             if spec_file.is_a?(Array)
                 run_spec(spec_file[0], spec_file[1])
             else
                 run_spec(spec_file, [{}])
-            end    
+            end
         end
-        
+
         @code = @exc_count > 0 ? 1 : 0
-        
+
     end
-    
+
     def self.describe(mod, msg=nil, options=nil, &block)
         @@spec_modules << RhoSpecModule.new(mod, block)
     end
-    
+
     def run_test(spec_name,test_name, &block)
         begin
             @count += 1
@@ -114,9 +114,9 @@ class MSpec
         rescue Exception => e
             @exc_count += 1
             ntrace_index = 2 #MSpec.current && MSpec.current.tests.size() > 0 ? 2 : 1
-            @errorMessages += "<br/>FAIL: '#{spec_name}:#{test_name}; #{$spec_settings}' failed: Error: #{e}\n" + 
+            @errorMessages += "<br/>FAIL: '#{spec_name}:#{test_name}; #{$spec_settings}' failed: Error: #{e}\n" +
                 "#{e.backtrace[ntrace_index]}" if e.backtrace && e.backtrace.length > 0
-            puts "FAIL: '#{spec_name}:#{test_name}; #{$spec_settings}' failed: Error: #{e}\n" + 
+            puts "FAIL: '#{spec_name}:#{test_name}; #{$spec_settings}' failed: Error: #{e}\n" +
                 "#{e.backtrace[ntrace_index]}" if e.backtrace && e.backtrace.length > 0
             e.backtrace.each do |item|
                 puts item
@@ -128,23 +128,23 @@ class MSpec
         @@spec_modules.each do |spec_module|
             spec_module.run_spec
             spec_module.run_test(spec_module.before[:all])
-            
+
             spec_module.tests.each do |test_name, body|
                 spec_module.run_test(spec_module.before[:each])
-            
+
                 @@spec_name  = spec_module.spec_name
                 run_test(@@spec_name, test_name){spec_module.run_test(body)}
-                
+
                 spec_module.run_test(spec_module.after[:each])
-                
+
             end
 
             spec_module.run_test(spec_module.after[:all])
-            
+
             @@spec_index += 1
         end
     end
-            
+
     def run_spec(spec_file, spec_settings)
         @@spec_name = ""
         begin
@@ -154,8 +154,8 @@ class MSpec
             spec_settings.each do |settings|
                 $spec_settings = settings
                 @@spec_index = 0
-                run_specs 
-            end    
+                run_specs
+            end
         rescue Exception => e
             @exc_count += 1
             puts "Test '#{@@spec_name}; #{$spec_settings}' FAIL: Error: #{e}"
@@ -164,11 +164,11 @@ class MSpec
             end
         end
     end
-    
+
 end
 
 class Object
-  
+
     def before(at=:each, &block)
         MSpec.current.before[ at ] = block
     end
@@ -191,7 +191,7 @@ class Object
 
     alias_method :context, :describe
     alias_method :specify, :it
-  
+
 end
 
 class PositiveOperatorMatcher
@@ -251,7 +251,7 @@ class BeNilMatcher
   def failure_message
     ["Expected #{@actual.inspect}", "to be nil"]
   end
-  
+
   def negative_failure_message
     ["Expected #{@actual.inspect}", "not to be nil"]
   end
@@ -259,7 +259,7 @@ end
 
 class Expectation
     def self.fail_with(msg, msg1)
-        raise msg+ " " + msg1        
+        raise msg+ " " + msg1
     end
 end
 
@@ -327,7 +327,7 @@ class BeTrueMatcher
   def failure_message
     ["Expected #{@actual.inspect}", "to be true"]
   end
-  
+
   def negative_failure_message
     ["Expected #{@actual.inspect}", "not to be true"]
   end
@@ -342,7 +342,7 @@ class BeFalseMatcher
   def failure_message
     ["Expected #{@actual.inspect}", "to be false"]
   end
-  
+
   def negative_failure_message
     ["Expected #{@actual.inspect}", "not to be false"]
   end
@@ -424,7 +424,7 @@ class Object
         PositiveOperatorMatcher.new(self)
         #raise "Expected '#{matcher.inspect.to_s}' equal to nil" if self != nil
     end
-    
+
   end
 
   def should_not(matcher=nil)
@@ -437,11 +437,11 @@ class Object
         NegativeOperatorMatcher.new(self)
     end
   end
-  
+
   def be_nil
     BeNilMatcher.new
   end
-  
+
   def be_true
     BeTrueMatcher.new
   end
@@ -461,6 +461,6 @@ class Object
   def ruby_version_is(*args)
     yield
   end
-  
+
 end
 

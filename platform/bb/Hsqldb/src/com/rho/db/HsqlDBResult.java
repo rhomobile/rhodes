@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -36,26 +36,26 @@ import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.lang.*;
 import j2me.math.Number;
 
-public class HsqlDBResult implements IDBResult 
+public class HsqlDBResult implements IDBResult
 {
 	private Result m_result;
 	private Record m_current;
 //	private int m_nCurIndex;
-	
+
 	public HsqlDBResult(Result res){
 		m_result = res;
 		reset();
 	}
-	
+
 	public HsqlDBResult(){
 	}
-	
+
 	public void close()
 	{
 	}
-/*	
-	public int getCount(){ 
-		return m_result != null ? m_result.getSize() : 0; 
+/*
+	public int getCount(){
+		return m_result != null ? m_result.getSize() : 0;
 	}*/
 
 	public boolean isNonUnique() {
@@ -66,14 +66,14 @@ public class HsqlDBResult implements IDBResult
 			return e.getErrorCode() == -Trace.VIOLATION_OF_UNIQUE_INDEX ||
 				e.getErrorCode() == -Trace.VIOLATION_OF_UNIQUE_CONSTRAINT;
 		}
-		
+
 		return false;
 	}
-	
-	public int getColCount(){ 
-		return m_result != null ? m_result.getColumnCount() : 0; 
+
+	public int getColCount(){
+		return m_result != null ? m_result.getColumnCount() : 0;
 	}
-	
+
 	public String getColName(int nCol){
 		Result.ResultMetaData md = m_result.metaData;
 		if ( md.tableNames[nCol] != null && md.tableNames[nCol].length() > 0 )
@@ -89,25 +89,25 @@ public class HsqlDBResult implements IDBResult
 		{
 			if ( md.colOrigNames[nCol] != null )
 				return md.colOrigNames[nCol];
-			
+
 			return md.colNames[nCol];//.toLowerCase();
 		}
-		
+
 		//AS alias
 		return md.colNames[nCol];
 	}
-	
+
 	public Result getResult(){
 		return m_result;
 	}
-	
+
 	/*
 	public RubyValue getRubyValueByIdx(int nItem, int nCol)
-	{ 
+	{
 		Object val = getColvalueByIdx(nItem,nCol);
 		if (val == null)
 			return RubyConstant.QNIL;
-		
+
 		switch( m_result.metaData.colTypes[nCol] )
 		{
         case Types.NULL :
@@ -118,12 +118,12 @@ public class HsqlDBResult implements IDBResult
         case Types.CHAR :
         case Types.VARCHAR_IGNORECASE :
         	return ObjectFactory.createString((String)val);
-        	
+
         case Types.TINYINT :
         case Types.SMALLINT :
         case Types.INTEGER :
         	return ObjectFactory.createInteger(Number.intValue(val));
-        	
+
         case Types.BIGINT :
         	return ObjectFactory.createInteger(Number.longValue(val));
         case Types.REAL :
@@ -131,9 +131,9 @@ public class HsqlDBResult implements IDBResult
         case Types.DOUBLE :
         	return ObjectFactory.createFloat(Number.doubleValue(val));
 
-        case Types.BOOLEAN : 
+        case Types.BOOLEAN :
         	return ObjectFactory.createBoolean(((Boolean) val).booleanValue());
-        	
+
         case Types.NUMERIC :
         case Types.DECIMAL :
         case Types.DATE :
@@ -145,30 +145,30 @@ public class HsqlDBResult implements IDBResult
         case Types.OTHER :
         	return ObjectFactory.createString(val.toString());
 		}
-		
+
 		throw new java.lang.RuntimeException("HsqlDBResult: unknown type :" + m_result.metaData.colTypes[nCol] );
 
-//		return ObjectFactory.createString(); 
+//		return ObjectFactory.createString();
 	}
-	
+
 	public long getLongByIdx(int nItem, int nCol)
-	{ 
+	{
 		Object val = getColvalueByIdx(nItem,nCol);
-		return val != null ? Number.longValue(val) : 0; 
+		return val != null ? Number.longValue(val) : 0;
 	}
-	
+
 	public int getIntByIdx(int nItem, int nCol)
 	{
 		Object val = getColvalueByIdx(nItem,nCol);
-		return val != null ? Number.intValue(val) : 0; 
+		return val != null ? Number.intValue(val) : 0;
 	}
-	
+
 	public String getStringByIdx(int nItem, int nCol)
 	{
 		Object val = getColvalueByIdx(nItem,nCol);
-		return val != null ? val.toString() : ""; 
+		return val != null ? val.toString() : "";
 	}
-	
+
 	public RubyValue getRubyValue(int nItem, String colname){ return getRubyValueByIdx(nItem, findColIndex(colname) ); }
 	public long getLong(int nItem, String colname){ return getLongByIdx(nItem, findColIndex(colname) ); }
 	public int getInt(int nItem, String colname){ return getIntByIdx(nItem, findColIndex(colname) ); }
@@ -178,14 +178,14 @@ public class HsqlDBResult implements IDBResult
 	{
 		if ( nCol < 0 || nCol >= getColCount() )
 			throw new IndexOutOfBoundsException("HsqlDBResult.getStringByIdx : " + nCol + ". Count : " + getColCount() );
-		
+
 		Object[] item = getItem(nItem);
 		if ( item != null )
 			return item[nCol];
-		
-		return null; 
+
+		return null;
 	}*/
-	
+
 	private void reset(){
 		m_current = m_result.rRoot;
 	//	m_nCurIndex = 0;
@@ -197,15 +197,15 @@ public class HsqlDBResult implements IDBResult
 
 		if ( m_nCurIndex > nItem  )
 			reset();
-		
+
 		if ( m_nCurIndex < nItem  ){
 			for ( ; m_nCurIndex < nItem; m_nCurIndex++ )
 				m_current = m_current.next;
 		}
 
-		return m_current.data;  
+		return m_current.data;
 	}
-	
+
 	int findColIndex(String colname )
 	{
 		for( int i = 0; i < getColCount(); i++ )
@@ -213,7 +213,7 @@ public class HsqlDBResult implements IDBResult
 			if ( m_result.metaData.colNames[i].equalsIgnoreCase(colname) )
 				return i;
 		}
-		
+
 		return -1;
 	}*/
 
@@ -222,13 +222,13 @@ public class HsqlDBResult implements IDBResult
     {
     	return m_current == null;
     }
-    
+
     public void next() throws DBException
     {
     	if ( m_current != null )
     		m_current = m_current.next;
     }
-    
+
     protected Object getCurValue(int nCol)
     {
     	return m_current.data[nCol];
@@ -242,38 +242,38 @@ public class HsqlDBResult implements IDBResult
 	public boolean isNullByIdx(int nCol)
 	{
 		Object val = getCurValue(nCol);
-		return val == null; 
+		return val == null;
 	}
-    
+
 	public String getStringByIdx(int nCol)
 	{
 		Object val = getCurValue(nCol);
-		return val != null ? val.toString() : ""; 
+		return val != null ? val.toString() : "";
 	}
-	
+
 	public int getIntByIdx(int nCol)
 	{
 		Object val = getCurValue(nCol);
-		return val != null ? Number.intValue(val) : 0; 
+		return val != null ? Number.intValue(val) : 0;
 	}
-	
+
 	public long getLongByIdx(int nCol)
 	{
 		Object val = getCurValue(nCol);
-		return val != null ? Number.longValue(val) : 0; 
+		return val != null ? Number.longValue(val) : 0;
 	}
-	
+
 	public String getUInt64ByIdx(int nCol)
 	{
 		return getStringByIdx(nCol);
 	}
 
 	public RubyValue getRubyValueByIdx(int nCol)
-	{ 
+	{
 		Object val = getCurValue(nCol);
 		if (val == null)
 			return RubyConstant.QNIL;
-		
+
 		switch( m_result.metaData.colTypes[nCol] )
 		{
         case Types.NULL :
@@ -284,23 +284,23 @@ public class HsqlDBResult implements IDBResult
         case Types.CHAR :
         case Types.VARCHAR_IGNORECASE :
         	return ObjectFactory.createString(/*(String)*/val.toString());
-        	
+
         case Types.TINYINT :
         case Types.SMALLINT :
         case Types.INTEGER :
         	return ObjectFactory.createInteger(Number.intValue(val));
-        	
+
         case Types.BIGINT :
         	return ObjectFactory.createInteger(Number.longValue(val));
-        	
+
         case Types.REAL :
         case Types.FLOAT :
         case Types.DOUBLE :
         	return ObjectFactory.createFloat(Number.doubleValue(val));
 
-        case Types.BOOLEAN : 
+        case Types.BOOLEAN :
         	//return ObjectFactory.createBoolean(((Boolean) val).booleanValue());
-        	
+
         case Types.NUMERIC :
         case Types.DECIMAL :
         case Types.DATE :
@@ -312,10 +312,10 @@ public class HsqlDBResult implements IDBResult
         case Types.OTHER :
         	return ObjectFactory.createString(val.toString());
 		}
-		
+
 		throw new java.lang.RuntimeException("HsqlDBResult: unknown type :" + m_result.metaData.colTypes[nCol] );
 
-//		return ObjectFactory.createString(); 
+//		return ObjectFactory.createString();
 	}
 
 	public RubyValue getRubyValue(String colname){ return getRubyValueByIdx( findColIndex(colname) ); }
@@ -329,8 +329,8 @@ public class HsqlDBResult implements IDBResult
 			if ( m_result.metaData.colNames[i].equalsIgnoreCase(colname) )
 				return i;
 		}
-		
+
 		return -1;
 	}
-	
+
 }

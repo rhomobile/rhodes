@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -58,7 +58,7 @@ static MapViewController *mc = nil;
     UIWindow *window = [[Rhodes sharedInstance] rootWindow];
 	map.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 	map.view.autoresizesSubviews = YES;
-	
+
 	UIView* v = [[[Rhodes sharedInstance] mainView] view];
 	map.savedMainView = v;
 	[map.savedMainView retain];
@@ -66,7 +66,7 @@ static MapViewController *mc = nil;
 	[window addSubview:map.view];
     //window.autoresizesSubviews = YES;
 	//[window layoutSubviews];
-    
+
     mc = map;
 }
 @end
@@ -104,7 +104,7 @@ static MapViewController *mc = nil;
     if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
         mapType =  MKMapTypeStandard;
         zoomEnabled = TRUE;
-        scrollEnabled = TRUE;	
+        scrollEnabled = TRUE;
         showsUserLocation = TRUE;
         region_set = FALSE;
         region_center = nil;
@@ -113,8 +113,8 @@ static MapViewController *mc = nil;
 }
 
 - (void)close {
-    [self dismissModalViewControllerAnimated:YES]; 
-    
+    [self dismissModalViewControllerAnimated:YES];
+
 	UIWindow *window = [[Rhodes sharedInstance] rootWindow];
 
 
@@ -128,13 +128,13 @@ static MapViewController *mc = nil;
 - (void)setSettings:(rho_param*)p {
     if (!p || p->type != RHO_PARAM_HASH)
         return;
-    
+
     for (int i = 0, lim = p->v.hash->size; i < lim; ++i) {
         char *name = p->v.hash->name[i];
         rho_param *value = p->v.hash->value[i];
         if (!name || !value)
             continue;
-        
+
         if (strcasecmp(name, "map_type") == 0) {
             if (value->type != RHO_PARAM_STRING)
                 continue;
@@ -154,13 +154,13 @@ static MapViewController *mc = nil;
             if (value->type == RHO_PARAM_ARRAY) {
                 if (value->v.array->size != 4)
                     continue;
-                
+
                 rho_param *lat = value->v.array->value[0];
                 rho_param *lon = value->v.array->value[1];
                 rho_param *latSpan = value->v.array->value[2];
                 rho_param *lonSpan = value->v.array->value[3];
-                
-                CLLocationCoordinate2D location;	
+
+                CLLocationCoordinate2D location;
                 location.latitude = lat->type == RHO_PARAM_STRING ? strtod(lat->v.string, NULL) : 0;
                 location.longitude = lon->type == RHO_PARAM_STRING ? strtod(lon->v.string, NULL) : 0;
                 MKCoordinateSpan span;
@@ -173,7 +173,7 @@ static MapViewController *mc = nil;
             else if (value->type == RHO_PARAM_HASH) {
                 char *center = NULL;
                 char *radius = NULL;
-                
+
                 for (int j = 0, limm = value->v.hash->size; j < limm; ++j) {
                     char *rname = value->v.hash->name[j];
                     rho_param *rvalue = value->v.hash->value[j];
@@ -192,10 +192,10 @@ static MapViewController *mc = nil;
                         radius = rvalue->v.string;
                     }
                 }
-                
+
                 if (!center || !radius)
                     continue;
-                
+
                 region_center = [NSString stringWithUTF8String:center];
                 region_radius = strtod(radius, NULL);
             }
@@ -243,20 +243,20 @@ static MapViewController *mc = nil;
             rho_param *ann = p->v.array->value[i];
             if (ann->type != RHO_PARAM_HASH)
                 continue;
-            
+
             CLLocationCoordinate2D coord;
             coord.latitude = 10000;
             coord.longitude = 10000;
-            
+
             NSString *address = nil;
             NSString *title = nil;
             NSString *subtitle = nil;
             NSString *url = nil;
-            
+
             NSString *image = nil;
             int image_x_offset = 0;
             int image_y_offset = 0;
-            
+
             for (int j = 0, limm = ann->v.hash->size; j < limm; ++j) {
                 char *name = ann->v.hash->name[j];
                 rho_param *value = ann->v.hash->value[j];
@@ -265,7 +265,7 @@ static MapViewController *mc = nil;
                 if (value->type != RHO_PARAM_STRING)
                     continue;
                 char *v = value->v.string;
-                
+
                 if (strcasecmp(name, "latitude") == 0) {
                     coord.latitude = strtod(v, NULL);
                 }
@@ -294,7 +294,7 @@ static MapViewController *mc = nil;
                     image_y_offset = (int)strtod(v, NULL);
                 }
             }
-            
+
             MapAnnotation *annObj = [[MapAnnotation alloc] init];
             [annObj setCoordinate:coord];
             if (address) [annObj setAddress:address];
@@ -336,21 +336,21 @@ static MapViewController *mc = nil;
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
     //Initialize the toolbar
     toolbar = [[UIToolbar alloc] init];
     toolbar.barStyle = UIBarStyleBlack;
     UIBarButtonItem *closeButton = [[UIBarButtonItem alloc]
-                               initWithTitle:@"Close" style:UIBarButtonItemStyleBordered 
+                               initWithTitle:@"Close" style:UIBarButtonItemStyleBordered
                                target:self action:@selector(close_clicked:)];
     [toolbar setItems:[NSArray arrayWithObjects:closeButton,nil]];
 
-	
-	toolbar.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | 
+
+	toolbar.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin |
 	UIViewAutoresizingFlexibleWidth;
 	toolbar.autoresizesSubviews = YES;
     [toolbar sizeToFit];
-	
+
     CGFloat toolbarHeight = [toolbar frame].size.height;
 	// hack for do not reduce height of toolbar in Landscape mode
 	if (toolbarHeight < 44) {
@@ -358,21 +358,21 @@ static MapViewController *mc = nil;
 	}
 
 	//RhoMainView* rw = [[Rhodes sharedInstance] mainView];
-    
+
 	CGRect rootViewBounds = [[[Rhodes sharedInstance] mainView] view].frame;//bounds;
-	
+
 	self.view.frame = rootViewBounds;
-	
+
     CGFloat rootViewHeight = rootViewBounds.size.height;
 	//CGFloat rootViewHeight = CGRectGetHeight(rootViewBounds);
     CGFloat rootViewWidth = CGRectGetWidth(rootViewBounds);
     CGRect rectArea = CGRectMake(0, rootViewHeight - toolbarHeight, rootViewWidth, toolbarHeight);
     toolbar.frame = rectArea;
-    
-	
+
+
 	[self.view addSubview:toolbar];
     [closeButton release];
-    
+
     CGRect rectMapArea = CGRectMake(0, 0, rootViewWidth, rootViewHeight - toolbarHeight);
     mapView =[[MKMapView alloc] initWithFrame:rectMapArea];
 	mapView.frame = rectMapArea;
@@ -382,32 +382,32 @@ static MapViewController *mc = nil;
     mapView.scrollEnabled=scrollEnabled;
     mapView.zoomEnabled=zoomEnabled;
     mapView.mapType=mapType;
-	
+
     mapView.autoresizesSubviews = YES;
     mapView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-	
-	
-	
-    
+
+
+
+
     /*Geocoder Stuff*/
     [ggeoCoder start];
-	
+
     //geoCoder=[[MKReverseGeocoder alloc] initWithCoordinate:location];
     //geoCoder.delegate=self;
     //[geoCoder start];
-	
+
     /*Region and Zoom*/
     if (region_set) {
         [mapView setRegion:region animated:TRUE];
         [mapView regionThatFits:region];
     }
-    
+
     [self.view insertSubview:mapView atIndex:0];
 	//[[self.view superview] layoutSubviews];
-	
+
 }
 
-- (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view 
+- (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view
     calloutAccessoryControlTapped:(UIControl *)control
 {
     MapAnnotation *ann = (MapAnnotation*)[view annotation];
@@ -415,7 +415,7 @@ static MapViewController *mc = nil;
     NSLog(@"Callout tapped... Url = %@\n", url);
     id<RhoMainView> mainView = [[Rhodes sharedInstance] mainView];
     [mainView navigateRedirect:url tab:[mainView activeTab]];
-    [self dismissModalViewControllerAnimated:YES]; 
+    [self dismissModalViewControllerAnimated:YES];
     [self close];
 	//mc = nil;
     //self.view.hidden = YES;
@@ -429,7 +429,7 @@ static MapViewController *mc = nil;
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
-	
+
 	// Release any cached data, images, etc that aren't in use.
 }
 
@@ -467,14 +467,14 @@ static MapViewController *mc = nil;
         region.center = annotation.coordinate;
         region.span = span;
         region_set = TRUE;
-        
+
         [mapView setRegion:region animated:YES];
         [mapView regionThatFits:region];
     }
     else
         [mapView addAnnotation:annotation];
 }
-	
+
 - (void)reverseGeocoder:(MKReverseGeocoder *)geocoder didFindPlacemark:(MKPlacemark *)placemark{
     NSLog(@"Reverse Geocoder completed");
     //mPlacemark=placemark;
@@ -482,9 +482,9 @@ static MapViewController *mc = nil;
 }
 
 - (MKAnnotationView *) mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>) annotation{
-    
+
     MKAnnotationView *annView = nil;
-    
+
     if ([annotation isKindOfClass:[MapAnnotation class]]) {
         MapAnnotation* ann = (MapAnnotation*)annotation;
         NSString* url = [ann url];
@@ -537,7 +537,7 @@ static MapViewController *mc = nil;
         center.latitude = 0;
         center.longitude = 0;
     }
-        
+
     return center;
 }
 

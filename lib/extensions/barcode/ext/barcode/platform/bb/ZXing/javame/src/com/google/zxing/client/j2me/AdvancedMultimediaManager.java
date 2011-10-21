@@ -41,7 +41,7 @@ final class AdvancedMultimediaManager implements MultimediaManager {
   public void setFocus(Controllable player) {
  /*
      FocusControl focusControl =
-  
+
         (FocusControl) getControl(player, "javax.microedition.amms.control.camera.FocusControl");
     if (focusControl != null) {
       try {

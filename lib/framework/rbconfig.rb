@@ -27,14 +27,14 @@ module RbConfig
   CONFIG["host_alias"] = ""
   CONFIG["build_alias"] = ""
 
-  if ( System.get_property('platform') == 'WINDOWS' )  
+  if ( System.get_property('platform') == 'WINDOWS' )
     CONFIG["host_os"] = "mingw32"
-  elsif ( System.get_property('platform') == 'APPLE' )    
+  elsif ( System.get_property('platform') == 'APPLE' )
     CONFIG["host_os"] = "darwin"
   else
     CONFIG["host_os"] = "linux"
   end
-  
+
   MAKEFILE_CONFIG = {}
   CONFIG.each{|k,v| MAKEFILE_CONFIG[k] = v.dup}
   def RbConfig::expand(val, config = CONFIG)

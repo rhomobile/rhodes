@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2006 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -19,7 +19,7 @@ import java.io.Writer;
 import javolution.lang.Reusable;
 
 /**
- * <p> This class represents a UTF-8 <code>j2me.nio.ByteBuffer</code> 
+ * <p> This class represents a UTF-8 <code>j2me.nio.ByteBuffer</code>
  *     writer.</p>
  *
  * <p> This writer supports surrogate <code>char</code> pairs (representing
@@ -32,7 +32,7 @@ import javolution.lang.Reusable;
  *     to avoid dynamic buffer allocation when the destination output changes.
  *     Also wrapping using a <code>java.io.BufferedWriter</code> is unnescessary
  *     as instances of this class embed their own data buffers.</p>
- * 
+ *
  * <p> Note: This writer is unsynchronized and always produces well-formed
  *           UTF-8 sequences.</p>
  *
@@ -58,7 +58,7 @@ public final class UTF8ByteBufferWriter extends Writer implements Reusable {
      *
      * @param  byteBuffer the destination byte buffer.
      * @return this UTF-8 writer.
-     * @throws IllegalStateException if this writer is being reused and 
+     * @throws IllegalStateException if this writer is being reused and
      *         it has not been {@link #close closed} or {@link #reset reset}.
      */
     public UTF8ByteBufferWriter setOutput(ByteBuffer byteBuffer) {
@@ -195,7 +195,7 @@ public final class UTF8ByteBufferWriter extends Writer implements Reusable {
     }
 
     /**
-     * Flushes the stream (this method has no effect, the data is 
+     * Flushes the stream (this method has no effect, the data is
      * always directly written to the <code>ByteBuffer</code>).
      *
      * @throws IOException if an I/O error occurs.

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -77,14 +77,14 @@ rb_f_eval_compiled(int argc, VALUE *argv, VALUE self)
     rb_scan_args(argc, argv, "11", &fname, &scope);
 
     //RAWLOG_INFO1("eval_compiled: %s", RSTRING_PTR(fname));
-    
+
     iseqval = loadISeqFromFile(RhoPreparePath(fname));
     res = eval_string_with_cref( self, iseqval, scope, 0, file, 1 );
     //rb_gc_enable();
-    
+
     return res;
     //return eval_iseq_with_scope(self, scope, iseqval );
-}   
+}
 
 static VALUE loadISeqFromFile(VALUE path)
 {
@@ -93,46 +93,46 @@ static VALUE loadISeqFromFile(VALUE path)
 #ifdef ENABLE_RUBY_VM_STAT
     struct timeval  start;
     struct timeval  end;
-#endif    
+#endif
 
         VALUE fiseq = rb_funcall(rb_cFile, rb_intern("binread"), 1, path);
         //VALUE fiseq = rb_funcall(rb_cFile, rb_intern("open"), 2, path, rb_str_new2("rb"));
 #ifdef ENABLE_RUBY_VM_STAT
-    gettimeofday (&start, NULL); 
-#endif    
+    gettimeofday (&start, NULL);
+#endif
 
 
 //        arr = Marshal.load(fiseq)
         VALUE arr = rb_funcall(rb_const_get(rb_cObject,rb_intern("Marshal")), rb_intern("load"), 1, fiseq);
 #ifdef ENABLE_RUBY_VM_STAT
     gettimeofday (&end, NULL);
-    
+
     if ( g_collect_stat )
 	{
 		if ( end.tv_sec > 0 )
 			g_iseq_marshal_load_msec += (end.tv_sec  - start.tv_sec) * 1000;
 		else
-			g_iseq_marshal_load_msec += (end.tv_usec - start.tv_usec)/1000; 
-	    
+			g_iseq_marshal_load_msec += (end.tv_usec - start.tv_usec)/1000;
+
 	}
     gettimeofday (&start, NULL);
-#endif    
-        
+#endif
+
 //        fiseq.close
         //rb_funcall(fiseq, rb_intern("close"), 0 );
 //        seq = VM::InstructionSequence.load(arr)
         seq = rb_funcall(rb_cISeq, rb_intern("load"), 1, arr);
 #ifdef ENABLE_RUBY_VM_STAT
     gettimeofday (&end, NULL);
-    
+
     if ( g_collect_stat )
 	{
 		if ( end.tv_sec > 0 )
 			g_iseq_binread_msec += (end.tv_sec  - start.tv_sec) * 1000;
 		else
-			g_iseq_binread_msec += ( end.tv_usec - start.tv_usec )/1000; 
+			g_iseq_binread_msec += ( end.tv_usec - start.tv_usec )/1000;
 	}
-#endif    
+#endif
 
         return seq;
 }
@@ -188,7 +188,7 @@ void RhoSetCurAppPath(char* path){
                 g_curAppPath[nLen] = 0;
             }
         }
-        
+
         free(appPath);
     }
 }*/
@@ -353,7 +353,7 @@ static VALUE find_file(VALUE fname)
 #else
                 return 0;
 #endif
-                
+
             }
         } /*else {
             dir = RARRAY_PTR(load_path)[RARRAY_LEN(load_path)-1];
@@ -387,7 +387,7 @@ VALUE isAlreadyLoaded(VALUE path)
     const char *f;
 
     features = GET_VM()->loaded_features;
-    for (i = 0; i < RARRAY_LEN(features); ++i) 
+    for (i = 0; i < RARRAY_LEN(features); ++i)
     {
         v = RARRAY_PTR(features)[i];
         f = StringValuePtr(v);
@@ -421,13 +421,13 @@ VALUE require_compiled(VALUE fname, VALUE* result)
     VALUE path;
     char* szName1 = 0;
     VALUE retval = Qtrue;
-    
+
     if (TYPE(fname) != T_STRING)
         rb_raise(rb_eLoadError, "can not load non-string");
 
     szName1 = RSTRING_PTR(fname);
 
-    if ( String_endsWith(szName1,".rb") ) 
+    if ( String_endsWith(szName1,".rb") )
     {
         rb_str_chop_bang(fname); rb_str_chop_bang(fname); rb_str_chop_bang(fname);
     }
@@ -436,7 +436,7 @@ VALUE require_compiled(VALUE fname, VALUE* result)
 
     if ( strcmp("strscan",szName1)==0 || strcmp("enumerator",szName1)==0 ||
         strcmp("stringio",szName1)==0 || strcmp("socket",szName1)==0 ||
-        strcmp("digest.so",szName1)==0 || 
+        strcmp("digest.so",szName1)==0 ||
         strcmp("fcntl",szName1)==0 || strcmp("digest/md5",szName1)==0 ||
         strcmp("digest/sha1",szName1)==0 )
         return Qtrue;
@@ -473,11 +473,11 @@ VALUE require_compiled(VALUE fname, VALUE* result)
 #else
         //rb_gc_disable();
         seq = loadISeqFromFile(path);
-        
+
 
         //*result = rb_funcall(seq, rb_intern("eval"), 0 );
         *result = rb_iseq_eval(seq);
-        
+
         //rb_gc_enable();
 #endif
         goto RCompExit;
@@ -509,12 +509,12 @@ VALUE RhoPreparePath(VALUE path){
 #ifdef __SYMBIAN32__
 
 	VALUE fname2 = rb_str_dup(path);
-	
+
 	translate_char(RSTRING_PTR(fname2),'/', '\\');
-	
+
 	return fname2;
 #endif //__SYMBIAN32__
-	
+
 	return path;
 }
 
@@ -540,7 +540,7 @@ void Init_RhoSupport()
 	rb_define_global_function("load", rb_require_compiled, 1);
 	rb_define_global_function("__rhoGetCallbackObject", __rhoGetCallbackObject, 1);
 
-    rb_define_method(rb_mKernel, "rhom_init", rb_obj_rhom_init, 1);	
+    rb_define_method(rb_mKernel, "rhom_init", rb_obj_rhom_init, 1);
 
 	Init_RhoLog();
 	Init_RhoBlobs();
@@ -685,7 +685,7 @@ static void Init_RhoLog(){
     rb_define_method(rb_RhoLogClass, "to_i", rb_RhoLogFileno, 0);
 
     appLog = rb_funcall(rb_RhoLogClass, rb_intern("new"), 0);
-    
+
     rb_gv_set("$stdout", appLog);
     rb_gv_set("$stderr", appLog);
 }

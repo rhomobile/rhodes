@@ -87,7 +87,7 @@ public class StringExpression extends Expression {
                 result.append(h);
                 i += 3;
                 break;
-            }                
+            }
             default:
                 //if (Character.isDigit(next_char)) {
             	if (next_char>='0' && next_char < '8') {
@@ -95,7 +95,7 @@ public class StringExpression extends Expression {
                     int number_length = 1;
                     while ((i + 1 + number_length) < value.length() &&
                            // Character.isDigit(value.charAt(i + 1 + number_length)) &&
-                    		(value.charAt(i + 1 + number_length)>='0' && value.charAt(i + 1 + number_length) < '8')&&                    		
+                    		(value.charAt(i + 1 + number_length)>='0' && value.charAt(i + 1 + number_length) < '8')&&
                             number_length <= 3) {
                         ++number_length;
                     }

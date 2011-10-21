@@ -1,7 +1,7 @@
-  iPhone Simulator 
+  iPhone Simulator
   ----------------
 
-  The iPhone Simulator is a simple command line utility for 
+  The iPhone Simulator is a simple command line utility for
   launching an iphone application in the simulator. This allows
   for nice things like automated testing of unit tests, etc without
   having to open XCode.
@@ -16,7 +16,7 @@
 
   ./iphonesim launch ~/tmp/yourproject/build/Debug.simulator/yourproject.app
 
-  You need to point to either Debug.simulator or Release.simulator based 
+  You need to point to either Debug.simulator or Release.simulator based
   on which build type you built with.
 
 
@@ -24,13 +24,13 @@
 
   Jeff Haynie
   jhaynie@appcelerator.com
-    
+
 
 
   Author: Landon Fuller <landonf@plausiblelabs.com>
   Copyright (c) 2008 Plausible Labs Cooperative, Inc.
   All rights reserved.
-          
+
   Permission is hereby granted, free of charge, to any person
   obtaining a copy of this software and associated documentation
   files (the "Software"), to deal in the Software without
@@ -42,7 +42,7 @@
 
   The above copyright notice and this permission notice shall be
   included in all copies or substantial portions of the Software.
-  
+
   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
   OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -51,7 +51,7 @@
   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
   OTHER DEALINGS IN THE SOFTWARE.
-  
+
 
   Modifications made by Appcelerator, Inc. relicensed under
   the same license as above.

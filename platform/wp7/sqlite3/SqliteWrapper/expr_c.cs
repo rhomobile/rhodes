@@ -15,7 +15,7 @@ using Pgno = System.UInt32;
 #if !SQLITE_MAX_VARIABLE_NUMBER
 using ynVar = System.Int16;
 #else
-using ynVar = System.Int32; 
+using ynVar = System.Int32;
 #endif
 
 namespace Community.CsharpSqlite
@@ -774,7 +774,7 @@ sqlite3Dequote(ref pNew.u._zToken);
           {
             int oldLength = pParse.nVarExprAlloc;
             pParse.nVarExprAlloc += pParse.nVarExprAlloc + 10;
-            
+
             Expr[] newXper = new Expr[pParse.nVarExprAlloc];
             for (int iter = 0; iter < newXper.Length && iter < oldLength; iter++)
             {
@@ -1534,7 +1534,7 @@ return null;
     ** Return FALSE if there is no chance that the expression can be NULL.
     **
     ** If the expression might be NULL or if the expression is too complex
-    ** to tell return TRUE.  
+    ** to tell return TRUE.
     **
     ** This routine is used as an optimization, to skip OP_IsNull opcodes
     ** when we know that a value cannot be NULL.  Hence, a false positive
@@ -1564,7 +1564,7 @@ return null;
 
     /*
     ** Generate an OP_IsNull instruction that tests register iReg and jumps
-    ** to location iDest if the value in iReg is NULL.  The value in iReg 
+    ** to location iDest if the value in iReg is NULL.  The value in iReg
     ** was computed by pExpr.  If we can look at pExpr at compile-time and
     ** determine that it can never generate a NULL, then the OP_IsNull operation
     ** can be omitted.
@@ -1720,7 +1720,7 @@ return null;
 ** be found with <column> as its left-most column.
 **
 ** When the b-tree is being used for membership tests, the calling function
-** needs to know whether or not the structure contains an SQL NULL 
+** needs to know whether or not the structure contains an SQL NULL
 ** value in order to correctly evaluate expressions like "X IN (Y, Z)".
 ** If there is any chance that the (...) might contain a NULL value at
 ** runtime, then a register is allocated and the register number written
@@ -2133,7 +2133,7 @@ return null;
 ** if the LHS is NULL or if the LHS is not contained within the RHS and the
 ** RHS contains one or more NULL values.
 **
-** This routine generates code will jump to destIfFalse if the LHS is not 
+** This routine generates code will jump to destIfFalse if the LHS is not
 ** contained within the RHS.  If due to NULLs we cannot determine if the LHS
 ** is contained in the RHS then jump to destIfNull.  If the LHS is contained
 ** within the RHS then fall through.
@@ -2186,9 +2186,9 @@ return null;
         */
         sqlite3VdbeAddOp4( v, OP_Affinity, r1, 1, 0, affinity, 1 );
 
-        /* If the set membership test fails, then the result of the 
+        /* If the set membership test fails, then the result of the
         ** "x IN (...)" expression must be either 0 or NULL. If the set
-        ** contains no NULL values, then the result is 0. If the set 
+        ** contains no NULL values, then the result is 0. If the set
         ** contains one or more NULL values, then the result of the
         ** expression is also NULL.
         */
@@ -2237,7 +2237,7 @@ return null;
           sqlite3VdbeAddOp2( v, OP_If, rRhsHasNull, destIfNull );
           sqlite3VdbeAddOp2( v, OP_Goto, 0, destIfFalse );
 
-          /* The OP_Found at the top of this branch jumps here when true, 
+          /* The OP_Found at the top of this branch jumps here when true,
           ** causing the overall IN expression evaluation to fall through.
           */
           sqlite3VdbeJumpHere( v, j1 );
@@ -3232,7 +3232,7 @@ pDef = sqlite3VtabOverloadFunction( db, pDef, nFarg, pFarg.a[0].pExpr );
             **
             ** The expression is implemented using an OP_Param opcode. The p1
             ** parameter is set to 0 for an old.rowid reference, or to (i+1)
-            ** to reference another column of the old.* pseudo-table, where 
+            ** to reference another column of the old.* pseudo-table, where
             ** i is the index of the column. For a new.rowid reference, p1 is
             ** set to (n+1), where n is the number of columns in each pseudo-table.
             ** For a reference to any other column in the new.* pseudo-table, p1
@@ -3246,7 +3246,7 @@ pDef = sqlite3VtabOverloadFunction( db, pDef, nFarg, pFarg.a[0].pExpr );
             **
             **   p1==0   .    old.rowid     p1==3   .    new.rowid
             **   p1==1   .    old.a         p1==4   .    new.a
-            **   p1==2   .    old.b         p1==5   .    new.b       
+            **   p1==2   .    old.b         p1==5   .    new.b
             */
             Table pTab = pExpr.pTab;
             int p1 = pExpr.iTable * ( pTab.nCol + 1 ) + 1 + pExpr.iColumn;
@@ -3670,7 +3670,7 @@ break;
     **
     **    x BETWEEN y AND z
     **
-    ** The above is equivalent to 
+    ** The above is equivalent to
     **
     **    x>=y AND x<=z
     **

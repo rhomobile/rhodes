@@ -489,7 +489,7 @@ static void** DumpHeapGrowthStackTraces() {
   virtual double GetMemoryReleaseRate() {
     return FLAGS_tcmalloc_release_rate;
   }
-};*/ 
+};*/
 
 // The constructor allocates an object to ensure that initialization
 // runs before main(), and therefore we do not have a chance to become
@@ -685,7 +685,7 @@ inline void* do_malloc(size_t size) {
   } else {
     ret = do_malloc_pages(tcmalloc::pages(size));
   }
-  if (ret == NULL) 
+  if (ret == NULL)
 	  errno = ENOMEM;
   return ret;
 }
@@ -710,7 +710,7 @@ static inline ThreadCache* GetCacheIfPresent() {
 // This lets you call back to a given function pointer if ptr is invalid.
 // It is used primarily by windows code which wants a specialized callback.
 inline void do_free_with_callback(void* ptr, void (*invalid_free_fn)(void*)) {
-  if (ptr == NULL) 
+  if (ptr == NULL)
       return;
 
   if ( !g_pTCMallocGuard )
@@ -775,7 +775,7 @@ inline void* do_realloc_with_callback(void* old_ptr, size_t new_size,
                                       void* (*invalid_realloc_fn)(void*,
                                                                   size_t)) {
   invalid_realloc_fn;
-  if ( !old_ptr )  
+  if ( !old_ptr )
       return do_malloc(new_size);
 
   // Get the size of the old entry
@@ -995,7 +995,7 @@ void* cpp_alloc(size_t size, bool nothrow) {
       } */
     } else {  // allocation success
       return p;
-    } 
+    }
 #endif
   }
 }

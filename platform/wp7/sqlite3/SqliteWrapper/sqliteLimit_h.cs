@@ -202,7 +202,7 @@ const int SQLITE_MAX_DEFAULT_PAGE_SIZE SQLITE_MAX_PAGE_SIZE
     ** Maximum depth of recursion for triggers.
     **
     ** A value of 1 means that a trigger program will not be able to itself
-    ** fire any triggers. A value of 0 means that no trigger programs at all 
+    ** fire any triggers. A value of 0 means that no trigger programs at all
     ** may be executed.
     */
 #if !SQLITE_MAX_TRIGGER_DEPTH

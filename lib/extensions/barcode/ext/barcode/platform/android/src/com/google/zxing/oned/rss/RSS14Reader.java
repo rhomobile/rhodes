@@ -488,7 +488,7 @@ public final class RSS14Reader extends AbstractRSSReader {
     if (decrementEven) {
       decrement(evenCounts, evenRoundingErrors);
     }
-    
+
   }
 
 }

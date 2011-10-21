@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -36,7 +36,7 @@ import rhomobile.RhodesApplication;
 
 public class WebView
 {
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("WebView");
 
 	public static void navigate(String url)
@@ -44,10 +44,10 @@ public class WebView
 		RhodesApplication.getInstance().addToHistory(url, null);
 		RhodesApplication.getInstance().navigateUrl(url);
 	}
-	
+
 	public static void initMethods(RubyClass klass) {
 		klass.getSingletonClass().defineMethod("refresh", new RubyNoArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyBlock block) 
+			protected RubyValue run(RubyValue receiver, RubyBlock block)
 			{
 				try {
 					RhodesApplication.getInstance().refreshCurrentPage();
@@ -57,7 +57,7 @@ public class WebView
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
 			}
-		});		
+		});
 		klass.getSingletonClass().defineMethod("navigate", new RubyVarArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block )
 			{
@@ -77,7 +77,7 @@ public class WebView
 			}
 		});
 		klass.getSingletonClass().defineMethod("navigate_back", new RubyNoArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyBlock block) 
+			protected RubyValue run(RubyValue receiver, RubyBlock block)
 			{
 				try {
 					RhodesApplication.getInstance().navigateBack();
@@ -87,12 +87,12 @@ public class WebView
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
 			}
-		});		
+		});
 		klass.getSingletonClass().defineMethod("current_location", new RubyNoOrOneArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyBlock block) 
+			protected RubyValue run(RubyValue receiver, RubyBlock block)
 			{
 				try {
-					String url = RhodesApp.getInstance().getCurrentUrl(0); 
+					String url = RhodesApp.getInstance().getCurrentUrl(0);
 						//RhodesApplication.getInstance().getCurrentPageUrl();
 					return ObjectFactory.createString(url);
 				} catch(Exception e) {
@@ -100,11 +100,11 @@ public class WebView
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
 			}
-			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block) 
+			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block)
 			{
 				try {
 					int nIndex = arg.toInt();
-					String url = RhodesApp.getInstance().getCurrentUrl(nIndex); 
+					String url = RhodesApp.getInstance().getCurrentUrl(nIndex);
 						//RhodesApplication.getInstance().getCurrentPageUrl();
 					return ObjectFactory.createString(url);
 				} catch(Exception e) {
@@ -112,10 +112,10 @@ public class WebView
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
 			}
-			
-		});		
+
+		});
 		klass.getSingletonClass().defineMethod("set_menu_items", new RubyOneArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) 
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block)
 			{
 				try {
 					RhodesApplication.getInstance().resetMenuItems();
@@ -134,9 +134,9 @@ public class WebView
 				}
 			}
 		});
-		
+
 		klass.getSingletonClass().defineMethod("execute_js", new RubyVarArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) 
+			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block)
 			{
 				try {
 					RhodesApplication.getInstance().executeJavascript(args.get(0).toStr());
@@ -159,14 +159,14 @@ public class WebView
 				try {
 					final String url = arg1.toString();
 					final String cookie = arg2.toString();
-					
-					RhodesApplication.getInstance().invokeLater( new Runnable() { 
-			            public void run() 
+
+					RhodesApplication.getInstance().invokeLater( new Runnable() {
+			            public void run()
 			            {
 							RhodesApplication.getInstance().setCookie(RhodesApp.getInstance().canonicalizeRhoUrl(url), cookie);
 			            }
 			        } );
-					
+
 					return RubyConstant.QNIL;
 				}
 				catch (Exception e) {
@@ -179,14 +179,14 @@ public class WebView
 			protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
 				try {
 					final String url = arg1.toString();
-					
-					RhodesApplication.getInstance().invokeLater( new Runnable() { 
-			            public void run() 
+
+					RhodesApplication.getInstance().invokeLater( new Runnable() {
+			            public void run()
 			            {
 							RhodesApplication.getInstance().getCookie(RhodesApp.getInstance().canonicalizeRhoUrl(url));
 			            }
 			        } );
-					
+
 					return RubyConstant.QNIL;
 				}
 				catch (Exception e) {
@@ -195,7 +195,7 @@ public class WebView
 				}
 			}
 		});
-		
+
 	}
-	
+
 }

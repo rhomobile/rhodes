@@ -259,7 +259,7 @@ public class HsqlProperties {
 			}
 			name = name.trim();
 			value = value.trim();
-			
+
 			setPropertyByName(name,value);
 		}
 	}
@@ -267,7 +267,7 @@ public class HsqlProperties {
     private void setPropertyByName(String name, String value ){
     	stringProps.put(name,value);
     }
-    
+
     public boolean load() throws Exception {
 
         /*if (!checkFileExists()) {
@@ -282,7 +282,7 @@ public class HsqlProperties {
         String      propsFilename = fileName + ".properties";
         RandomAccessFile file = new RandomAccessFile(propsFilename, "r");
         try{
-        	byte[] buf = new byte[(int)file.length()];  
+        	byte[] buf = new byte[(int)file.length()];
         	file.readFully(buf);
         	String strData = new String(buf);
         	loadFromString(strData);
@@ -291,7 +291,7 @@ public class HsqlProperties {
         }*/
 /*
         InputStream fis           = null;
-        
+
 // oj@openoffice.org
         try {
             fis = resource ? getClass().getResourceAsStream(propsFilename)
@@ -330,15 +330,15 @@ public class HsqlProperties {
 		while (enValues.hasMoreElements()) {
 			String key = (String)enKeys.nextElement();
 			String value = (String)enValues.nextElement();
-			
+
             strData += key;
             strData += "=";
             strData += value;
             strData += "\n";
 		}
-		
+
     	return strData;
-    }    
+    }
     /**
      *  Saves the properties using JDK2 method if present, otherwise JDK1.
      */
@@ -351,7 +351,7 @@ public class HsqlProperties {
         }finally{
         	file.close();
         }*/
-    	
+
 // oj@openoffice.org
        /* fa.createParentDirs(fileString);
 

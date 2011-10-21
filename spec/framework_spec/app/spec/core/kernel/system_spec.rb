@@ -38,7 +38,7 @@ describe "Kernel#system" do
   #it "does not write to stderr when it can't find a command" do
   #  system("sad").should output_to_fd("") # nothing in stderr
   #end
-=begin    
+=begin
   platform_is_not :windows do
     it "executes with `sh` if the command contains shell characters" do
       `echo $0`.should =~ %r{^(sh|/bin/sh)}
@@ -47,8 +47,8 @@ describe "Kernel#system" do
     it "ignores SHELL env var and always uses `sh`" do
       `SHELL=/bin/zsh #{RUBY_EXE} -e 'system "echo $0"'`.should =~ %r{sh|/bin/sh}
     end
-  end    
-=end    
+  end
+=end
 
   it "is a private method" do
     Kernel.should have_private_instance_method(:system)

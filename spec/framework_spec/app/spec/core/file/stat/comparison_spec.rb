@@ -42,5 +42,5 @@ if ( System.get_property('platform') != 'WINDOWS' && System.get_property('platfo
     (@file1.stat == @file1.stat).should == true
     (@file2.stat == @file2.stat).should == true
   end
-end  
+end
 end

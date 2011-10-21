@@ -75,7 +75,7 @@ wchar_t *wcspbrk( const wchar_t *_wc, const wchar_t *_wc2 );
 
 #if defined(OS_ANDROID)
 #  include _STLP_NATIVE_C_HEADER(wchar.h)
-#  define _STLP_INTERNAL_MBSTATE_T 
+#  define _STLP_INTERNAL_MBSTATE_T
 #endif
 
 #ifndef _STLP_INTERNAL_MBSTATE_T

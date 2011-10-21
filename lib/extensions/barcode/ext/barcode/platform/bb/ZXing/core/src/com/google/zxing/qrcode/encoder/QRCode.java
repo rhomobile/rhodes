@@ -101,7 +101,7 @@ public final class QRCode {
   public ByteMatrix getMatrix() {
     return matrix;
   }
-  
+
 
   // Return the value of the module (cell) pointed by "x" and "y" in the matrix of the QR Code. They
   // call cells in the matrix "modules". 1 represents a black cell, and 0 represents a white cell.

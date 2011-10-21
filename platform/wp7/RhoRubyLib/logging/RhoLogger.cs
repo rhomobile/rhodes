@@ -1,18 +1,18 @@
 ﻿/*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -40,9 +40,9 @@ namespace rho.common
 	    private static int L_WARNING = 2;
 	    private static int L_ERROR = 3;
 	    private static int L_FATAL = 4;
-	
+
 	    private String[] LogSeverityNames = { "TRACE", "INFO", "WARNING", "ERROR", "FATAL" };
-	
+
 	    private String m_category;
 	    private static RhoLogConf m_oLogConf = new RhoLogConf();
 	    private String m_strMessage;
@@ -74,7 +74,7 @@ namespace rho.common
                     return true;
 
                 return getLogConf().isCategoryEnabled(m_category);
-            } 
+            }
 
             return false;
         }
@@ -83,7 +83,7 @@ namespace rho.common
         {
 		    if ( nDigit > 9 )
 		    	return nDigit.ToString();
-			
+
 		    return "0" + nDigit.ToString();
 	    }
 
@@ -103,20 +103,20 @@ namespace rho.common
             DateTime time = DateTime.Now;
 
 		    String strTime = "";
-		    strTime += 
-			    get2FixedDigit(time.Month) + "/" + 
+		    strTime +=
+			    get2FixedDigit(time.Month) + "/" +
 			    get2FixedDigit(time.Day) + "/" +
-			    time.Year + " " + 
-			    get2FixedDigit(time.Hour) + ":" + 
-			    get2FixedDigit(time.Minute) +	":" + 
+			    time.Year + " " +
+			    get2FixedDigit(time.Hour) + ":" +
+			    get2FixedDigit(time.Minute) +	":" +
 			    get2FixedDigit(time.Second);
-			
+
 			    //if ( false ) //comment this to show milliseconds
 				    strTime += ":" + get3FixedDigit(time.Millisecond);
-			
+
 		    return strTime;
 	    }
-	
+
 	    private String makeStringSize(String str, int nSize)
 	    {
 		    if ( str.length() >= nSize )
@@ -125,9 +125,9 @@ namespace rho.common
 			    String res = "";
 			    for( int i = 0; i < nSize - str.length(); i++ )
 				    res += ' ';
-			
+
 			    res += str;
-			
+
 			    return res;
 		    }
 	    }
@@ -140,13 +140,13 @@ namespace rho.common
 			    String res = "";
 			    for( int i = 0; i < nSize - str.length(); i++ )
 				    res += ' ';
-			
+
 			    res += str;
-			
+
 			    return res;
 		    }
 	    }
-	
+
 	    private String getThreadField()
         {
 		    String strThread = System.Threading.Thread.CurrentThread.Name;
@@ -155,7 +155,7 @@ namespace rho.common
 
 		    return strThread;
 	    }
-	
+
 	    private void addPrefix()
         {
 	        //(log level, local date time, thread_id, file basename, line)
@@ -182,18 +182,18 @@ namespace rho.common
             m_severity = severity;
 		    if ( !isEnabled() )
 			    return;
-		
+
 		    m_strMessage = "";
 	        if ( getLogConf().isLogPrefix() )
 	            addPrefix();
-		
+
 	        if ( msg != null )
 	    	    m_strMessage += msg;
-	    
+
 	        if ( e != null )
 	        {
 	    	    m_strMessage += (msg != null && msg.length() > 0 ? ";" : "") + e.GetType().FullName + ": ";
-	    	
+
 	    	    String emsg = e.Message;
 	    	    if ( emsg != null )
 	    		    m_strMessage += emsg;
@@ -202,10 +202,10 @@ namespace rho.common
                 if (trace != null)
                     m_strMessage += ";TRACE: \n" + trace;
 	        }
-	    
+
 		    if (m_strMessage.length() > 0 || m_strMessage.charAt(m_strMessage.length() - 1) != '\n')
 			    m_strMessage += '\n';
-			
+
 		    if ( bOutputOnly )
 		    {
                 getLogConf().getOutputSink().writeLogMessage(m_strMessage);
@@ -274,7 +274,7 @@ namespace rho.common
         {
             logMessage(L_ERROR, message, e);
         }
-        public void ERROR_OUT(String message, Exception e) 
+        public void ERROR_OUT(String message, Exception e)
         {
 		    logMessage( L_ERROR, message, e, true );
 	    }
@@ -308,11 +308,11 @@ namespace rho.common
         public static String getLogText(){
 		    return m_oLogConf.getLogText();
 	    }
-	
+
 	    public static int getLogTextPos(){
 		    return m_oLogConf.getLogTextPos();
 	    }
-	
+
 	    public static void clearLog(){
 	        lock( m_SinkLock ){
 	    	    getLogConf().clearLog();
@@ -328,18 +328,18 @@ namespace rho.common
             logMessage(L_ERROR, message);
             throw rubyEx;
         }
-	
+
         public static void InitRhoLog()
         {
             RhoConf.InitRhoConf();
-        
+
             //Set defaults
-    	    m_oLogConf.setLogPrefix(true);		
-    	
+    	    m_oLogConf.setLogPrefix(true);
+
     	    m_oLogConf.setLogToFile(true);
 
             //TODO - if ip is empy in rhoconfig then we have to set to false
-        
+
 		    if ( isSimulator() ) {
 			    m_oLogConf.setMinSeverity( L_INFO );
 			    m_oLogConf.setLogToOutput(true);
@@ -352,7 +352,7 @@ namespace rho.common
 			    m_oLogConf.setEnabledCategories("");
 	    	    m_oLogConf.setMaxLogFileSize(1024*50);
 		    }
-		
+
     	    if ( RhoConf.getInstance().getRhoRootPath().length() > 0 )
 	    	    m_oLogConf.setLogFilePath( RhoConf.getInstance().getRhoRootPath() + LOGFILENAME );
 

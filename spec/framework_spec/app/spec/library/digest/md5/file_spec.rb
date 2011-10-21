@@ -34,12 +34,12 @@ describe "Digest::MD5.file" do
   it_behaves_like :file_read_directory, :file, Digest::MD5
 
   it 'raises a Errno::ENOENT when passed a path that does not exist' do
-    if System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'APPLE'  
+    if System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'APPLE'
         lambda { Digest::MD5.file("") }.should raise_error(Errno::ENOENT)
-    else    
+    else
         lambda { Digest::MD5.file("") }.should raise_error(Errno::EFAULT)
-    end    
-    
+    end
+
   end
 
   it 'raises a TypeError when passed nil' do

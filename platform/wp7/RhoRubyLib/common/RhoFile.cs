@@ -1,18 +1,18 @@
 ﻿/*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -46,22 +46,22 @@ namespace rho.common
         public int read(byte[] buffer, int bufOffset, int bytesToRead) { return m_oFile.readData(buffer, bufOffset, bytesToRead); }
         public void reset() { m_oFile.movePosToStart(); }
     };
-    
+
     public class CRhoFile
     {
         public enum EOpenModes{ OpenForAppend = 1, OpenReadOnly = 2, OpenForWrite = 3, OpenForReadWrite = 4 };
         Stream m_st = null;
         IInputStream m_pInputStream = null;
 
-        public bool isOpened() 
+        public bool isOpened()
         {
             if (m_st == null)
                 return false;
 
-            return true; 
+            return true;
         }
 
-        public bool open(String szFilePath, EOpenModes eMode) 
+        public bool open(String szFilePath, EOpenModes eMode)
         {
             using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
             {
@@ -82,7 +82,7 @@ namespace rho.common
                     m_st = isoStore.OpenFile(szFilePath, FileMode.OpenOrCreate, FileAccess.Read, FileShare.Read);
             }
 
-            return isOpened(); 
+            return isOpened();
         }
 
         public IInputStream getInputStream()
@@ -94,9 +94,9 @@ namespace rho.common
         public Stream getStream()
         {
             return m_st;
-        }  
+        }
 
-        public void write(byte[] data, int len) 
+        public void write(byte[] data, int len)
         {
             if (!isOpened())
                 return;
@@ -104,7 +104,7 @@ namespace rho.common
             m_st.Write(data, 0, len);
         }
 
-        public void writeString(String data) 
+        public void writeString(String data)
         {
             if (!isOpened())
                 return;
@@ -141,7 +141,7 @@ namespace rho.common
         {
             if (!isOpened())
                 return;
-            
+
             m_st.Seek(0, SeekOrigin.End);
         }
 
@@ -153,12 +153,12 @@ namespace rho.common
             m_st.Seek(nPos, SeekOrigin.Current);
         }
 
-        public long size() 
+        public long size()
         {
             if (!isOpened())
                 return -1;
 
-            return m_st.Length > 0 ? m_st.Length : -1; 
+            return m_st.Length > 0 ? m_st.Length : -1;
         }
 
         public String readString() { return ""; }
@@ -303,7 +303,7 @@ namespace rho.common
             string content = "";
             path = CFilePath.removeFirstSlash(path);
 
-            if (!CRhoFile.isResourceFileExist(path)) 
+            if (!CRhoFile.isResourceFileExist(path))
                 return content;
 
             StreamResourceInfo sr = Application.GetResourceStream(new Uri(path, UriKind.Relative));

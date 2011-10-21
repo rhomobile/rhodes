@@ -61,7 +61,7 @@ public final class BarcodeFormat {
 
   /** PDF417 format. */
   public static final BarcodeFormat PDF417 = new BarcodeFormat("PDF417");
-  
+
   private final String name;
 
   private BarcodeFormat(String name) {

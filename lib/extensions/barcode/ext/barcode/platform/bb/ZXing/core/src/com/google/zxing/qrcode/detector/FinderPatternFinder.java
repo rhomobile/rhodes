@@ -517,7 +517,7 @@ public class FinderPatternFinder {
 
     if (possibleCenters.size() > 3) {
       // Throw away all but those first size candidate points we found.
-      Collections.insertionSort(possibleCenters, new CenterComparator());      
+      Collections.insertionSort(possibleCenters, new CenterComparator());
       possibleCenters.setSize(3);
     }
 

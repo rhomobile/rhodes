@@ -23,12 +23,12 @@ public class RubyMathModule {
 	public static RubyValue cbrt(RubyValue receiver, RubyValue arg) {
 		return ObjectFactory.createFloat(MathEx.cbrt(arg.toFloat()));
 	}
-	
+
 	//@RubyLevelMethod(name="log", module=true)
 	public static RubyValue log(RubyValue receiver, RubyValue arg) {
 		return ObjectFactory.createFloat(MathEx.log(arg.toFloat()));
 	}
-	
+
 	//@RubyLevelMethod(name="log10", module=true)
 	public static RubyValue log10(RubyValue receiver, RubyValue arg) {
 		return ObjectFactory.createFloat(MathEx.log10(arg.toFloat()));
@@ -38,9 +38,9 @@ public class RubyMathModule {
 	public static RubyValue log2(RubyValue receiver, RubyValue arg) {
 		return ObjectFactory.createFloat(MathEx.log2(arg.toFloat()));
 	}
-	
+
 	//@RubyLevelMethod(name="frexp", module=true)
-	public static RubyValue frexp(RubyValue receiver, RubyValue arg) 
+	public static RubyValue frexp(RubyValue receiver, RubyValue arg)
 	{
 		double mantissa = arg.toFloat();
         short sign = 1;
@@ -56,95 +56,95 @@ public class RubyMathModule {
             // Increase value to hit lower range.
             for (; mantissa < 0.5; mantissa *= 2.0, exponent -=1) { }
 
-            // Decrease value to hit upper range.  
+            // Decrease value to hit upper range.
             for (; mantissa >= 1.0; mantissa *= 0.5, exponent +=1) { }
         }
-        RubyArray res = new RubyArray(); 
+        RubyArray res = new RubyArray();
         res.add(ObjectFactory.createFloat(sign * mantissa));
         res.add(ObjectFactory.createInteger(exponent));
-        
+
         return res;
 	}
 	//@RubyLevelMethod(name="ldexp", module=true)
-	public static RubyValue ldexp(RubyValue receiver, RubyValue mantissa, RubyValue exponent) 
+	public static RubyValue ldexp(RubyValue receiver, RubyValue mantissa, RubyValue exponent)
 	{
         double mantissaValue = mantissa.toFloat();
         return ObjectFactory.createFloat(mantissaValue * MathEx.pow(2.0, exponent.toInt()));
 	}
-	
+
 	//@RubyLevelMethod(name="exp", module=true)
 	public static RubyValue exp(RubyValue receiver, RubyValue arg) {
 		return ObjectFactory.createFloat(MathEx.exp(arg.toFloat()));
 	}
-	
+
 	//@RubyLevelMethod(name="cos", module=true)
 	public static RubyValue cos(RubyValue receiver, RubyValue arg) {
 		return ObjectFactory.createFloat(Math.cos(arg.toFloat()));
 	}
-	
+
 	//@RubyLevelMethod(name="sin", module=true)
 	public static RubyValue sin(RubyValue receiver, RubyValue arg) {
 		return ObjectFactory.createFloat(Math.sin(arg.toFloat()));
 	}
-	
+
 	//@RubyLevelMethod(name="tan", module=true)
 	public static RubyValue tan(RubyValue receiver, RubyValue arg) {
 		return ObjectFactory.createFloat(Math.tan(arg.toFloat()));
 	}
-	
+
 	//@RubyLevelMethod(name="cosh", module=true)
 	public static RubyValue cosh(RubyValue receiver, RubyValue arg) {
 		return ObjectFactory.createFloat(MathEx.cosh(arg.toFloat()));
 	}
-	
+
 	//@RubyLevelMethod(name="sinh", module=true)
 	public static RubyValue sinh(RubyValue receiver, RubyValue arg) {
 		return ObjectFactory.createFloat(MathEx.sinh(arg.toFloat()));
 	}
-	
+
 	//@RubyLevelMethod(name="tanh", module=true)
 	public static RubyValue tanh(RubyValue receiver, RubyValue arg) {
 		return ObjectFactory.createFloat(MathEx.tanh(arg.toFloat()));
 	}
-	
+
 	//@RubyLevelMethod(name="acos", module=true)
 	public static RubyValue acos(RubyValue receiver, RubyValue arg) {
 		return ObjectFactory.createFloat(MathEx.acos(arg.toFloat()));
 	}
-	
+
 	//@RubyLevelMethod(name="acosh", module=true)
 	public static RubyValue acosh(RubyValue receiver, RubyValue arg) {
 		double x = arg.toFloat();
 		return ObjectFactory.createFloat(MathEx.log(x + Math.sqrt(x * x - 1.0)));
 	}
-	
+
 	//@RubyLevelMethod(name="asin", module=true)
 	public static RubyValue asin(RubyValue receiver, RubyValue arg) {
 		return ObjectFactory.createFloat(MathEx.asin(arg.toFloat()));
 	}
-	
+
 	//@RubyLevelMethod(name="asinh", module=true)
 	public static RubyValue asinh(RubyValue receiver, RubyValue arg) {
 		double x = arg.toFloat();
 		return ObjectFactory.createFloat(MathEx.log(x + Math.sqrt(x * x + 1.0)));
 	}
-	
+
 	//@RubyLevelMethod(name="atan", module=true)
 	public static RubyValue atan(RubyValue receiver, RubyValue arg) {
 		return ObjectFactory.createFloat(MathEx.atan(arg.toFloat()));
 	}
-	
+
 	//@RubyLevelMethod(name="atanh", module=true)
 	public static RubyValue atanh(RubyValue receiver, RubyValue arg) {
 		double x = arg.toFloat();
 		return ObjectFactory.createFloat(MathEx.log((1.0 + x) / (1.0 - x)) / 2.0);
 	}
-	
+
 	//@RubyLevelMethod(name="atan2", module=true)
 	public static RubyValue atan2(RubyValue receiver, RubyValue arg1, RubyValue arg2) {
 		return ObjectFactory.createFloat(MathEx.atan2(arg1.toFloat(), arg2.toFloat()));
 	}
-	
+
 	//@RubyLevelMethod(name="hypot", module=true)
 	public static RubyValue hypot(RubyValue receiver, RubyValue arg1, RubyValue arg2) {
 		return ObjectFactory.createFloat(MathEx.hypot(arg1.toFloat(), arg2.toFloat()));
@@ -169,5 +169,5 @@ public class RubyMathModule {
 	public static RubyValue lgamma(RubyValue receiver, RubyValue arg) {
 		throw new RubyException("Not implemented: lgamma");
 	}
-	
+
 }

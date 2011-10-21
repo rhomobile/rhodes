@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2006 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -13,7 +13,7 @@ import j2mex.realtime.RealtimeThread;
 import javolution.lang.Reflection;
 
 /**
- * <p> This class represents the concurrent executors used by the default 
+ * <p> This class represents the concurrent executors used by the default
  *     implementation of {@link ConcurrentContext}. Executions
  *     are performed in the same memory area and at the same priority
  *     as the calling thread.</p>
@@ -95,7 +95,7 @@ class ConcurrentThread extends RealtimeThread {
 
     /**
      * Executes the specified logic by this thread if ready.
-     * 
+     *
      * @param logic the logic to execute.
      * @param context the concurrent context.
      */
@@ -123,9 +123,9 @@ class ConcurrentThread extends RealtimeThread {
     }
 
     /**
-     * Returns the name of this concurrent thread as well as its calling source 
+     * Returns the name of this concurrent thread as well as its calling source
      * (in parenthesis).
-     * 
+     *
      * @return the string representation of this thread.
      */
     public String toString() {

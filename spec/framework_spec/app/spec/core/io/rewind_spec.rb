@@ -2,7 +2,7 @@
 require File.expand_path('../../../spec_helper', __FILE__)
 require File.expand_path('../fixtures/classes', __FILE__)
 
-if System.get_property('platform') != 'ANDROID'      
+if System.get_property('platform') != 'ANDROID'
 describe "IO#rewind" do
   before :each do
     @io = IOSpecs.io_fixture "lines.txt"

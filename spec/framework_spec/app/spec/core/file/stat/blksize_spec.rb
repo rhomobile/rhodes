@@ -15,5 +15,5 @@ if ( System.get_property('platform') != 'WINDOWS' )
     st.blksize.is_a?(Integer).should == true
     st.blksize.should > 0
   end
-end  
+end
 end

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -46,7 +46,7 @@ extern "C" HWND getMainWnd();
  ********************************************************************************
  */
 
-//TODO: 
+//TODO:
 //      - smart alignment and win32
 //      - review for memory leaks.
 
@@ -60,14 +60,14 @@ CAlertDialog::CAlertDialog(Params *params)
 	m_icon     = params->m_icon;
 
 	int id = ID_ALERT_DLG_BUTTON_FIRST;
-    for (int i = 0; i < (int)params->m_buttons.size(); i++) 
+    for (int i = 0; i < (int)params->m_buttons.size(); i++)
     {
-		if(id > ID_ALERT_DLG_BUTTON_LAST) 
+		if(id > ID_ALERT_DLG_BUTTON_LAST)
         {
 			LOG(ERROR) + "too many buttons";
 			break;
 		}
-        m_buttons.addElement(CustomButton( params->m_buttons.elementAt(i).m_strCaption, 
+        m_buttons.addElement(CustomButton( params->m_buttons.elementAt(i).m_strCaption,
             params->m_buttons.elementAt(i).m_strID, id++));
 	}
 
@@ -84,25 +84,25 @@ CAlertDialog::~CAlertDialog()
 {
 }
 
-void CAlertDialog::DoInitTemplate() 
+void CAlertDialog::DoInitTemplate()
 {
 #ifdef OS_WINCE
 	int initialWidth  = GetSystemMetrics(SM_CXSCREEN)/3;
-#else 
+#else
 	int initialWidth  = CMainWindow::getScreenWidth()/3;
 #endif
 	int initialHeight = initialWidth/3;
 
-	m_Template.Create(false, convertToStringW(m_title).c_str(), 
-						0, 
+	m_Template.Create(false, convertToStringW(m_title).c_str(),
 						0,
-						initialWidth, 
+						0,
+						initialWidth,
 						initialHeight,
-						CAlertDialogTraits::GetWndStyle(0), 
+						CAlertDialogTraits::GetWndStyle(0),
 						CAlertDialogTraits::GetWndExStyle(0));
 }
 
-void CAlertDialog::DoInitControls() 
+void CAlertDialog::DoInitControls()
 {
 }
 
@@ -177,29 +177,29 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	const int btnHIndent = 12; //horizontal
 	const int btnVIndent = 8;  //vertical
 
-	int btnsNum = m_buttons.size(); 
+	int btnsNum = m_buttons.size();
 	int btnsHeight =tm.tmHeight + btnVIndent;
 
 	//if desired widht is bigger than current - make dialog window bigger
 	if (desiredDlgWidth > (dlgRect.right - dlgRect.left)) {
-		// if desired width is bigger than maximum width 
-		// - recalculate dialog window with wrapped text 
+		// if desired width is bigger than maximum width
+		// - recalculate dialog window with wrapped text
 		if (desiredDlgWidth >= (int)maxWidth) {
 			msgWidth = maxWidth - (iconRect.right + INDENT*2 + xBorderWidth*2);
-			msgHeight = (((m_message.length() * tm.tmAveCharWidth) / msgWidth) + 1) 
+			msgHeight = (((m_message.length() * tm.tmAveCharWidth) / msgWidth) + 1)
 						* (tm.tmHeight + tm.tmExternalLeading + tm.tmInternalLeading);
 			desiredDlgWidth = maxWidth;
 		}
-		
+
 		MoveWindow(0, 0, desiredDlgWidth,
 					MAX(iconRect.bottom, msgHeight) + GetSystemMetrics(SM_CYCAPTION) + INDENT + yBorderWidth * 2 +
                     btnsHeight);
 	} else {
 		//TODO: centering message
 	}
-	
+
 	m_messageCtrl.SetWindowText(convertToStringW(m_message).c_str());
-	
+
 	//LOG(INFO) + "iconHeight  msgHeight " + iconHeight + " "+ msgHeight;
 
 	if (iconHeight > msgHeight) {
@@ -226,7 +226,7 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	if (m_buttons.size() == 0) {
 		m_messageCtrl.CenterWindow();
 	}
-	
+
 	/***************************************************************************
 	  Buttons.
 	 ***************************************************************************/
@@ -246,14 +246,14 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	//if (iconHeight + msgHeight + INDENT + btnHeight + INDENT > dlgRect.) {
 	//}
 
-	for (Vector<CustomButton>::iterator itr = m_buttons.begin(); itr != m_buttons.end(); ++itr) 
+	for (Vector<CustomButton>::iterator itr = m_buttons.begin(); itr != m_buttons.end(); ++itr)
     {
 		//btnWidth = (itr->m_title.length() * tm.tmAveCharWidth) + btnHIndent;
 
 		RECT rc = {point.x, point.y, point.x + btnWidth, point.y + btnHeight};
-		itr->Create(m_hWnd, rc, 
+		itr->Create(m_hWnd, rc,
 					convertToStringW(itr->m_title).c_str(),
-					WS_CHILD | WS_VISIBLE, 0, 
+					WS_CHILD | WS_VISIBLE, 0,
 					itr->m_numId);
 
 		point.x += btnWidth + INDENT;
@@ -275,7 +275,7 @@ bool CAlertDialog::findButton(int id, CustomButton &btn)
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 
@@ -320,14 +320,14 @@ HICON CAlertDialog::loadIcon()
 	LPWSTR iconId = NULL;
 #endif
 
-	for (int i = 0; i < (sizeof(iconTable)/sizeof(iconTable[0])); i++) 
+	for (int i = 0; i < (sizeof(iconTable)/sizeof(iconTable[0])); i++)
 	{
 		//LOG(ERROR) + "ICON == " + iconTable[i].name;
 		if (iconTable[i].name == m_icon)
 			iconId = iconTable[i].id;
 	}
-	
-	if (iconId != 0) 
+
+	if (iconId != 0)
 	{
 #ifdef OS_WINCE
 		HMODULE hGWES = LoadLibraryEx( L"gwes.exe", NULL, LOAD_LIBRARY_AS_DATAFILE );
@@ -366,7 +366,7 @@ void CAlert::playFile(String fileName)
     rho::String path = RHODESAPP().getRhoRootPath() + "apps" + fileName;
 
     HSOUND hSound;
-    
+
     rho::String::size_type pos = 0;
     while ( (pos = path.find('/', pos)) != rho::String::npos ) {
         path.replace( pos, 1, "\\");
@@ -376,13 +376,13 @@ void CAlert::playFile(String fileName)
     StringW strPathW = convertToStringW(path);
     HRESULT hr = SndOpen( strPathW.c_str(), &hSound);
     hr = SndPlayAsync (hSound, 0);
-      
+
     if (hr != S_OK) {
-        LOG(WARNING) + "OnAlertPlayFile: failed to play file"; 
+        LOG(WARNING) + "OnAlertPlayFile: failed to play file";
     }
-    
+
     WaitForSingleObject(hSound, INFINITE);
-                        
+
     hr = SndClose(hSound);
     SndStop(SND_SCOPE_PROCESS, NULL);
 }
@@ -412,7 +412,7 @@ extern "C" void alert_show_popup(rho_param *p)
 		for (int i = 0, lim = p->v.hash->size; i < lim; ++i) {
 			char *name = p->v.hash->name[i];
             rho_param *value = p->v.hash->value[i];
-			
+
 			if (strcasecmp(name, "title") == 0) {
                 if (value->type != RHO_PARAM_STRING) {
                     RAWLOG_ERROR("'title' should be string");
@@ -465,7 +465,7 @@ extern "C" void alert_show_popup(rho_param *p)
                                     btnId = sValue->v.string;
                                 else if (strcasecmp(sName, "title") == 0)
                                     btnTitle = sValue->v.string;
-                            } 
+                            }
 							break;
 						default:
 							RAWLOG_ERROR("Illegal type of button item");
@@ -480,7 +480,7 @@ extern "C" void alert_show_popup(rho_param *p)
 				}
 			}//buttons
 		}
-		
+
 		CAlert::showPopup(new CAlertDialog::Params(title, message, icon, callback, buttons, CAlertDialog::Params::DLG_CUSTOM));
 	}
 }

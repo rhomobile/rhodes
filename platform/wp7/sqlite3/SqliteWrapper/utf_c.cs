@@ -342,13 +342,13 @@ Debugger.Break (); // TODO -
 //  if( pMem->enc==SQLITE_UTF16LE ){
 //    /* UTF-16 Little-endian -> UTF-8 */
 //    while( zIn<zTerm ){
-//      READ_UTF16LE(zIn, zIn<zTerm, c); 
+//      READ_UTF16LE(zIn, zIn<zTerm, c);
 //      WRITE_UTF8(z, c);
 //    }
 //  }else{
 //    /* UTF-16 Big-endian -> UTF-8 */
 //    while( zIn<zTerm ){
-//      READ_UTF16BE(zIn, zIn<zTerm, c); 
+//      READ_UTF16BE(zIn, zIn<zTerm, c);
 //      WRITE_UTF8(z, c);
 //    }
 //  }
@@ -505,7 +505,7 @@ Mem m = Pool.Allocate_Mem();
 ** is set to the length of the returned string in bytes. The call should
 ** arrange to call sqlite3DbFree() on the returned pointer when it is
 ** no longer required.
-** 
+**
 ** If a malloc failure occurs, NULL is returned and the db.mallocFailed
 ** flag set.
 */
@@ -534,7 +534,7 @@ int sqlite3Utf16ByteLen(const void *zIn, int nChar){
   int c;
   unsigned char const *z = zIn;
   int n = 0;
-  
+
   if( SQLITE_UTF16NATIVE==SQLITE_UTF16BE ){
     while( n<nChar ){
       READ_UTF16BE(z, 1, c);

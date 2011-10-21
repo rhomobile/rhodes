@@ -26,7 +26,7 @@ Building STLport
 ================
 First, make sure that RTTI is available. Not all SDKs that come with eVC4 also include
 the necessary libs, but there is a patch for the PPC2003 SDK, available at
-http://support.microsoft.com/default.aspx?scid=kb;[LN];830482. 
+http://support.microsoft.com/default.aspx?scid=kb;[LN];830482.
 
 Second, open command line and set proper system variables.
 This can be done by using batch files under your 'eMbedded Visual C++' directory(use either WCEemulator.BAT if you want to build STLport for the emulator or WCEARMV4.BAT if you intend to aim an ARM device).
@@ -41,8 +41,8 @@ then invoke following command: 'nmake /fmsvc.mak install' to build the library.
 If anything goes wrong check if you met all prerequisities and if you set system vars accordingly to the makfile you are using.
 At the end of build process you should have some libs installed in STLport/lib/evc4-arm or STLport/lib/evc4-x86 and dynamic libs in STLport/bin directory.
 
-You might want to repeat all those steps if you would like to have 
-e.g. both ARM and x86 emulator binaries, just don't forget to do 
+You might want to repeat all those steps if you would like to have
+e.g. both ARM and x86 emulator binaries, just don't forget to do
 'nmake /fmsvc.mak clobber' before new build.
 
 Note: MIPS platform is also available for build, but it may not compile or work properly. Use with caution!
@@ -80,14 +80,14 @@ Alternatively, you can #define _DLL for your project, which achieves the same bu
 ============
 Known issues
 ============
-- The compilers that come with eVC4 are almost bug-to-bug compatible with 
+- The compilers that come with eVC4 are almost bug-to-bug compatible with
 the one from VC6, so most workarounds for that compiler apply here, too.
 
 - There is a bug in the MIPS compiler that comes with eVC4 which only surfaces
 under certain conditions:
  * in release mode with global optimizations on (#pragma optimize("g", on))
  * a baseclass has (at least) two pointer members
- * a derived class adds no data members 
+ * a derived class adds no data members
  * the derived class' cctor defers to the basclass' compiler-generated cctor
  * it is passed as template parameter to a function
 The smallest testcase I could come up with is this:
@@ -107,8 +107,8 @@ The smallest testcase I could come up with is this:
 		~test() { function(tmp, tmp); }
 	};
 	test test;
-..which causes an internal compiler error. Removing the base::ptr1, adding data 
-to derived, making function() a normal function, or turning off optimization 
+..which causes an internal compiler error. Removing the base::ptr1, adding data
+to derived, making function() a normal function, or turning off optimization
 (#pragma optimize("g", off)) all causes the code to compile. This bug affects
 iterators of deque and vector<bool>.
 

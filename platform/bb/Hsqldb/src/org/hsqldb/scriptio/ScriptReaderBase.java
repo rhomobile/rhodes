@@ -58,7 +58,7 @@ public abstract class ScriptReaderBase {
         } else {
             return new ScriptReaderZipped(db, file);
         }*/
-        
+
         return null;
     }
 

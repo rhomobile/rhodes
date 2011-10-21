@@ -20,7 +20,7 @@ class SpecRunner < MSpecScript
     config[:files] <<  spec_folder + '/rhoruby_spec.rb'
     config[:files] <<  spec_folder + '/bsearch_spec.rb'
     config[:files] <<  spec_folder + '/find_spec.rb'
-    
+
   end
 
   def run

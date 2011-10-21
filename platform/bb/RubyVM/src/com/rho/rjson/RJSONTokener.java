@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -37,15 +37,15 @@ import com.xruby.runtime.builtin.RubyHash;
 
 public class RJSONTokener extends RhoJSONTokener
 {
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("JSON");
-	
+
     public RJSONTokener(String s) {
         super(s);
     }
-    
+
     public Object nextValue() throws RhoJSONException {
-    	throw new RhoJSONException("RJSONTokener should not call nextValue.");    	
+    	throw new RhoJSONException("RJSONTokener should not call nextValue.");
     }
     /**
      * Get the next value. The value can be a Boolean, Double, Integer,
@@ -147,7 +147,7 @@ public class RJSONTokener extends RhoJSONTokener
         }
         return ObjectFactory.createString(s);
     }
-    
+
     RubyValue parseArray(RJSONTokener x)throws RhoJSONException
     {
     	RubyArray ar = new RubyArray();
@@ -181,11 +181,11 @@ public class RJSONTokener extends RhoJSONTokener
             }
         }
     }
-    
+
     RubyValue parseObject(RJSONTokener x)throws RhoJSONException
     {
     	RubyHash hash = ObjectFactory.createHash();
-    	
+
         char c;
         RubyValue key;
 
@@ -237,9 +237,9 @@ public class RJSONTokener extends RhoJSONTokener
             }
         }
     }
-    
+
 	public static void initMethods(RubyModule klass) {
-		klass.getSingletonClass().defineMethod("parse", new RubyOneArgMethod(){ 
+		klass.getSingletonClass().defineMethod("parse", new RubyOneArgMethod(){
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
 			{
 				try {
@@ -252,22 +252,22 @@ public class RJSONTokener extends RhoJSONTokener
 				}
 			}
 		});
-		
-		klass.getSingletonClass().defineMethod("quote_value", new RubyOneArgMethod(){ 
+
+		klass.getSingletonClass().defineMethod("quote_value", new RubyOneArgMethod(){
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
 			{
 				try {
 					String str = arg.toStr();
-					
+
 					String strRes = RhoJSONObject.quote(str);
-					
+
 					return ObjectFactory.createString(strRes);
 				} catch(Exception e) {
 					LOG.ERROR("parse failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
 			}
-		});		
-		
-	}    
+		});
+
+	}
 }

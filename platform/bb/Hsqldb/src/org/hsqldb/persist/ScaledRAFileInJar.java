@@ -77,7 +77,7 @@ class ScaledRAFileInJar implements ScaledRAInterface {
 
     public void sync() throws IOException {
     }
-    
+
     public long length() throws IOException {
         return fileLength;
     }

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -42,7 +42,7 @@ public class BluetoothPort implements BluetoothSerialPortListener {
 		public void onBluetoothPortDataReceived();
 		public void onBluetoothPortConnected(boolean success);
 	}
-	
+
     private BluetoothSerialPort mPort;
     private static boolean mIsDataSent = true;
     private DataBuffer mWritedData;
@@ -50,9 +50,9 @@ public class BluetoothPort implements BluetoothSerialPortListener {
 	private BluetoothPortListener mListener = null;
     private byte[] _receiveBuffer = new byte[1024];
 	private String mConnectedDeviceName = "";
-	
+
 	private ConnectionListenThread mListenThread = null;
-	
+
 	private class ConnectionListenThread extends Thread {
 		private BluetoothPort Port;
 		private byte[] data;
@@ -60,14 +60,14 @@ public class BluetoothPort implements BluetoothSerialPortListener {
 			Port = port;
 			data = new byte[1];
 		}
-		
+
 		public void run() {
 			while (true) {
 				try {
 					sleep(50);
 				}
 				catch (Exception e) {
-					
+
 				}
 				try {
 					if (Port.mPort != null) {
@@ -85,13 +85,13 @@ public class BluetoothPort implements BluetoothSerialPortListener {
 				catch (Exception e) {
 					// port not ready
 				}
-				
+
 			}
 		}
 	}
-	
-	
-	
+
+
+
 	public void disconnect() {
 		BluetoothManager.rhoLogInfo("BluetoothPort.disconnect()");
 		if (mPort != null) {
@@ -107,11 +107,11 @@ public class BluetoothPort implements BluetoothSerialPortListener {
 			mListenThread = null;
 		}
 	}
-	
+
 	public int getStatus() {
 		return mReadedData.getArrayLength();
 	}
-	
+
 	public byte[] readData() {
 		byte[] data = null;
 		synchronized(mReadedData) {
@@ -120,7 +120,7 @@ public class BluetoothPort implements BluetoothSerialPortListener {
 		}
 		return data;
 	}
-	
+
 	public void writeData(byte[] data) {
         synchronized(mWritedData)
         {
@@ -129,18 +129,18 @@ public class BluetoothPort implements BluetoothSerialPortListener {
         // Call sendData to send the data.
         sendData();
 	}
-	
+
 	public String getConnectedDeviceName() {
 		return mConnectedDeviceName;
 	}
 
-	
+
 	public void startListenThread() {
 		//mListenThread = new ConnectionListenThread(this);
 		//mListenThread.start();
 		//deviceConnected(true);
 	}
-	
+
     public BluetoothPort(BluetoothSerialPortInfo info, BluetoothPortListener listener)
     {
         // Fill a 1k array with the a character.
@@ -148,10 +148,10 @@ public class BluetoothPort implements BluetoothSerialPortListener {
 
         // Initialize the buffers.
         //_data = new StringBuffer();
-        
+
     	mReadedData = new DataBuffer();
     	mWritedData = new DataBuffer();
-        
+
         mListener = listener;
 
         try
@@ -265,7 +265,7 @@ public class BluetoothPort implements BluetoothSerialPortListener {
 	                    // Set the _dataSent flag to false so we don't send any more
 	                    // data until it has been verified that this data was sent.
 	                    mIsDataSent = false;
-	
+
                         // Write out the data in the DataBuffer and reset the DataBuffer.
                         mPort.write(mWritedData.getArray(), 0, mWritedData.getArrayLength());
                         mWritedData.reset();
@@ -288,20 +288,20 @@ public class BluetoothPort implements BluetoothSerialPortListener {
 	        }
     	}
     }
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

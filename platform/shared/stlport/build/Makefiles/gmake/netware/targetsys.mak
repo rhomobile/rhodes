@@ -5,7 +5,7 @@ SO := nlm
 
 ARCH := lib
 AR := mwldnlm -type library -msgstyle gcc -w off
-AR_INS_R := 
+AR_INS_R :=
 AR_EXTR :=
 AR_OUT = -o $@
 

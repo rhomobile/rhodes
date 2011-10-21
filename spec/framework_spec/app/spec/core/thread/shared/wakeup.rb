@@ -57,5 +57,5 @@ describe :thread_wakeup, :shared => true do
     t.join
     lambda { t.wakeup }.should raise_error(ThreadError)
   end
-=end  
+=end
 end

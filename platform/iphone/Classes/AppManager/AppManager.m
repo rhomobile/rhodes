@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -54,16 +54,16 @@ static bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned i
 
 BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
     NSError *error;
-    
-    NSDictionary *attributes = [fileManager attributesOfItemAtPath:path error:&error]; 
-    
+
+    NSDictionary *attributes = [fileManager attributesOfItemAtPath:path error:&error];
+
     if (attributes == nil) {
         //NSLog(@"     SymLink  NO : %@", path);
         return NO;
     }
-    
+
     NSString* fileType = [attributes objectForKey:NSFileType];
-    
+
     if (fileType == nil) {
         //NSLog(@"     SymLink  NO : %@", path);
         return NO;
@@ -76,7 +76,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
     else {
         //NSLog(@"     SymLink  NO : %@", path);
     }
-    
+
     return res;
 }
 
@@ -134,13 +134,13 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 
 + (bool) installApplication:(NSString*)appName data:(NSData*)appData {
 	NSFileManager *fileManager = [NSFileManager defaultManager];
-	NSString *appPath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:appName]; 
+	NSString *appPath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:appName];
 	if ([fileManager fileExistsAtPath:appPath]) {
 		NSError *error;
 		[fileManager removeItemAtPath:appPath error:&error];
 	}
     [fileManager createDirectoryAtPath:appPath attributes:NULL];
-	
+
 	static char appRoot[FILENAME_MAX];
 	[appPath getFileSystemRepresentation:appRoot maxLength:sizeof(appRoot)];
 	return UnzipApplication( appRoot, [appData bytes], [appData length]);
@@ -153,12 +153,12 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 		NSAssert1(0, @"Source item '%@' does not exists in bundle", source);
 		return;
 	}
-	
+
 	if (!remove && dir) {
         NSError *error;
 		if (![fileManager fileExistsAtPath:target])
 			[fileManager createDirectoryAtPath:target withIntermediateDirectories:YES attributes:nil error:&error];
-		
+
 		NSDirectoryEnumerator *enumerator = [fileManager enumeratorAtPath:source];
 		NSString *child;
 		while (child = [enumerator nextObject]) {
@@ -184,7 +184,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
     NSLog(@"filePath2: %@", filePath2);
     if (![fileManager fileExistsAtPath:filePath1] || ![fileManager fileExistsAtPath:filePath2])
         return NO;
-    
+
     NSString *content1 = [[NSString alloc] initWithData:[fileManager contentsAtPath:filePath1]
                                                encoding:NSUTF8StringEncoding];
     NSString *content2 = [[NSString alloc] initWithData:[fileManager contentsAtPath:filePath2]
@@ -200,11 +200,11 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
  * Configures AppManager
  */
 - (void) configure {
-	
+
 #define RHO_DONT_COPY_ON_START
-    
+
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    
+
 	NSString *bundleRoot = [[NSBundle mainBundle] resourcePath];
 	NSString *rhoRoot = [NSString stringWithUTF8String:rho_native_rhopath()];
 
@@ -225,7 +225,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 		filePathOld = [rhoRoot stringByAppendingPathComponent:@"hash"];
 
         contentChanged = ![self isContentsEqual:fileManager first:filePathNew second:filePathOld];
-        
+
         // check for lost sym-links (upgrade OS or reinstall application without change version)
         if (!contentChanged) {
             // check exist of sym-link
@@ -239,7 +239,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
                 NSLog(@" Main Sym-Link founded - disable restoring !");
             }
         }
-        
+
 	}
 
     NSString* testName = [rhoRoot stringByAppendingPathComponent:@"lib"];
@@ -250,8 +250,8 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
     else {
         NSLog(@" Lib File is NOT Exist: %@", testName);
     }
-	
-    
+
+
     if (contentChanged) {
 #ifdef RHO_DONT_COPY_ON_START
         // we have next situations when we should remove old content:
@@ -259,11 +259,11 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
         //    we should remove all files
         // 2. we upgrade version with symlinks
         //    we should remove only symlinks
-        // 3. we should only restore sym-lins after that was cleared - OS upgrade/reinstall app with the same version/restore from bakup etc. 
+        // 3. we should only restore sym-lins after that was cleared - OS upgrade/reinstall app with the same version/restore from bakup etc.
         // we check old "lib" file - if it is SymLink then we have new version of Rhodes (with SymLinks instead of files)
 
         BOOL isNewVersion = isPathIsSymLink(fileManager, testName);
-        
+
         RhoFileManagerDelegate_RemoveOnly_SymLinks* myDelegate = nil;
         if (isNewVersion) {
             myDelegate = [[RhoFileManagerDelegate_RemoveOnly_SymLinks alloc] init];
@@ -278,7 +278,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
         NSLog(@"dst: %@", dst);
         [fileManager removeItemAtPath:dst error:&error];
         [fileManager createSymbolicLinkAtPath:dst withDestinationPath:src error:&error];
-        
+
         NSString *dirs[] = {@"apps"};
         for (int i = 0, lim = sizeof(dirs)/sizeof(dirs[0]); i < lim; ++i) {
             // Create directory
@@ -288,7 +288,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
             NSLog(@"dst: %@", dst);
             if (![fileManager fileExistsAtPath:dst])
                 [fileManager createDirectoryAtPath:dst withIntermediateDirectories:YES attributes:nil error:&error];
-            
+
             // And make symlinks from its content
             NSArray *subelements = [fileManager contentsOfDirectoryAtPath:src error:&error];
             for (int i = 0, lim = [subelements count]; i < lim; ++i) {
@@ -309,13 +309,13 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
                 }
             }
         }
-        
+
         [fileManager setDelegate:nil];
         if (myDelegate != nil) {
             [myDelegate release];
         }
         // copy "db"
-        if (!restoreSymLinks_only) { 
+        if (!restoreSymLinks_only) {
             NSString *copy_dirs[] = {@"db"};
             for (int i = 0, lim = sizeof(copy_dirs)/sizeof(copy_dirs[0]); i < lim; ++i) {
                 BOOL remove = nameChanged;
@@ -352,7 +352,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
         }
 #endif
 	}
-    
+
 	rho_logconf_Init(rho_native_rhopath(), "");
 	rho_rhodesapp_create(rho_native_rhopath());
 	RAWLOG_INFO("Rhodes started");
@@ -360,23 +360,23 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 
 
 - (UIViewController *) documentInteractionControllerViewControllerForPreview: (UIDocumentInteractionController *) controller {
-    
-    return [[Rhodes sharedInstance] mainView]; 
-    
+
+    return [[Rhodes sharedInstance] mainView];
+
 }
 
 - (void)openDocInteractCommand:(NSString*)url {
     if (NSClassFromString(@"UIDocumentInteractionController")) {
         NSURL *fileURL = [NSURL fileURLWithPath:url];
-        
+
         UIDocumentInteractionController* docController = [UIDocumentInteractionController interactionControllerWithURL:fileURL];
-        
+
         docController.delegate = self;//[AppManager instance];
-        
+
         BOOL result = [docController presentPreviewAnimated:YES];
-        
+
         if (!result) {
-        }    
+        }
     }
 }
 
@@ -384,14 +384,14 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 
 
 - (void)openDocInteract:(NSString*)url {
-	[self performSelectorOnMainThread:@selector(openDocInteractCommand:) withObject:url waitUntilDone:NO];	
+	[self performSelectorOnMainThread:@selector(openDocInteractCommand:) withObject:url waitUntilDone:NO];
 }
 
 
 
 @end
 
-const char* rho_native_rhopath() 
+const char* rho_native_rhopath()
 {
 	static bool loaded = FALSE;
 	static char root[FILENAME_MAX];
@@ -400,17 +400,17 @@ const char* rho_native_rhopath()
 		NSString *documentsDirectory = //[paths objectAtIndex:0];
 		[ [paths objectAtIndex:0] stringByAppendingString:@"/"];
 		[documentsDirectory getFileSystemRepresentation:root maxLength:sizeof(root)];
-		
+
 		loaded = TRUE;
 	}
-	
+
 	return root;
 }
 
-VALUE rho_sys_get_locale() 
+VALUE rho_sys_get_locale()
 {
 	NSString *preferredLang = [[NSLocale preferredLanguages] objectAtIndex:0];
-	
+
 	return rho_ruby_create_string( [preferredLang UTF8String] );
 }
 
@@ -456,14 +456,14 @@ int rho_sys_is_app_installed(const char *appname) {
 }
 
 void rho_sys_app_uninstall(const char *appname) {
-	NSLog(@"ALERT: Uninstall of applications is unsupported on iOS platfrom !!!");	
+	NSLog(@"ALERT: Uninstall of applications is unsupported on iOS platfrom !!!");
 }
 
 
-void rho_sys_open_url(const char* url) 
+void rho_sys_open_url(const char* url)
 {
-    RAWLOG_INFO1("rho_sys_open_url: %s", url);	
-	
+    RAWLOG_INFO1("rho_sys_open_url: %s", url);
+
 	NSString* strUrl = [NSString stringWithUTF8String:url];
 	BOOL res = FALSE;
 
@@ -486,16 +486,16 @@ void rho_sys_open_url(const char* url)
         }
     }
 	if ( res)
-		RAWLOG_INFO("rho_sys_open_url suceeded.");	
+		RAWLOG_INFO("rho_sys_open_url suceeded.");
 	else
-		RAWLOG_INFO("rho_sys_open_url failed.");	
+		RAWLOG_INFO("rho_sys_open_url failed.");
 }
 
 void rho_sys_app_install(const char *url) {
     rho_sys_open_url(url);
 }
 
-void rho_sys_run_app(const char* appname, VALUE params) 
+void rho_sys_run_app(const char* appname, VALUE params)
 {
 	NSString* app_name = [NSString stringWithUTF8String:appname];
 	app_name = [app_name stringByAppendingString:@":"];
@@ -510,29 +510,29 @@ void rho_sys_run_app(const char* appname, VALUE params)
 		//}
 	}
     const char* full_url = [app_name UTF8String];
-    RAWLOG_INFO1("rho_sys_run_app: %s", full_url);	
-	
+    RAWLOG_INFO1("rho_sys_run_app: %s", full_url);
+
 
 	BOOL res = FALSE;
 
     if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:app_name]]) {
         res = [[UIApplication sharedApplication] openURL:[NSURL URLWithString:app_name]];
     }
-	
+
 	if ( res)
-		RAWLOG_INFO("rho_sys_run_app suceeded.");	
+		RAWLOG_INFO("rho_sys_run_app suceeded.");
 	else
-		RAWLOG_INFO("rho_sys_run_app failed.");	
+		RAWLOG_INFO("rho_sys_run_app failed.");
 }
 
 void rho_sys_bring_to_front()
 {
-    RAWLOG_INFO("rho_sys_bring_to_front has no implementation on iPhone.");	
+    RAWLOG_INFO("rho_sys_bring_to_front has no implementation on iPhone.");
 }
 
 void rho_sys_report_app_started()
 {
-    RAWLOG_INFO("rho_sys_report_app_started has no implementation on iPhone.");	
+    RAWLOG_INFO("rho_sys_report_app_started has no implementation on iPhone.");
 }
 
 
@@ -573,14 +573,14 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
         {*resValue = rho_ruby_create_integer(rho_sys_get_screen_height()); return 1; }
     else if (strcasecmp("real_screen_height", szPropName) == 0)
     {
-        
-        *resValue = rho_ruby_create_integer((int)(rho_sys_get_screen_height()*get_scale())); 
-        return 1; 
+
+        *resValue = rho_ruby_create_integer((int)(rho_sys_get_screen_height()*get_scale()));
+        return 1;
     }
     else if (strcasecmp("real_screen_width", szPropName) == 0)
     {
-        *resValue = rho_ruby_create_integer((int)(rho_sys_get_screen_width()*get_scale())); 
-        return 1; 
+        *resValue = rho_ruby_create_integer((int)(rho_sys_get_screen_width()*get_scale()));
+        return 1;
     }
     else if (strcasecmp("screen_orientation", szPropName) == 0) {
         UIInterfaceOrientation current_orientation = [[UIApplication sharedApplication] statusBarOrientation];
@@ -613,7 +613,7 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
             *resValue = rho_ruby_create_double(RHO_IPHONE4_PPI);
         else
             *resValue = rho_ruby_create_double(RHO_IPHONE_PPI);
-        
+
         return 1;
     }
     else if (strcasecmp("device_name", szPropName) == 0) {
@@ -626,20 +626,20 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
         *resValue = rho_ruby_create_string([version UTF8String]);
         return 1;
     }else if (strcasecmp("is_emulator", szPropName) == 0) {
-        int bSim = 0; 
+        int bSim = 0;
 #if TARGET_IPHONE_SIMULATOR
 		bSim = 1;
-#endif		
+#endif
 		*resValue = rho_ruby_create_boolean(bSim);
         return 1;
     }else if (strcasecmp("has_calendar", szPropName) == 0) {
 		int bCal = 0;
-		if (is_rho_calendar_supported()) 
+		if (is_rho_calendar_supported())
 			bCal = 1;
 		*resValue = rho_ruby_create_boolean(bCal);
 		return 1;
-	} 
-	
+	}
+
 	/* "device_id" property used only for PUSH technology !
 	 else if (strcasecmp("device_id", szPropName) == 0) {
 		NSString* uuid = [[UIDevice currentDevice] uniqueIdentifier];
@@ -648,7 +648,7 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 	}
 	*/
 
-	
+
     /*
 	 [[UIDevice currentDevice] uniqueIdentifier]
     // Removed because it's possibly dangerous: Apple could reject application
@@ -678,39 +678,39 @@ const char* GetApplicationsRootPath() {
 
 // TODO - do error checking
 bool UnzipApplication(const char* appRoot, const void* zipbuf, unsigned int ziplen) {
-	
-	ZIPENTRY ze; 
+
+	ZIPENTRY ze;
     // Open zip file
 	HZIP hz = OpenZip((void*)zipbuf, ziplen, 0);
-	
+
 	// Set base for unziping
 	SetUnzipBaseDir(hz, appRoot);
-	
+
 	// Get info about the zip
 	// -1 gives overall information about the zipfile
 	GetZipItem(hz,-1,&ze);
 	int numitems = ze.index;
-	
+
 	// Iterate through items and unzip them
 	for (int zi = 0; zi<numitems; zi++)
-	{ 
-		//ZIPENTRY ze; 
+	{
+		//ZIPENTRY ze;
 		// fetch individual details, e.g. the item's name.
-		GetZipItem(hz,zi,&ze); 
+		GetZipItem(hz,zi,&ze);
 		// unzip item
-		UnzipItem(hz, zi, ze.name);         
+		UnzipItem(hz, zi, ze.name);
 	}
-	
+
 	CloseZip(hz);
-	
+
 	return true;
 }
 /*
 int _LoadApp(HttpContextRef context) {
 
-	if ( (context->_request->_query!=NULL) && 
+	if ( (context->_request->_query!=NULL) &&
 		(strlen(context->_request->_query)>0) ) {
-		
+
 		AppLoader* appLoader = [[AppLoader alloc] init];
 		bool ret = [appLoader loadApplication:[NSString stringWithCString:context->_request->_query]];
 		[appLoader release];
@@ -718,12 +718,12 @@ int _LoadApp(HttpContextRef context) {
 			HttpSendErrorToTheServer(context, 500, "Error loading application");
 			return -1;
 		}
-		
+
 		char location[strlen(context->_request->_query)+2];
 		HttpSnprintf(location, sizeof(location), "/%s", context->_request->_query);
 		return HTTPRedirect(context, location);
-	} 
-	
+	}
+
 	HttpSendErrorToTheServer(context, 400, "Application name to load and install is not specifyed");
 	return -1;
 }*/
@@ -735,7 +735,7 @@ void rho_appmanager_load( void* httpContext, const char* szQuery)
 		rho_http_senderror(httpContext, 400, "Application name to load and install is not specifyed");
 		return;
 	}
-	
+
 	AppLoader* appLoader = [[AppLoader alloc] init];
 	bool ret = [appLoader loadApplication:[NSString stringWithUTF8String:szQuery]];
 	[appLoader release];
@@ -743,11 +743,11 @@ void rho_appmanager_load( void* httpContext, const char* szQuery)
 		rho_http_senderror(httpContext, 500, "Error loading application");
 		return;
 	}
-	
+
 	char location[strlen(szQuery)+2];
 	rho_http_snprintf(location, sizeof(location), "/%s", szQuery);
     rho_http_redirect(httpContext, location);
-	
+
 	return;
 }
 
@@ -768,41 +768,41 @@ const static struct {
 	} _actions[MAX_ACTIONS];
 } controllers[] = {
 	{"loader" , { {"load", _LoadApp}, {NULL, NULL} } },
-	{NULL} 
+	{NULL}
 };
-	
+
 int ExecuteAppManager(HttpContextRef context, RouteRef route) {
 	char err[512];
-	
+
 	if (!route->_model) {
 		HttpSendErrorToTheServer(context, 404, "Controller is not specifyed for the App Manager");
 		return -1;
 	}
-	
+
 	for (int i = 0; controllers[i]._name != NULL; i++ ) {
 		if (!strcmp(route->_model, controllers[i]._name)) {
 
 			if (!route->_action) {
-				sprintf(err,"No action specifyed for the controller [%s]", route->_model); 
+				sprintf(err,"No action specifyed for the controller [%s]", route->_model);
 				HttpSendErrorToTheServer(context, 404, err);
-				return -1;	
+				return -1;
 			}
-			
+
 			for (int n = 0; controllers[i]._actions[n]._name; n++) {
 				if (!strcmp(controllers[i]._actions[n]._name, route->_action)) {
 					return (controllers[i]._actions[n]._process)(context);
 				}
 			}
 
-			sprintf(err,"No action [%s] found for the App Manager controller [%s]", 
-					route->_action, route->_model); 
+			sprintf(err,"No action [%s] found for the App Manager controller [%s]",
+					route->_action, route->_model);
 			HttpSendErrorToTheServer(context, 404, err);
-			return -1;	
-			
+			return -1;
+
 		}
 	}
-	
-	sprintf(err,"No [%s] controller found for App Manager", route->_model); 
+
+	sprintf(err,"No [%s] controller found for App Manager", route->_model);
 	HttpSendErrorToTheServer(context, 404, err);
 	return -1;
 }*/

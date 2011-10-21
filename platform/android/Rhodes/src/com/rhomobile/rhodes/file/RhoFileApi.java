@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -47,11 +47,11 @@ import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
 public class RhoFileApi {
-	
+
 	private static final String TAG = RhoFileApi.class.getSimpleName();
-	
+
 	private static final int MAX_SIZE = 2*1024*1024;
-	
+
 	private static AssetManager am;
 	private static String root;
     private static final String DB_FILES_FOLDER = "db/db-files";
@@ -60,13 +60,13 @@ public class RhoFileApi {
 	private static native void nativeInitPath(String rootPath, String sqliteJournalsPath, String apkPath);
 	private static native void nativeInit();
 	private static native void updateStatTable(String path, String type, long size, long mtime);
-	
+
 	public static native String normalizePath(String path);
     public static native String absolutePath(String path);
-	
+
 	private static native boolean needEmulate(String path);
 	private static native String makeRelativePath(String path);
-	
+
 	private static void fillStatTable() throws IOException
 	{
 		InputStream is = null;
@@ -77,7 +77,7 @@ public class RhoFileApi {
 				String line = in.readLine();
 				if (line == null)
 					break;
-				
+
 				int idx = line.indexOf('\t');
 				if (idx == -1)
 					continue;
@@ -93,7 +93,7 @@ public class RhoFileApi {
 					continue;
 				long size = Long.parseLong(line.substring(0, idx));
 				long mtime = Long.parseLong(line.substring(idx + 1));
-				
+
 				updateStatTable(path, type, size, mtime);
 			}
 		}
@@ -102,7 +102,7 @@ public class RhoFileApi {
 				is.close();
 		}
 	}
-	
+
 	private static void copyAssets(String assets[])
 	{
 		for(String asset: assets)
@@ -113,12 +113,12 @@ public class RhoFileApi {
 	}
 
 	public static String initRootPath(String dataDir, String sourceDir) {
-		
+
 		root = dataDir + "/rhodata/";
 		String sqliteJournals = dataDir + "/sqlite_stmt_journals/";
 		Log.d(TAG, "App root path: " + root);
 		Log.d(TAG, "Sqlite journals path: " + sqliteJournals);
-		
+
 		File f = new File(getRootPath());
 		f.mkdirs();
 		f = new File(getDbFilesPath());
@@ -127,9 +127,9 @@ public class RhoFileApi {
 		f.mkdirs();
 		f = new File(getTempPath());
 		f.mkdirs();
-		
+
 		String apkPath = sourceDir;
-		
+
 		nativeInitPath(root, sqliteJournals, apkPath);
 		return root;
 	}
@@ -142,18 +142,18 @@ public class RhoFileApi {
 	public static void init(Context ctx) throws IOException
 	{
 		nativeInit();
-	
+
 		am = ctx.getAssets();
 
 		fillStatTable();
 	}
-	
+
 	public static void initCopy(Context ctx, String assets[])
 	{
 		am = ctx.getAssets();
 		copyAssets(assets);
 	}
-	
+
 	public static boolean copy(String path)
 	{
 		Log.d(TAG, "Copy " + path + " to FS");
@@ -161,21 +161,21 @@ public class RhoFileApi {
 		OutputStream os = null;
 		try {
 			//RhodesService r = RhodesService.getInstance();
-			
+
 			is = am.open(path);
-			
+
 			File dst = new File(root, path);
 			File parent = dst.getParentFile();
 			if (parent == null)
 				return false;
 			parent.mkdirs();
-			
+
 			os = new FileOutputStream(dst);
 			byte[] buf = new byte[4096];
 			int len;
 			while((len = is.read(buf)) > 0)
 				os.write(buf, 0, len);
-			
+
 			Log.d(TAG, "File " + path + " copied");
 			return true;
 		}
@@ -195,7 +195,7 @@ public class RhoFileApi {
 			}
 		}
 	}
-	
+
 	public static InputStream open(String path)
 	{
 		//Log.d(TAG, "open: " + path);
@@ -204,7 +204,7 @@ public class RhoFileApi {
 			//Log.d(TAG, "open: (1): " + relPath);
 			return openInPackage(relPath);
 		}
-		
+
 		try {
 			//Log.d(TAG, "open (2): " + path);
 			return new FileInputStream(path);
@@ -261,7 +261,7 @@ public class RhoFileApi {
 			return null;
 		}
 	}
-	
+
 	public static void close(InputStream is)
 	{
 		try {
@@ -273,7 +273,7 @@ public class RhoFileApi {
 			// Ignore
 		}
 	}
-	
+
 	public static int read(InputStream is, byte[] buf)
 	{
 		try {
@@ -284,7 +284,7 @@ public class RhoFileApi {
 			return -1;
 		}
 	}
-	
+
 	public static void seek(InputStream is, int offset)
 	{
 		try {
@@ -300,14 +300,14 @@ public class RhoFileApi {
 			// Ignore
 		}
 	}
-	
+
 	public static String[] getChildren(String path) {
 		try {
-			// Merge children from both packed assets and file system 
+			// Merge children from both packed assets and file system
 			String[] list1 = am.list(path);
 			File f = new File(root, path);
 			String[] list2 = f.list();
-			
+
 			List<String> list = new ArrayList<String>();
 			if (list1 != null)
 				for (String child : list1)
@@ -318,12 +318,12 @@ public class RhoFileApi {
 						continue;
 					list.add(child);
 				}
-			
+
 			return list.toArray(new String[] {});
 		}
 		catch (IOException e) {
 			return null;
 		}
 	}
-	
+
 }

@@ -11,8 +11,8 @@
 class CIEBrowserEngine :  public rho::IBrowserEngine
 {
     // Represents the PIEWebBrowser control contained in the main application.
-    // window. m_browser is used to manage the control and its associated 
-    // "AtlAxWin" window. (AtlAxWin is a window class that ATL uses to support 
+    // window. m_browser is used to manage the control and its associated
+    // "AtlAxWin" window. (AtlAxWin is a window class that ATL uses to support
     // containment of controls in windows.)
     CAxWindow m_browser;
 

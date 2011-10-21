@@ -1,4 +1,4 @@
-/* 
+/*
  * $Id: CharStringPointer.java 124053 2005-01-04 01:24:35Z dfs $
  *
  * Copyright 2000-2005 The Apache Software Foundation
@@ -79,7 +79,7 @@ final class CharStringPointer {
   char _increment() { return _increment(1); }
 
   char _decrement(int inc) {
-    _offset-=inc; 
+    _offset-=inc;
     if(_offset < 0)
       _offset = 0;
 

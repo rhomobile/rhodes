@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -50,9 +50,9 @@ import android.widget.ImageButton;
 
 public class ImageCapture extends BaseActivity implements OnClickListener
  {
-	
+
 	private static final String TAG = "ImageCapture";
-	
+
 	private String callbackUrl;
 	private String imageFormat;
 	private SimpleDateFormat timeStampFormat = new SimpleDateFormat("yyyyMMddHHmmssSS");
@@ -71,15 +71,15 @@ public class ImageCapture extends BaseActivity implements OnClickListener
 		//getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		getWindow().setFormat(PixelFormat.TRANSLUCENT);
 		setContentView(AndroidR.layout.signature);
-		
+
 		Bundle extras = getIntent().getExtras();
 		callbackUrl = extras.getString(com.rhomobile.rhodes.signature.Signature.INTENT_EXTRA_PREFIX + "callback");
 		imageFormat = extras.getString(com.rhomobile.rhodes.signature.Signature.INTENT_EXTRA_PREFIX + "format");
-		
+
 		surfaceView = (SignatureView) findViewById(AndroidR.id.signature_view);
 		surfaceHolder = surfaceView.getHolder();
 		surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_NORMAL);
-		
+
 		cancelButton = (ImageButton)findViewById(AndroidR.id.sig_cancelButton);
 		cancelButton.setOnClickListener(this);
 		clearButton = (ImageButton)findViewById(AndroidR.id.sig_clearButton);
@@ -133,9 +133,9 @@ public class ImageCapture extends BaseActivity implements OnClickListener
 			finish();
 		}
 	}
-	
 
-	
+
+
 	private void takeSignature() {
 		try {
 			String file_ext = "jpg";
@@ -155,28 +155,28 @@ public class ImageCapture extends BaseActivity implements OnClickListener
 			values.put(Media.DESCRIPTION, "Handwrited Signature");
 
 			String dir = RhodesAppOptions.getBlobPath();
-			
+
 			//Uri uri = getContentResolver().insert(Media.EXTERNAL_CONTENT_URI, values);
 			//OutputStream osCommon = getContentResolver().openOutputStream(uri);
-			
+
 			String filePath = dir + "/" + filename + "." + file_ext;
 			OutputStream osOwn = new FileOutputStream(filePath);
-			
+
 			Bitmap bitmap = surfaceView.makeBitmap();
-	
-			//bitmap.compress(compress_format, 100, osCommon);		
+
+			//bitmap.compress(compress_format, 100, osCommon);
 			//osCommon.flush();
 			//osCommon.close();
-		
-			bitmap.compress(compress_format, 100, osOwn);		
+
+			bitmap.compress(compress_format, 100, osOwn);
 			osOwn.flush();
 			osOwn.close();
-			
+
 			Signature.doCallback(callbackUrl, filePath);
 		} catch (Exception ex) {
 			Logger.E(TAG, ex.getMessage());
 		}
-	
+
 	}
 
 

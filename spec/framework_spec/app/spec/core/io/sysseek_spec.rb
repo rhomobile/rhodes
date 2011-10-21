@@ -7,7 +7,7 @@ describe "IO#sysseek" do
   it_behaves_like :io_set_pos, :seek
 end
 
-if System.get_property('platform') != 'ANDROID'      
+if System.get_property('platform') != 'ANDROID'
 describe "IO#sysseek" do
   before :each do
     @io = IOSpecs.io_fixture "lines.txt"

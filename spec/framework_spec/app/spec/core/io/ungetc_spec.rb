@@ -11,7 +11,7 @@ ruby_version_is "1.9" do
   end
 end
 
-if System.get_property('platform') != 'ANDROID'      
+if System.get_property('platform') != 'ANDROID'
 describe "IO#ungetc" do
   before :each do
     @io = IOSpecs.io_fixture "lines.txt"

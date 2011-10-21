@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -56,23 +56,23 @@ import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
 
 public class ImageBrowserScreen extends MainScreen {
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("ImageBrowserScreen");
-	
+
 	private static final int IMAGE_SCALING = 7;
-	
+
     /** A reference to the current screen for listeners. */
 	private ImageBrowserScreen _imageBrowserScreen;
 
 	/** List of images in the folder's */
 	private Vector _images = new Vector();
-	
+
 	/** Currently displayed image */
 	private int _currentImage = 0;
-	
+
 	/** Field to display image */
 	BitmapField _imageField = new BitmapField();
-	
+
 	/** Callback URL */
 	private String _callbackUrl;
 
@@ -91,18 +91,18 @@ public class ImageBrowserScreen extends MainScreen {
 		// "/sdcard/blackberry/pictures/"
         // "/store/home/user/pictures/"
 
-		Jsr75File.listFolder("file:///SDCard/blackberry/pictures", _images); 
-		Jsr75File.listFolder("file:///store/home/user/pictures", _images); 
-		
-		for (int index = 0; index < _images.size(); ) { 
+		Jsr75File.listFolder("file:///SDCard/blackberry/pictures", _images);
+		Jsr75File.listFolder("file:///store/home/user/pictures", _images);
+
+		for (int index = 0; index < _images.size(); ) {
 			String fileName = (String) _images.elementAt(index);
-			if ( fileName.endsWith(".jpeg") || fileName.endsWith(".jpg") || 
+			if ( fileName.endsWith(".jpeg") || fileName.endsWith(".jpg") ||
 					 fileName.endsWith(".png") || fileName.endsWith(".gif") ) {
 				index++;
 			} else {
 				_images.removeElementAt(index);
 			}
-		}		
+		}
 
 		setTitle( new LabelField( "Choose picture", LabelField.ELLIPSIS | LabelField.USE_ALL_WIDTH ) );
 
@@ -129,7 +129,7 @@ public class ImageBrowserScreen extends MainScreen {
         }
 		return image;
 	}
-	
+
     /**
      * Adds the BitmapField and the "Choose" button to the screen.
      */
@@ -146,7 +146,7 @@ public class ImageBrowserScreen extends MainScreen {
     		hfm0.add(previousButton);
     		hfm0.add(nextButton);
         	add(hfm0);
-        	
+
         	HorizontalFieldManager hfm1 = new HorizontalFieldManager( Field.FIELD_HCENTER );
         	Bitmap bmp = loadBitmap((String)_images.elementAt(0));
         	if ( bmp != null ) {
@@ -165,7 +165,7 @@ public class ImageBrowserScreen extends MainScreen {
     		hfm.add(cancelButton);
 
             //Add the FieldManager containing the button to the screen.
-            add(hfm);   	
+            add(hfm);
         }
         //If not, display an error message to the user.
         else
@@ -206,7 +206,7 @@ public class ImageBrowserScreen extends MainScreen {
 		public void fieldChanged(Field field, int context)
 		{
 			if (_images.size() > 1) {
-				_currentImage++;			
+				_currentImage++;
 				if ( _currentImage >= _images.size() ) {
 					_currentImage = 0;
 				}
@@ -229,7 +229,7 @@ public class ImageBrowserScreen extends MainScreen {
 		public void fieldChanged(Field field, int context)
 		{
 			if (_images.size() > 1) {
-				_currentImage--;			
+				_currentImage--;
 				if ( _currentImage < 0 ) {
 					_currentImage = _images.size()-1;
 				}
@@ -240,7 +240,7 @@ public class ImageBrowserScreen extends MainScreen {
 			}
 		}
 	}
-	
+
 	/**
 	 * A listener used for the "Select" button.
 	 */
@@ -251,14 +251,14 @@ public class ImageBrowserScreen extends MainScreen {
 			String fullname = DBAdapter.makeBlobFolderName();
 			SimpleDateFormat format =
 				new SimpleDateFormat("MMM_dd_yyyy_HH_mm_ss_zzz");
-			
+
 			String name = format.format(new Date());
 			name = Utilities.replaceAll(name,"/","_");
 			fullname += "image_" + name + ext;
 
 			return fullname;
 		}
-		
+
 	    /**
 	     * Save file, send notification, and return to the main camera screen.
 	     */
@@ -267,7 +267,7 @@ public class ImageBrowserScreen extends MainScreen {
 			if (_images.size() == 0) {
 				return;
 			}
-				
+
         	RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
     		HttpHeaders headers = new HttpHeaders();
     		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
@@ -275,7 +275,7 @@ public class ImageBrowserScreen extends MainScreen {
 			Jsr75File destFile = new Jsr75File();
 			boolean error = false;
 			String fname = "";
-			
+
             try
             {
             	String imageName = (String)_images.elementAt(_currentImage);
@@ -290,11 +290,11 @@ public class ImageBrowserScreen extends MainScreen {
     			//load image bytes into memory
     			byte raw[] = new byte[(int)srcFile.length()];
             	srcFile.getInputStream().read(raw);
-            	
+
             	destFile.open(fname, false, false);
             	//Write image data
             	destFile.getOutStream().write(raw,0,raw.length);
-            	
+
             	String root = Jsr75File.getRhoPath();
             	fname = "/" + fname.substring(root.length());
             	fname = Utilities.replaceAll(fname,"/","%2F");
@@ -311,10 +311,10 @@ public class ImageBrowserScreen extends MainScreen {
             }
             if (error) {
             	LOG.ERROR("Callback with error: status=error&message=Error");
-            	app.postUrl(_callbackUrl, "status=error&message=Error&rho_callback=1", headers); 
+            	app.postUrl(_callbackUrl, "status=error&message=Error&rho_callback=1", headers);
             } else {
             	LOG.INFO("Callback with uri: status=ok&image_uri="+fname);
-            	app.postUrl(_callbackUrl,  "status=ok&rho_callback=1&image_uri="+fname, headers); 
+            	app.postUrl(_callbackUrl,  "status=ok&rho_callback=1&image_uri="+fname, headers);
             }
 
         	app.popScreen( _imageBrowserScreen );

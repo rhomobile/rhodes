@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -43,13 +43,13 @@ import net.rim.device.api.io.http.*;
 import com.rho.FilePath;
 
 public class PushListeningThread extends Thread {
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("PushListeningThread");
-	
+
 	// Constants ----------------------------------------------------------------
     private static final String URL = "http://:"; // PORT 100.
     private static final int CHUNK_SIZE = 256;
-    
+
     //
     private boolean _stop = false;
     private StreamConnectionNotifier _notify;
@@ -57,16 +57,16 @@ public class PushListeningThread extends Thread {
     protected synchronized void stop()
     {
         _stop = true;
-        try 
+        try
         {
             // Close the connection so the thread will return.
-            _notify.close(); 
-        } 
-        catch (IOException e) 
+            _notify.close();
+        }
+        catch (IOException e)
         {
             System.err.println(e.toString());
-        } 
-        catch (NullPointerException e) 
+        }
+        catch (NullPointerException e)
         {
             // The notify object likely failed to open, due to an IOException.
         }
@@ -76,9 +76,9 @@ public class PushListeningThread extends Thread {
     {
     	if ( !RhoConf.getInstance().isExist("push_options") )
     		return true;
-    	
+
     	String strOptions = RhoConf.getInstance().getString("push_options");
-    	
+
     	return strOptions.indexOf("mds") >= 0;
     }
 
@@ -86,64 +86,64 @@ public class PushListeningThread extends Thread {
     {
     	if ( !RhoConf.getInstance().isExist("push_options") )
     		return false;
-    	
+
     	String strOptions = RhoConf.getInstance().getString("push_options");
-    	
+
     	return strOptions.indexOf("push_service") >= 0;
     }
-    
+
     public void run()
     {
 
         StreamConnection stream = null;
         InputStream input = null;
         MDSPushInputStream pushInputStream=null;
-        
+
         //{
         //	String test = "do_sync=AeropriseSrd,AeropriseRequest,AeropriseWorklog,AeropriseCategory,AeropriseUser\nalert=push message\nvibrate=2\nsound=welcome.mp3";
         //	processPushMessage(test.getBytes(), test.length());
         //}
-        
+
         while (!_stop)
         {
-        try 
+        try
             {
                 // Synchronize here so that we don't end up creating a connection that is never closed.
-                synchronized(this)  
+                synchronized(this)
                 {
-                    // Open the connection once (or re-open after an IOException),  so we don't end up 
-                    // in a race condition, where a push is lost if it comes in before the connection 
-                    // is open again. We open the url with a parameter that indicates that we should 
+                    // Open the connection once (or re-open after an IOException),  so we don't end up
+                    // in a race condition, where a push is lost if it comes in before the connection
+                    // is open again. We open the url with a parameter that indicates that we should
                     // always use MDS when attempting to connect.
                 	int port = RhoConf.getInstance().getInt("push_port");
                 	if (port == 0) port = 100;
                     _notify = (StreamConnectionNotifier)Connector.open(URL + port + ";deviceside=false");
                 }
-                
+
                 while (!_stop)
                 {
-                    
+
                     // NOTE: the following will block until data is received.
                 	LOG.TRACE("Block push thread until data is recieved");
                     stream = _notify.acceptAndOpen();
                 	LOG.TRACE("Recieved push data");
-                    
-                    try 
+
+                    try
                     {
                         input = stream.openInputStream();
                         pushInputStream = new MDSPushInputStream((HttpServerConnection)stream, input);
 
                         // Extract the data from the input stream.
-                     
+
                         DataBuffer db = new DataBuffer();
                         byte[] data = new byte[CHUNK_SIZE];
                         int chunk = 0;
-                        
+
                         while ( -1 != (chunk = input.read(data)) )
                         {
                             db.write(data, 0, chunk);
                         }
-                        
+
                         try{
                         	processPushMessage(data, db.getLength());
                         }catch(Exception exc)
@@ -153,7 +153,7 @@ public class PushListeningThread extends Thread {
                         {
                         	LOG.ERROR("processPushMessage crashed.Data: " + new String(data), th);
                         }
-                        
+
                         // This method is called to accept the push.
                         pushInputStream.accept();
 
@@ -161,70 +161,70 @@ public class PushListeningThread extends Thread {
                         stream.close();
 
                         data = db.getArray();
-                        
 
-                    } 
-                    catch (IOException e1) 
+
+                    }
+                    catch (IOException e1)
                     {
-                        // A problem occurred with the input stream , however, the original 
+                        // A problem occurred with the input stream , however, the original
                         // StreamConnectionNotifier is still valid.
                     	LOG.ERROR("A problem occurred with the input stream", e1 );
 
-                        if ( input != null ) 
+                        if ( input != null )
                         {
-                            try 
+                            try
                             {
                                 input.close();
-                            } 
-                            catch (IOException e2) 
+                            }
+                            catch (IOException e2)
                             {
                             }
                         }
-                        
+
                         if ( stream != null )
                         {
-                            try 
+                            try
                             {
                                 stream.close();
-                            } 
-                            catch (IOException e2) 
+                            }
+                            catch (IOException e2)
                             {
                             }
                         }
                     }
                 }
-                
+
                 _notify.close();
-                _notify = null;   
-                
-            } 
+                _notify = null;
+
+            }
             catch (IOException ioe)
             {
             	if ( !_stop )
             	{
             		LOG.ERROR("Exception thrown by _notify.acceptAndOpen() - exiting push thread", ioe);
-	            	
-	            	// Likely the stream was closed. Catches the exception thrown by 
+
+	            	// Likely the stream was closed. Catches the exception thrown by
 	                // _notify.acceptAndOpen() when this program exits.
-	            	
+
 	            	_stop = true;
-	                if ( _notify != null ) 
+	                if ( _notify != null )
 	                {
-	                    try 
+	                    try
 	                    {
 	                        _notify.close();
-	                    } 
-	                    catch ( IOException e ) 
+	                    }
+	                    catch ( IOException e )
 	                    {
 	                    }
 	                }
             	}
-            	
+
                 _notify = null;
             }
         }
     }
-    
+
     private static String[] split(String original, String separator) {
 		Vector nodes = new Vector();
 		// Parse nodes into vector
@@ -247,7 +247,7 @@ public class PushListeningThread extends Thread {
 
 		return result;
 	}
-   
+
     private static String[] splitOnce(String original, String separator) {
 		String[] result;
     	int index = original.indexOf(separator);
@@ -261,53 +261,53 @@ public class PushListeningThread extends Thread {
     	}
     	return result;
     }
-    
+
     private static void showPopup(String message) {
     	com.rho.rubyext.Alert.showPopup(message);
 	}
-    
-    private static void vibrate(String duration) 
+
+    private static void vibrate(String duration)
     {
     	int dt = 2500;
     	try {
     		dt = Integer.parseInt(duration);
-    	} catch (NumberFormatException e) {    		
+    	} catch (NumberFormatException e) {
     	}
-    	
+
     	com.rho.rubyext.Alert.vibrate(dt);
     }
 
     private static void play_file(String file_name, String media_type) {
     	com.rho.rubyext.Alert.play_file(file_name, media_type);
     }
-   
+
     public static void processPushMessage(final byte[] data, int nLen)
     {
-       /* Application.getApplication().invokeLater(new Runnable() 
+       /* Application.getApplication().invokeLater(new Runnable()
         {
-            public void run() 
+            public void run()
             {*/
             	String msg = new String(data, 0, nLen);
             	LOG.INFO("Triger sync on PUSH message [" + msg + " ]");
 
             	String[] op;
             	String[] ops = split(msg,"\n");
-            	
+
             	if ( RhodesApp.getInstance() != null )
             	{
             		try
             		{
             			String strMsg = "";
-                    	for (int loop = 0; loop < ops.length; loop++) 
+                    	for (int loop = 0; loop < ops.length; loop++)
                     	{
                     		if ( ops[loop] == null || ops[loop].length() == 0 )
                     			continue;
-                    		
+
                     		if ( strMsg .length() > 0 )
                     			strMsg += "&";
                     		strMsg += ops[loop];
                     	}
-                    	
+
 	            		if ( RhodesApp.getInstance().callPushCallback(strMsg) )
 	            			return;
             		}catch(Exception exc)
@@ -316,7 +316,7 @@ public class PushListeningThread extends Thread {
             			return;
             		}
             	}
-            	
+
             	for (int loop = 0; loop < ops.length; loop++) {
             		if (ops[loop].startsWith("do_sync")) {
             			op = splitOnce(ops[loop],"=");
@@ -325,16 +325,16 @@ public class PushListeningThread extends Thread {
             			} else if ((op[1] != null) && (op[1].length()>0))
             			{
             				Tokenizer stringtokenizer = new Tokenizer(op[1].trim(), ",");
-            				while (stringtokenizer.hasMoreTokens()) 
+            				while (stringtokenizer.hasMoreTokens())
             				{
             					String tok = stringtokenizer.nextToken();
             					String name = tok.trim();
-            					if (name.length() == 0) 
+            					if (name.length() == 0)
             						continue;
-            					
+
                 				SyncThread.doSyncSourceByName(name,false);
             				}
-            				
+
             			}
             		} else if (ops[loop].startsWith("alert")) {
             			op = splitOnce(ops[loop],"=");
@@ -358,9 +358,9 @@ public class PushListeningThread extends Thread {
             				} else {
             					play_file(fileName,null);
             				}
-            			}            			
+            			}
             		}
-            	}            	
+            	}
             /*}
         });*/
     }

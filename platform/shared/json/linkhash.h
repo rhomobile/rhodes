@@ -8,7 +8,7 @@
  * it under the terms of the MIT license. See COPYING for details.
  *
  */
- 
+
 #ifndef _linkhash_h_
 #define _linkhash_h_
 

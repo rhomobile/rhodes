@@ -10,15 +10,15 @@ module LocalizationSimplified
   }
 
   class ActiveRecord
-    # ErrorMessages to override default messages in 
+    # ErrorMessages to override default messages in
     # +ActiveRecord::Errors::@@default_error_messages+
-    # This plugin also replaces hardcoded 3 text messages 
-    # :error_translation is inflected using the Rails 
-    # inflector. 
+    # This plugin also replaces hardcoded 3 text messages
+    # :error_translation is inflected using the Rails
+    # inflector.
     #
     # Remember to modify the Inflector with your localized translation
     # of "error" and "errors" in the bottom of this file
-    # 
+    #
     ErrorMessages = {
       :inclusion           => "non è incluso nella lista",
       :exclusion           => "è riservato",
@@ -57,7 +57,7 @@ module LocalizationSimplified
       :x_years             => "%d anni"
     }
 
-    # Rails uses Month names in Date and time select boxes 
+    # Rails uses Month names in Date and time select boxes
     # (+date_select+ and +datetime_select+ )
     # Currently (as of version 1.1.6), Rails doesn't use daynames
     Monthnames = [nil] + %w{ Gennaio Febbraio Marzo Aprile Maggio Giugno Luglio Agosto Settembre Ottobre Novembre Dicembre }
@@ -92,7 +92,7 @@ module LocalizationSimplified
     CurrencyOptions = {
       :unit      => "€",
       :separator => ",",             #unit separator (between integer part and fraction part)
-      :delimiter => ".",             #delimiter between each group of thousands. Example: 1.234.567 
+      :delimiter => ".",             #delimiter between each group of thousands. Example: 1.234.567
       :order     => [:unit, :number] #order is at present unsupported in Rails
       #to support for instance Danish format, the order is different: Unit comes last (ex. "1.234,00 dkr.")
     }

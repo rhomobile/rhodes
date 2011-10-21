@@ -189,7 +189,7 @@ do_include(struct ssi *ssi)
 		_shttpd_elog(E_LOG, ssi->conn, "ssi: bad #include: [%.*s]",
 		    inc->nbuf, inc->buf);
 	} else if ((fp = fopen(buf, "r")) == NULL) {
-		_shttpd_elog(E_LOG, ssi->conn, 
+		_shttpd_elog(E_LOG, ssi->conn,
 		    "ssi: fopen(%s): %s", buf, strerror(errno));
 	} else {
 		ssi->nest++;
@@ -369,7 +369,7 @@ again:
 		do_exec2(ssi, buf, len, &n);
 
 	while (n + inc->nbuf < len && (ch = fgetc(inc->fp)) != EOF)
-	
+
 		switch (inc->state) {
 
 		case SSI_PASS:
@@ -425,7 +425,7 @@ again:
 		inc--;
 		goto again;
 	}
-	
+
 	return (n);
 }
 

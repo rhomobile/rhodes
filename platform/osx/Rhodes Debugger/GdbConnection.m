@@ -34,22 +34,22 @@
 	[task setLaunchPath:@"/bin/sh"];
 	NSArray *args = [NSArray arrayWithObjects:@"-c",@"ps xo pid,command | grep rhorunner.app | grep iPhone | grep -v grep | grep -v gdb",nil];
 	[task setArguments: args];
-	
+
 	NSPipe *pipe = [NSPipe pipe];
 	[task setStandardOutput:pipe];
-	
+
 	NSFileHandle *file = [pipe fileHandleForReading];
 	[task launch];
-	
+
 	NSString *output = [[NSString alloc] initWithData:[file readDataToEndOfFile] encoding:NSUTF8StringEncoding];
     output = [output stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-	
+
 	if ( [output length] < 1 && ![gdbController finished]) {
 		[[gdbController task] terminate];
 		[[tailController task] terminate];
         return;
-	} 
-	
+	}
+
 	if ( [output length] > 0 && !gdbAttached) {
 		NSArray *components = [output componentsSeparatedByString:@" "];
 		pid = [components objectAtIndex:0];
@@ -65,16 +65,16 @@
 	if( gdbAttached && !gdbScriptLoaded && [gdbController isWaiting] ) {
 		NSString * cmd = @"source \"";
 		cmd = [cmd stringByAppendingString:[[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/Contents/Resources/ruby\""]];
-        
+
 		[gdbController sendCmd:cmd async:false];
-		
+
 		system("rm /tmp/ruby-debug*");
-		
+
 		[gdbController sendCmd:@"set objc-non-blocking-mode off" async:false];
 		[gdbController sendCmd:@"redirect_stdout" async:false];
 		[gdbController sendCmd:@"rb_trace" async:false];
 		gdbScriptLoaded = true;
-		
+
 		[self attachTail];
 
 		[self setIsConnected:true];
@@ -82,34 +82,34 @@
 		if ( delegate && [delegate respondsToSelector:@selector(resumed:)] ) {
 			[delegate resumed:self];
 		}
-		
+
 		if ( delegate && [delegate respondsToSelector:@selector(connected:)] ) {
 			[delegate connected:self];
 		}
-		
+
 	}
-	
-	
+
+
 }
 
 
 
 
 - (void)attachGdbTo:(NSString*)file withPid:(NSString*)inPid {
-	
+
 	NSTask *ps = [[NSTask alloc] init];
    	[ps setLaunchPath:@"/usr/bin/gdb"];
-	
+
 	NSMutableArray *args = [[NSMutableArray alloc] init];
 	[args addObject:file];
 	[args addObject:inPid];
-	
+
 	[ps setArguments:args];
-	
+
 	[gdbController setTask:ps];
 	[gdbController setWaitString:@"(gdb)"];
 	[gdbController launchTask];
-	
+
 }
 
 - (NSString *) getGdbPid {
@@ -117,33 +117,33 @@
 	[task setLaunchPath:@"/bin/sh"];
 	NSArray *args = [NSArray arrayWithObjects:@"-c",@"ps xo pid,command | grep rhorunner.app | grep gdb | grep -v grep ",nil];
 	[task setArguments: args];
-	
+
 	NSPipe *pipe = [NSPipe pipe];
 	[task setStandardOutput:pipe];
-	
+
 	NSFileHandle *file = [pipe fileHandleForReading];
 	[task launch];
-	
+
 	NSString *output = [[NSString alloc] initWithData:[file readDataToEndOfFile] encoding:NSUTF8StringEncoding];
     output = [output stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-	
+
 	NSArray *components = [output componentsSeparatedByString:@" "];
 	gdbPid = [components objectAtIndex:0];
-	
+
 	return [components objectAtIndex:0];
 }
 
 - (void)attachTail {
 	NSTask *ps = [[NSTask alloc] init];
    	[ps setLaunchPath:@"/usr/bin/tail"];
-	
+
 	NSMutableArray *args = [[NSMutableArray alloc] init];
 	[args addObject:@"-f"];
 	[args addObject:[NSString stringWithFormat:@"/tmp/ruby-debug.%@",pid]];
-	
+
 	[ps setArguments:args];
-	
-	
+
+
 	[tailController setTask:ps];
 	[tailController launchTask];
 }
@@ -166,9 +166,9 @@
 		if ( delegate && [delegate respondsToSelector:@selector(resumed:)] ) {
 			[delegate resumed:self];
 		}
-		
-	}	
-	
+
+	}
+
 }
 
 
@@ -191,7 +191,7 @@
 		NSString * myGdbPid = [self getGdbPid];
 		NSString *cmd = @"/bin/kill -INT ";
 		system([[cmd stringByAppendingString:myGdbPid] cStringUsingEncoding:NSASCIIStringEncoding]);
-		
+
 	}
 }
 
@@ -230,16 +230,16 @@
 	NSString *sanitized = [rubyCmd stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
     NSString *cmd = [NSString stringWithFormat:@"eval \"%@\"",sanitized];
 	[self pause];
-	
+
 	[gdbController sendCmd:cmd async:true];
-	
-	
+
+
 }
 
 - (void) clearBreakPoints {
 	if(![gdbController finished]) {
 		[self pause];
-		[gdbController sendCmd:@"rb_cont" async:true]; 
+		[gdbController sendCmd:@"rb_cont" async:true];
 	}
 }
 
@@ -248,22 +248,22 @@
 - (NSAttributedString *)logController:(id)sender willAppendNewString:(NSString *)plainString
 {
 	// NSLog(@"Colorizing string: %@", plainString);
-	
+
 	if( !plainString ) {
 		return [[NSAttributedString alloc] initWithString:@""];
 	}
-	
+
 	// First, we need a mutable attributed copy of it.
 	// It'd be nice to use something like [NSMutableAttributedString mutableAttributedStringWithString:]
 	// but that method doesn't exist. Make due with what I can.
 	NSMutableAttributedString *colorizedString = [[NSMutableAttributedString alloc] initWithString:plainString];
-	
+
 	// We'll do all the math on plainString, do all the modifications on colorizedString.
 	NSUInteger startOfLine=0, endOfLine=0;
 	NSUInteger endOfString = [plainString length];
 	NSRange restOfString=NSMakeRange(0, endOfString);
-	
-	
+
+
 	// Go through plainString one line at a time
 	for( startOfLine=0; endOfLine < endOfString; startOfLine=endOfLine)
 	{
@@ -274,25 +274,25 @@
 		// If we can't find one, just pretend it's at the end
 		if( nextNewLineRange.location == NSNotFound )
 			nextNewLineRange.location = restOfString.location+restOfString.length;
-		
+
 		// The end of the line is right after the \n
 		endOfLine = nextNewLineRange.location + nextNewLineRange.length;
-		
+
 		NSRange thisLineRange = NSMakeRange(startOfLine, endOfLine-startOfLine);
 		NSString *thisLine = [plainString substringWithRange:thisLineRange];
-		
+
 		restOfString = NSMakeRange(endOfLine,endOfString-endOfLine);
-		
+
 		// The entire line will be black Monaco 10pt font
 		NSMutableDictionary *attribDict = [NSMutableDictionary dictionary];
 		[attribDict setObject:[NSFont fontWithName:@"Monaco" size:10.0f]
 					   forKey:NSFontAttributeName];
 		[attribDict setObject:[NSColor blackColor]
 					   forKey:NSForegroundColorAttributeName];
-		
+
 		[colorizedString setAttributes:attribDict range:thisLineRange];
-		
-		
+
+
 		if([sender isEqual:gdbController]) {
 			NSRange gdbRange  = [thisLine rangeOfString:@"(gdb)"];
 			if ( gdbRange.location != NSNotFound)
@@ -317,18 +317,18 @@
 					if ( delegate && [delegate respondsToSelector:@selector(stopInFile:atLine:sender:)] ) {
 						[delegate stopInFile:file atLine:[stopLine intValue] sender:self];
 					}
-					
-					
+
+
 				}
 			}
-			
+
 		}
 	}
 	if([sender isEqual: tailController]) {
 		if ( delegate && [delegate respondsToSelector:@selector(rubyStdout:sender:)] ) {
 			[delegate rubyStdout:[colorizedString mutableString] sender:self];
 		}
-		
+
 	}
 	// Finally, return our colorized version.
 	return colorizedString;
@@ -359,7 +359,7 @@
 		[gdbController sendCmd:[sender stringValue] async:true];
 	}
     [sender setStringValue:@""];
-	
+
 }
 
 @end

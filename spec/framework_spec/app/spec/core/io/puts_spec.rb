@@ -99,9 +99,9 @@ describe "IO#puts" do
     @io.puts(5).should == nil
     $/ = "\n"
   end
-if System.get_property('platform') != 'ANDROID'      
+if System.get_property('platform') != 'ANDROID'
   it "raises IOError on closed stream" do
     lambda { IOSpecs.closed_io.puts("stuff") }.should raise_error(IOError)
   end
-end  
+end
 end

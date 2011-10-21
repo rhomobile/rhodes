@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2006 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -78,7 +78,7 @@ public final class UTF8StreamReader extends Reader implements Reusable {
 
     /**
      * Creates a UTF-8 reader having a byte buffer of specified capacity.
-     * 
+     *
      * @param capacity the capacity of the byte buffer.
      */
     public UTF8StreamReader(int capacity, boolean bReadByByte) {
@@ -100,7 +100,7 @@ public final class UTF8StreamReader extends Reader implements Reusable {
      *
      * @param  inStream the input stream.
      * @return this UTF-8 reader.
-     * @throws IllegalStateException if this reader is being reused and 
+     * @throws IllegalStateException if this reader is being reused and
      *         it has not been {@link #close closed} or {@link #reset reset}.
      */
     public UTF8StreamReader setInput(InputStream inStream) {
@@ -218,7 +218,7 @@ public final class UTF8StreamReader extends Reader implements Reusable {
 	private final int bufferedReadByByte(byte[] a, InputStream in) throws IOException {
 		int bytesRead = 0;
 		byte[] buf = new byte[1];
-		while (bytesRead < (a.length)) 
+		while (bytesRead < (a.length))
 		{
 			int read = 0;
 			try{
@@ -241,19 +241,19 @@ public final class UTF8StreamReader extends Reader implements Reusable {
 			{
 				if (m_bStopReadByTimeout)
 					return bytesRead > 0 ? bytesRead : -1;
-				
+
 				throw exc;
 			}
-			
+
 			a[bytesRead] = (byte)read;
 			bytesRead ++;
 		}
 		return bytesRead;
 	}
-    
+
     /**
      * Reads characters into a portion of an array.  This method will block
-     * until some input is available, an I/O error occurs or the end of 
+     * until some input is available, an I/O error occurs or the end of
      * the stream is reached.
      *
      * <p> Note: Characters between U+10000 and U+10FFFF are represented
@@ -275,7 +275,7 @@ public final class UTF8StreamReader extends Reader implements Reusable {
             	_end = bufferedReadByByte(_bytes, _inputStream);
             else
             	_end = _inputStream.read(_bytes, 0, _bytes.length);
-            
+
             if (_end <= 0) { // Done.
                 return _end;
             }

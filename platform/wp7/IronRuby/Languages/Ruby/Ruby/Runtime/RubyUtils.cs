@@ -1,11 +1,11 @@
 /* ****************************************************************************
  *
- * Copyright (c) Microsoft Corporation. 
+ * Copyright (c) Microsoft Corporation.
  *
- * This source code is subject to terms and conditions of the Apache License, Version 2.0. A 
- * copy of the license can be found in the License.html file at the root of this distribution. If 
- * you cannot locate the  Apache License, Version 2.0, please send an email to 
- * ironruby@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+ * This source code is subject to terms and conditions of the Apache License, Version 2.0. A
+ * copy of the license can be found in the License.html file at the root of this distribution. If
+ * you cannot locate the  Apache License, Version 2.0, please send an email to
+ * ironruby@microsoft.com. By using this source code in any fashion, you are agreeing to be bound
  * by the terms of the Apache License, Version 2.0.
  *
  * You must not remove this notice, or any other, from this software.
@@ -50,7 +50,7 @@ namespace IronRuby.Runtime {
 
         /// <summary>
         /// Ruby value types:
-        /// 
+        ///
         /// NilClass
         /// TrueClass
         /// FalseClass
@@ -94,8 +94,8 @@ namespace IronRuby.Runtime {
         public static bool HasSingletonClass(object obj) {
             return !(obj is int || obj is RubySymbol);
         }
-        
-        public static MutableString/*!*/ InspectObject(UnaryOpStorage/*!*/ inspectStorage, ConversionStorage<MutableString>/*!*/ tosConversion, 
+
+        public static MutableString/*!*/ InspectObject(UnaryOpStorage/*!*/ inspectStorage, ConversionStorage<MutableString>/*!*/ tosConversion,
             object obj) {
 
             var context = tosConversion.Context;
@@ -179,9 +179,9 @@ namespace IronRuby.Runtime {
 
         public static MutableString/*!*/ ObjectToMutableString(IRubyObject/*!*/ self) {
             return RubyUtils.FormatObject(
-                self.ImmediateClass.Context, 
-                self.ImmediateClass.GetNonSingletonClass().Name, 
-                self.GetInstanceData().ObjectId, 
+                self.ImmediateClass.Context,
+                self.ImmediateClass.GetNonSingletonClass().Name,
+                self.GetInstanceData().ObjectId,
                 self.IsTainted,
                 self.IsUntrusted
             );
@@ -197,7 +197,7 @@ namespace IronRuby.Runtime {
 
         public static bool TryDuplicateObject(
             CallSiteStorage<Func<CallSite, object, object, object>>/*!*/ initializeCopyStorage,
-            CallSiteStorage<Func<CallSite, RubyClass, object>>/*!*/ allocateStorage, 
+            CallSiteStorage<Func<CallSite, RubyClass, object>>/*!*/ allocateStorage,
             object obj, bool cloneSemantics, out object copy) {
 
             // Ruby value types can't be cloned
@@ -226,7 +226,7 @@ namespace IronRuby.Runtime {
             }
 
             return true;
-        }        
+        }
 
         public static long GetFixnumId(int number) {
             return ((long)number << 1) + 1;
@@ -247,7 +247,7 @@ namespace IronRuby.Runtime {
             return (ch < CachedCharCount) ? (_charCache[(int)ch] ?? (_charCache[(int)ch] = (object)ch)) : (object)ch;
         }
 
-        
+
 
         #endregion
 
@@ -256,7 +256,7 @@ namespace IronRuby.Runtime {
         public static bool HasUnmangledName(string/*!*/ name) {
             return !NotUnmangledObject.Contains(name);
         }
-        
+
         public static string TryUnmangleMethodName(string/*!*/ name) {
             return HasUnmangledName(name) ? TryUnmangleName(name) : null;
         }
@@ -351,7 +351,7 @@ namespace IronRuby.Runtime {
                     if (mangled == null) {
                         mangled = new StringBuilder();
                         mangled.Append(name, 0, i);
-                    } 
+                    }
 
                     if (i > 0) {
                         mangled.Append('_');
@@ -360,9 +360,9 @@ namespace IronRuby.Runtime {
                     int count = j - i;
                     if (count == 0) {
                         // NaN{end}, NaNXxx
-                        if (i + 2 < name.Length && 
-                            Char.IsUpper(name[i + 2]) && 
-                            (i + 3 == name.Length || Char.IsUpper(name[i + 3]) && 
+                        if (i + 2 < name.Length &&
+                            Char.IsUpper(name[i + 2]) &&
+                            (i + 3 == name.Length || Char.IsUpper(name[i + 3]) &&
                             (i + 4 < name.Length && !Char.IsUpper(name[i + 4])))) {
                             return null;
                         } else {
@@ -438,7 +438,7 @@ namespace IronRuby.Runtime {
 
         /// <summary>
         /// A list of Kernel/Object methods that are expected by common Ruby libraries to work on all objects.
-        /// We don't unmangled them to allow Ruby programs work with .NET objects that define e.g. Class property. 
+        /// We don't unmangled them to allow Ruby programs work with .NET objects that define e.g. Class property.
         /// </summary>
         internal static readonly HashSet<string> NotUnmangledObject = new HashSet<string>() {
             // Kernel
@@ -589,7 +589,7 @@ namespace IronRuby.Runtime {
                 case "~": return "op_OnesComplement";
                 case "&": return "op_BitwiseAnd";
                 case "|": return "op_BitwiseOr";
-                
+
                 case "**": return "Power";
                 case "<=>": return "Compare";
 
@@ -622,7 +622,7 @@ namespace IronRuby.Runtime {
 
                 case "Power": return "**";
                 case "Compare": return "<=>";
-                
+
                 default:
                     return null;
             }
@@ -709,7 +709,7 @@ namespace IronRuby.Runtime {
         #endregion
 
         #region Modules, Classes
-        
+
         internal static RubyModule/*!*/ GetModuleFromObject(RubyScope/*!*/ scope, object obj) {
             RubyModule module = obj as RubyModule;
             if (module == null) {
@@ -737,7 +737,7 @@ namespace IronRuby.Runtime {
                 }
 
                 if (module.Context != target.Context) {
-                    throw RubyExceptions.CreateTypeError(String.Format("cannot mix a foreign module `{0}' into `{1}' (runtime mismatch)", 
+                    throw RubyExceptions.CreateTypeError(String.Format("cannot mix a foreign module `{0}' into `{1}' (runtime mismatch)",
                         module.GetName(target.Context), target.GetName(module.Context)
                     ));
                 }
@@ -847,10 +847,10 @@ namespace IronRuby.Runtime {
         #region Evals
 
         //                         scope                   parent scope            self
-        // M.module_eval {}        block                   current                 M 
+        // M.module_eval {}        block                   current                 M
         // x.instance_eval {}      block                   current                 x
         // M.module_eval ""        ModEval(module: M)      current                 M
-        // x.instance_eval ""      ModEval(module: S(x))   current                 x 
+        // x.instance_eval ""      ModEval(module: S(x))   current                 x
         // eval "", binding        binding.scope           binding.scope.parent    binding.scope.self
         //
 
@@ -1108,7 +1108,7 @@ namespace IronRuby.Runtime {
         /// <summary>
         /// Thread#exit is implemented by calling Thread.Abort. However, we need to distinguish a call to Thread#exit
         /// from a raw call to Thread.Abort.
-        /// 
+        ///
         /// Note that if a finally block raises an exception while an Abort is pending, that exception can be propagated instead of a ThreadAbortException.
         /// </summary>
         public static bool IsRubyThreadExit(Exception e) {
@@ -1157,7 +1157,7 @@ namespace IronRuby.Runtime {
         }
 
         public static String CombinePaths(string basePath, string path) {
-            return basePath.Length == 0 || basePath.EndsWith("\\", StringComparison.Ordinal) || basePath.EndsWith("/", StringComparison.Ordinal) ? 
+            return basePath.Length == 0 || basePath.EndsWith("\\", StringComparison.Ordinal) || basePath.EndsWith("/", StringComparison.Ordinal) ?
                 basePath + path :
                 basePath + "/" + path;
         }
@@ -1249,11 +1249,11 @@ namespace IronRuby.Runtime {
         #region expand_path
 
         // Algorithm to find HOME equivalents under Windows. This is equivalent to Ruby 1.9 behavior:
-        // 
+        //
         // 1. Try get HOME
         // 2. Try to generate HOME equivalent using HOMEDRIVE + HOMEPATH
         // 3. Try to generate HOME equivalent from USERPROFILE
-        // 4. Try to generate HOME equivalent from Personal special folder 
+        // 4. Try to generate HOME equivalent from Personal special folder
 
         public static string/*!*/ GetHomeDirectory(PlatformAdaptationLayer/*!*/ pal) {
             string result = pal.GetEnvironmentVariable("HOME");
@@ -1355,7 +1355,7 @@ namespace IronRuby.Runtime {
         // 3. ~, ~/ or ~\ which expands to HOME
         // 4. ~foo is left unexpanded
         // 5. Expand to full path if path is a relative path
-        // 
+        //
         // No attempt is made to determine whether the path is valid or not
         // Returned path is always canonicalized to forward slashes
 
@@ -1428,7 +1428,7 @@ namespace IronRuby.Runtime {
 
         /// <summary>
         /// Returns the extension of given path.
-        /// Equivalent to <see cref="Path.GetExtension"/> but it doesn't check for an invalid path and 
+        /// Equivalent to <see cref="Path.GetExtension"/> but it doesn't check for an invalid path and
         /// it considers ".foo" to be a file name with no extension rather than an extension with an empty file name.
         /// </summary>
         /// <returns>Null iff path is null. Empty string if the path doesn't have any extension.</returns>

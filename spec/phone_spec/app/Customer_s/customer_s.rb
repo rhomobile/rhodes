@@ -3,7 +3,7 @@ class Customer_s
 
     enable :sync
     set :sync_priority, 1
-    
+
     set :schema_version, '1.0'
 
     property :address, :string

@@ -2,7 +2,7 @@
 require File.expand_path('../../../spec_helper', __FILE__)
 require File.expand_path('../fixtures/classes', __FILE__)
 
-if System.get_property('platform') != 'ANDROID'      
+if System.get_property('platform') != 'ANDROID'
 describe "IO#readlines" do
   before :each do
     @io = IOSpecs.io_fixture "lines.txt"
@@ -158,7 +158,7 @@ describe "IO.readlines" do
     @name = fixture __FILE__, "lines.txt"
   end
 
-if System.get_property('platform') != 'ANDROID'      
+if System.get_property('platform') != 'ANDROID'
   describe "when not passed a separator" do
     before :each do
       @sep, $/ = $/, " "
@@ -187,13 +187,13 @@ end
     it "tries to convert the passed file_name to a String using #to_str" do
       obj = mock('IO.readlines filename')
       obj.stub!(:to_str).and_return(@name)
-if System.get_property('platform') != 'ANDROID'            
+if System.get_property('platform') != 'ANDROID'
       IO.readlines(obj).should == IOSpecs.lines
-end      
+end
     end
   end
 
-if System.get_property('platform') != 'ANDROID'      
+if System.get_property('platform') != 'ANDROID'
   describe "when passed nil as a separator" do
     it "returns the contents as a single String" do
       IO.readlines(@name, nil).should == [IOSpecs.lines.join]
@@ -225,5 +225,5 @@ if System.get_property('platform') != 'ANDROID'
       IO.readlines(@name, obj).should == IOSpecs.lines_r_separator
     end
   end
-end  
+end
 end

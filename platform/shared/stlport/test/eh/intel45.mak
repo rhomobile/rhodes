@@ -6,9 +6,9 @@
 
 !IF "$(OS)" == "Windows_NT"
 NULL=
-!ELSE 
+!ELSE
 NULL=nul
-!ENDIF 
+!ENDIF
 ################################################################################
 # Begin Project
 RSC=rc.exe
@@ -18,7 +18,7 @@ LINK32=xilink.exe
 OUTDIR=.
 INTDIR=.
 
-# set this directories 
+# set this directories
 STL_PATH=..\..
 
 Dep_stl = TestClass.obj main.obj nc_alloc.obj \
@@ -39,7 +39,7 @@ LIBTYPE = STATIC
 #DEBUG = STL
 DEBUG = ON
 #DEBUG =
-# 
+#
 IOS = SGI
 #IOS = NOSGI
 #IOS = NONE
@@ -103,7 +103,7 @@ clean :
    $(CPP) $(CPP_PROJ) /c $<
 
 .cpp.E:
-   $(CPP) $(CPP_PROJ) -E $< >$*.E  
+   $(CPP) $(CPP_PROJ) -E $< >$*.E
 
 .cpp.sbr:
-   $(CPP) $(CPP_PROJ) $<  
+   $(CPP) $(CPP_PROJ) $<

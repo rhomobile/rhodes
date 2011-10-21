@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -30,14 +30,14 @@ import j2me.util.LinkedList;
 
 public abstract class ThreadQueue extends RhoThread
 {
-	private final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	private final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("ThreadQueue");
-	
+
 	public void setLogCategory(String category)
 	{
 		LOG.setLogCategory(category);
 	}
-	
+
 	public static final int QUEUE_POLL_INTERVAL_SECONDS  = 300;
 	public static final int QUEUE_POLL_INTERVAL_INFINITE  = Integer.MAX_VALUE/1000;
 	public static final int QUEUE_STARTUP_INTERVAL_SECONDS  = 10;
@@ -46,7 +46,7 @@ public abstract class ThreadQueue extends RhoThread
     {
         public abstract boolean equals(IQueueCommand cmd);
         public abstract String toString();
-        
+
         public abstract void cancel();
     };
 
@@ -55,12 +55,12 @@ public abstract class ThreadQueue extends RhoThread
 	private Object m_mxStackCommands;// = new Mutex();
    	private LinkedList	  m_stackCommands = new LinkedList();
    	private IQueueCommand m_pCurCmd;
-   	
+
     boolean m_bNoThreaded;
 
     public abstract void processCommand(IQueueCommand pCmd);
     public void onTimeout(){}
-    
+
     public int  getPollInterval(){ return m_nPollInterval;}
 
     public boolean isNoThreadedMode(){ return m_bNoThreaded; }
@@ -74,16 +74,16 @@ public abstract class ThreadQueue extends RhoThread
     protected Object getCommandLock(){ return m_mxStackCommands; }
     protected IQueueCommand getCurCommand(){ return m_pCurCmd; }
     protected LinkedList/*Ptr<IQueueCommand*>&*/ getCommands(){ return m_stackCommands; }
-    
+
     public ThreadQueue(RhoClassFactory factory)
     {
         super(factory);
-        
+
         m_nPollInterval = QUEUE_POLL_INTERVAL_SECONDS;
         m_bNoThreaded = false;
 
         m_ptrFactory = factory;
-        
+
         m_mxStackCommands = getSyncObject();
     }
 
@@ -106,22 +106,22 @@ public abstract class ThreadQueue extends RhoThread
 	    		    }
 	    	    }
 	        }
-	
+
 	    	if ( !bExist )
 	    		m_stackCommands.add(pCmd);
         }
     }
 
     public void addQueueCommand(IQueueCommand pCmd)
-    { 
+    {
         addQueueCommandInt(pCmd);
 
         if ( isNoThreadedMode()  )
             processCommands();
         else if ( isAlive() )
-    	    stopWait(); 
+    	    stopWait();
     }
-    
+
     public void stop(int nTimeoutToKill)
     {
         cancelCurrentCommand();
@@ -151,7 +151,7 @@ public abstract class ThreadQueue extends RhoThread
             m_pCurCmd = null;
         }
     }
-    
+
     public void run()
     {
 	    LOG.INFO("Starting main routine...");
@@ -176,7 +176,7 @@ public abstract class ThreadQueue extends RhoThread
 			    {
 	                LOG.INFO("ThreadQueue blocked for " + nWait + " seconds...");
 	                wait(nWait);
-	                
+
 	                if ( isNoCommands() )
 	                	onTimeout();
 	            }
@@ -193,15 +193,15 @@ public abstract class ThreadQueue extends RhoThread
 	        	}
             }
 	    }
-	    
-	    LOG.INFO("Thread shutdown");	    
+
+	    LOG.INFO("Thread shutdown");
     }
 
     public boolean isNoCommands()
     {
 	    boolean bEmpty = false;
 	    synchronized(m_mxStackCommands)
-        {		
+        {
 		    bEmpty = m_stackCommands.isEmpty();
 	    }
 
@@ -217,15 +217,15 @@ public abstract class ThreadQueue extends RhoThread
 		    {
     		    pCmd = (IQueueCommand)m_stackCommands.removeFirst();
     	    }
-    		
+
 		    processCommandBase(pCmd);
 	    }
     }
 
     public void setPollInterval(int nInterval)
-    { 
+    {
         m_nPollInterval = nInterval;
-        if ( isAlive() )        
+        if ( isAlive() )
         	stopWait();
     }
 }

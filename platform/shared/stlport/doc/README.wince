@@ -55,7 +55,7 @@ features are simply not supported, like security descriptors when opening files.
 Also, these APIs are only supported for wchar_t strings, e.g. only CreateFileW()
 and not CreateFileA().
 
-- CE doesn't have a current directory, hence no relative paths to that dir. You can 
+- CE doesn't have a current directory, hence no relative paths to that dir. You can
 have relative parts in global paths though.
 
 - CE doesn't have environment variables, thus STLport can't support e.g.
@@ -84,7 +84,7 @@ that run on the host machine and simulate the target platform.
 - The entrypoint for executables is generally WinMain. Normally, you would have
 switched to a normal main() using /SUBSYSTEM:CONSOLE on the linker commandline.
 The linkers for at least CE4 and 5 don't understand this switch, they claim it
-conflicts with CE targets. Instead, set the entrypoint directly to 
+conflicts with CE targets. Instead, set the entrypoint directly to
 mainACRTStartup.
 
 - The name of a DLL loaded via an import library can't be longer than 32 chars. If

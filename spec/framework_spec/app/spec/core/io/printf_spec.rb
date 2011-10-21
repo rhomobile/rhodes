@@ -17,9 +17,9 @@ describe "IO#printf" do
     @io.printf "%d %s", 5, "cookies"
     @name.should have_data("5 cookies")
   end
-if System.get_property('platform') != 'ANDROID'      
+if System.get_property('platform') != 'ANDROID'
   it "raises IOError on closed stream" do
     lambda { IOSpecs.closed_io.printf("stuff") }.should raise_error(IOError)
   end
-end  
+end
 end

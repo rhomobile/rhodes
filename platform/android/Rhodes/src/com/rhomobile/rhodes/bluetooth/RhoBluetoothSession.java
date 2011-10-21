@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -45,12 +45,12 @@ public class RhoBluetoothSession {
 	public static String BT_SESSION_INPUT_DATA_RECEIVED = "SESSION_INPUT_DATA_RECEIVED";
 	public static String BT_SESSION_DISCONNECT = "SESSION_DISCONNECT";
 	public static String BT_SESSION_ERROR = "ERROR";
-	
-	
-	
+
+
+
     // Debugging
     private static final String TAG = "RhoBluetoothSession";
- 
+
     // Name for the SDP record when creating server socket
     private static final String NAME = "btspp";
 
@@ -69,7 +69,7 @@ public class RhoBluetoothSession {
     public static final int STATE_LISTEN = 1;     // now listening for incoming connections
     public static final int STATE_CONNECTING = 2; // now initiating an outgoing connection
     public static final int STATE_CONNECTED = 3;  // now connected to a remote device
-    
+
     private String mCallbackUrl;
 
     /**
@@ -86,11 +86,11 @@ public class RhoBluetoothSession {
     public void setCallbackURL(String url) {
     	mCallbackUrl = url;
     }
-    
+
     public String getCallbackURL() {
     	return mCallbackUrl;
     }
-    
+
     /**
      * Set the current state of the chat connection
      * @param state  An integer defining the current connection state
@@ -479,9 +479,9 @@ public class RhoBluetoothSession {
             	RhoBluetoothManager.loge(TAG, "close() of connect socket failed");
             }
         }
-    }	
-	
-	
-	
-	
+    }
+
+
+
+
 }

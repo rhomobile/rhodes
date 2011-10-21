@@ -66,10 +66,10 @@ class ScaledRAFile implements ScaledRAInterface {
     static final int  DATA_FILE_NIO  = 1;
     static final int  DATA_FILE_JAR  = 2;
     static final long MAX_NIO_LENGTH = (1L << 28);
-    
-    private static final RhoProfiler PROF = RhoProfiler.RHO_STRIP_PROFILER ? new RhoEmptyProfiler() : 
+
+    private static final RhoProfiler PROF = RhoProfiler.RHO_STRIP_PROFILER ? new RhoEmptyProfiler() :
 		new RhoProfiler();
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("ScaledRAFile");
 
     //
@@ -186,16 +186,16 @@ class ScaledRAFile implements ScaledRAInterface {
         this.appLog   = database.logger.appLog;
         this.readOnly = readonly;
         this.fileName = name;
-        
+
         createFiles();
-        
+
         int bufferScale = database.getProperties().getIntegerProperty(
             HsqlDatabaseProperties.hsqldb_raf_buffer_scale, 12);
         int bufferSize = 1 << bufferScale;
 
         buffer = new byte[bufferSize];
         ba     = new HsqlByteArrayInputStream(buffer);
-        
+
     }
 
     private void createFiles()throws IOException{
@@ -203,28 +203,28 @@ class ScaledRAFile implements ScaledRAInterface {
     		m_Journal = new Journal();
     		m_Journal.create( fileName );
     	}
-        
+
     	if ( file == null ){
     		file = new RandomAccessFile(fileName, this.readOnly ? "r" : "rw");
-    		
+
             file.seek(seekPosition);
 
             realPosition = seekPosition;
-    		
+
     	}
     }
-    
+
     public void sync()throws IOException
     {
     	file.sync();
     }
-    
+
     public Journal getJournal()throws IOException{
     	createFiles();
-    	
+
     	return m_Journal;
     }
-    
+
     public long length() throws IOException {
         return file.length();
     }
@@ -237,7 +237,7 @@ class ScaledRAFile implements ScaledRAInterface {
     public void seek(long position) throws IOException {
 
     	createFiles();
-    	
+
         if (!readOnly && file.length() < position) {
             long tempSize = position - file.length();
 
@@ -276,7 +276,7 @@ class ScaledRAFile implements ScaledRAInterface {
     private void readIntoBuffer() throws IOException {
 
     	createFiles();
-    	
+
         long filePos    = seekPosition;
         long subOffset  = filePos % buffer.length;
         long fileLength = file.length();
@@ -309,7 +309,7 @@ class ScaledRAFile implements ScaledRAInterface {
 
         try {
         	createFiles();
-        	
+
             long fileLength = file.length();
 
             if (seekPosition >= fileLength) {
@@ -343,7 +343,7 @@ class ScaledRAFile implements ScaledRAInterface {
 
         try {
         	createFiles();
-        	
+
             if (bufferDirty || seekPosition < bufferOffset
                     || seekPosition >= bufferOffset + buffer.length) {
                 readIntoBuffer();
@@ -384,7 +384,7 @@ class ScaledRAFile implements ScaledRAInterface {
 
         try {
         	createFiles();
-        	
+
             if (bufferDirty || seekPosition < bufferOffset
                     || seekPosition >= bufferOffset + buffer.length) {
                 readIntoBuffer();
@@ -425,7 +425,7 @@ class ScaledRAFile implements ScaledRAInterface {
 
         try {
         	createFiles();
-        	
+
             if (bufferDirty || seekPosition < bufferOffset
                     || seekPosition >= bufferOffset + buffer.length) {
                 readIntoBuffer();
@@ -467,7 +467,7 @@ class ScaledRAFile implements ScaledRAInterface {
     	//PROF.START("ScaledRAFile1");
         try {
         	createFiles();
-        	
+
             if (realPosition != seekPosition) {
                 file.seek(seekPosition);
 
@@ -501,7 +501,7 @@ class ScaledRAFile implements ScaledRAInterface {
     	//PROF.START("ScaledRAFile2");
         try {
         	createFiles();
-        	
+
             if (realPosition != seekPosition) {
                 file.seek(seekPosition);
 
@@ -520,7 +520,7 @@ class ScaledRAFile implements ScaledRAInterface {
             realPosition = seekPosition;
         } catch (IOException e) {
         	close();
-        	
+
             //resetPointer();
             appLog.logContext(e, null);
 
@@ -536,7 +536,7 @@ class ScaledRAFile implements ScaledRAInterface {
     	//PROF.START("ScaledRAFile3");
         try {
         	createFiles();
-        	
+
             if (realPosition != seekPosition) {
                 file.seek(seekPosition);
 
@@ -555,7 +555,7 @@ class ScaledRAFile implements ScaledRAInterface {
             realPosition = seekPosition;
         } catch (IOException e) {
         	close();
-        	
+
             //resetPointer();
             appLog.logContext(e, null);
 
@@ -568,17 +568,17 @@ class ScaledRAFile implements ScaledRAInterface {
 
     public void close() throws IOException {
         Trace.printSystemOut("cache hit " + cacheHit);
-        
+
         if ( file != null ){
         	file.close();
         	file = null;
         }
-        
+
         if ( m_Journal != null ){
         	m_Journal.close();
         	m_Journal = null;
         }
-        
+
     }
 
     public boolean isReadOnly() {

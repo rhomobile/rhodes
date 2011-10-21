@@ -1,5 +1,5 @@
 # lang_se.rb
-# Swedish translation file. 
+# Swedish translation file.
 # Translation from plugin swe_rails by Ola Bini ( http://ola-bini.blogspot.com/ ) and Olle Jonsson ( http://olleolleolle.dk )
 
 
@@ -10,15 +10,15 @@ module LocalizationSimplified
   }
 
   class ActiveRecord
-    # ErrorMessages to override default messages in 
+    # ErrorMessages to override default messages in
     # +ActiveRecord::Errors::@@default_error_messages+
-    # This plugin also replaces hardcoded 3 text messages 
-    # :error_translation is inflected using the Rails 
-    # inflector. 
+    # This plugin also replaces hardcoded 3 text messages
+    # :error_translation is inflected using the Rails
+    # inflector.
     #
     # Remember to modify the Inflector with your localized translation
     # of "error" and "errors" in the bottom of this file
-    # 
+    #
     ErrorMessages = {
       :inclusion           => "finns inte i listan",
       :exclusion           => "Är reserverat",
@@ -56,7 +56,7 @@ module LocalizationSimplified
       :one_year            => "1 year",
       :x_years             => "%d years"
     }
-    # Rails uses Month names in Date and time select boxes 
+    # Rails uses Month names in Date and time select boxes
     # (+date_select+ and +datetime_select+ )
     # Currently (as of version 1.1.6), Rails doesn't use daynames
     Monthnames     = [nil] + %w{januari februari mars april maj juni juli augusti september oktober november december}
@@ -64,7 +64,7 @@ module LocalizationSimplified
     Daynames       = %w{söndag måndag tisdag onsdag torsdag fredag lördag}
     AbbrDaynames   = %w{sön mån tis ons tors fre lör}
 
-    
+
     # Date and time format syntax explained in http://www.rubycentral.com/ref/ref_c_time.html#strftime
     # These are sent to strftime that Ruby's date and time handlers use internally
     # Same options as php (that has a better list: http://www.php.net/strftime )
@@ -92,7 +92,7 @@ module LocalizationSimplified
     CurrencyOptions = {
       :unit      => "kr.",
       :separator => ",",             #unit separator (between integer part and fraction part)
-      :delimiter => ".",             #delimiter between each group of thousands. Example: 1.234.567 
+      :delimiter => ".",             #delimiter between each group of thousands. Example: 1.234.567
       :order     => [:number, :unit] #order is at present unsupported in Rails
       #to support for instance Swedish format, the order is different: Unit comes last (ex. "1.234,00 kr.")
     }
@@ -102,7 +102,7 @@ module LocalizationSimplified
     # Modifies +Array#to_sentence()+
     # http://api.rubyonrails.org/classes/ActiveSupport/CoreExtensions/Array/Conversions.html#M000274
     ToSentenceTexts = {
-      :connector => 'och', 
+      :connector => 'och',
       :skip_last_comma => true
     }
   end

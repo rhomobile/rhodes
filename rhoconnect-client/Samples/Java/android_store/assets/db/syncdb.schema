@@ -26,7 +26,7 @@ CREATE TABLE sources (
  "sync_priority" BIGINT,
  "partition" VARCHAR(255),
  "sync_type" VARCHAR(255),
- "metadata" varchar default NULL, 
+ "metadata" varchar default NULL,
  "last_updated" BIGINT default 0,
  "last_inserted_size" BIGINT default 0,
  "last_deleted_size" BIGINT default 0,

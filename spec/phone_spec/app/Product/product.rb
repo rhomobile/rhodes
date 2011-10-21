@@ -7,7 +7,7 @@ class Product
     enable :sync
     #set :partition, :application
     set :sync_priority, 1  #sync engine should reorder sources
-    
+
     belongs_to :quantity, ['Customer']
     belongs_to :sku, 'Customer'
 
@@ -17,7 +17,7 @@ class Product
 
     enable :sync
     set :schema_version, '1.0'
-    
+
     property :brand, :string
     property :created_at, :string
     property :name, :string

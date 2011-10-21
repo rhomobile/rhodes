@@ -1,4 +1,4 @@
-/* 
+/*
  * $Id: GlobCompiler.java 124053 2005-01-04 01:24:35Z dfs $
  *
  * Copyright 2000-2005 The Apache Software Foundation
@@ -86,16 +86,16 @@ public final class GlobCompiler implements PatternCompiler {
   /**
    * A mask passed as an option to the {@link #compile compile} methods
    * to indicate a compiled glob expression should be case insensitive.
-   */ 
+   */
   public static final int CASE_INSENSITIVE_MASK             = 0x0001;
 
   /**
    * A mask passed as an option to the {@link #compile compile} methods
    * to indicate that a * should not be allowed to match the null string.
    * The normal behavior of the * metacharacter is that it may match any
-   * 0 or more characters.  This mask causes it to match 1 or more 
+   * 0 or more characters.  This mask causes it to match 1 or more
    * characters of anything.
-   */ 
+   */
   public static final int STAR_CANNOT_MATCH_NULL_MASK       = 0x0002;
 
   /**
@@ -103,7 +103,7 @@ public final class GlobCompiler implements PatternCompiler {
    * to indicate that a ? should not be allowed to match the null string.
    * The normal behavior of the ? metacharacter is that it may match any 1
    * character.  This mask causes it to match 0 or 1 characters.
-   */ 
+   */
   public static final int QUESTION_MATCHES_ZERO_OR_ONE_MASK = 0x0004;
 
   /**

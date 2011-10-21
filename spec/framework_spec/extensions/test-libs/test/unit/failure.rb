@@ -29,7 +29,7 @@ module Test
         @inspected_actual = options[:inspected_actual]
         @user_message = options[:user_message]
       end
-      
+
       # Returns a single character representation of a failure.
       def single_character_display
         SINGLE_CHARACTER

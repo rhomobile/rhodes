@@ -525,5 +525,5 @@ describe :kernel_require, :shared => true do
       end
     end
   end
-=end  
+=end
 end

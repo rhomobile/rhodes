@@ -1,6 +1,6 @@
 #Rhodes Application Generator
 
-Rhodes utility is a generator which the user uses to create Rhodes applications, models, and tests (specs). 
+Rhodes utility is a generator which the user uses to create Rhodes applications, models, and tests (specs).
 
 ## Generating an Application
 
@@ -45,15 +45,15 @@ The generated application has the following directory structure and files.
 		loading.html
 		loading.png
 	./app/Settings:
-		controller.rb	
-		home.bb.erb	
-		home.erb	
-		index.bb.erb	
-		index.erb	
-		login.bb.erb	
-		login.erb	
-		reset.bb.erb	
-		reset.erb	
+		controller.rb
+		home.bb.erb
+		home.erb
+		index.bb.erb
+		index.erb
+		login.bb.erb
+		login.erb
+		reset.bb.erb
+		reset.erb
 		wait.bb.erb	wait.erb
 	./app/helpers:
 		application_helper.rb
@@ -83,7 +83,7 @@ Once you have generated your application, you can add a model to it, and the mod
 	args:
 	  name        - model name
 	  attributes  - list of one or more attributes (i.e. name,industry,progress), NO spaces between attributes
-  
+
 	options:
 	    -p, --pretend                    Run, but do not make any changes.
 	    -f, --force                      Overwrite files that already exist.

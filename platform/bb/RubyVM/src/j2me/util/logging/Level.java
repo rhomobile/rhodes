@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2005 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -15,7 +15,7 @@ public class Level {
     public static final Level SEVERE = new Level(1000);
 
     public static final Level WARNING = new Level(900);
-    
+
     public static final Level INFO = new Level(800);
 
     public static final Level CONFIG = new Level(700);
@@ -37,6 +37,6 @@ public class Level {
     }
 
     public void setLevel(Level newLevel) throws SecurityException {
-        
+
     }
 }

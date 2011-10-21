@@ -1,18 +1,18 @@
 #------------------------------------------------------------------------
 # (The MIT License)
-# 
+#
 # Copyright (c) 2008-2011 Rhomobile, Inc.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-# 
+#
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
@@ -28,14 +28,14 @@ require 'pathname'
 require 'yaml'
 require 'socket'
 require 'webrick'
-  
+
 class Hash
   def fetch_r(key)
     if self.has_key?(key) and not self[key].is_a?(Hash)
       return self[key]
     else
       self.each do |val|
-	value = false 
+	value = false
 	if val.is_a?(Array)
           val.each do |x|
             value = x.fetch_r(key) if x.is_a?(Hash)
@@ -46,10 +46,10 @@ class Hash
   	return value if value
       end
     end
-    return false  
+    return false
   end
 end
-  
+
 class Jake
 
   def self.config(configfile)
@@ -64,28 +64,28 @@ class Jake
   def self.get_absolute(path)
     get_absolute_ex(path, Dir.pwd())
   end
-    
+
   def self.get_absolute_ex(path, currentdir)
     ret_path = File.expand_path(path, currentdir)
     return ret_path  if File.exists?(ret_path)
 
     path = currentdir + "/" + path
-  
+
     patharray = path.split(/\//)
-  
+
     while idx = patharray.index("..") do
       if idx == 0
         raise "error getting absolute"
       end
-     
+
       if patharray[idx-1] != ".."
         patharray.delete_at(idx)
         patharray.delete_at(idx-1)
       end
     end
-    return patharray.join("/")  
-  end	
-  
+    return patharray.join("/")
+  end
+
   def self.config_parse(conf)
     if conf.is_a?(Array)
       conf.collect! do |x|
@@ -168,7 +168,7 @@ class Jake
     ensure
       server.shutdown
     end
-    
+
     $failed.to_i
   end
 
@@ -179,7 +179,7 @@ class Jake
     $faillog = []
     $getdump = false
   end
-  
+
   def self.process_spec_output(line)
       puts line if line =~ /\| - it/ or line =~ /\| describe/
 
@@ -209,16 +209,16 @@ class Jake
         end
         $getdump = true
       end
-      
+
       return true
   end
-  
+
   def self.process_spec_results(start)
     finish = Time.now
-  
+
     FileUtils.rm_rf $app_path + "/faillog.txt"
     File.open($app_path + "/faillog.txt", "w") { |io| $faillog.each {|x| io << x }  } if $failed.to_i > 0
-    
+
     puts "************************"
     puts "\n\n"
     puts "Tests completed in #{finish - start} seconds"
@@ -272,13 +272,13 @@ class Jake
                 res = yield(line)
                 if !res
                     #puts "f.pid : #{f.pid}"
-                    Process.kill( 9, f.pid ) 
-                end    
+                    Process.kill( 9, f.pid )
+                end
             else
                 retval += line
                 puts "RET: " + line
                 $stdout.flush
-            end    
+            end
           end
         end
       end
@@ -290,15 +290,15 @@ class Jake
 
     retval
   end
-  
+
   def self.run(command, args, wd=nil,system = false, hideerrors = false)
     self.run2(command, args, {:directory => wd, :system => system, :hiderrors => hideerrors})
   end
-  
+
   def self.unjar(src,targetdir)
-    jpath = $config["env"]["paths"]["java"]   
+    jpath = $config["env"]["paths"]["java"]
     cmd = jpath && jpath.length()>0 ? File.join(jpath, "jar" ) : "jar"
-  
+
 #    if RUBY_PLATFORM =~ /(win|w)32$/
 #      cmd =  $config["env"]["paths"]["java"] + "/jar.exe"
 #    else
@@ -309,21 +309,21 @@ class Jake
     src = p.realpath
     currentdir = Dir.pwd()
     src = src.to_s.gsub(/"/,"")
-  
+
     args = Array.new
-  
+
     args << "xf"
     args << src.to_s
-  
+
     Dir.chdir targetdir
     puts run(cmd,args)
     Dir.chdir currentdir
   end
-  
+
   def self.jarfilelist(target)
-    jpath = $config["env"]["paths"]["java"]   
+    jpath = $config["env"]["paths"]["java"]
     cmd = jpath && jpath.length()>0 ? File.join(jpath, "jar" ) : "jar"
-  
+
 #    if RUBY_PLATFORM =~ /(win|w)32$/
 #      cmd =  $config["env"]["paths"]["java"] + "/jar.exe"
 #    else
@@ -342,12 +342,12 @@ class Jake
   end
 
   def self.jar(target,manifest,files,isfolder=false)
-    jpath = $config["env"]["paths"]["java"]   
+    jpath = $config["env"]["paths"]["java"]
     cmd = jpath && jpath.length()>0 ? File.join(jpath, "jar" ) : "jar"
     #cmd +=  ".exe" if RUBY_PLATFORM =~ /(win|w)32$/
-	
+
     target.gsub!(/"/,"")
-    
+
     args = []
     args << "cfm"
     args << target
@@ -359,25 +359,25 @@ class Jake
     else
       args << files
     end
-  
+
     puts run(cmd,args)
-  
-  
+
+
   end
-  
+
   def self.rapc(output,destdir,imports,files,title=nil,vendor=nil,version=nil,icon=nil,library=true,cldc=false,quiet=true, nowarn=true)
     #cmd = $config["env"]["paths"][$config["env"]["bbver"]]["java"] + "/java.exe"
 #   cmd = "java.exe"
-    
+
     jdehome = $config["env"]["paths"][@@bbver]["jde"]
     javabin = $config["env"]["paths"]["java"]
     cmd = jdehome + "/bin/rapc.exe"
-    
+
     currentdir = Dir.pwd()
-  
-  
+
+
     Dir.chdir destdir
-  
+
     if output and title and version and vendor
       f = File.new(output + ".rapc", "w")
       f.write "MicroEdition-Profile: MIDP-2.0\n"
@@ -393,33 +393,33 @@ class Jake
         f.write "MIDlet-1: " + title + "," + icon + ",\n"
         puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! service_enabled: #{$service_enabled}"
         $stdout.flush
-        
-          if $service_enabled      
+
+          if $service_enabled
             if $hidden_app == "0"
-                f.write "RIM-MIDlet-Flags-1: 1\n" 
+                f.write "RIM-MIDlet-Flags-1: 1\n"
             else
-                f.write "RIM-MIDlet-Flags-1: 3\n" 
-            end    
+                f.write "RIM-MIDlet-Flags-1: 3\n"
+            end
           else
             if $hidden_app == "0"
-                f.write "RIM-MIDlet-Flags-1: 0\n" 
+                f.write "RIM-MIDlet-Flags-1: 0\n"
             else
-                f.write "RIM-MIDlet-Flags-1: 2\n" 
-            end    
+                f.write "RIM-MIDlet-Flags-1: 2\n"
+            end
           end
-        
+
       end
 
       f.close
     end
-  
-  
+
+
     args = []
     #args << "-classpath"
   #  args << "-jar"
     #args << jdehome + "/bin/rapc.jar"
     #args << "net.rim.tools.compiler.Compiler"
-    
+
     args << "-javacompiler=" + javabin + "/javac.exe"
     args << "-quiet" if quiet
     args << "-nowarn" if nowarn
@@ -428,23 +428,23 @@ class Jake
     args << 'library=' + output if library
     args << output + '.rapc'
     args << files
-  
+
     cmd.gsub!(/\//,"\\")
     outputstring = run(cmd, args)
     puts outputstring unless $? == 0
     Dir.chdir currentdir
-  
+
   end
-  
+
   def self.ant(dir,target)
-  
+
     srcdir = $config["build"]["srcdir"]
     rubypath = $config["build"]["rubypath"]
     excludelib = $config["build"]["excludelib"]
     excludeapps = $config["build"]["excludeapps"]
     compileERB = $config["build"]["compileERB"]
-    
-  
+
+
     args = []
     args << "-buildfile"
     args << dir + "/build.xml"
@@ -454,25 +454,25 @@ class Jake
     args << '-Dexclude.apps=' + excludeapps
     args << '-DcompileERB.path=' + get_absolute(compileERB)
     args << '-Dsrclib.dir=' + get_absolute(srcdir)
-  
-  
+
+
     args << target
     #puts args.to_s
     puts run("ant.bat",args,dir)
   end
-  
+
   def self.modify_file_if_content_changed(file_name, f)
     f.rewind
     content = f.read()
     old_content = File.exists?(file_name) ? File.read(file_name) : ""
 
-    if old_content != content  
-        puts "Modify #{file_name}"      
+    if old_content != content
+        puts "Modify #{file_name}"
         File.open(file_name, "w"){|file| file.write(content)}
     end
-    
+
     f.close
   end
-  
+
 end
-  
+

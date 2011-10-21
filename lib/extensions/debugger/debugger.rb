@@ -46,7 +46,7 @@ def execute_cmd(cmd, advanced)
     error = '1';
     result = "#{$!}".inspect
   end
-  
+
   cmd = URI.escape(cmd.sub(/[\n\r]+$/, ''), Regexp.new("[^#{URI::PATTERN::UNRESERVED}]")) if advanced
   $_s.write("EV" + (advanced ? "L:#{error}:#{cmd}:" : ':'+(error.to_i != 0 ? 'ERROR: ':'')) + result + "\n")
   #$_s.write("execute_cmd end\n")
@@ -293,8 +293,8 @@ begin
   debug_port_env = ENV['rho_debug_port']
   debug_path_env = ENV['ROOT_PATH']
 
-  debug_host = (debug_host_env.nil? or debug_host_env == "") ? '127.0.0.1' : debug_host_env 
-  debug_port = (debug_port_env.nil? or debug_port_env == "") ? 9000 : debug_port_env  
+  debug_host = (debug_host_env.nil? or debug_host_env == "") ? '127.0.0.1' : debug_host_env
+  debug_port = (debug_port_env.nil? or debug_port_env == "") ? 9000 : debug_port_env
 
   debugger_log(DEBUGGER_LOG_LEVEL_INFO, "host=" + debug_host_env.to_s)
   debugger_log(DEBUGGER_LOG_LEVEL_INFO, "port=" + debug_port_env.to_s)
@@ -304,7 +304,7 @@ begin
 
   debugger_log(DEBUGGER_LOG_LEVEL_WARN, "Connected: " + $_s.to_s)
   $_s.write("CONNECT\nHOST=" + debug_host.to_s + "\nPORT=" + debug_port.to_s + "\n")
- 
+
   $_breakpoint = Hash.new
   $_breakpoints_enabled = true
   $_step = 0
@@ -314,7 +314,7 @@ begin
   $_cmd = ""
   $_app_path = ""
 
-  $_app_path = (debug_path_env.nil? or debug_path_env == "") ? "" : debug_path_env  
+  $_app_path = (debug_path_env.nil? or debug_path_env == "") ? "" : debug_path_env
   $_s.write("DEBUG PATH=" + $_app_path.to_s + "\n")
 
   at_exit {

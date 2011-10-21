@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,13 +20,13 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
 #include "stdafx.h"
 
-#include "ext/phonebook/phonebook.h" 
+#include "ext/phonebook/phonebook.h"
 #include "NativeAddressBook.h"
 #include "OutlookApp.h"
 #include <common/RhoStd.h>
@@ -80,9 +80,9 @@ void CABRecord::dump() {
 //=============================================================================
 
 CABOutlookRecord::CABOutlookRecord(IContact* pContact) :
-m_pContact(pContact) {  
-	m_type = eOutlookContact; 
-	m_modifyed = false; 
+m_pContact(pContact) {
+	m_type = eOutlookContact;
+	m_modifyed = false;
 }
 
 CABOutlookRecord::~CABOutlookRecord() {
@@ -108,15 +108,15 @@ int CABOutlookRecord::load() {
 			}
 			::SysFreeString( pwsz);
 		}
-		
+
 		if(SUCCEEDED(m_pContact->get_HomeTelephoneNumber(&pwsz) ) ) {
 			if(pwsz[0]!=0) {
 				std::string const &number = bstr2str(pwsz);
 				setValue(RUBY_PB_HOME_NUMBER,number);
 			}
 			::SysFreeString( pwsz);
-		}	
-		
+		}
+
 		if(SUCCEEDED(m_pContact->get_BusinessTelephoneNumber(&pwsz) ) ) {
 			if(pwsz[0]!=0) {
 				std::string const &number = bstr2str(pwsz);
@@ -148,7 +148,7 @@ int CABOutlookRecord::load() {
 			}
 			::SysFreeString(pwsz);
 		}
-		
+
 		if(SUCCEEDED(m_pContact->get_Email1Address(&pwsz) ) ) {
 			if(pwsz[0]!=0) {
 				std::string const &address = bstr2str(pwsz);
@@ -211,11 +211,11 @@ int CABOutlookRecord::remove() {
 //=============================================================================
 
 CNativeAddressBook::CNativeAddressBook() :
-    m_outlookItems(NULL), m_hSim(0) 
+    m_outlookItems(NULL), m_hSim(0)
 {
 }
 
-CNativeAddressBook::~CNativeAddressBook() 
+CNativeAddressBook::~CNativeAddressBook()
 {
 	if(m_outlookItems) {
 		m_outlookItems->Release();
@@ -225,7 +225,7 @@ CNativeAddressBook::~CNativeAddressBook()
 		closeSimAB();
 }
 
-int CNativeAddressBook::openAB() 
+int CNativeAddressBook::openAB()
 {
 	initSimAB();
 
@@ -239,7 +239,7 @@ int CNativeAddressBook::getAllRecords(std::vector<CABRecord*>& records) {
 	return getAllOutlookRecords(records);
 }
 
-CABRecord* CNativeAddressBook::getRecord(char* id) 
+CABRecord* CNativeAddressBook::getRecord(char* id)
 {
 	char recordType[20];
 	long recordId;
@@ -253,7 +253,7 @@ CABRecord* CNativeAddressBook::getRecord(char* id)
 	}
 	return NULL;
 }
-	
+
 int CNativeAddressBook::addRecord(CABRecord* record) {
 	return addOutlookRecord((CABOutlookRecord*)record);
 }
@@ -264,10 +264,10 @@ int CNativeAddressBook::deleteRecord(CABRecord* record) {
 
 //=============================================================================
 
-bool CNativeAddressBook::getOutlookItems() 
+bool CNativeAddressBook::getOutlookItems()
 {
     IPOutlookApp* pApp = COutlookApp::getInstance()->getApp();
-	if( (pApp!=NULL)&&(m_outlookItems==NULL)) 
+	if( (pApp!=NULL)&&(m_outlookItems==NULL))
     {
 		//
 		IFolder* polFolder;
@@ -291,13 +291,13 @@ bool CNativeAddressBook::getOutlookItems()
 	return true;
 }
 
-int CNativeAddressBook::getAllOutlookRecords(std::vector<CABRecord*>& records) 
+int CNativeAddressBook::getAllOutlookRecords(std::vector<CABRecord*>& records)
 {
     IPOutlookApp* pApp = COutlookApp::getInstance()->getApp();
 
-	if(pApp && getOutlookItems()) 
-    { 
-		int size; 
+	if(pApp && getOutlookItems())
+    {
+		int size;
 		m_outlookItems->get_Count(&size);
 
 		IContact * pContact;
@@ -316,12 +316,12 @@ int CNativeAddressBook::getAllOutlookRecords(std::vector<CABRecord*>& records)
 	return 1;
 }
 
-CABRecord* CNativeAddressBook::getOutlookRecord(long oid) 
+CABRecord* CNativeAddressBook::getOutlookRecord(long oid)
 {
     IPOutlookApp* pApp = COutlookApp::getInstance()->getApp();
 
-	if(pApp && getOutlookItems()) 
-    { 
+	if(pApp && getOutlookItems())
+    {
 		DWORD index;
 		if(S_OK==GetItemIndexFromOid(m_outlookItems,oid,&index)) {
 			IContact * pContact;
@@ -340,12 +340,12 @@ CABRecord* CNativeAddressBook::getOutlookRecord(long oid)
 	return NULL;
 }
 
-int CNativeAddressBook::addOutlookRecord(CABOutlookRecord* record) 
+int CNativeAddressBook::addOutlookRecord(CABOutlookRecord* record)
 {
     IPOutlookApp* pApp = COutlookApp::getInstance()->getApp();
 
-	if(pApp && getOutlookItems()) 
-    { 
+	if(pApp && getOutlookItems())
+    {
 		if(SUCCEEDED(m_outlookItems->Add((IDispatch**)&record->m_pContact))) {
 			record->save();
 		}
@@ -358,9 +358,9 @@ bool CNativeAddressBook::initSimAB()
 	HRESULT h = SimInitialize(0, NULL, 0, &m_hSim);
 	if (SUCCEEDED(h))
 	{
-		if (SUCCEEDED(SimGetDevCaps(m_hSim, SIM_CAPSTYPE_ALL, &m_SimCaps))) 
+		if (SUCCEEDED(SimGetDevCaps(m_hSim, SIM_CAPSTYPE_ALL, &m_SimCaps)))
 		{
-				return true;				
+				return true;
 		}
 		LOG(ERROR) + "Failed to get SIM capabilities.";
 		SimDeinitialize(m_hSim);
@@ -417,7 +417,7 @@ int CNativeAddressBook::getAllSimPhonebookRecords(std::vector<CABRecord*>& recor
 		}
 	}
 
-	
+
 	return SUCCEEDED(hr) ? 1 : 0;
 }
 
@@ -434,7 +434,7 @@ CABSimRecord::~CABSimRecord()
 int CABSimRecord::load()
 {
 	SIMPHONEBOOKENTRY entry;
-	
+
 	String name, address;
 	HRESULT hr = SimReadPhonebookEntry(m_hSim, SIM_PBSTORAGE_SIM, m_index, &entry);
 	if (SUCCEEDED(hr))

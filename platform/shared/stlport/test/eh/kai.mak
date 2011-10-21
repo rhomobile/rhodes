@@ -1,8 +1,8 @@
-# ;;; -*- Mode:makefile;-*- 
+# ;;; -*- Mode:makefile;-*-
 # Generated automatically from Makefile.in by configure.
 
 # point this to proper location
-STL_INCL= -I../../stlport 
+STL_INCL= -I../../stlport
 # STL_INCL= -DEH_NO_SGI_STL
 
 AUX_LIST=TestClass.cpp main.cpp nc_alloc.cpp random_number.cpp
@@ -34,9 +34,9 @@ CXXFLAGS = -w -mt --one_per ${STL_INCL} -D_STLP_USE_NEWALLOC -DEH_VECTOR_OPERATO
 # CXXFLAGS = -w -mt --one_per -D_STLP_USE_NEWALLOC -DEH_NO_SGI_STL -DEH_NEW_HEADERS -DEH_VECTOR_OPERATOR_NEW -DEH_DELETE_HAS_THROW_SPEC
 
 # This is to test with STLport iostreams
-LIBS = -L../../lib -lstlport_kcc -lm 
+LIBS = -L../../lib -lstlport_kcc -lm
 
-LIBSTDCXX = 
+LIBSTDCXX =
 
 check: $(TEST)
 

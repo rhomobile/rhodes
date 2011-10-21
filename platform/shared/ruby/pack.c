@@ -347,7 +347,7 @@ static unsigned long utf8_to_uv(const char*,long*);
  *                |         |
  *      U         | Integer | UTF-8 character
  *      w         | Integer | BER-compressed integer
- *                
+ *
  *   Float        |         |
  *   Directive    |         | Meaning
  *   ---------------------------------------------------------------------------
@@ -357,7 +357,7 @@ static unsigned long utf8_to_uv(const char*,long*);
  *      e         | Float   | single-precision float, little-endian byte order
  *      G         | Float   | double-precision float, network (big-endian) byte order
  *      g         | Float   | single-precision float, network (big-endian) byte order
- *                
+ *
  *   String       |         |
  *   Directive    |         | Meaning
  *   ---------------------------------------------------------------------------
@@ -374,7 +374,7 @@ static unsigned long utf8_to_uv(const char*,long*);
  *                |         | (if count is 0, no line feed are added, see RFC 4648)
  *      P         | String  | pointer to a structure (fixed-length string)
  *      p         | String  | pointer to a null-terminated string
- *                
+ *
  *   Misc.        |         |
  *   Directive    |         | Meaning
  *   ---------------------------------------------------------------------------
@@ -1260,7 +1260,7 @@ infected_str_new(const char *ptr, long len, VALUE str)
  *                |         |
  *      U         | Integer | UTF-8 character
  *      w         | Integer | BER-compressed integer (see Array.pack)
- *                
+ *
  *   Float        |         |
  *   Directive    | Returns | Meaning
  *   -----------------------------------------------------------------
@@ -1270,7 +1270,7 @@ infected_str_new(const char *ptr, long len, VALUE str)
  *      e         | Float   | single-precision float, little-endian byte order
  *      G         | Float   | double-precision float, network (big-endian) byte order
  *      g         | Float   | single-precision float, network (big-endian) byte order
- *                
+ *
  *   String       |         |
  *   Directive    | Returns | Meaning
  *   -----------------------------------------------------------------
@@ -1287,7 +1287,7 @@ infected_str_new(const char *ptr, long len, VALUE str)
  *                |         | base64 encoded string (RFC 4648) if followed by 0
  *      P         | String  | pointer to a structure (fixed-length string)
  *      p         | String  | pointer to a null-terminated string
- *                
+ *
  *   Misc.        |         |
  *   Directive    | Returns | Meaning
  *   -----------------------------------------------------------------

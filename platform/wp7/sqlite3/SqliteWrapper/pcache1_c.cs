@@ -259,7 +259,7 @@ namespace Community.CsharpSqlite
       {
         int iSize = sqlite3MallocSize(p.pData);
         sqlite3StatusAdd( SQLITE_STATUS_PAGECACHE_OVERFLOW, -iSize );
-        sqlite3_free(ref p.pData); 
+        sqlite3_free(ref p.pData);
         p = null;
       }
     }
@@ -556,7 +556,7 @@ namespace Community.CsharpSqlite
 
     /*
     ** Implementation of the sqlite3_pcache.xShutdown method.
-    ** Note that the static mutex allocated in xInit does 
+    ** Note that the static mutex allocated in xInit does
     ** not need to be freed.
     */
     static void pcache1Shutdown( object NotUsed )
@@ -623,13 +623,13 @@ namespace Community.CsharpSqlite
     }
 
     /*
-    ** Implementation of the sqlite3_pcache.xFetch method. 
+    ** Implementation of the sqlite3_pcache.xFetch method.
     **
     ** Fetch a page by key value.
     **
     ** Whether or not a new page may be allocated by this function depends on
     ** the value of the createFlag argument.  0 means do not allocate a new
-    ** page.  1 means allocate a new page if space is easily available.  2 
+    ** page.  1 means allocate a new page if space is easily available.  2
     ** means to try really hard to allocate a new page.
     **
     ** For a non-purgeable cache (a cache used as the storage for an in-memory
@@ -640,7 +640,7 @@ namespace Community.CsharpSqlite
     ** There are three different approaches to obtaining space for a page,
     ** depending on the value of parameter createFlag (which may be 0, 1 or 2).
     **
-    **   1. Regardless of the value of createFlag, the cache is searched for a 
+    **   1. Regardless of the value of createFlag, the cache is searched for a
     **      copy of the requested page. If one is found, it is returned.
     **
     **   2. If createFlag==0 and the page is not already in the cache, NULL is
@@ -652,13 +652,13 @@ namespace Community.CsharpSqlite
     **       (a) the number of pages pinned by the cache is greater than
     **           PCache1.nMax, or
     **       (b) the number of pages pinned by the cache is greater than
-    **           the sum of nMax for all purgeable caches, less the sum of 
-    **           nMin for all other purgeable caches. 
+    **           the sum of nMax for all purgeable caches, less the sum of
+    **           nMin for all other purgeable caches.
     **
     **   4. If none of the first three conditions apply and the cache is marked
     **      as purgeable, and if one of the following is true:
     **
-    **       (a) The number of pages allocated for the cache is already 
+    **       (a) The number of pages allocated for the cache is already
     **           PCache1.nMax, or
     **
     **       (b) The number of pages allocated for all purgeable caches is
@@ -667,7 +667,7 @@ namespace Community.CsharpSqlite
     **
     **      then attempt to recycle a page from the LRU list. If it is the right
     **      size, return the recycled buffer. Otherwise, free the buffer and
-    **      proceed to step 5. 
+    **      proceed to step 5.
     **
     **   5. Otherwise, allocate and return a new page buffer.
     */

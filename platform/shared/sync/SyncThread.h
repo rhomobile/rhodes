@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -104,7 +104,7 @@ public:
     public:
 	    String m_strName, m_strPassword;
         common::CAutoPtr<CSyncNotification> m_pNotify;
-        CSyncLoginCommand(String name, String password, CSyncNotification* pNotify) : 
+        CSyncLoginCommand(String name, String password, CSyncNotification* pNotify) :
             CSyncCommand(CSyncThread::scLogin,"",false)
 	    {
 		    m_strName = name;
@@ -112,7 +112,7 @@ public:
 			m_pNotify = pNotify;
 	    }
     };
-	
+
     class CSyncSearchCommand : public CSyncCommand
     {
     public:
@@ -162,7 +162,7 @@ private:
 #ifdef __cplusplus
 extern "C" {
 #endif //__cplusplus
-	
+
 unsigned long rho_sync_doSyncAllSources(int show_status_popup, const char * query_params);
 unsigned long rho_sync_doSyncSource(unsigned long nSrcID,int show_status_popup, const char * query_params);
 unsigned long rho_sync_doSyncSourceByID(int nSrcID);
@@ -179,7 +179,7 @@ int rho_sync_set_pollinterval(int nInterval);
 int rho_sync_get_pollinterval();
 void rho_sync_set_syncserver(const char* syncserver);
 void rho_sync_setobjectnotify_url(const char* szUrl);
-void rho_sync_clear_object_notification();    
+void rho_sync_clear_object_notification();
 void rho_sync_addobjectnotify(int nSrcID, const char* szObject);
 void rho_sync_cleanobjectnotify();
 int rho_sync_get_pagesize();
@@ -198,7 +198,7 @@ unsigned long rho_sync_doSearchByNames(unsigned long ar_sources, const char *fro
 void rho_sync_set_notification_c(int source_id, /*RHOC_CALLBACK*/void* callback, void* callback_data);
 
 void rho_sync_setobjectnotify_url_c(/*RHOC_CALLBACK*/void* callback, void* callback_data);
-    
+
 void rho_sync_stop();
 
 #ifdef __cplusplus

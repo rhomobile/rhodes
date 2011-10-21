@@ -1,4 +1,4 @@
-/* 
+/*
  * $Id: PatternMatcherInput.java 124053 2005-01-04 01:24:35Z dfs $
  *
  * Copyright 2000-2005 The Apache Software Foundation
@@ -56,7 +56,7 @@ package org.apache.oro.text.regex;
  * input   = new PatternMatcherInput(someStringInput);
  *
  * while(matcher.contains(input, pattern)) {
- *   result = matcher.getMatch();  
+ *   result = matcher.getMatch();
  *   // Perform whatever processing on the result you want.
  * }
  * // Suppose we want to start searching from the beginning again with
@@ -131,7 +131,7 @@ public final class PatternMatcherInput {
    */
   public PatternMatcherInput(char[] input, int begin, int length) {
     setInput(input, begin, length);
-  } 
+  }
 
   /**
    * Like calling:

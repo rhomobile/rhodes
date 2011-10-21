@@ -22,5 +22,5 @@ describe "StringScanner#clear" do
       $VERBOSE = old
     end
   end
-=end  
+=end
 end

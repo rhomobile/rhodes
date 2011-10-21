@@ -16,5 +16,5 @@ if ( System.get_property('platform') != 'WINDOWS' )
     st.mode.is_a?(Integer).should == true
     st.mode.should == 33261
   end
-end  
+end
 end

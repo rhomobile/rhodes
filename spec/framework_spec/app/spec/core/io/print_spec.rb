@@ -47,10 +47,10 @@ describe IO, "#print" do
     IO.read(@name).should == "#{o.to_s}#{o2.to_s}#{$\}"
   end
 
-if System.get_property('platform') != 'ANDROID'      
+if System.get_property('platform') != 'ANDROID'
   it "raises IOError on closed stream" do
     lambda { IOSpecs.closed_io.print("stuff") }.should raise_error(IOError)
   end
-end  
+end
 end
 

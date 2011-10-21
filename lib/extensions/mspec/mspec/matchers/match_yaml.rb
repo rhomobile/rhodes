@@ -9,7 +9,7 @@ class MatchYAMLMatcher
   end
 
   def matches?(actual)
-    @actual = actual    
+    @actual = actual
     clean_yaml(@actual) == @expected
   end
 
@@ -20,9 +20,9 @@ class MatchYAMLMatcher
   def negative_failure_message
     ["Expected #{@actual.inspect}", " to match #{@expected.inspect}"]
   end
-  
+
   protected
-  
+
   def clean_yaml(yaml)
     yaml.gsub(/([^-])\s+\n/, "\\1\n")
   end

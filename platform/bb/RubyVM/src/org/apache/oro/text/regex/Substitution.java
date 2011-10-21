@@ -1,4 +1,4 @@
-/* 
+/*
  * $Id: Substitution.java 124053 2005-01-04 01:24:35Z dfs $
  *
  * Copyright 2000-2005 The Apache Software Foundation
@@ -26,7 +26,7 @@ package org.apache.oro.text.regex;
  * {@link Util#substitute Util.substitute} method.  Two standard
  * implementations are provided,
  * {@link StringSubstitution} and {@link Perl5Substitution}.  To
- * achieve custom control over the behavior of substitutions, you can 
+ * achieve custom control over the behavior of substitutions, you can
  * create your own implementations.  A common use for customization is
  * to make a substitution a function of a match.
  *
@@ -50,7 +50,7 @@ public interface Substitution {
    * For performance reasons, rather than provide a getSubstitution method
    * that returns a String used by Util.substitute, we have opted to pass
    * a StringBuffer argument from Util.substitute to which the Substitution
-   * must append data.  The contract that an appendSubstitution 
+   * must append data.  The contract that an appendSubstitution
    * implementation must abide by is that the appendBuffer may only be
    * appended to.  appendSubstitution() may not alter the appendBuffer in
    * any way other than appending to it.
@@ -58,7 +58,7 @@ public interface Substitution {
    * This method is invoked by Util.substitute every time it finds a match.
    * After finding a match, Util.substitute appends to the appendBuffer
    * all of the original input occuring between the end of the last match
-   * and the beginning of the current match.  Then it invokes 
+   * and the beginning of the current match.  Then it invokes
    * appendSubstitution(), passing the appendBuffer, current match, and
    * other information as arguments.  The substitutionCount keeps track
    * of how many substitutions have been performed so far by an invocation
@@ -68,7 +68,7 @@ public interface Substitution {
    * <p>
    * @param appendBuffer The buffer containing the new string resulting
    * from performing substitutions on the original input.
-   * @param match The current match causing a substitution to be made. 
+   * @param match The current match causing a substitution to be made.
    * @param substitutionCount  The number of substitutions that have been
    *  performed so far by Util.substitute.
    * @param originalInput The original input upon which the substitutions are
@@ -78,6 +78,6 @@ public interface Substitution {
    */
   public void appendSubstitution(StringBuffer appendBuffer, MatchResult match,
 				 int substitutionCount,
-				 PatternMatcherInput originalInput, 
+				 PatternMatcherInput originalInput,
 				 PatternMatcher matcher, Pattern pattern);
 }

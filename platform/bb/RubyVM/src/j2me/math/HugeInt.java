@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -36,7 +36,7 @@ public class HugeInt extends Number implements Comparable {
     private int bitLength = -1;
     private int firstNonzeroIntNum = -2;
     private final static long LONG_MASK = 0xffffffffL;
-    
+
     private HugeInt(int[] val) {
         if (val.length == 0)
             throw new NumberFormatException("Zero length BigInteger");
@@ -109,7 +109,7 @@ public class HugeInt extends Number implements Comparable {
         mag[mag.length - 1] = Integer.parseInt(group, radix);
         if (mag[mag.length - 1] < 0)
             throw new NumberFormatException("Illegal digit");
-        
+
         int superRadix = intRadix[radix];
         int groupVal = 0;
         while (cursor < val.length()) {
@@ -147,17 +147,17 @@ public class HugeInt extends Number implements Comparable {
         int numWords;
         if (len < 10) {
             numWords = 1;
-        } else {    
+        } else {
             int numBits = (int)(((numDigits * bitsPerDigit[10]) >>> 10) + 1);
             numWords = (numBits + 31) /32;
         }
         mag = new int[numWords];
- 
+
         int firstGroupLen = numDigits % digitsPerInt[10];
         if (firstGroupLen == 0)
             firstGroupLen = digitsPerInt[10];
         mag[mag.length-1] = parseInt(val, cursor,  cursor += firstGroupLen);
-        
+
         while (cursor < len) {
             int groupVal = parseInt(val, cursor, cursor += digitsPerInt[10]);
             destructiveMulAdd(mag, intRadix[10], groupVal);
@@ -279,7 +279,7 @@ public class HugeInt extends Number implements Comparable {
     public static final HugeInt ZERO = new HugeInt(new int[0], 0);
     public static final HugeInt ONE = valueOf(1);
     public static final HugeInt TEN = valueOf(10);
-    
+
     public HugeInt add(HugeInt val) {
         int[] resultMag;
 	if (val.signum == 0)
@@ -312,7 +312,7 @@ public class HugeInt extends Number implements Comparable {
         long sum = 0;
 
         while(yIndex > 0) {
-            sum = (x[--xIndex] & LONG_MASK) + 
+            sum = (x[--xIndex] & LONG_MASK) +
                   (y[--yIndex] & LONG_MASK) + (sum >>> 32);
             result[xIndex] = (int)sum;
         }
@@ -361,7 +361,7 @@ public class HugeInt extends Number implements Comparable {
 
         // Subtract common parts of both numbers
         while(littleIndex > 0) {
-            difference = (big[--bigIndex] & LONG_MASK) - 
+            difference = (big[--bigIndex] & LONG_MASK) -
                          (little[--littleIndex] & LONG_MASK) +
                          (difference >> 32);
             result[bigIndex] = (int)difference;
@@ -380,8 +380,8 @@ public class HugeInt extends Number implements Comparable {
     public HugeInt multiply(HugeInt val) {
         if (signum == 0 || val.signum==0)
 	    return ZERO;
-        
-        int[] result = multiplyToLen(mag, mag.length, 
+
+        int[] result = multiplyToLen(mag, mag.length,
                                      val.mag, val.mag.length, null);
         result = trustedStripLeadingZeroInts(result);
         return new HugeInt(result, signum*val.signum);
@@ -406,8 +406,8 @@ public class HugeInt extends Number implements Comparable {
         for (int i = xstart-1; i >= 0; i--) {
             carry = 0;
             for (int j=ystart, k=ystart+1+i; j>=0; j--, k--) {
-                long product = (y[j] & LONG_MASK) * 
-                               (x[i] & LONG_MASK) + 
+                long product = (y[j] & LONG_MASK) *
+                               (x[i] & LONG_MASK) +
                                (z[k] & LONG_MASK) + carry;
                 z[k] = (int)product;
                 carry = product >>> 32;
@@ -421,7 +421,7 @@ public class HugeInt extends Number implements Comparable {
         int zlen = len << 1;
         if (z == null || z.length < zlen)
             z = new int[zlen];
-        
+
         int lastProductLowWord = 0;
         for (int j=0, i=0; j<len; j++) {
             long piece = (x[j] & LONG_MASK);
@@ -487,7 +487,7 @@ public class HugeInt extends Number implements Comparable {
 
     	while (exponent != 0) {
     	    if ((exponent & 1)==1) {
-    		result = multiplyToLen(result, result.length, 
+    		result = multiplyToLen(result, result.length,
                                            baseToPow2, baseToPow2.length, null);
     		result = trustedStripLeadingZeroInts(result);
     	    }
@@ -552,7 +552,7 @@ public class HugeInt extends Number implements Comparable {
     static int addOne(int[] a, int offset, int mlen, int carry) {
         offset = a.length-1-mlen-offset;
         long t = (a[offset] & LONG_MASK) + (carry & LONG_MASK);
-        
+
         a[offset] = (int)t;
         if ((t >>> 32) == 0)
             return 0;
@@ -690,7 +690,7 @@ public class HugeInt extends Number implements Comparable {
 
     	return valueOf(result);
         }
-    
+
     public HugeInt not() {
     	int[] result = new int[intLength()];
     	for (int i=0; i<result.length; i++)
@@ -707,7 +707,7 @@ public class HugeInt extends Number implements Comparable {
 
         return valueOf(result);
     }
-    
+
     public boolean testBit(int n) {
         if (n<0)
             throw new ArithmeticException("Negative bit address");
@@ -813,7 +813,7 @@ public class HugeInt extends Number implements Comparable {
     public HugeInt max(HugeInt val) {
         return (compareTo(val)>0 ? this : val);
     }
-    
+
     public int hashCode() {
         int hashCode = 0;
 
@@ -831,7 +831,7 @@ public class HugeInt extends Number implements Comparable {
 
     	int maxNumDigitGroups = (4*mag.length + 6)/7;
     	String digitGroup[] = new String[maxNumDigitGroups];
-            
+
     	HugeInt tmp = this.abs();
     	int numGroups = 0;
     	while (tmp.signum != 0) {
@@ -924,7 +924,7 @@ public class HugeInt extends Number implements Comparable {
             int result[] = new int[val.length - keep];
             for(int i=0; i<val.length - keep; i++)
                result[i] = val[keep+i];
-            return result; 
+            return result;
         }
         return val;
     }

@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2005 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -39,7 +39,7 @@ public interface DataOutput {
     /*@JVM-1.1+@
 
      void writeFloat (float v) throws IOException;
-     
+
      void writeDouble (double v) throws IOException;
 
      /**/

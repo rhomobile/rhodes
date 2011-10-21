@@ -2,7 +2,7 @@
 
 This page describes how to build Rhodes Application on all of our supported platforms: iPhone, RIM Blackberry, Windows Mobile and Android.
 
-## All Platforms Prerequisites 
+## All Platforms Prerequisites
 
 ### Required Software
 
@@ -16,7 +16,7 @@ If you planning to modify or [extend](extensions) Rhodes, you will need the Rhod
 Rhodes source code is available on github.com. You will need Git to get it. If you used [RhoStudio for Windows](http://rhomobile.com/rhostudio-windows) you probably already have Git installed on your system. Otherwise, load it from [here](http://git-scm.com).
 
 To clone Rhodes to your local computer, execute git clone from the command line:
-	
+
 	:::term
 	$ git clone git://github.com/rhomobile/rhodes.git
 	$ cd rhodes
@@ -46,15 +46,15 @@ You don't have to do it if you cloned sources, but if you want to build a Rhodes
 
 ## Setting Up build.yml
 
-By default application use latest Rhodes gem installed on computer. 
+By default application use latest Rhodes gem installed on computer.
 
 If you wish to use special version of Rhodes or use Rhodes git sources :
 
 	:::term
 	sdk: /Library/Ruby/Gems/1.8/gems/rhodes-3.0.2
- 
+
     OR for Rhodes sources:
-    
+
     sdk: ~/Projects/rhodes
 
 After installing new Rhodes gem(3.2.x over any version less then 3.2.x), you can also open a command line window, navigate to the directory of your Rhodes application, and run the following command:
@@ -66,7 +66,7 @@ The set-rhodes-sdk command will remove sdk line from your build.yml to use lates
 
 ## Building a Rhodes Application for iPhone/iPad
 
-iPhone/iPad versions of Rhodes apps must be built on Macintosh computers or on [rhohub.com](http://rhohub.com). The instructions below describe how to do this from either the Macintosh Xcode development environment or from the command line on your local Macintosh. 
+iPhone/iPad versions of Rhodes apps must be built on Macintosh computers or on [rhohub.com](http://rhohub.com). The instructions below describe how to do this from either the Macintosh Xcode development environment or from the command line on your local Macintosh.
 
 ### Prerequisites
 
@@ -88,7 +88,7 @@ Tell Rhodes to build from your Rhodes application.
 The switch_app command changes the rhobuild.yml in the Rhodes source code folder to point to your application, as in the following example for a Rhodes application named Store in the user's home folder:
 
 	:::term
-	env: 
+	env:
 	  app: /Users/NameOfUser/Store
 
 Note that the switch_app command is only used when you run a Rhodes application within an IDE, such as Xcode: you run switch_app for each Rhodes application that you run in Xcode. The switch_app command does not affect Rhodes applications that you build and run on the command line.
@@ -126,7 +126,7 @@ The resulting application package (*.app) is located in your Rhodes source code 
 
 ### Building and Releasing on App Store
 
-Once you have the application building with Xcode as described above, it is treated as any other iPhone application when it comes to [signing and distributing to the app store](http://developer.apple.com/iphone/appstore/). 
+Once you have the application building with Xcode as described above, it is treated as any other iPhone application when it comes to [signing and distributing to the app store](http://developer.apple.com/iphone/appstore/).
 
 ### Restoring rrhorunner.xcodeproj
 
@@ -142,13 +142,13 @@ Unlike building the application from the Xcode GUI, when you build the applicati
 From the command line, navigate to the folder for your Rhodes application.
 
 To run your Rhodes application in the iPhone simulator, run this rake command:
-  
+
 	:::term
 	$ rake run:iphone
 
 ### Building the Application for the iOS Device
 
-After you have modified and debugged your Rhodes application, you can prepare your application to install to your iOS device. 
+After you have modified and debugged your Rhodes application, you can prepare your application to install to your iOS device.
 
 #### Modifying the build.yml
 
@@ -166,11 +166,11 @@ The default build.yml settings generated for iphone are:
 
 	name: myapp
 	version: 1.0
-	iphone: 
-	  provisionprofile: 
+	iphone:
+	  provisionprofile:
 	  sdk: iphonesimulator3.0
-	  entitlements: 
-	  codesignidentity: 
+	  entitlements:
+	  codesignidentity:
 	  configuration: Debug
 	  emulator: 3.0
 	  emulatortarget: iphone
@@ -179,14 +179,14 @@ The default build.yml settings generated for iphone are:
 
 * name: name of your application. Will show on screen (iPhone application bundle display name)
 * version: version of your application. iPhone application bundle version
-* provisionprofile: The UUID of your provisioning profile to use when signing. 
+* provisionprofile: The UUID of your provisioning profile to use when signing.
 * sdk: The version of sdk used to build. Typically iphonesimulatorX.X or iphoneosX.X
 * entitlements: propertylist file for entitlements for your build. Typically is Entitlements.plist
 * codesignidentity: The name of the code signing identity to use when signing for device.
 * configuration: Debug/Release/Distribution
 * emulator: version of emulator for run application
 * emulatortarget: device family for simulator (iphone/ipad)
-* BundleIdentifier: bundle identifier - used in provisioning profile 
+* BundleIdentifier: bundle identifier - used in provisioning profile
 * BundleURLScheme: bundle URL scheme of your app (used for opening your application from another application by using custom URL scheme)
 
 ** NOTE: BundleIdentifier and BundleURLScheme can contain only next symbols : "a"-"z", "A"-"Z", "0"-"9", "-", "." !
@@ -195,8 +195,8 @@ Here is an example of the iPhone settings in build.yml for a finished applicatio
 
 	name: JS App
 	version: 1.0
-	iphone: 
-	  provisionprofile: E5931D39-CA68-48E4-A3AF-BB538E1C8CE6 
+	iphone:
+	  provisionprofile: E5931D39-CA68-48E4-A3AF-BB538E1C8CE6
 	  sdk: iphoneos4.2
 	  codesignidentity: "iPhone Developer: John Smith (MF99RW67WY)"
 	  entitlements: ""
@@ -219,7 +219,7 @@ Result package named <b>rhorunner.app</b> will be placed to `<sdk directory>/pla
 
 ### Installing Your Application Package to Your iOS Device
 Use <b>iTunes</b> for installing your application package (your_application_name.app) to the iOS device:
- 
+
 * Open iTunes.
 * Under Library, select <b>Apps</b>.
 * Drag and drop your application package into the Apps screen.
@@ -261,7 +261,7 @@ If you are using Eclipse (Optional) please follow [these instructions](http://so
 
 Please check your applications and change how you include css files into html pages.
 
-For example, you will need to replace 
+For example, you will need to replace
 
 	<style type="text/css" media="screen">
 		@import "/public/js/iui/iui.css"; @import "/public/css/rho.css";
@@ -351,7 +351,7 @@ You can verify that your device is connected by executing:
 
 	:::term
 	$ adb devices
-	
+
 If connected, you'll see the device name listed.
 
 If your machine doesn't "see" the device as connected, try killing the adb process first:
@@ -362,7 +362,7 @@ If your machine doesn't "see" the device as connected, try killing the adb proce
 
 After you have your device connected, in your rhodes application directory, run:
 
-	:::term 
+	:::term
 	$ rake run:android:device
 
 This will build your application and sign it with auto-generated self-signed certificate
@@ -398,7 +398,7 @@ Please note: It is only Google API target (with Google mapping API) supported fo
 
 Create a new workspace in the following directory: `<Rhodes>/platform/android`
 
-Go to the Window > Preferences 
+Go to the Window > Preferences
 
 Click on Android node in the tree and specify file path to the installed Android SDK (For example: `E:\android\android-sdk-windows`)
 
@@ -426,7 +426,7 @@ To get application log from device or emulator, from your application folder or 
 Or
 	:::term
 	$ rake emulator:android:getlog
-	
+
 Application log will be pulled from device/emulator and stored in your application directory with name RhoLog.txt.
 
 To see all emulator messages run 'adb logcat' and start application on emulator
@@ -442,9 +442,9 @@ Blackberry SDK for Mac doesn't come with simulators so far. So for now we would 
 * Load and install Blackberry JDE version 4.6.0 or higher(5.0 or higher recommended for simulator usage) from [here](http://na.blackberry.com/eng/developers/)
 * Run 'rhodes-setup' to specify Blackberry JDE paths or edit <rhodes>/rhobuild.yml manually:
 
-        env: 
-          paths: 
-            5.0: 
+        env:
+          paths:
+            5.0:
               jde: <jde_5.0>/components
               sim: 9550
               mds: <jde_5.0>/components/MDS
@@ -464,7 +464,7 @@ There are 2 possible scenarios available:
 * Load application cod-file manually using Simulator menu: 'File\Load Blackberry application or theme...':
         $ rake run:bb:startsim
         $ rake package:bb:production_sim
-	
+
     In simulator window open menu: 'File\Load Blackberry application or theme...' and choose app cod-file:'<app_folder>/bin/target/<bb_ver>/<app_name.cod>'
 
     After application modification:
@@ -478,12 +478,12 @@ There are 2 possible scenarios available:
     Start application on simulator and DO NOT close application in simulator.
     After application modification:
 	    $ rake run:bbapp
-    
+
     In case of simulator errors:
     * Try load application cod-file manually.
     * Try to uninstall application: select application icon on simulator and press Menu\Delete
-    * Close simulator and run clean.bat in simulator folder 
-       
+    * Close simulator and run clean.bat in simulator folder
+
 #### To build and run using Blackberry simulator
 
 Run in application root directory:
@@ -499,7 +499,7 @@ Modify your application and run run rake script again:
 	$ rake run:bb
 
 
-To see application log change log settings in [rhoconfig.txt](configuration#run-time-configuration). Run your application and see log file at `<simulator folder>\sdcard\rho\<app_name>\RhoLog.txt` 
+To see application log change log settings in [rhoconfig.txt](configuration#run-time-configuration). Run your application and see log file at `<simulator folder>\sdcard\rho\<app_name>\RhoLog.txt`
 
 To switch log on while running your application  select menu\log\options form the application menu and set log level to Info and Message classes to APP or to *.
 
@@ -512,7 +512,7 @@ Run `rake config:checkbb` and see are any problems reported
 Run rake scripts from windows console. Do not use bash or similar tools.
 
 When emulator starts, open Blackberry Internet Browser and browse for some web site. If you are unable to browse:
-  
+
 * check that MDS is running - it should be console window started with emulator.
 * open manage connection (blackberry menu button)\check Mobile Network
 
@@ -528,7 +528,7 @@ You have to sign application before loading it to device. Go [here](http://na.bl
 Once you have Code Signing Keys files (sigtool.csk and sigtool.db) you should put them in the 'bin' folder of your Blackberry jdk and sign your application.
 
 If your target device is Blackberry JDK 4.3 and later, you can provide password in the rhobuild.yml file (located in the Rhodes SDK folder) in the 'build' section:
- 
+
 	build:
 	  bbsignpwd: <password>
 
@@ -543,10 +543,10 @@ You may deploy it to the device now. To do that upload .jad and all .cod files t
 
 ##### Some known issues while building for BB device
 
-After you get your CSI-file from Blackberry, you have to register them. If after dbl-click you will see message "Already registered" see instructions here: 
-[Incorrect password error when attempting to register signature keys](http://www.blackberry.com/knowledgecenterpublic/livelink.exe/fetch/2000/348583/800989/Support_-_Incorrect_password_error_when_attempting_to_register_signature_keys.html?nodeid=1461314&vernum=0) 
+After you get your CSI-file from Blackberry, you have to register them. If after dbl-click you will see message "Already registered" see instructions here:
+[Incorrect password error when attempting to register signature keys](http://www.blackberry.com/knowledgecenterpublic/livelink.exe/fetch/2000/348583/800989/Support_-_Incorrect_password_error_when_attempting_to_register_signature_keys.html?nodeid=1461314&vernum=0)
 
-After press Yes in dialog 'Would you like to create a new key pair file' - nothing appear. No dialogs, no error messages, just nothing then this is a problem with Java SDK and Blackberry SDK versions. See more information here: 
+After press Yes in dialog 'Would you like to create a new key pair file' - nothing appear. No dialogs, no error messages, just nothing then this is a problem with Java SDK and Blackberry SDK versions. See more information here:
 
 * [The signature key window disappears after receiving the private key prompt](http://www.blackberry.com/knowledgecenterpublic/livelink.exe/fetch/2000/348583/800738/800989/Support_-_The_signature_key_window_disappears_after_receiving_the_private_key_prompt.html?nodeid=1313681&vernum=0)
 * [Supported versions of Java for different BlackBerry JDE versions](http://www.blackberry.com/knowledgecenterpublic/livelink.exe/fetch/2000/348583/800738/800901/What_Is_-_Supported_versions_of_Java_for_different_BlackBerry_JDE_versions.html?nodeid=1313614&vernum=0)
@@ -559,7 +559,7 @@ There is a problem with network on BlackBerry simulators under Windows 7. It cau
 
 #### Application log on the device
 
-The log is written to the file 'rholog.txt': 
+The log is written to the file 'rholog.txt':
 
 * If your device has SD card log will place to `<Media Card>\Rho\<app name>` folder.
 * If your device doesn't have SD card log will place to `<Device Memory>\home\user\rho\<app name>`.
@@ -567,9 +567,9 @@ The log is written to the file 'rholog.txt':
 To see or copy log file to your computer:
 
 * Add menu item Log to your application menu
-* Call `RhoConf.show_log` or `RhoConf.send_log` somewhere in your app (for example on the settings page) 
+* Call `RhoConf.show_log` or `RhoConf.send_log` somewhere in your app (for example on the settings page)
 * Open Media application on the Phone, select Menu\explore. You can view log file or send it via bluetooth
-* If you have SD card: Phone options\memory\Mass storage support - ON, save. Then connect device to the computer via cable and you will see USB disk drive in computer explorer. Copy `rholog.txt` to computer. 
+* If you have SD card: Phone options\memory\Mass storage support - ON, save. Then connect device to the computer via cable and you will see USB disk drive in computer explorer. Copy `rholog.txt` to computer.
 
 **NOTE: Do not forget to turn 'Mass Storage support' OFF, otherwise Rhodes wouldn't be able write to the files! **
 
@@ -583,24 +583,24 @@ If your phone has Wifi connectivity Rhodes will use it without any additional ef
 
 Read Blackberry article on [how to enable, access, and extract the event logs on a BlackBerry smartphone](http://www.blackberry.com/btsc/search.do?cmd=displayKC&docType=kc&externalId=KB05349).
 
-Now you should be able to extract a full copy of BlackBerry smartphone event logs to a text file using loader.exe on a computer. 
+Now you should be able to extract a full copy of BlackBerry smartphone event logs to a text file using loader.exe on a computer.
 
 Connect the BlackBerry smartphone to the computer using a USB cable.
 
-Open the command prompt and type: 
-	
+Open the command prompt and type:
+
 	:::term
 	$ cd c:\Program Files\Common Files\Research In Motion\AppLoader
-	
-On a 64-bit system, type: 
+
+On a 64-bit system, type:
 
 	:::term
 	$ cd c:\Program Files (x86)\Common Files\Research In Motion\AppLoader
-	
-Type: 
+
+Type:
 
 	:::term
-	$ Loader.exe /eventlog c:\log.txt 
+	$ Loader.exe /eventlog c:\log.txt
 
 The log.txt file is the extracted log and should appear on the `C:\` drive.
 
@@ -615,12 +615,12 @@ The log.txt file is the extracted log and should appear on the `C:\` drive.
 * Go to `<rhodescheckout>` and run:
 
 	    $ rake build:bb:devrhobundle
-	
+
 * Run eclipse and choose rhodes\platform\bb as a workspace directory. Do not create workspace!
 * Open menu Window\Preferences
     * Blackberry java plug-in\Warnings - check all 3 chekboxes to suppress all warnings
     * Java\Compiler - set Compiler compliance level to 1.4
-* Go to File\Import... menu. Select `General\Existing projects into Workspace` workspace node. Press Next. 
+* Go to File\Import... menu. Select `General\Existing projects into Workspace` workspace node. Press Next.
     * Browse for `<rhodes>\platform\bb\RubyVM`. Press Finish. The project will be automatically build.
     * Browse for `<rhodes>\platform\bb\Hsqldb`. Press Finish. The project will be automatically build.
     * Browse for `<rhodes>\platform\bb\Rhodes`. Press Finish. The project will be automatically build.
@@ -658,15 +658,15 @@ Right click on RhoBundle project in Eclipse and select Refresh. It should rebuil
 
 Open `Debug\Open debug dialog...` from toolbar (small bug icons). Dbl-click on Blackberry simulator node.
 
-Go to Simulator page and choose Profile other than Default. Check 'Launch Mobile Data System Connection service with simulator' checkbox. 
+Go to Simulator page and choose Profile other than Default. Check 'Launch Mobile Data System Connection service with simulator' checkbox.
 ** NOTE: you may have to install MDS on your computer if it is not installed. **
 
-Press Debug button. Simulator starts. Eclipse may ask you about missing debug files, press 'Don't ask me again button'. 
+Press Debug button. Simulator starts. Eclipse may ask you about missing debug files, press 'Don't ask me again button'.
 
-You can also clean emulator and start emulator again: 
-	
+You can also clean emulator and start emulator again:
+
 	:::term
-	$ run <JDE_HOME>\simulator\clean.bat 
+	$ run <JDE_HOME>\simulator\clean.bat
 
 Press Menu button on emulator. Go to Downloads, run Rhodes
 
@@ -704,7 +704,7 @@ Add pathes to Qt SDK and MS Visual Studio 2005 to rhobuild.yml in the Rhodes fol
           paths:
             qtsymbian-sdk: C:/QtSDK
             msvs2005: C:/Program Files/Microsoft Visual Studio 8
-			
+
 
 ### To build and run application on emulator(Visual Studio 2005 only) :
 
@@ -718,12 +718,12 @@ Add pathes to Qt SDK and MS Visual Studio 2005 to rhobuild.yml in the Rhodes fol
 
 NOTE: This command creates two sis-files: signed for testing and unsigned for production signing. See <app_root>/bin/target/sym folder for sis-files.
 
-	
+
 ### To clean all binaries run:
 
 	:::term
-	$ rake clean:symbian	
-	
+	$ rake clean:symbian
+
 NOTE: If the clean rake task doesn't respond long time while it is being executed then stop it and delete folder like this: C:/QtSDK/Symbian/SDKs/Symbian1Qt473/epoc32/BUILD/.../rhodes
 
 NOTE: If You want to use your own UID for application you can redefine it in build.yml. You can find information about UID here - http://www.developer.nokia.com/Community/Wiki/UID_Q&As_(Symbian_Signed)
@@ -732,24 +732,24 @@ NOTE: If You want to use your own UID for application you can redefine it in bui
 ## Build for Windows Mobile
 
 Note that Windows Mobile versions of your Rhodes app must be built in a Windows environment.
-   
+
 ### Prerequisites
 
 * Follow [All Platforms Prerequisites](#all-platforms-prerequisites)
 * .NET Compact Framework
-* Windows Mobile 6 Professional SDK(s) 
+* Windows Mobile 6 Professional SDK(s)
 * Microsoft Active Sync 4.5 for Windows XP; Windows Mobile Device Center for Windows Vista or higher
 * Microsoft Device Emulator 3.0 for Windows Vista or higher
-* Visual Studio 2005 Service Pack 1 installed or Visual Studio 2008. 
+* Visual Studio 2005 Service Pack 1 installed or Visual Studio 2008.
 * [7-zip](http://www.7-zip.org/)
 
 NOTE: It is a good idea to install Windows Mobile 6 Professional last, since it needs to be installed after Visual Studio, and since the Windows Mobile 6 Professional install process will tell you if you forgot to install any of the other prerequisites.
 
 ### Allow DMA Connections
 
-On Windows XP, open ActiveSync main window and open the File menu; on Windows Vista and above, open Windows Mobile Device Center and click Mobile Device Settings. 
+On Windows XP, open ActiveSync main window and open the File menu; on Windows Vista and above, open Windows Mobile Device Center and click Mobile Device Settings.
 
-Select Connection Settings, then select the checkbox "Allow connections to one of the following." 
+Select Connection Settings, then select the checkbox "Allow connections to one of the following."
 
 Select "DMA" from the list box. DMA Connection is required to work with the Windows Mobile emulator.
 
@@ -774,21 +774,21 @@ On 64-bit installations:
 To build cab-file, install it, and run application on emulator, run:
 
 	:::term
-	$ rake run:wm:cab 
+	$ rake run:wm:cab
 
 Before you install the application on your Windows Mobile device, first connect your device via USB cable. Then check that your device is connected with ActiveSync on Windows XP or with Windows Mobile Device Center on Windows Vista or above.
 
 To build cab-file, install it, and run application on device, run:
 
-	:::term 
-	$ rake run:wm:device:cab 
+	:::term
+	$ rake run:wm:device:cab
 
 After the build process completes, the device will ask you to install the app. Disconnect the USB cable from the device before you install.
 
 ### Build application cab-file for the device
 
 	:::term
-	$ rake device:wm:production 
+	$ rake device:wm:production
 
 If you want the application to be signed automatically during the build process, please add the 'wmsign' key with full path to your code signing certificate to the 'build' section of rhobuild.yml file:
 
@@ -834,7 +834,7 @@ If you changed your application, then recompile your application code by running
 
 If you changed your application and built it using rake tasks, then to compile your application:
 
-	:::term 
+	:::term
 	$ rake device:wm
 
 Copy `<your_app_directory>\bin\target\rhodes.cab` content to `\My Documents\` on your device or the emulator, execute that .cab to install the app, and then run the installed app to see the changes.
@@ -890,7 +890,7 @@ Rholog.txt is placed in `<rhodes folder>\platform\wm\bin\win32\rhodes\Debug\rho`
 * Windows 7 OS
 * Visual Studio 2010 installed or VS Express for Windows Phone and VS Express for C#
     * [Windows Phone Developer Tools 7.1 Beta](http://www.microsoft.com/download/en/details.aspx?displaylang=en&id=11321)
-    
+
 * Add path to `msbuild` to `rhobuild.yml` in rhodes folder. For example:
 
 	    env:
@@ -898,7 +898,7 @@ Rholog.txt is placed in `<rhodes folder>\platform\wm\bin\win32\rhodes\Debug\rho`
 	        msbuild: C:/Windows/Microsoft.NET/Framework/v4.0.30319/MSBuild.exe
 
 ### Application changes
-    
+
 * Add to application build.yml productid GUID. For example:
 
         wp:
@@ -912,11 +912,11 @@ NOTE: When you use rhodes command to generate application, productid is generate
         <rhodes>\res\generators\templates\application\public\js\wp7.js
 
         to your application public/js folder
-        
+
     Modify layout.erb:
 
         <%if System::get_property('platform') == 'WP7' %>
-            <script src="/public/js/wp7.js" type="text/javascript"></script> 
+            <script src="/public/js/wp7.js" type="text/javascript"></script>
         <% end %>
 
         <% if System::get_property('platform') == 'WP7' %>
@@ -947,7 +947,7 @@ NOTE: in form action when using url_for specify :action => :create to call creat
 
         $rake run:wp
 
-* Run application device:    
+* Run application device:
 
         $rake run:wp:device
 
@@ -958,11 +958,11 @@ NOTE: When running on device you may need to disconnect USB cable from device to
 * After Application code modifications, run rake commands. DO NOT close simulator!
 
 ### Build from sources
-* Checkout rhodes source code from github 
+* Checkout rhodes source code from github
 * Get IronRuby master branch to parent folder of rhodes:
 
         $ git clone https://github.com/IronLanguages/main.git
-  
+
   rename IronLanguages folder to IronRuby
 
 * Build IronRuby(Once)
@@ -1005,7 +1005,7 @@ Place your image to use as an icon in a folder called `icon` in your application
 ### iPhone using xCode
 
 * Target->info->General->Name
-* Target->info->Build->Product Name (for all configurations)    
+* Target->info->Build->Product Name (for all configurations)
 * rhodes\platform\iphone\icon.png, icon57.png, icon72.png, icon114.png - change to your icons
 * check rhodes\platform\iphone\Info.plist it should contain BundleName=${PRODUCT_NAME}
 

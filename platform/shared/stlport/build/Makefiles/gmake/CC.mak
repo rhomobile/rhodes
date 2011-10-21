@@ -25,7 +25,7 @@ LINK_OUTPUT_OPTION = ${OUTPUT_OPTION}
 CPPFLAGS = $(DEFS) $(INCLUDES)
 
 OPT += -mt +w2
-CCFLAGS = -erroff=doubunder -qoption ccfe -expand=1000 -library=no%Cstd,no%iostream,no%rwtools7-xildoff $(OPT) 
+CCFLAGS = -erroff=doubunder -qoption ccfe -expand=1000 -library=no%Cstd,no%iostream,no%rwtools7-xildoff $(OPT)
 CFLAGS = $(OPT)
 CXXFLAGS = -erroff=doubunder -qoption ccfe -expand=1000 -library=no%Cstd,no%iostream,no%rwtools7 -xildoff $(OPT)
 CDEPFLAGS = -xM

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -149,8 +149,8 @@ public:
     void destroyImage(IDrawingImage* image);
 
     IDrawingImage* createCalloutImage(String const &title, String const &subtitle, String const& url, int* x_offset, int* y_offset);
-    
-    
+
+
     void requestRedraw();
 
     void paint(jobject canvas);
@@ -198,7 +198,7 @@ void AndroidImage::init(JNIEnv *env)
 
     m_width = env->CallIntMethod(*m_bitmap, midWidth);
     m_height = env->CallIntMethod(*m_bitmap, midHeight);
-    
+
 }
 
 AndroidImage::~AndroidImage()
@@ -245,7 +245,7 @@ void AndroidDrawingContext::drawImage(int x, int y, IDrawingImage *image)
 
     /////
     env->DeleteLocalRef(cls);
-    
+
     RHO_MAP_TRACE("drawImage done");
 }
 
@@ -264,8 +264,8 @@ void AndroidDrawingContext::drawText(int x, int y, int width, int height, String
 
     /////
     env->DeleteLocalRef(cls);
-    
-    
+
+
     RHO_MAP_TRACE("drawText done");
 }
 
@@ -279,7 +279,7 @@ AndroidMapDevice::AndroidMapDevice(rho_param *p)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "create", "(J)V");
     if (!mid) return;
     env->CallStaticVoidMethod(cls, mid, (jlong)this);
-    
+
     RHO_MAP_TRACE("AndroidMapDevice: ctor finish");
 }
 
@@ -331,17 +331,17 @@ void AndroidMapDevice::setMapView(IMapView *mv)
         mv->setESRILogoImage(m_esriLogo_image.get());
         mv->setGoogleLogoImage(m_googleLogo_image.get());
 
-        
-        
+
+
         pin_info.x_offset = -2;
         pin_info.y_offset = -31;
         pin_info.click_rect_x = -2;
         pin_info.click_rect_y = -31;
         pin_info.click_rect_width = 32;
         pin_info.click_rect_height = 32;
-        
+
         mv->setPinMyLocationImage(m_pin_myLocation_image.get(), pin_info);
-        
+
         mv->set_file_caching_enable((int)ourIsCachingEnabled);
 
     }
@@ -421,7 +421,7 @@ void AndroidMapDevice::setPinMyLocationImage(JNIEnv *env, jobject bitmap) {
         m_pin_myLocation_image.reset(new AndroidImage(bitmap));
         IMapView *mv = mapView();
         if (mv) {
-            
+
             PIN_INFO pin_info;
 
             pin_info.x_offset = -2;
@@ -430,8 +430,8 @@ void AndroidMapDevice::setPinMyLocationImage(JNIEnv *env, jobject bitmap) {
             pin_info.click_rect_y = -31;
             pin_info.click_rect_width = 32;
             pin_info.click_rect_height = 32;
-            
-            
+
+
             mv->setPinMyLocationImage(m_pin_myLocation_image.get(), pin_info);
         }
         RHO_MAP_TRACE("AndroidMapDevice: setGoogleLogoImage: finish");
@@ -453,7 +453,7 @@ IDrawingImage *AndroidMapDevice::createImage(String const &path, bool useAlpha)
         return NULL;
     }
     IDrawingImage *image = new AndroidImage(bitmap);
-    
+
     RHO_MAP_TRACE1("createImage: return image=%p", image);
     return image;
 }
@@ -474,11 +474,11 @@ IDrawingImage *AndroidMapDevice::createImage(void const *p, size_t size, bool us
 
     jobject bitmap = env->CallStaticObjectMethod(cls, mid, data.get());
     IDrawingImage *image = new AndroidImage(bitmap);
-    
+
     RHO_MAP_TRACE1("createImage: return image=%p", image);
     return image;
 }
-    
+
 IDrawingImage* AndroidMapDevice::createCalloutImage(String const &title, String const &subtitle, String const& url, int* x_offset, int* y_offset)
 {
     JNIEnv *env = jnienv();
@@ -486,43 +486,43 @@ IDrawingImage* AndroidMapDevice::createCalloutImage(String const &title, String 
     if (!cls) return NULL;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "makeCallout", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/rhomobile/rhodes/mapview/Callout;");
     if (!mid) return NULL;
-    
+
     jobject jo_callout = env->CallStaticObjectMethod(cls, mid, rho_cast<jhstring>(title).get(), rho_cast<jhstring>(subtitle).get(), rho_cast<jhstring>(url).get());
-    
+
     jmethodID mid_bitmap = env->GetMethodID( cls, "getResultBitmap", "()Landroid/graphics/Bitmap;");
     jmethodID mid_x_off = env->GetMethodID( cls, "getXOffset", "()I");
     jmethodID mid_y_off = env->GetMethodID( cls, "getYOffset", "()I");
-    
+
     jobject bitmap = env->CallObjectMethod(jo_callout, mid_bitmap);
     IDrawingImage *image = new AndroidImage(bitmap);
-    
+
     *x_offset = env->CallIntMethod(jo_callout, mid_x_off);
     *y_offset = env->CallIntMethod(jo_callout, mid_y_off);
-    
+
     return image;
 }
-    
+
 
     IDrawingImage *AndroidMapDevice::createImageEx(void const *p, size_t size, int x, int y, int w, int h, bool useAlpha) {
         RHO_MAP_TRACE2("createImageEx: p=%p, size=%llu", p, (unsigned long long)size);
-        
+
         JNIEnv *env = jnienv();
         jclass& cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
         if (!cls) return NULL;
         jmethodID mid = getJNIClassStaticMethod(env, cls, "createImageEx", "([BIIII)Landroid/graphics/Bitmap;");
         if (!mid) return NULL;
-        
+
         jholder<jbyteArray> data = jholder<jbyteArray>(env->NewByteArray(size));
         if (!data) return NULL;
         env->SetByteArrayRegion(data.get(), 0, size, (jbyte const *)p);
-        
+
         jobject bitmap = env->CallStaticObjectMethod(cls, mid, data.get(), x, y, w, h);
         IDrawingImage *image = new AndroidImage(bitmap);
-        
+
         RHO_MAP_TRACE1("createImage: return image=%p", image);
         return image;
     }
-    
+
 IDrawingImage *AndroidMapDevice::cloneImage(IDrawingImage *image)
 {
     RHO_MAP_TRACE1("cloneImage: image=%p", image);

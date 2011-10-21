@@ -140,7 +140,7 @@ describe "File.expand_path" do
       File.expand_path("C:/./dir").should == "C:/dir"
     end
   end
-=begin  
+=begin
   #ruby_version_is "1.9" do
   #  it "produces a String in the default external encoding" do
   #    old_external = Encoding.default_external
@@ -170,7 +170,7 @@ describe "File.expand_path" do
     path.should == "#{@base}/a/c"
     path.should be_an_instance_of(String)
   end
-=end  
+=end
 end
 
 platform_is_not :windows do

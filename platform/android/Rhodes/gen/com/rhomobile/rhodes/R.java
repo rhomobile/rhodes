@@ -112,7 +112,7 @@ public final class R {
         public static final int ok=0x7f04000f;
         public static final int options=0x7f040009;
         public static final int refresh=0x7f040002;
-        /**   RhoBluetoothDeviceListActivity 
+        /**   RhoBluetoothDeviceListActivity
          */
         public static final int scanning=0x7f040011;
         public static final int select_device=0x7f040012;

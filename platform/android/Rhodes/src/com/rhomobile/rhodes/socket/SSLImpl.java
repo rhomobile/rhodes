@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -45,11 +45,11 @@ import javax.net.ssl.X509TrustManager;
 import com.rhomobile.rhodes.Logger;
 
 public class SSLImpl {
-	
+
 	private static final String TAG = "SSLImplJava";
-	
+
 	private static SSLSocketFactory factory = null;
-	
+
 	private SSLSocket sock;
 
     //Used from jni
@@ -58,11 +58,11 @@ public class SSLImpl {
 
 	private InputStream is;
 	private OutputStream os;
-	
+
 	public native RhoSockAddr getRemoteSockAddr(int sockfd);
-	
+
 	private static class MyTrustManager implements X509TrustManager {
-		
+
 		public void checkClientTrusted(X509Certificate[] chain, String authType)
 				throws CertificateException {
 			// Nothing
@@ -79,17 +79,17 @@ public class SSLImpl {
 			Logger.T(TAG, "getAcceptedIssuers");
 			return new X509Certificate[0];
 		}
-		
+
 	};
-	
+
 	private static void reportFail(String name, Exception e) {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getClass().getSimpleName() + ": " + e.getMessage());
 	}
-	
+
 	private static SSLSocketFactory getFactory(boolean verify) throws NoSuchAlgorithmException, KeyManagementException {
 		if (verify)
 			return (SSLSocketFactory)SSLSocketFactory.getDefault();
-		
+
 		if (factory == null) {
 			SSLContext context = SSLContext.getInstance("TLS");
 			TrustManager[] managers = {new MyTrustManager()};
@@ -98,7 +98,7 @@ public class SSLImpl {
 		}
 		return factory;
 	}
-	
+
 	public boolean connect(int fd, boolean sslVerifyPeer) {
 		try {
             RhoSockAddr remote = getRemoteSockAddr(fd);
@@ -122,7 +122,7 @@ public class SSLImpl {
 			return false;
 		}
 	}
-	
+
 	public void shutdown() {
 		try {
 			if (sock != null) {
@@ -143,7 +143,7 @@ public class SSLImpl {
 			reportFail("shutdown", e);
 		}
 	}
-	
+
 	public boolean send(byte[] data) {
 		try {
 			if (os != null) {
@@ -163,7 +163,7 @@ public class SSLImpl {
 		}
         return false;
 	}
-	
+
 	public int recv(byte[] data) {
 		try {
 			if (is != null) {

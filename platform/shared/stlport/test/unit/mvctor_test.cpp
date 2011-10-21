@@ -1291,7 +1291,7 @@ void MoveConstructorTest::move_traits()
   }
 }
 
-#if defined (STLPORT) && !defined (_STLP_NO_MOVE_SEMANTIC) 
+#if defined (STLPORT) && !defined (_STLP_NO_MOVE_SEMANTIC)
 
 #  if defined (__GNUC__) && defined (_STLP_USE_NAMESPACES)
 // libstdc++ sometimes exposed its own __true_type in

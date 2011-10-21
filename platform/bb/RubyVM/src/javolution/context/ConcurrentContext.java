@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2006 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -15,29 +15,29 @@ import javolution.lang.MathLib;
 import javolution.lang.Reflection;
 
 /**
- * <p> This class represents a context to take advantage of concurrent 
+ * <p> This class represents a context to take advantage of concurrent
  *     algorithms on multi-processors systems.</p>
- *     
+ *
  * <p> When a thread enters a concurrent context, it may performs concurrent
  *     executions by calling the {@link #execute(Runnable)} static method.
- *     The logic is then executed by a concurrent thread or by the current 
- *     thread itself if there is no concurrent thread immediately available 
- *     (the number of concurrent threads is limited, see 
+ *     The logic is then executed by a concurrent thread or by the current
+ *     thread itself if there is no concurrent thread immediately available
+ *     (the number of concurrent threads is limited, see
  *     <a href="{@docRoot}/overview-summary.html#configuration">
  *     Javolution Configuration</a> for details).</p>
- *     
- * <p> Only after all concurrent executions are completed, is the current 
- *     thread allowed to exit the scope of the concurrent context 
+ *
+ * <p> Only after all concurrent executions are completed, is the current
+ *     thread allowed to exit the scope of the concurrent context
  *     (internal synchronization).</p>
- *     
- * <p> Concurrent logics always execute within the same {@link Context} as 
- *     the calling thread. For example, if the main thread runs in a 
+ *
+ * <p> Concurrent logics always execute within the same {@link Context} as
+ *     the calling thread. For example, if the main thread runs in a
  *     {@link StackContext}, concurrent executions are performed in the
  *     same {@link StackContext} as well.</p>
- *     
- * <p> Concurrent contexts are easy to use, and provide automatic 
+ *
+ * <p> Concurrent contexts are easy to use, and provide automatic
  *     load-balancing between processors with almost no overhead. Here is
- *     an example of <b>concurrent/recursive</b> implementation of the 
+ *     an example of <b>concurrent/recursive</b> implementation of the
  *     Karatsuba multiplication for large integers:[code]
  *     public LargeInteger multiply(LargeInteger that) {
  *         if (that._size <= 1) {
@@ -45,7 +45,7 @@ import javolution.lang.Reflection;
  *         } else { // Karatsuba multiplication in O(n^log2(3))
  *             int bitLength = this.bitLength();
  *             int n = (bitLength >> 1) + (bitLength & 1);
- *                 
+ *
  *             // this = a + 2^n b,   that = c + 2^n d
  *             LargeInteger b = this.shiftRight(n);
  *             LargeInteger a = this.minus(b.shiftLeft(n));
@@ -55,14 +55,14 @@ import javolution.lang.Reflection;
  *             Multiply bd = Multiply.valueOf(b, d);
  *             Multiply abcd = Multiply.valueOf(a.plus(b), c.plus(d));
  *             ConcurrentContext.enter();
- *             try { 
+ *             try {
  *                 ConcurrentContext.execute(ac);
  *                 ConcurrentContext.execute(bd);
  *                 ConcurrentContext.execute(abcd);
  *             } finally {
  *                 ConcurrentContext.exit(); // Waits for all concurrent threads to complete.
  *             }
- *             // a*c + ((a+b)*(c+d)-a*c-b*d) 2^n + b*d 2^2n 
+ *             // a*c + ((a+b)*(c+d)-a*c-b*d) 2^n + b*d 2^2n
  *             return  ac.value().plus(
  *                 abcd.value().minus(ac.value().plus(bd.value())).shiftWordLeft(n)).plus(
  *                 bd.value().shiftWordLeft(n << 1));
@@ -81,15 +81,15 @@ import javolution.lang.Reflection;
  *         }
  *         public LargeInteger value() {
  *             return _result;
- *         } 
+ *         }
  *     };[/code]
- *    
- *    Here is a concurrent/recursive quick/merge sort using anonymous inner 
- *    classes (the same method is used for   
+ *
+ *    Here is a concurrent/recursive quick/merge sort using anonymous inner
+ *    classes (the same method is used for
  *    <a href="http://javolution.org/doc/benchmark.html">benchmark</a>):[code]
  *    private void quickSort(final FastTable<? extends Comparable> table) {
  *        final int size = table.size();
- *        if (size < 100) { 
+ *        if (size < 100) {
  *            table.sort(); // Direct quick sort.
  *        } else {
  *            // Splits table in two and sort both part concurrently.
@@ -130,41 +130,41 @@ import javolution.lang.Reflection;
  *                    }
  *                }
  *            }
- *            FastTable.recycle(t1);  
+ *            FastTable.recycle(t1);
  *            FastTable.recycle(t2);
  *        }
  *     }[/code]
- * 
+ *
  * <p> Concurrent contexts ensure the same behavior whether or not the execution
- *     is performed by the current thread or a concurrent thread. Any exception 
- *     raised during the concurrent logic executions is propagated to the 
+ *     is performed by the current thread or a concurrent thread. Any exception
+ *     raised during the concurrent logic executions is propagated to the
  *     current thread.</p>
- *     
+ *
  * <p> {@link #getConcurrency() Concurrency} can be {@link LocalContext locally}
  *     adjusted. For example:[code]
- *         LocalContext.enter(); 
+ *         LocalContext.enter();
  *         try { // Do not use more than half of the processors during analysis.
  *             ConcurrentContext.setConcurrency((Runtime.getRuntime().availableProcessors() / 2) - 1);
- *             runAnalysis(); // Use concurrent contexts internally. 
+ *             runAnalysis(); // Use concurrent contexts internally.
  *         } finally {
- *             LocalContext.exit();    
+ *             LocalContext.exit();
  *         }[/code] </p>
- *     It should be noted that the concurrency cannot be increased above the  
- *     configurable {@link #MAXIMUM_CONCURRENCY maximum concurrency}. 
- *     In other words, if the maximum concurrency is <code>0</code>, 
- *     concurrency is disabled regardless of local concurrency settings.</p>   
- * 
+ *     It should be noted that the concurrency cannot be increased above the
+ *     configurable {@link #MAXIMUM_CONCURRENCY maximum concurrency}.
+ *     In other words, if the maximum concurrency is <code>0</code>,
+ *     concurrency is disabled regardless of local concurrency settings.</p>
+ *
  * @author  <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 5.1, July 2, 2007
  */
 public abstract class ConcurrentContext extends Context {
 
     /**
-     * Holds the default implementation. Concurrent executions are performed 
+     * Holds the default implementation. Concurrent executions are performed
      * in the same memory area and at the same priority as the calling thread.
      * This implementation uses <code>javax.realtime.RealtimeThread</code>
-     * for concurrent threads. Alternative (RTSJ) implementations could also use 
-     * <code>javax.realtime.NoHeapRealtimeThread</code>. 
+     * for concurrent threads. Alternative (RTSJ) implementations could also use
+     * <code>javax.realtime.NoHeapRealtimeThread</code>.
      */
     public static final Configurable/*<Class<? extends ConcurrentContext>>*/
         DEFAULT = new Configurable(Default.CLASS);
@@ -172,11 +172,11 @@ public abstract class ConcurrentContext extends Context {
     /**
      * Holds the maximum number of concurrent executors
      * (see <a href="{@docRoot}/overview-summary.html#configuration">
-     * Javolution Configuration</a> for details). 
+     * Javolution Configuration</a> for details).
      */
     public static final Configurable/*<Integer>*/MAXIMUM_CONCURRENCY = new Configurable(
             new Integer(availableProcessors() - 1)) {
-        protected void notifyChange() { // The maximum concurrency is also the default concurrency. 
+        protected void notifyChange() { // The maximum concurrency is also the default concurrency.
             CONCURRENCY.setDefault(this.get());
         }
     };
@@ -194,7 +194,7 @@ public abstract class ConcurrentContext extends Context {
     }
 
     /**
-     * Holds the current concurrency. 
+     * Holds the current concurrency.
      */
     private static final LocalContext.Reference CONCURRENCY = new LocalContext.Reference(
             MAXIMUM_CONCURRENCY.get());
@@ -206,8 +206,8 @@ public abstract class ConcurrentContext extends Context {
     }
 
     /**
-     * Enters a concurrent context (instance of {@link #DEFAULT}). 
-     * 
+     * Enters a concurrent context (instance of {@link #DEFAULT}).
+     *
      * @return the concurrent context being entered.
      */
     public static ConcurrentContext enter() {
@@ -216,7 +216,7 @@ public abstract class ConcurrentContext extends Context {
 
     /**
      * Exits the current concurrent context.
-     * 
+     *
      * @return the concurrent context being exited.
      * @throws ClassCastException if the context is not a concurrent context.
      */
@@ -225,9 +225,9 @@ public abstract class ConcurrentContext extends Context {
     }
 
     /**
-     * Set the {@link LocalContext local} concurrency. Concurrency is 
+     * Set the {@link LocalContext local} concurrency. Concurrency is
      * hard limited by {@link #MAXIMUM_CONCURRENCY}.
-     * 
+     *
      * @param concurrency the new concurrency (<code>0</code> or negative
      *       number to disable concurrency).
      */
@@ -240,7 +240,7 @@ public abstract class ConcurrentContext extends Context {
 
     /**
      * Returns the {@link LocalContext local} concurrency.
-     * 
+     *
      * @return the maximum number of concurrent thread.
      */
     public static int getConcurrency() {
@@ -248,12 +248,12 @@ public abstract class ConcurrentContext extends Context {
     }
 
     /**
-     * Executes the specified logic by a concurrent thread if 
+     * Executes the specified logic by a concurrent thread if
      * one available; otherwise the logic is executed by the current thread.
      * Any exception or error occuring during concurrent executions is
-     * propagated to the current thread upon {@link #exit} 
+     * propagated to the current thread upon {@link #exit}
      * of the concurrent context.
-     * 
+     *
      * @param  logic the logic to execute concurrently if possible.
      * @throws ClassCastException if the current context is not a
      *         {@link ConcurrentContext}.
@@ -264,8 +264,8 @@ public abstract class ConcurrentContext extends Context {
     }
 
     /**
-     * Executes the specified logic concurrently if possible. 
-     * 
+     * Executes the specified logic concurrently if possible.
+     *
      * @param  logic the logic to execute.
      */
     protected abstract void executeAction(Runnable logic);
@@ -276,14 +276,14 @@ public abstract class ConcurrentContext extends Context {
     static final class Default extends ConcurrentContext {
 
         private static final Class CLASS = new Default().getClass();
-        
+
         /**
          * Holds the concurrent executors.
          */
         private static ConcurrentThread[] _Executors = new ConcurrentThread[0];
 
         /**
-         * Holds the executors creation logic (to be performed in 
+         * Holds the executors creation logic (to be performed in
          * ImmortalMemory). The number of executors can only be increased
          * (typically through configuration).
          */
@@ -291,7 +291,7 @@ public abstract class ConcurrentContext extends Context {
             public synchronized void run() {
                 int max = ((Integer) MAXIMUM_CONCURRENCY.get()).intValue();
                 int count = _Executors.length;
-                if (count >= max) 
+                if (count >= max)
                     return; // We have enough executors.
                 ConcurrentThread[] executors = new ConcurrentThread[max];
                 System.arraycopy(_Executors, 0, executors, 0, count);
@@ -332,7 +332,7 @@ public abstract class ConcurrentContext extends Context {
             _concurrency = ConcurrentContext.getConcurrency();
             if (_concurrency > _Executors.length) { // We need more executors.
                 MemoryArea.getMemoryArea(_Executors).executeInArea(CREATE_EXECUTORS);
-            }            
+            }
         }
 
         // Implements ConcurrentContext abstract method.
@@ -374,13 +374,13 @@ public abstract class ConcurrentContext extends Context {
             Context.setCurrent(this);
         }
 
-        // Called when a concurrent execution finishes. 
+        // Called when a concurrent execution finishes.
         void completed() {
             synchronized (this) {
                 _completed++;
                 this.notify();
             }
-            ((AllocatorContext) AllocatorContext.getCurrent()).deactivate();        
+            ((AllocatorContext) AllocatorContext.getCurrent()).deactivate();
         }
 
         // Called when an error occurs.
@@ -393,7 +393,7 @@ public abstract class ConcurrentContext extends Context {
         }
     }
 
-    // Allows instances of private classes to be factory produced. 
+    // Allows instances of private classes to be factory produced.
     static {
         ObjectFactory.setInstance(new ObjectFactory() {
             protected Object create() {

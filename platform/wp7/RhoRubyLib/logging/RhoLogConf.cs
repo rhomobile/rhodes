@@ -1,18 +1,18 @@
 ﻿/*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -63,9 +63,9 @@ namespace rho.logging
         if (m_pServerSink != null)
             m_pServerSink.close();
 	}
-	
+
 	RhoConf RHOCONF(){ return RhoConf.getInstance(); }
-	
+
     public void saveToFile()
     {
         RHOCONF().setInt("MinSeverity", getMinSeverity(), true );
@@ -94,7 +94,7 @@ namespace rho.logging
         if (oRhoConf.isExist( "ExcludeLogCategories") )
             setDisabledCategories( oRhoConf.getString("ExcludeLogCategories") );
     }
-	
+
     public int getMinSeverity(){ return m_nMinSeverity; }
     public void setMinSeverity(int nMinSeverity){ m_nMinSeverity = nMinSeverity; }
 
@@ -108,7 +108,7 @@ namespace rho.logging
     public void setLogFilePath(String szLogFilePath)
     {
         if ( m_strLogFilePath.compareTo(szLogFilePath)!=0 ){
-            m_strLogFilePath = szLogFilePath; 
+            m_strLogFilePath = szLogFilePath;
 
             if ( m_pFileSink != null){
             	m_pFileSink.close();
@@ -134,20 +134,20 @@ namespace rho.logging
     {
         lock(m_CatLock)
         {
-            m_strEnabledCategories = szCatList; 
+            m_strEnabledCategories = szCatList;
         }
     }
     public void setDisabledCategories( String szCatList )
-    { 
+    {
         lock(m_CatLock)
         {
-            m_strDisabledCategories = szCatList; 
+            m_strDisabledCategories = szCatList;
         }
     }
-    
+
     public String getEnabledCategories(){ return m_strEnabledCategories; }
     public String getDisabledCategories(){ return m_strDisabledCategories; }
-    
+
     public boolean isCategoryEnabled(String cat)
     {
         //TODO: Optimize categories search : add map
@@ -174,23 +174,23 @@ namespace rho.logging
         if (m_pServerSink != null)
             m_pServerSink.writeLogMessage(strMsg);
     }
-    
+
     public int  getLogTextPos(){
         return m_pFileSink != null ? m_pFileSink.getCurPos() : -1;
     }
-    
+
 	public String getLogText(){
 		String res = "";
 	    boolean bOldSaveToFile = isLogToFile();
 	    setLogToFile(false);
-    	
+
     	try{
             res = CRhoFile.readStringFromFile(getLogFilePath());
     	}finally
     	{
     		setLogToFile(bOldSaveToFile);
     	}
-		
+
 		return res;
 	}
     }

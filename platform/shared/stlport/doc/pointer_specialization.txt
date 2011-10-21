@@ -6,7 +6,7 @@
   What is it for:
 
     The major problem of template code is the potentialy huge binary
-  size that can result from the compilation. Each template type 
+  size that can result from the compilation. Each template type
   instanciation is a new type from the compiler point of view even if
   the generated binaries are identicals. To avoid this binary duplication
   STLport grant the partial pointer specialization for 4 containers:
@@ -23,14 +23,14 @@
   are only bridges that forward all the method calls to the
   underlying void* container instanciation. The bridge job is to
   cast the pointer type to and from the void* type.
-  
+
   Why only those 4 containers:
 
     Some of you might wonder why none of the associative containers
   or hash containers has been specialized. Lets take the set container
   as an example. Its declaration is
 
-    template <class _Tp, 
+    template <class _Tp,
               class _Compare = less<_Tp>,
               class _Alloc = allocator<_Tp> >
     class set;
@@ -41,17 +41,17 @@
     template <class _Tp, class _Compare, class _Alloc>
     class set<_Tp*, _Compare, _Alloc>
 
-    What would be the underlying container for such a partial 
+    What would be the underlying container for such a partial
   specialization? The _Alloc type is supposed to have a rebind member
   method so you can easily find the _VoidAlloc type. The _Compare type,
   on the other hand, do not have this kind of Standard requirements.
   So you need to wrap the _Compare type within a _WrapCompare type
   that will take care of all the cast work. The underlying container
   type will be:
-  
+
     set<void*, _WrapCompare<_Tp, _Compare>, _VoidAlloc>
 
-    The problem of such a type is that it is still dependent on the 
+    The problem of such a type is that it is still dependent on the
   original _Tp type for the _WrapCompare instanciation. So each set
   instanciation will have a distinct underlying void* container and
   we fall back on a binary duplication trouble.
@@ -80,11 +80,11 @@
 
     set<void*, __less<void*>, _VoidAlloc>
 
-  where __less would be equivalent to the standard less functor but 
+  where __less would be equivalent to the standard less functor but
   would not be specializable because unreachable from the client code.
 
-    There is of course a solution for this specialization issue. We 
+    There is of course a solution for this specialization issue. We
   need to be able to detect the less specialization. The partial set
-  specialization would have to be used only if the less functor is 
+  specialization would have to be used only if the less functor is
   the default STLport implementation based on the strict ordering operator.
   No doubt that a solution to this problem will be soon found.

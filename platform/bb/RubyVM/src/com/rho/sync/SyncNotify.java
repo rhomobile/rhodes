@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -41,7 +41,7 @@ import com.rho.net.*;
 import java.util.Vector;
 
 public class SyncNotify {
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("Sync");
 
 	final int MAX_SERVER_ERROR_LEN = 1000;
@@ -49,21 +49,21 @@ public class SyncNotify {
     {
         String m_strUrl ="", m_strParams="";
         boolean m_bRemoveAfterFire;
-        
+
         SyncNotification(){m_bRemoveAfterFire = false;}
-        
+
         SyncNotification(String strUrl, String strParams, boolean bRemoveAfterFire)
         {
             if ( strUrl.length() > 0 )
                 m_strUrl = RhodesApp.getInstance().canonicalizeRhoUrl(strUrl);
-        	
-        	m_strParams = strParams; 
-        	m_bRemoveAfterFire = bRemoveAfterFire; 
+
+        	m_strParams = strParams;
+        	m_bRemoveAfterFire = bRemoveAfterFire;
         }
     };
-	
+
 	public static final Integer enNone = new Integer(0), enDelete=new Integer(1), enUpdate=new Integer(2), enCreate=new Integer(3);
-	
+
     SyncEngine m_syncEngine;
 
     static String m_strObjectNotifyUrl = "";
@@ -71,21 +71,21 @@ public class SyncNotify {
     Hashtable/*<int, Hashtable<String,String>* >*/ m_hashCreateObjectErrors = new Hashtable();
     String m_strSingleObjectSrcName = "", m_strSingleObjectID ="";
     Hashtable/*<int,int>*/ m_hashSrcObjectCount = new Hashtable();
-    
+
     static Mutex m_mxObjectNotify = new Mutex();
 
     Hashtable/*<int,SyncNotification>*/ m_mapSyncNotifications = new Hashtable();
     SyncNotification m_pSearchNotification;
     SyncNotification m_pAllNotification;
     SyncNotification m_emptyNotify = new SyncNotification();
-    
+
     Mutex m_mxSyncNotifications = new Mutex();
     ISyncStatusListener m_syncStatusListener = null;
     boolean m_bEnableReporting = false;
     boolean m_bEnableReportingGlobal = true;
     String m_strNotifyBody = "";
     NetRequest m_NetRequest;
-    
+
     SyncEngine getSync(){ return m_syncEngine; }
     NetRequest getNet() { return m_NetRequest;}
 
@@ -95,16 +95,16 @@ public class SyncNotify {
     boolean isReportingEnabled(){return m_bEnableReporting&&m_bEnableReportingGlobal;}
     void enableReporting(boolean bEnable) {	m_bEnableReporting = bEnable; }
     void enableStatusPopup(boolean bEnable){m_bEnableReportingGlobal = bEnable;}
-    
-    SyncNotify( SyncEngine syncEngine ) 
+
+    SyncNotify( SyncEngine syncEngine )
     {
     	m_syncEngine = syncEngine;
     }
-    
-    void setFactory(RhoClassFactory factory)throws Exception{ 
+
+    void setFactory(RhoClassFactory factory)throws Exception{
 		m_NetRequest = RhoClassFactory.createNetRequest();
     }
-    
+
     void addObjectNotify(Integer nSrcID, String strObject)
     {
     	synchronized(m_mxObjectNotify)
@@ -115,7 +115,7 @@ public class SyncNotify {
 	            hashObject = new Hashtable/*<String,int>*/();
 	            m_hashSrcIDAndObject.put( nSrcID, hashObject );
 	        }
-	
+
 	        hashObject.put(strObject,enNone);
     	}
     }
@@ -177,18 +177,18 @@ public class SyncNotify {
 
         	Enumeration valsNotify = m_hashSrcIDAndObject.elements();
         	Enumeration keysNotify = m_hashSrcIDAndObject.keys();
-    		while (valsNotify.hasMoreElements()) 
+    		while (valsNotify.hasMoreElements())
     		{
     			Integer nSrcID = (Integer)keysNotify.nextElement();
     			Hashtable hashObject = (Hashtable)valsNotify.nextElement();
 
             	Enumeration valsObject = hashObject.elements();
             	Enumeration keysObject = hashObject.keys();
-        		while (valsObject.hasMoreElements()) 
+        		while (valsObject.hasMoreElements())
         		{
         			int nNotifyType = ((Integer)valsObject.nextElement()).intValue();
         			String strObject = (String)keysObject.nextElement();
-        			
+
                     if (nNotifyType == enNone.intValue())
                         continue;
 
@@ -198,13 +198,13 @@ public class SyncNotify {
                     {
                         IDBResult res = getDB().executeSQL("SELECT object FROM object_values where object=? LIMIT 1 OFFSET 0", strObject );
                         if ( !res.isOneEnd() )
-                            nNotifyType = enUpdate.intValue();    
+                            nNotifyType = enUpdate.intValue();
                     }
 */
                     if ( strBody.length() > 0 )
                     	strBody += "&rho_callback=1&";
 
-                    if (nNotifyType == enDelete.intValue() ) 
+                    if (nNotifyType == enDelete.intValue() )
                     {
                         strBody += "deleted[][object]=" + strObject;
                         strBody += "&deleted[][source_id]=" + nSrcID;
@@ -271,7 +271,7 @@ public class SyncNotify {
 
         	Enumeration valsErrors = hashErrors.elements();
         	Enumeration keysErrors = hashErrors.keys();
-    		while (valsErrors.hasMoreElements()) 
+    		while (valsErrors.hasMoreElements())
     		{
     			String strObject = (String)keysErrors.nextElement();
     			String strError = (String)valsErrors.nextElement();
@@ -286,10 +286,10 @@ public class SyncNotify {
     }
 
     static void setObjectNotifyUrl(String strUrl)
-    { 
+    {
         synchronized(m_mxObjectNotify)
         {
-            m_strObjectNotifyUrl = strUrl; 
+            m_strObjectNotifyUrl = strUrl;
         }
     }
 
@@ -300,7 +300,7 @@ public class SyncNotify {
             return m_strObjectNotifyUrl;
         }
     }
-   
+
     void onSyncSourceEnd( int nSrc, Vector/*Ptr<CSyncSource*>&*/ sources )
     {
         SyncSource src = (SyncSource)sources.elementAt(nSrc);
@@ -308,7 +308,7 @@ public class SyncNotify {
         if ( getSync().getState() == SyncEngine.esStop && src.m_nErrCode != RhoAppAdapter.ERR_NONE )
         {
         	SyncNotification pSN = getSyncNotifyBySrc(src);
-        	if ( pSN != null )        	
+        	if ( pSN != null )
         		fireSyncNotification(src, true, src.m_nErrCode, "");
         	else
         		fireAllSyncNotifications(true, src.m_nErrCode, src.m_strError, "" );
@@ -318,19 +318,19 @@ public class SyncNotify {
 
         cleanCreateObjectErrors();
     }
-/*    
+/*
 	void setSyncNotification(int source_id, String strUrl, String strParams )throws Exception
 	{
 		LOG.INFO( "Set notification. Source ID: " + source_id + "; Url :" + strUrl + "; Params: " + strParams );
 	    String strFullUrl = getNet().resolveUrl(strUrl);
-		
+
 		if ( source_id == -1 )
 		{
 			synchronized(m_mxSyncNotifications)
 			{
-				m_pAllNotification = new SyncNotification( strFullUrl, strParams, false );				
+				m_pAllNotification = new SyncNotification( strFullUrl, strParams, false );
 			}
-			LOG.INFO( " Done Set notification for all sources; Url :" + strFullUrl + "; Params: " + strParams );			
+			LOG.INFO( " Done Set notification for all sources; Url :" + strFullUrl + "; Params: " + strParams );
 		}else
 		{
 		    if ( strFullUrl.length() > 0 )
@@ -359,14 +359,14 @@ public class SyncNotify {
                 m_mapSyncNotifications.put( new Integer(source_id), pNotify );
             }
         }
-    	
+
     }
 
 	void setSearchNotification(String strUrl, String strParams )throws Exception
 	{
 		LOG.INFO( "Set search notification. Url :" + strUrl + "; Params: " + strParams );
 	    String strFullUrl = getNet().resolveUrl(strUrl);
-		
+
 	    if ( strFullUrl.length() > 0 )
 	    {
 	        synchronized(m_mxSyncNotifications){
@@ -376,19 +376,19 @@ public class SyncNotify {
 	    }
 	}
 
-    public void setSyncStatusListener(ISyncStatusListener listener) 
-    { 
+    public void setSyncStatusListener(ISyncStatusListener listener)
+    {
     	synchronized(m_mxSyncNotifications){
     		m_syncStatusListener = listener;
     	}
     }
-    
-    public void reportSyncStatus(String status, int error, String strDetails) 
+
+    public void reportSyncStatus(String status, int error, String strDetails)
     {
     	synchronized(m_mxSyncNotifications)
-    	{    	
+    	{
 	    	if (m_syncStatusListener != null && (isReportingEnabled() || error == RhoAppAdapter.ERR_SYNCVERSION) ) {
-	    		
+
 	    		if ( error == RhoAppAdapter.ERR_SYNCVERSION )
 	    			status = RhoAppAdapter.getErrorText(error);
 	    		else
@@ -397,9 +397,9 @@ public class SyncNotify {
 		    			strDetails = RhoAppAdapter.getErrorText(error);
 		    		status += (strDetails.length() > 0 ? RhoAppAdapter.getMessageText("details") + strDetails: "");
 	    		}
-	    		
+
 	        	LOG.INFO("Status: "+status);
-	    		
+
 	        	m_syncStatusListener.reportStatus( status, error);
 	    	}
     	}
@@ -409,7 +409,7 @@ public class SyncNotify {
 	{
 		if ( getSync().getState() == SyncEngine.esExit )
 			return;
-		
+
 		if( nErrCode != RhoAppAdapter.ERR_NONE)
 		{
 			String strMessage = RhoAppAdapter.getMessageText("sync_failed_for") + "bulk.";
@@ -434,14 +434,14 @@ public class SyncNotify {
 			if ( !getSync().isSearch() )
 			{
 				String strMessage = RhoAppAdapter.getMessageText("sync_failed_for") + "all.";
-				
+
 				reportSyncStatus(strMessage,nErrCode,strError);
 			}
 		}
-	    
+
 	    synchronized(m_mxSyncNotifications)
 	    {
-	        SyncNotification pSN = getSyncNotifyBySrc(null);    
+	        SyncNotification pSN = getSyncNotifyBySrc(null);
 	        if ( pSN != null )
 	            doFireSyncNotification( null, bFinish, nErrCode, strError, "", strServerError );
 	    }
@@ -451,21 +451,21 @@ public class SyncNotify {
 	{
 		if ( getSync().getState() == SyncEngine.esExit )
 			return;
-		
+
 		if( strMessage.length() > 0 || nErrCode != RhoAppAdapter.ERR_NONE)
 		{
 			if ( !getSync().isSearch() )
 			{
 				if ( src != null && (strMessage==null || strMessage.length() == 0) )
 					strMessage = RhoAppAdapter.getMessageText("sync_failed_for") + src.getName() + ".";
-				
+
 				reportSyncStatus(strMessage,nErrCode,src!= null?src.m_strError:"");
 			}
 		}
-		
+
 		doFireSyncNotification(src, bFinish, nErrCode, "", "", "" );
 	}
-	
+
 	SyncNotification getSyncNotifyBySrc(SyncSource src)
 	{
 	    SyncNotification pSN = null;
@@ -485,15 +485,15 @@ public class SyncNotify {
 
 	    return pSN != null ? pSN : m_emptyNotify;
 	}
-	
+
 	void doFireSyncNotification( SyncSource src, boolean bFinish, int nErrCode, String strError, String strParams, String strServerError )
 	{
 		if ( getSync().isStoppedByUser() )
 			return;
-		
+
 		try{
-			SyncNotification pSN = null;		
-			
+			SyncNotification pSN = null;
+
 		    String strBody = "";
 		    boolean bRemoveAfterFire = bFinish;
 		    {
@@ -501,7 +501,7 @@ public class SyncNotify {
 		    		pSN = getSyncNotifyBySrc(src);
 			        if ( pSN == null )
 			            return;
-			
+
 				    strBody = "";
 
 		            if ( src != null )
@@ -509,16 +509,16 @@ public class SyncNotify {
 				        strBody += "total_count=" + src.getTotalCount();
 				        strBody += "&processed_count=" + src.getCurPageCount();
 				        strBody += "&processed_objects_count=" + getLastSyncObjectCount(src.getID());
-				        strBody += "&cumulative_count=" + src.getServerObjectsCount();			        
+				        strBody += "&cumulative_count=" + src.getServerObjectsCount();
 				        strBody += "&source_id=" + src.getID();
 				        strBody += "&source_name=" + src.getName();
 		            }
-		            
+
 		            if ( strParams.length() > 0 )
 		            	strBody += (strBody.length() > 0 ? "&" : "") + strParams;
 		            else
 		            	strBody += (strBody.length() > 0 ? "&" : "") + "sync_type=incremental";
-			        
+
 			        strBody += "&status=";
 			        if ( bFinish )
 			        {
@@ -526,71 +526,71 @@ public class SyncNotify {
 				        {
 				        	if ( getSync().isSchemaChanged() )
 				        		strBody += "schema_changed";
-				        	else				        	
+				        	else
 				        		strBody += (src == null && strParams.length() == 0) ? "complete" : "ok";
 				        }
 				        else
 				        {
 				        	if ( getSync().isStoppedByUser() )
 		                        nErrCode = RhoAppAdapter.ERR_CANCELBYUSER;
-				        	
-				        	strBody += "error";				        	
+
+				        	strBody += "error";
 						    strBody += "&error_code=" + nErrCode;
-						    
+
 						    if ( strError != null && strError.length() > 0 )
 						    {
 							    if ( strError.length() > MAX_SERVER_ERROR_LEN )
 							    	strError = strError.substring(0, MAX_SERVER_ERROR_LEN);
-						    	
+
 						    	strBody += "&error_message=" + URI.urlEncode(strError);
 						    }
 						    else  if ( src != null && src.m_strError != null)
 						    {
 							    if ( src.m_strError.length() > MAX_SERVER_ERROR_LEN )
 							    	src.m_strError = src.m_strError.substring(0, MAX_SERVER_ERROR_LEN);
-						    	
+
 						    	strBody += "&error_message=" + URI.urlEncode(src.m_strError);
 						    }
-						    
+
 						    if ( strServerError != null && strServerError.length() > 0 )
 						    {
 							    if ( strServerError.length() > MAX_SERVER_ERROR_LEN )
 							    	strServerError = strServerError.substring(0, MAX_SERVER_ERROR_LEN);
-						    	
+
 						    	strBody += "&" + strServerError;
 						    }
 						    else if ( src != null && src.m_strServerError != null && src.m_strServerError.length() > 0  )
 						    {
 							    if ( src.m_strServerError.length() > MAX_SERVER_ERROR_LEN )
 							    	src.m_strServerError = src.m_strServerError.substring(0, MAX_SERVER_ERROR_LEN);
-						    	
+
 						    	strBody += "&" + src.m_strServerError;
 						    }
 				        }
-				        
+
 		                if ( src != null )
 		                    strBody += makeCreateObjectErrorBody( src.getID());
 			        }
 			        else
 			        	strBody += "in_progress";
-			        
+
 			        strBody += "&rho_callback=1";
 			        if ( pSN.m_strParams != null && pSN.m_strParams.length() > 0 )
 			        {
 			        	if ( !pSN.m_strParams.startsWith("&") )
 			        		strBody += "&";
-			        	
+
 			        	strBody += pSN.m_strParams;
-			        }			        	
-			        
+			        }
+
 			        bRemoveAfterFire = bRemoveAfterFire && pSN.m_bRemoveAfterFire;
 		        }
 		    }
 		    if ( bRemoveAfterFire )
 		    	clearNotification(src);
-		    
+
 		    LOG.INFO("Fire notification. Source : " + (src != null ? (src).getName():"") + "; " + pSN.toString());
-		    
+
             if ( callNotify(pSN, strBody) )
                 clearNotification(src);
 		}catch(Exception exc)
@@ -609,7 +609,7 @@ public class SyncNotify {
 
         if ( oNotify.m_strUrl.length() == 0 )
             return true;
-        
+
         NetResponse resp = getNet().pushData( oNotify.m_strUrl, strBody, null );
         if ( !resp.isOK() )
             LOG.ERROR( "Fire object notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData() );
@@ -634,15 +634,15 @@ public class SyncNotify {
 	            m_mapSyncNotifications.remove(src.getID());
 	    }
 	}
-	
-	void clearSyncNotification(int source_id) 
+
+	void clearSyncNotification(int source_id)
 	{
 		LOG.INFO( "Clear notification. Source ID: " + source_id );
-		
+
 		synchronized(m_mxSyncNotifications){
 			if ( source_id == -1 )//Clear all
 				m_pAllNotification = null;
-			else			
+			else
 				m_mapSyncNotifications.remove(new Integer(source_id));
 		}
 	}
@@ -663,12 +663,12 @@ public class SyncNotify {
 	        nCount = ((Integer)m_hashSrcObjectCount.get(nSrcID));
 	        if ( nCount == null )
 	        	nCount = new Integer(0);
-	        
+
 	        nCount = new Integer(nCount.intValue()+1);
-	        
+
 	        m_hashSrcObjectCount.put(nSrcID,nCount);
 	    }
-	    
+
 	    return nCount != null ? nCount.intValue() : 0;
 	}
 
@@ -690,22 +690,22 @@ public class SyncNotify {
 		try{
 			if ( getSync().isStoppedByUser() )
 				return;
-			
+
 		    String strBody = "error_code=" + nErrCode;
 		    if ( strMessage != null&& strMessage.length() > MAX_SERVER_ERROR_LEN )
 		    	strMessage = strMessage.substring(0, MAX_SERVER_ERROR_LEN);
-		    	
+
 	        strBody += "&error_message=" + URI.urlEncode(strMessage != null? strMessage : "");
 	        strBody += "&rho_callback=1";
-	        
+
 			LOG.INFO( "Login callback: " + oNotify.toString() + ". Body: "+ strBody );
 
-            callNotify(oNotify, strBody);	
+            callNotify(oNotify, strBody);
 		}catch(Exception exc)
 		{
 			LOG.ERROR("Call Login callback failed.", exc);
 		}
 	}
-	
-	
+
+
 }

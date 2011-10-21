@@ -1,4 +1,4 @@
-# Testing, Logging, and Debugging 
+# Testing, Logging, and Debugging
 
 ## Testing
 
@@ -10,7 +10,7 @@ When you [generate a model](generator#add-new-model), you will now get an _spec.
 	....
 	[ADDED]  app/Person/person_spec.rb
 
-This file contains tests for your controller and is in the mspec format: [rubyspec.org](http://rubyspec.org/) 
+This file contains tests for your controller and is in the mspec format: [rubyspec.org](http://rubyspec.org/)
 
 	:::ruby
 	describe "Person" do
@@ -37,7 +37,7 @@ You will then see the mspec framework added to your application:
 	     [ADDED]  app/spec_runner.rb
 
 Finally, add the fileutils and mspec extensions to your build.yml:
-	
+
 	extensions: ["fileutils", "mspec"]
 
 You are now ready to run the tests. Simply add a link to the SpecRunner controller, and you will get a summary of number of passing/failing tests
@@ -73,7 +73,7 @@ When you are ready to do a production build of your application, change build.ym
 	...
 
 ## Logging
-There are two methods to log messages. 
+There are two methods to log messages.
 
 From any controller you can log using the methods app_info and app_error. These methods take a string and will write that to rholog.txt with the category of your controllers name. See platform specific [build topic](build) to see notes on how to get rholog.txt.
 

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -40,7 +40,7 @@ public class RhomModel {
 	public final static int SYNC_TYPE_NONE = 0;
 	public final static int SYNC_TYPE_INCREMENTAL = 1;
 	public final static int SYNC_TYPE_BULK_ONLY = 2;
-	
+
     private String mName;
     private int mModelType;
 
@@ -61,17 +61,17 @@ public class RhomModel {
     private static native void destroyByName(String modelName, String keys[], String values[]);
     private static native void startBulkUpdateByName(String modelName);
     private static native void stopBulkUpdateByName(String modelName);
-    
+
     public RhomModel(String name, int syncType) {
     	init();
     	mName = name;
     	mSyncType = syncType;
     }
-    
+
     public String getName() { return mName; }
     public int getModelType() { return mModelType; }
     public void setModelType(int type) { mModelType = type; }
-    public int getSyncType() { return mSyncType; } 
+    public int getSyncType() { return mSyncType; }
     public void setSyncType(int type) { mSyncType = type; }
     public int getSyncPriority() { return mSyncPriority; }
     public void setSyncPriority(int prio) { mSyncPriority = prio; }
@@ -83,10 +83,10 @@ public class RhomModel {
         Set<Map.Entry<String, Boolean> > entries = mBlobAttribs.entrySet();
         Iterator<Map.Entry<String, Boolean> > entryIt = entries.iterator();
         StringBuilder blobAttribs = new StringBuilder();
-    
+
         while(entryIt.hasNext()) {
             Map.Entry<String, Boolean> entry = entryIt.next();
-    
+
             if(blobAttribs.length() > 0)
                 blobAttribs.append(',');
 
@@ -108,7 +108,7 @@ public class RhomModel {
 			++n;
 		}
 	}
-	
+
 	public Map<String, String> find(String objectId) { return findByName(mName, objectId); }
     public Map<String, String> findFirst(Map<String, String> condition)
     {
@@ -130,13 +130,13 @@ public class RhomModel {
     	}
 		return findAllByName(mName, keys, vals);
     }
-	
+
 	public void create(Map<String, String> item) {
 		String keys[] = new String[item.size()];
 		String vals[] = new String[item.size()];
 		mapToArrays(item, keys, vals);
 		Map<String, String> created = createByName(mName, keys, vals);
-		
+
 		if (created != null) {
 			item.clear();
 			item.putAll(created);

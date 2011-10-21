@@ -1,4 +1,4 @@
-MinSeverity  = 1  
+MinSeverity  = 1
 
 LogToOutput=1
 LogToFile=1

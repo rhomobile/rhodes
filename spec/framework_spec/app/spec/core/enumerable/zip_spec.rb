@@ -36,7 +36,7 @@ describe "Enumerable#zip" do
     end
 
 #RHO: crash
-=begin    
+=begin
     it "converts arguments to arrays using #to_ary 2" do
       convertable = EnumerableSpecs::EnumConvertable.new(4..6)
       EnumerableSpecs::Numerous.new(1,2,3).zip(convertable).should == [[1,4],[2,5],[3,6]]
@@ -44,7 +44,7 @@ describe "Enumerable#zip" do
       convertable.sym.should == :each
     end
 =end
-#RHO    
+#RHO
   end
 
 end

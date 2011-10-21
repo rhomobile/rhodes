@@ -50,8 +50,8 @@
 
 #  include _STLP_NATIVE_HEADER(memory)
 
-#  if defined (__MSL__) && (__MSL__ >= 0x2405   && __MSL__ < 0x5201) 
-/*  980401 vss  MSL 2.4  Pro 3 Release  */  
+#  if defined (__MSL__) && (__MSL__ >= 0x2405   && __MSL__ < 0x5201)
+/*  980401 vss  MSL 2.4  Pro 3 Release  */
 #    include <new_mem.h>
 #  endif
 

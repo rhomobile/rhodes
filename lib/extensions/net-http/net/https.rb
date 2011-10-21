@@ -91,9 +91,9 @@ It can be replaced by the following code:
 require 'net/http'
 
 if System::get_property('platform') != 'Blackberry'
-    require 'openssl' 
+    require 'openssl'
 else
-    module OpenSSL    
+    module OpenSSL
         module SSL
             VERIFY_NONE = 0
         end

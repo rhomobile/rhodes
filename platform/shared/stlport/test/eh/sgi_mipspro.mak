@@ -1,4 +1,4 @@
-# ;;; -*- Mode:makefile;-*- 
+# ;;; -*- Mode:makefile;-*-
 # Generated automatically from Makefile.in by configure.
 # This requires GNU make.
 
@@ -35,8 +35,8 @@ CXX = $(CC)
 # CXXFLAGS = -J 4 -ansi -LANG:std -I. ${STL_INCL} ${DEBUG_FLAGS} -I. -D_STLP_NO_OWN_IOSTREAMS -D_STLP_NO_NEW_IOSTREAMS
 CXXFLAGS = -J 4 -ansi -LANG:std -I. ${STL_INCL} ${DEBUG_FLAGS} -I.
 
-LIBS = -L../../lib -lstlport_mipspro -lm 
-LIBSTDCXX = 
+LIBS = -L../../lib -lstlport_mipspro -lm
+LIBSTDCXX =
 
 .SUFFIXES: .cpp .i .o .out .res
 

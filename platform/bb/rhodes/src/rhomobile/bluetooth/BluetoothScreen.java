@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -33,7 +33,7 @@ import net.rim.device.api.ui.component.SeparatorField;
 import net.rim.device.api.ui.container.MainScreen;
 
 public class BluetoothScreen extends MainScreen {
-	
+
 	public static int BLUETOOTH_SCREEN_TYPE_CLIENT = 1;
 	public static int BLUETOOTH_SCREEN_TYPE_SERVER = 2;
 	public static int BLUETOOTH_SCREEN_TYPE_UNSUPPORTED = 3;
@@ -42,19 +42,19 @@ public class BluetoothScreen extends MainScreen {
 		void onBluetoothScreenCancel();
 		void onBluetoothScreenSelect(int index);
 	}
-	
+
 	private static String TITLE = "Bluetooth";
 	private static String SELECT_DEVICE = "Please select device to connect :";
 	private static String WAIT_FOR_CONNECT = "Waiting for a connection ...";
 	private static String NO_DEVICES = "There are no paired devices for connect !";
 	private static String UNSUPPORTED = "Bluetooth is not supported on this BlackBerry or simulator.";
-		
+
 
 	private BluetoothScreenCallback mCallback;
 	private LabelField[] mFields;
 	private boolean mIsClosedBySelect = false;
-	
-	
+
+
 	public BluetoothScreen(int type, String[] devices, BluetoothScreenCallback callback) {
 		BluetoothManager.rhoLogInfo("BluetoothScreen()");
 		mCallback = callback;
@@ -91,15 +91,15 @@ public class BluetoothScreen extends MainScreen {
 			add(new SeparatorField());
 		}
 	}
-	
+
     /**
-     * Overrides Screen.invokeAction().  Handles a trackball click and provides 
+     * Overrides Screen.invokeAction().  Handles a trackball click and provides
      * identical behavior to an ENTER keypress event.
-     * 
+     *
      * @see net.rim.device.api.ui#invokeAction(int)
      */
     public boolean invokeAction(int action)
-    {        
+    {
         switch(action)
         {
             case ACTION_INVOKE: // Trackball click.
@@ -114,18 +114,18 @@ public class BluetoothScreen extends MainScreen {
             			return true; // We've consumed the event.
             		}
             	}
-        }   
+        }
         return  super.invokeAction(action);
     }
-	
+
     /**
      * Called when the main screen (and thus, the application) closes.  Removes
      * this screen as a low memory listener, and commits the order list to the
      * persistent store.
-     * 
+     *
      * @see net.rim.device.api.ui.Screen#onClose()
      */
-    public boolean onClose() 
+    public boolean onClose()
     {
 		if (mCallback != null) {
 			if (!mIsClosedBySelect) {
@@ -135,11 +135,11 @@ public class BluetoothScreen extends MainScreen {
 		mIsClosedBySelect = false;
         return super.onClose();
     }
-    
+
     public void closeSilent() {
 		mIsClosedBySelect = true;
 		BluetoothManager.rhoPopScreen(this);
     }
-	
+
 
 }

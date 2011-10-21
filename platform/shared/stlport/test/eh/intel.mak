@@ -6,9 +6,9 @@
 
 !IF "$(OS)" == "Windows_NT"
 NULL=
-!ELSE 
+!ELSE
 NULL=nul
-!ENDIF 
+!ENDIF
 ################################################################################
 # Begin Project
 RSC=rc.exe
@@ -18,7 +18,7 @@ F90=fl32.exe
 OUTDIR=.
 INTDIR=.
 
-# set this directories 
+# set this directories
 STL_INCL=../../stlport
 VC_INCL=.
 # d:/vc41/msdev/include
@@ -63,7 +63,7 @@ clean :
    $(CPP) $(CPP_PROJ) /c $<
 
 .cpp.E:
-   $(CPP) $(CPP_PROJ) -E $< >$*.E  
+   $(CPP) $(CPP_PROJ) -E $< >$*.E
 
 .cpp.sbr:
-   $(CPP) $(CPP_PROJ) $<  
+   $(CPP) $(CPP_PROJ) $<

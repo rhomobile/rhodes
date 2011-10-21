@@ -32,26 +32,26 @@ describe "IO.foreach" do
     obj = mock('lines.txt fixture')
     obj.should_receive(:to_str).and_return(@name)
     IO.foreach(obj) { |l| ScratchPad << l }
-if System.get_property('platform') == 'WINDOWS'      
+if System.get_property('platform') == 'WINDOWS'
     ScratchPad.recorded.should == IOSpecs.lines
-end    
+end
   end
 
   ruby_version_is "1.8.7" do
     it "returns an Enumerator when called without a block" do
       IO.foreach(@name).should be_an_instance_of(enumerator_class)
-if System.get_property('platform') == 'WINDOWS'            
+if System.get_property('platform') == 'WINDOWS'
       IO.foreach(@name).to_a.should == IOSpecs.lines
-end      
+end
     end
   end
 
   describe "with no separator argument" do
     it "yields a sequence of Strings that were separated by $/" do
       IO.foreach(@name) { |l| ScratchPad << l }
-if System.get_property('platform') == 'WINDOWS'            
+if System.get_property('platform') == 'WINDOWS'
       ScratchPad.recorded.should == IOSpecs.lines
-end      
+end
     end
 
     it "updates $. with each yield" do
@@ -62,18 +62,18 @@ end
   ruby_version_is "1.9.2" do
     it "accepts an optional options argument" do
       IO.foreach(@name, :mode => 'r') {|l| ScratchPad << l}
-if System.get_property('platform') == 'WINDOWS'            
+if System.get_property('platform') == 'WINDOWS'
       ScratchPad.recorded.should == IOSpecs.lines
-end      
+end
     end
   end
 
   describe "with nil as the separator argument" do
     it "yields a single string with entire content" do
       IO.foreach(@name, nil) { |l| ScratchPad << l }
-if System.get_property('platform') == 'WINDOWS'            
+if System.get_property('platform') == 'WINDOWS'
       ScratchPad.recorded.should == [IOSpecs.lines.join]
-end      
+end
     end
 
     it "updates $. with each yield" do
@@ -84,9 +84,9 @@ end
   describe "with an empty String as the separator argument" do
     it "yields a sequence of paragraphs when the separator is an empty string" do
       IO.foreach(@name, "") { |l| ScratchPad << l }
-if System.get_property('platform') == 'WINDOWS'            
+if System.get_property('platform') == 'WINDOWS'
       ScratchPad.recorded.should == IOSpecs.lines_empty_separator
-end      
+end
     end
 
     it "updates $. with each yield" do
@@ -97,9 +97,9 @@ end
   describe "with an arbitrary String as the separator argument" do
     it "yields a sequence of Strings that were separated by r" do
       IO.foreach(@name, "r") { |l| ScratchPad << l }
-if System.get_property('platform') == 'WINDOWS'            
+if System.get_property('platform') == 'WINDOWS'
       ScratchPad.recorded.should == IOSpecs.lines_r_separator
-end      
+end
     end
 
     it "updates $. with each yield" do
@@ -120,14 +120,14 @@ end
         obj = mock("IO.foreach separator 'r'")
         obj.should_receive(:to_str).once.and_return("r")
         IO.foreach(@name, obj) { |l| ScratchPad << l }
-if System.get_property('platform') == 'WINDOWS'              
+if System.get_property('platform') == 'WINDOWS'
         ScratchPad.recorded.should == IOSpecs.lines_r_separator
-end        
+end
       end
     end
 
     ruby_version_is "1.9" do
-if System.get_property('platform') != 'ANDROID'    
+if System.get_property('platform') != 'ANDROID'
       it "calls #to_str once for each line read to convert it to a String" do
         obj = mock("IO.foreach separator 'r'")
         obj.should_receive(:to_str).exactly(6).times.and_return("r")
@@ -140,7 +140,7 @@ if System.get_property('platform') != 'ANDROID'
         path.should_receive(:to_path).and_return(@name)
         IO.foreach(path).to_a.should == IOSpecs.lines
       end
-end      
+end
     end
   end
 

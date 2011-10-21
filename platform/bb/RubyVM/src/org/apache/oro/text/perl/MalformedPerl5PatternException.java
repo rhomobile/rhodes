@@ -1,4 +1,4 @@
-/* 
+/*
  * $Id: MalformedPerl5PatternException.java 124053 2005-01-04 01:24:35Z dfs $
  *
  * Copyright 2000-2005 The Apache Software Foundation
@@ -56,7 +56,7 @@ public final class MalformedPerl5PatternException
    * @param message  A message indicating the nature of the error.
    */
   public MalformedPerl5PatternException(String message) {
-    super(message);                                
+    super(message);
   }
 
 }

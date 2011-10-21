@@ -5,7 +5,7 @@ As we've shown in the [Rhom section](/rhodes/rhom), adding synchronized data via
 This section covers in detail how the `SyncEngine` works in Rhodes and how you can use its flexible APIs to build data-rich native applications.
 
 ## Sync Workflow
-The `SyncEngine` interacts with RhoConnect over http(s) using [JSON](http://www.json.org/) as a data exchange format.  With the exception of [bulk sync](/rhoconnect/bulk-sync), pages of synchronized data, or "sync pages" as we will refer to them here, are sent as JSON from RhoConnect to the `SyncEngine`.  
+The `SyncEngine` interacts with RhoConnect over http(s) using [JSON](http://www.json.org/) as a data exchange format.  With the exception of [bulk sync](/rhoconnect/bulk-sync), pages of synchronized data, or "sync pages" as we will refer to them here, are sent as JSON from RhoConnect to the `SyncEngine`.
 
 Below is a simplified diagram of the `SyncEngine` workflow:
 
@@ -31,11 +31,11 @@ In `settings_controller.rb#do_login`, the `SyncEngine.login` method is called:
 
 	:::ruby
 	SyncEngine.login(
-	  @params['login'], 
-	  @params['password'], 
-	  url_for(:action => :login_callback) 
+	  @params['login'],
+	  @params['password'],
+	  url_for(:action => :login_callback)
 	)
-	
+
 Here login is called with the `login` and `password` provided by the `login.erb` form.  A `:login_callback` action is declared to handle the asynchronous result of the `SyncEngine.login` request.
 
 ### `login_callback`
@@ -52,15 +52,15 @@ When `SyncEngine.login` completes, the callback declared is executed and receive
         if error_code == Rho::RhoError::ERR_CUSTOMSYNCSERVER
           @msg = @params['error_message']
         end
-        
-        if not @msg or @msg.length == 0   
+
+        if not @msg or @msg.length == 0
           @msg = Rho::RhoError.new(error_code).message
         end
-      
-        WebView.navigate( 
-		  url_for(:action => :login, :query => {:msg => @msg}) 
+
+        WebView.navigate(
+		  url_for(:action => :login, :query => {:msg => @msg})
 		)
-      end  
+      end
     end
 
 This sample checks the login `error_code`, if it is `0`, perform a full sync and render the settings page.  Otherwise, it sets up an error message and re-displays the login page with an error.
@@ -76,11 +76,11 @@ If the `SyncEngine` already knows about a logged-in user and a new user logs in,
 	  def initialize
 	    super
 	  end
-	
+
 	  def on_sync_user_changed
 	    super
 		MyCoolApp.reset_user_preferences!
-	  end 
+	  end
 	end
 
 **NOTE: If `on_sync_user_changed`, data for all sync-enabled models will be removed.  To remove data for all local models as well:**
@@ -90,7 +90,7 @@ If the `SyncEngine` already knows about a logged-in user and a new user logs in,
 	  super
 	  Rhom::Rhom.database_local_reset
 	end
-	
+
 Other auth-related methods are described in the [`SyncEngine` API section](/rhodes/synchronization#syncengine-api).
 
 ## Notifications
@@ -104,7 +104,7 @@ To set a notification for a model, you can use the following method:
 	  url_for(:action => :sync_notify),
 	  "sync_complete=true"
 	)
-	
+
 Which is the same as:
 
 	:::ruby
@@ -112,7 +112,7 @@ Which is the same as:
 	  url_for(:action => :sync_notify),
 	  "sync_complete=true"
 	)
-	
+
 In this example, once the sync process for the `Account` model is complete, the view will be directed to the `sync_notify` action (with params 'sync_complete=true') if user is on the same page.
 
 **NOTE: In these examples, after the sync is complete the notifications are removed.**
@@ -121,10 +121,10 @@ You can also set a notification for all models:
 
 	:::ruby
 	SyncEngine.set_notification(
-	  -1, url_for(:action => :sync_notify), 
+	  -1, url_for(:action => :sync_notify),
 	  "sync_complete=true"
 	)
-	
+
 **NOTE: This notification will not be removed automatically.**
 
 ### Notification Parameters
@@ -167,7 +167,7 @@ For "create-error", "update-error", "delete-error": Type object is hash each con
 This status returns only when the `SyncEngine` process is complete.
 
 #### "schema-changed"
-This status returns for bulk-sync models that use [`FixedSchema`](/rhom#fixed-schema) when the schema has changed in the RhoConnect server.  
+This status returns for bulk-sync models that use [`FixedSchema`](/rhom#fixed-schema) when the schema has changed in the RhoConnect server.
 
 **NOTE: In this scenario the sync callback should notify the user with a wait screen and start the bulk sync process.**
 
@@ -189,7 +189,7 @@ So sync will work fine, but nobody will know about these changes.
 	:::ruby
 	SyncEngine.on_sync_update_error( src_name, objects, action, rollback_objects = nil )
 	Model.on_sync_update_error( objects, action, rollback_objects = nil)
-    
+
     * objects - One or more error objects
     * action - May be :retry or :rollback. :retry will push update object operation to server again at next sync, :rollback will write rollback_objects to client database.
     * rollback_objects - contains objects attributes before failed update and sends by server. should be specified for :rollback action.
@@ -201,23 +201,23 @@ So sync will work fine, but nobody will know about these changes.
 	:::ruby
 	SyncEngine.on_sync_delete_error( src_name, objects, action )
 	Model.on_sync_delete_error( objects, action )
-    
+
     * objects - One or more error objects
     * action - May be :retry - will push delete object operation to server again at next sync.
 
 For example:
 	:::ruby
-    SyncEngine.on_sync_create_error( @params['source_name'], 
+    SyncEngine.on_sync_create_error( @params['source_name'],
         @params['server_errors']['create-error'], :delete)
 
-    SyncEngine.on_sync_update_error( @params['source_name'], 
+    SyncEngine.on_sync_update_error( @params['source_name'],
         @params['server_errors']['update-error'], :retry)
-    SyncEngine.on_sync_update_error( @params['source_name'], 
+    SyncEngine.on_sync_update_error( @params['source_name'],
         @params['server_errors']['update-error'], :rollback, @params['server_errors']['update-rollback'] )
-        
-    SyncEngine.on_sync_delete_error( @params['source_name'], 
+
+    SyncEngine.on_sync_delete_error( @params['source_name'],
         @params['server_errors']['delete-error'], :retry)
-   
+
 ### Notification Example
 Here is a simple example of a sync notification method that uses some of the parameters described above:
 
@@ -226,48 +226,48 @@ Here is a simple example of a sync notification method that uses some of the par
 	  status = @params['status'] ? @params['status'] : ""
 	  bulk_sync? = @params['sync_type'] == 'bulk'
 
-	  if status == "in_progress" 	
+	  if status == "in_progress"
 	    # do nothing
-	
+
 	  elsif status == "complete" or status == "ok"
 	    WebView.navigate Rho::RhoConfig.start_path
-	
+
 	  elsif status == "error"
-	  
-        if @params['server_errors'] && 
+
+        if @params['server_errors'] &&
            @params['server_errors']['create-error']
-            SyncEngine.on_sync_create_error( @params['source_name'], 
+            SyncEngine.on_sync_create_error( @params['source_name'],
                 @params['server_errors']['create-error'], :delete)
         end
-	  
+
 	    err_code = @params['error_code'].to_i
 	    rho_error = Rho::RhoError.new(err_code)
-   
+
 		if err_code == Rho::RhoError::ERR_CUSTOMSYNCSERVER
     	  @msg = @params['error_message']
 	    end
-	
-	    @msg = rho_error.message unless @msg and @msg.length > 0   
+
+	    @msg = rho_error.message unless @msg and @msg.length > 0
 
 	    if rho_error.unknown_client?(@params['error_message'])
 	      Rhom::Rhom.database_client_reset
 	      SyncEngine.dosync
-	
+
 	    elsif err_code == Rho::RhoError::ERR_UNATHORIZED
-	      WebView.navigate( 
+	      WebView.navigate(
 		    url_for(
-			  :action => :login, 
-			  :query => { :msg => "Server credentials expired!" } 
-			)
-		  )                
-	    else
-	      WebView.navigate( 
-		    url_for(
-			  :action => :err_sync, 
-			  :query => { :msg => @msg } 
+			  :action => :login,
+			  :query => { :msg => "Server credentials expired!" }
 			)
 		  )
-	    end    
+	    else
+	      WebView.navigate(
+		    url_for(
+			  :action => :err_sync,
+			  :query => { :msg => @msg }
+			)
+		  )
+	    end
 	  end
 	end
 
@@ -293,7 +293,7 @@ To use object notifications, first set the notification callback in `application
 	end
 
 Next, in your controller action that displays the object(s), add the object notification by passing in a record or collection of records:
-	
+
 	:::ruby
 	class ProductController < Rho::RhoController
 
@@ -304,12 +304,12 @@ Next, in your controller action that displays the object(s), add the object noti
 	    add_objectnotify(@products)
 	    render
 	  end
-	
+
 	  # ...
-	
+
 	  def sync_object_notify
 	    #... do something with notification data ...
-	
+
 		# refresh the current page
 	    WebView.refresh
 	    # or call System.execute_js to call javascript function which will update list
@@ -336,10 +336,10 @@ First, call `search` from your controller action:
 	  page_size = @params['page_size'] || 10
 	  Contact.search(
 	    :from => 'search',
-	    :search_params => { 
-		  :FirstName => @params['FirstName'], 
-		  :LastName => @params['LastName'], 
-		  :Company => @params['Company'] 
+	    :search_params => {
+		  :FirstName => @params['FirstName'],
+		  :LastName => @params['LastName'],
+		  :Company => @params['Company']
 		},
 	    :offset => page * page_size,
 	    :max_results => page_size,
@@ -351,22 +351,22 @@ First, call `search` from your controller action:
 
 
 Your callback might look like:
-	
+
 	:::ruby
 	def search_callback
-	  status = @params["status"] 
+	  status = @params["status"]
 	  if (status and status == "ok")
-	    WebView.navigate( 
-		  url_for( 
-		    :action => :show_page, 
+	    WebView.navigate(
+		  url_for(
+		    :action => :show_page,
 		    :query => @params['search_params']
-		  ) 
+		  )
 		)
 	  else
 	    render :action => :search_error
 	  end
 	end
-	
+
 **NOTE: Typically you want to forward the original search query `@params['search_params']` to your view that displays the results so you can perform the same query locally.**
 
 Next, the resulting action `:show_page` will be called.  Here we demonstrate using Rhom's [advanced find query syntax](/rhodes/rhom#advanced-queries) since we are filtering a very large dataset:
@@ -375,43 +375,43 @@ Next, the resulting action `:show_page` will be called.  Here we demonstrate usi
 	def show_page
 	  @contacts = Contact.find(
 		:all,
-	    :conditions => { 
+	    :conditions => {
 	      {
-		    :func => 'LOWER', 
-		    :name => 'FirstName', 
+		    :func => 'LOWER',
+		    :name => 'FirstName',
 		    :op => 'LIKE'
-		  } => @params[:FirstName], 
+		  } => @params[:FirstName],
 	      {
-		    :func => 'LOWER', 
-		    :name=>'LastName', 
+		    :func => 'LOWER',
+		    :name=>'LastName',
 		    :op=>'LIKE'
 		  } => @params[:LastName],
 	      {
-		    :func=>'LOWER', 
-		    :name=>'Company', 
+		    :func=>'LOWER',
+		    :name=>'Company',
 		    :op=>'LIKE'
 		  } => @params[:Company],
-	    }, 
-	    :op => 'OR', 
+	    },
+	    :op => 'OR',
 	    :select => ['FirstName','LastName', 'Company'],
-	    :per_page => page_size, 
-	    :offset => page * page_size 
-	  )    
+	    :per_page => page_size,
+	    :offset => page * page_size
+	  )
 	  render :action => :show_page
 	end
 
 
 If you want to stop or cancel the search, return "stop" in your callback:
-	
+
 	:::ruby
-	def search_callback    
+	def search_callback
 	  if(status and status == 'ok')
 	    WebView.navigate( url_for :action => :show_page )
 	  else
 	    'stop'
 	  end
 	end
-	
+
 Finally, you will need to implement the `search` method in your source adapter.  See the [RhoConnect search method](/rhoconnect/source-adapters#source-adapter-api) for more details.
 
 ## SyncEngine API
@@ -422,9 +422,9 @@ Authenticates the user with RhoConnect.  The callback will be executed when it i
 
 	:::ruby
 	SyncEngine.login(
-	  @params['login'], 
-	  @params['password'], 
-	  url_for(:action => :login_callback) 
+	  @params['login'],
+	  @params['password'],
+	  url_for(:action => :login_callback)
 	)
 
 ### `logout`
@@ -434,7 +434,7 @@ Logout the user from the RhoConnect server.  This removes the local user session
 	SyncEngine.logout
 
 ### `logged_in`
-Returns 1 if the `SyncEngine` currently has a user session, 0 if not.  
+Returns 1 if the `SyncEngine` currently has a user session, 0 if not.
 
 	:::ruby
 	if SyncEngine::logged_in == 1
@@ -460,7 +460,7 @@ query_params will pass to sync server
 
 	:::ruby
 	SyncEngine.dosync_source(Product.get_source_id.to_i, false) #sync by source id
-    SyncEngine.dosync_source(Product.get_source_name, false) #sync by source name	
+    SyncEngine.dosync_source(Product.get_source_name, false) #sync by source name
 
 ### `lock_sync_mutex`
 Blocking call to wait for `SyncEngine` lock (useful for performing batch operations).
@@ -483,7 +483,7 @@ Stops any sync operations currently in progress.
 ### `set_notification(source_id, callback_url, params = nil)`
 See the [sync notification section](/rhodes/synchronization#notifications).
 
-### `set_notification(-1, callback_url, params = nil)` 
+### `set_notification(-1, callback_url, params = nil)`
 Set notification callback for all models. This callback is not removed after the sync process completes.  See the [sync notification section](/rhodes/synchronization#notifications).
 
 ### `clear_notification(source_id)`
@@ -491,25 +491,25 @@ Clears the sync notification for a given source id.
 
 	:::ruby
 	SyncEngine.clear_notification(Product.get_source_id)
-	
+
 ### `on_sync_create_error( src_name, objects, action )`
 "create-error" has to be handled in sync callback. Otherwise sync will stop on this model. To fix create errors you should call Model.on_sync_create_error or SyncEngine.on_sync_create_error.
 
 	:::ruby
-    SyncEngine.on_sync_create_error( @params['source_name'], 
+    SyncEngine.on_sync_create_error( @params['source_name'],
         @params['server_errors']['create-error'], :delete)
-    
+
 * objects - One or more error objects
 * action - May be :delete or :recreate. :delete just remove object from client, :recreate will push this object to server again at next sync.
 
 ### `on_sync_update_error( src_name, objects, action, rollback_objects = nil )`
 
 	:::ruby
-    SyncEngine.on_sync_update_error( @params['source_name'], 
+    SyncEngine.on_sync_update_error( @params['source_name'],
         @params['server_errors']['update-error'], :retry)
-    SyncEngine.on_sync_update_error( @params['source_name'], 
+    SyncEngine.on_sync_update_error( @params['source_name'],
         @params['server_errors']['update-error'], :rollback, @params['server_errors']['update-rollback'] )
-    
+
 * objects - One or more error objects
 * action - May be :retry or :rollback. :retry will push update object operation to server again at next sync, :rollback will write rollback_objects to client database.
 * rollback_objects - contains objects attributes before failed update and sends by server. should be specified for :rollback action.
@@ -517,9 +517,9 @@ Clears the sync notification for a given source id.
 ### `on_sync_delete_error( src_name, objects, action )`
 
 	:::ruby
-    SyncEngine.on_sync_delete_error( @params['source_name'], 
+    SyncEngine.on_sync_delete_error( @params['source_name'],
         @params['server_errors']['delete-error'], :retry)
-    
+
 * objects - One or more error objects
 * action - May be :retry - will push delete object operation to server again at next sync.
 
@@ -552,7 +552,7 @@ Get the current sync page size for the `SyncEngine`. See [the `SyncEngine` workf
 	:::ruby
 	SyncEngine.get_pagesize
 	  #=> 2000
-	
+
 	SyncEngine.set_pagesize(5000)
 	SyncEngine.get_pagesize
 	  #=> 5000
@@ -581,7 +581,7 @@ Returns current username of the `SyncEngine` session if `logged_in` is true, oth
 Call search on the RhoConnect application with given parameters.  See the [search section](#filtering-datasets-with-search) for more details.
 
 	:::ruby
-	# :from 			Sets the RhoConnect path that records 
+	# :from 			Sets the RhoConnect path that records
 	#					will be fetched with (optional).
 	#					Default is 'search'.
 	#
@@ -594,18 +594,18 @@ Call search on the RhoConnect application with given parameters.  See the [searc
 	# :callback 		Callback to be executed after search
 	#					is completed.
 	#
-	# :callback_param	(optional) Parameters passed to callback. 
+	# :callback_param	(optional) Parameters passed to callback.
 	#
-	# :progress_step	(optional) Define how often search callback 
-	#					will be executed with 'in_progress' state. 
+	# :progress_step	(optional) Define how often search callback
+	#					will be executed with 'in_progress' state.
 	# :sync_changes     (optional)  - true or false(default). Define should client changes send to server before search.
-	
+
 	Contact.search(
 	  :from => 'search',
-	  :search_params => { 
-	    :FirstName => @params['FirstName'], 
-	    :LastName => @params['LastName'], 
-	    :Company => @params['Company'] 
+	  :search_params => {
+	    :FirstName => @params['FirstName'],
+	    :LastName => @params['LastName'],
+	    :Company => @params['Company']
 	  },
 	  :offset => page * page_size,
 	  :max_results => page_size,
@@ -623,10 +623,10 @@ For example:
 	SyncEngine.search(
 	  :source_names => ['Product', 'Customer'],
 	  :from => 'search',
-	  :search_params => { 
-        :FirstName => @params['FirstName'], 
-        :LastName => @params['LastName'], 
-        :Company => @params['Company'] 
+	  :search_params => {
+        :FirstName => @params['FirstName'],
+        :LastName => @params['LastName'],
+        :Company => @params['Company']
       },
 	  :offset => page * page_size,
 	  :max_results => page_size,

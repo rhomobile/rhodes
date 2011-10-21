@@ -93,10 +93,10 @@ close_file(struct stream *stream)
 
 	if ( f )
 		(void) fclose(f);
-#else*/	
+#else*/
 	assert(stream->chan.fd != -1);
 	(void) close(stream->chan.fd);
-//#endif	
+//#endif
 }
 
 void
@@ -110,7 +110,7 @@ _shttpd_get_file(struct conn *c, struct stat *stp)
 
 	if (c->mime_type.len == 0)
 		_shttpd_get_mime_type(c->ctx, c->uri,
-		    strlen(c->uri), &c->mime_type); 
+		    strlen(c->uri), &c->mime_type);
 	cl = (big_int_t) stp->st_size;
 
 	/* If Range: header specified, act accordingly */

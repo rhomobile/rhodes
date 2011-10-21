@@ -1,4 +1,4 @@
-/* 
+/*
  * $Id: Perl5Substitution.java 124053 2005-01-04 01:24:35Z dfs $
  *
  * Copyright 2000-2005 The Apache Software Foundation
@@ -42,7 +42,7 @@ package org.apache.oro.text.regex;
  *  matching pattern."  An input of <b>b123:</b> after substitution
  * would yield a result of <b>a123-</b>.  But there's a little more
  * to be aware of.  If you set the <b>numInterpolations</b> parameter to
- * <b>INTERPOLATE_ALL</b>, then every time a match is found, the 
+ * <b>INTERPOLATE_ALL</b>, then every time a match is found, the
  * interpolation variables are computed relative to that match.
  * But if <b>numInterpolations</b> is set to some positive integer, then
  * only the interpolation variables for the first <b>numInterpolations</b>
@@ -56,7 +56,7 @@ package org.apache.oro.text.regex;
  * {@link Util#substitute Util.substitute})
  * of <b> SUBSTITUTE_ALL</b>, then your result  will be:
  * <pre><b>Tank a123- 85  Tank a256- 32  Tank a78- 22</b></pre>
- * But if you set <b> numInterpolations </b> to 2 and keep 
+ * But if you set <b> numInterpolations </b> to 2 and keep
  * <b> numSubs </b> with a value of <b>SUBSTITUTE_ALL</b>, your result is:
  * <pre><b>Tank a123- 85  Tank a256- 32  Tank a256- 22</b></pre>
  * Notice how the last substitution uses the same value for <b>$1</b>
@@ -108,8 +108,8 @@ public class Perl5Substitution extends StringSubstitution {
   public static final int INTERPOLATE_ALL = 0;
 
   /**
-   * A constant used when creating a Perl5Substitution indicating that 
-   * interpolation variables should be interpreted literally, effectively 
+   * A constant used when creating a Perl5Substitution indicating that
+   * interpolation variables should be interpreted literally, effectively
    * disabling interpolation.
    */
   public static final int INTERPOLATE_NONE = -1;
@@ -154,7 +154,7 @@ public class Perl5Substitution extends StringSubstitution {
    * A constant declaring opcode for lowercase mode operation.
    */
   static final int _OPCODE_ENDCASE_MODE    = -6;
-  
+
   int _numInterpolations;
   int[] _subOpcodes;
   int _subOpcodesCount;
@@ -186,7 +186,7 @@ public class Perl5Substitution extends StringSubstitution {
 
     _subOpcodes = new int[__OPCODE_STORAGE_SIZE];
     _subOpcodesCount = 0;
-    
+
     posParam = 0;
     offset = -1;
     saveDigits = false;
@@ -197,7 +197,7 @@ public class Perl5Substitution extends StringSubstitution {
       char c = subChars[current];
       char nextc;
       int next = current + 1;
-        
+
       // Save digits
       if (saveDigits) {
 	int digit = Character.digit(c, 10);
@@ -315,7 +315,7 @@ public class Perl5Substitution extends StringSubstitution {
       if(value >= 0 && value < result.groups()) {
 	int end, len;
 	offset = result.begin(value);
-	
+
 	if (offset < 0) continue;
 
 	end = result.end(value);
@@ -371,7 +371,7 @@ public class Perl5Substitution extends StringSubstitution {
 	}
       } else
 	buffer.append(sub, offset, count);
-        
+
     }
   }
 
@@ -401,7 +401,7 @@ public class Perl5Substitution extends StringSubstitution {
    * and setting the number of interpolations to the specified value.
    * <p>
    * @param substitution The string to use as a substitution.
-   * @param numInterpolations 
+   * @param numInterpolations
    *            If set to <b>INTERPOLATE_NONE</b>, interpolation variables are
    *            interpreted literally and not as references to the saved
    *            parenthesized groups of a pattern match.  If set to
@@ -442,7 +442,7 @@ public class Perl5Substitution extends StringSubstitution {
    * Perl5Substitution and reuse it by using this method when appropriate.
    * <p>
    * @param substitution The string to use as a substitution.
-   * @param numInterpolations 
+   * @param numInterpolations
    *            If set to <b>INTERPOLATE_NONE</b>, interpolation variables are
    *            interpreted literally and not as references to the saved
    *            parenthesized groups of a pattern match.  If set to
@@ -459,7 +459,7 @@ public class Perl5Substitution extends StringSubstitution {
     super.setSubstitution(substitution);
     _numInterpolations = numInterpolations;
 
-    if(numInterpolations != INTERPOLATE_NONE && 
+    if(numInterpolations != INTERPOLATE_NONE &&
        (substitution.indexOf('$') != -1 || substitution.indexOf('\\') != -1))
       __parseSubs(substitution);
     else
@@ -471,13 +471,13 @@ public class Perl5Substitution extends StringSubstitution {
   /**
    * Appends the substitution to a buffer containing the original input
    * with substitutions applied for the pattern matches found so far.
-   * See 
+   * See
    * {@link Substitution#appendSubstitution Substitution.appendSubstition()}
    * for more details regarding the expected behavior of this method.
    * <p>
    * @param appendBuffer The buffer containing the new string resulting
    * from performing substitutions on the original input.
-   * @param match The current match causing a substitution to be made. 
+   * @param match The current match causing a substitution to be made.
    * @param substitutionCount  The number of substitutions that have been
    *  performed so far by Util.substitute.
    * @param originalInput The original input upon which the substitutions are
@@ -487,7 +487,7 @@ public class Perl5Substitution extends StringSubstitution {
    */
   public void appendSubstitution(StringBuffer appendBuffer, MatchResult match,
 				 int substitutionCount,
-				 PatternMatcherInput originalInput, 
+				 PatternMatcherInput originalInput,
 				 PatternMatcher matcher, Pattern pattern)
   {
     if(_subOpcodes == null) {

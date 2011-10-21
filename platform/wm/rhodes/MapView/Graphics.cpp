@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -62,7 +62,7 @@ DEFINE_GUID(CLSID_ImagingFactory, 0x327abda8,0x072b,0x11d3,0x9d,0x7b,0x00,0x00,0
 
 
 
-#define IP_PORTION_COUNT 32 
+#define IP_PORTION_COUNT 32
 
 static void msg_out(const char* text) {
 	//wchar_t msg[2048];
@@ -92,7 +92,7 @@ DrawingImageImpl::DrawingImageImpl(const char* path, bool useAlpha) {
 }
 
 DrawingImageImpl::DrawingImageImpl(WMBitmap* bitmap) {
-	init(NULL, NULL, 0, bitmap, false);	
+	init(NULL, NULL, 0, bitmap, false);
 }
 
 
@@ -219,10 +219,10 @@ void DrawingContextImpl::drawImage(int x, int y, IDrawingImage* image) {
 void DrawingContextImpl::drawText(int x, int y,  int nWidth, int nHeight, String const &text, int color) {
 	RHO_MAP_TRACE2("DrawingContext drawText with x = %d, y = %d", x, y);
 
-	HFONT hfontTahoma;         
-	LOGFONT logfont;          
+	HFONT hfontTahoma;
+	LOGFONT logfont;
 	HFONT hfontSave = NULL;
-  
+
     memset (&logfont, 0, sizeof (logfont));
 	logfont.lfHeight = 18;
 	logfont.lfWidth = 0;
@@ -375,7 +375,7 @@ WMBitmap::~WMBitmap() {
 	}
 }
 
-void WMBitmap::draw(HDC hdc, int x, int y) 
+void WMBitmap::draw(HDC hdc, int x, int y)
 {
     HDC mMemoryDC = CreateCompatibleDC(hdc);
     HGDIOBJ resObj = ::SelectObject(mMemoryDC, mMemoryBitmap);
@@ -411,9 +411,9 @@ void WMBitmap::release() {
 	}
 }
 
-WMAlphaBitmap::WMAlphaBitmap(IImage* img) 
+WMAlphaBitmap::WMAlphaBitmap(IImage* img)
 {
-#if defined(_WIN32_WCE)	
+#if defined(_WIN32_WCE)
 	IImagingFactory *pImgFactory = NULL;
 
 	mWidth = 0;
@@ -546,8 +546,8 @@ void RENDER_DST16_SRC32(unsigned short* pdst, unsigned int* psrc)
 			register unsigned short dst = *pdst;
 			NORMALIZE_ALPHA(srca);
 			RENDER_R_16_32(dst, src, srca);
-			RENDER_G_16_32(dst, src, srca);			
-			RENDER_B_16_32(dst, src, srca);			
+			RENDER_G_16_32(dst, src, srca);
+			RENDER_B_16_32(dst, src, srca);
 			*pdst = dst;
 		}
 	}
@@ -563,7 +563,7 @@ void WMAlphaBitmap::draw(unsigned short int *buf, int lineSizeInBytes) {
 	for (y = 0; y < mHeight; y++) {
 		src = mImgBuf + (mHeight-1-y)*mWidth;
 		dst = (unsigned short*)( ((unsigned char*)buf) + (lineSizeInBytes*y) );
-		
+
 		for (x = 0; x < mWidth; x++) {
 			RENDER_DST16_SRC32(dst++, src++);
 		}

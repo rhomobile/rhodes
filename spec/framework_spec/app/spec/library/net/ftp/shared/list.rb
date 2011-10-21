@@ -130,5 +130,5 @@ if System::get_property('platform') != 'WINDOWS'
       lambda { @ftp.send(@method) }.should raise_error(Net::FTPPermError)
     end
   end
-end  
+end
 end

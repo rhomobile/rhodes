@@ -18,17 +18,17 @@ public class MethodType {
 	public static MethodType TWO_ARG = new FixedMethodType(4, "TWO_ARG");
 	public static MethodType ONE_OR_TWO_ARG = new FixedMethodType(6, "ONE_OR_TWO_ARG");
 	public static MethodType VAR_ARG = new FixedMethodType(8, "VAR_ARG");
-	
+
 	private int value;
-	
+
 	private MethodType(int value) {
 		this.value = value;
 	}
-	
+
 	public int value() {
 		return this.value;
 	}
-	
+
 	private static final Type methodTypeType = Type.getType(MethodType.class);
 
 	public void generateMethodType(GeneratorAdapter mg) {
@@ -36,19 +36,19 @@ public class MethodType {
 		mg.invokeStatic(methodTypeType,
 				CgUtil.getMethod("valueOf", methodTypeType, Type.INT_TYPE));
 	}
-	
+
 	static boolean isNoArg(MethodType type) {
 		return (type.value & NO_ARG.value) != 0;
 	}
-	
+
 	static boolean isOneArg(MethodType type) {
 		return (type.value & ONE_ARG.value) != 0;
 	}
-	
+
 	static boolean isTwoArg(MethodType type) {
 		return (type.value & TWO_ARG.value) != 0;
 	}
-	
+
 	public static MethodType valueOf(int value) {
 		switch(value) {
 		case -1:
@@ -69,10 +69,10 @@ public class MethodType {
 			return new MethodType(value);
 		}
 	}
-	
+
 	static class FixedMethodType extends MethodType {
 		private String str;
-		
+
 		private FixedMethodType(int value, String text) {
 			super(value);
 			this.str = text;

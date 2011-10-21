@@ -85,9 +85,9 @@ describe "IO#sysread on a file" do
     end
   end
 
-if System.get_property('platform') != 'ANDROID'      
+if System.get_property('platform') != 'ANDROID'
   it "raises IOError on closed stream" do
     lambda { IOSpecs.closed_io.sysread(5) }.should raise_error(IOError)
   end
-end  
+end
 end

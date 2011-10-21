@@ -9,7 +9,7 @@ import com.rho.sync.SyncEngine;
 
 public class NetRequest
 {
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("Net");
 
 	public static interface IRhoSession
@@ -18,7 +18,7 @@ public class NetRequest
 		public abstract String getSession();
 		public abstract String getContentType();
 	}
-	
+
 	public static class MultipartItem
 	{
 	    //mutually exclusive
@@ -36,7 +36,7 @@ public class NetRequest
 
 	public void cancel() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public NetResponse pullData(Object clientCreateUrl, SyncEngine syncEngine) {
@@ -49,18 +49,18 @@ public class NetRequest
 		HashMap headers = new HashMap();
 		m_bIgnoreSuffixOnSim = false;
 		m_bCancel = false;
-    	
+
 		NetResponse resp = doRequest("POST", strUrl, strBody, oSession, headers);
 		if ( resp.isOK() )
 		{
 			String strCookie = resp.getCookies();
 			if ( strCookie == null || strCookie.length() == 0 )
 				strCookie = "rho_empty";
-			
+
 			resp.setCharData(strCookie);
 			LOG.INFO("pullCookies: " + resp.getCharData() );
 		}
-		
+
 		return resp;
 	}
 
@@ -93,7 +93,7 @@ public class NetRequest
 
 		int code = resp.getRespCode();
 
-		if ( code >= 400 ) 
+		if ( code >= 400 )
 		{
 			LOG.ERROR("Error retrieving data: " + code);
 			if (code == IHttpConnection.HTTP_UNAUTHORIZED && oSession != null)
@@ -115,17 +115,17 @@ public class NetRequest
 		InputStream is = null;
 		OutputStream os = null;
 		int code = -1;
-		
+
 		m_bCancel = false;
 		try{
 			closeConnection();
 			m_connection = RhoClassFactory.getNetworkAccess().connect(strUrl, m_bIgnoreSuffixOnSim);
 			LOG.INFO("connection done");
-			
+
 			handleCookie(oSession);
 			//m_connection.setRequestProperty("Connection", "keep-alive");
 			//m_connection.setRequestProperty("Accept", "application/x-www-form-urlencoded,application/json,text/html");
-			
+
 			if ( strBody != null && strBody.length() > 0 )
 			{
 				if ( oSession != null )
@@ -137,7 +137,7 @@ public class NetRequest
 				LOG.INFO("writeHeaders done");
 				//m_connection.setRequestMethod(IHttpConnection.POST);
 				m_connection.setRequestMethod(strMethod);
-				
+
 				os = m_connection.openOutputStream();
 				os.write(strBody.getBytes(), 0, strBody.length());
 				LOG.INFO("write body done");
@@ -146,17 +146,17 @@ public class NetRequest
 				writeHeaders(headers);
 				m_connection.setRequestMethod(strMethod);
 			}
-			
+
 			code = m_connection.getResponseCode();
 			LOG.INFO("getResponseCode : " + code);
-			
+
 			is = m_connection.openInputStream();
 			LOG.INFO("openInputStream done");
 
 			readHeaders(headers);
 			copyHashtable(m_OutHeaders, headers);
-			
-			if ( code >= 400 ) 
+
+			if ( code >= 400 )
 			{
 				LOG.ERROR("Error retrieving data: " + code);
 				if (code == IHttpConnection.HTTP_UNAUTHORIZED && oSession != null)
@@ -164,7 +164,7 @@ public class NetRequest
 					LOG.ERROR("Unauthorize error.Client will be logged out");
 					oSession.logout();
 				}
-				
+
 				//if ( code != IHttpConnection.HTTP_INTERNAL_ERROR )
 				{
 					strRespBody = readFully(is, getResponseEncoding());
@@ -174,9 +174,9 @@ public class NetRequest
 			{
 				long len = m_connection.getLength();
 				LOG.INFO("fetchRemoteData data size:" + len );
-		
+
 				strRespBody = readFully(is, getResponseEncoding());
-				
+
 				LOG.INFO("fetchRemoteData data readFully.");
 			}
 
@@ -186,16 +186,16 @@ public class NetRequest
 				try{ is.close(); }catch(IOException exc){}
 			if ( os != null )
 				try{ os.close(); }catch(IOException exc){}
-			
+
 			closeConnection();
-			
+
 			m_bIgnoreSuffixOnSim = true;
 		}
-		
+
 		return makeResponse(strRespBody, code );
   		*/
       }
-	
+
 	public NetResponse pullFile(String strHsqlScriptUrl, String fScriptName,
 			SyncEngine syncEngine, Object object) {
 		// TODO Auto-generated method stub
@@ -218,14 +218,14 @@ public class NetRequest
 		// TODO Auto-generated method stub
 		return null;
 	};
-	
+
 /*
 	public boolean isCancelled(){ return false; }
-	
+
 	//TODO: use sslVerifyPeer
     public boolean sslVerifyPeer() {return false;}
     public void sslVerifyPeer(boolean mode) { }
-	
+
 	public NetResponse pullData(String strUrl, IRhoSession oSession ) throws Exception
     {
 		return null;
@@ -242,29 +242,29 @@ public class NetRequest
 	private void readHeaders(Hashtable headers) throws Exception
 	{
 	}
-	
+
 	public static void copyHashtable(Hashtable from, Hashtable to)
 	{
 	}
-	
+
 	private String getResponseEncoding() throws Exception
 	{
 	}
-	
+
 	void handleCookie(IRhoSession oSession) throws Exception
 	{
 	}
-	
+
 	public NetResponse doRequest(String strMethod, String strUrl, String strBody, IRhoSession oSession, Hashtable headers ) throws Exception
     {
 		return null;
     }
-	
+
 	private NetResponse makeResponse(String strRespBody, int nErrorCode)throws Exception
 	{
 		return null;
 	}
-	
+
 	public NetResponse pushData(String strUrl, String strBody, IRhoSession oSession)throws Exception
     {
 		return null;
@@ -274,36 +274,36 @@ public class NetRequest
     {
         return null;
     }
-	
+
 	public NetResponse pullCookies(String strUrl, String strBody, IRhoSession oSession)throws Exception
 	{
 		return null;
 	}
-	
+
 	void processMultipartItems( Vector arItems )throws Exception
 	{
 	}
-	
+
     public NetResponse pushMultipartData(String strUrl, Vector arItems, IRhoSession oSession, Hashtable headers)throws Exception
     {
 		return null;
     }
-	
+
 	public NetResponse pullFile( String strUrl, String strFileName, IRhoSession oSession, Hashtable headers )throws Exception
 	{
 		return null;
 	}
-	
+
 	NetResponse pullFile1( String strUrl, IRAFile file, long nStartPos, IRhoSession oSession, Hashtable headers )throws Exception
 	{
 		return null;
 	}
-	
+
 	private boolean isFinishDownload()throws IOException
 	{
 		return false;
 	}
-	
+
 	public String resolveUrl(String strUrl) throws Exception
     {
 	    return "";
@@ -313,12 +313,12 @@ public class NetRequest
     {
     }
 
-	public static final String readFully(InputStream in, String strContType) throws Exception 
+	public static final String readFully(InputStream in, String strContType) throws Exception
 	{
 		return "";
 	}
-	
+
 	public void closeConnection(){
 	}
-*/	
+*/
 }

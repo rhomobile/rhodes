@@ -149,7 +149,7 @@ public class RubyCompilerImpl implements CodeVisitor {
     }
 
     public void visitSingletonClassDefinition() {
-        MethodGenerator mg = cg_.getMethodGenerator();      
+        MethodGenerator mg = cg_.getMethodGenerator();
         mg.loadCurrentScope(isInClassBuilder(), isInSingletonMethod(), isInGlobalScope(), isInBlock());
         mg.RubyValue_getSingletonClass();
         callClassModuleBuilder("SINGLETON", true);
@@ -662,12 +662,12 @@ public class RubyCompilerImpl implements CodeVisitor {
         MethodGenerator mg = cg_.getMethodGenerator();
         mg.loadLocal(i);
         mg.RubyAPI_testCaseEqualNotNil();
-        
+
         Label label = new Label();
         mg.ifZCmp(GeneratorAdapter.EQ, label);
         return label;
     }
-    
+
     public Object visitAfterWhenBody(Object next_label, Object end_label) {
         return visitAfterIfBody(next_label, end_label);
     }
@@ -1196,7 +1196,7 @@ public class RubyCompilerImpl implements CodeVisitor {
             visitNilExpression();
         }
     }
-    
+
     public void visitDefinedYield() {
         if (cg_ instanceof ClassGeneratorForRubyMethod) {
             MethodGenerator mg = cg_.getMethodGenerator();

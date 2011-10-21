@@ -143,7 +143,7 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
   private Button mCancelButton2 = null;
   private Button mRetakeButton = null;
   private Button mOKButton = null;
-  
+
   /**
    * When the beep has finished playing, rewind to queue up another one.
    */
@@ -195,7 +195,7 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
     mCancelButton = (Button)findViewById(R.id.cancel_button);
     mRetakeButton = (Button)findViewById(R.id.retake_button);
     mOKButton = (Button)findViewById(R.id.ok_button);
-    
+
     mCancelButton2.setOnClickListener( new OnClickListener() {
 		public void onClick(View v) {
 			onCancel();
@@ -212,25 +212,25 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
 		public void onClick(View v) {
 			onOK();
 		}});
-    
+
     mCancelButton2.setVisibility(View.VISIBLE);
-    
+
     showHelpOnFirstLaunch();
   }
-  
-  
+
+
   public void onCancel() {
       finish();
 	  com.rhomobile.barcode.Barcode.callCancelCallback();
   }
-  
+
   public void onRetake() {
       resetStatusView();
 	  if (handler != null) {
         handler.sendEmptyMessage(R.id.restart_preview);
       }
   }
-  
+
   public void onOK() {
       finish();
       String res = null;
@@ -239,8 +239,8 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
       }
    	  com.rhomobile.barcode.Barcode.callOKCallback(res);
   }
-  
-  
+
+
 
   @Override
   protected void onResume() {
@@ -288,15 +288,15 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
         decodeFormats = null;
       }
       characterSet = intent.getStringExtra(Intents.Scan.CHARACTER_SET);
-    } 
+    }
     else
-    */ 
+    */
     {
       source = Source.NONE;
       decodeFormats = null;
       characterSet = null;
     }
-    
+
 
     //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
     playBeep = true;//prefs.getBoolean(PreferencesActivity.KEY_PLAY_BEEP, true);
@@ -562,7 +562,7 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
     metaTextView.setVisibility(View.GONE);
     metaTextViewLabel.setVisibility(View.GONE);
     */
-    
+
     /*
     Map<ResultMetadataType,Object> metadata =
         (Map<ResultMetadataType,Object>) rawResult.getResultMetadata();
@@ -588,12 +588,12 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
     // Crudely scale betweeen 22 and 32 -- bigger font for shorter text
     int scaledSize = Math.max(22, 32 - displayContents.length() / 4);
     contentsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, scaledSize);
-    
+
     mCancelButton2.setVisibility(View.GONE);
     mCancelButton.setVisibility(View.VISIBLE);
     mRetakeButton.setVisibility(View.VISIBLE);
     mOKButton.setVisibility(View.VISIBLE);
-    
+
 
     /*
     int buttonCount = resultHandler.getButtonCount();
@@ -619,7 +619,7 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
 
   // Briefly show the contents of the barcode, then handle the result outside Barcode Scanner.
   private void handleDecodeExternally(Result rawResult, Bitmap barcode) {
-	/*  
+	/*
     viewfinderView.drawResultBitmap(barcode);
 
     // Since this message will only be shown for a second, just tell the user what kind of
@@ -765,7 +765,7 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
     //statusView.setText(R.string.msg_default_status);
     //statusView.setVisibility(View.VISIBLE);
     viewfinderView.setVisibility(View.VISIBLE);
-    
+
     mCancelButton2.setVisibility(View.VISIBLE);
     mCancelButton.setVisibility(View.GONE);
     mRetakeButton.setVisibility(View.GONE);

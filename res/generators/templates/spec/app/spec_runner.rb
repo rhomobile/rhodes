@@ -4,7 +4,7 @@ class SpecRunner < MSpecScript
   def initialize
     super
     config[:files] = []
-    
+
     # turn on exception backtrace
     MSpec.backtrace = true
 

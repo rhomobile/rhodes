@@ -13,7 +13,7 @@ describe "MapView" do
 
     state = MapView.state
     state.should_not be_nil
-    state.is_a?(Hash).should == true 
+    state.is_a?(Hash).should == true
     delta = 0.001
     (state[:center][:latitude] - 37.0).abs.should  < delta
     (state[:center][:longitude] - (-122.0)).abs.should  < delta
@@ -32,7 +32,7 @@ describe "MapView" do
 
      myannotations = []
      250.times do |j|
-          annotation = {:latitude => '37.349691', :longitude => '-121.983261', :title => "Test Location", :subtitle => "test", :url => "/app/GeoLocation/show?city=Current Location"}	
+          annotation = {:latitude => '37.349691', :longitude => '-121.983261', :title => "Test Location", :subtitle => "test", :url => "/app/GeoLocation/show?city=Current Location"}
           myannotations << annotation
      end
 
@@ -53,7 +53,7 @@ describe "MapView" do
 
     state = MapView.state
     state.should_not be_nil
-    state.is_a?(Hash).should == true 
+    state.is_a?(Hash).should == true
     delta = 0.001
     (state[:center][:latitude] - 37.0).abs.should  < delta
     (state[:center][:longitude] - (-122.0)).abs.should  < delta

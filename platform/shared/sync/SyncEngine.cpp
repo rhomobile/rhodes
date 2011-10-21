@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -70,9 +70,9 @@ void CSyncEngine::initProtocol()
 }
 
 void CSyncEngine::setSslVerifyPeer(boolean b)
-{ 
-    m_NetRequest.setSslVerifyPeer(b); 
-    m_NetRequestClientID.setSslVerifyPeer(b); 
+{
+    m_NetRequest.setSslVerifyPeer(b);
+    m_NetRequestClientID.setSslVerifyPeer(b);
 
     if ( CClientRegister::getInstance() != null )
         CClientRegister::getInstance()->setSslVerifyPeer(b);
@@ -146,7 +146,7 @@ void CSyncEngine::prepareSync(ESyncState eState, const CSourceID* oSrcID)
     CSyncSource* src = null;
     if ( oSrcID != null )
     	src = findSource(*oSrcID);
-    
+
 	if ( src != null )
 	{
         src->m_nErrCode = m_nErrCode;
@@ -166,7 +166,7 @@ void CSyncEngine::doSyncAllSources(const String& strQueryParams)
 
     if ( isContinueSync() )
     {
-	    PROF_CREATE_COUNTER("Net");	    
+	    PROF_CREATE_COUNTER("Net");
 	    PROF_CREATE_COUNTER("Parse");
 	    PROF_CREATE_COUNTER("DB");
 	    PROF_CREATE_COUNTER("Data");
@@ -176,7 +176,7 @@ void CSyncEngine::doSyncAllSources(const String& strQueryParams)
 
         syncAllSources(strQueryParams);
 
-	    PROF_DESTROY_COUNTER("Net");	    
+	    PROF_DESTROY_COUNTER("Net");
 	    PROF_DESTROY_COUNTER("Parse");
 	    PROF_DESTROY_COUNTER("DB");
 	    PROF_DESTROY_COUNTER("Data");
@@ -333,7 +333,7 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
 
             break;
         }
-    }  
+    }
 
     getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError, m_strServerError);
 
@@ -347,8 +347,8 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
             continue;
         CSyncSource& oSrc = *pSrc;
         oSrc.getDB().executeSQL("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, \
-						 last_sync_duration=?,last_sync_success=?, backend_refresh_time=? WHERE source_id=?", 
-                         timeUpdated, oSrc.getInsertedCount(), oSrc.getDeletedCount(), 
+						 last_sync_duration=?,last_sync_success=?, backend_refresh_time=? WHERE source_id=?",
+                         timeUpdated, oSrc.getInsertedCount(), oSrc.getDeletedCount(),
                          (endTime-startTime).toULong(), oSrc.getGetAtLeastOnePage(), oSrc.getRefreshTime(),
                          oSrc.getID() );
     }
@@ -400,7 +400,7 @@ CSyncSource* CSyncEngine::findSource(const CSourceID& oSrcID)
         if ( oSrcID.isEqual(src) )
             return &src;
     }
-    
+
     return null;
 }
 
@@ -443,7 +443,7 @@ void CSyncEngine::loadAllSources()
         db::CDBAdapter& dbPart = db::CDBAdapter::getDB(arPartNames.elementAt(i).c_str());
         IDBResult  res = dbPart.executeSQL("SELECT source_id,sync_type,name from sources ORDER BY sync_priority");
         for ( ; !res.isEnd(); res.next() )
-        { 
+        {
             String strShouldSync = res.getStringByIdx(1);
             if ( strShouldSync.compare("none") == 0 )
                 continue;
@@ -471,7 +471,7 @@ static int findSrcIndex( VectorPtr<CSyncSource*>& sources, const String& strSrcN
 void CSyncEngine::checkSourceAssociations()
 {
     Hashtable<String, int> hashPassed;
-    
+
     for( int nCurSrc = m_sources.size()-1; nCurSrc >= 0 ; )
     {
         CSyncSource& oCurSrc = *(m_sources.elementAt(nCurSrc));
@@ -547,7 +547,7 @@ String CSyncEngine::loadClientID()
     	    if ( !resetClientIDByNet(clientID) )
     		    stopSync();
     	    else
-    		    getUserDB().executeSQL("UPDATE client_info SET reset=? where client_id=?", 0, clientID );	    	
+    		    getUserDB().executeSQL("UPDATE client_info SET reset=? where client_id=?", 0, clientID );
         }
     }
 
@@ -620,7 +620,7 @@ void CSyncEngine::doBulkSync()//throws Exception
         return;
 
 	LOG(INFO) + "Bulk sync: start";
-    getNotify().fireBulkSyncNotification(false, "start", "", RhoAppAdapter.ERR_NONE);        
+    getNotify().fireBulkSyncNotification(false, "start", "", RhoAppAdapter.ERR_NONE);
     Vector<String> arPartNames = db::CDBAdapter::getDBAllPartitionNames();
     for (int i = 0; i < (int)arPartNames.size() && isContinueSync(); i++)
     {
@@ -640,7 +640,7 @@ extern "C" int rho_unzip_file(const char* szZipPath);
 static String getHostFromUrl( const String& strUrl );
 void CSyncEngine::loadBulkPartition(const String& strPartition )
 {
-    db::CDBAdapter& dbPartition = getDB(strPartition); 
+    db::CDBAdapter& dbPartition = getDB(strPartition);
     String serverUrl = RHOCONF().getPath("syncserver");
     String strUrl = serverUrl + "bulk_data";
     String strQuery = "?client_id=" + m_clientID + "&partition=" + strPartition;
@@ -649,7 +649,7 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
   	getNotify().fireBulkSyncNotification(false, "start", strPartition, RhoAppAdapter.ERR_NONE);
 
     while(strCmd.length() == 0&&isContinueSync())
-    {	    
+    {
         NetResponse resp = getNet().pullData(strUrl+strQuery, this);
         const char* szData = resp.getCharData();
         if ( !resp.isOK() || szData == null || *szData == 0)
@@ -661,12 +661,12 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
         }
 
 	    LOG(INFO) + "Bulk sync: got response from server: " + szData;
-    	
+
         CJSONEntry oJsonEntry(szData);
         strCmd = oJsonEntry.getString("result");
         if ( oJsonEntry.hasName("url") )
    	        strDataUrl = oJsonEntry.getString("url");
-        
+
         if ( strCmd.compare("wait") == 0)
         {
             int nTimeout = RHOCONF().getInt("bulksync_timeout_sec");
@@ -723,7 +723,7 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
 
 	LOG(INFO) + "Bulk sync: start change db";
    	getNotify().fireBulkSyncNotification(false, "change_db", strPartition, RhoAppAdapter.ERR_NONE);
-    
+
     dbPartition.setBulkSyncDB(fDataName, strCryptKey);
     processServerSources(String("{\"partition\":\"") + strPartition + "\"}");
 
@@ -735,7 +735,7 @@ String CSyncEngine::makeBulkDataFileName(String strDataUrl, String strDbPath, St
 {
     CFilePath oUrlPath(strDataUrl);
 	String strNewName = oUrlPath.getBaseName();
-    
+
     String strOldName = RHOCONF().getString("bulksync_filename");
 
     if ( strOldName.length() > 0 && strNewName.compare(strOldName) != 0 )
@@ -845,7 +845,7 @@ void CSyncEngine::login(String name, String password, const CSyncNotification& o
 		else
 			getUserDB().executeSQL("INSERT INTO client_info (session) values (?)", strSession);
 	}
-	
+
     if ( RHOCONF().isExist("rho_sync_user") )
     {
         String strOldUser = RHOCONF().getString("rho_sync_user");
@@ -862,7 +862,7 @@ void CSyncEngine::login(String name, String password, const CSyncNotification& o
     RHOCONF().setString("rho_sync_user", name, true);
 
     getNotify().callLoginCallback(oNotify, RhoAppAdapter.ERR_NONE, "" );
-	
+
     PROF_STOP("Login");
 
     if ( CClientRegister::getInstance() != null )
@@ -883,7 +883,7 @@ boolean CSyncEngine::isLoggedIn()
     IDBResult res = getUserDB().executeSQL("SELECT session FROM client_info");
     if ( !res.isOneEnd() )
     	strRes = res.getStringByIdx(0);
-    
+
     return strRes.length() > 0;
 }
 
@@ -891,10 +891,10 @@ String CSyncEngine::loadSession()
 {
     m_strSession = "";
     IDBResult res = getUserDB().executeSQL("SELECT session FROM client_info");
-    
+
     if ( !res.isEnd() )
     	m_strSession = res.getStringByIdx(0);
-    
+
     return m_strSession;
 }
 
@@ -907,16 +907,16 @@ void CSyncEngine::logout()
 
     //loadAllSources();
 }
-	
+
 void CSyncEngine::setSyncServer(const char* syncserver)
 {
 	String strOldSrv = RHOCONF().getString("syncserver");
 	String strNewSrv = syncserver ? syncserver : "";
-	
+
 	if ( strOldSrv.compare(strNewSrv) != 0)
 	{
 		RHOCONF().setString("syncserver", syncserver, true);
-		
+
 		getUserDB().executeSQL("DELETE FROM client_info");
 
 		logout();

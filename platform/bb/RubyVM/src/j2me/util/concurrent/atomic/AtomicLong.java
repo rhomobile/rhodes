@@ -1,7 +1,7 @@
 package j2me.util.concurrent.atomic;
 public class AtomicLong  {
         private volatile long value;
-        
+
     public AtomicLong(long initialValue) {
         value = initialValue;
     }
@@ -24,5 +24,5 @@ public class AtomicLong  {
                 return current;
         }
     }
-    
+
 }

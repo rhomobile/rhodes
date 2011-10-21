@@ -353,7 +353,7 @@ public class SchemaManager {
         Table t = findUserTable(session, name, schema);
         if (t == null)
         	t = findUserTable(session, session.getOrigToken(), schema);
-        
+
         if (t == null) {
             if (!INFORMATION_SCHEMA.equals(schema)) {
                 throw Trace.error(Trace.TABLE_NOT_FOUND);

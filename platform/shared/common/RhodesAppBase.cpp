@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -38,7 +38,7 @@ CRhodesAppBase* CRhodesAppBase::m_pInstance = 0;
 
 /*static*/ CRhodesAppBase* CRhodesAppBase::Create(const String& strRootPath)
 {
-    if ( m_pInstance != null) 
+    if ( m_pInstance != null)
         return m_pInstance;
 
     m_pInstance = new CRhodesAppBase(strRootPath);
@@ -59,8 +59,8 @@ CRhodesAppBase::CRhodesAppBase(const String& strRootPath) : CRhoThread()
 
     initAppUrls();
 }
-	
-void CRhodesAppBase::initAppUrls() 
+
+void CRhodesAppBase::initAppUrls()
 {
 #ifndef RHODES_EMULATOR
     m_strBlobsDirPath = getRhoRootPath() + "db/db-files";
@@ -104,7 +104,7 @@ String CRhodesAppBase::resolveDBFilesPath(const String& strFilePath)
     return CFilePath::join(strDbFileRoot, strFilePath);
 }
 
-String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl) 
+String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl)
 {
     if (strUrl.length() == 0 )
         return m_strHomeUrl;
@@ -158,11 +158,11 @@ int rho_unzip_file(const char* szZipPath)
 
 	// Iterate through items and unzip them
 	for (int zi = 0; zi<numitems; zi++)
-	{ 
+	{
 		// fetch individual details, e.g. the item's name.
-		res = GetZipItem(hz,zi,&ze); 
+		res = GetZipItem(hz,zi,&ze);
         if ( res == ZR_OK )
-    		res = UnzipItem(hz, zi, ze.name);         
+    		res = UnzipItem(hz, zi, ze.name);
 	}
 
 	CloseZip(hz);
@@ -178,7 +178,7 @@ const char* rho_rhodesapp_getplatform()
 
     if ( strPlatform.compare("bb") == 0 || strPlatform.compare("bb6") == 0 )
         return "Blackberry";
-    
+
     if ( strPlatform.compare("wm") == 0 )
         return "WINDOWS";
 
@@ -195,7 +195,7 @@ const char* rho_rhodesapp_getplatform()
         return "SYMBIAN";
 
     return "UNKNOWN";
-}    
+}
 #else
 
 const char* rho_rhodesapp_getplatform()
@@ -212,7 +212,7 @@ const char* rho_rhodesapp_getplatform()
     return "LINUX";
 #else
 	return "UNKNOWN";
-#endif			
+#endif
 }
 #endif  //!RHODES_EMULATOR
 
@@ -235,10 +235,10 @@ int rho_base64_encode(const char *src, int srclen, char *dst)
 		srclen = strlen(src);
 	if (!dst)
 		return (srclen/3)*4 + (srclen%3 ? 4 : 0) + 1;
-	
+
 	int out = 0;
 	for(int in = 0; in < srclen; in += 3, out += 4) {
-		
+
 		unsigned x = 0;
 		int actual = 0;
 		for (int i = 0; i < 3; ++i) {
@@ -251,7 +251,7 @@ int rho_base64_encode(const char *src, int srclen, char *dst)
 			}
 			x = (x << 8) + (unsigned char)c;
 		}
-		
+
 		for (int i = 0; i < 4; ++i) {
 			if (actual <= 0) {
 				dst[out + i] = '=';
@@ -263,7 +263,7 @@ int rho_base64_encode(const char *src, int srclen, char *dst)
 			}
 		}
 	}
-	
+
 	dst[out++] = '\0';
 	return out;
 }
@@ -277,7 +277,7 @@ int rho_base64_decode(const char *src, int srclen, char *dst)
 		return 0;
 	if (!dst)
 		return srclen*3/4 + 1;
-	
+
 	char *found;
 	int out = 0;
 	for (int in = 0; in < srclen; in += 4, out += 3) {
@@ -288,7 +288,7 @@ int rho_base64_decode(const char *src, int srclen, char *dst)
 			else if (src[in + i] == '=')
 				x <<= 6;
 		}
-		
+
 		for (int i = 0; i < 3; ++i) {
 			dst[out + i] = (unsigned char)((x >> 16) & 0xFF);
 			x <<= 8;
@@ -297,7 +297,7 @@ int rho_base64_decode(const char *src, int srclen, char *dst)
 	dst[out++] = '\0';
 	return out;
 }
-	
+
 } //extern "C"
 
 #if !defined(OS_ANDROID)

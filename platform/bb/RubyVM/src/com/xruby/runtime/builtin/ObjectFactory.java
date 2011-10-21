@@ -63,7 +63,7 @@ public class ObjectFactory {
 
         return new RubyFixnum(value);
     }
-    
+
     public static RubyInteger createInteger(long value) {
         return RubyBignum.bignorm(value);
     }
@@ -84,8 +84,8 @@ public class ObjectFactory {
         return new RubyString(c, s);
     }
 
-    private static Hashtable m_hashRegex = new Hashtable(); 
-    public static synchronized RubyRegexp createRegexp(String value, String option) 
+    private static Hashtable m_hashRegex = new Hashtable();
+    public static synchronized RubyRegexp createRegexp(String value, String option)
     {
     	String strKey = value+option;
     	Object obj = m_hashRegex.get(strKey);
@@ -131,7 +131,7 @@ public class ObjectFactory {
     }
 
     //RHO_COMMENT
-    public static RubyIO createResourceFile(String filename, String mode) 
+    public static RubyIO createResourceFile(String filename, String mode)
     {
     	InputStreamExecutor ise = new InputStreamExecutor(filename, mode);
     	if ( ise.getInputStream() == null )
@@ -139,7 +139,7 @@ public class ObjectFactory {
         return new RubyFile( ise, RubyRuntime.FileClass );
     }
     //RHO_COMMENT
-    
+
     public static RubyMethodValue createMethod(RubyValue r, String s, RubyMethod m) {
         return new RubyMethodValue(r, s, m);
     }

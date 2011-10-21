@@ -1,4 +1,4 @@
-/* 
+/*
  * $Id: RegexFilenameFilter.java 124053 2005-01-04 01:24:35Z dfs $
  *
  * Copyright 2000-2005 The Apache Software Foundation
@@ -82,7 +82,7 @@ public class RegexFilenameFilter implements FilenameFilter, FileFilter {
    *                  keys.
    * @throws IllegalArgumentException
    */
-  public RegexFilenameFilter(String engineKey) 
+  public RegexFilenameFilter(String engineKey)
     throws IllegalArgumentException
   {
     PatternMatchingEngineFactory factory = new PatternMatchingEngineFactory();
@@ -92,7 +92,7 @@ public class RegexFilenameFilter implements FilenameFilter, FileFilter {
       throw
         new IllegalArgumentException("Unsupported PatternMatchingEngine type: "
                                      + engineKey);
-    
+
     _cache   = new PatternCacheLRU(engine.createCompiler());
     _matcher = engine.createMatcher();
   }

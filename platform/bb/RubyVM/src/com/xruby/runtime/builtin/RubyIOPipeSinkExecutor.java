@@ -35,7 +35,7 @@ public class RubyIOPipeSinkExecutor implements RubyIOExecutor {
     {
     	return null;
     }
-    
+
     public boolean eof() {
         throw notAllowed();
     }

@@ -1105,7 +1105,7 @@ rb_file_directory_p(VALUE obj, VALUE fname)
     DWORD res = 0;
     if (TYPE(fname) != T_STRING)
         rb_raise(rb_eTypeError, "argument is not a string");
-/*    
+/*
     fd = open(RSTRING_PTR(fname), O_RDONLY);
     if (fd == -1) return Qfalse;
     (void)close(fd);
@@ -1291,12 +1291,12 @@ rb_file_exist_p(VALUE obj, VALUE fname)
     int fd;
     if (TYPE(fname) != T_STRING)
         rb_raise(rb_eTypeError, "argument is not a string");
-    
+
     fd = open(RSTRING_PTR(fname), O_RDONLY);
     if (fd == -1) return Qfalse;
     (void)close(fd);
     return Qtrue; */
-    if (TYPE(fname) == T_STRING) 
+    if (TYPE(fname) == T_STRING)
     {
         DWORD res = 0;
         if ( !*RSTRING_PTR(fname))

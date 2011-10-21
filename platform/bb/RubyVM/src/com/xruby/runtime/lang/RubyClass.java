@@ -51,14 +51,14 @@ public class RubyClass extends RubyModule {
 
         return klass;
     }
-    
+
     //@RubyLevelMethod(name="new")
     public RubyValue newInstance(RubyBlock block) {
         RubyValue v = this.allocObject();
         callInitializeMethod(v, block);
         return v;
     }
-    
+
     //@RubyLevelMethod(name="new")
     public RubyValue newInstance(RubyValue arg, RubyBlock block) {
         RubyValue v = this.allocObject();
@@ -72,11 +72,11 @@ public class RubyClass extends RubyModule {
         callInitializeMethod(v, args, block);
         return v;
     }
-    
+
     private void callInitializeMethod(RubyValue v, RubyBlock block) {
     	RubyAPI.callNoArgMethod(v, block, RubyID.initializeId);
     }
-    
+
     private void callInitializeMethod(RubyValue v, RubyValue arg, RubyBlock block) {
     	RubyAPI.callOneArgMethod(v, arg, block, RubyID.initializeId);
     }
@@ -84,41 +84,41 @@ public class RubyClass extends RubyModule {
     private void callInitializeMethod(RubyValue v, RubyArray args, RubyBlock block) {
     	RubyAPI.callMethod(v, args, block, RubyID.initializeId);
     }
-    
+
     //@RubyLevelMethod(name="initialize")
     public RubyValue initialize(RubyBlock block) {
     	return this.initialize(RubyRuntime.ObjectClass, block);
     }
-    
+
     //@RubyLevelMethod(name="initialize")
     public RubyValue initialize(RubyValue arg, RubyBlock block) {
     	if (this.superclass_ != null) {
     		throw new RubyException(RubyRuntime.TypeErrorClass, "already initialized class");
     	}
-    	
+
     	this.superclass_ = checkInheritable(arg);
     	new RubySingletonClass(this, this.superclass_.getRubyClass(), null);
     	ClassFactory.inheritedClass(this.superclass_, this);
     	this.initializeModule(block);
-    	
+
     	return this;
     }
-    
+
     //@RubyAllocMethod
     public static RubyClass allocClass(RubyValue receiver) {
     	return ClassFactory.createBootClass(null);
     }
-    
+
     private RubyClass checkInheritable(RubyValue superclass) {
     	if (!(superclass instanceof RubyClass)) {
     		throw new RubyException(RubyRuntime.TypeErrorClass, "superclass must be a Class (" + superclass.getClass().getName() + " given)");
     	}
-    	
+
     	RubyClass klass = (RubyClass)superclass;
     	if (klass.isSingleton()) {
     		throw new RubyException(RubyRuntime.TypeErrorClass, "can't make subclass of virtual class");
     	}
-    	
+
     	return klass;
     }
 
@@ -234,7 +234,7 @@ public class RubyClass extends RubyModule {
         cache.removeMethod(id);
         return super.addMethod(id, method, attribute);
     }
-    
+
     public static void initDummyMethods(RubyClass klass){
     	klass.definePrivateMethod("inherited", new RubyOneArgMethod(){
 	    	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block)
@@ -242,7 +242,7 @@ public class RubyClass extends RubyModule {
 	    		return RubyConstant.QNIL;
 	    	}
 	    } );
-    	
+
     }
-    
+
 }

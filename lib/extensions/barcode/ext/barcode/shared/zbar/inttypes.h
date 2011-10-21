@@ -19,7 +19,7 @@ typedef unsigned short int uint16_t;
 
 
 /* 7.8.1 Macros for format specifiers
-* 
+*
 * MS runtime does not yet understand C9x standard "ll"
 * length specifier. It appears to treat "ll" as "l".
 * The non-standard I64 length specifier causes warning in GCC,
@@ -226,7 +226,7 @@ typedef unsigned short int uint16_t;
 #if defined (__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
 /*
 * no length modifier for char types prior to C9x
-* MS runtime  scanf appears to treat "hh" as "h" 
+* MS runtime  scanf appears to treat "hh" as "h"
 */
 
 /* signed char */

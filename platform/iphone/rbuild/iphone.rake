@@ -1,18 +1,18 @@
 #------------------------------------------------------------------------
 # (The MIT License)
-# 
+#
 # Copyright (c) 2008-2011 Rhomobile, Inc.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-# 
+#
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
@@ -135,14 +135,14 @@ def make_project_bakup
      BAKUP_FILES.each do |f|
            filename_origin = $config["build"]["iphonepath"] + "/" +f
            filename_bak = $config["build"]["iphonepath"] + "/project_bakup/" +f
-           is_folder = File.directory? filename_bak 
+           is_folder = File.directory? filename_bak
            if File.exists? filename_origin
-                if (!File.exists? filename_bak) && (!is_folder) 
+                if (!File.exists? filename_bak) && (!is_folder)
                     bak_folder = $config["build"]["iphonepath"] + "/project_bakup"
                     mkdir_p bak_folder
                     cp_r filename_origin,filename_bak
                 end
-           end        
+           end
      end
 end
 
@@ -151,15 +151,15 @@ def restore_project_from_bak
            filename_origin = $config["build"]["iphonepath"] + "/" +f
            filename_bak = $config["build"]["iphonepath"] + "/project_bakup/" +f
            if File.exists? filename_bak
-                   rm_rf filename_origin 
-                   cp_r filename_bak,filename_origin                      
-           end        
+                   rm_rf filename_origin
+                   cp_r filename_bak,filename_origin
+           end
      end
      CLEAR_FILES.each do |f|
            filename = $config["build"]["iphonepath"] + "/" +f
            if File.exists? filename
-                   rm_rf filename                      
-           end        
+                   rm_rf filename
+           end
      end
 end
 
@@ -218,7 +218,7 @@ def set_app_icon(make_bak)
       ibak = File.join(ipath, name + '.bak')
       icon = File.join(ipath, name + '.png')
       appicon = File.join($app_path, 'icon', name + '.png')
-      if make_bak 
+      if make_bak
          cp icon, ibak unless File.exists? ibak
       end
       cp appicon, ipath
@@ -288,11 +288,11 @@ def set_signing_identity(identity,profile,entitlements)
         line.gsub!(/PROVISIONING_PROFILE = .*;/,"PROVISIONING_PROFILE = \"#{profile}\";")
         line.gsub!(/"PROVISIONING_PROFILE\[sdk=iphoneos\*\]" = .*;/,"\"PROVISIONING_PROFILE[sdk=iphoneos*]\" = \"#{profile}\";")
       end
-      
+
       puts line if line =~ /CODE_SIGN/
       buf << line
   end
-  
+
   File.open(fname,"w") { |f| f.write(buf) }
 
 end
@@ -306,7 +306,7 @@ def app_expanded_path(appname)
 end
 
 
-def check_sdk(sdkname) 
+def check_sdk(sdkname)
 
       puts 'Check SDK :'
       args = ['-version', '-sdk', sdkname]
@@ -325,7 +325,7 @@ def check_sdk(sdkname)
         puts "See all installed SDKs on this computer :"
         args = ['-showsdks']
         Jake.run($xcodebuild,args)
-        
+
         exit 1
       end
 end
@@ -342,7 +342,7 @@ namespace "config" do
     $builddir = iphonepath + "/rbuild"
     $bindir = Jake.get_absolute(iphonepath) + "/bin"
     $srcdir =  $bindir + "/RhoBundle"
-    $targetdir = iphonepath + "/target" 
+    $targetdir = iphonepath + "/target"
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
     $tmpdir =  $bindir +"/tmp"
 
@@ -354,7 +354,7 @@ namespace "config" do
     $simdir = "#{$homedir}/Library/Application Support/iPhone Simulator/"
     $sim = $devroot + "/Platforms/iPhoneSimulator.platform/Developer/Applications"
     $guid = `uuidgen`.strip
-    $applog = File.join($homedir,$app_config["applog"]) if $app_config["applog"] 
+    $applog = File.join($homedir,$app_config["applog"]) if $app_config["applog"]
 
     if $app_config["iphone"].nil?
       $signidentity = $config["env"]["iphone"]["codesignidentity"]
@@ -384,8 +384,8 @@ namespace "config" do
     end
 
     puts $sdk
-    
-    check_sdk($sdk)    
+
+    check_sdk($sdk)
 
     if $sdk =~ /iphonesimulator/
       $sdkver = $sdk.gsub(/iphonesimulator/,"")
@@ -436,9 +436,9 @@ namespace "build" do
       rm_rf 'bin'
       rm_rf 'build/Debug-*'
       rm_rf 'build/Release-*'
-      
+
       chdir $startdir
-      
+
 
 
       Rake::Task["build:bundle:noxruby"].execute
@@ -474,7 +474,7 @@ namespace "build" do
       ENV["XCODEBUILD"] = $xcodebuild
       ENV["CONFIGURATION"] ||= $configuration
       ENV["SDK_NAME"] ||= $sdk
- 
+
       puts "extpaths: #{$app_config["extpaths"].inspect.to_s}"
       $stdout.flush
       $app_config["extensions"].each do |ext|
@@ -489,8 +489,8 @@ namespace "build" do
     end
 
     task :restore_xcode_project => ["config:iphone"] do
-       restore_project_from_bak 
-    end    
+       restore_project_from_bak
+    end
 
     task :setup_xcode_project => ["config:iphone"] do
       restore_project_from_bak
@@ -522,7 +522,7 @@ namespace "build" do
 
 #    desc "Build rhodes"
     task :rhodes => ["config:iphone", "build:iphone:rhobundle"] do
-      
+
       saved_name = ''
       saved_version = ''
       saved_identifier = ''
@@ -538,7 +538,7 @@ namespace "build" do
       bundle_identifier = "com.#{vendor}.#{appname}"
       bundle_identifier = $app_config["iphone"]["BundleIdentifier"] unless $app_config["iphone"]["BundleIdentifier"].nil?
       saved_identifier = set_app_bundle_identifier(bundle_identifier)
-      
+
       saved_url_scheme = set_app_url_scheme($app_config["iphone"]["BundleURLScheme"]) unless $app_config["iphone"]["BundleURLScheme"].nil?
       saved_url_name = set_app_url_name(bundle_identifier)
 
@@ -560,13 +560,13 @@ namespace "build" do
       ret = $?
 
       chdir $startdir
-      
+
       set_app_name(saved_name) unless $app_config["name"].nil?
       set_app_version(saved_version) unless $app_config["version"].nil?
       set_app_bundle_identifier(saved_identifier) unless $app_config["iphone"]["BundleIdentifier"].nil?
       set_app_url_scheme(saved_url_scheme) unless $app_config["iphone"]["BundleURLScheme"].nil?
       set_app_url_name(saved_url_name) unless $app_config["iphone"]["BundleIdentifier"].nil?
-      
+
       restore_default_images
       restore_app_icon
 
@@ -578,7 +578,7 @@ namespace "build" do
       end
 
     end
-    
+
   end
 end
 
@@ -586,7 +586,7 @@ namespace "run" do
   namespace "iphone" do
 
     task :spec => ["clean:iphone",:buildsim] do
- 	
+
       # Run local http server
       $iphonespec = true
       #httpserver = false
@@ -620,28 +620,28 @@ namespace "run" do
             $iphone_end_spec = true
       }
 
-      start = Time.now        
+      start = Time.now
 
       puts "waiting for log"
-      
+
         while (!File.exist?(log_name)) && (!$iphone_end_spec)
             sleep(1)
         end
 
         puts "start read log"
-        
+
         #$iphone_end_spec = false
 
         while !$iphone_end_spec do
             io = File.new(log_name, "r")
-        
+
             io.each do |line|
                 puts line
                 $iphone_end_spec = !Jake.process_spec_output(line)
                 break if $iphone_end_spec
             end
             io.close
-            
+
             sleep(5) unless $iphone_end_spec
         end
       puts 'spec logging is finished'
@@ -661,7 +661,7 @@ namespace "run" do
       #NetHTTPSpecs.stop_server if httpserver
 
       exit $failed.to_i unless $dont_exit_on_failure
- 
+
     end
 
     task :spec_old => ["clean:iphone",:buildsim] do
@@ -751,10 +751,10 @@ namespace "run" do
       exit $failed.to_i
     end
 
-    task :rhosimulator => ["config:set_iphone_platform","config:common"] do    
-    
+    task :rhosimulator => ["config:set_iphone_platform","config:common"] do
+
         $rhosim_config = "platform='iphone'\r\n"
-        
+
         Rake::Task["run:rhosimulator"].invoke
     end
 
@@ -762,9 +762,9 @@ namespace "run" do
     task :get_log => ["config:iphone"] do
       puts $simapppath
        $sdkver = $emulator_version.to_s unless $emulator_version.nil?
-      
+
        simapp = File.join($simdir, $sdkver, "Applications")
-      
+
        Dir.glob(File.join($simdir, $sdkver, "Applications", "*")).each do |simapppath|
            need_rm = true if File.directory? simapppath
            if File.exists?(File.join(simapppath, 'rhorunner.app', 'name'))
@@ -780,21 +780,21 @@ namespace "run" do
          rm_rf simapppath if need_rm
          rm_rf simapppath + ".sb" if need_rm
        end
-      
+
        simapp = File.join($simdir, $emulator_version, "Applications")
-       
-       
+
+
        rholog = simapp + "/" + $guid + "/Documents/RhoLog.txt"
        puts "log_file=" + rholog
-    end 
+    end
 
   end
-  
+
   task :buildsim => ["config:iphone", "build:iphone:rhodes"] do
-    
+
      unless $sdk =~ /^iphonesimulator/
        puts "SDK must be one of the iphonesimulator sdks to run in the iphone simulator"
-       exit 1       
+       exit 1
      end
      `killall "iPhone Simulator"`
 
@@ -835,7 +835,7 @@ namespace "run" do
                           next
                       end
                   end
-         
+
                   elements << element
               end
          end
@@ -928,14 +928,14 @@ namespace "run" do
         f = File.new("#{simapp}/#{$guid}.sb","w")
         f << "(version 1)\n(debug deny)\n(allow default)\n"
         f.close
-     #end    
+     #end
   end
 
   # split this off separate so running it normally is run:iphone
   # testing we will not launch emulator directly
   desc "Builds everything, launches iphone simulator"
   task :iphone => :buildsim do
-    
+
     iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim')
 
     rhorunner = File.join($startdir, $config["build"]["iphonepath"],"build/#{$configuration}-iphonesimulator/rhorunner.app")
@@ -950,11 +950,11 @@ namespace "run" do
            system(commandis)
        end
     }
-  
-    puts "end build iphone app"  
+
+    puts "end build iphone app"
     exit
   end
-  
+
   task :allspecs do
     $dont_exit_on_failure = true
     Rake::Task['run:iphone:phone_spec'].invoke
@@ -971,10 +971,10 @@ namespace "run" do
     end
     puts "Agg Total: #{$total}"
     puts "Agg Passed: #{$passed}"
-    puts "Agg Failed: #{$failed}" 
+    puts "Agg Failed: #{$failed}"
     exit $failed.to_i
   end
-  
+
 end
 
 namespace "clean" do
@@ -982,13 +982,13 @@ namespace "clean" do
   task :iphone => ["clean:iphone:all"]
   namespace "iphone" do
 #    desc "Clean rhodes binaries"
-    task :rhodes => ["config:iphone"] do 
+    task :rhodes => ["config:iphone"] do
 
       app_path = File.join($app_path, 'bin', 'target', 'iOS')
       rm_rf app_path
 
       chdir $config["build"]["iphonepath"]
-    
+
       args = ['clean', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk]
       puts Jake.run($xcodebuild,args)
       unless $? == 0
@@ -996,7 +996,7 @@ namespace "clean" do
         exit 1
       end
       chdir $startdir
-      
+
       chdir 'platform/iphone'
        rm_rf 'build/Debug-*'
        rm_rf 'build/Release-*'
@@ -1040,15 +1040,15 @@ namespace "device" do
   namespace "iphone" do
     desc "Builds and signs iphone for production"
     task :production => ["config:iphone", "build:iphone:rhodes"] do
-    
+
     #copy build results to app folder
-    
+
     app_path = File.join($app_path, 'bin', 'target', 'iOS', $sdk, $configuration)
-    
-    iphone_path = $config["build"]["iphonepath"]    
+
+    iphone_path = $config["build"]["iphonepath"]
     if $sdk =~ /iphonesimulator/
        iphone_path = File.join(iphone_path, 'build', $configuration+'-iphonesimulator')
-    else 
+    else
        iphone_path = File.join(iphone_path, 'build', $configuration+'-iphoneos')
     end
     appname = $app_config["name"]
@@ -1057,15 +1057,15 @@ namespace "device" do
     end
     src_file = File.join(iphone_path, 'rhorunner.app')
     dst_file = File.join(app_path, appname+'.app')
-    
+
     rm_rf dst_file
     rm_rf app_path
 
     mkdir_p app_path
 
-    puts 'copy result build package to application target folder ...'    
+    puts 'copy result build package to application target folder ...'
     cp_r src_file, dst_file
-    make_app_info 
+    make_app_info
 
     end
   end

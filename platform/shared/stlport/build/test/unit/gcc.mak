@@ -9,8 +9,8 @@ STLPORT_DIR := ../../..
 include Makefile.inc
 include ${SRCROOT}/Makefiles/top.mak
 
-dbg-shared:	DEFS += -D_STLP_DEBUG_UNINITIALIZED 
-stldbg-shared:	DEFS += -D_STLP_DEBUG_UNINITIALIZED 
+dbg-shared:	DEFS += -D_STLP_DEBUG_UNINITIALIZED
+stldbg-shared:	DEFS += -D_STLP_DEBUG_UNINITIALIZED
 
 ifdef STLP_BUILD_BOOST_PATH
 INCLUDES += -I${STLP_BUILD_BOOST_PATH}

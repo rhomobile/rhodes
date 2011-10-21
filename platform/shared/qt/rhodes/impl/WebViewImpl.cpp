@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -47,12 +47,12 @@ static wchar_t *dup_wcs(const wchar_t *s)
 
 extern "C" {
 
-void rho_webview_refresh(int index) 
+void rho_webview_refresh(int index)
 {
     CMainWindow::getInstance()->refreshCommand(index);
 }
 
-void rho_webview_navigate(const char* url, int index) 
+void rho_webview_navigate(const char* url, int index)
 {
     if ( !url )
     {
@@ -78,7 +78,7 @@ void rho_webview_navigate_forward()
     CMainWindow::getInstance()->navigateForwardCommand();
 }
 
-const char* rho_webview_execute_js(const char* js, int index) 
+const char* rho_webview_execute_js(const char* js, int index)
 {
     String strJS = "javascript:";
     strJS += js;
@@ -86,19 +86,19 @@ const char* rho_webview_execute_js(const char* js, int index)
     return "";
 }
 
-const char* rho_webview_current_location(int index) 
+const char* rho_webview_current_location(int index)
 {
     return RHODESAPP().getCurrentUrl(index).c_str();
 }
 
-int rho_webview_active_tab() 
+int rho_webview_active_tab()
 {
     return CMainWindow::getInstance()->tabbarGetCurrent();
 }
 
-void rho_webview_set_menu_items(VALUE valMenu) 
+void rho_webview_set_menu_items(VALUE valMenu)
 {
-    rho_rhodesapp_setViewMenu(valMenu); 
+    rho_rhodesapp_setViewMenu(valMenu);
 }
 
 void rho_webview_full_screen_mode(int enable)

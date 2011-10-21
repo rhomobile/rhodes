@@ -40,7 +40,7 @@ public class RubyIOPipeSourceExecutor implements RubyIOExecutor {
     {
     	return null;
     }
-    
+
     public boolean eof() {
         return !this.avaliable;
     }

@@ -1,4 +1,4 @@
-/* 
+/*
  * $Id: Pattern.java 124053 2005-01-04 01:24:35Z dfs $
  *
  * Copyright 2000-2005 The Apache Software Foundation
@@ -42,9 +42,9 @@ public interface Pattern {
   /**
    * This method returns the string representation of the pattern.  Its
    * purpose is to allow a pattern to be reconstructed after compilation.
-   * In other words, when you compile a pattern, the resulting data 
+   * In other words, when you compile a pattern, the resulting data
    * structures bear no relation to the string defining the pattern.
-   * It is often useful to be able to access the string defining a pattern 
+   * It is often useful to be able to access the string defining a pattern
    * after it has been compiled.
    * <p>
    * @return The original string representation of the regular expression

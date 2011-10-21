@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -50,17 +50,17 @@ import android.provider.ContactsContract.RawContacts;
 import android.provider.ContactsContract.Contacts;
 
 public class ContactAccessorNew implements ContactAccessor {
-	
+
 	private static final String TAG = "ContactsAccessorNew";
 	private static final boolean DEBUG = false;
-	
+
 	private ContentResolver cr;
 	private String accName;
 	private String accType;
-	
+
 	public ContactAccessorNew() throws Exception {
 		Context ctx = RhodesService.getContext();
-		
+
 		Account[] accounts = AccountManager.get(ctx).getAccounts();
 		if (accounts.length == 0) {
 			accName = null;//"rhodes@rhomobile.com";
@@ -71,17 +71,17 @@ public class ContactAccessorNew implements ContactAccessor {
 			accName = acnt.name;
 			accType = acnt.type;
 		}
-		
+
 		cr = ctx.getContentResolver();
 	}
-	
+
 	public void fillName(String id, Contact contact) {
 		if (DEBUG)
 			Logger.I(TAG, "fillName("+id+")");
-		
+
 		contact.setField(Phonebook.PB_FIRST_NAME, "");
 		contact.setField(Phonebook.PB_LAST_NAME, "");
-		
+
 		Cursor cursor = cr.query(Data.CONTENT_URI,
 				new String[] { StructuredName.GIVEN_NAME, StructuredName.FAMILY_NAME, StructuredName.DISPLAY_NAME },
 				Data.CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
@@ -93,13 +93,13 @@ public class ContactAccessorNew implements ContactAccessor {
 					Logger.D(TAG, "No name data records are found.");
 				return;
 			}
-			
+
 			String firstName = cursor.getString(cursor.getColumnIndex(StructuredName.GIVEN_NAME));
 			String lastName = cursor.getString(cursor.getColumnIndex(StructuredName.FAMILY_NAME));
 			if (firstName != null || lastName != null) {
 				if (DEBUG)
 					Logger.D(TAG, "fillName() firstName=" + firstName + ", lastName=" + lastName);
-				
+
 				if (firstName != null)
 					contact.setField(Phonebook.PB_FIRST_NAME, firstName);
 				if (lastName != null)
@@ -109,7 +109,7 @@ public class ContactAccessorNew implements ContactAccessor {
 				String displayName = cursor.getString(cursor.getColumnIndex(StructuredName.DISPLAY_NAME));
 				if (DEBUG)
 					Logger.D(TAG, "fillName() displayName=" + displayName);
-				
+
 				if (displayName != null) {
 					String[] names = displayName.split(" ");
 					if (names.length == 1) {
@@ -130,7 +130,7 @@ public class ContactAccessorNew implements ContactAccessor {
 			cursor.close();
 		}
 	}
-	
+
 	public void fillPhones(String id, Contact contact) {
 		Cursor cursor = cr.query(Data.CONTENT_URI,
 				new String[] {Phone.NUMBER, Phone.TYPE},
@@ -140,7 +140,7 @@ public class ContactAccessorNew implements ContactAccessor {
 		try {
 			if (!cursor.moveToFirst())
 				return;
-			
+
 			int numColumn = cursor.getColumnIndex(Phone.NUMBER);
 			int typeColumn = cursor.getColumnIndex(Phone.TYPE);
 			do {
@@ -161,7 +161,7 @@ public class ContactAccessorNew implements ContactAccessor {
 			cursor.close();
 		}
 	}
-	
+
 	public void fillEmails(String id, Contact contact) {
 		Cursor cursor = cr.query(Data.CONTENT_URI,
 				new String[] {Email.DATA},
@@ -171,7 +171,7 @@ public class ContactAccessorNew implements ContactAccessor {
 		try {
 			if (!cursor.moveToFirst())
 				return;
-			
+
 			String data = cursor.getString(cursor.getColumnIndex(Email.DATA));
 			contact.setField(Phonebook.PB_EMAIL_ADDRESS, data);
 		}
@@ -179,7 +179,7 @@ public class ContactAccessorNew implements ContactAccessor {
 			cursor.close();
 		}
 	}
-	
+
 	public void fillCompany(String id, Contact contact) {
 		Cursor cursor = cr.query(Data.CONTENT_URI,
 				new String[] {Organization.COMPANY},
@@ -196,7 +196,7 @@ public class ContactAccessorNew implements ContactAccessor {
 			cursor.close();
 		}
 	}
-	
+
 	@Override
 	public int getCount(int offset, int max_results) {
 		StringBuilder sortMode = new StringBuilder();
@@ -223,28 +223,28 @@ public class ContactAccessorNew implements ContactAccessor {
 	@Override
 	public Map<String, Contact> getContacts(int offset, int max_results, List<String> select) throws Exception {
 		Map<String, Contact> contacts = new HashMap<String, Contact>();
-		
+
 		StringBuilder sortMode = new StringBuilder();
 		sortMode.append(Contacts.DISPLAY_NAME);//.append(" ASC");
 		if (max_results > 0)
 			sortMode.append(" LIMIT ").append(max_results);
 		if (offset > 0)
 			sortMode.append(" OFFSET ").append(offset);
-		
+
 		Cursor cursor = cr.query(Contacts.CONTENT_URI,
 				new String[] {Contacts._ID, Contacts.LOOKUP_KEY, Contacts.DISPLAY_NAME},
 				null, null, sortMode.toString());
 		try {
 			if (!cursor.moveToFirst())
 				return contacts;
-			
+
 			do {
-				
+
 				String key = cursor.getString(cursor.getColumnIndex(Contacts.LOOKUP_KEY));
 				String id = cursor.getString(cursor.getColumnIndex(Contacts._ID));
 				String displayName = cursor.getString(cursor.getColumnIndex(Contacts.DISPLAY_NAME));
 				Contact contact = new Contact(this, key, displayName);
-				
+
 				if (select != null) {
 					if (select.contains(Phonebook.PB_FIRST_NAME) ||
 					    select.contains(Phonebook.PB_LAST_NAME)) {
@@ -262,30 +262,30 @@ public class ContactAccessorNew implements ContactAccessor {
 						fillCompany(id, contact);
 					}
 				}
-				
+
 				if (DEBUG) Logger.D(TAG, "Filling contact with ID: " + key);
 				contacts.put(contact.id(), contact);
-				
+
 			} while (cursor.moveToNext());
 		}
 		finally {
 			cursor.close();
 		}
-		
+
 		return contacts;
 	}
-	
+
 	public Contact getContact(String lookupKey) throws Exception {
 		if (DEBUG)
 			Logger.D(TAG, "getContact(lookupKey="+lookupKey+")");
-		
-		Contact contact = null; 
-		
+
+		Contact contact = null;
+
 		Cursor cursor = cr.query(Contacts.CONTENT_URI,
 				new String[] {Contacts.DISPLAY_NAME, Contacts._ID},
 				Contacts.LOOKUP_KEY + "=?",
-				new String[] {lookupKey}, null);		
-		
+				new String[] {lookupKey}, null);
+
 		try {
 			if (!cursor.moveToFirst()) {
 				Logger.D(TAG, "getContact() not found");
@@ -315,7 +315,7 @@ public class ContactAccessorNew implements ContactAccessor {
                 new String[] {Contacts._ID},
                 Contacts.LOOKUP_KEY + "=?",
                 new String[] {key}, null);
-        
+
         long contactId = 0;
         try {
             if (cursor.moveToFirst())
@@ -332,9 +332,9 @@ public class ContactAccessorNew implements ContactAccessor {
 
 	private String create(Contact contact) throws Exception {
 		String key = contact.id();
-		
+
 		if (key == null || key.length() == 0) {
-		    
+
 		    // Create RawContact
 			ContentValues values = new ContentValues();
 			if (accName != null && accName.length() > 0) {
@@ -388,7 +388,7 @@ public class ContactAccessorNew implements ContactAccessor {
         }
         return queryContactId(key);
 	}
-	
+
 	private void saveData(String contactId, ContentValues values, String where, String[] whereValues) throws Exception
 	{
 		StringBuilder w0 = new StringBuilder();
@@ -409,7 +409,7 @@ public class ContactAccessorNew implements ContactAccessor {
 		Cursor cursor = cr.query(Data.CONTENT_URI,
 				new String[] {Data._ID, Data.RAW_CONTACT_ID},
 				w0.toString(),
-				wv0, null);		
+				wv0, null);
 
 		long rawDataId = 0;
 		try {
@@ -444,7 +444,7 @@ public class ContactAccessorNew implements ContactAccessor {
 			if (whereValues != null)
 				System.arraycopy(whereValues, 0, wv1, 2, whereValues.length);
 			//whereValues = wv1;
-			
+
 			Logger.D(TAG, "Updating contact: " + values.toString());
 			Logger.D(TAG, "Updating contact: " + w1 + "; " + wv1);
 			int res = cr.update(Data.CONTENT_URI, values, w1.toString(), wv1);
@@ -454,7 +454,7 @@ public class ContactAccessorNew implements ContactAccessor {
 							  new String[] { RawContacts._ID },
 							  RawContacts.CONTACT_ID + "=?",
 							  new String[] { String.valueOf(contactId) }, null);
-			
+
 			long rawContactId = 0;
 			try {
 				if (cursor.moveToFirst()) {
@@ -468,17 +468,17 @@ public class ContactAccessorNew implements ContactAccessor {
 			if (rawContactId == 0) {
 				Logger.D(TAG, "No raw contact records found for contact: " + contactId);
 			}
-			
+
 			values.put(Data.RAW_CONTACT_ID, rawContactId);
 			Uri uri = cr.insert(Data.CONTENT_URI, values);
 			Logger.D(TAG, "New data record has inserved for raw contact: " + rawContactId + ", URI: " + uri);
 		}
 	}
-	
+
 	private void saveData(String contactId, ContentValues values) throws Exception {
 		saveData(contactId, values, null, null);
 	}
-	
+
 	private void updateName(String contactId, Contact contact) throws Exception {
 		String firstName = contact.getField(Phonebook.PB_FIRST_NAME);
 		String lastName = contact.getField(Phonebook.PB_LAST_NAME);
@@ -490,16 +490,16 @@ public class ContactAccessorNew implements ContactAccessor {
 		values.put(StructuredName.FAMILY_NAME, lastName);
 		saveData(contactId, values);
 	}
-	
+
 	private void updatePhones(String contactId, Contact contact) throws Exception {
 		String[] phones = {Phonebook.PB_MOBILE_NUMBER, Phonebook.PB_HOME_NUMBER, Phonebook.PB_BUSINESS_NUMBER};
 		int[] types = {Phone.TYPE_MOBILE, Phone.TYPE_HOME, Phone.TYPE_WORK};
-		
+
 		for (int i = 0; i < phones.length; ++i) {
 			String value = contact.getField(phones[i]);
 			if (value == null || value.length() == 0)
 				continue;
-			
+
 			ContentValues values = new ContentValues();
 			values.put(Data.MIMETYPE, Phone.CONTENT_ITEM_TYPE);
 			values.put(Phone.NUMBER, value);
@@ -507,23 +507,23 @@ public class ContactAccessorNew implements ContactAccessor {
 			saveData(contactId, values, Phone.TYPE + "=?", new String[] {String.valueOf(types[i])});
 		}
 	}
-	
+
 	private void updateEmails(String contactId, Contact contact) throws Exception {
 		String value = contact.getField(Phonebook.PB_EMAIL_ADDRESS);
 		if (value == null || value.length() == 0)
 			return;
-		
+
 		ContentValues values = new ContentValues();
 		values.put(Data.MIMETYPE, Email.CONTENT_ITEM_TYPE);
 		values.put(Email.DATA, value);
 		saveData(contactId, values);
 	}
-	
+
 	private void updateCompany(String contactId, Contact contact) throws Exception {
 		String value = contact.getField(Phonebook.PB_COMPANY_NAME);
 		if (value == null || value.length() == 0)
 			return;
-		
+
 		ContentValues values = new ContentValues();
 		values.put(Data.MIMETYPE, Organization.CONTENT_ITEM_TYPE);
 		values.put(Organization.COMPANY, value);
@@ -532,7 +532,7 @@ public class ContactAccessorNew implements ContactAccessor {
 
 	public void save(Contact contact) throws Exception {
 		String contactId = create(contact);
-		
+
 		updateName(contactId, contact);
 		updatePhones(contactId, contact);
 		updateEmails(contactId, contact);

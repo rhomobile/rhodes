@@ -12,7 +12,7 @@ describe "SortedSet#add" do
       lambda { SortedSet["hello"].add(obj) }.should raise_error(NoMethodError)
     end
   end
-=end  
+=end
 end
 
 describe "SortedSet#add?" do

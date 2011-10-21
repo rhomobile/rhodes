@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -98,7 +98,7 @@ static VALUE createHashFromContact(jobject contactObj)
             rho::String field = rho_cast<rho::String>(env, jhField);
             if(i == 0) {// add braces {id}
                 addStrToHash(contactHash, field_names[i], rho::String("{}").insert(1, field).c_str());
-            } else 
+            } else
                 addStrToHash(contactHash, field_names[i], field.c_str());
         }
     }
@@ -251,8 +251,8 @@ static VALUE getRecord(void *pb, const char *name)
     jmethodID mid = getJNIClassMethod(env, cls, name, "()Lcom/rhomobile/rhodes/phonebook/Contact;");
     if (!mid) {
         if (logging_enable) RAWLOG_INFO("getRecord() FINISH return NIL2");
-	return Qnil; 
-    }	
+	return Qnil;
+    }
     jobject recordObj = env->CallObjectMethod(obj, mid);
     if (!recordObj) {
         if (logging_enable) RAWLOG_INFO("getRecord() FINISH return NIL");

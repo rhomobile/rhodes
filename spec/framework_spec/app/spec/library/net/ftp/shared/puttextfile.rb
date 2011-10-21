@@ -3,7 +3,7 @@ describe :net_ftp_puttextfile, :shared => true do
     @server = NetFTPSpecs::DummyFTP.new
     @server.serve_once
 
-    @local_fixture_file = File.join(Rho::RhoApplication::get_model_path('app','spec'), 'library/net/ftp/fixtures/puttextfile') #File.dirname(__FILE__) + "/../fixtures/puttextfile"    
+    @local_fixture_file = File.join(Rho::RhoApplication::get_model_path('app','spec'), 'library/net/ftp/fixtures/puttextfile') #File.dirname(__FILE__) + "/../fixtures/puttextfile"
     @remote_tmp_file = tmp("textfile", false)
 
     @ftp = Net::FTP.new
@@ -146,5 +146,5 @@ if System::get_property('platform') != 'WINDOWS'
       lambda { @ftp.send(@method, @local_fixture_file, "text") }.should raise_error(Net::FTPPermError)
     end
   end
-end  
+end
 end

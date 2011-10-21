@@ -1,4 +1,4 @@
-# ;;; -*- Mode:makefile;-*- 
+# ;;; -*- Mode:makefile;-*-
 # Generated automatically from Makefile.in by configure.
 # This requires GNU make.
 
@@ -38,7 +38,7 @@ CXXFLAGS = $(ARCHF) +w2 -mt -features=rtti ${STL_INCL}
 
 
 
-LIBS = -lm 
+LIBS = -lm
 
 LIBSTLPORT = -L../../lib -lstlport_sunpro42
 

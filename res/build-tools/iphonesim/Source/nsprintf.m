@@ -22,7 +22,7 @@ int nsfprintf (FILE *stream, NSString *format, ...) {
     va_start(ap, format);
     {
         retval = nsvfprintf(stream, format, ap);
-    } 
+    }
     va_end(ap);
 
     return retval;
@@ -35,7 +35,7 @@ int nsprintf (NSString *format, ...) {
     va_start(ap, format);
     {
         retval = nsvfprintf(stderr, format, ap);
-    } 
+    }
     va_end(ap);
 
     return retval;

@@ -637,7 +637,7 @@ public class Trace {
     	    "S1000 invalid file access class: $$",
     	    "S1000 invalid storage class: $$",
     	    "LAST" };
-    
+
     /** Used during tests. */
     static {
         try {

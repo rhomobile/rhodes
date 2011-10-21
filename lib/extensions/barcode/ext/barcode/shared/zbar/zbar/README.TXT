@@ -22,7 +22,7 @@ After it you should fix ZBar surces for compile by Microsoft Visual Studio (desc
 
 - in image.c :
 int len = ...
-char filename[len] 
+char filename[len]
 is impossible - use:   filename = malloc(len+1);
 
 - remove including of <sys/time.h> from img_scanner.c and  timer.h
@@ -42,7 +42,7 @@ to:
 
 - in thread.h :
 replace
-#if defined(_WIN32)  
+#if defined(_WIN32)
 into:
 #if 0//defined(_WIN32)
 

@@ -8,15 +8,15 @@ namespace rho.sync
 {
     public class SyncEngine : NetRequest.IRhoSession
     {
-        private static RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+        private static RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		    new RhoLogger("Sync");
-        private static RhoProfiler PROF = RhoProfiler.RHO_STRIP_PROFILER ? new RhoEmptyProfiler() : 
+        private static RhoProfiler PROF = RhoProfiler.RHO_STRIP_PROFILER ? new RhoEmptyProfiler() :
     		new RhoProfiler();
 
         private static CRhodesApp RHODESAPP() { return CRhodesApp.Instance; }
 	    RhoConf RHOCONF(){ return RhoConf.getInstance(); }
         public CRhoRuby RhoRuby { get { return CRhoRuby.Instance; } }
-	
+
         public static int esNone = 0, esSyncAllSources = 1, esSyncSource = 2, esSearch=3, esStop = 4, esExit = 5;
 
         public class SourceID
@@ -26,7 +26,7 @@ namespace rho.sync
 
             public SourceID(int id, String strName ){ m_nID = id; m_strName = strName; }
             public SourceID(String strName ){ m_strName = strName; }
-        
+
             public String toString()
             {
                 if ( m_strName.length() > 0 )
@@ -42,12 +42,12 @@ namespace rho.sync
                 return m_nID == src.getID();
             }
         };
-    
+
         public class SourceOptions
         {
             private Mutex m_mxSrcOptions = new Mutex();
             private Hashtable<int, Hashtable<String,String> > m_hashSrcOptions = new Hashtable<int, Hashtable<String,String> >();
-        
+
     	    public void setProperty(int nSrcID, String szPropName, String szPropValue)
     	    {
     	        lock(m_mxSrcOptions)
@@ -83,10 +83,10 @@ namespace rho.sync
             {
                 String strValue = getProperty(nSrcID, szPropName);
                 return strValue.compareTo("1") == 0 || strValue.compareTo("true") == 0 ? true : false;
-        	
+
             }
         };
-    
+
         Vector<SyncSource> m_sources = new Vector<SyncSource>();
         NetRequest m_NetRequest, m_NetRequestClientID;
         ISyncProtocol m_SyncProtocol;
@@ -102,65 +102,65 @@ namespace rho.sync
         String m_strError = "",m_strServerError = "";
         boolean m_bIsSearch, m_bIsSchemaChanged;
         static SourceOptions m_oSourceOptions = new SourceOptions();
-    
+
         public void setState(int eState){ m_syncState = eState; }
         public int getState(){ return m_syncState; }
         public boolean isSearch(){ return m_bIsSearch; }
         public boolean isContinueSync(){ return m_syncState != esExit && m_syncState != esStop; }
         public boolean isSyncing() { return m_syncState == esSyncAllSources || m_syncState == esSyncSource; }
         public void stopSync()
-        { 
+        {
     	    if (isContinueSync())
-    	    { 
-	    	    setState(esStop); 
-	    	    if (m_NetRequest!=null) 
-	    		    m_NetRequest.cancel(); 
-	    	
-	    	    if (m_NetRequestClientID!=null) 
-	    		    m_NetRequestClientID.cancel(); 
-    	    } 
+    	    {
+	    	    setState(esStop);
+	    	    if (m_NetRequest!=null)
+	    		    m_NetRequest.cancel();
+
+	    	    if (m_NetRequestClientID!=null)
+	    		    m_NetRequestClientID.cancel();
+    	    }
         }
         public void stopSyncByUser() { m_bStopByUser = true; stopSync(); }
         public void exitSync()
-        { 
-    	    setState(esExit); 
-    	    if (m_NetRequest!=null) 
-    		    m_NetRequest.cancel(); 
-    	
-    	    if (m_NetRequestClientID!=null) 
-    		    m_NetRequestClientID.cancel(); 
+        {
+    	    setState(esExit);
+    	    if (m_NetRequest!=null)
+    		    m_NetRequest.cancel();
+
+    	    if (m_NetRequestClientID!=null)
+    		    m_NetRequestClientID.cancel();
         }
         public boolean isStoppedByUser(){ return m_bStopByUser; }
-    
+
         public String getClientID(){ return m_clientID; }
         void setSession(String strSession){m_strSession=strSession;}
         boolean isSessionExist(){ return m_strSession != null && m_strSession.length() > 0; }
-    
+
         public void setSchemaChanged(boolean bChanged){ m_bIsSchemaChanged = bChanged; }
         public boolean isSchemaChanged(){ return m_bIsSchemaChanged; }
 
         public DBAdapter getUserDB() { return DBAdapter.getUserDB(); }
         public DBAdapter getDB(String strPartition) { return DBAdapter.getDB(strPartition); }
-    
+
       //IRhoSession
         public String getSession(){ return m_strSession; }
         public String getContentType(){ return getProtocol().getContentType();}
-    
+
         public SyncNotify getNotify(){ return m_oSyncNotify; }
         public NetRequest getNet() { return m_NetRequest;}
         NetRequest getNetClientID(){ return m_NetRequestClientID; }
         public ISyncProtocol getProtocol(){ return m_SyncProtocol; }
-    
+
         public boolean isNoThreadedMode(){ return m_bNoThreaded; }
         public void setNonThreadedMode(boolean b){m_bNoThreaded = b;}
         public static SourceOptions getSourceOptions(){ return m_oSourceOptions; }
-    
+
         public SyncEngine(){
             m_oSyncNotify = new SyncNotify(this);
 		    m_NetRequest = null;
 		    m_NetRequestClientID = null;
     	    m_syncState = esNone;
-    	
+
     	    initProtocol();
         }
 
@@ -168,17 +168,17 @@ namespace rho.sync
         {
             m_SyncProtocol = new SyncProtocol_3();
         }
-    
+
         public int getSyncPageSize() { return m_nSyncPageSize; }
         void setSyncPageSize(int nPageSize){ m_nSyncPageSize = nPageSize; }
-    
-        public void setFactory(){ 
+
+        public void setFactory(){
 		    m_NetRequest = RhoClassFactory.createNetRequest();
 		    m_NetRequestClientID = RhoClassFactory.createNetRequest();
-		
-		    m_oSyncNotify.setFactory();		
+
+		    m_oSyncNotify.setFactory();
         }
-    
+
         void prepareSync(int eState, SourceID oSrcID)
         {
             setState(eState);
@@ -188,7 +188,7 @@ namespace rho.sync
             m_strError = "";
             m_strServerError = "";
             m_bIsSchemaChanged = false;
-        
+
             loadAllSources();
 
             m_strSession = loadSession();
@@ -204,11 +204,11 @@ namespace rho.sync
                 }
             }else
                 m_nErrCode = RhoAppAdapter.ERR_CLIENTISNOTLOGGEDIN;
-        
+
             SyncSource src = null;
             if ( oSrcID != null )
         	    src = findSource(oSrcID);
-        
+
     	    if ( src != null )
     	    {
                 src.m_nErrCode = m_nErrCode;
@@ -218,29 +218,29 @@ namespace rho.sync
             {
                 getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError, "");
             }
-        
+
             stopSync();
         }
-    
+
         public void doSyncAllSources()
         {
 	        try
 	        {
 	            prepareSync(esSyncAllSources, null);
-	
+
 	            if ( isContinueSync() )
 	            {
-			        PROF.CREATE_COUNTER("Net");	    
+			        PROF.CREATE_COUNTER("Net");
 			        PROF.CREATE_COUNTER("Parse");
 			        PROF.CREATE_COUNTER("DB");
 			        PROF.CREATE_COUNTER("Data");
 			        PROF.CREATE_COUNTER("Data1");
 			        PROF.CREATE_COUNTER("Pull");
 			        PROF.START("Sync");
-	
+
 	                syncAllSources();
-	
-			        PROF.DESTROY_COUNTER("Net");	    
+
+			        PROF.DESTROY_COUNTER("Net");
 			        PROF.DESTROY_COUNTER("Parse");
 			        PROF.DESTROY_COUNTER("DB");
 			        PROF.DESTROY_COUNTER("Data");
@@ -248,7 +248,7 @@ namespace rho.sync
 			        PROF.DESTROY_COUNTER("Pull");
 			        PROF.STOP("Sync");
 	            }
-	
+
 	            getNotify().cleanCreateObjectErrors();
 	        }catch(Exception exc)
 	        {
@@ -268,12 +268,12 @@ namespace rho.sync
 		        {
 		            if ( getState() != esExit )
 		                setState(esNone);
-		
+
 		            return;
 		        }
-		
+
 		        TimeInterval startTime = TimeInterval.getCurrentTime();
-		
+
 		        if ( bSearchSyncChanges )
 		        {
 		            for ( int i = 0; i < (int)arSources.size(); i++ )
@@ -283,16 +283,16 @@ namespace rho.sync
 		                    pSrc.syncClientChanges();
 		            }
 		        }
-		
+
 		        while( isContinueSync() )
 		        {
 		            int nSearchCount = 0;
 		            String strUrl = getProtocol().getServerQueryUrl(strAction);
 		            String strQuery = getProtocol().getServerQueryBody("", getClientID(), getSyncPageSize());
-		
+
 		            if ( strParams.length() > 0 )
 		                strQuery += strParams;
-		
+
 		            String strTestResp = "";
 		            for ( int i = 0; i < (int)arSources.size(); i++ )
 		            {
@@ -300,17 +300,17 @@ namespace rho.sync
 		                if ( pSrc != null )
 		                {
 		                    strQuery += "&sources[][name]=" + pSrc.getName();
-		
+
 		                    if ( !pSrc.isTokenFromDB() && pSrc.getToken() > 1 )
 		                        strQuery += "&sources[][token]=" + pSrc.getToken();
-		                
+
 		                    strTestResp = getSourceOptions().getProperty(pSrc.getID(), "rho_server_response");
 		                }
 		            }
-		
+
 				    LOG.INFO("Call search on server. Url: " + (strUrl+strQuery) );
 		            NetResponse resp = getNet().pullData(strUrl+strQuery, this);
-		
+
 		            if ( !resp.isOK() )
 		            {
 		                stopSync();
@@ -318,28 +318,28 @@ namespace rho.sync
 		                m_strError = resp.getCharData();
 		                continue;
 		            }
-		
+
 		            String szData = null;
 		            if ( strTestResp != null && strTestResp.length() > 0 )
 		        	    szData = strTestResp;
 		            else
-		        	    szData = resp.getCharData();		        
-		
+		        	    szData = resp.getCharData();
+
 		            JSONArrayIterator oJsonArr = new JSONArrayIterator(szData);
-		
+
 		            for( ; !oJsonArr.isEnd() && isContinueSync(); oJsonArr.next() )
 		            {
 		                JSONArrayIterator oSrcArr = oJsonArr.getCurArrayIter();//new JSONArrayIterator(oJsonArr.getCurItem());
 		                if (oSrcArr.isEnd())
 		            	    break;
-		            
+
 		                int nVersion = 0;
 		                if ( !oSrcArr.isEnd() && oSrcArr.getCurItem().hasName("version") )
 		                {
 		                    nVersion = oSrcArr.getCurItem().getInt("version");
 		                    oSrcArr.next();
 		                }
-		
+
 		                if ( nVersion != getProtocol().getVersion() )
 		                {
 		                    LOG.ERROR( "Sync server send search data with incompatible version. Client version: " + getProtocol().getVersion() +
@@ -348,12 +348,12 @@ namespace rho.sync
 		                    m_nErrCode = RhoAppAdapter.ERR_SYNCVERSION;
 		                    continue;
 		                }
-		
+
 		                if ( !oSrcArr.isEnd() && oSrcArr.getCurItem().hasName("token"))
 		                {
 		                    oSrcArr.next();
 		                }
-		            
+
 		                if ( !oSrcArr.getCurItem().hasName("source") )
 		                {
 		                    LOG.ERROR( "Sync server send search data without source name." );
@@ -362,7 +362,7 @@ namespace rho.sync
 		                    m_strError = szData;
 		                    continue;
 		                }
-		
+
 		                String strSrcName = oSrcArr.getCurItem().getString("source");
 		                SyncSource pSrc = findSourceByName(strSrcName);
 		                if ( pSrc == null )
@@ -373,23 +373,23 @@ namespace rho.sync
 		                    m_strError = szData;
 		                    continue;
 		                }
-		
+
 		                oSrcArr.reset(0);
 		                pSrc.setProgressStep(nProgressStep);
 		                pSrc.processServerResponse_ver3(oSrcArr);
-		
+
 		                nSearchCount += pSrc.getCurPageCount();
-		            
+
 		                if ( pSrc.getServerError().length() > 0 )
 		                {
 		            	    if ( m_strServerError.length() > 0 )
 		            		    m_strServerError +=  "&";
-		            	
+
 		            	    m_strServerError += pSrc.getServerError();
 		            	    m_nErrCode = pSrc.getErrorCode();
-		                }		            
+		                }
 		            }
-		
+
 		            if ( nSearchCount == 0 )
 		            {
 		        	    for ( int i = 0; i < (int)arSources.size(); i++ )
@@ -397,13 +397,13 @@ namespace rho.sync
 						    SyncSource pSrc = findSourceByName((String)arSources.elementAt(i));
 						    if ( pSrc != null )
 							    pSrc.processToken(0);
-					    }		        	
+					    }
 		                break;
 		            }
-		        }  
-		
+		        }
+
 		        getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError, m_strServerError);
-		
+
 		        //update db info
 		        TimeInterval endTime = TimeInterval.getCurrentTime();
 		        //unsigned long timeUpdated = CLocalTime().toULong();
@@ -413,13 +413,13 @@ namespace rho.sync
 		            if ( oSrc == null )
 		                continue;
 		            oSrc.getDB().executeSQL("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, "+
-					     "last_sync_duration=?,last_sync_success=?, backend_refresh_time=? WHERE source_id=?", 
-					     endTime.toULong()/1000, oSrc.getInsertedCount(), oSrc.getDeletedCount(), 
-					     endTime.minus(startTime).toULong(), oSrc.getGetAtLeastOnePage()?1:0, 
+					     "last_sync_duration=?,last_sync_success=?, backend_refresh_time=? WHERE source_id=?",
+					     endTime.toULong()/1000, oSrc.getInsertedCount(), oSrc.getDeletedCount(),
+					     endTime.minus(startTime).toULong(), oSrc.getGetAtLeastOnePage()?1:0,
 					     oSrc.getRefreshTime(),  oSrc.getID() );
 		        }
 		        //
-		
+
 		        getNotify().cleanCreateObjectErrors();
 		        if ( getState() != esExit )
 		            setState(esNone);
@@ -429,7 +429,7 @@ namespace rho.sync
 
     		    getNotify().fireAllSyncNotifications(true, RhoAppAdapter.ERR_RUNTIME, "", "");
 	        }
-		    
+
         }
 
         public void doSyncSource(SourceID oSrcID)
@@ -439,36 +439,36 @@ namespace rho.sync
 	        try
 	        {
 	            prepareSync(esSyncSource, oSrcID);
-	
+
 	            if ( isContinueSync() )
 	            {
 	        	    src = findSource(oSrcID);
 	                if ( src != null )
 	                {
 		                LOG.INFO("Started synchronization of the data source: " + src.getName() );
-	
+
 	                    src.sync();
-	
+
 				        getNotify().fireSyncNotification(src, true, src.m_nErrCode, src.m_nErrCode == RhoAppAdapter.ERR_NONE ? RhoAppAdapter.getMessageText("sync_completed") : "");
 	                }else
 	                {
     //                    LOG.ERROR( "Sync one source : Unknown Source " + oSrcID.toString() );
-	            
+
 		        	    src = new SyncSource(this, getUserDB());
 			    	    //src.m_strError = "Unknown sync source.";
 			    	    src.m_nErrCode = RhoAppAdapter.ERR_RUNTIME;
-		        	
+
 	    	    	    throw new Exception("Sync one source : Unknown Source " + oSrcID.toString() );
 	                }
 	            }
-	
+
 	        } catch(Exception exc) {
     		    LOG.ERROR("Sync source " + oSrcID.toString() + " failed.", exc);
-	    	
+
 	    	    if ( src != null && src.m_nErrCode == RhoAppAdapter.ERR_NONE )
 	    		    src.m_nErrCode = RhoAppAdapter.ERR_RUNTIME;
-	    	
-	    	    getNotify().fireSyncNotification(src, true, src.m_nErrCode, "" ); 
+
+	    	    getNotify().fireSyncNotification(src, true, src.m_nErrCode, "" );
 	        }
 
             getNotify().cleanCreateObjectErrors();
@@ -484,15 +484,15 @@ namespace rho.sync
 	            if ( oSrcID.isEqual(src) )
 	                return src;
 	        }
-	    
+
 	        return null;
 	    }
-	
+
 	    public SyncSource findSourceByName(String strSrcName)
 	    {
-		    return findSource(new SourceID(strSrcName));		
+		    return findSource(new SourceID(strSrcName));
 	    }
-	
+
 	    public void applyChangedValues(DBAdapter db)
 	    {
 	        IDBResult resSrc = db.executeSQL( "SELECT DISTINCT(source_id) FROM changed_values" );
@@ -508,7 +508,7 @@ namespace rho.sync
 	            src.applyChangedValues();
 	        }
 	    }
-	
+
 	    void loadAllSources()
 	    {
 		    if (isNoThreadedMode())
@@ -517,26 +517,26 @@ namespace rho.sync
 	        {
 	            getNet().pushData( getNet().resolveUrl("/system/loadallsyncsources"), "", null );
 	        }
-		
+
 	        m_sources.removeAllElements();
 	        Vector<String> arPartNames = DBAdapter.getDBAllPartitionNames();
 
 	        for( int i = 0; i < (int)arPartNames.size(); i++ )
 	        {
-	            DBAdapter dbPart = DBAdapter.getDB((String)arPartNames.elementAt(i));	    
+	            DBAdapter dbPart = DBAdapter.getDB((String)arPartNames.elementAt(i));
 		        IDBResult res = dbPart.executeSQL("SELECT source_id,sync_type,name from sources ORDER BY sync_priority");
 		        for ( ; !res.isEnd(); res.next() )
-		        { 
+		        {
 		            String strShouldSync = res.getStringByIdx(1);
 		            if ( strShouldSync.compareTo("none") == 0)
 		                continue;
-	
+
 		            String strName = res.getStringByIdx(2);
-		        
+
 		            m_sources.addElement( new SyncSource( res.getIntByIdx(0), strName, strShouldSync, dbPart, this) );
 		        }
 	        }
-	    
+
 	        checkSourceAssociations();
 	    }
 
@@ -554,7 +554,7 @@ namespace rho.sync
 	    void checkSourceAssociations()
 	    {
 	        Hashtable<String, int> hashPassed = new Hashtable<String, int>();
-	    
+
 	        for( int nCurSrc = m_sources.size()-1; nCurSrc >= 0 ; )
 	        {
 	            SyncSource oCurSrc = (SyncSource)m_sources.elementAt(nCurSrc);
@@ -587,21 +587,21 @@ namespace rho.sync
 	    public String readClientID()
 	    {
 	        String clientID = "";
-		
+
 		    lock( m_mxLoadClientID )
 		    {
 	            IDBResult res = getUserDB().executeSQL("SELECT client_id,reset from client_info");
 	            if ( !res.isEnd() )
 	                clientID = res.getStringByIdx(0);
 		    }
-		
+
 		    return clientID;
 	    }
-	
+
 	    public String loadClientID()
 	    {
 	        String clientID = "";
-		
+
 		    lock( m_mxLoadClientID )
 		    {
 		        boolean bResetClient = false;
@@ -613,29 +613,29 @@ namespace rho.sync
 		                bResetClient = res.getIntByIdx(1) > 0;
 		            }
 		        }
-		    
+
 		        if ( clientID.length() == 0 )
 		        {
 		            clientID = requestClientIDByNet();
-		
+
 	                IDBResult res = getUserDB().executeSQL("SELECT * FROM client_info");
 	                if ( !res.isEnd() )
 	            	    getUserDB().executeSQL("UPDATE client_info SET client_id=?", clientID);
 	                else
 	            	    getUserDB().executeSQL("INSERT INTO client_info (client_id) values (?)", clientID);
-	            
+
 		    	    if ( ClientRegister.getInstance() != null )
-		    		    ClientRegister.getInstance().startUp();	    	
-	            
+		    		    ClientRegister.getInstance().startUp();
+
 		        }else if ( bResetClient )
 		        {
 		    	    if ( !resetClientIDByNet(clientID) )
 		    		    stopSync();
 		    	    else
-		    		    getUserDB().executeSQL("UPDATE client_info SET reset=? where client_id=?", 0, clientID );	    	
+		    		    getUserDB().executeSQL("UPDATE client_info SET reset=? where client_id=?", 0, clientID );
 		        }
 		    }
-		
+
 		    return clientID;
 	    }
 
@@ -644,33 +644,33 @@ namespace rho.sync
 	        if ( strSources.length() > 0 )
 	        {
 	            if (isNoThreadedMode())
-	                RhoRuby.loadServerSources(strSources);            
+	                RhoRuby.loadServerSources(strSources);
 	            else
 	            {
 	        	    getNet().pushData( getNet().resolveUrl("/system/loadserversources"), strSources, null);
 	            }
-	        
+
 	            loadAllSources();
-	        
+
 	            DBAdapter.initAttrManager();
 	        }
 	    }
-	
+
 	    boolean resetClientIDByNet(String strClientID)
 	    {
             //String strBody = "";
-            //TODO: send client register info in client reset 
+            //TODO: send client register info in client reset
     //        if ( ClientRegister.getInstance() != null )
     //            strBody += ClientRegister.getInstance().getRegisterBody();
 
 	        NetResponse resp = getNetClientID().pullData(getProtocol().getClientResetUrl(strClientID), this);
-    /*	    
+    /*
 	        processServerSources("{\"server_sources\":[{\"name\":\"Product\",\"partition\":\"application\",\"source_id\":\"2\",\"sync_priority\":\"0\","+
 	    	        "\"schema_version\":\"7.0\",\"schema\":{"+
 	    	        "\"columns\":[\'brand\',\'created_at\',\'name\',\'price\',\'quantity\',\'sku\',\'updated_at\']"+
-	    	        "}}]}"); 
-    */	    				
-	    
+	    	        "}}]}");
+    */
+
 	        if ( !resp.isOK() )
 	        {
 	    	    m_nErrCode = RhoAppAdapter.getErrorFromResponse(resp);
@@ -680,27 +680,27 @@ namespace rho.sync
     	    {
     		    processServerSources(resp.getCharData());
     	    }*/
-	    
+
 	        return resp.isOK();
 	    }
 
 	    String requestClientIDByNet()
 	    {
             //String strBody = "";
-            //TODO: send client register info in client create 
+            //TODO: send client register info in client create
     //        if ( ClientRegister.getInstance() != null )
     //            strBody += ClientRegister.getInstance().getRegisterBody();
-	
+
 	        NetResponse resp = getNetClientID().pullData(getProtocol().getClientCreateUrl(), this);
 	        if ( resp.isOK() && resp.getCharData() != null )
 	        {
 	    	    String szData = resp.getCharData();
-	    	
+
 	            JSONEntry oJsonEntry = new JSONEntry(szData);
-	
+
 	            //if (oJsonEntry.hasName("sources") )
 	            //    processServerSources(szData);
-	        
+
 	            JSONEntry oJsonObject = oJsonEntry.getEntry("client");
 	            if ( !oJsonObject.isEmpty() )
 	                return oJsonObject.getString("client_id");
@@ -713,7 +713,7 @@ namespace rho.sync
 	    		    m_strError = resp.getCharData();
 	    	    }
 	        }
-	
+
 	        return "";
 	    }
 
@@ -723,14 +723,14 @@ namespace rho.sync
 
 	        if ( !RhoConf.getInstance().isExist("bulksync_state") )
 	            return;
-		
+
 	        int nBulkSyncState = RhoConf.getInstance().getInt("bulksync_state");;
 	        if ( nBulkSyncState >= 1 || !isContinueSync() )
 	            return;
 
 		    LOG.INFO("Bulk sync: start");
 		    getNotify().fireBulkSyncNotification(false, "start", "", RhoAppAdapter.ERR_NONE);
-		
+
 		    Vector<String> arPartNames = DBAdapter.getDBAllPartitionNames();
 	        for( int i = 0; i < (int)arPartNames.size()&& isContinueSync(); i++ )
 	            loadBulkPartition( (String)arPartNames.elementAt(i));
@@ -744,16 +744,16 @@ namespace rho.sync
 
 	    void loadBulkPartition(String strPartition )
 	    {
-		    DBAdapter dbPartition = getDB(strPartition); 		
+		    DBAdapter dbPartition = getDB(strPartition);
 	        String serverUrl = RhoConf.getInstance().getPath("syncserver");
 	        String strUrl = serverUrl + "bulk_data";
 	        String strQuery = "?client_id=" + m_clientID + "&partition=" + strPartition;
 	        String strDataUrl = "", strCmd = "", strCryptKey = "";
 
 	        getNotify().fireBulkSyncNotification(false, "start", strPartition, RhoAppAdapter.ERR_NONE);
-	    
+
 	        while(strCmd.length() == 0&&isContinueSync())
-	        {	    
+	        {
 	            NetResponse resp = getNet().pullData(strUrl+strQuery, this);
 	            if ( !resp.isOK() || resp.getCharData() == null )
 	            {
@@ -764,13 +764,13 @@ namespace rho.sync
 	            }
 
 		        LOG.INFO("Bulk sync: got response from server: " + resp.getCharData() );
-	    	
+
 	            String szData = resp.getCharData();
 	            JSONEntry oJsonEntry = new JSONEntry(szData);
 	            strCmd = oJsonEntry.getString("result");
 	            if ( oJsonEntry.hasName("url") )
 	   	            strDataUrl = oJsonEntry.getString("url");
-	        
+
 	            if ( strCmd.compareTo("wait") == 0)
 	            {
 	                int nTimeout = RhoConf.getInstance().getInt("bulksync_timeout_sec");
@@ -785,7 +785,7 @@ namespace rho.sync
 	        if ( strCmd.compareTo("nop") == 0)
 	        {
 		        LOG.INFO("Bulk sync return no data.");
-		        getNotify().fireBulkSyncNotification(true, "", strPartition, RhoAppAdapter.ERR_NONE);		    
+		        getNotify().fireBulkSyncNotification(true, "", strPartition, RhoAppAdapter.ERR_NONE);
 		        return;
 	        }
 
@@ -826,14 +826,14 @@ namespace rho.sync
 
 	        LOG.INFO("Bulk sync: start change db");
    	        getNotify().fireBulkSyncNotification(false, "change_db", strPartition, RhoAppAdapter.ERR_NONE);
-    
+
             dbPartition.setBulkSyncDB(fDataName, strCryptKey);
             processServerSources("{\"partition\":\"" + strPartition + "\"}");
 
 	        LOG.INFO("Bulk sync: end change db");
    	        getNotify().fireBulkSyncNotification(false, "", strPartition, RhoAppAdapter.ERR_NONE);
 	    }
-	
+
 	    String makeBulkDataFileName(String strDataUrl, String strDbPath, String strExt)
 	    {
 	        String strNewName = CFilePath.getBaseName(strDataUrl);
@@ -844,14 +844,14 @@ namespace rho.sync
 	            LOG.INFO( "Bulk sync: remove old bulk file '" + strFToDelete + "'" );
 
 	            //RhoFile.deleteFile( strFToDelete.c_str() );
-	            CRhoFile.deleteFile(strFToDelete);	        
+	            CRhoFile.deleteFile(strFToDelete);
 	        }
 
 	        RhoConf.getInstance().setString("bulksync_filename", strNewName, true);
 
 	        return CFilePath.changeBaseName(strDbPath, strNewName+strExt);
 	    }
-/*	
+/*
 	    int getStartSource()
 	    {
 	        for( int i = 0; i < m_sources.size(); i++ )
@@ -860,7 +860,7 @@ namespace rho.sync
 	            if ( !src.isEmptyToken() )
 	                return i;
 	        }
-	
+
 	        return -1;
 	    }
 */
@@ -872,16 +872,16 @@ namespace rho.sync
 		        src = (SyncSource)m_sources.elementAt(i);
 		        if ( src.getSyncType().compareTo("bulk_sync_only")==0 )
 		            return;
-	
+
 		        if ( isSessionExist() && getState() != esStop )
 		            src.sync();
-	
+
 		        //getNotify().onSyncSourceEnd(i, m_sources);
     	    }catch(Exception exc)
     	    {
 	    	    if ( src.m_nErrCode == RhoAppAdapter.ERR_NONE )
 	    		    src.m_nErrCode = RhoAppAdapter.ERR_RUNTIME;
-	    	
+
 	    	    //setState(esStop);
     		    //throw exc;
                 LOG.ERROR("Sync of source '" + src.getName() + "' failed.", exc);
@@ -889,10 +889,10 @@ namespace rho.sync
     		    getNotify().onSyncSourceEnd( i, m_sources );
     		    //bError = src.m_nErrCode != RhoAppAdapter.ERR_NONE;
     	    }
-    	
+
 	        //return !bError;
 	    }
-	
+
 	    void syncAllSources()
 	    {
 //	        boolean bError = false;
@@ -914,7 +914,7 @@ namespace rho.sync
         public void login(String name, String password, SyncNotify.SyncNotification oNotify)
 	    {
 		    try {
-    /*			
+    /*
 			    processServerSources("{\"sources\":{ \"ProductEx\":{ "+
 	            "\"sync_type\":\"incremental\", \"partition\":\"application\", \"source_id\":\"7\","+
 	            " \"sync_priority\":\"0\", \"model_type\":\"fixed_schema\", "+
@@ -925,9 +925,9 @@ namespace rho.sync
 	            */
 		        NetResponse resp = null;
 		        m_bStopByUser = false;
-		    
+
 		        try{
-				
+
 			        resp = getNet().pullCookies( getProtocol().getLoginUrl(), getProtocol().getLoginBody(name, password), this );
 			        int nErrCode = RhoAppAdapter.getErrorFromResponse(resp);
 			        if ( nErrCode != RhoAppAdapter.ERR_NONE )
@@ -941,7 +941,7 @@ namespace rho.sync
 		    	    getNotify().callLoginCallback(oNotify, RhoAppAdapter.getNetErrorCode(exc), "" );
 		    	    return;
 		        }
-		    
+
 		        String strSession = resp.getCharData();
 		        if ( strSession == null || strSession.length() == 0 )
 		        {
@@ -949,16 +949,16 @@ namespace rho.sync
 		    	    getNotify().callLoginCallback(oNotify, RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE, "" );
 		            return;
 		        }
-		    
+
 		        if ( isStoppedByUser() )
 		    	    return;
-		    
+
 		        IDBResult res = getUserDB().executeSQL("SELECT * FROM client_info");
 		        if ( !res.isEnd() )
 		    	    getUserDB().executeSQL( "UPDATE client_info SET session=?", strSession );
 		        else
 		    	    getUserDB().executeSQL("INSERT INTO client_info (session) values (?)", strSession);
-		
+
 		        if ( RHOCONF().isExist("rho_sync_user") )
 		        {
 		            String strOldUser = RHOCONF().getString("rho_sync_user");
@@ -973,12 +973,12 @@ namespace rho.sync
 		            }
 		        }
 		        RHOCONF().setString("rho_sync_user", name, true);
-		    
+
 	    	    getNotify().callLoginCallback(oNotify, RhoAppAdapter.ERR_NONE, "" );
-		    
+
 	    	    if ( ClientRegister.getInstance() != null )
-	    		    ClientRegister.getInstance().startUp();	    	
-	    	
+	    		    ClientRegister.getInstance().startUp();
+
 		    }catch(Exception exc)
 		    {
 			    LOG.ERROR("Login failed.", exc);
@@ -990,10 +990,10 @@ namespace rho.sync
 	    {
 	        String strRes = "";
 	        IDBResult res = getUserDB().executeSQL("SELECT session FROM client_info");
-	    
+
 	        if ( !res.isEnd() )
 	    	    strRes = res.getStringByIdx(0);
-	    
+
 	        return strRes.length() > 0;
 	    }
 
@@ -1001,39 +1001,39 @@ namespace rho.sync
 	    {
 		    m_strSession = "";
 	        IDBResult res = getUserDB().executeSQL("SELECT session FROM client_info");
-	    
+
 	        if ( !res.isEnd() )
 	    	    m_strSession = res.getStringByIdx(0);
 
             return m_strSession;
 	    }
-	
+
 	    public void logout()
 	    {
-	        if(m_NetRequest!=null) 
+	        if(m_NetRequest!=null)
 	            m_NetRequest.cancel();
-		
+
 		    getUserDB().executeSQL( "UPDATE client_info SET session = NULL");
 	        m_strSession = "";
-	
+
 	        //loadAllSources();
 	    }
-	
+
 	    public void setSyncServer(String syncserver)
 	    {
 		    String strOldSrv = RhoConf.getInstance().getString("syncserver");
 		    String strNewSrv = syncserver != null ? syncserver : "";
-		
+
 		    if ( strOldSrv.compareTo(strNewSrv) != 0)
 		    {
 			    RhoConf.getInstance().setString("syncserver", syncserver, true);
-			
+
 			    getUserDB().executeSQL("DELETE FROM client_info");
 
 			    logout();
 		    }
 	    }
-	
+
         static String getHostFromUrl( String strUrl )
         {
             int nHttp = strUrl.indexOf("://");
@@ -1050,6 +1050,6 @@ namespace rho.sync
 
             int nSrvLen = nEndSrv >= 0 ? nEndSrv + 1 : strUrl.length();
             return strUrl.substring(nSrvLen);
-        }    
+        }
     }
 }

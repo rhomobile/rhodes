@@ -37,7 +37,7 @@ describe "Bsearch" do
 
     range = %w(a b d e f).bsearch_range {|x| x <=> "c"}
     range.should == (2...2)
-    
+
   end
 
 end

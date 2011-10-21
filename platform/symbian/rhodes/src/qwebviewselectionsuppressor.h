@@ -66,7 +66,7 @@ public:
         view->installEventFilter(this);
         enabled = true;
     }
- 
+
     inline void disable()
     {
         if (!enabled)

@@ -5,11 +5,11 @@
   <property name="src.dir" location="../bin/RhoBundle" />
   <property name="ruby.path" value="../target/compiler/RhoRuby.exe" />
   <property name="sharedAnt.dir" value="../../shared/build" />
-  
+
   <target name="all">
-    
+
     <ant dir = "${sharedAnt.dir}"/>
 
   </target>
-  
+
 </project>

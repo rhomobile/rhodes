@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -47,52 +47,52 @@ import net.rim.device.api.util.Comparator;
 import net.rim.device.api.util.SimpleSortingVector;
 
 public class ESRIMapField extends Field implements RhoMapField {
-	
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("ESRIMapField");
-	
+
 	private static final int TILE_SIZE = 256;
 	private static final int MIN_ZOOM = 0;
 	private static final int MAX_ZOOM = 19;
-	
+
 	private static final int CACHE_UPDATE_INTERVAL = 500;
-	
+
 	// Maximum size of image cache (number of images stored locally)
 	private static final int MAX_IMAGE_CACHE_SIZE = 32;
-	
+
 	// Mode of decoding EncodedImage to bitmap
 	private static final int DECODE_MODE = EncodedImage.DECODE_NATIVE |
 		EncodedImage.DECODE_NO_DITHER | EncodedImage.DECODE_READONLY |
 		EncodedImage.DECODE_ALPHA;
-	
+
 	// Constants required to coordinates calculations
 	private static final long MIN_LATITUDE = degreesToPixelsY(90, MAX_ZOOM);
 	private static final long MAX_LATITUDE = degreesToPixelsY(-90, MAX_ZOOM);
 	private static final long MAX_LONGITUDE = degreesToPixelsX(180, MAX_ZOOM);
-	
+
 	// DON'T CHANGE THIS CONSTANT!!!
 	// This is maximum absolute value of sine ( == sin(85*PI/180) ) allowed by Merkator projection
 	private static final double MAX_SIN = 0.99627207622;
-	
+
 	private static final double PI = Math.PI;
-	
+
 	private Hashtable mMapUrls = new Hashtable();
-	
+
 	private String mMapType;
-	
+
 	//===============================================================================
 	// Coordinates of center in pixels of maximum zoom level
 	private long mLatitude = degreesToPixelsY(0, MAX_ZOOM);
 	private long mLongitude = degreesToPixelsX(0, MAX_ZOOM);
 	private int mZoom = 0;
-	
+
 	private int mWidth;
 	private int mHeight;
 
 	private Bitmap mapLogoImage;
-	
+
 	private static class ByCoordinatesComparator implements Comparator {
-		
+
 		public int compare (Object o1, Object o2) {
 			CachedImage img1 = (CachedImage)o1;
 			CachedImage img2 = (CachedImage)o2;
@@ -104,19 +104,19 @@ public class ESRIMapField extends Field implements RhoMapField {
 			if (img1.zoom > img2.zoom) return 1;
 			return 0;
 		}
-		
+
 	}
-	
+
 	private static class ByAccessTimeComparator implements Comparator {
-		
+
 		public int compare (Object o1, Object o2) {
 			long l1 = ((CachedImage)o1).lastUsed;
 			long l2 = ((CachedImage)o2).lastUsed;
 			return l1 < l2 ? -1 : l1 > l2 ? 1 : 0;
 		}
-		
+
 	};
-	
+
 	private class CachedImage {
 		public EncodedImage image;
 		public Bitmap bitmap;
@@ -125,7 +125,7 @@ public class ESRIMapField extends Field implements RhoMapField {
 		public int zoom;
 		public String key;
 		public long lastUsed;
-		
+
 		public CachedImage(EncodedImage img, long lat, long lon, int z) {
 			image = img;
 			bitmap = null;
@@ -136,16 +136,16 @@ public class ESRIMapField extends Field implements RhoMapField {
 			lastUsed = System.currentTimeMillis();
 		}
 	};
-	
+
 	private class ImageCache {
 		private Hashtable hash;
 		private SimpleSortingVector cvec;
 		private SimpleSortingVector tvec;
-		
+
 		public ImageCache() {
 			reinit();
 		}
-		
+
 		private void reinit() {
 			hash = new Hashtable();
 			cvec = new SimpleSortingVector();
@@ -155,40 +155,40 @@ public class ESRIMapField extends Field implements RhoMapField {
 			tvec.setSortComparator(new ByAccessTimeComparator());
 			tvec.setSort(true);
 		}
-		
+
 		public ImageCache clone() {
 			ImageCache cloned = new ImageCache();
 			for (Enumeration e = hash.elements(); e.hasMoreElements();)
 				cloned.put((CachedImage)e.nextElement());
 			return cloned;
 		}
-		
+
 		public Enumeration sortedByCoordinates() {
 			return cvec.elements();
 		}
-		
+
 		public CachedImage get(String key) {
 			return (CachedImage)hash.get(key);
 		}
-		
+
 		public void put(CachedImage img) {
 			put(img, true);
 		}
-		
+
 		private void put(CachedImage img, boolean doCheck) {
 			hash.put(img.key, img);
 			cvec.addElement(img);
 			tvec.addElement(img);
 			if (doCheck) check();
 		}
-		
+
 		private void check() {
 			if (hash.size() < MAX_IMAGE_CACHE_SIZE)
 				return;
-			
+
 			SimpleSortingVector vec = tvec;
 			reinit();
-			
+
 			Enumeration e = vec.elements();
 			while (e.hasMoreElements()) {
 				CachedImage img = (CachedImage)e.nextElement();
@@ -196,61 +196,61 @@ public class ESRIMapField extends Field implements RhoMapField {
 			}
 		}
 	};
-	
+
 	private ImageCache mImgCache = new ImageCache();
-	
+
 	private static abstract class MapCommand {
 		public abstract String type();
 		public abstract String description();
 	}
-	
+
 	private static class MapFetchCommand extends MapCommand {
-		
+
 		public String baseUrl;
 		public int zoom;
 		public long latitude;
 		public long longitude;
-		
+
 		public MapFetchCommand(String baseUrl, int zoom, long latitude, long longitude) {
 			this.baseUrl = baseUrl;
 			this.zoom = zoom;
 			this.latitude = latitude;
 			this.longitude = longitude;
 		}
-		
+
 		private String makeDescription() {
 			return "" + zoom + "/" + latitude + "/" + longitude;
 		}
-		
+
 		public String type() {
 			return "fetch";
 		}
-		
+
 		public String description() {
 			return "fetch:" + makeDescription();
 		}
-		
+
 	};
-	
+
 	private class MapThread extends Thread {
-		
+
 		private static final int BLOCK_SIZE = 1024;
-		
+
 		private Vector commands = new Vector();
 		private boolean active = true;
-		
+
 		public void process(MapCommand cmd) {
 			synchronized (commands) {
 				commands.addElement(cmd);
 				commands.notify();
 			}
 		}
-		
+
 		public void stop() {
 			active = false;
 			interrupt();
 		}
-		
+
 		public void run() {
 			try {
 				while (active) {
@@ -270,7 +270,7 @@ public class ESRIMapField extends Field implements RhoMapField {
 						if (cmd == null)
 							continue;
 					}
-					
+
 					try {
 						if (cmd instanceof MapFetchCommand)
 							processCommand((MapFetchCommand)cmd);
@@ -289,8 +289,8 @@ public class ESRIMapField extends Field implements RhoMapField {
 				LOG.INFO("Map thread exit");
 			}
 		}
-		
-		private byte[] fetchData(String url) throws IOException 
+
+		private byte[] fetchData(String url) throws IOException
 		{
 			byte[] data = null;
 			int nTry = 0;
@@ -298,27 +298,27 @@ public class ESRIMapField extends Field implements RhoMapField {
 			{
 				IHttpConnection conn = null;
 				InputStream is = null;
-				
+
 				try
 				{
 					conn = RhoClassFactory.getNetworkAccess().connect(url,false);
-					
+
 					conn.setRequestMethod("GET");
-					
+
 					//conn.setRequestProperty("User-Agent", "Blackberry");
 					//conn.setRequestProperty("Accept", "*/*");
-					
+
 					is = conn.openInputStream();
-					
+
 					int code = conn.getResponseCode();
 					if (code/100 != 2)
 						throw new IOException("ESRI map server respond with " + code + " " + conn.getResponseMessage());
-					
+
 					int size = conn.getHeaderFieldInt("Content-Length", 0);
 					data = new byte[size];
 					if (size == 0)
 						size = 1073741824; // 1Gb :)
-					
+
 					byte[] buf = new byte[BLOCK_SIZE];
 					for (int offset = 0; offset < size;) {
 						int n = is.read(buf, 0, BLOCK_SIZE);
@@ -346,21 +346,21 @@ public class ESRIMapField extends Field implements RhoMapField {
 				{
 					if ( is != null )
 						try{ is.close(); }catch(IOException e){}
-	
+
 					if ( conn != null )
 						try{ conn.close(); }catch(IOException e){}
-					
+
 					is = null;
 					conn = null;
 				}
 			}while( nTry <= 3 );
-			
+
 			return data;
 		}
-		
+
 		private void processCommand(MapFetchCommand cmd) throws IOException {
 			LOG.TRACE("Processing map fetch command (thread #" + hashCode() + "): " + cmd.description());
-			
+
 			long ts = toMaxZoom(TILE_SIZE, cmd.zoom);
 			int row = (int)(cmd.latitude/ts);
 			int column = (int)(cmd.longitude/ts);
@@ -372,13 +372,13 @@ public class ESRIMapField extends Field implements RhoMapField {
 			url.append(row);
 			url.append('/');
 			url.append(column);
-			
+
 			String finalUrl = url.toString();
 			byte[] data = fetchData(finalUrl);
-			
+
 			EncodedImage img = EncodedImage.createEncodedImage(data, 0, data.length);
 			img.setDecodeMode(DECODE_MODE);
-			
+
 			long lat = row*ts + ts/2;
 			long lon = column*ts + ts/2;
 			LOG.TRACE("Map request done, draw just received image: zoom=" + cmd.zoom + ", lat=" + lat + ", lon=" + lon);
@@ -389,20 +389,20 @@ public class ESRIMapField extends Field implements RhoMapField {
 			}
 			redraw();
 		}
-		
+
 	};
-	
+
 	private MapThread mMapThread = new MapThread();
-	
+
 	private class CacheUpdate extends Thread {
-		
+
 		private boolean active = true;
-		
+
 		public void stop() throws InterruptedException {
 			active = false;
 			join();
 		}
-		
+
 		public void run() {
 			LOG.TRACE("Cache update thread started");
 			while (active) {
@@ -412,20 +412,20 @@ public class ESRIMapField extends Field implements RhoMapField {
 				catch (InterruptedException e) {
 					// Ignore
 				}
-				
+
 				//LOG.TRACE("Cache update: next loop; mLatitude=" + mLatitude +
 				//		", mLongitude=" + mLongitude + ", mZoom=" + mZoom);
-				
+
 				long ts = toMaxZoom(TILE_SIZE, mZoom);
 				//LOG.TRACE("Tile size on the maximum zoom level: " + ts);
 				long h = toMaxZoom(mHeight, mZoom);
 				//LOG.TRACE("Height of the screen on the maximum zoom level: " + h);
 				long w = toMaxZoom(mWidth, mZoom);
 				//LOG.TRACE("Width of the screen on the maximum zoom level: " + w);
-				
+
 				long totalTiles = MapTools.math_pow2(mZoom);
 				//LOG.TRACE("Total tiles count on zoom level " + mZoom + ": " + totalTiles);
-				
+
 				long tlLat = mLatitude - h/2;
 				if (tlLat < 0) tlLat = 0;
 				long tlLon = mLongitude - w/2;
@@ -441,7 +441,7 @@ public class ESRIMapField extends Field implements RhoMapField {
 								//LOG.TRACE("lat=" + lat + ", lon=" + lon + "; key=" + key);
 								String baseUrl = getMapUrl();
 								cmd = new MapFetchCommand(baseUrl, mZoom, lat, lon);
-								
+
 								CachedImage dummy = new CachedImage(null, lat, lon, mZoom);
 								mImgCache.put(dummy);
 							}
@@ -453,32 +453,32 @@ public class ESRIMapField extends Field implements RhoMapField {
 			}
 			LOG.INFO("Cache update thread stopped");
 		}
-		
+
 	};
-	
+
 	private CacheUpdate mCacheUpdate = new CacheUpdate();
-	
+
 	public ESRIMapField() {
 		String url = RhoConf.getInstance().getString("esri_map_url_roadmap");
 		if (url == null || url.length() == 0)
 			url = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/";
 		mMapUrls.put("roadmap", url);
-		
+
 		url = RhoConf.getInstance().getString("esri_map_url_satellite");
 		if (url == null || url.length() == 0)
 			url = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/";
 		mMapUrls.put("satellite", url);
-		
+
 		mMapType = "roadmap";
 
 		mapLogoImage = Bitmap.getBitmapResource("esri.png");
-		
+
 		LOG.TRACE("ESRIMapField ctor: mLatitude=" + mLatitude + ", mLongitude=" + mLongitude);
-		
+
 		mMapThread.start();
 		mCacheUpdate.start();
 	}
-	
+
 	public void close() {
 		mMapThread.stop();
 		try {
@@ -488,29 +488,29 @@ public class ESRIMapField extends Field implements RhoMapField {
 			LOG.ERROR("Stopping of cache update thread was interrupted", e);
 		}
 	}
-	
+
 	public void redraw() {
 		invalidate();
 	}
-	
+
 	private String getMapUrl() {
 		String url = (String)mMapUrls.get(mMapType);
 		if (url == null)
 			url = (String)mMapUrls.get("roadmap");
 		return url;
 	}
-	
+
 	protected void paint(Graphics graphics) {
 		// Draw background
 		for (int i = 1, lim = 2*Math.max(mWidth, mHeight); i < lim; i += 5) {
 			graphics.drawLine(0, i, i, 0);
 		}
-		
+
 		ImageCache imgCache;
 		synchronized (this) {
 			imgCache = mImgCache.clone();
 		}
-		
+
 		// Draw map tiles
 		Enumeration e = imgCache.sortedByCoordinates();
 		while (e.hasMoreElements()) {
@@ -518,39 +518,39 @@ public class ESRIMapField extends Field implements RhoMapField {
 			CachedImage img = (CachedImage)e.nextElement();
 			if (img.image == null)
 				continue;
-			
+
 			paintImage(graphics, img);
 		}
 
 		int logoWidth = mapLogoImage.getWidth();
 		int logoHeight = mapLogoImage.getHeight();
-		graphics.drawBitmap(0, mHeight - logoHeight, logoWidth, logoHeight, mapLogoImage, 0, 0); 
+		graphics.drawBitmap(0, mHeight - logoHeight, logoWidth, logoHeight, mapLogoImage, 0, 0);
 
 	}
-	
+
 	private void paintImage(Graphics graphics, CachedImage img) {
 		// Skip images with zoom level which differ from the current zoom level
 		if (img.zoom != mZoom)
 			return;
-		
+
 		long left = -toCurrentZoom(mLongitude - img.longitude, mZoom);
 		long top = -toCurrentZoom(mLatitude - img.latitude, mZoom);
-		
+
 		if (img.zoom != mZoom) {
 			double x = MapTools.math_pow2d(img.zoom - mZoom);
 			int factor = Fixed32.tenThouToFP((int)(x*10000));
 			img.image = img.image.scaleImage32(factor, factor);
 			img.bitmap = null;
 		}
-		
+
 		int imgWidth = img.image.getScaledWidth();
 		int imgHeight = img.image.getScaledHeight();
 		left += (mWidth - imgWidth)/2;
 		top += (mHeight - imgHeight)/2;
-		
+
 		int w = mWidth - (int)left;
 		int h = mHeight - (int)top;
-		
+
 		int maxW = mWidth + TILE_SIZE;
 		int maxH = mHeight + TILE_SIZE;
 		if (w < 0 || h < 0 || w > maxW || h > maxH) {
@@ -558,18 +558,18 @@ public class ESRIMapField extends Field implements RhoMapField {
 			img.bitmap = null;
 			return;
 		}
-		
+
 		if (img.bitmap == null)
 			img.bitmap = img.image.getBitmap();
 		graphics.drawBitmap((int)left, (int)top, w, h, img.bitmap, 0, 0);
 	}
-	
+
 	protected void layout(int w, int h) {
 		mWidth = Math.min(mWidth, w);
 		mHeight = Math.min(mHeight, h);
 		setExtent(mWidth, mHeight);
 	}
-	
+
 	public int calculateZoom(double latDelta, double lonDelta) {
 		int zoom1 = calcZoom(latDelta, mWidth);
 		int zoom2 = calcZoom(lonDelta, mHeight);
@@ -592,20 +592,20 @@ public class ESRIMapField extends Field implements RhoMapField {
 		if (mLatitude < MIN_LATITUDE) mLatitude = MIN_LATITUDE;
 		if (mLatitude > MAX_LATITUDE) mLatitude = MAX_LATITUDE;
 	}
-	
+
 	public void moveTo(double lat, double lon) {
 		mLatitude = degreesToPixelsY(lat, MAX_ZOOM);
 		mLongitude = degreesToPixelsX(lon, MAX_ZOOM);
 		validateCoordinates();
-		
+
 		//LOG.TRACE("moveTo(" + lat + ", " + lon + "): mLatitude=" + mLatitude + ", mLongitude=" + mLongitude);
 	}
-	
+
 	public void move(int dx, int dy) {
 		mLatitude += toMaxZoom(dy, mZoom);
 		mLongitude += toMaxZoom(dx, mZoom);
 		validateCoordinates();
-		
+
 		//LOG.TRACE("move(" + dx + ", " + dy + "): mLatitude=" + mLatitude + ", mLongitude=" + mLongitude);
 	}
 
@@ -618,11 +618,11 @@ public class ESRIMapField extends Field implements RhoMapField {
 		mWidth = width;
 		mHeight = height;
 	}
-	
+
 	public int getPreferredWidth() {
 		return mWidth;
 	}
-	
+
 	public int getPreferredHeight() {
 		return mHeight;
 	}
@@ -645,21 +645,21 @@ public class ESRIMapField extends Field implements RhoMapField {
 	public int getZoom() {
 		return mZoom;
 	}
-	
+
 	private static int calcZoom(double degrees, int pixels) {
 		double angleRatio = degrees*TILE_SIZE/pixels;
-		
+
 		double twoInZoomExp = 360/angleRatio;
 		int zoom = (int)MapTools.math_log2(twoInZoomExp);
 		return zoom;
 	}
-	
+
 	private static long toMaxZoom(long n, int zoom) {
 		if (n == 0) return 0;
 		long pow = MapTools.math_pow2(MAX_ZOOM - zoom);
 		return n*pow;
 	}
-	
+
 	private static long toCurrentZoom(long coord, int zoom) {
 		if (coord == 0) return 0;
 		long pow = MapTools.math_pow2(MAX_ZOOM - zoom);
@@ -673,7 +673,7 @@ public class ESRIMapField extends Field implements RhoMapField {
 		double val = (n + 180)*TILE_SIZE/angleRatio;
 		return (long)val;
 	}
-	
+
 	private static long degreesToPixelsY(double n, int z) {
 		// Merkator projection
 		double sin_phi = MapTools.math_sin(n*PI/180);
@@ -681,12 +681,12 @@ public class ESRIMapField extends Field implements RhoMapField {
 		// (~85.0 degrees of north latitude)
 		if (sin_phi < -MAX_SIN) sin_phi = -MAX_SIN;
 		if (sin_phi > MAX_SIN) sin_phi = MAX_SIN;
-		
+
 		double ath = MapTools.math_atanh(sin_phi);
 		double val = TILE_SIZE * MapTools.math_pow2(z) * (1 - ath/PI)/2;
 		return (long)val;
 	}
-	
+
 	private static double pixelsToDegreesX(long n, int z) {
 		while (n < 0) n += MAX_LONGITUDE;
 		while (n > MAX_LONGITUDE) n -= MAX_LONGITUDE;
@@ -694,7 +694,7 @@ public class ESRIMapField extends Field implements RhoMapField {
 		double val = n*angleRatio/TILE_SIZE - 180.0;
 		return val;
 	}
-	
+
 	private static double pixelsToDegreesY(long n, int z) {
 		// Revert calculation of Merkator projection
 		double ath = PI - 2*PI*n/(TILE_SIZE*MapTools.math_pow2(z));
@@ -702,7 +702,7 @@ public class ESRIMapField extends Field implements RhoMapField {
 		double val = 180*MapTools.math_asin(th)/PI;
 		return val;
 	}
-	
+
 	private String makeCacheKey(long lat, long lon, int z) {
 		while (lon < 0) lon += MAX_LONGITUDE;
 		while (lon > MAX_LONGITUDE) lon -= MAX_LONGITUDE;
@@ -725,12 +725,12 @@ public class ESRIMapField extends Field implements RhoMapField {
 		long begin = center - mWidth/2;
 		return v - begin;
 	}
-	
+
 	public long toScreenCoordinateY(double n) {
 		long v = degreesToPixelsY(n, mZoom);
 		long center = toCurrentZoom(mLatitude, mZoom);
 		long begin = center - mHeight/2;
 		return v - begin;
 	}
-	
+
 }

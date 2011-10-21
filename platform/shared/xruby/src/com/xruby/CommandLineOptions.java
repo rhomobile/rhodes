@@ -59,7 +59,7 @@ class CommandLineOptions {
     public boolean isEnableDebug() {
         return enableDebug;
     }
-    
+
     public void enableDebug() {
     	this.enableDebug = true;
     }
@@ -228,10 +228,10 @@ class CommandLineOptions {
     			verbose_ = true;
     		}
     		if (line.hasOption("n")) {
-    			String str = line.getOptionValue("n"); 
+    			String str = line.getOptionValue("n");
     			com.xruby.compiler.codegen.NameFactory.name_classprefix_ = str;
     		}
-            
+
         } else if (line.hasOption("h")) {
 			help_ = true;
 		} else if (line.hasOption("v")) {

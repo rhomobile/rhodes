@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -59,7 +59,7 @@ void CNetRequestHolder::cancel()
 }
 
 boolean CNetRequestHolder::isCancelled()
-{ 
+{
     synchronized(m_mxReq)
     {
         return m_bCancel;
@@ -78,9 +78,9 @@ CNetRequestWrapper::CNetRequestWrapper(INetRequestImpl* pImpl, CNetRequestHolder
 }
 
 CNetRequestWrapper::~CNetRequestWrapper()
-{ 
+{
     if ( m_pHolder )
-        m_pHolder->setRequest(0); 
+        m_pHolder->setRequest(0);
 }
 
 INetResponse* CNetRequestWrapper::pullData(const String& strUrl, IRhoSession* oSession )
@@ -98,7 +98,7 @@ INetResponse* CNetRequestWrapper::pullCookies(const String& strUrl, const String
     INetResponse* pResp = doRequest("POST", strUrl, strBody, oSession, null );
     if ( pResp->getRespCode() == 200 )
         pResp->setCharData(pResp->getCookies().c_str());
-		
+
     return pResp;
 }
 
@@ -126,7 +126,7 @@ INetResponse* CNetRequestWrapper::pushMultipartData(const String& strUrl, CMulti
 INetResponse* CNetRequestWrapper::pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
 {
     common::CRhoFile oFile;
-    if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenForAppend) ) 
+    if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenForAppend) )
     {
         LOGC(ERROR, "Net") + "pullFile: cannot create file :" + strFilePath;
         return m_pReqImpl->createEmptyNetResponse();

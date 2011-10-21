@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -39,7 +39,7 @@ VALUE rho_sys_makephonecall(const char* callname, int nparams, char** param_name
 	PARAMS_WRAPPER* ret;
 	VALUE ret_value = Qnil;
 	int i;
-	
+
 	//Check if we need to do syscall on UI thread
 	for (i=0;i<nparams;i++) {
 		if (strcmp("thread",param_names[i]) == 0) {
@@ -49,7 +49,7 @@ VALUE rho_sys_makephonecall(const char* callname, int nparams, char** param_name
 			}
 			break;
 		}
-	}	
+	}
 
 	if (params._call_on_ui_thread) {
 		// Switching to UI thread
@@ -68,15 +68,15 @@ VALUE rho_sys_makephonecall(const char* callname, int nparams, char** param_name
 					rb_hash_aset(hash, rb_str_new2(ret->_names[i]), rb_str_new2(ret->_values[i]));
 				if (ret->_names[i]) free(ret->_names[i]);
 				if (ret->_values[i]) free(ret->_values[i]);
-			}	
+			}
 			if (ret->_names) free(ret->_names);
 			if (ret->_values) free(ret->_values);
-			free(ret);			
+			free(ret);
 			ret_value = hash;
             rho_ruby_releaseValue(hash);
 		}
 	}
-	
+
 	return ret_value;
 }
 

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -34,7 +34,7 @@
 #include "common/RhodesApp.h"
 #include "common/RhoAppAdapter.h"
 #include "common/Tokenizer.h"
-#ifndef RHO_NO_RUBY 
+#ifndef RHO_NO_RUBY
 #include "ruby/ext/rho/rhoruby.h"
 #endif //RHO_NO_RUBY
 #include "common/app_build_configs.h"
@@ -45,7 +45,7 @@ IMPLEMENT_LOGCLASS(CDBAdapter,"DB");
 HashtablePtr<String,CDBAdapter*> CDBAdapter::m_mapDBPartitions;
 
 using namespace rho::common;
-using namespace rho;	
+using namespace rho;
 
 static int onDBBusy(void* data,int nTry)
 {
@@ -217,14 +217,14 @@ void CDBAdapter::CDBVersion::fromFile(const String& strFilePath)//throws Excepti
 {
     String strData;
     CRhoFile::readStringFromFile(strFilePath.c_str(), strData);
-    
+
     CTokenizer oTokenizer( strData, ";" );
     int nPos = 0;
-	while (oTokenizer.hasMoreTokens()) 
+	while (oTokenizer.hasMoreTokens())
     {
 		String tok = oTokenizer.nextToken();
 		tok = String_trim(tok);
-		
+
 		switch(nPos)
 		{
 		case 0:
@@ -243,9 +243,9 @@ void CDBAdapter::CDBVersion::fromFile(const String& strFilePath)//throws Excepti
 
 void CDBAdapter::CDBVersion::toFile(const String& strFilePath)const//throws Exception
 {
-	String strFullVer = m_strRhoVer + ";" + m_strAppVer + 
+	String strFullVer = m_strRhoVer + ";" + m_strAppVer +
 		";" + (m_bEncrypted ? "encrypted":"");
-	
+
 	//try{
         CRhoFile::deleteFile( strFilePath.c_str() );
         CRhoFile::writeStringToFile(strFilePath.c_str(), strFullVer);
@@ -265,7 +265,7 @@ boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const CDBVersion& dbNewVe
         return true;
     }
 
-    if ( (dbVer.m_strRhoVer.find("2.0") == 0||dbVer.m_strRhoVer.find("2.1") == 0||dbVer.m_strRhoVer.find("2.2") == 0)&& 
+    if ( (dbVer.m_strRhoVer.find("2.0") == 0||dbVer.m_strRhoVer.find("2.1") == 0||dbVer.m_strRhoVer.find("2.2") == 0)&&
          (dbNewVer.m_strRhoVer.find("2.0")==0||dbNewVer.m_strRhoVer.find("2.1")==0||dbNewVer.m_strRhoVer.find("2.2")==0) )
     {
         LOG(INFO) + "No migration required from " + dbVer.m_strRhoVer + " to " + dbNewVer.m_strRhoVer;
@@ -298,7 +298,7 @@ boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const CDBVersion& dbNewVe
 
             for( size_t i = 0; i < vecSrcIds.size(); i++)
             {
-                IDBResult res3 = db.executeSQL( "UPDATE sources SET priority=? where source_id=?", 
+                IDBResult res3 = db.executeSQL( "UPDATE sources SET priority=? where source_id=?",
                     vecSrcIds.elementAt(i), vecSrcIds.elementAt(i) );
             }
         }
@@ -315,13 +315,13 @@ boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const CDBVersion& dbNewVe
 void CDBAdapter::checkDBVersion(String& strRhoDBVer)
 {
     CDBVersion dbNewVer;
-	dbNewVer.m_strRhoVer = strRhoDBVer; 
+	dbNewVer.m_strRhoVer = strRhoDBVer;
 	dbNewVer.m_strAppVer = RHOCONF().getString("app_db_version");
 
     const char* szEncrypt = get_app_build_config_item("encrypt_database");
 	dbNewVer.m_bEncrypted = szEncrypt && strcmp(szEncrypt, "1") == 0;
-		
-	CDBVersion dbVer;  
+
+	CDBVersion dbVer;
 	dbVer.fromFile(m_strDbVerPath);
 
 	if (dbVer.m_strRhoVer.length() == 0 )
@@ -329,20 +329,20 @@ void CDBAdapter::checkDBVersion(String& strRhoDBVer)
 		dbNewVer.toFile(m_strDbVerPath);
 		return;
 	}
-	
+
 	boolean bRhoReset = dbVer.isRhoVerChanged(dbNewVer);
     boolean bAppReset = dbVer.isAppVerChanged(dbNewVer);
-	
+
 	boolean bDbFormatChanged = dbVer.isDbFormatChanged(dbNewVer);
 	if ( !bDbFormatChanged && dbVer.m_bEncrypted )
 	{
 		//if (!com.rho.RhoCrypto.isKeyExist(strEncryptionInfo) )
 		//	bDbFormatChanged = true;
 	}
-	
+
 	if ( bDbFormatChanged )
 		LOG(INFO) + "Reset Database( format changed ):" + m_strDbPath;
-	
+
     if ( bRhoReset && !bAppReset && !bDbFormatChanged )
         bRhoReset = !migrateDB(dbVer, dbNewVer);
 
@@ -381,7 +381,7 @@ sqlite3_stmt* CDBAdapter::createInsertStatement(IDBResult& res, const String& ta
   	if ( strInsert.length() == 0 )
     {
 	    strInsert = "INSERT INTO ";
-	
+
 	    strInsert += tableName;
 	    strInsert += "(";
 	    String strQuest = ") VALUES(";
@@ -397,18 +397,18 @@ sqlite3_stmt* CDBAdapter::createInsertStatement(IDBResult& res, const String& ta
 			    strValues += ",";
 			    strQuest += ",";
 		    }
-    		
-		    strValues += strColName; 
+
+		    strValues += strColName;
 		    strQuest += "?";
 	    }
-    	
+
 	    strInsert += strValues + strQuest + ")";
     }
 
     int rc = sqlite3_prepare_v2(db.getDbHandle(), strInsert.c_str(), -1, &stInsert, NULL);
     if ( !checkDbError(rc) )
     	return 0;
-    
+
     int nBindCol = 1;
 	for (int nCol = 0; nCol < nColCount; nCol++ )
 	{
@@ -575,12 +575,12 @@ void CDBAdapter::updateAllAttribChanges()
                 String value = res2.getStringByIdx(j);
                 String attribType = getAttrMgr().isBlobAttr(arSrcID.elementAt(i), strAttrib.c_str()) ? "blob.file" : "";
 
-                executeSQLReportNonUnique("INSERT INTO changed_values (source_id,object,attrib,value,update_type,attrib_type,sent) VALUES(?,?,?,?,?,?,?)", 
+                executeSQLReportNonUnique("INSERT INTO changed_values (source_id,object,attrib,value,update_type,attrib_type,sent) VALUES(?,?,?,?,?,?,?)",
                     arSrcID.elementAt(i), arObj.elementAt(i), strAttrib, value, arUpdateType.elementAt(i), attribType, 0);
             }
         }else
         {
-            IDBResult res2 = executeSQL((String("SELECT attrib, value FROM ") + strTableName + " where object=? and source_id=?").c_str(), 
+            IDBResult res2 = executeSQL((String("SELECT attrib, value FROM ") + strTableName + " where object=? and source_id=?").c_str(),
                 arObj.elementAt(i), arSrcID.elementAt(i) );
 
             for( ; !res2.isEnd(); res2.next() )
@@ -592,13 +592,13 @@ void CDBAdapter::updateAllAttribChanges()
                 String value = res2.getStringByIdx(1);
                 String attribType = getAttrMgr().isBlobAttr(arSrcID.elementAt(i), strAttrib.c_str()) ? "blob.file" : "";
 
-                executeSQLReportNonUnique("INSERT INTO changed_values (source_id,object,attrib,value,update_type,attrib_type,sent) VALUES(?,?,?,?,?,?,?)", 
+                executeSQLReportNonUnique("INSERT INTO changed_values (source_id,object,attrib,value,update_type,attrib_type,sent) VALUES(?,?,?,?,?,?,?)",
                     arSrcID.elementAt(i), arObj.elementAt(i), strAttrib, value, arUpdateType.elementAt(i), attribType, 0);
             }
         }
     }
 
-    executeSQL("DELETE FROM changed_values WHERE attrib='object'"); 
+    executeSQL("DELETE FROM changed_values WHERE attrib='object'");
 
     endTransaction();
 }
@@ -674,16 +674,16 @@ void CDBAdapter::executeBatch(const char* szSql, CDBError& error)
 {
     char* errmsg = 0;
     int rc = sqlite3_exec(m_dbHandle, szSql,  NULL, NULL, &errmsg);
-	
+
     if ( rc != SQLITE_OK )
         LOG(ERROR)+"execute batch failed. Error code: " + rc + ";Message: " + (errmsg ? errmsg : "");
-	
+
 	error.setError(rc, errmsg);
-	
+
     if ( errmsg )
         sqlite3_free(errmsg);
 }
-	
+
 void CDBAdapter::createSchema()
 {
 #ifdef RHODES_EMULATOR
@@ -704,7 +704,7 @@ void CDBAdapter::createSchema()
 
 	CDBError dbError;
 	executeBatch(strSqlScript.c_str(), dbError);
-	
+
     if ( dbError.isOK() )
         createTriggers();
 }
@@ -800,7 +800,7 @@ DBResultPtr CDBAdapter::prepareStatement( const char* szSt )
 		res->setStatement(st);
         return res;
 	}
-	
+
     int rc = sqlite3_prepare_v2(m_dbHandle, szSt, -1, &st, NULL);
     if ( !checkDbErrorEx(rc,*res) )
     {
@@ -868,19 +868,19 @@ DBResultPtr CDBAdapter::executeStatement(DBResultPtr& res, const char* szSt)
 }
 
 void CDBAdapter::Lock()
-{ 
+{
     if ( m_mxRuby.isMainRubyThread() )
         m_bUIWaitDB = true;
 
     m_mxRuby.Lock();
-    m_mxDB.Lock(); 
+    m_mxDB.Lock();
 
     if ( m_mxRuby.isMainRubyThread() )
         m_bUIWaitDB = false;
 }
 
 void CDBAdapter::Unlock()
-{ 
+{
     m_mxDB.Unlock();
     m_mxRuby.Unlock();
 }
@@ -1008,7 +1008,7 @@ int rho_db_open(const char* szDBPath, const char* szDBPartition, void** ppDB)
         CDBAdapter::getDBPartitions().put(szDBPartition, pDB);
     }
 
-    rho::String strVer = RhoAppAdapter.getRhoDBVersion(); 
+    rho::String strVer = RhoAppAdapter.getRhoDBVersion();
     pDB->open(szDBPath,strVer, false);
 
     *ppDB = pDB;
@@ -1168,7 +1168,7 @@ void CRubyMutex::create()
 
 CRubyMutex::~CRubyMutex()
 {
-    close();    
+    close();
 }
 
 void CRubyMutex::close()
@@ -1243,7 +1243,7 @@ void CRubyMutex::close()
 
 void CRubyMutex::create()
     {
-        
+
     }
 #endif //RHO_NO_RUBY
 }

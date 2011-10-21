@@ -6,7 +6,7 @@ module Rho
       'sync_completed'  => "Synchronisation abgeschlossen.",
       'syncronizing'    => "Synchronisiere ",
       'syncronizing_data' => "Synchronisiere Daten...",
-      
+
 	  'home_menu' => "Home",
 	  'refresh_menu' => "Refresh",
 	  'back_menu' => "Back",
@@ -21,9 +21,9 @@ module Rho
       'call_menu' => "anrufen",
       'sms_menu' => "SMS",
       'add_contacts_menu' => "Zum Adressbuch hinzuf.",
-      
+
       'hide' => 'Hide'
     }
-    
+
   end # RhoMessages
 end # Rho

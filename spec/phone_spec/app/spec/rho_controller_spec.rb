@@ -25,11 +25,11 @@ module Rho
     def send(action)
         render :string => "", :layout => false
     end
-    
+
     def index
         render :string => "", :layout => false
     end
-    
+
   end
 end
 
@@ -38,7 +38,7 @@ describe "url_for and link_to" do
     before(:all) do
         @application = AppApplication.new
     end
-    
+
     before do
       @c = ::Rho::RhoControllerStub.new()
       @c.serve(@application,nil,{'application' => 'application', 'model' => 'model', 'request-method' => 'GET', :modelpath => 'model', 'headers' => {} },{})
@@ -66,9 +66,9 @@ describe "url_for and link_to" do
 
     it "should generate urls for create or index actions" do
       @c.url_for(:action => :index, :id => '{12}').should == '/application/model'
-      
-is_bb6 = System::get_property('platform') == 'Blackberry' && (System::get_property('os_version').split('.')[0].to_i >= 6)    
-      
+
+is_bb6 = System::get_property('platform') == 'Blackberry' && (System::get_property('os_version').split('.')[0].to_i >= 6)
+
 if !defined?(RHO_WP7) && !is_bb6
       @c.url_for(:action => :create).should == '/application/model'
 else
@@ -88,17 +88,17 @@ end
     end
 
     it "should generate urls for an application, model, action, and id" do
-      @c.url_for(:application => :another_app, :model => :another_model, 
+      @c.url_for(:application => :another_app, :model => :another_model,
         :action => :show, :id => '{12}').should == '/another_app/another_model/{12}/show'
     end
 
     it "should generate urls with a query" do
-is_bb6 = System::get_property('platform') == 'Blackberry' && (System::get_property('os_version').split('.')[0].to_i >= 6)    
+is_bb6 = System::get_property('platform') == 'Blackberry' && (System::get_property('os_version').split('.')[0].to_i >= 6)
 if !defined?(RHO_WP7) && !is_bb6
-      @c.url_for(:action => :create, :query => {:name => 'John Smith', 
+      @c.url_for(:action => :create, :query => {:name => 'John Smith',
         'address' => "http://john.smith.com"}).should == '/application/model?name=John%20Smith&address=http%3A%2F%2Fjohn.smith.com'
 else
-      @c.url_for(:action => :create, :query => {:name => 'John Smith', 
+      @c.url_for(:action => :create, :query => {:name => 'John Smith',
         'address' => "http://john.smith.com"}).should == '/application/model/create?name=John%20Smith&address=http%3A%2F%2Fjohn.smith.com'
 end
 
@@ -136,7 +136,7 @@ end
       res = @c.url_for :controller => :Settings, :action => :login
       res.should == "/application/Settings/login"
     end
-        
+
 end #describe "url_for and link_to"
 
 describe "redirect" do

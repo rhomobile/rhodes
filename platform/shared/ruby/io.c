@@ -6064,7 +6064,7 @@ rb_io_putc(VALUE io, VALUE ch)
  *  Equivalent to:
  *
  *    $stdout.putc(int)
- * 
+ *
  * Refer to the documentation for IO#putc for important information regarding
  * multi-byte characters.
  */
@@ -7524,7 +7524,7 @@ rb_io_fcntl(int argc, VALUE *argv, VALUE io)
  *  +String+ objects or +Integer+ objects. A +String+ object is passed
  *  as a pointer to the byte sequence. An +Integer+ object is passed
  *  as an integer whose bit size is same as a pointer.
- *  Up to nine parameters may be passed (14 on the Atari-ST). 
+ *  Up to nine parameters may be passed (14 on the Atari-ST).
  *
  *  The function identified by _num_ is system
  *  dependent. On some Unix systems, the numbers may be obtained from a
@@ -7583,7 +7583,7 @@ rb_f_syscall(int argc, VALUE *argv)
     int num, retval = -1;
 #endif
     int i;
- 
+
     if (RTEST(ruby_verbose)) {
 	rb_warning("We plan to remove a syscall function at future release. DL(Fiddle) provides safer alternative.");
     }

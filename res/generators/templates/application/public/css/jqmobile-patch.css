@@ -13,13 +13,13 @@
 @media all and (min-width: 320px){
 	label.ui-select { display: inline-block;  width: 20%;  margin: 0 2% 0 0; }
 	.ui-select { width: 60%; display: inline-block; }
-}	
+}
 
 /* min-width has been changed from 450px to 320px */
 @media all and (min-width: 320px){
 	label.ui-input-text  { vertical-align: top; display: inline-block;  width: 20%;  margin: 0 2% 0 0 }
-	input.ui-input-text, 
-	textarea.ui-input-text, 
+	input.ui-input-text,
+	textarea.ui-input-text,
 	.ui-input-search { width: 60%; display: inline-block; }
 	.ui-input-search { width: 50%; }
 	.ui-input-search input.ui-input-text { width: 98%; /*echos rule from above*/ }

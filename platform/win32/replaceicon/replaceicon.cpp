@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -41,7 +41,7 @@ typedef struct
 	DWORD dwImageOffeset; // the ID
 } ICONDIRENTRY;
 
-typedef struct 
+typedef struct
 {
 	WORD idReserved; // Reserved (must be 0)
 	WORD idType; // Resource type (1 for icons)
@@ -62,7 +62,7 @@ typedef struct
 	WORD nID; // the ID
 } GRPICONDIRENTRY, *LPGRPICONDIRENTRY;
 
-typedef struct 
+typedef struct
 {
 	WORD idReserved; // Reserved (must be 0)
 	WORD idType; // Resource type (1 for icons)
@@ -113,7 +113,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	DWORD read;
 	DWORD size = GetFileSize(inFile, NULL);
-	temp = (BYTE*)GlobalAlloc(GMEM_FIXED, size); 
+	temp = (BYTE*)GlobalAlloc(GMEM_FIXED, size);
 	ReadFile(inFile, temp, size, &read, NULL);
 
 	// Change the icon group
@@ -145,8 +145,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		if (TRUE == (rv = ReplaceResource(hUpdateRes, type, name, (LPVOID)temp1, size1 )))
 		{
 			printf("Icon %d replaced OK!\n", i + 1);
-		} 
-		else 
+		}
+		else
 		{
 			printf("Replacing the icon %d group FAILED!\n", i + 1);
 		}
@@ -158,7 +158,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	if (TRUE == (rv = ReplaceResource(hUpdateRes, type, name, (LPVOID)newDir, newSize)))
 	{
 		printf("Icon group replaced OK!\n");
-	} else 
+	} else
 	{
 		printf("Replacing the icon group FAILED!\n");
 	}

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -110,10 +110,10 @@ CMainWindow::~CMainWindow()
 //        free(m_szStartPage);
 }
 
-void CMainWindow::Navigate2(BSTR URL) 
+void CMainWindow::Navigate2(BSTR URL)
 {
 	String cleared_url = processForNativeView(convertToStringA(OLE2CT(URL)));
-	if (!cleared_url.empty()) 
+	if (!cleared_url.empty())
     {
 		StringW cw = convertToStringW(cleared_url);
 		//BSTR cleared_url_bstr = SysAllocString(cw.c_str());
@@ -122,10 +122,10 @@ void CMainWindow::Navigate2(BSTR URL)
 	}
 }
 
-void CMainWindow::Navigate(BSTR URL) 
+void CMainWindow::Navigate(BSTR URL)
 {
 	String cleared_url = processForNativeView(convertToStringA(OLE2CT(URL)));
-	if (!cleared_url.empty()) 
+	if (!cleared_url.empty())
     {
 		StringW cw = convertToStringW(cleared_url);
 		//BSTR cleared_url_bstr = SysAllocString(cw.c_str());
@@ -166,7 +166,7 @@ LRESULT CMainWindow::InitMainWindow()
     // In one step, create an "AtlAxWin" window for the PIEWebBrowser control,
     // and also create the control itself. (AtlAxWin is a window class that
     // ATL uses to support containment of controls in windows.)
-#if defined(_WIN32_WCE)    
+#if defined(_WIN32_WCE)
     m_pBrowserEng = rho_wmimpl_createBrowserEngine(m_hWnd);
 #else
 	LOGCONF().setLogView(&m_logView);
@@ -179,11 +179,11 @@ LRESULT CMainWindow::InitMainWindow()
         rcMainWindow.top = 0;
 
 	int width = RHOCONF().getInt("client_area_width");
-    if (width <= 0) 
+    if (width <= 0)
         width = rcMainWindow.right;
 	rcMainWindow.right = rcMainWindow.left+width;
 	int height = RHOCONF().getInt("client_area_height");
-	if (height <= 0) 
+	if (height <= 0)
         height = rcMainWindow.bottom;
 	rcMainWindow.bottom = rcMainWindow.top+height;
 
@@ -234,7 +234,7 @@ LRESULT CMainWindow::InitMainWindow()
     {
         rcMainWindow.bottom = si.rcVisibleDesktop.bottom;
     }
-	
+
 	SetToolbarButtonEnabled(IDM_SK1_EXIT, FALSE);
 #endif
 
@@ -262,7 +262,7 @@ void CMainWindow::performOnUiThread(rho::common::IRhoRunnable* pTask)
 {
 	PostMessage(WM_EXECUTE_RUNNABLE, 0, (LPARAM)pTask);
 }
-LRESULT CMainWindow::OnExecuteRunnable(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) 
+LRESULT CMainWindow::OnExecuteRunnable(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
     rho::common::IRhoRunnable* pTask = (rho::common::IRhoRunnable*)lParam;
 	if (pTask)
@@ -271,7 +271,7 @@ LRESULT CMainWindow::OnExecuteRunnable(UINT /*uMsg*/, WPARAM wParam, LPARAM lPar
         delete pTask;
     }
 	return 0;
-}	
+}
 LRESULT CMainWindow::OnSetText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
     return TRUE;
@@ -293,18 +293,18 @@ LRESULT CMainWindow::OnNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
     return 1;
 }
 
-HWND CMainWindow::getWebViewHWND() 
+HWND CMainWindow::getWebViewHWND()
 {
     return m_pBrowserEng->GetHTMLWND();
 }
 
-void CMainWindow::hideWebView() 
+void CMainWindow::hideWebView()
 {
     ::ShowWindow( m_pBrowserEng->GetHTMLWND(), SW_HIDE );
 	mIsBrowserViewHided = true;
 }
 
-void CMainWindow::showWebView() 
+void CMainWindow::showWebView()
 {
     ::ShowWindow( m_pBrowserEng->GetHTMLWND(), SW_SHOW );
 	mIsBrowserViewHided = false;
@@ -380,7 +380,7 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
     StringW pathW = convertToStringW(RHODESAPP().getLoadingPngPath());
 
 	HBITMAP hbitmap = SHLoadImageFile(pathW.c_str());
-		
+
 	if (!hbitmap)
 		return 0;
 
@@ -456,7 +456,7 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     SHHandleWMActivate(m_hWnd, wParam, lParam, &m_sai, 0);
 
     //pause_sync(!fActive);
-/* TBD: Commented this out because it was called before http server started 
+/* TBD: Commented this out because it was called before http server started
         We need to fix this properly
     if ( fActive )
         CHttpServer::Instance()->ResumeThread();
@@ -489,9 +489,9 @@ LRESULT CMainWindow::OnSetCookieCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
     return 0;
 }
 
-void CMainWindow::openNativeView(	NativeViewFactory* nativeViewFactory, 
+void CMainWindow::openNativeView(	NativeViewFactory* nativeViewFactory,
 					NativeView* nativeView,
-					String nativeViewType) 
+					String nativeViewType)
 {
 	mNativeView = nativeView;
 	mNativeViewFactory = nativeViewFactory;
@@ -535,7 +535,7 @@ String CMainWindow::processForNativeView(String _url) {
 	while (cur > 0) {
 		String protocol = url.substr(last+1, cur - last - 1);
 		String navto = url.substr(cur+1, url.size() - cur);
-		
+
 		if (callback_prefix.compare(protocol) == 0) {
 			// navigate but still in native view
 			String cleared_url = url.substr(callback_prefix.size()+1, url.size() - callback_prefix.size());
@@ -609,15 +609,15 @@ void CMainWindow::restoreWebView() {
 LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
 #if defined(_WIN32_WCE)
-	
+
 	//handle sreen rotation
-	int width  = GetSystemMetrics(SM_CXSCREEN);	
+	int width  = GetSystemMetrics(SM_CXSCREEN);
 	int height = GetSystemMetrics(SM_CYSCREEN);
-	
+
 	if (wParam == SETTINGCHANGE_RESET) {
 		rho_rhodesapp_callScreenRotationCallback(width, height, 90);
 	}
-	
+
 	// Notify shell of our WM_SETTINGCHANGE message
 	SHHandleWMSettingChange(m_hWnd, wParam, lParam, &m_sai);
 #endif
@@ -690,7 +690,7 @@ LRESULT CMainWindow::OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 LRESULT CMainWindow::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
 	LPTSTR wcurl = (LPTSTR)hWndCtl;
-	if (wcurl) 
+	if (wcurl)
     {
 		Navigate2(wcurl);
 		free(wcurl);
@@ -699,13 +699,13 @@ LRESULT CMainWindow::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 }
 
 #if defined(OS_WINDOWS)
-LRESULT CMainWindow::OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
+LRESULT CMainWindow::OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	createCustomMenu();
 	return 0;
 }
 
-LRESULT CMainWindow::OnPosChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) 
+LRESULT CMainWindow::OnPosChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 {
 	LPWINDOWPOS lp = (LPWINDOWPOS)lParam;
 	setIniInt(_T("main_view_left"),lp->x);
@@ -715,7 +715,7 @@ LRESULT CMainWindow::OnPosChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 }
 #endif
 
-LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
+LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
 	TCHAR image_uri[MAX_PATH];
     HRESULT status;
@@ -735,7 +735,7 @@ LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 	return 0;
 }
 
-LRESULT CMainWindow::OnConnectionsNetworkCount(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) 
+LRESULT CMainWindow::OnConnectionsNetworkCount(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 #if defined (_WIN32_WCE)
 
@@ -745,7 +745,7 @@ LRESULT CMainWindow::OnConnectionsNetworkCount(UINT /*uMsg*/, WPARAM wParam, LPA
 	return 0;
 }
 
-LRESULT CMainWindow::OnConnectionsNetworkCell(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) 
+LRESULT CMainWindow::OnConnectionsNetworkCell(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 #if defined (_WIN32_WCE)
 
@@ -755,7 +755,7 @@ LRESULT CMainWindow::OnConnectionsNetworkCell(UINT /*uMsg*/, WPARAM wParam, LPAR
 	return 0;
 }
 
-LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
+LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
 	TCHAR image_uri[MAX_PATH];
     HRESULT status = S_OK;
@@ -764,13 +764,13 @@ LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
 
     RHODESAPP().callCameraCallback( (const char*)lParam, rho::common::convertToStringA(image_uri),
         (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
-    
+
     free ((void *)lParam);
-    
+
 	return 0;
 }
 
-LRESULT CMainWindow::OnTakeSignature(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
+LRESULT CMainWindow::OnTakeSignature(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
 	TCHAR signature_uri[MAX_PATH];
     HRESULT status = S_OK;
@@ -780,9 +780,9 @@ LRESULT CMainWindow::OnTakeSignature(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
 
     RHODESAPP().callSignatureCallback(params->m_callback_url.c_str(), rho::common::convertToStringA(signature_uri),
         (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
-    
+
     free ((void *)lParam);
-    
+
 	return 0;
 }
 
@@ -792,7 +792,7 @@ LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     StringW strAppName = RHODESAPP().getAppNameW();
 	CAlertDialog::Params *params = (CAlertDialog::Params *)lParam;
 
-   	if (params->m_dlgType == CAlertDialog::Params::DLG_STATUS) 
+   	if (params->m_dlgType == CAlertDialog::Params::DLG_STATUS)
     {
         m_SyncStatusDlg.setStatusText(convertToStringW(params->m_message).c_str());
         m_SyncStatusDlg.setTitle( convertToStringW(params->m_title).c_str() );
@@ -805,21 +805,21 @@ LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
         }
     }else if (params->m_dlgType == CAlertDialog::Params::DLG_DEFAULT) {
 		MessageBox(convertToStringW(params->m_message).c_str(), strAppName.c_str(), MB_ICONWARNING | MB_OK);
-	} else if (params->m_dlgType == CAlertDialog::Params::DLG_CUSTOM) 
+	} else if (params->m_dlgType == CAlertDialog::Params::DLG_CUSTOM)
     {
         if ( params->m_buttons.size() == 1 && strcasecmp(params->m_buttons[0].m_strCaption.c_str(), "ok") == 0)
             MessageBox(convertToStringW(params->m_message).c_str(), convertToStringW(params->m_title).c_str(), MB_ICONWARNING | MB_OK);
         else if (params->m_buttons.size() == 2 && strcasecmp(params->m_buttons[0].m_strCaption.c_str(), "ok") == 0 &&
             strcasecmp(params->m_buttons[1].m_strCaption.c_str(), "cancel") == 0)
         {
-            int nRes = MessageBox(convertToStringW(params->m_message).c_str(), convertToStringW(params->m_title).c_str(), 
+            int nRes = MessageBox(convertToStringW(params->m_message).c_str(), convertToStringW(params->m_title).c_str(),
                     MB_ICONWARNING | MB_OKCANCEL);
             int nBtn = nRes == IDCANCEL ? 1 : 0;
             RHODESAPP().callPopupCallback(params->m_callback, params->m_buttons[nBtn].m_strID, params->m_buttons[nBtn].m_strCaption);
         }
         else
         {
-		    if (m_alertDialog == NULL) 
+		    if (m_alertDialog == NULL)
             {
 			    m_alertDialog = new CAlertDialog(params);
 			    m_alertDialog->DoModal();
@@ -867,7 +867,7 @@ LRESULT CMainWindow::OnExecuteCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
 		command->run();
 	}
 	return 0;
-}	
+}
 
 LRESULT CMainWindow::OnBluetoothCallback(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	char* callback_url = (char*)wParam;
@@ -876,7 +876,7 @@ LRESULT CMainWindow::OnBluetoothCallback(UINT /*uMsg*/, WPARAM wParam, LPARAM lP
 	delete callback_url;
 	delete body;
 	return 0;
-}	
+}
 
 
 LRESULT CMainWindow::OnDateTimePicker (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
@@ -895,7 +895,7 @@ LRESULT CMainWindow::OnDateTimePicker (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 		ret_time = dateTimeDialog.GetTime();
 	}
 
-	rho_rhodesapp_callDateTimeCallback( msg->m_callback, 
+	rho_rhodesapp_callDateTimeCallback( msg->m_callback,
 										retCode == IDOK ? (long )ret_time : 0,
 										msg->m_data,
 										retCode == IDOK ? 0 : 1);
@@ -948,7 +948,7 @@ void __stdcall CMainWindow::OnBeforeNavigate2(IDispatch* pDisp, VARIANT * pvtURL
         SetWindowText(convertToStringW(strTitle).c_str());
     else
         SetWindowText(TEXT("Untitled"));*/
-	
+
     //RHO_ASSERT(SetMenuItemEnabled(IDM_STOP, TRUE));
 }
 
@@ -968,7 +968,7 @@ void CMainWindow::ProcessTitleChange(LPCTSTR title)
     else
     {
         LPCTSTR szTitle = title;
-        if ( szTitle && 
+        if ( szTitle &&
             (_tcsncmp(szTitle, _T("http:"), 5) == 0 || _tcscmp(szTitle, _T("about:blank"))==0 ))
             return;
 
@@ -1014,13 +1014,13 @@ void CMainWindow::ShowLoadingPage()
 void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtURL)
 {
     USES_CONVERSION;
-	
+
 	ProcessDocumentComplete( OLE2CT(V_BSTR(pvtURL)) );
 }
 
 void CMainWindow::ProcessDocumentComplete(LPCTSTR url)
 {
-	if (m_bLoading && wcscmp(url,_T("about:blank"))==0) 
+	if (m_bLoading && wcscmp(url,_T("about:blank"))==0)
     {
 		LOG(TRACE) + "Show loading page";
 		ShowLoadingPage();
@@ -1034,12 +1034,12 @@ void CMainWindow::ProcessDocumentComplete(LPCTSTR url)
 
 #if defined (_WIN32_WCE)
 	createCustomMenu();
-	
+
 	m_pageCounter++;
 	if (m_pageCounter > 2) //"loading" page + first page
 		SetToolbarButtonEnabled(IDM_SK1_EXIT, TRUE);
-#endif	
-    
+#endif
+
     //CMetaHandler oHandler(m_spIWebBrowser2);
 }
 
@@ -1100,11 +1100,11 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
 		menu = menu.GetSubMenu(0);
 		return menu.TrackPopupMenu( TPM_CENTERALIGN | TPM_VERTICAL, LOWORD(pMsg->lParam), HIWORD(pMsg->lParam), m_hWnd);
 		*/
-		
+
 		return TRUE;
 	}
 
-	if (m_bFullScreen && pMsg->message == WM_KEYUP && 
+	if (m_bFullScreen && pMsg->message == WM_KEYUP &&
 		(pMsg->wParam == VK_F1 ||  pMsg->wParam == VK_F2))
 	        SetFullScreen(false);
 #endif
@@ -1115,11 +1115,11 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
         !(WM_MOUSEFIRST <= uMsg && uMsg <= WM_MOUSELAST))
     {
 
-#ifdef OS_WINCE			
+#ifdef OS_WINCE
         if ( uMsg == WM_HOTKEY )
         {
-            int idHotKey = (int) pMsg->wParam; 
-            int fuModifiers = (UINT) LOWORD(pMsg->lParam); 
+            int idHotKey = (int) pMsg->wParam;
+            int fuModifiers = (UINT) LOWORD(pMsg->lParam);
             int uVirtKey = (UINT) HIWORD(pMsg->lParam);
 
             if ( uVirtKey == VK_ESCAPE ){
@@ -1168,7 +1168,7 @@ void CMainWindow::createCustomMenu()
 	CMenu menu;
 	CMenu sub;
 	CMenu popup;
-	
+
     if (!m_pBrowserEng->GetHTMLWND())
         return;
 
@@ -1186,27 +1186,27 @@ void CMainWindow::createCustomMenu()
 #endif //ENABLE_DYNAMIC_RHOBUNDLE
 
 	//update UI with custom menu items
-	USES_CONVERSION; 
+	USES_CONVERSION;
     for ( int i = m_arAppMenuItems.size() - 1; i >= 0; i--)
     {
         CAppMenuItem& oItem = m_arAppMenuItems.elementAt(i);
-        if (oItem.m_eType == CAppMenuItem::emtSeparator) 
+        if (oItem.m_eType == CAppMenuItem::emtSeparator)
 			popup.InsertMenu(0, MF_BYPOSITION | MF_SEPARATOR, (UINT_PTR)0, (LPCTSTR)0);
 		else
         {
             StringW strLabelW = convertToStringW(oItem.m_strLabel);
 
-			popup.InsertMenu(0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + i, 
+			popup.InsertMenu(0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + i,
                 oItem.m_eType == CAppMenuItem::emtClose ? _T("Exit") : strLabelW.c_str() );
         }
     }
 
-	RECT  rect; 
+	RECT  rect;
 	GetWindowRect(&rect);
     rect.bottom -= m_menuBarHeight;
 	sub.Attach(menu.GetSubMenu(0));
-	sub.TrackPopupMenu( TPM_RIGHTALIGN | TPM_BOTTOMALIGN | TPM_LEFTBUTTON | TPM_VERNEGANIMATION, 
-						rect.right-1, 
+	sub.TrackPopupMenu( TPM_RIGHTALIGN | TPM_BOTTOMALIGN | TPM_LEFTBUTTON | TPM_VERNEGANIMATION,
+						rect.right-1,
 						rect.bottom-1,
 						m_hWnd);
 	sub.Detach();
@@ -1216,14 +1216,14 @@ void CMainWindow::createCustomMenu()
 void CMainWindow::createCustomMenu()
 {
 	HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
-	
+
 	//except exit item
 	int num = GetMenuItemCount (hMenu);
-	for (int i = 0; i < (num - 1); i++)	
+	for (int i = 0; i < (num - 1); i++)
 		DeleteMenu(hMenu, 0, MF_BYPOSITION);
 
 	RHODESAPP().getAppMenu().copyMenuItems(m_arAppMenuItems);
- 	
+
 	//update UI with cusom menu items
 	USES_CONVERSION;
     for ( int i = m_arAppMenuItems.size() - 1; i >= 0; i--)
@@ -1231,7 +1231,7 @@ void CMainWindow::createCustomMenu()
         CAppMenuItem& oItem = m_arAppMenuItems.elementAt(i);
         StringW strLabelW = convertToStringW(oItem.m_strLabel);
 
-		if (oItem.m_eType == CAppMenuItem::emtSeparator) 
+		if (oItem.m_eType == CAppMenuItem::emtSeparator)
 			InsertMenu(hMenu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, 0);
 		else if (oItem.m_eType != CAppMenuItem::emtExit && oItem.m_eType != CAppMenuItem::emtClose)
     		InsertMenu(hMenu, 0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + i, strLabelW.c_str() );
@@ -1240,7 +1240,7 @@ void CMainWindow::createCustomMenu()
 #endif //OS_WINCE
 
 LRESULT CMainWindow::OnCustomMenuItemCommand (WORD /*wNotifyCode*/, WORD  wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{	
+{
     int nItemPos = wID-ID_CUSTOM_MENU_ITEM_FIRST;
     if ( nItemPos < 0 || nItemPos >= (int)m_arAppMenuItems.size() )
         return 0;
@@ -1266,7 +1266,7 @@ LRESULT CMainWindow::OnCustomMenuItemCommand (WORD /*wNotifyCode*/, WORD  wID, H
     return 0;
 }
 LRESULT CMainWindow::OnCustomToolbarItemCommand (WORD /*wNotifyCode*/, WORD  wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{	
+{
     int nItemPos = wID-ID_CUSTOM_TOOLBAR_ITEM_FIRST;
     m_toolbar.processCommand(nItemPos);
     return 0;

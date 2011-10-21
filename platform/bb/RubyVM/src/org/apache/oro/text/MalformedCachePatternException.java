@@ -1,4 +1,4 @@
-/* 
+/*
  * $Id: MalformedCachePatternException.java 124053 2005-01-04 01:24:35Z dfs $
  *
  * Copyright 2000-2005 The Apache Software Foundation
@@ -54,7 +54,7 @@ public class MalformedCachePatternException extends RuntimeException {
    * @param message  A message indicating the nature of the error.
    */
   public MalformedCachePatternException(String message) {
-    super(message);                                
+    super(message);
   }
 
 }

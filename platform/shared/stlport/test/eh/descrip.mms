@@ -1,4 +1,4 @@
-# ;;; -*- Mode:makefile;-*- 
+# ;;; -*- Mode:makefile;-*-
 # Generated manually for MMS
 
 # point this to proper location
@@ -40,8 +40,8 @@ CXXFLAGS = $(STL_INCL) /define=(__NO_USE_STD_IOSTREAM,EH_VECTOR_OPERATOR_NEW,EH_
 # CXXFLAGS = +w2 -xildoff -D__STL_USE_NEWALLOC -DEH_NO_SGI_STL -DEH_NEW_HEADERS -DEH_VECTOR_OPERATOR_NEW -DEH_DELETE_HAS_THROW_SPEC
 
 
-LIBS = 
-LIBSTDCXX = 
+LIBS =
+LIBSTDCXX =
 
 check : $(TEST)
 
@@ -50,5 +50,5 @@ $(TEST) : $(OBJECTS)
 	run $(TEST_EXE)
 
 .cpp.obj :
-	$(CXX) $(CXXFLAGS) /obj=$@ $< 
+	$(CXX) $(CXXFLAGS) /obj=$@ $<
 

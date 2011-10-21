@@ -2173,7 +2173,7 @@ ruby_setenv(const char *name, const char *value)
     if (failed) {
         rb_warn("failed to set environment variable. Ruby 1.9.3 will raise SystemCallError in this case.");
     }
-#endif 
+#endif
 #elif defined(HAVE_SETENV) && defined(HAVE_UNSETENV)
 #undef setenv
 #undef unsetenv

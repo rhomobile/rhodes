@@ -4,7 +4,7 @@
 PHONY += clean clobber distclean
 
 ifneq (${OSNAME}, windows)
-clean::	
+clean::
 	@-rm -f core core.*
 	@-rm -f $(OBJ) $(DEP)
 	@-rm -f $(OBJ_DBG) $(DEP_DBG)
@@ -16,7 +16,7 @@ clean::
 clobber::	clean
 	@-rm -f $(DEPENDS_COLLECTION)
 else
-clean::	
+clean::
 	@if exist core del /f /q core
 	@if exist core.* del /f /q core.*
 	@if exist $(subst /,\,$(OUTPUT_DIR)/*.$(OBJ_EXT)) del /f /q $(subst /,\,$(OUTPUT_DIR)/*.$(OBJ_EXT))

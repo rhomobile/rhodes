@@ -15,7 +15,7 @@ public class RubyENV {
         String v = System.getenv(s.toString());
         return (null == v) ? RubyConstant.QNIL : ObjectFactory.createString(v);
     }
-	
+
 	@RubyLevelMethod(name="__os_ev_index__", singleton=true)
 	public static RubyValue osEvIndex(RubyValue receiver, RubyValue arg) {
         String s = RubyTypesUtil.convertToJavaString(arg);

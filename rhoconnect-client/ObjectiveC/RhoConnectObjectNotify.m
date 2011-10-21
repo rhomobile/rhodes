@@ -14,7 +14,7 @@
 @synthesize  deleted_objects;
 @synthesize  updated_objects;
 @synthesize  created_objects;
- 
+
 @synthesize  deleted_source_ids;
 @synthesize  updated_source_ids;
 @synthesize  created_source_ids;
@@ -28,7 +28,7 @@
     {
         deleted_objects = [[NSMutableArray alloc] initWithCapacity:data->deleted_count];
         deleted_source_ids = [[NSMutableArray alloc] initWithCapacity:data->deleted_count];
-        
+
         for ( int i = 0; i < data->deleted_count; i++ )
         {
             [deleted_objects addObject:[NSString stringWithUTF8String:data->deleted_objects[i]]];
@@ -40,7 +40,7 @@
     {
         updated_objects = [[NSMutableArray alloc] initWithCapacity:data->updated_count];
         updated_source_ids = [[NSMutableArray alloc] initWithCapacity:data->updated_count];
-        
+
         for ( int i = 0; i < data->updated_count; i++ )
         {
             [updated_objects addObject:[NSString stringWithUTF8String:data->updated_objects[i]]];
@@ -52,21 +52,21 @@
     {
         created_objects = [[NSMutableArray alloc] initWithCapacity:data->created_count];
         created_source_ids = [[NSMutableArray alloc] initWithCapacity:data->created_count];
-        
+
         for ( int i = 0; i < data->created_count; i++ )
         {
             [created_objects addObject:[NSString stringWithUTF8String:data->created_objects[i]]];
             [created_source_ids addObject: [NSNumber numberWithInt:data->created_source_ids[i]]];
         }
     }
-	
+
 	rho_connectclient_free_sync_objectnotify(data);
 	return self;
 }
 
-- (void)dealloc 
+- (void)dealloc
 {
-	
+
     [super dealloc];
 }
 

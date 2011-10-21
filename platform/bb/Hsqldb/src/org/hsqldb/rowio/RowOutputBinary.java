@@ -127,7 +127,7 @@ public class RowOutputBinary extends RowOutputBase {
     public void writeType(int type) {
         writeShort(type);
     }
-    
+
     public void writeString(String s) {
 
         int temp = count;

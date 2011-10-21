@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -50,7 +50,7 @@ CGeoLocation* CGeoLocation::m_pInstance = 0;
 
 /*static*/ CGeoLocation* CGeoLocation::Create()
 {
-    if ( m_pInstance ) 
+    if ( m_pInstance )
         return m_pInstance;
 
     RAWLOG_INFO("Creating singleton instance.");
@@ -173,7 +173,7 @@ int CGeoLocation::getDefaultPingTimeoutSec()
 {
     if (RHOCONF().isExist("gps_ping_timeout_sec"))
         return RHOCONF().getInt("gps_ping_timeout_sec");
-    else 
+    else
         return 0;
 }
 
@@ -182,7 +182,7 @@ void CGeoLocation::setPingTimeoutSec( int nTimeout )
 	int nNewTimeout = nTimeout;
 	if (nNewTimeout == -1)
 		nNewTimeout = getDefaultPingTimeoutSec();
-	
+
 	m_nGeoPingTimeoutSec = nNewTimeout;
 	rho_geoimpl_settimeout(m_nGeoPingTimeoutSec);
 }
@@ -191,7 +191,7 @@ int CGeoLocation::getGeoTimeoutSec()
 {
 	if (m_nGeoPingTimeoutSec==-1)
 		m_nGeoPingTimeoutSec = getDefaultPingTimeoutSec();
-	
+
 	return m_nGeoPingTimeoutSec;
 }
 
@@ -208,7 +208,7 @@ int CGeoLocation::getGeoTimeoutSec()
         rho_http_sendresponse(arg, "Reading;Reading;Reading");
         return;
     }
-    
+
     double latitude = rho_geo_latitude();
     double longitude = rho_geo_longitude();
 

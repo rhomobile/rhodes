@@ -11,13 +11,13 @@ define restore_stdout
 end
 
 define rb_break
-  call (unsigned long)rb_eval_string_protect("set_trace_func lambda{|event, file, line, id, bind, classname| $_self = self; $_binding = bind; if event =~ /line/ and file =~ Regexp.new(Regexp.escape($_file) + '$') and line.to_s == $_line.to_s;  puts \"--Break at #{file}:#{line}\"; sleep 0; end}",(int *)0) 
+  call (unsigned long)rb_eval_string_protect("set_trace_func lambda{|event, file, line, id, bind, classname| $_self = self; $_binding = bind; if event =~ /line/ and file =~ Regexp.new(Regexp.escape($_file) + '$') and line.to_s == $_line.to_s;  puts \"--Break at #{file}:#{line}\"; sleep 0; end}",(int *)0)
   tbreak rb_f_sleep
   cont
 end
 
 define rb_step
-  call (unsigned long)rb_eval_string_protect("set_trace_func lambda{|event, file, line, id, bind, classname|  $_self = self; $_binding = bind; if event =~ /line/; puts \"--Step at #{file}:#{line}\"; sleep 0;  end}",(int *)0) 
+  call (unsigned long)rb_eval_string_protect("set_trace_func lambda{|event, file, line, id, bind, classname|  $_self = self; $_binding = bind; if event =~ /line/; puts \"--Step at #{file}:#{line}\"; sleep 0;  end}",(int *)0)
   tbreak rb_f_sleep
   cont
 end

@@ -16,5 +16,5 @@ if ( System.get_property('platform') != 'WINDOWS' )
     File.link(@file, @link)
     File::Stat.new(@file).nlink.should == 2
   end
-end  
+end
 end

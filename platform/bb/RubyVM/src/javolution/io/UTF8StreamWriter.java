@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2006 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -30,7 +30,7 @@ import javolution.lang.Reusable;
  *     to avoid dynamic buffer allocation when the destination output changes.
  *     Also wrapping using a <code>java.io.BufferedWriter</code> is unnescessary
  *     as instances of this class embed their own data buffers.</p>
- * 
+ *
  * <p> Note: This writer is unsynchronized and always produces well-formed
  *           UTF-8 sequences.</p>
  *
@@ -63,7 +63,7 @@ public final class UTF8StreamWriter extends Writer implements Reusable {
 
     /**
      * Creates a UTF-8 writer having a byte buffer of specified capacity.
-     * 
+     *
      * @param capacity the capacity of the byte buffer.
      */
     public UTF8StreamWriter(int capacity) {
@@ -80,7 +80,7 @@ public final class UTF8StreamWriter extends Writer implements Reusable {
      *
      * @param  out the output stream.
      * @return this UTF-8 writer.
-     * @throws IllegalStateException if this writer is being reused and 
+     * @throws IllegalStateException if this writer is being reused and
      *         it has not been {@link #close closed} or {@link #reset reset}.
      */
     public UTF8StreamWriter setOutput(OutputStream out) {
@@ -333,7 +333,7 @@ public final class UTF8StreamWriter extends Writer implements Reusable {
         _index = 0;
         _outputStream = null;
     }
-    
+
     /**
      * @deprecated Replaced by {@link #setOutput(OutputStream)}
      */

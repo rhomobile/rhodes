@@ -8,7 +8,7 @@ USE_STLPORT = true
 def build_extension
 
 	#vsrclist = #rhoroot + "/lib/extensions/barcode/ext/barcode/platform/bb/barcode.files"
-        
+
 	vsrclist = "Barcode.files"
         vsrclist = "Barcode6.files" if ($bbver.to_f() >= 6.0 )
 
@@ -52,7 +52,7 @@ def build_extension
           exit 1
         end
         $stdout.flush
-		
+
 
 
 end
@@ -91,7 +91,7 @@ namespace "build" do
   task :all => :config do
 
 
-    build_extension	
+    build_extension
 
   end
 end

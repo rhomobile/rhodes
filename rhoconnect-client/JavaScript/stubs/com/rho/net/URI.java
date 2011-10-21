@@ -21,7 +21,7 @@ public class URI {
 		return null;
 	}
 
-	public static native String parseCookie(String value) 
+	public static native String parseCookie(String value)
 	/*
 		String strRes = "";
 		Tokenizer stringtokenizer = new Tokenizer(value, ";");
@@ -45,18 +45,18 @@ public class URI {
 					else
 						nEnd = tok.length()-1;
 				}
-				
+
 				tok = tok.substring(0,nExp) + tok.substring(nEnd+1);
 				tok = tok.trim();
 			}
-			
+
 			int nEq = tok.indexOf('=');
 			if ( nEq < 0 )
 				continue;
-			
-			strRes += tok + ";";  
+
+			strRes += tok + ";";
 		}
-		
+
 		return strRes;
  	*/
 	/*-{

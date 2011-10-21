@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -161,20 +161,20 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
     }
 
     if (strcasecmp("screen_orientation",szPropName) == 0) {
-        if (rho_sys_get_screen_width() <= rho_sys_get_screen_height()) 
+        if (rho_sys_get_screen_width() <= rho_sys_get_screen_height())
         {
             *resValue = rho_ruby_create_string("portrait");
         }
         else {
             *resValue = rho_ruby_create_string("landscape");
-        }                                                          
+        }
         return 1;
     }
 
     return 0;
 }
 
-VALUE rho_sys_makephonecall(const char* callname, int nparams, char** param_names, char** param_values) 
+VALUE rho_sys_makephonecall(const char* callname, int nparams, char** param_names, char** param_values)
 {
     return rho_ruby_get_NIL();
 }

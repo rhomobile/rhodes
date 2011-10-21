@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -47,19 +47,19 @@ class CallDateTimePickerScreen implements Runnable {
 	private long _max_time;
 	private DateFormat _fmt;
 	private String _opaque;
-	
+
 	private static DateTimeScreen screen = null;
-	
+
 	CallDateTimePickerScreen(String callback, String title, long init, DateFormat fmt, String opaque, long min_time, long max_time) {
 		_callback = callback;
 		_title = title;
 		_init = init;
 		_min_time = min_time;
-		_max_time = max_time; 
+		_max_time = max_time;
 		_fmt = fmt;
 		_opaque = opaque;
 	}
-	
+
 	public void run(){
 		if (screen != null)
 			return;
@@ -75,15 +75,15 @@ public class DateTimePicker extends RubyBasic {
 	public DateTimePicker(RubyClass c) {
 		super(c);
 	}
-	
+
 	public static RubyValue choose(RubyValue arg1, RubyValue arg2, RubyValue arg3, DateFormat fmt, String opaque) {
 		String callback = arg1.toStr();
 		String title = arg2.toStr();
 		long init = arg3.toRubyTime().getTime();
-		
+
 		CallDateTimePickerScreen screen = new CallDateTimePickerScreen(callback, title, (long)init, fmt, opaque, 0, 0);
 		UiApplication.getUiApplication().invokeLater(screen);
-        
+
 		return RubyConstant.QNIL;
 	}
 
@@ -91,12 +91,12 @@ public class DateTimePicker extends RubyBasic {
 		String callback = arg1.toStr();
 		String title = arg2.toStr();
 		long init = arg3.toRubyTime().getTime();
-		long min_t = arg6.toRubyTime().getTime(); 
-		long max_t = arg7.toRubyTime().getTime(); 
-		
+		long min_t = arg6.toRubyTime().getTime();
+		long max_t = arg7.toRubyTime().getTime();
+
 		CallDateTimePickerScreen screen = new CallDateTimePickerScreen(callback, title, (long)init, fmt, opaque, min_t, max_t);
 		UiApplication.getUiApplication().invokeLater(screen);
-        
+
 		return RubyConstant.QNIL;
 	}
 
@@ -106,16 +106,16 @@ public class DateTimePicker extends RubyBasic {
 				if(args.size() != 4 && args.size() != 5)
 					throw new RubyException(RubyRuntime.ArgumentErrorClass,
 							"in `" + this.getID() + "': wrong number of arguments (" + args.size() + " for 4 or 5)");
-				
+
 				RubyValue arg1 = args.get(0);
 				RubyValue arg2 = args.get(1);
 				RubyValue arg3 = args.get(2);
 				RubyValue arg4 = args.get(3);
-				
+
 				String opaque = null;
 				if(args.size() == 5)
 					opaque = args.get(4).toStr();
-				
+
 				int fmt;
 				switch(arg4.toInt())
 				{
@@ -126,28 +126,28 @@ public class DateTimePicker extends RubyBasic {
 						"in `" + this.getID() + "': wrong value of the third parameter (" +
 						arg4.toInt() + ", should be 0, 1 or 2)");
 				}
-				
+
 				return DateTimePicker.choose(arg1, arg2, arg3, new SimpleDateFormat(fmt), opaque);
 			}
-		});		
+		});
 		klass.getSingletonClass().defineMethod("choose_with_range", new RubyVarArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
 				if(args.size() != 7)
 					throw new RubyException(RubyRuntime.ArgumentErrorClass,
 							"in `" + this.getID() + "': wrong number of arguments (" + args.size() + " for 4 or 5)");
-				
+
 				RubyValue arg1 = args.get(0);
 				RubyValue arg2 = args.get(1);
 				RubyValue arg3 = args.get(2);
 				RubyValue arg4 = args.get(3);
-				
+
 				String opaque = null;
 				opaque = args.get(4).toStr();
 
 				RubyValue arg6 = args.get(5);
 				RubyValue arg7 = args.get(6);
 
-				
+
 				int fmt;
 				switch(arg4.toInt())
 				{
@@ -158,10 +158,10 @@ public class DateTimePicker extends RubyBasic {
 						"in `" + this.getID() + "': wrong value of the third parameter (" +
 						arg4.toInt() + ", should be 0, 1 or 2)");
 				}
-				
+
 				return DateTimePicker.choose_with_range(arg1, arg2, arg3, new SimpleDateFormat(fmt), opaque, arg6, arg7);
 			}
-		});		
+		});
 	}
 
 }

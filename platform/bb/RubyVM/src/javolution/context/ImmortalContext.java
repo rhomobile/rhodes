@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2007 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -15,13 +15,13 @@ import javolution.util.FastTable;
 
 /**
  * <p> This class represents an allocator from immortal memory (RTSJ).</p>
- * 
+ *
  * <p> It is typically used to allocate (and recycle) from immortal memory
- *     allowing dynamically created static instances to be accessible by 
- *     <code>NoHeapRealtimeThread</code>:[code] 
+ *     allowing dynamically created static instances to be accessible by
+ *     <code>NoHeapRealtimeThread</code>:[code]
  *         public synchronized Text intern() {
  *             if (!INTERN_INSTANCES.containsKey(this)) {
- *                 ImmortalContext.enter(); 
+ *                 ImmortalContext.enter();
  *                 try { // Forces interned instance to be in immortal memory.
  *                     Text txt = this.copy(); // In ImmortalMemory.
  *                     INTERN_INSTANCES.put(txt, txt);
@@ -32,8 +32,8 @@ import javolution.util.FastTable;
  *             return (Text) INTERN_INSTANCES.get(str);
  *         }[/code]</p>
  * <p> Because class initialization may occur while running in a non-heap
- *     context (e.g. {@link StackContext}), it is recommended to force 
- *     factory produced constants to immortal memory:[code]         
+ *     context (e.g. {@link StackContext}), it is recommended to force
+ *     factory produced constants to immortal memory:[code]
  *         public class Rational {
  *             public static final Rational ZERO;
  *             public static final Rational ONE;
@@ -45,10 +45,10 @@ import javolution.util.FastTable;
  *                     ONE = Rational.valueOf(1, 1); // Factory produced.
  *                 } finally {
  *                     ImmortalContext.exit();
- *                 } 
+ *                 }
  *             }
  *        }[/code]</p>
- *        
+ *
  * @author  <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 5.2, August 19, 2007
  */
@@ -79,7 +79,7 @@ public final class ImmortalContext extends AllocatorContext {
 
 	/**
 	 * Enters an immortal memory context.
-	 * 
+	 *
 	 * @return the immortal memory context entered.
 	 */
 	public static ImmortalContext enter() {
@@ -88,7 +88,7 @@ public final class ImmortalContext extends AllocatorContext {
 
 	/**
 	 * Exits the current immortal memory context.
-	 * 
+	 *
 	 * @return the immortal context being exited.
 	 * @throws ClassCastException if the context is not an immortal context.
 	 */
@@ -183,7 +183,7 @@ public final class ImmortalContext extends AllocatorContext {
 		}
 	}
 
-	// Allows instances to be factory produced (private constructor). 
+	// Allows instances to be factory produced (private constructor).
 	static {
 		ObjectFactory.setInstance(new ObjectFactory() {
 			protected Object create() {

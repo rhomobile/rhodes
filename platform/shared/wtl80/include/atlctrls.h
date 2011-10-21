@@ -1495,7 +1495,7 @@ public:
 		if(!(BOOL)HIWORD(lRet))
 			return -1;   // failed
 		return (int)(short)LOWORD(lRet);
-		
+
 	}
 
 	void InsertText(int nInsertAfterChar, LPCTSTR lpstrText, BOOL bNoScroll = FALSE, BOOL bCanUndo = FALSE)
@@ -2829,7 +2829,7 @@ public:
 
 	CImageList SetImageList(HIMAGELIST hImageList, int nImageList)
 	{
-		ATLASSERT(::IsWindow(m_hWnd)); 
+		ATLASSERT(::IsWindow(m_hWnd));
 		return CImageList((HIMAGELIST)::SendMessage(m_hWnd, LVM_SETIMAGELIST, nImageList, (LPARAM)hImageList));
 	}
 
@@ -3585,7 +3585,7 @@ public:
 		return (int)::SendMessage(m_hWnd, LVM_INSERTCOLUMN, nCol, (LPARAM)pColumn);
 	}
 
-	int InsertColumn(int nCol, LPCTSTR lpszColumnHeading, int nFormat = LVCFMT_LEFT, 
+	int InsertColumn(int nCol, LPCTSTR lpszColumnHeading, int nFormat = LVCFMT_LEFT,
 			int nWidth = -1, int nSubItem = -1, int iImage = -1, int iOrder = -1)
 	{
 		LVCOLUMN column = { 0 };
@@ -4384,7 +4384,7 @@ public:
 		int nSelectedImage, HTREEITEM hParent, HTREEITEM hInsertAfter)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		return InsertItem(TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE, lpszItem, nImage, nSelectedImage, 0, 0, 0, hParent, hInsertAfter); 
+		return InsertItem(TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE, lpszItem, nImage, nSelectedImage, 0, 0, 0, hParent, hInsertAfter);
 	}
 
 	HTREEITEM InsertItem(LPCTSTR lpszItem, HTREEITEM hParent, HTREEITEM hInsertAfter)
@@ -4431,37 +4431,37 @@ public:
 
 	HTREEITEM GetNextItem(HTREEITEM hItem, UINT nCode) const
 	{
-		ATLASSERT(::IsWindow(m_hWnd)); 
+		ATLASSERT(::IsWindow(m_hWnd));
 		return (HTREEITEM)::SendMessage(m_hWnd, TVM_GETNEXTITEM, nCode, (LPARAM)hItem);
 	}
 
 	HTREEITEM GetChildItem(HTREEITEM hItem) const
 	{
-		ATLASSERT(::IsWindow(m_hWnd)); 
+		ATLASSERT(::IsWindow(m_hWnd));
 		return (HTREEITEM)::SendMessage(m_hWnd, TVM_GETNEXTITEM, TVGN_CHILD, (LPARAM)hItem);
 	}
 
 	HTREEITEM GetNextSiblingItem(HTREEITEM hItem) const
 	{
-		ATLASSERT(::IsWindow(m_hWnd)); 
-		return (HTREEITEM)::SendMessage(m_hWnd, TVM_GETNEXTITEM, TVGN_NEXT, (LPARAM)hItem); 
+		ATLASSERT(::IsWindow(m_hWnd));
+		return (HTREEITEM)::SendMessage(m_hWnd, TVM_GETNEXTITEM, TVGN_NEXT, (LPARAM)hItem);
 	}
 
 	HTREEITEM GetPrevSiblingItem(HTREEITEM hItem) const
 	{
-		ATLASSERT(::IsWindow(m_hWnd)); 
+		ATLASSERT(::IsWindow(m_hWnd));
 		return (HTREEITEM)::SendMessage(m_hWnd, TVM_GETNEXTITEM, TVGN_PREVIOUS, (LPARAM)hItem);
 	}
 
 	HTREEITEM GetParentItem(HTREEITEM hItem) const
 	{
-		ATLASSERT(::IsWindow(m_hWnd)); 
-		return (HTREEITEM)::SendMessage(m_hWnd, TVM_GETNEXTITEM, TVGN_PARENT, (LPARAM)hItem); 
+		ATLASSERT(::IsWindow(m_hWnd));
+		return (HTREEITEM)::SendMessage(m_hWnd, TVM_GETNEXTITEM, TVGN_PARENT, (LPARAM)hItem);
 	}
 
 	HTREEITEM GetFirstVisibleItem() const
 	{
-		ATLASSERT(::IsWindow(m_hWnd)); 
+		ATLASSERT(::IsWindow(m_hWnd));
 		return (HTREEITEM)::SendMessage(m_hWnd, TVM_GETNEXTITEM, TVGN_FIRSTVISIBLE, 0L);
 	}
 
@@ -4651,7 +4651,7 @@ public:
 // Construction
 	CTreeItemT(HTREEITEM hTreeItem = NULL, CTreeViewCtrlExT<TBase>* pTreeView = NULL) : m_hTreeItem(hTreeItem), m_pTreeView(pTreeView)
 	{ }
- 
+
 	CTreeItemT(const CTreeItemT<TBase>& posSrc)
 	{
 		*this = posSrc;
@@ -4672,7 +4672,7 @@ public:
 	BOOL operator !() const { return m_hTreeItem == NULL; }
 
 	BOOL IsNull() const { return m_hTreeItem == NULL; }
-	
+
 	BOOL GetRect(LPRECT lpRect, BOOL bTextOnly) const;
 	BOOL GetText(LPTSTR lpstrText, int nLen) const;
 #ifndef _ATL_NO_COM
@@ -4777,7 +4777,7 @@ public:
 		int nSelectedImage, HTREEITEM hParent, HTREEITEM hInsertAfter)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		return InsertItem(TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE, lpszItem, nImage, nSelectedImage, 0, 0, 0, hParent, hInsertAfter); 
+		return InsertItem(TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE, lpszItem, nImage, nSelectedImage, 0, 0, 0, hParent, hInsertAfter);
 	}
 
 	CTreeItemT<TBase> InsertItem(LPCTSTR lpszItem, HTREEITEM hParent, HTREEITEM hInsertAfter)
@@ -4788,42 +4788,42 @@ public:
 
 	CTreeItemT<TBase> GetNextItem(HTREEITEM hItem, UINT nCode) const
 	{
-		ATLASSERT(::IsWindow(m_hWnd)); 
+		ATLASSERT(::IsWindow(m_hWnd));
 		HTREEITEM hTreeItem = (HTREEITEM)::SendMessage(m_hWnd, TVM_GETNEXTITEM, nCode, (LPARAM)hItem);
 		return CTreeItemT<TBase>(hTreeItem, (CTreeViewCtrlExT<TBase>*)this);
 	}
 
 	CTreeItemT<TBase> GetChildItem(HTREEITEM hItem) const
 	{
-		ATLASSERT(::IsWindow(m_hWnd)); 
+		ATLASSERT(::IsWindow(m_hWnd));
 		HTREEITEM hTreeItem = (HTREEITEM)::SendMessage(m_hWnd, TVM_GETNEXTITEM, TVGN_CHILD, (LPARAM)hItem);
-		return CTreeItemT<TBase>(hTreeItem, (CTreeViewCtrlExT<TBase>*)this); 
+		return CTreeItemT<TBase>(hTreeItem, (CTreeViewCtrlExT<TBase>*)this);
 	}
 
 	CTreeItemT<TBase> GetNextSiblingItem(HTREEITEM hItem) const
 	{
-		ATLASSERT(::IsWindow(m_hWnd)); 
-		HTREEITEM hTreeItem = (HTREEITEM)::SendMessage(m_hWnd, TVM_GETNEXTITEM, TVGN_NEXT, (LPARAM)hItem); 
+		ATLASSERT(::IsWindow(m_hWnd));
+		HTREEITEM hTreeItem = (HTREEITEM)::SendMessage(m_hWnd, TVM_GETNEXTITEM, TVGN_NEXT, (LPARAM)hItem);
 		return CTreeItemT<TBase>(hTreeItem, (CTreeViewCtrlExT<TBase>*)this);
 	}
 
 	CTreeItemT<TBase> GetPrevSiblingItem(HTREEITEM hItem) const
 	{
-		ATLASSERT(::IsWindow(m_hWnd)); 
+		ATLASSERT(::IsWindow(m_hWnd));
 		HTREEITEM hTreeItem = (HTREEITEM)::SendMessage(m_hWnd, TVM_GETNEXTITEM, TVGN_PREVIOUS, (LPARAM)hItem);
 		return CTreeItemT<TBase>(hTreeItem, (CTreeViewCtrlExT<TBase>*)this);
 	}
 
 	CTreeItemT<TBase> GetParentItem(HTREEITEM hItem) const
 	{
-		ATLASSERT(::IsWindow(m_hWnd)); 
-		HTREEITEM hTreeItem = (HTREEITEM)::SendMessage(m_hWnd, TVM_GETNEXTITEM, TVGN_PARENT, (LPARAM)hItem); 
+		ATLASSERT(::IsWindow(m_hWnd));
+		HTREEITEM hTreeItem = (HTREEITEM)::SendMessage(m_hWnd, TVM_GETNEXTITEM, TVGN_PARENT, (LPARAM)hItem);
 		return CTreeItemT<TBase>(hTreeItem, (CTreeViewCtrlExT<TBase>*)this);
 	}
 
 	CTreeItemT<TBase> GetFirstVisibleItem() const
 	{
-		ATLASSERT(::IsWindow(m_hWnd)); 
+		ATLASSERT(::IsWindow(m_hWnd));
 		HTREEITEM hTreeItem = (HTREEITEM)::SendMessage(m_hWnd, TVM_GETNEXTITEM, TVGN_FIRSTVISIBLE, 0L);
 		return CTreeItemT<TBase>(hTreeItem, (CTreeViewCtrlExT<TBase>*)this);
 	}
@@ -5562,7 +5562,7 @@ public:
 		return (BOOL)::SendMessage(m_hWnd, TB_SETBUTTONINFO, nID, (LPARAM)lptbbi);
 	}
 
-	BOOL SetButtonInfo(int nID, DWORD dwMask, BYTE Style, BYTE State, LPCTSTR lpszItem, 
+	BOOL SetButtonInfo(int nID, DWORD dwMask, BYTE Style, BYTE State, LPCTSTR lpszItem,
 	                   int iImage, WORD cx, int iCommand, DWORD_PTR lParam)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
@@ -5841,7 +5841,7 @@ public:
 		return (BOOL)::SendMessage(m_hWnd, TB_INSERTBUTTON, nIndex, (LPARAM)lpButton);
 	}
 
-	BOOL InsertButton(int nIndex, int iCommand, BYTE Style, BYTE State, int iBitmap, 
+	BOOL InsertButton(int nIndex, int iCommand, BYTE Style, BYTE State, int iBitmap,
 	                  INT_PTR iString, DWORD_PTR lParam)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
@@ -5855,7 +5855,7 @@ public:
 		return (BOOL)::SendMessage(m_hWnd, TB_INSERTBUTTON, nIndex, (LPARAM)&tbb);
 	}
 
-	BOOL InsertButton(int nIndex, int iCommand, BYTE Style, BYTE State, int iBitmap, 
+	BOOL InsertButton(int nIndex, int iCommand, BYTE Style, BYTE State, int iBitmap,
 	                  LPCTSTR lpszItem, DWORD_PTR lParam)
 	{
 		return InsertButton(nIndex, iCommand, Style, State, iBitmap, (INT_PTR)lpszItem, lParam);
@@ -8739,7 +8739,7 @@ public:
 		return (int)::SendMessage(m_hWnd, CBEM_INSERTITEM, 0, (LPARAM)lpcCBItem);
 	}
 
-	int InsertItem(UINT nMask, int nIndex, LPCTSTR lpszItem, int nImage, int nSelImage, 
+	int InsertItem(UINT nMask, int nIndex, LPCTSTR lpszItem, int nImage, int nSelImage,
 	               int iIndent, int iOverlay, LPARAM lParam)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
@@ -8797,7 +8797,7 @@ public:
 		return (BOOL)::SendMessage(m_hWnd, CBEM_SETITEM, 0, (LPARAM)lpcCBItem);
 	}
 
-	int SetItem(int nIndex, UINT nMask, LPCTSTR lpszItem, int nImage, int nSelImage, 
+	int SetItem(int nIndex, UINT nMask, LPCTSTR lpszItem, int nImage, int nSelImage,
 	            int iIndent, int iOverlay, LPARAM lParam)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));

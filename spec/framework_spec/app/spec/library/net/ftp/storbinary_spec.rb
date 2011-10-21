@@ -45,5 +45,5 @@ if System::get_property('platform') != 'WINDOWS'
       ]
     end
   end
-end  
+end
 end

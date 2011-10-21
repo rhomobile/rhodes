@@ -57,7 +57,7 @@
 ;   1.3 - 01/05/2006 - Fixed interactive flag and pop order (Kichik)
 ;   1.4 - 12/07/2006 - Added display and depend, fixed datatypes (Vitoco)
 ;   1.5 - 06/25/2008 - Added description of service.(DeSafe.com/liuqixing#gmail.com)
- 
+
 !ifndef SERVICELIB
   !define SERVICELIB
 

@@ -95,7 +95,7 @@ class StringTest : public CPPUNIT_NS::TestCase
 #endif
   CPPUNIT_TEST(io);
   CPPUNIT_STOP_IGNORE;
-#if defined (STLPORT) && defined (_STLP_NO_CUSTOM_IO) 
+#if defined (STLPORT) && defined (_STLP_NO_CUSTOM_IO)
   CPPUNIT_IGNORE;
 #endif
   CPPUNIT_TEST(allocator_with_state);
@@ -1136,7 +1136,7 @@ void StringTest::io()
 
 void StringTest::allocator_with_state()
 {
-#if !(defined (STLPORT) && defined (_STLP_NO_CUSTOM_IO)) 
+#if !(defined (STLPORT) && defined (_STLP_NO_CUSTOM_IO))
 
   char buf1[1024];
   StackAllocator<char> stack1(buf1, buf1 + sizeof(buf1));

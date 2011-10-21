@@ -4,7 +4,7 @@ import java.util.*;
 import j2me.lang.*;
 
 public
-class StringParser implements Enumeration 
+class StringParser implements Enumeration
 {
 	String m_strToSplit, m_strDelim;
 	int m_nCurPos = 0;
@@ -13,11 +13,11 @@ class StringParser implements Enumeration
 	{
 		m_strToSplit = strToSplit;
 		m_strDelim = strDelim;
-		
-		m_bFinish = !(m_strToSplit != null && m_strToSplit.length() > 0); 
+
+		m_bFinish = !(m_strToSplit != null && m_strToSplit.length() > 0);
 	}
-	
-	public boolean hasMoreElements() 
+
+	public boolean hasMoreElements()
 	{
 		return !m_bFinish;
 	}
@@ -26,22 +26,22 @@ class StringParser implements Enumeration
 	{
 		return m_strToSplit.substring(m_nCurPos);
 	}
-	
-	public Object nextElement() 
+
+	public Object nextElement()
 	{
 		if ( m_nCurPos >= m_strToSplit.length() )
 		{
 			m_bFinish = true;
 			return null;//"";
 		}
-		
+
 		String strRes = "";
-		
+
 		if ( m_strDelim.length() == 0 )
 		{
 			strRes += m_strToSplit.charAt(m_nCurPos);
 			m_nCurPos += 1;
-			
+
 			if ( m_nCurPos >= m_strToSplit.length() )
 				m_bFinish = true;
 		}
@@ -49,14 +49,14 @@ class StringParser implements Enumeration
 		{
 			int nStart = m_nCurPos;
 			m_nCurPos = m_strToSplit.indexOf(m_strDelim, nStart);
-			
+
 			if ( m_nCurPos >= 0 )
 			{
 				if ( nStart == m_nCurPos )
 					strRes = null;
 				else
 					strRes = m_strToSplit.substring(nStart, m_nCurPos);
-				
+
 				m_nCurPos += m_strDelim.length();
 			}
 			else
@@ -65,7 +65,7 @@ class StringParser implements Enumeration
 				m_bFinish = true;
 			}
 		}
-		
+
 		return strRes;
 	}
 	/*
@@ -79,7 +79,7 @@ class StringParser implements Enumeration
     private int maxDelimCodePoint;
     private boolean hasSurrogates = false;
     private int[] delimiterCodePoints;
-    
+
     public StringParser(String str, String delim, boolean returnDelims) {
         currentPosition = 0;
         newPosition = -1;
@@ -90,11 +90,11 @@ class StringParser implements Enumeration
         retDelims = returnDelims;
         makePoint();
     }
-    
+
     public StringParser(String str, String delim) {
         this(str, delim, false);
     }
-    
+
     public StringParser(String str) {
         this(str, " \t\n\r\f", false);
     }
@@ -166,7 +166,7 @@ class StringParser implements Enumeration
 
     public String nextToken() {
 
-        currentPosition = (newPosition >= 0 && !delimsChanged) ?  
+        currentPosition = (newPosition >= 0 && !delimsChanged) ?
             newPosition : skipDelimiters(currentPosition);
 
         /// Reset these anyway
@@ -177,7 +177,7 @@ class StringParser implements Enumeration
             throw new NoSuchElementException();
         if (currentPosition == maxPosition)
         	return "";
-        
+
         int start = currentPosition;
         currentPosition = parseTokens(currentPosition);
         return str.substring(start, currentPosition);
@@ -213,7 +213,7 @@ class StringParser implements Enumeration
         }
         return count;
     }
-    
+
     private void makePoint() {
         if (delimiters == null) {
             maxDelimCodePoint = 0;
@@ -243,5 +243,5 @@ class StringParser implements Enumeration
             }
         }
     }*/
-    
+
 }

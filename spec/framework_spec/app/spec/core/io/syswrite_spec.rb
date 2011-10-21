@@ -50,7 +50,7 @@ describe "IO#syswrite on a file" do
     end
   end
 end
-if System.get_property('platform') != 'ANDROID'      
+if System.get_property('platform') != 'ANDROID'
 describe "IO#syswrite" do
   it_behaves_like :io_write, :syswrite
 end

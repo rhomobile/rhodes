@@ -17,7 +17,7 @@ module Noise
       puts "is #{minimumNewLength} bytes which allows for no noise in the message."
       puts "You should choose an obscured length of at least double the clear text"
       puts "length, such as #{message.length / 8 * 32} bytes"
-      raise "Insufficient length for noisy message" 
+      raise "Insufficient length for noisy message"
     end
     bitmap = []
     usableNoisyMessageLength.times { bitmap << false }
@@ -32,7 +32,7 @@ module Noise
         positionsSelected = positionsSelected.next
       end
     end
-    
+
     noisyMessage = ""
     0.upto(bitmapSize-1) { |byte|
       c = 0
@@ -58,17 +58,17 @@ module Noise
     }
     return(noisyMessage)
   end
-  
-  
+
+
   def remove_noise
     noisyMessage = self
     bitmapSize = noisyMessage.length / 9
     actualMessageLength =  bitmapSize * 8
-    
+
     actualMessageStart = bitmapSize
     actualMessageFinish = bitmapSize + actualMessageLength - 1
     actualMessage = noisyMessage[actualMessageStart..actualMessageFinish]
-    
+
     bitmap = []
     0.upto(bitmapSize - 1) { |byte|
       c = noisyMessage[byte]
@@ -85,7 +85,7 @@ module Noise
     }
     return(clearMessage)
   end
-  
+
 end
 end
 

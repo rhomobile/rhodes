@@ -2,7 +2,7 @@
 
 # Note: _WIN32_WCE is defined as 420 for CE 4.2 but as 0x500 for CE 5.0!
 DEFS_COMMON = $(DEFS_COMMON) /D _WIN32_WCE=0x$(CEVERSION) /D UNDER_CE=1 /D "UNICODE"
-LDFLAGS_COMMON = $(LDFLAGS_COMMON) coredll.lib corelibc.lib /nodefaultlib:LIBC.lib /nodefaultlib:OLDNAMES.lib 
+LDFLAGS_COMMON = $(LDFLAGS_COMMON) coredll.lib corelibc.lib /nodefaultlib:LIBC.lib /nodefaultlib:OLDNAMES.lib
 # TODO: the subsystem settings will have to be adjusted for CE5.01...
 LDFLAGS_COMMON = $(LDFLAGS_COMMON) /subsystem:windowsce,5.00
 
@@ -22,8 +22,8 @@ LDFLAGS_REL = $(LDFLAGS_REL) /LTCG
 
 
 # make the compiler display absolute paths in diagnostics
-# While this is not necessary for STLport in any way, it is convenient when using 
-# the VC8 IDE for building things because then you can click on diagnostics in 
+# While this is not necessary for STLport in any way, it is convenient when using
+# the VC8 IDE for building things because then you can click on diagnostics in
 # order to warp to the exact place in the code.
 OPT_COMMON = $(OPT_COMMON) /FC
 

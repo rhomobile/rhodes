@@ -381,7 +381,7 @@ if ( System.get_property('platform') != 'WINDOWS' )
   end
 end
   platform_is_not :openbsd do
-if ( System.get_property('platform') != 'WINDOWS' )    
+if ( System.get_property('platform') != 'WINDOWS' )
     it "truncates the file when passed File::TRUNC mode" do
       File.open(@file, File::RDWR) { |f| f.puts "hello file" }
       @fh = File.open(@file, File::TRUNC)
@@ -515,7 +515,7 @@ end
   it "raises an ArgumentError if passed an invalid string for mode" do
     lambda { File.open(@file, 'fake') }.should raise_error(ArgumentError)
   end
-  
+
   ruby_version_is "1.9.2" do
     it "defaults external_encoding to ASCII-8BIT for binary modes" do
       File.open(@file, 'rb') {|f| f.external_encoding.should == Encoding::ASCII_8BIT}

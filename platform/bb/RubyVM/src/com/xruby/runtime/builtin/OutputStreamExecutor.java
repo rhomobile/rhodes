@@ -7,12 +7,12 @@ import com.rho.RhoLogger;
 import com.xruby.runtime.lang.RubyValue;
 
 public class OutputStreamExecutor implements RubyIOExecutor {
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("APP");
-	
+
 	//private PrintStream ps;
 	boolean m_bError = false;
-	
+
 	public OutputStreamExecutor(boolean bError) {
 		m_bError = bError;
 		/*if (os instanceof PrintStream) {
@@ -26,21 +26,21 @@ public class OutputStreamExecutor implements RubyIOExecutor {
     {
     	return null;
     }
-	
+
 	public int write(String s) {
 //		this.ps.print(s);
 		if ( m_bError )
 			LOG.ERROR(s);
 		else
 			LOG.INFO(s);
-		
+
 		return s.length();
 	}
-	
+
 	public void print(String s) {
 		write(s);
 	}
-	
+
 	public void close() {
 		//this.ps.close();
 	}

@@ -16,7 +16,7 @@
 
 
 
-#define IP_PORTION_COUNT 32 
+#define IP_PORTION_COUNT 32
 
 void msg_out(const char* text) {
 	//wchar_t msg[2048];

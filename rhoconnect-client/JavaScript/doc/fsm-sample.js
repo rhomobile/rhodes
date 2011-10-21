@@ -41,4 +41,4 @@ var dot = lampSwitchFsm.renderAsDot();
 // http://www.graphviz.org for Graphviz.
 //
 // Here is fsm-sample.png file rendered from lampSwitchFsm.
- 
+

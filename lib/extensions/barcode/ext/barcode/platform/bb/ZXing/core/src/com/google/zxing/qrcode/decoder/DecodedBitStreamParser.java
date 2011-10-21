@@ -340,7 +340,7 @@ final class DecodedBitStreamParser {
     // Otherwise, we take a wild guess with UTF-8
     return UTF8;
   }
-  
+
   private static int parseECIValue(BitSource bits) {
     int firstByte = bits.readBits(8);
     if ((firstByte & 0x80) == 0) {

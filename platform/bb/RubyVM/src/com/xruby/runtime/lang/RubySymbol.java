@@ -17,7 +17,7 @@ public class RubySymbol extends RubyValue {
 	public void setRubyClass(RubyClass klass) {
 		throw new RubyException(RubyRuntime.TypeErrorClass, this.getRubyClass().getName() + " can't be set class");
 	}
-	
+
 	public RubyClass getSingletonClass() {
     	throw new RubyException(RubyRuntime.TypeErrorClass, this.getRubyClass().getName() + " can't define singleton");
     }
@@ -25,7 +25,7 @@ public class RubySymbol extends RubyValue {
 	public RubyValue clone() {
 		throw new RubyException(RubyRuntime.TypeErrorClass, "can't clone " + this.getRubyClass().getName());
 	}
-    
+
     public RubySymbol(RubyID id) {
         this.id = id;
     }
@@ -62,7 +62,7 @@ public class RubySymbol extends RubyValue {
     public boolean respondTo(RubyID id) {
     	return super.respondTo(id);
     }
-    
+
     //@RubyLevelMethod(name="to_s", alias="id2name")
     public RubyString to_s() {
         return ObjectFactory.createString(id.toString());
@@ -82,7 +82,7 @@ public class RubySymbol extends RubyValue {
     public RubyValue array_access(RubyArray args) {
     	return to_s().array_access(args);
     }
-    
+
     //@RubyLevelMethod(name="inspect")
     public RubyString rubyInspect() {
         String value = this.toString();
@@ -101,13 +101,13 @@ public class RubySymbol extends RubyValue {
     public RubyValue sym_eqq(RubyValue v) {
     	if ( this == v )
     		return RubyConstant.QTRUE;
-    	
+
     	if ( v.toStr().equals(this.toStr()) )
     		return RubyConstant.QTRUE;
-    		
+
     	return RubyConstant.QFALSE;
     }
-    
+
     private boolean isSymname(String name) {
         if (name == null) {
             return false;
@@ -305,5 +305,5 @@ public class RubySymbol extends RubyValue {
 
         return getChar(name, current) <= 0;
     }
-    
+
 }

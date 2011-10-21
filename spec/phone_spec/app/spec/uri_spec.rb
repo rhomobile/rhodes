@@ -6,14 +6,14 @@ describe "URI" do
             write_data  = "this is rhodes test"
             f = File.new(@@file_name, "w")
             f.write(write_data)
-            f.close        
+            f.close
         end
     end
 
     after(:all) do
 unless System.get_property('platform') == 'WINDOWS'  && System.get_property('device_name') != 'Win32'
         File.delete(@@file_name) if File.exists?(@@file_name)
-end        
+end
     end
 
     it "test navigate local page" do

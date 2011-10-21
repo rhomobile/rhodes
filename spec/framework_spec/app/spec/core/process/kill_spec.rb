@@ -147,4 +147,4 @@ describe "Process.kill" do
     end
   end
 end
-end    
+end

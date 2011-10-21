@@ -13,5 +13,5 @@ describe :language___LINE__, :shared => true do
     @object.send(@method, @path).should be_true
     ScratchPad.recorded.should == [1, 5]
   end
-=end  
+=end
 end

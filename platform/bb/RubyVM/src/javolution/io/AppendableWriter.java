@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2006 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -19,7 +19,7 @@ import javolution.text.Appendable;
 import javolution.text.Text;
 
 /**
- * <p> This class allows any <code>Appendable</code> to be used as 
+ * <p> This class allows any <code>Appendable</code> to be used as
  *     a writer.</p>
  *
  * @author  <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
@@ -33,9 +33,9 @@ public final class AppendableWriter extends Writer implements Reusable {
     private Appendable _output;
 
     /**
-     * Creates a new appendable writer for which the appendable output 
+     * Creates a new appendable writer for which the appendable output
      * is not set.
-     * 
+     *
      * @see #setOutput(Appendable)
      */
     public AppendableWriter() {
@@ -49,7 +49,7 @@ public final class AppendableWriter extends Writer implements Reusable {
      *
      * @param  output the appendable written to.
      * @return this writer.
-     * @throws IllegalStateException if this writer is being reused and 
+     * @throws IllegalStateException if this writer is being reused and
      *         it has not been {@link #close closed} or {@link #reset reset}.
      */
     public AppendableWriter setOutput(Appendable output) {

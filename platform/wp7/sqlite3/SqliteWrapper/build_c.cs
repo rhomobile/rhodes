@@ -244,7 +244,7 @@ pParse.nVtabLock = 0;
         pParse.rc = SQLITE_DONE;
         pParse.colNamesSet = 0;
       }
-      else 
+      else
       {
         pParse.rc = SQLITE_ERROR;
       }
@@ -3949,9 +3949,9 @@ Debug.Assert( !SAVEPOINT_BEGIN && SAVEPOINT_RELEASE==1 && SAVEPOINT_ROLLBACK==2 
       pToplevel.isMultiWrite = 1;
     }
 
-    /* 
+    /*
     ** The code generator calls this routine if is discovers that it is
-    ** possible to abort a statement prior to completion.  In order to 
+    ** possible to abort a statement prior to completion.  In order to
     ** perform this abort without corrupting the database, we need to make
     ** sure that the statement is protected by a statement transaction.
     **
@@ -3960,7 +3960,7 @@ Debug.Assert( !SAVEPOINT_BEGIN && SAVEPOINT_RELEASE==1 && SAVEPOINT_ROLLBACK==2 
     ** such that the abort must occur after the multiwrite.  This makes
     ** some statements involving the REPLACE conflict resolution algorithm
     ** go a little faster.  But taking advantage of this time dependency
-    ** makes it more difficult to prove that the code is correct (in 
+    ** makes it more difficult to prove that the code is correct (in
     ** particular, it prevents us from writing an effective
     ** implementation of sqlite3AssertMayAbort()) and so we have chosen
     ** to take the safe route and skip the optimization.

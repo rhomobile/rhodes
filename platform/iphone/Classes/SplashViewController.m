@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -34,7 +34,7 @@
 - (void)layoutSubviews
 {
 	[super layoutSubviews];
-	
+
 	CGRect frame = self.frame;
 	CGRect rect = self.bounds;
 
@@ -44,38 +44,38 @@
 		scales = [[UIScreen mainScreen] scale];
 	}
 #endif
-	
+
 
 	BOOL is_need_left = NO;
-	
+
 	NSString* imagePath = [SplashViewController detectLoadingImage:rect rotation_to_left:&is_need_left];
 
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:imagePath])
         return;
-    
+
     UIImage *img = [[UIImage alloc] initWithContentsOfFile:imagePath];
-	
+
     self.image = img;
-	
+
 	{
-		
+
 		float img_scale = 1;
 #ifdef __IPHONE_4_0
 		if ( [img respondsToSelector:@selector(scale)] ) {
 			img_scale = [img scale];
 		}
 #endif
-		
-		int image_width = (int)([img size].width*img_scale); 
+
+		int image_width = (int)([img size].width*img_scale);
 		int image_height = (int)([img size].height*img_scale);
-		
+
 		CGRect appFrame = [[UIScreen mainScreen] applicationFrame];
 		CGRect srcrnBounds = [[UIScreen mainScreen] bounds];
 		CGRect sbFrame = [[UIApplication sharedApplication] statusBarFrame];
-		
+
 		UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-		
+
 		int scrnWidth = 0;
 		int scrnHeight = 0;
 
@@ -87,8 +87,8 @@
 			scrnWidth = (int)(srcrnBounds.size.height*scales+0.5);
 			scrnHeight = (int)(srcrnBounds.size.width*scales+0.5);
 		}
-		
-	
+
+
 		if ((image_width != scrnWidth) || (image_height != scrnHeight)) {
 			// scale to app frame
 			self.frame = appFrame;
@@ -114,7 +114,7 @@
     parentView = v;
     CGRect frame = [[UIScreen mainScreen] bounds];
     splashView = [[RhoSplashImageView alloc] initWithFrame:frame];
-	
+
 	splashView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 	splashView.autoresizesSubviews = YES;
 	self.view = splashView;
@@ -141,7 +141,7 @@
 - (void)didReceiveMemoryWarning {
     // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
-    
+
     // Release any cached data, images, etc that aren't in use.
 }
 
@@ -151,12 +151,12 @@
 
 + (NSString*)detectLoadingImage:(CGRect)myframe rotation_to_left:(BOOL*)rotation_to_left {
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    
-	
+
+
 	NSString * result = nil;
-	
+
     NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
-    
+
 	NSString *pngLoadingPath = [NSString stringWithFormat:@"%@/apps/app/loading.png", resourcePath];
 	NSString *pngDefaultPath = [NSString stringWithFormat:@"%@/Default.png", resourcePath];
 	NSString *pngDefault2xPath = [NSString stringWithFormat:@"%@/Default@2x.png", resourcePath];
@@ -167,7 +167,7 @@
 	NSString *pngDefaultLandscapeRightPath = [NSString stringWithFormat:@"%@/Default-LandscapeRight.png", resourcePath];
 
 	CGRect win_frame = [[[UIApplication sharedApplication] keyWindow] bounds];
-	
+
 	CGRect frame = myframe;
 	float scales = 1;//[[UIScreen mainScreen] scale];
 #ifdef __IPHONE_4_0
@@ -175,17 +175,17 @@
 		scales = [[UIScreen mainScreen] scale];
 	}
 #endif
-	
+
 	BOOL is_HiResolution = ((frame.size.width*scales) > 500);
 	BOOL is_iPad = NO;
-	
+
 	NSString *model = [[UIDevice currentDevice] model]; // "iPad ..."
 	if ([model hasPrefix:@"iPad"]) {
 		is_iPad = YES;
 	}
-	
+
 	UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-	
+
 	if (is_iPad) {
 		if ([fileManager fileExistsAtPath:pngDefaultPath]) {
 			result = pngDefaultPath;
@@ -272,7 +272,7 @@
 	NSString *pngDefaultLandscapePath = [NSString stringWithFormat:@"%@/Default-Landscape.png", resourcePath];
 	NSString *pngDefaultLandscapeLeftPath = [NSString stringWithFormat:@"%@/Default-LandscapeLeft.png", resourcePath];
 	NSString *pngDefaultLandscapeRightPath = [NSString stringWithFormat:@"%@/Default-LandscapeRight.png", resourcePath];
-	
+
 	return (
 			//([fileManager fileExistsAtPath:pngLoadingPath]) ||
 			([fileManager fileExistsAtPath:pngDefaultPath]) ||
@@ -289,7 +289,7 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	BOOL is_iPad = NO;
-	
+
 	NSString *model = [[UIDevice currentDevice] model]; // "iPad ..."
 	if ([model hasPrefix:@"iPad"]) {
 		is_iPad = YES;

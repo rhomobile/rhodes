@@ -7,23 +7,23 @@ options_path = '/app/Settings'
 # location of bundle url (i.e. from rhohub.com); used by desktop win32 simulator
 rhobundle_zip_url = '<%=zip_url%>'
 
-# optional password to access bundle (usually not required); used by desktop win32 simulator 
+# optional password to access bundle (usually not required); used by desktop win32 simulator
 rhobundle_zip_pwd = nil
 
 # Rhodes log properties
 # log level
 # 0-trace, 1-info(app level), 3-warnings, 4-errors
 # for production set to 3
-MinSeverity  = 1 
+MinSeverity  = 1
 
 # enable copy log messages to standard output, useful for debugging
 LogToOutput = 1
 
-# '*' means all categories, otherwise list them : Cat1, Cat2 
+# '*' means all categories, otherwise list them : Cat1, Cat2
 LogCategories = *
 
 # what categories to exclude
-ExcludeLogCategories = 
+ExcludeLogCategories =
 
 # max log file size in Bytes, set 0 to unlimited size; when limit is reached, log wraps to beginning of file
 MaxLogFileSize=50000
@@ -34,15 +34,15 @@ MaxLogFileSize=50000
 # timeout of network requests in seconds (30 by default)
 #net_timeout = 60
 
-# where log will be posted by RhoConf.send_log or from the log menu  
+# where log will be posted by RhoConf.send_log or from the log menu
 # source is also open and up on http://github.com/rhomobile/rhologs, so you can deploy your own logserver
-logserver = 'http://rhologs.heroku.com' 
+logserver = 'http://rhologs.heroku.com'
 
 # log file prefix - contain human-readable text
 logname='<%=@app_name%>'
 
 # Keep track of the last visited page
-KeepTrackOfLastVisitedPage = 0 
+KeepTrackOfLastVisitedPage = 0
 LastVisitedPage = ''
 
 # sync server url, typically this will look like 'http://<hostname>:<port>/application'

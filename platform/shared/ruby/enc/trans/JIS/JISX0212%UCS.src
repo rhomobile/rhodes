@@ -86,7 +86,7 @@ BEGIN_MAP
 #
 #	1. JIS X 0212 apparently unified the following two symbols
 #	   into a single character at 0x2922:
-#	
+#
 #	   LATIN CAPITAL LETTER D WITH STROKE
 #	   LATIN CAPITAL LETTER ETH
 #
@@ -96,7 +96,7 @@ BEGIN_MAP
 #	   0x2922 and 0x2942 are intended to be a capital/small pair.
 #	   Consequently, in the Unicode mapping, 0x2922 is treated as
 #	   LATIN CAPITAL LETTER D WITH STROKE.
-#	  
+#
 0x222F = 0x02D8
 0x2230 = 0x02C7
 0x2231 = 0x00B8

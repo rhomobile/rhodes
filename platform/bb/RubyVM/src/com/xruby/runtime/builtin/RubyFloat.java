@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright 2005-2007 Xue Yong Zhi, Jie Li, Ye Zheng
  * Distributed under the BSD License
  */
@@ -22,19 +22,19 @@ import com.xruby.runtime.lang.RubyValue;
 public class RubyFloat extends RubyNumeric {
 	private RubyClass klass;
 	private double value_;
-	
+
 	RubyFloat(double value) {
 		value_ = value;
 		this.klass = RubyRuntime.FloatClass;
 	}
-	
+
 	public RubyValue clone()
 	{
 		RubyFloat cl = new RubyFloat(this.value_);
 		cl.doClone(this);
 		return cl;
 	}
-	
+
 	public RubyClass getRubyClass() {
 		return this.klass;
 	}
@@ -42,7 +42,7 @@ public class RubyFloat extends RubyNumeric {
 	public void setRubyClass(RubyClass klass) {
 		this.klass = klass;
 	}
-	
+
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
@@ -52,7 +52,7 @@ public class RubyFloat extends RubyNumeric {
 			return super.equals(o);
 		}
 	}
-	
+
 	public String toString() {
 		return Double.toString(this.value_);
 	}
@@ -60,7 +60,7 @@ public class RubyFloat extends RubyNumeric {
 	public double doubleValue() {
 		return value_;
 	}
-	
+
 	public int toInt() {
 		return (int)this.value_;
 	}
@@ -68,7 +68,7 @@ public class RubyFloat extends RubyNumeric {
 	public long toLong() {
 		return (long)this.value_;
 	}
-	
+
 	public double toFloat() {
 		return this.value_;
 	}
@@ -76,7 +76,7 @@ public class RubyFloat extends RubyNumeric {
 	public RubyFloat toRubyFloat() {
 		return this;
 	}
-	
+
 	public RubyInteger toRubyInteger() {
 		return RubyBignum.bignorm((long)this.value_);
 	}
@@ -85,22 +85,22 @@ public class RubyFloat extends RubyNumeric {
 	public RubyString to_s() {
 		return ObjectFactory.createString(Double.toString(this.value_));
 	}
-	
+
 	//@RubyLevelMethod(name="to_i")
 	public RubyFixnum to_i() {
 		return ObjectFactory.createFixnum((long)this.value_);
 	}
-	
+
 	////@RubyLevelMethod(name="to_f")
 	public RubyFloat to_f() {
 		return this;
 	}
-	
+
 	//@RubyLevelMethod(name="coerce")
 	public RubyArray coerce(RubyValue v) {
 		return new RubyArray(v.toRubyFloat(), this);
 	}
-	
+
 	//@RubyLevelMethod(name="+")
 	public RubyValue opPlus(RubyValue v) {
 		if (v instanceof RubyFixnum) {
@@ -113,7 +113,7 @@ public class RubyFloat extends RubyNumeric {
 			return this.coerceBin(RubyID.plusID, v);
 		}
 	}
-	
+
 	//@RubyLevelMethod(name="-")
 	public RubyValue opMinus(RubyValue v) {
 		if (v instanceof RubyFixnum) {
@@ -126,9 +126,9 @@ public class RubyFloat extends RubyNumeric {
 			return this.coerceBin(RubyID.subID, v);
 		}
 	}
-	
+
 	//@RubyLevelMethod(name="*")
-	public RubyValue opMul(RubyValue v) {	
+	public RubyValue opMul(RubyValue v) {
 		if (v instanceof RubyFixnum) {
 			return ObjectFactory.createFloat(this.value_ * v.toFloat());
 		} else if (v instanceof RubyBignum) {
@@ -139,9 +139,9 @@ public class RubyFloat extends RubyNumeric {
 			return this.coerceBin(RubyID.mulID, v);
 		}
 	}
-	
+
 	//@RubyLevelMethod(name="/")
-	public RubyValue opDiv(RubyValue v) {	
+	public RubyValue opDiv(RubyValue v) {
 		if (v instanceof RubyFixnum) {
 			return ObjectFactory.createFloat(this.value_ / v.toFloat());
 		} else if (v instanceof RubyBignum) {
@@ -152,7 +152,7 @@ public class RubyFloat extends RubyNumeric {
 			return this.coerceBin(RubyID.divID, v);
 		}
 	}
-	
+
 	//@RubyLevelMethod(name="%")
 	public RubyValue opMod(RubyValue v) {
 		double fy;
@@ -165,10 +165,10 @@ public class RubyFloat extends RubyNumeric {
 		} else {
 			return coerceBin(RubyID.modID, v);
 		}
-		
+
 		return ObjectFactory.createFloat(this.value_ % fy);
 	}
-	
+
 	//@RubyLevelMethod(name="<=>")
 	public RubyValue cmp(RubyValue v) {
 		double a = this.value_;
@@ -182,7 +182,7 @@ public class RubyFloat extends RubyNumeric {
 		} else {
 			return this.coerceCmp(RubyID.unequalID, v);
 		}
-		
+
 		if (Double.isNaN(a) || Double.isNaN(b)) {
             return RubyConstant.QNIL;
         } else if (a == b) {
@@ -193,27 +193,27 @@ public class RubyFloat extends RubyNumeric {
 			return ObjectFactory.FIXNUM_NEGATIVE_ONE;
 		}
 	}
-	
+
 	//@RubyLevelMethod(name="floor")
 	public RubyInteger floor() {
 		return createRubyInteger(Math.floor(this.value_));
 	}
-	
+
 	//@RubyLevelMethod(name="ceil")
 	public RubyInteger ceil() {
 		return createRubyInteger(Math.ceil(this.value_));
 	}
-	
+
 	//@RubyLevelMethod(name="truncate")
 	public RubyInteger truncate() {
 		return createRubyInteger(this.value_);
 	}
-	
+
 	//@RubyLevelMethod(name="round")
 	public RubyInteger round() {
 		return createRubyInteger(MathEx.round(this.value_));
 	}
-	
+
 	//@RubyLevelMethod(name="abs")
 	public RubyFloat abs() {
 		return ObjectFactory.createFloat(Math.abs(this.value_));
@@ -225,12 +225,12 @@ public class RubyFloat extends RubyNumeric {
 		}
 		return ObjectFactory.createBignum(HugeDigit.valueOf(value).toBigInteger());
 	}
-	
+
 	//@RubyLevelMethod(name="finite?")
 	public RubyValue finite_p() {
 		return ObjectFactory.createBoolean(!Double.isInfinite(this.value_));
 	}
-	
+
 	//@RubyLevelMethod(name="infinite?")
 	public RubyValue infinite_p() {
 		if (this.value_ == Double.NEGATIVE_INFINITY) {
@@ -241,12 +241,12 @@ public class RubyFloat extends RubyNumeric {
             return RubyConstant.QNIL;
         }
 	}
-	
+
 	//@RubyLevelMethod(name="nan?")
 	public RubyValue nan_p() {
 		return ObjectFactory.createBoolean(Double.isNaN(this.value_));
 	}
-	
+
     //@RubyLevelMethod(name="**")
     public RubyValue pow(RubyValue v) {
     	if (v instanceof RubyFixnum) {
@@ -260,13 +260,13 @@ public class RubyFloat extends RubyNumeric {
     		//	HugeInt b = HugeInt.valueOf(this.value_);
     		//	return RubyBignum.bignorm(b.pow(p));
     		//}
-    		
+
     		return ObjectFactory.createFloat(MathEx.pow(this.value_, p));
     	} else if (v instanceof RubyFloat) {
     		return ObjectFactory.createFloat(MathEx.pow(this.value_, v.toFloat()));
     	}
-    	
+
     	return coerceBin(RubyID.powID, v);
     }
-	
+
 }

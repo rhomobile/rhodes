@@ -64,17 +64,17 @@ public abstract class RubyValue extends BlockCallStatus implements Cloneable {
 
     public abstract void setRubyClass(RubyClass klass);
     public abstract RubyClass getRubyClass();
-    
+
     public RubyValue clone()
-    { 
+    {
     	RubyValue cl = null;
     	try{
     		cl = (RubyValue)(this.getClass().newInstance());
     		cl.doClone(this);
     	}catch(Exception e){
-    		throw new RubyException(RubyRuntime.ExceptionClass, e.toString());    		
+    		throw new RubyException(RubyRuntime.ExceptionClass, e.toString());
     	}
-    	return cl; 
+    	return cl;
     }
     protected void doClone(RubyValue orig){
         frozen_ = orig.frozen_;
@@ -133,7 +133,7 @@ public abstract class RubyValue extends BlockCallStatus implements Cloneable {
     		taint_ = false;
     	}
     }
-    
+
     public RubyValue getInstanceVariable(RubyID id) {
         if (genericIvTbl != null) {
             Map/*<RubyID, RubyValue>*/ table = (Map)genericIvTbl.get(this);
@@ -216,7 +216,7 @@ public abstract class RubyValue extends BlockCallStatus implements Cloneable {
     public long toLong() {
         return this.convertToInteger().toLong();
     }
-    
+
     public RubyArray toAry() {
         return this.convertToArray().toAry();
     }
@@ -253,11 +253,11 @@ public abstract class RubyValue extends BlockCallStatus implements Cloneable {
     public RubyArray toRubyArray() {
         return toAry();
     }
-    
+
     public RubyTime toRubyTime() {
     	return (RubyTime)this.convertToTime();
     }
-    
+
     private RubyValue convertToInteger() {
         return convertToType(RubyRuntime.IntegerClass, RubyID.toIntID);
     }
@@ -273,7 +273,7 @@ public abstract class RubyValue extends BlockCallStatus implements Cloneable {
     private RubyValue convertToString() {
         return convertToType(RubyRuntime.StringClass, RubyID.toStrID);
     }
-    
+
     private RubyValue convertToTime() {
     	return convertToType(RubyRuntime.TimeClass, RubyID.toTimeID);
     }

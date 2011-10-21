@@ -29,7 +29,7 @@
 #endif
 
 #if (_STLP_OUTERMOST_HEADER_ID != 0x423) || defined (_STLP_DONT_POP_HEADER_ID)
-/* If we are here it means that we are in an include called 
+/* If we are here it means that we are in an include called
  * from the native lib which means that we can simply forward this
  * call to the native exception header:
  */

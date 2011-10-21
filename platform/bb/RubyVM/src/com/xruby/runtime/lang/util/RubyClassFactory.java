@@ -17,20 +17,20 @@ import com.xruby.runtime.lang.annotation.RubyLevelClass;
 import com.xruby.runtime.lang.annotation.UndefMethod;
 
 class RubyClassFactory extends RubyTypeFactory {
-	private static final Method RubyClassBuilderCreateRubyClassMethod = 
+	private static final Method RubyClassBuilderCreateRubyClassMethod =
 		CgUtil.getMethod("createRubyClass", Types.RUBY_CLASS_TYPE);
-	private static final Method RubyAPIDefineClassMethod = 
+	private static final Method RubyAPIDefineClassMethod =
 		CgUtil.getMethod("defineClass", Types.RUBY_CLASS_TYPE, Type.getType(String.class), Types.RUBY_VALUE_TYPE);
 	private static final Type BuilderInterface = Type.getType(RubyClassBuilder.class);
-	
+
 	RubyClassFactory(Class klass) {
 		super(klass);
 	}
-	
+
 	protected boolean isModule() {
 		return false;
 	}
-	
+
 	protected Class getTypeAnnotationClass() {
 		return RubyLevelClass.class;
 	}
@@ -44,7 +44,7 @@ class RubyClassFactory extends RubyTypeFactory {
 	}
 
 	protected Method getBuilderMethod() {
-		return RubyClassBuilderCreateRubyClassMethod; 
+		return RubyClassBuilderCreateRubyClassMethod;
 	}
 
 	protected int createRubyType(GeneratorAdapter mg, Annotation annotation) {
@@ -59,27 +59,27 @@ class RubyClassFactory extends RubyTypeFactory {
 //		for (String moduleName : klassAnnotation.modules()) {
     	for( int i = 0; i<klassAnnotation.modules().length; i++){
     		String moduleName = klassAnnotation.modules()[i];
-		
+
 			includeModule(mg, rubyTypeIdx, moduleName);
 		}
-		
+
 //		for (UndefMethod method : klassAnnotation.undef()) {
     	for( int i = 0; i<klassAnnotation.undef().length; i++){
     		UndefMethod method = klassAnnotation.undef()[i];
-    	
+
 			undefMethod(mg, rubyTypeIdx, method);
 		}
-		
+
 //		for (com.xruby.runtime.lang.annotation.DummyMethod dummy : klassAnnotation.dummy()) {
     	for( int i = 0; i<klassAnnotation.dummy().length; i++){
     		com.xruby.runtime.lang.annotation.DummyMethod dummy = klassAnnotation.dummy()[i];
-    	
+
 			mg.loadLocal(rubyTypeIdx);
 			mg.push(dummy.name());
 			Type type = Type.getType(DummyMethod.class);
 			mg.getStatic(type, "INSTANCE", type);
 			if (dummy.privateMethod()) {
-				mg.invokeVirtual(Types.RUBY_MODULE_TYPE, 
+				mg.invokeVirtual(Types.RUBY_MODULE_TYPE,
 						CgUtil.getMethod("definePrivateMethod", Types.RUBY_VALUE_TYPE, Type.getType(String.class), Types.RUBY_METHOD_TYPE));
 			} else {
 				mg.invokeVirtual(Types.RUBY_MODULE_TYPE,
@@ -96,14 +96,14 @@ class RubyClassFactory extends RubyTypeFactory {
 		mg.invokeVirtual(Types.RUBY_MODULE_TYPE,
 				CgUtil.getMethod("includeModule", Type.VOID_TYPE, Types.RUBY_MODULE_TYPE));
 	}
-	
+
 	private void undefMethod(GeneratorAdapter mg, int rubyTypeIdx, UndefMethod method) {
 		mg.loadLocal(rubyTypeIdx);
 		if (method.classMethod()) {
-			mg.invokeVirtual(Types.RUBY_VALUE_TYPE, 
+			mg.invokeVirtual(Types.RUBY_VALUE_TYPE,
 					CgUtil.getMethod("getRubyClass", Types.RUBY_CLASS_TYPE));
 		}
-		
+
 		mg.push(method.name());
 		mg.invokeVirtual(Types.RUBY_MODULE_TYPE,
 				CgUtil.getMethod("undefMethod", Type.VOID_TYPE, Type.getType(String.class)));
@@ -111,7 +111,7 @@ class RubyClassFactory extends RubyTypeFactory {
 
 	private void loadModule(GeneratorAdapter mg, String module, int rubyTypeIdx) {
 		if (Types.isBuiltinModule(module)) {
-			mg.getStatic(Types.RUBY_RUNTIME_TYPE, 
+			mg.getStatic(Types.RUBY_RUNTIME_TYPE,
 					module + "Module", Types.RUBY_MODULE_TYPE);
 		} else {
 			mg.loadLocal(rubyTypeIdx);

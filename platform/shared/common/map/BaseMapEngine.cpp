@@ -1147,7 +1147,7 @@ void BaseMapView::paintAnnotation(IDrawingContext *context, Annotation &ann)
             pin_info = &m_mylocation_pin_info;
         }
     }
-    
+
     if (ann.data() != NULL)
     {
         img = (IDrawingImage*)ann.data();

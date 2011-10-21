@@ -20,7 +20,7 @@ import com.google.zxing.Result;
 
 /**
  * Tries to parse results that are a URI of some kind.
- * 
+ *
  * @author Sean Owen
  */
 final class URIResultParser extends ResultParser {

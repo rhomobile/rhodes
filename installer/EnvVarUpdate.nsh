@@ -9,14 +9,14 @@
  *    ${EnvVarUpdate} "ResultVar" "EnvVarName" "Action" "RegLoc" "PathString"
  *
  *  Credits:
- *  Version 1.0 
+ *  Version 1.0
  *  * Cal Turney (turnec2)
  *  * Amir Szekely (KiCHiK) and e-circ for developing the forerunners of this
  *    function: AddToPath, un.RemoveFromPath, AddToEnvVar, un.RemoveFromEnvVar,
  *    WriteEnvStr, and un.DeleteEnvStr
  *  * Diego Pedroso (deguix) for StrTok
  *  * Kevin English (kenglish_hi) for StrContains
- *  * Hendri Adriaens (Smile2Me), Diego Pedroso (deguix), and Dan Fuhry  
+ *  * Hendri Adriaens (Smile2Me), Diego Pedroso (deguix), and Dan Fuhry
  *    (dandaman32) for StrReplace
  *
  *  Version 1.1 (compatibility with StrFunc.nsh)
@@ -25,8 +25,8 @@
  *  http://nsis.sourceforge.net/Environmental_Variables:_append%2C_prepend%2C_and_remove_entries
  *
  */
- 
- 
+
+
 !ifndef ENVVARUPDATE_FUNCTION
 !define ENVVARUPDATE_FUNCTION
 !verbose push
@@ -34,7 +34,7 @@
 !include "LogicLib.nsh"
 !include "WinMessages.NSH"
 !include "StrFunc.nsh"
- 
+
 ; ---- Fix for conflict if StrFunc.nsh is already includes in main file -----------------------
 !macro _IncludeStrFunction StrFuncName
   !ifndef ${StrFuncName}_INCLUDED
@@ -45,11 +45,11 @@
   !endif
   !define un.${StrFuncName} "${Un${StrFuncName}}"
 !macroend
- 
+
 !insertmacro _IncludeStrFunction StrTok
 !insertmacro _IncludeStrFunction StrStr
 !insertmacro _IncludeStrFunction StrRep
- 
+
 ; ---------------------------------- Macro Definitions ----------------------------------------
 !macro _EnvVarUpdateConstructor ResultVar EnvVarName Action Regloc PathString
   Push "${EnvVarName}"
@@ -60,7 +60,7 @@
   Pop "${ResultVar}"
 !macroend
 !define EnvVarUpdate '!insertmacro "_EnvVarUpdateConstructor"'
- 
+
 !macro _unEnvVarUpdateConstructor ResultVar EnvVarName Action Regloc PathString
   Push "${EnvVarName}"
   Push "${Action}"
@@ -71,15 +71,15 @@
 !macroend
 !define un.EnvVarUpdate '!insertmacro "_unEnvVarUpdateConstructor"'
 ; ---------------------------------- Macro Definitions end-------------------------------------
- 
+
 ;----------------------------------- EnvVarUpdate start----------------------------------------
 !define hklm_all_users     'HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
 !define hkcu_current_user  'HKCU "Environment"'
- 
+
 !macro EnvVarUpdate UN
- 
+
 Function ${UN}EnvVarUpdate
- 
+
   Push $0
   Exch 4
   Exch $1
@@ -95,7 +95,7 @@ Function ${UN}EnvVarUpdate
   Push $8
   Push $9
   Push $R0
- 
+
   /* After this point:
   -------------------------
      $0 = ResultVar     (returned)
@@ -109,7 +109,7 @@ Function ${UN}EnvVarUpdate
      $8 = Entry counter (temp)
      $9 = tempstr2      (temp)
      $R0 = tempChar     (temp)  */
- 
+
   ; Step 1:  Read contents of EnvVarName from RegLoc
   ;
   ; Check for empty EnvVarName
@@ -118,7 +118,7 @@ Function ${UN}EnvVarUpdate
     DetailPrint "ERROR: EnvVarName is blank"
     Goto EnvVarUpdate_Restore_Vars
   ${EndIf}
- 
+
   ; Check for valid Action
   ${If}    $2 != "A"
   ${AndIf} $2 != "P"
@@ -127,7 +127,7 @@ Function ${UN}EnvVarUpdate
     DetailPrint "ERROR: Invalid Action - must be A, P, or R"
     Goto EnvVarUpdate_Restore_Vars
   ${EndIf}
- 
+
   ${If} $3 == HKLM
     ReadRegStr $5 ${hklm_all_users} $1     ; Get EnvVarName from all users into $5
   ${ElseIf} $3 == HKCU
@@ -137,14 +137,14 @@ Function ${UN}EnvVarUpdate
     DetailPrint 'ERROR: Action is [$3] but must be "HKLM" or HKCU"'
     Goto EnvVarUpdate_Restore_Vars
   ${EndIf}
- 
+
   ; Check for empty PathString
   ${If} $4 == ""
     SetErrors
     DetailPrint "ERROR: PathString is blank"
     Goto EnvVarUpdate_Restore_Vars
   ${EndIf}
- 
+
   ; Make sure we've got some work to do
   ${If} $5 == ""
   ${AndIf} $2 == "R"
@@ -152,7 +152,7 @@ Function ${UN}EnvVarUpdate
     DetailPrint "$1 is empty - Nothing to remove"
     Goto EnvVarUpdate_Restore_Vars
   ${EndIf}
- 
+
   ; Step 2: Scrub EnvVar
   ;
   StrCpy $0 $5                             ; Copy the contents to $0
@@ -174,13 +174,13 @@ Function ${UN}EnvVarUpdate
       ${${UN}StrRep} $0  $0 "; " ";"         ; Remove ';<space>'
     ${Loop}
     ${Do}
-      ${${UN}StrStr} $7 $0 ";;" 
+      ${${UN}StrStr} $7 $0 ";;"
       ${If} $7 == ""
         ${ExitDo}
       ${EndIf}
       ${${UN}StrRep} $0  $0 ";;" ";"
     ${Loop}
- 
+
     ; Remove a leading or trailing semicolon from EnvVar
     StrCpy  $7  $0 1 0
     ${If} $7 == ";"
@@ -194,27 +194,27 @@ Function ${UN}EnvVarUpdate
     ${EndIf}
     ; DetailPrint "Scrubbed $1: [$0]"      ; Uncomment to debug
   ${EndIf}
- 
+
   /* Step 3. Remove all instances of the target path/string (even if "A" or "P")
      $6 = bool flag (1 = found and removed PathString)
      $7 = a string (e.g. path) delimited by semicolon(s)
      $8 = entry counter starting at 0
      $9 = copy of $0
      $R0 = tempChar      */
- 
+
   ${If} $5 != ""                           ; If EnvVar is not empty ...
     StrCpy $9 $0
     StrCpy $0 ""
     StrCpy $8 0
     StrCpy $6 0
- 
+
     ${Do}
       ${${UN}StrTok} $7 $9 ";" $8 "0"      ; $7 = next entry, $8 = entry counter
- 
+
       ${If} $7 == ""                       ; If we've run out of entries,
         ${ExitDo}                          ;    were done
       ${EndIf}                             ;
- 
+
       ; Remove leading and trailing spaces from this entry (critical step for Action=Remove)
       ${Do}
         StrCpy $R0  $7 1
@@ -239,11 +239,11 @@ Function ${UN}EnvVarUpdate
       ${AndIf}  $0 != ""                   ;    and this is NOT the 1st string to be added to $0,
         StrCpy $0 $0;$7                    ;    append path to $0 with a prepended semicolon
       ${EndIf}                             ;
- 
+
       IntOp $8 $8 + 1                      ; Bump counter
     ${Loop}                                ; Check for duplicates until we run out of paths
   ${EndIf}
- 
+
   ; Step 4:  Perform the requested Action
   ;
   ${If} $2 != "R"                          ; If Append or Prepend
@@ -281,7 +281,7 @@ Function ${UN}EnvVarUpdate
       DetailPrint "$1 is now empty"
     ${EndIf}
   ${EndIf}
- 
+
   ; Step 5:  Update the registry at RegLoc with the updated EnvVar and announce the change
   ;
   ClearErrors
@@ -290,15 +290,15 @@ Function ${UN}EnvVarUpdate
   ${ElseIf} $3 == HKCU
     WriteRegExpandStr ${hkcu_current_user} $1 $0  ; Write it to current user section
   ${EndIf}
- 
+
   IfErrors 0 +4
     MessageBox MB_OK|MB_ICONEXCLAMATION "Could not write updated $1 to $3"
     DetailPrint "Could not write updated $1 to $3"
     Goto EnvVarUpdate_Restore_Vars
- 
+
   ; "Export" our change
   SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
- 
+
   EnvVarUpdate_Restore_Vars:
   ;
   ; Restore the user's variables and return ResultVar
@@ -315,14 +315,14 @@ Function ${UN}EnvVarUpdate
   Push $0  ; Push my $0 (ResultVar)
   Exch
   Pop $0   ; Restore his $0
- 
+
 FunctionEnd
- 
+
 !macroend   ; EnvVarUpdate UN
 !insertmacro EnvVarUpdate ""
 !insertmacro EnvVarUpdate "un."
 ;----------------------------------- EnvVarUpdate end----------------------------------------
- 
+
 !verbose pop
 !endif
 

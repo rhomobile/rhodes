@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -39,18 +39,18 @@ public class DateTimeTokenizer {
     protected int tzoffset;
     protected static int local_tz;
 
-    DateTimeTokenizer(int inp_year, int inp_month, int inp_day, 
+    DateTimeTokenizer(int inp_year, int inp_month, int inp_day,
                int inp_hour, int inp_minute, int inp_second) {
         if (inp_year < 1583
             || inp_month < 0 || inp_month > 11
-            || inp_day < 0 || (inp_day > days_in_month[inp_month] 
+            || inp_day < 0 || (inp_day > days_in_month[inp_month]
                    && !(inp_month == 1 && inp_day == 29 && inp_year % 4 == 0))
             || inp_hour < 0 || inp_hour > 23
             || inp_minute < 0 || inp_minute > 59
             || inp_second < 0 || inp_second > 59) {
             throw new IllegalArgumentException();
         }
-        
+
         year   = inp_year;
         month  = inp_month;
         day    = inp_day;
@@ -59,11 +59,11 @@ public class DateTimeTokenizer {
         second = inp_second;
         milli = 0;
     }
-    
+
     DateTimeTokenizer(String s) {
         internalParse(s);
     }
-    
+
     DateTimeTokenizer(String s, boolean iso) {
         if (iso == false) {
             internalParse(s);
@@ -71,29 +71,29 @@ public class DateTimeTokenizer {
             internalParseISO(s);
         }
     }
-    
+
     static void setTimeZone(String tz) {
         if (timezones.get(tz) == null) {
             return;
         }
         local_tz = ((Integer)timezones.get(tz)).intValue();
     }
-    
+
     public static long parse(String s) {
         return (new DateTimeTokenizer(s)).getTime();
     }
-    
+
     public static long parseISO(String date) {
         return (new DateTimeTokenizer(date, true)).getTime();
     }
 
-    
-    
+
+
     private void internalParseISO(String date) {
         int field[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
         int field_ptr = 0;
         boolean field_ok;
-        
+
         int c = -1;
         int i = 0;
         int num_dig = 4;
@@ -108,12 +108,12 @@ public class DateTimeTokenizer {
         while (i < limit) {
             c = date.charAt(i);
             i++;
-            if (c == '+' || c == '-' || c == 'Z' || 
+            if (c == '+' || c == '-' || c == 'Z' ||
                     c == ' ' || c == 'T' || c == ':') {
                 prevc = c;
                 continue;
             }
-            
+
             if (c < '0' || '9' < c) {
                 throw new IllegalArgumentException();
             } else {
@@ -128,7 +128,7 @@ public class DateTimeTokenizer {
                         break;
                 }
                 num_dig = 2;
-                
+
                 field_ok = false;
                 switch (field_ptr) {
                     case 0: /* year */
@@ -178,9 +178,9 @@ public class DateTimeTokenizer {
                     throw new IllegalArgumentException();
                 }
                 prevc = 0;
-            }   
+            }
         }
-    
+
         if ((field_ptr >= 5) || (prevc == 'Z')) {
             field_ptr = 9;
         }
@@ -201,19 +201,19 @@ public class DateTimeTokenizer {
     int getYear() {
         return year;
     }
-    
+
     int getMonth() {
         return month;
     }
-    
+
     int getDay() {
         return day;
     }
-    
+
     int getHour() {
         return hour;
     }
-    
+
     int getMinute() {
         return minute;
     }
@@ -225,7 +225,7 @@ public class DateTimeTokenizer {
     long getTime() {
         long julianDay = computeJulianDay(year, month, day);
         long millis = julianDayToMillis(julianDay);
-        
+
         int millisInDay = 0;
         millisInDay += hour;
         millisInDay *= 60;
@@ -234,19 +234,19 @@ public class DateTimeTokenizer {
         millisInDay += second; // now have seconds
         millisInDay *= 1000;
         millisInDay += milli; // now have millis
-        
+
         return millis + millisInDay - tzoffset;
     }
-    
-    private final long computeJulianDay(int inp_year, 
-                                        int inp_month, 
+
+    private final long computeJulianDay(int inp_year,
+                                        int inp_month,
                                         int inp_day) {
         int y;
-        
+
         boolean isLeap = inp_year%4 == 0;
         y = inp_year - 1;
         long julianDay = 365L*y + floorDivide(y, 4) + (JAN_1_1_JULIAN_DAY - 3);
-        
+
         isLeap = isLeap && ((inp_year%100 != 0) || (inp_year%400 == 0));
         julianDay += floorDivide(y, 400) - floorDivide(y, 100) + 2;
         julianDay += isLeap ? LEAP_NUM_DAYS[inp_month] : NUM_DAYS[inp_month];
@@ -260,11 +260,11 @@ public class DateTimeTokenizer {
             numerator / denominator :
             ((numerator + 1) / denominator) - 1;
     }
-    
+
     private long julianDayToMillis(long julian) {
         return (julian - julianDayOffset) * millisPerDay;
     }
-    
+
     private void internalParse(String s) {
         int inp_year = -1;
         int mon = -1;
@@ -400,7 +400,7 @@ public class DateTimeTokenizer {
                 min = 0;
             if (inp_hour < 0)
                 inp_hour = 0;
-            
+
             year = inp_year;
             month = mon;
             day = mday;
@@ -414,22 +414,22 @@ public class DateTimeTokenizer {
         // syntax error
         throw new IllegalArgumentException();
     }
-    
+
     private static Hashtable timezones;
 
     private int[] days_in_month = {31, 28, 31, 30, 31, 30, 31,
                                    31, 30, 31, 30, 31};
-    //private String[] month_shorts = {"Jan", "Feb", "Mar", "Apr", 
-    //                                 "May", "Jun", "Jul", "Aug", 
+    //private String[] month_shorts = {"Jan", "Feb", "Mar", "Apr",
+    //                                 "May", "Jun", "Jul", "Aug",
     //                                 "Sep", "Oct", "Nov", "Dec"};
     //private String[] weekday_shorts = {"Mon", "Tue", "Wed", "Thu",
     //                                   "Fri", "Sat", "Sun"};
-    
+
     private static long julianDayOffset = 2440588;
     private static int millisPerHour = 60 * 60 * 1000;
     private static int millisPerDay = 24 * millisPerHour;
     private static final int JAN_1_1_JULIAN_DAY = 1721426;
-    
+
     private final static String wtb[] = {
         "am", "pm",
         "monday", "tuesday", "wednesday", "thursday", "friday",
@@ -450,13 +450,13 @@ public class DateTimeTokenizer {
         10000 + 7 * 60, 10000 + 6 * 60,
         10000 + 8 * 60, 10000 + 7 * 60
     };
-    
-    private static final int NUM_DAYS[]      = {  0,  31,  59,  90, 120, 151, 
+
+    private static final int NUM_DAYS[]      = {  0,  31,  59,  90, 120, 151,
                                                  181, 212, 243, 273, 304, 334};
 
     private static final int LEAP_NUM_DAYS[] = {  0,  31,  60,  91, 121, 152,
                                                 182, 213, 244, 274, 305, 335};
-    
+
     static {
         timezones = new Hashtable();
         timezones.put("GMT", new Integer(0 * millisPerHour));
@@ -465,7 +465,7 @@ public class DateTimeTokenizer {
         timezones.put("PST", new Integer(-8 * millisPerHour));
         timezones.put("PDT", new Integer(-7 * millisPerHour));
         timezones.put("JST", new Integer(9 * millisPerHour));
-        
+
         local_tz = ((Integer)timezones.get("PST")).intValue();
     }
 }

@@ -443,7 +443,7 @@ public class Logger {
         lockFile = LockFile.newLockFileLock(path);
 
 //#endif
- 
+
          */
     }
 

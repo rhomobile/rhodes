@@ -43,7 +43,7 @@ final class GeoResultParser extends ResultParser {
     if (latitudeEnd < 0) {
       return null;
     }
-    int longitudeEnd = geoURIWithoutQuery.indexOf(',', latitudeEnd + 1);    
+    int longitudeEnd = geoURIWithoutQuery.indexOf(',', latitudeEnd + 1);
     double latitude, longitude, altitude;
     try {
       latitude = Double.parseDouble(geoURIWithoutQuery.substring(0, latitudeEnd));

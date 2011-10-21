@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -32,22 +32,22 @@ import android.view.MotionEvent;
 import com.rhomobile.rhodes.mapview.MapTouch.Touch;
 
 public class OneTouchHandler implements TouchHandler {
-	
+
 	private static final String TAG = OneTouchHandler.class.getSimpleName();
-	
+
 	private static final boolean DEBUG = false;
-	
+
 	private MapTouch mMapTouch;
-	
+
 	public void setMapTouch(MapTouch mapTouch) {
 		mMapTouch = mapTouch;
 	}
-	
+
 	private static final float CLICK_TOLERANCE = 8;
 	private float mFirstTouchX;
 	private float mFirstTouchY;
 	private boolean mIsClickPossible;
-	
+
 	private void dumpEvent(MotionEvent event) {
 		String names[] = { "DOWN", "UP", "MOVE", "CANCEL", "OUTSIDE",
 				"5?", "6?", "7?", "8?", "9?" };
@@ -65,7 +65,7 @@ public class OneTouchHandler implements TouchHandler {
 	public boolean handleTouch(MotionEvent event) {
 		if (DEBUG)
 			dumpEvent(event);
-		
+
 		int action = event.getAction();
 		switch (action) {
 		case MotionEvent.ACTION_DOWN:
@@ -88,10 +88,10 @@ public class OneTouchHandler implements TouchHandler {
 			mMapTouch.touchMove(new Touch(event.getX(), event.getY()), null);
 			break;
 		}
-		
+
 		return true;
 	}
-	
+
 	private boolean checkDistance(float x1, float y1, float x2, float y2, float delta) {
 		float dx = x1 - x2;
 		if (dx < 0) dx = -dx;

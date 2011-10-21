@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright 2005-2007 Xue Yong Zhi
  * Distributed under the BSD License
  */
@@ -22,11 +22,11 @@ public class RubyParser extends RubyParserBase {
 		super(lexer);
 		lexer_ = lexer;
 	}
-	
+
 	public RubyParser(Reader in, List<String> pre_defined, boolean strip) {
 		this(new RubyLexer(in, new SymbolTableManager(pre_defined), strip));
 	}
-	
+
 	/// pre_defined can be empty
 	public RubyParser(Reader in, boolean strip) {
 		this(new RubyLexer(in, strip));
@@ -42,7 +42,7 @@ public class RubyParser extends RubyParserBase {
 
 	public Program parse(String filename) throws RecognitionException, TokenStreamException {
 		RubyTreeParser treeparser = new RubyTreeParser();
-		
+
 		try
 		{
 			return treeparser.parse(createAST(), filename);
@@ -50,7 +50,7 @@ public class RubyParser extends RubyParserBase {
 		{
 			if ( exc.line == -1 )
 				exc.line = treeparser.currentLineNumber;
-			
+
 			throw exc;
 		}
 	}
@@ -78,7 +78,7 @@ public class RubyParser extends RubyParserBase {
 	protected void tellLexerWeHaveFinishedParsingHeredocExpressionSubstituation() {
 		lexer_.setJustFinishedParsingHeredocExpressionSubstituation();
 	}
-	
+
 	protected void enterScope() {
 		lexer_.getSymbolTableManager().enterScope();
 	}

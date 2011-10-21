@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2005 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -20,7 +20,7 @@ import javolution.text.Text;
 import javolution.text.TextBuilder;
 
 /**
- * <p> This class allows any <code>CharSequence</code> to be used as 
+ * <p> This class allows any <code>CharSequence</code> to be used as
  *     a reader.</p>
  *
  * @author  <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
@@ -39,9 +39,9 @@ public final class CharSequenceReader extends Reader implements Reusable {
     private int _index;
 
     /**
-     * Creates a new character sequence reader for which the character 
+     * Creates a new character sequence reader for which the character
      * sequence input is not set.
-     * 
+     *
      * @see #setInput
      */
     public CharSequenceReader() {
@@ -52,7 +52,7 @@ public final class CharSequenceReader extends Reader implements Reusable {
      *
      * @param  charSequence the character sequence to be read.
      * @return this reader.
-     * @throws IllegalStateException if this reader is being reused and 
+     * @throws IllegalStateException if this reader is being reused and
      *         it has not been {@link #close closed} or {@link #reset reset}.
      */
     public CharSequenceReader setInput(CharSequence charSequence) {
@@ -65,7 +65,7 @@ public final class CharSequenceReader extends Reader implements Reusable {
     /**
      * Indicates if this stream is ready to be read.
      *
-     * @return <code>true</code> if this reader has remaining characters to 
+     * @return <code>true</code> if this reader has remaining characters to
      *         read; <code>false</code> otherwise.
      * @throws  IOException if an I/O error occurs.
      */
@@ -88,9 +88,9 @@ public final class CharSequenceReader extends Reader implements Reusable {
      * Reads a single character.  This method does not block, <code>-1</code>
      * is returned if the end of the character sequence input has been reached.
      *
-     * @return the 31-bits Unicode of the character read, or -1 if there is 
+     * @return the 31-bits Unicode of the character read, or -1 if there is
      *         no more remaining bytes to be read.
-     * @throws IOException if an I/O error occurs (e.g. incomplete 
+     * @throws IOException if an I/O error occurs (e.g. incomplete
      *         character sequence being read).
      */
     public int read() throws IOException {
@@ -100,7 +100,7 @@ public final class CharSequenceReader extends Reader implements Reusable {
     }
 
     /**
-     * Reads characters into a portion of an array.  This method does not 
+     * Reads characters into a portion of an array.  This method does not
      * block.
      *
      * @param  cbuf the destination buffer.
@@ -142,7 +142,7 @@ public final class CharSequenceReader extends Reader implements Reusable {
     }
 
     /**
-     * Reads characters into the specified appendable. This method does not 
+     * Reads characters into the specified appendable. This method does not
      * block.
      *
      * @param  dest the destination buffer.

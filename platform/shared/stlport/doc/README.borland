@@ -26,8 +26,8 @@ To build and use STLport you will need following tools and libraries:
 
     * For the Borland compiler bcc32:
 
-    In Borland's 'bin' directory (same directory as bcc32.exe), create a 
-  bcc32.cfg file containing the compiler option giving it the path to 
+    In Borland's 'bin' directory (same directory as bcc32.exe), create a
+  bcc32.cfg file containing the compiler option giving it the path to
   native Borland headers:
 
 	-I%BORLAND_PATH%\BCC55\include
@@ -42,7 +42,7 @@ To build and use STLport you will need following tools and libraries:
     * For the Borland linker ilink32:
 
     You need to give path to both the Borland libs and Borland PSDK libs.
-    For that you have to create, in the same directory as ilink32.exe, a 
+    For that you have to create, in the same directory as ilink32.exe, a
     configuration file, ilink32.cfg, that contains:
 
 	-L%BORLAND_PATH%\BCC55\lib;%BORLAND_PATH%\BCC55\lib\PSDK
@@ -61,14 +61,14 @@ and go to the STLport build/lib folder. Run
 
   This command will present you the different available build options. Just follow
 the instructions to set STLport configuration according your needs. For example,
-to set the typical configuration for most Borland compilers, run 
+to set the typical configuration for most Borland compilers, run
 
     configure -c bcc
 
 ================
 Building STLport
 ================
-  This is a step by step description of the actions to take in order to build 
+  This is a step by step description of the actions to take in order to build
 and install the STLport libraries:
 
 1. Open a console, you can use a Msys, Cygwin or Windows console.
@@ -81,13 +81,13 @@ and install the STLport libraries:
 
 	Where 'make' is the GNU make utility you have installed. The name of
 GNU make utility may differ, such as 'mingw32-make'.  -f is a make option
-telling it which makefile to use. You have of course to choose the 
+telling it which makefile to use. You have of course to choose the
 appropriate makefile for your compiler, 'bcc.mak' in our case.
 
-	Once the command returns you will have all the necessary import libraries 
-in STLport's 'lib' folder and DLLs in STLport's 'bin' folder.  For a 
-description of the generated libraries check the FAQ file in the 'doc' folder.  
-For a quick start guide to the STLport make system, see the README file in the 
+	Once the command returns you will have all the necessary import libraries
+in STLport's 'lib' folder and DLLs in STLport's 'bin' folder.  For a
+description of the generated libraries check the FAQ file in the 'doc' folder.
+For a quick start guide to the STLport make system, see the README file in the
 'build/lib' folder.
 
 ===============
@@ -100,7 +100,7 @@ STLport's 'build/test/unit' folder and type:
 
 This will build and install the unit tests with STLport dynamic libraries.
 Once the unit tests are built you just need to run them.  They can be found
-in STLport's bin, bin-g or bin-stlg folders.  To rebuild the unit tests 
+in STLport's bin, bin-g or bin-stlg folders.  To rebuild the unit tests
 with STLport static libraries, type:
 
   make -fbcc.mak clean
@@ -145,10 +145,10 @@ template <>
 locale::id codecvt<char, char, my_state>::id;
 
 2. If you get a linker memory error, e.g. LME351, it probably means that full
-source debugging is enabled and Borland's .TDS file has exceeded the memory 
+source debugging is enabled and Borland's .TDS file has exceeded the memory
 capacity of Borland's linker (ilink32.exe).  To resolve this error, check
 Borland's website for the latest patch for ilink32.exe.  In the alternative,
-disable full source debugging in build\Makefiles\gmake\bcc.mak by deleting 
+disable full source debugging in build\Makefiles\gmake\bcc.mak by deleting
 the -v option in the OPT settings.
 
-3. For "'uname' is not recognized . . .", see "Configuring STLport" above. 
+3. For "'uname' is not recognized . . .", see "Configuring STLport" above.

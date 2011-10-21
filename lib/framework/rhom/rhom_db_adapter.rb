@@ -1,18 +1,18 @@
 #------------------------------------------------------------------------
 # (The MIT License)
-# 
+#
 # Copyright (c) 2008-2011 Rhomobile, Inc.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-# 
+#
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
@@ -28,9 +28,9 @@ require 'rhodes'
 
 module Rhom
 class RhomDbAdapter
-    
+
   @database = nil
-      
+
   # maintains a single database connection
   def initialize(dbfile, partition)
     unless @database
@@ -47,7 +47,7 @@ class RhomDbAdapter
       return false
     end
     return true
-  end   
+  end
 
   def is_ui_waitfordb
       @database.is_ui_waitfordb
@@ -58,7 +58,7 @@ class RhomDbAdapter
         @database.start_transaction
       rescue Exception => e
         puts "exception when start_transaction: #{e}"
-        raise        
+        raise
       end
   end
 
@@ -67,7 +67,7 @@ class RhomDbAdapter
         @database.commit
       rescue Exception => e
         puts "exception when commit transaction : #{e}"
-        raise        
+        raise
       end
   end
 
@@ -85,7 +85,7 @@ class RhomDbAdapter
         @database.lock_db
       rescue Exception => e
         puts "exception when lock_db: #{e}"
-        raise        
+        raise
       end
   end
 
@@ -94,12 +94,12 @@ class RhomDbAdapter
         @database.unlock_db
       rescue Exception => e
         puts "exception when unlock_db: #{e}"
-        raise        
+        raise
       end
   end
 
   # execute a sql statement
-  # optionally, disable the factory processing 
+  # optionally, disable the factory processing
   # which returns the result array directly
   def execute_sql(sql, *args)
     _execute_sql(sql, false, args)
@@ -108,7 +108,7 @@ class RhomDbAdapter
     _execute_sql(sql, true, args)
   end
 
-  def _execute_sql(sql, is_batch, args)      
+  def _execute_sql(sql, is_batch, args)
     result = []
     if sql
       #puts "RhomDbAdapter: Executing query - #{sql}; #{args}"
@@ -132,10 +132,10 @@ class RhomDbAdapter
           where_str += string_from_key_vals(condition,"and")
           where_str = where_str[0..where_str.length - 5]
         end
-        
+
         where_str
       end
-      
+
       def select_str(select_arr)
         select_str = ""
         select_arr.each do |attrib|
@@ -143,7 +143,7 @@ class RhomDbAdapter
         end
         select_str.length > 2 ? select_str[0..select_str.length-2] : select_str
       end
-    
+
       # generates value clause based on hash
       def vals_str(values)
         vals = string_from_key_vals_set(values, ",")
@@ -158,7 +158,7 @@ class RhomDbAdapter
         end
         vals
       end
-      
+
       # generates key/value list
       def string_from_key_vals(values, delim)
         vals = ""
@@ -168,7 +168,7 @@ class RhomDbAdapter
         end
         vals
       end
-      
+
       # generates a value for sql statement
       def get_value_for_sql_stmt(value, convert_value_to_string=true)
         if value.nil? or value == 'NULL'
@@ -181,33 +181,33 @@ class RhomDbAdapter
             s = value.to_s.gsub(/'/,"''")
             "'#{s}'"
           else
-            "#{value}"            
-          end  
+            "#{value}"
+          end
         end
       end
-      
+
       def make_where_params(condition,op)
         raise ArgumentError if !condition || !op || op.length == 0
         quests = ""
         vals = []
-      
+
         condition.each do |key,val|
             if quests.length > 0
                 quests << ' ' << op << ' '
             end
 
-            if val.nil?        
-                quests << "\"#{key}\" IS NULL" 
+            if val.nil?
+                quests << "\"#{key}\" IS NULL"
             else
                 quests << "\"#{key}\"=?"
 				vals << val
             end
-            
+
         end
-        
+
         return quests,vals
       end
-      
+
     end #self
 
   # support for select statements
@@ -219,13 +219,13 @@ class RhomDbAdapter
   # this would return all columns where source_id = 2 and update_type = 'query' ordered
   # by the "object" column
   def select_from_table(table=nil,columns=nil,condition=nil,params=nil)
-  
+
     raise ArgumentError if !table || !columns
     query = nil
     vals = []
 
     if condition
-        quests,vals = RhomDbAdapter.make_where_params(condition,'AND') 
+        quests,vals = RhomDbAdapter.make_where_params(condition,'AND')
         if params and params['distinct']
             query = "select distinct #{columns} from #{table} where #{quests}"
         elsif params and params['order by']
@@ -236,7 +236,7 @@ class RhomDbAdapter
     else
         query = "select #{columns} from #{table}"
     end
-    
+
     execute_sql query, vals
   end
 
@@ -255,23 +255,23 @@ class RhomDbAdapter
 
   def make_insert_params(values, excludes)
     raise ArgumentError if !values
-    
+
     cols = ""
     quests = ""
     vals = []
-  
+
     values.each do |key,val|
         next if excludes && excludes[key]
         if cols.length > 0
             cols << ','
             quests << ','
         end
-    
+
         cols << "\"#{key}\""
         quests << '?'
         vals << val
     end
-    
+
     return cols,quests,vals
   end
 
@@ -282,7 +282,7 @@ class RhomDbAdapter
   # delete from object_values where object="some-object"
   def delete_from_table(table,condition)
     raise ArgumentError if !table
-    quests,vals = RhomDbAdapter.make_where_params(condition,'AND') 
+    quests,vals = RhomDbAdapter.make_where_params(condition,'AND')
     query = "delete from #{table} where #{quests}"
     execute_sql query, vals
   end
@@ -299,18 +299,18 @@ class RhomDbAdapter
   def delete_table(table)
     execute_sql "DROP TABLE IF EXISTS #{table}"
   end
-  
-  #destroy one table  
+
+  #destroy one table
   def destroy_table(name)
     destroy_tables(:include => [name])
   end
-  
+
   # deletes all rows from all tables, except list of given tables by recreating db-file and save all other tables
   # arguments - :include, :exclude
   def destroy_tables(*args)
       @database.destroy_tables args.first[:include], args.first[:exclude]
   end
-  
+
   # updates values (hash) in a given table which satisfy condition (hash)
   # example usage is the following:
   # update_into_table('object_values',{"value"=>"Electronics"},{"object"=>"some-object", "attrib"=>"industry"})
@@ -322,34 +322,34 @@ class RhomDbAdapter
     vals = []
     if condition
         quests_set, vals_set = make_set_params(values)
-        quests_where,vals_where = RhomDbAdapter.make_where_params(condition,'AND') 
+        quests_where,vals_where = RhomDbAdapter.make_where_params(condition,'AND')
         query = "update #{table} set #{quests_set} where #{quests_where}"
         vals = vals_set + vals_where
     else
         quests, vals = make_set_params(values)
         query = "update #{table} set #{quests}"
     end
-    
+
     execute_sql query, vals
   end
-  
+
   def make_set_params(values)
     raise ArgumentError if !values
-    
+
     quests = ""
     vals = []
-  
+
     values.each do |key,val|
         if quests.length > 0
             quests << ','
         end
-    
+
         quests << "\"#{key}\"=?"
         vals << val
     end
-    
+
     return quests,vals
   end
-  
+
 end # RhomDbAdapter
 end # Rhom

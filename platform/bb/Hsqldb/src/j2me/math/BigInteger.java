@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -37,7 +37,7 @@ public class BigInteger
 //    private long mQuote = -1L; // -m^(-1) mod b, b = 2^32 (see Montgomery mult.)
     private int firstNonzeroIntNum = -2;
     private int bitLength = -1;
-    
+
     private BigInteger(int sig, int[] mag)
     {
     	signum = sig;
@@ -153,7 +153,7 @@ public class BigInteger
 
     /**
      * If sign >= 0, packs bytes into an array of ints, most significant first
-     * If sign <  0, packs 2's complement of bytes into 
+     * If sign <  0, packs 2's complement of bytes into
      * an array of ints, most significant first,
      * adding an extra most significant byte in case bval = {0x80, 0x00, ..., 0x00}
      *
@@ -178,7 +178,7 @@ public class BigInteger
             }
 
             int nInts = (bval.length - firstSignificant + 3) / 4;
-            int bCount = (bval.length - firstSignificant) % 4;            
+            int bCount = (bval.length - firstSignificant) % 4;
             if (bCount == 0)
                 bCount = 4;
 
@@ -204,7 +204,7 @@ public class BigInteger
             int i;
             int[] mag;
             int firstSignificant;
-            
+
 
             // strip leading -1's
             for (firstSignificant = 0; firstSignificant < bval.length - 1
@@ -348,7 +348,7 @@ public class BigInteger
 
         // both BigIntegers are either +ve or -ve; set the sign later
 
-        int[] mag, 
+        int[] mag,
         op;
 
         if (this.magnitude.length < val.magnitude.length)
@@ -904,7 +904,7 @@ public class BigInteger
                 return this.add(val.negate());
         }
 
-        BigInteger bigun, 
+        BigInteger bigun,
         littlun;
         int compare = compareTo(val);
         if (compare == 0)
@@ -955,19 +955,19 @@ public class BigInteger
     public double doubleValue() {
     	return Double.valueOf(toString()).doubleValue();
     }
-    
+
     public float floatValue() {
     	return Float.valueOf(toString()).floatValue();
     }
-    
+
     public int signum() {
     	return signum;
     }
- 
+
     private int signInt() {
     	return (int) (signum < 0 ? -1 : 0);
     }
- 
+
     private int firstNonzeroIntNum() {
     	/*
     	 * Initialize firstNonzeroIntNum field the first time this method is
@@ -983,20 +983,20 @@ public class BigInteger
     	}
     	return firstNonzeroIntNum;
     }
-    
+
     private int getInt(int n) {
         if (n < 0)
             return 0;
-        
+
 		if (n >= magnitude.length)
 		    return signInt();
-	
+
 		int magInt = magnitude[magnitude.length-n-1];
-	
+
 		return (int) (signum >= 0 ? magInt :
 			       (n <= firstNonzeroIntNum() ? -magInt : ~magInt));
     }
-    
+
     public byte[] toByteArray() {
         int byteLen = bitLength()/8 + 1;
         byte[] byteArray = new byte[byteLen];
@@ -1013,7 +1013,7 @@ public class BigInteger
         }
         return byteArray;
     }
-    
+
     static int bitCnt(int val) {
         val -= (0xaaaaaaaa & val) >>> 1;
         val = (val & 0x33333333) + ((val >>> 2) & 0x33333333);
@@ -1022,7 +1022,7 @@ public class BigInteger
         val += val >>> 16;
         return val & 0xff;
     }
-    
+
     public int bitLength() {
     	/*
     	 * Initialize bitLength field the first time this method is executed.
@@ -1050,5 +1050,5 @@ public class BigInteger
     	}
     	return bitLength;
         }
-    
+
 }

@@ -5,5 +5,5 @@ if ( System.get_property('platform') != 'WINDOWS' )
   it "opens directories" do
     File.send(@method, tmp("")).should be_kind_of(File)
   end
-end  
+end
 end

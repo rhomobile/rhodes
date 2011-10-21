@@ -66,9 +66,9 @@
 	Added scalable.c, example on how to run SHTTPD in scalable manner.
 
 1.30
-	Removed multithreading. 
-	Reorganised examples, put everythting in one example file. 
-	shttpd_merge_fds(), shttpd_printf(), shttpd_template(), 
+	Removed multithreading.
+	Reorganised examples, put everythting in one example file.
+	shttpd_merge_fds(), shttpd_printf(), shttpd_template(),
 	shttpd_push() are gone.
 	added shttpd_watch().
 	Fixed CGI under Windows.

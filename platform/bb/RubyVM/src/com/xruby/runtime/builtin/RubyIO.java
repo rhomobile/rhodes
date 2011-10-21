@@ -32,7 +32,7 @@ import com.rho.net.NetRequest;
 ////@RubyLevelClass(name="IO")
 public class RubyIO extends RubyBasic {
 	public static RubyIO STDOUT;
-	
+
 	private static final RubyString DEFAULT_RS = new RubyString("\n");
 
     private RubyIOExecutor executor;
@@ -42,7 +42,7 @@ public class RubyIO extends RubyBasic {
         super(RubyRuntime.IOClass);
         this.executor = executor;
     }
-    
+
     public RubyIO(RubyIOExecutor executor, RubyClass klass) {
     	super(klass);
     	this.executor = executor;
@@ -53,22 +53,22 @@ public class RubyIO extends RubyBasic {
     	executor = io.executor;
     	is_closed_ = io.is_closed_;
     }
-    
+
     public RubyValue clone(){
     	RubyIO cl = new RubyIO( this.executor, this.class_);
-    	cl.is_closed_ = is_closed_; 
+    	cl.is_closed_ = is_closed_;
     	cl.doClone(this);
     	return cl;
     }
-    
+
     public InputStream getInputStream()
     {
     	if ( executor == null )
     		return null;
-    	
+
     	return executor.getInputStream();
     }
-    
+
     public void print(String s) {
         executor.print(s);
     }
@@ -84,7 +84,7 @@ public class RubyIO extends RubyBasic {
     public String read(long length) {
         return executor.read(length);
     }
-    
+
     public void truncate(int length) {
         this.executor.truncate(length);
     }
@@ -92,12 +92,12 @@ public class RubyIO extends RubyBasic {
     //@RubyLevelMethod(name="write")
     public RubyInteger write(RubyValue arg) {
     	String value = arg.asString();
-        
+
         if (this instanceof RubyFile) {
         	if (value.length() == 0) {
         		return ObjectFactory.FIXNUM0;
         	}
-        	
+
         	this.executor.print(value);
         } else {
         	RubyAPI.callOneArgMethod(this, arg, null, RubyID.writeID);
@@ -105,18 +105,18 @@ public class RubyIO extends RubyBasic {
 
         return ObjectFactory.createInteger(value.length());
     }
-    
+
     public void writeInvocation(RubyValue value) {
     	RubyAPI.callOneArgMethod(this, value, null, RubyID.writeID);
     }
-    
+
     //@RubyLevelMethod(name="puts")
     public RubyValue puts() {
     	/* if no argument given, print newline. */
     	this.writeInvocation(DEFAULT_RS);
     	return RubyConstant.QNIL;
     }
-    
+
     //@RubyLevelMethod(name="puts")
     public RubyValue puts(RubyArray args) {
     	String line;
@@ -140,12 +140,12 @@ public class RubyIO extends RubyBasic {
 
     	return RubyConstant.QNIL;
     }
-    
+
     //@RubyLevelMethod(name="print")
     public RubyValue print() {
     	return this.print(new RubyArray(GlobalVariables.get("$_")));
     }
-    
+
     //@RubyLevelMethod(name="print")
     public RubyValue print(RubyValue arg) {
     	if (arg == RubyConstant.QNIL) {
@@ -153,7 +153,7 @@ public class RubyIO extends RubyBasic {
         } else {
         	this.writeInvocation(arg);
         }
-    	
+
     	// if the output record separator($\) is not nil, it will be appended to the output.
 		if (GlobalVariables.OUTPUT_RS != RubyConstant.QNIL) {
         	this.writeInvocation(GlobalVariables.OUTPUT_RS);
@@ -161,7 +161,7 @@ public class RubyIO extends RubyBasic {
 
         return RubyConstant.QNIL;
     }
-    
+
     //@RubyLevelMethod(name="print")
     public RubyValue print(RubyArray args) {
     	int size = args.size();
@@ -177,7 +177,7 @@ public class RubyIO extends RubyBasic {
             	this.writeInvocation(args.get(i));
             }
         }
-        
+
 		// if the output record separator($\) is not nil, it will be appended to the output.
 		if (GlobalVariables.OUTPUT_RS != RubyConstant.QNIL) {
         	this.writeInvocation(GlobalVariables.OUTPUT_RS);
@@ -185,26 +185,26 @@ public class RubyIO extends RubyBasic {
 
         return RubyConstant.QNIL;
     }
-    
+
     //@RubyLevelMethod(name="close")
     public RubyValue close() {
     	this.executor.close();
         return RubyConstant.QNIL;
     }
-    
+
     //@RubyLevelMethod(name="flush")
     public RubyValue flush() {
         this.executor.flush();
         return RubyConstant.QNIL;
     }
-    
+
     //@RubyLevelMethod(name="seek")
     public RubyFixnum seek(RubyValue arg) {
         long pos = RubyTypesUtil.convertToJavaLong(arg);
         this.executor.seek(pos);
         return ObjectFactory.FIXNUM0;
     }
-    
+
     //@RubyLevelMethod(name="closed?")
     public RubyValue closedP(RubyValue receiver) {
         return ObjectFactory.createBoolean(is_closed_);
@@ -214,7 +214,7 @@ public class RubyIO extends RubyBasic {
 	public RubyValue eof() {
 		return ObjectFactory.createBoolean(this.executor.eof());
 	}
-	
+
 	//@RubyLevelMethod(name="read")
 	public RubyValue read(RubyArray args) {
         RubyString buffer = null;
@@ -228,7 +228,7 @@ public class RubyIO extends RubyBasic {
             return buildResult(this.executor.read(args.get(0).toInt()), buffer);
         }
     }
-	
+
 	//@RubyLevelMethod(name="readpartial")
 	public RubyValue readpartial(RubyArray args) {
         RubyValue v = read(args);
@@ -238,7 +238,7 @@ public class RubyIO extends RubyBasic {
         return v;
     }
 
-	
+
     private static RubyValue buildResult(String s, RubyString buffer) {
         if (null == s) {
             if (null != buffer) {
@@ -252,7 +252,7 @@ public class RubyIO extends RubyBasic {
             return ObjectFactory.createString(s);
         }
     }
-    
+
     //@RubyLevelMethod(name="gets")
     public RubyValue gets(RubyArray args) {
     	RubyValue seperator = (null == args) ? GlobalVariables.get("$/") : args.get(0);
@@ -261,7 +261,7 @@ public class RubyIO extends RubyBasic {
     	RubyValue v = RubyConstant.QNIL;
     	if ( null != s )
     		v = ObjectFactory.createString(s);
-    	
+
     	GlobalVariables.set(v, "$_");
 
     	return GlobalVariables.get("$_");
@@ -271,15 +271,15 @@ public class RubyIO extends RubyBasic {
     public RubyValue readline(RubyArray args) {
     	if ( this.executor.eof() )
     		throw new RubyException(RubyRuntime.EOFErrorClass, "end of file reached");
-    	
+
     	RubyValue seperator = (null == args) ? GlobalVariables.get("$/") : args.get(0);
     	String s = this.executor.gets(seperator);
     	if ( s == null )
     		throw new RubyException(RubyRuntime.EOFErrorClass, "end of file reached");
-    	
+
     	return ObjectFactory.createString(s);
     }
-    
+
     //@RubyLevelMethod(name="pipe")
    /* public static RubyValue pipeSingleton(RubyValue receiver, RubyBlock block) {
         RubyArray array = new RubyArray(2);
@@ -295,9 +295,9 @@ public class RubyIO extends RubyBasic {
 
         return array;
     }*/
-    
+
     //RHO_COMMENT
-/*    
+/*
     private static char[] buffer = new char[1024];
 	public static final RubyValue readFully(InputStream in, boolean bText) throws IOException {
 		RubyString str = ObjectFactory.createString();
@@ -323,13 +323,13 @@ public class RubyIO extends RubyBasic {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
     	if ( stream == null )
     		return null;
-    	
+
     	try{
    			String res = NetRequest.readFully(stream, bText ? "=UTF-8" : "");
-   			
+
    			return ObjectFactory.createString(res);
     	}catch( Exception exc ){
     		throw new RubyException(RubyRuntime.RuntimeErrorClass,exc.getMessage());
@@ -338,7 +338,7 @@ public class RubyIO extends RubyBasic {
 			try{ if ( stream != null ) stream.close(); }catch(java.io.IOException exc){}
     	}
     }
-    
+
     //@RubyLevelMethod(name="read")
     public static RubyValue read(RubyValue receiver, RubyArray args, RubyBlock block) {
         String fileName = ((RubyString) args.get(0)).toStr();
@@ -346,7 +346,7 @@ public class RubyIO extends RubyBasic {
         RubyValue r = loadFromResources(fileName, true);
         if ( r != null )
         	return r;
-        
+
         RubyIO io = ObjectFactory.createFile(fileName, "r");
         int offset;
         int length;
@@ -366,7 +366,7 @@ public class RubyIO extends RubyBasic {
         io.close();
         return r;
     }
-    
+
     //@RubyLevelMethod(name="read")
     public static RubyValue binread(RubyValue receiver, RubyArray args, RubyBlock block) {
         String fileName = ((RubyString) args.get(0)).toStr();
@@ -374,7 +374,7 @@ public class RubyIO extends RubyBasic {
         RubyValue r = loadFromResources(fileName, false);
         if ( r != null )
         	return r;
-        
+
         RubyIO io = ObjectFactory.createFile(fileName, "r");
         int offset;
         int length;
@@ -394,5 +394,5 @@ public class RubyIO extends RubyBasic {
         io.close();
         return r;
     }
-    
+
 }

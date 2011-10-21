@@ -107,7 +107,7 @@ VALUE rjson_tokener_parse(const char *str, char** pszError)
          *pszError = malloc(100);
          sprintf(*pszError,"JSON error code: %d; Offset: %d", tok->err, tok->char_offset);
      }
-     
+
      obj = 0;
      //obj = error_ptr(-tok->err);
   }
@@ -425,7 +425,7 @@ struct json_object* rjson_tokener_parse_ex(struct json_tokener *tok,
 
     case json_tokener_state_number:
       if(c && strchr(json_number_chars, c)) {
-	printbuf_memappend(tok->pb, &c, 1);	
+	printbuf_memappend(tok->pb, &c, 1);
 	if(c == '.' || c == 'e' || c == 'E') tok->is_double = 1;
       } else {
 	int64 numi = 0;
@@ -566,7 +566,7 @@ struct json_object* rjson_tokener_parse_ex(struct json_tokener *tok,
 
  out:
 
-  if(tok->err == json_tokener_success) 
+  if(tok->err == json_tokener_success)
       return rjson_object_get(current);
 
   RAWLOG_ERROR3("rjson_tokener_parse_ex: error %s at offset %d; String: %s",

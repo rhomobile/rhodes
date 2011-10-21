@@ -12,7 +12,7 @@ class SpecRunnerController < Rho::RhoController
     @count = MSpec.count
     @is_network_available = MSpec.is_network_available
     @errorMessages = MSpec.errorMessages
-    
+
     puts "***Total:  " + @count.to_s
     puts "***Passed: " + (@count - @exc_count).to_s
     puts "***Failed: " + @exc_count.to_s

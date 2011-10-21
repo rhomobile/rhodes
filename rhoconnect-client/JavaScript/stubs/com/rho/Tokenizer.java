@@ -5,7 +5,7 @@ public class Tokenizer {
 	public Tokenizer() {
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	public Tokenizer(String strAssociations, String string) {
 		// TODO Auto-generated constructor stub
 	}

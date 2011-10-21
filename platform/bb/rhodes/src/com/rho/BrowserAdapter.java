@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -40,25 +40,25 @@ import net.rim.device.api.system.Display;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.component.Status;
 
-public class BrowserAdapter implements RenderingApplication, IBrowserAdapter  
+public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
 {
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("BrowserAdapter");
     private RenderingSession _renderingSession;
     private RhoMainScreen m_oMainScreen;
-    
+
     private RhodesApplication m_app;
 	private HttpConnection m_connResource = null;
     private boolean m_bLoadImageAsync = false;
-    
-	public BrowserAdapter(RhoMainScreen oMainScreen, RhodesApplication app, boolean bLoadImageAsync) 
+
+	public BrowserAdapter(RhoMainScreen oMainScreen, RhodesApplication app, boolean bLoadImageAsync)
 	{
 		m_oMainScreen = oMainScreen;
 		m_app = app;
 		m_bLoadImageAsync = bLoadImageAsync;
-		
+
         _renderingSession = RenderingSession.getNewInstance();
-        
+
         // enable javascript
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_ENABLED, true);
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.JAVASCRIPT_LOCATION_ENABLED, true);
@@ -67,7 +67,7 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.OVERWRITE_CHARSET_MODE, true);
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ALLOW_POPUPS, true);
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.USE_BACKGROUND_IMAGES, true);
-        
+
 //        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.VALUE_THRESHOLD, 100000);
 //        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.USE_BACKGROUND_IMAGES, true);
 //        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.SHOW_IMAGE_PLACEHOLDERS, false);
@@ -75,7 +75,7 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
 //        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_EMBEDDED_RICH_CONTENT, false);
 //        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.ENABLE_IMAGE_EDITING, false);
 //        _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, RenderingOptions.NO_SEARCH_MENU_MODE, true);
-        
+
 	}
 
 	public void setFullBrowser()
@@ -83,7 +83,7 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
         //this is the undocumented option to tell the browser to use the 4.6 Rendering Engine
         _renderingSession.getRenderingOptions().setProperty(RenderingOptions.CORE_OPTIONS_GUID, 17000, true);
     }
-	
+
     public Object eventOccurred(Event event) {
 
         int eventId = event.getUID();
@@ -175,7 +175,7 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
                 break;
 
             case Event.EVENT_SET_HEADER :
-            case Event.EVENT_SET_HTTP_COOKIE : 
+            case Event.EVENT_SET_HTTP_COOKIE :
             {
             	String cookie = ((SetHttpCookieEvent)event).getCookie();
             	String strUrl = ((SetHttpCookieEvent)event).getURL();
@@ -200,7 +200,7 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
         return null;
     }
 
-    public void processConnection(HttpConnection connection, Object e) 
+    public void processConnection(HttpConnection connection, Object e)
     {
         BrowserContent browserContent = null;
 
@@ -210,15 +210,15 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
 
             if (browserContent != null) {
        			browserContent.finishLoading();
-                
+
                 Field field = browserContent.getDisplayableContent();
                 if (field != null) {
-                	
-                    synchronized (Application.getEventLock()) 
+
+                    synchronized (Application.getEventLock())
                     {
                     	m_oMainScreen.deleteAll();
                     	m_oMainScreen.add(field);
-                    	
+
                     	/*if ( m_oMainScreen.getFieldCount() > 0 )
                     	{
 	                    	Field old = m_oMainScreen.getField(0);
@@ -226,7 +226,7 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
 	                    	m_oMainScreen.delete(old);
                     	}else
                     		m_oMainScreen.add(field);*/
-/*                        
+/*
                         _mainScreen.doPaint();
                         if ( e == null )
                         {//This should awake screen in case of long network response
@@ -238,7 +238,7 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
                         }*/
                     }
                 }
-                
+
             }
         } catch (Exception re) {
         	LOG.ERROR("processConnection failed.", re);
@@ -246,7 +246,7 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
 	        SecondaryResourceFetchThread.doneAddingImages();
 	    }
     }
-    
+
 	public int getAvailableHeight(BrowserContent browserContent) {
 		return Display.getHeight();
 	}
@@ -255,9 +255,9 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
 		return Display.getWidth();
 	}
 
-	public String getHTTPCookie(String url) 
+	public String getHTTPCookie(String url)
 	{
-		return m_app.getCookie(url);		
+		return m_app.getCookie(url);
 	}
 
 	public int getHistoryPosition(BrowserContent browserContent) {
@@ -268,21 +268,21 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
 
         if (resource == null)
             return null;
-        
+
         String url = resource.getUrl();
         if (url == null || url.endsWith("/favicon.ico"))
         	return null;
-        
+
         try
         {
-        	if (referrer == null || URI.isLocalData(url) || !m_bLoadImageAsync) 
+        	if (referrer == null || URI.isLocalData(url) || !m_bLoadImageAsync)
         	{
 	        	boolean bLocalHost = RhodesApp.getInstance().isRhodesAppUrl(url);
 	        	if ( bLocalHost && m_connResource!= null)
 	        	{
-	        		com.rho.net.RhoConnection rhoConn = (com.rho.net.RhoConnection)((com.rho.net.bb.NativeBBHttpConnection)m_connResource).getNativeConnection(); 
+	        		com.rho.net.RhoConnection rhoConn = (com.rho.net.RhoConnection)((com.rho.net.bb.NativeBBHttpConnection)m_connResource).getNativeConnection();
 	        		rhoConn.resetUrl(url);
-	        		
+
 	        		Utilities.makeConnection(url, resource.getRequestHeaders(), null, m_connResource);
 	        		return m_connResource;
 	        	}else
@@ -294,15 +294,15 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
 	        	}
         	}else
         	{
-        		SecondaryResourceFetchThread.enqueue(resource, referrer);        		
+        		SecondaryResourceFetchThread.enqueue(resource, referrer);
         	}
         }catch(Exception exc)
         {
         	LOG.ERROR("getResource failed.", exc);
         }
-        
+
         return null;
-        
+
 /*
         // check if this is cache-only request
         if (resource.isCacheOnly()) {
@@ -321,8 +321,8 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
 	        if (referrer == null) {
 	            HttpConnection connection = Utilities.makeConnection(url, resource.getRequestHeaders(), null);
 	            return connection;
-	
-	        } else 
+
+	        } else
 	        {
 	    		if ( URI.isLocalHost(url) || URI.isLocalData(url))
 	    		{
@@ -338,7 +338,7 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
         {
         	LOG.ERROR("getResource failed.", exc);
         }
-        
+
         return null;*/
     }
 
@@ -350,14 +350,14 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
     {
     	return false;
     }
-    
+
     public void executeJavascript(String strJavascript)
     {
 //    	m_app.navigateUrlWithEvent("javascript:" + URI.urlEncode(strJavascript), new ExecutingScriptEvent(null, ExecutingScriptEvent.TYPE_JAVASCRIPT) );
     }
-    
+
     public void setCookie(String url, String cookie)
     {
-    	
+
     }
 }

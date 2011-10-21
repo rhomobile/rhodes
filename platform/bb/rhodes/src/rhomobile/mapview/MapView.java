@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -49,23 +49,23 @@ import com.xruby.runtime.lang.RubyValue;
 public class MapView extends RubyBasic {
 
 	private static class Parent implements MapViewParent {
-		
+
 		private static MapViewScreen screen = null;
-		
+
 		private static class CallMapViewScreen implements Runnable {
-			
+
 			private Parent thiz;
 			private String provider;
 			private Hashtable settings;
 			private Vector annotations;
-			
+
 			public CallMapViewScreen(Parent t, String p, Hashtable s, Vector a) {
 				thiz = t;
 				provider = p;
 				settings = s;
 				annotations = a;
 			}
-			
+
 			public void run() {
 				if (screen != null)
 					return;
@@ -79,7 +79,7 @@ public class MapView extends RubyBasic {
 			UiApplication.getUiApplication().invokeLater(
 					new CallMapViewScreen(this, provider, settings, annotations));
 		}
-		
+
 		public void close() {
 			UiApplication.getUiApplication().invokeLater(new Runnable() {
 				public void run() {
@@ -90,48 +90,48 @@ public class MapView extends RubyBasic {
 				}
 			});
 		}
-		
+
 		public void onChildClosed() {
 			screen = null;
 		}
-		
+
 		public boolean closed() {
 			return screen == null;
 		}
-		
+
 		public double getCenterLatitude() {
 			if (screen == null)
 				return 0.0;
 			return screen.getCenterLatitude();
 		}
-		
+
 		public double getCenterLongitude() {
 			if (screen == null)
 				return 0.0;
 			return screen.getCenterLongitude();
 		}
-		
+
 	};
-	
+
 	private static Parent parent = new Parent();
-	
+
 	public MapView(RubyClass c) {
 		super(c);
 	}
-	
+
 	public static void initMethods(RubyModule klass) {
 		klass.getSingletonClass().defineMethod("create", new RubyOneArgMethod() {
 
 			protected RubyValue run(RubyValue receiver, RubyValue arg,
 					RubyBlock block) {
-				
+
 				RubyHash settingsHash = null;
 				RubyArray annotationsArray = null;
 				RubyValue providerValue = null;
-				
+
 				Hashtable settings = new Hashtable();
 				Vector annotations = new Vector();
-				
+
 				RubyHash hash = (RubyHash)arg;
 				if (hash != null) {
 					RubyArray arKeys = hash.keys();
@@ -162,7 +162,7 @@ public class MapView extends RubyBasic {
 						}
 					}
 				}
-				
+
 				if (settings != null) {
 					RubyArray arKeys = settingsHash.keys();
 					RubyArray arValues = settingsHash.values();
@@ -218,7 +218,7 @@ public class MapView extends RubyBasic {
 									RubyValue hValue = hValues.get(j);
 									if (hKey == null || hValue == null)
 										continue;
-									
+
 									String strHKey = hKey.toString();
 									if (strHKey.equals("center")) {
 										settings.put("center", hValue.toString());
@@ -301,9 +301,9 @@ public class MapView extends RubyBasic {
 						annotations.addElement(annotation);
 					}
 				}
-				
+
 				String providerId = "google";
-				
+
 				/*
 				if (providerHash != null) {
 					RubyArray arKeys = providerHash.keys();
@@ -314,7 +314,7 @@ public class MapView extends RubyBasic {
 						if (key == null || value == null)
 							continue;
 						String strKey = key.toString();
-						
+
 						if (strKey.equals("id"))
 							providerId = value.toString().toLowerCase();
 					}
@@ -322,45 +322,45 @@ public class MapView extends RubyBasic {
 				*/
 				if (providerValue != null)
 					providerId = providerValue.toString().toLowerCase();
-				
+
 				parent.create(providerId, settings, annotations);
-				
+
 				return RubyConstant.QNIL;
 			}
-			
+
 		});
-		
+
 		klass.getSingletonClass().defineMethod("close", new RubyNoArgMethod() {
 
 			protected RubyValue run(RubyValue receiver, RubyBlock block) {
 				parent.close();
 				return RubyConstant.QNIL;
 			}
-			
+
 		});
-		
+
 		klass.getSingletonClass().defineMethod("state_started", new RubyNoArgMethod() {
 
 			protected RubyValue run(RubyValue receiver, RubyBlock block) {
 				return parent.closed() ? RubyConstant.QFALSE : RubyConstant.QTRUE;
 			}
-			
+
 		});
-		
+
 		klass.getSingletonClass().defineMethod("state_center_lat", new RubyNoArgMethod() {
 
 			protected RubyValue run(RubyValue receiver, RubyBlock block) {
 				return ObjectFactory.createFloat(parent.getCenterLatitude());
 			}
-			
+
 		});
-		
+
 		klass.getSingletonClass().defineMethod("state_center_lon", new RubyNoArgMethod() {
 
 			protected RubyValue run(RubyValue receiver, RubyBlock block) {
 				return ObjectFactory.createFloat(parent.getCenterLongitude());
 			}
-			
+
 		});
 
         klass.getSingletonClass().defineMethod("set_file_caching_enable", new RubyOneArgMethod()
@@ -373,5 +373,5 @@ public class MapView extends RubyBasic {
         });
 
 	}
-	
+
 }

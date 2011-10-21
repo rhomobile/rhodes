@@ -1069,7 +1069,7 @@ public class Table extends BaseTable {
         int i = findColumn(c);
         if (i == -1)
         	i = findColumn(c.toLowerCase());
-        
+
         if (i == -1) {
             throw Trace.error(Trace.COLUMN_NOT_FOUND, c);
         }
@@ -1894,7 +1894,7 @@ public class Table extends BaseTable {
         if (triggerLists[Trigger.INSERT_BEFORE_ROW] != null) {
             fireAll(session, Trigger.INSERT_BEFORE_ROW, null, data);
         }
-        
+
         setIdentityColumn(session, data);
         checkRowDataInsert(session, data);
         Row row = insertNoCheck(session, data);
@@ -1950,7 +1950,7 @@ public class Table extends BaseTable {
         if (isLogged) {
             database.logger.writeInsertStatement(session, this, data);
         }
-        
+
         return row;
     }
 
@@ -2801,7 +2801,7 @@ public class Table extends BaseTable {
 
         fireAll(session, Trigger.DELETE_BEFORE_ROW, data, null);
         session.onBeforeDelete(this, row);
-        
+
         deleteNoCheck(session, row, true);
 
         // fire the delete after statement trigger
@@ -3089,7 +3089,7 @@ public class Table extends BaseTable {
                 checkRowDataUpdate(session, data, cols);
             }
             session.onBeforeUpdate(this, row, cols);
-            
+
             insertNoCheck(session, data);
 
             if (triggerLists[Trigger.UPDATE_AFTER_ROW] != null) {

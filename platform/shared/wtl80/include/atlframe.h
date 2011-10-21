@@ -405,13 +405,13 @@ public:
 #endif // (_WIN32_IE >= 0x0500) && !defined(_WIN32_WCE)
 
 // Constructor
-	CFrameWindowImplBase() : 
+	CFrameWindowImplBase() :
 #ifdef _WIN32_WCE
 		m_hWndCECommandBar(NULL),
 #endif // _WIN32_WCE
-		m_hWndToolBar(NULL), 
-		m_hWndStatusBar(NULL), 
-		m_hWndClient(NULL), 
+		m_hWndToolBar(NULL),
+		m_hWndStatusBar(NULL),
+		m_hWndClient(NULL),
 		m_hAccel(NULL)
 	{ }
 
@@ -440,7 +440,7 @@ public:
 		return hWnd;
 	}
 
-	static HWND CreateSimpleToolBarCtrl(HWND hWndParent, UINT nResourceID, BOOL bInitialSeparator = FALSE, 
+	static HWND CreateSimpleToolBarCtrl(HWND hWndParent, UINT nResourceID, BOOL bInitialSeparator = FALSE,
 			DWORD dwStyle = ATL_SIMPLE_TOOLBAR_STYLE, UINT nID = ATL_IDW_TOOLBAR)
 	{
 		HINSTANCE hInst = ModuleHelper::GetResourceInstance();
@@ -1285,7 +1285,7 @@ public:
 
 #ifndef _WIN32_WCE
 
-inline HWND AtlCreateSimpleToolBar(HWND hWndParent, UINT nResourceID, BOOL bInitialSeparator = FALSE, 
+inline HWND AtlCreateSimpleToolBar(HWND hWndParent, UINT nResourceID, BOOL bInitialSeparator = FALSE,
 		DWORD dwStyle = ATL_SIMPLE_TOOLBAR_STYLE, UINT nID = ATL_IDW_TOOLBAR)
 {
 	return CFrameWindowImplBase<>::CreateSimpleToolBarCtrl(hWndParent, nResourceID, bInitialSeparator, dwStyle, nID);
@@ -2470,7 +2470,7 @@ public:
 		for( ; pMap->m_nID != (WORD)-1; pMap++, pUIData++)
 		{
 			if(nID == (int)pMap->m_nID)
-			{		
+			{
 				pUIData->m_wState = (WORD)(dwState | pMap->m_wType);
 				m_wDirtyType |= pMap->m_wType;
 				break;   // found
@@ -3263,7 +3263,7 @@ public:
 #endif // _WIN32_WCE
 
 // Implementation
-	bool DlgResize_PositionControl(int cxWidth, int cyHeight, RECT& rectGroup, _AtlDlgResizeData& data, bool bGroup, 
+	bool DlgResize_PositionControl(int cxWidth, int cyHeight, RECT& rectGroup, _AtlDlgResizeData& data, bool bGroup,
 	                               _AtlDlgResizeData* pDataPrev = NULL)
 	{
 		T* pT = static_cast<T*>(this);

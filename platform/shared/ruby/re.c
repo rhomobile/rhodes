@@ -1252,15 +1252,15 @@ rb_reg_prepare_enc(VALUE re, VALUE str, int warn)
 //RHO
         if (RREGEXP(re)->ptr->enc != enc &&
 	        (!rb_enc_asciicompat(RREGEXP(re)->ptr->enc) ||
-	        rb_enc_str_coderange(str) != ENC_CODERANGE_7BIT)) 
+	        rb_enc_str_coderange(str) != ENC_CODERANGE_7BIT))
         {
             rb_encoding *renc = rb_enc_get(re);
             if (renc != enc &&
 	            (!rb_enc_asciicompat(renc) ||
-	            rb_enc_str_coderange(str) != ENC_CODERANGE_7BIT)) 
+	            rb_enc_str_coderange(str) != ENC_CODERANGE_7BIT))
     	            reg_enc_error(re, str);
             else
-                enc = renc;    
+                enc = renc;
 	    }else
 	        enc = RREGEXP(re)->ptr->enc;
 //RHO

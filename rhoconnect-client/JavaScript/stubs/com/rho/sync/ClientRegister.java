@@ -9,7 +9,7 @@ public class ClientRegister {
 
 	public void startUp() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

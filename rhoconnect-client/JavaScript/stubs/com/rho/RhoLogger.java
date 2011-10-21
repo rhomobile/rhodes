@@ -8,7 +8,7 @@ public class RhoLogger {
 	public static String LOGFILENAME = "RhoLog.txt";
 
 	private String m_loggerName;
-	
+
 	public RhoLogger(String name){
 		m_loggerName = name;
 	}

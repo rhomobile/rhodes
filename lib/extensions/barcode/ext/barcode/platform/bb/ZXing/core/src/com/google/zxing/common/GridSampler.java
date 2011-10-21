@@ -41,7 +41,7 @@ public abstract class GridSampler {
    * ought to be appropriate for the entire platform, and all uses of this library
    * in the whole lifetime of the JVM. For instance, an Android activity can swap in
    * an implementation that takes advantage of native platform libraries.
-   * 
+   *
    * @param newGridSampler The platform-specific object to install.
    */
   public static void setGridSampler(GridSampler newGridSampler) {
@@ -97,7 +97,7 @@ public abstract class GridSampler {
                               PerspectiveTransform transform) throws NotFoundException {
     throw new IllegalStateException(); // Can't use UnsupportedOperationException
   }
-  
+
 
   /**
    * <p>Checks a set of points that have been transformed to sample points on an image against

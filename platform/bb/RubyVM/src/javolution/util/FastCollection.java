@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2006 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -20,8 +20,8 @@ import javolution.text.Text;
 //import javolution.xml.XMLSerializable;
 
 /**
- * <p> This class represents collections which can quickly be iterated over 
- *     (forward or backward) in a thread-safe manner without creating new 
+ * <p> This class represents collections which can quickly be iterated over
+ *     (forward or backward) in a thread-safe manner without creating new
  *     objects and without using {@link #iterator iterators} . For example:[code]
  *     boolean search(Object item, FastCollection c) {
  *         for (Record r = c.head(), end = c.tail(); (r = r.getNext()) != end;) {
@@ -29,26 +29,26 @@ import javolution.text.Text;
  *         }
  *         return false;
  *     }[/code]</p>
- *     
+ *
  * <p> Iterations are thread-safe as long as the {@link Record record} sequence
- *     iterated over is not structurally modified by another thread 
- *     (objects can safely be append/prepend during iterations but not 
+ *     iterated over is not structurally modified by another thread
+ *     (objects can safely be append/prepend during iterations but not
  *     inserted/removed).</p>
- *     
- * <p> Users may provide a read-only view of any {@link FastCollection} 
- *     instance using the {@link #unmodifiable()} method (the view is 
+ *
+ * <p> Users may provide a read-only view of any {@link FastCollection}
+ *     instance using the {@link #unmodifiable()} method (the view is
  *     thread-safe if iterations are thread-safe). For example:[code]
  *     public class Polynomial {
  *         private final FastTable<Coefficient> _coefficients = new FastTable<Coefficient>();
- *         public List<Coefficient> getCoefficients() { // Read-only view. 
+ *         public List<Coefficient> getCoefficients() { // Read-only view.
  *             return _coefficients.unmodifiable();
  *         }
  *     }[/code]</p>
- *     
+ *
  * <p> Finally, {@link FastCollection} may use custom {@link #getValueComparator
- *     comparators} for element equality or ordering if the collection is 
+ *     comparators} for element equality or ordering if the collection is
  *     ordered (e.g. <code>FastTree</code>).
- *     
+ *
  * @author <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 4.2, December 18, 2006
  */
@@ -56,28 +56,28 @@ public abstract class FastCollection/*<E>*/ implements
         Collection/*<E>*/, /*XMLSerializable,*/ Realtime {
 
     /**
-     * Holds the unmodifiable view (allocated in the same memory area as 
-     * this collection).  
+     * Holds the unmodifiable view (allocated in the same memory area as
+     * this collection).
      */
     private Unmodifiable _unmodifiable;
 
     /**
-     * Default constructor.  
+     * Default constructor.
      */
     protected FastCollection() {
     }
 
     /**
-     * Returns the number of values in this collection. 
+     * Returns the number of values in this collection.
      *
      * @return the number of values.
      */
     public abstract int size();
 
     /**
-     * Returns the head record of this collection; it is the record such as 
+     * Returns the head record of this collection; it is the record such as
      * <code>head().getNext()</code> holds the first collection value.
-     * 
+     *
      * @return the head record.
      */
     public abstract Record head();
@@ -85,7 +85,7 @@ public abstract class FastCollection/*<E>*/ implements
     /**
      * Returns the tail record of this collection; it is the record such as
      * <code>tail().getPrevious()</code> holds the last collection value.
-     * 
+     *
      * @return the tail record.
      */
     public abstract Record tail();
@@ -100,12 +100,12 @@ public abstract class FastCollection/*<E>*/ implements
 
     /**
      * Deletes the specified record from this collection.
-     * 
-     * <p> Implementation must ensure that removing a record from the 
-     *     collection does not affect in any way the records preceding 
+     *
+     * <p> Implementation must ensure that removing a record from the
+     *     collection does not affect in any way the records preceding
      *     the record being removed (it might affect the next records though,
      *     e.g. in a list collection, the indices of the subsequent records
-     *     will change).</p>   
+     *     will change).</p>
      *
      * @param record the record to be removed.
      * @throws UnsupportedOperationException if not supported.
@@ -113,13 +113,13 @@ public abstract class FastCollection/*<E>*/ implements
     public abstract void delete(Record record);
 
     /**
-     * Returns the unmodifiable view associated to this collection. 
-     * Attempts to modify the returned collection result in an 
-     * {@link UnsupportedOperationException} being thrown. The view is 
+     * Returns the unmodifiable view associated to this collection.
+     * Attempts to modify the returned collection result in an
+     * {@link UnsupportedOperationException} being thrown. The view is
      * typically part of the collection itself (created only once)
      * and also an instance of {@link FastCollection} supporting direct
-     * iterations.  
-     * 
+     * iterations.
+     *
      * @return the unmodifiable view over this collection.
      */
     public Collection/*<E>*/unmodifiable() {
@@ -134,8 +134,8 @@ public abstract class FastCollection/*<E>*/ implements
     }
 
     /**
-     * Returns an iterator over the elements in this collection 
-     * (allocated on the stack when executed in a 
+     * Returns an iterator over the elements in this collection
+     * (allocated on the stack when executed in a
      * {@link javolution.context.StackContext StackContext}).
      *
      * @return an iterator over this collection's elements.
@@ -145,10 +145,10 @@ public abstract class FastCollection/*<E>*/ implements
     }
 
     /**
-     * Returns the value comparator for this collection (default 
+     * Returns the value comparator for this collection (default
      * {@link FastComparator#DEFAULT}).
      *
-     * @return the comparator to use for value equality (or ordering if 
+     * @return the comparator to use for value equality (or ordering if
      *        the collection is ordered)
      */
     public FastComparator/*<? super E>*/ getValueComparator() {
@@ -158,10 +158,10 @@ public abstract class FastCollection/*<E>*/ implements
     /**
      * Appends the specified value to the end of this collection
      * (optional operation).
-     * 
-     * <p>Note: This default implementation always throws 
+     *
+     * <p>Note: This default implementation always throws
      *          <code>UnsupportedOperationException</code>.</p>
-     * 
+     *
      * @param value the value to be appended to this collection.
      * @return <code>true</code> (as per the general contract of the
      *         <code>Collection.add</code> method).
@@ -217,7 +217,7 @@ public abstract class FastCollection/*<E>*/ implements
     /**
      * Indicates if this collection contains the specified value.
      *
-     * @param value the value whose presence in this collection 
+     * @param value the value whose presence in this collection
      *        is to be tested.
      * @return <code>true</code> if this collection contains the specified
      *         value;<code>false</code> otherwise.
@@ -238,7 +238,7 @@ public abstract class FastCollection/*<E>*/ implements
      * is a {@link FastCollection}.
      *
      * @param c collection whose values are to be added to this collection.
-     * @return <code>true</code> if this collection changed as a result of 
+     * @return <code>true</code> if this collection changed as a result of
      *         the call; <code>false</code> otherwise.
      */
     public boolean addAll(Collection/*<? extends E>*/c) {
@@ -313,12 +313,12 @@ public abstract class FastCollection/*<E>*/ implements
      *
      * @param c collection that defines which values will be removed from
      *          this collection.
-     * @return <code>true</code> if this collection changed as a result of 
+     * @return <code>true</code> if this collection changed as a result of
      *         the call; <code>false</code> otherwise.
      */
     public boolean removeAll(Collection/*<?>*/c) {
         boolean modified = false;
-        // Iterates from the tail and removes the record if present in c. 
+        // Iterates from the tail and removes the record if present in c.
         for (Record head = head(), r = tail().getPrevious(), previous; r != head; r = previous) {
             previous = r.getPrevious(); // Saves previous.
             if (c.contains(valueOf(r))) {
@@ -334,12 +334,12 @@ public abstract class FastCollection/*<E>*/ implements
      * specified collection.
      *
      * @param c collection that defines which values this set will retain.
-     * @return <code>true</code> if this collection changed as a result of 
+     * @return <code>true</code> if this collection changed as a result of
      *         the call; <code>false</code> otherwise.
      */
     public boolean retainAll(Collection/*<?>*/c) {
         boolean modified = false;
-        // Iterates from the tail and remove the record if not present in c. 
+        // Iterates from the tail and remove the record if not present in c.
         for (Record head = head(), r = tail().getPrevious(), previous; r != head; r = previous) {
             previous = r.getPrevious(); // Saves previous.
             if (!c.contains(valueOf(r))) {
@@ -351,10 +351,10 @@ public abstract class FastCollection/*<E>*/ implements
     }
 
     /**
-     * Returns a new array allocated on the heap containing all of the values 
+     * Returns a new array allocated on the heap containing all of the values
      * in this collection in proper sequence.
-     * <p> Note: To avoid heap allocation {@link #toArray(Object[])} is 
-     *           recommended.</p> 
+     * <p> Note: To avoid heap allocation {@link #toArray(Object[])} is
+     *           recommended.</p>
      * @return <code>toArray(new Object[size()])</code>
      */
     public Object[] toArray() {
@@ -362,18 +362,18 @@ public abstract class FastCollection/*<E>*/ implements
     }
 
     /**
-     * Fills the specified array with the values of this collection in 
+     * Fills the specified array with the values of this collection in
      * the proper sequence.
-     *  
+     *
      * <p> Note: Unlike standard Collection, this method does not try to resize
-     *           the array using reflection (which might not be supported) if 
-     *           the array is too small. UnsupportedOperationException is raised 
+     *           the array using reflection (which might not be supported) if
+     *           the array is too small. UnsupportedOperationException is raised
      *           if the specified array is too small for this collection.</p>
      *
      * @param  array the array into which the values of this collection
      *         are to be stored.
      * @return the specified array.
-     * @throws UnsupportedOperationException if <code>array.length < size()</code> 
+     * @throws UnsupportedOperationException if <code>array.length < size()</code>
      */
     public Object/*{<T> T}*/[] toArray(Object/*{T}*/[] array) {
         int size = size();
@@ -393,7 +393,7 @@ public abstract class FastCollection/*<E>*/ implements
 
     /**
      * Returns the textual representation of this collection.
-     * 
+     *
      * @return this collection textual representation.
      */
     public Text toText() {
@@ -408,7 +408,7 @@ public abstract class FastCollection/*<E>*/ implements
     }
 
     /**
-     * Returns the <code>String</code> representation of this 
+     * Returns the <code>String</code> representation of this
      * {@link FastCollection}.
      *
      * @return <code>toText().toString()</code>
@@ -421,8 +421,8 @@ public abstract class FastCollection/*<E>*/ implements
     /**
      * Compares the specified object with this collection for equality.  Returns
      * <code>true</code> if and only both collection contains the same values
-     * regardless of the order; unless this collection is a list instance 
-     * in which case both collections must be list with the same order. 
+     * regardless of the order; unless this collection is a list instance
+     * in which case both collections must be list with the same order.
      *
      * @param obj the object to be compared for equality with this collection.
      * @return <code>true</code> if the specified object is equal to this
@@ -439,7 +439,7 @@ public abstract class FastCollection/*<E>*/ implements
     private boolean equalsList(Object obj) {
         if (obj == this)
             return true;
-        if (!(obj instanceof List)) 
+        if (!(obj instanceof List))
             return false;
         if (obj instanceof FastCollection)
             return equalsList((FastCollection)obj);
@@ -472,7 +472,7 @@ public abstract class FastCollection/*<E>*/ implements
     }
 
     /**
-     * Returns the hash code for this collection (independent from the 
+     * Returns the hash code for this collection (independent from the
      * collection order; unless this collection is a list instance).
      *
      * @return the hash code for this collection.
@@ -506,14 +506,14 @@ public abstract class FastCollection/*<E>*/ implements
 
         /**
          * Returns the record before this one.
-         * 
+         *
          * @return the previous record.
          */
         public Record getPrevious();
 
         /**
          * Returns the record after this one.
-         * 
+         *
          * @return the next record.
          */
         public Record getNext();
@@ -574,7 +574,7 @@ public abstract class FastCollection/*<E>*/ implements
         //////////////////////////////////////////
         // List interface supplementary methods //
         //////////////////////////////////////////
-        
+
         public boolean addAll(int index, Collection c) {
             throw new UnsupportedOperationException("Unmodifiable");
         }

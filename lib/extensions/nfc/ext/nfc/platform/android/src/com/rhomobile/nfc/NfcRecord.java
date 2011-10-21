@@ -18,10 +18,10 @@ public class NfcRecord {
 	private int 	mTnf = 0;
 	private byte[] 	mType = null;
 	private byte[] 	mByteArray = null;
-	
+
 	private NfcMessage mSubrecords = null;
-	
-	
+
+
 	public NfcRecord(byte[] array) {
 		NdefRecord r = null;
 		try {
@@ -32,7 +32,7 @@ public class NfcRecord {
 		}
 		initFromNdefRecord(r);
 	}
-	
+
 	public NfcRecord(NdefRecord rec) {
 		initFromNdefRecord(rec);
 	}
@@ -42,19 +42,19 @@ public class NfcRecord {
 		r = new NdefRecord(tnf, type, id, payload);
 		initFromNdefRecord(r);
 	}
-	
+
 	public void initFromNdefRecord(NdefRecord rec) {
 
 		if (rec == null) {
 			return;
 		}
-		
+
 		mId = rec.getId();
-		
+
 		/*
 		if (mId != null) {
 			Utils.platformLog("NfcRecord", " ID = "+mId.toString());
-			
+
 			StringBuffer s = new StringBuffer();
 			s.append("   ID is : ");
 			int i;
@@ -63,23 +63,23 @@ public class NfcRecord {
 				s.append(":");
 			}
 			Utils.platformLog("NfcRecord", s.toString());
-			
-			
+
+
 		}
 		else {
 			Utils.platformLog("NfcRecord", " ID is NULL !!!");
 		}
 		*/
-		
+
 		mPayload = rec.getPayload();
 		mTnf = rec.getTnf();
 		mType = rec.getType();
 		mByteArray = rec.toByteArray();
 		mPayloadString = "";
-		
+
 		mPayloadString = makePayloadString((short)mTnf, mType, mPayload, this);
 	}
-	
+
 	public static String makePayloadString(short tnf, byte[] type, byte[] payload, NfcRecord record) {
         String payload_string = "";
 		try {
@@ -123,10 +123,10 @@ public class NfcRecord {
             //throw new IllegalArgumentException(e);
         	Nfc.loge("construct string from payload: catch UnsupportedEncodingException - tag maybe broken !");
         }
-		
+
 		return payload_string;
 	}
-	
+
 	public NdefRecord makeNdefRecord() {
 		NdefRecord r = null;
 		try {
@@ -137,23 +137,23 @@ public class NfcRecord {
 		}
 		return r;
 	}
-	
+
 	public byte[] getId() {
 		return mId;
 	}
-	
+
 	public byte[] getPayload() {
 		return mPayload;
 	}
-	
+
 	public String getPayloadString() {
 		return mPayloadString;
 	}
-	
+
 	public int getTnf() {
 		return mTnf;
 	}
-	
+
 	public byte[] getType() {
 		return mType;
 	}
@@ -161,12 +161,12 @@ public class NfcRecord {
 	public byte[] getByteArray() {
 		return mByteArray;
 	}
-	
+
 	public NfcMessage getSubrecords() {
 		return mSubrecords;
 	}
-	
-	
+
+
 	private static String getUriPrefixByNfcCode(byte code) {
 		switch(code) {
 			case 0x00: return "";
@@ -208,6 +208,6 @@ public class NfcRecord {
 		}
 		return "";
 	}
-	
+
 
 }

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -151,7 +151,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 			m_nRestarting = 10;
 		}
 
-		if (wcsncmp(lpszToken, _T("log"), 3)==0) 
+		if (wcsncmp(lpszToken, _T("log"), 3)==0)
 		{
 			String token = convertToStringA(lpszToken);
 			//parseToken will allocate extra byte at the end of the returned token value
@@ -166,20 +166,20 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 			}
 		}
 #if defined(OS_WINDOWS)
-		else if (wcsncmp(lpszToken, _T("http_proxy_url"),14)==0) 
+		else if (wcsncmp(lpszToken, _T("http_proxy_url"),14)==0)
         {
 			String token = convertToStringA(lpszToken);
             char *proxy = parseToken( token.c_str(), token.length() );
-			
+
 			if (proxy)
             {
 				m_strHttpProxy = proxy;
                 free(proxy);
             }
-			else 
+			else
 				LOG(WARNING) + "invalid value for \"http_proxy_url\" cmd parameter";
 
-		} else if (wcsncmp(lpszToken, _T("approot"),7)==0) 
+		} else if (wcsncmp(lpszToken, _T("approot"),7)==0)
         {
 			String token = convertToStringA(lpszToken);
 			//parseToken will allocate extra byte at the end of the returned token value
@@ -197,7 +197,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 				m_strRootPath = path;
 				free(path);
 			}
-		} else if (wcsncmp(lpszToken, _T("rhodespath"),10)==0) 
+		} else if (wcsncmp(lpszToken, _T("rhodespath"),10)==0)
         {
 			String token = convertToStringA(lpszToken);
 			//parseToken will allocate extra byte at the end of the returned token value
@@ -206,7 +206,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 				m_strRhodesPath = path;
 				free(path);
 			}
-		} /* else if (wcsncmp(lpszToken, _T("appname"),7)==0) 
+		} /* else if (wcsncmp(lpszToken, _T("appname"),7)==0)
         {
 			String token = convertToStringA(lpszToken);
 			//parseToken will allocate extra byte at the end of the returned token value
@@ -215,7 +215,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
                 convertToStringW(path, m_strAppNameW);
 				free(path);
 			}
-		} else if (wcsncmp(lpszToken, _T("debughost"),9)==0) 
+		} else if (wcsncmp(lpszToken, _T("debughost"),9)==0)
         {
 			String token = convertToStringA(lpszToken);
 			//parseToken will allocate extra byte at the end of the returned token value
@@ -224,7 +224,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 				m_strDebugHost = host;
 				free(host);
 			}
-		} else if (wcsncmp(lpszToken, _T("debugport"),9)==0) 
+		} else if (wcsncmp(lpszToken, _T("debugport"),9)==0)
         {
 			String token = convertToStringA(lpszToken);
 			//parseToken will allocate extra byte at the end of the returned token value
@@ -318,7 +318,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 	//Check for bundle directory is exists.
 	HANDLE hFind;
 	WIN32_FIND_DATA wfd;
-	
+
 	// rootpath + "rho/"
 	if (m_strRootPath.at(m_strRootPath.length()-1) == '/') {
 		hFind = FindFirstFile(convertToStringW(m_strRootPath.substr(0, m_strRootPath.find_last_of('/'))).c_str(), &wfd);
@@ -338,8 +338,8 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 		pre_last = getRhoRootPath().substr(0, last).find_last_of('\\');
 		String appName = getRhoRootPath().substr(pre_last + 1, last - pre_last - 1);
 
-		String messageText = "Bundle directory \"" + 
-								m_strRootPath.substr(0, m_strRootPath.find_last_of('/')) + 
+		String messageText = "Bundle directory \"" +
+								m_strRootPath.substr(0, m_strRootPath.find_last_of('/')) +
 								"\" is  missing\n";
 
 		LOG(INFO) + messageText;
@@ -366,7 +366,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     String strTitle = RHODESAPP().getAppTitle();
     m_appWindow.Create(NULL, CWindow::rcDefault, convertToStringW(strTitle).c_str(), dwStyle);
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-    g_pWebKitEngine = rho_elements_Initialise( convertToStringW(g_strCmdLine).c_str(), rho_wmimpl_get_appinstance(), 
+    g_pWebKitEngine = rho_elements_Initialise( convertToStringW(g_strCmdLine).c_str(), rho_wmimpl_get_appinstance(),
         (HWND)m_appWindow.m_hWnd );
     if (!g_pWebKitEngine) {
         MessageBox(NULL, L"Failed to initialize WebKit engine.", convertToStringW(strTitle).c_str(), MB_ICONERROR | MB_OK);
@@ -396,37 +396,37 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
     DWORD dwConnCount = 0;
     hr = RegistryGetDWORD( SN_CONNECTIONSNETWORKCOUNT_ROOT,
-		SN_CONNECTIONSNETWORKCOUNT_PATH, 
-		SN_CONNECTIONSNETWORKCOUNT_VALUE, 
+		SN_CONNECTIONSNETWORKCOUNT_PATH,
+		SN_CONNECTIONSNETWORKCOUNT_VALUE,
         &dwConnCount
     );
     rho_sysimpl_sethas_network(dwConnCount);
 
     DWORD dwCellConnected = 0;
     hr = RegistryGetDWORD( SN_CONNECTIONSNETWORKCOUNT_ROOT,
-		SN_CELLSYSTEMCONNECTED_PATH, 
-		SN_CELLSYSTEMCONNECTED_VALUE, 
+		SN_CELLSYSTEMCONNECTED_PATH,
+		SN_CELLSYSTEMCONNECTED_VALUE,
         &dwCellConnected
     );
     rho_sysimpl_sethas_cellnetwork(dwCellConnected);
 
 	// Register for changes in the number of network connections
 	hr = RegistryNotifyWindow(SN_CONNECTIONSNETWORKCOUNT_ROOT,
-		SN_CONNECTIONSNETWORKCOUNT_PATH, 
-		SN_CONNECTIONSNETWORKCOUNT_VALUE, 
-		m_appWindow.m_hWnd, 
-		WM_CONNECTIONSNETWORKCOUNT, 
-		0, 
-		NULL, 
+		SN_CONNECTIONSNETWORKCOUNT_PATH,
+		SN_CONNECTIONSNETWORKCOUNT_VALUE,
+		m_appWindow.m_hWnd,
+		WM_CONNECTIONSNETWORKCOUNT,
+		0,
+		NULL,
 		&g_hNotify);
 
 	hr = RegistryNotifyWindow(SN_CONNECTIONSNETWORKCOUNT_ROOT,
-		SN_CELLSYSTEMCONNECTED_PATH, 
-		SN_CELLSYSTEMCONNECTED_VALUE, 
-		m_appWindow.m_hWnd, 
-		WM_CONNECTIONSNETWORKCELL, 
-		0, 
-		NULL, 
+		SN_CELLSYSTEMCONNECTED_PATH,
+		SN_CELLSYSTEMCONNECTED_VALUE,
+		m_appWindow.m_hWnd,
+		WM_CONNECTIONSNETWORKCELL,
+		0,
+		NULL,
 		&g_hNotifyCell);
 
 #else
@@ -492,7 +492,7 @@ const rho::String& CRhodesModule::getRhoRootPath()
                 m_strRootPath[i] = '/';
     }
 
-    return m_strRootPath; 
+    return m_strRootPath;
 }
 
 extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/,
@@ -512,17 +512,17 @@ extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/
 	return _AtlModule.WinMain(nShowCmd);
 }
 
-extern "C" void performOnUiThread(rho::common::IRhoRunnable* pTask) 
+extern "C" void performOnUiThread(rho::common::IRhoRunnable* pTask)
 {
     CMainWindow* mainWnd = _AtlModule.GetMainWindowObject();
-    mainWnd->performOnUiThread(pTask);    
+    mainWnd->performOnUiThread(pTask);
 }
 
 extern "C" HWND getMainWnd() {
 	return _AtlModule.GetMainWindow();
 }
 
-CMainWindow& getAppWindow() 
+CMainWindow& getAppWindow()
 {
 	return _AtlModule.GetAppWindow();
 }
@@ -546,7 +546,7 @@ translate_char(char *p, int from, int to)
     return p;
 }
 
-extern "C" const char* rho_native_rhopath() 
+extern "C" const char* rho_native_rhopath()
 {
     return _AtlModule.getRhoRootPath().c_str();
 }
@@ -556,7 +556,7 @@ extern "C" HINSTANCE rho_wmimpl_get_appinstance()
     return _AtlModule.GetModuleInstance();
 }
 
-extern "C" HWND rho_wmimpl_get_mainwnd() 
+extern "C" HWND rho_wmimpl_get_mainwnd()
 {
 	return _AtlModule.GetMainWindow();
 }
@@ -630,7 +630,7 @@ extern "C" void Init_fcntl(void)
 	static char current_path[255] = {0};
 	if ( strlen(current_path) == 0 )
 		GetWindowModuleFileName(getMainWnd(), current_path, 255);
-	
+
 	GetWindowModuleFileName(hwnd, buf, 255);
 
 	if ( strncmp( buf, current_path, 255 ) == 0 )
@@ -644,7 +644,7 @@ extern "C" void Init_fcntl(void)
 }*/
 
 
-//parseToken will allocate extra byte at the end of the 
+//parseToken will allocate extra byte at the end of the
 //returned token value
 char* parseToken( const char* start, int len ) {
     int nNameLen = 0;
@@ -659,7 +659,7 @@ char* parseToken( const char* start, int len ) {
 
                 nNameLen = s+1;
                 break;
-            }else 
+            }else
                 break;
         }
     }
@@ -684,13 +684,13 @@ char* parseToken( const char* start, int len ) {
 
 #if defined(OS_WINDOWS)
 /*
-// char -> wchar_t 
+// char -> wchar_t
 wchar_t* wce_mbtowc(const char* a)
 {
 	int length;
 	wchar_t *wbuf;
 
-	length = MultiByteToWideChar(CP_UTF8, 0, 
+	length = MultiByteToWideChar(CP_UTF8, 0,
 		a, -1, NULL, 0);
 	wbuf = (wchar_t*)malloc( (length+1)*sizeof(wchar_t) );
 	MultiByteToWideChar(CP_UTF8, 0,
@@ -839,21 +839,21 @@ void CRhodesModule::parseHttpProxyURI(const rho::String &http_proxy)
 			break;
 		case ST_HOST:
 			if (c == ':') {
-				host = token; token.clear();			
+				host = token; token.clear();
 				prev_state = state; state = ST_PORT;
 			} else if (c == '@') {
-				host = token; token.clear();		
-				prev_state = state;	state = ST_LOGIN;					
+				host = token; token.clear();
+				prev_state = state;	state = ST_LOGIN;
 			} else {
 				token += c;
 				if (i == (length - 1)) {
-					host = token; token.clear();								
+					host = token; token.clear();
 				}
 			}
 			break;
 		case ST_PORT:
 			if (c == '@') {
-				port = token; token.clear();			
+				port = token; token.clear();
 				prev_state = state; state = ST_LOGIN;
 			} else {
 				token += c;
@@ -871,18 +871,18 @@ void CRhodesModule::parseHttpProxyURI(const rho::String &http_proxy)
 			} else {
 				token += c;
 				if (i == (length - 1)) {
-					login = token; token.clear();								
+					login = token; token.clear();
 				}
 			}
 			break;
 		case ST_PASSWORD:
 			if (c == '@') {
-				password = token; token.clear();			
+				password = token; token.clear();
 				prev_state = state; state = ST_HOST;
 			} else {
 				token += c;
 				if (i == (length - 1)) {
-					password = token; token.clear();								
+					password = token; token.clear();
 				}
 			}
 			break;

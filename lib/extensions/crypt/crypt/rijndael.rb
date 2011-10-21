@@ -11,48 +11,48 @@ class Rijndael
 
   require 'crypt/cbc'
   include Crypt::CBC
-  
+
   require 'crypt/rijndael-tables'
   include Crypt::RijndaelTables
-  
-  
+
+
   def initialize(userKey, keyBits = 256, blockBits = 128)
     case keyBits
-      when 128 
+      when 128
         @keyWords = 4
-      when 192 
+      when 192
         @keyWords = 6
       when 256
         @keyWords = 8
       else raise "The key must be 128, 192, or 256 bits long."
     end
-    
+
     case (keyBits >= blockBits) ? keyBits : blockBits
-      when 128 
+      when 128
         @rounds = 10
-      when 192 
+      when 192
         @rounds = 12
       when 256
         @rounds = 14
       else raise "The key and block sizes must be 128, 192, or 256 bits long."
     end
-   
+
     case blockBits
-      when 128 
+      when 128
         @blockSize = 16
         @blockWords = 4
         @shiftIndex = 0
-      when 192 
+      when 192
         @blockSize = 24
         @blockWords = 6
         @shiftIndex = 1
-      when 256 
+      when 256
         @blockSize = 32
         @blockWords = 8
         @shiftIndex = 2
       else raise "The block size must be 128, 192, or 256 bits long."
     end
-    
+
     uk = userKey.unpack('C'*userKey.length)
     maxUsefulSizeOfUserKey = (keyBits/8)
     uk = uk[0..maxUsefulSizeOfUserKey-1]    # truncate
@@ -68,22 +68,22 @@ class Rijndael
     @roundKeys = generate_key_schedule(@key, keyBits, blockBits)
   end
 
-  
+
   def block_size
     return(@blockSize) # needed for CBC
   end
-  
-  
+
+
   def mul(a, b)
     if ((a ==0) | (b == 0))
-      result = 0 
+      result = 0
     else
       result = AlogTable[(LogTable[a] + LogTable[b]) % 255]
     end
     return(result)
   end
-  
-  
+
+
   def add_round_key(blockArray, roundKey)
   0.upto(3) { |i|
     0.upto(@blockWords) { |j|
@@ -96,8 +96,8 @@ class Rijndael
   }
   return(blockArray)
   end
-  
-  
+
+
   def shift_rows(blockArray, direction)
     tmp = []
     1.upto(3) { |i|  # row zero remains unchanged
@@ -110,8 +110,8 @@ class Rijndael
     }
     return(blockArray)
   end
-  
-  
+
+
   def substitution(blockArray, sBox)
     # replace every byte of the input with the byte at that position in the S-box
     0.upto(3) { |i|
@@ -121,8 +121,8 @@ class Rijndael
     }
     return(blockArray)
   end
-  
-  
+
+
   def mix_columns(blockArray)
     mixed = [[], [], [], []]
     0.upto(@blockWords-1) { |j|
@@ -135,22 +135,22 @@ class Rijndael
     }
     return(mixed)
   end
-  
-  
+
+
   def inverse_mix_columns(blockArray)
     unmixed = [[], [], [], []]
     0.upto(@blockWords-1) { |j|
       0.upto(3) { |i|
         unmixed[i][j] = mul(0xe, blockArray[i][j]) ^
-          mul(0xb, blockArray[(i + 1) % 4][j]) ^                
+          mul(0xb, blockArray[(i + 1) % 4][j]) ^
           mul(0xd, blockArray[(i + 2) % 4][j]) ^
           mul(0x9, blockArray[(i + 3) % 4][j])
       }
     }
      return(unmixed)
   end
-  
-  
+
+
   def generate_key_schedule(k, keyBits, blockBits)
     tk = k[0..3][0..@keyWords-1]  # using slice to get a copy instead of a reference
     keySched = []
@@ -166,7 +166,7 @@ class Rijndael
     end
     # while not enough round key material collected, calculate new values
     rconIndex = 0
-    while (t < (@rounds+1)*@blockWords) 
+    while (t < (@rounds+1)*@blockWords)
       0.upto(3) { |i|
         tk[i][0] ^= S[tk[(i + 1) % 4][@keyWords - 1]]
       }
@@ -188,8 +188,8 @@ class Rijndael
           tk[i][@keyWords/2] ^= S[tk[i][@keyWords/2 - 1]]
         }
         (@keyWords/2 + 1).upto(@keyWords - 1) { |j|
-          0.upto(3) { |i| 
-            tk[i][j] ^= tk[i][j-1] 
+          0.upto(3) { |i|
+            tk[i][j] ^= tk[i][j-1]
           }
         }
       end
@@ -204,8 +204,8 @@ class Rijndael
     end
     return(keySched)
   end
-  
-  
+
+
   def encrypt_byte_array(blockArray)
     blockArray = add_round_key(blockArray, @roundKeys[0])
     1.upto(@rounds - 1) { |round|
@@ -220,8 +220,8 @@ class Rijndael
     blockArray = add_round_key(blockArray, @roundKeys[@rounds])
     return(blockArray)
   end
-  
-  
+
+
   def encrypt_block(block)
     raise "block must be #{@blockSize} bytes long" if (block.length() != @blockSize)
     blockArray = [[], [], [], []]
@@ -235,25 +235,25 @@ class Rijndael
     }
     return(encrypted)
   end
-  
-  
+
+
   def decrypt_byte_array(blockArray)
     # first special round without inverse_mix_columns
     # add_round_key is an involution - applying it a second time returns the original result
-    blockArray = add_round_key(blockArray, @roundKeys[@rounds]) 
+    blockArray = add_round_key(blockArray, @roundKeys[@rounds])
     blockArray = substitution(blockArray,Si)   # using inverse S-box
     blockArray = shift_rows(blockArray,1)
     (@rounds-1).downto(1) { |round|
       blockArray = add_round_key(blockArray, @roundKeys[round])
       blockArray = inverse_mix_columns(blockArray)
-      blockArray = substitution(blockArray, Si) 
+      blockArray = substitution(blockArray, Si)
       blockArray = shift_rows(blockArray, 1)
     }
     blockArray = add_round_key(blockArray, @roundKeys[0])
     return(blockArray)
   end
-  
-  
+
+
   def decrypt_block(block)
     raise "block must be #{@blockSize} bytes long" if (block.length() != @blockSize)
     blockArray = [[], [], [], []]
@@ -267,7 +267,7 @@ class Rijndael
     }
     return(decrypted)
   end
-  
-  
+
+
 end
 end

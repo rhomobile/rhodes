@@ -1,4 +1,4 @@
-# ;;; -*- Mode:makefile;-*- 
+# ;;; -*- Mode:makefile;-*-
 # Generated automatically from Makefile.in by configure.
 # This requires GNU make.
 
@@ -40,7 +40,7 @@ CXXFLAGS = -Wall -fhandle-exceptions -g ${STL_INCL} -I. ${CXX_EXTRA_FLAGS} -D_ST
 
 check: $(TEST)
 
-LIBS = -lm 
+LIBS = -lm
 D_LIBSTLPORT = -L../../lib -lstlport_gcc_debug
 LIBSTLPORT = -L../../lib -lstlport_gcc
 

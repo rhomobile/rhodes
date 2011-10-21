@@ -5,25 +5,25 @@ import com.xruby.runtime.builtin.RubyIO;
 public class RubyIO_Methods{
 public static void initMethods( RubyClass klass){
 
-klass.getSingletonClass().defineMethod( "read", new RubyVarArgMethod(){ 
+klass.getSingletonClass().defineMethod( "read", new RubyVarArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return RubyIO.read(receiver, args, block);}
 });
-klass.getSingletonClass().defineMethod( "binread", new RubyVarArgMethod(){ 
+klass.getSingletonClass().defineMethod( "binread", new RubyVarArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return RubyIO.binread(receiver, args, block);}
 });
 
-klass.defineMethod( "gets", new RubyVarArgMethod(){ 
+klass.defineMethod( "gets", new RubyVarArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return ((RubyIO)receiver).gets(args);}
 });
-klass.defineMethod( "readline", new RubyVarArgMethod(){ 
+klass.defineMethod( "readline", new RubyVarArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return ((RubyIO)receiver).readline(args);}
 });
 
-klass.defineMethod( "print", new RubyVarArgMethod(){ 
+klass.defineMethod( "print", new RubyVarArgMethod(){
 	public RubyValue invoke(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return ((RubyIO)receiver).print(args);}
 	public RubyValue invoke(RubyValue receiver, RubyBlock block ){
@@ -37,23 +37,23 @@ klass.defineMethod( "print", new RubyVarArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
     	throw new Error("we overided invoke, so this method should never be called");}
 });
-/*klass.getSingletonClass().defineMethod( "pipe", new RubyNoArgMethod(){ 
+/*klass.getSingletonClass().defineMethod( "pipe", new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return RubyIO.pipeSingleton(receiver, block);}
 });*/
-klass.defineMethod( "close", new RubyNoArgMethod(){ 
+klass.defineMethod( "close", new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyIO)receiver).close();}
 });
-klass.defineMethod( "seek", new RubyOneArgMethod(){ 
+klass.defineMethod( "seek", new RubyOneArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return ((RubyIO)receiver).seek(arg);}
 });
-klass.defineMethod( "flush", new RubyNoArgMethod(){ 
+klass.defineMethod( "flush", new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyIO)receiver).flush();}
 });
-klass.defineMethod( "puts", new RubyVarArgMethod(){ 
+klass.defineMethod( "puts", new RubyVarArgMethod(){
 	public RubyValue invoke(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return ((RubyIO)receiver).puts(args);}
 	public RubyValue invoke(RubyValue receiver, RubyBlock block ){
@@ -69,23 +69,23 @@ klass.defineMethod( "puts", new RubyVarArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
     	throw new Error("we overided invoke, so this method should never be called");}
 });
-klass.defineMethod( "closed?", new RubyOneArgMethod(){ 
+klass.defineMethod( "closed?", new RubyOneArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return ((RubyIO)receiver).closedP(arg);}
 });
-klass.defineMethod( "readpartial", new RubyVarArgMethod(){ 
+klass.defineMethod( "readpartial", new RubyVarArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return ((RubyIO)receiver).readpartial(args);}
 });
-klass.defineMethod( "write", new RubyOneArgMethod(){ 
+klass.defineMethod( "write", new RubyOneArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 		return ((RubyIO)receiver).write(arg);}
 });
-klass.defineMethod( "read", new RubyVarArgMethod(){ 
+klass.defineMethod( "read", new RubyVarArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return ((RubyIO)receiver).read(args);}
 });
-klass.defineMethod( "eof", new RubyNoArgMethod(){ 
+klass.defineMethod( "eof", new RubyNoArgMethod(){
 	protected RubyValue run(RubyValue receiver, RubyBlock block ){
 		return ((RubyIO)receiver).eof();}
 });

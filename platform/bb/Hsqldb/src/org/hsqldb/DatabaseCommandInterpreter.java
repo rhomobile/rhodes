@@ -3053,13 +3053,13 @@ class DatabaseCommandInterpreter {
     private void processDropIndex() throws HsqlException {
 
         boolean ifexists = false;
-    	
+
         if (tokenizer.isGetThis(Token.T_IF)) {
             tokenizer.getThis(Token.T_EXISTS);
 
             ifexists = true;
         }
-    	
+
         String name = tokenizer.getName();
         String schema =
             session.getSchemaNameForWrite(tokenizer.getLongNameFirst());
@@ -3169,7 +3169,7 @@ class DatabaseCommandInterpreter {
         }
 
         return result;*/
-    	
+
     	throw new RuntimeException("EXPLAIN does not supported");
     }
 

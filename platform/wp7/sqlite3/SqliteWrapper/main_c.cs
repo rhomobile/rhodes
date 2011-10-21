@@ -2674,7 +2674,7 @@ return rc;
 
         /*  sqlite3_test_control(SQLITE_TESTCTRL_OPTIMIZATIONS, sqlite3 *db, int N)
         **
-        ** Enable or disable various optimizations for testing purposes.  The 
+        ** Enable or disable various optimizations for testing purposes.  The
         ** argument N is a bitmask of optimizations to be disabled.  For normal
         ** operation N should be 0.  The idea is that a test program (like the
         ** SQL Logic Test or SLT test module) can run the same SQL multiple times
@@ -2694,7 +2694,7 @@ return rc;
         **
         ** If zWord is a keyword recognized by the parser, then return the
         ** number of keywords.  Or if zWord is not a keyword, return 0.
-        ** 
+        **
         ** This test feature is only available in the amalgamation since
         ** the SQLITE_N_KEYWORD macro is not defined in this file if SQLite
         ** is built using separate source files.
@@ -2706,7 +2706,7 @@ return rc;
             rc = ( sqlite3KeywordCode( zWord, n ) != TK_ID ) ? SQLITE_N_KEYWORD : 0;
             break;
           }
-        //#endif 
+        //#endif
       }
       va_end( ap );
 #endif //* SQLITE_OMIT_BUILTIN_TEST */

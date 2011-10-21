@@ -13,7 +13,7 @@ class SpecRunner < MSpecScript
     config[:files] << "spec/string/lstrip_spec"
     config[:files] << "spec/string/slice_spec"
     config[:files] << "spec/array/pack_spec"
-    
+
     config[:files] << "spec/rho_spec"
 if !defined?(RHO_WP7)
     config[:files] << "spec/asynchttp_spec"
@@ -37,7 +37,7 @@ if !defined?(RHO_WP7)
     config[:files] << "spec/events_spec"  unless System.get_property('device_name') == 'Win32' or (System.get_property('platform') == 'ANDROID' and System.get_property('is_emulator'))
 
     config[:files] << "spec/barcode_spec" unless System.get_property('platform') == 'WINDOWS'
-    config[:files] << "spec/mapview_spec"  unless System.get_property('platform') == 'WINDOWS'    
+    config[:files] << "spec/mapview_spec"  unless System.get_property('platform') == 'WINDOWS'
 end
     config[:files] << "spec/nativebar_spec" if System.get_property('platform') != 'Blackberry'
     config[:files] << "spec/navbar_spec" if System.get_property('platform') == 'APPLE' || System.get_property('platform') == 'ANDROID'
@@ -53,7 +53,7 @@ end
 
 if !defined?(RHO_WP7) && !(System.get_property('platform') == 'Blackberry' && (System::get_property('os_version') =~ /^6\.0/))
     config[:files] << "spec/uri_spec"
-end    
+end
 
   end
 
@@ -63,5 +63,5 @@ end
     MSpec.process
     MSpec.exit_code
   end
-  
+
 end

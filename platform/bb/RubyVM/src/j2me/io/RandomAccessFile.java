@@ -3,19 +3,19 @@ package j2me.io;
 import java.io.*;
 import j2me.nio.channels.*;
 
-public class RandomAccessFile  
+public class RandomAccessFile
 {
     public RandomAccessFile(String name, String mode)
         throws FileNotFoundException
     {
         this(name != null ? new File(name) : null, mode);
     }
-        
+
     public RandomAccessFile(File file, String mode)
         throws FileNotFoundException
     {
     }
-    
+
     public void setLength(long newLength) throws IOException
     {
         //TODO: setLength
@@ -56,6 +56,6 @@ public class RandomAccessFile
     public final String readLine() throws IOException {
                 throw new IOException();
                 //TODO: readLine
-        
+
     }
 }

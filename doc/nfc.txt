@@ -1,6 +1,6 @@
 # NFC Developer Guide
 
-The Near Field Communications (NFC) API allows you to use NFC functionality in your Rhodes application. With the NFC API, you can check to see if the mobile device supports NFC, and if so, have it listen for an NFC tag and register a callback if it finds one. You can also have your device push out an NFC tag. 
+The Near Field Communications (NFC) API allows you to use NFC functionality in your Rhodes application. With the NFC API, you can check to see if the mobile device supports NFC, and if so, have it listen for an NFC tag and register a callback if it finds one. You can also have your device push out an NFC tag.
 
 Example Code
 -----------
@@ -15,9 +15,9 @@ To create a Rhodes NFC application, you generate a Rhodes application, then you 
 
 	:::term
 	$ rhodes app nfc
-	
+
 	$ (the command line now shows the app being generated)
-	
+
 	$ cd nfc
 	$ rhodes model stub1 stub2
 
@@ -41,10 +41,10 @@ Rhodes has a hook called on_activate_app that is called every time an applicatio
 	def on_activate_app
 	  # enable NFC on your NFC-capable mobile device
 	  Rho::NFCManager.enable
-	  
+
 	  # Set the method to call for nfc callback
 	  Rho::NFCManager.set_nfc_callback("/app/Nfc/nfc_callback")
-	  
+
 	  # Enable listening for events when the application is in the background
 	  Rho::NFCManager.perform_open_application_event
 	end
@@ -73,13 +73,13 @@ You will write the callback methods in your NFC controller method to process you
 	def on_activate_app
 	  # enable NFC on your NFC-capable mobile device
 	  Rho::NFCManager.enable
-	  
+
 	  # Set the method to call upon an nfc callback
 	  Rho::NFCManager.set_nfc_callback("/app/Nfc/nfc_callback")
-	  
+
 	  # Set the method to call upon an nfc tech callback
 	  Rho::NFCManager.set_nfc_tech_callback("/app/Nfc/nfc_tech_callback")
-	  
+
 	  # Enable listening for events when the application is in the background
 	  Rho::NFCManager.perform_open_application_event
 	end
@@ -169,8 +169,8 @@ For a Ndef record, make a hash and put the payload into it.
 Then make a record from the hash with the NFCManager method make_NdefRecord_from_hash, put the record(s) into an array, and make a message from the array with the NFCManager method make_NdefMessage_from_array_of_NdefRecord(records).
 
 	:::ruby
-    record = Rho::NFCManager.make_NdefRecord_from_hash(hash)       
-    records = [record]        
+    record = Rho::NFCManager.make_NdefRecord_from_hash(hash)
+    records = [record]
     msg = Rho::NFCManager.make_NdefMessage_from_array_of_NdefRecord(records)
 
 ### Writing the NFC Message
@@ -188,11 +188,11 @@ When you are done reading or writing to the NFC tag, close the connection to it 
 	:::ruby
     ndef.close
 
-For example, you can have the following code in your NFC controller method to process NFC tech callbacks. 
+For example, you can have the following code in your NFC controller method to process NFC tech callbacks.
 
 	:::ruby
-	def nfc_tech_callback	
-	  # Get the current tag 
+	def nfc_tech_callback
+	  # Get the current tag
 	  tag = Rho::NFCManager.get_current_Tag
 	  # get the tag technology to find out how to process it; it is an ndef tag
 	  ndef = tag.get_tech(Rho::NFCTagTechnology::NDEF)
@@ -221,10 +221,10 @@ First, you need to make the payload for the message.
 Then put the payload into the record. This is an Ndef example, so we make a hash, then use the NFCManager.make_NdefRecord_from_hash method to create the record.
 
 	:::ruby
-    hash = { 
-      'id' => [0], 
-      'type' => Rho::NdefRecord:: RTD_TEXT, 
-      'tnf' => Rho::NdefRecord::TNF_WELL_KNOWN, 
+    hash = {
+      'id' => [0],
+      'type' => Rho::NdefRecord:: RTD_TEXT,
+      'tnf' => Rho::NdefRecord::TNF_WELL_KNOWN,
       'payload' => payload
     }
     record = Rho::NFCManager.make_NdefRecord_from_hash(hash)
@@ -297,7 +297,7 @@ Here is some code that creates a hash for an NdefRecord, which will be part of a
 You can extract data from an Ndef record with the following methods:
 
 	:::ruby
-	get_id                   # returns byte[] 
+	get_id                   # returns byte[]
 	get_tnf                  # return int
 	get_type                 # returns byte[]
 	get_payload              # returns byte[]
@@ -340,7 +340,7 @@ This example steps through a records array, makes a hash of each record, and put
 	r_a = []
     i = 0
 	while i < records.size do
-      r_a << records[i].make_hash 
+      r_a << records[i].make_hash
       i = i+1
     end
 
@@ -501,12 +501,12 @@ None.
       end
       msg_hash = { 'records' => r_a }
       result = "Tag Result: " + msg_hash['records'][0]['payload_as_string'] if msg_hash['records'].size > 0
-      
+
       ndef.close
 
 ### NFCTagTechnology.is_connected
 
-This method returns true if the application is connected with an NFC tag, false otherwise. 
+This method returns true if the application is connected with an NFC tag, false otherwise.
 
 #### Returns
 
@@ -520,15 +520,15 @@ None.
 
 	:::ruby
 	tag = Rho::NFCManager.get_current_Tag
-    if tag != nil   
+    if tag != nil
       ndef = tag.get_tech(Rho::NFCTagTechnology::NDEF)
       if ndef != nil
         ndef.connect
         connected = ndef.is_connected
-        puts '  Ndef.isConnected() = '+connected.to_s	
+        puts '  Ndef.isConnected() = '+connected.to_s
 
 ## NFCTagTechnology_NfcA Class API
-	    
+
 Subset of NFCTagTechnology class.
 
 ### NFCTagTechnology_NfcA.get_Atqa
@@ -570,7 +570,7 @@ data - byte[] sent to the tag.
 ## NFCTagTechnology_Ndef Class API
 
 Subset of NFCTagTechnology class.
-	        
+
 MIFARE_CLASSIC = 'com.nxp.ndef.mifareclassic'
 NFC_FORUM_TYPE_1 = 'org.nfcforum.ndef.type1'
 NFC_FORUM_TYPE_2 = 'org.nfcforum.ndef.type2'
@@ -669,7 +669,7 @@ bool - True if the tag is made read only, false otherwise.
 #### Parameters
 
 None.
-	    
+
 ### NFCTagTechnology_Ndef.get_type
 
 Returns a string containing the type of the Ndef tag.
@@ -697,7 +697,7 @@ None.
 	  end
 	  #...
 	end
-	    
+
 ### NFCTagTechnology_Ndef.read_NdefMessage
 
 Returns an NdefMessage read from an Ndef tag.
@@ -751,8 +751,8 @@ Subset of NFCTagTechnology.
 	:::term
 	KEY_DEFAULT = [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]
 	KEY_MIFARE_APPLICATION_DIRECTORY = [0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5]
-	KEY_NFC_FORUM =[0xD3, 0xF7, 0xD3, 0xF7, 0xD3, 0xF7]    
-	
+	KEY_NFC_FORUM =[0xD3, 0xF7, 0xD3, 0xF7, 0xD3, 0xF7]
+
 ### Types
 
 	:::term
@@ -869,7 +869,7 @@ The index of the first block in a sector.
 #### Parameters
 
 index - the index to the current sector.
-	
+
 ### NFCTagTechnology_MifareClassic.authenticate_sector_with_key_A(index, key)
 
 Authenticates a sector with a key. Returns true if the authenticate was passed.
@@ -911,7 +911,7 @@ data - byte[] sent to the tag.
 ## NFCTagTechnology_MifareUltralight Class API
 
 Subclass of NFCTagTechnology.
-	
+
 	   TYPE_ULTRALIGHT = 1
 	   TYPE_ULTRALIGHT_C = 2
 	   TYPE_UNKNOWN = -1
@@ -1045,8 +1045,8 @@ None.
 
 #### Parameters
 
-msg - NdefMessage.	
-	
+msg - NdefMessage.
+
 ## NFCTagTechnology_NfcB Class API
 
 Subclass of NFCTagTechnology.
@@ -1165,7 +1165,7 @@ Use the NFCTag class to get the NFC tag in certain formats, such as Ndef.
 
 ### NFCTag.get_tech(tech_name)
 
-This method returns an object with the implementation of the requested NFC tech based on the NFCTagTechnology class. 
+This method returns an object with the implementation of the requested NFC tech based on the NFCTagTechnology class.
 
 #### Returns
 
@@ -1191,7 +1191,7 @@ tech_name - Tech name based on the NFCTagTechnology class.
 
 ### NFCTag.get_tech_list
 
-This method returns a string array containing the NFC tag. 
+This method returns a string array containing the NFC tag.
 
 #### Returns
 
@@ -1203,7 +1203,7 @@ None.
 
 ### NFCTag.get_ID
 
-This method returns a byte array containing the NFC tag ID. 
+This method returns a byte array containing the NFC tag ID.
 
 #### Returns
 
@@ -1239,7 +1239,7 @@ Methods:
 
 ### Callback Tag Message Storage
 
-The NFC callback stores the NFC tag messages in a hash array: 
+The NFC callback stores the NFC tag messages in a hash array:
 
 @params['messages'] - array of NFC tag messages. Each message is a hash.
 
@@ -1248,14 +1248,14 @@ The messages can be picked up in 'raw_message', an array of bytes containing the
  * 'raw_record' - Array of bytes. The raw record.
  * 'id' - Array of bytes. The tag ID.
  * 'payload' - Array of bytes.
- * 'tnf' - Int. The Type Name Format. 
+ * 'tnf' - Int. The Type Name Format.
  * 'type' - array of bytes
- * 'payload_as_string' - String. The message payload in a string (support special formats for URI, TEXT). 
+ * 'payload_as_string' - String. The message payload in a string (support special formats for URI, TEXT).
  * 'subrecords' - message hash (only for SMART_POSTER type)
 
 ### NFCManager.is_supported
 
-This method returns true if the mobile device supports NFC, false otherwise. 
+This method returns true if the mobile device supports NFC, false otherwise.
 
 #### Returns
 
@@ -1275,7 +1275,7 @@ None.
 	  $log = ''
 	  Rho::NFCManager.set_nfc_callback(url_for(:action => :nfc_callback))
 	  Rho::NFCManager.set_nfc_tech_callback(url_for(:action => :nfc_tech_callback))
-	
+
 	  puts 'NfcController.index'
 	  render
 	end
@@ -1322,7 +1322,7 @@ None.
 	def do_disable
 	  Rho::NFCManager.disable
 	  $status = Rho::NFCManager.is_disabled.to_s
-	  set_status($status)    
+	  set_status($status)
 	end
 
 ### NFCManager.is_enabled
@@ -1343,7 +1343,7 @@ None.
 	def do_enable
 	  Rho::NFCManager.enable
 	  $status = Rho::NFCManager.is_enabled.to_s
-	  set_status($status)    
+	  set_status($status)
 	end
 
 ### NFCManager.set_nfc_callback(string), NFCManager.set_nfc_tech_callback(string)
@@ -1365,18 +1365,18 @@ string - url. The path to the method in the NFC controller that is executed on N
 	:::ruby
 	def on_activate_app
       Rho::NFCManager.enable
-      
-      # Perform the nfc_callback or nfc_tech_callback method in 
+
+      # Perform the nfc_callback or nfc_tech_callback method in
       #   nfc_controller.rb on nfc callback
       Rho::NFCManager.set_nfc_callback("/app/Nfc/nfc_callback")
       Rho::NFCManager.set_nfc_tech_callback("/app/Nfc/nfc_tech_callback")
-    
+
       Rho::NFCManager.perform_open_application_event
 	end
 
 ### NFCManager.get_current_Tag
 
-This method returns the current NFCTag that the mobile device has just read, or returns nil if no tag has been discovered. 
+This method returns the current NFCTag that the mobile device has just read, or returns nil if no tag has been discovered.
 
 #### Returns
 
@@ -1411,19 +1411,19 @@ None.
 
 #### Parameters
 
-None. 
+None.
 
 #### Example:
 
 	:::ruby
 	def on_activate_app
       Rho::NFCManager.enable
-      
-      # Perform the nfc_callback or nfc_tech_callback method in 
+
+      # Perform the nfc_callback or nfc_tech_callback method in
       #   nfc_controller.rb on nfc callback
       Rho::NFCManager.set_nfc_callback("/app/Nfc/nfc_callback")
       Rho::NFCManager.set_nfc_tech_callback("/app/Nfc/nfc_tech_callback")
-    
+
       Rho::NFCManager.perform_open_application_event
 	end
 
@@ -1513,16 +1513,16 @@ NdefRecord - An Ndef record.
 	def do_p2p_enable
 	  # prepare an NdefMessage for sending to another device
 	  payload = Rho::NFCManager.make_payload_with_well_known_uri(0, 'http://www.rhomobile.com')
-	  
+
 	  # Create a hash -- id, tnf, type, payload -- for an NFC record
 	  hash = { 'id' => [0], 'type' => Rho::NdefRecord::RTD_URI, 'tnf' => Rho::NdefRecord::TNF_WELL_KNOWN, 'payload' => payload}
-	  
+
 	  # Create the NFC record with that hash
 	  record = Rho::NFCManager.make_NdefRecord_from_hash(hash)
 	  records = [record]
-	  
+
 	  msg = Rho::NFCManager.make_NdefMessage_from_array_of_NdefRecord(records)
-	  
+
 	  # start push message
 	  Rho::NFCManager.p2p_enable_foreground_nde_push(msg)
 	end

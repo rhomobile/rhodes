@@ -22,13 +22,13 @@ extern void* alloca ( unsigned int size);// defined in ext/alloca
 typedef void (*sighandler_t)(int);
 sighandler_t signal(int signum, sighandler_t handler);
 
-int sigfillset(sigset_t *set); 
-int sigdelset(sigset_t *set, int signum); 
-int sigprocmask(int how, const sigset_t *set, sigset_t *oldset); 
+int sigfillset(sigset_t *set);
+int sigdelset(sigset_t *set, int signum);
+int sigprocmask(int how, const sigset_t *set, sigset_t *oldset);
 int raise(int sig);
 int kill(pid_t pid, int sig);
 int pthread_sigmask(int how, const sigset_t *set, sigset_t *oset);
-int execv(const char *path, char *const argv[]); 
+int execv(const char *path, char *const argv[]);
 int pthread_kill(pthread_t thread, int sig);
 #endif
 */

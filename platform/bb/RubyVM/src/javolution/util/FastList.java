@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2005 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -26,33 +26,33 @@ import javolution.context.PersistentContext;
 import javolution.lang.Reusable;
 
 /**
- * <p> This class represents a linked list with real-time behavior; 
+ * <p> This class represents a linked list with real-time behavior;
  *     smooth capacity increase and no memory allocation as long as the
  *     list size does not exceed its initial capacity.</p>
- * 
+ *
  * <p> All of the operations perform as could be expected for a doubly-linked
  *     list ({@link #addLast insertion}/{@link #removeLast() deletion}
- *     at the end of the list are nonetheless the fastest). 
+ *     at the end of the list are nonetheless the fastest).
  *     Operations that index into the list will traverse the list from
- *     the begining or the end whichever is closer to the specified index. 
- *     Random access operations can be significantly accelerated by 
- *     {@link #subList splitting} the list into smaller ones.</p> 
- * 
+ *     the begining or the end whichever is closer to the specified index.
+ *     Random access operations can be significantly accelerated by
+ *     {@link #subList splitting} the list into smaller ones.</p>
+ *
  * <p> {@link FastList} (as for any {@link FastCollection} sub-class) supports
  *     thread-safe, fast iterations without using iterators.[code]
  *     FastList<String> list = new FastList<String>();
  *     for (FastList.Node<String> n = list.head(), end = list.tail(); (n = n.getNext()) != end;) {
- *         String value = n.getValue(); // No typecast necessary.    
+ *         String value = n.getValue(); // No typecast necessary.
  *     }[/code]</p>
- *     
- * <p> {@link FastList} are fully {@link Reusable reusable}, they maintain 
+ *
+ * <p> {@link FastList} are fully {@link Reusable reusable}, they maintain
  *     internal pools of {@link Node nodes} objects. When a node is removed
  *     from its list, it is automatically restored to its pool.</p>
- * 
- * <p> Custom list implementations may override the {@link #newNode} method 
- *     in order to return their own {@link Node} implementation (with 
+ *
+ * <p> Custom list implementations may override the {@link #newNode} method
+ *     in order to return their own {@link Node} implementation (with
  *     additional fields for example).</p>
- *     
+ *
  * @author <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 4.2, December 18, 2006
  */
@@ -103,7 +103,7 @@ implements List/*<E>*/, Reusable {
     /**
      * Creates a persistent list associated to the specified unique identifier
      * (convenience method).
-     * 
+     *
      * @param id the unique identifier for this map.
      * @throws IllegalArgumentException if the identifier is not unique.
      * @see javolution.context.PersistentContext.Reference
@@ -119,10 +119,10 @@ implements List/*<E>*/, Reusable {
     }
 
     /**
-     * Creates a list of specified initial capacity; unless the list size 
+     * Creates a list of specified initial capacity; unless the list size
      * reaches the specified capacity, operations on this list will not allocate
      * memory (no lazy object creation).
-     * 
+     *
      * @param capacity the initial capacity.
      */
     public FastList(int capacity) {
@@ -162,7 +162,7 @@ implements List/*<E>*/, Reusable {
     /**
      * Recycles a list {@link #newInstance() instance} immediately
      * (on the stack when executing in a {@link javolution.context.StackContext
-     * StackContext}). 
+     * StackContext}).
      */
     public static void recycle(FastList instance) {
         FACTORY.recycle(instance);
@@ -207,7 +207,7 @@ implements List/*<E>*/, Reusable {
      *
      * @param index the index of value to return.
      * @return the value at the specified position in this list.
-     * @throws IndexOutOfBoundsException if <code>(index < 0) || 
+     * @throws IndexOutOfBoundsException if <code>(index < 0) ||
      *         (index >= size())</code>
      */
     public final Object/*{E}*/get(int index) {
@@ -223,7 +223,7 @@ implements List/*<E>*/, Reusable {
      * @param index the index of value to replace.
      * @param value the value to be stored at the specified position.
      * @return the value previously at the specified position.
-     * @throws IndexOutOfBoundsException if <code>(index < 0) || 
+     * @throws IndexOutOfBoundsException if <code>(index < 0) ||
      *         (index >= size())</code>
      */
     public final Object/*{E}*/set(int index, Object/*{E}*/value) {
@@ -243,7 +243,7 @@ implements List/*<E>*/, Reusable {
      *
      * @param index the index at which the specified value is to be inserted.
      * @param value the value to be inserted.
-     * @throws IndexOutOfBoundsException if <code>(index < 0) || 
+     * @throws IndexOutOfBoundsException if <code>(index < 0) ||
      *         (index > size())</code>
      */
     public final void add(int index, Object/*{E}*/value) {
@@ -255,15 +255,15 @@ implements List/*<E>*/, Reusable {
     /**
      * Inserts all of the values in the specified collection into this
      * list at the specified position. Shifts the value currently at that
-     * position (if any) and any subsequent values to the right 
-     * (increases their indices). 
+     * position (if any) and any subsequent values to the right
+     * (increases their indices).
      *
      * @param index the index at which to insert first value from the specified
      *        collection.
      * @param values the values to be inserted into this list.
      * @return <code>true</code> if this list changed as a result of the call;
      *         <code>false</code> otherwise.
-     * @throws IndexOutOfBoundsException if <code>(index < 0) || 
+     * @throws IndexOutOfBoundsException if <code>(index < 0) ||
      *         (index > size())</code>
      */
     public final boolean addAll(int index, Collection/*<? extends E>*/values) {
@@ -285,7 +285,7 @@ implements List/*<E>*/, Reusable {
      *
      * @param index the index of the value to removed.
      * @return the value previously at the specified position.
-     * @throws IndexOutOfBoundsException if <code>(index < 0) || 
+     * @throws IndexOutOfBoundsException if <code>(index < 0) ||
      *         (index >= size())</code>
      */
     public final Object/*{E}*/remove(int index) {
@@ -336,8 +336,8 @@ implements List/*<E>*/, Reusable {
     }
 
     /**
-     * Returns a simple iterator over the elements in this list 
-     * (allocated on the stack when executed in a 
+     * Returns a simple iterator over the elements in this list
+     * (allocated on the stack when executed in a
      * {@link javolution.context.StackContext StackContext}).
      *
      * @return an iterator over this list values.
@@ -347,8 +347,8 @@ implements List/*<E>*/, Reusable {
     }
 
     /**
-     * Returns a list iterator over the elements in this list 
-     * (allocated on the stack when executed in a 
+     * Returns a list iterator over the elements in this list
+     * (allocated on the stack when executed in a
      * {@link javolution.context.StackContext StackContext}).
      *
      * @return an iterator over this list values.
@@ -359,9 +359,9 @@ implements List/*<E>*/, Reusable {
 
     /**
      * Returns a list iterator from the specified position
-     * (allocated on the stack when executed in a 
+     * (allocated on the stack when executed in a
      * {@link javolution.context.StackContext StackContext}).
-     * 
+     *
      * The specified index indicates the first value that would be returned by
      * an initial call to the <code>next</code> method.  An initial call to
      * the <code>previous</code> method would return the value with the
@@ -382,11 +382,11 @@ implements List/*<E>*/, Reusable {
 
     /**
      * Returns a view of the portion of this list between the specified
-     * indexes (allocated from the "stack" when executing in a 
+     * indexes (allocated from the "stack" when executing in a
      * {@link javolution.context.StackContext StackContext}).
-     * If the specified indexes are equal, the returned list is empty. 
+     * If the specified indexes are equal, the returned list is empty.
      * The returned list is backed by this list, so non-structural changes in
-     * the returned list are reflected in this list, and vice-versa. 
+     * the returned list are reflected in this list, and vice-versa.
      *
      * This method eliminates the need for explicit range operations (of
      * the sort that commonly exist for arrays). Any operation that expects
@@ -407,7 +407,7 @@ implements List/*<E>*/, Reusable {
      * @param fromIndex low endpoint (inclusive) of the subList.
      * @param toIndex high endpoint (exclusive) of the subList.
      * @return a view of the specified range within this list.
-     * 
+     *
      * @throws IndexOutOfBoundsException if [code](fromIndex < 0 ||
      *          toIndex > size || fromIndex < toIndex)[/code]
      */
@@ -447,7 +447,7 @@ implements List/*<E>*/, Reusable {
 
     /**
      * Inserts the specified value at the beginning of this list.
-     * 
+     *
      * @param value the value to be inserted.
      */
     public final void addFirst(Object/*{E}*/value) {
@@ -456,7 +456,7 @@ implements List/*<E>*/, Reusable {
 
     /**
      * Appends the specified value to the end of this list <i>(fast)</i>.
-     * 
+     *
      * @param value the value to be inserted.
      */
     public void addLast(Object/*{E}*/value) { // Optimized.
@@ -506,9 +506,9 @@ implements List/*<E>*/, Reusable {
 
     /**
      * Inserts the specified value before the specified Node.
-     * 
+     *
      * @param next the Node before which this value is inserted.
-     * @param value the value to be inserted.   
+     * @param value the value to be inserted.
      */
     public final void addBefore(Node/*<E>*/next, Object/*{E}*/value) {
         if (_tail._next == null) {
@@ -533,9 +533,9 @@ implements List/*<E>*/, Reusable {
 
     /**
      * Returns the node at the specified index. This method returns
-     * the {@link #headNode} node when [code]index < 0 [/code] or 
+     * the {@link #headNode} node when [code]index < 0 [/code] or
      * the {@link #tailNode} node when [code]index >= size()[/code].
-     * 
+     *
      * @param index the index of the Node to return.
      */
     private final Node/*<E>*/nodeAt(int index) {
@@ -632,8 +632,8 @@ implements List/*<E>*/, Reusable {
     }
 
     /**
-     * Returns a new node for this list; this method can be overriden by 
-     * custom list implementation. 
+     * Returns a new node for this list; this method can be overriden by
+     * custom list implementation.
      *
      * @return a new node.
      */
@@ -693,7 +693,7 @@ implements List/*<E>*/, Reusable {
     }
 
     /**
-     * This class represents a {@link FastList} node; it allows for direct 
+     * This class represents a {@link FastList} node; it allows for direct
      * iteration over the list {@link #getValue values}.
      * Custom {@link FastList} may use a derived implementation.
      * For example:[code]
@@ -703,7 +703,7 @@ implements List/*<E>*/, Reusable {
      *        }
      *        class MyNode extends Node<E> {
      *            X xxx; // Additional node field (e.g. cross references).
-     *        }        
+     *        }
      *    }[/code]
      */
     public static class Node/*<E>*/implements Record, Serializable {
@@ -731,7 +731,7 @@ implements List/*<E>*/, Reusable {
 
         /**
          * Returns the value for this node.
-         * 
+         *
          * @return the node value.
          */
         public final Object/*{E}*/getValue() {
@@ -1009,7 +1009,7 @@ implements List/*<E>*/, Reusable {
         }
     }
 
-    // For inlining of default comparator. 
+    // For inlining of default comparator.
     private static boolean defaultEquals(Object o1, Object o2) {
         return (o1 == null) ? (o2 == null) : (o1 == o2) || o1.equals(o2);
     }

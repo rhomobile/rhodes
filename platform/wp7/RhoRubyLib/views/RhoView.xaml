@@ -9,7 +9,7 @@
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
     d:DesignHeight="607" d:DesignWidth="480">
-    
+
     <Grid x:Name="LayoutRoot">
         <phone:WebBrowser Grid.Row="1" HorizontalAlignment="Left" Name="webBrowser1" VerticalAlignment="Top" Height="607" Width="480" />
     </Grid>

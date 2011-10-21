@@ -22,7 +22,7 @@ import com.google.zxing.oned.UPCEReader;
 
 /**
  * Parses strings of digits that represent a UPC code.
- * 
+ *
  * @author dswitkin@google.com (Daniel Switkin)
  */
 final class ProductResultParser extends ResultParser {
@@ -50,7 +50,7 @@ final class ProductResultParser extends ResultParser {
         return null;
       }
     }
-    // Not actually checking the checksum again here    
+    // Not actually checking the checksum again here
 
     String normalizedProductID;
     // Expand UPC-E for purposes of searching

@@ -293,7 +293,7 @@ _shttpd_check_authorization(struct conn *c, const char *path)
 			continue;
 
 		if (!memcmp(c->uri, s, p - s)) {
-			
+
 			n = s + len - p;
 			if (n > (int) sizeof(protected_path) - 1)
 				n = sizeof(protected_path) - 1;

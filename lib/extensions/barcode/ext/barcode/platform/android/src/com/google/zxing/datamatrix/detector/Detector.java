@@ -176,19 +176,19 @@ public final class Detector {
                                       ResultPoint topLeft,
                                       ResultPoint topRight,
                                       int dimension) {
-		
+
 		float corr = distance(bottomLeft, bottomRight) / (float)dimension;
 		int norm = distance(topLeft, topRight);
 		float cos = (topRight.getX() - topLeft.getX()) / norm;
 		float sin = (topRight.getY() - topLeft.getY()) / norm;
-		
+
 		ResultPoint c1 = new ResultPoint(topRight.getX()+corr*cos, topRight.getY()+corr*sin);
-	
+
 		corr = distance(bottomLeft, bottomRight) / (float)dimension;
 		norm = distance(bottomRight, topRight);
 		cos = (topRight.getX() - bottomRight.getX()) / norm;
 		sin = (topRight.getY() - bottomRight.getY()) / norm;
-		
+
 		ResultPoint c2 = new ResultPoint(topRight.getX()+corr*cos, topRight.getY()+corr*sin);
 
 		if (!isValid(c1)){
@@ -199,14 +199,14 @@ public final class Detector {
 		} else if (!isValid(c2)){
 			return c1;
 		}
-		
+
 		int l1 = Math.abs(transitionsBetween(topLeft, c1).getTransitions() - transitionsBetween(bottomRight, c1).getTransitions());
 		int l2 = Math.abs(transitionsBetween(topLeft, c2).getTransitions() - transitionsBetween(bottomRight, c2).getTransitions());
-		
+
 		if (l1 <= l2){
 			return c1;
 		}
-		
+
 		return c2;
   }
 

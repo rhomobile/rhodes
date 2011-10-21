@@ -186,7 +186,7 @@ a[target="_replace"] {
 }
 
 /************************************************************************************************/
-    
+
 body > .dialog {
     top: 0;
     width: 100%;
@@ -309,7 +309,7 @@ fieldset > .row:last-child {
     top: -1px;
     left: -1px;
     width: 40px;
-    height: 28px;    
+    height: 28px;
     border: 1px solid #888888;
     -webkit-border-radius: 6px;
     background: #ffffff url(/public/images/thumb.png) repeat-x;
@@ -347,7 +347,7 @@ body > .toolbar {
 }
 /* generate a new button to match toolbar */
 .button {
-  -webkit-border-image: url(/public/images/right_button.png) 0 5 0 5;	
+  -webkit-border-image: url(/public/images/right_button.png) 0 5 0 5;
 }
 table.grid {
 	table-layout: fixed;

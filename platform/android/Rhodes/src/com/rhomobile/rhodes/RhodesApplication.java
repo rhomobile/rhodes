@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -34,13 +34,13 @@ import android.os.Handler;
 import android.os.Process;
 
 public class RhodesApplication extends Application{
-	
+
     private static final String TAG = RhodesApplication.class.getSimpleName();
     private static Handler mHandler;
     static {
         NativeLibraries.load();
     }
-    
+
     @Override
     public void onCreate(){
         super.onCreate();
@@ -103,7 +103,7 @@ public class RhodesApplication extends Application{
 	{
 	    return canStartApp(strCmdLine, "&#");
 	}
-	
+
     public static void stop() {
         Logger.T(TAG, "Stopping application");
         mHandler = new Handler();
@@ -129,12 +129,12 @@ public class RhodesApplication extends Application{
         }, 500);
     }
 
-    
+
     public static abstract class StateHandler implements Runnable
     {
         private Exception error;
         private boolean runOnce;
-        
+
         public StateHandler(boolean once) { runOnce = once; }
 
         protected void setError(Exception err) { error = err; }
@@ -144,7 +144,7 @@ public class RhodesApplication extends Application{
     }
 
     private static void runHandlers(Collection<StateHandler> handlers)
-    { 
+    {
     	for(StateHandler handler: handlers) {
     		handler.run();
             Exception error = handler.getError();
@@ -155,7 +155,7 @@ public class RhodesApplication extends Application{
             }
     	}
     }
-    
+
     public enum AppState
     {
         Undefined("Undefined") {
@@ -174,14 +174,14 @@ public class RhodesApplication extends Application{
             @Override
             public boolean canHandle(AppState state) { return (state == this) || (state == AppStarted); }
         };
-        
+
         private static boolean appActivatedFlag = false;
-        
+
         private Vector<StateHandler> mHandlers = new Vector<StateHandler>();
         private String TAG;
-        
+
         private AppState(String tag) { TAG = tag; }
-        
+
         private synchronized Collection<StateHandler> commit()
         {
             Vector<StateHandler> handlers = new Vector<StateHandler>();
@@ -205,10 +205,10 @@ public class RhodesApplication extends Application{
             Logger.T(TAG, "After AppState commit: " + sAppState.TAG);
             return handlers;
         }
-        
+
         public synchronized void addHandler(StateHandler handler) { mHandlers.add(handler); }
         public abstract boolean canHandle(AppState state);
-        
+
         static public void handleState(AppState state) {
             runHandlers(state.commit());
             Logger.I(sAppState.TAG, "Handlers have completed.");
@@ -219,7 +219,7 @@ public class RhodesApplication extends Application{
             return;
         }
     }
-    
+
     public enum UiState
     {
         Undefined("Undefined") {
@@ -241,9 +241,9 @@ public class RhodesApplication extends Application{
 
         private Vector<StateHandler> mHandlers = new Vector<StateHandler>();
         public String TAG;
-        
+
         private UiState(String tag) { TAG = tag; }
-        
+
         private synchronized Collection<StateHandler> commit()
         {
             Vector<StateHandler> handlers = new Vector<StateHandler>();
@@ -251,7 +251,7 @@ public class RhodesApplication extends Application{
             Logger.T(TAG, "Starting commit. Current UiState: " + sUiState.TAG);
 
             if (!sUiState.canHandle(this)) {
-        		
+
 	            Logger.T(TAG, "Commiting UiState handlers.");
 	            Vector<StateHandler> doneHandlers = new Vector<StateHandler>();
 	            for (StateHandler handler: mHandlers) {
@@ -266,10 +266,10 @@ public class RhodesApplication extends Application{
             Logger.T(TAG, "After UiState commit: " + sUiState.TAG);
             return handlers;
         }
-        
+
         public synchronized void addHandler(StateHandler handler) { mHandlers.add(handler); }
         public abstract boolean canHandle(UiState state);
-        
+
         static public void handleState(UiState state) {
             runHandlers(state.commit());
             Logger.I(sAppState.TAG, "Handlers have completed.");
@@ -278,10 +278,10 @@ public class RhodesApplication extends Application{
 
     private static AppState sAppState = AppState.Undefined;
     private static UiState sUiState = UiState.Undefined;
-    
+
     public static boolean canHandleNow(AppState state) { return sAppState.canHandle(state); }
     public static boolean canHandleNow(UiState state) { return sUiState.canHandle(state); }
-    
+
     public static void runWhen(AppState state, StateHandler handler) {
         Logger.T(TAG, "Current AppState : " + sAppState.TAG);
         if (sAppState.canHandle(state)) {

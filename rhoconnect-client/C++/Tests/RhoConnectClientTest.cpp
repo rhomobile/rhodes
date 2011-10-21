@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -60,7 +60,7 @@ extern "C" int runSyncClientTests()
     //models[0].type = RMT_PROPERTY_FIXEDSCHEMA;
     //For schema model - add this create to rhoconnect-client\C++\Tests\win32\bin\Win32\RhoConnectClientTest\Debug\rho\db\syncdb.schema:
     /*
-    CREATE TABLE "Product_s" ( 
+    CREATE TABLE "Product_s" (
         "brand" varchar default null,
         "created_at" varchar default null,
         "name" varchar default null,
@@ -94,7 +94,7 @@ extern "C" int runSyncClientTests()
 	return 0;
 }
 
-TEST(SyncClient, shouldFindProductBySql) 
+TEST(SyncClient, shouldFindProductBySql)
 {
     unsigned long items = rho_connectclient_findbysql(g_szProduct, "SELECT * FROM sources", 0 );
     EXPECT_NE( items, 0 );
@@ -114,7 +114,7 @@ TEST(SyncClient, shouldFindProductBySql)
 
 }
 
-TEST(SyncClient, ResetAndLogout) 
+TEST(SyncClient, ResetAndLogout)
 {
     rho_sync_set_syncserver("http://rhodes-store-server.heroku.com/application");
 
@@ -123,7 +123,7 @@ TEST(SyncClient, ResetAndLogout)
     EXPECT_EQ(rho_sync_logged_in(), 0);
 }
 
-TEST(SyncClient, UpdateSyncServer) 
+TEST(SyncClient, UpdateSyncServer)
 {
     char* saveSrv = rho_conf_getString("syncserver");
     rho_sync_set_syncserver("http://example.com/sources/");
@@ -137,7 +137,7 @@ TEST(SyncClient, UpdateSyncServer)
     rho_conf_freeString(saveSrv);
 }
 
-TEST(SyncClient, shouldNotSyncWithoutLogin) 
+TEST(SyncClient, shouldNotSyncWithoutLogin)
 {
     EXPECT_EQ(rho_sync_logged_in(), 0);
 
@@ -152,7 +152,7 @@ TEST(SyncClient, shouldNotSyncWithoutLogin)
     rho_sync_free_string(szRes);
 }
 
-TEST(SyncClient, shouldLogin) 
+TEST(SyncClient, shouldLogin)
 {
     EXPECT_EQ(rho_sync_logged_in(), 0);
 
@@ -168,7 +168,7 @@ TEST(SyncClient, shouldLogin)
 
 }
 
-TEST(SyncClient, shouldSyncProductByName) 
+TEST(SyncClient, shouldSyncProductByName)
 {
     EXPECT_EQ(rho_sync_logged_in(), 1);
 
@@ -188,16 +188,16 @@ TEST(SyncClient, shouldSyncProductByName)
 
 }
 
-TEST(SyncClient, shouldSearchProduct) 
+TEST(SyncClient, shouldSearchProduct)
 {
     EXPECT_EQ(rho_sync_logged_in(), 1);
 
     unsigned long ar_sources = rho_connectclient_strarray_create();
     rho_connectclient_strarray_add(ar_sources, g_szProduct);
 
-    String strParams = "offset=0&max_results=10&filterData=Test&search_id=" + 
+    String strParams = "offset=0&max_results=10&filterData=Test&search_id=" +
         convertToStringA( CLocalTime().toULong() );
-    char* szRes = (char*)rho_sync_doSearchByNames( ar_sources, "search", 
+    char* szRes = (char*)rho_sync_doSearchByNames( ar_sources, "search",
         strParams.c_str(), false, 0, "", "" );
 
     rho_connectclient_strarray_delete(ar_sources);
@@ -213,7 +213,7 @@ TEST(SyncClient, shouldSearchProduct)
 
 }
 
-TEST(SyncClient, shouldCreateNewProduct) 
+TEST(SyncClient, shouldCreateNewProduct)
 {
     EXPECT_EQ(rho_sync_logged_in(), 1);
 
@@ -242,7 +242,7 @@ TEST(SyncClient, shouldCreateNewProduct)
     rho_sync_free_string(szRes);
 }
 
-TEST(SyncClient, shouldCreateNewProductWithCustomers) 
+TEST(SyncClient, shouldCreateNewProductWithCustomers)
 {
     EXPECT_EQ(rho_sync_logged_in(), 1);
 
@@ -296,7 +296,7 @@ TEST(SyncClient, shouldCreateNewProductWithCustomers)
     rho_connectclient_hash_delete(prod);
 }
 
-TEST(SyncClient, shouldModifyProduct) 
+TEST(SyncClient, shouldModifyProduct)
 {
     EXPECT_EQ(rho_sync_logged_in(), 1);
 
@@ -334,7 +334,7 @@ TEST(SyncClient, shouldModifyProduct)
 
 }
 
-TEST(SyncClient, shouldDeleteAllTestProduct) 
+TEST(SyncClient, shouldDeleteAllTestProduct)
 {
     EXPECT_EQ(rho_sync_logged_in(), 1);
 
@@ -343,7 +343,7 @@ TEST(SyncClient, shouldDeleteAllTestProduct)
 
     unsigned long items = rho_connectclient_find_all(g_szProduct, cond );
     EXPECT_NE( items, 0 );
-  
+
     for ( int i = 0; i < rho_connectclient_strhasharray_size(items); i++ )
     {
         rho_connectclient_itemdestroy(g_szProduct, rho_connectclient_strhasharray_get(items, i));
@@ -354,7 +354,7 @@ TEST(SyncClient, shouldDeleteAllTestProduct)
 
     unsigned long items2 = rho_connectclient_find_all(g_szProduct, cond2 );
     EXPECT_NE( items2, 0 );
-  
+
     for ( int i = 0; i < rho_connectclient_strhasharray_size(items2); i++ )
     {
         rho_connectclient_itemdestroy(g_szProduct, rho_connectclient_strhasharray_get(items2, i));

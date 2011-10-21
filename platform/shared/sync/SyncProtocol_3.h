@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -68,7 +68,7 @@ struct CSyncProtocol_3 : public ISyncProtocol
 
     String getClientRegisterBody( const String& strClientID, const String& strPin, int nPort, const String& strType, const String& strPhoneID )
     {
-        return "{\"client_id\":" + json::CJSONEntry::quoteValue(strClientID) + 
+        return "{\"client_id\":" + json::CJSONEntry::quoteValue(strClientID) +
             ",\"device_pin\":" + json::CJSONEntry::quoteValue(strPin) +
             ( strPhoneID.length() > 0 ? ",\"phone_id\":" + json::CJSONEntry::quoteValue(strPhoneID) : "") +
             ",\"device_port\":" + json::CJSONEntry::quoteValue(common::convertToStringA(nPort)) +
@@ -104,9 +104,9 @@ struct CSyncProtocol_3 : public ISyncProtocol
 
     String getServerQueryBody(const String& strSrcName, const String& strClientID, int nPageSize )
     {
-        String strQuery = "?client_id=" + strClientID + 
+        String strQuery = "?client_id=" + strClientID +
                 "&p_size=" + common::convertToStringA(nPageSize) + "&version=3";
-        
+
         if ( strSrcName.length() > 0 )
             strQuery += "&source_name=" + strSrcName;
 

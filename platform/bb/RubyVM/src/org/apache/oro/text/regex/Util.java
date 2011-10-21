@@ -1,4 +1,4 @@
-/* 
+/*
  * $Id: Util.java 124053 2005-01-04 01:24:35Z dfs $
  *
  * Copyright 2000-2005 The Apache Software Foundation
@@ -54,7 +54,7 @@ import j2me.util.*;
 public final class Util {
   /**
    * A constant passed to the {@link #substitute substitute()}
-   * methods indicating that all occurrences of a pattern should be 
+   * methods indicating that all occurrences of a pattern should be
    * substituted.
    */
   public static final int SUBSTITUTE_ALL = -1;
@@ -76,12 +76,12 @@ public final class Util {
   /**
    * Splits up a <code>String</code> instance and stores results as a
    * <code>List</code> of substrings numbering no more than a specified
-   * limit.  The string is split with a regular expression as the delimiter. 
+   * limit.  The string is split with a regular expression as the delimiter.
    * The <b>limit</b> parameter essentially says to split the
    * string only on at most the first <b>limit - 1</b> number of pattern
    * occurences.
    * <p>
-   * This method is inspired by the Perl split() function and behaves 
+   * This method is inspired by the Perl split() function and behaves
    * identically to it when used in conjunction with the Perl5Matcher and
    * Perl5Pattern classes except for the following difference:
    * <ul><p>
@@ -111,7 +111,7 @@ public final class Util {
    * @param input   The <code>String</code> to split.
    * @param limit  The limit on the number of resulting split elements.
    *               Values <= 0 produce the same behavior as using the
-   *               <b>SPLIT_ALL</b> constant which causes the limit to be 
+   *               <b>SPLIT_ALL</b> constant which causes the limit to be
    *               ignored and splits to be performed on all occurrences of
    *               the pattern.  You should use the <b>SPLIT_ALL</b> constant
    *               to achieve this behavior instead of relying on the default
@@ -143,7 +143,7 @@ public final class Util {
    * Splits up a <code>String</code> instance and stores results as a
    * <code>Collection</code> of all its substrings using a regular expression
    * as the delimiter.
-   * This method is inspired by the Perl split() function and behaves 
+   * This method is inspired by the Perl split() function and behaves
    * identically to it when used in conjunction with the Perl5Matcher and
    * Perl5Pattern classes except for the following difference:
    * <p>
@@ -152,7 +152,7 @@ public final class Util {
    * method creates additional list elements from each of the matching
    * subgroups in the pattern.  In other words:
    * <ul><p><code>split(list, "/([,-])/", "8-12,15,18")</code></ul>
-   * <p> produces the list containing: 
+   * <p> produces the list containing:
    * <ul><p><code> { "8", "-", "12", ",", "15", ",", "18" } </code> </ul>
    * <p> The OROMatcher split method does not follow this behavior.  The
    * following list would be produced by OROMatcher:
@@ -183,12 +183,12 @@ public final class Util {
   /**
    * Splits up a <code>String</code> instance into strings contained in a
    * <code>Vector</code> of size not greater than a specified limit.  The
-   * string is split with a regular expression as the delimiter. 
+   * string is split with a regular expression as the delimiter.
    * The <b>limit</b> parameter essentially says to split the
    * string only on at most the first <b>limit - 1</b> number of pattern
    * occurences.
    * <p>
-   * This method is inspired by the Perl split() function and behaves 
+   * This method is inspired by the Perl split() function and behaves
    * identically to it when used in conjunction with the Perl5Matcher and
    * Perl5Pattern classes except for the following difference:
    * <ul><p>
@@ -205,14 +205,14 @@ public final class Util {
    * {@link org.apache.oro.text.perl.Perl5Util#split}.
    * </ul>
    * <p>
-   * @deprecated Use 
+   * @deprecated Use
    *  {@link #split(Collection, PatternMatcher, Pattern, String, int)} instead.
    * @param matcher The regular expression matcher to execute the split.
    * @param pattern The regular expression to use as a split delimiter.
    * @param input  The <code>String</code> to split.
    * @param limit  The limit on the size of the returned <code>Vector</code>.
    *               Values <= 0 produce the same behavior as using the
-   *               <b>SPLIT_ALL</b> constant which causes the limit to be 
+   *               <b>SPLIT_ALL</b> constant which causes the limit to be
    *               ignored and splits to be performed on all occurrences of
    *               the pattern.  You should use the <b>SPLIT_ALL</b> constant
    *               to achieve this behavior instead of relying on the default
@@ -228,7 +228,7 @@ public final class Util {
   public static ArrayList split(PatternMatcher matcher, Pattern pattern,
                              String input, int limit)
   {
-    ArrayList results = new ArrayList(20); 
+    ArrayList results = new ArrayList(20);
 
     split(results, matcher, pattern, input, limit);
 
@@ -239,7 +239,7 @@ public final class Util {
   /**
    * Splits up a <code>String</code> instance into a <code>Vector</code>
    * of all its substrings using a regular expression as the delimiter.
-   * This method is inspired by the Perl split() function and behaves 
+   * This method is inspired by the Perl split() function and behaves
    * identically to it when used in conjunction with the Perl5Matcher and
    * Perl5Pattern classes except for the following difference:
    * <p>
@@ -248,7 +248,7 @@ public final class Util {
    * method creates additional list elements from each of the matching
    * subgroups in the pattern.  In other words:
    * <ul><p><code>split("/([,-])/", "8-12,15,18")</code></ul>
-   * <p> produces the Vector containing: 
+   * <p> produces the Vector containing:
    * <ul><p><code> { "8", "-", "12", ",", "15", ",", "18" } </code> </ul>
    * <p> The OROMatcher split method does not follow this behavior.  The
    * following Vector would be produced by OROMatcher:
@@ -262,7 +262,7 @@ public final class Util {
    * split(matcher, pattern, input, Util.SPLIT_ALL);
    * </pre></blockquote>
    * <p>
-   * @deprecated Use 
+   * @deprecated Use
    * {@link #split(Collection, PatternMatcher, Pattern, String)} instead.
    * @param matcher The regular expression matcher to execute the split.
    * @param pattern The regular expression to use as a split delimiter.
@@ -281,7 +281,7 @@ public final class Util {
   /**
    * Searches a string for a pattern and replaces the first occurrences
    * of the pattern with a Substitution up to the number of
-   * substitutions specified by the <b>numSubs</b> parameter.  A 
+   * substitutions specified by the <b>numSubs</b> parameter.  A
    * <b>numSubs</b> value of <b>SUBSTITUTE_ALL</b> will cause all occurrences
    * of the pattern to be replaced.
    * <p>
@@ -305,10 +305,10 @@ public final class Util {
   {
     StringBuffer buffer = new StringBuffer(input.length());
     PatternMatcherInput pinput = new PatternMatcherInput(input);
-    
+
     // Users have indicated that they expect the result to be the
     // original input string, rather than a copy, if no substitutions
-    // are performed, 
+    // are performed,
     if(substitute(buffer, matcher, pattern, sub, pinput, numSubs) != 0)
       return buffer.toString();
     return input;
@@ -343,7 +343,7 @@ public final class Util {
   /**
    * Searches a string for a pattern and replaces the first occurrences
    * of the pattern with a Substitution up to the number of
-   * substitutions specified by the <b>numSubs</b> parameter.  A 
+   * substitutions specified by the <b>numSubs</b> parameter.  A
    * <b>numSubs</b> value of <b>SUBSTITUTE_ALL</b> will cause all occurrences
    * of the pattern to be replaced.  The number of substitutions made
    * is returned.
@@ -375,7 +375,7 @@ public final class Util {
   /**
    * Searches a string for a pattern and replaces the first occurrences
    * of the pattern with a Substitution up to the number of
-   * substitutions specified by the <b>numSubs</b> parameter.  A 
+   * substitutions specified by the <b>numSubs</b> parameter.  A
    * <b>numSubs</b> value of <b>SUBSTITUTE_ALL</b> will cause all occurrences
    * of the pattern to be replaced.  The number of substitutions made
    * is returned.
@@ -404,7 +404,7 @@ public final class Util {
     char[] inputBuffer;
 
     subCount    = 0;
-    beginOffset = input.getBeginOffset(); 
+    beginOffset = input.getBeginOffset();
     inputBuffer = input.getBuffer();
 
     // Must be != 0 because SUBSTITUTE_ALL is represented by -1.

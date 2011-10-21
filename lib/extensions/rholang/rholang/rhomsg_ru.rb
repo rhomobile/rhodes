@@ -6,7 +6,7 @@ module Rho
       'sync_completed'  => "Синхронизация завершена.",
       'syncronizing'    => "Синхронизация ",
       'syncronizing_data' => "Синхронизация данных ...",
-      
+
 	  'home_menu' => "Домой",
 	  'refresh_menu' => "Обновить",
 	  'back_menu' => "Назад",
@@ -16,9 +16,9 @@ module Rho
 	  'close_menu' => "Закрыть",
       'get_link_menu' => "Получить ссылку",
       'get_link_menu' => "Открыть ссылку",
-      
+
       'hide' => 'Закрыть'
     }
-    
+
   end # RhoMessages
 end # Rho

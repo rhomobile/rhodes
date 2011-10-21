@@ -33,18 +33,18 @@ namespace "installer" do
         # Windows
         installerName = $commonName + $majorVer.to_s + "." + $minorVer.to_s + "." + $miniVer +  installerPrefix + $extWinExe
         puts 'new installer file name: ' + installerName
-        File.rename($commonName + $extWinExe, installerName) 
+        File.rename($commonName + $extWinExe, installerName)
       else
-        installerName = $commonName + $majorVer.to_s + "." + $minorVer.to_s + "." + $miniVer +  installerPrefix + $extOsxExe  
+        installerName = $commonName + $majorVer.to_s + "." + $minorVer.to_s + "." + $miniVer +  installerPrefix + $extOsxExe
         puts 'new installer file name: ' + installerName
-        Jake.run2 "hdiutil", ["convert", $macImage, "-format", "UDZO", "-o", installerName], {:nowait => false} 
+        Jake.run2 "hdiutil", ["convert", $macImage, "-format", "UDZO", "-o", installerName], {:nowait => false}
       end
     end
 
     def changeRubyFolder()
       if RUBY_PLATFORM =~ /(win|w)32$/
         #copy ruby folder
-        FileUtils.rm_rf $rubyInstallPath      
+        FileUtils.rm_rf $rubyInstallPath
         FileUtils.cp_r $rubyPath, $rubyInstallPath
       else
         return
@@ -57,29 +57,29 @@ namespace "installer" do
           return
         end
 
-        Jake.run2 "gem", ["uninstall", "rhomobile-debug", "-a"], {:nowait => false} 
-        Jake.run2 "gem", ["uninstall", "rhodes", "-a"], {:nowait => false} 
-        Jake.run2 "gem", ["uninstall", "rhoconnect", "-a"], {:nowait => false}       
-        Jake.run2 "gem", ["uninstall", "rhoconnect-adapters", "-a"], {:nowait => false} 
+        Jake.run2 "gem", ["uninstall", "rhomobile-debug", "-a"], {:nowait => false}
+        Jake.run2 "gem", ["uninstall", "rhodes", "-a"], {:nowait => false}
+        Jake.run2 "gem", ["uninstall", "rhoconnect", "-a"], {:nowait => false}
+        Jake.run2 "gem", ["uninstall", "rhoconnect-adapters", "-a"], {:nowait => false}
 
-        Jake.run2 "gem", ["install", "rhomobile-debug"], {:nowait => false} 
+        Jake.run2 "gem", ["install", "rhomobile-debug"], {:nowait => false}
 
 	if isRhodesBeta == false
-          Jake.run2 "gem", ["install", "rhodes"], {:nowait => false} 
+          Jake.run2 "gem", ["install", "rhodes"], {:nowait => false}
         else
-          Jake.run2 "gem", ["install", "rhodes", "--pre"], {:nowait => false} 
+          Jake.run2 "gem", ["install", "rhodes", "--pre"], {:nowait => false}
         end
 
 	if $isConnBeta == false
-          Jake.run2 "gem", ["install", "rhoconnect"], {:nowait => false}       
+          Jake.run2 "gem", ["install", "rhoconnect"], {:nowait => false}
         else
-          Jake.run2 "gem", ["install", "rhoconnect", "--pre"], {:nowait => false}       
+          Jake.run2 "gem", ["install", "rhoconnect", "--pre"], {:nowait => false}
         end
 
         if $isAdapterBeta == false
-          Jake.run2 "gem", ["install", "rhoconnect-adapters"], {:nowait => false} 
+          Jake.run2 "gem", ["install", "rhoconnect-adapters"], {:nowait => false}
         else
-          Jake.run2 "gem", ["install", "rhoconnect-adapters", "--pre"], {:nowait => false} 
+          Jake.run2 "gem", ["install", "rhoconnect-adapters", "--pre"], {:nowait => false}
         end
 
         changeRubyFolder()
@@ -100,7 +100,7 @@ namespace "installer" do
         installGems(false, false, false)
       end
 
-      task :nsis => "gems" do 
+      task :nsis => "gems" do
         runInstallerScript
       end
 
@@ -117,7 +117,7 @@ namespace "installer" do
         installGems(true, true, true)
       end
 
-      task :nsis => "gems" do 
+      task :nsis => "gems" do
         runInstallerScript
       end
 
@@ -132,7 +132,7 @@ namespace "installer" do
         installGems($isRhodesBeta, $isConnBeta, $isAdapterBeta)
       end
 
-      task :nsis => "gems" do 
+      task :nsis => "gems" do
         runInstallerScript
       end
 

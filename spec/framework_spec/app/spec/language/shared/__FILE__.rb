@@ -33,5 +33,5 @@ describe :language___FILE__, :shared => true do
       ScratchPad.recorded.should == [@path]
     end
   end
-=end  
+=end
 end

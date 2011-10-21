@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2006 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -18,14 +18,14 @@ import javolution.text.Text;
 /**
  * <p> This class contains the library {@link #main} method for
  *     versionning, self-tests, and performance analysis.</p>
- * <p> It is also the base class for the library benchmarks and 
+ * <p> It is also the base class for the library benchmarks and
  *     self-tests.</p>
  *
  * @author  <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 1.0, September 14, 2004
  */
 public class Javolution {
-    
+
     /**
      * Holds the version information.
      */
@@ -46,12 +46,12 @@ public class Javolution {
      *    java -jar javolution.jar perf <i>(run benchmark)</i>
      * [/code]
      * Configurable are read from system properties.
-     * 
+     *
      *
      * @param  args the option arguments.
      * @throws Exception if a problem occurs.
      */
-/*    
+/*
     public static void main(String[] args) throws Exception {
         LogContext.enter(LogContext.SYSTEM_OUT); // Output results to System.out
         try {
@@ -94,11 +94,11 @@ public class Javolution {
          javolution.lang.Configurable.read(System.getProperties());
          LogContext.info("");
          /**/
-     /*   
+     /*
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         new ContextTestSuite().run();
         new UtilTestSuite().run();
-        
+
         TestContext.info("More tests coming soon...");
 
     }*/
@@ -108,8 +108,8 @@ public class Javolution {
     ///////////////////////////////////////////////
 
     /**
-     * Returns the class having the specified name; for 
-     * backward compatibility with CLDC 1.0 (cannot use .class as exception 
+     * Returns the class having the specified name; for
+     * backward compatibility with CLDC 1.0 (cannot use .class as exception
      * java.lang.NoClassDefFoundError does not exist for that platform).
      */
     public static Class j2meGetClass(String name) {
@@ -136,9 +136,9 @@ public class Javolution {
     }
 
     /**
-     * Converts the specified String as CharSequence (String is a 
+     * Converts the specified String as CharSequence (String is a
      * CharSequence only for J2SE 1.4+).
-     * 
+     *
      * @param str the String to convert.
      * @return <code>this</code> or a text wrapper.
      */

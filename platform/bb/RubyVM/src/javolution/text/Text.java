@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2005 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -27,50 +27,50 @@ import javolution.util.FastMap;
 //import javolution.xml.XMLSerializable;
 
 /**
- * <p> This class represents an immutable character sequence with 
- *     fast {@link #concat concatenation}, {@link #insert insertion} and 
- *     {@link #delete deletion} capabilities (O[Log(n)]) instead of 
+ * <p> This class represents an immutable character sequence with
+ *     fast {@link #concat concatenation}, {@link #insert insertion} and
+ *     {@link #delete deletion} capabilities (O[Log(n)]) instead of
  *     O[n] for StringBuffer/StringBuilder).</p>
- * <p> This class has the same methods as 
+ * <p> This class has the same methods as
  *     <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/String.html">
- *     Java String</a> and 
+ *     Java String</a> and
  *     <a href="http://msdn2.microsoft.com/en-us/library/system.string.aspx">
  *     .NET String</a> with the following benefits:<ul>
- *     <li> No need for an intermediate 
- *          {@link StringBuffer}/{@link StringBuilder} in order to manipulate 
+ *     <li> No need for an intermediate
+ *          {@link StringBuffer}/{@link StringBuilder} in order to manipulate
  *          textual documents (insertion, deletion or concatenation).</li>
  *     <li> Bug free. They are not plagued by the {@link String#substring} <a
  *          href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4513622">
- *          memory leak bug</a> (when small substrings prevent memory from 
+ *          memory leak bug</a> (when small substrings prevent memory from
  *          larger string from being garbage collected).</li>
- *     <li> More flexible as they allows for search and comparison with any 
+ *     <li> More flexible as they allows for search and comparison with any
  *          <code>java.lang.String</code> or <code>CharSequence</code>.</li>
- *     <li> Support custom allocation policies (instances allocated on the 
- *          "stack" when executing in a 
+ *     <li> Support custom allocation policies (instances allocated on the
+ *          "stack" when executing in a
  *          {@link javolution.context.StackContext StackContext}).</li>
  *     </ul></p>
- * <p> {@link Text} literals should be explicitely {@link #intern interned}. 
+ * <p> {@link Text} literals should be explicitely {@link #intern interned}.
  *     Unlike strings literals and strings-value constant expressions,
  *     interning is not implicit. For example:[code]
  *         final static Text TRUE = Text.intern("true");
  *         final static Text FALSE = Text.intern("false");
  *     [/code]
  *     Interned texts are always allocated in ImmortalMemory (RTSJ VMs).</p>
- * <p> {@link Text} instances can be {@link #println printed out} directly 
+ * <p> {@link Text} instances can be {@link #println printed out} directly
  *     (no intermediate <code>String</code> allocated). For example:[code]
  *           FastTable myTable ...;
  *           myTable.toText().println(); // Prints to System.out
- *     [/code]</p>           
- *     
- * <p><i> Implementation Note: To avoid expensive copy operations , 
- *        {@link Text} instances are broken down into smaller immutable 
+ *     [/code]</p>
+ *
+ * <p><i> Implementation Note: To avoid expensive copy operations ,
+ *        {@link Text} instances are broken down into smaller immutable
  *        sequences, they form a minimal-depth binary tree.
- *        The tree is maintained balanced automatically through <a 
- *        href="http://en.wikipedia.org/wiki/Tree_rotation">tree rotations</a>. 
+ *        The tree is maintained balanced automatically through <a
+ *        href="http://en.wikipedia.org/wiki/Tree_rotation">tree rotations</a>.
  *        Insertion/deletions are performed in <code>O[Log(n)]</code>
- *        instead of <code>O[n]</code> for 
+ *        instead of <code>O[n]</code> for
  *        <code>StringBuffer/StringBuilder</code>.</i></p>
- * 
+ *
  * @author  <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @author Wilfried Middleton
  * @version 5.1, July 1, 2007
@@ -134,7 +134,7 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
 
     /**
      * Creates a new text instance.
-     * 
+     *
      * @param isPrimitive indicates if primitive or composite.
      */
     private Text(boolean isPrimitive) {
@@ -144,15 +144,15 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
     /**
      * Creates a text holding the characters from the specified <code>String
      * </code>.
-     * 
-     * @param str the string holding the character content. 
+     *
+     * @param str the string holding the character content.
      */
     public Text(String str) {
         this(str.length() <= BLOCK_SIZE);
         _count = str.length();
         if (_data != null) { // Primitive.
             str.getChars(0, _count, _data, 0);
-        } else { // Composite, splits on a block boundary. 
+        } else { // Composite, splits on a block boundary.
             int half = ((_count + BLOCK_SIZE) >> 1) & BLOCK_MASK;
             _head = new Text(str.substring(0, half));
             _tail = new Text(str.substring(half, _count));
@@ -161,7 +161,7 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
 
     /**
      * Returns the text representing the specified object.
-     * If the object is an instance of {@link Realtime} 
+     * If the object is an instance of {@link Realtime}
      * then {@link Realtime#toText()} is returned.
      *
      * @param  obj the object to represent as text.
@@ -208,7 +208,7 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
     }
 
     /**
-     * Returns the text that contains the characters from the specified 
+     * Returns the text that contains the characters from the specified
      * array.
      *
      * @param chars the array source of the characters.
@@ -219,14 +219,14 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
     }
 
     /**
-     * Returns the text that contains the characters from the specified 
+     * Returns the text that contains the characters from the specified
      * subarray of characters.
      *
      * @param chars the source of the characters.
      * @param offset the index of the first character in the data soure.
      * @param length the length of the text returned.
      * @return the corresponding instance.
-     * @throws IndexOutOfBoundsException if <code>(offset < 0) || 
+     * @throws IndexOutOfBoundsException if <code>(offset < 0) ||
      *         (length < 0) || ((offset + length) > chars.length)</code>
      */
     public static Text valueOf(char[] chars, int offset, int length) {
@@ -244,9 +244,9 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
     }
 
     /**
-     * Converts a text builder to a text instance (optimization for 
+     * Converts a text builder to a text instance (optimization for
      * TextBuilder.toText()).
-     * 
+     *
      * @param  start the index of the first character inclusive.
      * @param  end the index of the last character exclusive.
      * @return the corresponding text instance.
@@ -268,8 +268,8 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
      * Returns the text representation of the <code>boolean</code> argument.
      *
      * @param b a <code>boolean</code>.
-     * @return if the argument is <code>true</code>, the text 
-     *          <code>"true"</code> is returned; otherwise, the text 
+     * @return if the argument is <code>true</code>, the text
+     *          <code>"true"</code> is returned; otherwise, the text
      *          <code>"false"</code> is returned.
      */
     public static Text valueOf(boolean b) {
@@ -281,7 +281,7 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
     private static final Text FALSE = Text.intern("false");
 
     /**
-     * Returns the text instance corresponding to the specified character. 
+     * Returns the text instance corresponding to the specified character.
      *
      * @param c a character.
      * @return a text of length <code>1</code> containing <code>'c'</code>.
@@ -381,10 +381,10 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
      * @param  d the <code>double</code> to format.
      * @param  digits the number of significative digits (excludes exponent) or
      *         <code>-1</code> to mimic the standard library (16 or 17 digits).
-     * @param  scientific <code>true</code> to forces the use of the scientific 
-     *         notation (e.g. <code>1.23E3</code>); <code>false</code> 
-     *         otherwise. 
-     * @param  showZero <code>true</code> if trailing fractional zeros are 
+     * @param  scientific <code>true</code> to forces the use of the scientific
+     *         notation (e.g. <code>1.23E3</code>); <code>false</code>
+     *         otherwise.
+     * @param  showZero <code>true</code> if trailing fractional zeros are
      *         represented; <code>false</code> otherwise.
      * @return the corresponding text instance.
      * @throws IllegalArgumentException if <code>(digits &gt; 19)</code>)
@@ -407,9 +407,9 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
     }
 
     /**
-     * Returns the concatenation of this text and the textual 
+     * Returns the concatenation of this text and the textual
      * representation of the specified object.
-     * 
+     *
      * @param  obj the object whose textual representation is appended.
      * @return <code>this.concat(Text.valueOf(obj))</code>
      */
@@ -418,8 +418,8 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
     }
 
     /**
-     * Concatenates the specified text to the end of this text. 
-     * This method is very fast (faster even than 
+     * Concatenates the specified text to the end of this text.
+     * This method is very fast (faster even than
      * <code>StringBuffer.append(String)</code>) and still returns
      * a text instance with an internal binary tree of minimal depth!
      *
@@ -440,9 +440,9 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
         } else { // Returns a composite.
             Text head = this;
             Text tail = that;
-            if (((head._count << 1) < tail._count) 
+            if (((head._count << 1) < tail._count)
                     && (tail._data == null)) { // tail is composite
-                // head too small, returns (head + tail/2) + (tail/2) 
+                // head too small, returns (head + tail/2) + (tail/2)
                 if (tail._head._count > tail._tail._count) {
                     // Rotates to concatenate with smaller part.
                     tail = tail.rightRotation();
@@ -488,10 +488,10 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
 
     /**
      * Returns a portion of this text.
-     * 
+     *
      * @param  start the index of the first character inclusive.
      * @return the sub-text starting at the specified position.
-     * @throws IndexOutOfBoundsException if <code>(start < 0) || 
+     * @throws IndexOutOfBoundsException if <code>(start < 0) ||
      *          (start > this.length())</code>
      */
     public Text subtext(int start) {
@@ -499,7 +499,7 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
     }
 
     /**
-     * Returns the text having the specified text inserted at 
+     * Returns the text having the specified text inserted at
      * the specified location.
      *
      * @param index the insertion position.
@@ -528,7 +528,7 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
     }
 
     /**
-     * Replaces each character sequence of this text that matches the specified 
+     * Replaces each character sequence of this text that matches the specified
      * target sequence with the specified replacement sequence.
      *
      * @param target the character sequence to be replaced.
@@ -544,7 +544,7 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
     }
 
     /**
-     * Replaces the specified characters in this text with the specified 
+     * Replaces the specified characters in this text with the specified
      * replacement sequence.
      *
      * @param charSet the set of characters to be replaced.
@@ -591,7 +591,7 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
      * @param  csq a character sequence.
      * @param  fromIndex the index to start the search from.
      * @return the index in the range
-     *         <code>[fromIndex, length() - csq.length()]</code> 
+     *         <code>[fromIndex, length() - csq.length()]</code>
      *         or <code>-1</code> if the character sequence is not found.
      */
     public int indexOf(CharSequence csq, int fromIndex) {
@@ -740,8 +740,8 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
 
     /**
      * Returns a text equals to the specified character sequence from a pool of
-     * unique text instances in <code>ImmortalMemory</code>.  
-     * 
+     * unique text instances in <code>ImmortalMemory</code>.
+     *
      * @return an unique text instance allocated in <code>ImmortalMemory</code>.
      */
     public static Text intern(final CharSequence csq) {
@@ -751,8 +751,8 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
 
     /**
      * Returns a text equals to the specified string from a pool of
-     * unique text instances in <code>ImmortalMemory</code>.  
-     * 
+     * unique text instances in <code>ImmortalMemory</code>.
+     *
      * @return an unique text instance allocated in <code>ImmortalMemory</code>.
      */
     public static Text intern(final String str) {
@@ -778,7 +778,7 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
      * character sequence.
      *
      * @param csq the character sequence to compare with.
-     * @return <code>true</code> if the specified character sequence has the 
+     * @return <code>true</code> if the specified character sequence has the
      *        same character content as this text; <code>false</code> otherwise.
      */
     public boolean contentEquals(CharSequence csq) {
@@ -793,10 +793,10 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
 
     /**
      * Indicates if this text has the same character contend as the specified
-     * character sequence ignoring case considerations. 
+     * character sequence ignoring case considerations.
      *
      * @param  csq the <code>CharSequence</code> to compare this text against.
-     * @return <code>true</code> if the argument and this text are equal, 
+     * @return <code>true</code> if the argument and this text are equal,
      *         ignoring case; <code>false</code> otherwise.
      */
     public boolean contentEqualsIgnoreCase(CharSequence csq) {
@@ -821,10 +821,10 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
     /**
      * Compares this text against the specified object for equality.
      * Returns <code>true</code> if the specified object is a text having
-     * the same character sequence as this text. 
-     * For generic comparaison with any character sequence the 
+     * the same character sequence as this text.
+     * For generic comparaison with any character sequence the
      * {@link #contentEquals(CharSequence)} should be used.
-     * 
+     *
      * @param  obj the object to compare with or <code>null</code>.
      * @return <code>true</code> if that is a text with the same character
      *         sequence as this text; <code>false</code> otherwise.
@@ -859,7 +859,7 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
     }
 
     /**
-     * Compares this text to another character sequence or string 
+     * Compares this text to another character sequence or string
      * lexicographically.
      *
      * @param   csq the character sequence to be compared.
@@ -872,7 +872,7 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
     }
 
     /**
-     * Returns <code>this</code> (implements 
+     * Returns <code>this</code> (implements
      * {@link javolution.lang.ValueType Realtime} interface).
      *
      * @return <code>this</code>
@@ -930,7 +930,7 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
 
     /**
      * Prints out this text to the specified writer.
-     * 
+     *
      * @param writer the destination writer.
      */
     public void print(Writer writer) throws IOException {
@@ -943,9 +943,9 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
     }
 
     /**
-     * Prints out this text to the specified writer and then terminates 
+     * Prints out this text to the specified writer and then terminates
      * the line.
-     * 
+     *
      * @param writer the destination writer.
      */
     public void println(Writer writer) throws IOException {
@@ -955,9 +955,9 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
 
     /**
      * Converts the characters of this text to lower case.
-     * 
+     *
      * @return the text in lower case.
-     * @see Character#toLowerCase(char) 
+     * @see Character#toLowerCase(char)
      */
     public Text toLowerCase() {
         if (_data == null) // Composite.
@@ -971,9 +971,9 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
 
     /**
      * Converts the characters of this text to upper case.
-     * 
+     *
      * @return the text in lower case.
-     * @see Character#toUpperCase(char) 
+     * @see Character#toUpperCase(char)
      */
     public Text toUpperCase() {
         if (_data == null) // Composite.
@@ -1001,7 +1001,7 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
      *
      * @param  index the index of the character.
      * @return the character at the specified index.
-     * @throws IndexOutOfBoundsException if <code>(index < 0) || 
+     * @throws IndexOutOfBoundsException if <code>(index < 0) ||
      *         (index >= this.length())</code>
      */
     public char charAt(int index) {
@@ -1018,7 +1018,7 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
      * @param c the character to search for.
      * @param fromIndex the index to start the search from.
      * @return the index of the first occurrence of the character in this text
-     *         that is greater than or equal to <code>fromIndex</code>, 
+     *         that is greater than or equal to <code>fromIndex</code>,
      *         or <code>-1</code> if the character does not occur.
      */
     public int indexOf(char c, int fromIndex) {
@@ -1048,7 +1048,7 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
      * @param c the character to search for.
      * @param fromIndex the index to start the search backward from.
      * @return the index of the first occurrence of the character in this text
-     *         that is less than or equal to <code>fromIndex</code>, 
+     *         that is less than or equal to <code>fromIndex</code>,
      *         or <code>-1</code> if the character does not occur.
      */
     public int lastIndexOf(char c, int fromIndex) {
@@ -1074,7 +1074,7 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
      *
      * @param  start the index of the first character inclusive.
      * @param  end the index of the last character exclusive.
-     * @return the sub-text starting at the specified start position and 
+     * @return the sub-text starting at the specified start position and
      *         ending just before the specified end position.
      * @throws IndexOutOfBoundsException if <code>(start < 0) || (end < 0) ||
      *         (start > end) || (end > this.length())</code>
@@ -1408,7 +1408,7 @@ public final class Text implements CharSequence, Comparable, /*XMLSerializable,*
         text._count = length;
         return text;
     }
-    
+
     private static final ObjectFactory PRIMITIVE_FACTORY = new ObjectFactory() {
 
         public Object create() {

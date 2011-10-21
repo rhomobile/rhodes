@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -113,21 +113,21 @@ void parseHttpProxyURI(const rho::String &http_proxy)
             break;
         case ST_HOST:
             if (c == ':') {
-                host = token; token.clear();            
+                host = token; token.clear();
                 prev_state = state; state = ST_PORT;
             } else if (c == '@') {
-                host = token; token.clear();        
-                prev_state = state;    state = ST_LOGIN;                    
+                host = token; token.clear();
+                prev_state = state;    state = ST_LOGIN;
             } else {
                 token += c;
                 if (i == (length - 1)) {
-                    host = token; token.clear();                                
+                    host = token; token.clear();
                 }
             }
             break;
         case ST_PORT:
             if (c == '@') {
-                port = token; token.clear();            
+                port = token; token.clear();
                 prev_state = state; state = ST_LOGIN;
             } else {
                 token += c;
@@ -145,18 +145,18 @@ void parseHttpProxyURI(const rho::String &http_proxy)
             } else {
                 token += c;
                 if (i == (length - 1)) {
-                    login = token; token.clear();                                
+                    login = token; token.clear();
                 }
             }
             break;
         case ST_PASSWORD:
             if (c == '@') {
-                password = token; token.clear();            
+                password = token; token.clear();
                 prev_state = state; state = ST_HOST;
             } else {
                 token += c;
                 if (i == (length - 1)) {
-                    password = token; token.clear();                                
+                    password = token; token.clear();
                 }
             }
             break;
@@ -171,7 +171,7 @@ void parseHttpProxyURI(const rho::String &http_proxy)
     RAWLOGC_INFO1("RhodesImpl", "HTTP proxy password = %s", password.c_str());
     RAWLOGC_INFO1("RhodesImpl", "HTTP proxy host     = %s", host.c_str());
     RAWLOGC_INFO1("RhodesImpl", "HTTP proxy port     = %s", port.c_str());
-    
+
     if (host.length()) {
         RHOCONF().setString ("http_proxy_host", host, false);
 

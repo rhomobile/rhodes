@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -46,7 +46,7 @@
 
 #ifdef OS_WINCE
 #include <winsock.h>
-#endif 
+#endif
 
 using rho::net::HttpHeader;
 using rho::net::HttpHeaderList;
@@ -149,7 +149,7 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
     Command *cmd = (Command *)pCmd;
     if (!cmd)
         return;
-    
+
 /*
     if (cmd->type < m_expected)
     {
@@ -258,7 +258,7 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
 
 /*static*/ CRhodesApp* CRhodesApp::Create(const String& strRootPath)
 {
-    if ( m_pInstance != null) 
+    if ( m_pInstance != null)
         return (CRhodesApp*)m_pInstance;
 
     m_pInstance = new CRhodesApp(strRootPath);
@@ -296,7 +296,7 @@ CRhodesApp::CRhodesApp(const String& strRootPath)
 #endif
 
     initAppUrls();
-    
+
     initHttpServer();
 
     getSplashScreen().init();
@@ -359,7 +359,7 @@ CRhodesApp::~CRhodesApp(void)
 boolean CRhodesApp::callTimerCallback(const String& strUrl, const String& strData)
 {
     String strBody = "rho_callback=1";
-		
+
     if ( strData.length() > 0 )
         strBody += "&" + strData;
 
@@ -555,7 +555,7 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
     }
 }
 
-void CRhodesApp::callBarcodeCallback(String strCallbackUrl, const String& strBarcode, bool isError) 
+void CRhodesApp::callBarcodeCallback(String strCallbackUrl, const String& strBarcode, bool isError)
 {
     strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
     String strBody;
@@ -573,8 +573,8 @@ void CRhodesApp::callBarcodeCallback(String strCallbackUrl, const String& strBar
     getNetRequest().pushData( strCallbackUrl, strBody, null );
 }
 
-void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImagePath, 
-    const String& strError, boolean bCancel ) 
+void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImagePath,
+    const String& strError, boolean bCancel )
 {
     strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
     String strBody;
@@ -591,8 +591,8 @@ void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImag
     getNetRequest().pushData( strCallbackUrl, strBody, null );
 }
 
-void CRhodesApp::callSignatureCallback(String strCallbackUrl, const String& strSignaturePath, 
-										const String& strError, boolean bCancel ) 
+void CRhodesApp::callSignatureCallback(String strCallbackUrl, const String& strSignaturePath,
+										const String& strError, boolean bCancel )
 	{
 		strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
 		String strBody;
@@ -604,11 +604,11 @@ void CRhodesApp::callSignatureCallback(String strCallbackUrl, const String& strS
 				strBody = "status=error&message=" + strError;
 		}else
 			strBody = "status=ok&signature_uri=db%2Fdb-files%2F" + strSignaturePath;
-		
+
 		strBody += "&rho_callback=1";
 		getNetRequest().pushData( strCallbackUrl, strBody, null );
 	}
-	
+
 void CRhodesApp::callDateTimeCallback(String strCallbackUrl, long lDateTime, const char* szData, int bCancel )
 {
     strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
@@ -661,7 +661,7 @@ static void callback_redirect_to(void *arg, String const &strQuery )
 
     if ( strUrl.length() == 0 )
         strUrl = "/app/";
-	
+
     rho_http_redirect(arg, (rho::net::URI::urlDecode(strUrl)).c_str());
 }
 
@@ -771,14 +771,14 @@ int CRhodesApp::determineFreeListeningPort()
     int nFreePort = 0, noerrors = 1;
 
 	LOG(INFO) + "Trying to get free listening port.";
-	
+
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if ( sockfd < 0 )
     {
         LOG(WARNING) + "Unable to open socket";
         noerrors = 0;
     }
-    
+
     int disable = 0;
     if (noerrors && setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (const char*)&disable, sizeof(disable)) != 0)
     {
@@ -792,7 +792,7 @@ int CRhodesApp::determineFreeListeningPort()
         noerrors = 0;
     }
 #endif
-    
+
     if (noerrors)
     {
         int listenPort = rho_conf_getInt("local_server_port");
@@ -807,7 +807,7 @@ int CRhodesApp::determineFreeListeningPort()
         serv_addr.sin_family = AF_INET;
         serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
         serv_addr.sin_port = htons((short)listenPort);
-        
+
         LOG(INFO) + "Trying to bind of " + listenPort + " port...";
 
         if ( bind( sockfd, (struct sockaddr *) &serv_addr, sizeof( serv_addr ) ) != 0 )
@@ -823,7 +823,7 @@ int CRhodesApp::determineFreeListeningPort()
                 serv_addr.sin_port = htons(0);
 
                 LOG(INFO) + "Trying to bind on dynamic port...";
-            
+
                 if ( bind( sockfd, (struct sockaddr *) &serv_addr, sizeof( serv_addr ) ) != 0 )
                 {
                     LOG(WARNING) + "Unable to bind";
@@ -841,9 +841,9 @@ int CRhodesApp::determineFreeListeningPort()
     if ( noerrors )
     {
         char buf[10] = {0};
-        
+
         socklen_t length = sizeof( serv_addr );
-        
+
         if (getsockname( sockfd, (struct sockaddr *)&serv_addr, &length ) != 0)
         {
             LOG(WARNING) + "Can not get socket info";
@@ -855,21 +855,21 @@ int CRhodesApp::determineFreeListeningPort()
             LOG(INFO) + "Got port to bind on: " + nFreePort;
         }
     }
-    
+
     //Clean up
 #if defined(OS_ANDROID)
     close(sockfd);
 #else
     closesocket(sockfd);
 #endif
-	
+
 	return nFreePort;
 }
-	
-void CRhodesApp::initAppUrls() 
+
+void CRhodesApp::initAppUrls()
 {
-    CRhodesAppBase::initAppUrls(); 
-    
+    CRhodesAppBase::initAppUrls();
+
 #if defined( OS_WINCE ) || defined( __SYMBIAN32__ ) || defined( OS_ANDROID )
     m_strHomeUrl = "http://localhost:";
 #else
@@ -896,11 +896,11 @@ void CRhodesApp::keepLastVisitedUrl(String strUrl)
 }
 
 const String& CRhodesApp::getCurrentUrl(int index)
-{ 
+{
     if (index < 0) index = rho_webview_active_tab();
     if (index < 0) index = 0;
     if ( index < static_cast<int>(m_currentUrls.size()) )
-        return m_currentUrls[index]; 
+        return m_currentUrls[index];
 
     return m_EmptyString;
 }
@@ -911,7 +911,7 @@ const String& CRhodesApp::getAppBackUrl()
     if (index < 0)
         index = 0;
     if ( index < static_cast<int>(m_arAppBackUrl.size()) )
-        return m_arAppBackUrl[index]; 
+        return m_arAppBackUrl[index];
 
     return m_EmptyString;
 }
@@ -1028,7 +1028,7 @@ const String& CRhodesApp::getOptionsUrl()
     return m_strOptionsUrl;
 }
 
-const String& CRhodesApp::getRhobundleReloadUrl() 
+const String& CRhodesApp::getRhobundleReloadUrl()
 {
     m_strRhobundleReloadUrl = RHOCONF().getString("rhobundle_zip_url");
     return m_strRhobundleReloadUrl;
@@ -1049,35 +1049,35 @@ public:
     {
         String strDevicePin = rho::sync::CClientRegister::getInstance() ? rho::sync::CClientRegister::getInstance()->getDevicePin() : "";
 	    String strClientID = rho::sync::CSyncThread::getSyncEngine().readClientID();
-        
+
         String strLogUrl = RHOCONF().getPath("logserver");
         if ( strLogUrl.length() == 0 )
             strLogUrl = RHOCONF().getPath("syncserver");
-        
+
 	    String strQuery = strLogUrl + "client_log?" +
             "client_id=" + strClientID + "&device_pin=" + strDevicePin + "&log_name=" + RHOCONF().getString("logname");
-        
+
         net::CMultipartItem oItem;
         oItem.m_strFilePath = LOGCONF().getLogFilePath();
         oItem.m_strContentType = "application/octet-stream";
-        
+
         boolean bOldSaveToFile = LOGCONF().isLogToFile();
         LOGCONF().setLogToFile(false);
         NetRequest oNetRequest;
         oNetRequest.setSslVerifyPeer(false);
-        
+
         NetResponse resp = getNetRequest(&oNetRequest).pushMultipartData( strQuery, oItem, &(rho::sync::CSyncThread::getSyncEngine()), null );
         LOGCONF().setLogToFile(bOldSaveToFile);
-        
+
         boolean isOK = true;
-        
+
         if ( !resp.isOK() )
         {
             LOG(ERROR) + "send_log failed : network error - " + resp.getRespCode() + "; Body - " + resp.getCharData();
             isOK = false;
         }
 
-        if (m_strCallback.length() > 0) 
+        if (m_strCallback.length() > 0)
         {
             const char* body = isOK ? "rho_callback=1&status=ok" : "rho_callback=1&status=error";
 
@@ -1088,7 +1088,7 @@ public:
     }
 };
 
-boolean CRhodesApp::sendLog( const String& strCallbackUrl) 
+boolean CRhodesApp::sendLog( const String& strCallbackUrl)
 {
     if ( m_bSendingLog )
         return true;
@@ -1185,20 +1185,20 @@ void CRhodesApp::setScreenRotationNotification(String strUrl, String strParams)
 
 void CRhodesApp::callScreenRotationCallback(int width, int height, int degrees)
 {
-	synchronized(m_mxScreenRotationCallback) 
+	synchronized(m_mxScreenRotationCallback)
 	{
 		if (m_strScreenRotationCallback.length() == 0)
 			return;
-		
+
 		String strBody = "rho_callback=1";
-		
+
         strBody += "&width=";   strBody += convertToStringA(width);
 		strBody += "&height=";  strBody += convertToStringA(height);
 		strBody += "&degrees="; strBody += convertToStringA(degrees);
-		
+
         if ( m_strScreenRotationCallbackParams.length() > 0 )
             strBody += "&" + m_strPushCallbackParams;
-			
+
 		NetResponse resp = getNetRequest().pushData( m_strScreenRotationCallback, strBody, null);
         if (!resp.isOK()) {
             LOG(ERROR) + "Screen rotation notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
@@ -1268,7 +1268,7 @@ unsigned long rho_rhodesapp_GetCallbackObject(int nIndex)
     return RHODESAPP().getCallbackObject(nIndex);
 }
 
-char* rho_http_normalizeurl(const char* szUrl) 
+char* rho_http_normalizeurl(const char* szUrl)
 {
     rho::String strRes = RHODESAPP().canonicalizeRhoUrl(szUrl);
     return strdup(strRes.c_str());
@@ -1278,7 +1278,7 @@ void rho_http_free(void* data)
 {
     free(data);
 }
-    
+
 void rho_http_redirect( void* httpContext, const char* szUrl)
 {
     HttpHeaderList headers;
@@ -1290,7 +1290,7 @@ void rho_http_redirect( void* httpContext, const char* szUrl)
     headers.push_back(HttpHeader("Cache-Control", "no-store"));
     headers.push_back(HttpHeader("Expires", 0));
     headers.push_back(HttpHeader("Content-Type", "text/plain"));
-    
+
     CHttpServer *serv = (CHttpServer *)httpContext;
     serv->send_response(serv->create_response("301 Moved Permanently", headers), true);
 }
@@ -1299,11 +1299,11 @@ void rho_http_senderror(void* httpContext, int nError, const char* szMsg)
 {
     char buf[30];
     snprintf(buf, sizeof(buf), "%d", nError);
-    
+
     rho::String reason = buf;
     reason += " ";
     reason += szMsg;
-    
+
     CHttpServer *serv = (CHttpServer *)httpContext;
     serv->send_response(serv->create_response(reason));
 }
@@ -1311,24 +1311,24 @@ void rho_http_senderror(void* httpContext, int nError, const char* szMsg)
 void rho_http_sendresponse(void* httpContext, const char* szBody)
 {
     size_t nBodySize = strlen(szBody);
-    
+
     HttpHeaderList headers;
     headers.push_back(HttpHeader("Content-Length", nBodySize));
     headers.push_back(HttpHeader("Pragma", "no-cache"));
     headers.push_back(HttpHeader("Cache-Control", "no-cache"));
     headers.push_back(HttpHeader("Expires", 0));
-    
+
     const char *fmt = "%a, %d %b %Y %H:%M:%S GMT";
     char date[64], lm[64], etag[64];
     time_t	_current_time = time(0);
     strftime(date, sizeof(date), fmt, localtime(&_current_time));
     strftime(lm, sizeof(lm), fmt, localtime(&_current_time));
     snprintf(etag, sizeof(etag), "\"%lx.%lx\"", (unsigned long)_current_time, (unsigned long)nBodySize);
-    
+
     headers.push_back(HttpHeader("Date", date));
     headers.push_back(HttpHeader("Last-Modified", lm));
     headers.push_back(HttpHeader("Etag", etag));
-    
+
     CHttpServer *serv = (CHttpServer *)httpContext;
     serv->send_response(serv->create_response("200 OK", headers, szBody));
 }
@@ -1337,21 +1337,21 @@ int	rho_http_snprintf(char *buf, size_t buflen, const char *fmt, ...)
 {
 	va_list		ap;
 	int		n;
-		
+
 	if (buflen == 0)
 		return (0);
-		
+
 	va_start(ap, fmt);
 	n = vsnprintf(buf, buflen, fmt, ap);
 	va_end(ap);
-		
+
 	if (n < 0 || (size_t) n >= buflen)
 		n = buflen - 1;
 	buf[n] = '\0';
-		
+
 	return (n);
 }
-	
+
 void rho_rhodesapp_create(const char* szRootPath)
 {
     rho::common::CRhodesApp::Create(szRootPath);
@@ -1361,7 +1361,7 @@ void rho_rhodesapp_start()
 {
     RHODESAPP().startApp();
 }
-    
+
 void rho_rhodesapp_destroy()
 {
     rho::common::CRhodesApp::Destroy();
@@ -1422,18 +1422,18 @@ void rho_rhodesapp_navigate_back()
     RHODESAPP().navigateBack();
 }
 
-void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* strImagePath, 
+void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* strImagePath,
     const char* strError, int bCancel )
 {
     RHODESAPP().callCameraCallback(strCallbackUrl, strImagePath, strError, bCancel != 0);
 }
 
-void rho_rhodesapp_callSignatureCallback(const char* strCallbackUrl, const char* strSignaturePath, 
+void rho_rhodesapp_callSignatureCallback(const char* strCallbackUrl, const char* strSignaturePath,
 									  const char* strError, int bCancel )
 {
 	RHODESAPP().callSignatureCallback(strCallbackUrl, strSignaturePath, strError, bCancel != 0);
 }
-	
+
 void rho_rhodesapp_callDateTimeCallback(const char* strCallbackUrl, long lDateTime, const char* szData, int bCancel )
 {
     RHODESAPP().callDateTimeCallback(strCallbackUrl, lDateTime, szData, bCancel != 0);
@@ -1520,11 +1520,11 @@ void rho_net_request(const char *url)
     getNetRequest().pullData(url, null);
 }
 
-void rho_net_request_with_data(const char *url, const char *str_body) 
+void rho_net_request_with_data(const char *url, const char *str_body)
 {
     getNetRequest().pushData(url, str_body, null);
 }
-	
+
 void rho_rhodesapp_load_url(const char *url)
 {
     RHODESAPP().loadUrl(url);
@@ -1577,7 +1577,7 @@ int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
         return 1;
 
 	int skpos = strCmdLine.find(security_key);
-	if ((String::size_type)skpos != String::npos) 
+	if ((String::size_type)skpos != String::npos)
     {
 		String tmp = strCmdLine.substr(skpos+security_key.length(), strCmdLine.length() - security_key.length() - skpos);
 

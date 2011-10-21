@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -101,14 +101,14 @@ public:
     void addMessage(String strMesage){ applyExcludeFilter(strMesage); m_strMessage+=strMesage; }
     void addRawString(const char* data, int nLen){ m_strMessage.append(data, nLen); }
 
-    const String& getLastFmt()const{ return m_lastFmt.m_strFmt; } 
+    const String& getLastFmt()const{ return m_lastFmt.m_strFmt; }
     void  clearLastFmt(){ m_lastFmt.m_strFmt = String(); }
     void  setLastFmt(const LogFormat& fmt ){ m_lastFmt = fmt; }
 
     bool isEnabled()const;
 
     template<class T>
-    inline LogMessage& operator+(const T &value) { 
+    inline LogMessage& operator+(const T &value) {
 
         if ( isEnabled() )
         {
@@ -132,24 +132,24 @@ public:
                 addMessage( common::convertToStringA(value) );
         }
 
-        return *this; 
+        return *this;
     }
 
 //    template<>
-    inline LogMessage& operator+/*<LogMessage::LogFormat>*/(const LogMessage::LogFormat& value) { 
+    inline LogMessage& operator+/*<LogMessage::LogFormat>*/(const LogMessage::LogFormat& value) {
         setLastFmt( value );
 
         return *this;
     }
 
 //    template<>
-    inline LogMessage& operator+/*<String>*/(const String &value) { 
+    inline LogMessage& operator+/*<String>*/(const String &value) {
 
         return *this + value.c_str();
     }
 
-    /*inline LogMessage& operator+(const char* value) 
-    { 
+    /*inline LogMessage& operator+(const char* value)
+    {
         if (isEnabled())
         {
             m_strMessage+= value;
@@ -157,7 +157,7 @@ public:
         }
         return *this;
     }*/
-    
+
 private:
     void flushLog();
     void addPrefix(const char* file, int line);
@@ -202,7 +202,7 @@ extern "C"{
 #endif //__cplusplus
 
 extern const char* _rawDefaultCategory;
-#define DEFAULT_LOGCATEGORY _rawDefaultCategory 
+#define DEFAULT_LOGCATEGORY _rawDefaultCategory
 
 void rhoPlainLogVar(const char* file, int line, LogSeverity severity, const char* szCategory,
                  const char* format, ... );
@@ -288,7 +288,7 @@ int rhoPlainLogData(const char* file, int line, LogSeverity severity, const char
 #define RAWLOG_ERROR2(msg,arg1,arg2) RAWLOGC_ERROR2( DEFAULT_LOGCATEGORY, msg, arg1,arg2 )
 #define RAWLOG_ERROR3(msg,arg1,arg2,arg3) RAWLOGC_ERROR3( DEFAULT_LOGCATEGORY, msg, arg1,arg2,arg3 )
 #define RAWLOG_ERROR4(msg,arg1,arg2,arg3,arg4) RAWLOGC_ERROR4( DEFAULT_LOGCATEGORY, msg, arg1,arg2,arg3,arg4 )
-    
+
 #else
 #define RAWLOGC_ERROR(category,msg) RAWLOG_NONE
 #define RAWLOGC_ERROR1(category,msg,arg1) RAWLOG_NONE
@@ -301,7 +301,7 @@ int rhoPlainLogData(const char* file, int line, LogSeverity severity, const char
 #define RAWLOG_ERROR2(msg,arg1,arg2) RAWLOG_NONE
 #define RAWLOG_ERROR3(msg,arg1,arg2,arg3) RAWLOG_NONE
 #define RAWLOG_ERROR4(msg,arg1,arg2,arg3,arg4) RAWLOG_NONE
-    
+
 #endif
 
 #if RHO_STRIP_LOG <= L_FATAL

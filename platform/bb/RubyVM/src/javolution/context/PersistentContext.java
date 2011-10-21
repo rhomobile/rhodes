@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2006 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -13,12 +13,12 @@ import j2me.util.Map;
 import javolution.util.FastMap;
 
 /**
- * <p> This class represents a context persistent accross multiple program 
- *     executions. It is typically used to hold  
- *     {@link Reference persistent references}.</p>  
- *     
- * <p> How this context is loaded/saved is application specific. 
- *     Although, the simplest way is to use Javolution XML serialization 
+ * <p> This class represents a context persistent accross multiple program
+ *     executions. It is typically used to hold
+ *     {@link Reference persistent references}.</p>
+ *
+ * <p> How this context is loaded/saved is application specific.
+ *     Although, the simplest way is to use Javolution XML serialization
  *     facility. For example:[code]
  *      import javolution.xml.XMLObjectReader;
  *      import javolution.xml.XMLObjectWriter;
@@ -32,7 +32,7 @@ import javolution.util.FastMap;
  *           XMLObjectWriter writer = XMLObjectWriter.newInstance(new FileOutputStream("C:/persistent.xml"));
  *           writer.write(PersistentContext.getCurrent(), PersistentContext.class);
  *      }[/code]</p>
- *     
+ *
  * @author  <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 4.2, December 31, 2006
  */
@@ -55,8 +55,8 @@ public class PersistentContext extends Context {
     }
 
     /**
-     * Sets the persistent instance. 
-     * 
+     * Sets the persistent instance.
+     *
      * @param ctx the persistent instance.
      */
     public static void setCurrent(PersistentContext ctx) {
@@ -73,7 +73,7 @@ public class PersistentContext extends Context {
     }
 
     /**
-     * Returns the persistent context instance (singleton).  
+     * Returns the persistent context instance (singleton).
      *
      * @return the persistent context instance.
      */
@@ -82,7 +82,7 @@ public class PersistentContext extends Context {
     }
 
     /**
-     * Returns the ID to value mapping for this persistent context.  
+     * Returns the ID to value mapping for this persistent context.
      *
      * @return the persistent value indexed by identifiers.
      */
@@ -92,7 +92,7 @@ public class PersistentContext extends Context {
 
     /**
      * Throws <code>UnsupportedOperationException</code> persistent context
-     * are global to all threads (singleton).  
+     * are global to all threads (singleton).
      */
     protected void enterAction() {
         throw new j2me.lang.UnsupportedOperationException(
@@ -101,7 +101,7 @@ public class PersistentContext extends Context {
 
     /**
      * Throws <code>UnsupportedOperationException</code> persistent context
-     * are global to all threads (singleton).  
+     * are global to all threads (singleton).
      */
     protected void exitAction() {
         throw new j2me.lang.UnsupportedOperationException(
@@ -109,9 +109,9 @@ public class PersistentContext extends Context {
     }
 
     /**
-     * <p> This class represents a reference over an object which can be kept 
-     *     persistent accross multiple program executions. Instances of this class 
-     *     are typically used to hold global data time consuming to regenerate. 
+     * <p> This class represents a reference over an object which can be kept
+     *     persistent accross multiple program executions. Instances of this class
+     *     are typically used to hold global data time consuming to regenerate.
      *     For example:[code]
      *     public class FastMap<K,V> implements Map<K, V> {
      *         // Provides a constructor for persistent maps.
@@ -126,14 +126,14 @@ public class PersistentContext extends Context {
      *     }
      *     ...
      *     // Persistent lookup table for units multiplications.
-     *     static FastMap<Unit, FastMap<Unit, Unit>> UNITS_MULT_LOOKUP 
+     *     static FastMap<Unit, FastMap<Unit, Unit>> UNITS_MULT_LOOKUP
      *          =  new FastMap<Unit, FastMap<Unit, Unit>>("UNITS_MULT_LOOKUP").setShared(true);
      *    [/code]</p>
-     *    
-     * <p> Persistent references may also be used to hold optimum configuration 
+     *
+     * <p> Persistent references may also be used to hold optimum configuration
      *     values set from previous executions. For example:[code]
-     *     public Targets {  
-     *          private static PersistentContext.Reference<Integer> CAPACITY 
+     *     public Targets {
+     *          private static PersistentContext.Reference<Integer> CAPACITY
      *               = new PersistentContext.Reference<Integer>("Targets#CAPACITY", 256);
      *          private Target[] _targets = new Target[CAPACITY.get()];
      *          private int _count;
@@ -142,7 +142,7 @@ public class PersistentContext extends Context {
      *                  Target[] tmp = new Target[_count * 2];
      *                  System.arraycopy(_targets, 0, tmp, 0, _count);
      *                  _targets = tmp;
-     *                  CAPACITY.setMinimum(_targets.length); // Persists. 
+     *                  CAPACITY.setMinimum(_targets.length); // Persists.
      *              }
      *              _targets[_count++] target;
      *         }
@@ -170,9 +170,9 @@ public class PersistentContext extends Context {
         private Object/*{T}*/ _value;
 
         /**
-         * Creates a persistent reference identified by the specified name and 
+         * Creates a persistent reference identified by the specified name and
          * having the specified default value.
-         * 
+         *
          * @param id the unique identifier.
          * @param defaultValue the default value.
          * @throws IllegalArgumentException if the name is not unique.
@@ -203,11 +203,11 @@ public class PersistentContext extends Context {
         }
 
         /**
-         * Sets this reference to the specified value only if 
+         * Sets this reference to the specified value only if
          * <code>(value.compareTo(this.get()) &gt; 0)</code>.
-         * 
+         *
          * @param value the minimum value for this reference.
-         * @throws IllegalArgumentException if the specified value is not 
+         * @throws IllegalArgumentException if the specified value is not
          *         {@link Comparable} or an {@link Integer} instance (J2ME).
          */
         public void setMinimum(Object/*{T}*/value) {
@@ -230,11 +230,11 @@ public class PersistentContext extends Context {
         }
 
         /**
-         * Sets this reference to the specified value only if 
+         * Sets this reference to the specified value only if
          * <code>(value.compareTo(this.get()) &lt; 0)</code>.
-         * 
+         *
          * @param value the maximum value for this reference.
-         * @throws IllegalArgumentException if the specified value is not 
+         * @throws IllegalArgumentException if the specified value is not
          *         {@link Comparable} or an {@link Integer} instance (J2ME).
          */
         public void setMaximum(Object/*{T}*/value) {
@@ -257,7 +257,7 @@ public class PersistentContext extends Context {
         }
 
         /**
-         * Returns the string representation of the current value of this 
+         * Returns the string representation of the current value of this
          * reference.
          *
          * @return <code>String.valueOf(this.get())</code>

@@ -743,7 +743,7 @@ public class ArrayUtil {
         else {
             return null;
         }
-        
+
         if (source instanceof byte[]){
             byte[] newArray = new byte[size];
             System.arraycopy(source, 0, newArray, 0, size);
@@ -752,7 +752,7 @@ public class ArrayUtil {
         else {
             Object[] newArray = new Object[size];
             System.arraycopy(source, 0, newArray, 0, size);
-            return newArray; 
+            return newArray;
         }
 
     }
@@ -791,10 +791,10 @@ public class ArrayUtil {
         if (oldsize == newsize) {
             return source;
         }
-    	
+
         return resizeArray(source, newsize);
     }
-    
+
     /**
      * Returns a new array of given size, containing as many elements of
      * the original array as it can hold. N.B. Always returns a new array
@@ -816,13 +816,13 @@ public class ArrayUtil {
     }*/
 
     public static Object resizeArray(Object source, int newsize) {
-        
+
         int oldsize = 0;
-  
+
         if (source instanceof byte[]){
             byte[] arrayIn = (byte[])source;
             byte[] newArray = new byte[newsize];
-            
+
             if (arrayIn.length < newsize){
                 newsize = arrayIn.length;
             }
@@ -831,7 +831,7 @@ public class ArrayUtil {
         } else if (source instanceof int[]){
             int[] arrayIn = (int[])source;
             int[] newArray = new int[newsize];
-            
+
             if (arrayIn.length < newsize){
                 newsize = arrayIn.length;
             }
@@ -840,7 +840,7 @@ public class ArrayUtil {
         } else if (source instanceof double[]){
             double[] arrayIn = (double[])source;
             double[] newArray = new double[newsize];
-            
+
             if (arrayIn.length < newsize){
                 newsize = arrayIn.length;
             }
@@ -849,7 +849,7 @@ public class ArrayUtil {
         } else if (source instanceof boolean[]){
             boolean[] arrayIn = (boolean[])source;
             boolean[] newArray = new boolean[newsize];
-            
+
             if (arrayIn.length < newsize){
                 newsize = arrayIn.length;
             }
@@ -858,7 +858,7 @@ public class ArrayUtil {
         } else if (source instanceof short[]){
             short[] arrayIn = (short[])source;
             short[] newArray = new short[newsize];
-            
+
             if (arrayIn.length < newsize){
                 newsize = arrayIn.length;
             }
@@ -867,14 +867,14 @@ public class ArrayUtil {
         } else if (source instanceof long[]){
             long[] arrayIn = (long[])source;
             long[] newArray = new long[newsize];
-            
+
             if (arrayIn.length < newsize){
                 newsize = arrayIn.length;
             }
             System.arraycopy(source, 0, newArray, 0, newsize);
             return newArray;
         }
-        
+
         if (source.getClass().isArray()){
             Object[] arrayIn = (Object[])source;
             oldsize = arrayIn.length;
@@ -882,7 +882,7 @@ public class ArrayUtil {
         else {
             return null;
         }
-        
+
         Object[] newArray = null;
         if (source instanceof String[]){
             newArray = new String[newsize];
@@ -924,11 +924,11 @@ public class ArrayUtil {
         if (oldsize < newsize){
             newsize = oldsize;
         }
-        
+
         System.arraycopy(source, 0, newArray, 0, newsize);
-        return newArray;   
+        return newArray;
     }
-    
+
     /**
      * Returns an array containing the elements of parameter source, with one
      * element removed or added. Parameter adjust {-1, +1} indicates the
@@ -947,7 +947,7 @@ public class ArrayUtil {
         else {
             return null;
         }
-        
+
         Object arrayElement = null;
         if (addition != null){
             if (addition.getClass().isArray()){
@@ -967,9 +967,9 @@ public class ArrayUtil {
                 arrayElement = source;
             }
         }
-        
+
         Object newarray = null;
-        
+
         if (arrayElement == null){
             newarray = new Object[newsize];
         }
@@ -981,14 +981,14 @@ public class ArrayUtil {
         }
         else {
             newarray = new Object[newsize];
-        }    
+        }
 
         copyAdjustArray(source, newarray, addition, colindex, adjust);
 
         return newarray;
     }
 
-    
+
     /**
      *  Copies elements of source to dest. If adjust is -1 the element at
      *  colindex is not copied. If adjust is +1 that element is filled with

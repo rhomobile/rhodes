@@ -367,7 +367,7 @@ public class Library {
      * @return the base 10 logarithm of <code>x</code>, as a <code>double</code>
      */
     public static double log10(double x) {
-    	throw new java.lang.RuntimeException("NotImplemented");    	
+    	throw new java.lang.RuntimeException("NotImplemented");
         //return roundMagic(Math.log(x) * LOG10_FACTOR);
     }
 
@@ -485,7 +485,7 @@ public class Library {
         /*double f = Math.pow(10., p);
 
         return Math.round(d * f) / f;*/
-    	
+
     	throw new java.lang.RuntimeException("NotImplemented");
     }
 
@@ -1360,7 +1360,7 @@ public class Library {
             return daynameFormat.format(d, daynameBuffer,
                                         dayPosition).toString();
         }*/
-    	
+
     	throw new java.lang.RuntimeException("NotImplemented");
 
     }
@@ -1414,7 +1414,7 @@ public class Library {
 
         return ValuePool.getInt(HsqlDateTime.getDateTimePart(d,
                 Calendar.DAY_OF_YEAR));*/
-        
+
         throw new java.lang.RuntimeException("NotImplemented");
     }
 
@@ -1495,8 +1495,8 @@ public class Library {
             return monthnameFormat.format(d, monthnameBuffer,
                                           monthPosition).toString();
         }*/
-    	
-    	throw new java.lang.RuntimeException("NotImplemented");    	
+
+    	throw new java.lang.RuntimeException("NotImplemented");
     }
 
     /**
@@ -1562,7 +1562,7 @@ public class Library {
 
         return ValuePool.getInt(HsqlDateTime.getDateTimePart(d,
                 Calendar.WEEK_OF_YEAR));*/
-    	throw new java.lang.RuntimeException("NotImplemented");    	
+    	throw new java.lang.RuntimeException("NotImplemented");
     }
 
     /**
@@ -1597,8 +1597,8 @@ public class Library {
 
             return tocharFormat.format(d);
         }*/
-    	
-    	throw new java.lang.RuntimeException("NotImplemented");    	
+
+    	throw new java.lang.RuntimeException("NotImplemented");
     }
 
     // date calculations.
@@ -1705,7 +1705,7 @@ public class Library {
             return (g2.getTime().getTime() - g1.getTime().getTime())
                    / (1000 * 60 * 60);
         }    // end if-else
-        throw new java.lang.RuntimeException("NotImplemented");        
+        throw new java.lang.RuntimeException("NotImplemented");
 /*
         // if we got here, then we really need to work:
         long  elapsed = 0;
@@ -2299,7 +2299,7 @@ public class Library {
                ? functionMap.get(fname.substring(prefixLength), -1)
                : -1;
     }
-    
+
     static public class Method
     {
     	Class m_retType;
@@ -2309,18 +2309,18 @@ public class Library {
     		m_retType = retType;
     		m_aArgClasses = aArgClasses;
     	}
-    	
+
     	public Class getReturnType()
     	{
     		return m_retType;
     	}
-    	
+
     	Class[] getParameterTypes()
     	{
     		return m_aArgClasses;
     	}
     };
-    
+
     static public Method find_method(String strFullName)
     {
     	if ( strFullName.equals("org.hsqldb.Library.ucase") )

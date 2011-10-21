@@ -19,7 +19,7 @@ public class BufferedOutputStream extends FilterOutputStream{
     	}
     	buf[count++] = (byte)b;*/
     }
-    
+
     public synchronized void write(byte b[], int off, int len) throws IOException {
     	/*if (len >= buf.length) {
     	    flushBuffer();
@@ -32,5 +32,5 @@ public class BufferedOutputStream extends FilterOutputStream{
     	System.arraycopy(b, off, buf, count, len);
     	count += len;*/
     }
-    
+
 }

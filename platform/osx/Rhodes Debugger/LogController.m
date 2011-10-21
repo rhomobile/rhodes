@@ -46,39 +46,39 @@
 {
 	[self setPipe:[NSPipe pipe]];
 	[self setInpipe:[NSPipe pipe]];
-	
+
 	// Catch the stdout in our pipe
 	[self setStdoutFileHandle:[pipe fileHandleForReading]];
 	[self setStdinFileHandle:[inpipe fileHandleForWriting]];
 	[task setStandardOutput:pipe];
 	[task setStandardError:pipe];
 	[task setStandardInput:inpipe];
-	
+
 	[stdoutFileHandle readInBackgroundAndNotify];
-	
+
 	// Get a notification when the task ends
 	[[NSNotificationCenter defaultCenter]
 	 addObserver: self
 	 selector: @selector(taskFinished:)
 	 name: NSTaskDidTerminateNotification
 	 object: task];
-	
+
 	// Listen for notifications from readInBackgroundAndNotify
 	[[NSNotificationCenter defaultCenter]
 	 addObserver: self
 	 selector: @selector(gotData:)
 	 name: NSFileHandleReadCompletionNotification
 	 object: stdoutFileHandle];
-	
+
 	// Clear the output text view
 	if(outputTextView) {
 		[[[outputTextView textStorage] mutableString] setString:@""];
-	
+
 		[outputTextView setEditable:false];
 	}
-	
+
 	[self appendString:@"Execution Started\n\n"];
-	
+
 	finished = false;
 	// Run!
     [task launch];
@@ -87,7 +87,7 @@
 - (void)taskFinished:(NSNotification *)notification
 {
 	// We're done - stop listening for notifications
-	
+
 	[[NSNotificationCenter defaultCenter] removeObserver: self
 													name: NSFileHandleReadCompletionNotification
 												  object: stdoutFileHandle];
@@ -108,20 +108,20 @@
 	NSDictionary	*userInfoDictionary=NULL;
 	NSData			*data=NULL;
 	NSString		*stringData=NULL;
-	
+
 	userInfoDictionary = [inNotification userInfo];
 	require(userInfoDictionary != NULL, exit);
-	
+
 	data = [userInfoDictionary objectForKey: NSFileHandleNotificationDataItem];
 	require(data != NULL, exit);
-	
+
 	stringData = [[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding];
 	require(stringData != NULL, exit);
-	
+
 	// We got some data - append it to the end of the master script output
 	//[self appendString:@"###"];
 	[self appendString:stringData];
-	
+
 	if ([[self waitString] length] > 0) {
 		if ([stringData rangeOfString:[self waitString]].location != NSNotFound) {
 			if([cmdQueue count] > 0) {
@@ -134,15 +134,15 @@
 				if ( delegate && [delegate respondsToSelector:@selector(logControllerTaskIsWaiting:)] ) {
 					[delegate logControllerTaskIsWaiting:self];
 				}
-				
+
 			}
 		}
-	}	
+	}
 exit:
-	
+
 	// Continue to listen for more data
 	[stdoutFileHandle readInBackgroundAndNotify];
-	
+
 	if (stringData != NULL)
 	{
 		[stringData release];
@@ -159,7 +159,7 @@ exit:
 	} else {
 		attribString=[[[NSAttributedString alloc] initWithString:stringData] autorelease];
 	}
-	
+
 	[self appendAttributedString:attribString];
 }
 

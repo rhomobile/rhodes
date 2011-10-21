@@ -6,7 +6,7 @@ extern void rho_bluetooth_off_bluetooth();
 extern void rho_bluetooth_set_device_name(const char* device_name);
 extern VALUE rho_bluetooth_get_device_name();
 extern const char* rho_bluetooth_get_last_error();
-extern const char* rho_bluetooth_create_session(const char* role, const char* callback_url); 
+extern const char* rho_bluetooth_create_session(const char* role, const char* callback_url);
 
 extern const char* rho_bluetooth_create_custom_server_session(const char* client_name, const char* callback_url, int accept_any_device);
 extern const char* rho_bluetooth_create_custom_client_session(const char* server_name, const char* callback_url);
@@ -55,7 +55,7 @@ extern void off_bluetooth();
 extern void set_device_name(const char* device_name);
 extern VALUE get_device_name();
 extern const char* get_last_error();
-extern const char* create_session(const char* role, const char* callback_url); 
+extern const char* create_session(const char* role, const char* callback_url);
 
 extern const char* create_custom_server_session(const char* client_name, const char* callback_url, int accept_any_device);
 extern const char* create_custom_client_session(const char* server_name, const char* callback_url);

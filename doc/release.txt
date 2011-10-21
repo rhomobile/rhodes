@@ -1,11 +1,11 @@
 # Rhodes Release procedure
 ## Install Rhodes beta
     gem uninstall rhodes
-    gem install rhodes --pre --no-ri --no-rdoc 
-    
+    gem install rhodes --pre --no-ri --no-rdoc
+
     add <gem>/bin to PATH environment variable
     copy rhobuild.yml from rhodes to gem
-    
+
 ## Test procedures
 Remove Rhodes application from Device and Simulators, clean Simulator and remove files from device
 
@@ -14,12 +14,12 @@ Run on simulator from gem folder:
     rake run:win32:framework_spec
     rake run:android:framework_spec
     rake run:iphone:framework_spec
-    
+
 Build and Run on device:
     rake device:wm:production
     rake device:android:production
-    rake device:iphone:production    
-    
+    rake device:iphone:production
+
 ### Phone spec
 Run on simulator from gem folder:
     rake run:win32:phone_spec
@@ -27,14 +27,14 @@ Run on simulator from gem folder:
     rake run:iphone:phone_spec
     rake run:bb:phone_spec
     rake run:wp:phone_spec
-    
+
 Build and Run on device:
     rake device:wm:production
     rake device:android:production
     rake device:iphone:production
-    rake device:bb:production        
-    rake device:wp:production    
-    
+    rake device:bb:production
+    rake device:wp:production
+
 ### New generated application
     rhodes app mytest
 
@@ -42,11 +42,11 @@ Run on RhoSimulator from 'mytest' folder:
     rake run:win32:rhosimulator
 
 Run on Platform Simulator from 'mytest' folder.
-    
+
 ### System-api-samples
 
     git clone git@github.com:rhomobile/rhodes-system-api-samples.git
-    
+
 * Check application loading image (loading.png) - for iPhone you should see image correspondent to your device and orientation(only for iPad).
 * My Contacts : you should see contacts from SIM card and phone memory(if available), create new contact, go to phone book, you should see new record. Go back to app, edit some properties, than delete. Make sure that record deleted from phone book
 * My Events : you should see events from Calendar(if available), create new event, go to phone calendar, you should see new  event. Go back to app, edit some properties, than delete. Make sure that event deleted from phone calendar
@@ -72,19 +72,19 @@ Run on Platform Simulator from 'mytest' folder.
 * AsyncHttpTest: Apache license page should be displayed
 * AsyncHttpsTest: gmail login page should be displayed
 * Async Download file: you should see image with many r
-* System test: 
+* System test:
    - check system settings
    - press JS popup: you should see javascript alert
    - press execute_js:  you should see javascript alert (Blackberry is not supported)
-* Localization test: you should see Russian text, dates and currency in various formats  
-* Dynamic menu test: 
+* Localization test: you should see Russian text, dates and currency in various formats
+* Dynamic menu test:
    - see description on the page and press menu button, check all items
    - press call callback menu item: you should see text Callback called at the bottom of the page
    - press 'Test back with alert', enter some text to edit, when press Back button - you should see<br/> Alert with message 'Do you want to leave?'. Press No - text from edit should not disappear. <br/>Press back again, on alert press Yes - you should return to dynamic menu test
    - press 'Test back with close', when press Back button - application should exit
 * Rho tests: press on each link, you should see corresponding page with message
 * Barcode recognize test: open "My Barcode recognize ..." press [scan] under image - see Alert with correct recognized code. Press [Take Picture] for make shot of barcode by camea and see Alert with recognized code or "[]" if not recognized.
-* Bluetooth Chat Demo: 
+* Bluetooth Chat Demo:
   1. Phone and external Bluetooth device (for example external GPS Bluetooth device) - for Android, Windows Mobile and Blackberry only.
      - pair device with phone
      - open "Bluetooth Chat Demo" page and press "Connect as Client"
@@ -96,8 +96,8 @@ Run on Platform Simulator from 'mytest' folder.
      - select "Connect as Server" on first device and "Connect as Client" on second device
      - on second device select first device from list of Bluetooth devices
      - write message and press [Send](on first or second device) - on another device you should see received message
-* Custom URI schemes: 
-   - mailto should invoke send mail display with filled reviver field 
+* Custom URI schemes:
+   - mailto should invoke send mail display with filled reviver field
    - tel should display phone app with filled phone number
    - sms should invoke sms sending screen with filled phone number
 * Select some link(not home page), move app to background, when click on app icon, you should see selected page(not home page)
@@ -125,7 +125,7 @@ Run and Login with empty credentials, you should see Products and Customers
 * run system api samples, run AsyncHttp test - it should pass
 * move app to background, turn OFF GPRS, turn ON WIFI
 * run system api samples, run AsyncHttp test - it should pass
-    
+
 ## Install Eclipse plug-in beta
 * Install Eclipse >=3.6
 * Install plug-in: http://rhostudio.s3.amazonaws.com/beta
@@ -195,7 +195,7 @@ Same procedure as for plug-in
 
 	   cd ~/rhodes-release
 
-	   rm -rf * 
+	   rm -rf *
 	   git reset --hard
 	   git pull
 
@@ -219,7 +219,7 @@ Same procedure as for plug-in
 
 4. Import into workspace DLTK plugins
 
-    Select 'Pluigns and Fragments' item in Import Dialog and going to 'Selection' page. 
+    Select 'Pluigns and Fragments' item in Import Dialog and going to 'Selection' page.
     In left list of plugins select items with names:
 
     org.eclipse.dltk.debug
@@ -234,7 +234,7 @@ Same procedure as for plug-in
 
 5. Add imported plugins to java build paths (Project properties/Java build path/Libraries/Add JAR).
 
-6. Select imported plugins in Project properties/Java build path/Libraries/Order and Export 
+6. Select imported plugins in Project properties/Java build path/Libraries/Order and Export
 
 7. Build and run Eclipse configuration
 

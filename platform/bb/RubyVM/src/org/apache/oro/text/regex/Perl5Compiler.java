@@ -1,4 +1,4 @@
-/* 
+/*
  * $Id: Perl5Compiler.java 328125 2005-10-24 18:40:13Z dfs $
  *
  * Copyright 2000-2005 The Apache Software Foundation
@@ -26,7 +26,7 @@ import j2me.lang.CharacterMe;
  * The Perl5Compiler class is used to create compiled regular expressions
  * conforming to the Perl5 regular expression syntax.  It generates
  * Perl5Pattern instances upon compilation to be used in conjunction
- * with a Perl5Matcher instance.  Please see the user's guide for more 
+ * with a Perl5Matcher instance.  Please see the user's guide for more
  * information about Perl5 regular expressions.
  * <p>
  * Perl5Compiler and Perl5Matcher are designed with the intent that
@@ -78,7 +78,7 @@ public final class Perl5Compiler implements PatternCompiler {
 
   /** Lookup table for POSIX character class names */
   private static final HashMap __hashPOSIX;
-  
+
   static {
     __hashPOSIX = new HashMap();
     __hashPOSIX.put("alnum",     new Character(OpCode._ALNUMC));
@@ -152,7 +152,7 @@ public final class Perl5Compiler implements PatternCompiler {
   /**
    * A mask passed as an option to the {@link #compile compile} methods
    * to indicate a compiled regular expression should be treated as a Perl5
-   * extended pattern (i.e., a pattern using the <b>/x</b> modifier).  This 
+   * extended pattern (i.e., a pattern using the <b>/x</b> modifier).  This
    * option tells the compiler to ignore whitespace that is not backslashed or
    * within a character class.  It also tells the compiler to treat the
    * <b>#</b> character as a metacharacter introducing a comment as in
@@ -283,7 +283,7 @@ public final class Perl5Compiler implements PatternCompiler {
     int val = 0;
 
     scanned[0] = 0;
-    while(offset < str.length && 
+    while(offset < str.length &&
           maxLength > 0 && str[offset] >= '0' && str[offset] <= '7') {
       val <<= 3;
       val |= (str[offset] - '0');
@@ -452,7 +452,7 @@ public final class Perl5Compiler implements PatternCompiler {
 
 
   private int __parseAlternation(int[] retFlags)
-    throws MalformedPatternException 
+    throws MalformedPatternException
   {
     int chain, offset, latest;
     int flags = 0;
@@ -511,8 +511,8 @@ public final class Perl5Compiler implements PatternCompiler {
     boolean doDefault;
     char value;
     int offset, flags[] = { 0 };
-    
-    
+
+
     retFlags[0] = __WORSTCASE;
     doDefault = false;
     offset = OpCode._NULL_OFFSET;
@@ -1184,7 +1184,7 @@ public final class Perl5Compiler implements PatternCompiler {
               break;
             case '0': case '1': case '2': case '3': case '4':
             case '5': case '6': case '7': case '8': case '9':
-              clss = 
+              clss =
                 (char)__parseOctal(__input._array,
                                    __input._getOffset() - 1, 3, numLength);
               __input._increment(numLength[0] - 1);
@@ -1217,7 +1217,7 @@ public final class Perl5Compiler implements PatternCompiler {
           if(opcodeFlag == true) {
             if(negFlag[0] == false)
               __emitCode(OpCode._OPCODE);
-            else 
+            else
               __emitCode(OpCode._NOPCODE);
           } else
             __emitCode(OpCode._ONECHAR);
@@ -1247,7 +1247,7 @@ public final class Perl5Compiler implements PatternCompiler {
           lastclss = Character.MAX_VALUE;
           range = false;
         }
-    
+
         lastclss = clss;
       }
 
@@ -1262,12 +1262,12 @@ public final class Perl5Compiler implements PatternCompiler {
 
 
   /**
-   * Parse POSIX epxression like [:foo:]. 
-   * 
+   * Parse POSIX epxression like [:foo:].
+   *
    * @return OpCode. return 0 when fail parsing POSIX expression.
    */
   private char __parsePOSIX(boolean negFlag[])
-    throws MalformedPatternException 
+    throws MalformedPatternException
   {
     int offset = __input._getOffset();
     int len = __input._getLength();
@@ -1285,10 +1285,10 @@ public final class Perl5Compiler implements PatternCompiler {
     }
 
     buf = new StringBuffer();
-    
-    try { 
+
+    try {
       while ( (value = __input._getValue(pos++)) != ':' && pos < len) {
-        buf.append(value);      
+        buf.append(value);
       }
     } catch (Exception e){
       return 0;
@@ -1304,7 +1304,7 @@ public final class Perl5Compiler implements PatternCompiler {
       return 0;
 
     __input._setOffset(pos);
-    
+
     return ((Character)opcode).charValue();
   }
 
@@ -1539,10 +1539,10 @@ public final class Perl5Compiler implements PatternCompiler {
 
           if ( value == ':' )
           {
-        	  paren = value;        	  
+        	  paren = value;
         	  break;
           }
-          
+
           if(value != ')')
             throw new MalformedPatternException(
                "Sequence (?" + value + "...) not recognized");
@@ -1555,7 +1555,7 @@ public final class Perl5Compiler implements PatternCompiler {
         ++__numParentheses;
         nodeOffset = __emitArgNode(OpCode._OPEN, (char)parenthesisNum);
       }
-    } else 
+    } else
       paren = 0;
 
     br = __parseAlternation(flags);
@@ -1622,7 +1622,7 @@ public final class Perl5Compiler implements PatternCompiler {
 
     if(paren != 0 && (__input._isAtEnd() || __getNextChar() != ')')) {
       throw new MalformedPatternException("Unmatched parentheses.");
-    } else if(paren == 0 && !__input._isAtEnd()) { 
+    } else if(paren == 0 && !__input._isAtEnd()) {
       if(__input._getValue() == ')')
         throw new MalformedPatternException("Unmatched parentheses.");
       else
@@ -1734,7 +1734,7 @@ public final class Perl5Compiler implements PatternCompiler {
             (op == OpCode._BRANCH &&
              __program[OpCode._getNext(__program, first)] != OpCode._BRANCH) ||
             op == OpCode._PLUS || op == OpCode._MINMOD ||
-            (OpCode._opType[op] == OpCode._CURLY && 
+            (OpCode._opType[op] == OpCode._CURLY &&
              OpCode._getArg1(__program, first) > 0)) {
         if(op == OpCode._PLUS)
           sawPlus = true;
@@ -1771,7 +1771,7 @@ public final class Perl5Compiler implements PatternCompiler {
           doItAgain = true;
           continue;
         } else if(op == OpCode._STAR &&
-                  OpCode._opType[__program[OpCode._getNextOperator(first)]] == 
+                  OpCode._opType[__program[OpCode._getNextOperator(first)]] ==
                   OpCode._ANY && (regexp._anchor & Perl5Pattern._OPT_ANCH) != 0)
           {
             regexp._anchor = Perl5Pattern._OPT_ANCH | Perl5Pattern._OPT_IMPLICIT;
@@ -1814,7 +1814,7 @@ public final class Perl5Compiler implements PatternCompiler {
           int temp;
 
           first = scan;
-          while(__program[(temp = OpCode._getNext(__program, scan))] == 
+          while(__program[(temp = OpCode._getNext(__program, scan))] ==
                 OpCode._CLOSE)
             scan = temp;
 
@@ -1849,7 +1849,7 @@ public final class Perl5Compiler implements PatternCompiler {
 
           lastLongest = new StringBuffer();
 
-          if(op == OpCode._PLUS && 
+          if(op == OpCode._PLUS &&
              OpCode._isInArray(__program[OpCode._getNextOperator(scan)],
                             OpCode._opLengthOne, 0))
             ++minLength;
@@ -1887,11 +1887,11 @@ public final class Perl5Compiler implements PatternCompiler {
 
         /*
 
-          if(longest.length() > 
+          if(longest.length() >
           (((caseInsensitive & __CASE_INSENSITIVE) != 0 ||
           OpCode._opType[__program[first]] == OpCode._EOL)
           ? 1 : 0))
-          */        
+          */
       } else
         longest = null;
     } // end if

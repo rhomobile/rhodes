@@ -17,7 +17,7 @@ import j2me.util.concurrent.ConcurrentHashMap;
 import j2me.util.ArrayList;
 
 class MultipleMap/*<T>*/ {
-	
+
 	//class T{}
     private ConcurrentHashMap/*<String, ArrayList<T>>*/ values_ = new ConcurrentHashMap/*<String, ArrayList<T>>*/();
 
@@ -53,7 +53,7 @@ class MultipleMap/*<T>*/ {
 
 class DefaultGlobalVariable implements GlobalVariable {
 	private RubyValue v;
-	
+
 	public DefaultGlobalVariable(RubyValue v) {
 		this.v = v;
 	}
@@ -68,7 +68,7 @@ class DefaultGlobalVariable implements GlobalVariable {
 
 interface GlobalVariable {
 	void set(RubyValue v);
-	
+
 	RubyValue get();
 }
 
@@ -106,7 +106,7 @@ public class GlobalVariables {
 	public static RubyValue OUTPUT_FS = RubyConstant.QNIL;
 	// $\
 	public static RubyValue OUTPUT_RS = RubyConstant.QNIL;
-	
+
     private static ConcurrentHashMap/*<String, GlobalVariable>*/ values_ = new ConcurrentHashMap/*<String, GlobalVariable>*/();
     private static MultipleMap/*<RubyProc>*/ traces_procs_ = new MultipleMap/*<RubyProc>*/();
 
@@ -122,7 +122,7 @@ public class GlobalVariables {
 				OUTPUT_FS = v;
 			}
     	});
-    	
+
     	values_.put("$\\", new GlobalVariable() {
 			public RubyValue get() {
 				return OUTPUT_RS;
@@ -132,7 +132,7 @@ public class GlobalVariables {
 				OUTPUT_RS = v;
 			}
     	});
-    	
+
     	values_.put("$stdout", new GlobalVariable() {
     		public RubyValue get() {
 				return RubyIO.STDOUT;
@@ -142,7 +142,7 @@ public class GlobalVariables {
 				RubyIO.STDOUT = (RubyIO)v;
 			}
     	});
-    	
+
         values_.put("$/", new DefaultGlobalVariable(ObjectFactory.createString("\n")));
         values_.put("$$", new DefaultGlobalVariable(ObjectFactory.FIXNUM0));//no way to get pid in java
     }
@@ -211,7 +211,7 @@ public class GlobalVariables {
 //                    for (RubyProc p : set) {
                     for (Iterator iter = set.iterator(); iter.hasNext();) {
                     	RubyProc p = (RubyProc)iter.next();
-                	
+
                         p.getBlock().invoke(value, value);//TODO What the receiver should be?
                     }
                 }

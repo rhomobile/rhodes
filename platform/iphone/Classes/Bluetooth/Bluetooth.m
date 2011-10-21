@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -76,12 +76,12 @@ static RhoBluetoothManager *instance = NULL;
     return instance;
 }
 
-- (void)dealloc { 
+- (void)dealloc {
 	[self invalidateSession:self.mysession];
 	self.mysession = nil;
 	self.deviceName = nil;
 	self.connectedDeviceName = nil;
-	
+
 	[super dealloc];
 }
 
@@ -101,47 +101,47 @@ static RhoBluetoothManager *instance = NULL;
 
 #pragma mark GKPeerPickerControllerDelegate Methods
 
-- (void)peerPickerControllerDidCancel:(GKPeerPickerController *)picker { 
+- (void)peerPickerControllerDidCancel:(GKPeerPickerController *)picker {
 	// Peer Picker automatically dismisses on user cancel. No need to programmatically dismiss.
-    
-	// autorelease the picker. 
+
+	// autorelease the picker.
 	picker.delegate = nil;
-    [picker autorelease]; 
-	
+    [picker autorelease];
+
 	// invalidate and release game session if one is around.
 	if(self.mysession != nil)	{
 		[self invalidateSession:self.mysession];
 		self.mysession = nil;
 	}
 	[self fireConnectionCallback:BT_CANCEL connected_device_name:@""];
-} 
+}
 
-- (GKSession *)peerPickerController:(GKPeerPickerController *)picker sessionForConnectionType:(GKPeerPickerConnectionType)type { 
+- (GKSession *)peerPickerController:(GKPeerPickerController *)picker sessionForConnectionType:(GKPeerPickerConnectionType)type {
 	// session id - identifier for session
 	// display name - name for display on other devices
-	
-	GKSession *msession = [[GKSession alloc] initWithSessionID:BT_RHOMOBILE_SESSION_ID displayName:deviceName sessionMode:GKSessionModePeer]; 
+
+	GKSession *msession = [[GKSession alloc] initWithSessionID:BT_RHOMOBILE_SESSION_ID displayName:deviceName sessionMode:GKSessionModePeer];
 	return [msession autorelease]; // peer picker retains a reference, so autorelease ours so we don't leak.
 }
 
-- (void)peerPickerController:(GKPeerPickerController *)picker didConnectPeer:(NSString *)peerID toSession:(GKSession *)csession { 
+- (void)peerPickerController:(GKPeerPickerController *)picker didConnectPeer:(NSString *)peerID toSession:(GKSession *)csession {
 	// Remember the current peer.
 	self.connectedDeviceID = peerID;
 	self.connectedDeviceName = [csession displayNameForPeer:peerID];  // copy
-	
+
 	// Make sure we have a reference to the game session and it is set up
 	self.mysession = csession; // retain
-	self.mysession.delegate = self; 
+	self.mysession.delegate = self;
 	[self.mysession setDataReceiveHandler:self withContext:NULL];
-	
+
 	// Done with the Peer Picker so dismiss it.
 	[picker dismiss];
 	picker.delegate = nil;
 	[picker autorelease];
-	
+
 	[self fireConnectionCallback:BT_OK connected_device_name:self.connectedDeviceName];
 
-} 
+}
 
 
 #pragma mark -
@@ -149,10 +149,10 @@ static RhoBluetoothManager *instance = NULL;
 
 - (void)invalidateSession:(GKSession *)msession {
 	if(msession != nil) {
-		[msession disconnectFromAllPeers]; 
-		msession.available = NO; 
-		[msession setDataReceiveHandler: nil withContext: NULL]; 
-		msession.delegate = nil; 
+		[msession disconnectFromAllPeers];
+		msession.available = NO;
+		[msession setDataReceiveHandler: nil withContext: NULL];
+		msession.delegate = nil;
 	}
 }
 
@@ -160,12 +160,12 @@ static RhoBluetoothManager *instance = NULL;
 
 #pragma mark Data Send/Receive Methods
 
-- (void)receiveData:(NSData *)data fromPeer:(NSString *)peer inSession:(GKSession *)session context:(void *)context { 
+- (void)receiveData:(NSData *)data fromPeer:(NSString *)peer inSession:(GKSession *)session context:(void *)context {
 	static int lastPacketTime = -1;
 
 	unsigned char *incomingPacket = (unsigned char *)[data bytes];
 	int incomingPacketSize= [data length];
-	
+
 	[self addToPackets:incomingPacket length:incomingPacketSize];
 	[self fireSessionCallback:connectedDeviceName event_type:BT_SESSION_INPUT_DATA_RECEIVED];
 }
@@ -173,7 +173,7 @@ static RhoBluetoothManager *instance = NULL;
 - (void)sendData:(GKSession *)session withData:(void *)data ofLength:(int)length reliable:(BOOL)howtosend {
 	// the packet we'll send is resued
 	static unsigned char networkPacket[kMaxPacketSize];
-	
+
 	unsigned char* indata = (unsigned char*)data;
 	int size = length;
 	while (size > 0) {
@@ -181,9 +181,9 @@ static RhoBluetoothManager *instance = NULL;
 		if (send_size > kMaxPacketSize) {
 			send_size = kMaxPacketSize;
 		}
-		memcpy( &networkPacket[0], indata, send_size ); 
+		memcpy( &networkPacket[0], indata, send_size );
 		NSData *packet = [NSData dataWithBytes: networkPacket length: (length)];
-		if(howtosend == YES) { 
+		if(howtosend == YES) {
 			//[self.session sendData:packet toPeers:[NSArray arrayWithObject:self.connectedDeviceID] withDataMode:GKSendDataReliable error:nil];
 			[self.mysession sendDataToAllPeers:packet withDataMode:GKSendDataReliable error:nil];
 		} else {
@@ -202,13 +202,13 @@ static RhoBluetoothManager *instance = NULL;
 #pragma mark GKSessionDelegate Methods
 
 // we've gotten a state change in the session
-- (void)session:(GKSession *)session peer:(NSString *)peerID didChangeState:(GKPeerConnectionState)state { 
-	
+- (void)session:(GKSession *)session peer:(NSString *)peerID didChangeState:(GKPeerConnectionState)state {
+
 	if(state == GKPeerStateDisconnected) {
 		// We've been disconnected from the other peer.
 		[self fireSessionCallback:connectedDeviceName event_type:BT_SESSION_DISCONNECT];
-		
-	} 
+
+	}
     if ((state == GKPeerStateConnected) && ((self.mode == CLIENT_MODE) || (self.mode == SERVER_MODE))) {
         self.connectedDeviceID = peerID;
         self.connectedDeviceName = [session displayNameForPeer:peerID];  // copy
@@ -216,7 +216,7 @@ static RhoBluetoothManager *instance = NULL;
         //TODO: callback
         [self fireConnectionCallback:BT_OK connected_device_name:self.connectedDeviceName];
     }
-    
+
     if ((state == GKPeerStateAvailable) && ((self.mode == CLIENT_MODE))) {
         BOOL accept = NO;
         NSString* device_name = [session displayNameForPeer:peerID];
@@ -229,7 +229,7 @@ static RhoBluetoothManager *instance = NULL;
             [session connectToPeer:peerID withTimeout:20];
         }
     }
-} 
+}
 
 - (void)session:(GKSession *)session didReceiveConnectionRequestFromPeer:(NSString *)peerID {
     NSError* error;
@@ -282,7 +282,7 @@ static RhoBluetoothManager *instance = NULL;
 	self.mysession = nil;
 	self.connectedDeviceName = nil;
 	self.connectedDeviceID = nil;
-	
+
 	self.connectionCallbackURL = callback;
 	[self performSelectorOnMainThread:@selector(startPicker:) withObject:BT_ROLE_SERVER waitUntilDone:NO];
 }
@@ -306,7 +306,7 @@ static RhoBluetoothManager *instance = NULL;
 - (void)stop_current_connection {
     if (((self.mode == CLIENT_MODE) || (self.mode == SERVER_MODE))) {
         if (self.mysession != nil) {
-            [self invalidateSession:self.mysession]; 
+            [self invalidateSession:self.mysession];
             self.mysession = nil;
         }
         self.mode = PEER_MODE;
@@ -398,13 +398,13 @@ static RhoBluetoothManager *instance = NULL;
 	}
 	const char* sbuf = [string UTF8String];
 	int length = strlen(sbuf);
-	
+
 	char* buf = malloc(length+5);
 	char* dst = buf;
 	*((int*)dst) = length;
 	dst += 4;
 	memcpy(dst, sbuf, length);
-	
+
 	//[self sendData:self.session withData:(void*)buf ofLength:(4+length) reliable:YES];
 	NSData* data = [NSData dataWithBytes:buf length:(4+length)];
 	[self performSelectorOnMainThread:@selector(sendNSData:) withObject:data waitUntilDone:NO];
@@ -510,7 +510,7 @@ void rho_bluetooth_session_disconnect(const char* connected_device_name) {
 }
 
 int rho_bluetooth_session_get_status(const char* connected_device_name) {
-	return [[RhoBluetoothManager sharedInstance] getPacketsSize]; 
+	return [[RhoBluetoothManager sharedInstance] getPacketsSize];
 }
 
 VALUE rho_bluetooth_session_read_string(const char* connected_device_name) {

@@ -232,7 +232,7 @@ class Date
       if w
 	    f[:w] = w.to_i
       end
-      
+
       case c
           when 'A'; emit_ad(DAYNAMES[wday], 0, f)
           when 'a'; emit_ad(ABBR_DAYNAMES[wday], 0, f)
@@ -330,7 +330,7 @@ class Date
 	              sep = ':'
 	        end
 	        ([emit_z(sign * hh, 2, f)] + tail).join(sep)
-    	    
+
           when '%'; emit_a('%', 0, f)
           when '+'; emit_a(strftime('%a %b %e %H:%M:%S %Z %Y'), 0, f)
           else

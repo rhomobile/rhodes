@@ -1221,7 +1221,7 @@ INSN_ENTRY(defined){
 
 	    args[0] = obj; args[1] = Qfalse;
 	    r = rb_check_funcall(v, rb_intern("respond_to_missing?"), 2, args);
-	    if (r != Qundef && RTEST(r)) 
+	    if (r != Qundef && RTEST(r))
 		expr_type = "method";
 	}
 	break;

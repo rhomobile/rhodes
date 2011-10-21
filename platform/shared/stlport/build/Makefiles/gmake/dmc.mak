@@ -40,7 +40,7 @@ endif
 
 OUTPUT_OPTION = -o$@
 LINK_OUTPUT_OPTION = $(subst /,\,$@)
-CPPFLAGS = $(DEFS) $(OPT) $(INCLUDES) 
+CPPFLAGS = $(DEFS) $(OPT) $(INCLUDES)
 
 CDEPFLAGS = -E -M
 CCDEPFLAGS = -E -M

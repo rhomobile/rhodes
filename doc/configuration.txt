@@ -1,6 +1,6 @@
 # Application Configuration
 
-## Build time configuration 
+## Build time configuration
 
 ### Application Permissions and Capabilities
 
@@ -33,10 +33,10 @@ List of supported capabilities:
 
 ### RhoGallery Security Token
 
-To restrict access to the application it could be built with a security token. Specify security token in the build.yml and build application. Application built with security token can be started only if you provide this token as a parameter.  
+To restrict access to the application it could be built with a security token. Specify security token in the build.yml and build application. Application built with security token can be started only if you provide this token as a parameter.
 
 Specify in build.yml:
-	
+
 	security_token: 123
 
 Run application with special parameter:
@@ -58,25 +58,25 @@ Location of bundle url (i.e. from rhohub.com); used by desktop win32 simulator
 
 	rhobundle_zip_url = ''
 
-Optional password to access bundle (usually not required); used by desktop win32 simulator 
+Optional password to access bundle (usually not required); used by desktop win32 simulator
 
 	rhobundle_zip_pwd = nil
 
 Log level: 0-trace, 1-info(app level), 3-warnings, 4-errors. It is recommended for production set it to 3 to minimize log and increase speed lost due to log output
 
-	MinSeverity  = 1 
+	MinSeverity  = 1
 
 Enable copy log messages to standard output, useful for debugging
 
 	LogToOutput = 1
 
-Log categories: '*' means all categories, otherwise list them : Cat1, Cat2 
+Log categories: '*' means all categories, otherwise list them : Cat1, Cat2
 
 	LogCategories = *
 
 What log categories to exclude
 
-	ExcludeLogCategories = 
+	ExcludeLogCategories =
 
 Max log file size in Bytes, set 0 to unlimited size; when limit is reached, log wraps to beginning of file
 
@@ -90,17 +90,17 @@ Skip http package body from log(for security reasons), off by default
 
 	log_skip_post = 1
 
-Define exclude parameters log filter(for security reasons) - parameter names separated by comma, empty by default. 
+Define exclude parameters log filter(for security reasons) - parameter names separated by comma, empty by default.
 
 	log_exclude_filter = 'login, password'
 
 Timeout of network requests in seconds (30 by default)
-	
+
 	net_timeout = 60
 
 Log server address where log will be posted by using RhoConf.send_log or from the log view. Log server source code is open and available at http://github.com/rhomobile/rhologs, so you can deploy your own logserver
 
-	logserver = 'http://rhologs.heroku.com' 
+	logserver = 'http://rhologs.heroku.com'
 
 Log file prefix - contain human-readable text
 
@@ -115,24 +115,24 @@ Geo location update period (in seconds). Used as default value for third paramet
     gps_ping_timeout_sec = 30
 
 Geo location inactivity timeout (in seconds). This parameter controls the time after that location service is switched off in case no calls to the service. It also used as time period to drop cached location value.
-	
+
 	geo_location_inactivity_timeout = gps_ping_timeout_sec * 10
 
 Set this option to 1 in order to open Rhodes app in full screen mode. Default 1 for Android up to Rhodes 2.2.5. On all other platforms and on Android from Rhodes > 2.2.5 default is 0
-	
+
 	full_screen = 1
 
 Port of the local (embedded) HTTP server. This parameter is mainly for debug purposes. If not specified, application will use dynamically selected one.
 **NOTE WARNING!!! Remove this parameter before put application to production. **
-	
+
 	local_server_port = 8080
 
 Show status bar on windows mobile. Default is 1 (show)
-	
+
 	wm_show_statusbar = 1
 
 Disable screen rotation. By default set to 0 (enabled). This option available on ANDROID and iPhone ONLY
-	
+
 	disable_screen_rotation = 1
 
 Disable closing app when pressing back on home screen on blackberry
@@ -144,17 +144,17 @@ Load images in background, this improve reaction speed on user actions, 0 by def
 	bb_loadimages_async = 0
 
 Set to 0 to reset the bulksync_state and trigger a bulk sync the next time rhodes synchronizes
-	
+
 	bulksync_state = 1
 
 Hides forward button and animates back button transition
-	
+
 	jqtouch_mode=1
 
 Splash screen image display options. See more details [here](ui#loading-screen).
 
 	splash_screen='zoom'
-	
+
 Turn on Full Browser mode for Blackberry 4.6.0 and higher
 
 	use_bb_full_browser = 1
@@ -193,12 +193,12 @@ For example:
 
 To get start_path:
 	:::ruby
-	Rho::RhoConfig.start_path 
+	Rho::RhoConfig.start_path
 	#=> will return current value of start_path
-	
-To set start_path	
+
+To set start_path
 	:::ruby
-	Rho::RhoConfig.start_path = '/app/MyObject' 
+	Rho::RhoConfig.start_path = '/app/MyObject'
 	#=> start_path will be saved to rhoconfig.txt as '/app/MyObject'
 
 You may store any arbitrary options in the rhoconfig.txt file using the Ruby API. Keep in mind that they will may be lost the next time the user installs a new version of the application.
@@ -211,7 +211,7 @@ In the previous section, there is a "syncserver" option available.  This option 
 	:::ruby
 	SyncEngine.set_syncserver(
 		'http://examplesyncserver.com/apps/MyApp/sources/')
-		
+
 Calling the function above will do the following:
 
 * Update the in-memory syncserver for the SyncEngine (all subsequent synchronization will use the new syncserver)
@@ -222,18 +222,18 @@ To enable auto sync you can call (enabled by default with 5 minutes interval )
 
 	:::ruby
 	SyncEngine.set_pollinterval(timeout_in_seconds)
-	
+
 OR set in rhoconfig.txt:
 
 	sync_poll_interval=timeout_in_seconds
 
-To disable auto sync you can call 
+To disable auto sync you can call
 
 	:::ruby
 	SyncEngine.set_pollinterval(0)
 
 OR set in rhoconfig.txt:
-	
+
 	sync_poll_interval=0
 
 ### Logging
@@ -246,12 +246,12 @@ To send the log to the log server url, defined in rhoconfig.txt:
 
 	:::ruby
 	Rho::RhoConfig.send_log = "http://example.com/client_log?client_id=123&device_pin=345&log_name=mylog"
-	
+
 Url format: \<logserver\>/client_log?client_id=\<client_id\>&device_pin=\<device_pin\>&log_name=\<logname\>
 
 ### Persistent Storage (Blackberry only)
 To enable use of the RIM persistent storage API in rhodes, just add following line to your rhoconfig.txt:
 
 	use_persistent_storage = 1
-	
+
 It will enable RIM's persistent storage API (instead of files) to store the DB version, the DB journal and the database itself. The main goal of persistent storage is that all objects stored by an application will be automatically removed when the application is uninstalled.

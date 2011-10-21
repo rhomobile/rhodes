@@ -43,7 +43,7 @@ describe "IO#read_nonblock" do
     #   and #2469 http://redmine.ruby-lang.org/issues/show/2469
   end
 
-if System.get_property('platform') != 'ANDROID'      
+if System.get_property('platform') != 'ANDROID'
   it "raises IOError on closed stream" do
     lambda { IOSpecs.closed_io.read_nonblock(5) }.should raise_error(IOError)
   end

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -31,7 +31,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif //__cplusplus
-	
+
 typedef enum _RHOM_MODEL_TYPE { RMT_PROPERTY_BAG=1, RMT_PROPERTY_FIXEDSCHEMA=2 } RHOM_MODEL_TYPE;
 typedef enum _RHOM_SYNC_TYPE { RST_NONE = 0, RST_INCREMENTAL=1, RST_BULK_ONLY=2 } RHOM_SYNC_TYPE;
 typedef struct _RHOM_MODEL
@@ -39,7 +39,7 @@ typedef struct _RHOM_MODEL
     const char* name;
     RHOM_MODEL_TYPE type;
     int source_id; //generated when insert to database
-    
+
     RHOM_SYNC_TYPE sync_type;
     int  sync_priority;
 
@@ -72,12 +72,12 @@ typedef struct _RHO_CONNECT_OBJECT_NOTIFY
     int* deleted_source_ids;
     int* updated_source_ids;
     int* created_source_ids;
-    
+
     char** deleted_objects;
     char** updated_objects;
     char** created_objects;
 }RHO_CONNECT_OBJECT_NOTIFY;
-    
+
 void rho_connectclient_initmodel(RHOM_MODEL* model);
 void rho_connectclient_destroymodel(RHOM_MODEL* model);
 
@@ -86,13 +86,13 @@ void rho_connectclient_destroy();
 void rho_connectclient_database_full_reset_and_logout();
 void rho_connectclient_database_fullclient_reset_and_logout();
 void rho_connectclient_database_full_reset(bool bClientReset);
-	
+
 void rho_connectclient_parsenotify(const char* msg, RHO_CONNECT_NOTIFY* pNotify);
 void rho_connectclient_free_syncnotify(RHO_CONNECT_NOTIFY* pNotify);
 
 void rho_connectclient_parse_objectnotify(const char* msg, RHO_CONNECT_OBJECT_NOTIFY* pNotify);
 void rho_connectclient_free_sync_objectnotify(RHO_CONNECT_OBJECT_NOTIFY* pNotify);
-    
+
 unsigned long rho_connectclient_strarray_create();
 void rho_connectclient_strarray_add(unsigned long ar, const char* szStr);
 void rho_connectclient_strarray_delete(unsigned long ar);
@@ -122,7 +122,7 @@ void rho_connectclient_hash_enumerate(unsigned long hash, int (*enum_func)(const
 
 void rho_connectclient_start_bulkupdate(const char* szModel);
 void rho_connectclient_stop_bulkupdate(const char* szModel);
-	
+
 #ifdef __cplusplus
 };
 #endif //__cplusplus

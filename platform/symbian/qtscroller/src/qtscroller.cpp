@@ -451,11 +451,11 @@ Qt::GestureType QtScroller::grabGesture(QObject *target, ScrollerGestureType scr
             go->setAcceptTouchEvents(true);
         go->grabGesture(sp->recognizerType);
     }
-    
+
     // vvv QScroller Solution only
     QtScrollerFilter::instance()->add(target);
     // ^^^ QScroller Solution only
-    
+
     return sp->recognizerType;
 }
 

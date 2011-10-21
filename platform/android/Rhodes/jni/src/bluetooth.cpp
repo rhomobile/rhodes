@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -96,7 +96,7 @@ RHO_GLOBAL VALUE rho_bluetooth_get_device_name() {
     if (!mid) return rho_ruby_get_NIL();
     jstring jname = static_cast<jstring>(env->CallStaticObjectMethod(cls, mid));
     if (!jname) return rho_ruby_get_NIL();
-    std::string name = rho_cast<std::string>(env, jname); 
+    std::string name = rho_cast<std::string>(env, jname);
     RAWLOG_INFO1("rho_bluetooth_get_device_name() : %s", name.c_str());
     return rho_ruby_create_string(name.c_str());
 }
@@ -253,10 +253,10 @@ RHO_GLOBAL VALUE rho_bluetooth_session_read_data(const char* connected_device_na
     int real_readed = env->CallStaticIntMethod(cls, mid, objStr1.get(), buf_j.get(), buf_size);
 
     jbyte* buf_p = env->GetByteArrayElements(buf_j.get(), 0);
- 
+
     VALUE val = rho_ruby_create_byte_array((unsigned char*)buf_p, real_readed);
 
-    env->ReleaseByteArrayElements(buf_j.get(), buf_p, 0); 
+    env->ReleaseByteArrayElements(buf_j.get(), buf_p, 0);
 
     return val;
 }
@@ -285,6 +285,6 @@ RHO_GLOBAL void rho_bluetooth_session_write_data(const char* connected_device_na
 
     env->CallStaticVoidMethod(cls, mid, objStr1.get(), buf_j.get(), size);
 
-    env->ReleaseByteArrayElements(buf_j.get(), buf_p, 0); 
+    env->ReleaseByteArrayElements(buf_j.get(), buf_p, 0);
 }
 

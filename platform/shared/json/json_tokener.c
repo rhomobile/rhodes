@@ -399,7 +399,7 @@ struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
 
     case json_tokener_state_number:
       if(c && strchr(json_number_chars, c)) {
-	printbuf_memappend(tok->pb, &c, 1);	
+	printbuf_memappend(tok->pb, &c, 1);
 	if(c == '.' || c == 'e' || c == 'E') tok->is_double = 1;
       } else {
 	int64 numi = 0;
@@ -535,7 +535,7 @@ struct json_object* json_tokener_parse_ex(struct json_tokener *tok,
     tok->err = json_tokener_error_parse_eof;
 
  out:
-  if(tok->err == json_tokener_success) 
+  if(tok->err == json_tokener_success)
       return json_object_get(current);
 
   RAWLOG_ERROR3("json_tokener_parse_ex: error %s at offset %d; String: %s",

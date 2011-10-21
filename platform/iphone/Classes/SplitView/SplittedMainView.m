@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -46,38 +46,38 @@
 
 
 
-@implementation RhoUISplitView 
+@implementation RhoUISplitView
 
 @synthesize leftWidth;
 
 - (void)layoutSubviews {
 	//[super layoutSubviews];
-	
+
 	CGRect my_frame = self.bounds;
 	UIView* leftView = [[self subviews] objectAtIndex:0];
 	UIView* rightView = [[self subviews] objectAtIndex:1];
-	
+
 	CGSize leftSize;
 	leftSize.width = self.leftWidth;
 	leftSize.height = my_frame.size.height;
-	
+
 	leftSize = [leftView sizeThatFits:leftSize];
 	CGRect left_frame = leftView.bounds;
 	CGRect right_frame = rightView.bounds;
-	
+
 	left_frame.origin.x = 0;//my_frame.origin.x;
 	left_frame.origin.y = 0;//my_frame.origin.y;
 	left_frame.size.width = leftSize.width;
-	left_frame.size.height = my_frame.size.height; 
-	
+	left_frame.size.height = my_frame.size.height;
+
 	right_frame.origin.x = left_frame.origin.x + left_frame.size.width + 2;
 	right_frame.origin.y = 0;//my_frame.origin.y;
 	right_frame.size.width = my_frame.size.width - left_frame.size.width - 2;
 	right_frame.size.height = my_frame.size.height;
-	
+
 	leftView.frame = left_frame;
 	rightView.frame = right_frame;
-	
+
 }
 
 
@@ -91,7 +91,7 @@
 @synthesize viewControllers;
 
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p  bar_info:(NSDictionary*)bar_info {
-    
+
 	self = [self initWithNibName:nil bundle:nil];
 
 	RightViewController *rightView = NULL;
@@ -100,50 +100,50 @@
 	leftView = [[LeftViewController alloc]
 										initWithItems:bar_info
 										parent:self];
-	
+
 	//create the details view
 	rightView = [[RightViewController alloc]
 									  initWithItems:bar_info
 									  parent:self];
 
 	//RhoUISplitView* rv = [[RhoUISplitView alloc] init];
-	
-	
-	
+
+
+
 	CGRect parent_frame = [[v view] frame];
 	self.view.frame = parent_frame;
-	
-	
+
+
 	self.viewControllers = [NSArray arrayWithObjects:leftView, rightView, nil];
 	[self.view addSubview:leftView.view];
 	[self.view addSubview:rightView.view];
 
-	
-	
-	
+
+
+
 	//create and set the split view delegate
 	//SplitViewDelegate* splitViewDelegate = [[SplitViewDelegate alloc] init];
 	//splitViewDelegate.rightController = rightView;
 	//self.delegate = splitViewDelegate;
-	
+
 	// undocumented feature
-	//TODO: make legal way for not hide Master view in portrait mode 
+	//TODO: make legal way for not hide Master view in portrait mode
 	//if ( [self respondsToSelector:@selector(setHidesMasterViewInPortrait:)] ) {
 	//	[self setHidesMasterViewInPortrait:NO];
 	//}
-	
+
 
 	RhoUISplitView* rv = (RhoUISplitView*)self.view;
 	rv.leftWidth = [leftView getPreferredWidth];
 
-	
+
 	[leftView release];
 	[rightView release];
-	
-	
+
+
 	//[self.view layoutSubviews];
 	//[self.view setNeedsLayout];
-	
+
     return self;
 }
 
@@ -287,7 +287,7 @@
 	RightViewController* rvc = [self getRightViewController];
 	return [rvc getWebView:tab_index];
 }
- 
+
 -(void)setTabBarBadge:(NSString*)badge_text tab_index:(int)tab_index {
     // nothing
 }

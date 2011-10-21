@@ -9,7 +9,7 @@ Please report bugs/features/enhancements to the [google group](http://groups.goo
 First run the rhodes specs to make sure your environment is up-to-date for development (currently the specs only run on OSX):
 
 1. [Fork](http://help.github.com/forking/) the [Rhodes repository](http://github.com/rhomobile/rhodes).
-2. Clone your new repo: 
+2. Clone your new repo:
 
 		$ git clone git://github.com/<yourhandle>/rhodes.git
 		$ cd rhodes

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -114,18 +114,18 @@ String Annotation::make_address(double latitude, double longitude)
     {
     public:
         virtual ~EmptyDrawingDevice(){}
-        
+
         IDrawingImage* createImage(String const &path, bool useAlpha) {return NULL;}
         IDrawingImage* createImage(void const *p, size_t s, bool useAlpha) {return NULL;}
         IDrawingImage* createImageEx(void const *p, size_t s, int x, int y, int w, int h, bool useAlpha) {return NULL;}
         IDrawingImage* cloneImage(IDrawingImage *image) {return NULL;}
         void destroyImage(IDrawingImage* image){}
-        
+
         IDrawingImage* createCalloutImage(String const &title, String const &subtitle, String const& url, int* x_offset, int* y_offset) {return NULL;}
-        
+
         void requestRedraw() {}
     };
-    
+
 } // namespace map
 } // namespace common
 } // namespace rho
@@ -425,12 +425,12 @@ static void callPreloadCallback(const char* callback, const char* status, int pr
     char body[2048];
 
     snprintf(body, sizeof(body), "&rho_callback=1&status=%s&progress=%d", status, progress);
-    rho_net_request_with_data(RHODESAPP().canonicalizeRhoUrl(callback).c_str(), body);    
+    rho_net_request_with_data(RHODESAPP().canonicalizeRhoUrl(callback).c_str(), body);
 }
 
 class CheckProgress : public rho::common::CRhoThread
 {
-    
+
 public:
     CheckProgress(rhomap::IMapView *view, rho::String callback, int initial_count) {
         m_mapview = view;
@@ -440,8 +440,8 @@ public:
     virtual ~CheckProgress() {
         RHOMAPPROVIDER().destroyMapView(m_mapview);
     }
-    
-    
+
+
     virtual void run()
     {
         sleep(100);
@@ -454,7 +454,7 @@ public:
         callPreloadCallback(m_callback.c_str(), "DONE", 100);
         stop(500);
     }
-    
+
 private:
     rhomap::IMapView *m_mapview;
     rho::String m_callback;
@@ -470,9 +470,9 @@ int mapview_preload_map_tiles(rho_param* p, const char* callback)
     if (p->type != RHO_PARAM_HASH) {
         RAWLOG_ERROR("preload_map_tiles: first params must be HASH!");
         return 0;
-        
+
     }
-    
+
     char* engine = NULL;
     char* map_type = NULL;
     double top_latitude = 0;
@@ -481,7 +481,7 @@ int mapview_preload_map_tiles(rho_param* p, const char* callback)
     double right_longitude = 0;
     int min_zoom = 0;
     int max_zoom = 0;
-    
+
 
     for (int j = 0, limm = p->v.hash->size; j < limm; ++j) {
         char *name = p->v.hash->name[j];
@@ -491,7 +491,7 @@ int mapview_preload_map_tiles(rho_param* p, const char* callback)
         if (value->type != RHO_PARAM_STRING)
             continue;
         char *v = value->v.string;
-        
+
         if (strcasecmp(name, "engine") == 0) {
             engine = v;
         }
@@ -517,13 +517,13 @@ int mapview_preload_map_tiles(rho_param* p, const char* callback)
             max_zoom = (int)strtod(v, NULL);
         }
     }
-    
-    
+
+
     rhomap::EmptyDrawingDevice empty_device;
     std::string providerId = engine;
-    std::transform(providerId.begin(), providerId.end(), providerId.begin(), &::tolower);    
+    std::transform(providerId.begin(), providerId.end(), providerId.begin(), &::tolower);
     rhomap::IMapView *mapview = RHOMAPPROVIDER().createMapView(providerId, &empty_device);
-    
+
     if (mapview == NULL) {
         RAWLOG_ERROR1("Can not create MapView for provider=%s", engine);
         return 0;
@@ -531,13 +531,13 @@ int mapview_preload_map_tiles(rho_param* p, const char* callback)
 
     mapview->setMapType(map_type);
     mapview->set_file_caching_enable(true);
-    
+
     int count = mapview->preloadMapTiles(top_latitude, left_longitude, bottom_latitude, right_longitude, min_zoom, max_zoom);
-     
-    CheckProgress* cp = new CheckProgress(mapview, callback, count);    
-    
+
+    CheckProgress* cp = new CheckProgress(mapview, callback, count);
+
     cp->start(rho::common::IRhoRunnable::epNormal);
-    
-    return count; 
+
+    return count;
 }
 

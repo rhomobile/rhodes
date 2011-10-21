@@ -90,43 +90,43 @@
 
 
 // Customize the number of rows in the table view.
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section 
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
 	if (!arItems)
 		[self setArItems: [[RhoConnectEngine sharedInstance].product find_all:nil]];
-	
+
 	//warning here because this may be dictionary or an array when called.
     return (NSUInteger)[arItems count];
 }
 
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+
     static NSString *CellIdentifier = @"Cell";
     static NSString *ColumnCellIdentifier = @"ColumnCell";
-    
-    UITableViewCell *cell; 
-    
+
+    UITableViewCell *cell;
+
 	if([arItems isKindOfClass:NSClassFromString(@"NSMutableArray")]) {
 		cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
 		if (cell == nil) {
 			cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
 		}
-		
+
 		// Configure the cell.
 		NSDictionary* item = [(NSMutableArray *)arItems objectAtIndex: indexPath.row ];
 		cell.textLabel.text = [item valueForKey:@"name"];
 	} else if([arItems isKindOfClass:NSClassFromString(@"NSDictionary")]) {
-		
+
 		cell = [tableView dequeueReusableCellWithIdentifier:ColumnCellIdentifier];
 		if(cell == nil)
 			cell = [self reuseTableViewCellWithIdentifier:ColumnCellIdentifier];
-		
+
 		NSString *key = [[(NSDictionary *)arItems allKeys] objectAtIndex:indexPath.row];
-		
+
 		UILabel *lbl = (UILabel *)[cell viewWithTag:NAME_TAG];
 		lbl.text = key;
-		
+
 		UILabel *lblText = (UILabel *)[cell viewWithTag:TEXT_TAG];
 		lblText.text = [arItems valueForKey:key];
 	}
@@ -146,14 +146,14 @@
 /*
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source.
         [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
+    }
     else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
-    }   
+    }
 }
 */
 
@@ -178,27 +178,27 @@
 #pragma mark Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-	
+
+
 	if([arItems isKindOfClass:NSClassFromString(@"NSMutableArray")]) {
 		//Get the dictionary of the selected data source.
 		NSDictionary *dictionary = [(NSMutableArray *)arItems objectAtIndex:indexPath.row];
-	
-		
+
+
 		//Prepare to tableview.
 		RootViewController *rvController = [[RootViewController alloc] initWithNibName:@"RootViewController" bundle:[NSBundle mainBundle]];
-		
+
 		//Increment the Current View
 		rvController.CurrentLevel += 1;
-		
+
 		//Set the title;
 		rvController.CurrentTitle = [dictionary objectForKey:@"name"];
-		
+
 		//Push the new table view on the stack
 		[self.navigationController pushViewController:rvController animated:YES];
-		
+
 		rvController.arItems = dictionary;
-		
+
 		[rvController release];
 	}
 }
@@ -210,7 +210,7 @@
 - (void)didReceiveMemoryWarning {
     // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
-    
+
     // Relinquish ownership any cached data, images, etc that aren't in use.
 }
 
@@ -228,45 +228,45 @@
 #pragma mark -
 #pragma mark Custom Cell
 -(UITableViewCell *)reuseTableViewCellWithIdentifier:(NSString *)identifier {
-	
+
 	//Rectangle which will be used to create labels and table view cell.
 	CGRect cellRectangle;
-	
+
 	//Returns a rectangle with the coordinates and dimensions.
 	cellRectangle = CGRectMake(0.0, 0.0, CELL_WIDTH, ROW_HEIGHT);
-	
+
 	//Initialize a UITableViewCell with the rectangle we created.
 	UITableViewCell *cell = [[[UITableViewCell alloc] initWithFrame:cellRectangle reuseIdentifier:identifier] autorelease];
-	
+
 	//Now we have to create the two labels.
 	UILabel *label;
-	
+
 	//Create a rectangle container for the number text.
 	cellRectangle = CGRectMake(NAME_OFFSET, (ROW_HEIGHT - LABEL_HEIGHT) / 2.0, NAME_WIDTH, LABEL_HEIGHT);
-	
+
 	//Initialize the label with the rectangle.
 	label = [[UILabel alloc] initWithFrame:cellRectangle];
-	
+
 	//Mark the label with a tag
 	label.tag = NAME_TAG;
-	
+
 	//Add the label as a sub view to the cell.
 	[cell.contentView addSubview:label];
 	[label release];
-	
+
 	//Create a rectangle container for the custom text.
 	cellRectangle = CGRectMake(TEXT_OFFSET, (ROW_HEIGHT - LABEL_HEIGHT) / 2.0, TEXT_WIDTH, LABEL_HEIGHT);
-	
+
 	//Initialize the label with the rectangle.
 	label = [[UILabel alloc] initWithFrame:cellRectangle];
-	
+
 	//Mark the label with a tag
 	label.tag = TEXT_TAG;
-	
+
 	//Add the label as a sub view to the cell.
 	[cell.contentView addSubview:label];
 	[label release];
-	
+
 	return cell;
 }
 

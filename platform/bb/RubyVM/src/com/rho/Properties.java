@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -36,7 +36,7 @@ public class Properties {
     private String[] initProps;
     private Vector keys;
     private Vector vals;
-    
+
     public Properties() {
         keys = new Vector(INITIAL_SIZE);
         vals = new Vector(INITIAL_SIZE);
@@ -44,15 +44,15 @@ public class Properties {
     public Properties(String[] propertyStrings) {
         initProps = propertyStrings;
     }
-    
+
     public void clear()
     {
     	keys.removeAllElements();
     	vals.removeAllElements();
-    	
+
     	initProps = null;
     }
-    
+
     private void convertInitPropsToVectors() {
         int numberOfProps;
 
@@ -70,7 +70,7 @@ public class Properties {
         initProps = null;
     }
 
-    public synchronized void addProperty(String key, 
+    public synchronized void addProperty(String key,
                                          String value) {
         if (keys == null) {
             convertInitPropsToVectors();
@@ -93,7 +93,7 @@ public class Properties {
 
         if (idx == -1) {    // If I don't have this, add it and return null
             keys.addElement(key);
-            vals.addElement(value);    
+            vals.addElement(value);
         } else {	    // Else replace it and return the old one.
             rv = (String)vals.elementAt(idx);
             vals.setElementAt(value, idx);
@@ -101,7 +101,7 @@ public class Properties {
 
         return rv;
     }
-    
+
     public synchronized String setPropertyIgnoreCase(String key, String value) {
         int idx = -1;
         String rv = null;
@@ -118,7 +118,7 @@ public class Properties {
 
         if (idx == -1) {    // If I don't have this, add it and return null
             keys.addElement(key);
-            vals.addElement(value);    
+            vals.addElement(value);
         } else {	    // Else replace it and return the old one.
             rv = (String)vals.elementAt(idx);
             vals.setElementAt(value, idx);
@@ -145,7 +145,7 @@ public class Properties {
 
         return rv;
     }
-    
+
     public String getProperty(String key) {
         String rv = null;
 
@@ -198,8 +198,8 @@ public class Properties {
 
     	return rv;
     }
-    
-    
+
+
     public String getValueAt(int index) {
         if (keys == null) {
             return initProps[(index * 2) + 1];

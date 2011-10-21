@@ -4,15 +4,15 @@ module REXML
   class Text < Child
     include Comparable
 
-    attr_accessor :raw    
-    
+    attr_accessor :raw
+
     def initialize(arg, respect_whitespace=false, parent=nil, raw=nil, entity_filter=nil )
 
       @raw = false
 
       if parent
         super( parent )
-        @raw = parent.raw 
+        @raw = parent.raw
       else
         @parent = nil
       end
@@ -24,7 +24,7 @@ module REXML
       if arg.kind_of? String
         @string = arg.clone
         @string.squeeze!(" \n\t") unless respect_whitespace
-      else  
+      else
           if arg.kind_of? Text
             @string = arg.to_s
             @raw = arg.raw
@@ -32,7 +32,7 @@ module REXML
             raise "Illegal argument of type #{arg.type} for Text constructor (#{arg})"
           end
       end
-      
+
       @string.gsub!( /\r\n?/, "\n" )
     end
 
@@ -79,10 +79,10 @@ module REXML
     end
 
     def value
-      #TODO: 
+      #TODO:
       return @unnormalized if @unnormalized
       @unnormalized = Text::unnormalize( @string, doctype )
-      
+
       @unnormalized
     end
 
@@ -90,7 +90,7 @@ module REXML
     def Text::unnormalize( string, doctype=nil, filter=nil, illegal=nil )
         string.to_s.gsub(/\&amp;/, "&").gsub(/\&quot;/, "\"").gsub(/\&gt;/, ">").gsub(/\&lt;/, "<")
     end
-=begin    
+=begin
     def Text::unnormalize( string, doctype=nil, filter=nil, illegal=nil )
       string.gsub( /\r\n?/, "\n" ).gsub( REFERENCE ) {
         ref = $&

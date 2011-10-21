@@ -1,18 +1,18 @@
 #------------------------------------------------------------------------
 # (The MIT License)
-# 
+#
 # Copyright (c) 2008-2011 Rhomobile, Inc.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-# 
+#
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
@@ -59,20 +59,20 @@ module Rho
     def self.process_rho_object(params)
       if params['rho_callback'] && params['__rho_object']
         hashObjs = params['__rho_object']
-        
+
         hashObjs.each do |name,index|
             params[name] = __rhoGetCallbackObject(index.to_i())
         end
-        
+
         params.delete('__rho_object')
       end
     end
-    
+
     def self.before(&block)
       @@before = {} unless @@before
       @@before[self.to_s] = block if block_given?
     end
-    
+
     def serve(application,object_mapping,req,res)
       @request, @response = req, res
       @object_mapping = object_mapping
@@ -81,11 +81,11 @@ module Rho
       @redirected = false
 
       RhoController.process_rho_object(@params)
-      
+
       if @@before and @@before[self.class.to_s] and not @params['rho_callback']
-        @@before[self.class.to_s].call(@params,@request) 
+        @@before[self.class.to_s].call(@params,@request)
       end
-      
+
       act = req['action'].nil? ? default_action : req['action']
       if self.respond_to?(act)
         res = send req['action'].nil? ? default_action : req['action']
@@ -96,14 +96,14 @@ module Rho
           res = render :string => "<font size=\"+4\"><h2>404 Not Found.</h2>The action <i>#{called_action}</i> does not have a view or a controller</font>"
         end
       end
-      
+
       if @params['rho_callback']
         res = "" unless res.is_a?(String)
         return res
       end
-        
+
       res = render unless @rendered or @redirected
-        
+
       application.set_menu(@menu, @back_action)
   	  @menu = nil
   	  @back_action = nil;
@@ -120,17 +120,17 @@ module Rho
 
     def redirect(url_params = {},options = {})
       if @params['rho_callback']
-        rho_error( "redirect call in callback. Call WebView.navigate instead" ) 
+        rho_error( "redirect call in callback. Call WebView.navigate instead" )
         return ""
-      end  
-    
+      end
+
       @redirected = true
-      @response['status'] = options['status'] || 302 
+      @response['status'] = options['status'] || 302
       @response['headers']['Location'] = url_for(url_params)
       @response['message'] = options['message'] || 'Moved temporarily'
       return ''
     end
-    
+
     def strip_braces(str=nil)
       str ? str.gsub(/\{/,"").gsub(/\}/,"") : nil
     end

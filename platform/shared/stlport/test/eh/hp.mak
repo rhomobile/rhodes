@@ -1,4 +1,4 @@
-# ;;; -*- Mode:makefile;-*- 
+# ;;; -*- Mode:makefile;-*-
 # Generated automatically from Makefile.in by configure.
 # This requires GNU make.
 
@@ -39,7 +39,7 @@ CXX = $(CC)
 
 CXXFLAGS = -w ${STL_INCL} -D_STLP_NO_CUSTOM_IO
 
-LIBS = -lm 
+LIBS = -lm
 
 LIBSTLPORT = -L../../lib -lstlport_hp
 

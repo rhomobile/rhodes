@@ -154,7 +154,7 @@ time_t time( time_t *timer )
 	SystemTimeToFileTime( &s, &f );
 
 	t = wce_FILETIME2time_t(&f);
-	if( timer==NULL ) 
+	if( timer==NULL )
 		return t;
 	else
 	  *timer = t;
@@ -217,7 +217,7 @@ struct tm *gmtime(const time_t *t)
 	FILETIME f;
 	SYSTEMTIME s;
 	static struct tm tms;
-	
+
 	f = wce_time_t2FILETIME(*t);
 	FileTimeToSystemTime(&f, &s);
 	tms = wce_SYSTEMTIME2tm(&s);
@@ -237,7 +237,7 @@ char* ctime( const time_t *t )
 	strncpy( buf,    week+tms.tm_wday*4, 4 );
 	strncpy( buf+4,  month+tms.tm_mon*4, 4 );
 	sprintf( buf+8,  "%02d ", tms.tm_mday );
-	sprintf( buf+11, "%02d:%02d:%02d %d\n", 
+	sprintf( buf+11, "%02d:%02d:%02d %d\n",
 		tms.tm_hour, tms.tm_min, tms.tm_sec, tms.tm_year+1900 );
 	return buf;
 }
@@ -251,7 +251,7 @@ char *asctime(const struct tm *pt)
 	strncpy( buf,    week+pt->tm_wday*4, 4 );
 	strncpy( buf+4,  month+pt->tm_mon*4, 4 );
 	sprintf( buf+8,  "%02d ", pt->tm_mday );
-	sprintf( buf+11, "%02d:%02d:%02d %d\n", 
+	sprintf( buf+11, "%02d:%02d:%02d %d\n",
 		pt->tm_hour, pt->tm_min, pt->tm_sec, pt->tm_year+1900 );
 	return buf;
 }

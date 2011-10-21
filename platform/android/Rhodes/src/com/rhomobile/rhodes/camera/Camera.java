@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -44,16 +44,16 @@ import com.rhomobile.rhodes.util.PerformOnUiThread;
 public class Camera {
 
 	private static final String TAG = "Camera";
-	
+
 	public static final String INTENT_EXTRA_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + "camera.";
-	
+
 	private static int mMainCamera_max_Width = 0;
 	private static int mMainCamera_max_Height = 0;
 	private static int mFrontCamera_max_Width = 0;
 	private static int mFrontCamera_max_Height = 0;
-	
+
 	private static CameraService ourCameraService = null;
-	
+
 	public static CameraService getCameraService() {
 		if (ourCameraService == null) {
 			if (Capabilities.CAMERA_ENABLED) {
@@ -76,11 +76,11 @@ public class Camera {
 		}
 		return ourCameraService;
 	}
-	
+
 	private static void reportFail(String name, Exception e) {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
 	}
-	
+
 	public static void init_from_UI_Thread() {
 		int[] s_m = getCameraResolution("main");
 		mMainCamera_max_Width = s_m[0];
@@ -89,38 +89,38 @@ public class Camera {
 		mFrontCamera_max_Width = s_f[0];
 		mFrontCamera_max_Height = s_f[1];
 	}
-	
+
 	private static void init() {
 		File f = new File(RhodesAppOptions.getBlobPath());
 		if (!f.exists())
 			f.mkdirs();
 	}
-	
+
 	private static class CameraDisabled implements Runnable {
-		
+
 		private String url;
-		
+
 		public CameraDisabled(String u) {
 			url = u;
 		}
-		
+
 		public void run() {
 			execute_callback(url, "", "Camera disabled", false, 0, 0, "");
 		}
-		
+
 	};
-	
+
 	private static class Picture implements Runnable {
 		private String url;
 		private Class<?> klass;
 		private CameraSettings settings;
-		
+
 		public Picture(String u, Class<?> c, Object settingsObj) {
 			url = u;
 			klass = c;
 			settings = new CameraSettings(settingsObj);
 		}
-		
+
 		public void run() {
 			init();
 			RhodesActivity ra = RhodesActivity.getInstance();
@@ -130,7 +130,7 @@ public class Camera {
 			ra.startActivity(intent);
 		}
 	};
-	
+
 	public static void takePicture(String url, Object params_obj) {
 		try {
 			Runnable runnable = Capabilities.CAMERA_ENABLED ? new Picture(url, ImageCapture.class, params_obj) :
@@ -150,16 +150,16 @@ public class Camera {
 			reportFail("choosePicture", e);
 		}
 	}
-	
+
 	public static void doCallback(String callbackUrl, String filePath, int w, int h, String format) {
 		String fp = filePath == null ? "" : filePath;
 		int idx = fp.lastIndexOf('/');
 		if (idx != -1)
 			fp = fp.substring(idx + 1);
 		execute_callback(callbackUrl, fp, "", fp.length() == 0, w, h, format);
-		
+
 	}
-	
+
 	public static void execute_callback(String callbackUrl, String filePath, String error, boolean cancelled, int w, int h, String format) {
 		StringBuffer body = new StringBuffer();
 		body.append("&rho_callback=1");
@@ -206,14 +206,14 @@ public class Camera {
 		}
 
 		if (camera == null) {
-			
+
 			int[] res = {0,0};
 			return res;
 		}
 
 		int maxW = 10000;
 		int maxH = 10000;
-		
+
 		CameraService.Size s = getCameraService().getClosestPictureSize(camera, maxW, maxH);
 		if (s == null) {
 			int[] ress = {0, 0};
@@ -223,7 +223,7 @@ public class Camera {
 		int[] res = {s.width, s.height};
 		return res;
 	}
-	
+
 	public static int getMaxCameraWidth(String camera_type) {
 		if ("default".equals(camera_type) || "main".equals(camera_type)) {
 			return mMainCamera_max_Width;
@@ -243,5 +243,5 @@ public class Camera {
 		}
 		return 0;
 	}
-	
+
 }

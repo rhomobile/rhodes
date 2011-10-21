@@ -11,13 +11,13 @@ public class NetResponse extends JavaScriptObject {
 
 	/*
 	 * NetResponse json object structure:
-	 * 
+	 *
 	 * var netResponse = {
 	 * 		body: "",
 	 * 		statusCode: 200,
 	 * 		statusText: "200 OK"
 	 * };
-	 * 
+	 *
 	 */
 
 	public final native String getCharData() /*-{

@@ -17,7 +17,7 @@ import com.xruby.runtime.lang.*;
 public class RubyStringIO extends RubyBasic {
     private RubyString value_;
     private int nPos_ = 0;
-    
+
     private RubyStringIO() {
         super(RubyRuntime.StringIOClass);
     }
@@ -26,7 +26,7 @@ public class RubyStringIO extends RubyBasic {
 		value_ = ((RubyStringIO)orig).value_;
 		super.doClone(orig);
 	}
-    
+
     //@RubyAllocMethod
     public static RubyStringIO alloc(RubyValue receiver) {
     	RubyStringIO res = new RubyStringIO();
@@ -39,7 +39,7 @@ public class RubyStringIO extends RubyBasic {
         this.value_ = ObjectFactory.createString();
         return this;
     }
-    
+
     //@RubyLevelMethod(name="initialize")
     public RubyStringIO initialize(RubyValue arg) {
         this.value_ = (RubyString)arg.toRubyString().clone();
@@ -55,7 +55,7 @@ public class RubyStringIO extends RubyBasic {
     public RubyString puts(RubyValue arg) {
         return value_.appendString(arg);
     }
-    
+
     //@RubyLevelMethod(name="write")
     public RubyValue write(RubyValue arg) {
         return ObjectFactory.createFixnum(value_.appendString2(arg));
@@ -65,9 +65,9 @@ public class RubyStringIO extends RubyBasic {
     public RubyValue isEOF() {
         return ObjectFactory.createBoolean(nPos_>=value_.length());
     }
-    
+
     //@RubyLevelMethod(name="read")
-    public RubyValue read(RubyArray args) 
+    public RubyValue read(RubyArray args)
     {
     	switch ( args.size() )
     	{
@@ -76,11 +76,11 @@ public class RubyStringIO extends RubyBasic {
     	case 1:
     		if ( nPos_>=value_.length() )
     			return RubyConstant.QNIL;
-    		
+
     		int len = args.get(0).toInt();
     		String strRes = value_.getChars(nPos_,len);
     		nPos_ += strRes.length();
-    		
+
     		return ObjectFactory.createString(strRes);
     	case 2:
     		throw new RuntimeException("read with 2 parameters not implemented.");
@@ -88,8 +88,8 @@ public class RubyStringIO extends RubyBasic {
     		throw new RubyException(RubyRuntime.ArgumentErrorClass, "in 'StringIO.read': wrong number of arguments : " + args.size() );
     	}
     }
-    
-	public RubyValue readLine(RubyArray args) 
+
+	public RubyValue readLine(RubyArray args)
 	{
 		String chSep;
     	switch ( args.size() )
@@ -115,19 +115,19 @@ public class RubyStringIO extends RubyBasic {
 
 		String strRes = value_.getChars(nPos_, value_.length() - nPos_);
 		String strLine = "";
-		
+
 		int nPos = strRes.indexOf(chSep, nPos_ );
 		if ( nPos > 0 )
 			strLine = strRes.substring(nPos_, nPos+chSep.length());
 		else
 			strLine = strRes;
-			
+
 		if ( nPos > 0 )
-			nPos_ = nPos + chSep.length(); 
+			nPos_ = nPos + chSep.length();
 		else
 			nPos_ = value_.length();
-		
+
 		return ObjectFactory.createString(strLine);
 	}
-    
+
 }

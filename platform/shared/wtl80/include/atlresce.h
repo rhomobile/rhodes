@@ -37,7 +37,7 @@
   #define  SHMENUBAR RCDATA
 
   #if defined(SHELLSDK_MODULES_AYGSHELL)
-    #include <aygshell.h> 
+    #include <aygshell.h>
   #else
     #define NOMENU                 0xFFFF
     #define IDS_SHNEW              1
@@ -60,7 +60,7 @@
 #endif // APSTUDIO_INVOKED
 
 // Visual Studio dialog editor bug fix
-#ifndef DS_FIXEDSYS 
+#ifndef DS_FIXEDSYS
 	#define DS_FIXEDSYS 0
 #endif
 
@@ -82,7 +82,7 @@
 #define ATL_IDM_MENU_DONECANCEL         0xE703
 
 // Default device MenuBar control ID and MenuBar resource ID
-#define ATL_IDW_MENU_BAR				0xE802  
+#define ATL_IDW_MENU_BAR				0xE802
 
 // SmartPhone spinned controls ID offset for CSpinCtrl
 #define ATL_IDW_SPIN_ID                 9999

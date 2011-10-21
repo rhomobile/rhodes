@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -46,10 +46,10 @@ import com.xruby.runtime.lang.*;
 
 
 public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.BluetoothScreenCallback, BluetoothPort.BluetoothPortListener {
-	
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("Bluetooth");
-	
+
 
 	public static String BT_OK = "OK";
 	public static String BT_CANCEL = "CANCEL";
@@ -57,12 +57,12 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 
 	public static String BT_ROLE_SERVER = "ROLE_SERVER";
 	public static String BT_ROLE_CLIENT = "ROLE_CLIENT";
-	
+
 	public static String BT_SESSION_INPUT_DATA_RECEIVED = "SESSION_INPUT_DATA_RECEIVED";
 	public static String BT_SESSION_DISCONNECT = "SESSION_DISCONNECT";
-	
+
 	private static BluetoothManager ourBluetoothManager = null;
-	
+
 	private String mCreateSessionCallback = null;
 	private String mSessionCallback = null;
 	private String mConnectedDeviceName = null;
@@ -72,16 +72,16 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 	private BluetoothPort mPort = null;
 
 
-	
+
 	public static void rhoLogInfo(String msg) {
 		LOG.INFO(msg);
 		//LOG.ERROR(msg);
 	}
-	
+
 	public static void rhoLogError(String msg) {
 		LOG.ERROR(msg);
 	}
-	
+
 	public static BluetoothManager getInstance() {
 		if (ourBluetoothManager == null) {
 			ourBluetoothManager = new BluetoothManager();
@@ -89,26 +89,26 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 		}
 		return ourBluetoothManager;
 	}
-	
+
 	private void init() {
 		mLocalDeviceName = "Blackberry device";//DeviceInfo.getDeviceName();
 		mScreen = null;
 		mPort = null;
 	}
-	
+
 	private void freeAll() {
 		if (mScreen != null) {
 			rhoPopScreen(mScreen);
 			mScreen = null;
 		}
 	}
-	
+
 	public static void rhoPushScreen(MainScreen screen) {
 		RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
 		final MainScreen scr = screen;
-        app.invokeLater(new Runnable() 
+        app.invokeLater(new Runnable()
         {
-            public void run() 
+            public void run()
             {
             	UiApplication app = UiApplication.getUiApplication();
             	app.pushScreen(scr);
@@ -116,13 +116,13 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
             }
         });
 	}
-	
+
 	public static void rhoPopScreen(MainScreen screen) {
 		RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
 		final MainScreen scr = screen;
-        app.invokeLater(new Runnable() 
+        app.invokeLater(new Runnable()
         {
-            public void run() 
+            public void run()
             {
             	UiApplication app = UiApplication.getUiApplication();
             	app.popScreen(scr);
@@ -130,15 +130,15 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
             }
         });
 	}
-	
+
 	public void closeBluetoothScreenSilent() {
 		RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
 		final BluetoothScreen scr = mScreen;
 		mScreen = null;
 		if (scr != null) {
-			app.invokeLater(new Runnable() 
+			app.invokeLater(new Runnable()
 	        {
-	            public void run() 
+	            public void run()
 	            {
 					if (scr != null) {
 						scr.closeSilent();
@@ -147,7 +147,7 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 	        });
 		}
 	}
-	
+
 	// BluetoothScreenCallback
 	public void onBluetoothScreenCancel() {
 		rhoLogInfo("onBluetoothScreenCancel()");
@@ -158,37 +158,37 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 		fireCreateSessionCallback(BT_CANCEL, "");
 		mScreen = null;
 	}
-	
+
 	// BluetoothScreenCallback
 	public void onBluetoothScreenSelect(int index) {
 		rhoLogInfo("onBluetoothScreenSelect("+String.valueOf(index)+")");
 		UiApplication app = UiApplication.getUiApplication();
 		final int i = index;
-        app.invokeLater(new Runnable() 
+        app.invokeLater(new Runnable()
         {
-            public void run() 
+            public void run()
             {
         		getInstance().mPort = new BluetoothPort(mDevices[i], getInstance());
             }
         });
 		mScreen = null;
 	}
-	
+
 	// BluetoothPortListener
 	public void onBluetoothPortDisconnect() {
 		fireSessionCallback(mPort.getConnectedDeviceName(), BT_SESSION_DISCONNECT);
 	}
-	
+
 	// BluetoothPortListener
 	public void onBluetoothPortError() {
 		fireSessionCallback(mPort.getConnectedDeviceName(), BT_ERROR);
 	}
-	
+
 	// BluetoothPortListener
 	public void onBluetoothPortDataReceived() {
 		fireSessionCallback(mPort.getConnectedDeviceName(), BT_SESSION_INPUT_DATA_RECEIVED);
 	}
-	
+
 	// BluetoothPortListener
 	public void onBluetoothPortConnected(boolean success) {
 		if (success) {
@@ -199,7 +199,7 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 		}
 		closeBluetoothScreenSilent();
 	}
-	
+
 	private void fireCreateSessionCallback(String status, String connected_device_name) {
 		String body = "&status=";
 		body += status;
@@ -227,36 +227,36 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 			rhoLogError("fire Session Callback ERROR - Session callback not defined");
 		}
 	}
-	
+
 	private void fireRhodeCallback(String callback_url, String body) {
 		RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
 		HttpHeaders headers = new HttpHeaders();
 		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
 		app.postUrl(callback_url, body, headers);
 	}
-	
-	
+
+
 	public static int is_bluetooth_available() {
 		return BluetoothSerialPort.isSupported()?1:0;
 	}
-	
+
 	public static void off_bluetooth() {
 		rhoLogInfo("off_bluetooth()");
 		getInstance().freeAll();
 		ourBluetoothManager = null;
 	}
-	
+
 	public static void set_device_name(String device_name) {
 		getInstance().mLocalDeviceName = device_name;
 	}
-	
+
 	public static String get_device_name() {
 		return getInstance().mLocalDeviceName;
 	}
 	public static String get_last_error() {
 		return BT_OK;
 	}
-	
+
 	public static String create_session(String role, String callback_url) {
 		rhoLogInfo("create_session("+role+", "+callback_url+")");
 		getInstance().mCreateSessionCallback = callback_url;
@@ -268,7 +268,7 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 				String devices[] = new String[count];
 				int i;
 				for (i = 0; i < count; i++) {
-					devices[i] = getInstance().mDevices[i].getDeviceName(); 
+					devices[i] = getInstance().mDevices[i].getDeviceName();
 				}
 				getInstance().mScreen = new BluetoothScreen(BluetoothScreen.BLUETOOTH_SCREEN_TYPE_CLIENT, devices, getInstance());
 			}
@@ -297,7 +297,7 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 		rhoLogInfo("session_set_callback("+connected_device_name+", "+callback_url+")");
 		getInstance().mSessionCallback = callback_url;
 	}
-	
+
 	public static void session_disconnect(String connected_device_name) {
 		rhoLogInfo("session_disconnect("+connected_device_name+")");
 		if (getInstance().mPort != null) {
@@ -308,24 +308,24 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 			getInstance().fireSessionCallback("", BT_ERROR);
 		}
 	}
-	
+
 	public static int session_get_status(String connected_device_name) {
 		rhoLogInfo("session_get_status("+connected_device_name+")");
 		if (getInstance().mPort != null) {
 			int status = getInstance().mPort.getStatus();
 			rhoLogInfo("session_get_status() return = "+String.valueOf(status));
-			return status; 
+			return status;
 		}
 		else {
 			getInstance().fireSessionCallback("", BT_ERROR);
 		}
 		return 0;
 	}
-	
+
 	public static String session_read_string(String connected_device_name) {
 		rhoLogInfo("session_read_string("+connected_device_name+")");
 		if (getInstance().mPort != null) {
-			byte[] data = getInstance().mPort.readData(); 
+			byte[] data = getInstance().mPort.readData();
 			String str = new String(data,0,data.length);
 			rhoLogInfo("session_read_string() return = ["+str+"]");
 			return str;
@@ -335,7 +335,7 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 		}
 		return "";
 	}
-	
+
 	public static void session_write_string(String connected_device_name, String str) {
 		rhoLogInfo("session_write_string("+connected_device_name+", "+str+")");
 		if (getInstance().mPort != null) {
@@ -346,7 +346,7 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 			getInstance().fireSessionCallback("", BT_ERROR);
 		}
 	}
-	
+
 	public static byte[] session_read_data(String connected_device_name) {
 		rhoLogInfo("session_read_data()");
 		if (getInstance().mPort != null) {
@@ -358,7 +358,7 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 		byte[] m = new byte[0];
 		return m;
 	}
-	
+
 	public static void session_write_data(String connected_device_name, byte[] data) {
 		rhoLogInfo("session_write_data()");
 		if (getInstance().mPort != null) {
@@ -368,10 +368,10 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 			getInstance().fireSessionCallback("", BT_ERROR);
 		}
 	}
-		
-	
+
+
 	public static void initMethods(RubyClass klass) {
-		
+
 		klass.getSingletonClass().defineMethod("is_bluetooth_available", new RubyNoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyBlock block) {
 				RubyValue res = RubyConstant.QFALSE;
@@ -387,7 +387,7 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 				return RubyConstant.QNIL;
 			}
 		});
-		
+
 		klass.getSingletonClass().defineMethod("set_device_name", new RubyOneArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) {
 				if ( arg0 instanceof RubyString )
@@ -423,8 +423,8 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 					  throw new RubyException(RubyRuntime.ArgumentErrorClass, "in RhoBluetooth.create_session: wrong argument type.Should be String");
 				}
 			}
-		});		
-		
+		});
+
 		klass.getSingletonClass().defineMethod("session_set_callback", new RubyTwoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyValue arg2, RubyBlock block) {
 				if ( (arg1 instanceof RubyString) && (arg2 instanceof RubyString) )
@@ -438,7 +438,7 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 				}
 				return RubyConstant.QNIL;
 			}
-		});		
+		});
 		klass.getSingletonClass().defineMethod("session_disconnect", new RubyOneArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) {
 				if ( arg0 instanceof RubyString )
@@ -491,7 +491,7 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 				}
 				return RubyConstant.QNIL;
 			}
-		});		
+		});
 		klass.getSingletonClass().defineMethod("session_read_data", new RubyOneArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) {
 				if ( arg0 instanceof RubyString )
@@ -540,15 +540,15 @@ public class BluetoothManager /*extends RubyBasic*/  implements BluetoothScreen.
 								}
 							}
 						}
-    					data[i] = (byte)b;  
+    					data[i] = (byte)b;
 					}
-					session_write_data(connected_device_name, data);	
+					session_write_data(connected_device_name, data);
 				}
 				else {
 					  throw new RubyException(RubyRuntime.ArgumentErrorClass, "in RhoBluetooth.session_write_data: wrong argument type.Should be String second should be Array");
 				}
 				return RubyConstant.QNIL;
 			}
-		});		
+		});
 	}
 }

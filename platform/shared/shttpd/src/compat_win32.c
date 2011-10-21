@@ -11,8 +11,8 @@
 #include "defs.h"
 
 #if !defined(_WIN32_WCE) && !defined(WIN32)
-static SERVICE_STATUS		ss; 
-static SERVICE_STATUS_HANDLE	hStatus; 
+static SERVICE_STATUS		ss;
+static SERVICE_STATUS_HANDLE	hStatus;
 static SERVICE_DESCRIPTION	service_descr = {"Web server"};
 #endif //!defined(_WIN32_WCE)
 
@@ -23,7 +23,7 @@ fix_directory_separators(char *path)
 		if (*path == '/')
 			*path = '\\';
 		if (*path == '\\')
-			while (path[1] == '\\' || path[1] == '/') 
+			while (path[1] == '\\' || path[1] == '/')
 				(void) memmove(path + 1,
 				    path + 2, strlen(path + 2) + 1);
 	}
@@ -54,7 +54,7 @@ protect_against_code_disclosure(const wchar_t *path)
 
 	for (p = path + wcslen(path); p > path && p[-1] != L'\\';)
 		p--;
-	
+
 	if (!(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) &&
 	    wcscmp(data.cFileName, p) != 0)
 		return (FALSE);
@@ -240,7 +240,7 @@ closedir(DIR *dir)
 		free(dir);
 	}
 
-	if (result == -1) 
+	if (result == -1)
 		errno = EBADF;
 
 	return (result);
@@ -340,7 +340,7 @@ stdoutput(void *arg)
 		total += n;
 		max_recv = min(sizeof(buf), tp->content_len - total);
 	}
-	
+
 	CloseHandle(tp->hPipe);	/* Suppose we have POSTed everything */
 	free(tp);
 }
@@ -371,7 +371,7 @@ stdinput(void *arg)
 		}
 	}
 	CloseHandle(tp->hPipe);
-	
+
 	/*
 	 * Windows is a piece of crap. When this thread closes its end
 	 * of the socket pair, the other end (get_cgi() function) may loose
@@ -426,7 +426,7 @@ _shttpd_spawn_process(struct conn *c, const char *prog, char *envblk,
 	CreatePipe(&b[0], &b[1], NULL, 0);
 	DuplicateHandle(me, a[0], me, &h[0], 0, TRUE, flags);
 	DuplicateHandle(me, b[1], me, &h[1], 0, TRUE, flags);
-	
+
 	(void) memset(&si, 0, sizeof(si));
 	(void) memset(&pi, 0, sizeof(pi));
 
@@ -498,7 +498,7 @@ static LRESULT CALLBACK
 WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	POINT	pt;
-	HMENU	hMenu; 	 
+	HMENU	hMenu;
 
 	switch (msg) {
 	case WM_COMMAND:
@@ -535,17 +535,17 @@ systray(void *arg)
 
 	(void) memset(&cls, 0, sizeof(cls));
 
-	cls.lpfnWndProc = (WNDPROC) WindowProc; 
+	cls.lpfnWndProc = (WNDPROC) WindowProc;
 	cls.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-	cls.lpszClassName = "shttpd v." VERSION; 
+	cls.lpszClassName = "shttpd v." VERSION;
 
-	if (!RegisterClass(&cls)) 
+	if (!RegisterClass(&cls))
 		_shttpd_elog(E_FATAL, NULL, "RegisterClass: %d", ERRNO);
 	else if ((hWnd = CreateWindow(cls.lpszClassName, "",
 	    WS_OVERLAPPEDWINDOW, 0, 0, 0, 0, NULL, NULL, NULL, arg)) == NULL)
 		_shttpd_elog(E_FATAL, NULL, "CreateWindow: %d", ERRNO);
 	ShowWindow(hWnd, SW_HIDE);
-	
+
 	ni.cbSize = sizeof(ni);
 	ni.uID = ID_TRAYICON;
 	ni.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
@@ -555,9 +555,9 @@ systray(void *arg)
 	ni.uCallbackMessage = WM_USER;
 	Shell_NotifyIcon(NIM_ADD, &ni);
 
-	while (GetMessage(&msg, hWnd, 0, 0)) { 
-		TranslateMessage(&msg); 
-		DispatchMessage(&msg); 
+	while (GetMessage(&msg, hWnd, 0, 0)) {
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
 	}
 }
 
@@ -635,28 +635,28 @@ _shttpd_set_nt_service(struct shttpd_ctx *ctx, const char *action)
 }
 
 static void WINAPI
-ControlHandler(DWORD code) 
-{ 
+ControlHandler(DWORD code)
+{
 	if (code == SERVICE_CONTROL_STOP || code == SERVICE_CONTROL_SHUTDOWN) {
-		ss.dwWin32ExitCode	= 0; 
-		ss.dwCurrentState	= SERVICE_STOPPED; 
-	} 
- 
+		ss.dwWin32ExitCode	= 0;
+		ss.dwCurrentState	= SERVICE_STOPPED;
+	}
+
 	SetServiceStatus(hStatus, &ss);
 }
 
 static void WINAPI
-ServiceMain(int argc, char *argv[]) 
+ServiceMain(int argc, char *argv[])
 {
 	char	path[MAX_PATH], *p, *av[] = {"shttpd_service", path, NULL};
 	struct shttpd_ctx	*ctx;
 
-	ss.dwServiceType      = SERVICE_WIN32; 
-	ss.dwCurrentState     = SERVICE_RUNNING; 
+	ss.dwServiceType      = SERVICE_WIN32;
+	ss.dwCurrentState     = SERVICE_RUNNING;
 	ss.dwControlsAccepted = SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN;
 
 	hStatus = RegisterServiceCtrlHandler(SERVICE_NAME, ControlHandler);
-	SetServiceStatus(hStatus, &ss); 
+	SetServiceStatus(hStatus, &ss);
 
 	GetModuleFileName(NULL, path, sizeof(path));
 
@@ -673,9 +673,9 @@ ServiceMain(int argc, char *argv[])
 		shttpd_poll(ctx, INT_MAX);
 	shttpd_fini(ctx);
 
-	ss.dwCurrentState  = SERVICE_STOPPED; 
-	ss.dwWin32ExitCode = -1; 
-	SetServiceStatus(hStatus, &ss); 
+	ss.dwCurrentState  = SERVICE_STOPPED;
+	ss.dwWin32ExitCode = -1;
+	SetServiceStatus(hStatus, &ss);
 }
 
 void

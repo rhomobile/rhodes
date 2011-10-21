@@ -108,17 +108,17 @@ public class DataFileCache {
     public long maxDataFileSize;
 
     //
-    
+
     protected boolean m_bEncrypted = false;
     RhoCrypto m_RhoCrypto;
-    
+
     protected Storage dataFile;
     protected long    fileFreePosition;
     protected int     maxCacheSize;                // number of Rows
     protected long    maxCacheBytes;               // number of bytes
     protected int     maxFreeBlocks;
     protected Cache   cache;
-    
+
     public DataFileCache(Database db,
                          String baseFileName) throws HsqlException {
 
@@ -166,15 +166,15 @@ public class DataFileCache {
                                               : (long) Integer.MAX_VALUE * 4;
         maxFreeBlocks   = 1 << cacheFreeCountScale;
         dataFile        = null;
-        
+
         String strEncryptionInfo = database.getURLProperties().getProperty(
                 HsqlDatabaseProperties.hsqldb_encrypted, "");
-        
+
         if ( strEncryptionInfo != null && strEncryptionInfo.length() > 0  )
         {
-        	m_bEncrypted = true;        	
+        	m_bEncrypted = true;
         	cachedRowPadding = 16;
-        	m_RhoCrypto = new RhoCrypto(strEncryptionInfo,128); 
+        	m_RhoCrypto = new RhoCrypto(strEncryptionInfo,128);
         }
     }
 
@@ -182,11 +182,11 @@ public class DataFileCache {
     {
     	dataFile.sync();
     }
-    
+
     public com.rho.db.Journal getJournal()throws IOException {
     	return ((ScaledRAFile)dataFile).getJournal();
     }
-    
+
     /**
      * Opens the *.data file for this cache, setting the variables that
      * allow access to the particular database version of the *.data file.
@@ -252,7 +252,7 @@ public class DataFileCache {
 
             dataFile = ScaledRAFile.newScaledRAFile(database, fileName,
                     readonly, fileType, cname, skey );
-            
+
             if (preexists) {
                 dataFile.seek(FLAGS_POS);
 
@@ -273,7 +273,7 @@ public class DataFileCache {
                 }
             } else {
                 getJournal().start();
-            	
+
                 fileFreePosition = INITIAL_FREE_POS;
 
                 dataFile.seek(LONG_FREE_POS_POS);
@@ -282,12 +282,12 @@ public class DataFileCache {
                 // set unsaved flag;
                 dataFile.seek(FLAGS_POS);
                 dataFile.writeInt(0);
-                
+
                 dataFile.sync();
                 getJournal().stop();
-                
+
             }
-            
+
             initBuffers();
 
             fileModified = false;
@@ -335,7 +335,7 @@ public class DataFileCache {
 
             if (write) {
             	getJournal().start();
-            	
+
                 cache.saveAll();
                 Trace.printSystemOut("saveAll: " + sw.elapsedTime());
                 appLog.sendLine(SimpleLog.LOG_NORMAL,
@@ -373,7 +373,7 @@ public class DataFileCache {
                                     "DataFileCache.close() : seek end");
                     Trace.printSystemOut("pos and flags: " + sw.elapsedTime());
                 }
-                
+
                 getJournal().stop();
             }
 
@@ -393,7 +393,7 @@ public class DataFileCache {
                 fa.removeElement(fileName);
                 fa.removeElement(backupFileName);
             }
-            
+
             if ( m_RhoCrypto != null )
             	m_RhoCrypto.close();
         } catch (Exception e) {
@@ -407,13 +407,13 @@ public class DataFileCache {
     }
 
     public void rhoSave() throws HsqlException{
-    	
+
         SimpleLog appLog = database.logger.appLog;
-    	
+
         try {
         	getJournal().start();
         	cache.saveAll();
-        	
+
             if (fileModified || freeBlocks.isModified()) {
 
                 // set empty
@@ -439,10 +439,10 @@ public class DataFileCache {
                 if (dataFile.length() != fileFreePosition) {
                     dataFile.seek(fileFreePosition);
                 }
-                
+
                 fileModified = false;
             }
-        	
+
             dataFile.sync();
             getJournal().stop();
         } catch (Exception e) {
@@ -453,9 +453,9 @@ public class DataFileCache {
                 e, fileName
             });
         }
-    	
+
     }
-    
+
     protected void initBuffers() {
 
         if (rowOut == null
@@ -583,7 +583,7 @@ public class DataFileCache {
                * cachedRowPadding + 4;
         else
         	size = ((size + cachedRowPadding - 1) / cachedRowPadding)
-            	* cachedRowPadding;        	
+            	* cachedRowPadding;
 
         object.setStorageSize(size);
 
@@ -681,20 +681,20 @@ public class DataFileCache {
     }
 
     private byte[] m_decryptBuffer;
-    protected synchronized RowInputBinary readObject(int pos) throws IOException 
+    protected synchronized RowInputBinary readObject(int pos) throws IOException
     {
         dataFile.seek((long) pos * cacheFileScale);
         int size = dataFile.readInt();
 
         rowIn.resetRow(pos, size);
-        
+
         if ( m_bEncrypted )
         {
 	        if ( m_decryptBuffer == null || m_decryptBuffer.length < size-4 )
 	        	m_decryptBuffer = new byte[size-4];
-	        
+
 	        dataFile.read(m_decryptBuffer, 0, size-4);
-        
+
 	        try
 	        {
 	        	m_RhoCrypto.decrypt(m_decryptBuffer, 0, size-4, rowIn.getBuffer(), 4 );
@@ -705,7 +705,7 @@ public class DataFileCache {
 	        }
         }else
         	dataFile.read(rowIn.getBuffer(), 4, size - 4);
-        
+
         return rowIn;
     }
 
@@ -713,7 +713,7 @@ public class DataFileCache {
         return cache.release(i);
     }
 
-    protected synchronized void saveRows(CachedObject[] rows, int offset, int count) throws IOException 
+    protected synchronized void saveRows(CachedObject[] rows, int offset, int count) throws IOException
     {
         if (count == 0) {
             return;
@@ -744,14 +744,14 @@ public class DataFileCache {
      * Writes out the specified Row. Will write only the Nodes or both Nodes
      * and table row data depending on what is not already persisted to disk.
      */
-    public synchronized void saveRow(CachedObject row) throws IOException 
+    public synchronized void saveRow(CachedObject row) throws IOException
     {
         setFileModified();
         rowOut.reset();
         row.write(rowOut, m_bEncrypted);
         int nOutSize = rowOut.getOutputStream().size();
         byte[] outBuf = rowOut.getOutputStream().getBuffer();
-        
+
         if ( m_bEncrypted )
         {
 	        try{
@@ -762,7 +762,7 @@ public class DataFileCache {
 	         	throw new IOException("encrypt page failed.");
 	        }
         }
-        
+
         dataFile.seek((long) row.getPos() * cacheFileScale);
         dataFile.write(outBuf, 0, nOutSize);
     }

@@ -17,14 +17,14 @@ extern char* get_home_url();
 /*static char* localhost = "http://localhost:8080";*/
 #endif
 
-#ifdef __SYMBIAN32__      
+#ifdef __SYMBIAN32__
 extern int g_need_launch_gc;
 
 char* g_current_url = NULL;
 RHO_INIT_LOCK(change_url);
 
 //forward declaration
-void webview_set_current_location(char* url);      
+void webview_set_current_location(char* url);
 #endif
 
 
@@ -38,7 +38,7 @@ typedef struct __Route {
 
 struct data_chunk {
 	struct llhead	link;
-  size_t size; 
+  size_t size;
 	void  *data;
 };
 
@@ -67,7 +67,7 @@ static char *trim(char *str)
 static int _isid(char* str) {
 	if (str!=NULL) {
 		int l = strlen(str);
-		if ( (l>2) && (str[0]=='{') && (str[l-1]=='}') ) 
+		if ( (l>2) && (str[0]=='{') && (str[l-1]=='}') )
 			return 1;
 	}
 	return 0;
@@ -84,22 +84,22 @@ static char* _tok(char* t) {
   return s;
 }
 
-static int 
+static int
 _parse_route(RouteRef route) {
 	char *actionorid,*next;
   char* url = route->_url;
 
   if (url[0]=='/') url++;
-	
-	route->_application = url;	
+
+	route->_application = url;
 	if ((route->_model = _tok(url)) == NULL)
 		return 0;
-	
+
 	if ((actionorid = _tok(route->_model)) == NULL)
 		return 1;
-	
+
 	next = _tok(actionorid);
-	
+
 	if (_isid(actionorid)) {
 		route->_id = actionorid;
 		route->_action = next;
@@ -108,7 +108,7 @@ _parse_route(RouteRef route) {
 		route->_action = actionorid;
 	}
 	_tok(next);
-	
+
 	return 1;
 }
 
@@ -132,7 +132,7 @@ static void _free_route(RouteRef route) {
   }
 }
 
-static VALUE 
+static VALUE
 _create_request_hash(struct conn *c, RouteRef route, const char* body, int bodylen) {
   const char *method, *uri, *query;
   VALUE hash_headers;
@@ -141,31 +141,31 @@ _create_request_hash(struct conn *c, RouteRef route, const char* body, int bodyl
 
 	VALUE hash = createHash();
 
-	addStrToHash(hash, "application", 
+	addStrToHash(hash, "application",
     route->_application, strlen(route->_application));
 
-	addStrToHash(hash, "model", 
+	addStrToHash(hash, "model",
     route->_model, strlen(route->_model));
 
 	if (route->_action!=NULL) {
 		const char* actionName = route->_action;
 		addStrToHash(hash, "action", actionName, strlen(actionName));
 	}
-	
+
 	if (route->_id!=NULL) {
 		const char* _id = route->_id;
 		addStrToHash(hash, "id", _id, strlen(_id));
 	}
-	
+
   method = _shttpd_known_http_methods[c->method].ptr;
 	addStrToHash(hash, "request-method", method, strlen(method));
-		
+
 	uri = c->uri;
 	addStrToHash(hash, "request-uri", uri, strlen(uri));
-	
+
 	query = c->query == NULL ? "" : c->query;
 	addStrToHash(hash, "request-query", query, strlen(query));
-	
+
 	hash_headers = createHash();
   h = &c->ch.cl;
 	for (i = 0; i < sizeof(struct headers)/sizeof(struct parsed_header); i++) {
@@ -183,16 +183,16 @@ _create_request_hash(struct conn *c, RouteRef route, const char* body, int bodyl
 		h++;
 	}
 	addHashToHash(hash,"headers",hash_headers);
-	
+
   if (bodylen > 0) {
 		addStrToHash(hash, "request-body", body, bodylen);
 	}
-	
+
 	return hash;
 }
 
 /*
-static char* 
+static char*
 _rho_resolve_index(char* url,char* path,const char *index_names) {
 	char file[FILENAME_MAX];
 	char indexfile[128];
@@ -205,19 +205,19 @@ _rho_resolve_index(char* url,char* path,const char *index_names) {
 		strncpy(indexfile,index_names,len);
 		_shttpd_snprintf(file, sizeof(file), "%s%s%s", path, slash, indexfile);
 		if ( (_shttpd_stat(file, &st) == 0) && (!S_ISDIR(st.st_mode)) ) {
-			
+
 			//if ( i == 0 ) {// there is a controller in this folder
 			//	return url;
 			//}
-			
+
 			url_len = strlen(url);
 			slash = url[strlen(url)-1] == '/' ? "" : "/";
 
 			full_len = url_len + strlen(slash)+len+1;
 			resolved_url = malloc(full_len);
-			_shttpd_snprintf(resolved_url, full_len, "%s%s%s", url, slash, indexfile);	
+			_shttpd_snprintf(resolved_url, full_len, "%s%s%s", url, slash, indexfile);
 			free(url);
-			
+
 			return resolved_url;
 		}
 	}
@@ -225,7 +225,7 @@ _rho_resolve_index(char* url,char* path,const char *index_names) {
 }
 */
 /*
-static char* 
+static char*
 _rho_resolve_index(char* url,char* path,const char *index_names) {
 	char filename[FILENAME_MAX];
 	struct stat	st;
@@ -237,16 +237,16 @@ _rho_resolve_index(char* url,char* path,const char *index_names) {
 	if ((_shttpd_stat(filename, &st) == 0)&&(!S_ISDIR(st.st_mode))) {
 	  return url;
 	}
-	
+
 	len = strlen(url);
 	if (url[len-1]!='/') {
 		char* tmp_url = malloc(len+2);
 		_shttpd_snprintf(tmp_url,len+2,"%s/",url);
 		free(url);
 		return tmp_url;
-	} 
+	}
 
-	return url;				
+	return url;
 }*/
 /*
 char* rho_resolve_url(char* url, const char* root,const char *index_names) {
@@ -266,26 +266,26 @@ char* rho_resolve_url(char* url, const char* root,const char *index_names) {
 	} else {
 		_shttpd_snprintf(path, sizeof(path), "%s%s", root, url);
 		if ( _shttpd_stat(path, &st) == -1 ) {
-			tmp_url = url;				
+			tmp_url = url;
 		} else if ( S_ISDIR(st.st_mode) ) {
 			tmp_url = _rho_resolve_index(url,path,index_names);
 		} else {
-			tmp_url = url;				
+			tmp_url = url;
 		}
 	}
-	
-#if defined(__SYMBIAN32__) || defined(OS_WINDOWS) || defined(OS_WINCE)	
+
+#if defined(__SYMBIAN32__) || defined(OS_WINDOWS) || defined(OS_WINCE)
 	full_len = strlen(get_home_url())+strlen(tmp_url)+1;
 	ret = malloc(full_len);
-	_shttpd_snprintf(ret, full_len, "%s%s", get_home_url(), tmp_url);	
-#else		
+	_shttpd_snprintf(ret, full_len, "%s%s", get_home_url(), tmp_url);
+#else
 	full_len = strlen(localhost)+strlen(tmp_url)+1;
 	ret = malloc(full_len);
-	_shttpd_snprintf(ret, full_len, "%s%s", localhost, tmp_url);	
-#endif	
+	_shttpd_snprintf(ret, full_len, "%s%s", localhost, tmp_url);
+#endif
 
 	free(tmp_url);
-	
+
 	return ret;
 }*/
 
@@ -294,7 +294,7 @@ extern void rho_sync_addobjectnotify_bysrcname(const char* szSrcName, const char
 
 void* rho_dispatch(struct conn *c, const char* path) {
   RouteRef route;
-  
+
   if ( _shttpd_match_extension(c->uri,"css,js,html,htm,png,bmp,jpg,jpeg,gif") )
     return NULL;
 
@@ -308,7 +308,7 @@ void* rho_dispatch(struct conn *c, const char* path) {
 
       //is this an actual file or folder
       if (_shttpd_stat(path, &st) != 0)
-        return route;      
+        return route;
       //is this a folder
       if (S_ISDIR(st.st_mode)) {
         //check if there is controller.rb to run
@@ -332,9 +332,9 @@ void* rho_dispatch(struct conn *c, const char* path) {
 int collect_data(struct llhead *plist, const void* data, size_t len) {
     struct data_chunk *chunk;
 
-	if ((chunk = malloc(sizeof(*chunk))) != NULL) 
+	if ((chunk = malloc(sizeof(*chunk))) != NULL)
     {
-        if ((chunk->data = malloc(len)) != NULL) 
+        if ((chunk->data = malloc(len)) != NULL)
         {
             memcpy(chunk->data,data,len);
             chunk->size = len;
@@ -374,12 +374,12 @@ get_collected_data(struct llhead *head, int nchunks, size_t datasize) {
 		  collected_data_destructor(lp);
 	  }
   }
-  
+
   return data;
 }
 
 struct rho_write_state {
-    VALUE   data;		 
+    VALUE   data;
     size_t	nDataLen; /* Content-Length	*/
     size_t	nRead; /* Number of bytes read	*/
 };
@@ -417,7 +417,7 @@ void rho_create_write_state(struct shttpd_arg *arg, VALUE data)
 }
 
 void rho_serve(struct shttpd_arg *arg) {
-	
+
 	//const char	*s;
     struct rho_read_state {
         size_t	cl;		 /* Content-Length	*/
@@ -446,7 +446,7 @@ void rho_serve(struct shttpd_arg *arg) {
         arg->state = NULL;
 
         return;
-	} 
+	}
 
     if ( !arg->user_data ) {//Request read. Return response
         rho_write_data(arg);
@@ -459,8 +459,8 @@ void rho_serve(struct shttpd_arg *arg) {
         state->cl = ((struct conn *)(arg->priv))->ch.cl._v.v_big_int;
         state->nchunks = 0;
         LL_INIT(&state->post_data);
-	} 
-    
+	}
+
 	state = arg->state;
 
 	/* Collect the POST data */
@@ -482,9 +482,9 @@ void rho_serve(struct shttpd_arg *arg) {
         void* data = get_collected_data(&state->post_data, state->nchunks, state->nread);
         VALUE req = _create_request_hash(
             arg->priv, (RouteRef) arg->user_data, data, state->nread );
-        #ifdef __SYMBIAN32__      
+        #ifdef __SYMBIAN32__
             g_need_launch_gc = 1;
-        #endif      
+        #endif
 
         //shttpd_printf(arg, "%s", callFramework(req));
 //        _free_route(arg->user_data);
@@ -558,30 +558,30 @@ extern void webview_navigate(char* url);
 
 char* webview_current_location() {
 		char* retval = NULL;
-		
+
 		RHO_LOCK(change_url);
 
 		retval = strdup(g_current_url);
-	    
+
 	    RHO_UNLOCK(change_url);
-	    
+
 	    return retval;
 	}
 
 void webview_set_current_location(char* url) {
-	
+
 	RHO_LOCK(change_url);
-	
+
 	if ( g_current_url )
 		free(g_current_url);
 
 	g_current_url = strdup(url);
-	
+
 	RHO_UNLOCK(change_url);
 }
 
 void webview_refresh() {
-	
+
 	char* url = webview_current_location();
 	if ( url )
 	{

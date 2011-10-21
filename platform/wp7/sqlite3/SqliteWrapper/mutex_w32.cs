@@ -101,7 +101,7 @@ static int winMutexNotheld2(sqlite3_mutex *p, DWORD tid){
   return p->nRef==0 || p->owner!=tid;
 }
 static int winMutexNotheld(sqlite3_mutex *p){
-  DWORD tid = GetCurrentThreadId(); 
+  DWORD tid = GetCurrentThreadId();
   return winMutexNotheld2(p, tid);
 }
 #endif
@@ -251,10 +251,10 @@ sqlite3DbFree(db,p);
 ** more than once, the behavior is undefined.
 */
 static void winMutexEnter(sqlite3_mutex p){
-  DWORD tid = GetCurrentThreadId(); 
+  DWORD tid = GetCurrentThreadId();
   assert( p->id==SQLITE_MUTEX_RECURSIVE || winMutexNotheld2(p, tid) );
   EnterCriticalSection(&p->mutex);
-  p->owner = tid; 
+  p->owner = tid;
   p->nRef++;
 #if SQLITE_DEBUG
   if( p->trace ){
@@ -264,7 +264,7 @@ static void winMutexEnter(sqlite3_mutex p){
 }
 static int winMutexTry(sqlite3_mutex *p){
 #if !NDEBUG
-  DWORD tid = GetCurrentThreadId(); 
+  DWORD tid = GetCurrentThreadId();
 #endif
 int rc = SQLITE_BUSY;
   assert( p->id==SQLITE_MUTEX_RECURSIVE || winMutexNotheld2(p, tid) );

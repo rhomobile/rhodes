@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright 2005-2007 Xue Yong Zhi, Yu Zhang
  * Distributed under the BSD License
  */
@@ -18,17 +18,17 @@ import com.xruby.runtime.builtin.RubyHash;
 public class RubyObject extends RubyBasic {
 	protected Map/*<RubyID, RubyValue>*/ instance_varibles_ = null;
 	protected RubyHash m_rhomProps;
-	
+
 	public RubyObject(RubyClass c) {
 		super(c);
 	}
-	
+
     protected void doClone(RubyObject orig)
     {
     	instance_varibles_ = orig.instance_varibles_;
     	super.doClone(orig);
     }
-	
+
 	//@RubyAllocMethod
 	public static RubyValue alloc(RubyValue receiver) {
 		return new RubyObject((RubyClass)receiver);
@@ -41,7 +41,7 @@ public class RubyObject extends RubyBasic {
 				return v;
 			}
 		}
-		
+
         return RubyConstant.QNIL;
 	}
 
@@ -53,7 +53,7 @@ public class RubyObject extends RubyBasic {
         instance_varibles_.put(id, value);
         return value;
 	}
-	
+
 	public String inspect() {
 		StringBuffer sb = new StringBuffer();
         sb.append("#<");
@@ -80,7 +80,7 @@ public class RubyObject extends RubyBasic {
 
         return sb.toString();
 	}
-	
+
 	//RHO_COMMENT
     //@RubyLevelMethod(name="instance_variable_set")
     public RubyValue instance_variable_set(RubyValue arg1, RubyValue arg2){
@@ -99,33 +99,33 @@ public class RubyObject extends RubyBasic {
 		RubyID mid = RubyID.intern(arg1.toStr());
 		if ( getInstanceVariable(mid) != RubyConstant.QNIL )
 			return RubyConstant.QTRUE;
-		
+
 		return RubyConstant.QFALSE;
     }
 
     //@RubyLevelMethod(name="remove_instance_variable")
     public RubyValue instance_variable_remove(RubyValue arg1){
 		RubyID mid = RubyID.intern(arg1.toStr());
-		
+
 		if (this.instance_varibles_ != null) {
 			RubyValue v = (RubyValue)(instance_varibles_.remove(mid));
 			if (v != null) {
 				return v;
 			}
 		}
-		
+
 		throw new RubyException(RubyRuntime.NameErrorClass, "instance variable '" + mid.toString() + "' not defined");
     }
 
     //@RubyLevelMethod(name="instance_variables")
     public RubyValue instance_variables(){
     	RubyArray ar = new RubyArray();
-    	
+
         for (Iterator iter = instance_varibles_.keySet().iterator(); iter.hasNext();) {
         	RubyID value = (RubyID)iter.next();
             ar.add( ObjectFactory.createString(value.toString()) );
         }
-    	
+
     	return ar;
     }
 
@@ -134,12 +134,12 @@ public class RubyObject extends RubyBasic {
     	m_rhomProps = (RubyHash)arg1;
     	return RubyConstant.QNIL;
     }
-    
+
     public RubyValue rhom_processProperty(RubyID mid)
     {
     	if ( m_rhomProps == null )
     		return null;
-    	
+
     	return m_rhomProps.getRaw(mid.toSymbol());
     }
 }

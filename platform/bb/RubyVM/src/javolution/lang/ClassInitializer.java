@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2006 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -18,20 +18,20 @@ import javolution.util.StandardLog;
 /**
  * <p> This utility class allows for initialization of all classes
  *     at startup to avoid initialization delays at an innapropriate time.</p>
- *     
- * <p> Note: Users might want to disable logging when initializing run-time 
- *     classes  at start-up because of the presence of old classes (never used) 
+ *
+ * <p> Note: Users might want to disable logging when initializing run-time
+ *     classes  at start-up because of the presence of old classes (never used)
  *     in the jar files for which initialization fails. For example:[code]
  *     public static main(String[] args) {
  *         LogContext.enter(LogContext.NULL); // Temporarely disables logging errors and warnings.
- *         try { 
+ *         try {
  *             ClassInitializer.initializeAll();  // Initializes bootstrap, extensions and classpath classes.
  *         } finally {
  *             LogContext.exit(LogContext.NULL); // Goes back to default logging.
  *         }
  *         ...
  *     }[/code]</p>
- *    
+ *
  * @author  <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 3.6, November 6, 2005
  */
@@ -45,7 +45,7 @@ public class ClassInitializer {
 
     /**
      * Initializes all runtime and classpath classes.
-     * 
+     *
      * @see #initializeRuntime()
      * @see #initializeClassPath()
      */
@@ -56,8 +56,8 @@ public class ClassInitializer {
 
     /**
      * Initializes runtime classes (bootstrap classes in <code>
-     * System.getProperty("sun.boot.class.path"))</code>  and the 
-     * extension <code>.jar</code> in <code>lib/ext</code> directory). 
+     * System.getProperty("sun.boot.class.path"))</code>  and the
+     * extension <code>.jar</code> in <code>lib/ext</code> directory).
      */
     public static void initializeRuntime() {
         String bootPath = System.getProperty("sun.boot.class.path");
@@ -131,7 +131,7 @@ public class ClassInitializer {
 
     /**
      * Initializes the specified class.
-     * 
+     *
      * @param cls the class to initialize.
      */
     public static void initialize(Class cls) {
@@ -144,7 +144,7 @@ public class ClassInitializer {
 
     /**
      * Initializes the class with the specified name.
-     * 
+     *
      * @param className the name of the class to initialize.
      */
     public static void initialize(String className) {
@@ -159,8 +159,8 @@ public class ClassInitializer {
 
     /**
      * Initializes all the classes in the specified jar file.
-     * 
-     * @param jarName the jar filename. 
+     *
+     * @param jarName the jar filename.
      */
     public static void initializeJar(String jarName) {
         try {
@@ -190,9 +190,9 @@ public class ClassInitializer {
 
     /**
      * Initializes all the classes in the specified directory.
-     * 
+     *
      * @param dirName the name of the directory containing the classes to
-     *         initialize. 
+     *         initialize.
      */
     public static void initializeDir(String dirName) {
         StandardLog.fine("Initialize Directory: " + dirName);

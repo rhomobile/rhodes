@@ -48,7 +48,7 @@ unsigned long lh_char_hash(void *k)
 {
 	unsigned int h = 0;
 	const char* data = k;
- 
+
 	while( *data!=0 ) h = h*129 + (unsigned int)(*data++) + LH_PRIME;
 
 	return h;

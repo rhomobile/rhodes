@@ -97,7 +97,7 @@ static NSMutableArray* geocode_requests = nil;
 	NSString* title;
 	NSString* subtitle;
 	NSString* url;
-	
+
 }
 @property (nonatomic,assign) MapViewControllerESRI* map;
 @property (nonatomic,retain) NSString* title;
@@ -113,7 +113,7 @@ static NSMutableArray* geocode_requests = nil;
 @interface RhoESRIGeoLocatorItemMapCenter : RhoESRIGeoLocatorItem {
 	MapViewControllerESRI* map;
 	double radius;
-	
+
 }
 @property (nonatomic,assign) MapViewControllerESRI* map;
 @property (nonatomic,assign) double radius;
@@ -144,15 +144,15 @@ static NSMutableArray* geocode_requests = nil;
 -(void)start {
     self.locator = [AGSLocator locatorWithURL:[NSURL URLWithString:kGeoLocatorURL]];
     self.locator.delegate = self;
-    
+
     NSArray *outFields = [NSArray arrayWithObjects:@"Score",
                           @"Latitude",
                           @"Longitude",
                           nil];
-    
+
     //Create the address dictionary with the contents of the search bar
     NSDictionary *addresses = [NSDictionary dictionaryWithObjectsAndKeys:self.query_adress, @"PlaceName", nil];
-	
+
     //now request the location from the locator for our address
     [self.locator locationsForAddress:addresses returnFields:outFields];
 }
@@ -162,17 +162,17 @@ static NSMutableArray* geocode_requests = nil;
 	{
         //loop through all candidates/results and add to graphics layer
 		for (int i=0; i<[candidates count]; i++)
-		{            
+		{
 			AGSAddressCandidate *addressCandidate = (AGSAddressCandidate *)[candidates objectAtIndex:i];
-			
+
             //get the location from the candidate
             AGSPoint *pt = addressCandidate.location;
 			[self onFounded:pt.x latitude:pt.y];
-			
+
 			//[geocode_requests removeObject:self];
 			return;
 		}
-	}	
+	}
 }
 
 -(void)locator:(AGSLocator *)locator operation:(NSOperation *)op didFailLocationsForAddress:(NSError *)error {
@@ -183,7 +183,7 @@ static NSMutableArray* geocode_requests = nil;
 }
 
 - (void)dealloc {
-	[self.locator release];	
+	[self.locator release];
     [super dealloc];
 }
 
@@ -310,25 +310,25 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 //@synthesize locator = _locator;
 @synthesize calloutTemplate = _calloutTemplate;
 
-@synthesize params_value, region_center, region_radius, esriLogo, esri_standard_map_url, esri_satellite_map_url, zoomEnabled, scrollEnabled, showsUserLocation, region_set, mapType;	
+@synthesize params_value, region_center, region_radius, esriLogo, esri_standard_map_url, esri_satellite_map_url, zoomEnabled, scrollEnabled, showsUserLocation, region_set, mapType;
 
 
 - (id)initWithParams:(rho_param*)params {
-    geocode_requests = [NSMutableArray arrayWithCapacity:10]; 
-	
+    geocode_requests = [NSMutableArray arrayWithCapacity:10];
+
 	[self init];
 
 	self.mapType =  ESRI_MapType_RoadMap;
 	self.zoomEnabled = TRUE;
-	self.scrollEnabled = TRUE;	
+	self.scrollEnabled = TRUE;
 	self.showsUserLocation = TRUE;
 	self.region_set = FALSE;
 	self.params_value = NULL;
     self.region_center = nil;
-	
+
 	self.esri_standard_map_url = kESRI_standart_map_URL;
 	self.esri_satellite_map_url = kESRI_satellite_map_URL;
-	
+
 	{
 		char* std_map = rho_conf_getString("esri_map_url_roadmap");
 		if (std_map) {
@@ -339,7 +339,7 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 			self.esri_satellite_map_url = [[NSString stringWithUTF8String:std_map] stringByAppendingString:@"MapServer"];
 		}
 	}
-	
+
 	self.calloutTemplate = [[AGSCalloutTemplate alloc]init];
 
     if (params && params->type == RHO_PARAM_HASH) {
@@ -365,9 +365,9 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 
 
 + (void)createMap:(rho_param *)params {
-	
+
 	[RhoCreateMapTaskESRI run:[NSValue valueWithPointer:params]];
-	
+
     //id runnable = [RhoCreateMapTaskESRI class];
     //id arg = [NSValue valueWithPointer:params];
     //[Rhodes performOnUiThread:runnable arg:arg wait:NO];
@@ -382,8 +382,8 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 
 
 - (void)close {
-    //[self dismissModalViewControllerAnimated:YES]; 
-    
+    //[self dismissModalViewControllerAnimated:YES];
+
 	[ESRIViewManager closeView];
 
 }
@@ -391,13 +391,13 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 - (void)setSettings:(rho_param*)p {
     if (!p || p->type != RHO_PARAM_HASH)
         return;
-    
+
     for (int i = 0, lim = p->v.hash->size; i < lim; ++i) {
         char *name = p->v.hash->name[i];
         rho_param *value = p->v.hash->value[i];
         if (!name || !value)
             continue;
-        
+
         if (strcasecmp(name, "map_type") == 0) {
             if (value->type != RHO_PARAM_STRING)
                 continue;
@@ -417,12 +417,12 @@ static RhoCloseMapTaskESRI* instance_close = nil;
             if (value->type == RHO_PARAM_ARRAY) {
                 if (value->v.array->size != 4)
                     continue;
-                
+
                 rho_param *lat = value->v.array->value[0];
                 rho_param *lon = value->v.array->value[1];
                 rho_param *latSpan = value->v.array->value[2];
                 rho_param *lonSpan = value->v.array->value[3];
-                
+
                 double location_latitude = lat->type == RHO_PARAM_STRING ? strtod(lat->v.string, NULL) : 0;
                 double location_longitude = lon->type == RHO_PARAM_STRING ? strtod(lon->v.string, NULL) : 0;
                 double span_latitudeDelta = latSpan->type == RHO_PARAM_STRING ? strtod(latSpan->v.string, NULL) : 0;
@@ -432,13 +432,13 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 				region_latitude_max = location_latitude + span_latitudeDelta;
 				region_longitude_min = location_longitude - span_longitudeDelta;
 				region_longitude_max = location_longitude + span_longitudeDelta;
-				
+
 				region_set = TRUE;
             }
             else if (value->type == RHO_PARAM_HASH) {
                 char *center = NULL;
                 char *radius = NULL;
-                
+
                 for (int j = 0, limm = value->v.hash->size; j < limm; ++j) {
                     char *rname = value->v.hash->name[j];
                     rho_param *rvalue = value->v.hash->value[j];
@@ -457,10 +457,10 @@ static RhoCloseMapTaskESRI* instance_close = nil;
                         radius = rvalue->v.string;
                     }
                 }
-                
+
                 if (!center || !radius)
                     continue;
-                
+
                 self.region_center = [NSString stringWithUTF8String:center];
                 self.region_radius = strtod(radius, NULL);
 			}
@@ -484,7 +484,7 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 }
 
 - (void)setAnnotations:(rho_param*)p {
-///*	
+///*
     int size = 1;
     if (p && p->type == RHO_PARAM_ARRAY)
         size += p->v.array->size;
@@ -504,16 +504,16 @@ static RhoCloseMapTaskESRI* instance_close = nil;
             rho_param *ann = p->v.array->value[i];
             if (ann->type != RHO_PARAM_HASH)
                 continue;
-            
+
             //CLLocationCoordinate2D coord;
             double coord_latitude = 10000;
             double coord_longitude = 10000;
-            
+
             NSString *address = nil;
             NSString *title = nil;
             NSString *subtitle = nil;
             NSString *url = nil;
-            
+
             for (int j = 0, limm = ann->v.hash->size; j < limm; ++j) {
                 char *name = ann->v.hash->name[j];
                 rho_param *value = ann->v.hash->value[j];
@@ -522,7 +522,7 @@ static RhoCloseMapTaskESRI* instance_close = nil;
                 if (value->type != RHO_PARAM_STRING)
                     continue;
                 char *v = value->v.string;
-                
+
                 if (strcasecmp(name, "latitude") == 0) {
                     coord_latitude = strtod(v, NULL);
                 }
@@ -542,7 +542,7 @@ static RhoCloseMapTaskESRI* instance_close = nil;
                     url = [NSString stringWithUTF8String:v];
                 }
             }
-			
+
 			if ((coord_latitude < 10000) && (coord_longitude < 10000)) {
 				[self addAnnotation:coord_latitude longitude:coord_longitude streetAdress:address title:title subtitle:subtitle url:url];
 			}
@@ -551,7 +551,7 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 					[[RhoESRIGeoLocatorItemAnnotation alloc] init:self adress:address title:title subtitle:subtitle url:url];
 				}
 			}
-            
+
          }
     }
  }
@@ -590,7 +590,7 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];
-	
+
 	self.view.opaque = YES;
 	self.view.backgroundColor = [UIColor blackColor];
 
@@ -598,60 +598,60 @@ static RhoCloseMapTaskESRI* instance_close = nil;
     toolbar = [[UIToolbar alloc] init];
     toolbar.barStyle = UIBarStyleBlack;
     UIBarButtonItem *closeButton = [[UIBarButtonItem alloc]
-									initWithTitle:@"Close" style:UIBarButtonItemStyleBordered 
+									initWithTitle:@"Close" style:UIBarButtonItemStyleBordered
 									target:self action:@selector(close_clicked:)];
     [toolbar setItems:[NSArray arrayWithObjects:closeButton,nil]];
-	
-	
-	toolbar.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | 
+
+
+	toolbar.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin |
 	UIViewAutoresizingFlexibleWidth;
 	toolbar.autoresizesSubviews = YES;
     [toolbar sizeToFit];
-	
+
     CGFloat toolbarHeight = [toolbar frame].size.height;
 	// hack for do not reduce height of toolbar in Landscape mode
 	if (toolbarHeight < 44) {
 		toolbarHeight = 44;
 	}
-	
+
 	//RhoMainView* rw = [[Rhodes sharedInstance] mainView];
-    
+
 	CGRect rootViewBounds = CGRectMake(0, 20, 200, 200);//[[[Rhodes sharedInstance] mainView] view].frame;//bounds;
-	
+
 	self.view.frame = rootViewBounds;
-	
+
     CGFloat rootViewHeight = rootViewBounds.size.height;
 	//CGFloat rootViewHeight = CGRectGetHeight(rootViewBounds);
     CGFloat rootViewWidth = CGRectGetWidth(rootViewBounds);
     CGRect rectArea = CGRectMake(0, rootViewHeight - toolbarHeight, rootViewWidth, toolbarHeight);
     toolbar.frame = rectArea;
-    
-	
+
+
 	[self.view addSubview:toolbar];
     [closeButton release];
-    
+
     CGRect rectMapArea = CGRectMake(0, 0, rootViewWidth, rootViewHeight - toolbarHeight);
 
 	AGSMapView* content = [[AGSMapView alloc] initWithFrame:rectMapArea];
-	
-	self.mapView = content;	
+
+	self.mapView = content;
 	self.mapView.frame = rectMapArea;
     self.mapView.autoresizesSubviews = YES;
     self.mapView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	[content release];
 
-    
+
 	/*Geocoder Stuff*/
     //[ggeoCoder start];
-  
+
     [self.view insertSubview:self.mapView atIndex:0];
-	
+
 
 	// set the delegate for the map view
 	self.mapView.mapViewDelegate = self;
-	
-	
-	
+
+
+
 	NSURL* baseURL = [NSURL URLWithString:kESRI_standart_map_URL];
 	//create an instance of a tiled map service layer
 	if (mapType == ESRI_MapType_RoadMap) {
@@ -664,41 +664,41 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 		baseURL = [NSURL URLWithString:kESRI_satellite_map_URL];
 	}
 	AGSTiledMapServiceLayer *tiledLayer = [[AGSTiledMapServiceLayer alloc] initWithURL:baseURL];
-	
+
 	//Add it to the map view
 	UIView<AGSLayerView>* lyr = [self.mapView addMapLayer:tiledLayer withName:@"Tiled Layer"];
-	
+
 	//release to avoid memory leaks
 	[tiledLayer release];
-	
+
 	// Setting these two properties lets the map draw while still performing a zoom/pan
 	lyr.drawDuringPanning = scrollEnabled;
 	lyr.drawDuringZooming = zoomEnabled;
-	
-	
+
+
 	//if (mapType == ESRI_MapType_Hybrid) {
-	if (0) {	
+	if (0) {
 		//create an instance of a dynmaic map layer
 		self.dynamicLayer = [[[AGSDynamicMapServiceLayer alloc] initWithURL:[NSURL URLWithString:kESRI_standart_map_URL]] autorelease];
-		
+
 		//set visible layers
 		self.dynamicLayer.visibleLayers = [NSArray arrayWithObjects:[NSNumber numberWithInt:2], nil];
-		
+
 		//name the layer. This is the name that is displayed if there was a property page, tocs, etc...
 		self.dynamicLayerView = [self.mapView addMapLayer:self.dynamicLayer withName:@"Dynamic Layer"];
-		
+
 		//set transparency
 		self.dynamicLayerView.alpha = 1.0;
 	}
-	
-    
+
+
     //create the graphics layer that the geocoding result
     //will be stored in and add it to the map
     self.graphicsLayer = [AGSGraphicsLayer graphicsLayer];
     [self.mapView addMapLayer:self.graphicsLayer withName:@"Graphics Layer"];
-	
-	
-	
+
+
+
 	AGSSpatialReference *sr = [AGSSpatialReference spatialReferenceWithWKID:4326];
 	double xmin, ymin, xmax, ymax;
 	if (region_set) {
@@ -706,22 +706,22 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 		ymin = region_latitude_min;
 		xmax = region_longitude_max;
 		ymax = region_latitude_max;
-		
+
 		// zoom to region
 		AGSEnvelope *env = [AGSEnvelope envelopeWithXmin:xmin ymin:ymin xmax:xmax ymax:ymax spatialReference:sr];
-		
+
 		env = (AGSEnvelope*)AGSGeometryGeographicToWebMercator(env);
-		
+
 		//AGSEnvelope *env = [AGSEnvelope envelopeWithXmin:xmin ymin:ymin xmax:xmax ymax:ymax spatialReference:self.mapView.spatialReference];
-		
+
 		[self.mapView zoomToEnvelope:env animated:YES];
 	}
 	else if (region_center != nil){
 		[[RhoESRIGeoLocatorItemMapCenter alloc] init:self adress:region_center radius:self.region_radius];
 	}
-	
-	
-	
+
+
+
     if (params_value && params_value->type == RHO_PARAM_HASH) {
         rho_param *ann = NULL;
         for (int i = 0, lim = params_value->v.hash->size; i < lim; ++i) {
@@ -735,17 +735,17 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 		}
 		rho_param_free(params_value);
     }
-	
+
 	// ESRI logo
 	// http://resources.arcgis.com/content/attribution
 	//
 	UIImage* logoimg = [UIImage imageNamed:@"esri.png"];
 	self.esriLogo = [[UIImageView alloc] initWithImage:logoimg];
-	
-	CGSize size = [logoimg size]; 
-	
-	CGRect fr = self.mapView.frame; 
-	
+
+	CGSize size = [logoimg size];
+
+	CGRect fr = self.mapView.frame;
+
 	CGRect logo_fr;
 	logo_fr.origin.x = 0;
 	logo_fr.origin.y = fr.size.height - size.height;
@@ -753,15 +753,15 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 	logo_fr.size.height = size.height;
 	self.esriLogo.frame = logo_fr;
 	self.esriLogo.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
-	[self.view addSubview:esriLogo]; 
-	
+	[self.view addSubview:esriLogo];
+
 }
 
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
-	
+
 	// Release any cached data, images, etc that aren't in use.
 }
 
@@ -775,13 +775,13 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 	self.mapView = nil;
 	self.dynamicLayer = nil;
 	self.dynamicLayerView = nil;
-	
+
     self.graphicsLayer = nil;
 	//self.locator = nil;
-	self.calloutTemplate = nil;	
-	
+	self.calloutTemplate = nil;
+
 	geocode_requests = nil;
-	
+
     [super dealloc];
 }
 
@@ -789,7 +789,7 @@ static RhoCloseMapTaskESRI* instance_close = nil;
 #pragma mark AGSMapViewDelegate methods
 
 -(void) mapViewDidLoad:(AGSMapView*)mapView {
-	
+
 	// comment to disable the GPS on start up
 	if (showsUserLocation) {
 		[self.mapView.gps start];
@@ -812,76 +812,76 @@ static RhoCloseMapTaskESRI* instance_close = nil;
     //id<RhoMainView> mainView = [[Rhodes sharedInstance] mainView];
     //[mainView navigateRedirect:url tab:[mainView activeTab]];
 	if ([url length] > 0) {
-		rho_webview_navigate([url UTF8String], 0);	
+		rho_webview_navigate([url UTF8String], 0);
 		[self close];
 	}
 }
 
 
 
--(void)addAnnotation:(double)latitude longitude:(double)longitude 
+-(void)addAnnotation:(double)latitude longitude:(double)longitude
 								streetAdress:(NSString*)streetAdress
 								title:(NSString*)title
 								subtitle:(NSString*)subtitle
-								url:(NSString*)url 
+								url:(NSString*)url
 {
 	AGSPictureMarkerSymbol *marker = [AGSPictureMarkerSymbol pictureMarkerSymbolWithImageNamed:@"BluePushpin.png"];
 	marker.xoffset = 9;
 	marker.yoffset = -16;
 	marker.hotspot = CGPointMake(-9, -11);
-	
-	
+
+
 	AGSSpatialReference *sr = [AGSSpatialReference spatialReferenceWithWKID:4326];
 	AGSPoint *point = [[AGSPoint alloc] initWithX:longitude y:latitude spatialReference:sr];
-	
+
 	point = (AGSPoint*)AGSGeometryGeographicToWebMercator(point);
-	
+
 	//set the text and detail text based on 'Name' and 'Descr' fields in the attributes
 	self.calloutTemplate.titleTemplate = @"${Name}";
 	self.calloutTemplate.detailTemplate = @"${Descr}";
-	
+
 	//title - @"Name",
 	//street adress - @"Match_addr",
 	//subtitle - @"Descr",
 	//latitude - @"Latitude"
 	//longitude  - @"Longitude"
 	//url - @"URL"
-	
-	
+
+
 	NSMutableDictionary* attributes = [NSMutableDictionary dictionaryWithCapacity:6];
-	if (title != nil) 
+	if (title != nil)
 		[attributes setObject:title forKey:@"Name"];
-	
-	if (subtitle != nil) 
+
+	if (subtitle != nil)
 		[attributes setObject:subtitle forKey:@"Descr"];
-	
-	if (streetAdress != nil) 
+
+	if (streetAdress != nil)
 		[attributes setObject:streetAdress forKey:@"Match_addr"];
-	
-	if (url != nil) 
+
+	if (url != nil)
 		[attributes setObject:url forKey:@"URL"];
-	
+
 	//create the graphic
 	AGSGraphic *graphic = [[AGSGraphic alloc] initWithGeometry: point
-														symbol:marker 
+														symbol:marker
 													attributes:attributes
 										  infoTemplateDelegate:self.calloutTemplate];
-	
-	
+
+
 	//add the graphic to the graphics layer
 	[self.graphicsLayer addGraphic:graphic];
-	
-	//[graphic release];   
+
+	//[graphic release];
 	//[attributes release];
 
 	self.mapView.callout.width = 250;
-	//[self.mapView showCalloutAtPoint:(AGSPoint*)graphic.geometry forGraphic:graphic animated:YES];	
-	
-	
+	//[self.mapView showCalloutAtPoint:(AGSPoint*)graphic.geometry forGraphic:graphic animated:YES];
+
+
 	[self.graphicsLayer dataChanged];
-	
+
 }
-	
+
 
 
 

@@ -5,8 +5,8 @@ CXXFLAGS += -w6 -w7 -w18
 
 OPT += -WA
 
-release-shared: LDFLAGS += 
-release-STATIC: LDFLAGS += 
+release-shared: LDFLAGS +=
+release-STATIC: LDFLAGS +=
 dbg-shared : LDFLAGS += /CODEVIEW
 dbg-static : LDFLAGS += /CODEVIEW
 stldbg-shared : LDFLAGS += /CODEVIEW
@@ -27,7 +27,7 @@ endif
 ifdef STLP_BUILD_FORCE_STATIC_RUNTIME
 LIB_TYPE := _x
 else
-LIB_TYPE := 
+LIB_TYPE :=
 endif
 
 LIB_NAME := $(LIB_PREFIX)${STL_LIBNAME}${LIB_TYPE}${LIB_SUFFIX}.$(LIB)

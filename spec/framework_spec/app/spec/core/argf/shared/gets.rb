@@ -100,5 +100,5 @@ describe :argf_gets_inplace_edit, :shared => true do
     File.read(@tmp1_name_bak).should == "file1.1\nfile1.2\n"
     File.read(@tmp2_name_bak).should == "line2.1\nline2.2\n"
   end
-=end  
+=end
 end

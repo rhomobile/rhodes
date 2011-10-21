@@ -39,7 +39,7 @@ public class RhoLuminanceSource extends LuminanceSource {
     if (rgbData == null || rgbData.length < width) {
       rgbData = new int[width];
     }
-    
+
     image.getPixels(rgbData, 0, width, 0, y, width, 1);
     for (int x = 0; x < width; x++) {
       int pixel = rgbData[x];

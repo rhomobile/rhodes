@@ -1,18 +1,18 @@
 #------------------------------------------------------------------------
 # (The MIT License)
-# 
+#
 # Copyright (c) 2008-2011 Rhomobile, Inc.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-# 
+#
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
@@ -37,68 +37,68 @@ VERSION = "1.8.5"
 
 TOPLEVEL_BINDING = self
 
-module Kernel   
+module Kernel
     def nil?
         false
     end
-    
+
     def =~ x
         false
     end
-	
+
     def singleton_method_added symbol
     end
-	
+
     def singleton_method_removed symbol
     end
-	
+
     def singleton_method_undefined symbol
     end
-	
+
     #private
     def require(file_name)
         return false if ($".include?(file_name) || $".include?(file_name + ".rb"))
         nExt = file_name.index('.rb')
-        if nExt 
+        if nExt
             file_name1 = file_name[0,nExt]
             #puts "require test: #{file_name1}"
             return false if ($".include?(file_name1))
         end
-        
+
         load(file_name);
     end
-	
+
     #private
     def load(file_name)
         if __load_with_reflection__(file_name)
             return true
         end
-        
+
 #        $:.each do |path|
 #            return true if load_rb_file(path, file_name)
 #        end
-        
+
         raise LoadError, "no such file to load -- " + file_name
     end
-	
+
     private
     def method_added symbol
     end
-    
+
     public
     def fork
         raise NotImplementedError, "the fork() function is unimplemented on this machine"
     end
-    
+
 end
 
 class Object
 #    def to_a
 #        [self]
 #    end
-	
-    alias type :class 
-    
+
+    alias type :class
+
     private
     def initialize
     end
@@ -128,26 +128,26 @@ module Enumerable
         each { |obj| return obj if yield(obj) }
         ifnone.call if ifnone
     end
-    
+
     alias find :detect
 
-    def each_with_index 
+    def each_with_index
         i = 0;
         each {|x| yield x, i; i = i + 1}
     end
-	
+
     def to_a
         arr = []
         each{|obj| arr <<obj}
         return arr
     end
-    
+
     alias entries :to_a
 
     def sort(&proc)
         #proc = lambda{ |a,b| a<=>b } unless block_given?
         arr = to_a
-        arr.sort{|x,y| 
+        arr.sort{|x,y|
             if block_given?  then
                 proc.call(x,y)
             else
@@ -155,14 +155,14 @@ module Enumerable
             end
         }
     end
-    
+
     def member?(other)
         each{|obj| return true if obj == other }
         return false
     end
-    
+
     alias include? :member?
-	
+
     def inject(*args)
         if args.size == 0 then
             vals = to_a
@@ -177,27 +177,27 @@ module Enumerable
             nil
         end
     end
-	
+
     def all?(&proc)
         proc = lambda { |obj| obj } unless block_given?
         each { |obj| return false unless proc.call(obj) }
         true
     end
-    
+
     def any?(&proc)
         proc = lambda { |obj| obj } unless block_given?
         each { |obj| return true if proc.call(obj) }
         false
     end
-	
+
     def collect
         arr = []
         each{|obj| arr << yield(obj)}
         return arr
-    end   
-    
+    end
+
     alias map :collect
-    
+
     def max(&proc)
         proc = lambda { |a, b| a <=> b } unless block_given?
         max = nil
@@ -224,14 +224,14 @@ module Enumerable
                 values << obj
             end
         end
-        
+
         res
-    end    
+    end
 end
 
 class Array
     alias reject! delete_if
-  
+
     def reject
       a = []
       each {|x|
@@ -241,19 +241,19 @@ class Array
       }
       a
     end
-	
+
 #    def to_a
 #        self
 #    end
-	
+
     def join(sepString="")
         #return to_s if sepString.nil? || sepString == ""
-		
+
         result = ""
         return result if length==0
-        
+
         sepString = "" if sepString.nil?
-        
+
         (length - 1).times do |index|
             result += (self[index].to_s) + sepString
         end
@@ -264,7 +264,7 @@ class Array
     alias map! collect!
     alias size length
     alias to_ary to_a
-  
+
     def inspect
         str = "["
         is_first = true
@@ -279,30 +279,30 @@ class Array
     end
 
     alias to_s inspect
-    
+
     def count(*args, &block)
-        
+
         if !args || args.length() == 0
             n = 0
             if !block_given?
                 return self.length()
             else
-                self.each do |item|                
+                self.each do |item|
                     n += 1 if yield(item)
                 end
             end
-            
+
             return n
         else
             n = 0
-            self.each do |item|                
+            self.each do |item|
                 n += 1 if item == args[0]
             end
-            
+
             return n
-        end    
+        end
     end
-    
+
 end
 
 class File
@@ -331,7 +331,7 @@ class IO
         end
         close
     end
-    
+
     alias each_line each
 end
 
@@ -344,23 +344,23 @@ class Hash
         ks = keys
         ks.each {|k| yield([k, self[k]])}
     end
-    
+
     def each_key
         ks = keys
         ks.each {|k| yield(k)}
     end
-    
+
     def each_value
         vs = values
         vs.each {|k| yield(k)}
     end
-    
+
     def empty?
         length == 0
     end
-    
+
     alias each_pair each
-    
+
     def to_a
         res = []
         each_pair do |k, v|
@@ -386,31 +386,31 @@ class Hash
         end
         r << '}'
     end
-    
+
     alias to_s inspect
-    
+
     def invert
         h = {}
         each {|k, v| h[v] = k}
         h
     end
-    
+
     def update other
         other.each {|k, v| self[k] = v}
         self
     end
-    
+
     alias merge! update
-    
+
     def merge other
         clone.merge!(other)
     end
-    
+
     def index value
         each {|k, v| return k if value == v }
         return nil
     end
-    
+
     def replace(other)
         clear
         update other
@@ -425,15 +425,15 @@ class << self
     def to_s
         return "main"
     end
-    
+
     def public
         Object.public
     end
-    
+
     def private
         Object.private
     end
-    
+
     def protected
         Object.protected
     end
@@ -487,7 +487,7 @@ class Numeric
         return -self if (self <=> 0) == -1
         self
     end
-    
+
     def div value
         (self/value).floor
     end
@@ -582,50 +582,50 @@ class Fixnum < Integer
 end
 
 class NilClass
-	
+
     #Returns false
     def &(anObject)
         false
     end
-	
+
     #Returns false if anObject is nil or false, true otherwise
     def ^(anObject)
         anObject ? true : false
     end
-	
+
     #Returns false if anObject is nil or false, true otherwise
     def |(anObject)
         anObject ? true : false
     end
-	
+
     #Always returns true
     def nil?
         true
     end
-	
+
     #Always returns an empty array
     def to_a
         []
     end
-	
+
     #Always returns zero
     def to_i
         0
     end
-	
+
     def to_f
         0.0
     end
-	
+
     #Always returns the empty string
     def to_s
         ""
     end
-	
+
     def inspect
         "nil"
     end
-    alias to_str to_s		
+    alias to_str to_s
 end
 
 class TrueClass
@@ -633,47 +633,47 @@ class TrueClass
     def &(anObject)
         anObject ? true : false
     end
-	
+
     #Returns true if anObject is nil or false, false otherwise
     def ^(anObject)
         anObject ? false : true
     end
-	
+
     #Returns true
     def |(anObject)
         true
     end
-	
+
     def to_s
         "true"
     end
-	
+
     def inspect
         "true"
     end
 end
 
 class FalseClass
-	
+
     #Returns false
     def &(anObject)
         false
     end
-	
+
     #If anObject is nil or false, returns false; otherwise, returns true
     def ^(anObject)
         anObject ? true : false
     end
-	
+
     #Returns false if anObject is nil or false; true otherwise
     def |(anObject)
         anObject ? true : false
     end
-	
+
     def to_s
         "false"
     end
-	
+
     def inspect
         "false"
     end
@@ -722,11 +722,11 @@ end
 
 class String
     include Comparable
-	
+
     def to_s
         return self
     end
-	
+
     def sum(n=16)
         sum = 0
         each_byte {|x| sum += x}
@@ -736,7 +736,7 @@ class String
             return sum
         end
     end
-	
+
     def index(x, *start)
         begin_index = 0
         if start.size > 0
@@ -763,7 +763,7 @@ class String
             return nil
         end
     end
-	
+
     def empty?
         length == 0
     end
@@ -788,12 +788,12 @@ class String
         split = (width / 2) - (length / 2)
         return out.insert(split-((width-length)%2), self)
     end
-	
+
 	#from rubinius
     def rjust(width, str=" ")
         justify_string(width, str, 1)
     end
-	
+
 	#from rubinius
     def ljust(width, str=" ")
         justify_string(width, str, -1)
@@ -803,8 +803,8 @@ class String
     def center(width, str=" ")
         justify_string(width, str, 0)
     end
-	
-    alias to_str to_s	
+
+    alias to_str to_s
     alias size length
 
     def slice!(*args)
@@ -816,10 +816,10 @@ class String
             res = slice(args[0], args[1])
             self[args[0], args[1]]= "" if res
         else
-            raise ArgumentError, 'String.slice! - wrong number of arguments 3 for (1 or 2)'        
+            raise ArgumentError, 'String.slice! - wrong number of arguments 3 for (1 or 2)'
         end
-        
+
         res
     end
-    	
+
 end

@@ -88,11 +88,11 @@ module REXML
 
       case path[0]
       when :document
-        # do nothing 
+        # do nothing
         return first( path[1..-1], node )
       when :child
         #for c in node.children
-         node.children.each do |c| 
+         node.children.each do |c|
           #puts "#{depth}) CHILD checking #{name(c)}"
           r = first( path[1..-1], c )
           #puts "#{depth}) RETURNING #{r.inspect}" if r
@@ -112,7 +112,7 @@ module REXML
         r = first( path[1..-1], node )
         return r if r
         #for c in node.children
-        node.children.each do |c| 
+        node.children.each do |c|
           r = first( path, c )
           return r if r
         end
@@ -125,7 +125,7 @@ module REXML
     end
 
 
-    def match( path_stack, nodeset ) 
+    def match( path_stack, nodeset )
       #puts "MATCH: path_stack = #{path_stack.inspect}"
       #puts "MATCH: nodeset = #{nodeset.inspect}"
       r = expr( path_stack, nodeset )
@@ -138,7 +138,7 @@ module REXML
 
     # Returns a String namespace for a node, given a prefix
     # The rules are:
-    # 
+    #
     #  1. Use the supplied namespace mapping first.
     #  2. If no mapping was supplied, use the context node to look up the namespace
     def get_namespace( node, prefix )
@@ -189,8 +189,8 @@ module REXML
                 #puts "node.namespace == #{ns.inspect} => #{node.namespace == ns}"
               end
             end
-            !(node.node_type == :element and 
-              node.name == name and 
+            !(node.node_type == :element and
+              node.name == name and
               node.namespace == ns )
           end
           node_types = ELEMENTS
@@ -207,7 +207,7 @@ module REXML
         when :processing_instruction
           target = path_stack.shift
           nodeset.delete_if do |node|
-            (node.node_type != :processing_instruction) or 
+            (node.node_type != :processing_instruction) or
             ( target!='' and ( node.target != target ) )
           end
 
@@ -233,7 +233,7 @@ module REXML
 
         when :literal
           return path_stack.shift
-        
+
         when :attribute
           new_nodeset = []
           case path_stack.shift
@@ -486,23 +486,23 @@ module REXML
         when :function
           func_name = path_stack.shift.tr('-','_')
           arguments = path_stack.shift
-          #puts "FUNCTION 0: #{func_name}(#{arguments.collect{|a|a.inspect}.join(', ')})" 
+          #puts "FUNCTION 0: #{func_name}(#{arguments.collect{|a|a.inspect}.join(', ')})"
           subcontext = context ? nil : { :size => nodeset.size }
 
           res = []
           cont = context
-          nodeset.each_with_index { |n, i| 
+          nodeset.each_with_index { |n, i|
             if subcontext
               subcontext[:node]  = n
               subcontext[:index] = i
               cont = subcontext
             end
             arg_clone = arguments.dclone
-            args = arg_clone.collect { |arg| 
+            args = arg_clone.collect { |arg|
               #puts "FUNCTION 1: Calling expr( #{arg.inspect}, [#{n.inspect}] )"
-              expr( arg, [n], cont ) 
+              expr( arg, [n], cont )
             }
-            #puts "FUNCTION 2: #{func_name}(#{args.collect{|a|a.inspect}.join(', ')})" 
+            #puts "FUNCTION 2: #{func_name}(#{args.collect{|a|a.inspect}.join(', ')})"
             Functions.context = cont
             res << Functions.send( func_name, *args )
             #puts "FUNCTION 3: #{res[-1].inspect}"
@@ -520,10 +520,10 @@ module REXML
     # FIXME
     # The next two methods are BAD MOJO!
     # This is my achilles heel.  If anybody thinks of a better
-    # way of doing this, be my guest.  This really sucks, but 
+    # way of doing this, be my guest.  This really sucks, but
     # it is a wonder it works at all.
     # ########################################################
-    
+
     def descendant_or_self( path_stack, nodeset )
       rs = []
       #puts "#"*80
@@ -552,7 +552,7 @@ module REXML
     # Reorders an array of nodes so that they are in document order
     # It tries to do this efficiently.
     #
-    # FIXME: I need to get rid of this, but the issue is that most of the XPath 
+    # FIXME: I need to get rid of this, but the issue is that most of the XPath
     # interpreter functions as a filter, which means that we lose context going
     # in and out of function calls.  If I knew what the index of the nodes was,
     # I wouldn't have to do this.  Maybe add a document IDX for each node?
@@ -560,7 +560,7 @@ module REXML
     def document_order( array_of_nodes )
       new_arry = []
       array_of_nodes.each { |node|
-        node_idx = [] 
+        node_idx = []
         np = node.node_type == :attribute ? node.element : node
         while np.parent and np.parent.node_type == :element
           node_idx << np.parent.index( np )
@@ -585,7 +585,7 @@ module REXML
 
     # Builds a nodeset of all of the preceding nodes of the supplied node,
     # in reverse document order
-    # preceding:: includes every element in the document that precedes this node, 
+    # preceding:: includes every element in the document that precedes this node,
     # except for ancestors
     def preceding( node )
       #puts "IN PRECEDING"
@@ -615,9 +615,9 @@ module REXML
      #puts "NODE: #{node.inspect}"
      #puts "PREVIOUS NODE: #{node.previous_sibling_node.inspect}"
      #puts "PARENT NODE: #{node.parent}"
-      psn = node.previous_sibling_node 
+      psn = node.previous_sibling_node
       if psn.nil?
-        if node.parent.nil? or node.parent.class == Document 
+        if node.parent.nil? or node.parent.class == Document
           return nil
         end
         return node.parent
@@ -653,9 +653,9 @@ module REXML
     end
 
     def next_sibling_node(node)
-      psn = node.next_sibling_node 
+      psn = node.next_sibling_node
       while psn.nil?
-        if node.parent.nil? or node.parent.class == Document 
+        if node.parent.nil? or node.parent.class == Document
           return nil
         end
         node = node.parent

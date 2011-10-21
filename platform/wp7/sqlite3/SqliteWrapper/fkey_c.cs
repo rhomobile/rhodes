@@ -34,25 +34,25 @@ namespace Community.CsharpSqlite
 **
 ** Foreign keys in SQLite come in two flavours: deferred and immediate.
 ** If an immediate foreign key constraint is violated, SQLITE_CONSTRAINT
-** is returned and the current statement transaction rolled back. If a 
-** deferred foreign key constraint is violated, no action is taken 
-** immediately. However if the application attempts to commit the 
+** is returned and the current statement transaction rolled back. If a
+** deferred foreign key constraint is violated, no action is taken
+** immediately. However if the application attempts to commit the
 ** transaction before fixing the constraint violation, the attempt fails.
 **
 ** Deferred constraints are implemented using a simple counter associated
-** with the database handle. The counter is set to zero each time a 
-** database transaction is opened. Each time a statement is executed 
+** with the database handle. The counter is set to zero each time a
+** database transaction is opened. Each time a statement is executed
 ** that causes a foreign key violation, the counter is incremented. Each
 ** time a statement is executed that removes an existing violation from
 ** the database, the counter is decremented. When the transaction is
 ** committed, the commit fails if the current value of the counter is
 ** greater than zero. This scheme has two big drawbacks:
 **
-**   * When a commit fails due to a deferred foreign key constraint, 
+**   * When a commit fails due to a deferred foreign key constraint,
 **     there is no way to tell which foreign constraint is not satisfied,
 **     or which row it is not satisfied for.
 **
-**   * If the database contains foreign key violations when the 
+**   * If the database contains foreign key violations when the
 **     transaction is opened, this may cause the mechanism to malfunction.
 **
 ** Despite these problems, this approach is adopted as it seems simpler
@@ -64,26 +64,26 @@ namespace Community.CsharpSqlite
 **        the parent table for a match. If none is found increment the
 **        constraint counter.
 **
-**   I.2) For each FK for which the table is the parent table, 
+**   I.2) For each FK for which the table is the parent table,
 **        search the child table for rows that correspond to the new
 **        row in the parent table. Decrement the counter for each row
 **        found (as the constraint is now satisfied).
 **
 ** DELETE operations:
 **
-**   D.1) For each FK for which the table is the child table, 
-**        search the parent table for a row that corresponds to the 
-**        deleted row in the child table. If such a row is not found, 
+**   D.1) For each FK for which the table is the child table,
+**        search the parent table for a row that corresponds to the
+**        deleted row in the child table. If such a row is not found,
 **        decrement the counter.
 **
-**   D.2) For each FK for which the table is the parent table, search 
-**        the child table for rows that correspond to the deleted row 
+**   D.2) For each FK for which the table is the parent table, search
+**        the child table for rows that correspond to the deleted row
 **        in the parent table. For each found increment the counter.
 **
 ** UPDATE operations:
 **
 **   An UPDATE command requires that all 4 steps above are taken, but only
-**   for FK constraints for which the affected columns are actually 
+**   for FK constraints for which the affected columns are actually
 **   modified (values must be compared at runtime).
 **
 ** Note that I.1 and D.1 are very similar operations, as are I.2 and D.2.
@@ -92,10 +92,10 @@ namespace Community.CsharpSqlite
 ** For the purposes of immediate FK constraints, the OR REPLACE conflict
 ** resolution is considered to delete rows before the new row is inserted.
 ** If a delete caused by OR REPLACE violates an FK constraint, an exception
-** is thrown, even if the FK constraint would be satisfied after the new 
+** is thrown, even if the FK constraint would be satisfied after the new
 ** row is inserted.
 **
-** Immediate constraints are usually handled similarly. The only difference 
+** Immediate constraints are usually handled similarly. The only difference
 ** is that the counter used is stored as part of each individual statement
 ** object (struct Vdbe). If, after the statement has run, its immediate
 ** constraint counter is greater than zero, it returns SQLITE_CONSTRAINT
@@ -105,7 +105,7 @@ namespace Community.CsharpSqlite
 ** INSERT violates a foreign key constraint. This is necessary as such
 ** an INSERT does not open a statement transaction.
 **
-** TODO: How should dropping a table be handled? How should renaming a 
+** TODO: How should dropping a table be handled? How should renaming a
 ** table be handled?
 **
 **
@@ -116,7 +116,7 @@ namespace Community.CsharpSqlite
 ** for those two operations needs to know whether or not the operation
 ** requires any FK processing and, if so, which columns of the original
 ** row are required by the FK processing VDBE code (i.e. if FKs were
-** implemented using triggers, which of the old.* columns would be 
+** implemented using triggers, which of the old.* columns would be
 ** accessed). No information is required by the code-generator before
 ** coding an INSERT operation. The functions used by the UPDATE/DELETE
 ** generation code to query for this information are:
@@ -153,13 +153,13 @@ namespace Community.CsharpSqlite
     /*
     ** A foreign key constraint requires that the key columns in the parent
     ** table are collectively subject to a UNIQUE or PRIMARY KEY constraint.
-    ** Given that pParent is the parent table for foreign key constraint pFKey, 
-    ** search the schema a unique index on the parent key columns. 
+    ** Given that pParent is the parent table for foreign key constraint pFKey,
+    ** search the schema a unique index on the parent key columns.
     **
-    ** If successful, zero is returned. If the parent key is an INTEGER PRIMARY 
-    ** KEY column, then output variable *ppIdx is set to NULL. Otherwise, *ppIdx 
-    ** is set to point to the unique index. 
-    ** 
+    ** If successful, zero is returned. If the parent key is an INTEGER PRIMARY
+    ** KEY column, then output variable *ppIdx is set to NULL. Otherwise, *ppIdx
+    ** is set to point to the unique index.
+    **
     ** If the parent key consists of a single column (the foreign key constraint
     ** is not a composite foreign key), output variable *paiCol is set to NULL.
     ** Otherwise, it is set to point to an allocated array of size N, where
@@ -182,8 +182,8 @@ namespace Community.CsharpSqlite
     **      PRIMARY KEY, or
     **
     **   4) No parent key columns were provided explicitly as part of the
-    **      foreign key definition, and the PRIMARY KEY of the parent table 
-    **      consists of a a different number of columns to the child key in 
+    **      foreign key definition, and the PRIMARY KEY of the parent table
+    **      consists of a a different number of columns to the child key in
     **      the child table.
     **
     ** then non-zero is returned, and a "foreign key mismatch" error loaded
@@ -208,9 +208,9 @@ namespace Community.CsharpSqlite
       Debug.Assert( paiCol == null ); //assert( !paiCol || *paiCol==0 );
       Debug.Assert( pParse != null );
 
-      /* If this is a non-composite (single column) foreign key, check if it 
-      ** maps to the INTEGER PRIMARY KEY of table pParent. If so, leave *ppIdx 
-      ** and *paiCol set to zero and return early. 
+      /* If this is a non-composite (single column) foreign key, check if it
+      ** maps to the INTEGER PRIMARY KEY of table pParent. If so, leave *ppIdx
+      ** and *paiCol set to zero and return early.
       **
       ** Otherwise, for a composite foreign key (more than one column), allocate
       ** space for the aiCol array (returned via output parameter *paiCol).
@@ -220,7 +220,7 @@ namespace Community.CsharpSqlite
       {
         /* The FK maps to the IPK if any of the following are true:
         **
-        **   1) There is an INTEGER PRIMARY KEY column and the FK is implicitly 
+        **   1) There is an INTEGER PRIMARY KEY column and the FK is implicitly
         **      mapped to the primary key of table pParent, or
         **   2) The FK is explicitly mapped to a column declared as INTEGER
         **      PRIMARY KEY.
@@ -249,8 +249,8 @@ namespace Community.CsharpSqlite
 
           if ( zKey == null )
           {
-            /* If zKey is NULL, then this foreign key is implicitly mapped to 
-            ** the PRIMARY KEY of table pParent. The PRIMARY KEY index may be 
+            /* If zKey is NULL, then this foreign key is implicitly mapped to
+            ** the PRIMARY KEY of table pParent. The PRIMARY KEY index may be
             ** identified by the test (Index.autoIndex==2).  */
             if ( pIdx.autoIndex == 2 )
             {
@@ -316,15 +316,15 @@ namespace Community.CsharpSqlite
     }
 
     /*
-    ** This function is called when a row is inserted into or deleted from the 
-    ** child table of foreign key constraint pFKey. If an SQL UPDATE is executed 
+    ** This function is called when a row is inserted into or deleted from the
+    ** child table of foreign key constraint pFKey. If an SQL UPDATE is executed
     ** on the child table of pFKey, this function is invoked twice for each row
     ** affected - once to "delete" the old row, and then again to "insert" the
     ** new row.
     **
     ** Each time it is called, this function generates VDBE code to locate the
-    ** row in the parent table that corresponds to the row being inserted into 
-    ** or deleted from the child table. If the parent row can be found, no 
+    ** row in the parent table that corresponds to the row being inserted into
+    ** or deleted from the child table. If the parent row can be found, no
     ** special action is taken. Otherwise, if the parent row can *not* be
     ** found in the parent table:
     **
@@ -338,7 +338,7 @@ namespace Community.CsharpSqlite
     **
     **   DELETE      deferred    Decrement the "deferred constraint counter".
     **
-    ** These operations are identified in the comment at the top of this file 
+    ** These operations are identified in the comment at the top of this file
     ** (fkey.c) as "I.1" and "D.1".
     */
     static void fkLookupParent(
@@ -362,8 +362,8 @@ namespace Community.CsharpSqlite
       ** outstanding constraints to resolve. If there are not, there is no need
       ** to check if deleting this row resolves any outstanding violations.
       **
-      ** Check if any of the key columns in the child table row are NULL. If 
-      ** any are, then the constraint is considered satisfied. No need to 
+      ** Check if any of the key columns in the child table row are NULL. If
+      ** any are, then the constraint is considered satisfied. No need to
       ** search for a matching row in the parent table.  */
       if ( nIncr < 0 )
       {
@@ -384,7 +384,7 @@ namespace Community.CsharpSqlite
           int iMustBeInt;               /* Address of MustBeInt instruction */
           int regTemp = sqlite3GetTempReg( pParse );
 
-          /* Invoke MustBeInt to coerce the child key value to an integer (i.e. 
+          /* Invoke MustBeInt to coerce the child key value to an integer (i.e.
           ** apply the affinity of the parent key). If this fails, then there
           ** is no matching parent key. Before using MustBeInt, make a copy of
           ** the value. Otherwise, the value inserted into the child key column
@@ -473,7 +473,7 @@ namespace Community.CsharpSqlite
 
     /*
     ** This function is called to generate code executed when a row is deleted
-    ** from the parent table of foreign key constraint pFKey and, if pFKey is 
+    ** from the parent table of foreign key constraint pFKey and, if pFKey is
     ** deferred, when a row is inserted into the same table. When generating
     ** code for an SQL UPDATE operation, this function may be called twice -
     ** once to "delete" the old row and once to "insert" the new row.
@@ -496,7 +496,7 @@ namespace Community.CsharpSqlite
     **
     **   INSERT      deferred    Decrement the "deferred constraint counter".
     **
-    ** These operations are identified in the comment at the top of this file 
+    ** These operations are identified in the comment at the top of this file
     ** (fkey.c) as "I.2" and "D.2".
     */
     static void fkScanChildren(
@@ -571,7 +571,7 @@ namespace Community.CsharpSqlite
 
       /* If the child table is the same as the parent table, and this scan
       ** is taking place as part of a DELETE operation (operation D.2), omit the
-      ** row being deleted from the scan by adding ($rowid != rowid) to the WHERE 
+      ** row being deleted from the scan by adding ($rowid != rowid) to the WHERE
       ** clause, where $rowid is the rowid of the row being deleted.  */
       if ( pTab == pFKey.pFrom && nIncr > 0 )
       {
@@ -642,7 +642,7 @@ namespace Community.CsharpSqlite
     }
 
     /*
-    ** The second argument is a Trigger structure allocated by the 
+    ** The second argument is a Trigger structure allocated by the
     ** fkActionTrigger() routine. This function deletes the Trigger structure
     ** and all of its sub-components.
     **
@@ -672,7 +672,7 @@ namespace Community.CsharpSqlite
     **
     **   (a) The table is the parent table of a FK constraint, or
     **   (b) The table is the child table of a deferred FK constraint and it is
-    **       determined at runtime that there are outstanding deferred FK 
+    **       determined at runtime that there are outstanding deferred FK
     **       constraint violations in the database,
     **
     ** then the equivalent of "DELETE FROM <tbl>" is executed before dropping
@@ -691,7 +691,7 @@ namespace Community.CsharpSqlite
         if ( sqlite3FkReferences( pTab ) ==null )
         {
           /* Search for a deferred foreign key constraint for which this table
-          ** is the child table. If one cannot be found, return without 
+          ** is the child table. If one cannot be found, return without
           ** generating any VDBE code. If one can be found, then jump over
           ** the entire DELETE if there are no outstanding deferred constraints
           ** when this statement is run.  */
@@ -709,7 +709,7 @@ namespace Community.CsharpSqlite
         sqlite3DeleteFrom( pParse, sqlite3SrcListDup( db, pName, 0 ), null );
         pParse.disableTriggers = 0;
 
-        /* If the DELETE has generated immediate foreign key constraint 
+        /* If the DELETE has generated immediate foreign key constraint
         ** violations, halt the VDBE and return an error at this point, before
         ** any modifications to the schema are made. This is because statement
         ** transactions are not able to rollback schema changes.  */
@@ -727,7 +727,7 @@ namespace Community.CsharpSqlite
 
     /*
     ** This function is called when inserting, deleting or updating a row of
-    ** table pTab to generate VDBE code to perform foreign key constraint 
+    ** table pTab to generate VDBE code to perform foreign key constraint
     ** processing for the operation.
     **
     ** For a DELETE operation, parameter regOld is passed the index of the
@@ -743,7 +743,7 @@ namespace Community.CsharpSqlite
     ** For an UPDATE operation, this function is called twice. Once before
     ** the original record is deleted from the table using the calling convention
     ** described for DELETE. Then again after the original record is deleted
-    ** but before the new record is inserted using the INSERT convention. 
+    ** but before the new record is inserted using the INSERT convention.
     */
     static void sqlite3FkCheck(
       Parse pParse,                   /* Parse context */
@@ -781,9 +781,9 @@ namespace Community.CsharpSqlite
         int i;
         int isIgnore = 0;
 
-        /* Find the parent table of this foreign key. Also find a unique index 
-        ** on the parent key columns in the parent table. If either of these 
-        ** schema items cannot be located, set an error in pParse and return 
+        /* Find the parent table of this foreign key. Also find a unique index
+        ** on the parent key columns in the parent table. If either of these
+        ** schema items cannot be located, set an error in pParse and return
         ** early.  */
         if ( pParse.disableTriggers!=0 )
         {
@@ -816,7 +816,7 @@ namespace Community.CsharpSqlite
             aiCol[i] = -1;
           }
 #if !SQLITE_OMIT_AUTHORIZATION
-      /* Request permission to read the parent key columns. If the 
+      /* Request permission to read the parent key columns. If the
       ** authorization callback returns SQLITE_IGNORE, behave as if any
       ** values read from the parent table are NULL. */
       if( db.xAuth ){
@@ -828,8 +828,8 @@ namespace Community.CsharpSqlite
 #endif
         }
 
-        /* Take a shared-cache advisory read-lock on the parent table. Allocate 
-        ** a cursor to use to search the unique index on the parent key columns 
+        /* Take a shared-cache advisory read-lock on the parent table. Allocate
+        ** a cursor to use to search the unique index on the parent key columns
         ** in the parent table.  */
         sqlite3TableLock( pParse, iDb, pTo.tnum, 0, pTo.zName );
         pParse.nTab++;
@@ -837,7 +837,7 @@ namespace Community.CsharpSqlite
         if ( regOld != 0 )
         {
           /* A row is being removed from the child table. Search for the parent.
-          ** If the parent does not exist, removing the child row resolves an 
+          ** If the parent does not exist, removing the child row resolves an
           ** outstanding foreign key constraint violation. */
           fkLookupParent( pParse, iDb, pTo, pIdx, pFKey, aiCol, regOld, -1, isIgnore );
         }
@@ -873,7 +873,7 @@ namespace Community.CsharpSqlite
         }
         Debug.Assert( aiCol!=null || pFKey.nCol == 1 );
 
-        /* Create a SrcList structure containing a single table (the table 
+        /* Create a SrcList structure containing a single table (the table
         ** the foreign key that refers to this table is attached to). This
         ** is required for the sqlite3WhereXXX() interface.  */
         pSrc = sqlite3SrcListAppend( db, 0, null, null );
@@ -892,7 +892,7 @@ namespace Community.CsharpSqlite
           if ( regOld != 0 )
           {
             /* If there is a RESTRICT action configured for the current operation
-            ** on the parent table of this FK, then throw an exception 
+            ** on the parent table of this FK, then throw an exception
             ** immediately if the FK constraint is violated, even if this is a
             ** deferred trigger. That's what RESTRICT means. To defer checking
             ** the constraint, the FK should specify NO ACTION (represented
@@ -910,7 +910,7 @@ namespace Community.CsharpSqlite
     static uint COLUMN_MASK( int x ) { return ( ( x ) > 31 ) ? 0xffffffff : ( (u32)1 << ( x ) ); }
 
     /*
-    ** This function is called before generating code to update or delete a 
+    ** This function is called before generating code to update or delete a
     ** row contained in table pTab.
     */
     static u32 sqlite3FkOldmask(
@@ -942,17 +942,17 @@ namespace Community.CsharpSqlite
     }
 
     /*
-    ** This function is called before generating code to update or delete a 
+    ** This function is called before generating code to update or delete a
     ** row contained in table pTab. If the operation is a DELETE, then
     ** parameter aChange is passed a NULL value. For an UPDATE, aChange points
     ** to an array of size N, where N is the number of columns in table pTab.
-    ** If the i'th column is not modified by the UPDATE, then the corresponding 
+    ** If the i'th column is not modified by the UPDATE, then the corresponding
     ** entry in the aChange[] array is set to -1. If the column is modified,
     ** the value is 0 or greater. Parameter chngRowid is set to true if the
     ** UPDATE statement modifies the rowid fields of the table.
     **
     ** If any foreign key processing will be required, this function returns
-    ** true. If there is no foreign key related processing, this function 
+    ** true. If there is no foreign key related processing, this function
     ** returns false.
     */
     static int sqlite3FkRequired(
@@ -966,8 +966,8 @@ namespace Community.CsharpSqlite
       {
         if ( null==aChange )
         {
-          /* A DELETE operation. Foreign key processing is required if the 
-          ** table in question is either the child or parent table for any 
+          /* A DELETE operation. Foreign key processing is required if the
+          ** table in question is either the child or parent table for any
           ** foreign key constraint.  */
           return ( sqlite3FkReferences( pTab )!=null || pTab.pFKey !=null)?1:0;
         }
@@ -1013,7 +1013,7 @@ namespace Community.CsharpSqlite
     }
 
     /*
-    ** This function is called when an UPDATE or DELETE operation is being 
+    ** This function is called when an UPDATE or DELETE operation is being
     ** compiled on table pTab, which is the parent table of foreign-key pFKey.
     ** If the current operation is an UPDATE, then the pChanges parameter is
     ** passed a pointer to the list of columns being modified. If it is a
@@ -1025,7 +1025,7 @@ namespace Community.CsharpSqlite
     ** returned (these actions require no special handling by the triggers
     ** sub-system, code for them is created by fkScanChildren()).
     **
-    ** For example, if pFKey is the foreign key and pTab is table "p" in 
+    ** For example, if pFKey is the foreign key and pTab is table "p" in
     ** the following schema:
     **
     **   CREATE TABLE p(pk PRIMARY KEY);
@@ -1038,7 +1038,7 @@ namespace Community.CsharpSqlite
     **   END;
     **
     ** The returned pointer is cached as part of the foreign key object. It
-    ** is eventually freed along with the rest of the foreign key object by 
+    ** is eventually freed along with the rest of the foreign key object by
     ** sqlite3FkDelete().
     */
     static Trigger fkActionTrigger(
@@ -1261,9 +1261,9 @@ namespace Community.CsharpSqlite
       int regOld                     /* Address of array containing old row */
     )
     {
-      /* If foreign-key support is enabled, iterate through all FKs that 
-      ** refer to table pTab. If there is an action a6ssociated with the FK 
-      ** for this operation (either update or delete), invoke the associated 
+      /* If foreign-key support is enabled, iterate through all FKs that
+      ** refer to table pTab. If there is an action a6ssociated with the FK
+      ** for this operation (either update or delete), invoke the associated
       ** trigger sub-program.  */
       if (( pParse.db.flags & SQLITE_ForeignKeys )!=0)
       {

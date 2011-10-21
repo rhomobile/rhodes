@@ -54,9 +54,9 @@ import com.rho.RhoLogger;
  */
 public class SimpleLog {
 
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("DB");
-	
+
     public static final int LOG_NONE   = 0;
     public static final int LOG_ERROR  = 1;
     public static final int LOG_NORMAL = 2;
@@ -111,7 +111,7 @@ public class SimpleLog {
     		LOG.ERROR(message);
     	else
     		LOG.INFO(message);
-    	
+
         //if (level < atLevel) {
         //    return;
        // }

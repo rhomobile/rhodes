@@ -240,7 +240,7 @@ final class DecodedBitStreamParser {
       result.append(toAlphaNumericChar(digitBits));
     }
   }
-  
+
   private static int parseECIValue(BitSource bits) {
     int firstByte = bits.readBits(8);
     if ((firstByte & 0x80) == 0) {

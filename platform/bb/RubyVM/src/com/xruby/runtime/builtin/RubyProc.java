@@ -65,12 +65,12 @@ public class RubyProc extends RubyBinding {
 //        for (Field f : fields) {
         for(int i = 0; i<fields.length; i++){
             String name = fields[i].getName();
-            
+
             if ('$' != name.charAt(0)) {
                 continue;
             }
             name = name.substring(1);//remove '$'
-            
+
             RubyValue v = getVariable(name);
             if (null != v) {
                 try {
@@ -88,17 +88,17 @@ public class RubyProc extends RubyBinding {
         setUpCallContext();
         return value_.invoke(value_.getSelf(), args);
     }
-    
+
     public RubyValue call() {
         setUpCallContext();
         return value_.invoke(value_.getSelf());
     }
-    
+
     public RubyValue call(RubyValue arg) {
         setUpCallContext();
         return value_.invoke(value_.getSelf(), arg);
     }
-    
+
     //@RubyLevelMethod(name="call", alias="[]", alias="===", alias="yield")
     public static class Invoke extends RubyVarArgMethod {
         protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
@@ -110,7 +110,7 @@ public class RubyProc extends RubyBinding {
         	cl.doClone(this);
         	return cl;
         }
-        
+
         public RubyValue invoke(RubyValue receiver, RubyArray args, RubyBlock block) {
             RubyValue v = ((RubyProc)receiver).call(args);
             RubyBlock anotherBlock = ((RubyProc)receiver).getBlock();
@@ -139,7 +139,7 @@ public class RubyProc extends RubyBinding {
             args.add(arg);
             return this.invoke(receiver, args, anotherBlock);
         }
-        
+
         public RubyValue invoke(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) {
             RubyBlock anotherBlock = ((RubyProc)receiver).getBlock();
             RubyArray args = ObjectFactory.createArray(2, 0, anotherBlock.createdByLambda());
@@ -148,5 +148,5 @@ public class RubyProc extends RubyBinding {
             return this.invoke(receiver, args, anotherBlock);
         }
     }
-    
+
 }

@@ -67,7 +67,7 @@ public final class MultiFormatOneDReader extends OneDReader {
       readers.addElement(new Code39Reader());
       readers.addElement(new Code128Reader());
       readers.addElement(new ITFReader());
-      readers.addElement(new RSS14Reader());      
+      readers.addElement(new RSS14Reader());
     }
   }
 

@@ -149,9 +149,9 @@ public class JavaSystem {
     }
 
     public static void loadPropeties(Hashtable props, InputStream fis ){
-    	
+
     }
-    
+
     public static void saveProperties(Hashtable props, String name,
                                       OutputStream os) throws IOException {
 
@@ -197,16 +197,16 @@ public class JavaSystem {
 
 //#endif
     }
-    
+
     static public FileAccess createFileAccess(){
     	// oj@openoffice.org - changed to file access api
-    	
+
     	/*        String fileaccess_class_name =
         (String) urlProperties.getProperty("fileaccess_class_name");
 
 	    if (fileaccess_class_name != null) {
 	        String storagekey = urlProperties.getProperty("storage_key");
-	
+
 	        try {
 	            Class fileAccessClass = null;
 	            try {
@@ -221,7 +221,7 @@ public class JavaSystem {
 	            Constructor constructor =
 	                fileAccessClass.getConstructor(new Class[]{
 	                    Object.class });
-	
+
 	            fileaccess =
 	                (FileAccess) constructor.newInstance(new Object[]{
 	                    storagekey });
@@ -234,5 +234,5 @@ public class JavaSystem {
 	        return  FileUtilBB.getDefaultInstance();
 	    //}
     }
-    
+
 }

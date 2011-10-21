@@ -13,7 +13,7 @@
 // copies of the Software, and to permit persons to whom the
 // Software is furnished to do so, subject to the following
 // conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
 //
@@ -41,42 +41,42 @@
 - (void)dealloc
 {
 	[markerImage release];
-	
+
 	[super dealloc];
 }
 
 - (void)setRuleThickness:(float)thickness
 {
 	[super setRuleThickness:thickness];
-	
+
 	// Overridden to reset the size of the marker image forcing it to redraw with the new width.
-	// If doing this in a non-subclass of NoodleLineNumberView, you can set it to post frame 
+	// If doing this in a non-subclass of NoodleLineNumberView, you can set it to post frame
 	// notifications and listen for them.
-	[markerImage setSize:NSMakeSize(thickness, MARKER_HEIGHT)];	
+	[markerImage setSize:NSMakeSize(thickness, MARKER_HEIGHT)];
 }
 
 - (void)drawMarkerImageIntoRep:(id)rep
 {
 	NSBezierPath	*path;
 	NSRect			rect;
-	
+
 	rect = NSMakeRect(1.0, 2.0, [rep size].width - 2.0, [rep size].height - 3.0);
-	
+
 	path = [NSBezierPath bezierPath];
 	[path moveToPoint:NSMakePoint(NSMaxX(rect), NSMinY(rect) + NSHeight(rect) / 2)];
 	[path lineToPoint:NSMakePoint(NSMaxX(rect) - 5.0, NSMaxY(rect))];
-	
+
 	[path appendBezierPathWithArcWithCenter:NSMakePoint(NSMinX(rect) + CORNER_RADIUS, NSMaxY(rect) - CORNER_RADIUS) radius:CORNER_RADIUS startAngle:90 endAngle:180];
-	
+
 	[path appendBezierPathWithArcWithCenter:NSMakePoint(NSMinX(rect) + CORNER_RADIUS, NSMinY(rect) + CORNER_RADIUS) radius:CORNER_RADIUS startAngle:180 endAngle:270];
 	[path lineToPoint:NSMakePoint(NSMaxX(rect) - 5.0, NSMinY(rect))];
 	[path closePath];
-	
+
 	[[NSColor colorWithCalibratedRed:0.003 green:0.56 blue:0.85 alpha:1.0] set];
 	[path fill];
-	
+
 	[[NSColor colorWithCalibratedRed:0 green:0.44 blue:0.8 alpha:1.0] set];
-	
+
 	[path setLineWidth:2.0];
 	[path stroke];
 }
@@ -86,7 +86,7 @@
 	if (markerImage == nil)
 	{
 		NSCustomImageRep	*rep;
-		
+
 		markerImage = [[NSImage alloc] initWithSize:size];
 		rep = [[NSCustomImageRep alloc] initWithDrawSelector:@selector(drawMarkerImageIntoRep:) delegate:self];
 		[rep setSize:size];
@@ -100,24 +100,24 @@
 {
 	NSPoint					location;
 	unsigned				line;
-	
+
 	location = [self convertPoint:[theEvent locationInWindow] fromView:nil];
 	line = [self lineNumberForLocation:location.y];
-	
+
 	if (line != NSNotFound)
 	{
 		NoodleLineNumberMarker		*marker;
-		
+
 		marker = [self markerAtLine:line];
-		
-		
+
+
 		if (marker != nil)
 		{
 			[self removeMarker:marker];
 			if(debugger != nil) {
 				[debugger removeBreakpoint];
 			}
-			
+
 		}
 		else
 		{
@@ -131,7 +131,7 @@
 			[self setOldMarker: marker];
 			[self addMarker:marker];
 			[marker release];
-			
+
 			if(debugger != nil) {
 				[debugger setBreakPoint:nil atLine:line];
 			}

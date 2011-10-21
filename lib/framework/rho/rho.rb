@@ -1,18 +1,18 @@
 #------------------------------------------------------------------------
 # (The MIT License)
-# 
+#
 # Copyright (c) 2008-2011 Rhomobile, Inc.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-# 
+#
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
@@ -44,23 +44,23 @@ module Rho
 
   def self.close_database(arg_partition=nil)
     if arg_partition
-        puts "Close database for partition: #{arg_partition}"    
+        puts "Close database for partition: #{arg_partition}"
         ::Rho::RHO.get_db_partitions()[arg_partition].close
     else
         ::Rho::RHO.get_db_partitions().each do |partition, db|
             puts "Close database for partition: #{partition}"
             db.close
         end
-    end    
+    end
   end
-    
+
   class RHO
     APPLICATIONS = {}
     APPNAME = 'app'
-    
+
     @@rho_framework = nil
     @@native_bar_initialized = nil
-    
+
     def self.get_instance
         @@rho_framework
     end
@@ -82,31 +82,31 @@ module Rho
       @db_partitions[partition] = Rhom::RhomDbAdapter.new(Rho::RhoFSConnector::get_db_fullpathname(partition), partition)
     end
 
-=begin    
+=begin
     def initialize(app_manifest_filename=nil)
       puts "Calling RHO.initialize"
-      
+
       if app_manifest_filename
         process_model_dirs(app_manifest_filename)
       else
         process_model_dirs(Rho::RhoFSConnector::get_app_manifest_filename)
       end
-      
+
       # Initialize application and sources
       @@rho_framework = self
       @db_partitions = {}
       init_sources()
     end
-=end    
+=end
     attr_reader :db_partitions
-    
+
     def self.get_src_db(src_name=nil)
         if src_name
             src_partition = Rho::RhoConfig.sources[src_name]['partition']
             @@rho_framework.db_partitions[src_partition]
         else
             @@rho_framework.db_partitions['user']
-        end    
+        end
     end
 
     def self.get_user_db
@@ -116,11 +116,11 @@ module Rho
     def self.get_db_partitions
         @@rho_framework.db_partitions
     end
-    
+
     #def self.get_application_db
     #    @@rho_framework.db_application
     #end
-    
+
     def init_app
       puts "init_app"
       begin
@@ -128,7 +128,7 @@ module Rho
       rescue Exception => e
         trace_msg = e.backtrace.join("\n")
         puts 'Application initialize failed: ' + e.inspect + ";Trace: #{trace_msg}"
-      end    
+      end
     end
 
     def init_nativebar
@@ -149,7 +149,7 @@ module Rho
       rescue Exception => e
         trace_msg = e.backtrace.join("\n")
         puts 'Application on_reinstall_config_update failed: ' + e.inspect + ";Trace: #{trace_msg}"
-      end    
+      end
     end
 
     def activate_app
@@ -158,7 +158,7 @@ module Rho
       rescue Exception => e
         trace_msg = e.backtrace.join("\n")
         puts 'Application activate failed: ' + e.inspect + ";Trace: #{trace_msg}"
-      end    
+      end
     end
 
     def deactivate_app
@@ -167,7 +167,7 @@ module Rho
       rescue Exception => e
         trace_msg = e.backtrace.join("\n")
         puts 'Application deactivate failed: ' + e.inspect + ";Trace: #{trace_msg}"
-      end    
+      end
     end
 
     def ui_created
@@ -196,19 +196,19 @@ module Rho
       #if @@rho_framework
       #  @@rho_framework.db_application.close()
       #  @@rho_framework.db_user.close()
-        
+
       #  @@rho_framework = nil
       #end
     #end
-    
+
     def raise_rhoerror(errCode)
         raise Rho::RhoError.new(errCode)
     end
-    
+
     def set_app(appname, app)
         APPLICATIONS[appname] = app
     end
-    
+
     def get_app(appname)
       if (APPLICATIONS[appname].nil?)
         require 'application' #RhoApplication::get_app_path(appname)+'application'
@@ -222,70 +222,70 @@ module Rho
       end
       APPLICATIONS[appname]
     end
-    
+
 if defined?( RHODES_EMULATOR )
     def load_models_from_file(app_manifest_filename=nil)
         require 'rhoappmanifest'
-        
+
         fappManifest = Rho::AppManifest.enumerate_models(Rho::RhoFSConnector.get_app_path('app').chop)
         _load_models_from_file(fappManifest)
         fappManifest.close
     end
 else
     def load_models_from_file(app_manifest_filename=nil)
-if defined? RHO_WP7    
+if defined? RHO_WP7
 		return unless Rho::file_exist?(app_manifest_filename)
 end
         f = File.open(app_manifest_filename)
-        _load_models_from_file(f)    
+        _load_models_from_file(f)
         f.close
     end
 end
 
-    def _load_models_from_file(f)    
+    def _load_models_from_file(f)
       f.each do |line|
         str = line.chomp
-        if str != nil and str.length > 0 
+        if str != nil and str.length > 0
             puts "model file: #{str}"
             model_name = File.basename(File.dirname(str))
 
             Rho::RhoConfig::add_source(model_name, {:loaded => false, :file_path => str})
         end
-        
+
       end
     end
-    
+
     # Return the directories where we need to load configuration files
     def process_model_dirs(app_manifest_filename=nil)
       File.open(app_manifest_filename) do |f|
         f.each do |line|
             str = line.chomp
-            if str != nil and str.length > 0 
+            if str != nil and str.length > 0
                 #puts "model file: #{str}"
                 modelName = File.basename(File.dirname(str))
                 Rhom::RhomObjectFactory.init_object(modelName)
                 require str
 
-                puts "model name: #{modelName}"            
+                puts "model name: #{modelName}"
 
-                modelClass = nil 
+                modelClass = nil
                 modelClass = Object.const_get(modelName) if Object.const_defined?(modelName)
                 if modelClass
-                    puts "model class found"                            
+                    puts "model class found"
                     if modelClass.respond_to?( :get_model_params )
                         Rho::RhoConfig::add_loaded_source(modelName,modelClass.get_model_params())
                         modelClass.reset_model_params()
                     else
                         puts "ERROR: Invalid model definition. Add 'include Rhom::PropertyBag' or 'include Rhom::FixedSchema' to model class"
-                    end    
+                    end
                 else
                     puts "ERROR: cannot load model : #{modelClass}"
-                end    
+                end
             end
-        end        
+        end
       end
     end
-    
+
     # Return the directories where we need to load configuration files
 =begin
     def self.process_rhoconfig
@@ -300,25 +300,25 @@ end
               if key and defined? RHO_ME
                 value = rho_get_app_property(key.strip)
               end
-              
+
               if !value
                 value = parts[1] if parts[1]
               end
-                
+
               if key and value
                 val = value.strip.gsub(/\'|\"/,'')
                 val = val == 'nil' ? nil : val
                 puts "rhoconfig: #{key} => #{val}"
                 Rho::RhoConfig.add_config(key.strip,val)
-              end  
-          end                
+              end
+          end
         end
       rescue Exception => e
         puts "Error opening rhoconfig.txt: #{e}, using defaults."
       end
     end
 =end
-    
+
     def self.check_sources_migration(uniq_sources)
       uniq_sources.each do |source|
           check_source_migration(source)
@@ -328,28 +328,28 @@ end
     def self.check_source_migration(source)
         return unless source.has_key?('migrate_version')
 
-        db = ::Rho::RHO.get_src_db(source['name'])	  
+        db = ::Rho::RHO.get_src_db(source['name'])
 
         if !get_instance().get_app(APPNAME).on_migrate_source(source['migrate_version'], source)
             db.execute_batch_sql(source['schema']['sql'])
-        end  
+        end
 
         db.update_into_table('sources', {"schema_version"=>source['schema_version']},{"name"=>source['name']})
     end
 
-    def reset_db_on_sync_user_changed() 
+    def reset_db_on_sync_user_changed()
       puts "reset_db_on_sync_user_changed"
       begin
           get_app(APPNAME).on_sync_user_changed
       rescue Exception => e
         trace_msg = e.backtrace.join("\n")
         puts 'Application reset_db_on_sync_user_changed failed: ' + e.inspect + ";Trace: #{trace_msg}"
-      end       
+      end
     end
-    
+
     def load_server_sources(data)
         puts "load_server_sources : #{data}"
-        
+
         begin
             res = Rho::JSON.parse(data)
             if res['partition']
@@ -358,26 +358,26 @@ end
                 db = @db_partitions[ str_partition ]
 
                 #puts "sources before: #{Rho::RhoConfig::sources()}"
-                
+
                 db.start_transaction
                 begin
                     Rho::RhoConfig::sources().delete_if {|key, value| value['partition']==str_partition }
                     arSrcs = db.select_from_table('sources','source_id, name, sync_priority, partition, sync_type, schema, schema_version, associations, blob_attribs',
                         {'partition'=>str_partition} )
                     arSrcs.each do |src|
-                        
+
                         if src && src['schema'] && src['schema'].length() > 0
-                        
+
                             #puts "src['schema'] :  #{src['schema']}"
                             hashSchema = Rho::JSON.parse(src['schema'])
                             #puts "hashSchema :  #{hashSchema}"
-                            
+
                             src['schema'] = {}
                             src['schema']['sql'] = ::Rho::RHO.make_createsql_script( src['name'], hashSchema)
                             src['schema_version'] = hashSchema['version']
-                            
+
                             db.update_into_table('sources', {"schema"=>src['schema']['sql'], "schema_version"=>src['schema_version']},{"name"=>src['name']})
-                            
+
                             #if str_partition != 'user'
                             #    @db_partitions['user'].update_into_table('sources', {"schema"=>src['schema']['sql'], "schema_version"=>src['schema_version']},{"name"=>src['name']})
                             #end
@@ -385,29 +385,29 @@ end
 
                         src[:loaded] = true
                         Rho::RhoConfig::sources()[ src['name'] ] = src
-                        
+
                     end
                     db.commit
                 rescue Exception => e
                     db.rollback
                     raise
-                end                
-                
-                #puts "sources after: #{Rho::RhoConfig::sources()}"            
+                end
+
+                #puts "sources after: #{Rho::RhoConfig::sources()}"
                 return
             end
         rescue Exception => e
             puts "Error load_server_sources: #{e}"
             puts "Trace: #{e.backtrace}"
         end
-        
-        raise ArgumentError, "load_server_sources should be called only from bulk sync with partition parameter!"     
+
+        raise ArgumentError, "load_server_sources should be called only from bulk sync with partition parameter!"
     end
 
     def self.load_all_sources
         Rho::RHO.get_instance().load_all_sync_sources()
     end
-    
+
     @all_models_loaded = false
     def load_all_sync_sources()
         return if @all_models_loaded
@@ -416,10 +416,10 @@ end
         begin
             Rho::RhoConfig.sources.values.each do |src|
                 next if src[:loaded]
-                
+
                 load_model(src['name'],false)
             end
-            
+
             init_sources()
         rescue Exception => e
             puts "Error load_all_sync_sources: #{e}"
@@ -431,22 +431,22 @@ end
         return nil if !Rho::RhoConfig.sources.has_key?(modelName) || Rho::RhoConfig.sources[modelName][:loaded]
         Rho::RhoConfig.sources[modelName][:loaded] = true
 
-        puts "load_model: #{modelName}"        
-        
+        puts "load_model: #{modelName}"
+
         Rhom::RhomObjectFactory.init_object(modelName)
         require "#{Rho::RhoConfig.sources[modelName][:file_path]}"
 
-        puts "model name: #{modelName}"            
+        puts "model name: #{modelName}"
 
-        modelClass = nil 
+        modelClass = nil
         modelClass = Object.const_get(modelName) if Object.const_defined?(modelName)
         if modelClass
-            puts "model class found"                            
+            puts "model class found"
             if modelClass.respond_to?( :get_model_params )
                 Rho::RhoConfig::add_loaded_source(modelName,modelClass.get_model_params())
                 modelClass.reset_model_params()
 
-                partition = Rho::RhoConfig::sources[modelName]['partition']                
+                partition = Rho::RhoConfig::sources[modelName]['partition']
                 db = ::Rho::RHO.get_db_partitions()[partition]
                 if !db
                     db = Rhom::RhomDbAdapter.new(Rho::RhoFSConnector::get_db_fullpathname(partition), partition)
@@ -454,43 +454,43 @@ end
                 end
 
                 if init_db
-                    hash_migrate = {}                
+                    hash_migrate = {}
                     db.start_transaction
                     begin
                         uniq_sources = [Rho::RhoConfig::sources[modelName]]
                         init_db_sources(db, uniq_sources, partition, hash_migrate)
 
                         puts "Migrate schema sources: #{hash_migrate}"
-                        
+
                         ::Rho::RHO.init_schema_sources_partition(uniq_sources, hash_migrate, partition, db)
                         ::Rho::RHO.check_sources_migration(uniq_sources)
-                        
+
                         ::Rho::RHO.init_sync_source_properties(uniq_sources)
-                        
+
                         SyncEngine.update_blob_attribs(partition, Rho::RhoConfig::sources[modelName]['source_id'].to_i() )
                         db.commit
                     rescue Exception => e
                         trace_msg = e.backtrace.join("\n")
                         puts "exception when init_db_sources: #{e}; Trace:" + trace_msg
-                        
+
                         db.rollback
                     end
-                end                    
+                end
             else
                 puts "ERROR: Invalid model definition. Add 'include Rhom::PropertyBag' or 'include Rhom::FixedSchema' to model class"
-            end    
+            end
         else
             puts "ERROR: cannot load model : #{modelClass}"
         end
-        
-        modelClass    
+
+        modelClass
     end
 
     def find_src_byname(uniq_sources, src_name)
-        uniq_sources.each do |source|        
+        uniq_sources.each do |source|
             return source if src_name == source['name']
         end
-        
+
         nil
     end
 
@@ -499,39 +499,39 @@ end
         return unless defined? Rho::RhoConfig::sources
 
         @all_models_loaded = true
-    
+
         uniq_sources = Rho::RhoConfig::sources.values
         puts 'init_sources: ' #+ uniq_sources.inspect
 
         uniq_sources.each do |source|
-            source['str_associations'] = ""    
+            source['str_associations'] = ""
         end
-        
+
         uniq_sources.each do |source|
           partition = source['partition']
           @db_partitions[partition] = nil unless @db_partitions[partition]
-          
+
           if source['belongs_to']
-            source['belongs_to'].each do |hash_pair|    
+            source['belongs_to'].each do |hash_pair|
                 attrib = hash_pair.keys[0]
                 src_name = hash_pair.values[0]
-                
+
                 associationsSrc = find_src_byname(uniq_sources, src_name)
                 if !associationsSrc
                     puts "Error: belongs_to '#{source['name']}' : source name '#{src_name}' does not exist."
                     next
                 end
-                
+
                 str_associations = associationsSrc['str_associations']
                 str_associations = "" unless str_associations
                 str_associations += ',' if str_associations.length() > 0
-                
+
                 str_associations += source['name'] + ',' + attrib
                 associationsSrc['str_associations'] = str_associations
             end
           end
         end
-        
+
         #user partition should alwayse exist
         @db_partitions['user'] = nil unless @db_partitions['user']
         hash_migrate = {}
@@ -542,51 +542,51 @@ end
             begin
                 init_db_sources(db, uniq_sources, partition,hash_migrate)
                 SyncEngine.update_blob_attribs(partition, -1 )
-                
+
                 db.commit
             rescue Exception => e
                 trace_msg = e.backtrace.join("\n")
                 puts "exception when init_db_sources: #{e}; Trace:" + trace_msg
-                
+
                 db.rollback
             end
-                
+
             @db_partitions[partition] = db
         end
 
         puts "Migrate schema sources: #{hash_migrate}"
         ::Rho::RHO.init_schema_sources(hash_migrate)
         ::Rho::RHO.check_sources_migration(uniq_sources)
-        
+
         ::Rho::RHO.init_sync_source_properties(uniq_sources)
     end
 
     def self.init_sync_source_properties(uniq_sources)
         uniq_sources.each do|src|
             ['pass_through'].each do |prop|
-                next unless src.has_key?(prop)        
+                next unless src.has_key?(prop)
                 SyncEngine.set_source_property(src['source_id'], prop, src[prop] ? src[prop].to_s() : '' )
-            end            
+            end
         end
     end
-    
+
     def self.processIndexes(index_param, src_name, is_unique)
 
         return "" unless index_param
-        
+
         strUnique = 'UNIQUE' if is_unique
         strRes = ""
         if index_param.is_a?( String )
             strRes = index_param
         else
             nInd = 0
-            
+
             index_param.each do |index_name, index_cols|
                 strCols = ""
                 if index_cols.is_a?(String)
-                    index_cols = index_cols.split(',')    
+                    index_cols = index_cols.split(',')
                 end
-                
+
                 index_cols.each do |col|
                     strCols += ',' if strCols.length() > 0
                     strCols += "\"#{col}\""
@@ -600,7 +600,7 @@ end
         end
         strRes
     end
-        
+
     def self.init_schema_sources(hash_migrate)
         uniq_sources = Rho::RhoConfig::sources.values
         puts 'init_schema_sources'
@@ -613,43 +613,43 @@ end
             rescue Exception => e
                 trace_msg = e.backtrace.join("\n")
                 puts "exception when init_schema_sources: #{e}; Trace:" + trace_msg
-                
+
                 db.rollback
             end
         end
-        
+
         puts 'END init_schema_sources'
 
     end
-    
+
     def self.init_schema_sources_partition(uniq_sources, hash_migrate, partition, db)
         uniq_sources.each do |source|
           next unless partition == source['partition']
           next unless source['schema']
-          
+
           raise ArgumentError, "schema parameter should be Hash!" unless source['schema'].is_a?(Hash)
-          
+
           call_migrate = false
           if db.table_exist?(source['name'])
             next unless hash_migrate.has_key?(source['name'])
-            call_migrate = true 
+            call_migrate = true
           end
-          
+
           strCreate = make_createsql_script(source['name'], source['schema'])
-        
+
           if call_migrate
             db.update_into_table('sources', {"schema"=>strCreate},{"name"=>source['name']})
             #::Rho::RHO.get_user_db().update_into_table('sources', {"schema"=>strCreate},{"name"=>source['name']}) if db != ::Rho::RHO.get_user_db()
-                        
+
             source['migrate_version'] = hash_migrate[ source['name'] ]
             source['schema']['sql'] = strCreate
           else
             db.execute_batch_sql(strCreate)
             db.update_into_table('sources', {"schema"=>strCreate, "schema_version"=>source['schema_version']},{"name"=>source['name']})
-            
+
             #::Rho::RHO.get_user_db().update_into_table('sources', {"schema"=>strCreate, "schema_version"=>source['schema_version']},{"name"=>source['name']}) if db != ::Rho::RHO.get_user_db()
           end
-        
+
         end
     end
 
@@ -659,7 +659,7 @@ end
         if schema_attr['property']
             arCols = schema_attr['property']
             strCols = arCols.collect do |col, type|
-                "\"#{col}\" " + 
+                "\"#{col}\" " +
                 case type[0]
                     when :integer
                         'integer'
@@ -683,76 +683,76 @@ end
         strCreate += processIndexes(schema_attr['index'], name, false)
         strCreate += ";\r\n" if strCreate && strCreate.length() > 0
         strCreate += processIndexes(schema_attr['unique_index'], name, true)
-        
+
         strCreate
     end
-    
+
     def process_blob_attribs(source, db)
       return source['str_blob_attribs'] if source['str_blob_attribs']
       source['str_blob_attribs'] = ""
-      
+
       if source['schema']
         props = source['schema']['property']
       else
         props = source['property']
       end
-      
-      if props    
+
+      if props
         str = ""
         props.each do |name, ar_type|
             if ar_type && ar_type.is_a?(String)
-                ar_type = ar_type.split(',')    
+                ar_type = ar_type.split(',')
             end
-            
+
             if ar_type && ar_type[0].to_s == 'blob'
                 str += ',' if str.length()>0
                 str += name.to_s() + ','
                 str += (ar_type[1].to_s() == 'overwrite' ? '1' : '0')
             end
         end
-        
+
         source['str_blob_attribs'] = str
       end
-            
+
       source['str_blob_attribs']
-      
+
     end
 
     def get_start_id(db_sources, db_partition)
         start_id = 0
         db_sources.each do |db_src|
             next unless db_partition == db_src['partition']
-            
+
             src_id = db_src['source_id']
             start_id = src_id if src_id > start_id
-        end        
-        
-        if start_id < Rho::RhoConfig.max_config_srcid()[db_partition]        
-            start_id = Rho::RhoConfig.max_config_srcid()[db_partition]+2 
+        end
+
+        if start_id < Rho::RhoConfig.max_config_srcid()[db_partition]
+            start_id = Rho::RhoConfig.max_config_srcid()[db_partition]+2
         else
             start_id += 1
         end
-            
+
         puts "start_id: #{start_id}"
         start_id
     end
-    
+
     def find_src_byname(db_sources, name)
         db_sources.each do |db_src|
             return  db_src if db_src['name'] == name
-        end        
-        
-        nil            
+        end
+
+        nil
     end
-    
+
     def init_db_sources(db, uniq_sources, db_partition, hash_migrate)
         puts "init_db_sources"
-        
+
         db_sources = db.select_from_table('sources','sync_priority,source_id,partition, sync_type, schema_version, associations, blob_attribs, name' )
         start_id = get_start_id(db_sources, db_partition)
-        
+
         uniq_sources.each do |source|
-          partition = source['partition']        
+          partition = source['partition']
           next unless partition == db_partition
           #puts "init_db_sources(#{source['name']}) : #{source}"
           name = source['name']
@@ -761,10 +761,10 @@ end
           schema_version = source['schema_version']
           associations = source['str_associations']
           blob_attribs = process_blob_attribs(source, db)
-          
+
           #attribs = db.select_from_table('sources','sync_priority,source_id,partition, sync_type, schema_version, associations, blob_attribs', {'name'=>name})
           attribs = find_src_byname(db_sources,name)
-          
+
           if attribs
             if attribs['sync_priority'].to_i != sync_priority.to_i
                 db.update_into_table('sources', {"sync_priority"=>sync_priority},{"name"=>name})
@@ -775,9 +775,9 @@ end
             if attribs['schema_version'] != schema_version
                 if db_partition == partition
                     hash_migrate[name] = attribs['schema_version']
-                else    
+                else
                     db.update_into_table('sources', {"schema_version"=>schema_version},{"name"=>name})
-                end    
+                end
             end
             if attribs['partition'] != partition
                 db.update_into_table('sources', {"partition"=>partition},{"name"=>name})
@@ -788,46 +788,46 @@ end
             if attribs['blob_attribs'] != blob_attribs
                 db.update_into_table('sources', {"blob_attribs"=>blob_attribs},{"name"=>name})
             end
-            
+
             if !source['source_id']
                 source['source_id'] = attribs['source_id'].to_i
                 Rho::RhoConfig::sources[name]['source_id'] = attribs['source_id'].to_i
             end
-            
+
           else
-          
+
             #puts "Rho::RhoConfig.use_bulk_model :  #{Rho::RhoConfig.use_bulk_model}"
             if Rho::RhoConfig.use_bulk_model.to_s != 'true' && Rho::RhoConfig.use_bulk_model.to_s != '1'
                 if !source['source_id']
                     source['source_id'] = start_id
                     Rho::RhoConfig::sources[name]['source_id'] = start_id
-                    
+
                     start_id += 1
                 end
-              
+
                 db.insert_into_table('sources',
                     {"source_id"=>source['source_id'],"name"=>name, "sync_priority"=>sync_priority, "sync_type"=>sync_type, "partition"=>partition,
                     "schema_version"=>source['schema_version'], 'associations'=>associations, 'blob_attribs'=>blob_attribs })
-            end                
+            end
           end
-          
+
         end
-        
+
     end
-    
+
     def serve(req)
       begin
         puts "RHO serve: " + (req ? "#{req['request-uri']}" : '')
         res = init_response
         get_app(req['application']).send :serve, req, res
-        
+
         init_nativebar
         Rho::RhoController.clean_cached_metadata()
         Rho::RhoConfig.clean_cached_changed
         return send_response(res)
       rescue Exception => e
         return send_error(e)
-      end   
+      end
     end
 
     def serve_hash(req)
@@ -842,9 +842,9 @@ end
         return send_response_hash(res)
       rescue Exception => e
         return send_error(e,500,true)
-      end 
+      end
     end
-    
+
     def serve_index(index_name, req)
     	# TODO: Removed hardcoded appname
     	get_app(APPNAME).set_menu
@@ -888,23 +888,23 @@ end
         'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
       ]
-    
+
         sprintf('%s, %02d %s %d %02d:%02d:%02d GMT',
           _RFC2822_DAY_NAME[t.wday],
           t.day, _RFC2822_MONTH_NAME[t.mon-1], t.year,
           t.hour, t.min, t.sec)
     end
-    
+
     def init_response(status=200,message="OK",body="")
       res = Hash.new
       res['status'] = status
       res['message'] = message
-      res['headers'] = 
+      res['headers'] =
         {
         'Date' => make_httpdate(Time.now),#.httpdate,
         'Content-Type' => 'text/html; charset=utf-8',
         'Content-Length' => 0,
-        'Connection' => 'close' 
+        'Connection' => 'close'
       }
       res['request-body'] = body
       res
@@ -913,7 +913,7 @@ end
     CR   = "\x0d"
     LF   = "\x0a"
     CRLF = "\x0d\x0a"
-    
+
     def send_response(res)
       res['headers']['Content-Length'] = !res['request-body'].nil? && res['request-body'].is_a?(String) ? res['request-body'].bytesize : 0
       data = "HTTP/1.1 #{res['status'].to_s} #{res['message']}" + CRLF
@@ -931,7 +931,7 @@ end
       if ( !res['request-body'].nil? && res['request-body'].is_a?(String))
         data << res['request-body']
       end
-        
+
       data
     end
 
@@ -943,24 +943,24 @@ end
           resp[tmp] = value
       }
       resp['request-body'] = !res['request-body'].nil? && res['request-body'].is_a?(String) ? res['request-body'] : ""
-      resp['status'] = res['status']        
+      resp['status'] = res['status']
       resp['message'] = res['message']
-      
+
       resp
     end
-    
+
     @@current_exception = nil
     def self.current_exception
         @@current_exception
     end
-        
+
     def send_error(exception=nil,status=500,hash=false)
       if exception
         trace_msg = exception.backtrace.join("\n")
 	    puts "App error: #{exception}\n #{trace_msg}"
-	  end  
+	  end
       body=''
-      
+
       err_page = nil
       if exception && exception.is_a?(::Rhom::RecordNotFound)
         err_page = RhoApplication::get_app_path(APPNAME) + 'E400' + RHO_ERB_EXT
@@ -974,12 +974,12 @@ end
           @@current_exception = exception
           puts 'show error: ' + @@current_exception.inspect
           body = RhoController::renderfile(err_page)
-          
+
           return send_response_hash(init_response(200,"OK",body)) if hash
-      
+
           return send_response(init_response(200,"OK",body))
       end
-      
+
       body << <<-_HTML_STRING_
         <html>
             <head>
@@ -992,10 +992,10 @@ end
       body << 'Error: ' << exception.message << "<br/>" if exception
       body << "Trace: <br/>\n" << exception.backtrace.join("<br/>\n") if exception
       body << <<-_HTML_STRING_
-                </p>    
+                </p>
             </body>
         </html>
-        
+
       _HTML_STRING_
       if ( hash )
         send_response_hash(init_response(status,"Server error",body))
@@ -1004,37 +1004,37 @@ end
       end
     end
   end # RHO
-  
+
   # Generic configuration class which accepts hashes with unique keys
   class RhoConfig
-    
+
     @@sources = {}
     #@@config = {'start_path' => '/app', 'options_path' => '/app/Settings'}
     @@max_config_srcid = {}
     @@max_config_srcid['user'] = 1
     @@max_config_srcid['app'] = 20001
     @@max_config_srcid['local'] = 40001
-    
+
     class << self
       def method_missing(name, *args)
         unless name == Fixnum
           if name[name.length()-1] == '='
-            RhoConf.set_property_by_name(name.to_s.chop,args[0]) 
+            RhoConf.set_property_by_name(name.to_s.chop,args[0])
           else
-            RhoConf.get_property_by_name(name.to_s)             
+            RhoConf.get_property_by_name(name.to_s)
           end
         end
       end
-      
+
       def exists?(name)
-        RhoConf.is_property_exists(name)  
+        RhoConf.is_property_exists(name)
       end
-      
+
       #def reload
       #  @@config = {'start_path' => '/app', 'options_path' => '/app/Settings'}
       #  Rho::RHO.process_rhoconfig
       #end
-      
+
       def max_config_srcid
         @@max_config_srcid
       end
@@ -1042,7 +1042,7 @@ end
       def show_log
         RhoConf.show_log
       end
-      
+
       def send_log
         RhoConf.send_log
       end
@@ -1050,46 +1050,46 @@ end
       def read_log(limit=0)
         RhoConf.read_log(limit)
       end
-      
+
       def sources
         @@sources
       end
-      
+
       @@cached_changed = nil
       def clean_cached_changed
         @@cached_changed = nil
       end
-      
+
       def source_changed?(name, partition='user')
         return Object.const_get(name).changed?() if Object.const_defined?(name)
-        
+
         if !@@cached_changed
             @@cached_changed = {}
             db = ::Rho::RHO.get_db_partitions[partition]
             db_ids = db.execute_sql("SELECT source_id,name FROM sources" )
             changes = db.execute_sql("SELECT DISTINCT(source_id) FROM changed_values" )
-            
+
             changes.each do |changed_item|
-                
+
                 changed_name = nil
                 db_ids.each do |db_item|
                     if db_item['source_id'] == changed_item['source_id']
                         changed_name = db_item['name']
                         break
-                    end    
+                    end
                 end
-                
+
                 @@cached_changed[changed_name] = true if changed_name
             end
         end
-        
+
         @@cached_changed.has_key?(name) ? @@cached_changed[name] : false
       end
-      
+
       #def config
       #  @@config
       #end
-      
+
       #def add_config(key,value)
       #  @@config[key] = value if key # allow nil value
       #end
@@ -1098,15 +1098,15 @@ end
         @@sources[modelname] = props
         @@sources[modelname]['name'] ||= modelname
       end
-        
+
       def add_loaded_source(modelname, new_source=nil)
         return if !modelname || modelname.length() == 0# || @@sources[modelname]
-        
+
         puts "#{modelname} : #{new_source}"
         @@sources[modelname] = new_source ? new_source.clone() : {}
         @@sources[modelname]['name'] ||= modelname
         @@sources[modelname][:loaded] = true
-        
+
         if @@sources[modelname]['sync_priority']
             @@sources[modelname]['sync_priority'] = @@sources[modelname]['sync_priority'].to_i()
         else
@@ -1115,37 +1115,37 @@ end
 
         #@@sources[modelname]['sync_type'] = 'none' if !@@sources[modelname]['sync']
         @@sources[modelname]['sync_type'] ||= 'none'
-        
+
         if @@sources[modelname]['partition']
             @@sources[modelname]['partition'] = @@sources[modelname]['partition'].to_s
-        else    
+        else
             @@sources[modelname]['partition'] ||= @@sources[modelname]['sync_type'] != 'none' ? 'user' : 'local'
-        end    
-        
+        end
+
         if @@sources[modelname]['source_id']
             @@sources[modelname]['source_id'] = @@sources[modelname]['source_id'].to_i()
         end
-        
+
         @@max_config_srcid[@@sources[modelname]['partition']] = @@sources[modelname]['source_id'] if @@sources[modelname]['source_id'] && @@max_config_srcid[@@sources[modelname]['partition']] < @@sources[modelname]['source_id']
       end
-      
+
       @@g_base_temp_id = nil
       def generate_id
         @@g_base_temp_id = ((Time.now.to_f - Time.mktime(2009,"jan",1,0,0,0,0).to_f) * 10**6) unless @@g_base_temp_id
-        
+
         @@g_base_temp_id = @@g_base_temp_id + 1
         @@g_base_temp_id
       end
-      
+
     end
   end # RhoConfig
-  
+
     module AsyncHttp
 
         def self.make_auth_header(args)
           auth = args[:authentication] if args.has_key?(:authentication)
           auth = args [:authorization] if args.has_key?(:authorization)
-          
+
           return nil unless auth.is_a? Hash
           return nil if auth[:type].nil?
 
@@ -1169,7 +1169,7 @@ end
                 version = System.get_property('os_version')
                 @@user_agent = "Mozilla-5.0 (#{platform}; #{device}; #{version})"
             end
-            hdrs['User-Agent'] =  @@user_agent   
+            hdrs['User-Agent'] =  @@user_agent
           end
 
           auth = make_auth_header(args)
@@ -1186,7 +1186,7 @@ end
 
 	    def self.process_result(res, callback)
             return res if callback && callback.length() > 0
-            
+
             _params = ::Rho::RhoSupport::parse_query_parameters res
             ::Rho::RhoController.process_rho_object(_params)
             _params
@@ -1212,44 +1212,44 @@ end
             check_ssl_verify_peer(args)
             process_result( AsyncHttp.do_request("Upload", args ), args[:callback] )
         end
-        
+
     end
 
     module Timer
         def self.start( interval_ms, callback, callback_data )
             System.start_timer(interval_ms, callback, callback_data)
         end
-        
+
         def self.stop( callback )
             System.stop_timer( callback )
-        end        
+        end
     end
-      
+
 end # Rho
 
 module SyncEngine
     def self.get_user_name
-        Rho::RhoConfig.rho_sync_user        
+        Rho::RhoConfig.rho_sync_user
     end
-    
+
     def self.on_sync_create_error( src_name, objects, action )
         raise ArgumentError, 'on_sync_create_error src_name should be string' unless src_name.is_a?(String)
-        
+
         Object.const_get(src_name).on_sync_create_error(objects, action)
     end
 
     def self.on_sync_update_error( src_name, objects, action, rollback_data = nil )
         raise ArgumentError, 'on_sync_update_error src_name should be string' unless src_name.is_a?(String)
-    
+
         Object.const_get(src_name).on_sync_update_error(objects, action, rollback_data)
     end
 
     def self.on_sync_delete_error( src_name, objects, action )
         raise ArgumentError, 'on_sync_delete_error src_name should be string' unless src_name.is_a?(String)
-    
+
         Object.const_get(src_name).on_sync_delete_error(objects, action)
     end
-    
+
     def self.search(args)
         searchParams = ""
 
@@ -1262,7 +1262,7 @@ module SyncEngine
             args[:search_params].each do |key,value|
               searchParams += '&' + "search[#{Rho::RhoSupport.url_encode(key)}]" + '=' + Rho::RhoSupport.url_encode(value)
               callbackParams += '&' + "search_params[#{Rho::RhoSupport.url_encode(key)}]" + '=' + Rho::RhoSupport.url_encode(value)
-            end  
+            end
         end
 
         SyncEngine.dosearch( args[:source_names], args[:from] ? args[:from] : 'search',
@@ -1280,16 +1280,16 @@ class Module
     alias base_const_missing const_missing
     def const_missing(name)
         puts "const_missing: #{name}"
-        
+
         res = Rho::RHO.get_instance().load_model(name.to_s)
         return res if res
-        
+
         return base_const_missing(name)
     end
 end
 
-module Kernel   
+module Kernel
     def require_source(name)
-        Rho::RHO.get_instance().load_model(name.to_s)        
+        Rho::RHO.get_instance().load_model(name.to_s)
     end
-end    
+end

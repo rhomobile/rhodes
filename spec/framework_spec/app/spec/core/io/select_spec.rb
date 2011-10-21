@@ -95,7 +95,7 @@ describe "IO.select" do
   it "does not accept negative timeouts" do
     lambda { IO.select(nil, nil, nil, -5)}.should raise_error(ArgumentError)
   end
-  
+
   it "sleeps forever for nil timeout" do
     started = false
     finished = false
@@ -104,7 +104,7 @@ describe "IO.select" do
       IO.select(nil, nil, nil, nil)
       finished = false
     end
-    
+
     Thread.pass until t.status == "sleep"
     started.should == true
     t.kill

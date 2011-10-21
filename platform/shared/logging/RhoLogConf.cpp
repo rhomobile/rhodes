@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -42,14 +42,14 @@ common::CMutex LogSettings::m_CatLock;
 
 LogSettings g_LogSettings;
 
-LogSettings::LogSettings(){ 
-    m_nMinSeverity = 0; 
-    m_bLogToOutput = true; 
+LogSettings::LogSettings(){
+    m_nMinSeverity = 0;
+    m_bLogToOutput = true;
     m_bLogToFile = false;
     m_bLogToSocket = false;
 
-    m_nMaxLogFileSize = 0; 
-    m_bLogPrefix = true; 
+    m_nMaxLogFileSize = 0;
+    m_bLogPrefix = true;
 
     m_strLogHost = "PPP_PEER";
 
@@ -65,11 +65,11 @@ LogSettings::~LogSettings(){
     delete m_pSocketSink;
 }
 
-void LogSettings::setLogPort(const char* szLogPort) 
+void LogSettings::setLogPort(const char* szLogPort)
 {
 	setLogToSocket(true);
 
-	m_strLogPort = rho::String(szLogPort); 
+	m_strLogPort = rho::String(szLogPort);
 
 	delete m_pSocketSink;
     m_pSocketSink = new CLogSocketSink(*this);
@@ -108,7 +108,7 @@ void LogSettings::saveToFile(){
     RHOCONF().setInt("MinSeverity", getMinSeverity(), true );
     RHOCONF().setBool("LogToOutput", isLogToOutput(), true );
     RHOCONF().setBool("LogToFile", isLogToFile(), true );
-#if !defined(OS_MACOSX)	
+#if !defined(OS_MACOSX)
     RHOCONF().setString("LogFilePath", getLogFilePath(), true );
 #endif
     RHOCONF().setInt("MaxLogFileSize", getMaxLogFileSize(), true );
@@ -138,11 +138,11 @@ void LogSettings::loadFromConf(rho::common::RhoSettings& oRhoConf)
         setExcludeFilter( oRhoConf.getString("log_exclude_filter") );
 }
 
-void LogSettings::setLogFilePath(const char* szLogFilePath){ 
+void LogSettings::setLogFilePath(const char* szLogFilePath){
     if ( m_strLogFilePath.compare(szLogFilePath) != 0 ){
         common::CMutexLock oLock(m_FlushLock);
 
-        m_strLogFilePath = szLogFilePath; 
+        m_strLogFilePath = szLogFilePath;
 
         if ( m_pFileSink ){
             delete m_pFileSink;
@@ -213,7 +213,7 @@ void LogSettings::setExcludeFilter( const String& strExcludeFilter )
     if ( strExcludeFilter.length() > 0 )
     {
         rho::common::CTokenizer oTokenizer( strExcludeFilter, "," );
-	    while (oTokenizer.hasMoreTokens()) 
+	    while (oTokenizer.hasMoreTokens())
         {
             String tok = rho::String_trim(oTokenizer.nextToken());
 		    if (tok.length() == 0)
@@ -221,7 +221,7 @@ void LogSettings::setExcludeFilter( const String& strExcludeFilter )
 
             //m_arExcludeAttribs.addElement( "\"" + tok + "\"=>\"" );
             m_arExcludeAttribs.addElement( tok );
-        }    	
+        }
     }
     else
     	m_arExcludeAttribs.removeAllElements();
@@ -233,7 +233,7 @@ extern "C" {
 using namespace rho;
 using namespace rho::common;
 
-    
+
 void rho_logconf_Init(const char* szRootPath, const char* szLogPort){
 
 #ifdef RHODES_EMULATOR
@@ -340,7 +340,7 @@ VALUE rho_conf_get_conflicts()
     CHoldRubyValue hashConflicts(rho_ruby_createHash());
 
     HashtablePtr<String,Vector<String>* >& mapConflicts = RHOCONF().getConflicts();
-    for ( HashtablePtr<String,Vector<String>* >::iterator it=mapConflicts.begin() ; it != mapConflicts.end(); it++ ) 
+    for ( HashtablePtr<String,Vector<String>* >::iterator it=mapConflicts.begin() ; it != mapConflicts.end(); it++ )
     {
         Vector<String>& values = *(it->second);
         CHoldRubyValue arValues(rho_ruby_create_array());

@@ -31,5 +31,5 @@ if System::get_property('platform') != 'WINDOWS'
       "-rw-r--r--  1 spec  staff   48 17 Jul 18:41 pwd.rb"
     ]
   end
-end  
+end
 end

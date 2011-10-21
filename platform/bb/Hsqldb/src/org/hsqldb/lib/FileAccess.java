@@ -71,7 +71,7 @@ public interface FileAccess {
     }
 
     FileSync getFileSync(OutputStream os) throws java.io.IOException;*/
-    
+
     long getFileLength(java.lang.String filename);
     void deleteOnExit(java.lang.String filename);
     String canonicalOrAbsolutePath(String path);

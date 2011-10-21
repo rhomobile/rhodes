@@ -15,7 +15,7 @@
 	VALUE class;
 	VALUE class_str;
 	char *class_val;
-	
+
 	class = rb_funcall($input, rb_intern("class"), 0);
 	class_str = rb_funcall(class, rb_intern("to_s"), 0);
 	class_val = StringValuePtr(class_str);
@@ -34,7 +34,7 @@
 	VALUE class;
 	VALUE class_str;
 	char *class_val;
-	
+
 	class = rb_funcall($input, rb_intern("class"), 0);
 	class_str = rb_funcall(class, rb_intern("to_s"), 0);
 	class_val = StringValuePtr(class_str);
@@ -53,7 +53,7 @@
 	VALUE class;
 	VALUE class_str;
 	char *class_val;
-	
+
 	class = rb_funcall($input, rb_intern("class"), 0);
 	class_str = rb_funcall(class, rb_intern("to_s"), 0);
 	class_val = StringValuePtr(class_str);

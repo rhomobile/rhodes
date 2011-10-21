@@ -61,7 +61,7 @@ to access command-line tools' during Microsoft Visual Studio installation proced
 	nmake /fmsvc.mak install
 
 	nmake is the make utility from Microsoft. /f is an nmake option
-telling it which make file script to use. You have of course to grant the 
+telling it which make file script to use. You have of course to grant the
 closer make file to your effective compiler, msvc.mak in our case.
 
 	Once the command returns, you will have all the necessary libraries within
@@ -83,7 +83,7 @@ within the STLport bin folder.
 Using STLport
 =============
 Adjust your include and link paths in MSVC IDE (in 'Tools -> Options -> Directories'
-for MSVC6 IDE). In the include files add the path to STLport's 'stlport' folder. 
+for MSVC6 IDE). In the include files add the path to STLport's 'stlport' folder.
 Make sure it is the first directory listed there. Add STLport's 'lib' folder for
 the library files (order of paths doesn't matter here).
 
@@ -129,7 +129,7 @@ C:\Program Files\Microsoft SDK\Include\.\winbase.h(1390) : see declaration of
 'InterlockedIncrement'
 
 	It means that you are using the new Microsoft platform SDK. There is no
-way to known it from STLport so you have to signal it in the 
+way to known it from STLport so you have to signal it in the
 stlport/stl/config/user_config.h file (uncomment _STLP_NEW_PLATFORM_SDK in this file).
 
 2. Native C/C++ library headers location
@@ -144,7 +144,7 @@ _STLP_NATIVE_INCLUDE_PATH and associated macro in stlport/stl/config/host.h.
 4. C symbols in std namespace
 
 The compiler of MSVC++ 6 has a bug when dealing with symbols existant in both
-the global namespace and symbols imported by a using-directive or a 
+the global namespace and symbols imported by a using-directive or a
 using-declaration - it will report an ambiguous call to an overloaded
 function (error C2668). Example:
 
@@ -165,12 +165,12 @@ void call() {
 
 Since we anticipate that using-declarations or even using-directives are common
 use, STLport by default doesn't import or wrap functions that exist in both the
-global namespace and namespace std, in particular those are functions with C 
+global namespace and namespace std, in particular those are functions with C
 origin like fopen() or abs(). Also, it defines additional overloads for
 functions like abs() (overloaded for int, long, float, double, long double) in
 the global namespace.
 
 In order to make STLport include them in the std namespace, you can define the
-_STLP_DO_IMPORT_CSTD_FUNCTIONS macro. Doing so, you will have to explicitely 
+_STLP_DO_IMPORT_CSTD_FUNCTIONS macro. Doing so, you will have to explicitely
 scope all your functions calls like std::abs() though - otherwise you only get
 the global abs(int) from the C library.

@@ -14,7 +14,7 @@
 #pragma warn_impl_i2f_conv off
 #pragma warn_impl_s2u_conv off
 #pragma warn_illegal_instructions off
-#pragma suppress_warnings on 
+#pragma suppress_warnings on
 
 #define HAVE_SIGNBIT 1
 #define HAVE_INET_NTOP 1

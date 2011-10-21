@@ -385,7 +385,7 @@ sqlite3AuthContextPush(pParse, sContext, pTab.zName);
 #if !SQLITE_OMIT_TRUNCATE_OPTIMIZATION
       /* Special case: A DELETE without a WHERE clause deletes everything.
   ** It is easier just to erase the whole table. Prior to version 3.6.5,
-  ** this optimization caused the row change count (the value returned by 
+  ** this optimization caused the row change count (the value returned by
   ** API function sqlite3_count_changes) to be set incorrectly.  */
       if ( rcauth == SQLITE_OK && pWhere == null && null == pTrigger && !IsVirtual( pTab )
         && 0 == sqlite3FkRequired( pParse, pTab, null, 0 )
@@ -430,9 +430,9 @@ sqlite3AuthContextPush(pParse, sContext, pTab.zName);
         ** because deleting an item can change the scan order. */
         end = sqlite3VdbeMakeLabel( v );
 
-        /* Unless this is a view, open cursors for the table we are 
+        /* Unless this is a view, open cursors for the table we are
         ** deleting from and all its indices. If this is a view, then the
-        ** only effect this statement has is to fire the INSTEAD OF 
+        ** only effect this statement has is to fire the INSTEAD OF
         ** triggers.  */
         if ( !isView )
         {
@@ -479,7 +479,7 @@ sqlite3MayAbort(pParse);
         sqlite3AutoincrementEnd( pParse );
       }
 
-      /* Return the number of rows that were deleted. If this routine is 
+      /* Return the number of rows that were deleted. If this routine is
       ** generating code because of a call to sqlite3NestedParse(), do not
       ** invoke the callback function.
       */
@@ -526,7 +526,7 @@ sqlite3AuthContextPop(sContext);
     **   3.  The record number of the row to be deleted must be stored in
     **       memory cell iRowid.
     **
-    ** This routine generates code to remove both the table record and all 
+    ** This routine generates code to remove both the table record and all
     ** index entries that point to that record.
     */
     static void sqlite3GenerateRowDelete(
@@ -546,7 +546,7 @@ sqlite3AuthContextPop(sContext);
       /* Vdbe is guaranteed to have been allocated by this stage. */
       Debug.Assert( v != null );
 
-      /* Seek cursor iCur to the row to delete. If this row no longer exists 
+      /* Seek cursor iCur to the row to delete. If this row no longer exists
       ** (this can happen if a trigger program has already deleted it), do
       ** not attempt to delete it or fire any DELETE triggers.  */
       iLabel = sqlite3VdbeMakeLabel( v );
@@ -568,7 +568,7 @@ sqlite3AuthContextPop(sContext);
         iOld = pParse.nMem + 1;
         pParse.nMem += ( 1 + pTab.nCol );
 
-        /* Populate the OLD.* pseudo-table register array. These values will be 
+        /* Populate the OLD.* pseudo-table register array. These values will be
         ** used by any BEFORE and AFTER triggers that exist.  */
         sqlite3VdbeAddOp2( v, OP_Copy, iRowid, iOld );
         for ( iCol = 0; iCol < pTab.nCol; iCol++ )
@@ -588,12 +588,12 @@ sqlite3AuthContextPop(sContext);
 
         /* Seek the cursor to the row to be deleted again. It may be that
         ** the BEFORE triggers coded above have already removed the row
-        ** being deleted. Do not attempt to delete the row a second time, and 
+        ** being deleted. Do not attempt to delete the row a second time, and
         ** do not fire AFTER triggers.  */
         sqlite3VdbeAddOp3( v, OP_NotExists, iCur, iLabel, iRowid );
 
         /* Do FK processing. This call checks that any FK constraints that
-        ** refer to this table (i.e. constraints attached to other tables) 
+        ** refer to this table (i.e. constraints attached to other tables)
         ** are not violated by deleting this row.  */
         sqlite3FkCheck( pParse, pTab, iOld, 0 );
       }
@@ -622,7 +622,7 @@ sqlite3AuthContextPop(sContext);
       );
 
       /* Jump here if the row had already been deleted before any BEFORE
-      ** trigger programs were invoked. Or if a trigger program throws a 
+      ** trigger programs were invoked. Or if a trigger program throws a
       ** RAISE(IGNORE) exception.  */
       sqlite3VdbeResolveLabel( v, iLabel );
     }

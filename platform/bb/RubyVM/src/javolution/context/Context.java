@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2007 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -14,25 +14,25 @@ import j2me.lang.UnsupportedOperationException;
 import j2me.lang.ThreadLocal;
 
 /**
- * <p> This class represents an execution context; they can be associated to 
+ * <p> This class represents an execution context; they can be associated to
  *     particular threads or objects.</p>
- *     
- * <p> Context-aware applications may extend the context base class or any 
- *     predefined contexts in order to facilitate <a 
+ *
+ * <p> Context-aware applications may extend the context base class or any
+ *     predefined contexts in order to facilitate <a
  *     href="package-summary.html#package_description">
  *     separation of concerns</a>.</p>
- *     
- * <p> The scope of a {@link Context} should be surrounded by a <code>try, 
- *     finally</code> block statement to ensure correct behavior in case 
+ *
+ * <p> The scope of a {@link Context} should be surrounded by a <code>try,
+ *     finally</code> block statement to ensure correct behavior in case
  *     of exceptions being raised. For example:[code]
  *     LocalContext.enter(); // Current thread enter a local context.
- *     try 
+ *     try
  *         ModuloInteger.setModulus(m); // No impact on other threads!
  *         z = x.times(y); // Multiplication modulo m.
  *     } finally {
  *         LocalContext.exit();
  *     }[/code]</p>
- *      
+ *
  * @author  <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 5.0, April 15, 2007
  */
@@ -42,7 +42,7 @@ public abstract class Context { //implements XMLSerializable {
      * Holds the root context (top context of all threads).
      */
     public static final Context ROOT = new Root();
-    
+
     /**
      * Holds the current context (thread-local).
      */
@@ -51,9 +51,9 @@ public abstract class Context { //implements XMLSerializable {
             return ROOT;
         }
     };
-   
+
     /**
-     * Holds the current owner of this context or <code>null</code> if global 
+     * Holds the current owner of this context or <code>null</code> if global
      * context.
      */
     private Thread _owner;
@@ -64,24 +64,24 @@ public abstract class Context { //implements XMLSerializable {
     private Context _outer;
 
     /**
-     * Holds the factory having produced this context if any (for recycling 
+     * Holds the factory having produced this context if any (for recycling
      * purpose upon exit).
      */
-    private ObjectFactory _factory; 
+    private ObjectFactory _factory;
 
     /**
      * Holds the inherited allocator context or <code>null</code>
      */
-    private AllocatorContext _allocator; 
+    private AllocatorContext _allocator;
 
     /**
-     * Default constructor. 
+     * Default constructor.
      */
-    protected Context() {    
+    protected Context() {
     }
 
     /**
-     * Returns the current context for the current thread. 
+     * Returns the current context for the current thread.
      *
      * @return the current context.
      */
@@ -113,23 +113,23 @@ public abstract class Context { //implements XMLSerializable {
     }
 
     /**
-     * Returns the string representation of this context (default 
+     * Returns the string representation of this context (default
      * <code>"Instance of " + this.getClass().getName()</code>).
-     * 
+     *
      * @return the string representation of this context.
      */
     public String toString() {
         return "Instance of " + this.getClass().getName();
     }
-    
+
     /**
-     * The action to be performed after this context becomes the current 
+     * The action to be performed after this context becomes the current
      * context.
      */
     protected abstract void enterAction();
 
     /**
-     * The action to be performed before this context is no more the current 
+     * The action to be performed before this context is no more the current
      * context.
      */
     protected abstract void exitAction();
@@ -154,13 +154,13 @@ public abstract class Context { //implements XMLSerializable {
     }
 
     /**
-     * Enters a factory produced context of specified type to be recycled 
+     * Enters a factory produced context of specified type to be recycled
      * after {@link #exit exiting}.
-     * This method is called by the static <code>enter()</code> method 
-     * of specialized contexts. If the context class has no public 
-     * no-arg constructor accessible, then the factory for the class should 
-     * be {@link ObjectFactory#setInstance explicitely set} (typically 
-     * in a static initializer).  
+     * This method is called by the static <code>enter()</code> method
+     * of specialized contexts. If the context class has no public
+     * no-arg constructor accessible, then the factory for the class should
+     * be {@link ObjectFactory#setInstance explicitely set} (typically
+     * in a static initializer).
      *
      * @param contextType the type of context being entered.
      * @return the context being entered.
@@ -173,20 +173,20 @@ public abstract class Context { //implements XMLSerializable {
         Context.enter(context);
         return (/*T*/Context) context;
     }
-  
+
     /**
      * Exits the current context (the {@link #getOuter outer} context
      * becomes the current context).
-     * 
+     *
      * @return the context which has been exited.
-     * @throws IllegalStateException if this context is the {@link #ROOT} 
+     * @throws IllegalStateException if this context is the {@link #ROOT}
      *         context.
      */
     public static Context exit() {
         Context context = Context.getCurrent();
         Context outer = context._outer;
-        if (outer == null) 
-            throw new IllegalStateException(Thread.currentThread() + " Cannot exit instance of " 
+        if (outer == null)
+            throw new IllegalStateException(Thread.currentThread() + " Cannot exit instance of "
             		+ context.getClass());
         try {
             context.exitAction();
@@ -206,7 +206,7 @@ public abstract class Context { //implements XMLSerializable {
     /**
      * Sets the current context, used by {@link ConcurrentContext}
      * exclusively.
-     * 
+     *
      * @param context the concurrent context.
      */
     protected static void setCurrent(ConcurrentContext context) {
@@ -215,7 +215,7 @@ public abstract class Context { //implements XMLSerializable {
 
     /**
      * Returns the allocator context used while in this context (shortcut).
-     * 
+     *
      * @return the allocator context for this context.
      */
     final AllocatorContext getAllocatorContext() {
@@ -233,15 +233,15 @@ public abstract class Context { //implements XMLSerializable {
         protected void exitAction() {
             throw new UnsupportedOperationException(
                 "Cannot enter the root context");
-        } 
-    
+        }
+
     };
-    
+
     /**
      * @deprecated {@link #exit()} should be used.
      */
     public static final void exit(Context ctx) {
         Context.exit();
     }
-    
+
 }

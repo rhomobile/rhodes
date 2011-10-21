@@ -16,7 +16,7 @@ public:
 		//[mView release];
 		//mView = nil;
 	}
-	
+
 	virtual void* getView() {
 		//if (mView == nil) {
 		//	ctrl = []
@@ -24,7 +24,7 @@ public:
 		//}
 		return [MapViewControllerESRI getCurrentView];
 	}
-	
+
 	virtual void navigate(const char* url) {
 		//[mView navigate:url];
 	}
@@ -37,18 +37,18 @@ private:
 
 class ESRINativeViewFactory : public NativeViewFactory {
 public:
-	
+
 	virtual NativeView* getNativeView(const char* viewType) {
 		return new ESRINativeView();
 	}
-	
+
 	virtual void destroyNativeView(NativeView* nativeView) {
 		delete nativeView;
 	}
-	
+
 };
 
-static ESRINativeViewFactory* ourFactory = NULL; 
+static ESRINativeViewFactory* ourFactory = NULL;
 
 NativeViewFactory* ESRIViewFactorySingletone::instance() {
 	if (ourFactory == NULL) {

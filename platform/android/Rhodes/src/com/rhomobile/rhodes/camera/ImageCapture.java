@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -59,9 +59,9 @@ import android.view.OrientationEventListener;
 
 public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback, OnClickListener
  {
-	
+
 	private static final String TAG = "ImageCapture";
-	
+
 	private String callbackUrl;
 	private Camera camera;
 	private boolean isPreviewRunning = false;
@@ -72,11 +72,11 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 	private ImageButton cameraButton;
     private OrientationEventListener myOrientationEventListener;
     private int m_rotation = 0;
-    
+
     private CameraSettings mSettings = null;
     private boolean mIsFrontCamera = false;
-    
-    
+
+
 	// private Uri target = Media.EXTERNAL_CONTENT_URI;
 
 	@Override
@@ -87,52 +87,52 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		getWindow().setFormat(PixelFormat.TRANSLUCENT);
 		setContentView(AndroidR.layout.camera);
-		
+
 		Bundle extras = getIntent().getExtras();
 		callbackUrl = extras.getString(com.rhomobile.rhodes.camera.Camera.INTENT_EXTRA_PREFIX + "callback");
 		mSettings = (CameraSettings)extras.getSerializable(com.rhomobile.rhodes.camera.Camera.INTENT_EXTRA_PREFIX + "settings");
-		
+
 		surfaceView = (SurfaceView) findViewById(AndroidR.id.surface);
 		surfaceHolder = surfaceView.getHolder();
 		surfaceHolder.addCallback(this);
 		surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-		
+
 		cameraButton = (ImageButton)findViewById(AndroidR.id.cameraButton);
 		cameraButton.setOnClickListener(this);
-		
+
         myOrientationEventListener = new OrientationEventListener(this, SensorManager.SENSOR_DELAY_NORMAL)
         {
             @Override
-            public void onOrientationChanged(int orientation) 
-            { 
-                //Logger.D(TAG, "onOrientationChanged: " + orientation); 
-                if (orientation == ORIENTATION_UNKNOWN) 
-                    return; 
-                 
-                m_rotation = orientation;    
-             }   
+            public void onOrientationChanged(int orientation)
+            {
+                //Logger.D(TAG, "onOrientationChanged: " + orientation);
+                if (orientation == ORIENTATION_UNKNOWN)
+                    return;
+
+                m_rotation = orientation;
+             }
         };
-    
+
         if (myOrientationEventListener.canDetectOrientation())
         {
-           Logger.I(TAG, "myOrientationEventListener.enable()"); 
+           Logger.I(TAG, "myOrientationEventListener.enable()");
            myOrientationEventListener.enable();
         }
         else
         {
-           Logger.I(TAG, "cannot detect!"); 
+           Logger.I(TAG, "cannot detect!");
            myOrientationEventListener = null;
-        }		
+        }
 	}
 
 	@Override
-	public void finish() 
+	public void finish()
 	{
 	    Logger.D(TAG, "finish");
 	    if ( myOrientationEventListener != null )
 	        myOrientationEventListener.disable();
-	        
-        myOrientationEventListener = null;	        
+
+        myOrientationEventListener = null;
 		super.finish();
 	}
 
@@ -184,14 +184,14 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 	public void surfaceCreated(SurfaceHolder holder) {
 		Logger.D(TAG, "surfaceCreated");
 		try {
-			
+
 			if (mSettings.getCameraType() == mSettings.CAMERA_TYPE_FRONT) {
 				camera = com.rhomobile.rhodes.camera.Camera.getCameraService().getFrontCamera();
 			}
 			else {
 				camera = com.rhomobile.rhodes.camera.Camera.getCameraService().getMainCamera();
 			}
-			
+
 		}
 		catch (Exception e) {
 			Logger.E(TAG, e);
@@ -206,12 +206,12 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 				Logger.E(TAG, "Camera was not opened");
 				return;
 			}
-			
+
 			if (isPreviewRunning) {
 				camera.stopPreview();
 			}
 			Camera.Parameters p = camera.getParameters();
-			
+
 			int newW = (w >> 3) << 3;
 			int newH = (h >> 3) << 3;
 
@@ -231,7 +231,7 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 	            }
 	            if (mSettings.getFlashMode() != null) {
 	            	p.set("flash-mode", mSettings.getFlashMode());
-	            	
+
 	            }
 			}
 			camera.setParameters(p);
@@ -266,7 +266,7 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 			Logger.E(TAG, "Attempt of auto focus while camera was not opened");
 			return;
 		}
-		
+
 		//this only from API v.5 and higher
 		//String focus_mode = camera.getParameters().getFocusMode();
 		//if ((focus_mode != Camera.Parameters.FOCUS_MODE_FIXED) && (focus_mode != Camera.Parameters.FOCUS_MODE_INFINITY)) {
@@ -278,13 +278,13 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 		//}
 	}
 
-	
+
 	private void takePicture() {
 		if (camera == null) {
 			Logger.E(TAG, "Attempt of take picture while camera was not opened");
 			return;
 		}
-		
+
 		ImageCaptureCallback iccb = null;
 		try {
 			String filename = "Image_" + timeStampFormat.format(new Date());
@@ -315,7 +315,7 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 			// String filename = timeStampFormat.format(new Date());
 			String dir = RhodesAppOptions.getBlobPath();
 
-			
+
 			OutputStream osCommon = null;
 			try {
 				if (uri != null) {
@@ -328,10 +328,10 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 			}
 
 			Camera.Parameters parameters = camera.getParameters();
-	        
+
 	        int imgW = 0;
 	        int imgH = 0;
-	        
+
             //int nOrient = RhodesService.getInstance().getScreenOrientation();
             int nCamRotate = 90;
             if ( (m_rotation > 45 && m_rotation < 135) || (m_rotation > 225 && m_rotation < 315) )
@@ -343,12 +343,12 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 	        Logger.D(TAG, "Camera rotation: " + nCamRotate );
             parameters.set("rotation", nCamRotate );
             if ((mSettings != null) && (mSettings.getWidth() > 0) && (mSettings.getHeight() > 0)) {
-            
+
     			int newW = mSettings.getWidth();
     			int newH = mSettings.getHeight();
 
     			CameraService.Size s = com.rhomobile.rhodes.camera.Camera.getCameraService().getClosestPictureSize(camera, newW, newH);
- 
+
     			if (s != null) {
     				if ((s.width >= 0) && (s.height >= 0)) {
     					newW = s.width;
@@ -377,7 +377,7 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 	            }
 	            if (mSettings.getFlashMode() != null) {
 	            	parameters.set("flash-mode", mSettings.getFlashMode());
-	            	
+
 	            }
             }
 			iccb = new ImageCaptureCallback(this, callbackUrl, osCommon, dir + "/" + filename + ".jpg", imgW, imgH, "jpg");
@@ -386,7 +386,7 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 		} catch (Exception ex) {
 			Logger.E(TAG, ex.getMessage());
 		}
-		
+
 		camera.takePicture(mShutterCallback, mPictureCallbackRaw, iccb);
 	}
 

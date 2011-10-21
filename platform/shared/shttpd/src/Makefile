@@ -47,7 +47,7 @@ unix: lib$(PROG).a
 
 rtems:
 	$(CC) -c $(CFLAGS) $(SRCS) compat_rtems.c
-	$(AR) -r lib$(PROG).a *.o && ranlib lib$(PROG).a 
+	$(AR) -r lib$(PROG).a *.o && ranlib lib$(PROG).a
 
 $(PROG).lib: $(SRCS) $(HDRS) compat_win32.c
 	del *.obj
@@ -60,7 +60,7 @@ msvc:	$(PROG).lib
 
 mingw:
 	$(CC) -c $(CFLAGS) $(SRCS) compat_win32.c
-	$(AR) -r lib$(PROG).a *.o && ranlib lib$(PROG).a 
+	$(AR) -r lib$(PROG).a *.o && ranlib lib$(PROG).a
 	$(CC) $(CFLAGS) $(SRCS) compat_win32.c standalone.c \
 		-o $(PROG) $(LIBS) -lws2_32 -lcomdlg32 -lcomctl32
 

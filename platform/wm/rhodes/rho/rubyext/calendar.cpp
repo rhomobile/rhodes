@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -60,7 +60,7 @@ int checkHResult(HRESULT res, const char* file, int line, const char* msg )
 {
     if (FAILED(res))
     {
-        LOG(ERROR) + "Method: " + msg + ";Line: " + line; 
+        LOG(ERROR) + "Method: " + msg + ";Line: " + line;
         rho_ruby_raise_runtime("Calendar method failed.");
         return 0;
     }
@@ -95,23 +95,23 @@ static VALUE eventToRuby(IAppointment *pEvent)
 {
     if (!pEvent)
         return rho_ruby_get_NIL();
-    
+
     VALUE rEvent = rho_ruby_createHash();
 
     long lOid = 0;
-    if ( SUCCEEDED(pEvent->get_Oid(&lOid)) ) 
+    if ( SUCCEEDED(pEvent->get_Oid(&lOid)) )
         addStrToHash(rEvent, RUBY_EV_ID, convertToStringA(lOid).c_str() );
 
     CComBSTR bstrSubj;
-    if ( SUCCEEDED(pEvent->get_Subject(&bstrSubj)) ) 
+    if ( SUCCEEDED(pEvent->get_Subject(&bstrSubj)) )
         addStrToHash(rEvent, RUBY_EV_TITLE, convertToStringA((BSTR)bstrSubj).c_str() );
 
     long lStatus = 0;
-    if ( SUCCEEDED(pEvent->get_MeetingStatus(&lStatus)) ) 
+    if ( SUCCEEDED(pEvent->get_MeetingStatus(&lStatus)) )
         addBoolToHash(rEvent, RUBY_EV_CANCELED, lStatus==olMeetingCanceled ? 1:0);
 
     long lSensitivity = 0;
-    if ( SUCCEEDED(pEvent->get_Sensitivity(&lSensitivity)) ) 
+    if ( SUCCEEDED(pEvent->get_Sensitivity(&lSensitivity)) )
     {
         String strPrivacy = "public";
         switch(lSensitivity)
@@ -131,11 +131,11 @@ static VALUE eventToRuby(IAppointment *pEvent)
     }
 
     CComBSTR bstrLoc;
-    if ( SUCCEEDED(pEvent->get_Location(&bstrLoc)) ) 
+    if ( SUCCEEDED(pEvent->get_Location(&bstrLoc)) )
         addStrToHash(rEvent, RUBY_EV_LOCATION, convertToStringA((BSTR)bstrLoc).c_str() );
 
     CComBSTR bstrNotes;
-    if ( SUCCEEDED(pEvent->get_Body(&bstrNotes)) ) 
+    if ( SUCCEEDED(pEvent->get_Body(&bstrNotes)) )
         addStrToHash(rEvent, RUBY_EV_NOTES, convertToStringA((BSTR)bstrNotes).c_str() );
 
     DATE dStart = 0;
@@ -150,7 +150,7 @@ static VALUE eventToRuby(IAppointment *pEvent)
     if ( SUCCEEDED(pEvent->get_ReminderSet(&bReminder)) && bReminder == VARIANT_TRUE)
     {
         long lMinutes = 0;
-        if ( SUCCEEDED(pEvent->get_ReminderMinutesBeforeStart(&lMinutes)) ) 
+        if ( SUCCEEDED(pEvent->get_ReminderMinutesBeforeStart(&lMinutes)) )
             addIntToHash(rEvent, RUBY_EV_REMINDER, (int)lMinutes);
     }
 
@@ -161,9 +161,9 @@ static VALUE eventToRuby(IAppointment *pEvent)
     {
         long lRecType = 0;
         if ( SUCCEEDED(pEvent->get_IsRecurring(&bIsRecurring)) && bIsRecurring == VARIANT_TRUE &&
-             SUCCEEDED(pRP->get_RecurrenceType(&lRecType)) && lRecType != olRecursOnce ) 
+             SUCCEEDED(pRP->get_RecurrenceType(&lRecType)) && lRecType != olRecursOnce )
         {
-            VALUE rRecur = rho_ruby_createHash();        
+            VALUE rRecur = rho_ruby_createHash();
 
             switch( lRecType )
             {
@@ -184,12 +184,12 @@ static VALUE eventToRuby(IAppointment *pEvent)
             }
 
             long lInterval = 0;
-            if ( SUCCEEDED(pRP->get_Interval(&lInterval)) ) 
+            if ( SUCCEEDED(pRP->get_Interval(&lInterval)) )
                 addIntToHash(rRecur, RUBY_EV_RECURRENCE_INTERVAL, (int)lInterval);
             long lOccurrences = 0;
             VARIANT_BOOL bNoEndDate;
             if ( SUCCEEDED(pRP->get_NoEndDate(&bNoEndDate)) && bNoEndDate == VARIANT_FALSE &&
-                 SUCCEEDED(pRP->get_Occurrences(&lOccurrences)) ) 
+                 SUCCEEDED(pRP->get_Occurrences(&lOccurrences)) )
                 addIntToHash(rRecur, RUBY_EV_RECURRENCE_COUNT, (int)lOccurrences);
 
             DATE dEnd = 0;
@@ -197,11 +197,11 @@ static VALUE eventToRuby(IAppointment *pEvent)
                 addVariantTimeToHash(rEvent, RUBY_EV_RECURRENCE_END, dEnd);
 
             long lDayOfMonth = 0;
-            if ( SUCCEEDED(pRP->get_DayOfMonth(&lDayOfMonth)) ) 
+            if ( SUCCEEDED(pRP->get_DayOfMonth(&lDayOfMonth)) )
                 addIntToHash(rRecur, RUBY_EV_RECURRENCE_DAYOFMONTH, (int)lDayOfMonth);
 
             long lMonthOfYear = 0;
-            if ( SUCCEEDED(pRP->get_MonthOfYear(&lMonthOfYear)) ) 
+            if ( SUCCEEDED(pRP->get_MonthOfYear(&lMonthOfYear)) )
             {
                 VALUE arMonths = rho_ruby_create_array();
                 for ( int i = 1; i <= 12; i++ )
@@ -211,7 +211,7 @@ static VALUE eventToRuby(IAppointment *pEvent)
             }
 
             long lDayOfWeekMask = 0;
-            if ( SUCCEEDED(pRP->get_DayOfWeekMask(&lDayOfWeekMask)) ) 
+            if ( SUCCEEDED(pRP->get_DayOfWeekMask(&lDayOfWeekMask)) )
             {
                 VALUE arDays = rho_ruby_create_array();
                 rho_ruby_add_to_array(arDays, rho_ruby_create_integer( (lDayOfWeekMask&olMonday)!= 0 ? 1:0) );
@@ -240,18 +240,18 @@ static void eventFromRuby(VALUE rEvent, IAppointment* pEvent)
     START_CHECK
 
     VALUE rTitle = rho_ruby_hash_aref(rEvent, RUBY_EV_TITLE);
-    if (!rho_ruby_is_NIL(rTitle)) 
+    if (!rho_ruby_is_NIL(rTitle))
         CHECK( pEvent->put_Subject(const_cast<BSTR>(convertToStringW( String(getStringFromValue(rTitle))).c_str())) );
 
     VALUE rCancelled = rho_ruby_hash_aref(rEvent, RUBY_EV_CANCELED);
-    if (!rho_ruby_is_NIL(rCancelled)) 
+    if (!rho_ruby_is_NIL(rCancelled))
     {
         if( rho_ruby_get_bool(rCancelled) )
             CHECK( pEvent->Cancel() );
     }
 
     VALUE rPrivacy = rho_ruby_hash_aref(rEvent, RUBY_EV_PRIVACY);
-    if (!rho_ruby_is_NIL(rPrivacy)) 
+    if (!rho_ruby_is_NIL(rPrivacy))
     {
         String strPrivacy = getStringFromValue(rPrivacy);
         long lSensitivity = olNormal;
@@ -266,11 +266,11 @@ static void eventFromRuby(VALUE rEvent, IAppointment* pEvent)
     }
 
     VALUE rLoc = rho_ruby_hash_aref(rEvent, RUBY_EV_LOCATION);
-    if (!rho_ruby_is_NIL(rLoc)) 
+    if (!rho_ruby_is_NIL(rLoc))
         CHECK( pEvent->put_Location(const_cast<BSTR>(convertToStringW( String(getStringFromValue(rLoc))).c_str())) );
 
     VALUE rNotes = rho_ruby_hash_aref(rEvent, RUBY_EV_NOTES);
-    if (!rho_ruby_is_NIL(rNotes)) 
+    if (!rho_ruby_is_NIL(rNotes))
         CHECK( pEvent->put_Body(const_cast<BSTR>(convertToStringW( String(getStringFromValue(rNotes))).c_str())));
 
     VALUE rStartDate = rho_ruby_hash_aref(rEvent, RUBY_EV_START_DATE);

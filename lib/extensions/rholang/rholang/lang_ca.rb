@@ -1,5 +1,5 @@
 # lang_ca.rb
-# Catalan translation file. 
+# Catalan translation file.
 # Translation by Andrés Cirugeda andres.cirugeda(at)gmail.com
 
 
@@ -10,15 +10,15 @@ module LocalizationSimplified
   }
 
   class ActiveRecord
-    # ErrorMessages to override default messages in 
+    # ErrorMessages to override default messages in
     # +ActiveRecord::Errors::@@default_error_messages+
-    # This plugin also replaces hardcoded 3 text messages 
-    # :error_translation is inflected using the Rails 
-    # inflector. 
+    # This plugin also replaces hardcoded 3 text messages
+    # :error_translation is inflected using the Rails
+    # inflector.
     #
     # Remember to modify the Inflector with your localized translation
     # of "error" and "errors" in the bottom of this file
-    # 
+    #
     ErrorMessages = {
       :inclusion           => "no està inclós a la llista",
       :exclusion           => "està reservat",
@@ -57,14 +57,14 @@ module LocalizationSimplified
       :x_years             => "%d anys"
     }
 
-    # Rails uses Month names in Date and time select boxes 
+    # Rails uses Month names in Date and time select boxes
     # (+date_select+ and +datetime_select+ )
     # Currently (as of version 1.1.6), Rails doesn't use daynames
     Monthnames     = [nil] + %w{gener febrer març abril maig juny juliol agost setembre octubre novembre desembre}
     AbbrMonthnames = [nil] + %w{gen feb mar abr mai jun jul ago set oct nov des}
     Daynames       = %w{diumenge dilluns dimarts dimecres dijous divendres dissabte}
     AbbrDaynames   = %w{dmg dll dmt dmc djs dvn dsb}
-    
+
     # Date and time format syntax explained in http://www.rubycentral.com/ref/ref_c_time.html#strftime
     # These are sent to strftime that Ruby's date and time handlers use internally
     # Same options as php (that has a better list: http://www.php.net/strftime )
@@ -92,7 +92,7 @@ module LocalizationSimplified
     CurrencyOptions = {
       :unit      => "€",
       :separator => ",",             #unit separator (between integer part and fraction part)
-      :delimiter => ".",             #delimiter between each group of thousands. Example: 1.234.567 
+      :delimiter => ".",             #delimiter between each group of thousands. Example: 1.234.567
       :order     => [:unit, :number] #order is at present unsupported in Rails
     }
   end

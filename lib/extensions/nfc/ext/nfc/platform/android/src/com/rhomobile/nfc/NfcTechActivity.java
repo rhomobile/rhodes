@@ -19,17 +19,17 @@ import com.rhomobile.rhodes.RhodesService;
 
 public class NfcTechActivity  extends Activity {
 
-	
+
 	private static final String TAG = NfcTechActivity.class.getSimpleName();
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-	
-	/* NOT USED NOW !	
+
+	/* NOT USED NOW !
 		super.onCreate(savedInstanceState);
 		Intent intent = getIntent();
 		String action = intent.getAction();
-		
+
 		if (NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)) {
 			Tag tag = (Tag)intent.getExtras().get(NfcAdapter.EXTRA_TAG);
 			if (tag != null) {
@@ -38,7 +38,7 @@ public class NfcTechActivity  extends Activity {
         }
 		finish();
 	*/
-	}	
-	
+	}
+
 
 }

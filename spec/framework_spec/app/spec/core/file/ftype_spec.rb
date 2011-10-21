@@ -63,6 +63,6 @@ describe "File.ftype" do
         File.ftype(socket).should == 'socket'
       end
     end
-=end    
+=end
   end
 end

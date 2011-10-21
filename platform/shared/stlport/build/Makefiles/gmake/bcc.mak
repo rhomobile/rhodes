@@ -9,15 +9,15 @@ else
 INSTALL_TAGS = install-static
 endif
 
-CXX := bcc32 
+CXX := bcc32
 CC := bcc32
 RC := brcc32
 
 DEFS ?=
 OPT ?=
 
-CFLAGS = -q -ff 
-CXXFLAGS = -q -ff 
+CFLAGS = -q -ff
+CXXFLAGS = -q -ff
 
 OPT += -w-ccc -w-rch -w-ngu -w-inl -w-eff
 
@@ -45,7 +45,7 @@ endif
 
 OUTPUT_OPTION = -o$@
 LINK_OUTPUT_OPTION = $@
-CPPFLAGS = $(DEFS) $(OPT) $(INCLUDES) 
+CPPFLAGS = $(DEFS) $(OPT) $(INCLUDES)
 
 CDEPFLAGS = -E -M
 CCDEPFLAGS = -E -M
@@ -137,7 +137,7 @@ endif
 
 # map output option (see build/Makefiles/gmake/dmc.mak)
 
-MAP_OUTPUT_OPTION = 
+MAP_OUTPUT_OPTION =
 
 # dependency output parser (dependencies collector)
 

@@ -123,7 +123,7 @@ module JSON
   #  JSON.parser.new(source, opts).parse
   #end
   #module_function :parse
-  
+
   # Parse the JSON string _source_ into a Ruby data structure and return it.
   # The bang version of the parse method, defaults to the more dangerous values
   # for the _opts_ hash, so be sure only to parse trusted _source_ strings.
@@ -162,7 +162,7 @@ module JSON
   # * *indent*: a string used to indent levels (default: ''),
   # * *space*: a string that is put after, a : or , delimiter (default: ''),
   # * *space_before*: a string that is put before a : pair delimiter (default: ''),
-  # * *object_nl*: a string that is put at the end of a JSON object (default: ''), 
+  # * *object_nl*: a string that is put at the end of a JSON object (default: ''),
   # * *array_nl*: a string that is put at the end of a JSON array (default: ''),
   # * *check_circular*: true if checking for circular data structures
   #   should be done (the default), false otherwise.
@@ -186,7 +186,7 @@ module JSON
     obj.to_json(state)
   end
   module_function :generate
-  
+
   # :stopdoc:
   # I want to deprecate these later, so I'll first be silent about them, and
   # later delete them.

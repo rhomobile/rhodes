@@ -1,11 +1,11 @@
-# 
+#
 # = net/ftp.rb - FTP Client Library
-# 
+#
 # Written by Shugo Maeda <shugo@ruby-lang.org>.
 #
 # Documentation by Gavin Sinclair, sourced from "Programming Ruby" (Hunt/Thomas)
 # and "Ruby In a Nutshell" (Matsumoto), used with permission.
-# 
+#
 # This library is distributed under the terms of the Ruby license.
 # You can freely distribute/modify this library.
 #
@@ -22,8 +22,8 @@ module Net
   # :stopdoc:
   class FTPError < StandardError; end
   class FTPReplyError < FTPError; end
-  class FTPTempError < FTPError; end 
-  class FTPPermError < FTPError; end 
+  class FTPTempError < FTPError; end
+  class FTPPermError < FTPError; end
   class FTPProtoError < FTPError; end
   class FTPConnectionError < FTPError; end
   # :startdoc:
@@ -35,11 +35,11 @@ module Net
   # advantage of Ruby's style and strengths.
   #
   # == Example
-  # 
+  #
   #   require 'net/ftp'
   #
   # === Example 1
-  #  
+  #
   #   ftp = Net::FTP.new('ftp.netlab.co.jp')
   #   ftp.login
   #   files = ftp.chdir('pub/lang/ruby/contrib')
@@ -72,13 +72,13 @@ module Net
   #
   class FTP
     include MonitorMixin
-    
+
     # :stopdoc:
     FTP_PORT = 21
     CRLF = "\r\n"
     DEFAULT_BLOCKSIZE = 4096
     # :startdoc:
-    
+
     # When +true+, transfers are performed in binary mode.  Default: +true+.
     attr_reader :binary
 
@@ -102,7 +102,7 @@ module Net
 
     # The server's last response.
     attr_reader :last_response
-    
+
     #
     # A synonym for <tt>FTP.new</tt>, but with a mandatory host parameter.
     #
@@ -121,7 +121,7 @@ module Net
         new(host, user, passwd, acct)
       end
     end
-    
+
     #
     # Creates and returns a new +FTP+ object. If a +host+ is given, a connection
     # is made. Additionally, if the +user+ is given, the given user name,
@@ -190,7 +190,7 @@ module Net
       end
     end
     private :open_socket
-    
+
     #
     # Establishes an FTP connection to host, optionally overriding the default
     # port. If the environment variable +SOCKS_SERVER+ is set, sets up the
@@ -227,7 +227,7 @@ module Net
       end
     end
     private :sanitize
-    
+
     def putline(line)
       if @debug_mode
 	print "put: ", sanitize(line), "\n"
@@ -236,7 +236,7 @@ module Net
       @sock.write(line)
     end
     private :putline
-    
+
     def getline
       line = @sock.readline # if get EOF, raise EOFError
       line.sub!(/(\r\n|\n|\r)\z/n, "")
@@ -246,7 +246,7 @@ module Net
       return line
     end
     private :getline
-    
+
     def getmultiline
       line = getline
       buff = line
@@ -260,7 +260,7 @@ module Net
       return buff << "\n"
     end
     private :getmultiline
-    
+
     def getresp
       @last_response = getmultiline
       @last_response_code = @last_response[0, 3]
@@ -276,7 +276,7 @@ module Net
       end
     end
     private :getresp
-    
+
     def voidresp
       resp = getresp
       if resp[0] != ?2
@@ -284,7 +284,7 @@ module Net
       end
     end
     private :voidresp
-    
+
     #
     # Sends a command and returns the response.
     #
@@ -294,7 +294,7 @@ module Net
 	return getresp
       end
     end
-    
+
     #
     # Sends a command and expect a response beginning with '2'.
     #
@@ -304,7 +304,7 @@ module Net
 	voidresp
       end
     end
-    
+
     def sendport(host, port)
       af = (@sock.peeraddr)[0]
       if af == "AF_INET"
@@ -317,7 +317,7 @@ module Net
       voidcmd(cmd)
     end
     private :sendport
-    
+
     def makeport
       sock = TCPServer.open(@sock.addr[3], 0)
       port = sock.addr[1]
@@ -326,7 +326,7 @@ module Net
       return sock
     end
     private :makeport
-    
+
     def makepasv
       if @sock.peeraddr[0] == "AF_INET"
 	host, port = parse227(sendcmd("PASV"))
@@ -337,13 +337,13 @@ module Net
       return host, port
     end
     private :makepasv
-    
+
     def transfercmd(cmd, rest_offset = nil)
       if @passive
 	host, port = makepasv
 	conn = open_socket(host, port)
 	if @resume and rest_offset
-	  resp = sendcmd("REST " + rest_offset.to_s) 
+	  resp = sendcmd("REST " + rest_offset.to_s)
 	  if resp[0] != ?3
 	    raise FTPReplyError, resp
 	  end
@@ -357,7 +357,7 @@ module Net
       else
 	sock = makeport
 	if @resume and rest_offset
-	  resp = sendcmd("REST " + rest_offset.to_s) 
+	  resp = sendcmd("REST " + rest_offset.to_s)
 	  if resp[0] != ?3
 	    raise FTPReplyError, resp
 	  end
@@ -387,7 +387,7 @@ module Net
       if user == "anonymous" and passwd == nil
 	passwd = "anonymous@"
       end
-      
+
       resp = ""
       synchronize do
 	resp = sendcmd('USER ' + user)
@@ -407,7 +407,7 @@ module Net
       send_type_command
       @logged_in = true
     end
-    
+
     #
     # Puts the connection into binary (image) mode, issues the given command,
     # and fetches the data returned, passing it to the associated block in
@@ -428,7 +428,7 @@ module Net
         end
       end
     end
-    
+
     #
     # Puts the connection into ASCII (text) mode, issues the given command, and
     # passes the resulting data, one line at a time, to the associated block. If
@@ -449,7 +449,7 @@ module Net
         end
       end
     end
-    
+
     #
     # Puts the connection into binary (image) mode, issues the given server-side
     # command (such as "STOR myfile"), and sends the contents of the file named
@@ -481,7 +481,7 @@ module Net
       getresp
       raise
     end
-    
+
     #
     # Puts the connection into ASCII (text) mode, issues the given server-side
     # command (such as "STOR myfile"), and sends the contents of the file
@@ -546,7 +546,7 @@ module Net
 	f.close if localfile
       end
     end
-    
+
     #
     # Retrieves +remotefile+ in ASCII (text) mode, storing the result in
     # +localfile+.
@@ -586,7 +586,7 @@ module Net
 	gettextfile(remotefile, localfile, &block)
       end
     end
-    
+
     #
     # Transfers +localfile+ to the server in binary mode, storing the result in
     # +remotefile+. If a block is supplied, calls it, passing in the transmitted
@@ -615,7 +615,7 @@ module Net
 	f.close
       end
     end
-    
+
     #
     # Transfers +localfile+ to the server in ASCII (text) mode, storing the result
     # in +remotefile+. If callback or an associated block is supplied, calls it,
@@ -650,7 +650,7 @@ module Net
       cmd = "ACCT " + account
       voidcmd(cmd)
     end
-    
+
     #
     # Returns an array of filenames in the remote directory.
     #
@@ -665,7 +665,7 @@ module Net
       end
       return files
     end
-    
+
     #
     # Returns an array of file information in the directory (the output is like
     # `ls -l`).  If a block is given, it iterates through the listing.
@@ -687,7 +687,7 @@ module Net
     end
     alias ls list
     alias dir list
-    
+
     #
     # Renames a file on the server.
     #
@@ -698,7 +698,7 @@ module Net
       end
       voidcmd("RNTO " + toname)
     end
-    
+
     #
     # Deletes a file on the server.
     #
@@ -712,7 +712,7 @@ module Net
 	raise FTPReplyError, resp
       end
     end
-    
+
     #
     # Changes the (remote) directory.
     #
@@ -730,22 +730,22 @@ module Net
       cmd = "CWD " + dirname
       voidcmd(cmd)
     end
-    
+
     #
     # Returns the size of the given (remote) filename.
     #
     def size(filename)
       with_binary(true) do
         resp = sendcmd("SIZE " + filename)
-        if resp[0, 3] != "213" 
+        if resp[0, 3] != "213"
           raise FTPReplyError, resp
         end
         return resp[3..-1].strip.to_i
       end
     end
-    
+
     MDTM_REGEXP = /^(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)/  # :nodoc:
-    
+
     #
     # Returns the last modification time of the (remote) file.  If +local+ is
     # +true+, it is returned as a local time, otherwise it's a UTC time.
@@ -755,7 +755,7 @@ module Net
       ary = str.scan(MDTM_REGEXP)[0].collect {|i| i.to_i}
       return local ? Time.local(*ary) : Time.gm(*ary)
     end
-    
+
     #
     # Creates a remote directory.
     #
@@ -763,14 +763,14 @@ module Net
       resp = sendcmd("MKD " + dirname)
       return parse257(resp)
     end
-    
+
     #
     # Removes a remote directory.
     #
     def rmdir(dirname)
       voidcmd("RMD " + dirname)
     end
-    
+
     #
     # Returns the current remote directory.
     #
@@ -779,7 +779,7 @@ module Net
       return parse257(resp)
     end
     alias getdir pwd
-    
+
     #
     # Returns system information.
     #
@@ -790,7 +790,7 @@ module Net
       end
       return resp[4 .. -1]
     end
-    
+
     #
     # Aborts the previous command (ABOR command).
     #
@@ -804,7 +804,7 @@ module Net
       end
       return resp
     end
-    
+
     #
     # Returns the status (STAT command).
     #
@@ -814,7 +814,7 @@ module Net
       @sock.send(line, Socket::MSG_OOB)
       return getresp
     end
-    
+
     #
     # Issues the MDTM command.  TODO: more info.
     #
@@ -824,7 +824,7 @@ module Net
 	return resp[3 .. -1].strip
       end
     end
-    
+
     #
     # Issues the HELP command.
     #
@@ -835,7 +835,7 @@ module Net
       end
       sendcmd(cmd)
     end
-    
+
     #
     # Exits the FTP session.
     #
@@ -857,7 +857,7 @@ module Net
       cmd = "SITE " + arg
       voidcmd(cmd)
     end
-    
+
     #
     # Closes the connection.  Further operations are impossible until you open
     # a new connection with #connect.
@@ -865,14 +865,14 @@ module Net
     def close
       @sock.close if @sock and not @sock.closed?
     end
-    
+
     #
     # Returns +true+ iff the connection is closed.
     #
     def closed?
       @sock == nil or @sock.closed?
     end
-    
+
     def parse227(resp)
       if resp[0, 3] != "227"
 	raise FTPReplyError, resp
@@ -891,7 +891,7 @@ module Net
       return host, port
     end
     private :parse227
-    
+
     def parse228(resp)
       if resp[0, 3] != "228"
 	raise FTPReplyError, resp
@@ -919,11 +919,11 @@ module Net
 	end
 	host = v6[0, 8].join(":")
 	port = (numbers[19].to_i << 8) + numbers[20].to_i
-      end 
+      end
       return host, port
     end
     private :parse228
-    
+
     def parse229(resp)
       if resp[0, 3] != "229"
 	raise FTPReplyError, resp
@@ -942,7 +942,7 @@ module Net
       return host, port
     end
     private :parse229
-    
+
     def parse257(resp)
       if resp[0, 3] != "257"
 	raise FTPReplyError, resp

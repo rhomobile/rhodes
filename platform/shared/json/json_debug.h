@@ -69,7 +69,7 @@ extern void mc_info(const char *msg, ...);
 #define MC_INFO(x, arg1) if (0) mc_info(x, arg1)
 #define MC_INFO2(x, arg1, arg2) if (0) mc_info(x, arg1, arg2)
 #define MC_INFO3(x, arg1, arg2, arg3) if (0) mc_info(x, arg1, arg2, arg3)
-	
+
 #endif
 
 #endif

@@ -40,7 +40,7 @@
 #include "Utils.h"
 
 
-#include "RhoNativeViewManagerWM.h" 
+#include "RhoNativeViewManagerWM.h"
 
 extern "C" HWND getWebViewWnd();
 extern "C" HWND getMainWnd();
@@ -267,7 +267,7 @@ void RhoNativeViewManager::unregisterViewType(const char* viewType) {
 // that function return native object used for display Web content :
 // UIWebView* for iPhone
 // jobject for Android - jobect is android.webkit.WebView class type
-// HWND for Windows Mobile 
+// HWND for Windows Mobile
 void* RhoNativeViewManager::getWebViewObject(int tab_index) {
 	HWND main_wnd = getMainWnd();//getWebViewWnd();
     return main_wnd;
@@ -299,7 +299,7 @@ extern "C" int rho_native_view_manager_create_native_view(const char* viewtype, 
 		return -1;
 	}
 	//String vtype = new String(viewtype);
-	
+
 	RhoOpenedNativeView* opened_view = new RhoOpenedNativeView();
 	opened_view->factory_holder = h;
 	opened_view->n_view = nv;

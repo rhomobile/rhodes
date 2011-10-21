@@ -1,18 +1,18 @@
 #------------------------------------------------------------------------
 # (The MIT License)
-# 
+#
 # Copyright (c) 2008-2011 Rhomobile, Inc.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-# 
+#
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
@@ -103,7 +103,7 @@ def add_push(manifest)
   action.add_attribute('android:name', "com.google.android.c2dm.intent.REGISTRATION")
   category = REXML::Element.new('category')
   category.add_attribute('android:name', $app_package_name)
-  
+
   ie = REXML::Element.new('intent-filter')
   ie.add_element(action)
   ie.add_element(category)
@@ -145,7 +145,7 @@ def set_app_name_android(newname)
       version["patch"] = $3.to_i
     end
   end
-  
+
   version = version["major"]*10000 + version["minor"]*100 + version["patch"]
 
   doc = REXML::Document.new(File.new($rhomanifest))
@@ -176,10 +176,10 @@ def set_app_name_android(newname)
   manifest = doc.elements["manifest"]
 
   manifest.elements.each('uses-sdk') { |e| manifest.delete e }
-  
+
   element = REXML::Element.new('uses-sdk')
   element.add_attribute('android:minSdkVersion', $min_sdk_level.to_s)
-  element.add_attribute('android:maxSdkVersion', $max_sdk_level.to_s) unless $max_sdk_level.nil?  
+  element.add_attribute('android:maxSdkVersion', $max_sdk_level.to_s) unless $max_sdk_level.nil?
   manifest.add element
 
   # Remove category LAUNCHER from all activities if hidden_app is set
@@ -280,7 +280,7 @@ namespace "config" do
   end
 
   task :android => :set_android_platform do
-  
+
     Rake::Task["config:common"].invoke
 
     $ext_android_rhodes_activity_listener = []
@@ -293,7 +293,7 @@ namespace "config" do
     $gapikey = '' unless $gapikey.is_a? String
     $gapikey = nil if $gapikey.empty?
 
-    $android_orientation = $app_config["android"]["orientation"] unless $app_config["android"].nil? 
+    $android_orientation = $app_config["android"]["orientation"] unless $app_config["android"].nil?
 
     $use_geomapping = $app_config["android"]["mapping"] unless $app_config["android"].nil?
     $use_geomapping = $config["android"]["mapping"] if $use_geomapping.nil? and not $config["android"].nil?
@@ -319,7 +319,7 @@ namespace "config" do
     $min_sdk_level = $config["android"]["minSDK"] if $min_sdk_level.nil? and not $config["android"].nil?
     $min_sdk_level = $min_sdk_level.to_i unless $min_sdk_level.nil?
     $min_sdk_level = ANDROID_SDK_LEVEL if $min_sdk_level.nil?
-    
+
     $max_sdk_level = $app_config["android"]["maxSDK"] unless $app_config["android"].nil?
 
     # Here is switch between release/debug configuration used for
@@ -394,7 +394,7 @@ namespace "config" do
     $app_push_java = File.join $tmpdir, "Push.java"
 
     if RUBY_PLATFORM =~ /(win|w)32$/
-      $emulator = #"cmd /c " + 
+      $emulator = #"cmd /c " +
         File.join( $androidsdkpath, "tools", "emulator.exe" )
       $bat_ext = ".bat"
       $exe_ext = ".exe"
@@ -417,9 +417,9 @@ namespace "config" do
 
     puts "+++ Looking for platform..." if USE_TRACES
     napilevel = $min_sdk_level
-    
+
     android_api_levels = Array.new
-    
+
     Dir.glob(File.join($androidsdkpath, "platforms", "*")).each do |platform|
       props = File.join(platform, "source.properties")
       unless File.file? props
@@ -495,7 +495,7 @@ namespace "config" do
       puts "+++ Platform found: #{$androidplatform}" if USE_TRACES
     end
     $stdout.flush
-    
+
     $dx = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "dx" + $bat_ext )
     $dx = File.join( $androidsdkpath, "platform-tools", "dx" + $bat_ext ) unless File.exists? $dx
     $aapt = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "aapt" + $exe_ext )
@@ -539,13 +539,13 @@ namespace "config" do
     $app_config["capabilities"] += ANDROID_CAPS_ALWAYS_ENABLED
     $app_config["capabilities"].map! { |cap| cap.is_a?(String) ? cap : nil }.delete_if { |cap| cap.nil? }
     $use_google_addon_api = true unless $app_config["capabilities"].index("push").nil?
- 
+
     $applog_path = nil
     $applog_file = $app_config["applog"]
 
     if !$applog_file.nil?
       $applog_path = File.join( $app_path, $applog_file )
-    end 
+    end
 
     # Detect android targets
     if $androidtargets.nil?
@@ -598,7 +598,7 @@ namespace "config" do
         puts "+++ API LEVEL of #{dir}: #{apilevel}" if USE_TRACES
 
         if apilevel >= napilevel
-          
+
           sgapijar = File.join(dir, 'libs', 'maps.jar')
           if File.exists? sgapijar
             napilevel = apilevel
@@ -623,7 +623,7 @@ namespace "config" do
     $appavdname = $config["android"]["emulator"] if $appavdname.nil? and !$config["android"].nil? and $config["android"].length > 0
 
     setup_ndk($androidndkpath, $found_api_level)
-    
+
     $std_includes = File.join $androidndkpath, "sources", "cxx-stl", "stlport", "stlport"
     unless File.directory? $std_includes
       $stlport_includes = File.join $shareddir, "stlport", "stlport"
@@ -663,7 +663,7 @@ namespace "config" do
     $push_notifications = "none" if $push_notifications.nil?
     $push_notifications = $push_notifications
 
-    
+
 
     mkdir_p $bindir if not File.exists? $bindir
     mkdir_p $rhobindir if not File.exists? $rhobindir
@@ -711,7 +711,7 @@ namespace "build" do
       File.open(File.join(assets, "hash"), "w") { |f| f.write(hash.hexdigest) }
 
       File.open(File.join(assets, "name"), "w") { |f| f.write($appname) }
-      
+
       psize = assets.size + 1
 
       File.open(File.join(assets, 'rho.dat'), 'w') do |dat|
@@ -832,7 +832,7 @@ namespace "build" do
       args << "-DHAVE_CONFIG_H"
       args << "-I#{srcdir}/../include"
       args << "-I#{srcdir}"
-      args << "-I#{$shareddir}"      
+      args << "-I#{$shareddir}"
 
       cc_build 'libcurl', objdir, args or exit 1
       cc_ar libname, Dir.glob(objdir + "/**/*.o") or exit 1
@@ -1510,7 +1510,7 @@ namespace "device" do
       resourcepkg =  $bindir + "/rhodes.ap_"
 
       apk_build $androidsdkpath, simple_apkfile, resourcepkg, dexfile, true
-      
+
       puts "Align Debug APK file"
       args = []
       args << "-f"
@@ -1638,7 +1638,7 @@ end
 
 namespace "run" do
   namespace "android" do
-    
+
     task :spec => ["device:android:debug"] do
 
         log_name  = $app_path + '/RhoLogSpec.txt'
@@ -1647,7 +1647,7 @@ namespace "run" do
         AndroidTools.logclear($device_flag)
         run_emulator( :hidden => true ) if $device_flag == '-e'
         do_uninstall($device_flag)
-        
+
         # Failsafe to prevent eternal hangs
         Thread.new {
             sleep 2000
@@ -1675,7 +1675,7 @@ namespace "run" do
         end
 
         puts "waiting for log: " + log_name
-        
+
         for i in 0..120
 			if !File.exist?(log_name)
 				sleep(1)
@@ -1690,25 +1690,25 @@ namespace "run" do
         end
 
         puts "start read log"
-        
+
         end_spec = false
         while !end_spec do
             io = File.new(log_name, "r")
-        
+
             io.each do |line|
                 #puts line
-                
+
                 end_spec = !Jake.process_spec_output(line)
                 break if end_spec
             end
             io.close
-            
+
             break unless AndroidTools.application_running($device_flag, $app_package_name)
             sleep(5) unless end_spec
         end
 
-        Jake.process_spec_results(start)        
-        
+        Jake.process_spec_results(start)
+
         # stop app
         do_uninstall($device_flag)
         if $device_flag == '-e'
@@ -1777,15 +1777,15 @@ namespace "run" do
         load_app_and_run
     end
 
-    task :rhosimulator => ["config:set_android_platform","config:common"] do    
-    
+    task :rhosimulator => ["config:set_android_platform","config:common"] do
+
         $emuversion = $app_config["android"]["version"] unless $app_config["android"].nil?
         $emuversion = $config["android"]["version"] if $emuversion.nil? and !$config["android"].nil?
-    
+
         $rhosim_config = "platform='android'\r\n"
         $rhosim_config += "os_version='#{$emuversion}'\r\n" if $emuversion
-        
-        Rake::Task["run:rhosimulator"].invoke            
+
+        Rake::Task["run:rhosimulator"].invoke
     end
 
     task :get_info => "config:android" do
@@ -1794,10 +1794,10 @@ namespace "run" do
         end
 
         emu_version = $emuversion
-        
-        puts ""        
+
+        puts ""
         cur_name = ""
-        
+
         `"#{$androidbin}" list avd`.split(/\n/).each do |line|
             line.each_line do |item|
                 ar = item.split(':')
@@ -1806,21 +1806,21 @@ namespace "run" do
                     cur_name = ar[1].strip!
                     puts "#{cur_name}"
                 end
-                
+
                 if $appavdname && cur_name == $appavdname && (ar[0] == "Target" || ar.length == 1)
-                    
+
                     text = ar[0] == "Target" ? ar[1] : ar[0]
-                    
+
                     nAnd = text.index("Android")
                     if nAnd
                         nAnd = text.index(" ", nAnd)
-                        nAnd1 = text.index("-", nAnd+1)                    
+                        nAnd1 = text.index("-", nAnd+1)
                         nAnd1 = text.index(" ", nAnd+1) unless nAnd1
                         emu_version = text[nAnd+1, nAnd1-nAnd-1]
-                    end    
+                    end
                 end
-                
-            end    
+
+            end
         end
 
         puts ""
@@ -1906,7 +1906,7 @@ namespace "run" do
 
       $stdout.flush
     end
-    
+
     def  load_app_and_run(device_flag = '-e')
       puts "Loading package"
       apkfile = Jake.get_absolute $targetdir + "/" + $appname + "-debug.apk"
@@ -1941,7 +1941,7 @@ namespace "run" do
     task :device => "device:android:install" do
       puts "Starting application..."
       AndroidTools.run_application("-d")
-      
+
       AndroidTools.logcat_process("-d")
     end
   end
@@ -1968,17 +1968,17 @@ namespace "uninstall" do
 			puts "Application uninstalled successfully"
 			break
 		else
-			if result.include?("Failure")					
+			if result.include?("Failure")
 				puts "Application is not installed on the device"
 				break
-			else		
+			else
 				puts "Error uninstalling application"
 				exit 1 if i == 20
 			end
 		end
 		sleep(5)
     end
-    
+
   end
 
   namespace "android" do

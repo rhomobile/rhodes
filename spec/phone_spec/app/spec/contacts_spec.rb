@@ -37,15 +37,15 @@ describe "Contacts" do
     newcontacts.should_not be_nil
 
     diff = newcontacts.diff(contacts)
-    diff.size.should == 1 
-    diff.keys.size.should ==  1 
+    diff.size.should == 1
+    diff.keys.size.should ==  1
     c = diff[diff.keys.first]
 
     puts c.inspect
 
-    c['first_name'].should ==  first_name 
-    c['last_name'].should ==  last_name 
-    c['mobile_number'].should == mobile_number 
+    c['first_name'].should ==  first_name
+    c['last_name'].should ==  last_name
+    c['mobile_number'].should == mobile_number
 
     @id = c['id']
     puts "Contact created, id: #{@id}."
@@ -61,10 +61,10 @@ describe "Contacts" do
 
     unless System.get_property('platform') == 'Blackberry'
       #https://www.pivotaltracker.com/story/show/3983643
-      contact['first_name'].should ==  'RANDOM' 
-      contact['last_name'].should ==  'NEWBIE' 
+      contact['first_name'].should ==  'RANDOM'
+      contact['last_name'].should ==  'NEWBIE'
     end
-    
+
   end
 
 if System.get_property('platform') != 'Blackberry' || System.get_property('os_version')[0].to_i() < 5
@@ -72,7 +72,7 @@ if System.get_property('platform') != 'Blackberry' || System.get_property('os_ve
     contacts = Rho::RhoContact.find(:all)
     puts "contacts: #{contacts.inspect}"
     contacts.should_not be_nil
-    contacts.size.should >= 1 
+    contacts.size.should >= 1
 
     size = contacts.size
 
@@ -83,7 +83,7 @@ if System.get_property('platform') != 'Blackberry' || System.get_property('os_ve
     puts "new contacts: #{contacts.inspect.to_s}"
     contacts.should_not be_nil
 
-    (size - contacts.size).should == 1 
+    (size - contacts.size).should == 1
   end
 end
 

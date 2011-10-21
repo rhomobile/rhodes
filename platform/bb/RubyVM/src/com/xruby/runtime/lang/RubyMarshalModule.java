@@ -279,7 +279,7 @@ public class RubyMarshalModule {
     public static RubyValue dump(RubyValue arg) {
         return MarshalDumper.dump(arg);
     }
-	
+
 	//@RubyLevelMethod(name="load", module=true, alias="restore")
 	public static RubyValue load(RubyValue arg) {
 		MarshalLoader loader = new MarshalLoader();

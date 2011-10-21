@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -33,7 +33,7 @@
 IMPLEMENT_LOGCLASS(CGPSDevice,"GPSDevice");
 IMPLEMENT_LOGCLASS(CGPSController,"GPSController");
 
-//To test GPS on emulator, use FakeGPS (coming from WM6 SDK refresh) 
+//To test GPS on emulator, use FakeGPS (coming from WM6 SDK refresh)
 
 CGPSDevice * CGPSDevice::s_pInstance = NULL;
 
@@ -78,8 +78,8 @@ DWORD WINAPI CGPSDevice::GPSThreadProc(__opt LPVOID lpParameter)
 
     CGPSDevice * pDevice = (CGPSDevice*) lpParameter;
 
-    HANDLE gpsHandles[GPS_CONTROLLER_EVENT_COUNT] = 
-    {   pDevice->m_hNewLocationData, 
+    HANDLE gpsHandles[GPS_CONTROLLER_EVENT_COUNT] =
+    {   pDevice->m_hNewLocationData,
 		pDevice->m_hDeviceStateChange,
 		pDevice->m_hExitThread
     };
@@ -93,13 +93,13 @@ DWORD WINAPI CGPSDevice::GPSThreadProc(__opt LPVOID lpParameter)
     do
     {
         dwRet = WaitForMultipleObjects(
-            GPS_CONTROLLER_EVENT_COUNT, 
+            GPS_CONTROLLER_EVENT_COUNT,
             gpsHandles, FALSE, INFINITE);
 
         if (dwRet == WAIT_OBJECT_0)
         {
             dwRet = GPSGetPosition(
-                pDevice->m_hGPS_Device, 
+                pDevice->m_hGPS_Device,
                 &gps_Position, MAX_AGE, 0);
 
             if (ERROR_SUCCESS != dwRet)
@@ -112,7 +112,7 @@ DWORD WINAPI CGPSDevice::GPSThreadProc(__opt LPVOID lpParameter)
         }
         else if (dwRet == WAIT_OBJECT_0 + 1)
         {
-            dwRet = GPSGetDeviceState(&gps_Device);    
+            dwRet = GPSGetDeviceState(&gps_Device);
 
             if (ERROR_SUCCESS != dwRet)
                 continue;
@@ -147,7 +147,7 @@ HRESULT CGPSDevice::StartThread()
             if (m_hExitThread)
             {
 
-                m_hThread = ::CreateThread(NULL, NULL, 
+                m_hThread = ::CreateThread(NULL, NULL,
                     GPSThreadProc, this, NULL, &m_dwThreadID);
 
                 if ( m_hThread )
@@ -182,7 +182,7 @@ HRESULT CGPSDevice::StartThread()
             m_hExitThread = NULL;
         }
     }
-    return hr;    
+    return hr;
 }
 
 HRESULT CGPSDevice::StopThread()
@@ -251,9 +251,9 @@ HRESULT CGPSDevice::TurnOn(IGPSController * pController)
 
     if( SUCCEEDED(hr) )
     {
-        pDevice->m_hGPS_Device = GPSOpenDevice( 
-            pDevice->m_hNewLocationData, 
-            pDevice->m_hDeviceStateChange, 
+        pDevice->m_hGPS_Device = GPSOpenDevice(
+            pDevice->m_hNewLocationData,
+            pDevice->m_hDeviceStateChange,
             NULL, NULL);
 
         if( pDevice->m_hGPS_Device )
@@ -273,7 +273,7 @@ HRESULT CGPSDevice::TurnOff()
     CGPSDevice * pDevice = Instance();
 
     if( !pDevice->m_hGPS_Device )
-        return E_UNEXPECTED;    
+        return E_UNEXPECTED;
 
     HRESULT hr = pDevice->StopThread();
 
@@ -316,7 +316,7 @@ CGPSController* CGPSController::startInstance() {
 void CGPSController::DeleteInstance() {
     if( CGPSController::s_pInstance != NULL ) {
 		delete CGPSController::s_pInstance;
-	}	
+	}
 }
 
 CGPSController::CGPSController() {
@@ -437,7 +437,7 @@ void CGPSController::Unlock() {
 #endif //_WIN32_WCE
 
 extern "C"{
-double rho_geo_latitude() 
+double rho_geo_latitude()
 {
 #if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
 	CGPSController* gps = CGPSController::startInstance();
@@ -447,7 +447,7 @@ double rho_geo_latitude()
 #endif
 }
 
-double rho_geo_longitude() 
+double rho_geo_longitude()
 {
 #if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
   CGPSController* gps = CGPSController::startInstance();
@@ -457,12 +457,12 @@ double rho_geo_longitude()
 #endif
 }
 
-float rho_geo_accuracy() 
+float rho_geo_accuracy()
 {
 	return 0.0;
 }
 
-int rho_geo_known_position() 
+int rho_geo_known_position()
 {
 #if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
 	CGPSController* gps = CGPSController::startInstance();

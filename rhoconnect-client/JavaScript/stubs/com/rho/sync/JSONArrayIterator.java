@@ -5,7 +5,7 @@ public class JSONArrayIterator {
 	public JSONArrayIterator() {
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	public JSONArrayIterator(String szData) {
 		// TODO Auto-generated constructor stub
 	}
@@ -31,7 +31,7 @@ public class JSONArrayIterator {
 
 	public void reset(int i) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

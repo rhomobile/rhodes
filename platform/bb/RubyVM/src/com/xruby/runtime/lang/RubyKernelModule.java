@@ -33,14 +33,14 @@ import com.xruby.runtime.builtin.*;
 
 //@RubyLevelModule(name="Kernel")
 public class RubyKernelModule {
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("RubyKernelModule");
-	
+
 	//@RubyLevelMethod(name="==", alias={"equal?", "eql?"})
 	public static RubyValue opEqual(RubyValue receiver, RubyValue arg) {
 		return ObjectFactory.createBoolean(receiver == arg);
 	}
-	
+
 	//@RubyLevelMethod(name="===")
 	public static RubyValue objEqual(RubyValue receiver, RubyValue arg) {
 		if (receiver == arg) {
@@ -50,7 +50,7 @@ public class RubyKernelModule {
 			return ObjectFactory.createBoolean(result);
         }
 	}
-	
+
 	//@RubyLevelMethod(name="class")
 	public static RubyValue objRubyClass(RubyValue receiver) {
 		RubyClass klass = receiver.getRubyClass();
@@ -59,19 +59,19 @@ public class RubyKernelModule {
 		return RubyConstant.QNIL;
         //return klass != null ? klass.getRealClass() : RubyConstant.QNIL;
 	}
-	
+
 	// FIXME: Kernel_clone should be revised.
 	//@RubyLevelMethod(name="clone", alias="dup")
 	public static RubyValue objClone(RubyValue receiver) {
 		return (RubyValue) receiver.clone();
 	}
-	
+
 	//@RubyLevelMethod(name="to_s")
 	public static RubyValue anyObjToS(RubyValue receiver) {
 		String className = receiver.getRubyClass().getName();
         return ObjectFactory.createString("#<" + className + ":0x" + Integer.toHexString(receiver.hashCode()) + "x>");
 	}
-	
+
 	//@RubyLevelMethod(name="inspect")
 	public static RubyValue objInsepct(RubyValue receiver) {
 		return ObjectFactory.createString(receiver.inspect());
@@ -82,7 +82,7 @@ public class RubyKernelModule {
 		RubyID mid = RubyID.intern(args.get(1).toStr());
 		return receiver.setInstanceVariable((RubyValue)args.get(1), mid);
 	}
-	
+
 	//@RubyLevelMethod(name="methods")
 	public static RubyValue objMethods(RubyValue receiver) {
 		RubyArray a = new RubyArray();
@@ -90,17 +90,17 @@ public class RubyKernelModule {
         klass.collectClassMethodNames(a, RubyMethod.ALL);
         return a;
 	}
-	
+
 	//@RubyLevelMethod(name="singleton_methods")
 	public static RubyValue objSingletonMethods(RubyValue receiver) {
 		return objSingletonMethod(receiver, true);
 	}
-	
-	//@RubyLevelMethod(name="singleton_methods")	
+
+	//@RubyLevelMethod(name="singleton_methods")
 	public static RubyValue objSingletonMethods(RubyValue receiver, RubyValue arg) {
         return objSingletonMethod(receiver, arg.isTrue());
 	}
-	
+
 	private static RubyValue objSingletonMethod(RubyValue receiver, boolean all) {
 		RubyArray a = new RubyArray();
         if(receiver.getRubyClass().isSingleton()) {
@@ -117,7 +117,7 @@ public class RubyKernelModule {
         }
         return a;
 	}
-	
+
 	// FIXME:This method should be module.
 	//@RubyLevelMethod(name="raise", alias="fail")
 	public static RubyValue raise(RubyValue value, RubyArray args) {
@@ -149,14 +149,14 @@ public class RubyKernelModule {
 
         throw new RubyException(e);
 	}
-	
+
 	//@RubyLevelMethod(name="exit", module=true)
 	public static RubyValue exit(RubyValue receiver) {
 		// TODO should raise SystemExit exception and call at_exit blocks
 		System.exit(0);
         return RubyConstant.QNIL;
 	}
-	
+
 	//@RubyLevelMethod(name="exit", module=true)
 	public static RubyValue exit(RubyValue receiver, RubyValue arg) {
 		// TODO should raise SystemExit exception and call at_exit blocks
@@ -171,7 +171,7 @@ public class RubyKernelModule {
 		System.exit(status);
         return RubyConstant.QNIL;
 	}
-	
+
 	//@RubyLevelMethod(name="loop", module=true)
 	public static RubyValue loop(RubyValue receiver, RubyArray args, RubyBlock block) {
 		if (null == block) {
@@ -185,29 +185,29 @@ public class RubyKernelModule {
             }
         }
 	}
-	
+
 	//@RubyLevelMethod(name="kind_of?", alias="is_a?")
 	public static RubyValue kindOf(RubyValue receiver, RubyValue arg) {
 		return ObjectFactory.createBoolean(RubyAPI.isKindOf(arg, receiver));
 	}
-	
+
 	//@RubyLevelMethod(name="instance_of?")
 	public static RubyValue instanceOf(RubyValue receiver, RubyValue arg) {
 		return ObjectFactory.createBoolean(receiver.getRubyClass().getRealClass() == arg);
 	}
-	
+
 	//@RubyLevelMethod(name="respond_to?")
 	public static RubyValue respond_to(RubyValue receiver, RubyArray args) {
 		if (null == args || args.size() < 1) {
             int actual_argc = (null == args ) ? 0 : args.size();
             throw new RubyException(RubyRuntime.ArgumentErrorClass, "in `respond_to': wrong number of arguments (" + actual_argc + " for 1)");
         }
-		
+
         boolean include_private = (RubyConstant.QTRUE == args.get(1));
         RubyID mid = RubyID.intern(args.get(0).toStr());
         return ObjectFactory.createBoolean(hasMethod(receiver, mid, include_private));
 	}
-	
+
 	private static boolean hasMethod(RubyValue receiver, RubyID mid, boolean include_private) {
         if (include_private) {
             return (null != receiver.findMethod(mid));
@@ -215,31 +215,31 @@ public class RubyKernelModule {
             return (null != receiver.findPublicMethod(mid));
         }
     }
-	
+
 	//@RubyLevelMethod(name="send", alias="__send__")
 	public static RubyValue send(RubyValue receiver, RubyBlock block) {
 		throw new RubyException(RubyRuntime.ArgumentErrorClass, "no method name given");
 	}
-	
+
 	//@RubyLevelMethod(name="send", alias="__send__")
 	public static RubyValue send(RubyValue receiver, RubyValue value, RubyBlock block) {
 		RubyID mid = RubyID.intern(value.toStr());
 		return RubyAPI.callNoArgMethod(receiver, block, mid);
 	}
-	
+
 	//@RubyLevelMethod(name="send", alias="__send__")
 	public static RubyValue send(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) {
         RubyID mid = RubyID.intern(arg0.toStr());
         return RubyAPI.callOneArgMethod(receiver, arg1, block, mid);
 	}
-	
+
 	//@RubyLevelMethod(name="send", alias="__send__")
 	public static RubyValue send(RubyValue receiver, RubyArray args, RubyBlock block) {
         RubyValue method_name = args.delete_at(0);
         RubyID mid = RubyID.intern(method_name.toStr());
         return RubyAPI.callMethod(receiver, args, block, mid);
 	}
-	
+
 	//@RubyLevelMethod(name="instance_eval")
 	public static RubyValue instanceEval(RubyValue receiver, RubyArray args, RubyBlock block) {
 		if (null == args && null == block) {
@@ -258,11 +258,11 @@ public class RubyKernelModule {
 			return block.invoke(receiver);
 		}
 	}
-	
+
 	private static RubyValue eval(String evalText) {
 		//RHO_COMMENT: eval
 		throw new RubyException("Not implemented: eval(evalText)");
-		
+
 /*		RubyCompiler compiler = new RubyCompiler();
         try {
 			CompilationResults codes = compiler.compileString(evalText);
@@ -278,11 +278,11 @@ public class RubyKernelModule {
             throw new RubyException(e.toString());
         }*/
 	}
-	
+
 	public static RubyValue eval(String evalText, RubyBinding binding) {
 		//RHO_COMMENT: eval
 		throw new RubyException("Not implemented: eval(evalText,binding)");
-		
+
 		/*RubyCompiler compiler = new RubyCompiler();
         try {
 			CompilationResults codes = compiler.compileString(evalText);
@@ -302,7 +302,7 @@ public class RubyKernelModule {
 	private static RubyValue eval(String evalText, RubyBinding binding, String file_name) {
 		//RHO_COMMENT: eval
 		throw new RubyException("Not implemented: eval(evalText,binding)");
-		
+
 		/*RubyCompiler compiler = new RubyCompiler(binding, false);
         try {
 			CompilationResults codes = compiler.compileString(file_name, evalText);
@@ -322,12 +322,12 @@ public class RubyKernelModule {
             throw new RubyException(e.toString());
         }*/
 	}
-	
+
 	//@RubyLevelMethod(name="eval", module=true)
     public static RubyValue eval(RubyValue receiver, RubyValue arg) {
 		return eval(arg.toStr());
     }
-	
+
 	//@RubyLevelMethod(name="eval", module=true)
     public static RubyValue eval(RubyValue receiver, RubyValue arg0, RubyValue arg1) {
 		if (arg1 instanceof RubyBinding) {
@@ -351,7 +351,7 @@ public class RubyKernelModule {
 
         return eval(args.get(0).toStr(), binding, file_name);
     }
-   
+
 	//@RubyLevelMethod(name="method")
 	public static RubyValue objMethod(RubyValue receiver, RubyValue arg) {
 		String method_name = arg.toStr();
@@ -362,7 +362,7 @@ public class RubyKernelModule {
         }
         return ObjectFactory.createMethod(receiver, method_name, m);
 	}
-	
+
 	//@RubyLevelMethod(name="public_methods")
 	public static RubyValue publicMethods(RubyValue receiver) {
         RubyArray a = new RubyArray();
@@ -370,22 +370,22 @@ public class RubyKernelModule {
         klass.collectClassMethodNames(a, RubyMethod.PUBLIC);
         return a;
     }
-	
+
 	//@RubyLevelMethod(name="caller", module=true)
 	public static RubyValue call(RubyValue receiver) {
         return new RubyArray();//FIXME use a try/catch to get stacktrace
     }
-	
+
 	//@RubyLevelMethod(name="caller", module=true)
 	public static RubyValue call(RubyValue receiver, RubyValue arg) {
         return new RubyArray();//FIXME use a try/catch to get stacktrace
     }
-	
+
 	//@RubyLevelMethod(name="throw", module=true)
 	public static RubyValue throwMethod(RubyValue receiver) {
         throw new RubyException(RubyRuntime.ArgumentErrorClass, "in `throw': wrong number of arguments (0 for 1)");
     }
-	
+
 	//@RubyLevelMethod(name="throw", module=true)
 	public static RubyValue throwMethod(RubyValue receiver, RubyArray args) {
         RubyExceptionValue e;
@@ -403,7 +403,7 @@ public class RubyKernelModule {
         }
         throw new RubyException(e);
     }
-	
+
 	//@RubyLevelMethod(name="catch", module=true)
 	public static RubyValue catchMethod(RubyValue receiver, RubyValue arg, RubyBlock block) {
         if (!(arg instanceof RubySymbol)) {
@@ -425,7 +425,7 @@ public class RubyKernelModule {
 
         return RubyConstant.QNIL;
     }
-	
+
 	//@RubyLevelMethod(name="untrace_var", module=true)
 	public static RubyValue untrace_var(RubyValue receiver, RubyArray args, RubyBlock block) {
         if (null == args || args.size() < 1) {
@@ -448,7 +448,7 @@ public class RubyKernelModule {
 
         return RubyConstant.QNIL;
     }
-	
+
 	//@RubyLevelMethod(name="trace_var", module=true)
 	public static RubyValue trace_var(RubyValue receiver, RubyArray args, RubyBlock block) {
         if (null == args || args.size() < 1) {
@@ -473,25 +473,25 @@ public class RubyKernelModule {
 
         return RubyConstant.QNIL;
     }
-	
+
 	//@RubyLevelMethod(name="block_given?", alias="iterator?", module=true)
 	public static RubyValue blockGivenP(RubyValue receiver, RubyBlock block) {
 		return ObjectFactory.createBoolean(null != block);
     }
-	
+
 	//@RubyLevelMethod(name="Float", module=true)
 	public static RubyFloat toFloat(RubyValue receiver, RubyValue arg) {
-		return arg.toRubyFloat();		
+		return arg.toRubyFloat();
 	}
-	
+
 	//@RubyLevelMethod(name="Integer", module=true)
 	public static RubyInteger toInteger(RubyValue receiver, RubyValue arg) {
-		return arg.toRubyInteger();		
+		return arg.toRubyInteger();
 	}
 
 	//@RubyLevelMethod(name="String", module=true)
 	public static RubyString toString(RubyValue receiver, RubyValue arg) {
-		return arg.toRubyString();		
+		return arg.toRubyString();
 	}
 
 	//@RubyLevelMethod(name="Array", module=true)
@@ -503,35 +503,35 @@ public class RubyKernelModule {
 		{}
 		if ( res == null )
 			res = ObjectFactory.createArray(1, arg);
-				
+
 		return res;
 	}
-	
+
 	//@RubyLevelMethod(name="puts", module=true)
 	public static RubyValue puts(RubyValue receiver) {
 		return RubyIO.STDOUT.puts();
     }
-	
+
 	//@RubyLevelMethod(name="puts", module=true)
 	public static RubyValue puts(RubyValue receiver, RubyArray args) {
         return RubyIO.STDOUT.puts(args);
     }
-    
+
     //@RubyLevelMethod(name="print", module=true)
     public static RubyValue print(RubyValue receiver) {
         return RubyIO.STDOUT.print();
     }
-    
+
     //@RubyLevelMethod(name="print", module=true)
     public static RubyValue print(RubyValue receiver, RubyValue arg) {
         return RubyIO.STDOUT.print(arg);
     }
-    
+
     //@RubyLevelMethod(name="print", module=true)
     public static RubyValue print(RubyValue receiver, RubyArray args) {
     	return RubyIO.STDOUT.print(args);
     }
-    
+
     //@RubyLevelMethod(name="printf", module=true)
     public static RubyValue printf(RubyValue receiver, RubyArray args) {
         String fmt = args.get(0).toStr();
@@ -539,7 +539,7 @@ public class RubyKernelModule {
         PrintStreamMe.printf(System.out, fmt, args );//fmt, RubyKernelModule.buildFormatArg(args, 1));
         return RubyConstant.QNIL;
     }
-    
+
     //@RubyLevelMethod(name="sprintf", module=true)
     public static RubyValue sprintf(RubyValue receiver, RubyArray args) {
         /*String fmt = args.get(0).toStr();
@@ -553,12 +553,12 @@ public class RubyKernelModule {
     	args.delete_at(0);
     	return ObjectFactory.createString(PrintStreamMe.sprintf(fmt, args));
     }
-    
+
     //@RubyLevelMethod(name="p", module=true)
     public static RubyValue p(RubyValue receiver) {
         return RubyConstant.QNIL;
     }
-    
+
     //@RubyLevelMethod(name="p", module=true)
     public static RubyValue p(RubyValue receiver, RubyValue arg) {
     	RubyValue str = RubyAPI.callNoArgMethod(arg, null, RubyID.inspectID);
@@ -568,7 +568,7 @@ public class RubyKernelModule {
     	LOG.INFO(value.toString());
     	return RubyConstant.QNIL;
     }
-    
+
     //@RubyLevelMethod(name="p", module=true)
     public static RubyValue p(RubyValue receiver, RubyArray args) {
 //    	for (RubyValue arg : args) {
@@ -584,7 +584,7 @@ public class RubyKernelModule {
     }
 
 	//private static BufferedReader in_ = new BufferedReader(new InputStreamReader(System.in));
-	
+
     //@RubyLevelMethod(name="gets", module=true)
     public static RubyValue gets(RubyValue receiver) {
     	//RHO_COMMENT: gets
@@ -597,7 +597,7 @@ public class RubyKernelModule {
         GlobalVariables.set((null == s ? RubyConstant.QNIL : ObjectFactory.createString(s)), "$_");
         return GlobalVariables.get("$_");*/
     }
-    
+
     //@RubyLevelMethod(name="object_id", alias={"__id__", "hash"})
     public static RubyValue objectId(RubyValue receiver) {
         //Object.hashCode() javadoc:
@@ -605,18 +605,18 @@ public class RubyKernelModule {
         //by class Object does return distinct integers for distinct objects.
         return ObjectFactory.createFixnum(receiver.hashCode());
     }
-    
+
     //@RubyLevelMethod(name="extend")
     public static RubyValue extend(RubyValue receiver) {
     	throw new RubyException(RubyRuntime.ArgumentErrorClass, "wrong number of arguments (0 for 1)");
     }
-    
+
     //@RubyLevelMethod(name="extend")
     public static RubyValue extend(RubyValue receiver, RubyValue arg) {
     	RubyAPI.callPublicOneArgMethod(arg, receiver, null, RubyID.extendObjectID);
     	return receiver;
     }
-    
+
     //@RubyLevelMethod(name="extend")
     public static RubyValue extend(RubyValue receiver, RubyArray args) {
 //    	for (RubyValue v : args) {
@@ -627,7 +627,7 @@ public class RubyKernelModule {
 
     	return receiver;
     }
-    
+
     //@RubyLevelMethod(name="freeze")
     public static RubyValue freeze(RubyValue receiver) {
         receiver.freeze();
@@ -650,17 +650,17 @@ public class RubyKernelModule {
         receiver.untaint();
         return receiver;
     }
-    
+
     //@RubyLevelMethod(name="tainted?")
     public static RubyValue tainted(RubyValue receiver) {
     	return ObjectFactory.createBoolean(receiver.tainted());
     }
-    
+
     //@RubyLevelMethod(name="method_missing", module=true)
-    public static RubyValue constMissing(RubyValue receiver, RubyValue arg) 
+    public static RubyValue constMissing(RubyValue receiver, RubyValue arg)
     {
         RubySymbol const_name = (RubySymbol)arg;
-    	
+
         RubyString str = ObjectFactory.createString();
         if (receiver != RubyRuntime.ObjectClass) {
         	((RubyModule)receiver).to_s(str);
@@ -681,7 +681,7 @@ public class RubyKernelModule {
         //LOG.ERROR(msg);
         throw new RubyException(RubyRuntime.NoMethodErrorClass,msg);
     }
-    
+
     //@RubyLevelMethod(name="sleep", module=true)
     public static RubyValue sleep(RubyValue receiver, RubyValue arg) {
         long milliseconds = RubyTypesUtil.convertToJavaLong(arg)*1000;
@@ -692,7 +692,7 @@ public class RubyKernelModule {
         long endTime = System.currentTimeMillis();
         return ObjectFactory.createFixnum((int)MathEx.round((endTime-startTime)/1000.0));
     }
-    
+
     //private static Pattern packagePattern = Pattern.compile("\\.");
 
     //@RubyLevelMethod(name="require_java", alias="import", module=true)
@@ -716,19 +716,19 @@ public class RubyKernelModule {
         RubyRuntime.setJavaSupported(true);
         return RubyConstant.QTRUE;*/
     }
-    
+
     //@RubyLevelMethod(name="binding", module=true)
     public static RubyValue binding(RubyValue receiver, RubyArray args) {
         //compiler will do the magic and insert Binding object
         return args.get(0);
     }
-    
+
     //@RubyLevelMethod(name="lambda", alias="proc", module=true)
     public static RubyValue lambda(RubyValue receiver, RubyBlock block) {
         block.setCreatedByLambda();
         return ObjectFactory.createProc(block);
     }
-    
+
     //@RubyLevelMethod(name="at_exit", module=true)
     public static RubyValue atExit(RubyValue receiver, RubyBlock block) {
         if (null == block) {
@@ -738,7 +738,7 @@ public class RubyKernelModule {
         AtExitBlocks.registerBlock(block);
         return ObjectFactory.createProc(block);
     }
-    
+
     //@RubyLevelMethod(name="gsub", module=true)
     public static RubyValue gsub(RubyValue receiver, RubyArray args, RubyBlock block) {
         if (!(GlobalVariables.get("$_") instanceof RubyString)) {
@@ -748,7 +748,7 @@ public class RubyKernelModule {
         RubyValue r = ((RubyString)GlobalVariables.get("$_")).gsub_danger(args, block);
         return GlobalVariables.set(r, "$_");
     }
-    
+
     //@RubyLevelMethod(name="gsub!", module=true)
     public static RubyValue gsubBang(RubyValue receiver, RubyArray args, RubyBlock block) {
         if (!(GlobalVariables.get("$_") instanceof RubyString)) {
@@ -761,7 +761,7 @@ public class RubyKernelModule {
         }
         return r;
     }
-    
+
     //@RubyLevelMethod(name="sub", module=true)
     public static RubyValue sub(RubyValue receiver, RubyArray args, RubyBlock block) {
         if (!(GlobalVariables.get("$_") instanceof RubyString)) {
@@ -803,12 +803,12 @@ public class RubyKernelModule {
 	        	LOG.TRACE("Cannot open file from jar: " + filename, exc);
 	        }
         }
-        
+
         if ( io == null )
         	io = ObjectFactory.createFile(filename, mode);
-        
+
     	//RHO_COMMENT
-        
+
         if (null == block) {
             return io;
         } else {
@@ -832,5 +832,5 @@ public class RubyKernelModule {
         }
         return raw_args;
     }
-    
+
 }

@@ -1,18 +1,18 @@
 #------------------------------------------------------------------------
 # (The MIT License)
-# 
+#
 # Copyright (c) 2008-2011 Rhomobile, Inc.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-# 
+#
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ module Rho
     begin
       is_translator_exist = true
       is_translator_exist = Rho::file_exist?( File.join(__rhoGetCurrentDir(), 'lib/rhodes_translator' + RHO_RB_EXT) ) if !defined?( RHODES_EMULATOR )
-          
+
       if is_translator_exist
         require 'rhodes_translator'
         include RhodesTranslator::Translator
@@ -65,29 +65,29 @@ module Rho
           res
       rescue Exception => exception
         if defined? RHO_WP7
-          #For some reason rho_serve get another exception, so report original one here                
+          #For some reason rho_serve get another exception, so report original one here
           if exception
             trace_msg = exception.backtrace.join("\n")
             puts "renderfile error: #{exception}\n #{trace_msg}"
-          end  
+          end
         end
-        
+
         raise
-      end    
+      end
     end
 
     def inst_render_index(filename, req, res)
       rho_info 'inst_render_index'
       @request, @response = req, res
       @params = RhoSupport::query_params req
-      
+
       #@request, @response = {}
       #@params = {}
       require 'rho/rhoviewhelpers'
-      
+
       @content = eval_compiled_file(filename, getBinding() )
       if !xhr?
-          rho_info 'index layout' 
+          rho_info 'index layout'
           layout = File.dirname(filename) + "/layout" + RHO_ERB_EXT
           @content = eval_compiled_file(layout, getBinding() ) if Rho::file_exist?(layout)
 	  else
@@ -95,35 +95,35 @@ module Rho
 			  @content = "<div>#{@content}</div>"
           end
       end
-          
+
       @content
     end
 
     def getBinding
         binding
     end
-    
+
     @@cached_metadata = {}
     def self.cached_metadata
         @@cached_metadata
     end
-    
+
     def self.clean_cached_metadata
         @@cached_metadata.clear()
         #puts "meta deleted"
     end
-    
+
     def render(options = nil)
       if @params['rho_callback']
-        rho_error( "render call in callback. Call WebView.navigate instead" ) 
+        rho_error( "render call in callback. Call WebView.navigate instead" )
         return ""
-      end  
+      end
 
       options = {} if options.nil? or !options.is_a?(Hash)
       options = options.symbolize_keys
 
       metaenabled = false
-      
+
       action = nil
       action = options[:action] if options[:action]
       action = @request['action'].nil? ? default_action : @request['action'] unless action
@@ -133,7 +133,7 @@ module Rho
         model = Object.const_get(@request['model'].to_sym) if Object.const_defined?(@request['model'].to_sym)
         if model && model.respond_to?( :metadata ) and model.metadata != nil
             metaenabled = model.metadata[action.to_s] != nil
-        end    
+        end
       end
 
       if not options[:string].nil?
@@ -188,7 +188,7 @@ module Rho
       if metadata.nil?
         model = nil
         model = Object.const_get(@request['model'].to_sym) if Object.const_defined?(@request['model'].to_sym)
-        
+
         if model && model.respond_to?( :metadata ) and model.metadata != nil
           metadata = model.metadata
         end
@@ -199,7 +199,7 @@ module Rho
       end
 
       return "" if metadata.nil?
-      
+
       action = action.to_s
       data = {}
       self.instance_variables.each do |sym|
@@ -207,9 +207,9 @@ module Rho
       end
 
       data["self"] = self
-      
+
       prepared = bind(data,metadata[action])
-      
+
       translate(prepared,action)
 
     end
@@ -223,10 +223,10 @@ module Rho
         include ApplicationHelper
         require 'helpers/browser_helper'
         include BrowserHelper
-        
+
         def initialize()
         end
-        
+
         def set_vars(obj=nil)
           @vars = {}
           if obj
@@ -238,7 +238,7 @@ module Rho
         def method_missing(name, *args)
             unless name == Fixnum
               if name[name.length()-1] == '='
-                @vars[name.to_s.chop.to_sym()] = args[0]  
+                @vars[name.to_s.chop.to_sym()] = args[0]
               else
                 @vars[name]
               end
@@ -257,7 +257,7 @@ module Rho
       end
 
       options[:locals] = {} if options[:locals].nil? or !options[:locals].is_a?(Hash)
-       
+
       content = ""
       if options[:collection].nil?
         locals = localclass.new()
@@ -265,9 +265,9 @@ module Rho
         self.instance_variables.each do |ivar|
           locals.instance_variable_set(ivar,self.instance_variable_get(ivar))
         end
-        
+
         locals.set_vars(options[:locals])
-        
+
         modelpath = @request[:modelpath]
         modelpath = Rho::RhoFSConnector.get_model_path("app",model) if model
         content = eval_compiled_file(modelpath+'_' + partial_name.to_s+RHO_ERB_EXT, locals.get_binding )
@@ -289,7 +289,7 @@ module Rho
           #puts "render partial: #{x}"
           content += render_partial :partial => options[:partial], :locals => options[:locals]
         end
-        
+
         content
     end
 
@@ -301,7 +301,7 @@ module Rho
         @@m_geoview_callback_data = callback_data
         @@m_geoview_timeout_sec = timeout_sec
     end
-    
+
     def self.start_geoview_notification()
         GeoLocation.set_view_notification(@@m_geoview_callback, @@m_geoview_callback_data, @@m_geoview_timeout_sec)
         @@m_geoview_callback = nil
@@ -329,15 +329,15 @@ module Rho
     def self.start_objectnotify()
       SyncEngine::clean_objectnotify()
 
-      return unless @@m_arObjectNotify && @@m_arObjectNotify.length > 0 
+      return unless @@m_arObjectNotify && @@m_arObjectNotify.length > 0
 
       0.upto(@@m_arObjectNotify.length()-1) do |i|
         SyncEngine::add_objectnotify(@@m_arSrcIDNotify[i], @@m_arObjectNotify[i])
       end
-      
+
       @@m_arObjectNotify = []
       @@m_arSrcIDNotify = []
-      
+
     end
 
   end # RhoController

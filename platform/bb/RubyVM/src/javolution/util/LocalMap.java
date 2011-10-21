@@ -6,11 +6,11 @@ import j2me.util.Set;
 import javolution.context.LocalContext;
 
 /**
- * <p> This class represents a map which can be temporarily modified 
+ * <p> This class represents a map which can be temporarily modified
  *     without impacting other threads ({@link LocalContext locally}
  *     scoped changes).</p>
- *     
- * <p> Operation on instances of this class are completely thread-safe. 
+ *
+ * <p> Operation on instances of this class are completely thread-safe.
  *     For example:
  *     public class XMLFormat {
  *         static LocalMap<Class, XMLFormat> CLASS_TO_FORMAT = new LocalMap<Class, XMLFormat>();
@@ -37,11 +37,11 @@ import javolution.context.LocalContext;
  *     }
  *     getInstance(Foo.class); // Returns xFormat
  *     [/code]</p>
- * 
- * <p> <b>Note:</b> Because key-value mappings are inherited, the semantic of  
+ *
+ * <p> <b>Note:</b> Because key-value mappings are inherited, the semantic of
  *     {@link #remove} and {@link #clear} is slightly modified (associate
  *     <code>null</code> values instead of removing the entries).</p>
- *     
+ *
  * @author <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 3.7, January 27, 2005
  */
@@ -50,7 +50,7 @@ public final class LocalMap/*<K,V>*/implements Map/*<K,V>*/{
     /**
      * Holds the fast map reference (shared map).
      */
-    private final LocalContext.Reference _mapRef 
+    private final LocalContext.Reference _mapRef
         = new LocalContext.Reference(new FastMap().setShared(true));
 
     /**
@@ -61,7 +61,7 @@ public final class LocalMap/*<K,V>*/implements Map/*<K,V>*/{
 
     /**
      * Sets the key comparator for this local map.
-     * 
+     *
      * @param keyComparator the key comparator.
      * @return <code>this</code>
      */
@@ -72,7 +72,7 @@ public final class LocalMap/*<K,V>*/implements Map/*<K,V>*/{
 
     /**
      * Sets the value comparator for this local map.
-     * 
+     *
      * @param valueComparator the value comparator.
      * @return <code>this</code>
      */
@@ -82,11 +82,11 @@ public final class LocalMap/*<K,V>*/implements Map/*<K,V>*/{
     }
 
     /**
-     * Sets the default value for the specified key (typically done at 
-     * initialization). 
-     * 
+     * Sets the default value for the specified key (typically done at
+     * initialization).
+     *
      * @param key the key with which the specified value is to be associated.
-     * @param defaultValue the default value to be associated with the 
+     * @param defaultValue the default value to be associated with the
      *        specified key.
      * @return the previous default value associated with specified key, or
      *         <code>null</code> if there was no mapping for key. A
@@ -100,7 +100,7 @@ public final class LocalMap/*<K,V>*/implements Map/*<K,V>*/{
     }
     /**
      * Returns the number of key-value mappings in this map.
-     * 
+     *
      * @return this map's size.
      */
     public int size() {
@@ -109,7 +109,7 @@ public final class LocalMap/*<K,V>*/implements Map/*<K,V>*/{
 
     /**
      * Indicates if this map contains no key-value mappings.
-     * 
+     *
      * @return <code>true</code> if this map contains no key-value mappings;
      *         <code>false</code> otherwise.
      */
@@ -119,7 +119,7 @@ public final class LocalMap/*<K,V>*/implements Map/*<K,V>*/{
 
     /**
      * Indicates if this map contains a mapping for the specified key.
-     * 
+     *
      * @param key the key whose presence in this map is to be tested.
      * @return <code>true</code> if this map contains a mapping for the
      *         specified key; <code>false</code> otherwise.
@@ -130,9 +130,9 @@ public final class LocalMap/*<K,V>*/implements Map/*<K,V>*/{
     }
 
     /**
-     * Indicates if this map associates one or more keys to the 
+     * Indicates if this map associates one or more keys to the
      * specified value.
-     * 
+     *
      * @param value the value whose presence in this map is to be tested.
      * @return <code>true</code> if this map maps one or more keys to the
      *         specified value.
@@ -144,7 +144,7 @@ public final class LocalMap/*<K,V>*/implements Map/*<K,V>*/{
 
     /**
      * Returns the value to which this map associates the specified key.
-     * 
+     *
      * @param key the key whose associated value is to be returned.
      * @return the value to which this map maps the specified key, or
      *         <code>null</code> if there is no mapping for the key.
@@ -156,7 +156,7 @@ public final class LocalMap/*<K,V>*/implements Map/*<K,V>*/{
 
     /**
      * Associates the specified value with the specified key in this map.
-     * 
+     *
      * @param key the key with which the specified value is to be associated.
      * @param value the value to be associated with the specified key.
      * @return the previous value associated with specified key, or
@@ -171,7 +171,7 @@ public final class LocalMap/*<K,V>*/implements Map/*<K,V>*/{
 
     /**
      * Copies all of the mappings from the specified map to this map.
-     * 
+     *
      * @param map the mappings to be stored in this map.
      * @throws NullPointerException the specified map is <code>null</code>,
      *         or the specified map contains <code>null</code> keys.
@@ -183,7 +183,7 @@ public final class LocalMap/*<K,V>*/implements Map/*<K,V>*/{
     /**
      * Removes the mapping for this key from this map if present
      * (sets the local value to <code>null</code>).
-     * 
+     *
      * @param key the key whose value is set to <code>null</code>
      * @return <code>put(key, null)</code>
      * @throws NullPointerException if the key is <code>null</code>.
@@ -204,8 +204,8 @@ public final class LocalMap/*<K,V>*/implements Map/*<K,V>*/{
     }
 
     /**
-     * Returns a {@link FastCollection} view of the keys contained in this map. 
-     * 
+     * Returns a {@link FastCollection} view of the keys contained in this map.
+     *
      * @return a set view of the keys contained in this map
      *         (instance of {@link FastCollection}).
      */
@@ -215,9 +215,9 @@ public final class LocalMap/*<K,V>*/implements Map/*<K,V>*/{
 
     /**
      * Returns a {@link FastCollection} view of the values contained in this
-     * map. 
-     * 
-     * @return a collection view of the values contained in this map 
+     * map.
+     *
+     * @return a collection view of the values contained in this map
      *         (instance of {@link FastCollection}).
      */
     public Collection/*<V>*/values() {
@@ -226,8 +226,8 @@ public final class LocalMap/*<K,V>*/implements Map/*<K,V>*/{
 
     /**
      * Returns a {@link FastCollection} view of the mappings contained in this
-     * map. 
-     * 
+     * map.
+     *
      * @return a collection view of the mappings contained in this map
      *         (instance of {@link FastCollection}).
      */
@@ -236,9 +236,9 @@ public final class LocalMap/*<K,V>*/implements Map/*<K,V>*/{
     }
 
     /**
-     * Returns the local map or creates one on the stack and populates 
+     * Returns the local map or creates one on the stack and populates
      * it from inherited settings.
-     * 
+     *
      * @return a shared fast map belonging to the current local context.
      */
     private FastMap/*<K,V>*/localMap() {
@@ -248,7 +248,7 @@ public final class LocalMap/*<K,V>*/implements Map/*<K,V>*/{
 
     private FastMap newLocalMap() {
         FastMap parentMap = (FastMap) _mapRef.get();
-        FastMap localMap = FastMap.newInstance(); 
+        FastMap localMap = FastMap.newInstance();
         localMap.setShared(true);
         localMap.setKeyComparator(parentMap.getKeyComparator());
         localMap.setValueComparator(parentMap.getValueComparator());

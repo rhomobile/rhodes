@@ -298,7 +298,7 @@ public class Log {
             renameNewScript();
         }
     }
-    
+
     /**
      * Fast counterpart to close(). Does not perform a checkpoint or a backup
      * of the .data file.
@@ -737,7 +737,7 @@ public class Log {
         //File file       = new File(logFileName);
         //long logLength  = file.length();
         long logLength  = fa.getFileLength(logFileName);
-        
+
         long dataLength = cache.getFileFreePos();
 
         if (logLength + dataLength > cache.maxDataFileSize) {

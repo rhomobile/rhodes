@@ -25,35 +25,35 @@ import com.xruby.runtime.lang.RubyValue;
 
 //@RubyLevelClass(name="ThreadGroup")
 public class RubyThreadGroup extends RubyBasic{
-    
+
     private boolean enclosed = false;
     private List/*<RubyThread>*/ threads_ = new ArrayList/*<RubyThread>*/();
-    
+
     //@RubyLevelConstant(name="Default")
-    public static RubyThreadGroup defaultThreadGroup = new RubyThreadGroup();   
-    
+    public static RubyThreadGroup defaultThreadGroup = new RubyThreadGroup();
+
     public RubyThreadGroup(){
         super(RubyRuntime.ThreadGroupClass);
     }
-    
+
     protected void doClone(RubyValue orig){
     	RubyThreadGroup cl = (RubyThreadGroup)orig;
     	enclosed = cl.enclosed;
     	threads_ = cl.threads_;
     	super.doClone(orig);
     }
-    
+
     //@RubyLevelMethod(name="new")
     public static RubyValue newThreadGroup(RubyValue receiver) {
     	return new RubyThreadGroup();
     }
-    
+
     //@RubyLevelMethod(name="add")
     public RubyValue add(RubyValue arg) {
     	this.add((RubyThread)arg);
         return this;
     }
-    
+
     public void add(RubyThread thread){
         if(thread.getThreadGroup() != RubyConstant.QNIL){
             RubyThreadGroup group = (RubyThreadGroup)thread.getThreadGroup();
@@ -64,17 +64,17 @@ public class RubyThreadGroup extends RubyBasic{
         thread.setThreadGroup(this);
         threads_.add(thread);
     }
-    
+
     //When a thread terminates,remove it from this group.
     public void remove(RubyThread thread){
         thread.setThreadGroup(null);
         threads_.remove(thread);
     }
-    
+
     public List list(){
         return threads_;
     }
-    
+
     //@RubyLevelMethod(name="list")
     public RubyArray listAll() {
     	RubyArray result = new RubyArray();
@@ -83,23 +83,23 @@ public class RubyThreadGroup extends RubyBasic{
         	RubyThread thread = (RubyThread)iter.next();
     		result.add(thread);
     	}
-    	
+
     	return result;
     }
-    
+
     //@RubyLevelMethod(name="enclose")
     public RubyValue enclose(){
         enclosed = true;
         return this;
     }
-    
+
     public boolean isEnclosed() {
     	return this.enclosed;
     }
-    
+
     //@RubyLevelMethod(name="enclosed?")
     public RubyValue enclosed_p() {
         return ObjectFactory.createBoolean(enclosed);
     }
-    
+
 }

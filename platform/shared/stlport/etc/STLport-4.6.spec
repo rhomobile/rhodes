@@ -25,7 +25,7 @@ Group: Development/Libraries
 Requires: STLport = %{version}
 
 %description -n STLport-devel
-STLport is a multiplatform STL implementation based on SGI STL. Complete   
+STLport is a multiplatform STL implementation based on SGI STL. Complete
 C++ standard library, including <complex> and SGI STL iostreams. If you
 would like to use your code with STLport add
 "-nostdinc++ -I/usr/include/stlport" when compile and -lstlport_gcc when

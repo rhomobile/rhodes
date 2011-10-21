@@ -45,7 +45,7 @@
 #endif
 
 
-/* 
+/*
  * Curl_addrinfo is our internal struct definition that we use to allow
  * consistent internal handling of this data. We use this even when the
  * system provides an addrinfo structure definition. And we use this for

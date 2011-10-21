@@ -21,7 +21,7 @@ public class AtExitBlocks {
 //        for (RubyBlock block : registgered_blocks_) {
         for (Iterator iter = registgered_blocks_.iterator(); iter.hasNext();) {
         	RubyBlock block = (RubyBlock)iter.next();
-    	
+
             block.invoke(RubyRuntime.TOP_LEVEL_SELF_VALUE);
         }
     }

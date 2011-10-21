@@ -27,8 +27,8 @@ static RhoConnectEngine *sharedInst = nil;
 
 + (void)destroy
 {
-	if ( sharedInst ) 
-	{	
+	if ( sharedInst )
+	{
 		[sharedInst dealloc];
 		sharedInst = nil;
 	}
@@ -44,40 +44,40 @@ static RhoConnectEngine *sharedInst = nil;
     if ( sharedInst != nil ) {
         [NSException raise:NSInternalInconsistencyException
 			format:@"[%@ %@] cannot be called; use +[%@ %@] instead",
-			NSStringFromClass([self class]), NSStringFromSelector(_cmd), 
+			NSStringFromClass([self class]), NSStringFromSelector(_cmd),
 			NSStringFromClass([self class]),
 			NSStringFromSelector(@selector(sharedInstance))];
 	} else if ( self = [super init] ) {
 		sharedInst = self;
-		
-    	[RhoConnectClient initDatabase];		
-		
+
+    	[RhoConnectClient initDatabase];
+
 		customer = [[RhomModel alloc] init];
 		customer.name = @"Customer";
-		
+
 		product = [[RhomModel alloc] init];
 		product.name = @"Product";
-		
+
 		sclient = [[RhoConnectClient alloc] init];
-		NSMutableArray* models = [NSMutableArray arrayWithObjects:customer, product, nil];	
-		
+		NSMutableArray* models = [NSMutableArray arrayWithObjects:customer, product, nil];
+
 		[sclient addModels:models];
-		
+
 		sclient.sync_server = @"http://rhodes-store-server.heroku.com/application";
         //sclient.sync_server = @"http://192.168.0.103:9292/application";
 		sclient.threaded_mode = TRUE;
-		
+
 		loginState = [sclient is_logged_in] ? logged_in : logged_out;
 	}
 	return sharedInst;
 }
 
-- (void)dealloc 
+- (void)dealloc
 {
     [customer release];
     [product release];
     [sclient release];
-	
+
     [super dealloc];
 }
 
@@ -95,19 +95,19 @@ static RhoConnectEngine *sharedInst = nil;
 {
 	return NSUIntegerMax;
 }
-								 
+
 - (oneway void)release
 {
 }
-								 
+
 - (id)retain
 {
 	return sharedInst;
 }
-								 
+
 - (id)autorelease
 {
 	return sharedInst;
 }
-								 
+
 @end

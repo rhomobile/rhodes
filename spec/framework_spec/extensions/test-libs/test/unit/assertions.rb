@@ -1750,7 +1750,7 @@ EOM
         def to_s
           message_parts = []
           if (@head)
-            head = @head.to_s 
+            head = @head.to_s
             unless(head.empty?)
               message_parts << add_period(head)
             end

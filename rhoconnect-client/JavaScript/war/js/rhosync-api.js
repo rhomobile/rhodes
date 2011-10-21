@@ -31,7 +31,7 @@ Rhomobile = function() {
 				+' "sync_priority" BIGINT,'
 				+' "partition" VARCHAR(255),'
 				+' "sync_type" VARCHAR(255),'
-				+' "metadata" varchar default NULL,' 
+				+' "metadata" varchar default NULL,'
 				+' "last_updated" BIGINT default 0,'
 				+' "last_inserted_size" BIGINT default 0,'
 				+' "last_deleted_size" BIGINT default 0,'
@@ -73,7 +73,7 @@ Rhomobile = function() {
 			if(errHdlr) errHdlr(null, ex);
 		}
 	};
-		
+
 	klass_webSqlStorage.prototype.close = function()/*throws DBException*/{};
 
 	klass_webSqlStorage.prototype.executeSQL = function(sql, values, resultHdlr/*(tx,resultSet)*/, errHdlr/*(db|tx,err)*/)
@@ -82,7 +82,7 @@ Rhomobile = function() {
 			_execInTx(db, sql, values, resultHdlr, errHdlr);
 		});
 	};
-		
+
 	klass_webSqlStorage.prototype.executeBatchSQL = function(sql, errHdlr/*(db|tx,err)*/)
 	{
 		var statements = sql.split(";");
@@ -93,17 +93,17 @@ Rhomobile = function() {
 			}
 		}
 	};
-		
+
 	klass_webSqlStorage.prototype.initSchema = function(errHdlr/*(db|tx,err)*/)
 	{
 		this.executeBatchSQL(syncDbSchemaSQL, errHdlr);
 	};
-		
+
 	klass_webSqlStorage.prototype.getAllTableNames = function(toWait, errHdlr/*(db|tx,err)*/)
 	{
 		var tableNames = [];
 		var done = !toWait;
-		
+
 		this.executeSQL("SELECT name FROM sqlite_master WHERE type='table'", null, jQuery.proxy(function(tx,rs){
 			for(var i=0; i<rs.rows.length; i++) {
 				tableNames.push(rs.rows.item(i)['name']);
@@ -112,7 +112,7 @@ Rhomobile = function() {
 		}, this), function(obj,err){
 			done = true; errHdlr(obj,err);
 			}/*errHdlr*/);
-		
+
 //		while(!done) {
 //			jQuery.get('')
 //			};
@@ -122,21 +122,21 @@ Rhomobile = function() {
 
 //			/*IDBResult*/ createResult: function(){},
 //			/*void*/ deleteAllFiles: function(/*String*/ strPath)throws Exception{},
-//			
+//
 //			/*void*/ startTransaction: function()/*throws DBException*/{},
 //			/*void*/ commit: function()/*throws DBException*/{},
 //			/*void*/ rollback: function()/*throws DBException*/{},
 //			/*void*/ onBeforeCommit: function() /*throws DBException*/{},
-//			
+//
 //			/*boolean*/ isTableExists: function(/*String*/ strName)/*throws DBException*/{},
 //			/*boolean*/ isDbFileExists: function(/*String*/ strPath){},
-//			
+//
 //			/*void*/ OnInsertObjectRecord(/*Object*/ NEW_source_id, /*Object*/ NEW_attrib ){},
 //
 //			/*void*/ createTriggers: function() /*throws DBException*/{},
 //			/*void*/ setDbCallback: function(/*IDBCallback*/ callback){},
 
-			
+
 	// === Model ==================================================
 
 	var klass_model = function(name, opts, props) {
@@ -144,7 +144,7 @@ Rhomobile = function() {
 		this.options = opts;
 		this.properties = props;
 	}
-	
+
 	// === Source ==================================================
 
 	// add_source('Product', {'source_id'=> 1, 'sync_type' => 'incremental'} )
@@ -154,7 +154,7 @@ Rhomobile = function() {
 		this.id = this.properties['sourceId'];
 		this.name = this.model['name'];
 	}
-	
+
 	// === Config ==================================================
 
 	var klass_config = function() {
@@ -164,16 +164,16 @@ Rhomobile = function() {
 	klass_config.addSource = function(model, props) {
 		this.sources.push(new Rhomobile.sync.Source(model, props));
 	}
-	
+
 	// === Engine ==================================================
 
 	var klass_engine = function() {
 	}
-	
+
 	// === API load support =======================================
 
 	var _gwtClasses = ["com.rho.sync.SyncThread"];
-	
+
 	// Function to report the exact GWT class is ready to use.
 	//
 	// GWT class definitions are bound to load event and number

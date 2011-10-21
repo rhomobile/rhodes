@@ -56,12 +56,12 @@ public class RubyAPI {
     public static boolean testCaseEqual(RubyValue value1, RubyValue value2) {
         return RubyAPI.callPublicOneArgMethod(value1, value2, null, RubyID.longEqualID).isTrue();
     }
-    					  	
-    public static boolean testCaseEqualNotNil(RubyValue value1, RubyValue value2) 
+
+    public static boolean testCaseEqualNotNil(RubyValue value1, RubyValue value2)
     {
         return value1.isTrue();
     }
-    
+
     public static boolean testCaseEqual(RubyArray values, RubyValue value2) {
         for (RubyValue value1 : values) {
             if (RubyAPI.callPublicOneArgMethod(value1, value2, null, RubyID.longEqualID).isTrue()) {
@@ -138,7 +138,7 @@ public class RubyAPI {
         return ObjectFactory.createString("method");
     }
 
-    //e.g. defined? @m    
+    //e.g. defined? @m
     public static RubyValue isDefinedInstanceVariable(RubyValue receiver, String method_name) {
         RubyID mid = RubyID.intern(method_name);
         RubyValue var = receiver.getInstanceVariable(mid);
@@ -148,7 +148,7 @@ public class RubyAPI {
 
         return ObjectFactory.createString("instance-variable");
     }
-    
+
     public static RubyValue isDefinedYield(RubyBlock block) {
         if (null == block) {
             return RubyConstant.QNIL;
@@ -204,7 +204,7 @@ public class RubyAPI {
 
         return callMethodMissing(receiver, new RubyArray(arg), block, mid);
     }
-    
+
     public static RubyValue callTwoArgMethod(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block, RubyID mid) {
         assert(null != arg0 && null != arg1);
         RubyMethod m = receiver.findMethod(mid);
@@ -235,7 +235,7 @@ public class RubyAPI {
 
     	return callMethodMissing(receiver, new RubyArray(arg), block, mid);
     }
-    
+
     public static RubyValue callPublicTwoArgMethod(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block, RubyID mid) {
     	assert(null != arg0 && null != arg1);
     	RubyMethod m = receiver.findPublicMethod(mid);
@@ -277,7 +277,7 @@ public class RubyAPI {
 
         return m.invoke(receiver, arg, block);
     }
-    
+
     public static RubyValue callSuperTwoArgMethod(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block, MethodBlockBase mbb) {
         assert(null != arg0 && null != arg1);
         RubyClass c = (RubyClass) mbb.getScope();
@@ -299,7 +299,7 @@ public class RubyAPI {
 
         return m.invoke(receiver, args, block);
     }
-    
+
     public static RubyValue operatorNot(RubyValue value) {
         return value.isTrue() ? RubyConstant.QFALSE : RubyConstant.QTRUE;
     }
@@ -475,7 +475,7 @@ public class RubyAPI {
             throw new RubyException(RubyRuntime.TypeErrorClass, s + " is not a class/module");
         }
     }
-    
+
     private static final RubyID ASERT = RubyID.intern("[]=");
 
     public static void callArraySet(RubyValue value, RubyValue index, RubyValue receiver) {

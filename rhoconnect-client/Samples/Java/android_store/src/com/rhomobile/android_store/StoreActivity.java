@@ -13,30 +13,30 @@ import android.os.Bundle;
 import android.util.Log;
 
 public class StoreActivity extends Activity {
-    
+
 	private static final String TAG = StoreActivity.class.getSimpleName();
 	private RhoConnectClient mSyncClient;
 	private RhomModel mModels[];
-	
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        
+
 		ApplicationInfo appInfo = getApplicationInfo();
 
 		try {
 			RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir);
 			RhoFileApi.init(this.getApplicationContext());
-			
+
 			RhoLogConf.setMinSeverity(0);
 			RhoLogConf.setEnabledCategories("*");
-			
+
 			RhoConnectClient.nativeInit();
 		} catch (Exception e) {
 			Logger.E(TAG, e.getMessage());
 		}
-        
+
         mSyncClient = new RhoConnectClient();
 
     	mModels = new RhomModel[]{
@@ -54,15 +54,15 @@ public class StoreActivity extends Activity {
     			public void call(RhoConnectNotify notify) { onLogin(notify); }
     		});
     }
-    
+
     @Override
     public void onDestroy() {
         mSyncClient.databaseFullResetAndLogout();
     	mSyncClient.close();
     }
-    
+
     private void onLogin(RhoConnectNotify notify) {
     	Log.i(TAG, "onLogin");
     }
-    
+
 }

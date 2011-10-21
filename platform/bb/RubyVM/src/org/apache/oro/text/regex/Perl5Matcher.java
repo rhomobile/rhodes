@@ -1,4 +1,4 @@
-/* 
+/*
  * $Id: Perl5Matcher.java 124053 2005-01-04 01:24:35Z dfs $
  *
  * Copyright 2000-2005 The Apache Software Foundation
@@ -201,7 +201,7 @@ public final class Perl5Matcher implements PatternMatcher {
       if(endOffset < __INITIAL_NUM_OFFSETS)
 	endOffset = __INITIAL_NUM_OFFSETS;
       __beginMatchOffsets = new int[endOffset];
-      __endMatchOffsets   = new int[endOffset];      
+      __endMatchOffsets   = new int[endOffset];
     }
   }
 
@@ -279,14 +279,14 @@ public final class Perl5Matcher implements PatternMatcher {
 
       if(mustString != null &&
 	 ((expression._anchor & Perl5Pattern._OPT_ANCH) == 0 ||
-	  ((__multiline || 
+	  ((__multiline ||
 	   (expression._anchor & Perl5Pattern._OPT_ANCH_MBOL) != 0)
 	   && expression._back >= 0)))
 	{
 
 	__currentOffset =
 	  __findFirst(__input, __currentOffset, endOffset, mustString);
-	
+
 	if(__currentOffset >= endOffset) {
 	  if((expression._options & Perl5Compiler.READ_ONLY_MASK) == 0)
 	    expression._mustUtility++;
@@ -449,7 +449,7 @@ public final class Perl5Matcher implements PatternMatcher {
 	    ++__currentOffset;
 	  }
 
-	  if((minLength > 0 || tmp) && 
+	  if((minLength > 0 || tmp) &&
 	     __tryExpression(__currentOffset)) {
 	    success = true;
 	    break _mainLoop;
@@ -598,8 +598,8 @@ public final class Perl5Matcher implements PatternMatcher {
 
     return success;
   }
-  
-  private boolean __matchUnicodeClass(char code, char __program[], 
+
+  private boolean __matchUnicodeClass(char code, char __program[],
 			     int offset ,char opcode)
   {
     boolean isANYOF = ( opcode == OpCode._ANYOFUN );
@@ -618,7 +618,7 @@ public final class Perl5Matcher implements PatternMatcher {
 	if(__program[offset++] == code) return isANYOF;
 
       } else {
-	isANYOF = (__program[offset] == OpCode._OPCODE) 
+	isANYOF = (__program[offset] == OpCode._OPCODE)
 	  ? isANYOF : !isANYOF;
 
 	offset++;
@@ -699,14 +699,14 @@ public final class Perl5Matcher implements PatternMatcher {
 	case OpCode._ASCII:
 	  if(code < 0x80)return isANYOF;
 	}
-      } 
+      }
     }
     return !isANYOF;
   }
-  
+
   private boolean __tryExpression(int offset) {
     int count;
-    
+
     __inputOffset = offset;
     __lastParen   = 0;
     __expSize     = 0;
@@ -726,7 +726,7 @@ public final class Perl5Matcher implements PatternMatcher {
 
     return false;
   }
-    
+
 
   private int __repeat(int offset, int max) {
     int scan, eol, operand, ret;
@@ -845,7 +845,7 @@ public final class Perl5Matcher implements PatternMatcher {
 
       case OpCode._BOL:
 	if(input == __bol ? __previousChar == '\n' :
-	   (__multiline && (inputRemains || input < __eol) && 
+	   (__multiline && (inputRemains || input < __eol) &&
 	    __input[input - 1] == '\n'))
 	  break;
 	return false;
@@ -1316,7 +1316,7 @@ public final class Perl5Matcher implements PatternMatcher {
   /**
    * Set whether or not subsequent calls to {@link #matches matches()}
    * or {@link #contains contains()} should treat the input as
-   * consisting of multiple lines.  The default behavior is for 
+   * consisting of multiple lines.  The default behavior is for
    * input to be treated as consisting of multiple lines.  This method
    * should only be called if the Perl5Pattern used for a match was
    * compiled without either of the Perl5Compiler.MULTILINE_MASK or
@@ -1327,9 +1327,9 @@ public final class Perl5Matcher implements PatternMatcher {
    * {@link Perl5Compiler} for more details.
    * <p>
    * @param multiline  If set to true treats the input as consisting of
-   *        multiple lines with respect to the <b>^</b> and <b>$</b> 
+   *        multiple lines with respect to the <b>^</b> and <b>$</b>
    *        metacharacters.  If set to false treats the input as consisting
-   *        of a single line with respect to the <b>^</b> and <b>$</b> 
+   *        of a single line with respect to the <b>^</b> and <b>$</b>
    *        metacharacters.
    */
   public void setMultiline(boolean multiline) { __multiline = multiline; }
@@ -1476,7 +1476,7 @@ public final class Perl5Matcher implements PatternMatcher {
 
 
   /**
-   * Determines if a string (represented as a char[]) exactly 
+   * Determines if a string (represented as a char[]) exactly
    * matches a given pattern.  If
    * there is an exact match, a MatchResult instance
    * representing the match is made accesible via
@@ -1585,7 +1585,7 @@ public final class Perl5Matcher implements PatternMatcher {
    * will be tested for an exact match.
    * <p>
    * The pattern must be a Perl5Pattern instance, otherwise a
-   * ClassCastException will be thrown.  You are not required to, and 
+   * ClassCastException will be thrown.  You are not required to, and
    * indeed should NOT try to (for performance reasons), catch a
    * ClassCastException because it will never be thrown as long as you use
    * a Perl5Pattern as the pattern parameter.
@@ -1649,34 +1649,34 @@ public final class Perl5Matcher implements PatternMatcher {
   }
 
 //RHO
-  //move offset in case of success 
-  public boolean matchesPrefixEx(PatternMatcherInput input, Pattern pattern) 
+  //move offset in case of success
+  public boolean matchesPrefixEx(PatternMatcherInput input, Pattern pattern)
   {
 	  if ( matchesPrefix(input, pattern ) )
 	  {
 	      input.setCurrentOffset(__endMatchOffsets[0]);
 	      input.setMatchOffsets(__beginMatchOffsets[0], __endMatchOffsets[0]);
-	      
+
 	      return true;
 	  }
 	  return false;
   }
-  
-//RHO  
+
+//RHO
 
   /**
    * Determines if a string contains a pattern.  If the pattern is
    * matched by some substring of the input, a MatchResult instance
-   * representing the <b> first </b> such match is made acessible via 
+   * representing the <b> first </b> such match is made acessible via
    * {@link #getMatch()}.  If you want to access
    * subsequent matches you should either use a PatternMatcherInput object
    * or use the offset information in the MatchResult to create a substring
-   * representing the remaining input.  Using the MatchResult offset 
+   * representing the remaining input.  Using the MatchResult offset
    * information is the recommended method of obtaining the parts of the
    * string preceeding the match and following the match.
    * <p>
    * The pattern must be a Perl5Pattern instance, otherwise a
-   * ClassCastException will be thrown.  You are not required to, and 
+   * ClassCastException will be thrown.  You are not required to, and
    * indeed should NOT try to (for performance reasons), catch a
    * ClassCastException because it will never be thrown as long as you use
    * a Perl5Pattern as the pattern parameter.
@@ -1696,16 +1696,16 @@ public final class Perl5Matcher implements PatternMatcher {
    * Determines if a string (represented as a char[]) contains a pattern.
    * If the pattern is
    * matched by some substring of the input, a MatchResult instance
-   * representing the <b> first </b> such match is made acessible via 
+   * representing the <b> first </b> such match is made acessible via
    * {@link #getMatch()}.  If you want to access
    * subsequent matches you should either use a PatternMatcherInput object
    * or use the offset information in the MatchResult to create a substring
-   * representing the remaining input.  Using the MatchResult offset 
+   * representing the remaining input.  Using the MatchResult offset
    * information is the recommended method of obtaining the parts of the
    * string preceeding the match and following the match.
    * <p>
    * The pattern must be a Perl5Pattern instance, otherwise a
-   * ClassCastException will be thrown.  You are not required to, and 
+   * ClassCastException will be thrown.  You are not required to, and
    * indeed should NOT try to (for performance reasons), catch a
    * ClassCastException because it will never be thrown as long as you use
    * a Perl5Pattern as the pattern parameter.
@@ -1736,7 +1736,7 @@ public final class Perl5Matcher implements PatternMatcher {
    * Determines if the contents of a PatternMatcherInput, starting from the
    * current offset of the input contains a pattern.
    * If a pattern match is found, a MatchResult
-   * instance representing the <b>first</b> such match is made acessible via 
+   * instance representing the <b>first</b> such match is made acessible via
    * {@link #getMatch()}.  The current offset of the
    * PatternMatcherInput is set to the offset corresponding to the end
    * of the match, so that a subsequent call to this method will continue
@@ -1755,7 +1755,7 @@ public final class Perl5Matcher implements PatternMatcher {
    * method for more details.
    * <p>
    * The pattern must be a Perl5Pattern instance, otherwise a
-   * ClassCastException will be thrown.  You are not required to, and 
+   * ClassCastException will be thrown.  You are not required to, and
    * indeed should NOT try to (for performance reasons), catch a
    * ClassCastException because it will never be thrown as long as you use
    * a Perl5Pattern as the pattern parameter.
@@ -1782,7 +1782,7 @@ public final class Perl5Matcher implements PatternMatcher {
    * input   = new PatternMatcherInput(someStringInput);
    *
    * while(matcher.contains(input, pattern)) {
-   *   result = matcher.getMatch();  
+   *   result = matcher.getMatch();
    *   // Perform whatever processing on the result you want.
    * }
    *
@@ -1807,7 +1807,7 @@ public final class Perl5Matcher implements PatternMatcher {
     if(input._currentOffset > input._endOffset)
       return false;
     //}
-    /* else 
+    /* else
       if(input._endOfInput())
 	return false;
 	*/
@@ -1862,9 +1862,9 @@ public final class Perl5Matcher implements PatternMatcher {
    * @return A MatchResult instance containing the pattern match found
    *         by the last call to any one of the matches() or contains()
    *         methods.  If no match was found by the last call, returns
-   *         null. 
+   *         null.
    */
-  public MatchResult getMatch() { 
+  public MatchResult getMatch() {
     if(!__lastSuccess)
       return null;
 

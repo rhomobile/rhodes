@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -58,22 +58,22 @@ import android.widget.TextView;
 
 public class SimpleMainView implements MainView {
 
-	private final static String TAG = "SimpleMainView";	
-	
+	private final static String TAG = "SimpleMainView";
+
 	private static final int WRAP_CONTENT = ViewGroup.LayoutParams.WRAP_CONTENT;
 	private static final int FILL_PARENT = ViewGroup.LayoutParams.FILL_PARENT;
-	
+
 	private class ActionBack implements View.OnClickListener {
 		public void onClick(View v) {
 			goBack();//back(0);
 		}
 	};
-	
+
 	public class MyView extends LinearLayout {
 		public MyView(Context ctx) {
 			super(ctx);
 		}
-		
+
 		protected void onSizeChanged (int w, int h, int oldw, int oldh) {
 			super.onSizeChanged(w, h, oldw, oldh);
 			StringBuilder msg = new StringBuilder();
@@ -89,25 +89,25 @@ public class SimpleMainView implements MainView {
 			Utils.platformLog("SimpleMainView.View", msg.toString());
 		}
 	}
-	
+
 	private class ActionForward implements View.OnClickListener {
 		public void onClick(View v) {
 			forward(0);
 		}
 	};
-	
+
 	private class ActionHome implements View.OnClickListener {
 		public void onClick(View v) {
 			navigate(RhodesAppOptions.getStartUrl(), 0);
 		}
 	};
-	
+
 	private class ActionOptions implements View.OnClickListener {
 		public void onClick(View v) {
 			navigate(RhodesAppOptions.getOptionsUrl(), 0);
 		}
 	};
-	
+
 	private class ActionRefresh implements View.OnClickListener {
 		public void onClick(View v) {
 			reload(0);
@@ -123,11 +123,11 @@ public class SimpleMainView implements MainView {
 
 	private class ActionCustom implements View.OnClickListener {
 		private String url;
-		
+
 		public ActionCustom(String u) {
 			url = u;
 		}
-		
+
 		public void onClick(View v) {
 			PerformOnUiThread.exec(new Runnable() {
 				public void run() {
@@ -136,17 +136,17 @@ public class SimpleMainView implements MainView {
 			});
 		}
 	};
-	
+
 	private LinearLayout view;
 	private WebView webView;
 	private RhoNativeViewManager.RhoNativeView mNativeView = null;
 	private View mNativeViewView = null;
 	private LinearLayout navBar = null;
 	private LinearLayout toolBar = null;
-	
+
 	private int mCustomBackgroundColor = 0;
 	private boolean mCustomBackgroundColorEnable = false;
-	
+
 	public View getView() {
 		return view;
 	}
@@ -181,7 +181,7 @@ public class SimpleMainView implements MainView {
 			if (toolBar != null) {
 				view.addView(toolBar, index);
 			}
-			
+
 			//view.bringChildToFront(mNativeViewView);
 			//view.requestLayout();
 		}
@@ -190,7 +190,7 @@ public class SimpleMainView implements MainView {
 			mNativeViewView = null;
 		}
 	}
-	
+
 	public void restoreWebView() {
 		if (mNativeView != null) {
 			view.removeView(mNativeViewView);
@@ -199,14 +199,14 @@ public class SimpleMainView implements MainView {
 			//if (navBar != null) {
 				//view_index = 1;
 			//}
-			
+
 			if (navBar != null) {
 				view.removeView(navBar);
 			}
 			if (toolBar != null) {
 				view.removeView(toolBar);
 			}
-			
+
 			int index = 0;
 			if (navBar != null) {
 				view.addView(navBar, index);
@@ -225,14 +225,14 @@ public class SimpleMainView implements MainView {
 			//view.requestLayout();
 		}
 	}
-	
+
 
     private String processForNativeView(String _url) {
     	StringBuilder s = new StringBuilder("processForNativeView : [");
     	s.append(_url);
     	s.append("]");
     	Utils.platformLog(TAG, s.toString());
-    	
+
     	String url = _url;
     	String callback_prefix = "call_stay_native";
 
@@ -243,7 +243,7 @@ public class SimpleMainView implements MainView {
     	while (cur > 0) {
     		String protocol = url.substring(last+1, cur);
     		String navto = url.substring(cur+1, url.length());
-    		
+
     		if (callback_prefix.equals(protocol)) {
     			// navigate but still in native view
     			String cleared_url = url.substring(callback_prefix.length()+1, url.length());
@@ -290,8 +290,8 @@ public class SimpleMainView implements MainView {
     	restoreWebView();
     	return url;
     }
-	
-	
+
+
 	public WebView detachWebView() {
 		restoreWebView();
 		WebView v = null;
@@ -302,22 +302,22 @@ public class SimpleMainView implements MainView {
 		}
 		return v;
 	}
-	
+
 	private View createButton(Map<Object,Object> hash) {
 		Context ctx = RhodesActivity.getContext();
-		
+
 		Object actionObj = hash.get("action");
 		if (actionObj == null || !(actionObj instanceof String))
 			throw new IllegalArgumentException("'action' should be String");
-		
+
 		String action = (String)actionObj;
 		if (action.length() == 0)
 			throw new IllegalArgumentException("'action' should not be empty");
-		
+
 		Drawable icon = null;
 		String label = null;
 		View.OnClickListener onClick = null;
-		
+
 		if (action.equalsIgnoreCase("back")) {
 			icon = ctx.getResources().getDrawable(AndroidR.drawable.back);
 			onClick = new ActionBack();
@@ -347,11 +347,11 @@ public class SimpleMainView implements MainView {
 		}
 		else if (action.equalsIgnoreCase("separator"))
 			return null;
-		
+
 		DisplayMetrics metrics = new DisplayMetrics();
 		WindowManager wm = (WindowManager)ctx.getSystemService(Context.WINDOW_SERVICE);
 		wm.getDefaultDisplay().getMetrics(metrics);
-		
+
 		Object iconObj = hash.get("icon");
 		if (iconObj != null) {
 			if (!(iconObj instanceof String))
@@ -364,20 +364,20 @@ public class SimpleMainView implements MainView {
 			bitmap.setDensity(DisplayMetrics.DENSITY_MEDIUM);
 			icon = new BitmapDrawable(bitmap);
 		}
-		
+
 		if (icon == null) {
 			Object labelObj = hash.get("label");
 			if (labelObj == null || !(labelObj instanceof String))
 				throw new IllegalArgumentException("'label' should be String");
 			label = (String)labelObj;
 		}
-		
+
 		if (icon == null && label == null)
 			throw new IllegalArgumentException("One of 'icon' or 'label' should be specified");
-		
+
 		if (onClick == null)
 			onClick = new ActionCustom(action);
-		
+
 		View button;
 		if (icon != null) {
 			ImageButton btn = new ImageButton(ctx);
@@ -398,7 +398,7 @@ public class SimpleMainView implements MainView {
 			btn.setText(label);
 			if (mCustomBackgroundColorEnable) {
 				btn.setBackgroundColor(mCustomBackgroundColor);
-				int gray = (((mCustomBackgroundColor & 0xFF0000) >> 16) + ((mCustomBackgroundColor & 0xFF00) >> 8) + ((mCustomBackgroundColor & 0xFF)))/3; 
+				int gray = (((mCustomBackgroundColor & 0xFF0000) >> 16) + ((mCustomBackgroundColor & 0xFF00) >> 8) + ((mCustomBackgroundColor & 0xFF)))/3;
 				if (gray > 128) {
 					btn.setTextColor(0xFF000000);
 				}
@@ -408,12 +408,12 @@ public class SimpleMainView implements MainView {
 			}
 			button = btn;
 		}
-		
+
 		button.setOnClickListener(onClick);
-		
+
 		return button;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void setupToolbar(LinearLayout tool_bar, Object params) {
 		Context ctx = RhodesActivity.getContext();
@@ -427,25 +427,25 @@ public class SimpleMainView implements MainView {
 			}
 			else if (params instanceof Map<?,?>) {
 				Map<Object,Object> settings = (Map<Object,Object>)params;
-				
+
 				Object colorObj = settings.get("color");
 				if (colorObj != null && (colorObj instanceof Map<?,?>)) {
 					Map<Object,Object> color = (Map<Object,Object>)colorObj;
-					
+
 					Object redObj = color.get("red");
 					Object greenObj = color.get("green");
 					Object blueObj = color.get("blue");
-					
+
 					if (redObj != null && greenObj != null && blueObj != null &&
 							(redObj instanceof String) && (greenObj instanceof String) && (blueObj instanceof String)) {
 						try {
 							int red = Integer.parseInt((String)redObj);
 							int green = Integer.parseInt((String)greenObj);
 							int blue = Integer.parseInt((String)blueObj);
-							
+
 							mCustomBackgroundColor = ((red & 0xFF ) << 16) | ((green & 0xFF ) << 8) | ((blue & 0xFF )) | 0xFF000000;
 							mCustomBackgroundColorEnable = true;
-							
+
 							tool_bar.setBackgroundColor(Color.rgb(red, green, blue));
 						}
 						catch (NumberFormatException e) {
@@ -453,7 +453,7 @@ public class SimpleMainView implements MainView {
 						}
 					}
 				}
-				
+
 				Object bkgObj = settings.get("background_color");
 				if ((bkgObj != null) && (bkgObj instanceof String)) {
 					int color = Integer.decode(((String)bkgObj)).intValue();
@@ -464,13 +464,13 @@ public class SimpleMainView implements MainView {
 					mCustomBackgroundColor = color | 0xFF000000;
 					mCustomBackgroundColorEnable = true;
 				}
-				
+
 				Object buttonsObj = settings.get("buttons");
 				if (buttonsObj != null && (buttonsObj instanceof Vector<?>))
 					buttons = (Vector<Object>)buttonsObj;
 			}
 		}
-		
+
 		if (params != null) {
 			LinearLayout group = null;
 			// First group should have gravity LEFT
@@ -479,16 +479,16 @@ public class SimpleMainView implements MainView {
 				Object param = buttons.elementAt(i);
 				if (!(param instanceof Map<?,?>))
 					throw new IllegalArgumentException("Hash expected");
-				
+
 				Map<Object, Object> hash = (Map<Object, Object>)param;
-				
+
 				View button = createButton(hash);
 				if (button == null) {
 					group = null;
 					gravity = Gravity.CENTER;
 					continue;
 				}
-				
+
 				button.setLayoutParams(new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT));
 				if (group == null) {
 					group = new LinearLayout(ctx);
@@ -499,7 +499,7 @@ public class SimpleMainView implements MainView {
 				}
 				group.addView(button);
 			}
-			
+
 			// Last group should have gravity RIGHT
 			if (group != null) {
 				group.setGravity(Gravity.RIGHT);
@@ -507,69 +507,69 @@ public class SimpleMainView implements MainView {
 			}
 		}
 	}
-	
+
 	private void init(MainView v, Object params) {
 		Context ctx = RhodesActivity.getContext();
-		
+
 		view = new MyView(ctx);
 		view.setOrientation(LinearLayout.VERTICAL);
 		view.setGravity(Gravity.BOTTOM);
 		view.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, FILL_PARENT));
-		
+
 		webView = null;
 		if (v != null)
 			webView = v.detachWebView();
 		if (webView == null)
 			webView = RhodesActivity.safeGetInstance().createWebView();
 		view.addView(webView, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
-		
+
 		LinearLayout bottom = new LinearLayout(ctx);
 		bottom.setOrientation(LinearLayout.HORIZONTAL);
 		bottom.setBackgroundColor(Color.GRAY);
 		bottom.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, WRAP_CONTENT, 0));
 		view.addView(bottom);
-		
+
 		toolBar = bottom;
-		
+
 		setupToolbar(toolBar, params);
-		
-		
+
+
 		webView.requestFocus();
 	}
-	
+
 	public SimpleMainView() {
 		init(null, null);
 	}
-	
+
 	public SimpleMainView(MainView v) {
 		init(v, null);
 	}
-	
+
 	public SimpleMainView(MainView v, Object params) {
 		init(v, params);
 	}
-	
+
 	public void setWebBackgroundColor(int color) {
 		view.setBackgroundColor(color);
 		webView.setBackgroundColor(color);
 	}
-	
+
 	public void back(int index) {
 		restoreWebView();
-        
+
         boolean bStartPage = RhodesService.isOnStartPage();
 
-        if ( !bStartPage && webView.canGoBack() )		
+        if ( !bStartPage && webView.canGoBack() )
             webView.goBack();
         else
-        {    
+        {
 	        RhodesActivity ra = RhodesActivity.getInstance();
 	        if ( ra != null )
 	            ra.moveTaskToBack(true);
-        }		
+        }
 	}
-	
-	public void goBack() 
+
+	public void goBack()
 	{
 		RhodesService.navigateBack();
 	}
@@ -589,7 +589,7 @@ public class SimpleMainView implements MainView {
 			}
 		}
 	}
-	
+
 	public void reload(int index) {
 		if (mNativeViewView != null) {
 			mNativeViewView.invalidate();
@@ -598,7 +598,7 @@ public class SimpleMainView implements MainView {
 			webView.reload();
 		}
 	}
-	
+
 	public String currentLocation(int index) {
 		return webView.getUrl();
 	}
@@ -606,11 +606,11 @@ public class SimpleMainView implements MainView {
 	public void switchTab(int index) {
 		// Nothing
 	}
-	
+
 	public int activeTab() {
 		return 0;
 	}
-	
+
 	public void loadData(String data, int index) {
 		restoreWebView();
 		webView.loadData(data, "text/html", "utf-8");
@@ -618,43 +618,43 @@ public class SimpleMainView implements MainView {
 
 	public void addNavBar(String title, Map<Object,Object> left, Map<Object,Object> right) {
 		removeNavBar();
-		
+
 		Context ctx = RhodesActivity.getContext();
-		
+
 		LinearLayout top = new LinearLayout(ctx);
 		top.setOrientation(LinearLayout.HORIZONTAL);
 		top.setBackgroundColor(Color.GRAY);
 		top.setGravity(Gravity.CENTER);
 		top.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, WRAP_CONTENT, 0));
-		
+
 		View leftButton = createButton(left);
 		leftButton.setLayoutParams(new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT, 1));
 		top.addView(leftButton);
-		
+
 		TextView label = new TextView(ctx);
 		label.setText(title);
 		label.setGravity(Gravity.CENTER);
 		label.setTextSize((float)30.0);
 		label.setLayoutParams(new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT, 2));
 		top.addView(label);
-		
+
 		if (right != null) {
 			View rightButton = createButton(right);
 			rightButton.setLayoutParams(new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT, 1));
 			top.addView(rightButton);
 		}
-		
+
 		navBar = top;
 		view.addView(navBar, 0);
 	}
-	
+
 	public void removeNavBar() {
 		if (navBar == null)
 			return;
 		view.removeViewAt(0);
 		navBar = null;
 	}
-	
+
 	public void setToolbar(Object params) {
 		toolBar.setBackgroundColor(Color.GRAY);
 		toolBar.removeAllViews();
@@ -662,7 +662,7 @@ public class SimpleMainView implements MainView {
 		toolBar.requestLayout();
 		view.requestLayout();
 	}
-	
+
 	public void removeToolbar() {
 		toolBar.removeAllViews();
 		toolBar.requestLayout();

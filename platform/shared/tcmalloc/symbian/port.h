@@ -35,7 +35,7 @@ class SpinLock {
     return true;
   }
  private:
-  //void InitializeMutex() { 
+  //void InitializeMutex() {
   //    pthread_mutex_init(&mutex_, NULL);
   //}
 

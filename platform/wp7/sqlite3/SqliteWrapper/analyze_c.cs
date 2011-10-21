@@ -43,7 +43,7 @@ namespace Community.CsharpSqlite
     **
     ** If the sqlite_stat1 tables does not previously exist, it is created.
     ** Similarly, if the sqlite_stat2 table does not exist and the library
-    ** is compiled with SQLITE_ENABLE_STAT2 defined, it is created. 
+    ** is compiled with SQLITE_ENABLE_STAT2 defined, it is created.
     **
     ** Argument zWhere may be a pointer to a buffer containing a table name,
     ** or it may be a NULL pointer. If it is not NULL, then all entries in
@@ -94,9 +94,9 @@ new _aTable( "sqlite_stat2", "tbl,idx,sampleno,sample" ),
         Table pStat;
         if ( ( pStat = sqlite3FindTable( db, zTab, pDb.zName ) ) == null )
         {
-          /* The sqlite_stat[12] table does not exist. Create it. Note that a 
-          ** side-effect of the CREATE TABLE statement is to leave the rootpage 
-          ** of the new table in register pParse.regRoot. This is important 
+          /* The sqlite_stat[12] table does not exist. Create it. Note that a
+          ** side-effect of the CREATE TABLE statement is to leave the rootpage
+          ** of the new table in register pParse.regRoot. This is important
           ** because the OpenWrite opcode below will be needing it. */
           sqlite3NestedParse( pParse,
           "CREATE TABLE %Q.%s(%s)", pDb.zName, zTab, aTable[i].zCols
@@ -106,7 +106,7 @@ new _aTable( "sqlite_stat2", "tbl,idx,sampleno,sample" ),
         }
         else
         {
-          /* The table already exists. If zWhere is not NULL, delete all entries 
+          /* The table already exists. If zWhere is not NULL, delete all entries
           ** associated with the table zWhere. If zWhere is NULL, delete the
           ** entire contents of the table. */
           aRoot[i] = pStat.tnum;
@@ -242,18 +242,18 @@ return;
 
         /* The block of memory cells initialized here is used as follows.
 **
-**    iMem:                
+**    iMem:
 **        The total number of rows in the table.
 **
-**    iMem+1 .. iMem+nCol: 
-**        Number of distinct entries in index considering the 
-**        left-most N columns only, where N is between 1 and nCol, 
+**    iMem+1 .. iMem+nCol:
+**        Number of distinct entries in index considering the
+**        left-most N columns only, where N is between 1 and nCol,
 **        inclusive.
 **
-**    iMem+nCol+1 .. Mem+2*nCol:  
+**    iMem+nCol+1 .. Mem+2*nCol:
 **        Previous value of indexed columns, from left to right.
 **
-** Cells iMem through iMem+nCol are initialized to 0. The others are 
+** Cells iMem through iMem+nCol are initialized to 0. The others are
 ** initialized to contain an SQL NULL.
 */
         for ( i = 0; i <= nCol; i++ )
@@ -314,8 +314,8 @@ return;
           sqlite3VdbeChangeP5( v, SQLITE_JUMPIFNULL );
         }
         //if( db.mallocFailed ){
-        //  /* If a malloc failure has occurred, then the result of the expression 
-        //  ** passed as the second argument to the call to sqlite3VdbeJumpHere() 
+        //  /* If a malloc failure has occurred, then the result of the expression
+        //  ** passed as the second argument to the call to sqlite3VdbeJumpHere()
         //  ** below may be negative. Which causes an Debug.Assert() to fail (or an
         //  ** out-of-bounds write if SQLITE_DEBUG is not defined).  */
         //  return;
@@ -347,7 +347,7 @@ return;
         **
         **        I = (K+D-1)/D
         **
-        ** If K==0 then no entry is made into the sqlite_stat1 table.  
+        ** If K==0 then no entry is made into the sqlite_stat1 table.
         ** If K>0 then it is always the case the D>0 so division by zero
         ** is never possible.
         */
@@ -603,11 +603,11 @@ return;
     ** Index.aSample[] arrays.
     **
     ** If the sqlite_stat1 table is not present in the database, SQLITE_ERROR
-    ** is returned. In this case, even if SQLITE_ENABLE_STAT2 was defined 
-    ** during compilation and the sqlite_stat2 table is present, no data is 
+    ** is returned. In this case, even if SQLITE_ENABLE_STAT2 was defined
+    ** during compilation and the sqlite_stat2 table is present, no data is
     ** read from it.
     **
-    ** If SQLITE_ENABLE_STAT2 was defined during compilation and the 
+    ** If SQLITE_ENABLE_STAT2 was defined during compilation and the
     ** sqlite_stat2 table is not present in the database, SQLITE_ERROR is
     ** returned. However, in this case, data is read from the sqlite_stat1
     ** table (if it is present) before returning.

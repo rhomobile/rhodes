@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2006 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -34,39 +34,39 @@ import javolution.util.FastCollection.Record;
 //import javolution.xml.XMLSerializable;
 
 /**
- * <p> This class represents a hash map with real-time behavior; 
- *     smooth capacity increase and <i>thread-safe</i> without external 
+ * <p> This class represents a hash map with real-time behavior;
+ *     smooth capacity increase and <i>thread-safe</i> without external
  *     synchronization when {@link #isShared shared}.</p>
  *     <img src="doc-files/map-put.png"/>
- *     
+ *
  * <p> {@link FastMap} has a predictable iteration order, which is the order in
- *     which keys are inserted into the map (similar to 
- *     <code>java.util.LinkedHashMap</code> collection class). If the map is 
- *     marked {@link #setShared(boolean) shared} then all operations are 
- *     thread-safe including iterations over the map's collections. 
+ *     which keys are inserted into the map (similar to
+ *     <code>java.util.LinkedHashMap</code> collection class). If the map is
+ *     marked {@link #setShared(boolean) shared} then all operations are
+ *     thread-safe including iterations over the map's collections.
  *     Unlike <code>ConcurrentHashMap</code>, {@link #get(Object) access} never
  *     blocks; retrieval reflects the map state not older than the last time the
  *     accessing threads have been synchronized (for multi-processors systems
  *     synchronizing ensures that the CPU internal cache is not stale).</p>
- *     
+ *
  * <p> {@link FastMap} may use custom key comparators; the default comparator is
- *     either {@link FastComparator#DIRECT DIRECT} or 
+ *     either {@link FastComparator#DIRECT DIRECT} or
  *     {@link FastComparator#REHASH REHASH} based upon the current <a href=
- *     "{@docRoot}/overview-summary.html#configuration">Javolution 
- *     Configuration</a>. Users may explicitly set the key comparator to 
+ *     "{@docRoot}/overview-summary.html#configuration">Javolution
+ *     Configuration</a>. Users may explicitly set the key comparator to
  *     {@link FastComparator#DIRECT DIRECT} for optimum performance
  *     when the hash codes are well distributed for all run-time platforms
  *     (e.g. calculated hash codes).</p>
- *     
+ *
  * <p> Custom key comparators are extremely useful for value retrieval when
- *     map's keys and argument keys are not of the same class (such as 
- *     {@link String} and {@link javolution.text.Text Text} 
+ *     map's keys and argument keys are not of the same class (such as
+ *     {@link String} and {@link javolution.text.Text Text}
  *     ({@link FastComparator#LEXICAL LEXICAL})), to substitute more efficient
- *     hash code calculations ({@link FastComparator#STRING STRING}) 
+ *     hash code calculations ({@link FastComparator#STRING STRING})
  *     or for identity maps ({@link FastComparator#IDENTITY IDENTITY}):[code]
  *     FastMap identityMap = new FastMap().setKeyComparator(FastComparator.IDENTITY);
  *     [/code]</p>
- * 
+ *
  * <p> {@link FastMap.Entry} can quickly be iterated over (forward or backward)
  *     without using iterators. For example:[code]
  *     FastMap<String, Thread> map = ...;
@@ -74,39 +74,39 @@ import javolution.util.FastCollection.Record;
  *          String key = e.getKey(); // No typecast necessary.
  *          Thread value = e.getValue(); // No typecast necessary.
  *     }[/code]</p>
- *     
- * <p> Custom map implementations may override the {@link #newEntry} method 
- *     in order to return their own  {@link Entry} implementation (with 
+ *
+ * <p> Custom map implementations may override the {@link #newEntry} method
+ *     in order to return their own  {@link Entry} implementation (with
  *     additional fields for example).</p>
- *     
- * <p> {@link FastMap} are {@link Reusable reusable}; they maintain an 
+ *
+ * <p> {@link FastMap} are {@link Reusable reusable}; they maintain an
  *     internal pool of <code>Map.Entry</code> objects. When an entry is removed
  *     from a map, it is automatically restored to its pool (unless the map
- *     is shared in which case the removed entry is candidate for garbage 
+ *     is shared in which case the removed entry is candidate for garbage
  *     collection as it cannot be safely recycled).</p>
- *     
- * <p> Shared maps do not use internal synchronization, except in case of 
+ *
+ * <p> Shared maps do not use internal synchronization, except in case of
  *     concurrent modifications of the map structure (entry added/deleted).
  *     Reads and iterations are never synchronized and never blocking.
- *     With regards to the memory model, shared maps are equivalent to shared 
+ *     With regards to the memory model, shared maps are equivalent to shared
  *     non-volatile variables (no "happen before" guarantee). There are
  *     typically used as lookup tables. For example:[code]
  *     public class Unit {
- *         static FastMap<Unit, String> labels = new FastMap().setShared(true); 
+ *         static FastMap<Unit, String> labels = new FastMap().setShared(true);
  *         ...
  *         public String toString() {
  *             String label = labels.get(this); // No synchronization.
  *             return label != null ? label : makeLabel();
  *         }
  *    }[/code]</p>
- *            
+ *
  * <p> <b>Implementation Note:</b> To maintain time-determinism, rehash/resize
- *     is performed only when the map's size is small (see chart). For large 
- *     maps (size > 512), the collection is divided recursively into (64) 
- *     smaller sub-maps. The cost of the dispatching (based upon hashcode 
- *     value) has been measured to be at most 20% of the access time 
+ *     is performed only when the map's size is small (see chart). For large
+ *     maps (size > 512), the collection is divided recursively into (64)
+ *     smaller sub-maps. The cost of the dispatching (based upon hashcode
+ *     value) has been measured to be at most 20% of the access time
  *     (and most often way less).</p>
- *            
+ *
  * @author <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle </a>
  * @version 5.2, September 11, 2007
  */
@@ -141,7 +141,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
     private transient Entry/*<K,V>*/_tail;
 
     /**
-     * Holds the map's entries. 
+     * Holds the map's entries.
      */
     private transient Entry/*<K,V>*/[] _entries;
 
@@ -157,7 +157,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
     private transient int _nullCount;
 
     /**
-     * Holds sub-maps (for large collection). 
+     * Holds sub-maps (for large collection).
      */
     private transient FastMap[] _subMaps;
 
@@ -212,7 +212,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
     private transient boolean _isShared;
 
     /**
-     * Creates a map whose capacity increment smoothly without large resize 
+     * Creates a map whose capacity increment smoothly without large resize
      * operations.
      */
     public FastMap() {
@@ -222,7 +222,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
     /**
      * Creates a persistent map associated to the specified unique identifier
      * (convenience method).
-     * 
+     *
      * @param id the unique identifier for this map.
      * @throws IllegalArgumentException if the identifier is not unique.
      * @see javolution.context.PersistentContext.Reference
@@ -238,9 +238,9 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
     }
 
     /**
-     * Creates a map of specified maximum size (a full resize may occur if the 
+     * Creates a map of specified maximum size (a full resize may occur if the
      * specififed capacity is exceeded).
-     * 
+     *
      * @param capacity the maximum capacity.
      */
     public FastMap(int capacity) {
@@ -297,7 +297,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
 
     /**
      * Recycles the specified map instance.
-     * 
+     *
      * @param instance the map instance to recycle.
      */
     public static void recycle(FastMap instance) {
@@ -307,7 +307,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
     /**
      * Returns the head entry of this map.
      *
-     * @return the entry such as <code>head().getNext()</code> holds 
+     * @return the entry such as <code>head().getNext()</code> holds
      *         the first map entry.
      */
     public final Entry/*<K,V>*/head() {
@@ -326,10 +326,10 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
 
     /**
      * Returns the number of key-value mappings in this {@link FastMap}.
-     * 
-     * <p>Note: If concurrent updates are performed, application should not 
-     *          rely upon the size during iterations.</p> 
-     * 
+     *
+     * <p>Note: If concurrent updates are performed, application should not
+     *          rely upon the size during iterations.</p>
+     *
      * @return this map's size.
      */
     public final int size() {
@@ -344,7 +344,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
 
     /**
      * Indicates if this map contains no key-value mappings.
-     * 
+     *
      * @return <code>true</code> if this map contains no key-value mappings;
      *         <code>false</code> otherwise.
      */
@@ -354,7 +354,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
 
     /**
      * Indicates if this map contains a mapping for the specified key.
-     * 
+     *
      * @param key the key whose presence in this map is to be tested.
      * @return <code>true</code> if this map contains a mapping for the
      *         specified key; <code>false</code> otherwise.
@@ -366,7 +366,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
 
     /**
      * Indicates if this map associates one or more keys to the specified value.
-     * 
+     *
      * @param value the value whose presence in this map is to be tested.
      * @return <code>true</code> if this map maps one or more keys to the
      *         specified value.
@@ -378,9 +378,9 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
 
     /**
      * Returns the value to which this map associates the specified key.
-     * This method is always thread-safe regardless whether or not the map 
+     * This method is always thread-safe regardless whether or not the map
      * is marked {@link #isShared() shared}.
-     * 
+     *
      * @param key the key whose associated value is to be returned.
      * @return the value to which this map maps the specified key, or
      *         <code>null</code> if there is no mapping for the key.
@@ -394,7 +394,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
     /**
      * Returns the entry with the specified key.
      * This method is always thread-safe without synchronization.
-     * 
+     *
      * @param key the key whose associated entry is to be returned.
      * @return the entry for the specified key or <code>null</code> if none.
      */
@@ -429,7 +429,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
      * If this map previously contained a mapping for this key, the old value
      * is replaced. For {@link #isShared() shared} map, internal synchronization
      * is performed only when new entries are created.
-     * 
+     *
      * @param key the key with which the specified value is to be associated.
      * @param value the value to be associated with the specified key.
      * @return the previous value associated with specified key, or
@@ -526,7 +526,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
                         Object[] tmp = (Object[]) ArrayFactory.OBJECTS_FACTORY
                                 .array(_entries.length);
                         System.arraycopy(_entries, 0, tmp, 0, _entries.length);
-                        FastMap.reset(_entries); // Ok not shared. 
+                        FastMap.reset(_entries); // Ok not shared.
                         copyEntries(tmp, _entries, _entries.length);
                         FastMap.reset(tmp); // Clear references.
                         ArrayFactory.OBJECTS_FACTORY.recycle(tmp);
@@ -548,7 +548,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
                     _subMaps = newSubMaps(tableLength >> (B2 - 1));
                 }
 
-                // Copies the current entries to sub-maps. 
+                // Copies the current entries to sub-maps.
                 for (int i = 0; i < _entries.length;) {
                     Entry entry = _entries[i++];
                     if ((entry == null) || (entry == Entry.NULL))
@@ -566,7 +566,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
                         return;
                     }
                 }
-                _useSubMaps = ONE_VOLATILE == 1 ? true : false; // Prevents reordering.   
+                _useSubMaps = ONE_VOLATILE == 1 ? true : false; // Prevents reordering.
             }
         });
     }
@@ -613,7 +613,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
 
     /**
      * Copies all of the mappings from the specified map to this map.
-     * 
+     *
      * @param map the mappings to be stored in this map.
      * @throws NullPointerException the specified map is <code>null</code>,
      *         or the specified map contains <code>null</code> keys.
@@ -633,7 +633,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
      *   else
      *       return map.get(key);[/code]
      * except that for shared maps the action is performed atomically.
-     * For shared maps, this method guarantees that if two threads try to 
+     * For shared maps, this method guarantees that if two threads try to
      * put the same key concurrently only one of them will succeed.
      *
      * @param key the key with which the specified value is to be associated.
@@ -651,15 +651,15 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
     }
 
     /**
-     * Removes the entry for the specified key if present. The entry 
+     * Removes the entry for the specified key if present. The entry
      * is recycled if the map is not marked as {@link #isShared shared};
      * otherwise the entry is candidate for garbage collection.
-     * 
+     *
      * <p> Note: Shared maps in ImmortalMemory (e.g. static) should not remove
      *           their entries as it could cause a memory leak (ImmortalMemory
-     *           is never garbage collected), instead they should set their 
-     *           entry values to <code>null</code>.</p> 
-     * 
+     *           is never garbage collected), instead they should set their
+     *           entry values to <code>null</code>.</p>
+     *
      * @param key the key whose mapping is to be removed from the map.
      * @return previous value associated with specified key, or
      *         <code>null</code> if there was no mapping for key. A
@@ -719,17 +719,17 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
     }
 
     /**
-     * <p> Sets the shared status of this map (whether the map is thread-safe 
-     *     or not). Shared maps are typically used for lookup table (e.g. static 
-     *     instances in ImmortalMemory). They support concurrent access 
-     *     (e.g. iterations) without synchronization, the maps updates 
+     * <p> Sets the shared status of this map (whether the map is thread-safe
+     *     or not). Shared maps are typically used for lookup table (e.g. static
+     *     instances in ImmortalMemory). They support concurrent access
+     *     (e.g. iterations) without synchronization, the maps updates
      *     themselves are synchronized internally.</p>
-     * <p> Unlike <code>ConcurrentHashMap</code> access to a shared map never 
-     *     blocks. Retrieval reflects the map state not older than the last 
+     * <p> Unlike <code>ConcurrentHashMap</code> access to a shared map never
+     *     blocks. Retrieval reflects the map state not older than the last
      *     time the accessing thread has been synchronized (for multi-processors
-     *     systems synchronizing ensures that the CPU internal cache is not 
+     *     systems synchronizing ensures that the CPU internal cache is not
      *     stale).</p>
-     * 
+     *
      * @param isShared <code>true</code> if this map is shared and thread-safe;
      *        <code>false</code> otherwise.
      * @return <code>this</code>
@@ -740,10 +740,10 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
     }
 
     /**
-     * Indicates if this map supports concurrent operations without 
+     * Indicates if this map supports concurrent operations without
      * synchronization (default unshared).
-     * 
-     * @return <code>true</code> if this map is thread-safe; <code>false</code> 
+     *
+     * @return <code>true</code> if this map is thread-safe; <code>false</code>
      *         otherwise.
      */
     public boolean isShared() {
@@ -752,7 +752,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
 
     /**
      * Sets the key comparator for this fast map.
-     * 
+     *
      * @param keyComparator the key comparator.
      * @return <code>this</code>
      */
@@ -766,7 +766,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
 
     /**
      * Returns the key comparator for this fast map.
-     * 
+     *
      * @return the key comparator.
      */
     public FastComparator/*<? super K>*/getKeyComparator() {
@@ -775,7 +775,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
 
     /**
      * Sets the value comparator for this map.
-     * 
+     *
      * @param valueComparator the value comparator.
      * @return <code>this</code>
      */
@@ -787,7 +787,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
 
     /**
      * Returns the value comparator for this fast map.
-     * 
+     *
      * @return the value comparator.
      */
     public FastComparator/*<? super V>*/getValueComparator() {
@@ -795,14 +795,14 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
     }
 
     /**
-     * Removes all map's entries. The entries are removed and recycled; 
-     * unless this map is {@link #isShared shared} in which case the entries 
+     * Removes all map's entries. The entries are removed and recycled;
+     * unless this map is {@link #isShared shared} in which case the entries
      * are candidate for garbage collection.
-     * 
+     *
      * <p> Note: Shared maps in ImmortalMemory (e.g. static) should not remove
      *           their entries as it could cause a memory leak (ImmortalMemory
-     *           is never garbage collected), instead they should set their 
-     *           entry values to <code>null</code>.</p> 
+     *           is never garbage collected), instead they should set their
+     *           entry values to <code>null</code>.</p>
      */
     public final void clear() {
         if (_isShared) {
@@ -814,7 +814,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
             e._key = null;
             e._value = null;
         }
-        _tail = _head._next; // Reuse linked list of entries.       
+        _tail = _head._next; // Reuse linked list of entries.
         clearTables();
     }
 
@@ -831,9 +831,9 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
     }
 
     private synchronized void clearShared() {
-        // We do not modify the linked list of entries (e.g. key, values) 
+        // We do not modify the linked list of entries (e.g. key, values)
         // Concurrent iterations can still proceed unaffected.
-        // The linked list fragment is detached from the map and will be 
+        // The linked list fragment is detached from the map and will be
         // garbage collected once all concurrent iterations are completed.
         _head._next = _tail;
         _tail._previous = _head;
@@ -857,7 +857,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
      * Returns <code>true</code> if the given object is also a map and the two
      * maps represent the same mappings (regardless of collection iteration
      * order).
-     * 
+     *
      * @param obj the object to be compared for equality with this map.
      * @return <code>true</code> if the specified object is equal to this map;
      *         <code>false</code> otherwise.
@@ -875,7 +875,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
 
     /**
      * Returns the hash code value for this map.
-     * 
+     *
      * @return the hash code value for this map.
      */
     public int hashCode() {
@@ -888,7 +888,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
 
     /**
      * Returns the textual representation of this map.
-     * 
+     *
      * @return the textual representation of the entry set.
      */
     public Text toText() {
@@ -896,7 +896,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
     }
 
     /**
-     * Returns the <code>String</code> representation of this 
+     * Returns the <code>String</code> representation of this
      * {@link FastMap}.
      *
      * @return <code>toText().toString()</code>
@@ -906,8 +906,8 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
     }
 
     /**
-     * Returns a new entry for this map; this method can be overriden by 
-     * custom map implementations. 
+     * Returns a new entry for this map; this method can be overriden by
+     * custom map implementations.
      *
      * @return a new entry.
      */
@@ -918,9 +918,9 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
     /**
      * Prints the current statistics on this map.
      * This method may help identify poorly defined hash functions.
-     * The average distance should be less than 20% (most of the entries 
-     * are in their slots or close). 
-     *  
+     * The average distance should be less than 20% (most of the entries
+     * are in their slots or close).
+     *
      * @param out the stream to use for output (e.g. <code>System.out</code>)
      */
     public void printStatistics(PrintStream out) {
@@ -1024,15 +1024,15 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
     /**
      * Returns a {@link FastCollection} view of the values contained in this
      * map. The collection is backed by the map, so changes to the
-     * map are reflected in the collection, and vice-versa. The collection 
+     * map are reflected in the collection, and vice-versa. The collection
      * supports element removal, which removes the corresponding mapping from
-     * this map, via the <code>Iterator.remove</code>, 
+     * this map, via the <code>Iterator.remove</code>,
      * <code>Collection.remove</code>, <code>removeAll</code>,
-     * <code>retainAll</code> and <code>clear</code> operations. 
-     * It does not support the <code>add</code> or <code>addAll</code> 
+     * <code>retainAll</code> and <code>clear</code> operations.
+     * It does not support the <code>add</code> or <code>addAll</code>
      * operations.
-     * 
-     * @return a collection view of the values contained in this map 
+     *
+     * @return a collection view of the values contained in this map
      *         (instance of {@link FastCollection}).
      */
     public final Collection/*<V>*/values() {
@@ -1143,7 +1143,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
 
     /**
      * Returns a {@link FastCollection} view of the mappings contained in this
-     * map. Each element in the returned collection is a 
+     * map. Each element in the returned collection is a
      * <code>FastMap.Entry</code>. The collection is backed by the map, so
      * changes to the map are reflected in the collection, and vice-versa. The
      * collection supports element removal, which removes the corresponding
@@ -1151,7 +1151,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
      * <code>Collection.remove</code>,<code>removeAll</code>,
      * <code>retainAll</code>, and <code>clear</code> operations. It does
      * not support the <code>add</code> or <code>addAll</code> operations.
-     * 
+     *
      * @return a collection view of the mappings contained in this map
      *         (instance of {@link FastCollection}).
      */
@@ -1313,15 +1313,15 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
     }
 
     /**
-     * Returns a {@link FastCollection} view of the keys contained in this 
+     * Returns a {@link FastCollection} view of the keys contained in this
      * map. The set is backed by the map, so changes to the map are reflected
-     * in the set, and vice-versa. The set supports element removal, which 
-     * removes the corresponding mapping from this map, via the 
+     * in the set, and vice-versa. The set supports element removal, which
+     * removes the corresponding mapping from this map, via the
      * <code>Iterator.remove</code>,
      <code>Collection.remove</code>,<code>removeAll<f/code>,
      * <code>retainAll</code>, and <code>clear</code> operations. It does
      * not support the <code>add</code> or <code>addAll</code> operations.
-     * 
+     *
      * @return a set view of the keys contained in this map
      *         (instance of {@link FastCollection}).
      */
@@ -1440,13 +1440,13 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
 
     /**
      * Returns the unmodifiable view associated to this map.
-     * Attempts to modify the returned map or to directly access its  
+     * Attempts to modify the returned map or to directly access its
      * (modifiable) map entries (e.g. <code>unmodifiable().entrySet()</code>)
      * result in an {@link UnsupportedOperationException} being thrown.
      * Unmodifiable {@link FastCollection} views of this map keys and values
-     * are nonetheless obtainable (e.g. <code>unmodifiable().keySet(), 
-     * <code>unmodifiable().values()</code>). 
-     *  
+     * are nonetheless obtainable (e.g. <code>unmodifiable().keySet(),
+     * <code>unmodifiable().values()</code>).
+     *
      * @return an unmodifiable view of this map.
      */
     public final Map/*<K,V>*/unmodifiable() {
@@ -1517,7 +1517,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
      *        }
      *        class MyEntry extends Entry<K,V> {
      *            X xxx; // Additional entry field (e.g. cross references).
-     *        }        
+     *        }
      *    }[/code]
      */
     public static class Entry/*<K,V>*/implements Map.Entry/*<K,V>*/, Record {
@@ -1560,7 +1560,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
 
         /**
          * Returns the entry after this one.
-         * 
+         *
          * @return the next entry.
          */
         public final Record/*Entry<K,V>*/getNext() {
@@ -1569,7 +1569,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
 
         /**
          * Returns the entry before this one.
-         * 
+         *
          * @return the previous entry.
          */
         public final Record/*Entry<K,V>*/getPrevious() {
@@ -1578,7 +1578,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
 
         /**
          * Returns the key for this entry.
-         * 
+         *
          * @return the entry key.
          */
         public final Object/*{K}*/getKey() {
@@ -1587,7 +1587,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
 
         /**
          * Returns the value for this entry.
-         * 
+         *
          * @return the entry value.
          */
         public final Object/*{V}*/getValue() {
@@ -1596,7 +1596,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
 
         /**
          * Sets the value for this entry.
-         * 
+         *
          * @param value the new value.
          * @return the previous value.
          */
@@ -1609,7 +1609,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
         /**
          * Indicates if this entry is considered equals to the specified entry
          * (using default value and key equality comparator to ensure symetry).
-         * 
+         *
          * @param that the object to test for equality.
          * @return <code>true<code> if both entry have equal keys and values.
          *         <code>false<code> otherwise.
@@ -1627,7 +1627,7 @@ public class FastMap/*<K,V>*/implements Map/*<K,V>*/, Reusable,
 
         /**
          * Returns the hash code for this entry.
-         * 
+         *
          * @return this entry hash code.
          */
         public int hashCode() {

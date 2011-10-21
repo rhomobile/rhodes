@@ -51,11 +51,11 @@ module NetHTTPSpecs
   class << self
     @@server = nil
     @@server_port = 0
-    
+
     def server_port
         @@server_port
     end
-    
+
     def start_server
       unless @@server
         @@server_port = System::get_property('free_server_port')

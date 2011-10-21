@@ -1,4 +1,4 @@
-/* 
+/*
  * $Id: PatternMatchingEngine.java 124053 2005-01-04 01:24:35Z dfs $
  *
  * Copyright 2000-2005 The Apache Software Foundation
@@ -27,7 +27,7 @@ package org.apache.oro.text.regex;
  * Implementations of PatternMatchingEngine can wrap any regular
  * expression implementation and make them usable using the
  * jakarta-oro interfaces.
- * 
+ *
  * @version @version@
  * @since 2.1
  */

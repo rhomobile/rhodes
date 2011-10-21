@@ -72,7 +72,7 @@ public class RubyRegexp extends RubyBasic {
     	pattern_ = ((RubyRegexp)orig).pattern_;
     	super.doClone(orig);
     }
-    
+
     private void setValue(String v, int mode) {
         PatternCompiler compiler = new Perl5Compiler();
 
@@ -125,7 +125,7 @@ public class RubyRegexp extends RubyBasic {
     public static final int RE_OPTION_IGNORECASE = 1;
     public static final int RE_OPTION_EXTENDED   = 0x0020;
     public static final int RE_OPTION_MULTILINE   = 0x0008;
-    
+
     private int getFlag(RubyValue mode) {
         if (mode instanceof RubyFixnum) {
             return mode.toInt();
@@ -156,8 +156,8 @@ public class RubyRegexp extends RubyBasic {
             return RubyConstant.QFALSE;
         }*/
     	if ( arg == RubyConstant.QNIL )
-    		return RubyConstant.QNIL; 
-    	
+    		return RubyConstant.QNIL;
+
         RubyMatchData m = this.match(arg.toStr());
         if (null == m) {
             return RubyConstant.QNIL;
@@ -231,9 +231,9 @@ public class RubyRegexp extends RubyBasic {
         if (m.contains(input, pattern_)) {
             MatchResult r = m.getMatch();
             RubyMatchData mData = ObjectFactory.createMatchData(r,input);
-            
+
             updateGlobalVariables(r,mData);
-            
+
             return mData;
         } else {
             clearGlobalVariables();
@@ -281,7 +281,7 @@ public class RubyRegexp extends RubyBasic {
             } else {
                 RubyArray subarray = new RubyArray();
                 for (int i = 1; i < r.groups(); ++i) {
-                	
+
                 	String res = r.group(i);
                 	if ( res != null )
                 		subarray.add(ObjectFactory.createString(res));
@@ -298,7 +298,7 @@ public class RubyRegexp extends RubyBasic {
         if (m.contains(input, pattern_)) {
             MatchResult r = m.getMatch();
             updateGlobalVariables(r, input);
-            
+
             return r.beginOffset(0);
         } else {
             clearGlobalVariables();
@@ -421,18 +421,18 @@ public class RubyRegexp extends RubyBasic {
         return ObjectFactory.createString(pattern_.getPattern());
     }
 
-    private void updateGlobalVariables(MatchResult r, String strInput) 
+    private void updateGlobalVariables(MatchResult r, String strInput)
     {
         RubyMatchData mData = ObjectFactory.createMatchData(r,strInput);
         updateGlobalVariables(r, mData);
     }
-    
-    private void updateGlobalVariables(MatchResult r, RubyMatchData mData) 
+
+    private void updateGlobalVariables(MatchResult r, RubyMatchData mData)
     {
     	GlobalVariables.set(mData, "$~");
     	GlobalVariables.set(mData.post_match(), "$'");
     	GlobalVariables.set(mData.pre_match(), "$`");
-    	
+
         GlobalVariables.set(ObjectFactory.createString(r.group(0)), "$&");
         for (int i = 1; i < r.groups(); ++i) {
             String s = r.group(i);
@@ -457,7 +457,7 @@ public class RubyRegexp extends RubyBasic {
         GlobalVariables.set(RubyConstant.QNIL, "$8");
         GlobalVariables.set(RubyConstant.QNIL, "$9");
     }
-    
+
     //RHO_COMMENT
-    public Pattern getPattern(){ return pattern_; }    
+    public Pattern getPattern(){ return pattern_; }
 }

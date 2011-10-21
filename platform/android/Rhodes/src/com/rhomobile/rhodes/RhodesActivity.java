@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -60,61 +60,61 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 public class RhodesActivity extends BaseActivity {
-	
+
 	private static final String TAG = RhodesActivity.class.getSimpleName();
-	
+
 	private static final boolean DEBUG = false;
-	
+
 	private static final boolean USE_DELAYED_MAINVIEW_DISPLAY = false;
-	
+
 	public static boolean ENABLE_LOADING_INDICATION = true;
-	
+
 	public static int MAX_PROGRESS = 10000;
-	
+
 	private static RhodesActivity sInstance = null;
-	
+
 	private Handler mHandler;
-	
+
 	private SplashScreen mSplashScreen;
-	
+
 	private MainView mMainView;
-	
+
 	private RhoMenu mAppMenu;
-	
+
 	private WebChromeClient mChromeClient;
 	private WebViewClient mWebViewClient;
 	private RhoWebSettings mWebSettings;
 
-	
+
 	private long uiThreadId = 0;
-	
+
 	public long getUiThreadId() {
 		return uiThreadId;
 	}
-	
+
 	private ArrayList<RhodesActivityListener> mListeners = null;
-	
+
 	private boolean mIsForeground = false;
 	private boolean mIsInsideStartStop = false;
-	
+
 	public boolean isForegroundNow() {
 		return mIsForeground;
 	}
-	
+
 	public boolean isInsideStartStop() {
 		return mIsInsideStartStop;
 	}
-	
+
 	public void addRhodesActivityListener(RhodesActivityListener listener) {
 		if (!mListeners.contains(listener)) {
 			mListeners.add(listener);
 		}
 	}
-	
+
 	public void removeRhodesActivityListener(RhodesActivityListener listener) {
 		mListeners.remove(listener);
 	}
-	
+
 	public void processStartupListeners() {
 		int i;
 		for (i = 1; i < RhodesActivityStartupListeners.ourRunnableList.length; i++) {
@@ -143,13 +143,13 @@ public class RhodesActivity extends BaseActivity {
 			}
 		}
 	}
-	
-	
+
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		
+
 		super.onCreate(savedInstanceState);
-		
+
 		mListeners = new ArrayList<RhodesActivityListener>();
 
 		Thread ct = Thread.currentThread();
@@ -157,7 +157,7 @@ public class RhodesActivity extends BaseActivity {
 		uiThreadId = ct.getId();
 
 		sInstance = this;
-		
+
 		Camera.init_from_UI_Thread();
 
 		if (!RhodesService.isTitleEnabled()) {
@@ -184,11 +184,11 @@ public class RhodesActivity extends BaseActivity {
         		iterator.next().onCreate(this, getIntent());
         	}
         }
-		
+
 		notifyUiCreated();
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityCreated);
 	}
-	
+
 	private void notifyUiCreated() {
 		RhodesService r = RhodesService.getInstance();
 		if ( r != null ) {
@@ -204,13 +204,13 @@ public class RhodesActivity extends BaseActivity {
 						mHandler.postDelayed(this, 100);
 						return;
 					}
-				
+
 					r.callUiCreatedCallback();
 				}
 			});
 		}
 	}
-	
+
 	public static void setFullscreen(int enable) {
 		//Utils.platformLog(TAG, "setFullscreen("+String.valueOf(enable)+")");
 		final int en = enable;
@@ -250,10 +250,10 @@ public class RhodesActivity extends BaseActivity {
 
         Log.d(TAG, "RhodesActivity.onStart()");
         mIsInsideStartStop = true;
-        
+
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityStarted);
 	}
-	
+
 	@Override
 	public void onResume() {
         Log.d(TAG, "RhodesActivity.onResume()");
@@ -268,7 +268,7 @@ public class RhodesActivity extends BaseActivity {
 	}
 
     @Override
-    public void onPause() 
+    public void onPause()
     {
     	mIsForeground = false;
         {
@@ -285,22 +285,22 @@ public class RhodesActivity extends BaseActivity {
     }
 
     @Override
-	public void onStop() 
+	public void onStop()
 	{
 		super.onStop();
         Log.d(TAG, "RhodesActivity.onStop()");
         mIsInsideStartStop = false;
 	}
-	
+
 	@Override
 	public void onDestroy() {
         Log.d(TAG, "RhodesActivity.onDestroy()");
-        
+
         //TODO: Check is it really correct in case activity killed immediately after onPause()
         sInstance = null;
 		super.onDestroy();
 	}
-	
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
@@ -310,15 +310,15 @@ public class RhodesActivity extends BaseActivity {
 				Log.d(TAG, "onKeyDown: r=" + r);
 			if (r == null)
 				return false;
-			
+
 			MainView v = r.getMainView();
 			v.goBack();//back(v.activeTab());
 			return true;
 		}
-		
+
 		return super.onKeyDown(keyCode, event);
 	}
-	
+
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
@@ -332,7 +332,7 @@ public class RhodesActivity extends BaseActivity {
 			return false;
 		return mAppMenu.onMenuItemSelected(item);
 	}
-	
+
 	@Deprecated
 	public static RhodesActivity getInstance() {
 		return sInstance;
@@ -348,35 +348,35 @@ public class RhodesActivity extends BaseActivity {
 	public RhodesService getService() {
 		return mRhodesService;
 	}
-	
+
 	public void post(Runnable r) {
 		mHandler.post(r);
 	}
-	
+
 	public void post(Runnable r, long delay) {
 		mHandler.postDelayed(r, delay);
 	}
-	
+
 	public SplashScreen getSplashScreen() {
 		return mSplashScreen;
 	}
-	
+
 	public void setMainView(MainView v) {
 		setMainView(v, true);
 	}
-	
+
 	public void setMainView(final MainView v, boolean waitUntilNavigationDone) {
 		if (DEBUG)
 			Log.d(TAG, "setMainView: v=" + v + "; mMainView=" + mMainView);
-		
+
 		// If there's no previous mMainView, don't wait
 		if (mMainView == null)
 			waitUntilNavigationDone = false;
-		
+
 		// Set mMainView right now but not yet do it visible
 		mMainView = v;
 
-		// This is action need to be executed when mMainView should become visible 
+		// This is action need to be executed when mMainView should become visible
 		final Runnable setMainViewVisible = new Runnable() {
 			public void run() {
 				if (DEBUG)
@@ -384,7 +384,7 @@ public class RhodesActivity extends BaseActivity {
 				setContentView(v.getView());
 			}
 		};
-		
+
 		if (!USE_DELAYED_MAINVIEW_DISPLAY /* || !waitUntilNavigationDone*/) {
 			// Make new MainView visible right now
 			setMainViewVisible.run();
@@ -404,27 +404,27 @@ public class RhodesActivity extends BaseActivity {
 					// Restore standard WebViewClient to be sure this callback will not
 					// be called anymore (it should be called only once)
 					view.setWebViewClient(mWebViewClient);
-					
+
 					setMainViewVisible.run();
 				}
 			});
 		}
 	}
-	
+
 	public MainView getMainView() {
 		return mMainView;
 	}
-	
+
 	public WebView createWebView() {
 		WebView view = new WebView(this);
 		mWebSettings.setWebSettings(view);
 		view.setWebChromeClient(mChromeClient);
 		view.setWebViewClient(mWebViewClient);
 		view.clearCache(true);
-		
+
 		return view;
 	}
-	
+
 	private void initWebStuff() {
 		String ccName;
 		String wsName;
@@ -437,22 +437,22 @@ public class RhodesActivity extends BaseActivity {
 			ccName = "ChromeClientNew";
 			wsName = "RhoWebSettingsNew";
 		}
-		
+
 		try {
 			String pkgname = ChromeClientOld.class.getPackage().getName();
 			String fullName = pkgname + "." + ccName;
 			Class<? extends WebChromeClient> ccClass =
 				Class.forName(fullName).asSubclass(WebChromeClient.class);
-			
+
 			Constructor<? extends WebChromeClient> ctor = ccClass.getConstructor(RhodesActivity.class);
 			mChromeClient = ctor.newInstance(this);
-			
+
 			pkgname = RhoWebSettings.class.getPackage().getName();
 			fullName = pkgname + "." + wsName;
 			Class<? extends RhoWebSettings> wsClass =
 				Class.forName(fullName).asSubclass(RhoWebSettings.class);
 			mWebSettings = wsClass.newInstance();
-			
+
 			mWebViewClient = new RhoWebViewClient();
 		}
 		catch (Exception e) {
@@ -477,14 +477,14 @@ public class RhodesActivity extends BaseActivity {
         boolean firstParam = true;
         if (intent.getData() != null) {
 	    	String strUri = intent.toUri(0);
-	        
+
 	        if(strUri.length() > 0)
 	        {
 	            Uri uri = Uri.parse(strUri);
 	            String authority = uri.getAuthority();
 	            String path = uri.getPath();
 	            String query = uri.getQuery();
-	
+
 	            if (authority != null)
 	                startParams.append(authority);
 	            if (path != null)
@@ -498,7 +498,7 @@ public class RhodesActivity extends BaseActivity {
         Bundle extras = intent.getExtras();
         if (extras != null) {
 	        Set<String> keys = extras.keySet();
-	
+
 	        for (String key : keys) {
 	            Object value = extras.get(key);
 	            if (firstParam) {
@@ -523,7 +523,7 @@ public class RhodesActivity extends BaseActivity {
         }
 
 //        String urlStart = uri.getPath();
-//        if (urlStart != null) { 
+//        if (urlStart != null) {
 //            if ("".compareTo(urlStart) != 0)
 //            {
 //                Logger.D(TAG, "PROCESS URL START: " + urlStart);
@@ -538,10 +538,10 @@ public class RhodesActivity extends BaseActivity {
 			throw new IllegalStateException("No rhodes activity instance at this moment");
 		return ra;
 	}
-	
+
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		RhoBluetoothManager.onActivityResult(requestCode, resultCode, data);
 	}
-	
+
 }

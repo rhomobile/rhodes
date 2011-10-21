@@ -7,10 +7,10 @@ ruby_version_is "1.9" do
       ary = []
       y = Enumerator::Yielder.new {|x| ary << x}
       y << 1
-      
+
       ary.should == [1]
     end
-    
+
     it "returns the the yielder" do
       y = Enumerator::Yielder.new {|x| x + 1}
       (y << 1).should == y

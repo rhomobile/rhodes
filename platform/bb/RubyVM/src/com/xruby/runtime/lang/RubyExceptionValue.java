@@ -57,7 +57,7 @@ public class RubyExceptionValue extends RubyBasic {
     	cl.doClone(this);
     	return cl;
     }
-    
+
     public void setMessage(String message) {
         message_ = message;
     }
@@ -65,38 +65,38 @@ public class RubyExceptionValue extends RubyBasic {
     void setException(RubyException exception) {
         exception_ = exception;
     }
-    
+
     //@RubyAllocMethod
     public static RubyExceptionValue alloc(RubyValue receiver) {
     	return new RubyExceptionValue((RubyClass)receiver);
     }
-    
+
     //@RubyLevelMethod(name="initialize")
     public RubyExceptionValue initialize() {
     	this.setMessage("");
     	return this;
     }
-    
+
     //@RubyLevelMethod(name="initialize")
     public RubyExceptionValue initialize(RubyValue v) {
     	this.setMessage(v.toStr());
     	return this;
     }
-    
+
     //@RubyLevelMethod(name="to_s", alias={"message", "to_str"})
     public RubyString to_s() {
-    	
+
     	String res = this.message_;
 
 		if ( res == null || res.length() == 0 )
 			res = this.getRubyClass().getName();
-    	
+
 		if ( res == null || res.length() == 0 )
 			res = this.getClass().getName();
-    	
+
     	return ObjectFactory.createString(res);
     }
-    
+
     public String toString() {
         return message_;
     }
@@ -110,9 +110,9 @@ public class RubyExceptionValue extends RubyBasic {
     {
     	backTrace.add(ObjectFactory.createString(strTrace));
     }
-    
+
     public Throwable getThrowable(){
         return throwable_;
     }
-    
+
 }

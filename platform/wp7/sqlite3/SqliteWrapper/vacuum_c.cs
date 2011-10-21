@@ -154,7 +154,7 @@ sqlite3_step(pStmt);
         return SQLITE_ERROR;
       }
 
-      /* Save the current value of the database flags so that it can be 
+      /* Save the current value of the database flags so that it can be
       ** restored before returning. Then set the writable-schema flag, and
       ** disable CHECK and foreign key constraints.  */
       saved_flags = db.flags;

@@ -1,4 +1,4 @@
-/* 
+/*
  * $Id: Perl5Util.java 390702 2006-04-01 17:31:03Z dfs $
  *
  * Copyright 2000-2005 The Apache Software Foundation
@@ -40,7 +40,7 @@ import j2me.util.ArrayList;
  *  <p>
  * The objective of the class is to minimize the amount of code a Java
  * programmer using Jakarta-ORO
- * has to write to achieve the same results as Perl by 
+ * has to write to achieve the same results as Perl by
  * transparently handling regular expression compilation, caching, and
  * matching.  A second objective is to use the same Perl pattern matching
  * syntax to ease the task of Perl programmers transitioning to Java
@@ -71,7 +71,7 @@ import j2me.util.ArrayList;
  * String line;
  * DataInputStream input;
  * PrintStream output;
- * 
+ *
  * // Initialization of input and output omitted
  * while((line = input.readLine()) != null) {
  *     // First find the line with the string we want to substitute because
@@ -106,7 +106,7 @@ import j2me.util.ArrayList;
  * and MUST be handled by catching MalformedPerl5PatternException for your
  * programs to be robust.
  * <p>
- * Finally, as a convenience Perl5Util implements 
+ * Finally, as a convenience Perl5Util implements
  * the {@link org.apache.oro.text.regex.MatchResult MatchResult} interface.
  * The methods are merely wrappers which call the corresponding method of
  * the last {@link org.apache.oro.text.regex.MatchResult MatchResult}
@@ -169,7 +169,7 @@ public final class Perl5Util implements MatchResult {
 
   /**
    * A constant passed to the {@link #split split()} methods indicating
-   * that all occurrences of a pattern should be used to split a string. 
+   * that all occurrences of a pattern should be used to split a string.
    */
   public static final int SPLIT_ALL = Util.SPLIT_ALL;
 
@@ -178,7 +178,7 @@ public final class Perl5Util implements MatchResult {
    * used by the class to perform matching operations, but requires the
    * programmer to provide a PatternCache instance for the class
    * to use to compile and store regular expressions.  You would want to
-   * use this constructor if you want to change the capacity or policy 
+   * use this constructor if you want to change the capacity or policy
    * of the cache used.  Example uses might be:
    * <pre>
    * // We know we're going to use close to 50 expressions a whole lot, so
@@ -209,7 +209,7 @@ public final class Perl5Util implements MatchResult {
    * Default constructor for Perl5Util.  This initializes the Perl5Matcher
    * used by the class to perform matching operations and creates a
    * default PatternCacheLRU instance to use to compile and cache regular
-   * expressions.  The size of this cache is 
+   * expressions.  The size of this cache is
    * GenericPatternCache.DEFAULT_CAPACITY.
    */
   public Perl5Util() {
@@ -233,7 +233,7 @@ public final class Perl5Util implements MatchResult {
     Perl5Compiler compiler = new Perl5Compiler();
 
     try {
-      __matchPattern = 
+      __matchPattern =
         compiler.compile(__matchExpression, Perl5Compiler.SINGLELINE_MASK);
     } catch(MalformedPatternException e) {
       // This should only happen during debugging.
@@ -254,7 +254,7 @@ public final class Perl5Util implements MatchResult {
    *            the expression.
    */
   private Pattern __parseMatchExpression(String pattern)
-       throws MalformedPerl5PatternException 
+       throws MalformedPerl5PatternException
   {
     int index, compileOptions;
     String options, regex;
@@ -264,7 +264,7 @@ public final class Perl5Util implements MatchResult {
 
     obj = __expressionCache.getElement(pattern);
 
-    // Must catch ClassCastException because someone might incorrectly 
+    // Must catch ClassCastException because someone might incorrectly
     // pass an s/// expression.  try block is cheaper than checking
     // instanceof
     try {
@@ -318,7 +318,7 @@ public final class Perl5Util implements MatchResult {
    * </pre></blockquote>
    * The <code>m</code> prefix is optional and the meaning of the optional
    * trailing options are:
-   * <dl compact> 
+   * <dl compact>
    * <dt> i <dd> case insensitive match
    * <dt> m <dd> treat the input as consisting of multiple lines
    * <dt> s <dd> treat the input as consisting of a single line
@@ -341,14 +341,14 @@ public final class Perl5Util implements MatchResult {
    *            the pattern.  You are not forced to catch this exception
    *            because it is derived from RuntimeException.
    */
-  public synchronized boolean match(String pattern, char[] input) 
+  public synchronized boolean match(String pattern, char[] input)
        throws MalformedPerl5PatternException
   {
     boolean result;
     __parseMatchExpression(pattern);
 
     result = __matcher.contains(input, __parseMatchExpression(pattern));
-                         
+
     if(result) {
       ThreadState state      = __getState();
       state.lastMatch        = __matcher.getMatch();
@@ -369,7 +369,7 @@ public final class Perl5Util implements MatchResult {
    * </pre></blockquote>
    * The <code>m</code> prefix is optional and the meaning of the optional
    * trailing options are:
-   * <dl compact> 
+   * <dl compact>
    * <dt> i <dd> case insensitive match
    * <dt> m <dd> treat the input as consisting of multiple lines
    * <dt> s <dd> treat the input as consisting of a single line
@@ -409,7 +409,7 @@ public final class Perl5Util implements MatchResult {
    * </pre></blockquote>
    * The <code>m</code> prefix is optional and the meaning of the optional
    * trailing options are:
-   * <dl compact> 
+   * <dl compact>
    * <dt> i <dd> case insensitive match
    * <dt> m <dd> treat the input as consisting of multiple lines
    * <dt> s <dd> treat the input as consisting of a single line
@@ -481,7 +481,7 @@ public final class Perl5Util implements MatchResult {
    * </pre></blockquote>
    * The <code>s</code> prefix is mandatory and the meaning of the optional
    * trailing options are:
-   * <dl compact> 
+   * <dl compact>
    * <dt> g <dd> Substitute all occurrences of pattern with replacement.
    *             The default is to replace only the first occurrence.
    * <dt> i <dd> perform a case insensitive match
@@ -552,7 +552,7 @@ public final class Perl5Util implements MatchResult {
   // there are going to be variations of this method.
   public synchronized int substitute(StringBuffer result, String expression,
                                      String input)
-       throws MalformedPerl5PatternException 
+       throws MalformedPerl5PatternException
   {
     boolean backslash, finalDelimiter;
     int index, compileOptions, numSubstitutions, numInterpolations;
@@ -568,7 +568,7 @@ public final class Perl5Util implements MatchResult {
 
   __nullTest:
     if(obj != null) {
-      // Must catch ClassCastException because someone might incorrectly 
+      // Must catch ClassCastException because someone might incorrectly
       // pass an m// expression.  try block is cheaper than checking
       // instanceof.  We want to go ahead with parsing just in case so
       // we break.
@@ -607,7 +607,7 @@ public final class Perl5Util implements MatchResult {
       else if(exp[index] == delimiter && !backslash) {
         secondOffset = index;
         break;
-      } else if(backslash) 
+      } else if(backslash)
         backslash = !backslash;
     }
 
@@ -724,7 +724,7 @@ public final class Perl5Util implements MatchResult {
     substitute(result, expression, input);
     return result.toString();
   }
- 
+
   /**
    * Splits a String into strings that are appended to a List, but no more
    * than a specified limit.  The String is split using a regular expression
@@ -735,7 +735,7 @@ public final class Perl5Util implements MatchResult {
    * </pre></blockquote>
    * The <code>m</code> prefix is optional and the meaning of the optional
    * trailing options are:
-   * <dl compact> 
+   * <dl compact>
    * <dt> i <dd> case insensitive match
    * <dt> m <dd> treat the input as consisting of multiple lines
    * <dt> s <dd> treat the input as consisting of a single line
@@ -769,11 +769,11 @@ public final class Perl5Util implements MatchResult {
    * be a general self-consistent and predictable split function usable
    * with Pattern instances other than Perl5Pattern.
    * <p>
-   * @param results 
+   * @param results
    *    A <code> Collection </code> to which the substrings of the input
    *    that occur between the regular expression delimiter occurences
    *    are appended. The input will not be split into any more substrings
-   *    than the specified 
+   *    than the specified
    *    limit. A way of thinking of this is that only the first
    *    <b>limit - 1</b>
    *    matches of the delimiting regular expression will be used to split the
@@ -793,7 +793,7 @@ public final class Perl5Util implements MatchResult {
    */
   public synchronized void split(Collection results, String pattern,
                                  String input, int limit)
-       throws MalformedPerl5PatternException 
+       throws MalformedPerl5PatternException
   {
     int beginOffset, groups, index;
     String group;
@@ -851,7 +851,7 @@ public final class Perl5Util implements MatchResult {
    */
   public synchronized void split(Collection results, String pattern,
                                  String input)
-       throws MalformedPerl5PatternException 
+       throws MalformedPerl5PatternException
   {
     split(results, pattern, input, SPLIT_ALL);
   }
@@ -879,7 +879,7 @@ public final class Perl5Util implements MatchResult {
    * </pre></blockquote>
    * The <code>m</code> prefix is optional and the meaning of the optional
    * trailing options are:
-   * <dl compact> 
+   * <dl compact>
    * <dt> i <dd> case insensitive match
    * <dt> m <dd> treat the input as consisting of multiple lines
    * <dt> s <dd> treat the input as consisting of a single line
@@ -921,17 +921,17 @@ public final class Perl5Util implements MatchResult {
    *   associated with non-positive limit values.
    * @return A <code> Vector </code> containing the substrings of the input
    *    that occur between the regular expression delimiter occurences. The
-   *    input will not be split into any more substrings than the specified 
+   *    input will not be split into any more substrings than the specified
    *    limit. A way of thinking of this is that only the first
    *    <b>limit - 1</b>
    *    matches of the delimiting regular expression will be used to split the
-   *    input. 
+   *    input.
    * @exception MalformedPerl5PatternException  If there is an error in
    *            the expression.  You are not forced to catch this exception
    *            because it is derived from RuntimeException.
    */
   public synchronized ArrayList split(String pattern, String input, int limit)
-       throws MalformedPerl5PatternException 
+       throws MalformedPerl5PatternException
   {
         ArrayList results = new ArrayList(20);
     split(results, pattern, input, limit);
@@ -947,7 +947,7 @@ public final class Perl5Util implements MatchResult {
    * {@link #split(Collection results, String pattern, String input)} instead.
    */
   public synchronized ArrayList split(String pattern, String input)
-       throws MalformedPerl5PatternException 
+       throws MalformedPerl5PatternException
   {
     return split(pattern, input, SPLIT_ALL);
   }
@@ -962,7 +962,7 @@ public final class Perl5Util implements MatchResult {
    * {@link #split(Collection results, String input)} instead.
    */
   public synchronized ArrayList split(String input)
-       throws MalformedPerl5PatternException 
+       throws MalformedPerl5PatternException
   {
     return split("/\\s+/", input);
   }
@@ -984,7 +984,7 @@ public final class Perl5Util implements MatchResult {
    * @return The number of groups contained in the last match found.
    *         This number includes the 0th group.  In other words, the
    *         result refers to the number of parenthesized subgroups plus
-   *         the entire match itself.          
+   *         the entire match itself.
    */
   public synchronized int groups() {
     return getMatch().groups();
@@ -1001,13 +1001,13 @@ public final class Perl5Util implements MatchResult {
    *         matched, it returns null.  This is not to be confused with
    *         a group matching the null string, which will return a String
    *         of length 0.
-   */                       
+   */
   public synchronized String group(int group) {
     return getMatch().group(group);
   }
 
   /**
-   * Returns the begin offset of the subgroup of the last match found 
+   * Returns the begin offset of the subgroup of the last match found
    * relative the beginning of the match.
    * <p>
    * @param group The pattern subgroup.
@@ -1017,14 +1017,14 @@ public final class Perl5Util implements MatchResult {
    *         the null string at the end of a match will have an offset
    *         equal to the length of the string, so you shouldn't blindly
    *         use the offset to index an array or String.
-   */                                                                 
+   */
   public synchronized int begin(int group) {
     return getMatch().begin(group);
   }
 
 
   /**
-   * Returns the end offset of the subgroup of the last match found 
+   * Returns the end offset of the subgroup of the last match found
    * relative the beginning of the match.
    * <p>
    * @param group The pattern subgroup.
@@ -1046,7 +1046,7 @@ public final class Perl5Util implements MatchResult {
    * @param group The pattern subgroup.
    * @return The offset of the first token in the indicated
    *         pattern subgroup.  If a group was never matched or does
-   *         not exist, returns -1.          
+   *         not exist, returns -1.
    */
   public synchronized int beginOffset(int group) {
     return getMatch().beginOffset(group);
@@ -1062,7 +1062,7 @@ public final class Perl5Util implements MatchResult {
    *         the indicated pattern subgroup.  If a group was never matched
    *         or does not exist, returns -1.  A group matching the null
    *         string will return its start offset.
-   */                   
+   */
   public synchronized int endOffset(int group) {
     return getMatch().endOffset(group);
   }
@@ -1071,7 +1071,7 @@ public final class Perl5Util implements MatchResult {
    * Returns the same as group(0).
    * <p>
    * @return A string containing the entire match.
-   */  
+   */
   public synchronized String toString() {
     MatchResult match = getMatch();
     if(match == null)

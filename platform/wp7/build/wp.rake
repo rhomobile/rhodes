@@ -1,18 +1,18 @@
 #------------------------------------------------------------------------
 # (The MIT License)
-# 
+#
 # Copyright (c) 2008-2011 Rhomobile, Inc.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-# 
+#
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
@@ -38,7 +38,7 @@ namespace "config" do
 		$genpath = "ClassInitGenerator.exe"
 		$builddir = $config["build"]["wppath"] + "/build"
 		$vcbindir = $config["build"]["wppath"] + "/bin"
-		$appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"] 
+		$appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"]
 		$bindir = $app_path + "/bin"
 		$rhobundledir =  $app_path + "/RhoBundle"
 		$srcdir =  $bindir + "/RhoBundle"
@@ -52,19 +52,19 @@ namespace "config" do
 		$sdk = $app_config["wpsdk"] unless $app_config["wpsdk"].nil?
 
 		$excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
-		
+
         if !$app_config["wp"] || !$app_config["wp"]["productid"]
 			puts "Add wp:productid to application build.yml"
 			puts "productid is GUID in format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 			puts "for example:"
 			puts "wp:"
             puts "  productid: 'fd55c4d0-51fa-012e-7844-3caec51bd50e'"
-            
+
             exit 1
-		end		
+		end
 	end
 end
- 
+
  namespace "build" do
 	namespace "wp" do
 		task :extensions => "config:wp" do
@@ -86,7 +86,7 @@ end
 				end
 			end
 		end
-	
+
 		desc "Build WP7 rhobundle"
 		#task :rhobundle => ["config:wp", :extensions] do
 		task :rhobundle => ["config:wp"] do
@@ -96,7 +96,7 @@ end
 			cp_r $srcdir + "/apps/public", $srcdir + "/public"
 			rm_r $srcdir + "/apps/public"
 		end
-		
+
 		task :rhobundlemap => ["config:wp"] do
 			chdir $srcdir
 			file = File.open("RhoBundleMap.txt", "w+")
@@ -116,7 +116,7 @@ end
 			#file = File.open("timestamp.txt", "w+")
 			#file.puts stamp
 			#file.close
-		end 
+		end
 
 		task :rubyext => ["config:wp"] do
 			#chdir $startdir + "/res/build-tools"
@@ -128,8 +128,8 @@ end
 			args << "/out: " + $startdir + "/"+ $config["build"]["wppath"] +"/RhoRubyLib/" + "Initializers.Generated.cs"
 			puts Jake.run($genpath, args)
 		end
-		
-		task :ironruby => ["config:wp"] do   	
+
+		task :ironruby => ["config:wp"] do
 		    iron_path = ""
 			if $config["env"]["paths"]["ironruby"].nil?
 				iron_path = "../ironruby"
@@ -137,15 +137,15 @@ end
 				iron_path = $config["env"]["paths"]["ironruby"]
 			end
 			cp_r File.join( $config["build"]["wppath"], "IronRuby/Languages"), iron_path
-			
+
 			chdir File.join( iron_path, "Solutions" )
 
 			args = ['Ruby.sln', '/property:Configuration=Silverlight3Release']
-			
+
 			#if (!File.exists? "../bin/Silverlight3Release/Microsoft.Dynamic.dll") &&
 			#   (!File.exists? "../bin/Silverlight3Release/Microsoft.Scripting.dll") &&
-			#   (!File.exists? "../bin/Silverlight3Release/Microsoft.Scripting.Core.dll") && 
-			#   (!File.exists? "../bin/Silverlight3Release/IronRuby.Libraries.dll") && 
+			#   (!File.exists? "../bin/Silverlight3Release/Microsoft.Scripting.Core.dll") &&
+			#   (!File.exists? "../bin/Silverlight3Release/IronRuby.Libraries.dll") &&
 			#   (!File.exists? "../bin/Silverlight3Release/IronRuby.dll" )
 			#	puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
 				Jake.run($msbuild,args)
@@ -154,7 +154,7 @@ end
 					exit 1
 				end
 			#end
- 
+
 			chdir $startdir
 
             iron_release = File.join( $config["build"]["wppath"], "IronRuby/bin/Silverlight3Release")
@@ -165,18 +165,18 @@ end
 			cp File.join( iron_path, "bin/Silverlight3Release/Microsoft.Dynamic.dll" ), iron_release
 			cp File.join( iron_path, "bin/Silverlight3Release/Microsoft.Scripting.dll" ), iron_release
 			cp File.join( iron_path, "bin/Silverlight3Release/Microsoft.Scripting.Core.dll" ), iron_release
-		end 
+		end
 
 		task :rhodes do #=> ["config:wp", "build:wp:rhobundle"] do
 		    chdir $startdir
-		    
+
 		    out_dir = $startdir + "/"+ $config["build"]["wppath"] +"/rhodes"
-			cp $app_path + "/icon/icon.png", out_dir if File.exists? $app_path + "/icon/icon.ico"     
-		
+			cp $app_path + "/icon/icon.png", out_dir if File.exists? $app_path + "/icon/icon.ico"
+
 			chdir $config["build"]["wppath"]
 
 			doc = REXML::Document.new(File.open($startdir+"/"+$config["build"]["wppath"]+"/rhodes/Properties/WMAppManifest.xml"))
-			doc.elements.each("Deployment/App") { 
+			doc.elements.each("Deployment/App") {
 			    |element| element.attributes["ProductID"] =  "{"+$app_config["wp"]["productid"]+"}"
 			          element.attributes["Title"] =  $app_config["name"]
 			}
@@ -191,22 +191,22 @@ end
 				puts "Error building"
 				exit 1
 			end
- 
+
 			chdir $startdir
-		end 
+		end
 
 		task :rhobundle_production => [:rhobundle, :rhobundlemap] do
         end
-        
+
 		task :devrhobundleRelease do #=> [:rhobundle, :rhobundlemap, "device:wp:addbundletoxapRelease"] do
 			#out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
 			#doc = REXML::Document.new(File.open(out_dir + "XapCacheFile.xml"))
 			#chdir $srcdir
 			#Dir.glob(File.join("**", '*.*')).each do |f|
-			#	doc.root[1,0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='" + f.gsub("/", "\\") + "'" 
+			#	doc.root[1,0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='" + f.gsub("/", "\\") + "'"
 			#end
 			#File.open(out_dir + "XapCacheFile.xml", "w") { |f| doc.write f, 2; f.close }
-			
+
 			#chdir $startdir
 
 			#mkdir_p $config["build"]["wppath"] + "/rhodes/obj/Release" if not File.exists? $config["build"]["wppath"] + "/rhodes/obj/Release"
@@ -218,10 +218,10 @@ end
 			doc = REXML::Document.new(File.open(out_dir + "XapCacheFile.xml"))
 			chdir $srcdir
 			Dir.glob(File.join("**", '*.*')).each do |f|
-				doc.root[1,0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='" + f.gsub("/", "\\") + "'" 
+				doc.root[1,0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='" + f.gsub("/", "\\") + "'"
 			end
 			File.open(out_dir + "XapCacheFile.xml", "w") { |f| doc.write f, 2; f.close }
-			
+
 			chdir $startdir
 
 			mkdir_p $config["build"]["wppath"] + "/rhodes/obj/Debug" if not File.exists? $config["build"]["wppath"] + "/rhodes/obj/Debug"
@@ -245,7 +245,7 @@ end
 def run_rho_log_server()
     system("START rake run:wp:rhologserver[#{$app_path}]")
 end
- 
+
  namespace "device" do
 	namespace "wp" do
 		task :addbundletoxapDebug do
@@ -257,7 +257,7 @@ end
 			#cp_r $srcdir + "/timestamp.txt", $bindir + "/rho"
 
 			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Debug/"
-			
+
 			chdir $startdir
 			args = []
 			args << "a"
@@ -278,7 +278,7 @@ end
 			#cp_r $srcdir + "/timestamp.txt", $bindir + "/rho"
 
 			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
-			
+
 			chdir $startdir
 			args = []
 			args << "a"
@@ -334,7 +334,7 @@ namespace "run" do
 
 		desc "Build, install .xap and run on WP7 emulator"
 		task :wp => ["device:wp:production_noxap"] do
-		
+
 		    if $app_config["wp"] && $app_config["wp"]["productid"] != nil
 			    #system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
 
@@ -379,9 +379,9 @@ namespace "run" do
 			task :rhologserver, :app_path  do |t, args|
 			    puts "Args were: #{args}"
 			    $app_path = args[:app_path]
-			    
+
 			    Rake::Task["config:wp"].invoke
-			    
+
 				$rhologhostaddr = Jake.localip()
 				$rhologhostport = 0
 				$rhologserver = WEBrick::HTTPServer.new :BindAddress => $rhologhostaddr, :Port => $rhologhostport
@@ -394,7 +394,7 @@ namespace "run" do
 				started = File.open($app_path + "/started", "w+")
 				started.close
 				Thread.new { $rhologserver.start }
-				#write host and port 4 log server     
+				#write host and port 4 log server
 				$rhologfile = File.open(getLogPath, "w+")
 				$rhologserver.mount_proc '/' do |req,res|
 					$rhologfile.puts req.body
@@ -408,14 +408,14 @@ namespace "run" do
 				end
 			end
 
-            task :rhosimulator => ["config:set_wp_platform", "config:common"] do    
+            task :rhosimulator => ["config:set_wp_platform", "config:common"] do
                 $rhosim_config = "platform='wp'\r\n"
-                Rake::Task["run:rhosimulator"].invoke            
+                Rake::Task["run:rhosimulator"].invoke
             end
 
 			desc "Build, install .xap and run on WP7 device"
 			task :device => ["device:wp:production_noxap"] do
-			
+
 			    if $app_config["wp"] && $app_config["wp"]["productid"] != nil
 			        #system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
 				    File.delete($app_path + "/started")  if File.exists?($app_path + "/started")

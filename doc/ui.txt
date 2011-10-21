@@ -80,10 +80,10 @@ You may use layout.erb to load CSS and favorite [JavaScript frameworks](#javascr
 If you would like to override or customize layout behavior, you can call the render function with the following parameters:
 
 	:::ruby
-	render :action => 'index', 
+	render :action => 'index',
 		:layout => 'mycustomlayout', :use_layout_on_ajax => false
 
-The first argument is the action you would like to render.  Next is the (optional) layout name, which assumes the application root as a base directory.  In the above example, Rhodes would look for a file called "mycustomlayout.erb" in the application root directory (you also may use :layout => false to disable the use of a layout template).  The use_layout_on_ajax argument tells Rhodes whether or not to use the layout on Ajax calls (default is false). 
+The first argument is the action you would like to render.  Next is the (optional) layout name, which assumes the application root as a base directory.  In the above example, Rhodes would look for a file called "mycustomlayout.erb" in the application root directory (you also may use :layout => false to disable the use of a layout template).  The use_layout_on_ajax argument tells Rhodes whether or not to use the layout on Ajax calls (default is false).
 
 You can call the layout method on the controller to overwrite the default layout name:
 
@@ -123,7 +123,7 @@ If you need to submit form programmatically, please use the expression like **$(
 
 Rhodes supports the display of a custom "Loading" screen while your application is launching. This screen's source is the file loading.html, located at <application-root>/app/loading.html.
 
-Alternatively, you can replace loading.html with an image named loading.png if you just want a simple image to be displayed. 
+Alternatively, you can replace loading.html with an image named loading.png if you just want a simple image to be displayed.
 
 You can control how image presented by modifying splash_screen options in [rhoconfig.txt](configuration):
 
@@ -133,11 +133,11 @@ You can control how image presented by modifying splash_screen options in [rhoco
 
 Examples:
 
-Place splash screen in the center and show it for 5 seconds: 
+Place splash screen in the center and show it for 5 seconds:
 	:::ruby
 	splash_screen='delay=5;center'
 
-Center splash screen horizontally, scale it vertically to file all available space, and show it for 5 seconds: 
+Center splash screen horizontally, scale it vertically to file all available space, and show it for 5 seconds:
 	:::ruby
 	splash_screen='delay=5;hcenter;vzoom'
 
@@ -178,44 +178,44 @@ You can see examples of all these images in [Rhodes-System-Api-Samples](http://g
 
 ## Advanced Usage of Render
 
-Render does not need to be called at the end of each controller action method. If render was not called, then it will default to rendering the action of the method you are in. 
+Render does not need to be called at the end of each controller action method. If render was not called, then it will default to rendering the action of the method you are in.
 
-Rendering of views works with no method in controller. If the method does not exist for an action, but a view exists for that action, then the view will be rendered. 
+Rendering of views works with no method in controller. If the method does not exist for an action, but a view exists for that action, then the view will be rendered.
 
-Rendering of files:  render :file => "Settings/wait.erb"  will render that file with the current controller's instance. By default, layout is false when rendering a file. 
+Rendering of files:  render :file => "Settings/wait.erb"  will render that file with the current controller's instance. By default, layout is false when rendering a file.
 
 Rendering of partials, with collections or locals. Either collections or locals must be provided:
 
 	:::ruby
-	render :partial => "ad", :collection => ["foo1","foo2","foo3"] 
+	render :partial => "ad", :collection => ["foo1","foo2","foo3"]
 
-or 
+or
 
 	:::ruby
-	render :partial =>"ad", :locals => { :ad => "foo_ad" } 
+	render :partial =>"ad", :locals => { :ad => "foo_ad" }
 
 Will render the partial "_ad.erb"  and the local variable "ad" will be available. With a collection, the partial will be rendered once per element.
 
 Load from 'partials' folder:
 
 	:::ruby
-	render :partial =>"partials/ad", :locals => { :ad => "foo_ad" } 
-	
+	render :partial =>"partials/ad", :locals => { :ad => "foo_ad" }
+
 ## Control WebView from controller actions
 It is possible to call on the WebView (browser) directly from your controllers. This API is recommended for use from callbacks, such as sync callback or camera callbacks.
 
 Force WebView refresh current page
 	:::ruby
 	WebView.refresh
-	
-Force WebView refresh current page on tab with specified index. If no tab bar present, index ignored	 
+
+Force WebView refresh current page on tab with specified index. If no tab bar present, index ignored
 	:::ruby
-	WebView.refresh(index) 
+	WebView.refresh(index)
 
 Force WebView navigate to provided location (url)
 	:::ruby
-	WebView.navigate(url) 
-	
+	WebView.navigate(url)
+
 Since 1.2.2 WebView.navigate supports an optional index parameter (defaults to 0, useful for tabbed applications)
 	:::ruby
 	WebView.navigate(url, index)
@@ -226,11 +226,11 @@ Force WebView navigate to previouse page using Browser back
 
 Get location (url) of the currently displayed page
 	:::ruby
-	WebView.current_location 
+	WebView.current_location
 
-The same as above but for specified tab (if tab bar present)	
+The same as above but for specified tab (if tab bar present)
 	:::ruby
-	WebView.current_location(index) 
+	WebView.current_location(index)
 
 Execute javascript string in the context of the currently displayed page. Supported on iPhone, Android, Windows Mobile and Blackberry 5.0 in full browser mode.
 Suppose that current page has js method:
@@ -238,20 +238,20 @@ Suppose that current page has js method:
 	function test() {
 	    alert("Test");
 	}
-Then to call test() function from controller, do this:	
+Then to call test() function from controller, do this:
 	:::ruby
 	#call method test on the current page
-	WebView.execute_js("test();") 
+	WebView.execute_js("test();")
 
-The same as above but for specified tab (if tab bar present)	
+The same as above but for specified tab (if tab bar present)
 	:::ruby
-	#call method test on the tab page 
-	WebView.execute_js("test();", index) 
+	#call method test on the tab page
+	WebView.execute_js("test();", index)
 
 
 Returns index of @tabs array for currently selected tab
 	:::ruby
-	WebView.active_tab 
+	WebView.active_tab
 
 Switch to/from full screen mode
 	:::ruby
@@ -268,19 +268,19 @@ See controller and view in the /app/Image folder of the [system API sample appli
 For platforms which support menus Rhodes framework provides ability to change the native application menu items through the following simple API:
 
 	:::ruby
-	@default_menu = { 
-	  "Item Label 1" => "/item1path", 
+	@default_menu = {
+	  "Item Label 1" => "/item1path",
 	  "Item Label 2" => "/item2path",
-	   ... 
+	   ...
 	} #=> overrides the rhodes default menu
 
-	@menu = { 
-	  "Item Label 1" => "/item1path", 
-	  "Item Label 2" => "/item2path", 
-	  ... 
+	@menu = {
+	  "Item Label 1" => "/item1path",
+	  "Item Label 2" => "/item2path",
+	  ...
 	} #=> overrides the default menu in a specific action
 
-### Default Menu 
+### Default Menu
 To change the default menu (in application.rb):
 
 	:::ruby
@@ -288,12 +288,12 @@ To change the default menu (in application.rb):
 	  def initialize
 	    super
 	    @default_menu = {
-	      "Go Home" => :home, 
-	      "View Accounts" => "/app/Account", 
-	      "Do Refresh" => :refresh, 
-	      "Perform Sync" => :sync, 
-	      "App Options" => :options, 
-	      "View Log" => :log 
+	      "Go Home" => :home,
+	      "View Accounts" => "/app/Account",
+	      "Do Refresh" => :refresh,
+	      "Perform Sync" => :sync,
+	      "App Options" => :options,
+	      "View Log" => :log
 	    }
 	  end
 	end
@@ -315,13 +315,13 @@ To change the menu for a specific action (in controller.rb):
 	:::ruby
 	def index
 	  @accounts = Account.find(:all)
-	  @menu = { 
-	    "Go Home" => :home, 
-	    "Refresh" => :refresh, 
-	    "Options" => :options, 
-	    :separator => nil, 
-	    "Log" => :log, 
-	    "New Account" => "/app/Account/new" 
+	  @menu = {
+	    "Go Home" => :home,
+	    "Refresh" => :refresh,
+	    "Options" => :options,
+	    :separator => nil,
+	    "Log" => :log,
+	    "New Account" => "/app/Account/new"
 	  }
 	  render
 	end
@@ -334,12 +334,12 @@ The following is the default Rhodes menu if none is provided in application.rb:
 
 	:::ruby
 	@default_menu = {
-	  "Home" => :home, 
-	  "Refresh" => :refresh, 
-	  "Sync" => :sync, 
-	  "Options" => :options, 
-	  "Log" => :log, 
-	  :separator => nil, 
+	  "Home" => :home,
+	  "Refresh" => :refresh,
+	  "Sync" => :sync,
+	  "Options" => :options,
+	  "Log" => :log,
+	  :separator => nil,
 	  "Close" => :close
 	}
 
@@ -358,39 +358,39 @@ Here is list of allowed values for actions for user defined menus, toolbars and 
 * :close - close or put Rhodes to background (depending on platform)
 * :fullscreen - go to full screen mode
 
-Action can be also URL of user-defined controller method. URL can be prefixed with 'callback:' meaning it should be loaded by rhodes core, not WebView. This will effectively load specified url but in background, not touching UI. 
+Action can be also URL of user-defined controller method. URL can be prefixed with 'callback:' meaning it should be loaded by rhodes core, not WebView. This will effectively load specified url but in background, not touching UI.
 
 Some examples:
 
 Calling of this action will be done by UI WebView component so result of the do_that method will be rendered in UI
 	:::ruby
-	:action => url_for(:action => :do_that) 
+	:action => url_for(:action => :do_that)
 
 The same as above but for another controller
 	:::ruby
-	:action => '/app/AnotherController/do_that' 
+	:action => '/app/AnotherController/do_that'
 
-Here url of :callback action will be loaded in background by the rhodes core. UI will not be touched	
+Here url of :callback action will be loaded in background by the rhodes core. UI will not be touched
 	:::ruby
-	:action => 'callback:' + url_for(:action => :callback) 
-	
-The same as above but for another controller	
+	:action => 'callback:' + url_for(:action => :callback)
+
+The same as above but for another controller
 	:::ruby
 	:action => 'callback:/app/AnotherController/callback'
-	
+
 ## Redefine back action
 
 Use :back parameter in render:
 
 	:::ruby
-	render :action => :index, :back => 
+	render :action => :index, :back =>
 		url_for( :controller => :Settings, :action => :main_page )
 	render :back => '/app'
 
 Use back with callback:
 
 	:::ruby
-	render :action => :page_alert, :back => 
+	render :action => :page_alert, :back =>
 		'callback:' + url_for(:action => :callback_alert)
 
 You can also define back action in menu
@@ -408,7 +408,7 @@ Redefine back with close:
 
 ### Sample
 Please find sample code of ["Dynamic Menu"](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/DynamicMenu/) in Rhodes System Api Samples
-	
+
 
 ## Native Toolbar Control
 Rhodes supports displaying a native looking 'toolbar'.
@@ -425,9 +425,9 @@ To use the toolbar, all you have to do is define the toolbar items in your appli
 	class AppApplication < Rho::RhoApplication
 	  def initialize
 	    @@toolbar = [
-	      {:action => :back,    
+	      {:action => :back,
 			:icon => '/public/images/back_btn.png'},
-	      {:action => :forward, 
+	      {:action => :forward,
 			:icon => '/public/images/forward_btn.png'},
 	      {:action => :separator},
 	      {:action => :home},
@@ -452,7 +452,7 @@ Windows Mobile:
 
 * :width - optional, define width in pixels for separator element
 
-Predefined actions are drawn using predefined icons, but that icons can be overridden by the user by specifying an :icon as shown in the example above. Icons that are defined must be black with a transparent background. 
+Predefined actions are drawn using predefined icons, but that icons can be overridden by the user by specifying an :icon as shown in the example above. Icons that are defined must be black with a transparent background.
 
 iPhone and Android: Icons must be no more than 30x30 pixels and must be in .png format.
 Windows Mobile: Icons can be any size, but all icons should have same size. By default - 48x48
@@ -493,24 +493,24 @@ Examples of creating toolbar:
 	:::ruby
 	require 'rho/rhotoolbar'
 	Rho::NativeToolbar.create(toolbar)
-	
-The same as above	
-	:::ruby	
-	Rho::NativeToolbar.create(:buttons => toolbar)  
+
+The same as above
+	:::ruby
+	Rho::NativeToolbar.create(:buttons => toolbar)
 
 Create toolbar the same as above but with custom background color
-	:::ruby	
-	Rho::NativeToolbar.create( :buttons => toolbar, 
+	:::ruby
+	Rho::NativeToolbar.create( :buttons => toolbar,
 		:background_color => 0x0000FF)
-		             
+
 Examples of removing toolbar:
 	:::ruby
 	require 'rho/rhotoolbar'
 	Rho::NativeToolbar.remove
 
 Windows Mobile: Create toolbar with image mask color and toolbar height
-	:::ruby	
-	Rho::NativeToolbar.create( :buttons => toolbar, 
+	:::ruby
+	Rho::NativeToolbar.create( :buttons => toolbar,
 		:background_color => 0x0000FF, :mask_color => 0xFFFFFF, :view_height => 80)
 
 ### Sample
@@ -518,7 +518,7 @@ Please find sample code in "NativeToolbarTest" in [Rhodes-System-Api-Samples](ht
 
 ## Native Tabbar Control
 
-Rhodes supports displaying a native looking 'tabbar'. 
+Rhodes supports displaying a native looking 'tabbar'.
 
 The tabbar is set of different UI views associated with each tab, so that selecting any tab will display the associated view. There is no ability to define custom actions for the tabbar like you can for the toolbar. The only action when a tab is selected is to switch to another UI view.
 
@@ -534,13 +534,13 @@ For the tabbar:
 	  def initialize
 	    # Tab items are loaded left->right, @tabs[0] is leftmost tab in the tab-bar
 	    @tabs = [
-	      { :label => "Dashboard", :action => '/app', 
-			:icon => "/public/images/tabs/dashboard.png", :reload => true, :web_bkg_color => 0x7F7F7F }, 
-	      { :label => "Accounts",  :action => '/app/Account',  
+	      { :label => "Dashboard", :action => '/app',
+			:icon => "/public/images/tabs/dashboard.png", :reload => true, :web_bkg_color => 0x7F7F7F },
+	      { :label => "Accounts",  :action => '/app/Account',
 			:icon => "/public/images/tabs/accounts.png" },
-	      { :label => "Contacts",  :action => '/app/Contact',  
+	      { :label => "Contacts",  :action => '/app/Contact',
 			:icon => "/public/images/tabs/contacts.png" },
-	      { :label => "Options",   :action => '/app/Settings', 
+	      { :label => "Options",   :action => '/app/Settings',
 			:icon => "/public/images/tabs/options.png" }
 	    ]
 	    # Important to call super _after_ you define @tabs!
@@ -552,7 +552,7 @@ Each tabbar item defined in the above sample defines following tab elements:
 
 * :label - Visible label to display on the tabbar (required)
 * :action - Path to your rhodes action; i.e. '/app/Account' would load the Account index action (required)
-* :icon - Relative path to tabbar item icon in your rhodes app; typically located in /public/images/ (required) 
+* :icon - Relative path to tabbar item icon in your rhodes app; typically located in /public/images/ (required)
 * :reload => true - Optional argument which tells rhodes to reload the tab's :action, defaults to false
 * :selected_color => 0xFFFF00 - Optional parameter for change selected color of this tabs (if you use it on Android - you should defined it for all tabs! and also define :background_color for TabBar!)
 * :disabled => true - Optional parameter for disable this tab
@@ -578,48 +578,48 @@ To disable the tabbar entirely:
 
 ### Native Tabbar runtime API
 
-Require rhotabbar in your controller to use it 
+Require rhotabbar in your controller to use it
 	:::ruby
 	require 'rho/rhotabbar'
 
 Remove existing tabbar (if exists) and create new one
 	:::ruby
-	Rho::NativeTabbar.create(tabs) 
+	Rho::NativeTabbar.create(tabs)
 
 Same as above
 	:::ruby
-	Rho::NativeTabbar.create( :tabs => tabs) 
-	
-Means the same as above and setup background color for tabbar.	
+	Rho::NativeTabbar.create( :tabs => tabs)
+
+Means the same as above and setup background color for tabbar.
 	:::ruby
-	Rho::NativeTabbar.create( :tabs => tabs, 
+	Rho::NativeTabbar.create( :tabs => tabs,
 		:background_color => 0x0000FF)
 
-Means the same as above and place TabBar in bottom of screen (actual only on Android, where TabBar placed in top of screen by default).	
+Means the same as above and place TabBar in bottom of screen (actual only on Android, where TabBar placed in top of screen by default).
 	:::ruby
-	Rho::NativeTabbar.create( :tabs => tabs, 
+	Rho::NativeTabbar.create( :tabs => tabs,
 		:background_color => 0x0000FF, :place_tabs_bottom => true)
-	
-**NOTE: If you setup :background_color on Android you should also setup :selected_color for each tab **	 
+
+**NOTE: If you setup :background_color on Android you should also setup :selected_color for each tab **
 
 Create TabBar and set callback for change tab event. In callback see @params['tab_index'] for string value with new tab index.
 	:::ruby
 	Rho::NativeTabbar.create(:tabs => tabs, :on_change_tab_callback => url_for(:action => :tabbar_on_tab_change_callback))
 
 
-Remove current tabbar. Does nothing if there is no active bar	
+Remove current tabbar. Does nothing if there is no active bar
 	:::ruby
 	Rho::NativeTabbar.remove
-	 
-Switch active tab to second (numeration is zero based i.e. 0 means first tab, 1 - second etc)	
+
+Switch active tab to second (numeration is zero based i.e. 0 means first tab, 1 - second etc)
 	:::ruby
-	Rho::NativeTabbar.switch_tab(1) 
+	Rho::NativeTabbar.switch_tab(1)
 
 Get current tab index
 	:::ruby
-	Rho::NativeTabbar.get_current_tab 
+	Rho::NativeTabbar.get_current_tab
 
-Set iPhone badge to Tab (worked only on iOS devices!) 
+Set iPhone badge to Tab (worked only on iOS devices!)
 	:::ruby
 	# set badge '12' to tab 1
 	Rho::NativeTabbar.set_tab_badge( 1, '12')
@@ -630,12 +630,12 @@ Rho::NativeTabbar.create() create native tab bar UI element and activate its fir
 	:::ruby
 	require 'rho/rhotabbar'
 	# Create tab bar
-	Rho::NativeTabbar.create(tabs) 
+	Rho::NativeTabbar.create(tabs)
 	# Switch to 3-rd tab (index is zero-based!)
-	Rho::NativeTabbar.switch_tab(2) 
+	Rho::NativeTabbar.switch_tab(2)
 	# Show 'app/Settings' on the 3-rd tab
 	WebView.navigate('app/Settings', 3)
-	
+
 For VerticalTabBar on iPad (if you run this code not on iPad, then regular tabbar will be created):
 
 	:::ruby
@@ -646,7 +646,7 @@ For VerticalTabBar on iPad (if you run this code not on iPad, then regular tabba
 	WebView.navigate('app/Settings', 3)
 
 ### Sample
-Please find sample code in "NativeTabbarTest" in [Rhodes-System-Api-Samples](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/NativeTabbarTest/) 
+Please find sample code in "NativeTabbarTest" in [Rhodes-System-Api-Samples](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/NativeTabbarTest/)
 
 ## Navigation bar
 
@@ -655,10 +655,10 @@ Rhodes supports a native navigation bar for iPhone. This is a native UI element 
 	:::ruby
 	NavBar.create :title => "Navigation bar",
 	              :left => {
-					:action => :back, 
+					:action => :back,
 					:label => "Back"},
 	              :right => {
-					:action => url_for(:action => :help), 
+					:action => url_for(:action => :help),
 					:label => "Help"}
 
 __:right__ can be omitted. __:left__ and __:right__ described in [user defined menu/toolbar/tabbar actions](#user-defined-menutoolbartabbar-actions)
@@ -686,13 +686,13 @@ Once user chooses a date/time and presses OK or Cancel, the callback URL you spe
 * 'result' is a string representation of the selected date, as the number of seconds since Epoch. Ruby time can be created from it using the Time::at method.
 * There is no 'result' if status is 'cancel'
 * 'user_data' - if it exists, 'user_data' will be the same string that was passed into the choose method.
-* mindatetime - minimum datetime for setup range. Setup to Time.at(0) for no limit. 
-* maxdatetime - maximum datetime for setup range. Setup to Time.at(0) for no limit. 
+* mindatetime - minimum datetime for setup range. Setup to Time.at(0) for no limit.
+* maxdatetime - maximum datetime for setup range. Setup to Time.at(0) for no limit.
 
 Data/Time Picker also can executed via AJAX call for set date/time without leaving the page.
 **NOTE: Currently implemented for Android, iPhone and Blackberry **
 
-### Sample 
+### Sample
 See controller.rb and index.erb view in the /app/DateTime folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/DateTime) for more information.  This example demonstrates each of the three date/time picker types.
 
 See controller.rb and index.erb view in the /app/DateTimeAJ folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/DateTimeAJ) for more information about execute Date/Time Picker via AJAX call.  This example demonstrates set date/time without leave the page.
@@ -756,17 +756,17 @@ Note that animations other than slide may not work as well on Android devices as
 
 	:::html
 	<div class="toolbar">
-	    <div class="leftItem backButton"> 
+	    <div class="leftItem backButton">
 	        <a class="swap" href="...">
 				Left back button that animates swap transition</a>
 	    </div>
 	    <div class="rightItem regularButton">
 	        <a class="flip" href="...">
-				Right button that animates flip transition</a> 
+				Right button that animates flip transition</a>
 	    </div>
-	</div> 
+	</div>
 	<div class="content">
-	    <ul>     
+	    <ul>
 	        <li>
 	            <a class="pop" href="...">
 	                <span class="title">
@@ -796,7 +796,7 @@ Links marked with a ''backButton'' class reverse the navigation of the previous 
 	    <div class="rightItem regularButton">
 	        <a href="...">Edit</a>
 	    </div>
-	</div>   
+	</div>
 
 ### Navigating to another page
 
@@ -812,7 +812,7 @@ Setting a target="_webapp" will disable animation and navigate to the specified 
 	            </a>
 	        </li>
 	    </ul>
-	</div>   
+	</div>
 
 ### Sample application
 

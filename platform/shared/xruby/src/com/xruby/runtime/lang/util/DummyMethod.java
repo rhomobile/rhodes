@@ -8,7 +8,7 @@ import com.xruby.runtime.lang.RubyValue;
 
 public class DummyMethod extends RubyMethod {
 	public static DummyMethod INSTANCE = new DummyMethod();
-	
+
 	private DummyMethod() {
 		super(-1, false, 0);
 	}
