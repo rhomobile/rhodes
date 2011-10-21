@@ -96,11 +96,11 @@ public class Phonebook {
 		}
 	}
 	
-	public int queryContactCount(int offset, int limit) {
+	public int queryContactCount(int offset, int limit, Map<String,Object> conditions) {
 		int res = 0;
 		if (checkState()) {
 			try {
-				res = accessor.getCount(offset, limit);
+				res = accessor.getCount(offset, limit, conditions);
 			} catch (Exception e) {
 				Logger.E(TAG, e);
 			}
@@ -119,15 +119,15 @@ public class Phonebook {
 			PB_BUSINESS_NUMBER,
 			PB_EMAIL_ADDRESS,
 			PB_COMPANY_NAME };
-		queryContacts(0, -1, Arrays.asList(allColumns));
+		queryContacts(0, -1, Arrays.asList(allColumns), null);
 	}
 
-	public void queryContacts(int offset, int max_results, List<String> select) {
+	public void queryContacts(int offset, int max_results, List<String> select, Map<String,Object> conditions) {
 		if (!checkState())
 			return;
 		try {
 			Logger.I(TAG, "queryContacts()");
-			contactList = accessor.getContacts(offset, max_results, select);
+			contactList = accessor.getContacts(offset, max_results, select, conditions);
 		}
 		catch (Exception e) {
 			Logger.E(TAG, e);

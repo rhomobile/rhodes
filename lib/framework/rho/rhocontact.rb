@@ -44,34 +44,17 @@ module Rho
                     puts "Can't open phonebook"
                 elsif args.first.nil? or args.length == 0
                     puts "There are no arguments to find contacts"
-                elsif args.first == :all or args.first == :first or args.first == :count
-                    #conditions = args[1][:conditions] if args[1] && args[1][:conditions] && args[1][:conditions].is_a?(Hash)
-
-                    limit = -1
-                    offset = 0
-                    select = []
-
-                    if args[1]
-                        #if args[1][:conditions]
-                        #    condition_str = convertSqlConditionToStr(args[1][:conditions], args[1][:op])
-                    
-                        if args[1][:per_page] #and args[1][:offset]
-                            limit = args[1][:per_page].to_i
-                            offset = args[1][:offset] ? args[1][:offset].to_i : 0
-                        end
-
-                        select = args[1][:select] if args[1][:select]
+                elsif args.first == :all or args.first == :first
+                    if System::get_property('platform') == "ANDROID"
+                        result = Phonebook::getRecords(pb, args[1])
+                    else
+                        result = Phonebook::allRecords(pb)
                     end
-                    limit = 1 if args.first == :first
-
-                    if args.first == :all or args.first == :first
-                        if System::get_property('platform') == "ANDROID"
-                            result = Phonebook::getRecords(pb, offset, limit, select)
-                        else
-                            result = Phonebook::allRecords(pb)
-                        end
-				    elsif args.first == :count
-                        result = Phonebook::countRecords(pb, offset, limit)
+		        elsif args.first == :count
+                    if System::get_property('platform') == "ANDROID"
+                        result = Phonebook::countRecords(pb, args[1])
+                    else
+                        result = Phonebook::countRecords(pb);
                     end
                 else
                     result = Phonebook::getRecord(pb, args.first)

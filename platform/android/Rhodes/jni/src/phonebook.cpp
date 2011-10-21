@@ -106,10 +106,40 @@ static VALUE createHashFromContact(jobject contactObj)
     return contactHash;
 }
 
-RHO_GLOBAL VALUE getPhonebookRecords(void* pb, int offset, int max_results, rho_param* select_param)
+RHO_GLOBAL VALUE getPhonebookRecords(void* pb, rho_param* params)
 {
-    if (logging_enable) RAWLOG_INFO2("getPhonebookRecords(%d, %d) START", offset, max_results);
+    RAWTRACE("getPhonebookRecords() START");
     jobject phonebookObj = (jobject)pb;
+
+    int offset = 0;
+    int max_results = -1;
+    rho_param* select_param = 0;
+    rho_param* conditions = 0;
+
+    if (params != 0 && params->type == RHO_PARAM_HASH) {
+        for (int i = 0, lim = params->v.hash->size; i < lim; ++i) {
+            std::string key = params->v.hash->name[i];
+            rho_param* value = params->v.hash->value[i];
+
+            if (key.compare("offset") == 0) {
+                RAWTRACE("'offset' parameter found");
+                if (value->type == RHO_PARAM_STRING) {
+                    RAWTRACE1("'offset' parameter is string: %s", value->v.string);
+                    sscanf(value->v.string, "%d", &offset);
+                }
+            } else if (key.compare("per_page") == 0) {
+                RAWTRACE("'per_page' parameter found");
+                if (value->type == RHO_PARAM_STRING) {
+                    RAWTRACE1("'per_page' parameter is string: %s", value->v.string);
+                    sscanf(value->v.string, "%d", &max_results);
+                }
+            } else if (key.compare("select") == 0) {
+                select_param = value;
+            } else if (key.compare("conditions") == 0) {
+                conditions = value;
+            }
+        }
+    }
 
     JNIEnv *env = jnienv();
 
@@ -118,7 +148,7 @@ RHO_GLOBAL VALUE getPhonebookRecords(void* pb, int offset, int max_results, rho_
     jclass contactCls = getJNIClass(RHODES_JAVA_CLASS_CONTACT);
     if (!contactCls) return Qnil;
 
-    jmethodID queryMID = getJNIClassMethod(env, phonebookCls, "queryContacts", "(IILjava/util/List;)V");
+    jmethodID queryMID = getJNIClassMethod(env, phonebookCls, "queryContacts", "(IILjava/util/List;Ljava/util/Map;)V");
     if (!queryMID) return Qnil;
 
     jmethodID phonebookMoveToBeginMID = getJNIClassMethod(env, phonebookCls, "moveToBegin", "()V");
@@ -138,8 +168,14 @@ RHO_GLOBAL VALUE getPhonebookRecords(void* pb, int offset, int max_results, rho_
         RAWLOG_INFO("Converting 'select_param'.");
         selectObj = RhoValueConverter(env).createObject(select_param);
     }
-    env->CallVoidMethod(phonebookObj, queryMID, offset, max_results, selectObj);
+    jobject conditionsObj = NULL;
+    if (conditions) {
+        RAWLOG_INFO("Converting 'conditions'.");
+        conditionsObj = RhoValueConverter(env).createObject(conditions);
+    }
+    env->CallVoidMethod(phonebookObj, queryMID, offset, max_results, selectObj, conditionsObj);
     env->DeleteLocalRef(selectObj);
+    env->DeleteLocalRef(conditionsObj);
     env->CallVoidMethod(phonebookObj, phonebookMoveToBeginMID);
 
     VALUE valGc = rho_ruby_disable_gc();
@@ -165,20 +201,48 @@ RHO_GLOBAL VALUE getPhonebookRecords(void* pb, int offset, int max_results, rho_
     return hash;
 }
 
-RHO_GLOBAL int getPhonebookRecordCount(void* pb, int offset, int max_results)
+RHO_GLOBAL int getPhonebookRecordCount(void* pb, rho_param* params)
 {
-    if (logging_enable) RAWLOG_INFO2("getPhonebookRecordCount(%d, %d) START", offset, max_results);
+    RAWTRACE("getPhonebookRecordCount() START");
     jobject phonebookObj = static_cast<jobject>(pb);
 
+    int offset = 0;
+    int max_results = -1;
+    rho_param* conditions = 0;
+
+    if (params != 0 && params->type == RHO_PARAM_HASH) {
+        for (int i = 0, lim = params->v.hash->size; i < lim; ++i) {
+            std::string key = params->v.hash->name[i];
+            rho_param* value = params->v.hash->value[i];
+
+            if (key.compare("offset") == 0) {
+                if (value->type == RHO_PARAM_STRING) {
+                    sscanf(value->v.string, "%d", &offset);
+                }
+            } else if (key.compare("per_page") == 0) {
+                if (value->type == RHO_PARAM_STRING) {
+                    sscanf(value->v.string, "%d", &max_results);
+                }
+            } else if (key.compare("conditions") == 0) {
+                conditions = value;
+            }
+        }
+    }
     JNIEnv *env = jnienv();
 
     jclass phonebookCls = getJNIClass(RHODES_JAVA_CLASS_PHONEBOOK);
     if (!phonebookCls) return 0;
 
-    jmethodID queryMID = getJNIClassMethod(env, phonebookCls, "queryContactCount", "(II)I");
+    jmethodID queryMID = getJNIClassMethod(env, phonebookCls, "queryContactCount", "(IILjava/util/Map;)I");
     if (!queryMID) return 0;
 
-    int contactCount =  env->CallIntMethod(phonebookObj, queryMID, offset, max_results);
+    jobject conditionsObj = NULL;
+    if (conditions) {
+        RAWLOG_INFO("Converting 'conditions'.");
+        conditionsObj = RhoValueConverter(env).createObject(conditions);
+    }
+    int contactCount =  env->CallIntMethod(phonebookObj, queryMID, offset, max_results, conditionsObj);
+    env->DeleteLocalRef(conditionsObj);
 
     if (logging_enable) RAWLOG_INFO("getPhonebookRecordCount() FINISH");
     return contactCount;
@@ -187,7 +251,7 @@ RHO_GLOBAL int getPhonebookRecordCount(void* pb, int offset, int max_results)
 RHO_GLOBAL VALUE getallPhonebookRecords(void* pb)
 {
     if (logging_enable) RAWLOG_INFO("getallPhonebookRecords() START");
-    VALUE res = getPhonebookRecords(pb, 0, -1, 0);
+    VALUE res = getPhonebookRecords(pb, 0);
     if (logging_enable) RAWLOG_INFO("getallPhonebookRecords() FINISH");
     return res;
 }
