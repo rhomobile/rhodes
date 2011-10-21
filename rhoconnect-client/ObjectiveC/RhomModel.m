@@ -132,6 +132,7 @@ int enum_func(const char* szKey, const char* szValue, void* pThis)
 	NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
 	rho_connectclient_hash_enumerate(item, &enum_func, data );
 
+    rho_connectclient_hash_delete(item);
 	return [data autorelease];
 }
 
@@ -154,6 +155,7 @@ int enum_func(const char* szKey, const char* szValue, void* pThis)
 	NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
 	rho_connectclient_hash_enumerate(item, &enum_func, data );
 	
+    rho_connectclient_hash_delete(item);
 	return [data autorelease];
 }
 
@@ -188,6 +190,7 @@ int enum_func(const char* szKey, const char* szValue, void* pThis)
         [data release];
     }
 	
+    rho_connectclient_strhasharray_delete(items);
 	return [arRes autorelease];
 }
 
@@ -222,6 +225,7 @@ int enum_func(const char* szKey, const char* szValue, void* pThis)
         [data release];
     }
 	
+    rho_connectclient_strhasharray_delete(items);
 	return [arRes autorelease];
 
 }
