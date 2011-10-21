@@ -1,0 +1,78 @@
+How to build in first time:
+
+*** Eclipse product ***
+
+1. Download Eclipse 3.6 for RPC developer config
+
+2. clone Rhostudio repositary (git clone git@github.com:rhomobile/rhostudio.git)
+  
+3. Import RhoStudio project and Rhostudio feature project into workspace
+
+   3.1 Goto File/Import menu item 
+   3.2 Select General/Existing Project into Workspace
+   3.3 Select repository directory 
+   3.4 Finish
+   
+   3.5 Import 
+
+4. After import RhoStudio project you should see RhoStudio product item in project tree
+
+5. Export product 
+
+   5.1 Open product item 
+   5.2 press export button in toolbar
+   5.3 Uncheck 'Generate metadata repositary' item 
+   5.4 Place destination directory 
+
+6. Copy product files in directory with eclipse assambly
+
+*** Windows installer ***
+
+Need software:
+
+NSIS installer (link - http://rhostudio.s3.amazonaws.com/instant/work/RhoStudioDMG.dmg)
+NSIS large string path (link - http://downloads.sourceforge.net/project/nsis/NSIS%202/2.46/nsis-2.46-strlen_8192.zip?r=http%3A%2F%2Fnsis.sourceforge.net%2FSpecial_Builds&ts=1319209736&use_mirror=citylan)
+Installer package (link - http://rhostudio.s3.amazonaws.com/instant/work/installer-win.rar)
+
+For windows maked rake script for build installer
+
+settings:
+
+$majorVer, $minorVer, $miniVer, $betaVer
+Version number. $betaVer use only in beta and user configurations.
+
+$isRhodesBeta, $isConnBeta, $isAdapterBeta
+Settings for configure 'user' task. If parameter is true then download beta version of gem.
+
+$nsisPath
+Path to NSIS compiler (with file name)
+
+$rubyPath
+Path to ruby installation directory 
+
+$rubyInstallPath
+Path to ruby directory what use in ianstaller
+
+commands:
+
+rake installer:user
+download and install versions rhodes, rhoconnect, rhoconnect-adapters from beta flags in rake script
+after it, build installer with name 'RhoStudioInstaller#.#.#.beta#.exe'
+
+rake installer:beta
+download and install latest beta versions rhodes, rhoconnect, rhoconnect-adapters
+after it, build installer with name 'RhoStudioInstaller#.#.#.beta#.exe'
+
+rake installer:release 
+download and install latest release versions rhodes, rhoconnect, rhoconnect-adapters
+after it, build installer with name 'RhoStudioInstaller#.#.#.exe'
+
+*** OSX installer ***
+
+1. Download base DMG image (link - http://rhostudio.s3.amazonaws.com/instant/work/RhoStudioDMG.dmg)
+
+2. Make new version of RhoStudio plugin 
+
+3. Copy new version to eclipse folder in image (old version should be deleted)
+
+4. Open image in disk utility and convert to 'read only' image with compressed content
