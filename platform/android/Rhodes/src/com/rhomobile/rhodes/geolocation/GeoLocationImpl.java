@@ -300,7 +300,7 @@ public class GeoLocationImpl {
 			
 		} catch (Exception e) {
 			lastLocation = null;
-			Logger.E(TAG, e.getMessage());
+			Logger.E(TAG, e);
 		}
 	}
 	

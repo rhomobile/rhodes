@@ -62,7 +62,11 @@ public class ContactAccessorOld implements ContactAccessor {
 	public ContactAccessorOld() {
 		cr = RhodesService.getInstance().getContentResolver();
 	}
-	
+
+    private static String getConditionString(Map<String,Object> conditionsMap) {
+        return null;
+    }
+
 	private void fillPhones(String id, Contact contact) {
 		Cursor cursor = cr.query(Contacts.Phones.CONTENT_URI,
 				new String[] {Phones.NUMBER, Phones.TYPE},
@@ -94,7 +98,7 @@ public class ContactAccessorOld implements ContactAccessor {
 	}
 
 	@Override
-	public int getCount(int offset, int max_results) {
+	public int getCount(int offset, int max_results, Map<String, Object> conditions) {
 		StringBuilder sortMode = new StringBuilder();
 		if (max_results > 0 || offset > 0) {
 			sortMode.append(People._ID).append(" ASC");
@@ -114,7 +118,7 @@ public class ContactAccessorOld implements ContactAccessor {
 	}
 
 	@Override
-	public Map<String, Contact> getContacts(int offset, int max_results, List<String> select) throws Exception {
+	public Map<String, Contact> getContacts(int offset, int max_results, List<String> select, Map<String, Object> conditions) throws Exception {
 		Map<String, Contact> contacts = new HashMap<String, Contact>();
 		
 		Cursor cursor = cr.query(People.CONTENT_URI, null, null, null, null);
@@ -220,7 +224,7 @@ public class ContactAccessorOld implements ContactAccessor {
 	
 	@Override
 	public Contact getContact(String id) throws Exception {
-		Map<String, Contact> allContacts = getContacts(0, -1, null);
+		Map<String, Contact> allContacts = getContacts(0, -1, null, null);
 		/*TODO: implement old API getContact by id. */
 		return allContacts.get(id);
 	}

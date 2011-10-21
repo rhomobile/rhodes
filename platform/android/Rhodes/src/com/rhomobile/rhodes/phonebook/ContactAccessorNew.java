@@ -27,8 +27,10 @@
 package com.rhomobile.rhodes.phonebook;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesService;
@@ -196,85 +198,323 @@ public class ContactAccessorNew implements ContactAccessor {
 			cursor.close();
 		}
 	}
-	
-	@Override
-	public int getCount(int offset, int max_results) {
-		StringBuilder sortMode = new StringBuilder();
-		if (max_results > 0 || offset > 0) {
-			sortMode.append(Contacts._ID).append(" ASC");
-			if (max_results > 0)
-				sortMode.append(" LIMIT ").append(max_results);
-			if (offset > 0)
-				sortMode.append(" OFFSET ").append(offset);
-		}
 
-		Cursor cursor = cr.query(Contacts.CONTENT_URI,
-				new String[] {Contacts._ID},
-				null, null, sortMode.toString());
-		int count = -1;
-		try {
-			count = cursor.getCount();
-		} finally {
-			cursor.close();
-		}
-		return count;
+    @Override
+    public int getCount(int offset, int max_results, Map<String, Object> conditions) {
+        int count = 0;
+        List<String> select = null;
+        
+        if (conditions != null && conditions.isEmpty())
+            conditions = null;
+        else
+            select = new LinkedList<String>();
+
+        boolean manualOffset = false;
+
+        StringBuilder contactSortMode = new StringBuilder(Contacts.DISPLAY_NAME).append(',').append(Contacts._ID).append(" ASC");
+        if (conditions == null) {
+            if (max_results > 0)
+                contactSortMode.append(" LIMIT ").append(max_results);
+            if (offset > 0)
+                contactSortMode.append(" OFFSET ").append(offset);
+        } else {
+            manualOffset = offset > 0;
+        }
+
+        StringBuilder selection = new StringBuilder();
+        List<String> selectionArgs = new LinkedList<String>();
+        String[] selectionArray = null;
+        Cursor dataCursor = null;
+
+        if (conditions != null) {
+            Set<String> cond_keys = conditions.keySet();
+            for (String key: cond_keys) {
+                if (key.equalsIgnoreCase("phone")) {
+                    if (!select.contains(Phonebook.PB_BUSINESS_NUMBER))
+                        select.add(Phonebook.PB_BUSINESS_NUMBER);
+                    if (!select.contains(Phonebook.PB_HOME_NUMBER))
+                        select.add(Phonebook.PB_HOME_NUMBER);
+                    if (!select.contains(Phonebook.PB_MOBILE_NUMBER))
+                        select.add(Phonebook.PB_MOBILE_NUMBER);
+                }
+                else if (key.equalsIgnoreCase("email")) {
+                    if (!select.contains(Phonebook.PB_EMAIL_ADDRESS))
+                        select.add(Phonebook.PB_EMAIL_ADDRESS);
+                }
+            }
+            for(String field : select) {
+                if (selection.length() != 0) {
+                    selection.append(" OR ");
+                }
+
+                if (field.equals(Phonebook.PB_MOBILE_NUMBER) ||
+                         field.equals(Phonebook.PB_HOME_NUMBER) ||
+                         field.equals(Phonebook.PB_BUSINESS_NUMBER)) {
+                    selection.append(Data.MIMETYPE).append("=?");
+                    selectionArgs.add(Phone.CONTENT_ITEM_TYPE);
+                }
+                else if (field.equals(Phonebook.PB_EMAIL_ADDRESS)) {
+                    selection.append(Data.MIMETYPE).append("=?");
+                    selectionArgs.add(Email.CONTENT_ITEM_TYPE);
+                }
+            }
+
+             selectionArray = new String[selectionArgs.size()];
+             selectionArgs.toArray(selectionArray);
+
+             dataCursor = cr.query(Data.CONTENT_URI,
+                     new String[] {Data.CONTACT_ID, Data.LOOKUP_KEY, Data.DISPLAY_NAME, Data.MIMETYPE, Data.DATA1, Data.DATA2, Data.DATA3},
+                     selection.toString(),
+                     selectionArray,
+                     new StringBuilder(Data.DISPLAY_NAME).append(',').append(Data.CONTACT_ID).append(" ASC").toString());
+
+        }
+
+        Cursor contactCursor = cr.query(Contacts.CONTENT_URI,
+                new String[] {Contacts._ID, Contacts.LOOKUP_KEY, Contacts.DISPLAY_NAME},
+                null, null, contactSortMode.toString());
+
+        try {
+            long pos = 0;
+            Contact contact = null;
+
+            Logger.I(TAG, "Contact records: " + contactCursor.getCount());
+
+            if (dataCursor == null)
+                return contactCursor.getCount();
+            
+            Logger.I(TAG, "Contacts' data records: " + dataCursor.getCount());
+
+            boolean hasData = dataCursor != null && dataCursor.moveToFirst();
+            
+            if (contactCursor.moveToFirst()) do {
+                long curId = contactCursor.getLong(contactCursor.getColumnIndex(Contacts._ID));
+                Logger.I(TAG, "Processing contact id: " + curId + ", position: " + pos);
+
+                String key = contactCursor.getString(contactCursor.getColumnIndex(Contacts.LOOKUP_KEY));
+                String displayName = contactCursor.getString(contactCursor.getColumnIndex(Contacts.DISPLAY_NAME));
+
+                if (contact == null)
+                    contact = new Contact(this, key, displayName);
+                else
+                    contact.reset(key, displayName);
+
+                if (hasData)
+                    hasData = fillData(contact, curId, dataCursor, select);
+
+                if (contact.checkConditions(conditions)) {
+                    if (!manualOffset || pos >= offset) {
+                        count++;
+                        if (max_results > 0 && count >= max_results)
+                            break;
+                    }
+                    pos++;
+                }
+            } while (contactCursor.moveToNext());
+
+        }
+        finally {
+            contactCursor.close();
+            if (dataCursor != null)
+                dataCursor.close();
+        }
+        
+        return count;
 	}
 
-	@Override
-	public Map<String, Contact> getContacts(int offset, int max_results, List<String> select) throws Exception {
-		Map<String, Contact> contacts = new HashMap<String, Contact>();
-		
-		StringBuilder sortMode = new StringBuilder();
-		sortMode.append(Contacts.DISPLAY_NAME);//.append(" ASC");
-		if (max_results > 0)
-			sortMode.append(" LIMIT ").append(max_results);
-		if (offset > 0)
-			sortMode.append(" OFFSET ").append(offset);
-		
-		Cursor cursor = cr.query(Contacts.CONTENT_URI,
-				new String[] {Contacts._ID, Contacts.LOOKUP_KEY, Contacts.DISPLAY_NAME},
-				null, null, sortMode.toString());
-		try {
-			if (!cursor.moveToFirst())
-				return contacts;
-			
-			do {
-				
-				String key = cursor.getString(cursor.getColumnIndex(Contacts.LOOKUP_KEY));
-				String id = cursor.getString(cursor.getColumnIndex(Contacts._ID));
-				String displayName = cursor.getString(cursor.getColumnIndex(Contacts.DISPLAY_NAME));
-				Contact contact = new Contact(this, key, displayName);
-				
-				if (select != null) {
-					if (select.contains(Phonebook.PB_FIRST_NAME) ||
-					    select.contains(Phonebook.PB_LAST_NAME)) {
-						fillName(id, contact);
-					}
-					if (select.contains(Phonebook.PB_MOBILE_NUMBER) ||
-					    select.contains(Phonebook.PB_HOME_NUMBER) ||
-					    select.contains(Phonebook.PB_BUSINESS_NUMBER)) {
-						fillPhones(id, contact);
-					}
-					if (select.contains(Phonebook.PB_EMAIL_ADDRESS)) {
-						fillEmails(id, contact);
-					}
-					if (select.contains(Phonebook.PB_COMPANY_NAME)) {
-						fillCompany(id, contact);
-					}
-				}
-				
-				if (DEBUG) Logger.D(TAG, "Filling contact with ID: " + key);
-				contacts.put(contact.id(), contact);
-				
-			} while (cursor.moveToNext());
-		}
-		finally {
-			cursor.close();
-		}
-		
-		return contacts;
-	}
-	
+
+    private boolean fillData(Contact contact, long contactId, Cursor dataCursor, List<String> select)
+    {
+        do {
+            long curId = dataCursor.getLong(dataCursor.getColumnIndex(Data.CONTACT_ID));
+            if (curId != contactId) return true;
+            
+            String mime = dataCursor.getString(dataCursor.getColumnIndex(Data.MIMETYPE));
+            if ((select == null || select.contains(Phonebook.PB_FIRST_NAME) || select.contains(Phonebook.PB_LAST_NAME))
+                && mime.equals(StructuredName.CONTENT_ITEM_TYPE)) {
+
+                String firstName = dataCursor.getString(dataCursor.getColumnIndex(StructuredName.GIVEN_NAME));
+                String lastName = dataCursor.getString(dataCursor.getColumnIndex(StructuredName.FAMILY_NAME));
+
+                if (firstName != null)
+                        contact.setField(Phonebook.PB_FIRST_NAME, firstName);
+                if (lastName != null)
+                        contact.setField(Phonebook.PB_LAST_NAME, lastName);
+            }
+
+            if (mime.equals(Phone.CONTENT_ITEM_TYPE)) {
+                int type = dataCursor.getInt(dataCursor.getColumnIndex(Phone.TYPE));
+                switch (type) {
+                case Phone.TYPE_HOME:
+                    if (select == null || select.contains(Phonebook.PB_HOME_NUMBER))
+                        contact.setField(Phonebook.PB_HOME_NUMBER, dataCursor.getString(dataCursor.getColumnIndex(Phone.NUMBER)));
+                    break;
+                case Phone.TYPE_WORK:
+                    if (select == null || select.contains(Phonebook.PB_BUSINESS_NUMBER))
+                        contact.setField(Phonebook.PB_BUSINESS_NUMBER, dataCursor.getString(dataCursor.getColumnIndex(Phone.NUMBER)));
+                    break;
+                case Phone.TYPE_MOBILE:
+                    if (select == null || select.contains(Phonebook.PB_MOBILE_NUMBER))
+                        contact.setField(Phonebook.PB_MOBILE_NUMBER, dataCursor.getString(dataCursor.getColumnIndex(Phone.NUMBER)));
+                    break;
+                }
+            }
+
+            if (mime.equals(Email.CONTENT_ITEM_TYPE) && (select == null || select.contains(Phonebook.PB_EMAIL_ADDRESS))) {
+                if (contact.getField(Phonebook.PB_EMAIL_ADDRESS) == null) {
+                    contact.setField(Phonebook.PB_EMAIL_ADDRESS, dataCursor.getString(dataCursor.getColumnIndex(Email.ADDRESS)));
+                }
+            }
+
+            if (mime.equals(Organization.COMPANY) && (select == null || select.contains(Phonebook.PB_COMPANY_NAME))) {
+                String company = dataCursor.getString(dataCursor.getColumnIndex(Organization.COMPANY));
+                if (company != null)
+                    contact.setField(Phonebook.PB_COMPANY_NAME, company);
+            }
+        } while(dataCursor.moveToNext());
+
+        return false;
+    }
+
+
+    @Override
+    public Map<String, Contact> getContacts(int offset, int max_results, List<String> initialSelect, Map<String, Object> conditions) throws Exception {
+        
+        List<String> select;
+        if (initialSelect == null || initialSelect.isEmpty())
+            select = null;
+        else
+            select = new LinkedList<String>(initialSelect);
+
+        if (conditions != null && conditions.isEmpty())
+            conditions = null;
+        else if (select == null)
+            select = new LinkedList<String>();
+
+        boolean manualOffset = false;
+        StringBuilder contactSortMode = new StringBuilder(Contacts.DISPLAY_NAME).append(',').append(Contacts._ID).append(" ASC");
+        Map<String, Contact> contacts = new HashMap<String, Contact>();
+
+        if (conditions == null) {
+            if (max_results > 0)
+                contactSortMode.append(" LIMIT ").append(max_results);
+            if (offset > 0)
+                contactSortMode.append(" OFFSET ").append(offset);
+        } else {
+            manualOffset = offset > 0;
+        }
+
+        StringBuilder selection = new StringBuilder();
+        List<String> selectionArgs = new LinkedList<String>();
+
+        if (select == null) {
+            selection.append(Data.MIMETYPE).append("=? OR ")
+                     .append(Data.MIMETYPE).append("=? OR ")
+                     .append(Data.MIMETYPE).append("=? OR ")
+                     .append(Data.MIMETYPE).append("=?");
+
+            selectionArgs.add(StructuredName.CONTENT_ITEM_TYPE);
+            selectionArgs.add(Phone.CONTENT_ITEM_TYPE);
+            selectionArgs.add(Email.CONTENT_ITEM_TYPE);
+            selectionArgs.add(Organization.CONTENT_ITEM_TYPE);
+        } else {
+            if (conditions != null) {
+                Set<String> cond_keys = conditions.keySet();
+                for (String key: cond_keys) {
+                    if (key.equalsIgnoreCase("phone")) {
+                        if (!select.contains(Phonebook.PB_BUSINESS_NUMBER))
+                            select.add(Phonebook.PB_BUSINESS_NUMBER);
+                        if (!select.contains(Phonebook.PB_HOME_NUMBER))
+                            select.add(Phonebook.PB_HOME_NUMBER);
+                        if (!select.contains(Phonebook.PB_MOBILE_NUMBER))
+                            select.add(Phonebook.PB_MOBILE_NUMBER);
+                    }
+                    else if (key.equalsIgnoreCase("email")) {
+                        if (!select.contains(Phonebook.PB_EMAIL_ADDRESS))
+                            select.add(Phonebook.PB_EMAIL_ADDRESS);
+                    }
+                }
+            }
+            for(String field : select) {
+                if (selection.length() != 0) {
+                    selection.append(" OR ");
+                }
+
+                if (field.equals(Phonebook.PB_FIRST_NAME) || field.equals(Phonebook.PB_LAST_NAME)) {
+                    selection.append(Data.MIMETYPE).append("=?");
+                    selectionArgs.add(StructuredName.CONTENT_ITEM_TYPE);
+                }
+                else if (field.equals(Phonebook.PB_MOBILE_NUMBER) ||
+                         field.equals(Phonebook.PB_HOME_NUMBER) ||
+                         field.equals(Phonebook.PB_BUSINESS_NUMBER)) {
+                    selection.append(Data.MIMETYPE).append("=?");
+                    selectionArgs.add(Phone.CONTENT_ITEM_TYPE);
+                }
+                else if (field.equals(Phonebook.PB_EMAIL_ADDRESS)) {
+                    selection.append(Data.MIMETYPE).append("=?");
+                    selectionArgs.add(Email.CONTENT_ITEM_TYPE);
+                }
+                else if (field.equals(Phonebook.PB_COMPANY_NAME)) {
+                    selection.append(Data.MIMETYPE).append("=?");
+                    selectionArgs.add(Organization.CONTENT_ITEM_TYPE);
+                }
+            }
+        }
+        String[] selectionArray = new String[selectionArgs.size()];
+        selectionArgs.toArray(selectionArray);
+
+        Cursor contactCursor = cr.query(Contacts.CONTENT_URI,
+                                 new String[] {Contacts._ID, Contacts.LOOKUP_KEY, Contacts.DISPLAY_NAME},
+                                 null, null, contactSortMode.toString());
+
+        Cursor dataCursor = cr.query(Data.CONTENT_URI,
+                                 new String[] {Data.CONTACT_ID, Data.LOOKUP_KEY, Data.DISPLAY_NAME, Data.MIMETYPE, Data.DATA1, Data.DATA2, Data.DATA3},
+                                 selection.toString(),
+                                 selectionArray,
+                                 new StringBuilder(Data.DISPLAY_NAME).append(',').append(Data.CONTACT_ID).append(" ASC").toString());
+
+        try {
+            long pos = 0;
+            Contact contact = null;
+
+            Logger.I(TAG, "Contact records: " + contactCursor.getCount());
+            Logger.I(TAG, "Contacts' data records: " + dataCursor.getCount());
+
+            boolean hasData = dataCursor.moveToFirst();
+            if (contactCursor.moveToFirst()) do {
+                long curId = contactCursor.getLong(contactCursor.getColumnIndex(Contacts._ID));
+                Logger.I(TAG, "Processing contact id: " + curId + ", position: " + pos);
+
+                String key = contactCursor.getString(contactCursor.getColumnIndex(Contacts.LOOKUP_KEY));
+                String displayName = contactCursor.getString(contactCursor.getColumnIndex(Contacts.DISPLAY_NAME));
+
+                if (contact == null)
+                    contact = new Contact(this, key, displayName);
+                else
+                    contact.reset(key, displayName);
+
+                if (hasData)
+                    hasData = fillData(contact, curId, dataCursor, select);
+
+                if (contact.checkConditions(conditions)) {
+                    if (!manualOffset || pos >= offset) {
+                        contacts.put(contact.id(), contact);
+                        if (max_results > 0 && contacts.size() >= max_results)
+                            break;
+                        contact = null;
+                    }
+                    pos++;
+                }
+            } while (contactCursor.moveToNext());
+
+        }
+        finally {
+            contactCursor.close();
+            dataCursor.close();
+        }
+        return contacts;
+    }
+
 	public Contact getContact(String lookupKey) throws Exception {
 		if (DEBUG)
 			Logger.D(TAG, "getContact(lookupKey="+lookupKey+")");

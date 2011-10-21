@@ -29,6 +29,7 @@ package com.rhomobile.rhodes.phonebook;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.rhomobile.rhodes.Logger;
 
@@ -43,12 +44,62 @@ public class Contact {
 	
 	public Contact() { }
 
-	public Contact(ContactAccessor accessor, String id, String displayName) {
-		this.id = id;
-		mFields.put(Phonebook.PB_ID, id);
-		mFields.put(Phonebook.PB_DISPLAY_NAME, displayName);
-	}
-	
+    public Contact(ContactAccessor accessor, String id, String displayName) {
+        this.id = id;
+        mFields.put(Phonebook.PB_ID, id);
+        mFields.put(Phonebook.PB_DISPLAY_NAME, displayName);
+    }
+
+    void reset(String id, String displayName) {
+        mFields.clear();
+        this.id = id;
+        mFields.put(Phonebook.PB_ID, id);
+        mFields.put(Phonebook.PB_DISPLAY_NAME, displayName);
+    }
+
+    boolean checkConditions(Map<String, Object> conditions)
+    {
+        if (conditions == null)
+            return true;
+        
+        Set<String> cond_keys = conditions.keySet();
+        for (String key: cond_keys) {
+            Object condObj = conditions.get(key);
+            String cond = null;
+            boolean isNullFields = true;
+
+            if (condObj instanceof String) {
+                cond = (String)condObj;
+            }
+            //TODO: if (condObj instanceof Map<String, String>)
+
+            Logger.I(TAG, "Check " + key + " " + cond + ", contact: " + id());
+            
+            
+            if (key.equalsIgnoreCase("phone")) {
+                isNullFields = getField(Phonebook.PB_BUSINESS_NUMBER) == null
+                            && getField(Phonebook.PB_HOME_NUMBER) == null
+                            && getField(Phonebook.PB_MOBILE_NUMBER) == null;
+            }
+            else if (key.equalsIgnoreCase("email")) {
+                isNullFields = getField(Phonebook.PB_EMAIL_ADDRESS) == null;
+            }
+
+            if (cond.equalsIgnoreCase("not_nil")) {
+                if (isNullFields)
+                    return false;
+            }
+            else if (cond.equalsIgnoreCase("is_nil")) {
+                if (!isNullFields)
+                    return false;
+            }
+            
+        }
+        
+        Logger.I(TAG, "Condition is passed");
+        return true;
+    }
+
 	public void setField(String key, String value)
 	{
 		mFields.put(key,value);

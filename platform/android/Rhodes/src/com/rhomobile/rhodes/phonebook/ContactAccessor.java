@@ -31,8 +31,8 @@ import java.util.Map;
 
 public interface ContactAccessor {
 	
-	public int getCount(int offset, int limit) throws Exception;;
-	public Map<String, Contact> getContacts(int offset, int max_results, List<String> select) throws Exception;
+	public int getCount(int offset, int limit, Map<String, Object> conditions) throws Exception;;
+	public Map<String, Contact> getContacts(int offset, int max_results, List<String> select, Map<String, Object> conditions) throws Exception;
 	public Contact getContact(String id) throws Exception;
 	public void save(Contact contact) throws Exception;
 	public void remove(Contact contact);

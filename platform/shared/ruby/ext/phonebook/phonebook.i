@@ -8,10 +8,10 @@ extern void  closePhonebook(void* pb);
 extern VALUE getallPhonebookRecords(void* pb);
 #define allRecords getallPhonebookRecords
 
-extern int getPhonebookRecordCount(void* pb, int offset, int limit);
+extern int getPhonebookRecordCount(void* pb, rho_param* params);
 #define countRecords getPhonebookRecordCount
 
-extern VALUE getPhonebookRecords(void* pb, int offset, int limit, rho_param* select_param);
+extern VALUE getPhonebookRecords(void* pb, rho_param* params);
 #define getRecords getPhonebookRecords
 
 extern void* openPhonebookRecord(void* pb, char* id);
@@ -34,23 +34,23 @@ extern int deleteRecord(void* pb, void* record);
 
 %}
 
-%typemap(default) (rho_param* select_param) {
+%typemap(default) (rho_param* params) {
  $1 = NULL;
 }
 
-%typemap(in) (rho_param* select_param) {
+%typemap(in) (rho_param* params) {
     $1 = rho_param_fromvalue($input);
 }
 
-%typemap(freearg) (rho_param* select_param) {
+%typemap(freearg) (rho_param* params) {
     rho_param_free($1);
 }
 
 extern void* openPhonebook();
 extern void  closePhonebook(void* pb);
 extern VALUE allRecords(void* pb);
-extern int countRecords(void* pb, int offset, int limit);
-extern VALUE getRecords(void* pb, int offset, int limit, rho_param* select_param);
+extern int countRecords(void* pb, rho_param* params);
+extern VALUE getRecords(void* pb, rho_param* params);
 extern void* openRecord(void* pb, char* id);
 extern VALUE getRecord(void* pb, char* id);
 extern VALUE firstRecord(void* pb);

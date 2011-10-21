@@ -374,7 +374,7 @@ VALUE getallPhonebookRecords(void* pb) {
 	return rho_ruby_get_NIL();	
 }
 
-int getPhonebookRecordCount(void* pb) {
+int getPhonebookRecordCount(void* pb, rho_param* params) {
 	if (pb) {
 		if (logging_enable) RAWLOG_INFO("phonebook :: getPhonebookRecordCount START");
 		LocalPhonebook* phonebook = pb;
@@ -389,7 +389,7 @@ int getPhonebookRecordCount(void* pb) {
 	return 0;
 }
 
-VALUE getPhonebookRecords(void* pb, int offset, int max_results, rho_param* select_param) {
+VALUE getPhonebookRecords(void* pb, rho_param* params) {
 	if (pb) {
 		if (logging_enable) RAWLOG_INFO("phonebook :: getallPhonebookRecords START");
 		LocalPhonebook* phonebook = pb;
