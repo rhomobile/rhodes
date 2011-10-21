@@ -65,7 +65,7 @@ _Stl_prime<_Dummy>::_S_next_size(size_t __n) {
 #  else
   const size_t* __last =  _list + (30/sizeof(size_t)); // stupid MWERKS
 #  endif
-  const size_t* pos = __lower_bound(__first, __last, __n, 
+  const size_t* pos = __lower_bound(__first, __last, __n,
                                     __less((size_t*)0), __less((size_t*)0), (ptrdiff_t*)0);
   return (pos == __last ? *(__last - 1) : *pos);
 }

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -43,34 +43,34 @@ import java.io.IOException;
 
 public class AsyncHttp extends ThreadQueue
 {
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("AsyncHttp");
 	private static RhodesApp RHODESAPP(){ return RhodesApp.getInstance(); }
-	
+
     static AsyncHttp m_pInstance;
 
     static AsyncHttp Create()
     {
-	    if ( m_pInstance != null) 
+	    if ( m_pInstance != null)
 	        return m_pInstance;
-	
+
 	    m_pInstance = new AsyncHttp(new RhoClassFactory());
 	    return m_pInstance;
     }
-    
+
     static void Destroy()
     {
     	if ( m_pInstance != null )
     	{
     		m_pInstance.stop(-1);
 	        LOG.INFO("Thread shutdown");
-	        
+
 	        m_pInstance = null;
     	}
     }
-    
+
     static AsyncHttp getInstance(){ return m_pInstance; }
-    
+
     AsyncHttp(RhoClassFactory factory)
     {
     	super(factory);
@@ -78,7 +78,7 @@ public class AsyncHttp extends ThreadQueue
 
         setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
     }
-    
+
     void cancelRequest(String szCallback)
     {
         if (szCallback == null || szCallback.length() == 0 )
@@ -90,10 +90,10 @@ public class AsyncHttp extends ThreadQueue
         synchronized(getCommandLock())
         {
 	        HttpCommand pCmd = (HttpCommand)getCurCommand();
-	
+
 	        if ( pCmd != null && ( szCallback.compareTo("*") == 0 || pCmd.m_strCallback.compareTo(szCallback) == 0) )
 	            pCmd.cancel();
-	
+
 	        if ( szCallback.compareTo("*") == 0 )
 	            getCommands().clear();
 	        else
@@ -101,15 +101,15 @@ public class AsyncHttp extends ThreadQueue
 	            for (int i = getCommands().size()-1; i >= 0; i--)
 	            {
 	                HttpCommand pCmd1 = (HttpCommand)getCommands().get(i);
-	
+
 	                if ( pCmd1 != null && pCmd1.m_strCallback.compareTo(szCallback) == 0 )
 	                    getCommands().remove(i);
 	            }
-	
+
 	        }
         }
     }
-    
+
     public RubyValue addHttpCommand(IQueueCommand pCmd)
     {
         if ( ((HttpCommand)pCmd).m_strCallback.length()==0)
@@ -121,18 +121,18 @@ public class AsyncHttp extends ThreadQueue
         {
             super.addQueueCommand(pCmd);
             start(epLow);
-            
+
             return ((HttpCommand)pCmd).getRetValue();
         }
     }
-    
+
     public void processCommand(IQueueCommand pCmd)
     {
         ((HttpCommand)pCmd).execute();
     }
-    
+
 	public final static int  hcNone = 0, hcGet = 1, hcPost=2, hcDownload=3, hcUpload =4;
-    
+
     private static class HttpCommand implements IQueueCommand
     {
 	    int m_eCmd;
@@ -142,12 +142,12 @@ public class AsyncHttp extends ThreadQueue
         private NetRequest m_pNetRequest;
         String m_strResBody;
         private RubyValue m_valBody;
-        
+
         RhoParams    m_params;
 
         HttpCommand(String strCmd, RubyValue p)
         {
-        	m_params = new RhoParams(p); 
+        	m_params = new RhoParams(p);
             m_eCmd = translateCommand(strCmd);
             m_strCallback = m_params.getString("callback");
             m_strCallbackParams = m_params.getString("callback_param");
@@ -180,10 +180,10 @@ public class AsyncHttp extends ThreadQueue
     	    	if ( strContType != null && strContType.indexOf("application/json") >=0 )
     	    	{
     	    		RJSONTokener json = new RJSONTokener(resp.getCharData());
-    	    		
+
     	    		try{
     	    			m_valBody = json.nextRValue();
-    	    			
+
     	    			return;
     	    		}catch(Exception exc)
     	    		{
@@ -194,7 +194,7 @@ public class AsyncHttp extends ThreadQueue
 
     	    m_valBody = RhoRuby.create_string(resp.getCharData());
     	}
-        
+
         public void execute()
         {
             NetResponse resp = null;
@@ -204,30 +204,30 @@ public class AsyncHttp extends ThreadQueue
 	            {
 	            case hcGet:
 	            	m_pNetRequest.setIgnoreSuffixOnSim(false);
-	                resp = m_pNetRequest.doRequest( m_params.getString("http_command", "GET"), 
+	                resp = m_pNetRequest.doRequest( m_params.getString("http_command", "GET"),
 	                    m_params.getString("url"), m_params.getString("body"), null, m_mapHeaders);
 	                break;
 	            case hcPost:
 	            	m_pNetRequest.setIgnoreSuffixOnSim(false);
-	                resp = m_pNetRequest.doRequest(m_params.getString("http_command", "POST"), 
+	                resp = m_pNetRequest.doRequest(m_params.getString("http_command", "POST"),
 	                    m_params.getString("url"), m_params.getString("body"), null, m_mapHeaders);
 	                break;
-	
+
 	            case hcDownload:
 	                resp = m_pNetRequest.pullFile(m_params.getString("url"), m_params.getString("filename"), null, m_mapHeaders);
 	                break;
-	
+
 	            case hcUpload:
 	                {
 	                    Vector/*Ptr<net::CMultipartItem*>*/ arMultipartItems = new Vector();
-	
+
 	                    RhoParamArray arParams = new RhoParamArray( m_params, "multipart");
 	                    if ( arParams.size() > 0 )
 	                    {
 	                        for( int i = 0; i < arParams.size(); i++)
 	                        {
 	                            RhoParams oItem = arParams.getItem(i);
-	
+
 	                            MultipartItem pItem = new MultipartItem();
 	                            String strBody = oItem.getString("body");
 	                            if ( strBody.length() > 0 )
@@ -240,7 +240,7 @@ public class AsyncHttp extends ThreadQueue
 	                                pItem.m_strFilePath = oItem.getString("filename");
 	                                pItem.m_strContentType = oItem.getString("content_type", "application/octet-stream");
 	                            }
-	
+
 	                            pItem.m_strName = oItem.getString("name");
 	                            pItem.m_strFileName = oItem.getString("filename_base");
 	                            arMultipartItems.addElement(pItem);
@@ -253,7 +253,7 @@ public class AsyncHttp extends ThreadQueue
 	                        pItem.m_strName = m_params.getString("name");
 	                        pItem.m_strFileName = m_params.getString("filename_base");
 	                        arMultipartItems.addElement(pItem);
-	
+
 	                        String strBody = m_params.getString("body");
 	                        if ( strBody.length() > 0 )
 	                        {
@@ -263,12 +263,12 @@ public class AsyncHttp extends ThreadQueue
 	                            arMultipartItems.addElement(pItem2);
 	                        }
 	                    }
-	
+
 	                    resp = m_pNetRequest.pushMultipartData( m_params.getString("url"), arMultipartItems, null, m_mapHeaders );
 	                    break;
 	                }
 	            }
-	
+
 	            if ( !m_pNetRequest.isCancelled())
 	            {
 				    processResponse(resp);
@@ -284,7 +284,7 @@ public class AsyncHttp extends ThreadQueue
     	    	callNotify(null, RhoAppAdapter.ERR_RUNTIME);
     	    }
         }
-        
+
         public void cancel()
         {
             if (m_pNetRequest!=null )
@@ -341,11 +341,11 @@ public class AsyncHttp extends ThreadQueue
     	        }
             }
         }
-        
+
         RubyValue getRetValue()
         {
     	    if ( m_strCallback.length() == 0 )
-    	        return RhoRuby.create_string(m_strResBody); 
+    	        return RhoRuby.create_string(m_strResBody);
 
     	    return RubyConstant.QNIL;
         }
@@ -374,7 +374,7 @@ public class AsyncHttp extends ThreadQueue
 
         	Enumeration valsHeaders = m_mapHeaders.elements();
         	Enumeration keysHeaders = m_mapHeaders.keys();
-    		while (valsHeaders.hasMoreElements()) 
+    		while (valsHeaders.hasMoreElements())
     		{
     	        if ( strRes.length() > 0)
     	            strRes += "&";
@@ -389,15 +389,15 @@ public class AsyncHttp extends ThreadQueue
         }
 
     };
-	
-	public static void initMethods(RubyModule klass) 
+
+	public static void initMethods(RubyModule klass)
 	{
-		klass.getSingletonClass().defineMethod("do_request", new RubyTwoArgMethod(){ 
+		klass.getSingletonClass().defineMethod("do_request", new RubyTwoArgMethod(){
 			protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyValue arg2, RubyBlock block )
 			{
 				try {
 				    AsyncHttp.Create();
-				    
+
 				    String command = arg1.toStr();
 				    return AsyncHttp.getInstance().addHttpCommand(new AsyncHttp.HttpCommand( command, arg2 ));
 				} catch(Exception e) {
@@ -407,22 +407,22 @@ public class AsyncHttp extends ThreadQueue
 			}
 		});
 
-		klass.getSingletonClass().defineMethod("cancel", new RubyOneArgMethod(){ 
+		klass.getSingletonClass().defineMethod("cancel", new RubyOneArgMethod(){
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
 			{
 				try {
 					String cancel_callback = arg.toStr();
 				    if ( AsyncHttp.getInstance() != null )
 				        AsyncHttp.getInstance().cancelRequest(cancel_callback);
-					
+
 				} catch(Exception e) {
 					LOG.ERROR("cancel failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
 				return RubyConstant.QNIL;
 			}
-		});		
+		});
 
 	}
-	
+
 }

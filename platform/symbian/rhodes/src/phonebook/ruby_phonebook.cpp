@@ -24,15 +24,15 @@
 #include "Phonebook.h"
 #include <cpbkcontactitem.h>
 
-extern "C" 
+extern "C"
 {
-void* openPhonebook() 
+void* openPhonebook()
 {
 	CPhonebook* phonebook = CPhonebook::NewL();
 	return phonebook;
 }
 
-void  closePhonebook(void* pb) 
+void  closePhonebook(void* pb)
 {
 	if ( pb )
     {
@@ -48,10 +48,10 @@ int getPhonebookRecordCount(void* pb)
 
 VALUE getPhonebookRecords(void* pb, int offset, int max_results, rho_param* select_param)
 {
-	return rho_ruby_get_NIL();	
+	return rho_ruby_get_NIL();
 }
 
-VALUE getallPhonebookRecords(void* pb) 
+VALUE getallPhonebookRecords(void* pb)
 {
 	if ( pb )
 	{
@@ -59,17 +59,17 @@ VALUE getallPhonebookRecords(void* pb)
 		return phonebook->getallPhonebookRecords();
 	}
 
-	return rho_ruby_get_NIL();	
+	return rho_ruby_get_NIL();
 }
 
-VALUE getPhonebookRecord(void* pb, char* id) 
+VALUE getPhonebookRecord(void* pb, char* id)
 {
 	if ( pb && id )
 	{
 		CPhonebook* phonebook = (CPhonebook*)pb;
 		return phonebook->getContact(id);
 	}
-	return rho_ruby_get_NIL();	
+	return rho_ruby_get_NIL();
 }
 
 //==================================================================================
@@ -85,13 +85,13 @@ VALUE getnextPhonebookRecord(void* pb) {
 
 //==================================================================================
 
-void* createRecord(void* pb) 
+void* createRecord(void* pb)
 {
   pb;
 	return CPhonebook::createRecord();
 }
 
-void* openPhonebookRecord(void* pb, char* id) 
+void* openPhonebookRecord(void* pb, char* id)
 {
 	if ( pb && id )
 	{
@@ -102,7 +102,7 @@ void* openPhonebookRecord(void* pb, char* id)
 	return NULL;
 }
 
-int setRecordValue(void* record, char* prop, char* value) 
+int setRecordValue(void* record, char* prop, char* value)
 {
 	if (record) {
 		CPhonebook::setRecordValue((CContactItem*)record, prop, value);
@@ -110,7 +110,7 @@ int setRecordValue(void* record, char* prop, char* value)
 	return 1;
 }
 
-int addRecord(void* pb, void* record) 
+int addRecord(void* pb, void* record)
 {
 	if ( pb && record )
 	{

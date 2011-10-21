@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -51,19 +51,19 @@ public class RingtoneManager extends RubyBasic {
 	//		"fileconn.dir.music",
 	//		"fileconn.dir.memorycard.music"
 	//};
-	
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("RingtoneManager");
-	
+
 	private static Player p = null;
-	
+
 	public RingtoneManager(RubyClass c) {
 		super(c);
 	}
-	
+
 	public static void play(String url) {
 		stop();
-		
+
 		try {
 			p = Manager.createPlayer(url);
 			p.realize();
@@ -74,7 +74,7 @@ public class RingtoneManager extends RubyBasic {
 			LOG.ERROR("RingtoneManager", e);
 		}
 	}
-	
+
 	public static void stop() {
 		if (p != null) {
 			try {
@@ -117,27 +117,27 @@ public class RingtoneManager extends RubyBasic {
 						LOG.ERROR("RingtoneManager", e);
 					}
 				}
-				
+
 				return tmp;
 			}
 		});
-		
+
 		klass.getSingletonClass().defineMethod("play", new RubyOneArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyValue arg,
 					RubyBlock block) {
 				String fullName = arg.toStr();
-				
+
 				try {
 					play(fullName);
 				} catch(Exception e) {
 					throw new RubyException(RubyRuntime.MediaErrorClass,
 							"in `" + this.getID() + "': " + e.getMessage());
 				}
-					
+
 				return RubyConstant.QNIL;
 			}
 		});
-		
+
 		klass.getSingletonClass().defineMethod("stop", new RubyNoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyBlock block) {
 				try {

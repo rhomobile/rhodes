@@ -2,7 +2,7 @@
 # $Id: top.mak 1459 2005-04-18 21:25:32Z ptr $
 
 !ifndef LDFLAGS
-LDFLAGS = 
+LDFLAGS =
 !endif
 
 !include $(RULESBASE)/$(USE_MAKE)/lib/macro.mak

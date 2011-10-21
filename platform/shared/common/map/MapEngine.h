@@ -94,12 +94,12 @@ typedef struct
 } PIN_INFO;
 
 
-typedef enum 
+typedef enum
 {
     SIMPLE,
     MY_LOCATION
 } ANNOTATION_TYPE;
-    
+
 class Annotation
 {
 public:
@@ -127,8 +127,8 @@ public:
         if (m_title.empty())
             m_title = m_address;
     }
-    
-    
+
+
     Annotation(String const &str_title, String const &str_subtitle,
                double lat, double lon, String const &str_url)
         :m_title(str_title), m_subtitle(str_subtitle), m_resolved(true),

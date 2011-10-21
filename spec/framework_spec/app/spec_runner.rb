@@ -4,26 +4,26 @@ class SpecRunner < MSpecScript
   def initialize
     super
     config[:files] = []
-    
+
     # turn on exception backtrace
     MSpec.backtrace = true
 
     #MSpec.guard
-    
+
     #LANGUAGE
     app_folder = Rho::RhoFSConnector.get_app_path('app')
     app_folder.gsub!(/\\/, '/')
-    
+
     specs =  app_folder + "spec/language/**/*_spec.iseq"
-    
+
     Dir.glob(specs) do |file|
       file.gsub!(app_folder,"")
       file.gsub!(/\.iseq/,"")
-      
+
       if ( System.get_property('platform') == 'WINDOWS' )
-        next if file =~ /\/execution_spec$/           
+        next if file =~ /\/execution_spec$/
       end
-      
+
       config[:files] << file
     end
     # CORE
@@ -31,25 +31,25 @@ class SpecRunner < MSpecScript
 
     core << 'argf' unless System.get_property('platform') == 'WINDOWS'
     core << 'array'
-    core << 'basicobject'    
-    core << 'bignum'    
+    core << 'basicobject'
+    core << 'bignum'
     core << 'binding'
-    core << 'builtin_constants'    
+    core << 'builtin_constants'
     core << 'class'
     core << 'comparable'
     core << 'complex'
     core << 'continuation'
     core << 'dir'
-    core << 'encoding'    
-    core << 'enumerable'   
+    core << 'encoding'
+    core << 'enumerable'
     #has multiple crashes
-    #core << 'enumerator'   
+    #core << 'enumerator'
     #core << 'env' unless System.get_property('platform') == 'WINDOWS'
     core << 'exception'
     core << 'false'
     core << 'file'
     core << 'filetest'
-    core << 'fixnum'        
+    core << 'fixnum'
     core << 'float'
     core << 'gc'
     core << 'hash'
@@ -57,7 +57,7 @@ class SpecRunner < MSpecScript
     core << 'io'
     core << 'kernel'
     core << 'marshal'
-    core << 'matchdata'    
+    core << 'matchdata'
     core << 'math'
     core << 'method'
     core << 'module'
@@ -69,7 +69,7 @@ class SpecRunner < MSpecScript
     core << 'precision'
     core << 'proc'
     core << 'process' unless System.get_property('platform') == 'WINDOWS'
-    core << 'random'    
+    core << 'random'
     core << 'range'
     core << 'rational'
     core << 'regexp'
@@ -81,31 +81,31 @@ class SpecRunner < MSpecScript
     core << 'time'
     core << 'true'
     core << 'unboundmethod'
-    
+
     core << 'thread'
     core << 'threadgroup'
     core << 'fiber'
-    
+
     core.each do |folder|
       specs =  app_folder + "spec/core/#{folder}/**/*_spec.iseq"
       Dir.glob(specs) do |file|
         file.gsub!(app_folder,"")
         file.gsub!(/\.iseq/,"")
- 
+
         config[:files] << file
       end
     end
-    
+
     # LIBRARIES
     specs = app_folder + "spec/library/**/*_spec.iseq"
     Dir.glob(specs) do |file|
-      #next if file =~ /sha1/      
-    
+      #next if file =~ /sha1/
+
       file.gsub!(app_folder,"")
       file.gsub!(/\.iseq/,"")
       config[:files] << file
     end
-    
+
   end
 
   def run

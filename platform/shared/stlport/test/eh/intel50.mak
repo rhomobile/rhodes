@@ -6,9 +6,9 @@
 
 !IF "$(OS)" == "Windows_NT"
 NULL=
-!ELSE 
+!ELSE
 NULL=nul
-!ENDIF 
+!ENDIF
 ################################################################################
 # Begin Project
 RSC=rc.exe
@@ -18,7 +18,7 @@ LINK32=xilink.exe
 OUTDIR=.
 INTDIR=.
 
-# set this directories 
+# set this directories
 STL_PATH=..\..
 
 Dep_stl = TestClass.obj main.obj nc_alloc.obj \
@@ -32,7 +32,7 @@ CPP_PRJ_LINK = /link /incremental:no /LIBPATH:$(STL_PATH)\lib
 #disable warnings complaining about debug ...info exceeded....
 CPP_PRJ_EXTRA = /Qwd985
 CPP_PRJ_CMN = /nologo /W3 /GR /GX /DWIN32 /D_WINDOWS /D_CONSOLE /I$(STL_PATH)\stlport /I.
-	
+
 #
 LIBTYPE = STATIC
 # LIBTYPE = DYNAMIC
@@ -40,7 +40,7 @@ LIBTYPE = STATIC
 #DEBUG = STL
 DEBUG = ON
 #DEBUG =
-# 
+#
 IOS = SGI
 #IOS = NOSGI
 #IOS = NONE
@@ -109,7 +109,7 @@ clean :
    $(CPP) $(CPP_PROJ) /c $<
 
 .cpp.E:
-   $(CPP) $(CPP_PROJ) -E $< >$*.E  
+   $(CPP) $(CPP_PROJ) -E $< >$*.E
 
 .cpp.sbr:
-   $(CPP) $(CPP_PROJ) $<  
+   $(CPP) $(CPP_PROJ) $<

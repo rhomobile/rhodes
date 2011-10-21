@@ -162,7 +162,7 @@ class Function {
 
         mMethod = (Method) methodCache.get(fqn);
 
-        if (mMethod == null) 
+        if (mMethod == null)
         {
         	mMethod = Library.find_method(fqn);
         	String methodname    = fqn.substring(i + 1);

@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2006 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -18,7 +18,7 @@ import javolution.lang.MathLib;
  *     // Integration with Text.
  *     Text number;
  *     int exponentIndex = num.indexOfAny(CharSet.valueOf('e', 'E'));
- *     
+ *
  *     // Integration with TextFormat.
  *     public List<Integer> parse(CharSequence csq, TextFormat.Cursor cursor) {
  *         FastTable<Integer> numbers = FastTable.newInstance();
@@ -27,8 +27,8 @@ import javolution.lang.MathLib;
  *         }
  *         return numbers;
  *     }
- *     [/code]   
- * 
+ *     [/code]
+ *
  * @author  <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 3.7, January 1, 2006
  */
@@ -40,7 +40,7 @@ public final class CharSet implements Immutable {
     public static final CharSet EMPTY = new CharSet(new long[0]);
 
     /**
-     * Represents white spaces characters according to Java 
+     * Represents white spaces characters according to Java
      * (see {@link Character#isWhitespace(char)}).
      */
     public static final CharSet WHITESPACES = CharSet.valueOf(new char[] { 0x9,
@@ -49,7 +49,7 @@ public final class CharSet implements Immutable {
             0x2009, 0x200A, 0x200B, 0x2028, 0x2029, 0x205F, 0x3000 });
 
     /**
-     * Represents spaces characters according to Java 
+     * Represents spaces characters according to Java
      * (see {@link Character#isSpaceChar(char)}).
      */
     public static final CharSet SPACES = CharSet.valueOf(new char[] { 0x20,
@@ -58,7 +58,7 @@ public final class CharSet implements Immutable {
             0x2029, 0x202F, 0x205F, 0x3000 });
 
     /**
-     * Represents ISO control  characters according to Java 
+     * Represents ISO control  characters according to Java
      * (see {@link Character#isISOControl(char)}).
      */
     public static final CharSet ISO_CONTROLS = CharSet.valueOf(new char[] {
@@ -70,13 +70,13 @@ public final class CharSet implements Immutable {
             0x98, 0x99, 0x9A, 0x9B, 0x9C, 0x9D, 0x9E, 0x9F });
 
     /**
-     * Holds the containment mapping.  
+     * Holds the containment mapping.
      */
     private final long[] _mapping;
 
     /**
      * Creates a character set with the specified mapping.
-     * 
+     *
      * @param mapping the character set mapping.
      */
     private CharSet(long[] mapping) {
@@ -85,7 +85,7 @@ public final class CharSet implements Immutable {
 
     /**
      * Returns the character set holding the specified characters.
-     * 
+     *
      * @param chars the characters contained by this character set.
      * @return the corresponding character set.
      */
@@ -105,9 +105,9 @@ public final class CharSet implements Immutable {
     }
 
     /**
-     * Returns the character set holding the characters in the specified 
+     * Returns the character set holding the characters in the specified
      * range.
-     * 
+     *
      * @param first the first character.
      * @param last the last character.
      * @return the corresponding character set.
@@ -127,7 +127,7 @@ public final class CharSet implements Immutable {
 
     /**
      * Indicates if the specified character is contained by this character set.
-     * 
+     *
      * @param c the character to test.
      * @return <code>true</code> if this character set contains the specified
      *         character; <code>false</code> otherwise.
@@ -139,9 +139,9 @@ public final class CharSet implements Immutable {
     }
 
     /**
-     * Returns the character set containing the characters from this 
+     * Returns the character set containing the characters from this
      * character set plus the characters from the character set specified.
-     * 
+     *
      * @param that the set containing the characters to be added.
      * @return <code>this + that</code>
      */
@@ -156,9 +156,9 @@ public final class CharSet implements Immutable {
     }
 
     /**
-     * Returns the character set containing the characters from this 
+     * Returns the character set containing the characters from this
      * character minus the characters from the character set specified.
-     * 
+     *
      * @param that the set containing the character to be removed.
      * @return <code>this - that</code>
      */
@@ -172,7 +172,7 @@ public final class CharSet implements Immutable {
 
     /**
      * Returns the textual representation of this character set.
-     *  
+     *
      * @return the textual representation.
      */
     public String toString() {
@@ -196,7 +196,7 @@ public final class CharSet implements Immutable {
 
     /**
      * Returns a copy of this character set.
-     *  
+     *
      * @return an independant copy.
      */
     private CharSet copy() {

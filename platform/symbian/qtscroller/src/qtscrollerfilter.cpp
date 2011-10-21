@@ -98,12 +98,12 @@ void QtScrollerFilter::stateChanged(QtScroller::State state)
 bool QtScrollerFilter::eventFilter(QObject *o, QEvent *e)
 {
     bool result = false;
-    
+
     //qWarning() << o << e->type();
 
     if (o->isWidgetType()) {
         QWidget *w = static_cast<QWidget *>(o);
-        
+
 #ifndef QTSCROLLER_NO_WEBKIT
         if (QWebView *web = qobject_cast<QWebView *>(w))
             result |= eventFilter_QWebView(web, e);
@@ -111,7 +111,7 @@ bool QtScrollerFilter::eventFilter(QObject *o, QEvent *e)
 
          if (w->parentWidget()) {
             if (QAbstractScrollArea *area = qobject_cast<QAbstractScrollArea *>(w->parentWidget())) {
-                if (area->viewport() == w) {             
+                if (area->viewport() == w) {
                     if (QAbstractItemView *view = qobject_cast<QAbstractItemView *>(area))
                         result |= eventFilter_QAbstractItemView(view, e);
 
@@ -135,7 +135,7 @@ bool QtScrollerFilter::eventFilter_QWebView(QWebView *view, QEvent *event)
         if (view->page()) {
             if (QWebFrame *frame = scrollingFrameAt_QWebView(view, se->startPos().toPoint())) {
                 scrollingFrames[view] = frame;
-                
+
                 // there's no way to do that from outside of QtWebKit
                 //// remember old selection so that we can restore it later
                 //oldWebSelection = d->frame->selection()->selection();
@@ -144,12 +144,12 @@ bool QtScrollerFilter::eventFilter_QWebView(QWebView *view, QEvent *event)
                 QSize s = frame->contentsSize() - frame->geometry().size();
                 se->setContentPosRange(QRectF(0, 0, qMax(0, s.width()), qMax(0, s.height())));
                 se->setContentPos(QPointF(frame->scrollPosition()));
-                se->accept();                
+                se->accept();
                 return true;
             }
         }
         return false;
-    } 
+    }
     case QtScrollEvent::Scroll: {
         if (QWebFrame *frame = scrollingFrames.value(view)) {
             QtScrollEvent *se = static_cast<QtScrollEvent *>(event);
@@ -177,7 +177,7 @@ QWebFrame *QtScrollerFilter::scrollingFrameAt_QWebView(QWebView *view, const QPo
     QWebFrame *mainFrame = view->page()->mainFrame();
     QWebHitTestResult hitTest = mainFrame->hitTestContent(pos);
     QWebFrame *hitFrame = hitTest.frame();
-         
+
     if (!hitFrame)
         return 0;
 
@@ -190,12 +190,12 @@ QWebFrame *QtScrollerFilter::scrollingFrameAt_QWebView(QWebView *view, const QPo
         return 0;
 
     QSize range = hitFrame->contentsSize() - hitFrame->geometry().size();
-    
+
     while (hitFrame && range.width() <= 1 && range.height() <= 1)
         hitFrame = hitFrame->parentFrame();
     return hitFrame;
 }
-    
+
 #endif // QTSCROLLER_NO_WEBKIT
 
 bool QtScrollerFilter::eventFilter_QAbstractScrollArea(QAbstractScrollArea *area, QEvent *event)
@@ -319,11 +319,11 @@ bool QtScrollerFilter::eventFilter_QAbstractItemView(QAbstractItemView *view, QE
     case QtScrollPrepareEvent::ScrollPrepare:
         static_cast<HackedAbstractItemView *>(view)->hackedExecuteDelayedItemsLayout();
         break;
-        
+
     default:
         break;
     }
-  
+
     return false;
 }
 

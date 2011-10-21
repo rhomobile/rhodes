@@ -1,4 +1,4 @@
-/* 
+/*
  * $Id: Perl5MatchResult.java 124053 2005-01-04 01:24:35Z dfs $
  *
  * Copyright 2000-2005 The Apache Software Foundation
@@ -42,7 +42,7 @@ public class Perl5MatchResult implements MatchResult {
 
   /**
    * Arrays containing the beginning and end offsets of the pattern
-   * groups matched within the actual matched pattern contained in the 
+   * groups matched within the actual matched pattern contained in the
    * variable <code>match</code>.
    * Pattern matching methods that do not match subgroups, will only contain
    * entries for group 0, which always refers to the entire pattern.
@@ -191,7 +191,7 @@ public class Perl5MatchResult implements MatchResult {
   }
 
   /**
-   * Returns an offset marking the end of the pattern match 
+   * Returns an offset marking the end of the pattern match
    * relative to the beginning of the input.
    * <p>
    * @param group The pattern subgroup.

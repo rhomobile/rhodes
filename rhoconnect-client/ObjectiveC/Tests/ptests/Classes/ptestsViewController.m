@@ -17,7 +17,7 @@
 
 - (void)testComplete:(NSString*) result
 {
-	[indicator stopAnimating];	
+	[indicator stopAnimating];
 	txtResult.text = result;
 	[btnStart setEnabled:YES];
 }
@@ -26,9 +26,9 @@
 {
 	if ( tests_initialized )
 		return;
-	
+
 	[RhoConnectClient initDatabase];
-	
+
 	perftest = [[RhomModel alloc] init];
 	perftest.name = @"Perftest";
 	perftest.sync_type = RST_NONE;
@@ -40,31 +40,31 @@
 	customer = [[RhomModel alloc] init];
 	customer.name = @"Customer";
 	customer.sync_type = RST_INCREMENTAL;
-	
+
 	sclient = [[RhoConnectClient alloc] init];
-	NSArray* models = [NSArray arrayWithObjects: perftest, product, customer, nil];	
-	
+	NSArray* models = [NSArray arrayWithObjects: perftest, product, customer, nil];
+
 	[sclient addModels:models];
-	
+
 	[sclient setConfigString:@"MinSeverity" param:@"1"];
     sclient.threaded_mode = FALSE;
 	sclient.poll_interval = 0;
-	
+
 	[sclient database_full_reset_and_logout];
 	sclient.bulksync_state = 1;
-	
+
 	nCount = 1000;
-	
+
 	tests_initialized = TRUE;
 }
 
 - (void) testCreate
 {
-	[perftest startBulkUpdate];	
-	for (int i = 0; i < nCount; i++) 
+	[perftest startBulkUpdate];
+	for (int i = 0; i < nCount; i++)
 	{
 		NSMutableDictionary* item = [[NSMutableDictionary alloc] init];
-		[item setValue: [NSString stringWithFormat:@"Test%d", i] forKey:@"name"];							 
+		[item setValue: [NSString stringWithFormat:@"Test%d", i] forKey:@"name"];
 		[perftest create:item];
 		[item release];
 	}
@@ -73,57 +73,57 @@
 
 - (void) createTestData
 {
-	[product startBulkUpdate];	
-	for (int i = 0; i < 100; i++) 
+	[product startBulkUpdate];
+	for (int i = 0; i < 100; i++)
 	{
-		for (int j = 0; j < 100; j++) 
+		for (int j = 0; j < 100; j++)
 		{
 			NSMutableDictionary* item = [[NSMutableDictionary alloc] init];
-			[item setValue: [NSString stringWithFormat:@"Name%d", i] forKey:@"name"];							 
-			[item setValue: [NSString stringWithFormat:@"HTC%d", i] forKey:@"brand"];							 
-			
-			[item setValue: [NSString stringWithFormat:@"%d", i] forKey:@"price"];							 
-			
+			[item setValue: [NSString stringWithFormat:@"Name%d", i] forKey:@"name"];
+			[item setValue: [NSString stringWithFormat:@"HTC%d", i] forKey:@"brand"];
+
+			[item setValue: [NSString stringWithFormat:@"%d", i] forKey:@"price"];
+
 			[product create:item];
-			
+
 			[item release];
 		}
 	}
 	[product stopBulkUpdate];
-	
+
 }
 
 - (void) benchSearch
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init]; // Top-level pool
 	[self beforeTests];
-	
+
 	sclient.sync_server = @"http://192.168.0.84:9292/application";
 	RhoConnectNotify* res = [sclient loginWithUser:@"" pwd:@""];
 	[res release];
-	
-	double startTime = CACurrentMediaTime();	
+
+	double startTime = CACurrentMediaTime();
 	//[self createTestData];
 	[customer sync];
 	result = [result stringByAppendingString:
 			  [NSString stringWithFormat:@"   %@ (ms): %f\n",
 			   @"Sync data(10,000)", (CACurrentMediaTime()-startTime)*1000.0 ]];
-	
-	startTime = CACurrentMediaTime();	
+
+	startTime = CACurrentMediaTime();
 	NSMutableDictionary* cond = [[NSMutableDictionary alloc] init];
-	[cond setValue:[NSString stringWithFormat:@"PerfManager"] forKey:@"JobTitle"];							 
-	
-	NSMutableArray* items = [customer find_all:cond];	
+	[cond setValue:[NSString stringWithFormat:@"PerfManager"] forKey:@"JobTitle"];
+
+	NSMutableArray* items = [customer find_all:cond];
 	if (items) {
 		[items release];
 	}
-	
+
 	result = [result stringByAppendingString:
 			  [NSString stringWithFormat:@"   %@ (ms): %f\n",
 			   @"Search", (CACurrentMediaTime()-startTime)*1000.0 ]];
-	
+
 	NSLog(@"BENCH search results: \n%@", result);
-	
+
 	[self performSelectorOnMainThread:@selector(testComplete:) withObject:result waitUntilDone:false];
 	[pool release];  // Release the objects in the pool.
 }
@@ -131,44 +131,44 @@
 - (void) benchCreate
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init]; // Top-level pool
-	
+
 	[self beforeTests];
-	
+
 	sclient.sync_server = @"http://rhodes-store-server.heroku.com/application";
 	RhoConnectNotify* res = [sclient loginWithUser:@"" pwd:@""];
 	int nErr = res.error_code;
 	[res release];
-	if ( nErr!= RHO_ERR_NONE || ![sclient is_logged_in]) 
+	if ( nErr!= RHO_ERR_NONE || ![sclient is_logged_in])
 	{
-    	result = [result stringByAppendingString:@"ERROR: cannot login\n"];		
-	}else 
+    	result = [result stringByAppendingString:@"ERROR: cannot login\n"];
+	}else
 	{
 		[sclient syncAll];
-		
-		double startTime = CACurrentMediaTime();	
-	
+
+		double startTime = CACurrentMediaTime();
+
 		NSMutableDictionary* item = [[NSMutableDictionary alloc] init];
-		[item setValue: [NSString stringWithFormat:@"Name00"] forKey:@"name"];							 
-		[item setValue: [NSString stringWithFormat:@"HTC00"] forKey:@"brand"];							 
-		[item setValue: [NSString stringWithFormat:@"0"] forKey:@"price"];							 
-	
+		[item setValue: [NSString stringWithFormat:@"Name00"] forKey:@"name"];
+		[item setValue: [NSString stringWithFormat:@"HTC00"] forKey:@"brand"];
+		[item setValue: [NSString stringWithFormat:@"0"] forKey:@"price"];
+
 		[product create:item];
 		result = [result stringByAppendingString:
 			  [NSString stringWithFormat:@"   %@ (ms): %f\n",
 			   @"Create 1 item", (CACurrentMediaTime()-startTime)*1000.0 ]];
 
-		startTime = CACurrentMediaTime();		
+		startTime = CACurrentMediaTime();
 		[product sync];
 		result = [result stringByAppendingString:
 			  [NSString stringWithFormat:@"   %@ (ms): %f\n",
 			   @"Sync 1 item", (CACurrentMediaTime()-startTime)*1000.0 ]];
 
-		startTime = CACurrentMediaTime();		
-		
+		startTime = CACurrentMediaTime();
+
 		NSMutableDictionary* cond = [[NSMutableDictionary alloc] init];
-		[cond setValue:[NSString stringWithFormat:@"Name00"] forKey:@"name"];							 
-		
-		NSMutableArray* items = [product find_all:cond];	
+		[cond setValue:[NSString stringWithFormat:@"Name00"] forKey:@"name"];
+
+		NSMutableArray* items = [product find_all:cond];
 		if (items) {
 			[items release];
 		}
@@ -176,11 +176,11 @@
 		result = [result stringByAppendingString:
 				  [NSString stringWithFormat:@"   %@ (ms): %f\n",
 				   @"Search", (CACurrentMediaTime()-startTime)*1000.0 ]];
-		
+
 		NSLog(@"BENCH create results: \n%@", result);
-		
+
 	}
-	
+
 	[self performSelectorOnMainThread:@selector(testComplete:) withObject:result waitUntilDone:false];
 	[pool release];  // Release the objects in the pool.
 }
@@ -189,42 +189,42 @@
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init]; // Top-level pool
 	[self beforeTests];
-	
-	double startTime = CACurrentMediaTime();	
-	
+
+	double startTime = CACurrentMediaTime();
+
 	sclient.sync_server = @"http://192.168.0.84:9292/application";
 	RhoConnectNotify* res = [sclient loginWithUser:@"" pwd:@""];
 	//sclient.sync_server = @"http://184.73.159.63/application";
 	//RhoConnectNotify* res = [sclient loginWithUser:@"smladenova" pwd:@"password"];
-	
+
 	[res release];
 	sclient.bulksync_state = 0;
 
 	result = [result stringByAppendingString:
 			  [NSString stringWithFormat:@"   %@ (ms): %f\n",
 			   @"Reset and login", (CACurrentMediaTime()-startTime)*1000.0 ]];
-	
-	startTime = CACurrentMediaTime();	
+
+	startTime = CACurrentMediaTime();
 	[sclient syncAll];
 	result = [result stringByAppendingString:
 			  [NSString stringWithFormat:@"   %@ (ms): %f\n",
 			   @"Bulk sync", (CACurrentMediaTime()-startTime)*1000.0 ]];
-	
-	startTime = CACurrentMediaTime();	
+
+	startTime = CACurrentMediaTime();
 	NSMutableDictionary* cond = [[NSMutableDictionary alloc] init];
-	[cond setValue:[NSString stringWithFormat:@"PerfManager"] forKey:@"JobTitle"];							 
-	
-	NSMutableArray* items = [customer find_all:cond];	
+	[cond setValue:[NSString stringWithFormat:@"PerfManager"] forKey:@"JobTitle"];
+
+	NSMutableArray* items = [customer find_all:cond];
 	if (items) {
 		[items release];
 	}
-	
+
 	result = [result stringByAppendingString:
 			  [NSString stringWithFormat:@"   %@ (ms): %f\n",
 			   @"Search", (CACurrentMediaTime()-startTime)*1000.0 ]];
-	
+
 	NSLog(@"BENCH bulk results: \n%@", result);
-	
+
 	[self performSelectorOnMainThread:@selector(testComplete:) withObject:result waitUntilDone:false];
 	[pool release];  // Release the objects in the pool.
 }
@@ -232,25 +232,25 @@
 - (NSPersistentStore*) createStore
 {
     static NSManagedObjectContext *moc = nil;
-	
-    if (moc == nil) 
+
+    if (moc == nil)
 		moc = [[NSManagedObjectContext alloc] init];
-	
+
     NSPersistentStoreCoordinator *coordinator =	[[NSPersistentStoreCoordinator alloc] init];
     [moc setPersistentStoreCoordinator: coordinator];
-	
+
     NSString *STORE_TYPE = NSSQLiteStoreType;
-	
+
     NSError *error = nil;
     //NSURL *url = [applicationLogDirectory() URLByAppendingPathComponent:STORE_FILENAME];
-	NSURL *url = [NSURL URLWithString:[[[NSString alloc] initWithUTF8String:"test.db"] autorelease]];	
-	
+	NSURL *url = [NSURL URLWithString:[[[NSString alloc] initWithUTF8String:"test.db"] autorelease]];
+
     NSPersistentStore *newStore = [coordinator addPersistentStoreWithType:STORE_TYPE
 															configuration:nil
 																	  URL:url
 																  options:nil
 																	error:&error];
-	
+
     if (newStore == nil) {
         NSLog(@"Store Configuration Failure\n%@",
 			  ([error localizedDescription] != nil) ?
@@ -262,9 +262,9 @@
 - (void) benchAsyncHttpSync
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init]; // Top-level pool
-	
-	double startTime = CACurrentMediaTime();	
-	
+
+	double startTime = CACurrentMediaTime();
+
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
 	NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
 	NSError *error = nil;
@@ -273,131 +273,131 @@
 	[request setURL:url];
 	[request setHTTPMethod:@"GET"];
 	NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;	
-	
+	[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+
 	result = [result stringByAppendingString:
 			  [NSString stringWithFormat:@"   %@ (ms): %f\n",
 			   @"Download", (CACurrentMediaTime()-startTime)*1000.0 ]];
 
-	startTime = CACurrentMediaTime();	
+	startTime = CACurrentMediaTime();
 	result = [result stringByAppendingString:
 			  [NSString stringWithFormat:@"   %@ (ms): %f\n",
 			   @"Parse JSON", (CACurrentMediaTime()-startTime)*1000.0 ]];
 
-	startTime = CACurrentMediaTime();	
-	
+	startTime = CACurrentMediaTime();
+
 	NSPersistentStore* store = [self createStore];
 	result = [result stringByAppendingString:
 			  [NSString stringWithFormat:@"   %@ (ms): %f\n",
 			   @"Insert to DB", (CACurrentMediaTime()-startTime)*1000.0 ]];
-	
-	startTime = CACurrentMediaTime();	
+
+	startTime = CACurrentMediaTime();
 	NSMutableDictionary* cond = [[NSMutableDictionary alloc] init];
-	[cond setValue:[NSString stringWithFormat:@"PerfManager"] forKey:@"JobTitle"];							 
-	
-	NSMutableArray* items = [customer find_all:cond];	
+	[cond setValue:[NSString stringWithFormat:@"PerfManager"] forKey:@"JobTitle"];
+
+	NSMutableArray* items = [customer find_all:cond];
 	if (items) {
 		[items release];
 	}
-	
+
 	result = [result stringByAppendingString:
 			  [NSString stringWithFormat:@"   %@ (ms): %f\n",
 			   @"Search", (CACurrentMediaTime()-startTime)*1000.0 ]];
-	
+
 	NSLog(@"BENCH asynchttp sync results: \n%@", result);
-	
+
 	[self performSelectorOnMainThread:@selector(testComplete:) withObject:result waitUntilDone:false];
 	[pool release];  // Release the objects in the pool.
 }
 
 - (void) testRead
 {
-	for (int i = 0; i < 1; i++) 
+	for (int i = 0; i < 1; i++)
 	{
-		NSMutableArray* items = [perftest find_all:NULL];	
+		NSMutableArray* items = [perftest find_all:NULL];
 		if (items) {
 			[items release];
-		}	
-	}	
+		}
+	}
 }
 
 - (void) testReadByOne
 {
-	for (int i = 0; i < nCount; i++) 
+	for (int i = 0; i < nCount; i++)
 	{
 		NSMutableDictionary* cond = [[NSMutableDictionary alloc] init];
-		[cond setValue:[NSString stringWithFormat:@"Test%d", i] forKey:@"name"];							 
-		
-		NSMutableDictionary* item = [perftest find_first:cond];	
+		[cond setValue:[NSString stringWithFormat:@"Test%d", i] forKey:@"name"];
+
+		NSMutableDictionary* item = [perftest find_first:cond];
 		if (item) {
 			[item release];
 		}
-		
+
 		[cond release];
-	}	
+	}
 }
 
 - (void) testUpdate
 {
-	[perftest startBulkUpdate];		
-	for (int i = 0; i < nCount; i++) 
+	[perftest startBulkUpdate];
+	for (int i = 0; i < nCount; i++)
 	{
 		NSMutableDictionary* cond = [[NSMutableDictionary alloc] init];
-		[cond setValue:[NSString stringWithFormat:@"Test%d", i] forKey:@"name"];							 
-	
-		NSMutableDictionary* item = [perftest find_first:cond];	
+		[cond setValue:[NSString stringWithFormat:@"Test%d", i] forKey:@"name"];
+
+		NSMutableDictionary* item = [perftest find_first:cond];
 		if ( !item )
 			continue;
-	
+
 		//NSString* saved_object = [NSString stringWithString: [item valueForKey:@"object"]];
 		NSMutableString* new_name = [[NSMutableString alloc]init];
 		[new_name appendString:[item valueForKey:@"name"]];
 		[new_name appendString: @"_TEST"];
-	
+
 		[item setValue:new_name forKey:@"name"];
 		[perftest save: item];
-		
+
 		[cond release];
-		[item release];		
-		[new_name release];				
+		[item release];
+		[new_name release];
 	}
-	[perftest stopBulkUpdate];	
+	[perftest stopBulkUpdate];
 }
 
 - (void) testDelete
 {
-	NSMutableArray* items = [perftest find_all:NULL];	
+	NSMutableArray* items = [perftest find_all:NULL];
 	if ( !items )
 		return;
-	
+
 	[perftest startBulkUpdate];
 	for( NSDictionary* item in items)
 	{
 		[perftest destroy: item];
 	}
 	[perftest stopBulkUpdate];
-	
+
 	[items release];
 }
 
 - (void)testThreadMainRoutine
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init]; // Top-level pool
-	
-	NSLog(@"starting test");	
+
+	NSLog(@"starting test");
 	double startTime;
 	result = [[NSString alloc]initWithString:@""];
 	NSArray* ops = [NSArray arrayWithObjects:@"create", @"read all", @"read by one", @"update", @"delete", nil];
-	
+
 	[self beforeTests];
-	
+
 	result = [result stringByAppendingString:@"1000 records\n"];
-	
-	for(NSString* op in ops) 
+
+	for(NSString* op in ops)
 	{
 		startTime = CACurrentMediaTime();
-		//NSLog(@"testing %@ records op", op);	
-		
+		//NSLog(@"testing %@ records op", op);
+
 		//put calls to appropriate test methods here
 		//sleep(rand() % 2 + 1);
 		if ( [op isEqualToString:@"create"])
@@ -418,78 +418,78 @@
 				  [NSString stringWithFormat:@"%@ (ms): %f\n",
 				   op, (CACurrentMediaTime()-startTime)*1000.0 ]];
 	}
-	
+
 	NSLog(@"test is done");
 	[self performSelectorOnMainThread:@selector(testComplete:) withObject:result waitUntilDone:false];
-    
+
 	[pool release];  // Release the objects in the pool.
 }
 
 - (void)testThreadMainRoutineBench
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init]; // Top-level pool
-	
-	NSLog(@"starting test");	
+
+	NSLog(@"starting test");
 	double startTime;
 	result = [[NSString alloc]initWithString:@""];
 	NSArray* ops = [NSArray arrayWithObjects: @"Create bench", @"Search bench", @"Bulk bench", nil];//, @"bench_", @"read by one", @"update", @"delete", nil];
 	[self beforeTests];
-	
+
 	sclient.sync_server = @"http://rhodes-store-server.heroku.com/application";
-	
+
 	RhoConnectNotify* res = [sclient loginWithUser:@"" pwd:@""];
 	int nErr = res.error_code;
 	[res release];
-	if ( nErr!= RHO_ERR_NONE || ![sclient is_logged_in]) 
+	if ( nErr!= RHO_ERR_NONE || ![sclient is_logged_in])
 	{
-    	result = [result stringByAppendingString:@"ERROR: cannot login\n"];		
-	}else 
+    	result = [result stringByAppendingString:@"ERROR: cannot login\n"];
+	}else
 	{
 		[sclient syncAll];
-		for(NSString* op in ops) 
+		for(NSString* op in ops)
 		{
 			startTime = CACurrentMediaTime();
-		
+
 			if ( [op isEqualToString:@"Search bench"])
 				[self benchSearch];
 			else if ( [op isEqualToString:@"Create bench"])
 				[self benchCreate];
 			else if ( [op isEqualToString:@"Bulk bench"])
 				[self benchBulkSync];
-		
+
 			NSLog(@"bench %@ is done", op);
-		
+
 			result = [result stringByAppendingString:
 				  [NSString stringWithFormat:@"%@ (ms): %f\n",
 				   op, (CACurrentMediaTime()-startTime)*1000.0 ]];
 		}
 	}
-	
+
 	NSLog(@"BENCH results:");
 	NSLog(result);
 	[self performSelectorOnMainThread:@selector(testComplete:) withObject:result waitUntilDone:false];
-    
+
 	[pool release];  // Release the objects in the pool.
 }
 
 - (IBAction)runTest:(id)sender {
 	[btnStart setEnabled:NO];
-	[indicator startAnimating];	
+	[indicator startAnimating];
 	[NSThread detachNewThreadSelector:@selector(testThreadMainRoutine) toTarget:self withObject:nil];
 }
 
-- (IBAction)runBench:(id)sender 
+- (IBAction)runBench:(id)sender
 {
 	[btnStart setEnabled:NO];
-	[indicator startAnimating];	
-	
+	[indicator startAnimating];
+
 	result = [[NSString alloc]initWithString:@""];
-	
+
 	if ( sender == btnBenchSearch )
 		[NSThread detachNewThreadSelector:@selector(benchSearch) toTarget:self withObject:nil];
 	else if ( sender == btnBenchCreate)
 		[NSThread detachNewThreadSelector:@selector(benchCreate) toTarget:self withObject:nil];
-	else if ( sender == btnBenchBulk)		
+	else if ( sender == btnBenchBulk)
 		[NSThread detachNewThreadSelector:@selector(benchBulkSync) toTarget:self withObject:nil];
 	else if ( sender == btnBenchAsyncHttp )
 		[NSThread detachNewThreadSelector:@selector(benchAsyncHttpSync) toTarget:self withObject:nil];
@@ -532,7 +532,7 @@
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
-	
+
 	// Release any cached data, images, etc that aren't in use.
 }
 

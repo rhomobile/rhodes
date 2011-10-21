@@ -96,13 +96,13 @@ protected:
     bool eventFilter_QAbstractItemView(QAbstractItemView *view, QEvent *event);
     void stateChanged_QAbstractItemView(QAbstractItemView *view, QtScroller::State state);
 
-    // the selection before the last mouse down. In case we have to restore it for scrolling    
-    QItemSelection oldSelection; 
+    // the selection before the last mouse down. In case we have to restore it for scrolling
+    QItemSelection oldSelection;
     QModelIndex oldCurrent;
 
 protected slots:
     void stateChanged(QtScroller::State state);
-    
+
 private:
     static QtScrollerFilter *inst;
 };

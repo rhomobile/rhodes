@@ -126,13 +126,13 @@ public final class MultiFormatReader implements Reader {
         readers.addElement(new MultiFormatOneDReader(hints));
       }
       readers.addElement(new QRCodeReader());
-      
+
       // TODO re-enable once Data Matrix is ready
       // readers.addElement(new DataMatrixReader());
-      
+
       // TODO: Enable once PDF417 has passed QA
       //readers.addElement(new PDF417Reader());
-      
+
       if (tryHarder) {
         readers.addElement(new MultiFormatOneDReader(hints));
       }

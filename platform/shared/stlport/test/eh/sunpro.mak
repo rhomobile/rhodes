@@ -1,4 +1,4 @@
-# ;;; -*- Mode:makefile;-*- 
+# ;;; -*- Mode:makefile;-*-
 # Generated automatically from Makefile.in by configure.
 # This requires GNU make.
 
@@ -38,8 +38,8 @@ CXXFLAGS = ${STL_INCL} -library=no%Cstd -features=rtti -DEH_VECTOR_OPERATOR_NEW 
 # CXXFLAGS = +w2 -xildoff -D_STLP_USE_NEWALLOC -DEH_NO_SGI_STL -DEH_NEW_HEADERS -DEH_VECTOR_OPERATOR_NEW -DEH_DELETE_HAS_THROW_SPEC
 
 
-LIBS = -lm 
-LIBSTDCXX = 
+LIBS = -lm
+LIBSTDCXX =
 
 LIBSTLPORT = -library=no%Cstd -L../../lib -lstlport_sunpro
 
@@ -61,7 +61,7 @@ SUFFIXES: .cpp.o.out.res
 %.out: %.cpp
 	$(CXX) $(CXXFLAGS) $< -c -USINGLE -DMAIN -g -o $*.o
 	$(CXX) $(CXXFLAGS) $*.o $(LIBS) ${LIBSTLPORT} -o $*
-	LD_LIBRARY_PATH="../../lib;${LD_LIBRARY_PATH}" ./$* 
+	LD_LIBRARY_PATH="../../lib;${LD_LIBRARY_PATH}" ./$*
 
 
 %.s: %.cpp

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -40,7 +40,7 @@ extern "C" {
 #ifndef RUBY_RUBY_H
 typedef unsigned long VALUE;
 #endif //!RUBY_RUBY_H
-	
+
 #if defined( WINDOWS_PLATFORM )
 typedef unsigned __int64 uint64__;
 #else
@@ -49,7 +49,7 @@ typedef unsigned long long uint64__;
 typedef unsigned long long __int64;
 #endif
 #endif
-	
+
 void RhoRubyStart();
 void RhoRubyInitApp();
 //void RhoRubyThreadStart();
@@ -66,12 +66,12 @@ void rho_ruby_start_threadidle();
 void rho_ruby_stop_threadidle();
 
 VALUE rho_ruby_createHash();
-VALUE addTimeToHash(VALUE hash, const char* key, time_t val);	
-VALUE addIntToHash(VALUE hash, const char* key, int val);	
-VALUE addBoolToHash(VALUE hash, const char* key, int val);	
+VALUE addTimeToHash(VALUE hash, const char* key, time_t val);
+VALUE addIntToHash(VALUE hash, const char* key, int val);
+VALUE addBoolToHash(VALUE hash, const char* key, int val);
 VALUE addStrToHash(VALUE hash, const char* key, const char* val);
 VALUE addStrToHashLen(VALUE hash, const char* key, const char* val, int len);
-VALUE addHashToHash(VALUE hash, const char* key, VALUE val);	
+VALUE addHashToHash(VALUE hash, const char* key, VALUE val);
 VALUE rho_ruby_hash_aref(VALUE hash, const char* key);
 VALUE rho_ruby_array_get(VALUE ar, int nIndex);
 int rho_ruby_array_get_size(VALUE ar);
@@ -108,9 +108,9 @@ void rho_ruby_add_to_hash(VALUE hash, VALUE key, VALUE item);
 
 time_t rho_ruby_get_time(VALUE rTime);
 
-VALUE rho_ruby_create_byte_array(unsigned char* buf, int length);	
+VALUE rho_ruby_create_byte_array(unsigned char* buf, int length);
 int rho_ruby_unpack_byte_array(VALUE array_value, unsigned char* buf, int max_length);
-	
+
 const char* rho_ruby_getRhoDBVersion();
 
 typedef void rho_hash_eachstr_func(const char*, const char*, void*);
@@ -119,7 +119,7 @@ void rho_ruby_enum_strhash(VALUE hash, rho_hash_eachstr_func *, void* data);
 typedef void rho_ary_eachstr_func(const char*, void*);
 void rho_ruby_enum_strary(VALUE ary, rho_ary_eachstr_func *, void* data);
 
-struct CRhoRubyStringOrInt 
+struct CRhoRubyStringOrInt
 {
     const char* m_szStr;
     uint64__    m_nInt;
@@ -195,5 +195,5 @@ struct CHoldRubyValue
 };
 
 #endif
-		
+
 #endif //_RHO_RVM_H

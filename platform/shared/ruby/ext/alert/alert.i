@@ -3,13 +3,13 @@
 %{
 #include "ext/rho/rhoruby.h"
 extern void alert_show_popup(rho_param *p);
-#define show_popup alert_show_popup 
+#define show_popup alert_show_popup
 extern void alert_hide_popup();
 #define hide_popup alert_hide_popup
 extern void alert_vibrate(int vibrate_duration_ms);
 #define vibrate alert_vibrate
 extern void alert_play_file(char* file_name, char* media_type);
-#define play_file alert_play_file 
+#define play_file alert_play_file
 
 extern void rho_alert_show_status(char* szTitle, char* szText, char* szHideLabel);
 #define show_status rho_alert_show_status

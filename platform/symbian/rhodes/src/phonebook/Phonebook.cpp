@@ -77,11 +77,11 @@ void CPhonebook::ConstructL()
 	{
 		// Read name of the default database
                 //_LIT( KOrgContactFile,"" );
-		
+
                 //TBuf<KMaxDatabasePathAndNameLength> orgContactFile( KOrgContactFile );
                 //CContactDatabase::GetDefaultNameL( orgContactFile );
                 //orgContactFile.LowerCase();
-	
+
                 TRAPD(err, iContactDb = CContactDatabase::OpenL( ););//orgContactFile ););
 		// Check if database already exist
 	    if ( err == KErrNotFound )
@@ -101,18 +101,18 @@ void CPhonebook::ConstructL()
 char* CPhonebook::descriptorToStringL(const TDesC& aDescriptor)
 {
     TInt length = aDescriptor.Length();
- 
+
     if ( length > 0 )
 	{
 	    HBufC8* buffer = HBufC8::NewLC(length);
 	    buffer->Des().Copy(aDescriptor);
-	 
+
 	    char* str = (char*)malloc(length + 1);
 	    Mem::Copy(str, buffer->Ptr(), length);
 	    str[length] = '\0';
-	 
+
 	    CleanupStack::PopAndDestroy(buffer);
-	 
+
 	    return str;
 	}
     return NULL;
@@ -121,25 +121,25 @@ char* CPhonebook::descriptorToStringL(const TDesC& aDescriptor)
 void CPhonebook::add2hash(VALUE* hash, const char* key, TPtrC& aValue )
 {
     char* value = descriptorToStringL(aValue);
-        
+
     if ( key && value )
 	{
 		//LOG(INFO) + "Adding field [" + key + ":" + value + "]";
                 addStrToHash(*hash, key, value);
     }
-        
+
     if ( value )
     	free( value );
 }
 
-VALUE CPhonebook::getFields(CContactItemFieldSet& fieldSet, char* id) 
+VALUE CPhonebook::getFields(CContactItemFieldSet& fieldSet, char* id)
 {
         VALUE hash = rho_ruby_createHash();
-	
+
 	// Get field ID
 	//LOG(INFO) + "Adding field [id:" + id + "]";
         addStrToHash(hash, RUBY_PB_ID, id);
-	
+
 	// Get first name
     TInt findpos( fieldSet.Find( KUidContactFieldGivenName ) );
 
@@ -171,7 +171,7 @@ VALUE CPhonebook::getFields(CContactItemFieldSet& fieldSet, char* id)
 	{
                 addStrToHash(hash, RUBY_PB_LAST_NAME, "");
 	}
-    
+
     // Get home phone
     findpos = fieldSet.Find( KUidContactFieldPhoneNumber );
 
@@ -191,7 +191,7 @@ VALUE CPhonebook::getFields(CContactItemFieldSet& fieldSet, char* id)
                 addStrToHash(hash, RUBY_PB_MOBILE_NUMBER, "");
                 addStrToHash(hash, RUBY_PB_BUSINESS_NUMBER, "");
 	}
-    
+
     // Get email
     findpos = fieldSet.Find( KUidContactFieldEMail );
 
@@ -207,7 +207,7 @@ VALUE CPhonebook::getFields(CContactItemFieldSet& fieldSet, char* id)
 	{
                 addStrToHash(hash, RUBY_PB_EMAIL_ADDRESS, "");
 	}
-    
+
     // Get company
     findpos = fieldSet.Find( KUidContactFieldCompanyName );
 
@@ -223,14 +223,14 @@ VALUE CPhonebook::getFields(CContactItemFieldSet& fieldSet, char* id)
 	{
                 addStrToHash(hash, RUBY_PB_COMPANY_NAME, "");
 	}
-    
+
 	return hash;
 }
 
-VALUE CPhonebook::getallPhonebookRecords() 
+VALUE CPhonebook::getallPhonebookRecords()
 {
         VALUE hash = rho_ruby_createHash(); //retval
-	
+
 	iContactDb->SetDbViewContactType( KUidContactCard );
 
     TFieldType aFieldType1( KUidContactFieldFamilyName );
@@ -267,18 +267,18 @@ VALUE CPhonebook::getallPhonebookRecords()
 
         char rid[20] = {0};
         sprintf( rid, "{%d}", contact->Id());
-        
-        if (rid) 
+
+        if (rid)
     	{
 			//LOG(INFO) + "Adding record " + rid;
 			CContactItemFieldSet& fieldSet = contact->CardFields();
 			addHashToHash(hash,rid,getFields(fieldSet, rid));
 		}
-        
+
         iContactDb->CloseContactL( contact->Id() );
         CleanupStack::PopAndDestroy( contact );
     }
-    
+
     return hash;
 }
 
@@ -286,7 +286,7 @@ CContactItem* CPhonebook::openContact(char* id)
 {
 	TInt nID = -1;
 	sscanf( id, "{%d}", &nID );
-	
+
 	if ( nID >= 0 )
 	{
 		CContactItem* contact = NULL;
@@ -294,7 +294,7 @@ CContactItem* CPhonebook::openContact(char* id)
 	    // So push it onto the CleanupStack
 	    contact = iContactDb->OpenContactL( nID );
 	    CleanupStack::PushL( contact );
-	    
+
 	    return contact;
 	}
 	return NULL;
@@ -307,13 +307,13 @@ VALUE CPhonebook::getContact(char* id)
 	{
         CContactItemFieldSet& fieldSet = contact->CardFields();
         VALUE hash = getFields(fieldSet, id);
-        
+
         iContactDb->CloseContactL( contact->Id() );
         CleanupStack::PopAndDestroy( contact );
-        
+
         return hash;
 	}
-    
+
     return rho_ruby_get_NIL();
 }
 
@@ -326,7 +326,7 @@ CContactCard* CPhonebook::createRecord()
 TUid CPhonebook::getFieldId( char* prop )
 {
 	TUid fieldID = {-1};
-	
+
 	if ( strcmp(RUBY_PB_FIRST_NAME, prop) == 0 )
 	{
 		fieldID = KUidContactFieldGivenName;
@@ -349,7 +349,7 @@ TUid CPhonebook::getFieldId( char* prop )
 	{
 		fieldID = KUidContactFieldCompanyName;
 	}
-	
+
 	return fieldID;
 }
 
@@ -357,12 +357,12 @@ void ConvertToUnicode(RFs& session, TDes16& aUnicode, const char *str)
 {
   	CCnvCharacterSetConverter *converter = CCnvCharacterSetConverter::NewL();
   	converter->PrepareToConvertToOrFromL(KCharacterSetIdentifierUtf8, session);
-  
+
   	TPtrC8 ptr((const unsigned char*)str);
 
   	int state = CCnvCharacterSetConverter::KStateDefault;
   	converter->ConvertToUnicode(aUnicode, ptr, state);
-  	
+
   	delete converter;
 }
 
@@ -371,7 +371,7 @@ void CPhonebook::setRecordValue(CContactItem* contactItem, char* prop, char* val
 	if ( contactItem && prop && value )
 	{
 		TUid fieldId = CPhonebook::getFieldId(prop);
-		
+
 		if ( fieldId.iUid >= 0 ) //if supported id
 		{
 			TInt phoneFieldIndex =	contactItem->CardFields().Find(fieldId);
@@ -386,12 +386,12 @@ void CPhonebook::setRecordValue(CContactItem* contactItem, char* prop, char* val
 			{
 				// The contact has no existing phone field, so add one.
 				CContactItemField* addPhoneField = CContactItemField::NewLC(KStorageTypeText, fieldId);
-			
+
 				addPhoneField->SetMapping(fieldId);
 				addPhoneField->TextStorage()->SetTextL(textValue);
-			
+
 				contactItem->AddFieldL(*addPhoneField); // Takes ownership
-			
+
 				CleanupStack::Pop(addPhoneField);
 			}
 			else
@@ -402,7 +402,7 @@ void CPhonebook::setRecordValue(CContactItem* contactItem, char* prop, char* val
 			}
 
 			iSession.Close();
-		}	
+		}
 	}
 }
 

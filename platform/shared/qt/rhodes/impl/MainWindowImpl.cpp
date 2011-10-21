@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -115,7 +115,7 @@ void CMainWindow::createCustomMenu(void)
     for ( unsigned int i = 0; i < m_arAppMenuItems.size(); i++)
     {
         CAppMenuItem& oItem = m_arAppMenuItems.elementAt(i);
-        if (oItem.m_eType == CAppMenuItem::emtSeparator) 
+        if (oItem.m_eType == CAppMenuItem::emtSeparator)
             menuAddSeparator();
         else
         {
@@ -125,7 +125,7 @@ void CMainWindow::createCustomMenu(void)
 }
 
 void CMainWindow::onCustomMenuItemCommand(int nItemPos)
-{    
+{
     if ( nItemPos < 0 || nItemPos >= (int)m_arAppMenuItems.size() )
         return;
 
@@ -300,25 +300,25 @@ void CMainWindow::createToolbar(rho_param *p)
     int m_nHeight = CNativeToolbar::MIN_TOOLBAR_HEIGHT;
 
     rho_param *params = NULL;
-    switch (p->type) 
+    switch (p->type)
     {
         case RHO_PARAM_ARRAY:
             params = p;
             break;
-        case RHO_PARAM_HASH: 
+        case RHO_PARAM_HASH:
             {
-                for (int i = 0, lim = p->v.hash->size; i < lim; ++i) 
+                for (int i = 0, lim = p->v.hash->size; i < lim; ++i)
                 {
                     const char *name = p->v.hash->name[i];
                     rho_param *value = p->v.hash->value[i];
-                    
-                    if (strcasecmp(name, "background_color") == 0) 
+
+                    if (strcasecmp(name, "background_color") == 0)
                         m_rgbBackColor.reset(new QColor(getColorFromString(value->v.string)));
-                    else if (strcasecmp(name, "mask_color") == 0) 
+                    else if (strcasecmp(name, "mask_color") == 0)
                         m_rgbMaskColor.reset(new QColor(getColorFromString(value->v.string)));
-                    else if (strcasecmp(name, "view_height") == 0) 
+                    else if (strcasecmp(name, "view_height") == 0)
                         m_nHeight = atoi(value->v.string);
-                    else if (strcasecmp(name, "buttons") == 0 || strcasecmp(name, "tabs") == 0) 
+                    else if (strcasecmp(name, "buttons") == 0 || strcasecmp(name, "tabs") == 0)
                         params = value;
                 }
             }
@@ -328,7 +328,7 @@ void CMainWindow::createToolbar(rho_param *p)
             return;
         }
     }
-    
+
     if (!params) {
         LOG(ERROR) + "Wrong parameters for create_nativebar";
         return;
@@ -346,21 +346,21 @@ void CMainWindow::createToolbar(rho_param *p)
     int nSeparators = 0;
     bool wasSeparator = false;
     for (int ipass=0; ipass < 2; ++ipass) {
-        for (int i = 0; i < size; ++i) 
+        for (int i = 0; i < size; ++i)
         {
             rho_param *hash = params->v.array->value[i];
             if (hash->type != RHO_PARAM_HASH) {
                 LOG(ERROR) + "Unexpected type of array item for create_nativebar, should be Hash";
                 return;
             }
-            
+
             const char *label = NULL;
             const char *action = NULL;
             const char *icon = NULL;
             const char *colored_icon = NULL;
             int  nItemWidth = 0;
 
-            for (int j = 0, lim = hash->v.hash->size; j < lim; ++j) 
+            for (int j = 0, lim = hash->v.hash->size; j < lim; ++j)
             {
                 const char *name = hash->v.hash->name[j];
                 rho_param *value = hash->v.hash->value[j];
@@ -368,7 +368,7 @@ void CMainWindow::createToolbar(rho_param *p)
                     LOG(ERROR) + "Unexpected '" + name + "' type, should be String";
                     return;
                 }
-                
+
                 if (strcasecmp(name, "label") == 0)
                     label = value->v.string;
                 else if (strcasecmp(name, "action") == 0)
@@ -380,10 +380,10 @@ void CMainWindow::createToolbar(rho_param *p)
                 else if (strcasecmp(name, "width") == 0)
                     nItemWidth = atoi(value->v.string);
             }
-            
+
             if (label == NULL && bar_type == TOOLBAR_TYPE)
                 label = "";
-            
+
             if ( label == NULL || action == NULL) {
                 LOG(ERROR) + "Illegal argument for create_nativebar";
                 return;
@@ -467,7 +467,7 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
 
     std::auto_ptr<QColor> background_color (NULL);
     const char* on_change_tab_callback = NULL;
-    
+
     rho_param *params = NULL;
     switch (p->type)
 	{
@@ -495,12 +495,12 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
             return;
         }
     }
-    
+
     if (!params) {
         RAWLOG_ERROR("Wrong parameters for create_tabbar");
         return;
     }
-    
+
     ((QtMainWindow*)qtMainWindow)->tabbarInitialize();
 
     int size = params->v.array->size;
@@ -511,18 +511,18 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
             RAWLOG_ERROR("Unexpected type of array item for create_nativebar, should be Hash");
             return;
         }
-        
+
         const char *label = NULL;
         const char *action = NULL;
         const char *icon = NULL;
         const char *reload = NULL;
         const char *colored_icon = NULL;
-        
+
     	std::auto_ptr<QColor> selected_color (NULL);
         const char *disabled = NULL;
 		std::auto_ptr<QColor> web_bkg_color (NULL);
         const char* use_current_view_for_tab = NULL;
-        
+
         bool skip_item = false;
         for (int j = 0, lim = hash->v.hash->size; j < lim; ++j) {
             const char *name = hash->v.hash->name[j];
@@ -535,7 +535,7 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
                 background_color.reset(new QColor(getColorFromString(value->v.string)));
                 skip_item = true;
             }
-            
+
             if (strcasecmp(name, "label") == 0)
                 label = value->v.string;
             else if (strcasecmp(name, "action") == 0)
@@ -548,7 +548,7 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
                 colored_icon = value->v.string;
             else if (strcasecmp(name, "selected_color") == 0){
                 selected_color.reset(new QColor(getColorFromString(value->v.string)));
-            }    
+            }
             else if (strcasecmp(name, "disabled") == 0)
                 disabled = value->v.string;
             else if (strcasecmp(name, "web_bkg_color") == 0)
@@ -560,10 +560,10 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
                 }
             }
         }
-        
+
         if (label == NULL && bar_type == TOOLBAR_TYPE)
             label = "";
-        
+
         if ((label == NULL || (action == NULL)) && (!skip_item)) {
             RAWLOG_ERROR("Illegal argument for create_nativebar");
             return;

@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright 2005-2007 Xue Yong Zhi, Ye Zheng
  * Distributed under the BSD License
  */
@@ -28,7 +28,7 @@ public interface CodeVisitor extends ISymbolTable {
 
 	public void visitMethodCallBegin();
 	public void visitMethodCallEnd(String methodName, boolean hasReceiver, String blockName, int argc);
-	
+
 	public void visitDefinedPublicMethod(String name);
 	public void visitDefinedMethod(String name);
 	public void visitDefinedConstant(String name);
@@ -54,11 +54,11 @@ public interface CodeVisitor extends ISymbolTable {
 	public void visitBinding(boolean single_arg);
 
 	public void visitNoSuperClass();
-	
+
 	public void visitFloatExpression(double value);
 	public void visitFixnumExpression(int value);
 	public void visitBignumExpression(BigInteger value);
-	public void visitLocalVariableExpression(String value); 
+	public void visitLocalVariableExpression(String value);
 	public void visitTrueExpression();
 	public void visitFalseExpression();
 	public void visitNilExpression();
@@ -66,14 +66,14 @@ public interface CodeVisitor extends ISymbolTable {
 	public void visitStringExpression(String value);
 	public void visitRegexpExpression(String value, String option);
 	public void visitCommandOutputExpression(String value);
-	
+
 	public void visitStringExpressionWithExpressionSubstitutionBegin();
 	public void visitStringExpressionWithExpressionSubstitution(String value);
 	public void visitStringExpressionWithExpressionSubstitution();
 	public void visitStringExpressionWithExpressionSubstitutionEnd();
 	public void visitRegexpExpressionWithExpressionSubstitutionEnd(String option);
 	public void visitCommandOutputExpressionWithExpressionSubstitutionEnd();
-	
+
 	public String visitMethodDefinition(String methodName, int num_of_args, boolean has_asterisk_parameter, int num_of_default_args, boolean is_singleton_method);
 	public void visitMethodDefinitionParameter(String name);
 	public void visitMethodDefinitionAsteriskParameter(String name, int argc);
@@ -83,7 +83,7 @@ public interface CodeVisitor extends ISymbolTable {
 	public void visitMethodDefinitionDefaultParameters(int size);
 	public Object visitMethodDefinitionDefaultParameterBegin(int index);
 	public void visitMethodDefinitionDefaultParameterEnd(Object next_label);
-	
+
 	public void visitClassDefinition1(String className, boolean hasColon2);
 	public void visitClassDefinition2(String className, boolean hasColon2);
 	public void visitSingletonClassDefinition();
@@ -91,13 +91,13 @@ public interface CodeVisitor extends ISymbolTable {
 
 	public void visitModuleDefinition(String moduleName, boolean has_scope);
 	public void visitModuleDefinitionEnd(boolean last_statement_has_return_value);
-	
+
 	public void visitTerminal();
 	public void visitEof(boolean last_statement_has_return_value);
-	
+
 	public Object visitAfterIfCondition();
 	public Object visitAfterIfBody(Object next_label, Object end_label);
-	
+
 	public Object visitAfterCaseCondition();
 	public Object visitAfterWhenCondition(Object case_value, boolean mrhs);
 	public Object visitAfterWhenConditionNotNil(Object case_value);
@@ -105,7 +105,7 @@ public interface CodeVisitor extends ISymbolTable {
 
 	public Object visitAfterUnlessCondition();
 	public Object visitAfterUnlessBody(Object next_label, Object end_label);
-	
+
 	public Object visitBodyBegin(boolean has_ensure);
 	public Object visitBodyAfter();
 	public void visitBodyEnd(Object label);
@@ -121,7 +121,7 @@ public interface CodeVisitor extends ISymbolTable {
 	public void visitArrayBegin(int size, int rhs_size, boolean has_single_asterisk);
 	public void visitArrayEnd();
 	public void visitArrayElement(boolean asterisk, boolean is_method_call);
-	
+
 	public void visitYieldBegin();
 	public void visitYieldEnd(int argc);
 
@@ -133,13 +133,13 @@ public interface CodeVisitor extends ISymbolTable {
 	public void visitGlobalVariableExpression(String value);
 	public void visitClassVariableExpression(String value);
 	public void visitInstanceVariableExpression(String value);
-	
+
 	public void visitReturn();
 	public void visitBreak();
 	public void visitNext();
 	public void visitRedo();
 	public void visitRetry();
-	
+
 	public void visitAliasGlobalVariable(String newName, String oldName);
 	public void visitAliasMethod(String newName, String oldName);
 	public void visitUndef(String name);
@@ -156,7 +156,7 @@ public interface CodeVisitor extends ISymbolTable {
 	public void visitBlockBodyBegin(String name, int num_of_args, boolean has_asterisk_parameter, int num_of_default_args, boolean is_for_in_expression, boolean has_extra_comma_, boolean has_body);
 	public void visitBlockBodyEnd(String name, boolean last_statement_has_return_value, int saved_as_pulled);
     public void visitBlockBody();
-    
+
 	public void visitMrhs(int var, int index, boolean asterisk);
 	public int visitMultipleAssignment(boolean single_lhs, boolean has_mlhs, boolean has_mrhs);
 	public void visitMultipleArrayAssign();

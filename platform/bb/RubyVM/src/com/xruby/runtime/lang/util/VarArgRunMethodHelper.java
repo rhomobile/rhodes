@@ -14,15 +14,15 @@ import com.xruby.compiler.codegen.Types;
 public class VarArgRunMethodHelper extends RunMethodHelper {
 	private static final Method VarArgRunMethod = CgUtil.getMethod("run", Types.RUBY_VALUE_TYPE, Types.RUBY_VALUE_TYPE,
 			Types.RUBY_ARRAY_TYPE, Types.RUBY_BLOCK_TYPE);
-	
+
 	protected Method getRunMethod() {
 		return VarArgRunMethod;
 	}
-	
+
 	protected void loadBlock(GeneratorAdapter mg) {
 		mg.loadArg(2);
 	}
-	
+
 	protected int rubyArgSize() {
 		return -1;
 	}

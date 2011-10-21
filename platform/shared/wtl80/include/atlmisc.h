@@ -717,12 +717,12 @@ inline CRect CPoint::operator -(const RECT* lpRect) const
 #endif // !_WTL_NO_WTYPES
 
 
-// WTL::CSize or ATL::CSize scalar operators 
+// WTL::CSize or ATL::CSize scalar operators
 
 #if !defined(_WTL_NO_SIZE_SCALAR) && (!defined(_WTL_NO_WTYPES) || defined(__ATLTYPES_H__))
 
 template <class Num>
-inline CSize operator *(SIZE s, Num n) 
+inline CSize operator *(SIZE s, Num n)
 {
 	return CSize((int)(s.cx * n), (int)(s.cy * n));
 };
@@ -731,10 +731,10 @@ template <class Num>
 inline void operator *=(SIZE & s, Num n)
 {
 	s = s * n;
-};	
+};
 
 template <class Num>
-inline CSize operator /(SIZE s, Num n) 
+inline CSize operator /(SIZE s, Num n)
 {
 	return CSize((int)(s.cx / n), (int)(s.cy / n));
 };
@@ -743,7 +743,7 @@ template <class Num>
 inline void operator /=(SIZE & s, Num n)
 {
 	s = s / n;
-};	
+};
 
 #endif // !defined(_WTL_NO_SIZE_SCALAR) && (!defined(_WTL_NO_WTYPES) || defined(__ATLTYPES_H__))
 
@@ -2498,7 +2498,7 @@ protected:
 
 		TCHAR* p = pStr;
 
-		while (*p != 0) 
+		while (*p != 0)
 		{
 			TCHAR* pNext = ::CharNext(p);
 			if(pNext > p + 1)
@@ -2997,7 +2997,7 @@ public:
 		return bRet;
 	}
 
-	// This function is deprecated because it is not safe. 
+	// This function is deprecated because it is not safe.
 	// Use the version below that accepts the buffer length.
 #if (_MSC_VER >= 1300)
 	__declspec(deprecated)
@@ -3245,7 +3245,7 @@ public:
 	static LPCTSTR GetRegItemName()
 	{
 		// Note: This string is a format string used with wsprintf().
-		// Resulting formatted string must be m_cchItemNameLen or less 
+		// Resulting formatted string must be m_cchItemNameLen or less
 		// characters long, including the terminating null character.
 		return _T("Document%i");
 	}

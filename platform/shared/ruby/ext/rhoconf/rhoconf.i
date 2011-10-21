@@ -6,7 +6,7 @@
 
     extern VALUE rho_conf_get_property_by_name(char* property);
     #define get_property_by_name rho_conf_get_property_by_name
-	
+
 	extern void rho_conf_show_log();
 	#define show_log rho_conf_show_log
 
@@ -21,10 +21,10 @@
 
 	extern int rho_conf_is_property_exists(char* name);
 	#define is_property_exists rho_conf_is_property_exists
-	
+
 %}
 
-%typemap(out) int is_property_exists 
+%typemap(out) int is_property_exists
  "$result = ($1 != 0) ? Qtrue : Qfalse;";
 
 %typemap(default) int limit {
@@ -34,7 +34,7 @@
 %typemap(default) const char* callback_url  {
  $1 = "";
 }
- 
+
 extern void set_property_by_name(char* name, char* value);
 extern VALUE get_property_by_name(char* name);
 extern void show_log();

@@ -16,7 +16,7 @@ import com.xruby.runtime.lang.annotation.RubyLevelMethod;
 import com.xruby.runtime.lang.annotation.UndefMethod;
 
 @RubyLevelClass(
-		name="Integer", 
+		name="Integer",
 		superclass="Numeric",
 		undef={
 				@UndefMethod(name="new", classMethod=true)
@@ -26,7 +26,7 @@ public abstract class RubyInteger extends RubyNumeric {
 	public RubyInteger toRubyInteger() {
 		return this;
 	}
-	
+
 	@RubyLevelMethod(name="times")
 	public RubyValue times(RubyBlock block) {
 		RubyValue a = ObjectFactory.FIXNUM0;
@@ -37,17 +37,17 @@ public abstract class RubyInteger extends RubyNumeric {
             }
             a = RubyAPI.callPublicOneArgMethod(a, ObjectFactory.FIXNUM1, null, RubyID.plusID);
         }
-        
+
         return this;
 	}
-	
+
 	@RubyLevelMethod(name="chr")
 	public RubyValue chr() {
 		int i = this.toInt();
 		if (i < 0 || i > 0xff) {
 			throw new RubyException(RubyRuntime.RangeErrorClass, i + " out of char range");
 		}
-		
+
 		char charValue = (char)i;
         return ObjectFactory.createString("" + charValue);
 	}

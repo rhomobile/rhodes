@@ -48,13 +48,13 @@ add_http_headers_to_env(struct env_block *b, const char *s, int len)
 
 		/* Find where this header ends. Remember where value starts */
 		for (p = s, v = NULL; p < e && *p != '\n'; p++)
-			if (v == NULL && *p == ':') 
+			if (v == NULL && *p == ':')
 				v = p;
 
 		/* 2 null terminators and "HTTP_" */
 		space = (sizeof(b->buf) - b->len) - (2 + 5);
 		assert(space >= 0);
-	
+
 		/* Copy header if enough space in the environment block */
 		if (v > s && p > v + 2 && space > p - s) {
 
@@ -121,7 +121,7 @@ prepare_environment(const struct conn *c, const char *prog,
 	addenv(blk, "PATH_TRANSLATED=%s", prog);
 
 	if (h->ct.v_vec.len > 0)
-		addenv(blk, "CONTENT_TYPE=%.*s", 
+		addenv(blk, "CONTENT_TYPE=%.*s",
 		    h->ct.v_vec.len, h->ct.v_vec.ptr);
 
 	if (c->query != NULL)
@@ -197,7 +197,7 @@ _shttpd_run_cgi(struct conn *c, const char *prog)
 			*p++ = '\0';
 			break;
 		}
-	
+
 	if (shttpd_socketpair(pair) != 0) {
 		ret = -1;
 	} else if (_shttpd_spawn_process(c,

@@ -38,7 +38,7 @@ end
 #      find.should_not_receive(:to_str)
 #      "hello".start_with?("h",find).should be_true
 #    end
-  
+
     it "works for multibyte strings" do
       old_kcode = $KCODE
       begin

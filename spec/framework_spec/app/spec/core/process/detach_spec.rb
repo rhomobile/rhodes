@@ -23,4 +23,4 @@ describe "Process.detach" do
     end
   end
 end
-end    
+end

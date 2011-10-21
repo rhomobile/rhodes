@@ -29,7 +29,7 @@ import com.google.zxing.Result;
  *
  * Our understanding of the MECARD format is based on this document:
  *
- * http://www.mobicode.org.tw/files/OMIA%20Mobile%20Bar%20Code%20Standard%20v3.2.1.doc 
+ * http://www.mobicode.org.tw/files/OMIA%20Mobile%20Bar%20Code%20Standard%20v3.2.1.doc
  *
  * @author Sean Owen
  */

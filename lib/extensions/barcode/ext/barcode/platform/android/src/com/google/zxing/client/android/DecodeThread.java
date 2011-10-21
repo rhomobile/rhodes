@@ -66,8 +66,8 @@ final class DecodeThread extends Thread {
     DATA_MATRIX_FORMATS.add(BarcodeFormat.DATA_MATRIX);
   }
 
-  
-  
+
+
   DecodeThread(CaptureActivity activity,
                Vector<BarcodeFormat> decodeFormats,
                String characterSet,

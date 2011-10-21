@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2006 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -12,37 +12,37 @@ import javolution.util.FastMap;
 import j2me.lang.ThreadLocal;
 
 /**
- * <p> This class represents an object factory; it allows for object 
+ * <p> This class represents an object factory; it allows for object
  *     recycling, pre-allocation and stack allocations.
- *     
- * <p> Object factories are recommended over class constructors (ref. "new" 
- *     keyword) to allows for custom allocation policy (see 
+ *
+ * <p> Object factories are recommended over class constructors (ref. "new"
+ *     keyword) to allows for custom allocation policy (see
  *     {@link AllocatorContext}). For example:[code]
- *     static ObjectFactory<int[][]> BOARD_FACTORY = new ObjectFactory<int[][]>() { 
+ *     static ObjectFactory<int[][]> BOARD_FACTORY = new ObjectFactory<int[][]>() {
  *         protected int[][] create() {
  *             return new int[8][8];
  *         }
  *     };
  *     ...
- *     int[][] board = BOARD_FACTORY.object(); 
+ *     int[][] board = BOARD_FACTORY.object();
  *         // The board object might have been preallocated at start-up,
- *         // it might also be on the thread "stack/pool" for threads 
- *         // executing in a StackContext. 
+ *         // it might also be on the thread "stack/pool" for threads
+ *         // executing in a StackContext.
  *     ...
- *     BOARD_FACTORY.recycle(board); // Immediate recycling of the board object (optional).                      
+ *     BOARD_FACTORY.recycle(board); // Immediate recycling of the board object (optional).
  *     [/code]</p>
- *     
+ *
  * <p> For arrays of variable length {@link ArrayFactory} is recommended.</p>
- * 
- * <p> For convenience, this class provides a static {@link #getInstance} method 
+ *
+ * <p> For convenience, this class provides a static {@link #getInstance} method
  *     to retrieve a factory implementation for any given class.
  *     For example:[code]
  *        ObjectFactory<ArrayList> listFactory = ObjectFactory.getInstance(ArrayList.class);
  *        ArrayList list = listFactory.object();
  *        ... // Do something.
  *        listFactory.recycle(list); // Optional.
- *    [/code]</p> 
- *          
+ *    [/code]</p>
+ *
  * @author  <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 5.2, August 14, 2007
  */
@@ -62,9 +62,9 @@ public abstract class ObjectFactory/*<T>*/{
 
     /**
      * Returns a factory implementation producing instances of the specified
-     * class. By default this method returns a factory creating new objects 
-     * using the class public no-arg constructor (through reflection). 
-     * If that constructor is not accessible, the factory instance can be 
+     * class. By default this method returns a factory creating new objects
+     * using the class public no-arg constructor (through reflection).
+     * If that constructor is not accessible, the factory instance can be
      * {@link #setInstance set explicitly}:[code]
      * class LogContext {
      *     public static final Class<LogContext> NULL = Null.class;
@@ -77,7 +77,7 @@ public abstract class ObjectFactory/*<T>*/{
      *              Null.class);
      *     }
      *  }[/code]
-     *  
+     *
      * @param forClass the class for which an object factory is returned.
      * @return an object factory producing instances of the specified class.
      */
@@ -88,9 +88,9 @@ public abstract class ObjectFactory/*<T>*/{
     }
 
     /**
-     * Sets explicitely the factory to be used for the specified class 
+     * Sets explicitely the factory to be used for the specified class
      * (see {@link #getInstance}).
-     * 
+     *
      * @param factory the factory to use.
      * @param forClass the associated class.
      * @see #getInstance(Class)
@@ -103,16 +103,16 @@ public abstract class ObjectFactory/*<T>*/{
     /**
      * Returns a factory object possibly recycled or preallocated.
      * This method is equivalent to <code>currentAllocator().nextInQueue()</code>.
-     * 
+     *
      * @return a recycled, pre-allocated or new factory object.
      */
     public final Object/*{T}*/object() {
         final Allocator/*<T>*/ allocator = _allocator;
-        return allocator.user == Thread.currentThread() ? 
+        return allocator.user == Thread.currentThread() ?
              allocator.next() : currentAllocator().next();
     }
 
-    private Allocator/*<T>*/ _allocator = NULL_ALLOCATOR; // Hopefully in the cache.   
+    private Allocator/*<T>*/ _allocator = NULL_ALLOCATOR; // Hopefully in the cache.
 
     private static final Allocator NULL_ALLOCATOR = new Allocator() {
 		protected Object allocate() {
@@ -120,11 +120,11 @@ public abstract class ObjectFactory/*<T>*/{
 		}
 		protected void recycle(Object object) {
 		}};
-    
+
     /**
      * Recycles the specified object.
      * This method is equivalent to <code>getAllocator().recycle(obj)</code>.
-     * 
+     *
      * @param obj the object to be recycled.
      */
     public final void recycle(Object/*{T}*/obj) {
@@ -132,10 +132,10 @@ public abstract class ObjectFactory/*<T>*/{
     }
 
     /**
-     * Returns the factory allocator for the current thread (equivalent 
+     * Returns the factory allocator for the current thread (equivalent
      * to <code>AllocatorContext.current().getAllocator(this)</code>).
-     * 
-     * @return the current object queue for this factory. 
+     *
+     * @return the current object queue for this factory.
      */
     public final Allocator/*<T>*/currentAllocator() {
 
@@ -162,7 +162,7 @@ public abstract class ObjectFactory/*<T>*/{
     };
 
     /**
-     * Constructs a new object for this factory (using the <code>new</code> 
+     * Constructs a new object for this factory (using the <code>new</code>
      * keyword).
      *
      * @return a new factory object.
@@ -170,13 +170,13 @@ public abstract class ObjectFactory/*<T>*/{
     protected abstract Object/*{T}*/create();
 
     /**
-     * Cleans-up this factory's objects for future reuse. 
-     * When overriden, this method is called on objects being recycled to 
+     * Cleans-up this factory's objects for future reuse.
+     * When overriden, this method is called on objects being recycled to
      * dispose of system resources or to clear references to external
      * objects potentially on the heap (it allows these external objects to
-     * be garbage collected immediately and therefore reduces the memory 
+     * be garbage collected immediately and therefore reduces the memory
      * footprint). For example:[code]
-     *     static ObjectFactory<ArrayList> ARRAY_LIST_FACTORY = new ObjectFactory<ArrayList>() { 
+     *     static ObjectFactory<ArrayList> ARRAY_LIST_FACTORY = new ObjectFactory<ArrayList>() {
      *         protected ArrayList create() {
      *             return new ArrayList();
      *         }
@@ -192,10 +192,10 @@ public abstract class ObjectFactory/*<T>*/{
     }
 
     /**
-     * Indicates if this factory requires cleanup. 
+     * Indicates if this factory requires cleanup.
      *
-     * @return <code>true</code> if {@link #cleanup} is overriden and 
-     *         {@link #cleanup} has been called at least once; 
+     * @return <code>true</code> if {@link #cleanup} is overriden and
+     *         {@link #cleanup} has been called at least once;
      *         <code>false</code> otherwise.
      */
     protected final boolean doCleanup() {
@@ -235,5 +235,5 @@ public abstract class ObjectFactory/*<T>*/{
             }
         }
     }
-     
+
 }

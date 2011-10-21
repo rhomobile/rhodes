@@ -5,7 +5,7 @@ public class JSONStructIterator {
 	public JSONStructIterator() {
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	public JSONStructIterator(JSONEntry errSrc) {
 		// TODO Auto-generated constructor stub
 	}

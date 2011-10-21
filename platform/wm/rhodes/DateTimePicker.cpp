@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -112,7 +112,7 @@ LRESULT CDateTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LP
 
 	GotoDlgCtrl(GetDlgItem(IDC_DATE_CTRL));
 
-#else 
+#else
 
 	CreateButtons();
 	GotoDlgCtrl(m_btnOk);
@@ -122,7 +122,7 @@ LRESULT CDateTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LP
 	DLG_ITEM_SET_FONT_BOLD (IDC_DATE_STATIC);
 	DLG_ITEM_SET_FONT_BOLD (IDC_TIME_STATIC);
 	DLG_ITEM_SET_FONT_BOLD (ID_DATETIME_CAPTION);
-	
+
 
 	if (m_format == CDateTimeMessage::FORMAT_DATE) {
 		GetDlgItem(IDC_TIME_CTRL).ShowWindow(SW_HIDE);
@@ -139,11 +139,11 @@ LRESULT CDateTimePickerDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND hwnd, B
 	if (m_format == CDateTimeMessage::FORMAT_TIME)
 	{
 		DateTime_GetSystemtime (GetDlgItem(IDC_TIME_CTRL), &sysTime);
-	} 
+	}
 	else if (m_format == CDateTimeMessage::FORMAT_DATE)
 	{
 		DateTime_GetSystemtime (GetDlgItem(IDC_DATE_CTRL), &sysTime);
-	} 
+	}
 	else if (m_format == CDateTimeMessage::FORMAT_DATE_TIME)
 	{
 		SYSTEMTIME time, date;
@@ -151,14 +151,14 @@ LRESULT CDateTimePickerDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND hwnd, B
 		DateTime_GetSystemtime (GetDlgItem(IDC_TIME_CTRL), &time);
 		DateTime_GetSystemtime (GetDlgItem(IDC_DATE_CTRL), &date);
 
-		sysTime.wYear		= date.wYear; 
-		sysTime.wMonth		= date.wMonth; 
-		sysTime.wDayOfWeek	= date.wDayOfWeek; 
-		sysTime.wDay		= date.wDay; 
-		sysTime.wHour		= time.wHour; 
+		sysTime.wYear		= date.wYear;
+		sysTime.wMonth		= date.wMonth;
+		sysTime.wDayOfWeek	= date.wDayOfWeek;
+		sysTime.wDay		= date.wDay;
+		sysTime.wHour		= time.wHour;
 		sysTime.wMinute		= time.wMinute;
-		sysTime.wSecond		= time.wSecond; 
-	} 
+		sysTime.wSecond		= time.wSecond;
+	}
 	else
 	{
 		LOG(ERROR) + "invalid format";
@@ -263,7 +263,7 @@ LRESULT CTimePickerDialog::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndC
 
 static char ourTitle[1024];
 
-void  choose_datetime_with_range(char* callback, char* title, 
+void  choose_datetime_with_range(char* callback, char* title,
 					  long initial_time, int format, char* data,
 					  long min_time, long max_time)
 {
@@ -277,12 +277,12 @@ void  choose_datetime_with_range(char* callback, char* title,
 	}
 
 	HWND main_wnd = getMainWnd();
-	::PostMessage(main_wnd, WM_DATETIME_PICKER, 0, 
+	::PostMessage(main_wnd, WM_DATETIME_PICKER, 0,
 					(LPARAM)new CDateTimeMessage(callback, ourTitle, initial_time, format, data, min_time, max_time));
 }
 
 
-void  choose_datetime(char* callback, char* title, 
+void  choose_datetime(char* callback, char* title,
 					  long initial_time, int format, char* data)
 {
 	choose_datetime_with_range( callback, title, initial_time, format, data, 0, 0);

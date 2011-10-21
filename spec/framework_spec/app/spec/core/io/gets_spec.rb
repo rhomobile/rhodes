@@ -7,7 +7,7 @@ describe "IO#gets" do
   it_behaves_like :io_gets_ascii, :gets
 end
 
-if System.get_property('platform') == 'WINDOWS'      
+if System.get_property('platform') == 'WINDOWS'
 describe "IO#gets" do
   before :each do
     @io = IOSpecs.io_fixture "lines.txt"

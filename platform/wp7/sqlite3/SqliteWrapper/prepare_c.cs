@@ -270,7 +270,7 @@ namespace Community.CsharpSqlite
       }
 
       /* If there is not already a read-only (or read-write) transaction opened
-      ** on the b-tree database, open one now. If a transaction is opened, it 
+      ** on the b-tree database, open one now. If a transaction is opened, it
       ** will be closed before this function returns.  */
       sqlite3BtreeEnter(pDb.pBt);
       if (!sqlite3BtreeIsInReadTrans(pDb.pBt))
@@ -540,7 +540,7 @@ db.xAuth = xAuth;
         if (pBt == null) continue;
 
         /* If there is not already a read-only (or read-write) transaction opened
-        ** on the b-tree database, open one now. If a transaction is opened, it 
+        ** on the b-tree database, open one now. If a transaction is opened, it
         ** will be closed immediately after reading the meta-value. */
         if (!sqlite3BtreeIsInReadTrans(pBt))
         {
@@ -553,7 +553,7 @@ db.xAuth = xAuth;
           openedTransaction = 1;
         }
 
-        /* Read the schema cookie from the database. If it does not match the 
+        /* Read the schema cookie from the database. If it does not match the
         ** value stored as part of the in-memory schema representation,
         ** set Parse.rc to SQLITE_SCHEMA. */
         sqlite3BtreeGetMeta(pBt, BTREE_SCHEMA_VERSION, ref cookie);

@@ -10,16 +10,16 @@ $app_config = YAML::load_file("build.yml")
 $app_path = File.expand_path(File.dirname(__FILE__))
 
 if ENV["RHO_HOME"].nil?
-  if $app_config["sdk"] 
+  if $app_config["sdk"]
     rakefilepath = "#{$app_config["sdk"]}/Rakefile"
   else
     begin
       rakefilepath = `get-rhodes-info --rhodes-path`.chomp
       rakefilepath  = File.join(rakefilepath, "Rakefile")
     rescue
-      rakefilepath  = ""	
+      rakefilepath  = ""
     end
-  end  
+  end
 else
   rakefilepath = "#{ENV["RHO_HOME"]}/Rakefile"
 end

@@ -9,7 +9,7 @@ Quick start.
 
     make -f cygwin-vc6.mak depend
     make -f cygwin-vc6.mak install
-  
+
 
   GNU Make (SunOS), with SunPro CC:
 

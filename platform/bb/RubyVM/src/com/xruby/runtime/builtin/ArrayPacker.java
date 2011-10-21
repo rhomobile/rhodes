@@ -12,12 +12,12 @@ import com.xruby.runtime.lang.RubyValue;
 import j2me.lang.CharacterMe;
 
 class ArrayPacker {
-	
+
 	public static final int Integer_SIZE = 32;
 	public static final int Short_SIZE = 16;
 	public static final int Byte_SIZE = 8;
 	public static final int Long_SIZE = 64;
-	
+
     //uv_to_utf8:
     //Copyright (C) 1993-2003 Yukihiro Matsumoto
     //TODO java may has library to do this.
@@ -128,21 +128,21 @@ class ArrayPacker {
     }
 
     private static final String  uu_table = "`!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_";
-    
-    private static String encodes(String str, int charCount, char encodingType) 
+
+    private static String encodes(String str, int charCount, char encodingType)
     {
     	int startIndex = 0;
     	byte[] charsToEncode = str.getBytes();
-    	
+
     	StringBuffer io2Append = new StringBuffer();
         io2Append.ensureCapacity(charCount * 4 / 3 + 6);
-        
+
         int i = startIndex;
         byte[] lTranslationTable = (encodingType == 'u' ? uu_table : b64_table).getBytes();
         byte lPadding;
         if (encodingType == 'u') {
             if (charCount >= lTranslationTable.length) {
-            	throw new RubyException(RubyRuntime.ArgumentErrorClass, 
+            	throw new RubyException(RubyRuntime.ArgumentErrorClass,
             			"" + charCount + " is not a correct value for the number of bytes per line in a u directive.  Correct values range from 0 to " + lTranslationTable.length
             			);
             }
@@ -176,18 +176,18 @@ class ArrayPacker {
             io2Append.append((char)(lPadding));
         }
         io2Append.append('\n');
-    	
+
 //        throw new RubyException("Not implemented");
-        
+
         return io2Append.toString();
     }
 
     private static final String  b64_table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     private static final int[] b64_xtable = new int[256];
     private static final String sHexDigits = "0123456789abcdef0123456789ABCDEFx";
-    
+
     static{
-    	
+
 	    // b64_xtable for decoding Base 64
 	    for (int i = 0; i < 256; i++) {
 	        b64_xtable[i] = -1;
@@ -196,7 +196,7 @@ class ArrayPacker {
 	        b64_xtable[(int)b64_table.charAt(i)] = i;
 	    }
     }
-    
+
     public static RubyArray unpack(String str, String format) {
         int len;
         //int star;
@@ -281,21 +281,21 @@ class ArrayPacker {
                 {
                 	int bits = 0;
                 	StringBuffer lElem = new StringBuffer(len);
-                	
+
                     for (int lCurByte = 0; lCurByte < len; lCurByte++) {
                         if ((lCurByte & 1) != 0)
                             bits <<= 4;
                         else
                             bits = str.charAt(s++);
-                        
+
                         char c = sHexDigits.charAt((bits >>> 4) & 15);
                         lElem.append( c );
                     }
-                    
-                    ary.add(ObjectFactory.createString(lElem)); 
-                    
+
+                    ary.add(ObjectFactory.createString(lElem));
+
                     break;
-                }    
+                }
                 case 's':
                     while (len-- > 0) {
                         short tmp = 0;
@@ -380,28 +380,28 @@ class ArrayPacker {
                 case 'm': //base64
                     int length = send*3/4;
                     StringBuffer lElem = new StringBuffer(length);
-                    
+
                     int a = -1, b = -1, c = 0, d;
                     int s1 = -1;
-                	
+
                     if (len > send - s) len = send - s;
                     while (len > 0 && s < send) {
                         a = b = c = d = -1;
-                        
+
                         // obtain a
                         s1 = str.charAt(s++);
                         while (((a = b64_xtable[s1]) == -1) && s + 1 < send) {
                         	s1 = str.charAt(s++);
                         }
                         if (a == -1) break;
-                        
+
                         // obtain b
                         s1 = str.charAt(s++);
                         while (((b = b64_xtable[s1]) == -1) && s + 1 < send ) {
                         	s1 = str.charAt(s++);
                         }
                         if (b == -1) break;
-                        
+
                         // obtain c
                         s1 = str.charAt(s++);
                         while (((c = b64_xtable[s1]) == -1) && s + 1 < send) {
@@ -419,7 +419,7 @@ class ArrayPacker {
                         // obtain d
                         if ( s < send )
                         	s1 = str.charAt(s++);
-                        
+
                         while (((d = b64_xtable[s1]) == -1) && s + 1 < send) {
                             if (s1 == '=') break;
                             s1 = str.charAt(s++);
@@ -446,10 +446,10 @@ class ArrayPacker {
                         	lElem.append( (char)((b << 4 | c >> 2) & 255) );
                         }
                     }
-                    
+
                     ary.add( ObjectFactory.createString(lElem) );
                     break;
-                    
+
                 default:
                     break;
             }

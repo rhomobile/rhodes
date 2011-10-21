@@ -84,7 +84,7 @@ public class HsqlDateTime {
         today.setTime(new java.util.Date());
         tempCalGMT.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
-    
+
     private static Date tempDate = new Date(0);
     private static Date currentDate;
 
@@ -263,7 +263,7 @@ public class HsqlDateTime {
         String ts = tempCalDefault.get(Calendar.YEAR)+"-"+tempCalDefault.get(Calendar.MONTH)+"-"+tempCalDefault.get(Calendar.DAY_OF_MONTH)
           +" "+tempCalDefault.get(Calendar.HOUR)+":"+tempCalDefault.get(Calendar.MINUTE)+":"+tempCalDefault.get(Calendar.SECOND)+"."+x.getNanos();
         return ts;
-    	
+
     }
 
     /**
@@ -289,7 +289,7 @@ public class HsqlDateTime {
         usedCal.setTime(x);
         String s = usedCal.get(Calendar.YEAR)+"-"+usedCal.get(Calendar.MONTH)+"-"+usedCal.get(Calendar.DAY_OF_MONTH)
             +" "+usedCal.get(Calendar.HOUR)+":"+usedCal.get(Calendar.MINUTE)+":"+usedCal.get(Calendar.SECOND)+"."+x.getNanos();
-        
+
         return s + zerodatetime.substring(s.length());
     }
 
@@ -308,7 +308,7 @@ public class HsqlDateTime {
         String ts = myCal.get(Calendar.YEAR)+"-"+myCal.get(Calendar.MONTH)+"-"+myCal.get(Calendar.DAY_OF_MONTH)
             +" "+myCal.get(Calendar.HOUR)+":"+myCal.get(Calendar.MINUTE)+":"+myCal.get(Calendar.SECOND)+"."+myCal.get(Calendar.MILLISECOND);
         return ts;
-    	
+
     }
 
     public static String getTimestampString(long timestamp) {
@@ -324,7 +324,7 @@ public class HsqlDateTime {
         String ts = myCal.get(Calendar.YEAR)+"-"+myCal.get(Calendar.MONTH)+"-"+myCal.get(Calendar.DAY_OF_MONTH)
             +" "+myCal.get(Calendar.HOUR)+":"+myCal.get(Calendar.MINUTE)+":"+myCal.get(Calendar.SECOND)+"."+myCal.get(Calendar.MILLISECOND);
         return ts;
-    	
+
     }
 
     public static String getTimeString(java.util.Date x, Calendar cal) {
@@ -365,7 +365,7 @@ public class HsqlDateTime {
         usedCal.setTime(x);
         String s = usedCal.get(Calendar.YEAR)+"-"+usedCal.get(Calendar.MONTH)+"-"+usedCal.get(Calendar.DATE);
         return s;
-    	
+
     }
 
     /**

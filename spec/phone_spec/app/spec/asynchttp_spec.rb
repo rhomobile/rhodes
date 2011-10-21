@@ -7,17 +7,17 @@ describe "AsyncHttp" do
         File.delete(file_name) if File.exists?(file_name)
 
         file_name = File.join(Rho::RhoApplication::get_app_path('DataTemp'), 'test_log.txt')
-        File.delete(file_name) if File.exists?(file_name)		
+        File.delete(file_name) if File.exists?(file_name)
     end
-    
+
     it "should http get" do
         return unless $is_network_available
-        
+
         res = Rho::AsyncHttp.get(
           :url => 'http://www.apache.org/licenses/LICENSE-2.0' )
-        
-        #puts "res : #{res}"  
-        
+
+        #puts "res : #{res}"
+
         res['status'].should == 'ok'
         res['headers']['content-type'].should ==  'text/plain; charset=utf-8'
         res['body'].should_not be_nil
@@ -33,8 +33,8 @@ describe "AsyncHttp" do
     end
 
     it "should http post" do
-        return unless $is_network_available    
-        
+        return unless $is_network_available
+
         #TODO: post_test
     end
 
@@ -48,8 +48,8 @@ describe "AsyncHttp" do
         res = Rho::AsyncHttp.download_file(
           :url => 'http://rhomobile.com/wp-content/themes/rhomobile/img/imgs_21.jpg',
           :filename => file_name )
-        #puts "res : #{res}"  
-        
+        #puts "res : #{res}"
+
         res['status'].should == 'ok'
         res['headers']['content-length'].to_i.should ==  8945
         res['headers']['content-type'].should == 'image/jpeg'
@@ -58,12 +58,12 @@ describe "AsyncHttp" do
         orig_len = File.size(file_name)
         orig_len.should == res['headers']['content-length'].to_i
 
-        #check that in case of one more download, files keeps the same        
+        #check that in case of one more download, files keeps the same
         res = Rho::AsyncHttp.download_file(
           :url => 'http://rhomobile.com/wp-content/themes/rhomobile/img/imgs_21.jpg',
           :filename => file_name )
-        #puts "res : #{res}"  
-        
+        #puts "res : #{res}"
+
         res['status'].should == 'ok'
         res['headers']['content-length'].to_i.should ==  0
         #res['headers']['content-type'].should == 'image/jpeg'
@@ -71,11 +71,11 @@ describe "AsyncHttp" do
         File.exists?(file_name).should == true
         File.size(file_name).should == orig_len
 
-        #check that in case of network error, files keeps the same        
+        #check that in case of network error, files keeps the same
         res = Rho::AsyncHttp.download_file(
           :url => 'http://rhomobile.com/wp-content/themes/rhomobile/img/imgs_21__BAD.jpg',
           :filename => file_name )
-        #puts "res : #{res}"  
+        #puts "res : #{res}"
         res['status'].should == 'error'
         res['http_error'].should == '404'
 
@@ -85,28 +85,28 @@ describe "AsyncHttp" do
 
     it "should http upload" do
         return unless $is_network_available
-        
+
         server = 'http://rhologs.heroku.com'
-        
+
         file_name = File.join(Rho::RhoApplication::get_app_path('DataTemp'), 'test_log.txt')
         File.exists?(file_name).should ==  true
 
         res = Rho::AsyncHttp.upload_file(
           :url => server + "/client_log?client_id=&device_pin=&log_name=uptest",
           :filename => file_name )
-        #puts "res : #{res}"  
-        
+        #puts "res : #{res}"
+
         res['status'].should == 'ok'
         File.exists?(file_name).should ==  true
     end
 
     it "should http upload" do
         return unless $is_network_available
-        
+
         server = 'http://rhologs.heroku.com'
 		dir_name = Rho::RhoApplication::get_app_path('DataTemp')
 		Dir.mkdir(dir_name) unless Dir.exists?(dir_name)
-        
+
         file_name = File.join(dir_name, 'test_log.txt')
         puts " file_name : #{file_name}"
         File.open(file_name, "w"){|f| puts "OK"; f.write("******************THIS IS TEST! REMOVE THIS FILE! *******************")}
@@ -117,7 +117,7 @@ describe "AsyncHttp" do
           #optional parameters:
           #:filename_base => "phone_spec_file",
           #:name => "phone_spec_name" )
-        
+
         res['status'].should == 'ok'
         File.exists?(file_name).should ==  true
     end
@@ -136,30 +136,30 @@ describe "AsyncHttp" do
 
     it "should send custom command" do
         return unless $is_network_available
-        
+
         res = Rho::AsyncHttp.get(
           :url => 'http://www.apache.org/licenses/LICENSE-2.0',
           :http_command => 'PUT' )
-        
-        #puts "res : #{res}"  
+
+        #puts "res : #{res}"
         res['http_error'].should == '405'
         res['body'].index('The requested method PUT is not allowed for the URL').should_not be_nil
-        
+
         res = Rho::AsyncHttp.post(
           :url => 'http://www.apache.org/licenses/LICENSE-2.0',
           :http_command => 'PUT' )
-        
-        #puts "res : #{res}"  
+
+        #puts "res : #{res}"
         res['http_error'].should == '405'
         res['body'].index('The requested method PUT is not allowed for the URL').should_not be_nil
-        
-    end    
+
+    end
 
     it "should upload with body" do
         return unless $is_network_available
-        
+
         server = 'http://rhologs.heroku.com'
-        
+
         file_name = File.join(Rho::RhoApplication::get_app_path('app'), 'Data/test_log.txt')
         File.open(file_name, "w"){|f| f.write("******************THIS IS TEST! REMOVE THIS FILE! *******************")}
 
@@ -169,28 +169,28 @@ describe "AsyncHttp" do
           :file_content_type => "application/octet-stream",
           :filename_base => "phone_spec_file",
           :name => "phone_spec_name",
-          
+
           :body => "upload test",
           :headers => {"content-type"=>"plain/text"}
            )
-        #puts "res : #{res}"  
-        
+        #puts "res : #{res}"
+
         res['status'].should == 'ok'
         File.exists?(file_name).should == true
     end
 
     it "should upload miltiple" do
         return unless $is_network_available
-        
+
         server = 'http://rhologs.heroku.com'
-        
+
         file_name = File.join(Rho::RhoApplication::get_app_path('app'), 'Data/test_log.txt')
         File.open(file_name, "w"){|f| f.write("******************THIS IS TEST! REMOVE THIS FILE! *******************")}
 
         res = Rho::AsyncHttp.upload_file(
           :url => server + "/client_log?client_id=&device_pin=&log_name=uptest",
           :multipart => [
-              { 
+              {
                 :filename => file_name,
                 :filename_base => "phone_spec_file",
                 :name => "phone_spec_name",
@@ -203,29 +203,29 @@ describe "AsyncHttp" do
               }
            ]
         )
-        #puts "res : #{res}"  
-        
+        #puts "res : #{res}"
+
         res['status'].should == 'ok'
         File.exists?(file_name).should == true
     end
 
     it "should send https request" do
         return unless $is_network_available
-            
+
         res = Rho::AsyncHttp.get(
           :url => 'https://rhologs.heroku.com' )
-        
-        puts "res : #{res}"  
-        
+
+        puts "res : #{res}"
+
         res['status'].should == 'ok'
-        
+
         http_error = res['http_error'].to_i if res['http_error']
         if http_error == 301 || http_error == 302 #redirect
             res2 = Rho::AsyncHttp.get( :url => res['headers']['location'] )
-            
+
             res2['status'].should == 'ok'
-        end    
-        
+        end
+
     end
 
-end    
+end

@@ -43,7 +43,7 @@ with_feature :encoding do
       ruby_exe("print Encoding.default_internal", :options => '-E UTF-8:SHIFT_JIS').
         should == 'Shift_JIS'
     end
-=end    
+=end
   end
 
   describe "Encoding.default_internal=" do

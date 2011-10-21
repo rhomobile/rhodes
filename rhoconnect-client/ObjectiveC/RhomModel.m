@@ -28,7 +28,7 @@
     source_id = 0;
     associations = NULL;
     blob_attribs = [[NSMutableString alloc] init];
-    
+
 	return self;
 }
 
@@ -43,11 +43,11 @@
 - (RhoConnectNotify*) sync
 {
     char* res = (char*)rho_sync_doSyncSourceByName([name cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-	
+
     RHO_CONNECT_NOTIFY oNotify = {0};
     rho_connectclient_parsenotify(res, &oNotify);
 	rho_sync_free_string(res);
-	
+
 	return [[[RhoConnectNotify alloc] init: &oNotify] autorelease];
 }
 
@@ -55,7 +55,7 @@
 {
 	[RhoConnectClient setNotification:callback target:target];
 
-	rho_sync_doSyncSourceByName([name cStringUsingEncoding:[NSString defaultCStringEncoding]]);	 
+	rho_sync_doSyncSourceByName([name cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 }
 
 - (void) setNotification: (SEL) callback target:(id)target
@@ -88,45 +88,45 @@
 - (void) create: (NSMutableDictionary *) data
 {
     unsigned long item = rho_connectclient_hash_create();
-	
-	for (NSString* key in data) 
+
+	for (NSString* key in data)
 	{
-		rho_connectclient_hash_put(item, 
-			[key cStringUsingEncoding:[NSString defaultCStringEncoding]], 
+		rho_connectclient_hash_put(item,
+			[key cStringUsingEncoding:[NSString defaultCStringEncoding]],
 			[[data objectForKey:key] cStringUsingEncoding:[NSString defaultCStringEncoding]]
 		);
-	}	
-	
-    rho_connectclient_create_object([name cStringUsingEncoding:[NSString defaultCStringEncoding]], 
+	}
+
+    rho_connectclient_create_object([name cStringUsingEncoding:[NSString defaultCStringEncoding]],
 								 item);
     const char* szValue = rho_connectclient_hash_get(item, "object");
 	if ( szValue )
 		[data setValue: [NSString stringWithUTF8String: szValue] forKey:@"object"];
 	else
 		[data setValue: @"" forKey:@"object"];
-	
+
     szValue = rho_connectclient_hash_get(item, "source_id");
 	if ( szValue )
 		[data setValue: [NSString stringWithUTF8String: szValue] forKey:@"source_id"];
-	else 
+	else
 		[data setValue: @"" forKey:@"source_id"];
-	
+
 	rho_connectclient_hash_delete(item);
 }
 
 int enum_func(const char* szKey, const char* szValue, void* pThis)
 {
 	NSMutableDictionary* data = (NSMutableDictionary*)pThis;
-	[data setValue : [NSString stringWithUTF8String:szValue] forKey : [NSString stringWithUTF8String:szKey]];							 
+	[data setValue : [NSString stringWithUTF8String:szValue] forKey : [NSString stringWithUTF8String:szKey]];
 	return 1;
 }
 
 - (NSMutableDictionary *) find: (NSString*)object_id
 {
     unsigned long item = rho_connectclient_find(
-		[name cStringUsingEncoding:[NSString defaultCStringEncoding]], 
+		[name cStringUsingEncoding:[NSString defaultCStringEncoding]],
         [object_id cStringUsingEncoding:[NSString defaultCStringEncoding]] );
-	
+
 	if ( item == 0 )
 		return NULL;
 	NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
@@ -138,22 +138,22 @@ int enum_func(const char* szKey, const char* szValue, void* pThis)
 - (NSMutableDictionary *) find_first: (NSDictionary *)cond
 {
     unsigned long condhash = rho_connectclient_hash_create();
-	for (NSString* key in cond) 
+	for (NSString* key in cond)
 	{
-		rho_connectclient_hash_put(condhash, 
-								[key cStringUsingEncoding:[NSString defaultCStringEncoding]], 
+		rho_connectclient_hash_put(condhash,
+								[key cStringUsingEncoding:[NSString defaultCStringEncoding]],
 								[[cond objectForKey:key] cStringUsingEncoding:[NSString defaultCStringEncoding]]
 								);
-	}	
-	
+	}
+
     unsigned long item = rho_connectclient_find_first([name cStringUsingEncoding:[NSString defaultCStringEncoding]], condhash );
     rho_connectclient_hash_delete(condhash);
-	
+
 	if ( item == 0 )
 		return NULL;
 	NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
 	rho_connectclient_hash_enumerate(item, &enum_func, data );
-	
+
 	return [data autorelease];
 }
 
@@ -162,32 +162,32 @@ int enum_func(const char* szKey, const char* szValue, void* pThis)
     unsigned long condhash = rho_connectclient_hash_create();
 	if ( cond )
 	{
-		for (NSString* key in cond) 
+		for (NSString* key in cond)
 		{
-			rho_connectclient_hash_put(condhash, 
-								[key cStringUsingEncoding:[NSString defaultCStringEncoding]], 
+			rho_connectclient_hash_put(condhash,
+								[key cStringUsingEncoding:[NSString defaultCStringEncoding]],
 								[[cond objectForKey:key] cStringUsingEncoding:[NSString defaultCStringEncoding]]
 								);
-		}	
+		}
 	}
-	
+
     unsigned long items = rho_connectclient_find_all([name cStringUsingEncoding:[NSString defaultCStringEncoding]], condhash );
     rho_connectclient_hash_delete(condhash);
-	
+
 	if ( items == 0 )
 		return NULL;
-	
+
 	int nSize = rho_connectclient_strhasharray_size(items);
 	NSMutableArray* arRes = [[NSMutableArray alloc] initWithCapacity:nSize];
     for ( int i = 0; i < nSize; i++ )
     {
 		NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
 		rho_connectclient_hash_enumerate(rho_connectclient_strhasharray_get(items, i), &enum_func, data );
-			
+
 		[arRes addObject: data];
         [data release];
     }
-	
+
 	return [arRes autorelease];
 }
 
@@ -202,26 +202,26 @@ int enum_func(const char* szKey, const char* szValue, void* pThis)
             rho_connectclient_strarray_add(ar_params, [param cStringUsingEncoding:[NSString defaultCStringEncoding]]);
         }
     }
-    
+
     unsigned long items = rho_connectclient_findbysql(
                                                 [name cStringUsingEncoding:[NSString defaultCStringEncoding]],
                                                 [sql cStringUsingEncoding:[NSString defaultCStringEncoding]],
                                                 ar_params );
-	
+
 	if ( items == 0 )
 		return NULL;
-    
+
 	int nSize = rho_connectclient_strhasharray_size(items);
 	NSMutableArray* arRes = [[NSMutableArray alloc] initWithCapacity:nSize];
     for ( int i = 0; i < nSize; i++ )
     {
 		NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
 		rho_connectclient_hash_enumerate(rho_connectclient_strhasharray_get(items, i), &enum_func, data );
-        
+
 		[arRes addObject: data];
         [data release];
     }
-	
+
 	return [arRes autorelease];
 
 }
@@ -229,36 +229,36 @@ int enum_func(const char* szKey, const char* szValue, void* pThis)
 - (void) save: (NSDictionary *)data
 {
     unsigned long item = rho_connectclient_hash_create();
-	
-	for (NSString* key in data) 
+
+	for (NSString* key in data)
 	{
-		rho_connectclient_hash_put(item, 
-								[key cStringUsingEncoding:[NSString defaultCStringEncoding]], 
+		rho_connectclient_hash_put(item,
+								[key cStringUsingEncoding:[NSString defaultCStringEncoding]],
 								[[data objectForKey:key] cStringUsingEncoding:[NSString defaultCStringEncoding]]
 								);
-	}	
-	
-    rho_connectclient_save( [name cStringUsingEncoding:[NSString defaultCStringEncoding]], item );	
-	
-    rho_connectclient_hash_delete(item);	
+	}
+
+    rho_connectclient_save( [name cStringUsingEncoding:[NSString defaultCStringEncoding]], item );
+
+    rho_connectclient_hash_delete(item);
 }
 
 - (void) destroy: (NSDictionary *)data
 {
     unsigned long item = rho_connectclient_hash_create();
-	
-	for (NSString* key in data) 
+
+	for (NSString* key in data)
 	{
-		rho_connectclient_hash_put(item, 
-								[key cStringUsingEncoding:[NSString defaultCStringEncoding]], 
+		rho_connectclient_hash_put(item,
+								[key cStringUsingEncoding:[NSString defaultCStringEncoding]],
 								[[data objectForKey:key] cStringUsingEncoding:[NSString defaultCStringEncoding]]
 								);
-	}	
-	
-	rho_connectclient_itemdestroy( [name cStringUsingEncoding:[NSString defaultCStringEncoding]], 
+	}
+
+	rho_connectclient_itemdestroy( [name cStringUsingEncoding:[NSString defaultCStringEncoding]],
 		item );
-	
-    rho_connectclient_hash_delete(item);		
+
+    rho_connectclient_hash_delete(item);
 }
 
 - (void) startBulkUpdate

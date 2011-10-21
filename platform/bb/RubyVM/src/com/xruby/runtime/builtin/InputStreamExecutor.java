@@ -15,14 +15,14 @@ public class InputStreamExecutor implements RubyIOExecutor {
 	//private boolean m_EOF = false;
 	private String m_strInput;
 	private int m_nPos = 0;
-	
+
 	public InputStreamExecutor(InputStream is) {
 		m_is = is;
 	}
 	public InputStreamExecutor(String filename, String mode) {
 		if ( !mode.equals("r") )
 			throw new Error("Read Only!");
-		
+
     	try {
 //			m_is = RhoClassFactory.createFile().getResourceAsStream(filename.getClass(), filename);
     		m_is = RhoRuby.loadFile(filename);
@@ -30,13 +30,13 @@ public class InputStreamExecutor implements RubyIOExecutor {
 			throw new Error( e.getMessage() );
 		}
 	}
-	
+
 	public void close() {
 		try{
 			if ( m_is != null )
 				m_is.close();
 		}catch(IOException exc){
-		
+
 		}
 	}
 
@@ -44,11 +44,11 @@ public class InputStreamExecutor implements RubyIOExecutor {
     {
     	return m_is;
     }
-    
+
 	public boolean eof() {
 		if ( m_strInput == null )
 			return false;
-		
+
 		return m_nPos >= m_strInput.length();
 	}
 
@@ -56,7 +56,7 @@ public class InputStreamExecutor implements RubyIOExecutor {
 		throw new Error("should reach here");
 	}
 
-	public String gets(RubyValue seperator) 
+	public String gets(RubyValue seperator)
 	{
 		try{
 			if( m_strInput == null )
@@ -64,21 +64,21 @@ public class InputStreamExecutor implements RubyIOExecutor {
 				m_nPos = 0;
 				m_strInput = readFully(m_is);
 			}
-			
-			String strLine = "";	
-			String chSep = seperator.toStr();	
-		
+
+			String strLine = "";
+			String chSep = seperator.toStr();
+
 			int nPos = m_strInput.indexOf(chSep, m_nPos );
 			if ( nPos > 0 )
 				strLine = m_strInput.substring(m_nPos, nPos+chSep.length());
 			else
 				strLine = m_strInput.substring(m_nPos);
-				
+
 			if ( nPos > 0 )
-				m_nPos = nPos + chSep.length(); 
+				m_nPos = nPos + chSep.length();
 			else
 				m_nPos = m_strInput.length();
-					
+
 			return strLine;
 		}catch(IOException exc){
 			return null;
@@ -97,7 +97,7 @@ public class InputStreamExecutor implements RubyIOExecutor {
 		int size = in.available();
 		if (size < 0)
 			size = 1024;
-		RubyString str = ObjectFactory.createString();	
+		RubyString str = ObjectFactory.createString();
 		UTF8StreamReader reader = new UTF8StreamReader();
 		reader.setInput(in);
 		while (true) {
@@ -112,10 +112,10 @@ public class InputStreamExecutor implements RubyIOExecutor {
 		return str.toStr();
 	}*/
 	public  byte[]  m_byteBuffer = new byte[1024];
-	private final String readFully(InputStream in) throws IOException 
+	private final String readFully(InputStream in) throws IOException
 	{
 		String strRes = "";
-		synchronized (m_byteBuffer) {			
+		synchronized (m_byteBuffer) {
 			int nRead = 0;
 			do{
 				nRead = in.read(m_byteBuffer);
@@ -126,11 +126,11 @@ public class InputStreamExecutor implements RubyIOExecutor {
 				}
 			}while( nRead > 0 );
 		}
-		
+
 		return strRes;
 	}
-    
-	
+
+
 	public String read() {
 		try{
 			return readFully(m_is);
@@ -139,35 +139,35 @@ public class InputStreamExecutor implements RubyIOExecutor {
 		}
 	}
 
-	public String read(long length) 
+	public String read(long length)
 	{
 		try
 		{
 			byte[] buf = new byte[(int)length];
 			int nRead = m_is.read(buf, 0, (int)length);
-			
+
 			return new String(buf,0,nRead);
 		}catch(IOException exc){
 			return null;
 		}
 	}
 
-	public String read(int length, int offset) 
+	public String read(int length, int offset)
 	{
 		throw new RuntimeException("Read from offset does not supported");
 	}
 
-	public void seek(long pos) 
+	public void seek(long pos)
 	{
 		throw new RuntimeException("Seek does not supported");
 	}
 
-	public void truncate(int length) 
+	public void truncate(int length)
 	{
 		throw new RuntimeException("truncate does not supported");
 	}
 
-	public int write(String s) 
+	public int write(String s)
 	{
 		throw new RuntimeException("write does not supported");
 	}

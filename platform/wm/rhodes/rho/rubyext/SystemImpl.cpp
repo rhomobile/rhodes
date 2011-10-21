@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -60,7 +60,7 @@ extern "C"
 
 static const int PHONE_NUMBER_BUFFER_SIZE = 512;
 
-bool getPhoneNumFromSIMCard (String &number) 
+bool getPhoneNumFromSIMCard (String &number)
 {
 
 #define EXIT_ON_NULL(_p) if (_p == NULL){ hr = E_OUTOFMEMORY; goto FuncExit; }
@@ -145,7 +145,7 @@ bool getPhoneNumFromSIMCard (String &number)
 			EXIT_ON_FALSE(0 != placAddressCaps->dwAddressSize);
 
 			// A non-zero dwAddressSize means a phone number was found
-			ASSERT(0 != placAddressCaps->dwAddressOffset);    
+			ASSERT(0 != placAddressCaps->dwAddressOffset);
 			PWCHAR tsAddress = (WCHAR*)(((BYTE*)placAddressCaps)+placAddressCaps->dwAddressOffset);
 			number = convertToStringA (tsAddress);
 
@@ -157,7 +157,7 @@ bool getPhoneNumFromSIMCard (String &number)
 
 FuncExit:
     lineShutdown(hLineApp);
-	
+
 	if (hr != S_OK) {
 		LOG(ERROR) + "failed to get phone number from SIM";
 		return false;
@@ -166,7 +166,7 @@ FuncExit:
     return true;
 
 #undef EXIT_ON_NULL
-#undef EXIT_ON_FALSE 
+#undef EXIT_ON_FALSE
 #undef MAX
 
 }
@@ -174,7 +174,7 @@ FuncExit:
 bool getPhoneNumFromSMSBearer (String &number)
 {
 	SMS_ADDRESS psmsaAddress;
-	
+
 	if (SmsGetPhoneNumber (&psmsaAddress) != S_OK) {
 		LOG(ERROR) + "failed to get phone number using SMS bearer";
 		return false;
@@ -192,22 +192,22 @@ bool getPhoneNumFromOwnerInfo (String &number)
 	LONG    res;
 	TCHAR   errMsg[1024];
 
-	if ((res = RegOpenKeyEx(HKEY_CURRENT_USER, TEXT("ControlPanel\\Owner"),  NULL, KEY_EXECUTE , &hKey)) == 0) 
+	if ((res = RegOpenKeyEx(HKEY_CURRENT_USER, TEXT("ControlPanel\\Owner"),  NULL, KEY_EXECUTE , &hKey)) == 0)
 	{
-		if ((res = RegQueryValueEx (hKey, TEXT("Telephone"), NULL,  &dwType, (LPBYTE )strValue, &dwCount)) == 0) 
+		if ((res = RegQueryValueEx (hKey, TEXT("Telephone"), NULL,  &dwType, (LPBYTE )strValue, &dwCount)) == 0)
 		{
-			if (dwType != REG_SZ) 
+			if (dwType != REG_SZ)
 			{
 				LOG(ERROR) + "Settings/Owner Information/Telephone has invalid type";
 				RegCloseKey(hKey);
 				return false;
 			}
 
-			if (dwCount > 0) 
+			if (dwCount > 0)
 			{
 				strValue[dwCount + 1] = '\0';
 
-				if (_tcslen((strValue))  == 0) 
+				if (_tcslen((strValue))  == 0)
 				{
 					LOG(INFO) + "Settings/Owner Information/Telephone is empty";
 
@@ -236,7 +236,7 @@ VALUE phone_number()
 
 	if (getPhoneNumFromSIMCard(number))
 		return rho_ruby_create_string(number.c_str());
-	
+
 //	if (getPhoneNumFromSMSBearer(number))
 //		return rho_ruby_create_string(number.c_str());
 
@@ -363,7 +363,7 @@ static void toHexString(int i, String& strRes, int radix)
 	}
 	while(i>0);
 
-	if(neg) 
+	if(neg)
         buf[f--]= '-';
 
     strRes += (buf+f+1);
@@ -430,11 +430,11 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 	}
 
 #ifdef RHODES_EMULATOR
-    if (strcasecmp("main_window_closed",szPropName) == 0) 
+    if (strcasecmp("main_window_closed",szPropName) == 0)
         {*resValue = rho_ruby_create_boolean(CMainWindow::mainWindowClosed); return 1;}
 #endif
 
-	if (strcasecmp("has_camera",szPropName) == 0) 
+	if (strcasecmp("has_camera",szPropName) == 0)
         {*resValue = rho_ruby_create_boolean(has_camera()); return 1;}
 
 	if (strcasecmp("phone_number",szPropName) == 0)
@@ -476,7 +476,7 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 		if ( RegQueryValueEx( hKey, _T("name"), 0, &dwType, (PBYTE)NULL, &dwDataSize ) == ERROR_SUCCESS)
         {
 		    CAtlString deviceName;
-		    RegQueryValueEx( hKey, _T("name"), 0, &dwType, 
+		    RegQueryValueEx( hKey, _T("name"), 0, &dwType,
                 (PBYTE)deviceName.GetBuffer((dwDataSize/sizeof(TCHAR) + sizeof(TCHAR))), &dwDataSize );
             deviceName.ReleaseBuffer();
 
@@ -529,18 +529,18 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
     }
 	if (strcasecmp("screen_orientation",szPropName) == 0)
     {
-        if (rho_sys_get_screen_width() <= rho_sys_get_screen_height()) 
+        if (rho_sys_get_screen_width() <= rho_sys_get_screen_height())
         {
 		    *resValue = rho_ruby_create_string("portrait");
 	    }
 	    else {
 		    *resValue = rho_ruby_create_string("landscape");
-	    }                                                          
+	    }
         return 1;
     }
 
 #if defined( OS_WINCE )&& !defined( OS_PLATFORM_MOTCE )
-    if (strcasecmp("device_id",szPropName) == 0) 
+    if (strcasecmp("device_id",szPropName) == 0)
     {
         rho::String strDeviceID = "";
         String strAppData = "RHODES_" + RHODESAPP().getAppName() + "_DEVICEID";
@@ -570,7 +570,7 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
     return 0;
 }
 
-VALUE rho_sys_makephonecall(const char* callname, int nparams, char** param_names, char** param_values) 
+VALUE rho_sys_makephonecall(const char* callname, int nparams, char** param_names, char** param_values)
 {
 	return rho_ruby_get_NIL();
 }
@@ -633,7 +633,7 @@ void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams )
         LOG(ERROR) + "Cannot execute: " + strAppNameW + ";Error: " + GetLastError();
 
     if(se.hProcess)
-        CloseHandle(se.hProcess); 
+        CloseHandle(se.hProcess);
 }
 
 void rho_sys_open_url(const char* url)
@@ -700,12 +700,12 @@ int rho_sys_is_app_installed(const char *appname)
     int nRet = 0;
     CFilePath oPath(appname);
     String strAppName = oPath.getFolderName();
-    
-    StringW strRequest = 
+
+    StringW strRequest =
         L"<wap-provisioningdoc><characteristic type=\"UnInstall\">"
         L"<characteristic-query type=\"";
     strRequest += convertToStringW(strAppName) + L"\"/>"
-        L"</characteristic></wap-provisioningdoc>"; 
+        L"</characteristic></wap-provisioningdoc>";
 
 #if defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
     HRESULT hr         = E_FAIL;
@@ -736,8 +736,8 @@ void rho_sys_app_uninstall(const char *appname)
 {
     CFilePath oPath(appname);
     String strAppName = oPath.getFolderName();
-    
-    StringW strRequest = 
+
+    StringW strRequest =
         L"<wap-provisioningdoc><characteristic type=\"UnInstall\">"
         L"<characteristic type=\"";
     strRequest += convertToStringW(strAppName) + L"\">"

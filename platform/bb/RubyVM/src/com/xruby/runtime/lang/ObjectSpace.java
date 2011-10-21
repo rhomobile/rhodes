@@ -22,25 +22,25 @@ public class ObjectSpace {
     public static void add(RubyValue v) {
         map_.put(v, null);
     }
-    
+
     //@RubyLevelMethod(name="each_object", singleton=true)
     public static RubyFixnum rubyEachObject(RubyValue receiver, RubyBlock block) {
     	int n = ObjectSpace.each_object(receiver, block);
         return ObjectFactory.createFixnum(n);
     }
-    
+
     //@RubyLevelMethod(name="each_object", singleton=true)
     public static RubyFixnum rubyEachObject(RubyValue receiver, RubyValue arg, RubyBlock block) {
     	int n = ObjectSpace.each_object(receiver, (RubyModule)arg, block);
         return ObjectFactory.createFixnum(n);
     }
-    
+
     private static int each_object(RubyValue receiver, RubyBlock block) {
         int i = 0;
 //        for (RubyValue v : map_.keySet()) {
         for (Iterator iter = map_.keySet().iterator(); iter.hasNext();) {
         	RubyValue v = (RubyValue)iter.next();
-        
+
             block.invoke(receiver, v);
             ++i;
         }
@@ -52,7 +52,7 @@ public class ObjectSpace {
 //        for (RubyValue v : map_.keySet()) {
         for (Iterator iter = map_.keySet().iterator(); iter.hasNext();) {
         	RubyValue v = (RubyValue)iter.next();
-        
+
             if (RubyAPI.isKindOf(m, v)) {
                 block.invoke(receiver, v);
                 ++i;
@@ -60,6 +60,6 @@ public class ObjectSpace {
         }
         return i;
     }
-    
-    
+
+
 }

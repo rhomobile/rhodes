@@ -27,7 +27,7 @@ public class TestRhoConnectClientBlobs extends AndroidTestCase
     RhoConnectClient mClient;
     RhomModel mModels[];
     RhomModel mBlobTest;
-    
+
     @Override
     protected void setUp()
     {
@@ -37,15 +37,15 @@ public class TestRhoConnectClientBlobs extends AndroidTestCase
         try {
             RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir);
             RhoFileApi.init(this.getContext());
-            
+
             RhoLogConf.setMinSeverity(0);
             RhoLogConf.setEnabledCategories("*");
-            
+
             RhoConnectClient.nativeInit();
         } catch (Exception e) {
             fail(e.getMessage());
         }
-        
+
         mClient = new RhoConnectClient();
 
         mModels = new RhomModel[]{
@@ -67,7 +67,7 @@ public class TestRhoConnectClientBlobs extends AndroidTestCase
         //mClient.databaseFullResetAndLogout();
         mClient.close();
     }
-    
+
     public void test1Login()
     {
         RhoConnectNotify notify = mClient.loginWithUserSync("", "");
@@ -85,7 +85,7 @@ public class TestRhoConnectClientBlobs extends AndroidTestCase
                 fail("Cannot remove test file: " + testFile.getAbsolutePath());
             }
         }
-        
+
         try {
             testFile.createNewFile();
             FileWriter writer = new FileWriter(testFile);
@@ -124,7 +124,7 @@ public class TestRhoConnectClientBlobs extends AndroidTestCase
         notify = mBlobTest.sync();
         assertEquals(notify.getErrorMessage(), 0, notify.getErrorCode());
     }
-    
+
     public void test4DeleteAllBlobs()
     {
         RhoConnectNotify notify = mClient.loginWithUserSync("", "");
@@ -147,7 +147,7 @@ public class TestRhoConnectClientBlobs extends AndroidTestCase
         items = mBlobTest.findAll(null);
         assertTrue(items == null || items.size() == 0);
     }
-    
+
     public void test5CreateNewBlobObject()
     {
         String fileName = "androidtest.png";
@@ -215,4 +215,3 @@ public class TestRhoConnectClientBlobs extends AndroidTestCase
     }
 
 }
- 

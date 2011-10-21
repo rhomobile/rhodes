@@ -1,5 +1,5 @@
 # lang_pt_br.rb
-# Brazilian Portuguese translation file. 
+# Brazilian Portuguese translation file.
 # Translation by Frederico de Souza Araujo (www.frederico-araujo.com)
 # (based on lang_es.rb by Luis Villa del Campo)
 
@@ -10,15 +10,15 @@ module LocalizationSimplified
   }
 
   class ActiveRecord
-    # ErrorMessages to override default messages in 
+    # ErrorMessages to override default messages in
     # +ActiveRecord::Errors::@@default_error_messages+
-    # This plugin also replaces hardcoded 3 text messages 
-    # :error_translation is inflected using the Rails 
-    # inflector. 
+    # This plugin also replaces hardcoded 3 text messages
+    # :error_translation is inflected using the Rails
+    # inflector.
     #
     # Remember to modify the Inflector with your localized translation
     # of "error" and "errors" in the bottom of this file
-    # 
+    #
     ErrorMessages = {
       :inclusion           => "não está incluido na lista",
       :exclusion           => "ja esta reservado",
@@ -57,14 +57,14 @@ module LocalizationSimplified
       :x_years             => "%d anos"
     }
 
-    # Rails uses Month names in Date and time select boxes 
+    # Rails uses Month names in Date and time select boxes
     # (+date_select+ and +datetime_select+ )
     # Currently (as of version 1.1.6), Rails doesn't use daynames
     Monthnames     = [nil] + %w{janeiro fevereiro março abril maio junho julho agosto setembro outubro novembro dezembro}
     AbbrMonthnames = [nil] + %w{jan fev mar abr mai jun jul ago set out nov dez}
     Daynames       = %w{domingo segunda terça quarta quinta sexta sábado}
     AbbrDaynames   = %w{dom seg ter qua qui sex sáb}
-    
+
     # Date and time format syntax explained in http://www.rubycentral.com/ref/ref_c_time.html#strftime
     # These are sent to strftime that Ruby's date and time handlers use internally
     # Same options as php (that has a better list: http://www.php.net/strftime )
@@ -92,9 +92,9 @@ module LocalizationSimplified
     CurrencyOptions = {
       :unit      => "R$",
       :separator => ".",             #unit separator (between integer part and fraction part)
-      :delimiter => ",",             #delimiter between each group of thousands. Example: 1.234.567 
+      :delimiter => ",",             #delimiter between each group of thousands. Example: 1.234.567
       :order     => [:unit, :number] #order is at present unsupported in Rails
-    } 
+    }
   end
 
   class ArrayHelper

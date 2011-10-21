@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -47,7 +47,7 @@ void CAppMenu::addAppMenuItem( const String& strLabel, const String& strLink )
         RHODESAPP().setAppBackUrl(strLink);
     else
     {
-        synchronized(m_mxAppMenu) 
+        synchronized(m_mxAppMenu)
 	    {
         	m_arAppMenuItems.push_back(CAppMenuItem(strLabel, strLink));
         }
@@ -62,7 +62,7 @@ menu_iter(const char* szLabel, const char* szLink, void* pThis)
 
 void CAppMenu::setAppMenu(unsigned long valMenu)
 {
-    synchronized(m_mxAppMenu) 
+    synchronized(m_mxAppMenu)
 	{
 		m_arAppMenuItems.clear();
         RHODESAPP().setAppBackUrl("");
@@ -72,9 +72,9 @@ void CAppMenu::setAppMenu(unsigned long valMenu)
 
 void CAppMenu::copyMenuItems(Vector<CAppMenuItem>& arAppMenuItems)
 {
-    synchronized(m_mxAppMenu) 
+    synchronized(m_mxAppMenu)
 	{
-        arAppMenuItems = m_arAppMenuItems; 
+        arAppMenuItems = m_arAppMenuItems;
     }
 }
 
@@ -82,7 +82,7 @@ CAppMenuItem::CAppMenuItem (const String& strLabel, const String& strLink)
 {
 	m_strLabel = strLabel;
 	m_strLink  = strLink;
-	
+
 	if (strLabel == "separator")
 		m_eType = emtSeparator;
 	else if (strLink == "home")

@@ -168,9 +168,9 @@ describe "Time#strftime" do
   it "returns the timezone with %Z" do
     time = Time.local(2009, 9, 18, 12, 0, 0)
     zone = time.zone
-if System.get_property('platform') != 'ANDROID'          
+if System.get_property('platform') != 'ANDROID'
     time.strftime("%Z").should == zone
-end    
+end
   end
 
   ruby_version_is "1.9" .. "" do

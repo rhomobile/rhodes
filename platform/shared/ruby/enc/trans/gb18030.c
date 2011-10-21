@@ -21531,7 +21531,7 @@ fun_sio_to_gb18030(void *statep, const unsigned char *s, size_t l, VALUE info, u
 {
     unsigned int diff = (unsigned int)(info >> 8);
     unsigned int u;    /* Unicode Scalar Value */
-    
+
     u = ((s[0]&0x0F)<<12) | ((s[1]&0x3F)<<6) | (s[2]&0x3F);
 
     if (diff & 0x20000) { /* GB18030 4 bytes */

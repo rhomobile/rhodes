@@ -18,9 +18,9 @@ module Test
         RESET = name + "::RESET"
         STARTED = name + "::STARTED"
         FINISHED = name + "::FINISHED"
-        
+
         include Util::Observable
-        
+
         # Creates a new TestRunnerMediator initialized to run
         # the passed suite.
         def initialize(suite)

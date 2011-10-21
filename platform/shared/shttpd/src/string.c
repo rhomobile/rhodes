@@ -83,7 +83,7 @@ int
 _shttpd_match_extension(const char *path, const char *ext_list)
 {
 	size_t		len, path_len;
-	
+
 	path_len = strlen(path);
 
 	FOR_EACH_WORD_IN_LIST(ext_list, len)

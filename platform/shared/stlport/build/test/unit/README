@@ -14,7 +14,7 @@ and without any input request (i.e. files, cin input ...).
 =====
 Build
 =====
-Use makefile(s): 
+Use makefile(s):
 
 make -f gcc.mak
 
@@ -221,7 +221,7 @@ merge0.cpp              merge_test.cpp
 merge1.cpp
 merge2.cpp
 
-min1.cpp                min_test.cpp            
+min1.cpp                min_test.cpp
 min2.cpp
 minelem1.cpp
 minelem2.cpp

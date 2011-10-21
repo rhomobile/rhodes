@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -38,7 +38,7 @@ import javax.microedition.pim.*;
 
 //@RubyLevelClass(name="Phonebook")
 public class RhoPhonebook extends RubyBasic {
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("Phonebook");
 
 	private ContactList m_contactList;
@@ -51,7 +51,7 @@ public class RhoPhonebook extends RubyBasic {
 	static final RubyString RUBY_PB_BUSINESS_NUMBER = ObjectFactory.createString("business_number");
 	static final RubyString RUBY_PB_EMAIL_ADDRESS = ObjectFactory.createString("email_address");
 	static final RubyString RUBY_PB_COMPANY_NAME = ObjectFactory.createString("company_name");
-	
+
 	public static class PBRecord extends RubyBasic {
 
 		Contact m_contact;
@@ -61,15 +61,15 @@ public class RhoPhonebook extends RubyBasic {
 
 		public PBRecord(Contact contact) {
 			super(RubyRuntime.PBRecordClass);
-			
+
 			m_contact = contact;
 		}
-		
+
 	}
-	
+
 	public RhoPhonebook(RubyClass arg0) {
 		super(arg0);
-		
+
 		try {
 			m_contactList = (ContactList) PIM.getInstance().openPIMList(
 					PIM.CONTACT_LIST, PIM.READ_WRITE);
@@ -94,24 +94,24 @@ public class RhoPhonebook extends RubyBasic {
 		} catch (PIMException e) {
 			new RubyException(e.getMessage());
 		}
-		
+
 		return RubyConstant.QNIL;
 	}
 
 	RubyHash getPBRecord( Contact contact ){
 		RubyHash record = ObjectFactory.createHash();
-		
+
 		if ( m_contactList.isSupportedField(Contact.UID) &&
 			 contact.countValues(Contact.UID) > 0 ){
 			String strValue = "{" + contact.getString(Contact.UID, 0) + "}";
-			record.add(RUBY_PB_ID, ObjectFactory.createString(strValue));			
+			record.add(RUBY_PB_ID, ObjectFactory.createString(strValue));
 		}
 		if ( m_contactList.isSupportedField(Contact.TEL) ){
 			for (int i = 0, size = contact.countValues(Contact.TEL); i < size; i++) {
 				String strValue = contact.getString(Contact.TEL, i);
 				if ( strValue.length() == 0 )
 					continue;
-				
+
 				int attr = contact.getAttributes(Contact.TEL, i);
 
 				if ((attr & Contact.ATTR_MOBILE) != 0)
@@ -127,20 +127,20 @@ public class RhoPhonebook extends RubyBasic {
 				String strValue = contact.getString(Contact.EMAIL, i);
 				if ( strValue.length() == 0 )
 					continue;
-				
+
 				record.add(RUBY_PB_EMAIL_ADDRESS, ObjectFactory.createString(strValue));
 				break;
 			}
 		}
-		if ( m_contactList.isSupportedField(Contact.ORG) && 
+		if ( m_contactList.isSupportedField(Contact.ORG) &&
 			 contact.countValues(Contact.ORG) > 0 ){
 			String strValue = contact.getString(Contact.ORG, 0);
 			if ( strValue.length() > 0 )
-				record.add(RUBY_PB_COMPANY_NAME, ObjectFactory.createString(strValue));			
+				record.add(RUBY_PB_COMPANY_NAME, ObjectFactory.createString(strValue));
 		}
-		
+
 		boolean bNameFound = false;
-		if ( m_contactList.isSupportedField(Contact.NAME) && 
+		if ( m_contactList.isSupportedField(Contact.NAME) &&
 			contact.countValues(Contact.NAME) > 0 ){
             String[] names = contact.getStringArray(Contact.NAME, 0);
             if ( names != null ){
@@ -148,29 +148,29 @@ public class RhoPhonebook extends RubyBasic {
 					record.add(RUBY_PB_FIRST_NAME, ObjectFactory.createString(names[Contact.NAME_GIVEN]));
 					bNameFound = true;
                 }
-                
+
                 if (names[Contact.NAME_FAMILY] != null){
 					record.add(RUBY_PB_LAST_NAME, ObjectFactory.createString(names[Contact.NAME_FAMILY]));
 					bNameFound = true;
                 }
             }
 		}
-		
-		if ( !bNameFound && m_contactList.isSupportedField(Contact.FORMATTED_NAME) && 
+
+		if ( !bNameFound && m_contactList.isSupportedField(Contact.FORMATTED_NAME) &&
 				   contact.countValues(Contact.FORMATTED_NAME) > 0 ){
-			
+
 			String strValue = contact.getString(Contact.FORMATTED_NAME, 0);
 			if ( strValue.length() > 0 )
-				record.add(RUBY_PB_FIRST_NAME, ObjectFactory.createString(strValue));			
+				record.add(RUBY_PB_FIRST_NAME, ObjectFactory.createString(strValue));
 		}
-		
+
 		return record;
 	}
-	
+
 	public static RubyValue getallPhonebookRecords(RubyValue arg0) {
 		RhoPhonebook pb = (RhoPhonebook)arg0;
 		RubyHash res = ObjectFactory.createHash();
-		
+
 		try {
 			java.util.Enumeration contacts = pb.m_contactList.items();
 			while (contacts.hasMoreElements()) {
@@ -178,17 +178,17 @@ public class RhoPhonebook extends RubyBasic {
 				RubyHash record = pb.getPBRecord( contact );
 				res.add(record.get(RUBY_PB_ID), record);
 			}
-			
+
 		} catch (PIMException e) {
 			new RubyException(e.getMessage());
 		}
-		
+
 		return res;
 	}
 
 	private Contact findContactByID(RubyValue arg0, RubyValue arg1 ){
 		Contact contact = null;
-		
+
 		try {
 			Contact matching = m_contactList.createContact();
 			String id = arg1.toString();
@@ -200,18 +200,18 @@ public class RhoPhonebook extends RubyBasic {
 		} catch (PIMException e) {
 			new RubyException(e.getMessage());
 		}
-			
+
 		return contact;
 	}
-	
+
 	public static RubyValue getPhonebookRecord(RubyValue arg0, RubyValue arg1) {
 		RhoPhonebook pb = (RhoPhonebook)arg0;
 		RubyHash record = ObjectFactory.createHash();
-		
+
 		Contact contact = pb.findContactByID(arg0,arg1);
 		if ( contact != null )
 			record = pb.getPBRecord( contact );
-		
+
 		return record;
 	}
 
@@ -220,14 +220,14 @@ public class RhoPhonebook extends RubyBasic {
 		Contact contact = pb.findContactByID(arg0,arg1);
 		if ( contact != null )
 			return new PBRecord(contact);
-		
+
 		return RubyConstant.QNIL;
 	}
-	
+
 	public static RubyValue setRecordValue(RubyArray ar) {
 		if ( ar.get(0) == RubyConstant.QNIL || ar.get(0) == null )
 			return RubyConstant.QFALSE;
-		
+
 		PBRecord record = (PBRecord)ar.get(0);
 		RubyString strKey = ar.get(1).toRubyString();
 		String strValue = ar.get(2).toStr();
@@ -236,9 +236,9 @@ public class RhoPhonebook extends RubyBasic {
 		if ( strKey.opEql(RUBY_PB_ID) == RubyConstant.QTRUE )
 			return RubyConstant.QFALSE;
 
-		if ( contact.getPIMList().isSupportedField(Contact.NAME) ){ 
+		if ( contact.getPIMList().isSupportedField(Contact.NAME) ){
 			if ( strKey.opEql(RUBY_PB_FIRST_NAME) == RubyConstant.QTRUE ){
-				
+
 				if ( contact.countValues(Contact.NAME) > 0 ){
 					String[] names = contact.getStringArray(Contact.NAME, 0);
 					names[Contact.NAME_GIVEN] = strValue;
@@ -248,7 +248,7 @@ public class RhoPhonebook extends RubyBasic {
 					names[Contact.NAME_GIVEN] = strValue;
 					contact.addStringArray(Contact.NAME, Contact.ATTR_NONE, names);
 				}
-				
+
 				return RubyConstant.QTRUE;
 			}else if ( strKey.opEql(RUBY_PB_LAST_NAME) == RubyConstant.QTRUE ){
 				if ( contact.countValues(Contact.NAME) > 0 ){
@@ -263,7 +263,7 @@ public class RhoPhonebook extends RubyBasic {
 				return RubyConstant.QTRUE;
 			}
 		}
-		
+
 		if ( strKey.opEql(RUBY_PB_EMAIL_ADDRESS) == RubyConstant.QTRUE ){
 			field = Contact.EMAIL;
 		}else if ( strKey.opEql(RUBY_PB_COMPANY_NAME) == RubyConstant.QTRUE ){
@@ -283,7 +283,7 @@ public class RhoPhonebook extends RubyBasic {
 				}
 			}
 			if ( !bFound )
-				index = -1;				
+				index = -1;
 		}else if ( strKey.opEql(RUBY_PB_HOME_NUMBER) == RubyConstant.QTRUE ){
 			field = Contact.TEL;
 			attributes = Contact.ATTR_HOME;
@@ -299,7 +299,7 @@ public class RhoPhonebook extends RubyBasic {
 				}
 			}
 			if ( !bFound )
-				index = -1;				
+				index = -1;
 		}else if ( strKey.opEql(RUBY_PB_BUSINESS_NUMBER) == RubyConstant.QTRUE ){
 			field = Contact.TEL;
 			attributes = Contact.ATTR_WORK;
@@ -315,7 +315,7 @@ public class RhoPhonebook extends RubyBasic {
 				}
 			}
 			if ( !bFound )
-				index = -1;				
+				index = -1;
 		}else
 			return RubyConstant.QFALSE;
 
@@ -328,7 +328,7 @@ public class RhoPhonebook extends RubyBasic {
 		}
 		else
 			contact.addString(field, attributes, strValue);
-		
+
 		return RubyConstant.QTRUE;
 	}
 
@@ -339,7 +339,7 @@ public class RhoPhonebook extends RubyBasic {
 		} catch (PIMException e) {
 			new RubyException(e.getMessage());
 		}
-		
+
 		return RubyConstant.QTRUE;
 	}
 
@@ -348,14 +348,14 @@ public class RhoPhonebook extends RubyBasic {
 		Contact contact = pb.m_contactList.createContact();
 		if ( contact != null )
 			return new PBRecord(contact);
-		
+
 		return RubyConstant.QNIL;
 	}
 
 	public static RubyValue addRecord(RubyValue arg0, RubyValue arg1) {
 		return saveRecord(arg0, arg1);
 	}
-	
+
 	public static RubyValue deleteRecord(RubyValue arg0, RubyValue arg1) {
 		RhoPhonebook pb = (RhoPhonebook)arg0;
 		PBRecord record = (PBRecord)arg1;
@@ -365,7 +365,7 @@ public class RhoPhonebook extends RubyBasic {
 		} catch (PIMException e) {
 			new RubyException(e.getMessage());
 		}
-			
+
 		return RubyConstant.QTRUE;
 	}
 
@@ -374,9 +374,9 @@ public class RhoPhonebook extends RubyBasic {
 			protected RubyValue run(RubyValue receiver, RubyBlock block )	{
 				return RhoPhonebook.alloc(receiver);}
 		});
-		
+
 		klass.getSingletonClass().defineMethod("openPhonebook", new RubyNoArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyBlock block) 
+			protected RubyValue run(RubyValue receiver, RubyBlock block)
 			{
 				try {
 					return RhoPhonebook.openPhonebook();
@@ -384,11 +384,11 @@ public class RhoPhonebook extends RubyBasic {
 					LOG.ERROR("openPhonebook failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
-					
+
 			}
 		});
 		klass.getSingletonClass().defineMethod("closePhonebook", new RubyOneArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) 
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block)
 			{
 				try {
 					return RhoPhonebook.closePhonebook(arg0);
@@ -396,11 +396,11 @@ public class RhoPhonebook extends RubyBasic {
 					LOG.ERROR("closePhonebook failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
-					
+
 			}
 		});
 		klass.getSingletonClass().defineMethod("allRecords", new RubyOneArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) 
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block)
 			{
 				try {
 					return RhoPhonebook.getallPhonebookRecords(arg0);
@@ -408,11 +408,11 @@ public class RhoPhonebook extends RubyBasic {
 					LOG.ERROR("allRecords failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
-					
+
 			}
 		});
 		klass.getSingletonClass().defineMethod("openRecord", new RubyTwoArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) 
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block)
 			{
 				try {
 					return RhoPhonebook.openPhonebookRecord(arg0, arg1);
@@ -420,11 +420,11 @@ public class RhoPhonebook extends RubyBasic {
 					LOG.ERROR("openRecord failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
-					
+
 			}
 		});
 		klass.getSingletonClass().defineMethod("getRecord", new RubyTwoArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) 
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block)
 			{
 				try {
 					return RhoPhonebook.getPhonebookRecord(arg0, arg1);
@@ -432,11 +432,11 @@ public class RhoPhonebook extends RubyBasic {
 					LOG.ERROR("getRecord failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
-					
+
 			}
 		});
 		klass.getSingletonClass().defineMethod("createRecord", new RubyOneArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) 
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block)
 			{
 				try {
 					return RhoPhonebook.createRecord(arg0);
@@ -444,11 +444,11 @@ public class RhoPhonebook extends RubyBasic {
 					LOG.ERROR("createRecord failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
-					
+
 			}
 		});
 		klass.getSingletonClass().defineMethod("setRecordValue", new RubyVarArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyArray ar, RubyBlock block) 
+			protected RubyValue run(RubyValue receiver, RubyArray ar, RubyBlock block)
 			{
 				try {
 					return RhoPhonebook.setRecordValue(ar);
@@ -456,11 +456,11 @@ public class RhoPhonebook extends RubyBasic {
 					LOG.ERROR("setRecordValue failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
-					
+
 			}
 		});
 		klass.getSingletonClass().defineMethod("addRecord", new RubyTwoArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) 
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block)
 			{
 				try {
 					return RhoPhonebook.addRecord(arg0, arg1);
@@ -468,11 +468,11 @@ public class RhoPhonebook extends RubyBasic {
 					LOG.ERROR("addRecord failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
-					
+
 			}
 		});
 		klass.getSingletonClass().defineMethod("saveRecord", new RubyTwoArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) 
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block)
 			{
 				try {
 					return RhoPhonebook.saveRecord(arg0, arg1);
@@ -480,11 +480,11 @@ public class RhoPhonebook extends RubyBasic {
 					LOG.ERROR("saveRecord failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
-					
+
 			}
 		});
 		klass.getSingletonClass().defineMethod("deleteRecord", new RubyTwoArgMethod() {
-			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) 
+			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block)
 			{
 				try {
 					return RhoPhonebook.deleteRecord(arg0, arg1);
@@ -492,9 +492,9 @@ public class RhoPhonebook extends RubyBasic {
 					LOG.ERROR("deleteRecord failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
-					
+
 			}
 		});
-		
+
 	}
 }

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -42,9 +42,9 @@ import com.rho.file.IRAFile;
 public class FileUtilBB implements FileAccess {
 
     private static FileUtilBB fileUtil = new FileUtilBB();
-    
+
     private static IRAFile impl = null;
-    
+
     private void InitImpl() {
     	if (impl == null) {
     		try {
@@ -65,7 +65,7 @@ public class FileUtilBB implements FileAccess {
     }
 
     public long getFileLength(java.lang.String filename) {
-    	
+
    		InitImpl();
    		synchronized (impl) {
 	   		try {
@@ -83,14 +83,14 @@ public class FileUtilBB implements FileAccess {
 				}
 	    	}
    		}
-    	
+
     	return 0;
     }
-    
+
     public void deleteOnExit(java.lang.String filename){
     	//TODO: deleteOnExit
     }
-    
+
 //    public java.io.InputStream openInputStreamElement( java.lang.String streamName) throws IOException {
     	//TODO:openInputStreamElement
 /*
@@ -186,7 +186,7 @@ public class FileUtilBB implements FileAccess {
     public void deleteOnExit(File f) {
         //JavaSystem.deleteOnExit(f);
     }
-    
+
     public long size(String filename) {
     	InitImpl();
     	synchronized (impl) {
@@ -211,7 +211,7 @@ public class FileUtilBB implements FileAccess {
     /**
      * Return true or false based on whether the named file exists.
      */
-    public boolean exists(String filename) 
+    public boolean exists(String filename)
     {
     	InitImpl();
     	synchronized (impl) {
@@ -258,7 +258,7 @@ public class FileUtilBB implements FileAccess {
 	        	int nSlash = newname.lastIndexOf('/');
 	        	if ( nSlash >= 0 )
 	        		name = newname.substring(nSlash+1);
-	        	
+
 	        	InitImpl();
 	        	impl.open(oldname, "rw");
 	        	impl.rename(name);
@@ -378,7 +378,7 @@ public class FileUtilBB implements FileAccess {
                 new File(parent).mkdirs();
             }
         }*/
-    	//TODO: makeParentDirectories 
+    	//TODO: makeParentDirectories
     }
 /*
     public class FileSync implements FileAccess.FileSync {
@@ -394,7 +394,7 @@ public class FileUtilBB implements FileAccess {
         }
     }
 
-    public FileAccess.FileSync getFileSync(java.io.OutputStream os) throws java.io.IOException 
+    public FileAccess.FileSync getFileSync(java.io.OutputStream os) throws java.io.IOException
     {
         return new FileSync();//(FileOutputStream) os);
     }*/

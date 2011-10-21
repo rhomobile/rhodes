@@ -55,8 +55,8 @@
 //		dc.DrawText(_T("Button"), -1, &rect, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
 //	}
 //
-// Delay load is NOT AUTOMATIC for VC++ 7, you have to link to delayimp.lib, 
-// and add uxtheme.dll in the Linker.Input.Delay Loaded DLLs section of the 
+// Delay load is NOT AUTOMATIC for VC++ 7, you have to link to delayimp.lib,
+// and add uxtheme.dll in the Linker.Input.Delay Loaded DLLs section of the
 // project properties.
 #if (_MSC_VER < 1300) && !defined(_WTL_NO_THEME_DELAYLOAD)
   #pragma comment(lib, "delayimp.lib")
@@ -496,7 +496,7 @@ inline bool AtlDrawThemeClientEdge(HTHEME hTheme, HWND hWnd, HRGN hRgnUpdate = N
 		cyBorder = cxBorder;
 
 	RECT rect;
-	::GetWindowRect(hWnd, &rect);            
+	::GetWindowRect(hWnd, &rect);
 
 	// Remove the client edge from the update region
 	int cxEdge = GetSystemMetrics(SM_CXEDGE);
@@ -994,8 +994,8 @@ public:
 // CBufferedPaintWindowImpl - implements a window that uses buffered paint
 
 template <class T, class TBase = ATL::CWindow, class TWinTraits = ATL::CControlWinTraits>
-class ATL_NO_VTABLE CBufferedPaintWindowImpl : 
-		public ATL::CWindowImpl<T, TBase, TWinTraits>, 
+class ATL_NO_VTABLE CBufferedPaintWindowImpl :
+		public ATL::CWindowImpl<T, TBase, TWinTraits>,
 		public CBufferedPaintImpl< T >
 {
 public:
@@ -1194,8 +1194,8 @@ public:
 // CBufferedAnimationWindowImpl - implements a window that uses buffered animation
 
 template <class T, class TState = DWORD_PTR, class TBase = ATL::CWindow, class TWinTraits = ATL::CControlWinTraits>
-class ATL_NO_VTABLE CBufferedAnimationWindowImpl : 
-		public ATL::CWindowImpl<T, TBase, TWinTraits>, 
+class ATL_NO_VTABLE CBufferedAnimationWindowImpl :
+		public ATL::CWindowImpl<T, TBase, TWinTraits>,
 		public CBufferedAnimationImpl< T, TState >
 {
 public:

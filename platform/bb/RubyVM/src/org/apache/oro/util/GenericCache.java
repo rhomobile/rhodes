@@ -1,4 +1,4 @@
-/* 
+/*
  * $Id: GenericCache.java 124053 2005-01-04 01:24:35Z dfs $
  *
  * Copyright 2000-2005 The Apache Software Foundation
@@ -70,7 +70,7 @@ public abstract class GenericCache implements Cache {//, java.io.Serializable {
 
   public abstract void addElement(Object key, Object value);
 
-  public synchronized Object getElement(Object key) { 
+  public synchronized Object getElement(Object key) {
     Object obj;
 
     obj = _table.get(key);

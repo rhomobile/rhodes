@@ -48,10 +48,10 @@ module Timeout
       x = Thread.current
       y = Thread.start {
         sleep sec
-        
+
         if !@is_stoptimeout
             x.raise exception, "execution expired" if x.alive?
-        end    
+        end
       }
       return yield(sec)
     rescue exception => e
@@ -68,8 +68,8 @@ module Timeout
     ensure
       if y and y.alive?
         @is_stoptimeout = true
-      
-        y.kill 
+
+        y.kill
         y.join # make sure y is dead.
       end
     end

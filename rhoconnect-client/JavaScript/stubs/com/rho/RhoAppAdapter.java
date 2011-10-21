@@ -28,12 +28,12 @@ public class RhoAppAdapter {
 
 	public static void loadServerSources(String strSources) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public static void resetDBOnSyncUserChanged() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

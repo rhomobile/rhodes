@@ -26,7 +26,7 @@ public abstract class MethodBlockBase {
     	default_values_ = orig.default_values_;
     	scopeOfCurrentMethod_= orig.scopeOfCurrentMethod_;
     }
-    
+
     public int arity() {
         if (has_asterisk_parameter_ || default_argc_ > 0) {
             return -(argc_ - default_argc_) - 1;

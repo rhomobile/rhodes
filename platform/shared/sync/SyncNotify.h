@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -53,7 +53,7 @@ struct CSyncNotification
     CSyncNotification(): m_cCallback(0), m_cCallbackData(0){m_bRemoveAfterFire = false;}
 
     CSyncNotification(String strUrl, String strParams, boolean bRemoveAfterFire);
-    CSyncNotification(RHOC_CALLBACK callback, void* callback_data, boolean bRemoveAfterFire) : 
+    CSyncNotification(RHOC_CALLBACK callback, void* callback_data, boolean bRemoveAfterFire) :
         m_cCallback(callback), m_cCallbackData(callback_data), m_bRemoveAfterFire(false){}
 
     String toString()const;
@@ -66,18 +66,18 @@ struct CObjectNotification
     String m_strUrl;
     RHOC_CALLBACK m_cCallback;
     void*         m_cCallbackData;
-    
+
     CObjectNotification(): m_cCallback(0), m_cCallbackData(0){}
-    
+
     CObjectNotification(String strUrl);
-    CObjectNotification(RHOC_CALLBACK callback, void* callback_data) : 
+    CObjectNotification(RHOC_CALLBACK callback, void* callback_data) :
         m_cCallback(callback), m_cCallbackData(callback_data){}
-    
+
     String toString()const;
-    
+
     ~CObjectNotification();
 };
-    
+
 class CSyncNotify
 {
     DEFINE_LOGCLASS;
@@ -112,7 +112,7 @@ private:
     net::CNetRequestWrapper getNet(){ return getNetRequest(&m_NetRequest); }
     CSyncEngine& getSync(){ return m_syncEngine; }
 public:
-    CSyncNotify( CSyncEngine& syncEngine ) : m_syncEngine(syncEngine), m_bEnableReporting(false), 
+    CSyncNotify( CSyncEngine& syncEngine ) : m_syncEngine(syncEngine), m_bEnableReporting(false),
         m_bEnableReportingGlobal(false){}
 
     //Object notifications

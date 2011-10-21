@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright 2005-2007 Xue Yong Zhi
  * Distributed under the BSD License
  */
@@ -16,11 +16,11 @@ public class RubyBinding extends RubyBasic {
 	private RubyBlock block_;
 	private RubyArray variables_ = new RubyArray();
 	private List/*<String>*/ names_ = new ArrayList/*<String>*/();
-	
+
 	public RubyBinding(RubyClass c) {
 		super(c);
 	}
-	
+
 	public RubyBinding() {
 		super(RubyRuntime.BindingClass);
 	}
@@ -31,16 +31,16 @@ public class RubyBinding extends RubyBasic {
     	return cl;
     }
     protected void doClone(RubyValue orig){
-    	RubyBinding cl = (RubyBinding)orig; 
+    	RubyBinding cl = (RubyBinding)orig;
     	scope_ = cl.scope_;
     	self_ = cl.self_;
     	block_ = cl.block_;
     	variables_ = cl.variables_;
     	names_ = cl.names_;
-    	
+
     	super.doClone(orig);
     }
-	
+
 	public boolean hasName(String name) {
 		return names_.indexOf(name) >= 0;
 	}
@@ -96,7 +96,7 @@ public class RubyBinding extends RubyBasic {
 	public List/*<String>*/ getVariableNames() {
 		return names_;
 	}
-	
+
 	protected RubyValue getVariable(String name) {
 		int i = names_.indexOf(name);
 		if (i < 0) {
@@ -104,6 +104,6 @@ public class RubyBinding extends RubyBasic {
 		} else {
 			return variables_.get(i);
 		}
-		
+
 	}
 }

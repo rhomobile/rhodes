@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -33,11 +33,11 @@ public class MathEx {
     public static double pow(double a, double b) {
     	return MathLib.pow(a,b);
     }
-    
+
     public static long round(double a) {
     	return (long)Math.floor(a + 0.5d);
     }
-    
+
     public static double log(double a) {
     	return MathLib.log(a);
     }
@@ -54,7 +54,7 @@ public class MathEx {
     public static double log2(double a) {
         return log10(a)/log10(2.0);
     }
-    
+
     public static double exp(double a) {
     	return MathLib.exp(a);
     }
@@ -79,7 +79,7 @@ public class MathEx {
     public static double atan2(double y, double x) {
     	return MathLib.atan2(y,x);
     }
-    public static double hypot(double a, double b) 
+    public static double hypot(double a, double b)
     {
     	double result;
         if (Math.abs(a) > Math.abs(b)) {
@@ -91,18 +91,18 @@ public class MathEx {
         } else {
             result = 0;
         }
-        
+
         return result;
     }
-    
+
     public static int min(int a, int b) {
     	return (a <= b) ? a : b;
     }
-    
+
     public static int max(int a, int b) {
     	return (a >= b) ? a : b;
     }
-    
+
     private static double sign(double x, double y) {
         double abs = ((x < 0) ? -x : x);
         return (y < 0.0) ? -abs : abs;
@@ -124,7 +124,7 @@ public class MathEx {
         .710359900371425297116899083947e-17,
         -.126124551191552258324954248533e-18
    };
-    
+
     public static double erf(double value) {
         double  result;
         double  y = Math.abs(value);
@@ -138,7 +138,7 @@ public class MathEx {
         } else {
             result = sign(1, value);
         }
-        
+
         return result;
     }
 
@@ -203,8 +203,8 @@ public class MathEx {
         -.562681717632940809299928521323e-18,
         .194744338223207851429197867821e-18
    };
-    
-    public static double erfc(double value) 
+
+    public static double erfc(double value)
     {
         double  result;
         double  y = Math.abs(value);
@@ -227,10 +227,10 @@ public class MathEx {
                 if (value < 0) result = 2.0 - result;
             }
         }
-        
+
         return result;
     }
-    
+
     private static double chebylevSerie(double x, double coef[]) {
         double  b0, b1, b2, twox;
         int i;
@@ -245,5 +245,5 @@ public class MathEx {
         }
         return 0.5*(b0 - b2);
     }
-    
+
 }

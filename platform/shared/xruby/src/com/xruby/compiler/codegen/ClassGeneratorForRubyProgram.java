@@ -23,8 +23,8 @@ class ClassGeneratorForRubyProgram extends ClassGenerator {
     public String getFileName() {
         return fileName;
     }
-    
-    private static final Method RUBY_PROGRAM_RUN = 
+
+    private static final Method RUBY_PROGRAM_RUN =
     	CgUtil.getMethod("run", Types.RUBY_VALUE_TYPE, Types.RUBY_VALUE_TYPE, Types.RUBY_ARRAY_TYPE, Types.RUBY_BLOCK_TYPE, Types.RUBY_MODULE_TYPE);
 
     private MethodGenerator startRubyProgram(boolean createMain, boolean is_singleton) {
@@ -46,7 +46,7 @@ class ClassGeneratorForRubyProgram extends ClassGenerator {
         if (createMain) {
             createStaticVoidMain(cv_);
         }
-        
+
 		//Implement RubyProgram
         return new MethodGenerator(Opcodes.ACC_PROTECTED,
         		RUBY_PROGRAM_RUN,

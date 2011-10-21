@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -114,7 +114,7 @@ void mapview_create(rho_param *p) {
 			[RhoMapViewProvidersManager registerMapViewProvider:@"Google" provider:[[MapEngine_Google alloc] init]];
 		}
 	}
-	
+
 	NSString* engine = @"Google";
     if (p && p->type == RHO_PARAM_HASH) {
 		rho_param *eng_p = NULL;
@@ -128,7 +128,7 @@ void mapview_create(rho_param *p) {
 			engine = [NSString stringWithUTF8String:eng_p->v.string];
 		}
     }
-	
+
 	id<RhoMapViewProvider,NSObject> eng_p = [map_providers objectForKey:engine];
 	if (eng_p != nil ) {
 		engine_p = eng_p;
@@ -144,7 +144,7 @@ void mapview_create(rho_param *p) {
 	if (engine_p != nil) {
 		[engine_p createMap:rho_param_dup(p)];
 	}
-#endif	
+#endif
 }
 
 void mapview_close() {

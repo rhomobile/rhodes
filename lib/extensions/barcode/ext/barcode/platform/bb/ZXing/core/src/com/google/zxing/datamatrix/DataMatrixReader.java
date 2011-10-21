@@ -42,7 +42,7 @@ import java.util.Hashtable;
 public final class DataMatrixReader implements Reader {
 
   private static final ResultPoint[] NO_POINTS = new ResultPoint[0];
-  
+
   private final Decoder decoder = new Decoder();
 
   /**

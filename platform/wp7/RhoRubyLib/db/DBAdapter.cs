@@ -1,18 +1,18 @@
 ﻿/*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -33,7 +33,7 @@ namespace rho.db
 {
     public class DBAdapter
     {
-    private static RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+    private static RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("DbAdapter");
     private static CRhodesApp RHODESAPP(){return CRhodesApp.Instance;}
     public CRhoRuby RhoRuby { get { return CRhoRuby.Instance; } }
@@ -44,17 +44,17 @@ namespace rho.db
 	private String  m_strDbPartition;
 	private DBAttrManager m_attrMgr = new DBAttrManager();
 	static Hashtable<String,DBAdapter> m_mapDBPartitions = new Hashtable<String,DBAdapter>();
-	
+
     Mutex m_mxDB = new Mutex();
     int m_nTransactionCounter=0;
     boolean m_bUIWaitDB = false;
-	
+
     static String USER_PARTITION_NAME(){return "user";}
     static Hashtable<String,DBAdapter> getDBPartitions(){ return  m_mapDBPartitions; }
     String m_strClientInfoInsert = "";
     Object[] m_dataClientInfo = null;
-    
-	public DBAdapter() 
+
+	public DBAdapter()
     {
 		try{
 			m_dbStorage = RhoClassFactory.createDBStorage();
@@ -111,9 +111,9 @@ namespace rho.db
 	{
 		m_strDbPartition = strPartition;
 	}
-	 
+
 	public void close()
-	{ 
+	{
 		try{
             if (m_dbStorage != null)
             {
@@ -125,10 +125,10 @@ namespace rho.db
     		LOG.ERROR("DB close failed.", exc);
 		}
 	}
-	
+
 	public DBAttrManager getAttrMgr()
-	{ 
-		return m_attrMgr; 
+	{
+		return m_attrMgr;
 	}
 
 	public void executeBatchSQL(String strStatement)
@@ -136,7 +136,7 @@ namespace rho.db
 		LOG.TRACE("executeBatchSQL: " + strStatement);
 
         Lock();
-		try{		
+		try{
 		    m_dbStorage.executeBatchSQL(strStatement);
         }
         finally
@@ -149,7 +149,7 @@ namespace rho.db
     {
         return executeSQL(strStatement, values, false);
     }
-	
+
 	public IDBResult executeSQL(String strStatement, Object[] values, boolean bNoCopy)
     {
 		LOG.TRACE("executeSQL: " + strStatement + ";" + values);
@@ -167,7 +167,7 @@ namespace rho.db
 	public IDBResult executeSQL(String strStatement){
 		return executeSQL(strStatement,null);
 	}
-	
+
 	public IDBResult executeSQL(String strStatement, Object arg1){
 		Object[] values = {arg1};
 		return executeSQL(strStatement,values);
@@ -180,17 +180,17 @@ namespace rho.db
 		Object[] values = { arg1, arg2};
 		return executeSQL(strStatement,values);
 	}
-	
+
 	public IDBResult executeSQL(String strStatement, long arg1){
 		Object[] values = { arg1};
 		return executeSQL(strStatement,values);
 	}
-	
+
 	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2){
 		Object[] values = {arg1,arg2};
 		return executeSQL(strStatement,values);
 	}
-	
+
 	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2, Object arg3){
 		Object[] values = {arg1,arg2,arg3};
 		return executeSQL(strStatement,values);
@@ -199,7 +199,7 @@ namespace rho.db
 		Object[] values = {arg1,arg2,arg3,arg4};
 		return executeSQL(strStatement,values);
 	}
-	
+
 	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5){
 		Object[] values = {arg1,arg2,arg3,arg4,arg5};
 		return executeSQL(strStatement,values);
@@ -208,10 +208,10 @@ namespace rho.db
 		Object[] values = {arg1,arg2,arg3,arg4,arg5,arg6};
 		return executeSQL(strStatement,values);
 	}
-	
+
 	public IDBResult executeSQLReportNonUnique(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4){
 		//LOG.TRACE("executeSQLReportNonUnique: " + strStatement);
-		
+
 		Object[] values = {arg1,arg2,arg3,arg4};
 		IDBResult res = null;
 		Lock();
@@ -221,13 +221,13 @@ namespace rho.db
 		{
 			Unlock();
 		}
-		
-		return res; 
+
+		return res;
 	}
 
 	public IDBResult executeSQLReportNonUnique(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7){
 		//LOG.TRACE("executeSQLReportNonUnique: " + strStatement);
-		
+
 		Object[] values = {arg1,arg2,arg3,arg4, arg5, arg6, arg7};
 		IDBResult res = null;
 		Lock();
@@ -237,17 +237,17 @@ namespace rho.db
 		{
 			Unlock();
 		}
-		
-		return res; 
+
+		return res;
 	}
-	
+
 	public IDBResult executeSQLReportNonUniqueEx(String strStatement, Vector<Object> vecValues){
 		//LOG.TRACE("executeSQLReportNonUnique: " + strStatement);
-		
+
 		Object[] values = new Object[vecValues.size()];
 		for (int i = 0; i < vecValues.size(); i++ )
 			values[i] = vecValues.elementAt(i);
-		
+
 		IDBResult res = null;
 		Lock();
 		try{
@@ -256,18 +256,18 @@ namespace rho.db
 		{
 			Unlock();
 		}
-		
-		return res; 
+
+		return res;
 	}
-	
+
 	public IDBResult executeSQLEx(String strStatement, Vector<Object> vecValues){
 		Object[] values = new Object[vecValues.size()];
 		for (int i = 0; i < vecValues.size(); i++ )
 			values[i] = vecValues.elementAt(i);
-		
+
 		return executeSQL(strStatement,values);
 	}
-	
+
 	public IDBResult executeSQL(String strStatement, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7){
 		Object[] values = {arg1,arg2,arg3,arg4,arg5,arg6,arg7};
 		return executeSQL(strStatement,values);
@@ -278,25 +278,25 @@ namespace rho.db
 	{
 	    if ( RHODESAPP().isMainRubyThread() )
 	        m_bUIWaitDB = true;
-		
+
 		m_mxDB.Lock();
 
         if (RHODESAPP().isMainRubyThread())
 	        m_bUIWaitDB = false;
 	}
-	
+
 	public void Unlock(){ m_mxDB.Unlock(); }
     public boolean isInsideTransaction(){ return m_nTransactionCounter>0; }
-	
+
 	//public static IDBResult createResult(){
 	//	return getInstance().m_dbStorage.createResult();
 	//}
-	
+
 	public String makeBlobFolderName()
     {
 		String fName = CFilePath.join(CRhodesApp.getRhoRootPath(), "db/db-files");
         CRhoFile.recursiveCreateDir(fName);
-	
+
 		return fName;
 	}
 	/*
@@ -305,10 +305,10 @@ namespace rho.db
 		RubyString[] colNames = new RubyString[rows.getColCount()];
 		for ( int nCol = 0; nCol < rows.getColCount(); nCol ++ )
 			colNames[nCol] = ObjectFactory.createString(rows.getOrigColName(nCol));
-		
+
 		return colNames;
 	} */
-    
+
 	private String getNameNoExt(String strPath){
 		int nDot = strPath.lastIndexOf('.');
 		String strDbName = "";
@@ -316,32 +316,32 @@ namespace rho.db
 			strDbName = strPath.substring(0, nDot);
 		else
 			strDbName = strPath;
-		
+
 		return strDbName;
-	} 
-    
+	}
+
 	public String getDBPath(){ return getNameNoExt(m_strDBPath); }
-	
+
     private void initFilePaths(String strDBName)
     {
         CRhoFile.recursiveCreateDir(strDBName);
     	m_strDBPath = strDBName;
     	m_strDbVerPath = m_strDBPath+".version";
     }
-    
+
     private String getSqlScript()
     {
         return CRhoFile.readStringFromResourceFile("db/syncdb.schema");
     }
-    
+
     public void startTransaction()
     {
     	Lock();
     	m_nTransactionCounter++;
     	if (m_nTransactionCounter == 1)
-    		m_dbStorage.startTransaction();    	
+    		m_dbStorage.startTransaction();
     }
-    
+
     public void commit()
     {
     	m_nTransactionCounter--;
@@ -351,19 +351,19 @@ namespace rho.db
 	    	//getAttrMgr().save(this);
 	    	m_dbStorage.commit();
     	}
-    	
+
     	Unlock();
     }
 
     public void rollback()
     {
     	m_nTransactionCounter--;
-    	if (m_nTransactionCounter == 0)     	
+    	if (m_nTransactionCounter == 0)
     		m_dbStorage.rollback();
-    	
+
     	Unlock();
     }
-    
+
     public void endTransaction()
     {
     	commit();
@@ -375,7 +375,7 @@ namespace rho.db
     	public String m_strAppVer = "";
     	public boolean m_bEncrypted = false;
     	public boolean m_bSqlite = false;
-    	
+
     	public boolean isRhoVerChanged(DBVersion dbNewVer)
     	{
     		return m_strRhoVer.compareTo(dbNewVer.m_strRhoVer) != 0;
@@ -384,23 +384,23 @@ namespace rho.db
     	{
     		return m_strAppVer.compareTo(dbNewVer.m_strAppVer) != 0;
     	}
-    	
+
     	public boolean isDbFormatChanged(DBVersion dbNewVer)
     	{
-    		return m_bEncrypted != dbNewVer.m_bEncrypted || 
+    		return m_bEncrypted != dbNewVer.m_bEncrypted ||
     			m_bSqlite != dbNewVer.m_bSqlite;
     	}
-    	
+
 	    public void fromFile(String strFilePath)
 		{
 	        String strData = CRhoFile.readStringFromFile(strFilePath);
-	        
+
 	        Tokenizer oTokenizer = new Tokenizer( strData, ";" );
 	        int nPos = 0;
-			while (oTokenizer.hasMoreTokens()) 
+			while (oTokenizer.hasMoreTokens())
 	        {
 				String tok = oTokenizer.nextToken().trim();
-				
+
 				switch(nPos)
 				{
 				case 0:
@@ -414,18 +414,18 @@ namespace rho.db
 					break;
 				case 3:
 					m_bSqlite = tok.compareTo("sqlite") == 0;
-					break;				
+					break;
 				}
 				nPos++;
 	        }
 		}
-		
+
 		public void toFile(String strFilePath)
 		{
-			String strFullVer = m_strRhoVer + ";" + m_strAppVer + 
-        		";" + (m_bEncrypted ? "encrypted":"") + 
+			String strFullVer = m_strRhoVer + ";" + m_strAppVer +
+        		";" + (m_bEncrypted ? "encrypted":"") +
         		";" + (m_bSqlite ? "sqlite" : "");
-			
+
 			try{
 				CRhoFile.writeStringToFile(strFilePath, strFullVer);
 			}catch (Exception e) {
@@ -434,45 +434,45 @@ namespace rho.db
 		    }
 		}
     };
-    
+
 	boolean migrateDB(DBVersion dbVer, DBVersion dbNewVer )
 	{
 	    LOG.INFO( "Try migrate database from " + (dbVer != null ? dbVer.m_strRhoVer:"") + " to " + (dbNewVer.m_strRhoVer !=null ? dbNewVer.m_strRhoVer:"") );
 	    return false;
 	}
-	
+
 	String getEncryptionInfo()
 	{
         /*
 		boolean bEncrypted =  AppBuildConfig.getItem("encrypt_database") != null &&
 			AppBuildConfig.getItem("encrypt_database").compareTo("1") == 0;
-		
+
 		String strRes = "";
-		
+
 		if (bEncrypted)
 		{
 			String strAppName = "rhodes";
 			try{
 				strAppName = RhoClassFactory.createRhoRubyHelper().getModuleName();
 			}catch(Exception e){}
-			
-			strRes = m_strDbPartition + "_" + strAppName; 
+
+			strRes = m_strDbPartition + "_" + strAppName;
 		}
 		return strRes;*/
         //TODO: getEncryptionInfo
         return "";
 	}
-	
+
 	void checkDBVersion()
 	{
 		DBVersion dbNewVer = new DBVersion();
-		dbNewVer.m_strRhoVer = RhoRuby.getRhoDBVersion(); 
+		dbNewVer.m_strRhoVer = RhoRuby.getRhoDBVersion();
 		dbNewVer.m_strAppVer = RhoConf.getInstance().getString("app_db_version");
 		String strEncryptionInfo = getEncryptionInfo();
 		dbNewVer.m_bEncrypted = strEncryptionInfo != null && strEncryptionInfo.length() > 0;
 		dbNewVer.m_bSqlite = true;
-			
-		DBVersion dbVer = new DBVersion();  
+
+		DBVersion dbVer = new DBVersion();
 		dbVer.fromFile(m_strDbVerPath);
 
 		if (dbVer.m_strRhoVer.length() == 0 )
@@ -480,10 +480,10 @@ namespace rho.db
 			dbNewVer.toFile(m_strDbVerPath);
 			return;
 		}
-		
+
 		boolean bRhoReset = dbVer.isRhoVerChanged(dbNewVer);
 	    boolean bAppReset = dbVer.isAppVerChanged(dbNewVer);
-		
+
 		boolean bDbFormatChanged = dbVer.isDbFormatChanged(dbNewVer);
 		if ( !bDbFormatChanged && dbVer.m_bEncrypted )
 		{
@@ -491,13 +491,13 @@ namespace rho.db
 			//if (!com.rho.RhoCrypto.isKeyExist(strEncryptionInfo) )
 			//	bDbFormatChanged = true;
 		}
-		
+
 		if ( bDbFormatChanged )
 			LOG.INFO("Reset Database( format changed ):" + m_strDBPath);
-		
+
 	    if ( bRhoReset && !bAppReset && !bDbFormatChanged )
 	        bRhoReset = !migrateDB(dbVer, dbNewVer);
-	    
+
 		if ( bRhoReset || bAppReset || bDbFormatChanged)
 		{
 			if ( !bDbFormatChanged )
@@ -525,22 +525,22 @@ namespace rho.db
                         try { db.close(); } catch (Exception ) {  }
 				}
 			}
-			
+
 			m_dbStorage.deleteAllFiles(m_strDBPath);
-			
+
 			if ( this.m_strDbPartition.compareTo("user") == 0 ) //do it only once
 			{
 				String fName = makeBlobFolderName();
 				CRhoFile.deleteDirectory(fName);
 				makeBlobFolderName(); //Create folder back
 			}
-			
+
 			dbNewVer.toFile(m_strDbVerPath);
-            
+
             if ( RhoConf.getInstance().isExist("bulksync_state") && RhoConf.getInstance().getInt("bulksync_state") != 0)
-            	RhoConf.getInstance().setInt("bulksync_state", 0, true);            
+            	RhoConf.getInstance().setInt("bulksync_state", 0, true);
 		}
-		
+
 	}
 
     public void rb_open(String szDbName, String szDbPartition)
@@ -555,19 +555,19 @@ namespace rho.db
     {
     	if ( m_bIsOpen )
     		return;
-    	
+
 		initFilePaths(strDBName);
 	    if ( !bTemp )
 	    	checkDBVersion();
-	    
+
 		m_dbStorage.open(m_strDBPath, getSqlScript(), getEncryptionInfo() );
-		
+
 		m_bIsOpen = true;
-		
+
 		//getAttrMgr().load(this);
-		
+
 		m_dbStorage.setDbCallback(new DBCallback(this));
-		
+
 		//m_dbAdapters.addElement(this);
 
 	    //copy client_info table
@@ -575,24 +575,24 @@ namespace rho.db
         	 m_dataClientInfo != null )
         {
             LOG.INFO("Copy client_info table from old database");
-    		
+
         	m_dbStorage.executeSQL(m_strClientInfoInsert, m_dataClientInfo, false, false );
-        	
+
             IDBResult res = executeSQL( "SELECT client_id FROM client_info" );
             if ( !res.isEnd() &&  res.getStringByIdx(0).length() > 0 )
             {
                 LOG.INFO("Set reset=1 in client_info");
                 executeSQL( "UPDATE client_info SET reset=1" );
             }
-        	
+
         }
-		
+
     }
-    
+
 	private String createInsertStatement(IDBResult res, String tableName)
 	{
 		String strInsert = "INSERT INTO ";
-		
+
 		strInsert += tableName;
 		strInsert += "(";
 		String strQuest = ") VALUES(";
@@ -603,15 +603,15 @@ namespace rho.db
 				strInsert += ",";
 				strQuest += ",";
 			}
-			
+
 			strInsert += res.getColName(i);
 			strQuest += "?";
 		}
-		
-		strInsert += strQuest + ")"; 
+
+		strInsert += strQuest + ")";
 		return strInsert;
 	}
-    
+
 	private boolean destroyTableName(String tableName, Vector<String> arIncludeTables, Vector<String> arExcludeTables )
 	{
 	    int i;
@@ -629,17 +629,17 @@ namespace rho.db
 
 	    return arIncludeTables.size()==0;
 	}
-	
+
 	public boolean isTableExist(String strTableName)
 	{
 		return m_dbStorage.isTableExists(strTableName);
 	}
-	
-    public void rb_destroy_tables(Vector<String> vecIncludes, Vector<String> vecExcludes) 
+
+    public void rb_destroy_tables(Vector<String> vecIncludes, Vector<String> vecExcludes)
     {
 		if ( !m_bIsOpen )
 			return;
-		
+
 		IDBStorage db = null;
 		try{
             String dbNewName  = CFilePath.changeBaseName(m_strDBPath, "resetdbtemp.sqlite");
@@ -648,23 +648,23 @@ namespace rho.db
             CRhoFile.deleteFile(dbNewName+"-journal");
             CRhoFile.deleteFile(dbNewName+".version");
 
-		    db = RhoClassFactory.createDBStorage();	    
+		    db = RhoClassFactory.createDBStorage();
 			db.open( dbNewName, getSqlScript(), getEncryptionInfo() );
-			
+
 			String[] vecTables = m_dbStorage.getAllTableNames();
 			//IDBResult res;
-	
+
 		    db.startTransaction();
-			
+
 			for ( int i = 0; i< vecTables.Length; i++ )
 			{
 				String tableName = vecTables[i];
 				if ( destroyTableName( tableName, vecIncludes, vecExcludes ) )
 					continue;
-				
+
 				copyTable(tableName, this.m_dbStorage, db );
 			}
-			
+
 		    db.commit();
 		    db.close();
 
@@ -691,11 +691,11 @@ namespace rho.db
 
             string[] ar3 = CRhoFile.enumDirectory("db");
 			m_dbStorage.setDbCallback(new DBCallback(this));
-			
+
 		}catch(Exception e)
 		{
             LOG.ERROR("destroy_table failed.", e);
-    		
+
 			if ( !m_bIsOpen )
 			{
 				LOG.ERROR("destroy_table error.Try to open old DB.");
@@ -707,7 +707,7 @@ namespace rho.db
 					LOG.ERROR("destroy_table open old table failed.", exc);
 				}
 			}
-			
+
 			try {
 				if ( db != null)
 					db.close();
@@ -718,7 +718,7 @@ namespace rho.db
             throw e;
 		}
     }
-    
+
     private void copyTable(String tableName, IDBStorage dbFrom, IDBStorage dbTo)
     {
     	IDBResult res = dbFrom.executeSQL("SELECT * from " + tableName, null, false, false);
@@ -727,11 +727,11 @@ namespace rho.db
 	    {
 	    	if ( strInsert.length() == 0 )
 	    		strInsert = createInsertStatement(res, tableName);
-	    	
+
 	    	dbTo.executeSQL(strInsert, res.getCurData(), false, false );
 	    }
     }
-    
+
     public void updateAllAttribChanges()
     {
 	    //Check for attrib = object
@@ -751,7 +751,7 @@ namespace rho.db
 	        arSrcID.addElement(res.getIntByIdx(1));
 	        arUpdateType.addElement(res.getStringByIdx(2));
 	    }
-        
+
         for( int i = 0; i < (int)arObj.size(); i++ )
         {
             IDBResult resSrc = executeSQL("SELECT name, schema FROM sources where source_id=?", arSrcID.elementAt(i) );
@@ -776,12 +776,12 @@ namespace rho.db
                     String value = res2.getStringByIdx(j);
                     String attribType = getAttrMgr().isBlobAttr(arSrcID.elementAt(i), strAttrib) ? "blob.file" : "";
 
-    	            executeSQLReportNonUnique("INSERT INTO changed_values (source_id,object,attrib,value,update_type,attrib_type,sent) VALUES(?,?,?,?,?,?,?)", 
+    	            executeSQLReportNonUnique("INSERT INTO changed_values (source_id,object,attrib,value,update_type,attrib_type,sent) VALUES(?,?,?,?,?,?,?)",
         	                arSrcID.elementAt(i), arObj.elementAt(i), strAttrib, value, arUpdateType.elementAt(i), attribType, 0 );
                 }
             }else
             {
-                IDBResult res2 = executeSQL( "SELECT attrib, value FROM " + strTableName + " where object=? and source_id=?", 
+                IDBResult res2 = executeSQL( "SELECT attrib, value FROM " + strTableName + " where object=? and source_id=?",
                     arObj.elementAt(i), arSrcID.elementAt(i) );
 
     	        for( ; !res2.isEnd(); res2.next() )
@@ -793,20 +793,20 @@ namespace rho.db
     	            String value = res2.getStringByIdx(1);
     	            String attribType = getAttrMgr().isBlobAttr(arSrcID.elementAt(i), strAttrib) ? "blob.file" : "";
 
-    	            executeSQLReportNonUnique("INSERT INTO changed_values (source_id,object,attrib,value,update_type,attrib_type,sent) VALUES(?,?,?,?,?,?,?)", 
+    	            executeSQLReportNonUnique("INSERT INTO changed_values (source_id,object,attrib,value,update_type,attrib_type,sent) VALUES(?,?,?,?,?,?,?)",
     	                arSrcID.elementAt(i), arObj.elementAt(i), strAttrib, value, arUpdateType.elementAt(i), attribType, 0 );
     	        }
             }
         }
 
-        executeSQL("DELETE FROM changed_values WHERE attrib='object'"); 
+        executeSQL("DELETE FROM changed_values WHERE attrib='object'");
 
         endTransaction();
     }
-    
+
     void copyChangedValues(DBAdapter db)
     {
-    	updateAllAttribChanges();    	
+    	updateAllAttribChanges();
         copyTable("changed_values", m_dbStorage, db.m_dbStorage );
         {
             Vector<int> arOldSrcs = new Vector<int>();
@@ -839,7 +839,7 @@ namespace rho.db
             }
         }
     }
-    
+
     public void setBulkSyncDB(String fDbName, String fScriptName)
     {
         //TODO: setBulkSyncDB
@@ -847,19 +847,19 @@ namespace rho.db
 		DBAdapter db = null;
 		try{
 			db = (DBAdapter)alloc(null);
-			db.setDbPartition(m_strDbPartition);			
+			db.setDbPartition(m_strDbPartition);
     		db.openDB(fDbName, true);
     		db.m_dbStorage.createTriggers();
-			
+
 		    db.startTransaction();
-			
+
 		    copyTable("client_info", m_dbStorage, db.m_dbStorage );
 		    copyChangedValues(db);
-		    
+
 		    getDBPartitions().put(m_strDbPartition, db);
 		    com.rho.sync.SyncThread.getSyncEngine().applyChangedValues(db);
 		    getDBPartitions().put(m_strDbPartition, this);
-		    
+
 		    db.endTransaction();
 		    db.close();
 
@@ -869,37 +869,37 @@ namespace rho.db
 
 			String dbName = getNameNoExt(m_strDBPath);
 			IFileAccess fs = RhoClassFactory.createFileAccess();
-			
+
 			String dbNameData = dbName + ".data";
 		    String dbNameScript = dbName + ".script";
 		    String dbNameJournal = dbName + ".journal";
-		    String dbNameJournal2 = dbName + ".data-journal";		    
+		    String dbNameJournal2 = dbName + ".data-journal";
 		    String dbNewNameProps = getNameNoExt(fDbName) + ".properties";
-		    
+
 		    fs.delete(dbNameJournal);
 		    fs.delete(dbNameJournal2);
 		    fs.delete(dbNewNameProps);
-		    
+
 			String fName = makeBlobFolderName();
 			RhoClassFactory.createFile().delete(fName);
 			DBAdapter.makeBlobFolderName(); //Create folder back
-		    
+
 		    fs.renameOverwrite(fDbName, dbNameData);
 		    if ( !Capabilities.USE_SQLITE )
 		    	fs.renameOverwrite(fScriptName, dbNameScript);
-		    
+
 		    m_dbStorage = RhoClassFactory.createDBStorage();
 			m_dbStorage.open(m_strDBPath, getSqlScript(), getEncryptionInfo() );
 			m_bIsOpen = true;
-			
+
 			//getAttrMgr().load(this);
-			
+
 			m_dbStorage.setDbCallback(new DBCallback(this));
-			
+
 		}catch(Exception e)
 		{
     		LOG.ERROR("execute failed.", e);
-    		
+
 			if ( !m_bIsOpen )
 			{
 				LOG.ERROR("destroy_table error.Try to open old DB.");
@@ -911,24 +911,24 @@ namespace rho.db
 					LOG.ERROR("destroy_table open old table failed.", exc);
 				}
 			}
-			
+
 			if ( db != null)
 				db.close();
-    		
+
 			throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 		}
-*/    	
+*/
     }
 /*
-    public RubyValue rb_execute(RubyValue v, RubyValue batch, RubyValue arg) 
+    public RubyValue rb_execute(RubyValue v, RubyValue batch, RubyValue arg)
     {
-    	RubyArray res = new RubyArray(); 
+    	RubyArray res = new RubyArray();
     	try{
     		String strSql = v.toStr();
     		if ( batch == RubyConstant.QTRUE )
     		{
     			//LOG.INFO("batch execute:" + strSql);
-    			
+
     			executeBatchSQL( strSql );
     		}
     		else
@@ -940,7 +940,7 @@ namespace rho.db
 		    		RubyArray args = args1;
 		    		if ( args.size() > 0 && args.get(0) instanceof RubyArray )
 		    			args = (RubyArray)args.get(0);
-		    		
+
 		    		values = new Object[args.size()];
 		    		for ( int i = 0; i < args.size(); i++ )
 		    		{
@@ -961,10 +961,10 @@ namespace rho.db
 		    				values[i] = val.toStr();
 		    		}
 	    		}
-	    		
+
 	    		IDBResult rows = executeSQL( strSql, values);
 	    		RubyString[] colNames = null;
-	    		
+
 	    		for( ; !rows.isEnd(); rows.next() )
 	    		{
 	    			RubyHash row = ObjectFactory.createHash();
@@ -972,10 +972,10 @@ namespace rho.db
 	    			{
 	    				if ( colNames == null )
 	    					colNames = getOrigColNames(rows);
-	    				
+
 	    				row.add( colNames[nCol], rows.getRubyValueByIdx(nCol) );
 	    			}
-	    			
+
 	    			res.add( row );
 	    		}
     		}
@@ -984,15 +984,15 @@ namespace rho.db
     		LOG.ERROR("execute failed.", e);
 			throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 		}
-    	
+
         return res;
     }
-    
+
     //@RubyAllocMethod
     private static RubyValue alloc(RubyValue receiver) {
     	return new DBAdapter((RubyClass) receiver);
     }*/
-    
+
     public static void closeAll()
     {
         Hashtable<String, DBAdapter>.Enumerator hashEnum = m_mapDBPartitions.GetEnumerator();
@@ -1008,13 +1008,13 @@ namespace rho.db
         Hashtable<String, DBAdapter>.Enumerator hashEnum = m_mapDBPartitions.GetEnumerator();
         while (hashEnum.MoveNext())
         {
-            DBAdapter db = hashEnum.Current.Value; 
+            DBAdapter db = hashEnum.Current.Value;
             db.getAttrMgr().loadBlobAttrs(db);
 			if ( !db.getAttrMgr().hasBlobAttrs() )
 				db.m_dbStorage.setDbCallback(null);
 		}
     }
-    
+
     public static DBAdapter getUserDB()
     {
         return (DBAdapter)getDBPartitions().get(USER_PARTITION_NAME());
@@ -1033,16 +1033,16 @@ namespace rho.db
         {
             vecNames.addElement(hashEnum.Current.Key);
 		}
-		
+
         return vecNames;
     }
-        
+
     public static boolean isAnyInsideTransaction()
     {
         Hashtable<String, DBAdapter>.Enumerator hashEnum = m_mapDBPartitions.GetEnumerator();
         while (hashEnum.MoveNext())
         {
-            DBAdapter db = hashEnum.Current.Value;			
+            DBAdapter db = hashEnum.Current.Value;
 			if ( db.isInsideTransaction() )
 				return true;
 		}
@@ -1054,7 +1054,7 @@ namespace rho.db
 	{
 		private DBAdapter m_db;
 		public DBCallback(DBAdapter db){ m_db = db; }
-		
+
 		public void onBeforeUpdate(String tableName, IDBResult rows2Delete, int[] cols)
 		{
 			try
@@ -1065,8 +1065,8 @@ namespace rho.db
 				LOG.ERROR("onAfterInsert failed.", exc);
 			}
 		}
-		
-		public void onBeforeDelete(String tableName, IDBResult rows2Delete) 
+
+		public void onBeforeDelete(String tableName, IDBResult rows2Delete)
 		{
 			try
 			{
@@ -1076,12 +1076,12 @@ namespace rho.db
 				LOG.ERROR("onAfterInsert failed.", exc);
 			}
 		}
-		
+
 		private boolean isChangedCol(int[] cols, int iCol)
 		{
 			if (cols==null)
 				return true;
-			
+
 			for ( int i = 0; i < cols.Length; i++ )
 			{
 				if ( cols[i] == iCol )
@@ -1089,41 +1089,41 @@ namespace rho.db
 			}
 			return false;
 		}
-		
+
 		private void processDelete(String tableName, IDBResult rows2Delete, int[] cols)
 		{
 			if ( tableName.equalsIgnoreCase("changed_values") || tableName.equalsIgnoreCase("sources") ||
 			     tableName.equalsIgnoreCase("client_info"))
 				return;
-			
+
 			boolean bProcessTable = tableName.equalsIgnoreCase("object_values");
 			boolean bSchemaSrc = false;
 			int nSrcID = 0;
 			if ( !bProcessTable )
 			{
 				nSrcID = m_db.getAttrMgr().getSrcIDHasBlobsByName(tableName);
-				bProcessTable = nSrcID != 0; 
+				bProcessTable = nSrcID != 0;
 				bSchemaSrc = bProcessTable;
 			}
-			
+
 			if ( !bProcessTable)
 				return;
-		
+
 			if ( !bSchemaSrc && !isChangedCol(cols, 3))//value
 				return;
-			
+
 			for( ; !rows2Delete.isEnd(); rows2Delete.next() )
 			{
 				if ( !bSchemaSrc )
 				{
 					nSrcID = rows2Delete.getIntByIdx(0);
-					
+
 					String attrib = rows2Delete.getStringByIdx(1);
 					String value = rows2Delete.getStringByIdx(3);
 
 					//if (cols == null) //delete
 					//	m_db.getAttrMgr().remove(nSrcID, attrib);
-					
+
 				    if ( m_db.getAttrMgr().isBlobAttr(nSrcID, attrib) )
 				    	processBlobDelete(nSrcID, attrib, value);
 				}else
@@ -1133,11 +1133,11 @@ namespace rho.db
 					{
 						if (!isChangedCol(cols, i))
 							continue;
-						
+
 						String attrib = rows2Delete.getColName(i);
 						if ( !(data[i] is String ) )
 							continue;
-						
+
 						String value = (String)data[i];
 					    if ( m_db.getAttrMgr().isBlobAttr(nSrcID, attrib) )
 					    	processBlobDelete(nSrcID, attrib, value);
@@ -1145,20 +1145,20 @@ namespace rho.db
 				}
 			}
 		}
-		
+
 		private void processBlobDelete(int nSrcID, String attrib, String value)
 		{
 			if ( value == null || value.length() == 0 )
 				return;
-			
+
 			try{
 		        String strFilePath = RHODESAPP().resolveDBFilesPath(value);
                 CRhoFile.deleteFile(strFilePath);
 			}catch(Exception exc){
-				LOG.ERROR("DBCallback.OnDeleteFromTable: Error delete file: " + value, exc);				
+				LOG.ERROR("DBCallback.OnDeleteFromTable: Error delete file: " + value, exc);
 			}
 		}
-		
+
 	}
     }
 }

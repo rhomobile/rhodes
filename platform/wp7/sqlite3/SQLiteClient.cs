@@ -1,18 +1,18 @@
 ﻿/*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -40,7 +40,7 @@ using System.Globalization;
 
 
 namespace SQLiteClient
-{     
+{
     public class SQLiteException : Exception
     {
         private int _errorCode;
@@ -61,7 +61,7 @@ namespace SQLiteClient
         private Sqlite3.sqlite3 _db;
         private bool _open;
         public string callbackError;
-      
+
         public string Database { get; set; }
 
         public bool TransactionOpened=false;
@@ -84,15 +84,15 @@ namespace SQLiteClient
             String sb = "";// = new String();
             for (i = 0; i < nArg; i++)
                 sb += azCol[i] + " = " + azArg[i] + "\n";
-            callbackError += sb.ToString();            
+            callbackError += sb.ToString();
             return 0;
         }
 
         public void Open()
         {
             int n = Sqlite3.sqlite3_open(Database, ref _db);
-            if (n != Sqlite3.SQLITE_OK)            
-                throw new SQLiteException(n,"Could not open database file: " + Database);            
+            if (n != Sqlite3.SQLITE_OK)
+                throw new SQLiteException(n,"Could not open database file: " + Database);
             string errMsg = string.Empty;
             n = Sqlite3.sqlite3_exec(_db, "PRAGMA journal_mode=PERSIST", (Sqlite3.dxCallback)this.callback, null, ref errMsg);
             if (n != Sqlite3.SQLITE_OK)
@@ -101,7 +101,7 @@ namespace SQLiteClient
                 _db = null;
                 _open = false;
                 throw new SQLiteException(n, "Cannot set journal mode to PERSIST: " + Database);
-            }            
+            }
             _open = true;
         }
         public SQLiteCommand CreateCommand(string cmdText, params object[] ps)
@@ -143,12 +143,12 @@ namespace SQLiteClient
         }
 
         public bool BeginTransaction()
-        {     
+        {
             int n=Sqlite3.sqlite3_exec(_db, "BEGIN", 0, 0, 0) ;
             if (n != Sqlite3.SQLITE_OK)
                 throw new SQLiteException(n, SQLiteLastError());
             TransactionOpened = true;
-            return true;        
+            return true;
         }
 
         public bool RollbackTransaction()
@@ -203,7 +203,7 @@ namespace SQLiteClient
       "yyyy-MM-dd",
       "yyyy-MM-dd HH:mm:ss.FFFFFFF",
       "yyyy-MM-dd HH:mm:ss",
-      "yyyy-MM-dd HH:mm",                               
+      "yyyy-MM-dd HH:mm",
       "yyyy-MM-ddTHH:mm:ss.FFFFFFF",
       "yyyy-MM-ddTHH:mm",
       "yyyy-MM-ddTHH:mm:ss",
@@ -263,29 +263,29 @@ namespace SQLiteClient
 
         public int ExecuteNonQuery()
         {
-            Sqlite3.Vdbe stmt = Prepare();            
+            Sqlite3.Vdbe stmt = Prepare();
             var r = Sqlite3.sqlite3_step(stmt);
             switch (r)
             {
                 case Sqlite3.SQLITE_ERROR:
                     string msg = Sqlite3.sqlite3_errmsg(_db);
-                    Sqlite3.sqlite3_finalize(ref stmt);                
-                    throw new SQLiteException(r,msg);                    
+                    Sqlite3.sqlite3_finalize(ref stmt);
+                    throw new SQLiteException(r,msg);
                 case Sqlite3.SQLITE_DONE:
                     int rowsAffected = Sqlite3.sqlite3_changes(_db);
-                    Sqlite3.sqlite3_finalize(ref stmt);  
-                    return rowsAffected;                    
-                case Sqlite3.SQLITE_CANTOPEN:                   
-                    Sqlite3.sqlite3_finalize(ref stmt);                
-                    throw new SQLiteException(r,"Cannot open database file");                    
+                    Sqlite3.sqlite3_finalize(ref stmt);
+                    return rowsAffected;
+                case Sqlite3.SQLITE_CANTOPEN:
+                    Sqlite3.sqlite3_finalize(ref stmt);
+                    throw new SQLiteException(r,"Cannot open database file");
                 case Sqlite3.SQLITE_CONSTRAINT:
                     string msgC = Sqlite3.sqlite3_errmsg(_db);
                     Sqlite3.sqlite3_finalize(ref stmt);
-                    throw new SQLiteException(r,msgC);                    
+                    throw new SQLiteException(r,msgC);
                 default:
-                     Sqlite3.sqlite3_finalize(ref stmt);  
-                     throw new SQLiteException(r,"Unknown error");                     
-            }           
+                     Sqlite3.sqlite3_finalize(ref stmt);
+                     throw new SQLiteException(r,"Unknown error");
+            }
         }
 
         public int ExecuteNonQuery<T>(T toInsert)
@@ -324,7 +324,7 @@ namespace SQLiteClient
                 default:
                     Sqlite3.sqlite3_finalize(ref stmt);
                     throw new SQLiteException(r, "Unknown error");
-            }        
+            }
         }
 
         public IEnumerable<T> ExecuteQuery<T>() where T : new()
@@ -334,7 +334,7 @@ namespace SQLiteClient
             var props = GetProps(typeof(T));
             var cols = new System.Reflection.PropertyInfo[Sqlite3.sqlite3_column_count(stmt)];
             for (int i = 0; i < cols.Length; i++)
-                cols[i] = MatchColProp( Sqlite3.sqlite3_column_name(stmt, i), props);         
+                cols[i] = MatchColProp( Sqlite3.sqlite3_column_name(stmt, i), props);
             while (Sqlite3.sqlite3_step(stmt) == Sqlite3.SQLITE_ROW)
             {
                 var obj = new T();
@@ -550,7 +550,7 @@ namespace SQLiteClient
             if (clrType == typeof(Boolean))
                 return ToBoolean(Sqlite3.sqlite3_column_int(stmt, index));
             throw new NotSupportedException("Don't know how to read " + clrType);
-               
+
         }
         static System.Reflection.PropertyInfo[] GetProps(Type t)
         {

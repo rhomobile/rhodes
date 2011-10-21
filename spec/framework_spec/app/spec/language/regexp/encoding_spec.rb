@@ -66,7 +66,7 @@ describe "Regexps with encoding modifiers" do
   end
 
   ruby_version_is "1.9" do
-=begin  
+=begin
     it 'supports /e (EUC encoding)' do
       match = /./e.match("\303\251".force_encoding(Encoding::EUC_JP))
       match.to_a.should == ["\303\251".force_encoding(Encoding::EUC_JP)]

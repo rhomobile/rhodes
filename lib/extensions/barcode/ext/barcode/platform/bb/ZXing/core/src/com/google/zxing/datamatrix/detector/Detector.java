@@ -145,7 +145,7 @@ public final class Detector {
     // or bottom right should work here. The number of transitions could be higher than it should be
     // due to noise. So we try both and take the min.
 
-    int dimension = Math.min(transitionsBetween(topLeft, topRight).getTransitions(), 
+    int dimension = Math.min(transitionsBetween(topLeft, topRight).getTransitions(),
                              transitionsBetween(bottomRight, topRight).getTransitions());
     if ((dimension & 0x01) == 1) {
       // it can't be odd, so, round... up?

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -105,7 +105,7 @@ typedef struct _TCookieData {
 
 class CMainWindow :
 #if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-	public CFrameWindowImpl<CMainWindow>, 
+	public CFrameWindowImpl<CMainWindow>,
 	public CFullScreenFrame<CMainWindow>
 #else
     public CWindowImpl<CMainWindow, CWindow, CWinTraits<WS_BORDER | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_CLIPSIBLINGS> >
@@ -131,28 +131,28 @@ public:
     // Required to forward messages to the PIEWebBrowser control
     BOOL TranslateAccelerator(MSG* pMsg);
 
-	void openNativeView(	NativeViewFactory* nativeViewFactory, 
+	void openNativeView(	NativeViewFactory* nativeViewFactory,
 							NativeView* nativeView,
 							String nativeViewType);
 	void closeNativeView();
     rho::IBrowserEngine* getWebKitEngine(){return m_pBrowserEng; }
-    
+
 #if defined(OS_WINDOWS)
     DECLARE_WND_CLASS(TEXT("Rhodes.MainWindow"))
 #else
-	static ATL::CWndClassInfo& GetWndClassInfo() 
-	{ 
+	static ATL::CWndClassInfo& GetWndClassInfo()
+	{
         static rho::StringW strAppName = RHODESAPP().getAppNameW() + L".MainWindow";
-		static ATL::CWndClassInfo wc = 
-		{ 
-			{ CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS, StartWindowProc, 
-			0, 0, NULL, NULL, NULL, (HBRUSH)(COLOR_WINDOW + 1), NULL, strAppName.c_str() }, 
-			NULL, NULL, IDC_ARROW, TRUE, 0, _T("") 
-		}; 
-		return wc; 
+		static ATL::CWndClassInfo wc =
+		{
+			{ CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS, StartWindowProc,
+			0, 0, NULL, NULL, NULL, (HBRUSH)(COLOR_WINDOW + 1), NULL, strAppName.c_str() },
+			NULL, NULL, IDC_ARROW, TRUE, 0, _T("")
+		};
+		return wc;
 	}
 #endif
-    
+
 	BEGIN_MSG_MAP(CMainWindow)
         MESSAGE_HANDLER(WM_CREATE, OnCreate)
         MESSAGE_HANDLER(WM_SIZE, OnSize)
@@ -201,7 +201,7 @@ public:
 #endif
 
     END_MSG_MAP()
-	
+
 private:
     // WM_xxx handlers
     LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -265,9 +265,9 @@ public:
 
 private:
     // event handlers
-    void __stdcall OnBeforeNavigate2(IDispatch* pDisp, VARIANT * pvtURL, 
+    void __stdcall OnBeforeNavigate2(IDispatch* pDisp, VARIANT * pvtURL,
                                      VARIANT * /*pvtFlags*/, VARIANT * pvtTargetFrameName,
-                                     VARIANT * /*pvtPostData*/, VARIANT * /*pvtHeaders*/, 
+                                     VARIANT * /*pvtPostData*/, VARIANT * /*pvtHeaders*/,
                                      VARIANT_BOOL * /*pvbCancel*/);
     void __stdcall OnBrowserTitleChange(BSTR bstrTitleText);
     void __stdcall OnNavigateComplete2(IDispatch* pDisp, VARIANT * pvtURL);
@@ -277,7 +277,7 @@ private:
     // utility functions
     BOOL SetMenuItemEnabled      (UINT uMenuItemID, BOOL bEnable);
 	BOOL SetToolbarButtonEnabled (UINT uTbbID, BOOL bEnable);
-	
+
 	void ShowLoadingPage();
 
 	void createCustomMenu(void);
@@ -292,7 +292,7 @@ private:
 	void hideWebView();
 	void showWebView();
 
-	
+
 
 private:
 	NativeViewFactory* mNativeViewFactory;
@@ -327,7 +327,7 @@ private:
 private:
 	static int m_screenWidth;
 	static int m_screenHeight;
-	
+
 public:
 	static int getScreenWidth() {return m_screenWidth;}
 	static int getScreenHeight() {return m_screenHeight;}
@@ -341,7 +341,7 @@ private:
     CSyncStatusDlg m_SyncStatusDlg;
 };
 
-#if !defined(_WIN32_WCE) || defined( OS_PLATFORM_MOTCE ) 
+#if !defined(_WIN32_WCE) || defined( OS_PLATFORM_MOTCE )
 HBITMAP SHLoadImageFile (  LPCTSTR pszFileName );
 #endif
 

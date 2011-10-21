@@ -27,18 +27,18 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE 
+1 TEXTINCLUDE
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE 
+2 TEXTINCLUDE
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE 
+3 TEXTINCLUDE
 BEGIN
     "\r\n"
     "\0"
@@ -52,15 +52,15 @@ END
 // RCDATA
 //
 
-IDR_MAIN_MENUBAR RCDATA 
+IDR_MAIN_MENUBAR RCDATA
 BEGIN
-    0x0069, 0x0002, 0xfffe, 0x9c41, 0x0004, 0x0010, 0x2711, 0x0000, 0xffff, 
+    0x0069, 0x0002, 0xfffe, 0x9c41, 0x0004, 0x0010, 0x2711, 0x0000, 0xffff,
     0xfffe, 0x9c42, 0x0004, 0x0018, 0x2712, 0x0000, 0x0000
 END
 
-IDR_GETURL_MENUBAR RCDATA 
+IDR_GETURL_MENUBAR RCDATA
 BEGIN
-    0x0000, 0x0002, 0xfffe, 0x0001, 0x0004, 0x0010, 0x2713, 0x0000, 0xffff, 
+    0x0000, 0x0002, 0xfffe, 0x0001, 0x0004, 0x0010, 0x2713, 0x0000, 0xffff,
     0xfffe, 0x0002, 0x0004, 0x0010, 0x2714, 0x0000, 0xffff
 END
 
@@ -70,7 +70,7 @@ END
 // Menu
 //
 
-IDR_MAIN_MENU MENU 
+IDR_MAIN_MENU MENU
 BEGIN
     POPUP ""
     BEGIN
@@ -82,7 +82,7 @@ BEGIN
     END
 END
 
-IDR_LOGMENUBAR MENU 
+IDR_LOGMENUBAR MENU
 BEGIN
     MENUITEM "Back",                        IDM_BACK
     POPUP "Menu"
@@ -93,13 +93,13 @@ BEGIN
     END
 END
 
-IDR_LOGOPTIONSMENUBAR MENU 
+IDR_LOGOPTIONSMENUBAR MENU
 BEGIN
     MENUITEM "OK",                          IDOK
     MENUITEM "Cancel",                      IDCANCEL
 END
 
-IDR_LOGVIEW_MENU MENU 
+IDR_LOGVIEW_MENU MENU
 BEGIN
     POPUP "Menu"
     BEGIN
@@ -114,12 +114,12 @@ BEGIN
     END
 END
 
-IDR_MENU_PC MENU 
+IDR_MENU_PC MENU
 BEGIN
     MENUITEM "Close",                       IDOK
 END
 
-IDR_MAPVIEW MENU 
+IDR_MAPVIEW MENU
 BEGIN
     MENUITEM "Close",                       IDOK
 END
@@ -258,7 +258,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_GETURLDIALOG, DIALOG
     BEGIN
@@ -368,7 +368,7 @@ IDI_ICON                ICON                    "resources\\icon.ico"
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_EXIT                "Back"
     IDS_MENU                "Menu"

@@ -27,5 +27,5 @@ if System::get_property('platform') != 'WINDOWS'
     @ftp.retrbinary("RETR test", 10) { |bin| res << bin }
     res.should == [ "This is th", "e content\n", "of the fil", "e named 't", "est'.\n" ]
   end
-end  
+end
 end

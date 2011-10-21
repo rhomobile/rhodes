@@ -13,7 +13,7 @@ struct sqlite3_mutex {
 /*
 ** The sqlite3_mutex_alloc() routine allocates a new
 ** mutex and returns a pointer to it.  If it returns NULL
-** that means that a mutex could not be allocated. 
+** that means that a mutex could not be allocated.
 */
 sqlite3_mutex *sqlite3_mutex_alloc(int id){
   static sqlite3_mutex aStatic[5];

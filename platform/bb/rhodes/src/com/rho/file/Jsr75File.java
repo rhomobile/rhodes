@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -36,7 +36,7 @@ import java.util.Vector;
 
 import com.rho.*;
 
-public class Jsr75File implements SimpleFile 
+public class Jsr75File implements SimpleFile
 {
     private FileConnection fconn;
     private InputStream    in;
@@ -47,12 +47,12 @@ public class Jsr75File implements SimpleFile
     private long           fileSize = 0;
     private boolean        noFlush;
     private boolean        m_bOpened = false;
-    
+
     private static final int ZERO_BUF_SIZE = 4096;
-    
+
     private static Vector m_arRoots;
     private static String m_strRhoPath;
-    
+
 	static private void log(String txt) {
 		System.out.println("FileSystem: " + txt);
 	}
@@ -67,7 +67,7 @@ public class Jsr75File implements SimpleFile
 			nSlash = strPath.indexOf('/', nSlash+1 );
 		}
 	}
-	
+
 	static void createDir( String strDir  )throws IOException
 	{
 		log("Dir:"+strDir);
@@ -81,11 +81,11 @@ public class Jsr75File implements SimpleFile
 			}
 			log("Dir Connection opened.");
 	        // If no exception is thrown, then the URI is valid, but the file may or may not exist.
-	        if (!fdir.exists()) { 
+	        if (!fdir.exists()) {
 	        	log("Create directory.");
 	        	fdir.mkdir();  // create the dir if it doesn't exist
 	        }else{
-	        	log("Dir exists.");	        	
+	        	log("Dir exists.");
 	        }
 		}catch(IOException exc){
 			log("Create directory failed." + exc.getMessage());
@@ -99,19 +99,19 @@ public class Jsr75File implements SimpleFile
     static private Vector getRoots(){
     	if ( m_arRoots != null )
     		return m_arRoots;
-    	
+
     	m_arRoots = new Vector();
     	Enumeration e = FileSystemRegistry.listRoots();
         while (e.hasMoreElements()) {
         	String strRoot = (String)e.nextElement();
         	log("Root: " + strRoot);
-        	
+
         	m_arRoots.addElement(strRoot);
-        }    	
-        
+        }
+
         return m_arRoots;
     }
-	
+
     static private String findRoot(String strRoot){
     	Vector arRoots = getRoots();
     	for( int i = 0; i < arRoots.size(); i++ ){
@@ -120,15 +120,15 @@ public class Jsr75File implements SimpleFile
         		return strRoot1;
         	}
     	}
-    	
+
     	return null;
     }
-    
+
     static String makeRootPath(){
-    	//SoftVersion ver = Version.getSoftVersion();    	
-		
+    	//SoftVersion ver = Version.getSoftVersion();
+
     	String strRoot = findRoot("SDCard/");
-    	
+
     	if ( strRoot != null )
     		return strRoot;
     	/*
@@ -136,25 +136,25 @@ public class Jsr75File implements SimpleFile
 			strRoot = findRoot("store/");
 		else if ( ver.nMajor >= 4 && ver.nMinor >= 3 )
 			strRoot = findRoot("store/");*/
-    	
+
     	strRoot = findRoot("store/");
     	return strRoot;
     }
-    
-	//http://supportforums.blackberry.com/rim/board/message?board.id=java_dev&thread.id=6553            	
+
+	//http://supportforums.blackberry.com/rim/board/message?board.id=java_dev&thread.id=6553
     public static String getRhoPath() throws IOException{
     	if ( m_strRhoPath != null )
     		return m_strRhoPath;
-    	
+
     	String strRoot = makeRootPath();
     	if ( strRoot == null )
     		throw new IOException("Could not find storage");
-    	
+
     	m_strRhoPath = "file:///" + strRoot;
-    	
+
     	if ( strRoot.equalsIgnoreCase("store/") )
     		m_strRhoPath += "home/user/";
-    	
+
     	m_strRhoPath += "Rho/";
     	createDir( m_strRhoPath );
 
@@ -164,10 +164,10 @@ public class Jsr75File implements SimpleFile
     		appName = helper.getModuleName();
     	if ( appName == null || appName.length() == 0 )
     		appName = "rhodesApp";
-    	
+
     	m_strRhoPath += appName + "/";
     	createDir( m_strRhoPath );
-    	
+
     	return m_strRhoPath;
     }
 
@@ -176,15 +176,15 @@ public class Jsr75File implements SimpleFile
     	//create target directories
     	String strTargetPath = FilePath.join(getRhoPath(), strFileName);
     	recursiveCreateDir(strTargetPath);
-    	
+
     	FileConnection fMem = null;
     	OutputStream out = null;
-    	
+
     	try{
 	    	fMem = (FileConnection)Connector.open(strTargetPath,Connector.READ_WRITE);
 			if ( !fMem.exists() )
 				fMem.create();
-	    	
+
     		int nSize = jarStream.available();
     		if ( nSize > 0 )
     		{
@@ -192,7 +192,7 @@ public class Jsr75File implements SimpleFile
 	    		byte[] buf = new byte[nSize];
 	    		jarStream.read(buf);
 	    		out.write(buf);
-    		}			
+    		}
     	}finally{
 			if ( out != null )
 				out.close();
@@ -200,7 +200,7 @@ public class Jsr75File implements SimpleFile
 				fMem.close();
     	}
     }
-    
+
     public static void copyRhoFileFromDeviceMemory(String strFileName)
     {
     	InputStream in = null;
@@ -209,14 +209,14 @@ public class Jsr75File implements SimpleFile
     	FileConnection fMem = null;
 		try{
 	    	String strSDCardPath = getRhoPath() + strFileName;
-	    	int nSDcardPos = strSDCardPath.indexOf("SDCard"); 
-	    	String strMemoryPath = strSDCardPath.substring(0,nSDcardPos) + "store/home/user" + 
+	    	int nSDcardPos = strSDCardPath.indexOf("SDCard");
+	    	String strMemoryPath = strSDCardPath.substring(0,nSDcardPos) + "store/home/user" +
 	    		strSDCardPath.substring(nSDcardPos+6);
 	    	strSDCardPath += "_mem";
-	    		
+
 	    	fMem = (FileConnection)Connector.open(strMemoryPath);
     		in = fMem.openInputStream();
-    		
+
     		fSDCard = (FileConnection)Connector.open(strSDCardPath,Connector.READ_WRITE);
     		if ( !fSDCard.exists() )
     			fSDCard.create();
@@ -225,7 +225,7 @@ public class Jsr75File implements SimpleFile
     		byte[] buf = new byte[nSize];
     		in.read(buf);
     		out.write(buf);
-    		
+
 		}catch(IOException exc){
 			log("copyRhoFileFromDeviceMemory failed." + exc.getMessage());
 		}finally{
@@ -238,29 +238,29 @@ public class Jsr75File implements SimpleFile
 					fMem.close();
 				if ( fSDCard != null )
 					fSDCard.close();
-				
+
 			}catch(Exception exc){
 				log("copyRhoFileFromDeviceMemory failed." + exc.getMessage());
 			}
-					
+
 		}
-    	
+
     }
-    
+
     public static boolean isRhoFolderExist()
     {
     	String strSdCardPath = "file:///SDCard/Rho/";
     	String strMemoryPath = "file:///store/home/user/Rho/";
-    	
+
 		FileConnection fdir = null;
 		try{
 			fdir = (FileConnection)Connector.open(strSdCardPath);
 			if ( fdir != null && fdir.exists() )
 				return true;
-			
+
 			if (fdir != null)
 				fdir.close();
-			
+
 			fdir = (FileConnection)Connector.open(strMemoryPath);
 			if ( fdir != null && fdir.exists() )
 				return true;
@@ -273,11 +273,11 @@ public class Jsr75File implements SimpleFile
 
 		return false;
     }
-    
+
     public static boolean isSDCardExist()
     {
     	String strSdCardPath = "file:///SDCard/";
-    	
+
 		FileConnection fdir = null;
 		try{
 			fdir = (FileConnection)Connector.open(strSdCardPath);
@@ -292,12 +292,12 @@ public class Jsr75File implements SimpleFile
 
 		return false;
     }
-    
+
     public String getDirPath(String strDir) throws IOException{
     	String strRoot = getRhoPath();
     	if ( strRoot == null )
     		throw new IOException("Could not find storage");
-    	
+
     	if ( strDir != null && strDir.length() > 0 )
     	{
     		String strDirPath = strDir.startsWith(strRoot) ? strDir : FilePath.join(strRoot, strDir);
@@ -305,10 +305,10 @@ public class Jsr75File implements SimpleFile
     		createDir( strDirPath );
     		return strDirPath;
     	}
-    	
+
     	return strRoot;
     }
-    
+
     public static void listFolder(String uri, Vector result) {
     	FileConnection fc = null;
     	try {
@@ -316,8 +316,8 @@ public class Jsr75File implements SimpleFile
     		Enumeration enumFiles = fc.list("*",true);
     		while ( enumFiles.hasMoreElements() ) {
     			result.addElement(uri+"/"+enumFiles.nextElement());
-    		}   		
-    	} catch (IOException x) { 
+    		}
+    	} catch (IOException x) {
         	log("Exception in listFolder: " + x.getMessage());
         } finally {
         	if (fc !=null) {
@@ -327,21 +327,21 @@ public class Jsr75File implements SimpleFile
         	}
         }
     }
-    
+
     private static void deleteFilesInFolder(FileConnection fcFolder){
-    	
+
     	try{
 			Enumeration enumFiles = fcFolder.list();
-			
+
 	        while ( enumFiles.hasMoreElements() ) {
 	            String fileName = (String)enumFiles.nextElement();
 	            String fullFileName = fcFolder.getURL() + fileName;
-	            	
-	            try{ 
+
+	            try{
 					FileConnection fc2 = (FileConnection) Connector.open(fullFileName);
 					if ( fc2.isDirectory() )
 						deleteFilesInFolder(fc2);
-					
+
 					try{fc2.delete();}finally{ fc2.close();};
 				}catch( IOException exc) {
 					log("deleteFilesInFolder exception: " + exc.getMessage());
@@ -351,33 +351,33 @@ public class Jsr75File implements SimpleFile
     		log(exc.getMessage());
     	}
     }
-    
-    public void delete(String path) 
+
+    public void delete(String path)
     {
         String url = path;
-        if (!url.startsWith("file:")) { 
-            if (url.startsWith("/")) { 
+        if (!url.startsWith("file:")) {
+            if (url.startsWith("/")) {
                 url = "file:///" + path;
-            } else { 
-           
+            } else {
+
             	try{
 	            	String strRhoPath = getRhoPath();
 	            	url = strRhoPath + path;
-            	} catch (IOException x) { 
+            	} catch (IOException x) {
                  	log("getRhoPath exception: " + x.getMessage());
                      //throw new IOException(StorageError.FILE_ACCESS_ERROR, x);
-                 }              	
+                 }
             }
         }
-        
+
         FileConnection fc = null;
-        try { 
+        try {
         	fc = (FileConnection)Connector.open(url,Connector.READ_WRITE);
 			if ( fc.isDirectory() )
 				deleteFilesInFolder(fc);
-        	
+
         	fc.delete();
-        } catch (IOException x) { 
+        } catch (IOException x) {
         	log("delete Exception: " + x.getMessage());
             //throw new StorageError(StorageError.FILE_ACCESS_ERROR, x);
         }finally{
@@ -385,7 +385,7 @@ public class Jsr75File implements SimpleFile
         		try{
         			fc.close();
         		}catch(IOException exc){
-        			
+
         		}
         }
     }
@@ -397,12 +397,12 @@ public class Jsr75File implements SimpleFile
         FileConnection fconn = null;
     	try{
         	fconn = (FileConnection)Connector.open(oldname, Connector.READ_WRITE);
-        	
+
         	String name = newname;
         	int nSlash = newname.lastIndexOf('/');
         	if ( nSlash >= 0 )
         		name = newname.substring(nSlash+1);
-        	
+
         	if ( fconn.exists() ){
         		fconn.rename(name);
         	}
@@ -415,36 +415,36 @@ public class Jsr75File implements SimpleFile
 			    }
     	}
     }
-   
+
     public boolean isOpened(){
     	return m_bOpened;
     }
 
-    public void open(String path, boolean readOnly, boolean noFlush)throws IOException 
+    public void open(String path, boolean readOnly, boolean noFlush)throws IOException
     {
         String url = path;
         this.noFlush = noFlush;
         log("Open file:" + path);
-        if (!url.startsWith("file:")) { 
-            /*if (url.startsWith("/")) { 
+        if (!url.startsWith("file:")) {
+            /*if (url.startsWith("/")) {
                 url = "file:///" + path;
-            } else {*/ 
-           
+            } else {*/
+
             	try{
 	            	url = FilePath.join(getRhoPath(), path);
-	            	
-            	} catch (IOException x) { 
+
+            	} catch (IOException x) {
                  	log("getRhoPath Exception: " + x.getMessage());
                     throw x;
-                 }              	
+                 }
            // }
         }
-        
-        try { 
+
+        try {
             if (fconn == null) {
                 fconn = (FileConnection)Connector.open(url,Connector.READ_WRITE);
                 // If no exception is thrown, then the URI is valid, but the file may or may not exist.
-                if (!fconn.exists() && !readOnly ) { 
+                if (!fconn.exists() && !readOnly ) {
                     fconn.create();  // create the file if it doesn't exist
                 }
             }
@@ -453,8 +453,8 @@ public class Jsr75File implements SimpleFile
             	fileSize = fconn.fileSize();
             	m_bOpened = true;
 	            if (!readOnly) {
-	                //fconn.setWritable(true);	                    
-	            	
+	                //fconn.setWritable(true);
+
 	                out = fconn.openOutputStream();
 	                outPos = 0;
 	            }
@@ -462,12 +462,12 @@ public class Jsr75File implements SimpleFile
             {
             	fileSize = 0;
             	m_bOpened = false;
-            	
+
             }
-        } catch (IOException x) { 
+        } catch (IOException x) {
         	log("Exception: " + x.getMessage());
             throw x;
-        }        
+        }
         in = null;
         inPos = 0;
     }
@@ -475,7 +475,7 @@ public class Jsr75File implements SimpleFile
     public String readString()throws IOException{
     	if ( !isOpened() || fileSize == 0 )
     		return "";
-    	
+
 	    byte[] data = new byte[(int)fileSize];
 	    int len = read(0,data);
 	    if ( len == 0 )
@@ -483,44 +483,44 @@ public class Jsr75File implements SimpleFile
 
 	    return new String(data,0,len);
     }
-    
+
     public int read(long pos, byte[] b)throws IOException
     {
         int len = b.length;
 
-        if (pos >= fileSize) { 
+        if (pos >= fileSize) {
             return 0;
         }
 
         try {
-            if (in == null || inPos > pos) { 
-                sync(); 
-                if (in != null) { 
+            if (in == null || inPos > pos) {
+                sync();
+                if (in != null) {
                     in.close();
                 }
                 in = fconn.openInputStream();
                 inPos = in.skip(pos);
-            } else if (inPos < pos) { 
+            } else if (inPos < pos) {
                 inPos += in.skip(pos - inPos);
             }
-            if (inPos != pos) { 
+            if (inPos != pos) {
                 return 0;
-            }        
+            }
             int off = 0;
-            while (len > 0) { 
+            while (len > 0) {
                 int rc = in.read(b, off, len);
-                if (rc > 0) { 
+                if (rc > 0) {
                     inPos += rc;
                     off += rc;
                     len -= rc;
-                } else { 
+                } else {
                     break;
                 }
             }
             return off;
-        } catch(IOException x) { 
+        } catch(IOException x) {
             throw x;
-        } 
+        }
     }
 
     public void truncate(int nSize)throws IOException{
@@ -529,59 +529,59 @@ public class Jsr75File implements SimpleFile
     		fileSize = nSize;
     	}
     }
-    
+
     public OutputStream getOutStream(){ return out; }
-    
+
     public OutputStream getOutStreamEx(long pos)throws IOException
-    { 
-        if (outPos != pos) {                         
+    {
+        if (outPos != pos) {
             out.close();
             out = fconn.openOutputStream(pos);
-            if (pos > fileSize) { 
+            if (pos > fileSize) {
                 byte[] zeroBuf = new byte[ZERO_BUF_SIZE];
-                do { 
+                do {
                     int size = pos - fileSize > ZERO_BUF_SIZE ? ZERO_BUF_SIZE : (int)(pos - fileSize);
                     out.write(zeroBuf, 0, size);
                     fileSize += size;
-                    
+
                     //BB
                     //fconn.truncate(fileSize);
                 } while (pos != fileSize);
             }
             outPos = pos;
         }
-    	
-    	return out; 
+
+    	return out;
     }
-    
+
     public InputStream getInputStream()throws IOException{
     	if ( in  == null )
     		in = fconn.openInputStream();
-    	
-    	return in; 
+
+    	return in;
    }
-    
+
     public void write(long pos, byte[] b)throws IOException
     {
         int len = b.length;
-        if (out == null) { 
+        if (out == null) {
             throw new IOException("Illegal mode");
         }
         int nTry = 0;
         while (nTry <= 1)
         {
-	        try 
+	        try
 	        {
 	        	getOutStreamEx(pos);
-	        	
+
 	            out.write(b, 0, len);
 	            outPos += len;
-	            if (outPos > fileSize) { 
+	            if (outPos > fileSize) {
 	                fileSize = outPos;
 	            }
 	            //BB
 	            //fconn.truncate(fileSize);
-	            if (in != null) { 
+	            if (in != null) {
 	                in.close();
 	                in = null;
 	            }
@@ -593,44 +593,44 @@ public class Jsr75File implements SimpleFile
 	        	else{
 	                outPos = -pos;
 	        	}
-	        		
+
 	        }
         }
     }
 
-    public long length() { 
+    public long length() {
         return fileSize;
     }
 
-    public void close() throws IOException{ 
+    public void close() throws IOException{
         try {
         	m_bOpened = false;
-            if (in != null) { 
+            if (in != null) {
                 in.close();
                 in = null;
             }
-            if (out != null) { 
+            if (out != null) {
                 out.close();
                 out = null;
             }
-            
+
             if ( fconn != null )
             {
 	        	log("File close: " + fconn.getName());
-	            
+
 	            fconn.close();
 	            fconn = null;
             }
-        } catch(IOException x) { 
+        } catch(IOException x) {
             throw x;
         }
     }
-    
+
     public void sync() throws IOException{
-        if (!noFlush && out != null) { 
-            try { 
+        if (!noFlush && out != null) {
+            try {
                 out.flush();
-            } catch(IOException x) { 
+            } catch(IOException x) {
                 throw x;
             }
         }

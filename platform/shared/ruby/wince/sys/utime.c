@@ -23,7 +23,7 @@ int utime(const char *f, struct utimbuf *t)
 	wchar_t *w;
 
 	w = wce_mbtowc(f);
-	h = CreateFileW(w, GENERIC_WRITE, 
+	h = CreateFileW(w, GENERIC_WRITE,
 			FILE_SHARE_READ|FILE_SHARE_WRITE,
 			NULL, OPEN_EXISTING, 0, 0);
 	free(w);

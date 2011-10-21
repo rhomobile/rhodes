@@ -1,4 +1,4 @@
-# ;;; -*- Mode:makefile;-*- 
+# ;;; -*- Mode:makefile;-*-
 # Generated automatically from Makefile.in by configure.
 # This requires GNU make.
 
@@ -37,7 +37,7 @@ CC = gcc
 CXX = $(CC)
 
 # dwa 12/22/99 -- had to turn off -ansi flag so we could use SGI IOSTREAMS
-# also, test_slist won't compile with -O3/-O2 when targeting PPC. It fails 
+# also, test_slist won't compile with -O3/-O2 when targeting PPC. It fails
 # in the assembler with 'invalid relocation type'
 CXXFLAGS = -Wall -ftemplate-depth-32 -mbnu210 -O ${STL_INCL} -I. ${CXX_EXTRA_FLAGS} -DEH_VECTOR_OPERATOR_NEW -D_STLP_NO_SGI_IOSTREAMS
 D_CXXFLAGS = -Wall -g -O ${STL_INCL} -I. ${CXX_EXTRA_FLAGS} -DEH_VECTOR_OPERATOR_NEW -D_STLP_DEBUG -D_STLP_USE_STATIC_LIB
@@ -45,7 +45,7 @@ NOSGI_CXXFLAGS = -Wall -g -O2 ${STL_INCL} -I. ${CXX_EXTRA_FLAGS} -D_STLP_NO_SGI_
 
 check: $(TEST)
 
-LIBS = -lstdcxx -lm 
+LIBS = -lstdcxx -lm
 D_LIBSTLPORT = ../../lib/libstlport_djgpp_debug_static.a
 LIBSTLPORT = ../../lib/libstlport_djgpp_stldebug_static.a
 

@@ -76,7 +76,7 @@ describe :io_new, :shared => true do
       @io.internal_encoding.to_s.should == ''
     end
   end
-=end  
+=end
 end
 
 # This group of specs may ONLY contain specs that do not actually create
@@ -104,5 +104,5 @@ describe :io_new_errors, :shared => true do
   it "raises an Errno::EINVAL if the new mode is not compatible with the descriptor's current mode" do
     lambda { IO.send(@method, @fd, "r") }.should raise_error(Errno::EINVAL)
   end
-=end  
+=end
 end

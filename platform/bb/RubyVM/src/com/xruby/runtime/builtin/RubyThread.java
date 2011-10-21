@@ -75,12 +75,12 @@ public class RubyThread extends RubyBasic {
     	RubyThread cl = new RubyThread(thread_);
     	cl.thread_local_variables_ = thread_local_variables_;
     	cl.threadGroup = threadGroup;
-    	cl.result = result; 
-    	
+    	cl.result = result;
+
     	cl.doClone(this);
     	return cl;
     }
-    
+
     //Only called from <code>ThreadClassBuilder</code> to add main thread.
     public static void init(){
         //Assume that this method is called from main thread
@@ -246,7 +246,7 @@ public class RubyThread extends RubyBasic {
         return mainThread.thread_ == Thread.currentThread();
     }
     //RHO
-    
+
     //@RubyLevelMethod(name="stop?")
     public RubyValue getStoped(){
         return ObjectFactory.createBoolean(stoped);

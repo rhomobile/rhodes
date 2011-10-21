@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -60,7 +60,7 @@ class CLocalTime : public CBaseTime{
 public:
     CLocalTime(){ setToCurTime(); }
 
-    String toString(boolean ms = false, boolean inFileFormat = false){ 
+    String toString(boolean ms = false, boolean inFileFormat = false){
         char timeBuf[40];
         int nSize = 0;
         if ( ms )
@@ -82,8 +82,8 @@ public:
                 nSize = sprintf(timeBuf, "%02d/%02d/%04d %02d:%02d:%02d:%03d", locTime->tm_mon+1, locTime->tm_mday, locTime->tm_year + 1900,
                         locTime->tm_hour, locTime->tm_min, locTime->tm_sec, (int)tv.tv_usec/1000 );
 #else
-            SYSTEMTIME st; 
-            GetLocalTime( &st ); 
+            SYSTEMTIME st;
+            GetLocalTime( &st );
 
             if (inFileFormat)
                 nSize = sprintf(timeBuf, "%02d%02d%04d%02d%02d%02d%03d", st.wMonth, st.wDay, st.wYear,
@@ -105,7 +105,7 @@ public:
         }
 
         timeBuf[nSize] = 0;
-        return String(timeBuf); 
+        return String(timeBuf);
     }
 
 };
@@ -162,7 +162,7 @@ public:
     }
 
     bool isEmpty()const{ return m_nativeTime == 0 ; }
-    
+
 private:
 	unsigned long m_nativeTime;
 };

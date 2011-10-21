@@ -51,7 +51,7 @@ namespace WTL
 #define SPLIT_RIGHTALIGNED		0x00000004
 #define SPLIT_BOTTOMALIGNED		SPLIT_RIGHTALIGNED
 
-// Note: SPLIT_PROPORTIONAL and SPLIT_RIGHTALIGNED/SPLIT_BOTTOMALIGNED are 
+// Note: SPLIT_PROPORTIONAL and SPLIT_RIGHTALIGNED/SPLIT_BOTTOMALIGNED are
 // mutually exclusive. If both are set, splitter defaults to SPLIT_PROPORTIONAL
 
 
@@ -78,8 +78,8 @@ public:
 
 // Constructor
 	CSplitterImpl() :
-			m_xySplitterPos(-1), m_nDefActivePane(SPLIT_PANE_NONE), 
-			m_cxySplitBar(0), m_cxyMin(0), m_cxyBarEdge(0), m_bFullDrag(true), 
+			m_xySplitterPos(-1), m_nDefActivePane(SPLIT_PANE_NONE),
+			m_cxySplitBar(0), m_cxyMin(0), m_cxyBarEdge(0), m_bFullDrag(true),
 			m_cxyDragOffset(0), m_nProportionalPos(0), m_bUpdateProportionalPos(true),
 			m_dwExtendedStyle(SPLIT_PROPORTIONAL),
 			m_nSinglePane(SPLIT_PANE_NONE)

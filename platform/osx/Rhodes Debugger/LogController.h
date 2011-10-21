@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,12 +20,12 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
 //	Purpose: A LogController is used to execute a task and have the output displayed in an
-//	NSTextView. The best way to do this is to instantiate a LogController object in Interface 
+//	NSTextView. The best way to do this is to instantiate a LogController object in Interface
 //	Builder and create the following connections:
 //		LogController* IBOutlet in your app's controller -> Instantiated object
 //		Instantiated object's outputTextView -> an NSTextView in your app's window
@@ -36,19 +36,19 @@
 
 // Tell the compiler about what our delegate could possibly implement.
 // If you don't do this, you get compiler warnings when you try to call the delegate methods.
-@protocol LogControllerDelegate 
+@protocol LogControllerDelegate
 @optional
 - (void) logControllerTaskDidFinish:(id)sender;
 - (void) logControllerTaskIsWaiting:(id)sender;
 - (NSAttributedString *) logController:(id)sender willAppendNewString:(NSString *)plainString;
-@end 
+@end
 
 @interface LogController : NSObject {
-	
+
 	IBOutlet NSTextView *outputTextView;
 	// Delegate implements the LogControllerDelegate protocol
 	IBOutlet NSObject <LogControllerDelegate> *delegate;
-	
+
 	NSTask *task;
 	NSPipe *pipe;
 	NSPipe *inpipe;

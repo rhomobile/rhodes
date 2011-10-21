@@ -121,7 +121,7 @@ module Net # :nodoc:
         return rbuf_consume(@rbuf.size)
       end
     end
-        
+
     def readline
       readuntil("\n").chop
     end
@@ -131,7 +131,7 @@ module Net # :nodoc:
     BUFSIZE = 1024 * 16
 
     def rbuf_fill
-      
+
       begin
         @rbuf << @io.read_nonblock(BUFSIZE)
       rescue IO::WaitReadable
@@ -149,7 +149,7 @@ module Net # :nodoc:
           raise Timeout::Error
         end
       end
-      
+
     end
 
     def rbuf_consume(len)
@@ -238,7 +238,7 @@ module Net # :nodoc:
       LOG_on()
       LOG "read message (#{read_bytes} bytes)"
     end
-  
+
     # *library private* (cannot handle 'break')
     def each_list_item
       while (str = readuntil("\r\n")) != ".\r\n"

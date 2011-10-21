@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -35,7 +35,7 @@ static UINT WM_FIND_TEXT = ::RegisterWindowMessage(FINDMSGSTRING);
 
 #define WS_EX_LAYOUT_RTL	0x00400000
 
-class CResizableGrip  
+class CResizableGrip
 {
 
 	// Members
@@ -44,7 +44,7 @@ protected:
 	SIZE m_sizeGrip; // holds grip size
 	HWND m_wndGrip;	// grip control
 	CAtlArray<void*> m_wndControls; // controls allowed to dynamically move and resize
-	
+
 	RECT m_initialrect;
 	BOOL m_binitialrect;
 
@@ -82,7 +82,7 @@ protected:
 
 // CLogView
 
-class CLogView : 
+class CLogView :
 	public CDialogImpl<CLogView>
 #if defined(OS_WINDOWS)
    ,public rho::ILogSink
@@ -92,7 +92,7 @@ class CLogView :
 
     void loadLogText();
 public:
-    CLogView() : 
+    CLogView() :
 	  m_hBrush ( NULL )
 #if defined(OS_WINDOWS)
 	, m_pFindDialog(NULL), m_findText(L""), m_findParams(FR_DOWN)
@@ -176,7 +176,7 @@ END_MSG_MAP()
 	{
 		DRA::RelayoutDialog(
 			AtlGetThisModuleHandle(),
-			m_hWnd, 
+			m_hWnd,
 			DRA::GetDisplayMode() != DRA::Portrait ? MAKEINTRESOURCE(IDD_LOGVIEW_WIDE) : MAKEINTRESOURCE(IDD_LOGVIEW));
 		return 0;
 	}

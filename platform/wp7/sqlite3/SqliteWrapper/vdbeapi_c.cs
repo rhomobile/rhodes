@@ -1155,7 +1155,7 @@ pStmt, N, (const void*(*)(Mem*))sqlite3_value_text16, COLNAME_COLUMN);
       pVar.flags = MEM_Null;
       sqlite3Error(p.db, SQLITE_OK, 0);
 
-      /* If the bit corresponding to this variable in Vdbe.expmask is set, then 
+      /* If the bit corresponding to this variable in Vdbe.expmask is set, then
       ** binding a new value to this variable invalidates the current query plan.
       */
       if (p.isPrepareV2 &&

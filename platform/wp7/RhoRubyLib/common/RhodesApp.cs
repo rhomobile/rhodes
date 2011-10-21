@@ -1,18 +1,18 @@
 ﻿/*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -44,7 +44,7 @@ namespace rho.common
 {
     public sealed class CRhodesApp
     {
-        private static RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+        private static RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		    new RhoLogger("RhodesApp");
         RhoConf RHOCONF() { return RhoConf.getInstance(); }
 
@@ -59,7 +59,7 @@ namespace rho.common
         private Stack<Uri> m_backHistory = new Stack<Uri>();
         private Stack<Uri> m_forwardHistory = new Stack<Uri>();
         private Hash m_menuItems = null;
-        private Uri m_currentUri = null; 
+        private Uri m_currentUri = null;
         private CHttpServer m_httpServer;
         private bool m_barIsStarted = false;
         int m_currentTabIndex = 0;
@@ -120,14 +120,14 @@ namespace rho.common
             SyncThread sync = null;
             try{
 	        	sync = SyncThread.Create();
-	        	
+
 	        }catch(Exception exc){
 	        	LOG.ERROR("Create sync failed.", exc);
 	        }
 	        if (sync != null) {
 	        	//sync.setStatusListener(this);
 	        }
-	        
+
 	        RhoRuby.InitApp();
 	        RhoRuby.call_config_conflicts();
             RHOCONF().conflictsResolved();
@@ -276,7 +276,7 @@ namespace rho.common
                 }
             });
         }
-        
+
         public static String getRhoRootPath()
         {
             return "/";
@@ -340,7 +340,7 @@ namespace rho.common
                 strImagePath = "lib/res/forward_btn.png";
 
             return strImagePath.Length > 0 ? CFilePath.join(getRhoRootPath(), strImagePath) : null;
-        }   
+        }
 
         private void createToolBarButtons(int barType, Object[] hashArray)
         {
@@ -407,8 +407,8 @@ namespace rho.common
                 {
                     ApplicationBarMenuItem item = new ApplicationBarMenuItem();
                     item.Text = kvp.Key.ToString();
-                    String action = null; 
-                    if (kvp.Value == null) 
+                    String action = null;
+                    if (kvp.Value == null)
                         continue;
                     else
                         action = kvp.Value.ToString();
@@ -501,7 +501,7 @@ namespace rho.common
                         m_forwardHistory.Pop();
                 }
             }
-            m_currentUri = uri; 
+            m_currentUri = uri;
         }
 
         private void processToolBarCommand(object sender, EventArgs e,  String strAction)
@@ -741,7 +741,7 @@ namespace rho.common
             {
                 return m_tabControl.SelectedIndex;
             }
-                
+
             return -1;
         }
     }

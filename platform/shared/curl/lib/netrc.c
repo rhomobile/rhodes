@@ -145,7 +145,7 @@ int Curl_parsenetrc(const char *host,
     bool done=FALSE;
     char netrcbuffer[256];
     int  netrcbuffsize = (int)sizeof(netrcbuffer);
-    
+
     while(!done && fgets(netrcbuffer, netrcbuffsize, file)) {
       tok=strtok_r(netrcbuffer, " \t\n", &tok_buf);
       while(!done && tok) {

@@ -88,17 +88,17 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
     public RubyValue to_a() {
         if( this.getRubyClass() != RubyRuntime.ArrayClass)
             return clone();
-        
+
         return this;
     }
-    
+
     //@RubyLevelMethod(name="[]")
     public static RubyValue create(RubyValue receiver) {
     	RubyArray a = new RubyArray();
     	a.setRubyClass((RubyClass) receiver);
     	return a;
     }
-    
+
     //@RubyLevelMethod(name="[]")
     public static RubyValue create(RubyValue receiver, RubyArray args) {
         RubyArray a = args.copy();
@@ -408,7 +408,7 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
             return false;
         }
     }
-    
+
     private void sort() {
         Collections.sort(array_, new Comparator/*<RubyValue>*/() {
             public int compare(Object/*RubyValue*/ arg0, Object/*RubyValue*/ arg1) {
@@ -458,7 +458,7 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
         }
         return modified;
     }
-    
+
     //@RubyLevelMethod(name="new", singleton=true)
     public static RubyValue newArray(RubyValue receiver, RubyBlock block) {
     	RubyArray a = new RubyArray();
@@ -641,12 +641,12 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
         this.array_.add(v);
         return this;
     }
-    
+
     //@RubyLevelMethod(name="push")
     public RubyArray multiPush() {
         return this;
     }
-    
+
     //@RubyLevelMethod(name="push")
     public RubyArray multiPush(RubyValue v) {
         this.array_.add(v);
@@ -724,7 +724,7 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
     public RubyValue opEql(RubyValue v) {
         return ObjectFactory.createBoolean(equals(v,false));
     }
-    
+
     //@RubyLevelMethod(name="concat")
     public RubyArray concat(RubyValue v) {
         RubyArray ary = v.toAry();
@@ -756,11 +756,11 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
     }
 
     //@RubyLevelMethod(name="each")
-    public RubyValue each(RubyBlock block) 
+    public RubyValue each(RubyBlock block)
     {
     	if ( block == null )
     		return this;
-    	
+
 //        for (RubyValue item : array_) {
         for (Iterator iter = array_.iterator(); iter.hasNext();) {
         	RubyValue item = (RubyValue)iter.next();
@@ -773,11 +773,11 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
     }
 
     //@RubyLevelMethod(name="each_index")
-    public RubyValue each_index(RubyBlock block) 
+    public RubyValue each_index(RubyBlock block)
     {
     	if ( block == null )
     		return this;
-    	
+
         for (int i=0;i<size();i++) {
             RubyValue v = block.invoke(this, new RubyFixnum(i));
             if (block.breakedOrReturned()) {
@@ -788,11 +788,11 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
     }
 
     //@RubyLevelMethod(name="reverse_each")
-    public RubyValue reverse_each(RubyBlock block) 
+    public RubyValue reverse_each(RubyBlock block)
     {
     	if ( block == null )
     		return this;
-    	
+
         ListIterator/*<RubyValue>*/ ite = array_.listIterator(array_.size());
         while (ite.hasPrevious()) {
             RubyValue v = block.invoke(this, (RubyValue)ite.previous());
@@ -886,11 +886,11 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
     }
 
     //@RubyLevelMethod(name="uniq")
-    public RubyValue uniq() 
+    public RubyValue uniq()
     {
     	RubyArray res = copy();
         res.uniq_danger();
-        
+
         return res;
     }
 
@@ -909,7 +909,7 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
         }
         if ( !b )
         	return RubyConstant.QNIL;
-        
+
         return this;
         //return b ? this : RubyConstant.QNIL;
     }
@@ -1069,17 +1069,17 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
         }
         return this;
     }
-    
+
     //@RubyLevelMethod(name="[]=")
     public RubyValue aset() {
         throw new RubyException(RubyRuntime.ArgumentErrorClass, "wrong number of arguments (0 for 2)");
     }
-    
+
     //@RubyLevelMethod(name="[]=")
     public RubyValue aset(RubyValue arg) {
         throw new RubyException(RubyRuntime.ArgumentErrorClass, "wrong number of arguments (1 for 2)");
     }
-    
+
     //@RubyLevelMethod(name="[]=")
     public RubyValue aset(RubyValue arg0, RubyValue arg1) {
     	if (arg0 instanceof RubyRange) {
@@ -1156,6 +1156,6 @@ public class RubyArray extends RubyBasic implements Iterable/*<RubyValue>*/ {
         String format = ((RubyString) arg).toString();
         return ObjectFactory.createString(ArrayPacker.pack(this, format));
     }
-    
+
 }
 

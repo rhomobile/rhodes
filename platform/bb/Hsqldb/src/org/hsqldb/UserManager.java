@@ -134,7 +134,7 @@ class UserManager implements GrantConstants {
         // role DBA.  The former seems safer as it doesn't depend on any role.
         //granteeManager.grant(SYSTEM_AUTHORIZATION_NAME, RoleManager.ADMIN_ROLE_NAME);
         sysUser.getGrantee().setAdminDirect();
-        
+
         //createUser("SA", "");
         //granteeManager.grant("SA", GranteeManager.DBA_ADMIN_ROLE_NAME);
     }

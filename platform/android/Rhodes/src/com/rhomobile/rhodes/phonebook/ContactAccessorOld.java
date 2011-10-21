@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -44,9 +44,9 @@ import com.rhomobile.rhodes.RhodesService;
 
 @SuppressWarnings("deprecation")
 public class ContactAccessorOld implements ContactAccessor {
-	
+
 	//private static final String TAG = "ContactsAccessorOld";
-	
+
 	/*
 	private static final String PB_ID = Phonebook.PB_ID;
 	private static final String PB_FIRST_NAME = Phonebook.PB_FIRST_NAME;
@@ -58,11 +58,11 @@ public class ContactAccessorOld implements ContactAccessor {
 	private static final String PB_COMPANY_NAME = Phonebook.PB_COMPANY_NAME;
 	*/
 	private ContentResolver cr;
-	
+
 	public ContactAccessorOld() {
 		cr = RhodesService.getInstance().getContentResolver();
 	}
-	
+
 	private void fillPhones(String id, Contact contact) {
 		Cursor cursor = cr.query(Contacts.Phones.CONTENT_URI,
 				new String[] {Phones.NUMBER, Phones.TYPE},
@@ -116,7 +116,7 @@ public class ContactAccessorOld implements ContactAccessor {
 	@Override
 	public Map<String, Contact> getContacts(int offset, int max_results, List<String> select) throws Exception {
 		Map<String, Contact> contacts = new HashMap<String, Contact>();
-		
+
 		Cursor cursor = cr.query(People.CONTENT_URI, null, null, null, null);
 		try {
 			if (!cursor.moveToPosition(offset))
@@ -124,24 +124,24 @@ public class ContactAccessorOld implements ContactAccessor {
 			if (max_results == -1) {
 				max_results = cursor.getCount() - offset;
 			}
-			
+
 			do {
 				if(contacts.size() >= max_results) {
 					break;
 				}
 				Contact contact = new Contact();
-	
+
 				String id = cursor.getString(cursor.getColumnIndex(People._ID));
 				contact.setId(id);
-	
+
 				//contact.setField(PB_COMPANY_NAME, cursor.getString(cursor.getColumnIndex(People.COMPANY)));
-	
+
 				contact.setField(Phonebook.PB_FIRST_NAME, "");
 				contact.setField(Phonebook.PB_LAST_NAME, "");
 				String name = cursor.getString(cursor.getColumnIndex(People.NAME));
 				if (name != null) {
 					String[] names = name.split(" ");
-	
+
 					if (names.length == 1) {
 						contact.setField(Phonebook.PB_FIRST_NAME, names[0]);
 					}
@@ -150,15 +150,15 @@ public class ContactAccessorOld implements ContactAccessor {
 						contact.setField(Phonebook.PB_LAST_NAME, name.replaceFirst(names[0] + " ", ""));
 					}
 				}
-	
+
 				fillPhones(id, contact);
-	
+
 				Uri uri = ContentUris.withAppendedId(People.CONTENT_URI,
 						Long.parseLong(contact.id()));
-	
+
 				Uri orgUri = Uri.withAppendedPath(uri,
 						Contacts.Organizations.CONTENT_DIRECTORY);
-	
+
 				String[] organizationProjection = new String[] { Organizations.COMPANY };
 				Cursor organizationCursor = cr.query(orgUri,
 						organizationProjection, "person=?", new String[] {id}, null);
@@ -168,7 +168,7 @@ public class ContactAccessorOld implements ContactAccessor {
 						organizationCursor.moveToFirst();
 						int numberColumn = organizationCursor
 								.getColumnIndex(Organizations.COMPANY);
-		
+
 						if (numberColumn != -1)
 							contact.setField(Phonebook.PB_COMPANY_NAME,
 									organizationCursor.getString(numberColumn));
@@ -177,11 +177,11 @@ public class ContactAccessorOld implements ContactAccessor {
 				finally {
 					organizationCursor.close();
 				}
-	
+
 				String[] contactProjection = new String[] {
 						Contacts.ContactMethods.KIND,
 						Contacts.ContactMethods.DATA };
-	
+
 				Cursor contactCursor = cr.query(
 						Contacts.ContactMethods.CONTENT_URI,
 						contactProjection, "person=?", new String[] {id}, null);
@@ -213,11 +213,11 @@ public class ContactAccessorOld implements ContactAccessor {
 		finally {
 			cursor.close();
 		}
-		
+
 		return contacts;
 	}
 
-	
+
 	@Override
 	public Contact getContact(String id) throws Exception {
 		Map<String, Contact> allContacts = getContacts(0, -1, null);
@@ -250,11 +250,11 @@ public class ContactAccessorOld implements ContactAccessor {
 
 		if (uri == null)
 			throw new Exception("Can not save contact");
-		
+
 		if (!isNew) {
 			ContentValues values = new ContentValues();
 			values.put(People.NAME, name);
-			
+
 			cr.update(uri, values, null, null);
 		}
 
@@ -273,17 +273,17 @@ public class ContactAccessorOld implements ContactAccessor {
 			number.put(Phones.PERSON_ID, pathLeaf);
 			number.put(Phones.NUMBER, value);
 			number.put(Phones.TYPE, types[i]);
-			
+
 			Uri phoneUpdate = cr.insert(Phones.CONTENT_URI, number);
-			
+
 			if (phoneUpdate == null) {
 				int retval = cr.update(People.CONTENT_URI, number, null, null);
-				
+
 				if (retval == 0)
 					throw new Exception("Failed to insert phone number");
 			}
 		}
-		
+
 		// add email
 		if (contact.getField(Phonebook.PB_EMAIL_ADDRESS) != null) {
 			ContentValues email = new ContentValues();
@@ -326,7 +326,7 @@ public class ContactAccessorOld implements ContactAccessor {
 
 	public void remove(Contact contact) {
 		Uri uri = People.CONTENT_URI;
-		
+
 		String id = contact.id();
 		cr.delete(uri, People._ID + "=" + id, null);
 	}

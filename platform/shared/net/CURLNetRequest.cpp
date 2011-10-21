@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -45,7 +45,7 @@ namespace net
 curl_slist *set_curl_options(bool trace, CURL *curl, const char *method, const String& strUrl, const String& strBody,
                              IRhoSession* pSession, Hashtable<String,String>* pHeaders, bool sslVerifyPeer);
 CURLcode do_curl_perform(CURLM *curlm, CURL *curl);
-	
+
 IMPLEMENT_LOGCLASS(CURLNetRequest, "Net");
 
 class CURLNetResponseImpl : public INetResponse
@@ -72,7 +72,7 @@ public:
         return m_data.size();
     }
 
-    virtual int getRespCode() 
+    virtual int getRespCode()
     {
         return m_nRespCode;
     }
@@ -87,7 +87,7 @@ public:
         m_data = szData;
     }
 
-    void setRespCode(int nRespCode) 
+    void setRespCode(int nRespCode)
     {
         m_nRespCode = nRespCode;
     }
@@ -96,7 +96,7 @@ public:
     {
         return m_nRespCode == 200 || m_nRespCode == 206;
     }
-    
+
     boolean isUnathorized()
     {
         return m_nRespCode == 401;
@@ -113,12 +113,12 @@ public:
     {
         m_data = data;//.assign(data.begin(), data.end());
     }
-    
+
     void setCookies(String s)
     {
         m_cookies = s;
     }
-   
+
 };
 
 INetResponse *CURLNetRequest::makeResponse(String const &body, int nErrorCode)
@@ -150,16 +150,16 @@ static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opa
     size_t nBytes = size*nmemb;
     String strHeader((const char *)ptr, nBytes);
     RAWTRACE1("Received header: %s", strHeader.c_str());
-    
+
     int nSep = strHeader.find(':');
     if (nSep > 0 )
-    {		
+    {
         String strName = String_trim(strHeader.substr(0, nSep));
         String lName;
         std::transform(strName.begin(), strName.end(), std::back_inserter(lName), &::tolower);
-        
+
         String strValue = String_trim(strHeader.substr(nSep+1, strHeader.length() - (nSep+3) ));
-        
+
         if ( pHeaders->containsKey(lName) )
         {
             strValue += ";" + pHeaders->get( lName );
@@ -168,7 +168,7 @@ static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *opa
         else
             pHeaders->put(lName, strValue);
     }
-    
+
     return nBytes;
 }
 
@@ -190,7 +190,7 @@ static size_t curlBodyBinaryCallback(void *ptr, size_t size, size_t nmemb, void 
     return nBytes;
 }
 
-extern "C" int rho_net_ping_network(const char* szHost);	
+extern "C" int rho_net_ping_network(const char* szHost);
 
 INetResponse* CURLNetRequest::doRequest(const char *method, const String& strUrl,
                                         const String& strBody, IRhoSession *oSession,
@@ -213,7 +213,7 @@ CURLcode CURLNetRequest::doCURLPerform(const String& strUrl)
 
 	return err;
 }
-	
+
 INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
                                      const String& strBody, common::CRhoFile *oFile,
                                      IRhoSession* oSession, Hashtable<String,String>* pHeaders )
@@ -234,10 +234,10 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
     Hashtable<String,String> h;
     if (pHeaders)
         h = *pHeaders;
-    
+
     for (int nAttempts = 0; nAttempts < 10; ++nAttempts) {
         Vector<char> respChunk;
-        
+
         curl_slist *hdrs = m_curl.set_options(method, strUrl, strBody, oSession, &h);
         CURL *curl = m_curl.curl();
         if (pHeaders) {
@@ -251,11 +251,11 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
 
         CURLcode err = doCURLPerform(strUrl);
         curl_slist_free_all(hdrs);
-        
+
         long statusCode = 0;
         if (curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode) != 0)
             statusCode = 500;
-		
+
 		if (statusCode == 416 )
 		{
 			//Do nothing, file is already loaded
@@ -275,18 +275,18 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
             else
                 respBody = respChunk;
         }
-        
+
         if (err == CURLE_OPERATION_TIMEDOUT && respChunk.size() > 0) {
             RAWTRACE("Connection was closed by timeout, but we have part of data received; try to restore connection");
             nStartFrom = oFile ? oFile->size() : respBody.size();
             continue;
         }
-        
+
         nRespCode = getResponseCode(err, respBody, oSession);
         break;
     }
 
-	if( !RHODESAPP().isBaseUrl(strUrl.c_str()) )		   
+	if( !RHODESAPP().isBaseUrl(strUrl.c_str()) )
 	   rho_net_impl_network_indicator(0);
 
     return makeResponse(respBody, nRespCode);
@@ -306,21 +306,21 @@ INetResponse* CURLNetRequest::pushMultipartData(const String& strUrl, VectorPtr<
 {
     int nRespCode = -1;
     String strRespBody;
-    
+
     RAWLOG_INFO1("POST request (Push): %s", strUrl.c_str());
     rho_net_impl_network_indicator(1);
-    
+
     curl_slist *hdrs = m_curl.set_options("POST", strUrl, String(), oSession, pHeaders);
     CURL *curl = m_curl.curl();
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &strRespBody);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyStringCallback);
-	
+
     curl_httppost *post = NULL, *last = NULL;
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, NULL);
 
     for (size_t i = 0, lim = arItems.size(); i < lim; ++i) {
         CMultipartItem *mi = arItems[i];
-        
+
         size_t cl;
         if (mi->m_strFilePath.empty())
             cl = mi->m_strBody.size();
@@ -360,16 +360,16 @@ INetResponse* CURLNetRequest::pushMultipartData(const String& strUrl, VectorPtr<
                          CURLFORM_END);
         }
     }
-        
+
     curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
-    
+
     CURLcode err = doCURLPerform(strUrl);
-	
+
     curl_slist_free_all(hdrs);
     curl_formfree(post);
-    
+
     rho_net_impl_network_indicator(0);
-    
+
     nRespCode = getResponseCode(err, strRespBody, oSession);
     return makeResponse(strRespBody, nRespCode);
 }
@@ -384,8 +384,8 @@ int CURLNetRequest::getResponseCode(CURLcode err, Vector<char> const &body, IRho
     return getResponseCode(err, &body[0], body.size(), oSession);
 }
 
-int CURLNetRequest::getResponseCode(CURLcode err, char const *body, size_t bodysize, IRhoSession* oSession )	
-{    
+int CURLNetRequest::getResponseCode(CURLcode err, char const *body, size_t bodysize, IRhoSession* oSession )
+{
     //if (err != CURLE_OK)
     //    return -1;
 
@@ -393,16 +393,16 @@ int CURLNetRequest::getResponseCode(CURLcode err, char const *body, size_t bodys
         body = "";
         bodysize = 0;
     }
-	
+
     long statusCode = 0;
     CURL *curl = m_curl.curl();
     if (curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode) != 0)
         statusCode = 500;
-    
+
 	if (statusCode == 416) {
 		statusCode = 206;
 	}
-	
+
     if (statusCode >= 400) {
         RAWLOG_ERROR2("Request failed. HTTP Code: %d returned. HTTP Response: %s",
                       (int)statusCode, body);
@@ -439,39 +439,39 @@ String CURLNetRequest::makeCookies()
         RAWTRACE("No cookies");
         return cookies;
     }
-	
+
     for(curl_slist *cookie = rcookies; cookie; cookie = cookie->next) {
         char *data = cookie->data;
-        
+
         // Parse cookie which is in Netscape format:
         // domain <Tab> tailmatch <Tab> path <Tab> secure <Tab> expires <Tab> name <Tab> value
         char *s = data;
-        
+
         // Skip 'domain'
         for (; *s == '\t'; ++s);
         for (; *s != '\t' && *s != '\0'; ++s);
         if (*s == '\0') continue;
-        
+
         // Skip 'tailmatch'
         for (; *s == '\t'; ++s);
         for (; *s != '\t' && *s != '\0'; ++s);
         if (*s == '\0') continue;
-        
+
         // Skip 'path'
         for (; *s == '\t'; ++s);
         for (; *s != '\t' && *s != '\0'; ++s);
         if (*s == '\0') continue;
-        
+
         // Skip 'secure'
         for (; *s == '\t'; ++s);
         for (; *s != '\t' && *s != '\0'; ++s);
         if (*s == '\0') continue;
-        
+
         // Skip 'expires'
         for (; *s == '\t'; ++s);
         for (; *s != '\t' && *s != '\0'; ++s);
         if (*s == '\0') continue;
-        
+
         // Parse 'name'
         for (; *s == '\t'; ++s);
         char *name_start = s;
@@ -479,18 +479,18 @@ String CURLNetRequest::makeCookies()
         if (*s == '\0') continue;
         char *name_finish = s;
         String name(name_start, name_finish);
-        
+
         // Parse 'value'
         for (; *s == '\t'; ++s);
         char *value = s;
-        
+
         cookies += name;
         cookies += "=";
         cookies += value;
         cookies += ";";
     }
     curl_slist_free_all(rcookies);
-	
+
 	return cookies;
 }
 
@@ -509,7 +509,7 @@ static int curl_trace(CURL *curl, curl_infotype type, char *data, size_t size, v
             RAWLOG_INFO1("!! Unknown type of curl trace: %d", (int)type);
             return 0;
     }
-    
+
     String strData(data, size);
     RAWLOG_INFO3("%s (%d bytes): %s", text, size, strData.c_str());
     return 0;
@@ -526,7 +526,7 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
     }
     mStrUrl = strUrl;
     mStrBody = strBody;
-    
+
     curl_easy_setopt(m_curl, CURLOPT_BUFFERSIZE, CURL_MAX_WRITE_SIZE-1);
 
     if (strcasecmp(method, "GET") == 0)
@@ -537,7 +537,7 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
         curl_easy_setopt(m_curl, CURLOPT_CUSTOMREQUEST, method);
 
     curl_easy_setopt(m_curl, CURLOPT_URL, strUrl.c_str());
-    
+
     // Just to enable cookie parser
     curl_easy_setopt(m_curl, CURLOPT_COOKIEFILE, "");
     // It will clear all stored cookies
@@ -545,23 +545,23 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
     String session;
     if (pSession)
         session = pSession->getSession();
-    
+
     if (!session.empty()) {
         //RAWTRACE1("Set cookie: %s", session.c_str());
         curl_easy_setopt(m_curl, CURLOPT_COOKIE, session.c_str());
     }
-    
+
     curl_easy_setopt(m_curl, CURLOPT_TIMEOUT, timeout);
     curl_easy_setopt(m_curl, CURLOPT_TCP_NODELAY, 0); //enable Nagle algorithm
-    
+
     curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, (long)m_sslVerifyPeer);
-    
+
     // Set very large timeout in case of local requests
     // It is required because otherwise requests (especially requests to writing!)
     // could repeated twice or more times
     if (RHODESAPP().isBaseUrl(strUrl))
         curl_easy_setopt(m_curl, CURLOPT_TIMEOUT, 10*24*60*60);
-    
+
     curl_slist *hdrs = NULL;
     // Disable "Expect: 100-continue"
     hdrs = curl_slist_append(hdrs, "Expect:");
@@ -572,7 +572,7 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
         curl_easy_setopt(m_curl, CURLOPT_POSTFIELDSIZE, strBody.size());
         curl_easy_setopt(m_curl, CURLOPT_POSTFIELDS, strBody.c_str());
     }
-    
+
     bool hasContentType = false;
     if (pHeaders)
     {
@@ -584,7 +584,7 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
             hdrs = curl_slist_append(hdrs, strHeader.c_str());
         }
     }
-    
+
     if (!hasContentType && /*strcasecmp(method, "POST") == 0 &&*/ strBody.length() > 0)
     {
         String strHeader = "Content-Type: ";
@@ -594,20 +594,20 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
             strHeader += "application/x-www-form-urlencoded";
         hdrs = curl_slist_append(hdrs, strHeader.c_str());
     }
-    
+
     curl_easy_setopt(m_curl, CURLOPT_HTTPHEADER, hdrs);
 
     // Enable all available encodings (identity, deflate and gzip)
     curl_easy_setopt(m_curl, CURLOPT_ENCODING, "");
     curl_easy_setopt(m_curl, CURLOPT_HTTP_CONTENT_DECODING, (long)1);
     curl_easy_setopt(m_curl, CURLOPT_HTTP_TRANSFER_DECODING, (long)1);
-    
+
     if (m_bTraceCalls) {
         curl_easy_setopt(m_curl, CURLOPT_DEBUGFUNCTION, &curl_trace);
         curl_easy_setopt(m_curl, CURLOPT_DEBUGDATA, NULL);
         curl_easy_setopt(m_curl, CURLOPT_VERBOSE, 1L);
     }
-    
+
     return hdrs;
 }
 
@@ -619,7 +619,7 @@ CURLNetRequest::CURLHolder::CURLHolder()
     if (timeout == 0)
         timeout = 30; // 30 seconds by default
     m_sslVerifyPeer = true;
-    
+
     m_curl = curl_easy_init();
     m_curlm = curl_multi_init();
     curl_easy_setopt(m_curl, CURLOPT_ERRORBUFFER, &errbuf);
@@ -630,7 +630,7 @@ CURLNetRequest::CURLHolder::~CURLHolder()
     curl_easy_cleanup(m_curl);
     curl_multi_cleanup(m_curlm);
 }
-    
+
 void CURLNetRequest::CURLHolder::activate()
 {
     common::CMutexLock guard(m_lock);
@@ -656,11 +656,11 @@ CURLcode CURLNetRequest::CURLHolder::perform()
         RAWTRACE3("   Activate CURLNetRequest: METHOD = [%s] URL = [%s] BODY = [%s]", mStrMethod.c_str(), mStrUrl.c_str(), mStrBody.c_str());
     else
         RAWTRACE1("   Activate CURLNetRequest: METHOD = [%s]", mStrMethod.c_str() );
-    
+
     int const CHUNK = 1;
-    
+
     long noactivity = 0;
-    
+
     CURLcode result;
     for(;;)
     {
@@ -672,9 +672,9 @@ CURLcode CURLNetRequest::CURLHolder::perform()
             else
                 RAWLOG_INFO1("   CURLNetRequest: METHOD = [%s]", mStrMethod.c_str());
 
-            return CURLE_OBSOLETE4;   
+            return CURLE_OBSOLETE4;
         }
-    
+
         int running;
         CURLMcode err = curl_multi_perform(m_curlm, &running);
         if (err == CURLM_CALL_MULTI_PERFORM)

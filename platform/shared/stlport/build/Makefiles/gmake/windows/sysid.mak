@@ -6,13 +6,13 @@ OSREALNAME := mingw
 BUILD_OSNAME := windows
 BUILD_OSREALNAME := mingw
 
-OSREL = 
+OSREL =
 M_ARCH = i386
 P_ARCH = i386
 NODENAME = unknown
-SYSVER = 
+SYSVER =
 USER = unknown
 
-BUILD_SYSTEM = 
-BUILD_DATE = 
+BUILD_SYSTEM =
+BUILD_DATE =
 

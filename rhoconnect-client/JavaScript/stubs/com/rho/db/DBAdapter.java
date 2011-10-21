@@ -18,7 +18,7 @@ import com.rho.file.*;
 //import com.xruby.runtime.lang.RubyClass;
 //import com.xruby.runtime.lang.RubyValue;
 
-public class DBAdapter /*extends RubyBasic*/ 
+public class DBAdapter /*extends RubyBasic*/
 {
 
 	public static DBAdapter getUserDB() {
@@ -45,33 +45,33 @@ public class DBAdapter /*extends RubyBasic*/
 			Integer id) {
 				return null;
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public IDBResult executeSQL(String string, Long long1, Integer id) {
 		return null;
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public IDBResult executeSQL(String string, String strMetadata, Integer id) {
 		return null;
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public IDBResult executeSQL(String strSqlUpdate, String strNewObject,
 			String strOldObject) {
 				return null;
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public IDBResult executeSQL(String string, String strNewObject,
 			String strAttrib, Integer id, String strOldObject) {
 				return null;
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public IDBResult executeSQL(String string, int nSrcID) {
@@ -82,20 +82,20 @@ public class DBAdapter /*extends RubyBasic*/
 	public IDBResult executeSQL(String strSqlUpdate, String strObject) {
 		return null;
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public IDBResult executeSQL(String string, String strObject, Object elementAt,
 			Integer id) {
 				return null;
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public IDBResult executeSQLEx(String strSqlUpdate, Vector vecValues) {
 		return null;
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public IDBResult executeSQLReportNonUnique(String string,
@@ -117,7 +117,7 @@ public class DBAdapter /*extends RubyBasic*/
 
 	public void endTransaction() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public DBAttrManager getAttrMgr() {
@@ -129,7 +129,7 @@ public class DBAdapter /*extends RubyBasic*/
 			String m_strAttrib, Integer id) {
 				return null;
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public String getDBPath() {
@@ -139,7 +139,7 @@ public class DBAdapter /*extends RubyBasic*/
 
 	public static void initAttrManager() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public boolean isTableExist(String m_strName) {
@@ -154,21 +154,21 @@ public class DBAdapter /*extends RubyBasic*/
 
 	public void Lock() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void Unlock() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void setBulkSyncDB(String fDataName, String fScriptName) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void startTransaction() {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

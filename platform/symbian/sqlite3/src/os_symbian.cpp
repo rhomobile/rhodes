@@ -27,9 +27,9 @@
 #include <bautils.h>
 #include <unistd.h>
 
-extern "C" 
+extern "C"
 {
-	
+
 /*
 ** Macros used to determine whether or not to use threads.
 */
@@ -45,7 +45,7 @@ extern "C"
 typedef struct symbianFile symbianFile;
 struct symbianFile {
   sqlite3_io_methods const *pMethod;  /* Always the first entry */
-  
+
   int isOpen;
   unsigned char locktype; /* Type of lock currently held on this file */
   short sharedLockByte;   /* Randomly chosen byte used as a shared lock */
@@ -127,7 +127,7 @@ int symRead(
   if( got == 0 ){
 	  delete buf;
 	  TInt size = 0;
-	  if (pFile->file.Size(size) != KErrNone) 
+	  if (pFile->file.Size(size) != KErrNone)
 	  {
 		  return SQLITE_IOERR_READ;
 	  }
@@ -167,7 +167,7 @@ int symWrite(
   }
 
   assert( amt>0 );
-  
+
   rc = SQLITE_OK;
   TPtrC8 ptr((TUint8 *)pBuf,amt);
 
@@ -184,7 +184,7 @@ int symTruncate(sqlite3_file *id, sqlite3_int64 nByte){
 
   if (pFile->file.SetSize(nByte) != KErrNone)
   {
-	  return SQLITE_IOERR; 
+	  return SQLITE_IOERR;
   }
 
   return SQLITE_OK;
@@ -195,7 +195,7 @@ int symTruncate(sqlite3_file *id, sqlite3_int64 nByte){
 */
 int symSync(sqlite3_file *id, int flags){
   symbianFile *pFile = (symbianFile*)id;
-  
+
   TInt retval = pFile->file.Flush();
   if (retval != KErrNone)
   {
@@ -280,7 +280,7 @@ int symCheckReservedLock(sqlite3_file *id, int *pResOut){
 	  TInt size = 0;
 	  if (pFile->file.Size(size) == KErrNone) rc = 1;
   }
-  
+
   *pResOut = rc;
   return SQLITE_OK;
 }
@@ -349,7 +349,7 @@ void ConvertToUnicode(RFs session, TDes16& aUnicode, const char *str)
 {
   CCnvCharacterSetConverter *converter = CCnvCharacterSetConverter::NewL();
   converter->PrepareToConvertToOrFromL(KCharacterSetIdentifierUtf8, session);
-  
+
   TPtrC8 ptr((const unsigned char*)str);
 
   int state = CCnvCharacterSetConverter::KStateDefault;
@@ -412,7 +412,7 @@ int symAccess(
   session.Close();
 
   *pResOut = ret;
-  
+
   return SQLITE_OK;
 }
 
@@ -502,7 +502,7 @@ int symGetTempname(sqlite3_vfs *pVfs, int nBuf, char *zBuf){
   else
   {
   }
-  
+
   for(i=strlen(zTempPath); i>0 && zTempPath[i-1]=='\\'; i--){}
   zTempPath[i] = 0;
   sqlite3_snprintf(nBuf-30, zBuf,
@@ -513,7 +513,7 @@ int symGetTempname(sqlite3_vfs *pVfs, int nBuf, char *zBuf){
     zBuf[j] = (char)zChars[ ((unsigned char)zBuf[j])%(sizeof(zChars)-1) ];
   }
   zBuf[j] = 0;
-  return SQLITE_OK; 
+  return SQLITE_OK;
 }
 
 /*
@@ -533,7 +533,7 @@ int symFullPathname(
   return SQLITE_OK;
 }
 
-  
+
 /*
 ** Write up to nBuf bytes of randomness into zBuf.
 */
@@ -628,20 +628,20 @@ int symOpen(
 ){
   symbianFile *pFile = (symbianFile*)id;
   memset(pFile, 0, sizeof(symbianFile));
-  
+
   TBuf16<SYM_MAX_PATH> filename;
-  TInt nPos = 1; 
+  TInt nPos = 1;
   _LIT16(Slash,"\\");
   _LIT16(BackSlash,"/");
-  
+
   pFile->pMethod = &symIoMethod;
-  
+
   pFile->isOpen = 0;
-  
+
   strcpy(pFile->fileName, zName);
   pFile->session.Connect();
   pFile->session.ShareAuto();
-  
+
   ConvertToUnicode(pFile->session, filename, zName);
 
   while ( nPos != KErrNotFound )
@@ -650,7 +650,7 @@ int symOpen(
   	if ( nPos != KErrNotFound )
   		filename.Replace( nPos, 1, Slash );
   }
-  
+
   int ret = 0;
   if( flags & SQLITE_OPEN_CREATE ){
     if (BaflUtils::FileExists(pFile->session, filename) == 1)

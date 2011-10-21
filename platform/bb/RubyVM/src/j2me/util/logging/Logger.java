@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2005 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -12,14 +12,14 @@ package j2me.util.logging;
 public class Logger {
 
     private static final Logger INSTANCE = new Logger();
-    
+
     public static Logger getLogger(String name) {
-        return INSTANCE; 
+        return INSTANCE;
     }
 
-    private Logger() {        
+    private Logger() {
     }
-    
+
     public boolean isLoggable(Level level) {
         return (level == Level.SEVERE) || (level == Level.WARNING);
     }
@@ -28,7 +28,7 @@ public class Logger {
     }
 
     public void severe(String msg) {
-        System.out.println("[error] " + msg);               
+        System.out.println("[error] " + msg);
     }
 
     public void warning(String msg) {
@@ -52,21 +52,21 @@ public class Logger {
     }
 
     public void throwing(String sourceClass, String sourceMethod, Throwable thrown) {
-        
+
     }
 
     public void entering(String sourceClass, String sourceMethod) {
     }
-    
+
     public void exiting(String sourceClass, String sourceMethod) {
     }
-    
+
     public void log(Level level,
-            String msg) {        
+            String msg) {
     }
-    
+
     public void log(Level level,
             String msg,
-            Throwable thrown) {        
+            Throwable thrown) {
     }
 }

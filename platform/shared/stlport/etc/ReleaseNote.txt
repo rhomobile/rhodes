@@ -66,7 +66,7 @@
 	* Support of many modern C++ compilers and platforms
 	  - gcc 3.4.0 and later
 	  - MSVC .Net 2002, 2003 and MSVC 2005 Beta
-	  - Windows CE 
+	  - Windows CE
 	see build/test/unit/STATUS for a complete list of tested platforms/compilers
 
 	* Move semantic: vector or deque of any other STL containers are using

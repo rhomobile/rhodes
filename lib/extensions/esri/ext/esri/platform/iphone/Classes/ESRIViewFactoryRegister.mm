@@ -5,8 +5,8 @@
 #include "ESRIViewFactory.h"
 
 
-	
-//extern "C" void Init_ESRIRuby(void);	
+
+//extern "C" void Init_ESRIRuby(void);
 extern "C" void register_ESRI_mapViewProvider();
 
 
@@ -19,4 +19,4 @@ extern "C" void Init_ESRI(void) {
 	register_ESRI_mapViewProvider();
 	//Init_ESRIRuby();
 }
-	
+

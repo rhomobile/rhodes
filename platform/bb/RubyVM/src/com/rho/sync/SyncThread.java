@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -46,22 +46,22 @@ import java.util.Vector;
 
 public class SyncThread extends ThreadQueue
 {
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("Sync");
 	//private static final int SYNC_POLL_INTERVAL_SECONDS = 300;
 	//private static final int SYNC_POLL_INTERVAL_INFINITE = Integer.MAX_VALUE/1000;
 	private static final int SYNC_WAIT_BEFOREKILL_SECONDS  = 3;
-	
-//scSyncOneByUrl = 4, scChangePollInterval=5, scExit=6, 
-   	public final static int scNone = 0, scSyncAll = 1, scSyncOne = 2, scLogin = 3, scSearchOne=4; 
-    
+
+//scSyncOneByUrl = 4, scChangePollInterval=5, scExit=6,
+   	public final static int scNone = 0, scSyncAll = 1, scSyncOne = 2, scLogin = 3, scSearchOne=4;
+
    	static private class SyncCommand implements ThreadQueue.IQueueCommand
    	{
    		int m_nCmdCode;
    		int m_nCmdParam;
    		String m_strCmdParam, m_strQueryParams;
    		boolean m_bShowStatus;
-   		
+
    		SyncCommand(int nCode, int nParam, boolean bShowStatus, String query_params)
    		{
    			m_nCmdCode = nCode;
@@ -84,7 +84,7 @@ public class SyncThread extends ThreadQueue
             m_bShowStatus = bShowStatus;
             m_strQueryParams = query_params != null? query_params : "";
 	    }
-   		
+
    		SyncCommand(int nCode, boolean bShowStatus, String query_params)
    		{
    			m_nCmdCode = nCode;
@@ -92,7 +92,7 @@ public class SyncThread extends ThreadQueue
    			m_bShowStatus = bShowStatus;
    			m_strQueryParams = query_params != null? query_params : "";
    		}
-   		
+
    		public boolean equals(IQueueCommand obj)
    		{
    			SyncCommand oSyncCmd = (SyncCommand)obj;
@@ -100,9 +100,9 @@ public class SyncThread extends ThreadQueue
    				(m_strCmdParam == oSyncCmd.m_strCmdParam ||
    				(m_strCmdParam != null && oSyncCmd.m_strCmdParam != null && m_strCmdParam.equals(oSyncCmd.m_strCmdParam)))&&
    				(m_strQueryParams == oSyncCmd.m_strQueryParams ||
-   				(m_strQueryParams != null && oSyncCmd.m_strQueryParams != null && m_strQueryParams.equals(oSyncCmd.m_strQueryParams)));  		
+   				(m_strQueryParams != null && oSyncCmd.m_strQueryParams != null && m_strQueryParams.equals(oSyncCmd.m_strQueryParams)));
    		}
-   		
+
    		public String toString()
    		{
    		    switch(m_nCmdCode)
@@ -122,9 +122,9 @@ public class SyncThread extends ThreadQueue
 
    		    return "Unknown; Code : " + m_nCmdCode;
    		}
-   		
+
    		public void cancel(){}
-   		
+
    	};
    	static private class SyncLoginCommand extends SyncCommand
    	{
@@ -133,10 +133,10 @@ public class SyncThread extends ThreadQueue
    		public SyncLoginCommand(String name, String password, String callback, SyncNotify.SyncNotification pNotify)
    		{
    			super(scLogin,callback,false,"");
-   			
+
    			m_strName = name;
    			m_strPassword = password;
-   			m_pNotify = pNotify; 
+   			m_pNotify = pNotify;
    		}
    	};
     static class SyncSearchCommand extends SyncCommand
@@ -144,7 +144,7 @@ public class SyncThread extends ThreadQueue
 	    String m_strFrom;
 	    boolean   m_bSyncChanges;
 	    Vector/*<rho::String>*/ m_arSources;
-	    
+
         public SyncSearchCommand(String from, String params, Vector arSources, boolean sync_changes, int nProgressStep)
 	    {
         	super(scSearchOne,params,nProgressStep, false, "");
@@ -160,12 +160,12 @@ public class SyncThread extends ThreadQueue
     public static SyncThread getInstance(){ return m_pInstance; }
     public static SyncEngine getSyncEngine(){ return m_pInstance!= null ? m_pInstance.m_oSyncEngine : null; }
     public boolean isSkipDuplicateCmd() { return true; }
-    
+
 	public static SyncThread Create(RhoClassFactory factory)throws Exception
 	{
-	    if ( m_pInstance != null) 
+	    if ( m_pInstance != null)
 	        return m_pInstance;
-	
+
 	    m_pInstance = new SyncThread(factory);
 	    return m_pInstance;
 	}
@@ -174,12 +174,12 @@ public class SyncThread extends ThreadQueue
 	{
 	    m_oSyncEngine.exitSync();
 	    stop(SYNC_WAIT_BEFOREKILL_SECONDS);
-		
+
 	    if ( ClientRegister.getInstance() != null )
 	    	ClientRegister.getInstance().Destroy();
-	    
+
 	    DBAdapter.closeAll();
-	    
+
 	    m_pInstance = null;
 	}
 
@@ -187,19 +187,19 @@ public class SyncThread extends ThreadQueue
 	{
 		super(factory);
 		super.setLogCategory(LOG.getLogCategory());
-		
+
 		if( RhoConf.getInstance().isExist("sync_poll_interval") )
 			setPollInterval(RhoConf.getInstance().getInt("sync_poll_interval"));
 
 		m_oSyncEngine = new SyncEngine();
 		m_oSyncEngine.setFactory(factory);
-	
+
 	    LOG.INFO("sync_poll_interval: " + RhoConf.getInstance().getInt("sync_poll_interval"));
 	    LOG.INFO("syncserver: " + RhoConf.getInstance().getString("syncserver"));
 	    LOG.INFO("bulksync_state: " + RhoConf.getInstance().getInt("bulksync_state"));
-	    
+
 	    ClientRegister.Create(factory);
-	    
+
 		if ( RhoConf.getInstance().getString("syncserver").length() > 0 )
 			start(epLow);
 	}
@@ -215,26 +215,26 @@ public class SyncThread extends ThreadQueue
 
         return ret;
     }
-	
+
     public int getLastPollInterval()
     {
     	try{
 	    	long nowTime = (TimeInterval.getCurrentTime().toULong())/1000;
 	    	long latestTimeUpdated = 0;
-	    	
+
 	    	Vector/*<String>*/ arPartNames = DBAdapter.getDBAllPartitionNames();
 	    	for( int i = 0; i < (int)arPartNames.size(); i++ )
 	    	{
 	    		DBAdapter dbPart = DBAdapter.getDB((String)arPartNames.elementAt(i));
 			    IDBResult res = dbPart.executeSQL("SELECT last_updated from sources");
 			    for ( ; !res.isEnd(); res.next() )
-			    { 
+			    {
 			        long timeUpdated = res.getLongByIdx(0);
 			        if ( latestTimeUpdated < timeUpdated )
 			        	latestTimeUpdated = timeUpdated;
 			    }
 	    	}
-	    	
+
 	    	return latestTimeUpdated > 0 ? (int)(nowTime-latestTimeUpdated) : 0;
     	}catch(Exception exc)
     	{
@@ -248,15 +248,15 @@ public class SyncThread extends ThreadQueue
 	    if ( isNoCommands() && getPollInterval()>0 )
 	        addQueueCommandInt(new SyncCommand(scSyncAll,false, ""));
 	}
-	
+
 	void checkShowStatus(SyncCommand oSyncCmd)
 	{
 		boolean bShowStatus = oSyncCmd.m_bShowStatus && !this.isNoThreadedMode();
 		m_oSyncEngine.getNotify().enableReporting(bShowStatus);
 		if (m_oSyncEngine.getNotify().isReportingEnabled())
 			m_statusListener.createStatusPopup(RhoAppAdapter.getMessageText("syncronizing_data"));
-	}	
-	
+	}
+
 	public void processCommand(IQueueCommand pCmd)
 	{
 		SyncCommand oSyncCmd = (SyncCommand)pCmd;
@@ -272,16 +272,16 @@ public class SyncThread extends ThreadQueue
 	            m_oSyncEngine.doSyncSource(new SyncEngine.SourceID(oSyncCmd.m_nCmdParam,oSyncCmd.m_strCmdParam), oSyncCmd.m_strQueryParams);
 	        }
 	        break;
-	        
+
 	    case scSearchOne:
 		    {
 				checkShowStatus(oSyncCmd);
-	            m_oSyncEngine.doSearch( ((SyncSearchCommand)oSyncCmd).m_arSources, oSyncCmd.m_strCmdParam, 
+	            m_oSyncEngine.doSearch( ((SyncSearchCommand)oSyncCmd).m_arSources, oSyncCmd.m_strCmdParam,
 	                    ((SyncSearchCommand)oSyncCmd).m_strFrom, ((SyncSearchCommand)oSyncCmd).m_bSyncChanges,
 	                    oSyncCmd.m_nCmdParam);
 		    }
 	        break;
-	        
+
 	    case scLogin:
 	    	{
 	    		SyncLoginCommand oLoginCmd = (SyncLoginCommand)oSyncCmd;
@@ -289,7 +289,7 @@ public class SyncThread extends ThreadQueue
 	    		m_oSyncEngine.login(oLoginCmd.m_strName, oLoginCmd.m_strPassword, oLoginCmd.m_pNotify );
 	    	}
 	        break;
-	        
+
 	    }
 	}
 
@@ -302,44 +302,44 @@ public class SyncThread extends ThreadQueue
 		}
 		return false;
 	}
-	
+
 	public void setPollInterval(int nInterval)
-	{ 
+	{
 	    //if ( m_nPollInterval == 0 )
 	    //    m_oSyncEngine.stopSync();
-	    
-	    super.setPollInterval(nInterval);	    
+
+	    super.setPollInterval(nInterval);
 	}
-	
+
 	public static void doSyncAllSources(boolean bShowStatus)
 	{
 		getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncAll,bShowStatus, ""));
 	}
-	
+
 	public static void doSyncSourceByName(String strSrcName, boolean bShowStatus)
 	{
 		if (bShowStatus&&(m_statusListener != null)) {
 			m_statusListener.createStatusPopup(RhoAppAdapter.getMessageText("syncronizing_data"));
 		}
-	    getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncOne, strSrcName, (int)0, bShowStatus, "") );		
+	    getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncOne, strSrcName, (int)0, bShowStatus, "") );
 	}
-	
+
 	public static void stopSync()throws Exception
 	{
 		LOG.INFO("STOP sync");
-		
+
 		if ( getSyncEngine().isSyncing() )
 		{
 			LOG.INFO("STOP sync in progress.");
-			
+
 			getSyncEngine().stopSyncByUser();
 			getInstance().stopWait();
-			
+
 			int nWait = 0;
 			//while( nWait < 30000 && getSyncEngine().getState() != SyncEngine.esNone )
 			while( nWait < 30000 && DBAdapter.isAnyInsideTransaction() )
 				try{ Thread.sleep(100); nWait += 100; }catch(Exception e){}
-				
+
 			//if (getSyncEngine().getState() != SyncEngine.esNone)
 			if ( DBAdapter.isAnyInsideTransaction() )
 			{
@@ -347,22 +347,22 @@ public class SyncThread extends ThreadQueue
 				getInstance().stop(0);
 				RhoClassFactory ptrFactory = getInstance().getFactory();
 				m_pInstance = null;
-				
+
 				Create(ptrFactory);
 			}
 		}
 	}
-	
+
 	public void addobjectnotify_bysrcname(String strSrcName, String strObject)
 	{
 		getSyncEngine().getNotify().addObjectNotify(strSrcName, strObject);
 	}
-	
+
 	public static void initMethods(RubyModule klass) {
-		klass.getSingletonClass().defineMethod("dosync", new RubyVarArgMethod(){ 
+		klass.getSingletonClass().defineMethod("dosync", new RubyVarArgMethod(){
 			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block )
 			{
-				try 
+				try
 				{
 					boolean bShowStatus = true;
 					String query_params = "";
@@ -373,7 +373,7 @@ public class SyncThread extends ThreadQueue
 					}
 					if ( args != null &&  args.size() > 1 )
 						query_params = args.get(1).asString();
-					
+
 					getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncAll,bShowStatus, query_params));
 				} catch(Exception e) {
 					LOG.ERROR("dosync failed", e);
@@ -381,8 +381,8 @@ public class SyncThread extends ThreadQueue
 				}
 				return getInstance().getRetValue();
 			}
-		});		
-		klass.getSingletonClass().defineMethod("dosync_source", new RubyVarArgMethod(){ 
+		});
+		klass.getSingletonClass().defineMethod("dosync_source", new RubyVarArgMethod(){
 			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block )
 			{
 				try {
@@ -400,10 +400,10 @@ public class SyncThread extends ThreadQueue
 						String str = args.get(0).asString();
 						bShowStatus = args.get(0).equals(RubyConstant.QTRUE)||"true".equalsIgnoreCase(str);
 					}
-					
+
 					if ( args.size() > 2 )
 						query_params = args.get(2).asString();
-					
+
 					getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncOne, strName, nSrcID, bShowStatus, query_params) );
 				} catch(Exception e) {
 					LOG.ERROR("dosync_source failed", e);
@@ -412,43 +412,43 @@ public class SyncThread extends ThreadQueue
 				return getInstance().getRetValue();
 			}
 		});
-		
+
 		klass.getSingletonClass().defineMethod("dosearch",
 			new RubyVarArgMethod() {
 				protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
 					if ( args.size() != 7 )
-						throw new RubyException(RubyRuntime.ArgumentErrorClass, 
-								"in SyncEngine.dosearch_source: wrong number of arguments ( " + args.size() + " for " + 7 + " )");			
-					
+						throw new RubyException(RubyRuntime.ArgumentErrorClass,
+								"in SyncEngine.dosearch_source: wrong number of arguments ( " + args.size() + " for " + 7 + " )");
+
 					try{
 						Vector arSources = RhoRuby.makeVectorStringFromArray(args.get(0));
-						
+
 						String from = args.get(1).toStr();
 						String params = args.get(2).toStr();
-						
+
 						String str = args.get(3).asString();
 						int nProgressStep = args.get(4).toInt();
 						String callback = args.get(5) != RubyConstant.QNIL ? args.get(5).toStr() : "";
 						String callback_params = args.get(6) != RubyConstant.QNIL ? args.get(6).toStr() : "";
-						
+
 						boolean bSearchSyncChanges = args.get(3).equals(RubyConstant.QTRUE)||"true".equalsIgnoreCase(str);
 						stopSync();
 
 						if ( callback != null && callback.length() > 0 )
 							getSyncEngine().getNotify().setSearchNotification(callback, callback_params);
-						
+
 						getInstance().addQueueCommand(new SyncSearchCommand(from,params,arSources,bSearchSyncChanges, nProgressStep) );
 					}catch(Exception e)
 					{
 						LOG.ERROR("SyncEngine.login", e);
 						RhoRuby.raise_RhoError(RhoAppAdapter.ERR_RUNTIME);
 					}
-					
+
 					return getInstance().getRetValue();
-				    
+
 				}
 			});
-		
+
 		klass.getSingletonClass().defineMethod("stop_sync", new RubyNoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyBlock block) {
 				try{
@@ -458,7 +458,7 @@ public class SyncThread extends ThreadQueue
 					LOG.ERROR("stop_sync failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 				}
-				
+
 				return RubyConstant.QNIL;
 			}
 		});
@@ -474,21 +474,21 @@ public class SyncThread extends ThreadQueue
 				}
 			}
 		});
-		
+
 		klass.getSingletonClass().defineMethod("login",
 				new RubyVarArgMethod() {
 					protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
 						if ( args.size() != 3 )
-							throw new RubyException(RubyRuntime.ArgumentErrorClass, 
-									"in SyncEngine.login: wrong number of arguments ( " + args.size() + " for " + 3 + " )");			
-						
+							throw new RubyException(RubyRuntime.ArgumentErrorClass,
+									"in SyncEngine.login: wrong number of arguments ( " + args.size() + " for " + 3 + " )");
+
 						try{
 							String name = args.get(0).toStr();
 							String password = args.get(1).toStr();
 							String callback = args.get(2).toStr();
-							
+
 							stopSync();
-							
+
 							getInstance().addQueueCommand(new SyncLoginCommand(name, password, callback,
 									new SyncNotify.SyncNotification(callback, "", false) ) );
 						}catch(Exception e)
@@ -496,29 +496,29 @@ public class SyncThread extends ThreadQueue
 							LOG.ERROR("SyncEngine.login", e);
 							RhoRuby.raise_RhoError(RhoAppAdapter.ERR_RUNTIME);
 						}
-						
+
 						return getInstance().getRetValue();
-					    
+
 					}
 				});
-		
+
 		klass.getSingletonClass().defineMethod("logged_in",
 			new RubyNoArgMethod() {
 				protected RubyValue run(RubyValue receiver, RubyBlock block) {
 					DBAdapter db = DBAdapter.getUserDB();
 
 					try{
-					    return getSyncEngine().isLoggedIn() ? 
+					    return getSyncEngine().isLoggedIn() ?
 					    		ObjectFactory.createInteger(1) : ObjectFactory.createInteger(0);
 					}catch(Exception e)
 					{
 						LOG.ERROR("logged_in failed", e);
 						throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 					}
-				    
+
 				}
 			});
-		
+
 		klass.getSingletonClass().defineMethod("logout",
 			new RubyNoArgMethod() {
 				protected RubyValue run(RubyValue receiver, RubyBlock block) {
@@ -533,20 +533,20 @@ public class SyncThread extends ThreadQueue
 						LOG.ERROR("logout failed", e);
 						throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 					}
-					
+
 				    return RubyConstant.QNIL;
 				}
 			});
-		
+
 		klass.getSingletonClass().defineMethod("set_notification",
 			new RubyVarArgMethod() {
 				protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
-					
+
 					try{
 						int source_id = args.get(0).toInt();
 						String url = args.get(1).toStr();
 						String params = args.get(2).toStr();
-						getSyncEngine().getNotify().setSyncNotification(source_id, 
+						getSyncEngine().getNotify().setSyncNotification(source_id,
 								new SyncNotify.SyncNotification(url, params != null ? params : "", source_id != -1));
 					}catch(Exception e)
 					{
@@ -567,21 +567,21 @@ public class SyncThread extends ThreadQueue
 						LOG.ERROR("clear_notification failed", e);
 						throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 					}
-					
-					
+
+
 					return RubyConstant.QNIL;
 				}
 			});
-		
+
 		klass.getSingletonClass().defineMethod("set_pollinterval",
 			new RubyOneArgMethod() {
 				protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
 					try{
-						int nOldInterval = getInstance().getPollInterval(); 
+						int nOldInterval = getInstance().getPollInterval();
 						int nInterval = arg1.toInt();
 						getInstance().setPollInterval(nInterval);
-						
-						
+
+
 						return ObjectFactory.createInteger(nOldInterval);
 					}catch(Exception e)
 					{
@@ -594,7 +594,7 @@ public class SyncThread extends ThreadQueue
 				new RubyNoArgMethod() {
 					protected RubyValue run(RubyValue receiver, RubyBlock block) {
 						try{
-							int nOldInterval = getInstance().getPollInterval(); 
+							int nOldInterval = getInstance().getPollInterval();
 							return ObjectFactory.createInteger(nOldInterval);
 						}catch(Exception e)
 						{
@@ -603,21 +603,21 @@ public class SyncThread extends ThreadQueue
 						}
 					}
 				});
-		
+
 		klass.getSingletonClass().defineMethod("set_syncserver",
 				new RubyOneArgMethod() {
 					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
 						try{
 							String syncserver = arg1.toStr();
-							
-							stopSync();							
+
+							stopSync();
 							getSyncEngine().setSyncServer(syncserver);
-							
+
 						    if ( syncserver != null && syncserver.length() > 0 )
 						    {
 						        SyncThread.getInstance().start(SyncThread.epLow);
 						    	if ( ClientRegister.getInstance() != null )
-						    		ClientRegister.getInstance().startUp();	    	
+						    		ClientRegister.getInstance().startUp();
 						    }
 						    else
 						    {
@@ -626,22 +626,22 @@ public class SyncThread extends ThreadQueue
 						    	//if ( ClientRegister.getInstance() != null )
 						    	//	ClientRegister.getInstance().stop(SYNC_WAIT_BEFOREKILL_SECONDS);
 						    }
-							
+
 						}catch(Exception e)
 						{
 							LOG.ERROR("set_syncserver failed", e);
 							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 						}
-						
+
 						return RubyConstant.QNIL;
 					}
 			});
-		
+
 		klass.getSingletonClass().defineMethod("get_src_attrs",
 				new RubyTwoArgMethod() {
 					protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) {
 						try{
-							//String strPartition = arg0.toStr(); 
+							//String strPartition = arg0.toStr();
 							//int nSrcID = arg1.toInt();
 							//return DBAdapter.getDB(strPartition).getAttrMgr().getAttrsBySrc(nSrcID);
 							return RubyConstant.QNIL;
@@ -657,7 +657,7 @@ public class SyncThread extends ThreadQueue
 				new RubyVarArgMethod() {
 					protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
 						try{
-							String strPartition = args.get(0).toStr(); 
+							String strPartition = args.get(0).toStr();
 							Integer nSrcID = new Integer(args.get(1).toInt());
 							String strAttrName = args.get(2).toStr();
 							boolean bExists = DBAdapter.getDB(strPartition).getAttrMgr().isBlobAttr(nSrcID, strAttrName);
@@ -669,7 +669,7 @@ public class SyncThread extends ThreadQueue
 						}
 					}
 			});
-		
+
 		klass.getSingletonClass().defineMethod("set_objectnotify_url",
 				new RubyOneArgMethod() {
 					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
@@ -681,7 +681,7 @@ public class SyncThread extends ThreadQueue
 							LOG.ERROR("set_objectnotify_url failed", e);
 							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 						}
-						
+
 						return RubyConstant.QNIL;
 					}
 			});
@@ -692,14 +692,14 @@ public class SyncThread extends ThreadQueue
 						try{
 							Integer nSrcID = new Integer(arg1.toInt());
 							String strObject = arg2.toStr();
-							
+
 							getSyncEngine().getNotify().addObjectNotify(nSrcID, strObject);
 						}catch(Exception e)
 						{
 							LOG.ERROR("add_objectnotify failed", e);
 							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 						}
-						
+
 						return RubyConstant.QNIL;
 					}
 			});
@@ -713,18 +713,18 @@ public class SyncThread extends ThreadQueue
 							LOG.ERROR("clean_objectnotify failed", e);
 							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 						}
-						
+
 						return RubyConstant.QNIL;
 					}
 			});
-		
+
 		klass.getSingletonClass().defineMethod("get_lastsync_objectcount",
 				new RubyOneArgMethod() {
 					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
 						try{
 							Integer nSrcID = new Integer(arg1.toInt());
 							int nCount = getSyncEngine().getNotify().getLastSyncObjectCount(nSrcID);
-							
+
 							return ObjectFactory.createInteger(nCount);
 						}catch(Exception e)
 						{
@@ -745,7 +745,7 @@ public class SyncThread extends ThreadQueue
 						}
 					}
 			});
-		
+
 		klass.getSingletonClass().defineMethod("set_pagesize",
 				new RubyOneArgMethod() {
 					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {
@@ -756,7 +756,7 @@ public class SyncThread extends ThreadQueue
 							LOG.ERROR("set_pagesize failed", e);
 							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 						}
-						
+
 						return RubyConstant.QNIL;
 					}
 			});
@@ -773,7 +773,7 @@ public class SyncThread extends ThreadQueue
 							LOG.ERROR("set_threaded_mode failed", e);
 							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 						}
-						
+
 						return RubyConstant.QNIL;
 					}
 			});
@@ -789,7 +789,7 @@ public class SyncThread extends ThreadQueue
 							LOG.ERROR("enable_status_popup failed", e);
 							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 						}
-						
+
 						return RubyConstant.QNIL;
 					}
 			});
@@ -799,11 +799,11 @@ public class SyncThread extends ThreadQueue
 					protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
 						try{
 							Integer nSrcID = new Integer(args.get(0).toInt());
-							String strPropName = args.get(1).toStr(); 
+							String strPropName = args.get(1).toStr();
 							String strPropValue = args.get(2).toStr();
-							
+
 							SyncEngine.getSourceOptions().setProperty(nSrcID, strPropName, strPropValue);
-							
+
 							return RubyConstant.QNIL;
 						}catch(Exception e)
 						{
@@ -824,7 +824,7 @@ public class SyncThread extends ThreadQueue
 							LOG.ERROR("set_ssl_verify_peer failed", e);
 							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 						}
-						
+
 						return RubyConstant.QNIL;
 					}
 			});
@@ -835,7 +835,7 @@ public class SyncThread extends ThreadQueue
 						try{
 							String strPartition = arg1.toStr();
 							//Integer nSrcID = new Integer(arg2.toInt());
-							DBAdapter db = DBAdapter.getDB(strPartition); 
+							DBAdapter db = DBAdapter.getDB(strPartition);
 							db.getAttrMgr().loadBlobAttrs(db);
 							return RubyConstant.QNIL;
 						}catch(Exception e)
@@ -843,11 +843,11 @@ public class SyncThread extends ThreadQueue
 							LOG.ERROR("add_objectnotify failed", e);
 							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
 						}
-						
-						
+
+
 					}
 			});
-		
+
 	}
 
 }

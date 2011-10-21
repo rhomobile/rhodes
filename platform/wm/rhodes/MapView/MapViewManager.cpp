@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -100,11 +100,11 @@ LRESULT CRhoMapViewDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	mbi.hwndParent = m_hWnd;
 	mbi.nToolBarId = IDR_GETURL_MENUBAR;//IDR_MAPVIEW;
 	mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
-	
+
 	SHCreateMenuBar(&mbi);
 	//RHO_ASSERT(SHCreateMenuBar(&mbi));
 
-	//::SetWindowLong(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, 
+	//::SetWindowLong(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd,
 	//	GWL_EXSTYLE,
 	//	::GetWindowLong(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, GWL_EXSTYLE) | WS_EX_TRANSPARENT);
 
@@ -122,11 +122,11 @@ LRESULT CRhoMapViewDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 		int minz = ourMapView->minZoom();
 		int maxz = ourMapView->maxZoom();
 		RHO_MAP_TRACE2("request Zoom limits: minZoom = %d,  maxZoom = %d", minz, maxz);
-		::SendMessage(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, TBM_SETRANGEMIN, FALSE, minz); 
-		::SendMessage(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, TBM_SETRANGEMAX, FALSE, maxz); 
+		::SendMessage(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, TBM_SETRANGEMIN, FALSE, minz);
+		::SendMessage(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, TBM_SETRANGEMAX, FALSE, maxz);
 		int dwPos = ourMapView->zoom();
 		dwPos = ourMapView->maxZoom() - (dwPos - ourMapView->minZoom());
-		::SendMessage(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, TBM_SETPOS, TRUE, dwPos); 
+		::SendMessage(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, TBM_SETPOS, TRUE, dwPos);
 
 		String strImagePath = "lib/res/blue_pushpin.png";
 		String fullImagePath = CFilePath::join( RHODESAPP().getRhoRootPath(), strImagePath);
@@ -165,7 +165,7 @@ LRESULT CRhoMapViewDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 		ourMapView->setESRILogoImage(esriLogoImg);
 	}
 
-#else 
+#else
 
 	//CreateButtons();
 	//GotoDlgCtrl(m_btnOk);
@@ -179,8 +179,8 @@ LRESULT CRhoMapViewDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 
 LRESULT CRhoMapViewDlg::OnSliderScroll(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	//if (wParam == TB_THUMBTRACK) {
-		
-		int dwPos = ::SendMessage(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, TBM_GETPOS, 0, 0); 
+
+		int dwPos = ::SendMessage(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, TBM_GETPOS, 0, 0);
 		if (ourMapView != NULL) {
 			dwPos = ourMapView->maxZoom() - (dwPos - ourMapView->minZoom());
 			RHO_MAP_TRACE1("MapView->setZoom( %d)", dwPos);
@@ -213,7 +213,7 @@ LRESULT CRhoMapViewDlg::OnZoomIn(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
 		ourMapView->setZoom(nz);
 		int dwPos = ourMapView->zoom();
 		dwPos = ourMapView->maxZoom() - (dwPos - ourMapView->minZoom());
-		::SendMessage(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, TBM_SETPOS, TRUE, dwPos); 
+		::SendMessage(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, TBM_SETPOS, TRUE, dwPos);
 		requestRedraw();
 	}
 	return 0;
@@ -226,7 +226,7 @@ LRESULT CRhoMapViewDlg::OnZoomOut(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 		ourMapView->setZoom(nz);
 		int dwPos = ourMapView->zoom();
 		dwPos = ourMapView->maxZoom() - (dwPos - ourMapView->minZoom());
-		::SendMessage(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, TBM_SETPOS, TRUE, dwPos); 
+		::SendMessage(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, TBM_SETPOS, TRUE, dwPos);
 		requestRedraw();
 	}
 	return 0;
@@ -234,7 +234,7 @@ LRESULT CRhoMapViewDlg::OnZoomOut(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 
 
 LRESULT CRhoMapViewDlg::OnDraw(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{	
+{
 	RHO_MAP_TRACE("WM_PAINT start");
 
 	PAINTSTRUCT ps;
@@ -271,7 +271,7 @@ LRESULT CRhoMapViewDlg::OnDraw(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     DeleteDC(mMemoryDC);
 
 	::EndPaint(m_hWnd,&ps);
-	
+
 	RHO_MAP_TRACE("WM_PAINT finish");
 	return 0;
 }
@@ -282,9 +282,9 @@ LRESULT CRhoMapViewDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 		ourMapView = NULL;
 	}
 
-    if ( m_hBrush ) 
+    if ( m_hBrush )
         DeleteObject(m_hBrush);
-    if ( m_hMemBitmap ) 
+    if ( m_hMemBitmap )
         DeleteObject(m_hMemBitmap);
 
     m_hBrush = 0;
@@ -310,7 +310,7 @@ void CRhoMapViewDlg::requestRedraw() {
 }
 
 LRESULT CRhoMapViewDlg::OnTouch(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-	int xPos = LOWORD(lParam); 
+	int xPos = LOWORD(lParam);
 	int yPos = HIWORD(lParam);
 	mLastX = xPos;
 	mLastY = yPos;
@@ -330,12 +330,12 @@ LRESULT CRhoMapViewDlg::OnUntouch(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 				EndDialog(0);
 			}
 		}
-	}	
+	}
 	return 0;
 }
 
 LRESULT CRhoMapViewDlg::OnDrag(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-	int xPos = LOWORD(lParam); 
+	int xPos = LOWORD(lParam);
 	int yPos = HIWORD(lParam);
 	if (ourMapView != NULL && (abs(mInitialX-xPos) > 10 || abs(mInitialY-yPos) > 10) ) {
 		RHO_MAP_TRACE2("MapView->move( %d, %d)", mLastX-xPos, mLastY-yPos);
@@ -349,7 +349,7 @@ LRESULT CRhoMapViewDlg::OnDrag(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, 
 
 LRESULT CRhoMapViewDlg::OnCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 {
-    HDC hdcStatic = (HDC) wParam; 
+    HDC hdcStatic = (HDC) wParam;
     HWND hwndStatic = (HWND) lParam;
     HWND hwndSlider = GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd;
     bHandled = FALSE;

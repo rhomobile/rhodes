@@ -39,7 +39,7 @@ extern "C" {
 //typedef unsigned short _ino_t;
 
 #ifndef _STAT_DEFINED
-struct stat 
+struct stat
 {
   dev_t st_dev;
   ino_t st_ino;

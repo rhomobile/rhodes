@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2006 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -19,11 +19,11 @@ import javolution.util.FastMap;
 import java.io.IOException;
 
 /**
- * <p> This class represents the base format for text parsing and formatting; 
- *     it supports {@link CharSequence} and {@link javolution.text.Appendable} 
+ * <p> This class represents the base format for text parsing and formatting;
+ *     it supports {@link CharSequence} and {@link javolution.text.Appendable}
  *     interfaces for greater flexibility.</p>
- * 
- * <p> It is possible to retrieve the format for any class for which the 
+ *
+ * <p> It is possible to retrieve the format for any class for which the
  *     format has been registered (typically during class initialization).
  *     For example:[code]
  *     public class Complex extends RealtimeObject {
@@ -38,14 +38,14 @@ import java.io.IOException;
  *             return TextFormat.getInstance(Complex.class).format(this);
  *         }
  *     }[/code]</p>
- *     
+ *
  * <p> For parsing/formatting of primitive types, the {@link TypeFormat}
  *     utility class is recommended.</p>
- *     
- * <p> <i>Note:</i> The format behavior may depend upon  
- *     {@link javolution.context.LocalContext local} settings in which 
+ *
+ * <p> <i>Note:</i> The format behavior may depend upon
+ *     {@link javolution.context.LocalContext local} settings in which
  *     case concurrent threads may parse differently!</p>
- *     
+ *
  * @author <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle </a>
  * @version 5.1, July 4, 2007
  */
@@ -63,7 +63,7 @@ public abstract class TextFormat/*<T>*/{
     }
 
     /**
-     * Returns the text format for instances of specified type (class or 
+     * Returns the text format for instances of specified type (class or
      * interface). The following types are always recognized:<code><ul>
      *    <li>java.lang.Boolean</li>
      *    <li>java.lang.Character</li>
@@ -75,8 +75,8 @@ public abstract class TextFormat/*<T>*/{
      *    <li>java.lang.Double</li>
      *    <li>java.lang.Class</li>
      * </ul></code>
-     * Users may register additional types using the {@link #setInstance 
-     * TextFormat.setInstance(Class, TextFormat)} static method. 
+     * Users may register additional types using the {@link #setInstance
+     * TextFormat.setInstance(Class, TextFormat)} static method.
      * For example:[code]
      * TextFormat<Font> fontFormat = new TextFormat() {
      *     public Appendable format(Font font, Appendable dest) throws IOException {
@@ -90,9 +90,9 @@ public abstract class TextFormat/*<T>*/{
      * });
      * TextFormat.setInstance(Font.class, fontFormat); // Registers format for java.awt.Font
      * [/code]
-     * 
+     *
      * @param  cls the class for which the default format is returned.
-     * @return the format for instances of the specified class or 
+     * @return the format for instances of the specified class or
      *         <code>null</code> if unkown.
      */
     public static/*<T>*/TextFormat/*<T>*/getInstance(Class/*<T>*/cls) {
@@ -116,17 +116,17 @@ public abstract class TextFormat/*<T>*/{
     }
 
     /**
-     * Associates the specified format to the specified type (class or 
+     * Associates the specified format to the specified type (class or
      * interface).
-     * 
+     *
      * @param  cls the class for which the default format is returned.
      * @param format the format for instances of the specified calss class.
      */
     public static/*<T>*/void setInstance(Class/*<T>*/cls,
             TextFormat/*<T>*/format) {
 
-        // The specified class is initialized prior to setting 
-        // the format to ensure that the default format (typically in the 
+        // The specified class is initialized prior to setting
+        // the format to ensure that the default format (typically in the
         // class static initializer) does not override the new format.
         ClassInitializer.initialize(cls);
 
@@ -134,8 +134,8 @@ public abstract class TextFormat/*<T>*/{
     }
 
     /**
-     * Formats the specified object into an <code>Appendable</code> 
-     * 
+     * Formats the specified object into an <code>Appendable</code>
+     *
      * @param obj the object to format.
      * @param dest the appendable destination.
      * @return the specified <code>Appendable</code>.
@@ -148,20 +148,20 @@ public abstract class TextFormat/*<T>*/{
      * Parses a portion of the specified <code>CharSequence</code> from the
      * specified position to produce an object. If parsing succeeds, then the
      * index of the <code>cursor</code> argument is updated to the index after
-     * the last character used. 
-     * 
+     * the last character used.
+     *
      * @param csq the <code>CharSequence</code> to parse.
      * @param cursor the cursor holding the current parsing index.
      * @return the object parsed from the specified character sub-sequence.
-     * @throws RuntimeException if any problem occurs while parsing the 
+     * @throws RuntimeException if any problem occurs while parsing the
      *         specified character sequence (e.g. illegal syntax).
      */
     public abstract Object/*{T}*/parse(CharSequence csq, Cursor cursor);
 
     /**
-     * Formats the specified object into a {@link TextBuilder} (convenience 
-     * method which does not raise IOException). 
-     * 
+     * Formats the specified object into a {@link TextBuilder} (convenience
+     * method which does not raise IOException).
+     *
      * @param obj the object to format.
      * @param dest the text builder destination.
      * @return the specified text builder.
@@ -177,7 +177,7 @@ public abstract class TextFormat/*<T>*/{
     /**
      * Formats the specified object to a {@link Text} instance
      * (convenience method).
-     * 
+     *
      * @param obj the object being formated.
      * @return the text representing the specified object.
      */
@@ -191,11 +191,11 @@ public abstract class TextFormat/*<T>*/{
 
     /**
      * Parses a whole character sequence from the beginning to produce an object
-     * (convenience method). 
-     * 
+     * (convenience method).
+     *
      * @param csq the whole character sequence to parse.
      * @return the corresponding object.
-     * @throws IllegalArgumentException if the specified character sequence 
+     * @throws IllegalArgumentException if the specified character sequence
      *        cannot be fully parsed.
      */
     public final Object/*{T}*/parse(CharSequence csq) {
@@ -211,7 +211,7 @@ public abstract class TextFormat/*<T>*/{
      * This class represents a parsing cursor over a character sequence
      * (or subsequence). A cursor location may start and end at any predefined
      * location within the character sequence iterated over (equivalent to
-     * parsing a subsequence of the character sequence input). 
+     * parsing a subsequence of the character sequence input).
      */
     public static class Cursor extends ParsePosition {
 
@@ -248,9 +248,9 @@ public abstract class TextFormat/*<T>*/{
 
         /**
          * Returns a new, preallocated or {@link #recycle recycled} cursor
-         * instance (on the stack when executing in a {@link 
+         * instance (on the stack when executing in a {@link
          * javolution.context.StackContext StackContext}).
-         * 
+         *
          * @param start the start index.
          * @param end the end index (index after the last character to be read).
          * @return a new or recycled cursor instance.
@@ -265,9 +265,9 @@ public abstract class TextFormat/*<T>*/{
 
         /**
          * Recycles a cursor {@link #newInstance instance} immediately
-         * (on the stack when executing in a {@link 
+         * (on the stack when executing in a {@link
          * javolution.context.StackContext StackContext}).
-         * 
+         *
          * @param instance the cursor instance being recycled.
          */
         public static void recycle(Cursor instance) {
@@ -276,7 +276,7 @@ public abstract class TextFormat/*<T>*/{
 
         /**
          * Returns this cursor index.
-         * 
+         *
          * @return the index of the next character to parse.
          */
         public final int getIndex() {
@@ -285,7 +285,7 @@ public abstract class TextFormat/*<T>*/{
 
         /**
          * Returns this cursor start index.
-         * 
+         *
          * @return the start index.
          */
         public final int getStartIndex() {
@@ -294,7 +294,7 @@ public abstract class TextFormat/*<T>*/{
 
         /**
          * Returns this cursor end index.
-         * 
+         *
          * @return the end index.
          */
         public final int getEndIndex() {
@@ -302,10 +302,10 @@ public abstract class TextFormat/*<T>*/{
         }
 
         /**
-         * Returns the error index of this cursor if 
-         * {@link #setErrorIndex set}; otherwise returns the current 
+         * Returns the error index of this cursor if
+         * {@link #setErrorIndex set}; otherwise returns the current
          * {@link #getIndex index}.
-         * 
+         *
          * @return the error index.
          */
         public final int getErrorIndex() {
@@ -315,9 +315,9 @@ public abstract class TextFormat/*<T>*/{
 
         /**
          * Sets the cursor current index.
-         * 
+         *
          * @param i the index of the next character to parse.
-         * @throws IllegalArgumentException 
+         * @throws IllegalArgumentException
          *        if <code>((i < getStartIndex()) || (i > getEndIndex()))</code>
          */
         public final void setIndex(int i) {
@@ -328,7 +328,7 @@ public abstract class TextFormat/*<T>*/{
 
         /**
          * Sets this cursor start index.
-         * 
+         *
          * @param start the start index.
          */
         public final void setStartIndex(int start) {
@@ -337,7 +337,7 @@ public abstract class TextFormat/*<T>*/{
 
         /**
          * Sets this cursor end index.
-         * 
+         *
          * @param end the end index.
          */
         public final void setEndIndex(int end) {
@@ -346,7 +346,7 @@ public abstract class TextFormat/*<T>*/{
 
         /**
          * Sets this cursor error index.
-         * 
+         *
          * @param errorIndex the error index.
          */
         public final void setErrorIndex(int errorIndex) {
@@ -355,7 +355,7 @@ public abstract class TextFormat/*<T>*/{
 
         /**
          * Indicates if this cursor has not reached the end index.
-         * 
+         *
          * @return <code>this.getIndex() &lt; this.getEndIndex()</code>
          */
         public final boolean hasNext() {
@@ -363,14 +363,14 @@ public abstract class TextFormat/*<T>*/{
         }
 
         /**
-         * Returns the next character at the cursor position in the specified 
+         * Returns the next character at the cursor position in the specified
          * character sequence and increments the cursor position by one.
          * For example:[code]
          *    for (char c=cursor.next(csq); c != 0; c = cursor.next(csq)) {
          *        ...
          *    }
          *    }[/code]
-         * 
+         *
          * @param csq the character sequence iterated by this cursor.
          * @return the character at the current cursor position in the
          *         specified character sequence or <code>'&#92;u0000'</code>
@@ -381,12 +381,12 @@ public abstract class TextFormat/*<T>*/{
         }
 
         /**
-         * Indicates if this cursor points to the specified character 
+         * Indicates if this cursor points to the specified character
          * in the specified character sequence.
-         *  
+         *
          * @param c the character.
          * @param csq the character sequence iterated by this cursor.
-         * @return <code>true</code> if the cursor next character is the 
+         * @return <code>true</code> if the cursor next character is the
          *         one specified; <code>false</code> otherwise.
          */
         public final boolean at(char c, CharSequence csq) {
@@ -395,11 +395,11 @@ public abstract class TextFormat/*<T>*/{
 
         /**
          * Indicates if this cursor points to one of the specified character.
-         *  
+         *
          * @param charSet the character set
          * @param csq the character sequence iterated by this cursor.
-         * @return <code>true</code> if the cursor next character is one 
-         *         of the character contained by the character set; 
+         * @return <code>true</code> if the cursor next character is one
+         *         of the character contained by the character set;
          *         <code>false</code> otherwise.
          */
         public final boolean at(CharSet charSet, CharSequence csq) {
@@ -407,12 +407,12 @@ public abstract class TextFormat/*<T>*/{
         }
 
         /**
-         * Indicates if this cursor points to the specified characters 
+         * Indicates if this cursor points to the specified characters
          * in the specified character sequence.
-         *  
+         *
          * @param pattern the characters searched for.
          * @param csq the character sequence iterated by this cursor.
-         * @return <code>true</code> if the cursor next character are the 
+         * @return <code>true</code> if the cursor next character are the
          *         one specified in the pattern; <code>false</code> otherwise.
          */
         public final boolean at(String pattern, CharSequence csq) {
@@ -430,14 +430,14 @@ public abstract class TextFormat/*<T>*/{
         }
 
         /**
-         * Moves this cursor forward until it points to a character 
-         * different from the character specified. 
-         * 
+         * Moves this cursor forward until it points to a character
+         * different from the character specified.
+         *
          * @param c the character to skip.
          * @param csq the character sequence iterated by this cursor.
-         * @return <code>true</code> if this cursor points to a character 
-         *         different from the ones specified; <code>false</code> 
-         *         otherwise (e.g. end of sequence reached). 
+         * @return <code>true</code> if this cursor points to a character
+         *         different from the ones specified; <code>false</code>
+         *         otherwise (e.g. end of sequence reached).
          */
         public final boolean skip(char c, CharSequence csq) {
             while ((_index < _end) && (csq.charAt(_index) == c)) {
@@ -447,20 +447,20 @@ public abstract class TextFormat/*<T>*/{
         }
 
         /**
-         * Moves this cursor forward until it points to a character 
-         * different from any of the character in the specified set. 
+         * Moves this cursor forward until it points to a character
+         * different from any of the character in the specified set.
          * For example: [code]
          *  // Reads numbers separated by tabulations or spaces.
          *  FastTable<Integer> numbers = new FastTable<Integer>();
          *  while (cursor.skip(CharSet.SPACE_OR_TAB, csq)) {
          *      numbers.add(TypeFormat.parseInt(csq, cursor));
-         *  }[/code]   
-         * 
+         *  }[/code]
+         *
          * @param charSet the character to skip.
          * @param csq the character sequence iterated by this cursor.
-         * @return <code>true</code> if this cursor points to a character 
-         *         different from the ones specified; <code>false</code> 
-         *         otherwise (e.g. end of sequence reached). 
+         * @return <code>true</code> if this cursor points to a character
+         *         different from the ones specified; <code>false</code>
+         *         otherwise (e.g. end of sequence reached).
          */
         public final boolean skip(CharSet charSet, CharSequence csq) {
             while ((_index < _end) && (charSet.contains(csq.charAt(_index)))) {
@@ -481,7 +481,7 @@ public abstract class TextFormat/*<T>*/{
 
         /**
          * Increments the cursor index by the specified value.
-         * 
+         *
          * @param i the increment value.
          * @return <code>this</code>
          */
@@ -492,7 +492,7 @@ public abstract class TextFormat/*<T>*/{
 
         /**
          * Returns the string representation of this cursor.
-         * 
+         *
          * @return the index value as a string.
          */
         public String toString() {
@@ -501,8 +501,8 @@ public abstract class TextFormat/*<T>*/{
 
         /**
          * Indicates if this cursor is equals to the specified object.
-         * 
-         * @return <code>true</code> if the specified object is a cursor 
+         *
+         * @return <code>true</code> if the specified object is a cursor
          *         at the same index; <code>false</code> otherwise.
          */
         public boolean equals(Object obj) {
@@ -515,7 +515,7 @@ public abstract class TextFormat/*<T>*/{
 
         /**
          * Returns the hash code for this cursor.
-         * 
+         *
          * @return the hash code value for this object
          */
         public int hashCode() {

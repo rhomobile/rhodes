@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -79,7 +79,7 @@ public class Convert {
         getCharBytes(i, size, buf);
         return buf;
     }
-   
+
     public static final byte[] longToByteArray(long i, int radix, boolean upper) {
         if (radix < Character.MIN_RADIX || radix > Character.MAX_RADIX)
             radix = 10;
@@ -97,7 +97,7 @@ public class Convert {
             i = i / radix;
         }
         buf[charPos] = digits[(int)(-i)];
-        if (negative) { 
+        if (negative) {
             buf[--charPos] = '-';
         }
         int len = 65 - charPos;
@@ -134,13 +134,13 @@ public class Convert {
         getChars(i, size, buf);
         return buf;
     }
-    
+
     public static final void getCharBytes(int i, int index, byte[] buf) {
         int q, r;
         int charPos = index;
         byte sign = 0;
 
-        if (i < 0) { 
+        if (i < 0) {
             sign = '-';
             i = -i;
         }
@@ -157,7 +157,7 @@ public class Convert {
 
         // Fall thru to fast mode for smaller numbers
         // assert(i <= 65536, i);
-        for (;;) { 
+        for (;;) {
             q = (i * 52429) >>> (16+3);
             r = i - ((q << 3) + (q << 1));  // r = i-(q*10) ...
             buf [--charPos] = DIGITS[r];
@@ -181,7 +181,7 @@ public class Convert {
         }
 
         // Get 2 digits/iteration using longs until quotient fits into an int
-        while (i > Integer.MAX_VALUE) { 
+        while (i > Integer.MAX_VALUE) {
             q = i / 100;
             // really: r = i - (q * 100);
             r = (int)(i - ((q << 6) + (q << 5) + (q << 2)));
@@ -227,7 +227,7 @@ public class Convert {
         }
 
         // Get 2 digits/iteration using longs until quotient fits into an int
-        while (i > Integer.MAX_VALUE) { 
+        while (i > Integer.MAX_VALUE) {
             q = i / 100;
             // really: r = i - (q * 100);
             r = (int)(i - ((q << 6) + (q << 5) + (q << 2)));
@@ -271,7 +271,7 @@ public class Convert {
         }
         return 19;
     }
-    
+
     public static final int arraySize(int x) {
         for (int i=0; ; i++)
             if (x <= SIZE_TABLE[i])
@@ -319,7 +319,7 @@ public class Convert {
         } while (i != 0);
         return buf;
     }
-    
+
     public static final byte[] intToUnsignedBytes(int i, int shift, boolean upper) {
         byte[] buf = new byte[32];
         int charPos = 32;
@@ -347,7 +347,7 @@ public class Convert {
         } while (i != 0);
         return buf;
     }
-    
+
     public static final byte[] longToUnsignedBytes(long i, int shift, boolean upper) {
         byte[] buf = new byte[64];
         int charPos = 64;
@@ -382,7 +382,7 @@ public class Convert {
         final int FLAG_DIGIT       = 1 << 1;
         final int FLAG_UNDERSCORE  = 1 << 2;
         final int FLAG_WHITESPACE  = 1 << 3;
-      
+
         if (bytes == null) {
             throw new IllegalArgumentException("null bytes");
         }
@@ -493,7 +493,7 @@ public class Convert {
                     int ibefore = i;
                     for (; i < buflen && isWhitespace(bytes[i]); i++) ;
                     if (ibefore != i) {
-                        // set this to enforce no-underscore rule (though I think 
+                        // set this to enforce no-underscore rule (though I think
                         // it's an MRI bug)
                         flags |= FLAG_WHITESPACE;
                     }
@@ -548,7 +548,7 @@ public class Convert {
                 for ( ; i < buflen && bytes[i] == '_'; i++) ;
                 state = i < buflen ? SDIGIT : SEOF;
                 break;
-                
+
             case SDIGIT_STRICT:
                 while ((digit = Character.digit((char) bytes[i],radix)) >= 0) {
                     if (result < multmin || ((result *= radix) < limit + digit)) {
@@ -582,7 +582,7 @@ public class Convert {
                 for ( ; i < buflen && isWhitespace(bytes[i]); i++ );
                 state = i < buflen ? SERR_NOT_STRICT : SCOMPLETE;
                 break;
-                
+
             case SEOF:
                 if ((flags & FLAG_DIGIT) == 0) {
                     throw new RuntimeException("no digits supplied");
@@ -595,7 +595,7 @@ public class Convert {
 
             case SERR_NOT_STRICT:
                 throw new RuntimeException("does not meet strict criteria");
-                
+
             } // switch
         } //while
         if ((flags & FLAG_NEGATIVE) == 0) {
@@ -604,7 +604,7 @@ public class Convert {
             return result;
         }
     }
-    
+
     public static final HugeInt byteArrayToBigInteger(byte[] bytes, int begin, int buflen, int base, boolean strict) {
         final int SCOMPLETE         = 0;
         final int SBEGIN            = 1;
@@ -622,7 +622,7 @@ public class Convert {
         final int FLAG_DIGIT       = 1 << 1;
         final int FLAG_UNDERSCORE  = 1 << 2;
         final int FLAG_WHITESPACE  = 1 << 3;
-      
+
         if (bytes == null) {
             throw new IllegalArgumentException("null bytes");
         }
@@ -637,7 +637,7 @@ public class Convert {
             throw new RuntimeException("InvalidInteger");//InvalidIntegerException();
         }
         int i = begin;
-        buflen += begin; 
+        buflen += begin;
         byte ival;
         int flags = 0;
         int digit;
@@ -712,7 +712,7 @@ public class Convert {
                     int ibefore = i;
                     for (; i < buflen && isWhitespace(bytes[i]); i++) ;
                     if (ibefore != i) {
-                        // set this to enforce no-underscore rule (though I think 
+                        // set this to enforce no-underscore rule (though I think
                         // it's an MRI bug)
                         flags |= FLAG_WHITESPACE;
                     }
@@ -771,7 +771,7 @@ public class Convert {
                 for ( ; i < buflen && bytes[i] == '_'; i++) ;
                 state = i < buflen ? SDIGIT : SEOF;
                 break;
-                
+
             case SDIGIT_STRICT:
                 while ((digit = Character.digit((char)bytes[i],radix)) >= 0) {
                     chars[offset++] = (char)bytes[i];
@@ -801,7 +801,7 @@ public class Convert {
                 for ( ; i < buflen && isWhitespace(bytes[i]); i++ );
                 state = i < buflen ? SERR_NOT_STRICT : SCOMPLETE;
                 break;
-                
+
             case SEOF:
                 if ((flags & FLAG_DIGIT) == 0) {
                     throw new RuntimeException("no digits supplied");
@@ -811,7 +811,7 @@ public class Convert {
 
             case SERR_NOT_STRICT:
                 throw new RuntimeException("does not meet strict criteria");
-                
+
             } // switch
         } //while
         if (chars == null) { // 0, won't happen if byteArrayToLong called first
@@ -820,7 +820,7 @@ public class Convert {
             return new HugeInt(new String(chars,0,offset),radix);
         }
     }
-    
+
     public static final double byteArrayToDouble(byte[] bytes, int begin, int buflen, boolean strict) {
         // Simple cases  ( abs(exponent) <= 22 [up to 37 depending on significand length])
         // are converted directly, which is considerably faster than creating a Java
@@ -829,14 +829,14 @@ public class Convert {
         // (3 arrays + String + FloatingDecimal) and 3 array copies, two of them one byte/char
         // at a time (here and in FloatingDecimal).
         // However, the latter approach is employed for more difficult cases (generally
-        // speaking, those that require rounding). (The code for the difficult cases is 
+        // speaking, those that require rounding). (The code for the difficult cases is
         // quite involved; see sun.misc.FloatingDecimal.java if you're interested.)
 
         // states
         final int SCOMPLETE            =  0;
         final int SBEGIN               =  1; // remove leading whitespace (includes _ for lax)
         final int SSIGN                =  2; // get sign, if any
-        
+
         // optimistic pass - calculate value as digits are processed
         final int SOPTDIGIT            =  3; // digits - lax rules
         final int SOPTDECDIGIT         =  4; // decimal digits - lax rules
@@ -859,7 +859,7 @@ public class Convert {
         // largest abs(exponent) we can (potentially) handle without
         // calling Double.parseDouble() (aka sun.misc.FloatingDecimal)
         final int MAX_EXP = MAX_DECIMAL_DIGITS + MAX_SMALL_10; // (37)
-      
+
         if (bytes == null) {
             throw new IllegalArgumentException("null bytes");
         }
@@ -881,7 +881,7 @@ public class Convert {
         int decPos = -1;         // offset of decimal pt from start (-1 -> no decimal)
         long significand = 0;    // significand, updated as parsed
         int exponent = 0;        // exponent, updated as parsed
-        
+
         // fields used for fallback (send to Double.parseDouble())
         int startPos = 0;        // start of digits (or . if no leading digits)
         char[] chars = null;
@@ -965,7 +965,7 @@ public class Convert {
                             break; // switch
                         } else {
                             // oh, well, it was worth a try. go let
-                            // Double/FloatingDecimal handle it 
+                            // Double/FloatingDecimal handle it
                             state = SDIGIT;
                             break states;
                         }
@@ -983,7 +983,7 @@ public class Convert {
                         // end of parseable data, go to calc
                         state = SOPTCALC;
                         break states;
-                        
+
                     } // switch
                 } // for
                 state = SOPTCALC;
@@ -1021,7 +1021,7 @@ public class Convert {
                         // no dec digits, end of parseable data, go to calc
                         state = SOPTCALC;
                         break states;
-                        
+
                     } // switch
                 } // if
                 for ( ; i < buflen ; ) {
@@ -1067,11 +1067,11 @@ public class Convert {
                 // adapted from sun.misc.FloatingDecimal
                 if (nDigits == 0) {
                     if (i + 1 < buflen) {
-                        if ((ival == 'n' || ival == 'N') && 
+                        if ((ival == 'n' || ival == 'N') &&
                                 (bytes[i] == 'a' || bytes[i] == 'A') &&
                                 (bytes[i+1] == 'n' || bytes[i+1] == 'N')) {
                             return Double.NaN;
-                        } else if ((ival == 'i' || ival == 'I') && 
+                        } else if ((ival == 'i' || ival == 'I') &&
                                 (bytes[i] == 'n' || bytes[i] == 'N') &&
                                 (bytes[i+1] == 'f' || bytes[i+1] == 'F')) {
                             return negative ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
@@ -1109,7 +1109,7 @@ public class Convert {
                 // difficult case, send to Double/FloatingDecimal
                 state = SDIGIT;
                 break;
-                
+
             case SOPTEXP:
             {
                 // lax (str.to_f) allows underscores between e/E and sign
@@ -1208,7 +1208,7 @@ public class Convert {
                     default:
                         // only whitespace allowed after value for strict
                         for ( --i; i < buflen && isWhitespace(bytes[i]); i++ );
-                        state = i < buflen ? SERR_NOT_STRICT : SOPTCALC; 
+                        state = i < buflen ? SERR_NOT_STRICT : SOPTCALC;
                         break states;
                     } // switch
                 } // for
@@ -1247,7 +1247,7 @@ public class Convert {
                         // no dec digits after '.', error for strict
                         state = SERR_NOT_STRICT;
                         break states;
-                        
+
                     } // switch
                 } else {
                     state = SERR_NOT_STRICT;
@@ -1290,14 +1290,14 @@ public class Convert {
                     default:
                         // only whitespace allowed after value for strict
                         for ( --i; i < buflen && isWhitespace(bytes[i]); i++);
-                        state = i < buflen ? SERR_NOT_STRICT : SOPTCALC; 
+                        state = i < buflen ? SERR_NOT_STRICT : SOPTCALC;
                         break states;
                     } // switch
                 } // for
                 // no more data, OK for strict to go calc
                 state = SOPTCALC;
                 break;
-            
+
             case SOPTEXP_STRICT:
             {
                 int expSign = 1;
@@ -1352,7 +1352,7 @@ public class Convert {
                         exponent += expSign * expSpec;
                         // only whitespace allowed after value for strict
                         for ( --i; i < buflen && isWhitespace(bytes[i]);  i++);
-                        state = i < buflen ? SERR_NOT_STRICT : SOPTCALC; 
+                        state = i < buflen ? SERR_NOT_STRICT : SOPTCALC;
                         break states;
                     } // switch
                 } // for
@@ -1360,7 +1360,7 @@ public class Convert {
                 state = SOPTCALC;
                 break;
             } // block
-                
+
             // fallback, copy non-whitespace chars to char buffer and send
             // to Double.parseDouble() (front for sun.misc.FloatingDecimal)
             case SDIGIT:
@@ -1418,7 +1418,7 @@ public class Convert {
                 } // for
                 state = SCOMPLETE;
                 break;
-                
+
             case SDECDIGIT:
                 chars[offset++] = '.';
                 for ( ; i < buflen && bytes[i] == '_'; i++) ;
@@ -1487,7 +1487,7 @@ public class Convert {
                 }
                 state = SCOMPLETE;
                 break;
-            
+
             case SDIGIT_STRICT:
                 // first char must be digit or decimal point
                 if (i < buflen) {
@@ -1534,13 +1534,13 @@ public class Convert {
                     default:
                         // only whitespace allowed after value for strict
                         for ( --i; i < buflen && isWhitespace(bytes[i]);  i++) ;
-                        state = i < buflen ? SERR_NOT_STRICT : SCOMPLETE; 
+                        state = i < buflen ? SERR_NOT_STRICT : SCOMPLETE;
                         break states;
                     } // switch
                 } // for
                 state = SCOMPLETE;
                 break;
-                
+
             case SDECDIGIT_STRICT:
                 chars[offset++] = '.';
                 if ( i < buflen) {
@@ -1577,7 +1577,7 @@ public class Convert {
                         break; //switch
                     default:
                         for ( --i; i < buflen && isWhitespace(bytes[i]);  i++) ;
-                        state = i < buflen ? SERR_NOT_STRICT : SCOMPLETE; 
+                        state = i < buflen ? SERR_NOT_STRICT : SCOMPLETE;
                         break states;
                     } // switch
                 } // for
@@ -1631,16 +1631,16 @@ public class Convert {
                         break; //switch
                     default:
                         for ( --i; i < buflen && isWhitespace(bytes[i]);  i++) ;
-                        state = i < buflen ? SERR_NOT_STRICT : SCOMPLETE; 
+                        state = i < buflen ? SERR_NOT_STRICT : SCOMPLETE;
                         break states;
                     }
                 }
                 state = SCOMPLETE;
                 break;
-            
+
             case SERR_NOT_STRICT:
                 throw new NumberFormatException("does not meet strict criteria");
-                
+
             } // switch
         } //while
         if (chars == null || lastValidOffset == 0) {
@@ -1683,7 +1683,7 @@ public class Convert {
         }
         return out;
     }
-    
+
     // The following two methods, used in conjunction, provide the
     // equivalent of String#trim()
     public static final int skipLeadingWhitespace(byte[] bytes){
@@ -1701,7 +1701,7 @@ public class Convert {
     private static final boolean isWhitespace(final byte b) {
         return b == ' ' || (b <= 13 && b >= 9 && b != 11);
     }
-    
+
     public static final byte[] trim (byte[] bytes) {
         if (bytes.length == 0)
             return bytes;
@@ -1717,7 +1717,7 @@ public class Convert {
         System.arraycopy(bytes,0,trimmed,0,length);
         return trimmed;
     }
-    
+
     public static final byte[] delete(byte[] bytes, int pos, boolean copy) {
         int buflen = bytes.length;
         int newlen = buflen - 1;
@@ -1782,7 +1782,7 @@ public class Convert {
             return bytes;
         }
     }
-    
+
     public static final byte[] insert(byte[] bytes, int pos, byte value, boolean copy) {
         int buflen = bytes.length;
         if (pos < 0 || pos > buflen) {
@@ -1813,7 +1813,7 @@ public class Convert {
             return bytes;
         }
     }
-    
+
     public static final byte[] insert(byte[] bytes, int pos, byte[] value, boolean copy) {
         int buflen = bytes.length;
         if (pos < 0 || pos > buflen) {
@@ -1826,7 +1826,7 @@ public class Convert {
             if (pos == 0) {
                 System.arraycopy(value,0,newbytes,0,vlen);
                 System.arraycopy(bytes,0,newbytes,vlen,buflen);
-            } else if (pos == buflen) { 
+            } else if (pos == buflen) {
                 System.arraycopy(bytes,0,newbytes,0,buflen);
                 System.arraycopy(value,0,newbytes,buflen,vlen);
             } else {
@@ -1851,7 +1851,7 @@ public class Convert {
             }
             return bytes;
         }
-        
+
     }
     public static final byte[] append(byte[] bytes, byte value) {
         int buflen = bytes.length;
@@ -1860,7 +1860,7 @@ public class Convert {
         bytes[buflen] = value;
         return bytes;
     }
-    
+
     public static final byte[] fill(byte[] bytes, int pos, int length, byte value) {
         if (length < 0) {
             throw new IllegalArgumentException("illegal length for fill");
@@ -1874,7 +1874,7 @@ public class Convert {
         }
         return bytes;
     }
-    
+
     public static final byte[] copy(byte[] bytes) {
         int buflen = bytes.length;
         if (buflen == 0)
@@ -1904,11 +1904,11 @@ public class Convert {
       10000000000000000L,
       100000000000000000L
     };
-    
+
     private static final HugeInt BIG_INT_ZERO = HugeInt.valueOf(0L);
-    
+
     private static final byte[] EMPTY_BYTES = {};
-    
+
     private static final byte[] MIN_INT_BYTE_ARRAY = {
         '-','2','1','4','7','4','8','3','6','4','8'
         };
@@ -1950,9 +1950,9 @@ public class Convert {
         '7', '7', '7', '7', '7', '7', '7', '7', '7', '7',
         '8', '8', '8', '8', '8', '8', '8', '8', '8', '8',
         '9', '9', '9', '9', '9', '9', '9', '9', '9', '9',
-        } ; 
+        } ;
 
-    private static final byte[] DIGIT_ONES = { 
+    private static final byte[] DIGIT_ONES = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
@@ -1965,7 +1965,7 @@ public class Convert {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
         } ;
 
-    
+
     private static final char[] CDIGITS = {
         '0' , '1' , '2' , '3' , '4' , '5' ,
         '6' , '7' , '8' , '9' , 'a' , 'b' ,
@@ -1985,9 +1985,9 @@ public class Convert {
         '7', '7', '7', '7', '7', '7', '7', '7', '7', '7',
         '8', '8', '8', '8', '8', '8', '8', '8', '8', '8',
         '9', '9', '9', '9', '9', '9', '9', '9', '9', '9',
-        } ; 
+        } ;
 
-    private static final char [] CDIGIT_ONES = { 
+    private static final char [] CDIGIT_ONES = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
@@ -1999,7 +1999,7 @@ public class Convert {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
         } ;
-    
+
     private static final double[] SMALL_10_POWERS = {
         1.0e0,
         1.0e1, 1.0e2, 1.0e3, 1.0e4, 1.0e5,

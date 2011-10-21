@@ -54,7 +54,7 @@ public class RubyDir extends RubyBasic {
     	cl.doClone(this);
     	return cl;
     }
-    
+
     private boolean isDirectory(){
         return dir_.isDirectory();
     }
@@ -96,7 +96,7 @@ public class RubyDir extends RubyBasic {
             }
         }
         return a;*/
-    	
+
     	throw new RuntimeException("glob is not implemented");
     }
 
@@ -118,7 +118,7 @@ public class RubyDir extends RubyBasic {
         String[] files = file.list(new GlobFilenameFilter(pattern));
         if (null != files) {
 //            for (String f : files) {
-        	for( int i = 0; i < files.length; i++ ){        	
+        	for( int i = 0; i < files.length; i++ ){
                 block.invoke(receiver, ObjectFactory.createString(dir + "/" + files[i]));
             }
         }
@@ -226,7 +226,7 @@ public class RubyDir extends RubyBasic {
     public static RubyValue mkdir(RubyValue receiver, RubyValue arg) {
         String dir = arg.toStr();
        	File file = new File(dir + (dir.endsWith("/") ? "" : "/"), "dw");
-        
+
         if (file.isDirectory() || file.mkdir()) {
             return ObjectFactory.FIXNUM0;
         }
@@ -259,7 +259,7 @@ public class RubyDir extends RubyBasic {
         files.add(ObjectFactory.createString(".."));
         Vector arFiles = file.list();
         for( int i = 0; i < arFiles.size(); i++ )
-        {        
+        {
             files.add(ObjectFactory.createString((String)arFiles.elementAt(i)));
         }
 
@@ -301,11 +301,11 @@ public class RubyDir extends RubyBasic {
     ////@RubyLevelMethod(name="exist?", alias="exists?", singleton=true)
     public static RubyValue exist_question(RubyValue receiver, RubyValue arg) {
         String fileName = arg.toStr();
-        
+
     	File file = new File(fileName);
     	boolean bExist = file.isDirectory();
-        
+
     	return ObjectFactory.createBoolean(bExist);
     }
-    
+
 }

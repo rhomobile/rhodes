@@ -13,7 +13,7 @@ ruby_version_is "1.9" do
         File.delete('.spawn.tmp')
       end
     end
-    
+
     it "passes environment vars to the child environment" do
       begin
         pid = Process.spawn(
@@ -25,7 +25,7 @@ ruby_version_is "1.9" do
         File.delete('.spawn.tmp')
       end
     end
-    
+
     it "needs to be reviewed for spec completeness"
   end
 end

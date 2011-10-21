@@ -5,7 +5,7 @@ public class JSONEntry {
 	public JSONEntry() {
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	public JSONEntry(String szData) {
 		// TODO Auto-generated constructor stub
 	}

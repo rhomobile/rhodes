@@ -361,7 +361,7 @@ namespace Community.CsharpSqlite
 
     /*
     ** A linked list of the following structures is stored at BtShared.pLock.
-    ** Locks are added (or upgraded from READ_LOCK to WRITE_LOCK) when a cursor 
+    ** Locks are added (or upgraded from READ_LOCK to WRITE_LOCK) when a cursor
     ** is opened on the table with root page BtShared.iTable. Locks are removed
     ** from this list when a transaction is committed or rolled back, or when
     ** a btree handle is closed.
@@ -518,7 +518,7 @@ public u8 isPending;            /* If waiting for read-locks to clear */
       public u16 nSize;     /* Size of the cell content on the main b-tree page */
       public bool Equals( CellInfo ci )
       {
-        if ( ci.iCell >= ci.pCell.Length || iCell >= this.pCell.Length) return false; 
+        if ( ci.iCell >= ci.pCell.Length || iCell >= this.pCell.Length) return false;
         if ( ci.pCell[ci.iCell] != this.pCell[iCell] ) return false;
         if ( ci.nKey != this.nKey || ci.nData != this.nData || ci.nPayload != this.nPayload ) return false;
         if ( ci.nHeader != this.nHeader || ci.nLocal != this.nLocal ) return false;

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -38,7 +38,7 @@ namespace fastJSON
 	/// <summary>
 	/// This class encodes and decodes JSON strings.
 	/// Spec. details, see http://www.json.org/
-	/// 
+	///
 	/// JSON uses Arrays and Objects. These correspond here to the datatypes ArrayList and Hashtable.
 	/// All numbers are parsed to doubles.
 	/// </summary>
@@ -56,7 +56,7 @@ namespace fastJSON
 		private const int TOKEN_TRUE = 9;
 		private const int TOKEN_FALSE = 10;
 		private const int TOKEN_NULL = 11;
-		
+
 		/// <summary>
 		/// Parses the string json into a value
 		/// </summary>
@@ -65,7 +65,7 @@ namespace fastJSON
 		internal static object JsonDecode(string json)
 		{
 			bool success = true;
-			
+
 			return JsonDecode(json, ref success);
 		}
 
@@ -87,7 +87,7 @@ namespace fastJSON
 				return null;
 			}
 		}
-		
+
 
 		protected static Dictionary<string,object> ParseObject(char[] json, ref int index, ref bool success)
 		{
@@ -202,7 +202,7 @@ namespace fastJSON
 			char c;
 
 			EatWhitespace(json, ref index);
-			
+
 			// "
 			c = json[index++];
 
@@ -280,7 +280,7 @@ namespace fastJSON
 
 			string number = new string(json,index,charLength);
 			success = true;
-			
+
 			index = lastIndex + 1;
 			return number;
 		}
@@ -319,7 +319,7 @@ namespace fastJSON
 			if (index == json.Length) {
 				return TOKEN_NONE;
 			}
-			
+
 			char c = json[index];
 			index++;
 			switch (c) {
@@ -406,7 +406,7 @@ namespace fastJSON
 			}
 			return success;
 		}
-		
+
 		protected static bool SerializeObject(Hashtable anObject, StringBuilder builder)
 		{
 			builder.Append("{");

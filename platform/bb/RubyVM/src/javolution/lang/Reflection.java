@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2005 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -14,14 +14,14 @@ import j2me.lang.CharSequence;
 import j2me.lang.ThreadLocal;
 
 /**
- * <p> This utility class greatly facilitates the use of reflection to invoke 
+ * <p> This utility class greatly facilitates the use of reflection to invoke
  *     constructors or methods which may or may not exist at runtime.</p>
- * 
+ *
  * <p> The constructors/methods are identified through their signatures
  *     represented as a {@link String}. When the constructor/method does
  *     not exist (e.g. class not found) or when the platform does not support
- *     reflection, the constructor/method is <code>null</code> 
- *     (no exception raised). Here is an example of timer taking advantage 
+ *     reflection, the constructor/method is <code>null</code>
+ *     (no exception raised). Here is an example of timer taking advantage
  *     of the new (JRE1.5+) high resolution time when available:[code]
  *     public static long microTime() {
  *         if (NANO_TIME_METHOD != null) { // JRE 1.5+
@@ -31,9 +31,9 @@ import j2me.lang.ThreadLocal;
  *             return System.currentTimeMillis() * 1000;
  *         }
  *     }
- *     private static final Reflection.Method NANO_TIME_METHOD 
+ *     private static final Reflection.Method NANO_TIME_METHOD
  *         = Reflection.getMethod("j2me.lang.System.nanoTime()");[/code]</p>
- *   
+ *
  * <p> Arrays and primitive types are supported. For example:[code]
  *     Reflection.Constructor sbc = Reflection.getConstructor("j2me.lang.StringBuilder(int)");
  *     if (sbc != null) { // JDK 1.5+
@@ -42,9 +42,9 @@ import j2me.lang.ThreadLocal;
  *        append.invoke(sb, new char[] { 'h', 'i' }, new Integer(0), new Integer(2));
  *        System.out.println(sb);
  *    }
- * 
+ *
  *    > hi[/code]</p>
- * 
+ *
  * @author  <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 4.0, September 1, 2006
  */
@@ -57,12 +57,12 @@ public final class Reflection {
     }
 
     /**
-     * Returns the class having the specified name. 
-     * This method searches a lookup table first, then diverse class loaders 
-     * (caller, context, system); the newly found class is then initialized 
+     * Returns the class having the specified name.
+     * This method searches a lookup table first, then diverse class loaders
+     * (caller, context, system); the newly found class is then initialized
      * and added to the lookup table for future reference.
-     * 
-     * @param name the name of the class to search for. 
+     *
+     * @param name the name of the class to search for.
      * @return the corresponding class
      * @throws ClassNotFoundException if the class is not found.
      */
@@ -106,11 +106,11 @@ public final class Reflection {
     }
 
     /**
-     * Returns the constructor having the specified signature. 
-     * 
-     * @param signature the textual representation of the constructor signature. 
-     * @return the corresponding constructor or <code>null</code> if none 
-     *         found. 
+     * Returns the constructor having the specified signature.
+     *
+     * @param signature the textual representation of the constructor signature.
+     * @return the corresponding constructor or <code>null</code> if none
+     *         found.
      */
     public static Constructor getConstructor(String signature) {
         int argStart = signature.indexOf('(') + 1;
@@ -137,12 +137,12 @@ public final class Reflection {
          argsTypes = classesFor(args);
          } catch (ClassNotFoundException e) {
          return null;
-         }         
+         }
          try {
          return new ReflectConstructor(theClass.getConstructor(argsTypes),
          signature);
          } catch (NoSuchMethodException e) {
-         }          
+         }
          /**/
         return null;
     }
@@ -212,10 +212,10 @@ public final class Reflection {
 
     /**
      * Returns the method having the specified signature.
-     * 
-     * @param signature the textual representation of the method signature. 
-     * @return the corresponding constructor or <code>null</code> if none 
-     *         found. 
+     *
+     * @param signature the textual representation of the method signature.
+     * @return the corresponding constructor or <code>null</code> if none
+     *         found.
      */
     public static Method getMethod(String signature) {
         /*@JVM-1.4+@
@@ -236,7 +236,7 @@ public final class Reflection {
          theClass = Reflection.getClass(className);
          } catch (ClassNotFoundException e) {
          return null;
-         }         
+         }
          String methodName = signature.substring(nameStart, argStart - 1);
          String args = signature.substring(argStart, argEnd);
          Class[] argsTypes;
@@ -244,7 +244,7 @@ public final class Reflection {
          argsTypes = classesFor(args);
          } catch (ClassNotFoundException e) {
          return null;
-         }         
+         }
          return new ReflectMethod(theClass.getMethod(methodName, argsTypes),
          signature);
          } catch (Throwable t) {
@@ -289,7 +289,7 @@ public final class Reflection {
 
     /**
      * Returns the classes for the specified argument.
-     * 
+     *
      * @param args the comma separated arguments.
      * @return the classes or <code>null</code> if one of the class is not found.
      @JVM-1.4+@
@@ -387,15 +387,15 @@ public final class Reflection {
 
     /**
      * This class represents a run-time constructor obtained through reflection.
-     * 
+     *
      * Here are few examples of utilization:[code]
      * // Default constructor (fastList = new FastList())
-     * Reflection.Constructor fastListConstructor 
+     * Reflection.Constructor fastListConstructor
      *     = Reflection.getConstructor("javolution.util.FastList()");
      * Object fastList = fastListConstructor.newInstance();
-     * 
+     *
      * // Constructor with arguments (fastMap = new FastMap(64))
-     * Reflection.Constructor fastMapConstructor 
+     * Reflection.Constructor fastMapConstructor
      *     = Reflection.getConstructor("javolution.util.FastMap(int)");
      * Object fastMap = fastMapConstructor.newInstance(new Integer(64));
      * [/code]
@@ -409,7 +409,7 @@ public final class Reflection {
 
         /**
          * Creates a new constructor having the specified parameter types.
-         * 
+         *
          * @param parameterTypes the parameters types.
          */
         protected Constructor(Class[] parameterTypes) {
@@ -417,9 +417,9 @@ public final class Reflection {
         }
 
         /**
-         * Returns an array of <code>Class</code> objects that represents 
+         * Returns an array of <code>Class</code> objects that represents
          * the formal parameter types, in declaration order of this constructor.
-         * 
+         *
          * @return the parameter types for this constructor.
          */
         public Class[] getParameterTypes() {
@@ -429,19 +429,19 @@ public final class Reflection {
         /**
          * Allocates a new object using this constructor with the specified
          * arguments.
-         * 
-         * @param args the constructor arguments. 
+         *
+         * @param args the constructor arguments.
          * @return the object being instantiated.
          */
         protected abstract Object allocate(Object[] args);
 
         /**
          * Invokes this constructor with no argument (convenience method).
-         * 
-         * @return the object being instantiated. 
+         *
+         * @return the object being instantiated.
          */
         public final Object newInstance() {
-            if (_parameterTypes.length != 0) 
+            if (_parameterTypes.length != 0)
                 throw new IllegalArgumentException(
                         "Expected number of parameters is " + _parameterTypes.length);
             return allocate(ARRAY_0);
@@ -449,30 +449,30 @@ public final class Reflection {
 
         /**
          * Invokes this constructor with the specified single argument.
-         * 
-         * @param arg0 the first argument. 
-         * @return the object being instantiated. 
+         *
+         * @param arg0 the first argument.
+         * @return the object being instantiated.
          */
         public final Object newInstance(Object arg0) {
-            if (_parameterTypes.length != 1) 
+            if (_parameterTypes.length != 1)
                 throw new IllegalArgumentException(
                         "Expected number of parameters is " + _parameterTypes.length);
             Object[] args = (Object[])ARRAY_1.get();
             args[0] = arg0;
             Object result = allocate(args);
             args[0] = null;
-            return result;            
+            return result;
         }
 
         /**
          * Invokes this constructor with the specified two arguments.
-         * 
-         * @param arg0 the first argument. 
-         * @param arg1 the second argument. 
-         * @return the object being instantiated. 
+         *
+         * @param arg0 the first argument.
+         * @param arg1 the second argument.
+         * @return the object being instantiated.
          */
         public final Object newInstance(Object arg0, Object arg1) {
-            if (_parameterTypes.length != 2) 
+            if (_parameterTypes.length != 2)
                 throw new IllegalArgumentException(
                         "Expected number of parameters is " + _parameterTypes.length);
             Object[] args = (Object[])ARRAY_2.get();
@@ -481,19 +481,19 @@ public final class Reflection {
             Object result = allocate(args);
             args[0] = null;
             args[1] = null;
-            return result;            
+            return result;
         }
 
         /**
          * Invokes this constructor with the specified three arguments.
-         * 
-         * @param arg0 the first argument. 
-         * @param arg1 the second argument. 
-         * @param arg2 the third argument. 
-         * @return the object being instantiated. 
+         *
+         * @param arg0 the first argument.
+         * @param arg1 the second argument.
+         * @param arg2 the third argument.
+         * @return the object being instantiated.
          */
         public final Object newInstance(Object arg0, Object arg1, Object arg2) {
-            if (_parameterTypes.length != 3) 
+            if (_parameterTypes.length != 3)
                 throw new IllegalArgumentException(
                         "Expected number of parameters is " + _parameterTypes.length);
             Object[] args = (Object[])ARRAY_3.get();
@@ -504,20 +504,20 @@ public final class Reflection {
             args[0] = null;
             args[1] = null;
             args[2] = null;
-            return result;            
+            return result;
         }
 
         /**
          * Invokes this constructor with the specified four arguments.
-         * 
-         * @param arg0 the first argument. 
-         * @param arg1 the second argument. 
-         * @param arg2 the third argument. 
-         * @param arg3 the fourth argument. 
-         * @return the object being instantiated. 
+         *
+         * @param arg0 the first argument.
+         * @param arg1 the second argument.
+         * @param arg2 the third argument.
+         * @param arg3 the fourth argument.
+         * @return the object being instantiated.
          */
         public final Object newInstance(Object arg0, Object arg1, Object arg2, Object arg3) {
-            if (_parameterTypes.length != 4) 
+            if (_parameterTypes.length != 4)
                 throw new IllegalArgumentException(
                         "Expected number of parameters is " + _parameterTypes.length);
             Object[] args = (Object[])ARRAY_4.get();
@@ -530,23 +530,23 @@ public final class Reflection {
             args[1] = null;
             args[2] = null;
             args[3] = null;
-            return result;            
+            return result;
         }
 
     }
 
     /**
      * This class represents a run-time method obtained through reflection.
-     * 
+     *
      * Here are few examples of utilization:[code]
      * // Non-static method: fastMap.put(myKey, myValue)
-     * Reflection.Method putKeyValue  
+     * Reflection.Method putKeyValue
      *     = Reflection.getMethod(
      *         "javolution.util.FastMap.put(j2me.lang.Object, j2me.lang.Object)");
-     * Object previous = putKeyValue.invoke(fastMap, myKey, myValue); 
-     * 
-     * // Static method: System.nanoTime()  (JRE1.5+) 
-     * Reflection.Method nanoTime 
+     * Object previous = putKeyValue.invoke(fastMap, myKey, myValue);
+     *
+     * // Static method: System.nanoTime()  (JRE1.5+)
+     * Reflection.Method nanoTime
      *     = Reflection.getMethod("j2me.lang.System.nanoTime()");
      * long time = ((Long)nanoTime.invoke(null)).longValue();[/code]
      */
@@ -559,7 +559,7 @@ public final class Reflection {
 
         /**
          * Creates a new constructor having the specified parameter types.
-         * 
+         *
          * @param parameterTypes the parameters types.
          */
         protected Method(Class[] parameterTypes) {
@@ -567,9 +567,9 @@ public final class Reflection {
         }
 
         /**
-         * Returns an array of <code>Class</code> objects that represents 
+         * Returns an array of <code>Class</code> objects that represents
          * the formal parameter types, in declaration order of this constructor.
-         * 
+         *
          * @return the parameter types for this constructor.
          */
         public Class[] getParameterTypes() {
@@ -578,18 +578,18 @@ public final class Reflection {
 
         /**
          * Executes this method with the specified arguments.
-         * 
+         *
          * @param thisObject the object upon which this method is invoked
          *        or <code>null</code> for static methods.
-         * @param args the method arguments. 
-         * @return the result of the execution. 
+         * @param args the method arguments.
+         * @return the result of the execution.
          */
         protected abstract Object execute(Object thisObject, Object[] args);
 
         /**
-         * Invokes this method on the specified object which might be 
+         * Invokes this method on the specified object which might be
          * <code>null</code> if the method is static (convenience method).
-         * 
+         *
          * @param thisObject the object upon which this method is invoked
          *        or <code>null</code> for static methods.
          * @return the result of the invocation.
@@ -602,38 +602,38 @@ public final class Reflection {
          * Invokes this method with the specified single argument
          * on the specified object which might be <code>null</code>
          * if the method is static (convenience method).
-         * 
+         *
          * @param thisObject the object upon which this method is invoked
          *        or <code>null</code> for static methods.
-         * @param arg0 the single argument. 
+         * @param arg0 the single argument.
          * @return the result of the invocation.
          */
         public final Object invoke(Object thisObject, Object arg0) {
-            if (_parameterTypes.length != 1) 
+            if (_parameterTypes.length != 1)
                 throw new IllegalArgumentException(
                         "Expected number of parameters is " + _parameterTypes.length);
             Object[] args = (Object[])ARRAY_1.get();
             args[0] = arg0;
             Object result = execute(thisObject, args);
             args[0] = null;
-            return result;            
+            return result;
         }
 
         /**
          * Invokes this method with the specified two arguments
          * on the specified object which might be <code>null</code>
          * if the method is static (convenience method).
-         * 
+         *
          * @param thisObject the object upon which this method is invoked
          *        or <code>null</code> for static methods.
-         * @param arg0 the first argument. 
-         * @param arg1 the second argument. 
+         * @param arg0 the first argument.
+         * @param arg1 the second argument.
          * @return the result of the invocation.
-         * @throws RuntimeException wrapping any exception raised during 
-         *         invocation (see <code>Throwable.getCause()</code>). 
+         * @throws RuntimeException wrapping any exception raised during
+         *         invocation (see <code>Throwable.getCause()</code>).
          */
         public final Object invoke(Object thisObject, Object arg0, Object arg1) {
-            if (_parameterTypes.length != 2) 
+            if (_parameterTypes.length != 2)
                 throw new IllegalArgumentException(
                         "Expected number of parameters is " + _parameterTypes.length);
             Object[] args = (Object[])ARRAY_2.get();
@@ -642,24 +642,24 @@ public final class Reflection {
             Object result = execute(thisObject, args);
             args[0] = null;
             args[1] = null;
-            return result;            
+            return result;
         }
 
         /**
          * Invokes this method with the specified three arguments
          * on the specified object which might be <code>null</code>
          * if the method is static.
-         * 
+         *
          * @param thisObject the object upon which this method is invoked
          *        or <code>null</code> for static methods.
-         * @param arg0 the first argument (convenience method). 
-         * @param arg1 the second argument. 
-         * @param arg2 the third argument. 
+         * @param arg0 the first argument (convenience method).
+         * @param arg1 the second argument.
+         * @param arg2 the third argument.
          * @return the result of the invocation.
          */
         public final Object invoke(Object thisObject, Object arg0, Object arg1,
                 Object arg2) {
-            if (_parameterTypes.length != 3) 
+            if (_parameterTypes.length != 3)
                 throw new IllegalArgumentException(
                         "Expected number of parameters is " + _parameterTypes.length);
             Object[] args = (Object[])ARRAY_3.get();
@@ -670,25 +670,25 @@ public final class Reflection {
             args[0] = null;
             args[1] = null;
             args[2] = null;
-            return result;            
+            return result;
         }
 
         /**
          * Invokes this method with the specified four arguments
          * on the specified object which might be <code>null</code>
          * if the method is static (convenience method).
-         * 
+         *
          * @param thisObject the object upon which this method is invoked
          *        or <code>null</code> for static methods.
-         * @param arg0 the first argument. 
-         * @param arg1 the second argument. 
-         * @param arg2 the third argument. 
-         * @param arg3 the fourth argument. 
+         * @param arg0 the first argument.
+         * @param arg1 the second argument.
+         * @param arg2 the third argument.
+         * @param arg3 the fourth argument.
          * @return the result of the invocation.
          */
         public final Object invoke(Object thisObject, Object arg0, Object arg1,
                 Object arg2, Object arg3) {
-            if (_parameterTypes.length != 3) 
+            if (_parameterTypes.length != 3)
                 throw new IllegalArgumentException(
                         "Expected number of parameters is " + _parameterTypes.length);
             Object[] args = (Object[])ARRAY_3.get();
@@ -701,11 +701,11 @@ public final class Reflection {
             args[1] = null;
             args[2] = null;
             args[3] = null;
-            return result;            
+            return result;
         }
 
     }
-    
+
     // Holds array containers to avoid dynamic allocations.
 
     private static final Object[] ARRAY_0 = new Object[0]; // Immutable.

@@ -9,7 +9,7 @@
 
 class CImageProvider {
 public:
-	
+
 	static void rho_platform_image_load_grayscale(const char* url, void** image_pixels, int* pwidth, int* pheight);
 	static void rho_platform_image_free(void* image_pixels);
 };

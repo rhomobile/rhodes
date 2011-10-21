@@ -10,7 +10,7 @@ if System.get_property('platform') != 'APPLE'
       Time.local(2010,3,14,1,59,59).send(@method).should == -5*60*60
       if System.get_property('platform') != 'WINDOWS'
         Time.local(2010,3,14,2,0,0).send(@method).should == -4*60*60
-      end  
+      end
     end
   end
 end

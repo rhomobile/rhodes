@@ -56,7 +56,7 @@ import com.rho.RhoLogger;
  * @since 1.7.2
  */
 final class CompiledStatementExecutor {
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("DB");
 
     private Session session;
@@ -109,7 +109,7 @@ final class CompiledStatementExecutor {
         	{}
         	else
         		LOG.ERROR("execute statement failed.", e);
-        	
+
             result = new Result(e, cs.sql);
         } catch (Exception e) {
         	LOG.ERROR("execute statement failed.", e);

@@ -6,63 +6,63 @@ import com.rho.Tokenizer;
 
   public static class MalformedURIException extends RuntimeException {
 
-   
+
     public MalformedURIException(String p_msg) {
       super(p_msg);
     }
 
-	public String getMessage() {	
+	public String getMessage() {
 		return "MalformedURIException: " + super.getMessage();
 	}
   }
 
-  
+
   private static final byte [] fgLookupTable = new byte[128];
-  
+
   /** reserved characters ;/?:@&=+$,[] */
   //RFC 2732 added '[' and ']' as reserved characters
   private static final int RESERVED_CHARACTERS = 0x01;
-  
+
   /** URI punctuation mark characters: -_.!~*'() - these, combined with
       alphanumerics, constitute the "unreserved" characters */
   private static final int MARK_CHARACTERS = 0x02;
-  
+
   /** scheme can be composed of alphanumerics and these characters: +-. */
   private static final int SCHEME_CHARACTERS = 0x04;
-  
+
   /** userinfo can be composed of unreserved, escaped and these
       characters: ;:&=+$, */
 //  private static final int USERINFO_CHARACTERS = 0x08;
-  
+
   /** ASCII letter characters */
   private static final int ASCII_ALPHA_CHARACTERS = 0x10;
-  
+
   /** ASCII digit characters */
   private static final int ASCII_DIGIT_CHARACTERS = 0x20;
-  
+
   /** ASCII hex characters */
   private static final int ASCII_HEX_CHARACTERS = 0x40;
-  
+
   /** Path characters */
   private static final int PATH_CHARACTERS = 0x80;
 
   /** Mask for alpha-numeric characters */
   private static final int MASK_ALPHA_NUMERIC = ASCII_ALPHA_CHARACTERS | ASCII_DIGIT_CHARACTERS;
-  
+
   /** Mask for unreserved characters */
   private static final int MASK_UNRESERVED_MASK = MASK_ALPHA_NUMERIC | MARK_CHARACTERS;
-  
+
   /** Mask for URI allowable characters except for % */
   private static final int MASK_URI_CHARACTER = MASK_UNRESERVED_MASK | RESERVED_CHARACTERS;
-  
+
   /** Mask for scheme characters */
   private static final int MASK_SCHEME_CHARACTER = MASK_ALPHA_NUMERIC | SCHEME_CHARACTERS;
-  
+
   /** Mask for userinfo characters */
 //  private static final int MASK_USERINFO_CHARACTER = MASK_UNRESERVED_MASK | USERINFO_CHARACTERS;
-  
+
   /** Mask for path characters */
-  private static final int MASK_PATH_CHARACTER = MASK_UNRESERVED_MASK | PATH_CHARACTERS; 
+  private static final int MASK_PATH_CHARACTER = MASK_UNRESERVED_MASK | PATH_CHARACTERS;
 
   static {
       // Add ASCII Digits and ASCII Hex Numbers
@@ -109,9 +109,9 @@ import com.rho.Tokenizer;
 
       fgLookupTable['{'] |= MARK_CHARACTERS;
       fgLookupTable['}'] |= MARK_CHARACTERS;
-      
+
       fgLookupTable['|'] |= MARK_CHARACTERS;
-      
+
       // Add Scheme Characters
 //      fgLookupTable['+'] |= SCHEME_CHARACTERS;
 //      fgLookupTable['-'] |= SCHEME_CHARACTERS;
@@ -125,7 +125,7 @@ import com.rho.Tokenizer;
 //      fgLookupTable['+'] |= USERINFO_CHARACTERS;
 //      fgLookupTable['$'] |= USERINFO_CHARACTERS;
 //      fgLookupTable[','] |= USERINFO_CHARACTERS;
-      
+
       // Add Path Characters
 //      fgLookupTable[';'] |= PATH_CHARACTERS;
 //      fgLookupTable['/'] |= PATH_CHARACTERS;
@@ -149,7 +149,7 @@ import com.rho.Tokenizer;
 
   /** If specified, stores the port for this URI; otherwise -1 */
   private int m_port = -1;
-  
+
   /** If specified, stores the registry based authority for this URI; otherwise -1 */
   private String m_regAuthority = null;
 
@@ -165,7 +165,7 @@ import com.rho.Tokenizer;
 
   //
   private int mHashCode = -1;
-  
+
   /**
   * Construct a new and uninitialized URI.
   */
@@ -185,7 +185,7 @@ import com.rho.Tokenizer;
   public URI(String p_uriSpec) throws MalformedURIException {
     this((URI)null, p_uriSpec);
   }
-  
+
   public URI(URI p_base, String p_uriSpec) throws MalformedURIException {
     initialize(p_base, p_uriSpec!=null?p_uriSpec.trim():null);
     mHashCode=-1;
@@ -201,7 +201,7 @@ import com.rho.Tokenizer;
     m_queryString = p_other.getQueryString();
     m_fragment = p_other.getFragment();
   }
-  
+
   private int calcHashCode() {
 	  int hash = 0;
 	  if (m_scheme!=null) {
@@ -229,21 +229,21 @@ import com.rho.Tokenizer;
 //	  System.out.println("("+hash+") :"+this.toString());
 	  return hash;
   }
-  
+
   public int hashCode() {
 	  if (mHashCode==-1)
 		  mHashCode = calcHashCode();
-	  return mHashCode;	  
+	  return mHashCode;
   }
-  
+
   private void initialize(URI p_base, String p_uriSpec)
                          throws MalformedURIException {
-	  
+
     String uriSpec = p_uriSpec;
     int uriSpecLen = (uriSpec != null) ? uriSpec.length() : 0;
-	
+
     if (p_base == null && uriSpecLen == 0) {
-      throw new MalformedURIException("Url: " + p_uriSpec + 
+      throw new MalformedURIException("Url: " + p_uriSpec +
                    "; Cannot initialize URI with empty parameters.");
     }
 
@@ -263,8 +263,8 @@ import com.rho.Tokenizer;
         int slashIdx = uriSpec.lastIndexOf('/', searchFrom);
         int queryIdx = uriSpec.lastIndexOf('?', searchFrom);
         int fragmentIdx = uriSpec.lastIndexOf('#', searchFrom);
-       
-        if (colonIdx == 0 || slashIdx != -1 || 
+
+        if (colonIdx == 0 || slashIdx != -1 ||
             queryIdx != -1 || fragmentIdx != -1) {
             // A standalone base is a valid URI according to spec
             if (colonIdx == 0 || (p_base == null && fragmentIdx != 0)) {
@@ -274,23 +274,23 @@ import com.rho.Tokenizer;
         else {
             initializeScheme(uriSpec);
             index = m_scheme.length()+1;
-            
+
             // Neither 'scheme:' or 'scheme:#fragment' are valid URIs.
             if (colonIdx == uriSpecLen - 1 || uriSpec.charAt(colonIdx+1) == '#') {
-            	throw new MalformedURIException("Url: " + p_uriSpec +"; Scheme specific part cannot be empty.");	
+            	throw new MalformedURIException("Url: " + p_uriSpec +"; Scheme specific part cannot be empty.");
             }
         }
     }
-    
+
     else if (p_base == null && uriSpec.indexOf('#') != 0) {
-        throw new MalformedURIException("Url: " + p_uriSpec + "; No scheme found in URI.");    
+        throw new MalformedURIException("Url: " + p_uriSpec + "; No scheme found in URI.");
     }
 
     // Two slashes means we may have authority, but definitely means we're either
     // matching net_path or abs_path. These two productions are ambiguous in that
-    // every net_path (except those containing an IPv6Reference) is an abs_path. 
-    // RFC 2396 resolves this ambiguity by applying a greedy left most matching rule. 
-    // Try matching net_path first, and if that fails we don't have authority so 
+    // every net_path (except those containing an IPv6Reference) is an abs_path.
+    // RFC 2396 resolves this ambiguity by applying a greedy left most matching rule.
+    // Try matching net_path first, and if that fails we don't have authority so
     // then attempt to match abs_path.
     //
     // net_path = "//" authority [ abs_path ]
@@ -354,17 +354,17 @@ import com.rho.Tokenizer;
           m_port = p_base.m_port;
           m_regAuthority = p_base.m_regAuthority;
           m_path = p_base.m_path;
-          
+
           if (m_queryString == null) {
               m_queryString = p_base.getQueryString();
-              
+
               if (m_fragment == null) {
                   m_fragment = p_base.getFragment();
               }
           }
           return;
       }
-      
+
       // check for scheme - RFC 2396 5.2 #3
       // if we found a scheme, it means absolute URI, so we're done
       if (m_scheme == null) {
@@ -373,7 +373,7 @@ import com.rho.Tokenizer;
       else {
           return;
       }
-      
+
       // check for authority - RFC 2396 5.2 #4
       // if we found a host, then we've got a network path, so we're done
       if (m_host == null && m_regAuthority == null) {
@@ -385,18 +385,18 @@ import com.rho.Tokenizer;
       else {
           return;
       }
-      
+
       // check for absolute path - RFC 2396 5.2 #5
       if (m_path.length() > 0 &&
               m_path.startsWith("/")) {
           return;
       }
-      
+
       // if we get to this point, we need to resolve relative path
       // RFC 2396 5.2 #6
       String path = "";
       String basePath = p_base.getPath();
-      
+
       // 6a - get all but the last segment of the base URI path
       if (basePath != null && basePath.length() > 0) {
           int lastSlash = basePath.lastIndexOf('/');
@@ -407,27 +407,27 @@ import com.rho.Tokenizer;
       else if (m_path.length() > 0) {
           path = "/";
       }
-      
+
       // 6b - append the relative URI path
       path = path.concat(m_path);
-      
+
       // 6c - remove all "./" where "." is a complete path segment
       int index = -1;
       while ((index = path.indexOf("/./")) != -1) {
           path = path.substring(0, index+1).concat(path.substring(index+3));
       }
-      
+
       // 6d - remove "." if path ends with "." as a complete path segment
       if (path.endsWith("/.")) {
           path = path.substring(0, path.length()-1);
       }
-      
+
       // 6e - remove all "<segment>/../" where "<segment>" is a complete
       // path segment not equal to ".."
       index = 1;
       int segIndex = -1;
       String tempString = null;
-      
+
       while ((index = path.indexOf("/../", index)) > 0) {
           tempString = path.substring(0, path.indexOf("/../"));
           segIndex = tempString.lastIndexOf('/');
@@ -444,7 +444,7 @@ import com.rho.Tokenizer;
               index += 4;
           }
       }
-      
+
       // 6f - remove ending "<segment>/.." where "<segment>" is a
       // complete path segment
       if (path.endsWith("/..")) {
@@ -483,7 +483,7 @@ import com.rho.Tokenizer;
   }
 
   private boolean initializeAuthority(String p_uriSpec) {
-    
+
     int index = 0;
     int start = 0;
     int end = p_uriSpec.length();
@@ -504,7 +504,7 @@ import com.rho.Tokenizer;
 //      index++;
 //    }
 
-    // host is everything up to last ':', or up to 
+    // host is everything up to last ':', or up to
     // and including ']' if followed by ':'.
     String host = null;
     start = index;
@@ -559,7 +559,7 @@ import com.rho.Tokenizer;
         }
       }
     }
-    
+
     if (isValidServerBasedAuthority(host, port, userinfo)) {
       m_host = host;
       m_port = port;
@@ -576,14 +576,14 @@ import com.rho.Tokenizer;
 //    }
     return false;
   }
-  
+
   private boolean isValidServerBasedAuthority(String host, int port, String userinfo) {
-    
+
     // Check if the host is well formed.
     if (!isWellFormedAddress(host)) {
       return false;
     }
-    
+
     // Check that port is well formed if it exists.
     // REVISIT: There's no restriction on port value ranges, but
     // perform the same check as in setPort to be consistent. Pass
@@ -591,7 +591,7 @@ import com.rho.Tokenizer;
     if (port < -1 || port > 65535) {
       return false;
     }
-    
+
     // Check that userinfo is well formed if it exists.
 //    if (userinfo != null) {
 //      // Userinfo can contain alphanumerics, mark characters, escaped
@@ -617,7 +617,7 @@ import com.rho.Tokenizer;
 //    }
     return true;
   }
-  
+
   private void initializePath(String p_uriSpec, int p_nStartIndex)
                  throws MalformedURIException {
     if (p_uriSpec == null) {
@@ -634,13 +634,13 @@ import com.rho.Tokenizer;
     if (start < end) {
     	// RFC 2732 only allows '[' and ']' to appear in the opaque part.
     	if (getScheme() == null || p_uriSpec.charAt(start) == '/') {
-    	
+
             // Scan path.
             // abs_path = "/"  path_segments
             // rel_path = rel_segment [ abs_path ]
             while (index < end) {
                 testChar = p_uriSpec.charAt(index);
-            
+
                 // check for valid escape sequence
                 if (testChar == '%') {
                     if (index+2 >= end ||
@@ -664,16 +664,16 @@ import com.rho.Tokenizer;
             }
         }
         else {
-            
+
             // Scan opaque part.
             // opaque_part = uric_no_slash *uric
             while (index < end) {
                 testChar = p_uriSpec.charAt(index);
-            
+
                 if (testChar == '?' || testChar == '#') {
                     break;
       	        }
-                
+
                 // check for valid escape sequence
                 if (testChar == '%') {
                     if (index+2 >= end ||
@@ -686,7 +686,7 @@ import com.rho.Tokenizer;
                 }
                 // If the scheme specific part is opaque, it can contain '['
                 // and ']'. uric_no_slash wasn't modified by RFC 2732, which
-                // I've interpreted as an error in the spec, since the 
+                // I've interpreted as an error in the spec, since the
                 // production should be equivalent to (uric - '/'), and uric
                 // contains '[' and ']'. - mrglavas
                 else if (!isURICharacter(testChar)) {
@@ -751,7 +751,7 @@ import com.rho.Tokenizer;
       m_fragment = p_uriSpec.substring(start, index);
     }
   }
-  
+
   public String getScheme() {
     return m_scheme;
   }
@@ -761,7 +761,7 @@ import com.rho.Tokenizer;
 
     if (m_host != null || m_regAuthority != null) {
       schemespec.append("//");
-    
+
       // Server based authority.
       if (m_host != null) {
 
@@ -769,9 +769,9 @@ import com.rho.Tokenizer;
           schemespec.append(m_userinfo);
           schemespec.append('@');
         }
-        
+
         schemespec.append(m_host);
-        
+
         if (m_port != -1) {
           schemespec.append(':');
           schemespec.append(m_port);
@@ -807,10 +807,10 @@ import com.rho.Tokenizer;
 	    	schemespec.append(m_scheme);
 	    	schemespec.append(':');
 	      }
-	    
+
 	    if (m_host != null || m_regAuthority != null) {
 	      schemespec.append("//");
-	    
+
 	      // Server based authority.
 	      if (m_host != null) {
 
@@ -818,9 +818,9 @@ import com.rho.Tokenizer;
 	          schemespec.append(m_userinfo);
 	          schemespec.append('@');
 	        }
-	        
+
 	        schemespec.append(m_host);
-	        
+
 	        if (m_port != -1) {
 	          schemespec.append(':');
 	          schemespec.append(m_port);
@@ -844,7 +844,7 @@ import com.rho.Tokenizer;
 	    return schemespec.toString();
 	  }
 
-  public String getPathNoFragmentNoQuery() 
+  public String getPathNoFragmentNoQuery()
   {
 	    StringBuffer schemespec = new StringBuffer();
 
@@ -852,10 +852,10 @@ import com.rho.Tokenizer;
 	    	schemespec.append(m_scheme);
 	    	schemespec.append(':');
 	      }
-	    
+
 	    if (m_host != null || m_regAuthority != null) {
 	      schemespec.append("//");
-	    
+
 	      // Server based authority.
 	      if (m_host != null) {
 
@@ -863,9 +863,9 @@ import com.rho.Tokenizer;
 	          schemespec.append(m_userinfo);
 	          schemespec.append('@');
 	        }
-	        
+
 	        schemespec.append(m_host);
-	        
+
 	        if (m_port != -1) {
 	          schemespec.append(':');
 	          schemespec.append(m_port);
@@ -883,8 +883,8 @@ import com.rho.Tokenizer;
 
 	    return schemespec.toString();
   }
-  
-  public String getHostSpecificPart() 
+
+  public String getHostSpecificPart()
   {
     StringBuffer schemespec = new StringBuffer();
 
@@ -892,10 +892,10 @@ import com.rho.Tokenizer;
     	schemespec.append(m_scheme);
     	schemespec.append(':');
       }
-    
+
     if (m_host != null || m_regAuthority != null) {
       schemespec.append("//");
-    
+
       // Server based authority.
       if (m_host != null) {
 
@@ -903,9 +903,9 @@ import com.rho.Tokenizer;
           schemespec.append(m_userinfo);
           schemespec.append('@');
         }
-        
+
         schemespec.append(m_host);
-        
+
         if (m_port != -1) {
           schemespec.append(':');
           schemespec.append(m_port);
@@ -917,24 +917,24 @@ import com.rho.Tokenizer;
       }
     }
 
-	return schemespec.toString();	    
+	return schemespec.toString();
   }
-  
+
   public String getLastNamePart()
   {
 	int nSlash = m_path.lastIndexOf('/');
 	if ( nSlash < 0 )
 	    nSlash = m_path.lastIndexOf('\\');
-	
+
 	String strRes;
 	if ( nSlash >= 0 )
 	    strRes = m_path.substring(nSlash+1);
 	else
 		strRes = m_path;
-	
+
 	return strRes;
   }
-  
+
   public String getUserinfo() {
     return m_userinfo;
   }
@@ -942,7 +942,7 @@ import com.rho.Tokenizer;
   public String getHost() {
     return m_host;
   }
-  
+
   public void setHost(String strHost) {
 	m_host = strHost;
   }
@@ -950,11 +950,11 @@ import com.rho.Tokenizer;
   public int getPort() {
     return m_port;
   }
-  
+
   public String getRegBasedAuthority() {
     return m_regAuthority;
   }
-  
+
   public String getPath() {
     return m_path;
   }
@@ -962,7 +962,7 @@ import com.rho.Tokenizer;
   public void setPath(String path) {
 	    m_path = path;
   }
-  
+
   public String getQueryString() {
     return m_queryString;
   }
@@ -1008,18 +1008,18 @@ import com.rho.Tokenizer;
   public boolean equals(Object p_test) {
     if (p_test instanceof URI) {
       URI testURI = (URI) p_test;
-      if ( ((m_scheme == testURI.m_scheme) || 
+      if ( ((m_scheme == testURI.m_scheme) ||
             (m_scheme != null && m_scheme.equals(testURI.m_scheme))) &&
-           ((m_userinfo == testURI.m_userinfo) || 
+           ((m_userinfo == testURI.m_userinfo) ||
             (m_userinfo != null && m_userinfo.equals(testURI.m_userinfo))) &&
-           ((m_host == testURI.m_host) || 
+           ((m_host == testURI.m_host) ||
             (m_host != null && m_host.equals(testURI.m_host))) &&
            (m_port == testURI.m_port )&&
-           ((m_path == testURI.m_path) || 
+           ((m_path == testURI.m_path) ||
             (m_path != null && m_path.equals(testURI.m_path))) &&
-           ((m_queryString == testURI.m_queryString) || 
-            (m_queryString != null && m_queryString.equals(testURI.m_queryString))) 
-//            && ((m_fragment == testURI.m_fragment) || 
+           ((m_queryString == testURI.m_queryString) ||
+            (m_queryString != null && m_queryString.equals(testURI.m_queryString)))
+//            && ((m_fragment == testURI.m_fragment) ||
 //            (m_fragment != null && m_fragment.equals(testURI.m_fragment)))
             ){
           return true;
@@ -1065,7 +1065,7 @@ import com.rho.Tokenizer;
     // double-slashes which means generic uri
     return (m_host != null);
   }
-  
+
   public static boolean isConformantSchemeName(String p_scheme) {
     if (p_scheme == null || p_scheme.trim().length() == 0) {
       return false;
@@ -1096,15 +1096,15 @@ import com.rho.Tokenizer;
     if (addrLength == 0) {
       return false;
     }
-    
+
     // Check if the host is a valid IPv6reference.
 //    if (address.startsWith("[")) {
 //      return isWellFormedIPv6Reference(address);
 //    }
 
     // Cannot start with a '.', '-', or end with a '-'.
-    if (address.startsWith(".") || 
-        address.startsWith("-") || 
+    if (address.startsWith(".") ||
+        address.startsWith("-") ||
         address.endsWith("-")) {
       return false;
     }
@@ -1124,14 +1124,14 @@ import com.rho.Tokenizer;
       // hostname      = *( domainlabel "." ) toplabel [ "." ]
       // domainlabel   = alphanum | alphanum *( alphanum | "-" ) alphanum
       // toplabel      = alpha | alpha *( alphanum | "-" ) alphanum
-      
-      // RFC 2396 states that hostnames take the form described in 
+
+      // RFC 2396 states that hostnames take the form described in
       // RFC 1034 (Section 3) and RFC 1123 (Section 2.1). According
       // to RFC 1034, hostnames are limited to 255 characters.
       if (addrLength > 255) {
       	return false;
       }
-      
+
       // domain labels can contain alphanumerics and '-"
       // but must start and end with an alphanumeric
       char testChar;
@@ -1159,9 +1159,9 @@ import com.rho.Tokenizer;
     }
     return true;
   }
-  
+
   public static boolean isWellFormedIPv4Address(String address) {
-      
+
       int addrLength = address.length();
       char testChar;
       int numDots = 0;
@@ -1171,7 +1171,7 @@ import com.rho.Tokenizer;
       // any dot separator is preceded and followed by a digit and
       // 3) that we find 3 dots
       //
-      // RFC 2732 amended RFC 2396 by replacing the definition 
+      // RFC 2732 amended RFC 2396 by replacing the definition
       // of IPv4address with the one defined by RFC 2373. - mrglavas
       //
       // IPv4address = 1*3DIGIT "." 1*3DIGIT "." 1*3DIGIT "." 1*3DIGIT
@@ -1180,7 +1180,7 @@ import com.rho.Tokenizer;
       for (int i = 0; i < addrLength; i++) {
         testChar = address.charAt(i);
         if (testChar == '.') {
-          if ((i > 0 && !isDigit(address.charAt(i-1))) || 
+          if ((i > 0 && !isDigit(address.charAt(i-1))) ||
               (i+1 < addrLength && !isDigit(address.charAt(i+1)))) {
             return false;
           }
@@ -1201,9 +1201,9 @@ import com.rho.Tokenizer;
         else if (numDigits == 3) {
           char first = address.charAt(i-2);
           char second = address.charAt(i-1);
-          if (!(first < '2' || 
-               (first == '2' && 
-               (second < '5' || 
+          if (!(first < '2' ||
+               (first == '2' &&
+               (second < '5' ||
                (second == '5' && testChar <= '5'))))) {
             return false;
           }
@@ -1211,7 +1211,7 @@ import com.rho.Tokenizer;
       }
       return (numDots == 3);
   }
-  
+
   private static boolean isDigit(char p_char) {
     return p_char >= '0' && p_char <= '9';
   }
@@ -1268,12 +1268,12 @@ import com.rho.Tokenizer;
     }
     return true;
   }
-  
+
   static public String urlEncode(String fullPath)
   {
 	  StringBuffer sb = new StringBuffer();
 	  int len = fullPath.length();
-	  
+
 	  char c;
 	  for  (int index=0; index < len ; index++){
 		  c = fullPath.charAt(index);
@@ -1293,7 +1293,7 @@ import com.rho.Tokenizer;
 					// otherwise need to add a leading 0
 				}
 			}
-			  
+
 	  }
 	  return sb.toString();
   }
@@ -1302,18 +1302,18 @@ import com.rho.Tokenizer;
   {
 	  StringBuffer sb = new StringBuffer();
 	  int len = fullPath.length();
-	  
+
 	  for  (int index=0; index < len ; index++)
 	  {
     	char c1 = fullPath.charAt(index);
-		if (c1 != '%') 
+		if (c1 != '%')
 		{
 			sb.append(c1);
 			continue;
 		}
 		index++;
 		c1 = fullPath.charAt(index);
-		
+
 		if (c1 >= '0' && c1 <= '9')
 			c1 = (char)(c1 - '0');
 		else if (c1 >= 'a' && c1 <= 'f')
@@ -1322,7 +1322,7 @@ import com.rho.Tokenizer;
 			c1 = (char)(c1 - 'A' + 10);
 		else
 			break;
-		
+
 		index++;
 		char c2 = fullPath.charAt(index);
 		if (c2 >= '0' && c2 <= '9')
@@ -1333,28 +1333,28 @@ import com.rho.Tokenizer;
 			c2 = (char)(c2 - 'A' + 10);
 		else
 			break;
-			
+
 		char c = (char)((c1 << 4) | c2);
 		sb.append(c);
 	}
-	  
+
 	return sb.toString();
   }
-  
+
   static public String urlEscapeSymbols(String fullPath)
   {
 	  StringBuffer sb = new StringBuffer();
 	  int len = fullPath.length();
-	  
+
 	  char c;
       for  (int index=0; index < len ; index++)
       {
           c = fullPath.charAt(index);
           if ( (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') ||
-               c == '_' || c == '.') 
+               c == '_' || c == '.')
           {
               sb.append(c);
-          }else 
+          }else
           {
         	  sb.append('_');;
           }
@@ -1362,12 +1362,12 @@ import com.rho.Tokenizer;
 
       return sb.toString();
   }
-  
+
   static public String ampEncode(String fullPath)
   {
 	  StringBuffer sb = new StringBuffer();
 	  int len = fullPath.length();
-	  
+
 	  char c;
 	  for( int index=0; index < len ; index++ )
 	  {
@@ -1377,10 +1377,10 @@ import com.rho.Tokenizer;
 		  else
 			  sb.append(c);
 	  }
-	  
+
 	  return sb.toString();
   }
-  
+
   public static boolean isLocalHost(String strUrl)
   {
 	  return strUrl.startsWith("http://localhost") ||
@@ -1396,7 +1396,7 @@ import com.rho.Tokenizer;
 	  String fullPath = m_scheme + "://" + m_host + ":" + m_port + m_path;
 	  StringBuffer sb = new StringBuffer();
 	  int len = fullPath.length();
-	  
+
 	  char c;
 	  for  (int index=0; index < len ; index++){
 		  c = fullPath.charAt(index);
@@ -1411,7 +1411,7 @@ import com.rho.Tokenizer;
 					|| (c >= 'A' && c <= 'Z')
 					|| (c >= 'a' && c <= 'z')
 					|| (c >= '0' && c <= '9')
-					|| c == '_' || c == '=' 
+					|| c == '_' || c == '='
 					|| c == '?') {
 				sb.append(c);
 			} else {
@@ -1423,12 +1423,12 @@ import com.rho.Tokenizer;
 					// otherwise need to add a leading 0
 				}
 			}
-			  
+
 	  }
 	  return sb.toString();
   }
   */
-  
+
   public void appendFragment(String fragment) {
 	  this.m_fragment = fragment;
   }
@@ -1436,8 +1436,8 @@ import com.rho.Tokenizer;
 	//"auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT, auth_token=887b2ffd30a7b97be9a0986d7746a934421eec7d; path=/; expires=Sat, 24 Oct 2009 20:56:55 GMT, rhosync_session=BAh7BzoMdXNlcl9pZGkIIgpmbGFzaElDOidBY3Rpb25Db250cm9sbGVyOjpGbGFzaDo6Rmxhc2hIYXNoewAGOgpAdXNlZHsA--f9b67d99397fc534107fb3b7483ccdae23b4a761; path=/; expires=Sun, 10 Oct 2010 19:10:58 GMT; HttpOnly");
 	//"auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT");
 	//"rhosync_session=BAh7CToNcGFzc3dvcmQiFTiMYru1W11zuoAlN%2FPtgjc6CmxvZ2luIhU4jGK7tVtdc7qAJTfz7YI3Ogx1c2VyX2lkaQYiCmZsYXNoSUM6J0FjdGlvbkNvbnRyb2xsZXI6OkZsYXNoOjpGbGFzaEhhc2h7AAY6CkB1c2VkewA%3D--a7829a70171203d72cd4e83d07b18e8fcf5e2f78; path=/; expires=Thu, 02 Sep 2010 23:51:31 GMT; HttpOnly");
-  
-	public static String parseCookie(String value) 
+
+	public static String parseCookie(String value)
 	{
 		String strRes = "";
 		Tokenizer stringtokenizer = new Tokenizer(value, ";");
@@ -1461,19 +1461,19 @@ import com.rho.Tokenizer;
 					else
 						nEnd = tok.length()-1;
 				}
-				
+
 				tok = tok.substring(0,nExp) + tok.substring(nEnd+1);
 				tok = tok.trim();
 			}
-			
+
 			int nEq = tok.indexOf('=');
 			if ( nEq < 0 )
 				continue;
-			
-			strRes += tok + ";";  
+
+			strRes += tok + ";";
 		}
-		
+
 		return strRes;
 	}
-  
+
  }

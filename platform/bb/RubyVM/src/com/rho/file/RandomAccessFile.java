@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -40,31 +40,31 @@ import j2me.nio.channels.*;
 
 import j2me.io.File;
 
-public class RandomAccessFile  
+public class RandomAccessFile
 {
-	//private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	//private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 	//	new RhoLogger("RAFile");
-	
+
 	private IRAFile m_impl = null;
-	
+
     private boolean        m_bWriteAccess;
-    
+
     public RandomAccessFile(String name, String mode)
         throws FileNotFoundException
     {
         this(name != null ? new File(name) : null, mode, false);
     }
-        
+
     public RandomAccessFile(File file, String mode)
         throws FileNotFoundException
     {
     	this(file, mode, false);
     }
-    
+
     public RandomAccessFile(File file, String mode, boolean bFileSystem)
     	throws FileNotFoundException
     {
-    
+
     	String name = (file != null ? file.getAbsolutePath() : null);
     	int imode = -1;
     	if (mode.equals("r") || mode.equals("rb"))
@@ -78,7 +78,7 @@ public class RandomAccessFile
     	    imode = Connector.READ_WRITE;
     	    m_bWriteAccess = true;
     	}
-    	
+
     	if (imode < 0)
     	    throw new IllegalArgumentException("Illegal mode \"" + mode
     					       + "\" must be one of "
@@ -86,35 +86,35 @@ public class RandomAccessFile
         if (name == null) {
             throw new NullPointerException();
         }
-    	
+
         try {
         	if ( bFileSystem )
         		m_impl = RhoClassFactory.createFSRAFile();
         	else
         		m_impl = RhoClassFactory.createRAFile();
-        	
+
 		} catch (Exception e) {
 			throw new FileNotFoundException(e.getMessage());
 		}
         m_impl.open(name, mode);
     }
-    
+
     public long length() throws IOException
     {
    		return m_impl.size();
     }
-    
+
     public void close() throws IOException {
         m_impl.close();
     }
-    
+
     public void seek(long pos) throws IOException
     {
     	m_impl.seek(pos);
     }
-    
+
     public void write(byte b[]) throws IOException {
-    	writeBytes(b, 0, b.length); 
+    	writeBytes(b, 0, b.length);
     }
     public void write(byte b[], int off, int len) throws IOException {
     	writeBytes(b, off, len);
@@ -122,7 +122,7 @@ public class RandomAccessFile
     public final void readFully(byte b[]) throws IOException {
     	readFully(b, 0, b.length);
     }
-    
+
     public final void writeInt(int v) throws IOException {
     	write((v >>> 24) & 0xFF);
     	write((v >>> 16) & 0xFF);
@@ -135,17 +135,17 @@ public class RandomAccessFile
     {
     	if ( !this.m_bWriteAccess )
 			throw new IOException("Illegal mode");
-    	
+
     	m_impl.write(b);
     }
-    
+
     private void writeBytes(byte b[], int off, int len) throws IOException
     {
     	if ( !this.m_bWriteAccess )
 			throw new IOException("Illegal mode");
     	m_impl.write(b, off, len);
     }
-    
+
     public final void writeLong(long v) throws IOException {
     	write((int)(v >>> 56) & 0xFF);
     	write((int)(v >>> 48) & 0xFF);
@@ -157,18 +157,18 @@ public class RandomAccessFile
     	write((int)(v >>>  0) & 0xFF);
     	//written += 8;
     }
-    
+
     public final void readFully(byte b[], int off, int len) throws IOException {
         int n = 0;
 		do {
 		    int count = this.read(b, off + n, len - n);
 		    if (count < 0)
 		    	throw new EOFException();
-		    
+
 		    n += count;
 		} while (n < len);
     }
-    
+
     public int read(byte b[], int off, int len) throws IOException {
     	return readBytes(b, off, len);
     }
@@ -176,7 +176,7 @@ public class RandomAccessFile
     public final long readLong() throws IOException {
     	return ((long)(readInt()) << 32) + (readInt() & 0xFFFFFFFFL);
     }
-    
+
     public final int readInt() throws IOException {
     	int ch1 = this.read();
     	int ch2 = this.read();
@@ -186,7 +186,7 @@ public class RandomAccessFile
     	    throw new EOFException();
     	return ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
     }
-    
+
     private int readBytes(byte b[], int off, int len) throws IOException{
         return m_impl.read(b, off, len);
     }
@@ -195,8 +195,8 @@ public class RandomAccessFile
     {
         return m_impl.read();
     }
-    
-    public void sync() throws IOException 
+
+    public void sync() throws IOException
     {
         m_impl.sync();
     }
@@ -205,27 +205,27 @@ public class RandomAccessFile
     {
         return m_impl.seekPos();
     }
-    
+
     public void setLength(long newLength) throws IOException
     {
         m_impl.setSize(newLength);
     }
-    
+
     public final FileChannel getChannel() {
         //return new FileChannel();
     	throw new RuntimeException("Not Implemented");
     }
-    
+
     public final void writeBytes(String s) throws IOException {
-    	byte[] buf = s.getBytes(); 
+    	byte[] buf = s.getBytes();
     	writeBytes(buf, 0, buf.length);
     }
-    
+
     public int read(byte b[]) throws IOException {
     	return readBytes(b, 0, b.length);
     }
-    
-    public final String readLine() throws IOException 
+
+    public final String readLine() throws IOException
     {
     	StringBuffer input = new StringBuffer();
     	int c = -1;
@@ -255,11 +255,11 @@ public class RandomAccessFile
     	}
     	return input.toString();
     }
-    
+
     public void listenForSync(String name) throws IOException {
     	m_impl.listenForSync(name);
     }
-    
+
     public void stopListenForSync(String name) throws IOException {
     	m_impl.stopListenForSync(name);
     }

@@ -48,5 +48,5 @@ describe "String#replace" do
       end
     end
   end
-=end  
+=end
 end

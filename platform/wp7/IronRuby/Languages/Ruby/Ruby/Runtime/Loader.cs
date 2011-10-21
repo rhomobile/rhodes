@@ -1,11 +1,11 @@
 /* ****************************************************************************
  *
- * Copyright (c) Microsoft Corporation. 
+ * Copyright (c) Microsoft Corporation.
  *
- * This source code is subject to terms and conditions of the Apache License, Version 2.0. A 
- * copy of the license can be found in the License.html file at the root of this distribution. If 
- * you cannot locate the  Apache License, Version 2.0, please send an email to 
- * ironruby@microsoft.com. By using this source code in any fashion, you are agreeing to be bound 
+ * This source code is subject to terms and conditions of the Apache License, Version 2.0. A
+ * copy of the license can be found in the License.html file at the root of this distribution. If
+ * you cannot locate the  Apache License, Version 2.0, please send an email to
+ * ironruby@microsoft.com. By using this source code in any fashion, you are agreeing to be bound
  * by the terms of the Apache License, Version 2.0.
  *
  * You must not remove this notice, or any other, from this software.
@@ -117,7 +117,7 @@ namespace IronRuby.Runtime {
         public IDictionary<string, Scope>/*!*/ LoadedScripts {
             get {
                 if (_loadedScripts == null) {
-                    Interlocked.CompareExchange(ref _loadedScripts, 
+                    Interlocked.CompareExchange(ref _loadedScripts,
                         new SynchronizedDictionary<string, Scope>(new Dictionary<string, Scope>(DomainManager.Platform.PathComparer)), null
                     );
                 }
@@ -151,7 +151,7 @@ namespace IronRuby.Runtime {
 
         private RubyArray/*!*/ MakeLoadPaths(RubyOptions/*!*/ options) {
             var loadPaths = new RubyArray();
-            
+
             if (options.HasSearchPaths) {
                 foreach (string path in options.SearchPaths) {
                     loadPaths.Add(_context.EncodePath(path));
@@ -335,7 +335,7 @@ namespace IronRuby.Runtime {
             Assembly assembly = GetAssembly(assemblyName, throwOnError, tryPartialName);
             return (assembly != null && LoadAssembly(assembly, typeName, throwOnError)) ? assembly : null;
         }
-        
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods")]
         private Assembly GetAssembly(string/*!*/ assemblyName, bool throwOnError, bool tryPartialName) {
 #if SILVERLIGHT
@@ -358,7 +358,7 @@ namespace IronRuby.Runtime {
 #else
 #pragma warning disable 618,612 // csc, gmcs
             Assembly assembly;
-            try { 
+            try {
                 assembly = Assembly.LoadWithPartialName(assemblyName);
             } catch (Exception e) {
                 if (throwOnError) {
@@ -374,7 +374,7 @@ namespace IronRuby.Runtime {
             return assembly;
 #endif
         }
-        
+
         private bool LoadAssembly(Assembly/*!*/ assembly, string typeName, bool throwOnError) {
             Utils.Log(String.Format("Loading assembly '{0}' and type '{1}'", assembly, typeName), "LOADER");
             Type initializerType;
@@ -410,7 +410,7 @@ namespace IronRuby.Runtime {
             (?<assembly>
               [^,=]+\s*                   # assembly name
               (,\s*[\w]+\s*=\s*[^,]+\s*)+ # properties
-            )", 
+            )",
             RegexOptions.IgnorePatternWhitespace | RegexOptions.Singleline
         );
 
@@ -452,7 +452,7 @@ namespace IronRuby.Runtime {
                 try {
                     HookAssemblyResolveInternal();
                 } catch (System.Security.SecurityException) {
-                    // We may not have SecurityPermissionFlag.ControlAppDomain. 
+                    // We may not have SecurityPermissionFlag.ControlAppDomain.
                 }
             }
 
@@ -494,7 +494,7 @@ namespace IronRuby.Runtime {
 
         internal Assembly ResolveAssembly(string/*!*/ fullName) {
             Utils.Log(String.Format("Resolving assembly: '{0}'", fullName), "RESOLVE_ASSEMBLY");
-            
+
             AssemblyName assemblyName = new AssemblyName(fullName);
             ResolvedFile file = FindFile(assemblyName.Name, true, ArrayUtils.EmptyStrings).FirstOrDefault();
             if (file == null || file.SourceUnit != null) {
@@ -527,7 +527,7 @@ namespace IronRuby.Runtime {
             public ResolvedFile(SourceUnit/*!*/ sourceUnit, string/*!*/ fullPath, string appendedExtension) {
                 Assert.NotNull(sourceUnit, fullPath);
                 SourceUnit = sourceUnit;
-                Path = fullPath; 
+                Path = fullPath;
                 AppendedExtension = appendedExtension;
             }
 
@@ -618,7 +618,7 @@ namespace IronRuby.Runtime {
 
         private ScriptCode/*!*/ CompileRubySource(SourceUnit/*!*/ sourceUnit, LoadFlags flags) {
             Assert.NotNull(sourceUnit);
-            
+
             // TODO: check file timestamp
             string fullPath = Platform.GetFullPath(sourceUnit.Path);
             CompiledFile compiledFile;
@@ -744,8 +744,8 @@ namespace IronRuby.Runtime {
             // MRI doesn't load file w/o .rb extension:
             if (IsKnownExtension(extension, knownExtensions)) {
                 return GetSourceUnit(path, expandedPath, extension, false);
-            } 
-            
+            }
+
             if (_LibraryExtensions.IndexOf(extension, DlrConfiguration.FileExtensionComparer) != -1) {
                 if (Platform.FileExists(expandedPath)) {
                     return new ResolvedFile(expandedPath, null);
@@ -875,7 +875,7 @@ namespace IronRuby.Runtime {
         /// If the SCRIPT_LINES__ constant is set, we need to publish the file being loaded,
         /// along with the contents of the file
         /// </summary>
-        private void AddScriptLines(SourceUnit file) {            
+        private void AddScriptLines(SourceUnit file) {
             ConstantStorage storage;
             if (!_context.ObjectClass.TryResolveConstant(null, "SCRIPT_LINES__", out storage)) {
                 return;
@@ -920,7 +920,7 @@ namespace IronRuby.Runtime {
         private bool AlreadyLoaded(string/*!*/ path, string fullPath, LoadFlags flags) {
             return AlreadyLoaded(path, fullPath, flags, ArrayUtils.EmptyStrings);
         }
-        
+
         private bool AlreadyLoaded(string/*!*/ path, string fullPath, LoadFlags flags, string[]/*!*/ sourceFileExtensions) {
             Debug.Assert(fullPath == null || RubyUtils.GetExtension(path) == RubyUtils.GetExtension(fullPath));
             return (flags & LoadFlags.LoadOnce) != 0 && AnyFileLoaded(GetPathsToTestLoaded(path, fullPath, flags, sourceFileExtensions));
@@ -1006,7 +1006,7 @@ namespace IronRuby.Runtime {
                     return;
                 }
             }
-            
+
             LibraryInitializer initializer;
             try {
                 initializer = Activator.CreateInstance(initializerType) as LibraryInitializer;
@@ -1017,7 +1017,7 @@ namespace IronRuby.Runtime {
             }
 
             if (initializer == null) {
-                throw RubyExceptions.CreateLoadError(String.Format("Specified type {0} is not a subclass of {1}", 
+                throw RubyExceptions.CreateLoadError(String.Format("Specified type {0} is not a subclass of {1}",
                     initializerType.FullName,
                     typeof(LibraryInitializer).FullName)
                 );

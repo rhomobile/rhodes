@@ -1,18 +1,18 @@
 ﻿/*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -43,21 +43,21 @@ using IronRuby.Builtins;
 
 namespace rho.net
 {
-    public class CAsyncHttp : CThreadQueue 
+    public class CAsyncHttp : CThreadQueue
     {
-        private RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+        private RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		    new RhoLogger("AsyncHttp");
         public RhoLogger getLog() { return LOG;  }
 	    private static CRhodesApp RHODESAPP(){ return CRhodesApp.Instance; }
-	    
+
         static CAsyncHttp m_pInstance;
         private bool m_bInternal = false;
 
         public static CAsyncHttp Create()
         {
-	        if ( m_pInstance != null) 
+	        if ( m_pInstance != null)
 	           return m_pInstance;
-	
+
 	        m_pInstance = new CAsyncHttp();
 	        return m_pInstance;
         }
@@ -73,7 +73,7 @@ namespace rho.net
         }
 
         public static CAsyncHttp getInstance(){ return m_pInstance; }
-    
+
         public CAsyncHttp(bool bInternal = false)
         {
             m_bInternal = bInternal;
@@ -101,10 +101,10 @@ namespace rho.net
             lock(getCommandLock())
             {
 	            HttpCommand pCmd = (HttpCommand)getCurCommand();
-	
+
 	            if ( pCmd != null && ( szCallback.compareTo("*") == 0 || pCmd.m_strCallback.compareTo(szCallback) == 0) )
 	                pCmd.cancel();
-	
+
 	            if ( szCallback.compareTo("*") == 0 )
 	                getCommands().Clear();
 	            else
@@ -112,13 +112,13 @@ namespace rho.net
 	                for (int i = getCommands().size()-1; i >= 0; i--)
 	                {
 	                    HttpCommand pCmd1 = (HttpCommand)getCommands().get(i);
-	
+
 	                    if ( pCmd1 != null && pCmd1.m_strCallback.compareTo(szCallback) == 0 )
     	                    getCommands().RemoveAt(i);
 	                }
-	
+
 	            }
-            }   
+            }
         }
 
         public MutableString addHttpCommand(HttpCommand pCmd)
@@ -175,15 +175,15 @@ namespace rho.net
 
             private NetRequest m_pNetRequest;
             String m_strResBody;
-            private Object m_valBody;    
-        
+            private Object m_valBody;
+
             public RhoParams    m_params;
             bool m_bInternal = false;
             public void setInternal(bool b) { m_bInternal = b;  }
 
             public HttpCommand(String strCmd, RhoParams p)
             {
-                m_params = new RhoParams(p); 
+                m_params = new RhoParams(p);
                 m_eCmd = translateCommand(strCmd);
                 m_strCallback = m_params.getString("callback");
                 m_strCallbackParams = m_params.getString("callback_param");
@@ -215,7 +215,7 @@ namespace rho.net
     	    	    String strContType = null;
                     m_mapHeaders.TryGetValue("content-type", out strContType);
     	    	    if ( strContType != null && strContType.indexOf("application/json") >=0 )
-    	    	    {   
+    	    	    {
     	    		    try{
                             m_valBody = fastJSON.RJSONTokener.JsonDecode(resp.getCharData());
     	    			    return;
@@ -228,7 +228,7 @@ namespace rho.net
 
     	        m_valBody = CRhoRuby.create_string(resp.getCharData());
     	    }
-        
+
             public void execute()
             {
                 NetResponse resp = null;
@@ -238,23 +238,23 @@ namespace rho.net
 	                {
 	                    case hcGet:
 	            	        ///m_pNetRequest.setIgnoreSuffixOnSim(false);
-	                        resp = m_pNetRequest.doRequest( m_params.getString("http_command", "GET"), 
+	                        resp = m_pNetRequest.doRequest( m_params.getString("http_command", "GET"),
 	                        m_params.getString("url"), m_params.getString("body"), null, m_mapHeaders);
 	                        break;
 	                    case hcPost:
 	            	        ///m_pNetRequest.setIgnoreSuffixOnSim(false);
-	                        resp = m_pNetRequest.doRequest(m_params.getString("http_command", "POST"), 
+	                        resp = m_pNetRequest.doRequest(m_params.getString("http_command", "POST"),
 	                        m_params.getString("url"), m_params.getString("body"), null, m_mapHeaders);
 	                        break;
-	
+
 	                    case hcDownload:
 	                        resp = m_pNetRequest.pullFile(m_params.getString("url"), m_params.getString("filename"), null, m_mapHeaders);
-	                        break;  
-	
+	                        break;
+
 	            case hcUpload:
 	                {
                         Vector<NetRequest.MultipartItem>/*Ptr<net::CMultipartItem*>*/ arMultipartItems = new Vector<NetRequest.MultipartItem>();
-	
+
 	                    RhoParamArray arParams = new RhoParamArray( m_params, "multipart");
 	                    if ( arParams.size() > 0 )
 	                    {
@@ -274,7 +274,7 @@ namespace rho.net
 	                                pItem.m_strFilePath = oItem.getString("filename");
 	                                pItem.m_strContentType = oItem.getString("content_type", "application/octet-stream");
 	                            }
-	
+
 	                            pItem.m_strName = oItem.getString("name");
 	                            pItem.m_strFileName = oItem.getString("filename_base");
 	                            arMultipartItems.addElement(pItem);
@@ -287,7 +287,7 @@ namespace rho.net
 	                        pItem.m_strName = m_params.getString("name");
 	                        pItem.m_strFileName = m_params.getString("filename_base");
 	                        arMultipartItems.addElement(pItem);
-	
+
 	                        String strBody = m_params.getString("body");
 	                        if ( strBody.length() > 0 )
 	                        {
@@ -297,12 +297,12 @@ namespace rho.net
 	                            arMultipartItems.addElement(pItem2);
 	                        }
 	                    }
-	
+
 	                    resp = m_pNetRequest.pushMultipartData( m_params.getString("url"), arMultipartItems, null, m_mapHeaders );
 	                    break;
 	                }
 	            }
-	
+
 	            if ( !m_pNetRequest.isCancelled())
 	            {
 				    processResponse(resp);
@@ -318,7 +318,7 @@ namespace rho.net
     	    	callNotify(null, RhoAppAdapter.ERR_RUNTIME);
     	    }
         }
-        
+
         public void cancel()
         {
             if (m_pNetRequest!=null )
@@ -374,7 +374,7 @@ namespace rho.net
     	        }
             }
         }
-        
+
         public MutableString getRetValue()
         {
             if (m_strCallback.length() == 0)

@@ -42,7 +42,7 @@ describe "IO#write on a file" do
   end
 end
 
-if System.get_property('platform') != 'ANDROID'      
+if System.get_property('platform') != 'ANDROID'
 describe "IO#write" do
   it_behaves_like :io_write, :write
 end

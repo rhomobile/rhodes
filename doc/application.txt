@@ -10,7 +10,7 @@ As an example, /sugar could be the root folder for an application that provides 
 By convention, files for each Model include a controller, a model class and view templates described below.
 
 ### Controller
-Developer may create any number of controller actions by simple defining new methods in the controller class. Each action associated with url and can be performed by calling that url from the View in the WebView control. WebView control is a Web Browser imbedded in the application UI.  
+Developer may create any number of controller actions by simple defining new methods in the controller class. Each action associated with url and can be performed by calling that url from the View in the WebView control. WebView control is a Web Browser imbedded in the application UI.
 
 For example, if you have Account Model your controller actions will be in account_controller.rb file. To defined action 'list' you will create method 'list' in the account_controller.rb file:
 	:::ruby
@@ -19,9 +19,9 @@ For example, if you have Account Model your controller actions will be in accoun
 		#...
 		#return result to the browser
 		render :action => :list
-	end  
+	end
 
-From the View list action will be available as 'Account/list' url.	
+From the View list action will be available as 'Account/list' url.
 
 Each generated model controller has several actions to perform basic CRUD (create, read, update and delete) on the object. These actions are:
 
@@ -33,10 +33,10 @@ Each generated model controller has several actions to perform basic CRUD (creat
 * show - views the object
 * delete - deletes the object
 
-Generated set of actions (and the associated URL paths) follows the Rails scaffolding pattern for creating CRUD actions for objects and the associated "map resources" convention for routing to those actions. 
+Generated set of actions (and the associated URL paths) follows the Rails scaffolding pattern for creating CRUD actions for objects and the associated "map resources" convention for routing to those actions.
 
 ### Model
-To store data locally Rhodes uses Sqlite on iPhone, Android, and Windows Mobile. On Blackberry version up to 5.0 Rhodes uses Hsql. On version 5.0 and higher it is possible to use Sqlite or Hsql. To access and manipulate stored data you may use [Rhom](rhom). Rhom is a mini ORM (object relational mapper) for Rhodes. It provides a high level way to make the local database easier to program to.  
+To store data locally Rhodes uses Sqlite on iPhone, Android, and Windows Mobile. On Blackberry version up to 5.0 Rhodes uses Hsql. On version 5.0 and higher it is possible to use Sqlite or Hsql. To access and manipulate stored data you may use [Rhom](rhom). Rhom is a mini ORM (object relational mapper) for Rhodes. It provides a high level way to make the local database easier to program to.
 
 By convention, your model class is located in the model's folder. For the model "UserBase" the file would be called "user_base.rb"
 
@@ -66,9 +66,9 @@ These files are all created by the [rhodes generator](generator). Inside the tem
 To send View to the browser, use render method in your controller. For example, to render list.erb, make following call in your controller:
 
 	:::ruby
-	render :action => :list 
-	
-Rhodes framework will load list.erb template, process it, and send resulted HTML to the browser.	
+	render :action => :list
+
+Rhodes framework will load list.erb template, process it, and send resulted HTML to the browser.
 
 ## AppApplication class
 To coordinate application startup Rhodes framework introduced Application class. This class persistent all the time while app is running and across all requests to the controller actions. You can store session data here. To get an instance of the AppApplication object in your controller, use:
@@ -83,8 +83,8 @@ AppAplication class defined in the application.rb file:
 	  	# put initialization code here
 	  end
 	end
-	
-You may listen for activation/deactivation/upgrade events if you define following methods on AppApplication class. 
+
+You may listen for activation/deactivation/upgrade events if you define following methods on AppApplication class.
 
 Method on_ui_created will be invoked after application's UI was created (usually on app start)
 	:::ruby
@@ -92,7 +92,7 @@ Method on_ui_created will be invoked after application's UI was created (usually
 		# put your application UI creation code here
 		# for example, create tab bar:
 		# NativeBar.create(Rho::RhoApplication::TABBAR_TYPE, tabs)
-		
+
 		super # To navigate to start_path from rhoconfig.txt
 	end
 
@@ -106,11 +106,11 @@ Method on_ui_destroyed will be invoked when application's UI was destroyed (usua
 **NOTE: On iPhone, on_ui_destroyed invoked when also when application goes to background, because if application killed in background by user (via multitasking UI) then no any events sended to application. So if you want save state of your application, you can do it in on_ui_destoyed, but keep in mind - is just save - do not process destroy of your UI in this method**
 
 
-Method on_activate_app will be invoked after application is activated. 
+Method on_activate_app will be invoked after application is activated.
 	:::ruby
 	def on_activate_app
 		# put your application activation code here
-	end 
+	end
 
 Method on_deactivate_app will be invoked before application goes to background.
 	:::ruby
@@ -118,12 +118,12 @@ Method on_deactivate_app will be invoked before application goes to background.
 	  	# Don't call any UI operations here, they'll be ignored
 	  	# For example, WebView.refresh
 
-	  	# to stop sync background thread call 
+	  	# to stop sync background thread call
 		# SyncEngine.stop_sync; SyncEngine.set_pollinterval(0)
-	
-	  	# To stop local web server when application switched to 
+
+	  	# To stop local web server when application switched to
 		# background return "stop_local_server"
-	  	# return "stop_local_server" 
+	  	# return "stop_local_server"
 	end
 
 Method on_reinstall_config_update may be called after application was upgraded. If application bundle contain rhoconfig with properties modified locally on the phone conflicts is a hash name to array of conflicted values(old local value, new upgrade value). By default local values are kept in place but you may overwrite configuration with new values and any other steps required for your application upgrade.
@@ -169,7 +169,7 @@ That's how it's working. Important thing to understand is that *on_activate_app*
 always called **after** *on_ui_created* and *on_deactivate_app* always called **before** *on_ui_destroyed*
 
 ## Application Helpers
-Few helper methods defined as part of the Rhodes framework. There are just a few of them because Rhodes framework designed for mobile environment where size is still of some concern and we tried to keep framework as tight as possible. 
+Few helper methods defined as part of the Rhodes framework. There are just a few of them because Rhodes framework designed for mobile environment where size is still of some concern and we tried to keep framework as tight as possible.
 
 Generated application comes with number of other helpers (see app/helpers folder). These helpers are not used by the framework internally and may be modified/deleted/extended at will.
 
@@ -178,31 +178,31 @@ Examples of how to use the link_to method:
 
 	link_to "Visit Other Site", "http://www.rhomobile.com/"
 	==> <a href="http://www.rhomobile.com/" >Visit Other Site</a>
-  
+
 	link_to "Help", { :action => "help" }
 	==> <a href="/app/model/help" >Help</a>
-  
+
 	link_to "Delete", { :action => "delete", :id => '{12}' }
 	==> <a href="/app/model/{12}/delete"  onclick="
-		var f = document.createElement('form'); 
-	    f.style.display = 'none'; this.parentNode.appendChild(f); 
-		f.method = 'POST'; f.action = this.href; f.submit(); 
+		var f = document.createElement('form');
+	    f.style.display = 'none'; this.parentNode.appendChild(f);
+		f.method = 'POST'; f.action = this.href; f.submit();
 		return false;">Delete</a>
- 
+
 	link_to "Show", { :action => "show", :id => '{12}'},
-	"style=\"height:4px;width:7px;border-width:0px;\"" 
-	==> <a href="/app/model/{12}/show" 
+	"style=\"height:4px;width:7px;border-width:0px;\""
+	==> <a href="/app/model/{12}/show"
 		style="height:4px;width:7px;border-width:0px;">Show</a>
-  
-	link_to "Delete", { :action => "delete", :id => '{12}' }, 
+
+	link_to "Delete", { :action => "delete", :id => '{12}' },
 	"class=\"delete_link\""
-	==> <a href="/app/model/{12}/delete" class="delete_link" 
-		onclick="var f = document.createElement('form'); 
-	    f.style.display = 'none'; this.parentNode.appendChild(f); 
+	==> <a href="/app/model/{12}/delete" class="delete_link"
+		onclick="var f = document.createElement('form');
+	    f.style.display = 'none'; this.parentNode.appendChild(f);
 		f.method = 'POST'; f.action = this.href; f.submit();
 		return false;\">Delete</a>"
-  
-	link_to "Invite",:action => :invite, 
+
+	link_to "Invite",:action => :invite,
 	:query => {:name=>'John Smith','address'=>"http://john.smith.com"}
 	==> <a href="/app/model/invite?
 		name=John%20Smith&address=http%3A%2F%2Fjohn.smith.com">
@@ -210,42 +210,42 @@ Examples of how to use the link_to method:
 
 ### url_for
 Examples of how to use the url_for method:
-    
+
 	url_for '/some_url'
 	==> /some_url
-    
+
 When generating a new URL, missing values may be filled in from the current request's parameters.
 For example, if the application name or model are not specified in the call parameters, they would be filled from the request.
-    
+
 	url_for :action => :index
 	==> /app/model
-  
+
 	url_for :action => :create
 	==> /app/model
- 
+
 	url_for :action => :new
 	==> /app/model/new
-  
+
 	url_for :action => :show, :id => '{12}'
 	==> /app/model/{12}/show
 
-	url_for :model => :another_model, 
+	url_for :model => :another_model,
 	:action => :show, :id => '{12}'
 	==> /app/another_model/{12}/show
-  
-	url_for :controller => :another_controller, 
+
+	url_for :controller => :another_controller,
 	:action => :show, :id => '{12}'
 	==> /app/another_controller/{12}/show
-  
-	url_for :application => :another_app, 
+
+	url_for :application => :another_app,
 	:model => :another_model, :action => :show, :id => '{12}'
 	==> /another_app/another_model/{12}/show
-   
-	url_for :action => :create, :query => 
+
+	url_for :action => :create, :query =>
 	{:name => 'John Smith', 'address' => "http://john.smith.com"}
 	==> /app/model?name=John%20Smith&address=http%3A%2F%2Fjohn.smith.com
-  
-	url_for :action => :show, :id => '{12}', :fragment => "an-anchor" 
+
+	url_for :action => :show, :id => '{12}', :fragment => "an-anchor"
 	==> /app/model/{12}/show#an-anchor
 
 ## Error handlers(400,500)
@@ -258,7 +258,7 @@ Rhodes can display the following error pages: app\E400.erb and app\E500.erb
 To get exception object use $! or Rho::RHO.current_exception
 
 ## RhoSupport class
-### Rho::RhoSupport.url_encode(url) 
+### Rho::RhoSupport.url_encode(url)
 Encode url replacing special characters to %XX
 
 ### Rho::RhoSupport.url_decode(url)
@@ -266,7 +266,7 @@ Decode url replacing %XX to special characters
 
 ## Per Platform Files
 
-On a per platform basis, you can use alternative files for any given file in your 'app' or 'public' folder. To do this, make a second file with the platform in the name of the file. 
+On a per platform basis, you can use alternative files for any given file in your 'app' or 'public' folder. To do this, make a second file with the platform in the name of the file.
 
 For example, to replace these files on the Android platform:
 

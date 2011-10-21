@@ -12,7 +12,7 @@ import com.xruby.runtime.lang.*;
 public class RubyMatchData extends RubyBasic {
     private MatchResult result_;
     private String      str_;
-    
+
     RubyMatchData(MatchResult m,String input) {
         super(RubyRuntime.MatchDataClass);
         result_ = m;
@@ -24,7 +24,7 @@ public class RubyMatchData extends RubyBasic {
     	cl.doClone(this);
     	return cl;
     }
-    
+
     //@RubyLevelMethod(name="to_s")
     public RubyString to_s() {
         return ObjectFactory.createString(result_.toString());
@@ -35,35 +35,35 @@ public class RubyMatchData extends RubyBasic {
     }
 
     //@RubyLevelMethod(name="[]")
-    public RubyValue aref(RubyValue arg) 
+    public RubyValue aref(RubyValue arg)
     {
     	if ( arg instanceof RubyFixnum )
     	{
 	        int index = arg.toInt();
 	        if (index < 0)
 	        	index += result_.groups();
-	        
+
 	        String res = result_.group(index);
 	        if ( res == null )
 	        	return RubyConstant.QNIL;
-	        
+
 	        return ObjectFactory.createString(res);
     	}else if ( arg instanceof RubyString )
     	{
     		//TODO: implement m = /(?<foo>a+)b/.match("ccaaab"); m["foo"]   #=> "aaa"
     		throw new RuntimeException("Not implemented");
     	}
-    	
+
     	RubyArray ar = (RubyArray)to_a();
     	return ar.aref(arg);
     }
 
-    public RubyValue aref(RubyValue arg1, RubyValue arg2) 
+    public RubyValue aref(RubyValue arg1, RubyValue arg2)
     {
     	RubyArray ar = (RubyArray)to_a();
     	return ar.aref(arg1, arg2);
     }
-    
+
     public RubyValue to_a() {
         RubyArray ar = new RubyArray();
     	for (int i = 0; i < result_.groups(); i++)
@@ -74,11 +74,11 @@ public class RubyMatchData extends RubyBasic {
     		else
     			ar.add( RubyConstant.QNIL );
     	}
-    	
+
     	return ar;
     }
 
-    public RubyValue captures() 
+    public RubyValue captures()
     {
         RubyArray ar = new RubyArray();
     	for (int i = 1; i < result_.groups(); i++)
@@ -89,34 +89,34 @@ public class RubyMatchData extends RubyBasic {
 	        else
 	        	ar.add(ObjectFactory.createString(res));
     	}
-    	
+
     	return ar;
     }
 
-    public RubyValue post_match() 
+    public RubyValue post_match()
     {
     	String res = "";
     	int nMatchEnd = result_.endOffset(result_.groups()-1);
     	if ( nMatchEnd >= 0 && nMatchEnd+1 <= str_.length() )
-    		res = str_.substring(nMatchEnd); 
+    		res = str_.substring(nMatchEnd);
 
         if ( res == null )
         	return RubyConstant.QNIL;
-    	
+
 		return ObjectFactory.createString(res);
     }
 
-    public RubyValue pre_match() 
+    public RubyValue pre_match()
     {
     	String res = "";
     	int nMatchEnd = result_.beginOffset(0);
     	if ( nMatchEnd >= 0 && nMatchEnd < str_.length() )
-    		res = str_.substring(0,nMatchEnd); 
-    			
+    		res = str_.substring(0,nMatchEnd);
+
         if ( res == null )
         	return RubyConstant.QNIL;
-    	
+
 		return ObjectFactory.createString(res);
     }
-    
+
 }

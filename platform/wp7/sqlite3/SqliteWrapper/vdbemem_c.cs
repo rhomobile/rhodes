@@ -888,7 +888,7 @@ return SQLITE_OK;
 
       return SQLITE_OK;
     }
-   
+
 static int sqlite3VdbeMemSetStr(
     Mem pMem,           /* Memory cell to set to string value */
     string z,           /* String pointer */

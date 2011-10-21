@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -38,7 +38,7 @@ namespace common{
 typedef CRITICAL_SECTION MutexType;
 #else
 typedef pthread_mutex_t MutexType;
-#endif 
+#endif
 
 class CMutex{
 public:
@@ -47,7 +47,7 @@ public:
 
     inline void Lock();    // Block if needed until free then acquire exclusively
     inline void Unlock();  // Release a lock acquired via Lock()
-	
+
 	MutexType* getNativeMutex(){ return &m_nativeMutex;}
 private:
 
@@ -66,13 +66,13 @@ CMutex::CMutex()             {
 	pthread_mutexattr_settype(&mutex_details,PTHREAD_MUTEX_RECURSIVE);
 	pthread_mutex_init(&m_nativeMutex, &mutex_details);
 	pthread_mutexattr_destroy(&mutex_details);
-	
-	//pthread_mutex_init(&m_nativeMutex, NULL); 
+
+	//pthread_mutex_init(&m_nativeMutex, NULL);
 }
 CMutex::~CMutex()            { pthread_mutex_destroy(&m_nativeMutex); }
 void CMutex::Lock()         { pthread_mutex_lock(&m_nativeMutex); }
 void CMutex::Unlock()       { pthread_mutex_unlock(&m_nativeMutex); }
-#endif 
+#endif
 
 class CMutexLock {
 public:

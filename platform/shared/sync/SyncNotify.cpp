@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -126,7 +126,7 @@ void CSyncNotify::fireObjectsNotification()
                     //TODO: get db for source
                     IDBResult res = getDB().executeSQL("SELECT object FROM object_values where object=? LIMIT 1 OFFSET 0", itObject->first );
                     if ( !res.isEnd() )
-                        nNotifyType = enUpdate;    
+                        nNotifyType = enUpdate;
                 }
 */
                 if ( strBody.length() > 0 )
@@ -159,7 +159,7 @@ void CSyncNotify::fireObjectsNotification()
     if ( m_pObjectNotify->m_strUrl.length() > 0 )
     {
         String strUrl = getNet().resolveUrl(m_pObjectNotify->m_strUrl);
-  
+
         callNotify( CSyncNotification(strUrl,"",false), strBody);
     }else if (m_pObjectNotify->m_cCallback)
     {
@@ -224,10 +224,10 @@ String CSyncNotify::makeCreateObjectErrorBody(int nSrcID)
 }
 
 void CSyncNotify::setObjectNotification(CObjectNotification* pNotify)
-{ 
+{
     synchronized(m_mxObjectNotify)
     {
-        m_pObjectNotify = pNotify; 
+        m_pObjectNotify = pNotify;
     }
 }
 
@@ -276,7 +276,7 @@ void CSyncNotify::setSyncNotification(int source_id, CSyncNotification* pNotify 
     }
 }
 
-CSyncNotification::CSyncNotification(String strUrl, String strParams, boolean bRemoveAfterFire) : 
+CSyncNotification::CSyncNotification(String strUrl, String strParams, boolean bRemoveAfterFire) :
     m_strParams(strParams), m_bRemoveAfterFire(bRemoveAfterFire),
     m_cCallback(null), m_cCallbackData(null)
 {
@@ -289,20 +289,20 @@ CSyncNotification::~CSyncNotification()
     if ( m_cCallbackData )
 		rho_free_callbackdata(m_cCallbackData);
 }
-	
+
 String CSyncNotification::toString()const
 {
 	if ( m_cCallback )
 		return "C_Callback";
-	
+
 	String strRes = "Url :";
 	strRes += m_strUrl;
 	strRes += "; Params: ";
 	strRes += m_strParams;
 	return strRes;
 }
-    
-CObjectNotification::CObjectNotification(String strUrl) : 
+
+CObjectNotification::CObjectNotification(String strUrl) :
    m_cCallback(null), m_cCallbackData(null)
 {
     m_strUrl = strUrl;
@@ -318,7 +318,7 @@ String CObjectNotification::toString()const
 {
     if ( m_cCallback )
         return "C_Callback";
-    
+
     String strRes = "Url :";
     strRes += m_strUrl;
     return strRes;
@@ -344,12 +344,12 @@ void CSyncNotify::showStatusPopup(const String& status)
         alert_show_status("", status.c_str(), m_strStatusHide.c_str());
 }
 
-void CSyncNotify::reportSyncStatus(String status, int error, String strDetails) 
+void CSyncNotify::reportSyncStatus(String status, int error, String strDetails)
 {
 	synchronized(m_mxSyncNotifications)
-	{    	
+	{
     	if (/*m_syncStatusListener != null && */(isReportingEnabled() || error == RhoAppAdapter.ERR_SYNCVERSION) ) {
-    		
+
     		if ( error == RhoAppAdapter.ERR_SYNCVERSION )
             {
     			status = RhoAppAdapter.getErrorText(error);
@@ -394,7 +394,7 @@ void CSyncNotify::fireAllSyncNotifications( boolean bFinish, int nErrCode, Strin
 
     synchronized(m_mxSyncNotifications)
     {
-        CSyncNotification* pSN = getSyncNotifyBySrc(null);    
+        CSyncNotification* pSN = getSyncNotifyBySrc(null);
         if ( pSN != null )
             doFireSyncNotification( null, bFinish, nErrCode, strError, "", strServerError );
     }
@@ -404,14 +404,14 @@ void CSyncNotify::fireSyncNotification( CSyncSource* src, boolean bFinish, int n
 {
     if ( getSync().getState() == CSyncEngine::esExit )
 		return;
-	
+
 	if( strMessage.length() > 0 || nErrCode != RhoAppAdapter.ERR_NONE)
 	{
 		if ( !getSync().isSearch() )
         {
 			if ( src != null && strMessage.length() == 0 )
 				strMessage = RhoAppAdapter.getMessageText("sync_failed_for") + (*src).getName() + ".";
-			
+
             reportSyncStatus(strMessage,nErrCode, (src != null ? (*src).m_strError : "") );
         }
 	}
@@ -485,7 +485,7 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* src, boolean bFinish, int
                     if ( getSync().isStoppedByUser() )
                         nErrCode = RhoAppAdapter.ERR_CANCELBYUSER;
 
-	        	    strBody += "error";				        	
+	        	    strBody += "error";
 			        strBody += "&error_code=" + convertToStringA(nErrCode);
 		            strBody += "&error_message=";
 
@@ -519,7 +519,7 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* src, boolean bFinish, int
         }
     }
     LOG(INFO) + "Fire notification. Source : " + (src != null ? (*src).getName():"") + "; " + pSN->toString();
-	
+
     if ( callNotify(*pSN, strBody) || bRemoveAfterFire)
         clearNotification(src);
 }
@@ -565,10 +565,10 @@ void CSyncNotify::clearNotification(CSyncSource* src)
     }
 }
 
-void CSyncNotify::clearSyncNotification(int source_id) 
+void CSyncNotify::clearSyncNotification(int source_id)
 {
 	LOG(INFO) + "Clear notification. Source ID: " + source_id;
-	
+
     synchronized(m_mxSyncNotifications)
     {
         if ( source_id == -1 )//Clear all

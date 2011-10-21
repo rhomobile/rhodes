@@ -26,7 +26,7 @@ public class RubyMethodValue extends RubyBasic {
     	cl.doClone(this);
     	return cl;
     }
-    
+
     //@RubyLevelMethod(name="call")
     public RubyValue call(RubyArray args, RubyBlock block) {
     	return method_.invoke(receiver_, args, block);
@@ -57,7 +57,7 @@ public class RubyMethodValue extends RubyBasic {
         m.setRubyClass(RubyRuntime.UnboundMethodClass);
 		return m;
     }
-    
+
     //@RubyLevelMethod(name="to_s", alias="inspect")
     public RubyString to_s() {
     	return ObjectFactory.createString(this.toString());
@@ -71,5 +71,5 @@ public class RubyMethodValue extends RubyBasic {
         s.append(">");
         return s.toString();
     }
-    
+
 }

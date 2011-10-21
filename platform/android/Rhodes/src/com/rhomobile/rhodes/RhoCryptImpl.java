@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -41,7 +41,7 @@ import android.content.SharedPreferences;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.util.ContextFactory;
 
-public class RhoCryptImpl 
+public class RhoCryptImpl
 {
     private static final String TAG = "RhoCryptJava";
 
@@ -63,16 +63,16 @@ public class RhoCryptImpl
 
 	private void generateNewKey()throws Exception
 	{
-	    KeyGenerator kgen = KeyGenerator.getInstance("AES");  
-	    SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");  
-	    kgen.init(m_nKeyLenBit, sr);  
-	    SecretKey skey = kgen.generateKey();  
+	    KeyGenerator kgen = KeyGenerator.getInstance("AES");
+	    SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+	    kgen.init(m_nKeyLenBit, sr);
+	    SecretKey skey = kgen.generateKey();
 	    m_dbKeyData = skey.getEncoded();
 	}
 
 	private void writeKeyToStorage()
 	{
-		SharedPreferences settings =  ContextFactory.getContext().getSharedPreferences(m_strPrefName, Context.MODE_PRIVATE);		
+		SharedPreferences settings =  ContextFactory.getContext().getSharedPreferences(m_strPrefName, Context.MODE_PRIVATE);
     	SharedPreferences.Editor editor = settings.edit();
     	String strKey = Base64.encodeToString(m_dbKeyData, false);//, Base64.DEFAULT);
     	editor.putString(m_strDBPartition, strKey );
@@ -85,7 +85,7 @@ public class RhoCryptImpl
 	        return;
 
 	    m_strDBPartition = szPartition;
-		
+
 		readKeyFromStorage();
 	    if ( m_dbKeyData != null )
 	        return;
@@ -93,7 +93,7 @@ public class RhoCryptImpl
 		generateNewKey();
 		writeKeyToStorage();
 	}
-	
+
 	private void initContext(String szPartition)throws Exception
 	{
 	    if ( m_dbKeyData != null ) {
@@ -102,30 +102,30 @@ public class RhoCryptImpl
 	    }
 
 	    initKey(szPartition);
-	    
+
 		byte[] iv = new byte[]
      	{
      	    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,0x00, 0x00, 0x00, 0x00, 0x00, 0x00
      	};
-	    
+
 		AlgorithmParameterSpec paramSpec = new IvParameterSpec(iv);
-    	
-		SecretKeySpec skeySpec = new SecretKeySpec(m_dbKeyData, "AES");  
-		m_encryptCipher = Cipher.getInstance("AES/CBC/NoPadding");  
+
+		SecretKeySpec skeySpec = new SecretKeySpec(m_dbKeyData, "AES");
+		m_encryptCipher = Cipher.getInstance("AES/CBC/NoPadding");
 		m_encryptCipher.init(Cipher.ENCRYPT_MODE, skeySpec, paramSpec);
 
-		m_decryptCipher = Cipher.getInstance("AES/CBC/NoPadding");  
+		m_decryptCipher = Cipher.getInstance("AES/CBC/NoPadding");
 		m_decryptCipher.init(Cipher.DECRYPT_MODE, skeySpec, paramSpec);
-		
+
         Logger.T(TAG, "RhoCrypt context initialized for partition: " + szPartition);
 
 	}
-	
-	private static void reportFail(String name, Exception e) 
+
+	private static void reportFail(String name, Exception e)
 	{
 	    Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getClass().getSimpleName() + ": " + e.getMessage());
 	}
-	
+
     public boolean db_encrypt( String szPartition, ByteBuffer dataIn, ByteBuffer dataOut )
     {
     	try
@@ -146,13 +146,13 @@ public class RhoCryptImpl
     		return false;
     	}
     }
-    
+
     public boolean db_decrypt( String szPartition, ByteBuffer dataIn, ByteBuffer dataOut )
     {
         try
         {
             initContext(szPartition);
-            
+
             dataOut.rewind();
 
             if (m_decryptCipher == null)
@@ -167,12 +167,12 @@ public class RhoCryptImpl
 			return false;
 		}
     }
-    
+
     public boolean set_db_CryptKey( String szPartition, String szKey, boolean bPersistent )
     {
 	    m_strDBPartition = szPartition;
 	    byte[] keyData = Base64.decode(szKey);//, Base64.DEFAULT);
-	    
+
 	    if ( keyData.length != (m_nKeyLenBit/8))
 	    {
 	    	reportFail("set_db_CryptKey", new Exception("Incorrect key size : " + keyData.length + "; Should be: " + (int)(m_nKeyLenBit/8)));
@@ -182,7 +182,7 @@ public class RhoCryptImpl
 
 		if ( bPersistent )
 			writeKeyToStorage();
-	    
+
     	return true;
     }
 

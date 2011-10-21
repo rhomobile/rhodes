@@ -40,7 +40,7 @@ public class RubyModule extends RubyObject {
 //    protected Map/*<RubyID, RubyValue>*/ instance_varibles_ = null;
     protected Map/*<RubyID, RubyMethod>*/ methods_ = new HashMap/*<RubyID, RubyMethod>*/();
     protected Map/*<String, RubyValue>*/ constants_ = new HashMap/*<String, RubyValue>*/();
-    
+
     public RubyModule() {
         super(null);
         this.name_ = null;
@@ -62,10 +62,10 @@ public class RubyModule extends RubyObject {
     	//instance_varibles_ = m.instance_varibles_;
     	methods_ = m.methods_;
     	constants_ = m.constants_;
-    	
+
     	super.doClone(orig);
     }
-    
+
     public String getName() {
         return name_;
     }
@@ -109,34 +109,34 @@ public class RubyModule extends RubyObject {
         }
         return value;
     }
-    
+
     //@RubyAllocMethod
     public static RubyModule allocModule(RubyValue receiver) {
     	RubyModule module = new RubyModule();
     	module.setRubyClass((RubyClass)receiver);
-    	return module;    	
+    	return module;
     }
-    
+
     //@RubyLevelMethod(name="initialize")
     public RubyValue initializeModule(RubyBlock block) {
     	if (block != null) {
     		this.module_eval(null, block);
     	}
-    	
+
     	return RubyConstant.QNIL;
     }
 
     public RubyValue defineMethod(String name, RubyMethod m) {
     	if ( module_methods_mode_ )
     		this.getSingletonClass().defineMethod(name, m);
-    	
+
     	return addMethod(RubyID.intern(name), m, this.current_access_mode_);
     }
 
     public RubyValue defineMethod(RubyID mid, RubyMethod m) {
     	if ( module_methods_mode_ )
     		this.getSingletonClass().defineMethod(mid, m);
-    	
+
    		return addMethod(mid, m, this.current_access_mode_);
     }
 
@@ -205,7 +205,7 @@ public class RubyModule extends RubyObject {
 //        for (Map.Entry/*<RubyID, RubyMethod>*/ entry : methods_.entrySet()) {
         for (Iterator iter = methods_.entrySet().iterator(); iter.hasNext();) {
         	Map.Entry/*<RubyID, RubyMethod>*/ entry = (Map.Entry/*<RubyID, RubyMethod>*/)iter.next();
-    	
+
             if (entry.getKey() == RubyID.ID_ALLOCATOR) {
                 continue;
             }
@@ -257,10 +257,10 @@ public class RubyModule extends RubyObject {
 
         return false;
     }
-    
+
     private boolean isKindOf(RubyValue v) {
         RubyClass cl = v.getRubyClass();
-        
+
         while (cl != null) {
             if (cl == this || cl.methods_ == this.methods_) {
                 return true;
@@ -309,7 +309,7 @@ public class RubyModule extends RubyObject {
         RubyClass c = (RubyClass)v;
 
         if (null != parent) {
-        	//RHO : TODO:superclass mismatch for class - mspec/pp.rb 
+        	//RHO : TODO:superclass mismatch for class - mspec/pp.rb
             /*if (!c.isMyParent(parent)){
                 throw new RubyException(RubyRuntime.TypeErrorClass, "superclass mismatch for class "+ name);
             }*/
@@ -505,7 +505,7 @@ public class RubyModule extends RubyObject {
 //        for (RubyValue v : args) {
         for (Iterator iter = args.iterator(); iter.hasNext();) {
         	RubyValue v = (RubyValue)iter.next();
-    	
+
             RubyID id = v.toID();
             this.defineMethod(id, new AttrReader(id));
         }
@@ -518,7 +518,7 @@ public class RubyModule extends RubyObject {
 //        for (RubyValue v : args) {
         for (Iterator iter = args.iterator(); iter.hasNext();) {
         	RubyValue v = (RubyValue)iter.next();
-    	
+
             RubyID id = v.toID();
             this.defineMethod(id + "=", new AttrWriter(id));
         }
@@ -531,7 +531,7 @@ public class RubyModule extends RubyObject {
 //        for (RubyValue v : args) {
         for (Iterator iter = args.iterator(); iter.hasNext();) {
         	RubyValue v = (RubyValue)iter.next();
-    	
+
             RubyID id = v.toID();
             this.defineMethod(id, new AttrReader(id));
             this.defineMethod(id + "=", new AttrWriter(id));
@@ -586,7 +586,7 @@ public class RubyModule extends RubyObject {
 //        for (RubyValue arg : args) {
         for (Iterator iter = args.iterator(); iter.hasNext();) {
         	RubyValue arg = (RubyValue)iter.next();
-        
+
             String method_name;
             if (arg instanceof RubyString) {
                 method_name = arg.toString();
@@ -677,7 +677,7 @@ public class RubyModule extends RubyObject {
 //        for (RubyValue arg : args) {
         for (Iterator iter = args.iterator(); iter.hasNext();) {
         	RubyValue arg = (RubyValue)iter.next();
-    	
+
             checkType(arg, RubyRuntime.ModuleClass);
             RubyAPI.callOneArgMethod(arg, this, null, RubyID.append_featuresID);
             RubyAPI.callOneArgMethod(arg, this, null, RubyID.includedID);
@@ -772,7 +772,7 @@ public class RubyModule extends RubyObject {
         return ObjectFactory.createBoolean(this.isKindOf(arg));
     }
 
-    
+
 
     //@RubyLevelMethod(name="ancestors")
     public RubyValue ancestors() {
@@ -787,16 +787,16 @@ public class RubyModule extends RubyObject {
     }
 
     //@RubyLevelMethod(name="instance_method")
-    public RubyValue instance_method(RubyValue arg) 
+    public RubyValue instance_method(RubyValue arg)
     {
     	RubyMethod m = (RubyMethod)methods_.get(arg.toID());
     	if ( m!= null )
     		return ObjectFactory.createMethod(this, arg.toStr(), m);
-    	
+
         throw new RubyException(RubyRuntime.NameErrorClass, arg.toStr() + " is undefined");
         //return get_instance_methods(this, args, RubyMethod.NON_PRIVATE);
     }
-    
+
     //@RubyLevelMethod(name="public_instance_methods")
     public RubyValue public_instance_methods(RubyArray args) {
         return get_instance_methods(this, args, RubyMethod.PUBLIC);
@@ -847,7 +847,7 @@ public class RubyModule extends RubyObject {
 //        for (RubyValue v : args) {
         for (Iterator iter = args.iterator(); iter.hasNext();) {
         	RubyValue v = (RubyValue)iter.next();
-    	
+
             RubySymbol s = (RubySymbol) v;
             this.module_function(s.toString());
         }
@@ -886,26 +886,26 @@ public class RubyModule extends RubyObject {
         return RubyAPI.setConstant(arg2, this, s.toString());
     }
 
-    //RHO_COMMENT: 
+    //RHO_COMMENT:
     //@RubyLevelMethod(name="const_defined?")
     public RubyValue isConstDefined(RubyValue arg) {
         RubySymbol s = RubyTypesUtil.convertToSymbol(arg);
         return RubyAPI.isConstantDefined(this, s.toString());
     }
 
-    public RubyValue getConstants() 
+    public RubyValue getConstants()
     {
         RubyArray arRes = new RubyArray();
         j2me.util.Set keys = constants_.keySet();
-        Iterator iter = keys.iterator(); 
+        Iterator iter = keys.iterator();
         while( iter.hasNext() )
         {
         	arRes.add( ObjectFactory.createSymbol((String)iter.next()));
         }
-        
+
         return arRes;
     }
-    
+
     //@RubyLevelMethod(name="method_defined?")
     public RubyValue isMethodDefined(RubyValue arg) {
         RubySymbol s = RubyTypesUtil.convertToSymbol(arg);
@@ -919,7 +919,7 @@ public class RubyModule extends RubyObject {
         return RubyAPI.isDefinedPublicMethod(this, this, s.toString()) != RubyConstant.QNIL ?
         		RubyConstant.QTRUE : RubyConstant.QFALSE;
     }
-    
+
     private static class RubyVarArgMethodImpl extends RubyVarArgMethod{
     	RubyBlock b_;
     	RubyVarArgMethodImpl(RubyBlock b)
@@ -937,9 +937,9 @@ public class RubyModule extends RubyObject {
         	cl.doClone(this);
         	return cl;
         }
-    	
+
     };
-    
+
     //@RubyLevelMethod(name="define_method")
     public RubyValue define_method(RubyArray args, RubyBlock block) {
 
@@ -960,7 +960,7 @@ public class RubyModule extends RubyObject {
         };*/
         //RHO_COMMENT: RubyVarArgMethod
         RubyMethod method = new RubyVarArgMethodImpl(b);
-        
+
         b.setCurrentMethod(method);
         return this.defineMethod(name, method);
     }
@@ -970,7 +970,7 @@ public class RubyModule extends RubyObject {
 //        for (RubyValue arg : args) {
         for (Iterator iter = args.iterator(); iter.hasNext();) {
         	RubyValue arg = (RubyValue)iter.next();
-    	
+
             String method_name = RubyTypesUtil.convertToJavaString(arg);
             this.undefMethod(method_name);
         }
@@ -994,7 +994,7 @@ public class RubyModule extends RubyObject {
         undefMethod(symbol.toStr());
         return this;
     }
-    
+
     public static void initDummyMethods(RubyClass klass){
     	klass.definePrivateMethod("included", new RubyOneArgMethod(){
 	    	protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block)
@@ -1026,7 +1026,7 @@ public class RubyModule extends RubyObject {
 	    		return RubyConstant.QNIL;
 	    	}
 	    } );
-    	
+
     }
 
 }

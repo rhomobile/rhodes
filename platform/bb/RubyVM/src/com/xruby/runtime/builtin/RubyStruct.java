@@ -44,7 +44,7 @@ public class RubyStruct {
 
         }
         );
-        
+
         c.defineMethod("[]", new RubyOneArgMethod() {
             protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block) {
                 String name;
@@ -82,7 +82,7 @@ public class RubyStruct {
             }
         }
         );
-        
+
         c.defineMethod("to_a", new RubyNoArgMethod() {
             protected RubyValue run(RubyValue receiver, RubyBlock block) {
                 RubyArray a = new RubyArray(super_args.size() - 1);

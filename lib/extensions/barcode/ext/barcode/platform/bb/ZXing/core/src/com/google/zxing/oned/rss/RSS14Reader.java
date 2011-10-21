@@ -551,7 +551,7 @@ public final class RSS14Reader extends OneDReader {
     if (decrementEven) {
       decrement(evenCounts, evenRoundingErrors);
     }
-    
+
   }
 
 }

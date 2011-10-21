@@ -22,14 +22,14 @@ import com.rho.file.SimpleFile;
 
 public class RhoConnection implements IHttpConnection {
 
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("RhoConnection");
 	RhoConf RHOCONF(){ return RhoConf.getInstance(); }
-	
+
 	/** Request URI **/
 	URI uri, uri_orig;
 	String  url_external;
-	
+
 	/** Method - GET, POST, HEAD **/
 	String method;
     /** Numeric code returned from HTTP response header. */
@@ -48,31 +48,31 @@ public class RhoConnection implements IHttpConnection {
 	private /*ByteArray*/InputStream responseData = null;
 	private ByteArrayOutputStream postData = new ByteArrayOutputStream();
 	private SimpleFile m_file = null;
-	
+
 	/** Construct connection using URI **/
-    
-    public RhoConnection(URI _uri) 
+
+    public RhoConnection(URI _uri)
     {
     	url_external = _uri.toString();
     	uri_orig = _uri;
     	uri = new URI(url_external);
-    
+
     	if ( !uri.getPath().startsWith("/apps") )
     		uri.setPath("/apps" + uri.getPath());
     	else
     		uri.setPath(uri.getPath());
     }
-    
+
     public void resetUrl(String url)
     {
     	url_external = url;
     	uri = new URI(url_external);
-    
+
     	if ( !uri.getPath().startsWith("/apps") )
     		uri.setPath("/apps" + uri.getPath());
     	else
     		uri.setPath(uri.getPath());
-    	
+
     	method = "";
         responseCode = 200;
         responseMsg = "OK";
@@ -80,7 +80,7 @@ public class RhoConnection implements IHttpConnection {
         reqHeaders.clear();
         resHeaders.clear();
         requestProcessed = false;
-        
+
         try{
         	clean();
         }catch(IOException exc)
@@ -89,30 +89,30 @@ public class RhoConnection implements IHttpConnection {
         }
     }
 
-	private void clean() throws IOException 
+	private void clean() throws IOException
 	{
 		if ( m_file != null ){
 			m_file.close();
 			m_file = null;
 		}else if (responseData != null)
 			responseData.close();
-		
+
 		responseData = null;
-		
+
 		if ( postData != null )
 			postData.close();
 	}
-	
-	public void close() throws IOException 
+
+	public void close() throws IOException
 	{
 		clean();
 		LOG.TRACE("Close browser connection.");
 	}
-    
+
 	public Object getNativeConnection() {
 		throw new RuntimeException("getNativeConnection - Not implemented");
 	}
-    
+
 	public long getDate() throws IOException {
 		LOG.TRACE("getDate");
 		return getHeaderFieldDate("date", 0);
@@ -164,7 +164,7 @@ public class RhoConnection implements IHttpConnection {
             // fall through
         } catch (NullPointerException npe) {
             // fall through
-        }        
+        }
         return def;
 	}
 
@@ -232,7 +232,7 @@ public class RhoConnection implements IHttpConnection {
 	public int getResponseCode() throws IOException {
 		processRequest();
 		LOG.TRACE("getResponseCode" + responseCode);
-		
+
 		return responseCode;
 	}
 
@@ -257,8 +257,8 @@ public class RhoConnection implements IHttpConnection {
 // throw new IOException("connection already open");
 // }
 
-        if (!method.equals(HEAD) && 
-            !method.equals(GET) && 
+        if (!method.equals(HEAD) &&
+            !method.equals(GET) &&
             !method.equals(POST)) {
             throw new IOException("unsupported method: " + method);
         }
@@ -302,7 +302,7 @@ public class RhoConnection implements IHttpConnection {
     /**
 	 * Add the named field to the list of request fields. This method is where a
 	 * subclass should override properties.
-	 * 
+	 *
 	 * @param key
 	 *            key for the request header field.
 	 * @param value
@@ -331,7 +331,7 @@ public class RhoConnection implements IHttpConnection {
 
         reqHeaders.setPropertyIgnoreCase(key, value);
     }
-    
+
 	public String getEncoding() {
 		LOG.TRACE("getEncloding");
         try {
@@ -376,7 +376,7 @@ public class RhoConnection implements IHttpConnection {
 	public OutputStream openOutputStream() throws IOException {
 		return postData;
 	}
-	
+
 	static private class UrlParser{
 		String strPath;
 		int nStart = 0;
@@ -388,30 +388,30 @@ public class RhoConnection implements IHttpConnection {
 		public String next(){
 			if (  isEnd() )
 				return null;
-			
+
 			int nEnd = strPath.indexOf('/',nStart);
 			if ( nEnd < 0 )
 				nEnd = strPath.length();
-			
+
 			String res = strPath.substring(nStart, nEnd);
 			nStart = nEnd+1;
 			return URI.urlDecode(res).trim();
 		}
-	
+
 	}
-	
+
 	void respondMoved( String location ){
 		responseCode = HTTP_MOVED_PERM;
 		responseMsg = "Moved Permanently";
-		
+
 		String strLoc = location;
 		if ( strLoc.startsWith("/apps"))
 			strLoc = strLoc.substring(5);
-		
+
 		String strQuery = uri.getQueryString();
 		if ( strQuery != null && strQuery.length() > 0 )
 			strLoc += "?" + strQuery;
-		
+
 		resHeaders.addProperty("Location", strLoc );
 		contentLength = 0;
 	}
@@ -427,36 +427,36 @@ public class RhoConnection implements IHttpConnection {
 		responseMsg = "Success";
 		contentLength = 0;
 	}
-	
+
 	void respondNotFound( String strError ){
 		responseCode = HTTP_NOT_FOUND;
 		responseMsg = "Not found";
 		if ( strError != null && strError.length() != 0 )
 			responseMsg += ".Error: " + strError;
-		
-		String strBody = "Page not found: " + uri.getPath(); 
-		
+
+		String strBody = "Page not found: " + uri.getPath();
+
 		contentLength = strBody.length();
 		responseData = new ByteArrayInputStream(strBody.getBytes());
-		
+
 		resHeaders.addProperty("Content-Type", "text/html" );
 		resHeaders.addProperty("Content-Length", Integer.toString( contentLength ) );
 	}
-	
+
 	String getContentType(){
 		String contType = reqHeaders.getProperty("Content-Type");
 		if ( contType == null || contType.length() == 0 )
 			contType = reqHeaders.getProperty("content-type");
-		
+
 		if ( contType != null && contType.length() > 0 )
 			return contType;
-			
+
 		String path = uri.getPath();
 		int nPoint = path.lastIndexOf('.');
 		String strExt = "";
 		if ( nPoint > 0 )
 			strExt = path.substring(nPoint+1);
-		
+
 		if ( strExt.equals("png") )
 			return "image/png";
 		else if ( strExt.equals("jpeg") )
@@ -473,12 +473,12 @@ public class RhoConnection implements IHttpConnection {
 			return "text/html";
 		else if ( strExt.equals("txt") )
 			return "text/plain";
-		
+
 		return "";
 	}
-	
+
 	static final String[] m_arIndexes = {"index_erb.iseq", "index.html", "index.htm"};
-	
+
 	public static int findIndex(String strUrl){
 		String filename;
 		int nLastSlash = strUrl.lastIndexOf('/');
@@ -486,12 +486,12 @@ public class RhoConnection implements IHttpConnection {
 			filename = strUrl.substring(nLastSlash+1);
 		else
 			filename = strUrl;
-		
+
 		for( int i = 0; i < m_arIndexes.length; i++ ){
 			if ( filename.equalsIgnoreCase(m_arIndexes[i]) )
 				return i;
 		}
-		
+
 		return -1;
 	}
 
@@ -500,22 +500,22 @@ public class RhoConnection implements IHttpConnection {
 		String slash = "";
 		if ( uri.getPath()!=null && uri.getPath().length() > 0 )
 			slash = uri.getPath().charAt(uri.getPath().length()-1) == '/' ? "" : "/";
-		
+
 		for( int i = 0; i < m_arIndexes.length; i++ ){
 			String name = uri.getPath() + slash + m_arIndexes[i];
 			String nameClass = name;
 			if ( nameClass.endsWith(".iseq"))
 				nameClass = nameClass.substring(0, nameClass.length()-5);
-			
+
 			if ( RhoSupport.findClass(nameClass) != null || RhoRuby.resourceFileExists(name)  ){
 				strIndex = name;
 				break;
 			}
 		}
-		
+
 		if ( strIndex == null )
 			return false;
-		
+
 		respondMoved(strIndex);
 		return true;
 	}
@@ -524,35 +524,35 @@ public class RhoConnection implements IHttpConnection {
 	{
 		final String[] months= { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 		final String[] wdays= { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
-		
+
 		//Thu, 01 Dec 2010 16:00:00 GMT
 		Calendar time = Calendar.getInstance();
 		String strTime = "";
 		strTime += wdays[time.get(Calendar.DAY_OF_WEEK)-1] + ", " +
 			time.get(Calendar.DATE) + " " +
 			months[time.get(Calendar.MONTH)] + " " +
-			time.get(Calendar.YEAR) + " " + 
-			time.get(Calendar.HOUR_OF_DAY) + ":" + 
-			time.get(Calendar.MINUTE) +	":" + 
-			time.get(Calendar.SECOND) + " " + 
+			time.get(Calendar.YEAR) + " " +
+			time.get(Calendar.HOUR_OF_DAY) + ":" +
+			time.get(Calendar.MINUTE) +	":" +
+			time.get(Calendar.SECOND) + " " +
 			"GMT";
-		
+
 		return strTime;
 	}
-	
+
 	protected boolean isDbFilesPath(String strPath)
 	{
 		return strPath.startsWith("/apps/app/db/db-files") || strPath.startsWith("/apps/db/db-files");
 	}
-	
+
 	protected boolean httpServeFile(String strContType)throws IOException
 	{
 		String strPath = uri.getPath();
 		//if ( !strPath.startsWith("/apps") )
-		//	strPath = "/apps" + strPath; 
+		//	strPath = "/apps" + strPath;
 
 		LOG.TRACE("httpServeFile: " + strPath);
-		
+
 		if ( !isDbFilesPath(strPath) )
 		{
 			if ( strContType.equals("application/javascript")){
@@ -562,7 +562,7 @@ public class RhoConnection implements IHttpConnection {
 					responseData = new ByteArrayInputStream(str.getBytes());
 				}
 			}
-			else	
+			else
 				responseData = RhoRuby.loadFile(strPath);
 		}else
 		{
@@ -571,16 +571,16 @@ public class RhoConnection implements IHttpConnection {
 			else
 				strPath = strPath.substring(5);// remove /apps
 		}
-		
+
 		if (responseData == null){
-			  
+
 			SimpleFile file = null;
 			try{
 				file = RhoClassFactory.createFile();
 				String strFileName = strPath;
 //				if ( strFileName.startsWith("/apps") )
 //					strFileName = strPath.substring(5);
-				
+
 				file.open(strFileName, true, true);
 				responseData = file.getInputStream();
 				if (responseData != null) {
@@ -590,28 +590,28 @@ public class RhoConnection implements IHttpConnection {
 			}catch(Exception exc){
 				if ( file != null )
 					file.close();
-			}			
+			}
 		} else {
 			if (responseData != null) {
-				contentLength = responseData.available(); 
+				contentLength = responseData.available();
 			}
 		}
-		
+
 		if (responseData== null)
 			return false;
-		
+
 		if ( strContType.length() > 0 )
 			resHeaders.addProperty("Content-Type", strContType );
-		
+
 		resHeaders.addProperty("Content-Length", Integer.toString( contentLength ) );
-		
+
 		//resHeaders.addProperty("Date",getLocalHttpTimeString());
 		//resHeaders.addProperty("Cache-control", "public, max-age=3600" );
 		//resHeaders.addProperty("Expires", "Thu, 01 Dec 2010 16:00:00 GMT" );
-		
+
 		return true;
 	}
-	
+
 	private boolean isKnownExtension(String strPath)
 	{
 		int nDot = strPath.lastIndexOf('.');
@@ -621,16 +621,16 @@ public class RhoConnection implements IHttpConnection {
 			return strExt.equalsIgnoreCase("png") || strExt.equalsIgnoreCase("jpg") ||
 				strExt.equalsIgnoreCase("css") || strExt.equalsIgnoreCase("js");
 		}
-		
+
 		return false;
 	}
-	
+
 	protected boolean httpGetFile(String strContType)throws IOException
 	{
 		if ( !isDbFilesPath(uri.getPath()) && !isKnownExtension(uri.getPath()) && strContType.length() == 0 )
 		{
 			String strTemp = FilePath.join(uri.getPath(), "/");
-	
+
 			if( RhoSupport.findClass(strTemp + "controller") != null )
 				return false;
 
@@ -642,18 +642,18 @@ public class RhoConnection implements IHttpConnection {
 				this.doDispatch(reqHash, url);
 			//	RubyValue res = RhoRuby.processIndexRequest(url);//erb-compiled should load from class
 				//processResponse(res);
-				
+
 				//RhodesApp.getInstance().keepLastVisitedUrl(url_external);
 				return true;
 			}
-			
+
 			if( httpGetIndexFile() )
 				return true;
 		}
-		
+
 		return httpServeFile(strContType);
 	}
-	
+
 	protected boolean checkRhoExtensions(String application, String model ){
 		if ( application.equalsIgnoreCase("AppManager") ){
 			//TODO: AppManager
@@ -676,10 +676,10 @@ public class RhoConnection implements IHttpConnection {
 
 		}else if ( application.equalsIgnoreCase("shared") )
 			return false;
-		
+
 		return false;
 	}
-	
+
 	void showGeoLocation(){
 		String location = "";
 		try {
@@ -690,17 +690,17 @@ public class RhoConnection implements IHttpConnection {
 			LOG.ERROR("getGeoLocationText failed", exc);
 		}
 		respondOK();
-		
+
 		contentLength = location.length();
 		responseData = new ByteArrayInputStream(location.getBytes());
 		resHeaders.addProperty("Content-Type", "text/html" );
 		resHeaders.addProperty("Content-Length", Integer.toString( contentLength ) );
 	}
-	
+
 	protected boolean dispatch()throws IOException
 	{
 		//LOG.INFO("dispatch start : " + uri.getPath());
-		
+
 		UrlParser up = new UrlParser(uri.getPath());
 		String apps = up.next();
 		String application;
@@ -708,15 +708,15 @@ public class RhoConnection implements IHttpConnection {
 			application = up.next();
 		else
 			application = apps;
-		
+
 		String model = up.next();
-		
+
 		if ( model == null || model.length() == 0 )
 			return false;
-		
+
 		if ( checkRhoExtensions(application, model ) )
 			return true;
-		
+
 		// Convert CamelCase to underscore_case
 		StringBuffer cName = new StringBuffer();
 		byte[] modelname = model.getBytes();
@@ -726,30 +726,30 @@ public class RhoConnection implements IHttpConnection {
 				ch = (char)(modelname[i] + 0x20);
 				if (i != 0)
 					cName.append('_');
-				
+
 			}
 			else ch = (char)modelname[i];
 			cName.append(ch);
 		}
 		String controllerName = cName.toString();
-		
+
 		String strCtrl = "apps/" + application + '/' + model + '/' + controllerName + "_controller";
 		if (RhoSupport.findClass(strCtrl) == null) {
 			strCtrl = "apps/" + application + '/' + model + '/' + "controller";
 			if( RhoSupport.findClass(strCtrl) == null )
 				return false;
 		}
-		
+
 		Properties reqHash = new Properties();
-		
+
 		String actionid = up.next();
 		String actionnext = up.next();
 		if ( actionid != null && actionid.length() > 0 ){
-			if ( actionid.length() > 6 && actionid.startsWith("%7B") && 
+			if ( actionid.length() > 6 && actionid.startsWith("%7B") &&
 			     actionid.endsWith("%7D") )
 				actionid = "{" + actionid.substring(3, actionid.length()-3) + "}";
-			
-			if ( actionid.length() > 2 && 
+
+			if ( actionid.length() > 2 &&
 				 actionid.charAt(0)=='{' && actionid.charAt(actionid.length()-1)=='}' ){
 				reqHash.setProperty( "id", actionid);
 				reqHash.setProperty( "action", actionnext);
@@ -760,50 +760,50 @@ public class RhoConnection implements IHttpConnection {
 		}
 		reqHash.setProperty( "application",application);
 		reqHash.setProperty( "model", model);
-		
+
 		doDispatch( reqHash, null);
 
-		if ( actionid !=null && actionid.length() > 2 && 
+		if ( actionid !=null && actionid.length() > 2 &&
 				 actionid.charAt(0)=='{' && actionid.charAt(actionid.length()-1)=='}' )
 				SyncThread.getInstance().addobjectnotify_bysrcname( model, actionid);
-		
+
 		return true;
 	}
-	
+
 	void doDispatch( Properties reqHash, String strIndex)throws IOException
-	{	
+	{
 		reqHash.setProperty("request-method", this.method);
 		reqHash.setProperty("request-uri", uri.getPath());
 		reqHash.setProperty("request-query", uri.getQueryString());
-		
+
 		if ( postData != null && postData.size() > 0 )
 		{
-	        if ( !RHOCONF().getBool("log_skip_post") )	        
+	        if ( !RHOCONF().getBool("log_skip_post") )
 	        	LOG.TRACE(postData.toString());
 			reqHash.setProperty("request-body", postData.toString());
 		}
-		
+
 		RubyValue res = RhoRuby.processRequest( reqHash, reqHeaders, resHeaders, strIndex);
 		processResponse(res);
-		
+
 		RhodesApp.getInstance().keepLastVisitedUrl(url_external);
 		LOG.INFO("dispatch end");
 	}
-	
+
 	public void processRequest()  throws IOException{
 		if (!requestProcessed) {
 			String strErr = "";
-			
+
 			LOG.TRACE("processRequest: " + getURL() );
 			String strReferer = reqHeaders != null ? reqHeaders.getPropertyIgnoreCase("Referer") : "";
 			if ( getRef() != null && getRef().length() > 0 && strReferer != null &&
         		 strReferer.equalsIgnoreCase(uri_orig.getPathNoFragment()) )
 			{
-				respondNotModified();				
+				respondNotModified();
 			}else
 			{
 				String strContType = getContentType();
-				
+
 				if ( uri.getPath().startsWith("/apps/public"))
 				{
 					httpServeFile(strContType);
@@ -818,15 +818,15 @@ public class RhoConnection implements IHttpConnection {
 							return;
 						}
 					}
-					
+
 					if ( /*this.method == "GET" &&*/ httpGetFile(strContType) ){
-						
+
 					//}else if ( dispatch() ){
 					}else{
 						respondNotFound(strErr);
 					}
 				}
-			}			
+			}
 			requestProcessed = true;
 		}
 	}
@@ -835,7 +835,7 @@ public class RhoConnection implements IHttpConnection {
 		if ( res != null && res != RubyConstant.QNIL && res instanceof RubyHash ){
 			RubyHash resHash = (RubyHash)res;
 			RubyValue resBody = null;
-			
+
 			RubyArray arKeys = resHash.keys();
 			RubyArray arValues = resHash.values();
 			for( int i = 0; i < arKeys.size(); i++ ){
@@ -846,30 +846,30 @@ public class RhoConnection implements IHttpConnection {
 					responseCode = arValues.get(i).toInt();
 				else if (strKey.equals("message"))
 					responseMsg = arValues.get(i).toString();
-				else	
+				else
 					resHeaders.addProperty( strKey, arValues.get(i).toString() );
-					
+
 			}
 			String strBody = "";
-			
+
 			if ( resBody != null && resBody != RubyConstant.QNIL )
 				strBody = resBody.toRubyString().toString();
-			
-	        if ( !RHOCONF().getBool("log_skip_post") )	        
+
+	        if ( !RHOCONF().getBool("log_skip_post") )
 	        	LOG.TRACE(strBody);
-			
+
 			try{
 				responseData = new ByteArrayInputStream(strBody.getBytes("UTF-8"));
        		}catch(java.io.UnsupportedEncodingException exc)
        		{
        			LOG.ERROR("Error getting utf-8 body :", exc);
        		}
-				
+
 			if ( responseData != null )
 				contentLength = Integer.parseInt(resHeaders.getPropertyIgnoreCase("Content-Length"));
 
 		}
 	}
-	
+
 }
 

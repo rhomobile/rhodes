@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -61,41 +61,41 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class PopupActivity extends BaseActivity {
-	
+
 	private static final String TAG = PopupActivity.class.getSimpleName();
-	
+
 	private static final String INTENT_EXTRA_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + ".popup";
-	
+
 	private static Dialog currentAlert = null;
 	private static TextView s_textView = null;
-	
+
 	private static native void doCallback(String url, String id, String title);
-	
+
 	private static class CustomButton {
-		
+
 		public String id;
 		public String title;
-		
+
 		public CustomButton(String i, String t) {
 			id = i;
 			title = t;
 		}
 	};
-	
+
 	private static class ShowDialogListener implements OnClickListener {
 
 		private String callback;
 		private String id;
 		private String title;
 		private Dialog dialog;
-		
+
 		public ShowDialogListener(String c, String i, String t, Dialog d) {
 			callback = c;
 			id = i;
 			title = t;
 			dialog = d;
 		}
-		
+
 		public void onClick(View arg0) {
 			if (callback != null) {
 				doCallback(callback, Uri.encode(id), Uri.encode(title));
@@ -103,36 +103,36 @@ public class PopupActivity extends BaseActivity {
 			dialog.dismiss();
 			currentAlert = null;
 		}
-		
+
 	};
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		Window window = getWindow();
 		WindowManager.LayoutParams lp = window.getAttributes();
 		lp.type = WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG;
 		window.setAttributes(lp);
 		window.addFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
-		
+
 		Bundle extras = getIntent().getExtras();
 		if (extras == null) {
 			Log.e(TAG, "No data passed to popup activity");
 			finish();
 			return;
 		}
-		
+
 		String title = extras.getString(INTENT_EXTRA_PREFIX + ".title");
 		String message = extras.getString(INTENT_EXTRA_PREFIX + ".message");
 		String iconName = extras.getString(INTENT_EXTRA_PREFIX + ".icon");
 		String callback = extras.getString(INTENT_EXTRA_PREFIX + ".callback");
-		
+
 		ArrayList<String> buttonIds = new ArrayList<String>();
 		Object idsObj = extras.get(INTENT_EXTRA_PREFIX + ".buttons.ids");
 		if (idsObj != null) {
 			if (idsObj instanceof String[]) {
-				String[] ids = (String[])idsObj; 
+				String[] ids = (String[])idsObj;
 				for (int i = 0; i < ids.length; ++i)
 					buttonIds.add(ids[i]);
 			}
@@ -156,17 +156,17 @@ public class PopupActivity extends BaseActivity {
 					buttonTitles.add(titleObj.toString());
 			}
 		}
-		
+
 		Vector<CustomButton> buttons = new Vector<CustomButton>();
 		if (buttonIds.size() != buttonTitles.size()) {
 			Log.e(TAG, "Corrupted data passed to popup activity");
 			finish();
 			return;
 		}
-		
+
 		for (int i = 0; i < buttonIds.size(); ++i)
 			buttons.addElement(new CustomButton(buttonIds.get(i), buttonTitles.get(i)));
-		
+
 		Resources res = getResources();
 		Drawable icon = null;
 		if (iconName != null) {
@@ -183,42 +183,42 @@ public class PopupActivity extends BaseActivity {
 					icon = new BitmapDrawable(bitmap);
 			}
 		}
-		
+
 		createDialog(title, message, icon, buttons, callback);
 	}
-	
+
 	synchronized private void createDialog(String title, String message, Drawable icon, Vector<CustomButton> buttons, String callback) {
 		Context ctx = this;
-		
+
 		Logger.T(TAG, "Creating dialog{ title: " + title + ", message: " + message + ", buttons cnt: " + buttons.size() + ", callback: " + callback);
-		
+
 		int nTopPadding = 10;
-        
+
 		Dialog dialog = new Dialog(ctx);
 		if ( title == null || title.length() == 0 ) {
 			dialog.getWindow();
 			dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		} else    
+		} else
 		{
 		    dialog.setTitle(title);
 		    nTopPadding = 0;
 		}
-		
+
 		dialog.setCancelable(false);
 		dialog.setCanceledOnTouchOutside(false);
-		
+
 		LinearLayout main = new LinearLayout(ctx);
 		main.setOrientation(LinearLayout.VERTICAL);
 		main.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.FILL_PARENT));
 		main.setPadding(10, nTopPadding, 10, 10);
-		
+
 		LinearLayout top = new LinearLayout(ctx);
 		top.setOrientation(LinearLayout.HORIZONTAL);
 		top.setGravity(Gravity.CENTER);
 		top.setPadding(10, nTopPadding, 10, 10);
 		top.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 		main.addView(top);
-		
+
 		if (icon != null) {
 			ImageView imgView = new ImageView(ctx);
 			imgView.setImageDrawable(icon);
@@ -226,7 +226,7 @@ public class PopupActivity extends BaseActivity {
 			imgView.setPadding(10, nTopPadding, 10, 10);
 			top.addView(imgView);
 		}
-		
+
 		if ( message != null )
 		{
 		    TextView textView = new TextView(ctx);
@@ -236,13 +236,13 @@ public class PopupActivity extends BaseActivity {
 		    textView.setGravity(Gravity.CENTER);
 		    top.addView(textView);
         }
-		
+
 		LinearLayout bottom = new LinearLayout(ctx);
 		bottom.setOrientation(buttons.size() > 3 ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL);
 		bottom.setGravity(Gravity.CENTER);
 		bottom.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 		main.addView(bottom);
-		
+
 		for (int i = 0, lim = buttons.size(); i < lim; ++i) {
 			final CustomButton btn = buttons.elementAt(i);
 			Button button = new Button(ctx);
@@ -253,9 +253,9 @@ public class PopupActivity extends BaseActivity {
 					LayoutParams.WRAP_CONTENT, 1));
 			bottom.addView(button);
 		}
-		
+
 		dialog.setContentView(main);
-		
+
 		dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
 			@Override
 			public void onCancel(DialogInterface dialog) {
@@ -268,16 +268,16 @@ public class PopupActivity extends BaseActivity {
 				finish();
 			}
 		});
-		
+
 		dialog.show();
-		
+
 		currentAlert = dialog;
 	}
-	
+
 	public static void showDialog(Object params) {
 		showDialog(RhodesService.getInstance(), params);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static void showDialog(RhodesService ctx, Object params) {
 		String title = "";
@@ -286,7 +286,7 @@ public class PopupActivity extends BaseActivity {
 		String callback = null;
 		ArrayList<String> buttonIds = new ArrayList<String>();
 		ArrayList<String> buttonTitles = new ArrayList<String>();
-		
+
 		if (params instanceof String) {
 			message = (String)params;
 			buttonIds.add("OK");
@@ -294,30 +294,30 @@ public class PopupActivity extends BaseActivity {
 		}
 		else if (params instanceof Map<?,?>) {
 			Map<Object, Object> hash = (Map<Object, Object>)params;
-			
+
 			Object titleObj = hash.get("title");
 			if (titleObj != null && (titleObj instanceof String))
 				title = (String)titleObj;
-			
+
 			Object messageObj = hash.get("message");
 			if (messageObj != null && (messageObj instanceof String))
 				message = (String)messageObj;
-			
+
 			Object iconObj = hash.get("icon");
 			if (iconObj != null && (iconObj instanceof String))
 				icon = (String)iconObj;
-			
+
 			Object callbackObj = hash.get("callback");
 			if (callbackObj != null && (callbackObj instanceof String))
 				callback = (String)callbackObj;
-			
+
 			Object buttonsObj = hash.get("buttons");
 			if (buttonsObj != null && (buttonsObj instanceof Vector<?>)) {
 				Vector<Object> btns = (Vector<Object>)buttonsObj;
 				for (int i = 0; i < btns.size(); ++i) {
 					String itemId = null;
 					String itemTitle = null;
-					
+
 					Object btnObj = btns.elementAt(i);
 					if (btnObj instanceof String) {
 						itemId = (String)btnObj;
@@ -332,18 +332,18 @@ public class PopupActivity extends BaseActivity {
 						if (btnTitleObj != null && (btnTitleObj instanceof String))
 							itemTitle = (String)btnTitleObj;
 					}
-					
+
 					if (itemId == null || itemTitle == null) {
 						Logger.E(TAG, "Incomplete button item");
 						continue;
 					}
-					
+
 					buttonIds.add(itemId);
 					buttonTitles.add(itemTitle);
 				}
 			}
 		}
-		
+
 		Intent intent = new Intent(ctx, PopupActivity.class);
 		//intent.addFlags(/*Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_USER_ACTION*/);
 		intent.putExtra(INTENT_EXTRA_PREFIX + ".title", title);
@@ -358,13 +358,13 @@ public class PopupActivity extends BaseActivity {
 	public static void showStatusDialog(String title, String message, String hide) {
 		showStatusDialog(RhodesService.getInstance(), title, message, hide);
 	}
-	
+
 	public static void showStatusDialog(Context ctx, String title, String message, String hide) {
 		if (currentAlert != null) {
 			s_textView.setText(message);
 			return;
 		}
-		
+
 		Intent intent = new Intent(ctx, PopupActivity.class);
 		//intent.addFlags(/*Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_USER_ACTION*/);
 		intent.putExtra(INTENT_EXTRA_PREFIX + ".title", title);
@@ -373,7 +373,7 @@ public class PopupActivity extends BaseActivity {
 		intent.putExtra(INTENT_EXTRA_PREFIX + ".buttons.titles", new String[] {hide});
 		ctx.startActivity(intent);
 	}
-	
+
 	public synchronized static void hidePopup() {
 		if (currentAlert == null)
 			return;

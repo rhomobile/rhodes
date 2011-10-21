@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -31,15 +31,15 @@ import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesApplication;
 
 public class PerformOnUiThread implements Runnable {
-	
+
 	private static final String TAG = PerformOnUiThread.class.getSimpleName();
-	
+
 	private Runnable runnable;
-	
+
 	public PerformOnUiThread(Runnable r) {
 		runnable = r;
 	}
-	
+
 	public void run() {
 		try {
 			runnable.run();
@@ -53,7 +53,7 @@ public class PerformOnUiThread implements Runnable {
 			}
 		}
 	}
-	
+
 	public static void exec(final Runnable r, final long delay) {
         RhodesApplication.runWhen(
                 RhodesApplication.UiState.MainActivityCreated,
@@ -94,8 +94,8 @@ public class PerformOnUiThread implements Runnable {
                     }
                 });
     }
-    
-    
+
+
     // Special exec edition for RhoBluetoothManager
     //TODO: Use future pattern to return result and wait
     @Deprecated
@@ -103,7 +103,7 @@ public class PerformOnUiThread implements Runnable {
     {
         try {
             RhodesActivity ra = RhodesActivity.safeGetInstance();
-            
+
             long thrId = Thread.currentThread().getId();
             if (ra.getUiThreadId() == thrId) {
                 // We are already in UI thread

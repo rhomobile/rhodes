@@ -820,5 +820,5 @@ describe "Processing RUBYOPT" do
     ENV["RUBYOPT"] = '--yydebug'
     ruby_exe("", :args => '2>&1').should =~ /RuntimeError/
   end
-=end  
+=end
 end

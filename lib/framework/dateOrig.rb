@@ -1110,7 +1110,7 @@ end
   class << self
 
     def once(*ids) # :nodoc: -- restricted
-=begin    
+=begin
       for id in ids
 	    module_eval <<-"end;"
 	    alias_method :__#{id.object_id}__, :#{id.to_s}
@@ -1120,7 +1120,7 @@ end
 	     end
 	    end;
       end
-=end      
+=end
     end # <<dummy
 
     private :once

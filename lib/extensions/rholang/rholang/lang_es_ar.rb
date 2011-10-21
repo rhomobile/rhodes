@@ -10,15 +10,15 @@ module LocalizationSimplified
   }
 
   class ActiveRecord
-    # ErrorMessages to override default messages in 
+    # ErrorMessages to override default messages in
     # +ActiveRecord::Errors::@@default_error_messages+
-    # This plugin also replaces hardcoded 3 text messages 
-    # :error_translation is inflected using the Rails 
-    # inflector. 
+    # This plugin also replaces hardcoded 3 text messages
+    # :error_translation is inflected using the Rails
+    # inflector.
     #
     # Remember to modify the Inflector with your localized translation
     # of "error" and "errors" in the bottom of this file
-    # 
+    #
     ErrorMessages = {
       :inclusion           => "no está incluido en la lista",
       :exclusion           => "está reservado",
@@ -57,14 +57,14 @@ module LocalizationSimplified
       :x_years             => "%d años"
     }
 
-    # Rails uses Month names in Date and time select boxes 
+    # Rails uses Month names in Date and time select boxes
     # (+date_select+ and +datetime_select+ )
     # Currently (as of version 1.1.6), Rails doesn't use daynames
     Monthnames     = [nil] + %w{enero febrero marzo abril mayo junio julio agosto septiembre octubre noviembre diciembre}
     AbbrMonthnames = [nil] + %w{ene feb mar abr may jun jul ago sep oct nov dic}
     Daynames       = %w{domingo lunes martes miércoles jueves viernes sábado}
     AbbrDaynames   = %w{dom lun mar mié jue vie sáb}
-    
+
     # Date and time format syntax explained in http://www.rubycentral.com/ref/ref_c_time.html#strftime
     # These are sent to strftime that Ruby's date and time handlers use internally
     # Same options as php (that has a better list: http://www.php.net/strftime )
@@ -92,7 +92,7 @@ module LocalizationSimplified
     CurrencyOptions = {
       :unit      => "$",
       :separator => ",",             #unit separator (between integer part and fraction part)
-      :delimiter => ".",             #delimiter between each group of thousands. Example: 1.234.567 
+      :delimiter => ".",             #delimiter between each group of thousands. Example: 1.234.567
       :order     => [:unit, :number] #order is at present unsupported in Rails
       #to support for instance Danish format, the order is different: Unit comes last (ex. "1.234,00 dkr.")
     }

@@ -210,7 +210,7 @@ bool QWebViewKineticScroller::eventFilter(QObject *o, QEvent *e)
             // re-install the event filter so that we get the mouse release before all other filters.
             // this is an evil hack, but hard to work around without prioritized event filters.
             d->web->removeEventFilter(this);
-            d->web->installEventFilter(this);            
+            d->web->installEventFilter(this);
             // fall through
 
         case QEvent::MouseButtonDblClick:
@@ -301,7 +301,7 @@ QWebFrame *QWebViewKineticScrollerPrivate::scrollingFrameAt(const QPointF &pos) 
         QWebFrame *mainFrame = web->page()->mainFrame();
         hitFrame = mainFrame->hitTestContent(pos.toPoint()).frame();
         QSize range = hitFrame->contentsSize() - hitFrame->geometry().size();
-        
+
         while (hitFrame && range.width() <= 1 && range.height() <= 1)
             hitFrame = hitFrame->parentFrame();
     }
@@ -318,7 +318,7 @@ QSizeF QWebViewKineticScroller::viewportSize() const
 QPointF QWebViewKineticScroller::maximumContentPosition() const
 {
     Q_D(const QWebViewKineticScroller);
-    
+
     QWebFrame *frame = d->currentFrame();
     QSize s = frame ? frame->contentsSize() - frame->geometry().size() : QSize();
     return QPointF(qMax(0, s.width()), qMax(0, s.height()));
@@ -335,7 +335,7 @@ QPointF QWebViewKineticScroller::contentPosition() const
 void QWebViewKineticScroller::setContentPosition(const QPointF &p, const QPointF & /*overshoot*/)
 {
     Q_D(QWebViewKineticScroller);
-    
+
     QWebFrame *frame = d->currentFrame();
     if (frame) {
         QPoint pint(int(p.x()), int(p.y()));

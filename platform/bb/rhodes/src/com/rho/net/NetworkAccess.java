@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -48,7 +48,7 @@ import net.rim.device.api.servicebook.ServiceBook;
 
 public class NetworkAccess implements INetworkAccess {
 
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("NetworkAccess");
 
 	private static String URLsuffix = "";
@@ -56,7 +56,7 @@ public class NetworkAccess implements INetworkAccess {
 	private static boolean networkConfigured = false;
 	private static boolean bes = true;
 	private static long  m_nMaxPacketSize = 0;
-	
+
 	void checkWAP(ServiceRecord[] records)
 	{
         for(int i=0; i < records.length; i++)
@@ -74,26 +74,26 @@ public class NetworkAccess implements INetworkAccess {
                     {
                     	 	URLsuffix = ";ConnectionUID=" + records[i].getUid()+";connectionhandler=none;deviceside=true";
                     	 	networkConfigured = true;
-                    	 	LOG.INFO("Found WAP2 provider. Suffix: " + URLsuffix);                    	 	
+                    	 	LOG.INFO("Found WAP2 provider. Suffix: " + URLsuffix);
                             break;
                     }
                 }
             }
         }
 	}
-	
-	public void configure() 
+
+	public void configure()
 	{
 		networkConfigured = false;
 		bes = false;
 		URLsuffix = "";
 		WIFIsuffix = "";
-		
+
 		String strDeviceside = ";deviceside=true";
 		if ( com.rho.RhoConf.getInstance().getInt("no_deviceside_postfix") == 1 )
 			strDeviceside = "";
-		
-		if (DeviceInfo.isSimulator()) 
+
+		if (DeviceInfo.isSimulator())
 		{
 			URLsuffix = strDeviceside;
 			WIFIsuffix = ";interface=wifi";
@@ -106,18 +106,18 @@ public class NetworkAccess implements INetworkAccess {
 				for ( int i = 0; i < wifis.length; i++ ){
 					if (/*srs[i].isDisabled() ||*/ !wifis[i].isValid())
 						continue;
-					
-					WIFIsuffix = ";interface=wifi";// + strDeviceside; 
-						//";deviceside=true;ConnectionUID=" + 
+
+					WIFIsuffix = ";interface=wifi";// + strDeviceside;
+						//";deviceside=true;ConnectionUID=" +
 						//wifis[i].getUid();
-					
+
 					LOG.TRACE("WIFI :" + WIFIsuffix );
-					
+
 					break;
 				}
-                
+
                 checkWAP(wifis);
-                
+
 				ServiceRecord[] srs = sb.getRecords();
 				// search for BIS-B transport
 				for (int i = 0; i < srs.length; i++) {
@@ -126,21 +126,21 @@ public class NetworkAccess implements INetworkAccess {
 					if (srs[i].getCid().equals("IPPP")
 							&& srs[i].getName().equals("IPPP for BIBS")) {
 						LOG.INFO("SRS: CID: " + srs[i].getCid() + " NAME: " + srs[i].getName());
-						
+
 						URLsuffix = ";deviceside=false;ConnectionType=mds-public";
 						networkConfigured = true;
 						break;
 					}
 				}
-				
+
 				// search for BES transport
 				for (int i = 0; i < srs.length; i++) {
 					LOG.INFO("SB: " + srs[i].getName() + ";UID: " + srs[i].getUid() +
 							";CID: " + srs[i].getCid() +
 							";APN: " + srs[i].getAPN() + ";Descr: " + srs[i].getDataSourceId() +
-							";Valid: " + (srs[i].isValid() ? "true" : "false") + 
+							";Valid: " + (srs[i].isValid() ? "true" : "false") +
 							";Disabled: "+ (srs[i].isDisabled()? "true" : "false") );
-					
+
 					if (srs[i].isDisabled() || !srs[i].isValid())
 						continue;
 					if (srs[i].getCid().equals("IPPP")
@@ -151,10 +151,10 @@ public class NetworkAccess implements INetworkAccess {
 						break;
 					}
 				}
-				
+
 			}
 		}
-		
+
 		String strConfPostfix = com.rho.RhoConf.getInstance().getString("bb_connection_postfix");
 		if ( strConfPostfix != null && strConfPostfix.length() > 0 )
 		{
@@ -172,20 +172,20 @@ public class NetworkAccess implements INetworkAccess {
 	{
 		HttpHeaders headers = new HttpHeaders();
 		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
-		
-		
+
+
 		HttpConnection http = Utilities.makeConnection(strUrl, headers, strBody.getBytes());
-		
+
 //		RhodesApplication.getInstance().postUrl(strUrl, strBody, headers);
-		
+
 		return new BBHttpConnection(http);
 	}*/
-	
+
 	public long getMaxPacketSize()
 	{
 		if ( WIFIsuffix != null && isWifiActive() )
 			return 0;
-		
+
 		m_nMaxPacketSize = RhoConf.getInstance().getInt("bb_net_maxpacketsize_kb")*1024;
 		if ( (/*DeviceInfo.isSimulator() ||*/ URLsuffix.indexOf(";deviceside=true") < 0) && m_nMaxPacketSize == 0 )
 		{
@@ -193,23 +193,23 @@ public class NetworkAccess implements INetworkAccess {
 			//http://supportforums.blackberry.com/t5/Java-Development/HTTP-Error-413-when-downloading-small-files/m-p/103918
 			m_nMaxPacketSize = 1024*250;
 		}
-		
+
 		return m_nMaxPacketSize;
 	}
-	
+
 	public boolean isWifiActive()
 	{
 		return BBVersionSpecific.isWifiActive();
 	}
-	
-	public IHttpConnection connect(String url, boolean ignoreSuffixOnSim) throws IOException 
+
+	public IHttpConnection connect(String url, boolean ignoreSuffixOnSim) throws IOException
 	{
 		if ( RhodesApp.getInstance().isRhodesAppUrl(url) )
 		{
 			URI uri = new URI(url);
 			return new RhoConnection(uri);
 		}
-		
+
 		int fragment = url.indexOf('#');
 		if (-1 != fragment) {
 			url = url.substring(0, fragment);
@@ -225,15 +225,15 @@ public class NetworkAccess implements INetworkAccess {
 		return socketConnect("socket", strHost, nPort);
 	}
 
-	public SocketConnection socketConnect(String proto, String strHost, int nPort) throws IOException 
+	public SocketConnection socketConnect(String proto, String strHost, int nPort) throws IOException
 	{
 		boolean ignoreSuffix = DeviceInfo.isSimulator();// && proto.equals("ssl") &&
 			//URLsuffix.indexOf("deviceside=true") != -1;
 		String strUrl = proto + "://" + strHost + ":" + Integer.toString(nPort);
-		
+
 		return (SocketConnection)baseConnect(strUrl, ignoreSuffix);
 	}
-	
+
 	void setConnectionTimeout(Connection conn, int nTimeOutMS)throws  java.io.IOException
 	{
         Version.SoftVersion ver = Version.getSoftVersion();
@@ -244,11 +244,11 @@ public class NetworkAccess implements INetworkAccess {
 			sce.setSocketOptionEx(sceOption, nTimeOutMS);
         }
 	}
-	
+
 	private Connection doConnect(String urlArg, boolean bThrowIOException) throws IOException
 	{
-		Connection conn = null;		
-		try 
+		Connection conn = null;
+		try
 		{
 			String url = new String(urlArg);
             if (url.startsWith("https"))
@@ -257,33 +257,33 @@ public class NetworkAccess implements INetworkAccess {
 			int nTimeoutMS = RhoConf.getInstance().getInt("net_timeout")*1000;
 			if (nTimeoutMS == 0)
 				nTimeoutMS = 30000; //30 sec by default
-			
+
 			if ( url.indexOf(";deviceside=true") == 0 && nTimeoutMS > 0 )
 				url += ";ConnectionTimeout=" + nTimeoutMS;
-			
+
 			LOG.INFO("Connect to url: " + url);
             conn = Connector.open(url, Connector.READ_WRITE, true);
-            
+
             if ( url.indexOf(";deviceside=true") >= 0 && nTimeoutMS > 0 )
             	setConnectionTimeout(conn, nTimeoutMS);
-            
-		} catch (java.io.InterruptedIOException ioe) 
+
+		} catch (java.io.InterruptedIOException ioe)
 		{
 			LOG.ERROR("Connector.open InterruptedIOException", ioe );
 			if (conn != null)
 				conn.close();
 			conn = null;
-			throw ioe;			
-		} catch (IOException ioe) 
+			throw ioe;
+		} catch (IOException ioe)
 		{
 			LOG.ERROR("Connector.open exception", ioe );
-			
-            String strMsg = ioe.getMessage(); 
+
+            String strMsg = ioe.getMessage();
 			boolean bTimeout = strMsg != null && (strMsg.indexOf("timed out") >= 0 || strMsg.indexOf("Timed out") >= 0);
 			boolean bDNS = strMsg != null && (strMsg.equalsIgnoreCase("Error trying to resolve") || strMsg.indexOf("DNS") >= 0);
-			
-			if ( bTimeout || bDNS || bThrowIOException )				
-			{				
+
+			if ( bTimeout || bDNS || bThrowIOException )
+			{
 				if (conn != null)
 					conn.close();
 				conn = null;
@@ -293,22 +293,22 @@ public class NetworkAccess implements INetworkAccess {
 		{
 			throw new IOException("Could not open network connection.");
 		}
-		
+
 		return conn;
 	}
-	
-	public Connection baseConnect(String strUrl, boolean ignoreSuffix) throws IOException 
+
+	public Connection baseConnect(String strUrl, boolean ignoreSuffix) throws IOException
 	{
 		Connection conn = null;
-		
+
 		//Try wifi first
 		if ( WIFIsuffix != null && isWifiActive() )
 		{
 			conn = doConnect(strUrl + WIFIsuffix + (URLsuffix.startsWith(";ConnectionUID=")? "":URLsuffix), false);
 			//if ( conn == null )
-			//	conn = doConnect(strUrl + WIFIsuffix, false);				
+			//	conn = doConnect(strUrl + WIFIsuffix, false);
 		}
-		
+
 		if ( conn == null  )
 		{
 			if ( isNetworkAvailable() )
@@ -317,16 +317,16 @@ public class NetworkAccess implements INetworkAccess {
 				//if ( conn == null && URLsuffix != null && URLsuffix.length() > 0 )
 				//	conn = doConnect(strUrl, true);
 			}else
-				throw new IOException("No network coverage.");				
+				throw new IOException("No network coverage.");
 		}
-		
+
 		return conn;
 	}
-	
+
 	public void close() {
 	}
 
-	public boolean isNetworkAvailable() 
+	public boolean isNetworkAvailable()
 	{
 		if (!(RadioInfo.getState() == RadioInfo.STATE_ON))
 			return false;
@@ -339,5 +339,5 @@ public class NetworkAccess implements INetworkAccess {
 		//return networkConfigured;
 		return true;
 	}
-	
+
 }

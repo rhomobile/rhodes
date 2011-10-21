@@ -1,4 +1,4 @@
-/* 
+/*
  * $Id: CacheLRU.java 124053 2005-01-04 01:24:35Z dfs $
  *
  * Copyright 2000-2005 The Apache Software Foundation
@@ -26,7 +26,7 @@ package org.apache.oro.util;
  * cache is full, when a new value is added to the cache, it replaces
  * the least recently used value currently in the cache.  This is probably
  * the best general purpose cache replacement policy.
- * 
+ *
  * @version @version@
  * @since 1.0
  * @see GenericCache
@@ -40,7 +40,7 @@ public final class CacheLRU extends GenericCache {
    * <p>
    * @param capacity  The capacity of the cache.
    */
-  public CacheLRU(int capacity) { 
+  public CacheLRU(int capacity) {
     super(capacity);
 
     int i;
@@ -90,7 +90,7 @@ public final class CacheLRU extends GenericCache {
   }
 
 
-  public synchronized Object getElement(Object key) { 
+  public synchronized Object getElement(Object key) {
     Object obj;
 
     obj = _table.get(key);

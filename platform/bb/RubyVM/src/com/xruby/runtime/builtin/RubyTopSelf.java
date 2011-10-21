@@ -33,5 +33,5 @@ public class RubyTopSelf {
         RubyRuntime.ObjectClass.include(args);
         return RubyRuntime.ObjectClass;
     }
-    
+
 }

@@ -1614,7 +1614,7 @@ pNewTerm.prereqAll = pTerm.prereqAll;
       nTerm = pOrderBy.nExpr;
       Debug.Assert(nTerm > 0);
 
-      /* Argument pIdx must either point to a 'real' named index structure, 
+      /* Argument pIdx must either point to a 'real' named index structure,
       ** or an index structure allocated on the stack by bestBtreeIndex() to
       ** represent the rowid index that is part of every table.  */
       Debug.Assert(!String.IsNullOrEmpty(pIdx.zName) || (pIdx.nColumn == 1 && pIdx.aiColumn[0] == -1));
@@ -2222,7 +2222,7 @@ bestOrClauseIndex(pParse, pWC, pSrc, notReady, pOrderBy, pCost);
 ** 1 contains values larger than or equal to the value of the first sample,
 ** but smaller than the value of the second. And so on.
 **
-** If successful, this function determines which of the regions value 
+** If successful, this function determines which of the regions value
 ** pVal lies in, sets *piRegion to the region index (a value between 0
 ** and SQLITE_INDEX_SAMPLES+1, inclusive) and returns SQLITE_OK.
 ** Or, if an OOM occurs while converting text values between encodings,
@@ -2246,7 +2246,7 @@ static int whereRangeRegion(
         if( aSample[i].eType==SQLITE_NULL ) continue;
         if( aSample[i].eType>=SQLITE_TEXT || aSample[i].u.r>r ) break;
       }
-    }else{ 
+    }else{
       sqlite3 db = pParse.db;
       CollSeq pColl;
       string z;
@@ -2312,8 +2312,8 @@ static int whereRangeRegion(
     /*
 ** If expression pExpr represents a literal value, set *pp to point to
 ** an sqlite3_value structure containing the same value, with affinity
-** aff applied to it, before returning. It is the responsibility of the 
-** caller to eventually release this structure by passing it to 
+** aff applied to it, before returning. It is the responsibility of the
+** caller to eventually release this structure by passing it to
 ** sqlite3ValueFree().
 **
 ** If the current parse is a recompile (sqlite3Reprepare()) and pExpr
@@ -2327,9 +2327,9 @@ static int whereRangeRegion(
 */
 #if SQLITE_ENABLE_STAT2
 static int valueFromExpr(
-  Parse pParse, 
-  Expr pExpr, 
-  u8 aff, 
+  Parse pParse,
+  Expr pExpr,
+  u8 aff,
   ref sqlite3_value pp
 ){
   /* The evalConstExpr() function will have already converted any TK_VARIABLE
@@ -2593,18 +2593,18 @@ range_est_fallback:
         ** scan being evaluated. They are then used to determine the expected
         ** cost and number of rows returned.
         **
-        **  nEq: 
+        **  nEq:
         **    Number of equality terms that can be implemented using the index.
         **
-        **  nInMul:  
-        **    The "in-multiplier". This is an estimate of how many seek operations 
-        **    SQLite must perform on the index in question. For example, if the 
+        **  nInMul:
+        **    The "in-multiplier". This is an estimate of how many seek operations
+        **    SQLite must perform on the index in question. For example, if the
         **    WHERE clause is:
         **
         **      WHERE a IN (1, 2, 3) AND b IN (4, 5, 6)
         **
-        **    SQLite must perform 9 lookups on an index on (a, b), so nInMul is 
-        **    set to 9. Given the same schema and either of the following WHERE 
+        **    SQLite must perform 9 lookups on an index on (a, b), so nInMul is
+        **    set to 9. Given the same schema and either of the following WHERE
         **    clauses:
         **
         **      WHERE a =  1
@@ -2612,12 +2612,12 @@ range_est_fallback:
         **
         **    nInMul is set to 1.
         **
-        **    If there exists a WHERE term of the form "x IN (SELECT ...)", then 
-        **    the sub-select is assumed to return 25 rows for the purposes of 
+        **    If there exists a WHERE term of the form "x IN (SELECT ...)", then
+        **    the sub-select is assumed to return 25 rows for the purposes of
         **    determining nInMul.
         **
-        **  bInEst:  
-        **    Set to true if there was at least one "x IN (SELECT ...)" term used 
+        **  bInEst:
+        **    Set to true if there was at least one "x IN (SELECT ...)" term used
         **    in determining the value of nInMul.
         **
         **  nBound:
@@ -2629,18 +2629,18 @@ range_est_fallback:
         **    space to 1/3rd its original size.  So an x>? constraint reduces
         **    nBound to 33.  Two constraints (x>? AND x<?) reduce nBound to 11.
         **
-        **  bSort:   
-        **    Boolean. True if there is an ORDER BY clause that will require an 
-        **    external sort (i.e. scanning the index being evaluated will not 
+        **  bSort:
+        **    Boolean. True if there is an ORDER BY clause that will require an
+        **    external sort (i.e. scanning the index being evaluated will not
         **    correctly order records).
         **
-        **  bLookup: 
-        **    Boolean. True if for each index entry visited a lookup on the 
-        **    corresponding table b-tree is required. This is always false 
-        **    for the rowid index. For other indexes, it is true unless all the 
-        **    columns of the table used by the SELECT statement are present in 
+        **  bLookup:
+        **    Boolean. True if for each index entry visited a lookup on the
+        **    corresponding table b-tree is required. This is always false
+        **    for the rowid index. For other indexes, it is true unless all the
+        **    columns of the table used by the SELECT statement are present in
         **    the index (such an index is sometimes described as a covering index).
-        **    For example, given the index on (a, b), the second of the following 
+        **    For example, given the index on (a, b), the second of the following
         **    two queries requires table b-tree lookups, but the first does not.
         **
         **             SELECT a, b    FROM tbl WHERE a = 1;
@@ -2734,7 +2734,7 @@ range_est_fallback:
         }
 
         /* If currently calculating the cost of using an index (not the IPK
-        ** index), determine if all required column data may be obtained without 
+        ** index), determine if all required column data may be obtained without
         ** seeking to entries in the main table (i.e. if the index is a covering
         ** index for this query). If it is, set the WHERE_IDX_ONLY flag in
         ** wsFlags. Otherwise, set the bLookup variable to true.  */
@@ -2931,7 +2931,7 @@ else
 
     /*
     ** Code an OP_Affinity opcode to apply the column affinity string zAff
-    ** to the n registers starting at base. 
+    ** to the n registers starting at base.
     **
     ** As an optimization, SQLITE_AFF_NONE entries (which are no-ops) at the
     ** beginning and end of zAff are ignored.  If all entries in zAff are
@@ -3054,7 +3054,7 @@ else
 
     /*
     ** Generate code for a single equality term of the WHERE clause.  An equality
-    ** term can be either X=expr or X IN (...).   pTerm is the term to be 
+    ** term can be either X=expr or X IN (...).   pTerm is the term to be
     ** coded.
     **
     ** For example, consider table t1(a,b,c,d,e,f) with index i1(a,b,c).
@@ -3533,7 +3533,7 @@ OP_IdxLT             /* 2: (end_constraints && bRev) */
             if (sqlite3CompareAffinity(pRight, zAff[nConstraint]) == SQLITE_AFF_NONE)
             {
               /* Since the comparison is to be performed with no conversions
-              ** applied to the operands, set the affinity to apply to pRight to 
+              ** applied to the operands, set the affinity to apply to pRight to
               ** SQLITE_AFF_NONE.  */
               zAff[nConstraint] = SQLITE_AFF_NONE;
             }
@@ -3577,7 +3577,7 @@ OP_IdxLT             /* 2: (end_constraints && bRev) */
             if (sqlite3CompareAffinity(pRight, zAff[nConstraint]) == SQLITE_AFF_NONE)
             {
               /* Since the comparison is to be performed with no conversions
-              ** applied to the operands, set the affinity to apply to pRight to 
+              ** applied to the operands, set the affinity to apply to pRight to
               ** SQLITE_AFF_NONE.  */
               zAff[nConstraint] = SQLITE_AFF_NONE;
             }
@@ -4029,7 +4029,7 @@ OP_IdxLT             /* 2: (end_constraints && bRev) */
         return null;
       }
 
-      /* This function normally generates a nested loop for all tables in 
+      /* This function normally generates a nested loop for all tables in
       ** pTabList.  But if the WHERE_ONETABLE_ONLY flag is set, then we should
       ** only generate code for the first table in pTabList and assume that
       ** any cursors associated with subsequent tables are uninitialized.
@@ -4174,7 +4174,7 @@ pWC.vmask |= ( (Bitmask)1 << i );
 
         /* Loop through the remaining entries in the FROM clause to find the
 ** next nested loop. The FROM clause entries may be iterated through
-** either once or twice. 
+** either once or twice.
 **
 ** The first iteration, which is always performed, searches for the
 ** FROM clause entry that permits the lowest-cost, "optimal" scan. In
@@ -4192,15 +4192,15 @@ pWC.vmask |= ( (Bitmask)1 << i );
 ** the next outermost loop was always that with the lowest overall
 ** cost. However, this meant that SQLite could select the wrong plan
 ** for scripts such as the following:
-**   
-**   CREATE TABLE t1(a, b); 
+**
+**   CREATE TABLE t1(a, b);
 **   CREATE TABLE t2(c, d);
 **   SELECT * FROM t2, t1 WHERE t2.rowid = t1.a;
 **
 ** The best strategy is to iterate through table t1 first. However it
 ** is not possible to determine this with a simple greedy algorithm.
-** However, since the cost of a linear scan through table t2 is the same 
-** as the cost of a linear scan through table t1, a simple greedy 
+** However, since the cost of a linear scan through table t2 is the same
+** as the cost of a linear scan through table t1, a simple greedy
 ** algorithm may choose to use t2 for the outer loop, which is a much
 ** costlier approach.
 */

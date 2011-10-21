@@ -16,7 +16,7 @@ using Pgno = System.UInt32;
 #if !SQLITE_MAX_VARIABLE_NUMBER
 using ynVar = System.Int16;
 #else
-using ynVar = System.Int32; 
+using ynVar = System.Int32;
 #endif
 
 namespace Community.CsharpSqlite
@@ -135,7 +135,7 @@ public readonly sqlite3_module pModule; /* Module for cursor pVtabCursor */
     ** When a sub-program is executed (OP_Program), a structure of this type
     ** is allocated to store the current value of the program counter, as
     ** well as the current memory cell array and various other frame specific
-    ** values stored in the Vdbe struct. When the sub-program is finished, 
+    ** values stored in the Vdbe struct. When the sub-program is finished,
     ** these values are copied back to the Vdbe from the VdbeFrame structure,
     ** restoring the state of the VM to as it was before the sub-program
     ** began executing.
@@ -306,7 +306,7 @@ set { _flags = value; }
     const int MEM_Ephem = 0x1000;
     const int MEM_Agg = 0x2000;
 #if !SQLITE_OMIT_INCRBLOB
-    const int MEM_Zero = 0x4000;  
+    const int MEM_Zero = 0x4000;
 #else
     const int MEM_Zero = 0x0000;
 #endif
@@ -364,7 +364,7 @@ set { _flags = value; }
       public Mem pMem;             /* Memory cell used to store aggregate context */
       public int isError;          /* Error code returned by the function. */
       public CollSeq pColl;        /* Collating sequence */
-    
+
     };
 
     /*
@@ -586,7 +586,7 @@ ct.pLruNext=pLruNext;
     //int sqlite3VdbeCloseStatement(Vdbe *, int);
     //void sqlite3VdbeFrameDelete(VdbeFrame*);
     //int sqlite3VdbeFrameRestore(VdbeFrame *);
-    //void sqlite3VdbeMemStoreType(Mem *pMem);  
+    //void sqlite3VdbeMemStoreType(Mem *pMem);
 #if !SQLITE_OMIT_FOREIGN_KEY
     //int sqlite3VdbeCheckFk(Vdbe *, int);
 #else

@@ -28,7 +28,7 @@ const struct vec _shttpd_known_http_methods[] = {
 	{"HEAD",	4},
 	{NULL,		0}
 };
-	
+
 /*
  * This structure tells how HTTP headers must be parsed.
  * Used by parse_headers() function.
@@ -173,7 +173,7 @@ _shttpd_stop_stream(struct stream *stream)
 	stream->flags &= ~(FLAG_R | FLAG_W | FLAG_ALWAYS_READY);
 
 	DBG(("%d %s stopped. %lu of content data, %d now in a buffer",
-	    stream->conn->rem.chan.sock, 
+	    stream->conn->rem.chan.sock,
 	    stream->io_class ? stream->io_class->name : "(null)",
 	    (unsigned long) stream->io.total, (int) io_data_len(&stream->io)));
 }
@@ -530,7 +530,7 @@ get_path_info(struct conn *c, char *path, struct stat *stp)
 
 	p = path + strlen(path);
 	e = path + strlen(c->ctx->options[OPT_ROOT]) + 2;
-	
+
 	/* Strip directory parts of the path one by one */
 	for (; p > e; p--)
 		if (*p == '/') {
@@ -564,7 +564,7 @@ decide_what_to_do(struct conn *c)
 
 	_shttpd_url_decode(c->uri, strlen(c->uri), c->uri, strlen(c->uri) + 1);
 	remove_double_dots(c->uri);
-	
+
 	root = c->ctx->options[OPT_ROOT];
 	if (strlen(c->uri) + strlen(root) >= sizeof(path)) {
 		_shttpd_send_server_error(c, 400, "URI is too long");
@@ -646,7 +646,7 @@ decide_what_to_do(struct conn *c)
         if ( find_index_file(c, path, sizeof(path) - 1, &st, bufIndex) >= 0 )
         {
 		    (void) _shttpd_snprintf(path, sizeof(path),
-                "Moved Permanently\r\nLocation: %s%s%s", c->uri, 
+                "Moved Permanently\r\nLocation: %s%s%s", c->uri,
                     c->uri[strlen(c->uri) - 1] != '/' ? "/" : "", bufIndex);
             if ( c->query != 0 && *(c->query) != 0 ){
                 strcat(path,"?");
@@ -689,7 +689,7 @@ decide_what_to_do(struct conn *c)
 			_shttpd_do_ssi(c);
 		}
 #endif /* NO_CGI */
-    } else if ( isindex(c,path) ) 
+    } else if ( isindex(c,path) )
     {
         union variant callback;
 
@@ -698,11 +698,11 @@ decide_what_to_do(struct conn *c)
 
         callback.v_func = (void (*)(void))rho_serve_index;
 	    _shttpd_setup_embedded_stream(c, callback, _shttpd_strdup(path));
-    } 
+    }
 #ifndef __SYMBIAN32__ //This is a bug in loading css in Symbian browser
     else if (c->ch.ims._v.v_time && st.st_mtime <= c->ch.ims._v.v_time) {
 		_shttpd_send_server_error(c, 304, "Not Modified");
-    } 
+    }
 #endif //__SYMBIAN32__
     else if ((c->loc.chan.fd = _shttpd_open(path,
 	    O_RDONLY | O_BINARY, 0644)) != -1) {
@@ -878,7 +878,7 @@ add_socket(struct worker *worker, int sock, int is_ssl)
 		_shttpd_set_close_on_exec(sock);
 
 		c->loc.io_class	= NULL;
-	
+
 		c->rem.io_class	= &_shttpd_io_socket;
 		c->rem.chan.sock = sock;
 
@@ -893,7 +893,7 @@ add_socket(struct worker *worker, int sock, int is_ssl)
 
 		LL_TAIL(&worker->connections, &c->link);
 		worker->num_conns++;
-		
+
 		DBG(("%s:%hu connected (socket %d)",
 		    inet_ntoa(* (struct in_addr *) &sa.u.sin.sin_addr.s_addr),
 		    ntohs(sa.u.sin.sin_port), sock));
@@ -1030,7 +1030,7 @@ write_stream(struct stream *from, struct stream *to)
     DBG(("write_stream (%d %s): written %d/%d bytes (errno %d)",
 	    to->conn->rem.chan.sock,
         to->io_class ? to->io_class->name : "(null)", n, len, n < 0 ? ERRNO : 0));
-	
+
     if (n != len) {
         DBG(("WARNING: n/len mismatch: %d/%d", n, len));
     }
@@ -1098,7 +1098,7 @@ connection_desctructor(struct llhead *lp)
 
 		if (c->rem.io_class != NULL)
 			c->rem.io_class->close(&c->rem);
-		
+
 		free(c);
 	}
 }
@@ -1163,7 +1163,7 @@ process_connection(struct conn *c, int remote_ready, int local_ready)
 		write_stream(&c->rem, &c->loc);
 
 	if (io_data_len(&c->loc.io) > 0 && c->rem.io_class != NULL)
-		write_stream(&c->loc, &c->rem); 
+		write_stream(&c->loc, &c->rem);
 
 	/* Check whether we should close this connection */
 	if ((_shttpd_current_time > c->expire_time) ||
@@ -1251,7 +1251,7 @@ multiplex_worker_sockets(const struct worker *worker, int *max_fd,
 	/* Multiplex streams */
 	LL_FOREACH(&worker->connections, lp) {
 		c = LL_ENTRY(lp, struct conn, link);
-		
+
 		/* If there is a space in remote IO, check remote socket */
 		if (io_space_len(&c->rem.io))
 			add_to_set(c->rem.chan.fd, read_set, max_fd);
@@ -1287,7 +1287,7 @@ multiplex_worker_sockets(const struct worker *worker, int *max_fd,
 		if (io_space_len(&c->loc.io) && (c->loc.flags & FLAG_R) &&
 		    (c->loc.flags & FLAG_ALWAYS_READY))
 			nowait = TRUE;
-		
+
 		if (io_data_len(&c->rem.io) && (c->loc.flags & FLAG_W) &&
 		    (c->loc.flags & FLAG_ALWAYS_READY))
 			nowait = TRUE;
@@ -1550,7 +1550,7 @@ set_acl(struct shttpd_ctx *ctx, const char *s)
 			_shttpd_elog(E_FATAL, NULL, "bad ip address: [%s]", s);
 		} else	if ((acl = malloc(sizeof(*acl))) == NULL) {
 			_shttpd_elog(E_FATAL, NULL, "%s", "cannot malloc subnet");
-		} else if (sscanf(s + n, "/%d", &mask) == 0) { 
+		} else if (sscanf(s + n, "/%d", &mask) == 0) {
 			/* Do nothing, no mask specified */
 		} else if (mask < 0 || mask > 32) {
 			_shttpd_elog(E_FATAL, NULL, "bad subnet mask: %d [%s]", n, s);
@@ -1805,7 +1805,7 @@ shttpd_set_option(struct shttpd_ctx *ctx, const char *opt, const char *val)
 	/* Free old value if any */
 	if (ctx->options[o->index] != NULL)
 		free(ctx->options[o->index]);
-	
+
 	/* Set new option value */
 	ctx->options[o->index] = val ? _shttpd_strdup(val) : NULL;
 
@@ -1813,7 +1813,7 @@ shttpd_set_option(struct shttpd_ctx *ctx, const char *opt, const char *val)
 }
 
 const char* shttpd_get_index_names(struct shttpd_ctx *ctx) {
-	return ctx->options[OPT_INDEX_FILES];	
+	return ctx->options[OPT_INDEX_FILES];
 }
 
 static void

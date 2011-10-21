@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -108,7 +108,7 @@ String URI::getLastNamePart()
 
     if ( nSlash >= 0 )
         strRes = strRes.substr(nSlash+1);
-    
+
     return strRes;
 }
 
@@ -130,7 +130,7 @@ static void toHexString(int i, String& strRes, int radix)
 	}
 	while(i>0);
 
-	if(neg) 
+	if(neg)
         buf[f--]= '-';
 
     strRes += (buf+f+1);
@@ -153,11 +153,11 @@ static void toHexString(int i, String& strRes, int radix)
     {
         c = fullPath.at(index);
         if ( (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') ||
-             c == '_' || c == '.') 
+             c == '_' || c == '.')
         {
-            if ( bFound ) 
+            if ( bFound )
                 strRes += c;
-        }else 
+        }else
         {
             if ( !bFound )
             {
@@ -193,7 +193,7 @@ String URI::urlEncode(const String& fullPath)
 		     || (c >= 'A' && c <= 'Z')
 		     || (c >= 'a' && c <= 'z')
 		     || (c >= '0' && c <= '9') ) {
-            if ( bFound ) 
+            if ( bFound )
                 strRes += c;
 	    } else {
             if ( !bFound )
@@ -213,7 +213,7 @@ String URI::urlEncode(const String& fullPath)
 			    // otherwise need to add a leading 0
 		    }
 	    }
-    	  
+
     }
 
     if ( !bFound )
@@ -226,7 +226,7 @@ String URI::urlEncode(const String& fullPath)
 	urlDecode(fullPath, res);
 	return res;
 }
-	
+
 /*static*/ void URI::urlDecode(const String &url, String& ret )
 {
 	for (const char *s = url.c_str(); *s != '\0'; ++s) {
@@ -234,7 +234,7 @@ String URI::urlEncode(const String& fullPath)
 			ret.push_back(*s);
 			continue;
 		}
-			
+
 		unsigned int c1 = (unsigned char)*++s;
 		if (c1 >= (unsigned char)'0' && c1 <= (unsigned char)'9')
 			c1 = c1 - (unsigned char)'0';
@@ -253,27 +253,27 @@ String URI::urlEncode(const String& fullPath)
 			c2 = c2 - (unsigned char)'A' + 10;
 		else
 			break;
-			
+
 		char c = (char)((c1 << 4) | c2);
 		ret.push_back(c);
 	}
 }
-	
+
 //"auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT, auth_token=887b2ffd30a7b97be9a0986d7746a934421eec7d; path=/; expires=Sat, 24 Oct 2009 20:56:55 GMT, rhosync_session=BAh7BzoMdXNlcl9pZGkIIgpmbGFzaElDOidBY3Rpb25Db250cm9sbGVyOjpGbGFzaDo6Rmxhc2hIYXNoewAGOgpAdXNlZHsA--f9b67d99397fc534107fb3b7483ccdae23b4a761; path=/; expires=Sun, 10 Oct 2010 19:10:58 GMT; HttpOnly");
 //"auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT");
 //"rhosync_session=BAh7CToNcGFzc3dvcmQiFTiMYru1W11zuoAlN%2FPtgjc6CmxvZ2luIhU4jGK7tVtdc7qAJTfz7YI3Ogx1c2VyX2lkaQYiCmZsYXNoSUM6J0FjdGlvbkNvbnRyb2xsZXI6OkZsYXNoOjpGbGFzaEhhc2h7AAY6CkB1c2VkewA%3D--a7829a70171203d72cd4e83d07b18e8fcf5e2f78; path=/; expires=Thu, 02 Sep 2010 23:51:31 GMT; HttpOnly");
 
-/*static*/ void URI::parseCookie(const char* szCookie, String& strRes) 
+/*static*/ void URI::parseCookie(const char* szCookie, String& strRes)
 {
     common::CTokenizer stringtokenizer(szCookie, ";");
-	while (stringtokenizer.hasMoreTokens()) 
+	while (stringtokenizer.hasMoreTokens())
     {
 		String tok = stringtokenizer.nextToken();
 		tok = String_trim(tok);
 		if (tok.length() == 0) {
 			continue;
 		}
-		
+
 		//expires=Thu, 01 Jan 1970 00:00:00 GMT, auth_token=
 		int nExp = tok.find("expires=");
 		if ( nExp >= 0 )
@@ -287,16 +287,16 @@ String URI::urlEncode(const String& fullPath)
 				else
 					nEnd = tok.length()-1;
 			}
-			
+
 			tok = tok.substr(0,nExp) + tok.substr(nEnd+1);
 			tok = String_trim(tok);
 		}
-		
+
 		int nEq = tok.find('=');
 		if ( nEq < 0 )
 			continue;
-		
-		strRes += tok + ";";  
+
+		strRes += tok + ";";
 /*
 		int i = 0;
 		if ( (i=tok.find("auth_token=")) >= 0 )
@@ -328,6 +328,6 @@ String URI::urlEncode(const String& fullPath)
 		} */
 	}
 }
-	
+
 }
 }

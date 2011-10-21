@@ -400,7 +400,7 @@ native_cond_wait(rb_thread_cond_t *cond, rb_thread_lock_t *mutex)
 {
     DWORD r;
     struct cond_event_entry entry;
-//RHO	
+//RHO
     //WinMo BUG: in release mode CreateEventW without name inside non-main thread does not work
     static int nCounter = 0;
     wchar_t buf[20];
@@ -485,7 +485,7 @@ native_thread_destroy(rb_thread_t *th)
 //RHO
     if ( intr )
         w32_close_handle(intr);
-//RHO		
+//RHO
 }
 
 static unsigned long _stdcall
@@ -534,7 +534,7 @@ native_thread_create(rb_thread_t *th)
 //RHO
 		if ( th->native_thread_data.interrupt_event )
             w32_close_handle(th->native_thread_data.interrupt_event);
-//RHO				
+//RHO
 		return thread_errno;
     }
 
@@ -612,7 +612,7 @@ rb_thread_create_timer_thread(void)
 					    timer_thread_func, 0);
 	w32_resume_thread(timer_thread_id);
     }*/
-//RHO	
+//RHO
 }
 
 static int
@@ -637,8 +637,8 @@ native_reset_timer_thread(void)
 	CloseHandle(timer_thread_id);
 	timer_thread_id = 0;
     }
-*/	
-//RHO	
+*/
+//RHO
 }
 
 #endif /* THREAD_SYSTEM_DEPENDENT_IMPLEMENTATION */

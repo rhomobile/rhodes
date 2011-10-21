@@ -2,7 +2,7 @@
 %module "Rho::AsyncHttp"
 %{
     #include "ext/rho/rhoruby.h"
-    
+
 	extern VALUE rho_asynchttp_request(const char* command, rho_param *p);
 	#define do_request rho_asynchttp_request
 

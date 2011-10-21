@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2005 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -16,7 +16,7 @@ import java.io.OutputStream;
  */
 public class ObjectOutputStream
     extends OutputStream implements ObjectOutput {
-	
+
     // For sub-classes reimplementing this class.
 	protected ObjectOutputStream() throws IOException, SecurityException {
     }
@@ -24,7 +24,7 @@ public class ObjectOutputStream
     public ObjectOutputStream(OutputStream out) throws IOException {
         throw new UnsupportedOperationException();
     }
-    
+
     public void defaultWriteObject() throws IOException {
         throw new UnsupportedOperationException();
     }
@@ -78,7 +78,7 @@ public class ObjectOutputStream
     public void writeFloat (float v) throws IOException {
         throw new UnsupportedOperationException();
     }
-    
+
     public void writeDouble (double v) throws IOException {
         throw new UnsupportedOperationException();
     }

@@ -29,12 +29,12 @@ TEST_EXE  = ./eh_test
 TEST  = ./eh_test.out
 
 CC = como
-CXX = $(CC) 
+CXX = $(CC)
 
 CXXFLAGS = -DLIBCIO= --diag_suppress=68 -D__null=0L -D__GNUG__ -D_STLP_DEBUG -I${STL_INCL}  -I. ${CXX_EXTRA_FLAGS}
 
-LIBS = -L../../lib -lstlport_como_stldebug -lpthread -lm 
-LIBSTDCXX = 
+LIBS = -L../../lib -lstlport_como_stldebug -lpthread -lm
+LIBSTDCXX =
 
 check: $(TEST)
 

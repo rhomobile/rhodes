@@ -54,8 +54,8 @@ typedef int RHO_ESRI_Map_Type;
 #define ESRI_MapType_RoadMap 1
 #define ESRI_MapType_Satellite 2
 #define ESRI_MapType_Hybrid 3
-    
-    
+
+
 //Set up constant for predefined where clause for search
 //#define kLayerDefinitionFormat @"STATE_NAME = '%@'"
 
@@ -71,36 +71,36 @@ typedef int RHO_ESRI_Map_Type;
 
     AGSGraphicsLayer *_graphicsLayer;
 	AGSCalloutTemplate *_calloutTemplate;
-	
+
 	UIView* savedMainView;
-	
+
 	RHO_ESRI_Map_Type mapType;
     BOOL zoomEnabled;
-    BOOL scrollEnabled;	
+    BOOL scrollEnabled;
     BOOL showsUserLocation;
-    BOOL region_set;	
+    BOOL region_set;
 	double region_latitude_min;
 	double region_latitude_max;
 	double region_longitude_min;
 	double region_longitude_max;
-	
+
 	rho_param* params_value;
 
 	UIImageView* esriLogo;
-	
+
 	//container for map layers
 	AGSMapView *_mapView;
-	
+
 	//this map has a dynamic layer, need a view to act as a container for it
 	AGSDynamicMapServiceLayer *_dynamicLayer;
 	UIView *_dynamicLayerView;
-	
+
 	NSString* esri_standard_map_url;
 	NSString* esri_satellite_map_url;
-	
+
 }
 
-// 
+//
 @property (nonatomic, retain) NSString* esri_standard_map_url;
 @property (nonatomic, retain) NSString* esri_satellite_map_url;
 @property (nonatomic, retain) NSString *region_center;
@@ -126,9 +126,9 @@ typedef int RHO_ESRI_Map_Type;
 
 
 @property (assign) BOOL zoomEnabled;
-@property (assign) BOOL scrollEnabled;	
+@property (assign) BOOL scrollEnabled;
 @property (assign) BOOL showsUserLocation;
-@property (assign) BOOL region_set;	
+@property (assign) BOOL region_set;
 @property (assign) RHO_ESRI_Map_Type mapType;
 
 
@@ -144,7 +144,7 @@ typedef int RHO_ESRI_Map_Type;
 + (double)centerLatitude;
 + (double)centerLongitude;
 
--(void)addAnnotation:(double)latitude longitude:(double)longitude 
+-(void)addAnnotation:(double)latitude longitude:(double)longitude
 						streetAdress:(NSString*)streetAdress
 						title:(NSString*)title
 						subtitle:(NSString*)subtitle

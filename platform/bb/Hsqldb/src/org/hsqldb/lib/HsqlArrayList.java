@@ -368,17 +368,17 @@ public class HsqlArrayList extends BaseList implements HsqlList {
 	        //                      elementCount);
 	    	throw new java.lang.IllegalArgumentException();
 	    }
-	
+
 	    System.arraycopy(elementData, 0, a, 0, elementCount);
-	
+
 	    return a;
     }
-    
+
     public Object toArray(Object a) {
-        
+
         if (this.elementData == null)
             return a;
-        
+
         if (this.elementData.length == 0)
             return a;
         if (((Object[])a).length < elementCount){
@@ -398,12 +398,12 @@ public class HsqlArrayList extends BaseList implements HsqlList {
                 a = new Object[elementCount];
             }
         }
-        
+
         System.arraycopy(elementData, 0, a, 0, elementCount);
 
         return a;
     }
-    
+
     public void sort(ObjectComparator c) {
 
         if (elementCount < 2) {

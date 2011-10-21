@@ -2,6 +2,6 @@
 
 
 class ESRIViewFactorySingletone  {
-public: 
+public:
   static NativeViewFactory* instance();
 };

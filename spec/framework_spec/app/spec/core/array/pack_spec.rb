@@ -168,28 +168,28 @@ describe "Array#pack with ASCII-string format", :shared => true do
       # example of stateful encoding
       s = "\u3042".encode(Encoding::ISO_2022_JP)
       [s].pack(format('*')).bytes.to_a.should == s.bytes.to_a
-=end      
+=end
     end
 
     # This feature is under discussion - [ruby-dev:37278]
     it "returns result in ASCII-8BIT" do
       ["abcd"].pack(format).encoding.should == Encoding::ASCII_8BIT
       ["\u3042"].pack(format).encoding.should == Encoding::ASCII_8BIT
-=begin      
+=begin
       ["\u3042".encode(Encoding::UTF_32BE)].pack(format).encoding.should ==
         Encoding::ASCII_8BIT
       ["\u3042".encode(Encoding::ISO_2022_JP)].pack(format).encoding.should ==
         Encoding::ASCII_8BIT
-=end        
+=end
     end
 
     # This feature is under discussion - [ruby-dev:37278]
     it "cuts byte sequence even if it breaks a multibyte character" do
       ["\u3042"].pack(format).should == "\xe3".force_encoding('ascii-8bit')
-=begin      
+=begin
       ["\u3042".encode(Encoding::UTF_32BE)].pack(format(2)).should == "\x00\x00"
       ["\u3042".encode(Encoding::ISO_2022_JP)].pack(format(4)).should == "\e$B$"
-=end      
+=end
     end
   end
 end

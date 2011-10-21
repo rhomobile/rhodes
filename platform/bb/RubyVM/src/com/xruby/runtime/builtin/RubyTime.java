@@ -15,7 +15,7 @@ import j2me.lang.*;
 
 //@RubyLevelClass(name="Time")
 public class RubyTime extends RubyBasic {
-	//private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	//private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 	//	new RhoLogger("RubyTime");
 	private final Calendar date_;
 
@@ -51,7 +51,7 @@ public class RubyTime extends RubyBasic {
 
     //RHO_COMMENT : initialize
     //@RubyLevelMethod(name="initialize")
-    public RubyTime initialize(RubyArray args) 
+    public RubyTime initialize(RubyArray args)
     {
     	if ( args != null )
     	{
@@ -62,10 +62,10 @@ public class RubyTime extends RubyBasic {
 	    	if ( args.size() > 2 )
 	    		date_.set(Calendar.DAY_OF_MONTH, args.get(2).toInt());
     	}
-    	
+
         return this;
     }
-    
+
     public final long getTime() {
         //return date_.getTimeInMillis();
     	return date_.getTime().getTime();
@@ -86,7 +86,7 @@ public class RubyTime extends RubyBasic {
 	private String get2FixedDigit(int nDigit){
 		if ( nDigit > 9 )
 			return Integer.toString(nDigit);
-			
+
 		return "0" + Integer.toString(nDigit);
 	}
 
@@ -96,15 +96,15 @@ public class RubyTime extends RubyBasic {
     	//return sdf.format(date_.getTime()).replace("GMT", "UTC");
     	//String strDate = date_.getTime().toString();
         //StringMe.replaceAll(strDate, "GMT", "UTC");
-    	
-    	String strDate = date_.get(Calendar.YEAR) + "-" + 
+
+    	String strDate = date_.get(Calendar.YEAR) + "-" +
     	  get2FixedDigit(date_.get(Calendar.MONTH)+1) + "-" +
-    	  get2FixedDigit(date_.get(Calendar.DATE)) + " " + 
+    	  get2FixedDigit(date_.get(Calendar.DATE)) + " " +
     	  get2FixedDigit(date_.get(Calendar.HOUR_OF_DAY)) + ":" +
-    	  get2FixedDigit(date_.get(Calendar.MINUTE)) + ":" + 
+    	  get2FixedDigit(date_.get(Calendar.MINUTE)) + ":" +
     	  get2FixedDigit(date_.get(Calendar.SECOND)) + " " +
     	  date_.getTimeZone().toString();
-    	  
+
         return strDate;
     }
 
@@ -148,7 +148,7 @@ public class RubyTime extends RubyBasic {
     public RubyValue nsec() {
         return ObjectFactory.createFixnum( ((long)date_.get(Calendar.MILLISECOND))*1000000L);
     }
-    
+
     //@RubyLevelMethod(name="to_f")
     public RubyFloat to_f() {
         return ObjectFactory.createFloat((double)getTime() / 1000);
@@ -206,13 +206,13 @@ public class RubyTime extends RubyBasic {
     public RubyValue eql(RubyValue v) {
     	if ( this == v )
     		return RubyConstant.QTRUE;
-    	
+
     	if ( !(v instanceof RubyTime))
     		return RubyConstant.QFALSE;
-    	
-    	return cmp(v) == ObjectFactory.FIXNUM0 ? RubyConstant.QTRUE : RubyConstant.QFALSE; 
+
+    	return cmp(v) == ObjectFactory.FIXNUM0 ? RubyConstant.QTRUE : RubyConstant.QFALSE;
     }
-    
+
     //@RubyLevelMethod(name="zone")
     public RubyString zone() {
         //String name = date_.getTimeZone().getDisplayName(false, TimeZone.SHORT, Locale.US);
@@ -227,12 +227,12 @@ public class RubyTime extends RubyBasic {
     public RubyValue gmt_offset() {
         //int offset = dt.getZone().getOffsetFromLocal(dt.getMillis());
     	String strZone = date_.getTimeZone().toString();
-    	int offset = date_.getTimeZone().getOffset(1, 
-    			date_.get(Calendar.YEAR), date_.get(Calendar.MONTH), date_.get(Calendar.DATE), 
+    	int offset = date_.getTimeZone().getOffset(1,
+    			date_.get(Calendar.YEAR), date_.get(Calendar.MONTH), date_.get(Calendar.DATE),
     			date_.get(Calendar.DAY_OF_WEEK), date_.get(Calendar.MILLISECOND) );
         return ObjectFactory.createFixnum(offset/1000);
     }
-    
+
     //@RubyLevelMethod(name="utc", alias="gm")
     public static RubyTime utc(RubyValue receiver, RubyArray args) {
         return createTime(args, TimeZone.getTimeZone("GMT"));
@@ -244,7 +244,7 @@ public class RubyTime extends RubyBasic {
     	date_.setTimeZone(TimeZone.getTimeZone("GMT"));
         return this;
     }
-    
+
     //@RubyLevelMethod(name="gmt?")
     public RubyValue gmt_question() {
         return ObjectFactory.createBoolean(
@@ -253,7 +253,7 @@ public class RubyTime extends RubyBasic {
 
     //@RubyLevelMethod(name="localtime")
     public RubyValue localtime() {
-    	date_.getTime(); //fix for #734 - problem with Time and timezones on BlackBerry  
+    	date_.getTime(); //fix for #734 - problem with Time and timezones on BlackBerry
         date_.setTimeZone(TimeZone.getDefault());
         return this;
     }
@@ -263,10 +263,10 @@ public class RubyTime extends RubyBasic {
         return createTime(args, TimeZone.getDefault());
     }
 
-    private static String[] month_shorts = {"Jan", "Feb", "Mar", "Apr", 
-            "May", "Jun", "Jul", "Aug", 
+    private static String[] month_shorts = {"Jan", "Feb", "Mar", "Apr",
+            "May", "Jun", "Jul", "Aug",
             "Sep", "Oct", "Nov", "Dec"};
-    
+
     private static RubyTime createTime(RubyArray args, TimeZone zone) {
         if (null == args || args.size() == 0) {
             throw new RubyException(RubyRuntime.ArgumentErrorClass, "wrong number of arguments (0 for 1)");
@@ -284,11 +284,11 @@ public class RubyTime extends RubyBasic {
         	{
         		month = -1;
         		try{
-        			month = mon.toInt();        		
+        			month = mon.toInt();
         		}catch(Exception exc){
-        			
+
         		}
-        		
+
         		if ( month == -1 )
         		{
 	        		String strMon = mon.toStr();
@@ -301,14 +301,14 @@ public class RubyTime extends RubyBasic {
         		}
         	}
         }
-        
+
         int day = (args.size() <= i) ? 0 : args.get(i++).toInt();
         int hour = (args.size() <= i) ? 0 : args.get(i++).toInt();
         int min = (args.size() <= i) ? 0 : args.get(i++).toInt();
-        
+
         int sec = 0;
         int millis = 0;
-        
+
         if ( args.size() > i )
         {
         	RubyValue sec_fract = args.get(i++);
@@ -352,5 +352,5 @@ public class RubyTime extends RubyBasic {
         RubyClass r = (RubyClass) receiver;
         return r.newInstance(args, block);
     }
-    
+
 }

@@ -21,11 +21,11 @@ public class RubyRandom {
 	private static Random random = new Random();
 
 	private static boolean first = true;
-	private static RubyInteger saved_seed = new RubyFixnum(0); 
- 
-	private static RubyValue rand_init(RubyValue vseed) {	
+	private static RubyInteger saved_seed = new RubyFixnum(0);
+
+	private static RubyValue rand_init(RubyValue vseed) {
 		RubyInteger seed = vseed.toRubyInteger();
-		
+
 		if (seed instanceof RubyFixnum) {
 			randomSeed = seed.toInt();
 		} else if (seed instanceof RubyBignum) {
@@ -34,7 +34,7 @@ public class RubyRandom {
 			throw new RubyException(RubyRuntime.TypeErrorClass, "failed to convert " + vseed.getRubyClass().getName() + " into Integer");
 		}
 		random.setSeed(randomSeed);
-		
+
 		first = false;
 		RubyInteger old = saved_seed;
 		saved_seed = seed;
@@ -52,12 +52,12 @@ public class RubyRandom {
     public static RubyValue srand(RubyValue receiver) {
         return srand(receiver, random_seed());
     }
-    
+
     @RubyLevelMethod(name="srand")
     public static RubyValue srand(RubyValue receiver, RubyValue arg) {
         return rand_init(arg);
     }
-	
+
 	@RubyLevelMethod(name="rand")
 	public static RubyValue rand(RubyValue receiver) {
 		if (first) {
@@ -65,15 +65,15 @@ public class RubyRandom {
 		}
         return new RubyFloat(random.nextDouble());
     }
-	
+
 	@RubyLevelMethod(name="rand")
 	public static RubyValue rand(RubyValue receiver, RubyValue arg) {
 		long val, max = 0;
-		
+
 		if (first) {
 			rand_init(random_seed());
 		}
-		
+
 		if (arg instanceof RubyFloat) {
 			RubyFloat vmax = (RubyFloat)arg;
 			if (vmax.doubleValue() <= Long.MAX_VALUE && vmax.doubleValue() >= Long.MIN_VALUE) {
@@ -96,7 +96,7 @@ public class RubyRandom {
 			arg = arg.toRubyInteger();
 			max = arg.toInt();
 		}
-		
+
 		if (arg instanceof RubyBignum) {
 			byte[] bytes = new byte[((RubyBignum)arg).getInternal().toByteArray().length-1];
 			random.nextBytes(bytes);
@@ -106,7 +106,7 @@ public class RubyRandom {
 		if (max == 0) {
 			return new RubyFloat(random.nextDouble());
 		}
-		
+
 		if (max < 0) {
 			max = -max;
 		}

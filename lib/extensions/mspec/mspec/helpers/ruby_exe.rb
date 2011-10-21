@@ -102,7 +102,7 @@ class Object
 
       # It has been reported that File.executable is not reliable
       # on Windows platforms (see commit 56bc555c). So, we check the
-      # platform. 
+      # platform.
       if File.exists?(exe) and (PlatformGuard.windows? or File.executable?(exe))
         return cmd
       end
@@ -134,5 +134,5 @@ class Object
 #    RUBY_EXE = resolve_ruby_exe or
 #      raise Exception, "Unable to find a suitable ruby executable."
 #  end
-#RHO  
+#RHO
 end

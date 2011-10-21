@@ -8,17 +8,17 @@ import j2me.lang.Comparable;
 import j2me.util.Comparator;
 
 /**
- * <p> This class represents a comparator to be used for equality as well as 
- *     for ordering; instances of this class provide a hashcode function 
+ * <p> This class represents a comparator to be used for equality as well as
+ *     for ordering; instances of this class provide a hashcode function
  *     consistent with equal (if two objects {@link #areEqual
  *     are equal}, they have the same {@link #hashCodeOf hashcode}),
  *     equality with <code>null</code> values is supported.</p>
- *     
- * <p> {@link FastComparator} can be employed with {@link FastMap} (e.g. custom 
- *     key comparators for identity maps, value retrieval using keys of a 
+ *
+ * <p> {@link FastComparator} can be employed with {@link FastMap} (e.g. custom
+ *     key comparators for identity maps, value retrieval using keys of a
  *     different class that the map keys) or with {@link FastCollection}
  *     classes.</p>
- *     
+ *
  * @author <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 4.2, December 18, 2006
  */
@@ -26,17 +26,17 @@ public abstract class FastComparator/*<T>*/implements Comparator/*<T>*/
         /*,XMLSerializable*/ {
 
     /**
-     * Indicates if the system hash code should be rehashed 
+     * Indicates if the system hash code should be rehashed
      * (see <a href="{@docRoot}/overview-summary.html#configuration">
      * Javolution Configuration</a> for details).
      */
-    public static final Configurable/*<Boolean>*/ REHASH_SYSTEM_HASHCODE 
+    public static final Configurable/*<Boolean>*/ REHASH_SYSTEM_HASHCODE
          = new Configurable(new Boolean(isPoorSystemHash())) {
         protected void notifyChange() {
             _Rehash = ((Boolean)get()).booleanValue();
         }
     };
-    static boolean _Rehash 
+    static boolean _Rehash
          = ((Boolean)REHASH_SYSTEM_HASHCODE.get()).booleanValue();
 
     private static boolean isPoorSystemHash() {
@@ -50,12 +50,12 @@ public abstract class FastComparator/*<T>*/implements Comparator/*<T>*/
         }
         return occupied < (dist.length >> 2); // Less than 16 slots on 64.
     }
-    
+
     /**
-     * Holds the default object comparator; rehash is performed if the 
+     * Holds the default object comparator; rehash is performed if the
      * system hash code (platform dependent) is not evenly distributed.
      * @see <a href="{@docRoot}/overview-summary.html#configuration">
-     *      Javolution Configuration</a> 
+     *      Javolution Configuration</a>
      */
     public static final FastComparator/*<Object>*/ DEFAULT = new Default/*<Object>*/();
 
@@ -82,9 +82,9 @@ public abstract class FastComparator/*<T>*/implements Comparator/*<T>*/
     /**
      * Holds the direct object comparator; no rehash is performed.
      * Two objects o1 and o2 are considered {@link #areEqual equal} if and
-     * only if <code>o1.equals(o2)</code>. The {@link #compare} method 
+     * only if <code>o1.equals(o2)</code>. The {@link #compare} method
      * throws {@link ClassCastException} if the specified objects are not
-     * {@link Comparable}. 
+     * {@link Comparable}.
      */
     public static final FastComparator/*<Object>*/ DIRECT = new Direct/*<Object>*/();
 
@@ -109,7 +109,7 @@ public abstract class FastComparator/*<T>*/implements Comparator/*<T>*/
 
     /**
      * Holds the comparator for objects with uneven hash distribution; objects
-     * hashcodes are rehashed. Two objects o1 and o2 are considered 
+     * hashcodes are rehashed. Two objects o1 and o2 are considered
      * {@link #areEqual equal} if and only if <code>o1.equals(o2)</code>.
      * The {@link #compare} method throws {@link ClassCastException} if the
      * specified objects are not {@link Comparable}.
@@ -119,7 +119,7 @@ public abstract class FastComparator/*<T>*/implements Comparator/*<T>*/
     static final class Rehash/*<T>*/ extends FastComparator/*<T>*/ {
         public int hashCodeOf(Object/*{T}*/ obj) {
             // Formula identical <code>java.util.HashMap</code> to ensures
-            // similar behavior for ill-conditioned hashcode keys. 
+            // similar behavior for ill-conditioned hashcode keys.
             int h = obj.hashCode();
             h += ~(h << 9);
             h ^= (h >>> 14);
@@ -142,8 +142,8 @@ public abstract class FastComparator/*<T>*/implements Comparator/*<T>*/
     };
 
     /**
-     * Holds a fast comparator for <code>java.lang.String</code>. Hashcodes 
-     * are calculated by taking a sample of few characters instead of 
+     * Holds a fast comparator for <code>java.lang.String</code>. Hashcodes
+     * are calculated by taking a sample of few characters instead of
      * the whole string.
      */
     public static final FastComparator/*<String>*/ STRING = new StringComparator();
@@ -154,7 +154,7 @@ public abstract class FastComparator/*<T>*/implements Comparator/*<T>*/
             final int length = str.length();
             if (length == 0) return 0;
             return str.charAt(0) + str.charAt(length - 1) * 31 +
-                str.charAt(length >> 1) * 1009 + 
+                str.charAt(length >> 1) * 1009 +
                 str.charAt(length >> 2) * 27583 +
                 str.charAt(length - 1 - (length >> 2)) * 73408859;
         }
@@ -174,8 +174,8 @@ public abstract class FastComparator/*<T>*/implements Comparator/*<T>*/
 
     /**
      * Holds the identity comparator; poorly distributed system hashcodes are
-     * rehashed. Two objects o1 and o2 are considered {@link #areEqual equal} 
-     * if and only if <code>(o1 == o2)</code>. The {@link #compare} method 
+     * rehashed. Two objects o1 and o2 are considered {@link #areEqual equal}
+     * if and only if <code>(o1 == o2)</code>. The {@link #compare} method
      * throws {@link ClassCastException} if the specified objects are not
      * {@link Comparable}.
      */
@@ -207,9 +207,9 @@ public abstract class FastComparator/*<T>*/implements Comparator/*<T>*/
     };
 
     /**
-     * Holds a lexicographic comparator for any {@link CharSequence} or 
-     * {@link String} instances. 
-     * Two objects are considered {@link #areEqual equal} if and only if they 
+     * Holds a lexicographic comparator for any {@link CharSequence} or
+     * {@link String} instances.
+     * Two objects are considered {@link #areEqual equal} if and only if they
      * represents the same character sequence). The hashcode is calculated
      * using the following formula (same as for <code>java.lang.String</code>):
      * <code>s[0]*31^(n-1) + s[1]*31^(n-2) + ... + s[n-1]</code>
@@ -257,7 +257,7 @@ public abstract class FastComparator/*<T>*/implements Comparator/*<T>*/
                 }
                 return true;
             }
-            if ((o1 == null) || (o2 == null)) 
+            if ((o1 == null) || (o2 == null))
                 return o1 == o2;
             final CharSequence csq1 = (CharSequence) o1;
             final CharSequence csq2 = (CharSequence) o2;
@@ -314,37 +314,37 @@ public abstract class FastComparator/*<T>*/implements Comparator/*<T>*/
     };
 
     /**
-     * Returns the hash code for the specified object (consistent with 
-     * {@link #areEqual}). Two objects considered {@link #areEqual equal} have 
-     * the same hash code. 
-     * 
+     * Returns the hash code for the specified object (consistent with
+     * {@link #areEqual}). Two objects considered {@link #areEqual equal} have
+     * the same hash code.
+     *
      * @param  obj the object to return the hashcode for.
      * @return the hashcode for the specified object.
-     * @throws NullPointerException if the specified object is 
+     * @throws NullPointerException if the specified object is
      *         <code>null</code>.
      */
     public abstract int hashCodeOf(Object/*{T}*/obj);
 
     /**
      * Indicates if the specified objects can be considered equal.
-     * 
+     *
      * @param o1 the first object (or <code>null</code>).
      * @param o2 the second object (or <code>null</code>).
      * @return <code>true</code> if both objects are considered equal;
-     *         <code>false</code> otherwise. 
+     *         <code>false</code> otherwise.
      */
     public abstract boolean areEqual(Object/*{T}*/o1, Object/*{T}*/o2);
 
     /**
-     * Compares the specified objects for order. Returns a negative integer, 
+     * Compares the specified objects for order. Returns a negative integer,
      * zero, or a positive integer as the first argument is less than, equal to,
      * or greater than the second.
-     * 
+     *
      * @param o1 the first object.
      * @param o2 the second object.
      * @return a negative integer, zero, or a positive integer as the first
      *         argument is less than, equal to, or greater than the second.
-     * @throws NullPointerException if any of the specified object is 
+     * @throws NullPointerException if any of the specified object is
      *         <code>null</code>.
      */
     public abstract int compare(Object/*{T}*/o1, Object/*{T}*/o2);

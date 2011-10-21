@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -42,78 +42,78 @@ import com.xruby.runtime.lang.*;
 
 public class BaseSocket extends RubyBasic {
 
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("BaseSocket");
 
 	// TODO: fix threads based implementation because now there are random fluctuations
 	// when data does not returned even if it already readed from socket
 	private static final boolean USE_THREADS_BASED_IMPLEMENTATION = false;
-	
+
 	private static final int READ_TIMEOUT = 1000;
 
 	private SocketConnection m_conn;
 	//private SocketConnectionEnhanced m_extconn;
 	private OutputStream     m_os;
 	private InputStream      m_is;
-	
+
 	private SocketThread     m_thr;
 	private Vector           m_read_results = new Vector();
 	private Vector           m_write_results = new Vector();
-	
+
 	private static class Result {
-		
+
 		int size;
 		byte[] result;
-		
+
 		Result (int s) {
 			size = s;
 			result = null;
 		}
-		
+
 		Result (byte[] b) {
 			size = 0;
 			result = b;
 		}
-		
+
 		public void clear() {
 			size = -1;
 			result = null;
 		}
-		
+
 	}
-	
+
 	private static class SocketCommand {
-		
+
 		private static final int READ = 0;
 		private static final int WRITE = 1;
-		
+
 		public int cmd;
 		public byte[] buffer;
-		
+
 		public SocketCommand(int c, byte[] b) {
 			cmd = c;
 			buffer = b;
 		}
-		
+
 	};
-	
+
 	private class SocketThread extends Thread {
-		
+
 		private Vector queue = new Vector();
 		private boolean active = true;
-		
+
 		public void stopSelf() {
 			active = false;
 			interrupt();
 		}
-		
+
 		public void send_command(int cmd, byte[] b) {
 			synchronized (queue) {
 				queue.addElement(new SocketCommand(cmd, b));
 				queue.notify();
 			}
 		}
-		
+
 		public void run() {
 			Vector cmds = new Vector();
 			for (;;) {
@@ -129,12 +129,12 @@ public class BaseSocket extends RubyBasic {
 						LOG.TRACE("Waiting on command queue interrupted", e);
 						continue;
 					}
-					
+
 					for (int i = 0; i != queue.size(); ++i)
 						cmds.addElement(queue.elementAt(i));
 					queue.removeAllElements();
 				}
-				
+
 				for (int i = 0; i != cmds.size(); ++i) {
 					SocketCommand cmd = (SocketCommand)cmds.elementAt(i);
 					int size = 0;
@@ -157,7 +157,7 @@ public class BaseSocket extends RubyBasic {
 								return;
 							LOG.TRACE("Error when reading from socket", e);
 						}
-						
+
 						LOG.TRACE("Processing READ operation: notify about results");
 						synchronized (m_read_results) {
 							Result res = new Result(size);
@@ -178,7 +178,7 @@ public class BaseSocket extends RubyBasic {
 								return;
 							LOG.TRACE("Error when writing to socket", e);
 						}
-						
+
 						LOG.TRACE("Processing WRITE operation: notify about results");
 						size = cmd.buffer.length;
 						synchronized (m_write_results) {
@@ -194,17 +194,17 @@ public class BaseSocket extends RubyBasic {
 				}
 			}
 		}
-		
+
 	};
-	
+
 	public BaseSocket(RubyClass c) {
 		super(c);
 	}
-	
+
 	protected void setConnection(SocketConnection c) {
 		m_conn = c;
 	}
-	
+
 	public void initialize(String strHost, int nPort) throws IOException
 	{
 		if (USE_THREADS_BASED_IMPLEMENTATION) {
@@ -213,30 +213,30 @@ public class BaseSocket extends RubyBasic {
 	    	m_write_results.removeAllElements();
 	    	m_thr.start();
     	}
-    	
+
 		/*
 		try{
 			m_extconn = (SocketConnectionEnhanced)m_conn;
 		}catch(ClassCastException cce){
 			LOG.ERROR("Cannot get SocketConnectionEnhanced connection.", cce);
-		}    	
-		
+		}
+
 		if ( m_extconn != null )
 			m_extconn.setSocketOptionEx(SocketConnectionEnhanced.READ_TIMEOUT, READ_TIMEOUT);
 		*/
 	}
-	
+
 	public boolean is_closed()
     {
     	return m_conn == null;
     }
-	
+
 	public void flush()throws IOException
     {
     	if (m_os != null)
     		m_os.flush();
     }
-	
+
 	public void close()throws IOException
     {
     	if ( m_conn != null )
@@ -245,7 +245,7 @@ public class BaseSocket extends RubyBasic {
     		m_os.close();
     	if (m_is != null)
     		m_is.close();
-    	
+
     	m_is = null;
     	m_os = null;
     	m_conn = null;
@@ -256,7 +256,7 @@ public class BaseSocket extends RubyBasic {
     		m_write_results.removeAllElements();
     	}
     }
-	
+
 	public int write(String strData)throws IOException
     {
     	if (USE_THREADS_BASED_IMPLEMENTATION) {
@@ -274,7 +274,7 @@ public class BaseSocket extends RubyBasic {
     					return 0;
     				Result res = (Result)m_write_results.elementAt(0);
     				m_write_results.removeElementAt(0);
-    				
+
     				if (res.size != 0)
     					LOG.TRACE("WRITE success: " + res.size + " bytes written");
     				return res.size;
@@ -284,8 +284,8 @@ public class BaseSocket extends RubyBasic {
     	else {
 	    	if (m_os == null)
 	    		m_os = m_conn.openOutputStream();
-	    	
-	    	byte[] bytes = strData.getBytes(); 
+
+	    	byte[] bytes = strData.getBytes();
 	    	m_os.write(bytes);
 	    	return bytes.length;
     	}
@@ -304,7 +304,7 @@ public class BaseSocket extends RubyBasic {
 		        	LOG.TRACE("Waiting for READ results...");
 		        	m_read_results.wait(READ_TIMEOUT);
 	    		}
-				
+
     			if (m_read_results.isEmpty()) {
 					// Timeout
 					LOG.TRACE("Timeout on READ operation");
@@ -313,11 +313,11 @@ public class BaseSocket extends RubyBasic {
 				}
 				Result res = (Result)m_read_results.elementAt(0);
 				m_read_results.removeElementAt(0);
-				
+
 				if (res.size == 0)
-					throw new RubyException(RubyRuntime.EOFErrorClass, "");					
+					throw new RubyException(RubyRuntime.EOFErrorClass, "");
 					//return new String();
-				
+
 				LOG.TRACE("READ success: " + res.size + " bytes readed");
 				return new String(res.result, 0, res.size);
     		}
@@ -326,25 +326,25 @@ public class BaseSocket extends RubyBasic {
 	    	if (m_os != null)
 	    		m_os.close();
 	    	m_os = null;
-	
+
 	    	if (m_is==null)
 	    		m_is = m_conn.openInputStream();
-	    	
+
 	    	byte[] charBuffer = new byte[nBytes];
 	    	int n = m_is.read(charBuffer);
 	        //int n = bufferedReadByByte(charBuffer, m_is);
-	    	
+
 	        if ( n < 0 )
 	        	throw new RubyException(RubyRuntime.EOFErrorClass, "");
-	        
+
 	        return new String(charBuffer, 0, n == -1 ? 0 : n);
     	}
     }
-    
+
 	private final int bufferedReadByByte(byte[] a, InputStream in) throws IOException {
 		int bytesRead = 0;
 		//byte[] buf = new byte[1];
-		while (bytesRead < (a.length)) 
+		while (bytesRead < (a.length))
 		{
 			int read = 0;
 			try{
@@ -356,14 +356,14 @@ public class BaseSocket extends RubyBasic {
 					int avail = in.available();
 					if (avail > 0)
 						break;
-					
+
 					long now = System.currentTimeMillis();
 					if (now - started > READ_TIMEOUT) {
 						if (bytesRead > 0)
 							break;
 						return -1;
 					}
-			
+
 					try {
 						Thread.sleep(10);
 					}
@@ -382,11 +382,11 @@ public class BaseSocket extends RubyBasic {
 			{
 				return bytesRead > 0 ? bytesRead : -1;
 			}
-			
+
 			a[bytesRead] = (byte)read;
 			bytesRead ++;
 		}
 		return bytesRead;
 	}
-	
+
 }

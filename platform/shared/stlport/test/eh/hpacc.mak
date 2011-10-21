@@ -1,4 +1,4 @@
-# ;;; -*- Mode:makefile;-*- 
+# ;;; -*- Mode:makefile;-*-
 # Generated automatically from Makefile.in by configure.
 # This requires GNU make.
 
@@ -38,7 +38,7 @@ CXX = $(CC)
 
 CXX_EXTRA_FLAGS = -AA -DEH_DELETE_HAS_THROW_SPEC
 # dwa 12/22/99 -- had to turn off -ansi flag so we could use SGI IOSTREAMS
-# also, test_slist won't compile with -O3/-O2 when targeting PPC. It fails 
+# also, test_slist won't compile with -O3/-O2 when targeting PPC. It fails
 # in the assembler with 'invalid relocation type'
 CXXFLAGS = -g -O ${STL_INCL} -I. ${CXX_EXTRA_FLAGS} -DEH_VECTOR_OPERATOR_NEW
 D_CXXFLAGS = -g -O ${STL_INCL} -I. ${CXX_EXTRA_FLAGS} -DEH_VECTOR_OPERATOR_NEW -D_STLP_DEBUG -D_STLP_USE_STATIC_LIB
@@ -54,7 +54,7 @@ PTHREAD_LIB=-lpthread +nostl
 endif
 
 LIBS = $(PTHREAD_LIB) -lm
- 
+
 D_LIBSTLPORT = -L../../lib -lstlport_aCC_debug
 LIBSTLPORT = -L../../lib -lstlport_aCC
 

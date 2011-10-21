@@ -44,20 +44,20 @@ import com.rhomobile.rhodes.util.PerformOnUiThread;
 public class Nfc implements RhodesActivityListener {
 
 	private static final String TAG = Nfc.class.getSimpleName();
-	
+
 	private static boolean ourIsEnable = false;
 	private static String ourCallback = null;
 	private static String ourTechCallback = null;
-	
+
 	private static NdefMessage ourP2PNdefMessage = null;
-	
+
 	private static Nfc ourInstance = null;
 
 	private static native void callCallback(String callback_url, NfcMessagePack msgpack);
 	private static native void callTechCallback(String callback_url, String tech_event);
-	
+
 	private static Tag ourTag = null;
-	
+
 	private MifareClassic mMifareClassic = null;
 	private MifareUltralight mMifareUltralight = null;
 	private Ndef mNdef = null;
@@ -69,20 +69,20 @@ public class Nfc implements RhodesActivityListener {
 	private NfcV mNfcV = null;
 	private ArrayList<String> mTechList = null;
 	private Hashtable<String,TagTechnology> mTechs = null;
-	
+
 	private static final boolean isLogging = false;
-	
+
 	private static native void logNative(String msg);
-	
-	
+
+
 	private static NdefMessage[] ourApplicationStartupMessages = null;
 	private static Tag ourApplicationStartupTag = null;
-	
-	
+
+
 	public static void setApplicationStartupIntent(Intent intent) {
 		getInstance().onNewIntent(null, intent, true);
 	}
-	
+
 	public static void performOpenApplicationTag() {
 		PerformOnUiThread.exec(new Runnable() {
 			public void run() {
@@ -103,11 +103,11 @@ public class Nfc implements RhodesActivityListener {
 			}
 		}, 100);
 	}
-	
+
 
 	public static void log(String msg) {
 		//logNative(msg);
-		if (isLogging) { 
+		if (isLogging) {
 			Utils.platformLog(TAG, msg);
 		}
 	}
@@ -115,14 +115,14 @@ public class Nfc implements RhodesActivityListener {
 	public static void loge(String msg) {
 		Utils.platformLog(TAG, msg);
 	}
-	
+
 	public static Nfc getInstance() {
 		if (ourInstance == null) {
 			ourInstance = new Nfc();
 		}
 		return ourInstance;
 	}
-	
+
 	public static NfcAdapter getDefaultAdapter(Context ctx) {
 		Context context = ctx;
 		if (ctx == null) {
@@ -133,7 +133,7 @@ public class Nfc implements RhodesActivityListener {
 			int sdkVersion = Build.VERSION.SDK_INT;
 			if (sdkVersion >= Build.VERSION_CODES.GINGERBREAD_MR1) {
 				da = NfcAdapter.getDefaultAdapter(RhodesActivity.getContext());
-			} 
+			}
 			else if (sdkVersion >= Build.VERSION_CODES.GINGERBREAD) {
 				da = NfcAdapter.getDefaultAdapter();
 			}
@@ -145,7 +145,7 @@ public class Nfc implements RhodesActivityListener {
 		}
 		return da;
 	}
-	
+
 	public static int isSupported() {
 		NfcAdapter da = getDefaultAdapter(null);
 		if (da == null) {
@@ -157,7 +157,7 @@ public class Nfc implements RhodesActivityListener {
 		}
 		return res;
 	}
-	
+
 	public static int isEnabled() {
 		int res = 0;
 		if (ourIsEnable) {
@@ -165,7 +165,7 @@ public class Nfc implements RhodesActivityListener {
 		}
 		return res;
 	}
-	
+
 	public static void setEnable(int enable) {
 		log(" $$$$$$$$$ setEnable() START() ");
 		boolean oldEnable = ourIsEnable;
@@ -192,16 +192,16 @@ public class Nfc implements RhodesActivityListener {
 		}
 		log(" $$$$$$$$$ setEnable() FINISH() ");
 	}
-	
+
 	public void onCreate(RhodesActivity activity, Intent intent) {
 		getInstance().onNewIntent(activity, intent, true);
 	}
-	
+
 	public void onRhodesActivityStartup(RhodesActivity activity) {
 		activity.addRhodesActivityListener(getInstance());
 	}
-	
-	
+
+
 	public void onPause(RhodesActivity activity) {
 		log(" $$$$$$$$$ onPause() ");
 		NfcAdapter nfcAdapter = getDefaultAdapter(RhodesActivity.getContext());
@@ -210,31 +210,31 @@ public class Nfc implements RhodesActivityListener {
 			nfcAdapter.disableForegroundNdefPush(activity);
 		}
 	}
-	
+
 	public void onResume(RhodesActivity activity) {
 		log(" $$$$$$$$$ onResume() ");
 		NfcAdapter nfcAdapter = getDefaultAdapter(RhodesActivity.getContext());
 		if ((nfcAdapter != null) && (ourIsEnable)) {
 			IntentFilter[] filters = new IntentFilter[1];
 			filters[0] = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
-			
-			PendingIntent intent = 
+
+			PendingIntent intent =
 	            PendingIntent.getActivity(activity, 0,
-	              new Intent(activity, activity.getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 
+	              new Intent(activity, activity.getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
 	              0);
-			
+
 			nfcAdapter.enableForegroundDispatch(activity, intent, null, null);
 			if (ourP2PNdefMessage != null) {
-				nfcAdapter.enableForegroundNdefPush(activity, ourP2PNdefMessage);			
+				nfcAdapter.enableForegroundNdefPush(activity, ourP2PNdefMessage);
 			}
 		}
 	}
 
 	public void onNewIntent(RhodesActivity activity, Intent intent, boolean postpone) {
 		String action = intent.getAction();
-		
+
 		Utils.platformLog("Nfc", "onNewIntent !!! Action = "+action+"     postpone="+String.valueOf(postpone));
-		
+
 		if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
 			log("ACTION_TAG_DISCOVERED !");
             Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
@@ -276,7 +276,7 @@ public class Nfc implements RhodesActivityListener {
 		if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
 			log("ACTION_NDEF_DISCOVERED !");
 			Uri u = intent.getData();
-			
+
 			if (u != null) {
 				log("     Data = "+u.toString());
 			}
@@ -290,7 +290,7 @@ public class Nfc implements RhodesActivityListener {
 			else {
 				log("     Type is NULL= ");
 			}
-			
+
 			Tag tag = (Tag)intent.getExtras().get(NfcAdapter.EXTRA_TAG);
 			if (tag != null) {
 				log("     Tag found in extars ! ");
@@ -298,8 +298,8 @@ public class Nfc implements RhodesActivityListener {
 			else {
 				log("     Tag not found in extars ! ");
 			}
-			
-			
+
+
             Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
             NdefMessage[] msgs;
             if (rawMsgs != null) {
@@ -321,7 +321,7 @@ public class Nfc implements RhodesActivityListener {
             else {
             	getInstance().onReceiveMessages(msgs);
             }
-            
+
             if (tag != null) {
 	            if (postpone) {
 	            	ourApplicationStartupTag = tag;
@@ -344,7 +344,7 @@ public class Nfc implements RhodesActivityListener {
 			}
         }
 	}
-	
+
 	public void onNewIntent(RhodesActivity activity, Intent intent) {
 		if (activity.isInsideStartStop()) {
 			onNewIntent(activity, intent, false);
@@ -353,10 +353,10 @@ public class Nfc implements RhodesActivityListener {
 			onNewIntent(activity, intent, true);
 		}
 	}
-	
-	
-	
-	
+
+
+
+
 	public static void setCallback(String callback) {
 		ourCallback = callback;
 	}
@@ -364,30 +364,30 @@ public class Nfc implements RhodesActivityListener {
 	public static void setTechCallback(String callback) {
 		ourTechCallback = callback;
 	}
-	
+
 	//@Override
 	//public void onReceive(Context context, Intent intent) {
-	
+
 	private static boolean isRhodesApplicationRun() {
 		return RhodesService.getInstance()!=null;
 	}
 
-	
+
 	public void onReceiveTag(Tag tag) {
 		//if (!ourIsEnable) {
 		//	return;
 		//}
-		
+
 		log("onReceiveTag()");
 		if (tag == null) {
 			return;
 		}
-		
+
 		ourTag = tag;
-		
+
 		mTechs = new Hashtable<String,TagTechnology>();
 		mTechList = new ArrayList<String>();
-		
+
 		mMifareClassic = MifareClassic.get(tag);
 		mMifareUltralight = MifareUltralight.get(tag);
 		mNdef = Ndef.get(tag);
@@ -431,16 +431,16 @@ public class Nfc implements RhodesActivityListener {
 		if (mNfcV != null) {
 			mTechs.put("NfcV", mNfcV);
 		}
-		
+
 		Set<String> keys = mTechs.keySet();
 		Iterator<String> iterator = keys.iterator();
 		while (iterator.hasNext()) {
 			String key = iterator.next();
 			mTechList.add(key);
 		}
-		
+
         log("NFC TAG Tech Received ! Service started = "+String.valueOf(isRhodesApplicationRun()));
-        
+
         if (isRhodesApplicationRun()) {
         	if (ourIsEnable) {
         		if (ourTechCallback != null) {
@@ -468,9 +468,9 @@ public class Nfc implements RhodesActivityListener {
         else {
             log("Rhodes application is not runned");
         }
-        
+
 	}
-	
+
 	public void onReceiveMessages(NdefMessage[] msgs) {
 		//if (!ourIsEnable) {
 		//	return;
@@ -479,11 +479,11 @@ public class Nfc implements RhodesActivityListener {
         if (msgs == null || msgs.length == 0) {
             return;
         }
-		
+
         log("NFC TAG(with NDE Messages) Received ! Service started = "+String.valueOf(isRhodesApplicationRun()));
-        
+
         NfcMessagePack pack = new NfcMessagePack(msgs);
-        
+
         log("Message Pack created");
         if (isRhodesApplicationRun()) {
         	if (ourIsEnable) {
@@ -504,24 +504,24 @@ public class Nfc implements RhodesActivityListener {
         	}
         }
 	}
-	
+
 
 	public static void clear_listen_tech_list() {
 		// listen all now
 	}
-	
+
 	public static void add_listen_tech(String tech_name) {
 		// listen all now
 	}
-	
+
 	public static int get_tech_list_count() {
 		return getInstance().mTechList.size();
 	}
-	
+
 	public static String get_tech_list(int index) {
 		return getInstance().mTechList.get(index);
 	}
-	
+
 
 	public static void tech_connect(String tech_name) {
 		log("tech_connect("+tech_name+") START");
@@ -542,7 +542,7 @@ public class Nfc implements RhodesActivityListener {
 		}
 		log("tech_connect("+tech_name+") FINISH");
 	}
-	
+
 	public static void tech_close(String tech_name) {
 		if (getInstance().mTechs == null) {
 			return;
@@ -558,7 +558,7 @@ public class Nfc implements RhodesActivityListener {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static int tech_is_connected(String tech_name) {
 		if (getInstance().mTechs == null) {
 			log ("tech_is_connected("+tech_name+") return FALSE because tech list is empty");
@@ -576,13 +576,13 @@ public class Nfc implements RhodesActivityListener {
 		log ("tech_is_connected("+tech_name+") return FALSE");
 		return 0;
 	}
-	
+
 	public static int tech_MifareClassic_get_size() {
 		if (getInstance().mMifareClassic != null)
 			return getInstance().mMifareClassic.getSize();
 		return 0;
 	}
-	
+
 	public static int tech_MifareClassic_get_block_count() {
 		if (getInstance().mMifareClassic != null)
 			return getInstance().mMifareClassic.getBlockCount();
@@ -600,16 +600,16 @@ public class Nfc implements RhodesActivityListener {
 			return getInstance().mMifareClassic.getBlockCountInSector(index);
 		return 0;
 	}
-	
+
 	public static int tech_MifareClassic_get_type() {
 		if (getInstance().mMifareClassic != null)
 			return getInstance().mMifareClassic.getType();
 		return -2;
 	}
-	
+
 	public static byte[] tech_MifareClassic_transceive(byte[] data) {
 		log ("tech_MifareClassic_transceive() START");
-		
+
 		if (getInstance().mMifareClassic == null) {
 			log ("     MifareClassic is not supported in current Tag");
 			return null;
@@ -624,14 +624,14 @@ public class Nfc implements RhodesActivityListener {
 		log("tech_MifareClassic_transceive() FINISH");
 		return result;
 	}
-	
+
 	public static byte[] tag_get_id() {
 		if (ourTag == null) {
 			return null;
 		}
 		return ourTag.getId();
 	}
-	
+
 
 	public static int tech_MifareClassic_sector_to_block(int index) {
 		if (getInstance().mMifareClassic != null)
@@ -653,7 +653,7 @@ public class Nfc implements RhodesActivityListener {
 		}
 		return 0;
 	}
-	
+
 	public static int tech_MifareClassic_authenticate_sector_with_key_B(int index, byte[] key) {
 		if (getInstance().mMifareClassic != null) {
 			try {
@@ -668,10 +668,10 @@ public class Nfc implements RhodesActivityListener {
 		}
 		return 0;
 	}
-		
+
 	public static void tech_MifareClassic_write_block(int index, byte[] block) {
 		log ("tech_MifareClassic_write_block("+String.valueOf(index)+") START");
-		
+
 		if (getInstance().mMifareClassic == null) {
 			log ("     MifareClassic is not supported in current Tag");
 			return;
@@ -683,12 +683,12 @@ public class Nfc implements RhodesActivityListener {
 			e.printStackTrace();
 		}
 		log("tech_MifareClassic_read_block("+String.valueOf(index)+") FINISH");
-		
+
 	}
-	
+
 	public static int tech_MifareClassic_read_block(int index, byte[] block) {
 		log ("tech_MifareClassic_read_block("+String.valueOf(index)+") START");
-		
+
 		int i;
 		for (i = 0; i < 16; i++) {
 			block[i] = 0;
@@ -720,8 +720,8 @@ public class Nfc implements RhodesActivityListener {
 		log("tech_MifareClassic_read_block("+String.valueOf(index)+") FINISH");
 		return 1;
 	}
-	
-	
+
+
 
 	public static int tech_Ndef_get_max_size() {
 		if (getInstance().mNdef != null)
@@ -771,7 +771,7 @@ public class Nfc implements RhodesActivityListener {
 		/*
 		if (message != null) {
 			Utils.platformLog("MSG", " ID = "+message.toString());
-			
+
 			StringBuffer s = new StringBuffer();
 			s.append("   Message is ["+String.valueOf(message.length)+"]   : ");
 			int i;
@@ -780,8 +780,8 @@ public class Nfc implements RhodesActivityListener {
 				s.append(":");
 			}
 			Utils.platformLog("MSG", s.toString());
-			
-			
+
+
 		}
 		else {
 			Utils.platformLog("MSG", " message is NULL !!!");
@@ -1001,8 +1001,8 @@ public class Nfc implements RhodesActivityListener {
 		}
 		return result;
 	}
-	
-	
+
+
 	public static NfcRecord convert_byte_array_to_NdeRecord_hash(byte[] array) {
 	    return new NfcRecord(array);
 	}
@@ -1023,7 +1023,7 @@ public class Nfc implements RhodesActivityListener {
 	public static NfcRecord make_NfcRecord(byte[] id, byte[] payload, int tnf, byte[] type) {
 		return new NfcRecord((short)tnf, type, id, payload);
 	}
-	
+
 	public static String make_string_from_payload(byte[] payload, int tnf, byte[] type) {
 		return NfcRecord.makePayloadString((short)tnf, type, payload, null);
 	}
@@ -1036,7 +1036,7 @@ public class Nfc implements RhodesActivityListener {
 	    byte[] b_lang = language.getBytes();
 	    byte[] b_str = str.getBytes();
 	    byte[] result = new byte[b_lang.length + b_str.length+1];
-	    
+
 	    result[0] = (byte)b_lang.length;
 	    int i;
 	    for (i = 0; i < b_lang.length; i++) {
@@ -1051,7 +1051,7 @@ public class Nfc implements RhodesActivityListener {
 	public static byte[] make_payload_with_well_known_uri(int prefix, String str) {
 		byte[] b_str = str.getBytes();
 	    byte[] result = new byte[1+b_str.length];
-	    
+
 	    result[0] = (byte)prefix;
 	    int i;
 	    for (i = 0; i < b_str.length; i++) {
@@ -1110,7 +1110,7 @@ public class Nfc implements RhodesActivityListener {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static byte[] tech_MifareUltralight_read_pages(int index) {
 		byte[] result = null;
 		if (getInstance().mMifareUltralight == null) {
@@ -1125,7 +1125,7 @@ public class Nfc implements RhodesActivityListener {
 		}
 		return result;
 	}
-	
+
 	public static int tech_MifareUltralight_get_type() {
 		if (getInstance().mMifareUltralight != null)
 			return getInstance().mMifareUltralight.getType();
@@ -1146,8 +1146,8 @@ public class Nfc implements RhodesActivityListener {
 		}
 		return result;
 	}
-	
-	
-	
+
+
+
 
 }

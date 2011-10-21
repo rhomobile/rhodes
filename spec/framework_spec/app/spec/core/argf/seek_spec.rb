@@ -45,13 +45,13 @@ describe "ARGF.seek" do
       ARGF.gets.should == @file1.first
       ARGF.seek -6, IO::SEEK_END
       ARGF.gets.should == @file1.last[-6..-1]
-if ( System.get_property('platform') != 'ANDROID' )      
+if ( System.get_property('platform') != 'ANDROID' )
       ARGF.seek -4, IO::SEEK_END
       ARGF.gets.should == @file1.last[4..-1]
       ARGF.gets.should == @file2.first
       ARGF.seek -6, IO::SEEK_END
       ARGF.gets.should == @file2.last[-6..-1]
-end      
+end
     end
   end
 

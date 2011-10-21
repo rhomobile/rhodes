@@ -166,7 +166,7 @@ module MarshalSpec
       false
     end
   end
-  
+
   class StructWithUserInitialize < Struct.new(:a)
     THREADLOCAL_KEY = :marshal_load_struct_args
     def initialize(*args)

@@ -22,9 +22,9 @@ import com.xruby.runtime.builtin.RubyString;
 import com.xruby.runtime.builtin.RubyTypesUtil;
 
 public class RubyAPI {
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("RubyAPI");
-	
+
     public static RubyClass defineClass(String name, RubyClass superclass) {
         return ClassFactory.defineClass(name, superclass);
     }
@@ -82,17 +82,17 @@ public class RubyAPI {
         return RubyAPI.callPublicOneArgMethod(value1, value2, null, RubyID.equalID).isTrue();
     }
 
-    public static boolean testCaseEqualNotNil(RubyValue value1, RubyValue value2) 
+    public static boolean testCaseEqualNotNil(RubyValue value1, RubyValue value2)
     {
         return value1.isTrue();
     }
-    
+
     public static boolean testExceptionType(RubyArray classes_to_compare, RubyException e) {
         RubyValue value = e.getRubyValue();
 //        for (RubyValue class_to_compare : classes_to_compare) {
         for (Iterator iter = classes_to_compare.iterator(); iter.hasNext();) {
         	RubyValue class_to_compare = (RubyValue)iter.next();
-        
+
             if (RubyAPI.isKindOf(class_to_compare, value)) {
                 return true;
             }
@@ -152,7 +152,7 @@ public class RubyAPI {
         return ObjectFactory.createString("method");
     }
 
-    //e.g. defined? @m    
+    //e.g. defined? @m
     public static RubyValue isDefinedInstanceVariable(RubyValue receiver, String method_name) {
         RubyID mid = RubyID.intern(method_name);
         RubyValue var = receiver.getInstanceVariable(mid);
@@ -162,7 +162,7 @@ public class RubyAPI {
 
         return ObjectFactory.createString("instance-variable");
     }
-    
+
     public static RubyValue isDefinedNonPrivateMethod(RubyValue receiver, String method_name) {
         RubyID mid = RubyID.intern(method_name);
         RubyMethod m = receiver.findMethod(mid);
@@ -172,7 +172,7 @@ public class RubyAPI {
 
         return ObjectFactory.createString("method");
     }
-    
+
     public static RubyValue isDefinedYield(RubyBlock block) {
         if (null == block) {
             return RubyConstant.QNIL;
@@ -205,9 +205,9 @@ public class RubyAPI {
     		if ( exc.getRubyValue().getRubyClass() == RubyRuntime.EOFErrorClass )
     			throw exc;
     	}
-    	
+
 		String className = "Unknown::";
-		
+
 		if ( receiver instanceof RubyClass)
 			className = ((RubyClass)receiver).getName() + "::";
 		else
@@ -215,10 +215,10 @@ public class RubyAPI {
 			if ( receiver.getRubyClass() != null )
 				className = receiver.getRubyClass().getName() + ".";
 		}
-		
+
 		String strTraceMsg = className + mid.toString();
 		String strErrMsg = strTraceMsg + " failed.";
-		
+
 		if ( e instanceof RubyException )
 		{
 			RubyException exc = (RubyException)e;
@@ -226,12 +226,12 @@ public class RubyAPI {
 			LOG.ERROR( strTraceMsg + " failed: " + e.getMessage() );
 		}else
 			LOG.ERROR( strErrMsg, e);
-		
+
 		throw (e instanceof RubyException ? (RubyException)e : new RubyException( strErrMsg + e.getMessage()));
     }
-    
+
     //receiver is implicit self
-    public static RubyValue callMethod(RubyValue receiver, RubyArray args, RubyBlock block, RubyID mid) 
+    public static RubyValue callMethod(RubyValue receiver, RubyArray args, RubyBlock block, RubyID mid)
     {
     	try{
 	    	AssertMe.rho_assert(null == args || args.size() > 1);//use callOneArgMethod if has only one arg
@@ -239,7 +239,7 @@ public class RubyAPI {
 	        if (null != m && !UndefMethod.isUndef(m)) {
 	            return m.invoke(receiver, args, block);
 	        }
-	
+
 	        return callMethodMissing(receiver, args, block, mid);
     	}catch(Exception e)
 		{
@@ -248,25 +248,25 @@ public class RubyAPI {
 
     }
 
-    public static RubyValue callNoArgMethod(RubyValue receiver, RubyBlock block, RubyID mid) 
+    public static RubyValue callNoArgMethod(RubyValue receiver, RubyBlock block, RubyID mid)
     {
     	try{
 	        RubyMethod m = receiver.findMethod(mid);
 	        if (null != m && !UndefMethod.isUndef(m)) {
 	            return m.invoke(receiver, block);
 	        }
-	
+
 	        return callMethodMissing(receiver, null, block, mid);
     	}catch(Exception e)
 		{
     		return processException(e,receiver,mid);
 		}
-	        
+
     }
 
     //method call with *one* argument and no block (use the other one if no arg (arg == null)!)
     //This make code (especially reverse engineered ones) more readable.
-    public static RubyValue callOneArgMethod(RubyValue receiver, RubyValue arg, RubyBlock block, RubyID mid) 
+    public static RubyValue callOneArgMethod(RubyValue receiver, RubyValue arg, RubyBlock block, RubyID mid)
     {
     	try{
 	    	AssertMe.rho_assert(null != arg);
@@ -274,16 +274,16 @@ public class RubyAPI {
 	        if (null != m && !UndefMethod.isUndef(m)) {
 	            return m.invoke(receiver, arg, block);
 	        }
-	
+
 	        return callMethodMissing(receiver, new RubyArray(arg), block, mid);
     	}catch(Exception e)
 		{
     		return processException(e,receiver,mid);
 		}
-	        
+
     }
-    
-    public static RubyValue callTwoArgMethod(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block, RubyID mid) 
+
+    public static RubyValue callTwoArgMethod(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block, RubyID mid)
     {
     	try{
 	    	AssertMe.rho_assert(null != arg0 && null != arg1);
@@ -291,38 +291,38 @@ public class RubyAPI {
 	        if (null != m && !UndefMethod.isUndef(m)) {
 	            return m.invoke(receiver, arg0, arg1, block);
 	        }
-	
+
 	        return callMethodMissing(receiver, new RubyArray(arg0, arg1), block, mid);
     	}catch(Exception e)
 		{
     		return processException(e,receiver,mid);
 		}
-	        
+
     }
 
-    public static RubyValue callPublicNoArgMethod(RubyValue receiver, RubyBlock block, RubyID mid) 
+    public static RubyValue callPublicNoArgMethod(RubyValue receiver, RubyBlock block, RubyID mid)
     {
     	try{
     		RubyValue res = receiver.rhom_processProperty(mid);
     		if ( res != null )
     			return res;
-    		
+
 	        RubyMethod m = receiver.findPublicMethod(mid);
 	        if (null != m && !UndefMethod.isUndef(m)) {
 	            return m.invoke(receiver, block);
 	        }
-	
+
 	        return callMethodMissing(receiver, null, block, mid);
     	}catch(Exception e)
 		{
     		return processException(e,receiver,mid);
 		}
-	        
+
     }
 
     //method call with *one* argument and no block (use the other one if no arg (arg == null)!)
     //This make code (especially reverse engineered ones) more readable.
-    public static RubyValue callPublicOneArgMethod(RubyValue receiver, RubyValue arg, RubyBlock block, RubyID mid) 
+    public static RubyValue callPublicOneArgMethod(RubyValue receiver, RubyValue arg, RubyBlock block, RubyID mid)
     {
     	try{
 	    	AssertMe.rho_assert(null != arg);
@@ -330,16 +330,16 @@ public class RubyAPI {
 	    	if (null != m && !UndefMethod.isUndef(m)) {
 	    		return m.invoke(receiver, arg, block);
 	    	}
-	
+
 	    	return callMethodMissing(receiver, new RubyArray(arg), block, mid);
     	}catch(Exception e)
 		{
     		return processException(e,receiver,mid);
 		}
-	    	
+
     }
-    
-    public static RubyValue callPublicTwoArgMethod(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block, RubyID mid) 
+
+    public static RubyValue callPublicTwoArgMethod(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block, RubyID mid)
     {
     	try{
 	    	AssertMe.rho_assert(null != arg0 && null != arg1);
@@ -347,13 +347,13 @@ public class RubyAPI {
 	    	if (null != m && !UndefMethod.isUndef(m)) {
 	    		return m.invoke(receiver, arg0, arg1, block);
 	    	}
-	
+
 	    	return callMethodMissing(receiver, new RubyArray(arg0, arg1), block, mid);
     	}catch(Exception e)
 		{
     		return processException(e,receiver,mid);
 		}
-	    	
+
     }
 
     //TODO should pass owner to work with protected method
@@ -366,16 +366,16 @@ public class RubyAPI {
 	        if (null != m && !UndefMethod.isUndef(m)) {
 	            return m.invoke(receiver, args, block);
 	        }
-	
+
 	        return callMethodMissing(receiver, args, block, mid);
     	}catch(Exception e)
 		{
     		return processException(e,receiver,mid);
 		}
-	        
+
     }
 
-    public static RubyValue callSuperNoArgMethod(RubyValue receiver, RubyBlock block, MethodBlockBase mbb) 
+    public static RubyValue callSuperNoArgMethod(RubyValue receiver, RubyBlock block, MethodBlockBase mbb)
     {
     	try{
 	        RubyClass c = (RubyClass) mbb.getScope();
@@ -383,16 +383,16 @@ public class RubyAPI {
 	        if (null == m || UndefMethod.isUndef(m)) {
 	            throw new RubyException(RubyRuntime.NoMethodErrorClass, "super method '" + mbb.getID() + "' can not be found in '" + c.getName() + "'");
 	        }
-	
+
 	        return m.invoke(receiver, block);
     	}catch(Exception e)
 		{
     		return processException(e,receiver,mbb.getID());
 		}
-	        
+
     }
 
-    public static RubyValue callSuperOneArgMethod(RubyValue receiver, RubyValue arg, RubyBlock block, MethodBlockBase mbb) 
+    public static RubyValue callSuperOneArgMethod(RubyValue receiver, RubyValue arg, RubyBlock block, MethodBlockBase mbb)
     {
     	try{
 	    	AssertMe.rho_assert(null != arg);
@@ -401,16 +401,16 @@ public class RubyAPI {
 	        if (null == m || UndefMethod.isUndef(m)) {
 	            throw new RubyException(RubyRuntime.NoMethodErrorClass, "super method '" + mbb.getID() + "' can not be found in '" + c.getName() + "'");
 	        }
-	
+
 	        return m.invoke(receiver, arg, block);
     	}catch(Exception e)
 		{
     		return processException(e,receiver,mbb.getID());
 		}
-	        
+
     }
-    
-    public static RubyValue callSuperTwoArgMethod(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block, MethodBlockBase mbb) 
+
+    public static RubyValue callSuperTwoArgMethod(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block, MethodBlockBase mbb)
     {
     	try{
 	    	AssertMe.rho_assert(null != arg0 && null != arg1);
@@ -419,16 +419,16 @@ public class RubyAPI {
 	        if (null == m || UndefMethod.isUndef(m)) {
 	            throw new RubyException(RubyRuntime.NoMethodErrorClass, "super method '" + mbb.getID() + "' can not be found in '" + c.getName() + "'");
 	        }
-	
+
 	        return m.invoke(receiver, arg0, arg1, block);
     	}catch(Exception e)
 		{
     		return processException(e,receiver,mbb.getID());
 		}
-	        
+
     }
 
-    public static RubyValue callSuperMethod(RubyValue receiver, RubyArray args, RubyBlock block, MethodBlockBase mbb) 
+    public static RubyValue callSuperMethod(RubyValue receiver, RubyArray args, RubyBlock block, MethodBlockBase mbb)
     {
     	try{
 	    	AssertMe.rho_assert(null == args || args.size() > 1);//use callSuperOneArgMethod if has only one arg
@@ -437,15 +437,15 @@ public class RubyAPI {
 	        if (null == m || UndefMethod.isUndef(m)) {
 	            throw new RubyException(RubyRuntime.NoMethodErrorClass, "super method '" + mbb.getID() + "' can not be found in '" + c.getName() + "'");
 	        }
-	
+
 	        return m.invoke(receiver, args, block);
     	}catch(Exception e)
 		{
     		return processException(e,receiver,mbb.getID());
 		}
-	        
+
     }
-    
+
     public static RubyValue operatorNot(RubyValue value) {
         return value.isTrue() ? RubyConstant.QFALSE : RubyConstant.QTRUE;
     }
@@ -455,7 +455,7 @@ public class RubyAPI {
 /*    	String strOS = System.getProperty("os.name");
     	if ( strOS == null )
     		return false;
-    	
+
         return (strOS.toUpperCase().indexOf("WINDOWS") >= 0);*/
     }
 
@@ -569,8 +569,8 @@ public class RubyAPI {
 /*            if(RubyRuntime.javaIsSupported()){
 //                for(String pkgName :JavaClass.getPackeageList()){
             	  for(int i = 0; i < JavaClass.getPackeageList().length;i++){
-            		  String pkgName = JavaClass.getPackeageList()[i];  
-            	  
+            		  String pkgName = JavaClass.getPackeageList()[i];
+
                     try {
                         Class clazz = Class.forName(pkgName+"."+name);
                         return JavaClass.createJavaClass(clazz);
@@ -617,15 +617,15 @@ public class RubyAPI {
 
         return RubyConstant.QTRUE;
     }
-    
-    private static RubyValue callUninitializedConstant(RubyModule module, String name) 
+
+    private static RubyValue callUninitializedConstant(RubyModule module, String name)
     {
         RubyMethod m = module.findMethod(RubyID.constMissingId);
         if (null != m && !UndefMethod.isUndef(m)) {
            	RubyArray args = new RubyArray(ObjectFactory.createSymbol(name));
             return m.invoke(module, args, (RubyBlock)null);
         }
-    	
+
         RubyString str = ObjectFactory.createString();
         if (module != RubyRuntime.ObjectClass) {
         	module.to_s(str);
@@ -651,7 +651,7 @@ public class RubyAPI {
             throw new RubyException(RubyRuntime.TypeErrorClass, s + " is not a class/module");
         }
     }
-    
+
     private static final RubyID ASERT = RubyID.intern("[]=");
 
     public static void callArraySet(RubyValue value, RubyValue index, RubyValue receiver) {

@@ -84,7 +84,7 @@ namespace Community.CsharpSqlite
 **   (2) NORMAL    We are in the middle of statement which ends with a single
 **                 semicolon.
 **
-**   (3) EXPLAIN   The keyword EXPLAIN has been seen at the beginning of 
+**   (3) EXPLAIN   The keyword EXPLAIN has been seen at the beginning of
 **                 a statement.
 **
 **   (4) CREATE    The keyword CREATE has been seen at the beginning of a

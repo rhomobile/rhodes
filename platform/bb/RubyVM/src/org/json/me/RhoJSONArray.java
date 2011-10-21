@@ -546,7 +546,7 @@ public class RhoJSONArray {
         put(new RhoJSONArray(value));
         return this;
     }
-    
+
 
     /**
      * Append a double value. This increases the array's length by one.
@@ -597,8 +597,8 @@ public class RhoJSONArray {
         put(new RhoJSONObject(value));
         return this;
     }
-    
-    
+
+
     /**
      * Append an object value. This increases the array's length by one.
      * @param value An object value.  The value should be a
@@ -626,7 +626,7 @@ public class RhoJSONArray {
         return this;
     }
 
-    
+
     /**
      * Put a value in the JSONArray, where the value will be a
      * JSONArray which is produced from a Collection.
@@ -641,7 +641,7 @@ public class RhoJSONArray {
         return this;
     }
 
-    
+
     /**
      * Put or replace a double value. If the index is greater than the length of
      *  the JSONArray, then null elements will be added as necessary to pad
@@ -701,8 +701,8 @@ public class RhoJSONArray {
         put(index, new RhoJSONObject(value));
         return this;
     }
-    
-    
+
+
     /**
      * Put or replace an object value in the JSONArray. If the index is greater
      *  than the length of the JSONArray, then null elements will be added as

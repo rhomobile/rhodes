@@ -1,18 +1,18 @@
 #------------------------------------------------------------------------
 # (The MIT License)
-# 
+#
 # Copyright (c) 2008-2011 Rhomobile, Inc.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-# 
+#
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
@@ -56,16 +56,16 @@ module Rho
     # ==> <a href=\"/application/model/help\" >Help</a>
     #
     # link_to "Delete", { :action => "delete", :id => '{12}' }
-    # ==> <a href="/application/model/{12}/delete"  onclick="var f = document.createElement('form'); 
-    # f.style.display = 'none';this.parentNode.appendChild(f); f.method = 'POST'; 
+    # ==> <a href="/application/model/{12}/delete"  onclick="var f = document.createElement('form');
+    # f.style.display = 'none';this.parentNode.appendChild(f); f.method = 'POST';
     # f.action = this.href;f.submit();return false;">Delete</a>
     #
-    # link_to "Show", { :action => "show", :id => '{12}'},"style=\"height:4px;width:7px;border-width:0px;\"" 
+    # link_to "Show", { :action => "show", :id => '{12}'},"style=\"height:4px;width:7px;border-width:0px;\""
     # ==> <a href="/application/model/{12}/show" style="height:4px;width:7px;border-width:0px;">Show</a>
     #
     # link_to "Delete", { :action => "delete", :id => '{12}' }, "class=\"delete_link\""
-    # ==> <a href="/application/model/{12}/delete" class="delete_link" onclick="var f = document.createElement('form'); 
-    # f.style.display = 'none';this.parentNode.appendChild(f); f.method = 'POST'; 
+    # ==> <a href="/application/model/{12}/delete" class="delete_link" onclick="var f = document.createElement('form');
+    # f.style.display = 'none';this.parentNode.appendChild(f); f.method = 'POST';
     # f.action = this.href;f.submit();return false;\">Delete</a>"
     #
     # link_to "Invate",:action => :invite, :query => {:name => 'John Smith', 'address' => "http://john.smith.com"}
@@ -111,11 +111,11 @@ module Rho
     #
     # url_for :application => :another_app, :model => :another_model, :action => :show, :id => '{12}'
     # ==> /another_app/another_model/{12}/show
-    # 
+    #
     # url_for :action => :create, :query => {:name => 'John Smith', 'address' => "http://john.smith.com"}
     # ==> /application/model?name=John%20Smith&address=http%3A%2F%2Fjohn.smith.com
     #
-    # url_for :action => :show, :id => '{12}', :fragment => "an-anchor" 
+    # url_for :action => :show, :id => '{12}', :fragment => "an-anchor"
     # ==> /application/model/{12}/show#an-anchor
     #
     def url_for(params = {})
@@ -125,7 +125,7 @@ module Rho
       params = params.symbolize_keys if params.is_a? Hash
 
       application = params[:application] || @request['application']
-      model = params[:controller] || params[:model] || @request['model'] 
+      model = params[:controller] || params[:model] || @request['model']
       action = params[:action].nil? ? nil : params[:action].to_s
       id = params[:id].nil? ? nil : params[:id].to_s
       id = "{#{id}}" if id and not( id =~ /^{/ and id =~ /}$/ )
@@ -135,9 +135,9 @@ module Rho
       else
         query = query_to_s(params[:query])
       end
-        
+
       fragment = params[:fragment].nil? ? '' : '#' + params[:fragment]
-   
+
       amurl = ''
       amurl << '/' << application.to_s << '/' if application
       amurl << model.to_s
@@ -146,11 +146,11 @@ module Rho
       if action.nil? or ( !defined?(RHO_WP7) && !is_bb6 && action == 'create' ) or action == 'index'
         amurl << query << fragment
       else
-        amurl << '/' << (id.nil? ? action : id + '/' + action) << query << fragment          
+        amurl << '/' << (id.nil? ? action : id + '/' + action) << query << fragment
       end
-        
+
       amurl
-      
+
       #amurl = '/' + application.to_s + '/' + model.to_s
 
       #return amurl + query + fragment if action.nil? or action == 'create' or action == 'index'
@@ -164,9 +164,9 @@ module Rho
 
       params = params.symbolize_keys if params.is_a? Hash
 
-      name = params[:name] 
-      param = params[:param] 
-      
+      name = params[:name]
+      param = params[:param]
+
       amurl = ''
 
       amurl << name << ':' << param
@@ -184,12 +184,12 @@ module Rho
       end
       qstring
     end
-    
+
     # def url_encode(s)
     #   s.to_s.dup.force_encoding("ASCII-8BIT").gsub(/[^a-zA-Z0-9_\-.]/n) {
     #     sprintf("%%%02X", $&.unpack("C")[0])
     #   }
     # end
-    
+
   end # RhoController
 end # Rho

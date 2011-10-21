@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -39,9 +39,9 @@ class CProfiler
         common::CTimeInterval m_startTime;
         bool m_bWasStarted;
     public:
-        CCounter(bool bStart=true) : m_bWasStarted(false){ 
+        CCounter(bool bStart=true) : m_bWasStarted(false){
             if ( bStart )
-                start();     
+                start();
         }
 
         virtual bool isGlobal()const{ return false;}
@@ -72,8 +72,8 @@ class CProfiler
 
             return m_sumGlobal;
         }
-        virtual common::CTimeInterval flush(){ 
-            common::CTimeInterval res = stop(); 
+        virtual common::CTimeInterval flush(){
+            common::CTimeInterval res = stop();
             m_sumGlobal = common::CTimeInterval();
             return res;
         }
@@ -101,7 +101,7 @@ void CProfiler::startCounter(const char* szCounterName)
         LOG(INFO) + szCounterName + " : START";
 
     if ( !pCounter )
-        m_mapCounters[szCounterName] = new CCounter(); 
+        m_mapCounters[szCounterName] = new CCounter();
     else
         pCounter->start();
 }
@@ -140,7 +140,7 @@ void CProfiler::flushCounter(const char* szCounterName, const char* msg)
 
 void CProfiler::createCounter(const char* szCounterName)
 {
-    m_mapCounters[szCounterName] = new CGlobalCounter(); 
+    m_mapCounters[szCounterName] = new CGlobalCounter();
 }
 
 void CProfiler::destroyCounter(const char* szCounterName)

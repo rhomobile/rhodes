@@ -229,5 +229,5 @@ if System::get_property('platform') != 'WINDOWS'
       lambda { @ftp.send(@method, @local_fixture_file, "binary") }.should raise_error(Net::FTPPermError)
     end
   end
-end  
+end
 end

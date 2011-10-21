@@ -1,7 +1,7 @@
 # -*- makefile -*- Time-stamp: <05/12/27 10:53:41 ptr>
 
 # Oh, the commented below work for gmake 3.78.1 and above,
-# but phrase without tag not work for it. Since gmake 3.79 
+# but phrase without tag not work for it. Since gmake 3.79
 # tag with assignment fail, but work assignment for all tags
 # (really that more correct).
 
@@ -117,8 +117,8 @@ END_OBJ := $(shell for o in crtend.o crtn.o; do ${CXX} -print-file-name=$$o; don
 STDLIBS := -Wl,-zallextract -lsupc++ ${_LGCC_EH} -Wl,-zdefaultextract ${_LGCC_S} -lpthread -lc -lm
 endif
 ifeq ($(OSNAME),darwin)
-START_OBJ := 
-END_OBJ := 
+START_OBJ :=
+END_OBJ :=
 ifdef GCC_APPLE_CC
 STDLIBS := -lgcc -lc -lm -all_load -lsupc++
 else

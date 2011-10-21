@@ -22,7 +22,7 @@ class Date
   ...
   end
 
-NOT WORKING  
+NOT WORKING
 1249:       if Format::ZONES.include?(zone)
 WORKING:
 1249:       if Date::Format::ZONES.include?(zone)
@@ -30,7 +30,7 @@ end
 
 
 3. Compiler crash:
-top, parent = T.new.m, nil 
+top, parent = T.new.m, nil
 
 4.SystemCallError:
 rb_define_singleton_method(rb_eSystemCallError, "===", syserr_eqq, 1);
@@ -55,7 +55,7 @@ Now it works:
 		  of, DateTime::ITALY)
   end
 
-4.1 Error preverify: 
+4.1 Error preverify:
   def self.commercial(y=-4712, w=1, d=1, h=0, min=0, s=0, of=0, sg=ITALY)
     unless (jd = _valid_commercial?(y, w, d, sg)) &&
 	   (fr = _valid_time?(h, min, s))

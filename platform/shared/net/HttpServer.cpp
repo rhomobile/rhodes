@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -116,28 +116,28 @@ static bool isfile(String const &path)
         {"index.php", 9},
         {"index.cgi", 9}
     };
-    
+
     // Convert uri to lower case
     String luri;
     std::transform(uri.begin(), uri.end(), std::back_inserter(luri), &::tolower);
-    
+
     for (size_t i = 0, lim = sizeof(index_files)/sizeof(index_files[0]); i != lim; ++i) {
         size_t pos = luri.find(index_files[i].s);
         if (pos == String::npos)
             continue;
-        
+
         if (pos + index_files[i].len != luri.size())
             continue;
-        
+
         return index_files[i].len;
     }
-    
+
     return 0;
 }
 
 static bool isindex(String const &uri)
 {
-    return CHttpServer::isIndex(uri) > 0 ; 
+    return CHttpServer::isIndex(uri) > 0 ;
 }
 
 static bool isknowntype(String const &uri)
@@ -156,25 +156,25 @@ static bool isknowntype(String const &uri)
         {".jpeg", 5},
         {".gif", 4}
     };
-    
+
     // Convert uri to lower case
     String luri;
     std::transform(uri.begin(), uri.end(), std::back_inserter(luri), &::tolower);
-    
+
     for (size_t i = 0, lim = sizeof(ignored_exts)/sizeof(ignored_exts[0]); i != lim; ++i) {
         size_t pos = luri.find(ignored_exts[i].s);
         if (pos == String::npos)
             continue;
-        
+
         if (pos + ignored_exts[i].len != luri.size())
             continue;
-        
+
         return true;
     }
-    
+
     return false;
 }
-    
+
 
 static String get_mime_type(String const &path)
 {
@@ -221,30 +221,30 @@ static String get_mime_type(String const &path)
         {".avi",		4,	"video/x-msvideo"               },
         {".bmp",		4,	"image/bmp"                     },
     };
-    
+
     // Convert path to lower case
     String lpath;
     std::transform(path.begin(), path.end(), std::back_inserter(lpath), &::tolower);
-    
+
     String mime_type;
     for (int i = 0, lim = sizeof(builtin_mime_types)/sizeof(builtin_mime_types[0]); i != lim; ++i) {
         size_t pos = lpath.find(builtin_mime_types[i].extension);
         if (pos == String::npos)
             continue;
-        
+
         if (pos + builtin_mime_types[i].ext_len != lpath.size())
             continue;
-        
+
         mime_type = builtin_mime_types[i].mime_type;
         break;
     }
-    
+
     if (mime_type.empty())
         mime_type = "text/plain";
-    
+
     return mime_type;
 }
-    
+
 
 static VALUE create_request_hash(String const &application, String const &model,
                                  String const &action, String const &id,
@@ -259,19 +259,19 @@ static VALUE create_request_hash(String const &application, String const &model,
         addStrToHash(hash, "action", action.c_str());
     if (!id.empty())
         addStrToHash(hash, "id", id.c_str());
-	
+
 	addStrToHash(hash, "request-method", method.c_str());
 	addStrToHash(hash, "request-uri", uri.c_str());
     addStrToHash(hash, "request-query", query.c_str());
-	
+
     CHoldRubyValue hash_headers(rho_ruby_createHash());
     for (HttpHeaderList::const_iterator it = headers.begin(), lim = headers.end(); it != lim; ++it)
         addStrToHash(hash_headers, it->name.c_str(), it->value.c_str());
 	addHashToHash(hash,"headers",hash_headers);
-	
+
     if (!body.empty())
 		addStrToHash(hash, "request-body", body.c_str());
-    
+
     return hash;
 }
 
@@ -350,21 +350,21 @@ extern "C" void rb_gc(void);
 bool CHttpServer::init()
 {
     RAWTRACE("Open listening socket...");
-    
+
     close_listener();
     m_listener = socket(AF_INET, SOCK_STREAM, 0);
     if (m_listener == INVALID_SOCKET) {
         RAWLOG_ERROR1("Can not create listener: %d", RHO_NET_ERROR_CODE);
         return false;
     }
-    
+
     int enable = 1;
     if (setsockopt(m_listener, SOL_SOCKET, SO_REUSEADDR, (const char *)&enable, sizeof(enable)) == SOCKET_ERROR) {
         RAWLOG_ERROR1("Can not set socket option (SO_REUSEADDR): %d", RHO_NET_ERROR_CODE);
         close_listener();
         return false;
     }
-    
+
     struct sockaddr_in sa;
     memset(&sa, 0, sizeof(sa));
     sa.sin_family = AF_INET;
@@ -375,13 +375,13 @@ bool CHttpServer::init()
         close_listener();
         return false;
     }
-    
+
     if (listen(m_listener, 128) == SOCKET_ERROR) {
         RAWLOG_ERROR1("Can not listen on socket: %d", RHO_NET_ERROR_CODE);
         close_listener();
         return false;
     }
-    
+
     RAWLOG_INFO1("Listen for connections on port %d", m_port);
     return true;
 }
@@ -391,10 +391,10 @@ bool CHttpServer::run()
     LOG(INFO) + "Start HTTP server";
     if (!init())
         return false;
-    
+
     m_active = true;
     RHODESAPP().notifyLocalServerStarted();
-    
+
     for(;;) {
         RAWTRACE("Waiting for connections...");
         rho_ruby_start_threadidle();
@@ -411,7 +411,7 @@ bool CHttpServer::run()
 
         rho_ruby_stop_threadidle();
         bool bProcessed = false;
-        if (ret > 0) 
+        if (ret > 0)
         {
             if (FD_ISSET(m_listener, &readfds))
             {
@@ -438,7 +438,7 @@ bool CHttpServer::run()
                 bProcessed = process(conn);
                 if ( !RHOCONF().getBool("enable_gc_while_request") )
                     rho_ruby_enable_gc(val);
-                
+
                 RAWTRACE("Close connected socket");
                 closesocket(conn);
             }
@@ -490,7 +490,7 @@ bool receive_request_test(ByteVector &request, int attempt)
 		default:
 			return false;
 	}
-	
+
 	request.insert(request.end(), data.begin(), data.end());
 	return true;
 }
@@ -516,27 +516,27 @@ bool CHttpServer::receive_request(ByteVector &request)
             if (e == EAGAIN) {
                 if (!r.empty())
                     break;
-                
+
                 fd_set fds;
                 FD_ZERO(&fds);
                 FD_SET(m_sock, &fds);
                 select(m_sock + 1, &fds, 0, 0, 0);
                 continue;
             }
-            
+
             RAWLOG_ERROR1("Error when receiving data from socket: %d", e);
             return false;
         }
-        
+
         if (n == 0) {
             RAWLOG_ERROR("Connection gracefully closed before we send any data");
             return false;
         }
-        
+
         if (verbose) RAWTRACE1("Actually read %d bytes", n);
         r.insert(r.end(), &buf[0], &buf[0] + n);
     }
-    
+
     if (!r.empty()) {
         request.insert(request.end(), r.begin(), r.end());
         if ( !rho_conf_getBool("log_skip_post") )
@@ -553,7 +553,7 @@ bool CHttpServer::send_response_impl(String const &data, bool continuation)
         else
             RAWTRACE("Sending response...");
     }
-    
+
     // First of all, make socket blocking
 #if defined(WINDOWS_PLATFORM)
     unsigned long optval = 0;
@@ -572,7 +572,7 @@ bool CHttpServer::send_response_impl(String const &data, bool continuation)
         return false;
     }
 #endif
-    
+
     size_t pos = 0;
     for(; pos < data.size();) {
         int n = send(m_sock, data.c_str() + pos, data.size() - pos, 0);
@@ -582,17 +582,17 @@ bool CHttpServer::send_response_impl(String const &data, bool continuation)
             if (e == EINTR)
                 continue;
 #endif
-            
+
             RAWLOG_ERROR1("Can not send response data: %d", e);
             return false;
         }
-        
+
         if (n == 0)
             break;
-        
+
         pos += n;
     }
-    
+
     //String dbg_response = response.size() > 100 ? response.substr(0, 100) : response;
     //RAWTRACE2("Sent response:\n%s%s", dbg_response.c_str(), response.size() > 100 ? "..." : "   ");
     if (continuation)
@@ -634,15 +634,15 @@ String CHttpServer::create_response(String const &reason, HeaderList const &hdrs
     String response = "HTTP/1.1 ";
     response += reason;
     response += "\r\n";
-    
+
     char buf[50];
     snprintf(buf, sizeof(buf), "%d", m_port);
-    
+
     HeaderList headers;
     headers.push_back(Header("Host", String("127.0.0.1:") + buf));
     headers.push_back(Header("Connection", "close"));
     std::copy(hdrs.begin(), hdrs.end(), std::back_inserter(headers));
-    
+
     for(HeaderList::const_iterator it = headers.begin(), lim = headers.end();
         it != lim; ++it) {
         response += it->name;
@@ -650,11 +650,11 @@ String CHttpServer::create_response(String const &reason, HeaderList const &hdrs
         response += it->value;
         response += "\r\n";
     }
-    
+
     response += "\r\n";
-    
+
     response += body;
-    
+
     return response;
 }
 
@@ -729,15 +729,15 @@ bool CHttpServer::parse_request(String &method, String &uri, String &query, Head
                 RAWLOG_ERROR("Wrong request syntax, line should ends by '\\r\\n'");
                 return false;
             }
-            
+
             String line(&request[s], e - s);
             s = e + 2;
-            
+
             if (line.empty()) {
                 parsing_headers = false;
                 break;
             }
-            
+
             if (uri.empty()) {
                 // Parse start line
                 if (!parse_startline(line, method, uri, query) || uri.empty())
@@ -748,7 +748,7 @@ bool CHttpServer::parse_request(String &method, String &uri, String &query, Head
                 if (!parse_header(line, hdr) || hdr.name.empty())
                     return false;
                 headers.push_back(hdr);
-                
+
                 String low;
                 std::transform(hdr.name.begin(), hdr.name.end(), std::back_inserter(low), &::tolower);
                 if (low == "content-length") {
@@ -773,28 +773,28 @@ bool CHttpServer::parse_request(String &method, String &uri, String &query, Head
 bool CHttpServer::parse_startline(String const &line, String &method, String &uri, String &query)
 {
     const char *s, *e;
-    
+
     // Find first space
     for(s = line.c_str(), e = s; *e != ' ' && *e != '\0'; ++e);
     if (*e == '\0') {
         RAWLOG_ERROR1("Parse startline (1): syntax error: \"%s\"", line.c_str());
         return false;
     }
-    
+
     method.assign(s, e);
-    
+
     // Skip spaces
     for(s = e; *s == ' '; ++s);
-    
+
     for(e = s; *e != '?' && *e != ' ' && *e != '\0'; ++e);
     if (*e == '\0') {
         RAWLOG_ERROR1("Parse startline (2): syntax error: \"%s\"", line.c_str());
         return false;
     }
-    
+
     uri.assign(s, e);
     uri = URI::urlDecode(uri);
-    
+
     query.clear();
     if (*e == '?') {
         s = ++e;
@@ -819,10 +819,10 @@ bool CHttpServer::parse_header(String const &line, Header &hdr)
         return false;
     }
     hdr.name.assign(s, e);
-    
+
     // Skip spaces and colon
     for(s = e; *s == ' ' || *s == ':'; ++s);
-    
+
     hdr.value = s;
     return true;
 }
@@ -831,31 +831,31 @@ bool CHttpServer::parse_route(String const &line, Route &route)
 {
     if (line.empty())
         return false;
-    
+
     const char *s = line.c_str();
     if (*s == '/')
         ++s;
-    
+
     const char *application_begin = s;
     for(; *s != '/' && *s != '\0'; ++s);
     if (*s == '\0')
         return false;
     const char *application_end = s;
-    
+
     const char *model_begin = ++s;
     for(; *s != '/' && *s != '\0'; ++s);
     const char *model_end = s;
-    
+
     route.application.assign(application_begin, application_end);
     route.model.assign(model_begin, model_end);
-    
+
     if (*s == '\0')
         return true;
-    
+
     const char *actionorid_begin = ++s;
     for (; *s != '/' && *s != '\0'; ++s);
     const char *actionorid_end = s;
-    
+
     if (*s == '/')
         ++s;
 
@@ -868,11 +868,11 @@ bool CHttpServer::parse_route(String const &line, Route &route)
         route.id = s;
         route.action = aoi;
     }
-    
+
 	//const char* frag = strrchr(route.action.c_str(), '#');
 	//if (frag)
 	//	route.action = route.action.substr(0, frag-route.action.c_str());
-	
+
     return true;
 }
 
@@ -880,11 +880,11 @@ bool CHttpServer::dispatch(String const &uri, Route &route)
 {
     if (isknowntype(uri))
         return false;
-    
+
     // Trying to parse route
     if (!parse_route(uri, route))
         return false;
-    
+
     // Convert CamelCase to underscore_case
     // There has to be a better way?
     char tmp[3];
@@ -906,7 +906,7 @@ bool CHttpServer::dispatch(String const &uri, Route &route)
         }
         controllerName += tmp;
     }
-        
+
     //check if there is controller.rb to run
 	struct stat st;
 
@@ -916,7 +916,7 @@ bool CHttpServer::dispatch(String const &uri, Route &route)
     //look for controller.rb or model_name_controller.rb
     if ((stat(filename.c_str(), &st) != 0 || !S_ISREG(st.st_mode)) && (stat(newfilename.c_str(), &st) != 0 || !S_ISREG(st.st_mode)))
         return false;
-    
+
     return true;
 }
 
@@ -925,32 +925,32 @@ static bool parse_range(HttpHeaderList const &hdrs, size_t *pbegin, size_t *pend
     for (HttpHeaderList::const_iterator it = hdrs.begin(), lim = hdrs.end(); it != lim; ++it) {
         if (strcasecmp(it->name.c_str(), "range") != 0)
             continue;
-        
+
         const char *s = strstr(it->value.c_str(), "bytes=");
         if (!s)
             continue;
-        
+
         s += 6; // size of "bytes=" string
-        
+
         char *e;
-        
+
         size_t begin = strtoul(s, &e, 10);
         if (s == e)
             begin = 0;
-        
+
         if (*e != '-') // error
             continue;
-        
+
         s = e+1;
         size_t end = strtoul(s, &e, 10);
         if (s == e)
             end = (size_t)-1;
-        
+
         *pbegin = begin;
         *pend = end;
         return true;
     }
-    
+
     return false;
 }
 
@@ -962,9 +962,9 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
         fullPath = CFilePath::join( RHODESAPP().getRhoRootPath(), path.substr(4) );
     else if (fullPath.find(m_root) != 0 && fullPath.find(m_strRhoRoot) != 0)
         fullPath = CFilePath::join( m_root, path );
-	
+
     if (verbose) RAWTRACE1("Sending file %s...", fullPath.c_str());
-    
+
     struct stat st;
     bool bCheckExist = true;
 #ifdef RHODES_EMULATOR
@@ -993,7 +993,7 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
         send_response(create_response("404 Not Found",error));
         return false;
     }
-    
+
     FILE *fp = fopen(fullPath.c_str(), "rb");
     if (!fp) {
         RAWLOG_ERROR1("The file %s could not be opened", path.c_str());
@@ -1001,9 +1001,9 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
         send_response(create_response("404 Not Found",error));
         return false;
     }
-    
+
     HeaderList headers;
-    
+
     // Detect mime type
     headers.push_back(Header("Content-Type", get_mime_type(path)));
     //headers.push_back(Header("Expires", "Thu, 15 Apr 2020 20:00:00 GMT") );
@@ -1011,9 +1011,9 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
 
     // Content length
     char* buf = new char[FILE_BUF_SIZE];
-    
+
     String start_line;
-    
+
     size_t file_size = st.st_size;
     size_t range_begin = 0, range_end = file_size - 1;
     size_t content_size = file_size;
@@ -1024,28 +1024,28 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
         if (range_begin >= range_end)
             range_begin = range_end - 1;
         content_size = range_end - range_begin + 1;
-        
+
         snprintf(buf, FILE_BUF_SIZE, "bytes %lu-%lu/%lu", (unsigned long)range_begin,
                  (unsigned long)range_end, (unsigned long)file_size);
         headers.push_back(Header("Content-Range", buf));
-        
+
         if (fseek(fp, range_begin, SEEK_SET) == -1) {
             RAWLOG_ERROR1("Can not seek to specified range start: %lu", (unsigned long)range_begin);
             fclose(fp);
             delete buf;
             return false;
         }
-        
+
         start_line = "206 Partial Content";
     }
     else {
         start_line = "200 OK";
     }
 
-    
+
     snprintf(buf, FILE_BUF_SIZE, "%lu", (unsigned long)content_size);
     headers.push_back(Header("Content-Length", buf));
-    
+
     // Send headers
     if (!send_response(create_response(start_line, headers))) {
         RAWLOG_ERROR1("Can not send headers while sending file %s", path.c_str());
@@ -1053,13 +1053,13 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
         delete buf;
         return false;
     }
-    
+
     // Send body
     for (size_t start = range_begin; start < range_end + 1;) {
         size_t need_to_read = range_end - start + 1;
         if (need_to_read == 0)
             break;
-        
+
         if (need_to_read > FILE_BUF_SIZE)
             need_to_read = FILE_BUF_SIZE;
         size_t n = fread(buf, 1, need_to_read, fp);//fread(buf, 1, need_to_read, fp);
@@ -1075,9 +1075,9 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
             delete buf;
             return false;
         }
-        
+
         start += n;
-        
+
         if (!send_response_body(String(buf, n))) {
             RAWLOG_ERROR1("Can not send part of data while sending file %s", path.c_str());
             fclose(fp);
@@ -1095,7 +1095,7 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
 bool CHttpServer::call_ruby_method(String const &uri, String const &body, String& strReply)
 {
     Route route;
-    if (!dispatch(uri, route)) 
+    if (!dispatch(uri, route))
         return false;
 
     HeaderList headers;
@@ -1126,7 +1126,7 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
 //    //Work around malformed Android WebView URLs
 //    if (!String_startsWith(uri, "/app") &&
 //        !String_startsWith(uri, "/public") &&
-//        !String_startsWith(uri, "/data")) 
+//        !String_startsWith(uri, "/data"))
 //    {
 //        RAWTRACE1("Malformed URL: '%s', adding '/app' prefix.", uri.c_str());
 //        uri = CFilePath::join("/app", uri);
@@ -1134,11 +1134,11 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
 //#endif
 
     String fullPath = CFilePath::join(m_root, uri);
-    
+
     Route route;
     if (dispatch(uri, route)) {
         RAWTRACE1("Uri %s is correct route, so enable MVC logic", uri.c_str());
-        
+
         VALUE req = create_request_hash(route.application, route.model, route.action, route.id,
                                         method, uri, query, headers, body);
         VALUE data = callFramework(req);
@@ -1156,18 +1156,18 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
 
         if (!route.id.empty())
             rho_sync_addobjectnotify_bysrcname(route.model.c_str(), route.id.c_str());
-        
+
         return true;
     }
-    
+
 //#ifndef OS_ANDROID
     if (isdir(fullPath)) {
         RAWTRACE1("Uri %s is directory, redirecting to index", uri.c_str());
         String q = query.empty() ? "" : "?" + query;
-        
+
         HeaderList headers;
         headers.push_back(Header("Location", CFilePath::join( uri, "index"RHO_ERB_EXT) + q));
-        
+
         send_response(create_response("301 Moved Permanently", headers), true);
         return false;
     }
@@ -1186,7 +1186,7 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
             send_response(create_response("404 Not Found",error));
             return false;
         }
-        
+
         RAWTRACE1("Uri %s is index file, call serveIndex", uri.c_str());
 
         VALUE req = create_request_hash(route.application, route.model, route.action, route.id,
@@ -1204,7 +1204,7 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
 
         return true;
     }
-    
+
     // Try to send requested file
     RAWTRACE1("Uri %s should be regular file, trying to send it", uri.c_str());
     return send_file(uri, headers);

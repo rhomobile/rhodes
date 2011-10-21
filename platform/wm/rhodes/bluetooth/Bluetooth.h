@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -65,7 +65,7 @@
 #define RHO_BT_SESSION_INPUT_DATA_RECEIVED "SESSION_INPUT_DATA_RECEIVED"
 #define RHO_BT_SESSION_DISCONNECT "SESSION_DISCONNECT"
 
-#define RHO_DISCOVER_TIME_MS	5000	
+#define RHO_DISCOVER_TIME_MS	5000
 #define RHO_DISCOVERED_TIME_MS	5000
 #define SerialPortConnectGUID L"00001101-0000-1000-8000-00805F9B34FB"
 
@@ -78,7 +78,7 @@ class CRhoBluetoothDiscoverDlg : public //CDialog
 	COkCancelModalDialog<CRhoBluetoothDiscoverDlg>
 #else
 	CDialogImpl <CRhoBluetoothDiscoverDlg>
-#endif	
+#endif
 {
 public:
 	CRhoBluetoothDiscoverDlg  ();
@@ -108,7 +108,7 @@ class CRhoBluetoothDiscoveredDlg : public //CDialog
 	COkCancelModalDialog<CRhoBluetoothDiscoveredDlg>
 #else
 	CDialogImpl <CRhoBluetoothDiscoveredDlg>
-#endif	
+#endif
 {
 public:
 	CRhoBluetoothDiscoveredDlg  ();
@@ -131,17 +131,17 @@ public:
 
 
 struct RhoDeviceList
-{ 
+{
 	BT_ADDR bthAddress;
 	TCHAR bthName[40];
 	RhoDeviceList *NextDevice;
 };
 
-struct RhoDeviceInfo 
+struct RhoDeviceInfo
 {
 	WCHAR szDeviceNameAddr[MAX_NAME_SIZE];
 
-}; 
+};
 
 struct RhoDataBlock {
 	RhoDataBlock() {
@@ -204,7 +204,7 @@ public :
 	int rho_bluetooth_session_get_status(const char* connected_device_name);
 	const char* rho_bluetooth_session_read_string(const char* connected_device_name);
 	void rho_bluetooth_session_write_data(const char* connected_device_name, void* buf, int datasize);
-	
+
 	// access API
 	static RhoBluetoothManager* getInstance();
 	static void releaseAll();
@@ -251,7 +251,7 @@ private:
 	void freeAll();
 	void freeAllBlocks();
 	int getBlocksSummarySizeFromBlock(RhoDataBlock* block);
-	
+
 	int RegisterService(BYTE *rgbSdpRecord, int cSdpRecord, int iChannelOffset, UCHAR channel);
 
 	int makeConnection(BT_ADDR bt_addr);
@@ -260,7 +260,7 @@ private:
 
 	int m_iNumDevices;
 	HANDLE m_hReadThread; // thread with read from socket, infinity
-	HANDLE m_hDiscoverThred; // thread with find BT devices, 
+	HANDLE m_hDiscoverThred; // thread with find BT devices,
 	HANDLE m_hDiscoveredThread; // thread with discovered this device and read data
 	SOCKET m_socketServer;
 	SOCKET m_socketClient;
@@ -274,7 +274,7 @@ private:
 
 	char mCreateSessionCallback[MAX_NAME_SIZE];
 	char mSessionCallback[MAX_NAME_SIZE];
-	
+
 	RhoDataBlock* mFirstDataBlock;
 	RhoDataBlock* mLastDataBlock;
 

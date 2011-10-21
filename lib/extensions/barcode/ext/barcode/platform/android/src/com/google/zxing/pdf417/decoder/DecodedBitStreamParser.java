@@ -447,7 +447,7 @@ final class DecodedBitStreamParser {
             code == BEGIN_MACRO_PDF417_OPTIONAL_FIELD ||
             code == MACRO_PDF417_TERMINATOR) {
           codeIndex--;
-          end = true;          
+          end = true;
         }
       }
       if (count % MAX_NUMERIC_CODEWORDS == 0 ||

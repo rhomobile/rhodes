@@ -154,14 +154,14 @@ public class ValuePool {
         //if (val == null || val.length() > maxStringLength) {
             return val;
         //}
-        /*    
+        /*
         synchronized (stringPool) {
             return stringPool.getOrAddString(val);
         }*/
     }
 
     public static Date getDate(long val) {
-    	
+
     	return new Date(val);
         //synchronized (datePool) {
         //    return datePool.getOrAddDate(val);

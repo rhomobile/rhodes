@@ -5,7 +5,7 @@ import com.xruby.runtime.builtin.RubyTopSelf;
 public class RubyTopSelf_Methods{
 public static void initMethods( RubyClass klass){
 
-klass.getSingletonClass().defineMethod( "include", new RubyVarArgMethod(){ 
+klass.getSingletonClass().defineMethod( "include", new RubyVarArgMethod(){
 	public RubyValue invoke(RubyValue receiver, RubyArray args, RubyBlock block ){
 		return RubyTopSelf.include(receiver, args);}
 	public RubyValue invoke(RubyValue receiver, RubyBlock block ){

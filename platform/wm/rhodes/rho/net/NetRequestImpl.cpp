@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -78,7 +78,7 @@ void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession
     CAtlStringW strUrlW(strUrl.c_str());
 
     LOG(INFO) + "Method: " + method + ";Url: " + strUrl;
-    do 
+    do
     {
         if ( !initConnection(RHODESAPPBASE().isBaseUrl(strUrl.c_str()), strUrlW) )
             break;
@@ -93,7 +93,7 @@ void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession
         strCanonicalUrlW.ReleaseBuffer();
 
 		alloc_url_components( &m_uri, strCanonicalUrlW );
-        if( !InternetCrackUrl( strCanonicalUrlW, strCanonicalUrlW.GetLength(), 0, &m_uri ) ) 
+        if( !InternetCrackUrl( strCanonicalUrlW, strCanonicalUrlW.GetLength(), 0, &m_uri ) )
         {
 			m_pszErrFunction = L"InternetCrackUrl";
 			break;
@@ -102,7 +102,7 @@ void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession
 #ifdef OS_WINDOWS
 		if (RHOCONF().isExist("http_proxy_host")) {
 			rho::String login, password;
-			
+
 			if (RHOCONF().isExist("http_proxy_login"))
 				login = RHOCONF().getString ("http_proxy_login");
 			else
@@ -111,20 +111,20 @@ void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession
 			if (RHOCONF().isExist("http_proxy_password"))
 				password = RHOCONF().getString("http_proxy_password");
 
-			m_hConnection = InternetConnect(m_hInternet, m_uri.lpszHostName, m_uri.nPort, 
+			m_hConnection = InternetConnect(m_hInternet, m_uri.lpszHostName, m_uri.nPort,
 											//rho::common::convertToStringW(login).c_str(),
 											//password.length() ? rho::common::convertToStringW(password).c_str() : NULL,
 											_T("baran"), _T("baran"),
 											INTERNET_SERVICE_HTTP, 0, 0);
 		} else {
-			m_hConnection = InternetConnect(m_hInternet, m_uri.lpszHostName, m_uri.nPort, _T("anonymous"), NULL, 
+			m_hConnection = InternetConnect(m_hInternet, m_uri.lpszHostName, m_uri.nPort, _T("anonymous"), NULL,
 											INTERNET_SERVICE_HTTP, 0, 0);
 		}
 #else
-        m_hConnection = InternetConnect( m_hInternet, m_uri.lpszHostName, m_uri.nPort, _T("anonymous"), 
+        m_hConnection = InternetConnect( m_hInternet, m_uri.lpszHostName, m_uri.nPort, _T("anonymous"),
 										 NULL, INTERNET_SERVICE_HTTP, 0, 0 );
 #endif
-        if ( !m_hConnection ) 
+        if ( !m_hConnection )
         {
             m_pszErrFunction = L"InternetConnect";
             break;
@@ -140,7 +140,7 @@ void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession
             dwFlags |= INTERNET_FLAG_IGNORE_CERT_CN_INVALID|INTERNET_FLAG_IGNORE_CERT_DATE_INVALID;
 
         m_hRequest = HttpOpenRequest( m_hConnection, CAtlStringW(method), m_strReqUrlW, NULL, NULL, NULL, dwFlags, NULL );
-        if ( !m_hRequest ) 
+        if ( !m_hRequest )
         {
             m_pszErrFunction = L"HttpOpenRequest";
             break;
@@ -280,7 +280,7 @@ boolean CNetRequestImpl::readHeaders(Hashtable<String,String>& oHeaders)
     DWORD dwLen = 0;
     DWORD nIndex = 0;
     if( !HttpQueryInfo( m_hRequest, HTTP_QUERY_RAW_HEADERS_CRLF, null, &dwLen, &nIndex) )
-    {   
+    {
         DWORD dwErr = ::GetLastError();
         if ( dwErr != ERROR_INSUFFICIENT_BUFFER )
         {
@@ -333,7 +333,7 @@ String CNetRequestImpl::makeClientCookie()
         CAtlStringW strCookie;
         DWORD dwLen = 0;
         if( !HttpQueryInfo( m_hRequest, HTTP_QUERY_SET_COOKIE, null, &dwLen, &nIndex) )
-        {   
+        {
             DWORD dwErr = ::GetLastError();
             if ( dwErr == ERROR_HTTP_HEADER_NOT_FOUND  )
                 break;
@@ -392,7 +392,7 @@ void CNetRequestImpl::readResponse(CNetResponseImpl* pNetResp)
 
         // If we're unauthorized, delete any cookies that might have been
         // stored so we don't reuse them later
-        if ( nCode == 401 && m_pSession ) 
+        if ( nCode == 401 && m_pSession )
         {
             LOG(ERROR) + "Unauthorize error.Client will be logged out";
             m_pSession->logout();
@@ -455,7 +455,7 @@ INetResponse* CNetRequestImpl::pullFile(const String& strUrl, common::CRhoFile& 
 
         if ( pNetResp->getRespCode() == 200 )
             oFile.movePosToStart();
-            
+
         if ( pNetResp->getRespCode() == 416 )
         {
             pNetResp->setResponseCode(206);
@@ -477,9 +477,9 @@ INetResponse* CNetRequestImpl::pullFile(const String& strUrl, common::CRhoFile& 
     return pNetResp;
 }
 
-static const wchar_t* szMultipartContType = 
+static const wchar_t* szMultipartContType =
     L"Content-Type: multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5\r\n";
-static const char* szMultipartPostfix = 
+static const char* szMultipartPostfix =
     "\r\n------------A6174410D6AD474183FDE48F5662FCC5--";
 
 int CNetRequestImpl::processMultipartItems( VectorPtr<CMultipartItem*>& arItems )
@@ -487,7 +487,7 @@ int CNetRequestImpl::processMultipartItems( VectorPtr<CMultipartItem*>& arItems 
     int nSize = 0;
     for( int i = 0; i < (int)arItems.size(); i++ )
     {
-        CMultipartItem& oItem = *arItems.elementAt(i); 
+        CMultipartItem& oItem = *arItems.elementAt(i);
 
         if ( oItem.m_strName.length() == 0 )
             oItem.m_strName = "blob";
@@ -504,7 +504,7 @@ int CNetRequestImpl::processMultipartItems( VectorPtr<CMultipartItem*>& arItems 
         }
 
         oItem.m_strDataPrefix = i > 0 ? "\r\n" : "";
-        oItem.m_strDataPrefix += 
+        oItem.m_strDataPrefix +=
             "------------A6174410D6AD474183FDE48F5662FCC5\r\n"
             "Content-Disposition: form-data; name=\"";
         oItem.m_strDataPrefix += oItem.m_strName + "\"";
@@ -518,7 +518,7 @@ int CNetRequestImpl::processMultipartItems( VectorPtr<CMultipartItem*>& arItems 
         if ( oItem.m_strFilePath.length() > 0 )
         {
             common::CRhoFile oFile;
-            if ( oFile.open(oItem.m_strFilePath.c_str(),common::CRhoFile::OpenReadOnly) ) 
+            if ( oFile.open(oItem.m_strFilePath.c_str(),common::CRhoFile::OpenReadOnly) )
                 nContentSize = oFile.size();
         }
         else
@@ -581,12 +581,12 @@ INetResponse* CNetRequestImpl::pushMultipartData(const String& strUrl, VectorPtr
         //write all items
         for( int i = 0; i < (int)arItems.size(); i++ )
         {
-            CMultipartItem& oItem = *arItems.elementAt(i); 
+            CMultipartItem& oItem = *arItems.elementAt(i);
 
             if ( oItem.m_strFilePath.length() > 0 )
             {
                 common::CRhoFile oFile;
-                if ( !oFile.open(oItem.m_strFilePath.c_str(),common::CRhoFile::OpenReadOnly) ) 
+                if ( !oFile.open(oItem.m_strFilePath.c_str(),common::CRhoFile::OpenReadOnly) )
                 {
                     m_pszErrFunction = L"InternetWriteFile";
                     return pNetResp;
@@ -678,11 +678,11 @@ void CNetRequestImpl::cancel()
 {
     m_bCancel = true;
 
-	if ( m_hRequest ) 
+	if ( m_hRequest )
         InternetCloseHandle(m_hRequest);
-	if ( m_hConnection ) 
+	if ( m_hConnection )
         InternetCloseHandle(m_hConnection);
-/*	if ( hInet ) 
+/*	if ( hInet )
         InternetCloseHandle(hInet); */
 /*
     hRequest = 0;
@@ -697,11 +697,11 @@ void CNetRequestImpl::close()
 
     free_url_components(&m_uri);
 
-	if ( m_hRequest ) 
+	if ( m_hRequest )
         InternetCloseHandle(m_hRequest);
-	if ( m_hConnection ) 
+	if ( m_hConnection )
         InternetCloseHandle(m_hConnection);
-//	if ( hInet ) 
+//	if ( hInet )
 //        InternetCloseHandle(hInet);
 
     memset(&m_uri, 0, sizeof(m_uri));
@@ -769,13 +769,13 @@ void CNetRequestImpl::readInetFile( HINTERNET hRequest, CNetResponseImpl* pNetRe
 }
 
 void CNetRequestImpl::ErrorMessage(LPCTSTR pszFunction)
-{ 
+{
     // Retrieve the system error message for the last-error code
     LPTSTR pszMessage = NULL;
-    DWORD dwLastError = GetLastError(); 
+    DWORD dwLastError = GetLastError();
 
     DWORD dwLen = FormatMessage(
-        FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+        FORMAT_MESSAGE_ALLOCATE_BUFFER |
         //FORMAT_MESSAGE_FROM_SYSTEM |
         FORMAT_MESSAGE_FROM_HMODULE|
         FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -801,7 +801,7 @@ void CNetRequestImpl::ErrorMessage(LPCTSTR pszFunction)
     rho::LogMessage oLogMsg(__FILE__, __LINE__, L_ERROR, LOGCONF(), getLogCategory() );
     oLogMsg + "Call " + pszFunction + " failed. Url:" + m_strUrl.c_str() + ". With code : " + dwLastError;
 
-    if ( pszMessage ) 
+    if ( pszMessage )
         oLogMsg + ".Message: " + pszMessage;
     if ( szExtError && *szExtError )
         oLogMsg + ".Extended info: " + szExtError;
@@ -812,7 +812,7 @@ void CNetRequestImpl::ErrorMessage(LPCTSTR pszFunction)
         LocalFree(pszMessage);
 }
 
-void CNetRequestImpl::alloc_url_components(URL_COMPONENTS *uri, const wchar_t *url) 
+void CNetRequestImpl::alloc_url_components(URL_COMPONENTS *uri, const wchar_t *url)
 {
   int dwLength = wcslen(url)*sizeof(wchar_t);
   memset(uri, 0, sizeof(URL_COMPONENTS));
@@ -832,7 +832,7 @@ void CNetRequestImpl::alloc_url_components(URL_COMPONENTS *uri, const wchar_t *u
   uri->dwExtraInfoLength = dwLength;
 }
 
-void CNetRequestImpl::free_url_components(URL_COMPONENTS *uri) 
+void CNetRequestImpl::free_url_components(URL_COMPONENTS *uri)
 {
   if ( uri->lpszScheme )
     free(uri->lpszScheme);
@@ -872,8 +872,8 @@ bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
 
 		LOG(INFO) + "PROXY: " + proxyName;
 
-		m_hInternet = InternetOpen(_T("rhodes-wm"), INTERNET_OPEN_TYPE_PROXY, 
-									rho::common::convertToStringW(proxyName).c_str(), 
+		m_hInternet = InternetOpen(_T("rhodes-wm"), INTERNET_OPEN_TYPE_PROXY,
+									rho::common::convertToStringW(proxyName).c_str(),
 									NULL, NULL);
 	} else {
 		m_hInternet = InternetOpen(_T("rhodes-wm"), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, NULL );
@@ -882,7 +882,7 @@ bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
     m_hInternet = InternetOpen(_T("rhodes-wm"), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, NULL );
 #endif
 
-	if ( !m_hInternet ) 
+	if ( !m_hInternet )
     {
         m_pszErrFunction = L"InternetOpen";
         return false;
@@ -939,7 +939,7 @@ bool CNetRequestImpl::SetupInternetConnection(LPCTSTR url)
 		return false;
 
 	//while( SUCCEEDED(ConnMgrEnumDestinations(iNetwork++, &DestInfo)))
-	{	
+	{
 		LOG(INFO) + "Try establish Internet connection";
 		// actually try to establish the connection
 		CONNMGR_CONNECTIONINFO ConnInfo;
@@ -960,9 +960,9 @@ bool CNetRequestImpl::SetupInternetConnection(LPCTSTR url)
 		while(SUCCEEDED(hResult) && count++ < 60 )
 		{
 			LOG(INFO) + "Wait for connect (" + count + ")";
-			DWORD dwResult = WaitForSingleObject(m_hWceConnMgrConnection, 1000); 
+			DWORD dwResult = WaitForSingleObject(m_hWceConnMgrConnection, 1000);
 			if (dwResult == (WAIT_OBJECT_0))
-			{ 
+			{
 				hResult=ConnMgrConnectionStatus(m_hWceConnMgrConnection,&dwStatus);
 				if( SUCCEEDED(hResult) )
 				{

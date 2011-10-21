@@ -147,7 +147,7 @@ if( (O=(char*)(P->xCodec(P->pCodec,D,N,X)))==0 ){ E; }
 #endif
 
     /*
-** The maximum allowed sector size. 64KiB. If the xSectorsize() method 
+** The maximum allowed sector size. 64KiB. If the xSectorsize() method
 ** returns a value larger than this, then MAX_SECTOR_SIZE is used instead.
 ** This could conceivably cause corruption following a power failure on
 ** such a system. This is currently an undocumented limit.
@@ -1039,7 +1039,7 @@ pPg.pageHash==pager_pagehash(pPg) );
 
         /* Check that the values read from the page-size and sector-size fields
         ** are within range. To be 'in range', both values need to be a power
-        ** of two greater than or equal to 512 or 32, and not greater than their 
+        ** of two greater than or equal to 512 or 32, and not greater than their
         ** respective compile time maximum limits.
         */
         if ( iPageSize < 512 || iSectorSize < 32
@@ -2629,7 +2629,7 @@ pPager->xCodecSizeChng(pPager->pCodec, pPager->pageSize,
             pager_reset( pPager );
             pPager.pageSize = pageSize;
             sqlite3PageFree( ref  pPager.pTmpSpace );
-            
+
             pPager.pTmpSpace = sqlite3Malloc(pageSize);// pNew;
             sqlite3PcacheSetPageSize( pPager.pPCache, pageSize );
           }
@@ -2863,10 +2863,10 @@ pPager->xCodecSizeChng(pPager->pCodec, pPager->pageSize,
     }
 
     /*
-    ** Function assertTruncateConstraint(pPager) checks that one of the 
+    ** Function assertTruncateConstraint(pPager) checks that one of the
     ** following is true for all dirty pages currently in the page-cache:
     **
-    **   a) The page number is less than or equal to the size of the 
+    **   a) The page number is less than or equal to the size of the
     **      current database image, in pages, OR
     **
     **   b) if the page content were written at this time, it would not
@@ -2879,9 +2879,9 @@ pPager->xCodecSizeChng(pPager->pCodec, pPager->pageSize,
     ** the database file. If a savepoint transaction were rolled back after
     ** this happened, the correct behaviour would be to restore the current
     ** content of the page. However, since this content is not present in either
-    ** the database file or the portion of the rollback journal and 
+    ** the database file or the portion of the rollback journal and
     ** sub-journal rolled back the content could not be restored and the
-    ** database image would become corrupt. It is therefore fortunate that 
+    ** database image would become corrupt. It is therefore fortunate that
     ** this circumstance cannot arise.
     */
 #if SQLITE_DEBUG
@@ -4270,7 +4270,7 @@ CODEC1(pPager, pPg.pData, pPg.pgno, 3, rc = SQLITE_NOMEM);
         return SQLITE_CORRUPT_BKPT();
       }
 
-      /* If the pager is in the error state, return an error immediately. 
+      /* If the pager is in the error state, return an error immediately.
       ** Otherwise, request the page from the PCache layer. */
       if ( pPager.errCode != SQLITE_OK && pPager.errCode != SQLITE_FULL )
       {
@@ -4303,7 +4303,7 @@ CODEC1(pPager, pPg.pData, pPg.pgno, 3, rc = SQLITE_NOMEM);
       }
       else
       {
-        /* The pager cache has created a new page. Its content needs to 
+        /* The pager cache has created a new page. Its content needs to
         ** be initialized.  */
         int nMax = 0;
 #if SQLITE_TEST
@@ -5060,7 +5060,7 @@ int DIRECT_MODE = isDirectMode;
         Debug.Assert( pPgHdr == null || rc == SQLITE_OK );
 
         /* If page one was fetched successfully, and this function is not
-        ** operating in direct-mode, make page 1 writable.  When not in 
+        ** operating in direct-mode, make page 1 writable.  When not in
         ** direct mode, page 1 is always held in cache and hence the PagerGet()
         ** above is always successful - hence the ALWAYS on rc==SQLITE_OK.
         */
@@ -5664,7 +5664,7 @@ rc = pager_incr_changecounter(pPager, 0);
         }
         pPager.nSavepoint = nNew;
 
-        /* If this is a release of the outermost savepoint, truncate 
+        /* If this is a release of the outermost savepoint, truncate
         ** the sub-journal to zero bytes in size. */
         if (op == SAVEPOINT_RELEASE)
         {

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -57,7 +57,7 @@ CJSONArrayIterator::CJSONArrayIterator(const char* szData)
     m_nCurItem = 0;
     m_rootObject = json_tokener_parse(const_cast<char*>(szData));
 
-	if ( !m_rootObject || is_error(m_rootObject) ) 
+	if ( !m_rootObject || is_error(m_rootObject) )
         m_rootObject = 0;
     else
         m_array = json_object_get_array((struct json_object *)m_rootObject);
@@ -119,7 +119,7 @@ CJSONStructIterator::CJSONStructIterator(const char* szData)
     m_curEntry = 0;
     m_rootObject = json_tokener_parse(const_cast<char*>(szData));
 
-	if ( !m_rootObject || is_error(m_rootObject) ) 
+	if ( !m_rootObject || is_error(m_rootObject) )
         m_rootObject = 0;
     else
     {
@@ -291,7 +291,7 @@ CJSONEntry CJSONEntry::getEntry(const char* name)const
     unsigned char c;
     String strRes = "\"";
     const char* str = strValue.c_str();
-    do 
+    do
     {
         c = str[pos];
         switch(c) {
@@ -318,7 +318,7 @@ CJSONEntry CJSONEntry::getEntry(const char* name)const
             start_offset = ++pos;
             break;
         default:
-            if(c < ' ') 
+            if(c < ' ')
             {
                 if(pos - start_offset > 0)
                     strRes.append( str + start_offset, pos - start_offset);
@@ -328,7 +328,7 @@ CJSONEntry CJSONEntry::getEntry(const char* name)const
                 strRes.append(buf, nSize);
 
                 start_offset = ++pos;
-            }else 
+            }else
                 pos++;
         }
     } while(c);

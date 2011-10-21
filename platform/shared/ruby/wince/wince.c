@@ -23,7 +23,7 @@ extern char _currentdir[];
 
 /* make up Win32API except wce_* functions.  */
 
-DWORD GetModuleFileNameA( 
+DWORD GetModuleFileNameA(
 	HMODULE hModule, LPSTR lpFileName,
 	DWORD size )
 {
@@ -54,7 +54,7 @@ FARPROC GetProcAddressA(HMODULE hModule, LPCSTR lpProcName)
 	free( lpwProcName );
 	return p;
 }
-#endif 
+#endif
 
 char * GetCommandLineA(void)
 {
@@ -82,7 +82,7 @@ void wce_FreeCommandLine(void)
 /* I have no idea how to replace this. */
 BOOL GetProcessTimes(HANDLE hprocess,
 	LPFILETIME lpCreationTime, LPFILETIME lpExitTime,
-	LPFILETIME lpKernelTime, LPFILETIME lpUserTime) 
+	LPFILETIME lpKernelTime, LPFILETIME lpUserTime)
 {
 	return 0;
 }
@@ -100,7 +100,7 @@ DWORD GetFileAttributesA(LPCSTR lpFileName)
 }
 
 BOOL SetFileAttributesA(
-	LPCSTR lpFileName, DWORD attributes) 
+	LPCSTR lpFileName, DWORD attributes)
 {
 	LPWSTR lpwFileName;
 	BOOL b;
@@ -145,7 +145,7 @@ BOOL MoveFileEx(LPCSTR oldname, LPCSTR newname, DWORD dwFlags)
 }
 
 BOOL DeleteFileA(LPCSTR path)
-{ 
+{
 	LPWSTR wpath;
 	BOOL b;
 
@@ -338,7 +338,7 @@ BOOL CreateProcessA(LPCSTR appname, LPCSTR commandline,
 	return b;
 }
 
-HANDLE CreateEventA(SECURITY_ATTRIBUTES *sa, 
+HANDLE CreateEventA(SECURITY_ATTRIBUTES *sa,
 	BOOL manual_reset, BOOL initial_state, LPCSTR name)
 {
 	HANDLE h;
@@ -352,8 +352,8 @@ HANDLE CreateEventA(SECURITY_ATTRIBUTES *sa,
 	return h;
 }
 
-DWORD FormatMessageA(DWORD dwFlags, LPCVOID lpSource, 
-	DWORD dwMessageId, DWORD dwLanguageId, LPSTR lpBuffer, 
+DWORD FormatMessageA(DWORD dwFlags, LPCVOID lpSource,
+	DWORD dwMessageId, DWORD dwLanguageId, LPSTR lpBuffer,
 	DWORD nSize, va_list* args)
 {
 	DWORD dw;
@@ -406,7 +406,7 @@ HANDLE FindFirstFileA(LPCSTR path,
     if ( h == INVALID_HANDLE_VALUE && dwErr == 18)
         h = 0;
 	free(wpath);
-	
+
     copy_fund_data(data,&wdata);
 
 	return h;
@@ -593,7 +593,7 @@ wchar_t* wce_mbtowc(const char* a)
 	int length;
 	wchar_t *wbuf;
 
-	length = MultiByteToWideChar(CP_UTF8, 0, 
+	length = MultiByteToWideChar(CP_UTF8, 0,
 		a, -1, NULL, 0);
 	wbuf = (wchar_t*)malloc( (length+1)*sizeof(wchar_t) );
 	MultiByteToWideChar(CP_UTF8, 0,
@@ -636,9 +636,9 @@ void GetSystemTimeAsFileTime(
   LPFILETIME lpSystemTimeAsFileTime
 )
 {
-    SYSTEMTIME st; 
-    GetSystemTime( &st ); 
-    SystemTimeToFileTime( &st, lpSystemTimeAsFileTime ); 
+    SYSTEMTIME st;
+    GetSystemTime( &st );
+    SystemTimeToFileTime( &st, lpSystemTimeAsFileTime );
 }
 
 DWORD GetCurrentDirectoryA(
@@ -746,7 +746,7 @@ WSASocketA(
     IN DWORD dwFlags
     )
 {
-    //TODO:WSASocketA 
+    //TODO:WSASocketA
 	return 0;
 }
 

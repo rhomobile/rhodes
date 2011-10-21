@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -52,7 +52,7 @@ static void report_error(const char *s, CFStreamError *e)
     else
         RAWLOG_ERROR1("%s, unknown error", s);
 }
-    
+
 
 void * SSLImpl::createStorage()
 {
@@ -64,28 +64,28 @@ void SSLImpl::freeStorage(void *ptr)
     if (ptr)
         free(ptr);
 }
-    
+
 CURLcode SSLImpl::connect(int sockfd, int nonblocking, int *done, int ssl_verify_peer, void *storage)
 {
     ssl_data_t *data = (ssl_data_t*)storage;
-    
+
     CFStreamCreatePairWithSocket(kCFAllocatorDefault, sockfd, &data->readStream, &data->writeStream);
     // Indicate that the connection needs to be done in secure manner
     CFReadStreamSetProperty(data->readStream, kCFStreamPropertySocketSecurityLevel, kCFStreamSocketSecurityLevelSSLv3);
     CFWriteStreamSetProperty(data->writeStream, kCFStreamPropertySocketSecurityLevel, kCFStreamSocketSecurityLevelSSLv3);
-    
+
     CFMutableDictionaryRef dict = CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                 &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
     if (!dict) {
         RAWLOG_ERROR("Can not allocate CFMutableDictionaryRef");
         return CURLE_SSL_CONNECT_ERROR;
     }
-    
+
     CFDictionarySetValue(dict, kCFStreamSSLValidatesCertificateChain, ssl_verify_peer ? kCFBooleanTrue : kCFBooleanFalse);
     CFReadStreamSetProperty(data->readStream, kCFStreamPropertySSLSettings, dict);
     CFWriteStreamSetProperty(data->writeStream, kCFStreamPropertySSLSettings, dict);
     CFRelease(dict);
-    
+
     if (!CFReadStreamOpen(data->readStream) || !CFWriteStreamOpen(data->writeStream)) {
         RAWLOG_ERROR("SSL connection error");
         return CURLE_SSL_CONNECT_ERROR;
@@ -128,40 +128,40 @@ void SSLImpl::shutdown(void *storage)
 ssize_t SSLImpl::send(const void *mem, size_t len, void *storage)
 {
     ssl_data_t *data = (ssl_data_t*)storage;
-    
+
     if (!CFWriteStreamCanAcceptBytes(data->writeStream))
         return 0;
-    
+
     int rc = CFWriteStreamWrite(data->writeStream, (const UInt8 *)mem, len);
     if (rc < 0) {
         CFStreamError err = CFWriteStreamGetError(data->writeStream);
         report_error("SSL send failed", &err);
         return -1;
     }
-    
+
     return rc;
 }
 
 ssize_t SSLImpl::recv(char *buf, size_t size, int *wouldblock, void *storage)
 {
     ssl_data_t *data = (ssl_data_t*)storage;
-    
+
     if (!CFReadStreamHasBytesAvailable(data->readStream)) {
         *wouldblock = 1;
         return -1;
     }
-    
+
     *wouldblock = 0;
-    
+
     CFIndex rc = CFReadStreamRead(data->readStream, (UInt8*)buf, size);
     if (rc < 0) {
         CFStreamError err = CFReadStreamGetError(data->readStream);
         report_error("SSL recv failed", &err);
         return -1;
     }
-    
+
     return rc;
-    
+
 }
 
 } // namespace net

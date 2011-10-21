@@ -12,7 +12,7 @@ public class SyncThread implements EntryPoint {
 	static {
 		m_syncThreadInstance = new SyncThread();
 	}
-	
+
 	protected SyncThread() {
 		RhoConf.InitRhoConf();
 		RhoConf.getInstance().loadConf();
@@ -24,7 +24,7 @@ public class SyncThread implements EntryPoint {
 			//e.printStackTrace();
 		}
 	}
-	
+
 	public static SyncThread getInstance() {
 		return m_syncThreadInstance;
 	}
@@ -43,21 +43,21 @@ public class SyncThread implements EntryPoint {
 	}
 
 	public void start() {
-		
+
 	}
-	
+
 	public void stop() {
-		
+
 	}
-	
+
 	public void sleep(int i) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void wait(int i) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class SyncThread implements EntryPoint {
 	public native void exportApiMethods() /*-{
 		var me = this;
 		var klass = {};
-		
+
 		klass.login = function(login, password, notify) {
 			me.@com.rho.sync.SyncThread::login(Ljava/lang/String;Ljava/lang/String;Lcom/rho/sync/SyncNotify$SyncNotification;)(login, password, notify);
 		};

@@ -15,13 +15,13 @@ Below is the list of available `AsyncHttp` methods you can use to asyncrhonously
         #values will be decoded automatically in callback
 
 * `:authentication` - (optional) Send Basic Auth header with request.  This takes the form:
-		
+
 		:authentication => {
-		  :type => :basic, 
-		  :username => "john", 
+		  :type => :basic,
+		  :username => "john",
 		  :password => "secret"
-		} 
-		
+		}
+
 * `:ssl_verify_peer` - (optional) Verify SSL certificates, `true` by default.
 
 ### `get(:url, :headers, :callback, :callback_param)`
@@ -42,8 +42,8 @@ Example using Basic Auth:
 	  :headers => {"Cookie" => cookie},
 	  :callback => (url_for :action => :httpget_callback),
 	  :authentication => {
-	    :type => :basic, 
-		:username => "john", 
+	    :type => :basic,
+		:username => "john",
 		:password => "secret"
       }
 	)
@@ -71,15 +71,15 @@ Perform HTTP POST request to the specified <code>:url</code>.  As with get, you 
 	  :headers => {"Cookie" => cookie},
 	  :body => "username=john&password=secret",
 	  :callback => url_for(:action => :httppost_callback),
-	  :callback_param => "post=complete" 
+	  :callback_param => "post=complete"
 	)
-	
+
 ### `download_file(:url, :headers, :filename, :callback, :callback_param)`
 Download a file to the specified filename.<a id="asynchttp-download_file-ex" />
 
 	:::ruby
 	file_name = File.join(Rho::RhoApplication::get_base_app_path, "test.jpg")
-	
+
 	# :filename		Full path to download file target.
 	Rho::AsyncHttp.download_file(
 	  :url => "http://www.google.com/images/logos/ps_logo2.png",
@@ -87,15 +87,15 @@ Download a file to the specified filename.<a id="asynchttp-download_file-ex" />
 	  :headers => {},
 	  :callback => url_for(:action => :httpdownload_callback),
 	)
-	
+
 ### `upload_file(:url, :headers, :filename, :body, :callback, :callback_param)`
 Upload the specified file using HTTP POST:<a id="asynchttp-upload_file-ex" />
 
-	:::ruby	
+	:::ruby
   	file_name = File.join(Rho::RhoApplication::get_base_app_path, "myfile.txt")
 
 	# :filename		Full path to download file target.
-	# :post			HTTP POST body to send with request.		
+	# :post			HTTP POST body to send with request.
     Rho::AsyncHttp.upload_file(
       :url => "http://example.com/receive_file",
       :filename => file_name,
@@ -108,21 +108,21 @@ You can also send multiple files in a single `upload_file` request:
 
 	:::ruby
 	# :multipart				 Array of hashes containing
-	#							 file information. 
+	#							 file information.
 	#
 	# :multipart[:filename]		 Name of file to be uploaded.
 	#
 	# :multipart[:filename_base] (optional) Base directory containing
 	#							 the :filename.
-	# :multipart[:name]			 (optional) File type, defaults 
+	# :multipart[:name]			 (optional) File type, defaults
 	#							 to "blob".
 	#
-	# :multipart[:content_type]	 (optional) Content-Type header, 
+	# :multipart[:content_type]	 (optional) Content-Type header,
 	#							 defaults to "application/octet-stream".
    	Rho::AsyncHttp.upload_file(
       :url => "some_url",
       :multipart => [
-        { 
+        {
           :filename => file_name,
 		  # if missed base name from file path used
           :filename_base => "files_to_upload",
@@ -138,14 +138,14 @@ You can also send multiple files in a single `upload_file` request:
       ]
     )
 
-### `cancel(cancel_callback = "*")` 
+### `cancel(cancel_callback = "*")`
 Cancel the current `AsyncHttp` call.  Defaults to "*", which cancels all requests.
 
 	:::ruby
 	AsyncHttp.cancel
 
 ## AsyncHttp Callback
-As you noticed with each of the code samples above, we specified a `:callback` action.  This will execute with the `AsyncHttp` request is completed.  
+As you noticed with each of the code samples above, we specified a `:callback` action.  This will execute with the `AsyncHttp` request is completed.
 
 ### Callback Parameters
 The following parameters are available in an `AsyncHttp` callback:
@@ -162,8 +162,8 @@ The following parameters are available in an `AsyncHttp` callback:
 * `@params["http_error"]` - HTTP error code if response code was not 200.
 
 ## AsyncHttp and Animated Transitions
- 
-Adding an animated transition to an `AsyncHttp` request requires some small setup and is useful for displaying a smoother user experience. 
+
+Adding an animated transition to an `AsyncHttp` request requires some small setup and is useful for displaying a smoother user experience.
 
 To enable an animated transition, the controller action must set a `"Wait-Page"` response header after making the `AsyncHttp` call. The response header tells the user interface that an `AsyncHttp` request has been spawned and that the rendered view should be treated as a transient page, it will not be added to the navigation history.
 
@@ -209,7 +209,7 @@ Also, you can disable caching on exact page transition with `data-dom-cache` att
 
 ### Note About Animated Transitions
 
-If you deploy to platforms that don"t handle animated transitions (like Windows Mobile and BlackBerry), the controller will need to handle both cases. In your `AsyncHttp` request, you"ll need to set the `callback_param` with the `@request` variable. 
+If you deploy to platforms that don"t handle animated transitions (like Windows Mobile and BlackBerry), the controller will need to handle both cases. In your `AsyncHttp` request, you"ll need to set the `callback_param` with the `@request` variable.
 
 There's a helper function called `caller_request_hash_to_query` defined in `ApplicationHelper` that you can invoke. The returned value is a string that looks like "_request=<json_request>", where `<json_request>` is the URL-encoded JSON representation of the `@request` value. This parameter is used to give the callback function some context of whether the user interface made the request with or without transition enabled.
 
@@ -249,19 +249,19 @@ In your callback function, the first thing you need to do is invoke `caller_requ
 
 ## AsyncHttp Example
 Here is a controller in the [Rexml sample from the System API Samples](http://github.com/rhomobile/system-api-samples).  It makes a `AsyncHttp.get` call to a test web service.  Then it parses the web service response with rexml and displays the result.
-	
+
 	:::ruby
 	def webservicetest
 	  Rho::AsyncHttp.get(
 	    :url => "http://rhostore.heroku.com/products.xml",
 	    :callback => url_for(:action => :httpget_callback),
 	  )
-   
+
 	  render :action => :wait
 	end
 
 	def get_res
-	  @@get_result    
+	  @@get_result
 	end
 
 	def get_error
@@ -271,20 +271,20 @@ Here is a controller in the [Rexml sample from the System API Samples](http://gi
 	def httpget_callback
 	  if @params["status"] != "ok"
 	    @@error_params = @params
-	    WebView.navigate( url_for(:action => :show_error) )        
+	    WebView.navigate( url_for(:action => :show_error) )
 	  else
 	    @@get_result = @params["body"]
 
 	    begin
 	      require "rexml/document"
-     
+
 	      doc = REXML::Document.new(@@get_result)
 	      puts "doc : #{doc}"
 	    rescue Exception => e
 	      puts "Error: #{e}"
 	      @@get_result = "Error: #{e}"
 	    end
-         
+
 	    WebView.navigate( url_for(:action => :show_result) )
 	  end
 	end

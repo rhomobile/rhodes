@@ -1,4 +1,4 @@
---- 
+---
 name: phone_spec
 bbver: 6.0
 sdk: ../../
@@ -7,34 +7,34 @@ version: 1.0.0
 vendor: rhomobile
 sdkversion: 1.4
 wmsdk: "Windows Mobile 6 Professional SDK (ARMV4I)"
-iphone: 
+iphone:
   sdk: iphonesimulator4.3
   entitlements: ""
   codesignidentity: ""
   configuration: Release
   extensions: ["barcode"]
-  
+
 android:
   apikey: "0tLch9tZSX1G7PQRWwmqvINECUGtJ8ReArpPJxw"
   mapping: enabled
   capabilities:
     - network_state
-    
+
   extensions: ["barcode"]
   version: 2.3.3
 
 #wm:
 #  extensions: ["barcode"]
-  
+
 bb:
   extensions: ["barcode"]
-      
+
 capabilities:
   - pim
   - push
   - calendar
-     
-extensions: ["json", "rhoxml", "rhospec", "crypt"]  
+
+extensions: ["json", "rhoxml", "rhospec", "crypt"]
 
 wp:
   productid: 'fd55c4d0-51fa-012e-7844-6caec51bd50e'

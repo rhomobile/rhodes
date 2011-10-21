@@ -171,7 +171,7 @@ shttpd_get_http_version(struct shttpd_arg *arg,
 		unsigned long *major, unsigned long *minor)
 {
 	struct conn *c = arg->priv;
-	
+
 	*major = c->major_version;
 	*minor = c->minor_version;
 }
@@ -207,7 +207,7 @@ shttpd_get_var(const char *var, const char *buf, int buf_len,
 		    !_shttpd_strncasecmp(var, p, var_len)) {
 
 			/* Point 'p' to var value, 's' to the end of value */
-			p += var_len + 1;	
+			p += var_len + 1;
 			if ((s = memchr(p, '&', e - p)) == NULL)
 				s = e;
 

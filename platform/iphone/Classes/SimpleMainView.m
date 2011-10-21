@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -113,26 +113,26 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	if (image == nil) {
 		image = [UIImage imageNamed:name];
 	}
-	
+
 	if (!colored_icon) {
 		btn = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:target action:action];
 		return btn;
 	}
-	
+
 	//create the button and assign the image
 	UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
 	[button setImage:image forState:UIControlStateNormal];
-	[button addTarget:target action:action forControlEvents:UIControlEventTouchDown];	
-	
+	[button addTarget:target action:action forControlEvents:UIControlEventTouchDown];
+
 	//set the frame of the button to the size of the image (see note below)
 	button.frame = CGRectMake(0, 0, image.size.width, image.size.height);
-	
+
 	//create a UIBarButtonItem with the button as a custom view
-	btn = [[UIBarButtonItem alloc] initWithCustomView:button];	
-	
+	btn = [[UIBarButtonItem alloc] initWithCustomView:button];
+
 	btn.target = target;
 	btn.action = action;
-	
+
 	return btn;
 }
 
@@ -142,14 +142,14 @@ static BOOL makeHiddenUntilLoadContent = YES;
         NSString *imagePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:icon];
         img = [UIImage imageWithContentsOfFile:imagePath];
     }
-    
+
     UIBarButtonItem *btn = nil;
-    
-	
+
+
     if ([url compare:@"back"] == NSOrderedSame) {
         btn = [self makeUIBarButtonWithCustomImage:img name:@"back_btn.png" target:self action:@selector(goBack:) colored_icon:colored_icon];
     }
-    else if ([url compare:@"forward"] == NSOrderedSame) 
+    else if ([url compare:@"forward"] == NSOrderedSame)
 	{
 		if ( !rho_conf_getBool("jqtouch_mode") )
 			btn = [self makeUIBarButtonWithCustomImage:img name:@"forward_btn.png" target:self action:@selector(goForward:) colored_icon:colored_icon];
@@ -184,15 +184,15 @@ static BOOL makeHiddenUntilLoadContent = YES;
                    target:action action:@selector(onAction:)];
         }
     }
-    
+
     return btn;
 }
 
 - (UIToolbar*)newToolbar:(NSDictionary*)bar_info frame:(CGRect)mainFrame {
-    
+
     UIToolbar *tb = [UIToolbar new];
     tb.barStyle = UIBarStyleBlack;//Opaque;
-	
+
 
 	NSString *background_color = nil;
 
@@ -200,8 +200,8 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	if (global_properties != nil) {
 		background_color = (NSString*)[global_properties objectForKey:NATIVE_BAR_BACKGOUND_COLOR];
 	}
-	
-	
+
+
 	if (background_color != nil) {
 		tb.barStyle = UIBarStyleDefault;
 		int c = [background_color intValue];
@@ -210,27 +210,27 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		int cB = (c & 0xFF);
 		tb.tintColor = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
 	}
-	
-	
-    
+
+
+
     [tb sizeToFit];
-    
+
     CGFloat tbHeight = [tb frame].size.height;
 	// hack for do not reduce height of toolbar in Landscape mode
 	if (tbHeight < 44) {
 		tbHeight = 44;
 	}
-	
+
     CGRect tbFrame = CGRectMake(CGRectGetMinX(mainFrame),
                                 CGRectGetHeight(mainFrame) - tbHeight,
                                 CGRectGetWidth(mainFrame),
                                 tbHeight);
     [tb setFrame:tbFrame];
-    
+
     UIBarButtonItem *fixed = [[UIBarButtonItem alloc]
                               initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
                               target:nil action:nil];
-    
+
 	NSArray* items = (NSArray*)[bar_info objectForKey:NATIVE_BAR_ITEMS];
 	if (items == nil) {
 		RAWLOG_ERROR("Illegal arguments for createNewToolbar - array of items not found");
@@ -240,41 +240,41 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	}
 
     NSMutableArray *btns = [NSMutableArray arrayWithCapacity:[items count]];
-	
+
     for(int i = 0, lim = [items count]; i < lim; i++) {
 		NSDictionary* item = (NSDictionary*)[items objectAtIndex:i];
-        
-		
+
+
 		NSString *label = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_LABEL];
         NSString *url = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_ACTION];
         NSString *icon = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_ICON];
-		NSString *colored_icon = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_COLORED_ICON];  
-        
+		NSString *colored_icon = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_COLORED_ICON];
+
         if ([url length] == 0) {
             RAWLOG_ERROR("Illegal arguments for createNewToolbar");
             [tb release];
             [fixed release];
             return nil;
         }
-        
+
         UIBarButtonItem *btn = [self newButton:url label:label icon:icon colored_icon:[colored_icon isEqualToString:@"true"]];
-        
+
         if (btn) {
             [btns addObject:fixed];
             [btns addObject:btn];
             [btn release];
         }
     }
-    
+
     [tb setItems:btns];
-    
+
     [fixed release];
-    
+
     tb.hidden = NO;
     tb.userInteractionEnabled = YES;
     tb.autoresizesSubviews = YES;
     tb.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
- 	
+
 	assert([tb retainCount] == 1);
     return tb;
 }
@@ -286,7 +286,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
         wFrame.size.height += tbFrame.size.height;
         [self setContentRect:wFrame];
     }
-    
+
     [toolbar removeFromSuperview];
     assert(!toolbar || [toolbar retainCount] == 1);
     self.toolbar = nil;
@@ -295,21 +295,21 @@ static BOOL makeHiddenUntilLoadContent = YES;
 - (void)addToolbar:(NSDictionary*)bar_info {
     [self removeToolbar];
     assert(!toolbar);
-    
+
     if (!bar_info)
         return;
-    
+
     CGRect wFrame = [self getContentRect];
 	wFrame.size.height += wFrame.origin.y;
 	wFrame.origin.y = 0;
-    
+
     toolbar = [self newToolbar:bar_info frame:wFrame];
     assert([toolbar retainCount] == 1);
     toolbar.tag = RHO_TAG_TOOLBAR;
     UIView* root = self.view;
     [root addSubview:toolbar];
     assert([toolbar retainCount] == 2);
-    
+
     CGRect tbFrame = toolbar.frame;
 	wFrame = [self getContentRect];
     wFrame.size.height -= tbFrame.size.height;
@@ -328,29 +328,29 @@ static BOOL makeHiddenUntilLoadContent = YES;
     //w.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     w.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     w.tag = RHO_TAG_WEBVIEW;
-	
+
     assert([w retainCount] == 1);
     return w;
 }
 
 - (id)init:(UIView*)p webView:(UIWebView*)w frame:(CGRect)frame bar_info:(NSDictionary*)bar_info web_bkg_color:(UIColor*)web_bkg_color {
 	[self init];
-	
+
 	self.mTabBarCallback = nil;
-    
+
     rootFrame = frame;
-	
+
 	self.urlBasedNativeView = NO;
-    
+
 	self.url_after_set_background = nil;
 	self.isBackgroundSetted = YES;
 	self.is_url_after_set_background_redirect = NO;
-	
+
     UIView* root = self.view;
 	if (web_bkg_color != nil) {
 		self.view.backgroundColor = web_bkg_color;
 	}
-    
+
     assert(!webView || [webView retainCount] == 2);
     [webView removeFromSuperview];
     assert(!webView || [webView retainCount] == 1);
@@ -360,11 +360,11 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	if (!webView)
         webView = [self newWebView:frame];
     assert(webView && [webView retainCount] == 1);
-    
+
 	CGRect wFrame = frame;
     wFrame.origin.y = 0;
     webView.frame = wFrame;
-    
+
     webView.autoresizesSubviews = YES;
     webView.autoresizingMask = /*UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin |*/ UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 
@@ -381,14 +381,14 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		[root addSubview:webView];
 		assert([webView retainCount] == 2);
     }
-	
+
 
     [self addToolbar:bar_info];
     self.navbar = nil;
 	nativeView = nil;
 	nativeViewType = nil;
 	nativeViewView = nil;
-    
+
    // DO NOT REMOVE THIS LINE!!!
     // First call of self.view (when self.view is nil) trigger loadView
     // and viewDidLoad which add all our subviews to the root view
@@ -405,10 +405,10 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	}
     root.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     root.autoresizesSubviews = YES;
-	
-	
+
+
     self.view = root;
-	
+
     [root release];
     assert([root retainCount] == 1);
 }
@@ -545,11 +545,11 @@ static BOOL makeHiddenUntilLoadContent = YES;
 
 - (void)viewDidLoad {
     UIView *root = self.view;
-    
+
     root.userInteractionEnabled = YES;
  	root.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 	root.autoresizesSubviews = YES;
-    
+
 	if (nativeView) {
           [root addSubview:[nativeView getView]];
 	}
@@ -619,7 +619,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	[w removeFromSuperview];
     webView.delegate = nil;
     self.webView = nil;
-    
+
     assert(w && [w retainCount] == 1);
     return w;
 }
@@ -630,14 +630,14 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	int cG = (bkg_color & 0xFF00) >> 8;
 	int cB = (bkg_color & 0xFF);
 	UIColor* bc = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
-	
+
 	self.webView.backgroundColor = bc;
 	self.view.backgroundColor = bc;
-	
-	NSString* data = [NSString stringWithFormat:@"<body bgcolor=\"#%6$X\"></body>", bkg_color]; 
-	
+
+	NSString* data = [NSString stringWithFormat:@"<body bgcolor=\"#%6$X\"></body>", bkg_color];
+
 	self.webView.hidden = YES;
-	
+
 	[self loadHTMLString:data];
 }
 
@@ -683,7 +683,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		CGRect rect = [nativeViewView frame];
 		[nativeViewView removeFromSuperview];
 		nativeViewView = nil;
-		
+
 		webView.frame = rect;
 		[root addSubview:webView];
 	}
@@ -859,15 +859,15 @@ static BOOL makeHiddenUntilLoadContent = YES;
 
 - (void)addNavBar:(UINavigationBar*)navb {
     [self removeNavBar];
-    
+
     navbar = navb;
     assert([navbar retainCount] == 1);
     NSLog(@"navbar retain count: %d", [navbar retainCount]);
 	navbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	navbar.autoresizesSubviews = YES;
-	
+
 	UIView* root = self.view;
-    
+
     CGRect nFrame = navbar.frame;
 
 	CGFloat nvHeight = nFrame.size.height;
@@ -877,7 +877,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	}
 	nFrame.size.height = nvHeight;
 	navbar.frame = nFrame;
-	
+
     CGRect wFrame = [self getContentRect];
     wFrame.origin.y += nFrame.size.height;
     wFrame.size.height -= nFrame.size.height;
@@ -894,9 +894,9 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	nb.autoresizesSubviews = YES;
     nb.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     [nb sizeToFit];
-    
+
     UINavigationItem *ni = [[UINavigationItem alloc] initWithTitle:title];
-    
+
     NSArray *btns[] = {left, right};
     for (int i = 0, lim = sizeof(btns)/sizeof(btns[0]); i < lim; ++i) {
         NSArray *btn = btns[i];
@@ -906,15 +906,15 @@ static BOOL makeHiddenUntilLoadContent = YES;
         NSString *label = [btn objectAtIndex:1];
         NSString *icon = [btn objectAtIndex:2];
         UIBarButtonItem *button = [self newButton:action label:label icon:icon colored_icon:NO];
-        
+
         if (btn == left)
             [ni setLeftBarButtonItem:button];
         else
             [ni setRightBarButtonItem:button];
     }
-    
+
     [nb pushNavigationItem:ni animated:NO];
-	
+
 	[self addNavBar:nb];
 }
 
@@ -945,9 +945,9 @@ static BOOL makeHiddenUntilLoadContent = YES;
     NSURL *url = [request URL];
     if (!url)
         return NO;
-    
+
     BOOL external = NO;
-    
+
     NSString *scheme = url.scheme;
     if (![scheme isEqualToString:@"http"] && ![scheme isEqualToString:@"https"])
         external = YES;
@@ -964,21 +964,21 @@ static BOOL makeHiddenUntilLoadContent = YES;
             NSString *value = nil;
             if (size == 2)
                 value = [nv objectAtIndex:1];
-            
+
             if ([name isEqualToString:@"rho_open_target"] && [value isEqualToString:@"_blank"]) {
                 external = YES;
                 break;
             }
         }
     }
-    
+
     if (external) {
         // This is not http url so try to open external application for it
         RAWLOG_INFO1("Open url in external application: %s", [[url absoluteString] UTF8String]);
         [[UIApplication sharedApplication] openURL:url];
         return NO;
     }
-    
+
     // Retrieve cookie for http url
     NSString *c = [[Rhodes sharedInstance] cookie:[url absoluteString]];
     if (c && [request isKindOfClass:[NSMutableURLRequest class]]) {
@@ -996,13 +996,13 @@ static BOOL makeHiddenUntilLoadContent = YES;
 - (void)webViewDidFinishLoad:(UIWebView *)webview {
     // Disable default context menu on touch
     [webview stringByEvaluatingJavaScriptFromString:@"document.documentElement.style.webkitTouchCallout = \"none\";"];
-    
+
     // Set empty application cache. Otherwise memory used by UIWebView increased rapidly
     // and finally application got out of memory
     NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:0 diskCapacity:0 diskPath:nil];
 	[NSURLCache setSharedURLCache:sharedCache];
 	[sharedCache release];
-	
+
 	if (self.view.hidden) {
 		[[Rhodes sharedInstance] hideSplash];
 		self.view.hidden = NO;
@@ -1017,7 +1017,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 			[self.webView.superview bringSubviewToFront:self.webView];
 		}
 	}
-	
+
 	if (!self.isBackgroundSetted) {
 		self.isBackgroundSetted = YES;
 		if (self.url_after_set_background != nil) {
@@ -1029,12 +1029,12 @@ static BOOL makeHiddenUntilLoadContent = YES;
 			}
 		}
 	}
-	self.url_after_set_background = nil;	
-    
+	self.url_after_set_background = nil;
+
 	// TODO
     /*
      [self inactive];
-     
+
      if ([webView canGoBack]) {
      backBtn.enabled = YES;
      } else {
@@ -1045,10 +1045,10 @@ static BOOL makeHiddenUntilLoadContent = YES;
      } else {
      forwardBtn.enabled = NO;
      }
-     
+
      //NSString* location = [webview stringByEvaluatingJavaScriptFromString:@"location.href"];
-     //rho_rhodesapp_keeplastvisitedurl( [location cStringUsingEncoding:[NSString defaultCStringEncoding]] );									 
-     
+     //rho_rhodesapp_keeplastvisitedurl( [location cStringUsingEncoding:[NSString defaultCStringEncoding]] );
+
      if ([actionTarget respondsToSelector:@selector(hideSplash)])
      [actionTarget performSelectorOnMainThread:@selector(hideSplash) withObject:nil waitUntilDone:NO];
      */

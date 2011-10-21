@@ -32,10 +32,10 @@ module Rhogen
 
     desc <<-DESC
       Generates a new rhodes application.
-      
+
       Required:
         name        - application name
-        
+
       Optional:
         syncserver  - url to the rhosync application (i.e. "http://localhost:9292/application")
         zip_url     - optional url to zipfile download of bundle (this can be your RhoHub Bundle URL)
@@ -66,12 +66,12 @@ module Rhogen
       template.source = 'build.yml'
       template.destination = "#{name}/build.yml"
     end
-    
+
     template :gitignore do |template|
       template.source = 'gitignore'
       template.destination = "#{name}/.gitignore"
     end
-    
+
     template :application do |template|
       template.source = 'app/application.rb'
       template.destination = "#{name}/app/application.rb"
@@ -85,13 +85,13 @@ module Rhogen
     template :bb_index do |template|
       template.source = 'app/index.bb.erb'
       template.destination = "#{name}/app/index.bb.erb"
-    end   
+    end
 
     template :layout do |template|
       template.source = 'app/layout.erb'
       template.destination = "#{name}/app/layout.erb"
     end
-    
+
     template :loading do |template|
       template.source = 'app/loading.html'
       template.destination = "#{name}/app/loading.html"
@@ -101,7 +101,7 @@ module Rhogen
       file.source = 'app/loading.png'
       file.destination = "#{name}/app/loading.png"
     end
-    
+
     directory :helpers do |directory|
       directory.source = 'app/helpers'
       directory.destination = "#{name}/app/helpers"
@@ -112,7 +112,7 @@ module Rhogen
       directory.destination = "#{name}/icon"
     end
 
-    
+
     directory :settings do |directory|
       directory.source = 'app/Settings'
       directory.destination = "#{name}/app/Settings/"
@@ -122,7 +122,7 @@ module Rhogen
       directory.source = 'public'
       directory.destination = "#{name}/public/"
     end
- 
+
     template :rakefile do |template|
       template.source = 'Rakefile'
       template.destination = "#{name}/Rakefile"
@@ -138,14 +138,14 @@ module Rhogen
 
     desc <<-DESC
       Generates a new model for a rhodes application.
-      
+
       Required:
         name        - model name
         attributes  - list of one or more string attributes (i.e. name,industry,progress), NO spaces between attributes
-        
+
       Optional:
         priority    - sync priority (i.e. 100)
-        type        - DEPRECATED: type of model (i.e. "ask" for an ask model). This will be removed in 1.5, instead use 
+        type        - DEPRECATED: type of model (i.e. "ask" for an ask model). This will be removed in 1.5, instead use
                       search method.
     DESC
 
@@ -181,7 +181,7 @@ module Rhogen
       template.source = 'show.erb'
       template.destination = "app/#{name.camel_case}/show.erb"
     end
-    
+
     template :bb_index do |template|
       template.source = 'index.bb.erb'
       template.destination = "app/#{name.camel_case}/index.bb.erb"
@@ -196,7 +196,7 @@ module Rhogen
       template.source = 'new.bb.erb'
       template.destination = "app/#{name.camel_case}/new.bb.erb"
     end
-    
+
     template :bb_show do |template|
       template.source = 'show.bb.erb'
       template.destination = "app/#{name.camel_case}/show.bb.erb"
@@ -223,7 +223,7 @@ module Rhogen
     def attributes?
       self.attributes && !self.attributes.empty?
     end
-    
+
     def syncserver_exists?
       found = true
       File.open('rhoconfig.txt').each do |line|

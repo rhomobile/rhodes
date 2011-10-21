@@ -71,4 +71,4 @@ int rb_w32_mkdir(const char *path, int mode)
 {
     return _mkdir(path);
 }
-#endif 
+#endif

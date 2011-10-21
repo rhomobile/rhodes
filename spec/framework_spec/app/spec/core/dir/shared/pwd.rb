@@ -13,5 +13,5 @@ describe :dir_pwd, :shared => true do
       File.stat(Dir.send(@method)).ino.should == File.stat(File.expand_path(`cd`.chomp)).ino
     end
   end
-=end  
+=end
 end

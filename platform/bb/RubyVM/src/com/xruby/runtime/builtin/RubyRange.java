@@ -22,10 +22,10 @@ public class RubyRange extends RubyBasic {
     	begin_ = cl.begin_;
     	end_ = cl.end_;
     	exclude_end_ = cl.exclude_end_;
-    	
+
     	super.doClone(orig);
     }
-    
+
     public void setValue(RubyValue left, RubyValue right, boolean isExclusive) {
         if(!(left instanceof RubyFixnum && right instanceof RubyFixnum)){
             try {
@@ -45,20 +45,20 @@ public class RubyRange extends RubyBasic {
         end_ = right;
         exclude_end_ = isExclusive;
     }
-    
+
     //@RubyAllocMethod
 	public static RubyRange alloc(RubyValue receiver) {
 		RubyRange range = new RubyRange();
 		range.setRubyClass((RubyClass) receiver);
 		return range;
 	}
-    
+
     //@RubyLevelMethod(name="initialize")
     public RubyValue initialize(RubyValue arg0, RubyValue arg1) {
         this.setValue(arg0, arg1, false);
         return this;
     }
-    
+
     //@RubyLevelMethod(name="initialize")
     public RubyValue initialize(RubyArray args) {
     	RubyValue left = args.get(0);
@@ -70,7 +70,7 @@ public class RubyRange extends RubyBasic {
                 isExclusive = true;
             }
         }
-        
+
         this.setValue(left, right, isExclusive);
         return this;
     }
@@ -84,7 +84,7 @@ public class RubyRange extends RubyBasic {
     public RubyValue getRight() {
         return end_;
     }
-    
+
     //@RubyLevelMethod(name="exclude_end?")
     public RubyValue excludeEndP() {
     	return ObjectFactory.createBoolean(this.exclude_end_);
@@ -95,16 +95,16 @@ public class RubyRange extends RubyBasic {
     public RubyValue eql(RubyValue v) {
     	if ( !(v instanceof RubyRange))
     		return RubyConstant.QFALSE;
-    	
+
     	RubyRange range = (RubyRange)v;
     	if ( range.begin_.equals(this.begin_) &&
     		 range.end_.equals(this.end_) &&
     		 range.exclude_end_ == this.exclude_end_ )
     		return RubyConstant.QTRUE;
-    	
+
     	return RubyConstant.QFALSE;
     }
-    
+
     public boolean isExcludeEnd() {
         return exclude_end_;
     }
@@ -120,17 +120,17 @@ public class RubyRange extends RubyBasic {
 
 	private RubyArray defaultToA() {
 		RubyArray a = new RubyArray();
-		
+
 		RubyValue iter = this.begin_;
 		while (this.compare(iter, this.end_)) {
 			a.add(iter);
 			iter = RubyAPI.callPublicNoArgMethod(iter, null, RubyID.succID);
 		}
-		
+
 		if (!this.exclude_end_) {
 			a.add(iter);
 		}
-		
+
 		return a;
 	}
 
@@ -147,37 +147,37 @@ public class RubyRange extends RubyBasic {
 		}
 		return a;
 	}
-    
+
     //@RubyLevelMethod(name="hash")
     public RubyFixnum hash() {
         int baseHash = this.exclude_end_ ? 1 : 0;
         int beginHash = RubyAPI.callPublicNoArgMethod(this.begin_, null, RubyID.hashID).toInt();
         int endHash = RubyAPI.callPublicNoArgMethod(this.end_, null, RubyID.hashID).toInt();
-        
+
         int hash = baseHash;
         hash = hash ^ (beginHash << 1);
         hash = hash ^ (endHash << 9);
         hash = hash ^ (baseHash << 24);
         return ObjectFactory.createFixnum(hash);
     }
-    
+
     //@RubyLevelMethod(name="each")
     public RubyValue each(RubyBlock block) {
         if (this.begin_ instanceof RubyFixnum && this.end_ instanceof RubyFixnum) {
         	return eachForFixnum(block);
         }
         // FIXME: for string
-        
+
         return rangeEach(block);
     }
 
 	private RubyValue eachForFixnum(RubyBlock block) {
 		int begin = this.begin_.toInt();
-		int limit = this.end_.toInt(); 
+		int limit = this.end_.toInt();
 		if (!this.exclude_end_) {
 			limit++;
 		}
-		
+
 		for (int i = begin; i < limit; i++) {
 			RubyValue v = block.invoke(this, ObjectFactory.createFixnum(i));
 			if (block.breakedOrReturned()) {
@@ -187,15 +187,15 @@ public class RubyRange extends RubyBasic {
 				continue;
 			}
 		}
-		
+
 		return this;
 	}
-	
+
     private boolean compare(RubyValue value1, RubyValue value2) {
         RubyValue r = RubyAPI.callPublicOneArgMethod(value1, value2, null, RubyID.unequalID);
         return !RubyAPI.testEqual(r, ObjectFactory.FIXNUM0);
     }
-	
+
 	private RubyValue rangeEach(RubyBlock block) {
 		RubyValue ite = this.begin_;
 
@@ -229,5 +229,5 @@ public class RubyRange extends RubyBasic {
 
         return this;
 	}
-	
+
 }

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -59,11 +59,11 @@ int rho_simimpl_get_property(char* szPropName, VALUE* resValue)
 }
 #endif
 
-VALUE rho_sys_get_property(char* szPropName) 
+VALUE rho_sys_get_property(char* szPropName)
 {
-	if (!szPropName || !*szPropName) 
+	if (!szPropName || !*szPropName)
         return rho_ruby_get_NIL();
-    
+
     VALUE res;
 #ifdef RHODES_EMULATOR
     if (rho_simimpl_get_property(szPropName, &res))
@@ -73,28 +73,28 @@ VALUE rho_sys_get_property(char* szPropName)
     if (rho_sysimpl_get_property(szPropName, &res))
         return res;
 
-	if (strcasecmp("platform",szPropName) == 0) 
+	if (strcasecmp("platform",szPropName) == 0)
         return rho_ruby_create_string(rho_rhodesapp_getplatform());
 
-	if (strcasecmp("has_network",szPropName) == 0) 
+	if (strcasecmp("has_network",szPropName) == 0)
         return rho_sys_has_network();
 
-	if (strcasecmp("locale",szPropName) == 0) 
+	if (strcasecmp("locale",szPropName) == 0)
         return rho_sys_get_locale();
 
-	if (strcasecmp("screen_width",szPropName) == 0) 
+	if (strcasecmp("screen_width",szPropName) == 0)
         return rho_ruby_create_integer(rho_sys_get_screen_width());
 
-	if (strcasecmp("screen_height",szPropName) == 0) 
+	if (strcasecmp("screen_height",szPropName) == 0)
         return rho_ruby_create_integer(rho_sys_get_screen_height());
 
-	if (strcasecmp("real_screen_width",szPropName) == 0) 
+	if (strcasecmp("real_screen_width",szPropName) == 0)
         return rho_ruby_create_integer(rho_sys_get_screen_width());
-    
-	if (strcasecmp("real_screen_height",szPropName) == 0) 
+
+	if (strcasecmp("real_screen_height",szPropName) == 0)
         return rho_ruby_create_integer(rho_sys_get_screen_height());
 
-	if (strcasecmp("device_id",szPropName) == 0) 
+	if (strcasecmp("device_id",szPropName) == 0)
     {
         rho::String strDeviceID = "";
         if ( rho::sync::CClientRegister::getInstance() )
@@ -104,18 +104,18 @@ VALUE rho_sys_get_property(char* szPropName)
     }
 
     if (strcasecmp("phone_id", szPropName) == 0)
-        return rho_ruby_create_string(""); 
+        return rho_ruby_create_string("");
 
-	if (strcasecmp("full_browser",szPropName) == 0) 
+	if (strcasecmp("full_browser",szPropName) == 0)
         return rho_ruby_create_boolean(1);
 
-	if (strcasecmp("rhodes_port",szPropName) == 0) 
+	if (strcasecmp("rhodes_port",szPropName) == 0)
         return rho_ruby_create_integer(atoi(RHODESAPP().getFreeListeningPort()));
 
-	if (strcasecmp("free_server_port",szPropName) == 0) 
+	if (strcasecmp("free_server_port",szPropName) == 0)
         return rho_ruby_create_integer(RHODESAPP().determineFreeListeningPort());
 
-	if (strcasecmp("is_emulator",szPropName) == 0) 
+	if (strcasecmp("is_emulator",szPropName) == 0)
         return rho_ruby_create_boolean(0);
 
 	if (strcasecmp("has_touchscreen",szPropName) == 0)
@@ -161,7 +161,7 @@ int rho_sys_set_sleeping(int sleeping)
 }
 #endif //defined(OS_MACOSX) || defined(OS_ANDROID)
 
-const char* rho_sys_get_start_params() 
+const char* rho_sys_get_start_params()
 {
     return rho::common::CRhodesApp::getStartParameters().c_str();
 }

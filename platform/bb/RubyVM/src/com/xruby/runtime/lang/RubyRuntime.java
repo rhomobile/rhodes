@@ -9,7 +9,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 
 import com.xruby.runtime.builtin.*;
-import com.xruby.GeneratedMethods.*; 
+import com.xruby.GeneratedMethods.*;
 import com.rho.RhoClassFactory;
 import com.rho.RhoEmptyLogger;
 import com.rho.RhoLogger;
@@ -17,11 +17,11 @@ import com.rho.StringScanner;
 
 import com.rho.Extensions;
 
-public class RubyRuntime 
+public class RubyRuntime
 {
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("RubyRuntime");
-	
+
     public static RubyClass ObjectClass;
     public static RubyClass ModuleClass;
     public static RubyClass ClassClass;
@@ -85,7 +85,7 @@ public class RubyRuntime
     public static RubyClass NotImplementedErrorClass;
 
     public static RubyClass StringIOClass;
-    
+
     //RHO
 	private static RubyModule SQLite3Module;
     public static RubyClass DatabaseClass;
@@ -95,7 +95,7 @@ public class RubyRuntime
     public static RubyModule EventModule;
     public static RubyClass CalendarClass;
     public static RubyClass PBRecordClass;
-    public static RubyClass EVRecordClass;    
+    public static RubyClass EVRecordClass;
     public static RubyClass GeoLocationClass;
     public static RubyModule AsyncHttpModule;
     public static RubyModule SystemClass;
@@ -104,7 +104,7 @@ public class RubyRuntime
     public static RubyClass RhoBluetoothClass;
     public static RubyClass WebViewClass;
     public static RubyClass RhoConfClass;
-    public static RubyClass AlertClass;    
+    public static RubyClass AlertClass;
     public static RubyClass DateTimePickerClass;
     public static RubyClass NativeBarClass;
     public static RubyModule RingtoneManagerClass;
@@ -132,22 +132,22 @@ public class RubyRuntime
  		          Class wrapperClass = null;
 		          try {
 		            wrapperClass = Class.forName(ext_class);
-		          } catch (ClassNotFoundException exc) {  
-		        	  LOG.ERROR("Extension class [" + ext_class + "] not exist !",exc);    	
+		          } catch (ClassNotFoundException exc) {
+		        	  LOG.ERROR("Extension class [" + ext_class + "] not exist !",exc);
 		          }
 		          if (wrapperClass != null) {
 		        	Runnable ext_run = null;
 		        	try {
 		        		ext_run = (Runnable)wrapperClass.newInstance();
 		        	} catch (Exception e) {
-		            	  LOG.ERROR("Extension class [" + ext_class + "] not instantiated !",e);    	
-		      		
+		            	  LOG.ERROR("Extension class [" + ext_class + "] not instantiated !",e);
+
 		        	}
 			        if (ext_run != null ) {
 			        	ext_run.run();
 			        }
 			        else {
-		            	  LOG.ERROR("Extension class [" + ext_class + "] not implemented Runnable interface !");    	
+		            	  LOG.ERROR("Extension class [" + ext_class + "] not implemented Runnable interface !");
 			        }
 		          }
 			}
@@ -186,7 +186,7 @@ public class RubyRuntime
         //MathModule = RubyTypeFactory.getModule(RubyMathModule.class);
         //MathModule = RubyAPI.defineModule("Math");
         //ObjectSpaceModule = RubyTypeFactory.getModule(ObjectSpace.class);
-        
+
         ProcessModule = RubyAPI.defineModule("Process");
 
         BindingClass = RubyAPI.defineClass("Binding", RubyRuntime.ObjectClass);
@@ -200,13 +200,13 @@ public class RubyRuntime
 
         MarshalModule = RubyAPI.defineModule("Marshal");
         RubyMarshalModule_Methods.initMethods(MarshalModule);
-        
+
         MathModule = RubyAPI.defineModule("Math");
         RubyMathModule_Methods.initMethods(MathModule);
 
 //        ObjectSpaceModule = RubyAPI.defineModule("ObjectSpace");
 //        RubyObjectSpace_Methods.initMethods(ObjectSpaceModule);
-        
+
         RubyModule_Methods.initMethods(ModuleClass);
         RubyModule.initDummyMethods(ModuleClass);
         RubyKernelModule_Methods.initMethods(KernelModule);
@@ -215,41 +215,41 @@ public class RubyRuntime
         RubyObject_Methods.initMethods(ObjectClass);
 
         ObjectClass.includeModule(KernelModule);
-        
+
         ArrayClass = RubyAPI.defineClass("Array", RubyRuntime.ObjectClass);
         ArrayClass.includeModule(EnumerableModule);
         RubyArray_Methods.initMethods(ArrayClass);
-        
+
         SymbolClass = RubyAPI.defineClass("Symbol", RubyRuntime.ObjectClass);
         RubySymbol_Methods.initMethods(SymbolClass);
 
         IOClass = RubyAPI.defineClass("IO", RubyRuntime.ObjectClass);
         RubyIO_Methods.initMethods(IOClass);
-        
+
         StringClass = RubyAPI.defineClass("String", RubyRuntime.ObjectClass);
         RubyString_Methods.initMethods(StringClass);
 
         NumericClass = RubyAPI.defineClass("Numeric", RubyRuntime.ObjectClass);
         RubyNumeric_Methods.initMethods(NumericClass);
-        
+
         IntegerClass = RubyAPI.defineClass("Integer", RubyRuntime.NumericClass);
         RubyInteger_Methods.initMethods(IntegerClass);
-        
+
         FixnumClass = RubyAPI.defineClass("Fixnum", RubyRuntime.IntegerClass);
         RubyFixnum_Methods.initMethods(FixnumClass);
-        
+
         BignumClass = RubyAPI.defineClass("Bignum", RubyRuntime.IntegerClass);
         RubyBignum_Methods.initMethods(BignumClass);
-        
+
         FloatClass = RubyAPI.defineClass("Float", RubyRuntime.NumericClass);
         RubyFloat_Methods.initMethods(FloatClass);
-        
+
         RangeClass = RubyAPI.defineClass("Range", RubyRuntime.ObjectClass);
         RubyRange_Methods.initMethods(RangeClass);
 
         RegexpClass = RubyAPI.defineClass("Regexp", RubyRuntime.ObjectClass);
         RubyRegexp_Methods.initMethods(RegexpClass);
-        
+
         TimeClass = RubyAPI.defineClass("Time", RubyRuntime.ObjectClass);
         RubyTime_Methods.initMethods(TimeClass);
 
@@ -262,13 +262,13 @@ public class RubyRuntime
 
         ThreadClass = RubyAPI.defineClass("Thread", RubyRuntime.ObjectClass);
         RubyThread_Methods.initMethods(ThreadClass);
-        
+
         IOClass = RubyAPI.defineClass("IO", RubyRuntime.ObjectClass);
         RubyIO_Methods.initMethods(IOClass);
-        
+
         FileClass = RubyAPI.defineClass("File", RubyRuntime.IOClass);
         RubyFile_Methods.initMethods(FileClass);
-        
+
         MethodClass = RubyAPI.defineClass("Method", RubyRuntime.ObjectClass);
         RubyMethodValue_Methods.initMethods(MethodClass);
 
@@ -284,10 +284,10 @@ public class RubyRuntime
 
         StructClass = RubyAPI.defineClass("StructData", RubyRuntime.ObjectClass);
         RubyStruct_Methods.initMethods(StructClass);
-        
+
         ThreadGroupClass = RubyAPI.defineClass("ThreadGroup", RubyRuntime.ObjectClass );
         RubyThreadGroup_Methods.initMethods(ThreadGroupClass);
-        
+
         ExceptionClass = RubyAPI.defineClass("Exception", RubyRuntime.ObjectClass);
         RubyExceptionValue_Methods.initMethods(ExceptionClass);
 
@@ -295,7 +295,7 @@ public class RubyRuntime
 		DatabaseClass = SQLite3Module.defineClass("Database", RubyRuntime.ObjectClass);
 //        DBAdapterClass = RubyAPI.defineClass("DbAdapter", RubyRuntime.ObjectClass);
 //        PerstLiteAdapter.initMethods(DBAdapterClass);
-        
+
         SyncEngineClass = RubyAPI.defineModule("SyncEngine" );//, RubyRuntime.ObjectClass);
 //        SyncEngine.initMethods(SyncEngineClass);
 
@@ -303,12 +303,12 @@ public class RubyRuntime
         StringScanner.initMethods(StringScannerClass);
 
         RubyModule rhoModule = RubyAPI.defineModule("Rho");
-        
+
         PhonebookClass = RubyAPI.defineClass("Phonebook", RubyRuntime.ObjectClass);
         EventModule = rhoModule.defineModule("RhoEvent");
-        CalendarClass = RubyAPI.defineClass("Calendar", RubyRuntime.ObjectClass);        
+        CalendarClass = RubyAPI.defineClass("Calendar", RubyRuntime.ObjectClass);
         PBRecordClass = RubyAPI.defineClass("PBRecord", RubyRuntime.ObjectClass);
-        EVRecordClass = RubyAPI.defineClass("EVRecord", RubyRuntime.ObjectClass);        
+        EVRecordClass = RubyAPI.defineClass("EVRecord", RubyRuntime.ObjectClass);
         GeoLocationClass = RubyAPI.defineClass("GeoLocation", RubyRuntime.ObjectClass);
         AsyncHttpModule = rhoModule.defineModule("AsyncHttp");
 		SystemClass = RubyAPI.defineModule("System");//, RubyRuntime.ObjectClass);
@@ -317,7 +317,7 @@ public class RubyRuntime
         RhoBluetoothClass = RubyAPI.defineClass("RhoBluetooth", RubyRuntime.ObjectClass);
         WebViewClass = RubyAPI.defineClass("WebView", RubyRuntime.ObjectClass);
         RhoConfClass = RubyAPI.defineClass("RhoConf", RubyRuntime.ObjectClass);
-        AlertClass = RubyAPI.defineClass("Alert", RubyRuntime.ObjectClass);        
+        AlertClass = RubyAPI.defineClass("Alert", RubyRuntime.ObjectClass);
         DateTimePickerClass = RubyAPI.defineClass("DateTimePicker", RubyRuntime.ObjectClass);
         NativeBarClass = RubyAPI.defineClass("NativeBar", RubyRuntime.NativeBarClass);
         //RingtoneManagerClass = RubyAPI.defineClass("RingtoneManager", RubyRuntime.ObjectClass);
@@ -329,12 +329,12 @@ public class RubyRuntime
         MapViewClass = RubyAPI.defineModule("MapView" );//, RubyRuntime.ObjectClass);
         RubyMutex.initMethods(MutexClass);
 
-        RubyModule rexmlModule = RubyAPI.defineModule("REXML"); 
+        RubyModule rexmlModule = RubyAPI.defineModule("REXML");
         RubyModule parsersModule = rexmlModule.defineModule("Parsers");
         XMLParserClass = parsersModule.defineClass("BaseParser", RubyRuntime.ObjectClass);
-                
+
 //      RhoPhonebook.initMethods(PhonebookClass);
-        
+
 //
         /*RubyTypeFactory.getClass(RubyObject.class);
         RubyTypeFactory.getClass(RubyModule.class);
@@ -391,16 +391,16 @@ public class RubyRuntime
         //TOP_LEVEL_SELF_VALUE = RubyTypeFactory.getObject(RubyTopSelf.class);
       //RHO_ADDED
         TopSelfClass = RubyAPI.defineClass("__TopSelf", ObjectClass);
-        RubyTopSelf_Methods.initMethods(TopSelfClass);        
+        RubyTopSelf_Methods.initMethods(TopSelfClass);
         TOP_LEVEL_SELF_VALUE = TopSelfClass;//new RubyObject( TopSelfClass );//RubyTopSelf();
-        
+
         StringIOClass = RubyAPI.defineClass("StringIO", RubyRuntime.ObjectClass);
         RubyStringIO_Methods.initMethods(StringIOClass);
         StringIOClass.includeModule(EnumerableModule);
-        
+
         RhoSupport.init();
-        
-      //  
+
+      //
         //StringIOClass = RubyTypeFactory.getClass(RubyStringIO.class);
 
         RubyThread.init();
@@ -412,7 +412,7 @@ public class RubyRuntime
         if (args != null) {
 //            for (String arg : args) {
         	for( int i = 0; i<args.length; i++){
-        		String arg = args[i];        	
+        		String arg = args[i];
                 argv.add(ObjectFactory.createString(arg));
             }
         }
@@ -439,7 +439,7 @@ public class RubyRuntime
         }
 
         initClasses();
-        
+
         initARGV(args);
 
 	registerExtensions();
@@ -456,7 +456,7 @@ public class RubyRuntime
     	RubyAPI.setConstant(ObjectFactory.createFixnum(RubyRegexp.RE_OPTION_IGNORECASE), RubyRuntime.RegexpClass, "IGNORECASE");
     	RubyAPI.setConstant(ObjectFactory.createFixnum(RubyRegexp.RE_OPTION_EXTENDED), RubyRuntime.RegexpClass, "EXTENDED");
     	RubyAPI.setConstant(ObjectFactory.createFixnum(RubyRegexp.RE_OPTION_MULTILINE), RubyRuntime.RegexpClass, "MULTILINE");
-        
+
         //RubyTypeFactory.getObject(RubyENV.class);
         //RHO_ADDED
         RubyClass EnvClass = RubyAPI.defineClass("ENV", RubyRuntime.ObjectClass);
@@ -466,14 +466,14 @@ public class RubyRuntime
 
         //RHO_ADED
         RubyAPI.setTopLevelConstant(RubyConstant.QTRUE, "RHO_ME");
-        
+
         try{
 	        if( RhoClassFactory.createRhoRubyHelper().getPlatform().equals("Blackberry" ) )
 	        	RubyAPI.setTopLevelConstant(RubyConstant.QTRUE, "RHO_DBME");
         }catch(Exception e)
         {
         }
-        
+
         RubyAPI.setTopLevelConstant(ObjectFactory.createString("1.9.1"), "RUBY_VERSION");
         RubyAPI.setTopLevelConstant(ObjectFactory.createString("2009-05-12"), "RUBY_RELEASE_DATE");
         RubyAPI.setTopLevelConstant(ObjectFactory.createString("java"), "RUBY_PLATFORM");
@@ -482,9 +482,9 @@ public class RubyRuntime
         RubyAPI.setTopLevelConstant(ObjectFactory.createString("xruby"), "RUBY_DESCRIPTION");
         RubyAPI.setTopLevelConstant(ObjectFactory.createString("ruby - Copyright (C)"), "RUBY_COPYRIGHT");
         RubyAPI.setTopLevelConstant(ObjectFactory.createString("ruby"), "RUBY_ENGINE");
-        
+
         //
-        
+
         updateStdout();
         updateStderr();
 

@@ -1109,7 +1109,7 @@ rb_f_eval(int argc, VALUE *argv, VALUE self)
 
       rb_raise(rb_eNotImpError,
           "Not implemented: eval is not supported.");
-    } else 
+    } else
     {
 //RHO
     VALUE src, scope, vfile, vline;

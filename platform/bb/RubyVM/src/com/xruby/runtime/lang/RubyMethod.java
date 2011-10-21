@@ -22,24 +22,24 @@ public abstract class RubyMethod extends MethodBlockBase implements Cloneable {
         super(argc, has_asterisk_parameter, default_argc);
         access_ = PUBLIC;
     }
-  
+
     public RubyMethod clone()
-    { 
+    {
     	RubyMethod cl = null;
     	try{
     		cl = (RubyMethod)(this.getClass().newInstance());
     		cl.doClone(this);
     	}catch(Exception e){
-    		throw new RubyException(RubyRuntime.ExceptionClass, e.toString());    		
+    		throw new RubyException(RubyRuntime.ExceptionClass, e.toString());
     	}
-    	return cl; 
+    	return cl;
     }
-    
+
     protected void doClone(RubyMethod orig)
     {
     	access_ = orig.access_;
     	id_ = orig.id_;
-    	
+
     	super.doClone(orig);
     }
     //RHO_COMMENT: clone
@@ -78,7 +78,7 @@ public abstract class RubyMethod extends MethodBlockBase implements Cloneable {
     public void setAccess(int access) {
         access_ = access;
     }
-    
+
     private void validateArgSize(int args_length) {
     	// TODO parameter checking with 'has_asterisk_parameter_' maybe incorrect
     	if ((0 == default_argc_ && !has_asterisk_parameter_ && args_length != argc_) ||
@@ -146,7 +146,7 @@ public abstract class RubyMethod extends MethodBlockBase implements Cloneable {
     protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block) {
         return this.run(receiver, new RubyArray(arg), block);
     }
-    
+
     // two arg invocation
     public RubyValue invoke(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) {
         if (argc_ >= 0) {
@@ -181,11 +181,11 @@ class UndefMethod extends RubyVarArgMethod {
 
     public RubyMethod clone()
     {
-    	UndefMethod um = new UndefMethod(); 
+    	UndefMethod um = new UndefMethod();
     	um.doClone(this);
     	return um;
     }
-    
+
     protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
         throw new Error("should not reach here!");
     }

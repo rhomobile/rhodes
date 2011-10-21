@@ -23,7 +23,7 @@ import com.google.zxing.common.BitMatrix;
 
 /**
  * This object renders a CODE128 code as a {@link BitMatrix}.
- * 
+ *
  * @author erik.barbara@gmail.com (Erik Barbara)
  */
 public final class Code128Writer extends UPCEANWriter {

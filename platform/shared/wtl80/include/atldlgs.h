@@ -425,7 +425,7 @@ public:
 		LPCTSTR lpszFileName = NULL,
 		DWORD dwFlags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
 		OFN_EXFLAG ExFlags = OFN_EXFLAG_THUMBNAILVIEW,
-		OFN_SORTORDER dwSortOrder = OFN_SORTORDER_AUTO,		
+		OFN_SORTORDER dwSortOrder = OFN_SORTORDER_AUTO,
 		LPCTSTR lpszFilter = NULL,
 		HWND hWndParent = NULL)
 		: CFileDialogImpl<CFileDialogEx>(TRUE, lpszDefExt, lpszFileName, dwFlags, lpszFilter, hWndParent)
@@ -449,7 +449,7 @@ public:
 // (as described in Knowledge Base article 131462). It also expands selected
 // shortcut files to take into account the full path of the target file.
 // Note that this doesn't work on Win9x for the old style dialogs, as well as
-// on NT for non-Unicode builds. 
+// on NT for non-Unicode builds.
 
 #ifndef _WTL_FIXED_OFN_BUFFER_LENGTH
   #define _WTL_FIXED_OFN_BUFFER_LENGTH 0x10000
@@ -459,7 +459,7 @@ template <class T>
 class ATL_NO_VTABLE CMultiFileDialogImpl : public CFileDialogImpl< T >
 {
 public:
-	mutable LPCTSTR m_pNextFile; 
+	mutable LPCTSTR m_pNextFile;
 #ifndef _UNICODE
 	bool m_bIsNT;
 #endif
@@ -470,7 +470,7 @@ public:
 		DWORD dwFlags = OFN_HIDEREADONLY,
 		LPCTSTR lpszFilter = NULL,
 		HWND hWndParent = NULL)
-		: CFileDialogImpl<T>(TRUE, lpszDefExt, lpszFileName, dwFlags, lpszFilter, hWndParent), 
+		: CFileDialogImpl<T>(TRUE, lpszDefExt, lpszFileName, dwFlags, lpszFilter, hWndParent),
 		  m_pNextFile(NULL)
 	{
 		m_ofn.Flags |= OFN_ALLOWMULTISELECT;   // Force multiple selection mode
@@ -481,7 +481,7 @@ public:
 		m_bIsNT = (ovi.dwPlatformId == VER_PLATFORM_WIN32_NT);
 		if (m_bIsNT)
 		{
-			// On NT platforms, GetOpenFileNameA thunks to GetOpenFileNameW and there 
+			// On NT platforms, GetOpenFileNameA thunks to GetOpenFileNameW and there
 			// is absolutely nothing we can do except to start off with a large buffer.
 			ATLVERIFY(ResizeFilenameBuffer(_WTL_FIXED_OFN_BUFFER_LENGTH));
 		}
@@ -496,7 +496,7 @@ public:
 
 // Operations
 	// Get the directory that the files were chosen from.
-	// The function returns the number of characters copied, not including the terminating zero. 
+	// The function returns the number of characters copied, not including the terminating zero.
 	// If the buffer is NULL, the function returns the required size, in characters, including the terminating zero.
 	// If the function fails, the return value is zero.
 	int GetDirectory(LPTSTR pBuffer, int nBufLen) const
@@ -582,7 +582,7 @@ public:
 			return NULL;
 
 		LPCTSTR pStr = m_pNextFile;
-		// Set "m_pNextFile" to point to the next file name, or null if we 
+		// Set "m_pNextFile" to point to the next file name, or null if we
 		// have reached the last file in the list.
 		int nLength = lstrlen(pStr);
 		m_pNextFile = (pStr[nLength + 1] != 0) ? &pStr[nLength + 1] : NULL;
@@ -591,7 +591,7 @@ public:
 	}
 
 	// Get the first filename as a full path.
-	// The function returns the number of characters copied, not including the terminating zero. 
+	// The function returns the number of characters copied, not including the terminating zero.
 	// If the buffer is NULL, the function returns the required size, in characters, including the terminating zero.
 	// If the function fails, the return value is zero.
 	int GetFirstPathName(LPTSTR pBuffer, int nBufLen) const
@@ -610,7 +610,7 @@ public:
 			nRet = nLengthTotal + 1;
 		}
 		else if (nBufLen > nLengthTotal) // If the buffer is big enough, go ahead and construct the path
-		{		
+		{
 			GetDirectory(pBuffer, nBufLen);
 			SecureHelper::strcat_x(pBuffer, nBufLen, _T("\\"));
 			SecureHelper::strcat_x(pBuffer, nBufLen, pStr);
@@ -637,7 +637,7 @@ public:
 #endif // defined(_WTL_USE_CSTRING) || defined(__ATLSTR_H__)
 
 	// Get the next filename as a full path.
-	// The function returns the number of characters copied, not including the terminating zero. 
+	// The function returns the number of characters copied, not including the terminating zero.
 	// If the buffer is NULL, the function returns the required size, in characters, including the terminating zero.
 	// If the function fails, the return value is zero.
 	// The internal position marker is moved forward only if the function succeeds and the buffer was large enough.
@@ -745,7 +745,7 @@ public:
 		int nLength = GetSpec(NULL, 0);
 		if (nLength <= 1)
 			return; // no files are selected, presumably
-		
+
 		// Add room for the directory, and an extra terminating zero.
 		nLength += GetFolderPath(NULL, 0) + 1;
 
@@ -762,7 +762,7 @@ public:
 		// Get the file spec, which is the text in the edit control.
 		if (GetSpec(m_ofn.lpstrFile, m_ofn.nMaxFile) <= 0)
 			return;
-		
+
 		// Get the ID-list of the current folder.
 		int nBytes = GetFolderIDList(NULL, 0);
 		CTempBuffer<ITEMIDLIST> idlist;
@@ -777,7 +777,7 @@ public:
 		if (FAILED(pDesktop->BindToObject(idlist, NULL, IID_IShellFolder, (void**)&pFolder)))
 			return;
 
-		// Work through the file spec, looking for quoted filenames. If we find a shortcut file, then 
+		// Work through the file spec, looking for quoted filenames. If we find a shortcut file, then
 		// we need to add enough extra buffer space to hold its target path.
 		DWORD nExtraChars = 0;
 		bool bInsideQuotes = false;
@@ -823,7 +823,7 @@ public:
 								TCHAR szPath[MAX_PATH];
 								if (SUCCEEDED(pLink->GetPath(szPath, MAX_PATH, NULL, 0)))
 								{
-									// If the target path is longer than the shortcut name, then add on the number 
+									// If the target path is longer than the shortcut name, then add on the number
 									// of extra characters that are required.
 									int nNewLength = lstrlen(szPath);
 									if (nNewLength > nFileNameLength)
@@ -1213,10 +1213,10 @@ class ATL_NO_VTABLE CShellFileOpenDialogImpl : public CShellFileDialogImpl< T >
 public:
 	ATL::CComPtr<IFileOpenDialog> m_spFileDlg;
 
-	CShellFileOpenDialogImpl(LPCWSTR lpszFileName = NULL, 
-	                         DWORD dwOptions = FOS_FORCEFILESYSTEM | FOS_PATHMUSTEXIST | FOS_FILEMUSTEXIST, 
-	                         LPCWSTR lpszDefExt = NULL, 
-	                         const COMDLG_FILTERSPEC* arrFilterSpec = NULL, 
+	CShellFileOpenDialogImpl(LPCWSTR lpszFileName = NULL,
+	                         DWORD dwOptions = FOS_FORCEFILESYSTEM | FOS_PATHMUSTEXIST | FOS_FILEMUSTEXIST,
+	                         LPCWSTR lpszDefExt = NULL,
+	                         const COMDLG_FILTERSPEC* arrFilterSpec = NULL,
 	                         UINT uFilterSpecCount = 0U)
 	{
 		HRESULT hRet = m_spFileDlg.CoCreateInstance(CLSID_FileOpenDialog);
@@ -1238,10 +1238,10 @@ public:
 class CShellFileOpenDialog : public CShellFileOpenDialogImpl<CShellFileOpenDialog>
 {
 public:
-	CShellFileOpenDialog(LPCWSTR lpszFileName = NULL, 
-	                     DWORD dwOptions = FOS_FORCEFILESYSTEM | FOS_PATHMUSTEXIST | FOS_FILEMUSTEXIST, 
-	                     LPCWSTR lpszDefExt = NULL, 
-	                     const COMDLG_FILTERSPEC* arrFilterSpec = NULL, 
+	CShellFileOpenDialog(LPCWSTR lpszFileName = NULL,
+	                     DWORD dwOptions = FOS_FORCEFILESYSTEM | FOS_PATHMUSTEXIST | FOS_FILEMUSTEXIST,
+	                     LPCWSTR lpszDefExt = NULL,
+	                     const COMDLG_FILTERSPEC* arrFilterSpec = NULL,
 	                     UINT uFilterSpecCount = 0U) : CShellFileOpenDialogImpl<CShellFileOpenDialog>(lpszFileName, dwOptions, lpszDefExt, arrFilterSpec, uFilterSpecCount)
 	{ }
 
@@ -1263,10 +1263,10 @@ class ATL_NO_VTABLE CShellFileSaveDialogImpl : public CShellFileDialogImpl< T >
 public:
 	ATL::CComPtr<IFileSaveDialog> m_spFileDlg;
 
-	CShellFileSaveDialogImpl(LPCWSTR lpszFileName = NULL, 
-	                         DWORD dwOptions = FOS_FORCEFILESYSTEM | FOS_PATHMUSTEXIST | FOS_OVERWRITEPROMPT, 
-	                         LPCWSTR lpszDefExt = NULL, 
-	                         const COMDLG_FILTERSPEC* arrFilterSpec = NULL, 
+	CShellFileSaveDialogImpl(LPCWSTR lpszFileName = NULL,
+	                         DWORD dwOptions = FOS_FORCEFILESYSTEM | FOS_PATHMUSTEXIST | FOS_OVERWRITEPROMPT,
+	                         LPCWSTR lpszDefExt = NULL,
+	                         const COMDLG_FILTERSPEC* arrFilterSpec = NULL,
 	                         UINT uFilterSpecCount = 0U)
 	{
 		HRESULT hRet = m_spFileDlg.CoCreateInstance(CLSID_FileSaveDialog);
@@ -1288,10 +1288,10 @@ public:
 class CShellFileSaveDialog : public CShellFileSaveDialogImpl<CShellFileSaveDialog>
 {
 public:
-	CShellFileSaveDialog(LPCWSTR lpszFileName = NULL, 
-	                     DWORD dwOptions = FOS_FORCEFILESYSTEM | FOS_PATHMUSTEXIST | FOS_OVERWRITEPROMPT, 
-	                     LPCWSTR lpszDefExt = NULL, 
-	                     const COMDLG_FILTERSPEC* arrFilterSpec = NULL, 
+	CShellFileSaveDialog(LPCWSTR lpszFileName = NULL,
+	                     DWORD dwOptions = FOS_FORCEFILESYSTEM | FOS_PATHMUSTEXIST | FOS_OVERWRITEPROMPT,
+	                     LPCWSTR lpszDefExt = NULL,
+	                     const COMDLG_FILTERSPEC* arrFilterSpec = NULL,
 	                     UINT uFilterSpecCount = 0U) : CShellFileSaveDialogImpl<CShellFileSaveDialog>(lpszFileName, dwOptions, lpszDefExt, arrFilterSpec, uFilterSpecCount)
 	{ }
 
@@ -1325,7 +1325,7 @@ public:
 	HWND m_hWnd;   // used only in the callback function
 
 // Constructor
-	CFolderDialogImpl(HWND hWndParent = NULL, LPCTSTR lpstrTitle = NULL, UINT uFlags = BIF_RETURNONLYFSDIRS) : 
+	CFolderDialogImpl(HWND hWndParent = NULL, LPCTSTR lpstrTitle = NULL, UINT uFlags = BIF_RETURNONLYFSDIRS) :
 			m_lpstrInitialFolder(NULL), m_pidlInitialSelection(NULL), m_bExpandInitialSelection(false), m_pidlSelected(NULL), m_hWnd(NULL)
 	{
 		memset(&m_bi, 0, sizeof(m_bi)); // initialize structure to 0/NULL
@@ -2067,14 +2067,14 @@ public:
 	{
 		static COLORREF rgbCustomColors[16] =
 		{
-			RGB(255, 255, 255), RGB(255, 255, 255), 
-			RGB(255, 255, 255), RGB(255, 255, 255), 
-			RGB(255, 255, 255), RGB(255, 255, 255), 
-			RGB(255, 255, 255), RGB(255, 255, 255), 
-			RGB(255, 255, 255), RGB(255, 255, 255), 
-			RGB(255, 255, 255), RGB(255, 255, 255), 
-			RGB(255, 255, 255), RGB(255, 255, 255), 
-			RGB(255, 255, 255), RGB(255, 255, 255), 
+			RGB(255, 255, 255), RGB(255, 255, 255),
+			RGB(255, 255, 255), RGB(255, 255, 255),
+			RGB(255, 255, 255), RGB(255, 255, 255),
+			RGB(255, 255, 255), RGB(255, 255, 255),
+			RGB(255, 255, 255), RGB(255, 255, 255),
+			RGB(255, 255, 255), RGB(255, 255, 255),
+			RGB(255, 255, 255), RGB(255, 255, 255),
+			RGB(255, 255, 255), RGB(255, 255, 255),
 		};
 
 		return rgbCustomColors;
@@ -2408,7 +2408,7 @@ namespace WTL
 {
 
 template <class T>
-class ATL_NO_VTABLE CPrintDialogExImpl : 
+class ATL_NO_VTABLE CPrintDialogExImpl :
 				public ATL::CWindow,
 				public ATL::CMessageMap,
 				public IPrintDialogCallback,
@@ -3029,7 +3029,7 @@ public:
 		m_cAllocated = 0;
 	}
 
-	void Create(bool bDlgEx, LPCTSTR lpszCaption, short nX, short nY, short nWidth, short nHeight, DWORD dwStyle = 0, DWORD dwExStyle = 0, 
+	void Create(bool bDlgEx, LPCTSTR lpszCaption, short nX, short nY, short nWidth, short nHeight, DWORD dwStyle = 0, DWORD dwExStyle = 0,
 	            LPCTSTR lpstrFontName = NULL, WORD wFontSize = 0, WORD wWeight = 0, BYTE bItalic = 0, BYTE bCharset = 0, DWORD dwHelpID = 0,
 				ATL::_U_STRINGorID ClassName = 0U, ATL::_U_STRINGorID Menu = 0U)
 	{
@@ -3395,7 +3395,7 @@ public:
 #if (_ATL_VER >= 0x0800)
 		// Allocate the thunk structure here, where we can fail gracefully.
 		BOOL result = m_thunk.Init(NULL, NULL);
-		if (result == FALSE) 
+		if (result == FALSE)
 		{
 			SetLastError(ERROR_OUTOFMEMORY);
 			return NULL;
@@ -3420,12 +3420,12 @@ public:
 		return Create(hWndParent, dwInitParam);
 	}
 
-	void DoInitTemplate() 
+	void DoInitTemplate()
 	{
 		ATLASSERT(FALSE);   // MUST be defined in derived class
 	}
 
-	void DoInitControls() 
+	void DoInitControls()
 	{
 		ATLASSERT(FALSE);   // MUST be defined in derived class
 	}
@@ -3719,7 +3719,7 @@ public:
 	TCHAR m_szLink[PROPSHEET_LINK_SIZE];
 	static LPCTSTR m_pszTitle;
 	static LPCTSTR m_pszLink;
-#endif // defined(_AYGSHELL_H_) || defined(__AYGSHELL_H__) 
+#endif // defined(_AYGSHELL_H_) || defined(__AYGSHELL_H__)
 
 // Construction/Destruction
 	CPropertySheetImpl(ATL::_U_STRINGorID title = (LPCTSTR)NULL, UINT uStartPage = 0, HWND hWndParent = NULL)
@@ -3735,7 +3735,7 @@ public:
 		m_psh.hwndParent = hWndParent;   // if NULL, will be set in DoModal/Create
 		m_psh.pfnCallback = T::PropSheetCallback;
 
-#if defined(_AYGSHELL_H_) || defined(__AYGSHELL_H__) // PPC specific 
+#if defined(_AYGSHELL_H_) || defined(__AYGSHELL_H__) // PPC specific
 		m_psh.dwFlags |= PSH_MAXIMIZE;
 		m_szLink[0] = 0;
 #endif // defined(_AYGSHELL_H_) || defined(__AYGSHELL_H__)
@@ -3799,7 +3799,7 @@ public:
 				break;
 			}
 		}
-#endif // defined(_AYGSHELL_H_) || defined(__AYGSHELL_H__) 
+#endif // defined(_AYGSHELL_H_) || defined(__AYGSHELL_H__)
 
 		return nRet;
 	}
@@ -3931,14 +3931,14 @@ public:
 		}
 	}
 
-#if defined(_AYGSHELL_H_) || defined(__AYGSHELL_H__) // PPC specific Link field	
+#if defined(_AYGSHELL_H_) || defined(__AYGSHELL_H__) // PPC specific Link field
 	void SetLinkText(LPCTSTR lpszText)
 	{
 		ATLASSERT(lpszText != NULL);
 		ATLASSERT(lstrlen(lpszText) < PROPSHEET_LINK_SIZE);
 		lstrcpy(m_szLink, lpszText);
 	}
-#endif // defined(_AYGSHELL_H_) || defined(__AYGSHELL_H__) 
+#endif // defined(_AYGSHELL_H_) || defined(__AYGSHELL_H__)
 
 	void SetWizardMode()
 	{
@@ -4626,7 +4626,7 @@ public:
 	HGLOBAL m_hDlgResSplit;
 
 // Constructor/destructor
-	CAxPropertyPageImpl(ATL::_U_STRINGorID title = (LPCTSTR)NULL) : 
+	CAxPropertyPageImpl(ATL::_U_STRINGorID title = (LPCTSTR)NULL) :
 			CPropertyPageImpl< T, TBase >(title),
 			m_hInitData(NULL), m_hDlgRes(NULL), m_hDlgResSplit(NULL)
 	{
@@ -4805,7 +4805,7 @@ public:
 								if (h != NULL)
 								{
 									BYTE* pBytes = (BYTE*) GlobalLock(h);
-									BYTE* pSource = pData; 
+									BYTE* pSource = pData;
 									SecureHelper::memcpy_x(pBytes, dwLen, pSource, dwLen);
 									GlobalUnlock(h);
 									CreateStreamOnHGlobal(h, TRUE, &spStream);
@@ -4823,44 +4823,44 @@ public:
 							{
 								ATL::CAxWindow2 wnd;
 								// Get control caption.
-								LPWSTR pszClassName = 
-									bDialogEx ? 
+								LPWSTR pszClassName =
+									bDialogEx ?
 										(LPWSTR)(((ATL::_DialogSplitHelper::DLGITEMTEMPLATEEX*)pItem) + 1) :
 										(LPWSTR)(pItem + 1);
 								// Get control rect.
 								RECT rect;
-								rect.left = 
-									bDialogEx ? 
-										((ATL::_DialogSplitHelper::DLGITEMTEMPLATEEX*)pItem)->x : 
+								rect.left =
+									bDialogEx ?
+										((ATL::_DialogSplitHelper::DLGITEMTEMPLATEEX*)pItem)->x :
 										pItem->x;
-								rect.top = 
-									bDialogEx ? 
-										((ATL::_DialogSplitHelper::DLGITEMTEMPLATEEX*)pItem)->y : 
+								rect.top =
+									bDialogEx ?
+										((ATL::_DialogSplitHelper::DLGITEMTEMPLATEEX*)pItem)->y :
 										pItem->y;
-								rect.right = rect.left + 
-									(bDialogEx ? 
-										((ATL::_DialogSplitHelper::DLGITEMTEMPLATEEX*)pItem)->cx : 
+								rect.right = rect.left +
+									(bDialogEx ?
+										((ATL::_DialogSplitHelper::DLGITEMTEMPLATEEX*)pItem)->cx :
 										pItem->cx);
-								rect.bottom = rect.top + 
-									(bDialogEx ? 
-										((ATL::_DialogSplitHelper::DLGITEMTEMPLATEEX*)pItem)->cy : 
+								rect.bottom = rect.top +
+									(bDialogEx ?
+										((ATL::_DialogSplitHelper::DLGITEMTEMPLATEEX*)pItem)->cy :
 										pItem->cy);
 
 								// Convert from dialog units to screen units
 								MapDialogRect(&rect);
 
 								// Create AxWindow with a NULL caption.
-								wnd.Create(m_hWnd, 
-									&rect, 
-									NULL, 
-									(bDialogEx ? 
-										((ATL::_DialogSplitHelper::DLGITEMTEMPLATEEX*)pItem)->style : 
-										pItem->style) | WS_TABSTOP, 
-									bDialogEx ? 
-										((ATL::_DialogSplitHelper::DLGITEMTEMPLATEEX*)pItem)->exStyle : 
+								wnd.Create(m_hWnd,
+									&rect,
+									NULL,
+									(bDialogEx ?
+										((ATL::_DialogSplitHelper::DLGITEMTEMPLATEEX*)pItem)->style :
+										pItem->style) | WS_TABSTOP,
+									bDialogEx ?
+										((ATL::_DialogSplitHelper::DLGITEMTEMPLATEEX*)pItem)->exStyle :
 										0,
-									bDialogEx ? 
-										((ATL::_DialogSplitHelper::DLGITEMTEMPLATEEX*)pItem)->id : 
+									bDialogEx ?
+										((ATL::_DialogSplitHelper::DLGITEMTEMPLATEEX*)pItem)->id :
 										pItem->id,
 									NULL);
 
@@ -5001,11 +5001,11 @@ public:
 //    LTEXT           "List Item 2. Keep 7 dlus between paragraphs",IDC_STATIC,
 //                    127,78,33,8
 //    CONTROL         "&Do not show this Welcome page again",
-//                    IDC_WIZ97_WELCOME_NOTAGAIN,"Button",BS_AUTOCHECKBOX | 
+//                    IDC_WIZ97_WELCOME_NOTAGAIN,"Button",BS_AUTOCHECKBOX |
 //                    WS_TABSTOP,115,169,138,10
 // END
 //
-// GUIDELINES DESIGNINFO 
+// GUIDELINES DESIGNINFO
 // BEGIN
 //    IDD_WIZ97_INTERIOR_BLANK, DIALOG
 //    BEGIN
@@ -5132,7 +5132,7 @@ protected:
 // Member variables
 	CFont m_fontExteriorPageTitle;   // Welcome and Completion page title font
 	CFont m_fontBullet;              // Bullet font (used on static text 'h' to produce a small bullet)
-	bool m_bReceivedFirstSizeMessage;   
+	bool m_bReceivedFirstSizeMessage;
 
 public:
 	CWizard97SheetImpl(ATL::_U_STRINGorID title, ATL::_U_STRINGorID headerBitmap, ATL::_U_STRINGorID watermarkBitmap, UINT uStartPage = 0, HWND hWndParent = NULL) :
@@ -5617,8 +5617,8 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 // AtlTaskDialog - support for TaskDialog() function
 
-inline int AtlTaskDialog(HWND hWndParent, 
-                         ATL::_U_STRINGorID WindowTitle, ATL::_U_STRINGorID MainInstructionText, ATL::_U_STRINGorID ContentText, 
+inline int AtlTaskDialog(HWND hWndParent,
+                         ATL::_U_STRINGorID WindowTitle, ATL::_U_STRINGorID MainInstructionText, ATL::_U_STRINGorID ContentText,
                          TASKDIALOG_COMMON_BUTTON_FLAGS dwCommonButtons = 0U, ATL::_U_STRINGorID Icon = (LPCTSTR)NULL)
 {
 	int nRet = -1;

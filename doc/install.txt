@@ -26,7 +26,7 @@ If you are planning to build for Blackberry or Android, make sure you have JDK v
 
 For Macintosh, JDK version 1.6.0_24 for Mac OSX 10.6 is available [here](http://support.apple.com/downloads/DL1360/en_US/JavaForMacOSX10.6Update4.dmg). Install it and then run "Java Preferences" utility to change default version.
 
-The Sun JDK for Windows or Linux is available [here](http://java.sun.com/javase/downloads/index.jsp). The 32-bit Windows version of the JDK is required for Blackberry tools. 
+The Sun JDK for Windows or Linux is available [here](http://java.sun.com/javase/downloads/index.jsp). The 32-bit Windows version of the JDK is required for Blackberry tools.
 
 You will want to have your JAVA_HOME variable set; have JAVA_HOME/bin set on your path.
 

@@ -24,7 +24,7 @@ function loadIframe(url) {
   var iframeDiv = topDoc.createElement("div");
   iframeDiv.innerHTML = "<iframe scrolling=no frameborder=0 src='" + url + "'>";
   var iframe = iframeDiv.firstChild;
-  
+
   // mess with the iframe style a little
   var iframeStyle = iframe.style;
   iframeStyle.position = "absolute";
@@ -37,7 +37,7 @@ function loadIframe(url) {
   iframeStyle.height = "100%";
 
   // update the top window's document's body's style
-  var hostBodyStyle = window.top.document.body.style; 
+  var hostBodyStyle = window.top.document.body.style;
   hostBodyStyle.margin = "0";
   hostBodyStyle.height = iframeStyle.height;
   hostBodyStyle.overflow = "hidden";
@@ -61,7 +61,7 @@ if (ua.indexOf("chrome") != -1) {
     return prop != "__gwt_ObjectId" && hop.call(this, prop);
   };
   // do the same in our parent as well -- see issue 4486
-  // NOTE: this will have to be changed when we support non-iframe-based DevMode 
+  // NOTE: this will have to be changed when we support non-iframe-based DevMode
   var hop2 = parent.Object.prototype.hasOwnProperty;
   parent.Object.prototype.hasOwnProperty = function(prop) {
     return prop != "__gwt_ObjectId" && hop2.call(this, prop);
@@ -102,7 +102,7 @@ function __gwt_doMakeJavaInvoke(argCount) {
     "      return result[1];\n" +
     "    }\n" +
     "  }\n"
-  ); 
+  );
 }
 
 /*
@@ -118,7 +118,7 @@ function __gwt_makeTearOff(proxy, dispId, argCount) {
 }
 
 function __gwt_doMakeTearOff(dispId, argCount) {
-  return __gwt_tearOffs[dispId] = 
+  return __gwt_tearOffs[dispId] =
       (__gwt_tearOffGenerators[argCount] || __gwt_doMakeTearOffGenerator(argCount))(dispId);
 }
 
@@ -142,7 +142,7 @@ function __gwt_doMakeTearOffGenerator(argCount) {
     "      }\n" +
     "    }\n" +
     "  }\n"
-  ); 
+  );
 }
 
 function __gwt_makeResult(isException, result) {
@@ -170,7 +170,7 @@ function __gwt_displayGlassMessage(summary, details) {
   var topDoc = topWin.document;
   var outer = topDoc.createElement("div");
   // Do not insert whitespace or outer.firstChild will get a text node.
-  outer.innerHTML = 
+  outer.innerHTML =
     '<div style="position:absolute;z-index:2147483646;left:0px;top:0px;right:0px;bottom:0px;filter:alpha(opacity=75);opacity:0.75;background-color:#000000;"></div>' +
     '<div style="position:absolute;z-index:2147483647;left:50px;top:50px;width:600px;color:#FFFFFF;font-family:verdana;">' +
       '<div style="font-size:30px;font-weight:bold;">' + summary + '</div>' +

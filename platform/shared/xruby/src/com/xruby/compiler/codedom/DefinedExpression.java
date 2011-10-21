@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright 2005-2007 Xue Yong Zhi
  * Distributed under the BSD License
  */
@@ -10,7 +10,7 @@ import antlr.RecognitionException;
 public class DefinedExpression extends Expression {
 
 	private Expression expression_;
-	
+
 	public DefinedExpression(MethodCallArguments arguments) throws RecognitionException {
 		if (arguments.size() > 1) {
 			throw new RecognitionException("defined? can only has one parameter");
@@ -20,7 +20,7 @@ public class DefinedExpression extends Expression {
 
 		expression_ = arguments.getFirstExpression();
 	}
-	
+
 	// defined? expression is compile time computable in some cases
 	public void accept(CodeVisitor visitor) {
 		if (expression_ instanceof NilExpression) {
@@ -57,7 +57,7 @@ public class DefinedExpression extends Expression {
 		} else {
 			visitor.visitStringExpression("expression");
 		}
-		
+
 	}
 
 }

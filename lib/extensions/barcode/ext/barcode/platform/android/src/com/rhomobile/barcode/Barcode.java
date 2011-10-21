@@ -26,17 +26,17 @@ import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 
 public class Barcode {
-	
+
 	private static final String TAG = "Barcode Recognizer";
 
      public static String recognize(String filename) {
 
     	 InputStream istream = RhoFileApi.open(filename);
-    	 
+
     	 Bitmap image = BitmapFactory.decodeStream(istream);
-    	 
+
     	 RhoFileApi.close(istream);
- 
+
 	      if (image != null) {
 	    	// we have image
 	        LuminanceSource source = new RhoLuminanceSource(image);
@@ -48,8 +48,8 @@ public class Barcode {
 				  hints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
 				  result = reader.decode(bitmap, hints);
 	        } catch (ReaderException e) {
-	          // image not decoded - not found any barcodes	
-	          Utils.platformLog(TAG, "Barcode not found in image ["+filename+"] !");	
+	          // image not decoded - not found any barcodes
+	          Utils.platformLog(TAG, "Barcode not found in image ["+filename+"] !");
 	          return "";
 	        }
 	        if (result != null) {
@@ -59,15 +59,15 @@ public class Barcode {
 	          return resultText;
 	        }
 	      }
-	    Utils.platformLog(TAG, "Unrecognized Error during process file ["+filename+"] !");	      
+	    Utils.platformLog(TAG, "Unrecognized Error during process file ["+filename+"] !");
 		return "";
-     } 
+     }
 
      private static String ourCallback = null;
-     
+
      public static void take(String callback) {
     	 ourCallback = callback;
-    	 
+
 //    	 PerformOnUiThread.exec( new Runnable() {
 //    		 public void run() {
 				RhodesActivity ra = RhodesActivity.safeGetInstance();
@@ -76,16 +76,16 @@ public class Barcode {
 //    		 }
 //    	 });
      }
-     
+
    	 public static native void callback(String callbackUrl, String body);
-     
+
      public static void callCancelCallback() {
  		StringBuffer body = new StringBuffer();
 		body.append("&rho_callback=1");
 		body.append("&status=cancel");
 		callback(ourCallback, body.toString());
      }
-     
+
      public static void callOKCallback(String barcode) {
   		StringBuffer body = new StringBuffer();
 		body.append("&rho_callback=1");

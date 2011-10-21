@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -84,17 +84,17 @@
     void *          bitmapData;
     int             bitmapByteCount;
     int             bitmapBytesPerRow;
-	
+
     size_t pixelsWide = 1;
     size_t pixelsHigh = height;
-	
+
     bitmapBytesPerRow   = (pixelsWide) << 2;
     bitmapByteCount     = (bitmapBytesPerRow * pixelsHigh);
-	
+
     colorSpace = CGColorSpaceCreateDeviceRGB();//CGColorSpaceCreateDeviceGray();//(kCGColorSpaceGenericRGB);
-	
+
     bitmapData = malloc( bitmapByteCount );
-	
+
     context = CGBitmapContextCreate (bitmapData,
 									 pixelsWide,
 									 pixelsHigh,
@@ -102,10 +102,10 @@
 									 bitmapBytesPerRow,
 									 colorSpace,
 									 kCGImageAlphaNoneSkipLast);
-	
+
     CGColorSpaceRelease( colorSpace );
 	CGRect rect;
-	
+
 	float color12_r = ((float)colorR)/255.0;
 	float color12_g = ((float)colorG)/255.0;
 	float color12_b = ((float)colorB)/255.0;
@@ -113,15 +113,15 @@
 	float color21_r = color12_r;
 	float color21_g = color12_g;
 	float color21_b = color12_b;
-	
-	
+
+
 	float color11_r = color12_r + 0.3;
 	float color11_g = color12_g + 0.3;
 	float color11_b = color12_b + 0.3;
 	if (color11_r > 1) color11_r = 1.0;
 	if (color11_g > 1) color11_g = 1.0;
 	if (color11_b > 1) color11_b = 1.0;
-	
+
 	float color22_r = color21_r - 0.2;
 	float color22_g = color21_g - 0.2;
 	float color22_b = color21_b - 0.2;
@@ -135,84 +135,84 @@
 	if (color12_r > 1) color12_r = 1;
 	if (color12_g > 1) color12_g = 1;
 	if (color12_b > 1) color12_b = 1;
-	
+
 	int  y0 =0;
 	int  y1 = ((float)height)*0.5;
 	int  y2 = ((float)height)*0.5;
 	int  y3 = (float)height;
-	
+
 	rect.origin.x = 0;
 	rect.origin.y = y0;
 	rect.size.width = pixelsWide;
 	rect.size.height = y1-y0;
-	
-	
+
+
 	int i;
-			
+
 	for (i = y0; i <= y1; i++ ) {
 		float k = ((float)i - y0)/((float)(y1 - y0));
 		k = sqrt(k);
-		float curR = color22_r*(1-k) + color21_r*k; 
-		float curG = color22_g*(1-k) + color21_g*k; 
-		float curB = color22_b*(1-k) + color21_b*k; 
+		float curR = color22_r*(1-k) + color21_r*k;
+		float curG = color22_g*(1-k) + color21_g*k;
+		float curB = color22_b*(1-k) + color21_b*k;
 		rect.origin.y = i;
 		rect.size.height = 1;
 		CGContextSetRGBFillColor(context, curR, curG, curB, 1);
 		CGContextFillRect(context, rect);
 
-	
+
 	}
 
 	for (i = y2; i <= y3; i++ ) {
 		float k = ((float)i - y2)/((float)(y3 - y2));
 		k= k*k;
-		float curR = color12_r*(1-k) + color11_r*k; 
-		float curG = color12_g*(1-k) + color11_g*k; 
-		float curB = color12_b*(1-k) + color11_b*k; 
+		float curR = color12_r*(1-k) + color11_r*k;
+		float curG = color12_g*(1-k) + color11_g*k;
+		float curB = color12_b*(1-k) + color11_b*k;
 		rect.origin.y = i;
 		rect.size.height = 1;
 		CGContextSetRGBFillColor(context, curR, curG, curB, 1);
 		CGContextFillRect(context, rect);
-		
-		
+
+
 	}
 
 	rect.origin.y = y3-1;
 	rect.size.height = 1;
 	CGContextSetRGBFillColor(context, 0, 0, 0, 1);
 	CGContextFillRect(context, rect);
-	
+
 	CGImageRef cgImage = CGBitmapContextCreateImage(context);
-	
+
 	UIImage* ui = [UIImage imageWithCGImage:cgImage];
-	
+
 	CGContextRelease(context);
-	
+
 	return ui;
 }
 
 - (void)viewDidLoad {
-	
-    [super viewDidLoad]; 
-	
+
+    [super viewDidLoad];
+
     CGRect frame = self.tabBar.frame;
 	frame.origin.x = 0;
 	frame.origin.y = 0;
     UIView *v = [[UIView alloc] initWithFrame:frame];
-    
+
 	int cR = (self.bkgColor & 0xFF0000) >> 16;
 	int cG = (self.bkgColor & 0xFF00) >> 8;
 	int cB = (self.bkgColor & 0xFF);
-	
+
 	UIImage *i = [self makeUIImageWithGradient:(int)frame.size.height colorR:cR colorG:cG colorB:cB];
-	
+
     UIColor *c = [[UIColor alloc] initWithPatternImage:i];
     v.backgroundColor = c;
 	v.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [c release];
     [[self tabBar] insertSubview:v atIndex:0];
     [v release];
-	
+
 }
 
 
@@ -227,7 +227,7 @@
 - (void) dealloc
 {
     [customHighlightedImage release]; customHighlightedImage=nil;
-    [customStdImage release]; customStdImage=nil;   
+    [customStdImage release]; customStdImage=nil;
     [super dealloc];
 }
 
@@ -266,7 +266,7 @@
 
     UIImage *itemImage = image;
     CGSize itemImageSize = [itemImage size];
-    CGPoint itemImagePosition; 
+    CGPoint itemImagePosition;
     itemImagePosition.x = ceilf((contextRect.size.width - itemImageSize.width) / 2);
     itemImagePosition.y = ceilf((contextRect.size.height - itemImageSize.height) / 2);
     UIGraphicsBeginImageContext(contextRect.size);
@@ -280,29 +280,29 @@
 
     CGContextSetFillColorWithColor(c, cgColor);
     contextRect.size.height = -contextRect.size.height;
-	
+
 	float* colorComponents = CGColorGetComponents(cgColor);
 	float color0R = colorComponents[0];
 	float color0G = colorComponents[1];
 	float color0B = colorComponents[2];
-	
+
 	float color1R = color0R+0.6;
 	float color1G = color0G+0.6;
 	float color1B = color0B+0.6;
-	if (color1R > 1) color1R = 1; 
-	if (color1G > 1) color1G = 1; 
-	if (color1B > 1) color1B = 1; 
-	
-	CGFloat components[16] = {	color0R, color0G, color0B, 1.0, 
+	if (color1R > 1) color1R = 1;
+	if (color1G > 1) color1G = 1;
+	if (color1B > 1) color1B = 1;
+
+	CGFloat components[16] = {	color0R, color0G, color0B, 1.0,
 								color0R, color0G, color0B, 1.0,
 								color1R, color1G, color1B, 1.0,
 								1.0, 1.0, 1.0, 1.0};
-	CGFloat locations[4] = {	0, 0.3, 0.8, 1.0 }; 
-	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();  
+	CGFloat locations[4] = {	0, 0.3, 0.8, 1.0 };
+	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
 	CGGradientRef colorGradient = CGGradientCreateWithColorComponents(colorSpace, components, locations, 4);
-	CGContextDrawLinearGradient(c, colorGradient, CGPointMake(0,contextRect.size.height), CGPointMake(0,0), 0);	
-	CGContextDrawLinearGradient(c, colorGradient, CGPointMake(contextRect.size.width*0.75,contextRect.size.height), CGPointMake(contextRect.size.width*0.25, 0), 0);	
-	
+	CGContextDrawLinearGradient(c, colorGradient, CGPointMake(0,contextRect.size.height), CGPointMake(0,0), 0);
+	CGContextDrawLinearGradient(c, colorGradient, CGPointMake(contextRect.size.width*0.75,contextRect.size.height), CGPointMake(contextRect.size.width*0.25, 0), 0);
+
     //CGContextFillRect(c, contextRect);
     CGContextEndTransparencyLayer(c);
 
@@ -321,15 +321,15 @@
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p bar_info:(NSDictionary*)bar_info {
 	[SimpleMainView disableHiddenOnStart];
     CGRect frame = [[v view] frame];
-    
+
 	NSString *background_color = nil;
-	
+
 	NSDictionary* global_properties = (NSDictionary*)[bar_info objectForKey:NATIVE_BAR_PROPERTIES];
 	if (global_properties != nil) {
 		background_color = (NSString*)[global_properties objectForKey:NATIVE_BAR_BACKGOUND_COLOR];
         self.on_change_tab_callback = (NSString*)[global_properties objectForKey:NATIVE_BAR_ON_CHANGE_TAB_CALLBACK];
 	}
-	
+
 	if (background_color != nil) {
 		RhoUITabBarController* rc = [RhoUITabBarController alloc];
 		rc.bkgColor = [background_color intValue];
@@ -344,8 +344,8 @@
     tabbar.selectedIndex = 0;
     //tabbar.tabBar.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
     //tabbar.tabBar.autoresizesSubviews = YES;
-	
-    
+
+
     CGRect childFrame = [[v view] bounds];
 	childFrame.origin.x = 0;
 	childFrame.origin.y = 0;
@@ -357,70 +357,70 @@
 	//else {
 		childFrame.size.height -= tbFrame.size.height;
 	//}
-	
-	
+
+
 	NSArray* items = (NSArray*)[bar_info objectForKey:NATIVE_BAR_ITEMS];
-	
+
     int count = [items count];
     NSMutableArray *views = [NSMutableArray arrayWithCapacity:count];
     NSMutableArray *tabs = [[NSMutableArray alloc] initWithCapacity:count];
-    
+
     NSString *initUrl = nil;
 	BOOL is_load_initial_url = YES;
 	int tab_to_initial_select = -1;
-    
+
     for (int i = 0; i < count; ++i) {
-		
+
 		NSDictionary* item = (NSDictionary*)[items objectAtIndex:i];
-		
+
         NSString *label = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_LABEL];
         NSString *url = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_ACTION];
         NSString *icon = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_ICON];
         NSString *reload = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_RELOAD];
-		
-		NSString *selected_color = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_SELECTED_COLOR];  
+
+		NSString *selected_color = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_SELECTED_COLOR];
 		NSString *disabled = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_DISABLED];
-		
+
 		NSString *web_bkg_color = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_WEB_BACKGROUND_COLOR];
-		
+
 		NSString *use_current_view_for_tab = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_USE_CURRENT_VIEW_FOR_TAB];
-        
-		
+
+
 		BOOL is_use_current_view_for_tab = NO;
 		if (use_current_view_for_tab != nil) {
 			if ([use_current_view_for_tab caseInsensitiveCompare:@"true"] == NSOrderedSame) {
 				is_use_current_view_for_tab = YES;
 			}
 		}
-		
+
         if (!initUrl)
             initUrl = url;
-        
+
         if (label && url && icon) {
             RhoTabBarData *td = [[RhoTabBarData alloc] init];
             td.url = url;
 			td.reload = [reload isEqualToString:@"true"];
 			td.loaded = is_use_current_view_for_tab;
-			
+
 			if (is_use_current_view_for_tab) {
 				td.url = [v currentLocation:-1];
 			}
-			
+
 			SimpleMainView *subController = nil;
-			
+
 			if (is_use_current_view_for_tab) {
 				web_bkg_color = nil;
 				is_load_initial_url = NO;
 				tab_to_initial_select = i;
 			}
-			
+
 			if (web_bkg_color != nil) {
 				int bkgc = [web_bkg_color intValue];
 				int cR = (bkgc & 0xFF0000) >> 16;
 				int cG = (bkgc & 0xFF00) >> 8;
 				int cB = (bkgc & 0xFF);
 				UIColor* bc = [UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0];
-				
+
 				subController = [[SimpleMainView alloc] initWithParentView:tabbar.view frame:childFrame web_bkg_color:bc];
 			}
 			else {
@@ -431,52 +431,52 @@
 					subController = [[SimpleMainView alloc] initWithParentView:tabbar.view frame:childFrame];
 				}
 			}
-            
-			
+
+
             subController.title = label;
             NSString *imagePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:icon];
-			
-			
+
+
 			if (selected_color != nil) {
-				
+
 				int sel_col = [selected_color intValue];
 				int cR = (sel_col & 0xFF0000) >> 16;
 				int cG = (sel_col & 0xFF00) >> 8;
 				int cB = (sel_col & 0xFF);
-				
+
 				RhoCustomTabBarItem *tabItem = [[RhoCustomTabBarItem alloc]
 												initWithTitle:label image:nil tag:0];
-			
+
 				tabItem.image = [UIImage imageWithContentsOfFile:imagePath];
 				tabItem.badgeValue = nil;
 
 				//subController.tabBarItem.image = [UIImage imageWithContentsOfFile:imagePath];
 				//subController.tabBarItem.badgeValue = nil;
-				
+
 				UIImage* img = [UIImage imageWithContentsOfFile:imagePath];
 				//img = [self recolorImageWithColor:img color:[UIColor colorWithRed:(43.0 / 255.0) green:(143.0 / 255.0) blue:(230.0 / 255.0) alpha:1.0] shadowColor:[UIColor blackColor] shadowOffset:CGSizeMake(0.5f, 1.0f) shadowBlur:3.0f];
 				img = [self recolorImageWithColor:img color:[UIColor colorWithRed:( ((float)(cR)) / 255.0) green:(((float)(cG)) / 255.0) blue:(((float)(cB)) / 255.0) alpha:1.0] shadowColor:[UIColor blackColor] shadowOffset:CGSizeMake(0.5f, 1.0f) shadowBlur:3.0f];
 				tabItem.customHighlightedImage = img;
-				tabItem.customStdImage=nil;       
-			
+				tabItem.customStdImage=nil;
+
 				subController.tabBarItem=tabItem;
-				[tabItem release]; 
+				[tabItem release];
 			}
 			else {
 				subController.tabBarItem.image = [UIImage imageWithContentsOfFile:imagePath];
 				subController.tabBarItem.badgeValue = nil;
 			}
-			
+
 			if ([disabled isEqualToString:@"true"]) {
 				subController.tabBarItem.enabled = NO;
 			}
-			
+
 			subController.mTabBarCallback = self;
 	    //[subController navigateRedirect:url tab:0];
-            
+
             [tabs addObject:td];
             [views addObject:subController];
-            
+
             [td release];
             [subController release];
         }
@@ -486,10 +486,10 @@
     tabbar.view.hidden = NO;
     tabbar.view.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
     tabbar.view.autoresizesSubviews = YES;
-    
+
     self.tabbarData = tabs;
     [tabs release];
-    
+
 	if (initUrl && is_load_initial_url) {
         [self navigateRedirect:initUrl tab:0];
         RhoTabBarData *td = [self tabData:0];
@@ -499,14 +499,14 @@
 	if (tab_to_initial_select >= 0) {
 		tabbar.selectedIndex = tab_to_initial_select;
 	}
-									 
+
     return self;
 }
 
 - (void)didReceiveMemoryWarning {
     // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
-    
+
     // Release any cached data, images, etc that aren't in use.
 }
 
@@ -681,8 +681,8 @@
 
 
 -(void)setTabBarBadge:(NSString*)badge_text tab_index:(int)tab_index {
-    
-    SimpleMainView* subview = [self subView:tab_index]; 
+
+    SimpleMainView* subview = [self subView:tab_index];
     if (subview != nil) {
         if ([badge_text length] > 0) {
             subview.tabBarItem.badgeValue = badge_text;

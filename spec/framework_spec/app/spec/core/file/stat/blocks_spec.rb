@@ -15,5 +15,5 @@ if ( System.get_property('platform') != 'WINDOWS' )
     st.blocks.is_a?(Integer).should == true
     st.blocks.should > 0
   end
-end  
+end
 end

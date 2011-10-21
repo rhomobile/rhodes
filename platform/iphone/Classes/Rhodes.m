@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -137,7 +137,7 @@ static Rhodes *instance = NULL;
 + (UIView*)subviewWithTag:(NSInteger)tag ofView:(UIView*)view {
     if (!view)
         return nil;
-    
+
     for (int i = 0, lim = [view.subviews count]; i < lim; ++i) {
         UIView *subview = [view.subviews objectAtIndex:i];
         if (subview.tag == tag)
@@ -146,7 +146,7 @@ static Rhodes *instance = NULL;
         if (subview)
             return subview;
     }
-    
+
     return nil;
 }
 #endif
@@ -220,7 +220,7 @@ static Rhodes *instance = NULL;
 }
 
 - (void)sysCall:(PARAMS_WRAPPER*)params {
-    ParamsWrapper* pw = [ParamsWrapper wrap:params]; 	
+    ParamsWrapper* pw = [ParamsWrapper wrap:params];
     [self performSelectorOnMainThread:@selector(doSysCall:) withObject:pw waitUntilDone:NO];
 }
 
@@ -271,23 +271,23 @@ static Rhodes *instance = NULL;
     }
 }
 
--(BOOL)startCameraPicker:(PickImageDelegate*)delegateObject 
+-(BOOL)startCameraPicker:(PickImageDelegate*)delegateObject
                                 sourceType:(UIImagePickerControllerSourceType)type
 {
 	[self hideSplash];
 #ifndef __IPHONE_3_0
-    if ( (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) || 
+    if ( (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) ||
         (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ||
         (delegateObject == nil)) {
-        return NO; 
+        return NO;
     }
 #endif
-	
+
     @try {
-        UIImagePickerController* picker = [[UIImagePickerController alloc] init]; 
+        UIImagePickerController* picker = [[UIImagePickerController alloc] init];
         picker.sourceType = type;
         picker.delegate = delegateObject;
-        
+
 #ifndef __IPHONE_3_1
         if (delegateObject.settings.enable_editing != 0) {
             picker.allowsImageEditing = YES;
@@ -320,20 +320,20 @@ static Rhodes *instance = NULL;
             [popover setPopoverContentSize:CGSizeMake(CGRectGetWidth(rect), CGRectGetHeight(rect))];
             [popover presentPopoverFromRect:rect inView:[[self mainView] view] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
         }
-        else 
+        else
 #endif
         {
             if (delegateObject.settings.camera_type == CAMERA_SETTINGS_TYPE_FRONT) {
                 picker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
             }
-            
+
             [window addSubview:picker.view];
         }
     } @catch(NSException* theException) {
         RAWLOG_ERROR2("startCameraPickerFromViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
         return NO;
     }
-	
+
 	return YES;
 }
 
@@ -342,7 +342,7 @@ static Rhodes *instance = NULL;
         return;
     [pickImageDelegate setPostUrl:settings.callback_url];
     pickImageDelegate.settings = settings;
-    [self startCameraPicker:pickImageDelegate 
+    [self startCameraPicker:pickImageDelegate
                  sourceType:UIImagePickerControllerSourceTypeCamera];
 }
 
@@ -366,7 +366,7 @@ static Rhodes *instance = NULL;
     } @catch(NSException* theException) {
         RAWLOG_ERROR2("startSignatureViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
     }
-    
+
 }
 
 - (void)openFullScreenNativeView:(UIView*)view {
@@ -385,10 +385,10 @@ static Rhodes *instance = NULL;
 		[mainView.view retain];
 		[mainView.view removeFromSuperview];
 		[window addSubview:svc.view];
-		
+
 		[window layoutSubviews];
 		[window setNeedsDisplay];
-		
+
 	} @catch(NSException* theException) {
         RAWLOG_ERROR2("startFullSreeenNativeViewViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
     }
@@ -403,7 +403,7 @@ static Rhodes *instance = NULL;
     if (!rho_rhodesapp_check_mode())
         return;
     [pickImageDelegate setPostUrl:url];
-    [self startCameraPicker:pickImageDelegate 
+    [self startCameraPicker:pickImageDelegate
                  sourceType:UIImagePickerControllerSourceTypePhotoLibrary];
 }
 
@@ -416,7 +416,7 @@ static Rhodes *instance = NULL;
         [splashViewController hideSplash];
         [splashViewController release];
         splashViewController = nil;
-		
+
 		[window addSubview:mainView.view];
 		[window bringSubviewToFront:mainView.view];
     }
@@ -428,7 +428,7 @@ static Rhodes *instance = NULL;
 
 	UIViewController* sv = mainView;
 	//[self hideSplash];
-    
+
 	// Special hack for solve problem with VerticalTabBar on iPad
 	// When we switch from VerticalTabBar to any View - autorotation is disabled and application switch to Portrait orientation
 	// But there are no problme on iPhone 4.1 and above
@@ -436,24 +436,24 @@ static Rhodes *instance = NULL;
     BOOL isVerticalTab = NO;
 	if ([mainView isKindOfClass:[SplittedMainView class]]) {
 		BOOL is_iPad = NO;
-		
+
 		NSString *model = [[UIDevice currentDevice] model]; // "iPad ..."
 		if ([model hasPrefix:@"iPad"]) {
 			is_iPad = YES;
 		}
-		
+
 		isVerticalTab = is_iPad;
 	}
-	
+
 	CGRect main_frame = mainView.view.frame;
-	
+
 	UIWindow* www = window;
 	if (isVerticalTab) {
-		
+
 		window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 		window.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 		window.autoresizesSubviews = YES;
-		
+
 		//view.view.frame = main_frame;
 		mainView = nil;
 	}
@@ -461,11 +461,11 @@ static Rhodes *instance = NULL;
 		[mainView.view removeFromSuperview];
 		[mainView release];
 	}
-	
+
     mainView = [view retain];
     [window addSubview:mainView.view];
 	//[window bringSubviewToFront:mainView.view];
-	
+
 	if (isVerticalTab) {
 		[window makeKeyAndVisible];
 
@@ -474,7 +474,7 @@ static Rhodes *instance = NULL;
 		[www release];
 	}
 	[window layoutSubviews];
-	
+
 }
 
 - (id<RhoMainView,NSObject>)mainView {
@@ -484,14 +484,14 @@ static Rhodes *instance = NULL;
 
 
 // make splash screen
-// return YES if SplashScreen maked 
-- (BOOL) showLoadingPagePre 
+// return YES if SplashScreen maked
+- (BOOL) showLoadingPagePre
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    
+
     NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
     NSString *htmPath = [NSString stringWithFormat:@"%@/apps/app/loading.html", resourcePath];
-    
+
     if ([SplashViewController hasLoadingImage]) {
         splashViewController = [[SplashViewController alloc] initWithParentView:window];
     }
@@ -509,13 +509,13 @@ static Rhodes *instance = NULL;
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
     NSString *htmPath = [NSString stringWithFormat:@"%@/apps/app/loading.html", resourcePath];
-    
+
     if (splashViewController != nil) {
 		rho_splash_screen_start();
     }
     else if ([fileManager fileExistsAtPath:htmPath]) {
 		rho_splash_screen_start();
-		
+
     }
 }
 
@@ -538,22 +538,22 @@ static Rhodes *instance = NULL;
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     @try {
         NSLog(@"Init appManager");
-        appManager = [AppManager instance]; 
+        appManager = [AppManager instance];
         //Configure AppManager
         [appManager configure];
-        
+
         const char *szRootPath = rho_native_rhopath();
         NSLog(@"Init logconf");
         rho_logconf_Init(szRootPath, "");
         NSLog(@"Create rhodes app");
         rho_rhodesapp_create(szRootPath);
         app_created = YES;
-        
+
         rotationLocked = rho_conf_getBool("disable_screen_rotation");
-        
+
         NSLog(@"Show loading page");
         [self performSelectorOnMainThread:@selector(showLoadingPagePost) withObject:nil waitUntilDone:NO];
-        
+
         NSLog(@"Start rhodes app");
         rho_rhodesapp_start();
 		rho_rhodesapp_callUiCreatedCallback();
@@ -561,11 +561,11 @@ static Rhodes *instance = NULL;
     @finally {
         [pool release];
     }
-    
+
     if (rho_conf_getBool("full_screen") != 0) {
         [Rhodes setStatusBarHidden:YES];
     }
-    
+
 }
 
 - (void)doStartUp {
@@ -573,58 +573,58 @@ static Rhodes *instance = NULL;
     instance = self;
     application = [UIApplication sharedApplication];
     rotationLocked = NO;
-    
+
     [NSThread setThreadPriority:1.0];
-    
+
     NSLog(@"Create new detached thread for initialization stuff");
     [NSThread detachNewThreadSelector:@selector(doRhoInit) toTarget:self withObject:nil];
-    
+
     NSLog(@"Init all windows");
-    
-    
+
+
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
-    
+
     window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     window.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     window.autoresizesSubviews = YES;
-	
+
     mainView = nil;
     mainView = [[SimpleMainView alloc] initWithParentView:window frame:[Rhodes applicationFrame]];
     mainView.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     mainView.view.autoresizesSubviews = YES;
-    
+
 	BOOL is_splash_screen_maked = [self showLoadingPagePre];
-	
+
 	if (!is_splash_screen_maked) {
 		[window addSubview:mainView.view];
 	}
-	
+
     [window makeKeyAndVisible];
 
- 
+
 	CGRect rrr = [application statusBarFrame];
-	
+
     NSLog(@"Init cookies");
     cookies = [[NSMutableDictionary alloc] initWithCapacity:0];
-    
+
     // Init controllers
     NSLog(@"Init controllers");
     logOptionsController = [[LogOptionsController alloc] init];
     logViewController = [[LogViewController alloc] init];
-    
+
     NSLog(@"Init delegates");
     dateTimePickerDelegate = [[DateTimePickerDelegate alloc] init];
     pickImageDelegate = [[PickImageDelegate alloc] init];
     signatureDelegate = [[SignatureDelegate alloc] init];
     nvDelegate = [[NVDelegate alloc] init];
-    
-#ifdef APP_BUILD_CAPABILITY_PUSH    
+
+#ifdef APP_BUILD_CAPABILITY_PUSH
 #ifdef __IPHONE_3_0
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
      (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)];
 #endif //__IPHONE_3_0
-#endif //APP_BUILD_CAPABILITY_PUSH    
-    
+#endif //APP_BUILD_CAPABILITY_PUSH
+
 #ifdef __IPHONE_4_0
     eventStore = [[EKEventStore alloc] init];
 #endif
@@ -639,7 +639,7 @@ static Rhodes *instance = NULL;
 	if (do_sync) {
 		NSEnumerator *enumerator = [do_sync objectEnumerator];
 		id url;
-		
+
 		NSLog(@"do_sync array: ");
 		bool sync_all = false;
 		while ( url = [enumerator nextObject] ) {
@@ -652,7 +652,7 @@ static Rhodes *instance = NULL;
 				rho_sync_doSyncSourceByName([srcUrl cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 			}
 		}
-		
+
 		if (sync_all) {
 			rho_sync_doSyncAllSources(TRUE,"");
 		}
@@ -661,45 +661,45 @@ static Rhodes *instance = NULL;
 - (void)processPushMessage:(NSDictionary *)userInfo
 {
     RAWLOG_INFO("Processing PUSH message...");
-	
+
     {
 		NSMutableString* strData = [[NSMutableString alloc] init];
-		for (NSString* key in userInfo) 
+		for (NSString* key in userInfo)
 		{
 			if ( !key )
 				continue;
-			
+
 		    NSLog(@"Push item: %@", key );
 			if ( [key compare:@"aps"] == 0)
 			{
 				NSDictionary *aps = [userInfo objectForKey:key];
-				for (NSString* key1 in aps) 
+				for (NSString* key1 in aps)
 				{
 					if ( !key1 )
 						continue;
 				    NSLog(@"Push aps item: %@", key1 );
-					
+
 					if ( [strData length] > 0 )
-						[strData appendString:@"&"];					
-					
+						[strData appendString:@"&"];
+
 					[strData appendString:key1];
 					[strData appendString:@"="];
 					if ( [aps objectForKey:key1] )
 						[strData appendString:[NSString stringWithFormat:@"%@", [aps objectForKey:key1]]];
 				}
-				
+
 				continue;
 			}
 
 			if ( [strData length] > 0 )
-				[strData appendString:@"&"];					
+				[strData appendString:@"&"];
 			[strData appendString:key];
 			[strData appendString:@"="];
 			if ( [userInfo objectForKey:key] )
 				[strData appendString:[NSString stringWithFormat:@"%@", [userInfo objectForKey:key]]];
 
-		}	
-		
+		}
+
 //        NSString* strData = [userInfo description];
         NSLog(@"Push string: %@", strData );
         const char* szData = [strData cStringUsingEncoding:[NSString defaultCStringEncoding]];
@@ -708,7 +708,7 @@ static Rhodes *instance = NULL;
         if ( nRes )
             return;
     }
-    
+
     NSDictionary *aps = [userInfo objectForKey:@"aps"];
     if (aps) {
         NSString *alert = [aps objectForKey:@"alert"];
@@ -741,22 +741,22 @@ static Rhodes *instance = NULL;
 	//hack to work around iphone limitation when it will play push alerts only from the main bundle root
 	if ([fileName hasPrefix:@"/public/alerts/"] || [fileName hasPrefix:@"/apps/public/alerts/"]) {
 		NSString *file = [fileName lastPathComponent];
-		soundFilePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:file];		
+		soundFilePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:file];
 	} else {
 		soundFilePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:fileName];
 	}
 	NSLog(@"Playing %@: ", soundFilePath);
-	
+
 	NSURL *fileURL = [[NSURL alloc] initFileURLWithPath: soundFilePath];
 	NSError* err = nil;
 	AVAudioPlayer *newPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL error:&err];
 	NSLog(@"Init media player returns: %@", err);
-	
+
 	[fileURL release];
 	self.player = newPlayer;
 	[newPlayer release];
-	
-	[player prepareToPlay];	
+
+	[player prepareToPlay];
 	[player setDelegate: self];
 	[self.player play];
 }
@@ -764,7 +764,7 @@ static Rhodes *instance = NULL;
 - (void)playStop {
     if (!self.player)
         return;
-    
+
     [self.player stop];
     self.player = nil;
 }
@@ -774,7 +774,7 @@ static Rhodes *instance = NULL;
 - (void) audioPlayerDidFinishPlaying: (AVAudioPlayer *) player successfully: (BOOL) flag {
 	if (flag == YES) {
 		NSLog(@"Audio player finished playing...");
-	}	
+	}
 }
 
 - (void)audioPlayerDecodeErrorDidOccur:(AVAudioPlayer *)player error:(NSError *)error {
@@ -788,7 +788,7 @@ static Rhodes *instance = NULL;
 
 	NSURL* url = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
     NSLog(@"didFinishLaunchingWithOptions: %@", url);
-	
+
 	// store start parameter
 	NSString* start_parameter = [NSString stringWithUTF8String:""];
 	if (url != nil) {
@@ -799,8 +799,8 @@ static Rhodes *instance = NULL;
 				start_parameter = [url_str substringFromIndex:range.location + 1];
 			}
 		}
-	}	
-    
+	}
+
 	[self doStartUp];
 	[self processDoSync:launchOptions];
 
@@ -809,12 +809,12 @@ static Rhodes *instance = NULL;
 		NSLog(@"This is hidden app and can be started only with security key.");
 		exit(EXIT_SUCCESS);
     }
-	
+
 	return NO;
 }
 #endif
 /*
-- (void)applicationDidFinishLaunching:(UIApplication *)application 
+- (void)applicationDidFinishLaunching:(UIApplication *)application
 {
 	[self doStartUp];
 } */
@@ -827,12 +827,12 @@ static Rhodes *instance = NULL;
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
 	NSLog(@"Device token is %@", deviceToken);
-	
+
 	NSMutableString *stringBuffer = [NSMutableString stringWithCapacity:([deviceToken length] * 2)];
 	const unsigned char *dataBuffer = [deviceToken bytes];
 	for (int i = 0; i < [deviceToken length]; ++i)
 		[stringBuffer appendFormat:@"%02x", (unsigned long)dataBuffer[ i ]];
-	
+
 	char* szpin = strdup([stringBuffer cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 	RAWLOG_INFO1("device pin: %s\n", szpin);
 
@@ -909,11 +909,11 @@ static Rhodes *instance = NULL;
     NSDictionary* scheme = [schemes objectAtIndex:0];
     NSArray* urls = [scheme objectForKey:@"CFBundleURLSchemes"];
     NSString* url0 = [urls objectAtIndex:0];
-    
+
     if ([[url scheme] isEqualToString:url0]) {
         NSString *startparams = @"";
         NSString *fullurl = [[url absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        
+
         NSRange range = [fullurl rangeOfString:@":"];
         if ((range.location > 0) && (range.length > 0)) {
             startparams = [fullurl substringFromIndex:range.location + 1];
@@ -923,7 +923,7 @@ static Rhodes *instance = NULL;
         rho_rhodesapp_canstartapp([startparams UTF8String], ", ");
         return YES;
     }
-    return NO;	
+    return NO;
     /*
     NSString *URLString = [url absoluteString];
     [[NSUserDefaults standardUserDefaults] setObject:URLString forKey:@"url"];
@@ -931,14 +931,14 @@ static Rhodes *instance = NULL;
 
 	//NSString* msg = @"handleOpenURL: ";
 	//msg = [msg stringByAppendingString:URLString];
-	
+
 	UIAlertView *alert = [[[UIAlertView alloc]
 						   initWithTitle:@"handleOpenURL:"
 						   message:URLString
 						   delegate:self
 						   cancelButtonTitle:@"Close"
 						   otherButtonTitles:nil] autorelease];
-    
+
     [alert show];
 	*/
     return YES;

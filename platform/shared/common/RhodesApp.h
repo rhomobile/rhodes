@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -74,10 +74,10 @@ private:
 
     common::CMutex m_mxPushCallback;
     String m_strPushCallback, m_strPushCallbackParams;
-	
+
     common::CMutex m_mxScreenRotationCallback;
     String m_strScreenRotationCallback, m_strScreenRotationCallbackParams;
-    
+
     boolean m_bDeactivationMode;
     //int m_activateCounter;
 
@@ -97,7 +97,7 @@ public:
     void  keepLastVisitedUrl(String strUrl);
     void navigateToUrl( const String& strUrl);
     void navigateBack();
-    
+
     boolean deactivationMode() const {return m_bDeactivationMode;}
 
     const String& getRhobundleReloadUrl();
@@ -145,7 +145,7 @@ public:
 
     void setPushNotification(String strUrl, String strParams );
     boolean callPushCallback(String strData);
-	
+
     void setScreenRotationNotification(String strUrl, String strParams);
     void callScreenRotationCallback(int width, int height, int degrees);
 
@@ -173,11 +173,11 @@ inline rho::common::CRhodesApp& RHODESAPP(){ return *rho::common::CRhodesApp::ge
 #ifdef __cplusplus
 extern "C" {
 #endif //__cplusplus
-	
+
 void rho_rhodesapp_create(const char* szRootPath);
-void rho_rhodesapp_start();	
+void rho_rhodesapp_start();
 void rho_rhodesapp_destroy();
-	
+
 const char* rho_rhodesapp_getstarturl();
 //const char* rho_rhodesapp_getfirststarturl();
 
@@ -190,20 +190,20 @@ const char* rho_rhodesapp_getloadingpagepath();
 const char* rho_rhodesapp_getblobsdirpath();
 const char* rho_rhodesapp_getdbdirpath();
 const char* rho_rhodesapp_getapprootpath();
-	
+
 void rho_http_redirect(void* httpContext, const char* szUrl);
 void rho_http_senderror(void* httpContext, int nError, const char* szMsg);
 void rho_http_sendresponse(void* httpContext, const char* szBody);
 int	rho_http_snprintf(char *buf, size_t buflen, const char *fmt, ...);
 
 void rho_rhodesapp_navigate_back();
-	
+
 char* rho_http_normalizeurl(const char* szUrl);
 void rho_http_free(void* data);
 
-void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* strImagePath, 
+void rho_rhodesapp_callCameraCallback(const char* strCallbackUrl, const char* strImagePath,
     const char* strError, int bCancel );
-void rho_rhodesapp_callSignatureCallback(const char* strCallbackUrl, const char* strSignaturePath, 
+void rho_rhodesapp_callSignatureCallback(const char* strCallbackUrl, const char* strSignaturePath,
   const char* strError, int bCancel );
 void rho_rhodesapp_callDateTimeCallback(const char* strCallbackUrl, long lDateTime, const char* szData, int bCancel );
 void rho_rhodesapp_callBluetoothCallback(const char* strCallbackUrl, const char* body);

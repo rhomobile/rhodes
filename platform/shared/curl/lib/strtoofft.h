@@ -30,7 +30,7 @@
  * to implement string conversion to our curl_off_t integral data type.
  *
  * Notice that curl_off_t might be 64 or 32 bit wide, and that it might use
- * an undelying data type which might be 'long', 'int64_t', 'long long' or 
+ * an undelying data type which might be 'long', 'int64_t', 'long long' or
  * '__int64' and more remotely other data types.
  *
  * On systems where the size of curl_off_t is greater than the size of 'long'

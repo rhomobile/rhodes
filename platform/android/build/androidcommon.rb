@@ -1,18 +1,18 @@
 #------------------------------------------------------------------------
 # (The MIT License)
-# 
+#
 # Copyright (c) 2008-2011 Rhomobile, Inc.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-# 
+#
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
@@ -100,12 +100,12 @@ def setup_ndk(ndkpath,apilevel)
       puts "Checking #{sys_root} for NDK nsysroot"  if USE_TRACES
       next unless File.directory? sys_root
       next unless platform =~ /android-([0-9]+)$/
-      api_level = $1.to_i 
+      api_level = $1.to_i
       api_levels.push api_level
       puts "NDK API level: #{api_level}" if USE_TRACES
     end
   end
-  
+
   api_levels.sort!
 
   last_api_level = 0
@@ -130,7 +130,7 @@ def setup_ndk(ndkpath,apilevel)
     name = tool.gsub('+', 'p')
     eval "$#{name}bin = $ndktools + '/bin/#{$ndkabi}-#{tool}' + $exe_ext"
   end
-  
+
   # Detect rlim_t
   if $have_rlim_t.nil?
     $have_rlim_t = false
@@ -278,7 +278,7 @@ end
 
 def cc_build(name, objdir, additional = nil)
   sources = get_sources(name)
-  
+
   # Ruby 1.8 has problems with Thread.join on Windows
   if RUBY_PLATFORM =~ /w(in)?32/ and RUBY_VERSION =~ /^1\.8\./
     sources.each do |f|
@@ -377,13 +377,13 @@ def apk_build(sdk, apk_name, res_name, dex_name, debug)
     puts "Building APK file..."
     prev_dir = Dir.pwd
     Dir.chdir File.join(sdk, "tools")
-    #"-classpath", File.join("lib", "sdklib.jar"), "com.android.sdklib.build.ApkBuilderMain", 
+    #"-classpath", File.join("lib", "sdklib.jar"), "com.android.sdklib.build.ApkBuilderMain",
     if debug
         params = [apk_name, "-z", res_name, "-f", dex_name]
     else
         params = [apk_name, "-u", "-z", res_name, "-f", dex_name]
     end
-    
+
     if RUBY_PLATFORM =~ /(win|w)32$/
         apkbuilder = "apkbuilder" + $bat_ext
     else
@@ -391,7 +391,7 @@ def apk_build(sdk, apk_name, res_name, dex_name, debug)
     end
 
     Jake.run apkbuilder, params
-    
+
     unless $?.success?
         Dir.chdir prev_dir
         puts "Error building APK file"

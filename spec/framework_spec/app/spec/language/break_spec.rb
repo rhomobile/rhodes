@@ -116,7 +116,7 @@ describe "The break statement in a lambda" do
   end
 
   describe "created at the toplevel" do
-=begin  
+=begin
     it "returns a value when invoking from the toplevel" do
       code = fixture __FILE__, "break_lambda_toplevel.rb"
       ruby_exe(code).chomp.should == "a,b,break,d"
@@ -131,7 +131,7 @@ describe "The break statement in a lambda" do
       code = fixture __FILE__, "break_lambda_toplevel_block.rb"
       ruby_exe(code).chomp.should == "a,d,f,b,break,g,e,h"
     end
-=end    
+=end
   end
 
   describe "from a scope that has returned" do

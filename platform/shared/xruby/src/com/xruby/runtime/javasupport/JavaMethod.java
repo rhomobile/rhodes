@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright 2006-2007 Yu Su, Ye Zheng, Yu Zhang
  * Distributed under the BSD License
  */
@@ -51,7 +51,7 @@ public class JavaMethod extends RubyVarArgMethod {
         this.constructor = constructor;
         this.isConstructor = true;
     }
-    
+
     public JavaMethod(Method method,Field field,boolean isGetter){
         this.method = method;
         this.field = field;
@@ -64,16 +64,16 @@ public class JavaMethod extends RubyVarArgMethod {
         Object[] arguments = JavaUtil.convertToJavaValues(args);
 
         try {
-            if(!isConstructor) {                
+            if(!isConstructor) {
                 Object object = null;
-                if(!(receiver instanceof JavaClass)){                    
+                if(!(receiver instanceof JavaClass)){
                     if(receiver instanceof RubyExceptionValue){
                         object = ((RubyExceptionValue)receiver).getThrowable();
                     }else{
                         object = ((RubyData<Object>)receiver).getData();
                     }
-                } 
-                
+                }
+
                 Object retValue = null;
                 if(isField){
                     if(!(Modifier.isStatic(field.getModifiers())) && object == null){
@@ -90,8 +90,8 @@ public class JavaMethod extends RubyVarArgMethod {
                     }
                     //If the underlying method is static,object will be null!
                     retValue = method.invoke(object, arguments);
-                }               
-                
+                }
+
                 return JavaUtil.convertToRubyValue(retValue);
             }
             else {

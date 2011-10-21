@@ -219,7 +219,7 @@ public class Collation {
   //      } else {
            //i = collator.compare(toUpperCase(a), toUpperCase(b));
         //}
-        
+
         return (i == 0) ? 0
                         : (i < 0 ? -1
                                  : 1);

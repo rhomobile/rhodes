@@ -187,7 +187,7 @@ namespace Community.CsharpSqlite
     /*
     ** Argument pMem points at a register that will be passed to a
     ** user-defined function or returned to the user as the result of a query.
-    ** This routine sets the pMem.type variable used by the sqlite3_value_*() 
+    ** This routine sets the pMem.type variable used by the sqlite3_value_*()
     ** routines.
     */
     static void sqlite3VdbeMemStoreType(Mem pMem)
@@ -1001,7 +1001,7 @@ start = sqlite3Hwtime();
                 pc = sqlite3VdbeFrameRestore(pFrame);
                 if (pOp.p2 == OE_Ignore)
                 {
-                  /* Instruction pc is the OP_Program that invoked the sub-program 
+                  /* Instruction pc is the OP_Program that invoked the sub-program
                   ** currently being halted. If the p2 instruction of this OP_Halt
                   ** instruction is set to OE_Ignore, then the sub-program is throwing
                   ** an IGNORE exception. In this case jump to the address specified
@@ -1439,8 +1439,8 @@ pOp.p1 = pOut.n;
           /* Opcode: Divide P1 P2 P3 * *
           **
           ** Divide the value in register P1 by the value in register P2
-          ** and store the result in register P3 (P3=P2/P1). If the value in 
-          ** register P1 is zero, then the result is NULL. If either input is 
+          ** and store the result in register P3 (P3=P2/P1). If the value in
+          ** register P1 is zero, then the result is NULL. If either input is
           ** NULL, the result is NULL.
           */
           /* Opcode: Remainder P1 P2 P3 * *
@@ -3089,8 +3089,8 @@ Debug.Assert( pC.pVtabCursor==0 );
                     db.nSavepoint--;
                   }
 
-                  /* If it is a RELEASE, then destroy the savepoint being operated on 
-                  ** too. If it is a ROLLBACK TO, then set the number of deferred 
+                  /* If it is a RELEASE, then destroy the savepoint being operated on
+                  ** too. If it is a ROLLBACK TO, then set the number of deferred
                   ** constraint violations present in the database to the value stored
                   ** when the savepoint was created.  */
                   if (p1 == SAVEPOINT_RELEASE)
@@ -3530,7 +3530,7 @@ Debug.Assert( pC.pVtabCursor==0 );
               rc = sqlite3BtreeCursor(pX, p2, wrFlag, pKeyInfo, pCur.pCursor);
               pCur.pKeyInfo = pKeyInfo;
               /* Since it performs no memory allocation or IO, the only values that
-              ** sqlite3BtreeCursor() may return are SQLITE_EMPTY and SQLITE_OK. 
+              ** sqlite3BtreeCursor() may return are SQLITE_EMPTY and SQLITE_OK.
               ** SQLITE_EMPTY is only returned when attempting to open the table
               ** rooted at page 1 of a zero-byte database.  */
               Debug.Assert(rc == SQLITE_EMPTY || rc == SQLITE_OK);
@@ -3622,7 +3622,7 @@ Debug.Assert( pC.pVtabCursor==0 );
           **
           ** Open a new cursor that points to a fake table that contains a single
           ** row of data.  The content of that one row in the content of memory
-          ** register P2.  In other words, cursor P1 becomes an alias for the 
+          ** register P2.  In other words, cursor P1 becomes an alias for the
           ** MEM_Blob content contained in register P2.
           **
           ** A pseudo-table created by this opcode is used to hold a single
@@ -3942,9 +3942,9 @@ Debug.Assert( pC.pVtabCursor==0 );
           ** If P4==0 then register P3 holds a blob constructed by MakeRecord.  If
           ** P4>0 then register P3 is the first of P4 registers that form an unpacked
           ** record.
-          ** 
+          **
           ** Cursor P1 is on an index btree.  If the record identified by P3 and P4
-          ** is not the prefix of any entry in P1 then a jump is made to P2.  If P1 
+          ** is not the prefix of any entry in P1 then a jump is made to P2.  If P1
           ** does contain an entry whose prefix matches the P3/P4 record then control
           ** falls through to the next instruction and P1 is left pointing at the
           ** matching entry.
@@ -4197,9 +4197,9 @@ Debug.Assert( pC.pVtabCursor==0 );
           ** table that cursor P1 points to.  The new record number is written
           ** written to register P2.
           **
-          ** If P3>0 then P3 is a register in the root frame of this VDBE that holds 
+          ** If P3>0 then P3 is a register in the root frame of this VDBE that holds
           ** the largest previously generated record number. No new record numbers are
-          ** allowed to be less than this value. When this value reaches its maximum, 
+          ** allowed to be less than this value. When this value reaches its maximum,
           ** a SQLITE_FULL error is generated. The P3 register is updated with the '
           ** generated record number. This P3 mechanism is used to help implement the
           ** AUTOINCREMENT feature.
@@ -4382,7 +4382,7 @@ const int MAX_ROWID = i32.MaxValue;//#   define MAX_ROWID 0x7fffffff
           ** the update hook.
           **
           ** Parameter P4 may point to a string containing the table-name, or
-          ** may be NULL. If it is not NULL, then the update-hook 
+          ** may be NULL. If it is not NULL, then the update-hook
           ** (sqlite3.xUpdateCallback) is invoked following a successful insert.
           **
           ** (WARNING/TODO: If P1 is a pseudo-cursor and P2 is dynamically
@@ -5558,13 +5558,13 @@ iCnt++;
 
           /* Opcode: Program P1 P2 P3 P4 *
 **
-** Execute the trigger program passed as P4 (type P4_SUBPROGRAM). 
+** Execute the trigger program passed as P4 (type P4_SUBPROGRAM).
 **
-** P1 contains the address of the memory cell that contains the first memory 
-** cell in an array of values used as arguments to the sub-program. P2 
-** contains the address to jump to if the sub-program throws an IGNORE 
-** exception using the RAISE() function. Register P3 contains the address 
-** of a memory cell in this (the parent) VM that is used to allocate the 
+** P1 contains the address of the memory cell that contains the first memory
+** cell in an array of values used as arguments to the sub-program. P2
+** contains the address to jump to if the sub-program throws an IGNORE
+** exception using the RAISE() function. Register P3 contains the address
+** of a memory cell in this (the parent) VM that is used to allocate the
 ** memory required by the sub-vdbe at runtime.
 **
 ** P4 is a pointer to the VM containing the trigger program.
@@ -5584,16 +5584,16 @@ iCnt++;
               pRt = aMem[pOp.p3];
               Debug.Assert(pProgram.nOp > 0);
 
-              /* If the p5 flag is clear, then recursive invocation of triggers is 
+              /* If the p5 flag is clear, then recursive invocation of triggers is
               ** disabled for backwards compatibility (p5 is set if this sub-program
               ** is really a trigger, not a foreign key action, and the flag set
               ** and cleared by the "PRAGMA recursive_triggers" command is clear).
-              ** 
-              ** It is recursive invocation of triggers, at the SQL level, that is 
-              ** disabled. In some cases a single trigger may generate more than one 
-              ** SubProgram (if the trigger may be executed with more than one different 
+              **
+              ** It is recursive invocation of triggers, at the SQL level, that is
+              ** disabled. In some cases a single trigger may generate more than one
+              ** SubProgram (if the trigger may be executed with more than one different
               ** ON CONFLICT algorithm). SubProgram structures associated with a
-              ** single trigger all have the same value for the SubProgram.token 
+              ** single trigger all have the same value for the SubProgram.token
               ** variable.  */
               if (pOp.p5 != 0)
               {
@@ -5611,11 +5611,11 @@ iCnt++;
 
               /* Register pRt is used to store the memory required to save the state
               ** of the current program, and the memory required at runtime to execute
-              ** the trigger program. If this trigger has been fired before, then pRt 
+              ** the trigger program. If this trigger has been fired before, then pRt
               ** is already allocated. Otherwise, it must be initialized.  */
               if ((pRt.flags & MEM_Frame) == 0)
               {
-                /* SubProgram.nMem is set to the number of memory cells used by the 
+                /* SubProgram.nMem is set to the number of memory cells used by the
                 ** program stored in SubProgram.aOp. As well as these, one memory
                 ** cell is required for each cursor used by the program. Set local
                 ** variable nMem (and later, VdbeFrame.nChildMem) to this value.
@@ -5686,10 +5686,10 @@ iCnt++;
 
           /* Opcode: Param P1 P2 * * *
           **
-          ** This opcode is only ever present in sub-programs called via the 
-          ** OP_Program instruction. Copy a value currently stored in a memory 
-          ** cell of the calling (parent) frame to cell P2 in the current frames 
-          ** address space. This is used by trigger programs to access the new.* 
+          ** This opcode is only ever present in sub-programs called via the
+          ** OP_Program instruction. Copy a value currently stored in a memory
+          ** cell of the calling (parent) frame to cell P2 in the current frames
+          ** address space. This is used by trigger programs to access the new.*
           ** and old.* values.
           **
           ** The address of the cell in the parent frame is determined by adding
@@ -5711,8 +5711,8 @@ iCnt++;
           /* Opcode: FkCounter P1 P2 * * *
 **
 ** Increment a "constraint counter" by P2 (P2 may be negative or positive).
-** If P1 is non-zero, the database constraint counter is incremented 
-** (deferred foreign key constraints). Otherwise, if P1 is zero, the 
+** If P1 is non-zero, the database constraint counter is incremented
+** (deferred foreign key constraints). Otherwise, if P1 is zero, the
 ** statement counter is incremented (immediate foreign key constraints).
 */
           case OP_FkCounter:
@@ -5731,7 +5731,7 @@ iCnt++;
           /* Opcode: FkIfZero P1 P2 * * *
           **
           ** This opcode tests if a foreign key constraint-counter is currently zero.
-          ** If so, jump to instruction P2. Otherwise, fall through to the next 
+          ** If so, jump to instruction P2. Otherwise, fall through to the next
           ** instruction.
           **
           ** If P1 is non-zero, then the jump is taken if the database constraint-counter
@@ -5758,7 +5758,7 @@ iCnt++;
 **
 ** P1 is a register in the root frame of this VM (the root frame is
 ** different from the current frame if this instruction is being executed
-** within a sub-program). Set the value of register P1 to the maximum of 
+** within a sub-program). Set the value of register P1 to the maximum of
 ** its current value and the value in register P2.
 **
 ** This instruction throws an error if the memory cell is not initially
@@ -5827,7 +5827,7 @@ iCnt++;
           /* Opcode: IfZero P1 P2 P3 * *
           **
           ** The register P1 must contain an integer.  Add literal P3 to the
-          ** value in register P1.  If the result is exactly 0, jump to P2. 
+          ** value in register P1.  If the result is exactly 0, jump to P2.
           **
           ** It is illegal to use this instruction on a register that does
           ** not contain an integer.  An assertion fault will result if you try.
@@ -6017,7 +6017,7 @@ case OP_TableLock:
 {
 u8 isWriteLock = (u8)pOp.p3;
 if( isWriteLock || 0==(db.flags&SQLITE_ReadUncommitted) ){
-int p1 = pOp.p1; 
+int p1 = pOp.p1;
 Debug.Assert( p1 >= 0 && p1 < db.nDb );
 Debug.Assert( ( p.btreeMask & ( 1 << p1 ) ) != 0 );
 Debug.Assert( isWriteLock == 0 || isWriteLock == 1 );

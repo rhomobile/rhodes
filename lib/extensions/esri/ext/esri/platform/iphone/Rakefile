@@ -14,25 +14,25 @@ namespace "build" do
     $rootdir = ENV['RHO_ROOT']
     raise "RHO_ROOT is not set" if $rootdir.nil?
 
-    $xcodebuild = ENV['XCODEBUILD']	
+    $xcodebuild = ENV['XCODEBUILD']
     raise "XCODEBUILD is not set" if $xcodebuild.nil?
-    
-    $configuration = ENV['CONFIGURATION']	
+
+    $configuration = ENV['CONFIGURATION']
     raise "CONFIGURATION is not set" if $configuration.nil?
 
-    $sdk = ENV['SDK_NAME']	
+    $sdk = ENV['SDK_NAME']
     raise "SDK_NAME is not set" if $sdk.nil?
 
     $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
     raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
-    
+
     $sdkroot = ENV['SDKROOT']
     raise "SDKROOT is not set" if $sdkroot.nil?
 
 
     $arch = ENV['ARCHS']
     raise "ARCHS is not set" if $arch.nil?
-    
+
     $gccbin = $bindir + '/gcc-4.2'
     $arbin = $bindir + '/ar'
 

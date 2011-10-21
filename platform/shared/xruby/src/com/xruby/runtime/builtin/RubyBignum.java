@@ -31,7 +31,7 @@ public class RubyBignum extends RubyInteger {
         value_ = value;
         this.klass = RubyRuntime.BignumClass;
     }
-    
+
 	public RubyClass getRubyClass() {
 		return this.klass;
 	}
@@ -39,15 +39,15 @@ public class RubyBignum extends RubyInteger {
 	public void setRubyClass(RubyClass klass) {
 		this.klass = klass;
 	}
-    
+
     public int toInt() {
 		return this.value_.intValue();
 	}
-    
+
 	public double toFloat() {
 		return this.value_.doubleValue();
 	}
-	
+
 	public RubyFloat toRubyFloat() {
 		return ObjectFactory.createFloat(this.value_.doubleValue());
 	}
@@ -61,7 +61,7 @@ public class RubyBignum extends RubyInteger {
     public RubyString to_s(RubyValue radix) {
         return ObjectFactory.createString(value_.toString(radix.toInt()));
     }
-	
+
 	@RubyLevelMethod(name="to_f")
 	public RubyFloat to_f() {
 		return ObjectFactory.createFloat(this.value_.doubleValue());
@@ -74,7 +74,7 @@ public class RubyBignum extends RubyInteger {
     public boolean sign() {
     	return value_.signum() >= 0;
     }
-	
+
 	public long longValue() {
 		return value_.longValue();
 	}
@@ -82,7 +82,7 @@ public class RubyBignum extends RubyInteger {
     public void setValue(BigInteger value) {
         value_ = value;
     }
-    
+
     @RubyLevelMethod(name="size")
     public RubyFixnum rubySize() {
     	return ObjectFactory.createFixnum(size());
@@ -92,29 +92,29 @@ public class RubyBignum extends RubyInteger {
         int alignedBytesCount = (((value_.bitLength() - 1) & -32) >> 3) + 4;
         return alignedBytesCount;
     }
-    
-    @RubyLevelMethod(name="coerce")    
+
+    @RubyLevelMethod(name="coerce")
 	public RubyArray coerce(RubyValue v) {
 		if (v instanceof RubyFixnum) {
 			return new RubyArray(new RubyBignum(BigInteger.valueOf(v.toInt())), this);
 		} else if (v instanceof RubyBignum) {
 			return new RubyArray(v, this);
-		} 
-		
-		throw new RubyException(RubyRuntime.TypeErrorClass, 
+		}
+
+		throw new RubyException(RubyRuntime.TypeErrorClass,
 				"can't coerce " + v.getRubyClass().getName() + " to Bignum");
 	}
-    
+
     @RubyLevelMethod(name="-@")
     public RubyBignum uminus() {
     	return ObjectFactory.createBignum(this.value_.negate());
     }
-    
+
     @RubyLevelMethod(name="~")
     public RubyValue op_neg() {
     	return bignorm(this.value_.not());
     }
-    
+
     @RubyLevelMethod(name="+")
     public RubyValue op_add(RubyValue value) {
         if (value instanceof RubyBignum) {
@@ -162,7 +162,7 @@ public class RubyBignum extends RubyInteger {
         	return coerceBin(RubyID.mulID, value);
         }
     }
-	
+
 	@RubyLevelMethod(name="/")
     public RubyValue op_div(RubyValue value) {
         if (value instanceof RubyBignum) {
@@ -185,7 +185,7 @@ public class RubyBignum extends RubyInteger {
         	return coerceBin(RubyID.divID, value);
         }
     }
-	
+
 	@RubyLevelMethod(name="quo")
 	public RubyValue quo(RubyValue v) {
 		double dx = this.value_.doubleValue();
@@ -199,10 +199,10 @@ public class RubyBignum extends RubyInteger {
 		} else {
 			return coerceBin(RubyID.quoID, v);
 		}
-		
+
 		return ObjectFactory.createFloat(dx / dy);
 	}
-	
+
 	@RubyLevelMethod(name="**")
 	public RubyValue pow(RubyValue v) {
 		if (v instanceof RubyFixnum) {
@@ -210,9 +210,9 @@ public class RubyBignum extends RubyInteger {
 				return ObjectFactory.FIXNUM1;
 			}
 		}
-		
+
 		double d;
-		
+
 		if (v instanceof RubyFloat) {
 			d = v.toFloat();
 		} else if (v instanceof RubyBignum) {
@@ -227,12 +227,12 @@ public class RubyBignum extends RubyInteger {
                     return bignorm(this.value_.pow(yy));
                 }
             }
-			
+
 			d = yy;
 		} else {
 			return coerceBin(RubyID.powID, v);
 		}
-		
+
 		return ObjectFactory.createFloat(Math.pow(this.value_.doubleValue(), d));
 	}
 
@@ -248,25 +248,25 @@ public class RubyBignum extends RubyInteger {
         	return coerceBin(RubyID.modID, value);
         }
     }
-    
+
     private static BigInteger ruby_mod(BigInteger a, BigInteger b) {
         BigInteger modValue = a.abs().mod(b.abs());
         if (modValue.signum() == 0) {
             return modValue;
         }
-        
+
         BigInteger result = modValue;
         if (a.signum() > 0) {
             if (b.signum() < 0) {
                 result = b.add(modValue);
             }
         }
-        
+
         if (a.signum() < 0) {
             if (b.signum() > 0) {
                 result = b.add(modValue.negate());
             }
-            
+
             if (b.signum() < 0) {
                 result = modValue.negate();
             }
@@ -336,33 +336,33 @@ public class RubyBignum extends RubyInteger {
         }
         return bignorm(result);
     }
-    
+
     @RubyLevelMethod(name="<<")
     public RubyValue lshift(RubyValue v) {
     	int shift = v.toInt();
     	if (shift < 0) {
     		return rshift(bignorm(-shift));
     	}
-    	
+
     	return bignorm(this.value_.shiftLeft(shift));
     }
-    
+
     @RubyLevelMethod(name=">>")
     public RubyValue rshift(RubyValue v) {
     	int shift = v.toInt();
     	if (shift < 0) {
     		return lshift(ObjectFactory.createFixnum(-shift));
     	}
-    	
+
     	return bignorm(this.value_.shiftRight(shift));
     }
-    
+
     @RubyLevelMethod(name="[]")
     public RubyFixnum aref(RubyValue v) {
         int index = v.toInt();
         return this.value_.testBit(index) ? ObjectFactory.FIXNUM1 : ObjectFactory.FIXNUM0;
     }
-    
+
     @RubyLevelMethod(name="<=>")
     public RubyValue cmp(RubyValue v) {
     	BigInteger b;
@@ -375,7 +375,7 @@ public class RubyBignum extends RubyInteger {
     	} else {
     		return coerceCmp(RubyID.unequalID, v);
     	}
-    	
+
     	int result = this.value_.compareTo(b);
     	if (result == 0) {
     		return ObjectFactory.FIXNUM0;
@@ -385,16 +385,16 @@ public class RubyBignum extends RubyInteger {
     		return ObjectFactory.FIXNUM_NEGATIVE_ONE;
     	}
     }
-    
+
     public static RubyValue bignorm(RubyValue v) {
     	if (v instanceof RubyFixnum) {
     		return v;
     	}
-    	
+
     	if (v instanceof RubyBignum) {
     		return bignorm(((RubyBignum)v).value_);
     	}
-    	
+
     	return v;
     }
 

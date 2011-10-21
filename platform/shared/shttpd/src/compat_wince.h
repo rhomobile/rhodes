@@ -112,7 +112,7 @@ struct _stat {
 #define S_IFDIR  0040000
 #define S_IFREG  0100000
 #define S_IEXEC  0000100
-#define S_IWRITE 0000200 
+#define S_IWRITE 0000200
 #define S_IREAD  0000400
 
 #define _S_IFDIR S_IFDIR	/* MSVCRT compatibilit */

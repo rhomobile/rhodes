@@ -262,7 +262,7 @@ namespace Community.CsharpSqlite
     public static PrepareDelegate Prepare = sqlite3_prepare;
     public static PrepareDelegate PrepareV2 = sqlite3_prepare_v2;
     public static PrepareDelegateNoTail PrepareV2NoTail = sqlite3_prepare_v2;
-    
+
     public static Func<sqlite3_context, Int32, Mem> AggregateContext = sqlite3_aggregate_context;
     public static Func<sqlite3_context, Int32, String> GetAuxdata = sqlite3_get_auxdata;
     public static Func<sqlite3_context, sqlite3> ContextDbHandle = sqlite3_context_db_handle;

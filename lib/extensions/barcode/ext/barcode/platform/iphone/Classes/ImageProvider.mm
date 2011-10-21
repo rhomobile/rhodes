@@ -21,17 +21,17 @@ static CGContextRef CreateRGBABitmapContext (CGImageRef inImage)
     void *          bitmapData;
     int             bitmapByteCount;
     int             bitmapBytesPerRow;
-	
+
 	// Get image width, height. We'll use the entire image.
     size_t pixelsWide = CGImageGetWidth(inImage);
     size_t pixelsHigh = CGImageGetHeight(inImage);
-	
+
     // Declare the number of bytes per row. Each pixel in the bitmap in this
     // example is represented by 4 bytes; 8 bits each of red, green, blue, and
     // alpha.
     bitmapBytesPerRow   = (pixelsWide) << 2;
     bitmapByteCount     = (bitmapBytesPerRow * pixelsHigh);
-	
+
     // Use the generic RGB color space.
     colorSpace = CGColorSpaceCreateDeviceRGB();//CGColorSpaceCreateDeviceGray();//(kCGColorSpaceGenericRGB);
     if (colorSpace == NULL)
@@ -39,19 +39,19 @@ static CGContextRef CreateRGBABitmapContext (CGImageRef inImage)
         fprintf(stderr, "Error allocating color space\n");
         return NULL;
     }
-	
+
     // Allocate memory for image data. This is the destination in memory
     // where any drawing to the bitmap context will be rendered.
     bitmapData = malloc( bitmapByteCount );
-    if (bitmapData == NULL) 
+    if (bitmapData == NULL)
     {
         fprintf (stderr, "Memory not allocated!");
         CGColorSpaceRelease( colorSpace );
         return NULL;
     }
-	
-    // Create the bitmap context. We want pre-multiplied ARGB, 8-bits 
-    // per component. Regardless of what the source image format is 
+
+    // Create the bitmap context. We want pre-multiplied ARGB, 8-bits
+    // per component. Regardless of what the source image format is
     // (CMYK, Grayscale, and so on) it will be converted over to the format
     // specified here by CGBitmapContextCreate.
     context = CGBitmapContextCreate (bitmapData,
@@ -66,10 +66,10 @@ static CGContextRef CreateRGBABitmapContext (CGImageRef inImage)
         free (bitmapData);
         fprintf (stderr, "Context not created!");
     }
-	
+
     // Make sure and release colorspace before returning
     CGColorSpaceRelease( colorSpace );
-	
+
     return context;
 }
 
@@ -82,46 +82,46 @@ void CImageProvider::rho_platform_image_load_grayscale(const char* url, void** i
 	*image_pixels = 0;
 	*pwidth = 0;
 	*pheight = 0;
-	
+
 	NSString* ns_path = [NSString stringWithCString:url encoding:1];
 	UIImage* image = [UIImage imageWithContentsOfFile:ns_path];
 	CGImageRef imageRef = [image CGImage];
-    if (imageRef == NULL) 
-    { 
+    if (imageRef == NULL)
+    {
         // error creating img
         return;
-    }	
-	
+    }
+
 	// Create the bitmap context
     CGContextRef cgctx = IP_Inner_Helper::CreateRGBABitmapContext(imageRef);
-    if (cgctx == NULL) 
-    { 
+    if (cgctx == NULL)
+    {
         // error creating context
         return;
     }
-	
+
 	// Get image width, height. We'll use the entire image.
     size_t w = CGImageGetWidth(imageRef);
     size_t h = CGImageGetHeight(imageRef);
-    CGRect rect = {{0,0},{w,h}}; 
-	
-    // Draw the image to the bitmap context. Once we draw, the memory 
-    // allocated for the context for rendering will then contain the 
+    CGRect rect = {{0,0},{w,h}};
+
+    // Draw the image to the bitmap context. Once we draw, the memory
+    // allocated for the context for rendering will then contain the
     // raw image data in the specified color space.
-    CGContextDrawImage(cgctx, rect, imageRef); 
-	
+    CGContextDrawImage(cgctx, rect, imageRef);
+
     // Now we can get a pointer to the image data associated with the bitmap
     // context.
     void *data = CGBitmapContextGetData (cgctx);
     if (data != NULL)
     {
-		
+
 		unsigned char* gray_buf = new unsigned char[w*h];
 		if (gray_buf != 0) {
 			*image_pixels = gray_buf;
 			*pwidth = w;
 			*pheight = h;
-		
+
 			// now we have image in int_32(ARGB) array
 			{
 				// make gray image
@@ -137,17 +137,17 @@ void CImageProvider::rho_platform_image_load_grayscale(const char* url, void** i
 				}
 			}
 		}
-		
+
     }
-	
+
     // When finished, release the context
-    CGContextRelease(cgctx); 
+    CGContextRelease(cgctx);
     // Free image data memory for the context
     if (data)
     {
         free(data);
     }
-	
+
 }
 
 void CImageProvider::rho_platform_image_free(void* image_pixels) {

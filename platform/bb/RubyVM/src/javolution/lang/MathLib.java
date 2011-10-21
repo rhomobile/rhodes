@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2006 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -11,12 +11,12 @@ package javolution.lang;
 import java.util.Random;
 
 /**
- * <p> This utility class ensures cross-platform portability of the math 
+ * <p> This utility class ensures cross-platform portability of the math
  *     library. Functions not supported by the platform are emulated.
  *     Developers may replace the current implementation with native
- *     implementations for faster execution (unlike 
- *     <code>java.lang.Math</code> this class can be customized).<p> 
- * 
+ *     implementations for faster execution (unlike
+ *     <code>java.lang.Math</code> this class can be customized).<p>
+ *
  * @author  <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 4.2, January 6, 2007
  */
@@ -31,7 +31,7 @@ public final class MathLib {
     /**
      * Returns a pseudo random <code>int</code> value in the range
      * <code>[min, max]</code> (fast and thread-safe without synchronization).
-     * 
+     *
      * @param min the minimum value inclusive.
      * @param max the maximum value exclusive.
      * @return a pseudo random number in the range <code>[min, max]</code>.
@@ -43,7 +43,7 @@ public final class MathLib {
         next += Integer.MIN_VALUE;
         if ((next >= min) && (next <= max))
             return next;
-        // We should not have interval overflow as the interval has to be less 
+        // We should not have interval overflow as the interval has to be less
         // or equal to Integer.MAX_VALUE (otherwise we would have exited before).
         final int interval = 1 + max - min; // Positive.
         if (interval <= 0)
@@ -56,7 +56,7 @@ public final class MathLib {
     /**
      * Returns a pseudo random <code>long</code> value in the range
      * <code>[min, max]</code> (fast and thread-safe without synchronization).
-     * 
+     *
      * @param min the minimum value inclusive.
      * @param max the maximum value inclusive.
      * @return a pseudo random number in the range <code>[min, max]</code>.
@@ -68,7 +68,7 @@ public final class MathLib {
         next += Long.MIN_VALUE;
         if ((next >= min) && (next <= max))
             return next;
-        // We should not have interval overflow as the interval has to be less 
+        // We should not have interval overflow as the interval has to be less
         // or equal to Long.MAX_VALUE (otherwise we would have exited before).
         final long interval = 1L + max - min; // Positive.
         if (interval <= 0)
@@ -79,20 +79,20 @@ public final class MathLib {
     /**
      * Returns a pseudo random <code>float</code> value in the range
      * <code>[min, max]</code> (fast and thread-safe without synchronization).
-     * 
+     *
      * @param min the minimum value inclusive.
      * @param max the maximum value inclusive.
      * @return a pseudo random number in the range <code>[min, max]</code>.
      * @JVM-1.1+@
      public static float random(float min, float max) {
-     return (float) random((double)min, (double) max);   
+     return (float) random((double)min, (double) max);
      }
      /**/
 
     /**
      * Returns a pseudo random <code>double</code> value in the range
      * <code>[min, max]</code> (fast and thread-safe without synchronization).
-     * 
+     *
      * @param min the minimum value inclusive.
      * @param max the maximum value inclusive.
      * @return a pseudo random number in the range <code>[min, max]</code>.
@@ -109,9 +109,9 @@ public final class MathLib {
      * of the specified <code>int</code>, excluding a sign bit.
      * For positive <code>int</code>, this is equivalent to the number of bits
      * in the ordinary binary representation. For negative <code>int</code>,
-     * it is equivalent to the number of bits of the positive value 
+     * it is equivalent to the number of bits of the positive value
      * <code>-(i + 1)</code>.
-     * 
+     *
      * @param i the <code>int</code> value for which the bit length is returned.
      * @return the bit length of <code>i</code>.
      */
@@ -143,9 +143,9 @@ public final class MathLib {
      * of the specified <code>long</code>, excluding a sign bit.
      * For positive <code>long</code>, this is equivalent to the number of bits
      * in the ordinary binary representation. For negative <code>long</code>,
-     * it is equivalent to the number of bits of the positive value 
+     * it is equivalent to the number of bits of the positive value
      * <code>-(l + 1)</code>.
-     * 
+     *
      * @param l the <code>long</code> value for which the bit length is returned.
      * @return the bit length of <code>l</code>.
      */
@@ -166,13 +166,13 @@ public final class MathLib {
     }
 
     /**
-     * Returns the number of digits in the minimal ten's-complement 
+     * Returns the number of digits in the minimal ten's-complement
      * representation of the specified <code>int</code>, excluding a sign bit.
      * For positive <code>int</code>, this is equivalent to the number of digit
      * in the ordinary decimal representation. For negative <code>int</code>,
-     * it is equivalent to the number of digit of the positive value 
+     * it is equivalent to the number of digit of the positive value
      * <code>-(i + 1)</code>.
-     * 
+     *
      * @param i the <code>int</code> value for which the digit length is returned.
      * @return the digit length of <code>i</code>.
      */
@@ -186,13 +186,13 @@ public final class MathLib {
     }
 
     /**
-     * Returns the number of digits in the minimal ten's-complement 
+     * Returns the number of digits in the minimal ten's-complement
      * representation of the specified <code>long</code>, excluding a sign bit.
      * For positive <code>long</code>, this is equivalent to the number of digit
      * in the ordinary decimal representation. For negative <code>long</code>,
-     * it is equivalent to the number of digit of the positive value 
+     * it is equivalent to the number of digit of the positive value
      * <code>-(value + 1)</code>.
-     * 
+     *
      * @param l the <code>long</code> value for which the digit length is returned.
      * @return the digit length of <code>l</code>.
      */
@@ -280,25 +280,25 @@ public final class MathLib {
      while (n != 0) {
      int i = (n >= POW5_INT.length) ? POW5_INT.length - 1 : n;
      int coef = POW5_INT[i]; // 31 bits max.
-     
+
      if (((int)x0) != 0) x0 *= coef; // 63 bits max.
      if (((int)x1) != 0) x1 *= coef; // 63 bits max.
      x2 *= coef; // 63 bits max.
      x3 *= coef; // 63 bits max.
-     
+
      x1 += x0 >>> 32;
      x0 &= MASK_32;
-     
+
      x2 += x1 >>> 32;
      x1 &= MASK_32;
-     
+
      x3 += x2 >>> 32;
      x2 &= MASK_32;
-     
+
      // Adjusts powers.
      pow2 += i;
      n -= i;
-     
+
      // Normalizes (x3 should be 32 bits max).
      long carry = x3 >>> 32;
      if (carry != 0) { // Shift.
@@ -309,7 +309,7 @@ public final class MathLib {
      pow2 += 32;
      }
      }
-     
+
      // Merges registers to a 63 bits mantissa.
      int shift = 31 - MathLib.bitLength(x3); // -1..30
      pow2 -= shift;
@@ -317,32 +317,32 @@ public final class MathLib {
      (x3 << 31) | (x2 >>> 1) : // x3 is 32 bits.
      (((x3 << 32) | x2) << shift) | (x1 >>> (32 - shift));
      return toDoublePow2(mantissa, pow2);
-     
+
      } else { // n < 0
      if (n < -324 - 20) // m less than 20 digits.
      return 0.0;
-     
+
      // Works with x1:x0 126 bits register.
      long x1 = m; // 63 bits.
      long x0 = 0; // 63 bits.
      int pow2 = 0;
      while (true) {
-     
+
      // Normalizes x1:x0
      int shift = 63 - MathLib.bitLength(x1);
      x1 <<= shift;
      x1 |= x0 >>> (63 - shift);
      x0 = (x0 << shift) & MASK_63;
      pow2 -= shift;
-     
+
      // Checks if division has to be performed.
      if (n == 0)
      break; // Done.
-     
+
      // Retrieves power of 5 divisor.
      int i = (-n >= POW5_INT.length) ? POW5_INT.length - 1 : -n;
      int divisor = POW5_INT[i];
-     
+
      // Performs the division (126 bits by 31 bits).
      long wh = (x1 >>> 32);
      long qh = wh / divisor;
@@ -351,14 +351,14 @@ public final class MathLib {
      long ql = wl / divisor;
      r = wl - ql * divisor;
      x1 = (qh << 32) | ql;
-     
+
      wh = (r << 31) | (x0 >>> 32);
      qh = wh / divisor;
      r = wh - qh * divisor;
      wl = (r << 32) | (x0 & MASK_32);
      ql = wl / divisor;
      x0 = (qh << 32) | ql;
-     
+
      // Adjusts powers.
      n += i;
      pow2 -= i;
@@ -366,11 +366,11 @@ public final class MathLib {
      return toDoublePow2(x1, pow2);
      }
      }
-     
+
      private static final long MASK_63 = 0x7FFFFFFFFFFFFFFFL;
-     
+
      private static final long MASK_32 = 0xFFFFFFFFL;
-     
+
      private static final int[] POW5_INT = { 1, 5, 25, 125, 625, 3125, 15625,
      78125, 390625, 1953125, 9765625, 48828125, 244140625, 1220703125 };
      /**/
@@ -401,7 +401,7 @@ public final class MathLib {
      if (shift <= -64) return 0L;
      if (shift >= 11) throw new  ArithmeticException(
      "Cannot convert to long (overflow)");
-     m = (shift >= 0) ? m << shift : 
+     m = (shift >= 0) ? m << shift :
      (m >> -shift) + ((m >> -(shift + 1)) & 1) ; // Rounding.
      return isNegative ? -m : m;
      }
@@ -438,25 +438,25 @@ public final class MathLib {
      while (n != 0) {
      int i = (n >= POW5_INT.length) ? POW5_INT.length - 1 : n;
      int coef = POW5_INT[i]; // 31 bits max.
-     
+
      if (((int)x0) != 0) x0 *= coef; // 63 bits max.
      if (((int)x1) != 0) x1 *= coef; // 63 bits max.
      x2 *= coef; // 63 bits max.
      x3 *= coef; // 63 bits max.
-     
+
      x1 += x0 >>> 32;
      x0 &= MASK_32;
-     
+
      x2 += x1 >>> 32;
      x1 &= MASK_32;
-     
+
      x3 += x2 >>> 32;
      x2 &= MASK_32;
-     
+
      // Adjusts powers.
      pow2 += i;
      n -= i;
-     
+
      // Normalizes (x3 should be 32 bits max).
      long carry = x3 >>> 32;
      if (carry != 0) { // Shift.
@@ -467,36 +467,36 @@ public final class MathLib {
      pow2 += 32;
      }
      }
-     
+
      // Merges registers to a 63 bits mantissa.
      int shift = 31 - MathLib.bitLength(x3); // -1..30
      pow2 -= shift;
      m = (shift < 0) ?
      (x3 << 31) | (x2 >>> 1) : // x3 is 32 bits.
      (((x3 << 32) | x2) << shift) | (x1 >>> (32 - shift));
-     
+
      } else { // n < 0
-     
+
      // Works with x1:x0 126 bits register.
      long x1 = m; // 63 bits.
      long x0 = 0; // 63 bits.
      while (true) {
-     
+
      // Normalizes x1:x0
      int shift = 63 - MathLib.bitLength(x1);
      x1 <<= shift;
      x1 |= x0 >>> (63 - shift);
      x0 = (x0 << shift) & MASK_63;
      pow2 -= shift;
-     
+
      // Checks if division has to be performed.
      if (n == 0)
      break; // Done.
-     
+
      // Retrieves power of 5 divisor.
      int i = (-n >= POW5_INT.length) ? POW5_INT.length - 1 : -n;
      int divisor = POW5_INT[i];
-     
+
      // Performs the division (126 bits by 31 bits).
      long wh = (x1 >>> 32);
      long qh = wh / divisor;
@@ -505,14 +505,14 @@ public final class MathLib {
      long ql = wl / divisor;
      r = wl - ql * divisor;
      x1 = (qh << 32) | ql;
-     
+
      wh = (r << 31) | (x0 >>> 32);
      qh = wh / divisor;
      r = wh - qh * divisor;
      wl = (r << 32) | (x0 & MASK_32);
      ql = wl / divisor;
      x0 = (qh << 32) | ql;
-     
+
      // Adjusts powers.
      n += i;
      pow2 -= i;
@@ -541,7 +541,7 @@ public final class MathLib {
      int exp = ((int)(bits >> 52)) & 0x7FF;
      if (exp == 0x7FF) throw new ArithmeticException("Infinity or NaN");
      if (exp == 0)  // Degenerated.
-     return floorLog2(d * 18014398509481984L) - 54;  // 2^54 Exact.       
+     return floorLog2(d * 18014398509481984L) - 54;  // 2^54 Exact.
      return exp - 1023;
      }
      /**/
@@ -563,7 +563,7 @@ public final class MathLib {
      if (pow10 > d)  // Too large.
      return guess - 1;
      return guess + 1;
-     }    
+     }
      private static final double LOG2_DIV_LOG10 = 0.3010299956639811952137388947;
      /**/
 
@@ -571,7 +571,7 @@ public final class MathLib {
      * The natural logarithm.
      * @JVM-1.1+@
      public static final double E = 2.71828182845904523536028747135266;
-     
+
      /**
      * The ratio of the circumference of a circle to its diameter.
      * @JVM-1.1+@*/
@@ -586,32 +586,32 @@ public final class MathLib {
      * Twice the ratio of the circumference of a circle to its diameter.
      * @JVM-1.1+@*/
      public static final double TWO_PI = 6.283185307179586476925286766559;
-     
+
      /**
      * Four time the ratio of the circumference of a circle to its diameter.
      * @JVM-1.1+@
      public static final double FOUR_PI = 12.566370614359172953850573533118;
-     
+
      /**
      * Holds {@link #PI} * {@link #PI}.
      * @JVM-1.1+@
      public static final double PI_SQUARE = 9.8696044010893586188344909998762;
-     
+
      /**
      * The natural logarithm of two.
      * @JVM-1.1+@
      public static final double LOG2 = 0.69314718055994530941723212145818;
-     
+
      /**
      * The natural logarithm of ten.
      * @JVM-1.1+@
      public static final double LOG10 = 2.3025850929940456840179914546844;
-     
+
      /**
      * The square root of two.
      * @JVM-1.1+@
      public static final double SQRT2 = 1.4142135623730950488016887242097;
-     
+
      /**
      * Not-A-Number.
      * @JVM-1.1+@ */
@@ -648,7 +648,7 @@ public final class MathLib {
 
     /**
      * Returns the positive square root of the specified value.
-     * 
+     *
      * @param x the value.
      * @return <code>java.lang.Math.sqrt(x)</code>
      * @JVM-1.1+@ */
@@ -666,7 +666,7 @@ public final class MathLib {
      * @JVM-1.1+@
      public static double rem(double x, double y) {
      double tmp = x / y;
-     if (MathLib.abs(tmp) <= Long.MAX_VALUE) { 
+     if (MathLib.abs(tmp) <= Long.MAX_VALUE) {
      return x - MathLib.round(tmp) * y;
      } else {
      return NaN;
@@ -675,8 +675,8 @@ public final class MathLib {
      /**/
 
     /**
-     * Returns the smallest (closest to negative infinity) 
-     * <code>double</code> value that is not less than the argument and is 
+     * Returns the smallest (closest to negative infinity)
+     * <code>double</code> value that is not less than the argument and is
      * equal to a mathematical integer.
      *
      * @param x the value.
@@ -688,8 +688,8 @@ public final class MathLib {
      /**/
 
     /**
-     * Returns the largest (closest to positive infinity) 
-     * <code>double</code> value that is not greater than the argument and 
+     * Returns the largest (closest to positive infinity)
+     * <code>double</code> value that is not greater than the argument and
      * is equal to a mathematical integer.
      *
      * @param x the value.
@@ -702,7 +702,7 @@ public final class MathLib {
 
     /**
      * Returns the trigonometric sine of the specified angle in radians.
-     * 
+     *
      * @param radians the angle in radians.
      * @return <code>java.lang.Math.sin(radians)</code>
      * @JVM-1.1+@
@@ -713,7 +713,7 @@ public final class MathLib {
 
     /**
      * Returns the trigonometric cosine of the specified angle in radians.
-     * 
+     *
      * @param radians the angle in radians.
      * @return <code>java.lang.Math.cos(radians)</code>
      * @JVM-1.1+@
@@ -724,7 +724,7 @@ public final class MathLib {
 
     /**
      * Returns the trigonometric tangent of the specified angle in radians.
-     * 
+     *
      * @param radians the angle in radians.
      * @return <code>java.lang.Math.tan(radians)</code>
      * @JVM-1.1+@
@@ -734,8 +734,8 @@ public final class MathLib {
      /**/
 
     /**
-     * Returns the arc sine of the specified value, 
-     * in the range of -<i>pi</i>/2 through <i>pi</i>/2. 
+     * Returns the arc sine of the specified value,
+     * in the range of -<i>pi</i>/2 through <i>pi</i>/2.
      *
      * @param x the value whose arc sine is to be returned.
      * @return the arc sine in radians for the specified value.
@@ -749,7 +749,7 @@ public final class MathLib {
 
     /**
      * Returns the arc cosine of the specified value,
-     * in the range of 0.0 through <i>pi</i>. 
+     * in the range of 0.0 through <i>pi</i>.
      *
      * @param x the value whose arc cosine is to be returned.
      * @return the arc cosine in radians for the specified value.
@@ -761,12 +761,12 @@ public final class MathLib {
 
     /**
      * Returns the arc tangent of the specified value,
-     * in the range of -<i>pi</i>/2 through <i>pi</i>/2.  
+     * in the range of -<i>pi</i>/2 through <i>pi</i>/2.
      *
      * @param x the value whose arc tangent is to be returned.
      * @return the arc tangent in radians for the specified value.
      * @see <a href="http://mathworld.wolfram.com/InverseTangent.html">
-     *      Inverse Tangent -- from MathWorld</a> 
+     *      Inverse Tangent -- from MathWorld</a>
      * @JVM-1.1+@ */
      public static double atan(double x) {
      return MathLib._atan(x);
@@ -775,7 +775,7 @@ public final class MathLib {
 
     /**
      * Returns the angle theta such that
-     * <code>(x == cos(theta)) && (y == sin(theta))</code>. 
+     * <code>(x == cos(theta)) && (y == sin(theta))</code>.
      *
      * @param y the y value.
      * @param x the x value.
@@ -793,14 +793,14 @@ public final class MathLib {
      } else if( y < -epsilon) {
      return 3 * HALF_PI;
      } else {
-     return 0.0; 
+     return 0.0;
      }
      }
      /**/
 
     /**
      * Returns the hyperbolic sine of x.
-     * 
+     *
      * @param x the value for which the hyperbolic sine is calculated.
      * @return <code>(exp(x) - exp(-x)) / 2</code>
      * @JVM-1.1+@*/
@@ -811,7 +811,7 @@ public final class MathLib {
 
     /**
      * Returns the hyperbolic cosine of x.
-     * 
+     *
      * @param x the value for which the hyperbolic cosine is calculated.
      * @return <code>(exp(x) + exp(-x)) / 2</code>
      * @JVM-1.1+@*/
@@ -822,7 +822,7 @@ public final class MathLib {
 
     /**
      * Returns the hyperbolic tangent of x.
-     * 
+     *
      * @param x the value for which the hyperbolic tangent is calculated.
      * @return <code>(exp(2 * x) - 1) / (exp(2 * x) + 1)</code>
      * @JVM-1.1+@*/
@@ -837,7 +837,7 @@ public final class MathLib {
      * @param x the exponent.
      * @return <code><i>e</i><sup>x</sup></code>
      * @see <a href="http://mathworld.wolfram.com/ExponentialFunction.html">
-     *      Exponential Function -- from MathWorld</a> 
+     *      Exponential Function -- from MathWorld</a>
      * @JVM-1.1+@*/
      public static double exp(double x) {
      return MathLib._ieee754_exp(x);
@@ -865,12 +865,12 @@ public final class MathLib {
      public static double log10(double x) {
      return log(x) * INV_LOG10;
      }
-     private static double INV_LOG10 = 0.43429448190325182765112891891661;    
+     private static double INV_LOG10 = 0.43429448190325182765112891891661;
      /**/
 
     /**
      * Returns the value of the first argument raised to the power of the
-     * second argument. 
+     * second argument.
      *
      * @param x the base.
      * @param y the exponent.
@@ -878,18 +878,18 @@ public final class MathLib {
      * @JVM-1.1+@*/
      public static double pow(double x, double y) {
      /**/
-    /* @JVM-1.4+@ // Use java.lang.Math value. 
+    /* @JVM-1.4+@ // Use java.lang.Math value.
      if (true) return Math.pow(x, y);
      /**/
     /* @JVM-1.1+@ // Else (J2ME) use close approximation (+/- LSB)*/
-     if ((x < 0) && (y == (int)y)) return 
+     if ((x < 0) && (y == (int)y)) return
      (((int)y) & 1) == 0 ? pow(-x, y) : -pow(-x, y);
      return MathLib.exp(y * MathLib.log(x));
      }
      /**/
 
     /**
-     * Returns the closest <code>int</code> to the specified argument. 
+     * Returns the closest <code>int</code> to the specified argument.
      *
      * @param f the <code>float</code> value to be rounded to a <code>int</code>
      * @return the nearest <code>int</code> value.
@@ -900,9 +900,9 @@ public final class MathLib {
      /**/
 
     /**
-     * Returns the closest <code>long</code> to the specified argument. 
+     * Returns the closest <code>long</code> to the specified argument.
      *
-     * @param d the <code>double</code> value to be rounded to a 
+     * @param d the <code>double</code> value to be rounded to a
      *        <code>long</code>
      * @return the nearest <code>long</code> value.
      * @JVM-1.1+@
@@ -913,8 +913,8 @@ public final class MathLib {
 
     /**
      * Returns a random number between zero and one.
-     *  
-     * @return  a <code>double</code> greater than or equal 
+     *
+     * @return  a <code>double</code> greater than or equal
      *          to <code>0.0</code> and less than <code>1.0</code>.
      * @JVM-1.1+@
      public static double random() {
@@ -966,7 +966,7 @@ public final class MathLib {
      /**/
 
     /**
-     * Returns the greater of two <code>int</code> values. 
+     * Returns the greater of two <code>int</code> values.
      *
      * @param x the first value.
      * @param y the second value.
@@ -977,7 +977,7 @@ public final class MathLib {
     }
 
     /**
-     * Returns the greater of two <code>long</code> values. 
+     * Returns the greater of two <code>long</code> values.
      *
      * @param x the first value.
      * @param y the second value.
@@ -988,7 +988,7 @@ public final class MathLib {
     }
 
     /**
-     * Returns the greater of two <code>float</code> values. 
+     * Returns the greater of two <code>float</code> values.
      *
      * @param x the first value.
      * @param y the second value.
@@ -1000,7 +1000,7 @@ public final class MathLib {
      /**/
 
     /**
-     * Returns the greater of two <code>double</code> values. 
+     * Returns the greater of two <code>double</code> values.
      *
      * @param x the first value.
      * @param y the second value.
@@ -1012,7 +1012,7 @@ public final class MathLib {
      /**/
 
     /**
-     * Returns the smaller of two <code>int</code> values. 
+     * Returns the smaller of two <code>int</code> values.
      *
      * @param x the first value.
      * @param y the second value.
@@ -1023,7 +1023,7 @@ public final class MathLib {
     }
 
     /**
-     * Returns the smaller of two <code>long</code> values. 
+     * Returns the smaller of two <code>long</code> values.
      *
      * @param x the first value.
      * @param y the second value.
@@ -1034,7 +1034,7 @@ public final class MathLib {
     }
 
     /**
-     * Returns the smaller of two <code>float</code> values. 
+     * Returns the smaller of two <code>float</code> values.
      *
      * @param x the first value.
      * @param y the second value.
@@ -1046,7 +1046,7 @@ public final class MathLib {
      /**/
 
     /**
-     * Returns the smaller of two <code>double</code> values. 
+     * Returns the smaller of two <code>double</code> values.
      *
      * @param x the first value.
      * @param y the second value.
@@ -1059,30 +1059,30 @@ public final class MathLib {
 
      static final double atanhi[] = {
      4.63647609000806093515e-01, // atan(0.5)hi 0x3FDDAC67, 0x0561BB4F
-     7.85398163397448278999e-01, // atan(1.0)hi 0x3FE921FB, 0x54442D18 
-     9.82793723247329054082e-01, // atan(1.5)hi 0x3FEF730B, 0xD281F69B 
-     1.57079632679489655800e+00, // atan(inf)hi 0x3FF921FB, 0x54442D18 
+     7.85398163397448278999e-01, // atan(1.0)hi 0x3FE921FB, 0x54442D18
+     9.82793723247329054082e-01, // atan(1.5)hi 0x3FEF730B, 0xD281F69B
+     1.57079632679489655800e+00, // atan(inf)hi 0x3FF921FB, 0x54442D18
      };
      static final double atanlo[] = {
-     2.26987774529616870924e-17, // atan(0.5)lo 0x3C7A2B7F, 0x222F65E2 
+     2.26987774529616870924e-17, // atan(0.5)lo 0x3C7A2B7F, 0x222F65E2
      3.06161699786838301793e-17, // atan(1.0)lo 0x3C81A626, 0x33145C07
      1.39033110312309984516e-17, // atan(1.5)lo 0x3C700788, 0x7AF0CBBD
-     6.12323399573676603587e-17, // atan(inf)lo 0x3C91A626, 0x33145C07 
+     6.12323399573676603587e-17, // atan(inf)lo 0x3C91A626, 0x33145C07
      };
      static final double aT[] = {
-     3.33333333333329318027e-01, // 0x3FD55555, 0x5555550D 
-     -1.99999999998764832476e-01, // 0xBFC99999, 0x9998EBC4 
-     1.42857142725034663711e-01, // 0x3FC24924, 0x920083FF 
-     -1.11111104054623557880e-01, // 0xBFBC71C6, 0xFE231671 
-     9.09088713343650656196e-02, // 0x3FB745CD, 0xC54C206E 
-     -7.69187620504482999495e-02, // 0xBFB3B0F2, 0xAF749A6D 
-     6.66107313738753120669e-02, // 0x3FB10D66, 0xA0D03D51 
-     -5.83357013379057348645e-02, // 0xBFADDE2D, 0x52DEFD9A 
-     4.97687799461593236017e-02, // 0x3FA97B4B, 0x24760DEB 
-     -3.65315727442169155270e-02, // 0xBFA2B444, 0x2C6A6C2F 
-     1.62858201153657823623e-02, // 0x3F90AD3A, 0xE322DA11 
+     3.33333333333329318027e-01, // 0x3FD55555, 0x5555550D
+     -1.99999999998764832476e-01, // 0xBFC99999, 0x9998EBC4
+     1.42857142725034663711e-01, // 0x3FC24924, 0x920083FF
+     -1.11111104054623557880e-01, // 0xBFBC71C6, 0xFE231671
+     9.09088713343650656196e-02, // 0x3FB745CD, 0xC54C206E
+     -7.69187620504482999495e-02, // 0xBFB3B0F2, 0xAF749A6D
+     6.66107313738753120669e-02, // 0x3FB10D66, 0xA0D03D51
+     -5.83357013379057348645e-02, // 0xBFADDE2D, 0x52DEFD9A
+     4.97687799461593236017e-02, // 0x3FA97B4B, 0x24760DEB
+     -3.65315727442169155270e-02, // 0xBFA2B444, 0x2C6A6C2F
+     1.62858201153657823623e-02, // 0x3F90AD3A, 0xE322DA11
      };
-     static final double 
+     static final double
      one   = 1.0,
      huge   = 1.0e300;
      static double _atan(double x)
@@ -1095,7 +1095,7 @@ public final class MathLib {
 
      hx = __HIx;
      ix = hx&0x7fffffff;
-     if(ix>=0x44100000) {	// if |x| >= 2^66 
+     if(ix>=0x44100000) {	// if |x| >= 2^66
      if(ix>0x7ff00000||
      (ix==0x7ff00000&&(__LOx!=0)))
      return x+x;		// NaN
@@ -1110,9 +1110,9 @@ public final class MathLib {
      x = MathLib.abs(x);
      if (ix < 0x3ff30000) {		// |x| < 1.1875
      if (ix < 0x3fe60000) {	// 7/16 <=|x|<11/16
-     id = 0; x = (2.0*x-one)/(2.0+x); 
+     id = 0; x = (2.0*x-one)/(2.0+x);
      } else {			// 11/16<=|x|< 19/16
-     id = 1; x  = (x-one)/(x+one); 
+     id = 1; x  = (x-one)/(x+one);
      }
      } else {
      if (ix < 0x40038000) {	// |x| < 2.4375
@@ -1151,21 +1151,21 @@ public final class MathLib {
      {
      double hfsq,f,s,z,R,w,t1,t2,dk;
      int k,hx,i,j;
-     int lx; // unsigned 
+     int lx; // unsigned
 
      long xBits = Double.doubleToLongBits(x);
      hx = (int) (xBits >> 32);
      lx = (int) xBits;
 
      k=0;
-     if (hx < 0x00100000) {			// x < 2**-1022 
-     if (((hx&0x7fffffff)|lx)==0) 
+     if (hx < 0x00100000) {			// x < 2**-1022
+     if (((hx&0x7fffffff)|lx)==0)
      return -two54/zero;		// log(+-0)=-inf
      if (hx<0) return (x-x)/zero;	// log(-#) = NaN
      k -= 54; x *= two54; // subnormal number, scale up x
      xBits = Double.doubleToLongBits(x);
      hx = (int) (xBits >> 32); // high word of x
-     } 
+     }
      if (hx >= 0x7ff00000) return x+x;
      k += (hx>>20)-1023;
      hx &= 0x000fffff;
@@ -1183,14 +1183,14 @@ public final class MathLib {
      if(k==0) return f-R; else {dk=(double)k;
      return dk*ln2_hi-((R-dk*ln2_lo)-f);}
      }
-     s = f/(2.0+f); 
+     s = f/(2.0+f);
      dk = (double)k;
      z = s*s;
      i = hx-0x6147a;
      w = z*z;
      j = 0x6b851-hx;
-     t1= w*(Lg2+w*(Lg4+w*Lg6)); 
-     t2= z*(Lg1+w*(Lg3+w*(Lg5+w*Lg7))); 
+     t1= w*(Lg2+w*(Lg4+w*Lg6));
+     t2= z*(Lg1+w*(Lg3+w*(Lg5+w*Lg7)));
      i |= j;
      R = t2+t1;
      if(i>0) {
@@ -1201,7 +1201,7 @@ public final class MathLib {
      if(k==0) return f-s*(f-R); else
      return dk*ln2_hi-((s*(f-R)-dk*ln2_lo)-f);
      }
-     }    
+     }
      static final double
      halF[]	= {0.5,-0.5,},
      twom1000= 9.33263618503218878990e-302,     // 2**-1000=0x01700000,0
@@ -1233,7 +1233,7 @@ public final class MathLib {
      // filter out non-finite argument
      if(hx >= 0x40862E42) {			// if |x|>=709.78...
      if(hx>=0x7ff00000) {
-     if(((hx&0xfffff)|__LOx)!=0) 
+     if(((hx&0xfffff)|__LOx)!=0)
      return x+x; 		// NaN
      else return (xsb==0)? x:0.0;	// exp(+-inf)={inf,0}
      }
@@ -1242,7 +1242,7 @@ public final class MathLib {
      }
 
      // argument reduction
-     if(hx > 0x3fd62e42) {		// if  |x| > 0.5 ln2 
+     if(hx > 0x3fd62e42) {		// if  |x| > 0.5 ln2
      if(hx < 0x3FF0A2B2) {	// and |x| < 1.5 ln2
      hi = x-ln2HI[xsb]; lo=ln2LO[xsb]; k = 1-xsb-xsb;
      } else {
@@ -1252,7 +1252,7 @@ public final class MathLib {
      lo = t*ln2LO[0];
      }
      x  = hi - lo;
-     } 
+     }
      else if(hx < 0x3e300000)  {	// when |x|<2**-28
      if(huge+x>one) return one+x;// trigger inexact
      }
@@ -1261,7 +1261,7 @@ public final class MathLib {
      // x is now in primary range
      t  = x*x;
      c  = x - t*(P1+t*(P2+t*(P3+t*(P4+t*P5))));
-     if(k==0) 	return one-((x*c)/(c-2.0)-x); 
+     if(k==0) 	return one-((x*c)/(c-2.0)-x);
      else 		y = one-((lo-(x*c)/(2.0-c))-hi);
      long yBits = Double.doubleToLongBits(y);
      int __HIy = (int) (yBits >> 32);
@@ -1271,7 +1271,7 @@ public final class MathLib {
      y = Double.longBitsToDouble(yBits);
      return y;
      } else {
-     __HIy += ((k+1000)<<20);// add k to y's exponent 
+     __HIy += ((k+1000)<<20);// add k to y's exponent
      yBits = ((__HIy & 0xFFFFFFFFL) << 32) | (yBits & 0xFFFFFFFFL);
      y = Double.longBitsToDouble(yBits);
      return y*twom1000;

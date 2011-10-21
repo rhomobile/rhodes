@@ -6,21 +6,21 @@
 #       by Keiju ISHITSUKA(SHL Japan Inc.)
 #
 # Documentation by Kevin Jackson and Gavin Sinclair.
-# 
+#
 # When you <tt>require 'rational'</tt>, all interactions between numbers
 # potentially return a rational result.  For example:
 #
 #   1.quo(2)              # -> 0.5
 #   require 'rational'
 #   1.quo(2)              # -> Rational(1,2)
-# 
+#
 # See Rational for full documentation.
 #
 
 
 #
 # Creates a Rational number (i.e. a fraction).  +a+ and +b+ should be Integers:
-# 
+#
 #   Rational(1,3)           # -> 1/3
 #
 # Note: trying to construct a Rational with floating point or real values
@@ -51,7 +51,7 @@ end
 # Examples:
 #   Rational(5,6)             # -> 5/6
 #   Rational(5)               # -> 5/1
-# 
+#
 # Rational numbers are reduced to their lowest terms:
 #   Rational(6,10)            # -> 3/5
 #

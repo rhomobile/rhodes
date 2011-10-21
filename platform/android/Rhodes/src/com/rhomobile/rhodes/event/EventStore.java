@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -42,12 +42,12 @@ import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.event.Event;
 
 public class EventStore {
-	
+
 	private static final String TAG = "EventStore";
-	
+
 	private static final String AUTHORITY = Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO ? "com.android.calendar" : "calendar";
 	private static final Uri EVENTS_URI = Uri.parse("content://" + AUTHORITY + "/events");
-	
+
 	private static final String EVENTS_ID = "_id";
 	private static final String EVENTS_TITLE = "title";
 	private static final String EVENTS_START_DATE = "dtstart";
@@ -60,7 +60,7 @@ public class EventStore {
 	private static final String EVENTS_BEGIN = "begin";
 	private static final String EVENTS_END = "end";
 	private static final String EVENTS_RRULE = "rrule";
-	
+
 	private static final String EVENTS_RPARAM_FREQ = "FREQ";
 	private static final String EVENTS_RPARAM_INTERVAL = "INTERVAL";
 
@@ -69,19 +69,19 @@ public class EventStore {
 		if ( e != null )
 		    e.printStackTrace();
 	}
-	
+
 	private static String dateToString(Date date) {
 		if (null == date) return "null";
 		return String.format("%04d-%02d-%02d %02d:%02d:%02d",
 				date.getYear() + 1900, date.getMonth() + 1, date.getDate(),
 				date.getHours(), date.getMinutes(), date.getSeconds());
 	}
-	
+
 	private static void checkCapabilities() throws IllegalAccessException {
 		if (!Capabilities.CALENDAR_ENABLED)
 			throw new IllegalAccessException("Capability CALENDAR disabled");
 	}
-	
+
 	public static boolean hasCalendar() {
 		if (!Capabilities.CALENDAR_ENABLED) {
 			Logger.E(TAG, "Calendar capability is not enabled !!!");
@@ -104,11 +104,11 @@ public class EventStore {
 		}
 		return false;
 	}
-	
+
 	private static ContentResolver getContentResolver() {
 		return RhodesService.getInstance().getContentResolver();
 	}
-	
+
 	private static long getDefaultCalendarId() {
 		final Cursor calendarCursor = getContentResolver().query(
 				Uri.parse("content://" + AUTHORITY + "/calendars"),
@@ -124,7 +124,7 @@ public class EventStore {
 			calendarCursor.close();
 		}
 	}
-	
+
 	private static Event parseRepetition(Cursor cursor, Event event) {
 		try {
 			String rrule = cursor.getString(cursor.getColumnIndex(EVENTS_RRULE));
@@ -144,27 +144,27 @@ public class EventStore {
 		} catch (Exception ex) {
 			reportFail("parseRepetition(cursor, event)", ex);
 		}
-		
+
 		return event;
 	}
-	
+
 	public static Object fetch(Date startDate, Date endDate, boolean includeRepeating) {
 		try {
 			checkCapabilities();
-			
+
 			Logger.D(TAG, "fetch(start, end), start: " + dateToString(startDate) + ", end: " + dateToString(endDate)
 					+ ", includeRepeating: " +includeRepeating);
-			
+
 			Vector<Event> ret = new Vector<Event>();
-			
+
 			ContentResolver r = getContentResolver();
-			
+
 			Cursor eventCursor;
 			if (includeRepeating) {
 				Uri.Builder builder = Uri.parse("content://" + AUTHORITY + "/instances/when").buildUpon();
 				ContentUris.appendId(builder, startDate.getTime());
 				ContentUris.appendId(builder, endDate.getTime());
-				
+
 				eventCursor = r.query(builder.build(),
 						new String[] {"event_id", EVENTS_TITLE, EVENTS_BEGIN, EVENTS_END, EVENTS_LOCATION,
 							EVENTS_NOTES, EVENTS_PRIVACY, EVENTS_DELETED, EVENTS_RRULE},
@@ -194,26 +194,26 @@ public class EventStore {
 							continue;
 						}
 					}
-					
+
 					String eid = eventCursor.getString(eventCursor.getColumnIndex(EVENTS_ID));
 					Event event = new Event(eid);
-					
+
 					long longDtStart = eventCursor.getLong(eventCursor.getColumnIndex(EVENTS_START_DATE));
 					long longDtEnd = eventCursor.getLong(eventCursor.getColumnIndex(EVENTS_END_DATE));
-					
+
 					Date eventStartDate = 0 < longDtStart ? new Date(longDtStart) : null;
 					Date eventEndDate = 0 < longDtEnd ? new Date(longDtEnd) : null;
-					
+
 					if (null != eventStartDate && null != eventEndDate && eventStartDate.after(eventEndDate)) {
 						Date tmp = eventStartDate;
 						eventStartDate = eventEndDate;
 						eventEndDate = tmp;
 					}
-					
+
 					if (null != eventStartDate && null != eventEndDate
 							&& (eventEndDate.before(startDate) || eventStartDate.after(endDate)))
 						continue;
-					
+
 					event.title = eventCursor.getString(eventCursor.getColumnIndex(EVENTS_TITLE));
 					event.startDate = eventStartDate;
 					event.endDate = eventEndDate;
@@ -225,7 +225,7 @@ public class EventStore {
 						case 3: event.privacy = "public"; break;
 					}
 					parseRepetition(eventCursor, event);
-					
+
 					Logger.D(TAG, "Event: id: " + event.id +
 							", title: " + event.title +
 							", begin: " + dateToString(event.startDate) +
@@ -239,7 +239,7 @@ public class EventStore {
 			finally {
 				eventCursor.close();
 			}
-			
+
 			return ret;
 		}
 		catch (Exception e) {
@@ -248,15 +248,15 @@ public class EventStore {
 			return error == null ? "unknown" : error;
 		}
 	}
-	
+
 	public static Object fetch(String id) {
 		try {
 			checkCapabilities();
-			
+
 			Logger.D(TAG, "fetch(id)");
-			
+
 			ContentResolver r = getContentResolver();
-			
+
 			Uri uri = ContentUris.withAppendedId(EVENTS_URI, Long.parseLong(id));
 			final Cursor eventCursor = r.query(uri,
 					new String[] {EVENTS_TITLE, EVENTS_START_DATE, EVENTS_END_DATE,
@@ -264,25 +264,25 @@ public class EventStore {
 					null, null, null);
 			if (eventCursor == null)
 				throw new RuntimeException("Calendar provider not found");
-			
+
 			try {
 				if (!eventCursor.moveToFirst()) {
 					Logger.D(TAG, "fetch(id): result set is empty");
 					return null;
 				}
-				
+
 				long longDtStart = eventCursor.getLong(eventCursor.getColumnIndex(EVENTS_START_DATE));
 				long longDtEnd = eventCursor.getLong(eventCursor.getColumnIndex(EVENTS_END_DATE));
-				
+
 				Date eventStartDate = 0 < longDtStart ? new Date(longDtStart) : null;
 				Date eventEndDate = 0 < longDtEnd ? new Date(longDtEnd) : null;
-				
+
 				if (null != eventStartDate && null != eventEndDate && eventStartDate.after(eventEndDate)) {
 					Date tmp = eventStartDate;
 					eventStartDate = eventEndDate;
 					eventEndDate = tmp;
 				}
-				
+
 				Event event = new Event(id);
 				event.title = eventCursor.getString(eventCursor.getColumnIndex(EVENTS_TITLE));
 				event.startDate = eventStartDate;
@@ -295,14 +295,14 @@ public class EventStore {
 				case 3: event.privacy = "public"; break;
 				}
 				parseRepetition(eventCursor, event);
-				
+
 				Logger.D(TAG, "Event: id: " + event.id +
 						", title: " + event.title +
 						", begin: " + dateToString(event.startDate) +
 						", end: " + dateToString(event.endDate) +
 						", freq: " + event.frequency +
 						", interval: " + Integer.toString(event.interval));
-				
+
 				return event;
 			}
 			finally {
@@ -315,25 +315,25 @@ public class EventStore {
 			return error == null ? "unknown" : error;
 		}
 	}
-	
+
 	public static String save(Event event) {
 		String return_id = null;
 		try {
 			checkCapabilities();
-			
+
 			Logger.D(TAG, "save(event)");
-			
+
 			ContentValues values = new ContentValues();
 			values.put(EVENTS_TITLE, event.title);
-			
+
 			if (null != event.startDate) {
 				values.put(EVENTS_START_DATE, event.startDate.getTime());
 			}
-			
+
 			if (null != event.endDate) {
 				values.put(EVENTS_END_DATE, event.endDate.getTime());
 			}
-			
+
 			if (event.location != null) {
 				values.put(EVENTS_LOCATION, event.location);
 			}
@@ -352,7 +352,7 @@ public class EventStore {
 					privacy = 3;
 				values.put(EVENTS_PRIVACY, privacy);
 			}
-			
+
 			if (null != event.frequency && 0 < event.frequency.length()) {
 				String rrule = EVENTS_RPARAM_FREQ + "=" + event.frequency.toUpperCase();
 				if (0 < event.interval) {
@@ -363,7 +363,7 @@ public class EventStore {
 				if (null != event.startDate && null != event.startDate ) {
 					duration = (event.endDate.getTime() - event.startDate.getTime()) / 1000 /*ms in sec*/;
 				}
-				
+
 				values.put(EVENTS_DURATION, "P" + Long.toString(duration) + "S");
 			}
 
@@ -377,9 +377,9 @@ public class EventStore {
 
 			long calendarId = getDefaultCalendarId();
 			values.put("calendar_id", calendarId);
-			
+
 			ContentResolver r = getContentResolver();
-					
+
 			if (event.id == null || event.id.equalsIgnoreCase("")) {
 				Logger.D(TAG, "Insert new event...");
 				Uri euri = r.insert(EVENTS_URI, values);
@@ -404,13 +404,13 @@ public class EventStore {
 		}
 		return return_id;
 	}
-	
+
 	public static String delete(String id) {
 		try {
 			checkCapabilities();
-			
+
 			Logger.D(TAG, "delete("+id+")");
-			
+
 			ContentResolver r = getContentResolver();
 			int rows;
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
@@ -427,7 +427,7 @@ public class EventStore {
 				r.notifyChange(EVENTS_URI, null);
 			}
 			Logger.D(TAG, String.format("%d rows deleted", rows));
-			
+
 			return null;
 		}
 		catch (Exception e) {
@@ -436,5 +436,5 @@ public class EventStore {
 			return error == null ? "unknown" : error;
 		}
 	}
-	
+
 }

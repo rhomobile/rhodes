@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -41,15 +41,15 @@ static CFStringRef getAddressPartValue(ABRecordRef record, const char* property)
 
 void* openPhonebook() {
 	if (logging_enable) RAWLOG_INFO("phonebook :: openPhonebook");
-	
+
 	LocalPhonebook* phonebook = CFAllocatorAllocate(NULL, sizeof(LocalPhonebook), 0);
-	
+
 	// Fail if unable to create context
 	if (phonebook == NULL)
 		return NULL;
-	
+
 	memset(phonebook, 0, sizeof(LocalPhonebook));
-	
+
 	phonebook->_ab = ABAddressBookCreate();
 	if (phonebook->_ab) {
 		phonebook->_people = NULL;
@@ -80,7 +80,7 @@ static void _getAllPeople(LocalPhonebook* phonebook) {
 		if	(phonebook->_people) {
 			CFRelease(phonebook->_people);
 		}
-		phonebook->_people = ABAddressBookCopyArrayOfAllPeople(phonebook->_ab);	
+		phonebook->_people = ABAddressBookCopyArrayOfAllPeople(phonebook->_ab);
 		if (phonebook->_people) {
 			phonebook->_len = ABAddressBookGetPersonCount(phonebook->_ab);
 			phonebook->_index = 0;
@@ -124,16 +124,16 @@ static void _addPhonesToHash(VALUE hash,ABRecordRef ref) {
 					ABMultiValueCopyValueAtIndex(phones,n));
 			} else if(CFStringCompare(label,kABHomeLabel,0)==kCFCompareEqualTo) {
 				_addPropertyToHash(hash,RUBY_PB_HOME_NUMBER,
-								ABMultiValueCopyValueAtIndex(phones,n));				
+								ABMultiValueCopyValueAtIndex(phones,n));
 			} else if(CFStringCompare(label,kABPersonPhoneMobileLabel,0)==kCFCompareEqualTo) {
 				_addPropertyToHash(hash,RUBY_PB_MOBILE_NUMBER,
 								   ABMultiValueCopyValueAtIndex(phones,n));
 			} else if(CFStringCompare(label,kABPersonPhoneMainLabel,0)==kCFCompareEqualTo) {
 				_addPropertyToHash(hash,RUBY_PB_MAIN_MUMBER,
-								   ABMultiValueCopyValueAtIndex(phones,n));				
+								   ABMultiValueCopyValueAtIndex(phones,n));
 			} else if(CFStringCompare(label,kABPersonPhonePagerLabel,0)==kCFCompareEqualTo) {
 				_addPropertyToHash(hash,RUBY_PB_PAGER_NUMBER,
-								   ABMultiValueCopyValueAtIndex(phones,n));				
+								   ABMultiValueCopyValueAtIndex(phones,n));
 			} else if(CFStringCompare(label,kABPersonPhoneHomeFAXLabel,0)==kCFCompareEqualTo) {
 				_addPropertyToHash(hash,RUBY_PB_HOME_FAX,
 								   ABMultiValueCopyValueAtIndex(phones,n));
@@ -143,11 +143,11 @@ static void _addPhonesToHash(VALUE hash,ABRecordRef ref) {
 			} else if(CFStringCompare(label,(CFStringRef)@"assistant_number",0)==kCFCompareEqualTo) {
 				_addPropertyToHash(hash,RUBY_PB_ASSISTANT_NUMBER,
 								   ABMultiValueCopyValueAtIndex(phones,n));
-			}  
+			}
 			CFRelease(label);
 		}
 		CFRelease(phones);
-	}	
+	}
 }
 
 static void _addEmailToHash(VALUE hash,ABRecordRef ref) {
@@ -169,7 +169,7 @@ static void _addEmailToHash(VALUE hash,ABRecordRef ref) {
 			if (label) CFRelease(label);
 		}
 		CFRelease(emails);
-	}	
+	}
 }
 
 static void _addUrlToHash(VALUE hash,ABRecordRef ref) {
@@ -181,11 +181,11 @@ static void _addUrlToHash(VALUE hash,ABRecordRef ref) {
 			if(CFStringCompare(label,kABPersonHomePageLabel,0)==kCFCompareEqualTo) {
 				_addPropertyToHash(hash,RUBY_PB_HOME_PAGE,
 								   ABMultiValueCopyValueAtIndex(urls,n));
-			} 
+			}
 			CFRelease(label);
 		}
 		CFRelease(urls);
-	}	
+	}
 }
 
 static void _addRelatedNamesToHash(VALUE hash,ABRecordRef ref) {
@@ -200,11 +200,11 @@ static void _addRelatedNamesToHash(VALUE hash,ABRecordRef ref) {
 			} else if(CFStringCompare(label,kABPersonAssistantLabel,0)==kCFCompareEqualTo) {
 				_addPropertyToHash(hash,RUBY_PB_ASSISTANT_NAME,
 								   ABMultiValueCopyValueAtIndex(names,n));
-			} 
+			}
 			CFRelease(label);
 		}
 		CFRelease(names);
-	}	
+	}
 }
 
 static void _addDatesToHash(VALUE hash,ABRecordRef ref) {
@@ -222,11 +222,11 @@ static void _addDatesToHash(VALUE hash,ABRecordRef ref) {
 			} else if(CFStringCompare(label,(CFStringRef)@"updated",0)==kCFCompareEqualTo) {
 				_addDatePropertyToHash(hash,RUBY_PB_UPDATED,
 								   (NSDate*)ABMultiValueCopyValueAtIndex(dates,n));
-			} 
+			}
 			CFRelease(label);
 		}
 		CFRelease(dates);
-	}	
+	}
 }
 
 static VALUE _getRecord(ABRecordRef ref, ABRecordID* precordId) {
@@ -234,40 +234,40 @@ static VALUE _getRecord(ABRecordRef ref, ABRecordID* precordId) {
 
 	VALUE hash = rho_ruby_createHash();
 	rho_ruby_holdValue(hash);
-	
+
 	ABRecordID recordId = ABRecordGetRecordID(ref);
 	if (precordId) {
 		*precordId = recordId;
 	}
-			
+
 	snprintf(buf, sizeof(buf), "{%d}", recordId);
 	addStrToHash(hash, RUBY_PB_ID, buf);
-	
-	_addPropertyToHash(hash, RUBY_PB_PREFIX, 
+
+	_addPropertyToHash(hash, RUBY_PB_PREFIX,
 					   ABRecordCopyValue(ref, kABPersonPrefixProperty));
 
-	_addPropertyToHash(hash, RUBY_PB_FIRST_NAME, 
+	_addPropertyToHash(hash, RUBY_PB_FIRST_NAME,
 					   ABRecordCopyValue(ref, kABPersonFirstNameProperty));
 
-	_addPropertyToHash(hash, RUBY_PB_MIDDLE_NAME, 
+	_addPropertyToHash(hash, RUBY_PB_MIDDLE_NAME,
 					   ABRecordCopyValue(ref, kABPersonMiddleNameProperty));
 
-	_addPropertyToHash(hash, RUBY_PB_LAST_NAME, 
+	_addPropertyToHash(hash, RUBY_PB_LAST_NAME,
 					   ABRecordCopyValue(ref, kABPersonLastNameProperty));
-	
-	_addPropertyToHash(hash, RUBY_PB_SUFFIX, 
+
+	_addPropertyToHash(hash, RUBY_PB_SUFFIX,
 					   ABRecordCopyValue(ref, kABPersonSuffixProperty));
-	
-	_addPropertyToHash(hash, RUBY_PB_NICKNAME, 
+
+	_addPropertyToHash(hash, RUBY_PB_NICKNAME,
 					   ABRecordCopyValue(ref, kABPersonNicknameProperty));
 
-	_addPropertyToHash(hash, RUBY_PB_NOTE, 
+	_addPropertyToHash(hash, RUBY_PB_NOTE,
 					   ABRecordCopyValue(ref, kABPersonNoteProperty));
-	
-	_addPropertyToHash(hash, RUBY_PB_COMPANY_NAME, 
+
+	_addPropertyToHash(hash, RUBY_PB_COMPANY_NAME,
 					   ABRecordCopyValue(ref, kABPersonOrganizationProperty));
-	
-	_addPropertyToHash(hash, RUBY_PB_JOB_TITLE, 
+
+	_addPropertyToHash(hash, RUBY_PB_JOB_TITLE,
 					   ABRecordCopyValue(ref, kABPersonJobTitleProperty));
 
 	NSDate* birthdate = (NSDate *)ABRecordCopyValue(ref, kABPersonBirthdayProperty);
@@ -278,10 +278,10 @@ static VALUE _getRecord(ABRecordRef ref, ABRecordID* precordId) {
 	_addPropertyToHash(hash, RUBY_PB_BIRTHDAY, (CFStringRef)bd);
 	[birthdate release];
 	[df release];
-	
+
 	_addPropertyToHash(hash, RUBY_PB_STREET_ADDRESS_1,
 					   getAddressPartValue(ref,RUBY_PB_STREET_ADDRESS_1));
-	
+
 	_addPropertyToHash(hash, RUBY_PB_CITY_1,
 					   getAddressPartValue(ref,RUBY_PB_CITY_1));
 
@@ -296,44 +296,44 @@ static VALUE _getRecord(ABRecordRef ref, ABRecordID* precordId) {
 
 	_addPropertyToHash(hash, RUBY_PB_STREET_ADDRESS_2,
 					   getAddressPartValue(ref,RUBY_PB_STREET_ADDRESS_2));
-	
+
 	_addPropertyToHash(hash, RUBY_PB_CITY_2,
 					   getAddressPartValue(ref,RUBY_PB_CITY_2));
-	
+
 	_addPropertyToHash(hash, RUBY_PB_STATE_2,
 					   getAddressPartValue(ref,RUBY_PB_STATE_2));
-	
+
 	_addPropertyToHash(hash, RUBY_PB_ZIP_2,
 					   getAddressPartValue(ref,RUBY_PB_ZIP_2));
-	
+
 	_addPropertyToHash(hash, RUBY_PB_COUNTRY_2,
 					   getAddressPartValue(ref,RUBY_PB_COUNTRY_2));
-	
+
 	_addPropertyToHash(hash, RUBY_PB_STREET_ADDRESS_3,
 					   getAddressPartValue(ref,RUBY_PB_STREET_ADDRESS_3));
-	
+
 	_addPropertyToHash(hash, RUBY_PB_CITY_3,
 					   getAddressPartValue(ref,RUBY_PB_CITY_3));
-	
+
 	_addPropertyToHash(hash, RUBY_PB_STATE_3,
 					   getAddressPartValue(ref,RUBY_PB_STATE_3));
-	
+
 	_addPropertyToHash(hash, RUBY_PB_ZIP_3,
 					   getAddressPartValue(ref,RUBY_PB_ZIP_3));
-	
+
 	_addPropertyToHash(hash, RUBY_PB_COUNTRY_3,
 					   getAddressPartValue(ref,RUBY_PB_COUNTRY_3));
-	
+
 	_addPhonesToHash(hash,ref);
-	
+
 	_addEmailToHash(hash,ref);
-	
+
 	_addUrlToHash(hash,ref);
-	
+
 	_addRelatedNamesToHash(hash, ref);
-	
+
 	_addDatesToHash(hash, ref);
-	
+
 	rho_ruby_releaseValue(hash);
 	return hash;
 }
@@ -350,41 +350,41 @@ VALUE getallPhonebookRecords(void* pb) {
 	if (pb) {
 		if (logging_enable) RAWLOG_INFO("phonebook :: getallPhonebookRecords START");
 		LocalPhonebook* phonebook = pb;
-		
+
 		VALUE hash = rho_ruby_createHash();
 		VALUE valGc = rho_ruby_disable_gc();
-		
+
 		rho_ruby_holdValue(hash);
 		ABRecordID recordId;
 		VALUE record; char buf[128];
-		
-		_getAllPeople(phonebook);		
+
+		_getAllPeople(phonebook);
 		for (int index = 0; index < phonebook->_len; index++) {
 			record = _getRecordByIndex(phonebook->_people, index, &recordId);
 			snprintf(buf, sizeof(buf), "{%d}", recordId);
 			addHashToHash(hash, buf, record);
 		}
 
-        rho_ruby_releaseValue(hash);		
-        
+        rho_ruby_releaseValue(hash);
+
         rho_ruby_enable_gc(valGc);
 		if (logging_enable) RAWLOG_INFO("phonebook :: getallPhonebookRecords FINISH");
-		return hash; 
+		return hash;
 	}
-	return rho_ruby_get_NIL();	
+	return rho_ruby_get_NIL();
 }
 
 int getPhonebookRecordCount(void* pb) {
 	if (pb) {
 		if (logging_enable) RAWLOG_INFO("phonebook :: getPhonebookRecordCount START");
 		LocalPhonebook* phonebook = pb;
-		
+
 		VALUE valGc = rho_ruby_disable_gc();
 		_getAllPeople(phonebook);
         rho_ruby_enable_gc(valGc);
 
 		if (logging_enable) RAWLOG_INFO("phonebook :: getallPhonebookRecords FINISH");
-		return phonebook->_len; 
+		return phonebook->_len;
 	}
 	return 0;
 }
@@ -393,14 +393,14 @@ VALUE getPhonebookRecords(void* pb, int offset, int max_results, rho_param* sele
 	if (pb) {
 		if (logging_enable) RAWLOG_INFO("phonebook :: getallPhonebookRecords START");
 		LocalPhonebook* phonebook = pb;
-		
+
 		VALUE hash = rho_ruby_createHash();
 		VALUE valGc = rho_ruby_disable_gc();
-		
+
 		rho_ruby_holdValue(hash);
 		ABRecordID recordId;
 		VALUE record; char buf[128];
-		
+
 		_getAllPeople(phonebook);
         int top_index = (offset + max_results) > phonebook->_len ? phonebook->_len : offset + max_results;
 		for (int index = offset; index < top_index ; index++) {
@@ -409,13 +409,13 @@ VALUE getPhonebookRecords(void* pb, int offset, int max_results, rho_param* sele
 			addHashToHash(hash, buf, record);
 		}
 
-        rho_ruby_releaseValue(hash);		
-        
+        rho_ruby_releaseValue(hash);
+
         rho_ruby_enable_gc(valGc);
 		if (logging_enable) RAWLOG_INFO("phonebook :: getallPhonebookRecords FINISH");
-		return hash; 
+		return hash;
 	}
-	return rho_ruby_get_NIL();	
+	return rho_ruby_get_NIL();
 }
 
 VALUE getPhonebookRecord(void* pb, char* id) {
@@ -423,13 +423,13 @@ VALUE getPhonebookRecord(void* pb, char* id) {
 		LocalPhonebook* phonebook = pb;
 		int recordId;
 		if ( sscanf(id, "{%d}", &recordId) == 1 ) {
-			ABRecordRef ref = 
+			ABRecordRef ref =
 			ABAddressBookGetPersonWithRecordID(phonebook->_ab,
-											   (ABRecordID)recordId); 
+											   (ABRecordID)recordId);
 			return _getRecord(ref,NULL);
 		}
 	}
-	return rho_ruby_get_NIL();		
+	return rho_ruby_get_NIL();
 }
 
 //==================================================================================
@@ -465,13 +465,13 @@ void* openPhonebookRecord(void* pb, char* id) {
 		LocalPhonebook* phonebook = pb;
 		int recordId;
 		if ( sscanf(id, "{%d}", &recordId) == 1 ) {
-			ABRecordRef ref = 
+			ABRecordRef ref =
 			ABAddressBookGetPersonWithRecordID(phonebook->_ab,
-											   (ABRecordID)recordId); 
+											   (ABRecordID)recordId);
 			return (void*)ref;
 		}
 	}
-	return NULL;		
+	return NULL;
 }
 
 static CFStringRef _getPhoneLabel(const char* property) {
@@ -491,7 +491,7 @@ static CFStringRef _getPhoneLabel(const char* property) {
 		return kABPersonPhoneWorkFAXLabel;
 	} else if (strcmp(RUBY_PB_ASSISTANT_NUMBER, property)==0) {
 		return (CFStringRef)@"assistant_number";
-	}	
+	}
 	return NULL;
 }
 
@@ -502,14 +502,14 @@ static CFStringRef _getEmailLabel(const char* property) {
 		return kABHomeLabel;
 	} else if (strcmp(RUBY_PB_OTHER_EMAIL_ADDRESS,property)==0) {
 		return kABOtherLabel;
-	} 
+	}
 	return NULL;
 }
 
 static CFStringRef _getUrlLabel(const char* property) {
 	if (strcmp(RUBY_PB_HOME_PAGE,property)==0) {
 		return kABPersonHomePageLabel;
-	} 
+	}
 	return NULL;
 }
 
@@ -518,7 +518,7 @@ static CFStringRef _getRelatedNamesLabel(const char* property) {
 		return kABPersonSpouseLabel;
 	} else if (strcmp(RUBY_PB_ASSISTANT_NAME,property)==0) {
 		return kABPersonAssistantLabel;
-	} 
+	}
 	return NULL;
 }
 
@@ -529,7 +529,7 @@ static CFStringRef _getDatesLabel(const char* property) {
 		return (CFStringRef)@"created";
 	} else if (strcmp(RUBY_PB_UPDATED,property)==0) {
 		return (CFStringRef)@"updated";
-	} 
+	}
 	return NULL;
 }
 
@@ -539,7 +539,7 @@ static boolean_t _replaceProperty(ABMutableMultiValueRef mv, CFStringRef label, 
 	boolean_t found = CFStringCompare(lbl,label,0)==kCFCompareEqualTo;
 	if (found) {
 		ABMultiValueReplaceValueAtIndex(mv, value, index);
-	} 
+	}
 	CFRelease(lbl);
 	return found;
 }
@@ -548,7 +548,7 @@ static void __updateMultiValueProperty(ABRecordRef record, ABPropertyID propId, 
 	if (!v) return;
 	ABMutableMultiValueRef mv = ABRecordCopyValue(record,propId);
 	if (!mv) {
-		mv = ABMultiValueCreateMutable(kABMultiStringPropertyType); 
+		mv = ABMultiValueCreateMutable(kABMultiStringPropertyType);
 		ABMultiValueAddValueAndLabel(mv,v,label,nil);
 	} else {
 		ABMutableMultiValueRef lmv  = ABMultiValueCreateMutableCopy(mv);
@@ -566,7 +566,7 @@ static void __updateMultiValueProperty(ABRecordRef record, ABPropertyID propId, 
 	}
 	ABRecordSetValue(record, propId, mv, nil);
 	CFRelease(mv);
-	CFRelease(v);	
+	CFRelease(v);
 }
 
 static void _updateMultiValueProperty(ABRecordRef record, ABPropertyID propId, CFStringRef label, const char* value) {
@@ -630,7 +630,7 @@ CFStringRef getAddressPartValue(ABRecordRef record, const char* property) {
 	CFStringRef  label;
 	CFStringRef  key;
 	CFStringRef  v = nil;
-	
+
 	if ( getAddressLabelAndKey(property, &label, &key) ) {
 		ABMutableMultiValueRef mv = ABRecordCopyValue(record,kABPersonAddressProperty);
 		if (mv) {
@@ -639,7 +639,7 @@ CFStringRef getAddressPartValue(ABRecordRef record, const char* property) {
 				CFStringRef lbl = ABMultiValueCopyLabelAtIndex(mv,n);
                 if (lbl) {
                     if (CFStringCompare(lbl,label,0)==kCFCompareEqualTo) {
-                        NSMutableDictionary *addressDictionary = 
+                        NSMutableDictionary *addressDictionary =
                             (NSMutableDictionary *)ABMultiValueCopyValueAtIndex(mv,n);
                         if (addressDictionary) {
                             v = (CFStringRef)[addressDictionary objectForKey:(NSString*)key];
@@ -660,11 +660,11 @@ CFStringRef getAddressPartValue(ABRecordRef record, const char* property) {
 bool setAddressValue(void* record, const char* property, const char* value) {
 	CFStringRef  label;
 	CFStringRef  key;
-	
+
 	if ( !getAddressLabelAndKey(property, &label, &key) ) {
 		return false;
 	}
-		
+
 	CFStringRef v = (CFStringRef)[NSString stringWithUTF8String:value];//CFStringCreateWithCString(NULL, value, CFStringGetSystemEncoding());
 	ABMutableMultiValueRef mv = ABRecordCopyValue(record,kABPersonAddressProperty);
 	if (!mv) {
@@ -672,7 +672,7 @@ bool setAddressValue(void* record, const char* property, const char* value) {
 	} else {
 		ABMutableMultiValueRef lmv  = ABMultiValueCreateMutableCopy(mv);
 		CFRelease(mv);
-		mv = lmv;		
+		mv = lmv;
 	}
 
 	int addresses = ABMultiValueGetCount(mv);
@@ -684,9 +684,9 @@ bool setAddressValue(void* record, const char* property, const char* value) {
 			break;
 		}
 	}
-	
+
 	NSMutableDictionary *addressDictionary;
-	
+
 	if (index>=0) {
 		addressDictionary = (NSMutableDictionary *)ABMultiValueCopyValueAtIndex(mv,index);
 	} else {
@@ -702,7 +702,7 @@ bool setAddressValue(void* record, const char* property, const char* value) {
 	}
 
 	ABRecordSetValue(record, kABPersonAddressProperty, mv, nil);
-	
+
 	//[addressDictionary release];
 	CFRelease(mv);
 	CFRelease(v);
@@ -799,7 +799,7 @@ static const struct {
 } pbp[] = {
 { RUBY_PB_PREFIX, pbPrefix },
 { RUBY_PB_FIRST_NAME, pbFirstName },
-{ RUBY_PB_MIDDLE_NAME, pbMiddleName }, 
+{ RUBY_PB_MIDDLE_NAME, pbMiddleName },
 { RUBY_PB_LAST_NAME, pbLastName },
 { RUBY_PB_SUFFIX, pbSuffix },
 { RUBY_PB_NICKNAME, pbNickname },
@@ -827,7 +827,7 @@ static int _getProperty(char* property) {
 			return kABPersonMiddleNameProperty;
 		case pbLastName:
 			return kABPersonLastNameProperty;
-		case pbSuffix:	
+		case pbSuffix:
 			return kABPersonSuffixProperty;
 		case pbNickname:
 			return kABPersonNicknameProperty;
@@ -835,7 +835,7 @@ static int _getProperty(char* property) {
 			return kABPersonNoteProperty;
 		case pbCompanyName:
 			return kABPersonOrganizationProperty;
-		case pbJobTitle:	
+		case pbJobTitle:
 			return kABPersonJobTitleProperty;
 		case pbBirthday:
 			return kABPersonBirthdayProperty;

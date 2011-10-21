@@ -15,7 +15,7 @@ MinSeverity  = 0
 LogToOutput = 1
 LogCategories = *
 ExcludeLogCategories =
-KeepTrackOfLastVisitedPage = 0 
+KeepTrackOfLastVisitedPage = 0
 LastVisitedPage = ''
 
 # Sync server url.  This must be the full path to your sources.  For example: http://rhomobile.rhohub.com/apps/SugarCRM/sources/

@@ -132,7 +132,7 @@
 /* #undef HAVE_X11_EXTENSIONS_XVLIB_H */
 
 /* Define as const if the declaration of iconv() needs const. */
-#undef ICONV_CONST 
+#undef ICONV_CONST
 
 /* Library major version */
 #define LIB_VERSION_MAJOR 0
@@ -236,7 +236,7 @@
 
 /* MOHUS added */
 
-#ifdef _WIN32 
+#ifdef _WIN32
 //#include <stdio.h>
 //#ifndef snprintf
 #define RHO_NEED_FAKE_SNPRINTF

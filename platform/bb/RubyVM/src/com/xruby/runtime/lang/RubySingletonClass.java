@@ -61,7 +61,7 @@ public class RubySingletonClass extends RubyClass {
             return super.setClassVariable(value, name);
         }
     }
-    
+
     public boolean isSingleton() {
         return true;
     }

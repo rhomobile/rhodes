@@ -14,7 +14,7 @@
 	var log = function(str) {
 		logDiv.append('<div>'+str+'</div>');
 	};
-	
+
 	var wrk = null;
 	var async = null;
 	var sync = null;
@@ -22,7 +22,7 @@
 	try { wrk = Worker } catch (ex) { worker = ex +''};
 	try { async = openDatabase } catch (ex) { async = ex +''};
 	try { sync = openDatabaseSync } catch (ex) { sync = ex +''};
-	
+
 	log('In the main thread:');
 	log('&nbsp;&nbsp;Worker is: ' +wrk);
 	log('&nbsp;&nbsp;openDatabase is: ' +async);

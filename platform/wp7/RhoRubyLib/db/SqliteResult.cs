@@ -1,18 +1,18 @@
 ﻿/*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -150,19 +150,19 @@ namespace rho.db
         public String getStringByIdx(int nCol)
         {
             Object val = getCurValue(nCol);
-            return val != null ? val.ToString() : ""; 
+            return val != null ? val.ToString() : "";
         }
 
         public int getIntByIdx(int nCol)
         {
             Object val = getCurValue(nCol);
-            return val != null ? Convert.ToInt32(val) : 0; 
+            return val != null ? Convert.ToInt32(val) : 0;
         }
 
         public long getLongByIdx(int nCol)
         {
             Object val = getCurValue(nCol);
-            return val != null ? (long)val : 0; 
+            return val != null ? (long)val : 0;
         }
 
         public String getUInt64ByIdx(int nCol)
@@ -197,7 +197,7 @@ namespace rho.db
         public boolean isNullByIdx(int nCol)
         {
             Object val = getCurValue(nCol);
-            return val == null; 
+            return val == null;
         }
 
         public Object /*RubyValue*/ getRubyValue(String colname)
@@ -219,7 +219,7 @@ namespace rho.db
         {
             if (m_resCopy != null)
                 return m_resCopy.getCurData();
-            
+
             String[] cols = getColumnNames();
             Object[] res = new Object[cols.Length];
             for (int i = 0; i < cols.Length; i++)
@@ -276,7 +276,7 @@ namespace rho.db
         {
             if (m_resCopy != null)
                 return m_resCopy.findColIndex(colname);
-            
+
             int cnt = Sqlite3.sqlite3_data_count(m_st);
 
             for (int i = 0; i < cnt; i++)

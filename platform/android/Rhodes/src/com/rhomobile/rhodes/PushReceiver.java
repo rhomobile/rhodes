@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -39,15 +39,15 @@ public class PushReceiver extends BroadcastReceiver {
     private static final String TAG = PushReceiver.class.getSimpleName();
 
 	private static final String REG_ID = "registration_id";
-	
+
 	public static final String INTENT_SOURCE = PushReceiver.class.getName();
-	
+
 	private static final String INTENT_PREFIX = PushReceiver.class.getPackage().getName();
-	
+
 	public static final String INTENT_TYPE = INTENT_PREFIX + ".type";
 	public static final String INTENT_REGISTRATION_ID = INTENT_PREFIX + ".registration_id";
 	public static final String INTENT_EXTRAS = INTENT_PREFIX + ".extras";
-	
+
 	public static final int INTENT_TYPE_UNKNOWN = 0;
 	public static final int INTENT_TYPE_REGISTRATION_ID = 1;
 	public static final int INTENT_TYPE_MESSAGE = 2;
@@ -73,7 +73,7 @@ public class PushReceiver extends BroadcastReceiver {
 		else
 			Log.w(TAG, "Unknown registration event");
 	}
-	
+
 	private void handleMessage(Context context, Intent intent) {
 		Bundle extras = intent.getExtras();
 
@@ -94,7 +94,7 @@ public class PushReceiver extends BroadcastReceiver {
 		serviceIntent.putExtra(INTENT_EXTRAS, extras);
 		context.startService(serviceIntent);
 	}
-	
+
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		String action = intent.getAction();

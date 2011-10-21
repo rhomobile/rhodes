@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -50,7 +50,7 @@ CAppManager::~CAppManager(void)
 
 bool CAppManager::RemoveFolder(String pathname)
 {
-	if (pathname.length() > 0) 
+	if (pathname.length() > 0)
     {
 		StringW  swPath = convertToStringW(pathname);
 		TCHAR name[MAX_PATH+2];
@@ -59,7 +59,7 @@ bool CAppManager::RemoveFolder(String pathname)
 		SHFILEOPSTRUCT fop;
 
 		fop.hwnd = NULL;
-		fop.wFunc = FO_DELETE;		
+		fop.wFunc = FO_DELETE;
 		fop.pFrom = name;
 		fop.pTo = NULL;
 		fop.fFlags = FOF_SILENT | FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_NOCONFIRMMKDIR;
@@ -73,7 +73,7 @@ bool CAppManager::RemoveFolder(String pathname)
 bool CAppManager::MoveFolder(const String& pathFrom, const String &pathTo)
 {
 	if (pathFrom.length() > 0 && pathTo.length() > 0) {
-		
+
 		StringW  swPathFrom = convertToStringW(pathFrom);
 		StringW  swPathTo   = convertToStringW(pathTo);
 
@@ -84,13 +84,13 @@ bool CAppManager::MoveFolder(const String& pathFrom, const String &pathTo)
 		wsprintf(tcPathTo, L"%s%c", swPathTo.c_str(),'\0');
 
 		SHFILEOPSTRUCT fop;
-		
+
 		fop.hwnd = NULL;
 		fop.wFunc = FO_MOVE;
 		fop.pFrom = tcPathFrom;
 		fop.pTo   = tcPathTo;
 		fop.fFlags = FOF_SILENT | FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_NOCONFIRMMKDIR;
-		
+
 		int result = SHFileOperation(&fop);
 
 		return result == 0;
@@ -98,7 +98,7 @@ bool CAppManager::MoveFolder(const String& pathFrom, const String &pathTo)
 	return false;
 }
 
-bool CAppManager::RestartClient(HWND hwnd) 
+bool CAppManager::RestartClient(HWND hwnd)
 {
 	TCHAR module[MAX_PATH];
 	GetModuleFileName(NULL,module,MAX_PATH);
@@ -107,7 +107,7 @@ bool CAppManager::RestartClient(HWND hwnd)
 }
 
 void CAppManager::ReloadRhoBundle(HWND hwnd, const char* szUrl, const char* szZipPassword)
-{	
+{
 	const char  *tmp_dir_name = "_tmp_";
 	const char	*loadData = NULL;
 	unsigned int loadSize = 0;
@@ -126,7 +126,7 @@ void CAppManager::ReloadRhoBundle(HWND hwnd, const char* szUrl, const char* szZi
 	//trying to load file
 	//NB: for mobile devices should use filesystem instead of RAM
 	NetResponse resp = getNetRequest().pullData(szUrl, null);
-	if (resp.getDataSize() > 0 && resp.getCharData()) 
+	if (resp.getDataSize() > 0 && resp.getCharData())
     {
 		loadData = resp.getCharData();
 		loadSize = resp.getDataSize();
@@ -138,7 +138,7 @@ void CAppManager::ReloadRhoBundle(HWND hwnd, const char* szUrl, const char* szZi
 	//trying to unzip loaded file
 	if (errCode == RRB_NONE_ERR)
 		errCode = unzipRhoBundle(loadData, loadSize, szZipPassword, tmp_unzip_dir);
-	
+
 	RHODESAPP().stopApp();
 
 	//trying to delete old rhobundle
@@ -185,15 +185,15 @@ int CAppManager::unzipRhoBundle (const char *zipData, unsigned int zipDataSize, 
 	if (err_code == RRB_NONE_ERR) {
 		// Set base for unziping
 		SetUnzipBaseDir(hz, convertToStringW(targetPath).c_str());
-					
+
 		// Get info about the zip
 		// -1 gives overall information about the zipfile
 		ZIPENTRY ze;
 		GetZipItem(hz,-1, &ze);
 		int numitems = ze.index;
-					
+
 		// Iterate through items and unzip them
-		for (int zi = 0; zi<numitems; zi++) { 
+		for (int zi = 0; zi<numitems; zi++) {
 			// fetch individual details, e.g. the item's name.
 			if (ZR_OK != GetZipItem(hz,zi,&ze)) {
 				LOG(ERROR) + "Failed to unzip item";
@@ -225,7 +225,7 @@ int CAppManager::removeOldRhoBundle (void)
 		LOG(ERROR) + "Failed to remove" + "\"" + (root + "lib	") + "\"";
 		return RRB_REMOVEOLD_ERR;
 	}
-	
+
 	return RRB_NONE_ERR;
 }
 
@@ -248,16 +248,16 @@ int CAppManager::updateRhoBundle (const String &root_path, const String &from_pa
 	return err_code;
 }
 
-void CAppManager::showMessage(HWND hWnd, int rrbErrCode) 
+void CAppManager::showMessage(HWND hWnd, int rrbErrCode)
 {
 	String messageText;
 
 	if (rrbErrCode == RRB_NONE_ERR) {
-		MessageBox(hWnd, 
-					_T("Rhobundle has been updated successfully.\nApplication will be restarted."), 
-					_T("Information"), 
+		MessageBox(hWnd,
+					_T("Rhobundle has been updated successfully.\nApplication will be restarted."),
+					_T("Information"),
 					MB_OK | MB_ICONINFORMATION );
-		RestartClient(hWnd); 
+		RestartClient(hWnd);
 		//Close main window and client
 		::PostMessage(hWnd,WM_CLOSE,0,0);
 	}

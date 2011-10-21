@@ -95,7 +95,7 @@ do
     --clean)
       rm -f ${configmak}
       echo Configuration file removed.
-      ;; 
+      ;;
     --target=*)
       write_option "$option" TARGET_OS
       ;;

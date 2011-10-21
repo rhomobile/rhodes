@@ -1,18 +1,18 @@
 #------------------------------------------------------------------------
 # (The MIT License)
-# 
+#
 # Copyright (c) 2008-2011 Rhomobile, Inc.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-# 
+#
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
@@ -74,7 +74,7 @@ namespace "framework" do
     else
       rhoruby = 'res/build-tools/rubylinux'
     end
-   
+
     puts `#{rhoruby}  -I#{File.expand_path('spec/framework_spec/app/')} -I#{File.expand_path('lib/framework')} -I#{File.expand_path('lib/test')} -Clib/test framework_test.rb`
   end
 end
@@ -83,7 +83,7 @@ end
 $application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title']
 
 def make_application_build_config_header_file
-  f = StringIO.new("", "w+")      
+  f = StringIO.new("", "w+")
   f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
   #f.puts "// Generated #{Time.now.to_s}"
   f.puts ""
@@ -91,14 +91,14 @@ def make_application_build_config_header_file
   f.puts ""
   f.puts '#include "app_build_configs.h"'
   f.puts ""
-      
+
   f.puts 'static const char* keys[] = { ""'
   $application_build_configs.keys.each do |key|
     f.puts ',"'+key+'"'
   end
   f.puts '};'
   f.puts ''
-  
+
   count = 1
 
   f.puts 'static const char* values[] = { ""'
@@ -121,18 +121,18 @@ def make_application_build_config_header_file
   f.puts '  return 0;'
   f.puts '}'
   f.puts ''
-  
+
   Jake.modify_file_if_content_changed(File.join($startdir, "platform", "shared", "common", "app_build_configs.c"), f)
 end
 
 def make_application_build_capabilities_header_file
-  f = StringIO.new("", "w+")      
+  f = StringIO.new("", "w+")
   f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
   #f.puts "// Generated #{Time.now.to_s}"
   f.puts ""
 
   caps = []
- 
+
   capabilities = $app_config["capabilities"]
 
   if capabilities != nil && capabilities.is_a?(Array)
@@ -146,7 +146,7 @@ def make_application_build_capabilities_header_file
   end
 
   f.puts ''
-  
+
   Jake.modify_file_if_content_changed(File.join($startdir, "platform", "shared", "common", "app_build_capabilities.h"), f)
 end
 
@@ -198,14 +198,14 @@ namespace "config" do
   task :common do
     $startdir = File.dirname(__FILE__)
     $startdir.gsub!('\\', '/')
-    
+
     $binextensions = []
     buildyml = 'rhobuild.yml'
 
     buildyml = ENV["RHOBUILD"] unless ENV["RHOBUILD"].nil?
     $config = Jake.config(File.open(buildyml))
     $config["platform"] = $current_platform if $current_platform
-    
+
     if RUBY_PLATFORM =~ /(win|w)32$/
       $all_files_mask = "*.*"
       $rubypath = "res/build-tools/RhoRuby.exe"
@@ -217,7 +217,7 @@ namespace "config" do
         $rubypath = "res/build-tools/rubylinux"
       end
     end
-	
+
     if $app_path.nil? #if we are called from the rakefile directly, this wont be set
       #load the apps path and config
 
@@ -234,7 +234,7 @@ namespace "config" do
     $app_config = Jake.config(File.open(File.join($app_path, "build.yml")))
 
     Jake.set_bbver($app_config["bbver"].to_s)
-    
+
     extpaths = []
 
     extpaths << $app_config["paths"]["extensions"] if $app_config["paths"] and $app_config["paths"]["extensions"]
@@ -248,23 +248,23 @@ namespace "config" do
     else
       $debug = true
     end
-    
+
     extensions = []
     extensions += $app_config["extensions"] if $app_config["extensions"] and
        $app_config["extensions"].is_a? Array
     extensions += $app_config[$config["platform"]]["extensions"] if $app_config[$config["platform"]] and
        $app_config[$config["platform"]]["extensions"] and $app_config[$config["platform"]]["extensions"].is_a? Array
     $app_config["extensions"] = extensions
-    
+
     capabilities = []
     capabilities += $app_config["capabilities"] if $app_config["capabilities"] and
        $app_config["capabilities"].is_a? Array
     capabilities += $app_config[$config["platform"]]["capabilities"] if $app_config[$config["platform"]] and
        $app_config[$config["platform"]]["capabilities"] and $app_config[$config["platform"]]["capabilities"].is_a? Array
     $app_config["capabilities"] = capabilities
-    
+
     $hidden_app = $app_config["hidden_app"].nil?() ? "0" : $app_config["hidden_app"]
-    
+
 
     #application build configs
     application_build_configs = {}
@@ -279,13 +279,13 @@ namespace "config" do
       if value != nil
         application_build_configs[key] = value
       end
-    end	
+    end
     $application_build_configs = application_build_configs
 
-    if $current_platform == "bb"  
+    if $current_platform == "bb"
       make_application_build_config_java_file
-    else  
-      make_application_build_config_header_file    
+    else
+      make_application_build_config_header_file
       make_application_build_capabilities_header_file
     end
 
@@ -306,11 +306,11 @@ namespace "config" do
 end
 
 def copy_assets(asset)
-  
+
   dest = File.join($srcdir,'apps/public')
-  
-  cp_r asset + "/.", dest, :preserve => true, :remove_destination => true 
-  
+
+  cp_r asset + "/.", dest, :preserve => true, :remove_destination => true
+
 end
 
 def clear_linker_settings
@@ -382,7 +382,7 @@ end
 
 def init_extensions(startdir, dest)
   extentries = []
-  extlibs = [] 
+  extlibs = []
   extpaths = $app_config["extpaths"]
 
   $app_config["extensions"].each do |extname|
@@ -401,7 +401,7 @@ def init_extensions(startdir, dest)
         require extname
         extpath = $rhodes_extensions[0] unless $rhodes_extensions.nil?
       rescue Exception => e
-        
+
       end
 
     end
@@ -424,7 +424,7 @@ def init_extensions(startdir, dest)
             end
             extlibs += libs
           end
-      end    
+      end
     end
 
   end
@@ -433,18 +433,18 @@ def init_extensions(startdir, dest)
 
   if $config["platform"] != "bb"
       exists = []
-      
+
       if ( File.exists?(exts) )
           File.new(exts, "r").read.split("\n").each do |line|
             next if line !~ /^\s*extern\s+void\s+([A-Za-z_][A-Za-z0-9_]*)/
             exists << $1
           end
       end
-        
+
       if (exists.sort! != extentries.sort! ) || (!File.exists?(exts))
         File.open(exts, "w") do |f|
           puts "MODIFY : #{exts}"
-          
+
           f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
           #f.puts "// Generated #{Time.now.to_s}"
           if $config["platform"] == "wm" || $config["platform"] == "win32"
@@ -468,7 +468,7 @@ def init_extensions(startdir, dest)
 
       set_linker_flags
   end
-  
+
   unless $app_config["constants"].nil?
     File.open("rhobuild.rb","w") do |file|
       file << "module RhoBuild\n"
@@ -480,7 +480,7 @@ def init_extensions(startdir, dest)
     end
   end
 
-  if $excludeextlib  
+  if $excludeextlib
       chdir dest
       $excludeextlib.each {|e| Dir.glob(e).each {|f| rm f}}
   end
@@ -517,10 +517,10 @@ def common_bundle_start(startdir, dest)
   cp_r app + '/public', File.join($srcdir,'apps'), :preserve => true if File.exists? app + '/public'
   cp   app + '/rhoconfig.txt', File.join($srcdir,'apps'), :preserve => true
 
-  app_version = "\r\napp_version='#{$app_config["version"]}'"  
+  app_version = "\r\napp_version='#{$app_config["version"]}'"
   File.open(File.join($srcdir,'apps/rhoconfig.txt'), "a"){ |f| f.write(app_version) }
   File.open(File.join($srcdir,'apps/rhoconfig.txt.timestamp'), "w"){ |f| f.write(Time.now.to_f().to_s()) }
-  
+
   unless $debug
     rm_rf $srcdir + "/apps/app/test"
     rm_rf $srcdir + "/apps/app/SpecRunner"
@@ -538,13 +538,13 @@ def common_bundle_start(startdir, dest)
 
   [File.join($srcdir,'apps'), ($current_platform == "bb" ? File.join($srcdir,'res') : File.join($srcdir,'lib/res'))].each do |folder|
       chdir folder
-      
+
       Dir.glob("**/*.#{replace_platform}.*").each do |file|
         oldfile = file.gsub(Regexp.new(Regexp.escape('.') + replace_platform + Regexp.escape('.')),'.')
         rm oldfile if File.exists? oldfile
         mv file,oldfile
       end
-      
+
       Dir.glob("**/*.wm.*").each { |f| rm f }
 	  Dir.glob("**/*.wp7.*").each { |f| rm f }
       Dir.glob("**/*.iphone.*").each { |f| rm f }
@@ -553,16 +553,16 @@ def common_bundle_start(startdir, dest)
       Dir.glob("**/*.android.*").each { |f| rm f }
       Dir.glob("**/.svn").each { |f| rm_rf f }
       Dir.glob("**/CVS").each { |f| rm_rf f }
-  end  
+  end
 end
 
 def create_manifest
     require File.dirname(__FILE__) + '/lib/framework/rhoappmanifest'
-    
+
     fappManifest = Rho::AppManifest.enumerate_models(File.join($srcdir, 'apps/app'))
     content = fappManifest.read();
-    
-    File.open( File.join($srcdir,'apps/app_manifest.txt'), "w"){|file| file.write(content)}    
+
+    File.open( File.join($srcdir,'apps/app_manifest.txt'), "w"){|file| file.write(content)}
 end
 
 def process_exclude_folders
@@ -576,22 +576,22 @@ def process_exclude_folders
       excl << $app_config["excludedirs"]['all'] if $app_config["excludedirs"]['all']
       excl << $app_config["excludedirs"][exclude_platform] if $app_config["excludedirs"][exclude_platform]
   end
-      
-  if  $config["excludedirs"]    
+
+  if  $config["excludedirs"]
       excl << $config["excludedirs"]['all'] if $config["excludedirs"]['all']
       excl << $config["excludedirs"][exclude_platform] if $config["excludedirs"][exclude_platform]
-  end  
-  
+  end
+
   if excl
       chdir File.join($srcdir, 'apps')
-  
+
       excl.each do |mask|
         Dir.glob(mask).each {|f| rm_rf f}
       end
   end
 
 end
-  
+
 namespace "build" do
   namespace "bundle" do
     task :xruby do
@@ -603,18 +603,18 @@ namespace "build" do
       xruby =  File.dirname(__FILE__) + '/res/build-tools/xruby-0.3.3.jar'
       compileERB = "lib/build/compileERB/bb.rb"
       rhodeslib = File.dirname(__FILE__) + "/lib/framework"
-      
+
       common_bundle_start(startdir,dest)
 
       process_exclude_folders()
-      
+
       cp_r File.join(startdir, "platform/shared/db/res/db"), File.join($srcdir, 'apps')
-      
+
       chdir startdir
-      
+
       #create manifest
       create_manifest
-      
+
       #"compile ERB"
       #ext = ".erb"
       #Find.find($srcdir) do |path|
@@ -648,7 +648,7 @@ namespace "build" do
       end
       chdir startdir
       chdir $srcdir
-  
+
       Dir.glob("**/*.rb") { |f| rm f }
       Dir.glob("**/*.erb") { |f| rm f }
 =begin
@@ -657,11 +657,11 @@ namespace "build" do
       Dir.glob($tmpdir + "/**/RubyIDContainer.class") { |f| rm f }
       rm "#{$bindir}/RhoBundle.jar"
       chdir $tmpdir
-      puts `jar cf #{$bindir}/RhoBundle.jar #{$all_files_mask}`      
+      puts `jar cf #{$bindir}/RhoBundle.jar #{$all_files_mask}`
       rm_rf $tmpdir
       mkdir_p $tmpdir
       chdir $srcdir
-=end  
+=end
 
       puts `"#{File.join(jpath,'jar')}" uf ../RhoBundle.jar apps/#{$all_files_mask}`
       unless $? == 0
@@ -669,7 +669,7 @@ namespace "build" do
         exit 1
       end
       chdir startdir
-      
+
     end
 
     task :noxruby do
@@ -678,14 +678,14 @@ namespace "build" do
       compileERB = "lib/build/compileERB/default.rb"
       compileRB = "lib/build/compileRB/compileRB.rb"
       startdir = pwd
-      dest = $srcdir + "/lib"      
+      dest = $srcdir + "/lib"
 
       common_bundle_start(startdir,dest)
       process_exclude_folders
       chdir startdir
-      
+
       create_manifest
-      
+
       cp   compileERB, $srcdir
       puts "Running default.rb"
 
@@ -708,25 +708,25 @@ namespace "build" do
       chdir $srcdir
       Dir.glob("**/*.rb") { |f| rm f }
       Dir.glob("**/*.erb") { |f| rm f }
-  
+
       chdir startdir
 
-      cp_r "platform/shared/db/res/db", $srcdir 
+      cp_r "platform/shared/db/res/db", $srcdir
     end
-    
+
     task :noiseq do
       app = $app_path
       rhodeslib = File.dirname(__FILE__) + "/lib/framework"
 	  compileERB = "lib/build/compileERB/bb.rb"
       startdir = pwd
-      dest = $srcdir + "/lib"      
+      dest = $srcdir + "/lib"
 
       common_bundle_start(startdir,dest)
       process_exclude_folders
       chdir startdir
-      
+
       create_manifest
-  
+
 	  cp   compileERB, $srcdir
       puts "Running bb.rb"
 
@@ -742,7 +742,7 @@ namespace "build" do
       Dir.glob("**/*.erb") { |f| rm f }
 
 	  chdir startdir
-      cp_r "platform/shared/db/res/db", $srcdir 
+      cp_r "platform/shared/db/res/db", $srcdir
     end
   end
 end
@@ -759,7 +759,7 @@ task :get_version do
   #symver = "unknown"
   wmver = "unknown"
   androidver = "unknown"
-  
+
 
   # File.open("res/generators/templates/application/build.yml","r") do |f|
   #     file = f.read
@@ -780,7 +780,7 @@ task :get_version do
   #     major = ""
   #     minor = ""
   #     build = ""
-  # 
+  #
   #     if file.match(/release\.major=(\d+)/)
   #       major =  $1
   #     end
@@ -790,7 +790,7 @@ task :get_version do
   #     if file.match(/build\.number=(\d+)/)
   #       build =  $1
   #     end
-  # 
+  #
   #     symver = major + "." + minor + "." + build
   #   end
 
@@ -826,7 +826,7 @@ task :get_version do
     end
   end
 
-  
+
 
   puts "Versions:"
   #puts "  Generator:        " + genver
@@ -846,7 +846,7 @@ task :set_version, [:version] do |t,args|
   major = ver[0]
   minor = ver[1]
   build = ver[2]
-  
+
   throw "Invalid version format. Must be in the format of: major.minor.build" if major.nil? or minor.nil? or build.nil?
 
   verstring = major+"."+minor+"."+build
@@ -856,10 +856,10 @@ task :set_version, [:version] do |t,args|
   #   File.open("res/generators/templates/application/build.yml","w") do |f|
   #     f.write origfile.gsub(/version: (\d+\.\d+\.\d+)/, "version: #{verstring}")
   #   end
-  
+
 
   File.open("platform/iphone/Info.plist","r") { |f| origfile = f.read }
-  File.open("platform/iphone/Info.plist","w") do |f| 
+  File.open("platform/iphone/Info.plist","w") do |f|
     f.write origfile.gsub(/CFBundleVersion<\/key>(\s+)<string>(\d+\.\d+\.*\d*)<\/string>/, "CFBundleVersion</key>\n\t<string>#{verstring}</string>")
   end
 
@@ -881,15 +881,15 @@ task :set_version, [:version] do |t,args|
     f.write origfile
   end
   ["lib/rhodes.rb","lib/framework/rhodes.rb","lib/framework/version.rb"].each do |versionfile|
-  
+
     File.open(versionfile,"r") { |f| origfile = f.read }
     File.open(versionfile,"w") do |f|
-      origfile.gsub!(/^(\s*VERSION) = '(\d+\.\d+\.*\d*)'/, '\1 = \''+ verstring + "'")     
+      origfile.gsub!(/^(\s*VERSION) = '(\d+\.\d+\.*\d*)'/, '\1 = \''+ verstring + "'")
       f.write origfile
     end
   end
 
-  Rake::Task[:get_version].invoke  
+  Rake::Task[:get_version].invoke
 end
 
 
@@ -903,7 +903,7 @@ namespace "buildall" do
           puts "BUILDING VERSION: #{k}"
           $app_config["bbver"] = k
 #          Jake.reconfig($config)
- 
+
           #reset all tasks used for building
           Rake::Task["config:bb"].reenable
           Rake::Task["build:bb:rhobundle"].reenable
@@ -934,10 +934,10 @@ task :gem do
   rm_rf Dir.glob("rhodes*.gem")
   puts "Copying Rakefile"
   cp "Rakefile", "rakefile.rb"
-  
+
   puts "Building manifest"
   out = ""
-  Dir.glob("**/*") do |fname| 
+  Dir.glob("**/*") do |fname|
     # TODO: create exclusion list
     out << fname + "\n" if File.file? fname and not fname =~ /rhoconnect-client/
   end
@@ -956,28 +956,28 @@ namespace "rhomobile-debug" do
       puts "Removing old gem"
       rm_rf Dir.glob("rhomobile-debug*.gem")
       rm_rf "rhomobile-debug"
-      
+
       mkdir_p "rhomobile-debug"
       mkdir_p "rhomobile-debug/lib"
       cp 'lib/extensions/debugger/debugger.rb', "rhomobile-debug/lib", :preserve => true
       cp 'lib/extensions/debugger/README.md', "rhomobile-debug", :preserve => true
       cp 'lib/extensions/debugger/LICENSE', "rhomobile-debug", :preserve => true
       cp 'lib/extensions/debugger/CHANGELOG', "rhomobile-debug", :preserve => true
-      
+
       cp 'rhomobile-debug.gemspec', "rhomobile-debug", :preserve => true
-      
+
       startdir = pwd
       chdir 'rhomobile-debug'
-      
+
       puts "Loading gemspec"
       require 'rubygems'
       spec = Gem::Specification.load('rhomobile-debug.gemspec')
 
       puts "Building gem"
       gemfile = Gem::Builder.new(spec).build
-      
+
       Dir.glob("rhomobile-debug*.gem").each do |f|
-        cp f, startdir, :preserve => true      
+        cp f, startdir, :preserve => true
       end
 
       chdir startdir
@@ -1025,41 +1025,41 @@ namespace "build" do
         zip_name = "rhoconnect-client-"+ver+".zip"
 
         bin_dir = "rhoconnect-client-bin"
-        src_dir = bin_dir + "/rhoconnect-client-"+ver #"/src"        
-        shared_dir = src_dir + "/platform/shared"        
+        src_dir = bin_dir + "/rhoconnect-client-"+ver #"/src"
+        shared_dir = src_dir + "/platform/shared"
         rm_rf bin_dir
         rm    zip_name if File.exists? zip_name
         mkdir_p bin_dir
         mkdir_p src_dir
 
         cp_r 'rhoconnect-client', src_dir, :preserve => true
-        
+
         mv src_dir+"/rhoconnect-client/license", src_dir
         mv src_dir+"/rhoconnect-client/README.textile", src_dir
         mv src_dir+"/rhoconnect-client/version", src_dir
         mv src_dir+"/rhoconnect-client/changelog", src_dir
-                
+
         Dir.glob(src_dir+"/rhoconnect-client/**/*").each do |f|
 		    #puts f
-		    
-            rm_rf f if f.index("/build/") || f.index(".DS_Store")         
- 
+
+            rm_rf f if f.index("/build/") || f.index(".DS_Store")
+
         end
-		
+
         mkdir_p shared_dir
-        
+
         Dir.glob("platform/shared/*").each do |f|
             next if f == "platform/shared/ruby" || f == "platform/shared/rubyext" || f == "platform/shared/xruby" || f == "platform/shared/shttpd" ||
                 f == "platform/shared/stlport"  || f == "platform/shared/qt"
-            #puts f                
-            cp_r f, shared_dir #, :preserve => true                        
+            #puts f
+            cp_r f, shared_dir #, :preserve => true
         end
         startdir = pwd
         chdir bin_dir
         puts `zip -r #{File.join(startdir, zip_name)} *`
-                
+
         chdir startdir
-        
+
         rm_rf bin_dir
     end
 end
@@ -1105,7 +1105,7 @@ namespace "run" do
             if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'].length() > 0
                 puts "Check 'env:paths:rhosimulator' path in '<rhodes>/rhobuild.yml' OR"
             end
-            
+
             puts "Install Rhodes gem OR"
             puts "Install RhoSimulator and modify 'env:paths:rhosimulator' section in '<rhodes>/rhobuild.yml'"
             exit 1
@@ -1114,30 +1114,30 @@ namespace "run" do
         sim_conf = "rhodes_path='#{$startdir}'\r\n"
         sim_conf += "app_name='#{$appname}'\r\n"
         if ( ENV['rho_reload_app_changes'] )
-            sim_conf += "reload_app_changes=#{ENV['rho_reload_app_changes']}\r\n"        
+            sim_conf += "reload_app_changes=#{ENV['rho_reload_app_changes']}\r\n"
         else
-            sim_conf += "reload_app_changes=1\r\n"                    
+            sim_conf += "reload_app_changes=1\r\n"
         end
 
         if $config['debug']
             sim_conf += "debug_port=#{$config['debug']['port']}\r\n"
         else
             sim_conf += "debug_port=\r\n"
-        end    
-        
+        end
+
         if $config['debug'] && $config['debug']['host'] && $config['debug']['host'].length() > 0
-            sim_conf += "debug_host='#{$config['debug']['host']}'\r\n"        
-        else    
+            sim_conf += "debug_host='#{$config['debug']['host']}'\r\n"
+        else
             sim_conf += "debug_host='127.0.0.1'\r\n"
         end
-        
+
         sim_conf += $rhosim_config if $rhosim_config
 
         #check gem extensions
         config_ext_paths = ""
-        extpaths = $app_config["extpaths"]        
+        extpaths = $app_config["extpaths"]
         $app_config["extensions"].each do |extname|
-        
+
             extpath = nil
             extpaths.each do |p|
               ep = File.join(p, extname)
@@ -1152,25 +1152,25 @@ namespace "run" do
                     $rhodes_extensions = nil
                     require extname
                     extpath = $rhodes_extensions[0] unless $rhodes_extensions.nil?
-                    config_ext_paths += "#{extpath};" if extpath && extpath.length() > 0 
+                    config_ext_paths += "#{extpath};" if extpath && extpath.length() > 0
                 rescue Exception => e
                 end
             else
-            
+
                 if $config["platform"] != "bb"
                     extyml = File.join(extpath, "ext.yml")
                     next if File.file? extyml
                 end
-                
-                config_ext_paths += "#{extpath};" if extpath && extpath.length() > 0                     
-            end    
+
+                config_ext_paths += "#{extpath};" if extpath && extpath.length() > 0
+            end
         end
 
-        sim_conf += "ext_path=#{config_ext_paths}\r\n" if config_ext_paths && config_ext_paths.length() > 0 
-        
+        sim_conf += "ext_path=#{config_ext_paths}\r\n" if config_ext_paths && config_ext_paths.length() > 0
+
         fdir = File.join($app_path, 'rhosimulator')
         mkdir fdir unless File.exist?(fdir)
-            
+
         fname = File.join(fdir, 'rhosimconfig.txt')
         File.open(fname, "wb") do |fconf|
             fconf.write( sim_conf )
@@ -1192,7 +1192,7 @@ namespace "run" do
 
         if RUBY_PLATFORM =~ /darwin/
 	  while 1
-          end     
+          end
         end
     end
 

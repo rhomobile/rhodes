@@ -1,4 +1,4 @@
-/* 
+/*
  * $Id: PatternCompiler.java 124053 2005-01-04 01:24:35Z dfs $
  *
  * Copyright 2000-2005 The Apache Software Foundation
@@ -23,7 +23,7 @@ package org.apache.oro.text.regex;
 /**
  * The PatternCompiler interface defines the operations a regular
  * expression compiler must implement.  However, the types of
- * regular expressions recognized by a compiler and the Pattern 
+ * regular expressions recognized by a compiler and the Pattern
  * implementations produced as a result of compilation are not
  * restricted.
  * <p>
@@ -48,7 +48,7 @@ package org.apache.oro.text.regex;
  *   System.out.println(e.getMessage());
  *   System.exit(1);
  * }
- * 
+ *
  *
  * if(matcher.matches(input, pattern))
  *    System.out.println(input + " is a number");
@@ -61,7 +61,7 @@ package org.apache.oro.text.regex;
  * variations of the compile() methods that take extra options affecting
  * the compilation of a pattern.  However, the PatternCompiler method
  * implementations should provide the default behavior of the class.
- * 
+ *
  * @version @version@
  * @since 1.0
  * @see Pattern

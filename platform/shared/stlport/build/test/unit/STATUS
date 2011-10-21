@@ -480,7 +480,7 @@ STLP Version:                   STLPORT_5_1 branch (revision 3171)
 Reporter:                       dums (Francois Dumont)
 Status (release-shared):        1 failure (390 tests)
 Notes:                          ExceptionTest::uncaught_exception fails when all tests
-                                are run but succeed with only running it using the 
+                                are run but succeed with only running it using the
                                 -t=ExceptionTest option.
 Status (dbg-shared):            1 failure (390 tests)
 Notes:                          Idem release-shared.

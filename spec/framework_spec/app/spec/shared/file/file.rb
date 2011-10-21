@@ -22,7 +22,7 @@ describe :file_file, :shared => true do
     @object.send(@method, @file).should == true
 if System.get_property('platform') == 'WINDOWS'
     @object.send(@method, @dir).should == false
-end    
+end
   end
 
   ruby_version_is "1.9" do

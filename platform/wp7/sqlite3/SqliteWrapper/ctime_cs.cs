@@ -34,7 +34,7 @@ namespace Community.CsharpSqlite
     //#include "sqliteInt.h"
 
 /*
-** An array of names of all compile-time options.  This array should 
+** An array of names of all compile-time options.  This array should
 ** be sorted A-Z.
 **
 ** This array looks large, but in a typical installation actually uses

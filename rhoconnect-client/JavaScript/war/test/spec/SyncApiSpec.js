@@ -461,10 +461,10 @@ describe("Sync client API", function() {
 		            	  'state':		'string',
 		            	  'zip':		'string',
 
-		            	  'SurveySectionID':	'string',    
-		            	  'SurveyID':			'string',    
-		            	  'CallID':				'string',    
-		            	  'SurveyResultID':		'string'    
+		            	  'SurveySectionID':	'string',
+		            	  'SurveyID':			'string',
+		            	  'CallID':				'string',
+		            	  'SurveyResultID':		'string'
 		              }),
 
 		              new Rhomobile.data.Model("Product", {
@@ -562,7 +562,7 @@ describe("Sync client API", function() {
 
 		it("should login OK with proper credentials", function() {
 			expect(api.Thread.login).toBeSet();
-			var result = api.Thread.login(OK_LOGIN, OK_PASSWD); 
+			var result = api.Thread.login(OK_LOGIN, OK_PASSWD);
 			expect(result).not.toBeNull();
 			expect(result).toBeTruthy();
 		});

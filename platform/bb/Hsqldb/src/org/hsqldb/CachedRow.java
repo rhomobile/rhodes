@@ -315,7 +315,7 @@ public class CachedRow extends Row {
         try {
             writeNodes(out);
 
-            if (bFullSave || hasDataChanged) 
+            if (bFullSave || hasDataChanged)
             {
                 out.writeData(oData, tTable);
                 out.writeEnd();

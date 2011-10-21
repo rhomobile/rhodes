@@ -89,5 +89,5 @@ describe :kernel_load, :shared => true do
       ScratchPad.recorded.should == [:loaded]
     end
   end
-=end  
+=end
 end

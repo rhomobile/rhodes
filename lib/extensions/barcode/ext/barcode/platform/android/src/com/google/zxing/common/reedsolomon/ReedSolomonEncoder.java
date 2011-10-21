@@ -47,7 +47,7 @@ public final class ReedSolomonEncoder {
         lastGenerator = nextGenerator;
       }
     }
-    return (GF256Poly) cachedGenerators.elementAt(degree);    
+    return (GF256Poly) cachedGenerators.elementAt(degree);
   }
 
   public void encode(int[] toEncode, int ecBytes) {

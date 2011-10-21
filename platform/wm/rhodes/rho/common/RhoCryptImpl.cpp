@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -39,7 +39,7 @@ CRhoCryptImpl::CRhoCryptImpl(void) : m_hCryptProv(0), m_hKey(0)
 
 CRhoCryptImpl::~CRhoCryptImpl(void)
 {
-    if ( m_hKey ) 
+    if ( m_hKey )
         CryptDestroyKey(m_hKey);
 
     if ( m_hCryptProv )
@@ -58,7 +58,7 @@ bool CRhoCryptImpl::_checkError( BOOL bRes, const char* szFunc )
     LPTSTR pszMessage = NULL;
 
     DWORD dwLen = FormatMessage(
-        FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+        FORMAT_MESSAGE_ALLOCATE_BUFFER |
         //FORMAT_MESSAGE_FROM_SYSTEM |
         FORMAT_MESSAGE_FROM_HMODULE|
         FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -149,7 +149,7 @@ void CRhoCryptImpl::initCryptProvider()
         return;
 
     LPCTSTR szContName = _T("RhodesKeyContainer");  // Name of the key container to be used.
-    checkError( CryptAcquireContext( &m_hCryptProv, szContName, NULL, PROV_RSA_AES, 0) ); 
+    checkError( CryptAcquireContext( &m_hCryptProv, szContName, NULL, PROV_RSA_AES, 0) );
 
     if ( getErrorCode() == NTE_BAD_KEYSET )
     {
@@ -185,12 +185,12 @@ void CRhoCryptImpl::initContext(const char* szPartition)
         if ( protectedKey.pbData )
             LocalFree(protectedKey.pbData);
     }else
-    {  
+    {
         //generate new key
         if ( checkError(CryptGenKey(m_hCryptProv, CALG_RC4, CRYPT_EXPORTABLE, &m_hKey)) )
         {
             //DWORD dwPadding = ZERO_PADDING;
-            //checkError( CryptSetKeyParam( m_hKey, KP_PADDING, (const BYTE*)&dwPadding, 0) ); 
+            //checkError( CryptSetKeyParam( m_hKey, KP_PADDING, (const BYTE*)&dwPadding, 0) );
 
             writeKeyToStorage();
         }
@@ -213,7 +213,7 @@ int CRhoCryptImpl::db_encrypt( const char* szPartition, int size, unsigned char*
                 dataOut,             // Data buffer
                 &dwSize,         // Size of data
                 dwSize           // Size of block
-        ));         
+        ));
     }
 
     return getErrorCode() == 0 ? 1 : 0;
@@ -233,7 +233,7 @@ int CRhoCryptImpl::db_decrypt( const char* szPartition, int size, unsigned char*
                 0,               // Must be zero
                 data,             // Data buffer
                 &dwSize         // Size of data
-        ));         
+        ));
     }
 
     return getErrorCode() == 0 ? 1 : 0;

@@ -114,6 +114,6 @@ LOCAL_C_INCLUDES := \
     $(LOCAL_PATH) \
     $(SHARED_PATH_INC) \
     $(SHARED_PATH_INC)/sqlite
-    
+
 
 include $(BUILD_STATIC_LIBRARY)

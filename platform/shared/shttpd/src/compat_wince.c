@@ -862,7 +862,7 @@ The century, that is, the year divided by 100 then truncated.  For
 4-digit years, the result is zero-padded and exactly two characters;
 but for other years, there may a negative sign or more digits.  In
 this way, `<<%C%y>>' is equivalent to `<<%Y>>'. [tm_year]
- 
+
 o %d
 The day of the month, formatted with two digits (from `<<01>>' to
 `<<31>>'). [tm_mday]
@@ -894,7 +894,7 @@ includes January 4th, and begin on Mondays. Therefore, if January 1st,
 2nd, or 3rd falls on a Sunday, that day and earlier belong to the last
 week of the previous year; and if December 29th, 30th, or 31st falls
 on Monday, that day and later belong to week 1 of the next year.  For
-consistency with %Y, it always has at least four characters. 
+consistency with %Y, it always has at least four characters.
 Example: "%G" for Saturday 2nd January 1999 gives "1998", and for
 Tuesday 30th December 1997 gives "1998". [tm_year, tm_wday, tm_yday]
 

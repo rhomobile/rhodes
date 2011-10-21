@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -31,12 +31,12 @@ class HugeIntHelper {
     int intLen;
     int offset = 0;
     private final static long LONG_MASK = 0xffffffffL;
-    
+
     HugeIntHelper() {
         value = new int[1];
         intLen = 0;
     }
-    
+
     HugeIntHelper(int[] val) {
         value = val;
         intLen = val.length;
@@ -125,7 +125,7 @@ class HugeIntHelper {
         int nInts = n >>> 5;
         int nBits = n&0x1F;
         int bitsInHighWord = HugeInt.bitLen(value[offset]);
-        
+
         if (n <= (32-bitsInHighWord)) {
             primitiveLeftShift(nBits);
             return;
@@ -162,7 +162,7 @@ class HugeIntHelper {
         long carry = 0;
 
         for (int j=a.length-1; j >= 0; j--) {
-            long sum = (a[j] & LONG_MASK) + 
+            long sum = (a[j] & LONG_MASK) +
                        (result[j+offset] & LONG_MASK) + carry;
             result[j+offset] = (int)sum;
             carry = sum >>> 32;
@@ -220,7 +220,7 @@ class HugeIntHelper {
             value[0] = (int) (remValue - (quotient.value[0] * divLong));
             offset = 0;
             intLen = (value[0] == 0) ? 0 : 1;
-           
+
             return;
         }
 
@@ -241,7 +241,7 @@ class HugeIntHelper {
             remLong = rem & LONG_MASK;
         }
 
-        int xlen = intLen; 
+        int xlen = intLen;
         int[] qWord = new int[2];
         while (--xlen > 0) {
             long dividendEstimate = (remLong<<32) |
@@ -256,18 +256,18 @@ class HugeIntHelper {
             rem = (int)qWord[1];
             remLong = rem & LONG_MASK;
         }
-        
+
         if (shift > 0)
             value[0] = rem %= divisor;
         else
             value[0] = rem;
         intLen = (value[0] == 0) ? 0 : 1;
-        
+
         quotient.normalize();
     }
 
     void divide(HugeIntHelper b,
-                        HugeIntHelper quotient, HugeIntHelper rem) {  
+                        HugeIntHelper quotient, HugeIntHelper rem) {
         if (b.intLen == 0)
             throw new ArithmeticException("BigInteger divide by zero");
 
@@ -276,7 +276,7 @@ class HugeIntHelper {
             quotient.intLen = quotient.offset = rem.intLen = rem.offset = 0;
             return;
         }
- 
+
         int cmp = compare(b);
 
         if (cmp < 0) {
@@ -284,7 +284,7 @@ class HugeIntHelper {
             rem.copyValue(this);
             return;
         }
-        
+
         if (cmp == 0) {
             quotient.value[0] = quotient.intLen = 1;
             quotient.offset = rem.intLen = rem.offset = 0;
@@ -321,13 +321,13 @@ class HugeIntHelper {
         }
         quotient.intLen = limit;
         int[] q = quotient.value;
-        
+
         int shift = 32 - HugeInt.bitLen(d[0]);
         if (shift > 0) {
             HugeInt.primitiveLeftShift(d, dlen, shift);
             rem.leftShift(shift);
         }
-       
+
         if (rem.intLen == nlen) {
             rem.offset = 0;
             rem.value[0] = 0;
@@ -338,7 +338,7 @@ class HugeIntHelper {
         long dhLong = dh & LONG_MASK;
         int dl = d[1];
         int[] qWord = new int[2];
-        
+
         for(int j=0; j<limit; j++) {
             int qhat = 0;
             int qrem = 0;
@@ -365,7 +365,7 @@ class HugeIntHelper {
 
             if (qhat == 0)
                 continue;
-            
+
             if (!skipCorrection) { // Correct qhat
                 long nl = rem.value[j+2+rem.offset] & LONG_MASK;
                 long rs = ((qrem & LONG_MASK) << 32) | nl;
@@ -413,7 +413,7 @@ class HugeIntHelper {
             result[1] = 0;
             return;
         }
-                
+
         long q = (n >>> 1) / (dLong >>> 1);
         long r = n - q*dLong;
 

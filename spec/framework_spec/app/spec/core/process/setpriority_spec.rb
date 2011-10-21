@@ -2,7 +2,7 @@ require File.expand_path('../../../spec_helper', __FILE__)
 
 describe "Process.setpriority" do
   # Needs a valid version written for Linux
-  if System.get_property('platform') != 'APPLE'  
+  if System.get_property('platform') != 'APPLE'
   platform_is :os => :darwin do
     it "sets the scheduling priority for a specified process" do
       p = Process.getpriority(Process::PRIO_PROCESS, 0)

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -37,38 +37,38 @@ public class HugeDigit extends Number implements Comparable {
     public static final HugeDigit ZERO = new HugeDigit(HugeInt.ZERO, 0);
     public static final HugeDigit ONE = new HugeDigit(HugeInt.ONE, 0);
     public static final HugeDigit TEN = new HugeDigit(HugeInt.TEN, 0);
-    
+
     public HugeDigit(char[] in, int offset, int len) {
         try {
-            boolean isneg = false;          
+            boolean isneg = false;
             if (in[offset] == '-') {
-                isneg = true;               
+                isneg = true;
                 offset++;
                 len--;
-            } else if (in[offset] == '+') { 
+            } else if (in[offset] == '+') {
                 offset++;
                 len--;
             }
 
-            int dotoff = -1;                 
-            int cfirst = offset;             
-            long exp = 0;                    
-            if (len > in.length)             
+            int dotoff = -1;
+            int cfirst = offset;
+            long exp = 0;
+            if (len > in.length)
                 throw new NumberFormatException();
-            char coeff[] = new char[len];    
-            char c;                          
+            char coeff[] = new char[len];
+            char c;
 
             for (; len > 0; offset++, len--) {
                 c = in[offset];
                 if ((c >= '0' && c <= '9') || Character.isDigit(c)) {
                     // have digit
                     coeff[precision] = c;
-                    precision++;             
+                    precision++;
                     continue;
                 }
                 if (c == '.') {
                     // have dot
-                    if (dotoff >= 0)         
+                    if (dotoff >= 0)
                         throw new NumberFormatException();
                     dotoff = offset;
                     continue;
@@ -121,7 +121,7 @@ public class HugeDigit extends Number implements Comparable {
             if (exp != 0) {                  // had significant exponent
                 try {
                     scale = checkScale(-exp + scale); // adjust
-                } catch (ArithmeticException e) { 
+                } catch (ArithmeticException e) {
                     throw new NumberFormatException("Scale out of range.");
                 }
             }
@@ -176,20 +176,20 @@ public class HugeDigit extends Number implements Comparable {
         HugeInt q = i[0], r = i[1];
         if (r.signum() == 0)
             return new HugeDigit(q, scale);
-        if (roundingMode == ROUND_UNNECESSARY)      
+        if (roundingMode == ROUND_UNNECESSARY)
             throw new ArithmeticException("Rounding necessary");
 
-        int signum = dividend.signum() * divisor.signum(); 
+        int signum = dividend.signum() * divisor.signum();
         boolean increment;
-        if (roundingMode == ROUND_UP) {             
+        if (roundingMode == ROUND_UP) {
             increment = true;
-        } else if (roundingMode == ROUND_DOWN) {    
+        } else if (roundingMode == ROUND_DOWN) {
             increment = false;
-        } else if (roundingMode == ROUND_CEILING) { 
+        } else if (roundingMode == ROUND_CEILING) {
             increment = (signum > 0);
-        } else if (roundingMode == ROUND_FLOOR) {   
+        } else if (roundingMode == ROUND_FLOOR) {
             increment = (signum < 0);
-        } else { 
+        } else {
             int cmpFracHalf = r.add(r).abs().compareTo(divisor.intVal.abs());
             if (cmpFracHalf < 0) {         /* We're closer to higher digit */
                 increment = false;
@@ -200,8 +200,8 @@ public class HugeDigit extends Number implements Comparable {
                     increment = true;
                 else if (roundingMode == ROUND_HALF_DOWN)
                     increment = false;
-                else  
-                    increment = q.testBit(0);   
+                else
+                    increment = q.testBit(0);
             }
         }
         return (increment
@@ -212,7 +212,7 @@ public class HugeDigit extends Number implements Comparable {
     public int signum() {
         return intVal.signum();
     }
-    
+
     public int precision() {
         int result = precision;
         if (result == 0) {
@@ -230,7 +230,7 @@ public class HugeDigit extends Number implements Comparable {
     public final static int ROUND_HALF_DOWN =    5;
     public final static int ROUND_HALF_EVEN =    6;
     public final static int ROUND_UNNECESSARY =  7;
-    
+
     public HugeDigit setScale(int newScale, int roundingMode) {
         if (roundingMode < ROUND_UP || roundingMode > ROUND_UNNECESSARY)
             throw new IllegalArgumentException("Invalid rounding mode");
@@ -255,7 +255,7 @@ public class HugeDigit extends Number implements Comparable {
     }
 
     public int compareTo(Object arg) {
-        HugeDigit val = (HugeDigit)arg; 
+        HugeDigit val = (HugeDigit)arg;
         int sigDiff = signum() - val.signum();
         if (sigDiff != 0)
             return (sigDiff > 0 ? 1 : -1);
@@ -300,7 +300,7 @@ public class HugeDigit extends Number implements Comparable {
     public HugeInt toBigInteger() {
         return this.setScale(0, ROUND_DOWN).intVal;
     }
-    
+
     public long longValue(){
         return toBigInteger().longValue();
     }
@@ -390,7 +390,7 @@ public class HugeDigit extends Number implements Comparable {
         for (int i = 1; i <= n; i++) tenpow[i] = '0';
         return new HugeInt(tenpow);
     }
-    
+
     private static HugeInt TENPOWERS[] = {HugeInt.ONE,
         HugeInt.valueOf(10),       HugeInt.valueOf(100),
         HugeInt.valueOf(1000),     HugeInt.valueOf(10000),
@@ -453,7 +453,7 @@ public class HugeDigit extends Number implements Comparable {
 
     private int checkScale(long val) {
         if ((int)val != val) {
-            if ((this.intVal != null &&  this.signum() != 0) || 
+            if ((this.intVal != null &&  this.signum() != 0) ||
                 this.intVal == null ) {
                 if (val > Integer.MAX_VALUE)
                     throw new ArithmeticException("Underflow");

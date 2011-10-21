@@ -25,13 +25,13 @@ public class RubyHash extends RubyBasic {
 	  	cl.doClone(this);
 	  	return cl;
     }
-    
+
     //@SuppressWarnings("unchecked")
     protected void doClone(RubyValue orig) {
     	RubyHash h = (RubyHash)orig;
         map_ = (HashMap/*<RubyValue, RubyValue>*/) h.map_.clone();
         default_value_ = h.default_value_;
-        default_value_as_block_ = h.default_value_as_block_; 
+        default_value_as_block_ = h.default_value_as_block_;
         super.doClone(orig);
     }
 
@@ -90,7 +90,7 @@ public class RubyHash extends RubyBasic {
     public RubyValue getRaw(RubyValue k) {
         return (RubyValue)map_.get(k);
     }
-    
+
     public RubyValue get(RubyValue k) {
         RubyValue v = (RubyValue)map_.get(k);
         if (null != v) {
@@ -112,7 +112,7 @@ public class RubyHash extends RubyBasic {
         RubyValue v = (RubyValue)map_.remove(k);
         if ( v == null && block != null )
         	return block.invoke(this, k);
-        
+
         return (null != v) ? v : RubyAPI.callOneArgMethod(this, k, null, defaultID);
     }
 
@@ -135,7 +135,7 @@ public class RubyHash extends RubyBasic {
         map_.clear();
         return this;
     }
-    
+
     //@RubyLevelMethod(name="reject")
     public RubyValue reject(RubyBlock block) {
         RubyHash dup = (RubyHash)clone();
@@ -297,7 +297,7 @@ public class RubyHash extends RubyBasic {
     //RHO_COMMENT:
     //@RubyLevelMethod(name="[]")
     public static RubyValue create(RubyArray args) {
-        
+
         if (args.size() == 1 && args.get(0).isKindOf(RubyRuntime.HashClass) ){
             return args.get(0).clone();
         }
@@ -307,18 +307,18 @@ public class RubyHash extends RubyBasic {
         }
 
         RubyHash res = ObjectFactory.createHash();
-        
-        for (int i=0; i < args.size(); i+=2) 
+
+        for (int i=0; i < args.size(); i+=2)
         	res.add(args.get(i), args.get(i+1));
-        
+
         return res;
     }
-    
+
     //@RubyAllocMethod
     public static RubyValue alloc(RubyValue receiver) {
         RubyHash h = ObjectFactory.createHash();
         h.setRubyClass((RubyClass) receiver);
         return h;
     }
-    
+
 }

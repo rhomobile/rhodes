@@ -61,7 +61,7 @@ describe "File.new" do
     ensure
       f.close
     end
-if ( System.get_property('platform') != 'WINDOWS' )    
+if ( System.get_property('platform') != 'WINDOWS' )
     File.stat(@file).mode.to_s(8).should == orig_perms
 end
     # it should be still possible to read from the file

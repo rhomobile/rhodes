@@ -127,7 +127,7 @@
 // CAppStdDialogImplBase - Base implementation of standard application dialogs
 // CAppStdDialogImpl<T, t_shidiFlags, t_bModal> : Implementation of standard application dialog
 // CAppStdDialogResizeImpl - implementation of orientation resizing standard application dialog
-// CAppStdAxDialogImpl - Implementation of standard application AxDialog 
+// CAppStdAxDialogImpl - Implementation of standard application AxDialog
 // CAppStdAxDialogResizeImpl - implementation of orientation resizing standard application AxDialog
 // CAppStdOrientedDialogImpl - implementation of oriented PPC standard application dialog
 // CAppStdAxOrientedDialogImpl - implementation of oriented PPC standard application AxDialog
@@ -136,7 +136,7 @@
 //
 // CZoomScrollImpl<T> : WinCE zooming implementation
 //
-// CBottomTabViewImpl<T, TBase, TWinTraits> - CBottomTabView 
+// CBottomTabViewImpl<T, TBase, TWinTraits> - CBottomTabView
 // CHtmlCtrlT<TBase> - CHtmlCtrl
 // CRichInkCtrlT<TBase> - CRichInkCtrl
 // CInkXCtrlT<TBase> - CInkXCtrl
@@ -184,10 +184,10 @@ inline HWND AtlCreateEmptyMenuBar(HWND hWnd, bool bSip = true)
 	SHMENUBARINFO embi = { sizeof(SHMENUBARINFO), hWnd, SHCMBF_EMPTYBAR };
 	if (!bSip)
 		embi.dwFlags |= SHCMBF_HIDESIPBUTTON;
-	
+
 	return AtlCreateMenuBar(embi);
 }
-	
+
 ///////////////////////////////////////////////////////////////////////////////
 // Helper functions for SmartPhone back key handling
 
@@ -241,7 +241,7 @@ public:
 	{ }
 
 // Overloads
-	BOOL GetClientRect(LPRECT lpRect) 
+	BOOL GetClientRect(LPRECT lpRect)
 	{
 		T* pT = static_cast<T*>(this);
 		ATLASSERT(pT->IsWindow());
@@ -304,7 +304,7 @@ public:
 	#ifdef _WTL_CE_DRA
 		int nSeg = DRA::SCALEY(1);
 	#else // !_WTL_CE_DRA
-		int nSeg = nTitleHeight / 24; 
+		int nSeg = nTitleHeight / 24;
 	#endif // !_WTL_CE_DRA
 
 		dc.Polyline(line, nSeg <= 2 ? nSeg * 2 : 4);
@@ -339,7 +339,7 @@ public:
 
 		SIPINFO si = {sizeof(SIPINFO)};
 		SipGetInfo(&si);
-		if ((si.fdwFlags & SIPF_ON) ^ SIPF_ON) 
+		if ((si.fdwFlags & SIPF_ON) ^ SIPF_ON)
 			si.rcVisibleDesktop.bottom = si.rcSipRect.bottom;
 		pT->MoveWindow(&si.rcVisibleDesktop, FALSE);
 	}
@@ -487,7 +487,7 @@ class ATL_NO_VTABLE CStdDialogImplBase :
 {
 public:
 #ifdef WIN32_PLATFORM_PSPC
-	BOOL GetClientRect(LPRECT lpRect) 
+	BOOL GetClientRect(LPRECT lpRect)
 	{
 		return CStdDialogBase<T, t_shidiFlags, t_bModal>::GetClientRect(lpRect);
 	}
@@ -510,7 +510,7 @@ public:
 		COMMAND_RANGE_HANDLER(IDOK, IDCANCEL, OnCloseCmd)
 		COMMAND_RANGE_HANDLER(ID_MENU_OK, ID_MENU_CANCEL, OnMenuClose)
 	END_MSG_MAP()
-	
+
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 	{
 #ifdef _DEBUG
@@ -533,10 +533,10 @@ class ATL_NO_VTABLE CStdDialogImpl : public CStdDialogImplBase< T, t_shidiFlags,
 ///////////////////////////////////////////////////////////////////////////////
 // CStdIndirectDialogImpl - implementation of standard indirect PPC/SmartPhone dialog
 
-#if defined __ATLDLGS_H__ 
+#if defined __ATLDLGS_H__
 
 template <class T, UINT t_shidiFlags = WTL_STD_SHIDIF, bool t_bModal = true>
-class ATL_NO_VTABLE CStdIndirectDialogImpl : 
+class ATL_NO_VTABLE CStdIndirectDialogImpl :
 	public CIndirectDialogImpl< T, CMemDlgTemplate, CStdDialogImpl<T, t_shidiFlags, t_bModal> >
 {
 public:
@@ -602,8 +602,8 @@ public:
 	END_MSG_MAP()
 
 };
- 
-#endif // defined __ATLDLGS_H__ 
+
+#endif // defined __ATLDLGS_H__
 
 #ifndef _ATL_NO_HOSTING
 
@@ -627,7 +627,7 @@ public:
 	typedef CStdDialogBase<CStdSimpleDialog<t_wDlgTemplateID, t_shidiFlags>, t_shidiFlags> baseClass;
 
 #ifdef WIN32_PLATFORM_PSPC
-	BOOL GetClientRect(LPRECT lpRect) 
+	BOOL GetClientRect(LPRECT lpRect)
 	{
 		return baseClass::GetClientRect(lpRect);
 	}
@@ -771,7 +771,7 @@ public:
 		T* pT = static_cast<T*>(this);
 		ATLASSERT(pT->IsWindow());
 		ATLASSERT(mode == DRA::GetDisplayMode());
-		
+
 		// Derived dialog must enumerate TWO dialog templates with the same control ids and types ie:
 		// enum { IDD = IDD_MYDLG, IDD_LANDSCAPE = IDD_MYDLG_L };
 		UINT iResource = (mode == DRA::Landscape)? T::IDD_LANDSCAPE : T::IDD;
@@ -969,7 +969,7 @@ public:
 #else
   #pragma message("Warning: CAppInfoBase compiles without CString support. Do not use CString in Save or Restore.")
 #endif // defined(_WTL_USE_CSTRING) || defined(__ATLSTR_H__)
-	
+
 #if (_ATL_VER < 0x0800)
 	LONG Save(LPCTSTR sval, ATL::_U_STRINGorID sName)
 	{
@@ -991,7 +991,7 @@ public:
 		return m_Key.QueryStringValue(sName.m_lpstr, sval, plength);
 	}
 #endif // !(_ATL_VER < 0x0800)
-	
+
 	LONG Delete(ATL::_U_STRINGorID sName)
 	{
 		return  m_Key.DeleteValue(sName.m_lpstr);
@@ -1000,7 +1000,7 @@ public:
 
 
 ///////////////////////////////////////////////////////////////////////////////
-// CAppInfoT - CAppInfoBase constructed from a class with T::GetAppKey() 
+// CAppInfoT - CAppInfoBase constructed from a class with T::GetAppKey()
 
 // Macro for declaring AppKey
 #define DECLARE_APPKEY(uAppKey) \
@@ -1098,7 +1098,7 @@ public:
 			if(dw == ERROR_ALREADY_EXISTS)
 			{
 				CloseHandle(hMutex);
-				
+
 				HWND hwnd = NULL;
 				if (bDialog)
 					hwnd = FindWindow(NULL, pszClass);
@@ -1146,8 +1146,8 @@ public:
 	{
 	}
 
-#ifdef WIN32_PLATFORM_WFSP 
-	void AppBackKey() 
+#ifdef WIN32_PLATFORM_WFSP
+	void AppBackKey()
 	{
 		::SHNavigateBack();
 	}
@@ -1327,9 +1327,9 @@ public:
 
 template <class T, class TImplBase, UINT t_shidiFlags = WTL_APP_SHIDIF, bool t_bModal = false>
 class ATL_NO_VTABLE CAppStdDialogImplBase :
-		public TImplBase, 
+		public TImplBase,
 		public CAppDialog< T >
-{ 
+{
 public:
 	WTL_DLG_NOTITLE;
 
@@ -1346,7 +1346,7 @@ public:
 		else
 			::EndDialog(pT->m_hWnd, nVal);
 	}
-	
+
 	BEGIN_MSG_MAP(CAppStdDialogImplBase)
 		MESSAGE_HANDLER(WM_CLOSE, OnSystemClose)
 		CHAIN_MSG_MAP(TImplBase)
@@ -1362,7 +1362,7 @@ public:
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-// CAppStdDialogImpl - Implementation of standard application dialog 
+// CAppStdDialogImpl - Implementation of standard application dialog
 
 template <class T, UINT t_shidiFlags = WTL_APP_SHIDIF, bool t_bModal = false>
 class ATL_NO_VTABLE CAppStdDialogImpl :
@@ -1379,7 +1379,7 @@ class ATL_NO_VTABLE CAppStdDialogResizeImpl :
 
 #ifndef _ATL_NO_HOSTING
 ///////////////////////////////////////////////////////////////////////////////
-// CAppStdAxDialogImpl - Implementation of standard application AxDialog 
+// CAppStdAxDialogImpl - Implementation of standard application AxDialog
 
 template <class T, UINT t_shidiFlags = WTL_APP_SHIDIF, bool t_bModal = false>
 class ATL_NO_VTABLE CAppStdAxDialogImpl :
@@ -1437,7 +1437,7 @@ public:
 	CFullScreenFrame() : m_bFullScreen(false)
 	{ }
 
-// Operation	
+// Operation
 	void SetFullScreen(bool bFull)
 	{
 		m_bFullScreen = bFull;
@@ -1470,7 +1470,7 @@ public:
 		MenuBar.ShowWindow(bShow ? SW_SHOWNORMAL : SW_HIDE);
 		pT->SizeToMenuBar();
 	}
-	
+
 	void ShowTaskBar(bool bShow, bool bRepaint = true)
 	{
 		T* pT = static_cast<T*>(this);
@@ -1481,7 +1481,7 @@ public:
 			rect.top = 0;
 
 #ifdef WIN32_PLATFORM_PSPC // Pocket PC code
-		UINT uShow = t_bHasSip ? SHFS_SHOWTASKBAR | SHFS_SHOWSIPBUTTON : SHFS_SHOWTASKBAR | SHFS_HIDESIPBUTTON;		
+		UINT uShow = t_bHasSip ? SHFS_SHOWTASKBAR | SHFS_SHOWSIPBUTTON : SHFS_SHOWTASKBAR | SHFS_HIDESIPBUTTON;
 		SHFullScreen(pT->m_hWnd, bShow ? uShow : SHFS_HIDETASKBAR | SHFS_HIDESIPBUTTON);
 #elif _WIN32_WCE > 0x500 // Smartphone 2005 code
 		SHFullScreen(pT->m_hWnd, bShow ? SHFS_SHOWTASKBAR : SHFS_HIDETASKBAR);
@@ -1726,7 +1726,7 @@ public:
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)
 		CHAIN_MSG_MAP(CScrollImpl< T >)
 	END_MSG_MAP()
-	
+
 	LRESULT OnEraseBkgnd(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 	{
 		T* pT = static_cast<T*>(this);
@@ -2912,7 +2912,7 @@ public:
 	CSpinned(HWND hWnd = NULL) : TBase(hWnd)
 	{
 		m_dwSpinnedStyle = WS_VISIBLE | UDS_ALIGNRIGHT | UDS_EXPANDABLE;
-		
+
 		if (t_bExpandOnly == true)
 			m_dwSpinnedStyle |= UDS_NOSCROLL;
 		else

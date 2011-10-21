@@ -21,5 +21,5 @@ describe "Process.abort" do
       File.exists?(@name).should == false
     end
   end
-end    
+end
 end

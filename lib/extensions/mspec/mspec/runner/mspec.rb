@@ -28,13 +28,13 @@ module MSpec
   @randomize    = nil
   @expectation  = nil
   @expectations = false
-  @backtrace = false  
+  @backtrace = false
   @file_count = 0
 
   def self.exc_count
     @exc_count
   end
-  
+
   def self.count
     @count
   end
@@ -94,7 +94,7 @@ module MSpec
       puts "FAIL: #{current} - #{exc.message}\n" + (@backtrace ? exc.backtrace.join("\n") : "")
       @exc_count+=1
       #RHO
-      
+
       register_exit 1
       actions :exception, ExceptionState.new(current && current.state, location, exc)
       return false

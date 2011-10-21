@@ -58,7 +58,7 @@ public class ScriptReaderText extends ScriptReaderBase {
     //boolean         isInsert;
     //RandomAccessFile dataFile;
     String m_strScript;
-    
+
     ScriptReaderText(Database db,
                      String file) throws HsqlException, IOException {
 
@@ -75,7 +75,7 @@ public class ScriptReaderText extends ScriptReaderBase {
 
         dataStreamIn = new BufferedReader(
             new InputStreamReader(new BufferedInputStream(d)));*/
-    	
+
     	RandomAccessFile dataFile = null;
     	try{
 	    	dataFile = new RandomAccessFile(fileName,"r");
@@ -86,7 +86,7 @@ public class ScriptReaderText extends ScriptReaderBase {
 		    {
 			    byte[] data = new byte[len];
 			    dataFile.readFully(data);
-		
+
 			    m_strScript = new String(data,0,len);
 		    }
     	}catch(IOException exc)
@@ -98,7 +98,7 @@ public class ScriptReaderText extends ScriptReaderBase {
     	}
     }
 
-    protected void readDDL(Session session) throws IOException, HsqlException 
+    protected void readDDL(Session session) throws IOException, HsqlException
     {
 /*
         for (; readLoggedStatement(session); ) {
@@ -121,7 +121,7 @@ public class ScriptReaderText extends ScriptReaderBase {
                     new Integer(lineCount), result.getMainString()
                 });
 
-                // @todo fredt - if unavaialble external functions are to be ignored 
+                // @todo fredt - if unavaialble external functions are to be ignored
                 throw error;
             }
         //}

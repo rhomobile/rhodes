@@ -236,14 +236,14 @@ describe "IO#read" do
     @io.pos = 1000
     @io.read(1).should == nil
   end
-if System.get_property('platform') != 'ANDROID'      
+if System.get_property('platform') != 'ANDROID'
   it "raises IOError on closed stream" do
     lambda { IOSpecs.closed_io.read }.should raise_error(IOError)
   end
-end  
+end
 end
 
-if System.get_property('platform') != 'ANDROID'      
+if System.get_property('platform') != 'ANDROID'
 describe "IO#read with encodings" do
   before :each do
     @kcode, $KCODE = $KCODE, "utf-8"

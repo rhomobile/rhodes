@@ -65,7 +65,7 @@
 
 - (void) session: (DTiPhoneSimulatorSession *) session didEndWithError: (NSError *) error {
     nsprintf(@"Session did end with error %@", error);
-    
+
     if (error != nil)
         exit(EXIT_FAILURE);
 
@@ -101,7 +101,7 @@
     nsprintf(@"App Spec: %@", appSpec);
 
     /* Load the default SDK root */
-    
+
     nsprintf(@"SDK Root: %@", sdkRoot);
 
     /* Set up the session configuration */
@@ -112,10 +112,10 @@
 
 	if (logout != nil) {
 		nsprintf(@"using logout file: %@",logout);
-		[config setSimulatedApplicationStdErrPath:logout];	
-		[config setSimulatedApplicationStdOutPath:logout];	
+		[config setSimulatedApplicationStdErrPath:logout];
+		[config setSimulatedApplicationStdOutPath:logout];
 	}
-	
+
     [config setSimulatedApplicationLaunchArgs: [NSArray array]];
     [config setSimulatedApplicationLaunchEnvironment: [NSDictionary dictionary]];
 

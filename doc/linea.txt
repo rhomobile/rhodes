@@ -24,12 +24,12 @@ Ruby interface located in [https://github.com/rhomobile/linea-rhodes/blob/master
 	#   All method can raise Ruby exception like methods of Linea objective-C class
 	#
 
-	 
+
 	class Linea
 
 
 	# BARCODES
-		BAR_ALL = 0 
+		BAR_ALL = 0
 		BAR_UPC = 1
 		BAR_CODABAR = 2
 		BAR_CODE25_NI2OF5 = 3
@@ -66,7 +66,7 @@ Ruby interface located in [https://github.com/rhomobile/linea-rhodes/blob/master
 		BAR_LAST = 34
 
 	# BARCODES_EX
-		BAR_EX_ALL = 0 
+		BAR_EX_ALL = 0
 		BAR_EX_UPCA = 1
 		BAR_EX_CODABAR = 2
 		BAR_EX_CODE25_NI2OF5 = 3
@@ -136,7 +136,7 @@ Ruby interface located in [https://github.com/rhomobile/linea-rhodes/blob/master
 		MODE_SINGLE_SCAN = 0
 		MODE_MULTI_SCAN = 1
 
-	# BUTTON_STATES 
+	# BUTTON_STATES
 		BUTTON_DISABLED = 0
 		BUTTON_ENABLED = 1
 
@@ -167,7 +167,7 @@ Ruby interface located in [https://github.com/rhomobile/linea-rhodes/blob/master
 		ALIGN_LEFT = 0
 		ALIGN_CENTER = 1
 		ALIGN_RIGHT = 2
-		
+
 	# BARCODE MODULE SPECIFIC CONSTANTS
 	# Barcode Printing Types
 	# Prints UPC-A barcode
@@ -201,7 +201,7 @@ Ruby interface located in [https://github.com/rhomobile/linea-rhodes/blob/master
 		BAR_TEXT_BELOW = 2
 		BAR_TEXT_BOTH = 3
 
-	# Intensity Levels 
+	# Intensity Levels
 		INTENSITY70 = 0
 		INTENSITY80 = 1
 		INTENSITY90 = 2
@@ -209,7 +209,7 @@ Ruby interface located in [https://github.com/rhomobile/linea-rhodes/blob/master
 		INTENSITY120 = 4
 		INTENSITY150 = 5
 
-	# Font Sizes 
+	# Font Sizes
 		FONT_9X16 = 0
 		FONT_18X16 = 1
 		FONT_9X32 = 2
@@ -263,39 +263,39 @@ Ruby interface located in [https://github.com/rhomobile/linea-rhodes/blob/master
 	  def self.sharedDevice
 		if $our_line_object == nil
 		  $our_line_object = Linea.new
-		end	
+		end
 		return $our_line_object
 	  end
 	  # get current connection state
-	  # return int 
+	  # return int
 	  def get_connstate
 	  end
-	  
+
 	  # get Linea device name
 	  # return string
 	  def get_deviceName
-	  end	
+	  end
 
 	  # get Linea device model
-	  # return string 
+	  # return string
 	  def get_deviceModel
-	  end	
+	  end
 
 	  # get firmware revision
 	  # return string
 	  def get_firmwareRevision
-	  end	
+	  end
 
 	  # get hardware revision
 	  # return string
 	  def get_hardwareRevision
-	  end	
-	 
+	  end
+
 	  # get serial number
 	  # return string
 	  def get_serialNumber
-	  end	
-	 
+	  end
+
 	  # Instead of special delegate class (in objective-C interface) we use callback mechanism for any feedback from device :
 	  # if you want listen events from Line device - make Ruby function in your controller
 	  # and post his url to this function
@@ -333,18 +333,18 @@ Ruby interface located in [https://github.com/rhomobile/linea-rhodes/blob/master
 	  #       @params['encryption'] - int value
 	  #       @params['data'] - array of bytes value
 	  #
-	  # 
+	  #
 	  #  example (code in controller.rb) :
-	  # 
+	  #
 	  #  require 'linea'
-	  #  
+	  #
 	  #  class YoupageController < Rho::RhoController
 	  #
 	  #    def index
 	  #        Linea.sharedDevice.addDelegate(url_for(:action => :linea_callback))
 	  #        render
 	  #    end
-	  #  
+	  #
 	  #    def linea_callback
 	  #       puts 'callback'
 	  #       if @params['delegateEvent'] == 'connectionState'
@@ -356,23 +356,23 @@ Ruby interface located in [https://github.com/rhomobile/linea-rhodes/blob/master
 	  #
 	  #  delegate_callback - string
 	  def addDelegate(delegate_callback)
-	  end	
+	  end
 
 	  # remove callback - see addDelegate function for more detail
 	  # delegate_callback - string
 	  def removeDelegate(delegate_callback)
-	  end	
+	  end
 
 	  def connect
-	  end	
+	  end
 
 	  def disconnect
-	  end	
+	  end
 
 	  # type - int
 	  # return string
 	  def barcodeType2Text(type)
-	  end	 
+	  end
 
 	  def startScan
 	  end
@@ -382,83 +382,83 @@ Ruby interface located in [https://github.com/rhomobile/linea-rhodes/blob/master
 
 	  # return int
 	  def getScanTimeout
-	  end	 
-	 
+	  end
+
 	  # timeout - int
 	  def setScanTimeout(timeout)
-	  end	 
-	 
+	  end
+
 	  # return int
 	  def getScanButtonMode
-	  end	 
+	  end
 
 	  # mode - int
 	  def setScanButtonMode(mode)
-	  end	 
+	  end
 
 	  # return int
 	  def getScanMode
-	  end	 
+	  end
 
 	  # mode - int
 	  def setScanMode(mode)
-	  end	 
-	  
+	  end
+
 	  # barcode_type - int
 	  # enabled - BOOL
 	  def enableBarcode(barcode_type, enabled)
-	  end	 
-	 
+	  end
+
 	  # enabled - BOOL
 	  # volume - int
 	  # beepData - array of int/fixnums
-	  def setScanBeep(enabled, volume, beepData) 
-	  end	
+	  def setScanBeep(enabled, volume, beepData)
+	  end
 
 	  # return int
 	  def getBatteryCapacity
-	  end	 
+	  end
 
 	  # return int
 	  def getBatteryVoltage
-	  end	 
-	 
+	  end
+
 	  # type - int
 	  # return BOOL
 	  def isBarcodeEnabled?(type)
-	  end	 
+	  end
 
 	  # type - int
 	  # return BOOL
 	  def isBarcodeSupported?(type)
-	  end	 
+	  end
 
 	  # volume - int
 	  # beepData - array of int/fixnums
 	  def playSound(volume, beepData)
-	  end	
+	  end
 
 	  def msStartScan
-	  end	
-	 
+	  end
+
 	  def msStopScan
-	  end	
+	  end
 
 	  # return int
 	  def getMSCardDataMode
-	  end	 
+	  end
 
 	  # mode - int
 	  def setMSCardDataMode(mode)
-	  end	 
+	  end
 
 	  # return BOOL
 	  def getCharging?
-	  end	 
+	  end
 
 	  # enabled - BOOL
-	  def setCharging(enabled) 
-	  end	
+	  def setCharging(enabled)
+	  end
 
 	  # path - string
 	  # return HASH with firmwareInfo struct fields (all keys with value type):
@@ -467,20 +467,20 @@ Ruby interface located in [https://github.com/rhomobile/linea-rhodes/blob/master
 	  #      'firmwareRevision' - string
 	  #      'firmwareRevisionNumber' - int
 	  def getFirmwareFileInformation(path)
-	  end	 
+	  end
 
 	  # path - string
 	  def updateFirmware(path)
-	  end	
-	 
+	  end
+
 	  # return int
 	  def getSyncButtonMode
-	  end	 
+	  end
 
 	  # mode - int
 	  def setSyncButtonMode(mode)
-	  end	
-	 
+	  end
+
 	  # track1 - string
 	  # track2 - string
 	  # return nil if nothing or HASH with financialCard struct (all keys with value type):
@@ -491,35 +491,35 @@ Ruby interface located in [https://github.com/rhomobile/linea-rhodes/blob/master
 	  #      'serviceCode' - string
 	  #      'discretionaryData' - string
 	  #      'firstName' - string
-	  #      'lastName' - string  
+	  #      'lastName' - string
 	  def msProcessFinancialCard(track1, track2)
 	  end
-	 
+
 	  # return int
 	  def getBarcodeTypeMode
-	  end	 
+	  end
 
 	  # mode - int
 	  # return BOOL
 	  def setBarcodeTypeMode?(mode)
-	  end	
+	  end
 
 	  # return array of bytes
 	  def cryptoRawGenerateRandomData
-	  end	
+	  end
 
 	  # keyID - int
 	  # encryptedData - array of bytes
 	  def cryptoRawSetKey(keyID, encryptedData)
-	  end	
+	  end
 
 	  # keyID - int
 	  # key - arrays of byte
 	  # oldKey - arrays of byte
 	  def cryptoSetKey(keyID, key, oldKey)
-	  end	
+	  end
 
-	  # randomData - array of bytes 
+	  # randomData - array of bytes
 	  # return array of bytes
 	  def cryptoRawAuthenticateLinea(randomData)
 	  end
@@ -528,30 +528,30 @@ Ruby interface located in [https://github.com/rhomobile/linea-rhodes/blob/master
 	  # return BOOL
 	  def cryptoAuthenticateLinea?(key)
 	  end
-	 
+
 	  # data - array of bytes
 	  # return BOOL
 	  def barcodeEngineWrite?(data)
-	  end	
+	  end
 
 	  # data - string
 	  # return BOOL
 	  def barcodeEngineWriteString?(data)
-	  end	
+	  end
 
 	  # max_length - int with maximum length of readed data in bytes
 	  # timeout - float
 	  # return array of bytes or nil if nothing
 	  def barcodeEngineRead(max_length, timeout)
-	  end	
+	  end
 
 	  # enabled - BOOL
 	  def barcodeEnginePowerControl(enable)
-	  end	    
+	  end
 
 	  # params - string
 	  def barcodeOpticonSetParams(params)
-	  end	
+	  end
 
 	end
 
@@ -564,10 +564,10 @@ This is simple example of ruby code where you can see how LineSDK is used in rub
 	require 'rho/rhocontroller'
 	require 'linea'
 
-	 
+
 	class ScanbarcodeController < Rho::RhoController
 
-	  
+
 	  def index
 		puts 'ScanBarcodeController.index'
 		Linea.sharedDevice.addDelegate(url_for(:action => :linea_callback))
@@ -679,7 +679,7 @@ In application you can see two pages:
    [addDelegate]
    [connect]
    see events in Log box
-     
+
    for scan barcode use hardware button or [startScan] - scan code by device [stopScan]
 
 ## How to use Linea native extension in your application

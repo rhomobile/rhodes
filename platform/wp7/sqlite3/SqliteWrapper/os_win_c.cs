@@ -48,10 +48,10 @@ namespace Community.CsharpSqlite
 
     private static LockingStrategy lockingStrategy = HelperMethods.IsRunningMediumTrust() ? new MediumTrustLockingStrategy() : new LockingStrategy();
 
-    public static IsolatedStorageFile store = IsolatedStorageFile.GetUserStoreForApplication();    
-    
+    public static IsolatedStorageFile store = IsolatedStorageFile.GetUserStoreForApplication();
+
     public partial class sqlite3_file
-    {      
+    {
         // public HANDLE h;            /* Handle for accessing the file */
       public int locktype;           /* Type of lock currently held on this file */
       public int sharedLockByte;     /* Randomly chosen byte used as a shared lock */
@@ -70,7 +70,7 @@ namespace Community.CsharpSqlite
         sectorSize = 0;
       }
     };
-      
+
       static int sqlite3_os_type = 0;
 
 
@@ -112,7 +112,7 @@ namespace Community.CsharpSqlite
     ** giving up and returning an error.
     */
     public static int MX_CLOSE_ATTEMPT = 3;
-    static int winClose( sqlite3_file id )    
+    static int winClose( sqlite3_file id )
     {
       bool rc;
       int cnt = 0;
@@ -222,7 +222,7 @@ namespace Community.CsharpSqlite
       }
       if ( rc == 0 || amt > (int)wrote )
       {
-        id.lastErrno  = 1;     
+        id.lastErrno  = 1;
         return SQLITE_FULL;
       }
       return SQLITE_OK;
@@ -510,7 +510,7 @@ namespace Community.CsharpSqlite
     */
     static int winCheckReservedLock( sqlite3_file id, ref int pResOut )
     {
-      //int rc;      
+      //int rc;
       //Debug.Assert( id != null );
       //if ( id.locktype >= RESERVED_LOCK )
       //{
@@ -805,12 +805,12 @@ namespace Community.CsharpSqlite
         ** it's important to not reference them for WINCE builds.
         */
      }
-      //if ( pFile.fs == null 
-      if (pFile.fs == null 
+      //if ( pFile.fs == null
+      if (pFile.fs == null
           ||
           //!pFile.fs.CanRead
           !pFile.fs.CanRead
-          ) 
+          )
       {
         if ( ( flags & SQLITE_OPEN_READWRITE ) != 0 )
         {
@@ -944,7 +944,7 @@ namespace Community.CsharpSqlite
       //        pResOut =store.FileExists(zFilename) ? 1 : 0;
       //        return SQLITE_OK;
       //    }
-          
+
       //    try
       //    {
       //        if (store.DirectoryExists(zFilename))

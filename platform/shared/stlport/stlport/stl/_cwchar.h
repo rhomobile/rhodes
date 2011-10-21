@@ -128,7 +128,7 @@ _STLP_STATIC_ASSERT(((wchar_t)-1 > 0) && (WCHAR_MIN < 0))
 #      undef WCHAR_MIN
 #      define WCHAR_MIN 0
 #      undef WCHAR_MAX
-#      define WCHAR_MAX UINT_MAX 
+#      define WCHAR_MAX UINT_MAX
 #    endif
 #  endif
 

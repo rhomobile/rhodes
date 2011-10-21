@@ -45,7 +45,7 @@ BOOL CIEBrowserEngine::Navigate(LPCTSTR szURL)
     BSTR bstrUrl = SysAllocString(szURL);
     BOOL bRes = m_spIWebBrowser2->Navigate(bstrUrl, NULL, &CComVariant(L"_self"), NULL, NULL) == S_OK;
 
-    SysFreeString(bstrUrl);    
+    SysFreeString(bstrUrl);
 
     return bRes;
 }
@@ -87,7 +87,7 @@ static void writeHtmlToTheDoc (
 	// Creates a new one-dimensional array
 	sfArray = SafeArrayCreateVector(VT_VARIANT, 0, 1);
 
-	if (sfArray && document) 
+	if (sfArray && document)
     {
 	    hresult = SafeArrayAccessData(sfArray,(LPVOID*) & param);
 	    param->vt = VT_BSTR;

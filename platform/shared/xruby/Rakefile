@@ -17,7 +17,7 @@ else
   SEP = ":"
 end
 
-  
+
 
 def classpath(args)
   cp = ""
@@ -53,20 +53,20 @@ end
 
 desc "Generates parser"
 task :parser do
-  puts run("java",["-classpath", classpath([ANTLR]), "antlr.Tool", "-o", "src/com/xruby/compiler/parser","src/com/xruby/compiler/parser/ruby.g"]) 
-  if $? != 0 
+  puts run("java",["-classpath", classpath([ANTLR]), "antlr.Tool", "-o", "src/com/xruby/compiler/parser","src/com/xruby/compiler/parser/ruby.g"])
+  if $? != 0
     puts "Error generating parser"
     exit 1
-  end 
+  end
 end
 
 desc "Generates tree parser"
 task :treeparser do
-  puts run("java",["-classpath", classpath([ANTLR]), "antlr.Tool", "-o", "src/com/xruby/compiler/parser","src/com/xruby/compiler/parser/ruby.tree.g"]) 
-  if $? != 0 
+  puts run("java",["-classpath", classpath([ANTLR]), "antlr.Tool", "-o", "src/com/xruby/compiler/parser","src/com/xruby/compiler/parser/ruby.tree.g"])
+  if $? != 0
     puts "Error generating tree parser"
     exit 1
-  end 
+  end
 end
 
 desc "Compile sources"
@@ -85,7 +85,7 @@ desc "Generate the distribution"
 task :dist => [:clean, :method] do
   puts "Creating #{XRUBY}..."
   mkdir_p TMPDIR, :verbose => false
- 
+
   unjar(ANTLR,TMPDIR)
   unjar(ASM,TMPDIR)
   unjar(COMCLI,TMPDIR)

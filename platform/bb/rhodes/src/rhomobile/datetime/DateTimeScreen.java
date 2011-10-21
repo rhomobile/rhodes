@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -44,38 +44,38 @@ import net.rim.device.api.ui.container.MainScreen;
 import net.rim.device.api.ui.container.VerticalFieldManager;
 
 public class DateTimeScreen extends MainScreen {
-	
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("DateTimePicker");
-	
+
 	private String _callbackUrl;
 	private String _opaque;
-	
+
 	/** A reference to the current screen for listeners. */
 	private DateTimeScreen _dateTimeScreen;
-	
+
 	private DateField _dateTimeField;
 	private ButtonField _okButton;
 	private ButtonField _cancelButton;
-	
+
 	private long _min_time;
 	private long _max_time;
-	
-	
+
+
 	public DateTimeScreen(String callback, String title, long init, DateFormat fmt, String opaque, long min_time, long max_time)
 	{
 		_callbackUrl = callback;
 		_opaque = opaque;
 		//A reference to this object, to be used in listeners.
 		_dateTimeScreen = this;
-		
+
 		setTitle( new LabelField( title, LabelField.ELLIPSIS | LabelField.USE_ALL_WIDTH ) );
-		
+
 		_dateTimeField = new DateField("", init, fmt);
-		
+
 		_min_time = min_time;
 		_max_time = max_time;
-		
+
 		_dateTimeField.setChangeListener( new FieldChangeListener() {
 			public void fieldChanged(Field field, int context) {
 				if (_dateTimeField == null) {
@@ -100,34 +100,34 @@ public class DateTimeScreen extends MainScreen {
 				}
 			}
 		});
-		
+
 		_okButton = new ButtonField("OK");
 		_okButton.setChangeListener(new OkListener());
 		_cancelButton = new ButtonField("Cancel");
 		_cancelButton.setChangeListener(new CancelListener());
-		
+
 		HorizontalFieldManager hfm = new HorizontalFieldManager(Field.FIELD_HCENTER);
 		hfm.add(_okButton);
 		hfm.add(_cancelButton);
-		
+
 		VerticalFieldManager vfm = new VerticalFieldManager(Field.FIELD_VCENTER);
 		vfm.add(_dateTimeField);
 		vfm.add(new SeparatorField());
 		vfm.add(hfm);
-		
+
 		add(vfm);
 	}
-	
+
 	private void setFieldsEditable(boolean v) {
 		_okButton.setEditable(v);
 		_cancelButton.setEditable(v);
 		_dateTimeField.setEditable(v);
 	}
-	
+
 	/**
 	 * Handle trackball click events.
 	 * @see net.rim.device.api.ui.Screen#invokeAction(int)
-	 */   
+	 */
 	protected boolean invokeAction(int action)
 	{
 		boolean handled = super.invokeAction(action);
@@ -144,63 +144,63 @@ public class DateTimeScreen extends MainScreen {
 		}
 		return handled;
 	}
-	
+
 	private class RemoveScreen implements Runnable
 	{
 		private RhodesApplication _app = null;
 		private DateTimeScreen _screen = null;
-		
+
 		public RemoveScreen(RhodesApplication app, DateTimeScreen screen) {
 			_app = app;
 			_screen = screen;
 		}
-		
+
 		public void run() {
 			synchronized ( RhodesApplication.getEventLock() ) {
 				_app.popScreen( _screen );
 			}
 		}
 	};
-	
+
 	private class OkListener implements FieldChangeListener
 	{
 		public void fieldChanged(Field field, int context)
 		{
 			RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
-			
+
 			HttpHeaders headers = new HttpHeaders();
     		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
-    		
+
     		// We need to divide returned value to 1000 because we send number of seconds
     		// but returned value is actually number of milliseconds since Epoch.
     		String body = "status=ok&result=" + _dateTimeField.getDate()/1000;
     		if (_opaque != null)
     			body += "&opaque=" + _opaque;
     		body += "&rho_callback=1";
-    		
+
     		LOG.INFO("Callback with result: " + body);
-    		
+
     		_dateTimeScreen.setFieldsEditable(false);
 			app.postUrl(_callbackUrl, body, headers, new RemoveScreen(app, _dateTimeScreen));
 		}
 	}
-	
+
 	private class CancelListener implements FieldChangeListener
 	{
 		public void fieldChanged(Field field, int context)
 		{
 			RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
-			
+
 			HttpHeaders headers = new HttpHeaders();
 			headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
-			
+
 			String body = "status=cancel";
     		if (_opaque != null)
     			body += "&opaque=" + _opaque;
     		body += "&rho_callback=1";
-    		
+
 			LOG.INFO("Callback with result: " + body);
-			
+
 			_dateTimeScreen.setFieldsEditable(false);
 			app.postUrl(_callbackUrl, body, headers, new RemoveScreen(app, _dateTimeScreen));
 		}

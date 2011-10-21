@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2007 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -17,7 +17,7 @@ package javolution.context;
  *     for (int i = reader.read(buffer, 0, buffer.length); i > 0;) {
  *         ...
  *     }
- *     ArrayFactory.CHARS_FACTORY.recycle(buffer); //  
+ *     ArrayFactory.CHARS_FACTORY.recycle(buffer); //
  *
  *     // Custom types.
  *     static ArrayFactory<Vertex[]> VERTICES_FACTORY = new ArrayFactory<Vertex[]> {
@@ -28,7 +28,7 @@ package javolution.context;
  *     ...
  *     Vertex[] vertices = VERTICES_FACTORY.array(256);
  *     [/code]</p>
- *          
+ *
  * @author  <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 5.0, May 5, 2007
  */
@@ -125,7 +125,7 @@ public abstract class ArrayFactory/*<T>*/{
      }
      public void recycle(Object array) {
      recycle(array, ((float[])array).length);
-     }        
+     }
      };
      /**/
 
@@ -142,7 +142,7 @@ public abstract class ArrayFactory/*<T>*/{
      }
      public void recycle(Object array) {
      recycle(array, ((double[])array).length);
-     }        
+     }
      };
      /**/
 
@@ -294,7 +294,7 @@ public abstract class ArrayFactory/*<T>*/{
         }
     };
 
-    // Above 65536 we use the heap exclusively. 
+    // Above 65536 we use the heap exclusively.
 
     /**
      * Default constructor.
@@ -303,9 +303,9 @@ public abstract class ArrayFactory/*<T>*/{
     }
 
     /**
-     * Returns an array possibly recycled or preallocated of specified 
+     * Returns an array possibly recycled or preallocated of specified
      * minimum size.
-     * 
+     *
      * @param capacity the minimum size of the array to be returned.
      * @return a recycled, pre-allocated or new factory array.
      */
@@ -348,7 +348,7 @@ public abstract class ArrayFactory/*<T>*/{
 
     /**
      * Recycles the specified arrays.
-     * 
+     *
      * @param array the array to be recycled.
      */
     public void recycle(Object/*{T}*/array) {
@@ -390,7 +390,7 @@ public abstract class ArrayFactory/*<T>*/{
     }
 
     /**
-     * Constructs a new array of specified size from this factory 
+     * Constructs a new array of specified size from this factory
      * (using the <code>new</code> keyword).
      *
      * @param size the size of the array.

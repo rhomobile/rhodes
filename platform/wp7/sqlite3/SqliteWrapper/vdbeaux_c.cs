@@ -15,7 +15,7 @@ using Pgno = System.UInt32;
 #if !SQLITE_MAX_VARIABLE_NUMBER
 using ynVar = System.Int16;
 #else
-using ynVar = System.Int32; 
+using ynVar = System.Int32;
 #endif
 
 namespace Community.CsharpSqlite
@@ -426,19 +426,19 @@ pOp.cnt = 0;
 
     /*
 ** The following type and function are used to iterate through all opcodes
-** in a Vdbe main program and each of the sub-programs (triggers) it may 
+** in a Vdbe main program and each of the sub-programs (triggers) it may
 ** invoke directly or indirectly. It should be used as follows:
 **
 **   Op *pOp;
 **   VdbeOpIter sIter;
 **
 **   memset(&sIter, 0, sizeof(sIter));
-**   sIter.v = v;                            // v is of type Vdbe* 
+**   sIter.v = v;                            // v is of type Vdbe*
 **   while( (pOp = opIterNext(&sIter)) ){
 **     // Do something with pOp
 **   }
 **   sqlite3DbFree(v->db, sIter.apSub);
-** 
+**
 */
     //typedef struct VdbeOpIter VdbeOpIter;
     public class VdbeOpIter
@@ -564,8 +564,8 @@ pOp.cnt = 0;
 **
 ** This routine is called once after all opcodes have been inserted.
 **
-** Variable *pMaxFuncArgs is set to the maximum value of any P2 argument 
-** to an OP_Function, OP_AggStep or OP_VFilter opcode. This is used by 
+** Variable *pMaxFuncArgs is set to the maximum value of any P2 argument
+** to an OP_Function, OP_AggStep or OP_VFilter opcode. This is used by
 ** sqlite3VdbeMakeReady() to size the Vdbe.apArg[] array.
 **
 ** The Op.opflags field is set on all opcodes.
@@ -625,12 +625,12 @@ if( n>nMaxArgs ) nMaxArgs = n;
     /*
     ** This function returns a pointer to the array of opcodes associated with
     ** the Vdbe passed as the first argument. It is the callers responsibility
-    ** to arrange for the returned array to be eventually freed using the 
+    ** to arrange for the returned array to be eventually freed using the
     ** vdbeFreeOpArray() function.
     **
     ** Before returning, *pnOp is set to the number of entries in the returned
-    ** array. Also, *pnMaxArg is set to the larger of its current value and 
-    ** the number of entries in the Vdbe.apArg[] array required to execute the 
+    ** array. Also, *pnMaxArg is set to the larger of its current value and
+    ** the number of entries in the Vdbe.apArg[] array required to execute the
     ** returned program.
     */
     static VdbeOp[] sqlite3VdbeTakeOpArray( Vdbe p, ref int pnOp, ref int pnMaxArg )
@@ -831,8 +831,8 @@ if( n>nMaxArgs ) nMaxArgs = n;
 
     /*
     ** Free the space allocated for aOp and any p4 values allocated for the
-    ** opcodes contained within. If aOp is not NULL it is assumed to contain 
-    ** nOp entries. 
+    ** opcodes contained within. If aOp is not NULL it is assumed to contain
+    ** nOp entries.
     */
     static void vdbeFreeOpArray( sqlite3 db, ref Op[] aOp, int nOp )
     {
@@ -843,7 +843,7 @@ if( n>nMaxArgs ) nMaxArgs = n;
         //      freeP4(db, pOp.p4type, pOp.p4.p);
         //#if SQLITE_DEBUG
         //      sqlite3DbFree(db, ref pOp.zComment);
-        //#endif     
+        //#endif
         //    }
         //  }
         //  sqlite3DbFree(db, aOp);
@@ -1882,10 +1882,10 @@ sqlite3IoTrace( "SQL %s\n", z.Trim() );
         // C# -- Replace allocation with individual Dims
         //
         /* Memory for registers, parameters, cursor, etc, is allocated in two
-        ** passes.  On the first pass, we try to reuse unused space at the 
+        ** passes.  On the first pass, we try to reuse unused space at the
         ** end of the opcode array.  If we are unable to satisfy all memory
         ** requirements by reusing the opcode array tail, then the second
-        ** pass will fill in the rest using a fresh allocation.  
+        ** pass will fill in the rest using a fresh allocation.
         **
         ** This two-pass approach that reuses as much memory as possible from
         ** the leftover space at the end of the opcode array can significantly
@@ -1920,7 +1920,7 @@ sqlite3IoTrace( "SQL %s\n", z.Trim() );
         //p.aMem--;         /* aMem[] goes from 1..nMem */
         p.nMem = nMem;      /*       not from 0..nMem-1 */
         //
-        p.aVar = new Mem[nVar == 0 ? 1 : nVar ]; 
+        p.aVar = new Mem[nVar == 0 ? 1 : nVar ];
         for ( n = 0; n < nVar; n++ )
         {
           p.aVar[n] = sqlite3Malloc(p.aVar[n] );
@@ -2045,7 +2045,7 @@ p.inVtabMethod = 0;
     /*
     ** Close all cursors.
     **
-    ** Also release any dynamic memory held by the VM in the Vdbe.aMem memory 
+    ** Also release any dynamic memory held by the VM in the Vdbe.aMem memory
     ** cell array. This is necessary as the memory cell array may contain
     ** pointers to VdbeFrame objects, which may in turn contain pointers to
     ** open cursors.
@@ -2090,7 +2090,7 @@ p.inVtabMethod = 0;
     {
       sqlite3 db = p.db;
 #if SQLITE_DEBUG
-      /* Execute assert() statements to ensure that the Vdbe.apCsr[] and 
+      /* Execute assert() statements to ensure that the Vdbe.apCsr[] and
   ** Vdbe.aMem[] arrays have already been cleaned up.  */
       int i;
       //TODO for(i=0; i<p.nCursor; i++) Debug.Assert( p.apCsr==null || p.apCsr[i]==null );
@@ -2490,7 +2490,7 @@ static void checkActiveVdbeCnt( sqlite3 db ){}
     {
       sqlite3 db = p.db;
       int rc = SQLITE_OK;
-      /* If p->iStatement is greater than zero, then this Vdbe opened a 
+      /* If p->iStatement is greater than zero, then this Vdbe opened a
       ** statement transaction that should be closed here. The only exception
       ** is that an IO error may have occured, causing an emergency rollback.
       ** In this case (db->nStatement==0), and there is nothing to do.
@@ -2527,8 +2527,8 @@ static void checkActiveVdbeCnt( sqlite3 db ){}
         db.nStatement--;
         p.iStatement = 0;
 
-        /* If the statement transaction is being rolled back, also restore the 
-        ** database handles deferred constraint counter to the value it had when 
+        /* If the statement transaction is being rolled back, also restore the
+        ** database handles deferred constraint counter to the value it had when
         ** the statement transaction was opened.  */
         if ( eOp == SAVEPOINT_ROLLBACK )
         {
@@ -2566,12 +2566,12 @@ sqlite3BtreeEnterAll(p.db);
 #endif
 
     /*
-** This function is called when a transaction opened by the database 
-** handle associated with the VM passed as an argument is about to be 
+** This function is called when a transaction opened by the database
+** handle associated with the VM passed as an argument is about to be
 ** committed. If there are outstanding deferred foreign key constraint
 ** violations, return SQLITE_ERROR. Otherwise, SQLITE_OK.
 **
-** If there are outstanding FK violations and this function returns 
+** If there are outstanding FK violations and this function returns
 ** SQLITE_ERROR, set the result of the VM to SQLITE_CONSTRAINT and write
 ** an error message to it. Then return SQLITE_ERROR.
 */
@@ -2697,9 +2697,9 @@ sqlite3BtreeEnterAll(p.db);
               sqlite3BtreeMutexArrayLeave( p.aMutex );
               return SQLITE_ERROR;
             }
-            /* The auto-commit flag is true, the vdbe program was successful 
+            /* The auto-commit flag is true, the vdbe program was successful
             ** or hit an 'OR FAIL' constraint and there are no deferred foreign
-            ** key constraints to hold up the transaction. This means a commit 
+            ** key constraints to hold up the transaction. This means a commit
             ** is required.  */
             rc = vdbeCommit( db, p );
             if ( rc == SQLITE_BUSY )
@@ -2751,7 +2751,7 @@ sqlite3BtreeEnterAll(p.db);
         **
         ** Note that sqlite3VdbeCloseStatement() can only fail if eStatementOp
         ** is SAVEPOINT_ROLLBACK.  But if p->rc==SQLITE_OK then eStatementOp
-        ** must be SAVEPOINT_RELEASE.  Hence the NEVER(p->rc==SQLITE_OK) in 
+        ** must be SAVEPOINT_RELEASE.  Hence the NEVER(p->rc==SQLITE_OK) in
         ** the following code.
         */
         if (eStatementOp != 0)
@@ -3640,7 +3640,7 @@ swapMixedEndianFloat(x);
       if ( ( p.flags & UNPACKED_NEED_FREE ) != 0 )
       {
         sqlite3DbFree( p.pKeyInfo.db, ref p.aMem );
-        p = null; 
+        p = null;
       }
     }
 
@@ -3706,7 +3706,7 @@ swapMixedEndianFloat(x);
 
       /* Compilers may complain that mem1.u.i is potentially uninitialized.
       ** We could initialize it, as shown here, to silence those complaints.
-      ** But in fact, mem1.u.i will never actually be used initialized, and doing 
+      ** But in fact, mem1.u.i will never actually be used initialized, and doing
       ** the unnecessary initialization has a measurable negative performance
       ** impact, since this routine is a very high runner.  And so, we choose
       ** to ignore the compiler warnings and leave this variable uninitialized.
@@ -3809,14 +3809,14 @@ swapMixedEndianFloat(x);
       u32 typeRowid = 0;    /* Serial type of the rowid */
       u32 lenRowid;       /* Size of the rowid */
       Mem m = null;
-      Mem v = null; 
+      Mem v = null;
       v = sqlite3Malloc( v);
       UNUSED_PARAMETER(db);
 
       /* Get the size of the index entry.  Only indices entries of less
       ** than 2GiB are support - anything large must be database corruption.
       ** Any corruption is detected in sqlite3BtreeParseCellPtr(), though, so
-      ** this code can safely assume that nCellKey is 32-bits  
+      ** this code can safely assume that nCellKey is 32-bits
       */
       Debug.Assert( sqlite3BtreeCursorIsValid( pCur ) );
       rc = sqlite3BtreeKeySize( pCur, ref nCellKey );
@@ -3885,7 +3885,7 @@ swapMixedEndianFloat(x);
     **
     ** pUnpacked is either created without a rowid or is truncated so that it
     ** omits the rowid at the end.  The rowid at the end of the index entry
-    ** is ignored as well.  Hence, this routine only compares the prefixes 
+    ** is ignored as well.  Hence, this routine only compares the prefixes
     ** of the keys prior to the final rowid, not the entire key.
     */
     static int sqlite3VdbeIdxKeyCompare(
@@ -3971,7 +3971,7 @@ swapMixedEndianFloat(x);
     }
     /*
     ** Return a pointer to an sqlite3_value structure containing the value bound
-    ** parameter iVar of VM v. Except, if the value is an SQL NULL, return 
+    ** parameter iVar of VM v. Except, if the value is an SQL NULL, return
     ** 0 instead. Unless it is NULL, apply affinity aff (one of the SQLITE_AFF_*
     ** constants) to the value before returning it.
     **

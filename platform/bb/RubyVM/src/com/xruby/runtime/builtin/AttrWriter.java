@@ -17,7 +17,7 @@ public class AttrWriter extends RubyOneArgMethod {
     public AttrWriter(String methodName) {
         attrName = RubyID.intern("@" + methodName);
     }
-    
+
     public AttrWriter(RubyID id) {
         attrName = RubyID.intern("@" + id.toString());
     }
@@ -25,12 +25,12 @@ public class AttrWriter extends RubyOneArgMethod {
     protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block) {
         return receiver.setInstanceVariable(arg, attrName);
     }
-    
+
     protected void doClone(RubyMethod orig){
     	attrName = ((AttrWriter)orig).attrName;
-    	
+
     	super.doClone(orig);
     }
-    
+
 }
 

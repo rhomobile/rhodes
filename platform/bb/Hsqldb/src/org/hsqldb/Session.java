@@ -118,7 +118,7 @@ public class Session implements SessionInterface {
     private volatile boolean isReadOnly;
     private volatile boolean isClosed;
     private volatile boolean m_bNeedCommit;
-    
+
     //
     Database          database;
     private User      user;
@@ -159,11 +159,11 @@ public class Session implements SessionInterface {
     Session getSession() {
         return this;
     }
-    String getOrigToken() 
+    String getOrigToken()
     {
     	if ( tokenizer!= null)
     		return tokenizer.sTokenOrig;
-    	
+
     	return "";
     }
 
@@ -174,11 +174,11 @@ public class Session implements SessionInterface {
     	public void onBeforeUpdate(Table table, Row row, int[] cols);
     	public void onBeforeDelete(Table table, Row row);
     };
-    
+
     public void setDBCallback(IDBCallback callback){
     	m_dbCallback = callback;
     }
-    
+
     public void onAfterInsert(Table table, Row row)
     {
     	if ( m_dbCallback != null )
@@ -443,7 +443,7 @@ public class Session implements SessionInterface {
      */
     public boolean addDeleteAction(Table table, Row row) throws HsqlException {
     	m_bNeedCommit = true;//!isNestedTransaction;
-    	
+
         if (!isAutoCommit || isNestedTransaction) {
             Transaction t = new Transaction(true, table, row, actionTimestamp);
 
@@ -466,7 +466,7 @@ public class Session implements SessionInterface {
      * @throws  HsqlException
      */
     boolean addInsertAction(Table table, Row row) throws HsqlException {
-    	
+
     	m_bNeedCommit = true;//!isNestedTransaction;
 
         if (!isAutoCommit || isNestedTransaction) {
@@ -474,7 +474,7 @@ public class Session implements SessionInterface {
         	if ( isNestedTransaction ){
 	            Transaction t = new Transaction(false, table, row,
 	                                            actionTimestamp);
-	
+
 	            rowActionList.add(t);
 	            database.txManager.addTransaction(this, t);
         	}
@@ -483,7 +483,7 @@ public class Session implements SessionInterface {
         } else {
             table.commitRowToStore(row);
         }
-        
+
         return false;
     }
 
@@ -536,10 +536,10 @@ public class Session implements SessionInterface {
 
             database.txManager.commit(this);
             clearIndexRoots();
-            
+
             if ( database.getState() == Database.DATABASE_ONLINE )
             	database.logger.rhoSave(false);
-            
+
             m_bNeedCommit = false;
         }
     }
@@ -559,14 +559,14 @@ public class Session implements SessionInterface {
 
             database.txManager.commit(this);
             clearIndexRoots();
-            
+
             if ( database.getState() == Database.DATABASE_ONLINE )
             	database.logger.rhoSave(true);
-            
+
             m_bNeedCommit = false;
         }
     }
-    
+
     /**
      * Rolls back any uncommited transaction this Session may have open.
      *
@@ -1120,7 +1120,7 @@ public class Session implements SessionInterface {
     		return compiledStatementExecutor.execute(cs, pvals, bReportNonUnique);
     	}
 	}
-    
+
     private Result sqlExecuteBatch(Result cmd) {
 
         int               csid;

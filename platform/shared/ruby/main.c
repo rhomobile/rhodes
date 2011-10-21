@@ -51,7 +51,7 @@ main(int argc, char **argv)
     return "D:/Projects/rhodes1/rhodes/win32/bin/RhoBundle/";
 }*/
 
-#else 
+#else
 #include "vm_core.h"
 static VALUE
 __rho_compile( VALUE obj, VALUE src);
@@ -119,7 +119,7 @@ __rho_compile( VALUE obj, VALUE src)
     return result;
 }
 //#ifdef __APPLE__
-const char* rho_native_rhopath() 
+const char* rho_native_rhopath()
 {
     return "";
 }

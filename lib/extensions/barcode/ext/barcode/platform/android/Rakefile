@@ -10,7 +10,7 @@ def build_extension(name, arch, src_files)
       $stlport_includes = "#{$rootdir}/platform/shared/stlport/stlport"
       use_own_stlport = true
   end
- 
+
   #Dir.glob("*.c").each do |f|
   src_files.each do |f|
     objname = File.join( $tempdir, File.basename( f.gsub(/\.c$/, '.o') ) )
@@ -24,7 +24,7 @@ def build_extension(name, arch, src_files)
     args << "-I#{$std_includes}" unless $std_includes.nil?
     args << "-D__NEW__" if use_own_stlport
     args << "-I#{$stlport_includes}" if use_own_stlport
-    
+
     args << "-I#{$rootdir}/platform/shared/ruby/android"
     args << "-I#{$rootdir}/platform/shared/ruby/generated"
     args << "-I#{$rootdir}/platform/android/Rhodes/jni/include"
@@ -89,7 +89,7 @@ namespace "build" do
     build_extension('Barcode', $arch, src_files)
 
     #build java part
-    #javafiles = []	
+    #javafiles = []
     #File.open('ext_build.files', "r") do |f|
     #    while line = f.gets
     #       javafiles << line

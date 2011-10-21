@@ -13,7 +13,7 @@
 // copies of the Software, and to permit persons to whom the
 // Software is furnished to do so, subject to the following
 // conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
 //
@@ -74,7 +74,7 @@
 - (void)encodeWithCoder:(NSCoder *)encoder
 {
 	[super encodeWithCoder:encoder];
-	
+
 	if ([encoder allowsKeyedCoding])
 	{
 		[encoder encodeObject:[NSNumber numberWithUnsignedInt:lineNumber] forKey:NOODLE_LINE_CODING_KEY];
@@ -91,10 +91,10 @@
 - (id)copyWithZone:(NSZone *)zone
 {
 	id		copy;
-	
+
 	copy = [super copyWithZone:zone];
 	[copy setLineNumber:lineNumber];
-	
+
 	return copy;
 }
 

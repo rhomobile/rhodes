@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -43,9 +43,9 @@ LRESULT CLogView::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 {
 #ifdef OS_WINCE
 	SHINITDLGINFO shidi;
-	shidi.dwMask = SHIDIM_FLAGS; 
-	shidi.dwFlags = SHIDIF_SIZEDLGFULLSCREEN;//SHIDIF_DONEBUTTON | SHIDIF_SIZEDLGFULLSCREEN |SHIDIF_EMPTYMENU; 
-	shidi.hDlg = m_hWnd; 
+	shidi.dwMask = SHIDIM_FLAGS;
+	shidi.dwFlags = SHIDIF_SIZEDLGFULLSCREEN;//SHIDIF_DONEBUTTON | SHIDIF_SIZEDLGFULLSCREEN |SHIDIF_EMPTYMENU;
+	shidi.hDlg = m_hWnd;
 	SHInitDialog(&shidi);
 
     SHMENUBARINFO mbi = { sizeof(mbi), 0 };
@@ -74,7 +74,7 @@ LRESULT CLogView::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 	rc.right = rc.left+width;
 	int height = getIniInt(_T("log_view_height"),400);
 	rc.bottom = rc.top+height;
-	
+
 	MoveWindow(&rc);
 #endif //OS_
 
@@ -127,7 +127,7 @@ LRESULT CLogView::OnClear(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandl
 
 LRESULT CLogView::OnCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 {
-    HDC hdcStatic = (HDC) wParam; 
+    HDC hdcStatic = (HDC) wParam;
     HWND hwndStatic = (HWND) lParam;
 
     if ( !m_hBrush )
@@ -248,7 +248,7 @@ LRESULT CLogView::OnFindText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 			m_findParams |= FR_DOWN;
 			findtext.chrg.cpMin = curr_sel.cpMax;
 			findtext.chrg.cpMax = -1;
-		} 
+		}
 		int pos = ::SendMessage(edit.m_hWnd, EM_FINDTEXTEXW,m_findParams,(LPARAM)&findtext);
 		if (pos!=-1) {
 			int nLine = ::SendMessage(edit.m_hWnd,EM_LINEFROMCHAR,pos,0);
@@ -266,7 +266,7 @@ LRESULT CLogView::OnFindText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 void CLogView::OnPopupMenuCommand() {
 	CMenu menu;
 	CMenu sub;
-    POINT point;                                            
+    POINT point;
     ::GetCursorPos(&point); //where is the mouse?
 
 	RECT  rect;
@@ -276,16 +276,16 @@ void CLogView::OnPopupMenuCommand() {
 	VERIFY(menu.LoadMenu(IDR_LOGVIEW_MENU));
 	sub.Attach(menu.GetSubMenu(0));
     sub.TrackPopupMenu(
-            TPM_RIGHTALIGN | TPM_TOPALIGN | TPM_LEFTBUTTON | TPM_VERNEGANIMATION, 
-			point.x, 
+            TPM_RIGHTALIGN | TPM_TOPALIGN | TPM_LEFTBUTTON | TPM_VERNEGANIMATION,
+			point.x,
 			point.y,
 			m_hWnd);
 	sub.Detach();
 }
 
 LRESULT CLogView::OnNotify(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-	MSGFILTER * lpMsgFilter = (MSGFILTER *)lParam; 
-	if ( (wParam == IDC_LOGEDIT) && (lpMsgFilter->nmhdr.code == EN_MSGFILTER)   
+	MSGFILTER * lpMsgFilter = (MSGFILTER *)lParam;
+	if ( (wParam == IDC_LOGEDIT) && (lpMsgFilter->nmhdr.code == EN_MSGFILTER)
 		&& (lpMsgFilter->msg == WM_RBUTTONDOWN)) {
 		OnPopupMenuCommand();
 		bHandled = TRUE;
@@ -382,10 +382,10 @@ BOOL CResizableGrip::InitGrip(HWND hParent)
 
 	RECT rect = { 0 , 0, m_sizeGrip.cx, m_sizeGrip.cy };
 
-	m_wndGrip = ::CreateWindowEx(0, _T("SCROLLBAR"), 
-								(LPTSTR)NULL, 
+	m_wndGrip = ::CreateWindowEx(0, _T("SCROLLBAR"),
+								(LPTSTR)NULL,
 								WS_CHILD | WS_CLIPSIBLINGS | SBS_SIZEGRIP,
-								rect.left, rect.top, 
+								rect.left, rect.top,
 								rect.right-rect.left,
 								rect.bottom-rect.top,
 								hParent,
@@ -403,7 +403,7 @@ BOOL CResizableGrip::InitGrip(HWND hParent)
 		for (int y=0; y<m_sizeGrip.cy; y++)
 		{
 			::SetRectRgn(rgn, 0, y, m_sizeGrip.cx-y, y+1);
-			::CombineRgn(rgnGrip, rgnGrip, rgn, RGN_DIFF); 
+			::CombineRgn(rgnGrip, rgnGrip, rgn, RGN_DIFF);
 		}
 		::SetWindowRgn(m_wndGrip, rgnGrip, FALSE);
 
@@ -413,9 +413,9 @@ BOOL CResizableGrip::InitGrip(HWND hParent)
 		::SetWindowLong(m_wndGrip, GWL_WNDPROC, (LONG)GripWindowProc);
 
 		// force dialog styles (RESIZABLE BORDER, NO FLICKERING)
-		::SetWindowLong(hParent, GWL_STYLE, 
+		::SetWindowLong(hParent, GWL_STYLE,
 			::GetWindowLong(hParent, GWL_STYLE) | WS_THICKFRAME | WS_CLIPCHILDREN);
-		
+
 
 		// update pos
 		UpdateGripPos();
@@ -440,7 +440,7 @@ LRESULT CResizableGrip::GripWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARA
 			return HTBOTTOMRIGHT;
 
 	case WM_DESTROY:
-		
+
 		// unsubclass
 		::RemoveProp(hwnd, RSZ_GRIP_OBJ);
 		::SetWindowLong(hwnd, GWL_WNDPROC, (LONG)oldWndProc);
@@ -470,14 +470,14 @@ LPCTSTR getIniPath() {
 }
 
 int getIniInt(LPCTSTR lpKeyName, int nDefault) {
-	return GetPrivateProfileInt( _T("properties"), 
+	return GetPrivateProfileInt( _T("properties"),
 		lpKeyName, nDefault, getIniPath());
 }
 
 void setIniInt(LPCTSTR lpKeyName, int nValue) {
 	TCHAR value[128];
 	_itow_s(nValue,value,128,10);
-	WritePrivateProfileString( _T("properties"), 
+	WritePrivateProfileString( _T("properties"),
 		lpKeyName, value, getIniPath());
 }
 

@@ -176,7 +176,7 @@ public class ScriptRunner {
                                     message);
 
             throw Trace.error(Trace.OUT_OF_MEMORY);
-        	
+
         } finally {
             if (scr != null) {
                 scr.close();

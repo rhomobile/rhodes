@@ -1,4 +1,4 @@
-/* 
+/*
  * $Id: GlobFilenameFilter.java 124053 2005-01-04 01:24:35Z dfs $
  *
  * Copyright 2000-2005 The Apache Software Foundation
@@ -36,7 +36,7 @@ import org.apache.oro.text.*;
  */
 public class GlobFilenameFilter extends RegexFilenameFilter {
   private static final PatternMatcher __MATCHER = new Perl5Matcher();
-  private static final PatternCache __CACHE = 
+  private static final PatternCache __CACHE =
                              new PatternCacheLRU(new GlobCompiler());
 
   /**

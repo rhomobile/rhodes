@@ -33,7 +33,7 @@
 - (id) init: (SEL) selector target: (id) target thread: (NSThread*) thread
 {
 	self = [super init];
-	
+
 	targetMethod = selector;
 	targetObject = target;
 	targetThread = thread;
@@ -46,11 +46,11 @@ int callback_impl(const char* szNotify, void* data)
 {
     RHO_CONNECT_NOTIFY oNotify = {0};
     rho_connectclient_parsenotify(szNotify, &oNotify);
-	
+
 	RhoConnectNotify* notify =  [[RhoConnectNotify alloc] init: &oNotify];
-	
+
 	CCallbackData* callbackObj = data;
-	
+
     if ( callbackObj.targetThread != [NSThread currentThread] )
         [ callbackObj.targetObject performSelector:callbackObj.targetMethod onThread:callbackObj.targetThread withObject:notify waitUntilDone:TRUE];
     else
@@ -66,16 +66,16 @@ int callback_object_impl(const char* szNotify, void* data)
 {
     RHO_CONNECT_OBJECT_NOTIFY oNotify = {0};
     rho_connectclient_parse_objectnotify(szNotify, &oNotify);
-	
+
 	RhoConnectObjectNotify* notify =  [[RhoConnectObjectNotify alloc] init: &oNotify];
-	
+
 	CCallbackData* callbackObj = data;
-	
+
     if ( callbackObj.targetThread != [NSThread currentThread] )
         [ callbackObj.targetObject performSelector:callbackObj.targetMethod onThread:callbackObj.targetThread withObject:notify waitUntilDone:TRUE];
     else
         [ callbackObj.targetObject performSelector:callbackObj.targetMethod withObject:notify];
-    
+
 	[callbackObj autorelease];
     [notify autorelease];
 	return 0;
@@ -100,10 +100,10 @@ void rho_free_callbackdata(void* pData)
 	return self;
 }
 
-- (void)dealloc 
+- (void)dealloc
 {
 	rho_connectclient_destroy();
-	
+
 	[sync_server release];
     [super dealloc];
 }
@@ -140,7 +140,7 @@ void rho_free_callbackdata(void* pData)
 {
 	if( [name compare:@"MinSeverity"] == 0)
 		rho_logconf_setSeverity([param intValue]);
-	else	
+	else
 		rho_conf_setString([name cStringUsingEncoding:[NSString defaultCStringEncoding]],
 					   [param cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 }
@@ -164,51 +164,51 @@ void rho_free_callbackdata(void* pData)
 {
 	RHOM_MODEL rhom_models[models.count];
 	int nModel = 0;
-	for (RhomModel* model in models) 
+	for (RhomModel* model in models)
 	{
 		rho_connectclient_initmodel(&rhom_models[nModel]);
 		rhom_models[nModel].name = [model.name cStringUsingEncoding:[NSString defaultCStringEncoding]];
 
 		rhom_models[nModel].sync_type = model.sync_type;
         rhom_models[nModel].type = model.model_type;
-        
+
         if (model.associations != NULL) {
             for (NSString* key in model.associations) {
-                rho_connectclient_hash_put(rhom_models[nModel].associations, 
-                                           [key cStringUsingEncoding:[NSString defaultCStringEncoding]], 
+                rho_connectclient_hash_put(rhom_models[nModel].associations,
+                                           [key cStringUsingEncoding:[NSString defaultCStringEncoding]],
                                            [[model.associations objectForKey:key] cStringUsingEncoding:[NSString defaultCStringEncoding]]
                                            );
-            }	
+            }
         }
-        
+
         if (0 < [model.blob_attribs length]) {
             rhom_models[nModel].blob_attribs = [model.blob_attribs cStringUsingEncoding:[NSString defaultCStringEncoding]];
         }
 		nModel++;
 	}
-	
-    rho_connectclient_init(rhom_models, models.count);	
-	
+
+    rho_connectclient_init(rhom_models, models.count);
+
     int i = 0;
-    for (RhomModel* model in models) 
+    for (RhomModel* model in models)
 	{
-        model.source_id = rhom_models[i].source_id; 
+        model.source_id = rhom_models[i].source_id;
         rho_connectclient_destroymodel(&rhom_models[i]);
         i++;
     }
-    
+
     [self setThreadedMode:FALSE];
 	[self setPollInterval: 0];
 }
 
 - (void) database_full_reset_and_logout
 {
-	rho_connectclient_database_full_reset_and_logout();	
+	rho_connectclient_database_full_reset_and_logout();
 }
 
 - (void) database_client_reset
 {
-	rho_connectclient_database_full_reset(true);	
+	rho_connectclient_database_full_reset(true);
 }
 
 - (BOOL) is_logged_in
@@ -220,38 +220,38 @@ void rho_free_callbackdata(void* pData)
 {
 	char* res = (char*)rho_sync_login( [user cStringUsingEncoding:[NSString defaultCStringEncoding]],
 				   [pwd cStringUsingEncoding:[NSString defaultCStringEncoding]], "");
-	
+
     RHO_CONNECT_NOTIFY oNotify = {0};
     rho_connectclient_parsenotify(res, &oNotify);
 	rho_sync_free_string(res);
-	
+
 	return [[[RhoConnectNotify alloc] init: &oNotify] autorelease];
 }
 
 - (void) loginWithUser: (NSString*) user pwd:(NSString*) pwd callback:(SEL) callback target:(id)target
 {
 	rho_sync_login_c( [user cStringUsingEncoding:[NSString defaultCStringEncoding]],
-					[pwd cStringUsingEncoding:[NSString defaultCStringEncoding]], 
-					 callback_impl, [[CCallbackData alloc] init: callback target: target thread:[NSThread currentThread]] 
+					[pwd cStringUsingEncoding:[NSString defaultCStringEncoding]],
+					 callback_impl, [[CCallbackData alloc] init: callback target: target thread:[NSThread currentThread]]
 				   );
 }
 
 + (void) setNotification: (SEL) callback target:(id)target
 {
-	rho_sync_set_notification_c(-1, callback_impl, 
+	rho_sync_set_notification_c(-1, callback_impl,
       [[CCallbackData alloc] init: callback target: target thread:[NSThread currentThread]] );
 }
 
 - (void) setNotification: (SEL) callback target:(id)target
 {
-	rho_sync_set_notification_c(-1, callback_impl, 
+	rho_sync_set_notification_c(-1, callback_impl,
 	  [[CCallbackData alloc] init: callback target: target thread:[NSThread currentThread]] );
 }
 
 + (void) setModelNotification: (int) nSrcID callback: (SEL) callback target:(id)target
 {
-    rho_sync_set_notification_c(nSrcID, callback_impl, 
-                                [[CCallbackData alloc] init: callback target: target thread:[NSThread currentThread]] );    
+    rho_sync_set_notification_c(nSrcID, callback_impl,
+                                [[CCallbackData alloc] init: callback target: target thread:[NSThread currentThread]] );
 }
 
 - (void) clearNotification
@@ -261,7 +261,7 @@ void rho_free_callbackdata(void* pData)
 
 - (void) setObjectNotification: (SEL) callback target:(id)target
 {
-	rho_sync_setobjectnotify_url_c( callback_object_impl, 
+	rho_sync_setobjectnotify_url_c( callback_object_impl,
                                 [[ CCallbackData alloc] init: callback target: target thread:[NSThread currentThread]] );
 }
 
@@ -272,17 +272,17 @@ void rho_free_callbackdata(void* pData)
 
 - (void) addObjectNotify: (int) nSrcID szObject:(NSString*) szObject
 {
-    rho_sync_addobjectnotify(nSrcID, [szObject cStringUsingEncoding:[NSString defaultCStringEncoding]]); 
+    rho_sync_addobjectnotify(nSrcID, [szObject cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 }
 
 - (RhoConnectNotify*) syncAll
 {
     char* res = (char*)rho_sync_doSyncAllSources(0, "");
-	
+
     RHO_CONNECT_NOTIFY oNotify = {0};
     rho_connectclient_parsenotify(res, &oNotify);
 	rho_sync_free_string(res);
-	
+
 	return [[[RhoConnectNotify alloc] init: &oNotify] autorelease];
 }
 
@@ -293,19 +293,19 @@ void rho_free_callbackdata(void* pData)
 	{
 		rho_connectclient_strarray_add(ar_sources, [model.name cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 	}
-	
-    char* res = (char*)rho_sync_doSearchByNames( ar_sources, 
-		[from cStringUsingEncoding:[NSString defaultCStringEncoding]], 
+
+    char* res = (char*)rho_sync_doSearchByNames( ar_sources,
+		[from cStringUsingEncoding:[NSString defaultCStringEncoding]],
 		[params cStringUsingEncoding:[NSString defaultCStringEncoding]],
-		sync_changes ? 1 : 0, 
+		sync_changes ? 1 : 0,
 		progress_step, "", "" );
-	
+
     rho_connectclient_strarray_delete(ar_sources);
 
     RHO_CONNECT_NOTIFY oNotify = {0};
     rho_connectclient_parsenotify(res, &oNotify);
 	rho_sync_free_string(res);
-	
+
 	return [[[RhoConnectNotify alloc] init: &oNotify] autorelease];
 }
 
@@ -315,11 +315,11 @@ const char* rho_native_rhopath() ;
 + (void) initDatabase
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    
+
 	NSString *bundleRoot = [[NSBundle mainBundle] resourcePath];
 	NSString *rhoRoot = [NSString stringWithUTF8String:rho_native_rhopath()];
-	
-    NSString *dirs[] = {@"db"};	
+
+    NSString *dirs[] = {@"db"};
 	copyFromMainBundle( fileManager,
 					   [bundleRoot stringByAppendingPathComponent:dirs[0]],
 					   [rhoRoot stringByAppendingPathComponent:dirs[0]],
@@ -360,7 +360,7 @@ const char* rho_native_rhopath() ;
 
 @end
 
-const char* rho_native_rhopath() 
+const char* rho_native_rhopath()
 {
 	static bool loaded = FALSE;
 	static char root[FILENAME_MAX];
@@ -371,7 +371,7 @@ const char* rho_native_rhopath()
 		[documentsDirectory getFileSystemRepresentation:root maxLength:sizeof(root)];
 		loaded = TRUE;
 	}
-	
+
 	return root;
 }
 
@@ -382,11 +382,11 @@ void copyFromMainBundle( NSFileManager* fileManager,  NSString * source, NSStrin
 		//NSAssert1(0, @"Source item '%@' does not exists in bundle", source);
 		return;
 	}
-	
+
 	if (!remove && dir) {
 		if (![fileManager fileExistsAtPath:target])
 			[fileManager createDirectoryAtPath:target attributes:nil];
-		
+
 		NSDirectoryEnumerator *enumerator = [fileManager enumeratorAtPath:source];
 		NSString *child;
 		while (nil != (child = [enumerator nextObject])) {
@@ -414,14 +414,14 @@ void createFolder( NSFileManager* fileManager,  NSString * target, BOOL remove )
 	if (!remove && dir) {
         return;
     }
-    
+
     NSError* error;
     if (remove) {
         if (![fileManager removeItemAtPath:target error:&error]) {
             return;
         }
     }
-    
+
     if (![fileManager createDirectoryAtPath:target withIntermediateDirectories:YES attributes:nil error:&error]) {
         return;
     }
@@ -431,25 +431,25 @@ int rho_net_ping_network(const char* szHost)
 {
 	RAWLOG_INFO("PING network.");
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	
+
 	NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
 	NSString *linkString = [NSString stringWithUTF8String: szHost];
-	
+
 	[request setURL:[NSURL URLWithString:linkString]];
 	[request setTimeoutInterval:10];
-	
+
 	NSError *error = nil;
 	NSHTTPURLResponse *response;
 	NSData *returnData = NULL;
 	returnData = [ NSURLConnection sendSynchronousRequest: request returningResponse:&response error: &error ];
-	
+
 	if (!returnData)
 		RAWLOG_ERROR2("PING network FAILED. NSError: %d. NSErrorInfo : %s", [error code], [[error localizedDescription] UTF8String]);
 	else
-		RAWLOG_INFO("PING network SUCCEEDED.");	
-	
+		RAWLOG_INFO("PING network SUCCEEDED.");
+
 	[pool release];
-	
+
 	return returnData == NULL ? 0 : 1;
 }
 

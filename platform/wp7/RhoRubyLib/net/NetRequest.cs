@@ -1,18 +1,18 @@
 ﻿/*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -37,7 +37,7 @@ namespace rho.net
 {
     public class NetRequest
     {
-        private RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+        private RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		    new RhoLogger("Net");
         private static CRhodesApp RHODESAPP() { return CRhodesApp.Instance; }
         public void setLog(RhoLogger log) { LOG = log;  }
@@ -59,14 +59,14 @@ namespace rho.net
         Vector<MultipartItem> m_arItems = null;
         Hashtable<String, String> m_headers = null;
 
-	
+
 	    public interface IRhoSession
 	    {
 		    void logout();
 		    String getSession();
 		    String getContentType();
 	    }
-	
+
 	    public class MultipartItem
 	    {
 	        //mutually exclusive
@@ -78,14 +78,14 @@ namespace rho.net
 
 	        public String m_strDataPrefix = "";
 	    };
-	
+
 	    private Hashtable<String, String> m_OutHeaders;
 	    public boolean isCancelled(){ return m_bCancel;}
-	
+
 	    //TODO: use sslVerifyPeer
         public boolean sslVerifyPeer() {return m_sslVerifyPeer;}
         public void sslVerifyPeer(boolean mode) {m_sslVerifyPeer = mode;}
-	
+
 	    public NetResponse pullData(String strUrl, IRhoSession oSession )
         {
 		    return doRequest("GET", strUrl, "", oSession, null);
@@ -102,7 +102,7 @@ namespace rho.net
 				    String strValue = hashEnum.Current.Value;
                     m_webRequest.Headers[strName.Replace("-", "")] = strValue;
 		        }
-			
+
 		    }
 
             m_webRequest.UserAgent = "rhodes-wp7";
@@ -122,7 +122,7 @@ namespace rho.net
 
             strUrl += "wp7_nocache_param=" + strUnique;
 
-            return strUrl; 
+            return strUrl;
         }
 
 	    private void readHeaders(Hashtable<String, String> headers, HttpWebResponse response)
@@ -131,20 +131,20 @@ namespace rho.net
 		    {
 			    m_OutHeaders = new Hashtable<String, String>();
 
-			    for (int i = 0; i < response.Headers.Count; i++) 
+			    for (int i = 0; i < response.Headers.Count; i++)
                 {
                     String strField = response.Headers.AllKeys[i];
-				    if (strField != null ) 
+				    if (strField != null )
 				    {
                         String header_field = response.Headers[strField];
-					
+
 					    String strKeyName = strField.toLowerCase();
 					    if ( m_OutHeaders.containsKey(strKeyName))
 					    {
 						    header_field += ";" + m_OutHeaders.get(strKeyName);
 						    m_OutHeaders.put(strKeyName, header_field);
 					    }
-					    else	
+					    else
 						    m_OutHeaders.put(strKeyName, header_field);
 				    }
 			    }
@@ -171,7 +171,7 @@ namespace rho.net
             if (strRes != null && strRes.Length > 0)
                 return strRes;
 
-            for (int i = 0; i < response.Headers.Count; i++) 
+            for (int i = 0; i < response.Headers.Count; i++)
             {
                 String strName = response.Headers.AllKeys[i];
                 String strValue = response.Headers[strName];
@@ -200,19 +200,19 @@ namespace rho.net
 		    while( hashEnum.MoveNext() )
 		    {
 				String strName = hashEnum.Current.Key;
-				String strValue = hashEnum.Current.Value;		
+				String strValue = hashEnum.Current.Value;
 			    to.put(strName, strValue);
 	        }
 	    }
-	
+
 	    private String getResponseEncoding()
 	    {
 		    if ( m_OutHeaders != null )
 			    return (String)m_OutHeaders.get("content-type");
-		
+
 		    return "";
 	    }
-	
+
 	    void handleCookie(IRhoSession oSession)
 	    {
 		    if ( oSession != null )
@@ -225,7 +225,7 @@ namespace rho.net
 	    }
 
         private void GetResponseCallback(IAsyncResult asyncResult)
-        {       
+        {
             HttpWebResponse response = null;
             try
             {
@@ -254,7 +254,7 @@ namespace rho.net
                 m_respWaitEvent.Set();
                 return;
             }
-            
+
             Stream stream = response.GetResponseStream();
 
 		    m_code = Convert.ToInt32(response.StatusCode);
@@ -335,7 +335,7 @@ namespace rho.net
 				    m_code = Convert.ToInt32(HttpStatusCode.PartialContent);
 			    else
 			    {
-                    if (m_code >= 400 && m_code != Convert.ToInt32(HttpStatusCode.PartialContent) ) 
+                    if (m_code >= 400 && m_code != Convert.ToInt32(HttpStatusCode.PartialContent) )
                     {
                         LOG.ERROR("Error retrieving data: " + m_code);
                         if (m_code == Convert.ToInt32(HttpStatusCode.Unauthorized) && m_oSession != null)
@@ -350,8 +350,8 @@ namespace rho.net
                     else
                     {
                         int nRead = 0;
-					
-					    byte[]  byteBuffer = new byte[1024*20]; 
+
+					    byte[]  byteBuffer = new byte[1024*20];
 
 		    		    do{
 		    			    nRead = stream.Read(byteBuffer, 0, 1024*20);
@@ -373,7 +373,7 @@ namespace rho.net
                 stream.Close();
                 response.Close();
                 m_respWaitEvent.Set();
-            }	
+            }
         }
 
         private void GetRequestStreamCallback(IAsyncResult asyncResult)
@@ -419,7 +419,7 @@ namespace rho.net
                             {
                                 if (file != null)
                                     try { file.close(); }
-                                    catch (IOException e) 
+                                    catch (IOException e)
                                     {
                                         LOG.ERROR("GetRequestStreamCallback: file close failed.", e);
                                     }
@@ -453,7 +453,7 @@ namespace rho.net
             m_strBody = strBody;
             m_strUrl = addUniqueParam(strUrl);
             m_headers = headers;
-		
+
 		    m_bCancel = false;
 
             closeConnection();
@@ -502,7 +502,7 @@ namespace rho.net
             m_isMultiPart = false;
             return makeResponse(m_strRespBody, m_code);
         }
-	
+
 	    private NetResponse makeResponse(String strRespBody, int nErrorCode)
 	    {
 		    NetResponse pResp = new NetResponse(strRespBody != null ? strRespBody : "", nErrorCode );
@@ -518,20 +518,20 @@ namespace rho.net
                 }
                 pResp.setCookies(m_strCookies);
             }
-		
+
 		    return pResp;
 	    }
-	
+
 	    public NetResponse pushData(String strUrl, String strBody, IRhoSession oSession)
         {
 		    m_bCancel = false;
-		
+
 		    if ( RHODESAPP().isRhodesAppUrl(strUrl) )
                 return RHODESAPP().processCallback(strUrl, strBody);
-		
+
 		    return doRequest("POST", strUrl, strBody, oSession, null);
         }
-	
+
         public NetResponse pushMultipartData(String strUrl, MultipartItem oItem, IRhoSession oSession, Hashtable<String,String> pHeaders)
         {
             Vector<MultipartItem> arItems = new Vector<MultipartItem>();
@@ -539,34 +539,34 @@ namespace rho.net
 
             return pushMultipartData(strUrl, arItems, oSession, pHeaders);
         }
-	
+
 	    public NetResponse pullCookies(String strUrl, String strBody, IRhoSession oSession)
 	    {
 		    Hashtable<String,String> headers = new Hashtable<String,String>();
 		    m_bCancel = false;
-    	
+
 		    NetResponse resp = doRequest/*Try*/("POST", strUrl, strBody, oSession, headers);
 		    if ( resp.isOK() )
 		    {
 			    String strCookie = resp.getCookies();
 			    if ( strCookie == null || strCookie.length() == 0 )
 				    strCookie = "rho_empty";
-			
+
 			    resp.setCharData(strCookie);
 			    LOG.INFO("pullCookies: " + resp.getCharData() );
 		    }
-		
+
 		    return resp;
 	    }
-	
-	    static String szMultipartPostfix = 
+
+	    static String szMultipartPostfix =
 	        "\r\n------------A6174410D6AD474183FDE48F5662FCC5--";
 
 	    void processMultipartItems( Vector<MultipartItem> arItems )
 	    {
 	        for( int i = 0; i < (int)arItems.size(); i++ )
 	        {
-	            MultipartItem oItem = (MultipartItem)arItems.elementAt(i); 
+	            MultipartItem oItem = (MultipartItem)arItems.elementAt(i);
 
 	            if ( oItem.m_strName.length() == 0 )
 	                oItem.m_strName = "blob";
@@ -582,7 +582,7 @@ namespace rho.net
 	            }
 
 	            oItem.m_strDataPrefix = i > 0 ? "\r\n" : "";
-	            oItem.m_strDataPrefix += 
+	            oItem.m_strDataPrefix +=
 	                "------------A6174410D6AD474183FDE48F5662FCC5\r\n"+
 	                "Content-Disposition: form-data; name=\"";
 	            oItem.m_strDataPrefix += oItem.m_strName + "\"";
@@ -622,7 +622,7 @@ namespace rho.net
 	        }
 
 	    }
-	
+
         public NetResponse pushMultipartData(String strUrl, Vector<MultipartItem> arItems, IRhoSession oSession, Hashtable<String,String> headers)
         {
             m_arItems = arItems;
@@ -630,7 +630,7 @@ namespace rho.net
             processMultipartItems( arItems );
             return doRequest("POST", strUrl, null, oSession, headers);
         }
-	
+
 	    int m_nCurDownloadSize = 0;
 	    public NetResponse pullFile( String strUrl, String strFileName, IRhoSession oSession, Hashtable<String, String> headers )
 	    {
@@ -638,25 +638,25 @@ namespace rho.net
             m_isPullFile = true;
 
 		    m_bCancel = false;
-    	
+
 		    try{
 
-	            if (!strFileName.startsWith("file:")) { 
+	            if (!strFileName.startsWith("file:")) {
             	    try{
 	            	    strFileName = CFilePath.join(CRhodesApp.getRhoRootPath(), strFileName);
-            	    } catch (IOException e) { 
+            	    } catch (IOException e) {
                  	    LOG.ERROR("getDirPath failed.", e);
-                    }              	
+                    }
 	            }
 
                 m_pulledFile = RhoClassFactory.createFile();
                 m_pulledFile.open(strFileName, CRhoFile.EOpenModes.OpenForReadWrite);
                 m_pulledFile.setPosTo(m_pulledFile.size());
-			
+
 			    do{
                     resp = doRequest("GET", strUrl, null, oSession, headers, m_pulledFile.size());
 			    }while( !m_bCancel && (resp == null || resp.isOK()) && m_nCurDownloadSize > 0);
-			
+
 		    }finally{
                 if (m_pulledFile != null)
 			    {
@@ -668,14 +668,14 @@ namespace rho.net
                     m_pulledFile = null;
 			    }
 		    }
-		
+
 		    copyHashtable(m_OutHeaders, headers);
 
             m_isPullFile = false;
             m_nCurDownloadSize = 0;
             return resp != null && !m_bCancel ? resp : makeResponse("", Convert.ToInt32(HttpStatusCode.InternalServerError));
 	    }
-	
+
 	    private boolean isFinishDownload(String strContentRange)
 	    {
             String strContRange = strContentRange;// m_connection.getHeaderField("Content-Range");
@@ -689,16 +689,16 @@ namespace rho.net
 				    {
 					    String strHigh = strContRange.substring(nMinus+1,nSep);
 					    String strTotal = strContRange.substring(nSep+1);
-					
+
 					    if ( int.Parse(strHigh) + 1 >= int.Parse(strTotal) )
 						    return true;
 				    }
 			    }
 		    }
-		
+
 		    return false;
 	    }
-	
+
 	    public String resolveUrl(String strUrl)
         {
 	        return RHODESAPP().canonicalizeRhoUrl(strUrl);
@@ -739,13 +739,13 @@ namespace rho.net
 		    strClientCookie = URI.parseCookie("rhosync_session=BAh7CToNcGFzc3dvcmQiFTiMYru1W11zuoAlN%2FPtgjc6CmxvZ2luIhU4jGK7tVtdc7qAJTfz7YI3Ogx1c2VyX2lkaQYiCmZsYXNoSUM6J0FjdGlvbkNvbnRyb2xsZXI6OkZsYXNoOjpGbGFzaEhhc2h7AAY6CkB1c2VkewA%3D--a7829a70171203d72cd4e83d07b18e8fcf5e2f78; path=/; expires=Thu, 02 Sep 2010 23:51:31 GMT; HttpOnly");
 	    }*/
 
-	    public static String readFully(Stream stream, String strContType) 
+	    public static String readFully(Stream stream, String strContType)
 	    {
 		    String strRes = "";
             byte[]  byteBuffer = new byte[1024*4];
 		    boolean bUTF8 = false;
             StreamReader reader = null;
-		
+
 		    if ( strContType != null )
 		    {
 			    int nCharsetPos = strContType.lastIndexOf('=');

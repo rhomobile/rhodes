@@ -260,7 +260,7 @@ namespace Community.CsharpSqlite
 
     /*
     ** Search the first N tables in pSrc, from left to right, looking for a
-    ** table that has a column named zCol.  
+    ** table that has a column named zCol.
     **
     ** When found, set *piTab and *piCol to the table index and column index
     ** of the matching column and return TRUE.
@@ -302,7 +302,7 @@ namespace Community.CsharpSqlite
         **
         **    (tab1.col1 = tab2.col2)
         **
-        ** where tab1 is the iSrc'th table in SrcList pSrc and tab2 is the 
+        ** where tab1 is the iSrc'th table in SrcList pSrc and tab2 is the
         ** (iSrc+1)'th. Column col1 is column iColLeft of tab1, and col2 is
         ** column iColRight of tab2.
         */
@@ -1107,19 +1107,19 @@ namespace Community.CsharpSqlite
             {
               /* At one time, code such as "SELECT new.x" within a trigger would
               ** cause this condition to run.  Since then, we have restructured how
-              ** trigger code is generated and so this condition is no longer 
+              ** trigger code is generated and so this condition is no longer
               ** possible. However, it can still be true for statements like
               ** the following:
               **
               **   CREATE TABLE t1(col INTEGER);
               **   SELECT (SELECT t1.col) FROM FROM t1;
               **
-              ** when columnType() is called on the expression "t1.col" in the 
+              ** when columnType() is called on the expression "t1.col" in the
               ** sub-select. In this case, set the column type to NULL, even
               ** though it should really be "INTEGER".
               **
               ** This is not a problem, as the column type of "t1.col" is never
-              ** used. When columnType() is called on the expression 
+              ** used. When columnType() is called on the expression
               ** "(SELECT t1.col)", the correct type is returned (see the TK_SELECT
               ** branch below.  */
               break;

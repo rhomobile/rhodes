@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -41,8 +41,8 @@ public class RhoLogConf {
     boolean     m_bLogPrefix = false;
 
     String      m_strEnabledCategories = "", m_strDisabledCategories = "";
-    Vector/*<String>*/  m_arExcludeAttribs = new Vector(); 
-    
+    Vector/*<String>*/  m_arExcludeAttribs = new Vector();
+
     IRhoLogSink   m_pFileSink = null;
     IRhoLogSink   m_pOutputSink = null;
 
@@ -51,12 +51,12 @@ public class RhoLogConf {
 		m_pOutputSink = new RhoLogOutputSink(this);
     }
 
-	public static void close(){ 
-		//TODO: should we close log file? some threads may still logging 
+	public static void close(){
+		//TODO: should we close log file? some threads may still logging
 	}
-	
+
 	RhoConf RHOCONF(){ return RhoConf.getInstance(); }
-	
+
     public void saveToFile()
     {
         RHOCONF().setInt("MinSeverity", getMinSeverity(), true );
@@ -67,7 +67,7 @@ public class RhoLogConf {
         RHOCONF().setString("LogCategories", getEnabledCategories(), true  );
         RHOCONF().setString("ExcludeLogCategories", getDisabledCategories(), true  );
     }
-    
+
     void loadFromConf(RhoConf oRhoConf){
         if ( oRhoConf.isExist( "MinSeverity" ) )
             setMinSeverity( oRhoConf.getInt("MinSeverity") );
@@ -84,9 +84,9 @@ public class RhoLogConf {
         if (oRhoConf.isExist( "ExcludeLogCategories") )
             setDisabledCategories( oRhoConf.getString("ExcludeLogCategories") );
         if ( oRhoConf.isExist( "log_exclude_filter") )
-        	setExcludeFilter( oRhoConf.getString("log_exclude_filter") );        
+        	setExcludeFilter( oRhoConf.getString("log_exclude_filter") );
     }
-	
+
     public int getMinSeverity(){ return m_nMinSeverity; }
     public void setMinSeverity(int nMinSeverity){ m_nMinSeverity = nMinSeverity; }
 
@@ -100,7 +100,7 @@ public class RhoLogConf {
     void setLogFilePath(String szLogFilePath)
     {
         if ( !m_strLogFilePath.equals(szLogFilePath) ){
-            m_strLogFilePath = szLogFilePath; 
+            m_strLogFilePath = szLogFilePath;
 
             if ( m_pFileSink != null){
             	m_pFileSink.close();
@@ -113,7 +113,7 @@ public class RhoLogConf {
         	m_pFileSink.clear();
         }
 	}
-    
+
     void setMaxLogFileSize(int nMaxSize){m_nMaxLogFileSize = nMaxSize; }
     int getMaxLogFileSize(){ return m_nMaxLogFileSize; }
 
@@ -122,10 +122,10 @@ public class RhoLogConf {
 
     public synchronized void setEnabledCategories( String szCatList ){m_strEnabledCategories = szCatList; }
     public synchronized void setDisabledCategories( String szCatList ){ m_strDisabledCategories = szCatList; }
-    
+
     public String getEnabledCategories(){ return m_strEnabledCategories; }
     public String getDisabledCategories(){ return m_strDisabledCategories; }
-    
+
     synchronized boolean isCategoryEnabled(String cat){
         //TODO: Optimize categories search : add map
 
@@ -138,14 +138,14 @@ public class RhoLogConf {
         return m_strEnabledCategories.equals("*") || m_strEnabledCategories.indexOf(cat) >= 0;
     }
 
-    Vector/*<String>&*/ getExcludeAttribs(){ return m_arExcludeAttribs; }    
-    
+    Vector/*<String>&*/ getExcludeAttribs(){ return m_arExcludeAttribs; }
+
     void setExcludeFilter( String strExcludeFilter )
     {
         if ( strExcludeFilter != null && strExcludeFilter.length() > 0 )
         {
             com.rho.Tokenizer oTokenizer = new com.rho.Tokenizer( strExcludeFilter, "," );
-    	    while (oTokenizer.hasMoreTokens()) 
+    	    while (oTokenizer.hasMoreTokens())
             {
                 String tok = oTokenizer.nextToken().trim();
     		    if (tok.length() == 0)
@@ -153,12 +153,12 @@ public class RhoLogConf {
 
                 //m_arExcludeAttribs.addElement( "\"" + tok + "\"=>\"" );
     		    m_arExcludeAttribs.addElement( tok );
-            }    	
+            }
         }
         else
         	m_arExcludeAttribs.removeAllElements();
     }
-    
+
     void sinkLogMessage( String strMsg, boolean bOutputOnly ){
         if ( !bOutputOnly && isLogToFile() )
             m_pFileSink.writeLogMessage(strMsg);
@@ -166,28 +166,28 @@ public class RhoLogConf {
         //Should be at the end
         if ( isLogToOutput() )
             m_pOutputSink.writeLogMessage(strMsg);
-    	
+
     }
-    
+
     int  getLogTextPos(){
         return m_pFileSink != null ? m_pFileSink.getCurPos() : -1;
     }
-    
+
 	public String getLogText(){
 		String res = "";
     	SimpleFile oFile = null;
 	    boolean bOldSaveToFile = isLogToFile();
 	    setLogToFile(false);
-    	
+
     	try{
 	        oFile = RhoClassFactory.createFile();
 	        oFile.open( getLogFilePath(), true, false);
-	        
+
 	        if ( oFile.isOpened() ){
 	            res = oFile.readString();
 	            oFile.close();
 	        }
-	        
+
     	}catch(Exception exc){
     		if ( oFile != null )
     			try{ oFile.close(); }catch(IOException exc2){}
@@ -195,7 +195,7 @@ public class RhoLogConf {
     	{
     		setLogToFile(bOldSaveToFile);
     	}
-		
+
 		return res;
 	}
 

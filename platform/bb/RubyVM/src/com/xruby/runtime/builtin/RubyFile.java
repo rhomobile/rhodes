@@ -60,25 +60,25 @@ public class RubyFile extends RubyIO {
 
         if ( !bExist )
         	bExist = RhoRuby.resourceFileExists(fileName);
-        
+
         if ( !bExist )
         {
         	File file = new File(fileName);
         	bExist = file.exists();
         }
-        
+
     	return ObjectFactory.createBoolean(bExist);
-        
+
     }
 
-    public static RubyValue existinjar_question(RubyValue receiver, RubyValue arg) 
+    public static RubyValue existinjar_question(RubyValue receiver, RubyValue arg)
     {
         String fileName = arg.toStr();
         boolean bExist = RhoSupport.findClass(fileName)!=null;
     	return ObjectFactory.createBoolean(bExist);
-        
+
     }
-    
+
     ////@RubyLevelMethod(name="directory?", singleton=true)
     public static RubyValue directory_question(RubyValue receiver, RubyValue arg) {
         String fileName = arg.toStr();
@@ -138,7 +138,7 @@ public class RubyFile extends RubyIO {
         String fileName = arg.toStr();
         File file = new File(fileName);
         String parent = file.getParent();
-        
+
         return ObjectFactory.createString(parent != null ? parent : "/");
         //if (parent == null) {
         //    return ObjectFactory.createString(StringMe.matches(fileName, "\\/+") ? "/" : ".");
@@ -163,7 +163,7 @@ public class RubyFile extends RubyIO {
     public static RubyValue size(RubyValue receiver, RubyValue arg) {
         String fileName = arg.toStr();
     	InputStream stream = null;
-        
+
         if ( fileName.startsWith("/apps"))
         {
 			try {
@@ -171,7 +171,7 @@ public class RubyFile extends RubyIO {
 				if ( stream != null )
 				{
 		        	RubyValue res = ObjectFactory.createInteger(stream.available());
-		        	
+
 		        	return res;
 				}
 			} catch (Exception e) {
@@ -181,7 +181,7 @@ public class RubyFile extends RubyIO {
 				try{ if ( stream != null ) stream.close(); }catch(java.io.IOException exc){}
 			}
         }
-        
+
         File file = new File(fileName);
         if (!file.isFile() && !file.isDirectory()) {
             throw new RubyException(RubyRuntime.RuntimeErrorClass, "No such file or directory - " + fileName);
@@ -287,7 +287,7 @@ public class RubyFile extends RubyIO {
     }
 
     //@RubyLevelMethod(name="initialize")
-    public RubyValue initialize(RubyArray args, RubyBlock block) 
+    public RubyValue initialize(RubyArray args, RubyBlock block)
     {
     	RubyValue val = com.xruby.runtime.lang.RubyKernelModule.open(this, args, block);
     	if( val instanceof RubyIO)
@@ -296,14 +296,14 @@ public class RubyFile extends RubyIO {
     	}
         return this;
     }
-    
+
     //@RubyAllocMethod
     public static RubyValue alloc(RubyValue receiver) {
         RubyFile h = new RubyFile();
         h.setRubyClass((RubyClass) receiver);
         return h;
     }
-    
+
     //@RubyLevelMethod(name="extname", singleton=true)
     public static RubyValue extname(RubyValue receiver, RubyValue arg) {
         String filename = arg.toStr();
@@ -316,5 +316,5 @@ public class RubyFile extends RubyIO {
 
         return ObjectFactory.createString(ext);
     }
-    
+
 }

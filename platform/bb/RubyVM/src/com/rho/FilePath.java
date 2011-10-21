@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -29,10 +29,10 @@ package com.rho;
 public class FilePath
 {
     private String m_szPath;
-	
+
     public FilePath( String str) { m_szPath = str; }
 
-    public String getBaseName(){ 
+    public String getBaseName(){
         int base = findLastSlash();
         if ( base >=0 )
             return m_szPath.substring(base+1);
@@ -46,7 +46,7 @@ public class FilePath
             res += "/";
 
         res += szFileName;
-        
+
         return res;
     }
 
@@ -78,7 +78,7 @@ public class FilePath
 
         return res;
     }
-    
+
     static public boolean isEqualBaseNames(String path1, String path2)
     {
         FilePath oPath1 = new FilePath(path1);
@@ -94,7 +94,7 @@ public class FilePath
 
         return path1.substring(path2.length());
     }
-    
+
     int findLastSlash()
     {
         int slash = m_szPath.lastIndexOf('/');
@@ -112,7 +112,7 @@ public class FilePath
 			strRes = m_szPath.substring(0, nDot);
 		else
 			strRes = m_szPath;
-		
+
 		return strRes;
 	}
 }

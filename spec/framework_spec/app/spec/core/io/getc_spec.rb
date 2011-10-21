@@ -2,7 +2,7 @@
 require File.expand_path('../../../spec_helper', __FILE__)
 require File.expand_path('../fixtures/classes', __FILE__)
 
-if System.get_property('platform') == 'WINDOWS'      
+if System.get_property('platform') == 'WINDOWS'
 describe "IO#getc" do
   before :each do
     @kcode, $KCODE = $KCODE, "utf-8"

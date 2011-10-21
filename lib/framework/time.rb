@@ -105,7 +105,7 @@ class Time
       #   In RFC 3339, -00:00 is used for the time in UTC is known,
       #   but the offset to local time is unknown.
       #   They are not appropriate for specific time zone such as
-      #   Europe/London because time zone neutral, 
+      #   Europe/London because time zone neutral,
       #   So -00:00 and -0000 are treated as UTC.
       if /\A(?:-00:00|-0000|-00|UTC|Z|UT)\z/i =~ zone
         true
@@ -554,20 +554,20 @@ class Time
   # Originally, its <tt>:default  => "%a, %d %b %Y %H:%M:%S %z"</tt> (RFC2822 names), but as it can be
   # modified in this plugin, and we can end up with a different file format in logfiles, etc
   def strftime(date)
-  
+
     if LocalizationSimplified::get_cur_locale() == 'en' || date == '%m/%d/%Y, %I:%M%p'
         return old_strftime(date)
     end
-    
+
     tmpdate=date.dup
     LocalizationSimplified::localize_strftime(tmpdate, self)
     old_strftime(tmpdate)
   end
 
   DATE_FORMATS	=	{ :db => "%Y-%m-%d %H:%M:%S", :number => "%Y%m%d%H%M%S", :time => "%H:%M", :short => "%d %b %H:%M", :long => "%B %d, %Y %H:%M"  }
-  #, :long_ordinal => lambda { |time| time.strftime("%B #{time.day.ordinalize}, %Y %H:%M") }, :rfc822 => lambda { |time| time.strftime("%a, %d %b %Y %H:%M:%S #{time.formatted_offset(false)}") }  
-  DATE_FORMATS.merge!(LocalizationSimplified::DateHelper::TimeFormats)  
-  
+  #, :long_ordinal => lambda { |time| time.strftime("%B #{time.day.ordinalize}, %Y %H:%M") }, :rfc822 => lambda { |time| time.strftime("%a, %d %b %Y %H:%M:%S #{time.formatted_offset(false)}") }
+  DATE_FORMATS.merge!(LocalizationSimplified::DateHelper::TimeFormats)
+
   def to_formatted_s(type)
     strftime(DATE_FORMATS[type])
   end

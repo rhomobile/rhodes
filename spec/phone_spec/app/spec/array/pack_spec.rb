@@ -1,4 +1,4 @@
-#             ~~~~~~~~~~  
+#             ~~~~~~~~~~
 # Script encoding of this file should be neither ASCII-8BIT, US-ASCII nor UTF-8.
 # This makes it easier to verify that Strings are converted into correct encodings.
 
@@ -26,7 +26,7 @@ describe "Array#pack with format 'm'" do
   #end
 
   it "appends newline whenever after consumes 45 bytes by default" do
-    ["ABC"*31].pack('m').should == 
+    ["ABC"*31].pack('m').should ==
       "QUJD"*15 + "\n" +
       "QUJD"*15 + "\n" +
       "QUJD\n"
@@ -45,7 +45,7 @@ describe "Array#pack with format 'm'" do
 =end
 
   it "ignores line length parameter if it is 1 or 2" do
-    wrapped_at_45 = 
+    wrapped_at_45 =
       "QUJD"*15 + "\n" +
       "QUJD"*15 + "\n" +
       "QUJD\n"

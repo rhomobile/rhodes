@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -56,7 +56,7 @@ void CLogFileSink::writeLogMessage( String& strMsg ){
 
     if ( getLogConf().getMaxLogFileSize() > 0 )
     {
-        if ( ( m_nCirclePos >= 0 && m_nCirclePos + len > getLogConf().getMaxLogFileSize() ) || 
+        if ( ( m_nCirclePos >= 0 && m_nCirclePos + len > getLogConf().getMaxLogFileSize() ) ||
              ( m_nCirclePos < 0 && m_nFileLogSize + len > getLogConf().getMaxLogFileSize() ) )
         {
             m_pFile->movePosToStart();
@@ -113,7 +113,7 @@ void CLogFileSink::loadLogPosition(){
     m_nCirclePos = atoi(strPos.c_str());
     if ( m_nCirclePos < 0 || m_nCirclePos > (int)m_nFileLogSize )
     	m_nCirclePos = -1;
-    
+
     if ( m_nCirclePos >= 0 )
         m_pFile->setPosTo( m_nCirclePos );
 }
@@ -124,11 +124,11 @@ void CLogFileSink::saveLogPosition(){
 
     if ( m_nCirclePos > (int)getLogConf().getMaxLogFileSize() )
     	return;
-    
+
     String strPos = common::convertToStringA(m_nCirclePos);
     for( int i = strPos.length(); i < 10; i++ )
     	strPos += ' ';
-    
+
     m_pPosFile->movePosToStart();
     m_pPosFile->write( strPos.c_str(), strPos.length() );
     m_pPosFile->flush();
@@ -143,7 +143,7 @@ void CLogOutputSink::writeLogMessage( String& strMsg )
     if ( strMsg.length() > 1 && strMsg[strMsg.length()-2] == '\r' )
         strMsg.erase(strMsg.length()-2,1);
 
-    const char* szMsg = strMsg.c_str(); 
+    const char* szMsg = strMsg.c_str();
 
 #if defined( OS_WINDOWS ) //|| defined( OS_WINCE )
 		::OutputDebugStringA(szMsg);
@@ -159,12 +159,12 @@ void CLogOutputSink::writeLogMessage( String& strMsg )
     fflush(stdout);
 }
 
-CLogSocketSink::CLogSocketSink(const LogSettings& oSettings) 
+CLogSocketSink::CLogSocketSink(const LogSettings& oSettings)
 	: m_oLogConf(oSettings)
 	, m_logNetClient(0)
 {
 	m_hostName = oSettings.getLogHost();
-    m_hostPort = oSettings.getLogPort(); 
+    m_hostPort = oSettings.getLogPort();
 }
 
 void CLogSocketSink::writeLogMessage( String& strMsg )
@@ -173,7 +173,7 @@ void CLogSocketSink::writeLogMessage( String& strMsg )
     {
 		m_logNetClient = new rho::net::RawSocket(m_hostName, m_hostPort);
     }
-    
+
     if (!m_logNetClient->isInit())
     {
          m_logNetClient->init();
@@ -181,5 +181,5 @@ void CLogSocketSink::writeLogMessage( String& strMsg )
 
     m_logNetClient->send(strMsg);
 }
-        
+
 }

@@ -103,7 +103,7 @@ namespace Community.CsharpSqlite
     ** Standard function tolower() is implemented using the sqlite3UpperToLower[]
     ** array. tolower() is used more often than toupper() by SQLite.
     **
-    ** Bit 0x40 is set if the character non-alphanumeric and can be used in an 
+    ** Bit 0x40 is set if the character non-alphanumeric and can be used in an
     ** SQLite identifier.  Identifiers are alphanumerics, "_", "$", and any
     ** non-ASCII UTF character. Hence the test for whether or not a character is
     ** part of an identifier is 0x46.
@@ -221,7 +221,7 @@ namespace Community.CsharpSqlite
     ** Properties of opcodes.  The OPFLG_INITIALIZER macro is
     ** created by mkopcodeh.awk during compilation.  Data is obtained
     ** from the comments following the "case OP_xxxx:" statements in
-    ** the vdbe.c file.  
+    ** the vdbe.c file.
     */
     public static int[] sqlite3OpcodeProperty;
   }

@@ -11,7 +11,7 @@
 
    File:          strblock.c
 
-   Description:   Implements the functions that manipulate a string block. 
+   Description:   Implements the functions that manipulate a string block.
 
 **************************************************************************/
 #include "strblock.h"
@@ -22,22 +22,22 @@
 // The smallest granularity of string resource that can be loaded/updated is a block.
 // Each block is identified by an ID, starting with 1. You need to use the block ID
 // when calling FindResource(), LoadResource(), UpdateResource().
-// 
-// A string with ID, nStringID, is in the block with ID, nBlockID, given by the following 
+//
+// A string with ID, nStringID, is in the block with ID, nBlockID, given by the following
 // formula:
 //                    nBlockID = (nStringID / 16) + 1; // Note integer division.
-// 
+//
 // A block of string resource is laid out as follows:
 // Each block has NO_OF_STRINGS_PER_BLOCK (= 16) strings. Each string is represented as
 // an ordered pair, (LENGTH, TEXT). The LENGTH is a WORD that specifies the size, in terms
-// of number of characters, of the string that follows. TEXT follows the LENGTH and is 
+// of number of characters, of the string that follows. TEXT follows the LENGTH and is
 // a sequence of UNICODE characters, NOT terminated by a NULL character.Any TEXT may be of
-// zero-length, in which case, LENGTH is zero. 
-// 
-// An executable does not have a string table block with ID, nBlockID, if it does not have any 
+// zero-length, in which case, LENGTH is zero.
+//
+// An executable does not have a string table block with ID, nBlockID, if it does not have any
 // strings with IDs - ((nBlockID - 1) * 16) thru' ((nBlockID * 16) - 1).
 //
-// This format is the same for Windows NT, Windows 95 & Windows 98. Yes, strings in a resource 
+// This format is the same for Windows NT, Windows 95 & Windows 98. Yes, strings in a resource
 // are internally stored in UNICODE format even in Windows 95 & Windows 98.
 
 
@@ -72,7 +72,7 @@ BOOL ParseRes( LPVOID pRes, PSTRINGBLOCK pStrBlock );
 // Get the size of the raw string block resource in the given block.
 DWORD GetResSize( PSTRINGBLOCK pStrBlock );
 
-// Update a block of string in the specified library. 
+// Update a block of string in the specified library.
 // hUpdate specifies the update-file handle. This handle is returned by the BeginUpdateResource.
 // pStrBlock contains the new strings.
 // nBlockID specifies the ID of the block. Use the same block ID as of pStrBlock if this value is -1.
@@ -96,9 +96,9 @@ HSTRBLOCK WINAPI GetStringBlockA( LPCSTR strAppName, UINT nBlockID, WORD wLangID
 	HINSTANCE hInstLib = NULL;
 
 	hInstLib = LoadLibraryExA(
-					strAppName, 
+					strAppName,
 					NULL,
-					DONT_RESOLVE_DLL_REFERENCES | LOAD_LIBRARY_AS_DATAFILE 
+					DONT_RESOLVE_DLL_REFERENCES | LOAD_LIBRARY_AS_DATAFILE
 							 );
 
 	if( NULL == hInstLib )
@@ -128,9 +128,9 @@ HSTRBLOCK WINAPI GetStringBlockW( LPCWSTR strAppName, UINT nBlockID, WORD wLangI
 	HINSTANCE hInstLib = NULL;
 
 	hInstLib = LoadLibraryExW(
-					strAppName, 
+					strAppName,
 					NULL,
-					DONT_RESOLVE_DLL_REFERENCES | LOAD_LIBRARY_AS_DATAFILE 
+					DONT_RESOLVE_DLL_REFERENCES | LOAD_LIBRARY_AS_DATAFILE
 							 );
 
 	if( NULL == hInstLib )
@@ -219,7 +219,7 @@ BOOL WINAPI GetStringA( HSTRBLOCK hStrBlock, UINT nIndex, LPSTR pszText )
 		return FALSE;
 	}
 
-	if( !WideCharToMultiByte(CP_ACP, 0, pStrBlock->strArray[nIndex], -1, pszText, 
+	if( !WideCharToMultiByte(CP_ACP, 0, pStrBlock->strArray[nIndex], -1, pszText,
 			wcslen(pStrBlock->strArray[nIndex]) + 1, NULL, NULL) )
 	{
 		SetBlockError(STRBLOCKERR_UNKNOWN);
@@ -251,7 +251,7 @@ BOOL WINAPI GetStringW( HSTRBLOCK hStrBlock, UINT nIndex, LPWSTR pszText )
 		SetBlockError(STRBLOCKERR_STRINVALID);
 		return FALSE;
 	}
-	
+
 	wcscpy(pszText, pStrBlock->strArray[nIndex]);
 	SetBlockError(STRBLOCKERR_OK);
 
@@ -274,7 +274,7 @@ BOOL WINAPI SetStringA( HSTRBLOCK hStrBlock, UINT nIndex, LPCSTR pszText )
 		SetBlockError(STRBLOCKERR_INVALIDINDEX);
 		return FALSE;
 	}
-	
+
 	// Delete the current string & reallocate a new one..
 	free(pStrBlock->strArray[nIndex]);
 
@@ -314,7 +314,7 @@ BOOL WINAPI SetStringW( HSTRBLOCK hStrBlock, UINT nIndex, LPCWSTR pszText )
 		SetBlockError(STRBLOCKERR_INVALIDINDEX);
 		return FALSE;
 	}
-	
+
 	// Delete the current string & reallocate a new one..
 	free(pStrBlock->strArray[nIndex]);
 	nLen = wcslen(pszText) + 1;
@@ -402,9 +402,9 @@ BOOL WINAPI UpdateStringBlockA( LPCSTR strAppName, HSTRBLOCK hStrBlock, int nBlo
 
 			SetBlockError(STRBLOCKERR_UPDATENOTIMPLEMENTED);
 			break;
-			
+
 		default:
-			
+
 			SetBlockError(STRBLOCKERR_UPDATEFAILED);
 			break;
 		}
@@ -454,9 +454,9 @@ BOOL WINAPI UpdateStringBlockW( LPCWSTR strAppName, HSTRBLOCK hStrBlock, int nBl
 
 			SetBlockError(STRBLOCKERR_UPDATENOTIMPLEMENTED);
 			break;
-			
+
 		default:
-			
+
 			SetBlockError(STRBLOCKERR_UPDATEFAILED);
 			break;
 		}
@@ -548,7 +548,7 @@ BOOL ParseRes( LPVOID pRes, PSTRINGBLOCK pStrBlock )
 	int		i, j;
 	int		nLen;
 	WCHAR*	pParse = (WCHAR *)pRes;
-	
+
 	// There are NO_OF_STRINGS_PER_BLOCK(=16) strings per block.
 	for( i = 0; i < NO_OF_STRINGS_PER_BLOCK; i++ )
 	{
@@ -642,9 +642,9 @@ BOOL UpdateBlock( HANDLE hUpdate, PSTRINGBLOCK pStrBlock, int nBlockID, WORD wLa
 
 			SetBlockError(STRBLOCKERR_UPDATENOTIMPLEMENTED);
 			break;
-			
+
 		default:
-			
+
 			SetBlockError(STRBLOCKERR_UPDATEFAILED);
 			break;
 		}

@@ -46,7 +46,7 @@ class RubyIOFileExecutor implements RubyIOExecutor {
     {
     	return null;
     }
-    
+
     private boolean open(String filename, String mode) {
         AssertMe.rho_assert (null == file_);
 		File f = new File(filename);
@@ -73,7 +73,7 @@ class RubyIOFileExecutor implements RubyIOExecutor {
         try {
         	if (null == file_)
         		return true;
-        		
+
             return file_.length() == file_.getFilePointer();
         } catch (IOException e) {
             throw new RubyException(RubyRuntime.IOErrorClass, e.toString());

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -36,7 +36,7 @@
 
 TCHAR *app_name = NULL;
 
-void checkMDEstart(HRESULT hr) 
+void checkMDEstart(HRESULT hr)
 {
 	if (FAILED(hr)) {
 		if (hr == REGDB_E_CLASSNOTREG) {
@@ -61,7 +61,7 @@ DWORD WINAPI startDEM(LPVOID lpParam)
 			ExitProcess(EXIT_FAILURE);
 			return hr;
 		}
-		
+
 		pDeviceEmulatorManager->ShowManagerUI(false);
 		while (1) {
 			Sleep(600 * 1000);
@@ -160,7 +160,7 @@ bool emuBringToFront(const CComBSTR& deviceIdentifier)
             return false;
         }
         return true;
-    } 		
+    }
     return false;
 }
 
@@ -230,7 +230,7 @@ bool emuShutdown(const CComBSTR& deviceIdentifier)
     return false;
 }
 
-bool wceConnect (void) 
+bool wceConnect (void)
 {
 	HRESULT hRapiResult;
 
@@ -266,7 +266,7 @@ bool wceConnect (void)
     if (WAIT_OBJECT_0 == dwRapiInit) {
         // heRapiInit signaled:
         // set return error code to return value of RAPI Init function
-        hRapiResult = riCopy.hrRapiInit;  
+        hRapiResult = riCopy.hrRapiInit;
     } else if (WAIT_TIMEOUT == dwRapiInit) {
         // timed out: device is probably not connected
         // or not responding
@@ -332,7 +332,7 @@ bool wcePutFile(const char *host_file, const char *wce_file)
         _tprintf( TEXT("Host file specifies a directory\n"));
         return false;
     }
-	
+
 	if (wceConnect()) {
 		dwAttr = CeGetFileAttributes( wszDestFile);
 		if (dwAttr & FILE_ATTRIBUTE_DIRECTORY) {
@@ -343,7 +343,7 @@ bool wcePutFile(const char *host_file, const char *wce_file)
             if(FAILED(hr)) return false;
 #else
             nResult = MultiByteToWideChar(
-                        CP_ACP,    
+                        CP_ACP,
                         MB_PRECOMPOSED,
                         wfd.cFileName,
                         strlen(wfd.cFileName)+1,
@@ -378,7 +378,7 @@ bool wcePutFile(const char *host_file, const char *wce_file)
 				_tprintf( TEXT("Error !!! Reading host file\n"));
 				goto FatalError;
 			}
-			_tprintf( TEXT("."));                                        
+			_tprintf( TEXT("."));
 		} while (dwNumRead);
 		//_tprintf( TEXT("\n"));
 
@@ -399,7 +399,7 @@ bool wceRunProcess(const char *process, const char *args)
 {
 	HRESULT hRapiResult;
 	HRESULT hr;
-	PROCESS_INFORMATION pi;    
+	PROCESS_INFORMATION pi;
 	WCHAR wszProgram[MAX_PATH];
 	WCHAR wszArgs[MAX_PATH];
 
@@ -409,7 +409,7 @@ bool wceRunProcess(const char *process, const char *args)
 	if(0 == nResult) { return false;}
 	if (args) {
 		nResult = MultiByteToWideChar(CP_ACP,MB_PRECOMPOSED, args, strlen(args)+1, wszArgs, ARRAYSIZE(wszArgs));
-		if(0 == nResult) 
+		if(0 == nResult)
 			return false;
 	}
 #else
@@ -444,7 +444,7 @@ bool wceInvokeCabSetup(const char *wceload_params)
 	DWORD dwInSize = sizeof(wszCabFile);
 	DWORD dwOutSize = 0;
 	BYTE *pInBuff = NULL;
-	
+
 	pInBuff = (BYTE *)LocalAlloc(LPTR, dwInSize);
 	memcpy(pInBuff, &wszCabFile, dwInSize);
 
@@ -468,12 +468,12 @@ bool wceInvokeCabSetup(const char *wceload_params)
  * detool emucab "<emu_name|vmid>" app.cab "app-name"
  * or
    detool dev "app-name" rhobundle_path exe_name
-   or 
+   or
  * detool devcab app.cab "app-name"
  */
 void usage(void)
 {
-printf 
+printf
 	("Rhodes deployment tool for Windows Mobile:          \n  \
 	  detool emu \"<emu_name|vmid>\" app.cab \"app-name\" \n  \
 	  or                                                  \n  \
@@ -497,7 +497,7 @@ int copyExecutable (TCHAR *file_name, TCHAR *app_dir)
 	DWORD dwNumRead, dwNumWritten;
 
 	USES_CONVERSION;
-	
+
 	_tcscpy(exe_fullpath, app_dir);
 	_tcscat(exe_fullpath, _T("\\"));
 	_tcscat(exe_fullpath, app_name);
@@ -525,7 +525,7 @@ int copyExecutable (TCHAR *file_name, TCHAR *app_dir)
 				_tprintf( TEXT("Error !!! Reading host file\n"));
 				goto copyFailure;
 		}
-		_tprintf( TEXT("."));                                        
+		_tprintf( TEXT("."));
 	} while (dwNumRead);
 	_tprintf( TEXT("\n"));
 
@@ -600,8 +600,8 @@ int copyBundle (TCHAR *parent_dir, TCHAR *file, TCHAR *app_dir)
 		_tcscat(new_app_item, _T("\\"));
 		_tcscat(new_app_item, findData.cFileName);
 
-		if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) 
-		{	
+		if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+		{
 			//Check and create dir on device
 			hFind = CeFindFirstFile(new_app_item, &wceFindData);
 			if (INVALID_HANDLE_VALUE == hFind) {
@@ -612,10 +612,10 @@ int copyBundle (TCHAR *parent_dir, TCHAR *file, TCHAR *app_dir)
 				}
 			}
 			FindClose( hFind);
-			
+
 			copyBundle (fullpath, findData.cFileName, new_app_item);
-		} 
-		else 
+		}
+		else
 		{
 			_tcscpy(host_file, fullpath);
 			_tcscat(host_file, _T("\\"));
@@ -645,7 +645,7 @@ int copyBundle (TCHAR *parent_dir, TCHAR *file, TCHAR *app_dir)
 					_tprintf( TEXT("Error !!! Reading host file\n"));
 					goto copyBundleFailure;
 				}
-				_tprintf( TEXT("."));                                        
+				_tprintf( TEXT("."));
 			} while (dwNumRead);
 			_tprintf( TEXT("\n"));
 
@@ -669,7 +669,7 @@ copyBundleFailure:
 	return EXIT_FAILURE;
 }
 
-void startLogServer( TCHAR * log_file, TCHAR* log_port ) 
+void startLogServer( TCHAR * log_file, TCHAR* log_port )
 {
 	// Declare and initialize variables
 	WSADATA wsaData;
@@ -682,7 +682,7 @@ void startLogServer( TCHAR * log_file, TCHAR* log_port )
 		printf("WSAStartup failed: %d\n", iResult);
 		return;
 	}
-	
+
 	if (logSrv.init())
 	{
 		logSrv.run();
@@ -766,14 +766,14 @@ int _tmain(int argc, _TCHAR* argv[])
 				goto stop_emu_deploy;
 			}
 			_tprintf( TEXT("DONE\n"));
-				
+
 			_tprintf( TEXT("Cradle emulator... "));
 			if(!emuCradle (emu_name)) {
 				_tprintf( TEXT("FAILED\n"));
 				goto stop_emu_deploy;
 			}
 			_tprintf( TEXT("DONE\n"));
-	
+
 			if (!wceConnect ()) {
 				printf ("Failed to connect to remote device.\n");
 				goto stop_emu_deploy;
@@ -782,7 +782,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				hFind = CeFindFirstFile(app_dir, &findData);
 				if (INVALID_HANDLE_VALUE == hFind) {
 					_tprintf( TEXT("Application directory on device was no found\n"));
-					
+
 					new_copy = 1;
 
 					if (!CeCreateDirectory(app_dir, NULL)) {
@@ -796,7 +796,7 @@ int _tmain(int argc, _TCHAR* argv[])
 					_tprintf( TEXT("Error: target directory is file\n"));
 					goto stop_emu_deploy;
 				}
-				
+
 
 				TCHAR remote_bundle_path[MAX_PATH];
 
@@ -806,7 +806,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				hFind = CeFindFirstFile(remote_bundle_path, &findData);
 				if (INVALID_HANDLE_VALUE == hFind) {
 					_tprintf( TEXT("Bundle directory on device was no found\n"));
-	
+
 					if (!CeCreateDirectory(remote_bundle_path, NULL)) {
 						printf ("Failed to create bundle directory\n");
 						goto stop_emu_deploy;
@@ -849,7 +849,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 				wceDisconnect();
 			}
-	
+
 			CoUninitialize();
 
 			ExitProcess(EXIT_SUCCESS);
@@ -867,7 +867,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				goto stop_emu_deploy;
 			}
 			_tprintf( TEXT("DONE\n"));
-			
+
 			_tprintf( TEXT("Cradle emulator... "));
 			if(!emuCradle (emu_name)) {
 				_tprintf( TEXT("FAILED\n"));
@@ -875,7 +875,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			}
 			_tprintf( TEXT("DONE\n"));
 
-			_tprintf( TEXT("Loading cab file..."));		
+			_tprintf( TEXT("Loading cab file..."));
 			if (!wcePutFile (T2A(cab_file), "")) {
 				_tprintf( TEXT("FAILED\n"));
 				goto stop_emu_deploy;
@@ -888,7 +888,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				goto stop_emu_deploy;
 			}
 			_tprintf( TEXT("DONE\n"));
-			
+
 			_tprintf( TEXT("Setup application..."));
 
 			//FIXME: rake gives pathname with unix-like '/' file separators,
@@ -950,7 +950,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		hFind = CeFindFirstFile(app_dir, &findData);
 		if (INVALID_HANDLE_VALUE == hFind) {
 			_tprintf( TEXT("Application directory on device was no found\n"));
-					
+
 			new_copy = 1;
 
 			if (!CeCreateDirectory(app_dir, NULL)) {
@@ -964,7 +964,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			_tprintf( TEXT("Error: target directory is file\n"));
 			goto stop_emu_deploy;
 		}
-				
+
 
 		TCHAR remote_bundle_path[MAX_PATH];
 
@@ -974,7 +974,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		hFind = CeFindFirstFile(remote_bundle_path, &findData);
 		if (INVALID_HANDLE_VALUE == hFind) {
 			_tprintf( TEXT("Bundle directory on device was no found\n"));
-	
+
 			if (!CeCreateDirectory(remote_bundle_path, NULL)) {
 				printf ("Failed to create bundle directory\n");
 				goto stop_emu_deploy;
@@ -982,7 +982,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 		FindClose( hFind);
 
-		
+
 		int retval = copyExecutable (app_exe, app_dir);
 		if (retval != EXIT_SUCCESS) {
 			printf ("Failed to copy application executable\n");
@@ -1045,7 +1045,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				goto stop_emu_deploy;
 			}
 			_tprintf( TEXT("DONE\n"));
-			
+
 			_tprintf( TEXT("Setup application..."));
 
 			//FIXME: rake gives pathname with unix-like '/' file separators,
@@ -1097,6 +1097,6 @@ int _tmain(int argc, _TCHAR* argv[])
 			startLogServer(log_file, log_port);
 		}
 	}
-	
+
 	return EXIT_SUCCESS;
 }

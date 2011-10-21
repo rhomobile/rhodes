@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -45,7 +45,7 @@ public class TestRhoConnectClient extends AndroidTestCase {
     //private static final String TAG = TestRhoConnectClient.class.getSimpleName();
 
 	private final String SYNC_URL = "http://rhodes-store-server.heroku.com/application";
-	
+
 	class ObjectNotifyDelegate implements RhoConnectObjectNotify.IDelegate
 	{
 		RhoConnectObjectNotify mNotify;
@@ -59,7 +59,7 @@ public class TestRhoConnectClient extends AndroidTestCase {
     RhomModel mModels[];
     RhomModel mProduct;
     RhomModel mCustomer;
-    
+
     @Override
     protected void setUp()
     {
@@ -69,15 +69,15 @@ public class TestRhoConnectClient extends AndroidTestCase {
 		try {
 			RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir);
 			RhoFileApi.init(this.getContext());
-			
+
 			RhoLogConf.setMinSeverity(0);
 			RhoLogConf.setEnabledCategories("*");
-			
+
 			RhoConnectClient.nativeInit();
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
-		
+
     	mClient = new RhoConnectClient();
 
     	mModels = new RhomModel[]{
@@ -97,14 +97,14 @@ public class TestRhoConnectClient extends AndroidTestCase {
         mClient.setSyncServer(SYNC_URL);
         mClient.setBulkSyncState(1);
     }
-    
+
     @Override
     protected void tearDown()
     {
         //mClient.databaseFullResetAndLogout();
         mClient.close();
     }
-    
+
     public void testInitiallyLoggedOut()
     {
         mClient.databaseFullResetAndLogout();
@@ -125,7 +125,7 @@ public class TestRhoConnectClient extends AndroidTestCase {
         notify = mCustomer.sync();
         assertEquals(0, notify.getErrorCode());
     }
-    
+
     public void testSyncAll()
     {
         RhoConnectNotify notify = mClient.loginWithUserSync("", "");
@@ -205,7 +205,7 @@ public class TestRhoConnectClient extends AndroidTestCase {
         assertEquals(cust22.get("first"), cust2.get("first"));
 
     }
-    
+
     public void testCreateObjectNotify()
     {
         RhoConnectNotify notify = mClient.loginWithUserSync("", "");
@@ -214,31 +214,31 @@ public class TestRhoConnectClient extends AndroidTestCase {
 
     	Map<String, String> item = new HashMap<String, String>();
     	item.put("name", "AndroidTest2");
-    	
+
     	mProduct.create(item);
-    	
+
     	assertTrue(item.containsKey("object"));
     	assertTrue(item.containsKey("source_id"));
-    	
+
     	Map<String, String> item2 = mProduct.find(item.get("object"));
     	assertNotNull(item2);
     	assertEquals(item.get("name"), item2.get("name"));
-    	
+
     	ObjectNotifyDelegate objectCallback = new ObjectNotifyDelegate();
     	mClient.setObjectNotification(objectCallback);
     	mClient.addObjectNotify(Integer.parseInt(item.get("source_id")), item.get("object"));
 
         notify = mProduct.sync();
     	assertEquals(notify.getErrorMessage(), 0, notify.getErrorCode());
-    	
+
     	assertNotNull(objectCallback.mNotify);
-    	
+
     	String[] createdObjects = objectCallback.mNotify.getCreatedObjects();
     	assertNotNull(createdObjects);
-    	
+
     	int[] createdSourceIds = objectCallback.mNotify.getCreatedSourceIds();
     	assertNotNull(createdSourceIds);
-    	
+
     	assertEquals(createdObjects[0], item.get("object"));
     }
 

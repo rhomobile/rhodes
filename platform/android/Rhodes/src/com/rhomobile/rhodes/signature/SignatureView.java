@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -71,7 +71,7 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
 	        	}
 	        }
 		}
-		
+
 		private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
 			int seq_count = in.readInt();
 	        int s;
@@ -90,32 +90,32 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
 	        }
 		}
 	}
-	
-	
+
+
 	private Vector<PointSequence> mSequences = new Vector<PointSequence>();
 	private PointSequence mCurrentSequence = new PointSequence();
-	
+
 	private static final String TAG = "SignatureView";
-	
+
     Bitmap mBitmap;
     Canvas mCanvas;
-    
+
     private float mX;
     private float mY;
-    
+
     //private Path mCurrentPath;
     //private Path mGlobalPath;
-    
+
     private Paint mPaint;
-    
-   
+
+
     public void doClear() {
     	// clear paths
     	mSequences.clear();
     	doFullRedraw();
     }
-	
-     
+
+
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		SignatureViewState s = (SignatureViewState)savedInstanceState.getSerializable(mStateID);
 		mSequences = s.mSequences;
@@ -128,14 +128,14 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
 		s.mSequences = mSequences;
 		outState.putSerializable(mStateID, s);
 	}
-	
+
 	private void doFullRedraw() {
         Paint paint = new Paint();
         paint.setAntiAlias(false);
         paint.setARGB(255, 255, 255, 255);
-   	 
+
         mCanvas.drawRect(0, 0, mCanvas.getWidth(), mCanvas.getHeight(), paint);
-        
+
         // draw path
         int s;
         int p;
@@ -161,7 +161,7 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
         		}
         	}
         }
-        
+
         // update screen
 	     Canvas c = null;
 	     try {
@@ -173,9 +173,9 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
 	         if (c != null) {
 	        	 getHolder().unlockCanvasAndPost(c);
 	         }
-	     }    	 
+	     }
 	}
-    
+
 	private void doDrawSegment(float x1, float y1, float x2, float y2) {
 	     Canvas c = null;
 	     Rect rect = new Rect((int)(x1-1),(int)(y1-1),(int)(x1+1),(int)(y1+1));
@@ -190,11 +190,11 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
 	         if (c != null) {
 	        	 getHolder().unlockCanvasAndPost(c);
 	         }
-	     }    	 
-		
+	     }
+
 	}
-    
-    
+
+
     public SignatureView(Context context, AttributeSet attrs) {
         super(context, attrs);
 		Logger.D(TAG, "SignatureView()");
@@ -204,7 +204,7 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
         holder.addCallback(this);
 
         setVisibility(VISIBLE);
-        
+
 
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
@@ -214,19 +214,19 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setStrokeWidth(2);
 
-        
+
         setFocusable(true); // make sure we get key events
-        
+
         requestFocus();
         bringToFront();
-        
-        
+
+
     }
-	
+
     public Bitmap makeBitmap() {
     	return mBitmap;
     }
-    
+
     public boolean onTouchEvent(MotionEvent event) {
     	 float x = event.getX();
     	 float y = event.getY();
@@ -246,13 +246,13 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
                 	mCurrentSequence = new PointSequence();
                     break;
             }
-    	 
+
     	 mX = x;
     	 mY = y;
     	 return true;
      }
-     
-    
+
+
     /* Callback invoked when the surface dimensions change. */
     public void surfaceChanged(SurfaceHolder holder, int format, int width,
             int height) {
@@ -261,8 +261,8 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
         mCanvas = new Canvas(mBitmap);
         doFullRedraw();
     }
-    
-    
+
+
     /*
      * Callback invoked when the Surface has been created and is ready to be
      * used.
@@ -276,9 +276,9 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
  		mBitmap = null;
  		mCanvas = null;
      }
-	
-    
-    
+
+
+
 }
 
 

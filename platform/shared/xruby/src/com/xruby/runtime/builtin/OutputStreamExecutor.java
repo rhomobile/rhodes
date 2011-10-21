@@ -7,7 +7,7 @@ import com.xruby.runtime.lang.RubyValue;
 
 public class OutputStreamExecutor implements RubyIOExecutor {
 	private PrintStream ps;
-	
+
 	public OutputStreamExecutor(OutputStream os) {
 		if (os instanceof PrintStream) {
 			this.ps = (PrintStream)os;

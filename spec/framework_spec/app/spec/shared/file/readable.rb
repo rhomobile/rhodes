@@ -23,7 +23,7 @@ if System.get_property('platform') != 'ANDROID'
       @object.send(@method, mock_to_path(@file2)).should == true
     end
   end
-end  
+end
 end
 
 describe :file_readable_missing, :shared => true do

@@ -81,47 +81,47 @@
 
 _STLP_BEGIN_NAMESPACE
 
-template <class _CharT> 
+template <class _CharT>
 inline bool isspace (_CharT c, const locale& loc)
 { return (use_facet<ctype<_CharT> >(loc)).is(ctype_base::space, c); }
 
-template <class _CharT> 
+template <class _CharT>
 inline bool isprint (_CharT c, const locale& loc)
 { return (use_facet<ctype<_CharT> >(loc)).is(ctype_base::print, c); }
 
-template <class _CharT> 
+template <class _CharT>
 inline bool iscntrl (_CharT c, const locale& loc)
 { return (use_facet<ctype<_CharT> >(loc)).is(ctype_base::cntrl, c); }
 
-template <class _CharT> 
+template <class _CharT>
 inline bool isupper (_CharT c, const locale& loc)
 { return (use_facet<ctype<_CharT> >(loc)).is(ctype_base::upper, c); }
 
-template <class _CharT> 
+template <class _CharT>
 inline bool islower (_CharT c, const locale& loc)
 { return (use_facet<ctype<_CharT> >(loc)).is(ctype_base::lower, c); }
 
-template <class _CharT> 
+template <class _CharT>
 inline bool isalpha (_CharT c, const locale& loc)
 { return (use_facet<ctype<_CharT> >(loc)).is(ctype_base::alpha, c); }
 
-template <class _CharT> 
+template <class _CharT>
 inline bool isdigit (_CharT c, const locale& loc)
 { return (use_facet<ctype<_CharT> >(loc)).is(ctype_base::digit, c); }
 
-template <class _CharT> 
+template <class _CharT>
 inline bool ispunct (_CharT c, const locale& loc)
 { return (use_facet<ctype<_CharT> >(loc)).is(ctype_base::punct, c); }
 
-template <class _CharT> 
+template <class _CharT>
 inline bool isxdigit (_CharT c, const locale& loc)
 { return (use_facet<ctype<_CharT> >(loc)).is(ctype_base::xdigit, c); }
 
-template <class _CharT> 
+template <class _CharT>
 inline bool isalnum (_CharT c, const locale& loc)
 { return (use_facet<ctype<_CharT> >(loc)).is(ctype_base::alnum, c); }
 
-template <class _CharT> 
+template <class _CharT>
 inline bool isgraph (_CharT c, const locale& loc)
 { return (use_facet<ctype<_CharT> >(loc)).is(ctype_base::graph, c); }
 

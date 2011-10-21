@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -43,7 +43,7 @@ import com.rho.net.IHttpConnection;
 import com.rho.net.bb.NativeBBHttpConnection;
 import com.rho.net.RhoConnection;
 /**
- * 
+ *
  */
 public class Utilities {
 
@@ -54,7 +54,7 @@ public class Utilities {
 		OutputStream out = null;
 
 		try {
-			
+
 			if ( conn == null )
 			{
 				if ( RhodesApp.getInstance().isRhodesAppUrl(url) )
@@ -68,7 +68,7 @@ public class Utilities {
 					// conn = NetworkAccess.connect(url);
 				}
 			}
-				
+
 			if (requestHeaders != null) {
 				// From
 				// http://www.w3.org/Protocols/rfc2616/rfc2616-sec15.html#sec15.1.3
@@ -85,7 +85,7 @@ public class Utilities {
 						&& !StringUtilities.startsWithIgnoreCase(url, "https:")) {
 					sendReferrer = false;
 				}
-				
+
 				// Set cookie
 				String cookie = RhodesApplication.getInstance().getCookie(url);
 				if (cookie != null) {
@@ -139,26 +139,26 @@ public class Utilities {
 
 		return conn;
 	}
-	
-	public static String replaceAll(String content, String that, String withthat) { 
-		int from = 0; 
-		StringBuffer sb = new StringBuffer(); 
-		int index = -1; 
-		
-		while(true) { 
-			index = content.indexOf(that,from); 
-			if(index!=-1) { 
-				sb = new StringBuffer(); 
-				String upto = content.substring(0,index); 
-				sb.append(upto+withthat); 
-				String lastbit = content.substring(index+that.length(),content.length()); 
-				sb.append(lastbit); 
-				content = sb.toString(); 
-				from = index+that.length(); 
-			} else { 
-				break; 
-			} 
-		} 
-		return content; 
-	} 	
+
+	public static String replaceAll(String content, String that, String withthat) {
+		int from = 0;
+		StringBuffer sb = new StringBuffer();
+		int index = -1;
+
+		while(true) {
+			index = content.indexOf(that,from);
+			if(index!=-1) {
+				sb = new StringBuffer();
+				String upto = content.substring(0,index);
+				sb.append(upto+withthat);
+				String lastbit = content.substring(index+that.length(),content.length());
+				sb.append(lastbit);
+				content = sb.toString();
+				from = index+that.length();
+			} else {
+				break;
+			}
+		}
+		return content;
+	}
 }

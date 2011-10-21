@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2006 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -15,15 +15,15 @@ import java.io.IOException;
 
 /**
  * <p> This class provides utility methods to parse <code>CharSequence</code>
- *     into primitive types and to format primitive types into any 
+ *     into primitive types and to format primitive types into any
  *     <code>Appendable</code>.</p>
  *
  * <p> Methods from this class <b>do not create temporary objects</b> and
- *     are typically faster than standard library methods (see 
+ *     are typically faster than standard library methods (see
  *     <a href="http://javolution.org/doc/benchmark.html">benchmark</a>).</p>
- *     
- * <p> The number of digits when formatting floating point numbers can be 
- *     specified. The default setting for <code>double</code> is 17 digits 
+ *
+ * <p> The number of digits when formatting floating point numbers can be
+ *     specified. The default setting for <code>double</code> is 17 digits
  *     or even 16 digits when the conversion is lossless back and forth
  *     (mimic the standard library formatting). For example:[code]
  *         TypeFormat.format(0.2, a) = "0.2" // 17 or 16 digits (as long as lossless conversion), remove trailing zeros.
@@ -31,13 +31,13 @@ import java.io.IOException;
  *         TypeFormat.format(0.2, 19, false, false, a) = "0.2000000000000000111" // Closest 19 digits.
  *         TypeFormat.format(0.2, 4, false, false, a) = "0.2" // Fixed-point notation, remove trailing zeros.
  *         TypeFormat.format(0.2, 4, false, true, a) = "0.2000" // Fixed-point notation, fixed number of digits.
- *         TypeFormat.format(0.2, 4, true, false, a) = "2.0E-1" // Scientific notation, remove trailing zeros.  
+ *         TypeFormat.format(0.2, 4, true, false, a) = "2.0E-1" // Scientific notation, remove trailing zeros.
  *         TypeFormat.format(0.2, 4, true, true, a) = "2.000E-1" // Scientific notation, fixed number of digits.
- *         [/code]</p>        
+ *         [/code]</p>
  *
- * <p> For non-primitive objects, formatting is typically performed using 
+ * <p> For non-primitive objects, formatting is typically performed using
  *     specialized {@link TextFormat} instances.</p>
- * 
+ *
  * @author  <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 4.1, November 30, 2006
  */
@@ -54,7 +54,7 @@ public final class TypeFormat {
      *
      * @param  csq the character sequence to parse.
      * @return the corresponding boolean value.
-     * @throws IllegalArgumentException if the specified character sequence 
+     * @throws IllegalArgumentException if the specified character sequence
      *         is different from "true" or "false" ignoring cases.
      */
     public static boolean parseBoolean(CharSequence csq) {
@@ -77,7 +77,7 @@ public final class TypeFormat {
     }
 
     /**
-     * Equivalent to {@link #parseBoolean(CharSequence)} 
+     * Equivalent to {@link #parseBoolean(CharSequence)}
      * (for J2ME compatibility).
      */
     public static boolean parseBoolean(String csq) {
@@ -100,13 +100,13 @@ public final class TypeFormat {
     }
 
     /**
-     * Parses the specified character sequence from the specified position 
+     * Parses the specified character sequence from the specified position
      * as a <code>boolean</code>.
      *
      * @param csq the character sequence to parse.
      * @param cursor the current cursor position (being maintained).
      * @return the next boolean value.
-     * @throws IllegalArgumentException if the character sequence from the 
+     * @throws IllegalArgumentException if the character sequence from the
      *         specified position is different from "true" or "false" ignoring
      *         cases.
      */
@@ -129,12 +129,12 @@ public final class TypeFormat {
             cursor.increment(5);
             return false;
         }
-        throw new IllegalArgumentException("Cannot parse boolean " + 
+        throw new IllegalArgumentException("Cannot parse boolean " +
                 csq.subSequence(cursor.getIndex(), cursor.getEndIndex()));
     }
 
     /**
-     * Parses the specified character sequence as a signed decimal 
+     * Parses the specified character sequence as a signed decimal
      * <code>byte</code>.
      *
      * @param  csq the character sequence to parse.
@@ -148,7 +148,7 @@ public final class TypeFormat {
     }
 
     /**
-     * Parses the specified character sequence as a signed <code>byte</code> 
+     * Parses the specified character sequence as a signed <code>byte</code>
      * in the specified radix.
      *
      * @param  csq the character sequence to parse.
@@ -165,7 +165,7 @@ public final class TypeFormat {
     }
 
     /**
-     * Parses the specified character sequence from the specified position 
+     * Parses the specified character sequence from the specified position
      * as a signed <code>byte</code> in the specified radix.
      *
      * @param  csq the character sequence to parse.
@@ -183,7 +183,7 @@ public final class TypeFormat {
     }
 
     /**
-     * Parses the specified character sequence as a signed decimal 
+     * Parses the specified character sequence as a signed decimal
      * <code>short</code>.
      *
      * @param  csq the character sequence to parse.
@@ -197,7 +197,7 @@ public final class TypeFormat {
     }
 
     /**
-     * Parses the specified character sequence as a signed <code>short</code> 
+     * Parses the specified character sequence as a signed <code>short</code>
      * in the specified radix.
      *
      * @param  csq the character sequence to parse.
@@ -214,7 +214,7 @@ public final class TypeFormat {
     }
 
     /**
-     * Parses the specified character sequence from the specified position 
+     * Parses the specified character sequence from the specified position
      * as a signed <code>short</code> in the specified radix.
      *
      * @param  csq the character sequence to parse.
@@ -252,7 +252,7 @@ public final class TypeFormat {
     }
 
     /**
-     * Parses the specified character sequence as a signed <code>int</code> 
+     * Parses the specified character sequence as a signed <code>int</code>
      * in the specified radix.
      *
      * @param  csq the character sequence to parse.
@@ -266,7 +266,7 @@ public final class TypeFormat {
     }
 
     /**
-     * Equivalent to {@link #parseInt(CharSequence, int)} 
+     * Equivalent to {@link #parseInt(CharSequence, int)}
      * (for J2ME compatibility).
      */
     public static int parseInt(String str, int radix) {
@@ -499,7 +499,7 @@ public final class TypeFormat {
     }
 
     /**
-     * Equivalent to {@link #parseLong(CharSequence)} 
+     * Equivalent to {@link #parseLong(CharSequence)}
      * (for J2ME compatibility).
      */
     public static long parseLong(String str) {
@@ -521,7 +521,7 @@ public final class TypeFormat {
     }
 
     /**
-     * Equivalent to {@link #parseLong(CharSequence, int)} 
+     * Equivalent to {@link #parseLong(CharSequence, int)}
      * (for J2ME compatibility).
      */
     public static long parseLong(String str, int radix) {
@@ -529,7 +529,7 @@ public final class TypeFormat {
     }
 
     /**
-     * Parses the specified character sequence from the specified position 
+     * Parses the specified character sequence from the specified position
      * as a signed <code>long</code> in the specified radix.
      *
      * @param  csq the character sequence to parse.
@@ -753,7 +753,7 @@ public final class TypeFormat {
      /**/
 
     /**
-     * Equivalent to {@link #parseFloat(CharSequence)} 
+     * Equivalent to {@link #parseFloat(CharSequence)}
      * (for J2ME compatibility).
      *@JVM-1.1+@
      public static float parseFloat(String str) {
@@ -762,7 +762,7 @@ public final class TypeFormat {
      /**/
 
     /**
-     * Parses the specified character sequence from the specified position 
+     * Parses the specified character sequence from the specified position
      * as a <code>float</code>.
      *
      * @param  csq the character sequence to parse.
@@ -791,7 +791,7 @@ public final class TypeFormat {
      /**/
 
     /**
-     * Equivalent to {@link #parseDouble(CharSequence)} 
+     * Equivalent to {@link #parseDouble(CharSequence)}
      * (for J2ME compatibility).
      *@JVM-1.1+@
      public static double parseDouble(String str) {
@@ -800,7 +800,7 @@ public final class TypeFormat {
      /**/
 
     /**
-     * Parses the specified character sequence from the specified position 
+     * Parses the specified character sequence from the specified position
      * as a <code>double</code>.
      *
      * @param  csq the character sequence to parse.
@@ -822,7 +822,7 @@ public final class TypeFormat {
      return parseDoubleString((String) ((Object) csq), cursor);
      return parseDoubleCharSequence(csq,  cursor);
      }
-     
+
      private static double parseDoubleCharArray(CharArray csq, Cursor cursor)
      throws NumberFormatException {
      // Parsing block identical for all CharSequences.
@@ -830,25 +830,25 @@ public final class TypeFormat {
      final int length = (cursor != null) ? cursor.getEndIndex() : csq.length();
      int i = start;
      char c = csq.charAt(i);
-     
+
      // Checks for NaN.
      if ((c == 'N') && match("NaN", csq, i, length)) {
      if (cursor != null) cursor.setIndex(i + 3);
      return Double.NaN;
      }
-     
+
      // Reads sign.
      boolean isNegative = (c == '-');
      if ((isNegative || (c == '+')) && (++i < length)) {
      c = csq.charAt(i);
      }
-     
+
      // Checks for Infinity.
      if ((c == 'I') && match("Infinity", csq, i, length)) {
      if (cursor != null) cursor.setIndex(i + 8);
      return isNegative ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
      }
-     
+
      // Reads decimal and fraction (both merged to a long).
      long decimal = 0;
      int decimalPoint = -1;
@@ -872,7 +872,7 @@ public final class TypeFormat {
      decimal = - decimal;
      }
      int fractionLength = (decimalPoint >= 0) ? i - decimalPoint - 1 : 0;
-     
+
      // Reads exponent.
      int exp = 0;
      if ((i < length) && ((c == 'E') || (c == 'e'))) {
@@ -902,10 +902,10 @@ public final class TypeFormat {
      if (cursor != null)
      cursor.setIndex(i);
      else if (i < length)
-     throw new NumberFormatException("Incomplete parsing");    
+     throw new NumberFormatException("Incomplete parsing");
      return javolution.lang.MathLib.toDoublePow10(decimal, exp - fractionLength);
      }
-     
+
      private static double parseDoubleTextBuilder(TextBuilder csq, Cursor cursor)
      throws NumberFormatException {
      // Parsing block identical for all CharSequences.
@@ -913,25 +913,25 @@ public final class TypeFormat {
      final int length = (cursor != null) ? cursor.getEndIndex() : csq.length();
      int i = start;
      char c = csq.charAt(i);
-     
+
      // Checks for NaN.
      if ((c == 'N') && match("NaN", csq, i, length)) {
      if (cursor != null) cursor.setIndex(i + 3);
      return Double.NaN;
      }
-     
+
      // Reads sign.
      boolean isNegative = (c == '-');
      if ((isNegative || (c == '+')) && (++i < length)) {
      c = csq.charAt(i);
      }
-     
+
      // Checks for Infinity.
      if ((c == 'I') && match("Infinity", csq, i, length)) {
      if (cursor != null) cursor.setIndex(i + 8);
      return isNegative ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
      }
-     
+
      // Reads decimal and fraction (both merged to a long).
      long decimal = 0;
      int decimalPoint = -1;
@@ -955,7 +955,7 @@ public final class TypeFormat {
      decimal = - decimal;
      }
      int fractionLength = (decimalPoint >= 0) ? i - decimalPoint - 1 : 0;
-     
+
      // Reads exponent.
      int exp = 0;
      if ((i < length) && ((c == 'E') || (c == 'e'))) {
@@ -985,7 +985,7 @@ public final class TypeFormat {
      if (cursor != null)
      cursor.setIndex(i);
      else if (i < length)
-     throw new NumberFormatException("Incomplete parsing");    
+     throw new NumberFormatException("Incomplete parsing");
      return javolution.lang.MathLib.toDoublePow10(decimal, exp - fractionLength);
      }
 
@@ -996,25 +996,25 @@ public final class TypeFormat {
      final int length = (cursor != null) ? cursor.getEndIndex() : csq.length();
      int i = start;
      char c = csq.charAt(i);
-     
+
      // Checks for NaN.
      if ((c == 'N') && match("NaN", csq, i, length)) {
      if (cursor != null) cursor.setIndex(i + 3);
      return Double.NaN;
      }
-     
+
      // Reads sign.
      boolean isNegative = (c == '-');
      if ((isNegative || (c == '+')) && (++i < length)) {
      c = csq.charAt(i);
      }
-     
+
      // Checks for Infinity.
      if ((c == 'I') && match("Infinity", csq, i, length)) {
      if (cursor != null) cursor.setIndex(i + 8);
      return isNegative ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
      }
-     
+
      // Reads decimal and fraction (both merged to a long).
      long decimal = 0;
      int decimalPoint = -1;
@@ -1038,7 +1038,7 @@ public final class TypeFormat {
      decimal = - decimal;
      }
      int fractionLength = (decimalPoint >= 0) ? i - decimalPoint - 1 : 0;
-     
+
      // Reads exponent.
      int exp = 0;
      if ((i < length) && ((c == 'E') || (c == 'e'))) {
@@ -1068,10 +1068,10 @@ public final class TypeFormat {
      if (cursor != null)
      cursor.setIndex(i);
      else if (i < length)
-     throw new NumberFormatException("Incomplete parsing");    
+     throw new NumberFormatException("Incomplete parsing");
      return javolution.lang.MathLib.toDoublePow10(decimal, exp - fractionLength);
      }
-     
+
      private static double parseDoubleString(String csq, Cursor cursor)
      throws NumberFormatException {
      // Parsing block identical for all CharSequences.
@@ -1079,25 +1079,25 @@ public final class TypeFormat {
      final int length = (cursor != null) ? cursor.getEndIndex() : csq.length();
      int i = start;
      char c = csq.charAt(i);
-     
+
      // Checks for NaN.
      if ((c == 'N') && match("NaN", csq, i, length)) {
      if (cursor != null) cursor.setIndex(i + 3);
      return Double.NaN;
      }
-     
+
      // Reads sign.
      boolean isNegative = (c == '-');
      if ((isNegative || (c == '+')) && (++i < length)) {
      c = csq.charAt(i);
      }
-     
+
      // Checks for Infinity.
      if ((c == 'I') && match("Infinity", csq, i, length)) {
      if (cursor != null) cursor.setIndex(i + 8);
      return isNegative ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
      }
-     
+
      // Reads decimal and fraction (both merged to a long).
      long decimal = 0;
      int decimalPoint = -1;
@@ -1121,7 +1121,7 @@ public final class TypeFormat {
      decimal = - decimal;
      }
      int fractionLength = (decimalPoint >= 0) ? i - decimalPoint - 1 : 0;
-     
+
      // Reads exponent.
      int exp = 0;
      if ((i < length) && ((c == 'E') || (c == 'e'))) {
@@ -1151,10 +1151,10 @@ public final class TypeFormat {
      if (cursor != null)
      cursor.setIndex(i);
      else if (i < length)
-     throw new NumberFormatException("Incomplete parsing");    
+     throw new NumberFormatException("Incomplete parsing");
      return javolution.lang.MathLib.toDoublePow10(decimal, exp - fractionLength);
      }
-     
+
      private static double parseDoubleCharSequence(CharSequence csq, Cursor cursor)
      throws NumberFormatException {
      // Parsing block identical for all CharSequences.
@@ -1162,25 +1162,25 @@ public final class TypeFormat {
      final int length = (cursor != null) ? cursor.getEndIndex() : csq.length();
      int i = start;
      char c = csq.charAt(i);
-     
+
      // Checks for NaN.
      if ((c == 'N') && match("NaN", csq, i, length)) {
      if (cursor != null) cursor.setIndex(i + 3);
      return Double.NaN;
      }
-     
+
      // Reads sign.
      boolean isNegative = (c == '-');
      if ((isNegative || (c == '+')) && (++i < length)) {
      c = csq.charAt(i);
      }
-     
+
      // Checks for Infinity.
      if ((c == 'I') && match("Infinity", csq, i, length)) {
      if (cursor != null) cursor.setIndex(i + 8);
      return isNegative ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
      }
-     
+
      // Reads decimal and fraction (both merged to a long).
      long decimal = 0;
      int decimalPoint = -1;
@@ -1204,7 +1204,7 @@ public final class TypeFormat {
      decimal = - decimal;
      }
      int fractionLength = (decimalPoint >= 0) ? i - decimalPoint - 1 : 0;
-     
+
      // Reads exponent.
      int exp = 0;
      if ((i < length) && ((c == 'E') || (c == 'e'))) {
@@ -1234,10 +1234,10 @@ public final class TypeFormat {
      if (cursor != null)
      cursor.setIndex(i);
      else if (i < length)
-     throw new NumberFormatException("Incomplete parsing");    
+     throw new NumberFormatException("Incomplete parsing");
      return javolution.lang.MathLib.toDoublePow10(decimal, exp - fractionLength);
      }
-     
+
      static boolean match(String str, CharSequence csq, int start, int length) {
      for (int i = 0; i < str.length(); i++) {
      if ((start + i >= length)
@@ -1408,16 +1408,16 @@ public final class TypeFormat {
      /**/
 
     /**
-     * Formats the specified <code>double</code> value according to the 
+     * Formats the specified <code>double</code> value according to the
      * specified formatting arguments.
      *
      * @param  d the <code>double</code> value.
      * @param  digits the number of significative digits (excludes exponent) or
      *         <code>-1</code> to mimic the standard library (16 or 17 digits).
-     * @param  scientific <code>true</code> to forces the use of the scientific 
-     *         notation (e.g. <code>1.23E3</code>); <code>false</code> 
-     *         otherwise. 
-     * @param  showZero <code>true</code> if trailing fractional zeros are 
+     * @param  scientific <code>true</code> to forces the use of the scientific
+     *         notation (e.g. <code>1.23E3</code>); <code>false</code>
+     *         otherwise.
+     * @param  showZero <code>true</code> if trailing fractional zeros are
      *         represented; <code>false</code> otherwise.
      * @param  a the <code>Appendable</code> to append.
      * @return the specified <code>Appendable</code> object.
@@ -1448,7 +1448,7 @@ public final class TypeFormat {
     private static void appendTo(Object to, TextBuilder txt) throws IOException {
         if (to instanceof StringBuffer) {
             txt.appendTo((StringBuffer) to);
-        /* @JVM-1.5+@            
+        /* @JVM-1.5+@
         } else if (to instanceof StringBuilder) {
             txt.appendTo((StringBuilder) to);
         /**/

@@ -1,6 +1,6 @@
 # Standard Smartphone CSS/HTML Architecture
 
-## HTML Structure 
+## HTML Structure
 
 ### page (\<div data-role="page"\>)
 
@@ -59,7 +59,7 @@ If you wish to include more than two items in an application targeting iPhone, y
 
 #### Toolbar Button Styles
 
-Four button styles are supported for the toolbar.  Note that variation in height and width are due to variation in toolbar height between the platforms. Additionally, in Windows Mobile, the button is a simple text-based link without decoration on a black background.  
+Four button styles are supported for the toolbar.  Note that variation in height and width are due to variation in toolbar height between the platforms. Additionally, in Windows Mobile, the button is a simple text-based link without decoration on a black background.
 
 
 <table>
@@ -98,12 +98,12 @@ Four button styles are supported for the toolbar.  Note that variation in height
 **NOTE: the variation in width of the buttons for Android is due to the length of the text in the button, and should not be attributed to the classes described in this section. **
 
 ### Content (\<div data-role="content"\>)
- 
-The features described below are only accessible when used inside the content div.  
+
+The features described below are only accessible when used inside the content div.
 
 The content div includes support for native-styled forms and lists.
 
-#### Lists 
+#### Lists
 
 ##### Static list (title)
 	:::html
@@ -141,14 +141,14 @@ Sample: generated application Model show.erb
 
 **NOTE: WiMo cuts off text.  Overflow doesn't work. **
 
-By default, list items dynamically resize to fit your content on iPhone and Android.  
+By default, list items dynamically resize to fit your content on iPhone and Android.
 
-To enforce a standard height for list items, select one of the following options: 
+To enforce a standard height for list items, select one of the following options:
 
 <ol >
 <li>Assign a static height to some list items:</li>
 
-<li>Create a class as follows, and 
+<li>Create a class as follows, and
 
 <ul >
 <li>apply that class to each list item to assign a static height to some list elements:
@@ -156,14 +156,14 @@ To enforce a standard height for list items, select one of the following options
 </li>
 
 <li> OR </li>
- 
+
 <li> Apply a class to the ul tag to assign a static height to all elements in that list:
 
 	<em><code>div#content ul.fixed li { height:50px; }</code></em>
-	
+
 </li>
 </ul>
-</li> 
+</li>
 
 <li>Redefine the default <code>li</code> style as follows to assign a static height to all list elements in the content <code>div</code>:
 
@@ -182,27 +182,27 @@ You can make these modifications in the original device stylesheets individually
 
 Note that the standard rules of css inheritance apply, so if using options B or C, make sure that you have redefined the style ''after'' the standard device stylesheet has been included to override the style.
 
-## Forms 
+## Forms
 
 In Rhodes applications, object attributes are stored as strings, so by default, when you generate your model, all editable fields in your generated views will be text fields.  However, each field can easily be changed to support your desired input type.  Refer to the following guidelines for styling form elements using the default device stylesheets.
 
 ### Form Structure
 
 To simplify layout of forms in a horizontally constrained space, form fields are organized in one or more unordered lists. In order to access the custom styles for each device, follow the guidelines below. You can structure your forms in a single set of fields or grouped sets of related fields in a form.
- 
-Add a <code>\<ul\></code> tag inside your form to display your fields in a single cluster.  To create groupings of related fields within a form, cluster fields in separate  <code>\<ul\></code> tags.  Each  <code>\<ul\></code> will be displayed according to the device's default form styling.  
 
-To apply natively-styled labels to a grouping of fields, apply the groupTitle class to an  <code>\<h4\></code> tag immediately outside the grouping  <code>\<ul\></code> tag.  
+Add a <code>\<ul\></code> tag inside your form to display your fields in a single cluster.  To create groupings of related fields within a form, cluster fields in separate  <code>\<ul\></code> tags.  Each  <code>\<ul\></code> will be displayed according to the device's default form styling.
+
+To apply natively-styled labels to a grouping of fields, apply the groupTitle class to an  <code>\<h4\></code> tag immediately outside the grouping  <code>\<ul\></code> tag.
 
 	:::html
 	<h2 class="groupTitle">Person</h2>
-	<ul>  
+	<ul>
 	       <li>...</li>
 	       <li>...</li>
 	</ul>
 
-	 <h2 class="groupTitle">Address</h2> 
-	<ul>  
+	 <h2 class="groupTitle">Address</h2>
+	<ul>
 	       <li>...</li>
 	       <li>...</li>
 	</ul>
@@ -220,10 +220,10 @@ Typically, each list item in the form should contain a label element and an inpu
 
 Custom "new" form for iPhone, Android, and Windows Mobile platforms
 
-You can create native-styled forms by organizing form fields in one or more unordered lists inside a view's "content" div. 
+You can create native-styled forms by organizing form fields in one or more unordered lists inside a view's "content" div.
 
 Include a form tag inside the \<div id="content"\> tag. The form should use the post method to submit to the current controller's <code>create</code> or <code>update</code> actions.
-    
+
 	:::html
     <form method="POST" action="<%= url_for :action => :create %>">
     </form>
@@ -231,10 +231,10 @@ Include a form tag inside the \<div id="content"\> tag. The form should use the 
 Add a <code>\<ul\></code> tag inside your form. To break your fields into multiple groupings, include one <code>\<ul\></code> tag to contain each group as described above.<br/>
 **NOTE: to append a label to a group of fields, use the <code>\<h2 class="groupTitle"\></code> tag to apply styling appropriate for each platform. **
 
-Add one <code>\<li\></code> tag inside the <code>\<ul\></code> tag for each input field.  You must adhere to the syntax found in the examples below to access the natively-styled form elements for each platform.<br/>        
+Add one <code>\<li\></code> tag inside the <code>\<ul\></code> tag for each input field.  You must adhere to the syntax found in the examples below to access the natively-styled form elements for each platform.<br/>
 **NOTE: each checkbox and radio button will need to be contained inside its own list item.  Further discussion of the formatting can be found later in this document. **
 
-To include a "submit" button, immediately below the last closing <code>\</ul\></code> tag and immediately above the closing <code>\</form\></code> tag.  
+To include a "submit" button, immediately below the last closing <code>\</ul\></code> tag and immediately above the closing <code>\</form\></code> tag.
 **NOTE: the button should ''not'' be contained inside an <code>\<li\></code> tag, and must have the <code>standardButton</code> class to be appropriately styled. **
 
 	:::html
@@ -243,10 +243,10 @@ To include a "submit" button, immediately below the last closing <code>\</ul\></
 ### Creating a custom "Edit" Form
 
 
-You can create native-styled forms by organizing form fields in one or more unordered lists inside a view's <code>"content" \<div\></code>. 
+You can create native-styled forms by organizing form fields in one or more unordered lists inside a view's <code>"content" \<div\></code>.
 <br/>
 Include a form tag inside the <code>\<div id="content"\></code> tag. The form should use the post method to submit to the current controller's "create" or "update" actions.
-    
+
 	:::html
     <form method="POST" action="<%= url_for :action => :create %>">
     </form>
@@ -260,16 +260,16 @@ When creating an edit form, it should include a hidden field that contains the i
 	:::html
 	<input type="hidden" name="id" value="<%= @model_name.object %>"/>
 
-Add one <code>\<li\></code> tag inside the <code>\<ul\></code> tag for each input field.  You must adhere to the syntax found in the examples below to access the natively-styled form elements for each platform.<br/>        
+Add one <code>\<li\></code> tag inside the <code>\<ul\></code> tag for each input field.  You must adhere to the syntax found in the examples below to access the natively-styled form elements for each platform.<br/>
 **NOTE: each checkbox and radio button will need to be contained inside its own list item.  Further discussion of the formatting can be found later in this document. **
 
-To include a form submission button, immediately below the last closing <code>\</ul\></code> tag and immediately above the closing <code>\</form\></code> tag.  
+To include a form submission button, immediately below the last closing <code>\</ul\></code> tag and immediately above the closing <code>\</form\></code> tag.
 **NOTE: the button should ''not'' be contained inside an <code><nowiki><li></nowiki></code> tag, and must have the <code>standardButton</code> class to be appropriately styled. **
 
 	:::html
     <input type="submit" class="standardButton" value="Create" />
 
-## Form fields 
+## Form fields
 
 ### Text fields
 
@@ -281,19 +281,19 @@ Apply the <code>fieldLabel</code> class to the textfield label.  The <code>field
 Call the placeholder method inside the text field input tag and include the desired placeholder text as an argument.  The text field input tag should contain an embedded ruby tag calling the placeholder method to display placeholder text only on the iPhone.  The placeholder method only returns the placeholder attribute when the application is running on an iPhone, since only native iPhone applications use placeholders instead of labels.
 
 	:::html
-	<ul>  
+	<ul>
 		<li>
 	        <label for="thing[name]" class="fieldLabel">Name</label>
 	        <input type="text" name="thing[name]" <%= placeholder( "Name" ) %> />
 		</li>
-         
+
 		<li>
 	        <label for="thing[desc]" class="fieldLabel">Desc</label>
 	        <input type="text" name="thing[desc]" <%= placeholder( "Desc" ) %> />
 		</li>
 	</ul>
 
-### Checkboxes/Switches 
+### Checkboxes/Switches
 Checkboxes should be used to allow the user to distinguish between two binary states.  On Android and WiMo, checkboxes look like checkboxes.   However, traditional checkboxes are not a native component on the iPhone, so to comply with Apple HIG, checkboxes are instead displayed as switches labeled with the diametrically opposed states 'on/off.'
 
 	:::html
@@ -308,7 +308,7 @@ Checkboxes should be used to allow the user to distinguish between two binary st
 		</li>
 	</ul>
 
-The custom style can be overridden on the iphone by redefining div#content form input[type="checkbox"] as follows:  
+The custom style can be overridden on the iphone by redefining div#content form input[type="checkbox"] as follows:
 
 	:::html
 	div#content form input[type="checkbox"]{
@@ -321,7 +321,7 @@ The custom style can be overridden on the iphone by redefining div#content form 
 
 Android and iPhone applications display stylized radio buttons that match those used in the native interface.  Note that on the iPhone, a selected radio button will be marked with a checkmark.
 
-WiMo applications utilize the default radio button styles.  
+WiMo applications utilize the default radio button styles.
 
 	:::html
 	<h4 class="groupTitle">Current status</h4>
@@ -339,7 +339,7 @@ WiMo applications utilize the default radio button styles.
 
 ### Select boxes
 
-The stylesheets included in your Rhodes applications customize the style of the selection box element displayed on the form.  Select boxes make use of the device's native selection components and cannot be modified. 
+The stylesheets included in your Rhodes applications customize the style of the selection box element displayed on the form.  Select boxes make use of the device's native selection components and cannot be modified.
 
 	:::html
 	<h4 class="groupTitle">Select</h4>
@@ -372,7 +372,7 @@ If your application is targeting Windows Mobile devices, include the <code>texta
 
 ### Buttons
 
-Buttons involved in form submission should be created as input tags, type submit. Buttons should not be contained inside an <code>\<li\></code> tag, and must have the <code>standardButton</code> class to be appropriately styled. 
+Buttons involved in form submission should be created as input tags, type submit. Buttons should not be contained inside an <code>\<li\></code> tag, and must have the <code>standardButton</code> class to be appropriately styled.
 
 Links/buttons used to perform actions related to the form but not involved in form submission (e.g., Delete, Cancel) should be located in the top toolbar instead.
 

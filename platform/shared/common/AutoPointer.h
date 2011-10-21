@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -55,9 +55,9 @@ public:
     virtual void FreePtr() = 0;
     void Close()
     {
-        if ( m_ptr ) 
-        { 
-            FreePtr(); 
+        if ( m_ptr )
+        {
+            FreePtr();
             m_ptr = 0;
         }
     }
@@ -77,8 +77,8 @@ public:
     CAutoPtr( const CAutoPtr& orig){ *this = orig; }
     CAutoPtr& operator=( const CAutoPtr& orig)
     {
-        if ( CBaseAutoPointer<PTRTYPE>::m_ptr ) 
-            FreePtr(); 
+        if ( CBaseAutoPointer<PTRTYPE>::m_ptr )
+            FreePtr();
 
         CBaseAutoPointer<PTRTYPE>::m_ptr = orig.m_ptr;
         const_cast<CAutoPtr&>(orig).m_ptr = 0;
@@ -89,7 +89,7 @@ public:
 
     //operator PTRTYPE(){ return m_ptr; }
     virtual void FreePtr()
-    { 
+    {
         delete CBaseAutoPointer<PTRTYPE>::m_ptr;
     }
 };
@@ -101,8 +101,8 @@ public:
     ~CAutoPointer1(){ CBaseAutoPointer<PTRTYPE>::Close(); }
 
     virtual void FreePtr()
-    { 
-        (*((BaseClass*)this))(CBaseAutoPointer<PTRTYPE>::m_ptr); 
+    {
+        (*((BaseClass*)this))(CBaseAutoPointer<PTRTYPE>::m_ptr);
     }
 };
 /*
@@ -119,9 +119,9 @@ public:
     ~CAutoPointer2(){ CBaseAutoPointer<PTRTYPE>::Close(); }
 
     virtual void FreePtr()
-    { 
-        if(pFunc) 
-            (*pFunc)(CBaseAutoPointer<PTRTYPE>::m_ptr); 
+    {
+        if(pFunc)
+            (*pFunc)(CBaseAutoPointer<PTRTYPE>::m_ptr);
     }
 };
 
@@ -135,8 +135,8 @@ class CAutoPointer : public CBaseAutoPointer<PTRTYPE>
     {
         CDeleter( FUNCTYPE pFunc ): m_pFunc(pFunc){;}
         void Delete(PTRTYPE ptr)
-        { 
-            m_pFunc(ptr); 
+        {
+            m_pFunc(ptr);
         }
 
         FUNCTYPE m_pFunc;
@@ -145,18 +145,18 @@ class CAutoPointer : public CBaseAutoPointer<PTRTYPE>
 public:
 
     template <typename FUNCTYPE>
-    CAutoPointer( FUNCTYPE pFunc ) 
-    { 
+    CAutoPointer( FUNCTYPE pFunc )
+    {
         static CDeleter<FUNCTYPE> oDeleter(pFunc);
-        CBaseAutoPointer<PTRTYPE>::m_ptr = 0; 
+        CBaseAutoPointer<PTRTYPE>::m_ptr = 0;
         m_pDeleter = &oDeleter;
     }
     ~CAutoPointer(){ CBaseAutoPointer<PTRTYPE>::Close(); }
 
     virtual void FreePtr()
-    { 
-        if(m_pDeleter) 
-            m_pDeleter->Delete(CBaseAutoPointer<PTRTYPE>::m_ptr); 
+    {
+        if(m_pDeleter)
+            m_pDeleter->Delete(CBaseAutoPointer<PTRTYPE>::m_ptr);
     }
 private:
     CBaseDeleter* m_pDeleter;

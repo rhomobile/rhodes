@@ -28,9 +28,9 @@ module Rho
         elsif code ==  ERR_NONE
             return ""
         end
-        
+
         return "Unbekannter Fehler"
     end
-    
+
   end # RhoError
 end # Rho

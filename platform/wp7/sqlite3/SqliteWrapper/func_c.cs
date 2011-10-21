@@ -159,7 +159,7 @@ namespace Community.CsharpSqlite
     ** Implementation of the abs() function.
     **
     ** IMP: R-23979-26855 The abs(X) function returns the absolute value of
-    ** the numeric argument X. 
+    ** the numeric argument X.
     */
     static void absFunc(
     sqlite3_context context,
@@ -200,7 +200,7 @@ namespace Community.CsharpSqlite
             /* Because sqlite3_value_double() returns 0.0 if the argument is not
             ** something that can be converted into a number, we have:
             ** IMP: R-57326-31541 Abs(X) return 0.0 if X is a string or blob that
-            ** cannot be converted to a numeric value. 
+            ** cannot be converted to a numeric value.
             */
             double rVal = sqlite3_value_double(argv[0]);
             if (rVal < 0) rVal = -rVal;
@@ -988,8 +988,8 @@ break;
 
 
     /*
-** Implementation of the sqlite_compileoption_get() function. 
-** The result is a string that identifies the compiler options 
+** Implementation of the sqlite_compileoption_get() function.
+** The result is a string that identifies the compiler options
 ** used to build SQLite.
 */
 #if !SQLITE_OMIT_COMPILEOPTION_DIAGS
@@ -1381,7 +1381,7 @@ break;
 ** Compute the soundex encoding of a word.
 **
 ** IMP: R-59782-00072 The soundex(X) function returns a string that is the
-** soundex encoding of the string X. 
+** soundex encoding of the string X.
 */
 static void soundexFunc(
 sqlite3_context context,
@@ -1961,7 +1961,7 @@ FUNCTION("coalesce",           1, 0, 0, null             ),
 FUNCTION("coalesce",           0, 0, 0, null             ),
 /*  FUNCTION(coalesce,          -1, 0, 0, ifnullFunc       ), */
 // use versionFunc here just for a dummy placeholder
-new FuncDef(-1,SQLITE_UTF8,SQLITE_FUNC_COALESCE,null,null,versionFunc,null,null,"coalesce",null), 
+new FuncDef(-1,SQLITE_UTF8,SQLITE_FUNC_COALESCE,null,null,versionFunc,null,null,"coalesce",null),
 FUNCTION("hex",                1, 0, 0, hexFunc          ),
 /*  FUNCTION(ifnull,             2, 0, 0, ifnullFunc       ), */
 // use versionFunc here just for a dummy placeholder

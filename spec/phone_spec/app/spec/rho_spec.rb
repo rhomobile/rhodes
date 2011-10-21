@@ -23,13 +23,13 @@ require 'date'
 require 'time'
 
 describe "System" do
-   
+
    it "should test app_installed?" do
    	[1..1000].each do |i|
    			System::app_installed?("mythebesttestandroidapplication")
    	end
    end
-  
+
 end
 
 describe "RhoConfig" do
@@ -38,65 +38,65 @@ describe "RhoConfig" do
     Rho::RhoConfig.start_path = '/app'
     Rho::RhoConfig.options_path = '/app/Settings'
   end
-  
+
 if !defined?(RHO_WP7)
   it "should populate configuration in sources table" do
     sources = ::Rho::RHO.get_user_db().select_from_table('sources','*')
     sources.size.should == 0
-    
+
     Rho::RhoConfig.sources().size.should > 0
   end
 end
-  
+
   it "should have start_path" do
     Rho::RhoConfig.start_path.should == '/app'
   end
-  
+
   it "should retrieve start_path" do
     Rho::RhoConfig.start_path.should == '/app'
   end
-  
+
   it "should set start_path" do
     oldpath = Rho::RhoConfig.start_path
     Rho::RhoConfig.start_path = '/foo/bar'
     Rho::RhoConfig.start_path.should == '/foo/bar'
     Rho::RhoConfig.start_path = oldpath
   end
-  
+
   it "should have options_path" do
     Rho::RhoConfig.options_path.should == '/app/Settings'
   end
-  
+
   it "should set options_path" do
     oldpath = Rho::RhoConfig.options_path
     Rho::RhoConfig.options_path = '/ops2'
     Rho::RhoConfig.options_path.should == '/ops2'
     Rho::RhoConfig.options_path = oldpath
   end
-  
+
   it "should read arbitrary options" do
     Rho::RhoConfig.arbitrary_option.should == 'rhodes rocks!'
   end
-  
+
   it "should reload" do
     oldpath = Rho::RhoConfig.start_path
     Rho::RhoConfig.reload
     Rho::RhoConfig.start_path.should == oldpath
-  end  
-  
+  end
+
 if !defined?(RHO_WP7)
   it "should read log" do
   #  log_text = Rho::RhoConfig.read_log
   #  log_text.length.should > 0
-  
+
     log_text = Rho::RhoConfig.read_log(20000)
     log_text.length.should <= 20000
-    
+
     log_text = Rho::RhoConfig.read_log(1000)
     log_text.length.should == 1000
-  end  
+  end
 end
-  
+
 end
 
 describe "RhoError" do
@@ -129,14 +129,14 @@ describe "RhomSource" do
   it "should find all source" do
     srcs = Rhom::RhomSource.find(:all)
     srcs.should_not be_nil
-    
+
     srcs.length.should > 1
   end
-  
+
   it "should find Product_s source" do
     src = Rhom::RhomSource.find("Product_s")
     src.should_not be_nil
-    
+
     #src.get_lastsync_objectcount.should == 0
     src.source_id.should == Product_s.get_source_id.to_i
     src.name.should == "Product_s"
@@ -150,7 +150,7 @@ describe "RhomSource" do
     src.partition.should == "user"
     src.schema.length.should > 0
     src.schema_version.length.should > 0
-    
+
   end
 
 end
@@ -161,40 +161,40 @@ describe "RhoRuby" do
   it "should compute string to_f to test flt_rounds" do
     "100.250".to_f.should == 100.25
   end
-  
+
   it "should compute == on float to test flt_rounds" do
     1.0.should == 1
   end
 
   it "should create octet string" do
     val = "\1\2\3\0\5\8\6\7\34\39" #octet numbers
-=begin    
+=begin
     val[3].should == "\x00"
     val[8].should == "\x1C"
     val[9].should == "\x03"
     val[10].should == '9'
-=end          
+=end
   end
 
   it "should create hex string" do
     val = "\x21\x43"
-=begin        
+=begin
     val[0].should == "\x21"
     val[1].should == "\x43"
-=end              
+=end
   end
 
   it "should base64 binary string" do
     val = ["\1\2\3\0\5\8\6\7\34"]
     str = val.pack('m')
     str.should_not be_nil
-    
+
     res = str.unpack('m')
     res.should_not be_nil
-    
+
     res[0].should == val[0]
   end
-    
+
   it "split should have nil" do
     line = "Account|parent_name|44e804f2-4933-4e20-271c-48fcecd9450d||\n"
     parts = line.chomp.split('|')
@@ -207,23 +207,23 @@ describe "RhoRuby" do
   it "should empty fields when limit isn't given" do
     "1,2,,3,4,,".split(',').should == ["1", "2", "", "3", "4"]
   end
-  
+
   it "should call to_a on string" do
     s = "abcdef"
-if !defined? RHO_ME    
+if !defined? RHO_ME
     #https://www.pivotaltracker.com/story/show/4292906
     a = s.chars.to_a
     a[0].should == "a"
     a[3].should == "d"
-end    
+end
     ch = '1'
     s.each_char do |c|
         ch =  c
     end
-    
+
     ch.should == 'f'
   end
-    
+
   it "should call each on array of hashes"  do
     id = 8775
     providers = [{:IsMandatory=>"true", :RequiresSaveOrderToFile=>"true", :HasFarmPackageAccess=>"true", :OfficeID=>"2354", :OfficeName=>"Poway Realty Services", :ProviderID=>"8775", :ProviderFirstName=>"Jodie", :ProviderLastName=>"Fagan", :ProviderName=>"Jodie Fagan"}]
@@ -235,7 +235,7 @@ end
 		    break
 	    end
     end
-    
+
     provider.should_not be_nil
     provider[:OfficeID].should == "2354"
   end
@@ -244,12 +244,12 @@ end
 
     file = "some file text with [propertyOwnerName] within"
 
-    replace_str = 'a' 
+    replace_str = 'a'
 
     file["[propertyOwnerName]"] = replace_str
-    
+
     file.should == "some file text with a within"
-  end  
+  end
 
   it "should calll []= on string with empty string"  do
 
@@ -258,43 +258,43 @@ end
     replace_str = ''
 
     file["[propertyOwnerName]"] = replace_str
-    
-    file.should == "some file text with  within"
-  end  
 
-  it "should test string split" do 
-    s = "password="  
-    key, value = s.split('=', 2)
-    
-    key.should == "password"
-    value.should == ""
-    
-    key1, value1 = s.split('=')
-    
-    key1.should == "password"
-    value1.should be_nil
-    
+    file.should == "some file text with  within"
   end
 
-  it "should test string split with limit" do 
-    s = "splash_screen='delay=2;center'"  
+  it "should test string split" do
+    s = "password="
     key, value = s.split('=', 2)
-    
+
+    key.should == "password"
+    value.should == ""
+
+    key1, value1 = s.split('=')
+
+    key1.should == "password"
+    value1.should be_nil
+
+  end
+
+  it "should test string split with limit" do
+    s = "splash_screen='delay=2;center'"
+    key, value = s.split('=', 2)
+
     key.should == 'splash_screen'
     value.should == "'delay=2;center'"
-  end                              
+  end
 
-  it "should test string split without parameters" do 
+  it "should test string split without parameters" do
     res = "Revision: 18805".split[1]
     res.should == "18805"
   end
-   
+
   it "should require with diff case" do
     require "Data/reqTest.rb"
-    
+
     ReqTest.get_name.should == "reqTest"
   end
-  
+
   it "should array count" do
     ary = [1, 2, 4, 2]
     ary.count.should == 4
@@ -350,12 +350,12 @@ end
   it "should call Float.to_f"  do
     ftest = 0.34
     ftest.is_a?(Float).should == true
-    
+
     fres = ftest.to_f
     fres.is_a?(Float).should == true
-    
+
     fres.should == ftest
-    
+
   end
 
   it "should split empty string"  do
@@ -365,17 +365,17 @@ end
     else
         buffer = block.split('')
     end
-    
+
     buffer.should_not be_nil
     buffer.should == []
     buffer.length.should == 0
   end
 
   it "should split empty string1"  do
-  
+
     block = '' if block.nil?
     buffer = block.split('')
-    
+
     buffer.should_not be_nil
     buffer.should == []
     buffer.length.should == 0
@@ -389,19 +389,19 @@ end
     date[1]["Z"] = "" if date[1]["Z"]
     day = date[0].split("-")
     time = date[1].split(":")
-    
+
     day[0].should == '2011'
     day[1].should == '02'
     day[2].should == '05'
     time[0].should == '21'
     time[1].should == '10'
     time[2].should == "11.123"
-    
+
     var_time= Time.local(day[0],day[1],day[2],time[0],time[1],time[2])
     res = var_time.strftime("%b %d, %y, %I:%M%p")
-    
+
     res.should == "Feb 05, 11, 09:10PM"
-  
+
   end
-        
+
 end

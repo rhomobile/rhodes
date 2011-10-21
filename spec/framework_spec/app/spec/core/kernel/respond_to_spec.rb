@@ -57,7 +57,7 @@ describe "Kernel#respond_to?" do
         unless System.get_property('platform') == 'APPLE'
             Process.respond_to?(:fork).should be_false
             lambda { Process.fork }.should raise_error(NotImplementedError)
-        end    
+        end
       end
 
     else

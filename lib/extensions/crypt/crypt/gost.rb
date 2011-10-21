@@ -1,6 +1,6 @@
-# gost.rb  
-# Adapted by Richard Kernahan <kernighan_rich@rubyforge.org> 
-# from C++ code written by Wei Dai 
+# gost.rb
+# Adapted by Richard Kernahan <kernighan_rich@rubyforge.org>
+# from C++ code written by Wei Dai
 # of the Crypto++ project http://www.eskimo.com/~weidai/cryptlib.html
 
 module Crypt
@@ -8,16 +8,16 @@ class Gost
 
   require 'crypt/cbc'
   include CBC
-  
+
   ULONG   = 0x100000000
-  
+
   def block_size
     return(8)
   end
-  
-  
+
+
   def initialize(userKey)
-  
+
     # These are the S-boxes given in Applied Cryptography 2nd Ed., p. 333
     @sBox = [
       [4, 10, 9, 2, 13, 8, 0, 14, 6, 11, 1, 12, 7, 15, 5, 3],
@@ -39,11 +39,11 @@ class Gost
     # [ 7, 13, 14,  3,  0,  6,  9, 10,  1,  2,  8,  5, 11, 12,  4, 15 ],
     # [10,  0,  9, 14,  6,  3, 15,  5,  1, 13, 12,  7, 11,  4,  2,  8 ],
     # [15,  1,  8, 14,  6, 11,  3,  4,  9,  7,  2, 13, 12,  0,  5, 10 ],
-    # [14,  4, 13,  1,  2, 15, 11,  8,  3, 10,  6, 12,  5,  9,  0,  7 ] 
-    
+    # [14,  4, 13,  1,  2, 15, 11,  8,  3, 10,  6, 12,  5,  9,  0,  7 ]
+
     # precalculate the S table
     @sTable = precalculate_S_table()
-    
+
     # derive the 32-byte key from the user-supplied key
     userKeyLength = userKey.length
     @key = userKey[0..31].unpack('C'*32)
@@ -51,8 +51,8 @@ class Gost
       userKeyLength.upto(31) { @key << 0 }
     end
   end
-  
-  
+
+
   def precalculate_S_table()
     sTable = [[], [], [], []]
     0.upto(3) { |i|
@@ -61,19 +61,19 @@ class Gost
         u = (8*i + 11) % 32
         v = (t << u) | (t >> (32-u))
         sTable[i][j] = (v % ULONG)
-      } 
+      }
     }
     return(sTable)
   end
-  
-  
+
+
   def f(longWord)
     longWord = longWord % ULONG
     a, b, c, d = [longWord].pack('L').unpack('CCCC')
     return(@sTable[3][d] ^ @sTable[2][c] ^ @sTable[1][b] ^ @sTable[0][a])
   end
-  
-  
+
+
   def encrypt_pair(xl, xr)
     3.times {
       xr ^= f(xl+@key[0])
@@ -95,8 +95,8 @@ class Gost
     xl ^= f(xr+@key[0])
     return([xr, xl])
   end
-  
-  
+
+
   def decrypt_pair(xl, xr)
     xr ^= f(xl+@key[0])
     xl ^= f(xr+@key[1])
@@ -118,16 +118,16 @@ class Gost
     }
     return([xr, xl])
   end
-  
-  
+
+
   def encrypt_block(block)
     xl, xr = block.unpack('NN')
     xl, xr = encrypt_pair(xl, xr)
     encrypted = [xl, xr].pack('NN')
     return(encrypted)
   end
-  
-  
+
+
   def decrypt_block(block)
     xl, xr = block.unpack('NN')
     xl, xr = decrypt_pair(xl, xr)

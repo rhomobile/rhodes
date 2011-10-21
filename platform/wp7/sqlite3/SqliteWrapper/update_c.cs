@@ -454,7 +454,7 @@ goto update_cleanup;
         sqlite3VdbeAddOp1( v, OP_MustBeInt, regNewRowid );
       }
 
-      /* If there are triggers on this table, populate an array of registers 
+      /* If there are triggers on this table, populate an array of registers
       ** with the required old.* column data.  */
       if ( hasFK || pTrigger != null )
       {
@@ -488,8 +488,8 @@ goto update_cleanup;
       ** If there are one or more BEFORE triggers, then do not populate the
       ** registers associated with columns that are (a) not modified by
       ** this UPDATE statement and (b) not accessed by new.* references. The
-      ** values for registers not modified by the UPDATE must be reloaded from 
-      ** the database after the BEFORE triggers are fired anyway (as the trigger 
+      ** values for registers not modified by the UPDATE must be reloaded from
+      ** the database after the BEFORE triggers are fired anyway (as the trigger
       ** may have modified them). So not loading those that are not going to
       ** be used eliminates some redundant opcodes.
       */
@@ -511,7 +511,7 @@ goto update_cleanup;
           }
           else if ( 0 == ( tmask & TRIGGER_BEFORE ) || i > 31 || ( newmask & ( 1 << i ) ) != 0 )
           {
-            /* This branch loads the value of a column that will not be changed 
+            /* This branch loads the value of a column that will not be changed
             ** into a register. This is done if there are no BEFORE triggers, or
             ** if there are one or more BEFORE triggers that use this value via
             ** a new.* reference in a trigger program.
@@ -535,16 +535,16 @@ goto update_cleanup;
             TRIGGER_BEFORE, pTab, regOldRowid, onError, addr );
 
         /* The row-trigger may have deleted the row being updated. In this
-        ** case, jump to the next row. No updates or AFTER triggers are 
+        ** case, jump to the next row. No updates or AFTER triggers are
         ** required. This behaviour - what happens when the row being updated
         ** is deleted or renamed by a BEFORE trigger - is left undefined in the
         ** documentation.
         */
         sqlite3VdbeAddOp3( v, OP_NotExists, iCur, addr, regOldRowid );
 
-        /* If it did not delete it, the row-trigger may still have modified 
-        ** some of the columns of the row being updated. Load the values for 
-        ** all columns not modified by the update statement into their 
+        /* If it did not delete it, the row-trigger may still have modified
+        ** some of the columns of the row being updated. Load the values for
+        ** all columns not modified by the update statement into their
         ** registers in case this has happened.
         */
         for ( i = 0; i < pTab.nCol; i++ )
@@ -600,7 +600,7 @@ goto update_cleanup;
         }
       }
 
-      /* Increment the row counter 
+      /* Increment the row counter
       */
       if ( ( db.flags & SQLITE_CountRows ) != 0 && null == pParse.pTriggerTab )
       {
@@ -636,7 +636,7 @@ goto update_cleanup;
       }
 
       /*
-      ** Return the number of rows that were changed. If this routine is 
+      ** Return the number of rows that were changed. If this routine is
       ** generating code because of a call to sqlite3NestedParse(), do not
       ** invoke the callback function.
       */

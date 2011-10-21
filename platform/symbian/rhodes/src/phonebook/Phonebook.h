@@ -41,12 +41,12 @@ class CContactItem;
 
 /**
  *  CPhonebook
- * 
+ *
  */
 class CPhonebook : public CBase
 	{
     //DEFINE_LOGCLASS;
-    
+
 public:
 	// Constructors and destructor
 
@@ -66,51 +66,51 @@ public:
 	static CPhonebook* NewLC();
 
 public:
-	
+
 	/**
 	 * Get all phonebook records
 	 * The caller take ownership of the object.
 	 */
 	VALUE getallPhonebookRecords();
-	
+
 	/**
 	 * Open contact
 	 * The caller take ownership of the object.
 	 */
 	CContactItem* openContact(char* id);
-	
+
 	/**
 	 * Get contact
 	 * The caller take ownership of the object.
 	 */
 	VALUE getContact(char* id);
-	
+
 	/**
 	 * Commit contact
 	 */
 	void saveContact(CContactItem* contactItem);
-	
+
 	/**
 	 * Delete contact
 	 */
 	void deleteContact(CContactItem* contactItem);
-	
+
 	/**
 	 * Create contact
 	 * The caller take ownership of the object.
 	 */
 	static CContactCard* createRecord();
-	
+
 	/**
-	 * Set contact's field value 
+	 * Set contact's field value
 	 */
 	static void setRecordValue(CContactItem* contactItem, char* prop, char* value);
-	
+
 	/**
 	 * Add record
 	 */
 	void addRecord( CContactCard* card );
-	
+
 private:
 
 	/**
@@ -128,23 +128,23 @@ private:
 	 */
 
 	/**
-	 * Convert descriptor to c-style string. 
+	 * Convert descriptor to c-style string.
 	 * The caller take ownership of the allocated memory.
 	 */
 	char* descriptorToStringL(const TDesC& aDescriptor);
-	
+
 	/**
 	 * Insert descriptor value as string to the hash
 	 */
 	void add2hash(VALUE* hash, const char* key, TPtrC& aValue );
-	
+
 	/**
 	 * Insert phonebook fields into the hash
 	 */
 	VALUE getFields(CContactItemFieldSet& fieldSet, char* id);
-	
+
 	static TUid getFieldId( char* prop );
-	
+
 private: //data
 	CContactDatabase* iContactDb;
 	};

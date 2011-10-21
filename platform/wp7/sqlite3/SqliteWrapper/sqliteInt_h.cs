@@ -21,7 +21,7 @@ using Pgno = System.UInt32;
 #if !SQLITE_MAX_VARIABLE_NUMBER
 using ynVar = System.Int16;
 #else
-using ynVar = System.Int32; 
+using ynVar = System.Int32;
 #endif
 
 namespace Community.CsharpSqlite
@@ -115,7 +115,7 @@ namespace Community.CsharpSqlite
 #endif
 
     /*
-** The number of samples of an index that SQLite takes in order to 
+** The number of samples of an index that SQLite takes in order to
 ** construct a histogram of the table content when running ANALYZE
 ** and with SQLITE_ENABLE_STAT2
 */
@@ -128,7 +128,7 @@ namespace Community.CsharpSqlite
     ** to the next, so we have developed the following set of #if statements
     ** to generate appropriate macros for a wide range of compilers.
     **
-    ** The correct "ANSI" way to do this is to use the intptr_t type. 
+    ** The correct "ANSI" way to do this is to use the intptr_t type.
     ** Unfortunately, that typedef is not available on all compilers, or
     ** if it is available, it requires an #include of specific headers
     ** that very from one machine to the next.
@@ -1008,7 +1008,7 @@ sqlite3 *pNextBlocked;        /* Next in list of all blocked connections */
     //#define SQLITE_SqlTrace       0x00004000  /* Debug print SQL as it executes */
     //#define SQLITE_VdbeListing    0x00008000  /* Debug listings of VDBE programs */
     //#define SQLITE_WriteSchema    0x00010000  /* OK to update SQLITE_MASTER */
-    //#define SQLITE_NoReadlock     0x00020000  /* Readlocks are omitted when 
+    //#define SQLITE_NoReadlock     0x00020000  /* Readlocks are omitted when
     //                                          ** accessing read-only databases */
     //#define SQLITE_IgnoreChecks   0x00040000  /* Do not enforce check constraints */
     //#define SQLITE_ReadUncommitted 0x0080000  /* For shared-cache mode */
@@ -1031,7 +1031,7 @@ sqlite3 *pNextBlocked;        /* Next in list of all blocked connections */
     const int SQLITE_SqlTrace = 0x00004000; /* Debug print SQL as it executes */
     const int SQLITE_VdbeListing = 0x00008000; /* Debug listings of VDBE programs */
     const int SQLITE_WriteSchema = 0x00010000; /* OK to update SQLITE_MASTER */
-    const int SQLITE_NoReadlock = 0x00020000; /* Readlocks are omitted when 
+    const int SQLITE_NoReadlock = 0x00020000; /* Readlocks are omitted when
                               ** accessing read-only databases */
     const int SQLITE_IgnoreChecks = 0x00040000; /* Do not enforce check constraints */
     const int SQLITE_ReadUncommitted = 0x0080000; /* For shared-cache mode */
@@ -1373,20 +1373,20 @@ public   u8 isHidden;     /* True if this column is 'hidden' */
 
     /*
     ** An object of this type is created for each virtual table present in
-    ** the database schema. 
+    ** the database schema.
     **
     ** If the database schema is shared, then there is one instance of this
     ** structure for each database connection (sqlite3*) that uses the shared
     ** schema. This is because each database connection requires its own unique
-    ** instance of the sqlite3_vtab* handle used to access the virtual table 
-    ** implementation. sqlite3_vtab* handles can not be shared between 
-    ** database connections, even when the rest of the in-memory database 
+    ** instance of the sqlite3_vtab* handle used to access the virtual table
+    ** implementation. sqlite3_vtab* handles can not be shared between
+    ** database connections, even when the rest of the in-memory database
     ** schema is shared, as the implementation often stores the database
     ** connection handle passed to it via the xConnect() or xCreate() method
     ** during initialization internally. This database connection handle may
-    ** then used by the virtual table implementation to access real tables 
-    ** within the database. So that they appear as part of the callers 
-    ** transaction, these accesses need to be made via the same database 
+    ** then used by the virtual table implementation to access real tables
+    ** within the database. So that they appear as part of the callers
+    ** transaction, these accesses need to be made via the same database
     ** connection as that used to execute SQL operations on the virtual table.
     **
     ** All VTable objects that correspond to a single table in a shared
@@ -1398,19 +1398,19 @@ public   u8 isHidden;     /* True if this column is 'hidden' */
     ** sqlite3_vtab* handle in the compiled query.
     **
     ** When an in-memory Table object is deleted (for example when the
-    ** schema is being reloaded for some reason), the VTable objects are not 
-    ** deleted and the sqlite3_vtab* handles are not xDisconnect()ed 
+    ** schema is being reloaded for some reason), the VTable objects are not
+    ** deleted and the sqlite3_vtab* handles are not xDisconnect()ed
     ** immediately. Instead, they are moved from the Table.pVTable list to
     ** another linked list headed by the sqlite3.pDisconnect member of the
-    ** corresponding sqlite3 structure. They are then deleted/xDisconnected 
+    ** corresponding sqlite3 structure. They are then deleted/xDisconnected
     ** next time a statement is prepared using said sqlite3*. This is done
     ** to avoid deadlock issues involving multiple sqlite3.mutex mutexes.
     ** Refer to comments above function sqlite3VtabUnlockList() for an
     ** explanation as to why it is safe to add an entry to an sqlite3.pDisconnect
     ** list without holding the corresponding sqlite3.mutex mutex.
     **
-    ** The memory for objects of this type is always allocated by 
-    ** sqlite3DbMalloc(), using the connection handle stored in VTable.db as 
+    ** The memory for objects of this type is always allocated by
+    ** sqlite3DbMalloc(), using the connection handle stored in VTable.db as
     ** the first argument.
     */
     public class VTable
@@ -1750,7 +1750,7 @@ static bool IsVirtual( Column X) { return X.isHidden!=0;}
       }
     };
     /*
-    ** Each sample stored in the sqlite_stat2 table is represented in memory 
+    ** Each sample stored in the sqlite_stat2 table is represented in memory
     ** using a structure of this type.
     */
     public struct IndexSample
@@ -2701,7 +2701,7 @@ static void ExprSetIrreducible( Expr X ) { }
 #endif
 
     /*
-** At least one instance of the following structure is created for each 
+** At least one instance of the following structure is created for each
 ** trigger that may be fired while parsing an INSERT, UPDATE or DELETE
 ** statement. All such objects are stored in the linked list headed at
 ** Parse.pTriggerPrg and deleted once statement compilation has been
@@ -2714,7 +2714,7 @@ static void ExprSetIrreducible( Expr X ) { }
 ** values for both pTrigger and orconf.
 **
 ** The TriggerPrg.aColmask[0] variable is set to a mask of old.* columns
-** accessed (or set to 0 for triggers fired as a result of INSERT 
+** accessed (or set to 0 for triggers fired as a result of INSERT
 ** statements). Similarly, the TriggerPrg.aColmask[1] variable is set to
 ** a mask of new.* columns used by the program.
 */
@@ -3904,7 +3904,7 @@ int sqlite3ParserStackPeak(void*);
     static void sqlite3VtabCommit(sqlite3 X) { }
 
     //#  define sqlite3VtabInSync(db) 0
-    //#  define sqlite3VtabLock(X) 
+    //#  define sqlite3VtabLock(X)
     static void sqlite3VtabLock(VTable X) { }
 
     //#  define sqlite3VtabUnlock(X)
@@ -3954,7 +3954,7 @@ static bool sqlite3VtabInSync( sqlite3 db ) { return ( db.nVTrans > 0 && db.aVTr
     ** no-op macros if OMIT_FOREIGN_KEY is defined. In this case no foreign
     ** key functionality is available. If OMIT_TRIGGER is defined but
     ** OMIT_FOREIGN_KEY is not, only some of the functions are no-oped. In
-    ** this case foreign keys are parsed, but no other functionality is 
+    ** this case foreign keys are parsed, but no other functionality is
     ** provided (enforcement of FK constraints requires the triggers sub-system).
     */
 #if !(SQLITE_OMIT_FOREIGN_KEY) && !(SQLITE_OMIT_TRIGGER)
@@ -3984,7 +3984,7 @@ static int sqlite3FkRequired( Parse a, Table b, int[] c, int d ) { return 0; }
     //void sqlite3FkDelete(Table*);
 #else
 //#define sqlite3FkDelete(a)
-static void sqlite3FkDelete(Table a) {}                 
+static void sqlite3FkDelete(Table a) {}
 #endif
 
     /*

@@ -23,5 +23,5 @@ class Case_s
     property :resolution, :string
     property :created_by, :string
     property :account_name, :string
-    
+
 end

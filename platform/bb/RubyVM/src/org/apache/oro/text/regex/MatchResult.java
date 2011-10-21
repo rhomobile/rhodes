@@ -1,4 +1,4 @@
-/* 
+/*
  * $Id: MatchResult.java 124053 2005-01-04 01:24:35Z dfs $
  *
  * Copyright 2000-2005 The Apache Software Foundation
@@ -34,7 +34,7 @@ package org.apache.oro.text.regex;
  * or by the {@link #toString()} method which is
  * defined to return the same thing.  It is also possible to obtain
  * the beginning and ending offsets of a match relative to the input
- * producing the match by using the 
+ * producing the match by using the
  * {@link #beginOffset(int)} and {@link #endOffset(int)} methods.  The
  * {@link #begin(int)} and {@link #end(int)} are useful in some
  * circumstances and return the begin and end offsets of the subgroups
@@ -64,11 +64,11 @@ package org.apache.oro.text.regex;
  * input   = new PatternMatcherInput(someStringInput);
  *
  * while(matcher.contains(input, pattern)) {
- *   result = matcher.getMatch();  
+ *   result = matcher.getMatch();
  *   // Perform whatever processing on the result you want.
  *   // Here we just print out all its elements to show how its
  *   // methods are used.
- * 
+ *
  *   System.out.println("Match: " + result.toString());
  *   System.out.println("Length: " + result.length());
  *   groups = result.groups();
@@ -102,7 +102,7 @@ public interface MatchResult {
    * int length = -1; // Use -1 to indicate group doesn't exist
    * MatchResult result;
    * String subgroup;
-   * 
+   *
    * // Initialization of result omitted
    *
    * subgroup = result.group(1);

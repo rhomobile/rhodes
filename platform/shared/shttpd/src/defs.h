@@ -30,7 +30,7 @@ extern void __shttpd_trace(const char* format, ... );
 //do { printf x ; putchar('\n'); fflush(stdout); } while (0)
 #else
 #define	DBG(x)
-#endif // RHO_DEBUG 
+#endif // RHO_DEBUG
 
 /*
  * Darwin prior to 7.0 and Win32 do not have socklen_t
@@ -55,7 +55,7 @@ enum {METHOD_GET, METHOD_POST, METHOD_PUT, METHOD_DELETE, METHOD_HEAD};
 enum {HDR_DATE, HDR_INT, HDR_STRING};	/* HTTP header types		*/
 enum {E_FATAL = 1, E_LOG = 2};		/* Flags for elog() function	*/
 typedef unsigned long big_int_t;	/* Type for Content-Length	*/
-	
+
 /*
  * Unified socket address
  */

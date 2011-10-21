@@ -89,17 +89,17 @@ static CURLcode rhossl_connect_common(struct connectdata *conn, int sockindex,
 
     if (connssl->state == ssl_connection_complete)
         return CURLE_OK;
-    
+
     connssl->storage = rho_ssl_create_storage();
-    
+
     int idone = *done;
     retcode = rho_ssl_connect(sockfd, nonblocking, &idone, config->verifypeer, connssl->storage);
     if (retcode)
         return retcode;
-    
+
     *done = (bool)idone;
     connssl->state = ssl_connection_complete;
-    
+
     return retcode;
 }
 
@@ -118,7 +118,7 @@ CURLcode Curl_rhossl_connect(struct connectdata *conn,
     retcode = rhossl_connect_common(conn, sockindex, FALSE, &done);
     if (retcode)
         return retcode;
-    
+
     DEBUGASSERT(done);
     return CURLE_OK;
 }

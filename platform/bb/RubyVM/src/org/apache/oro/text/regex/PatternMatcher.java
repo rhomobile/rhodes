@@ -1,4 +1,4 @@
-/* 
+/*
  * $Id: PatternMatcher.java 124053 2005-01-04 01:24:35Z dfs $
  *
  * Copyright 2000-2005 The Apache Software Foundation
@@ -22,7 +22,7 @@ package org.apache.oro.text.regex;
 
 /**
  * The PatternMatcher interface defines the operations a regular
- * expression matcher must implement.  However, the types of the Pattern 
+ * expression matcher must implement.  However, the types of the Pattern
  * implementations recognized by a matcher are not restricted.  Typically
  * PatternMatcher instances will only recognize a specific type of Pattern.
  * For example, the Perl5Matcher only recognizes Perl5Pattern instances.
@@ -159,11 +159,11 @@ public interface PatternMatcher {
   /**
    * Determines if a string contains a pattern.  If the pattern is
    * matched by some substring of the input, a MatchResult instance
-   * representing the <b> first </b> such match is made acessible via 
+   * representing the <b> first </b> such match is made acessible via
    * {@link #getMatch()}.  If you want to access
    * subsequent matches you should either use a PatternMatcherInput object
    * or use the offset information in the MatchResult to create a substring
-   * representing the remaining input.  Using the MatchResult offset 
+   * representing the remaining input.  Using the MatchResult offset
    * information is the recommended method of obtaining the parts of the
    * string preceeding the match and following the match.
    * <p>
@@ -176,11 +176,11 @@ public interface PatternMatcher {
   /**
    * Determines if a string (represented as a char[]) contains a pattern.
    * If the pattern is matched by some substring of the input, a MatchResult
-   * instance representing the <b>first</b> such match is made acessible via 
+   * instance representing the <b>first</b> such match is made acessible via
    * {@link #getMatch()}.  If you want to access
    * subsequent matches you should either use a PatternMatcherInput object
    * or use the offset information in the MatchResult to create a substring
-   * representing the remaining input.  Using the MatchResult offset 
+   * representing the remaining input.  Using the MatchResult offset
    * information is the recommended method of obtaining the parts of the
    * string preceeding the match and following the match.
    * <p>
@@ -194,7 +194,7 @@ public interface PatternMatcher {
    * Determines if the contents of a PatternMatcherInput, starting from the
    * current offset of the input contains a pattern.
    * If a pattern match is found, a MatchResult
-   * instance representing the <b>first</b> such match is made acessible via 
+   * instance representing the <b>first</b> such match is made acessible via
    * {@link #getMatch()}.  The current offset of the
    * PatternMatcherInput is set to the offset corresponding to the end
    * of the match, so that a subsequent call to this method will continue
@@ -229,7 +229,7 @@ public interface PatternMatcher {
    * input   = new PatternMatcherInput(someStringInput);
    *
    * while(matcher.contains(input, pattern)) {
-   *   result = matcher.getMatch();  
+   *   result = matcher.getMatch();
    *   // Perform whatever processing on the result you want.
    * }
    *

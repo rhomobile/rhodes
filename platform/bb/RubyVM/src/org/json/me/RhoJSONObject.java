@@ -239,8 +239,8 @@ public class RhoJSONObject {
             }
         }
     }
-    
-    
+
+
     /**
      * Construct a JSONObject from a string.
      * This is the most commonly used JSONObject constructor.
@@ -289,7 +289,7 @@ public class RhoJSONObject {
      * @param key   A key string.
      * @param value An object to be accumulated under the key.
      * @return this.
-     * @throws RhoJSONException If the key is null or if the current value 
+     * @throws RhoJSONException If the key is null or if the current value
      * 	associated with the key is not a JSONArray.
      */
     public RhoJSONObject append(String key, Object value)
@@ -299,7 +299,7 @@ public class RhoJSONObject {
         if (o == null) {
             put(key, new RhoJSONArray().put(value));
         } else if (o instanceof RhoJSONArray) {
-            throw new RhoJSONException("JSONObject[" + key + 
+            throw new RhoJSONException("JSONObject[" + key +
             		"] is not a JSONArray.");
         } else {
             put(key, new RhoJSONArray().put(o).put(value));
@@ -400,13 +400,13 @@ public class RhoJSONObject {
             try {
             	if ( ((String)o).length() == 0 )
             		return 0;
-            	
+
                 return Double.valueOf((String)o).doubleValue();
             } catch (Exception e) {
                 throw new RhoJSONException("JSONObject[" + quote(key) +
                     "] is not a number.");
             }
-        } 
+        }
         throw new RhoJSONException("JSONObject[" + quote(key) +
             "] is not a number.");
     }
@@ -437,7 +437,7 @@ public class RhoJSONObject {
             return (int) ((Double)o).doubleValue();
         } else if (o instanceof String) {
             return (int) getDouble(key);
-        } 
+        }
         throw new RhoJSONException("JSONObject[" + quote(key) +
             "] is not a number.");
     }
@@ -504,7 +504,7 @@ public class RhoJSONObject {
             return (long) ((Double)o).doubleValue();
         } else if (o instanceof String) {
             return (long) getDouble(key);
-        } 
+        }
         throw new RhoJSONException("JSONObject[" + quote(key) +
             "] is not a number.");
     }
@@ -579,7 +579,7 @@ public class RhoJSONObject {
         return ja.length() == 0 ? null : ja;
     }
 
-    
+
     /**
      * Shave off trailing zeros and decimal point, if possible.
      */
@@ -650,7 +650,7 @@ public class RhoJSONObject {
         }
     }
 
-    
+
     /**
      * Put a key/value pair in the JSONObject, where the value will be a
      * JSONArray which is produced from a Collection.
@@ -664,7 +664,7 @@ public class RhoJSONObject {
         return this;
     }
 
-    
+
     /**
      * Get an optional double associated with a key,
      * or NaN if there is no such key or if its value is not a number.
@@ -875,7 +875,7 @@ public class RhoJSONObject {
         return this;
     }
 
-     
+
     /**
      * Put a key/value pair in the JSONObject, where the value will be a
      * JSONObject which is produced from a Map.
@@ -888,8 +888,8 @@ public class RhoJSONObject {
         put(key, new RhoJSONObject(value));
         return this;
     }
-    
-    
+
+
     /**
      * Put a key/value pair in the JSONObject. If the value is null,
      * then the key will be removed from the JSONObject if it is present.
@@ -1190,7 +1190,7 @@ public class RhoJSONObject {
             throw new RhoJSONException("Bad value from toJSONString: " + o);
         }
         if (value instanceof Float || value instanceof Double ||
-            value instanceof Byte || value instanceof Short || 
+            value instanceof Byte || value instanceof Short ||
             value instanceof Integer || value instanceof Long) {
             return numberToString(value);
         }
@@ -1232,7 +1232,7 @@ public class RhoJSONObject {
         	/* forget about it */
         }
         if (value instanceof Float || value instanceof Double ||
-            value instanceof Byte || value instanceof Short || 
+            value instanceof Byte || value instanceof Short ||
             value instanceof Integer || value instanceof Long) {
             return numberToString(value);
         }

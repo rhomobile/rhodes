@@ -2,7 +2,7 @@
 %module WebView
 %{
 extern void rho_webview_refresh(int index);
-#define refresh rho_webview_refresh 
+#define refresh rho_webview_refresh
 extern void rho_webview_navigate(const char* url, int index);
 #define navigate rho_webview_navigate
 extern char* rho_webview_current_location(int index);

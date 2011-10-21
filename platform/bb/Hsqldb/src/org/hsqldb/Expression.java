@@ -1962,7 +1962,7 @@ public class Expression {
                     int   i     = table.findColumn(columnName);
                     if (i == -1)
                     	i = table.findColumn(columnNameOrig);
-                    
+
                     if (i != -1) {
                         tableFilter = f;
                         columnIndex = i;
@@ -2489,7 +2489,7 @@ public class Expression {
         //RHO
         //boolean ignoreCase = eArg.dataType == Types.VARCHAR_IGNORECASE
         //                     || eArg2.dataType == Types.VARCHAR_IGNORECASE;
-        boolean ignoreCase = true;                  
+        boolean ignoreCase = true;
         likeObject.setParams(session, likeStr, ignoreCase);
 
         if (!isRightArgFixedConstant) {

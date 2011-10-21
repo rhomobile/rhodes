@@ -3,8 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<title>RhodesTest</title>
-		<link href="/public/css/base.css" type="text/css" rel="stylesheet"/>		
-			
+		<link href="/public/css/base.css" type="text/css" rel="stylesheet"/>
+
 		<% if System::get_property('platform') == 'APPLE' %>
 			<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
 
@@ -14,12 +14,12 @@
 			<link href="/public/css/iphone.css" type="text/css" rel="stylesheet"/>
 		<% else %>
 			<% if System::get_property('platform') == 'Blackberry' && System::get_property('webview_framework') !~ /^WEBKIT/ %>
-				<link href="/public/css/blackberry.css" type="text/css" rel="stylesheet"/>	
-			<% else %>	
-				<link href="/public/css/xhtml.css" type="text/css" rel="stylesheet"/>	
+				<link href="/public/css/blackberry.css" type="text/css" rel="stylesheet"/>
+			<% else %>
+				<link href="/public/css/xhtml.css" type="text/css" rel="stylesheet"/>
 			<% end %>
-		<% end %>	
-				
+		<% end %>
+
 	</head>
 	<body>
 		<%= @content %>

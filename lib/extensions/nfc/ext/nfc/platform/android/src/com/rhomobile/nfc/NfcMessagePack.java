@@ -4,9 +4,9 @@ import android.nfc.NdefMessage;
 
 public class NfcMessagePack {
 
-	
+
 	private NfcMessage[] mMessages = null;
-	
+
 	public NfcMessagePack(NdefMessage[] msgs) {
 		mMessages = new NfcMessage[msgs.length];
 		int i;
@@ -14,14 +14,14 @@ public class NfcMessagePack {
 			mMessages[i] = new NfcMessage(msgs[i]);
 		}
 	}
-	
+
 	public int getItemCount() {
 		if (mMessages == null) {
 			return 0;
 		}
 		return mMessages.length;
 	}
-	
+
 	public NfcMessage getItem(int index) {
 		if (mMessages == null) {
 			return null;

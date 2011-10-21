@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2006 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -13,14 +13,14 @@ import javolution.util.FastMap;
 import javolution.util.FastTable;
 
 /**
- * <p> This class represents the default allocator context. Allocations are 
- *     performed using the <code>new</code> keyword and explicit object 
+ * <p> This class represents the default allocator context. Allocations are
+ *     performed using the <code>new</code> keyword and explicit object
  *     {@link ObjectFactory#recycle(Object) recycling} is supported:[code]
  *         char[] buffer = ArrayFactory.CHARS_FACTORY.array(4098); // Possibly recycled.
  *         while (reader.read(buffer) > 0) { ... }
  *         ArrayFactory.CHARS_FACTORY.recycle(buffer); // Explicit recycling.
  *     [/code]</p>
- *       
+ *
  * @author  <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 5.2, August 19, 2007
  */
@@ -46,7 +46,7 @@ public class HeapContext extends AllocatorContext {
 
     /**
      * Enters a heap context.
-     * 
+     *
      * @return the heap context entered.
      */
     public static HeapContext enter() {
@@ -56,7 +56,7 @@ public class HeapContext extends AllocatorContext {
 
     /**
      * Exits the current heap context.
-     * 
+     *
      * @return the heap context being exited.
      * @throws ClassCastException if the context is not a heap context.
      */

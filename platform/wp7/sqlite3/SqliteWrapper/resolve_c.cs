@@ -11,7 +11,7 @@ using u32 = System.UInt32;
 #if !SQLITE_MAX_VARIABLE_NUMBER
 using ynVar = System.Int16;
 #else
-using ynVar = System.Int32; 
+using ynVar = System.Int32;
 #endif
 
 namespace Community.CsharpSqlite
@@ -126,7 +126,7 @@ namespace Community.CsharpSqlite
         pDup.flags |= EP_ExpCollate;
       }
 
-      /* Before calling sqlite3ExprDelete(), set the EP_Static flag. This 
+      /* Before calling sqlite3ExprDelete(), set the EP_Static flag. This
       ** prevents ExprDelete() from deleting the Expr structure itself,
       ** allowing it to be repopulated by the memcpy() on the following line.
       */

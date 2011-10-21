@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -31,7 +31,7 @@
 #define _GLIBCXX_CSTDLIB 1
 namespace std
 {
-	using ::rand;	
+	using ::rand;
 }
 
 #include <string>
@@ -131,7 +131,7 @@ public:
         {
             if ( *it == item )
             {
-                it = std::vector<Type>::erase(it);    
+                it = std::vector<Type>::erase(it);
             }else
                 it++;
         }
@@ -172,7 +172,7 @@ public:
     {
         for (typename std::vector<Type>::iterator it = Vector<Type>::begin();  it !=Vector<Type>::end(); ++it )
             delete *it;
-        
+
         Vector<Type>::clear();
     }
 
@@ -183,7 +183,7 @@ public:
             if ( *it == item )
             {
                 delete *it;
-                it = std::vector<Type>::erase(it);    
+                it = std::vector<Type>::erase(it);
             }else
                 it++;
         }
@@ -276,7 +276,7 @@ public:
     {
         for (typename std::map<TKEY,TVALUE>::iterator it = Hashtable<TKEY,TVALUE>::begin();  it != Hashtable<TKEY,TVALUE>::end(); ++it )
             delete it->second;
-        
+
         Hashtable<TKEY,TVALUE>::clear();
     }
 
@@ -291,6 +291,6 @@ public:
 
 };
 
-} 
+}
 
 #endif //_RHOSTD_H_

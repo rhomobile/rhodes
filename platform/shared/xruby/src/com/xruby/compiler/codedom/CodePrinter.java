@@ -61,7 +61,7 @@ public class CodePrinter implements CodeVisitor {
         result_.append(name);
         result_.append("\n");
     }
-    
+
     public void visitBinaryOperator(String operator) {
         result_.append(operator);
         result_.append("\n");
@@ -344,7 +344,7 @@ public class CodePrinter implements CodeVisitor {
         result_.append("\n");
         return null;
     }
-    
+
     public Object visitAfterWhenBody(Object next_label, Object end_label) {
         result_.append("end when\n");
         return null;

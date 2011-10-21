@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2006 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -16,22 +16,22 @@ import j2me.util.logging.Logger;
 import j2me.util.logging.LogRecord;
 
 /**
- * <p> This class represents a specialized logging context forwarding events 
+ * <p> This class represents a specialized logging context forwarding events
  *     to a standard logger (<code>java.util.logging.Logger</code>).</p>
  *
- * <p> This class leverages the capabilities of the standard logging facility 
- *     and extends it to support specialized {@link LogContext logging} on a 
+ * <p> This class leverages the capabilities of the standard logging facility
+ *     and extends it to support specialized {@link LogContext logging} on a
  *     thread or object basis. For example:[code]
  *     StandardLog remoteLog = new StandardLog(Logger.getLogger("remote"));
- *     StandardLog.enter(remoteLog); 
+ *     StandardLog.enter(remoteLog);
  *     try {
  *         StandardLog.fine("Current thread uses a remote logger");
- *         ...       
+ *         ...
  *     } finally {
  *         StandardLog.exit(remoteLog); // Reverts to previous logging context.
  *     }[/code]</p>
- *     
- *     
+ *
+ *
  * @author  <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 5.1, August 1, 2007
  */
@@ -43,7 +43,7 @@ public class StandardLog extends LogContext {
     private Logger _logger;
 
     /**
-     * Creates a logging context forwarding events to the root logger 
+     * Creates a logging context forwarding events to the root logger
      * (<code>Logger.getLogger("")</code>).
      */
     public StandardLog() {
@@ -51,9 +51,9 @@ public class StandardLog extends LogContext {
     }
 
     /**
-     * Creates a standard log context forwarding events to the specified 
+     * Creates a standard log context forwarding events to the specified
      * logger.
-     * 
+     *
      * @param logger the logger to which log events are forwarded to.
      */
     public StandardLog(Logger logger) {
@@ -62,7 +62,7 @@ public class StandardLog extends LogContext {
 
     /**
      * Returns the logger to which this context forwards the events to.
-     * 
+     *
      * @return the logger for this standard logging context.
      */
     public final Logger getLogger() {
@@ -91,8 +91,8 @@ public class StandardLog extends LogContext {
     }
 
     /**
-     * Log a specific LogRecord. If the current logging context is not a 
-     * {@link StandardLog}, an {@link LogContext#logError error}, 
+     * Log a specific LogRecord. If the current logging context is not a
+     * {@link StandardLog}, an {@link LogContext#logError error},
      * {@link LogContext#logWarning warning} or
      * {@link LogContext#logInfo info} is possibly logged.
      *
@@ -105,11 +105,11 @@ public class StandardLog extends LogContext {
         } else {
             Throwable error = record.getThrown();
             if (error != null) {
-                if (log.isErrorLogged()) { 
+                if (log.isErrorLogged()) {
                     log.logError(error, Javolution.j2meToCharSeq(record.getMessage()));
                 }
             } else if (record.getLevel().intValue() > Level.WARNING.intValue()) {
-                if (log.isWarningLogged()) { 
+                if (log.isWarningLogged()) {
                     log.logWarning(Javolution.j2meToCharSeq(record.getMessage()));
                 }
             } else if (record.getLevel().intValue() > Level.INFO.intValue()) {
@@ -121,10 +121,10 @@ public class StandardLog extends LogContext {
     }
 
     /**
-     * Logs a {@link Level#SEVERE SEVERE} message. If the current logging 
-     * context is not a {@link StandardLog} a {@link LogContext#warning 
+     * Logs a {@link Level#SEVERE SEVERE} message. If the current logging
+     * context is not a {@link StandardLog} a {@link LogContext#warning
      * warning} message is logged.
-     * 
+     *
      * @param msg the severe message.
      */
     public static void severe(String msg) {
@@ -137,9 +137,9 @@ public class StandardLog extends LogContext {
     }
 
     /**
-     * Logs a {@link Level#CONFIG CONFIG} message. If the current logging 
+     * Logs a {@link Level#CONFIG CONFIG} message. If the current logging
      * context is not a {@link StandardLog} no message is logged.
-     * 
+     *
      * @param msg the config message.
      */
     public static void config(String msg) {
@@ -150,9 +150,9 @@ public class StandardLog extends LogContext {
     }
 
     /**
-     * Logs a {@link Level#FINE FINE} message. If the current logging 
+     * Logs a {@link Level#FINE FINE} message. If the current logging
      * context is not a {@link StandardLog} no message is logged.
-     * 
+     *
      * @param msg the fine message.
      */
     public static void fine(String msg) {
@@ -163,9 +163,9 @@ public class StandardLog extends LogContext {
     }
 
     /**
-     * Logs a {@link Level#FINER FINER} message. If the current logging 
+     * Logs a {@link Level#FINER FINER} message. If the current logging
      * context is not a {@link StandardLog} no message is logged.
-     * 
+     *
      * @param msg the finer message.
      */
     public static void finer(String msg) {
@@ -176,9 +176,9 @@ public class StandardLog extends LogContext {
     }
 
     /**
-     * Logs a {@link Level#FINEST FINEST} message. If the current logging 
+     * Logs a {@link Level#FINEST FINEST} message. If the current logging
      * context is not a {@link StandardLog} no message is logged.
-     * 
+     *
      * @param msg the finest message.
      */
     public static void finest(String msg) {
@@ -189,9 +189,9 @@ public class StandardLog extends LogContext {
     }
 
     /**
-     * Logs throwing an exception. If the current logging context is not a 
+     * Logs throwing an exception. If the current logging context is not a
      * {@link StandardLog} an {@link LogContext#logError error} is logged.
-     * 
+     *
      * @param sourceClass name of class that issued the logging request.
      * @param sourceMethod name of the method.
      * @param thrown the error that is being thrown.
@@ -208,9 +208,9 @@ public class StandardLog extends LogContext {
     }
 
     /**
-     * Log a method entry. If the current logging context is not a 
+     * Log a method entry. If the current logging context is not a
      * {@link StandardLog} no entry is logged.
-     * 
+     *
      * @param sourceClass name of class that issued the logging request.
      * @param sourceMethod name of method that is being entered.
      */
@@ -222,9 +222,9 @@ public class StandardLog extends LogContext {
     }
 
     /**
-     * Log a method return. If the current logging context is not a 
+     * Log a method return. If the current logging context is not a
      * {@link StandardLog} no return is logged.
-     * 
+     *
      * @param sourceClass name of class that issued the logging request.
      * @param sourceMethod name of method that is being returned.
      */
@@ -266,7 +266,7 @@ public class StandardLog extends LogContext {
         if (error != null) {
             _logger.log(Level.SEVERE, description, error);
         } else {
-            _logger.log(Level.SEVERE, description);            
+            _logger.log(Level.SEVERE, description);
         }
     }
 

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -49,7 +49,7 @@ CSyncThread* CSyncThread::m_pInstance = 0;
 
 /*static*/ CSyncThread* CSyncThread::Create()
 {
-    if ( m_pInstance ) 
+    if ( m_pInstance )
         return m_pInstance;
 
     m_pInstance = new CSyncThread();
@@ -111,7 +111,7 @@ unsigned long CSyncThread::getRetValue()
 
     return ret;
 }
-#endif 
+#endif
 
 int CSyncThread::getLastPollInterval()
 {
@@ -125,7 +125,7 @@ int CSyncThread::getLastPollInterval()
 
         IDBResult res = dbPart.executeSQL("SELECT last_updated from sources");
         for ( ; !res.isEnd(); res.next() )
-        { 
+        {
             uint64 timeUpdated = res.getUInt64ByIdx(0);
             if ( latestTimeUpdated < timeUpdated )
         	    latestTimeUpdated = timeUpdated;
@@ -148,7 +148,7 @@ void CSyncThread::checkShowStatus(CSyncCommand& oSyncCmd)
     if (m_oSyncEngine.getNotify().isReportingEnabled())
         m_oSyncEngine.getNotify().showStatusPopup(RhoAppAdapter.getMessageText("syncronizing_data"));
     //m_statusListener.createStatusPopup(RhoRuby.getMessageText("syncronizing_data"));
-}	
+}
 
 void CSyncThread::processCommand(IQueueCommand* pCmd)
 {
@@ -168,7 +168,7 @@ void CSyncThread::processCommand(IQueueCommand* pCmd)
     case scSearchOne:
         {
 			checkShowStatus(oSyncCmd);
-            m_oSyncEngine.doSearch( ((CSyncSearchCommand&)oSyncCmd).m_arSources, oSyncCmd.m_strCmdParam, 
+            m_oSyncEngine.doSearch( ((CSyncSearchCommand&)oSyncCmd).m_arSources, oSyncCmd.m_strCmdParam,
                 ((CSyncSearchCommand&)oSyncCmd).m_strFrom, ((CSyncSearchCommand&)oSyncCmd).m_bSyncChanges,
                 oSyncCmd.m_nCmdParam);
         }
@@ -185,7 +185,7 @@ void CSyncThread::processCommand(IQueueCommand* pCmd)
 }
 
 void CSyncThread::setPollInterval(int nInterval)
-{ 
+{
 //    if ( nInterval == 0 )
 //        m_oSyncEngine.stopSync();
 
@@ -219,7 +219,7 @@ extern "C" {
 
 using namespace rho::sync;
 using namespace rho::db;
-	
+
 unsigned long rho_sync_doSyncAllSources(int show_status_popup, const char * query_params/* = 0*/)
 {
     CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncAll,show_status_popup!=0,query_params));
@@ -246,13 +246,13 @@ unsigned long rho_sync_doSyncSource(unsigned long nSrcID,int show_status_popup, 
     CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, oSrcID.m_szStr, (int)oSrcID.m_nInt, show_status_popup!=0, query_params ) );
 
     return CSyncThread::getInstance()->getRetValue();
-}	
+}
 #endif //RHO_NO_RUBY
 
 void rho_sync_stop()
 {
 	LOG(INFO)+"STOP sync";
-	
+
 	if (CSyncThread::getSyncEngine().isSyncing() )
 	{
 		LOG(INFO)+"STOP sync in progress.";
@@ -280,7 +280,7 @@ source_iter(const char* szName, void* parSources)
 }
 
 #ifndef RHO_NO_RUBY
-unsigned long rho_sync_doSearch(unsigned long ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, 
+unsigned long rho_sync_doSearch(unsigned long ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep,
     const char* callback, const char* callback_params)
 {
     rho_sync_stop();
@@ -293,10 +293,10 @@ unsigned long rho_sync_doSearch(unsigned long ar_sources, const char *from, cons
     CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncSearchCommand(from,params,arSources,sync_changes,nProgressStep) );
 
     return CSyncThread::getInstance()->getRetValue();
-}	
+}
 #endif //RHO_NO_RUBY
 
-unsigned long rho_sync_doSearchByNames(unsigned long ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, 
+unsigned long rho_sync_doSearchByNames(unsigned long ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep,
     /*RHOC_CALLBACK*/void* callback, void* callback_data)
 {
     rho_sync_stop();
@@ -308,7 +308,7 @@ unsigned long rho_sync_doSearchByNames(unsigned long ar_sources, const char *fro
     CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncSearchCommand(from,params,arSources,sync_changes,nProgressStep) );
 
     return CSyncThread::getInstance()->getRetValue();
-}	
+}
 
 int rho_sync_set_pollinterval(int nInterval)
 {
@@ -346,7 +346,7 @@ void rho_sync_set_syncserver(const char* syncserver)
 unsigned long rho_sync_login(const char *name, const char *password, const char* callback)
 {
     rho_sync_stop();
-    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncLoginCommand(name, password, 
+    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncLoginCommand(name, password,
 		new CSyncNotification(callback, "", false) ) );
 
     return CSyncThread::getInstance()->getRetValue();
@@ -355,7 +355,7 @@ unsigned long rho_sync_login(const char *name, const char *password, const char*
 unsigned long rho_sync_login_c(const char *name, const char *password, /*RHOC_CALLBACK*/void* callback, void* callback_data)
 {
     rho_sync_stop();
-    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncLoginCommand(name, password, 
+    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncLoginCommand(name, password,
 		new CSyncNotification((RHOC_CALLBACK)callback,callback_data,false)) );
 
     return CSyncThread::getInstance()->getRetValue();
@@ -418,9 +418,9 @@ void rho_sync_setobjectnotify_url_c(/*RHOC_CALLBACK*/void* callback, void* callb
 
 void rho_sync_clear_object_notification()
 {
-    CSyncNotify::setObjectNotification(0);   
+    CSyncNotify::setObjectNotification(0);
 }
-    
+
 void rho_sync_addobjectnotify(int nSrcID, const char* szObject)
 {
     CSyncThread::getSyncEngine().getNotify().addObjectNotify(nSrcID, szObject);
@@ -457,7 +457,7 @@ void rho_sync_set_threaded_mode(int b)
     {
         RAWLOG_ERROR("No SyncThread instance!");
     }
-    
+
     CSyncThread::getInstance()->setNonThreadedMode(b==0);
     CSyncThread::getSyncEngine().setNonThreadedMode(b==0);
 }

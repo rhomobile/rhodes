@@ -1123,7 +1123,7 @@ using ATL::CTempBuffer;
 #else // !(_ATL_VER >= 0x0700)
 
 #ifndef SIZE_MAX
-  #ifdef _WIN64 
+  #ifdef _WIN64
     #define SIZE_MAX _UI64_MAX
   #else
     #define SIZE_MAX UINT_MAX
@@ -1489,7 +1489,7 @@ public:
 					break;
 			}
 		}
-		// This handle should be valid now. If it isn't, 
+		// This handle should be valid now. If it isn't,
 		// check if _Module.Term was called first (it shouldn't)
 		if(::CloseHandle(m_hEventShutdown))
 			m_hEventShutdown = NULL;

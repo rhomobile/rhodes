@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2005 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -23,10 +23,10 @@ import javolution.text.Appendable;
  * <p> This class represents a UTF-8 <code>j2me.nio.ByteBuffer</code> reader.
  *     </p>
  *
- * <p> This reader can be used for efficient decoding of native byte 
- *     buffers (e.g. <code>MappedByteBuffer</code>), high-performance 
+ * <p> This reader can be used for efficient decoding of native byte
+ *     buffers (e.g. <code>MappedByteBuffer</code>), high-performance
  *     messaging (no intermediate buffer), etc.</p>
- *     
+ *
  * <p> This reader supports surrogate <code>char</code> pairs (representing
  *     characters in the range [U+10000 .. U+10FFFF]). It can also be used
  *     to read characters unicodes (31 bits) directly
@@ -60,7 +60,7 @@ public final class UTF8ByteBufferReader extends Reader implements Reusable {
      *
      * @param  byteBuffer the <code>ByteBuffer</code> source.
      * @return this UTF-8 reader.
-     * @throws IllegalStateException if this reader is being reused and 
+     * @throws IllegalStateException if this reader is being reused and
      *         it has not been {@link #close closed} or {@link #reset reset}.
      */
     public UTF8ByteBufferReader setInput(ByteBuffer byteBuffer) {
@@ -73,7 +73,7 @@ public final class UTF8ByteBufferReader extends Reader implements Reusable {
     /**
      * Indicates if this stream is ready to be read.
      *
-     * @return <code>true</code> if the byte buffer has remaining bytes to 
+     * @return <code>true</code> if the byte buffer has remaining bytes to
      *         read; <code>false</code> otherwise.
      * @throws  IOException if an I/O error occurs.
      */
@@ -100,9 +100,9 @@ public final class UTF8ByteBufferReader extends Reader implements Reusable {
      * Reads a single character.  This method does not block, <code>-1</code>
      * is returned if the buffer's limit has been reached.
      *
-     * @return the 31-bits Unicode of the character read, or -1 if there is 
+     * @return the 31-bits Unicode of the character read, or -1 if there is
      *         no more remaining bytes to be read.
-     * @throws IOException if an I/O error occurs (e.g. incomplete 
+     * @throws IOException if an I/O error occurs (e.g. incomplete
      *         character sequence being read).
      */
     public int read() throws IOException {
@@ -171,7 +171,7 @@ public final class UTF8ByteBufferReader extends Reader implements Reusable {
     private int _moreBytes;
 
     /**
-     * Reads characters into a portion of an array.  This method does not 
+     * Reads characters into a portion of an array.  This method does not
      * block.
      *
      * <p> Note: Characters between U+10000 and U+10FFFF are represented
@@ -180,7 +180,7 @@ public final class UTF8ByteBufferReader extends Reader implements Reusable {
      * @param  cbuf the destination buffer.
      * @param  off the offset at which to start storing characters.
      * @param  len the maximum number of characters to read
-     * @return the number of characters read, or -1 if there is no more 
+     * @return the number of characters read, or -1 if there is no more
      *         byte remaining.
      * @throws IOException if an I/O error occurs.
      */
@@ -225,7 +225,7 @@ public final class UTF8ByteBufferReader extends Reader implements Reusable {
     }
 
     /**
-     * Reads characters into the specified appendable. This method does not 
+     * Reads characters into the specified appendable. This method does not
      * block.
      *
      * <p> Note: Characters between U+10000 and U+10FFFF are represented

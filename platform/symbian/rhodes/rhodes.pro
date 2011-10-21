@@ -1,4 +1,4 @@
-# Add files and directories to ship with the application 
+# Add files and directories to ship with the application
 # by adapting the examples below.
 # file1.source = myfile
 
@@ -20,7 +20,7 @@ symbian:TARGET.UID3 = 3959687259
 #0x20047C9A
 
 # Smart Installer package's UID
-# This UID is from the protected range 
+# This UID is from the protected range
 # and therefore the package will fail to install if self-signed
 # By default qmake uses the unprotected range value if unprotected UID is defined for the application
 # and 0x2002CCCF value if protected UID is given to the application
@@ -42,8 +42,8 @@ symbian:TARGET.EPOCSTACKSIZE = 80000
 symbian:TARGET.EPOCHEAPSIZE = 0x100000 0x2400000
 
 # If your application uses the Qt Mobility libraries, uncomment
-# the following lines and add the respective components to the 
-# MOBILITY variable. 
+# the following lines and add the respective components to the
+# MOBILITY variable.
 # CONFIG += mobility
 # MOBILITY +=
 

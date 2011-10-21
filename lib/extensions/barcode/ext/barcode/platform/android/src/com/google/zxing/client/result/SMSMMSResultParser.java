@@ -81,7 +81,7 @@ final class SMSMMSResultParser extends ResultParser {
       addNumberVia(numbers, vias, numberPart);
       lastComma = comma;
     }
-    addNumberVia(numbers, vias, smsURIWithoutQuery.substring(lastComma + 1));    
+    addNumberVia(numbers, vias, smsURIWithoutQuery.substring(lastComma + 1));
 
     return new SMSParsedResult(toStringArray(numbers), toStringArray(vias), subject, body);
   }

@@ -48,7 +48,7 @@ public class AsciiValueExpression extends Expression {
 	public void accept(CodeVisitor visitor) {
 		if (str_value_ != null )
 			visitor.visitStringExpression(str_value_);
-		else	
+		else
 			visitor.visitFixnumExpression(value_);
 	}
 }

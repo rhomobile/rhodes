@@ -32,7 +32,7 @@
 
 #  if defined (_STLP_HAS_WCHAR_T) && !defined (_STLP_INTERNAL_CWCHAR)
 #    include <stl/_cwchar.h>
-#  endif /* _STLP_HAS_WCHAR_T && !_STLP_CWCHAR */      
+#  endif /* _STLP_HAS_WCHAR_T && !_STLP_CWCHAR */
 
 #  include <stl/_iosfwd.h>
 #else

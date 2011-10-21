@@ -8,12 +8,12 @@ import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 
 public class NfcMessage {
-	
+
 	private NfcRecord[] mRecords = null;
 	private byte[] mByteArray = null;
 
 	private ArrayList<NfcRecord> mConstructRecords = null;
-	
+
 	public NfcMessage(byte[] array) {
 		NdefMessage r = null;
 		try {
@@ -24,14 +24,14 @@ public class NfcMessage {
 		}
 		initFromNdefMessage(r);
 	}
-	
+
 	public NfcMessage(NdefMessage msg) {
 		initFromNdefMessage(msg);
 	}
 
 	public NfcMessage() {
 	}
-	
+
 	private void initFromNdefMessage(NdefMessage msg) {
 		mByteArray = msg.toByteArray();
 		NdefRecord[] records = msg.getRecords();
@@ -41,14 +41,14 @@ public class NfcMessage {
 			mRecords[i] = new NfcRecord(records[i]);
 		}
 	}
-	
+
 	public void addConstructRecord(NfcRecord record) {
 		if (mConstructRecords == null) {
 			mConstructRecords = new ArrayList<NfcRecord>();
 		}
 		mConstructRecords.add(record);
 	}
-	
+
 	public void initFromConstructRecordList () {
 		if (mConstructRecords == null) {
 			return;
@@ -71,7 +71,7 @@ public class NfcMessage {
 		initFromNdefMessage(m);
 		mConstructRecords = null;
 	}
-	
+
 	public NdefMessage makeNdefMessage() {
 		NdefMessage r = null;
 		try {
@@ -82,15 +82,15 @@ public class NfcMessage {
 		}
 		return r;
 	}
-	
+
 	public int getItemCount() {
 		return mRecords.length;
 	}
-	
+
 	public NfcRecord getItem(int index) {
 		return mRecords[index];
 	}
-	
+
 	public byte[] getByteArray() {
 		return mByteArray;
 	}

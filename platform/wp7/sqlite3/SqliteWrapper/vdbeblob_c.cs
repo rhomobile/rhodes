@@ -60,7 +60,7 @@ int sqlite3_blob_open(
   int nAttempt = 0;
   int iCol;               /* Index of zColumn in row-record */
 
-  /* This VDBE program seeks a btree cursor to the identified 
+  /* This VDBE program seeks a btree cursor to the identified
   ** db/table/row entry. The reason for using a vdbe program instead
   ** of writing code to use the b-tree layer directly is that the
   ** vdbe program will take advantage of the various transaction,
@@ -68,11 +68,11 @@ int sqlite3_blob_open(
   **
   ** After seeking the cursor, the vdbe executes an OP_ResultRow.
   ** Code external to the Vdbe then "borrows" the b-tree cursor and
-  ** uses it to implement the blob_read(), blob_write() and 
+  ** uses it to implement the blob_read(), blob_write() and
   ** blob_bytes() functions.
   **
   ** The sqlite3_blob_close() function finalizes the vdbe program,
-  ** which closes the b-tree cursor and (possibly) commits the 
+  ** which closes the b-tree cursor and (possibly) commits the
   ** transaction.
   */
   static const VdbeOpList openBlob[] = {
@@ -147,7 +147,7 @@ int sqlite3_blob_open(
     }
 
     /* If the value is being opened for writing, check that the
-    ** column is not indexed, and that it is not part of a foreign key. 
+    ** column is not indexed, and that it is not part of a foreign key.
     ** It is against the rules to open a column to which either of these
     ** descriptions applies for writing.  */
     if( flags ){
@@ -157,7 +157,7 @@ int sqlite3_blob_open(
       if( db->flags&SQLITE_ForeignKeys ){
         /* Check that the column is not part of an FK child key definition. It
         ** is not necessary to check if it is part of a parent key, as parent
-        ** key columns must be indexed. The check below will pick up this 
+        ** key columns must be indexed. The check below will pick up this
         ** case.  */
         FKey *pFKey;
         for(pFKey=pTab->pFKey; pFKey; pFKey=pFKey->pNextFrom){
@@ -202,7 +202,7 @@ int sqlite3_blob_open(
       sqlite3VdbeChangeP2(v, 1, pTab->pSchema->schema_cookie);
 
       /* Make sure a mutex is held on the table to be accessed */
-      sqlite3VdbeUsesBtree(v, iDb); 
+      sqlite3VdbeUsesBtree(v, iDb);
 
       /* Configure the OP_TableLock instruction */
       sqlite3VdbeChangeP1(v, 2, iDb);
@@ -210,7 +210,7 @@ int sqlite3_blob_open(
       sqlite3VdbeChangeP3(v, 2, flags);
       sqlite3VdbeChangeP4(v, 2, pTab->zName, P4_TRANSIENT);
 
-      /* Remove either the OP_OpenWrite or OpenRead. Set the P2 
+      /* Remove either the OP_OpenWrite or OpenRead. Set the P2
       ** parameter of the other to pTab->tnum.  */
       sqlite3VdbeChangeToNoop(v, 4 - flags, 1);
       sqlite3VdbeChangeP2(v, 3 + flags, pTab->tnum);
@@ -220,7 +220,7 @@ int sqlite3_blob_open(
       ** think that the table has one more column than it really
       ** does. An OP_Column to retrieve this imaginary column will
       ** always return an SQL NULL. This is useful because it means
-      ** we can invoke OP_Column to fill in the vdbe cursors type 
+      ** we can invoke OP_Column to fill in the vdbe cursors type
       ** and offset cache without causing any IO.
       */
       sqlite3VdbeChangeP4(v, 3+flags, SQLITE_INT_TO_PTR(pTab->nCol+1),P4_INT32);
@@ -229,7 +229,7 @@ int sqlite3_blob_open(
         sqlite3VdbeMakeReady(v, 1, 1, 1, 0, 0, 0);
       }
     }
-   
+
     sqlite3BtreeLeaveAll(db);
       goto blob_open_out;
     }
@@ -320,10 +320,10 @@ int sqlite3_blob_close(sqlite3_blob *pBlob){
 ** Perform a read or write operation on a blob
 */
 static int blobReadWrite(
-  sqlite3_blob *pBlob, 
-  void *z, 
-  int n, 
-  int iOffset, 
+  sqlite3_blob *pBlob,
+  void *z,
+  int n,
+  int iOffset,
   int (*xCall)(BtCursor*, u32, u32, void*)
 ){
   int rc;

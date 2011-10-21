@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -94,13 +94,13 @@ DWORD WINAPI runThreadDiscoverDevices(LPVOID data) {
 iRetVal=objBthUtils.OpenServerConnection(rgbSdpRecord, SDP_RECORD_SIZE, SDP_CHANNEL_OFFSET, DisplayMessage);
 if(iRetVal!=0)
 {
-	StringCchPrintf(szMessage, ARRAYSIZE(szMessage), L"%d: Server socket failed.", iRetVal); 
-	SendMessage(GetDlgItem(hDlg, IDC_MESSAGES), LB_ADDSTRING,0,(LPARAM)szMessage);					
+	StringCchPrintf(szMessage, ARRAYSIZE(szMessage), L"%d: Server socket failed.", iRetVal);
+	SendMessage(GetDlgItem(hDlg, IDC_MESSAGES), LB_ADDSTRING,0,(LPARAM)szMessage);
 }
 else
 {
 	StringCchPrintf(szMessage, ARRAYSIZE(szMessage), L"You are now ready to receive messages.");
-	SendMessage(GetDlgItem(hDlg, IDC_MESSAGES), LB_ADDSTRING,0,(LPARAM)szMessage);		
+	SendMessage(GetDlgItem(hDlg, IDC_MESSAGES), LB_ADDSTRING,0,(LPARAM)szMessage);
 }
 
 OpenServerConnection(BYTE *rgbSdpRecord, int cSdpRecord, int iChannelOffset, void (*funcPtr)(WCHAR *))
@@ -114,7 +114,7 @@ DWORD WINAPI RhoBluetoothManager::runThreadDiscovered(LPVOID data) {
 		return 0;
 	}
 	mManager->m_socketServer = socket (AF_BT, SOCK_STREAM, BTHPROTO_RFCOMM);
-	if (mManager->m_socketServer  == INVALID_SOCKET) 
+	if (mManager->m_socketServer  == INVALID_SOCKET)
 	{
 		mManager->fireCreateSessionCallBack(RHO_BT_ERROR, "");
 		return WSAGetLastError ();
@@ -124,13 +124,13 @@ DWORD WINAPI RhoBluetoothManager::runThreadDiscovered(LPVOID data) {
 	memset (&sa, 0, sizeof(sa));
 	sa.addressFamily = AF_BT;
 	sa.port = 0;
-	if (bind (mManager->m_socketServer, (SOCKADDR *)&sa, sizeof(sa))) 
+	if (bind (mManager->m_socketServer, (SOCKADDR *)&sa, sizeof(sa)))
 	{
 		mManager->fireCreateSessionCallBack(RHO_BT_ERROR, "");
 		return WSAGetLastError ();
 	}
 	iNameLen = sizeof(sa);
-	if (getsockname(mManager->m_socketServer, (SOCKADDR *)&sa, &iNameLen))	
+	if (getsockname(mManager->m_socketServer, (SOCKADDR *)&sa, &iNameLen))
 	{
 		mManager->fireCreateSessionCallBack(RHO_BT_ERROR, "");
 		return WSAGetLastError ();
@@ -140,7 +140,7 @@ DWORD WINAPI RhoBluetoothManager::runThreadDiscovered(LPVOID data) {
 		mManager->fireCreateSessionCallBack(RHO_BT_ERROR, "");
 		return WSAGetLastError();
 
-	if (listen (mManager->m_socketServer, SOMAXCONN)) 
+	if (listen (mManager->m_socketServer, SOMAXCONN))
 	{
 		mManager->fireCreateSessionCallBack(RHO_BT_ERROR, "");
 		return WSAGetLastError ();
@@ -168,14 +168,14 @@ DWORD WINAPI RhoBluetoothManager::runThreadDiscovered(LPVOID data) {
 
 
 
-	if (s != INVALID_SOCKET) 
+	if (s != INVALID_SOCKET)
 	{
-		for ( ; ; ) 
+		for ( ; ; )
 		{
 			//receive data in pbuf
 			cbBytesRecd = recv (s, pbuf, MAX_MESSAGE_SIZE, 0);
 			//if error occured in receiving, return error code
-			if (cbBytesRecd == SOCKET_ERROR) 
+			if (cbBytesRecd == SOCKET_ERROR)
 			{
 				mManager->fireSessionCallBack(mManager->mConnectedDeviceName, RHO_BT_ERROR);
 				return WSAGetLastError();
@@ -301,7 +301,7 @@ const char* RhoBluetoothManager::rho_bluetooth_get_last_error() {
 const char* RhoBluetoothManager::rho_bluetooth_create_session(const char* role, const char* callback_url) {
 	LOG(INFO)  + "RhoBluetoothManager::rho_bluetooth_create_session( "+role+", "+callback_url+")";
 	strcpy(mCreateSessionCallback,callback_url);
-	if (strcmp(role, RHO_BT_ROLE_CLIENT) == 0) 
+	if (strcmp(role, RHO_BT_ROLE_CLIENT) == 0)
 	{
 		DWORD data = 0;
 		CreateThread(NULL, 0, runThreadDiscoverDevices, (LPVOID)data, 0, NULL);
@@ -309,7 +309,7 @@ const char* RhoBluetoothManager::rho_bluetooth_create_session(const char* role, 
 		HWND main_wnd = getMainWnd();
 		::PostMessage(main_wnd, WM_BLUETOOTH_DISCOVER, 0, 0);
 	}
-	else 
+	else
 	{
 		DWORD data = 0;
 		//mDiscoveredDlg.openDialog(this);
@@ -434,9 +434,9 @@ void RhoBluetoothManager::init() {
 	m_hDiscoverThred = NULL;
 	m_hDiscoveredThread = NULL;
 	mReadedString = NULL;
-	
+
 	WideCharToMultiByte(CP_UTF8, 0, devInfo.szDeviceNameAddr, -1, mLocalDeviceName, MAX_NAME_SIZE, 0, 0);
-	
+
 	mIsBluetoothEnabled = true;
 	strcpy(mConnectedDeviceName,"");
 	strcpy(mCreateSessionCallback,"");
@@ -617,11 +617,11 @@ int RhoBluetoothManager::DiscoverDevices() {
 	m_pEnd=m_pStart=NULL;
 	m_iNumDevices=0;
 	while (true)
-	{	
+	{
 		if(WSALookupServiceNext (hLookup, LUP_RETURN_NAME | LUP_RETURN_ADDR, &dwSize, pwsaResults)!=ERROR_SUCCESS)
 			break;
 		ASSERT (pwsaResults->dwNumberOfCsAddrs == 1);
-		//Populate the link list		
+		//Populate the link list
 		tempDevice=(RhoDeviceList*)malloc(sizeof(RhoDeviceList));
 		tempDevice->NextDevice=NULL;
 		if(m_pStart==NULL)
@@ -668,14 +668,14 @@ DWORD WINAPI RhoBluetoothManager::runThreadReadData(LPVOID voidArg) {
 
 	//setsockopt(functionInfo->m_socketServer,SOL_RFCOMM, SO_BTH_SET_READ_REMOTE_NAME, (char*)&remotename, sizeof(remotename));
 
-	if (s != INVALID_SOCKET) 
+	if (s != INVALID_SOCKET)
 	{
-		for ( ; ; ) 
+		for ( ; ; )
 		{
 			//receive data in pbuf
 			cbBytesRecd = recv (s, pbuf, MAX_MESSAGE_SIZE, 0);
 			//if error occured in receiving, return error code
-			if (cbBytesRecd == SOCKET_ERROR) 
+			if (cbBytesRecd == SOCKET_ERROR)
 			{
 				LOG(INFO)  + "RhoBluetoothManager::runThreadReadData() exit with error";
 				functionInfo->fireSessionCallBack(functionInfo->mConnectedDeviceName, RHO_BT_ERROR);
@@ -715,7 +715,7 @@ int RhoBluetoothManager::makeConnection(BT_ADDR bt_addr) {
 			return -1;
 		m_socketClient = socket (AF_BT, SOCK_STREAM, BTHPROTO_RFCOMM);
 
-		if (m_socketClient == INVALID_SOCKET) 
+		if (m_socketClient == INVALID_SOCKET)
 		{
 			LOG(INFO)  + "RhoBluetoothManager::makeConnection() return with invalid socket opened";
 			return WSAGetLastError();
@@ -724,7 +724,7 @@ int RhoBluetoothManager::makeConnection(BT_ADDR bt_addr) {
 		SOCKADDR_BTH sa;
 
 		memset (&sa, 0, sizeof(sa));
-		sa.addressFamily = AF_BT;			
+		sa.addressFamily = AF_BT;
 		//Search for the selected device in the list box in the link list
 		//m_pCurrentDevice=m_pStart;
 		sa.serviceClassId=ServerGuid;
@@ -740,7 +740,7 @@ int RhoBluetoothManager::makeConnection(BT_ADDR bt_addr) {
 		//}
 		sa.btAddr = bt_addr;
 
-		if (connect (m_socketClient, (SOCKADDR *)&sa, sizeof(sa)) == SOCKET_ERROR) 
+		if (connect (m_socketClient, (SOCKADDR *)&sa, sizeof(sa)) == SOCKET_ERROR)
 		{
 			LOG(INFO)  + "RhoBluetoothManager::makeConnection() return with error during socket connection";
 			m_socketClient=INVALID_SOCKET;
@@ -771,7 +771,7 @@ void RhoBluetoothManager::onDiscoverDlgSelectDevice(int index) {
 	}
 	for (int iCount = 0 ;(m_pCurrentDevice)&&iCount!=index;m_pCurrentDevice=m_pCurrentDevice->NextDevice,iCount++);
 	BT_ADDR bt_addr = m_pCurrentDevice->bthAddress;
-	
+
 	if (makeConnection(bt_addr) == 0) {
 		// get connected_device_name
 		RhoDeviceInfo devInfo;
@@ -786,7 +786,7 @@ void RhoBluetoothManager::onDiscoverDlgSelectDevice(int index) {
 
 	// fire callback
 	fireCreateSessionCallBack(RHO_BT_ERROR, "");
-	
+
 }
 
 void RhoBluetoothManager::onDiscoverDlgCancel() {
@@ -807,10 +807,10 @@ void RhoBluetoothManager::onDiscoveredDlgCancel() {
 int RhoBluetoothManager::GetDeviceInfo(RhoDeviceInfo *pPeerDevicesInfo)
 {
 	int iCtr=0;
-	for (m_pCurrentDevice = m_pStart;(m_pCurrentDevice);m_pCurrentDevice=m_pCurrentDevice->NextDevice,iCtr++) 
-	{ 
-		StringCchPrintf(pPeerDevicesInfo[iCtr].szDeviceNameAddr, ARRAYSIZE(pPeerDevicesInfo[iCtr].szDeviceNameAddr),  L"%s:(%04x%08x)", m_pCurrentDevice->bthName, GET_NAP(m_pCurrentDevice->bthAddress), GET_SAP(m_pCurrentDevice->bthAddress));		
-	} 
+	for (m_pCurrentDevice = m_pStart;(m_pCurrentDevice);m_pCurrentDevice=m_pCurrentDevice->NextDevice,iCtr++)
+	{
+		StringCchPrintf(pPeerDevicesInfo[iCtr].szDeviceNameAddr, ARRAYSIZE(pPeerDevicesInfo[iCtr].szDeviceNameAddr),  L"%s:(%04x%08x)", m_pCurrentDevice->bthName, GET_NAP(m_pCurrentDevice->bthAddress), GET_SAP(m_pCurrentDevice->bthAddress));
+	}
 	return 0;
 }
 
@@ -823,14 +823,14 @@ int RhoBluetoothManager::GetDeviceInfo(RhoDeviceInfo *pPeerDeviceInfo, int iSele
 {
 	int iCtr=0;
 
-	for (m_pCurrentDevice = m_pStart;(m_pCurrentDevice);m_pCurrentDevice=m_pCurrentDevice->NextDevice,iCtr++) 
-	{ 
+	for (m_pCurrentDevice = m_pStart;(m_pCurrentDevice);m_pCurrentDevice=m_pCurrentDevice->NextDevice,iCtr++)
+	{
 		if(iCtr==iSelectedItem)
 		{
-			StringCchPrintf(pPeerDeviceInfo[0].szDeviceNameAddr, ARRAYSIZE(pPeerDeviceInfo[0].szDeviceNameAddr), L"%s:(%04x%08x)", m_pCurrentDevice->bthName, GET_NAP(m_pCurrentDevice->bthAddress), GET_SAP(m_pCurrentDevice->bthAddress));		
+			StringCchPrintf(pPeerDeviceInfo[0].szDeviceNameAddr, ARRAYSIZE(pPeerDeviceInfo[0].szDeviceNameAddr), L"%s:(%04x%08x)", m_pCurrentDevice->bthName, GET_NAP(m_pCurrentDevice->bthAddress), GET_SAP(m_pCurrentDevice->bthAddress));
 			return 0;
 		}
-	} 
+	}
 	return -1;
 }
 
@@ -841,14 +841,14 @@ int RhoBluetoothManager::GetDeviceInfo(RhoDeviceInfo *pPeerDeviceInfo, int iSele
 //Input:		string cotaining the GUID
 //Output:	GUID type
 //Return: Returns -1 in case of an error, otherwise returns zero.
-int RhoBluetoothManager::GetGUID(WCHAR *psz, GUID *pGUID) 
+int RhoBluetoothManager::GetGUID(WCHAR *psz, GUID *pGUID)
 {
 	int data1, data2, data3;
 	int data4[8];
 
 	if (11 ==  swscanf(psz, L"%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x\n",
 		&data1, &data2, &data3,
-		&data4[0], &data4[1], &data4[2], &data4[3], 
+		&data4[0], &data4[1], &data4[2], &data4[3],
 		&data4[4], &data4[5], &data4[6], &data4[7])) {
 			pGUID->Data1 = data1;
 			pGUID->Data2 = data2 & 0xffff;
@@ -876,10 +876,10 @@ int RhoBluetoothManager::GetLocalDeviceName(RhoDeviceInfo *pLocalDeviceInfo)
 	{
 		if(RegQueryValueEx(hKey,L"Name",0,&dwRegType,(LPBYTE)pLocalDeviceInfo->szDeviceNameAddr,&dwRegSize)==ERROR_SUCCESS)
 		{
-			if (dwRegSize>MAX_NAME_SIZE) 
+			if (dwRegSize>MAX_NAME_SIZE)
 			{
 				RegCloseKey(hKey);
-				return -1; 
+				return -1;
 			}
 			RegCloseKey(hKey);
 		}
@@ -934,7 +934,7 @@ void RhoDiscoverDlg::updateDeviceListFromManager() {
 	//mBtManager->onDiscoverDlgSelectDevice(0);
 
 	int count = mBtManager->GetNumDevices();
-	
+
 	if (count <= 0) {
 		LOG(INFO)  + "RhoDiscoverDlg::updateDeviceListFromManager() Device list is Empty !!!";
 		::MessageBox(getMainWnd(), L"Not found any Bluetooth devices !", L"Warning", MB_OK | MB_ICONINFORMATION);
@@ -946,7 +946,7 @@ void RhoDiscoverDlg::updateDeviceListFromManager() {
 	int i;
 	for (i = 0; i < count; ++i) {
 		RhoDeviceInfo devInfo;
-		mBtManager->GetDeviceInfo(&devInfo, i);		
+		mBtManager->GetDeviceInfo(&devInfo, i);
 		int index = SendMessage(dlg.GetDlgItem(IDC_BT_LIST).m_hWnd, LB_ADDSTRING,0,(LPARAM) devInfo.szDeviceNameAddr);
 		SendMessage(dlg.GetDlgItem(IDC_BT_LIST).m_hWnd, LB_SETITEMDATA, (WPARAM)index, (LPARAM) i);
 	}
@@ -1070,7 +1070,7 @@ const char* rho_bluetooth_create_custom_client_session(const char* server_name, 
 }
 
 const char* rho_bluetooth_stop_current_connection_process() {
-    
+
     return NULL;
 }
 
@@ -1084,7 +1084,7 @@ void rho_bluetooth_session_disconnect(const char* connected_device_name) {
 }
 
 int rho_bluetooth_session_get_status(const char* connected_device_name) {
-	return RhoBluetoothManager::getInstance()->rho_bluetooth_session_get_status(connected_device_name); 
+	return RhoBluetoothManager::getInstance()->rho_bluetooth_session_get_status(connected_device_name);
 }
 
 VALUE rho_bluetooth_session_read_string(const char* connected_device_name) {
@@ -1147,7 +1147,7 @@ LRESULT CRhoBluetoothDiscoverDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/,
 	RHO_ASSERT(SHCreateMenuBar(&mbi));
 	//GotoDlgCtrl(GetDlgItem(IDC_DATE_CTRL));
 
-#else 
+#else
 
 	CreateButtons();
 	GotoDlgCtrl(m_btnOk);
@@ -1214,7 +1214,7 @@ LRESULT CRhoBluetoothDiscoveredDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*
 	RHO_ASSERT(SHCreateMenuBar(&mbi));
 	//GotoDlgCtrl(GetDlgItem(IDC_DATE_CTRL));
 
-#else 
+#else
 
 	CreateButtons();
 	GotoDlgCtrl(m_btnOk);
@@ -1288,7 +1288,7 @@ const char* rho_bluetooth_create_custom_client_session(const char* server_name, 
 }
 
 const char* rho_bluetooth_stop_current_connection_process() {
-    
+
     return NULL;
 }
 
@@ -1301,7 +1301,7 @@ void rho_bluetooth_session_disconnect(const char* connected_device_name) {
 }
 
 int rho_bluetooth_session_get_status(const char* connected_device_name) {
-	return -1; 
+	return -1;
 }
 
 VALUE rho_bluetooth_session_read_string(const char* connected_device_name) {

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -49,14 +49,14 @@ const char* getSyncTypeName( RHOM_SYNC_TYPE sync_type )
 		case RST_BULK_ONLY:
 			return "bulk_only";
     }
-	
+
     return "none";
 }
 
 void parseSyncNotify(const char* msg, RHO_CONNECT_NOTIFY* pNotify);
 String rhom_generate_id();
 
-extern "C" 
+extern "C"
 {
 
 void rho_connectclient_initmodel(RHOM_MODEL* model)
@@ -92,7 +92,7 @@ void rho_connectclient_processmodels(RHOM_MODEL* pModels, int nModels)
     //create associations string
     Hashtable<String, String> hashSrcAssoc;
     for ( int i = 0; i < nModels; i++ )
-    { 
+    {
         RHOM_MODEL& model = pModels[i];
         if ( !model.associations )
             continue;
@@ -111,25 +111,25 @@ void rho_connectclient_processmodels(RHOM_MODEL* pModels, int nModels)
     }
 
     for ( int i = 0; i < nModels; i++ )
-    { 
+    {
         RHOM_MODEL& model = pModels[i];
         IDBResult res = oUserDB.executeSQL("SELECT sync_priority,source_id,partition, sync_type, schema_version, associations, blob_attribs FROM sources WHERE name=?",
             model.name);
 
-        String strAssoc = hashSrcAssoc[model.name]; 
+        String strAssoc = hashSrcAssoc[model.name];
 
         if ( !res.isEnd() )
         {
             oUserDB.executeSQL("UPDATE sources SET sync_priority=?, sync_type=?, partition=?, schema=?, schema_version=?, associations=?, blob_attribs=? WHERE name=?",
-                model.sync_priority, getSyncTypeName(model.sync_type), model.partition, 
+                model.sync_priority, getSyncTypeName(model.sync_type), model.partition,
                 (model.type == RMT_PROPERTY_FIXEDSCHEMA ? "schema_model" : ""), "", strAssoc.c_str(), model.blob_attribs, model.name );
-            
+
             model.source_id = res.getIntByIdx(1);
-            
+
         }else //new model
         {
             oUserDB.executeSQL("INSERT INTO sources (source_id,name,sync_priority, sync_type, partition, schema,schema_version, associations, blob_attribs) values (?,?,?,?,?,?,?,?,?) ",
-                nStartModelID, model.name, model.sync_priority, getSyncTypeName(model.sync_type), model.partition, 
+                nStartModelID, model.name, model.sync_priority, getSyncTypeName(model.sync_type), model.partition,
                 (model.type == RMT_PROPERTY_FIXEDSCHEMA ? "schema_model" : ""), "", strAssoc.c_str(), model.blob_attribs );
 
             model.source_id = nStartModelID;
@@ -182,7 +182,7 @@ void rho_connectclient_database_fullclient_reset_and_logout()
 	rho_sync_logout();
 	rho_connectclient_database_full_reset(true);
 }
-	
+
 void rho_connectclient_database_full_reset(bool bClientReset)
 {
     db::CDBAdapter& oUserDB = db::CDBAdapter::getUserDB();
@@ -210,7 +210,7 @@ void rho_connectclient_database_full_reset(bool bClientReset)
 
     //TODO: scema_sources
     //hash_migrate = {}
-    //::Rho::RHO.init_schema_sources(hash_migrate) 
+    //::Rho::RHO.init_schema_sources(hash_migrate)
 }
 
 void rho_connectclient_destroy()
@@ -253,7 +253,7 @@ void db_insert_into_table( db::CDBAdapter& db, const String& table, Hashtable<St
             cols += ',';
             quests += ',';
         }
-    
+
         cols += key;
         quests += '?';
         vals.addElement( val );
@@ -368,15 +368,15 @@ unsigned long rhom_find(const char* szModel, unsigned long hash, int nCount )
 					sql += "\nINTERSECT\n";
 
 				sql += "SELECT object FROM object_values WHERE attrib=? AND source_id=? AND value=?";
-				arValues.addElement(it->first); 
+				arValues.addElement(it->first);
 				arValues.addElement(strSrcID);
 				arValues.addElement(it->second);
 			}
 		}
     }else
     {
-		sql = "SELECT object FROM " + src_name;		
-		if (hashCond.size() != 0) 
+		sql = "SELECT object FROM " + src_name;
+		if (hashCond.size() != 0)
 		{
 			sql += " WHERE ";
 			for ( Hashtable<String,String>::iterator it = hashCond.begin();  it != hashCond.end(); ++it )
@@ -399,7 +399,7 @@ unsigned long rhom_find(const char* szModel, unsigned long hash, int nCount )
     unsigned long items = rho_connectclient_strhasharray_create();
     for ( ; !res1.isEnd(); res1.next() )
     {
-        rho_connectclient_strhasharray_add(items, 
+        rho_connectclient_strhasharray_add(items,
             rhom_load_item_by_object(db, src_name, nSrcID, res1.getStringByIdx(0), isSchemaSrc) );
     }
 
@@ -448,7 +448,7 @@ unsigned long rho_connectclient_findbysql(const char* szModel, const char* szSql
                 rho_connectclient_hash_put(item, res1.getColName(i).c_str(), res1.getStringByIdx(i).c_str() );
         }
 
-        rho_connectclient_strhasharray_add(items, item ); 
+        rho_connectclient_strhasharray_add(items, item );
     }
 
     return items;
@@ -466,10 +466,10 @@ void rho_connectclient_start_bulkupdate(const char* szModel)
     }
     String db_partition = res.getStringByIdx(0);
     db::CDBAdapter& db = db::CDBAdapter::getDB(db_partition.c_str());
-	
+
     db.startTransaction();
 }
-	
+
 void rho_connectclient_stop_bulkupdate(const char* szModel)
 {
     String src_name = szModel;
@@ -481,10 +481,10 @@ void rho_connectclient_stop_bulkupdate(const char* szModel)
     }
     String db_partition = res.getStringByIdx(0);
     db::CDBAdapter& db = db::CDBAdapter::getDB(db_partition.c_str());
-	
+
     db.endTransaction();
 }
-	
+
 void rho_connectclient_itemdestroy( const char* szModel, unsigned long hash )
 {
     Hashtable<String, String>& hashObject = *((Hashtable<String, String>*)hash);
@@ -511,7 +511,7 @@ void rho_connectclient_itemdestroy( const char* szModel, unsigned long hash )
 
     //save list of attrs
     unsigned long item = 0;
-    
+
     if ( isSchemaSrc )
     {
         IDBResult attrsList = db.executeSQL( ("SELECT * FROM " + tableName + " WHERE object=?").c_str(), obj);
@@ -604,9 +604,9 @@ void rho_connectclient_save( const char* szModel, unsigned long hash )
     {
         if (isSyncSrc)
         {
-            IDBResult resUpdateType = db.executeSQL( "SELECT update_type FROM changed_values WHERE object=? and source_id=? and sent=?", 
+            IDBResult resUpdateType = db.executeSQL( "SELECT update_type FROM changed_values WHERE object=? and source_id=? and sent=?",
                 obj, nSrcID, 0 );
-            if (!resUpdateType.isEnd()) 
+            if (!resUpdateType.isEnd())
                 update_type = resUpdateType.getStringByIdx(0);
             else
 	            update_type = "update";
@@ -648,18 +648,18 @@ void rho_connectclient_save( const char* szModel, unsigned long hash )
                 {
                     if (isSyncSrc)
                     {
-                        IDBResult resUpdateType = db.executeSQL( "SELECT update_type FROM changed_values WHERE object=? and attrib=? and source_id=? and sent=?", 
+                        IDBResult resUpdateType = db.executeSQL( "SELECT update_type FROM changed_values WHERE object=? and attrib=? and source_id=? and sent=?",
                             obj, key, nSrcID, 0 );
-                        if (!resUpdateType.isEnd()) 
+                        if (!resUpdateType.isEnd())
                         {
                             fields.put("update_type", resUpdateType.getStringByIdx(0) );
-                            db.executeSQL( "DELETE FROM changed_values WHERE object=? and attrib=? and source_id=? and sent=?", 
+                            db.executeSQL( "DELETE FROM changed_values WHERE object=? and attrib=? and source_id=? and sent=?",
                                 obj, key, nSrcID, 0 );
                         }
 
                         db_insert_into_table(db, "changed_values", fields);
                     }
-                        
+
                     if ( isSchemaSrc )
                         db.executeSQL( (String("UPDATE ") + tableName + " SET " + key + "=? WHERE object=?").c_str(), val, obj );
                     else
@@ -673,7 +673,7 @@ void rho_connectclient_save( const char* szModel, unsigned long hash )
 
                 fields.remove("update_type");
                 fields.remove("attrib_type");
-                
+
                 if (isSchemaSrc)
                     db.executeSQL( (String("UPDATE ") + tableName + " SET " + key + "=? WHERE object=?").c_str(), val, obj );
                 else
@@ -720,12 +720,12 @@ void rho_connectclient_create_object(const char* szModel, unsigned long hash)
         fields.put("attrib", "object");
         fields.put("update_type", "create");
 
-        db_insert_into_table(db, "changed_values", fields ); 
+        db_insert_into_table(db, "changed_values", fields );
     }
 
     if ( isSchemaSrc )
         db_insert_into_table(db, tableName, hashObject, "source_id");
-    else                    
+    else
     {
         for ( Hashtable<String,String>::iterator it = hashObject.begin();  it != hashObject.end(); ++it )
         {
@@ -744,7 +744,7 @@ void rho_connectclient_create_object(const char* szModel, unsigned long hash)
             db_insert_into_table(db, tableName, fields);
         }
     }
-                        
+
     db.endTransaction();
 }
 
@@ -752,7 +752,7 @@ void rho_connectclient_parsenotify(const char* msg, RHO_CONNECT_NOTIFY* pNotify)
 {
     CTokenizer oTokenizer( msg, "&" );
     int nLastPos = 0;
-    while (oTokenizer.hasMoreTokens()) 
+    while (oTokenizer.hasMoreTokens())
     {
         nLastPos = oTokenizer.getCurPos();
 
@@ -796,50 +796,50 @@ void rho_connectclient_free_syncnotify(RHO_CONNECT_NOTIFY* pNotify)
 {
     if (!pNotify)
         return;
-    
+
     if ( pNotify->source_name != null )
         free(pNotify->source_name);
-    
+
     if ( pNotify->status != null )
         free(pNotify->status);
-    
+
     if ( pNotify->error_message != null )
         free(pNotify->error_message);
-    
+
     if ( pNotify->callback_params != null )
         free(pNotify->callback_params);
-    
+
     memset( pNotify, 0, sizeof(RHO_CONNECT_NOTIFY) );
 }
-    
+
 void rho_connectclient_parse_objectnotify(const char* msg, RHO_CONNECT_OBJECT_NOTIFY* pNotify)
 {
     {
         CTokenizer oTokenizer( msg, "&" );
-        while (oTokenizer.hasMoreTokens()) 
+        while (oTokenizer.hasMoreTokens())
         {
             String tok = oTokenizer.nextToken();
             if (tok.length() == 0)
                 continue;
-        
+
             CTokenizer oValueTok( tok, "=" );
             String name = net::URI::urlDecode(oValueTok.nextToken());
-        
+
             if ( String_startsWith(name, "deleted[][object]"))
                 pNotify->deleted_count++;
-            else if ( String_startsWith(name, "updated[][object]")) 
+            else if ( String_startsWith(name, "updated[][object]"))
                 pNotify->updated_count++;
-            else  if ( String_startsWith(name, "created[][object]")) 
-                pNotify->created_count++; 
+            else  if ( String_startsWith(name, "created[][object]"))
+                pNotify->created_count++;
         }
     }
-    
+
     if ( pNotify->deleted_count > 0 )
     {
         pNotify->deleted_source_ids = new int[pNotify->deleted_count];
         pNotify->deleted_objects = new char*[pNotify->deleted_count];
     }
-    
+
     if ( pNotify->updated_count > 0 )
     {
         pNotify->updated_source_ids = new int[pNotify->updated_count];
@@ -855,29 +855,29 @@ void rho_connectclient_parse_objectnotify(const char* msg, RHO_CONNECT_OBJECT_NO
     {
         CTokenizer oTokenizer( msg, "&" );
         int nDeleted = 0, nUpdated = 0, nCreated = 0;
-        while (oTokenizer.hasMoreTokens()) 
+        while (oTokenizer.hasMoreTokens())
         {
             String tok = oTokenizer.nextToken();
             if (tok.length() == 0)
                 continue;
-            
+
             CTokenizer oValueTok( tok, "=" );
             String name = net::URI::urlDecode(oValueTok.nextToken());
             String value = net::URI::urlDecode(oValueTok.nextToken());
-            
+
             if ( String_startsWith(name, "deleted[][object]"))
             {
                 pNotify->deleted_objects[nDeleted] = strdup(value.c_str());
                 nDeleted++;
             }else if (String_startsWith(name, "deleted[][source_id]"))
                 convertFromStringA( value.c_str(), pNotify->deleted_source_ids[nDeleted] );
-            else if ( String_startsWith(name, "updated[][object]")) 
+            else if ( String_startsWith(name, "updated[][object]"))
             {
                 pNotify->updated_objects[nUpdated] = strdup(value.c_str());
                 nUpdated++;
             }else if (String_startsWith(name, "updated[][source_id]"))
                 convertFromStringA( value.c_str(), pNotify->updated_source_ids[nUpdated] );
-            else  if ( String_startsWith(name, "created[][object]")) 
+            else  if ( String_startsWith(name, "created[][object]"))
             {
                 pNotify->created_objects[nCreated] = strdup(value.c_str());
                 nCreated++;
@@ -886,12 +886,12 @@ void rho_connectclient_parse_objectnotify(const char* msg, RHO_CONNECT_OBJECT_NO
         }
     }
 }
-    
+
 void rho_connectclient_free_sync_objectnotify(RHO_CONNECT_OBJECT_NOTIFY* pNotify)
 {
     if (!pNotify)
         return;
-    
+
     if ( pNotify->deleted_source_ids != null )
         free(pNotify->deleted_source_ids);
 
@@ -900,12 +900,12 @@ void rho_connectclient_free_sync_objectnotify(RHO_CONNECT_OBJECT_NOTIFY* pNotify
 
     if ( pNotify->created_source_ids != null )
         free(pNotify->created_source_ids);
-    
+
     if ( pNotify->deleted_objects != null )
     {
         for(int i = 0; i < pNotify->deleted_count; i++)
             free(pNotify->deleted_objects[i]);
-        
+
         free(pNotify->deleted_objects);
     }
 
@@ -913,7 +913,7 @@ void rho_connectclient_free_sync_objectnotify(RHO_CONNECT_OBJECT_NOTIFY* pNotify
     {
         for(int i = 0; i < pNotify->updated_count; i++)
             free(pNotify->updated_objects[i]);
-        
+
         free(pNotify->updated_objects);
     }
 
@@ -921,13 +921,13 @@ void rho_connectclient_free_sync_objectnotify(RHO_CONNECT_OBJECT_NOTIFY* pNotify
     {
         for(int i = 0; i < pNotify->created_count; i++)
             free(pNotify->created_objects[i]);
-        
+
         free(pNotify->created_objects);
     }
-    
-    memset( pNotify, 0, sizeof(RHO_CONNECT_OBJECT_NOTIFY) );        
+
+    memset( pNotify, 0, sizeof(RHO_CONNECT_OBJECT_NOTIFY) );
 }
-    
+
 unsigned long rho_connectclient_strarray_create()
 {
     return (unsigned long)(new rho::Vector<rho::String>());
@@ -1003,8 +1003,8 @@ const char* rho_connectclient_hash_get(unsigned long hash, const char* szKey)
 
 int rho_connectclient_hash_equal(unsigned long hash1, unsigned long hash2)
 {
-    Hashtable<String, String>& hashThis1 = *((Hashtable<String, String>*)hash1);    
-    Hashtable<String, String>& hashThis2 = *((Hashtable<String, String>*)hash2);    
+    Hashtable<String, String>& hashThis1 = *((Hashtable<String, String>*)hash1);
+    Hashtable<String, String>& hashThis2 = *((Hashtable<String, String>*)hash2);
 
     return hashThis1 == hashThis2 ? 1 : 0;
 }
@@ -1012,21 +1012,21 @@ int rho_connectclient_hash_equal(unsigned long hash1, unsigned long hash2)
 int rho_connectclient_hash_size(unsigned long hash)
 {
     Hashtable<String, String>& hashThis = *((Hashtable<String, String>*)hash);
-	
+
 	return hashThis.size();
 }
-	
+
 void rho_connectclient_hash_enumerate(unsigned long hash, int (*enum_func)(const char* szKey, const char* szValue, void* pThis), void* pThis )
 {
     Hashtable<String, String>& hashThis = *((Hashtable<String, String>*)hash);
-	
+
 	for ( Hashtable<String,String>::iterator it = hashThis.begin();  it != hashThis.end(); ++it )
 	{
 		if ( !(*enum_func)(it->first.c_str(), it->second.c_str(), pThis) )
 			return;
-	}		
+	}
 }
-	
+
 }
 
 String rhom_generate_id()
@@ -1042,53 +1042,53 @@ String rhom_generate_id()
 
 namespace rho {
 	const _CRhoAppAdapter& RhoAppAdapter = _CRhoAppAdapter();
-	
+
 	/*static*/ String _CRhoAppAdapter::getMessageText(const char* szName)
 	{
 		return String();
 	}
-	
+
 	/*static*/ String _CRhoAppAdapter::getErrorText(int nError)
 	{
 		return String();
 	}
-	
+
 	/*static*/ int  _CRhoAppAdapter::getErrorFromResponse(NetResponse& resp)
 	{
 		if ( !resp.isResponseRecieved())
 			return ERR_NETWORK;
-		
+
 		if ( resp.isUnathorized() )
 			return ERR_UNATHORIZED;
-		
+
 		if ( !resp.isOK() )
 			return ERR_REMOTESERVER;
-		
+
 		return ERR_NONE;
 	}
-	
+
 	/*static*/ void  _CRhoAppAdapter::loadServerSources(const String& strSources)
 	{
-		
+
 	}
 
 	/*static*/ void  _CRhoAppAdapter::loadAllSyncSources()
 	{
-		
+
 	}
-	
+
     /*static*/ const char* _CRhoAppAdapter::getRhoDBVersion()
 	{
 		return "1.0";
 	}
-	
+
 	/*static*/ void _CRhoAppAdapter::resetDBOnSyncUserChanged()
 	{
 		rho_connectclient_database_full_reset(false);
-	}	
+	}
 }
 
-extern "C" 
+extern "C"
 {
 extern "C" void alert_show_popup(const char* message)
 {
@@ -1113,9 +1113,9 @@ void rho_net_impl_network_indicator(int active)
 	void alert_show_status(const char* szTitle, const char* szMessage, const char* szHide)
 	{
 	}
-	
-	const char* get_app_build_config_item(const char* key) 
+
+	const char* get_app_build_config_item(const char* key)
 	{
 		return 0;
-	}	
+	}
 }

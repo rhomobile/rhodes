@@ -214,7 +214,7 @@ public class Database {
         }*/
 
         fileaccess = JavaSystem.createFileAccess();
-        	
+
         shutdownOnNoConnection = urlProperties.getProperty("shutdown",
                 "false").equals("true");
         logger                   = new Logger();

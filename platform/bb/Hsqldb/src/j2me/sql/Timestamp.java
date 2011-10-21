@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -31,7 +31,7 @@ import java.util.Calendar;
 public class Timestamp extends java.util.Date
 {
     private int nanos;
-    
+
     public Timestamp(int year, int month, int date,
             int hour, int minute, int second, int nano) {
         Calendar myCal = Calendar.getInstance();
@@ -46,7 +46,7 @@ public class Timestamp extends java.util.Date
 	    throw new IllegalArgumentException("nanos > 999999999 or < 0");
 	nanos = nano;
     }
-    
+
     public Timestamp(long time) {
 	super(time / 1000L * 1000L);
 	nanos = (int) (time % 1000L * 1000000L);
@@ -55,7 +55,7 @@ public class Timestamp extends java.util.Date
 	    this.setTime((time / 1000L - 1L) * 1000L);
 	}
     }
-    
+
     public static Timestamp valueOf(String s) {
         String date_s;
 	String time_s;
@@ -94,35 +94,35 @@ public class Timestamp extends java.util.Date
 	secondDash = date_s.indexOf('-', firstDash+1);
 
 	// Parse the time
-	if (time_s == null) 
+	if (time_s == null)
 	    throw new java.lang.IllegalArgumentException(formatError);
 	firstColon = time_s.indexOf(':');
 	secondColon = time_s.indexOf(':', firstColon+1);
 	period = time_s.indexOf('.', secondColon+1);
 
 	// Convert the date
-	if ((firstDash > 0) & (secondDash > 0) & 
+	if ((firstDash > 0) & (secondDash > 0) &
 	    (secondDash < date_s.length()-1)) {
 	    year = Integer.parseInt(date_s.substring(0, firstDash)) - 1900;
-	    month = 
+	    month =
 		Integer.parseInt(date_s.substring
 				 (firstDash+1, secondDash)) - 1;
 	    day = Integer.parseInt(date_s.substring(secondDash+1));
-	} else {		
+	} else {
 	    throw new java.lang.IllegalArgumentException(formatError);
 	}
 
 	// Convert the time; default missing nanos
-	if ((firstColon > 0) & (secondColon > 0) & 
+	if ((firstColon > 0) & (secondColon > 0) &
 	    (secondColon < time_s.length()-1)) {
 	    hour = Integer.parseInt(time_s.substring(0, firstColon));
-	    minute = 
+	    minute =
 		Integer.parseInt(time_s.substring(firstColon+1, secondColon));
 	    if ((period > 0) & (period < time_s.length()-1)) {
-		second = 
+		second =
 		    Integer.parseInt(time_s.substring(secondColon+1, period));
 		nanos_s = time_s.substring(period+1);
-		if (nanos_s.length() > 9) 
+		if (nanos_s.length() > 9)
 		    throw new java.lang.IllegalArgumentException(formatError);
 		if (!Character.isDigit(nanos_s.charAt(0)))
 		    throw new java.lang.IllegalArgumentException(formatError);
@@ -139,7 +139,7 @@ public class Timestamp extends java.util.Date
 
 	return new Timestamp(year, month, day, hour, minute, second, a_nanos);
     }
-    
+
     public String toString() {
         Calendar myCal = Calendar.getInstance();
         myCal.setTime(this);
@@ -195,17 +195,17 @@ public class Timestamp extends java.util.Date
 		+ hour_s + ":" + minute_s + ":" + second_s + "."
 		+ nano_s);
     }
-    
+
     public int getNanos() {
 	return nanos;
     }
-    
+
     public void setNanos(int n) {
 	if (n > 999999999 || n < 0)
 	    throw new IllegalArgumentException("nanos > 999999999 or < 0");
 	nanos = n;
     }
-    
+
     public boolean equals(Timestamp ts) {
 	if (super.equals(ts)) {
 	    if (nanos == ts.nanos)
@@ -214,13 +214,13 @@ public class Timestamp extends java.util.Date
 	}
 	return false;
     }
-    
+
     public boolean equals(Object ts) {
 	if (ts instanceof Timestamp)
 	    return equals((Timestamp) ts);
 	return false;
     }
-    
+
     public boolean before(Timestamp ts) {
         Calendar myself = Calendar.getInstance();
         myself.setTime(this);
@@ -235,7 +235,7 @@ public class Timestamp extends java.util.Date
 	}
 	return false;
     }
-    
+
     public boolean after(Timestamp ts) {
         Calendar myself = Calendar.getInstance();
         myself.setTime(this);

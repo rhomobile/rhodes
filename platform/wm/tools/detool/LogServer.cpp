@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -32,7 +32,7 @@
 #define DEFAULT_PORT "11000"
 #define DEFAULT_HOST _T("localhost")
 
-LogServer::LogServer(TCHAR* logFilePath, TCHAR* log_port) 
+LogServer::LogServer(TCHAR* logFilePath, TCHAR* log_port)
 	: m_logFilePath(logFilePath)
 	, m_hLogFile(INVALID_HANDLE_VALUE)
 	, m_logPort(log_port)
@@ -65,8 +65,8 @@ bool LogServer::init()
 
 	// Resolve the local address and port to be used by the server
 	int iResult = getaddrinfo(T2A(m_logHost), T2A(m_logPort), &hints, &result);
-	
-	if (iResult != 0) 
+
+	if (iResult != 0)
 	{
 		printf("getaddrinfo failed: %d\n", iResult);
 		return false;
@@ -111,7 +111,7 @@ void LogServer::run()
 	// Accept a client socket
 	clientSocket = accept(m_listenSocket, NULL, NULL);
 
-	if (clientSocket == INVALID_SOCKET) 
+	if (clientSocket == INVALID_SOCKET)
 	{
 		printf("accept failed: %d\n", WSAGetLastError());
 		closesocket(m_listenSocket);
@@ -119,7 +119,7 @@ void LogServer::run()
 	}
 
 	// Receive until the peer shuts down the connection
-	do 
+	do
 	{
 		iResult = recv(clientSocket, recvbuf, recvbuflen, 0);
 
@@ -133,27 +133,27 @@ void LogServer::run()
 		{
 			printf("Connection closing...\n");
 		}
-		else 
+		else
 		{
 			printf("recv failed: %d\n", WSAGetLastError());
 			closesocket(clientSocket);
 			return;
 		}
 
-	} 
+	}
 	while (iResult > 0);
 }
 
 bool LogServer::createFile()
 {
-	m_hLogFile = CreateFile(m_logFilePath, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, 
+	m_hLogFile = CreateFile(m_logFilePath, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
 		CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
 	if (INVALID_HANDLE_VALUE == m_hLogFile) {
 		_tprintf( TEXT("Unable to open host file\n"));
 		return false;
 	}
-	
+
 	return true;
 }
 

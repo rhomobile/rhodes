@@ -13,7 +13,7 @@
 #Some built-in functions can be implemented in pure ruby, so they are implemented here.
 #
 
-$: = ["./lib/ruby/site_ruby/1.8", 
+$: = ["./lib/ruby/site_ruby/1.8",
         "./lib/ruby/1.8",
         "./lib/ruby/1.8/xruby",
         "."]
@@ -32,11 +32,11 @@ TOPLEVEL_BINDING = self
 
 #Float::EPSILON = 2.2204460492503131e-16
 
-module Kernel   
+module Kernel
     def nil?
         false
     end
-    
+
     def fork
         raise NotImplementedError, "the fork() function is unimplemented on this machine"
     end
@@ -57,7 +57,7 @@ module Kernel
     #private
     def require(file_name)
         return false if ($".include?(file_name) || $".include?(file_name + ".rb"))
-        
+
         load(file_name);
     end
 
@@ -66,11 +66,11 @@ module Kernel
         if __load_with_reflection__(file_name)
             return true
         end
-        
+
         $:.each do |path|
             return true if load_rb_file(path, file_name)
         end
-        
+
         raise LoadError, "no such file to load -- " + file_name
     end
 
@@ -80,7 +80,7 @@ module Kernel
         if fullname[-3..-1] != ".rb"
             fullname << ".rb"
         end
-        
+
         if !::File.file?(fullname)
             return false
         end
@@ -101,17 +101,17 @@ class Object
         [self]
     end
 
-    alias type :class 
-    
+    alias type :class
+
     private
     def initialize
     end
 end
 
 class Array
-	
+
     alias reject! delete_if
-  
+
     def reject
       a = []
       each {|x|
@@ -121,7 +121,7 @@ class Array
       }
       a
     end
-	
+
     def to_a
         self
     end
@@ -153,7 +153,7 @@ class Array
         }
         str << "]"
     end
-    
+
     #from rubinius
     def fetch(pos, *rest)
     	if rest.length > 1
@@ -175,7 +175,7 @@ class Array
     	end
     	self.at(index)
   end
-  
+
   #from rubinius
   def fill(*args)
     start_index = 0
@@ -225,13 +225,13 @@ class Array
     if len
       end_index = start_index + len - 1
     end
-    
+
     (start_index..end_index).each do |i|
       self[i] = block_given? ? yield(i) : item
     end
     self
   end
-  
+
   #from rubinius
   def transpose
     out = []
@@ -239,7 +239,7 @@ class Array
     a1.zip(*self) { |x| out << x }
     out
   end
-  
+
   #from rubinius
   def values_at (*args)
     out = []
@@ -255,7 +255,7 @@ class Array
           lst = size            # sick to do this BEFORE exclude_end?
         end
         lst -= 1 if x.exclude_end?
-        idx = x.first  
+        idx = x.first
         idx.upto(lst) { |i|
           out << self[i]
         }
@@ -265,9 +265,9 @@ class Array
     }
     out
   end
-  
+
   alias map! collect!
-  
+
 end
 
 class Hash
@@ -275,23 +275,23 @@ class Hash
         ks = keys
         ks.each {|k| yield([k, self[k]])}
     end
-    
+
     def each_key
         ks = keys
         ks.each {|k| yield(k)}
     end
-      
+
     def each_value
         vs = values
         vs.each {|k| yield(k)}
     end
-    
+
     def empty?
         length == 0
     end
-    
+
     alias each_pair each
-    
+
     def inspect
       r = '{'
       is_first = true
@@ -312,18 +312,18 @@ class Hash
       each {|k, v| h[v] = k}
       h
     end
-    
+
     def update other
         other.each {|k, v| self[k] = v}
         self
     end
-    
+
     alias merge! update
-    
+
     def merge other
         clone.merge!(other)
     end
-    
+
     def index value
         each {|k, v| return k if value == v }
         return nil
@@ -422,7 +422,7 @@ class String
         carry_type = nil
 
         return __add_nocarry__(result, last_index)
-    end 
+    end
 
     def succ
         result = self.dup  #may be dup?
@@ -506,7 +506,7 @@ class String
     def inspect
         '"' + to_s + '"'
     end
-    
+
     #from rubinius
     def insert(idx, str)
         if idx < 0
@@ -541,7 +541,7 @@ class String
     def rjust(width, str=" ")
         justify_string(width, str, 1)
     end
-	
+
 	#from rubinius
     def ljust(width, str=" ")
         justify_string(width, str, -1)
@@ -598,7 +598,7 @@ class Numeric
         return -self if (self <=> 0) == -1
         self
     end
-    
+
     def div value
         (self/value).floor
     end
@@ -838,7 +838,7 @@ class File < IO
     RDWR = 2
     CREAT = 256
     EXCL = 1024
-  
+
     SEPARATOR = separator
 
     def self.join(*strings)
@@ -848,7 +848,7 @@ class File < IO
     def self.split(filename)
         [dirname(filename), basename(filename)]
     end
-    
+
     module Constants
     end
 end
@@ -867,15 +867,15 @@ module Process
     def Process.getrlimit x
         raise NotImplementedError, "the getrlimit() function is unimplemented on this machine"
     end
-    
+
     def Process.setrlimit *x
         raise NotImplementedError, "the setrlimit() function is unimplemented on this machine"
     end
-    
+
     def Process.fork
         raise NotImplementedError, "the fork() function is unimplemented on this machine"
     end
-    
+
 end
 
 class ThreadError < StandardError
@@ -885,10 +885,10 @@ class Proc
     def to_proc
         self
     end
-    
+
     def inspect
-        to_s  
-    end      
+        to_s
+    end
 end
 
 class File
@@ -932,26 +932,26 @@ module Enumerable
         each { |obj| return obj if yield(obj) }
         ifnone.call if ifnone
     end
-    
+
     alias find :detect
 
-    def each_with_index 
+    def each_with_index
         i = 0;
         each {|x| yield x, i; i = i + 1}
     end
-    
+
     def to_a
         arr = []
         each{|obj| arr <<obj}
         return arr
     end
-    
+
     alias entries :to_a
 
     def sort(&proc)
         #proc = lambda{ |a,b| a<=>b } unless block_given?
         arr = to_a
-        arr.sort{|x,y| 
+        arr.sort{|x,y|
             if block_given?  then
                 proc.call(x,y)
             else
@@ -959,14 +959,14 @@ module Enumerable
             end
         }
     end
-    
+
     def member?(other)
         each{|obj| return true if obj == other }
         return false
     end
-    
+
     alias include? :member?
-    
+
     def inject(*args)
         if args.size == 0 then
             vals = to_a
@@ -981,13 +981,13 @@ module Enumerable
             nil
         end
     end
-    
+
     def all?(&proc)
         proc = lambda { |obj| obj } unless block_given?
         each { |obj| return false unless proc.call(obj) }
         true
     end
-    
+
     def any?(&proc)
         proc = lambda { |obj| obj } unless block_given?
         each { |obj| return true if proc.call(obj) }
@@ -998,7 +998,7 @@ module Enumerable
         arr = []
         each{|obj| arr << yield(obj)}
         return arr
-    end   
+    end
 
     alias map :collect
 
@@ -1034,8 +1034,8 @@ module Enumerable
            yield(result.last) if block_given?
         }
         result unless block_given?
-    end 
-    
+    end
+
     def grep(pattern, &proc)
         result = []
         each do |obj|
@@ -1053,12 +1053,12 @@ end
 
 class Regexp
     EXTENDED = 2
-    
+
     def ==(other)
         return false unless Regexp === other
         return inspect == other.inspect
     end
-    
+
     def inspect
         '/' + source + '/'
     end
@@ -1069,12 +1069,12 @@ class IO
         write v
         return self
     end
-    
+
     def rewind
         seek(0)
         return 0
-    end    
-    
+    end
+
     def getc
         return read(1)
     end
@@ -1091,8 +1091,8 @@ class <<ENV
     def to_s
         return "ENV"
     end
-    
-    #As we can not modify environment variable in java, 
+
+    #As we can not modify environment variable in java,
     #we just store it in @fake_ev
     def delete x
         return if @fake_ev == nil
@@ -1101,24 +1101,24 @@ class <<ENV
 
     def [](x)
         raise TypeError.new("[] can't convert into String") if !(x.instance_of?(String))
-        
+
         return __get_os_ev__(x) if @fake_ev == nil
-        
+
         v = @fake_ev[x.upcase]
         if v == nil
             return __get_os_ev__(x)
         else
             return v
-        end    
+        end
     end
-    
+
     def []=(x, y)
         raise TypeError.new("[]= can't convert into String") if !(x.instance_of?(String))
         raise TypeError.new("[]= can't convert value into String") if !(y.instance_of?(String))
         @fake_ev = {} if @fake_ev == nil
         @fake_ev[x.upcase]=y
     end
-    
+
     def index x
         v = @fake_ev.index(x)
         if v != nil
@@ -1127,7 +1127,7 @@ class <<ENV
             return __os_ev_index__(x)
         end
     end
-    
+
     def has_value? x
         return (self.index(x) != nil)
     end

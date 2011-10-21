@@ -41,5 +41,5 @@ describe "The DATA constant" do
       end
     end
   end
-=end  
+=end
 end

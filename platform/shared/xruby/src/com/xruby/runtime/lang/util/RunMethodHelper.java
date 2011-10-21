@@ -25,8 +25,8 @@ public abstract class RunMethodHelper {
 	protected abstract void loadBlock(GeneratorAdapter mg);
 	protected abstract void loadArgs(GeneratorAdapter mg);
 	protected abstract int rubyArgSize();
-	
-	public void createRunMethod(ClassVisitor cv, Class hostClass, Class castClass, String name, 
+
+	public void createRunMethod(ClassVisitor cv, Class hostClass, Class castClass, String name,
 			boolean staticMethod, boolean block) {
 		Class[] params = getParamType(staticMethod, block);
 		Class returnClass;
@@ -35,17 +35,17 @@ public abstract class RunMethodHelper {
 		} catch (NoSuchMethodException nsme) {
 			throw new IllegalArgumentException("no such method: " + CgUtil.getMethod(name, RubyValue.class, params).getDescriptor());
 		}
-		
+
 		GeneratorAdapter mg = startRun(getRunMethod(), cv);
-		
+
 		Type type = Type.getType(castClass);
-		loadReceiver(mg, type, staticMethod);	
+		loadReceiver(mg, type, staticMethod);
 		loadArgs(mg);
-		
-		if (block) {	
+
+		if (block) {
 			this.loadBlock(mg);
 		}
-		
+
 		Method method = CgUtil.getMethod(name, returnClass, params);
 		if (staticMethod) {
 			mg.invokeStatic(type, method);
@@ -54,14 +54,14 @@ public abstract class RunMethodHelper {
 		}
 		endRun(mg);
 	}
-	
+
 	private Class[] getParamType(boolean staticMethod, boolean block) {
 		List<Class> javaArgList = new ArrayList<Class>();
 		if (staticMethod) {
 			// receiver
 			javaArgList.add(RubyValue.class);
 		}
-		
+
 		int size = rubyArgSize();
 		if (size >= 0) {
 			for (int i = 0; i < size; i++) {
@@ -70,24 +70,24 @@ public abstract class RunMethodHelper {
 		} else {
 			javaArgList.add(RubyArray.class);
 		}
-		
+
 		if (block) {
 			javaArgList.add(RubyBlock.class);
 		}
-		
+
 		return javaArgList.toArray(new Class[0]);
 	}
-	
+
 	protected GeneratorAdapter startRun(Method runMethod, ClassVisitor cv) {
 		GeneratorAdapter mg = new GeneratorAdapter(Opcodes.ACC_PROTECTED,
 	            runMethod, null, null, cv);
-		mg.visitCode();		
+		mg.visitCode();
 		return mg;
 	}
 
 	protected void loadReceiver(GeneratorAdapter mg, Type type, boolean module) {
 		mg.loadArg(0);
-		
+
 		if (!module && !Types.RUBY_VALUE_TYPE.equals(type)) {
 			mg.checkCast(type);
 		}
@@ -95,6 +95,6 @@ public abstract class RunMethodHelper {
 
 	protected void endRun(GeneratorAdapter mg) {
 		mg.returnValue();
-		mg.endMethod();	
+		mg.endMethod();
 	}
 }

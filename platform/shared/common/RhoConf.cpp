@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -57,7 +57,7 @@ void RhoSettings::saveToFile(const char* szName)
 void RhoSettings::checkConflicts()
 {
     m_mapConflictedValues.clear();
-    for ( Hashtable<String,String>::iterator it=m_mapChangedValues.begin() ; it != m_mapChangedValues.end(); it++ ) 
+    for ( Hashtable<String,String>::iterator it=m_mapChangedValues.begin() ; it != m_mapChangedValues.end(); it++ )
     {
         String key = it->first;
         String valueChanged = it->second;
@@ -103,7 +103,7 @@ void RhoSettings::readChanges()
 	    Hashtable<String,String>::iterator it = m_mapChangedValues.find(CONF_TIMESTAMP_PROP);
         if ( it != m_mapChangedValues.end() )
             strOldTimestamp = it->second;
-        
+
         if ( strTimestamp.compare(strOldTimestamp) != 0 )
             checkConflicts();
 
@@ -166,7 +166,7 @@ void RhoSettings::loadProperty( const char* start, int len, Hashtable<String,Str
 
                 nNameLen = s+1;
                 break;
-            }else 
+            }else
                 break;
         }
     }
@@ -257,7 +257,7 @@ bool   RhoSettings::isExist(const char* szName){
 }
 
 extern "C" {
-	
+
 void rho_conf_Init(const char* szRootPath){
 	rho::common::CFilePath oRhoPath( szRootPath );
 
@@ -284,11 +284,11 @@ void rho_conf_setBool(const char* szName, bool value) {
 int rho_conf_getInt(const char* szName) {
 	return RHOCONF().getInt(szName);
 }
-	
+
 void rho_conf_setInt(const char* szName, int value) {
 	RHOCONF().setInt(szName,value,true);
 }
-	
+
 char* rho_conf_getString(const char* szName) {
 	return strdup(RHOCONF().getString(szName).c_str());
 }
@@ -311,9 +311,9 @@ void rho_conf_setString(const char* szName, const char* value){
 //	RHOCONF().saveToFile();
 //}
 
-char* str_assign_ex( char* data, int len) 
+char* str_assign_ex( char* data, int len)
 {
-	if (data) 
+	if (data)
 	{
 		char* a = (char*)malloc(len+1);
 		strncpy(a,data,len);
@@ -323,14 +323,14 @@ char* str_assign_ex( char* data, int len)
 	return 0;
 }
 
-char* str_assign(char* data) 
+char* str_assign(char* data)
 {
-	if (data) 
+	if (data)
 	{
 		int len = strlen(data);
 		return str_assign_ex(data,len);
 	}
 	return 0;
 }
-	
+
 }

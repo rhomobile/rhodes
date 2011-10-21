@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -43,17 +43,17 @@ import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.util.Utils;
 
 public class AnnotationsOverlay extends ItemizedOverlay<OverlayItem> {
-	
+
 	public static final String TAG = "AnnotationOverlay";
 
 	private GoogleMapView mainView;
 	private Vector<Annotation> annotations;
-	
+
 	private int base_callout_x_offset = 0;
 	private int base_callout_y_offset = 0;
-	
+
 	private int myDensity = DisplayMetrics.DENSITY_DEFAULT;
-	
+
 	public AnnotationsOverlay(GoogleMapView view, Drawable marker, int density) {
 		super(boundCenterBottom(marker));
 		base_callout_x_offset = 0;
@@ -63,12 +63,12 @@ public class AnnotationsOverlay extends ItemizedOverlay<OverlayItem> {
 		myDensity = density;
 		populate();
 	}
-	
+
 	public void addAnnotation(Annotation ann) {
 		annotations.addElement(ann);
 		populate();
 	}
-	
+
 	public void addAnnotations(Vector<Annotation> anns) {
 		int i;
 		for (i = 0; i < anns.size(); i++) {
@@ -76,7 +76,7 @@ public class AnnotationsOverlay extends ItemizedOverlay<OverlayItem> {
 		}
 		populate();
 	}
-	
+
 	@Override
 	protected OverlayItem createItem(int i) {
 		Annotation ann = annotations.elementAt(i);
@@ -95,7 +95,7 @@ public class AnnotationsOverlay extends ItemizedOverlay<OverlayItem> {
 				BitmapDrawable bd = new BitmapDrawable(bitmap);
 				//bd.setTargetDensity(DisplayMetrics.DENSITY_MEDIUM);
 				bd.setVisible(true, true);
-				
+
 				/*
 				Callout cal = new Callout(0,0, ann.title, ann.subtitle, ann.url, RhodesService.getContext());
 				Bitmap b = cal.getResultBitmap();
@@ -110,7 +110,7 @@ public class AnnotationsOverlay extends ItemizedOverlay<OverlayItem> {
 				ann.callout_x_offset = 0;
 				ann.callout_y_offset = -(ann.image_y_offset);
 				//*/
-				
+
 				item.setMarker(bd);
 			}
 		}
@@ -121,7 +121,7 @@ public class AnnotationsOverlay extends ItemizedOverlay<OverlayItem> {
 	public int size() {
 		return annotations.size();
 	}
-	
+
 	@Override
 	protected boolean onTap(int i) {
 		Annotation ann = annotations.elementAt(i);

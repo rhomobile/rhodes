@@ -22,8 +22,8 @@
 
 #include <windows.h>
 
-#ifdef __cplusplus 
-	extern "C" { 
+#ifdef __cplusplus
+	extern "C" {
 #endif
 
 // The number of strings in a block. The string resource is internally
@@ -55,10 +55,10 @@ DECLARE_HANDLE(HSTRBLOCK);
 
 // Methods to access a string block.
 
-// Function:			HSTRBLOCK WINAPI GetStringBlockA( LPCSTR strAppName, UINT nBlockID, 
+// Function:			HSTRBLOCK WINAPI GetStringBlockA( LPCSTR strAppName, UINT nBlockID,
 //														  WORD wLangID );
-// Purpose:				Get the block of string with the specified ID & language from the 
-//						specified application (ANSI version). 
+// Purpose:				Get the block of string with the specified ID & language from the
+//						specified application (ANSI version).
 // LPCSTR	strAppName:	The name of the application.
 // UINT		nBlockID:	The ID of the block.
 // WORD		wLangID:	The language identifier. You can create a language
@@ -69,10 +69,10 @@ DECLARE_HANDLE(HSTRBLOCK);
 HSTRBLOCK WINAPI GetStringBlockA( LPCSTR strAppName, UINT nBlockID, WORD wLangID );
 
 
-// Function:			HSTRBLOCK WINAPI GetStringBlockW( LPCWSTR strAppName, UINT nBlockID, 
+// Function:			HSTRBLOCK WINAPI GetStringBlockW( LPCWSTR strAppName, UINT nBlockID,
 //														  WORD wLangID );
-// Purpose:				Get the block of string with the specified ID & language from the 
-//						specified application (UNICODE version). 
+// Purpose:				Get the block of string with the specified ID & language from the
+//						specified application (UNICODE version).
 // LPCWSTR	strAppName:	The name of the application.
 // UINT		nBlockID:	The ID of the block.
 // WORD		wLangID:	The language identifier. You can create a language
@@ -98,7 +98,7 @@ BOOL WINAPI DeleteStringBlock( HSTRBLOCK hStrBlock );
 // HSTRBLOCK hStrBlock:	The handle to the string block.
 // UINT nIndex:			The zero-based index of the string in the block. The index can be
 //						any value from 0 thru' (NO_OF_STRINGS_PER_BLOCK - 1).
-// Returns:				If successful, the string length in number of characters, excluding the terminating 
+// Returns:				If successful, the string length in number of characters, excluding the terminating
 //						NULL character; -1 if the function fails.
 // Comments:			Call this function to get the string length before calling GetString.
 int WINAPI GetStringLength( HSTRBLOCK hStrBlock, UINT nIndex );
@@ -110,8 +110,8 @@ int WINAPI GetStringLength( HSTRBLOCK hStrBlock, UINT nIndex );
 // UINT nIndex:			The zero-based index of the string in the block. The index can be a value
 //						from 0 through (NO_OF_STRINGS_PER_BLOCK - 1).
 // LPSTR pszStr:		The pointer to the memory to which the string requested will be copied.
-//						This memory should be large enough to contain the string. 			
-// Returns:				TRUE on success, FALSE otherwise. 
+//						This memory should be large enough to contain the string.
+// Returns:				TRUE on success, FALSE otherwise.
 // Comments:			Before calling this function, call GetStringLength() to get the string length.
 BOOL WINAPI GetStringA( HSTRBLOCK hStrBlock, UINT nIndex, LPSTR pszStr );
 
@@ -122,8 +122,8 @@ BOOL WINAPI GetStringA( HSTRBLOCK hStrBlock, UINT nIndex, LPSTR pszStr );
 // UINT nIndex:			The zero-based index of the string in the block. The index can be a value
 //						from 0 through (NO_OF_STRINGS_PER_BLOCK - 1).
 // LPSTR pszStr:		The pointer to the memory to which the string requested will be copied.
-//						This memory should be large enough to contain the string. 			
-// Returns:				TRUE on success, FALSE otherwise. 
+//						This memory should be large enough to contain the string.
+// Returns:				TRUE on success, FALSE otherwise.
 // Comments:			Before calling this function, call GetStringLength() to get the string length.
 BOOL WINAPI GetStringW( HSTRBLOCK hStrBlock, UINT nIndex, LPWSTR pszStr );
 
@@ -133,8 +133,8 @@ BOOL WINAPI GetStringW( HSTRBLOCK hStrBlock, UINT nIndex, LPWSTR pszStr );
 // HSTRBLOCK hStrBlock: The handle to the string block.
 // UINT nIndex:			The zero-based index of the string in the block. The index can be a value
 //						from 0 through (NO_OF_STRINGS_PER_BLOCK - 1).
-// LPCSTR pszText:		The pointer to the new string. 			
-// Returns:				TRUE on success, FALSE otherwise. 
+// LPCSTR pszText:		The pointer to the new string.
+// Returns:				TRUE on success, FALSE otherwise.
 BOOL WINAPI SetStringA( HSTRBLOCK hStrBlock, UINT nIndex, LPCSTR pszText );
 
 
@@ -143,8 +143,8 @@ BOOL WINAPI SetStringA( HSTRBLOCK hStrBlock, UINT nIndex, LPCSTR pszText );
 // HSTRBLOCK hStrBlock: The handle to the string block.
 // UINT nIndex:			The zero-based index of the string in the block. The index can be a value
 //						from 0 through (NO_OF_STRINGS_PER_BLOCK - 1).
-// LPCWSTR pszText:		The pointer to the new string. 	 			
-// Returns:				TRUE on success, FALSE otherwise. 
+// LPCWSTR pszText:		The pointer to the new string.
+// Returns:				TRUE on success, FALSE otherwise.
 BOOL WINAPI SetStringW( HSTRBLOCK hStrBlock, UINT nIndex, LPCWSTR pszText );
 
 
@@ -156,7 +156,7 @@ int WINAPI GetFirstStringID( HSTRBLOCK hStrBlock );
 
 
 // Function:			int WINAPI GetBlockID( HSTRBLOCK hStrBlock );
-// Purpose:				Get the ID of the string block. This is the ID of the string block that was 
+// Purpose:				Get the ID of the string block. This is the ID of the string block that was
 //						specified when the block was created.
 // HSTRBLOCK hStrBlock:	The handle to the string block.
 // Returns:				The block ID, if sucessful, or -1 on failure.
@@ -164,7 +164,7 @@ int WINAPI GetBlockID( HSTRBLOCK hStrBlock );
 
 
 // Function:			WORD WINAPI GetBlockLanguage( HSTRBLOCK hStrBlock );
-// Purpose:				Get the identifier of the language for the string block. This is the language ID 
+// Purpose:				Get the identifier of the language for the string block. This is the language ID
 //						specified when the block was created.
 // HSTRBLOCK hStrBlock:	The handle to the string block.
 // Returns:				The language ID of the block, if successful; 0 on failure.
@@ -172,15 +172,15 @@ int WINAPI GetBlockID( HSTRBLOCK hStrBlock );
 WORD WINAPI GetBlockLanguage( HSTRBLOCK hStrBlock );
 
 
-// Function:			BOOL WINAPI UpdateStringBlockA( LPCSTR strAppName, HSTRBLOCK hStrBlock, 
+// Function:			BOOL WINAPI UpdateStringBlockA( LPCSTR strAppName, HSTRBLOCK hStrBlock,
 //														int nBlockID, WORD wLangID );
-// Purpose:				Update the block of string resource in the specified application 
-//						(ANSI version). 
+// Purpose:				Update the block of string resource in the specified application
+//						(ANSI version).
 // LPCTSTR strAppName:	The name of the application whose string resource has to be updated.
 // HSTRBLOCK hStrBlock: The handle to the block that contains the new strings.
 // int nBlockID:		The ID of the block to update in the app. If it is -1, use the same block
 //						ID as that of hStrBlock.
-// WORD wLangID:		The identifier of the language whaose string block has to be updated. If this 
+// WORD wLangID:		The identifier of the language whaose string block has to be updated. If this
 //						value is 0, use the same language as that of hStrBlock.
 // Returns:				TRUE on success, FALSE on failure.
 BOOL WINAPI UpdateStringBlockA( LPCSTR strAppName, HSTRBLOCK hStrBlock, int nBlockID, WORD wLangID );
@@ -188,13 +188,13 @@ BOOL WINAPI UpdateStringBlockA( LPCSTR strAppName, HSTRBLOCK hStrBlock, int nBlo
 
 // Function:			BOOL WINAPI UpdateStringBlockW( LPCWTR strAppName, HSTRBLOCK hStrBlock,
 //														int nBlockID, WORD wLangID );
-// Purpose:				Update the block of string resource in the specified application 
-//						(UNICODE version). 
+// Purpose:				Update the block of string resource in the specified application
+//						(UNICODE version).
 // LPCTSTR strAppName:	The name of the application whose string resource has to be updated.
 // HSTRBLOCK hStrBlock: The handle to the block that contains the new strings.
 // int nBlockID:		The ID of the block to update in the app. If it is -1, use the same block
 //						ID as that of hStrBlock.
-// WORD wLangID:		The identifier of the language whaose string block has to be updated. If this 
+// WORD wLangID:		The identifier of the language whaose string block has to be updated. If this
 //						value is 0, use the same language as that of hStrBlock.
 // Returns:				TRUE on success, FALSE on failure.
 BOOL WINAPI UpdateStringBlockW( LPCWSTR strAppName, HSTRBLOCK hStrBlock, int nBlockID, WORD wLangID );
@@ -213,15 +213,15 @@ STRBLOCKERR WINAPI GetStringBlockError();
 #define		GetString			GetStringW
 #define		SetString			SetStringW
 #define		UpdateStringBlock	UpdateStringBlockW
-#else	
+#else
 #define		GetStringBlock		GetStringBlockA
 #define		GetString			GetStringA
 #define		SetString			SetStringA
 #define		UpdateStringBlock	UpdateStringBlockA
 #endif // UNICODE
 
-#ifdef __cplusplus 
-	} 
+#ifdef __cplusplus
+	}
 #endif
 
 #endif // _STRBLOCK_H

@@ -529,7 +529,7 @@ rc = isnan(x);
           }
           else
           {
-            /* 1.0e+22 is the largest power of 10 than can be 
+            /* 1.0e+22 is the largest power of 10 than can be
             ** represented exactly. */
             while ((e % 22) != 0) { scale *= 1.0e+1; e -= 1; }
             while (e > 0) { scale *= 1.0e+22; e -= 22; }

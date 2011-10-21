@@ -33,15 +33,15 @@ class HashWithIndifferentAccess < Hash
   end
 
   # Updates the instantized hash with values from the second:
-  # 
+  #
   #   hash_1 = HashWithIndifferentAccess.new
   #   hash_1[:key] = "value"
-  # 
+  #
   #   hash_2 = HashWithIndifferentAccess.new
   #   hash_2[:key] = "New Value!"
-  # 
+  #
   #   hash_1.update(hash_2) # => {"key"=>"New Value!"}
-  # 
+  #
   def update(other_hash)
     other_hash.each_pair { |key, value| regular_writer(convert_key(key), convert_value(value)) }
     self

@@ -36,7 +36,7 @@ public class RubyModule extends RubyBasic {
     protected Map<RubyID, RubyValue> instance_varibles_ = null;
     protected Map<RubyID, RubyMethod> methods_ = new HashMap<RubyID, RubyMethod>();
     protected Map<String, RubyValue> constants_ = new HashMap<String, RubyValue>();
-    
+
     public RubyModule() {
         super(null);
         this.name_ = null;
@@ -92,20 +92,20 @@ public class RubyModule extends RubyBasic {
         }
         return value;
     }
-    
+
     @RubyAllocMethod
     public static RubyModule allocModule(RubyValue receiver) {
     	RubyModule module = new RubyModule();
     	module.setRubyClass((RubyClass)receiver);
-    	return module;    	
+    	return module;
     }
-    
+
     @RubyLevelMethod(name="initialize")
     public RubyValue initializeModule(RubyBlock block) {
     	if (block != null) {
     		this.module_eval(null, block);
     	}
-    	
+
     	return RubyConstant.QNIL;
     }
 
@@ -227,10 +227,10 @@ public class RubyModule extends RubyBasic {
 
         return false;
     }
-    
+
     private boolean isKindOf(RubyValue v) {
         RubyClass cl = v.getRubyClass();
-        
+
         while (cl != null) {
             if (cl == this || cl.methods_ == this.methods_) {
                 return true;
@@ -723,7 +723,7 @@ public class RubyModule extends RubyBasic {
         return ObjectFactory.createBoolean(this.isKindOf(arg));
     }
 
-    
+
 
     @RubyLevelMethod(name="ancestors")
     public RubyValue ancestors() {

@@ -1236,7 +1236,7 @@ void LocaleTest::combine()
       }
 
       {
-        // Check auto combination do not result in weird reference counting behavior 
+        // Check auto combination do not result in weird reference counting behavior
         // (might generate a crash).
         loc1->combine<numpunct<char> >(*loc1);
       }

@@ -89,9 +89,9 @@ inline BOOL AtlIsFullPathT(_In_ const CharType* szPath)
 	{
 		return TRUE;
 	}
-	if (szPath[0]=='\\' && szPath[1]=='\\' && 
+	if (szPath[0]=='\\' && szPath[1]=='\\' &&
 		szPath[2] != '\0' ) // unc path name
-	{		
+	{
 		return TRUE;
 	}
 #else // _WIN32_WCE
@@ -118,7 +118,7 @@ inline BOOL IsFullPathA(_In_ LPCSTR szPath) throw()
 #pragma warning(push)
 #pragma warning(disable : 4706)
 
-// this function is different from the the CRT 
+// this function is different from the the CRT
 // strncpy in that it does not pad out the whole string with zeroes
 inline char * __cdecl _strncpy(_Out_cap_(count) char * dest, _In_ const char * source, _In_ size_t count) throw()
 {
@@ -257,9 +257,9 @@ public:
 //typedefs and defines for CUrl (essentially the same as the ones from wininet, but with an ATL_ prepended)
 typedef WORD ATL_URL_PORT;
 
-enum ATL_URL_SCHEME 
+enum ATL_URL_SCHEME
 {
-	ATL_URL_SCHEME_UNKNOWN = -1, 
+	ATL_URL_SCHEME_UNKNOWN = -1,
 	ATL_URL_SCHEME_FTP     = 0,
 	ATL_URL_SCHEME_GOPHER  = 1,
 	ATL_URL_SCHEME_HTTP    = 2,
@@ -401,7 +401,7 @@ public:
 
 		__try
 		{
-			union 
+			union
 			{
 				CHAR rgchSymbol[sizeof(IMAGEHLP_SYMBOL) + ATL_SYMBOL_NAME_LEN];
 				IMAGEHLP_SYMBOL  sym;
@@ -423,7 +423,7 @@ public:
 			{
 				pszSymbol = sym.sym.Name;
 
-				if (UnDecorateSymbolName(sym.sym.Name, szUndec, sizeof(szUndec)/sizeof(szUndec[0]), 
+				if (UnDecorateSymbolName(sym.sym.Name, szUndec, sizeof(szUndec)/sizeof(szUndec[0]),
 					UNDNAME_NO_MS_KEYWORDS | UNDNAME_NO_ACCESS_SPECIFIERS))
 				{
 					pszSymbol = szUndec;
@@ -512,8 +512,8 @@ public:
 	}
 	static DWORD WINAPI ContextThreadProc(_In_ LPVOID pv) throw()
 	{
-		_AtlThreadContextInfo* pThis = 
-			reinterpret_cast< _AtlThreadContextInfo* >(pv); 
+		_AtlThreadContextInfo* pThis =
+			reinterpret_cast< _AtlThreadContextInfo* >(pv);
 		return pThis->DoDumpStack();
 	}
 	DWORD DoDumpStack() throw()
@@ -615,7 +615,7 @@ public:
 		ResumeThread(hThread);
 
 		return 0;
-	} 
+	}
 };
 
 // Helper function to produce a stack dump
@@ -834,7 +834,7 @@ public:
 			}
 
 			//If the pipe is busy, we wait for up to m_dwTimeout
-			if (!WaitNamedPipeA(m_szPipeName, m_dwTimeout)) 
+			if (!WaitNamedPipeA(m_szPipeName, m_dwTimeout))
 			{
 				if (revert.Restore())
 				{
@@ -971,7 +971,7 @@ __declspec(selectany) char CDebugReportHook::m_szClientName[MAX_COMPUTERNAME_LEN
 // IThreadPoolConfig
 // Used to configure the worker thread pool. This can be used by any
 // client of the CThreadPool class.
-__interface __declspec(uuid("B1F64757-6E88-4fa2-8886-7848B0D7E660")) 
+__interface __declspec(uuid("B1F64757-6E88-4fa2-8886-7848B0D7E660"))
 	IThreadPoolConfig : public IUnknown
 {
 	STDMETHOD(SetSize)(int nNumThreads);
@@ -1064,7 +1064,7 @@ public:
 			// failed creating the Io completion port
 			m_critSec.Term();
 			CloseHandle(m_hThreadEvent);
-			return AtlHresultFromLastError();		
+			return AtlHresultFromLastError();
 		}
 		m_pvWorkerParam = pvWorkerParam;
 		m_dwStackSize = dwStackSize;
@@ -1251,7 +1251,7 @@ protected:
 
 		OVERLAPPED* pOverlapped;
 
-		// this block is to ensure theWorker gets destructed before the 
+		// this block is to ensure theWorker gets destructed before the
 		// thread handle is closed
 		{
 			// We instantiate an instance of the worker class on the stack
@@ -1294,16 +1294,16 @@ protected:
 		m_dwThreadEventId = GetCurrentThreadId();
 		SetEvent(m_hThreadEvent);
 
-		return 0; 
+		return 0;
 	}
 
 	static DWORD WINAPI WorkerThreadProc(_In_ LPVOID pv) throw()
 	{
-		CThreadPool* pThis = 
-			reinterpret_cast< CThreadPool* >(pv); 
+		CThreadPool* pThis =
+			reinterpret_cast< CThreadPool* >(pv);
 
 		return pThis->ThreadProc();
-	} 
+	}
 
 	_Check_return_ HRESULT InternalResizePool(_In_ int nNumThreads, _In_ int dwMaxWait) throw()
 	{
@@ -1352,7 +1352,7 @@ protected:
 				{
 					HANDLE hThread = m_threadMap.GetValueAt(nIndex);
 					// Wait for the thread to shutdown
-					if (WaitTraits::WaitForSingleObject(hThread, 60000) == WAIT_OBJECT_0) 
+					if (WaitTraits::WaitForSingleObject(hThread, 60000) == WAIT_OBJECT_0)
 					{
 						CloseHandle(hThread);
 						m_threadMap.RemoveAt(nIndex);
@@ -1517,9 +1517,9 @@ ATL_NOINLINE inline BOOL AtlEscapeUrlMetaHelper(
 	_In_ LPCSTR szPrev,
 	_In_ DWORD dwOutLen,
 	_Inout_ _Deref_prepost_valid_ LPSTR* ppszInUrl,
-	_Out_ DWORD* pdwLen, 
+	_Out_ DWORD* pdwLen,
 	_In_ DWORD dwFlags = 0,
-	_In_ DWORD dwColonPos = ATL_URL_MAX_URL_LENGTH) 
+	_In_ DWORD dwColonPos = ATL_URL_MAX_URL_LENGTH)
 {
 	ATLENSURE( ppszOutUrl != NULL );
 	ATLENSURE( szPrev != NULL );
@@ -1544,7 +1544,7 @@ ATL_NOINLINE inline BOOL AtlEscapeUrlMetaHelper(
 			szIn++;
 			bRet = TRUE;
 		}
-		else if (chNext == '.' && ((chNext = *(szIn+1)) == '/' || 
+		else if (chNext == '.' && ((chNext = *(szIn+1)) == '/' ||
 			chNext == '\\' || chNext == '\0'))
 		{
 			//otherwise if the meta sequence is of the form "/../"
@@ -1570,7 +1570,7 @@ ATL_NOINLINE inline BOOL AtlEscapeUrlMetaHelper(
 					if ((dwFlags & ATL_URL_CANONICALIZE) && ((dwFlags & ATL_URL_COMBINE) == 0) &&
 						(dwColonPos && (dwOutPos <= dwColonPos+1)))
 					{
-						//NOTE: this is to match the way that InternetCanonicalizeUrl and 
+						//NOTE: this is to match the way that InternetCanonicalizeUrl and
 						//      InternetCombineUrl handle this case
 						break;
 					}
@@ -1649,7 +1649,7 @@ inline BOOL AtlEscapeUrl(
 				LPSTR pszStrToLower=szStringOut-dwLen;
 				ATLENSURE(pszStrToLower >= szOrigStringOut &&  pszStrToLower <= szStringOutEnd);
 				Checked::strlwr_s(pszStrToLower,szStringOutEnd-pszStrToLower+1);
- 
+
 				if (dwLen == 4 && !strncmp("file", (szStringOut-4), 4))
 				{
 					bSchemeFile = TRUE;
@@ -1664,7 +1664,7 @@ inline BOOL AtlEscapeUrl(
 			if (*szStringIn != '\0')
 			{
 				short nFirstDigit = AtlHexValue(*szStringIn++);
-				
+
 				if( nFirstDigit < 0 )
 				{
 					bRet = FALSE;
@@ -1682,14 +1682,14 @@ inline BOOL AtlEscapeUrl(
 					}
 					ch = static_cast<char>(ch+nSecondDigit);
 				}
-				else 
+				else
 				{
-					break; 
+					break;
 				}
 			}
-			else 
+			else
 			{
-				break; 
+				break;
 			}
 		}
 		else if ((ch == '?' || ch == '#') && (dwFlagsInternal & ATL_URL_BROWSER_MODE))
@@ -1732,7 +1732,7 @@ inline BOOL AtlEscapeUrl(
 				if (bRet)
 					*szStringOut++ = ch;
 			}
-			else 
+			else
 			{
 				//if there is not enough space for the escape sequence
 				if (dwLen >= (dwMaxLength-3))
@@ -1782,7 +1782,7 @@ inline BOOL AtlEscapeUrl(
 	_In_ DWORD dwFlags = 0)
 {
 	ATLENSURE( szStringIn != NULL );
-	ATLENSURE( szStringOut != NULL );	
+	ATLENSURE( szStringOut != NULL );
 	// convert to UTF8
 	BOOL bRet = FALSE;
 
@@ -1793,7 +1793,7 @@ inline BOOL AtlEscapeUrl(
 		{
 			*pdwStrLen = 1; //one for null
 	    }
-        *szStringOut = '\0';			
+        *szStringOut = '\0';
 		return TRUE;
 	}
 	int nCnt = AtlUnicodeToUTF8(szStringIn, nSrcLen, NULL, 0);
@@ -1866,7 +1866,7 @@ inline BOOL AtlEscapeUrl(
 }
 
 //Convert all escaped characters in szString to their real values
-//lpszStringIn and lpszStringOut can be the same string	
+//lpszStringIn and lpszStringOut can be the same string
 inline BOOL AtlUnescapeUrl(
 	_In_ LPCSTR szStringIn,
 	_Out_cap_post_count_(dwMaxLength, *pdwStrLen) LPSTR szStringOut,
@@ -2017,7 +2017,7 @@ inline BOOL AtlCanonicalizeUrl(
 	_In_ LPCTSTR szUrl,
 	_Out_capcount_(*pdwMaxLength) LPTSTR szCanonicalized,
 	_Inout_ DWORD* pdwMaxLength,
-	_In_ DWORD dwFlags = 0) 
+	_In_ DWORD dwFlags = 0)
 {
 	ATLENSURE( szUrl != NULL );
 	ATLENSURE( szCanonicalized != NULL );
@@ -2032,7 +2032,7 @@ inline BOOL AtlCombineUrl(
 	_In_ LPCTSTR szRelativeUrl,
 	_Out_cap_(*pdwMaxLength) LPTSTR szBuffer,
 	_Inout_ DWORD* pdwMaxLength,
-	_In_ DWORD dwFlags = 0) 
+	_In_ DWORD dwFlags = 0)
 {
 	ATLENSURE(szBaseUrl != NULL);
 	ATLENSURE(szRelativeUrl != NULL);
@@ -2040,7 +2040,7 @@ inline BOOL AtlCombineUrl(
 	ATLENSURE(pdwMaxLength != NULL);
 
 	size_t nLen1 = _tcslen(szBaseUrl);
-	TCHAR szCombined[2*ATL_URL_MAX_URL_LENGTH];  
+	TCHAR szCombined[2*ATL_URL_MAX_URL_LENGTH];
 	if (nLen1 >= _countof(szCombined))
 	{
 		return FALSE;
@@ -2050,7 +2050,7 @@ inline BOOL AtlCombineUrl(
 
 	// if last char of szBaseUrl is not a slash, add it.
 	if (nLen1 > 0 && szCombined[nLen1-1] != _T('/'))
-	{		
+	{
 		if (nLen1 >= _countof(szCombined) - 1)
 		{
 			return FALSE;
@@ -2065,7 +2065,7 @@ inline BOOL AtlCombineUrl(
 	if (nLen2 >= _countof(szCombined))
 	{
 		return FALSE;
-	}	
+	}
 	if (nLen2+nLen1+1 >= _countof(szCombined) || nLen2+nLen1+1 <= nLen1)
 	{
 		return FALSE;
@@ -2145,7 +2145,7 @@ public:
 		{
 			if (bRet && (m_dwUserNameLength > 0))
 			{
-				bRet = AtlUnescapeUrl(m_szUserName, m_szUserName, 
+				bRet = AtlUnescapeUrl(m_szUserName, m_szUserName,
 					&m_dwUserNameLength, ATL_URL_MAX_USER_NAME_LENGTH+1);
 				if (bRet)
 				{
@@ -2155,7 +2155,7 @@ public:
 
 			if (bRet && (m_dwPasswordLength > 0))
 			{
-				bRet = AtlUnescapeUrl(m_szPassword, m_szPassword, 
+				bRet = AtlUnescapeUrl(m_szPassword, m_szPassword,
 					&m_dwPasswordLength, ATL_URL_MAX_PASSWORD_LENGTH+1);
 				if (bRet)
 				{
@@ -2165,7 +2165,7 @@ public:
 
 			if (bRet && (m_dwHostNameLength > 0))
 			{
-				bRet = AtlUnescapeUrl(m_szHostName, m_szHostName, 
+				bRet = AtlUnescapeUrl(m_szHostName, m_szHostName,
 					&m_dwHostNameLength, ATL_URL_MAX_HOST_NAME_LENGTH+1);
 				if (bRet)
 				{
@@ -2175,7 +2175,7 @@ public:
 
 			if (bRet && (m_dwUrlPathLength > 0))
 			{
-				bRet = AtlUnescapeUrl(m_szUrlPath, m_szUrlPath, 
+				bRet = AtlUnescapeUrl(m_szUrlPath, m_szUrlPath,
 					&m_dwUrlPathLength, ATL_URL_MAX_PATH_LENGTH+1);
 				if (bRet)
 				{
@@ -2185,7 +2185,7 @@ public:
 
 			if (bRet && (m_dwExtraInfoLength > 0))
 			{
-				bRet = AtlUnescapeUrl(m_szExtraInfo, m_szExtraInfo, 
+				bRet = AtlUnescapeUrl(m_szExtraInfo, m_szExtraInfo,
 					&m_dwExtraInfoLength, ATL_URL_MAX_PATH_LENGTH+1);
 				if (bRet)
 				{
@@ -2233,7 +2233,7 @@ public:
 		LPTSTR lpszEndUrl = lpszUrl + dwLength;
 		if (*m_szScheme)
 		{
-			Checked::tcsncpy_s(lpszUrl,lpszEndUrl - lpszUrl,m_szScheme, m_dwSchemeNameLength);			
+			Checked::tcsncpy_s(lpszUrl,lpszEndUrl - lpszUrl,m_szScheme, m_dwSchemeNameLength);
 			lpszUrl += m_dwSchemeNameLength;
 			if( lpszUrl >= lpszEndUrl )
 				return FALSE;
@@ -2266,7 +2266,7 @@ public:
 
 		if (*m_szHostName)
 		{
-			Checked::tcsncpy_s(lpszUrl, lpszEndUrl - lpszUrl,m_szHostName, m_dwHostNameLength);			
+			Checked::tcsncpy_s(lpszUrl, lpszEndUrl - lpszUrl,m_szHostName, m_dwHostNameLength);
 			lpszUrl += m_dwHostNameLength;
 			if (m_nPortNumber != AtlGetDefaultUrlPort(m_nScheme))
 			{
@@ -2309,7 +2309,7 @@ public:
 		if (dwFlags & ATL_URL_ESCAPE)
 		{
 			TCHAR szUrl[ATL_URL_MAX_URL_LENGTH];
-			Checked::tcsncpy_s(szUrl, _countof(szUrl),lpszOutUrl, *pdwMaxLength);			
+			Checked::tcsncpy_s(szUrl, _countof(szUrl),lpszOutUrl, *pdwMaxLength);
 			if (AtlUnescapeUrl(szUrl, lpszOutUrl, pdwMaxLength, dwLength))
 			{
 				(*pdwMaxLength)--;
@@ -2337,7 +2337,7 @@ public:
 
 		//i.e. "//"
 		if (m_nScheme != ATL_URL_SCHEME_MAILTO)
-			dwUrlLength += 2;  
+			dwUrlLength += 2;
 
 		//i.e. "username@"
 		if (m_dwUserNameLength > 0)
@@ -2381,9 +2381,9 @@ public:
 		return m_dwSchemeNameLength;
 	}
 
-	//This method will incur the cost of 
+	//This method will incur the cost of
 	//validating the scheme and updating the scheme name
-	inline BOOL SetSchemeName(_In_z_ LPCTSTR lpszSchm) 
+	inline BOOL SetSchemeName(_In_z_ LPCTSTR lpszSchm)
 	{
 		ATLENSURE(lpszSchm != NULL);
 
@@ -2421,14 +2421,14 @@ public:
 
 			m_nPortNumber = ATL_URL_INVALID_PORT_NUMBER;
 		}
-		
+
 		Checked::tcsncpy_s(m_szScheme, _countof(m_szScheme),lpszSchm, m_dwSchemeNameLength);
 		m_szScheme[m_dwSchemeNameLength] = '\0';
 
 		return TRUE;
 	}
 
-	inline BOOL SetScheme(_In_ ATL_URL_SCHEME nScheme) 
+	inline BOOL SetScheme(_In_ ATL_URL_SCHEME nScheme)
 	{
 		if ((nScheme < 0) || (nScheme >= s_nSchemes))
 		{
@@ -2533,7 +2533,7 @@ public:
 	}
 
 	//Set the password
-	inline BOOL SetPassword(_In_ LPCTSTR lpszPass) 
+	inline BOOL SetPassword(_In_ LPCTSTR lpszPass)
 	{
 		ATLENSURE(lpszPass != NULL);
 
@@ -2612,7 +2612,7 @@ public:
 		TCHAR szTmp[ATL_URL_MAX_URL_LENGTH];
 		Checked::tcscpy_s(szTmp,_countof(szTmp), m_szUserName);
 		// AtlEscapeUrl returns the size of the buffer required to hold the data
-		// including the NULL terminator. However, CUrl stores the lengths of the 
+		// including the NULL terminator. However, CUrl stores the lengths of the
 		// URL components as length - NULL terminator, similar to what you'd get
 		// if you did a strlen on the URL component so we have to adjust the lengths
 		// that come back from AtlEscapeUrl
@@ -2620,7 +2620,7 @@ public:
 		if (bRet)
 		{
 			m_dwUserNameLength--;
-			Checked::tcscpy_s(szTmp,_countof(szTmp), m_szPassword);			
+			Checked::tcscpy_s(szTmp,_countof(szTmp), m_szPassword);
 			bRet = AtlEscapeUrl(szTmp, m_szPassword, &m_dwPasswordLength, ATL_URL_MAX_PASSWORD_LENGTH, dwFlags);
 		}
 		if (bRet)
@@ -2677,7 +2677,7 @@ private:
 		return s_schemes;
 	}
 
-	inline BOOL Parse(_In_ LPCTSTR lpszUrl) 
+	inline BOOL Parse(_In_ LPCTSTR lpszUrl)
 	{
 		ATLENSURE(lpszUrl != NULL);
 
@@ -2690,7 +2690,7 @@ private:
 		TCHAR* szCurrentUrl = strCurrentUrl.GetBuffer(ATL_URL_MAX_URL_LENGTH+6);
 		TCHAR* pszCurrentUrl = szCurrentUrl;
 		size_t nUrlSize = 0;
-		
+
 		BOOL bInsideSquareBrackets = FALSE;
 
 		//parse lpszUrl using szCurrentUrl to store temporary data
@@ -2703,7 +2703,7 @@ private:
 				goto error;
 
 			if (ch == ':' && !bInsideSquareBrackets)
-			{							
+			{
 				//3 cases:
 				//(1) Just encountered a scheme
 				//(2) Port number follows
@@ -2731,7 +2731,7 @@ private:
 							//Skip these characters and continue
 							lpszUrl+= 2;
 						}
-						else 
+						else
 						{
 							//it is an absolute path
 							//no domain name, port, username, or password is allowed in this case
@@ -2847,8 +2847,8 @@ private:
 			else
 			{
 				if (ch == '[' && bGotScheme && !bGotHostName)
-					bInsideSquareBrackets = TRUE;								
-				else if (ch == ']')				
+					bInsideSquareBrackets = TRUE;
+				else if (ch == ']')
 					bInsideSquareBrackets = FALSE;
 
 				*pszCurrentUrl++ = ch;
@@ -3150,7 +3150,7 @@ public:
 			return hr;
 		}
 
-		m_hThread = ThreadTraits::CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) _WorkerThreadProc, 
+		m_hThread = ThreadTraits::CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) _WorkerThreadProc,
 			this, 0, &m_dwThreadId);
 		if (!m_hThread)
 		{
@@ -3298,7 +3298,7 @@ public:
 			m_hWaitHandles.RemoveAt(nIndex);
 			m_ClientEntries.RemoveAt(nIndex);
 
-			// refresh 
+			// refresh
 			hr = Refresh();
 
 			ATLTRACE( L"Refresh result: 0x%08X", hr );
@@ -3547,7 +3547,7 @@ inline BOOL CopyCString(_In_ const StringType& str, _Out_capcount_(*pdwDestLen) 
 	StringType::PCXSTR szBuffer = str;
 	if (szBuffer)
 	{
-		Checked::memcpy_s(szDest, *pdwDestLen * sizeof(StringType::XCHAR), 
+		Checked::memcpy_s(szDest, *pdwDestLen * sizeof(StringType::XCHAR),
 			szBuffer, (dwLen+1) * sizeof(StringType::XCHAR));
 		*pdwDestLen = dwLen;
 		return TRUE;
@@ -3568,7 +3568,7 @@ inline void SystemTimeToHttpDate(_In_ const SYSTEMTIME& st, _Inout_ CStringA &st
 	static LPCSTR szDays[] = { "Sun", "Mon", "Tue",
 		"Wed", "Thu", "Fri", "Sat" };
 	static LPCSTR szMonth[] = { "Jan", "Feb", "Mar", "Apr",
-		"May", "Jun", "Jul", "Aug", "Sep", 
+		"May", "Jun", "Jul", "Aug", "Sep",
 		"Oct", "Nov", "Dec" };
 
 	strTime.Format("%s, %02d %s %d %02d:%02d:%02d GMT",
@@ -3584,7 +3584,7 @@ inline void SystemTimeToHttpDate(_In_ const SYSTEMTIME& st, _Inout_ CStringA &st
 bool inline RGBToHtml(_In_ COLORREF color, _Out_bytecap_(nBuffer) _Post_bytecount_c_(8) LPTSTR pbOut, _In_ long nBuffer)
 {
 #ifndef _WIN32_WCE
-	if (_stprintf_s(pbOut, nBuffer/sizeof(TCHAR), _T("#%0.2x%0.2x%0.2x"), GetRValue(color), 
+	if (_stprintf_s(pbOut, nBuffer/sizeof(TCHAR), _T("#%0.2x%0.2x%0.2x"), GetRValue(color),
 		GetGValue(color), GetBValue(color)) == -1)
 	{
 		return false;
@@ -3603,7 +3603,7 @@ bool inline RGBToHtml(_In_ COLORREF color, _Out_bytecap_(nBuffer) _Post_bytecoun
 inline int AsciiStricmp (
 		_In_ const char * dst,
 		_In_ const char * src
-		) 
+		)
 {
 	ATLENSURE( dst != NULL );
 	ATLENSURE( src != NULL );
@@ -3626,7 +3626,7 @@ inline int AsciiStrnicmp (
 		_In_ const char * first,
 		_In_ const char * last,
 		_In_ size_t count
-		) 
+		)
 {
 	ATLENSURE( first != NULL );
 	ATLENSURE( last != NULL );
@@ -3652,7 +3652,7 @@ inline CString AtlGetErrorDescription(_In_ HRESULT hr, _In_ DWORD dwLangId = 0) 
 {
 	LPTSTR szMessage = NULL;
 	CString str;
-	
+
 	if (FormatMessage(
 			FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
 			NULL,

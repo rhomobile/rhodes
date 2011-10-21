@@ -41,7 +41,7 @@ static LocationController *sharedLC = nil;
 @implementation LocationController
 
 @synthesize _locationManager;
-@synthesize onUpdateLocation; 
+@synthesize onUpdateLocation;
 
 - (bool)update{
     if (!_locationManager)
@@ -64,7 +64,7 @@ static LocationController *sharedLC = nil;
 	} else {
 		CFRunLoopTimerSetNextFireDate(_timer, CFAbsoluteTimeGetCurrent() + timeOutInSeconds);
 	}
-	
+
 	[_locationManager startUpdatingLocation];
 	return true;
 }
@@ -87,17 +87,17 @@ static LocationController *sharedLC = nil;
 	self = [super init];
 	if (self != nil) {
 		[Rhodes performOnUiThread:[LocationManagerInit class] wait:NO];
-		
-		self.onUpdateLocation = @selector(doUpdateLocation);	
+
+		self.onUpdateLocation = @selector(doUpdateLocation);
 		_dLatitude = 0;
 		_dLongitude = 0;
         _dAccuracy = 0;
 		_bKnownPosition = false;
-		
+
     	RAWLOG_INFO("init");
-		
+
 	}
-	
+
 	return self;
 }
 
@@ -105,14 +105,14 @@ static LocationController *sharedLC = nil;
     if (!_locationManager)
         return;
 	[_locationManager stopUpdatingLocation];
-	
+
     // Get rid of the timer, if it still exists
     if (_timer != NULL) {
         CFRunLoopTimerInvalidate(_timer);
         CFRelease(_timer);
         _timer = NULL;
     }
-	
+
 }
 
 // Called when the location is updated
@@ -123,48 +123,48 @@ static LocationController *sharedLC = nil;
 	RAWTRACE("Updated location");
 	if (!newLocation)
 		return;
-	
-    bool bNotify = false; 
-	
+
+    bool bNotify = false;
+
 	@synchronized(self){
-		
+
 		bNotify = _bKnownPosition==0 || _dLatitude != newLocation.coordinate.latitude || _dLongitude != newLocation.coordinate.longitude;
-	
+
 		_dLatitude = newLocation.coordinate.latitude;
 		_dLongitude = newLocation.coordinate.longitude;
         _dAccuracy = newLocation.horizontalAccuracy;//sqrt(newLocation.horizontalAccuracy*newLocation.horizontalAccuracy + newLocation.verticalAccuracy*newLocation.verticalAccuracy);
-		_bKnownPosition = true;	
+		_bKnownPosition = true;
 	}
-	
+
     if ( bNotify )
         rho_geo_callcallback();
-	
+
 }
 
 - (double) getLatitude{
-	double res = 0; 
+	double res = 0;
 	@synchronized(self){
 		res = _dLatitude;
 	}
-	
+
 	return res;
 }
 
 - (double) getAccuracy {
-	double res = 0; 
+	double res = 0;
 	@synchronized(self){
 		res = _dAccuracy;
 	}
-	
+
 	return res;
 }
 
 - (double) getLongitude{
-	double res = 0; 
+	double res = 0;
 	@synchronized(self){
 		res = _dLongitude;
 	}
-	return res;	
+	return res;
 }
 
 - (bool) isKnownPosition{
@@ -252,7 +252,7 @@ double rho_geo_latitude() {
 
 int rho_geo_is_available()
 {
-	return [[LocationController sharedInstance] isAvailable] ? 1 : 0;	
+	return [[LocationController sharedInstance] isAvailable] ? 1 : 0;
 }
 
 void rho_geoimpl_init()
@@ -269,7 +269,7 @@ float rho_geo_accuracy() {
 	geo_update();
 	return (float)[[LocationController sharedInstance] getAccuracy ];
 }
-	
+
 int rho_geo_known_position() {
 	geo_update();
 	return [[LocationController sharedInstance] isKnownPosition] ? 1 : 0;

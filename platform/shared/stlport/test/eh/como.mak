@@ -1,4 +1,4 @@
-# ;;; -*- Mode:makefile;-*- 
+# ;;; -*- Mode:makefile;-*-
 # Generated automatically from Makefile.in by configure.
 # This requires GNU make.
 
@@ -26,13 +26,13 @@ TEST_EXE  = ./eh_test
 TEST  = ./eh_test.out
 
 CC = e:\lang\como\bin\como
-CXX = $(CC) 
+CXX = $(CC)
 
 # __COMO__ appears not to be defined automatically ;(
 CXXFLAGS = -D__COMO__ -D_MSC_VER=1200 --exceptions --microsoft -D_STLP_DEBUG -I${STL_INCL}  -I. ${CXX_EXTRA_FLAGS}
 
-LIBS = -lm 
-LIBSTDCXX = 
+LIBS = -lm
+LIBSTDCXX =
 
 check: $(TEST)
 

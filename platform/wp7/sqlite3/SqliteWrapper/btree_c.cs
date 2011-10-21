@@ -49,7 +49,7 @@ namespace Community.CsharpSqlite
     ** Set this global variable to 1 to enable tracing using the TRACE
     ** macro.
     */
-#if TRACE 
+#if TRACE
 static bool sqlite3BtreeTrace=false;  /* True to enable tracing */
 //# define TRACE(X)  if(sqlite3BtreeTrace){printf X;fflush(stdout);}
 static void TRACE(string X, params object[] ap) { if (sqlite3BtreeTrace)  printf(X, ap); }
@@ -122,15 +122,15 @@ return SQLITE_OK;
 /*
 **** This function is only used as part of an assert() statement. ***
 **
-** Check to see if pBtree holds the required locks to read or write to the 
+** Check to see if pBtree holds the required locks to read or write to the
 ** table with root page iRoot.   Return 1 if it does and 0 if not.
 **
-** For example, when writing to a table with root-page iRoot via 
+** For example, when writing to a table with root-page iRoot via
 ** Btree connection pBtree:
 **
 **    assert( hasSharedCacheTableLock(pBtree, iRoot, 0, WRITE_LOCK) );
 **
-** When writing to an index that resides in a sharable database, the 
+** When writing to an index that resides in a sharable database, the
 ** caller should have first obtained a lock specifying the root page of
 ** the corresponding table. This makes things a bit more complicated,
 ** as this module treats each table as a separate structure. To determine
@@ -152,7 +152,7 @@ Pgno iTab = 0;
 BtLock pLock;
 
   /* If this database is not shareable, or if the client is reading
-  ** and has the read-uncommitted flag set, then no lock is required. 
+  ** and has the read-uncommitted flag set, then no lock is required.
   ** Return true immediately.
   */
 if( (pBtree.sharable==null)
@@ -300,7 +300,7 @@ return SQLITE_OK;
 #if !SQLITE_OMIT_SHARED_CACHE
 /*
 ** Add a lock on the table with root-page iTable to the shared-btree used
-** by Btree handle p. Parameter eLock must be either READ_LOCK or 
+** by Btree handle p. Parameter eLock must be either READ_LOCK or
 ** WRITE_LOCK.
 **
 ** This function assumes the following:
@@ -312,7 +312,7 @@ return SQLITE_OK;
 **       with the requested lock (i.e. querySharedCacheTableLock() has
 **       already been called and returned SQLITE_OK).
 **
-** SQLITE_OK is returned if the lock is added successfully. SQLITE_NOMEM 
+** SQLITE_OK is returned if the lock is added successfully. SQLITE_NOMEM
 ** is returned if a malloc attempt fails.
 */
 static int setSharedCacheTableLock(Btree p, Pgno iTable, u8 eLock){
@@ -375,7 +375,7 @@ return SQLITE_OK;
 ** Release all the table locks (locks obtained via calls to
 ** the setSharedCacheTableLock() procedure) held by Btree object p.
 **
-** This function assumes that Btree p has an open read or write 
+** This function assumes that Btree p has an open read or write
 ** transaction. If it does not, then the BtShared.isPending variable
 ** may be incorrectly cleared.
 */
@@ -408,7 +408,7 @@ pBt.pWriter = 0;
 pBt.isExclusive = 0;
 pBt.isPending = 0;
 }else if( pBt.nTransaction==2 ){
-/* This function is called when Btree p is concluding its 
+/* This function is called when Btree p is concluding its
 ** transaction. If there currently exists a writer, and p is not
 ** that writer, then the number of locks held by connections other
 ** than the writer must be about to drop to zero. In this case
@@ -5800,11 +5800,11 @@ if (false)
          && sqlite3PagerPageRefcount(pOvfl.pDbPage) != 1
         )
         {
-          /* There is no reason any cursor should have an outstanding reference 
+          /* There is no reason any cursor should have an outstanding reference
           ** to an overflow page belonging to a cell that is being deleted/updated.
-          ** So if there exists more than one reference to this page, then it 
-          ** must not really be an overflow page and the database must be corrupt. 
-          ** It is helpful to detect this before calling freePage2(), as 
+          ** So if there exists more than one reference to this page, then it
+          ** must not really be an overflow page and the database must be corrupt.
+          ** It is helpful to detect this before calling freePage2(), as
           ** freePage2() may zero the page contents if secure-delete mode is
           ** enabled. If this 'overflow' page happens to be a page that the
           ** caller is iterating through or using in some other way, this
@@ -6512,7 +6512,7 @@ return 1;
 
         /* Reinitialize page pTo so that the contents of the MemPage structure
         ** match the new data. The initialization of pTo can actually fail under
-        ** fairly obscure circumstances, even though it is a copy of initialized 
+        ** fairly obscure circumstances, even though it is a copy of initialized
         ** page pFrom.
         */
         pTo.isInit = 0;
@@ -6753,7 +6753,7 @@ TRACE("BALANCE: begin page %d child of %d\n", pPage.pgno, pParent.pgno);
       //   + nMaxCells*sizeof(u16)                       /* szCell */
       //   + pBt.pageSize                               /* aSpace1 */
       //   + k*nOld;                                     /* Page copies (apCopy) */
-      apCell = sqlite3ScratchMalloc(apCell, nMaxCells); 
+      apCell = sqlite3ScratchMalloc(apCell, nMaxCells);
       //if( apCell==null ){
       //  rc = SQLITE_NOMEM;
       //  goto balance_cleanup;
@@ -8580,7 +8580,7 @@ if( idx==BTREE_LARGEST_ROOT_PAGE && pMeta>0 ) pBt.readOnly = 1;
       byte[] hit = null;
       i64 nMinKey = 0;
       i64 nMaxKey = 0;
-   
+
 
       sqlite3_snprintf( 200, ref zContext, "Page %d: ", iPage );
 
@@ -8667,7 +8667,7 @@ if( idx==BTREE_LARGEST_ROOT_PAGE && pMeta>0 ) pBt.readOnly = 1;
           }
 #endif
           if ( i == 0 )
-            d2 = checkTreePage( pCheck, pgno, zContext, ref nMinKey, ref refNULL, pCheck, null ); 
+            d2 = checkTreePage( pCheck, pgno, zContext, ref nMinKey, ref refNULL, pCheck, null );
           else
             d2 = checkTreePage( pCheck, pgno, zContext, ref nMinKey, ref nMaxKey, pCheck, pCheck );
 
@@ -8889,7 +8889,7 @@ if( idx==BTREE_LARGEST_ROOT_PAGE && pMeta>0 ) pBt.readOnly = 1;
           checkPtrmap( sCheck, (u32)aRoot[i], PTRMAP_ROOTPAGE, 0, "" );
         }
 #endif
-        checkTreePage( sCheck, aRoot[i], "List of tree roots: ", ref refNULL, ref refNULL, null, null ); 
+        checkTreePage( sCheck, aRoot[i], "List of tree roots: ", ref refNULL, ref refNULL, null, null );
       }
 
       /* Make sure every page in the file is referenced

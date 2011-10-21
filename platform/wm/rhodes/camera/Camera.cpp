@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -54,7 +54,7 @@ Camera::Camera(void) {
 Camera::~Camera(void) {
 }
 
-HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename) 
+HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename)
 {
     HRESULT         hResult = S_OK;
 #if defined(_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
@@ -107,7 +107,7 @@ HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename)
     return hResult;
 }
 
-HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename) 
+HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename)
 {
 	RHO_ASSERT(pszFilename);
 #if defined( _WIN32_WCE ) && !defined( OS_PLATFORM_MOTCE )
@@ -145,12 +145,12 @@ HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename)
         LPCTSTR szExt = wcsrchr(pszFilename, '.');
 		TCHAR filename[256];
 		generate_filename(filename, szExt);
-		
+
 		int len = strBlobRoot.length() + wcslen(L"\\") + wcslen(filename);
 		wchar_t* full_name = (wchar_t*) malloc((len+2)*sizeof(wchar_t));
 		wsprintf(full_name,L"%s\\%s",strBlobRoot.c_str(),filename);
 
-		if (copy_file(pszFilename,full_name)) 
+		if (copy_file(pszFilename,full_name))
         {
 			wcscpy( pszFilename, filename );
 		} else {
@@ -166,7 +166,7 @@ HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename)
 	return E_INVALIDARG;
 }
 
-bool copy_file(LPTSTR from, LPTSTR to) 
+bool copy_file(LPTSTR from, LPTSTR to)
 {
 	RHO_ASSERT(from);
 	RHO_ASSERT(to);
@@ -200,7 +200,7 @@ LPTSTR get_file_name(LPTSTR from, LPTSTR to) {
 	int len = wcslen(to);
 	if (wcsncmp(to,from,len)==0) {
 		LPTSTR fname = from+len;
-		if ( (wcsncmp(L"\\",fname,1)==0) || 
+		if ( (wcsncmp(L"\\",fname,1)==0) ||
 			 (wcsncmp(L"/",fname,1)==0) ) {
 			fname++;
 		}
@@ -222,8 +222,8 @@ LPTSTR generate_filename(LPTSTR filename, LPCTSTR szExt) {
 	time.GetGmtTm(&tg);
 	int tz = tl.tm_hour-tg.tm_hour; //TBD: fix tz
 
-    wsprintf(filename, L"Image_%02i-%02i-%0004i_%02i.%02i.%02i_%c%03i%s", 
-		tg.tm_mon, tg.tm_mday, 1900+tg.tm_year, tg.tm_hour, tg.tm_min, tg.tm_sec,  
+    wsprintf(filename, L"Image_%02i-%02i-%0004i_%02i.%02i.%02i_%c%03i%s",
+		tg.tm_mon, tg.tm_mday, 1900+tg.tm_year, tg.tm_hour, tg.tm_min, tg.tm_sec,
         tz>0?'_':'-',abs(tz),(szExt?szExt:L""));
 
 	return filename;
@@ -233,7 +233,7 @@ void create_folder(LPTSTR Path)
 {
 	TCHAR DirName[256];
 	LPTSTR p = Path;
-	LPTSTR q = DirName; 
+	LPTSTR q = DirName;
 	while(*p)
 	{
 		if (('\\' == *p) || ('/' == *p))

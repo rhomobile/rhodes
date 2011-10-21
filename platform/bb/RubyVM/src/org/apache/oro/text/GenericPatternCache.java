@@ -1,4 +1,4 @@
-/* 
+/*
  * $Id: GenericPatternCache.java 124053 2005-01-04 01:24:35Z dfs $
  *
  * Copyright 2000-2005 The Apache Software Foundation
@@ -147,7 +147,7 @@ public abstract class GenericPatternCache implements PatternCache {
    *     compiling the regular expression.
    */
   public final synchronized Pattern getPattern(String expression, int options)
-       throws MalformedCachePatternException 
+       throws MalformedCachePatternException
   {
     Pattern result = null;
 
@@ -155,7 +155,7 @@ public abstract class GenericPatternCache implements PatternCache {
       result = addPattern(expression, options);
     } catch(MalformedPatternException e) {
       throw new MalformedCachePatternException("Invalid expression: " +
-					       expression + "\n" + 
+					       expression + "\n" +
 					       e.getMessage());
     }
 
@@ -169,8 +169,8 @@ public abstract class GenericPatternCache implements PatternCache {
    * getPattern(expression, 0)
    * </pre></blockquote>
    */
-  public final synchronized Pattern getPattern(String expression) 
-       throws MalformedCachePatternException 
+  public final synchronized Pattern getPattern(String expression)
+       throws MalformedCachePatternException
   {
     return getPattern(expression, 0);
   }

@@ -3,7 +3,7 @@
 
 
 # Oh, the commented below work for gmake 3.78.1 and above,
-# but phrase without tag not work for it. Since gmake 3.79 
+# but phrase without tag not work for it. Since gmake 3.79
 # tag with assignment fail, but work assignment for all tags
 # (really that more correct).
 

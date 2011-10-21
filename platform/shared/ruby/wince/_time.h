@@ -41,8 +41,8 @@ struct tm {
 
 typedef struct {
 		int  yr;        // year of interest
-		int  yd;        // day of year 
-		long ms;        // milli-seconds in the day 
+		int  yd;        // day of year
+		long ms;        // milli-seconds in the day
 } transitionTime;
 
 time_t mktime(struct tm* pt);

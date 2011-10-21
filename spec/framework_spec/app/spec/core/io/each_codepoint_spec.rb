@@ -4,7 +4,7 @@ require File.expand_path('../shared/codepoints', __FILE__)
 
 # See redmine #1667
 ruby_version_is "1.9" do
-if System.get_property('platform') != 'ANDROID'  
+if System.get_property('platform') != 'ANDROID'
   describe "IO#each_codepoint" do
     it_behaves_like(:io_codepoints, :codepoints)
   end
@@ -29,6 +29,6 @@ if System.get_property('platform') != 'ANDROID'
       @io.each_codepoint { |l| l }.should equal(@io)
     end
   end
-end  
+end
 end
 

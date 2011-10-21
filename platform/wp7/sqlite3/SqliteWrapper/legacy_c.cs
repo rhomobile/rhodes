@@ -55,7 +55,7 @@ namespace Community.CsharpSqlite
     static public int exec(     sqlite3 db,             /* The database on which the SQL executes */    string zSql,                /* The SQL to be executed */    sqlite3_callback xCallback, /* Invoke this callback routine */    object pArg,                /* First argument to xCallback() */    ref string pzErrMsg         /* Write error messages here */)
     { return sqlite3_exec(db, zSql, xCallback, pArg, ref pzErrMsg); }
 
-    //OVERLOADS 
+    //OVERLOADS
     static public int sqlite3_exec(
     sqlite3 db,             /* The database on which the SQL executes */
     string zSql,            /* The SQL to be executed */

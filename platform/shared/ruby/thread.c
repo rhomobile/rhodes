@@ -1536,7 +1536,7 @@ static VALUE
 rb_thread_s_kill(VALUE obj, VALUE th)
 {
     if (CLASS_OF(th) != rb_cThread) {
-        rb_raise(rb_eTypeError, 
+        rb_raise(rb_eTypeError,
                 "wrong argument type %s (expected Thread)",
                 rb_obj_classname(th));
     }

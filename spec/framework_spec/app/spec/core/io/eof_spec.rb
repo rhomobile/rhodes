@@ -22,7 +22,7 @@ describe "IO#eof?" do
   end
 end
 
-if System.get_property('platform') != 'ANDROID'  
+if System.get_property('platform') != 'ANDROID'
 describe "IO#eof?" do
   before :each do
     @name = fixture __FILE__, "lines.txt"

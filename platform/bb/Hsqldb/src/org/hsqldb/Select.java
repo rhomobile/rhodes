@@ -644,7 +644,7 @@ class Select {
         		limitCount = ((Integer) limitCondition.getArg2().getValue(session)).intValue();
         	else if (obj instanceof Long)
         		limitCount = (int)((Long) limitCondition.getArg2().getValue(session)).longValue();
-        	else 
+        	else
         	{
         		String strVal = obj.toString();
         		limitCount = Integer.parseInt(strVal);
@@ -905,7 +905,7 @@ class Select {
             }
 
 //            arrLoaded[nCounter++] = session.getDatabase().logger.getCache().getCachedObjectCount();
-            
+
             if (!found &&!outerfound) {
                 level--;
 
@@ -958,7 +958,7 @@ class Select {
                     if (gResult.size() >= limitcount) {
                         break;
                     }
-                    
+
                     if ( t != null && t.filterIndex != null && t.isMultiFindFirst && t.filterIndex.isUnique() )
                     	break;
                 } catch (HsqlInternalException e) {
@@ -980,12 +980,12 @@ class Select {
         }
 
         if (isAggregated || iHavingLen > 0 )
-        {        
+        {
 	        Iterator it = gResult.iterator();
-	
+
 	        while (it.hasNext()) {
 	            Object[] row = (Object[]) it.next();
-	
+
 	            if (isAggregated) {
 	                for (int i = 0; i < len; i++) {
 	                    if (exprColumns[i].isAggregate()) {
@@ -994,9 +994,9 @@ class Select {
 	                    }
 	                }
 	            }
-	
+
 	            if (iHavingLen > 0) {
-	
+
 	                // The test value, either aggregate or not, is set already.
 	                // Removes the row that does not satisfy the HAVING
 	                // condition.
@@ -1006,7 +1006,7 @@ class Select {
 	            }
 	        }
         }
-        
+
         return gResult.getResult();
     }
 

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -90,51 +90,51 @@
 	self = [self initWithNibName:nil bundle:nil];
 
 	CGRect rect = CGRectMake(0,0,200,200);//self.view.frame;
-	
+
 	NSArray* items = (NSArray*)[bar_info objectForKey:NATIVE_BAR_ITEMS];
-	
+
     int count = [items count];
-	
+
     NSMutableArray *tabs = [[NSMutableArray alloc] initWithCapacity:count];
-    
+
     NSString *initUrl = nil;
-    
+
     for (int i = 0; i < count; ++i) {
 		NSDictionary* item = (NSDictionary*)[items objectAtIndex:i];
-        
+
         NSString *label = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_LABEL];
         NSString *url = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_ACTION];
         NSString *icon = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_ICON];
         NSString *reload = (NSString*)[item objectForKey:NATIVE_BAR_ITEM_RELOAD];
-        
+
         if (!initUrl)
             initUrl = url;
-        
+
         if (label && url && icon) {
             RhoRightItem *td = [[RhoRightItem alloc] init];
             td.url = url;
             td.reload = [reload isEqualToString:@"true"];
-            
+
             SimpleMainView *subController = [[SimpleMainView alloc] initWithParentView:parent.view frame:rect];
-            
+
 			subController.title = label;
 			//subController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-            
+
 			td.view = subController;
-            
+
             [tabs addObject:td];
-            
+
             [td release];
             [subController release];
         }
     }
-    
+
     self.itemsData = tabs;
     [tabs release];
-	
+
 	self.view.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 	self.view.autoresizesSubviews = YES;
-	
+
     self.tabindex = 0;
     if (initUrl){
         [self navigateRedirect:initUrl tab:0];
@@ -150,7 +150,7 @@
 		[v.view setNeedsDisplay];
         [self callCallback:0];
 	}
-	
+
 	return self;
 }
 
@@ -277,12 +277,12 @@
 	[cur_v.view removeFromSuperview];
 	[self.view addSubview:new_v.view];
 	[self.view setNeedsLayout];
-    [self callCallback:index];    
+    [self callCallback:index];
 }
 
 - (void)switchTab:(int)index {
 	SimpleMainView* new_v = [self getSimpleView:index];
-	[self performSelectorOnMainThread:@selector(switchTabCommand:) withObject:new_v waitUntilDone:NO];	
+	[self performSelectorOnMainThread:@selector(switchTabCommand:) withObject:new_v waitUntilDone:NO];
 }
 
 - (int)activeTab {

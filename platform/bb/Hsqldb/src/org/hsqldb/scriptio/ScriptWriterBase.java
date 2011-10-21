@@ -91,7 +91,7 @@ public abstract class ScriptWriterBase implements Runnable {
     String              outFile;
     //OutputStream        fileStreamOut;
     //FileAccess.FileSync outDescriptor;
-    RandomAccessFile    dataFile;    
+    RandomAccessFile    dataFile;
     int                 tableRowCount;
     HsqlName            schemaToLog;
 
@@ -132,7 +132,7 @@ public abstract class ScriptWriterBase implements Runnable {
             return new ScriptWriterZipped(db, file, includeCachedData,
                                           newFile);
         }*/
-        
+
         return null;
     }
 
@@ -249,8 +249,8 @@ public abstract class ScriptWriterBase implements Runnable {
 
             outDescriptor = fa.getFileSync(fos);
             fileStreamOut = new BufferedOutputStream(fos, 2 << 12);*/
-        	
-        	dataFile = new RandomAccessFile(outFile,"rw"); 
+
+        	dataFile = new RandomAccessFile(outFile,"rw");
         } catch (IOException e) {
             throw Trace.error(Trace.FILE_IO_ERROR, Trace.Message_Pair,
                               new Object[] {

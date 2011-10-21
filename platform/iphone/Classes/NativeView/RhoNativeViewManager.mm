@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -28,7 +28,7 @@
 #import <strings.h>
 
 #import "RhoNativeViewManagerOC.h"
-#import "RhoNativeViewManager.h" 
+#import "RhoNativeViewManager.h"
 #import "Rhodes.h"
 #include "logging/RhoLog.h"
 
@@ -86,7 +86,7 @@ static int currentID = 1;
 
 
 
-	
+
 @interface NativeViewOCImpl:NSObject<NativeViewOC> {
 	NativeView* mNativeView;
 	id mFactory;
@@ -273,7 +273,7 @@ static RhoNativeViewManagerOC *instance = NULL;
 
 -(void)create_native_view_command:(RhoNativeViewItem*)item {
 	RhoNativeViewManagerOC* sharedInstance = [RhoNativeViewManagerOC sharedInstance];
-	
+
 	NativeViewOCImpl* nvoc = (NativeViewOCImpl*)[RhoNativeViewManagerOC getNativeView:item.type_name];
 	if (nvoc == nil) {
 		RAWLOG_ERROR("NativeViewManager do not found registered NativeView type !");
@@ -284,15 +284,15 @@ static RhoNativeViewManagerOC *instance = NULL;
 		RAWLOG_ERROR("NativeViewManager do not get NativeView !");
 		return;
 	}
-	
+
 	item.nv_view = nv;
 	item.nv_factory = NULL;
 	NativeViewFactoryOCImpl* nvf = [[sharedInstance mProviders] objectForKey:item.type_name];
 	if (nvf != nil) {
 		item.nv_factory = [nvf getFactory];
 	}
-	
-	
+
+
 	UIView* v = ((UIView*)item.nv_view->createView(item.start_params));
 	if (!rho_ruby_is_NIL(item.start_params)) {
 		rho_ruby_releaseValue(item.start_params);
@@ -306,7 +306,7 @@ static RhoNativeViewManagerOC *instance = NULL;
 		[rho openFullScreenNativeView:v];
 	}
 	else {
-		[[rho mainView] openNativeView:v tab_index:item.tab_index];		
+		[[rho mainView] openNativeView:v tab_index:item.tab_index];
 	}
 }
 
@@ -314,18 +314,18 @@ static RhoNativeViewManagerOC *instance = NULL;
 	RhoNativeViewManagerOC* sharedInstance = [RhoNativeViewManagerOC sharedInstance];
 
 	RhoNativeViewItem* item = [[RhoNativeViewItem alloc] init];
-	
+
 	item.type_name = viewType;
 	item.tab_index = tab_index;
 	item.start_params = params;
-	
+
 	if (!rho_ruby_is_NIL(item.start_params)) {
 		rho_ruby_holdValue(item.start_params);
 	}
 	[sharedInstance.mOpenedViews addObject:item];
 
 	[sharedInstance performSelectorOnMainThread:@selector(create_native_view_command:) withObject:item waitUntilDone:NO];
-	
+
 	return item.nv_id;
 }
 
@@ -372,7 +372,7 @@ static RhoNativeViewManagerOC *instance = NULL;
 		[rho closeFullScreenNativeView];
 	}
 	else {
-		[[rho mainView] closeNativeView:item.tab_index];		
+		[[rho mainView] closeNativeView:item.tab_index];
 	}
 	item.nv_factory->destroyNativeView(item.nv_view);
 	[item release];
@@ -419,7 +419,7 @@ void RhoNativeViewManager::unregisterViewType(const char* viewType) {
 // that function return native object used for display Web content :
 // UIWebView* for iPhone
 // jobject for Android - jobect is android.webkit.WebView class type
-// HWND for Windows Mobile 
+// HWND for Windows Mobile
 void* RhoNativeViewManager::getWebViewObject(int tab_index) {
 	return [RhoNativeViewManagerOC getWebViewObject:tab_index];
 }

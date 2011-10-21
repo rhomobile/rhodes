@@ -1,4 +1,4 @@
-/* 
+/*
  * $Id: PatternCacheLRU.java 124053 2005-01-04 01:24:35Z dfs $
  *
  * Copyright 2000-2005 The Apache Software Foundation

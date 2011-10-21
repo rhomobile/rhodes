@@ -39,25 +39,25 @@ class Account_s
     property :parent_id, :string
     property :created_by_name, :string
     property :shipping_address_state, :string
-    
+
     property :type_acct, :string
     property :object_acct, :string
     property :new_name, :string
     property :last_checked, :string
     property :acct_object,  :string
-    
+
     property :address,  :string
-     
+
     property :propOne,  :string
     property :TwoProps,  :string
-    
+
     property :my_text,  :blob
-    
-    property :SurveyID,        :string    
-    property :CallID,        :string    
-    property :SurveyResultID,        :string    
-   
+
+    property :SurveyID,        :string
+    property :CallID,        :string
+    property :SurveyResultID,        :string
+
     property :float_test,  :float
     property :date_test,  :date
-    property :time_test,  :time    
+    property :time_test,  :time
 end

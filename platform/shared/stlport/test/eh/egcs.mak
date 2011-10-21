@@ -1,4 +1,4 @@
-# ;;; -*- Mode:makefile;-*- 
+# ;;; -*- Mode:makefile;-*-
 # Generated automatically from Makefile.in by configure.
 # This requires GNU make.
 
@@ -31,7 +31,7 @@ CXX = $(CC)
 # for egcs
 REPO_FLAGS =
 
-# CXXFLAGS = -g -Wall -I${STL_INCL}  -I. -D_STLP_USE_NEWALLOC -D_STLP_DEBUG_ALLOC ${REPO_FLAGS} -DEH_NEW_HEADERS 
+# CXXFLAGS = -g -Wall -I${STL_INCL}  -I. -D_STLP_USE_NEWALLOC -D_STLP_DEBUG_ALLOC ${REPO_FLAGS} -DEH_NEW_HEADERS
 
 # CXXFLAGS = -Wall -ansi -I${STL_INCL}  -I. -D_STLP_DEBUG ${REPO_FLAGS} ${CXX_EXTRA_FLAGS}
 CXXFLAGS = -Wall -g  -D_STLP_USE_NEWALLOC -DNO_FAST_ALLOCATOR -ansi -I${STL_INCL}  -I. ${REPO_FLAGS} ${CXX_EXTRA_FLAGS} -DEH_VECTOR_OPERATOR_NEW -D_STLP_DEBUG -D_STLP_NO_DEBUG_EXCEPTIONS
@@ -39,8 +39,8 @@ CXXFLAGS = -Wall -g  -D_STLP_USE_NEWALLOC -DNO_FAST_ALLOCATOR -ansi -I${STL_INCL
 # CXXFLAGS = -Wall -I${STL_INCL}  -I. -D_STLP_USE_NEWALLOC ${REPO_FLAGS} ${CXX_EXTRA_FLAGS}
 
 
-LIBS = -lm 
-LIBSTDCXX = 
+LIBS = -lm
+LIBSTDCXX =
 
 check: $(TEST)
 

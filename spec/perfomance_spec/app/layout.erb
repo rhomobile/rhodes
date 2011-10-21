@@ -9,7 +9,7 @@
             <link href="/public/css/webkit.css" type="text/css" rel="stylesheet"/>
 			<link href="/public/css/iphone.css" type="text/css" rel="stylesheet"/>
 		<% elsif System::get_property('platform') == 'Blackberry' %>
-			<link href="/public/css/blackberry.css" type="text/css" rel="stylesheet"/>	
+			<link href="/public/css/blackberry.css" type="text/css" rel="stylesheet"/>
 		<% elsif  System::get_property('platform') == 'ANDROID' %>
             <link href="/public/css/webkit.css" type="text/css" rel="stylesheet"/>
 			<link href="/public/css/android.css" type="text/css" rel="stylesheet"/>
@@ -18,9 +18,9 @@
 			<link href="/public/css/android.css" type="text/css" rel="stylesheet"/>
 		<% else %>
 			<link href="/public/css/windows_mobile.css" type="text/css" rel="stylesheet"/>
-		<% end %>	
-			
-				
+		<% end %>
+
+
 	</head>
 	<body>
 		<%= @content %>

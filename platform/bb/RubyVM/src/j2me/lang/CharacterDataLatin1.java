@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -45,8 +45,8 @@ public class CharacterDataLatin1 {
     public static final int 	MAX_RADIX = 36;
     static final char CHAR_ERROR = '\uFFFF';
 	};
-	
-			
+
+
     /* The character properties are currently encoded into 32 bits in the following manner:
         1 bit   mirrored property
         4 bits  directionality property
@@ -160,8 +160,8 @@ public class CharacterDataLatin1 {
         char mapChar = ch;
         int val = getProperties(ch);
 
-        if (((val & 0x00020000) != 0) && 
-                ((val & 0x07FC0000) != 0x07FC0000)) { 
+        if (((val & 0x00020000) != 0) &&
+                ((val & 0x07FC0000) != 0x07FC0000)) {
             int offset = val << 5 >> (5+18);
             mapChar = (char)(ch + offset);
         }
@@ -216,7 +216,7 @@ public class CharacterDataLatin1 {
                 retval = ch + ((val & 0x3E0) >> 5) & 0x1F;
                 break;
             case (0x00000800)      :       // "strange" numeric
-                 retval = -2; 
+                 retval = -2;
                  break;
             case (0x00000C00):           // Java supradecimal
                 retval = (ch + ((val & 0x3E0) >> 5) & 0x1F) + 10;
@@ -320,6 +320,6 @@ public class CharacterDataLatin1 {
             }
         }
 
-    }        
+    }
 }
 

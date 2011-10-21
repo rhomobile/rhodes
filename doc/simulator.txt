@@ -13,8 +13,8 @@ e.g. '/Library/Ruby/Gems/1.8/gems/rhodes-3.1.0/')
 If you would like to run RhoSimulator without Rhodes gem, download [Windows](http://rhosimulator.s3.amazonaws.com/RhoSimulator.zip) or
 [Mac OS X](http://rhosimulator.s3.amazonaws.com/RhoSimulatorMac.zip) version, unzip and specify path to `rhosimulator.exe` or `RhoSimulator.app` respectively at `rhodes/rhobuild.yml`:
 
-        env: 
-           paths:    
+        env:
+           paths:
               rhosimulator: <RhoSimulator folder>
 
 Alternatively you may [build](#build-rhosimulator) your own customized version of RhoSimulator as described [below](#build-rhosimulator).
@@ -24,12 +24,12 @@ Alternatively you may [build](#build-rhosimulator) your own customized version o
 To run application in RhoSimulator just run in rhodes or application folder:
 
     #run RhoSimulator to simulate specific platform:
-    rake run:android:rhosimulator 
+    rake run:android:rhosimulator
     rake run:iphone:rhosimulator
-    
+
     #bbver from build.yml will be used as System.get_property('os_version')
     rake run:bb:rhosimulator
-    
+
     rake run:wm:rhosimulator
     rake run:wp:rhosimulator
 
@@ -126,6 +126,6 @@ To run Rhodes applications in custom built RhoSimulator, please ensure that no `
   `C:\Rhomobile\rhodes\platform\wm\rhodes\rhodes.vcproj`
 * Build solution for the configuration `SimulatorRelease|Win32`
 * Specify the path to custom built RhoSimulator at `rhobuild.yml`:
-        env: 
-          paths:    
+        env:
+          paths:
             rhosimulator: platform/wm/bin/Win32/rhodes/SimulatorRelease

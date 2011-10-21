@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2006 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -21,13 +21,13 @@ import javolution.lang.Reusable;
 /**
  * <p> This class represents a set collection backed by a {@link FastMap};
  *     smooth capacity increase and no rehashing ever performed.</p>
- * 
+ *
  * <p> {@link FastSet}, as for any {@link FastCollection} sub-class, supports
  *     thread-safe fast iterations without using iterators. For example:[code]
  *     for (FastSet.Record r = set.head(), end = set.tail(); (r = r.getNext()) != end;) {
- *         Object value = set.valueOf(r);    
+ *         Object value = set.valueOf(r);
  *     }[/code]</p>
- *     
+ *
  * @author  <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 4.2, December 18, 2006
  */
@@ -62,7 +62,7 @@ public class FastSet/*<E>*/ extends FastCollection/*<E>*/ implements Set/*<E>*/,
     /**
      * Creates a persistent set associated to the specified unique identifier
      * (convenience method).
-     * 
+     *
      * @param id the unique identifier for this map.
      * @throws IllegalArgumentException if the identifier is not unique.
      * @see javolution.context.PersistentContext.Reference
@@ -72,10 +72,10 @@ public class FastSet/*<E>*/ extends FastCollection/*<E>*/ implements Set/*<E>*/,
     }
 
     /**
-     * Creates a set of specified initial capacity; unless the set size 
+     * Creates a set of specified initial capacity; unless the set size
      * reaches the specified capacity, operations on this set will not allocate
      * memory (no lazy object creation).
-     * 
+     *
      * @param capacity the initial capacity.
      */
     public FastSet(int capacity) {
@@ -95,7 +95,7 @@ public class FastSet/*<E>*/ extends FastCollection/*<E>*/ implements Set/*<E>*/,
 
     /**
      * Creates a set implemented using the specified map.
-     * 
+     *
      * @param map the backing map.
      */
     private FastSet(FastMap map) {
@@ -116,14 +116,14 @@ public class FastSet/*<E>*/ extends FastCollection/*<E>*/ implements Set/*<E>*/,
     /**
      * Recycles a set {@link #newInstance() instance} immediately
      * (on the stack when executing in a {@link javolution.context.StackContext
-     * StackContext}). 
+     * StackContext}).
      */
     public static void recycle(FastSet instance) {
         FACTORY.recycle(instance);
     }
 
     /**
-     * Returns the number of elements in this set (its cardinality). 
+     * Returns the number of elements in this set (its cardinality).
      *
      * @return the number of elements in this set (its cardinality).
      */
@@ -135,7 +135,7 @@ public class FastSet/*<E>*/ extends FastCollection/*<E>*/ implements Set/*<E>*/,
      * Adds the specified value to this set if it is not already present.
      *
      * @param value the value to be added to this set.
-     * @return <code>true</code> if this set did not already contain the 
+     * @return <code>true</code> if this set did not already contain the
      *         specified element.
      * @throws NullPointerException if the value is <code>null</code>.
      */
@@ -144,8 +144,8 @@ public class FastSet/*<E>*/ extends FastCollection/*<E>*/ implements Set/*<E>*/,
     }
 
     /**
-     * Returns an iterator over the elements in this set 
-     * (allocated on the stack when executed in a 
+     * Returns an iterator over the elements in this set
+     * (allocated on the stack when executed in a
      * {@link javolution.context.StackContext StackContext}).
      *
      * @return an iterator over this set values.
@@ -184,7 +184,7 @@ public class FastSet/*<E>*/ extends FastCollection/*<E>*/ implements Set/*<E>*/,
         _map.setKeyComparator(comparator);
         return this;
     }
-    
+
     // Overrides.
     public FastComparator/*<? super E>*/ getValueComparator() {
         return _map.getKeyComparator();
@@ -199,11 +199,11 @@ public class FastSet/*<E>*/ extends FastCollection/*<E>*/ implements Set/*<E>*/,
     private void readObject(ObjectInputStream stream) throws IOException,
             ClassNotFoundException {
         FastComparator cmp = (FastComparator) stream.readObject();
-        final int size = stream.readInt();        
+        final int size = stream.readInt();
         _map = new FastMap(size);
         this.setValueComparator(cmp);
         for (int i = size; i-- != 0;) {
-            Object key = stream.readObject(); 
+            Object key = stream.readObject();
             _map.put(key, key);
         }
     }
@@ -212,7 +212,7 @@ public class FastSet/*<E>*/ extends FastCollection/*<E>*/ implements Set/*<E>*/,
     private void writeObject(ObjectOutputStream stream) throws IOException {
         stream.writeObject(getValueComparator());
         stream.writeInt(size());
-        for (FastMap.Entry e = _map.head(), end = _map.tail(); 
+        for (FastMap.Entry e = _map.head(), end = _map.tail();
               (e = (FastMap.Entry) e.getNext()) != end;) {
             stream.writeObject(e.getKey());
         }

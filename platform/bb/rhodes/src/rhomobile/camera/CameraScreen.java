@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -66,9 +66,9 @@ import com.rho.Version;
 
 public class CameraScreen extends MainScreen {
 
-	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
+	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
 		new RhoLogger("Camera");
-	
+
     /** The camera's video controller. */
     private VideoControl _videoControl;
 
@@ -77,23 +77,23 @@ public class CameraScreen extends MainScreen {
 
     /** A field which contains the current snapshot encoding. */
     private ObjectChoiceField _encodingField;
-    
+
     /** An array of valid snapshot encodings. */
     private EncodingProperties[] _encodings;
-    
+
     /** A button that captures a snapshot when pressed. */
     private ButtonField _photoButton;
-    
+
     /** A reference to the current screen for listeners. */
 	private CameraScreen _cameraScreen;
 
 	/** Callback URL **/
 	private String _callbackUrl;
-	
+
 	private CameraFilesListener _fileListener = null;
-	
+
 	private boolean _cameraConnected;
-	
+
 	/**
 	 * Constructor.
 	 * @param raw A byte array representing an image.
@@ -101,7 +101,7 @@ public class CameraScreen extends MainScreen {
 	public CameraScreen(String callbackUrl)
 	{
 		_cameraConnected = false;
-		
+
 		//
 		_callbackUrl = callbackUrl;
 
@@ -112,25 +112,25 @@ public class CameraScreen extends MainScreen {
 
         //Initialize the camera object and video field.
         initializeCamera();
-        
+
         createUI();
 	}
-	
+
 	public void invokeCloseScreen(boolean ok) {
 		invokeCloseScreen(ok, null);
 	}
-	
+
 	public void invokeCloseScreen(boolean ok, String fileName) {
 		RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
 		app.invokeLater(new CloseScreen(_cameraScreen, ok, fileName));
 		app.requestForeground();
 	}
-	
+
 	private class CloseScreen implements Runnable {
 		private CameraScreen _screen;
 		private boolean _ok;
 		private String _fileName;
-		
+
 		CloseScreen(CameraScreen screen, boolean ok, String fileName) {
 			_screen = screen;
 			_ok = ok;
@@ -144,34 +144,34 @@ public class CameraScreen extends MainScreen {
 			}
 		}
 	};
-	
+
 	private void closeScreen(boolean ok) {
 		closeScreen(ok, null);
 	}
-	
+
 	private void closeScreen(boolean ok, String fileName) {
 		if (_cameraScreen == null)
 			return;
-		
+
 		RhodesApplication app = (RhodesApplication)UiApplication.getUiApplication();
-    	
+
     	if (_fileListener != null) {
     		app.removeFileSystemJournalListener(_fileListener);
     		_fileListener = null;
     	}
-    	
+
 		String body;
 		if (ok) {
 			boolean error = false;
 			String fname = "";
-			
+
 			SimpleFile file = null;
 			FileConnection fconnsrc = null;
 			FileConnection fconndst = null;
 	        try
 	        {
 	        	file = RhoClassFactory.createFile();
-	        	
+
 	        	if (fileName != null) {
 	        		String ext = fileName.substring(fileName.lastIndexOf('.'));
 	        		fname = makeFileName(ext);
@@ -180,14 +180,14 @@ public class CameraScreen extends MainScreen {
 					if (fconndst.exists())
 						fconndst.delete();
 					fconndst.create();
-					
+
 					LOG.TRACE("should be readed " + fconnsrc.fileSize() + " bytes");
-					
+
 					InputStream src = fconnsrc.openInputStream();
 					OutputStream dst = fconndst.openOutputStream();
-					
+
 					long fullLength = 0;
-					
+
 					byte[] buf = new byte[64*1024];
 					int ret;
 					while((ret = src.read(buf)) > 0) {
@@ -195,7 +195,7 @@ public class CameraScreen extends MainScreen {
 						dst.write(buf, 0, ret);
 					}
 					dst.flush();
-					
+
 					LOG.TRACE("readed: " + fullLength + " bytes");
 				}
 	        	else {
@@ -210,18 +210,18 @@ public class CameraScreen extends MainScreen {
 		                encoding = _encodings[_encodingField.getSelectedIndex()].getFullEncoding();
 		                ext += _encodings[_encodingField.getSelectedIndex()].getFormat();
 		            }
-		            
+
 		            fname = makeFileName(ext);
-	        		
+
 		        	file.open(fname, false, false);
-		        	
+
 		            //Retrieve the raw image from the VideoControl
 		        	byte[] image = _videoControl.getSnapshot(encoding);
 		        	//Write image data
 		        	file.getOutStream().write(image,0,image.length);
 		        	image = null;
 	        	}
-	
+
 	        	String root = file.getDirPath("");
 	        	fname = "/" + fname.substring(root.length());
 	        	fname = Utilities.replaceAll(fname,"/","%2F");
@@ -233,7 +233,7 @@ public class CameraScreen extends MainScreen {
 				try{
 					if ( file != null )
 						file.close();
-					
+
 					if (fconnsrc != null)
 						fconnsrc.close();
 					if (fconndst != null)
@@ -247,28 +247,28 @@ public class CameraScreen extends MainScreen {
 		}
 		else
 			body = "status=cancel&message=User cancelled operation";
-	
+
 		body += "&rho_callback=1";
-		
+
 		HttpHeaders headers = new HttpHeaders();
 		headers.addProperty("Content-Type", "application/x-www-form-urlencoded");
-		
+
 		LOG.INFO("Callback with uri: " + _callbackUrl + ": " + body);
 		app.postUrl(_callbackUrl, body, headers);
 		app.popScreen(_cameraScreen);
 		_cameraScreen = null;
 	}
-	
+
 	private String makeFileName(String ext)throws Exception {
-		
+
 		String fullname = DBAdapter.makeBlobFolderName();
-		SimpleDateFormat format = 
+		SimpleDateFormat format =
 			new SimpleDateFormat("MMM_dd_yyyy_HH_mm_ss_zzz");
-		
+
 		String name = format.format(new Date());
 		name = Utilities.replaceAll(name,"/","_");
 		fullname += "image_" + name + ext;
-		
+
 		return fullname;
 	}
 
@@ -284,18 +284,18 @@ public class CameraScreen extends MainScreen {
 	        if ( ver.nMajor == 4 && ver.nMinor == 6 && ver.nMinor2 == 1)
 	        {
 	        	//http://rim.lithium.com/rim/board/message?board.id=java_dev&view=by_date_ascending&message.id=21891
-	        	//takeSnapShot does not work on BlackBerry handheld software version 4.6.1:  
-	        	//The only work around is to invoke the camera application and listen for an image 
-	        	//being saved (would occur when the user takes a picture).  
+	        	//takeSnapShot does not work on BlackBerry handheld software version 4.6.1:
+	        	//The only work around is to invoke the camera application and listen for an image
+	        	//being saved (would occur when the user takes a picture).
 	        }else
 	        {
 	    		// First of all, attempting to capture picture using MM API
-	    		
+
 	            //Create a player for the Blackberry's camera.
                 // do not use it:
 	        	//http://supportforums.blackberry.com/t5/Java-Development/ControlledAccessException-from-getSnapshot/m-p/284997;jsessionid=59C552A3EC61C282E67BDF229DDD2701
-	        		            
-	            //player = Manager.createPlayer( "capture://video" ); 
+
+	            //player = Manager.createPlayer( "capture://video" );
 	            //LOG.TRACE("Recording using MM API");
 	        }
     	}
@@ -303,16 +303,16 @@ public class CameraScreen extends MainScreen {
     		// Try to capture picture using BB Camera application
     		LOG.TRACE("Recording using BB Camera application");
     	}
-    	
+
     	try
         {
     		if (player != null) {
 	            //Set the player to the REALIZED state (see Player docs.)
 	            player.realize();
-	
+
 	            //Grab the video control and set it to the current display.
 	            _videoControl = (VideoControl)player.getControl( "VideoControl" );
-	
+
 	            if (_videoControl != null)
 	            {
 	                //Create the video field as a GUI primitive (as opposed to a
@@ -322,10 +322,10 @@ public class CameraScreen extends MainScreen {
 	                //Display the video control
 	                _videoControl.setVisible(true);
 	            }
-	
+
 	            //Set the player to the STARTED state (see Player docs.)
 	            player.start();
-	            
+
 	            //Initialize the list of possible encodings.
 	            initializeEncodingList();
     		}
@@ -333,9 +333,9 @@ public class CameraScreen extends MainScreen {
     			RhodesApplication app = RhodesApplication.getInstance();
     			_fileListener = new CameraFilesListener(this);
     			app.addFileSystemJournalListener(_fileListener);
-    			
+
     			app.addActivateHook(new ActivateHook(_cameraScreen));
-    			
+
     			CameraArguments vidargs = new CameraArguments();
             	Invoke.invokeApplication(Invoke.APP_TYPE_CAMERA, vidargs);
     		}
@@ -347,7 +347,7 @@ public class CameraScreen extends MainScreen {
         	//Dialog.alert( "ERROR : can not connect to camera");
         }
     }
-    
+
     private class ActivateHook extends RhodesApplication.ActivateHook {
     	private CameraScreen _screen;
     	public ActivateHook(CameraScreen screen) {
@@ -367,22 +367,22 @@ public class CameraScreen extends MainScreen {
         {
             //Retrieve the list of valid encodings.
             String encodingString = System.getProperty("video.snapshot.encodings");
-            
+
             //Extract the properties as an array of words.
             String[] properties = StringUtilities.stringToKeywords(encodingString);
-            
+
             //The list of encodings;
             Vector encodingList = new Vector();
-            
+
             //Strings representing the four properties of an encoding as
             //returned by System.getProperty().
             String encoding = "encoding";
             String width = "width";
             String height = "height";
             String quality = "quality";
-            
+
             EncodingProperties temp = null;
-            
+
             for(int i = 0; i < properties.length ; ++i)
             {
                 if( properties[i].equals(encoding))
@@ -394,7 +394,7 @@ public class CameraScreen extends MainScreen {
                         encodingList.addElement( temp );
                     }
                     temp = new EncodingProperties();
-                    
+
                     //Set the new encoding's format.
                     ++i;
                     temp.setFormat(properties[i]);
@@ -418,13 +418,13 @@ public class CameraScreen extends MainScreen {
                     temp.setQuality(properties[i]);
                 }
             }
-            
+
             //If there is a leftover complete encoding, add it.
             if(temp != null && temp.isComplete())
             {
                 encodingList.addElement( temp );
             }
-            
+
             //Convert the Vector to an array for later use.
             _encodings = new EncodingProperties[ encodingList.size() ];
             encodingList.copyInto((Object[])_encodings);
@@ -435,7 +435,7 @@ public class CameraScreen extends MainScreen {
             _encodings = null;
         }
     }
-    
+
     /**
      * Adds the VideoField and the "Take Photo" button to the screen.
      */
@@ -445,11 +445,11 @@ public class CameraScreen extends MainScreen {
         	add( new RichTextField( "Error connecting to camera." ) );
         	return;
         }
-    	
+
         if (_videoField != null) {
 	        //Add the video field to the screen.
 	        add(_videoField);
-	
+
 	        //Initialize the button used to take photos.
 	        _photoButton = new ButtonField( "Take Photo" );
 	        _photoButton.setChangeListener( new SaveListener() );
@@ -457,12 +457,12 @@ public class CameraScreen extends MainScreen {
         else {
         	add( new RichTextField( "Waiting for Camera start..." ) );
         }
-	
+
 		//Create the CANCEL button which returns the user to the main camera
 		//screen without saving the picture.
 		ButtonField cancelButton = new ButtonField( "Cancel" );
 		cancelButton.setChangeListener( new CancelListener() );
-		
+
 		//The HorizontalFieldManager keeps the buttons in the center of
         //the screen.
 
@@ -472,41 +472,41 @@ public class CameraScreen extends MainScreen {
 		hfm.add(cancelButton);
 
         //Add the FieldManager containing the button to the screen.
-        add(hfm);  
-        
+        add(hfm);
+
         //If there are encoding options available:
         if(_encodings != null)
         {
             //Add the field used to select the snapshot encoding to the screen.
             _encodingField = new ObjectChoiceField("Encoding: ", _encodings, 0);
             add(_encodingField);
-        }        
+        }
     }
-    
+
 	/**
 	 * Handle trackball click events.
 	 * @see net.rim.device.api.ui.Screen#invokeAction(int)
-	 */   
+	 */
 	protected boolean invokeAction(int action)
 	{
 		if (_fileListener != null) {
     		RhodesApplication.getInstance().removeFileSystemJournalListener(_fileListener);
     		_fileListener = null;
     	}
-		
-		boolean handled = super.invokeAction(action); 
+
+		boolean handled = super.invokeAction(action);
 
 		if(!handled)
 		{
 			switch(action)
 			{
     			case ACTION_INVOKE: // Trackball click.
-    			{         
+    			{
     				return true;
     			}
 			}
-		}        
-		return handled;          
+		}
+		return handled;
 	}
 
 	/**
@@ -514,7 +514,7 @@ public class CameraScreen extends MainScreen {
 	 * for use with the VideoControl.getSnapshot() method.
 	 */
 	public final static class EncodingProperties
-	{   
+	{
 	    /** The file format of the picture. */
 	    private String _format;
 
@@ -526,7 +526,7 @@ public class CameraScreen extends MainScreen {
 
 	    /** The quality of the picture. */
 	    private String _quality;
-	    
+
 	    /** Booleans that indicate whether the values have been set. */
 	    private boolean _formatSet;
 	    private boolean _widthSet;
@@ -549,7 +549,7 @@ public class CameraScreen extends MainScreen {
 	    		return _format;
 	        return "image";
 	    }
-	    
+
 	    /**
 	     * Set the width to be used in snapshots.
 	     * @param width
@@ -622,7 +622,7 @@ public class CameraScreen extends MainScreen {
 
 	        return fullEncoding.toString();
 	    }
-	    
+
 	    /**
 	     * Have all the fields been set?
 	     * @return true if all fields have been set.
@@ -646,7 +646,7 @@ public class CameraScreen extends MainScreen {
         	_cameraScreen.closeScreen(true);
 		}
 	}
-	
+
 	/**
 	 * A listener used for the "Cancel" button.
 	 */

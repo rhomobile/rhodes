@@ -7,7 +7,7 @@
 
 #include <stdlib.h>
 
-#define IP_PORTION_COUNT 32 
+#define IP_PORTION_COUNT 32
 
 
 RHO_GLOBAL void rho_platform_image_load_grayscale(const char* url, void** image_pixels, int* pwidth, int* pheight) {
@@ -53,7 +53,7 @@ RHO_GLOBAL void rho_platform_image_load_grayscale(const char* url, void** image_
     return;
   }
 
-  
+
 	jmethodID bf_mid = env->GetStaticMethodID(bitmapf_class, "decodeStream", "(Ljava/io/InputStream;)Landroid/graphics/Bitmap;");
 	if (!bf_mid) {
 		RAWLOG_ERROR("rho_platform_image_load_grayscale() : not identify decodeStream() !");
@@ -143,7 +143,7 @@ RHO_GLOBAL void rho_platform_image_load_grayscale(const char* url, void** image_
 				*dst++ = (unsigned char)((((c & 0xFF) + ((c & 0xFF00)>>8)	+ ((c & 0xFF0000)>>16))*tk)>>16);
 			}
 		}
-		env->ReleaseIntArrayElements(bufARGB_j, bufARGB, 0); 
+		env->ReleaseIntArrayElements(bufARGB_j, bufARGB, 0);
 		current_y += current_size;
 	}
 

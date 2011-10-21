@@ -24,7 +24,7 @@
 	#define set_pollinterval rho_sync_set_pollinterval
 	extern int rho_sync_get_pollinterval();
 	#define get_pollinterval rho_sync_get_pollinterval
-	
+
 	extern void rho_sync_set_syncserver(char* syncserver);
 	#define set_syncserver rho_sync_set_syncserver
 	extern VALUE rho_sync_get_attrs(const char* szPartition, int source_id);
@@ -34,7 +34,7 @@
 
 	extern void rho_sync_update_blob_attribs(const char* szPartition, int source_id);
 	#define update_blob_attribs rho_sync_update_blob_attribs
-	
+
     extern void  rho_sync_setobjectnotify_url(const char* szUrl);
     #define set_objectnotify_url rho_sync_setobjectnotify_url
     extern void  rho_sync_addobjectnotify(int nSrcID, const char* szObject);
@@ -71,8 +71,8 @@
 	#define is_syncing rho_sync_is_syncing
 
     extern VALUE rho_sync_register_push();
-	#define register_push rho_sync_register_push	
-	
+	#define register_push rho_sync_register_push
+
 	#if !defined(bool)
 	#define bool int
 	#define true  1

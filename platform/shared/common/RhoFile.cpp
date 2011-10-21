@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -63,7 +63,7 @@ bool CRhoFile::open( const char* szFilePath, EOpenModes eMode ){
         m_file = fopen(szFilePath,"rb");
     else if ( eMode == OpenForWrite )
         m_file = fopen(szFilePath,"wb");
-    
+
     return isOpened();
 }
 
@@ -75,7 +75,7 @@ unsigned int CRhoFile::write( const void* data, unsigned int len ){
 }
 
 int CRhoFile::readByte()
-{ 
+{
     unsigned char buf[1];
     int nSize = fread(buf, 1, 1, m_file);
 
@@ -83,7 +83,7 @@ int CRhoFile::readByte()
 }
 
 int CRhoFile::readData(void* buffer, int bufOffset, int bytesToRead)
-{ 
+{
     int nSize = fread(((char*)buffer)+bufOffset, 1, bytesToRead, m_file);
     return nSize > 0 ? nSize : -1;
 }
@@ -217,10 +217,10 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
     HANDLE hFind = INVALID_HANDLE_VALUE;
 
     hFind = FindFirstFileW(wFolderMask.c_str(), &FindFileData);
-    if (hFind == INVALID_HANDLE_VALUE) 
+    if (hFind == INVALID_HANDLE_VALUE)
         return;
 
-    while (FindNextFileW(hFind, &FindFileData) != 0) 
+    while (FindNextFileW(hFind, &FindFileData) != 0)
     {
         if ( FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY )
             continue;
@@ -254,7 +254,7 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
     String strRelPath = String(szFolderPath).substr(strlen(szBasePath), strlen(szFolderPath) );
     String strPath = szBasePath;
     CTokenizer oTokenizer( strRelPath, "/\\" );
-	while (oTokenizer.hasMoreTokens()) 
+	while (oTokenizer.hasMoreTokens())
     {
 		String tok = oTokenizer.nextToken();
         strPath = CFilePath::join(strPath, tok);

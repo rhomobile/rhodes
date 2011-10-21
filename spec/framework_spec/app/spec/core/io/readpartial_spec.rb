@@ -14,7 +14,7 @@ describe "IO#readpartial" do
     @wr.close unless @wr.closed?
   end
 
-if System.get_property('platform') != 'ANDROID'      
+if System.get_property('platform') != 'ANDROID'
   it "raises IOError on closed stream" do
     lambda { IOSpecs.closed_io.readpartial(10) }.should raise_error(IOError)
 

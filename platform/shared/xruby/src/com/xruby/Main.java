@@ -24,11 +24,11 @@ import java.nio.channels.FileChannel;
 
 public class Main {
 	private CommandLineOptions options;
-	
+
 	public Main(CommandLineOptions options) {
 		this.options = options;
 	}
-	
+
 	public void run() throws Exception {
 		if (options.isHelp()) {
 			help();
@@ -68,7 +68,7 @@ public class Main {
 			run(results, options.getArgs());
 		}
 	}
-	
+
     private void redirectStdinout(String filename) throws IOException {
         //count line number
         BufferedReader r = new BufferedReader(new FileReader(filename));
@@ -94,17 +94,17 @@ public class Main {
     private void help() {
         System.out.println("Usage: xruby [-c] filename1, filename2, ...");
     }
-    
+
     private CompilationResults compileStdin() throws Exception {
     	RubyCompiler compiler = createCompiler();
     	return compiler.compileStdin();
     }
-    
+
     private CompilationResults compile(String filename) throws Exception {
     	RubyCompiler compiler = createCompiler();
     	return compiler.compileFile(options.getFilename());
     }
-    
+
     private RubyCompiler createCompiler() {
     	RubyCompiler compiler = new RubyCompiler(options.isStrip());
         if (options.isVerbose()) {
@@ -149,7 +149,7 @@ public class Main {
     		}
     	}
     }
-    
+
     public static void main(String[] args) throws Exception {
     	try{
 	    	CommandLineOptions options = new CommandLineOptions(args);

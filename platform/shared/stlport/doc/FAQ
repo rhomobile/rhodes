@@ -49,7 +49,7 @@ from STLport?
 ========================================================================
 
 Q1.0 What is STLport?
-A1.0 STLport is an implementation of the C++ Standard Library, as described 
+A1.0 STLport is an implementation of the C++ Standard Library, as described
 in the INTERNATIONAL STANDARD ISO/IEC 14882:1998(E) and latest
 ISO/IEC 14882:2003(E).
 
@@ -185,7 +185,7 @@ class A {
     A() {}
 
     void push( const string s );
-    
+
     string _str;
 };
 
@@ -213,7 +213,7 @@ void gee()
 
 Now build library from a.cpp with string implementation Impl1;
 then build application with b.cpp that use string implementation Impl2,
-and link with mentioned above library. Compiler will pass. Linker may 
+and link with mentioned above library. Compiler will pass. Linker may
 pass too. But your application will crash (or randomly crash) either on
 call a.push, or on assignment _str = s. This is evident here, but not
 evident in real applications.
@@ -251,7 +251,7 @@ Package maintainers can use any path by own taste---we can't satisfy
 variety of distributions/packages.
 
 So you can:
- - fix path in stlport administration config file stlport/stl/config/host.h, 
+ - fix path in stlport administration config file stlport/stl/config/host.h,
    see _STLP_NATIVE_INCLUDE_PATH macro and related.
  - create a link to the native compiler headers like expected by STLport
  - make request to package maintainer
@@ -328,7 +328,7 @@ Sometimes we will think about 'make install', but not now.
 
 Q5.0 I found a bug, how I can report about it?
 
-A5.0 
+A5.0
   0. Ensure that this is really a bug (standard violation, incorrect
      behaviour with correct usage).
   1. Ensure that bug is in STLport, not in your code (you can use _STLP_DEBUG
@@ -337,11 +337,11 @@ A5.0
      (build/test/unit) first with default settings, then with your settings
      (if you changed any).
   3. Write a short test that demonstrates the bug.
-  4. Make sure that this test case is really new, i.e. not covered by unit 
+  4. Make sure that this test case is really new, i.e. not covered by unit
      tests (test/unit/*).
   5. Compare your results with reported runs of unit tests (build/test/unit/STATUS).
   6. Write bug description and test here
-     
+
      https://sourceforge.net/projects/stlport
 
      DON'T FORGET TO DESCRIBE:
@@ -356,7 +356,7 @@ A5.0
 
 ========================================================================
 
-Q6.0 In STLport files like locale.h, setjmp.h, stdlib.h, etc., do 
+Q6.0 In STLport files like locale.h, setjmp.h, stdlib.h, etc., do
 nothing except include native headers. Why are these files present in STLport?
 
 A6.0 Sometimes native C headers was using C++ one or was refering
@@ -391,14 +391,14 @@ variables.
 Q6.2 My tool detects memory leaks in application with STLport. Is this leak
 from STLport?
 
-A6.2 In most cases these are 'pseudo memory leaks' that some tools 
+A6.2 In most cases these are 'pseudo memory leaks' that some tools
 wrongly detect.
 
 In the default compile of STLport, the node allocator is used to allocate
 internal memory. The node allocator works by pre-allocating a large chunk of
 memory and handing out small memory blocks. The memory chunk is not freed
-during running an application that uses STLport (i.e. it is not returned to 
-the system, but reused inside application). 
+during running an application that uses STLport (i.e. it is not returned to
+the system, but reused inside application).
 See also http://www.sgi.com/tech/stl/alloc.html
 
 There are tools like BoundsChecker, Purify or Valgrind that check for memory

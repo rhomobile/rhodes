@@ -16,7 +16,7 @@ SpinLock::SpinLock(StaticInitializer) : initialize_token_(0), mutex_( __initmute
   pthread_mutex_init(&mutex_, NULL);
 }
 
-void SpinLock::Lock() 
+void SpinLock::Lock()
 {
 	pthread_mutex_lock(&mutex_);
 }

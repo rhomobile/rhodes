@@ -837,7 +837,7 @@
 #define RETSIGTYPE void
 
 /* Define to the type qualifier of arg 5 for select. */
-#define SELECT_QUAL_ARG5 
+#define SELECT_QUAL_ARG5
 
 /* Define to the type of arg 1 for select. */
 #define SELECT_TYPE_ARG1 int

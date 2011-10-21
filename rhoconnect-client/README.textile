@@ -4,7 +4,7 @@ The "RhoConnect-Client":http://github.com/rhomobile/rhodes/rhoconnect-client is 
 
 RhoConnect-Client is available as an open source product under the MIT license.  For developers interested a commercial license is still "available":http://rhomobile.com/products/rhodes/license/.
 
-h2. INTRODUCTION  
+h2. INTRODUCTION
 
 
 h2. STARTING A RhoConnect-Client APPLICATION

@@ -2,7 +2,7 @@
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
  * Copyright (C) 2006 - Javolution (http://javolution.org/)
  * All rights reserved.
- * 
+ *
  * Permission to use, copy, modify, and distribute this software is
  * freely granted, provided that this notice is preserved.
  */
@@ -11,7 +11,7 @@ import javolution.util.FastMap;
 
 /**
  * <p> This class represents a context to define locally scoped environment
- *     settings. This settings are held by {@link LocalContext.Reference} 
+ *     settings. This settings are held by {@link LocalContext.Reference}
  *     and typically wrapped within a static method:[code]
  *     LocalContext.enter();
  *     try {
@@ -21,14 +21,14 @@ import javolution.util.FastMap;
  *         ... // Operations performed using local settings.
  *     } finally {
  *         LocalContext.exit(); // Reverts to previous settings.
- *     }[/code]</p>   
- *     
+ *     }[/code]</p>
+ *
  * <p> Calls to locally scoped methods should be performed either at
- *     start-up (global setting) or within a local context (to avoid 
+ *     start-up (global setting) or within a local context (to avoid
  *     impacting other threads).</p>
- *     
- * <p> As for any context, local context settings are inherited during 
- *     {@link ConcurrentContext concurrent} executions.</p> 
+ *
+ * <p> As for any context, local context settings are inherited during
+ *     {@link ConcurrentContext concurrent} executions.</p>
  *
  * @author  <a href="mailto:jean-marie@dautelle.com">Jean-Marie Dautelle</a>
  * @version 3.6, September 24, 2005
@@ -42,7 +42,7 @@ public class LocalContext extends Context {
     private static Class CLASS = new LocalContext().getClass();
 
     /**
-     * Holds any reference associated to this context (reference to 
+     * Holds any reference associated to this context (reference to
      * referent mapping).
      */
     final FastMap _references = new FastMap();
@@ -55,7 +55,7 @@ public class LocalContext extends Context {
 
     /**
      * Enters a {@link LocalContext} possibly recycled.
-     * 
+     *
      * @return the local context being entered.
      */
     public static LocalContext enter() {
@@ -64,7 +64,7 @@ public class LocalContext extends Context {
 
     /**
      * Exits the current local context.
-     * 
+     *
      * @return the local context being exited.
      * @throws ClassCastException if the context is not a local context.
      */
@@ -81,29 +81,29 @@ public class LocalContext extends Context {
     protected void exitAction() {
         _references.clear();
     }
-    
+
     /**
-     * <p> This class represents a reference whose setting is local to the current 
-     *     {@link LocalContext}. Setting outside of any {@link LocalContext} scope 
+     * <p> This class represents a reference whose setting is local to the current
+     *     {@link LocalContext}. Setting outside of any {@link LocalContext} scope
      *     affects the reference default value (equivalent to {@link #setDefault}).
      *     For example:[code]
      *     public class Foo {
-     *         public static final LocalContext.Reference<TextFormat<Foo>> FORMAT 
+     *         public static final LocalContext.Reference<TextFormat<Foo>> FORMAT
      *             = new LocalContext.Reference<TextFormat<Foo>>(DEFAULT_FORMAT);
-     *             
+     *
      *         public Text toString() {
      *              return FORMAT.get().format(this).toString();
-     *         }     
+     *         }
      *     }
      *     ...
      *     LocalContext.enter();
      *     try {
      *        Foo.FORMAT.set(localFormat);
-     *        ... // This thread displays Foo instances using localFormat. 
+     *        ... // This thread displays Foo instances using localFormat.
      *     } finally {
      *        LocalContext.exit(); // Reverts to previous format.
      *     }[/code]</p>
-     */     
+     */
     public static class Reference/*<T>*/implements javolution.lang.Reference/*<T>*/ {
 
         /**
@@ -112,7 +112,7 @@ public class LocalContext extends Context {
         private Object/*{T}*/_defaultValue;
 
         /**
-         * Indicates if this reference value has ever been locally overriden 
+         * Indicates if this reference value has ever been locally overriden
          * (optimization, most applications use default values).
          */
         private boolean _hasBeenLocallyOverriden;
@@ -126,7 +126,7 @@ public class LocalContext extends Context {
 
         /**
          * Creates a local reference having the specified default value.
-         * 
+         *
          * @param defaultValue the default value or root value of this variable.
          */
         public Reference(Object/*{T}*/defaultValue) {
@@ -189,7 +189,7 @@ public class LocalContext extends Context {
         /**
          * Returns the local (non-inherited) value for this reference.
          *
-         * @return the local value or <code>null</code> if none (value to be 
+         * @return the local value or <code>null</code> if none (value to be
          *         inherited or not set).
          */
         public Object/*{T}*/getLocal() {
@@ -206,9 +206,9 @@ public class LocalContext extends Context {
         public void setDefault(Object/*{T}*/defaultValue) {
             _defaultValue = defaultValue;
         }
-        
+
         /**
-         * Returns the string representation of the current value of this 
+         * Returns the string representation of the current value of this
          * reference.
          *
          * @return <code>String.valueOf(this.get())</code>
@@ -216,7 +216,7 @@ public class LocalContext extends Context {
         public String toString() {
             return String.valueOf(this.get());
         }
-        
+
         // Returns the local context if any.
         private static LocalContext getLocalContext() {
             for (Context ctx = Context.getCurrent(); ctx != null; ctx = ctx.getOuter()) {

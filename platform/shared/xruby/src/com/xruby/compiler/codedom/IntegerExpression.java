@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright 2005-2007 Xue Yong Zhi
  * Distributed under the BSD License
  */
@@ -17,7 +17,7 @@ public class IntegerExpression extends Expression {
 	public IntegerExpression(BigInteger value) {
 		value_ = value;
 	}
-	
+
 	public IntegerExpression(int value){
 		value_ = BigInteger.valueOf(value);
 	}

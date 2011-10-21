@@ -53,6 +53,6 @@ class <%= class_name %>Controller < Rho::RhoController
   def delete
     @<%= name.downcase %> = <%= class_name %>.find(@params['id'])
     @<%= name.downcase %>.destroy if @<%= name.downcase %>
-    redirect :action => :index  
+    redirect :action => :index
   end
 end

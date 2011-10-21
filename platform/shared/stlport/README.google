@@ -61,19 +61,19 @@ cstring:
 
 Added support for Symbian, based on Marco Jez's port:
  http://marcoplusplus.blogspot.com/
- 
+
 This patch will be in the official STLPort from release 5.1.5 on.
 
 Detailed changes:
 
 num_get_float.cpp:
   modified the #define for unsigned int64 so that it handles the Symbian case.
-  
+
 _system.h:
   added defines to include the correct config files for Symbian.
 
 features.h:
-  added a define guard around _STLP_WIN32 to avoid setting it when cross 
+  added a define guard around _STLP_WIN32 to avoid setting it when cross
   compiling.
 
 stl_gcce.h:
@@ -91,7 +91,7 @@ stl_symbian.h:
   _STLP_EXPOSE_GLOBALS_IMPLEMENTATION
   _STLP_USE_NEWALLOC
   _STLP_INLINE_EXCEPTION_CLASS
-  
+
 _exception.h:
   used the new STLP_INLINE_EXCEPTION_CLASS define to avoid having missing
   symbols if we don't compile as a library.

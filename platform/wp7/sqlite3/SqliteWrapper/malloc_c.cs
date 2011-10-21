@@ -53,7 +53,7 @@ namespace Community.CsharpSqlite
     }
 
     /*
-    ** Set the soft heap-size limit for the library. Passing a zero or 
+    ** Set the soft heap-size limit for the library. Passing a zero or
     ** negative value indicates no limit.
     */
     void sqlite3_soft_heap_limit( int n )
@@ -284,7 +284,7 @@ namespace Community.CsharpSqlite
     }
 
     /*
-    ** Trigger the alarm 
+    ** Trigger the alarm
     */
     static void sqlite3MallocAlarm( int nByte )
     {
@@ -886,9 +886,9 @@ static int isLookaside(sqlite3 *db, void *p){
     }
 
     /*
-    ** Make a copy of a string in memory obtained from sqliteMalloc(). These 
+    ** Make a copy of a string in memory obtained from sqliteMalloc(). These
     ** functions call sqlite3MallocRaw() directly instead of sqliteMalloc(). This
-    ** is because when memory debugging is turned on, these two functions are 
+    ** is because when memory debugging is turned on, these two functions are
     ** called via macros that record the current file and line number in the
     ** ThreadData structure.
     */

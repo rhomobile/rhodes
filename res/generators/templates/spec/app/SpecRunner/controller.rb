@@ -6,7 +6,7 @@ class SpecRunnerController < Rho::RhoController
   #GET /SpecRunner
   def index
     puts 'before render'
-  
+
     @msg = 'MSpec version: '+MSpec::VERSION
     @runner = SpecRunner.new
     @code = @runner.run

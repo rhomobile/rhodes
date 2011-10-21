@@ -1,4 +1,4 @@
-/* 
+/*
  * $Id: StringSubstitution.java 124053 2005-01-04 01:24:35Z dfs $
  *
  * Copyright 2000-2005 The Apache Software Foundation
@@ -85,13 +85,13 @@ public class StringSubstitution implements Substitution {
   /**
    * Appends the substitution to a buffer containing the original input
    * with substitutions applied for the pattern matches found so far.
-   * See 
+   * See
    * {@link Substitution#appendSubstitution Substitution.appendSubstition()}
    * for more details regarding the expected behavior of this method.
    * <p>
    * @param appendBuffer The buffer containing the new string resulting
    * from performing substitutions on the original input.
-   * @param match The current match causing a substitution to be made. 
+   * @param match The current match causing a substitution to be made.
    * @param substitutionCount  The number of substitutions that have been
    *  performed so far by Util.substitute.
    * @param originalInput The original input upon which the substitutions are
@@ -101,10 +101,10 @@ public class StringSubstitution implements Substitution {
    */
   public void appendSubstitution(StringBuffer appendBuffer, MatchResult match,
 				 int substitutionCount,
-				 PatternMatcherInput originalInput, 
+				 PatternMatcherInput originalInput,
 				 PatternMatcher matcher, Pattern pattern)
   {
-    if(_subLength == 0) 
+    if(_subLength == 0)
       return;
     appendBuffer.append(_substitution);
   }

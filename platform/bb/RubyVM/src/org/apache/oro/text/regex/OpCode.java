@@ -1,4 +1,4 @@
-/* 
+/*
  * $Id: OpCode.java 124053 2005-01-04 01:24:35Z dfs $
  *
  * Copyright 2000-2005 The Apache Software Foundation
@@ -23,7 +23,7 @@ import j2me.lang.CharacterMe;
 
 /**
  * The OpCode class should not be instantiated.  It is a holder of various
- * constants and static methods pertaining to the manipulation of the 
+ * constants and static methods pertaining to the manipulation of the
  * op-codes used in a compiled regular expression.
  *
  * @version @version@
@@ -74,7 +74,7 @@ final class OpCode {
      _WHILEM  = 34,  // no       Do curly processing and see if rest matches.
      _ANYOFUN = 35,  // yes      Match unicode character in this class.
      _NANYOFUN= 36,  // yes      Match unicode character not in this class.
-     _RANGE   = 37,  // yes      Range flag in 
+     _RANGE   = 37,  // yes      Range flag in
     // Change the names of these constants later to make it clear they
     // are POSIX classes.
      _ALPHA   = 38,
@@ -98,8 +98,8 @@ final class OpCode {
     2, 2, 0, 0, 0, 0, 0, 0, 0, 0, // OpCode 10-19
     0, 0, 0, 0, 0, 0, 1, 1, 1, 0, // OpCode 20-29
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // OpCode 30-39
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // OpCode 40-49 
-    0, 0                          // OpCode 50-51 
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // OpCode 40-49
+    0, 0                          // OpCode 50-51
   };
 
   static final char _opType[] = {
@@ -117,7 +117,7 @@ final class OpCode {
   };
 
   static final char _opLengthOne[] = {
-    _ANY, _SANY, _ANYOF, _ALNUM, _NALNUM, _SPACE, _NSPACE, _DIGIT, _NDIGIT, 
+    _ANY, _SANY, _ANYOF, _ALNUM, _NALNUM, _SPACE, _NSPACE, _DIGIT, _NDIGIT,
     _ANYOFUN, _NANYOFUN, _ALPHA, _BLANK, _CNTRL, _GRAPH, _LOWER, _PRINT,
     _PUNCT, _UPPER, _XDIGIT, _OPCODE, _NOPCODE, _ONECHAR, _ALNUMC,
     _ASCII
@@ -127,15 +127,15 @@ final class OpCode {
   static final char _NULL_POINTER =  0;
 
   static final int _getNextOffset(char[] program, int offset) {
-    return ((int)program[offset + 1]); 
+    return ((int)program[offset + 1]);
   }
 
   static final char _getArg1(char[] program, int offset) {
-    return program[offset + 2]; 
+    return program[offset + 2];
   }
 
   static final char _getArg2(char[] program, int offset) {
-    return program[offset + 3]; 
+    return program[offset + 3];
   }
 
   static final int _getOperand(int offset) {

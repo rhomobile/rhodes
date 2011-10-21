@@ -1,4 +1,4 @@
-# Rhodes 
+# Rhodes
 
 ## Introduction
 
@@ -25,7 +25,7 @@ All versions of iPhone 3.0 or greater, iPad
 
 A Rhodes application is a web application that runs locally on your mobile device. It is implemented with the standard MVC architecture:
 
-* Views are sets of ERB templates: HTML, CSS, and JavaScript files executed by the WebView control available on the device and served by the local web server. This server is a very lightweight web server running on the device. See [User Interface](ui) section for more details on [Layouts](ui#view-layouts), [CSS framework](ui#css-framework), [JavaScript frameworks](ui#javascript-frameworks), [Menus](ui#menu), and [Native UI elements](ui#native-toolbar-control) that you may use in the View.  
+* Views are sets of ERB templates: HTML, CSS, and JavaScript files executed by the WebView control available on the device and served by the local web server. This server is a very lightweight web server running on the device. See [User Interface](ui) section for more details on [Layouts](ui#view-layouts), [CSS framework](ui#css-framework), [JavaScript frameworks](ui#javascript-frameworks), [Menus](ui#menu), and [Native UI elements](ui#native-toolbar-control) that you may use in the View.
 * Controllers are sets of usually very simple Ruby scripts in controller.rb files. You have access to many [native device capabilities](device-caps) from your controllers.
 * Models are defined by a Ruby script in the model.rb file.
 
@@ -44,7 +44,7 @@ You should run the rhodes specs to make sure your development environment is up-
 
 [Fork](http://help.github.com/forking/) the [Rhodes repository](http://github.com/rhomobile/rhodes).
 
-Clone your new repo: 
+Clone your new repo:
 	:::term
 	$ git clone git://github.com/<yourhandle>/rhodes.git
 	$ cd rhodes
@@ -52,7 +52,7 @@ Clone your new repo:
 
 Run Rhodes framework_spec and phone_spec targets
 	:::term
-	$ rake run:allspecs 
+	$ rake run:allspecs
 
 If everything passes (pending specs are OK), then your environment is ready for development. If you have trouble installing a particular gem, or the specs won't run properly, please feel free to email the [Rhomobile google group](mailto:rhomobile@googlegroups.com) or [hop on IRC](http://webchat.freenode.net/?channels=rhomobile) to chat with other Rhodes developers.
 
@@ -62,7 +62,7 @@ Now that your environment is ready, make your changes!
 Create a topic branch:
 	:::term
 	$ git checkout -b cool_new_feature
-	
+
 Write tests, [such as this code in a Rhom example](http://github.com/rhomobile/rhodes/blob/a905e9c9781bfe6e5003e8c8a11cd5418b08df73/spec/framework_spec/app/spec/rhom_object_spec.rb#L239).
 
 Make changes to your project to ready it for others to use.
