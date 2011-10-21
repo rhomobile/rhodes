@@ -82,7 +82,7 @@ def get_variables(scope)
     vars = eval(prefix + cmd, $_binding)
     $_s.write("VSTART:#{vartype}\n")
     vars.each do |v|
-      if v !~ /^\$(=|KCODE)$/
+      if v !~ /^\$(=|KCODE|-K)$/
         begin
           result = eval(v.to_s, $_binding).inspect
         rescue Exception => exc
