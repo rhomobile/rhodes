@@ -469,7 +469,8 @@ char* rho_sync_create_string(const char* szStr)
 
 void rho_sync_free_string(char* szStr)
 {
-    free(szStr);
+    if (NULL != szStr)
+        free(szStr);
 }
 
 void rho_sync_enable_status_popup(int b)
