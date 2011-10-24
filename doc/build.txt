@@ -683,8 +683,21 @@ Note that Symbian versions of your Rhodes app must be built in a Windows environ
 If you want to build for Symbian device you have to install QT and QT Mobility for Symbian on your device.
 You can find installation files in QT SDK folder like below:
 
-	QT - C:/QtSDK/Symbian/sis/Symbian1/Qt/4.7.3/qt.sis
-	QT Mobility - C:/QtSDK/Symbian/sis/Symbian1/QtMobility/1.1.3/qtmobility.sis
+        For Symbian 9.4
+
+        QT - C:/QtSDK/Symbian/sis/Symbian1/Qt/4.7.3/qt.sis
+        (install it only on disc C:, before install pls close all opened applications)
+
+        QT WebKit - C:/QtSDK/Symbian/sis/Symbian1/Qt/4.7.3/qtwebkit.sis
+        QT Mobility - C:/QtSDK/Symbian/sis/Symbian1/QtMobility/1.1.3/qtmobility.sis
+
+        For Symbian 9.5
+
+        QT - C:/QtSDK/Symbian/sis/Symbian3/Qt/4.7.3/qt.sis
+        (install it only on disc C:, before install pls close all opened applications)
+
+        QT WebKit - C:/QtSDK/Symbian/sis/Symbian3/Qt/4.7.3/qtwebkit.sis
+        QT Mobility - C:/QtSDK/Symbian/sis/Symbian3/QtMobility/1.1.3/qtmobility.sis
 
 Then open file - C:/QtSDK/Symbian/SDKs/Symbian1Qt473/epoc32/include/cntdb.h and replace below two strings:
     CContactConverter& CContactDatabase::ConverterL(const TUid& aFormat);
