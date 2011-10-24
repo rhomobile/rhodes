@@ -259,10 +259,10 @@ public class ContactAccessorNew implements ContactAccessor {
                 }
             }
 
-             selectionArray = new String[selectionArgs.size()];
-             selectionArgs.toArray(selectionArray);
+            selectionArray = new String[selectionArgs.size()];
+            selectionArgs.toArray(selectionArray);
 
-             dataCursor = cr.query(Data.CONTENT_URI,
+            dataCursor = cr.query(Data.CONTENT_URI,
                      new String[] {Data.CONTACT_ID, Data.LOOKUP_KEY, Data.DISPLAY_NAME, Data.MIMETYPE, Data.DATA1, Data.DATA2, Data.DATA3},
                      selection.toString(),
                      selectionArray,
@@ -460,27 +460,32 @@ public class ContactAccessorNew implements ContactAccessor {
                 }
             }
         }
-        String[] selectionArray = new String[selectionArgs.size()];
-        selectionArgs.toArray(selectionArray);
 
         Cursor contactCursor = cr.query(Contacts.CONTENT_URI,
-                                 new String[] {Contacts._ID, Contacts.LOOKUP_KEY, Contacts.DISPLAY_NAME},
-                                 null, null, contactSortMode.toString());
+                new String[] {Contacts._ID, Contacts.LOOKUP_KEY, Contacts.DISPLAY_NAME},
+                null, null, contactSortMode.toString());
 
-        Cursor dataCursor = cr.query(Data.CONTENT_URI,
-                                 new String[] {Data.CONTACT_ID, Data.LOOKUP_KEY, Data.DISPLAY_NAME, Data.MIMETYPE, Data.DATA1, Data.DATA2, Data.DATA3},
-                                 selection.toString(),
-                                 selectionArray,
-                                 new StringBuilder(Data.DISPLAY_NAME).append(',').append(Data.CONTACT_ID).append(" ASC").toString());
+        Cursor dataCursor = null;
+
+        if (selection.length() != 0) {
+            String[] selectionArray = new String[selectionArgs.size()];
+            selectionArgs.toArray(selectionArray);
+
+            dataCursor = cr.query(Data.CONTENT_URI,
+                    new String[] {Data.CONTACT_ID, Data.LOOKUP_KEY, Data.DISPLAY_NAME, Data.MIMETYPE, Data.DATA1, Data.DATA2, Data.DATA3},
+                    selection.toString(),
+                    selectionArray,
+                    new StringBuilder(Data.DISPLAY_NAME).append(',').append(Data.CONTACT_ID).append(" ASC").toString());
+        }
 
         try {
             long pos = 0;
             Contact contact = null;
 
             Logger.I(TAG, "Contact records: " + contactCursor.getCount());
-            Logger.I(TAG, "Contacts' data records: " + dataCursor.getCount());
+            Logger.I(TAG, "Contacts' data records: " + ((dataCursor != null) ? dataCursor.getCount() : 0));
 
-            boolean hasData = dataCursor.moveToFirst();
+            boolean hasData = dataCursor != null && dataCursor.moveToFirst();
             if (contactCursor.moveToFirst()) do {
                 long curId = contactCursor.getLong(contactCursor.getColumnIndex(Contacts._ID));
                 Logger.I(TAG, "Processing contact id: " + curId + ", position: " + pos);
@@ -510,7 +515,8 @@ public class ContactAccessorNew implements ContactAccessor {
         }
         finally {
             contactCursor.close();
-            dataCursor.close();
+            if (dataCursor != null)
+                dataCursor.close();
         }
         return contacts;
     }
