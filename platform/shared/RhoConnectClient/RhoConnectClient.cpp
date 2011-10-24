@@ -750,6 +750,11 @@ void rho_connectclient_create_object(const char* szModel, unsigned long hash)
 
 void rho_connectclient_parsenotify(const char* msg, RHO_CONNECT_NOTIFY* pNotify)
 {
+    // for the case it has been called in single-threaded mode,
+    // so notification message may be NULL
+    if (NULL == msg)
+        return;
+    
     CTokenizer oTokenizer( msg, "&" );
     int nLastPos = 0;
     while (oTokenizer.hasMoreTokens()) 

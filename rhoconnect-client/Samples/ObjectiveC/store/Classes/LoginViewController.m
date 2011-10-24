@@ -32,7 +32,7 @@
 	 
 	[waitPage loginComplete: [notify error_message] ];	
 	
-	[notify release];
+	//[notify release];
 }
 
 - (IBAction)doLogin:(id)sender 
