@@ -140,10 +140,11 @@ public class ContactAccessorOld implements ContactAccessor {
 	
 				//contact.setField(PB_COMPANY_NAME, cursor.getString(cursor.getColumnIndex(People.COMPANY)));
 	
-				contact.setField(Phonebook.PB_FIRST_NAME, "");
-				contact.setField(Phonebook.PB_LAST_NAME, "");
+				//contact.setField(Phonebook.PB_FIRST_NAME, "");
+				//contact.setField(Phonebook.PB_LAST_NAME, "");
 				String name = cursor.getString(cursor.getColumnIndex(People.NAME));
 				if (name != null) {
+				    contact.setField(Phonebook.PB_DISPLAY_NAME, name);
 					String[] names = name.split(" ");
 	
 					if (names.length == 1) {
