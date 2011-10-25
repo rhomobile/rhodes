@@ -957,7 +957,7 @@ end
     def send_error(exception=nil,status=500,hash=false)
       if exception
         trace_msg = exception.backtrace.join("\n")
-	    puts "App error: #{exception}\n #{trace_msg}"
+	    puts "App error: #{exception.message}\n #{trace_msg}"
 	  end  
       body=''
       
