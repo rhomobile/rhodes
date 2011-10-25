@@ -343,6 +343,7 @@ For these selectors an additional params hash may be used. The next keys and val
 * :offset - offset from begin of contacts' list
 These two parameters are used to paginate contacts list. If used with :count exact number of returned contacts can be determined (for example for last page).
 * :select - list of contact properties have to be selected from phonebook (Use it to enchance query performance)
+* :conditions - hash of conditions to query contacts
 
 On Android the nexts contact properties are supported (every of them may be used in :select list):
 
@@ -359,6 +360,39 @@ Company:
 "company_name"
 
 **NOTE: In most cases the result of RhoContact::find query may return more contact properties the defined in :select**
+
+#### Conditions
+
+:conditions parameter is a hash of conditions. Keys of the hash are contact property selectors (condition to be applied to) and values is conditions itself.
+The next property selectors are defined:
+- :phone
+- :email
+Property selectors has no one-to-one relation to just single contact property like a mobile phone or work email. Selectors are mapped to whole property group like all phones or all emails.
+Condition like
+	:::ruby
+	{:phone => 'not_nil'}
+will select all contacts which has at least one phone.
+The next conditions are currently suported:
+- 'not_nil'
+- 'is_nil'
+
+**NOTE: It may be useful to sort contacts (espessially if paginated). Contacts is ordered by 'display_name' column and then splitted for pages. Unfortunately the order inside page is lost while passing the list to ruby**
+
+	:::ruby
+	@count = Rho::RhoContact.find(:count, :conditions => {:phone => 'not_nil'})
+	if @params['offset']
+		@offset = @params['offset'].to_i
+	else
+		@offset = 0;
+	end
+	@contacts = Rho::RhoContact.find(:all, :per_page => 10, :offset => @offset, :select => ["id", "display_name", "mobile_number"], :conditions => {:phone => 'not_nil'})    
+	@contacts = {} unless @contacts
+	@contacts = @contacts.sort do |x,y| 
+		res = 1 if x[1]['display_name'].nil? 
+		res = -1 if y[1]['display_name'].nil?
+		res = x[1]['display_name'] <=> y[1]['display_name'] unless res
+		res
+	end
 
 ### Sample
 For examples on how to use the API provided by this class, see the view and controller in the /app/Contacts folder in the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/Contacts/controller.rb).
