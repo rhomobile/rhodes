@@ -630,7 +630,7 @@ public:
     void onSuccess(double latitude, double longitude)
     {
         RHO_MAP_TRACE2("AnnotationResolved: latitude=%lf, longitude=%lf", latitude, longitude);
-        Annotation ann(m_ann.title(), m_ann.subtitle(), latitude, longitude, m_ann.url());
+        Annotation ann(m_ann.title(), m_ann.subtitle(), latitude, longitude, m_ann.url(), m_ann.pass_location());
         m_mapview->addAnnotation(ann);
     }
 

@@ -110,6 +110,24 @@ String Annotation::make_address(double latitude, double longitude)
     return buf;
 }
 
+String Annotation::make_url(const String& base_url, bool pass_location, double lat, double lon)
+{
+    if (!pass_location)
+        return base_url;
+
+    String base(base_url, 0, base_url.find('?'));
+    String query(base_url, base.length(), base_url.find('#'));
+    String anchor(base_url, base.length() + query.length());
+    char buf[64];
+
+    if (query.empty())
+        snprintf(buf, 64, "?latitude=%.5lf&longitude=%.5lf", lat, lon);
+    else
+        snprintf(buf, 64, "&latitude=%.5lf&longitude=%.5lf", lat, lon);
+
+    return base + query + buf + anchor;
+}
+
     class EmptyDrawingDevice : public IDrawingDevice
     {
     public:
@@ -325,6 +343,7 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
             char const *image = NULL;
             int x_off = 0;
             int y_off = 0;
+            bool pass_location = false;
 
             for (int j = 0, limm = ann_params->v.hash->size; j < limm; ++j)
             {
@@ -363,17 +382,20 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
                 else if (strcasecmp(name, "image_y_offset") == 0) {
                     y_off = (int)strtod(v, NULL);
                 }
+                else if (strcasecmp(name, "pass_location") == 0) {
+                    pass_location = static_cast<bool>(atoi(v));
+                }
              }
 
             if (latitude_set && longitude_set) {
-                ann_t ann(title, subtitle, cur_lat, cur_lon, url);
+                ann_t ann(title, subtitle, cur_lat, cur_lon, url, pass_location);
                 if (image != NULL) {
                     ann.setImageFileName(image, x_off, y_off);
                 }
                 ann_list.push_back(ann);
             }
             else {
-                ann_t ann(title, subtitle, address, url);
+                ann_t ann(title, subtitle, address, url, pass_location);
                 if (image != NULL) {
                     ann.setImageFileName(image, x_off, y_off);
                 }
