@@ -108,10 +108,12 @@ public:
 
     Annotation(String const &str_title, String const &str_subtitle,
                double lat, double lon, String const &addr,
-               String const &str_url)
+               String const &str_url, bool pass_location)
         :m_title(str_title), m_subtitle(str_subtitle), m_resolved(true),
-         m_latitude(lat), m_longitude(lon),
-         m_address(addr), m_url(str_url), m_x_off(0), m_y_off(0), m_data(NULL), m_type(SIMPLE)
+         m_latitude(lat), m_longitude(lon), m_address(addr),
+         m_url(make_url(str_url, pass_location, lat, lon)),
+         m_pass_location(pass_location),
+         m_x_off(0), m_y_off(0), m_data(NULL), m_type(SIMPLE)
     {
         if (m_title.empty())
             m_title = m_address;
@@ -119,10 +121,11 @@ public:
 
     Annotation(String const &str_title, String const &str_subtitle,
                double lat, double lon, String const &addr,
-               String const &str_url, ANNOTATION_TYPE _type)
+               String const &str_url, bool pass_location, ANNOTATION_TYPE _type)
     :m_title(str_title), m_subtitle(str_subtitle), m_resolved(true),
-    m_latitude(lat), m_longitude(lon),
-    m_address(addr), m_url(str_url), m_x_off(0), m_y_off(0), m_data(NULL), m_type(_type)
+    m_latitude(lat), m_longitude(lon), m_address(addr),
+    m_url(make_url(str_url, pass_location, lat, lon)), m_pass_location(pass_location),
+    m_x_off(0), m_y_off(0), m_data(NULL), m_type(_type)
     {
         if (m_title.empty())
             m_title = m_address;
@@ -130,20 +133,22 @@ public:
     
     
     Annotation(String const &str_title, String const &str_subtitle,
-               double lat, double lon, String const &str_url)
+               double lat, double lon, String const &str_url, bool pass_location)
         :m_title(str_title), m_subtitle(str_subtitle), m_resolved(true),
-         m_latitude(lat), m_longitude(lon),
-         m_address(make_address(lat, lon)), m_url(str_url), m_x_off(0), m_y_off(0), m_data(NULL), m_type(SIMPLE)
+         m_latitude(lat), m_longitude(lon), m_address(make_address(lat, lon)),
+         m_url(make_url(str_url, pass_location, lat, lon)), m_pass_location(pass_location),
+         m_x_off(0), m_y_off(0), m_data(NULL), m_type(SIMPLE)
     {
         if (m_title.empty())
             m_title = m_address;
     }
 
     Annotation(String const &str_title, String const &str_subtitle,
-               String const &addr, String const &str_url)
+               String const &addr, String const &str_url, bool pass_location)
         :m_title(str_title), m_subtitle(str_subtitle), m_resolved(false),
          m_latitude(0), m_longitude(0),
-         m_address(addr), m_url(str_url), m_x_off(0), m_y_off(0), m_data(NULL), m_type(SIMPLE)
+         m_address(addr), m_url(str_url), m_pass_location(pass_location),
+         m_x_off(0), m_y_off(0), m_data(NULL), m_type(SIMPLE)
     {
         if (m_title.empty())
             m_title = m_address;
@@ -184,6 +189,10 @@ public:
     {
         return m_url;
     }
+    bool pass_location() const
+    {
+        return m_pass_location;
+    }
     String const &imageFileName() const
     {
         return mImageFileName;
@@ -210,6 +219,7 @@ public:
     }
 private:
     static String make_address(double latitude, double longitude);
+    static String make_url(const String& base_url, bool pass_location, double latitude, double longitude);
 
 private:
     String m_title;
@@ -219,6 +229,7 @@ private:
     double m_longitude;
     String m_address;
     String m_url;
+    bool m_pass_location;
     String mImageFileName;
     int m_x_off;
     int m_y_off;
