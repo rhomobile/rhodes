@@ -57,12 +57,12 @@ If you wish to use special version of Rhodes or use Rhodes git sources :
     
     sdk: ~/Projects/rhodes
 
-After installing new Rhodes gem(3.2.x over any version less then 3.2.x), you can also open a command line window, navigate to the directory of your Rhodes application, and run the following command:
+After installing new Rhodes gem(3.2.x over any version less then 3.2.x), you need also open a command line window, navigate to the directory of your Rhodes application, and run the following command:
 
 	:::term
-	$ set-rhodes-sdk
+        $ migrate-rhodes-app
 
-The set-rhodes-sdk command will remove sdk line from your build.yml to use latest Rhodes gem, it also upgrade application Rakefile.
+The migrate-rhodes-app will remove sdk line from your build.yml to use latest Rhodes gem, it also will upgrade application Rakefile.
 
 ## Building a Rhodes Application for iPhone/iPad
 

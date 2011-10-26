@@ -1100,7 +1100,7 @@ namespace "run" do
         $appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"]
         if !File.exists?($path)
             puts "Cannot find RhoSimulator: '#{$path}' does not exists"
-            puts "Check sdk path in build.yml - it should point to latest rhodes (run set-rhodes-sdk in application folder) OR"
+            puts "Check sdk path in build.yml - it should point to latest rhodes (run 'set-rhodes-sdk' in application folder) OR"
 
             if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'].length() > 0
                 puts "Check 'env:paths:rhosimulator' path in '<rhodes>/rhobuild.yml' OR"
