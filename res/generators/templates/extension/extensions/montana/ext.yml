@@ -1,0 +1,3 @@
+entry: Init_<%= name.camel_case %>_extension	
+javaentry: com.rho.rubyext.<%= name.camel_case %>Extension
+libraries: ["<%= name.camel_case %>"]

@@ -278,8 +278,133 @@ module Rhogen
   end
 
 
+
+  class ExtensionGenerator < BaseGenerator
+
+    def self.source_root
+      File.join(File.dirname(__FILE__), 'templates', 'extension')
+    end
+
+    desc <<-DESC
+      Adds native extension to Rhodes based application.
+    DESC
+
+    #option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
+
+    first_argument :name, :required => true, :desc => "extension name"
+
+    template :ext do |template|
+      template.source = 'extensions/montana/ext.yml'
+      template.destination = "extensions/#{name.downcase}/ext.yml"
+    end
+
+    template :extension_ruby do |template|
+      template.source = 'extensions/montana/montana.rb'
+      template.destination = "extensions/#{name.downcase}/#{name.downcase}.rb"
+    end
+
+    $build_script_full_path = ''
+
+    def callback_after_make_build(template)
+        # change atribbutes in build script file to executable
+        File.chmod(0755, $build_script_full_path) 
+    end    
+
+    template :build do |template|
+      template.source = 'extensions/montana/ext/build'
+      template.destination = "extensions/#{name.downcase}/ext/build"
+      $build_script_full_path = template.destination   
+      template.options = { :after => :callback_after_make_build}  
+    end
+
+    template :build_bat do |template|
+      template.source = 'extensions/montana/ext/build.bat'
+      template.destination = "extensions/#{name.downcase}/ext/build.bat"
+    end
+
+    template :extension_i do |template|
+      template.source = 'extensions/montana/ext/montana/shared/ruby/montana.i'
+      template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/shared/ruby/#{name.downcase}.i"
+    end
+
+    template :extension_wrap do |template|
+      template.source = 'extensions/montana/ext/montana/shared/ruby/montana_wrap.c'
+      template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/shared/ruby/#{name.downcase}_wrap.c"
+    end
+
+    template :extension_c do |template|
+      template.source = 'extensions/montana/ext/montana/shared/src/montana.c'
+      template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/shared/src/#{name.downcase}.c"
+    end
+
+    template :extension_iphone_rakefile do |template|
+      template.source = 'extensions/montana/ext/montana/platform/iphone/Rakefile'
+      template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/iphone/Rakefile"
+    end
+
+    file :extension_iphone_pch do |file|
+      file.source = 'extensions/montana/ext/montana/platform/iphone/Montana_Prefix.pch'
+      file.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/iphone/#{name.camel_case}_Prefix.pch"
+    end
+
+    template :extension_iphone_project do |template|
+      template.source = 'extensions/montana/ext/montana/platform/iphone/Montana.xcodeproj/project.pbxproj'
+      template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/iphone/#{name.camel_case}.xcodeproj/project.pbxproj"
+    end
+
+    template :extension_iphone_src_h do |template|
+      template.source = 'extensions/montana/ext/montana/platform/iphone/Classes/Montana.h'
+      template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/iphone/Classes/#{name.camel_case}.h"
+    end
+
+    template :extension_iphone_src_m do |template|
+      template.source = 'extensions/montana/ext/montana/platform/iphone/Classes/Montana.m'
+      template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/iphone/Classes/#{name.camel_case}.m"
+    end
+
+    template :extension_test_controller do |template|
+      template.source = 'app/MontanaTest/controller.rb'
+      template.destination = "app/#{name.camel_case}Test/controller.rb"
+    end
+
+    template :extension_test_index do |template|
+      template.source = 'app/MontanaTest/index.erb'
+      template.destination = "app/#{name.camel_case}Test/index.erb"
+    end
+
+
+    #<%= name.downcase %>
+    #<%= name.camel_case %>
+
+    #template :spec do |template|
+    #  underscore_name = name.camel_case.split(/(?=[A-Z])/).map{|w| w.downcase}.join("_")
+    #  template.source = 'spec.rb'
+    #  template.destination = "app/test/#{underscore_name}_spec.rb"
+    #end
+
+    #file :loadingpng do |file|
+    #  file.source = 'app/loading.png'
+    #  file.destination = "#{name}/app/loading.png"
+    #end
+    
+    #directory :helpers do |directory|
+    #  directory.source = 'app/helpers'
+    #  directory.destination = "#{name}/app/helpers"
+    #end
+
+
+    def attributes?
+      self.attributes && !self.attributes.empty?
+    end
+
+  end
+
+
+
+
   add :app, AppGenerator
   add :model, ModelGenerator
   add :spec, SpecGenerator
+  add :extension, ExtensionGenerator
 
 end
