@@ -48,10 +48,13 @@ public class GeoLocationImpl {
 	
 	private LocationManager locationManager = null;
 	private volatile Location lastLocation;
+	
+	// These two values should be equal in most cases but explicit request to GeoLocation without call to setTimeout
 	private long invalidateLocationPeriod;
 	private volatile long pingTimeout = Long.MAX_VALUE;
 	
 	private List<RhoLocationListener> mListeners = new LinkedList<RhoLocationListener>();
+    private List<RhoLocationListener> mSwitchedOffListeners = new LinkedList<RhoLocationListener>();
 	
 	public class RhoLocationListener implements LocationListener {
 		private String providerName;
@@ -106,11 +109,11 @@ public class GeoLocationImpl {
 					if((System.currentTimeMillis() - time) > invalidateLocationPeriod) {
 						message.append(" time is very old: ").append(location.getTime());
 						message.append(". Current time: ").append(System.currentTimeMillis());
-						message.append(". Inactivity timeout: ").append(invalidateLocationPeriod).append(".");
+						message.append(". Invalitate period: ").append(invalidateLocationPeriod).append(".");
 					} else {
 						message.append(" time os ok: ").append(location.getTime());
 						message.append(". Current time: ").append(System.currentTimeMillis());
-						message.append(". Inactivity timeout: ").append(invalidateLocationPeriod).append(".");
+						message.append(". Invalidate period: ").append(invalidateLocationPeriod).append(".");
 						onLocationChanged(location);
 					}
 					Logger.T(TAG,  message.toString());
@@ -151,7 +154,7 @@ public class GeoLocationImpl {
 				if (pingTimeout < 0)
 					break;
 				try {
-					long curTimeout = errorTimeout(pingTimeout);
+					final long curTimeout = errorTimeout(pingTimeout);
 					Logger.T(TAG, "\"watchdog\" thread waits (" + curTimeout + "ms)...");
 					Thread.sleep(curTimeout);
 				}
@@ -183,7 +186,7 @@ public class GeoLocationImpl {
 	});
 	
 	// Sleep greater then ping time to do not interfere with real location updates
-	private static long errorTimeout(long time) { return time * 5; } 
+	private static long errorTimeout(long time) { return (time == Long.MAX_VALUE) ? time : (time * 5); 	} 
 	
 	private static native void geoCallback();
 	private static native void geoCallbackError();
@@ -209,7 +212,7 @@ public class GeoLocationImpl {
 					continue;
 				
 				RhoLocationListener listener = new RhoLocationListener(provider, locationManager);
-				mListeners.add(listener);
+				mSwitchedOffListeners.add(listener);
 			}
 		}
 		
@@ -217,10 +220,18 @@ public class GeoLocationImpl {
 	private void registerListeners() {
 		Iterator<RhoLocationListener> it;
 		synchronized (mListeners) {
-			it = mListeners.iterator();
+			it = mSwitchedOffListeners.iterator();
 			while (it.hasNext()) {
-				it.next().register(pingTimeout);
+			    RhoLocationListener listener = it.next();
+                
+                Logger.T(TAG, "Registering location listener: " + listener.getProviderName());
+                
+				listener.register(pingTimeout);
+				mListeners.add(listener);
 			}
+			mSwitchedOffListeners.removeAll(mListeners);
+			
+			Logger.T(TAG, "Count of switched off listeners: " + mSwitchedOffListeners.size());
 		}
 		// Request last location after every listener has registered
 		// because last location from GPS will force other listeners to unregister
@@ -237,8 +248,14 @@ public class GeoLocationImpl {
 				RhoLocationListener listener = it.next(); 
 				if ((skipProvider != null) && listener.getProviderName().equals(skipProvider))
 					continue;
+                
+                Logger.T(TAG, "Unregistering location listener: " + listener.getProviderName());
+                
 				listener.unregister();
+				it.remove();
+				mSwitchedOffListeners.add(listener);
 			}
+            Logger.T(TAG, "Count of switched off listeners: " + mSwitchedOffListeners.size());
 		}
 	}
 	
@@ -406,10 +423,15 @@ public class GeoLocationImpl {
 	}
 
 	synchronized void setTimeout(long msec) {
-		pingTimeout = msec;
-		thWatchdog.interrupt();
-		registerListeners();// do reregister for new timeout
-		Logger.T(TAG, "Set new ping timeout: " + pingTimeout + "ms");
+        if (pingTimeout != msec) {
+            pingTimeout = msec;
+            thWatchdog.interrupt();
+            registerListeners();// do reregister for new timeout
+            Logger.T(TAG, "Set new ping timeout: " + pingTimeout + "ms");
+        } else {
+            // Just renew timer in case same value
+            thWatchdog.interrupt();
+        }
 		
 	}
 }
