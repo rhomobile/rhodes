@@ -90,7 +90,7 @@ namespace "build" do
      ENV['GCCPATH']= $symbiandir+"/tools/gcce4"
      ENV['DEFALT_MKSPEC_PATH']=$sdkprefix+"/mkspecs/default"
      ENV['QMAKE_PATH']=$sdkprefix+"/bin"
-     ENV['QT_SIS_OPTIONS']="-u"
+     #ENV['QT_SIS_OPTIONS']="-u -o"
 
 
      if($ver == "9.4")
@@ -120,14 +120,14 @@ namespace "build" do
      #args = ['installer_sis']
      args = ['sis']
      puts Jake.run($make,args)
-     unless $? == 0
-     puts "Error building"
-        exit 1
-     end
+     #unless $? == 0
+     #puts "Error building"
+     #   exit 1
+     #end
 
-     #chdir "rhodes"
-     #args = ['ok_installer_sis']
-     #puts Jake.run($make,args)
+     chdir "rhodes"
+     args = ['unsigned_installer_sis']
+     puts Jake.run($make,args)
      #unless $? == 0
      #puts "Error building"
      #   exit 1
@@ -135,7 +135,7 @@ namespace "build" do
 
      mkdir_p $targetdir if not File.exists? $targetdir
      rm $targetdir+"/"+$appname+"_unsigned.sis" if File.exists? $targetdir+"/"+$appname+"_unsigned.sis"
-     cp $startdir + "/"+$config["build"]["symbianpath"] + "/rhodes/"+$appname+"_unsigned.sis", $targetdir+"/"+$appname+"_unsigned.sis"
+     cp $startdir + "/"+$config["build"]["symbianpath"] + "/rhodes/"+$appname+"_installer_unsigned.sis", $targetdir+"/"+$appname+"_installer_unsigned.sis"
 
      rm $targetdir+"/"+$appname+".sis" if File.exists? $targetdir+"/"+$appname+".sis"
      cp $startdir + "/"+$config["build"]["symbianpath"] + "/rhodes/"+$appname+".sis", $targetdir+"/"+$appname+".sis"

@@ -12,8 +12,9 @@ db.source = db
 lib.source = lib
 DEPLOYMENTFOLDERS = apps db lib
 
-symbian:TARGET = testmy
-symbian:TARGET.UID3 = 3959687259
+symbian:TARGET = AgendaSalute
+symbian:TARGET.UID3 = 0xE15AE169
+#3780829545
 #0xE17AE169
 #symbian:TARGET.UID3 = 0x20047C9A
 #0xA00100C8
@@ -24,16 +25,16 @@ symbian:TARGET.UID3 = 3959687259
 # and therefore the package will fail to install if self-signed
 # By default qmake uses the unprotected range value if unprotected UID is defined for the application
 # and 0x2002CCCF value if protected UID is given to the application
-#symbian:DEPLOYMENT.installer_header = 0xA000D7CE
+symbian:DEPLOYMENT.installer_header = 0xA000D7CE
 
 #symbian:DEPLOYMENT.installer_header=0xA000D7CE
 
-#symbian:vendorinfo = \
-#      "%{\"CustomVendor-EN\"}" \
-#      ":\"CustomVendor\""
+symbian:vendorinfo = \
+      "%{\"CustomVendor-EN\"}" \
+      ":\"CustomVendor\""
 
-#symbian:my_deployment.pkg_prerules = symbian:vendorinfo
-#DEPLOYMENT +=  symbian:my_deployment
+symbian:my_deployment.pkg_prerules = symbian:vendorinfo
+DEPLOYMENT +=  symbian:my_deployment
 
 # Allow network access on Symbian
 symbian:TARGET.CAPABILITY += NetworkServices LocalServices ReadUserData UserEnvironment WriteUserData
@@ -103,6 +104,7 @@ OTHER_FILES +=
 
 win32 {
 #DESTDIR = ../../rhodes-symbian-emulator-build
+#DEFINES += _WIN32=1
 HEADERS += ../../wm/rhodes/rho/net/NetRequestImpl.h\
              ../../wm/rhodes/rho/common/impl/RhoThreadImpl.h
 SOURCES += ../../wm/rhodes/rho/net/NetRequestImpl.cpp
@@ -116,6 +118,7 @@ SOURCES +=  ../../wm/rhodes/rho/net/NetRequestImpl.cpp \
 #                  ../../rhodes-symbian-emulator-build/sqlite3/release/sqlite3.lib\
 #                  ../../rhodes-symbian-emulator-build/syncengine/release/syncengine.lib
 LIBS += -L../rubylib/release -L../rholib/release -L../sqlite3/release -L../syncengine/release
+#LIBS += -L../rubylib/debug -L../rholib/debug -L../sqlite3/debug -L../syncengine/debug
 LIBS += rubylib.lib\
         rholib.lib\
         sqlite3.lib\
