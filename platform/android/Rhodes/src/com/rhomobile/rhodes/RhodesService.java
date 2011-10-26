@@ -1286,7 +1286,7 @@ public class RhodesService extends Service {
 	
 	private void restartGeoLocationIfNeeded() {
 		if (mNeedGeoLocationRestart) {
-			GeoLocation.isKnownPosition();
+			GeoLocation.restart();
 			mNeedGeoLocationRestart = false;
 		}
 	}

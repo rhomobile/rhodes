@@ -64,10 +64,6 @@ public class GeoLocation {
 			return 30000; // 30 sec
 	}
 	
-	private static void reportFail(String name, Exception e) {
-		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
-	}
-	
 	private static void checkState() throws IllegalAccessException {
 		if (!Capabilities.GPS_ENABLED)
 			throw new IllegalAccessException("Capability GPS disabled");
@@ -117,10 +113,22 @@ public class GeoLocation {
 			}
 		}
 		catch (Exception e) {
-			reportFail("stop", e);
+			Logger.E(TAG, e);
 		}
 	}
-	
+
+    public static void restart() {
+        try {
+            checkState();
+            Logger.T(TAG, "restart");
+            if (updatePeriod != -1)
+                getImpl().setTimeout(getUpdatePeriod());
+        }
+        catch (Exception e) {
+            Logger.E(TAG, e);
+        }
+    }
+
 	public static boolean isAvailable() {
 		Logger.T(TAG, "isAvailable...");
 		try {
@@ -133,7 +141,7 @@ public class GeoLocation {
 			return result;
 		}
 		catch (Exception e) {
-			reportFail("isAvailable", e);
+            Logger.E(TAG, e);
 		}
 		return false;
 	}
@@ -145,7 +153,7 @@ public class GeoLocation {
 			return getImpl().getLatitude();
 		}
 		catch (Exception e) {
-			reportFail("getLatitude", e);
+            Logger.E(TAG, e);
 		}
 		return 0.0;
 	}
@@ -157,7 +165,7 @@ public class GeoLocation {
 			return getImpl().getLongitude();
 		}
 		catch (Exception e) {
-			reportFail("getLongitude", e);
+            Logger.E(TAG, e);
 		}
 		return 0.0;
 	}
@@ -169,7 +177,7 @@ public class GeoLocation {
 			return getImpl().getAccuracy();
 		}
 		catch (Exception e) {
-			reportFail("getAccuracy", e);
+            Logger.E(TAG, e);
 		}
 		return 0;
 	}
@@ -181,7 +189,7 @@ public class GeoLocation {
 			return getImpl().isKnownPosition();
 		}
 		catch (Exception e) {
-			reportFail("isKnownPosition", e);
+            Logger.E(TAG, e);
 		}
 		return false;
 	}
@@ -196,10 +204,10 @@ public class GeoLocation {
 			checkState();
 			Logger.T(TAG, "setTimeout: " + nsec + "s");
 			updatePeriod = nsec * 1000;
-			getImpl().setTimeout(updatePeriod);
+			getImpl().setTimeout(getUpdatePeriod());
 		}
 		catch (Exception e) {
-			reportFail("setTimeout", e);
+            Logger.E(TAG, e);
 		}
 	}
 
