@@ -331,7 +331,7 @@ Home pages:
 ### Android
 
 On Android extended RhoContact::find functionality is implemented.
-In addition to common usage described above it is allowed to pass additional parameter values:
+In addition to common usage described above it is allowed to pass additional parameter values.
 
 * :all - get all contacts as usual 
 * :first - find first contact from list
@@ -345,10 +345,11 @@ These two parameters are used to paginate contacts list. If used with :count exa
 * :select - list of contact properties have to be selected from phonebook (Use it to enchance query performance)
 * :conditions - hash of conditions to query contacts
 
-On Android the nexts contact properties are supported (every of them may be used in :select list):
+On Android the next contact properties are supported (every of them may be used in :select list):
 
 General:
 "id", "display_name", "first_name", "last_name"
+The "display_name" is always filled by Android even if "first_name" and "last_name" are both empty. In this case email or phone number  may be used. 
 
 Phone numbers:
 "mobile_number", "home_number", "business_number"
@@ -359,15 +360,15 @@ E-mails:
 Company:
 "company_name"
 
-**NOTE: In most cases the result of RhoContact::find query may return more contact properties the defined in :select**
+**NOTE: In most cases the result of RhoContact::find query may return more contact properties then defined in :select**
 
 #### Conditions
 
-:conditions parameter is a hash of conditions. Keys of the hash are contact property selectors (condition to be applied to) and values is conditions itself.
+:conditions parameter is a hash of conditions. Keys of the hash are contact property selectors (condition to be applied to) and values are conditions itself.
 The next property selectors are defined:
 - :phone
 - :email
-Property selectors has no one-to-one relation to just single contact property like a mobile phone or work email. Selectors are mapped to whole property group like all phones or all emails.
+A property selector has no one-to-one relation to a single contact property like mobile_phone or email_address. Selectors are mapped to whole property group like all phones or all emails (support for several emails may be implemented in future).
 Condition like
 	:::ruby
 	{:phone => 'not_nil'}
@@ -376,7 +377,7 @@ The next conditions are currently suported:
 - 'not_nil'
 - 'is_nil'
 
-**NOTE: It may be useful to sort contacts (espessially if paginated). Contacts is ordered by 'display_name' column and then splitted for pages. Unfortunately the order inside page is lost while passing the list to ruby**
+**NOTE: It may be useful to sort received contacts (espessially if paginated). Contacts is ordered by 'display_name' column and then splitted for pages. Unfortunately the order inside page is lost while passing the list to ruby**
 
 	:::ruby
 	@count = Rho::RhoContact.find(:count, :conditions => {:phone => 'not_nil'})
