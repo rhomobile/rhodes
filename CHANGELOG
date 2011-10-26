@@ -1,3 +1,7 @@
+## 3.2.1
+* Add mirgate-rhodes-app command that updates build.yml to use latest Rhodes gem
+* Change set-rhodes-sdk command to set sdk path at build.yml only
+
 ## 3.2
 * Migrate to Ruby 1.9.2
 * Support reset selected models
