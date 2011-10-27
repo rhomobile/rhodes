@@ -1,10 +1,109 @@
-#Rhodes Application Generator
+# Rhodes Application Generator
 
-Rhodes utility is a generator which the user uses to create Rhodes applications, models, and tests (specs). 
+You can use RhoStudio to create Rhodes applications and models in an Eclipse-like environment.
 
-## Generating an Application
+You can also use the Rhodes generator utility from the command line to create Rhodes applications, models, and tests (specs).
 
-You pass your application name to the rhodes app command as a parameter. The Rhodes utility will generate a default directory structure for your application, with default code for the generated files.
+## Generating a Rhodes Application from RhoStudio
+
+In RhoStudio, select File->New->Project...
+
+The New Project window opens. Select the Rhodes application wizard and click the Next button.
+
+<img src="http://rhodocs.s3.amazonaws.com/rhostudio-tutorial/new-project.png"/>
+
+Enter the name for your Rhodes application in Project name; in this case, "storemanager". You may specify a specific folder for your destination where your project is stored, by default, the destination is your RhoStudio workspace folder. Then press the Finish button.
+
+<img src="http://rhodocs.s3.amazonaws.com/rhostudio-tutorial/rhodes-application-wizard.png"/>
+
+After pressing the Finish button, you'll see the Rhodes app generator script output in the output console (Rhomobile build console).
+
+<img src="http://rhodocs.s3.amazonaws.com/rhostudio-tutorial/rhodes-app-generator-output.png"/>
+
+The generated application has the following directory structure and files.
+
+	storemanager/
+		Rakefile
+		build.yml
+		rhoconfig.txt
+	./app:
+		application.rb
+		index.bb.erb
+		index.erb
+		layout.erb
+		loading.html
+		loading.png
+	./app/Settings:
+		controller.rb	
+		home.bb.erb	
+		home.erb	
+		index.bb.erb	
+		index.erb	
+		login.bb.erb	
+		login.erb	
+		reset.bb.erb	
+		reset.erb	
+		wait.bb.erb
+		wait.erb
+	./app/helpers:
+		application_helper.rb
+		browser_helper.rb
+	./icon:
+		<default application icons; modify these to have your own app icon>
+	./public:
+	./public/css:
+	   	<default set of css for different platforms>
+	./public/images:
+		<default images used by js libraries>
+	./public/jquery:
+		<jQuery js script with some rhomobile fixes>
+	./public/jqmobile:
+		<jQuery Mobile js script with some rhomobile fixes>
+	./public/js:
+	   	<default js libraries>
+
+## Adding a Model to a Rhodes Application from RhoStudio
+
+Rhodes applications support a Model-View-Controller (MVC) pattern.  To start our application, we will generate a Model. To generate a Rhodes model and create the associated Controller and View templates, right-click on the application project in the Project Explorer and select New->Rhodes model.
+
+<img src="http://rhodocs.s3.amazonaws.com/rhostudio-tutorial/menu-new-rhodes-model.png"/>
+
+In the Model Information window, enter the name for your model: in this case, Product. Also enter the Model attributes as a string with no spaces and each attribute separated by a comma: in this case, name,brand,price,quantity,sku. (Whitespaces at the field name beginning and end will be trimmed and whitespaces in the middle of the field name will be replaced with an underscore character.)
+
+Click the Finish button to create the model.
+
+<img src="http://rhodocs.s3.amazonaws.com/rhostudio-tutorial/model-information.png"/>
+
+After pressing the Finish button, you'll see the Rhodes model generator script output in the output console (Rhodes build log console).
+
+<img src="http://rhodocs.s3.amazonaws.com/rhostudio-tutorial/rhodes-model-generator-output.png"/>
+
+You should now see a 'Product' folder below the 'app' folder in your storemanager application. These files constitute the Model, Views and Controller file for the Product Model we just created. The files are organized as follows:
+
+This will generate the following files in the folder app/Account:
+
+* app/Product/index.erb - the html view template to display the list of objects
+* app/Product/edit.erb - the html view template to edit an object
+* app/Product/new.erb - the html view template to supply values to create a new object
+* app/Product/show.erb - the html view template to displays the selected object
+* app/Product/index.bb.erb - the html view template to display the list of objects on Blackberry
+* app/Product/edit.bb.erb - the html view template to edit an object on Blackberry
+* app/Product/new.bb.erb - the html view template to supply values to create a new object on Blackberry
+* app/Product/show.bb.erb - the html view template to displays the selected object on Blackberry
+* app/Product/product_controller.rb - contains the the business logic for the model, the basic CRUD actions: index, new, create, edit, update and delete.
+* app/Product/product.rb - contains the Product model definition. Since we are using the default PropertyBag definition, we don't need to modify this file any further.
+
+A placeholder for Account test specs will be generated in the app/test folder:
+
+* app/test/product_spec.rb - placeholder for Account test specs
+
+## Generating A Rhodes Application and Model 
+
+You can generate your Rhodes application and model from the command line.
+
+### Generating a Rhodes Application from the Command Line
+
+You can pass your application name to the rhodes app command as a parameter. The Rhodes utility will generate a default directory structure for your application, with default code for the generated files.
 
 	Usage: rhodes app name [options] [args]
 
@@ -26,53 +125,7 @@ You pass your application name to the rhodes app command as a parameter. The Rho
 	    -h, --help                       Show this message
 	        --debug                      Do not catch errors
 
-For example, the following command generates an application named myspace.
-
-	:::term
-	$ rhodes app myspace
-
-The generated application has the following directory structure and files.
-
-	myspace/
-		Rakefile
-		build.yml
-		rhoconfig.txt
-	./app:
-		application.rb
-		index.bb.erb
-		index.erb
-		layout.erb
-		loading.html
-		loading.png
-	./app/Settings:
-		controller.rb	
-		home.bb.erb	
-		home.erb	
-		index.bb.erb	
-		index.erb	
-		login.bb.erb	
-		login.erb	
-		reset.bb.erb	
-		reset.erb	
-		wait.bb.erb	wait.erb
-	./app/helpers:
-		application_helper.rb
-		browser_helper.rb
-	./icon:
-		<default application icons; modify these to have your own app icon>
-	./public:
-	./public/css:
-	   	<default set of css for different platforms>
-	./public/images:
-		<default images used by js libraries>
-	./public/jquery:
-		<jQuery js script with some rhomobile fixes>
-	./public/jqmobile:
-		<jQuery Mobile js script with some rhomobile fixes>
-	./public/js:
-	   	<default js libraries>
-
-## Adding a Model to Your Application
+### Adding a Model to Your Rhodes Application from the Command Line
 
 Once you have generated your application, you can add a model to it, and the model can have attributes. For example, if you have a store application, you can add a model named product, and attributes like brand, name, price, and quantity.
 
@@ -99,23 +152,6 @@ For example, here is the command to generate a model named account, with the att
 	$ cd myspace
 	$ rhodes model account name,industry
 
-This will generate the following files in the folder app/Account:
-
-* app/Account/index.erb - the template to display the list of objects
-* app/Account/edit.erb - the template to edit an object
-* app/Account/new.erb - the template to supply values to create a new object
-* app/Account/show.erb - the template to displays the selected object
-* app/Account/index.bb.erb - the template to display the list of objects on Blackberry
-* app/Account/edit.bb.erb - the template to edit an object on Blackberry
-* app/Account/new.bb.erb - the template to supply values to create a new object on Blackberry
-* app/Account/show.bb.erb - the template to displays the selected object on Blackberry
-* app/Account/account_controller.rb - contains the basic CRUD actions: index, new, create, edit, update and delete.
-* app/Account/account.rb - contains Account model definition
-
-A placeholder for Account test specs will be generated in the app/test folder:
-
-* app/test/account_spec.rb - placeholder for Account test specs
-
 ## Add test framework
 
 To add a test framework to the application:
@@ -123,7 +159,6 @@ To add a test framework to the application:
 	Usage: rhodes spec
 
 	Add test framework to a rhodes application.
-
 
 For example:
 
