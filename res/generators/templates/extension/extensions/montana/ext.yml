@@ -1,3 +1,4 @@
 entry: Init_<%= name.camel_case %>_extension	
 javaentry: com.rho.rubyext.<%= name.camel_case %>Extension
+android_additional_sources_list: ext/<%= name.downcase %>/platform/android/ext_build.files
 libraries: ["<%= name.camel_case %>"]
