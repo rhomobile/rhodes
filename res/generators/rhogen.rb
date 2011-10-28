@@ -383,6 +383,26 @@ module Rhogen
     end
 
 
+    template :extension_wm_rakefile do |template|
+        template.source = 'extensions/montana/ext/montana/platform/wm/Rakefile'
+        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/wm/Rakefile"
+    end
+
+    template :extension_wm_vcproject do |template|
+        template.source = 'extensions/montana/ext/montana/platform/wm/Montana.vcproj'
+        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/wm/#{name.camel_case}.vcproj"
+    end
+
+    template :extension_wm_h do |template|
+        template.source = 'extensions/montana/ext/montana/platform/wm/src/montana_wm.h'
+        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/wm/src/#{name.downcase}_wm.h"
+    end
+
+    template :extension_wm_cpp do |template|
+        template.source = 'extensions/montana/ext/montana/platform/wm/src/montana_wm.cpp'
+        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/wm/src/#{name.downcase}_wm.cpp"
+    end
+
 
 
     template :extension_test_controller do |template|
