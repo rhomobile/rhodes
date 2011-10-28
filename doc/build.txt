@@ -81,13 +81,13 @@ To start the build process, create a Run Configuration: select your project in t
  * select Run->Run Configurations... from the main menu,
  * or right-click on your project, and select Run As->Run Configurations from the popup menu.
 
-<img src="build-rhodes-app/run-configurations-menu.png"/>
+<img src="http://rhodocs.s3.amazonaws.com/build-rhodes-app/run-configurations-menu.png"/>
 
 The Run Configurations window appears.
 
 To run on the iOS simulator, select iPhone in Platform, Simulator in Simulator type, and select iPhone or iPad. Then click the Run button.
 
-<img src="build-rhodes-app/run-configurations-ios.png"/>
+<img src="http://rhodocs.s3.amazonaws.com/build-rhodes-app/run-configurations-ios.png"/>
 
 ### Build a Rhodes Application with Xcode
 
@@ -332,7 +332,7 @@ To start the build process, create a Run Configuration: select your project in t
  * select Run->Run Configurations... from the main menu,
  * or right-click on your project, and select Run As->Run Configurations from the popup menu.
 
-<img src="build-rhodes-app/run-configurations-menu.png"/>
+<img src="http://rhodocs.s3.amazonaws.com/build-rhodes-app/run-configurations-menu.png"/>
 
 The Run Configurations window appears.
 
@@ -340,11 +340,11 @@ The Run Configurations window appears.
 
 To run on the Android simulator, select Android in Platform, Simulator in Simulator type, and enter the name of the AVD in AVD name. Then click the Run button.
 
-<img src="build-rhodes-app/run-configurations-avd.png"/>
+<img src="http://rhodocs.s3.amazonaws.com/build-rhodes-app/run-configurations-avd.png"/>
 
 You can get a list of the AVD names by running the SDK setup: on Macintosh and Linux, navigate to and run <Android SDK>/tools/android. On Windows, navigate to and run <Android SDK>/SDK Setup.exe. Then click Virtual devices.
 
-<img src="build-rhodes-app/android-virtual-devices.png"/>
+<img src="http://rhodocs.s3.amazonaws.com/build-rhodes-app/android-virtual-devices.png"/>
 
 #### Running on an Android Device with RhoStudio
 
