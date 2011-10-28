@@ -46,7 +46,7 @@ You don't have to do it if you installed RhoStudio, but if you want to build a R
 
 ## Setting Up build.yml
 
-By default, a RHodes application uses the latest Rhodes gem installed on your computer. If you wish to use special version of Rhodes or use Rhodes git sources, check for this line in your application's build.yml file:
+By default, a Rhodes application uses the latest Rhodes gem installed on your computer. If you wish to use special version of Rhodes or use Rhodes git sources, check for this line in your application's build.yml file:
 
 	:::term
 	sdk: /Library/Ruby/Gems/1.8/gems/rhodes-3.0.2
