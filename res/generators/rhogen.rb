@@ -404,6 +404,27 @@ module Rhogen
     end
 
 
+    template :extension_bb_files do |template|
+        template.source = 'extensions/montana/ext/montana/platform/bb/Montana.files'
+        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/bb/#{name.camel_case}.files"
+    end
+
+    template :extension_bb_jgp do |template|
+        template.source = 'extensions/montana/ext/montana/platform/bb/montana.jdp'
+        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/bb/#{name.downcase}.jdp"
+    end
+
+    template :extension_bb_Rakefile do |template|
+        template.source = 'extensions/montana/ext/montana/platform/bb/Rakefile'
+        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/bb/Rakefile"
+    end
+
+    template :extension_bb_java do |template|
+        template.source = 'extensions/montana/ext/montana/platform/bb/src/com/montana/Montana.java'
+        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/bb/src/com/#{name.downcase}/#{name.camel_case}.java"
+    end
+
+
 
     template :extension_test_controller do |template|
       template.source = 'app/MontanaTest/controller.rb'
