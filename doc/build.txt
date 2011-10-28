@@ -258,7 +258,7 @@ On Macintosh and Linux, navigate to and run <Android SDK>/tools/android. On Wind
 
 Download and unzip the [Android NDK](http://developer.android.com/sdk/ndk/index.html) to the location of your choice.
 
-In RhoStudio Preferences, open Rhomobile->Android and set the paths to your Android SDK and NDK installations.
+In RhoStudio -> Preferences on the Macintosh or Winndows -> Preferences on Windows, open Rhomobile->Android and set the paths to your Android SDK and NDK installations.
 
 <img src="http://rhodocs.s3.amazonaws.com/rhostudio-tutorial/preferences-android-sdk.png"/>
 
