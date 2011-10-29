@@ -11,7 +11,7 @@ You should check to see that the required software in installed on your computer
 
 ## Setting Up Rhodes Source Code
 
-If you planning to modify or [extend](extensions) Rhodes, you will need the Rhodes source code. It is distributed under MIT license. You don't need it if you are not planning to modify/extend Rhodes.
+If you are planning to modify or [extend](extensions) Rhodes, you will need the Rhodes source code. It is distributed under MIT license. You don't need the Rhodes source code if you are not planning to modify/extend Rhodes, and you should skip to the building section for your platform if this is the case.
 
 Rhodes source code is available on github.com. You will need Git to get it. If you used [RhoStudio for Windows](http://rhomobile.com/rhostudio-windows) you probably already have Git installed on your system. Otherwise, load it from [here](http://git-scm.com).
 
@@ -38,7 +38,7 @@ Configure your environment by running the rhodes-setup script. This will attempt
 	:::term
 	$ rhodes-setup
 
-You don't have to do it if you cloned sources, but if you want to build a Rhodes gem, do the following:
+You don't have to do it if you installed RhoStudio, but if you want to build a Rhodes gem, do the following:
 
 	:::term
   	$ rake gem
@@ -46,23 +46,22 @@ You don't have to do it if you cloned sources, but if you want to build a Rhodes
 
 ## Setting Up build.yml
 
-By default application use latest Rhodes gem installed on computer. 
-
-If you wish to use special version of Rhodes or use Rhodes git sources :
+By default, a Rhodes application uses the latest Rhodes gem installed on your computer. If you wish to use special version of Rhodes or use Rhodes git sources, check for this line in your application's build.yml file:
 
 	:::term
 	sdk: /Library/Ruby/Gems/1.8/gems/rhodes-3.0.2
- 
-    OR for Rhodes sources:
-    
-    sdk: ~/Projects/rhodes
 
-After installing new Rhodes gem(3.2.x over any version less then 3.2.x), you need also open a command line window, navigate to the directory of your Rhodes application, and run the following command:
+Or for Rhodes sources:
 
 	:::term
-        $ migrate-rhodes-app
+	sdk: ~/Projects/rhodes
 
-The migrate-rhodes-app will remove sdk line from your build.yml to use latest Rhodes gem, it also will upgrade application Rakefile.
+After you install a new Rhodes gem(3.2.x over any version less then 3.2.x), you need to go to the command line, navigate to the directory of your Rhodes application, and run the following command:
+
+    :::term
+    $ migrate-rhodes-app
+    
+The migrate-rhodes-app will update the sdk line from your build.yml to use the latest Rhodes gem. It will also upgrade your application's Rakefile.
 
 ## Building a Rhodes Application for iPhone/iPad
 
@@ -72,15 +71,29 @@ iPhone/iPad versions of Rhodes apps must be built on Macintosh computers or on [
 
 To build for iPhone/iPad using you will need the following software installed:
 
-* Mac OS X 10.6 or greater
-* Follow [All Platforms Prerequisites](#all-platforms-prerequisites)
-* iPhone SDK. We recommend the latest stable version available from the [iPhone Dev Center](http://developer.apple.com/iphone/index.action)
+* Mac OS X 10.6 or greater.
+* Follow [All Platforms Prerequisites](#all-platforms-prerequisites).
+* iPhone SDK. We recommend the latest stable version available from the [iPhone Dev Center](http://developer.apple.com/iphone/index.action).
+
+### Building and Running Your iOS Application with RhoStudio
+
+To start the build process, create a Run Configuration: select your project in the Project Explorer, and either:
+ * select Run->Run Configurations... from the main menu,
+ * or right-click on your project, and select Run As->Run Configurations from the popup menu.
+
+<img src="http://rhodocs.s3.amazonaws.com/build-rhodes-app/run-configurations-menu.png"/>
+
+The Run Configurations window appears.
+
+To run on the iOS simulator, select iPhone in Platform, Simulator in Simulator type, and select iPhone or iPad. Then click the Run button.
+
+<img src="http://rhodocs.s3.amazonaws.com/build-rhodes-app/run-configurations-ios.png"/>
 
 ### Build a Rhodes Application with Xcode
 
 If you wish to run your Rhodes application on an iOS device, you need to build and run it using an Xcode project.
 
-Tell Rhodes to build from your Rhodes application.
+Tell Rhodes to build from your Rhodes application. Within your Rhodes project folder, run the following command:
 
 	:::term
 	$ rake switch_app
@@ -91,7 +104,7 @@ The switch_app command changes the rhobuild.yml in the Rhodes source code folder
 	env: 
 	  app: /Users/NameOfUser/Store
 
-Note that the switch_app command is only used when you run a Rhodes application within an IDE, such as Xcode: you run switch_app for each Rhodes application that you run in Xcode. The switch_app command does not affect Rhodes applications that you build and run on the command line.
+Note that the switch_app command is only used when you run a Rhodes application within an IDE, such as Xcode: you run switch_app for each Rhodes application that you run in Xcode. The switch_app command does not affect Rhodes applications that you build and run on the command line or within RhoStudio.
 
 Now run the following command to tell Rhodes to set up the Xcode environment for your Rhodes application:
 
@@ -231,54 +244,67 @@ Use <b>iTunes</b> for installing your application package (your_application_name
 
 ## Build for Android
 
-### Prerequisites
+### Setting Up the Android SDK and NDK
 
-* [OS compatible with Android SDK](http://developer.android.com/sdk/requirements.html)
-* Follow [All Platforms Prerequisites](#all-platforms-prerequisites)
-* Download the [Android SDK Starter Package](http://developer.android.com/sdk/index.html)
-	* Run `<sdk>/tools/android` on OSX/Linux or `<sdk>/SDK Setup.exe` on Windows
-	* Go to Settings > check `Force https://... sources to be fetched using http://` and press `Save & Apply`.
-	* Go to Available > Expand `https://dl-ssl.google.com`
-	* Download the latest SDK version, latest platform (SDK Platform 2.2, for example) and latest "Google APIs" available.
-* Set the environment variables ANDROID_HOME to where you installed the SDK, and add `<sdk path>/tools` to PATH
-* Download and install the [Android NDK](http://developer.android.com/sdk/ndk/index.html)
-* Run `rhodes-setup` and tell Rhodes where you installed the Android SDK and NDK
+Check that your [OS is compatible with the Android SDK](http://developer.android.com/sdk/requirements.html).
 
-In case if you are planning to work with native geo mapping (MapView interface), two things should be done:
+Download the [Android SDK](http://developer.android.com/sdk/index.html), and unzip it to the location of your choice.
 
-* Android Maps API key should be retrieved from Google. Follow these [instructions](http://code.google.com/intl/en/android/add-ons/google-apis/mapkey.html) to get it. When key received, put it in your application's `build.yml` or share it across all your applications by adding it to `rhobuild.yml`. Note that the `apikey` value must match a certificate used to sign an application (the key is different for debug and production signed build and debug key cannot be shared between different build computers).
+On Macintosh and Linux, navigate to and run <Android SDK>/tools/android. On Windows, navigate to and run <Android SDK>/SDK Setup.exe. The Android SDK and AVD Manager window appears. Then perform the following steps:
+
+ * Select Settings, then check "check `Force https://... sources to be fetched using http://".
+ * Select Available packages, expand the Android repository and Third Party add-ons, check the Android SDK Platform(s) and Google APIs of your choice, then click the "Add Add-on site" button to download them.
+ * Set up an AVD (Android Virtual Device) by clicking on Virtual Devices, and clicking the New button. More detailed instructions can be on the Google site for [Managing AVDs with AVD Manager](http://developer.android.com/guide/developing/devices/managing-avds.html).
+
+Download and unzip the [Android NDK](http://developer.android.com/sdk/ndk/index.html) to the location of your choice.
+
+In RhoStudio -> Preferences on the Macintosh or Winndows -> Preferences on Windows, open Rhomobile->Android and set the paths to your Android SDK and NDK installations.
+
+<img src="http://rhodocs.s3.amazonaws.com/rhostudio-tutorial/preferences-android-sdk.png"/>
+
+If you are not using RhoStudio, run rhodes-setup from the command line and set the paths to the Android SDK and NDK installations.
+
+### Setting up the Android Maps API
+
+In case you are planning to work with native geo mapping (the MapView interface), you must do two things:
+
+* Retrieve the Android Maps API key from Google. Follow these [instructions](http://code.google.com/intl/en/android/add-ons/google-apis/mapkey.html) to get it. When key received, put it in your application's `build.yml` or share it across all your applications by adding it to `rhobuild.yml`. Note that the `apikey` value must match a certificate used to sign an application (the key is different for debug and production signed build and debug key cannot be shared between different build computers).
 
 	android:
 	  apikey: "GOOGLE-API-KEY-FOR-ANDROID"
 
-* Enable 'mapping' in your application's `build.yml` (or in `<rhodes-root>/rhobuild.yml`):
+* Enable 'mapping' in your application's `build.yml` (or in `<rhodes-root>/rhobuild.yml`). In RhoStudio, you can double-click on your application's build.yml and edit from the text editor; otherwise, you can edit rhobuil.yml or build.yml from another text editor.
 
 	android:
 	  mapping: yes
 
-If you are using Eclipse (Optional) please follow [these instructions](http://source.android.com/source/using-eclipse.html) on how to increase Java memory space to use Android.
+### Including CSS Files
 
+You should check your application to change how you include css files in your html pages.
 
-Please check your applications and change how you include css files into html pages.
-
-For example, you will need to replace 
+For example, you will need to replace this:
 
 	<style type="text/css" media="screen">
 		@import "/public/js/iui/iui.css"; @import "/public/css/rho.css";
 	</style>
 
-with
+with this:
 
 	<link rel="stylesheet" href="public/js/iui/iui.css" type="text/css">
     <link rel="stylesheet" href="public/css/rho.css" type="text/css">
 
-Otherwise your css files will not be loaded in Android 1.5 (and higher)
+Otherwise your css files will not be loaded in Android 1.5 (and higher).
 
 ### Device capabilities settings in build.yml
 
-Attention ! On Android you should specify list of device capabilities need for you application. By default there are not any capabilities enabled !
-This is important because all defined capability produce special <uses-permission ... > lines in AndroidManifest.xml specific to Android platfrom. Without enabled permission application can not access to device functions.
-List of capabilities related to changes in AndroidManifest - add or remove this items in "capabilities" section in your build.yml:
+On Android, you must specify your device capabilities the your application will use. By default, these capabiliteis are NOT enabled.
+
+In RhoStudio, you can double-click on your application's build.yml file, then click the Rhobuild setting tab, then click the Capabilities: Add button. You will see a list of capabilities you can check to activate for your application.
+
+<img src="http://rhodocs.s3.amazonaws.com/rhostudio-tutorial/select-capabilities.png"/>
+
+You can also edit the build.yml file directly with a text editor. Here is a list of capabilites you can add to the capabilities section in your application build.yml file.
+
 	audio
   	camera
   	gps
@@ -292,87 +318,125 @@ List of capabilities related to changes in AndroidManifest - add or remove this 
   	sdcard
   	push
 
-### Set up minimal Andoid SDK API level
+### Set up minimal Android SDK API level
 
 The minimal API level supported by Rhodes is 4 (Android 1.6)
-It is possible to set greated minimal API level with build.yml. This will restrict installing an application on any Android OS prior to 3.0:
+You can set a greater minimal API level in build.yml. For example, the following entry will restrict installing your application on any Android OS prior to 3.0:
 
    android:
      minSDK: 11
 
-### Building app and running it in emulator from the command line
+### Building and Running Your Android Application with RhoStudio
 
-** NOTE: make sure that your PATH has the path to java bin. **
+To start the build process, create a Run Configuration: select your project in the Project Explorer, and either:
+ * select Run->Run Configurations... from the main menu,
+ * or right-click on your project, and select Run As->Run Configurations from the popup menu.
 
-From the command line, in your rhodes application directory, run:
+<img src="http://rhodocs.s3.amazonaws.com/build-rhodes-app/run-configurations-menu.png"/>
+
+The Run Configurations window appears.
+
+#### Running on the Android Simulator with RhoStudio
+
+To run on the Android simulator, select Android in Platform, Simulator in Simulator type, and enter the name of the AVD in AVD name. Then click the Run button.
+
+<img src="http://rhodocs.s3.amazonaws.com/build-rhodes-app/run-configurations-avd.png"/>
+
+You can get a list of the AVD names by running the SDK setup: on Macintosh and Linux, navigate to and run <Android SDK>/tools/android. On Windows, navigate to and run <Android SDK>/SDK Setup.exe. Then click Virtual devices.
+
+<img src="http://rhodocs.s3.amazonaws.com/build-rhodes-app/android-virtual-devices.png"/>
+
+#### Running on an Android Device with RhoStudio
+
+To run on an Android device, first set up your device as shown in the Android documentation for [Using Hardware Devices](http://developer.android.com/guide/developing/device.html).
+
+Then connect your Android device to your computer with a USB cable. 
+
+In the Run Configurations window, select Android in Platform, and Device in Simulator type.
+
+#### Reading the Log File with RhoStudio
+
+After you run your applciation in RhoStudio, your application log file, rholog.txt, is stored in your application directory. You can open and read rholog.txt in RhoStudio by double-clicking on it in the Project Explorer.
+
+### Building and Running Your Android Application from the Command Line
+
+From the command line, navigate to your application directory. 
+
+To run your application in the Android emulator, run the following command:
 
 	:::term
 	$ rake run:android
 
-It will create (if needed) new virtual sdcard for emulator, then check if emulator is already running (and start if not) and upload application there. You can specify version of emulator you are want to run in your application's build.yml:
+You can adjust the settings of the Android emulator from your application's build.yml file. For example, to specify the platform version number and the emulator AVD name:
 
 	android:
 	  version: 2.1
-
-You can also specify emulator AVD name (see 'Android SDK and AVD Manager').
-
-	android:
 	  emulator: myDeviceEmulator20
 
-Disable Android title in application :
+You can also disable the Android title in the application and set the orientation to portrait (or landscape):
 
 	android:
 	  android_title: 0
-
-Setup fixed screen orientation for application (writed to Manifest, possible values: "portrait", "landscape") :
-
-	android:
 	  orientation: portrait
 
-If the rake command gets stuck you can kill the command window, open another window, run:
+If the rake command gets stuck, you can kill the command window, open another window, and run:
 
   	:::term
 	$ adb start-server
   	$ rake run:android
 
-
 ** NOTE: If you didn't run your Android simulator yet or don't have AVD configuration set, you will be asked a few questions about emulator configuration. You should answer "yes" for most questions or use default answers. As a result new AVD configuration will be created. **
 
-To uninstall application from emulator, run:
+To uninstall your application from the emulator, run:
 
 	:::term
 	$ rake uninstall:android
 
-### Building app and running it on the device from the command line
+To run on an Android device, first set up your device as shown in the Android documentation for [Using Hardware Devices](http://developer.android.com/guide/developing/device.html).
 
-If you have an Android device, you can develop and debug your Android applications just as usual. Launching your apps on a device works just the same as on the emulator, but there are a few things to do before you can start. Please check corresponding [Android documentation](http://developer.android.com/guide/developing/device.html).
-
-You can verify that your device is connected by executing:
+Connect your Android to your computer with a USB cable. You can verify that your device is connected by executing:
 
 	:::term
 	$ adb devices
 	
-If connected, you'll see the device name listed.
-
-If your machine doesn't "see" the device as connected, try killing the adb process first:
+If connected, you'll see the device name listed. If your computer doesn't see the device, try killing the adb process first:
 
 	:::term
 	$ adb kill-server
 	$ adb install <filename>.apk
 
-After you have your device connected, in your rhodes application directory, run:
+After you have your device connected, navigate to your application directory and run:
 
 	:::term 
 	$ rake run:android:device
 
-This will build your application and sign it with auto-generated self-signed certificate
+This will build your application and sign it with auto-generated self-signed certificate.
 
-To uninstall from the device, run:
+To uninstall your application from the device, run:
 
 	:::term
 	$ rake uninstall:android:device
 
-If you want to build production version, edit your application's build.yml as below:
+#### Getting the Application Log from Device or Emulator
+
+You can get the application log from the device or the emulator. From the command line, navigate to your application folder or to the root of your rhodes source tree (where the rhobuild.yml file is located). Then run this command:
+
+	:::term
+	$ rake device:android:getlog
+
+Or
+	:::term
+	$ rake emulator:android:getlog
+	
+The application log will be stored in your application directory. The file will be named RhoLog.txt.
+
+To see all the emulator messages, run `adb logcat` and start the application in the emulator.
+
+To see all the device messages, run `adb -d logcat` and start the application on your device.
+
+### Building an Android Production Version
+
+To build a production version of your application, edit your application's build.yml as below:
 
 	android:
 	  production:
@@ -380,39 +444,41 @@ If you want to build production version, edit your application's build.yml as be
 	    password: "password-of-the-certificate"
 	    alias: "keystore.alias"
 
-This will use specified certificate to sign application. If certificate is not found, it will be auto-generated. In this case you'll be prompted with several questions like your name, organization etc. The path to certificate may be absolute or relative to your app directory. If you don't want to use auto-generated certificate, refer to the [these instructions](http://developer.android.com/guide/publishing/app-signing.html) on how to create it manually.
+This will use the specified certificate to sign your application. If the certificate is not found, it will be auto-generated, and you'll be prompted with several questions like your name, organization etc. The path to the certificate may be absolute or relative to your app directory. If you don't want to use an auto-generated certificate, refer to the [these instructions](http://developer.android.com/guide/publishing/app-signing.html) on how to create a certificate manually.
 
-After that run:
+Once your certificate is set up, you can run:
 
 	:::term
 	$ rake device:android:production
 
-Signed APK will be located in `<rhodes-app-dir>/bin/target`. To install application on the device run:
+The signed APK will be located in `<rhodes-app-dir>/bin/target`. To install the application on the device run:
 
 	:::term
 	$ adb -d install -r <rhodes-app-dir>/bin/target/<app-name>_signed.apk
 
 ### Building app in Eclipse
 
-Please note: It is only Google API target (with Google mapping API) supported for Eclipse
+On Macintosh and WIndows computers, you can create Rhodes apps within RhoStudio. However, on Linux installations, you can use Eclipse, since RhoStudio is not available for Linux.
+
+Please note: It is only Google API target (with Google mapping API) supported for Eclipse.
 
 Create a new workspace in the following directory: `<Rhodes>/platform/android`
 
-Go to the Window > Preferences 
+In Eclipse, open Window > Preferences.
 
-Click on Android node in the tree and specify file path to the installed Android SDK (For example: `E:\android\android-sdk-windows`)
+Click on Android node in the tree and specify the file path to the installed Android SDK (for example: `E:\android\android-sdk`).
 
-Import all projects from the following directory: `<Rhodes>/platform/android`
+Import all projects from the directory for your new workspace: `<Rhodes>/platform/android`
 
-If you have set the option to build sources automatically all stuff will be compiled just after the import.
+If you have set the option to build sources automatically, your project will be compiled just after the import.
 
-Select Properties from the Rhodes project context menu and select one of latest Google API target for Android.
+Select Properties from the Rhodes project context menu and select one of the latest Google API targets for Android.
 
-Check bin directory. You should see Rhodes.apk file created. It will be signed with debug key provided with SDK.
+Check the bin directory. You should see the Rhodes.apk file that was created. It will be signed with the debug key provided with SDK.
 
-Now you are ready to install your application on device and/or emulator.
+Now you are ready to install your application on your device and/or emulator.
 
-In case of troubles in Eclipse while setting up the Android SDK and target try "Rhodes project context menu" > "Android Tools" > "Fix Project Properties".
+In case of troubles in Eclipse while setting up the Android SDK and target, try "Rhodes project context menu" > "Android Tools" > "Fix Project Properties".
 
 It is possible your application has stopped unexpectedly just after the first build. In this case try to copy autogenerated java source files from the application folder <app>/bin/tmp to the Rhodes project.
 
@@ -429,9 +495,9 @@ Or
 	
 Application log will be pulled from device/emulator and stored in your application directory with name RhoLog.txt.
 
-To see all emulator messages run 'adb logcat' and start application on emulator
+To see all emulator messages, run 'adb logcat' and start application on emulator.
 
-To see all device messages run 'adb -d logcat' and start application on device
+To see all device messages, run 'adb -d logcat' and start application on device.
 
 ## Build for BlackBerry
 
@@ -744,31 +810,38 @@ NOTE: If You want to use your own UID for application you can redefine it in bui
 
 ## Build for Windows Mobile
 
-Note that Windows Mobile versions of your Rhodes app must be built in a Windows environment.
-   
+Note that Windows Mobile versions of your Rhodes application must be built in a Windows environment.
+
 ### Prerequisites
 
-* Follow [All Platforms Prerequisites](#all-platforms-prerequisites)
+Follow [All Platforms Prerequisites](#all-platforms-prerequisites).
+
+Make sure you have installed the following software.
+
 * .NET Compact Framework
 * Windows Mobile 6 Professional SDK(s) 
 * Microsoft Active Sync 4.5 for Windows XP; Windows Mobile Device Center for Windows Vista or higher
 * Microsoft Device Emulator 3.0 for Windows Vista or higher
 * Visual Studio 2005 Service Pack 1 installed or Visual Studio 2008. 
-* [7-zip](http://www.7-zip.org/)
+* Software for unzipping a zip file, such as [7-zip](http://www.7-zip.org/)
 
 NOTE: It is a good idea to install Windows Mobile 6 Professional last, since it needs to be installed after Visual Studio, and since the Windows Mobile 6 Professional install process will tell you if you forgot to install any of the other prerequisites.
 
 ### Allow DMA Connections
 
-On Windows XP, open ActiveSync main window and open the File menu; on Windows Vista and above, open Windows Mobile Device Center and click Mobile Device Settings. 
+On Windows XP, open ActiveSync and open the File menu; on Windows Vista and above, open Windows Mobile Device Center and click Mobile Device Settings. 
 
 Select Connection Settings, then select the checkbox "Allow connections to one of the following." 
 
 Select "DMA" from the list box. DMA Connection is required to work with the Windows Mobile emulator.
 
-### Add Paths
+### Add Paths to Cab Wizard and Visual Studio
 
-Add path to vcbuild.exe and CabWiz.exe to rhobuild.yml in the Rhodes folder (example location: `C:/InstantRhodes/ruby/lib/ruby/gems/1.8/gems/rhodes-3.0.2`).
+In RhoStudio Windows -> Preferences, right-click on Rhomobile->Windows Mobile to show the rhobuild.yml preferences. Check that the Cab wizard path (which is contained in your Windows Mobile 6 SDK program installation) is correct.
+
+<img src="http://rhodocs.s3.amazonaws.com/build-rhodes-app/preferences-windows-mobile.png"/>
+
+Also check that the vcbuild path is shown in the rhobuild.yml file. The rhobuild.yml file is located in the Rhodes folder (example location: `C:/RhoStudio/ruby/lib/ruby/gems/1.8/gems/rhodes-3.1.1`).
 
 	env:
 	  paths:
@@ -782,7 +855,38 @@ On 64-bit installations:
 	    vcbuild: `C:/Program Files (x86)/Microsoft Visual Studio 8/VC/vcpackages/vcbuild.exe`
 	    cabwiz: `C:/Program Files (x86)/Windows Mobile 6 SDK/Tools/CabWiz`
 
-### Build and Run application on device or emulator (Visual Studio 2008 only):
+### Building and Running Your Windows Mobile Application with RhoStudio
+
+To start the build process, create a Run Configuration: select your project in the Project Explorer, and either:
+ * select Run->Run Configurations... from the main menu,
+ * or right-click on your project, and select Run As->Run Configurations from the popup menu.
+
+<img src="http://rhodocs.s3.amazonaws.com/build-rhodes-app/run-configurations-menu.png"/>
+
+The Run Configurations window appears.
+
+#### Running on the Windows Mobile Simulator in RhoStudio
+
+To run on the Windows Mobile simulator, select Windows Mobile in Platform and Simulator in Simulator type. Then click the Run button.
+
+<img src="http://rhodocs.s3.amazonaws.com/build-rhodes-app/run-configurations-wm.png"/>
+
+#### Running on a Windows Mobile Device in RhoStudio
+
+To run on an Android device, first set up your device as shown in the Android documentation for [Using Hardware Devices](http://developer.android.com/guide/developing/device.html).
+
+Then connect your Android device to your computer with a USB cable. 
+
+In the Run Configurations window, select Android in Platform, and Device in Simulator type.
+
+### Build and Run from the Command Line
+
+On computers without RhoStudio, you can build and run from the command line. 
+
+Navigate to your Rhodes application directory. To build and run application on emulator, run:
+
+	:::term
+	$ rake run:wm
 
 To build cab-file, install it, and run application on emulator, run:
 
@@ -791,10 +895,15 @@ To build cab-file, install it, and run application on emulator, run:
 
 Before you install the application on your Windows Mobile device, first connect your device via USB cable. Then check that your device is connected with ActiveSync on Windows XP or with Windows Mobile Device Center on Windows Vista or above.
 
+Navigate to your Rhodes application directory. To build and run application on device, run:
+
+	:::term
+	$ rake run:wm:device
+
 To build cab-file, install it, and run application on device, run:
 
-	:::term 
-	$ rake run:wm:device:cab 
+	:::term
+	$ rake run:wm:device:cab
 
 After the build process completes, the device will ask you to install the app. Disconnect the USB cable from the device before you install.
 
@@ -818,11 +927,11 @@ You can use rake tasks to deploy the application. See the previous section, 'Bui
 
 Manually copy the .cab file to the device. For example, you can use the device File Explorer to display the .cab file that is on the computer. Click on that .cab file and the installation process will be started; after it is finished, you should see the app icon on your device in Programs.
 
-### Build from IDE
+### Build from Visual Studio IDE
 
-Checkout the rhodes source code from github (you have this source code already if you installed Instant Rhodes).
+Checkout the rhodes source code from github (you have this source code already if you installed RhoStudio).
 
-Open `<source-code-root>\platform\wm\rhodes.sln` in Visual Studio (example location for <source-code-root>: `C:/InstantRhodes/ruby/lib/ruby/gems/1.8/gems/rhodes-3.0.2`).
+Open `<source-code-root>\platform\wm\rhodes.sln` in Visual Studio (example location for <source-code-root>: `C:/RhoStudio/ruby/lib/ruby/gems/1.8/gems/rhodes-3.1.1`).
 
 In Visual Studio, select Windows Mobile 6 Professional and build Release configuration.
 

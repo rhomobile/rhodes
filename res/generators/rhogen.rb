@@ -362,6 +362,70 @@ module Rhogen
       template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/iphone/Classes/#{name.camel_case}.m"
     end
 
+    template :extension_android_ext_build do |template|
+        template.source = 'extensions/montana/ext/montana/platform/android/ext_build.files'
+        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/android/ext_build.files"
+    end
+
+    template :extension_android_rakefile do |template|
+        template.source = 'extensions/montana/ext/montana/platform/android/Rakefile'
+        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/android/Rakefile"
+    end
+
+    template :extension_android_cpp do |template|
+        template.source = 'extensions/montana/ext/montana/platform/android/jni/src/montana.cpp'
+        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/android/jni/src/#{name.downcase}.cpp"
+    end
+
+    template :extension_android_java do |template|
+        template.source = 'extensions/montana/ext/montana/platform/android/src/com/montana/Montana.java'
+        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/android/src/com/#{name.downcase}/#{name.camel_case}.java"
+    end
+
+
+    template :extension_wm_rakefile do |template|
+        template.source = 'extensions/montana/ext/montana/platform/wm/Rakefile'
+        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/wm/Rakefile"
+    end
+
+    template :extension_wm_vcproject do |template|
+        template.source = 'extensions/montana/ext/montana/platform/wm/Montana.vcproj'
+        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/wm/#{name.camel_case}.vcproj"
+    end
+
+    template :extension_wm_h do |template|
+        template.source = 'extensions/montana/ext/montana/platform/wm/src/montana_wm.h'
+        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/wm/src/#{name.downcase}_wm.h"
+    end
+
+    template :extension_wm_cpp do |template|
+        template.source = 'extensions/montana/ext/montana/platform/wm/src/montana_wm.cpp'
+        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/wm/src/#{name.downcase}_wm.cpp"
+    end
+
+
+    template :extension_bb_files do |template|
+        template.source = 'extensions/montana/ext/montana/platform/bb/Montana.files'
+        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/bb/#{name.camel_case}.files"
+    end
+
+    template :extension_bb_jgp do |template|
+        template.source = 'extensions/montana/ext/montana/platform/bb/montana.jdp'
+        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/bb/#{name.downcase}.jdp"
+    end
+
+    template :extension_bb_Rakefile do |template|
+        template.source = 'extensions/montana/ext/montana/platform/bb/Rakefile'
+        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/bb/Rakefile"
+    end
+
+    template :extension_bb_java do |template|
+        template.source = 'extensions/montana/ext/montana/platform/bb/src/com/montana/Montana.java'
+        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/bb/src/com/#{name.downcase}/#{name.camel_case}.java"
+    end
+
+
+
     template :extension_test_controller do |template|
       template.source = 'app/MontanaTest/controller.rb'
       template.destination = "app/#{name.camel_case}Test/controller.rb"
@@ -371,6 +435,8 @@ module Rhogen
       template.source = 'app/MontanaTest/index.erb'
       template.destination = "app/#{name.camel_case}Test/index.erb"
     end
+
+
 
 
     #<%= name.downcase %>
