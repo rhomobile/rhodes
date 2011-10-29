@@ -1,0 +1,161 @@
+# RhoStudio Test Plan
+
+## On Testing In General
+
+Any deviation from the described behaviour is a possible bug and should be reported to the developers.
+
+## On Virtual Machines
+
+It is recommended to run all tests on virtual machines (e.g. using freeware [Oracle VirtualBox](http://www.virtualbox.org/)) on Windows XP, Windows 7, Mac OS 10.6 Snow Leopard, Mac OS 10.7 Lion.
+
+1. Create virtual (guest) machine for selected operating system. Use the default settings for each virtual machine except:
+   1. For Windows XP:
+      - General > Basic > Version = Windows XP
+      - Virtual HDD: 100 GB (dynamically allocated)
+      - System > Motherboard > Base Memory = 1024 MB
+      - Display > Video > Enable 3D Acceleration = check
+      - Display > Video > Enable 2D Video Acceleration = check
+      - Display > Video > Video Memory = 128 MB
+   2. For Windows 7:
+      - General > Basic > Version = Windows 7
+      - Virtual HDD: 100 GB (dynamically allocated)
+      - System > Motherboard > Base Memory = 2048 MB
+      - Display > Video > Enable 3D Acceleration = check
+      - Display > Video > Enable 2D Video Acceleration = check
+      - Display > Video > Video Memory = 256 MB
+   3. For Mac OS X:
+      - General > Basic > Version = Mac OS X Server (64 bit)
+      - Virtual HDD: 100 GB (dynamically allocated)
+      - System > Motherboard > Base Memory = 2048 MB
+      - Display > Video > Enable 3D Acceleration = check
+      - Display > Video > Enable 2D Video Acceleration = uncheck
+      - Display > Video > Video Memory = 128 MB
+
+      Note that only Mac OS X Server license allows an installation on virtual machines, and that virtual machine must run on Apple hardware.
+      This means that it's illegal to install regular Mac OS X to virtual machine even on Apple hardware.
+      And of course it's completely illegal to install Mac OS X or Mac OS X Server to any non-Apple hardware
+      (to virtual machine or as a primary operating system).
+
+   Pay attention to `System > Processor > Processors` property -- if you plan to connect USB devices directly to virtual machine, set the number of processors strictly to 1
+   (this is a workaround for the bug in VirtualBox). Also for USB pass-thru you need to install VirtualBox Extension Pack and, if VirtualBox is installed on Linux host, then you need
+   to add all users runnung virtual machines to `vboxusers` group.
+2. Install desired operating system to virtual machine using original installation media (CD or DVD) and product license key
+   (see VirtualBox help and documentation for details on guest operating systems installation).
+3. Install all updates, service packs and official patches for installed OS.
+4. Install all latest avaiable SDKs for supported mobile platforms:
+   1. Install latest Android SDK and NDK. Run Android SDK Manager to download and install all latest tools, platforms and APIs.
+      Don't use path with spaces, install SDK and NDK to something like `C:\Anrdoid\android-sdk` and `C:\Anrdoid\android-ndk` on Windows
+      and to something like `/Developer/SDKs/android-sdk` and `/Developer/SDKs/android-ndk` on Mac.
+   2. On Windows: install Visual Studio 2008 and Windows Mobile 6 Professional SDK Refresh
+      (don't forget to run Microsoft Update after Visual Studio installation to apply all latest updates, service packs and fixes).
+5. Shutdown virtual machine and create a snapshot.
+6. Before testing of each new version of RhoStudio restore the virtual machine state from this snapshot.
+7. After release of the update, service pack or official patch for the operating system and/or mobile platforms SDKs:
+   - restore the virtual machine state from latest snapshot;
+   - install the updates, service packs and/or patches;
+   - shutdown virtual machine and create new snapshot;
+   - delete old (previous) snapshot.
+
+Thus you will always have an up-to-date clean fresh installation of each operating system with all required SDKs for testing purposes.
+
+Never create a snapshot of crashed or abnormally exited virtual machine! Always restore previous good state
+from latest snapshot, install neccesary updates/service-packs/patches, create new snapshot, and delete previous snapshot.
+
+Deletion of previous snapshots lets you save a lot of free disk space on a physical (host) machine especially for Windows virtual machines (guests).
+
+## Testing Windows installation
+
+Take just installed Windows XP or Windows 7 with all latest Microsoft Service Packs and hotfixes applied, Android SDK, Android NDK, Visual Studio 2008, and Windows Mobile 6 Professional SDK Refresh installed.
+
+### Installation failure test on Windows without JRE
+
+1. Download and run RhoStudioInstallerX.Y.Z.exe
+2. Go through the installation wizard until message appears: "Java Runtime Environment could not be found on your computer.
+   Please install Java Runtime Environment before RhoStudio" (if this message does not appear and install starts,
+   then it's a bug).
+
+### Installation success test on Windows with JRE
+
+1. Install latest JRE.
+2. Run RhoStudioInstallerX.Y.Z.exe again.
+3. Go through the installation wizard, leave all settings at their defaults.
+4. Installation must start then. It takes some time.
+5. On the last installation step the Git installer should appear. Install Git leaving all default settings.
+   When it's done, click `Finish` button. If you didn't unselect 'View ReleaseNotes.rtf', then the Release Notes window will appear -- just close it.
+6. On the last screen of RhoStudio installation wizard click `Finish`. If you didn't unselect 'View Readme', then README.html will be opened in the separate default browser window.
+7. Check that RhoStudio group appears on Start Menu and contains `RhoStudio` and `Uninstall RhoStudio` shortcuts.
+
+## Testing Mac OS X installation
+
+Take a fresh clean installation of Mac OS X with all available Software Updates (excluding Java), latest Android SDK and Android NDK installed.
+
+### RhoStudioInstaller appearance test
+
+1. Download and open RhoStudioInstallerX.Y.Z.dmg
+2. You will see `RhoStudio -> Applications` in the first row (top part of the window), and `README.html`, `Install gems`, `Install gems on rvm`, `samples` on the next rows (below).
+
+### Installation failure test on Mac OS X without Xcode
+
+1. Open `Install gems` shorcut. The Terminal window will appear.
+2. If asked for password, enter your password.
+3. The message will appear: "Please install building tools"
+
+### Installation failure test on Mac OS X without Java
+
+1. Install latest available Xcode with iOS SDK.
+2. Open `Install gems` shorcut again.
+3. If asked for password, enter your password.
+4. The message will appear: "Please install java development kit"
+
+### Installation success test on Mac OS X with Xcode
+
+1. Open Terminal application and type `java` command. The window will appear asking you about installation of Java -- agree and proceed JDK installation.
+2. Open `Install gems` shorcut again.
+3. If asked for password, enter your password.
+4. When `[Process completed]` appears, close this window and open new Terminal window.
+5. Type `gem list` and make sure the following gems are on the list:
+   activesupport
+   addressable
+   builder
+   bundler
+   coderay
+   configuration
+   curb
+   daemons
+   diff-lcs
+   eventmachine
+   extlib
+   faraday
+   faraday-stack
+   haml
+   heroku
+   heroku-nav
+   highline
+   indextank
+   json
+   json_pure
+   launchy
+   macaddr
+   mime-types
+   msgpack
+   multi_json
+   multipart-post
+   nokogiri
+   patron
+   pdfkit
+   pg
+   rack
+   rack-codehighlighter
+   rake
+   rdiscount
+   rest-client
+   shotgun
+   sinatra
+   sqlite3-ruby
+   systemu
+   templater
+   thin
+   tilt
+   uuid
+   yajl-ruby
+
