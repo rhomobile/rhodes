@@ -114,48 +114,33 @@ Take a fresh clean installation of Mac OS X with all available Software Updates 
 3. If asked for password, enter your password.
 4. When `[Process completed]` appears, close this window and open new Terminal window.
 5. Type `gem list` and make sure the following gems are on the list:
-   activesupport
-   addressable
-   builder
-   bundler
-   coderay
-   configuration
-   curb
-   daemons
-   diff-lcs
-   eventmachine
-   extlib
-   faraday
-   faraday-stack
-   haml
-   heroku
-   heroku-nav
-   highline
-   indextank
-   json
-   json_pure
-   launchy
-   macaddr
-   mime-types
-   msgpack
-   multi_json
-   multipart-post
-   nokogiri
-   patron
-   pdfkit
-   pg
-   rack
-   rack-codehighlighter
-   rake
-   rdiscount
-   rest-client
-   shotgun
-   sinatra
-   sqlite3-ruby
-   systemu
-   templater
-   thin
-   tilt
-   uuid
-   yajl-ruby
-
+   - activesupport
+   - bundler
+   - diff-lcs
+   - extlib
+   - highline
+   - i18n
+   - json
+   - macaddr
+   - mime-types
+   - multi_json
+   - nokogiri
+   - rack
+   - rack-protection
+   - rake
+   - redis
+   - redis-namespace
+   - resque
+   - rest-client
+   - rhoconnect
+   - rhoconnect-adapters
+   - rhodes
+   - rhomobile-debug
+   - rubyzip
+   - sinatra
+   - systemu
+   - templater
+   - tilt
+   - uuid
+   - uuidtools
+   - vegas
