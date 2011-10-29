@@ -261,18 +261,32 @@ namespace rho.common
 
         public void processInvokeScript(String strScript, int index)
         {
+            String[] arr = strScript.Split('(');
+            String[] arrParams = null;
+            if (arr.Length > 1)
+            {
+                arrParams = arr[1].Split(',');
+                if (arrParams.Length == 1)
+                {
+                    arrParams[0] = arrParams[0].Replace('"', ' ');
+                    arrParams[0] = arrParams[0].Replace(')', ' ');
+                    arrParams[0] = arrParams[0].Replace(';', ' ');
+                    arrParams[0] = arrParams[0].Trim();
+                }
+            }
+
             m_webBrowser.Dispatcher.BeginInvoke(() =>
             {
                 if (index > 0)
                 {
                     if (m_tabControl != null && m_tabControl.Items.Count > 0)
                     {
-                        ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.InvokeScript(strScript);
+                        ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.InvokeScript(arr[0], arrParams);
                     }
                 }
                 else
                 {
-                    m_webBrowser.InvokeScript(strScript);
+                    m_webBrowser.InvokeScript(arr[0], arrParams);
                 }
             });
         }
