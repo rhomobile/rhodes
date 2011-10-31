@@ -225,6 +225,7 @@ bool RhoMapConvertor::initConvertor(JNIEnv *env)
 
     return initialized = true;
 }
+//----------------------------------------------------------------------------------------------------------------------
 
 std::auto_ptr<rho::Hashtable<std::string, std::string> >
 rho_cast_helper<std::auto_ptr<rho::Hashtable<std::string, std::string> >, jobject>::operator()(JNIEnv *env, jobject jObj)
@@ -249,6 +250,7 @@ rho_cast_helper<std::auto_ptr<rho::Hashtable<std::string, std::string> >, jobjec
         }
         return result;
 }
+//----------------------------------------------------------------------------------------------------------------------
 
 std::auto_ptr<rho::Hashtable<std::string,std::string> >
 rho_cast_helper<std::auto_ptr<rho::Hashtable<std::string,std::string> >, jobjectArray>::operator()(JNIEnv *env,
@@ -270,5 +272,24 @@ rho_cast_helper<std::auto_ptr<rho::Hashtable<std::string,std::string> >, jobject
     }
     return result;
 }
+//----------------------------------------------------------------------------------------------------------------------
+
+std::auto_ptr<rho::Vector<std::string> >
+rho_cast_helper<std::auto_ptr<rho::Vector<std::string> >, jobjectArray>::operator ()(JNIEnv *env, jobjectArray jArr)
+{
+    value_type result(new element_type);
+
+    unsigned n = env->GetArrayLength(jArr);
+    result->reserve(n);
+
+    for(unsigned i = 0; i < n; ++i)
+    {
+        jhstring jval = static_cast<jstring>(env->GetObjectArrayElement(jArr, i));
+        std::string val = rho_cast<std::string>(env, jval);
+        result->push_back(val);
+    }
+    return result;
+}
+//----------------------------------------------------------------------------------------------------------------------
 
 } // namespace details

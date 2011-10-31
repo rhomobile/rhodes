@@ -27,13 +27,18 @@
 package com.rhomobile.rhoconnect_client_test;
 
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import android.content.pm.ApplicationInfo;
 import android.test.AndroidTestCase;
 
+import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhoLogConf;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhoconnect.RhoConnectClient;
@@ -42,7 +47,7 @@ import com.rhomobile.rhoconnect.RhomModel;
 import com.rhomobile.rhoconnect.RhoConnectNotify;
 
 public class TestRhoConnectClient extends AndroidTestCase {
-    //private static final String TAG = TestRhoConnectClient.class.getSimpleName();
+    private static final String TAG = TestRhoConnectClient.class.getSimpleName();
 
 	private final String SYNC_URL = "http://rhodes-store-server.heroku.com/application";
 	
@@ -101,22 +106,22 @@ public class TestRhoConnectClient extends AndroidTestCase {
     @Override
     protected void tearDown()
     {
-        //mClient.databaseFullResetAndLogout();
+        mClient.databaseFullResetAndLogout();
         mClient.close();
     }
     
-    public void testInitiallyLoggedOut()
+    public void test1InitiallyLoggedOut()
     {
         mClient.databaseFullResetAndLogout();
     	assertFalse(mClient.isLoggedIn());
     }
-    public void testLogin()
+    public void test2Login()
     {
         RhoConnectNotify notify = mClient.loginWithUserSync("", "");
         assertEquals(notify.getErrorCode(), 0);
         assertTrue(mClient.isLoggedIn());
     }
-    public void testSyncProductByName()
+    public void test3SyncProductByName()
     {
         RhoConnectNotify notify = mClient.loginWithUserSync("", "");
         assertEquals(notify.getErrorCode(), 0);
@@ -126,7 +131,7 @@ public class TestRhoConnectClient extends AndroidTestCase {
         assertEquals(0, notify.getErrorCode());
     }
     
-    public void testSyncAll()
+    public void test4SyncAll()
     {
         RhoConnectNotify notify = mClient.loginWithUserSync("", "");
         assertEquals(notify.getErrorCode(), 0);
@@ -136,7 +141,7 @@ public class TestRhoConnectClient extends AndroidTestCase {
         assertEquals(notify.getErrorCode(), 0);
     }
 
-    public void testCreateNewProduct()
+    public void test5CreateNewProduct()
     {
         Map<String, String> item = new HashMap<String, String>();
         item.put("name", "AndroidTest");
@@ -160,7 +165,7 @@ public class TestRhoConnectClient extends AndroidTestCase {
         assertEquals(item.get("name"), item3.get("name"));
     }
 
-    public void testCreateNewProductWithCustomer()
+    public void test6CreateNewProductWithCustomer()
     {
         RhoConnectNotify notify = mClient.loginWithUserSync("", "");
         assertEquals(notify.getErrorCode(), 0);
@@ -206,7 +211,7 @@ public class TestRhoConnectClient extends AndroidTestCase {
 
     }
     
-    public void testCreateObjectNotify()
+    public void test7CreateObjectNotify()
     {
         RhoConnectNotify notify = mClient.loginWithUserSync("", "");
         assertEquals(notify.getErrorCode(), 0);
@@ -242,7 +247,7 @@ public class TestRhoConnectClient extends AndroidTestCase {
     	assertEquals(createdObjects[0], item.get("object"));
     }
 
-    public void testModifyProduct()
+    public void test8ModifyProduct()
     {
         RhoConnectNotify notify = mClient.loginWithUserSync("", "");
         assertEquals(notify.getErrorCode(), 0);
@@ -257,7 +262,7 @@ public class TestRhoConnectClient extends AndroidTestCase {
         Map<String,String> item = mProduct.findFirst(cond);
 
         if(item == null || item.isEmpty()) {
-            testCreateNewProduct();
+            test5CreateNewProduct();
             item = mProduct.findFirst(cond);
         }
 
@@ -279,4 +284,37 @@ public class TestRhoConnectClient extends AndroidTestCase {
 
         assertEquals(item.get("sku"), foundItem.get("sku"));
     }
+
+    public void test9FindBySql()
+    {
+        Collection<Map<String, String> > items = mProduct.findBySql(
+                "SELECT * FROM sources", null);
+        
+        assertNotNull(items);
+        
+        for(Map<String, String> item: items) {
+            Logger.T(TAG, "Next source:");
+            Set<String> keys = item.keySet();
+            for(String key: keys) {
+                if(key.equals("name"))
+                    Logger.T(TAG, key + " => " + item.get(key));
+            }
+        }
+        
+        assertEquals(4, items.size());
+        
+        List<String> params = new LinkedList<String>();
+        params.add(mProduct.getName());
+        
+        Collection<Map<String, String> > items2 = mProduct.findBySql(
+                "SELECT * FROM sources WHERE name=?", params);
+        
+        assertNotNull(items2);
+        assertEquals(1, items2.size());
+    }
 }
+
+
+
+
+

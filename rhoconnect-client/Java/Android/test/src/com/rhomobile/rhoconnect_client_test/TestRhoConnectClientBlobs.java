@@ -64,7 +64,7 @@ public class TestRhoConnectClientBlobs extends AndroidTestCase
     @Override
     protected void tearDown()
     {
-        //mClient.databaseFullResetAndLogout();
+        mClient.databaseFullResetAndLogout();
         mClient.close();
     }
     

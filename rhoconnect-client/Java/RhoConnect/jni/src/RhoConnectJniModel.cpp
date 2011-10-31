@@ -80,7 +80,7 @@ int java_map_inserter(const char* key, const char* val, void* pThis)
     JNIEnv * env = jnienv();
     jobject jMap = reinterpret_cast<jobject>(pThis);
 
-    static jclass jMapClass = getJNIClass(RHODES_JAVA_CLASS_MAP);
+    jclass& jMapClass = getJNIClass(RHODES_JAVA_CLASS_MAP);
     if (!jMapClass) return 0;
 
     static jmethodID midPut = getJNIClassMethod(env, jMapClass, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
@@ -266,3 +266,45 @@ RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhoconnect_RhomModel_findAllByName
     return jList;
 }
 //----------------------------------------------------------------------------------------------------------------------
+
+RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhoconnect_RhomModel_findBySqlByName
+  (JNIEnv * env, jclass, jstring jModelName, jstring jQuery, jobjectArray jParams)
+{
+    std::string name = rho_cast<std::string>(env, jModelName);
+
+    LOG(TRACE) + "findBySqlByName: " + name;
+
+    std::string query = rho_cast<std::string>(env, jQuery);
+    std::auto_ptr<rho::Vector<std::string> > params = (jParams != NULL)
+                                                ? rho_cast<std::auto_ptr<rho::Vector<std::string> > >(env, jParams)
+                                                : std::auto_ptr<rho::Vector<std::string> >(0);
+
+    unsigned long items = rho_connectclient_findbysql(name.c_str(), query.c_str(), reinterpret_cast<unsigned long>(params.get()));
+
+    jclass& jListClass = getJNIClass(RHODES_JAVA_CLASS_ARRAYLIST);
+    if (!jListClass) return 0;
+    static jmethodID midList = getJNIClassMethod(env, jListClass, "<init>", "()V");
+    if (!midList) return 0;
+    static jmethodID midListAdd = getJNIClassMethod(env, jListClass, "add", "(Ljava/lang/Object;)Z");
+    if (!midList) return 0;
+
+    jclass& jMapClass = getJNIClass(RHODES_JAVA_CLASS_HASHMAP);
+    if (!jMapClass) return 0;
+    static jmethodID midHashMap = getJNIClassMethod(env, jMapClass, "<init>", "()V");
+    if (!midHashMap) return 0;
+
+    jobject jList = env->NewObject(jListClass, midList);
+
+    int cnt = rho_connectclient_strhasharray_size(items);
+    for(int i = 0; i < cnt; ++i)
+    {
+        jobject jMap = env->NewObject(jMapClass, midHashMap);
+        rho_connectclient_hash_enumerate(rho_connectclient_strhasharray_get(items, i), java_map_inserter, jMap);
+        env->CallBooleanMethod(jList, midListAdd, jMap);
+        env->DeleteLocalRef(jMap);
+    }
+    return jList;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+

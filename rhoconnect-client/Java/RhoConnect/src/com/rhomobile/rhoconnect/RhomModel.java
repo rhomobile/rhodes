@@ -29,6 +29,7 @@ package com.rhomobile.rhoconnect;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -56,6 +57,7 @@ public class RhomModel {
     private static native Map<String, String> findByName(String modelName, String objectId);
     private static native Map<String, String> findFirstByName(String modelName, String condKeys[], String condVals[]);
     private static native Collection<Map<String, String> > findAllByName(String modelName, String condKeys[], String condVals[]);
+    private static native Collection<Map<String, String> > findBySqlByName(String modelName, String query, String params[]);
     private static native Map<String, String> createByName(String modelName, String keys[], String values[]);
     private static native void saveByName(String modelName, String keys[], String values[]);
     private static native void destroyByName(String modelName, String keys[], String values[]);
@@ -129,6 +131,16 @@ public class RhomModel {
     		keys = vals = new String[0];
     	}
 		return findAllByName(mName, keys, vals);
+    }
+    
+    public Collection<Map<String, String> > findBySql(String query, List<String> params)
+    {
+        String arrayParams[] = null;
+        if (params != null) {
+            arrayParams = new String[params.size()];
+            params.toArray(arrayParams);
+        }
+        return findBySqlByName(mName, query, arrayParams);
     }
 	
 	public void create(Map<String, String> item) {
