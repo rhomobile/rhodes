@@ -2,6 +2,10 @@
 
 ## On Testing In General
 
+RhoStudio is a multi-platform application and should act identically on all platforms (Windows and Mac OS X at present).
+The only process that differs from platform to platform is an installation. So the installation tests are
+described separately for each platform. All other tests should be performed on all platforms and yield the identical results.
+
 Any deviation from the described behaviour is a possible bug and should be reported to the developers.
 
 ## On Virtual Machines
@@ -31,25 +35,32 @@ It is recommended to run all tests on virtual machines (e.g. using freeware [Ora
       - Display > Video > Enable 2D Video Acceleration = uncheck
       - Display > Video > Video Memory = 128 MB
 
-      Note that only Mac OS X Server license allows an installation on virtual machines, and that virtual machine must run on Apple hardware.
+      NOTE: Mac OS X <b>Server</b> license <b>only</b> allows an installation on virtual machines, and that virtual machine must run on Apple hardware.
       This means that it's illegal to install regular Mac OS X to virtual machine even on Apple hardware.
       And of course it's completely illegal to install Mac OS X or Mac OS X Server to any non-Apple hardware
       (to virtual machine or as a primary operating system).
 
-   Pay attention to `System > Processor > Processors` property -- if you plan to connect USB devices directly to virtual machine, set the number of processors strictly to 1
-   (this is a workaround for the bug in VirtualBox). Also for USB pass-thru you need to install VirtualBox Extension Pack and, if VirtualBox is installed on Linux host, then you need
-   to add all users runnung virtual machines to `vboxusers` group.
+   NOTE: Pay attention to `System > Processor > Processors` property -- if you plan to connect USB devices directly to virtual machine, set the number of processors strictly to 1
+   (this is a workaround for the bug in VirtualBox). Also for USB pass-thru you need to install [VirtualBox Extension Pack](https://www.virtualbox.org/wiki/Downloads) and,
+   if VirtualBox is installed on Linux host, then you need to add all users runnung virtual machines to `vboxusers` group.
+
 2. Install desired operating system to virtual machine using original installation media (CD or DVD) and product license key
    (see VirtualBox help and documentation for details on guest operating systems installation).
+
 3. Install all updates, service packs and official patches for installed OS.
+
 4. Install all latest avaiable SDKs for supported mobile platforms:
-   1. Install latest Android SDK and NDK. Run Android SDK Manager to download and install all latest tools, platforms and APIs.
+
+   1. Install latest Android SDK and NDK. Do not forget to run Android SDK Manager to download and install all latest tools, platforms and APIs.
       Don't use path with spaces, install SDK and NDK to something like `C:\Anrdoid\android-sdk` and `C:\Anrdoid\android-ndk` on Windows
       and to something like `/Developer/SDKs/android-sdk` and `/Developer/SDKs/android-ndk` on Mac.
    2. On Windows: install Visual Studio 2008 and Windows Mobile 6 Professional SDK Refresh
       (don't forget to run Microsoft Update after Visual Studio installation to apply all latest updates, service packs and fixes).
+
 5. Shutdown virtual machine and create a snapshot.
+
 6. Before testing of each new version of RhoStudio restore the virtual machine state from this snapshot.
+
 7. After release of the update, service pack or official patch for the operating system and/or mobile platforms SDKs:
    - restore the virtual machine state from latest snapshot;
    - install the updates, service packs and/or patches;
@@ -58,10 +69,10 @@ It is recommended to run all tests on virtual machines (e.g. using freeware [Ora
 
 Thus you will always have an up-to-date clean fresh installation of each operating system with all required SDKs for testing purposes.
 
-Never create a snapshot of crashed or abnormally exited virtual machine! Always restore previous good state
+NOTE: Never create a snapshot of crashed or abnormally exited virtual machine! Always restore previous good state
 from latest snapshot, install neccesary updates/service-packs/patches, create new snapshot, and delete previous snapshot.
 
-Deletion of previous snapshots lets you save a lot of free disk space on a physical (host) machine especially for Windows virtual machines (guests).
+NOTE: Deletion of previous snapshots lets you save a lot of free disk space on a physical (host) machine especially for Windows virtual machines (guests).
 
 ## Testing Windows installation
 
@@ -76,14 +87,18 @@ Take just installed Windows XP or Windows 7 with all latest Microsoft Service Pa
 
 ### Installation success test on Windows with JRE
 
-1. Install latest JRE.
+1. Install the latest JDK (Java Development Kit).
+   NOTE: Java Runtime Environment (JRE) installation would be enough at this stage, but RhoStudio needs JDK to build applications for Android,
+   so it's logical to install the full JDK here.
+
 2. Run RhoStudioInstallerX.Y.Z.exe again.
 3. Go through the installation wizard, leave all settings at their defaults.
 4. Installation must start then. It takes some time.
 5. On the last installation step the Git installer should appear. Install Git leaving all default settings.
-   When it's done, click `Finish` button. If you didn't unselect 'View ReleaseNotes.rtf', then the Release Notes window will appear -- just close it.
-6. On the last screen of RhoStudio installation wizard click `Finish`. If you didn't unselect 'View Readme', then README.html will be opened in the separate default browser window.
-7. Check that RhoStudio group appears on Start Menu and contains `RhoStudio` and `Uninstall RhoStudio` shortcuts.
+   When it's done, click `Finish` button. If you didn't unselect <b>View ReleaseNotes.rtf</b>, then the Release Notes window will appear -- just close it.
+6. On the last screen of RhoStudio installation wizard click `Finish`. If you didn't unselect <b>View Readme</b>, then `README.html` will be opened in the separate default browser window.
+7. Check that `RhoStudio` group appears on `Start Menu` and contains `RhoStudio` and `Uninstall RhoStudio` shortcuts.
+8. Open RhoStudio by clicking `RhoStudio` shortcut in the `RhoStudio` group on the `Start Menu`.
 
 ## Testing Mac OS X installation
 
@@ -92,28 +107,42 @@ Take a fresh clean installation of Mac OS X with all available Software Updates 
 ### RhoStudioInstaller appearance test
 
 1. Download and open RhoStudioInstallerX.Y.Z.dmg
-2. You will see `RhoStudio -> Applications` in the first row (top part of the window), and `README.html`, `Install gems`, `Install gems on rvm`, `samples` on the next rows (below).
+2. You will see `RhoStudio -> Applications` in the first row (top part of the window), and `README.html`, 'Install gems', 'Install gems on rvm', and 'samples' below (on the next rows).
 
 ### Installation failure test on Mac OS X without Xcode
 
-1. Open `Install gems` shorcut. The Terminal window will appear.
-2. If asked for password, enter your password.
+1. Open 'Install gems' shorcut. The Terminal window will appear.
+2. If asked for a password, enter the password.
 3. The message will appear: "Please install building tools"
 
 ### Installation failure test on Mac OS X without Java
 
 1. Install latest available Xcode with iOS SDK.
-2. Open `Install gems` shorcut again.
-3. If asked for password, enter your password.
+2. Open 'Install gems' shorcut again.
+3. If asked for a password, enter the password.
 4. The message will appear: "Please install java development kit"
 
 ### Installation success test on Mac OS X with Xcode
 
-1. Open Terminal application and type `java` command. The window will appear asking you about installation of Java -- agree and proceed JDK installation.
-2. Open `Install gems` shorcut again.
+1. Open Terminal application and type:
+
+       :::term
+       $ java
+
+   The window will appear asking you about installation of Java -- agree and proceed JDK installation.
+
+2. Open 'Install gems' shorcut again.
+
 3. If asked for password, enter your password.
+
 4. When `[Process completed]` appears, close this window and open new Terminal window.
-5. Type `gem list` and make sure the following gems are on the list:
+
+5. Type:
+
+       :::term
+       $ gem list
+
+   Make sure the following gems are on the list:
    - activesupport
    - bundler
    - diff-lcs
@@ -144,3 +173,85 @@ Take a fresh clean installation of Mac OS X with all available Software Updates 
    - uuid
    - uuidtools
    - vegas
+
+6. Drag `RhoStudio` icon to `Applications` icon. The 'Copy' progress window will appear. It will copy approximately 300 MB and 2,000 files.
+
+7. Drag 'samples' folder to the desktop -- it will be used in the further tests.
+
+8. To launch RhoStudio open Finder window, go to Applications, open `RhoStudio` folder and then open `RhoStudio` shortcut.
+
+## Testing RhoStudio
+
+When you open the RhoStudio it asks a path to create (or open existing) `workspace` folder -- leave this path at its default and click 'OK'
+(you may wish to check 'Use this as the default and do not ask again' to avoid unnecessary stop during RhoStudio launch in the future).
+
+### Rhomobile Preferences editing failure test
+
+1. Go to `Window > Preferences` (on Windows) or `RhoStudio > Preferences` (on Mac) in the top menu.
+2. Click on `Rhomobile` node, the message will appear: "Rhodes location is undefined. Please, open/create at least one Rhodes Application project".
+
+### Rhodes Application project creation test
+
+1. Go to `File > New > Project` in the top menu.
+2. Expand `Rhomobile` node, select `Rhodes application` and click `Next`.
+3. Leave all settings at their defaults and click `Finish`. Wait until the wizard finishes application generation.
+4. Something similar to the following output should appear in the Console window:
+       Generating with app generator:
+       [ADDED]   RhodesApplication1/rhoconfig.txt
+       [ADDED]   RhodesApplication1/build.yml
+       [ADDED]   RhodesApplication1/.gitignore
+       [ADDED]   RhodesApplication1/app/application.rb
+       [ADDED]   RhodesApplication1/app/index.erb
+       [ADDED]   RhodesApplication1/app/index.bb.erb
+       [ADDED]   RhodesApplication1/app/layout.erb
+       [ADDED]   RhodesApplication1/app/loading.html
+       [ADDED]   RhodesApplication1/Rakefile
+       [ADDED]   RhodesApplication1/app/helpers
+       [ADDED]   RhodesApplication1/icon
+       [ADDED]   RhodesApplication1/app/Settings
+       [ADDED]   RhodesApplication1/public
+       [ADDED]   RhodesApplication1/app/loading.png
+5. Check that project `RhodesApplication1` appeared at `Project Explorer` window.
+
+### Rhomobile Preferences editing success test
+
+1. Go to `Window > Preferences` (on Windows) or `RhoStudio > Preferences` (on Mac) in the top menu.
+2. Click on `Rhomobile` node, 'Rhodes rhobuild.yml preferences' page containing 'Java path' textbox should appear.
+3. Enter the correct path to the installed JDK (typically `/Library/Java/Home` on Mac,
+   and the folder you installed JDK during installation tests on Windows, e.g. `C:\Program Files\Java\jdk1.7.0`).
+4. Expand `Rhomobile` node and enter correct paths to 'Android SDK' and 'Android NDK' on `Android` tab,
+   e.g. `C:\Anrdoid\android-sdk` and `C:\Anrdoid\android-ndk` on Windows
+   and `/Developer/SDKs/android-sdk` and `/Developer/SDKs/android-ndk` on Mac.
+5. On Windows go to `Windows Mobile` tab and set a correct path to 'Cab wizard'.
+6. Click `OK` to finish editing and apply changes.
+7. Open `rhobuild.yml` (from the Rhodes gem home folder) in any text editor/viewer and make sure
+   it contains the correct paths you just entered, e.g. on Windows:
+       env:
+         paths:
+           java: C:/Program Files/Java/jdk1.7.0
+           android: C:/Android/android-sdk
+           android-ndk: C:/Android/android-ndk
+           cabwiz: C:/Program Files/Windows Mobile 6 SDK/Tools/CabWiz
+   On Mac, e.g.:
+       env:
+         paths:
+           java: /Library/Java/Home
+           android: /Developer/SDKs/android-sdk
+           android-ndk: /Developer/SDKs/android-ndk
+
+
+   NOTE: `rhobuild.yml` is located at the Rhodes gem home folder.
+   Typically its full path is `/Library/Ruby/Gems/1.8/gems/rhodes-x.y.z/rhobuild.yml` on Mac and
+   `C:\RhoStudio\ruby\lib\ruby\gems\1.8\gems\rhodes-x.y.z\rhobuild.yml` on Windows.
+
+### Rhodes Application import test
+
+1. Go to `File > New > Project` in the top menu.
+2. Expand `Rhomobile` node, select `Rhodes application` and click `Next`.
+3. Check 'Create application from existing sources'.
+4. To select 'Application folder' click 'Browse...' and open:
+   - on Windows: `C:\RhoStudio\samples\sas` (and enter 'rhodes-system-api-samples' in 'Project name' textbox)
+
+   - on Mac: `Desktop > samples > rhodes-system-api-samples`
+5. Click `Finish`. Wait until the wizard finishes application import.
+6. Check that project `rhodes-system-api-samples` appeared at `Project Explorer` window.
