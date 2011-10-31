@@ -250,8 +250,58 @@ When you open the RhoStudio it asks a path to create (or open existing) `workspa
 2. Expand `Rhomobile` node, select `Rhodes application` and click `Next`.
 3. Check 'Create application from existing sources'.
 4. To select 'Application folder' click 'Browse...' and open:
-   - on Windows: `C:\RhoStudio\samples\sas` (and enter 'rhodes-system-api-samples' in 'Project name' textbox)
-
+   - on Windows: `C:\RhoStudio\samples\rhodes-system-api-samples`
    - on Mac: `Desktop > samples > rhodes-system-api-samples`
 5. Click `Finish`. Wait until the wizard finishes application import.
 6. Check that project `rhodes-system-api-samples` appeared at `Project Explorer` window.
+
+## Testing RhoStudio Debugger
+
+1. Go to `Run > Debug Configurations` in the top menu.
+2. Pop-up context menu on `Rhodes Application` node and choose `New`.
+3. Select `RhodesApplication1` using `Browser` button of 'Project name' textbox.
+4. Select any 'Platform' and version (e.g. 'Android', '3.0').
+5. Click `Debug` button.
+6. RhoSimulator running new empty application should appear. There should be 'RhodesApplication1' title, 'Login' button, and 'Add link here...' text below
+   in main RhoSimulator window. A separate Web Inspector window should be on the right of the main Rhosimulator window.
+   NOTE: On Windows the security dialog may appear asking you to 'Keep blocking' or to 'Unblock' RhoSimulator --
+   it must be unblocked in order all further tests to work.
+
+7. Switch back to RhoStudio. There must be 'Debug' perspective opened by RhoStudio automatically.
+8. Make sure that Console window shows rhodes application log. The last lines at this point should look somewhat like this:
+       I 10/31/2011 20:37:13:295 00000b3c   MainWindow| addToolbarButton: Label: '';Action: 'back'
+       I 10/31/2011 20:37:13:295 00000b3c   MainWindow| addToolbarButton: Label: '';Action: 'separator'
+       I 10/31/2011 20:37:13:295 00000b3c   MainWindow| addToolbarButton: Label: '';Action: 'home'
+       I 10/31/2011 20:37:13:295 00000b3c   MainWindow| addToolbarButton: Label: '';Action: 'refresh'
+       I 10/31/2011 20:37:13:295 00000b3c   MainWindow| addToolbarButton: Label: '';Action: 'options'
+       I 10/31/2011 20:37:13:341 00000b3c   MainWindow| WebView: URL changed
+       I 10/31/2011 20:37:13:607 00000734   HttpServer| Process URI: '/public/jquery/jquery-1.6.4.min.js'
+       I 10/31/2011 20:37:13:607 00000734   HttpServer| Process URI: '/public/jqmobile/jquery.mobile-1.0rc1.min.css'
+       I 10/31/2011 20:37:13:607 00000734   HttpServer| Process URI: '/public/css/jqmobile-patch.css'
+       I 10/31/2011 20:37:13:623 00000734   HttpServer| Process URI: '/public/jqmobile/jquery.mobile-1.0rc1.min.js'
+       I 10/31/2011 20:37:13:638 00000734   HttpServer| Process URI: '/public/js/jqmobile-patch.js'
+       I 10/31/2011 20:37:13:638 00000734   HttpServer| Process URI: '/public/css/android.css'
+       I 10/31/2011 20:37:13:966 00000734   HttpServer| Process URI: '/public/jqmobile/images/icons-18-white.png'
+       I 10/31/2011 20:37:13:982 00000b3c   MainWindow| WebView: loaded
+9. Switch to 'RhoStudio' perspective.
+10. Open file `RhodesApplication1\app\Settings\controller.rb` -- its Ruby code must be syntax-highlighted appropriately.
+11. Go to line 10 and toggle breakpoint.
+12. Switch to RhoSimulator and choose `Main > Options` in the top menu.
+13. Switch to RhoStudio and choose 'Debug' perspective.
+14. The execution must be stopped at the breakpoint in `controller.rb` line 10.
+15. Look at the Variables window -- there must be a complete list of Ruby variables with current values in the following order:
+    - instance variables (name starts with '@')
+    - global variables (name starts with '$')
+    - local variables (name starts with latin letter) -- at this breakpoint there must be no local variables
+    - class variables (name starts with '@@') -- at this breakpoint there must be no class variables
+
+    Notice that there is no `@msg` variable on the list.
+16. Choose `Run > Step Over` in the top menu.
+17. The execution must stop at line 11 of `controller.rb`.
+18. Notice that `@msg` variable appeared on the list of variables with 'nil' value.
+19. Close RhoSimulator main window.
+20. The status of the `RhodesApplication1` in the Debug window of RhoStudio must be `<terminated>` now.
+    NOTE: On Mac OS X this will not happen -- it's a known issue. Choose `Run > Terminate` from the top menu to stop the debug session.
+
+21. Switch to 'RhoStudio' perspective and close the RhoStudio. 'Confirm Exit' dialog will appear --
+    you may check 'Always exit without prompt' and click 'OK'.
