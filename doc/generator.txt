@@ -152,6 +152,26 @@ For example, here is the command to generate a model named account, with the att
 	$ cd myspace
 	$ rhodes model account name,industry
 
+
+### Adding a Native extension to Your Rhodes Application from the Command Line
+
+Once you have generated your application, you can add a native extension to it.
+
+	Usage: rhodes extension [args]
+
+	Generate a new native extension for a rhodes application.
+
+	args:
+	  name        - extension name
+
+For example, here is the command to generate a model named account, with the attributes name and industry.
+
+	:::term
+	$ cd myspace
+	$ rhodes extension Nanovisor
+
+
+
 ## Add test framework
 
 To add a test framework to the application:

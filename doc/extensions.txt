@@ -331,6 +331,13 @@ NOTE: Once again, it should be mentioned that not all libraries are guaranteed t
 
 Starting from 2.0, Rhodes support native extensions for Android, iPhone, WM and BB platforms. Native extensions are extensions written on native language (C/C++/ObjC for iPhone, C/C++/Java for Android, C/C++ for WM, Java for BB). They can provide Ruby interface or don't provide it - its up to authors of these extensions. Below is list of steps need to be done to create native extension for Rhodes (here assumed extension name is 'ext-name')
 
+### Native extension template generation
+
+You can generate all required folder structure and files for your native extension by next console command in your application folder:
+	rhogen extension extension_name
+
+### Native extension details
+
 Create folder ext-name in your application extensions folder (app-name/extensions/ext-name) and go there.
 
 Create file ext.yml with content:
