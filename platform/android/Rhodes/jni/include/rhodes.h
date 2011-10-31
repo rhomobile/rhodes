@@ -94,6 +94,7 @@ typedef jholder<jstring> jhstring;
 
 namespace rho {
     template <typename K, typename V> class Hashtable;
+    template <typename T> class Vector;
 }
 typedef std::auto_ptr<rho::Hashtable<std::string, std::string> > hashtableholder;
 
@@ -181,6 +182,14 @@ struct rho_cast_helper<std::auto_ptr<rho::Hashtable<std::string,std::string> >, 
     typedef rho::Hashtable<std::string,std::string> element_type;
     typedef std::auto_ptr<element_type> value_type;
     value_type operator()(JNIEnv *env, jobjectArray jKeys, jobjectArray jVals);
+};
+
+template <>
+struct rho_cast_helper<std::auto_ptr<rho::Vector<std::string> >, jobjectArray>
+{
+    typedef rho::Vector<std::string> element_type;
+    typedef std::auto_ptr<element_type> value_type;
+    value_type operator()(JNIEnv *env, jobjectArray jArr);
 };
 
 } // namespace details
