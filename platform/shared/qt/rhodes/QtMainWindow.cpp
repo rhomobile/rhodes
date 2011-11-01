@@ -737,7 +737,16 @@ void QtMainWindow::alertShowPopup(CAlertParams * params)
                 QString::fromWCharArray(rho::common::convertToStringW(params->m_message).c_str()));
             m_alertDialog->setStandardButtons(0);
             for (int i = 0; i < (int)params->m_buttons.size(); i++) {
-                m_alertDialog->addButton(QString::fromWCharArray(rho::common::convertToStringW(params->m_buttons[i].m_strCaption).c_str()), QMessageBox::ActionRole);
+#ifdef OS_SYMBIAN
+                if(i == 0)
+#endif
+                    m_alertDialog->addButton(QString::fromWCharArray(rho::common::convertToStringW(params->m_buttons[i].m_strCaption).c_str()), QMessageBox::ActionRole);
+#ifdef OS_SYMBIAN
+                else if( i == 1)
+                    m_alertDialog->addButton(QString::fromWCharArray(rho::common::convertToStringW(params->m_buttons[i].m_strCaption).c_str()), QMessageBox::RejectRole);
+                else if(i == 2)
+                    break;
+#endif
             }
             m_alertDialog->exec();
             if (m_alertDialog) {
