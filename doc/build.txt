@@ -873,11 +873,9 @@ To run on the Windows Mobile simulator, select Windows Mobile in Platform and Si
 
 #### Running on a Windows Mobile Device in RhoStudio
 
-To run on an Android device, first set up your device as shown in the Android documentation for [Using Hardware Devices](http://developer.android.com/guide/developing/device.html).
+To run on a Windows Mobile device, connect your device to your computer with a USB cable. 
 
-Then connect your Android device to your computer with a USB cable. 
-
-In the Run Configurations window, select Android in Platform, and Device in Simulator type.
+In the Run Configurations window, select Windows Mobile in Platform, and Device in Simulator type.
 
 ### Build and Run from the Command Line
 
