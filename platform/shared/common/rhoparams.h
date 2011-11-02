@@ -38,6 +38,7 @@ class CRhoParams
 protected:
     rho_param * m_pParams;
 
+public:
     const rho_param * findHashParam(const char* name) const;
 
 public:
