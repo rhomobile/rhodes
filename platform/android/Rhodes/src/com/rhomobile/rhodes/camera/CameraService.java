@@ -27,7 +27,7 @@
 package com.rhomobile.rhodes.camera;
 
 
-interface CameraService {
+public interface CameraService {
 
 	public class Size {
 		public Size(int w, int h) {
