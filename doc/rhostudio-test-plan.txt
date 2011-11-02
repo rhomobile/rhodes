@@ -195,6 +195,25 @@ Take a fresh clean installation of Mac OS X with all available Software Updates 
 When you open the RhoStudio it asks a path to create (or open existing) `workspace` folder -- leave this path at its default and click 'OK'
 (you may wish to check 'Use this as the default and do not ask again' to avoid unnecessary stop during RhoStudio launch in the future).
 
+### RhoStudio update site check
+
+1. Go to `Help > Install New Software`.
+2. Open 'Work with' drop-down selection list.
+3. Select 'RhoStudio update site'.
+4. Expand 'Rhomobile' node.
+5. 'RhoStudio' should be grayed out -- that means the latest version is already installed.
+6. To double-check this write down the version number of RhoStudio available from the update site (that is displayed in this list).
+7. Click 'What is <u>alreay installed</u>?' link.
+8. Switch to 'Plug-ins' tab.
+9. Find plug-in named 'com.rhomobile.rhostudio' and write down its version number.
+10. The version numbers written down on step 6 and step 9 should be the same -- if not, the RhoStudio installer contains
+    incorrect version of RhoStudio plug-in (that's a problem that must be reported to developers and be fixed).
+
+### RhoStudio check for updates test
+
+1. Go to `Help > Check for Updates`.
+2. On process finish the message box should appear saying "No updates were found."
+
 ### Rhomobile Preferences editing failure test
 
 1. Go to `Window > Preferences` (on Windows) or `RhoStudio > Preferences` (on Mac) in the top menu.
