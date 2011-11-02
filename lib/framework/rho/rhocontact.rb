@@ -45,13 +45,13 @@ module Rho
                 elsif args.first.nil? or args.length == 0
                     puts "There are no arguments to find contacts"
                 elsif args.first == :all or args.first == :first
-                    if System::get_property('platform') == "ANDROID"
+                    if System::get_property('platform') == "ANDROID" or System::get_property('platform') == "APPLE"
                         result = Phonebook::getRecords(pb, args[1])
                     else
                         result = Phonebook::allRecords(pb)
                     end
 		        elsif args.first == :count
-                    if System::get_property('platform') == "ANDROID"
+                    if System::get_property('platform') == "ANDROID" or System::get_property('platform') == "APPLE"
                         result = Phonebook::countRecords(pb, args[1])
                     else
                         result = Phonebook::countRecords(pb);

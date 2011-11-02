@@ -62,6 +62,8 @@
 		5CE03CCD12DB7E990058B474 /* sqlite3.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CE03CCB12DB7E990058B474 /* sqlite3.h */; };
 		5CEBCFEF11E6FB8700145F4E /* rhoparams.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CEBCFEE11E6FB8700145F4E /* rhoparams.cpp */; };
 		5CECDBB3113FE3620084A75B /* System.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CECDBB2113FE3620084A75B /* System.cpp */; };
+		A22F9EFB14605D09006D8F1A /* PhonebookParams.h in Headers */ = {isa = PBXBuildFile; fileRef = A22F9EFA14605D09006D8F1A /* PhonebookParams.h */; };
+		A22F9EFF14605D82006D8F1A /* PhonebookParams.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A22F9EFE14605D82006D8F1A /* PhonebookParams.cpp */; };
 		BD2C950810AE0D4B008D4692 /* PosixThreadImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD2C950610AE0D4B008D4692 /* PosixThreadImpl.cpp */; };
 		BD2C950910AE0D4B008D4692 /* PosixThreadImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = BD2C950710AE0D4B008D4692 /* PosixThreadImpl.h */; };
 		BD2CEFCE10ADF10D002356D9 /* CURLNetRequest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD2CEFCB10ADF10D002356D9 /* CURLNetRequest.cpp */; };
@@ -148,6 +150,8 @@
 		5CE03CCB12DB7E990058B474 /* sqlite3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sqlite3.h; path = ../../shared/sqlite/sqlite3.h; sourceTree = SOURCE_ROOT; };
 		5CEBCFEE11E6FB8700145F4E /* rhoparams.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rhoparams.cpp; path = ../../shared/common/rhoparams.cpp; sourceTree = SOURCE_ROOT; };
 		5CECDBB2113FE3620084A75B /* System.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = System.cpp; path = ../../shared/rubyext/System.cpp; sourceTree = SOURCE_ROOT; };
+		A22F9EFA14605D09006D8F1A /* PhonebookParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhonebookParams.h; path = ../../shared/common/phonebook/PhonebookParams.h; sourceTree = "<group>"; };
+		A22F9EFE14605D82006D8F1A /* PhonebookParams.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PhonebookParams.cpp; path = ../../shared/common/phonebook/PhonebookParams.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		BD2C950610AE0D4B008D4692 /* PosixThreadImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PosixThreadImpl.cpp; path = ../../shared/common/PosixThreadImpl.cpp; sourceTree = SOURCE_ROOT; };
 		BD2C950710AE0D4B008D4692 /* PosixThreadImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PosixThreadImpl.h; path = ../../shared/common/PosixThreadImpl.h; sourceTree = SOURCE_ROOT; };
 		BD2CEFCB10ADF10D002356D9 /* CURLNetRequest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CURLNetRequest.cpp; path = ../../shared/net/CURLNetRequest.cpp; sourceTree = SOURCE_ROOT; };
@@ -243,9 +247,10 @@
 		5C7162600F8B7DEE0096B6AA /* common */ = {
 			isa = PBXGroup;
 			children = (
+				A22F9EFD14605D12006D8F1A /* phonebook */,
+				FAC6EE4C143B1F1E00B8E352 /* map */,
 				FAC6EE67143B20B600B8E352 /* RhoMath.cpp */,
 				FAC6EE68143B20B600B8E352 /* RhoMath.h */,
-				FAC6EE4C143B1F1E00B8E352 /* map */,
 				5C0F94DE132979140093FA1B /* RhoTime.cpp */,
 				FA5F58DD12ADDA6D00C7613A /* app_build_configs.c */,
 				FA5F58DE12ADDA6D00C7613A /* app_build_configs.h */,
@@ -343,6 +348,15 @@
 			name = sqlite;
 			sourceTree = "<group>";
 		};
+		A22F9EFD14605D12006D8F1A /* phonebook */ = {
+			isa = PBXGroup;
+			children = (
+				A22F9EFA14605D09006D8F1A /* PhonebookParams.h */,
+				A22F9EFE14605D82006D8F1A /* PhonebookParams.cpp */,
+			);
+			name = phonebook;
+			sourceTree = "<group>";
+		};
 		C6A0FF2B0290797F04C91782 /* Documentation */ = {
 			isa = PBXGroup;
 			children = (
@@ -423,6 +437,7 @@
 				FAC6EE64143B1FC800B8E352 /* MapEngine.h in Headers */,
 				FAC6EE66143B1FC800B8E352 /* OSMMapEngine.h in Headers */,
 				FAC6EE6A143B20B600B8E352 /* RhoMath.h in Headers */,
+				A22F9EFB14605D09006D8F1A /* PhonebookParams.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -511,6 +526,7 @@
 				FAC6EE63143B1FC800B8E352 /* MapEngine.cpp in Sources */,
 				FAC6EE65143B1FC800B8E352 /* OSMMapEngine.cpp in Sources */,
 				FAC6EE69143B20B600B8E352 /* RhoMath.cpp in Sources */,
+				A22F9EFF14605D82006D8F1A /* PhonebookParams.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

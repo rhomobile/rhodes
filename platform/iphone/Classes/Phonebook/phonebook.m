@@ -27,6 +27,7 @@
 #include "ruby/ext/rho/rhoruby.h"
 #include "ruby/ext/phonebook/phonebook.h"
 #include "phonebook.h"
+#include "common/phonebook/PhonebookParams.h"
 
 #include "logging/RhoLog.h"
 
@@ -374,22 +375,33 @@ VALUE getallPhonebookRecords(void* pb) {
 	return rho_ruby_get_NIL();	
 }
 
-int getPhonebookRecordCount(void* pb, rho_param* params) {
+int getPhonebookRecordCount(void* pb, rho_param* param) {
 	if (pb) {
 		if (logging_enable) RAWLOG_INFO("phonebook :: getPhonebookRecordCount START");
 		LocalPhonebook* phonebook = pb;
+        int count = 0;
 		
 		VALUE valGc = rho_ruby_disable_gc();
 		_getAllPeople(phonebook);
         rho_ruby_enable_gc(valGc);
+        count = phonebook->_len;
+        
+        PbPageParam pageParam;
+        if(rho_phonebook_getpageparams(param, &pageParam) != 0)
+        {
+            count -= pageParam.offset;
+            if(pageParam.per_page != -1 && count > pageParam.per_page)
+                count = pageParam.per_page;
+        }
 
 		if (logging_enable) RAWLOG_INFO("phonebook :: getallPhonebookRecords FINISH");
-		return phonebook->_len; 
+		
+        return count;
 	}
 	return 0;
 }
 
-VALUE getPhonebookRecords(void* pb, rho_param* params) {
+VALUE getPhonebookRecords(void* pb, rho_param* param) {
 	if (pb) {
 		if (logging_enable) RAWLOG_INFO("phonebook :: getPhonebookRecords START");
 		LocalPhonebook* phonebook = pb;
@@ -402,8 +414,19 @@ VALUE getPhonebookRecords(void* pb, rho_param* params) {
 		VALUE record; char buf[128];
 		
 		_getAllPeople(phonebook);
-        int top_index = phonebook->_len;//(offset + max_results) > phonebook->_len ? phonebook->_len : offset + max_results;
-		for (int index = 0/*offset*/; index < top_index ; index++) {
+
+        int offset = 0;
+        int top_index = phonebook->_len;
+        PbPageParam pageParam;
+        if(rho_phonebook_getpageparams(param, &pageParam) != 0)
+        {
+            RAWTRACE2("Page params: offset: %d, per_page: %d", pageParam.offset, pageParam.per_page);
+            offset = pageParam.offset;
+            if(pageParam.per_page != -1 && (offset + pageParam.per_page) < top_index)
+                top_index = offset + pageParam.per_page;
+        }
+        
+        for (int index = offset; index < top_index ; index++) {
 			record = _getRecordByIndex(phonebook->_people, index, &recordId);
 			snprintf(buf, sizeof(buf), "{%d}", recordId);
 			addHashToHash(hash, buf, record);

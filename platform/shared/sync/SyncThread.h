@@ -105,7 +105,7 @@ public:
 	    String m_strName, m_strPassword;
         common::CAutoPtr<CSyncNotification> m_pNotify;
         CSyncLoginCommand(String name, String password, CSyncNotification* pNotify) : 
-            CSyncCommand(CSyncThread::scLogin,"",false)
+            CSyncCommand(CSyncThread::scLogin,"",false,NULL)
 	    {
 		    m_strName = name;
 		    m_strPassword = password;
