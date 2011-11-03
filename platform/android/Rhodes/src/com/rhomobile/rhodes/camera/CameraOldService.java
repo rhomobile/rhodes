@@ -45,5 +45,9 @@ class CameraOldService implements CameraService {
 		return null;
 	}
 	
+	public boolean isAutoFocusSupported(android.hardware.Camera camera) {
+		return false;
+	}
+	
 	
 }

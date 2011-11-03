@@ -45,5 +45,7 @@ public interface CameraService {
 	Size getClosestPictureSize(android.hardware.Camera camera, int w, int h);
 	
 	Size getClosestPreviewSize(android.hardware.Camera camera, int w, int h);
+	
+	boolean isAutoFocusSupported(android.hardware.Camera camera);
 
 }
