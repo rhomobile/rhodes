@@ -83,6 +83,7 @@ void rho_connectclient_destroymodel(RHOM_MODEL* model);
 
 void rho_connectclient_init(RHOM_MODEL* pModels, int nModels);
 void rho_connectclient_destroy();
+void rho_connectclient_database_client_reset();
 void rho_connectclient_database_full_reset_and_logout();
 void rho_connectclient_database_fullclient_reset_and_logout();
 void rho_connectclient_database_full_reset(bool bClientReset);

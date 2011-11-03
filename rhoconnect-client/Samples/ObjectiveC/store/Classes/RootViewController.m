@@ -177,8 +177,17 @@
 #pragma mark -
 #pragma mark Table view delegate
 
+- (void)doSyncAllTest {
+    [[RhoConnectEngine sharedInstance].syncClient setNotification: @selector(syncAllCalback:) target:self];
+    [[RhoConnectEngine sharedInstance].syncClient syncAll];
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+
+    //if (indexPath.row == 3) {
+    //    [self doSyncAllTest];
+    //    return;
+    //}
 	
 	if([arItems isKindOfClass:NSClassFromString(@"NSMutableArray")]) {
 		//Get the dictionary of the selected data source.
@@ -203,6 +212,37 @@
 	}
 }
 
+- (void)syncAllCalback:(RhoConnectNotify*) notify {
+    NSString* status = notify.status;
+    NSString* error = notify.error_message;
+    int err_code = notify.error_code;
+    
+    NSLog(@"syncAll DONE, status: '%s' , error_msg: '%s' , error_code: %d",
+          [status cStringUsingEncoding: NSUTF8StringEncoding],
+          [error cStringUsingEncoding: NSUTF8StringEncoding],
+          err_code
+          );
+    
+	if ( [notify.status compare:@"in_progress"] == 0) {
+        
+	} else if ([notify.status compare:@"complete"] == 0) {
+        
+		[[RhoConnectEngine sharedInstance].syncClient clearNotification];
+        
+	} else if ([notify.status compare:@"error"] == 0) {
+        
+        if([notify.error_message caseInsensitiveCompare:@"unknown client"] == 0) {
+            [[RhoConnectEngine sharedInstance].syncClient database_client_reset]; 
+            [[RhoConnectEngine sharedInstance].syncClient setNotification: @selector(syncAllCalback:) target:self];
+            [[RhoConnectEngine sharedInstance].syncClient syncAll];
+        } else if( err_code == RHO_ERR_CLIENTISNOTLOGGEDIN
+                || err_code == RHO_ERR_UNATHORIZED) {
+
+            NSLog(@"GO TO LOGIN PAGE!");
+            // real code to trigger view transition goes here.. 
+        }
+	}
+}
 
 #pragma mark -
 #pragma mark Memory management

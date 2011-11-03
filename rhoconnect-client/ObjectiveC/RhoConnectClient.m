@@ -208,7 +208,7 @@ void rho_free_callbackdata(void* pData)
 
 - (void) database_client_reset
 {
-	rho_connectclient_database_full_reset(true);	
+	rho_connectclient_database_client_reset();	
 }
 
 - (BOOL) is_logged_in
