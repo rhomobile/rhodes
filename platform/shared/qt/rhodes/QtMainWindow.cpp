@@ -754,7 +754,11 @@ void QtMainWindow::alertShowPopup(CAlertParams * params)
                 if (btn) {
                     for (int i = 0; i < m_alertDialog->buttons().count(); ++i) {
                         if (btn == m_alertDialog->buttons().at(i)) {
+#ifdef OS_SYMBIAN
+                            RHODESAPP().callPopupCallback(params->m_callback, params->m_buttons[m_alertDialog->buttons().count() - i - 1].m_strID, params->m_buttons[m_alertDialog->buttons().count() - i - 1].m_strCaption);
+#else
                             RHODESAPP().callPopupCallback(params->m_callback, params->m_buttons[i].m_strID, params->m_buttons[i].m_strCaption);
+#endif
                             break;
                         }
                     }
