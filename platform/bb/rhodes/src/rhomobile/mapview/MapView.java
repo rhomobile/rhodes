@@ -297,6 +297,9 @@ public class MapView extends RubyBasic {
 								annotation.resolved_address = strValue;
 							else if (strKey.equals("url"))
 								annotation.url = strValue;
+							else if (strKey.equals("pass_location"))
+								annotation.pass_location = Integer.parseInt(strValue) != 0;
+							
 						}
 						annotations.addElement(annotation);
 					}

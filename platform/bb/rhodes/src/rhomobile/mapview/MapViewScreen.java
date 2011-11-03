@@ -467,6 +467,7 @@ public class MapViewScreen extends RhoMainScreen {
 		}
 	}
 	
+	
 	private void handleClick(int x, int y) 
 	{
 		Annotation old_selectedAnnotation = mSelectedAnnotation;
@@ -479,7 +480,8 @@ public class MapViewScreen extends RhoMainScreen {
 		if (mSelectedAnnotation != null && old_selectedAnnotation != null && mSelectedAnnotation.equals(old_selectedAnnotation)) 
 		{
 			// We have clicked already selected annotation
-			WebView.navigate(mSelectedAnnotation.url);
+			
+			WebView.navigate(mSelectedAnnotation.make_url());
 			mapParent.close();
 			mSelectedAnnotation = null;
 		}
