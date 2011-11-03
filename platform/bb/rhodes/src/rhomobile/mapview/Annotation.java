@@ -26,6 +26,10 @@
 
 package rhomobile.mapview;
 
+import com.rho.Sprintf;
+import com.xruby.runtime.builtin.ObjectFactory;
+import com.xruby.runtime.builtin.RubyArray;
+
 public class Annotation {
 
 	public static class Coordinates {
@@ -44,5 +48,18 @@ public class Annotation {
 	public String resolved_address = null;
 	public String url = null;
 	public Coordinates coordinates = null;
+	public boolean pass_location = false;
 	
+	
+	public String make_url()
+	{
+		if (!pass_location)
+			return url;
+		
+		RubyArray args = new RubyArray();
+		args.add(ObjectFactory.createFloat(coordinates.latitude));
+		args.add(ObjectFactory.createFloat(coordinates.longitude));
+		
+		return url + ( url.indexOf('?') >= 0 ? "&" : "?" ) + Sprintf.sprintf("latitude=%.5f&longitude=%.5f", args);
+	}
 }
