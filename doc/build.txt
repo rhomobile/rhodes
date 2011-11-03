@@ -845,15 +845,15 @@ Also check that the vcbuild path is shown in the rhobuild.yml file. The rhobuild
 
 	env:
 	  paths:
-	    vcbuild: `C:/Program Files/Microsoft Visual Studio 8/VC/vcpackages/vcbuild.exe`
-	    cabwiz: `C:/Program Files/Windows Mobile 6 SDK/Tools/CabWiz`
+	    vcbuild: C:/Program Files/Microsoft Visual Studio 8/VC/vcpackages/vcbuild.exe
+	    cabwiz: C:/Program Files/Windows Mobile 6 SDK/Tools/CabWiz
 
 On 64-bit installations:
 
 	env:
 	  paths:
-	    vcbuild: `C:/Program Files (x86)/Microsoft Visual Studio 8/VC/vcpackages/vcbuild.exe`
-	    cabwiz: `C:/Program Files (x86)/Windows Mobile 6 SDK/Tools/CabWiz`
+	    vcbuild: C:/Program Files (x86)/Microsoft Visual Studio 8/VC/vcpackages/vcbuild.exe
+	    cabwiz: C:/Program Files (x86)/Windows Mobile 6 SDK/Tools/CabWiz
 
 ### Building and Running Your Windows Mobile Application with RhoStudio
 
