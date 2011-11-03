@@ -195,12 +195,13 @@ def make_app_info
   File.open(fname,"w") { |f| f.write(buf) }
 end
 
-ICONS = ['icon', 'icon57', 'icon72', 'icon114']
+ICONS = [['icon', 'icon57'], ['icon57','icon57'], ['icon72','icon72'], ['icon114','icon114']]
 
 def restore_app_icon
   puts "restore icon"
   ipath = $config["build"]["iphonepath"]
-  ICONS.each do |name|
+  ICONS.each do |pair|
+    name = pair[0]
     ibak = File.join(ipath, name + '.bak')
     icon = File.join(ipath, name + '.png')
     next if !File.exists? ibak
@@ -214,10 +215,11 @@ def set_app_icon(make_bak)
   puts "set icon"
   ipath = $config["build"]["iphonepath"]
   begin
-    ICONS.each do |name|
+    ICONS.each do |pair|
+      name = pair[0]
       ibak = File.join(ipath, name + '.bak')
       icon = File.join(ipath, name + '.png')
-      appicon = File.join($app_path, 'icon', name + '.png')
+      appicon = File.join($app_path, 'icon', pair[1] + '.png')
       if make_bak 
          cp icon, ibak unless File.exists? ibak
       end
