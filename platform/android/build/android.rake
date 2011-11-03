@@ -259,10 +259,58 @@ def set_app_name_android(newname)
 
   manifest.elements.each('uses-permission') { |e| manifest.delete e }
 
+
+  uses_camera = false
+  uses_autofocus = false
+  uses_front = false
+  uses_flash = false
+
+  manifest.elements.each('uses-feature') do |e|
+    uname = e.attribute("name", "android").to_s 
+    if "android.hardware.camera".eql? uname
+       uses_camera = true
+    end
+    if "android.hardware.camera.autofocus".eql? uname
+       uses_autofocus = true
+    end
+    if "android.hardware.camera.front".eql? uname
+       uses_front = true
+    end
+    if "android.hardware.camera.flash".eql? uname
+       uses_flash = true
+    end
+  end
+
   caps.sort.each do |cap|
     element = REXML::Element.new('uses-permission')
     element.add_attribute('android:name', "android.permission.#{cap}")
     manifest.add element
+    if cap == 'CAMERA'
+        if !uses_camera
+           element = REXML::Element.new('uses-feature')
+           element.add_attribute('android:required', "false")
+           element.add_attribute('android:name', "android.hardware.camera")
+           manifest.add element
+        end
+        if !uses_autofocus
+           element = REXML::Element.new('uses-feature')
+           element.add_attribute('android:required', "false")
+           element.add_attribute('android:name', "android.hardware.camera.autofocus")
+           manifest.add element
+        end
+        if !uses_front
+           element = REXML::Element.new('uses-feature')
+           element.add_attribute('android:required', "false")
+           element.add_attribute('android:name', "android.hardware.camera.front")
+           manifest.add element
+        end
+        if !uses_flash
+           element = REXML::Element.new('uses-feature')
+           element.add_attribute('android:required', "false")
+           element.add_attribute('android:name', "android.hardware.camera.flash")
+           manifest.add element
+        end
+    end
   end
 
   caps_proc.each do |p|
