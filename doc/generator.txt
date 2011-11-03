@@ -68,11 +68,9 @@ Rhodes applications support a Model-View-Controller (MVC) pattern.  To start ou
 
 <img src="http://rhodocs.s3.amazonaws.com/rhostudio-tutorial/menu-new-rhodes-model.png"/>
 
-In the Model Information window, enter the name for your model: in this case, `Product`. Do not use the following for model names:
+In the Model Information window, enter the name for your model: in this case, `Product`. 
 
- * Config, Settings, helpers, test, Client, Sync.
- * Any built-in Ruby class name.
- * It is good programming practice to avoid using generic names, such as client, or time, or print.
+** NOTE: Do not use the following for model names: Config, Settings, helpers, test, Client, Sync, or any built-in Ruby class name. It is good programming practice to avoid using generic names, such as client, or time, or print.
 
 Also enter the Model attributes as a string with no spaces and each attribute separated by a comma: in this case, `name,brand,price,quantity,sku`. (Whitespaces at the field name beginning and end will be trimmed and whitespaces in the middle of the field name will be replaced with an underscore character.)
 
