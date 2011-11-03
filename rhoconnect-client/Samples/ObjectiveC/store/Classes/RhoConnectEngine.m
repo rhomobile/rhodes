@@ -64,7 +64,7 @@ static RhoConnectEngine *sharedInst = nil;
 		[sclient addModels:models];
 		
 		sclient.sync_server = @"http://rhodes-store-server.heroku.com/application";
-        //sclient.sync_server = @"http://192.168.0.103:9292/application";
+        //sclient.sync_server = @"http://localhost:9292/application";
 		sclient.threaded_mode = TRUE;
 		
 		loginState = [sclient is_logged_in] ? logged_in : logged_out;

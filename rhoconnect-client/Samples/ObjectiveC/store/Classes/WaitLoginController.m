@@ -24,6 +24,12 @@
 		[ [RhoConnectEngine sharedInstance].syncClient clearNotification];		
 	}else if ([notify.status compare:@"error"] == 0)
 	{
+        if([notify.error_message caseInsensitiveCompare:@"unknown client"] == 0) 
+        {
+            [[RhoConnectEngine sharedInstance].syncClient database_client_reset]; 
+            [[RhoConnectEngine sharedInstance].syncClient setNotification: @selector(syncAllComplete:) target:self];
+            [[RhoConnectEngine sharedInstance].syncClient syncAll];
+        }
 	}
 }
 

@@ -171,6 +171,38 @@ void rho_connectclient_init(RHOM_MODEL* pModels, int nModels)
 
 }
 
+void rho_connectclient_database_client_reset()
+{
+    int pollInterval = rho_sync_set_pollinterval(0);
+    rho_sync_stop();
+    
+    db::CDBAdapter& oUserDB = db::CDBAdapter::getUserDB();
+    oUserDB.executeSQL("UPDATE client_info SET client_id=?, token=?, token_sent=?", "", "", 0);
+    
+    if ( rho_conf_is_property_exists("bulksync_state") )
+        rho_conf_setInt("bulksync_state", 0 );
+    
+    Vector<String> arExclude;
+    arExclude.addElement("sources");
+    arExclude.addElement("client_info");
+    
+    Vector<String> arPartNames = db::CDBAdapter::getDBAllPartitionNames();
+    for( int i = 0; i < (int)arPartNames.size(); i++ )
+    {
+        db::CDBAdapter& dbPart = db::CDBAdapter::getDB(arPartNames.elementAt(i).c_str());
+        
+        dbPart.executeSQL("UPDATE sources SET token=0");
+        dbPart.destroy_tables(Vector<String>(), arExclude);
+        //db::CDBAdapter::destroy_tables_allpartitions(Vector<String>(), arExclude);
+    }
+    
+    //TODO: scema_sources
+    //hash_migrate = {}
+    //::Rho::RHO.init_schema_sources(hash_migrate)
+    
+    rho_sync_set_pollinterval(pollInterval);
+}
+
 void rho_connectclient_database_full_reset_and_logout()
 {
     rho_sync_logout();
@@ -185,6 +217,9 @@ void rho_connectclient_database_fullclient_reset_and_logout()
 	
 void rho_connectclient_database_full_reset(bool bClientReset)
 {
+    int pollInterval = rho_sync_set_pollinterval(0);
+    rho_sync_stop();
+    
     db::CDBAdapter& oUserDB = db::CDBAdapter::getUserDB();
     oUserDB.executeSQL("UPDATE client_info SET reset=1");
 
@@ -208,9 +243,14 @@ void rho_connectclient_database_full_reset(bool bClientReset)
         //db::CDBAdapter::destroy_tables_allpartitions(Vector<String>(), arExclude);
     }
 
+	if (!bClientReset)
+        rho_conf_setString("push_pin", "");
+    
     //TODO: scema_sources
     //hash_migrate = {}
-    //::Rho::RHO.init_schema_sources(hash_migrate) 
+    //::Rho::RHO.init_schema_sources(hash_migrate)
+    
+    rho_sync_set_pollinterval(pollInterval);
 }
 
 void rho_connectclient_destroy()
