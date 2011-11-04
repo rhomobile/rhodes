@@ -15,6 +15,9 @@ platform/shared/ruby/enc/ascii.c
 platform/shared/ruby/enc/unicode.c
 platform/shared/ruby/enc/us_ascii.c
 platform/shared/ruby/enc/utf_8.c
+platform/shared/ruby/enc/encdb.c
+platform/shared/ruby/enc/iso_8859_1.c
+platform/shared/ruby/enc/iso_8859_9.c
 platform/shared/ruby/enum.c
 platform/shared/ruby/enumerator.c
 platform/shared/ruby/error.c

@@ -2450,6 +2450,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\shared\ruby\enc\encdb.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\shared\ruby\enc\iso_8859_1.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\shared\ruby\enc\iso_8859_9.c"
 					>
 				</File>
