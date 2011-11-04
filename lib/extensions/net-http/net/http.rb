@@ -628,9 +628,9 @@ module Net   #:nodoc:
         iv_list = instance_variables
         SSL_ATTRIBUTES.each do |name|
           ivname = "@#{name}".intern
-          if iv_list.include?(ivname) and
-             value = instance_variable_get(ivname)
-            ssl_parameters[name] = value
+          if iv_list.include?(ivname)
+	   
+            ssl_parameters[name] = value if value = instance_variable_get(ivname)
           end
         end
         if platform != 'Blackberry'
@@ -659,10 +659,12 @@ module Net   #:nodoc:
             @socket.writeline ''
             HTTPResponse.read_new(@socket).value
           end
-          timeout(@open_timeout) { s.connect }
-          if @ssl_context.verify_mode != OpenSSL::SSL::VERIFY_NONE
-            s.post_connection_check(@address)
-          end
+	  if platform != 'Blackberry'
+            timeout(@open_timeout) { s.connect }
+            if @ssl_context.verify_mode != OpenSSL::SSL::VERIFY_NONE
+              s.post_connection_check(@address)
+            end
+	  end   
         rescue => exception
           D "Conn close because of connect error #{exception}"
           @socket.close if @socket and not @socket.closed?
