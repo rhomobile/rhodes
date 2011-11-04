@@ -25,6 +25,9 @@ SOURCES += \
     ../../shared/ruby/enc/us_ascii.c \
     ../../shared/ruby/enc/unicode.c \
     ../../shared/ruby/enc/ascii.c \
+    ../../shared/ruby/enc/encdb.c \
+    ../../shared/ruby/enc/iso_8859_1.c \
+    ../../shared/ruby/enc/iso_8859_9.c \        
     ../../shared/ruby/generated/parse.c \
     ../../shared/ruby/missing/tgamma.c \
     ../../shared/ruby/missing/strlcpy.c \

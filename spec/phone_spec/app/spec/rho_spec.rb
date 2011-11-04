@@ -176,6 +176,10 @@ describe "RhoRuby" do
 =end          
   end
 
+  it "should support encoding" do
+    "Utf8 String".force_encoding( Encoding::UTF_8 )
+  end
+  
   it "should create hex string" do
     val = "\x21\x43"
 =begin        

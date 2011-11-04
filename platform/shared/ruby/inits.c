@@ -22,6 +22,7 @@ rb_call_inits(void)
     CALL(Object);
     CALL(top_self);
     CALL(Encoding);
+    CALL(encdb);
     CALL(Comparable);
     CALL(Enumerable);
     CALL(String);

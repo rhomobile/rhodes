@@ -823,3 +823,12 @@ class String
     end
     	
 end
+
+class Encoding
+
+US_ASCII = "US-ASCII"
+UTF_8 = "UTF-8";
+ASCII_8BIT = "ASCII-8BIT"
+ISO_8859_1 = "ISO-8859-1"
+
+end
