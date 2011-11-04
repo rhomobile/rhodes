@@ -171,7 +171,7 @@ module Rhom
 
                 def convertOpToStr(val_op, value)
                     res = ""
-                    if val_op.upcase == 'IN'
+                    if val_op.upcase == 'IN' || val_op.upcase == 'NOT IN'
                     
                         if value.is_a?(String)
                             value = value.split(",")
@@ -400,7 +400,7 @@ module Rhom
                         end
                     end
                     
-                    if val_op == 'IN' or val_op == 'in'
+                    if val_op.upcase == 'IN' || val_op.upcase == 'NOT IN'
 
                         if value.is_a?(String)
                             value = value.split(",")

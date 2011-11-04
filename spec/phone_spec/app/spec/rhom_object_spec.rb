@@ -885,6 +885,40 @@ end
     
   end
   
+  it "should search with NOT IN array" do
+    items = getAccount.find( :all, 
+       :conditions => { 
+        {:name=>'industry', :op=>'NOT IN'} => ["Technology1", "Technology2"] }
+    )
+  
+    items.length.should == 2
+    
+    items = getAccount.find( :all, 
+       :conditions => { 
+        {:name=>'industry', :op=>'NOT IN'} => ["Technology"] }
+    )
+  
+    items.length.should == 0
+    
+  end
+  
+  it "should search with NOT IN string" do
+    items = getAccount.find( :all, 
+       :conditions => { 
+        {:name=>'industry', :op=>'NOT IN'} => "\"Technology1\", \"Technology2\"" }
+    )
+  
+    items.length.should == 2
+    
+    items = getAccount.find( :all, 
+       :conditions => { 
+        {:name=>'industry', :op=>'NOT IN'} => "\"Technology\"" }
+    )
+  
+    items.length.should == 0
+    
+  end
+    
   it "should find with group of advanced conditions" do
     query = '%IND%'    
     cond1 = {
