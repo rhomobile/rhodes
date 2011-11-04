@@ -50,7 +50,6 @@
 #include "LogView.h"
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-//#include "rhoelements/PBCore/PBCore/Eng.h"
 #define PB_NAVIGATETAB					WM_USER	+ 1
 #define PB_GEN_ACTIVEX					WM_USER	+ 2
 #define PB_GEN_QUIT						WM_USER + 3
@@ -68,7 +67,7 @@
 #include <pvdispid.h>
 #include <piedocvw.h>
 #endif
-#endif
+#endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 
 #define ID_CUSTOM_MENU_ITEM_FIRST (WM_APP+3)
 #define ID_CUSTOM_MENU_ITEM_LAST  (ID_CUSTOM_MENU_ITEM_FIRST + (APP_MENU_ITEMS_MAX) - 1)
@@ -92,11 +91,10 @@ static UINT WM_EXECUTE_COMMAND		   = ::RegisterWindowMessage(L"RHODES_WM_EXECUTE
 static UINT WM_EXECUTE_RUNNABLE		   = ::RegisterWindowMessage(L"RHODES_WM_EXECUTE_RUNNABLE");
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 extern "C" UINT WM_BROWSER_ONDOCUMENTCOMPLETE;
-//extern "C" UINT WM_BROWSER_ONBEFORENAVIGATE;
 extern "C" UINT WM_BROWSER_ONNAVIGATECOMPLETE;
 extern "C" UINT WM_BROWSER_ONTITLECHANGE;
 extern "C" bool Rhodes_WM_ProcessBeforeNavigate(LPCTSTR url);
-#endif
+#endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 
 typedef struct _TCookieData {
     char* url;
@@ -191,12 +189,8 @@ public:
         MESSAGE_HANDLER(WM_EXECUTE_RUNNABLE, OnExecuteRunnable);
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
         MESSAGE_HANDLER(WM_BROWSER_ONDOCUMENTCOMPLETE, OnBrowserDocumentComplete);
-        //MESSAGE_HANDLER(WM_BROWSER_ONBEFORENAVIGATE, OnBeforeNavigate);
         MESSAGE_HANDLER(WM_BROWSER_ONNAVIGATECOMPLETE, OnNavigateComplete);
         MESSAGE_HANDLER(WM_BROWSER_ONTITLECHANGE, OnTitleChange);
-#endif
-
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
         MESSAGE_RANGE_HANDLER(PB_NAVIGATETAB, PB_NEWGPSDATA, OnWebKitMessages)
 #endif
 
@@ -246,7 +240,6 @@ private:
     LRESULT OnExecuteRunnable (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     LRESULT OnBrowserDocumentComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-    //LRESULT OnBeforeNavigate (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnNavigateComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnTitleChange (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnWebKitMessages (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);

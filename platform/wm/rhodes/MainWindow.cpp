@@ -53,14 +53,8 @@
 #endif
 #include <hash_map>
 
-//#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-//#include "rhoelements/RhoWKBrowserEngine.h"
-//#include "rhoelements/PBCore/PBCore/PBCore.h"
-//#endif
-
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 UINT WM_BROWSER_ONDOCUMENTCOMPLETE = ::RegisterWindowMessage(L"RHODES_WM_BROWSER_ONDOCUMENTCOMPLETE");
-//UINT WM_BROWSER_ONBEFORENAVIGATE   = ::RegisterWindowMessage(L"RHODES_WM_BROWSER_ONBEFORENAVIGATE");
 UINT WM_BROWSER_ONNAVIGATECOMPLETE = ::RegisterWindowMessage(L"RHODES_WM_BROWSER_ONNAVIGATECOMPLETE");
 UINT WM_BROWSER_ONTITLECHANGE      = ::RegisterWindowMessage(L"RHODES_WM_BROWSER_ONTITLECHANGE");
 #endif
@@ -422,12 +416,6 @@ LRESULT CMainWindow::OnBrowserDocumentComplete (UINT /*uMsg*/, WPARAM /*wParam*/
     return 0;
 }
 
-//LRESULT CMainWindow::OnBeforeNavigate (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
-//{
-//    Rhodes_WM_ProcessBeforeNavigate( (LPCTSTR)lParam );
-//    return 0;
-//}
-
 LRESULT CMainWindow::OnNavigateComplete(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     ProcessNavigateComplete( (LPCTSTR)lParam );
@@ -444,7 +432,7 @@ LRESULT CMainWindow::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 {
     return m_pBrowserEng->OnWebKitMessages(uMsg, wParam, lParam, bHandled);
 }
-#endif
+#endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 
 LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
