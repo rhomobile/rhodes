@@ -181,11 +181,11 @@ public class MapView extends RubyBasic {
 							settings.put(strKey, strValue);
 						}
 						else if (strKey.equals("zoom_enabled"))
-							settings.put(strKey, new Boolean(value.toString().equalsIgnoreCase("true")));
+							settings.put(strKey, new Boolean(value.inspect().equalsIgnoreCase("true")));
 						else if (strKey.equals("scroll_enabled"))
-							settings.put(strKey, new Boolean(value.toString().equalsIgnoreCase("true")));
+							settings.put(strKey, new Boolean(value.inspect().equalsIgnoreCase("true")));
 						else if (strKey.equals("shows_user_location"))
-							settings.put(strKey, new Boolean(value.toString().equalsIgnoreCase("true")));
+							settings.put(strKey, new Boolean(value.inspect().equalsIgnoreCase("true")));
 						else if (strKey.equals("region")) {
 							if (value instanceof RubyArray) {
 								RubyArray arr = (RubyArray)value;
@@ -257,8 +257,8 @@ public class MapView extends RubyBasic {
 									key.equals(RubyConstant.QNIL) ||
 									value.equals(RubyConstant.QNIL))
 								continue;
-							String strKey = key.toString();
-							String strValue = value.toString();
+							String strKey = key.toStr();
+							String strValue = value.inspect();
 							if (strKey.equals("latitude")) {
 								double v;
 								try {
@@ -298,7 +298,7 @@ public class MapView extends RubyBasic {
 							else if (strKey.equals("url"))
 								annotation.url = strValue;
 							else if (strKey.equals("pass_location"))
-								annotation.pass_location = Integer.parseInt(strValue) != 0;
+								annotation.pass_location = strValue.equalsIgnoreCase("true") || strValue.equalsIgnoreCase("1");
 							
 						}
 						annotations.addElement(annotation);

@@ -1231,7 +1231,7 @@ NOTE: in order to use it on Android, you need to install Google Add-on API and r
 	                      {:street_address => "Cupertino, CA 95014", :title => "Cupertino", :subtitle => "zip: 95014", 
 	                       :url => "/app/GeoLocation/show?city=Cupertino"},
 	                      {:street_address => "Santa Clara, CA 95051", :title => "Santa Clara", :subtitle => "zip: 95051", 
-	                       :url => "/app/GeoLocation/show?city=Santa%20Clara"}]
+	                       :url => "/app/GeoLocation/show?city=Santa%20Clara", :pass_location => true}]
 	}
 	MapView.create map_params
 
@@ -1276,6 +1276,7 @@ Annotations - array of map annotation objects (list of pins on the map). Annotat
 * image - image file name
 * image_x_offset - int horizontal coordinate of image anchor (ancor point placed to annotation point on map) . Set to image width/2 for center
 * image_y_offset - int vertical coordinate of image anchor (ancor point placed to annotation point on map). Set image height/2 for center
+* pass_location  - then true, location coordinates added to url in the format: latitude=xx.xxx&longitude=xx.xxx
 
 Enable file caching for map tiles - file cache can use for offline map browsing:
 	:::ruby
