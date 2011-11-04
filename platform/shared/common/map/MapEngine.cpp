@@ -383,7 +383,7 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
                     y_off = (int)strtod(v, NULL);
                 }
                 else if (strcasecmp(name, "pass_location") == 0) {
-                    pass_location = static_cast<bool>(atoi(v));
+                    pass_location = strcasecmp(value->v.string, "true") == 0 || strcasecmp(value->v.string, "1") == 0;
                 }
              }
 
