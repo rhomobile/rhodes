@@ -868,3 +868,9 @@ div.itemValue {
     color: red;
     text-align: center
 }
+
+.ui-page {
+-webkit-transform-style: flat;
+-webkit-backface-visibility: hidden;
+-webkit-perspective: 800;
+}
