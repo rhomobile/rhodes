@@ -29,7 +29,7 @@ public class <%= name.camel_case %> implements Runnable {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("<%= name.camel_case %>");
 
-	public static RubyClass <%= name.camel_case %>Class;    
+	public static RubyModule <%= name.camel_case %>Module;    
 
 	
 	public String doProcessString( String str ) {
@@ -45,10 +45,10 @@ public class <%= name.camel_case %> implements Runnable {
 
 	public void run() {
 		  LOG.INFO("$$$ Register <%= name.camel_case %> Ruby class");
-   	  	  // register Ruby class
-          <%= name.camel_case %>Class = RubyAPI.defineClass("<%= name.camel_case %>", RubyRuntime.ObjectClass);        
+   	  	  // register Ruby Module
+          <%= name.camel_case %>Module = RubyAPI.defineModule("<%= name.camel_case %>");        
           // register Ruby method
-          <%= name.camel_case %>Class.getSingletonClass().defineMethod("native_process_string", new RubyOneArgMethod() {
+          <%= name.camel_case %>Module.getSingletonClass().defineMethod("native_process_string", new RubyOneArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyBlock block) {
 				if ( arg0 instanceof RubyString )
 				{
@@ -61,7 +61,7 @@ public class <%= name.camel_case %> implements Runnable {
 				}
 			}
           });
-          <%= name.camel_case %>Class.getSingletonClass().defineMethod("calc_summ", new RubyTwoArgMethod() {
+          <%= name.camel_case %>Module.getSingletonClass().defineMethod("calc_summ", new RubyTwoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyValue arg2, RubyBlock block) {
 				try {
 					int x = 0;

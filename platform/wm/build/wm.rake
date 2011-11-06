@@ -95,8 +95,10 @@ namespace "config" do
     $vcbuild = "vcbuild" if $vcbuild.nil?
     $cabwiz = File.join($config["env"]["paths"]["cabwiz"], "cabwiz.exe") if $config["env"]["paths"]["cabwiz"]
     $cabwiz = "cabwiz" if $cabwiz.nil?
-    $sdk = "Windows Mobile 6 Professional SDK (ARMV4I)" unless $sdk
-    $sdk = $app_config["wmsdk"] unless $app_config["wmsdk"].nil?
+    unless $sdk
+        $sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
+        $sdk = $app_config["wmsdk"] unless $app_config["wmsdk"].nil?
+    end    
     $build_solution = 'rhodes.sln' unless $build_solution
     #$startdir = $app_config["sdk"]
 
@@ -119,6 +121,7 @@ end
 namespace "build" do
   namespace "wm" do
     task :extensions => "config:wm" do
+
       $app_config["extensions"].each do |ext|
         $app_config["extpaths"].each do |p|
           extpath = File.join(p, ext, 'ext')
@@ -128,12 +131,16 @@ namespace "build" do
           ENV['PWD'] = $startdir
           ENV['RHO_ROOT'] = ENV['PWD']
           
-          ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", $sdk, "rhodes", $current_platform == 'wm' ? "Release" : "Debug")
-          ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", $sdk, "extensions", ext)
+          ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", 'wm', "bin", $sdk, "rhodes", $current_platform == 'wm' ? "Release" : "Debug")
+          ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform",  'wm', "bin", $sdk, "extensions", ext)
           ENV['VCBUILD'] = $vcbuild
           ENV['SDK'] = $sdk
 
-          puts Jake.run("build.bat", [], extpath)
+          #puts Jake.run("build.bat", [], extpath)
+          chdir extpath
+          puts `build.bat`
+          chdir $startdir
+          
           break
         end
       end
@@ -159,7 +166,7 @@ namespace "build" do
       chdir $startdir
     end
 
-    task :devrhobundle => ["config:set_wm_platform", "win32:devrhobundle"]
+    task :devrhobundle => ["config:set_wm_platform", "win32:rhobundle", "win32:after_bundle"]
     end
   
   namespace "win32" do
@@ -189,7 +196,10 @@ namespace "build" do
       Rake::Task["build:bundle:noxruby"].execute
     end
 
-    task :devrhobundle => ["config:set_win32_platform", :rhobundle] do
+    task :devrhobundle => ["config:set_win32_platform", :rhobundle, :after_bundle] do
+    end
+    
+    task :after_bundle do
         win32rhopath = 'platform/wm/bin/win32/rhodes/Debug/rho/'
         mkdir_p win32rhopath
         namepath = File.join(win32rhopath,"name.txt")        
@@ -256,7 +266,7 @@ namespace "build" do
   end
 
   #desc "Build rhodes for win32"
-  task :win32 => ["config:set_win32_platform", "config:wm", "build:win32:devrhobundle"] do
+  task :win32 => ["build:win32:devrhobundle"] do
     chdir $config["build"]["wmpath"]
 
     args = ['/M4', $build_solution, '"debug|win32"']
