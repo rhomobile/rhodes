@@ -1,4 +1,17 @@
-<h3><%= name.camel_case %> Extension Test</h3>
-<div>
-    <%%= link_to '[Run <%= name.camel_case %> test]', { :action => :run_test }%><br/>
+<div data-role="page">
+
+  <div data-role="header" data-position="inline">
+    <h1><%= name.camel_case %> Extension Test</h1>
+    <a href="<%%= Rho::RhoConfig.start_path %>" class="ui-btn-left" data-icon="home" data-direction="reverse"
+       <%%= "data-ajax='false'" if is_bb6 %>>Home</a>
+      
+  </div>
+
+  <div data-role="content">
+    <ul data-role="listview">
+        <%%= link_to 'Run <%= name.camel_case %> test', { :action => :run_test }%>
+    </ul>
+  </div>
+
 </div>
+

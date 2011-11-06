@@ -20,6 +20,13 @@ rake --trace
 
 )
 
+if "%RHO_PLATFORM%" == "win32" (
+
+cd <%= name.downcase %>\platform\wm
+rake --trace
+
+)
+
 if "%RHO_PLATFORM%" == "bb" (
 
 cd <%= name.downcase %>\platform\bb

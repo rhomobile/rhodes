@@ -1,4 +1,4 @@
-module <%= name.camel_case %>Module
+module <%= name.camel_case %>
 
 class <%= name.camel_case %>StringHelper
 
