@@ -1814,8 +1814,9 @@ static VALUE mBarcode;
 #define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),(void**)(a)) 
 
 
+#include "ruby/ext/rho/rhoruby.h"
 extern const char* rho_barcode_barcode_recognize(const char* filename);
-extern void rho_barcode_take_barcode(const char* callback);
+extern void rho_barcode_take_barcode(const char* callback, VALUE options);
 
 #define barcode_recognize rho_barcode_barcode_recognize 
 #define take_barcode rho_barcode_take_barcode 
@@ -1929,19 +1930,21 @@ fail:
 SWIGINTERN VALUE
 _wrap_take_barcode(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
+  VALUE arg2 = (VALUE) 0 ;
   int res1 ;
   char *buf1 = 0 ;
   int alloc1 = 0 ;
   
-  if ((argc < 1) || (argc > 1)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
   }
   res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","take_barcode", 1, argv[0] ));
   }
   arg1 = (char *)(buf1);
-  take_barcode((char const *)arg1);
+  arg2 = argv[1];
+  take_barcode((char const *)arg1,arg2);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return Qnil;
 fail:

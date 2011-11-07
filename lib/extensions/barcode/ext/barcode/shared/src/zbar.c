@@ -8,11 +8,11 @@
 
 #include "../zbar/zbar/include/zbar.h"
 
-
+#include "ruby/ext/rho/rhoruby.h"
 
 static char strbuf[1024];
 
-void rho_barcode_take_barcode(const char* callback) {
+void rho_barcode_take_barcode(const char* callback, VALUE options) {
 
 }
 
