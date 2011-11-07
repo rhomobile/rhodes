@@ -137,4 +137,11 @@ class CameraSemiService implements CameraService {
 		return new Size(neww, newh);
 	}
 	
+	public boolean isAutoFocusSupported(android.hardware.Camera camera) {
+		String focus_mode = camera.getParameters().getFocusMode();
+		boolean auto_focus_supported = (focus_mode.equals(android.hardware.Camera.Parameters.FOCUS_MODE_AUTO)) || (focus_mode.equals(android.hardware.Camera.Parameters.FOCUS_MODE_MACRO));
+		return auto_focus_supported;
+	}
+	
+	
 }
