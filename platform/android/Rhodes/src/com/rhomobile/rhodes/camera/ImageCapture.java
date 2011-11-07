@@ -63,7 +63,7 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 	private static final String TAG = "ImageCapture";
 	
 	private String callbackUrl;
-	private Camera camera;
+	private android.hardware.Camera camera;
 	private boolean isPreviewRunning = false;
 	private SimpleDateFormat timeStampFormat = new SimpleDateFormat("yyyyMMddHHmmssSS");
 
@@ -270,11 +270,16 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 		//this only from API v.5 and higher
 		//String focus_mode = camera.getParameters().getFocusMode();
 		//if ((focus_mode != Camera.Parameters.FOCUS_MODE_FIXED) && (focus_mode != Camera.Parameters.FOCUS_MODE_INFINITY)) {
-		camera.autoFocus(new Camera.AutoFocusCallback() {
-			public void onAutoFocus(boolean success, Camera camera) {
-				takePicture();
-			}
-		});
+		if (com.rhomobile.rhodes.camera.Camera.getCameraService().isAutoFocusSupported(camera)) {
+			camera.autoFocus(new Camera.AutoFocusCallback() {
+				public void onAutoFocus(boolean success, Camera camera) {
+					takePicture();
+				}
+			});
+		}
+		else {
+			takePicture();
+		}
 		//}
 	}
 

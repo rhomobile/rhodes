@@ -33,7 +33,21 @@ USE_OWN_STLPORT = false
 
 ANDROID_API_LEVEL_TO_MARKET_VERSION = {}
 ANDROID_MARKET_VERSION_TO_API_LEVEL = {}
-{2 => "1.1", 3 => "1.5", 4 => "1.6", 5 => "2.0", 6 => "2.0.1", 7 => "2.1", 8 => "2.2", 9 => "2.3.1", 10 => "2.3.3", 11 => "3.0", 12 => "3.1", 13 => "3.2"  }.each do |k,v|
+{
+    2 => "1.1",
+    3 => "1.5",
+    4 => "1.6",
+    5 => "2.0",
+    6 => "2.0.1",
+    7 => "2.1",
+    8 => "2.2",
+    9 => "2.3.1",
+    10 => "2.3.3",
+    11 => "3.0",
+    12 => "3.1",
+    13 => "3.2",
+    14 => "4.0"
+  }.each do |k,v|
   ANDROID_API_LEVEL_TO_MARKET_VERSION[k] = v
   ANDROID_MARKET_VERSION_TO_API_LEVEL[v] = k
 end
@@ -245,10 +259,58 @@ def set_app_name_android(newname)
 
   manifest.elements.each('uses-permission') { |e| manifest.delete e }
 
+
+  uses_camera = false
+  uses_autofocus = false
+  uses_front = false
+  uses_flash = false
+
+  manifest.elements.each('uses-feature') do |e|
+    uname = e.attribute("name", "android").to_s 
+    if "android.hardware.camera".eql? uname
+       uses_camera = true
+    end
+    if "android.hardware.camera.autofocus".eql? uname
+       uses_autofocus = true
+    end
+    if "android.hardware.camera.front".eql? uname
+       uses_front = true
+    end
+    if "android.hardware.camera.flash".eql? uname
+       uses_flash = true
+    end
+  end
+
   caps.sort.each do |cap|
     element = REXML::Element.new('uses-permission')
     element.add_attribute('android:name', "android.permission.#{cap}")
     manifest.add element
+    if cap == 'CAMERA'
+        if !uses_camera
+           element = REXML::Element.new('uses-feature')
+           element.add_attribute('android:required', "false")
+           element.add_attribute('android:name', "android.hardware.camera")
+           manifest.add element
+        end
+        if !uses_autofocus
+           element = REXML::Element.new('uses-feature')
+           element.add_attribute('android:required', "false")
+           element.add_attribute('android:name', "android.hardware.camera.autofocus")
+           manifest.add element
+        end
+        if !uses_front
+           element = REXML::Element.new('uses-feature')
+           element.add_attribute('android:required', "false")
+           element.add_attribute('android:name', "android.hardware.camera.front")
+           manifest.add element
+        end
+        if !uses_flash
+           element = REXML::Element.new('uses-feature')
+           element.add_attribute('android:required', "false")
+           element.add_attribute('android:name', "android.hardware.camera.flash")
+           manifest.add element
+        end
+    end
   end
 
   caps_proc.each do |p|
