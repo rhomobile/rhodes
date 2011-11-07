@@ -217,7 +217,46 @@ For example:
         
     SyncEngine.on_sync_delete_error( @params['source_name'], 
         @params['server_errors']['delete-error'], :retry)
-   
+
+#### unknown-client error
+Unknown client error return by server after resetting server database, removing particular client id from database or any other cases when server cannot find client id(sync server unique id of device).
+Note that login session may still exist on server, so in this case client does not have to login again, just create new client id.
+Processing of this error contain 2 steps:
+
+* When unknown client error is come from server, client should call database_client_reset and start new sync, to register new client id:
+
+	    rho_error = Rho::RhoError.new(err_code)
+       
+	    if err_code == Rho::RhoError::ERR_CUSTOMSYNCSERVER
+	      @msg = @params['error_message']
+        end
+
+        @msg = rho_error.message unless @msg and @msg.length > 0   
+
+        if rho_error.unknown_client?(@params['error_message'])
+          Rhom::Rhom.database_client_reset
+          SyncEngine.dosync
+        end
+        
+* If login session also deleted or expired on the server, then customer has to login again:
+
+        rho_error = Rho::RhoError.new(err_code)
+
+        if err_code == Rho::RhoError::ERR_CUSTOMSYNCSERVER
+          @msg = @params['error_message']
+        end
+
+        @msg = rho_error.message unless @msg and @msg.length > 0   
+
+        if err_code == Rho::RhoError::ERR_UNATHORIZED
+          WebView.navigate( 
+            url_for(
+              :action => :login, 
+              :query => { :msg => "Server credentials expired!" } 
+            )
+          )   
+        end	
+              
 ### Notification Example
 Here is a simple example of a sync notification method that uses some of the parameters described above:
 
