@@ -64,6 +64,7 @@ public final class CameraManager {
   private final Context context;
   private final CameraConfigurationManager configManager;
   private Camera camera;
+  private int mCameraIndex = 0;
   private Rect framingRect;
   private Rect framingRectInPreview;
   private boolean initialized;
@@ -82,9 +83,9 @@ public final class CameraManager {
    *
    * @param context The Activity which wants to use the camera.
    */
-  public static void init(Context context) {
+  public static void init(Context context, int camera_index) {
     if (cameraManager == null) {
-      cameraManager = new CameraManager(context);
+      cameraManager = new CameraManager(context, camera_index);
     }
   }
 
@@ -97,8 +98,9 @@ public final class CameraManager {
     return cameraManager;
   }
 
-  private CameraManager(Context context) {
+  private CameraManager(Context context, int camera_index) {
 
+	this.mCameraIndex = camera_index;
     this.context = context;
     this.configManager = new CameraConfigurationManager(context);
 
@@ -121,7 +123,12 @@ public final class CameraManager {
    */
   public void openDriver(SurfaceHolder holder) throws IOException {
     if (camera == null) {
-      camera = Camera.open();
+      if (mCameraIndex == 0) {	
+    	  camera = Camera.open();
+      }
+      else {
+    	  camera = com.rhomobile.rhodes.camera.Camera.getCameraService().getFrontCamera();  
+      }
       if (camera == null) {
         throw new IOException();
       }

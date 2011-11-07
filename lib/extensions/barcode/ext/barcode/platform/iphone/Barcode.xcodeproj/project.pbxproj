@@ -18,6 +18,15 @@
 		FA4D3F4E136B07B2009D6E63 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4D3F4D136B07B2009D6E63 /* CoreMedia.framework */; };
 		FA4D3F50136B07BB009D6E63 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4D3F4F136B07BB009D6E63 /* CoreVideo.framework */; };
 		FA4D3F52136B07CA009D6E63 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4D3F51136B07CA009D6E63 /* libiconv.dylib */; };
+		FAA838881455B0BA0002F4E6 /* BarcodeViewFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = FAA838831455B0BA0002F4E6 /* BarcodeViewFactory.h */; };
+		FAA838891455B0BA0002F4E6 /* BarcodeViewFactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAA838841455B0BA0002F4E6 /* BarcodeViewFactory.mm */; };
+		FAA8388A1455B0BA0002F4E6 /* BarcodeViewFactoryRegister.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAA838851455B0BA0002F4E6 /* BarcodeViewFactoryRegister.mm */; };
+		FAA8388B1455B0BA0002F4E6 /* BarcodeViewManager.h in Headers */ = {isa = PBXBuildFile; fileRef = FAA838861455B0BA0002F4E6 /* BarcodeViewManager.h */; };
+		FAA8388C1455B0BA0002F4E6 /* BarcodeViewManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAA838871455B0BA0002F4E6 /* BarcodeViewManager.mm */; };
+		FAA838901455B1F60002F4E6 /* BarcodeViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FAA8388E1455B1F60002F4E6 /* BarcodeViewController.h */; };
+		FAA838911455B1F60002F4E6 /* BarcodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FAA8388F1455B1F60002F4E6 /* BarcodeViewController.m */; };
+		FAA839321455F7210002F4E6 /* BarcodeCallbackHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = FAA839301455F7210002F4E6 /* BarcodeCallbackHelper.h */; };
+		FAA839331455F7210002F4E6 /* BarcodeCallbackHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAA839311455F7210002F4E6 /* BarcodeCallbackHelper.mm */; };
 		FAAE06AD11EF4F02001787D8 /* ImageProvider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAAE06AA11EF4F02001787D8 /* ImageProvider.cpp */; };
 		FAAE06AE11EF4F02001787D8 /* ImageProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = FAAE06AB11EF4F02001787D8 /* ImageProvider.h */; };
 		FAAE06AF11EF4F02001787D8 /* ImageProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAAE06AC11EF4F02001787D8 /* ImageProvider.mm */; };
@@ -38,6 +47,15 @@
 		FA4D3F4D136B07B2009D6E63 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		FA4D3F4F136B07BB009D6E63 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		FA4D3F51136B07CA009D6E63 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
+		FAA838831455B0BA0002F4E6 /* BarcodeViewFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BarcodeViewFactory.h; path = Classes/BarcodeViewFactory.h; sourceTree = "<group>"; };
+		FAA838841455B0BA0002F4E6 /* BarcodeViewFactory.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = BarcodeViewFactory.mm; path = Classes/BarcodeViewFactory.mm; sourceTree = "<group>"; };
+		FAA838851455B0BA0002F4E6 /* BarcodeViewFactoryRegister.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = BarcodeViewFactoryRegister.mm; path = Classes/BarcodeViewFactoryRegister.mm; sourceTree = "<group>"; };
+		FAA838861455B0BA0002F4E6 /* BarcodeViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BarcodeViewManager.h; path = Classes/BarcodeViewManager.h; sourceTree = "<group>"; };
+		FAA838871455B0BA0002F4E6 /* BarcodeViewManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = BarcodeViewManager.mm; path = Classes/BarcodeViewManager.mm; sourceTree = "<group>"; };
+		FAA8388E1455B1F60002F4E6 /* BarcodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BarcodeViewController.h; path = Classes/BarcodeViewController.h; sourceTree = "<group>"; };
+		FAA8388F1455B1F60002F4E6 /* BarcodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BarcodeViewController.m; path = Classes/BarcodeViewController.m; sourceTree = "<group>"; };
+		FAA839301455F7210002F4E6 /* BarcodeCallbackHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BarcodeCallbackHelper.h; path = Classes/BarcodeCallbackHelper.h; sourceTree = "<group>"; };
+		FAA839311455F7210002F4E6 /* BarcodeCallbackHelper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = BarcodeCallbackHelper.mm; path = Classes/BarcodeCallbackHelper.mm; sourceTree = "<group>"; };
 		FAAE06AA11EF4F02001787D8 /* ImageProvider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ImageProvider.cpp; path = Classes/ImageProvider.cpp; sourceTree = "<group>"; };
 		FAAE06AB11EF4F02001787D8 /* ImageProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ImageProvider.h; path = Classes/ImageProvider.h; sourceTree = "<group>"; };
 		FAAE06AC11EF4F02001787D8 /* ImageProvider.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ImageProvider.mm; path = Classes/ImageProvider.mm; sourceTree = "<group>"; };
@@ -104,6 +122,15 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				FAA839301455F7210002F4E6 /* BarcodeCallbackHelper.h */,
+				FAA839311455F7210002F4E6 /* BarcodeCallbackHelper.mm */,
+				FAA8388E1455B1F60002F4E6 /* BarcodeViewController.h */,
+				FAA8388F1455B1F60002F4E6 /* BarcodeViewController.m */,
+				FAA838831455B0BA0002F4E6 /* BarcodeViewFactory.h */,
+				FAA838841455B0BA0002F4E6 /* BarcodeViewFactory.mm */,
+				FAA838851455B0BA0002F4E6 /* BarcodeViewFactoryRegister.mm */,
+				FAA838861455B0BA0002F4E6 /* BarcodeViewManager.h */,
+				FAA838871455B0BA0002F4E6 /* BarcodeViewManager.mm */,
 				FA4D3F0E136AFA94009D6E63 /* barcode.m */,
 				FAAE06AA11EF4F02001787D8 /* ImageProvider.cpp */,
 				FAAE06AB11EF4F02001787D8 /* ImageProvider.h */,
@@ -154,6 +181,10 @@
 			files = (
 				AA747D9F0F9514B9006C5449 /* Barcode_Prefix.pch in Headers */,
 				FAAE06AE11EF4F02001787D8 /* ImageProvider.h in Headers */,
+				FAA838881455B0BA0002F4E6 /* BarcodeViewFactory.h in Headers */,
+				FAA8388B1455B0BA0002F4E6 /* BarcodeViewManager.h in Headers */,
+				FAA838901455B1F60002F4E6 /* BarcodeViewController.h in Headers */,
+				FAA839321455F7210002F4E6 /* BarcodeCallbackHelper.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -211,6 +242,11 @@
 				FAAE06AF11EF4F02001787D8 /* ImageProvider.mm in Sources */,
 				FAAE072811EF4F22001787D8 /* barcode_wrap.c in Sources */,
 				FA4D3F0F136AFA94009D6E63 /* barcode.m in Sources */,
+				FAA838891455B0BA0002F4E6 /* BarcodeViewFactory.mm in Sources */,
+				FAA8388A1455B0BA0002F4E6 /* BarcodeViewFactoryRegister.mm in Sources */,
+				FAA8388C1455B0BA0002F4E6 /* BarcodeViewManager.mm in Sources */,
+				FAA838911455B1F60002F4E6 /* BarcodeViewController.m in Sources */,
+				FAA839331455F7210002F4E6 /* BarcodeCallbackHelper.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

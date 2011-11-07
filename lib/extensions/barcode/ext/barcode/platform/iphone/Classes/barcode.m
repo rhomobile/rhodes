@@ -4,16 +4,23 @@
 #include <stdlib.h>
 
 #include "zbar.h"
+#include "BarcodeViewController.h"
 
-
+#include "ruby/ext/rho/rhoruby.h"
 
 extern void rho_platform_image_load_grayscale(const char* url, void** image_pixels, int* pwidth, int* pheight);
 extern void rho_platform_image_free(void* image_pixels);
 
+extern void register_Barcode_View(void);
 
 static char strbuf[1024];
 
-void rho_barcode_take_barcode(const char* callback) {
+void rho_barcode_take_barcode(const char* callback, VALUE options) {
+    
+    register_Barcode_View();
+    
+    [BarcodeViewController createBarcodeView:[NSString stringWithCString:callback]];
+
 }
 
 
