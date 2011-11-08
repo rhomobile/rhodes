@@ -1,3 +1,10 @@
+## 3.2.2
+* Fix iPhone build for AppStore
+* Fix Android infinite loop while using GPS
+* Update IronRuby for Windows Phone 7 to log application stack while exception
+* Add generator for native extensions
+* Add real-time Barcode scanning for iPhone
+
 ## 3.2.1
 * Add migrate-rhodes-app command that updates build.yml to use latest Rhodes gem
 * Change set-rhodes-sdk command to set sdk path at build.yml only
