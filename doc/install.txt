@@ -30,21 +30,23 @@ The Sun JDK for Windows or Linux is available [here](http://java.sun.com/javase/
 
 You will want to have your JAVA_HOME variable set; have JAVA_HOME/bin set on your path.
 
-## Rhodes Gem for non-RhoStudio Installations
+## Rhodes Gem
 
-If you are not using RhoStudio (for example, you are developing from the command line on a Linux computer), you need to install the Rhodes gem. To do so, you will need the following tools installed:
+If you are not using RhoStudio for Macintosh or RhoStudio for Windows (for example, you are developing from the command line on a Linux computer), you need to install the Rhodes gem. To do so, you will need the following tools installed:
 
 * [Ruby](http://www.ruby-lang.org/en/) (On Windows, [RubyInstaller](http://rubyinstaller.org) is a convenient way to install Ruby)
 * [RubyGems](http://docs.rubygems.org/) (RubyGems offers a .tgz, a .zip, and a .gem download. You want the .zip.)
 
 NOTE: Windows doesn't come with the necessary build tools to install gems ('make', for example). There are various ways to get these tools, but the GnuWin32 project at http://gnuwin32.sourceforge.net/ provides the tools, and can be conveniently installed via the GetGnuWin32 installer at http://sourceforge.net/projects/getgnuwin32/files/.
 
-The first step in using Rhodes is to install the Rhodes gem (you may want to put "sudo" in the front of this command on OS X):
+To install the Rhodes gem, run the following command (you may want to put "sudo" in the front of this command on OS X):
 
     :::term
     $ gem install rhodes
 
 NOTE: If you get any `no such file to load -- something` messages while running the rake tasks or rhodes commands, this can usually be resolved by putting "sudo" in front of the command, as in `sudo gem install something`.
+
+You can [install RhoStudio as a plugin for Eclipse](rhostudio-eclipse) if you are not using RhoStudio for Macintosh or RhoStudio for Windows.
 
 ## Setup Rhodes
 
