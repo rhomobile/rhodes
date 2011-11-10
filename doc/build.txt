@@ -835,6 +835,23 @@ Select Connection Settings, then select the checkbox "Allow connections to one o
 
 Select "DMA" from the list box. DMA Connection is required to work with the Windows Mobile emulator.
 
+### Debugging on Windows Mobile devices connected to PC
+
+On Windows Vista and Windows 7 the Windows Mobile Device Center (WMDC) may start automatically upon connection of the WM device.
+If it is not happening, then you're lucky and most probably you wouldn't need to do anything to be able to run and debug rhodes application on the device
+while it is connected to PC.
+
+The problem is that WMDC locks the file system of the mobile device and prevents rhodes application from running
+(because the application usually writes data to files located within the application folder).
+So if WMDC is starting when you connect the device to PC, you need to shutdown WMDC completely to be able to run rhodes application
+on Windows Mobile device.
+
+To shutdown WMDC open the Task Manager, find wmdc.exe (Windows Device Mobile Center) and
+WmdHost.exe (Windows Mobile Device Center Sync Host) processes and end them.
+
+Then disconnect the device and connect it again to PC -- WMDC should not appear this time.
+Now you may run and debug rhodes applications on Windows Mobile devices connected to PC from both RhoStudio and command line.
+
 ### Add Paths to Cab Wizard and Visual Studio
 
 In RhoStudio Windows -> Preferences, right-click on Rhomobile->Windows Mobile to show the rhobuild.yml preferences. Check that the Cab wizard path (which is contained in your Windows Mobile 6 SDK program installation) is correct.
@@ -873,7 +890,7 @@ To run on the Windows Mobile simulator, select Windows Mobile in Platform and Si
 
 #### Running on a Windows Mobile Device in RhoStudio
 
-To run on a Windows Mobile device, connect your device to your computer with a USB cable. 
+To run on a Windows Mobile device, connect your device to your computer with a USB cable.
 
 In the Run Configurations window, select Windows Mobile in Platform, and Device in Simulator type.
 
