@@ -99,7 +99,13 @@ namespace "config" do
         $sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
         $sdk = $app_config["wmsdk"] unless $app_config["wmsdk"].nil?
     end    
-    $build_solution = 'rhodes.sln' unless $build_solution
+    unless $build_solution
+        if $app_config["capabilities"].nil? or $app_config["capabilities"].index("webkit_browser").nil?
+            $build_solution = 'rhodes.sln' 
+        else
+            $build_solution = 'rhoelements.sln'
+        end
+    end
     #$startdir = $app_config["sdk"]
 
     if $app_config["wm"].nil?
