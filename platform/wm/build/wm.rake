@@ -95,15 +95,16 @@ namespace "config" do
     $vcbuild = "vcbuild" if $vcbuild.nil?
     $cabwiz = File.join($config["env"]["paths"]["cabwiz"], "cabwiz.exe") if $config["env"]["paths"]["cabwiz"]
     $cabwiz = "cabwiz" if $cabwiz.nil?
+    $webkit_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("webkit_browser").nil?)
     unless $sdk
         $sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
         $sdk = $app_config["wmsdk"] unless $app_config["wmsdk"].nil?
     end    
     unless $build_solution
-        if $app_config["capabilities"].nil? or $app_config["capabilities"].index("webkit_browser").nil?
-            $build_solution = 'rhodes.sln' 
-        else
+        if $webkit_capability
             $build_solution = 'rhoelements.sln'
+        else
+            $build_solution = 'rhodes.sln' 
         end
     end
     #$startdir = $app_config["sdk"]
@@ -308,7 +309,24 @@ namespace "device" do
               
       build_platform = 'wm6'
       build_platform = 'ce5' if $sdk != "Windows Mobile 6 Professional SDK (ARMV4I)"
-      args = ['build_inf.js', $appname + ".inf", build_platform, '"' + $app_config["name"] +'"', $app_config["vendor"], '"' + $srcdir + '"', $hidden_app]
+
+      if $webkit_capability
+          wk_config_dir = '../../../../Motorola-Extensions/RhoElements/Config'
+          config_files = ['Config','Plugin','RegEx']
+          config_files.each do |filename|
+              filepath = File.join(wk_config_dir,filename + ".xml.template")
+              if not File.exists?(filepath)
+                  puts "Cannot find required config template: #{filepath}"
+                  exit 1
+              end
+              template = File.read(filepath)
+              config = template.to_s.gsub('(%APPNAME%)',$app_config["name"]);
+              filepath = File.join(wk_config_dir,filename + ".xml")
+              File.open(filepath, "w") { |f| f.write(config) }
+          end
+      end
+
+      args = ['build_inf.js', $appname + ".inf", build_platform, '"' + $app_config["name"] +'"', $app_config["vendor"], '"' + $srcdir + '"', $hidden_app, ($webkit_capability ? "1" : "0")]
       puts Jake.run('cscript',args)
       unless $? == 0
         puts "Error running build_inf"
