@@ -26,6 +26,8 @@ module LocalizationSimplified
   def self.set_cur_locale(loc, country)
     @@cur_locale = loc
     @@cur_country = country  
+    
+    puts "Current locale: #{@@cur_locale}; Country code: #{@@cur_country}"
   end
   
     def self.init_current_locale
@@ -36,9 +38,6 @@ module LocalizationSimplified
         @@cur_locale = 'en' unless @@cur_locale
         @@cur_country = System::get_property("country")
         @@cur_country = @@cur_country.downcase if @@cur_country
-        
-        puts "Current locale: #{@@cur_locale}; Country code: #{@@cur_country}"
-                
     end
     
     def self.requre_loc(file,check_exist)
@@ -50,20 +49,19 @@ if defined?( RHODES_EMULATOR )
 else
             file = File.join( __rhoGetCurrentDir(), 'lib', file)            
 end            
-            puts "file: #{file}"
         end
-      
-      puts "Current locale: #{@@cur_locale}; Country code: #{@@cur_country}"
+
+      puts "Locilized file: #{file}"
       
         if @@cur_country && @@cur_country.length() > 0 && Rho::file_exist?(file + @@cur_locale + '_' + @@cur_country + RHO_RB_EXT) 
-            require file + @@cur_locale + '_' + @@cur_country
+            load file + @@cur_locale + '_' + @@cur_country
         elsif Rho::file_exist?(file + @@cur_locale + RHO_RB_EXT)
-            require file + @@cur_locale
+            load file + @@cur_locale
         else    
             puts 'Could not find resources for locale: ' + @@cur_locale.to_s + ";file: #{file}" if @@cur_locale != 'en'
             if @@cur_locale != 'en' && Rho::file_exist?(file + 'en' + RHO_RB_EXT)
                 puts 'Load english resources.'
-                require file + 'en'
+                load file + 'en'
             end    
         end
     end
@@ -75,7 +73,7 @@ end
 module System
     def self.set_locale(locale_code, country_code = nil)
         LocalizationSimplified::set_cur_locale(locale_code, country_code)
-        
+
         LocalizationSimplified.requre_loc('rholang/lang_',false)
         LocalizationSimplified.requre_loc(Rho::RhoFSConnector::get_app_path('app') + 'lang/lang_',true)
         LocalizationSimplified.requre_loc('rholang/rhoerror_',false)
