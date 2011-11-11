@@ -515,6 +515,7 @@ namespace rho.net
                     m_strRespBody = m_strRespBody.Replace('"', ' ');
                     string[] cookies = m_strRespBody.Split(':');
                     m_strCookies = cookies[1].Trim();
+                    m_strCookies = Uri.UnescapeDataString(m_strCookies);
                 }
                 pResp.setCookies(m_strCookies);
             }
