@@ -89,6 +89,13 @@ module Kernel
 		 orig_require( file_name )
 	end
 
+	alias :orig_load :load
+
+	def load(file_name)
+		 file_name += '.rb' unless file_name.end_with?('.rb')
+		 orig_load( file_name )
+	end
+
 	def eval_compiled_file(fname, bind)
 	    code = IO.read(fname)
 	    code.force_encoding('utf-8')
