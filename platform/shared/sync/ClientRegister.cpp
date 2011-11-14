@@ -85,16 +85,23 @@ void CClientRegister::startUp()
     }
 }
 
-void CClientRegister::run() 
-{	
+void CClientRegister::run()
+{
+    unsigned i = 0;
     LOG(INFO)+"ClientRegister start";
 	while(!isStopping()) 
 	{
+	    i++;
+        LOG(INFO)+"Try to register: " + i;
         if ( CSyncThread::getInstance() != null )
 		{
 			if ( doRegister(CSyncThread::getSyncEngine()) )
+			{
+			    LOG(INFO)+"Registered: " + i;
 				break;
-		}
+			}
+		} else
+		    LOG(INFO)+"SyncThread is not ready";
 		
 		LOG(INFO)+"Waiting for "+ m_nPollInterval+ " sec to try again to register client";
 		wait(m_nPollInterval);
@@ -110,19 +117,23 @@ String CClientRegister::getRegisterBody(const String& strClientID)
         port > 0 ? port : DEFAULT_PUSH_PORT, rho_rhodesapp_getplatform(), rho_sysimpl_get_phone_id() );
 }
 
-boolean CClientRegister::doRegister(CSyncEngine& oSync) 
+boolean CClientRegister::doRegister(CSyncEngine& oSync)
 {
 	String session = oSync.loadSession();
 	if ( session.length() == 0 )
     {
         m_nPollInterval = POLL_INTERVAL_INFINITE;
+        LOG(INFO)+"Session is empty, do register later";
 		return false;
     }
-    m_nPollInterval = POLL_INTERVAL_SECONDS;    		
+    m_nPollInterval = POLL_INTERVAL_SECONDS;
 
 	String client_id = oSync.loadClientID();
 	if ( client_id.length() == 0 )
+	{
+        LOG(WARNING)+"Sync client_id is empty, do register later";
 		return false;
+	}
 
     IDBResult res = CDBAdapter::getUserDB().executeSQL("SELECT token,token_sent from client_info");
     if ( !res.isEnd() ) {
@@ -146,10 +157,9 @@ boolean CClientRegister::doRegister(CSyncEngine& oSync)
 //				}	
 		LOG(INFO)+"Registered client sucessfully...";
 		return true;
-	} else {
-		LOG(INFO)+"Network error POST-ing device pin to the server...";
 	}
-	
+
+	LOG(WARNING)+"Network error: "+ resp.getRespCode();
 	return false;
 }
 
