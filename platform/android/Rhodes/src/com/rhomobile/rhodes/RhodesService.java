@@ -607,25 +607,30 @@ public class RhodesService extends Service {
 	}
 
 	public static void exit() {
-        Logger.I(TAG, "Exit application");
-        try {
-            // Do this fake state change in order to make processing before server is stopped
-            RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityPaused);
-
-            RhodesService service = RhodesService.getInstance();
-            if (service != null)
-            {
-                Logger.T(TAG, "stop RhodesService");
-                service.wakeLock.reset();
-                service.stopSelf();
-            }
-            
-            Logger.T(TAG, "stop RhodesApplication");
-            RhodesApplication.stop();
-        }
-        catch (Exception e) {
-            Logger.E(TAG, e);
-        }
+	    PerformOnUiThread.exec(new Runnable() {
+	        @Override
+	        public void run() {
+                Logger.I(TAG, "Exit application");
+                try {
+                    // Do this fake state change in order to make processing before server is stopped
+                    RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityPaused);
+        
+                    RhodesService service = RhodesService.getInstance();
+                    if (service != null)
+                    {
+                        Logger.T(TAG, "stop RhodesService");
+                        service.wakeLock.reset();
+                        service.stopSelf();
+                    }
+                    
+                    Logger.T(TAG, "stop RhodesApplication");
+                    RhodesApplication.stop();
+                }
+                catch (Exception e) {
+                    Logger.E(TAG, e);
+                }
+	        }
+	    });
 	}
 	
 	public void rereadScreenProperties() {
