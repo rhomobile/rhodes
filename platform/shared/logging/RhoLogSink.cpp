@@ -145,18 +145,22 @@ void CLogOutputSink::writeLogMessage( String& strMsg )
 
     const char* szMsg = strMsg.c_str(); 
 
-#if defined( OS_WINDOWS ) //|| defined( OS_WINCE )
+#if defined( OS_WINDOWS )
 		::OutputDebugStringA(szMsg);
+#elif defined( OS_PLATFORM_MOTCE )
+		::OutputDebugStringW(common::convertToStringW(strMsg).c_str());
 #elif defined( OS_SYMBIAN )
         TPtrC8 des((const TUint8*)szMsg);
       	RDebug::RawPrint(des);
         return;
 #endif
 
+#if !defined( OS_PLATFORM_MOTCE )
     for( int n = 0; n < (int)strMsg.length(); n+= 100 )
         fwrite(szMsg+n, 1, min(100,strMsg.length()-n) , stdout );
 
     fflush(stdout);
+#endif
 }
 
 CLogSocketSink::CLogSocketSink(const LogSettings& oSettings) 
