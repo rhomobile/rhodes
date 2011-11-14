@@ -41,7 +41,7 @@
 #import "NVDelegate.h"
 
 @interface Rhodes : NSObject <UIApplicationDelegate,
-    UITabBarControllerDelegate, AVAudioPlayerDelegate>
+    UITabBarControllerDelegate, AVAudioPlayerDelegate, UIAlertViewDelegate>
 {
     AppManager *appManager;
     UIApplication *application;
@@ -104,4 +104,7 @@
 - (void)openFullScreenNativeView:(UIView*)view;
 - (void)closeFullScreenNativeView;
 	
+// UIAlertViewDelegate
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex;
+
 @end

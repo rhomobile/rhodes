@@ -41,8 +41,10 @@ import com.rhomobile.rhodes.webview.ChromeClientOld;
 import com.rhomobile.rhodes.webview.RhoWebSettings;
 import com.rhomobile.rhodes.webview.RhoWebViewClient;
 
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -58,6 +60,7 @@ import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 public class RhodesActivity extends BaseActivity {
 	
@@ -518,7 +521,26 @@ public class RhodesActivity extends BaseActivity {
         if(!RhodesApplication.canStart(paramString))
         {
             Logger.E(TAG, "This is hidden app and can be started only with security key.");
-            RhodesService.exit();
+            
+            //Toast.makeText(this,"Invalid security token !",Toast.LENGTH_SHORT).show();
+            /*
+            AlertDialog.Builder b = new AlertDialog.Builder(this);
+            b.setCancelable(true);
+            b.setOnCancelListener( new DialogInterface.OnCancelListener() {
+				public void onCancel(DialogInterface dialog) {
+					RhodesService.exit();
+				}
+			});
+            AlertDialog securityAlert = b.create();
+            securityAlert.setMessage(RhodesService.getInvalidSecurityTokenMessage());
+            securityAlert.setButton("OK", new DialogInterface.OnClickListener(){
+				public void onClick(DialogInterface arg0, int arg1) {
+					RhodesService.exit();
+				}
+            	
+            });
+            securityAlert.show();
+            */
             return;
         }
 

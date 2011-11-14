@@ -60,6 +60,23 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_makeLink
         env->ThrowNew(getJNIClass(RHODES_JAVA_CLASS_RUNTIME_EXCEPTION), "Can not create symlink");
 }
 
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getInvalidSecurityTokenMessage(JNIEnv* env, jclass) {
+    
+    const char* message = "Invalid security token !";
+    
+    //rho_conf_Init(rho_native_rhopath());
+    
+    if (rho_conf_is_property_exists("invalid_security_token_message")) {
+        const char* conf_message = rho_conf_getString("invalid_security_token_message");
+        message = conf_message;
+    }
+    
+    jstring objStr = env->NewStringUTF(message);
+    return objStr;
+    
+    
+}
+
 static bool set_capabilities(JNIEnv *env)
 {
     char const *caps[] = {
