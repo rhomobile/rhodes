@@ -1020,7 +1020,7 @@ void CMainWindow::ProcessDocumentComplete(LPCTSTR url)
 
     LOG(TRACE) + "OnDocumentComplete: " + url;
 
-#if defined (_WIN32_WCE)
+#if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
 	createCustomMenu();
 	
 	m_pageCounter++;

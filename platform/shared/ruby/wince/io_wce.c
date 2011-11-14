@@ -503,11 +503,11 @@ int dup2( int handle1, int handle2 )
 */
 int _isatty(int fd)
 {
-	if( fd==(int)_fileno(stdin) || 
+	/*if( fd==(int)_fileno(stdin) || 
 		fd==(int)_fileno(stdout)||
 		fd==(int)_fileno(stderr) )
 		return 1;
-	else
+	else*/
 		return 0;
 }
 

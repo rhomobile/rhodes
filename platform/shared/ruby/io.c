@@ -6345,7 +6345,7 @@ static VALUE
 prep_stdio(FILE *f, int fmode, VALUE klass, const char *path)
 {
     rb_io_t *fptr;
-    VALUE io = prep_io(fileno(f), fmode|FMODE_PREP, klass, path);
+    VALUE io = prep_io(-1/*fileno(f)*/, fmode|FMODE_PREP, klass, path);
 
     GetOpenFile(io, fptr);
     fptr->stdio_file = f;
@@ -10057,11 +10057,11 @@ Init_IO(void)
     orig_stdout = rb_stdout;
     rb_deferr = orig_stderr = rb_stderr;
 
-    /* constants to hold original stdin/stdout/stderr */
+    // constants to hold original stdin/stdout/stderr
     rb_define_global_const("STDIN", rb_stdin);
     rb_define_global_const("STDOUT", rb_stdout);
     rb_define_global_const("STDERR", rb_stderr);
-
+    
     /*
      * Hack to get rdoc to regard ARGF as a class:
      * rb_cARGF = rb_define_class("ARGF", rb_cObject);

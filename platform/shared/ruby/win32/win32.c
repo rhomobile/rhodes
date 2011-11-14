@@ -5692,14 +5692,14 @@ int
 rb_w32_isatty(int fd)
 {
     // validate fd by using _get_osfhandle() because we cannot access _nhandle
-    if (_get_osfhandle(fd) == -1) {
+/*    if (_get_osfhandle(fd) == -1) {
 	return 0;
     }
     if (!(_osfile(fd) & FDEV)) {
 	errno = ENOTTY;
 	return 0;
-    }
-    return 1;
+    }*/
+    return 0;
 }
 #endif
 
