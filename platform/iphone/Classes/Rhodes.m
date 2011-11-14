@@ -807,7 +807,7 @@ static Rhodes *instance = NULL;
     if ( !rho_rhodesapp_canstartapp([start_parameter UTF8String], ", ") )
     {
 		NSLog(@"This is hidden app and can be started only with security key.");
-		exit(EXIT_SUCCESS);
+		//exit(EXIT_SUCCESS);
     }
 	
 	return NO;

@@ -518,7 +518,7 @@ public class RhodesActivity extends BaseActivity {
         if(!RhodesApplication.canStart(paramString))
         {
             Logger.E(TAG, "This is hidden app and can be started only with security key.");
-            RhodesService.exit();
+            //RhodesService.exit();
             return;
         }
 

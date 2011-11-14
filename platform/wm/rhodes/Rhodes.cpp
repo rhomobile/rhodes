@@ -293,7 +293,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     if ( !rho_rhodesapp_canstartapp(g_strCmdLine.c_str(), " /-,") )
     {
 		LOG(INFO) + "This is hidden app and can be started only with security key.";
-		return S_FALSE;
+		//return S_FALSE;
     }
 
 	LOG(INFO) + "Rhodes started";
