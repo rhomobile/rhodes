@@ -420,7 +420,7 @@ TEST(SyncClient, shouldProcessCreateError_Delete)
     RHO_CONNECT_NOTIFY oNotify = {0};
     unsigned long item = beforeProcessCreateError(oNotify);
 
-    rho_connectclient_on_sync_create_error(g_szProduct, oNotify, "delete" );
+    rho_connectclient_on_sync_create_error(g_szProduct, &oNotify, "delete" );
 
     unsigned long params = rho_connectclient_strarray_create();
     rho_connectclient_strarray_add(params, rho_connectclient_hash_get(item,"object"));
@@ -441,7 +441,7 @@ TEST(SyncClient, shouldProcessCreateError_Recreate)
     RHO_CONNECT_NOTIFY oNotify = {0};
     unsigned long item = beforeProcessCreateError(oNotify);
 
-    rho_connectclient_on_sync_create_error(g_szProduct, oNotify, "recreate" );
+    rho_connectclient_on_sync_create_error(g_szProduct, &oNotify, "recreate" );
 
     unsigned long params = rho_connectclient_strarray_create();
     rho_connectclient_strarray_add(params, rho_connectclient_hash_get(item,"object"));
@@ -481,7 +481,7 @@ TEST(SyncClient, shouldProcessCreateError_RecreateDeleted)
     EXPECT_EQ( String(rho_connectclient_hash_get(rec0, "sent")), "0");
     rho_connectclient_strhasharray_delete(records);
 
-    rho_connectclient_on_sync_create_error(g_szProduct, oNotify, "recreate" );
+    rho_connectclient_on_sync_create_error(g_szProduct, &oNotify, "recreate" );
 
     unsigned long params = rho_connectclient_strarray_create();
     rho_connectclient_strarray_add(params, rho_connectclient_hash_get(item,"object"));
@@ -517,7 +517,7 @@ TEST(SyncClient, shouldProcessUpdateError_Retry)
     EXPECT_NE( records, 0 );
     EXPECT_EQ(rho_connectclient_strhasharray_size(records), 0 );
 
-    rho_connectclient_on_sync_update_error(g_szProduct, oNotify, "retry" );
+    rho_connectclient_on_sync_update_error(g_szProduct, &oNotify, "retry" );
 
     records = rho_connectclient_findbysql(g_szProduct, "SELECT * FROM changed_values WHERE update_type='update'", 0 );
     EXPECT_NE( records, 0 );
@@ -588,7 +588,7 @@ TEST(SyncClient, shouldProcessUpdateError_Rollback)
     EXPECT_NE(item, 0 );
     EXPECT_EQ(rho_connectclient_hash_get(item,"name"), prod_name );
 
-    rho_connectclient_on_sync_update_error(g_szProduct, oNotify, "rollback" );
+    rho_connectclient_on_sync_update_error(g_szProduct, &oNotify, "rollback" );
 
     records = rho_connectclient_findbysql(g_szProduct, "SELECT * FROM changed_values WHERE update_type='update'", 0 );
     EXPECT_NE( records, 0 );
@@ -622,7 +622,7 @@ TEST(SyncClient, shouldProcessDeleteError_Retry)
     EXPECT_EQ(rho_connectclient_strhasharray_size(records), 0 );
     rho_connectclient_strhasharray_delete(records);
 
-    rho_connectclient_on_sync_delete_error(g_szProduct, oNotify, "retry" );
+    rho_connectclient_on_sync_delete_error(g_szProduct, &oNotify, "retry" );
 
     records = rho_connectclient_findbysql(g_szProduct, "SELECT * FROM changed_values WHERE update_type='delete'", 0 );
     EXPECT_NE( records, 0 );
@@ -658,6 +658,8 @@ TEST(SyncClient, shouldProcessDeleteError_Retry)
 
     rho_connectclient_strhasharray_delete(records);
     rho_connectclient_findbysql(g_szProduct, "DELETE FROM changed_values", 0 );
+
+    rho_sync_set_source_property( m_nProductSrcID, "rho_server_response", "" );
 }
 
 TEST(SyncClient, shouldDeleteAllTestProduct) 
