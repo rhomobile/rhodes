@@ -50,7 +50,7 @@
 extern /*RHO static*/ VALUE
 eval_string_with_cref(VALUE self, VALUE src, VALUE scope, NODE *cref, const char *file, int line);
 static VALUE loadISeqFromFile(VALUE path);
-VALUE require_compiled(VALUE fname, VALUE* result);
+VALUE require_compiled(VALUE fname, VALUE* result, int bLoad);
 VALUE RhoPreparePath(VALUE path);
 VALUE rb_iseq_eval(VALUE iseqval);
 static void Init_RhoJSON();
@@ -153,7 +153,7 @@ rb_require_compiled(VALUE obj, VALUE fname)
 {
     VALUE result;
     VALUE res;
-    result = require_compiled(fname, &res);
+    result = require_compiled(fname, &res, 0);
     if (NIL_P(result)) {
         rb_raise(rb_eLoadError, "no such file to load -- %s",
             RSTRING_PTR(fname));
@@ -161,6 +161,21 @@ rb_require_compiled(VALUE obj, VALUE fname)
 
     return result;
 }
+
+VALUE
+rb_load_compiled(VALUE obj, VALUE fname)
+{
+    VALUE result;
+    VALUE res;
+    result = require_compiled(fname, &res, 1);
+    if (NIL_P(result)) {
+        rb_raise(rb_eLoadError, "no such file to load -- %s",
+            RSTRING_PTR(fname));
+    }
+
+    return result;
+}
+
 /*
 static char* g_curAppPath = 0;
 void RhoSetCurAppPath(char* path){
@@ -416,7 +431,7 @@ static int String_endsWith(const char* str, const char* szSuffix)
     return strcmp(str+nOff, szSuffix) == 0;
 }
 
-VALUE require_compiled(VALUE fname, VALUE* result)
+VALUE require_compiled(VALUE fname, VALUE* result, int bLoad)
 {
     VALUE path;
     char* szName1 = 0;
@@ -443,7 +458,7 @@ VALUE require_compiled(VALUE fname, VALUE* result)
 
     RHO_LOCK(require_lock);
 
-    if ( isAlreadyLoaded(fname) == Qtrue )
+    if ( !bLoad && isAlreadyLoaded(fname) == Qtrue )
         goto RCompExit;
 
     path = find_file(fname);
@@ -537,7 +552,7 @@ void Init_RhoSupport()
     rb_define_global_function("__rhoGetRhodesDir", __rhoGetRhodesDir, 0);
 #endif
 	rb_define_global_function("__rhoGetCurrentDir", __rhoGetCurrentDir, 0);
-	rb_define_global_function("load", rb_require_compiled, 1);
+	rb_define_global_function("load", rb_load_compiled, 1);
 	rb_define_global_function("__rhoGetCallbackObject", __rhoGetCallbackObject, 1);
 
     rb_define_method(rb_mKernel, "rhom_init", rb_obj_rhom_init, 1);	
