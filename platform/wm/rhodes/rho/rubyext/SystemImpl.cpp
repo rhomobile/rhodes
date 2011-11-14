@@ -311,15 +311,24 @@ int rho_wmsys_has_touchscreen()
         return 1;
 #else
         BOOL bRet;
+        TCHAR oem[257];
 #ifndef WIN32_PLATFORM_WFSP
         // fix for all supported platforms expect Smartphone 2003:
         // DeviceEmulator sould report it has a touch screen
-        TCHAR oem[257];
         bRet = SystemParametersInfo(SPI_GETOEMINFO, sizeof(oem), oem, 0);
         if (bRet && wcsstr(oem, _T("DeviceEmulator"))!=NULL)
             return 1;
 #endif
 
+        bRet = SystemParametersInfo(SPI_GETPLATFORMTYPE, sizeof(oem), oem, 0);
+        // SmartPhone has no touch screen
+        if (bRet && wcsstr(oem, _T("SmartPhone"))!=NULL)
+            return 0;
+        // PocketPC has touch screen
+        if (bRet && wcsstr(oem, _T("PocketPC"))!=NULL)
+            return 1;
+
+        // otherwise check mouse info
         int aMouseInfo[3] = {0};
         bRet = SystemParametersInfo(SPI_GETMOUSE, sizeof(aMouseInfo), aMouseInfo, 0);
         return (bRet && aMouseInfo[0] != 0) ? 1 : 0;
