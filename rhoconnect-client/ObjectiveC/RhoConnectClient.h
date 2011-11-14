@@ -66,6 +66,8 @@
 - (void) setConfigString: (NSString*)name param: (NSString*) param;
 - (NSString*) getConfigString: (NSString*)name;
 
+- (void) setSourceProperty: (int) nSrcID szPropName:(NSString*) szPropName szPropValue:(NSString*) szPropValue;
+
 + (NSString*) storagePath;
 + (NSString*) pathForStorageFile: (NSString*) file;
 

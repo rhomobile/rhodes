@@ -602,9 +602,9 @@ void rho_connectclient_itemdestroy( const char* szModel, unsigned long hash )
     db.endTransaction();
 }
 
-void rho_connectclient_on_sync_create_error(const char* szModel, RHO_CONNECT_NOTIFY& oNotify, const char* szAction )
+void rho_connectclient_on_sync_create_error(const char* szModel, RHO_CONNECT_NOTIFY* pNotify, const char* szAction )
 {
-    unsigned long hash_create_errors = oNotify.create_errors;
+    unsigned long hash_create_errors = pNotify->create_errors;
     String src_name = szModel;
     IDBResult res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name);
     if ( res.isEnd())
@@ -684,7 +684,7 @@ void _insert_or_update_attr(db::CDBAdapter& db, bool isSchemaSrc, const String& 
     }
 }
 
-void rho_connectclient_on_sync_update_error(const char* szModel, RHO_CONNECT_NOTIFY& oNotify, const char* szAction )
+void rho_connectclient_on_sync_update_error(const char* szModel, RHO_CONNECT_NOTIFY* pNotify, const char* szAction )
 {
     String src_name = szModel;
     IDBResult res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name);
@@ -704,12 +704,12 @@ void rho_connectclient_on_sync_update_error(const char* szModel, RHO_CONNECT_NOT
 
     if ( strcmp(szAction, "rollback") == 0 )
     {
-        rho::Vector<rho::String>& arObjs = *((rho::Vector<rho::String>*)oNotify.update_rollback_obj);
+        rho::Vector<rho::String>& arObjs = *((rho::Vector<rho::String>*)pNotify->update_rollback_obj);
         for (int i = 0; i < (int)arObjs.size(); i++)
         {
             String obj = arObjs[i];
 
-            Hashtable<String, String>& hashUpdateAttrs = *((Hashtable<String, String>*)rho_connectclient_strhasharray_get(oNotify.update_rollback_attrs,i));
+            Hashtable<String, String>& hashUpdateAttrs = *((Hashtable<String, String>*)rho_connectclient_strhasharray_get(pNotify->update_rollback_attrs,i));
             for ( Hashtable<String,String>::iterator it = hashUpdateAttrs.begin();  it != hashUpdateAttrs.end(); ++it )
             {
                 String attrib = it->first;
@@ -720,12 +720,12 @@ void rho_connectclient_on_sync_update_error(const char* szModel, RHO_CONNECT_NOT
         }
     }else
     {
-        rho::Vector<rho::String>& arObjs = *((rho::Vector<rho::String>*)oNotify.update_errors_obj);
+        rho::Vector<rho::String>& arObjs = *((rho::Vector<rho::String>*)pNotify->update_errors_obj);
         for (int i = 0; i < (int)arObjs.size(); i++)
         {
             String obj = arObjs[i];
 
-            Hashtable<String, String>& hashUpdateAttrs = *((Hashtable<String, String>*)rho_connectclient_strhasharray_get(oNotify.update_errors_attrs,i));
+            Hashtable<String, String>& hashUpdateAttrs = *((Hashtable<String, String>*)rho_connectclient_strhasharray_get(pNotify->update_errors_attrs,i));
             for ( Hashtable<String,String>::iterator it = hashUpdateAttrs.begin();  it != hashUpdateAttrs.end(); ++it )
             {
                 String attrib = it->first;
@@ -751,7 +751,7 @@ void rho_connectclient_on_sync_update_error(const char* szModel, RHO_CONNECT_NOT
     db.endTransaction();
 }
 
-void rho_connectclient_on_sync_delete_error(const char* szModel, RHO_CONNECT_NOTIFY& oNotify, const char* szAction )
+void rho_connectclient_on_sync_delete_error(const char* szModel, RHO_CONNECT_NOTIFY* pNotify, const char* szAction )
 {
     String src_name = szModel;
     IDBResult res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name);
@@ -769,12 +769,12 @@ void rho_connectclient_on_sync_delete_error(const char* szModel, RHO_CONNECT_NOT
     db::CDBAdapter& db = db::CDBAdapter::getDB(db_partition.c_str());
     db.startTransaction();
 
-    rho::Vector<rho::String>& arObjs = *((rho::Vector<rho::String>*)oNotify.delete_errors_obj);
+    rho::Vector<rho::String>& arObjs = *((rho::Vector<rho::String>*)pNotify->delete_errors_obj);
     for (int i = 0; i < (int)arObjs.size(); i++)
     {
         String obj = arObjs[i];
 
-        Hashtable<String, String>& hashDeleteAttrs = *((Hashtable<String, String>*)rho_connectclient_strhasharray_get(oNotify.delete_errors_attrs,i));
+        Hashtable<String, String>& hashDeleteAttrs = *((Hashtable<String, String>*)rho_connectclient_strhasharray_get(pNotify->delete_errors_attrs,i));
         for ( Hashtable<String,String>::iterator it = hashDeleteAttrs.begin();  it != hashDeleteAttrs.end(); ++it )
         {
             String attrib = it->first;

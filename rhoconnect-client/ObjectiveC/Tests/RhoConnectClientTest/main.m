@@ -180,6 +180,118 @@ int shouldModifyProduct()
 	return 1;
 }
 
+int shouldProcessCreateError()
+{
+	NSMutableDictionary* item = [[NSMutableDictionary alloc] init];
+	[item setValue:@"Test" forKey:@"name"];		
+	[product create:item];
+	if ( [item objectForKey:@"object"] == NULL || [item objectForKey:@"source_id"] == NULL ) 
+		return 0;
+    
+    NSMutableString* err_resp = [NSMutableString stringWithString:@"[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":0},{\"total_count\":0},{\"create-error\":{\""];
+    [err_resp appendString: [item objectForKey:@"object"]];
+    [err_resp appendString: @"\":{\"name\":\"wrongname\",\"an_attribute\":\"error create\"},\""];
+    [err_resp appendString: [item objectForKey:@"object"]];
+    [err_resp appendString: @"-error\":{\"message\":\"error create\"}}}]"];
+    [sclient setSourceProperty: [product source_id] szPropName:@"rho_server_response" szPropValue:err_resp];
+                                  
+    RhoConnectNotify* res = [product sync];
+    if ( ![res hasCreateErrors] )
+        return 0;
+    
+    [product onCreateError: res action: @"delete"];
+    
+    NSArray* params = [NSArray arrayWithObjects: [item objectForKey:@"object"], nil];
+	NSMutableArray* items2 = [product find_bysql:@"SELECT * FROM changed_values WHERE object=?" args: params];	
+	if ( !items2 )
+		return 0;
+    
+    if ( [items2 count] != 0 )
+        return 0;
+
+	items2 = [product find_bysql:@"SELECT * FROM changed_values WHERE update_type='create'" args: nil];	
+	if ( !items2 )
+		return 0;
+    
+    if ( [items2 count] != 0 )
+        return 0;
+    
+    [product find_bysql:@"DELETE FROM changed_values" args: nil];
+    
+    return 1;
+}
+
+int shouldProcessUpdateError()
+{
+	NSMutableDictionary* item = [[NSMutableDictionary alloc] init];
+	[item setValue:@"Test" forKey:@"name"];		
+	[product create:item];
+	if ( [item objectForKey:@"object"] == NULL || [item objectForKey:@"source_id"] == NULL ) 
+		return 0;
+    
+    NSMutableString* err_resp = [NSMutableString stringWithString:@"[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":0},{\"total_count\":0},{\"update-rollback\": {\""];
+    [err_resp appendString: [item objectForKey:@"object"]];
+    [err_resp appendString: @"\": {\"name\": \"OLD_NAME\"}},\"update-error\":{\""];
+    [err_resp appendString: [item objectForKey:@"object"]];
+    [err_resp appendString: @"\":{\"name\":\"wrongname\",\"an_attribute\":\"error update\"},\""];
+    [err_resp appendString: [item objectForKey:@"object"]];
+    [err_resp appendString: @"-error\":{\"message\":\"error update\"}}}]"];
+    [sclient setSourceProperty: [product source_id] szPropName:@"rho_server_response" szPropValue:err_resp];
+    
+    RhoConnectNotify* res = [product sync];
+    if ( ![res hasUpdateErrors] )
+        return 0;
+    
+    [product onUpdateError: res action: @"rollback"];
+    
+    NSMutableArray* items2 = [product find_bysql:@"SELECT * FROM changed_values WHERE update_type='update'" args: nil];	
+	if ( !items2 )
+		return 0;
+    
+    if ( [items2 count] != 0 )
+        return 0;
+    
+    return 1;
+}
+
+int shouldProcessDeleteError()
+{
+    NSString* err_resp = @"[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":0},{\"total_count\":0},{\"delete-error\":{\"broken_object_id\":{\"name\":\"wrongname\",\"an_attribute\":\"error delete\"},\"broken_object_id-error\":{\"message\":\"Error delete record\"}}}]";
+    [sclient setSourceProperty: [product source_id] szPropName:@"rho_server_response" szPropValue:err_resp];
+    
+    RhoConnectNotify* res = [product sync];
+    if ( ![res hasDeleteErrors] )
+        return 0;
+    
+    [product onDeleteError: res action: @"retry"];
+    
+    NSMutableArray* items2 = [product find_bysql:@"SELECT * FROM changed_values WHERE update_type='delete'" args: nil];	
+	if ( !items2 )
+		return 0;
+    
+    if ( [items2 count] != 2 )
+        return 0;
+    
+    return 1;
+}
+
+int shouldProcessServerErrors()
+{
+
+    if ( !shouldProcessCreateError() )
+        return 0;
+    
+    if ( !shouldProcessUpdateError() )
+        return 0;
+    
+    if ( !shouldProcessDeleteError() )
+        return 0;
+    
+    [sclient setSourceProperty: [product source_id] szPropName:@"rho_server_response" szPropValue:@""];
+    
+    return 1;
+}
+
 int shouldDeleteAllTestProduct()
 {
 	NSMutableDictionary* cond = [[NSMutableDictionary alloc] init];
@@ -195,8 +307,8 @@ int shouldDeleteAllTestProduct()
 	}
 	
 	RhoConnectNotify* res = [product sync];
-	if ( res.error_code!= RHO_ERR_NONE )
-		return 0;
+	//if ( res.error_code!= RHO_ERR_NONE )
+	//	return 0;
 
 	NSMutableDictionary* item = [product find_first:cond];	
 	if ( item )
@@ -389,9 +501,14 @@ int runObjCClientTest()
         
         if ( !shouldModifyProduct() )
             @throw e;
+      
+        if ( !shouldProcessServerErrors() )
+            @throw e;
         
         if ( !shouldDeleteAllTestProduct() )
             @throw e;
+        
+        
         
         if ( !shouldCreateNewProductWithCustomers() )
             @throw e;
@@ -642,7 +759,7 @@ int runObjCClientBlobTest()
 	
 	[RhoConnectClient initDatabase];
 	sclient = [[RhoConnectClient alloc] init];
-    NSArray* models = [NSArray arrayWithObjects: blobTest, nil];	
+    NSMutableArray* models = [NSMutableArray arrayWithObjects: blobTest, nil];	
 	[sclient addModels:models];
 	
     //sclient.threaded_mode = FALSE;
@@ -698,7 +815,7 @@ int main(int argc, char *argv[]) {
 	
 	int retVal = runObjCClientTest();
     if (0 < retVal)
-        retVal = runObjCClientBlobTest();
+        ;//retVal = runObjCClientBlobTest();
 	
 	if (retVal)
 		NSLog(@"SUCCESS");
