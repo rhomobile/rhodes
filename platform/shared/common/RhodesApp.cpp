@@ -1572,6 +1572,8 @@ int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
     CRhodesApp::setStartParameters(szCmdLine);
     RAWLOGC_INFO1("RhodesApp", "New start params: %s", strCmdLine.c_str());
 
+    CRhodesApp::setSecurityTokenPassed(true);
+    
 	const char* szAppSecToken = get_app_build_config_item("security_token");
     if ( !szAppSecToken || !*szAppSecToken)
         return 1;
@@ -1587,8 +1589,10 @@ int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
 		else
 			strCmdLineSecToken = tmp;
 	}
+    int result = strCmdLineSecToken.compare(szAppSecToken) != 0 ? 0 : 1; 
+    CRhodesApp::setSecurityTokenPassed(result);
 
-    return strCmdLineSecToken.compare(szAppSecToken) != 0 ? 0 : 1;
+    return result; 
 }
 
 } //extern "C"

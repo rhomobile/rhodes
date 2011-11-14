@@ -256,6 +256,8 @@ public class RhodesService extends Service {
 	
 	public static native boolean isOnStartPage();
 	
+	public static native String getInvalidSecurityTokenMessage();
+	
 	public static RhodesService getInstance() {
 		return sInstance;
 	}

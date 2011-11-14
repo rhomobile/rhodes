@@ -800,18 +800,47 @@ static Rhodes *instance = NULL;
 			}
 		}
 	}	
-    
-	[self doStartUp];
-	[self processDoSync:launchOptions];
 
+    [self doStartUp];
+    [self processDoSync:launchOptions];
+
+    /*
     if ( !rho_rhodesapp_canstartapp([start_parameter UTF8String], ", ") )
     {
+        //const char* szAppSecToken = get_app_build_config_item("security_token");
 		NSLog(@"This is hidden app and can be started only with security key.");
-		exit(EXIT_SUCCESS);
+        {
+            NSString* message = @"Invalid security token !";
+            
+            rho_conf_Init(rho_native_rhopath());
+            
+            if (rho_conf_is_property_exists("invalid_security_token_message")) {
+                const char* conf_message = rho_conf_getString("invalid_security_token_message");
+                message = [NSString stringWithUTF8String:conf_message];
+            }
+            
+            
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"" 
+                                                            message:message
+                                                           delegate:self 
+                                                  cancelButtonTitle:@"OK" 
+                                                  otherButtonTitles: nil];
+            [alert show];
+            [alert release];
+        }
+		//exit(EXIT_SUCCESS);
     }
+    */
 	
 	return NO;
 }
+
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+    exit(EXIT_SUCCESS);
+}
+
+
+
 #endif
 /*
 - (void)applicationDidFinishLaunching:(UIApplication *)application 

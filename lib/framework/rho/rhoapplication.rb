@@ -114,8 +114,22 @@ module Rho
         start_url = Rho::RhoConfig.start_path
         start_url = "" unless start_url
         
+        security_token_passed = System.get_property('security_token_passed')
+        invalid_security_token_start_path_exist = Rho::RhoConfig.exists? 'invalid_security_token_start_path'
+        invalid_security_token_start_path = Rho::RhoConfig.invalid_security_token_start_path
+        
+        if !security_token_passed
+            if invalid_security_token_start_path_exist
+                start_url = invalid_security_token_start_path
+            else
+                # exit from application - old way
+                puts 'security_token is not passed - application will closed'
+                System.exit
+            end
+        end
+
         puts "on_ui_created.navigate to start url: '#{start_url}'"
-		WebView.navigate(start_url)
+        WebView.navigate(start_url)
     end
 
     def on_ui_destroyed
