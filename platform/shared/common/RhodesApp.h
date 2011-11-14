@@ -64,7 +64,7 @@ private:
     String m_strLoadingPagePath, m_strLoadingPngPath;
     String m_strStartUrl, m_strOptionsUrl, m_strRhobundleReloadUrl;//, m_strFirstStartUrl;
     static String m_strStartParameters;
-    boolean m_bSecurityTokenPassed;
+    static boolean m_bSecurityTokenPassed;
     String m_strRhoMessage;
     String m_EmptyString;
 
@@ -112,8 +112,8 @@ public:
     const String& getLoadingPagePath(){return m_strLoadingPagePath; }
 
     static void setStartParameters(const char* szParams ){ m_strStartParameters = (szParams ? szParams : ""); }
-    static void setSecurityTokenPassed(boolean is_passed) {getInstance()->m_bSecurityTokenPassed = is_passed;}
-    static boolean isSecurityTokenPassed() {return getInstance()->m_bSecurityTokenPassed;}
+    static void setSecurityTokenPassed(boolean is_passed) {m_bSecurityTokenPassed = is_passed;}
+    static boolean isSecurityTokenPassed() {return m_bSecurityTokenPassed;}
     static const String& getStartParameters(){ return m_strStartParameters; }
 
     const String& getAppBackUrl();
