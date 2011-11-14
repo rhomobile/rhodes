@@ -65,7 +65,7 @@ namespace common{
 
 IMPLEMENT_LOGCLASS(CRhodesApp,"RhodesApp");
 String CRhodesApp::m_strStartParameters;
-boolean CRhodesApp::m_bSecurityTokenPassed;
+boolean CRhodesApp::m_bSecurityTokenPassed = true;
 
 class CAppCallbacksQueue : public CThreadQueue
 {
