@@ -62,6 +62,17 @@ typedef struct _RHO_CONNECT_NOTIFY
     int error_code;
     char* error_message;
     char* callback_params;
+    unsigned long create_errors;
+
+    unsigned long update_errors_obj;
+    unsigned long update_errors_attrs;
+
+    unsigned long update_rollback_obj;
+    unsigned long update_rollback_attrs;
+
+    unsigned long delete_errors_obj;
+    unsigned long delete_errors_attrs;
+
 }RHO_CONNECT_NOTIFY;
 
 typedef struct _RHO_CONNECT_OBJECT_NOTIFY
@@ -95,8 +106,9 @@ void rho_connectclient_parse_objectnotify(const char* msg, RHO_CONNECT_OBJECT_NO
 void rho_connectclient_free_sync_objectnotify(RHO_CONNECT_OBJECT_NOTIFY* pNotify);
     
 unsigned long rho_connectclient_strarray_create();
-void rho_connectclient_strarray_add(unsigned long ar, const char* szStr);
+int rho_connectclient_strarray_add(unsigned long ar, const char* szStr);
 void rho_connectclient_strarray_delete(unsigned long ar);
+int rho_connectclient_strarray_find(unsigned long ar, const char* szStr);
 
 unsigned long rho_connectclient_strhasharray_create();
 void rho_connectclient_strhasharray_add(unsigned long ar, unsigned long hash);
@@ -123,7 +135,11 @@ void rho_connectclient_hash_enumerate(unsigned long hash, int (*enum_func)(const
 
 void rho_connectclient_start_bulkupdate(const char* szModel);
 void rho_connectclient_stop_bulkupdate(const char* szModel);
-	
+
+void rho_connectclient_on_sync_create_error(const char* szModel, RHO_CONNECT_NOTIFY& oNotify, const char* szAction );
+void rho_connectclient_on_sync_update_error(const char* szModel, RHO_CONNECT_NOTIFY& oNotify, const char* szAction );
+void rho_connectclient_on_sync_delete_error(const char* szModel, RHO_CONNECT_NOTIFY& oNotify, const char* szAction );
+
 #ifdef __cplusplus
 };
 #endif //__cplusplus
