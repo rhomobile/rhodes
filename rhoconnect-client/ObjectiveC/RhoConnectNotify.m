@@ -20,11 +20,13 @@
 @synthesize  sync_type;
 @synthesize  error_message;
 @synthesize  callback_params;
+@synthesize  notify_data;
 
 - (id) init: (RHO_CONNECT_NOTIFY*) data
 {
 	self = [super init];
 	
+    notify_data = *data;
 	total_count = data->total_count;
 	processed_count = data->processed_count;	
 	cumulative_count = data->cumulative_count;	
@@ -42,12 +44,13 @@
 	if ( data->callback_params )	
 		callback_params = [[NSString alloc] initWithUTF8String: data->callback_params];
 	
-	rho_connectclient_free_syncnotify(data);
 	return self;
 }
 
 - (void)dealloc 
 {
+    rho_connectclient_free_syncnotify(&notify_data);
+    
 	if ( source_name )
 		[source_name release];
 	
@@ -64,6 +67,32 @@
 		[callback_params release];
 	
     [super dealloc];
+}
+
+- (RHO_CONNECT_NOTIFY*)getNotifyPtr
+{
+    return &notify_data;
+}
+
+- (Boolean) hasCreateErrors
+{
+    return notify_data.create_errors != 0;
+}
+
+- (Boolean) hasUpdateErrors
+{
+    return notify_data.update_errors_obj != 0;
+    
+}
+
+- (Boolean) hasDeleteErrors
+{
+    return notify_data.delete_errors_obj != 0;
+}
+
+- (Boolean) isUnknownClientError
+{
+    return [error_message caseInsensitiveCompare:@"unknown client"] == 0;
 }
 
 @end

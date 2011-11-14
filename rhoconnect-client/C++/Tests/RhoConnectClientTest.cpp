@@ -173,7 +173,7 @@ TEST(SyncClient, shouldLogin)
     rho_sync_free_string(szRes);
 
 }
-#if 0
+
 TEST(SyncClient, shouldSyncProductByName) 
 {
     EXPECT_EQ(rho_sync_logged_in(), 1);
@@ -339,7 +339,6 @@ TEST(SyncClient, shouldModifyProduct)
     rho_sync_free_string(szRes);
 
 }
-#endif 
 
 unsigned long beforeProcessCreateError1(RHO_CONNECT_NOTIFY& oNotify)
 {
@@ -661,7 +660,6 @@ TEST(SyncClient, shouldProcessDeleteError_Retry)
     rho_connectclient_findbysql(g_szProduct, "DELETE FROM changed_values", 0 );
 }
 
-/*
 TEST(SyncClient, shouldDeleteAllTestProduct) 
 {
     EXPECT_EQ(rho_sync_logged_in(), 1);
@@ -712,7 +710,7 @@ TEST(SyncClient, shouldDeleteAllTestProduct)
     rho_connectclient_hash_delete(cond4);
     rho_connectclient_strhasharray_delete(items);
 }
-*/
+
 extern "C" void rho_free_callbackdata(void* pData)
 {
 	//It is used in SyncClient.

@@ -41,8 +41,16 @@
 @property(readonly) NSString* sync_type;
 @property(readonly) NSString* error_message;
 @property(readonly) NSString* callback_params;
+@property(readonly) RHO_CONNECT_NOTIFY notify_data;
 
 - (id) init: (RHO_CONNECT_NOTIFY*) data;
 - (void)dealloc;
+
+- (Boolean) hasCreateErrors;
+- (Boolean) hasUpdateErrors;
+- (Boolean) hasDeleteErrors;
+- (Boolean) isUnknownClientError;
+
+- (RHO_CONNECT_NOTIFY*)getNotifyPtr;
 
 @end

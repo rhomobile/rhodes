@@ -201,6 +201,12 @@ void rho_free_callbackdata(void* pData)
 	[self setPollInterval: 0];
 }
 
+- (void) setSourceProperty: (int) nSrcID szPropName:(NSString*) szPropName szPropValue:(NSString*) szPropValue
+{
+    rho_sync_set_source_property( nSrcID, [szPropName cStringUsingEncoding:[NSString defaultCStringEncoding]],
+                                 [szPropValue cStringUsingEncoding:[NSString defaultCStringEncoding]] );
+}
+
 - (void) database_full_reset_and_logout
 {
 	rho_connectclient_database_full_reset_and_logout();	

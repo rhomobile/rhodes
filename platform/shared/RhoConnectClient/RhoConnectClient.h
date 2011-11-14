@@ -136,9 +136,9 @@ void rho_connectclient_hash_enumerate(unsigned long hash, int (*enum_func)(const
 void rho_connectclient_start_bulkupdate(const char* szModel);
 void rho_connectclient_stop_bulkupdate(const char* szModel);
 
-void rho_connectclient_on_sync_create_error(const char* szModel, RHO_CONNECT_NOTIFY& oNotify, const char* szAction );
-void rho_connectclient_on_sync_update_error(const char* szModel, RHO_CONNECT_NOTIFY& oNotify, const char* szAction );
-void rho_connectclient_on_sync_delete_error(const char* szModel, RHO_CONNECT_NOTIFY& oNotify, const char* szAction );
+void rho_connectclient_on_sync_create_error(const char* szModel, RHO_CONNECT_NOTIFY* oNotify, const char* szAction );
+void rho_connectclient_on_sync_update_error(const char* szModel, RHO_CONNECT_NOTIFY* oNotify, const char* szAction );
+void rho_connectclient_on_sync_delete_error(const char* szModel, RHO_CONNECT_NOTIFY* oNotify, const char* szAction );
 
 #ifdef __cplusplus
 };
