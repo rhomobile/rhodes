@@ -33,9 +33,12 @@ List of supported capabilities:
 
 ### RhoGallery Security Token
 
-To restrict access to the application it could be built with a security token. Specify security token in the build.yml and build application. Application built with security token can be started only if you provide this token as a parameter.  
+To restrict access to the application it could be built with a security token. Specify security token in the build.yml and build application. Application built with security token can be started in normal mode only if you provide this token as a parameter.  
+If you do not specify correct security token in start params, application will close on start by default. If you want do something instead of exit (for example show special message or run application in limited mode etc.) you can define another start_path for your application in "rhoconfig.txt":
 
-Specify in build.yml:
+	invalid_security_token_start_path = '/app/InvalidSecurityTokenStartPage'
+
+Specify security token in build.yml:
 	
 	security_token: 123
 
