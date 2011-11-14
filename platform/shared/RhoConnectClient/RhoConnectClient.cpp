@@ -602,6 +602,203 @@ void rho_connectclient_itemdestroy( const char* szModel, unsigned long hash )
     db.endTransaction();
 }
 
+void rho_connectclient_on_sync_create_error(const char* szModel, RHO_CONNECT_NOTIFY& oNotify, const char* szAction )
+{
+    unsigned long hash_create_errors = oNotify.create_errors;
+    String src_name = szModel;
+    IDBResult res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name);
+    if ( res.isEnd())
+    {
+        //TODO: report error - unknown source
+        return;
+    }
+
+    int nSrcID = res.getIntByIdx(0);
+    String db_partition = res.getStringByIdx(1);
+    bool isSchemaSrc = res.getStringByIdx(2).length() > 0;
+    bool isSyncSrc = res.getStringByIdx(3).compare("none") != 0;
+    String tableName = isSchemaSrc ? src_name : "object_values";
+    db::CDBAdapter& db = db::CDBAdapter::getDB(db_partition.c_str());
+    db.startTransaction();
+
+    Hashtable<String, String>& hashCreateErrors = *((Hashtable<String, String>*)hash_create_errors);
+
+    for ( Hashtable<String,String>::iterator it = hashCreateErrors.begin();  it != hashCreateErrors.end(); ++it )
+    {
+        String obj = it->first;
+        if ( strcmp(szAction, "recreate") == 0 )
+        {
+            IDBResult deletes = db.executeSQL( "SELECT object FROM changed_values WHERE update_type=? and object=? and source_id=?", "delete", obj, nSrcID );
+            if (deletes.isEnd()) 
+            {
+                db.executeSQL( "DELETE FROM changed_values WHERE object=? and source_id=?", obj, nSrcID );
+                Hashtable<String,String> fields;
+                fields.put("update_type", "create");
+                fields.put("attrib", "object");
+                fields.put("source_id", convertToStringA(nSrcID));
+                fields.put("object", obj);
+                db_insert_into_table(db, "changed_values", fields);
+                continue;
+            }
+        }
+
+        db.executeSQL( "DELETE FROM changed_values WHERE object=? and source_id=?", obj, nSrcID );
+        if ( isSchemaSrc )
+            db.executeSQL( (String("DELETE FROM ") + tableName + " WHERE object=?").c_str(), obj );
+        else
+            db.executeSQL( (String("DELETE FROM ") + tableName + " WHERE object=? and source_id=?").c_str(), obj, nSrcID );
+    }
+
+    db.endTransaction();
+}
+
+void _insert_or_update_attr(db::CDBAdapter& db, bool isSchemaSrc, const String& tableName, int nSrcID, const String& obj, const String& attrib, const String& new_val)
+{
+    if ( isSchemaSrc )
+    {
+        IDBResult result = db.executeSQL( ("SELECT * FROM " + tableName + " WHERE object=?").c_str(), obj);
+        if ( !result.isEnd() )
+            db.executeSQL( (String("UPDATE ") + tableName + " SET " + attrib + "=? WHERE object=?").c_str(), new_val, obj );
+        else
+        {
+            Hashtable<String,String> fields;
+            fields.put("object", obj);
+            fields.put("attrib", new_val);
+            db_insert_into_table(db, tableName, fields);
+        }
+    } 
+    else  
+    {
+        IDBResult result = db.executeSQL( ("SELECT attrib, value FROM " + tableName + " WHERE object=? and source_id=?").c_str(), obj, nSrcID);
+        if ( !result.isEnd() )
+            db.executeSQL( "UPDATE object_values SET value=? WHERE object=? and attrib=? and source_id=?", new_val, obj, attrib, nSrcID );
+        else
+        {
+            Hashtable<String,String> fields;
+            fields.put("source_id", convertToStringA(nSrcID));
+            fields.put("object", obj);
+            fields.put("attrib", attrib);
+            fields.put("value", new_val);
+            db_insert_into_table(db, tableName, fields);
+        }
+    }
+}
+
+void rho_connectclient_on_sync_update_error(const char* szModel, RHO_CONNECT_NOTIFY& oNotify, const char* szAction )
+{
+    String src_name = szModel;
+    IDBResult res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name);
+    if ( res.isEnd())
+    {
+        //TODO: report error - unknown source
+        return;
+    }
+
+    int nSrcID = res.getIntByIdx(0);
+    String db_partition = res.getStringByIdx(1);
+    bool isSchemaSrc = res.getStringByIdx(2).length() > 0;
+    bool isSyncSrc = res.getStringByIdx(3).compare("none") != 0;
+    String tableName = isSchemaSrc ? src_name : "object_values";
+    db::CDBAdapter& db = db::CDBAdapter::getDB(db_partition.c_str());
+    db.startTransaction();
+
+    if ( strcmp(szAction, "rollback") == 0 )
+    {
+        rho::Vector<rho::String>& arObjs = *((rho::Vector<rho::String>*)oNotify.update_rollback_obj);
+        for (int i = 0; i < (int)arObjs.size(); i++)
+        {
+            String obj = arObjs[i];
+
+            Hashtable<String, String>& hashUpdateAttrs = *((Hashtable<String, String>*)rho_connectclient_strhasharray_get(oNotify.update_rollback_attrs,i));
+            for ( Hashtable<String,String>::iterator it = hashUpdateAttrs.begin();  it != hashUpdateAttrs.end(); ++it )
+            {
+                String attrib = it->first;
+                String value = it->second;
+
+                _insert_or_update_attr(db, isSchemaSrc, tableName, nSrcID, obj, attrib, value);
+            }
+        }
+    }else
+    {
+        rho::Vector<rho::String>& arObjs = *((rho::Vector<rho::String>*)oNotify.update_errors_obj);
+        for (int i = 0; i < (int)arObjs.size(); i++)
+        {
+            String obj = arObjs[i];
+
+            Hashtable<String, String>& hashUpdateAttrs = *((Hashtable<String, String>*)rho_connectclient_strhasharray_get(oNotify.update_errors_attrs,i));
+            for ( Hashtable<String,String>::iterator it = hashUpdateAttrs.begin();  it != hashUpdateAttrs.end(); ++it )
+            {
+                String attrib = it->first;
+                String value = it->second;
+
+                IDBResult resUpdateType = db.executeSQL( "SELECT update_type FROM changed_values WHERE object=? and source_id=? and attrib=? and sent=?", obj, nSrcID, attrib, 0 );
+                if (resUpdateType.isEnd())
+                {
+                    String attrib_type = db::CDBAdapter::getDB(db_partition.c_str()).getAttrMgr().isBlobAttr(nSrcID, attrib.c_str()) ? "blob.file" : "";
+                    Hashtable<String,String> fields;
+                    fields.put("update_type", "update");
+                    fields.put("attrib", attrib);
+                    fields.put("attrib_type", attrib_type);
+                    fields.put("source_id", convertToStringA(nSrcID));
+                    fields.put("object", obj);
+                    fields.put("value", value);
+                    db_insert_into_table(db, "changed_values", fields);
+                }
+            }
+        }
+    }
+
+    db.endTransaction();
+}
+
+void rho_connectclient_on_sync_delete_error(const char* szModel, RHO_CONNECT_NOTIFY& oNotify, const char* szAction )
+{
+    String src_name = szModel;
+    IDBResult res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name);
+    if ( res.isEnd())
+    {
+        //TODO: report error - unknown source
+        return;
+    }
+
+    int nSrcID = res.getIntByIdx(0);
+    String db_partition = res.getStringByIdx(1);
+    bool isSchemaSrc = res.getStringByIdx(2).length() > 0;
+    bool isSyncSrc = res.getStringByIdx(3).compare("none") != 0;
+    String tableName = isSchemaSrc ? src_name : "object_values";
+    db::CDBAdapter& db = db::CDBAdapter::getDB(db_partition.c_str());
+    db.startTransaction();
+
+    rho::Vector<rho::String>& arObjs = *((rho::Vector<rho::String>*)oNotify.delete_errors_obj);
+    for (int i = 0; i < (int)arObjs.size(); i++)
+    {
+        String obj = arObjs[i];
+
+        Hashtable<String, String>& hashDeleteAttrs = *((Hashtable<String, String>*)rho_connectclient_strhasharray_get(oNotify.delete_errors_attrs,i));
+        for ( Hashtable<String,String>::iterator it = hashDeleteAttrs.begin();  it != hashDeleteAttrs.end(); ++it )
+        {
+            String attrib = it->first;
+            String value = it->second;
+
+            IDBResult resUpdateType = db.executeSQL( "SELECT update_type FROM changed_values WHERE object=? and source_id=? and attrib=? and sent=?", obj, nSrcID, attrib, 0 );
+            if (resUpdateType.isEnd())
+            {
+                String attrib_type = db::CDBAdapter::getDB(db_partition.c_str()).getAttrMgr().isBlobAttr(nSrcID, attrib.c_str()) ? "blob.file" : "";
+                Hashtable<String,String> fields;
+                fields.put("update_type", "delete");
+                fields.put("attrib", attrib);
+                fields.put("attrib_type", attrib_type);
+                fields.put("source_id", convertToStringA(nSrcID));
+                fields.put("object", obj);
+                fields.put("value", value);
+                db_insert_into_table(db, "changed_values", fields);
+            }
+        }
+    }
+
+    db.endTransaction();
+}
+
 void rho_connectclient_save( const char* szModel, unsigned long hash )
 {
     Hashtable<String, String>& hashObject = *((Hashtable<String, String>*)hash);
@@ -623,11 +820,12 @@ void rho_connectclient_save( const char* szModel, unsigned long hash )
     String tableName = isSchemaSrc ? src_name : "object_values";
     db::CDBAdapter& db = db::CDBAdapter::getDB(db_partition.c_str());
 
-    db.startTransaction();
+    db.Lock();
 
-    String update_type = "";
     String sql;
     Vector<String> arValues;
+    bool is_new_item = false;
+
     if (isSchemaSrc)
     {
         sql = "SELECT object FROM " + tableName + " WHERE object=? LIMIT 1 OFFSET 0";
@@ -640,85 +838,90 @@ void rho_connectclient_save( const char* szModel, unsigned long hash )
         arValues.addElement(convertToStringA(nSrcID));
     }
     IDBResult res1 = db.executeSQLEx(sql.c_str(), arValues );
-    if (!res1.isEnd())
-    {
-        if (isSyncSrc)
-        {
-            IDBResult resUpdateType = db.executeSQL( "SELECT update_type FROM changed_values WHERE object=? and source_id=? and sent=?", 
-                obj, nSrcID, 0 );
-            if (!resUpdateType.isEnd()) 
-                update_type = resUpdateType.getStringByIdx(0);
-            else
-	            update_type = "update";
-        }else
-            update_type = "update";
-    }
-    else
+    if (res1.isEnd())
     {
         rho_connectclient_create_object(szModel, hash);
+        is_new_item = true;
     }
 
-    if (!res.isEnd())
+    db.Unlock();
+
+    if ( is_new_item )
+        return;
+
+    db.startTransaction();
+    String update_type = "update";
+    bool ignore_changed_values = true;
+    if (isSyncSrc)
     {
-        unsigned long item = rhom_load_item_by_object( db, src_name, nSrcID, obj, isSchemaSrc);
-        Hashtable<String, String>& hashItem = *((Hashtable<String, String>*)item);
+        IDBResult resUpdateType = db.executeSQL( "SELECT update_type FROM changed_values WHERE object=? and source_id=? and sent=?", 
+            obj, nSrcID, 0 );
+        if (!resUpdateType.isEnd()) 
+            update_type = resUpdateType.getStringByIdx(0);
+        else
+            update_type = "update";
 
-        for ( Hashtable<String,String>::iterator it = hashObject.begin();  it != hashObject.end(); ++it )
+        ignore_changed_values = update_type=="create";
+    }
+
+    unsigned long item = rhom_load_item_by_object( db, src_name, nSrcID, obj, isSchemaSrc);
+    Hashtable<String, String>& hashItem = *((Hashtable<String, String>*)item);
+
+    for ( Hashtable<String,String>::iterator it = hashObject.begin();  it != hashObject.end(); ++it )
+    {
+        String key = it->first;
+        String val  = it->second;
+
+        if ( rhom_method_name_isreserved(key) )
+            continue;
+
+        // add rows excluding object, source_id and update_type
+        Hashtable<String,String> fields;
+        fields.put("source_id", convertToStringA(nSrcID));
+        fields.put("object", obj);
+        fields.put("attrib", key);
+        fields.put("value", val);
+        fields.put("update_type", update_type);
+        if ( db::CDBAdapter::getDB(db_partition.c_str()).getAttrMgr().isBlobAttr(nSrcID, key.c_str()) )
+            fields.put( "attrib_type", "blob.file");
+
+        if ( hashItem.containsKey(key) )
         {
-            String key = it->first;
-            String val  = it->second;
-
-            if ( rhom_method_name_isreserved(key) )
-                continue;
-
-            // add rows excluding object, source_id and update_type
-            Hashtable<String,String> fields;
-            fields.put("source_id", convertToStringA(nSrcID));
-            fields.put("object", obj);
-            fields.put("attrib", key);
-            fields.put("value", val);
-            fields.put("update_type", update_type);
-            if ( db::CDBAdapter::getDB(db_partition.c_str()).getAttrMgr().isBlobAttr(nSrcID, key.c_str()) )
-                fields.put( "attrib_type", "blob.file");
-
-            if ( hashItem.containsKey(key) )
+            bool isModified = hashItem.get(key) != val;
+            if (isModified)
             {
-                bool isModified = hashItem.get(key) != val;
-                if (isModified)
+                if (!ignore_changed_values)
                 {
-                    if (isSyncSrc)
+                    IDBResult resUpdateType = db.executeSQL( "SELECT update_type FROM changed_values WHERE object=? and attrib=? and source_id=? and sent=?", 
+                        obj, key, nSrcID, 0 );
+                    if (!resUpdateType.isEnd()) 
                     {
-                        IDBResult resUpdateType = db.executeSQL( "SELECT update_type FROM changed_values WHERE object=? and attrib=? and source_id=? and sent=?", 
+                        fields.put("update_type", resUpdateType.getStringByIdx(0) );
+                        db.executeSQL( "DELETE FROM changed_values WHERE object=? and attrib=? and source_id=? and sent=?", 
                             obj, key, nSrcID, 0 );
-                        if (!resUpdateType.isEnd()) 
-                        {
-                            fields.put("update_type", resUpdateType.getStringByIdx(0) );
-                            db.executeSQL( "DELETE FROM changed_values WHERE object=? and attrib=? and source_id=? and sent=?", 
-                                obj, key, nSrcID, 0 );
-                        }
-
-                        db_insert_into_table(db, "changed_values", fields);
                     }
-                        
-                    if ( isSchemaSrc )
-                        db.executeSQL( (String("UPDATE ") + tableName + " SET " + key + "=? WHERE object=?").c_str(), val, obj );
-                    else
-                        db.executeSQL( "UPDATE object_values SET value=? WHERE object=? and attrib=? and source_id=?", val, obj, key, nSrcID );
-                }
 
-            }else
-            {
-                if (isSyncSrc)
                     db_insert_into_table(db, "changed_values", fields);
-
-                fields.remove("update_type");
-                fields.remove("attrib_type");
-                
-                if (isSchemaSrc)
+                }
+                    
+                if ( isSchemaSrc )
                     db.executeSQL( (String("UPDATE ") + tableName + " SET " + key + "=? WHERE object=?").c_str(), val, obj );
                 else
-                    db_insert_into_table(db, tableName, fields);
+                    db.executeSQL( "UPDATE object_values SET value=? WHERE object=? and attrib=? and source_id=?", val, obj, key, nSrcID );
             }
+
+        }else
+        {
+            if (!ignore_changed_values )
+                db_insert_into_table(db, "changed_values", fields);
+
+            fields.remove("update_type");
+            fields.remove("attrib_type");
+            
+            if (isSchemaSrc)
+                db.executeSQL( (String("UPDATE ") + tableName + " SET " + key + "=? WHERE object=?").c_str(), val, obj );
+            else
+                db_insert_into_table(db, tableName, fields);
         }
     }
 
@@ -788,6 +991,38 @@ void rho_connectclient_create_object(const char* szModel, unsigned long hash)
     db.endTransaction();
 }
 
+void parseServerErrors( const char* szPrefix, const String& name, const String& value, unsigned long& errors_obj, unsigned long& errors_attrs )
+{
+    int nPrefixLen = strlen(szPrefix)+1;
+    if (!errors_obj)
+        errors_obj = rho_connectclient_strarray_create();
+
+    String strObject = name.substr(nPrefixLen, name.find(']', nPrefixLen)-nPrefixLen );
+
+    int nObj = rho_connectclient_strarray_find(errors_obj, strObject.c_str() ); 
+    if ( nObj < 0 )
+        nObj = rho_connectclient_strarray_add(errors_obj, strObject.c_str() );
+
+    int nAttrs = name.find("[attributes]");
+    if ( nAttrs >= 0 )
+    {
+        String strAttr = name.substr(nAttrs+13, name.find(']', nAttrs+13)-(nAttrs+13) );
+        if (!errors_attrs)
+            errors_attrs = rho_connectclient_strhasharray_create();
+
+        VectorPtr<Hashtable<String, String>* >& arAttrs = *((VectorPtr<Hashtable<String, String>* >*)errors_attrs);
+        if ( nObj < (int)arAttrs.size() )
+            arAttrs[nObj]->put(strAttr, value);
+        else
+        {
+            unsigned long hashAttrs = rho_connectclient_hash_create();
+            rho_connectclient_hash_put(hashAttrs, strAttr.c_str(), value.c_str());
+            arAttrs.addElement( (Hashtable<String, String>*)hashAttrs );
+        }
+
+    }
+}
+
 void rho_connectclient_parsenotify(const char* msg, RHO_CONNECT_NOTIFY* pNotify)
 {
     // for the case it has been called in single-threaded mode,
@@ -827,7 +1062,24 @@ void rho_connectclient_parsenotify(const char* msg, RHO_CONNECT_NOTIFY* pNotify)
             pNotify->status = strdup(value.c_str());
         else if ( name.compare("error_message") == 0)
             pNotify->error_message = strdup(value.c_str());
-        else if ( name.compare("rho_callback") != 0)
+        else if ( String_startsWith(name, "server_errors[create-error]") )
+        {
+            if (!pNotify->create_errors)
+                pNotify->create_errors = rho_connectclient_hash_create();
+
+            String strObject = name.substr(28, name.find(']', 28)-28 );
+            rho_connectclient_hash_put(pNotify->create_errors, strObject.c_str(), value.c_str());
+        }
+        else if ( String_startsWith(name, "server_errors[update-error]") || String_startsWith(name, "server_errors[update-rollback]") || String_startsWith(name, "server_errors[delete-error]") )
+        {
+            if ( String_startsWith(name, "server_errors[update-error]") )
+                parseServerErrors( "server_errors[update-error]", name, value, pNotify->update_errors_obj, pNotify->update_errors_attrs );
+            else if ( String_startsWith(name, "server_errors[update-rollback]") )
+                parseServerErrors( "server_errors[update-rollback]", name, value, pNotify->update_rollback_obj, pNotify->update_rollback_attrs );
+            else if ( String_startsWith(name, "server_errors[delete-error]") )
+                parseServerErrors( "server_errors[delete-error]", name, value, pNotify->delete_errors_obj, pNotify->delete_errors_attrs );
+
+        }else if ( name.compare("rho_callback") != 0)
             break;
 
         nLastPos = oTokenizer.getCurPos();
@@ -856,7 +1108,28 @@ void rho_connectclient_free_syncnotify(RHO_CONNECT_NOTIFY* pNotify)
     
     if ( pNotify->callback_params != null )
         free(pNotify->callback_params);
-    
+
+    if ( pNotify->create_errors != null )
+        rho_connectclient_hash_delete(pNotify->create_errors);
+
+    if ( pNotify->update_errors_obj != null )
+        rho_connectclient_strarray_delete(pNotify->update_errors_obj);
+
+    if ( pNotify->update_errors_attrs != null )
+        rho_connectclient_strhasharray_delete(pNotify->update_errors_attrs);
+
+    if ( pNotify->update_rollback_obj != null )
+        rho_connectclient_strarray_delete(pNotify->update_rollback_obj);
+
+    if ( pNotify->update_rollback_attrs != null )
+        rho_connectclient_strhasharray_delete(pNotify->update_rollback_attrs);
+
+    if ( pNotify->delete_errors_obj != null )
+        rho_connectclient_strarray_delete(pNotify->delete_errors_obj);
+
+    if ( pNotify->delete_errors_attrs != null )
+        rho_connectclient_strhasharray_delete(pNotify->delete_errors_attrs);
+
     memset( pNotify, 0, sizeof(RHO_CONNECT_NOTIFY) );
 }
     
@@ -975,22 +1248,36 @@ void rho_connectclient_free_sync_objectnotify(RHO_CONNECT_OBJECT_NOTIFY* pNotify
     
     memset( pNotify, 0, sizeof(RHO_CONNECT_OBJECT_NOTIFY) );        
 }
-    
+
 unsigned long rho_connectclient_strarray_create()
 {
     return (unsigned long)(new rho::Vector<rho::String>());
 }
 
-void rho_connectclient_strarray_add(unsigned long ar, const char* szStr)
+int rho_connectclient_strarray_add(unsigned long ar, const char* szStr)
 {
     rho::Vector<rho::String>& arThis = *((rho::Vector<rho::String>*)ar);
     arThis.addElement(szStr);
+
+    return arThis.size()-1;
 }
 
 void rho_connectclient_strarray_delete(unsigned long ar)
 {
     if (ar)
         delete ((rho::Vector<rho::String>*)ar);
+}
+
+int rho_connectclient_strarray_find(unsigned long ar, const char* szStr)
+{
+    rho::Vector<rho::String>& arThis = *((rho::Vector<rho::String>*)ar);
+    for (int i = 0; i < (int)arThis.size(); i++)
+    {
+        if (arThis[i].compare(szStr) == 0)
+            return i;
+    }
+
+    return -1;
 }
 
 unsigned long rho_connectclient_strhasharray_create()

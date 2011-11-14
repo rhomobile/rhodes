@@ -631,7 +631,7 @@ end
     
     SyncEngine.set_source_property(getProduct().get_source_id.to_i(), "rho_server_response", err_resp )    
     res = ::Rho::RhoSupport::parse_query_parameters getProduct.sync( "/app/Settings/sync_notify")
-    puts "res : #{res}"
+    #puts "res : #{res}"
     
     res['server_errors'].should_not be_nil
     res['server_errors']['update-error'].should_not be_nil
