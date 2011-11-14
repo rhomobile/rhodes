@@ -305,7 +305,7 @@ static Rhodes *instance = NULL;
 #endif
         // Show picker
 #ifdef __IPHONE_3_2
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) && (type != UIImagePickerControllerSourceTypeCamera)) {
             // WARNING!!! DO NOT USE UIPopoverController DIRECTLY HERE!!!
             // It will cause problem of starting application on iPhone OS < 3.2
             // All such stuff should be loaded in runtime using NSClassFromString
