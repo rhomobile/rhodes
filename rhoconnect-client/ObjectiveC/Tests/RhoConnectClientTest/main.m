@@ -199,7 +199,7 @@ int shouldProcessCreateError()
     if ( ![res hasCreateErrors] )
         return 0;
     
-    [product onCreateError: res action: @"delete"];
+    [sclient onCreateError: res action: @"delete"];
     
     NSArray* params = [NSArray arrayWithObjects: [item objectForKey:@"object"], nil];
 	NSMutableArray* items2 = [product find_bysql:@"SELECT * FROM changed_values WHERE object=?" args: params];	
@@ -242,7 +242,7 @@ int shouldProcessUpdateError()
     if ( ![res hasUpdateErrors] )
         return 0;
     
-    [product onUpdateError: res action: @"rollback"];
+    [sclient onUpdateError: res action: @"rollback"];
     
     NSMutableArray* items2 = [product find_bysql:@"SELECT * FROM changed_values WHERE update_type='update'" args: nil];	
 	if ( !items2 )
@@ -263,7 +263,7 @@ int shouldProcessDeleteError()
     if ( ![res hasDeleteErrors] )
         return 0;
     
-    [product onDeleteError: res action: @"retry"];
+    [sclient onDeleteError: res action: @"retry"];
     
     NSMutableArray* items2 = [product find_bysql:@"SELECT * FROM changed_values WHERE update_type='delete'" args: nil];	
 	if ( !items2 )
