@@ -69,8 +69,4 @@
 - (void) startBulkUpdate;
 - (void) stopBulkUpdate;
 
-- (void) onCreateError: (RhoConnectNotify*)notify action: (NSString*)action;
-- (void) onUpdateError: (RhoConnectNotify*)notify action: (NSString*)action;
-- (void) onDeleteError: (RhoConnectNotify*)notify action: (NSString*)action;
-
 @end

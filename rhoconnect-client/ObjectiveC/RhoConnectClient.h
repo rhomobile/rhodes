@@ -68,6 +68,10 @@
 
 - (void) setSourceProperty: (int) nSrcID szPropName:(NSString*) szPropName szPropValue:(NSString*) szPropValue;
 
+- (void) onCreateError: (RhoConnectNotify*)notify action: (NSString*)action;
+- (void) onUpdateError: (RhoConnectNotify*)notify action: (NSString*)action;
+- (void) onDeleteError: (RhoConnectNotify*)notify action: (NSString*)action;
+
 + (NSString*) storagePath;
 + (NSString*) pathForStorageFile: (NSString*) file;
 
