@@ -275,31 +275,4 @@ int enum_func(const char* szKey, const char* szValue, void* pThis)
 	rho_connectclient_stop_bulkupdate([name cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 }
 
-- (void) onCreateError: (RhoConnectNotify*)notify action: (NSString*)action
-{
-    rho_connectclient_on_sync_create_error(
-        [name cStringUsingEncoding:[NSString defaultCStringEncoding]],
-        [notify getNotifyPtr],
-        [action cStringUsingEncoding:[NSString defaultCStringEncoding]]                                  
-    );
-}
-
-- (void) onUpdateError: (RhoConnectNotify*)notify action: (NSString*)action
-{
-    rho_connectclient_on_sync_update_error(
-                                           [name cStringUsingEncoding:[NSString defaultCStringEncoding]],
-                                           [notify getNotifyPtr],
-                                           [action cStringUsingEncoding:[NSString defaultCStringEncoding]]                                  
-                                           );    
-}
-
-- (void) onDeleteError: (RhoConnectNotify*)notify action: (NSString*)action
-{
-    rho_connectclient_on_sync_delete_error(
-                                           [name cStringUsingEncoding:[NSString defaultCStringEncoding]],
-                                           [notify getNotifyPtr],
-                                           [action cStringUsingEncoding:[NSString defaultCStringEncoding]]                                  
-                                           );    
-}
-
 @end

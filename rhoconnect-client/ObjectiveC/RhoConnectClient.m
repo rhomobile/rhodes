@@ -315,6 +315,33 @@ void rho_free_callbackdata(void* pData)
 	return [[[RhoConnectNotify alloc] init: &oNotify] autorelease];
 }
 
+- (void) onCreateError: (RhoConnectNotify*)notify action: (NSString*)action
+{
+    rho_connectclient_on_sync_create_error(
+        [notify.source_name cStringUsingEncoding:[NSString defaultCStringEncoding]],
+        [notify getNotifyPtr],
+        [action cStringUsingEncoding:[NSString defaultCStringEncoding]]                                  
+    );
+}
+
+- (void) onUpdateError: (RhoConnectNotify*)notify action: (NSString*)action
+{
+    rho_connectclient_on_sync_update_error(
+       [notify.source_name cStringUsingEncoding:[NSString defaultCStringEncoding]],
+       [notify getNotifyPtr],
+       [action cStringUsingEncoding:[NSString defaultCStringEncoding]]                                  
+       );    
+}
+
+- (void) onDeleteError: (RhoConnectNotify*)notify action: (NSString*)action
+{
+    rho_connectclient_on_sync_delete_error(
+       [notify.source_name cStringUsingEncoding:[NSString defaultCStringEncoding]],
+       [notify getNotifyPtr],
+       [action cStringUsingEncoding:[NSString defaultCStringEncoding]]                                  
+       );    
+}
+
 void copyFromMainBundle( NSFileManager* fileManager,  NSString * source, NSString * target, BOOL remove );
 void createFolder( NSFileManager* fileManager,  NSString * target, BOOL remove );
 const char* rho_native_rhopath() ;
