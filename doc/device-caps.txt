@@ -56,6 +56,8 @@ Properties:
 * ppi_y - vertical PPI (Pixels Per Inch)
 * has_network - is device connected to the network
 * phone_number - device phone number
+* device_owner_email - primary email of phone owner (works only on Android)
+* device_owner_device_owner_name - name(account name) of phone owner (works only on Android)
 * device_id - returns device ID which may be used to receive push messages. This is not phone device id, this is PUSH device id - you should register you phone for PUSH before get this parameter. Read [Push Notification documentation](device-caps#push-notifications) about it. On iPhone it may be empty right after application started while Rhodes registers to receive PUSH notifications; you should wait till it become non-empty.
 * phone_id - returns hardware based id. It depends on capabilities configured for an application and has to remain same even across application uninstall/install.
 * full_browser -  is full browser in the WebView control on Blackberry (see [here](#blackberry-browser-support) for more details)
