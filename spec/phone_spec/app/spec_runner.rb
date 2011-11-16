@@ -49,8 +49,7 @@ end
 
 if !defined?(RHO_WP7)
 
-    #{:schema_model=>true }, 
-    config[:files] << [ "spec/blobsync_spec", [  {:schema_model=>false } ] ]
+    config[:files] << [ "spec/blobsync_spec", [ {:schema_model=>true }, {:schema_model=>false } ] ]
 
     config[:files] << "spec/bulksync_spec"
 end
