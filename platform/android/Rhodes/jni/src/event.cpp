@@ -141,6 +141,8 @@ static jfieldID fidNotes;
 static jfieldID fidPrivacy;
 static jfieldID fidFrequency;
 static jfieldID fidInterval;
+static jfieldID fidRecurrenceEnd;
+static jfieldID fidRecurrenceTimes;
 
 static bool init_event_stuff(JNIEnv *env)
 {
@@ -170,6 +172,10 @@ static bool init_event_stuff(JNIEnv *env)
     if (!fidFrequency) return false;
     fidInterval = getJNIClassField(env, clsEvent, "interval", "I");
     if (!fidInterval) return false;
+    fidRecurrenceEnd = getJNIClassField(env, clsEvent, "recurrenceEnd", "Ljava/util/Date;");
+    if (!fidRecurrenceEnd) return false;
+    fidRecurrenceTimes = getJNIClassField(env, clsEvent, "recurrenceTimes", "I");
+    if (!fidRecurrenceTimes) return false;
 
     initialized = true;
     return true;
@@ -240,7 +246,7 @@ jobject event_cast<jobject, VALUE>(VALUE rEvent)
         env->SetObjectField(jEvent, fidNotes, rho_cast<jhstring>(RSTRING_PTR(rNotes)).get());
     }
 
-    RHO_TRACE("eventFromRuby (10)");
+    RHO_TRACE("eventFromRuby privacy");
     VALUE rPrivacy = rb_hash_aref(rEvent, rb_str_new2(RUBY_EV_PRIVACY));
     if (!NIL_P(rPrivacy))
     {
@@ -248,7 +254,7 @@ jobject event_cast<jobject, VALUE>(VALUE rEvent)
         env->SetObjectField(jEvent, fidPrivacy, rho_cast<jhstring>(RSTRING_PTR(rPrivacy)).get());
     }
 
-    RHO_TRACE("eventFromRuby (11)");
+    RHO_TRACE("eventFromRuby recurrence");
     VALUE rRecurrence = rb_hash_aref(rEvent, rb_str_new2(RUBY_EV_RECURRENCE));
     if (!NIL_P(rRecurrence)) {
         Check_Type(rRecurrence, T_HASH);
@@ -269,6 +275,19 @@ jobject event_cast<jobject, VALUE>(VALUE rEvent)
         rInterval = rb_funcall(rInterval, rb_intern("to_i"), 0);
         int interval = NUM2INT(rInterval);
         env->SetIntField(jEvent, fidInterval, interval);
+        RAWTRACE1("eventFromRuby recurrence interval: %d", interval);
+
+        VALUE rUntilDate = rb_hash_aref(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_END));
+        if (!NIL_P(rUntilDate))
+        {
+            env->SetObjectField(jEvent, fidRecurrenceEnd, date_cast<jobject>(rUntilDate));
+            RAWTRACE("eventFromRuby recurrence until date");
+        }
+
+        VALUE rTimes = rb_funcall(rb_hash_aref(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_COUNT)), rb_intern("to_i"), 0);;
+        int times = NUM2INT(rTimes);
+        env->SetIntField(jEvent, fidRecurrenceTimes, times);
+        RAWTRACE1("eventFromRuby recurrence count: %d", times);
     }
 
     RHO_TRACE("eventFromRuby: return");
@@ -278,48 +297,50 @@ jobject event_cast<jobject, VALUE>(VALUE rEvent)
 template <>
 VALUE event_cast<VALUE, jobject>(jobject jEvent)
 {
+    RHO_TRACE("eventToRuby");
+
     if (!jEvent)
         return Qnil;
 
-    RHO_TRACE("eventToRuby (1)");
+    RHO_TRACE("eventToRuby init JNI");
     JNIEnv *env = jnienv();
     if (!init_event_stuff(env))
     {
-        RHO_TRACE("eventToRuby (1.1)");
+        RHO_TRACE("eventToRuby failed to init JNI");
         return Qnil;
     }
 
-    RHO_TRACE("eventToRuby (2)");
+    RHO_TRACE("eventToRuby alloc event hash");
     VALUE rEvent = rb_hash_new();
 
-    RHO_TRACE("eventToRuby (3)");
+    RHO_TRACE("eventToRuby get event id");
     jstring jId = (jstring)env->GetObjectField(jEvent, fidId);
     std::string s = rho_cast<std::string>(env, jId);
     env->DeleteLocalRef(jId);
     rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_ID), rb_str_new2(s.c_str()));
 
-    RHO_TRACE("eventToRuby (4)");
+    RHO_TRACE("eventToRuby get title");
     jstring jTitle = (jstring)env->GetObjectField(jEvent, fidTitle);
     s = rho_cast<std::string>(env, jTitle);
     env->DeleteLocalRef(jTitle);
     rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_TITLE), rb_str_new2(s.c_str()));
 
-    RHO_TRACE("eventToRuby (5)");
+    RHO_TRACE("eventToRuby get start date");
     jobject jStartDate = env->GetObjectField(jEvent, fidStartDate);
     rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_START_DATE), date_cast<VALUE>(jStartDate));
     env->DeleteLocalRef(jStartDate);
 
-    RHO_TRACE("eventToRuby (6)");
+    RHO_TRACE("eventToRuby get end date");
     jobject jEndDate = env->GetObjectField(jEvent, fidEndDate);
     rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_END_DATE), date_cast<VALUE>(jEndDate));
     env->DeleteLocalRef(jEndDate);
 
-    RHO_TRACE("eventToRuby (7)");
+    RHO_TRACE("eventToRuby get last modified date");
     jobject jLastModified = env->GetObjectField(jEvent, fidLastModified);
     rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_LAST_MODIFIED), date_cast<VALUE>(jLastModified));
     env->DeleteLocalRef(jLastModified);
 
-    RHO_TRACE("eventToRuby (8)");
+    RHO_TRACE("eventToRuby get location");
     jstring jLocation = (jstring)env->GetObjectField(jEvent, fidLocation);
     if (jLocation)
     {
@@ -328,7 +349,7 @@ VALUE event_cast<VALUE, jobject>(jobject jEvent)
         rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_LOCATION), rb_str_new2(s.c_str()));
     }
 
-    RHO_TRACE("eventToRuby (9)");
+    RHO_TRACE("eventToRuby get notes");
     jstring jNotes = (jstring)env->GetObjectField(jEvent, fidNotes);
     if (jNotes)
     {
@@ -337,7 +358,7 @@ VALUE event_cast<VALUE, jobject>(jobject jEvent)
         rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_NOTES), rb_str_new2(s.c_str()));
     }
 
-    RHO_TRACE("eventToRuby (10)");
+    RHO_TRACE("eventToRuby get privacy");
     jstring jPrivacy = (jstring)env->GetObjectField(jEvent, fidPrivacy);
     if (jPrivacy)
     {
@@ -346,22 +367,24 @@ VALUE event_cast<VALUE, jobject>(jobject jEvent)
         rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_PRIVACY), rb_str_new2(s.c_str()));
     }
 
-    RHO_TRACE("eventToRuby (11)");
+    RHO_TRACE("eventToRuby frequency");
     jstring jFrequency = (jstring)env->GetObjectField(jEvent, fidFrequency);
-    if (jFrequency)
+    if(jFrequency)
     {
+        RHO_TRACE("eventToRuby parse frequency");
+
         VALUE rRecurrence = rb_hash_new();
 
         jboolean isCopy;
         const char* str = env->GetStringUTFChars (jFrequency, &isCopy);
-        if (   strcasecmp(str, RUBY_EV_RECURRENCE_FREQUENCY_DAILY) == 0
-        	|| strcasecmp(str, RUBY_EV_RECURRENCE_FREQUENCY_WEEKLY) == 0
-        	|| strcasecmp(str, RUBY_EV_RECURRENCE_FREQUENCY_MONTHLY) == 0
-        	|| strcasecmp(str, RUBY_EV_RECURRENCE_FREQUENCY_YEARLY) == 0)
+        if(strcasecmp(str, RUBY_EV_RECURRENCE_FREQUENCY_DAILY) == 0
+            || strcasecmp(str, RUBY_EV_RECURRENCE_FREQUENCY_WEEKLY) == 0
+            || strcasecmp(str, RUBY_EV_RECURRENCE_FREQUENCY_MONTHLY) == 0
+            || strcasecmp(str, RUBY_EV_RECURRENCE_FREQUENCY_YEARLY) == 0)
         {
-        	s = rho_cast<std::string>(env, jFrequency);
+            s = rho_cast<std::string>(env, jFrequency);
         } else {
-        	s = "undefined";
+            s = "undefined";
             // rb_raise(rb_eArgError, "Wrong recurrence frequency: %s", frequency);
         }
         if (isCopy == JNI_TRUE) {
@@ -373,6 +396,15 @@ VALUE event_cast<VALUE, jobject>(jobject jEvent)
         jint jInterval = (jint)env->GetIntField(jEvent, fidInterval);
         rb_hash_aset(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_INTERVAL), INT2FIX((int)jInterval));
 
+        jhobject jhUntil = env->GetObjectField(jEvent, fidRecurrenceEnd);
+        if(jhUntil.get())
+        {
+            rb_hash_aset(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_END), date_cast<VALUE>(jhUntil.get()));
+        }
+
+        jint jCount = env->GetIntField(jEvent, fidRecurrenceTimes);
+        rb_hash_aset(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_COUNT), INT2FIX((int)jCount));
+
         rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_RECURRENCE), rRecurrence);
     }
 
@@ -382,8 +414,10 @@ VALUE event_cast<VALUE, jobject>(jobject jEvent)
 
 RHO_GLOBAL VALUE event_fetch(VALUE rParams)
 {
+    RHO_TRACE("event_fetch");
+
     JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_EVENT_STORE);
+    jclass& cls = getJNIClass(RHODES_JAVA_CLASS_EVENT_STORE);
     if (!cls) return Qnil;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "fetch", "(Ljava/util/Date;Ljava/util/Date;Z)Ljava/lang/Object;");
     if (!mid) return Qnil;
@@ -392,17 +426,17 @@ RHO_GLOBAL VALUE event_fetch(VALUE rParams)
     VALUE end_date = rb_hash_aref(rParams, rb_str_new2(RUBY_EV_END_DATE));
     VALUE include_repeating = rb_hash_aref(rParams, rb_str_new2(RUBY_FETCH_include_repeating));
 
-    RHO_TRACE("event_fetch (1)");
+    RHO_TRACE("event_fetch: start date");
     jobject jStartDate = date_cast<jobject>(start_date);
-    RHO_TRACE("event_fetch (2)");
+    RHO_TRACE("event_fetch: end date");
     jobject jEndDate = date_cast<jobject>(end_date);
-    RHO_TRACE("event_fetch (3)");
+    RHO_TRACE("event_fetch: EventStore.fetch()");
     jobject jRet = env->CallStaticObjectMethod(cls, mid, jStartDate, jEndDate, (jboolean)rho_ruby_get_bool(include_repeating));
-    RHO_TRACE("event_fetch (4)");
+    RHO_TRACE("event_fetch: release java references");
     env->DeleteLocalRef(jStartDate);
     env->DeleteLocalRef(jEndDate);
 
-    jclass clsString = getJNIClass(RHODES_JAVA_CLASS_STRING);
+    jclass& clsString = getJNIClass(RHODES_JAVA_CLASS_STRING);
     if (!clsString) return Qnil;
     if (env->IsInstanceOf(jRet, clsString))
     {

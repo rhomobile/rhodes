@@ -33,18 +33,23 @@ module Rho
       if args.first == :all
         params = {}
         if args.length >= 2 and args[1].is_a? Hash
+          puts "Event find params: #{args[1].inspect}"
           args[1].each do |k,v|
             params[k.to_s] = v
+            puts "#{k.to_s} => #{v}"
           end
         end
 
         params['start_date'] = params['start_date'].to_time if !params['start_date'].nil? and !params['start_date'].is_a?(Time)
-        params['end_date'] = params['end_date'].to_time if !params['end_date'].nil? and !params['start_date'].is_a?(Time)
+        params['end_date'] = params['end_date'].to_time if !params['end_date'].nil? and !params['end_date'].is_a?(Time)
         
         params['start_date'] = MIN_TIME if params['start_date'].nil? or params['start_date'] < MIN_TIME
         params['end_date'] = MAX_TIME if params['end_date'].nil? or params['end_date'] > MAX_TIME
         
-        params['include_repeating'] = false if ( params['start_date'] == MIN_TIME || params['end_date'] == MAX_TIME )
+        if params['start_date'] == MIN_TIME or params['end_date'] == MAX_TIME
+          params['include_repeating'] = false
+          puts "Resetting 'include_repeating' param to false"
+        end
         
         puts "Rho::Calendar.fetch(params) : #{params}"
         events = Rho::Calendar.fetch(params)
@@ -65,6 +70,7 @@ module Rho
     def self.create!(event)
       event['id'] = nil #indicate that event should be created
       event['reminder'] = event['reminder'].to_i if event['reminder'] != nil
+      event['recurrence']['end'] = nil if event['recurrence'] and event['recurrence']['end'] == ""
       new_id = Rho::Calendar.save(event)
       event['id'] = new_id
       return event

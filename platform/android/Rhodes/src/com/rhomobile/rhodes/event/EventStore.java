@@ -26,6 +26,7 @@
 
 package com.rhomobile.rhodes.event;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Vector;
 
@@ -61,20 +62,15 @@ public class EventStore {
 	private static final String EVENTS_END = "end";
 	private static final String EVENTS_RRULE = "rrule";
 	
-	private static final String EVENTS_RPARAM_FREQ = "FREQ";
-	private static final String EVENTS_RPARAM_INTERVAL = "INTERVAL";
+    private static final String DATE_FORMAT_TRACE = "yyyy-MM-dd HH:mm:ss z";
 
-	private static void reportFail(String name, Exception e) {
-		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e != null ? e.getMessage() : "null exception");
-		if ( e != null )
-		    e.printStackTrace();
-	}
-	
-	private static String dateToString(Date date) {
-		if (null == date) return "null";
-		return String.format("%04d-%02d-%02d %02d:%02d:%02d",
-				date.getYear() + 1900, date.getMonth() + 1, date.getDate(),
-				date.getHours(), date.getMinutes(), date.getSeconds());
+    private static String dateToString(Date date) {
+        if (null == date) return "null";
+        
+        return new SimpleDateFormat(DATE_FORMAT_TRACE).format(date);
+//		return String.format("%04d-%02d-%02d %02d:%02d:%02d",
+//				date.getYear() + 1900, date.getMonth() + 1, date.getDate(),
+//				date.getHours(), date.getMinutes(), date.getSeconds());
 	}
 	
 	private static void checkCapabilities() throws IllegalAccessException {
@@ -124,30 +120,53 @@ public class EventStore {
 			calendarCursor.close();
 		}
 	}
-	
-	private static Event parseRepetition(Cursor cursor, Event event) {
-		try {
-			String rrule = cursor.getString(cursor.getColumnIndex(EVENTS_RRULE));
-			rrule = (null == rrule) ? "" : rrule;
-			String[] rparams = rrule.split(";");
 
-			for (int i=0; i<rparams.length; i++) {
-				String[] nameVal = rparams[i].split("=");
-				if (0 == nameVal[0].compareToIgnoreCase(EVENTS_RPARAM_FREQ)) {
-					event.frequency = nameVal[1].toLowerCase();
-					continue;
-				}
-				if (0 == nameVal[0].compareToIgnoreCase(EVENTS_RPARAM_INTERVAL)) {
-					event.interval = Integer.parseInt(nameVal[1]);
-				}
-			}
-		} catch (Exception ex) {
-			reportFail("parseRepetition(cursor, event)", ex);
-		}
-		
-		return event;
-	}
-	
+    static Event fetchEvent(Cursor cursor) {
+        String eid = cursor.getString(cursor.getColumnIndex(EVENTS_ID));
+        Event event = new Event(eid);
+
+        long longDtStart = cursor.getLong(cursor.getColumnIndex(EVENTS_START_DATE));
+        Date startDate = 0 < longDtStart ? new Date(longDtStart) : null;
+
+        long longDtEnd = cursor.getLong(cursor.getColumnIndex(EVENTS_END_DATE));
+        Date endDate = 0 < longDtEnd ? new Date(longDtEnd) : null;
+        String duration = null;
+
+        if (longDtEnd == 0) {
+            event.startDate = startDate;
+
+            duration = cursor.getString(cursor.getColumnIndex(EVENTS_DURATION));
+            Logger.D(TAG, "Event duration: " + duration);
+            event.parseDuration(duration);
+
+        } else {
+            if (null != startDate && null != endDate && startDate.after(endDate)) {
+                Date tmp = startDate;
+                startDate = endDate;
+                endDate = tmp;
+            }
+            event.startDate = startDate;
+            event.endDate = endDate;
+        }
+
+        event.title = cursor.getString(cursor.getColumnIndex(EVENTS_TITLE));
+        event.location = cursor.getString(cursor.getColumnIndex(EVENTS_LOCATION));
+        event.notes = cursor.getString(cursor.getColumnIndex(EVENTS_NOTES));
+        switch (cursor.getInt(cursor.getColumnIndex(EVENTS_PRIVACY))) {
+            case 1: event.privacy = "confidential"; break;
+            case 2: event.privacy = "private"; break;
+            case 3: event.privacy = "public"; break;
+        }
+
+        String rrule = cursor.getString(cursor.getColumnIndex(EVENTS_RRULE));
+        Logger.D(TAG, "Event recurrence rule: " + rrule);
+        event.parseRrule(rrule);
+
+        Logger.D(TAG, event.toString());
+
+        return event;
+    }
+
 	public static Object fetch(Date startDate, Date endDate, boolean includeRepeating) {
 		try {
 			checkCapabilities();
@@ -177,7 +196,7 @@ public class EventStore {
 				String start = Long.toString(startDate.getTime());
 				String end = Long.toString(endDate.getTime());
 				eventCursor = r.query(EVENTS_URI,
-					new String[] {EVENTS_ID, EVENTS_TITLE, EVENTS_START_DATE, EVENTS_END_DATE,
+					new String[] {EVENTS_ID, EVENTS_TITLE, EVENTS_START_DATE, EVENTS_END_DATE, EVENTS_DURATION,
 						EVENTS_LOCATION, EVENTS_NOTES, EVENTS_PRIVACY, EVENTS_DELETED, EVENTS_RRULE},
 					where, new String[] {start, end, start, end},
 					null);
@@ -195,9 +214,6 @@ public class EventStore {
 						}
 					}
 					
-					String eid = eventCursor.getString(eventCursor.getColumnIndex(EVENTS_ID));
-					Event event = new Event(eid);
-					
 					long longDtStart = eventCursor.getLong(eventCursor.getColumnIndex(EVENTS_START_DATE));
 					long longDtEnd = eventCursor.getLong(eventCursor.getColumnIndex(EVENTS_END_DATE));
 					
@@ -214,25 +230,7 @@ public class EventStore {
 							&& (eventEndDate.before(startDate) || eventStartDate.after(endDate)))
 						continue;
 					
-					event.title = eventCursor.getString(eventCursor.getColumnIndex(EVENTS_TITLE));
-					event.startDate = eventStartDate;
-					event.endDate = eventEndDate;
-					event.location = eventCursor.getString(eventCursor.getColumnIndex(EVENTS_LOCATION));
-					event.notes = eventCursor.getString(eventCursor.getColumnIndex(EVENTS_NOTES));
-					switch (eventCursor.getInt(eventCursor.getColumnIndex(EVENTS_PRIVACY))) {
-						case 1: event.privacy = "confidential"; break;
-						case 2: event.privacy = "private"; break;
-						case 3: event.privacy = "public"; break;
-					}
-					parseRepetition(eventCursor, event);
-					
-					Logger.D(TAG, "Event: id: " + event.id +
-							", title: " + event.title +
-							", begin: " + dateToString(event.startDate) +
-							", end: " + dateToString(event.endDate) +
-							", freq: " + event.frequency +
-							", interval: " + Integer.toString(event.interval));
-
+					Event event = fetchEvent(eventCursor);
 					ret.add(event);
 				}
 			}
@@ -243,9 +241,8 @@ public class EventStore {
 			return ret;
 		}
 		catch (Exception e) {
-			reportFail("fetch(start, end)", e);
-			String error = e.getMessage();
-			return error == null ? "unknown" : error;
+            Logger.E(TAG, e);
+            return null;
 		}
 	}
 	
@@ -271,37 +268,7 @@ public class EventStore {
 					return null;
 				}
 				
-				long longDtStart = eventCursor.getLong(eventCursor.getColumnIndex(EVENTS_START_DATE));
-				long longDtEnd = eventCursor.getLong(eventCursor.getColumnIndex(EVENTS_END_DATE));
-				
-				Date eventStartDate = 0 < longDtStart ? new Date(longDtStart) : null;
-				Date eventEndDate = 0 < longDtEnd ? new Date(longDtEnd) : null;
-				
-				if (null != eventStartDate && null != eventEndDate && eventStartDate.after(eventEndDate)) {
-					Date tmp = eventStartDate;
-					eventStartDate = eventEndDate;
-					eventEndDate = tmp;
-				}
-				
-				Event event = new Event(id);
-				event.title = eventCursor.getString(eventCursor.getColumnIndex(EVENTS_TITLE));
-				event.startDate = eventStartDate;
-				event.endDate = eventEndDate;
-				event.location = eventCursor.getString(eventCursor.getColumnIndex(EVENTS_LOCATION));
-				event.notes = eventCursor.getString(eventCursor.getColumnIndex(EVENTS_NOTES));
-				switch (eventCursor.getInt(eventCursor.getColumnIndex(EVENTS_PRIVACY))) {
-				case 1: event.privacy = "confidential"; break;
-				case 2: event.privacy = "private"; break;
-				case 3: event.privacy = "public"; break;
-				}
-				parseRepetition(eventCursor, event);
-				
-				Logger.D(TAG, "Event: id: " + event.id +
-						", title: " + event.title +
-						", begin: " + dateToString(event.startDate) +
-						", end: " + dateToString(event.endDate) +
-						", freq: " + event.frequency +
-						", interval: " + Integer.toString(event.interval));
+				Event event = fetchEvent(eventCursor);
 				
 				return event;
 			}
@@ -310,9 +277,8 @@ public class EventStore {
 			}
 		}
 		catch (Exception e) {
-			reportFail("fetch(id)", e);
-			String error = e.getMessage();
-			return error == null ? "unknown" : error;
+            Logger.E(TAG, e);
+            return null;
 		}
 	}
 	
@@ -354,17 +320,8 @@ public class EventStore {
 			}
 			
 			if (null != event.frequency && 0 < event.frequency.length()) {
-				String rrule = EVENTS_RPARAM_FREQ + "=" + event.frequency.toUpperCase();
-				if (0 < event.interval) {
-					rrule = rrule + ";" + EVENTS_RPARAM_INTERVAL + "=" + Integer.toString(event.interval);
-				}
-				values.put(EVENTS_RRULE, rrule);
-				long duration = 0;
-				if (null != event.startDate && null != event.startDate ) {
-					duration = (event.endDate.getTime() - event.startDate.getTime()) / 1000 /*ms in sec*/;
-				}
-				
-				values.put(EVENTS_DURATION, "P" + Long.toString(duration) + "S");
+				values.put(EVENTS_RRULE, event.getRrule());
+				values.put(EVENTS_DURATION, event.getDuration());
 			}
 
 			Logger.D(TAG, "Event: id: " + event.id +
@@ -373,6 +330,8 @@ public class EventStore {
 					", end: " + dateToString(new Date(values.getAsLong(EVENTS_END_DATE).longValue())) +
 					", freq: " + event.frequency +
 					", interval: " + Integer.toString(event.interval) +
+					", recurrence end: " + event.recurrenceEnd +
+					", recurrence count: " + event.recurrenceTimes +
 					", rrule: " + values.get(EVENTS_RRULE));
 
 			long calendarId = getDefaultCalendarId();
@@ -398,9 +357,8 @@ public class EventStore {
 			}
 		}
 		catch (Exception e) {
-			reportFail("save", e);
-			//String error = e.getMessage();
-			return null;//error == null ? "unknown" : error;
+            Logger.E(TAG, e);
+            return null;
 		}
 		return return_id;
 	}
@@ -427,14 +385,10 @@ public class EventStore {
 				r.notifyChange(EVENTS_URI, null);
 			}
 			Logger.D(TAG, String.format("%d rows deleted", rows));
-			
-			return null;
 		}
 		catch (Exception e) {
-			reportFail("delete", e);
-			String error = e.getMessage();
-			return error == null ? "unknown" : error;
-		}
-	}
-	
+            Logger.E(TAG, e);
+        }
+        return null;
+    }
 }
