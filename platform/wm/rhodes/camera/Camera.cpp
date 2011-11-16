@@ -115,6 +115,7 @@ HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename)
 #else
     OPENFILENAME ofn = {0};
 #endif
+    pszFilename[0] = 0;
 
 	ofn.lStructSize     = sizeof(ofn);
 	ofn.lpstrFilter     = NULL;
