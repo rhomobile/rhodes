@@ -2143,7 +2143,7 @@ SWIGEXPORT void Init_RhoEvent(void) {
   rb_define_const(mRhoEvent, "RECURRENCE_FREQUENCY_YEARLY", SWIG_FromCharPtr("yearly"));
   rb_define_const(mRhoEvent, "RECURRENCE_INTERVAL", SWIG_FromCharPtr("interval"));
   rb_define_const(mRhoEvent, "RECURRENCE_COUNT", SWIG_FromCharPtr("count"));
-  rb_define_const(mRhoEvent, "RECURRENCE_END", SWIG_FromCharPtr("end_date"));
+  rb_define_const(mRhoEvent, "RECURRENCE_END", SWIG_FromCharPtr("end"));
   rb_define_const(mRhoEvent, "RECURRENCE_DAYOFMONTH", SWIG_FromCharPtr("day_of_month"));
   rb_define_const(mRhoEvent, "RECURRENCE_MONTHS", SWIG_FromCharPtr("months"));
   rb_define_const(mRhoEvent, "RECURRENCE_DAYS", SWIG_FromCharPtr("days"));
