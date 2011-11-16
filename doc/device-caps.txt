@@ -471,6 +471,9 @@ Recurrence properties:
 "recurrence", "frequency"('daily', 'weekly', 'monthly', 'yearly'), "interval", "count", "end_date"
 "count" and "end" rucurrence properties are mutual exclusive. "end" is date/time beyond last event occurence but within same day.     
 
+### Recurrence properties
+Recurrence properties are groupped in separate hash stored as single event property (event[Rho::RhoEvent::RECURRENCE]).
+
 ### Names of properties
 There are helper constants defined in Rho::RhoEvent which can be used to address event values and as predefined set of values (for frequency):
 * ID
