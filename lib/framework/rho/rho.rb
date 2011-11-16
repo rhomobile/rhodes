@@ -467,7 +467,7 @@ end
                         
                         ::Rho::RHO.init_sync_source_properties(uniq_sources)
                         
-                        SyncEngine.update_blob_attribs(partition, Rho::RhoConfig::sources[modelName]['source_id'].to_i() )
+                        #SyncEngine.update_blob_attribs(partition, Rho::RhoConfig::sources[modelName]['source_id'].to_i() )
                         db.commit
                     rescue Exception => e
                         trace_msg = e.backtrace.join("\n")
@@ -558,9 +558,9 @@ end
         ::Rho::RHO.init_schema_sources(hash_migrate)
         ::Rho::RHO.check_sources_migration(uniq_sources)
         
-        @db_partitions.each do |partition, db|
-            SyncEngine.update_blob_attribs(partition, -1 )
-        end
+        #@db_partitions.each do |partition, db|
+        #    SyncEngine.update_blob_attribs(partition, -1 )
+        #end
         
         ::Rho::RHO.init_sync_source_properties(uniq_sources)
     end
@@ -655,6 +655,8 @@ end
           end
         
         end
+        
+        SyncEngine.update_blob_attribs(partition, -1 )
     end
 
     def self.make_createsql_script(name,schema_attr)
