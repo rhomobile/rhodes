@@ -89,17 +89,17 @@ void SyncBlob_UpdateCallback(sqlite3_context* dbContext, int nArgs, sqlite3_valu
 
 void SyncBlob_DeleteSchemaCallback(sqlite3_context* dbContext, int nArgs, sqlite3_value** ppArgs)
 {
-    //CDBAttrManager& attrMgr = CDBAdapter::getDBByHandle(sqlite3_context_db_handle(dbContext)).getAttrMgr();
-    //TODO: SyncBlob_DeleteSchemaCallback
-    //TODO: add to reset - set callback
-}
+    //LOG(INFO) + "SyncBlob_DeleteSchemaCallback";
 
-void SyncBlob_InsertCallback(sqlite3_context* dbContext, int nArgs, sqlite3_value** ppArgs)
-{
-    //if ( nArgs < 2 )
-    //    return;
-
-    //CDBAdapter::getDBByHandle(sqlite3_context_db_handle(dbContext)).getAttrMgr().add( sqlite3_value_int(*(ppArgs)), (char*)sqlite3_value_text(*(ppArgs+1)) );
+    for ( int i = 0; i < nArgs; i++ )
+    {
+        const char* szValue = (char*)sqlite3_value_text(*(ppArgs+i));
+        if ( szValue && *szValue )
+        {
+            String strFilePath = RHODESAPPBASE().resolveDBFilesPath(szValue);
+            CRhoFile::deleteFile(strFilePath.c_str());
+        }
+    }
 }
 
 boolean CDBAdapter::checkDbError(int rc)
@@ -176,12 +176,18 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
 	    SyncBlob_DeleteCallback, 0, 0 );
     sqlite3_create_function( m_dbHandle, "rhoOnUpdateObjectRecord", 3, SQLITE_ANY, 0,
 	    SyncBlob_UpdateCallback, 0, 0 );
-
-    sqlite3_create_function( m_dbHandle, "rhoOnDeleteRecord", 1, SQLITE_ANY, 0,
+/*
+CREATE TRIGGER rhodeleteTrigger_Image BEFORE DELETE ON Image FOR EACH ROW 
+   BEGIN 
+       SELECT rhoOnDeleteSchemaRecord(OLD.image_uri);
+   END;
+CREATE TRIGGER rhoupdateTrigger_Image BEFORE UPDATE ON Image FOR EACH ROW WHEN NEW.image_uri != OLD.image_uri
+   BEGIN 
+       SELECT rhoOnDeleteSchemaRecord(OLD.image_uri);
+   END;
+*/
+    sqlite3_create_function( m_dbHandle, "rhoOnDeleteSchemaRecord", 1, SQLITE_ANY, 0,
 	    SyncBlob_DeleteSchemaCallback, 0, 0 );
-
-    sqlite3_create_function( m_dbHandle, "rhoOnInsertObjectRecord", 2, SQLITE_ANY, 0,
-	    SyncBlob_InsertCallback, 0, 0 );
 
     sqlite3_busy_handler(m_dbHandle, onDBBusy, 0 );
 
