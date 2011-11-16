@@ -91,14 +91,29 @@ void SyncBlob_DeleteSchemaCallback(sqlite3_context* dbContext, int nArgs, sqlite
 {
     //LOG(INFO) + "SyncBlob_DeleteSchemaCallback";
 
-    for ( int i = 0; i < nArgs; i++ )
+    const char* szValue = (char*)sqlite3_value_text(*ppArgs);
+    if ( szValue && *szValue )
     {
-        const char* szValue = (char*)sqlite3_value_text(*(ppArgs+i));
-        if ( szValue && *szValue )
-        {
-            String strFilePath = RHODESAPPBASE().resolveDBFilesPath(szValue);
-            CRhoFile::deleteFile(strFilePath.c_str());
-        }
+        String strFilePath = RHODESAPPBASE().resolveDBFilesPath(szValue);
+        CRhoFile::deleteFile(strFilePath.c_str());
+    }
+}
+
+void SyncBlob_UpdateSchemaCallback(sqlite3_context* dbContext, int nArgs, sqlite3_value** ppArgs)
+{
+    //LOG(INFO) + "SyncBlob_UpdateSchemaCallback";
+    const char* szOldValue = (char*)sqlite3_value_text(*(ppArgs+0));
+    const char* szNewValue = (char*)sqlite3_value_text(*(ppArgs+1));
+    if ( szOldValue == szNewValue || szOldValue == 0 )
+        return;
+
+    if ( szOldValue && szNewValue &&  strcmp(szOldValue, szNewValue) == 0 )
+        return;
+
+    if ( szOldValue && *szOldValue )
+    {
+        String strFilePath = RHODESAPPBASE().resolveDBFilesPath(szOldValue);
+        CRhoFile::deleteFile(strFilePath.c_str());
     }
 }
 
@@ -176,18 +191,10 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
 	    SyncBlob_DeleteCallback, 0, 0 );
     sqlite3_create_function( m_dbHandle, "rhoOnUpdateObjectRecord", 3, SQLITE_ANY, 0,
 	    SyncBlob_UpdateCallback, 0, 0 );
-/*
-CREATE TRIGGER rhodeleteTrigger_Image BEFORE DELETE ON Image FOR EACH ROW 
-   BEGIN 
-       SELECT rhoOnDeleteSchemaRecord(OLD.image_uri);
-   END;
-CREATE TRIGGER rhoupdateTrigger_Image BEFORE UPDATE ON Image FOR EACH ROW WHEN NEW.image_uri != OLD.image_uri
-   BEGIN 
-       SELECT rhoOnDeleteSchemaRecord(OLD.image_uri);
-   END;
-*/
     sqlite3_create_function( m_dbHandle, "rhoOnDeleteSchemaRecord", 1, SQLITE_ANY, 0,
 	    SyncBlob_DeleteSchemaCallback, 0, 0 );
+    sqlite3_create_function( m_dbHandle, "rhoOnUpdateSchemaRecord", 2, SQLITE_ANY, 0,
+	    SyncBlob_UpdateSchemaCallback, 0, 0 );
 
     sqlite3_busy_handler(m_dbHandle, onDBBusy, 0 );
 
@@ -743,20 +750,23 @@ void CDBAdapter::createTriggers()
         sqlite3_free(errmsg);
 }
 
-void CDBAdapter::createDeleteTrigger(const String& strTable)
+void CDBAdapter::createTrigger(const String& strSQL)
 {
-String strTrigger = String("CREATE TRIGGER rhodeleteSchemaTrigger BEFORE DELETE ON ") + strTable + " FOR EACH ROW "
-"   BEGIN "
-"       SELECT rhoOnDeleteRecord( OLD );"
-"   END;"
-";";
-    //char* errmsg = 0;
-    //TODO: createDeleteTrigger
-/*    int rc = sqlite3_exec(m_dbHandle, strTrigger.c_str(),  NULL, NULL, &errmsg);
+    char* errmsg = 0;
+    int rc = sqlite3_exec(m_dbHandle, strSQL.c_str(),  NULL, NULL, &errmsg);
 
     if ( rc != SQLITE_OK )
-        LOG(ERROR)+"createTriggers failed. Error code: " + rc + ";Message: " + (errmsg ? errmsg : "");
-*/
+        LOG(ERROR)+"createTrigger failed. Error code: " + rc + ";Message: " + (errmsg ? errmsg : "");
+}
+
+void CDBAdapter::dropTrigger(const String& strName)
+{
+    String strSQL = "DROP TRIGGER " + strName + ";";
+    char* errmsg = 0;
+    int rc = sqlite3_exec(m_dbHandle, strSQL.c_str(),  NULL, NULL, &errmsg);
+
+    if ( rc != SQLITE_OK )
+        LOG(ERROR)+"dropTrigger failed. Error code: " + rc + ";Message: " + (errmsg ? errmsg : "");
 }
 
 void CDBAdapter::close()

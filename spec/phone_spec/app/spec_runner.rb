@@ -26,6 +26,7 @@ end
     config[:files] << "spec/bsearch_spec"
 
     config[:files] << "spec/rho_controller_spec"
+
     config[:files] << [ "spec/rhom_object_spec",
         [ {:schema_model=>true, :sync_model=>true},  {:schema_model=>true, :sync_model=>false},
           {:schema_model=>false, :sync_model=>true} , {:schema_model=>false, :sync_model=>false} ] ]
@@ -47,7 +48,10 @@ end
     config[:files] << [ "spec/syncengine_spec", [ {:schema_model=>true }, {:schema_model=>false } ] ]
 
 if !defined?(RHO_WP7)
-    config[:files] << "spec/blobsync_spec"
+
+    #{:schema_model=>true }, 
+    config[:files] << [ "spec/blobsync_spec", [  {:schema_model=>false } ] ]
+
     config[:files] << "spec/bulksync_spec"
 end
 

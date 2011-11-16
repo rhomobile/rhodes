@@ -171,6 +171,18 @@ void CDBAttrManager::loadBlobAttrs(CDBAdapter& db)
 {
     loadAttrs(db, m_mapBlobAttrs, "blob_attribs");
 
+    String strTriggerPrefix = "rhoSchemaTrigger_";
+    IDBResult res = db.executeSQL( "SELECT name FROM sqlite_master WHERE type='trigger'" );
+    Hashtable<String,int> mapTriggers;
+    for ( ; !res.isEnd(); res.next() )
+    {
+        String strName = res.getStringByIdx(0);
+        if ( !String_startsWith(strName, strTriggerPrefix) )
+            continue;
+
+        mapTriggers[strName.substr(strTriggerPrefix.length())] = 0;
+    }
+
     for ( HashtablePtr< int, Hashtable<String,int>* >::iterator it = m_mapBlobAttrs.begin();  it != m_mapBlobAttrs.end(); ++it )
     {
         int nSrcID = it->first;
@@ -183,7 +195,44 @@ void CDBAttrManager::loadBlobAttrs(CDBAdapter& db)
         if ( !db.isTableExist(strName) )
             continue;
 
-        db.createDeleteTrigger(strName);
+        Hashtable<String,int>& hashAttribs = *it->second;
+        for ( Hashtable<String,int>::iterator itAttr = hashAttribs.begin();  itAttr != hashAttribs.end(); ++itAttr )
+        {
+            String strTriggerName = strName + "_" + itAttr->first;
+            if ( !mapTriggers.containsKey(strTriggerName + "_delete") )
+            {
+                String strTrigger = String("CREATE TRIGGER ") + strTriggerPrefix + strTriggerName + "_delete BEFORE DELETE ON \"" + strName + "\" FOR EACH ROW \r\n"
+                "   BEGIN \r\n"
+                "       SELECT rhoOnDeleteSchemaRecord( OLD." + itAttr->first + ");\r\n"
+                "   END;\r\n"
+                ";";
+
+                db.createTrigger(strTrigger);
+            }else
+                mapTriggers[strTriggerName + "_delete"] = 1;
+
+            if ( !mapTriggers.containsKey(strTriggerName + "_update") )
+            {
+                String strTrigger = String("CREATE TRIGGER ") + strTriggerPrefix + strTriggerName + "_update BEFORE UPDATE ON \"" + strName + "\" FOR EACH ROW\r\n"
+                "   BEGIN \r\n"
+                "       SELECT rhoOnUpdateSchemaRecord( OLD." + itAttr->first + ", NEW." + itAttr->first + ");\r\n"
+                "   END;\r\n"
+                ";";
+
+                db.createTrigger(strTrigger);
+            }else
+                mapTriggers[strTriggerName + "_update"] = 1;
+
+        }
+    }
+
+    //Remove outdated triggers
+    for ( Hashtable<String,int>::iterator itTriggers = mapTriggers.begin();  itTriggers != mapTriggers.end(); ++itTriggers )
+    {
+        if ( !itTriggers->second )
+        {
+            db.dropTrigger(strTriggerPrefix+itTriggers->first);
+        }
     }
 }
 
