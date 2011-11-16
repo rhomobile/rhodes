@@ -468,7 +468,35 @@ On iPhone and Android additional event properties are supported. These are:
 "canceled", "organizer", "attendees", "last_modified", 
 
 Recurrence properties:
-"recurrence", "frequency"('daily', 'weekly', 'monthly', 'yearly'), "interval"
+"recurrence", "frequency"('daily', 'weekly', 'monthly', 'yearly'), "interval", "count", "end_date"
+"count" and "end" rucurrence properties are mutual exclusive. "end" is date/time beyond last event occurence but within same day.     
+
+### Names of properties
+There are helper constants defined in Rho::RhoEvent which can be used to address event values and as predefined set of values (for frequency):
+* ID
+* TITLE
+* CANCELED
+* ORGANIZER
+* START_DATE
+* END_DATE
+* LAST_MODIFIED
+* LOCATION
+* NOTES
+* PRIVACY
+* REMINDER
+* RECURRENCE
+* RECURRENCE_FREQUENCY
+* RECURRENCE_FREQUENCY_DAILY
+* RECURRENCE_FREQUENCY_WEEKLY
+* RECURRENCE_FREQUENCY_MONTHLY
+* RECURRENCE_FREQUENCY_YEARLY
+* RECURRENCE_INTERVAL
+* RECURRENCE_COUNT
+* RECURRENCE_END
+* RECURRENCE_DAYOFMONTH
+* RECURRENCE_MONTHS
+* RECURRENCE_DAYS
+
 
 ### Sample
 For examples on how to use the API provided by this class, see the view and controller in the /app/Calendar folder in the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/Calendar/controller.rb).
