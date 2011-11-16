@@ -67,6 +67,8 @@ import com.rhomobile.rhodes.util.Utils;
 import com.rhomobile.rhodes.util.Utils.AssetsSource;
 import com.rhomobile.rhodes.util.Utils.FileSource;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -786,6 +788,45 @@ public class RhodesService extends Service {
 		return mScreenHeight;
 	}
 	
+	 private static Account AccessOwnerInfo_getAccount(AccountManager accountManager) {
+		    Account[] accounts = accountManager.getAccountsByType("com.google");
+	    Account account;
+	    if (accounts.length > 0) {
+	      account = accounts[0];
+	    } else {
+	      account = null;
+	    }
+	    return account;
+	  }
+	
+	  public static String AccessOwnerInfo_getEmail(Context context) {
+	    AccountManager accountManager = AccountManager.get(context);
+	    Account account = AccessOwnerInfo_getAccount(accountManager);
+	
+	    if (account == null) {
+	      return null;
+	    } else {
+	      return account.name;
+	    }
+	  }
+	
+	  public static String AccessOwnerInfo_getUsername(Context context) {
+	    // String email;
+		AccountManager manager = AccountManager.get(context);
+		Account account = AccessOwnerInfo_getAccount(manager);
+		if (account == null) {
+		  return "";
+		} else {
+		  String email = account.name;
+		  String[] parts = email.split("@");
+		  if (parts.length > 0 && parts[0] != null)
+		    return parts[0];
+		  else
+		    return "";
+	    }
+ 	  }	
+  
+		  
 	public static Object getProperty(String name) {
 		try {
 			if (name.equalsIgnoreCase("platform"))
@@ -819,6 +860,12 @@ public class RhodesService extends Service {
 				TelephonyManager manager = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
 				String number = manager.getLine1Number();
 				return number;
+			}
+			else if (name.equalsIgnoreCase("device_owner_name")) {
+				return AccessOwnerInfo_getUsername(getContext());
+			}
+			else if (name.equalsIgnoreCase("device_owner_email")) {
+				return AccessOwnerInfo_getEmail(getContext());
 			}
 			else if (name.equalsIgnoreCase("device_name")) {
 				return Build.DEVICE;
