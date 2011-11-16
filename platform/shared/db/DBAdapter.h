@@ -150,6 +150,10 @@ public:
     {
         sqlite3_bind_int64(st, nPos, val);
     }
+    void bind(sqlite3_stmt* st, int nPos, sqlite_int64 val)
+    {
+        sqlite3_bind_int64(st, nPos, val);
+    }
     void bind(sqlite3_stmt* st, int nPos, unsigned long val)
     {
         sqlite3_bind_int(st, nPos, static_cast<int>(val));
@@ -345,7 +349,8 @@ public:
     void destroy_tables(const rho::Vector<rho::String>& arIncludeTables, const rho::Vector<rho::String>& arExcludeTables);
     void setBulkSyncDB(String fDataName, String strCryptKey);
 
-    void createDeleteTrigger(const String& strTable);
+    void createTrigger(const String& strSQL);
+    void dropTrigger(const String& strName);
 	
     virtual DBResultPtr prepareStatement( const char* szSt );
     DBResultPtr executeStatement(common::CAutoPtr<CDBResult>& res, const char* szSt);

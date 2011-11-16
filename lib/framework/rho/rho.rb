@@ -541,7 +541,7 @@ end
             db.start_transaction
             begin
                 init_db_sources(db, uniq_sources, partition,hash_migrate)
-                SyncEngine.update_blob_attribs(partition, -1 )
+                #SyncEngine.update_blob_attribs(partition, -1 )
                 
                 db.commit
             rescue Exception => e
@@ -557,6 +557,10 @@ end
         puts "Migrate schema sources: #{hash_migrate}"
         ::Rho::RHO.init_schema_sources(hash_migrate)
         ::Rho::RHO.check_sources_migration(uniq_sources)
+        
+        @db_partitions.each do |partition, db|
+            SyncEngine.update_blob_attribs(partition, -1 )
+        end
         
         ::Rho::RHO.init_sync_source_properties(uniq_sources)
     end
@@ -761,6 +765,7 @@ end
           schema_version = source['schema_version']
           associations = source['str_associations']
           blob_attribs = process_blob_attribs(source, db)
+          #puts "blob_attribs : #{blob_attribs}"
           
           #attribs = db.select_from_table('sources','sync_priority,source_id,partition, sync_type, schema_version, associations, blob_attribs', {'name'=>name})
           attribs = find_src_byname(db_sources,name)

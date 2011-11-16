@@ -1276,32 +1276,29 @@ end
 if !defined?(RHO_WP7)
   it "should support blob type" do
     
-    #TODO: fix blob for schema models    
-    unless $spec_settings[:schema_model]     
-        file_name = File.join(Rho::RhoApplication::get_blob_folder, 'MyText123.txt')
-        puts "file_name : #{file_name}"
-        File.delete(file_name) if File.exists?(file_name)
-        File.exists?(file_name).should ==  false
-      
-        write_data  = "this is blob test"
-        f = File.new(file_name, "w")
-        f.write(write_data)
-        f.close        
+    file_name = File.join(Rho::RhoApplication::get_blob_folder, 'MyText123.txt')
+    #puts "file_name : #{file_name}"
+    File.delete(file_name) if File.exists?(file_name)
+    File.exists?(file_name).should ==  false
+  
+    write_data  = "this is blob test"
+    f = File.new(file_name, "w")
+    f.write(write_data)
+    f.close        
 
-        File.exists?(file_name).should == true
-        blob_name = file_name[__rhoGetCurrentDir().length(), file_name.length()-__rhoGetCurrentDir().length()]
-        puts "blob_name : #{blob_name}"
-        
-        item = getAccount.create({'my_text'=>blob_name})
-        item.my_text.should == blob_name
-        File.exists?(file_name).should == true
-        
-        item.destroy
-        
-        item2 = getAccount.find(item.object)
-        item2.should be_nil
-        File.exists?(file_name).should == false
-    end        
+    File.exists?(file_name).should == true
+    blob_name = file_name[__rhoGetCurrentDir().length(), file_name.length()-__rhoGetCurrentDir().length()]
+    #puts "blob_name : #{blob_name}"
+    
+    item = getAccount.create({'my_text'=>blob_name})
+    item.my_text.should == blob_name
+    File.exists?(file_name).should == true
+    
+    item.destroy
+    
+    item2 = getAccount.find(item.object)
+    item2.should be_nil
+    File.exists?(file_name).should == false
   end
 end
 

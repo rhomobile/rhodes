@@ -21,6 +21,18 @@
 require 'rho/rho'
 #require 'fileutils'
 
+def getBlobTest
+    return BlobTest_s if $spec_settings[:schema_model]
+    
+    BlobTest
+end
+
+def getBlobTest_str
+    return 'BlobTest_s' if $spec_settings[:schema_model]
+    
+    'BlobTest'
+end
+
 describe "BlobSync_test" do
 
   before(:all)  do
@@ -43,7 +55,7 @@ describe "BlobSync_test" do
   it "should sync BlobTest" do
     SyncEngine.logged_in.should == 1
   
-    res = ::Rho::RhoSupport::parse_query_parameters BlobTest.sync( "/app/Settings/sync_notify")
+    res = ::Rho::RhoSupport::parse_query_parameters getBlobTest.sync( "/app/Settings/sync_notify")
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
   end
@@ -51,7 +63,7 @@ describe "BlobSync_test" do
   it "should delete all Test Blobs" do
     SyncEngine.logged_in.should == 1
   
-    items = BlobTest.find(:all ) #, :conditions => {:name => 'BlobTestItem'})
+    items = getBlobTest.find(:all ) #, :conditions => {:name => 'BlobTestItem'})
     items.should_not == nil
     
     items.each do |item|
@@ -61,14 +73,14 @@ describe "BlobSync_test" do
         File.exists?(file_name).should == false
     end    
 
-    BlobTest.sync( "/app/Settings/sync_notify")
+    getBlobTest.sync( "/app/Settings/sync_notify")
     sleep(2) #wait till sync server update data
     
-    res = ::Rho::RhoSupport::parse_query_parameters BlobTest.sync( "/app/Settings/sync_notify")
+    res = ::Rho::RhoSupport::parse_query_parameters getBlobTest.sync( "/app/Settings/sync_notify")
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
     
-    item2 = BlobTest.find(:first ) #, :conditions => {:name => 'BlobTestItem'})
+    item2 = getBlobTest.find(:first ) #, :conditions => {:name => 'BlobTestItem'})
     item2.should == nil
   end
 
@@ -80,25 +92,25 @@ describe "BlobSync_test" do
   it "should create new BlobTest" do
     SyncEngine.logged_in.should == 1
 
-    file_name = File.join(Rho::RhoApplication::get_model_path('app','BlobTest'), 'test.png')
+    file_name = File.join(Rho::RhoApplication::get_model_path('app',getBlobTest_str()), 'test.png')
     copy_file(file_name, Rho::RhoApplication::get_blob_folder() )
     file_name = File.join(Rho::RhoApplication::get_blob_folder(), 'test.png')
     
     file_size = File.size(file_name)
     file_content = File.read(file_name)
     
-    item = BlobTest.new
+    item = getBlobTest.new
     #item.name = 'BlobTestItem'
     item.image_uri = file_name
     item.save
-    BlobTest.sync( "/app/Settings/sync_notify")
+    getBlobTest.sync( "/app/Settings/sync_notify")
     sleep(2) #wait till sync server update data
 
-    res = ::Rho::RhoSupport::parse_query_parameters BlobTest.sync( "/app/Settings/sync_notify")
+    res = ::Rho::RhoSupport::parse_query_parameters getBlobTest.sync( "/app/Settings/sync_notify")
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
 
-    items = BlobTest.find(:all ) #, :conditions => {:name => 'BlobTestItem'})
+    items = getBlobTest.find(:all ) #, :conditions => {:name => 'BlobTestItem'})
     items.should_not == nil
     items.length.should == 1
     
@@ -113,11 +125,11 @@ describe "BlobSync_test" do
   it "should modify BlobTest" do
     SyncEngine.logged_in.should == 1
   
-    item = BlobTest.find(:first)
+    item = getBlobTest.find(:first)
     item.should_not == nil
     saved_obj = item.object
 
-    file_name = File.join(Rho::RhoApplication::get_model_path('app','BlobTest'), 'test2.png')
+    file_name = File.join(Rho::RhoApplication::get_model_path('app',getBlobTest_str()), 'test2.png')
     copy_file(file_name, Rho::RhoApplication::get_blob_folder() )
     file_name = File.join(Rho::RhoApplication::get_blob_folder(), 'test2.png')
     
@@ -129,14 +141,14 @@ describe "BlobSync_test" do
     item.save
     File.exists?(old_file).should == false
     
-    BlobTest.sync( "/app/Settings/sync_notify")
+    getBlobTest.sync( "/app/Settings/sync_notify")
     sleep(2) #wait till sync server update data
 
-    res = ::Rho::RhoSupport::parse_query_parameters BlobTest.sync( "/app/Settings/sync_notify")
+    res = ::Rho::RhoSupport::parse_query_parameters getBlobTest.sync( "/app/Settings/sync_notify")
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
     
-    item2 = BlobTest.find(saved_obj)
+    item2 = getBlobTest.find(saved_obj)
     item2.should_not be_nil
     
     item2.image_uri.should == file_name

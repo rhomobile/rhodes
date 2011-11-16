@@ -314,7 +314,7 @@ void CRhodesApp::run()
     RhoRubyStart();
     rubyext::CGeoLocation::Create();
 
-    rho_db_init_attr_manager();
+    //rho_db_init_attr_manager();
 
     LOG(INFO) + "Starting sync engine...";
     sync::CSyncThread::Create();
