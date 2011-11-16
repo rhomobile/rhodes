@@ -49,8 +49,9 @@ public class Event {
 //            "(\\d{4,})(\\d\\d)(\\d\\d)(?:T([0-1]\\d|2[0-3])([0-5]\\d)([0-5]\\d)(Z)?)?");
 
     private static final Pattern TIME_PATTERN_DURATION = Pattern.compile(
-            "^P(?:(?:\\d+?)D)(?:T(?:(?:\\d+?)H)(?:(?:\\d+?)M)(?:(?:\\d+?)S))$");
-    private static final int DURATION_DAYS = 1;
+//            "P(\\d+)S");
+            "^P((\\d+)D)??T??((\\d+)H)??((\\d+)M)??((\\d+)S)??$");
+    private static final int DURATION_DAYS = 2;
     private static final int DURATION_HOURS = 4;
     private static final int DURATION_MINUTES = 6;
     private static final int DURATION_SECONDS = 8;
@@ -88,9 +89,12 @@ public class Event {
             endDate = null;
             return;
         }
+        
+        Logger.T(TAG, "Parsing duration: " + str);
 
         try {
             Matcher match = TIME_PATTERN_DURATION.matcher(str);
+            match.find();
             String strDays = match.group(DURATION_DAYS);
             String strHours = match.group(DURATION_HOURS);
             String strMinutes = match.group(DURATION_MINUTES);
@@ -115,7 +119,7 @@ public class Event {
             }
             endDate = new Date(startDate.getTime() + (days * DAY_SEC + hours * HOUR_SEC + minutes * MINUTE_SEC + seconds) * 1000);
         } catch (IllegalStateException e) {
-            Logger.T(TAG, e);
+            Logger.E(TAG, e);
             endDate = null;
         }
     }
