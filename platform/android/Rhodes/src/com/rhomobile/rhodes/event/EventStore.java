@@ -132,7 +132,7 @@ public class EventStore {
         Date endDate = 0 < longDtEnd ? new Date(longDtEnd) : null;
         String duration = null;
 
-        if (longDtEnd == 0) {
+        if (endDate == null) {
             event.startDate = startDate;
 
             duration = cursor.getString(cursor.getColumnIndex(EVENTS_DURATION));
