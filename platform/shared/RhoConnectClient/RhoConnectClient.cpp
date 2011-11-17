@@ -196,7 +196,8 @@ void rho_connectclient_database_client_reset()
         //db::CDBAdapter::destroy_tables_allpartitions(Vector<String>(), arExclude);
     }
     
-    //TODO: scema_sources
+    rho_db_init_attr_manager();
+
     //hash_migrate = {}
     //::Rho::RHO.init_schema_sources(hash_migrate)
     
@@ -246,7 +247,7 @@ void rho_connectclient_database_full_reset(bool bClientReset)
 	if (!bClientReset)
         rho_conf_setString("push_pin", "");
     
-    //TODO: scema_sources
+    rho_db_init_attr_manager();
     //hash_migrate = {}
     //::Rho::RHO.init_schema_sources(hash_migrate)
     
@@ -254,7 +255,7 @@ void rho_connectclient_database_full_reset(bool bClientReset)
 }
 
 void rho_connectclient_destroy()
-{
+{                                                                     
     CSyncThread::Destroy();
 }
 
