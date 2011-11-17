@@ -137,6 +137,7 @@ module Rho
 
     def on_sync_user_changed
         Rhom::Rhom.database_full_reset(false, false)    
+        ::Rho::RHO.get_user_db().execute_sql("UPDATE client_info SET client_id=?", "")
     end
     
     def on_reinstall_config_update(conflicts)

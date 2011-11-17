@@ -795,7 +795,7 @@ void CSyncEngine::syncAllSources(const String& strQueryParams)
         /*bError = !*/syncOneSource(i, strQueryParams);
     }
 
-    if ( !isSchemaChanged() )
+    if ( !isSchemaChanged() && getState() != CSyncEngine::esStop )
     	getNotify().fireSyncNotification(null, true, RhoAppAdapter.ERR_NONE, RhoAppAdapter.getMessageText("sync_completed"));
 }
 
@@ -898,14 +898,18 @@ String CSyncEngine::loadSession()
     return m_strSession;
 }
 
-void CSyncEngine::logout()
+void CSyncEngine::logout_int()
 {
-    m_NetRequest.cancel();
-
     getUserDB().executeSQL( "UPDATE client_info SET session=NULL" );
     m_strSession = "";
 
     //loadAllSources();
+}
+
+void CSyncEngine::logout()
+{
+    stopSync();
+    logout_int();
 }
 	
 void CSyncEngine::setSyncServer(const char* syncserver)
@@ -919,7 +923,7 @@ void CSyncEngine::setSyncServer(const char* syncserver)
 		
 		getUserDB().executeSQL("DELETE FROM client_info");
 
-		logout();
+		logout_int();
 	}
 }
 

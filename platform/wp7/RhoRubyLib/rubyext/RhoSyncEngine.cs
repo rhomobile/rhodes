@@ -336,8 +336,7 @@ namespace rho.rubyext
             try
             {
                 SyncThread.stopSync();
-                SyncThread.getSyncEngine().stopSyncByUser();
-                SyncThread.getSyncEngine().logout();
+                SyncThread.getSyncEngine().logout_int();
             }
             catch (Exception ex)
             {

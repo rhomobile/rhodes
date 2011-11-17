@@ -102,6 +102,8 @@ public:
     boolean isLoggedIn();
     String loadSession();
     void logout();
+    void logout_int();
+
 	void setSyncServer(const char* syncserver);
 
     void setState(ESyncState eState){ m_syncState = eState; }
