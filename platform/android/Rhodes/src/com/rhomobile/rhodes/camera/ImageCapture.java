@@ -285,6 +285,9 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 
 	
 	private void takePicture() {
+		
+		com.rhomobile.rhodes.camera.Camera.logDebug(TAG, "takePicture()");
+		
 		if (camera == null) {
 			Logger.E(TAG, "Attempt of take picture while camera was not opened");
 			return;
@@ -348,10 +351,13 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 	        Logger.D(TAG, "Camera rotation: " + nCamRotate );
             parameters.set("rotation", nCamRotate );
             if ((mSettings != null) && (mSettings.getWidth() > 0) && (mSettings.getHeight() > 0)) {
-            
+
+            	
     			int newW = mSettings.getWidth();
     			int newH = mSettings.getHeight();
 
+        		com.rhomobile.rhodes.camera.Camera.logDebug(TAG, "    use custom size: ["+String.valueOf(newW)+"x"+String.valueOf(newH)+"]");
+    			
     			CameraService.Size s = com.rhomobile.rhodes.camera.Camera.getCameraService().getClosestPictureSize(camera, newW, newH);
  
     			if (s != null) {
@@ -363,6 +369,7 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
     			}
             	imgW = newW;
             	imgH = newH;
+        		com.rhomobile.rhodes.camera.Camera.logDebug(TAG, "    final size: ["+String.valueOf(imgW)+"x"+String.valueOf(imgH)+"]");
             }
             else {
             	// detect camera resolution
