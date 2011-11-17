@@ -41,7 +41,7 @@ CSyncSource::CSyncSource() : m_syncEngine( *new CSyncEngine(*new db::CDBAdapter(
 CSyncSource::CSyncSource(CSyncEngine& syncEngine, db::CDBAdapter& db  ) : m_syncEngine(syncEngine), m_dbAdapter(db)
 {
     m_bTokenFromDB = true;
-
+    m_nProgressStep = 0;
     m_nCurPageCount = 0;
     m_nInserted = 0;
     m_nDeleted = 0;                                     
@@ -58,6 +58,7 @@ CSyncSource::CSyncSource(int id, const String& strName, const String& strSyncTyp
     m_nID = id;
     m_strName = strName;
     m_strSyncType = strSyncType;
+    m_nProgressStep = 0;
 
     m_nCurPageCount = 0;
     m_nInserted = 0;
