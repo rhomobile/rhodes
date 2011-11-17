@@ -514,7 +514,9 @@ public class SyncSource
 	            oItem.m_strContentType = "application/octet-stream";
 	            oItem.m_strName = strAttrib + "-" + strObject;
 
-	            m_arBlobAttrs.addElement(strAttrib);
+	            if ( m_arBlobAttrs.indexOf(strAttrib) == -1 )
+	            	m_arBlobAttrs.addElement(strAttrib);
+	            
 	            m_arMultipartItems.addElement(oItem);
 	        }
 

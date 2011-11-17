@@ -152,6 +152,12 @@ namespace rho.common
         {
             base.Insert(nPos, value);
         }
+
+        public int indexOf(TValue item)
+        {
+            return base.IndexOf(item);
+        }
+
     }
 
     public class Hashtable<TKey, TValue> : System.Collections.Generic.Dictionary<TKey, TValue>
