@@ -29,6 +29,7 @@
 #include "RhoStd.h"
 #include "IRhoThreadImpl.h"
 #include "AutoPointer.h"
+#include "common/RhoSystem.h"
 
 namespace rho {
 namespace common {
@@ -42,6 +43,7 @@ class CRhoThread : public IRhoRunnable
     static const int TS_RUNNING = 4;
 
     int m_nState;
+    unsigned int m_nThreadID;
 public:
 
     CRhoThread();
@@ -55,6 +57,7 @@ public:
     virtual void run() = 0;
     virtual void runObject()
     {
+        m_nThreadID = CSystem::getThreadID();
         run();
         m_nState = TS_NONE;
     }
@@ -62,7 +65,7 @@ public:
     boolean isStopping(){return (m_nState&TS_STOPPING) != 0;}
     boolean isWaiting(){return (m_nState&TS_WAIT) != 0;}
     boolean isAlive(){return (m_nState&TS_RUNNING) != 0;}
-
+    unsigned int getThreadID(){ return m_nThreadID; }
 };
 
 }

@@ -1242,7 +1242,10 @@ CRubyMutex::~CRubyMutex()
 
 boolean CRubyMutex::isMainRubyThread()
 {
-    return true;
+    if ( !sync::CSyncThread::getInstance() )
+        return true;
+
+    return sync::CSyncThread::getInstance()->getThreadID() != CSystem::getThreadID();
 }
 
 void CRubyMutex::Lock()
