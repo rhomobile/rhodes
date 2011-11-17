@@ -260,7 +260,7 @@ public:
 
     boolean containsKey(const TKEY& key)
     {
-        return std::map<TKEY,TVALUE>::find(key) != std::map<TKEY,TVALUE>::end();
+        return !std::map<TKEY,TVALUE>::empty() && std::map<TKEY,TVALUE>::find(key) != std::map<TKEY,TVALUE>::end();
     }
 };
 
