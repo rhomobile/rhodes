@@ -40,6 +40,7 @@ import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesAppOptions;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
+import com.rhomobile.rhodes.util.Utils;
 
 public class Camera {
 
@@ -75,6 +76,14 @@ public class Camera {
 			}
 		}
 		return ourCameraService;
+	}
+
+	public static boolean ENABLE_DEBUG_LOGGING = false;
+	
+	public static void logDebug(String tag, String message) {
+		if (ENABLE_DEBUG_LOGGING) {
+			Utils.platformLog(tag, message);
+		}
 	}
 	
 	private static void reportFail(String name, Exception e) {
