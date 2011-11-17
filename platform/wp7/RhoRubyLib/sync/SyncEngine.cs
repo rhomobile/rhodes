@@ -907,7 +907,7 @@ namespace rho.sync
 	            /*bError = !*/syncOneSource(i);
 	        }
 
-	        if ( !isSchemaChanged() )
+            if (!isSchemaChanged() && getState() != SyncEngine.esStop )
 	    	    getNotify().fireSyncNotification(null, true, RhoAppAdapter.ERR_NONE, RhoAppAdapter.getMessageText("sync_completed"));
 	    }
 
@@ -1010,14 +1010,17 @@ namespace rho.sync
 	
 	    public void logout()
 	    {
-	        if(m_NetRequest!=null) 
-	            m_NetRequest.cancel();
-		
-		    getUserDB().executeSQL( "UPDATE client_info SET session = NULL");
-	        m_strSession = "";
-	
-	        //loadAllSources();
-	    }
+            stopSync();
+            logout_int();
+        }
+
+        public void logout_int()
+        {
+            getUserDB().executeSQL("UPDATE client_info SET session = NULL");
+            m_strSession = "";
+
+            //loadAllSources();
+        }
 	
 	    public void setSyncServer(String syncserver)
 	    {
@@ -1030,7 +1033,7 @@ namespace rho.sync
 			
 			    getUserDB().executeSQL("DELETE FROM client_info");
 
-			    logout();
+			    logout_int();
 		    }
 	    }
 	

@@ -375,8 +375,7 @@ void rho_sync_logout()
 
 	//CDBAdapter& db = CDBAdapter::getUserDB();
 	LOG(INFO) + "stopSyncByUser";
-    CSyncThread::getSyncEngine().stopSyncByUser();
-    CSyncThread::getSyncEngine().logout();
+    CSyncThread::getSyncEngine().logout_int();
 }
 
 void rho_sync_set_notification(int source_id, const char *url, char* params)

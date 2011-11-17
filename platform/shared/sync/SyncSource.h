@@ -168,6 +168,9 @@ public:
 
     void applyChangedValues();
     boolean processServerErrors(json::CJSONEntry& oCmds);
+
+    void checkProgressStepNotify(boolean bEndTransaction);
+
 private:
     CSyncEngine& getSync(){ return m_syncEngine; }
     CSyncNotify& getNotify();

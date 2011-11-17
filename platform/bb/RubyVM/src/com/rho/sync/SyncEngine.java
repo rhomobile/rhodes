@@ -961,7 +961,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	        /*bError = !*/syncOneSource(i, strQueryParams);
 	    }
 
-	    if ( !isSchemaChanged() )
+	    if ( !isSchemaChanged()  && getState() != SyncEngine.esStop )
 	    	getNotify().fireSyncNotification(null, true, RhoAppAdapter.ERR_NONE, RhoAppAdapter.getMessageText("sync_completed"));
 	}
 	
@@ -1067,9 +1067,12 @@ public class SyncEngine implements NetRequest.IRhoSession
 	
 	public void logout()throws Exception
 	{
-	    if(m_NetRequest!=null) 
-	        m_NetRequest.cancel();
-		
+		stopSync();
+		logout_int();
+	}
+
+	public void logout_int()throws Exception
+	{
 		getUserDB().executeSQL( "UPDATE client_info SET session = NULL");
 	    m_strSession = "";
 	
@@ -1087,7 +1090,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 			
 			getUserDB().executeSQL("DELETE FROM client_info");
 
-			logout();
+			logout_int();
 		}
 	}
 	

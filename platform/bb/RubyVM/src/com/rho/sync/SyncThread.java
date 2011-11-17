@@ -526,8 +526,7 @@ public class SyncThread extends ThreadQueue
 
 					try{
 						stopSync();
-						getSyncEngine().stopSyncByUser();
-					    getSyncEngine().logout();
+					    getSyncEngine().logout_int();
 					}catch(Exception e)
 					{
 						LOG.ERROR("logout failed", e);

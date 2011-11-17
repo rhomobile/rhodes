@@ -794,18 +794,36 @@ void CSyncSource::processSyncCommand(const String& strCmd, CJSONEntry oCmdEntry,
 
         if ( bCheckUIRequest )
         {
-            int nSyncObjectCount  = getNotify().incLastSyncObjectCount(getID());
-            if ( getProgressStep() > 0 && (nSyncObjectCount%getProgressStep() == 0) )
-                getNotify().fireSyncNotification(this, false, RhoAppAdapter.ERR_NONE, "");
-
             if ( getDB().isUIWaitDB() )
             {
 	            LOG(INFO) + "Commit transaction because of UI request.";
                 getDB().endTransaction();
+
+                checkProgressStepNotify(false);
+
                 CSyncThread::getInstance()->sleep(1000);
                 getDB().startTransaction();
-            }
+            }else
+                checkProgressStepNotify(true);
         }
+    }
+}
+
+void CSyncSource::checkProgressStepNotify(boolean bEndTransaction)
+{
+    int nSyncObjectCount  = getNotify().incLastSyncObjectCount(getID());
+    if ( getProgressStep() > 0 && (nSyncObjectCount%getProgressStep() == 0) )
+    {
+        if ( bEndTransaction )
+        {
+            LOG(INFO) + "Commit transaction because of Sync Progress notification.";
+            getDB().endTransaction();
+        }
+
+        getNotify().fireSyncNotification(this, false, RhoAppAdapter.ERR_NONE, "");
+
+        if ( bEndTransaction )
+            getDB().startTransaction();
     }
 }
 

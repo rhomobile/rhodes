@@ -48,7 +48,7 @@ namespace rho.sync
         public String m_strError = "", m_strServerError = "";
     
         int m_nRefreshTime = 0;
-        int m_nProgressStep = -1;
+        int m_nProgressStep = 0;
         boolean m_bSchemaSource;
     
         public class CAssociation
@@ -107,6 +107,7 @@ namespace rho.sync
             m_nID = 0;
         
             m_bTokenFromDB = true;
+            m_nProgressStep = 0;
 
             m_nCurPageCount = 0;
             m_nInserted = 0;
@@ -125,7 +126,8 @@ namespace rho.sync
             m_nID = id;
             m_strName = name;
             m_strSyncType = strSyncType;
-        
+            m_nProgressStep = 0;
+
             m_nCurPageCount = 0;
             m_nInserted = 0;
             m_nDeleted = 0;
@@ -827,18 +829,36 @@ namespace rho.sync
 	        
 	            if ( bCheckUIRequest )
 	            {
-		            int nSyncObjectCount  = getNotify().incLastSyncObjectCount(getID());
-		            if ( getProgressStep() > 0 && (nSyncObjectCount%getProgressStep() == 0) )
-		                getNotify().fireSyncNotification(this, false, RhoAppAdapter.ERR_NONE, "");
-		        
 		            if ( getDB().isUIWaitDB() )
 		            {
 			            LOG.INFO("Commit transaction because of UI request.");
 		                getDB().endTransaction();
+
+                        checkProgressStepNotify(false);
+
 		                SyncThread.sleep(1000);
 		                getDB().startTransaction();
-		            }
+		            }else
+                        checkProgressStepNotify(true);
 	            }
+	        }
+	    }
+
+	    void checkProgressStepNotify(boolean bEndTransaction)//throws Exception
+	    {
+	        int nSyncObjectCount  = getNotify().incLastSyncObjectCount(getID());
+	        if ( getProgressStep() > 0 && (nSyncObjectCount%getProgressStep() == 0) )
+	        {
+	            if ( bEndTransaction )
+	            {
+	                LOG.INFO("Commit transaction because of Sync Progress notification.");
+	                getDB().endTransaction();
+	            }
+
+	            getNotify().fireSyncNotification(this, false, RhoAppAdapter.ERR_NONE, "");
+
+	            if ( bEndTransaction )
+	                getDB().startTransaction();
 	        }
 	    }
 	
