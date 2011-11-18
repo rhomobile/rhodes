@@ -98,7 +98,7 @@ namespace "config" do
     $webkit_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("webkit_browser").nil?)
     unless $sdk
         $sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
-        $sdk = $app_config["wmsdk"] unless $app_config["wmsdk"].nil?
+        $sdk = $app_config["wm"]["sdk"] if $app_config["wm"] && $app_config["wm"]["sdk"]
     end    
     unless $build_solution
         if $webkit_capability
@@ -122,6 +122,9 @@ namespace "config" do
     #  $app_config["extensions"] += $app_config["wm"]["extensions"]
     #  $app_config["wm"]["extensions"] = nil
     #end
+
+    $wm_emulator = $app_config["wm"]["emulator"] if $app_config["wm"] and $app_config["wm"]["emulator"]
+    $wm_emulator = "Windows Mobile 6 Professional Emulator" unless $wm_emulator
   end
 end
 
@@ -308,7 +311,7 @@ namespace "device" do
 
               
       build_platform = 'wm6'
-      build_platform = 'ce5' if $sdk != "Windows Mobile 6 Professional SDK (ARMV4I)"
+      build_platform = 'ce5' if $sdk == "MC3000c50b (ARMV4I)"
 
       if $webkit_capability
           wk_config_dir = '../../../../Motorola-Extensions/RhoElements/Config'
@@ -405,7 +408,7 @@ namespace "run" do
 
    	  cd $startdir + "/res/build-tools"
 	  detool = "detool.exe"    
-	  args   = [ 'emu', '"Windows Mobile 6 Professional Emulator"', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port]
+	  args   = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port]
 	  puts "\nStarting application on the WM6 emulator\n\n"
 	  log_file = gelLogPath
 
@@ -460,7 +463,7 @@ namespace "run" do
 
   	  cd $startdir + "/res/build-tools"
 	  detool = "detool.exe"
-	  args   = ['emucab', '"Windows Mobile 6 Professional Emulator"', $targetdir + '/' +  $appname + ".cab", $appname, $port]
+	  args   = ['emucab', "\"#{$wm_emulator}\"", $targetdir + '/' +  $appname + ".cab", $appname, $port]
 	  log_file = gelLogPath
 
 	  Jake.run2( detool, ['log', log_file, $port], {:nowait => true})

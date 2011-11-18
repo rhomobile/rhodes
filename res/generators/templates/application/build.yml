@@ -5,7 +5,6 @@ version: 1.0
 vendor: rhomobile
 build: debug
 bbver: 4.6
-wmsdk: "Windows Mobile 6 Professional SDK (ARMV4I)"
 applog: rholog.txt
 iphone:
   configuration: Release
