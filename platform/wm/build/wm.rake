@@ -311,6 +311,7 @@ namespace "device" do
 
               
       build_platform = 'wm6'
+      build_platform = 'wm653' if $sdk == "Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
       build_platform = 'ce5' if $sdk == "MC3000c50b (ARMV4I)"
 
       if $webkit_capability
