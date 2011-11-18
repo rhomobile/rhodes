@@ -64,7 +64,12 @@ static VALUE dateToRuby(NSDate *date)
 
 static NSDate *dateFromRuby(VALUE rDate)
 {
+    if (NIL_P(rDate))
+        return nil;
+    
     if (TYPE(rDate) == T_STRING) {
+        if (RSTRING_LEN(rDate) == 0)
+            return nil;
         // Convert to time
         ID id_parse = rb_intern("parse");
         rDate = rb_funcall(rb_cTime, id_parse, 1, rDate);
@@ -155,6 +160,16 @@ static VALUE eventToRuby(EKEvent *event)
         int interval = event.recurrenceRule.interval;
         rb_hash_aset(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_INTERVAL), INT2FIX(interval));
         
+        if (event.recurrenceRule.recurrenceEnd != nil) {
+            NSDate* endDate = event.recurrenceRule.recurrenceEnd.endDate;
+            if (endDate != nil) {
+                rb_hash_aset(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_END), dateToRuby(endDate));
+                [endDate release];
+            } else {
+                int count = event.recurrenceRule.recurrenceEnd.occurrenceCount;
+                rb_hash_aset(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_COUNT), INT2FIX(count));
+            }
+        }
         rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_RECURRENCE), rRecurrence);
     }
     
@@ -226,8 +241,29 @@ static EKEvent *eventFromRuby(EKEventStore *eventStore, VALUE rEvent)
         VALUE rInterval = rb_hash_aref(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_INTERVAL));
         rInterval = rb_funcall(rInterval, rb_intern("to_i"), 0);
         int interval = NUM2INT(rInterval);
+
+        EKRecurrenceEnd *recurrenceEnd = nil;
+        VALUE rUntilDate = rb_hash_aref(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_END));
+        NSDate *until = dateFromRuby(rUntilDate);
+        if (until != nil) {
+            recurrenceEnd = [EKRecurrenceEnd recurrenceEndWithEndDate: until];
+            RAWTRACE("eventFromRuby recurrenceEndWithEndDate");
+        }
+        if (recurrenceEnd == nil)
+        {
+            VALUE rTimes = rb_funcall(rb_hash_aref(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_COUNT)), rb_intern("to_i"), 0);;
+            int times = NUM2INT(rTimes);
+            if (times > 0) {
+                recurrenceEnd = [EKRecurrenceEnd recurrenceEndWithOccurrenceCount:times];
+                RAWTRACE1("eventFromRuby recurrenceEndWithOccurrenceCount: %d", [recurrenceEnd occurrenceCount]);
+            }
+        }
         
-        EKRecurrenceRule *rule = [[EKRecurrenceRule alloc] initRecurrenceWithFrequency:freq interval:interval end:nil];
+        EKRecurrenceRule *rule = [[EKRecurrenceRule alloc] initRecurrenceWithFrequency:freq interval:interval end:recurrenceEnd];
+        
+        if (recurrenceEnd != nil)
+            [recurrenceEnd release];
+        
         event.recurrenceRule = rule;
         [rule release];
     }
