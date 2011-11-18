@@ -6,6 +6,7 @@ var stdout = WScript.StdOut;
 
 var settings = new Object();
 settings['wm6'] = ['Windows Mobile 6 Professional SDK (ARMV4I)','VersionMin=5.02','VersionMax=6.99'];
+settings['wm653'] = ['Windows Mobile 6.5.3 Professional DTK (ARMV4I)','VersionMin=5.02','VersionMax=6.99'];
 settings['ce5'] = ['MC3000c50b (ARMV4I)','VersionMin=5.00','VersionMax=6.99'];
 
 main();
