@@ -872,6 +872,16 @@ On 64-bit installations:
 	    vcbuild: C:/Program Files (x86)/Microsoft Visual Studio 8/VC/vcpackages/vcbuild.exe
 	    cabwiz: C:/Program Files (x86)/Windows Mobile 6 SDK/Tools/CabWiz
 
+### Setup target SDK and emulator
+By default 'Windows Mobile 6 Professional SDK (ARMV4I)' SDK and "Windows Mobile 6 Professional Emulator" are used. To change edit build.yml:
+
+    wm:
+      sdk: <target_sdk>
+      emulator: <target_emulator> 
+
+* 'target_sdk' may be: "MC3000c50b (ARMV4I)" - for Motorola CE devices, "Windows Mobile 6.5.3 Professional DTK (ARMV4I)" for latest Windows Mobile SDK.
+* 'target_emulator' may be: "Windows Mobile 6.5.3 Professional VGA Emulator" for VGA emulator , or any other installed Windows Mobile emulator
+
 ### Building and Running Your Windows Mobile Application with RhoStudio
 
 To start the build process, create a Run Configuration: select your project in the Project Explorer, and either:
