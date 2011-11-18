@@ -196,7 +196,11 @@ end
     dbRes.length.should == 1
     dbRes[0]['token_sent'].should == 0
     dbRes[0]['token'].should be_nil
-    dbRes[0]['client_id'].should be_nil
+    if $spec_settings[:schema_model]
+        dbRes[0]['client_id'].should be_nil
+    else
+        dbRes[0]['client_id'].should == ""
+    end    
   
     res = ::Rho::RhoSupport::parse_query_parameters getProduct.sync( "/app/Settings/sync_notify")
     res['status'].should == 'ok'
