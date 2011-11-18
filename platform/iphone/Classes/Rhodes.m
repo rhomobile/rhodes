@@ -804,12 +804,13 @@ static Rhodes *instance = NULL;
     [self doStartUp];
     [self processDoSync:launchOptions];
 
-    /*
     if ( !rho_rhodesapp_canstartapp([start_parameter UTF8String], ", ") )
     {
         //const char* szAppSecToken = get_app_build_config_item("security_token");
 		NSLog(@"This is hidden app and can be started only with security key.");
+        /*
         {
+            
             NSString* message = @"Invalid security token !";
             
             rho_conf_Init(rho_native_rhopath());
@@ -828,9 +829,9 @@ static Rhodes *instance = NULL;
             [alert show];
             [alert release];
         }
-		//exit(EXIT_SUCCESS);
+        */
+        //exit(EXIT_SUCCESS);
     }
-    */
 	
 	return NO;
 }
