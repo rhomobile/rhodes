@@ -241,6 +241,10 @@ static EKEvent *eventFromRuby(EKEventStore *eventStore, VALUE rEvent)
         VALUE rInterval = rb_hash_aref(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_INTERVAL));
         rInterval = rb_funcall(rInterval, rb_intern("to_i"), 0);
         int interval = NUM2INT(rInterval);
+        
+        if (interval <= 0) {
+            interval = 1;
+        }
 
         EKRecurrenceEnd *recurrenceEnd = nil;
         VALUE rUntilDate = rb_hash_aref(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_END));
