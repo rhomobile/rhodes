@@ -30,32 +30,29 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
-import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
 
-import android.content.Context;
 import android.content.res.AssetManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
-import android.widget.ImageView;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 public class SplashScreen implements MainView {
 	
 	private static final String TAG = SplashScreen.class.getSimpleName();
 	
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	
 	private static final String LOADING_ANDROID_PNG = "apps/app/loading.android.png";
 	private static final String LOADING_PNG = "apps/app/loading.png";
 	private static final String LOADING_PAGE = "apps/app/loading.html";
 	
-	private View mContentView;
+	private FrameLayout mView;
 	
 	private WebView mWebView;
 	
@@ -65,72 +62,62 @@ public class SplashScreen implements MainView {
 	
 	private boolean mFirstNavigate = true;
 	
-	public SplashScreen(Context context) {
+	public void init() {}
+	
+    public SplashScreen(RhodesActivity context) {
+    
+        mView = new FrameLayout(context);
+        mView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
 		AssetManager am = context.getResources().getAssets();
-		mContentView = createImageView(context, am);
-		if (mContentView == null)
-			mContentView = createHtmlView(context, am);
+		mWebView = createHtmlView(context, am);
+		mView.addView(mWebView);
 		mFirstNavigate = true;
 	}
-	
-	private View createImageView(Context context, AssetManager am) {
-		String[] imageFiles = {LOADING_ANDROID_PNG, LOADING_PNG};
-		for (String imageFile : imageFiles) {
-			InputStream is = null;
-			try {
-				is = am.open(imageFile);
-				Bitmap bitmap = BitmapFactory.decodeStream(is);
-				
-				ImageView view = new ImageView(context);
-				view.setImageBitmap(bitmap);
-				view.setAdjustViewBounds(false);
-				
-				return view;
-			} catch (IOException e) {
-				if (DEBUG)
-					Log.d(TAG, "Can't load " + imageFile, e);
-			}
-			finally {
-				if (is != null)
-					try {
-						is.close();
-					} catch (IOException e) {}
-			}
-		}
-		
-		return null;
-	}
-	
-	private View createHtmlView(Context context, AssetManager am) {
-		boolean hasNeededPage;
 
-		String page = LOADING_PAGE;
-		InputStream is = null;
-		try {
-			is = am.open(page);
-			hasNeededPage = true;
-		} catch (IOException e) {
-			if (DEBUG)
-				Log.d(TAG, "Can't load " + page, e);
-			hasNeededPage = false;
-		}
-		finally {
-			if (is != null)
-				try {
-					is.close();
-				} catch (IOException e) {}
-		}
-		
-		// Now create WebView and load appropriate content there
-		WebView view = new WebView(context);
-		
-		if (hasNeededPage)
-			view.loadUrl("file:///android_asset/" + page);
-		else
-			view.loadData("<html><title>Loading</title><body>Loading...</body></html>", "text/html", "utf-8");
-		
-		return view;
-	}
+    private WebView createHtmlView(RhodesActivity context, AssetManager am) {
+
+        int type = 0;
+        final String[][] urls = {{LOADING_ANDROID_PNG, LOADING_PNG}, {LOADING_PAGE}};
+        String[] fn = new String[2];
+        types: for (String[] X: urls) {
+            for (String url:X) {
+                InputStream is = null;
+                try {
+                    is = am.open(url);
+                    fn[type] = url;
+                    break types;
+                }
+                catch (IOException e) {
+                    if (DEBUG)
+                        Log.d(TAG, "Can't load " + url, e);
+                    continue;
+                }
+                finally {
+                    if (is != null)
+                        try {
+                            is.close();
+                        } catch (IOException e) {}
+                }
+            }
+            type++;
+        }
+
+        // Now create WebView and load appropriate content there
+        WebView view = context.createWebView();
+
+        switch (type) {
+        case 0:
+            view.loadDataWithBaseURL("file:///android_asset/", "<html><body style=\"margin:0px\"><img src=\""+ fn[type] + "\" height=\"100%\" width=\"100%\" border=\"0\"/></body></html>", "text/html", "utf-8", null);
+            break;
+        case 1:
+            view.loadUrl("file:///android_asset/" + fn[type]);
+            break;
+        default:
+            view.loadData("<html><title>Loading</title><body text='white' bgcolor='black'>Loading...</body></html>", "text/html", "utf-8");
+        }
+
+        return view;
+    }
 	
 	public void start() {
 		nativeStart();
@@ -138,15 +125,11 @@ public class SplashScreen implements MainView {
 	
 	@Override
 	public View getView() {
-		return mContentView;
+		return mView;
 	}
 	
 	@Override
 	public WebView getWebView(int index) {
-		if (mWebView == null) {
-			RhodesActivity ra = RhodesActivity.getInstance();
-			mWebView = ra.createWebView();
-		}
 		return mWebView;
 	}
 	
@@ -156,10 +139,8 @@ public class SplashScreen implements MainView {
 	}
 	
 	@Override
-	public void navigate(String url, int index) {
+	public void navigate(final String url, final int index) {
 
-		final String _url = url;
-		final int _index = index;
 		if (DEBUG)
 			Log.d(TAG, "navigate: url=" + url);
 		
@@ -168,24 +149,21 @@ public class SplashScreen implements MainView {
 			delay = 0;
 		}
 		
-		Utils.platformLog(TAG, "$$$$$$$$$$$$$$$$$$$$$$$     DELAY for SplashScreen = "+String.valueOf(delay));
+		Utils.platformLog(TAG, "DELAY for SplashScreen = "+String.valueOf(delay));
 
 		PerformOnUiThread.exec(new Runnable() {
-			private String mUrl = _url;
-			private int mIndex = _index;
+			private String mUrl = url;
+			private int mIndex = index;
 			public void run() {
+			    RhodesService r = RhodesService.getInstance();
+			    MainView mainView = r.getMainView();
 				if (mFirstNavigate) {
 					mFirstNavigate = false;
-			        RhodesService r = RhodesService.getInstance();
-					MainView mainView = r.getMainView();
 					SimpleMainView v = new SimpleMainView(mainView);
-					r.setMainView(v);		
-					//getWebView(0).loadUrl(url);
+					r.setMainView(v);
 					v.navigate(mUrl,0);
 				}
 				else {
-			        RhodesService r = RhodesService.getInstance();
-					MainView mainView = r.getMainView();
 					if (mainView != null) {
 						mainView.navigate(mUrl,mIndex);
 					}
@@ -193,16 +171,20 @@ public class SplashScreen implements MainView {
 			}
 			
 		}, delay);
-		
-		//nativeHide();
-		
 
 	}
 	
-	@Override
-	public WebView detachWebView() {
-		return getWebView(0);
-	}
+    @Override
+    public WebView detachWebView() {
+        WebView v = null;
+        if (mWebView != null) {
+            mView.removeView(mWebView);
+            v = mWebView;
+            mWebView = null;
+        }
+        return v;
+    }
+
 	@Override
 	public void back(int index) 
 	{
@@ -216,12 +198,9 @@ public class SplashScreen implements MainView {
 	}
 	@Override
 	public void reload(int index) {
-		// TODO Auto-generated method stub
-		
 	}
 	@Override
 	public String currentLocation(int index) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
@@ -245,26 +224,4 @@ public class SplashScreen implements MainView {
 	@Override
 	public void removeNavBar() {
 	}
-
-	/*
-	public void start(ViewGroup outer) {
-		outer.removeAllViews();
-		if (view instanceof SplashImageView) {
-			((SplashImageView)view).setupExecuted = false;
-		}
-		outer.addView(view);
-		RhoService.platformLog(TAG, " view was showed on screen");
-	}
-	
-	public void rho_start() {
-		nativeStart();
-		RhoService.platformLog(TAG, " rho native loading splash screen started");
-	}
-	
-	public void hide(ViewGroup outer) {
-		nativeHide();
-		outer.removeView(view);
-		RhoService.platformLog(TAG, " splash screen closed");
-	}
-	*/
 }
