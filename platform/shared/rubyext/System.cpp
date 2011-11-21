@@ -124,10 +124,10 @@ VALUE rho_sys_get_property(char* szPropName)
 	if (strcasecmp("has_sqlite",szPropName) == 0)
         return rho_ruby_create_boolean(1);
     
-    if (strcasecmp("security_token_passed",szPropName) == 0) {
-        int passed = 1;
-        if (!(RHODESAPP().isSecurityTokenPassed())) {
-            passed = 0;
+    if (strcasecmp("security_token_not_passed",szPropName) == 0) {
+        int passed = 0;
+        if ((RHODESAPP().isSecurityTokenNotPassed())) {
+            passed = 1;
         }
         return rho_ruby_create_boolean(passed);
     }
