@@ -50,6 +50,7 @@ public class EventStore {
 	private static final Uri EVENTS_URI = Uri.parse("content://" + AUTHORITY + "/events");
 	
 	private static final String EVENTS_ID = "_id";
+    private static final String EVENTS_EVENT_ID = "event_id";
 	private static final String EVENTS_TITLE = "title";
 	private static final String EVENTS_START_DATE = "dtstart";
 	private static final String EVENTS_END_DATE = "dtend";
@@ -121,18 +122,18 @@ public class EventStore {
 		}
 	}
 
-    static Event fetchEvent(Cursor cursor) {
-        String eid = cursor.getString(cursor.getColumnIndex(EVENTS_ID));
+    static Event fetchEvent(Cursor cursor, boolean expandRecurrency) {
+        String eid = cursor.getString(cursor.getColumnIndex(expandRecurrency ? EVENTS_EVENT_ID : EVENTS_ID));
         Event event = new Event(eid);
 
-        long longDtStart = cursor.getLong(cursor.getColumnIndex(EVENTS_START_DATE));
+        long longDtStart = cursor.getLong(cursor.getColumnIndex(expandRecurrency ? EVENTS_BEGIN : EVENTS_START_DATE));
         Date startDate = 0 < longDtStart ? new Date(longDtStart) : null;
 
-        long longDtEnd = cursor.getLong(cursor.getColumnIndex(EVENTS_END_DATE));
+        long longDtEnd = cursor.getLong(cursor.getColumnIndex(expandRecurrency ? EVENTS_END : EVENTS_END_DATE));
         Date endDate = 0 < longDtEnd ? new Date(longDtEnd) : null;
         String duration = null;
 
-        if (endDate == null) {
+        if (endDate == null && !expandRecurrency) {
             event.startDate = startDate;
 
             duration = cursor.getString(cursor.getColumnIndex(EVENTS_DURATION));
@@ -158,35 +159,37 @@ public class EventStore {
             case 3: event.privacy = "public"; break;
         }
 
-        String rrule = cursor.getString(cursor.getColumnIndex(EVENTS_RRULE));
-        Logger.D(TAG, "Event recurrence rule: " + rrule);
-        event.parseRrule(rrule);
+        if (!expandRecurrency) {
+            String rrule = cursor.getString(cursor.getColumnIndex(EVENTS_RRULE));
+            Logger.D(TAG, "Event recurrence rule: " + rrule);
+            event.parseRrule(rrule);
+        }
 
         Logger.D(TAG, event.toString());
 
         return event;
     }
 
-	public static Object fetch(Date startDate, Date endDate, boolean includeRepeating) {
+	public static Object fetch(Date startDate, Date endDate, boolean expandRecurrency) {
 		try {
 			checkCapabilities();
 			
 			Logger.D(TAG, "fetch(start, end), start: " + dateToString(startDate) + ", end: " + dateToString(endDate)
-					+ ", includeRepeating: " +includeRepeating);
+					+ ", includeRepeating: " + expandRecurrency);
 			
 			Vector<Event> ret = new Vector<Event>();
 			
 			ContentResolver r = getContentResolver();
 			
 			Cursor eventCursor;
-			if (includeRepeating) {
+			if (expandRecurrency) {
 				Uri.Builder builder = Uri.parse("content://" + AUTHORITY + "/instances/when").buildUpon();
 				ContentUris.appendId(builder, startDate.getTime());
 				ContentUris.appendId(builder, endDate.getTime());
 				
 				eventCursor = r.query(builder.build(),
 						new String[] {"event_id", EVENTS_TITLE, EVENTS_BEGIN, EVENTS_END, EVENTS_LOCATION,
-							EVENTS_NOTES, EVENTS_PRIVACY, EVENTS_DELETED, EVENTS_RRULE},
+							EVENTS_NOTES, EVENTS_PRIVACY, EVENTS_DELETED},
 						null, //"Calendars._id=" + id,
 						null, "startDay ASC, startMinute ASC");
 			}
@@ -214,8 +217,8 @@ public class EventStore {
 						}
 					}
 					
-					long longDtStart = eventCursor.getLong(eventCursor.getColumnIndex(EVENTS_START_DATE));
-					long longDtEnd = eventCursor.getLong(eventCursor.getColumnIndex(EVENTS_END_DATE));
+					long longDtStart = eventCursor.getLong(eventCursor.getColumnIndex(expandRecurrency ? EVENTS_BEGIN : EVENTS_START_DATE));
+					long longDtEnd = eventCursor.getLong(eventCursor.getColumnIndex(expandRecurrency ? EVENTS_END : EVENTS_END_DATE));
 					
 					Date eventStartDate = 0 < longDtStart ? new Date(longDtStart) : null;
 					Date eventEndDate = 0 < longDtEnd ? new Date(longDtEnd) : null;
@@ -230,7 +233,7 @@ public class EventStore {
 							&& (eventEndDate.before(startDate) || eventStartDate.after(endDate)))
 						continue;
 					
-					Event event = fetchEvent(eventCursor);
+					Event event = fetchEvent(eventCursor, expandRecurrency);
 					ret.add(event);
 				}
 			}
@@ -268,7 +271,7 @@ public class EventStore {
 					return null;
 				}
 				
-				Event event = fetchEvent(eventCursor);
+				Event event = fetchEvent(eventCursor, false);
 				
 				return event;
 			}

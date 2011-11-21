@@ -50,15 +50,25 @@ Out date_cast(In value);
 template <>
 jobject date_cast<jobject, VALUE>(VALUE rDate)
 {
-    if (NIL_P(rDate))
-        return NULL;
+    RHO_TRACE("dateFromRuby");
 
-    RHO_TRACE("dateFromRuby (1)");
+    if (NIL_P(rDate)) {
+        RHO_TRACE("dateFromRuby - NIL object");
+        return NULL;
+    }
+
+    RHO_TRACE("dateFromRuby - check for string type");
     if (TYPE(rDate) == T_STRING)
     {
-        RHO_TRACE("dateFromRuby (1.1)");
+        RHO_TRACE("dateFromRuby - converting from string");
+
+        if (strlen(RSTRING_PTR(rDate)) == 0) {
+            RHO_TRACE("dateFromRuby - empty string");
+            return NULL;
+        }
+
         rDate = rb_funcall(rb_cTime, rb_intern("parse"), 1, rDate);
-        RHO_TRACE("dateFromRuby (1.2)");
+        RHO_TRACE("dateFromRuby - converted to ruby date");
     }
     VALUE cDate = rb_class_of(rDate);
     if (!rb_equal(cDate, rb_cTime))
