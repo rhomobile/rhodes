@@ -1299,4 +1299,8 @@ module Kernel
     def require_source(name)
         Rho::RHO.get_instance().load_model(name.to_s)        
     end
+    def require_model(name)
+        Rho::RHO.get_instance().load_model(name.to_s)        
+    end
+    
 end    
