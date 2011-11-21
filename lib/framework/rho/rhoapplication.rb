@@ -114,11 +114,12 @@ module Rho
         start_url = Rho::RhoConfig.start_path
         start_url = "" unless start_url
         
-        security_token_passed = System.get_property('security_token_passed')
+        security_token_not_passed = System.get_property('security_token_not_passed')
+        security_token_not_passed = false if security_token_not_passed.nil?
         invalid_security_token_start_path_exist = Rho::RhoConfig.exists? 'invalid_security_token_start_path'
         invalid_security_token_start_path = Rho::RhoConfig.invalid_security_token_start_path
         
-        if !security_token_passed
+        if security_token_not_passed
             if invalid_security_token_start_path_exist
                 start_url = invalid_security_token_start_path
             else
