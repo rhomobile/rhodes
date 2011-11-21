@@ -178,6 +178,7 @@ static VALUE eventToRuby(EKEvent *event)
 
 static EKEvent *eventFromRuby(EKEventStore *eventStore, VALUE rEvent)
 {
+
     VALUE rId = rb_hash_aref(rEvent, rb_str_new2(RUBY_EV_ID));
     if (!NIL_P(rId))
         Check_Type(rId, T_STRING);
@@ -265,10 +266,12 @@ static EKEvent *eventFromRuby(EKEventStore *eventStore, VALUE rEvent)
         
         EKRecurrenceRule *rule = [[EKRecurrenceRule alloc] initRecurrenceWithFrequency:freq interval:interval end:recurrenceEnd];
         
+        
+        [event setRecurrenceRule:rule];
+
+        
         if (recurrenceEnd != nil)
             [recurrenceEnd release];
-        
-        event.recurrenceRule = rule;
         [rule release];
     }
     
