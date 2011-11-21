@@ -874,3 +874,8 @@ If your application requires that the local database is encrypted on the filesys
         rescue
          db.rollback
         end
+
+*NOTE: If ::Rho::RHO.get_src_db('Model') return nil, it means that you never call this models methods before(models are loaded by demand). To fix it call 'require_source': *
+
+	:::ruby
+    require_source 'Model'  
