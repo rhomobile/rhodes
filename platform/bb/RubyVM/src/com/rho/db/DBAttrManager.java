@@ -78,7 +78,8 @@ public class DBAttrManager {
     public void loadBlobAttrs(DBAdapter db)throws DBException
     {
         loadAttrs(db, m_mapBlobAttrs, "blob_attribs", m_mapSrcNames);
-        //TODO: update/delete trigger for schema sources
+        
+        db.setDBCallback(db.getAttrMgr().hasBlobAttrs());
     }
     
     static void loadAttrs(DBAdapter db, Hashtable/*Ptr< int, Hashtable<String,int>* >&*/ mapAttrs, String strDBAttr, Hashtable mapSrcNames)throws DBException
@@ -115,7 +116,7 @@ public class DBAttrManager {
 	
 			mapAttrs.put( nSrcID, mapAttr );
 			if ( mapSrcNames != null )
-				mapSrcNames.put(res.getStringByIdx(2).toUpperCase(), nSrcID);
+				mapSrcNames.put(res.getStringByIdx(2), nSrcID);
 	    }
     }
 }

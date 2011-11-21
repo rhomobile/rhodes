@@ -640,7 +640,7 @@ public class DBAdapter extends RubyBasic
 		
 		//getAttrMgr().load(this);
 		
-		m_dbStorage.setDbCallback(new DBCallback(this));
+		//m_dbStorage.setDbCallback(new DBCallback(this));
 		
 		//m_dbAdapters.addElement(this);
 
@@ -793,7 +793,7 @@ public class DBAdapter extends RubyBasic
 			
 			//getAttrMgr().load(this);
 			
-			m_dbStorage.setDbCallback(new DBCallback(this));
+			//m_dbStorage.setDbCallback(new DBCallback(this));
 			
 		}catch(Exception e)
 		{
@@ -1016,7 +1016,7 @@ public class DBAdapter extends RubyBasic
 			
 			//getAttrMgr().load(this);
 			
-			m_dbStorage.setDbCallback(new DBCallback(this));
+			//m_dbStorage.setDbCallback(new DBCallback(this));
 			
 		}catch(Exception e)
 		{
@@ -1144,8 +1144,6 @@ public class DBAdapter extends RubyBasic
 		{
 			DBAdapter db = (DBAdapter)enumDBs.nextElement();
 			db.getAttrMgr().loadBlobAttrs(db);
-			if ( !db.getAttrMgr().hasBlobAttrs() )
-				db.m_dbStorage.setDbCallback(null);
 		}
     }
     
@@ -1337,6 +1335,14 @@ public class DBAdapter extends RubyBasic
 			}
 		});
 		
+	}
+	
+	public void setDBCallback(boolean bSet)
+	{
+		if ( bSet )
+			m_dbStorage.setDbCallback(new DBCallback(this));
+		else
+			m_dbStorage.setDbCallback(null);
 	}
 	
 	public static class DBCallback implements IDBCallback
