@@ -643,7 +643,7 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     	try
     	{
 	        RhoRuby.RhoRubyStart("");
-	        com.rho.db.DBAdapter.initAttrManager();
+	        //com.rho.db.DBAdapter.initAttrManager();
 	        
 	        SyncThread sync = null;
 	        
@@ -1147,8 +1147,9 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
         		 AppBuildConfig.getItem("security_token").compareTo(m_strSecurityToken) != 0)
             {
                 LOG.INFO("This is hidden app and can be started only with security key.");
-                System.exit(0);
-                return;
+                //System.exit(0);
+                RhoConf.getInstance().setBool("security_token_not_passed",true,true);
+                //return;
             }
             
 	        LOG.INFO(" STARTING RHODES: ***----------------------------------*** " );
