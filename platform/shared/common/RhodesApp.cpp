@@ -65,7 +65,7 @@ namespace common{
 
 IMPLEMENT_LOGCLASS(CRhodesApp,"RhodesApp");
 String CRhodesApp::m_strStartParameters;
-boolean CRhodesApp::m_bSecurityTokenPassed = true;
+boolean CRhodesApp::m_bSecurityTokenNotPassed = false;
 
 class CAppCallbacksQueue : public CThreadQueue
 {
@@ -1573,7 +1573,7 @@ int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
     CRhodesApp::setStartParameters(szCmdLine);
     RAWLOGC_INFO1("RhodesApp", "New start params: %s", strCmdLine.c_str());
 
-    CRhodesApp::setSecurityTokenPassed(true);
+    CRhodesApp::setSecurityTokenNotPassed(false);
     
 	const char* szAppSecToken = get_app_build_config_item("security_token");
     if ( !szAppSecToken || !*szAppSecToken)
@@ -1591,7 +1591,7 @@ int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
 			strCmdLineSecToken = tmp;
 	}
     int result = strCmdLineSecToken.compare(szAppSecToken) != 0 ? 0 : 1; 
-    CRhodesApp::setSecurityTokenPassed(result);
+    CRhodesApp::setSecurityTokenNotPassed(!result);
 
     return result; 
 }
