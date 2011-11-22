@@ -220,22 +220,27 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
   $_methodname = id;
   file = file.to_s.gsub('\\', '/')
 
-  if file[0, $_app_path.length] == $_app_path
+  if file[0, $_app_path.length] == $_app_path or file.index("./") != nil
 
     if event =~ /^line/
 
       unhandled = true
       step_stop = ($_step > 0) and (($_step_level < 0) or ($_call_stack <= $_step_level))
 
-      a = step_stop.to_s
-      #$_s.write('[Debugger][2] file = ' + file.to_s + ' step = ' + a.to_s + "\n")
+      #$_s.write('[Debugger][2] file = ' + file.to_s + ' line = ' + line.to_s + "\n")
 
       if (step_stop or ($_breakpoints_enabled and (not $_breakpoint.empty?)))
-        filename = file[$_app_path.length, file.length-$_app_path.length]
+        filename = ""
+         
+        if file.index("./") != nil
+          filename = "/" + file[file.index("./") + 2, file.length]
+        else
+          filename = file[$_app_path.length, file.length-$_app_path.length]
+        end
 
         ln = line.to_i.to_s
         if (step_stop or ($_breakpoints_enabled and ($_breakpoint.has_key?(filename + ':' + ln))))
-          #$_s.write('[Debugger][3] step = ' + file.to_s + ' line = ' + line.to_s + "\n")
+          $_s.write('[Debugger][3] step = ' + filename.to_s + ' line = ' + line.to_s + "\n")
 
           fn = filename.gsub(/:/, '|')
           cl = classname.to_s.gsub(/:/,'#')
