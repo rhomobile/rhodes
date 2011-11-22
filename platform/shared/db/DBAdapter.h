@@ -109,7 +109,7 @@ public:
     ~CDBAdapter(void){}
 
     void open (String strDbPath, String strVer, boolean bTemp);
-    void close();
+    void close(boolean bCloseRubyMutex = true);
     sqlite3* getDbHandle(){ return m_dbHandle; }
     CDBAttrManager& getAttrMgr(){ return m_attrMgr; }
 
