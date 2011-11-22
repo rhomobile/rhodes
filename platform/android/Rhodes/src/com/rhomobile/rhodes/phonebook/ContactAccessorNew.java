@@ -362,7 +362,7 @@ public class ContactAccessorNew implements ContactAccessor {
 
             if (mime.equals(Email.CONTENT_ITEM_TYPE) && (select == null || select.contains(Phonebook.PB_EMAIL_ADDRESS))) {
                 if (contact.getField(Phonebook.PB_EMAIL_ADDRESS) == null) {
-                    contact.setField(Phonebook.PB_EMAIL_ADDRESS, dataCursor.getString(dataCursor.getColumnIndex(Email.ADDRESS)));
+                    contact.setField(Phonebook.PB_EMAIL_ADDRESS, dataCursor.getString(dataCursor.getColumnIndex(Email.DATA)));
                 }
             }
 
