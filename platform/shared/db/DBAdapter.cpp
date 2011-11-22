@@ -137,7 +137,7 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
         return;
 
     LOG(INFO) + "Open DB: " + strDbPath;
-    close();
+    //close();
 
     m_mxRuby.create();
     m_strDbPath = strDbPath;
@@ -660,7 +660,7 @@ void CDBAdapter::setBulkSyncDB(String fDataName, String strCryptKey)
     db.close();
 
     String dbOldName = m_strDbPath;
-    close();
+    close(false);
 
     CRhoFile::deleteFilesInFolder(RHODESAPPBASE().getBlobsDirPath().c_str());
 
@@ -753,7 +753,7 @@ String strTrigger = String("CREATE TRIGGER rhodeleteSchemaTrigger BEFORE DELETE 
 */
 }
 
-void CDBAdapter::close()
+void CDBAdapter::close(boolean bCloseRubyMutex/* = true*/)
 {
     for (Hashtable<String,sqlite3_stmt*>::iterator it = m_mapStatements.begin();  it != m_mapStatements.end(); ++it )
         sqlite3_finalize( it->second );
@@ -769,7 +769,8 @@ void CDBAdapter::close()
     m_ptrCrypt = 0;
     m_strCryptKey = "";
 
-    m_mxRuby.close();
+    if ( bCloseRubyMutex )
+        m_mxRuby.close();
 }
 
 int CDBAdapter::prepareSqlStatement(const char* szSql, int nByte, sqlite3_stmt **ppStmt)
@@ -1162,7 +1163,7 @@ CRubyMutex::CRubyMutex(boolean bIgnore) : m_nLockCount(0), m_valThread(0), m_val
 
 void CRubyMutex::create()
 {
-    if ( !m_bIgnore )
+    if ( !m_bIgnore && !m_valMutex)
         m_valMutex = rho_ruby_create_mutex();
 }
 
