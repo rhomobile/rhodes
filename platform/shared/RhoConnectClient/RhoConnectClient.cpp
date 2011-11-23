@@ -1329,6 +1329,9 @@ void rho_connectclient_hash_delete(unsigned long hash)
 
 const char* rho_connectclient_hash_get(unsigned long hash, const char* szKey)
 {
+    if (!hash)
+        return null;
+
     Hashtable<String, String>& hashThis = *((Hashtable<String, String>*)hash);
 
     if ( hashThis.containsKey(szKey) )
