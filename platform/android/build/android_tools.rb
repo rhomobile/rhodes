@@ -33,6 +33,64 @@
 
 module AndroidTools
 
+def fill_api_levels(sdkpath)
+    $api_levels = Hash.new
+    $market_versions = Hash.new
+    max_apilevel = 0
+    max_platform = nil 
+    
+    Dir.glob(File.join(sdkpath, "platforms", "*")).each do |platform|
+      props = File.join(platform, "source.properties")
+      unless File.file? props
+        puts "+++ WARNING! No source.properties found in #{platform}"
+        next
+      end
+
+      apilevel = 0
+      marketversion = nil
+      File.open(props, "r") do |f|
+        while line = f.gets
+          apilevel = $1.to_i if line =~ /^\s*AndroidVersion\.ApiLevel\s*=\s*([0-9]+)\s*$/
+          marketversion = $1 if line =~ /^\s*Platform\.Version\s*=\s*([^\s]*)\s*$/
+        end
+      end
+
+      puts "+++ API LEVEL of #{platform}: #{apilevel}" if USE_TRACES
+
+      if apilevel != 0
+        $api_levels[marketversion] = apilevel
+        $market_versions[apilevel] = marketversion
+        if apilevel > max_apilevel
+          max_apilevel = apilevel
+          max_platform = File.basename platform
+        end
+      end
+    end
+    
+    max_platform
+end
+module_function :fill_api_levels
+
+def get_installed_market_versions
+    $api_levels.keys
+end
+module_function :get_installed_market_versions
+
+def get_installed_api_levels
+    $market_versions.keys
+end
+module_function :get_installed_api_levels
+
+def get_market_version(apilevel)
+    $market_versions[apilevel]
+end
+module_function :get_market_version
+
+def get_api_level(marketversion)
+    $api_levels[marketversion]
+end
+module_function :get_api_level
+
 def get_app_log (appname, device, silent = false)
   pkgname = "com.#{$vendor}." + appname.downcase.gsub(/[^A-Za-z_0-9]/, '')
   path = File.join('/data/data', pkgname, 'rhodata', 'RhoLog.txt')
