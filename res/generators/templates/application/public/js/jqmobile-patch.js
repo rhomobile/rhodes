@@ -158,14 +158,30 @@
 		// attribute and in need of enhancement.
 		if ( page.length === 0 && dataUrl && !path.isPath( dataUrl ) ) {
 			page = settings.pageContainer.children( "#" + dataUrl )
-				.attr( "data-" + $.mobile.ns + "url", dataUrl )
+				.attr( "data-" + $.mobile.ns + "url", dataUrl );
 		}
 
 		// If we failed to find a page in the DOM, check the URL to see if it
-		// refers to the first page in the application.
-		if ( page.length === 0 && $.mobile.firstPage && absUrl && path.isFirstPageUrl( absUrl ) ) {
-			page = $( $.mobile.firstPage );
-		}
+		// refers to the first page in the application. If it isn't a reference
+		// to the first page and refers to non-existent embedded page, error out.
+        if ( page.length === 0 ) {
+            if ( $.mobile.firstPage && fileUrl && path.isFirstPageUrl( fileUrl ) ) {
+                // Check to make sure our cached-first-page is actually
+                // in the DOM. Some user deployed apps are pruning the first
+                // page from the DOM for various reasons, we check for this
+                // case here because we don't want a first-page with an id
+                // falling through to the non-existent embedded page error
+                // case. If the first-page is not in the DOM, then we let
+                // things fall through to the ajax loading code below so
+                // that it gets reloaded.
+                if ( $.mobile.firstPage.parent().length ) {
+                    page = $( $.mobile.firstPage );
+                }
+            } else if ( fileUrl && path.isEmbeddedPage( fileUrl )  ) {
+                deferred.reject( absUrl, options );
+                return deferred.promise();
+            }
+        }
 
         /*
 		// Reset base to the default document base.
@@ -264,6 +280,9 @@
             }
 
             if ( newPageTitle && !page.jqmData( "title" ) ) {
+                if ( ~newPageTitle.indexOf( "&" ) ) {
+                    newPageTitle = $( "<div>" + newPageTitle + "</div>" ).text();
+                }
                 page.jqmData( "title", newPageTitle );
             }
 
@@ -315,6 +334,8 @@
             }
 
             // Add the page reference to our triggerData.
+            //triggerData.xhr = xhr;
+            //triggerData.textStatus = textStatus;
             triggerData.page = page;
 
             // Let listeners know the page loaded successfully.
