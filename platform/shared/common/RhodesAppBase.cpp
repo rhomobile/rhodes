@@ -127,21 +127,21 @@ boolean CRhodesAppBase::isBaseUrl(const String& strUrl)
 
 extern "C" {
 
-int rho_unzip_file(const char* szZipPath)
+int rho_unzip_file(const char* szZipPath, const char* psw)
 {
     rho::common::CFilePath oPath(szZipPath);
     rho::String strBaseDir = oPath.getFolderName();
 #if defined(UNICODE) && defined(WIN32)
     rho::StringW strZipPathW;
     rho::common::convertToStringW(szZipPath, strZipPathW);
-    HZIP hz = OpenZipFile(strZipPathW.c_str(), "");
+    HZIP hz = OpenZipFile(strZipPathW.c_str(), psw);
     if ( !hz )
         return 0;
 
 	// Set base for unziping
     SetUnzipBaseDir(hz, rho::common::convertToStringW(strBaseDir).c_str());
 #else
-    HZIP hz = OpenZipFile(szZipPath, "");
+    HZIP hz = OpenZipFile(szZipPath, psw);
     if ( !hz )
         return 0;
 
