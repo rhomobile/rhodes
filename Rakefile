@@ -734,12 +734,47 @@ namespace "build" do
 
       Rake::Task["build:bundle:noxruby"].invoke
       
-      chdir File.join($srcdir, "apps")
-      sh %{zip -r upgrade_bundle.zip .}
+      new_zip_file = File.join($srcdir, "apps", "upgrade_bundle.zip")
       
-      cp   File.join($srcdir, "apps", "upgrade_bundle.zip"), $bindir
+      if RUBY_PLATFORM =~ /(win|w)32$/
+        begin
       
-      rm   File.join($srcdir, "apps", "upgrade_bundle.zip")
+          require 'rubygems'
+          require 'zip/zip'
+          require 'find'
+          require 'fileutils'
+          include FileUtils
+
+          root = $srcdir
+          
+          new_zip_file = File.join($srcdir, "upgrade_bundle.zip")
+
+          Zip::ZipFile.open(new_zip_file, Zip::ZipFile::CREATE)do |zipfile|
+            Find.find(root) do |path|
+                  Find.prune if File.basename(path)[0] == ?.
+                  dest = /apps\/(\w.*)/.match(path)
+                  if dest
+                      puts '     add file to zip : '+dest[1].to_s
+                      zipfile.add(dest[1],path)
+                  end
+            end 
+          end
+        rescue
+          puts 'ERROR !'
+          puts 'Require "rubyzip" gem for make zip file !'
+          puts 'Install gem by "gem install rubyzip"'
+        end        
+      else
+        chdir File.join($srcdir, "apps")
+        sh %{zip -r upgrade_bundle.zip .}
+      end
+
+      
+      cp   new_zip_file, $bindir
+      
+      rm   new_zip_file
+      
+      
       
     end
     
