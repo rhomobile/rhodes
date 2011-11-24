@@ -1,3 +1,9 @@
+## 3.2.3
+* Fix Blob sync issue in Rhoconnect-client
+* Fix logging issue on iPhone and Android
+* Fix Cookie issue on Windows phone 7
+* Implement Security token ruby callback
+
 ## 3.2.2
 * Fix iPhone build for AppStore
 * Fix Android infinite loop while using GPS
