@@ -1687,11 +1687,16 @@ int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
             String zip_bundle_path = m_zip_path;
             String old_bundle_path = RHODESAPP().getAppRootPath();
             String tmp_bundle_path = String(rho_native_rhopath()) + String("/tmp_new_apps");
-            //String tmp_zip_path = String(rho_native_rhopath()) + String("/tmp_new_apps/tmp_zip_file_with_bundle.zip");
+            String tmp_zip_path = String(rho_native_rhopath()) + String("/tmp_new_apps/tmp_zip_file_with_bundle.zip");
             
             CRhoFile::createFolder(tmp_bundle_path.c_str());
-            //CRhoFile::copyFile(zip_bundle_path.c_str(), tmp_zip_path.c_str() );
+            CRhoFile::copyFile(zip_bundle_path.c_str(), tmp_zip_path.c_str() );
             
+            
+            
+            rho_unzip_file(tmp_zip_path.c_str(), m_zip_password.c_str());
+
+            /*
             HZIP zip = OpenZipFile(zip_bundle_path.c_str(), m_zip_password.c_str());
 
             if (!zip) {
@@ -1720,10 +1725,10 @@ int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
             
             if (zip)
                 CloseZip(zip);
+            */
             
             
-            
-            //CRhoFile::deleteFile(tmp_zip_path.c_str());
+            CRhoFile::deleteFile(tmp_zip_path.c_str());
             CRhoFile::deleteFolder(old_bundle_path.c_str());
             CRhoFile::createFolder(old_bundle_path.c_str());
             CRhoFile::copyFoldersContentToAnotherFolder(tmp_bundle_path.c_str(), old_bundle_path.c_str());

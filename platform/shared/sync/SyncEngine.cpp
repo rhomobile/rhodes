@@ -635,7 +635,7 @@ void CSyncEngine::doBulkSync()//throws Exception
     }
 }
 
-extern "C" int rho_unzip_file(const char* szZipPath);
+extern "C" int rho_unzip_file(const char* szZipPath, const char* psw);
 
 static String getHostFromUrl( const String& strUrl );
 void CSyncEngine::loadBulkPartition(const String& strPartition )
@@ -711,7 +711,7 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
 
     LOG(INFO) + "Bulk sync: unzip db";
 
-    if ( !rho_unzip_file((fDataName+strZip).c_str()) )
+    if ( !rho_unzip_file((fDataName+strZip).c_str(), "") )
     {
         CRhoFile::deleteFile((fDataName+strZip).c_str());
         LOG(ERROR) + "Bulk sync failed: cannot unzip database file.";
