@@ -714,6 +714,37 @@ namespace "build" do
       cp_r "platform/shared/db/res/db", $srcdir 
     end
     
+    task :upgrade_package do
+    
+      $bindir = File.join($app_path, "bin") 
+      $current_platform = 'empty'
+      $srcdir = File.join($bindir, "RhoBundle")
+    
+      $targetdir = File.join($bindir, "target")
+      $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
+      $tmpdir = File.join($bindir, "tmp")
+      $appname = $app_config["name"]
+      $appname = "Rhodes" if $appname.nil?
+      $vendor = $app_config["vendor"]
+      $vendor = "rhomobile" if $vendor.nil?
+      $vendor = $vendor.gsub(/^[^A-Za-z]/, '_').gsub(/[^A-Za-z0-9]/, '_').gsub(/_+/, '_').downcase
+      $appincdir = File.join $tmpdir, "include"
+
+      Rake::Task["config:common"].invoke
+
+      Rake::Task["build:bundle:noxruby"].invoke
+      
+      chdir File.join($srcdir, "apps")
+      sh %{zip -r upgrade_bundle.zip .}
+      
+      cp   File.join($srcdir, "apps", "upgrade_bundle.zip"), $bindir
+      
+      rm   File.join($srcdir, "apps", "upgrade_bundle.zip")
+      
+    end
+    
+    
+    
     task :noiseq do
       app = $app_path
       rhodeslib = File.dirname(__FILE__) + "/lib/framework"

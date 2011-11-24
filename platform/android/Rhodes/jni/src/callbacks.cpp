@@ -69,6 +69,34 @@ RHO_GLOBAL void delete_files_in_folder(const char *szFolderPath)
     env->CallStaticVoidMethod(cls, mid, objFolderPath.get());
 }
 
+RHO_GLOBAL void rho_delete_folder(const char* szFolderPath) {
+    /*
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "deleteFolder", "(Ljava/lang/String;)V");
+    if (!mid) return;
+    jhstring objFolderPath = rho_cast<jhstring>(szFolderPath);
+    env->CallStaticVoidMethod(cls, mid, objFolderPath.get());
+     */
+    
+}
+
+RHO_GLOBAL void rho_copy_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath) {
+    /*
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "copyFoldersContentToAnotherFolder", "(Ljava/lang/String;Ljava/lang/String;)V");
+    if (!mid) return;
+    jhstring objSrcFolderPath = rho_cast<jhstring>(szSrcFolderPath);
+    jhstring objDstFolderPath = rho_cast<jhstring>(szDstFolderPath);
+    env->CallStaticVoidMethod(cls, mid, objSrcFolderPath.get(), objDstFolderPath.get());
+     */
+}
+
+
+
 RHO_GLOBAL VALUE rho_sys_makephonecall(const char* callname, int nparams, char** param_names, char** param_values)
 {
     // TODO:
