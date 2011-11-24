@@ -33,3 +33,17 @@
     textarea.ui-input-text,
     .ui-input-search { margin-left: 20px; }
 }
+
+/* fix for https://www.pivotaltracker.com/story/show/19794687 */
+@media all and (min-width: 320px){
+    .ui-content ul li div.itemLabel {
+        float: left;  /* float the label left, rather than floating the item right */
+        width: 40%;   /* A width MUST be specified when floating. */
+    }
+
+    .ui-content ul li div.itemValue {
+        width: 60%;
+        float: none;            /* Un-do the default float */
+        word-wrap: break-word;  /* breaks-up long strings with no spaces */
+    }
+}
