@@ -1918,6 +1918,10 @@ namespace "run" do
         cmd << " -no-window" if options[:hidden]
         cmd << " -avd #{$avdname}"
         Thread.new { system(cmd) }
+
+        puts "Waiting for emulator..."
+        puts Jake.run($adb, ['wait-for-device'] )
+
         puts "Waiting up to 180 seconds for emulator..."
         startedWaiting = Time.now
         adbRestarts = 1
