@@ -756,7 +756,9 @@ void rho_sys_set_application_icon_badge(int badge_number) {
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:badge_number];
 }
 
-
+void rho_platform_restart_application() {
+    [Rhodes restart_app];
+}
 
 /*
 #define MAX_ACTIONS 4
