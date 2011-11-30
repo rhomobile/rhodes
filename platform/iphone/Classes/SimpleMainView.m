@@ -92,6 +92,10 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	makeHiddenUntilLoadContent = NO;
 }
 
++ (void) enableHiddenOnStart {
+	makeHiddenUntilLoadContent = YES;
+}
+
 -(CGRect)getContentRect {
 	if (nativeViewView != nil) {
 		return nativeViewView.frame;

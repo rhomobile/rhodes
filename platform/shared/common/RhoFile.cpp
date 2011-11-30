@@ -295,6 +295,74 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
         oFile.close();
     }
 }
+    
+    /*static*/ void CRhoFile::copyFile(const char* szSrcFile, const char* szDstFile) {
+        
+        CRhoFile src;
+        CRhoFile dst;
+        
+        if (!src.open(szSrcFile, OpenReadOnly)) {
+            return;
+        }
+        if (!dst.open(szDstFile, OpenForWrite)) {
+            src.close();
+        }
+        
+        int buf_size = 1 << 16;
+        unsigned char* buf = new unsigned char[buf_size];
+        
+        unsigned int to_copy = src.size();
+        
+        while (to_copy > 0) {
+            int portion_size = buf_size;
+            if (to_copy < portion_size) {
+                portion_size = to_copy;
+            }
+            src.readData(buf, 0, portion_size);
+            dst.write(buf, portion_size);
+            
+            to_copy -= portion_size;
+        }
+        
+        src.close();
+        dst.flush();
+        dst.close();
+        
+        delete buf;
+    }
+    
+    
+    /*static*/ void  CRhoFile::deleteFolder(const char* szFolderPath) {
+#if defined(OS_WINDOWS) || defined(OS_WINCE)
+#else
+        rho_delete_folder(szFolderPath);
+#endif
+    }
+    
+    /*static*/ void  CRhoFile::copyFoldersContentToAnotherFolder(const char* szSrcFolderPath, const char* szDstFolderPath) {
+#if defined(OS_WINDOWS) || defined(OS_WINCE)
+#else
+        rho_copy_folders_content_to_another_folder(szSrcFolderPath, szDstFolderPath);
+#endif
+    }
 
 }
 }
+
+#if defined(OS_MACOSX) || defined(OS_ANDROID)
+// implemented in platform code
+#else
+extern "C" {
+    
+    void rho_delete_folder(const char* szFolderPath) {
+        
+    }
+    
+    void rho_copy_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath) {
+        
+    }
+    
+    
+}
+#endif
+

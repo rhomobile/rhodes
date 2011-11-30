@@ -59,6 +59,8 @@ static RhoConnectEngine *sharedInst = nil;
 		product.name = @"Product";
 		
 		sclient = [[RhoConnectClient alloc] init];
+        [sclient setLogSeverity:1];
+        
 		NSMutableArray* models = [NSMutableArray arrayWithObjects:customer, product, nil];	
 		
 		[sclient addModels:models];

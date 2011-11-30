@@ -71,6 +71,11 @@ public:
     static void         recursiveCreateDir(const char* szFolderPath, const char* szBasePath);
     static void         readStringFromFile( const char* szFilePath, String& strData );
     static void         writeStringToFile( const char* szFilePath, String& strData );
+    
+    static void         copyFile(const char* szSrcFile, const char* szDstFile);
+    static void         deleteFolder(const char* szFolderPath);
+    static void         copyFoldersContentToAnotherFolder(const char* szSrcFolderPath, const char* szDstFolderPath);
+
 private:
     CRhoFile(const CRhoFile&);
     void operator=(const CRhoFile&);
@@ -81,5 +86,8 @@ private:
 }
 
 extern "C" void delete_files_in_folder(const char *szFolderPath);
+
+extern "C" void rho_delete_folder(const char* szFolderPath);
+extern "C" void rho_copy_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath);
 
 #endif //_RHOFILE_H_

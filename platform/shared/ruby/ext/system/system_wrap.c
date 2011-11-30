@@ -1877,6 +1877,12 @@ extern void rho_sys_stop_timer( const char *url );
 #define set_application_icon_badge rho_sys_set_application_icon_badge
 extern void rho_sys_set_application_icon_badge(int badge_number);
 
+#define replace_current_bundle_by_folder rho_sys_replace_current_bundle_by_folder
+extern void rho_sys_replace_current_bundle_by_folder(const char* path);
+
+#define replace_current_bundle_by_zip rho_sys_replace_current_bundle_by_zip
+extern void rho_sys_replace_current_bundle_by_zip(const char* path, const char* zip_password);
+
 
 	#if !defined(bool)
 	#define bool int
@@ -2578,6 +2584,65 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_replace_current_bundle_by_folder(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","replace_current_bundle_by_folder", 1, argv[0] ));
+  }
+  arg1 = (char *)(buf1);
+  replace_current_bundle_by_folder((char const *)arg1);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_replace_current_bundle_by_zip(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","replace_current_bundle_by_zip", 1, argv[0] ));
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","replace_current_bundle_by_zip", 2, argv[1] ));
+  }
+  arg2 = (char *)(buf2);
+  replace_current_bundle_by_zip((char const *)arg1,(char const *)arg2);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return Qnil;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -2876,5 +2941,7 @@ SWIGEXPORT void Init_System(void) {
   rb_define_module_function(mSystem, "start_timer", _wrap_start_timer, -1);
   rb_define_module_function(mSystem, "stop_timer", _wrap_stop_timer, -1);
   rb_define_module_function(mSystem, "set_application_icon_badge", _wrap_set_application_icon_badge, -1);
+  rb_define_module_function(mSystem, "replace_current_bundle_by_folder", _wrap_replace_current_bundle_by_folder, -1);
+  rb_define_module_function(mSystem, "replace_current_bundle_by_zip", _wrap_replace_current_bundle_by_zip, -1);
 }
 

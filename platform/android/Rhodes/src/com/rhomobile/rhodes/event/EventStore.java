@@ -259,7 +259,7 @@ public class EventStore {
 			
 			Uri uri = ContentUris.withAppendedId(EVENTS_URI, Long.parseLong(id));
 			final Cursor eventCursor = r.query(uri,
-					new String[] {EVENTS_TITLE, EVENTS_START_DATE, EVENTS_END_DATE,
+					new String[] {EVENTS_ID, EVENTS_TITLE, EVENTS_START_DATE, EVENTS_END_DATE,
 						EVENTS_LOCATION, EVENTS_NOTES, EVENTS_PRIVACY, EVENTS_RRULE},
 					null, null, null);
 			if (eventCursor == null)

@@ -91,6 +91,7 @@ void rho_free_callbackdata(void* pData)
 
 @synthesize threaded_mode;
 @synthesize poll_interval;
+@synthesize log_severity;
 @synthesize sync_server;
 @synthesize bulksync_state;
 
@@ -124,6 +125,12 @@ void rho_free_callbackdata(void* pData)
 {
 	poll_interval = interval;
 	rho_sync_set_pollinterval(interval);
+}
+
+- (void) setLogSeverity:(int)severity
+{
+	log_severity = severity;
+	rho_logconf_setSeverity(log_severity);
 }
 
 - (void) setBulkSyncState:(int)state

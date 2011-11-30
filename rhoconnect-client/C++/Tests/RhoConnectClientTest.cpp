@@ -88,6 +88,7 @@ extern "C" int runSyncClientTests()
 
     rho_sync_set_threaded_mode(0);
     rho_sync_set_pollinterval(0);
+    rho_logconf_setSeverity(1);
 
     m_nProductSrcID = models[0].source_id;
 //run tests
