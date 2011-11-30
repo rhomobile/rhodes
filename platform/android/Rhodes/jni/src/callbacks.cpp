@@ -95,7 +95,7 @@ RHO_GLOBAL void rho_copy_folders_content_to_another_folder(const char* szSrcFold
      */
 }
 
-RHO_GLOBAL void void rho_platform_restart_application() {
+RHO_GLOBAL void rho_platform_restart_application() {
 
 }
 
