@@ -91,7 +91,7 @@ const char* rho_rhodesapp_getplatform();
 //const char* rho_rhodesapp_getrhodespath();
 void rho_file_recursive_createdir(const char* szPath, const char* szBasePath);
 
-int rho_unzip_file(const char* szZipPath);
+int rho_unzip_file(const char* szZipPath, const char* psw);
 
 void rho_free_callbackdata(void* pData);
 	

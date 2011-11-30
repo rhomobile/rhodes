@@ -35,6 +35,7 @@
 
 @property(setter=setThreadedMode:) BOOL threaded_mode;
 @property(setter=setPollInterval:) int  poll_interval;
+@property(setter=setLogSeverity:) int  log_severity;
 @property(assign, setter=setSyncServer:) NSString* sync_server;
 @property(setter=setBulkSyncState:, getter=getBulkSyncState) int bulksync_state;
 

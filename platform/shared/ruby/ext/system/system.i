@@ -63,6 +63,12 @@ extern void rho_sys_stop_timer( const char *url );
 #define set_application_icon_badge rho_sys_set_application_icon_badge
 extern void rho_sys_set_application_icon_badge(int badge_number);
 
+#define replace_current_bundle_by_folder rho_sys_replace_current_bundle_by_folder
+extern void rho_sys_replace_current_bundle_by_folder(const char* path);
+
+#define replace_current_bundle_by_zip rho_sys_replace_current_bundle_by_zip
+extern void rho_sys_replace_current_bundle_by_zip(const char* path, const char* zip_password);
+
 
 	#if !defined(bool)
 	#define bool int
@@ -118,3 +124,5 @@ extern void app_uninstall(const char *appname);
 extern void start_timer( int interval, const char *url, const char* params);
 extern void stop_timer( const char *url);
 extern void set_application_icon_badge(int badge_number);
+extern void replace_current_bundle_by_folder(const char* path);
+extern void replace_current_bundle_by_zip(const char* path, const char* zip_password);

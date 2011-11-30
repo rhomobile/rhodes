@@ -21,6 +21,9 @@ LOCAL_SRC_FILES := \
     enc/unicode.c \
     enc/us_ascii.c \
     enc/utf_8.c \
+    enc/encdb.c \
+    enc/iso_8859_1.c \
+    enc/iso_8859_9.c \
     enum.c \
     enumerator.c \
     error.c \

@@ -464,9 +464,10 @@ int runObjCClientTest()
     NSMutableArray* models = [NSMutableArray arrayWithObjects:customer, product, perftest, nil];	
 	
 	[sclient addModels:models];
-	
+    
     //sclient.threaded_mode = FALSE;
 	//sclient.poll_interval = 0;
+    [sclient setLogSeverity:1];
 	
     // exception to throw on test failure
     NSException *e = [NSException
@@ -764,6 +765,7 @@ int runObjCClientBlobTest()
 	
     //sclient.threaded_mode = FALSE;
 	//sclient.poll_interval = 0;
+    [sclient setLogSeverity:1];
 	
     // exception to throw on test failure
     NSException *e = [NSException

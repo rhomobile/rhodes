@@ -63,3 +63,31 @@ void delete_files_in_folder(const char *szFolderPath)
 {
 	[RhoFileImpl deleteFilesInFolder:[NSString stringWithUTF8String:szFolderPath]];
 }
+
+void rho_delete_folder(const char* szFolderPath) {
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+	NSError *err;
+    [fileManager removeItemAtPath:[NSString stringWithUTF8String:szFolderPath] error:&err];
+}
+
+void rho_copy_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath) {
+
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    NSString* src_folder = [NSString stringWithUTF8String:szSrcFolderPath];
+    NSString* dst_folder = [NSString stringWithUTF8String:szDstFolderPath];
+	
+	NSDirectoryEnumerator *enumerator = [fileManager enumeratorAtPath:src_folder];
+	if (enumerator == nil)
+		return;
+	
+	NSError *err;
+	id path;
+	while ((path = [enumerator nextObject])) {
+		NSString *src_item = [NSString stringWithFormat:@"%@/%@", src_folder, [NSString stringWithFormat:@"%@", path]];
+		NSString *dst_item = [NSString stringWithFormat:@"%@/%@", dst_folder, [NSString stringWithFormat:@"%@", path]];
+		[fileManager copyItemAtPath:src_item toPath:dst_item error:&err];
+	}
+    
+}
+

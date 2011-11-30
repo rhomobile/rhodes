@@ -51,6 +51,7 @@ public class RhodesApp
 	Mutex m_mxScreenRotationCallback = new Mutex();
     String m_strScreenRotationCallback = "", m_strScreenRotationCallbackParams = "";
     static String m_strStartParameters = "";
+    static boolean m_bSecurityTokenNotPassed = false;
     
     int m_currentTabIndex = 0;
     String[] m_currentUrls = new String[5];
@@ -85,6 +86,9 @@ public class RhodesApp
     
     public static void setStartParameters(String szParams ){ m_strStartParameters = (szParams != null? szParams : ""); }
     public static String getStartParameters(){ return m_strStartParameters; }
+    
+    public static void setSecurityTokenNotPassed(boolean is_not_passed) {m_bSecurityTokenNotPassed = is_not_passed;}
+    public static boolean isSecurityTokenNotPassed() {return m_bSecurityTokenNotPassed;}
     
     RhodesApp(String strRootPath)
     {

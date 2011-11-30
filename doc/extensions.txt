@@ -329,65 +329,528 @@ NOTE: Once again, it should be mentioned that not all libraries are guaranteed t
 
 ## Native Extensions 
 
-Starting from 2.0, Rhodes support native extensions for Android, iPhone, WM and BB platforms. Native extensions are extensions written on native language (C/C++/ObjC for iPhone, C/C++/Java for Android, C/C++ for WM, Java for BB). They can provide Ruby interface or don't provide it - its up to authors of these extensions. Below is list of steps need to be done to create native extension for Rhodes (here assumed extension name is 'ext-name')
+Starting from 2.0, Rhodes supports native extensions for Android, iPhone, WM and BlackBerry platforms. Native extensions are extensions written in the native language for the platform (C/C++/ObjC for iPhone, C/C++/Java for Android, C/C++ for WM, Java for Blackberry).
 
-### Native extension template generation
+## Generating a Native Extension Template
 
-You can generate all required folder structure and files for your native extension by next console command in your application folder:
-	rhogen extension extension_name
+The rhogen extension command allows you to create a native extension template for your Rhodes application. This template contains build scripts, projects, and native source code for the functions calc_summ and native_process_string, which you can use as templates to create your own native extension functions.
 
-### Native extension details
+Before you use the rhogen extension command, you must have or you must create a Rhodes application from which you will call the native extension. You can [generate a Rhodes application](generator) from the command line or from RhoStudio.
 
-Create folder ext-name in your application extensions folder (app-name/extensions/ext-name) and go there.
+Then, on the command line, navigate to the main folder in your Rhodes application. Run the following command:
 
-Create file ext.yml with content:
+	:::term
+	rhogen extension yourextension
 
-	entry: Init_ext_name
-	libraries: ["ext-name"]
+where `yourextension` is the name you want to use for your native extension.
 
-Here Init_ext_name is function provided by native extension. It will be called on rhodes application start - put here all initialization stuff. "ext-name" - is the name of library extension will be compiled in. There could be more than one libraries, in this case just specify them separated by comma. When rhodes creates final binary, it will search library with name 'libext-name.a' for iPhone and Android or 'ext-name.lib' for Windows and link with it.
+This command will create two folders in your application folder:
+ * `yourextensionTest`, which contains a test controller and page for the generated native extension.
+ * `extensions`, which contains the generated native extension source code for the iPhone, Android, Windows Mobile, and Blackberry platforms.
 
-Create folder 'ext' and put 'build' script there (build.bat on Windows). Be sure this script has execute bit set in file permissions if running on Linux/Mac OS X.
+### Understanding the Generated Native Extension Test Implementation
 
-Edit build script as you want - it will be called on application build and must produce library libext-name.a (iPhone/Android) or ext-name.lib (Windows) in the folder pointed by environment variable TARGET_TEMP_DIR. You are free to implement it as you want - the only requirement is when the script finished, library libext-name.a/ext-name.lib must exist in TARGET_TEMP_DIR directory. Other useful environment variables passed to the build script:
+In your applications `app` folder is a folder named `yourextensionTest`. It contains two files that have a test implementation of the generated native extension example functions:
 
-Common variables :
+ * controller.rb - An example of application controller code with execution of the generated extension code.
+ * index.erb - A page that executes the application controller.
 
-* TARGET_TEMP_DIR - Location to put your compiled library
-* RHO_PLATFORM - mobile platform current build for. Possible values are 'iphone', 'android' and 'wm'
-* RHO_ROOT - point to the rhodes installation root folder (directory where rhobuild.yml located)
-* TEMP_FILES_DIR - you can use it for temporary files
+The controller.rb is a simple Ruby controller file that calls the generated native extension functions of calc_summ and process_string. It has a function, run_test, that calls the calc_summ native function to calculate a sum, then uses an Alert popup to show the sum via the process_string native function.
 
-Special for Android build :
+	:::ruby
+	require 'rho/rhocontroller'
+	require 'yourextension'
+	
+	class YourextensionTestController < Rho::RhoController
+	  @layout = :simplelayout
+	  
+	  def index
+	    render :back => '/app'
+	  end
+	
+	  def run_test
+	    sum = Yourextension.calc_summ(3,7) 
+	    Alert.show_popup YourextensionModule::YourextensionStringHelper::process_string('test')+sum.to_s
+	    render :action => :index, :back => '/app'
+	  end
+	  
+	end
+
+The index.erb provides a page where you can click a link to run the run_test function.
+
+	:::html
+	<h3>Yourextension Extension Test</h3>
+	<div>
+	    <%= link_to '[Run Yourextension test]', { :action => :run_test }%><br/>
+	</div>
+
+## Understanding the Generated Native Extension Code
+
+The extensions folder has the following contents.
+
+	:::term
+	yourextension - A folder named for your extension.
+
+		ext.yml - The native extension configuration file. It contains the library name, java entry point (class name for BB), C entry point, etc.
+
+		yourextension.rb - The extension Ruby code. This file contains Ruby classes that you wish to execute from your native code; it has the generated Ruby class YourextensionStringHelper.
+        
+        All files named in this folder will be added to build extent "ext" folder and file.
  
-* ANDROID_NDK - path to Android NDK used by rhodes (Android build)
-* ANDROID_API_LEVEL - Android API level used by rhodes (Android build)
+        ext - The folder with the extension sources for the native build.
 
-Special for WM build :
+            build - A unix based build script (for Mac OS).
 
-* VCBUILD - path to the vcbuild application usable to build MS VS projects/solutions (WM build)
+            build.bat - A Windows based build script (for MS Windows).
 
-Special for iPhone build :
+            <yourextension> - The folder containing the shared and platform folders.
 
-* PLATFORM_DEVELOPER_BIN_DIR - path to the platform developer bin directory (iPhone build)
-* SDKROOT - path to the root of the used SDK - 3.0, 3.1 etc (iPhone build)
-* ARCHS - cpu architecture used to build extension - i386, armv6 etc (iPhone build)
-* XCODEBUILD - contain fullname of xcodebuild (iPhone build)
-* CONFIGURATION - "Debug"/"Release"  (iPhone build)
-* SDK_NAME - name of SDK - need for build of xcodeproject  (iPhone build)
+                shared - The folder with the shared code (this is used by all platforms except Blackberry). Contains the interface for the native extension.
 
-Special for BB build :
+                platform - The folder with the platform dependent code, This contains the native extension code for your platform, which you will rewrite for your native extension.
 
-* JAVA_EXE - java.exe full path (BB build)
-* JAVAC_EXE - javac.exe full path (BB build)
-* JDE_HOME - JDE home full path (BB build)
-* JAR_EXE - jar.exe full path (BB build)
-* RUBYVM_JAR - full name of RubyVM.jar file (need for compilation) (BB build)	
-* BB_SDK_VERSION - version of BB SDK
+To create your native extension, you will rewrite code within:
+ * the `shared` folder, which contains the interface for your native extension.
+ * the `platform` folder, which contains the source code for your native extension.
 
-Android notes:
+## Rewriting the Generated Native Extension Interface Code
 
-In your "ext.yml" file add new parameters :
+The `shared` folder, within `extensions/yourextension/ext/yourextension`, contains the interface code for your native extension that is used by all platforms except for Blackberry. It contains the following folders and files.
+
+	:::term
+	ruby - The folder with the native-Ruby code wrapper. We use SWIG to generate the C wrapper code from the Ruby interface file.
+
+        yourextension.i - The Ruby interface declaration for native code 
+
+        <yourextension_wrap.c - wrapper code for *.i file generated by SWIG
+
+    src - folder with native shared native code
+
+        yourextension.c - C file with main extension initialization function (native entry point) - also execute Ruby wrapper initialization code.
+
+You need to:
+
+ * Rewrite the Interface file, yourextension.i, by changing the generated native extension function names to your native extension function names.
+ 
+ * Regenerate the wrapper file, yourextension_wrap.c, by running the SWIG command on the rewritten Interface file: `swig -ruby yourextension.i`.
+
+Here is the yourextension.i file that is generated by the rhogen extension command. You would replace the calc_summ and native_string_process interfaces with interfaces for your native extension functions.
+
+	:::ruby
+	/* yourextension.i */
+	%module Yourextension
+	%{
+	#include "ruby/ext/rho/rhoruby.h"
+	
+	extern VALUE yourextension_native_process_string(const char* str);
+	extern int yourextension_calc_summ(int x, int y);
+	
+	#define native_process_string yourextension_native_process_string 
+	#define calc_summ yourextension_calc_summ 
+	
+	%}
+	
+	extern VALUE native_process_string(const char* str);
+	extern int calc_summ(int x, int y);
+
+Suppose you generated code for a native extension that you named Accelerometer. You would have a file named Accelerometer.i that contains the references to the process_string and calc_summ functions that are generated by rhogen; you would replace these references with the references to your native extension code for Accelerometer. You would start with this code:
+
+	:::ruby
+	/* accelerometer.i */
+	%module Accelerometer
+	%{
+	#include "ruby/ext/rho/rhoruby.h"
+	
+	extern VALUE accelerometer_native_process_string(const char* str);
+	extern int accelerometer_calc_summ(int x, int y);
+	
+	#define native_process_string accelerometer_native_process_string 
+	#define calc_summ accelerometer_calc_summ 
+	
+	%}
+	
+	extern VALUE native_process_string(const char* str);
+	extern int calc_summ(int x, int y);
+
+In this Accelerometer example, the native extensions are a start function and a get_readings function. You would rewrite the accelerometer.i as follows, replacing the generated functions of calc_summ and native_process_string with your start and get_readings functions.
+
+	:::ruby
+	/* accelerometer.i */
+	%module Accelerometer
+	%{
+	#include "ruby/ext/rho/rhoruby.h"
+	
+	extern void accelerometer_get_readings(double *x, double *y, double *z);
+	extern void accelerometer_start(void);
+	
+	#define get_readings accelerometer_get_readings
+	#define start accelerometer_start
+	
+	%}
+	
+	extern void get_readings(double *OUTPUT, double *OUTPUT, double *OUTPUT);
+	extern void start(void);
+
+## Rewriting the Generated Native Extension Source Code for iPhone
+
+The iPhone generated native extension code is contained in the following structure.
+
+	:::term
+    iphone - folder with iPhone native extension code
+    
+        Rakefile - The build script for the iPhone platform.
+        
+		yourextension.xcodeproj - The Xcode project file of iPhone specific code.
+		
+		Classes - a folder with the iPhone native extension source code.
+			yourextension.h - header file
+			yourextension.m - iPhone specific code (implementation of native function declared in Ruby wrapper).
+
+To create native extensions for the iPhone platform:
+
+ * Rewrite the generated Objective C files in the Classes folder, yourextension.h and yourextension.M, to implement your native extension.
+ * Add any new Objective C files that you create to the Xcode project for this native extension.
+
+### Rewriting the Native Extension Objective C Header File
+
+If you generate an Accelerometer native extension, you get the following header file (accelerometer.h) for the iPhone.
+
+	:::cplusplus
+	#import <UIKit/UIKit.h>
+	#import <Foundation/Foundation.h>
+
+You could rewrite this header file to look like this for an accelerometer.
+
+	:::cplusplus
+	#import <UIKit/UIKit.h>
+	
+	@interface Accel : UIViewController<UIAccelerometerDelegate>
+	{
+	}
+	
+	- (void)start;
+	
+	@end
+
+### Rewriting the Native Extension Objective C Manifest File
+
+If you generate an Accelerometer native extension, you get the following manifest file (accelerometer.m) for the iPhone.
+
+	:::cplusplus
+	#import "Accelerometer.h"
+	
+	#include "ruby/ext/rho/rhoruby.h"
+	
+	VALUE accelerometer_native_process_string(const char* str) {
+		
+	    NSString* os_string = @"<iOS>";
+	    
+	    NSString* result_string = [os_string stringByAppendingString:[NSString stringWithUTF8String:str]];
+	    result_string = [result_string stringByAppendingString:os_string];
+	    
+		VALUE result = rho_ruby_create_string([result_string UTF8String]);
+	    
+	    return result;
+	}
+	
+	int accelerometer_calc_summ(int x, int y) {
+		return (x+y);
+	}
+
+You can rewrite the accelerometer.m file as follows to access the iPhone accelerometer functionality. Replace the stub code for accelerometer_native_process_string and accelerometer_calc_summ with your code: in this case, with native functions start and get_readings.
+
+	:::cplusplus
+	#import "Accelerometer.h"
+	
+	// store the acceleration values
+	double gx,gy,gz;
+	
+	// Reference this Objective C class.
+	Accel *accel;
+	@implementation Accel
+	
+	-(void)start
+	{
+		// Initialize the accelerometer variables.
+		gx = gy = gz = 0;
+		// Set the update interval.
+		[[UIAccelerometer sharedAccelerometer] setUpdateInterval:0.025];
+		// Set the delegate to this class, so the iPhone accelerometer will 
+		// call you back on the delegate method.
+		[[UIAccelerometer sharedAccelerometer] setDelegate:self];
+	}
+	
+	-(void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration
+	// Get the accelerometer values from the iPhone.
+	{
+		gx = acceleration.x;
+		gy = acceleration.y;
+		gz = acceleration.z;
+	}
+	
+	@end
+	
+	// This C function interfaces with the Objective C start function.
+	void accelerometer_start(void) {
+		// make sure we can only start this method once
+		static bool started = false;
+		if(!started) {
+			// Initialize the Objective C accelerometer class.
+			accel = [[Accel alloc] init];
+			// Start the accelerometer readings.
+			[accel start];
+			started = true;
+		}
+	}
+	
+	// This C function allows us to get the readings from the accelerometer so
+	// they can be returned to the Ruby code.
+	void accelerometer_get_readings(double *x, double *y, double *z) {
+		*x = gx;
+		*y = gy;
+		*z = gz;
+	}
+
+### Adding New Files to the Xcode Project
+
+If you create any new files for your native extension, you must add them to the Xcode project. In Xcode, open yourextension.xcodeproj. Then add the new files to this project.
+
+## Rewriting the Generated Native Extension Source Code for Android
+
+The Android generated native extension code is contained in the following structure.
+
+	:::term
+    android - folder with Android specific code
+    	Rakefile - build script for Android platform
+        ext_build.files - list of java files should be compiled
+        jni - folder with Android native code
+            src
+                yourextension.cpp - native Android code with implementation of native function declared in Ruby wrapper
+        src - folder with Java Android code
+            com
+                yourextension
+                    yourextension.java - Android java code
+
+### Rewrite the Generated Android Native Extension Java File
+
+The folder in extensions/yourextension/ext/yourextension/platform/android/src contains a generated Java file, yourextension.java. This file contains the native extension code for the process_string function. Rewrite this code to reference your native extension function.
+
+	:::java
+	package com.yourextension;
+
+	public class Yourextension {
+
+		public static String processString(String str) {
+	        return "<Android>" + str + "<Android>";
+		}
+	}
+
+### Rewrite the Generated Android C++ Native Extension
+
+Rewrite the C++ file for your native extension. This is where you implement the C function that is declared in the Interface file. You would also implement any Android native C++ code here.
+
+The generated C++ file for Android, yourextension.cpp (within the folder extensions/yourextension/ext/yourextension/platform/android/jni/src) contains the C interfaces for the native_process_string function and the calc_summ functions. Rewrite that code for the interfaces for your native extension functions: rename the functions to match yours, redo their argument lists, etc.
+
+	:::cplusplus
+	#include <rhodes.h>
+	#include "rubyext/WebView.h"
+	#include <stdlib.h>
+	#include "ruby/ext/rho/rhoruby.h"
+	
+	extern "C" VALUE yourextension_native_process_string(const char* str) {
+	
+	    JNIEnv *env = jnienv();
+	    jclass cls = rho_find_class(env, "com/yourextension/Yourextension");
+	    if (!cls) return rho_ruby_get_NIL();;
+	    jmethodID mid = env->GetStaticMethodID( cls, "processString", "(Ljava/lang/String;)Ljava/lang/String;");
+	    if (!mid) return rho_ruby_get_NIL();;
+	    jstring objStr = env->NewStringUTF(str);
+	    jstring jstr = (jstring)env->CallStaticObjectMethod(cls, mid, objStr);
+	    env->DeleteLocalRef(objStr);
+	    const char* buf = env->GetStringUTFChars(jstr,0);
+	    VALUE result = rho_ruby_create_string(buf);
+	    env->ReleaseStringUTFChars(jstr, buf);
+	    return result;
+	}
+	
+	extern "C" int yourextension_calc_summ(int x, int y) {
+		return (x+y);
+	}
+
+### Add New C++ Files to Rakefile
+
+You can code new C++ files; place them in the extensions/yourextension/ext/yourextension/platform/android/jni/src/ folder (the same folder containing yourextension.cpp). If you add new C++ files, add their file names to the list of C++ files in the Rakefile, which is in the folder extensions/yourextension/ext/yourextension/platform/android.
+
+In the Rakefile, there is a section coded as follows:
+
+	:::term
+	task :all => :config do
+	
+	    src_files = []
+	
+	    src_files << $yourextensiondir + '/ext/yourextension/platform/android/jni/src/yourextension.cpp'
+	    src_files << $yourextensiondir + '/ext/yourextension/shared/ruby/yourextension_wrap.c'
+	    src_files << $yourextensiondir + '/ext/yourextension/shared/src/yourextension.c'
+	
+	    # build native part
+	    build_extension('Yourextension', $arch, src_files)
+	
+	    # java part will be built automatically (java files should be listed in ext_build.files and ext.yml should be configured)
+	
+	  end
+
+Add a src_files line for every new .cpp file that you add to your native extension project, such as:
+
+	:::term
+	src_files << $yourextensiondir + '/ext/yourextension/platform/android/jni/src/yournewfile.cpp'
+
+### Add New Java Files to ext_build.files
+
+You can code new Java files for your native extension; if you do so, place them in the extensions/yourextension/ext/yourextension/platform/android/src folder (the same folder containing yourextension.java). Then add that file to the list of Java files in ext_build.files, which is in the folder extensions/yourextension/ext/yourextension/platform/android.
+
+This sample listing of ext_build.files shows that it already lists the generated native extenstion Java file.
+
+	:::term
+	ext/yourextension/platform/android/src/com/yourextension/Yourextension.java
+
+## Rewriting the Generated Native Extension Source Code for Windows Mobile
+
+The Windows Mobile generated native extension code is contained in the following structure.
+
+	:::term
+	wm - folder with Windows Mobile specific code
+        Rakefile - build script for WM platform
+        <yourextension>.vcproj - Microsoft Visual Studio project file for the Windows Mobile native extension
+        src - folder with WM specific sources
+			<yourextension>_wm.h - header file
+            <yourextension>_wm.cpp - native code with implementation of native function declared in Ruby wrapper
+
+### Rewrite the Generated Native Extension C++ Files
+
+You will find the implementations of the Windows Mobile version of the native_process_string and the calc_summ functions in the files yourextension_wm.h and yourextension_wm.cpp, which are in the folder extensions/yourextension/ext/yourextension/platform/wm/src. Rewrite these files for your native extension functions: rename the functions to match yours, redo the argument lists, implement your native extension functionality, etc.
+
+Sample listing of yourextension_wm.cpp:
+
+	:::cplusplus
+	#include <common/RhodesApp.h>
+	#include <logging/RhoLogConf.h>
+	#include <stdlib.h>
+	#include <windows.h>
+	#include <commctrl.h>
+	#include <RhoNativeViewManager.h>
+	#include "rubyext/WebView.h"
+	#include "ruby/ext/rho/rhoruby.h"
+	#include "yourextension_wm.h"
+	
+	extern "C" VALUE yourextension_native_process_string(const char* str) {
+	    
+	    const char block[] = "<WM>";
+	    char* buf = NULL;
+	    buf = (char*)malloc(strlen(str) + strlen(block)*2 + 1);
+	    strcpy(buf, block);
+	    strcat(buf, str);
+	    strcat(buf, block);
+	    VALUE result = rho_ruby_create_string(buf);
+	    free(buf);
+	    return result;
+	}
+	
+	extern "C" int yourextension_calc_summ(int x, int y) {
+		return (x+y);
+	}
+
+### Adding New Files to the Visual Studio Project
+
+If you create any new C++ files for your native extension, save them in the same location as the generated C++ file yourextension_wm.cpp, in extensions/yourextension/ext/yourextension/platform/wm/src.
+
+Open the Visual Studio project for your native extension: yourextension_wm.vcproj in extensions/yourextension/ext/yourextension/platform/wm. Add any new C++ files to this project.
+
+## Rewriting the Generated Native Extension Source Code for Blackberry
+
+The Blackberry generated native extension code is contained in the following structure.
+
+	:::term
+	bb - folder with Blackberry specific code
+
+        Rakefile - build script for BB platform
+
+        <yourextension>.files - list of Java files to be compiled
+
+        <yourextension>.jdp - Eclipse project (not required for a rake script build)
+
+            src - folder with BB specific Java sources
+                com
+                    <yourextension>
+                        <yourextension>.java - BB platform entry point class with implementation and registration of Ruby functions
+
+Note: You do not use the Interface file or SWIG with Blackberry. But you will rewrite the generated native extension Java file.
+
+### Rewrite the Generated Native Extension Java File
+
+First, rewrite the Public functions, renaming them and changing the arguments for your native extension.
+
+	:::java
+	public String doProcessString( String str ) {
+		return "<BB>" + str + "<BB>";
+	}
+
+	public int doCalcSumm( int x, int y ) {
+		return (x+y);
+	}
+
+Then, in the void run() method, rewrite the native_process_string and the calc_summ methods declared in the YourextensionClass.getSingletonClass(). 
+
+## Creating Your Native Extension Without the Generator
+
+You can also create a native extension without using the rhogen extension command. This means you will need to write the entire extension (source code, interface file, build scripts, etc.) from scratch.
+
+In your Rhodes application folder, create a folder called "extensions". This is the folder that will contain all your native extesion code for your Rhodes application. Within the "extensions" folder, create a folder named for the extension that you are creating, such as "accelerometer". An example path for a Rhodes application named "accel" would be `accel/extensions/accelerometer`. And in that folder, create a folder called "ext."
+
+### Create Your Extensions Configuration File
+
+In the folder named for your extension, such as `accel/extensions/accelerometer`, create a file named ext.yml.
+
+In this file, you have two lines to define your initialization function and your libraries. Here is an example for an accelerometer extension.
+
+	entry: Init_Accelerometer
+	
+	libraries: [ "accelerometer" ]
+
+The first line names the function that is the entry point into your extension; the function is named Init_Your-extension-name. This function is called when your Rhodes application starts, so it will contain all your initialization code for your extension.
+
+The second line is the name of your library extension that holds your binary extensions that are compiled and integrated into your Ruby code. It is named after the name of your extension folder; in this example, it is named accelerometer.
+
+You can have more that one library, in which case you would separate the libraries with commas:
+
+	libraries: [ "extension1", "extension2" ]
+
+For Android, add the following parameters to your ext.yml file.
+
+* android_rhodes_activity_listener - Java class name implemented interface com.rhomobile.rhodes.RhodesActivityListener (used for attach to main Rhodes application activity)
+* android_manifest_changes - filename with Android manifest items (in format of Android manifest) 0 this file will join to main AndroidManifest.xml of application
+* android_resources_addons - folder with any additional files for add to main application build folder (can contain any resources, layouts, etc.)
+* android_additional_sources_list - filename with list of *.java files for building with main Rhodes application package.
+
+<table border="1">
+<tr>
+	<td><code>android_rhodes_activity_listener</code></td>
+	<td>Java class name implemented interface com.rhomobile.rhodes.RhodesActivityListener (used for attach to main Rhodes application activity)</td>	
+</tr>
+<tr>
+	<td><code>android_manifest_changes</code></td>
+	<td>filename with Android manifest items (in format of Android manifest) 0 this file will join to main AndroidManifest.xml of application</td>	
+</tr>
+<tr>
+	<td><code>android_resources_addons</code></td>
+	<td>folder with any additional files for add to main application build folder (can contain any resources, layouts, etc.)</td>	
+</tr>
+<tr>
+	<td><code>android_additional_sources_list</code></td>
+	<td>filename with list of *.java files for building with main Rhodes application package</td>	
+</tr>
+</table>
+
+Here is an example of an ext.yml file for an NFC extension. This example is taken from the Rhodes installation, located at [Rhodes root]/lib/extensions/Nfc.
 
 	entry: Init_Nfc
 	android_rhodes_activity_listener: com.rhomobile.nfc.Nfc
@@ -396,24 +859,412 @@ In your "ext.yml" file add new parameters :
 	android_additional_sources_list: ext/nfc/platform/android/ext_build.files
 	libraries: ["Nfc"]
 
-Used real ext.yml from Nfc extension (located in [Rhodes root]/lib/extensions/Nfc)
-* android_rhodes_activity_listener - Java class name implemented interface com.rhomobile.rhodes.RhodesActivityListener (used for attach to main Rhodes application activity)
-* android_manifest_changes - filename with Android manifest items (in format of Android manifest) 0 this file will join to main AndroidManifest.xml of application
-* android_resources_addons - folder with any additional files for add to main application build folder (can contain any resources, layouts, etc.)
-* android_additional_sources_list - filename with list of *.java files for building with main Rhodes application package.
+### Create Your Build Script
 
-Also if you want use any resources in your code - use com.rhomobile.rhodes.R instead of just R - all resources (include your additonal) will accessible from this R file.
+In the "ext" folder, such as `accel/extensions/accelerometer/ext`, you will create your build scripts and your native extension code.
 
-* If you need to call JNI functions from native code, `JNIEnv *env` variable need to be retrieved. To get it, include file `RHO_ROOT/platform/android/Rhodes/jni/include/rhodes.h` somewhere to the C/C++ files. Global function `JNIEnv *jnienv()` defined there so use it anywhere when `JNIEnv *` needed.
+Create a build script file. Name this file `build` for Macintosh and `build.bat` for Windows. This file executes a rake file that contains all your compiling commands for your extension. (You can instead put your compiling commands in the build file, but this chapter uses the Rakefile method.)
 
-* If native extension use Java code, build script should create file ext_build.files in the TARGET_TEMP_DIR. This file should contain java source file names (full names, with path) - one by line. Rhodes will include all of them to the final build.
-**NOTE: We recommend use new android_additional_sources_list parameter from ext.yml config - just prepare file with list of your java files for build and setup that parameter.
+When running on Linux and Macintosh, make sure the build files are executable.
 
-* If native extension use prebuilt libraries (jars), build script should copy all such jars to the TARGET_TEMP_DIR. They must have extension '.jar'. Rhodes will include these files to the final build.
+For the Macintosh, the build file contains:
 
-* If native extension create native thread (using pthread_create, for example), this thread should be attached to the JVM to be able call Java methods from its context. This should be done using rho_nativethread_start/rho_nativethread_end functions called at start/end of thread routine. 
+	#!/bin/sh
+	
+	rake
+
+For Windows, the build.bat file contains:
+
+	rake --trace
+
+The above build scripts execute a Rakefile script which you create: this Rakefile compiles your extension code and produces the libraries. When Rhodes creates the final binary for your application, it will search for and link with the library that was generated for your extension. For an extension called `accelerometer`, the build script for iPhone and Android should be name the library `libaccelerometer.a`; for Windows, it should be named `accelerometer.lib`. The build script (in this case, in the Rakefile) should place the library in the folder named by TARGET_TEMP_DIR.
+
+**NOTE: You do not need to use a rakefile. You can put your compiling commands in the build or build.bat scripts. The only requirement is that you have a file named build and that it is executable.
+
+## Environment Variables Used in the Build Script
+
+Before you build the build script (in this case, a Rakefile), you should be aware of the environmental variables that you can use in the script. These variables give you the path to the Rhodes root and information about your application platform. In the example used here, the Rakefile for the iPhone accelerometer uses several of these variables.
+
+The following environment variables are used by all the platforms.
+
+<table border="1">
+<tr>
+	<td><code>TARGET_TEMP_DIR</code></td>
+	<td>Location to put your compiled library</td>	
+</tr>
+<tr>
+	<td><code>RHO_PLATFORM</code></td>
+	<td>mobile platform fot this application build. Possible values are 'iphone', 'android' and 'wm'</td>	
+</tr>
+<tr>
+	<td><code>RHO_ROOT</code></td>
+	<td>point to the Rhodes installation root folder (the directory where rhobuild.yml is located)</td>	
+</tr>
+<tr>
+	<td><code>TEMP_FILES_DIR</code></td>
+	<td>used for temporay files</td>	
+</tr>
+</table>
+
+The following environment variables are available for Android.
+
+<table border="1">
+<tr>
+	<td><code>ANDROID_NDK</code></td>
+	<td>path to the Android NDK used by Rhodes</td>	
+</tr>
+<tr>
+	<td><code>ANDROID_API_LEVEL</code></td>
+	<td>Android API level used by Rhodes</td>	
+</tr>
+</table>
+
+The following environment variables are available for Windows Mobile.
+
+<table border="1">
+<tr>
+	<td><code>VCBUILD</code></td>
+	<td>path to the vcbuild application in the Microsoft Visual Studio  installation</td>
+</tr>
+</table>
+
+The following environment variables are available for iPhone.
+
+<table border="1">
+<tr>
+	<td><code>PLATFORM_DEVELOPER_BIN_DIR</code></td>
+	<td>path to the platform developer bin directory</td>
+</tr>
+<tr>
+	<td><code>SDKROOT</code></td>
+	<td>path to the root of the used SDK - 3.0, 3.1</td>
+</tr>
+<tr>
+	<td><code>ARCHS</code></td>
+	<td>path to the platform developer bin directory</td>
+</tr>
+<tr>
+	<td><code>XCODEBUILD</code></td>
+	<td>contains the full name of the xcodebuild</td>
+</tr>
+<tr>
+	<td><code>CONFIGURATION</code></td>
+	<td>"Debug" or "Release"</td>
+</tr>
+<tr>
+	<td><code>SDK_NAME</code></td>
+	<td>name of SDK - need for build of xcodeproject</td>
+</tr>
+</table>
+
+The following environment variables are available for Blackberry.
+
+<table border="1">
+<tr>
+	<td><code>JAVA_EXE</code></td>
+	<td>java.exe full path</td>
+</tr>
+<tr>
+	<td><code>JAVAC_EXE</code></td>
+	<td>javac.exe full path</td>
+</tr>
+<tr>
+	<td><code>JDE_HOME</code></td>
+	<td>JDE home full path</td>
+</tr>
+<tr>
+	<td><code>JAR_EXE</code></td>
+	<td>jar.exe full path</td>
+</tr>
+<tr>
+	<td><code>RUBYVM_JAR</code></td>
+	<td>full name of RubyVM.jar file (needed for compilation)</td>
+</tr>
+<tr>
+	<td><code>BB_SDK_VERSION</code></td>
+	<td>version of Blackberry SDK</td>
+</tr>
+</table>
+
+### Creating the Rakefile Script
+
+The code listing below is a Rakefile for an iPhone accelerometer native extension. Most of this code you can use for all platforms. Comments are included to tell you where you would substitute code for your specific platform.
+
+The sections that you write specifically for your platform are:
+
+ * Clean file types specific to your platform.
+ * Set platform-specific arguments when compiling the .c files.
+ * Compile code specific for your platform (such as objective C for iphone).
+ * Build the linking command for your platform.
+
+For other platforms, you can use the Rakefile in the digest extension, which is located in your Rhodes folder: `<rhodes>/lib/extensions/digest/ext/Rakefile`.
+
+	:::term
+	require 'fileutils'
+	
+	def build_extension(name, arch)
+	  objects = []
+	  mkdir_p $tempdir unless File.exists? $tempdir
+	  
+	  Dir.glob("*.o").each { |f| rm_rf f }
+	  
+	  # *** IPHONE SPECIFIC: remove any leftover .a files
+	  Dir.glob("*.a").each { |f| rm_rf f }
+	  rm_rf "accelerometer_wrap.c"
+	  
+	  #swig
+	  Dir.glob("*.i").each do |f|
+	    puts "swig -ruby #{f}"
+	    puts `swig -ruby #{f}`
+	  end
+	  
+	  # compile the .c files
+	  Dir.glob("*.c").each do |f|
+	    objname = File.join( $tempdir, File.basename( f.gsub(/\.c$/, '.o') ) )
+	    objects << objname
+	
+	    args = []
+	    args << "-I."
+	    args << "-I#{$rootdir}/platform/shared/ruby/include"
+	    args << "-I#{$rootdir}/platform/shared"
+
+	    if ENV['RHO_PLATFORM'] == 'android'
+	    
+	    # *** IPHONE SPECIFIC: set arguments (and execute the compile command)
+	    elsif ENV['RHO_PLATFORM'] == 'iphone'
+	    # get iPhone specific ruby files
+	      args << "-I#{$rootdir}/platform/shared/ruby/iphone"
+	      # set some flags for Xcode
+	      args << "-D_XOPEN_SOURCE"
+	      args << "-D_DARWIN_C_SOURCE"
+	      # isysroot sets the root sdk of where the gcc compiler will pick up
+	      #  the libraries, such as the UIKit library
+	      args << "-isysroot #{$sdkroot}"
+	      args << "-fno-common"
+	      # set the architecture and optimization level
+	      args << "-arch #{arch}"
+	      args << "-O2"
+	      # give the object name
+	      args << "-o #{objname}"
+	      args << "-c"
+	      args << f
+	      # build up the command
+	      cmdline = $gccbin + ' ' + args.join(' ')
+	      puts cmdline
+	      # and execute the command
+	      puts `#{cmdline}`
+	      exit unless $? == 0
+	    end
+	  end    
+	  
+	  # *** IPHONE SPECIFIC: compile all the .m objective c files
+	  if ENV['RHO_PLATFORM'] == 'iphone'
+	    # add all the .m files to the list of objects
+	    Dir.glob("*.m").each do |f|
+	      objname = File.join( $tempdir, File.basename( f.gsub(/\.m$/, '.o') ) )
+	      objects << objname
+	
+	      args = []
+	      args << "-x objective-c"
+	      # add the specific flags needed to build for iPhone
+	      args << "-arch #{arch}"
+	      args << "-pipe -std=c99 -Wno-trigraphs -fpascal-strings  -O0 -Wreturn-type -Wunused-variable"
+	      args << "-isysroot #{$sdkroot}"
+	      args << "-D__IPHONE_OS_VERSION_MIN_REQUIRED=30200 "
+	      args << "-fvisibility=hidden -mmacosx-version-min=10.6 -gdwarf-2 -fobjc-abi-version=2 -fobjc-legacy-dispatch"
+	      args << "-I."
+	      args << "-o #{objname}"
+	      args << "-c"
+	      args << f
+	      cmdline = $gccbin + ' ' + args.join(' ')
+	      puts cmdline
+	      puts `#{cmdline}`
+	      exit unless $? == 0
+	    end    
+	  end  
+	  
+	  mkdir_p $targetdir unless File.exist? $targetdir
+	
+	  if ENV['RHO_PLATFORM'] == 'android'
+	  
+	  # *** IPHONE SPECIFIC: check to see that the linking code exists
+	  elsif ENV['RHO_PLATFORM'] == 'iphone'
+	    args = []
+	    # build up the command line
+	    args << 'rcs'
+	    # put the output into targetdir and call it libaccelerometer.a
+	    args << File.join( $targetdir, 'lib' + name + '.a' )
+	    # give it list of objects compiles in previous steps
+	    args += objects
+	    cmdline = $arbin + ' ' + args.join(' ')
+	    # execute the linking command
+	    puts cmdline
+	    puts `#{cmdline}`
+	    exit unless $? == 0
+	
+	  elsif ENV['RHO_PLATFORM'] == 'wm'
+	  end
+	    
+	end
+	
+	namespace "build" do
+	  task :config do
+	    $targetdir = ENV['TARGET_TEMP_DIR']
+	    raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
+	    $tempdir = ENV['TEMP_FILES_DIR']
+	    raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
+	    $rootdir = ENV['RHO_ROOT']
+	    raise "RHO_ROOT is not set" if $rootdir.nil?
+	    
+	    if ENV['RHO_PLATFORM'] == 'android'
+	    elsif ENV['RHO_PLATFORM'] == 'wm'
+	    
+	    # *** IPHONE SPECIFIC: set the iPhone specific environment variables 
+	    elsif ENV['RHO_PLATFORM'] == 'iphone'
+	       $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
+	       raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
+	       $sdkroot = ENV['SDKROOT']
+	       raise "SDKROOT is not set" if $sdkroot.nil?
+	       $arch = ENV['ARCHS']
+	       raise "ARCHS is not set" if $arch.nil?
+	       $gccbin = $bindir + '/gcc-4.2'
+	       $arbin = $bindir + '/ar'
+	    end
+	    
+	  end
+	  
+	  task :all => :config do
+	    build_extension('accelerometer', $arch)
+	  end
+	end
+	
+	task :default => "build:all"
+
+### Adding Your Extension to build.yml
+
+Edit your application's build.yml to add the extension name to the list of extensions. For example, if your extension is named accelerometer, have this line in your build.yml file:
+
+	extensions: ["accelerometer"]
+
+### Writing Your Extension Code
+
+In the folder named for your extension, such as `accel/extensions/accelerometer`, in the ext folder, create your native extension code. For your iPhone extension, write your header and manifest files in Objectve C.
+
+For the accelerometer example, the header file, Accel.h, imports the iOS libraries your extension needs (in the case of the iPhone accelerometer, the UIKit library). And it defines the class to perform the extension's functionality. (The documentation to perform the accelerometer functionality can be found on the iPhone developer portal.) In this case, we have a class named Accel that implements the UIViewController delegate, and the class has one method: start.
+
+	:::cplusplus
+	#import <UIKit/UIKit.h>
+	
+	@interface Accel : UIViewController<UIAccelerometerDelegate>
+	{
+	}
+	
+	- (void)start;
+	
+	@end
+
+The manifest file, Accel.m, contains the Objective C code to perform the accelerometer functionality. 
+
+Because Rhodes is written in C, and the Ruby implementation is in C, this manifest file must also expose a C interface to the Objective C code. This accelerometer example has the start and get_reading C functions to do that.
+
+	:::cplusplus
+	#import "accel.h"
+	
+	// store the acceleration values
+	double gx,gy,gz;
+	// Reference this Objective C class.
+	Accel *accel;
+	@implementation Accel
+	
+	-(void)start
+	{
+		// Initialize the accelerometer variables.
+		gx = gy = gz = 0;
+		// Set the update interval.
+		[[UIAccelerometer sharedAccelerometer] setUpdateInterval:0.025];
+		// Set the delegate to this class, so the iPhone accelerometer will 
+		// call you back on the delegate method.
+		[[UIAccelerometer sharedAccelerometer] setDelegate:self];
+	}
+	
+	-(void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration
+	// Get the accelerometer values from the iPhone.
+	{
+		gx = acceleration.x;
+		gy = acceleration.y;
+		gz = acceleration.z;
+	}
+	
+	@end
+	
+	// This C function interfaces with the Objective C start function.
+	void start(void) {
+		// make sure we can only start this method once
+		static bool started = false;
+		if(!started) {
+			// Initialize the Objective C accelerometer class.
+			accel = [[Accel alloc] init];
+			// Start the accelerometer readings.
+			[accel start];
+			started = true;
+		}
+	}
+	
+	// This C function allows us to get the readings from the accelerometer so
+	// they can be returned to the Ruby code.
+	void get_readings(double *x, double *y, double *z) {
+		*x = gx;
+		*y = gy;
+		*z = gz;
+	}
+
+### Writing the Interface File
+
+Now we need to have an interface file that SWIG uses to create a Ruby object which will make the functions in the platform-specific code be available to the Ruby virtual machine.
+
+As is referenced in the Rakefile, this is done with SWIG. You write an interface (.i) file which has the same name as the extension. This will interface with the C functions in the platform-specific code, and get the proper ruby . Here is the code for the iPhone accelerometer example.
+
+	:::ruby
+	%module Accelerometer
+	%{
+	extern void get_readings(double *x, double *y, double *z);
+	extern void start(void);
+	%}
+	extern void start(void);
+	extern void get_readings(double *OUTPUT, double *OUTPUT, double *OUTPUT);
+
+Remember that the iPhone .m Objective C file has C functions to get readings from the accelerometer: void get_readings. It also has a start function to initialize the accelerometer class. These are the C function referenced in the interface file.
+
+### Building the Application
+
+Build your application as usual. It will call the build script for your extension and, if this script finishes successfully, produce the needed libraries into TARGET_TEMP_DIR and link extension libraries into the final binary.
+
+## Platform Notes
+
+### Using Resources
+
+If you want to use any resources in your code, use com.rhomobile.rhodes.R instead of just R. This will make all resources (include your additonal resources) accessible from this R file.
+
+### Calling JNI Functions
+
+If you need to call JNI functions from your native code, you need to retrieve the `JNIEnv *env` variable. To get it, include the file `RHO_ROOT/platform/android/Rhodes/jni/include/rhodes.h` in your C/C++ files. The global function `JNIEnv *jnienv()` is defined in this file, so use it anywhere when `JNIEnv *` needed.
+
+### Using Java Code in Native Extension
+
+If your native extension uses Java code, your build script should create file ext_build.files in the TARGET_TEMP_DIR. This file should contain java source file names (full names, with path) - one by line. Rhodes will include all of them to the final build.
+
+**NOTE: We recommend you use new android_additional_sources_list parameter from ext.yml config - just prepare file with list of your java files for build and set up that parameter.
+
+### Using Prebuilt Libraries (jars)
+
+If your native extension uses prebuilt libraries (jars), your build script must copy all such jar files to the TARGET_TEMP_DIR. The jar files must have the extension '.jar'. Rhodes will include these files in the final build.
+
+### Creating Native Threads
+
+If your native extension creates a native thread (using pthread_create, for example), this thread should be attached to the JVM so that it can call Java methods from its context. Do this by using rho_nativethread_start/rho_nativethread_end functions, called at the start/end of your thread routine. 
 
 Example:
+
 	:::cpp
 	void *thread_routine(void *arg)
 	{
@@ -423,29 +1274,24 @@ Example:
 	  return NULL;
 	}
 
-Otherwise, if thread was not attached to the JVM, no JNI calls should be performed in its context (it will cause crash).
+Otherwise, if the thread was not attached to the JVM, no JNI calls should be performed in its context (it will cause your application to crash).
 
-WM note:
+### Providing Additional DLLs for Windows Mobile
 
-* If application need to provide additional DLLs, just put them to the TARGET_TEMP_DIR. Rhodes build scripts will detect them and include to the final binary automatically.
+If your application needs additional DLLs, put them in the TARGET_TEMP_DIR. The Rhodes build scripts will detect them and include them in the final binary automatically.
 
-Now edit application's build.yml and add 'ext-name' to the list of extensions:
+### Registering Your Classes and Methods with Blackberry
 
-	extensions: ["ext-name"]
+As with the other platforms, you create a build script (build.bat)  Similar to other platfrom you should prepare build.bat where you should prepare <your Extension name>.jar file and place it to TARGET_TEMP_DIR
 
-That's all. Now build your application as usual - it will automatically call build script of your extension and (if this script finished successfully, producing needed libraries into TARGET_TEMP_DIR) link extension libraries into the final binary.
-
-BlackBerry Notes:
-
-Similar to other platfrom you should prepare build.bat where you should prepare <your Extension name>.jar file and place it to TARGET_TEMP_DIR
-In your "ext.yml" file add new parameter with full name of you class supported Runnable interface, see example:
+In your "ext.yml" file, add a parameter with the full name of your class supported runnable interface. For example, you might use this for a Barcode extension:
 
 	entry: Init_Barcode
 	javaentry: com.rho.rubyext.BarcodeRecognizer
 	libraries: ["Barcode"]
 
-In run() method of this class you should register in RubyVM your classes and methods.
-Example of registration:
+In the run() method of this class, register your classes and methods in RubyVM. Here is an example of registering for a barcode extension.
+
 	:::java
 	package com.rho.rubyext;
 
@@ -474,15 +1320,15 @@ Example of registration:
 
 	}
 
-Examples:
+## Other Examples
 
-You can use Barcode extension as an example of native extension for all supported platforms. Please see code of Barcode native extension [here](https://github.com/rhomobile/rhodes/tree/master/lib/extensions/barcode/).
+You can use teh Barcode extension as an example of native extension for all teh supported platforms. The code for the Barcode native extension is [here on Github](https://github.com/rhomobile/rhodes/tree/master/lib/extensions/barcode/).
 
-Also you can see another example of native extension - Rainbow native extension from Rhodes System Api Samples. Please see code of Rainbow native extension [here](https://github.com/rhomobile/rhodes-system-api-samples/tree/master/extensions/rainbow/). 
+Another example of the native extension is the Rainbow native extension in the Rhodes System Api Samples. The code for the Rainbow native extension is [here on Github](https://github.com/rhomobile/rhodes-system-api-samples/tree/master/extensions/rainbow/).
 
 ## Native View Extensions
 
-The Native View interface allow developers implement a custom native view and seamlessly integrate it into Rhodes framework (currently only on iPhone supported, Android, WM and Blackberry is soon).
+The Native View interface allows developers to implement a custom native view and seamlessly integrate it into the Rhodes framework. (This is currently only supported on iPhone; Android, WM and Blackberry is coming soon).
 
 To access implemented view navigate to a url where url schema is the register type name of your view: 
   
@@ -505,7 +1351,7 @@ To provide custom native view native extension should implement NativeViewFactor
 	public:
 		// that function must return native object provided view functionality :
 		// UIView* for iPhone
-		// jobject for Android - jobect must be android.view.View class type
+		// jobject for Android - jobject must be android.view.View class type
 		// HWND for Windows Mobile 
 		virtual void* getView() = 0;
 		// Used by Rhodes to pass path?query_string#anchor to the view
@@ -543,17 +1389,17 @@ To provide custom native view native extension should implement NativeViewFactor
 	};
 
 ### Sample
-See [Rhodes-System-Api-Samples](http://github.com/rhomobile/rhodes-system-api-samples) for details of how to implement and use native view interface. This sample implements a "rainbow_view" native view; you should add rainbow to the list of extensions to include it to the application. 
+See [Rhodes-System-Api-Samples](http://github.com/rhomobile/rhodes-system-api-samples) for details of how to implement and use the native view interface. This sample implements a "rainbow_view" native view; you should add rainbow to the list of extensions to include it to the application. 
 
 See [/app/NativeView/controller.rb](http://github.com/rhomobile/rhodes-system-api-samples/blob/master/app/NativeView/controller.rb) and [/app/NativeView/index.erb](http://github.com/rhomobile/rhodes-system-api-samples/blob/master/app/NativeView/index.erb) for details how to call native view from your controller.
 
-** NOTE:  Windows Mobile: Visual Studio 2005 has issues with long paths. If you have problems with building rainbow extension, move rhodes folder to shorter path. **
+** NOTE:  Windows Mobile: Visual Studio 2005 has issues with long paths. If you have problems with building rainbow extension, move your rhodes folder to a shorter path. **
 
-* To navigate to rainbow view in your controller you should call `WebView.navigate('rainbow_view:red')`. In your url schema indicates view type you want to open and rest of the url (red) passed to the after it was created. 
+* To navigate to rainbow view in your controller, call `WebView.navigate('rainbow_view:red')`. In your url schema indicates view type you want to open and rest of the url (red) passed to the after it was created. 
 
 * To pass parameters to created view you may call WebView.navigate again: `WebView.navigate('rainbow_view:green')`. In your native code you may pass parameters to the native view by calling `pNativeView->navigate(url)` where pNativeView is an instance of native view created by the `RhoNativeViewManager` using registered factory. 
 
-* To close view you created just navigate to any other url.
+* To close the view you created, navigate to any other url.
 
 See [/extensions/rainbow](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/extensions/rainbow/) for implementation of the "rainbow" native view. 
 
@@ -574,7 +1420,7 @@ This sample extension uses functionality provided by Rhodes framework and theref
 * [$(RHO_ROOT)/platform/shared/common/RhodesApp.h](http://github.com/rhomobile/rhodes/blob/master/platform/shared/common/RhodesApp.h)
 * [$(RHO_ROOT)/platform/shared/rubyext/WebView.h](http://github.com/rhomobile/rhodes/blob/master/platform/shared/rubyext/WebView.h)
 
-Make sure following folder added to your compiler include path:
+Make sure the following folders are added to your compiler include path:
 
 * [$(RHO_ROOT)/platform/shared/rubyext](http://github.com/rhomobile/rhodes/tree/master/platform/shared/rubyext/)
 * [$(RHO_ROOT)/platform/shared/ruby/include](http://github.com/rhomobile/rhodes/tree/master/platform/shared/ruby/include/)
@@ -590,5 +1436,5 @@ Examples of how to use the url_for_nativeview method:
 
 
 ## Using LineaSDK in Rhodes (with using special Linea native extension)
-Please see documentation :  [LineaSDK as native extension in Rhodes applications](linea) 
 
+Please see the documentation at [LineaSDK as native extension in Rhodes applications](linea).

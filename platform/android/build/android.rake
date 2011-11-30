@@ -345,6 +345,43 @@ namespace "config" do
   
     Rake::Task["config:common"].invoke
 
+    $java = $config["env"]["paths"]["java"]
+
+    $androidsdkpath = $config["env"]["paths"]["android"]
+    unless File.exists? $androidsdkpath
+      puts "Missing or invalid 'android' section in rhobuild.yml: '#{$androidsdkpath}'"
+      exit 1
+    end
+
+    $androidndkpath = $config["env"]["paths"]["android-ndk"]
+    unless File.exists? $androidndkpath
+      puts "Missing or invalid 'android-ndk' section in rhobuild.yml: '#{$androidndkpath}'"
+      exit 1
+    end
+
+    errfmt = "WARNING!!! Path to Android %s contain spaces! It will not work because of the Google toolchain restrictions. Move it to another location and reconfigure rhodes."
+    if $androidndkpath =~ /\s/
+      puts(errfmt % "NDK")
+      exit 1
+    end
+
+    $min_sdk_level = $app_config["android"]["minSDK"] unless $app_config["android"].nil?
+    $min_sdk_level = $config["android"]["minSDK"] if $min_sdk_level.nil? and not $config["android"].nil?
+    $min_sdk_level = $min_sdk_level.to_i unless $min_sdk_level.nil?
+    $min_sdk_level = ANDROID_SDK_LEVEL if $min_sdk_level.nil?
+    
+    $max_sdk_level = $app_config["android"]["maxSDK"] unless $app_config["android"].nil?
+
+    $androidplatform = AndroidTools.fill_api_levels $androidsdkpath
+    if $androidplatform == nil
+        puts "No Android platform found at SDK path: '#{$androidsdkpath}'"
+        exit 1
+    end
+
+    android_api_levels = AndroidTools.get_installed_api_levels
+    android_api_levels.sort!
+    $found_api_level = android_api_levels.last
+
     $ext_android_rhodes_activity_listener = []
     $ext_android_manifest_changes= []
     $ext_android_resources_addons = []
@@ -369,20 +406,13 @@ namespace "config" do
 
     puts "Use Google addon API: #{$use_google_addon_api}" if USE_TRACES
 
-    $emuversion = $app_config["android"]["version"] unless $app_config["android"].nil?
-    $emuversion = $config["android"]["version"] if $emuversion.nil? and !$config["android"].nil?
-
     $uri_scheme = $app_config["android"]["URIScheme"] unless $app_config["android"].nil?
     $uri_scheme = "http" if $uri_scheme.nil?
 
     $uri_host = $app_config["android"]["URIHost"] unless $app_config["android"].nil?
 
-    $min_sdk_level = $app_config["android"]["minSDK"] unless $app_config["android"].nil?
-    $min_sdk_level = $config["android"]["minSDK"] if $min_sdk_level.nil? and not $config["android"].nil?
-    $min_sdk_level = $min_sdk_level.to_i unless $min_sdk_level.nil?
-    $min_sdk_level = ANDROID_SDK_LEVEL if $min_sdk_level.nil?
-    
-    $max_sdk_level = $app_config["android"]["maxSDK"] unless $app_config["android"].nil?
+    $emuversion = $app_config["android"]["version"] unless $app_config["android"].nil?
+    $emuversion = $config["android"]["version"] if $emuversion.nil? and !$config["android"].nil?
 
     # Here is switch between release/debug configuration used for
     # building native libraries
@@ -392,29 +422,6 @@ namespace "config" do
       $build_release = !$app_config["debug"].to_i
     end
 
-    $androidsdkpath = $config["env"]["paths"]["android"]
-    unless File.exists? $androidsdkpath
-      puts "Missing or invalid 'android' section in rhobuild.yml: '#{$androidsdkpath}'"
-      exit 1
-    end
-
-    $androidndkpath = $config["env"]["paths"]["android-ndk"]
-    unless File.exists? $androidndkpath
-      puts "Missing or invalid 'android-ndk' section in rhobuild.yml: '#{$androidndkpath}'"
-      exit 1
-    end
-
-    errfmt = "WARNING!!! Path to Android %s contain spaces! It will not work because of the Google toolchain restrictions. Move it to another location and reconfigure rhodes."
-    #if $androidsdkpath =~ /\s/
-    #  puts(errfmt % "SDK")
-    #  exit 1
-    #end
-    if $androidndkpath =~ /\s/
-      puts(errfmt % "NDK")
-      exit 1
-    end
-
-    $java = $config["env"]["paths"]["java"]
     $androidpath = Jake.get_absolute $config["build"]["androidpath"]
     $bindir = File.join($app_path, "bin")
     $rhobindir = File.join($androidpath, "bin")
@@ -478,40 +485,20 @@ namespace "config" do
     end
 
     puts "+++ Looking for platform..." if USE_TRACES
-    napilevel = $min_sdk_level
+#    napilevel = $min_sdk_level
     
-    android_api_levels = Array.new
-    
-    Dir.glob(File.join($androidsdkpath, "platforms", "*")).each do |platform|
-      props = File.join(platform, "source.properties")
-      unless File.file? props
-        puts "+++ WARNING! No source.properties found in #{platform}"
-        next
-      end
-
-      apilevel = -1
-      marketversion = nil
-      File.open(props, "r") do |f|
-        while line = f.gets
-          apilevel = $1.to_i if line =~ /^\s*AndroidVersion\.ApiLevel\s*=\s*([0-9]+)\s*$/
-          marketversion = $1 if line =~ /^\s*Platform\.Version\s*=\s*([^\s]*)\s*$/
+    $emuversion = AndroidTools.get_market_version($min_sdk_level) if $emuversion.nil?
+    if $emuversion.nil?
+      android_api_levels.each do |v|
+        puts "Check api level for emulator '#{v}'"
+        if v >= $min_sdk_level
+          $emuversion = AndroidTools.get_market_version(v)
+          puts "emulator version will used: '#{$emuversion}'"
+          break
         end
       end
-
-      puts "+++ API LEVEL of #{platform}: #{apilevel}" if USE_TRACES
-      android_api_levels.push apilevel
-
-      if apilevel >= napilevel
-        napilevel = apilevel
-        $androidplatform = File.basename(platform)
-        $found_api_level = apilevel
-      end
     end
-
-    android_api_levels.sort!
-
-    $emuversion = get_market_version($min_sdk_level) if $emuversion.nil?
-    requested_api_level = get_api_level($emuversion)
+    requested_api_level = AndroidTools.get_api_level($emuversion)
 
     if USE_TRACES
       puts "Found API levels:"
@@ -674,6 +661,11 @@ namespace "config" do
       else
         puts "+++ Google APIs add-on found: #{$gapijar}" if USE_TRACES
       end
+    end
+
+    if $min_sdk_level > $found_api_level
+        puts "Latest installed Android platform '#{$androidplatform}' does not meet minSdk '#{$min_sdk_level}' requirement"
+        exit 1
     end
 
     $emuversion = $emuversion.to_s
@@ -1926,6 +1918,10 @@ namespace "run" do
         cmd << " -no-window" if options[:hidden]
         cmd << " -avd #{$avdname}"
         Thread.new { system(cmd) }
+
+        puts "Waiting for emulator..."
+        puts Jake.run($adb, ['wait-for-device'] )
+
         puts "Waiting up to 180 seconds for emulator..."
         startedWaiting = Time.now
         adbRestarts = 1

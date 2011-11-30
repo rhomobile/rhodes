@@ -27,6 +27,7 @@
 #include "RhodesApp.h"
 #include "common/RhoMutexLock.h"
 #include "common/IRhoClassFactory.h"
+#include "common/RhoFile.h"
 #include "common/RhoConf.h"
 #include "common/RhoFilePath.h"
 #include "common/RhoAppAdapter.h"
@@ -41,6 +42,7 @@
 #include "rubyext/WebView.h"
 #include "rubyext/GeoLocation.h"
 #include "common/app_build_configs.h"
+#include "unzip/unzip.h"
 
 #include <algorithm>
 
@@ -277,6 +279,9 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
         delete m_pInstance;
 
     m_pInstance = 0;
+    
+    
+
 }
 
 CRhodesApp::CRhodesApp(const String& strRootPath)
@@ -1595,5 +1600,194 @@ int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
 
     return result; 
 }
+    
+    
+    class ReplaceBundleFromFolderThread : public rho::common::CRhoThread
+    {
+        
+    public:
+        ReplaceBundleFromFolderThread(const char* bundle_path) {
+            m_bundle_path = bundle_path;
+        }
+        
+        virtual ~ReplaceBundleFromFolderThread() {
+
+        
+        }
+        
+        
+        virtual void run()
+        {
+            //sleep(100);
+
+            String new_bundle_path = m_bundle_path;
+            String old_bundle_path = RHODESAPP().getAppRootPath();
+            String tmp_bundle_path = String(rho_native_rhopath()) + String("/tmp_new_apps");
+            
+            CRhoFile::createFolder(tmp_bundle_path.c_str());
+            CRhoFile::copyFoldersContentToAnotherFolder(new_bundle_path.c_str(), tmp_bundle_path.c_str());
+            CRhoFile::deleteFolder(old_bundle_path.c_str());
+            CRhoFile::createFolder(old_bundle_path.c_str());
+            CRhoFile::copyFoldersContentToAnotherFolder(tmp_bundle_path.c_str(), old_bundle_path.c_str());
+            CRhoFile::deleteFolder(tmp_bundle_path.c_str());
+            
+            
+            /*
+             RHODESAPP().stopApp();    
+            sleep(2000);
+            
+            const char *szRootPath = rho_native_rhopath();
+            rho_logconf_Init(szRootPath, "");
+            rho_rhodesapp_create(szRootPath);
+            rho_rhodesapp_start();
+            rho_rhodesapp_callUiCreatedCallback();
+            */
+            
+            //rho_rhodesapp_callUiDestroyedCallback();
+            //rho_rhodesapp_callAppActiveCallback(0);
+            //rho_rhodesapp_callAppActiveCallback(1);
+            //rho_rhodesapp_callUiCreatedCallback();
+            
+            rho_sys_app_exit();
+            
+            
+            stop(500);
+        }
+        
+    private:
+        rho::String m_bundle_path;
+    };
+    
+    
+    
+    class ReplaceBundleFromZipThread : public rho::common::CRhoThread
+    {
+        
+    public:
+        ReplaceBundleFromZipThread(const char* zip_path, const char* zip_psw) {
+            m_zip_path = zip_path;
+            if (zip_psw != NULL) {
+                m_zip_password = zip_psw;
+            }
+            else {
+                m_zip_password = "";
+            }
+        }
+        
+        virtual ~ReplaceBundleFromZipThread() {
+            
+            
+        }
+        
+        
+        virtual void run()
+        {
+            //sleep(100);
+            
+            String zip_bundle_path = m_zip_path;
+            String old_bundle_path = RHODESAPP().getAppRootPath();
+            String tmp_bundle_path = String(rho_native_rhopath()) + String("/tmp_new_apps");
+            String tmp_zip_path = String(rho_native_rhopath()) + String("/tmp_new_apps/tmp_zip_file_with_bundle.zip");
+            
+            CRhoFile::createFolder(tmp_bundle_path.c_str());
+            CRhoFile::copyFile(zip_bundle_path.c_str(), tmp_zip_path.c_str() );
+            
+            
+            
+            rho_unzip_file(tmp_zip_path.c_str(), m_zip_password.c_str());
+
+            /*
+            HZIP zip = OpenZipFile(zip_bundle_path.c_str(), m_zip_password.c_str());
+
+            if (!zip) {
+                LOG(ERROR) + "Failed to open zipfile";
+                CRhoFile::deleteFolder(tmp_bundle_path.c_str());
+                return;
+            }
+            
+            SetUnzipBaseDir(zip, tmp_bundle_path.c_str());
+            
+            ZIPENTRY ze;
+            GetZipItem(zip,-1, &ze);
+            int numitems = ze.index;
+            
+            // Iterate through items and unzip them
+            for (int zi = 0; zi<numitems; zi++) { 
+                // fetch individual details, e.g. the item's name.
+                if (ZR_OK != GetZipItem(zip,zi,&ze)) {
+                    LOG(ERROR) + "Failed to unzip item";
+                    CRhoFile::deleteFolder(tmp_bundle_path.c_str());
+                    return;
+                }
+                UnzipItem(zip, zi, ze.name);
+            }
+
+            
+            if (zip)
+                CloseZip(zip);
+            */
+            
+            
+            CRhoFile::deleteFile(tmp_zip_path.c_str());
+            CRhoFile::deleteFolder(old_bundle_path.c_str());
+            CRhoFile::createFolder(old_bundle_path.c_str());
+            CRhoFile::copyFoldersContentToAnotherFolder(tmp_bundle_path.c_str(), old_bundle_path.c_str());
+            CRhoFile::deleteFolder(tmp_bundle_path.c_str());
+            
+            //rho_rhodesapp_callAppActiveCallback(0);
+            ////sleep(250);
+            //rho_rhodesapp_callUiDestroyedCallback();
+            
+            
+            ////RhoRubyFinish();
+            
+            //RHODESAPP().stopApp();
+            //rho_rhodesapp_destroy();
+            
+            ////sleep(250);
+            ////rho_rhodesapp_callUiCreatedCallback();
+            ////sleep(250);
+            ////rho_rhodesapp_callAppActiveCallback(1);
+            
+            //roro();
+            rho_sys_app_exit();
+            
+            stop(1000);
+        }
+        
+    private:
+        rho::String m_zip_path;
+        rho::String m_zip_password;
+    };
+    
+    
+    
+    
+void rho_sys_replace_current_bundle_by_folder(const char* path) {
+        
+    ReplaceBundleFromFolderThread* cp = new ReplaceBundleFromFolderThread(path);    
+    
+    cp->start(rho::common::IRhoRunnable::epNormal);
+}
+
+    
+void rho_sys_replace_current_bundle_by_zip(const char* path, const char* zip_password){
+
+    ReplaceBundleFromZipThread* cp = new ReplaceBundleFromZipThread(path, zip_password);    
+    
+    cp->start(rho::common::IRhoRunnable::epNormal);
+    
+}
+    
+    
 
 } //extern "C"
+
+
+
+
+
+
+
+
+

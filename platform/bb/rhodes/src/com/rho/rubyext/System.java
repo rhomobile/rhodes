@@ -389,6 +389,8 @@ public class System {
     		Version.SoftVersion ver = Version.getSoftVersion();
     		return ObjectFactory.createString((ver.nMajor < 6 ? "BB" : "WEBKIT")+"/"+DeviceInfo.getSoftwareVersion() ); 
     	}
+        if (strPropName.equalsIgnoreCase("security_token_not_passed"))
+        	return ObjectFactory.createBoolean(RHODESAPP().isSecurityTokenNotPassed());
 
     	return RubyConstant.QNIL;
     }
