@@ -1,0 +1,7 @@
+This is patch for SWIG.
+Fixed issue with reinitialization of generated Ruby-C wrapper.
+Copy this files into SWIG sources folder before build and install SWIG.
+Or copy all files and folder from Lib folder into SWIG library folder (for already installed SWIG)
+On Mac OS X is (2.0.4 is version of SWIG - may be another):
+/Volumes/Macintosh HD/usr/share/swig/2.0.4/
+

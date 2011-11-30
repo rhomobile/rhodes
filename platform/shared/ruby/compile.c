@@ -5155,15 +5155,19 @@ get_exception_sym2type(VALUE sym)
     VALUE sym_inspect;
     static VALUE symRescue, symEnsure, symRetry;
     static VALUE symBreak, symRedo, symNext;
-
-    if (symRescue == 0) {
-	symRescue = ID2SYM(rb_intern("rescue"));
-	symEnsure = ID2SYM(rb_intern("ensure"));
-	symRetry  = ID2SYM(rb_intern("retry"));
-	symBreak  = ID2SYM(rb_intern("break"));
-	symRedo   = ID2SYM(rb_intern("redo"));
-	symNext   = ID2SYM(rb_intern("next"));
+    //RHO
+    static int cache_version;
+    
+    if ((symRescue == 0) || (const_cache_version != cache_version)) {
+        symRescue = ID2SYM(rb_intern("rescue"));
+        symEnsure = ID2SYM(rb_intern("ensure"));
+        symRetry  = ID2SYM(rb_intern("retry"));
+        symBreak  = ID2SYM(rb_intern("break"));
+        symRedo   = ID2SYM(rb_intern("redo"));
+        symNext   = ID2SYM(rb_intern("next"));
+        cache_version = const_cache_version;
     }
+    //RHO
 
     if (sym == symRescue) return CATCH_TYPE_RESCUE;
     if (sym == symEnsure) return CATCH_TYPE_ENSURE;
@@ -5239,10 +5243,14 @@ iseq_build_body(rb_iseq_t *iseq, LINK_ANCHOR *anchor,
      * index -> LABEL *label
      */
     static struct st_table *insn_table;
+    //RHO
+    static int cache_version;
 
-    if (insn_table == 0) {
-	insn_table = insn_make_insn_table();
+    if ((insn_table == 0) || (cache_version != const_cache_version)) {
+        insn_table = insn_make_insn_table();
+        cache_version = const_cache_version;
     }
+    //RHO
 
     for (i=0; i<len; i++) {
 	VALUE obj = ptr[i];

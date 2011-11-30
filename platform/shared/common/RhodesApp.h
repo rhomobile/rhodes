@@ -234,6 +234,10 @@ int rho_rhodesapp_check_mode();
 
 int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators);
 
+    
+// should be implemented in platforms code
+void rho_platform_restart_application();    
+    
 #ifdef __cplusplus
 };
 #endif //__cplusplus

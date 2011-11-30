@@ -88,6 +88,8 @@
 + (void)performOnUiThread:(id)runnable arg:(id)arg wait:(BOOL)wait;
 + (void)performOnUiThread:(id)runnable arg:(id)arg1 arg:(id)arg2 wait:(BOOL)wait;
 
++(void)restart_app;
+
 - (UIWindow*)rootWindow;
 
 - (void)playStart:(NSString*)fileName mediaType:(NSString*)type;

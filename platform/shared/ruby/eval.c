@@ -41,14 +41,121 @@ void rb_call_inits(void);
 void Init_heap(void);
 void Init_BareVM(void);
 
+//RHO
+int const_cache_version = 1;
+//RHO
+
 void
 ruby_init(void)
 {
+    //RHO
+    const_cache_version++;
+    
+    rb_mKernel = 0;
+    rb_mComparable = 0;
+    rb_mEnumerable = 0;
+    rb_mErrno = 0;
+    rb_mFileTest = 0;
+    rb_mGC = 0;
+    rb_mMath = 0;
+    rb_mProcess = 0;
+    rb_mWaitReadable = 0;
+    rb_mWaitWritable = 0;
+    
+    rb_cBasicObject = 0;
+    rb_cObject = 0;
+    rb_cArray = 0;
+    rb_cBignum = 0;
+    rb_cBinding = 0;
+    rb_cClass = 0;
+    //rb_cCont = 0;
+    rb_cDir = 0;
+    rb_cData = 0;
+    rb_cFalseClass = 0;
+    rb_cEncoding = 0;
+    rb_cEnumerator = 0;
+    rb_cFile = 0;
+    rb_cFixnum = 0;
+    rb_cFloat = 0;
+    rb_cHash = 0;
+    rb_cInteger = 0;
+    rb_cIO = 0;
+    rb_cMatch = 0;
+    rb_cMethod = 0;
+    rb_cModule = 0;
+    rb_cNameErrorMesg = 0;
+    rb_cNilClass = 0;
+    rb_cNumeric = 0;
+    rb_cProc = 0;
+    rb_cRandom = 0;
+    rb_cRange = 0;
+    rb_cRational = 0;
+    rb_cComplex = 0;
+    rb_cRegexp = 0;
+    rb_cStat = 0;
+    rb_cString = 0;
+    rb_cStruct = 0;
+    rb_cSymbol = 0;
+    rb_cThread = 0;
+    rb_cTime = 0;
+    rb_cTrueClass = 0;
+    rb_cUnboundMethod = 0;
+    
+    rb_eException = 0;
+    rb_eStandardError = 0;
+    rb_eSystemExit = 0;
+    rb_eInterrupt = 0;
+    rb_eSignal = 0;
+    rb_eFatal = 0;
+    rb_eArgError = 0;
+    rb_eEOFError = 0;
+    rb_eIndexError = 0;
+    rb_eStopIteration = 0;
+    rb_eKeyError = 0;
+    rb_eRangeError = 0;
+    rb_eIOError = 0;
+    rb_eRuntimeError = 0;
+    rb_eSecurityError = 0;
+    rb_eSystemCallError = 0;
+    rb_eThreadError = 0;
+    rb_eTypeError = 0;
+    rb_eZeroDivError = 0;
+    rb_eNotImpError = 0;
+    rb_eNoMemError = 0;
+    rb_eNoMethodError = 0;
+    rb_eFloatDomainError = 0;
+    rb_eLocalJumpError = 0;
+    rb_eSysStackError = 0;
+    rb_eRegexpError = 0;
+    rb_eEncodingError = 0;
+    rb_eEncCompatError = 0;
+    
+    rb_eScriptError = 0;
+    rb_eNameError = 0;
+    rb_eSyntaxError = 0;
+    rb_eLoadError = 0;
+    
+    rb_eMathDomainError = 0;
+    
+    ruby_current_vm = 0;
+    
+    rb_cISeq = 0;
+    rb_cRubyVM = 0;
+    rb_cEnv = 0;
+    rb_mRubyVMFrozenCore = 0;
+
+    //RHO
+    
+    
+    
     static int initialized = 0;
     int state;
 
-    if (initialized)
-	return;
+    //RHO
+    //if (initialized)
+	//return;
+    //RHO
+    
     initialized = 1;
 
     ruby_init_stack((void *)&state);
