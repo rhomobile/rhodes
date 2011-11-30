@@ -104,8 +104,18 @@
 
 @end
 
-void rho_signature_take_signature(char* callback_url, char* image_format) {
+void rho_signature_take(char* callback_url, rho_param* p) {
     NSString *url = [NSString stringWithUTF8String:callback_url];
+    char* image_format = 0;
+    if (p)
+    {
+        rho_param* pFF = rho_param_hash_get(p, "imageFormat");
+        if ( pFF )
+            image_format = pFF->v.string;
+    }
+    if (!image_format)
+        image_format = "";
+    
     NSString *iformat = [NSString stringWithUTF8String:image_format];
 	Rhodes* rho = [Rhodes sharedInstance];
 	SignatureDelegate* deleg = rho.signatureDelegate; 
@@ -114,3 +124,17 @@ void rho_signature_take_signature(char* callback_url, char* image_format) {
                                               withObject:url waitUntilDone:NO];
 }
 
+void rho_signature_visible(bool b, rho_param* p)
+{
+    //TODO: rho_signature_visible
+}
+
+void rho_signature_capture(const char* callback_url) 
+{
+    //TODO: rho_signature_capture
+}
+
+void rho_signature_clear() 
+{
+    //TODO: rho_signature_clear
+}

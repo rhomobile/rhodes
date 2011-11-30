@@ -56,7 +56,7 @@ extern void Init_WebView(void);
 extern void Init_RhoConf(void);
 extern void Init_Alert(void);
 extern void Init_Camera(void);
-extern void Init_SignatureTool(void);
+extern void Init_SignatureCapture(void);
 extern void Init_RhoBluetooth(void);
 extern void Init_RhodesNativeViewManager(void);
 extern void Init_stringio(void);
@@ -219,7 +219,7 @@ void RhoRubyStart()
     Init_WebView();
     Init_RhoConf();
     Init_Alert();
-    Init_SignatureTool();
+    Init_SignatureCapture();
     Init_RhoBluetooth();	
 	Init_RhodesNativeViewManager();	
     Init_Camera();

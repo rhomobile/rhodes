@@ -127,6 +127,14 @@ class Thread
   end
 end
 
+module SignatureTool
+    def SignatureTool.take_signature( callback, image_fmt)
+        require 'rho/rhosignature'
+        
+        Rho::SignatureCapture.take(callback, :imageFormat => image_fmt)
+    end
+end
+
 begin
 	if defined? RHO_WP7
 		require 'rhosystem'
@@ -169,3 +177,4 @@ rescue Exception => e
     trace_msg = e.backtrace.join("\n")
     puts 'Create RHO framework failed: ' + e.inspect + ";Trace: #{trace_msg}"
 end    
+

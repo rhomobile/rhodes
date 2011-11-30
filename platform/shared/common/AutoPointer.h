@@ -26,6 +26,8 @@
 
 #pragma once
 
+#include "common/IRhoThreadImpl.h"
+
 namespace rho {
 namespace common {
 
@@ -160,6 +162,27 @@ public:
     }
 private:
     CBaseDeleter* m_pDeleter;
+};
+
+template <typename FUNCTYPE, typename PARAMTYPE>
+class CStaticClassFunctor : public rho::common::IRhoRunnable
+{
+public:
+
+    CStaticClassFunctor( FUNCTYPE pFunc, PARAMTYPE param ): m_pFunc(pFunc), m_param(param){}
+    virtual void runObject()
+    { 
+        m_pFunc(m_param); 
+    }
+
+    ~CStaticClassFunctor()
+    {
+    }
+
+private:
+    FUNCTYPE m_pFunc;
+    PARAMTYPE m_param;
+
 };
 
 }

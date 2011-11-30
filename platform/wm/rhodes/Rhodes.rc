@@ -125,6 +125,11 @@ BEGIN
 END
 
 
+IDR_SIGNATURE_MENU MENU 
+BEGIN
+    MENUITEM "Clear",                       IDM_CLEAR
+END
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
@@ -246,11 +251,10 @@ BEGIN
 END
 
 IDD_TAKE_SIGNATURE DIALOG  0, 0, 135, 105
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_SYSMENU
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_SYSMENU// | WS_CAPTION
 FONT 8, "MS Shell Dlg"
 BEGIN
 END
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
