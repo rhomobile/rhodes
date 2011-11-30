@@ -612,7 +612,8 @@ void CRhodesApp::callSignatureCallback(String strCallbackUrl, const String& strS
 			strBody = "status=ok&signature_uri=db%2Fdb-files%2F" + strSignaturePath;
 		
 		strBody += "&rho_callback=1";
-		getNetRequest().pushData( strCallbackUrl, strBody, null );
+		//getNetRequest().pushData( strCallbackUrl, strBody, null );
+        runCallbackInThread(strCallbackUrl, strBody);
 	}
 	
 void CRhodesApp::callDateTimeCallback(String strCallbackUrl, long lDateTime, const char* szData, int bCancel )

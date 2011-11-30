@@ -31,13 +31,25 @@
 
 extern "C" {
 
-void rho_signature_take_signature(char* callback_url, char* image_format)
+void rho_signature_take(char* callback_url, rho_param* p)
 {
     //TODO: rho_signature_take_signature
     //String callback = callback_url;
     //String format = image_format ? image_format : "png"; // default PNG
     //Signature::Params* params = new Signature::Params(callback, format);
-    CMainWindow::getInstance()->takeSignature(0);
+    //CMainWindow::getInstance()->takeSignature(0);
+}
+
+void rho_signature_visible(bool b, rho_param* p)
+{
+}
+
+void rho_signature_capture(const char* callback_url) 
+{
+}
+
+void rho_signature_clear() 
+{
 }
 
 } //extern "C"

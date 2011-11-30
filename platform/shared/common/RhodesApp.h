@@ -166,6 +166,16 @@ protected:
     void initAppUrls();
 };
 
+#if defined(OS_WINDOWS) || defined(OS_WINCE)
+extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask);
+
+template <typename FUNCTYPE, typename PARAMTYPE>
+void rho_callInUIThread( FUNCTYPE pFunc, PARAMTYPE param )
+{
+    rho_wm_impl_performOnUiThread( new rho::common::CStaticClassFunctor<FUNCTYPE,PARAMTYPE>(pFunc, param) );
+}
+#endif //defined(OS_WINDOWS) || defined(OS_WINCE)
+
 }
 }
 

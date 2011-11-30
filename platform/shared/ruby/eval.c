@@ -48,6 +48,9 @@ int const_cache_version = 1;
 void
 ruby_init(void)
 {
+    static int initialized = 0;
+    int state;
+
     //RHO
     const_cache_version++;
     
@@ -147,10 +150,6 @@ ruby_init(void)
     //RHO
     
     
-    
-    static int initialized = 0;
-    int state;
-
     //RHO
     //if (initialized)
 	//return;

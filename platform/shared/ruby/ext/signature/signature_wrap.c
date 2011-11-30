@@ -1801,17 +1801,18 @@ int SWIG_Ruby_arity( VALUE proc, int minimal )
 /* -------- TYPES TABLE (BEGIN) -------- */
 
 #define SWIGTYPE_p_char swig_types[0]
-static swig_type_info *swig_types[2];
-static swig_module_info swig_module = {swig_types, 1, 0, 0, 0, 0};
+#define SWIGTYPE_p_rho_param swig_types[1]
+static swig_type_info *swig_types[3];
+static swig_module_info swig_module = {swig_types, 2, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
 /* -------- TYPES TABLE (END) -------- */
 
-#define SWIG_init    Init_SignatureTool
-#define SWIG_name    "SignatureTool"
+#define SWIG_init    Init_SignatureCapture
+#define SWIG_name    "Rho::SignatureCapture"
 
-static VALUE mSignatureTool;
+static VALUE mSignatureCapture;
 
 #define SWIG_RUBY_THREAD_BEGIN_BLOCK
 #define SWIG_RUBY_THREAD_END_BLOCK
@@ -1825,8 +1826,26 @@ static VALUE mSignatureTool;
 #define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),(void**)(a)) 
 
 
-extern void rho_signature_take_signature(char* callback_url, char* image_format);
-#define take_signature rho_signature_take_signature 
+#include "ext/rho/rhoruby.h"
+
+#if !defined(bool)
+#define bool int
+#define true  1
+#define false 0
+#endif
+
+extern void rho_signature_take(const char* callback_url, rho_param* p);
+#define take  rho_signature_take
+
+extern void rho_signature_visible(bool b, rho_param* p);
+#define visible  rho_signature_visible
+
+extern void rho_signature_capture(const char* callback_url);
+#define capture  rho_signature_capture
+
+extern void rho_signature_clear();
+#define clear    rho_signature_clear
+
 
 
 SWIGINTERN swig_type_info*
@@ -1882,37 +1901,195 @@ SWIG_AsCharPtrAndSize(VALUE obj, char** cptr, size_t* psize, int *alloc)
 
 
 
+
+#include <limits.h>
+#if !defined(SWIG_NO_LLONG_MAX)
+# if !defined(LLONG_MAX) && defined(__GNUC__) && defined (__LONG_LONG_MAX__)
+#   define LLONG_MAX __LONG_LONG_MAX__
+#   define LLONG_MIN (-LLONG_MAX - 1LL)
+#   define ULLONG_MAX (LLONG_MAX * 2ULL + 1ULL)
+# endif
+#endif
+
+
 SWIGINTERN VALUE
-_wrap_take_signature(int argc, VALUE *argv, VALUE self) {
+SWIG_ruby_failed(void)
+{
+  return Qnil;
+} 
+
+
+/*@SWIG:C:\Install\swigwin-2.0.4\Lib\ruby\rubyprimtypes.swg,19,%ruby_aux_method@*/
+SWIGINTERN VALUE SWIG_AUX_NUM2LONG(VALUE *args)
+{
+  VALUE obj = args[0];
+  VALUE type = TYPE(obj);
+  long *res = (long *)(args[1]);
+  *res = type == T_FIXNUM ? NUM2LONG(obj) : rb_big2long(obj);
+  return obj;
+}
+/*@SWIG@*/
+
+SWIGINTERN int
+SWIG_AsVal_long (VALUE obj, long* val)
+{
+  VALUE type = TYPE(obj);
+  if ((type == T_FIXNUM) || (type == T_BIGNUM)) {
+    long v;
+    VALUE a[2];
+    a[0] = obj;
+    a[1] = (VALUE)(&v);
+    if (rb_rescue(RUBY_METHOD_FUNC(SWIG_AUX_NUM2LONG), (VALUE)a, RUBY_METHOD_FUNC(SWIG_ruby_failed), 0) != Qnil) {
+      if (val) *val = v;
+      return SWIG_OK;
+    }
+  }
+  return SWIG_TypeError;
+}
+
+
+SWIGINTERN int
+SWIG_AsVal_int (VALUE obj, int *val)
+{
+  long v;
+  int res = SWIG_AsVal_long (obj, &v);
+  if (SWIG_IsOK(res)) {
+    if ((v < INT_MIN || v > INT_MAX)) {
+      return SWIG_OverflowError;
+    } else {
+      if (val) *val = (int)(v);
+    }
+  }  
+  return res;
+}
+
+
+SWIGINTERN int
+SWIG_AsVal_bool (VALUE obj, bool *val)
+{
+  if (obj == Qtrue) {
+    if (val) *val = true;
+    return SWIG_OK;
+  } else if (obj == Qfalse) {
+    if (val) *val = false;
+    return SWIG_OK;
+  } else {
+    int res = 0;
+    if (SWIG_AsVal_int (obj, &res) == SWIG_OK) {    
+      if (val) *val = res ? true : false;
+      return SWIG_OK;
+    }
+  }  
+  return SWIG_TypeError;
+}
+
+SWIGINTERN VALUE
+_wrap_take(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
-  char *arg2 = (char *) 0 ;
+  rho_param *arg2 = (rho_param *) 0 ;
   int res1 ;
   char *buf1 = 0 ;
   int alloc1 = 0 ;
-  int res2 ;
-  char *buf2 = 0 ;
-  int alloc2 = 0 ;
   
-  if ((argc < 2) || (argc > 2)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  {
+    arg2 = 0;
+  }
+  if ((argc < 1) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
   }
   res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char *","take_signature", 1, argv[0] ));
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","take", 1, argv[0] ));
   }
   arg1 = (char *)(buf1);
-  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char *","take_signature", 2, argv[1] ));
+  if (argc > 1) {
+    {
+      arg2 = rho_param_fromvalue(argv[1]);
+    }
   }
-  arg2 = (char *)(buf2);
-  take_signature(arg1,arg2);
+  take((char const *)arg1,arg2);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  {
+    rho_param_free(arg2);
+  }
   return Qnil;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  {
+    rho_param_free(arg2);
+  }
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_visible(int argc, VALUE *argv, VALUE self) {
+  bool arg1 ;
+  rho_param *arg2 = (rho_param *) 0 ;
+  bool val1 ;
+  int ecode1 = 0 ;
+  
+  {
+    arg2 = 0;
+  }
+  if ((argc < 1) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_bool(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), Ruby_Format_TypeError( "", "bool","visible", 1, argv[0] ));
+  } 
+  arg1 = (bool)(val1);
+  if (argc > 1) {
+    {
+      arg2 = rho_param_fromvalue(argv[1]);
+    }
+  }
+  visible(arg1,arg2);
+  {
+    rho_param_free(arg2);
+  }
+  return Qnil;
+fail:
+  {
+    rho_param_free(arg2);
+  }
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_capture(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","capture", 1, argv[0] ));
+  }
+  arg1 = (char *)(buf1);
+  capture((char const *)arg1);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_clear(int argc, VALUE *argv, VALUE self) {
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  clear();
+  return Qnil;
+fail:
   return Qnil;
 }
 
@@ -1921,15 +2098,19 @@ fail:
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_rho_param = {"_p_rho_param", "rho_param *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_char,
+  &_swigt__p_rho_param,
 };
 
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_rho_param[] = {  {&_swigt__p_rho_param, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_char,
+  _swigc__p_rho_param,
 };
 
 
@@ -2211,11 +2392,12 @@ SWIG_PropagateClientData(void) {
 #ifdef __cplusplus
 extern "C"
 #endif
-SWIGEXPORT void Init_SignatureTool(void) {
+SWIGEXPORT void Init_SignatureCapture(void) {
   size_t i;
   
   SWIG_InitRuntime();
-  mSignatureTool = rb_define_module("SignatureTool");
+  mSignatureCapture = rb_define_module("Rho");
+  mSignatureCapture = rb_define_module_under(mSignatureCapture, "SignatureCapture");
   
   SWIG_InitializeModule(0);
   for (i = 0; i < swig_module.size; i++) {
@@ -2223,6 +2405,9 @@ SWIGEXPORT void Init_SignatureTool(void) {
   }
   
   SWIG_RubyInitializeTrackings();
-  rb_define_module_function(mSignatureTool, "take_signature", _wrap_take_signature, -1);
+  rb_define_module_function(mSignatureCapture, "take", _wrap_take, -1);
+  rb_define_module_function(mSignatureCapture, "visible", _wrap_visible, -1);
+  rb_define_module_function(mSignatureCapture, "capture", _wrap_capture, -1);
+  rb_define_module_function(mSignatureCapture, "clear", _wrap_clear, -1);
 }
 

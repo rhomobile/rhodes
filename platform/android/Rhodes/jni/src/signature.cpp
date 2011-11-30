@@ -29,6 +29,7 @@
 #include "rhodes/jni/com_rhomobile_rhodes_signature_Signature.h"
 
 #include <common/RhodesApp.h>
+#include "ruby/ext/rho/rhoruby.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Signature"
@@ -41,7 +42,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_signature_Signature_callback
 }
 
 
-RHO_GLOBAL void rho_signature_take_signature(char* callback_url, char* image_format)
+RHO_GLOBAL void rho_signature_take(char* callback_url, rho_param* p)
 {
 ///*
     JNIEnv *env = jnienv();
@@ -50,8 +51,33 @@ RHO_GLOBAL void rho_signature_take_signature(char* callback_url, char* image_for
     jmethodID mid = getJNIClassStaticMethod(env, cls, "takeSignature", "(Ljava/lang/String;Ljava/lang/String;)V");
     if (!mid) return;
     jhstring objCallback = rho_cast<jhstring>(callback_url);
+
+    char* image_format = 0;
+    if (p)
+    {
+        rho_param* pFF = rho_param_hash_get(p, "imageFormat");
+        if ( pFF )
+            image_format = pFF->v.string;
+    }
+    if (!image_format)
+        image_format = "";
+
     jhstring objFormat = rho_cast<jhstring>(image_format);
     env->CallStaticVoidMethod(cls, mid, objCallback.get(), objFormat.get());
 //*/
 }
 
+RHO_GLOBAL void rho_signature_visible(bool b, rho_param* p)
+{
+    //TODO: rho_signature_visible
+}
+
+RHO_GLOBAL void rho_signature_capture(const char* callback_url) 
+{
+    //TODO: rho_signature_capture
+}
+
+RHO_GLOBAL void rho_signature_clear() 
+{
+    //TODO: rho_signature_clear
+}

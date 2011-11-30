@@ -43,7 +43,7 @@
 #include "ext/rho/rhoruby.h"
 #include "rubyext/WebView.h"
 #include "camera/Camera.h"
-#include "signature/Signature.h"
+#include "rubyext/RhoSignature.h"
 #include "sync/SyncThread.h"
 #include "common/RhoFilePath.h"
 #include "common/RhoFile.h"
@@ -237,7 +237,14 @@ LRESULT CMainWindow::InitMainWindow()
 	m_screenHeight = rcMainWindow.bottom - rcMainWindow.top;
 #endif
 
+#if !defined( OS_PLATFORM_MOTCE )
     MoveWindow(&rcMainWindow);
+#else
+    g_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
+    CommandBar_AddAdornments(g_hWndCommandBar, 0, 0);
+    CommandBar_Show(g_hWndCommandBar, TRUE);
+
+#endif
 
 #if defined(_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
 	//Set fullscreen after window resizing
@@ -354,7 +361,20 @@ LRESULT CMainWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOO
     LOG(INFO)  + "OnSize: x=" + (int)(LOWORD(lParam)) + ";y=" + (int)(HIWORD(lParam));
 
     //m_browser.MoveWindow(0, 0, LOWORD(lParam), HIWORD(lParam)- m_toolbar.getHeight());
-    RECT rect = {0, 0, LOWORD(lParam), HIWORD(lParam)- m_toolbar.getHeight()};
+    RECT rect = {0, 0, LOWORD(lParam), HIWORD(lParam) };//- m_toolbar.getHeight()};
+
+    if ( m_toolbar.m_hWnd )
+        rect.bottom -= m_toolbar.getHeight();
+
+#if defined( OS_PLATFORM_MOTCE )
+    if ( g_hWndCommandBar ) 
+    {
+        CRect rcCmdBar;
+        ::GetWindowRect(g_hWndCommandBar, &rcCmdBar);
+        rect.top += rcCmdBar.Height();
+    }
+#endif
+
     m_pBrowserEng->ResizeOnTab(0, rect);
 
     if ( m_toolbar.m_hWnd )
@@ -758,21 +778,29 @@ LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
 	return 0;
 }
 
-LRESULT CMainWindow::OnTakeSignature(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
+#if 0
+LRESULT CMainWindow::OnTakeSignature(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) 
 {
-	TCHAR signature_uri[MAX_PATH];
-    HRESULT status = S_OK;
-	Signature::Params* params = (Signature::Params *)lParam;
-	Signature signature;
-	status = signature.takeSignature(this->m_hWnd, signature_uri, convertToStringW(params->m_image_format).c_str());
+    if ( wParam == 0 )
+    {
+	    TCHAR signature_uri[MAX_PATH];
+        HRESULT status = S_OK;
+	    Signature::Params* params = (Signature::Params *)lParam;
+	    status = Signature::takeSignature(this->m_hWnd, signature_uri, params);
 
-    RHODESAPP().callSignatureCallback(params->m_callback_url.c_str(), rho::common::convertToStringA(signature_uri),
-        (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
-    
-    free ((void *)lParam);
-    
+        RHODESAPP().callSignatureCallback(params->m_callback_url.c_str(), rho::common::convertToStringA(signature_uri),
+            (status!= S_OK && status != S_FALSE ? "Error" : ""), status == S_FALSE);
+        
+        free ((void *)lParam);
+    }else
+    {
+	    Signature::Params* params = (Signature::Params *)lParam;
+        Signature::showSignature(m_hWnd/*m_pBrowserEng->GetHTMLWND()*/, params);
+    }
+
 	return 0;
 }
+#endif
 
 LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
@@ -902,6 +930,8 @@ extern "C" void rho_wmsys_run_app(const char* szPath, const char* szParams );
 bool Rhodes_WM_ProcessBeforeNavigate(LPCTSTR url)
 {
     LOG(TRACE) + "OnBeforeNavigate2: " + url;
+
+    rho::CRhoSignature::hideSignature();
 
     const wchar_t *to_remove;
     if ( (to_remove = wcsstr(url, L"rho_open_target=_blank")) != 0)

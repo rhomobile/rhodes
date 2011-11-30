@@ -176,6 +176,8 @@ rho_param *rho_param_str(char *s);
 rho_param *rho_param_array(int size);
 rho_param *rho_param_hash(int size);
 
+rho_param *rho_param_hash_get(rho_param *p, const char* name);
+
 rho_param *rho_param_dup(rho_param *p);
 void rho_param_free(rho_param *p);
 
