@@ -301,7 +301,7 @@ LRESULT CRhoSignatureWindow::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND hwnd, BOO
 {
     saveImage();
 
-    if (m_bModal)
+    if (getParams().m_eType == CRhoSignature::esModal)
 	    EndDialog(wID);
 
 	return 0;
@@ -309,7 +309,7 @@ LRESULT CRhoSignatureWindow::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND hwnd, BOO
 
 LRESULT CRhoSignatureWindow::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    if (m_bModal)
+    if (getParams().m_eType == CRhoSignature::esModal)
 	    EndDialog(wID);
 
 	return 0;
