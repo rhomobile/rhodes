@@ -14,15 +14,6 @@ iphone:
   configuration: Release
   extensions: ["barcode"]
   
-android:
-  apikey: "0tLch9tZSX1G7PQRWwmqvINECUGtJ8ReArpPJxw"
-  mapping: enabled
-  capabilities:
-    - network_state
-    
-  extensions: ["barcode"]
-  version: 2.3.3
-
 #wm:
 #  extensions: ["barcode"]
   
@@ -38,3 +29,10 @@ extensions: ["json", "rhoxml", "rhospec", "crypt"]
 
 wp:
   productid: 'fd55c4d0-51fa-012e-7844-6caec51bd50e'
+
+android:
+  apikey: "0tLch9tZSX1G7PQRWwmqvINECUGtJ8ReArpPJxw"
+  mapping: enabled
+  capabilities:
+    - network_state
+  extensions: ["barcode"]
