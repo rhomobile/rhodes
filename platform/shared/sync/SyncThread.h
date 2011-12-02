@@ -201,6 +201,7 @@ void rho_sync_setobjectnotify_url_c(/*RHOC_CALLBACK*/void* callback, void* callb
     
 void rho_sync_stop();
 void rho_sync_set_source_property(int nSrcID, const char* szPropName, const char* szPropValue);
+int  rho_sync_issyncing();
 
 #ifdef __cplusplus
 };

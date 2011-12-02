@@ -992,6 +992,25 @@ void rho_connectclient_create_object(const char* szModel, unsigned long hash)
     db.endTransaction();
 }
 
+int rho_connectclient_is_changed(const char* szModel)
+{
+    String src_name = szModel;
+    IDBResult  res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition from sources WHERE name=?", src_name);
+    if ( res.isEnd())
+    {
+        //TODO: report error - unknown source
+        return 0;
+    }
+
+    int nSrcID = res.getIntByIdx(0);
+    String db_partition = res.getStringByIdx(1);
+    db::CDBAdapter& db = db::CDBAdapter::getDB(db_partition.c_str());
+
+    IDBResult resChanged = db.executeSQL("SELECT object FROM changed_values WHERE source_id=? LIMIT 1 OFFSET 0", nSrcID);
+
+    return resChanged.isEnd() ? 0 : 1;
+}
+
 void parseServerErrors( const char* szPrefix, const String& name, const String& value, unsigned long& errors_obj, unsigned long& errors_attrs )
 {
     int nPrefixLen = strlen(szPrefix)+1;
