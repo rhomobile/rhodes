@@ -1,6 +1,7 @@
 /* geolocation.i */
 %module GeoLocation
 %{
+#include "ext/rho/rhoruby.h"
 /* Put header files here or function declarations like below */
 
 #define latitude rho_geo_latitude
@@ -27,6 +28,9 @@ extern double rho_geo_haversine_distance(double lat1, double lon1, double lat2, 
 #define turnoff rho_geoimpl_turngpsoff
 extern void rho_geoimpl_turngpsoff();
 
+#define request_coordinates_by_adress rho_geoimpl_request_coordinates_by_adress
+extern void rho_geoimpl_request_coordinates_by_adress(rho_param* p, const char* callback);
+
 %}
 
 %predicate known_position();
@@ -37,6 +41,14 @@ extern void rho_geoimpl_turngpsoff();
  $1 = 0;
 }
 
+%typemap(in) (rho_param *p) {
+    $1 = rho_param_fromvalue($input);
+}
+
+%typemap(freearg) (rho_param *p) {
+    rho_param_free($1);
+}
+
 extern double latitude();
 extern double longitude();
 extern float  accuracy();
@@ -45,4 +57,5 @@ extern void   set_view_notification( const char *url, char* params, int timeout_
 extern void   set_notification( const char *url, char* params, int timeout_sec);
 extern double haversine_distance(double lat1, double lon1, double lat2, double lon2);
 extern void   turnoff();
+extern void request_coordinates_by_adress(rho_param* p, const char* callback);
 
