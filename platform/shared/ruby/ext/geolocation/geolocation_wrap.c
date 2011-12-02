@@ -1801,8 +1801,9 @@ int SWIG_Ruby_arity( VALUE proc, int minimal )
 /* -------- TYPES TABLE (BEGIN) -------- */
 
 #define SWIGTYPE_p_char swig_types[0]
-static swig_type_info *swig_types[2];
-static swig_module_info swig_module = {swig_types, 1, 0, 0, 0, 0};
+#define SWIGTYPE_p_rho_param swig_types[1]
+static swig_type_info *swig_types[3];
+static swig_module_info swig_module = {swig_types, 2, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1825,6 +1826,7 @@ static VALUE mGeoLocation;
 #define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),(void**)(a)) 
 
 
+#include "ext/rho/rhoruby.h"
 /* Put header files here or function declarations like below */
 
 #define latitude rho_geo_latitude
@@ -1850,6 +1852,9 @@ extern double rho_geo_haversine_distance(double lat1, double lon1, double lat2, 
 
 #define turnoff rho_geoimpl_turngpsoff
 extern void rho_geoimpl_turngpsoff();
+
+#define request_coordinates_by_adress rho_geoimpl_request_coordinates_by_adress
+extern void rho_geoimpl_request_coordinates_by_adress(rho_param* p, const char* callback);
 
 
 
@@ -2237,19 +2242,57 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_request_coordinates_by_adress(int argc, VALUE *argv, VALUE self) {
+  rho_param *arg1 = (rho_param *) 0 ;
+  char *arg2 = (char *) 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  {
+    arg1 = rho_param_fromvalue(argv[0]);
+  }
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","request_coordinates_by_adress", 2, argv[1] ));
+  }
+  arg2 = (char *)(buf2);
+  request_coordinates_by_adress(arg1,(char const *)arg2);
+  {
+    rho_param_free(arg1);
+  }
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return Qnil;
+fail:
+  {
+    rho_param_free(arg1);
+  }
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_rho_param = {"_p_rho_param", "rho_param *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_char,
+  &_swigt__p_rho_param,
 };
 
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_rho_param[] = {  {&_swigt__p_rho_param, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_char,
+  _swigc__p_rho_param,
 };
 
 
@@ -2551,5 +2594,6 @@ SWIGEXPORT void Init_GeoLocation(void) {
   rb_define_module_function(mGeoLocation, "set_notification", _wrap_set_notification, -1);
   rb_define_module_function(mGeoLocation, "haversine_distance", _wrap_haversine_distance, -1);
   rb_define_module_function(mGeoLocation, "turnoff", _wrap_turnoff, -1);
+  rb_define_module_function(mGeoLocation, "request_coordinates_by_adress", _wrap_request_coordinates_by_adress, -1);
 }
 
