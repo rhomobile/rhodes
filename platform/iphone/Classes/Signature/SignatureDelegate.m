@@ -28,6 +28,8 @@
 #import "SignatureDelegate.h"
 #import "AppManager.h"
 #import "common/RhodesApp.h"
+#include "ruby/ext/rho/rhoruby.h"
+
 
 @implementation SignatureDelegate
 
