@@ -265,10 +265,15 @@ void rho_sync_stop()
 	}
 }
 
+int  rho_sync_issyncing()
+{
+    return CSyncThread::getSyncEngine().isSyncing() ? 1 : 0;
+}
+
 #ifndef RHO_NO_RUBY
 unsigned long rho_sync_is_syncing()
 {
-    return rho_ruby_create_boolean(CSyncThread::getSyncEngine().isSyncing());
+    return rho_ruby_create_boolean(rho_sync_issyncing());
 }
 #endif //RHO_NO_RUBY
 

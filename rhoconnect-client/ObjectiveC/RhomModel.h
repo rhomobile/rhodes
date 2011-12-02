@@ -69,4 +69,6 @@
 - (void) startBulkUpdate;
 - (void) stopBulkUpdate;
 
+- (BOOL) is_changed;
+
 @end

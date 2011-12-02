@@ -122,6 +122,8 @@ unsigned long rho_connectclient_find_first(const char* szModel, unsigned long ha
 unsigned long rho_connectclient_find_all(const char* szModel, unsigned long hashCond );
 unsigned long rho_connectclient_findbysql(const char* szModel, const char* szSql, unsigned long arParams );
 
+int rho_connectclient_is_changed(const char* szModel);
+
 void rho_connectclient_save( const char* szModel, unsigned long hash );
 void rho_connectclient_itemdestroy( const char* szModel, unsigned long hash );
 
