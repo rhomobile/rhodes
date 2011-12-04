@@ -168,9 +168,11 @@ public class CameraScreen extends MainScreen {
 			SimpleFile file = null;
 			FileConnection fconnsrc = null;
 			FileConnection fconndst = null;
+			InputStream src = null;
+			OutputStream dst = null;			
 	        try
 	        {
-	        	file = RhoClassFactory.createFile();
+	            file = RhoClassFactory.createFile();	        		
 	        	
 	        	if (fileName != null) {
 	        		String ext = fileName.substring(fileName.lastIndexOf('.'));
@@ -183,8 +185,8 @@ public class CameraScreen extends MainScreen {
 					
 					LOG.TRACE("should be readed " + fconnsrc.fileSize() + " bytes");
 					
-					InputStream src = fconnsrc.openInputStream();
-					OutputStream dst = fconndst.openOutputStream();
+					src = fconnsrc.openInputStream();
+					dst = fconndst.openOutputStream();
 					
 					long fullLength = 0;
 					
@@ -197,6 +199,17 @@ public class CameraScreen extends MainScreen {
 					dst.flush();
 					
 					LOG.TRACE("readed: " + fullLength + " bytes");
+					
+					try{
+						if ( src != null )
+							src.close();
+						src = null;
+
+						fconnsrc.delete();
+					}catch (Exception exc)
+					{
+						LOG.ERROR("Cannot delete file: " + fileName, exc);
+					}
 				}
 	        	else {
 		            //A null encoding indicates that the camera should
@@ -212,7 +225,6 @@ public class CameraScreen extends MainScreen {
 		            }
 		            
 		            fname = makeFileName(ext);
-	        		
 		        	file.open(fname, false, false);
 		        	
 		            //Retrieve the raw image from the VideoControl
@@ -233,6 +245,11 @@ public class CameraScreen extends MainScreen {
 				try{
 					if ( file != null )
 						file.close();
+					
+					if ( dst != null )
+						dst.close();
+					if ( src != null )
+						src.close();
 					
 					if (fconnsrc != null)
 						fconnsrc.close();
