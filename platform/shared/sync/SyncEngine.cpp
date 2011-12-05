@@ -427,13 +427,16 @@ void CSyncEngine::applyChangedValues(db::CDBAdapter& db)
 
 void CSyncEngine::loadAllSources()
 {
+#ifndef RHO_NO_RUBY    
     if (isNoThreadedMode())
         RhoAppAdapter.loadAllSyncSources();
     else
     {
         NetResponse resp = getNet().pushData( getNet().resolveUrl("/system/loadallsyncsources"), "", null );
     }
-
+#else
+    RhoAppAdapter.loadAllSyncSources();
+#endif
     m_sources.removeAllElements();
 
     Vector<String> arPartNames = db::CDBAdapter::getDBAllPartitionNames();
@@ -558,13 +561,16 @@ void CSyncEngine::processServerSources(String strSources)
 {
     if ( strSources.length() > 0 )
     {
+ #ifndef RHO_NO_RUBY       
         if (isNoThreadedMode())
             RhoAppAdapter.loadServerSources(strSources);
         else
         {
             NetResponse resp = getNet().pushData( getNet().resolveUrl("/system/loadserversources"), strSources, null );
         }
-
+#else
+        RhoAppAdapter.loadServerSources(strSources);
+#endif
         loadAllSources();
 
         rho_db_init_attr_manager();
@@ -851,12 +857,16 @@ void CSyncEngine::login(String name, String password, const CSyncNotification& o
         String strOldUser = RHOCONF().getString("rho_sync_user");
         if ( name.compare(strOldUser) != 0 )
         {
+#ifndef RHO_NO_RUBY            
             if (isNoThreadedMode())
                 RhoAppAdapter.resetDBOnSyncUserChanged();
             else
             {
                 NetResponse resp = getNet().pushData( getNet().resolveUrl("/system/resetDBOnSyncUserChanged"), "", null );
-            }
+           }
+#else
+          RhoAppAdapter.resetDBOnSyncUserChanged();  
+#endif            
         }
     }
     RHOCONF().setString("rho_sync_user", name, true);
