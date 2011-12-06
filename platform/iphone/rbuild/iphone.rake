@@ -556,8 +556,14 @@ namespace "build" do
       set_signing_identity($signidentity,$provisionprofile,$entitlements.to_s) if $signidentity.to_s != ""
 
       chdir $config["build"]["iphonepath"]
+
       args = ['build', '-target', 'rhorunner', '-configuration', $configuration, '-sdk', $sdk]
 
+      if $sdk =~ /iphonesimulator/
+         args << '-arch'
+         args << 'i386'
+      end
+      
       puts Jake.run($xcodebuild,args)
       ret = $?
 

@@ -50,6 +50,11 @@ namespace "build" do
     chdir iphone_path
     args = ['build', '-target', 'Barcode', '-configuration', $configuration, '-sdk', $sdk]
 
+    if simulator
+        args << '-arch'
+        args << 'i386'
+    end
+
     puts Jake.run($xcodebuild,args)
     ret = $?
 
