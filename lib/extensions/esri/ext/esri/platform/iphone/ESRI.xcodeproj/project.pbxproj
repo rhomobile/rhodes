@@ -198,7 +198,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					armv7,
+					armv6,
+				);
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = NO;
 				DSTROOT = /tmp/ESRI.dst;
@@ -219,6 +222,7 @@
 				PRODUCT_NAME = ESRI;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
 				USER_HEADER_SEARCH_PATHS = "${HOME}/Library/SDKs/ArcGIS/iOS.sdk/usr/local/include/**";
+				VALID_ARCHS = "armv6 armv7 i386";
 			};
 			name = Debug;
 		};
@@ -226,7 +230,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					armv7,
+					armv6,
+				);
 				DEAD_CODE_STRIPPING = NO;
 				DSTROOT = /tmp/ESRI.dst;
 				GCC_MODEL_TUNING = G5;
@@ -243,6 +250,7 @@
 				PRODUCT_NAME = ESRI;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
 				USER_HEADER_SEARCH_PATHS = "${HOME}/Library/SDKs/ArcGIS/iOS.sdk/usr/local/include/**";
+				VALID_ARCHS = "armv6 armv7 i386";
 			};
 			name = Release;
 		};
