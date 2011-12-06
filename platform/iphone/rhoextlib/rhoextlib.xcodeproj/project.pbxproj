@@ -151,7 +151,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					armv7,
+					armv6,
+				);
 				COPY_PHASE_STRIP = NO;
 				DSTROOT = /tmp/rhoextlib.dst;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -167,6 +170,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = "armv6 armv7 i386";
 			};
 			name = Debug;
 		};
@@ -174,7 +178,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					armv7,
+					armv6,
+				);
 				DSTROOT = /tmp/rhoextlib.dst;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -186,6 +193,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = "armv6 armv7 i386";
 			};
 			name = Release;
 		};
