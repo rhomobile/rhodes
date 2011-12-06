@@ -576,6 +576,7 @@ void CRhodesApp::callBarcodeCallback(String strCallbackUrl, const String& strBar
         strBody += "&status=fail";
     }
 
+    strBody += "&rho_callback=1";
     getNetRequest().pushData( strCallbackUrl, strBody, null );
 }
 
