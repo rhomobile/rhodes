@@ -108,6 +108,7 @@ public class RhoFile
 	public static boolean isFileExist(String szFilePath)
 	{
 		IRAFile oFile = null; 
+		//LOG.INFO("isFileExist:" + szFilePath);
 		
 		try
 		{
@@ -116,6 +117,7 @@ public class RhoFile
 			return oFile.exists();
 		}catch(Exception exc)
 		{
+			LOG.ERROR("isFileExist failed:" + szFilePath, exc);
 			return false;
 		}finally
 		{
