@@ -587,7 +587,7 @@ For barcode recognition we use Zbar library (iPhone, and Windows Mobile platform
 
 **NOTE: We are very sorry, but we are removed ZBar source code from our project by ZBar license requirements. For build Barcode extension for WM, you should download ZBar sources from http://zbar.sourceforge.net/ and copy to [rhodes root]/lib/extensions/barcode/ext/barcode/shared/zbar/zbar/ folder "include" and "zbar" folders from ZBar sources. Also you should fix ZBar sources for building by Microsoft Visual Studio (move define of inner function variables to begin of functions, etc.). See detailed instructon in [Rhodes root]/lib/extensions/barcode/ext/barcode/shared/zbar/zbar/README.TXT
 
-On Android and iOS now supported real-time barcode recognizing (second parameter is hash with options):
+On Android and iOS (not supported on iPhone 2G and iPhone 3G !) now supported real-time barcode recognizing (second parameter is hash with options):
 	:::ruby
 	Barcode.take_barcode(url_for(:action => :take_callback), {})
 

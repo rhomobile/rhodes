@@ -69,6 +69,16 @@ public class RhoConf {
     	m_mapChangedValues.put(szName, getString(szName) );
     	
         String strData = saveChangesToString();
+        
+        RhoFile.deleteFile(getConfFilePath()+CONF_CHANGES);
+        
+        try{
+        	RhoFile.writeStringToFile(getConfFilePath()+CONF_CHANGES, strData);
+        }catch(Exception exc)
+        {
+        	LOG.ERROR("saveToFile failed.", exc);
+        }
+/*        
     	SimpleFile oFile = null;
 
     	try{
@@ -81,7 +91,7 @@ public class RhoConf {
     	}catch(Exception exc){
     		if ( oFile != null )
     			try{ oFile.close(); }catch(IOException exc2){}
-    	}
+    	}*/
         
     }
 

@@ -78,7 +78,7 @@ static const UINT ID_BROWSER = 1;
 
 static UINT WM_TAKEPICTURE             = ::RegisterWindowMessage(L"RHODES_WM_TAKEPICTURE");
 static UINT WM_SELECTPICTURE           = ::RegisterWindowMessage(L"RHODES_WM_SELECTPICTURE");
-static UINT WM_TAKESIGNATURE           = ::RegisterWindowMessage(L"RHODES_WM_TAKESIGNATURE");
+//static UINT WM_TAKESIGNATURE           = ::RegisterWindowMessage(L"RHODES_WM_TAKESIGNATURE");
 static UINT WM_CONNECTIONSNETWORKCOUNT = ::RegisterWindowMessage(L"RHODES_WM_CONNECTIONSNETWORKCOUNT");
 static UINT WM_CONNECTIONSNETWORKCELL  = ::RegisterWindowMessage(L"RHODES_WM_CONNECTIONSNETWORKCELL");
 static UINT WM_ALERT_SHOW_POPUP        = ::RegisterWindowMessage(L"RHODES_WM_ALERT_SHOW_POPUP");
@@ -176,7 +176,7 @@ public:
 #endif
 		MESSAGE_HANDLER(WM_TAKEPICTURE, OnTakePicture)
 		MESSAGE_HANDLER(WM_SELECTPICTURE, OnSelectPicture)
-		MESSAGE_HANDLER(WM_TAKESIGNATURE, OnTakeSignature)
+		//MESSAGE_HANDLER(WM_TAKESIGNATURE, OnTakeSignature)
 		MESSAGE_HANDLER(WM_CONNECTIONSNETWORKCOUNT, OnConnectionsNetworkCount)
         MESSAGE_HANDLER(WM_CONNECTIONSNETWORKCELL, OnConnectionsNetworkCell)
         MESSAGE_HANDLER(WM_ALERT_SHOW_POPUP, OnAlertShowPopup)
@@ -227,7 +227,7 @@ private:
 
 	LRESULT OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-	LRESULT OnTakeSignature(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+	//LRESULT OnTakeSignature(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnConnectionsNetworkCount(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnConnectionsNetworkCell(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
@@ -307,6 +307,10 @@ private:
 	int m_menuBarHeight;
 	CLogView m_logView;
 #endif //_WIN32_WCE
+
+#if defined( OS_PLATFORM_MOTCE )
+    HWND				g_hWndCommandBar;	// command bar handle
+#endif
 
 #if defined(_WIN32_WCE)
     // Used to manage SIP state. Also used to adjust window for SIP.

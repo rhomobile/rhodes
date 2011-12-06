@@ -59,19 +59,19 @@ end
     end
 
     it "test open phone uri" do
-        System.open_url "tel:1234567"
+        System.open_url "tel:1234567" unless System.get_property('platform') == 'WINDOWS' && System.get_property('device_name') == 'Win32'
     end
 
     it "test open sms uri" do
-        System.open_url "sms:+1234567?body=test%20sms%20message"
+        System.open_url "sms:+1234567?body=test%20sms%20message" unless System.get_property('platform') == 'WINDOWS' && System.get_property('device_name') == 'Win32'
     end
 
     it "test open mailto URI" do
-        System.open_url "mailto:dev@rhomobile.com?body=test%20phone%20spec%20mail%20message"
+        System.open_url "mailto:dev@rhomobile.com?body=test%20phone%20spec%20mail%20message" unless System.get_property('platform') == 'WINDOWS' && System.get_property('device_name') == 'Win32'
     end
 
     it "test open video" do
-        System.open_url "video.avi"
+        System.open_url "video.avi" unless System.get_property('platform') == 'WINDOWS' && System.get_property('device_name') == 'Win32'
     end
 
 end

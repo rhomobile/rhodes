@@ -36,6 +36,8 @@
 #include "common/RhoFile.h"
 #include "net/INetRequest.h"
 
+#include "ruby/ext/rho/rhoruby.h"
+
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "GeocodingMapEngine"
@@ -197,4 +199,98 @@ void GoogleGeoCoding::processCommand(IQueueCommand *pCmd)
 } // namespace map
 } // namespace common
 } // namespace rho
+
+
+static rho::common::map::GoogleGeoCoding* ourGeocode = NULL;
+
+static rho::common::map::GoogleGeoCoding* getGeocodeSignletone() {
+    if (ourGeocode == NULL) {
+        ourGeocode = new rho::common::map::GoogleGeoCoding();
+    }
+    return ourGeocode;
+}
+
+class RhoGoogleGeocodeCallbackImpl : public rho::common::map::GeoCodingCallback {
+public:
+    RhoGoogleGeocodeCallbackImpl(rho::String adress, rho::String callback) {
+        mAdress = adress;
+        mCallback = callback;
+    }
+    
+    virtual ~RhoGoogleGeocodeCallbackImpl() {
+        
+    }
+    
+    virtual void onError(rho::String const &description) {
+        char* buf = new char[2048];
+        
+        if (buf == NULL) {
+            RAWLOG_ERROR("can not allocate temporary char buffer in GeoLocation callback");
+            return;
+        }
+        
+        sprintf(buf,"&rho_callback=1&status=error&description=%s", description.c_str()); 
+        
+        char* norm_url = rho_http_normalizeurl(mCallback.c_str());
+        rho_net_request_with_data(norm_url, buf);
+        rho_http_free(norm_url);
+        
+        delete buf;
+        //delete this;
+    }
+
+    virtual void onSuccess(double latitude, double longitude) {
+        char* buf = new char[2048];
+        
+        if (buf == NULL) {
+            RAWLOG_ERROR("can not allocate temporary char buffer in GeoLocation callback");
+            return;
+        }
+        
+        sprintf(buf,"&rho_callback=1&status=ok&latitude=%f&longitude=%f", (float)latitude, (float)longitude); 
+                
+        char* norm_url = rho_http_normalizeurl(mCallback.c_str());
+        rho_net_request_with_data(norm_url, buf);
+        rho_http_free(norm_url);
+                
+        delete buf;
+        //delete this;
+    }
+    
+    
+private:
+    rho::String mAdress;
+    rho::String mCallback;
+};
+
+void rho_geoimpl_request_coordinates_by_adress(rho_param* p, const char* callback) {
+    const char* c_adress = NULL;
+    
+    switch (p->type) {
+        case RHO_PARAM_HASH: {
+            for (int i = 0, lim = p->v.hash->size; i < lim; ++i) {
+                const char *name = p->v.hash->name[i];
+                rho_param *value = p->v.hash->value[i];
+                
+                if (strcasecmp(name, "adress") == 0) {
+					c_adress = value->v.string;
+                }
+            }
+        }
+        break;
+        default: {
+            RAWLOG_ERROR("Unexpected parameter type for request_coordinates_by_adress, should be Hash");
+            return;
+        }
+    }
+    if (c_adress == NULL) {
+        RAWLOG_ERROR("Unexpected parameter type for request_coordinates_by_adress, should be Hash with 'adress' string parameter");
+        return;
+    }
+    
+    rho::String adress = c_adress;
+    
+    getGeocodeSignletone()->resolve(adress, new RhoGoogleGeocodeCallbackImpl(adress, callback));
+}
+
 

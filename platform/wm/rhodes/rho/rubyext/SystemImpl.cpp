@@ -307,7 +307,7 @@ VALUE rho_sys_get_locale()
 
 int rho_wmsys_has_touchscreen()
 {
-#ifdef OS_WINDOWS
+#if defined( OS_WINDOWS ) || defined( OS_PLATFORM_MOTCE )
         return 1;
 #else
         BOOL bRet;

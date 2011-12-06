@@ -985,6 +985,7 @@ SWIG_UnpackDataName(const char *c, void *ptr, size_t sz, const char *name) {
 #define rb_undef_alloc_func(klass) rb_undef_method(CLASS_OF((klass)), "new")
 #endif
 
+#define _mSWIG_defined
 static VALUE _mSWIG = Qnil;
 
 /* -----------------------------------------------------------------------------
@@ -1000,26 +1001,27 @@ static VALUE _mSWIG = Qnil;
    exceptions.  Note this only works for C++ since a global cannot be
    initialized by a function in C.  For C, fallback to rb_eRuntimeError.*/
 
+#define SWIG_rb_eNullReferenceError_defined
+static VALUE SWIG_rb_eNullReferenceError  = Qnil;
+
+
 SWIGINTERN VALUE 
 getNullReferenceError(void) {
-  static int init = 0;
-  static VALUE rb_eNullReferenceError ;
-  if (!init) {
-    init = 1;
-    rb_eNullReferenceError = rb_define_class("NullReferenceError", rb_eRuntimeError);
+  if (SWIG_rb_eNullReferenceError == Qnil) {
+      SWIG_rb_eNullReferenceError = rb_define_class("NullReferenceError", rb_eRuntimeError);
   }
-  return rb_eNullReferenceError;
+  return SWIG_rb_eNullReferenceError;
 } 
+
+#define SWIG_rb_eObjectPreviouslyDeleted_defined
+static  VALUE SWIG_rb_eObjectPreviouslyDeleted = Qnil;
 
 SWIGINTERN VALUE 
 getObjectPreviouslyDeletedError(void) {
-  static int init = 0;
-  static VALUE rb_eObjectPreviouslyDeleted ;
-  if (!init) {
-    init = 1;
-    rb_eObjectPreviouslyDeleted = rb_define_class("ObjectPreviouslyDeleted", rb_eRuntimeError);
+  if (SWIG_rb_eObjectPreviouslyDeleted == Qnil) {
+      SWIG_rb_eObjectPreviouslyDeleted = rb_define_class("ObjectPreviouslyDeleted", rb_eRuntimeError);
   }
-  return rb_eObjectPreviouslyDeleted;
+  return SWIG_rb_eObjectPreviouslyDeleted;
 } 
 
 
@@ -1170,11 +1172,13 @@ extern "C" {
 /* Global Ruby hash table to store Trackings from C/C++
    structs to Ruby Objects. 
 */
+#define swig_ruby_trackings_defined
 static VALUE swig_ruby_trackings = Qnil;
 
 /* Global variable that stores a reference to the ruby
    hash table delete function. */
-static ID swig_ruby_hash_delete;
+#define swig_ruby_hash_delete_defined
+static ID swig_ruby_hash_delete = 0;
 
 /* Setup a Ruby hash table to store Trackings */
 SWIGRUNTIME void SWIG_RubyInitializeTrackings(void) {
@@ -1413,11 +1417,17 @@ typedef struct {
 
 
 /* Global pointer used to keep some internal SWIG stuff */
+#define _cSWIG_Pointer_defined
 static VALUE _cSWIG_Pointer = Qnil;
+
+#define swig_runtime_data_type_pointer_defined
 static VALUE swig_runtime_data_type_pointer = Qnil;
 
 /* Global IDs used to keep some internal SWIG stuff */
+#define swig_arity_id_defined
 static ID swig_arity_id = 0;
+
+#define swig_call_id_defined
 static ID swig_call_id  = 0;
 
 /*
@@ -1438,7 +1448,8 @@ static ID swig_call_id  = 0;
 #  define Ruby_DirectorTypeMismatchException(x) \
           rb_raise( rb_eTypeError, "%s", x ); return c_result;
 
-      static unsigned int swig_virtual_calls = 0;
+#define swig_virtual_calls_defined
+static unsigned int swig_virtual_calls = 0;
 
 #else  /* normal non-embedded extension */
 
@@ -1452,12 +1463,12 @@ static ID swig_call_id  = 0;
 
 SWIGRUNTIME VALUE 
 getExceptionClass(void) {
-  static int init = 0;
+  //static int init = 0;
   static VALUE rubyExceptionClass ;
-  if (!init) {
-    init = 1;
+  //if (!init) {
+    //init = 1;
     rubyExceptionClass = rb_const_get(_mSWIG, rb_intern("Exception"));
-  }
+  //}
   return rubyExceptionClass;
 } 
 
@@ -1479,11 +1490,11 @@ SWIG_Ruby_ExceptionType(swig_type_info *desc, VALUE obj) {
 SWIGRUNTIME void
 SWIG_Ruby_InitRuntime(void)
 {
-  if (_mSWIG == Qnil) {
+  //if (_mSWIG == Qnil) {
     _mSWIG = rb_define_module("SWIG");
     swig_call_id  = rb_intern("call");
     swig_arity_id = rb_intern("arity");
-  }
+  //}
 }
 
 /* Define Ruby class for C type */
@@ -2183,6 +2194,39 @@ SWIG_InitializeModule(void *clientdata) {
   int found, init;
 
   clientdata = clientdata;
+  
+  // clear static variables for support reinitialization
+  #ifdef SWIG_rb_eNullReferenceError_defined
+    SWIG_rb_eNullReferenceError  = Qnil;
+  #endif
+  #ifdef SWIG_rb_eObjectPreviouslyDeleted_defined
+    SWIG_rb_eObjectPreviouslyDeleted = Qnil;
+  #endif
+  //#ifdef _mSWIG_defined
+  //  _mSWIG = Qnil;
+  //#endif
+  #ifdef _cSWIG_Pointer_defined
+    _cSWIG_Pointer = Qnil;
+  #endif
+  #ifdef swig_runtime_data_type_pointer_defined
+    swig_runtime_data_type_pointer = Qnil;
+  #endif
+  #ifdef swig_arity_id_defined
+    swig_arity_id = 0;
+  #endif
+  #ifdef swig_call_id_defined
+    swig_call_id  = 0;
+  #endif 
+  #ifdef swig_virtual_calls_defined
+    swig_virtual_calls = 0;
+  #endif
+  #ifdef swig_ruby_trackings_defined
+    swig_ruby_trackings = Qnil;
+  #endif
+  #ifdef swig_ruby_hash_delete_defined
+    swig_ruby_hash_delete = 0;
+  #endif
+  
 
   /* check to see if the circular list has been setup, if not, set it up */
   if (swig_module.next==0) {

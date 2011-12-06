@@ -65,6 +65,9 @@ public class BrowserAdapter5 implements IBrowserAdapter
 				throws Exception 
 		{
 			String url = request.getURL();
+			LOG.INFO("handleNavigationRequest: " + url);
+			if ( url.startsWith("http:/") && !url.startsWith("http://") )
+				url = RhodesApp.getInstance().getHomeUrl() + url.substring(5);
 
             if ( request.getPostData() == null ||
             		request.getPostData().length == 0 )
@@ -82,7 +85,12 @@ public class BrowserAdapter5 implements IBrowserAdapter
 				throws Exception 
 		{
 			String url = request.getURL();
-    		if ( RhodesApp.getInstance().isRhodesAppUrl(url) || URI.isLocalData(url))
+			LOG.INFO("handleResourceRequest: " + url);
+			
+			if ( url.startsWith("http:/") && !url.startsWith("http://") )
+				url = RhodesApp.getInstance().getHomeUrl() + url.substring(5);
+				
+    		if ( RhodesApp.getInstance().isRhodesAppUrl(url) || URI.isLocalData(url) )
     		{
                 HttpConnection connection = Utilities.makeConnection(url, request.getHeaders(), null, null);
                 
@@ -110,7 +118,7 @@ public class BrowserAdapter5 implements IBrowserAdapter
 		m_app = app;
 		
 		m_oConfig = new BrowserFieldConfig();
-//		m_oConfig.setProperty( BrowserFieldConfig.NAVIGATION_MODE, BrowserFieldConfig.NAVIGATION_MODE_POINTER );
+		m_oConfig.setProperty( BrowserFieldConfig.NAVIGATION_MODE, BrowserFieldConfig.NAVIGATION_MODE_POINTER );
 		m_oConfig.setProperty( BrowserFieldConfig.JAVASCRIPT_ENABLED, Boolean.TRUE );
 //		m_oConfig.setProperty( BrowserFieldConfig.NAVIGATION_MODE, BrowserFieldConfig.NAVIGATION_MODE_CARET );
 		m_oConfig.setProperty( BrowserFieldConfig.ENABLE_COOKIES, Boolean.TRUE );
@@ -171,7 +179,7 @@ public class BrowserAdapter5 implements IBrowserAdapter
 
     public void executeJavascript(String strJavascript)
     {
-        synchronized (Application.getEventLock()) 
+        //synchronized (Application.getEventLock()) 
         {
         	BrowserField field = (BrowserField)m_oMainScreen.getField(0);
         	field.executeScript("javascript:" + strJavascript);
@@ -180,7 +188,7 @@ public class BrowserAdapter5 implements IBrowserAdapter
     
     public void setCookie(String url, String cookie)
     {
-        synchronized (Application.getEventLock()) 
+        //synchronized (Application.getEventLock()) 
         {
         	BrowserFieldCookieManager man = (BrowserFieldCookieManager)m_oConfig.getProperty(BrowserFieldConfig.COOKIE_MANAGER);
         	if ( man != null )

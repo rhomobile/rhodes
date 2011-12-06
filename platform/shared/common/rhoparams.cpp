@@ -164,6 +164,20 @@ rho_param *rho_param_hash(int size)
     return ret;
 }
 
+rho_param *rho_param_hash_get(rho_param *p, const char* name)
+{
+    if ( p->type != RHO_PARAM_HASH )
+        return 0;
+
+    for (int i = 0; i < p->v.hash->size; ++i) 
+    {
+        if (strcasecmp(name, p->v.hash->name[i]) == 0)
+            return p->v.hash->value[i];
+    }
+
+    return 0;
+}
+
 rho_param *rho_param_dup(rho_param *p)
 {
     int i, lim;

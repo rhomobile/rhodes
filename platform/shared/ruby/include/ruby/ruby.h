@@ -1072,16 +1072,25 @@ const char *rb_id2name(ID);
 ID rb_to_id(VALUE);
 VALUE rb_id2str(ID);
 
+//RHO
+extern int const_cache_version;
+//RHO
+
+
+//RHO
 #define CONST_ID_CACHE(result, str)			\
     {							\
-	static ID rb_intern_id_cache;			\
-	if (!rb_intern_id_cache)			\
-	    rb_intern_id_cache = rb_intern2(str, (long)strlen(str)); \
+    static ID rb_intern_id_cache;               \
+    static ID rb_intern_cache_version;               \
+	if ((!rb_intern_id_cache) || (rb_intern_cache_version != const_cache_version))	{		\
+        rb_intern_id_cache = rb_intern2(str, (long)strlen(str)); \
+        rb_intern_cache_version = const_cache_version;  \
+    }       \
 	result rb_intern_id_cache;			\
     }
 #define CONST_ID(var, str) \
     do CONST_ID_CACHE(var =, str) while (0)
-#ifdef __GNUC__
+#if 0 //#ifdef __GNUC__
 /* __builtin_constant_p and statement expression is available
  * since gcc-2.7.2.3 at least. */
 #define rb_intern(str) \
@@ -1094,7 +1103,9 @@ VALUE rb_id2str(ID);
      (rb_intern)(str))
 #else
 #define rb_intern_const(str) rb_intern2(str, (long)strlen(str))
+#define rb_intern(str) rb_intern_const((str))
 #endif
+//RHO
 
 const char *rb_class2name(VALUE);
 const char *rb_obj_classname(VALUE);

@@ -81,9 +81,8 @@ end
 
 def startsim(hidden=false)
   sim = $config["env"]["paths"][$bbver]["sim"]
-  jde = $config["env"]["paths"][$bbver]["jde"]
     
-  command =  jde + "/simulator/fledge.exe"
+  command =  $bb_sim_path + "/fledge.exe"
   args = []
   args << "/app=Jvm.dll"
   args << "/handheld=" + sim
@@ -108,26 +107,24 @@ def startsim(hidden=false)
         
   args << "/app-param=JvmDebugFile:"+Jake.get_absolute_ex($app_config["applog"], $app_path) if $app_config["applog"] && $app_config["applog"].length() > 0
 
-  Jake.run2 command, args, {:directory => jde + "/simulator", :nowait => true}
+  Jake.run2 command, args, {:directory => $bb_sim_path, :nowait => true}
 end
 
 def load_to_sim(is_wait)
   sim = $config["env"]["paths"][$bbver]["sim"]
-  jde = $config["env"]["paths"][$bbver]["jde"]
 
-  #cod_path = jde + "/simulator" + "/"+$outfilebase+".cod.pending"
   cod_path = File.join( $targetdir, $outfilebase+".cod.pending")
 
   puts "cod_path : #{cod_path}"
   
-  command = jde + "/simulator/fledgecontroller.exe"
+  command = $bb_sim_path + "/fledgecontroller.exe"
   args = []
   args << "/session="+sim
   args << "/execute=LoadCod(\"#{cod_path}\")"
 
   while(true)  
     res_line = ""
-    Jake.run2( command, args, {:directory => jde + "/simulator"} ) do |line| 
+    Jake.run2( command, args, {:directory => $bb_sim_path} ) do |line| 
       puts "fledgecontroller return:" + line;
       res_line = line
     end  
@@ -144,30 +141,28 @@ def load_to_sim(is_wait)
   args = []
   args << "/session="+sim
   args << "/execute=LoadCod(\"updates.force\")"
-  Jake.run2 command, args, {:directory => jde + "/simulator", :nowait => true}  
+  Jake.run2 command, args, {:directory => $bb_sim_path, :nowait => true}  
   
   return true
 end
 
 def stopsim
   sim = $config["env"]["paths"][$bbver]["sim"]
-  jde = $config["env"]["paths"][$bbver]["jde"]
     
-  command = jde + "/simulator/fledgecontroller.exe"
+  command = $bb_sim_path + "/fledgecontroller.exe"
   args = []
   args << "/session="+sim
   args << "/execute=Exit(true)"
-  Jake.run2 command, args, {:directory => jde + "/simulator", :nowait => true}
+  Jake.run2 command, args, {:directory => $bb_sim_path, :nowait => true}
 end
 
 def manualsign
   jpath = $config["env"]["paths"]["java"]
   java = jpath && jpath.length() > 0 ? File.join(jpath, "java" ) : "java"
-  jde = $config["env"]["paths"][$bbver]["jde"]
 
   args = []
   args << "-jar"
-  args << jde + "/bin/SignatureTool.jar"
+  args << $bb_jde_path + "/bin/SignatureTool.jar"
   args << "-r"
   args << $targetdir
 
@@ -179,11 +174,10 @@ end
 def autosign
   jpath = $config["env"]["paths"]["java"]
   java = jpath && jpath.length() > 0 ? File.join(jpath, "java" ) : "java"
-  jde = $config["env"]["paths"][$bbver]["jde"]
 
   args = []
   args << "-jar"
-  args << jde + "/bin/SignatureTool.jar"
+  args << $bb_jde_path + "/bin/SignatureTool.jar"
   args << "-c"
   args << "-a"
   args << "-p"
@@ -242,11 +236,17 @@ namespace "config" do
     $appname = $app_config["name"].nil? ? "rhodesApp" : $app_config["name"]
     $outfilebase = $appname.gsub(/[^A-Za-z_0-9]/, '_')
     $bundleClassName = $outfilebase + '_'  unless $bundleClassName
+
+    $bb_jde_path = $config["env"]["paths"][$bbver]["jde"]
+    $bb_lib_path = $bb_jde_path + "/lib/net_rim_api.jar"
+    $bb_sim_path = $config["env"]["paths"][$bbver]["sim_path"]    
+    $bb_sim_path = $bb_jde_path + "/simulator" unless $bb_sim_path
+
+	jpath = $config["env"]["paths"]["java"]
+    $javac = jpath && jpath.length() > 0 ? File.join(jpath, "javac.exe" ) : "javac.exe"
     
-    $rhobundleimplib = $config["env"]["paths"][$bbver]["jde"] + "/lib/net_rim_api.jar;" +
-      $preverified+"/RubyVM.jar"
+    $rhobundleimplib = $bb_lib_path + ";" + $preverified+"/RubyVM.jar"
     $rhodesimplib = $rhobundleimplib + ";"+ $preverified+"/RhoBundle.jar"
-    
 
     needsclean = true
     if File.exists? "#{$app_path}/last_bbver"
@@ -274,11 +274,9 @@ namespace "build" do
     end
     
     def runPreverify(args)  
-      jdehome = $config["env"]["paths"][$bbver]["jde"]
-    
       startdir = Dir.pwd()
       chdir $tmpdir
-      puts Jake.run(File.join(jdehome,"bin/preverify"),args)
+      puts Jake.run(File.join($bb_jde_path,"bin/preverify"),args)
       chdir startdir
       
       unless $? == 0
@@ -294,7 +292,6 @@ namespace "build" do
     task :rhobundle => ["config:checkbb", :rubyvm] do
       jpath = $config["env"]["paths"]["java"]  
       java = jpath && jpath.length()>0 ? File.join( jpath, "java") : "jar"
-      jdehome = $config["env"]["paths"][$bbver]["jde"]
       jarexe =  jpath && jpath.length()>0 ? File.join( jpath, "jar" ) : "jar"
       
       #common bundle task goes here#
@@ -315,8 +312,8 @@ namespace "build" do
       ENV["RHO_ROOT"] = $startdir
       
       ENV["JAVA_EXE"] = java
-      ENV["JAVAC_EXE"] = jpath && jpath.length()>0 ? File.join( jpath, "javac") : "javac"
-      ENV["JDE_HOME"] = jdehome
+      ENV["JAVAC_EXE"] = $javac
+      ENV["JDE_HOME"] = $bb_jde_path
       ENV["JAR_EXE"] = jarexe
 	
       ENV["RUBYVM_JAR"] = $preverified+"/RubyVM.jar"	
@@ -397,7 +394,7 @@ namespace "build" do
       args = []
       #args << "-verbose"
       args << "-classpath"
-      args << jdehome + "/lib/net_rim_api.jar;"+$preverified+"/RubyVM.jar"
+      args << $bb_lib_path + ";"+$preverified+"/RubyVM.jar"
       args << "-d"
       args << $preverified
       args << $bindir + "/RhoBundle.jar"
@@ -416,14 +413,14 @@ namespace "build" do
       #cp $preverified + "/RhoBundle.jar", "platform/bb/RhoBundle/RhoBundle.jar"
 	  cp $preverified + "/RhoBundle.jar", "platform/bb/Rhodes/RhoBundle.jar"
       
-      sdcardpath = $config["env"]["paths"][$bbver]["jde"] +"/simulator/sdcard/Rho/rhodes"
+      sdcardpath = $bb_sim_path + "/sdcard/Rho/rhodes"
       
       namepath = File.join(sdcardpath,"name.txt")        
       old_appname = File.read(namepath) if File.exists?(namepath)
       if old_appname != $appname
         rm_rf sdcardpath 
         #This is eclipse bag : it creates rho folder under simulator
-        rm_rf $config["env"]["paths"][$bbver]["jde"] +"/simulator/Rho/rhodes"
+        rm_rf $bb_sim_path + "/Rho/rhodes"
       end
         
       mkdir_p sdcardpath unless File.exists?(sdcardpath)
@@ -540,9 +537,6 @@ namespace "build" do
     
 #    desc "Build RubyVM"
     task :rubyvm => [:gensources, "config:bb"] do
-	  jpath = $config["env"]["paths"]["java"]
-      javac = jpath && jpath.length() > 0 ? File.join(jpath, "javac" ) : "javac"
-      jdehome = $config["env"]["paths"][$bbver]["jde"]
 
 #java -jar /Users/evgeny/Desktop/BBEclipse/plugins/net.rim.ejde.componentpack6.0.0_6.0.0.29/components/bin/rapc.jar -convertpng -quiet library=deliverables/Standard/6.0.0/RubyVM deliverables/Standard/6.0.0/RubyVM.rapc -exepath=/Users/evgeny/Desktop/BBEclipse/plugins/net.rim.ejde.componentpack6.0.0_6.0.0.29/components/bin/ -sourceroot=/Users/evgeny/Projects/rhodes/platform/bb/RubyVM/src:/Users/evgeny/Projects/rhodes/platform/bb/RubyVM/res -import=/Users/evgeny/Desktop/BBEclipse/plugins/net.rim.ejde.componentpack6.0.0_6.0.0.29/components/lib/net_rim_api.jar /Users/evgeny/Projects/rhodes/platform/bb/RubyVM/bin
       rubyvmfiles = File.readlines($builddir + '/RubyVM_build.files').map { |l| l.strip! }
@@ -562,7 +556,7 @@ namespace "build" do
         args << "-d"
         args << $tmpdir + '/RubyVM'
         args << "-bootclasspath"
-        args << $config["env"]["paths"][$bbver]["jde"] + '/lib/net_rim_api.jar'
+        args << $bb_lib_path
         args << "-source"
         args << "1.3"
         args << "-target"
@@ -571,7 +565,7 @@ namespace "build" do
         args << "-sourcepath"		
         args << "#{$startdir}"				
         args << "@#{$builddir}/RubyVM_build.files"
-        puts Jake.run(javac,args)
+        puts Jake.run($javac,args)
         unless $? == 0
           puts "Error compiling java code"
           exit 1
@@ -580,7 +574,7 @@ namespace "build" do
         #XXX Move to task/function
         args = []
         args << "-classpath"
-        args << jdehome + "/lib/net_rim_api.jar"
+        args << $bb_lib_path
         args << "-d"
         args << $tmpdir + "/RubyVM.preverify"
         args << $tmpdir + "/RubyVM"
@@ -600,9 +594,6 @@ namespace "build" do
    
 #    desc "Build rhodes"
     task :rhodes => ["config:checkbb",:rubyvm, :rhobundle ] do
-      jpath = $config["env"]["paths"]["java"]
-      javac = jpath && jpath.length() > 0 ? File.join(jpath, "javac" ) : "javac"
-      jdehome = $config["env"]["paths"][$bbver]["jde"]
 
       sources = Dir.glob($builddir + "/../rhodes/resources/**/*") |
       ($use_sqlite ? [] : File.readlines($builddir + '/hsqldb_build.files').map { |l| l.strip! }) |
@@ -656,7 +647,7 @@ namespace "build" do
         args << "-classpath"
         args << $bindir + "/RhoBundle.jar;"+$preverified+"/RubyVM.jar"
         args << "-bootclasspath"
-        args << jdehome + "/lib/net_rim_api.jar"
+        args << $bb_lib_path
         args << "-source"
         args << "1.3"
         args << "-target"
@@ -667,7 +658,7 @@ namespace "build" do
         args << "@#{$builddir}/hsqldb_build.files" if !$use_sqlite
         args << "@#{$builddir}/rhodes_build.files"
         puts "\texecuting javac"
-        puts Jake.run(javac,args)
+        puts Jake.run($javac,args)
         unless $? == 0
           puts "Error compiling java code"
           exit 1
@@ -718,12 +709,11 @@ namespace "package" do
 
 #    desc "Package rubyVM"
     task :rubyvm => "build:bb:rubyvm" do
-      jdehome = $config["env"]["paths"][$bbver]["jde"]
 
       if not FileUtils.uptodate?($targetdir + '/RubyVM.cod',$preverified + "/RubyVM.jar")
         Jake.rapc("RubyVM",
           $targetdir,
-          jdehome + "/lib/net_rim_api.jar",
+          $bb_lib_path,
           $preverified + "/RubyVM.jar",
           "RubyVM",
           $app_config["vendor"],
@@ -771,9 +761,6 @@ namespace "package" do
     end
     
     def runProGuard(target_jar, lib_jar)
-	  jpath = $config["env"]["paths"]["java"]
-      javac = jpath && jpath.length() > 0 ? File.join(jpath, "javac" ) : "javac"
-      jdehome = $config["env"]["paths"][$bbver]["jde"]
 	  
       proguard =  File.join( $startdir, '/res/build-tools/proguard-4.5.1.jar' )
       out_jar = File.join( File.dirname(target_jar), File.basename(target_jar, File.extname(target_jar) ) + "_out.jar" )
@@ -787,7 +774,7 @@ namespace "package" do
       args << "-outjars"
       args << out_jar
       args << "-libraryjars"
-      args << jdehome + "/lib/net_rim_api.jar"
+      args << $bb_lib_path
       args << "-overloadaggressively"
       args << "-repackageclasses '' "
       args << "-allowaccessmodification"
@@ -816,7 +803,6 @@ namespace "package" do
 
 #    desc "Package all production (all parts in one package)"
     task :production => ["build:bb:rhodes"] do
-      jdehome = $config["env"]["paths"][$bbver]["jde"]
       rm_rf $tmpdir
       mkdir_p $tmpdir
 
@@ -862,7 +848,7 @@ namespace "package" do
       
       Jake.rapc($outfilebase,
         $targetdir,
-        jdehome + "/lib/net_rim_api.jar",
+        $bb_lib_path,
         $bindir + "/" + $outfilebase + ".jar",
         $appname,
         $app_config["vendor"],
@@ -969,6 +955,15 @@ end
 namespace "clean" do
   desc "Clean bb"
   task :bb => "clean:bb:all"
+
+  desc "Clean bb and simulator"
+  task :bbsim => ["clean:bb:all"] do
+
+      command =  "clean.bat"
+      args = []
+      Jake.run2 command, args, {:directory => $bb_sim_path, :system => true}
+  end
+  
   namespace "bb" do
     task :all => ["config:bb"] do
 
@@ -987,8 +982,7 @@ namespace "run" do
   namespace "bb" do
 
       def getLogFilePath
-        jde = $config["env"]["paths"][$bbver]["jde"]
-        return jde + "/simulator/sdcard/Rho/" + $outfilebase + "/RhoLog.txt"
+        return $bb_sim_path + "/sdcard/Rho/" + $outfilebase + "/RhoLog.txt"
       end
       # >>>>>>>>>>>>>>>>>>>>>
       task :get_log => ["config:bb"] do
@@ -1011,11 +1005,10 @@ namespace "run" do
       end
 
       task :spec => ["config:checkbb", "run:bb:stopmdsandsim", "clean:bb", "package:bb:production_sim"] do
-        jde = $config["env"]["paths"][$bbver]["jde"]
-        cp_r File.join($targetdir,"/."), jde + "/simulator"
-        rm_rf jde + "/simulator/sdcard/Rho"
+        cp_r File.join($targetdir,"/."), $bb_sim_path
+        rm_rf $bb_sim_path + "/sdcard/Rho"
 
-        log_name = jde + "/simulator/sdcard/Rho/" + $outfilebase + "/RhoLog.txt"
+        log_name = $bb_sim_path + "/sdcard/Rho/" + $outfilebase + "/RhoLog.txt"
         puts log_name
         #log_name  = Jake.get_absolute($app_config["applog"] )
         #File.delete(log_name) if File.exist?(log_name)
@@ -1089,9 +1082,8 @@ namespace "run" do
 
   desc "Builds everything, loads and starts bb sim and mds"
   task :bb => ["run:bb:stopmdsandsim", "package:bb:production_sim"] do
-    jde = $config["env"]["paths"][$bbver]["jde"]
 
-    cp_r File.join($targetdir,"/."), jde + "/simulator"
+    cp_r File.join($targetdir,"/."), $bb_sim_path
     
     startmds
     startsim 
@@ -1101,15 +1093,14 @@ namespace "run" do
 
   desc "Builds everything and loads application on simulator"
   task :bbapp => ["run:bb:stopmdsandsim_ex", "package:bb:production_sim"] do
-    jde = $config["env"]["paths"][$bbver]["jde"]
     
     startmds
 
     if $bbver.to_f < 5.0
-      cp_r File.join($targetdir,"/."), jde + "/simulator"
+      cp_r File.join($targetdir,"/."), $bb_sim_path
       startsim 
     elsif !load_to_sim(false)
-      cp_r File.join($targetdir,"/."), jde + "/simulator"
+      cp_r File.join($targetdir,"/."), $bb_sim_path
       
       startsim 
       
@@ -1120,9 +1111,8 @@ namespace "run" do
 
   desc "Same as run:bb, but only supports one app at a time and works faster"
   task :bbdev => ["run:bb:stopmdsandsim", "package:bb:dev"] do
-    jde = $config["env"]["paths"][$bbver]["jde"]
     
-    cp_r File.join($targetdir,"/."), jde + "/simulator"
+    cp_r File.join($targetdir,"/."), $bb_sim_path
     
     startmds
     startsim
@@ -1135,7 +1125,6 @@ namespace "config" do
   desc "Check local blackberry configuration"
   task :checkbb => ["config:bb"] do
     javahome = $config["env"]["paths"]["java"]
-    jdehome  = $config["env"]["paths"][$bbver]["jde"]
     mdshome  = $config["env"]["paths"][$bbver]["mds"]
 
     begin
@@ -1152,7 +1141,7 @@ namespace "config" do
 
     puts "BBVER: " + $bbver
     puts "JAVAHOME: " + javahome
-    puts "JDEHOME: " + jdehome
+    puts "JDEHOME: " + $bb_jde_path
     puts "MDSHOME: " + mdshome
 
     if not FileTest.exists? javahome
@@ -1160,8 +1149,8 @@ namespace "config" do
       throw "JAVAHOME missing"
     end
 
-    if not FileTest.exists? javahome + "/javac.exe"
-      puts "javac.exe not found. Make sure JAVAHOME points to a valid Java SDK"
+    if not FileTest.exists? $javac
+      puts "#{$javac} not found. Make sure JAVAHOME points to a valid Java SDK"
       throw "javac missing"
     end
 
@@ -1175,7 +1164,7 @@ namespace "config" do
       throw "jar missing"
     end
 
-    if not FileTest.exists? jdehome
+    if not FileTest.exists? $bb_jde_path
       puts "JDEHOME does not exist. Make sure you have the Blackberry JDK installed and that build.yml has the correct path"
       throw "JDEHOME missing"
     end
@@ -1184,12 +1173,12 @@ namespace "config" do
       throw "MDSHOME missing"
     end
 
-    if not FileTest.exists? jdehome + "/bin/preverify.exe"
+    if not FileTest.exists? $bb_jde_path + "/bin/preverify.exe"
       puts "preverify.exe not found. Make sure JDEHOME points to a valid Blackberry JDK"
       throw "preverify missing"
     end
 
-    if not FileTest.exists? jdehome + "/bin/rapc.jar"
+    if not FileTest.exists? $bb_jde_path + "/bin/rapc.jar"
       puts "rapc.jar not found. Make sure JDEHOME points to a valid Blackberry JDK"
       throw "rapc missing"
     end

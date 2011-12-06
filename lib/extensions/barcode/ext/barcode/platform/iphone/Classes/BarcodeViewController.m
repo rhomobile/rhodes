@@ -157,8 +157,13 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
     
 	readerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	readerView.autoresizesSubviews = YES;
+    
 	readerView.frame = srect;
 
+    // the delegate receives decode results
+    readerView.readerDelegate = self;
+    
+    
 	//signatureView = [[SignatureView alloc] initWithFrame:CGRectZero];
 	//signatureView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	//signatureView.autoresizesSubviews = YES;
@@ -169,6 +174,7 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
 	[self.view addSubview:toolbar];
 
 	//[readerView start];
+    [readerView start];
     
     // the delegate receives decode results
     readerView.readerDelegate = self;

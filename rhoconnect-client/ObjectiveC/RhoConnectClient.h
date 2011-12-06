@@ -61,6 +61,8 @@
 - (void) clearNotification;
 
 - (RhoConnectNotify*) syncAll;
+- (BOOL) is_syncing;
+- (void) stop_sync;
 
 - (RhoConnectNotify*) search: (NSArray*)models from: (NSString*) from params: (NSString*)params sync_changes: (BOOL) sync_changes progress_step: (int) progress_step;
 

@@ -14,7 +14,4 @@ iphone:
   configuration: Release
   #extensions: ["digest-sha1"]   
   
-android:    
-  version: 2.3.3
-
 extensions: ["mspec", "fileutils", "digest", "digest-md5", "digest-sha1", "test-libs", "set", "thread", "timeout", "uri", "net-http", "fcntl", "rexml" ]
