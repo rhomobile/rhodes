@@ -1250,16 +1250,20 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     	String strFullBrowser = RhoConf.getInstance().getString("use_bb_full_browser");
     	boolean bTouch = strFullBrowser.indexOf("touch") >= 0;
     	boolean bBB5 = strFullBrowser.indexOf("5") >= 0;
+    	boolean bBB6 = strFullBrowser.indexOf("6") >= 0;
     	
-        if ( bTouch || bBB5 )
+        if ( bTouch || bBB5 || bBB6)
         {
         	if ( bTouch )
         		m_isFullBrowser = _mainScreen.isTouchScreen();
         	
-            if (!m_isFullBrowser && bBB5 )
+            if (!m_isFullBrowser && (bBB5 || bBB6 ) )
             {
                 Version.SoftVersion ver = Version.getSoftVersion();
-                m_isFullBrowser = ver.nMajor >= 5; 
+                if ( bBB5 )
+                	m_isFullBrowser = ver.nMajor >= 5;
+                if ( bBB6 )
+                	m_isFullBrowser = ver.nMajor >= 6;
             }
         }else if ( RhoConf.getInstance().getBool("use_bb_full_browser") )
         {
