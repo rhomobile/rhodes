@@ -543,9 +543,27 @@ rb_obj_rhom_init(VALUE obj, VALUE iv)
     return Qnil;
 }
 
+
+static VALUE rb_RhoLogClass;
+static VALUE rb_RhoModule;
+static VALUE rb_RhoJSON;
+static VALUE rb_RhoMessages;
+static VALUE rb_RhoError;
+static ID get_message_mid;
+static ID err_message_mid;
+
+
 void Init_RhoSupport()
 {
-	rb_define_global_function("require", rb_require_compiled, 1);
+    rb_RhoModule = 0;
+    rb_RhoJSON = 0;
+    rb_RhoLogClass = 0;   
+    rb_RhoMessages = 0;
+	rb_RhoError = 0;
+    get_message_mid = 0;
+    err_message_mid = 0;
+    
+    rb_define_global_function("require", rb_require_compiled, 1);
 #ifndef RHODES_EMULATOR
 	rb_define_global_function("eval_compiled_file", rb_f_eval_compiled, -1);
 #else

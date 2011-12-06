@@ -114,6 +114,11 @@
 	rho_connectclient_hash_delete(item);
 }
 
+- (BOOL) is_changed
+{
+    return rho_connectclient_is_changed([name cStringUsingEncoding:[NSString defaultCStringEncoding]]) == 1 ? TRUE : FALSE;
+}
+
 int enum_func(const char* szKey, const char* szValue, void* pThis)
 {
 	NSMutableDictionary* data = (NSMutableDictionary*)pThis;

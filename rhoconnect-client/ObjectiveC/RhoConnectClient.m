@@ -299,6 +299,16 @@ void rho_free_callbackdata(void* pData)
 	return [[[RhoConnectNotify alloc] init: &oNotify] autorelease];
 }
 
+- (BOOL) is_syncing
+{
+    return rho_sync_issyncing() == 1 ? TRUE : FALSE;
+}
+
+- (void) stop_sync
+{
+    rho_sync_stop();
+}
+
 - (RhoConnectNotify*) search: (NSArray*)models from: (NSString*) from params: (NSString*)params sync_changes: (BOOL) sync_changes progress_step: (int) progress_step
 {
     unsigned long ar_sources = rho_connectclient_strarray_create();

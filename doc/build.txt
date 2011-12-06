@@ -137,6 +137,16 @@ You can edit your Rhodes code for your Rhodes application in a text editor, save
 
 The resulting application package (*.app) is located in your Rhodes source code folder under /platform/iphone/build/, in a folder named like [Debug/Release]-[iphoneos/iphonesimulator]/rhorunner.app.
 
+### Building and run on old devices (before iPhone4/iPad)
+
+From the XCode 4.2 Apple was removed default support of armv6 architecture. In this case there are two issues:
+
+* Distributution build should include code for armv6 and armv7 both. Our projects already fixed for this require for Distribution build.
+* If you want build/run/debug your application on devices before iPhone/iPad (for example on iPhone 3G), you should manually path all rhodes xcode projects and all xcode projects in native extensions used in your application for Architecture settings:
+	in each project modify [Build Settings]-[Architectures]-[Debug]/[Release]:
+		remove $(ARCHS_STANDARD_32_BIT)
+		add two architectures manually: "armv7" and "armv6"	
+
 ### Building and Releasing on App Store
 
 Once you have the application building with Xcode as described above, it is treated as any other iPhone application when it comes to [signing and distributing to the app store](http://developer.apple.com/iphone/appstore/). 

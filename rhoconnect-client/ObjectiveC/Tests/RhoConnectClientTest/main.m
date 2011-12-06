@@ -112,6 +112,9 @@ int shouldCreateNewProduct()
 	if ( [item objectForKey:@"object"] == NULL || [item objectForKey:@"source_id"] == NULL ) 
 		return 0;
 
+    if ( ![product is_changed] )
+        return 0;
+    
 	NSDictionary* item2 = [product find:[item valueForKey:@"object"]];
 	if ( ![item2 isEqualToDictionary: item])
 		return 0;
@@ -136,6 +139,12 @@ int shouldCreateNewProduct()
 	if ( [[pObjectCallback.m_pNotify.created_objects objectAtIndex:0] compare: [item valueForKey:@"object"]] != 0 )
         return 0;
     
+    if ( [product is_changed] )
+        return 0;
+
+    if ( [sclient is_syncing] )
+        return 0;
+
 	[item release];
 	[pObjectCallback release];
     
@@ -817,7 +826,7 @@ int main(int argc, char *argv[]) {
 	
 	int retVal = runObjCClientTest();
     if (0 < retVal)
-        ;//retVal = runObjCClientBlobTest();
+        retVal = runObjCClientBlobTest();
 	
 	if (retVal)
 		NSLog(@"SUCCESS");

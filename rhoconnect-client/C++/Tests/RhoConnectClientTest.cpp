@@ -231,6 +231,8 @@ TEST(SyncClient, shouldCreateNewProduct)
     unsigned long item2 = rho_connectclient_find(g_szProduct, rho_connectclient_hash_get(item, "object") );
     EXPECT_EQ( rho_connectclient_hash_equal(item2, item), 1 );
 
+    EXPECT_EQ( rho_connectclient_is_changed(g_szProduct), 1 );
+
     char* szRes = (char*)rho_sync_doSyncSourceByName(g_szProduct);
     RHO_CONNECT_NOTIFY oNotify = {0};
     rho_connectclient_parsenotify(szRes, &oNotify);
@@ -240,6 +242,8 @@ TEST(SyncClient, shouldCreateNewProduct)
 
     unsigned long item3 = rho_connectclient_find(g_szProduct, rho_connectclient_hash_get(item, "object") );
     EXPECT_EQ( item3, 0 );
+
+    EXPECT_EQ( rho_connectclient_is_changed(g_szProduct), 0 );
 
     rho_connectclient_hash_delete(item);
     rho_connectclient_hash_delete(item2);

@@ -61,7 +61,7 @@ void rho_db_init_attr_manager();
 void rho_sys_app_exit();
 void rho_sys_report_app_started();
 }
-
+    
 namespace rho {
 namespace common{
 
@@ -612,7 +612,8 @@ void CRhodesApp::callSignatureCallback(String strCallbackUrl, const String& strS
 			strBody = "status=ok&signature_uri=db%2Fdb-files%2F" + strSignaturePath;
 		
 		strBody += "&rho_callback=1";
-		getNetRequest().pushData( strCallbackUrl, strBody, null );
+		//getNetRequest().pushData( strCallbackUrl, strBody, null );
+        runCallbackInThread(strCallbackUrl, strBody);
 	}
 	
 void CRhodesApp::callDateTimeCallback(String strCallbackUrl, long lDateTime, const char* szData, int bCancel )
@@ -1632,26 +1633,18 @@ int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
             CRhoFile::deleteFolder(tmp_bundle_path.c_str());
             
             
-            /*
-             RHODESAPP().stopApp();    
-            sleep(2000);
+            rho_rhodesapp_callAppActiveCallback(0);
+            rho_rhodesapp_callUiDestroyedCallback();
             
-            const char *szRootPath = rho_native_rhopath();
-            rho_logconf_Init(szRootPath, "");
-            rho_rhodesapp_create(szRootPath);
-            rho_rhodesapp_start();
-            rho_rhodesapp_callUiCreatedCallback();
-            */
+            RHODESAPP().stopApp();
+            rho_rhodesapp_destroy();
             
-            //rho_rhodesapp_callUiDestroyedCallback();
-            //rho_rhodesapp_callAppActiveCallback(0);
-            //rho_rhodesapp_callAppActiveCallback(1);
-            //rho_rhodesapp_callUiCreatedCallback();
+            rho_platform_restart_application();
             
-            rho_sys_app_exit();
+            stop(1000);
             
+            //rho_sys_app_exit();
             
-            stop(500);
         }
         
     private:
@@ -1734,23 +1727,23 @@ int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
             CRhoFile::copyFoldersContentToAnotherFolder(tmp_bundle_path.c_str(), old_bundle_path.c_str());
             CRhoFile::deleteFolder(tmp_bundle_path.c_str());
             
-            //rho_rhodesapp_callAppActiveCallback(0);
+            rho_rhodesapp_callAppActiveCallback(0);
             ////sleep(250);
-            //rho_rhodesapp_callUiDestroyedCallback();
+            rho_rhodesapp_callUiDestroyedCallback();
             
             
             ////RhoRubyFinish();
             
-            //RHODESAPP().stopApp();
-            //rho_rhodesapp_destroy();
+            RHODESAPP().stopApp();
+            rho_rhodesapp_destroy();
             
             ////sleep(250);
             ////rho_rhodesapp_callUiCreatedCallback();
             ////sleep(250);
             ////rho_rhodesapp_callAppActiveCallback(1);
             
-            //roro();
-            rho_sys_app_exit();
+            rho_platform_restart_application();
+            //rho_sys_app_exit();
             
             stop(1000);
         }
@@ -1778,6 +1771,15 @@ void rho_sys_replace_current_bundle_by_zip(const char* path, const char* zip_pas
     cp->start(rho::common::IRhoRunnable::epNormal);
     
 }
+    
+    
+#if defined(OS_MACOSX) || defined(OS_ANDROID)
+    // implemented in platform code
+#else
+void rho_platform_restart_application() {
+            
+}
+#endif
     
     
 

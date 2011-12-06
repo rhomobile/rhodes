@@ -130,6 +130,12 @@ void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession
             break;
         }
 
+        int timeout = rho_conf_getInt("net_timeout")*1000;
+        if (timeout == 0 )
+            timeout = 30000;
+
+        InternetSetOption( m_hInternet, INTERNET_OPTION_RECEIVE_TIMEOUT, &timeout, sizeof(timeout) ); 
+
         m_strReqUrlW = m_uri.lpszUrlPath;
         m_strReqUrlW += m_uri.lpszExtraInfo;
         DWORD dwFlags = INTERNET_FLAG_KEEP_CONNECTION|INTERNET_FLAG_NO_CACHE_WRITE|INTERNET_FLAG_NO_COOKIES|INTERNET_FLAG_NO_AUTO_REDIRECT;

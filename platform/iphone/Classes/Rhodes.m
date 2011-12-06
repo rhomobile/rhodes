@@ -781,6 +781,63 @@ static Rhodes *instance = NULL;
 	NSLog(@"Audio player decoding error %@", error);
 }
 
+
+
+
+
+
+
+
+
+
+- (void)doStartUpRe:(NSObject*)arg {
+    NSLog(@"Rhodes starting application...");
+    rotationLocked = NO;
+    
+    NSLog(@"Create new detached thread for initialization stuff");
+    [NSThread detachNewThreadSelector:@selector(doRhoInit) toTarget:self withObject:nil];
+    
+    if (mainView != nil) {
+        [mainView.view removeFromSuperview];
+        [mainView release];
+    }
+    
+    mainView = nil;
+    [SimpleMainView enableHiddenOnStart];
+    mainView = [[SimpleMainView alloc] initWithParentView:window frame:[Rhodes applicationFrame]];
+    mainView.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    mainView.view.autoresizesSubviews = YES;
+    
+	BOOL is_splash_screen_maked = [self showLoadingPagePre];
+	
+	if (!is_splash_screen_maked) {
+		[window addSubview:mainView.view];
+	}
+	
+    NSLog(@"Init cookies");
+    cookies = [[NSMutableDictionary alloc] initWithCapacity:0];
+    
+    rho_rhodesapp_canstartapp("", ", ");
+    
+    NSLog(@"Initialization finished");
+}
+
+
+
+
+
+-(void)restart_app_func
+{
+    [self performSelectorOnMainThread:@selector(doStartUpRe:) withObject:nil waitUntilDone:NO];
+}
+
++(void)restart_app
+{
+    [[Rhodes sharedInstance] restart_app_func];
+
+}
+
+
 // UIApplicationDelegate implementation
 
 #ifdef __IPHONE_3_0

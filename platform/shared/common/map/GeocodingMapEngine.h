@@ -83,4 +83,14 @@ private:
 } // namespace common
 } // namespace rho
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif //__cplusplus
+void rho_geoimpl_request_coordinates_by_adress(rho_param* p, const char* callback);
+#ifdef __cplusplus
+}
+#endif
+
+
 #endif

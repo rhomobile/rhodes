@@ -166,6 +166,16 @@ protected:
     void initAppUrls();
 };
 
+#if defined(OS_WINDOWS) || defined(OS_WINCE)
+extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask);
+
+template <typename FUNCTYPE, typename PARAMTYPE>
+void rho_callInUIThread( FUNCTYPE pFunc, PARAMTYPE param )
+{
+    rho_wm_impl_performOnUiThread( new rho::common::CStaticClassFunctor<FUNCTYPE,PARAMTYPE>(pFunc, param) );
+}
+#endif //defined(OS_WINDOWS) || defined(OS_WINCE)
+
 }
 }
 
@@ -234,6 +244,10 @@ int rho_rhodesapp_check_mode();
 
 int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators);
 
+    
+// should be implemented in platforms code
+void rho_platform_restart_application();    
+    
 #ifdef __cplusplus
 };
 #endif //__cplusplus

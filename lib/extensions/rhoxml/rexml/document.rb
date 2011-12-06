@@ -3,10 +3,11 @@ require "rexml/element"
 require 'rexml/text'
 require "rexml/source"
 #require "rexml/doctype"
-=begin
-require "rexml/comment"
+
+#require "rexml/comment"
 
 require "rexml/instruction"
+=begin
 require "rexml/rexml"
 require "rexml/parseexception"
 require "rexml/output"
