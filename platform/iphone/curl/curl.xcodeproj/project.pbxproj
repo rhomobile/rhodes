@@ -768,6 +768,7 @@
 				SKIP_INSTALL = YES;
 				SYMROOT = ../build;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = "armv6 armv7 i386";
 			};
 			name = Debug;
 		};
@@ -792,6 +793,7 @@
 				SKIP_INSTALL = YES;
 				SYMROOT = ../build;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = "armv6 armv7 i386";
 			};
 			name = Release;
 		};

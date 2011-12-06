@@ -37,11 +37,10 @@ public class RhoWebSettingsOld implements RhoWebSettings {
 		webSettings.setSaveFormData(false);
 		webSettings.setJavaScriptEnabled(true);
 		webSettings.setJavaScriptCanOpenWindowsAutomatically(false);
-		webSettings.setSupportZoom(false);
-		//webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+		webSettings.setSupportZoom(true);
+		webSettings.setBuiltInZoomControls(true);
 		webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 		webSettings.setSupportMultipleWindows(false);
-		// webSettings.setLoadsImagesAutomatically(true);
 
 		w.setVerticalScrollBarEnabled(true);
 		w.setHorizontalScrollBarEnabled(true);
