@@ -139,13 +139,13 @@ public class RhoConnection implements IHttpConnection {
 	}
 
 	public String getHeaderField(String name) throws IOException {
-		//LOG.TRACE("getHeaderField: " + name);
+		LOG.TRACE("getHeaderField: " + name);
 		processRequest();
 		return resHeaders.getPropertyIgnoreCase(name);
 	}
 
 	public String getHeaderField(int index) throws IOException {
-		//LOG.TRACE("getHeaderField: " + index);
+		LOG.TRACE("getHeaderField: " + index);
 		processRequest();
         if (index >= resHeaders.size()) {
             return null;
@@ -154,7 +154,7 @@ public class RhoConnection implements IHttpConnection {
 	}
 
 	public long getHeaderFieldDate(String name, long def) throws IOException {
-		//LOG.TRACE("getHeaderFieldDate: " + name);
+		LOG.TRACE("getHeaderFieldDate: " + name);
 		processRequest();
         try {
             return DateTimeTokenizer.parse(getHeaderField(name));
@@ -169,7 +169,7 @@ public class RhoConnection implements IHttpConnection {
 	}
 
 	public int getHeaderFieldInt(String name, int def) throws IOException {
-		//LOG.TRACE("getHeaderFieldInt: " + name);
+		LOG.TRACE("getHeaderFieldInt: " + name);
 		processRequest();
         try {
             return Integer.parseInt(getHeaderField(name));
@@ -182,7 +182,7 @@ public class RhoConnection implements IHttpConnection {
 	}
 
 	public String getHeaderFieldKey(int index) throws IOException {
-		//LOG.TRACE("getHeaderFieldKey: " + index);
+		LOG.TRACE("getHeaderFieldKey: " + index);
 		processRequest();
         if (index >= resHeaders.size())
             return null;
@@ -216,7 +216,7 @@ public class RhoConnection implements IHttpConnection {
 
 	public String getRef() {
 		LOG.TRACE("getRef: " + uri.getFragment());
-		return uri.getFragment();
+		return uri.getFragment() != null ? uri.getFragment() : "";
 	}
 
 	public String getRequestMethod() {
@@ -225,7 +225,7 @@ public class RhoConnection implements IHttpConnection {
 	}
 
 	public String getRequestProperty(String key) {
-		//LOG.TRACE("getRequestProperty: " + key);
+		LOG.TRACE("getRequestProperty: " + key);
         return reqHeaders.getPropertyIgnoreCase(key);
 	}
 
@@ -309,7 +309,7 @@ public class RhoConnection implements IHttpConnection {
 	 *            the value for the request header field.
 	 */
     protected void setRequestField(String key, String value) {
-    	//LOG.TRACE("setRequestField: key = " + key + "; value = " + value);
+    	LOG.TRACE("setRequestField: key = " + key + "; value = " + value);
 
         /*
 		 * If application setRequestProperties("Connection", "close") then we
@@ -361,19 +361,23 @@ public class RhoConnection implements IHttpConnection {
 	}
 
 	public DataInputStream openDataInputStream() throws IOException {
+		LOG.TRACE("openDataInputStream");
 		return new DataInputStream(openInputStream());
 	}
 
 	public InputStream openInputStream() throws IOException {
+		LOG.TRACE("openInputStream");
 		processRequest();
 		return responseData;
 	}
 
 	public DataOutputStream openDataOutputStream() throws IOException {
+		LOG.TRACE("openDataOutputStream");
 		return new DataOutputStream(postData);
 	}
 
 	public OutputStream openOutputStream() throws IOException {
+		LOG.TRACE("openOutputStream");
 		return postData;
 	}
 	
@@ -414,18 +418,22 @@ public class RhoConnection implements IHttpConnection {
 		
 		resHeaders.addProperty("Location", strLoc );
 		contentLength = 0;
+		
+		responseData = new ByteArrayInputStream("".getBytes());
 	}
 
 	void respondOK(){
 		responseCode = HTTP_OK;
 		responseMsg = "Success";
 		contentLength = 0;
+		responseData = new ByteArrayInputStream("".getBytes());
 	}
 
 	void respondNotModified(){
 		responseCode = HTTP_NOTMODIFIED;
 		responseMsg = "Success";
 		contentLength = 0;
+		responseData = new ByteArrayInputStream("".getBytes());
 	}
 	
 	void respondNotFound( String strError ){
