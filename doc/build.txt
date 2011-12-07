@@ -523,6 +523,8 @@ Blackberry SDK for Mac doesn't come with simulators so far. So for now we would 
             5.0: 
               jde: <jde_5.0>/components
               sim: 9550
+              #sim_path is optional. It defines path for standalone simulator
+              sim_path: <jde_5.0>/components/simulator
               mds: <jde_5.0>/components/MDS
 
 * Read about Blackberry Browser limitations of CSS, HTML and JavaScript. Get relevant documentation from [here](http://na.blackberry.com/eng/support/docs/subcategories/?userType=21&category=BlackBerry+Browser).

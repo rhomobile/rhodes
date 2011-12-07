@@ -72,6 +72,13 @@ class Time
     elsif fmt == '%Y%m%d'
         strRes = year().to_s() +  __makeTwoDigit(mon()) + __makeTwoDigit(mday())
 		return strRes 
+    elsif fmt == '%m/%d/%Y'
+        strRes = __makeTwoDigit(mon()) + "/" + __makeTwoDigit(mday()) + "/" + year().to_s()
+		return strRes 
+    elsif fmt == '%I:%M%p'
+        strPM, nHour = __getPM()
+        strRes += __makeTwoDigit(nHour) + ':' + __makeTwoDigit(min()) + strPM;
+		return strRes 
     elsif fmt == '%a'
 		strRes = LocalizationSimplified::DateHelper::AbbrDaynames[wday()]
 		return strRes 
