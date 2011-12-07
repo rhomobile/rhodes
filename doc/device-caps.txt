@@ -1564,7 +1564,11 @@ Blackberry 5.0 and above has new BrowserField class, which support javascript, a
 
 WebView.execute_js is also supported in this mode.
 
-NOTE: on Blackberry 5.0 non-touch device full browser has problems with fields navigation - it does not move from one focus field to another like usual browser field does, it just move from one symbol to another. This issue make full browser usable only on touch screen devices.
+NOTE: on Blackberry 6.0 and above it is recommended to use full browser mode. Because overwise some UI elements like combobox is not selectable by trackball:
+
+	# use full browser only on BB 6.0 and above
+	use_bb_full_browser=6
+
 
 ### Blackberry full browser
 
