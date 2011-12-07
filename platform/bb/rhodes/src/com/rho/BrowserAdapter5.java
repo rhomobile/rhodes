@@ -86,6 +86,9 @@ public class BrowserAdapter5 implements IBrowserAdapter
 		{
 			String url = request.getURL();
 			LOG.INFO("handleResourceRequest: " + url);
+
+	        if (url == null || url.endsWith("/favicon.ico"))
+	        	return null;
 			
 			if ( url.startsWith("http:/") && !url.startsWith("http://") )
 				url = RhodesApp.getInstance().getHomeUrl() + url.substring(5);
