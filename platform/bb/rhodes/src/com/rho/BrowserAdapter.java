@@ -206,7 +206,7 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
 
         try {
         	if ( connection.getResponseCode() != HttpConnection.HTTP_NOT_MODIFIED )
-        		browserContent = _renderingSession.getBrowserContent(connection, this, (Event)e);
+        		browserContent = _renderingSession.getBrowserContent(connection, this, e instanceof Event ? (Event)e : null );
 
             if (browserContent != null) {
        			browserContent.finishLoading();
