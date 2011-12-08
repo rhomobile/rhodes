@@ -120,9 +120,7 @@ module Rhom
                 def metadata=(metadata_doc)
                   src_name = get_source_name
                   db = ::Rho::RHO.get_src_db(src_name)
-                  db.start_transaction
                   db.execute_sql("UPDATE sources set metadata=? where name=?", metadata_doc, src_name)
-                  db.commit
                 end
 
                 def count
