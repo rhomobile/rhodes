@@ -571,7 +571,7 @@ Name of the source.
 	  #=> "Product"
 	
 ### `last_updated`
-Last time the source was synchronzied (in `Time.at` format).
+Last time the source was successfully synchronzied (in `Time.at` format).
 
 	:::ruby
 	@source.last_updated.to_s
@@ -600,7 +600,7 @@ Number of records deleted on last sync.
 	  #=> 1
 
 ### `last_sync_duration`
-This returns the duration in seconds of the last sync for this source.
+This returns the duration in milliseconds of the last sync for this source.
 	
 	:::ruby
 	@source.last_sync_duration
