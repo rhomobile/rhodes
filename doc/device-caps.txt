@@ -1379,7 +1379,7 @@ See GeoLocation/controller.rb of [system API sample application](http://github.c
 ### Platform notes
 
 #### Blackberry
-Only read from files are supported as of 1.4 release
+Only read from files are supported.
 
 Simulator files folder (4.6 and bigger) - `<sdk root>/components/simulator/sdcard/rho/<appname>`
 
