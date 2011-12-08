@@ -19,6 +19,7 @@
 #require 'spec/spec_helper'
 require 'rhom'
 require 'rho/rhoutils'
+require 'json'
 
 USE_HSQLDB = !System.get_property('has_sqlite')
 USE_COPY_FILES = !defined? RHO_ME && !defined? RHO_WP7
@@ -1680,6 +1681,12 @@ end
       
       @accts3 = getAccount.paginate(:per_page => 20, :order=> 'name', :page => 2)
       @accts3.length.should == 0
+    end
+    
+    it "should assign metadata" do
+      meta = {"foo" => "bar"}
+      getAccount.metadata = meta.to_json
+      getAccount.metadata.should == meta
     end
 end
 
