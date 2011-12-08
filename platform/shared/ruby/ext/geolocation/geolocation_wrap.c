@@ -1853,8 +1853,8 @@ extern double rho_geo_haversine_distance(double lat1, double lon1, double lat2, 
 #define turnoff rho_geoimpl_turngpsoff
 extern void rho_geoimpl_turngpsoff();
 
-#define request_coordinates_by_adress rho_geoimpl_request_coordinates_by_adress
-extern void rho_geoimpl_request_coordinates_by_adress(rho_param* p, const char* callback);
+#define do_geocoding rho_geoimpl_do_geocoding
+extern void rho_geoimpl_do_geocoding(rho_param* p, const char* callback, int callback_tag);
 
 
 
@@ -2243,14 +2243,20 @@ fail:
 
 
 SWIGINTERN VALUE
-_wrap_request_coordinates_by_adress(int argc, VALUE *argv, VALUE self) {
+_wrap_do_geocoding(int argc, VALUE *argv, VALUE self) {
   rho_param *arg1 = (rho_param *) 0 ;
   char *arg2 = (char *) 0 ;
+  int arg3 ;
   int res2 ;
   char *buf2 = 0 ;
   int alloc2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
   
-  if ((argc < 2) || (argc > 2)) {
+  {
+    arg3 = 0;
+  }
+  if ((argc < 2) || (argc > 3)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
   }
   {
@@ -2258,10 +2264,17 @@ _wrap_request_coordinates_by_adress(int argc, VALUE *argv, VALUE self) {
   }
   res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","request_coordinates_by_adress", 2, argv[1] ));
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","do_geocoding", 2, argv[1] ));
   }
   arg2 = (char *)(buf2);
-  request_coordinates_by_adress(arg1,(char const *)arg2);
+  if (argc > 2) {
+    ecode3 = SWIG_AsVal_int(argv[2], &val3);
+    if (!SWIG_IsOK(ecode3)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "int","do_geocoding", 3, argv[2] ));
+    } 
+    arg3 = (int)(val3);
+  }
+  do_geocoding(arg1,(char const *)arg2,arg3);
   {
     rho_param_free(arg1);
   }
@@ -2594,6 +2607,6 @@ SWIGEXPORT void Init_GeoLocation(void) {
   rb_define_module_function(mGeoLocation, "set_notification", _wrap_set_notification, -1);
   rb_define_module_function(mGeoLocation, "haversine_distance", _wrap_haversine_distance, -1);
   rb_define_module_function(mGeoLocation, "turnoff", _wrap_turnoff, -1);
-  rb_define_module_function(mGeoLocation, "request_coordinates_by_adress", _wrap_request_coordinates_by_adress, -1);
+  rb_define_module_function(mGeoLocation, "do_geocoding", _wrap_do_geocoding, -1);
 }
 

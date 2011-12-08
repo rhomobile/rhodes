@@ -294,7 +294,7 @@ class GeoCodingCallback
 {
 public:
     virtual void onError(String const &description) = 0;
-    virtual void onSuccess(double latitude, double longitude) = 0;
+    virtual void onSuccess(double latitude, double longitude, const char* adress) = 0;
 };
 
 class IGeoCoding
