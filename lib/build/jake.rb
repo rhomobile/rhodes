@@ -245,9 +245,11 @@ class Jake
 
     cmdstr = argv.map { |x| x =~ / |\|/ ? '"' + x + '"' : x }.join(' ')
 
-    puts "PWD: " + Dir.pwd()
-    puts "CMD: " + cmdstr
-    $stdout.flush
+    unless options[:hide_output]
+      puts "PWD: " + Dir.pwd()
+      puts "CMD: " + cmdstr
+      $stdout.flush
+    end
 
     hideerrors = options[:hideerrors]
     if hideerrors
@@ -276,8 +278,10 @@ class Jake
                 end    
             else
                 retval += line
-                puts "RET: " + line
-                $stdout.flush
+		unless options[:hide_output]
+                    puts "RET: " + line
+                    $stdout.flush
+		end
             end    
           end
         end

@@ -439,6 +439,69 @@ namespace "run" do
 	  Jake.run2( detool, args, {:nowait => false})
     end
 
+    task :spec => ["device:wm:production"] do
+        # kill all running detool
+        kill_detool
+
+        cd $startdir + "/res/build-tools"
+        detool = "detool.exe"    
+        args   = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port]
+        puts "\nStarting application on the WM6 emulator\n\n"
+        log_file = gelLogPath
+
+        #remove log file
+        rm_rf log_file if File.exists?(log_file)
+
+        Jake.before_run_spec
+        start = Time.now
+        
+        Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
+        Jake.run2( detool, args, {:nowait => false})
+
+        puts "waiting for log: " + log_file
+        
+        for i in 0..120
+		if !File.exist?(log_file)
+			sleep(1)
+		else
+			break
+		end
+        end
+
+	if !File.exist?(log_file)
+		puts "Can not read log file: " + log_file
+		exit(1)
+        end
+
+        puts "start read log"
+        
+        while true do
+            break if Jake.run2( 'tasklist', ['/fi', '"ImageName eq detool.exe"'], {:nowait => false, :hide_output => true}).to_s.index('detool.exe').nil?
+            sleep(5)
+        end
+
+        io = File.new(log_file, "r")
+        io.each do |line|
+            Jake.process_spec_output(line)
+        end
+        io.close
+
+        Jake.process_spec_results(start)
+        
+        $stdout.flush
+        chdir $startdir
+    end
+
+    task :phone_spec do
+      exit 1 if Jake.run_spec_app('wm','phone_spec')
+      exit 0
+    end
+
+    task :framework_spec do
+      exit 1 if Jake.run_spec_app('wm','framework_spec')
+      exit 0
+    end
+
     namespace "device" do
 	desc "Build, install .cab  and run on the Windows Phone"
 	task :cab => ["device:wm:production"] do
