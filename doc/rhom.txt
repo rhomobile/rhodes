@@ -503,6 +503,22 @@ Determine if a rhom model has local database changes that need to be synchronize
       end
     end
 
+### `metadata`
+
+Returns the [metadata](/rhoconnect/metadata) for a given model.
+
+	:::ruby
+	Product.metadata
+	#=> {'foo' => 'bar'}
+
+### `metadata=(metadata_def)`
+
+Assigns the [metadata](/rhoconnect/metadata) for a given model.
+
+	:::ruby
+	Product.metadata = { 'foo' => 'bar' }.to_json
+	
+
 ## Associations
 For sync-enabled models, Rhom offers associations as a means to automatically trigger sync updates for dependent objects.  This is useful where you have relationships between backend service objects.
 
