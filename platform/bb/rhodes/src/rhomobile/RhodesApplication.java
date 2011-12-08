@@ -158,8 +158,9 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     }
 
     public void navigateUrl(String url){
+    	String strUrl = RHODESAPP().canonicalizeRhoUrl(url); 
     	PrimaryResourceFetchThread thread = new PrimaryResourceFetchThread(
-        		RHODESAPP().canonicalizeRhoUrl(url), null, null, null);
+        		strUrl, null, null, strUrl);
         thread.start();                       
     }
 
