@@ -766,25 +766,7 @@ namespace "build" do
 
       File.open(File.join(assets, "name"), "w") { |f| f.write($appname) }
       
-      psize = assets.size + 1
-
-      File.open(File.join(assets, 'rho.dat'), 'w') do |dat|
-        Dir.glob(File.join(assets, '**/*')).sort.each do |f|
-          relpath = f[psize..-1]
-
-          if File.directory?(f)
-            type = 'dir'
-          elsif File.file?(f)
-            type = 'file'
-          else
-            next
-          end
-          size = File.stat(f).size
-          tm = File.stat(f).mtime.to_i
-
-          dat.puts "#{relpath}\t#{type}\t#{size.to_s}\t#{tm.to_s}"
-        end
-      end
+      Jake.build_file_map(assets)
     end
 
     task :extensions => :genconfig do
