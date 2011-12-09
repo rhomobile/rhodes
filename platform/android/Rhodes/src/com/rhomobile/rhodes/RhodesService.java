@@ -51,6 +51,7 @@ import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.geolocation.GeoLocation;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.mainview.SplashScreen;
+import com.rhomobile.rhodes.osfunctionality.AndroidFunctionalityManager;
 import com.rhomobile.rhodes.ui.AboutDialog;
 import com.rhomobile.rhodes.ui.LogOptionsDialog;
 import com.rhomobile.rhodes.ui.LogViewDialog;
@@ -788,45 +789,6 @@ public class RhodesService extends Service {
 		return mScreenHeight;
 	}
 	
-	 private static Account AccessOwnerInfo_getAccount(AccountManager accountManager) {
-		    Account[] accounts = accountManager.getAccountsByType("com.google");
-	    Account account;
-	    if (accounts.length > 0) {
-	      account = accounts[0];
-	    } else {
-	      account = null;
-	    }
-	    return account;
-	  }
-	
-	  public static String AccessOwnerInfo_getEmail(Context context) {
-	    AccountManager accountManager = AccountManager.get(context);
-	    Account account = AccessOwnerInfo_getAccount(accountManager);
-	
-	    if (account == null) {
-	      return null;
-	    } else {
-	      return account.name;
-	    }
-	  }
-	
-	  public static String AccessOwnerInfo_getUsername(Context context) {
-	    // String email;
-		AccountManager manager = AccountManager.get(context);
-		Account account = AccessOwnerInfo_getAccount(manager);
-		if (account == null) {
-		  return "";
-		} else {
-		  String email = account.name;
-		  String[] parts = email.split("@");
-		  if (parts.length > 0 && parts[0] != null)
-		    return parts[0];
-		  else
-		    return "";
-	    }
- 	  }	
-  
-		  
 	public static Object getProperty(String name) {
 		try {
 			if (name.equalsIgnoreCase("platform"))
@@ -862,10 +824,10 @@ public class RhodesService extends Service {
 				return number;
 			}
 			else if (name.equalsIgnoreCase("device_owner_name")) {
-				return AccessOwnerInfo_getUsername(getContext());
+				return AndroidFunctionalityManager.getAndroidFunctionality().AccessOwnerInfo_getUsername(getContext());
 			}
 			else if (name.equalsIgnoreCase("device_owner_email")) {
-				return AccessOwnerInfo_getEmail(getContext());
+				return AndroidFunctionalityManager.getAndroidFunctionality().AccessOwnerInfo_getEmail(getContext());
 			}
 			else if (name.equalsIgnoreCase("device_name")) {
 				return Build.DEVICE;

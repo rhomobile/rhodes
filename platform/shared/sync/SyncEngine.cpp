@@ -349,7 +349,7 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
         oSrc.getDB().executeSQL("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, \
 						 last_sync_duration=?,last_sync_success=?, backend_refresh_time=? WHERE source_id=?", 
                          timeUpdated, oSrc.getInsertedCount(), oSrc.getDeletedCount(), 
-                         (endTime-startTime).toULong(), oSrc.getGetAtLeastOnePage(), oSrc.getRefreshTime(),
+                         (endTime-startTime).toULong(), oSrc.m_nErrCode == RhoAppAdapter.ERR_NONE, oSrc.getRefreshTime(),
                          oSrc.getID() );
     }
     //

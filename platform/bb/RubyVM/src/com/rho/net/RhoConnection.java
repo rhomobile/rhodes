@@ -44,6 +44,7 @@ public class RhoConnection implements IHttpConnection {
     protected Properties resHeaders = new Properties();
     /** Request state **/
     protected boolean requestProcessed = false;
+    protected boolean m_isDispatchCall = false;
     /** Input/Output streams **/
 	private /*ByteArray*/InputStream responseData = null;
 	private ByteArrayOutputStream postData = new ByteArrayOutputStream();
@@ -109,6 +110,8 @@ public class RhoConnection implements IHttpConnection {
 		LOG.TRACE("Close browser connection.");
 	}
     
+	public boolean isDispatchCall(){ return m_isDispatchCall; }
+	
 	public Object getNativeConnection() {
 		throw new RuntimeException("getNativeConnection - Not implemented");
 	}
@@ -823,6 +826,7 @@ public class RhoConnection implements IHttpConnection {
 						if ( dispatch() )
 						{
 							requestProcessed = true;
+							m_isDispatchCall = true;
 							return;
 						}
 					}
