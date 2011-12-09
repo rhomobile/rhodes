@@ -74,7 +74,6 @@ class CSyncSource
     boolean m_bTokenFromDB;
 
     int m_nCurPageCount, m_nInserted, m_nDeleted, m_nTotalCount;
-    boolean m_bGetAtLeastOnePage;
     int m_nRefreshTime;
     int m_nProgressStep;
     boolean m_bSchemaSource;
@@ -120,7 +119,6 @@ public:
     int getProgressStep(){ return m_nProgressStep; }
     void setProgressStep(int nProgressStep){ m_nProgressStep = nProgressStep; }
 
-    boolean getGetAtLeastOnePage(){ return m_bGetAtLeastOnePage; }
     int getRefreshTime(){ return m_nRefreshTime; }
 
     Vector<CAssociation>& getAssociations(){ return m_arAssociations; }

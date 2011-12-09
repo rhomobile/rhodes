@@ -85,7 +85,6 @@ public class SyncSource
     boolean m_bTokenFromDB; 
     
     int m_nCurPageCount, m_nInserted, m_nDeleted, m_nTotalCount;
-    boolean m_bGetAtLeastOnePage = false;
     int m_nErrCode = RhoAppAdapter.ERR_NONE;
     String m_strError = "", m_strServerError = "";
     String m_strQueryParams = "";
@@ -124,7 +123,6 @@ public class SyncSource
     int getProgressStep(){ return m_nProgressStep; }
     void setProgressStep(int nProgressStep){ m_nProgressStep = nProgressStep; }
 
-    boolean getGetAtLeastOnePage(){ return m_bGetAtLeastOnePage; }
     int getRefreshTime(){ return m_nRefreshTime; }
     Vector/*<CAssociation>*/ getAssociations(){ return m_arAssociations; }
     
@@ -156,7 +154,6 @@ public class SyncSource
         m_nInserted = 0;
         m_nDeleted = 0;
         m_nTotalCount = 0;
-        m_bGetAtLeastOnePage = false;
 
         m_nErrCode = RhoAppAdapter.ERR_NONE;
         m_bSchemaSource = db.isTableExist(m_strName);
@@ -175,7 +172,6 @@ public class SyncSource
         m_nInserted = 0;
         m_nDeleted = 0;
         m_nTotalCount = 0;
-        m_bGetAtLeastOnePage = false;
 
         m_nErrCode = RhoAppAdapter.ERR_NONE;
 
@@ -245,12 +241,21 @@ public class SyncSource
 	    	//getSync().stopSync();
 	    	throw exc;
 	    }finally{
-		   TimeInterval endTime = TimeInterval.getCurrentTime();
-		   getDB().executeSQL("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, "+
-			 "last_sync_duration=?,last_sync_success=?, backend_refresh_time=? WHERE source_id=?", 
-             new Long(endTime.toULong()/1000), new Integer(getInsertedCount()), new Integer(getDeletedCount()), 
-             new Long((endTime.minus(startTime)).toULong()), 
-             new Integer(m_bGetAtLeastOnePage?1:0), new Integer(m_nRefreshTime), getID() );
+			TimeInterval endTime = TimeInterval.getCurrentTime();
+			   
+			int nSyncSucess = m_nErrCode == RhoAppAdapter.ERR_NONE ? 1 : 0;
+			if ( nSyncSucess > 0 )
+				getDB().executeSQL("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, "+
+						 "last_sync_duration=?,last_sync_success=?, backend_refresh_time=? WHERE source_id=?", 
+			             new Long(endTime.toULong()/1000), new Integer(getInsertedCount()), new Integer(getDeletedCount()), 
+			             new Long((endTime.minus(startTime)).toULong()), 
+			             new Integer(nSyncSucess), new Integer(m_nRefreshTime), getID() );
+			else
+				getDB().executeSQL("UPDATE sources set last_inserted_size=?,last_deleted_size=?, "+
+						 "last_sync_duration=?,last_sync_success=?, backend_refresh_time=? WHERE source_id=?", 
+			             new Integer(getInsertedCount()), new Integer(getDeletedCount()), 
+			             new Long((endTime.minus(startTime)).toULong()), 
+			             new Integer(nSyncSucess), new Integer(m_nRefreshTime), getID() );
 	    }
 	}
 	

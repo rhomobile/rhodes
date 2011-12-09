@@ -608,7 +608,7 @@ public:
 
     void onError(String const &) {}
 
-    void onSuccess(double latitude, double longitude)
+    void onSuccess(double latitude, double longitude, const char* adress)
     {
         RHO_MAP_TRACE2("CenterResolved: latitude=%lf, longitude=%lf", latitude, longitude);
         m_mapview->moveTo(latitude, longitude);
@@ -627,7 +627,7 @@ public:
 
     void onError(String const &) {}
 
-    void onSuccess(double latitude, double longitude)
+    void onSuccess(double latitude, double longitude, const char* adress)
     {
         RHO_MAP_TRACE2("AnnotationResolved: latitude=%lf, longitude=%lf", latitude, longitude);
         Annotation ann(m_ann.title(), m_ann.subtitle(), latitude, longitude, m_ann.url(), m_ann.pass_location());

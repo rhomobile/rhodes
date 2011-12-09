@@ -35,11 +35,13 @@ import javax.microedition.io.InputConnection;
 
 import com.rho.RhoLogger;
 import com.rho.RhodesApp;
+import com.rho.net.RhoConnection;
 import com.rho.net.URI;
 
 import rhomobile.Utilities;
 import rhomobile.RhodesApplication.PrimaryResourceFetchThread;
 import rhomobile.RhodesApplication;
+import com.rho.net.bb.NativeBBHttpConnection;
 
 //http://rim.lithium.com/t5/Java-Development/Browser-events-on-JDK-5-field2-package/m-p/430991
 //http://208.74.204.192/t5/Web-Development/Embedded-Browser-Ajax-support/m-p/410260;jsessionid=CDE85D9F4D88217EA118DE3F5DF9FEFD
@@ -96,6 +98,18 @@ public class BrowserAdapter5 implements IBrowserAdapter
     		if ( RhodesApp.getInstance().isRhodesAppUrl(url) || URI.isLocalData(url) )
     		{
                 HttpConnection connection = Utilities.makeConnection(url, request.getHeaders(), null, null);
+
+                if ( request.getPostData() == null || request.getPostData().length == 0 )
+                {
+                	if ( connection != null && connection instanceof NativeBBHttpConnection )
+                	{
+                		RhoConnection rhoConn =	(RhoConnection)((NativeBBHttpConnection)connection).getNativeConnection();
+                		rhoConn.getResponseCode();
+                			//String referrer = request.getHeaders().getPropertyValue("referer");
+                		if ( rhoConn.isDispatchCall() )
+                			m_app.addToHistory(url, null );
+                	}
+                }
                 
                 return connection;
     		}else

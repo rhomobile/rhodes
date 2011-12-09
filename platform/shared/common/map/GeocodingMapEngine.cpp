@@ -55,7 +55,8 @@ String GoogleGeoCoding::Command::toString()
 {
     return address;
 }
-
+    
+    
 IMPLEMENT_LOGCLASS(GoogleGeoCoding,"GGeoCoding");
 GoogleGeoCoding::GoogleGeoCoding()
 {
@@ -98,8 +99,12 @@ void GoogleGeoCoding::resolve(String const &address, GeoCodingCallback *cb)
     RHO_MAP_TRACE1("GoogleGeoCoding: resolve address=%s", address.c_str());
     addQueueCommand(new Command(address, cb));
 }
+    
+void GoogleGeoCoding::resolve(float latitude, float longitude, GeoCodingCallback *cb) {
+    addQueueCommand(new Command(latitude, longitude, cb));
+}
 
-static bool parse_json(const char *data, double *plat, double *plon)
+static bool parse_json(const char *data, double *plat, double *plon, String* adress, bool* coord_ok, bool* adress_ok)
 {
     RHO_MAP_TRACE1("parse_json: data=%s", data);
     json::CJSONEntry json(data);
@@ -107,17 +112,43 @@ static bool parse_json(const char *data, double *plat, double *plon)
     RHO_MAP_TRACE1("parse_json: status=%s", status);
     if (strcasecmp(status, "OK") != 0)
         return false;
+    bool params_founded = false;
+    if (adress_ok != NULL) {
+        *adress_ok = false;
+    }
+    if (coord_ok != NULL) {
+        *coord_ok = false;
+    }
     for (json::CJSONArrayIterator results = json.getEntry("results"); !results.isEnd(); results.next())
     {
         json::CJSONEntry item = results.getCurItem();
-        if (!item.hasName("geometry"))
-            continue;
-
-        json::CJSONEntry geometry = item.getEntry("geometry");
-        json::CJSONEntry location = geometry.getEntry("location");
-        *plat = location.getDouble("lat");
-        *plon = location.getDouble("lng");
-        return true;
+        
+        
+        if (item.hasName("formatted_address")) {
+            json::CJSONEntry formatted_address = item.getEntry("formatted_address");
+            if (adress != NULL) {
+                *adress = formatted_address.getString();
+            }
+            params_founded = true;
+            if (adress_ok != NULL) {
+                *adress_ok = true;
+            }
+        }
+        
+        if (item.hasName("geometry")) {
+            json::CJSONEntry geometry = item.getEntry("geometry");
+            json::CJSONEntry location = geometry.getEntry("location");
+            *plat = location.getDouble("lat");
+            *plon = location.getDouble("lng");
+            params_founded = true;
+            if (coord_ok != NULL) {
+                *coord_ok = true;
+            }
+        }
+        
+        if (params_founded) {
+            return true;
+        }
     }
 
     return false;
@@ -128,8 +159,19 @@ void GoogleGeoCoding::processCommand(IQueueCommand *pCmd)
     Command *cmd = (Command*)pCmd;
     GeoCodingCallback &cb = *(cmd->callback);
 
-    String url = "http://maps.googleapis.com/maps/api/geocode/json?address=";
-    url += net::URI::urlEncode(cmd->address);
+    String url = "http://maps.googleapis.com/maps/api/geocode/json?";
+    
+    if (cmd->is_inverse) {
+        char* buf = new char[2048];
+        url += "latlng=";
+        sprintf(buf, "%f,%f", (float)cmd->latitude, (float)cmd->longitude);
+        url += buf;
+        delete buf;
+    }
+    else {
+        url += "address=";
+        url += net::URI::urlEncode(cmd->address);
+    }
     url += "&sensor=false";
 
     RHO_MAP_TRACE1("GoogleGeoCoding: processCommand: url=%s", url.c_str());
@@ -145,10 +187,28 @@ void GoogleGeoCoding::processCommand(IQueueCommand *pCmd)
     RHO_MAP_TRACE("GoogleGeoCoding: processCommand: Parse received json...");
 
     double latitude, longitude;
-    if (parse_json((const char *)data, &latitude, &longitude))
+    String cadress;
+    bool adress_ok = false;
+    bool coordinates_ok = false;
+    
+    if (parse_json((const char *)data, &latitude, &longitude, &cadress, &coordinates_ok, &adress_ok))
     {
         RHO_MAP_TRACE("GoogleGeoCoding: processCommand: json parsed successfully");
-        cb.onSuccess(latitude, longitude);
+        if (cmd->is_inverse && adress_ok) {
+            cb.onSuccess(latitude, longitude, cadress.c_str());
+        }
+        else if (coordinates_ok) {
+            if (adress_ok) {
+                cb.onSuccess(latitude, longitude, cadress.c_str());
+            }
+            else {
+                cb.onSuccess(latitude, longitude, NULL);
+            }
+        }
+        else {
+            RHO_MAP_TRACE("GoogleGeoCoding: processCommand: can't found response in json");
+            cb.onError("Can not found response in JSON");
+        }
     }
     else
     {
@@ -212,9 +272,10 @@ static rho::common::map::GoogleGeoCoding* getGeocodeSignletone() {
 
 class RhoGoogleGeocodeCallbackImpl : public rho::common::map::GeoCodingCallback {
 public:
-    RhoGoogleGeocodeCallbackImpl(rho::String adress, rho::String callback) {
+    RhoGoogleGeocodeCallbackImpl(rho::String adress, rho::String callback, int tag) {
         mAdress = adress;
         mCallback = callback;
+        mTag = tag;
     }
     
     virtual ~RhoGoogleGeocodeCallbackImpl() {
@@ -239,7 +300,7 @@ public:
         //delete this;
     }
 
-    virtual void onSuccess(double latitude, double longitude) {
+    virtual void onSuccess(double latitude, double longitude, const char* adress) {
         char* buf = new char[2048];
         
         if (buf == NULL) {
@@ -247,8 +308,16 @@ public:
             return;
         }
         
-        sprintf(buf,"&rho_callback=1&status=ok&latitude=%f&longitude=%f", (float)latitude, (float)longitude); 
-                
+        if (adress != NULL) {
+            rho::String coded_adr = adress;
+            coded_adr = rho::net::URI::urlEncode(coded_adr);
+            sprintf(buf,"&rho_callback=1&status=ok&tag=%d&latitude=%f&longitude=%f&adress=%s", mTag, (float)latitude, (float)longitude, coded_adr.c_str()); 
+        }
+        else {
+            sprintf(buf,"&rho_callback=1&status=ok&tag=%d&latitude=%f&longitude=%f", mTag, (float)latitude, (float)longitude); 
+        }
+        
+            
         char* norm_url = rho_http_normalizeurl(mCallback.c_str());
         rho_net_request_with_data(norm_url, buf);
         rho_http_free(norm_url);
@@ -261,10 +330,19 @@ public:
 private:
     rho::String mAdress;
     rho::String mCallback;
+    int mTag;
 };
 
-void rho_geoimpl_request_coordinates_by_adress(rho_param* p, const char* callback) {
+
+void rho_geoimpl_do_geocoding(rho_param* p, const char* callback, int callback_tag) {
+    
     const char* c_adress = NULL;
+    bool adress_setted = false;
+    
+    float longitude = 0;
+    float latitude = 0;
+    bool longitude_setted = false;
+    bool latitude_setted = false;
     
     switch (p->type) {
         case RHO_PARAM_HASH: {
@@ -274,23 +352,40 @@ void rho_geoimpl_request_coordinates_by_adress(rho_param* p, const char* callbac
                 
                 if (strcasecmp(name, "adress") == 0) {
 					c_adress = value->v.string;
+                    adress_setted = true;
+                }
+                if (strcasecmp(name, "latitude") == 0) {
+                    latitude = strtod(value->v.string, NULL);
+                    latitude_setted = true;
+                }
+                if (strcasecmp(name, "longitude") == 0) {
+                    longitude_setted = true;
+                    longitude = strtod(value->v.string, NULL);
                 }
             }
         }
         break;
         default: {
-            RAWLOG_ERROR("Unexpected parameter type for request_coordinates_by_adress, should be Hash");
+            RAWLOG_ERROR("Unexpected parameter type for do_geocoding, should be Hash");
             return;
         }
     }
-    if (c_adress == NULL) {
-        RAWLOG_ERROR("Unexpected parameter type for request_coordinates_by_adress, should be Hash with 'adress' string parameter");
+    if ((c_adress == NULL) && (!latitude_setted && !longitude_setted)) {
+        RAWLOG_ERROR("Unexpected parameter type for do_geocoding, should be Hash with 'adress' or 'latitude' + 'longitude' parameters");
         return;
     }
     
-    rho::String adress = c_adress;
+    if (adress_setted) {
+        rho::String adress = c_adress;
     
-    getGeocodeSignletone()->resolve(adress, new RhoGoogleGeocodeCallbackImpl(adress, callback));
+        getGeocodeSignletone()->resolve(adress, new RhoGoogleGeocodeCallbackImpl(adress, callback, callback_tag));\
+    }
+    else if (latitude_setted && longitude_setted) {
+        getGeocodeSignletone()->resolve(latitude, longitude, new RhoGoogleGeocodeCallbackImpl("", callback, callback_tag));
+    }
+    else {
+        RAWLOG_ERROR("Ivalid parameters type for do_geocoding, should be Hash with 'adress' or 'latitude' + 'longitude' parameters");
+    }
 }
 
 

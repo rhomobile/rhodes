@@ -445,7 +445,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		        oSrc.getDB().executeSQL("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, "+
 					 "last_sync_duration=?,last_sync_success=?, backend_refresh_time=? WHERE source_id=?", 
 					 new Long(endTime.toULong()/1000), new Integer(oSrc.getInsertedCount()), new Integer(oSrc.getDeletedCount()), 
-					 new Long((endTime.minus(startTime)).toULong()), new Integer(oSrc.getGetAtLeastOnePage()?1:0), 
+					 new Long((endTime.minus(startTime)).toULong()), new Integer(oSrc.m_nErrCode == RhoAppAdapter.ERR_NONE?1:0), 
 					 new Integer(oSrc.getRefreshTime()),  oSrc.getID() );
 		    }
 		    //

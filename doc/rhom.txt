@@ -503,6 +503,22 @@ Determine if a rhom model has local database changes that need to be synchronize
       end
     end
 
+### `metadata`
+
+Returns the [metadata](/rhoconnect/metadata) for a given model.
+
+	:::ruby
+	Product.metadata
+	#=> {'foo' => 'bar'}
+
+### `metadata=(metadata_def)`
+
+Assigns the [metadata](/rhoconnect/metadata) for a given model.
+
+	:::ruby
+	Product.metadata = { 'foo' => 'bar' }.to_json
+	
+
 ## Associations
 For sync-enabled models, Rhom offers associations as a means to automatically trigger sync updates for dependent objects.  This is useful where you have relationships between backend service objects.
 
@@ -571,7 +587,7 @@ Name of the source.
 	  #=> "Product"
 	
 ### `last_updated`
-Last time the source was synchronzied (in `Time.at` format).
+Last time the source was successfully synchronzied (in `Time.at` format).
 
 	:::ruby
 	@source.last_updated.to_s
@@ -600,7 +616,7 @@ Number of records deleted on last sync.
 	  #=> 1
 
 ### `last_sync_duration`
-This returns the duration in seconds of the last sync for this source.
+This returns the duration in milliseconds of the last sync for this source.
 	
 	:::ruby
 	@source.last_sync_duration
