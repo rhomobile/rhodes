@@ -626,6 +626,7 @@ void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams )
     se.cbSize = sizeof(SHELLEXECUTEINFO);
     se.fMask = SEE_MASK_NOCLOSEPROCESS;
     se.lpVerb = L"Open";
+    se.nShow = SW_SHOWNORMAL;
 
     StringW strAppNameW = szPath;
     for(int i = 0; i<(int)strAppNameW.length();i++)
