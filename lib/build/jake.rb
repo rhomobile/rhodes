@@ -245,9 +245,11 @@ class Jake
 
     cmdstr = argv.map { |x| x =~ / |\|/ ? '"' + x + '"' : x }.join(' ')
 
-    puts "PWD: " + Dir.pwd()
-    puts "CMD: " + cmdstr
-    $stdout.flush
+    unless options[:hide_output]
+      puts "PWD: " + Dir.pwd()
+      puts "CMD: " + cmdstr
+      $stdout.flush
+    end
 
     hideerrors = options[:hideerrors]
     if hideerrors
@@ -276,8 +278,10 @@ class Jake
                 end    
             else
                 retval += line
-                puts "RET: " + line
-                $stdout.flush
+		unless options[:hide_output]
+                    puts "RET: " + line
+                    $stdout.flush
+		end
             end    
           end
         end
@@ -473,6 +477,28 @@ class Jake
     
     f.close
   end
+
+  def self.build_file_map(dir)
+    psize = dir.size + 1
+
+    File.open(File.join(dir, 'rho.dat'), 'w') do |dat|
+        Dir.glob(File.join(dir, '**/*')).sort.each do |f|
+          relpath = f[psize..-1]
+
+          if File.directory?(f)
+            type = 'dir'
+          elsif File.file?(f)
+            type = 'file'
+          else
+            next
+          end
+          size = File.stat(f).size
+          tm = File.stat(f).mtime.to_i
+
+          dat.puts "#{relpath}\t#{type}\t#{size.to_s}\t#{tm.to_s}"
+        end
+    end  
+end
   
 end
   

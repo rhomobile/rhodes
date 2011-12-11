@@ -28,8 +28,8 @@ extern double rho_geo_haversine_distance(double lat1, double lon1, double lat2, 
 #define turnoff rho_geoimpl_turngpsoff
 extern void rho_geoimpl_turngpsoff();
 
-#define request_coordinates_by_adress rho_geoimpl_request_coordinates_by_adress
-extern void rho_geoimpl_request_coordinates_by_adress(rho_param* p, const char* callback);
+#define do_geocoding rho_geoimpl_do_geocoding
+extern void rho_geoimpl_do_geocoding(rho_param* p, const char* callback, int callback_tag);
 
 %}
 
@@ -38,6 +38,9 @@ extern void rho_geoimpl_request_coordinates_by_adress(rho_param* p, const char* 
  $1 = -1;
 }
 %typemap(default) char* params {
+ $1 = 0;
+}
+%typemap(default) int callback_tag {
  $1 = 0;
 }
 
@@ -57,5 +60,5 @@ extern void   set_view_notification( const char *url, char* params, int timeout_
 extern void   set_notification( const char *url, char* params, int timeout_sec);
 extern double haversine_distance(double lat1, double lon1, double lat2, double lon2);
 extern void   turnoff();
-extern void request_coordinates_by_adress(rho_param* p, const char* callback);
+extern void do_geocoding(rho_param* p, const char* callback, int callback_tag);
 

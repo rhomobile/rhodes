@@ -95,3 +95,15 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebSettings.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebSettingsNew.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebSettingsOld.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebViewClient.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality01.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality02.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality03.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality04.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality05.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality06.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality07.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality08.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality09.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality10.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionalityManager.java
