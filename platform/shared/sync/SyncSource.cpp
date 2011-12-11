@@ -57,7 +57,6 @@ CSyncSource::CSyncSource() : m_syncEngine( *new CSyncEngine(*new db::CDBAdapter(
     m_nInserted = 0;
     m_nDeleted = 0;
     m_nTotalCount = 0;
-    m_bGetAtLeastOnePage = false;
 
     m_nErrCode = RhoAppAdapter.ERR_NONE;
 
@@ -72,7 +71,6 @@ CSyncSource::CSyncSource(CSyncEngine& syncEngine, db::CDBAdapter& db  ) : m_sync
     m_nInserted = 0;
     m_nDeleted = 0;                                     
     m_nTotalCount = 0;
-    m_bGetAtLeastOnePage = false;
     m_nRefreshTime = 0;
 
     m_nErrCode = RhoAppAdapter.ERR_NONE;
@@ -90,7 +88,6 @@ CSyncSource::CSyncSource(int id, const String& strName, const String& strSyncTyp
     m_nInserted = 0;
     m_nDeleted = 0;
     m_nTotalCount = 0;
-    m_bGetAtLeastOnePage = false;
     m_nRefreshTime = 0;
 
     m_nErrCode = RhoAppAdapter.ERR_NONE;
@@ -162,11 +159,18 @@ void CSyncSource::sync()
 
     CTimeInterval endTime = CTimeInterval::getCurrentTime();
 
-    getDB().executeSQL("UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, \
-						 last_sync_duration=?,last_sync_success=?, backend_refresh_time=? WHERE source_id=?", 
-                         CLocalTime().toULong(), getInsertedCount(), getDeletedCount(), (
-                         endTime-startTime).toULong(), m_bGetAtLeastOnePage, m_nRefreshTime,
-                         getID() );
+    int nSyncSucess = m_nErrCode == RhoAppAdapter.ERR_NONE ? 1 : 0;
+    if ( nSyncSucess > 0 )
+        getDB().executeSQL( "UPDATE sources set last_updated=?,last_inserted_size=?,last_deleted_size=?, \
+						     last_sync_duration=?,last_sync_success=?, backend_refresh_time=? WHERE source_id=?", 
+                             CLocalTime().toULong(), getInsertedCount(), getDeletedCount(), (endTime-startTime).toULong(), nSyncSucess, m_nRefreshTime,
+                             getID() );
+    else
+        getDB().executeSQL( "UPDATE sources set last_inserted_size=?,last_deleted_size=?, \
+						     last_sync_duration=?,last_sync_success=?, backend_refresh_time=? WHERE source_id=?", 
+                             getInsertedCount(), getDeletedCount(), (endTime-startTime).toULong(), nSyncSucess, m_nRefreshTime,
+                             getID() );
+
 }
 
 void CSyncSource::syncClientChanges()

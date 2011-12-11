@@ -26,20 +26,28 @@
 
 package com.rho;
 
+import java.util.Vector;
+
+import net.rim.device.api.browser.field.ContentReadEvent;
 import net.rim.device.api.browser.field.RenderingOptions;
 import net.rim.device.api.browser.field2.*;
+import net.rim.device.api.script.ScriptEngine;
 import net.rim.device.api.system.Application;
 
 import javax.microedition.io.HttpConnection;
 import javax.microedition.io.InputConnection;
 
+import org.w3c.dom.Document;
+
 import com.rho.RhoLogger;
 import com.rho.RhodesApp;
+import com.rho.net.RhoConnection;
 import com.rho.net.URI;
 
 import rhomobile.Utilities;
 import rhomobile.RhodesApplication.PrimaryResourceFetchThread;
 import rhomobile.RhodesApplication;
+import com.rho.net.bb.NativeBBHttpConnection;
 
 //http://rim.lithium.com/t5/Java-Development/Browser-events-on-JDK-5-field2-package/m-p/430991
 //http://208.74.204.192/t5/Web-Development/Embedded-Browser-Ajax-support/m-p/410260;jsessionid=CDE85D9F4D88217EA118DE3F5DF9FEFD
@@ -52,7 +60,8 @@ public class BrowserAdapter5 implements IBrowserAdapter
     private RhoMainScreen m_oMainScreen;
     private BrowserField m_oBrowserField;
     private BrowserFieldConfig m_oConfig;
-    
+    private RhoProtocolController m_oController;
+    private Vector m_arUrls = new Vector();
     private RhodesApplication m_app;
  
     private class RhoProtocolController extends ProtocolController
@@ -86,6 +95,9 @@ public class BrowserAdapter5 implements IBrowserAdapter
 		{
 			String url = request.getURL();
 			LOG.INFO("handleResourceRequest: " + url);
+
+	        if (url == null || url.endsWith("/favicon.ico"))
+	        	return null;
 			
 			if ( url.startsWith("http:/") && !url.startsWith("http://") )
 				url = RhodesApp.getInstance().getHomeUrl() + url.substring(5);
@@ -93,6 +105,18 @@ public class BrowserAdapter5 implements IBrowserAdapter
     		if ( RhodesApp.getInstance().isRhodesAppUrl(url) || URI.isLocalData(url) )
     		{
                 HttpConnection connection = Utilities.makeConnection(url, request.getHeaders(), null, null);
+
+                if ( request.getPostData() == null || request.getPostData().length == 0 )
+                {
+                	if ( connection != null && connection instanceof NativeBBHttpConnection )
+                	{
+                		RhoConnection rhoConn =	(RhoConnection)((NativeBBHttpConnection)connection).getNativeConnection();
+                		rhoConn.getResponseCode();
+                			//String referrer = request.getHeaders().getPropertyValue("referer");
+                		if ( rhoConn.isDispatchCall() )
+                			m_app.addToHistory(url, null );
+                	}
+                }
                 
                 return connection;
     		}else
@@ -110,7 +134,6 @@ public class BrowserAdapter5 implements IBrowserAdapter
 		}
     	
     };
-    private RhoProtocolController m_oController;
     
 	public BrowserAdapter5(RhoMainScreen oMainScreen, RhodesApplication app) 
 	{
@@ -140,23 +163,82 @@ public class BrowserAdapter5 implements IBrowserAdapter
 		
 		BrowserFieldListener _listener = new BrowserFieldListener() 
 		{ 
-		     public void documentLoaded(BrowserField browserField, 
+		     public void documentAborted(BrowserField browserField,
+					Document document) throws Exception {
+	    		if ( browserField != null )
+	    			LOG.TRACE("documentAborted(browserField): " + browserField.getDocumentUrl() );
+	    		else
+	    			LOG.TRACE("documentAborted(browserField): NULL" );
+				super.documentAborted(browserField, document);
+			}
+
+			public void documentCreated(BrowserField browserField,
+					ScriptEngine scriptEngine, Document document)
+					throws Exception {
+	    		if ( browserField != null )
+	    			LOG.TRACE("documentCreated(browserField): " + browserField.getDocumentUrl() );
+	    		else
+	    			LOG.TRACE("documentCreated(browserField): NULL" );
+				super.documentCreated(browserField, scriptEngine, document);
+			}
+
+			public void documentError(BrowserField browserField,
+					Document document) throws Exception {
+	    		if ( browserField != null )
+	    			LOG.TRACE("documentError(browserField): " + browserField.getDocumentUrl() );
+	    		else
+	    			LOG.TRACE("documentError(browserField): NULL" );
+				super.documentError(browserField, document);
+			}
+
+			public void downloadProgress(BrowserField browserField,
+					ContentReadEvent event) throws Exception {
+	    		if ( browserField != null )
+	    			LOG.TRACE("downloadProgress(browserField): " + browserField.getDocumentUrl() );
+	    		else
+	    			LOG.TRACE("downloadProgress(browserField): NULL" );
+				super.downloadProgress(browserField, event);
+			}
+
+			public void documentLoaded(BrowserField browserField, 
 		    		 org.w3c.dom.Document document) throws Exception 
 		     {
 		    	synchronized (Application.getEventLock())
 		    	{
-		    		m_oMainScreen.deleteAll();
-					m_oMainScreen.add(m_oBrowserField);
+		    		if ( browserField != null )
+		    			LOG.INFO("documentLoaded(browserField): " + browserField.getDocumentUrl() );
+		    		else
+		    			LOG.INFO("documentLoaded(browserField): NULL" );
+		    		
+		    		LOG.INFO("documentLoaded(document): " + document );
+		    		
+		    		if ( !checkDoShowURL(browserField) )
+		    		{
+		    			LOG.INFO("Skip show URL which was requested before current URL.");
+		    			return;
+		    		}
+		    		
+		    		if ( browserField != null && document != null )
+		    		{
+		    			m_oMainScreen.deleteAll();
+		    			m_oMainScreen.add(browserField);
+		    		}
 		     	}
 		     }
-		     /*
-		     public void downloadProgress(BrowserField browserField, 
-		    		 net.rim.device.api.browser.field.ContentReadEvent event)throws Exception
-		     {
-		        //Add your code here.
-		     }*/
 		};
 		m_oBrowserField.addListener( _listener );
+	}
+
+	private boolean checkDoShowURL(BrowserField browserField)
+	{
+		int nPos = m_arUrls.indexOf(browserField);
+		if (nPos < 0 )
+			return false;
+		
+		for(int i = 0; i<=nPos; i++)
+			m_arUrls.removeElementAt(0);
+		
+		return true;
 	}
 	
     public void processConnection(HttpConnection connection, Object e) 
@@ -172,7 +254,9 @@ public class BrowserAdapter5 implements IBrowserAdapter
     	
         synchronized (Application.getEventLock()) 
         {
-        	createBrowserField();        	
+        	createBrowserField();
+        	
+    		m_arUrls.addElement(m_oBrowserField);
         	m_oBrowserField.displayContent(connection,  (e != null ? (String)e : "") );
         }
     }

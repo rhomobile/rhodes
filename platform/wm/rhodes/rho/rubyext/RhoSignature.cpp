@@ -146,6 +146,7 @@ LRESULT CRhoSignatureWindow::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
     #elif defined( OS_PLATFORM_MOTCE )
         m_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
         TBBUTTON oBtn = {0};
+        oBtn.iBitmap = -1;
         oBtn.idCommand = IDM_CLEAR;
         oBtn.fsState = TBSTATE_ENABLED;
         oBtn.iString = (int)L"Clear";

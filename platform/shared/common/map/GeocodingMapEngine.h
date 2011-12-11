@@ -52,11 +52,21 @@ private:
     struct Command : public IQueueCommand
     {
         String address;
+        float latitude;
+        float longitude;
+        bool is_inverse;
         std::auto_ptr<GeoCodingCallback> callback;
 
         Command(String const &a, GeoCodingCallback *cb)
-            :address(a), callback(cb)
-        {}
+            :longitude(0), latitude(0), address(a), callback(cb)
+        {
+            is_inverse = false;
+        }
+        Command(float _latitude, float _longitude, GeoCodingCallback *cb)
+        :longitude(_longitude), latitude(_latitude), address(""), callback(cb)
+        {
+            is_inverse = true;
+        }
 
         bool equals(IQueueCommand const &) {return false;}
         String toString();
@@ -68,6 +78,7 @@ public:
 
     //void stop();
     void resolve(String const &address, GeoCodingCallback *cb);
+    void resolve(float latitude, float longitude, GeoCodingCallback *cb);
 
 private:
     bool fetchData(String const &url, void **data, size_t *datasize);
@@ -87,7 +98,9 @@ private:
 #ifdef __cplusplus
 extern "C" {
 #endif //__cplusplus
-void rho_geoimpl_request_coordinates_by_adress(rho_param* p, const char* callback);
+    
+    
+void rho_geoimpl_do_geocoding(rho_param* p, const char* callback, int callback_tag);    
 #ifdef __cplusplus
 }
 #endif
