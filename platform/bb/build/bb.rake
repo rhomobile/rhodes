@@ -1078,6 +1078,19 @@ namespace "run" do
         Rake::Task["run:rhosimulator"].invoke
     end
 
+    task :rhosimulator_debug => ["config:set_bb_platform", "config:common", "config:read_bb_version"] do
+    
+        if $bb6
+            $rhosim_config = "platform='bb6'\r\n"
+        else
+            $rhosim_config = "platform='bb'\r\n"            
+        end    
+
+        $rhosim_config += "os_version='#{$bbver}'\r\n"
+        
+        Rake::Task["run:rhosimulator_debug"].invoke
+    end
+    
   end
 
   desc "Builds everything, loads and starts bb sim and mds"

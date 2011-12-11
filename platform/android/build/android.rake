@@ -1842,6 +1842,17 @@ namespace "run" do
         Rake::Task["run:rhosimulator"].invoke            
     end
 
+    task :rhosimulator_debug => ["config:set_android_platform","config:common"] do    
+    
+        $emuversion = $app_config["android"]["version"] unless $app_config["android"].nil?
+        $emuversion = $config["android"]["version"] if $emuversion.nil? and !$config["android"].nil?
+    
+        $rhosim_config = "platform='android'\r\n"
+        $rhosim_config += "os_version='#{$emuversion}'\r\n" if $emuversion
+        
+        Rake::Task["run:rhosimulator_debug"].invoke            
+    end
+    
     task :get_info => "config:android" do
         $androidtargets.each do |level|
             puts "#{get_market_version(level[0])}"
