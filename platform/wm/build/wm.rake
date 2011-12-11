@@ -1,18 +1,18 @@
 #------------------------------------------------------------------------
 # (The MIT License)
-# 
+#
 # Copyright (c) 2008-2011 Rhomobile, Inc.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,53 +20,52 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-# 
+#
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
-
 def kill_detool
   #if RUBY_PLATFORM =~ /(win|w)32$/
-    # Windows
-    `taskkill /F /IM detool.exe`
+  # Windows
+  `taskkill /F /IM detool.exe`
   #else
   #  `killall -9 detool`
   #end
 end
 
-def sign (cabfile)	
-	puts "Singing .cab file"
-	
-	cabsigntool = $cabwiz[0, $cabwiz.index("CabWiz")] + "Security\\CabSignTool\\cabsigntool" if $config["env"]["paths"]["cabwiz"]
-	cabsigntool = "cabsigntool" if cabsigntool.nil?
-	
-	signature = $config["build"]["wmsign"]
-	cab_in  = cabfile
-	cab_out = cabfile
-	
-	#TODO: need better solution, maybe just let know users on wiki to add bin dir of MS SDKs to PATH variable
-	#Assuming that MS SDKs intalled to default path on c: or d: disk
-	if Dir.exists?("C:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\bin")
-		ENV['PATH'] = ENV['PATH'] + "C:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\bin" + ";"
-	end
-	if Dir.exists?("D:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\bin")
-		ENV['PATH'] = ENV['PATH'] + "D:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\bin" + ";"
-	end
-	
-	if system(cabsigntool + " "  + cab_in + " " + cab_out + " -F " + signature)
-		puts "\nSigned successfully.\n\n"
-	else
-		puts "\nFailed to sign .cab file!\n\n"
-	end
-	
-	$stdout.flush
+def sign (cabfile)
+  puts "Singing .cab file"
+
+  cabsigntool = $cabwiz[0, $cabwiz.index("CabWiz")] + "Security\\CabSignTool\\cabsigntool" if $config["env"]["paths"]["cabwiz"]
+  cabsigntool = "cabsigntool" if cabsigntool.nil?
+
+  signature = $config["build"]["wmsign"]
+  cab_in  = cabfile
+  cab_out = cabfile
+
+  #TODO: need better solution, maybe just let know users on wiki to add bin dir of MS SDKs to PATH variable
+  #Assuming that MS SDKs intalled to default path on c: or d: disk
+  if Dir.exists?("C:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\bin")
+    ENV['PATH'] = ENV['PATH'] + "C:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\bin" + ";"
+  end
+  if Dir.exists?("D:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\bin")
+    ENV['PATH'] = ENV['PATH'] + "D:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\bin" + ";"
+  end
+
+  if system(cabsigntool + " "  + cab_in + " " + cab_out + " -F " + signature)
+    puts "\nSigned successfully.\n\n"
+  else
+    puts "\nFailed to sign .cab file!\n\n"
+  end
+
+  $stdout.flush
 end
 
 namespace "config" do
   task :set_wm_platform do
     $current_platform = "wm" unless $current_platform
   end
-  
+
   task :set_win32_platform do
     $current_platform = "win32" unless $current_platform
     $sdk = "Win32"
@@ -78,16 +77,16 @@ namespace "config" do
     $sdk = "MC3000c50b (ARMV4I)"
   end
 
-  task :wm => [:set_wm_platform, "config:common"] do    
+  task :wm => [:set_wm_platform, "config:common"] do
     puts " $current_platform : #{$current_platform}"
-    
+
     $rubypath = "res/build-tools/RhoRuby.exe" #path to RubyMac
     $builddir = $config["build"]["wmpath"] + "/build"
     $vcbindir = $config["build"]["wmpath"] + "/bin"
-    $appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"] 
+    $appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"]
     $bindir = $app_path + "/bin"
     $rhobundledir =  $app_path + "/RhoBundle"
-    $log_file = $app_config["applog"].nil? ? "applog.txt" : $app_config["applog"] 
+    $log_file = $app_config["applog"].nil? ? "applog.txt" : $app_config["applog"]
     $srcdir =  $bindir + "/RhoBundle"
     $targetdir = $bindir + "/target/wm6p"
     $tmpdir =  $bindir +"/tmp"
@@ -97,22 +96,22 @@ namespace "config" do
     $cabwiz = "cabwiz" if $cabwiz.nil?
     $webkit_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("webkit_browser").nil?)
     unless $sdk
-        $sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
-        $sdk = $app_config["wm"]["sdk"] if $app_config["wm"] && $app_config["wm"]["sdk"]
-    end    
+      $sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
+      $sdk = $app_config["wm"]["sdk"] if $app_config["wm"] && $app_config["wm"]["sdk"]
+    end
     unless $build_solution
-        if $webkit_capability
-            $build_solution = 'rhoelements.sln'
-        else
-            $build_solution = 'rhodes.sln' 
-        end
+      if $webkit_capability
+        $build_solution = 'rhoelements.sln'
+      else
+        $build_solution = 'rhodes.sln'
+      end
     end
     #$startdir = $app_config["sdk"]
 
     if $app_config["wm"].nil?
       $port = "11000"
     else
-      $port = $app_config["wm"]["logport"].nil? ? "11000" : $app_config["wm"]["logport"] 
+      $port = $app_config["wm"]["logport"].nil? ? "11000" : $app_config["wm"]["logport"]
     end
 
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
@@ -140,7 +139,7 @@ namespace "build" do
           ENV['RHO_PLATFORM'] = $current_platform
           ENV['PWD'] = $startdir
           ENV['RHO_ROOT'] = ENV['PWD']
-          
+
           ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", 'wm', "bin", $sdk, "rhodes", $current_platform == 'wm' ? "Release" : "Debug")
           ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform",  'wm', "bin", $sdk, "extensions", ext)
           ENV['VCBUILD'] = $vcbuild
@@ -150,15 +149,14 @@ namespace "build" do
           chdir extpath
           puts `build.bat`
           chdir $startdir
-          
+
           break
         end
       end
     end
 
-#    desc "Build wm rhobundle"
-    task :rhobundle => ["config:wm", :extensions] do
-      Rake::Task["build:bundle:noxruby"].execute
+    #    desc "Build wm rhobundle"
+    task :rhobundle => ["config:wm", "build:bundle:noxruby", "build:wm:extensions"] do
     end
 
     task :rhodes => ["config:wm", "build:wm:rhobundle"] do
@@ -177,8 +175,8 @@ namespace "build" do
     end
 
     task :devrhobundle => ["config:set_wm_platform", "win32:rhobundle", "win32:after_bundle"]
-    end
-  
+  end
+
   namespace "win32" do
 =begin
     task :extensions => "config:wm" do
@@ -201,76 +199,75 @@ namespace "build" do
       end
     end
 =end
-#    desc "Build win32 rhobundle"
-    task :rhobundle => ["config:wm", "build:wm:extensions"] do
-      Rake::Task["build:bundle:noxruby"].execute
+    #    desc "Build win32 rhobundle"
+    task :rhobundle => ["config:wm", "build:bundle:noxruby", "build:wm:extensions"] do
     end
 
     task :devrhobundle => ["config:set_win32_platform", :rhobundle, :after_bundle] do
     end
-    
+
     task :after_bundle do
-        win32rhopath = 'platform/wm/bin/win32/rhodes/Debug/rho/'
-        mkdir_p win32rhopath
-        namepath = File.join(win32rhopath,"name.txt")        
-        old_appname = File.read(namepath) if File.exists?(namepath)
+      win32rhopath = 'platform/wm/bin/win32/rhodes/Debug/rho/'
+      mkdir_p win32rhopath
+      namepath = File.join(win32rhopath,"name.txt")
+      old_appname = File.read(namepath) if File.exists?(namepath)
 
-        confpath = File.join(win32rhopath,"apps/rhoconfig.txt.changes")        
-        confpath_content = File.read(confpath) if File.exists?(confpath)
-        
-        rm_rf win32rhopath + 'lib'      
-        rm_rf win32rhopath + 'apps'
-        rm_rf win32rhopath + 'db' if old_appname != $appname
-        
-        cp_r $srcdir + '/lib', win32rhopath
-        cp_r $srcdir + '/apps', win32rhopath      
-        cp_r $srcdir + '/db', win32rhopath      
-        
-        File.open(namepath, "w") { |f| f.write($appname) }      
-        File.open(confpath, "w") { |f| f.write(confpath_content) }  if old_appname == $appname && confpath_content && confpath_content.length()>0
-        
+      confpath = File.join(win32rhopath,"apps/rhoconfig.txt.changes")
+      confpath_content = File.read(confpath) if File.exists?(confpath)
+
+      rm_rf win32rhopath + 'lib'
+      rm_rf win32rhopath + 'apps'
+      rm_rf win32rhopath + 'db' if old_appname != $appname
+
+      cp_r $srcdir + '/lib', win32rhopath
+      cp_r $srcdir + '/apps', win32rhopath
+      cp_r $srcdir + '/db', win32rhopath
+
+      File.open(namepath, "w") { |f| f.write($appname) }
+      File.open(confpath, "w") { |f| f.write(confpath_content) }  if old_appname == $appname && confpath_content && confpath_content.length()>0
+
     end
-    
+
     task :rhosimulator => ["config:set_win32_platform", "config:wm"] do
-        chdir $config["build"]["wmpath"]
+      chdir $config["build"]["wmpath"]
 
-        qtdir = ENV['QTDIR']
-        unless (qtdir !~/^\s*$/) and File.directory?(qtdir)
-          puts "\nPlease, set QTDIR environment variable to Qt root directory path"
-          exit 1
-        end
+      qtdir = ENV['QTDIR']
+      unless (qtdir !~/^\s*$/) and File.directory?(qtdir)
+        puts "\nPlease, set QTDIR environment variable to Qt root directory path"
+        exit 1
+      end
 
-        args = ['/M4', $build_solution, '"SimulatorRelease|win32"']
-        puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
-        puts Jake.run($vcbuild,args)
+      args = ['/M4', $build_solution, '"SimulatorRelease|win32"']
+      puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
+      puts Jake.run($vcbuild,args)
 
-        chdir $startdir
+      chdir $startdir
 
-        unless $? == 0
-          puts "Error building"
-          exit 1
-        end
+      unless $? == 0
+        puts "Error building"
+        exit 1
+      end
 
-        target_path = File.join( $startdir, "platform/win32/RhoSimulator/")
-        if not File.directory?(target_path)
-          Dir.mkdir(target_path)
-        end
-        cp File.join($startdir, $vcbindir, "win32/rhodes/SimulatorRelease/rhosimulator.exe"), target_path
+      target_path = File.join( $startdir, "platform/win32/RhoSimulator/")
+      if not File.directory?(target_path)
+        Dir.mkdir(target_path)
+      end
+      cp File.join($startdir, $vcbindir, "win32/rhodes/SimulatorRelease/rhosimulator.exe"), target_path
 
-        cp File.join(qtdir, "bin/QtCore4.dll"), target_path
-        cp File.join(qtdir, "bin/QtGui4.dll"), target_path
-        cp File.join(qtdir, "bin/QtNetwork4.dll"), target_path
-        cp File.join(qtdir, "bin/QtWebKit4.dll"), target_path
-        target_if_path = File.join(target_path, 'imageformats/')
-        if not File.directory?(target_if_path)
-          Dir.mkdir(target_if_path)
-        end
-        cp File.join(qtdir, "plugins/imageformats/qgif4.dll"), target_if_path
-        cp File.join(qtdir, "plugins/imageformats/qico4.dll"), target_if_path
-        cp File.join(qtdir, "plugins/imageformats/qjpeg4.dll"), target_if_path
-        cp File.join(qtdir, "plugins/imageformats/qmng4.dll"), target_if_path
-        cp File.join(qtdir, "plugins/imageformats/qsvg4.dll"), target_if_path
-        cp File.join(qtdir, "plugins/imageformats/qtiff4.dll"), target_if_path
+      cp File.join(qtdir, "bin/QtCore4.dll"), target_path
+      cp File.join(qtdir, "bin/QtGui4.dll"), target_path
+      cp File.join(qtdir, "bin/QtNetwork4.dll"), target_path
+      cp File.join(qtdir, "bin/QtWebKit4.dll"), target_path
+      target_if_path = File.join(target_path, 'imageformats/')
+      if not File.directory?(target_if_path)
+        Dir.mkdir(target_if_path)
+      end
+      cp File.join(qtdir, "plugins/imageformats/qgif4.dll"), target_if_path
+      cp File.join(qtdir, "plugins/imageformats/qico4.dll"), target_if_path
+      cp File.join(qtdir, "plugins/imageformats/qjpeg4.dll"), target_if_path
+      cp File.join(qtdir, "plugins/imageformats/qmng4.dll"), target_if_path
+      cp File.join(qtdir, "plugins/imageformats/qsvg4.dll"), target_if_path
+      cp File.join(qtdir, "plugins/imageformats/qtiff4.dll"), target_if_path
     end
 
   end
@@ -282,9 +279,9 @@ namespace "build" do
     args = ['/M4', $build_solution, '"debug|win32"']
     puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
     puts Jake.run($vcbuild,args)
-    
+
     chdir $startdir
-    
+
     unless $? == 0
       puts "Error building"
       exit 1
@@ -299,35 +296,34 @@ namespace "device" do
     task :production => ["config:set_motce_platform", "device:wm:production"] do
     end
   end
-    
+
   namespace "wm" do
     desc "Build production for device or emulator"
     task :production => ["config:wm","build:wm:rhobundle","build:wm:rhodes"] do
-	
-	  out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/"
-      cp  out_dir + "rhodes.exe", out_dir + $appname + ".exe" 
-	
+
+      out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/"
+      cp  out_dir + "rhodes.exe", out_dir + $appname + ".exe"
+
       chdir $builddir
 
-              
       build_platform = 'wm6'
       build_platform = 'wm653' if $sdk == "Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
       build_platform = 'ce5' if $sdk == "MC3000c50b (ARMV4I)"
 
       if $webkit_capability
-          wk_config_dir = '../../../../Motorola-Extensions/RhoElements/Config'
-          config_files = ['Config','Plugin','RegEx']
-          config_files.each do |filename|
-              filepath = File.join(wk_config_dir,filename + ".xml.template")
-              if not File.exists?(filepath)
-                  puts "Cannot find required config template: #{filepath}"
-                  exit 1
-              end
-              template = File.read(filepath)
-              config = template.to_s.gsub('(%APPNAME%)',$app_config["name"]);
-              filepath = File.join(wk_config_dir,filename + ".xml")
-              File.open(filepath, "w") { |f| f.write(config) }
+        wk_config_dir = '../../../../Motorola-Extensions/RhoElements/Config'
+        config_files = ['Config','Plugin','RegEx']
+        config_files.each do |filename|
+          filepath = File.join(wk_config_dir,filename + ".xml.template")
+          if not File.exists?(filepath)
+            puts "Cannot find required config template: #{filepath}"
+            exit 1
           end
+          template = File.read(filepath)
+          config = template.to_s.gsub('(%APPNAME%)',$app_config["name"]);
+          filepath = File.join(wk_config_dir,filename + ".xml")
+          File.open(filepath, "w") { |f| f.write(config) }
+        end
       end
 
       args = ['build_inf.js', $appname + ".inf", build_platform, '"' + $app_config["name"] +'"', $app_config["vendor"], '"' + $srcdir + '"', $hidden_app, ($webkit_capability ? "1" : "0")]
@@ -335,21 +331,21 @@ namespace "device" do
       unless $? == 0
         puts "Error running build_inf"
         exit 1
-      end        
-      
+      end
+
       args = [$appname + ".inf"]
       puts Jake.run($cabwiz, args)
       unless $? == 0
         puts "Error running cabwiz"
         exit 1
-      end        
-      
+      end
+
       args = ['cleanup.js']
       puts Jake.run('cscript',args)
       unless $? == 0
         puts "Error running cleanup.js"
         exit 1
-      end    
+      end
 
       mkdir_p $bindir if not File.exists? $bindir
       mkdir_p $targetdir if not File.exists? $targetdir
@@ -357,11 +353,11 @@ namespace "device" do
       mv $appname + ".cab", $targetdir
 
       File.open(File.join($targetdir,"app_info.txt"), "w") { |f| f.write( $app_config["vendor"] + " " + $appname + "/" + $appname + ".exe") }
-            
-	  if (not $config["build"]["wmsign"].nil?) and $config["build"]["wmsign"] != ""
+
+      if (not $config["build"]["wmsign"].nil?) and $config["build"]["wmsign"] != ""
         sign $targetdir + '/' +  $appname + ".cab";
-	  end
-	  
+      end
+
       rm_f "cleanup.js"
 
       chdir $startdir
@@ -375,11 +371,11 @@ namespace "clean" do
   desc "Clean Motorola device build"
   task :motce => ["config:set_motce_platform", "clean:wm:all"] do
   end
-    
+
   desc "Clean wm"
   task :wm => "clean:wm:all" do
   end
-      
+
   namespace "wm" do
     task :rhodes => ["config:wm"] do
       rm_rf $vcbindir + "/#{$sdk}"
@@ -396,94 +392,102 @@ namespace "clean" do
 end
 
 namespace "run" do
+  def gelLogPath
+    log_file_path =  File.join($app_path, $log_file)
+    return log_file_path
+  end
 
-    def gelLogPath
-      log_file_path =  File.join($app_path, $log_file)
-      return log_file_path
-    end
+  desc "Build and run on WM6 emulator"
+  task :wm => ["device:wm:production"] do
+    # kill all running detool
+    kill_detool
 
-    desc "Build and run on WM6 emulator"
-    task :wm => ["device:wm:production"] do
-          # kill all running detool
-          kill_detool
+    cd $startdir + "/res/build-tools"
+    detool = "detool.exe"
+    args   = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port]
+    puts "\nStarting application on the WM6 emulator\n\n"
+    log_file = gelLogPath
 
-   	  cd $startdir + "/res/build-tools"
-	  detool = "detool.exe"    
-	  args   = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port]
-	  puts "\nStarting application on the WM6 emulator\n\n"
-	  log_file = gelLogPath
-
-	  Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
-	  Jake.run2( detool, args, {:nowait => false})
-    end
+    Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
+    Jake.run2( detool, args, {:nowait => false})
+  end
 
   namespace "wm" do
-
     task :get_log => "config:wm" do
       puts "log_file=" + gelLogPath
+    end
+    
+    task :rhosimulator => ["config:set_wm_platform", "config:common"] do
+      $rhosim_config = "platform='wm'\r\n"
+      Rake::Task["run:rhosimulator"].invoke
+    end
+    
+    task :rhosimulator_debug => ["config:set_wm_platform", "config:common"] do
+      $rhosim_config = "platform='wm'\r\n"
+      Rake::Task["run:rhosimulator_debug"].invoke
     end
 
     desc "Build and run on the Windows Phone"
     task :device => ["device:wm:production"] do
-          # kill all running detool
-          kill_detool
+      # kill all running detool
+      kill_detool
 
-   	  cd $startdir + "/res/build-tools"
-	  detool = "detool.exe"    
-	  args   = [ 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port ]
-	  puts "\nStarting application on the device"
-	  puts "Please, connect you device via ActiveSync.\n\n"
-	  log_file = gelLogPath
+      cd $startdir + "/res/build-tools"
+      detool = "detool.exe"
+      args   = [ 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port ]
+      puts "\nStarting application on the device"
+      puts "Please, connect you device via ActiveSync.\n\n"
+      log_file = gelLogPath
 
-	  Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
-	  Jake.run2( detool, args, {:nowait => false})
+      Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
+      Jake.run2( detool, args, {:nowait => false})
     end
 
     namespace "device" do
-	desc "Build, install .cab  and run on the Windows Phone"
-	task :cab => ["device:wm:production"] do
-            # kill all running detool
-            kill_detool
+      desc "Build, install .cab  and run on the Windows Phone"
+      task :cab => ["device:wm:production"] do
+        # kill all running detool
+        kill_detool
 
-   	    cd $startdir + "/res/build-tools"
-	    detool = "detool.exe"    
-	    args   = ['devcab', $targetdir + '/' +  $appname + ".cab", $appname, $port]
-	    puts "\nStarting application on the device"
-	    puts "Please, connect you device via ActiveSync.\n\n"
-	    log_file = gelLogPath
+        cd $startdir + "/res/build-tools"
+        detool = "detool.exe"
+        args   = ['devcab', $targetdir + '/' +  $appname + ".cab", $appname, $port]
+        puts "\nStarting application on the device"
+        puts "Please, connect you device via ActiveSync.\n\n"
+        log_file = gelLogPath
 
-	    Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
-	    Jake.run(detool,args)
-        end
+        Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
+        Jake.run(detool,args)
+      end
     end
 
     desc "Build, install .cab and run on WM6 emulator"
     task :cab => ["device:wm:production"] do
-          # kill all running detool
-          kill_detool
+      # kill all running detool
+      kill_detool
 
-  	  cd $startdir + "/res/build-tools"
-	  detool = "detool.exe"
-	  args   = ['emucab', "\"#{$wm_emulator}\"", $targetdir + '/' +  $appname + ".cab", $appname, $port]
-	  log_file = gelLogPath
+      cd $startdir + "/res/build-tools"
+      detool = "detool.exe"
+      args   = ['emucab', "\"#{$wm_emulator}\"", $targetdir + '/' +  $appname + ".cab", $appname, $port]
+      log_file = gelLogPath
 
-	  Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
+      Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
 
-	  puts "\nStarting application on the WM6 emulator\n\n"
-	  Jake.run(detool,args)
+      puts "\nStarting application on the WM6 emulator\n\n"
+      Jake.run(detool,args)
     end
   end
-	
-  desc "Run win32" 
+
+  desc "Run win32"
   task :win32 => ["build:win32"] do
     args = [' ']
-#    chdir $config["build"]["wmpath"]
-#    Thread.new { Jake.run("bin\\win32\\rhodes\\Debug\\rhodes", args) }
+    #    chdir $config["build"]["wmpath"]
+    #    Thread.new { Jake.run("bin\\win32\\rhodes\\Debug\\rhodes", args) }
     Jake.run2 "bin\\win32\\rhodes\\Debug\\rhodes.exe", args, {:directory => $config["build"]["wmpath"], :nowait => true}
-    
+
     $stdout.flush
     chdir $startdir
-    
+
     unless $? == 0
       puts "Error to run rhodes for win32"
       exit 1
@@ -492,46 +496,38 @@ namespace "run" do
 
   namespace "rhosimulator" do
     task :get_log => "config:common" do
-            $log_file = $app_config["applog"].nil? ? "applog.txt" : $app_config["applog"] 	    
-            puts "log_file=" + File.join($app_path, "rhosimulator", $log_file)
-    end
-  end
-  
-  namespace "wm" do    
-    task :rhosimulator => ["config:set_wm_platform", "config:common"] do    
-       $rhosim_config = "platform='wm'\r\n"
-       Rake::Task["run:rhosimulator"].invoke            
+      $log_file = $app_config["applog"].nil? ? "applog.txt" : $app_config["applog"]
+      puts "log_file=" + File.join($app_path, "rhosimulator", $log_file)
     end
   end
 
   namespace "win32" do
-
     task :delete_db do
-        db_path = 'platform/wm/bin/win32/rhodes/Debug/rho/db'
-        rm_rf db_path if File.exists?(db_path)    
+      db_path = 'platform/wm/bin/win32/rhodes/Debug/rho/db'
+      rm_rf db_path if File.exists?(db_path)
     end
-    
+
     task :spec => [:delete_db, "build:win32"] do
-        #remove log file
-        win32rhopath = 'platform/wm/bin/win32/rhodes/Debug/rho/'
-        win32logpath = File.join(win32rhopath,"RhoLog.txt")        
-        win32logpospath = File.join(win32rhopath,"RhoLog.txt_pos")        
-        win32configpath = File.join(win32rhopath,"apps/rhoconfig.txt.changes")                
-        rm_rf win32logpath if File.exists?(win32logpath)
-        rm_rf win32logpospath if File.exists?(win32logpospath)
-        rm_rf win32configpath if File.exists?(win32configpath)
-        
-        Jake.before_run_spec
-        start = Time.now
-        
-        args = [' ']
-        Jake.run2( "bin\\win32\\rhodes\\Debug\\rhodes.exe", args, {:directory => $config["build"]["wmpath"], :nowait => false}) do |line|
-            Jake.process_spec_output(line)        
-        end
-        Jake.process_spec_results(start)        
-        
-        $stdout.flush
-        chdir $startdir
+      #remove log file
+      win32rhopath = 'platform/wm/bin/win32/rhodes/Debug/rho/'
+      win32logpath = File.join(win32rhopath,"RhoLog.txt")
+      win32logpospath = File.join(win32rhopath,"RhoLog.txt_pos")
+      win32configpath = File.join(win32rhopath,"apps/rhoconfig.txt.changes")
+      rm_rf win32logpath if File.exists?(win32logpath)
+      rm_rf win32logpospath if File.exists?(win32logpospath)
+      rm_rf win32configpath if File.exists?(win32configpath)
+
+      Jake.before_run_spec
+      start = Time.now
+
+      args = [' ']
+      Jake.run2( "bin\\win32\\rhodes\\Debug\\rhodes.exe", args, {:directory => $config["build"]["wmpath"], :nowait => false}) do |line|
+        Jake.process_spec_output(line)
+      end
+      Jake.process_spec_results(start)
+
+      $stdout.flush
+      chdir $startdir
     end
 
     task :phone_spec do
@@ -543,7 +539,7 @@ namespace "run" do
       exit 1 if Jake.run_spec_app('win32','framework_spec')
       exit 0
     end
-    
+
   end
-  
+
 end
