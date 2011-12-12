@@ -579,12 +579,6 @@ namespace "config" do
     $storealias = $config["android"]["production"]["alias"] if $storealias.nil? and !$config["android"].nil? and !$config["android"]["production"].nil?
     $storealias = "rhomobile.keystore" if $storealias.nil?
 
-#    $app_config["capabilities"] = [] if $app_config["capabilities"].nil?
-#    $app_config["capabilities"] = [] unless $app_config["capabilities"].is_a? Array
-#    if $app_config["android"] and $app_config["android"]["capabilities"]
-#      $app_config["capabilities"] += $app_config["android"]["capabilities"]
-#      $app_config["android"]["capabilities"] = nil
-#    end
     $app_config["capabilities"] += ANDROID_CAPS_ALWAYS_ENABLED
     $app_config["capabilities"].map! { |cap| cap.is_a?(String) ? cap : nil }.delete_if { |cap| cap.nil? }
     $use_google_addon_api = true unless $app_config["capabilities"].index("push").nil?
@@ -700,13 +694,6 @@ namespace "config" do
 
     $extensionsdir = $bindir + "/libs/" + $confdir + "/" + $ndkabi + "/" + $ndkgccver + "/extensions"
 
-    #$app_config["extensions"] = [] if $app_config["extensions"].nil?
-    #$app_config["extensions"] = [] unless $app_config["extensions"].is_a? Array
-    #if $app_config["android"] and $app_config["android"]["extensions"]
-    #  $app_config["extensions"] += $app_config["android"]["extensions"]
-    #  $app_config["android"]["extensions"] = nil
-    #end
-
     $push_sender = nil
     $push_sender = $config["android"]["push"]["sender"] if !$config["android"].nil? and !$config["android"]["push"].nil?
     $push_sender = $app_config["android"]["push"]["sender"] if !$app_config["android"].nil? and !$app_config["android"]["push"].nil?
@@ -715,9 +702,7 @@ namespace "config" do
     $push_notifications = nil
     $push_notifications = $app_config["android"]["push"]["notifications"] if !$app_config["android"].nil? and !$app_config["android"]["push"].nil?
     $push_notifications = "none" if $push_notifications.nil?
-    $push_notifications = $push_notifications
-
-    
+    $push_notifications = $push_notifications    
 
     mkdir_p $bindir if not File.exists? $bindir
     mkdir_p $rhobindir if not File.exists? $rhobindir
@@ -1824,6 +1809,17 @@ namespace "run" do
         Rake::Task["run:rhosimulator"].invoke            
     end
 
+    task :rhosimulator_debug => ["config:set_android_platform","config:common"] do    
+    
+        $emuversion = $app_config["android"]["version"] unless $app_config["android"].nil?
+        $emuversion = $config["android"]["version"] if $emuversion.nil? and !$config["android"].nil?
+    
+        $rhosim_config = "platform='android'\r\n"
+        $rhosim_config += "os_version='#{$emuversion}'\r\n" if $emuversion
+        
+        Rake::Task["run:rhosimulator_debug"].invoke            
+    end
+    
     task :get_info => "config:android" do
         $androidtargets.each do |level|
             puts "#{get_market_version(level[0])}"

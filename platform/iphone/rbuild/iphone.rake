@@ -759,11 +759,16 @@ namespace "run" do
       exit $failed.to_i
     end
 
-    task :rhosimulator => ["config:set_iphone_platform","config:common"] do    
-    
+    task :rhosimulator => ["config:set_iphone_platform","config:common"] do        
         $rhosim_config = "platform='iphone'\r\n"
         
         Rake::Task["run:rhosimulator"].invoke
+    end
+
+    task :rhosimulator_debug => ["config:set_iphone_platform","config:common"] do        
+        $rhosim_config = "platform='iphone'\r\n"
+        
+        Rake::Task["run:rhosimulator_debug"].invoke
     end
 
     #<<<<<<<<<

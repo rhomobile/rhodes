@@ -30,7 +30,7 @@
 
 #include "stdafx.h"
 
-#include "Graphics.h"
+#include "WmGraphics.h"
 #include <string>
 #include "ext/rho/rhoruby.h"
 #include "common/StringConverter.h"

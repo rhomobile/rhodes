@@ -413,6 +413,11 @@ namespace "run" do
                 Rake::Task["run:rhosimulator"].invoke            
             end
 
+            task :rhosimulator_debug => ["config:set_wp_platform", "config:common"] do    
+                $rhosim_config = "platform='wp'\r\n"
+                Rake::Task["run:rhosimulator_debug"].invoke            
+            end
+            
 			desc "Build, install .xap and run on WP7 device"
 			task :device => ["device:wp:production_noxap"] do
 			

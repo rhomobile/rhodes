@@ -382,10 +382,12 @@ end
 
 def init_extensions(startdir, dest)
   extentries = []
+  nativelib = []
   extlibs = [] 
-  extpaths = $app_config["extpaths"]
-
-  $app_config["extensions"].each do |extname|
+  extpaths = $app_config["extpaths"]  
+    
+  puts 'init extensions'
+  $app_config["extensions"].each do |extname|  
     extpath = nil
     extpaths.each do |p|
       ep = File.join(p, extname)
@@ -393,28 +395,40 @@ def init_extensions(startdir, dest)
         extpath = ep
         break
       end
-    end
+    end    
 
     if extpath.nil?
       begin
         $rhodes_extensions = nil
         require extname
         extpath = $rhodes_extensions[0] unless $rhodes_extensions.nil?
-      rescue Exception => e
-        
+        $app_config["extpaths"] << extpath
+      rescue Exception => e      
+        puts "exception"  
       end
-
     end
-
+    
     unless extpath.nil?
       add_extension(extpath, dest)
 
       if $config["platform"] != "bb"
-          extyml = File.join(extpath, "ext.yml")
-          if File.file? extyml
-            extconf = Jake.config(File.open(extyml))
-            entry = extconf["entry"]
-            extentries << entry unless entry.nil?
+        extyml = File.join(extpath, "ext.yml")
+        puts "extyml " + extyml 
+        if File.file? extyml
+          extconf = Jake.config(File.open(extyml))
+          entry = extconf["entry"]
+          lib = extconf["nativelibs"]
+          type = extconf["exttype"]
+            
+          if lib != nil
+            lib.each do |libname|
+              nativelib << libname
+            end
+          end
+          
+          extentries << entry unless entry.nil?
+          
+          if type != "nativelib"
             libs = extconf["libraries"]
             libs = [] unless libs.is_a? Array
             if $config["platform"] == "wm" || $config["platform"] == "win32"
@@ -424,49 +438,57 @@ def init_extensions(startdir, dest)
             end
             extlibs += libs
           end
+        end
       end    
     end
-
   end
-
+  
   exts = File.join($startdir, "platform", "shared", "ruby", "ext", "rho", "extensions.c")
-
+  puts "exts " + exts
+  
   if $config["platform"] != "bb"
-      exists = []
+    exists = []
       
-      if ( File.exists?(exts) )
-          File.new(exts, "r").read.split("\n").each do |line|
-            next if line !~ /^\s*extern\s+void\s+([A-Za-z_][A-Za-z0-9_]*)/
-            exists << $1
-          end
+    if ( File.exists?(exts) )
+      File.new(exts, "r").read.split("\n").each do |line|
+        next if line !~ /^\s*extern\s+void\s+([A-Za-z_][A-Za-z0-9_]*)/
+        exists << $1
       end
-        
-      if (exists.sort! != extentries.sort! ) || (!File.exists?(exts))
-        File.open(exts, "w") do |f|
-          puts "MODIFY : #{exts}"
+    end
+  
+    #if (exists.sort! != extentries.sort! ) || (!File.exists?(exts))
+      File.open(exts, "w") do |f|
+        puts "MODIFY : #{exts}"
           
-          f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
-          #f.puts "// Generated #{Time.now.to_s}"
-          if $config["platform"] == "wm" || $config["platform"] == "win32"
-            # Add libraries through pragma
-            extlibs.each do |lib|
-              f.puts "#pragma comment(lib, \"#{lib}\")"
-            end
+        f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
+        #f.puts "// Generated #{Time.now.to_s}"
+        if $config["platform"] == "wm" || $config["platform"] == "win32"
+          # Add libraries through pragma
+          extlibs.each do |lib|
+            f.puts "#pragma comment(lib, \"#{lib}\")"
           end
-          extentries.each do |entry|
-            f.puts "extern void #{entry}(void);"
+
+          nativelib.each do |lib|
+            f.puts "#pragma comment(lib, \"#{lib}\")"
           end
-          f.puts "void Init_Extensions(void) {"
-          extentries.each do |entry|
-            f.puts "    #{entry}();"
-          end
-          f.puts "}"
         end
+          
+        extentries.each do |entry|
+          f.puts "extern void #{entry}(void);"
+        end
+    
+        f.puts "void Init_Extensions(void) {"
+        extentries.each do |entry|
+          f.puts "    #{entry}();"
+        end
+        f.puts "}"
       end
+    #end
 
-      extlibs.each { |lib| add_linker_library(lib) }
+    extlibs.each { |lib| add_linker_library(lib) }
+    nativelib.each { |lib| add_linker_library(lib) }
 
-      set_linker_flags
+    set_linker_flags
   end
   
   unless $app_config["constants"].nil?
@@ -484,9 +506,12 @@ def init_extensions(startdir, dest)
       chdir dest
       $excludeextlib.each {|e| Dir.glob(e).each {|f| rm f}}
   end
+  
 end
 
 def common_bundle_start(startdir, dest)
+  puts "common_bundle_start"
+  
   app = $app_path
   rhodeslib = "lib/framework"
 
@@ -597,7 +622,7 @@ namespace "build" do
     task :xruby do
       #needs $config, $srcdir, $excludelib, $bindir
       app = $app_path
-	  jpath = $config["env"]["paths"]["java"]
+  	  jpath = $config["env"]["paths"]["java"]
       startdir = pwd
       dest =  $srcdir
       xruby =  File.dirname(__FILE__) + '/res/build-tools/xruby-0.3.3.jar'
@@ -994,6 +1019,7 @@ namespace "buildall" do
     end
   end
 end
+
 
 task :gem do
   puts "Removing old gem"

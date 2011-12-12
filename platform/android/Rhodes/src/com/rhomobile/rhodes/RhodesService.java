@@ -373,7 +373,10 @@ public class RhodesService extends Service {
 		}
 		
 		RhodesApplication.create();
-		
+		//Logger is initialized from this point
+
+        Logger.I("Rhodes", "Loading...");
+
 		RhodesActivity ra = RhodesActivity.getInstance();
 		if (ra != null) {
 			// Show splash screen only if we have active activity
@@ -384,8 +387,6 @@ public class RhodesService extends Service {
 		initForegroundServiceApi();
 		
 		setFullscreenParameters();
-		
-		Logger.I("Rhodes", "Loading...");
 		
 		// Increase WebView rendering priority
 		WebView w = new WebView(context);
@@ -415,29 +416,27 @@ public class RhodesService extends Service {
 		mUriHandlers.addElement(new SmsUriHandler(context));
 		mUriHandlers.addElement(new VideoUriHandler(context));
 		
-		try {
-			if (Capabilities.PUSH_ENABLED) {
-				String pushPin = getPushRegistrationId();
-				if (pushPin.length() == 0)
-					PushService.register();
-				else
-				    Log.i(TAG, "PUSH already registered: " + pushPin);
-			}
-		} catch (IllegalAccessException e) {
-			Log.e(TAG, e.getMessage());
-			exit();
-			return;
-		}
-		
+        if (Capabilities.PUSH_ENABLED) {
+            Logger.D(TAG, "Push is enabled");
+            try {
+                String pushPin = getPushRegistrationId();
+                if (pushPin.length() == 0)
+                    PushService.register();
+                else
+                    Logger.D(TAG, "PUSH already registered: " + pushPin);
+            } catch (IllegalAccessException e) {
+                Logger.E(TAG, e);
+                exit();
+                return;
+            }
+        } else {
+            Logger.D(TAG, "Push is disabled");
+        }
+
 		RhodesApplication.start();
 
 		if (sActivitiesActive > 0)
 			handleAppActivation();
-	}
-	
-	public static void handleAppStarted()
-	{
-	    RhodesApplication.stateChanged(AppState.AppStarted);
 	}
 	
 	private void setFullscreenParameters() {
@@ -481,37 +480,35 @@ public class RhodesService extends Service {
 	
 	@Override
 	public void onStart(Intent intent, int startId) {
-		if (DEBUG)
-			Log.d(TAG, "+++ onStart");
+		Log.d(TAG, "onStart");
 		try {
 			handleCommand(intent, startId);
 		}
 		catch (Exception e) {
-			Logger.E(TAG, "Can't handle service command: " + e.getMessage());
+			Log.e(TAG, "Can't handle service command", e);
 		}
 	}
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		if (DEBUG)
-			Log.d(TAG, "+++ onStartCommand");
+		Log.d(TAG, "+++ onStartCommand");
 		try {
 			handleCommand(intent, startId);
 		}
 		catch (Exception e) {
-			Logger.E(TAG, "Can't handle service command: " + e.getMessage());
+			Log.e(TAG, "Can't handle service command", e);
 		}
 		return Service.START_STICKY;
 	}
 	
 	private void handleCommand(Intent intent, int startId) {
 		String source = intent.getStringExtra(INTENT_SOURCE);
-		Logger.D(TAG, "handleCommand: startId=" + startId + ", source=" + source);
+		Log.i(TAG, "handleCommand: startId=" + startId + ", source=" + source);
 		if (source == null)
 			throw new IllegalArgumentException("Service command received from empty source");
 		
 		if (source.equals(BaseActivity.INTENT_SOURCE)) {
-			Logger.D(TAG, "New activity was created");
+			Log.d(TAG, "New activity was created");
 		}
 		else if (source.equals(PushReceiver.INTENT_SOURCE)) {
 			int type = intent.getIntExtra(PushReceiver.INTENT_TYPE, PushReceiver.INTENT_TYPE_UNKNOWN);
@@ -520,12 +517,12 @@ public class RhodesService extends Service {
 				String id = intent.getStringExtra(PushReceiver.INTENT_REGISTRATION_ID);
 				if (id == null)
 					throw new IllegalArgumentException("Empty registration id received in service command");
-				Logger.I(TAG, "Received PUSH registration id: " + id);
+				Log.i(TAG, "Received PUSH registration id: " + id);
 				setPushRegistrationId(id);
 				break;
 			case PushReceiver.INTENT_TYPE_MESSAGE:
 				final Bundle extras = intent.getBundleExtra(PushReceiver.INTENT_EXTRAS);
-				Logger.D(TAG, "Received PUSH message: " + extras);
+				Log.i(TAG, "Received PUSH message: " + extras);
 				RhodesApplication.runWhen(
 				        RhodesApplication.AppState.AppStarted,
 				        new RhodesApplication.StateHandler(true) {
@@ -537,7 +534,7 @@ public class RhodesService extends Service {
                         });
 				break;
 			default:
-				Logger.W(TAG, "Unknown command type received from " + source + ": " + type);
+				Log.w(TAG, "Unknown command type received from " + source + ": " + type);
 			}
 		}
 	}
