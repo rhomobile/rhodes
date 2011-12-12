@@ -8,7 +8,7 @@ Prerequisites
 You need to have installed:
 
 * Java Runtime Environment, minimum of Java 5 JRE or JDK.
-* [Rhodes Gems](rhodes/install#rhodes-gem). 
+* [Rhodes gem](install#rhodes-gem-for-linux-and-non-rhostudio). 
 
 Checking the Eclipse Installation
 ----------------
