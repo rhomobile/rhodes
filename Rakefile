@@ -401,8 +401,8 @@ def init_extensions(startdir, dest)
       begin
         $rhodes_extensions = nil
         require extname
-        extpath = $rhodes_extensions[0] unless $rhodes_extensions.nil?
-        $app_config["extpaths"] << extpath
+        extpath = $rhodes_extensions[0] unless $rhodes_extensions.nil?        
+        $app_config["extpaths"] << extpath 
       rescue Exception => e      
         puts "exception"  
       end
@@ -414,21 +414,22 @@ def init_extensions(startdir, dest)
       if $config["platform"] != "bb"
         extyml = File.join(extpath, "ext.yml")
         puts "extyml " + extyml 
+        
         if File.file? extyml
           extconf = Jake.config(File.open(extyml))
           entry = extconf["entry"]
-          lib = extconf["nativelibs"]
+          nlib = extconf["nativelibs"]
           type = extconf["exttype"]
             
-          if lib != nil
-            lib.each do |libname|
+          if nlib != nil
+            nlib.each do |libname|
               nativelib << libname
             end
           end
           
           extentries << entry unless entry.nil?
           
-          if type != "nativelib"
+          if type.to_s() != "nativelib"
             libs = extconf["libraries"]
             libs = [] unless libs.is_a? Array
             if $config["platform"] == "wm" || $config["platform"] == "win32"
@@ -506,7 +507,7 @@ def init_extensions(startdir, dest)
       chdir dest
       $excludeextlib.each {|e| Dir.glob(e).each {|f| rm f}}
   end
-  
+
 end
 
 def common_bundle_start(startdir, dest)
