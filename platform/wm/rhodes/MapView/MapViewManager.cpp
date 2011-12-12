@@ -67,7 +67,7 @@ public:
 };
 
 
-class DrawingDeviceMapViewImpl : public DrawingDeviceImpl {
+class DrawingDeviceMapViewImpl : public WmDrawingDeviceImpl {
 	virtual void requestRedraw(){
 		RHO_MAP_TRACE("MapView requested redraw -> post command to UI thread");
 		RhoMapViewRedrawViewCommand* command = new RhoMapViewRedrawViewCommand();
@@ -251,7 +251,12 @@ LRESULT CRhoMapViewDlg::OnDraw(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
     HBITMAP hOldBitmap  = (HBITMAP)SelectObject(mMemoryDC, m_hMemBitmap );
 
-    DrawingContextImpl* context = new DrawingContextImpl(mMemoryDC, rect.Width(), rect.Height());
+    IDrawingContext* context = 0;
+        
+#if defined(_WIN32_WCE)    
+    context = new WmDrawingContextImpl(mMemoryDC, rect.Width(), rect.Height());
+#else
+#endif
 
     context->fillRect(0, 0, rect.Width(), rect.Height(), BACKGROUND_COLOR);
 

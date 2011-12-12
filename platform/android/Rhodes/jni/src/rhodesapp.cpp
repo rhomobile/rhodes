@@ -42,7 +42,7 @@
 #include "rhodes/RhoClassFactory.h"
 
 #undef DEFAULT_LOGCATEGORY
-#define DEFAULT_LOGCATEGORY "RhodesApp"
+#define DEFAULT_LOGCATEGORY "RhodesAppJNI"
 
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_makeLink
@@ -79,14 +79,15 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getInvalidSec
 
 static bool set_capabilities(JNIEnv *env)
 {
+    RAWTRACE("Capabilities setup");
     char const *caps[] = {
 #define RHO_DEFINE_CAP(x) #x,
-#include <rhocaps.inc>
+#include "rhocaps.inc"
 #undef RHO_DEFINE_CAP
     };
     std::map<std::string, bool> actual_caps;
 #define RHO_DEFINE_CAP(x) actual_caps[#x] = RHO_CAP_ ## x ## _ENABLED;
-#include <rhocaps.inc>
+#include "rhocaps.inc"
 #undef RHO_DEFINE_CAP
 
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_CAPABILITIES);
@@ -94,6 +95,9 @@ static bool set_capabilities(JNIEnv *env)
     for (size_t i = 0, lim = sizeof(caps)/sizeof(caps[0]); i < lim; ++i)
     {
         std::string field_name = std::string(caps[i]) + "_ENABLED";
+
+        RAWTRACE2("%s->%d", field_name.c_str(), static_cast<int>(actual_caps[caps[i]]));
+
         jfieldID fid = getJNIClassStaticField(env, cls, field_name.c_str(), "Z");
         if (!fid) return false;
         env->SetStaticBooleanField(cls, fid, actual_caps[caps[i]]);
@@ -125,7 +129,11 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesApplication_createRhodes
 {
     android_setup(env);
 
-    if (!set_capabilities(env)) return;
+    if (!set_capabilities(env))
+    {
+        RAWLOG_ERROR("Capabilities setup failed");
+        return;
+    }
 
     // Start Rhodes application
     rho_rhodesapp_create(rho_native_rhopath());
@@ -341,3 +349,4 @@ RHO_GLOBAL void rho_conf_show_log()
 
     env->CallStaticVoidMethod(cls, mid);
 }
+
