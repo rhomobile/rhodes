@@ -129,7 +129,6 @@ end
 
 module SignatureTool
     def SignatureTool.take_signature( callback, image_fmt)
-        require 'rho/rhosignature'
         
         Rho::SignatureCapture.take(callback, :imageFormat => image_fmt)
     end
