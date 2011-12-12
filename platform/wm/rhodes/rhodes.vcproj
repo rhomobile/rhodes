@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="rhodes"
 	ProjectGUID="{95D5D2E5-FEF5-4CA9-88CF-FCB0F7465E62}"
 	RootNamespace="Rhodes"
 	Keyword="AtlProj"
-	TargetFrameworkVersion="0"
 	>
 	<Platforms>
 		<Platform
@@ -123,9 +122,6 @@
 				Name="VCBscMakeTool"
 			/>
 			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
 				Name="VCCodeSignTool"
 				AuthenticodeSignature="false"
 				Certificate="SHA-1 Hash=8AEB6E720079EB0494AE9BE32CB13A9E3687D913|8AEB6E720079EB0494AE9BE32CB13A9E3687D913"
@@ -233,6 +229,9 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -319,9 +318,6 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
 			/>
 			<Tool
 				Name="VCCodeSignTool"
@@ -426,9 +422,6 @@
 				Name="VCBscMakeTool"
 			/>
 			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
 				Name="VCCodeSignTool"
 				AuthenticodeSignature="false"
 				Certificate="SHA-1 Hash=8AEB6E720079EB0494AE9BE32CB13A9E3687D913|8AEB6E720079EB0494AE9BE32CB13A9E3687D913"
@@ -515,6 +508,604 @@
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(OutDir)"
 				GenerateDebugInformation="true"
+				SubSystem="9"
+				StackReserveSize="196608"
+				StackCommitSize="4096"
+				ImportLibrary="$(OutDir)/Rhodes.lib"
+				TargetMachine="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+				AuthenticodeSignature="false"
+				Certificate="SHA-1 Hash=8AEB6E720079EB0494AE9BE32CB13A9E3687D913|8AEB6E720079EB0494AE9BE32CB13A9E3687D913"
+				ProvisionDevice="0"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
+			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			ConfigurationType="1"
+			UseOfATL="1"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="false"
+				GenerateStublessProxies="true"
+				TypeLibraryName="$(IntDir)/Rhodes.tlb"
+				HeaderFileName="Rhodes.h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="Rhodes_i.c"
+				ProxyFileName="Rhodes_p.c"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="2"
+				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;&quot;../../../../Motorola-Extensions&quot;"
+				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
+				RuntimeLibrary="0"
+				UsePrecompiledHeader="2"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				DisableSpecificWarnings="4996"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				RegisterOutput="false"
+				IgnoreImportLibrary="true"
+				UseUnicodeResponseFiles="false"
+				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
+				AdditionalDependencies="Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppw.lib pimstore.lib bthutil.lib"
+				OutputFile="$(OutDir)/rhodes.exe"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="$(OutDir)"
+				GenerateDebugInformation="true"
+				SubSystem="0"
+				StackReserveSize="196608"
+				StackCommitSize="4096"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				ImportLibrary="$(OutDir)/Rhodes.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			ConfigurationType="1"
+			UseOfATL="1"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="false"
+				GenerateStublessProxies="true"
+				TypeLibraryName="$(IntDir)/Rhodes.tlb"
+				HeaderFileName="Rhodes.h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="Rhodes_i.c"
+				ProxyFileName="Rhodes_p.c"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="2"
+				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;."
+				PreprocessorDefinitions="_NDEBUG;NDEBUG;WIN32;_WINDOWS;ENABLE_DYNAMIC_RHOBUNDLE"
+				RuntimeLibrary="0"
+				UsePrecompiledHeader="2"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				DisableSpecificWarnings="4996"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				RegisterOutput="false"
+				IgnoreImportLibrary="true"
+				UseUnicodeResponseFiles="false"
+				AdditionalDependencies="wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib gdiplus.lib"
+				OutputFile="$(OutDir)/rhodes.exe"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="$(OutDir)"
+				GenerateDebugInformation="false"
+				SubSystem="0"
+				StackReserveSize="196608"
+				StackCommitSize="4096"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				ImportLibrary="$(OutDir)/Rhodes.lib"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Pocket PC 2003 (ARMV4)"
+			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			ConfigurationType="1"
+			UseOfATL="1"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="false"
+				TargetEnvironment="1"
+				GenerateStublessProxies="true"
+				TypeLibraryName="$(IntDir)/Rhodes.tlb"
+				HeaderFileName="Rhodes.h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="Rhodes_i.c"
+				ProxyFileName="Rhodes_p.c"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="2"
+				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;."
+				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
+				RuntimeLibrary="0"
+				UsePrecompiledHeader="2"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				DisableSpecificWarnings="4996"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				RegisterOutput="false"
+				IgnoreImportLibrary="true"
+				UseUnicodeResponseFiles="false"
+				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
+				AdditionalDependencies="Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppw.lib pimstore.lib bthutil.lib"
+				OutputFile="$(OutDir)/rhodes.exe"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="$(OutDir)"
+				GenerateDebugInformation="true"
+				SubSystem="0"
+				StackReserveSize="196608"
+				StackCommitSize="4096"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				ImportLibrary="$(OutDir)/Rhodes.lib"
+				TargetMachine="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Smartphone 2003 (ARMV4)"
+			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			ConfigurationType="1"
+			UseOfATL="1"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="false"
+				TargetEnvironment="1"
+				GenerateStublessProxies="true"
+				TypeLibraryName="$(IntDir)/Rhodes.tlb"
+				HeaderFileName="Rhodes.h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="Rhodes_i.c"
+				ProxyFileName="Rhodes_p.c"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="2"
+				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;."
+				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
+				RuntimeLibrary="0"
+				UsePrecompiledHeader="2"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				DisableSpecificWarnings="4996"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				RegisterOutput="false"
+				IgnoreImportLibrary="true"
+				UseUnicodeResponseFiles="false"
+				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
+				AdditionalDependencies="Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppw.lib pimstore.lib bthutil.lib"
+				OutputFile="$(OutDir)/rhodes.exe"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="$(OutDir)"
+				GenerateDebugInformation="true"
+				SubSystem="0"
+				StackReserveSize="196608"
+				StackCommitSize="4096"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				ImportLibrary="$(OutDir)/Rhodes.lib"
+				TargetMachine="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|MC3000c50b (ARMV4I)"
+			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			ConfigurationType="1"
+			UseOfATL="1"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="false"
+				TargetEnvironment="1"
+				GenerateStublessProxies="true"
+				TypeLibraryName="$(IntDir)/Rhodes.tlb"
+				HeaderFileName="Rhodes.h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="Rhodes_i.c"
+				ProxyFileName="Rhodes_p.c"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="2"
+				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;&quot;../../../../Motorola-Extensions&quot;"
+				PreprocessorDefinitions="OS_PLATFORM_MOTCE=5;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL"
+				RuntimeLibrary="0"
+				UsePrecompiledHeader="2"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				DisableSpecificWarnings="4996"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				RegisterOutput="false"
+				IgnoreImportLibrary="true"
+				UseUnicodeResponseFiles="false"
+				AdditionalOptions=" /subsystem:windowsce,5.00 /machine:THUMB"
+				AdditionalDependencies="Ws2.lib Ceshell.lib wininet.lib  comsuppw.lib"
+				OutputFile="$(OutDir)/rhodes.exe"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="$(OutDir)"
+				GenerateDebugInformation="true"
+				SubSystem="0"
+				StackReserveSize="262144"
+				StackCommitSize="262144"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				ImportLibrary="$(OutDir)/Rhodes.lib"
+				TargetMachine="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			ConfigurationType="1"
+			UseOfATL="1"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="false"
+				TargetEnvironment="1"
+				GenerateStublessProxies="true"
+				TypeLibraryName="$(IntDir)/Rhodes.tlb"
+				HeaderFileName="Rhodes.h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="Rhodes_i.c"
+				ProxyFileName="Rhodes_p.c"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="0"
+				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;."
+				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;DEBUG;UNICODE;_UNICODE;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL"
+				MinimalRebuild="true"
+				RuntimeLibrary="1"
+				UsePrecompiledHeader="2"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				DisableSpecificWarnings="4996"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				RegisterOutput="false"
+				IgnoreImportLibrary="true"
+				UseUnicodeResponseFiles="false"
+				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
+				AdditionalDependencies="aygshell.lib Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppwd.lib pimstore.lib bthutil.lib"
+				OutputFile="$(OutDir)/rhodes.exe"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="$(OutDir)"
+				GenerateDebugInformation="true"
 				SubSystem="0"
 				StackReserveSize="196608"
 				StackCommitSize="4096"
@@ -531,13 +1122,912 @@
 				Name="VCBscMakeTool"
 			/>
 			<Tool
+				Name="VCCodeSignTool"
+				AuthenticodeSignature="false"
+				Certificate="SHA-1 Hash=8AEB6E720079EB0494AE9BE32CB13A9E3687D913|8AEB6E720079EB0494AE9BE32CB13A9E3687D913"
+				ProvisionDevice="0"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="SimulatorDebug|Win32"
+			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			ConfigurationType="1"
+			UseOfATL="1"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="false"
+				GenerateStublessProxies="true"
+				TypeLibraryName="$(IntDir)/Rhodes.tlb"
+				HeaderFileName="Rhodes.h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="Rhodes_i.c"
+				ProxyFileName="Rhodes_p.c"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;&quot;..\..\shared\qt\rhodes\GeneratedFiles&quot;;&quot;$(QTDIR)\include&quot;;&quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtWebKit&quot;"
+				PreprocessorDefinitions="_DEBUG;DEBUG;WIN32;_WINDOWS;RHODES_EMULATOR;UNICODE;QT_LARGEFILE_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_WEBKIT_LIB"
+				MinimalRebuild="true"
+				RuntimeLibrary="1"
+				TreatWChar_tAsBuiltInType="false"
+				UsePrecompiledHeader="2"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				DisableSpecificWarnings="4996"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				RegisterOutput="false"
+				IgnoreImportLibrary="true"
+				UseUnicodeResponseFiles="false"
+				AdditionalDependencies="wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib gdiplus.lib qtmaind.lib QtCored4.lib QtGuid4.lib QtNetworkd4.lib QtWebKitd4.lib"
+				OutputFile="$(OutDir)/rhosimulator.exe"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="&quot;$(OutDir)&quot;;&quot;$(QTDIR)\lib&quot;"
+				GenerateDebugInformation="true"
+				SubSystem="0"
+				StackReserveSize="196608"
+				StackCommitSize="4096"
+				ImportLibrary="$(OutDir)/Rhodes.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
 				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
+			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			ConfigurationType="1"
+			UseOfATL="1"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="false"
+				TargetEnvironment="1"
+				GenerateStublessProxies="true"
+				TypeLibraryName="$(IntDir)/Rhodes.tlb"
+				HeaderFileName="Rhodes.h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="Rhodes_i.c"
+				ProxyFileName="Rhodes_p.c"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="0"
+				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;."
+				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;DEBUG;UNICODE;_UNICODE;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL"
+				MinimalRebuild="true"
+				RuntimeLibrary="1"
+				UsePrecompiledHeader="2"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				DisableSpecificWarnings="4996"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				RegisterOutput="false"
+				IgnoreImportLibrary="true"
+				UseUnicodeResponseFiles="false"
+				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
+				AdditionalDependencies="aygshell.lib Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppwd.lib pimstore.lib bthutil.lib"
+				OutputFile="$(OutDir)/rhodes.exe"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="$(OutDir)"
+				GenerateDebugInformation="true"
+				SubSystem="0"
+				StackReserveSize="196608"
+				StackCommitSize="4096"
+				ImportLibrary="$(OutDir)/Rhodes.lib"
+				TargetMachine="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
 			/>
 			<Tool
 				Name="VCCodeSignTool"
 				AuthenticodeSignature="false"
 				Certificate="SHA-1 Hash=8AEB6E720079EB0494AE9BE32CB13A9E3687D913|8AEB6E720079EB0494AE9BE32CB13A9E3687D913"
 				ProvisionDevice="0"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
+			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			ConfigurationType="1"
+			UseOfATL="1"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="false"
+				TargetEnvironment="1"
+				GenerateStublessProxies="true"
+				TypeLibraryName="$(IntDir)/Rhodes.tlb"
+				HeaderFileName="Rhodes.h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="Rhodes_i.c"
+				ProxyFileName="Rhodes_p.c"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="0"
+				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;."
+				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;DEBUG;UNICODE;_UNICODE;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL"
+				MinimalRebuild="true"
+				RuntimeLibrary="1"
+				UsePrecompiledHeader="2"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				DisableSpecificWarnings="4996"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				RegisterOutput="false"
+				IgnoreImportLibrary="true"
+				UseUnicodeResponseFiles="false"
+				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
+				AdditionalDependencies="aygshell.lib Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppwd.lib pimstore.lib bthutil.lib"
+				OutputFile="$(OutDir)/rhodes.exe"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="$(OutDir)"
+				GenerateDebugInformation="true"
+				SubSystem="0"
+				StackReserveSize="196608"
+				StackCommitSize="4096"
+				ImportLibrary="$(OutDir)/Rhodes.lib"
+				TargetMachine="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+				AuthenticodeSignature="false"
+				Certificate="SHA-1 Hash=8AEB6E720079EB0494AE9BE32CB13A9E3687D913|8AEB6E720079EB0494AE9BE32CB13A9E3687D913"
+				ProvisionDevice="0"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="SimulatorDebug|MC3000c50b (ARMV4I)"
+			OutputDirectory="MC3000c50b (ARMV4I)\$(ConfigurationName)"
+			IntermediateDirectory="MC3000c50b (ARMV4I)\$(ConfigurationName)"
+			ConfigurationType="1"
+			UseOfATL="1"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="false"
+				TargetEnvironment="1"
+				GenerateStublessProxies="true"
+				TypeLibraryName="$(IntDir)/Rhodes.tlb"
+				HeaderFileName="Rhodes.h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="Rhodes_i.c"
+				ProxyFileName="Rhodes_p.c"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="0"
+				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;."
+				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;DEBUG;UNICODE;_UNICODE;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL"
+				MinimalRebuild="true"
+				RuntimeLibrary="1"
+				UsePrecompiledHeader="2"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				DisableSpecificWarnings="4996"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				RegisterOutput="false"
+				IgnoreImportLibrary="true"
+				UseUnicodeResponseFiles="false"
+				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
+				AdditionalDependencies="aygshell.lib Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppwd.lib pimstore.lib bthutil.lib"
+				OutputFile="$(OutDir)/rhodes.exe"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="$(OutDir)"
+				GenerateDebugInformation="true"
+				SubSystem="0"
+				StackReserveSize="196608"
+				StackCommitSize="4096"
+				ImportLibrary="$(OutDir)/Rhodes.lib"
+				TargetMachine="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+				AuthenticodeSignature="false"
+				Certificate="SHA-1 Hash=8AEB6E720079EB0494AE9BE32CB13A9E3687D913|8AEB6E720079EB0494AE9BE32CB13A9E3687D913"
+				ProvisionDevice="0"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			ConfigurationType="1"
+			UseOfATL="1"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="false"
+				TargetEnvironment="1"
+				GenerateStublessProxies="true"
+				TypeLibraryName="$(IntDir)/Rhodes.tlb"
+				HeaderFileName="Rhodes.h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="Rhodes_i.c"
+				ProxyFileName="Rhodes_p.c"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="2"
+				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;."
+				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
+				RuntimeLibrary="0"
+				UsePrecompiledHeader="2"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				DisableSpecificWarnings="4996"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				RegisterOutput="false"
+				IgnoreImportLibrary="true"
+				UseUnicodeResponseFiles="false"
+				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
+				AdditionalDependencies="Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppw.lib pimstore.lib bthutil.lib"
+				OutputFile="$(OutDir)/rhodes.exe"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="$(OutDir)"
+				GenerateDebugInformation="true"
+				SubSystem="0"
+				StackReserveSize="196608"
+				StackCommitSize="4096"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				ImportLibrary="$(OutDir)/Rhodes.lib"
+				TargetMachine="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="SimulatorRelease|Win32"
+			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			ConfigurationType="1"
+			UseOfATL="1"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="false"
+				GenerateStublessProxies="true"
+				TypeLibraryName="$(IntDir)/Rhodes.tlb"
+				HeaderFileName="Rhodes.h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="Rhodes_i.c"
+				ProxyFileName="Rhodes_p.c"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="2"
+				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;&quot;..\..\shared\qt\rhodes\GeneratedFiles&quot;;&quot;$(QTDIR)\include&quot;;&quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtWebKit&quot;"
+				PreprocessorDefinitions="_NDEBUG;NDEBUG;WIN32;_WINDOWS;RHODES_EMULATOR;UNICODE;QT_LARGEFILE_SUPPORT;QT_NO_DEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_WEBKIT_LIB"
+				RuntimeLibrary="0"
+				TreatWChar_tAsBuiltInType="false"
+				UsePrecompiledHeader="2"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				DisableSpecificWarnings="4996"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				RegisterOutput="false"
+				IgnoreImportLibrary="true"
+				UseUnicodeResponseFiles="false"
+				AdditionalDependencies="wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib gdiplus.lib qtmain.lib QtCore4.lib QtGui4.lib QtNetwork4.lib QtWebKit4.lib"
+				OutputFile="$(OutDir)/rhosimulator.exe"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="&quot;$(OutDir)&quot;;&quot;$(QTDIR)\lib&quot;"
+				GenerateDebugInformation="false"
+				SubSystem="0"
+				StackReserveSize="196608"
+				StackCommitSize="4096"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				ImportLibrary="$(OutDir)/Rhodes.lib"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
+			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			ConfigurationType="1"
+			UseOfATL="1"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="false"
+				TargetEnvironment="1"
+				GenerateStublessProxies="true"
+				TypeLibraryName="$(IntDir)/Rhodes.tlb"
+				HeaderFileName="Rhodes.h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="Rhodes_i.c"
+				ProxyFileName="Rhodes_p.c"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="2"
+				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;."
+				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
+				RuntimeLibrary="0"
+				UsePrecompiledHeader="2"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				DisableSpecificWarnings="4996"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				RegisterOutput="false"
+				IgnoreImportLibrary="true"
+				UseUnicodeResponseFiles="false"
+				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
+				AdditionalDependencies="Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppw.lib pimstore.lib bthutil.lib"
+				OutputFile="$(OutDir)/rhodes.exe"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="$(OutDir)"
+				GenerateDebugInformation="true"
+				SubSystem="0"
+				StackReserveSize="196608"
+				StackCommitSize="4096"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				ImportLibrary="$(OutDir)/Rhodes.lib"
+				TargetMachine="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
+			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			ConfigurationType="1"
+			UseOfATL="1"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="false"
+				TargetEnvironment="1"
+				GenerateStublessProxies="true"
+				TypeLibraryName="$(IntDir)/Rhodes.tlb"
+				HeaderFileName="Rhodes.h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="Rhodes_i.c"
+				ProxyFileName="Rhodes_p.c"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="2"
+				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;."
+				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
+				RuntimeLibrary="0"
+				UsePrecompiledHeader="2"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				DisableSpecificWarnings="4996"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				RegisterOutput="false"
+				IgnoreImportLibrary="true"
+				UseUnicodeResponseFiles="false"
+				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
+				AdditionalDependencies="Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppw.lib pimstore.lib bthutil.lib"
+				OutputFile="$(OutDir)/rhodes.exe"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="$(OutDir)"
+				GenerateDebugInformation="true"
+				SubSystem="0"
+				StackReserveSize="196608"
+				StackCommitSize="4096"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				ImportLibrary="$(OutDir)/Rhodes.lib"
+				TargetMachine="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+			OutputDirectory="MC3000c50b (ARMV4I)\$(ConfigurationName)"
+			IntermediateDirectory="MC3000c50b (ARMV4I)\$(ConfigurationName)"
+			ConfigurationType="1"
+			UseOfATL="1"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="false"
+				TargetEnvironment="1"
+				GenerateStublessProxies="true"
+				TypeLibraryName="$(IntDir)/Rhodes.tlb"
+				HeaderFileName="Rhodes.h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="Rhodes_i.c"
+				ProxyFileName="Rhodes_p.c"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="2"
+				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;."
+				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
+				RuntimeLibrary="0"
+				UsePrecompiledHeader="2"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				DisableSpecificWarnings="4996"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				RegisterOutput="false"
+				IgnoreImportLibrary="true"
+				UseUnicodeResponseFiles="false"
+				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
+				AdditionalDependencies="Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppw.lib pimstore.lib bthutil.lib"
+				OutputFile="$(OutDir)/rhodes.exe"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="$(OutDir)"
+				GenerateDebugInformation="true"
+				SubSystem="0"
+				StackReserveSize="196608"
+				StackCommitSize="4096"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				ImportLibrary="$(OutDir)/Rhodes.lib"
+				TargetMachine="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -657,511 +2147,6 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
-			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			ConfigurationType="1"
-			UseOfATL="1"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="false"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/Rhodes.tlb"
-				HeaderFileName="Rhodes.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="Rhodes_i.c"
-				ProxyFileName="Rhodes_p.c"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				ExecutionBucket="7"
-				Optimization="2"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;&quot;../../../../Motorola-Extensions&quot;"
-				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
-				RuntimeLibrary="0"
-				UsePrecompiledHeader="2"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-				DisableSpecificWarnings="4996"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				RegisterOutput="false"
-				IgnoreImportLibrary="true"
-				UseUnicodeResponseFiles="false"
-				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
-				AdditionalDependencies="Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppw.lib pimstore.lib bthutil.lib"
-				OutputFile="$(OutDir)/rhodes.exe"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(OutDir)"
-				GenerateDebugInformation="true"
-				SubSystem="0"
-				StackReserveSize="196608"
-				StackCommitSize="4096"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/Rhodes.lib"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCCodeSignTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-			<DeploymentTool
-				ForceDirty="-1"
-				RemoteDirectory=""
-				RegisterOutput="0"
-				AdditionalFiles=""
-			/>
-			<DebuggerTool
-			/>
-		</Configuration>
-		<Configuration
-			Name="Release|Win32"
-			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			ConfigurationType="1"
-			UseOfATL="1"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="false"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/Rhodes.tlb"
-				HeaderFileName="Rhodes.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="Rhodes_i.c"
-				ProxyFileName="Rhodes_p.c"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="2"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;."
-				PreprocessorDefinitions="_NDEBUG;NDEBUG;WIN32;_WINDOWS;ENABLE_DYNAMIC_RHOBUNDLE"
-				RuntimeLibrary="0"
-				UsePrecompiledHeader="2"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-				DisableSpecificWarnings="4996"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				RegisterOutput="false"
-				IgnoreImportLibrary="true"
-				UseUnicodeResponseFiles="false"
-				AdditionalDependencies="wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib gdiplus.lib"
-				OutputFile="$(OutDir)/rhodes.exe"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(OutDir)"
-				GenerateDebugInformation="false"
-				SubSystem="0"
-				StackReserveSize="196608"
-				StackCommitSize="4096"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/Rhodes.lib"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Release|Pocket PC 2003 (ARMV4)"
-			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			ConfigurationType="1"
-			UseOfATL="1"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="false"
-				TargetEnvironment="1"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/Rhodes.tlb"
-				HeaderFileName="Rhodes.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="Rhodes_i.c"
-				ProxyFileName="Rhodes_p.c"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				ExecutionBucket="7"
-				Optimization="2"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;."
-				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
-				RuntimeLibrary="0"
-				UsePrecompiledHeader="2"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-				DisableSpecificWarnings="4996"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				RegisterOutput="false"
-				IgnoreImportLibrary="true"
-				UseUnicodeResponseFiles="false"
-				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
-				AdditionalDependencies="Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppw.lib pimstore.lib bthutil.lib"
-				OutputFile="$(OutDir)/rhodes.exe"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(OutDir)"
-				GenerateDebugInformation="true"
-				SubSystem="0"
-				StackReserveSize="196608"
-				StackCommitSize="4096"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/Rhodes.lib"
-				TargetMachine="0"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCCodeSignTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-			<DeploymentTool
-				ForceDirty="-1"
-				RemoteDirectory=""
-				RegisterOutput="0"
-				AdditionalFiles=""
-			/>
-			<DebuggerTool
-			/>
-		</Configuration>
-		<Configuration
-			Name="Release|Smartphone 2003 (ARMV4)"
-			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			ConfigurationType="1"
-			UseOfATL="1"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="false"
-				TargetEnvironment="1"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/Rhodes.tlb"
-				HeaderFileName="Rhodes.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="Rhodes_i.c"
-				ProxyFileName="Rhodes_p.c"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				ExecutionBucket="7"
-				Optimization="2"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;."
-				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
-				RuntimeLibrary="0"
-				UsePrecompiledHeader="2"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-				DisableSpecificWarnings="4996"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				RegisterOutput="false"
-				IgnoreImportLibrary="true"
-				UseUnicodeResponseFiles="false"
-				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
-				AdditionalDependencies="Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppw.lib pimstore.lib bthutil.lib"
-				OutputFile="$(OutDir)/rhodes.exe"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(OutDir)"
-				GenerateDebugInformation="true"
-				SubSystem="0"
-				StackReserveSize="196608"
-				StackCommitSize="4096"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/Rhodes.lib"
-				TargetMachine="0"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCCodeSignTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-			<DeploymentTool
-				ForceDirty="-1"
-				RemoteDirectory=""
-				RegisterOutput="0"
-				AdditionalFiles=""
-			/>
-			<DebuggerTool
-			/>
-		</Configuration>
-		<Configuration
-			Name="Release|MC3000c50b (ARMV4I)"
-			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			ConfigurationType="1"
-			UseOfATL="1"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="false"
-				TargetEnvironment="1"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/Rhodes.tlb"
-				HeaderFileName="Rhodes.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="Rhodes_i.c"
-				ProxyFileName="Rhodes_p.c"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				ExecutionBucket="7"
-				Optimization="2"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;&quot;../../../../Motorola-Extensions&quot;"
-				PreprocessorDefinitions="OS_PLATFORM_MOTCE=5;_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL"
-				RuntimeLibrary="0"
-				UsePrecompiledHeader="2"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-				DisableSpecificWarnings="4996"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				RegisterOutput="false"
-				IgnoreImportLibrary="true"
-				UseUnicodeResponseFiles="false"
-				AdditionalOptions=" /subsystem:windowsce,5.00 /machine:THUMB"
-				AdditionalDependencies="Ws2.lib Ceshell.lib wininet.lib  comsuppw.lib"
-				OutputFile="$(OutDir)/rhodes.exe"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(OutDir)"
-				GenerateDebugInformation="true"
-				SubSystem="0"
-				StackReserveSize="262144"
-				StackCommitSize="262144"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/Rhodes.lib"
-				TargetMachine="0"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCCodeSignTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-			<DeploymentTool
-				ForceDirty="-1"
-				RemoteDirectory=""
-				RegisterOutput="0"
-				AdditionalFiles=""
-			/>
-			<DebuggerTool
-			/>
-		</Configuration>
-		<Configuration
 			Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
@@ -1251,520 +2236,6 @@
 			/>
 			<Tool
 				Name="VCCodeSignTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-			<DeploymentTool
-				ForceDirty="-1"
-				RemoteDirectory=""
-				RegisterOutput="0"
-				AdditionalFiles=""
-			/>
-			<DebuggerTool
-			/>
-		</Configuration>
-		<Configuration
-			Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
-			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			ConfigurationType="1"
-			UseOfATL="1"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				MkTypLibCompatible="false"
-				TargetEnvironment="1"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/Rhodes.tlb"
-				HeaderFileName="Rhodes.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="Rhodes_i.c"
-				ProxyFileName="Rhodes_p.c"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				ExecutionBucket="7"
-				Optimization="0"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;."
-				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;DEBUG;UNICODE;_UNICODE;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL"
-				MinimalRebuild="true"
-				RuntimeLibrary="1"
-				UsePrecompiledHeader="2"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-				DisableSpecificWarnings="4996"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				RegisterOutput="false"
-				IgnoreImportLibrary="true"
-				UseUnicodeResponseFiles="false"
-				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
-				AdditionalDependencies="aygshell.lib Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppwd.lib pimstore.lib bthutil.lib"
-				OutputFile="$(OutDir)/rhodes.exe"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(OutDir)"
-				GenerateDebugInformation="true"
-				SubSystem="0"
-				StackReserveSize="196608"
-				StackCommitSize="4096"
-				ImportLibrary="$(OutDir)/Rhodes.lib"
-				TargetMachine="0"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCCodeSignTool"
-				AuthenticodeSignature="false"
-				Certificate="SHA-1 Hash=8AEB6E720079EB0494AE9BE32CB13A9E3687D913|8AEB6E720079EB0494AE9BE32CB13A9E3687D913"
-				ProvisionDevice="0"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-			<DeploymentTool
-				ForceDirty="-1"
-				RemoteDirectory=""
-				RegisterOutput="0"
-				AdditionalFiles=""
-			/>
-			<DebuggerTool
-			/>
-		</Configuration>
-		<Configuration
-			Name="SimulatorDebug|Win32"
-			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			ConfigurationType="1"
-			UseOfATL="1"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				MkTypLibCompatible="false"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/Rhodes.tlb"
-				HeaderFileName="Rhodes.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="Rhodes_i.c"
-				ProxyFileName="Rhodes_p.c"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;&quot;..\..\shared\qt\rhodes\GeneratedFiles&quot;;&quot;$(QTDIR)\include&quot;;&quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtWebKit&quot;"
-				PreprocessorDefinitions="_DEBUG;DEBUG;WIN32;_WINDOWS;RHODES_EMULATOR;UNICODE;QT_LARGEFILE_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_WEBKIT_LIB"
-				MinimalRebuild="true"
-				RuntimeLibrary="1"
-				TreatWChar_tAsBuiltInType="false"
-				UsePrecompiledHeader="2"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-				DisableSpecificWarnings="4996"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				RegisterOutput="false"
-				IgnoreImportLibrary="true"
-				UseUnicodeResponseFiles="false"
-				AdditionalDependencies="wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib gdiplus.lib qtmaind.lib QtCored4.lib QtGuid4.lib QtNetworkd4.lib QtWebKitd4.lib"
-				OutputFile="$(OutDir)/rhosimulator.exe"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(OutDir)&quot;;&quot;$(QTDIR)\lib&quot;"
-				GenerateDebugInformation="true"
-				SubSystem="0"
-				StackReserveSize="196608"
-				StackCommitSize="4096"
-				ImportLibrary="$(OutDir)/Rhodes.lib"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="SimulatorDebug|Pocket PC 2003 (ARMV4)"
-			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			ConfigurationType="1"
-			UseOfATL="1"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				MkTypLibCompatible="false"
-				TargetEnvironment="1"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/Rhodes.tlb"
-				HeaderFileName="Rhodes.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="Rhodes_i.c"
-				ProxyFileName="Rhodes_p.c"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				ExecutionBucket="7"
-				Optimization="0"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;."
-				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;DEBUG;UNICODE;_UNICODE;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL"
-				MinimalRebuild="true"
-				RuntimeLibrary="1"
-				UsePrecompiledHeader="2"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-				DisableSpecificWarnings="4996"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				RegisterOutput="false"
-				IgnoreImportLibrary="true"
-				UseUnicodeResponseFiles="false"
-				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
-				AdditionalDependencies="aygshell.lib Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppwd.lib pimstore.lib bthutil.lib"
-				OutputFile="$(OutDir)/rhodes.exe"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(OutDir)"
-				GenerateDebugInformation="true"
-				SubSystem="0"
-				StackReserveSize="196608"
-				StackCommitSize="4096"
-				ImportLibrary="$(OutDir)/Rhodes.lib"
-				TargetMachine="0"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCCodeSignTool"
-				AuthenticodeSignature="false"
-				Certificate="SHA-1 Hash=8AEB6E720079EB0494AE9BE32CB13A9E3687D913|8AEB6E720079EB0494AE9BE32CB13A9E3687D913"
-				ProvisionDevice="0"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-			<DeploymentTool
-				ForceDirty="-1"
-				RemoteDirectory=""
-				RegisterOutput="0"
-				AdditionalFiles=""
-			/>
-			<DebuggerTool
-			/>
-		</Configuration>
-		<Configuration
-			Name="SimulatorDebug|Smartphone 2003 (ARMV4)"
-			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			ConfigurationType="1"
-			UseOfATL="1"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				MkTypLibCompatible="false"
-				TargetEnvironment="1"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/Rhodes.tlb"
-				HeaderFileName="Rhodes.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="Rhodes_i.c"
-				ProxyFileName="Rhodes_p.c"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				ExecutionBucket="7"
-				Optimization="0"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;."
-				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;DEBUG;UNICODE;_UNICODE;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL"
-				MinimalRebuild="true"
-				RuntimeLibrary="1"
-				UsePrecompiledHeader="2"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-				DisableSpecificWarnings="4996"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				RegisterOutput="false"
-				IgnoreImportLibrary="true"
-				UseUnicodeResponseFiles="false"
-				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
-				AdditionalDependencies="aygshell.lib Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppwd.lib pimstore.lib bthutil.lib"
-				OutputFile="$(OutDir)/rhodes.exe"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(OutDir)"
-				GenerateDebugInformation="true"
-				SubSystem="0"
-				StackReserveSize="196608"
-				StackCommitSize="4096"
-				ImportLibrary="$(OutDir)/Rhodes.lib"
-				TargetMachine="0"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCCodeSignTool"
-				AuthenticodeSignature="false"
-				Certificate="SHA-1 Hash=8AEB6E720079EB0494AE9BE32CB13A9E3687D913|8AEB6E720079EB0494AE9BE32CB13A9E3687D913"
-				ProvisionDevice="0"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-			<DeploymentTool
-				ForceDirty="-1"
-				RemoteDirectory=""
-				RegisterOutput="0"
-				AdditionalFiles=""
-			/>
-			<DebuggerTool
-			/>
-		</Configuration>
-		<Configuration
-			Name="SimulatorDebug|MC3000c50b (ARMV4I)"
-			OutputDirectory="MC3000c50b (ARMV4I)\$(ConfigurationName)"
-			IntermediateDirectory="MC3000c50b (ARMV4I)\$(ConfigurationName)"
-			ConfigurationType="1"
-			UseOfATL="1"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				MkTypLibCompatible="false"
-				TargetEnvironment="1"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/Rhodes.tlb"
-				HeaderFileName="Rhodes.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="Rhodes_i.c"
-				ProxyFileName="Rhodes_p.c"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				ExecutionBucket="7"
-				Optimization="0"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;."
-				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);_DEBUG;DEBUG;UNICODE;_UNICODE;$(ARCHFAM);$(_ARCHFAM_);POCKETPC2003_UI_MODEL"
-				MinimalRebuild="true"
-				RuntimeLibrary="1"
-				UsePrecompiledHeader="2"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-				DisableSpecificWarnings="4996"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				RegisterOutput="false"
-				IgnoreImportLibrary="true"
-				UseUnicodeResponseFiles="false"
-				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
-				AdditionalDependencies="aygshell.lib Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppwd.lib pimstore.lib bthutil.lib"
-				OutputFile="$(OutDir)/rhodes.exe"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(OutDir)"
-				GenerateDebugInformation="true"
-				SubSystem="0"
-				StackReserveSize="196608"
-				StackCommitSize="4096"
-				ImportLibrary="$(OutDir)/Rhodes.lib"
-				TargetMachine="0"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCCodeSignTool"
-				AuthenticodeSignature="false"
-				Certificate="SHA-1 Hash=8AEB6E720079EB0494AE9BE32CB13A9E3687D913|8AEB6E720079EB0494AE9BE32CB13A9E3687D913"
-				ProvisionDevice="0"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -1870,514 +2341,6 @@
 				AuthenticodeSignature="false"
 				Certificate="SHA-1 Hash=8AEB6E720079EB0494AE9BE32CB13A9E3687D913|8AEB6E720079EB0494AE9BE32CB13A9E3687D913"
 				ProvisionDevice="0"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-			<DeploymentTool
-				ForceDirty="-1"
-				RemoteDirectory=""
-				RegisterOutput="0"
-				AdditionalFiles=""
-			/>
-			<DebuggerTool
-			/>
-		</Configuration>
-		<Configuration
-			Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
-			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			ConfigurationType="1"
-			UseOfATL="1"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="false"
-				TargetEnvironment="1"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/Rhodes.tlb"
-				HeaderFileName="Rhodes.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="Rhodes_i.c"
-				ProxyFileName="Rhodes_p.c"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				ExecutionBucket="7"
-				Optimization="2"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;."
-				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
-				RuntimeLibrary="0"
-				UsePrecompiledHeader="2"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-				DisableSpecificWarnings="4996"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				RegisterOutput="false"
-				IgnoreImportLibrary="true"
-				UseUnicodeResponseFiles="false"
-				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
-				AdditionalDependencies="Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppw.lib pimstore.lib bthutil.lib"
-				OutputFile="$(OutDir)/rhodes.exe"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(OutDir)"
-				GenerateDebugInformation="true"
-				SubSystem="0"
-				StackReserveSize="196608"
-				StackCommitSize="4096"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/Rhodes.lib"
-				TargetMachine="0"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCCodeSignTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-			<DeploymentTool
-				ForceDirty="-1"
-				RemoteDirectory=""
-				RegisterOutput="0"
-				AdditionalFiles=""
-			/>
-			<DebuggerTool
-			/>
-		</Configuration>
-		<Configuration
-			Name="SimulatorRelease|Win32"
-			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			ConfigurationType="1"
-			UseOfATL="1"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="false"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/Rhodes.tlb"
-				HeaderFileName="Rhodes.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="Rhodes_i.c"
-				ProxyFileName="Rhodes_p.c"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="2"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;&quot;..\..\shared\qt\rhodes\GeneratedFiles&quot;;&quot;$(QTDIR)\include&quot;;&quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtWebKit&quot;"
-				PreprocessorDefinitions="_NDEBUG;NDEBUG;WIN32;_WINDOWS;RHODES_EMULATOR;UNICODE;QT_LARGEFILE_SUPPORT;QT_NO_DEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_WEBKIT_LIB"
-				RuntimeLibrary="0"
-				TreatWChar_tAsBuiltInType="false"
-				UsePrecompiledHeader="2"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-				DisableSpecificWarnings="4996"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				RegisterOutput="false"
-				IgnoreImportLibrary="true"
-				UseUnicodeResponseFiles="false"
-				AdditionalDependencies="wininet.lib comsuppwd.lib ws2_32.lib Crypt32.lib gdiplus.lib qtmain.lib QtCore4.lib QtGui4.lib QtNetwork4.lib QtWebKit4.lib"
-				OutputFile="$(OutDir)/rhosimulator.exe"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(OutDir)&quot;;&quot;$(QTDIR)\lib&quot;"
-				GenerateDebugInformation="false"
-				SubSystem="0"
-				StackReserveSize="196608"
-				StackCommitSize="4096"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/Rhodes.lib"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="SimulatorRelease|Pocket PC 2003 (ARMV4)"
-			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			ConfigurationType="1"
-			UseOfATL="1"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="false"
-				TargetEnvironment="1"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/Rhodes.tlb"
-				HeaderFileName="Rhodes.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="Rhodes_i.c"
-				ProxyFileName="Rhodes_p.c"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				ExecutionBucket="7"
-				Optimization="2"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;."
-				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
-				RuntimeLibrary="0"
-				UsePrecompiledHeader="2"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-				DisableSpecificWarnings="4996"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				RegisterOutput="false"
-				IgnoreImportLibrary="true"
-				UseUnicodeResponseFiles="false"
-				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
-				AdditionalDependencies="Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppw.lib pimstore.lib bthutil.lib"
-				OutputFile="$(OutDir)/rhodes.exe"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(OutDir)"
-				GenerateDebugInformation="true"
-				SubSystem="0"
-				StackReserveSize="196608"
-				StackCommitSize="4096"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/Rhodes.lib"
-				TargetMachine="0"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCCodeSignTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-			<DeploymentTool
-				ForceDirty="-1"
-				RemoteDirectory=""
-				RegisterOutput="0"
-				AdditionalFiles=""
-			/>
-			<DebuggerTool
-			/>
-		</Configuration>
-		<Configuration
-			Name="SimulatorRelease|Smartphone 2003 (ARMV4)"
-			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			ConfigurationType="1"
-			UseOfATL="1"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="false"
-				TargetEnvironment="1"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/Rhodes.tlb"
-				HeaderFileName="Rhodes.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="Rhodes_i.c"
-				ProxyFileName="Rhodes_p.c"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				ExecutionBucket="7"
-				Optimization="2"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;."
-				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
-				RuntimeLibrary="0"
-				UsePrecompiledHeader="2"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-				DisableSpecificWarnings="4996"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				RegisterOutput="false"
-				IgnoreImportLibrary="true"
-				UseUnicodeResponseFiles="false"
-				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
-				AdditionalDependencies="Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppw.lib pimstore.lib bthutil.lib"
-				OutputFile="$(OutDir)/rhodes.exe"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(OutDir)"
-				GenerateDebugInformation="true"
-				SubSystem="0"
-				StackReserveSize="196608"
-				StackCommitSize="4096"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/Rhodes.lib"
-				TargetMachine="0"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCCodeSignTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-			<DeploymentTool
-				ForceDirty="-1"
-				RemoteDirectory=""
-				RegisterOutput="0"
-				AdditionalFiles=""
-			/>
-			<DebuggerTool
-			/>
-		</Configuration>
-		<Configuration
-			Name="SimulatorRelease|MC3000c50b (ARMV4I)"
-			OutputDirectory="MC3000c50b (ARMV4I)\$(ConfigurationName)"
-			IntermediateDirectory="MC3000c50b (ARMV4I)\$(ConfigurationName)"
-			ConfigurationType="1"
-			UseOfATL="1"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="false"
-				TargetEnvironment="1"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/Rhodes.tlb"
-				HeaderFileName="Rhodes.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="Rhodes_i.c"
-				ProxyFileName="Rhodes_p.c"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				ExecutionBucket="7"
-				Optimization="2"
-				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;."
-				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);UNDER_CE=$(CEVER);WINCE;$(PLATFORMDEFINES);NDEBUG;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;POCKETPC2003_UI_MODEL;POCKETPC2003_UI_MODEL"
-				RuntimeLibrary="0"
-				UsePrecompiledHeader="2"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-				DisableSpecificWarnings="4996"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;_UNICODE;UNICODE;_WIN32_WCE;UNDER_CE"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				RegisterOutput="false"
-				IgnoreImportLibrary="true"
-				UseUnicodeResponseFiles="false"
-				AdditionalOptions=" /subsystem:windowsce,5.01 /machine:THUMB"
-				AdditionalDependencies="Ws2.lib Ceshell.lib wininet.lib Cellcore.lib Gpsapi.lib  comsuppw.lib pimstore.lib bthutil.lib"
-				OutputFile="$(OutDir)/rhodes.exe"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(OutDir)"
-				GenerateDebugInformation="true"
-				SubSystem="0"
-				StackReserveSize="196608"
-				StackCommitSize="4096"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/Rhodes.lib"
-				TargetMachine="0"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCCodeSignTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -3205,14 +3168,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					>
 					<Tool
@@ -3246,14 +3201,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|MC3000c50b (ARMV4I)"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -3301,14 +3248,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					>
 					<Tool
@@ -3342,6 +3281,30 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -3621,14 +3584,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -3662,6 +3617,14 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3721,14 +3684,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCResourceCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -3762,6 +3717,14 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCResourceCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -3821,14 +3784,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -3869,14 +3824,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorDebug|Win32"
 					>
 					<Tool
@@ -3894,6 +3841,22 @@
 						Description="Rcc&apos;ing $(InputFileName)..."
 						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name $(InputName) ..\..\shared\qt\rhodes\resources\simulator.qrc -o &quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\qrc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						Outputs="&quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\qrc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
 			</File>
@@ -4172,11 +4135,11 @@
 			Name="MapView"
 			>
 			<File
-				RelativePath=".\MapView\Graphics.cpp"
+				RelativePath=".\MapView\Bitmap.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\MapView\Graphics.h"
+				RelativePath=".\MapView\Bitmap.h"
 				>
 			</File>
 			<File
@@ -4185,6 +4148,14 @@
 			</File>
 			<File
 				RelativePath=".\MapView\MapViewManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MapView\WmGraphics.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MapView\WmGraphics.h"
 				>
 			</File>
 		</Filter>
@@ -4235,14 +4206,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -4283,14 +4246,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -4323,14 +4278,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -4356,6 +4303,30 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4415,14 +4386,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -4456,14 +4419,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|MC3000c50b (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4510,14 +4465,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -4550,6 +4497,30 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4609,14 +4580,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -4657,14 +4620,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -4697,14 +4652,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -4730,6 +4677,30 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4789,14 +4760,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -4830,14 +4793,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|MC3000c50b (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4884,14 +4839,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -4924,6 +4871,30 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -4983,14 +4954,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -5031,14 +4994,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -5071,14 +5026,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -5104,6 +5051,30 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -5163,14 +5134,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -5204,14 +5167,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|MC3000c50b (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -5258,14 +5213,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -5298,6 +5245,30 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -5361,14 +5332,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -5402,14 +5365,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|MC3000c50b (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -5457,14 +5412,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -5498,6 +5445,30 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -5557,14 +5528,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -5598,14 +5561,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|MC3000c50b (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -5656,14 +5611,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -5700,6 +5647,30 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -5759,14 +5730,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -5800,14 +5763,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|MC3000c50b (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -5858,14 +5813,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -5902,6 +5849,30 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -5961,14 +5932,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -6002,14 +5965,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|MC3000c50b (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -6057,14 +6012,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -6098,6 +6045,30 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -6157,14 +6128,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -6198,14 +6161,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|MC3000c50b (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -6256,14 +6211,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -6300,6 +6247,30 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -6359,14 +6330,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -6400,14 +6363,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|MC3000c50b (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -6458,14 +6413,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -6502,6 +6449,30 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -6561,14 +6532,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -6602,14 +6565,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|MC3000c50b (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -6656,14 +6611,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -6696,6 +6643,30 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -6755,14 +6726,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -6796,14 +6759,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|MC3000c50b (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -6851,14 +6806,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -6892,6 +6839,30 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -6951,14 +6922,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -6992,14 +6955,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|MC3000c50b (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -7050,14 +7005,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -7094,6 +7041,30 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -7153,14 +7124,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -7194,14 +7157,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|MC3000c50b (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -7252,14 +7207,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -7296,6 +7243,30 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -7355,14 +7326,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -7396,14 +7359,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|MC3000c50b (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -7451,14 +7406,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -7492,6 +7439,30 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -7551,14 +7522,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -7592,14 +7555,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|MC3000c50b (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -7646,14 +7601,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -7686,6 +7633,30 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -7745,14 +7716,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -7786,14 +7749,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|MC3000c50b (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -7841,14 +7796,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -7882,6 +7829,30 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -7941,14 +7912,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -7982,14 +7945,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|MC3000c50b (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -8040,14 +7995,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -8084,6 +8031,30 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -8143,14 +8114,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -8184,14 +8147,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|MC3000c50b (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -8242,14 +8197,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
@@ -8286,6 +8233,30 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -8349,14 +8320,6 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 						ExcludedFromBuild="true"
 						>
@@ -8390,14 +8353,6 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Release|MC3000c50b (ARMV4I)"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -8444,14 +8399,6 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 						ExcludedFromBuild="true"
 						>
@@ -8484,6 +8431,30 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -8543,14 +8514,6 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 						ExcludedFromBuild="true"
 						>
@@ -8584,14 +8547,6 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Release|MC3000c50b (ARMV4I)"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -8638,14 +8593,6 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 						ExcludedFromBuild="true"
 						>
@@ -8678,6 +8625,30 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -8737,14 +8708,6 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 						ExcludedFromBuild="true"
 						>
@@ -8778,14 +8741,6 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Release|MC3000c50b (ARMV4I)"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -8832,14 +8787,6 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 						ExcludedFromBuild="true"
 						>
@@ -8872,6 +8819,30 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -8931,14 +8902,6 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 						ExcludedFromBuild="true"
 						>
@@ -8972,14 +8935,6 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Release|MC3000c50b (ARMV4I)"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -9026,14 +8981,6 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCustomBuildTool"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
 						Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 						ExcludedFromBuild="true"
 						>
@@ -9066,6 +9013,30 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -9134,15 +9105,6 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
 							Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
@@ -9181,15 +9143,6 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="Release|MC3000c50b (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -9242,15 +9195,6 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
 							Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
@@ -9289,6 +9233,33 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -9356,15 +9327,6 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
 							Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
@@ -9403,15 +9365,6 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="Release|MC3000c50b (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -9464,15 +9417,6 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
 							Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
@@ -9511,6 +9455,33 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -9578,15 +9549,6 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
 							Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
@@ -9625,15 +9587,6 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="Release|MC3000c50b (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -9686,15 +9639,6 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
 							Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
@@ -9733,6 +9677,33 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -9800,15 +9771,6 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
 							Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
@@ -9847,15 +9809,6 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="Release|MC3000c50b (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -9908,15 +9861,6 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
 							Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
@@ -9955,6 +9899,33 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -10022,15 +9993,6 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
 							Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
@@ -10069,15 +10031,6 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="Release|MC3000c50b (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -10130,15 +10083,6 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
 							Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
@@ -10177,6 +10121,33 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -10242,14 +10213,6 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
 							Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
@@ -10283,14 +10246,6 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="Release|MC3000c50b (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -10338,14 +10293,6 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
 							Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
@@ -10379,6 +10326,30 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -10438,14 +10409,6 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
 							Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
@@ -10479,14 +10442,6 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="Release|MC3000c50b (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -10534,14 +10489,6 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
 							Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
@@ -10575,6 +10522,30 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -10634,14 +10605,6 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
 							Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
@@ -10675,14 +10638,6 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="Release|MC3000c50b (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -10730,14 +10685,6 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
 							Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
@@ -10771,6 +10718,30 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -10830,14 +10801,6 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
 							Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
@@ -10871,14 +10834,6 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="Release|MC3000c50b (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -10926,14 +10881,6 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
 							Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
@@ -10967,6 +10914,30 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -11026,14 +10997,6 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
 							Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
@@ -11067,14 +11030,6 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="Release|MC3000c50b (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
@@ -11122,14 +11077,6 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-							ExcludedFromBuild="true"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
 							Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
@@ -11163,6 +11110,30 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+							ExcludedFromBuild="true"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 							ExcludedFromBuild="true"
 							>
 							<Tool
