@@ -1,14 +1,14 @@
 # Install Rhodes
 
-## Macintosh
+## Mac OS
 
-If you're running Macintosh, download the latest [RhoStudio for Macintosh](http://rhomobile.com/rhostudio-mac). This contains the [Ruby stack](http://www.ruby-lang.org/en/), [Redis](http://redis.io/), [RhoConnect](/rhoconnect/introduction) and [Rhodes](/rhodes/introduction).
+If you're running Mac OS, download the latest [RhoStudio for Macintosh](http://rhomobile.com/rhostudio-mac). This contains the [Ruby stack](http://www.ruby-lang.org/en/), [Redis](http://redis.io/), [RhoConnect](/rhoconnect/introduction) and [Rhodes](/rhodes/introduction).
 
-Click on the RhoStudioInstaller .dmg download file to open it. You will get a window similar to this:
+Click on the RhoStudioInstaller for Mac download file to open it. You will get a window similar to this:
 
 <img src="http://rhodocs.s3.amazonaws.com/rhodes-devel/rhostudio-mac-install.png" alt="RhoStudioInstaller Mac" />
 
-Run the install gems script (double-click on install gems). A terminal window will open; wait for the gems install process to complete.
+Run the install gems script appropriate for you. You can run "Install gems." If you have Ruby Version Manager, you can run "Install gems on rvm." A terminal window will open; wait for the gems install process to complete.
 
 Then drag RhoStudio to the Applications folder.
 
@@ -18,33 +18,40 @@ If you're running Windows, download the latest [RhoStudio for Windows](http://rh
 
 Once the installer has completed, and you have installed the Java Development Kit, you can skip to the [Setup Rhodes section](#setup-rhodes).
 
-## Java Development Kit
+## Java Development Kit (JDK)
 
-You need to have the Java Development Kit (JDK) installed.
+You need to have the Java Development Kit (JDK) installed for RhoStudio. If you are planning to build for Blackberry or Android, make sure you have JDK version 1.6.0_2 or higher installed; the 32-bit Windows version of the JDK is required for Blackberry tools.
 
-If you are planning to build for Blackberry or Android, make sure you have JDK version 1.6.0_2 or higher installed. The recommended version is 6.0 update 11.
+### Installing the Java Development Kit
 
-For Macintosh, JDK version 1.6.0_24 for Mac OSX 10.6 is available [here](http://support.apple.com/downloads/DL1360/en_US/JavaForMacOSX10.6Update4.dmg). Install it and then run "Java Preferences" utility to change default version.
+The Sun JDK for Windows or Linux is available [here](http://java.sun.com/javase/downloads/index.jsp). For Windows, install the 32-bit version of the JDK; RhoStudio needs the 32-bit version.
 
-The Sun JDK for Windows or Linux is available [here](http://java.sun.com/javase/downloads/index.jsp). The 32-bit Windows version of the JDK is required for Blackberry tools. 
+For Mac OS 10.6 and earlier, the JDK is already installed. For Mac OS 10.7, Java is not automatically installed. Download the Java for Mac Installer from [Apple support](http://support.apple.com/kb/DL1421) and install Java.
 
-You will want to have your JAVA_HOME variable set; have JAVA_HOME/bin set on your path.
+### Setting the JDK Path
 
-## Rhodes Gem
+On Windows installs for RhoMobile, go to RhoStudio Preferences (Windows -> Preferences) and set the JDK path in the rhobuild.yml file. On Windows 64-bit installations, you must set this path to the 32-bit version of the JDK, such as `C:/Program Files (x86)/Java/jdk1.7.0_01/bin`.
 
-If you are not using RhoStudio for Macintosh or RhoStudio for Windows (for example, you are developing from the command line on a Linux computer), you need to install the Rhodes gem. To do so, you will need the following tools installed:
+On Mac OS, the path to the JDK is automatically set once Java is installed.
 
-* [Ruby](http://www.ruby-lang.org/en/) (On Windows, [RubyInstaller](http://rubyinstaller.org) is a convenient way to install Ruby)
-* [RubyGems](http://docs.rubygems.org/) (RubyGems offers a .tgz, a .zip, and a .gem download. You want the .zip.)
+For non-RhoStudio installations, set the JDK path on the JAVA_HOME variable in your PATH.
 
-NOTE: Windows doesn't come with the necessary build tools to install gems ('make', for example). There are various ways to get these tools, but the GnuWin32 project at http://gnuwin32.sourceforge.net/ provides the tools, and can be conveniently installed via the GetGnuWin32 installer at http://sourceforge.net/projects/getgnuwin32/files/.
+## Rhodes Gem: Linux and non-RhoStudio Installations
 
-To install the Rhodes gem, run the following command (you may want to put "sudo" in the front of this command on OS X):
+For Linux installations, and for Windows or Mac OS installations that are not using RhoStudio, you need to install the Rhodes gem. Download and install:
 
-    :::term
-    $ gem install rhodes
+1. [Ruby v1.8.7+](http://www.ruby-lang.org/en/downloads/) (On Windows, [RubyInstaller](http://rubyinstaller.org) is a convenient way to install Ruby.)
+
+2. [RubyGems v1.8.5+](http://rubygems.org/pages/download) (RubyGems offers a .tgz, a .zip, and a .gem download. You want the .zip.) NOTE: Windows doesn't come with the necessary build tools to install gems ('make', for example). There are various ways to get these tools, but the GnuWin32 project at http://gnuwin32.sourceforge.net/ provides the tools, and can be conveniently installed via the GetGnuWin32 installer at http://sourceforge.net/projects/getgnuwin32/files/.
+
+3. Install the Rhode Gem by running:
+
+	:::term
+  	$ [sudo] gem install rhodes
 
 NOTE: If you get any `no such file to load -- something` messages while running the rake tasks or rhodes commands, this can usually be resolved by putting "sudo" in front of the command, as in `sudo gem install something`.
+
+RhoSimulator, which comes with RhoStudio for Mac and Windows, does not work with Linux.
 
 You can [install RhoStudio as a plugin for Eclipse](rhostudio-eclipse) if you are not using RhoStudio for Macintosh or RhoStudio for Windows.
 
