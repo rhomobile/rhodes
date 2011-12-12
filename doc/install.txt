@@ -36,7 +36,7 @@ On Mac OS, the path to the JDK is automatically set once Java is installed.
 
 For non-RhoStudio installations, set the JDK path on the JAVA_HOME variable in your PATH.
 
-## Rhodes Gem: Linux and non-RhoStudio Installations
+## Rhodes Gem for Linux and non-RhoStudio
 
 For Linux installations, and for Windows or Mac OS installations that are not using RhoStudio, you need to install the Rhodes gem. Download and install:
 
