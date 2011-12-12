@@ -132,6 +132,7 @@
 
 #ifndef OS_PLATFORM_CE
 #define _WTL_CE_NO_ZOOMSCROLL
+#define _WTL_CE_NO_CONTROLS
 #include <atlwince.h>
 #endif //OS_PLATFORM_CE
 
