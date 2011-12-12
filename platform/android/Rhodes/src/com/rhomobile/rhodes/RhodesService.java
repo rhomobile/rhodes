@@ -438,7 +438,12 @@ public class RhodesService extends Service {
 		if (sActivitiesActive > 0)
 			handleAppActivation();
 	}
-	
+
+	public static void handleAppStarted()
+	{
+	    RhodesApplication.stateChanged(AppState.AppStarted);
+	}
+
 	private void setFullscreenParameters() {
 		boolean fullScreen = true;
 		if (RhoConf.isExist("full_screen"))
