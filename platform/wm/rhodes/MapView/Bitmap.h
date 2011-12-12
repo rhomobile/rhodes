@@ -40,17 +40,7 @@ struct IImage;
 
 #include <string>
 #include <string>
-#include "ext/rho/rhoruby.h"
 #include "common/StringConverter.h"
-
-#include <common/rhoparams.h>
-#include <common/map/MapEngine.h>
-
-
-using namespace rho::common;
-using namespace rho::common::map;
-using namespace rho;
-using namespace stdext;
 
 class WMAlphaBitmap 
 {
