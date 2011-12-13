@@ -166,8 +166,7 @@ LRESULT CRhoSignatureWindow::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
         CSignature* pRESig = new CSignature(_AtlBaseModule.GetResourceInstance(), getMainWnd(), 0, 0);
         pRESig->RhoInitialise(m_hWnd, rcWnd, getParams().getBgColor(), getParams().getPenColor(), getParams().getPenWidth());
         m_pInkImpl = pRESig;
-    #elif defined(_WIN32_WCE)
-
+    #elif defined(_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE ) 
 	    HRESULT hr = S_OK;
 	    HRESULT co_init_result = CoInitializeEx(NULL, 0); //COINIT_APARTMENTTHREADED
 	    if ( (co_init_result == S_OK) || (co_init_result == S_FALSE)  ) 
