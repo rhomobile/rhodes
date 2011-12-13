@@ -155,11 +155,6 @@ void rho_sys_set_screen_rotation_notification(const char *url, const char* param
 	RHODESAPP().setScreenRotationNotification(s_url, s_params);
 }
 
-void rho_sys_unzip_file(const char *url)
-{
-    rho_unzip_file(url, "");
-}
-
 #if defined(OS_MACOSX) || defined(OS_ANDROID) || defined(OS_LINUX)
   // implemented in platform code
 #else

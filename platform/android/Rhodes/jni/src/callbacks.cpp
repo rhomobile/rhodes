@@ -58,7 +58,7 @@ RHO_GLOBAL VALUE rho_sys_has_network()
     return rho_ruby_create_boolean(env->CallStaticBooleanMethod(cls, mid));
 }
 
-RHO_GLOBAL void delete_files_in_folder(const char *szFolderPath)
+RHO_GLOBAL void rho_file_impl_delete_files_in_folder(const char *szFolderPath)
 {
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
@@ -69,7 +69,7 @@ RHO_GLOBAL void delete_files_in_folder(const char *szFolderPath)
     env->CallStaticVoidMethod(cls, mid, objFolderPath.get());
 }
 
-RHO_GLOBAL void rho_delete_folder(const char* szFolderPath) {
+RHO_GLOBAL void rho_file_impl_delete_folder(const char* szFolderPath) {
     /*
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
@@ -82,7 +82,7 @@ RHO_GLOBAL void rho_delete_folder(const char* szFolderPath) {
     
 }
 
-RHO_GLOBAL void rho_copy_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath) {
+RHO_GLOBAL void rho_file_impl_copy_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath) {
     /*
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
