@@ -100,11 +100,7 @@ namespace "config" do
       $sdk = $app_config["wm"]["sdk"] if $app_config["wm"] && $app_config["wm"]["sdk"]
     end
     unless $build_solution
-      if $webkit_capability
-        $build_solution = 'rhoelements.sln'
-      else
         $build_solution = 'rhodes.sln'
-      end
     end
     #$startdir = $app_config["sdk"]
 
