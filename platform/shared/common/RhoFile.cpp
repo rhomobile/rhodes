@@ -29,8 +29,37 @@
 #include "common/Tokenizer.h"
 #include "common/RhoFilePath.h"
 
+#if defined(WINDOWS_PLATFORM)
+    extern "C" int _mkdir(const char * dir);
+    extern "C" int  _unlink(const char *path);
+#endif
+
+#if defined(OS_WINCE)
+    extern "C" int  _rename(const char *, const char *);
+#elif defined(OS_WINDOWS)
+    extern "C" int  rename(const char *, const char *);
+#endif
+
 namespace rho{
 namespace common{
+
+static wchar_t * translate_wchar(wchar_t *p, int from, int to)
+{
+    for (; *p; p++) {
+	    if (*p == from)
+	        *p = to;
+        }
+    return p;
+}
+
+static void translate_wstring(StringW& str, int from, int to)
+{
+    for( int i = 0; i < str.length(); i++)
+    {
+        if ( str[i] == from )
+            str[i] = to;
+    }
+}
 
 class CFileInputStream : public InputStream
 {
@@ -196,13 +225,15 @@ void CRhoFile::loadTextFile(const char* szFilePath, String& strFile)
         oFile.readString(strFile);
 }
 
-void CRhoFile::deleteFile( const char* szFilePath ){
+unsigned int CRhoFile::deleteFile( const char* szFilePath ){
 #if defined(OS_WINDOWS) || defined(OS_WINCE)
-    StringW wFileName;
+    /*StringW wFileName;
     common::convertToStringW(szFilePath,wFileName);
-    DeleteFileW(wFileName.c_str());
+    BOOL res = DeleteFileW(wFileName.c_str());
+    return !res ? ::GetLastError() : 0;*/
+    return (unsigned int)_unlink(szFilePath);
 #else
-    remove(szFilePath);
+    return (unsigned int)remove(szFilePath);
 #endif
 }
 
@@ -220,32 +251,27 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
     if (hFind == INVALID_HANDLE_VALUE) 
         return;
 
-    while (FindNextFileW(hFind, &FindFileData) != 0) 
-    {
+    do{
         if ( FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY )
             continue;
 
         StringW wFileName = wFolderName + L"/" + FindFileData.cFileName;
         DeleteFileW(wFileName.c_str());
-    }
+    }while (FindNextFileW(hFind, &FindFileData) != 0); 
 
     FindClose(hFind);
 
 #else
-    delete_files_in_folder(szFolderPath);
+    rho_file_impl_delete_files_in_folder(szFolderPath);
 #endif
 }
 
-#if defined(WINDOWS_PLATFORM)
-    extern "C" int _mkdir(const char * dir);
-#endif
-
-/*static*/ void CRhoFile::createFolder(const char* szFolderPath)
+/*static*/ unsigned int CRhoFile::createFolder(const char* szFolderPath)
 {
 #if defined(WINDOWS_PLATFORM)
-    _mkdir(szFolderPath);
+    return _mkdir(szFolderPath);
 #else
-    mkdir(szFolderPath, S_IRWXU);
+    return mkdir(szFolderPath, S_IRWXU);
 #endif
 }
 
@@ -262,16 +288,19 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
     }
 }
 
-/*static*/ void CRhoFile::renameFile( const char* szOldFilePath, const char* szNewFilePath )
+/*static*/ unsigned int CRhoFile::renameFile( const char* szOldFilePath, const char* szNewFilePath )
 {
-#if defined(OS_WINDOWS) || defined(OS_WINCE)
-    StringW wNewFileName, wOldFileName;
+#if defined(OS_WINCE)
+/*    StringW wNewFileName, wOldFileName;
     common::convertToStringW(szNewFilePath,wNewFileName);
     common::convertToStringW(szOldFilePath,wOldFileName);
 
 	BOOL res = MoveFileW( wOldFileName.c_str(), wNewFileName.c_str());
+    return !res ? ::GetLastError() : 0;*/
+    return _rename( szOldFilePath, szNewFilePath );
+
 #else
-    rename( szOldFilePath, szNewFilePath );
+    return rename( szOldFilePath, szNewFilePath );
 #endif
 
 }
@@ -296,72 +325,175 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
     }
 }
     
-    /*static*/ void CRhoFile::copyFile(const char* szSrcFile, const char* szDstFile) {
-        
-        CRhoFile src;
-        CRhoFile dst;
-        
-        if (!src.open(szSrcFile, OpenReadOnly)) {
-            return;
+/*static*/ unsigned int CRhoFile::copyFile(const char* szSrcFile, const char* szDstFile) {
+    
+    CRhoFile src;
+    CRhoFile dst;
+    
+    if (!src.open(szSrcFile, OpenReadOnly)) {
+        return -1;
+    }
+    if (!dst.open(szDstFile, OpenForWrite)) {
+        return -1;
+    }
+    
+    int buf_size = 1 << 16;
+    unsigned char* buf = new unsigned char[buf_size];
+    
+    unsigned int to_copy = src.size();
+    
+    while (to_copy > 0) {
+        int portion_size = buf_size;
+        if (to_copy < portion_size) {
+            portion_size = to_copy;
         }
-        if (!dst.open(szDstFile, OpenForWrite)) {
-            src.close();
+        src.readData(buf, 0, portion_size);
+        dst.write(buf, portion_size);
+        
+        to_copy -= portion_size;
+    }
+    
+    src.close();
+    dst.flush();
+    dst.close();
+    
+    delete buf;
+
+    return 0;
+}
+    
+/*static*/ unsigned int CRhoFile::deleteFolder(const char* szFolderPath) 
+{
+#if defined(OS_WINDOWS) || defined(OS_WINCE)
+
+	StringW  swPath;
+    convertToStringW(szFolderPath, swPath);
+	wchar_t* name = new wchar_t[ swPath.length() + 2];
+    wsprintf(name, L"%s%c", swPath.c_str(), '\0');
+    translate_wchar(name, L'/', L'\\');
+
+    SHFILEOPSTRUCT fop = {0};
+
+	fop.hwnd = NULL;
+	fop.wFunc = FO_DELETE;		
+	fop.pFrom = name;
+	fop.pTo = NULL;
+	fop.fFlags = FOF_SILENT | FOF_NOCONFIRMATION | /*FOF_NOERRORUI |*/ FOF_NOCONFIRMMKDIR;
+	int result = SHFileOperation(&fop);
+
+    delete name;
+
+    return result == 0 ? 0 : (unsigned int)-1;
+#else
+    rho_file_impl_delete_folder(szFolderPath);
+    return 0;
+#endif
+
+}
+
+#if defined(OS_WINDOWS) || defined(OS_WINCE)
+static unsigned int copyFolder(const StringW& strSrc, const StringW& strDst, boolean bMove)
+{
+    unsigned int nErr = 0;
+
+    CRhoFile::createFolder(convertToStringA(strDst).c_str());
+
+    StringW wFolderMask = CFilePath::join(strSrc, L"*");
+
+    WIN32_FIND_DATAW FindFileData = {0};
+    HANDLE hFind = INVALID_HANDLE_VALUE;
+
+    hFind = FindFirstFileW(wFolderMask.c_str(), &FindFileData);
+    if (hFind == INVALID_HANDLE_VALUE) 
+        return GetLastError();
+
+    do{
+        if (!wcscmp(FindFileData.cFileName , L".")) continue ;
+		if (!wcscmp(FindFileData.cFileName , L"..")) continue ;
+
+        if ( FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY )
+        {
+            int i = 0;
+            nErr = copyFolder( CFilePath::join(strSrc,FindFileData.cFileName), CFilePath::join(strDst,FindFileData.cFileName), bMove );
         }
-        
-        int buf_size = 1 << 16;
-        unsigned char* buf = new unsigned char[buf_size];
-        
-        unsigned int to_copy = src.size();
-        
-        while (to_copy > 0) {
-            int portion_size = buf_size;
-            if (to_copy < portion_size) {
-                portion_size = to_copy;
+        else
+        {
+            if ( bMove )
+            {
+                CRhoFile::deleteFile(convertToStringA(CFilePath::join(strDst,FindFileData.cFileName)).c_str());
+                nErr = CRhoFile::renameFile(convertToStringA(CFilePath::join(strSrc,FindFileData.cFileName)).c_str(), convertToStringA(CFilePath::join(strDst,FindFileData.cFileName)).c_str());
             }
-            src.readData(buf, 0, portion_size);
-            dst.write(buf, portion_size);
-            
-            to_copy -= portion_size;
+            else
+                nErr = CRhoFile::copyFile( convertToStringA(CFilePath::join(strSrc,FindFileData.cFileName)).c_str(), convertToStringA(CFilePath::join(strDst,FindFileData.cFileName)).c_str() );
         }
-        
-        src.close();
-        dst.flush();
-        dst.close();
-        
-        delete buf;
-    }
-    
-    
-    /*static*/ void  CRhoFile::deleteFolder(const char* szFolderPath) {
-#if defined(OS_WINDOWS) || defined(OS_WINCE)
-#else
-        rho_delete_folder(szFolderPath);
+
+        if ( nErr != 0 )
+            return nErr;
+    }while (FindNextFileW(hFind, &FindFileData) != 0); 
+
+    FindClose(hFind);
+
+    return 0;
+}
 #endif
-    }
-    
-    /*static*/ void  CRhoFile::copyFoldersContentToAnotherFolder(const char* szSrcFolderPath, const char* szDstFolderPath) {
+
+/*static*/ unsigned int CRhoFile::copyFoldersContentToAnotherFolder(const char* szSrcFolderPath, const char* szDstFolderPath) 
+{
 #if defined(OS_WINDOWS) || defined(OS_WINCE)
+
+    StringW strSrcW, strDstW;
+    common::convertToStringW(szSrcFolderPath,strSrcW);
+    common::convertToStringW(szDstFolderPath,strDstW);
+    translate_wstring(strSrcW, L'/', L'\\' );
+    translate_wstring(strDstW, L'/', L'\\' );
+
+    return copyFolder(strSrcW, strDstW, false);
 #else
-        rho_copy_folders_content_to_another_folder(szSrcFolderPath, szDstFolderPath);
+    rho_file_impl_copy_folders_content_to_another_folder(szSrcFolderPath, szDstFolderPath);
+    return 0;
 #endif
-    }
+}
+
+/*static*/ unsigned int CRhoFile::moveFoldersContentToAnotherFolder(const char* szSrcFolderPath, const char* szDstFolderPath) 
+{
+#if defined(OS_WINDOWS) || defined(OS_WINCE)
+
+    StringW strSrcW, strDstW;
+    common::convertToStringW(szSrcFolderPath,strSrcW);
+    common::convertToStringW(szDstFolderPath,strDstW);
+    translate_wstring(strSrcW, L'/', L'\\' );
+    translate_wstring(strDstW, L'/', L'\\' );
+
+    return copyFolder(strSrcW, strDstW, true);
+
+#else
+    rho_file_impl_move_folders_content_to_another_folder(szSrcFolderPath, szDstFolderPath);
+    return 0;
+#endif
+}
 
 }
 }
 
 #if defined(OS_MACOSX) || defined(OS_ANDROID)
-// implemented in platform code
+
+    void rho_file_impl_move_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath) {
+        
+    }
 #else
 extern "C" {
     
-    void rho_delete_folder(const char* szFolderPath) {
+    void rho_file_impl_delete_folder(const char* szFolderPath) {
         
     }
     
-    void rho_copy_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath) {
+    void rho_file_impl_copy_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath) {
         
     }
     
+    void rho_file_impl_move_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath) {
+        
+    }
     
 }
 #endif

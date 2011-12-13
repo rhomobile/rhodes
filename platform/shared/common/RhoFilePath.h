@@ -98,6 +98,24 @@ public:
 
         return res;
     }
+#if defined(WINDOWS_PLATFORM)
+    static StringW join(const StringW& path1, const StringW& path2)
+    {
+        boolean bSlash1 = path1.length()>0 && (path1[path1.length()-1] == L'/' || path1[path1.length()-1] == L'\\');
+        boolean bSlash2 = path2.length()>0 && (path2[0] == L'/' || path2[0] == L'\\');
+        StringW res;
+        if (bSlash1 && bSlash2)
+            res = path1 + path2.substr(1);
+        else if ( bSlash1 || bSlash2 )
+            res = path1 + path2;
+        else
+        {
+            res = path1 + L"/" + path2;
+        }
+
+        return res;
+    }
+#endif
 
     static String normalizePath(const String& path1)
     {

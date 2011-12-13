@@ -33,7 +33,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoConnectUtil"
 
-RHO_GLOBAL void delete_files_in_folder(const char *szFolderPath)
+RHO_GLOBAL void rho_file_impl_delete_files_in_folder(const char *szFolderPath)
 {
 //    JNIEnv *env = jnienv();
 //    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);

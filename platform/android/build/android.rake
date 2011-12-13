@@ -751,7 +751,7 @@ namespace "build" do
 
       File.open(File.join(assets, "name"), "w") { |f| f.write($appname) }
       
-      Jake.build_file_map(assets)
+      Jake.build_file_map(assets, "rho.dat")
     end
 
     task :extensions => :genconfig do

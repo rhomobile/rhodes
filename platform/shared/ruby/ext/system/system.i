@@ -28,7 +28,7 @@ extern void rho_sys_set_screen_rotation_notification(const char *url, const char
 extern void rho_sys_app_exit();
 
 #define unzip_file rho_sys_unzip_file
-extern int rho_sys_unzip_file(const char *path);
+extern int rho_sys_unzip_file(const char *path, const char* pwd);
 
 #define set_sleeping rho_sys_set_sleeping
 extern int rho_sys_set_sleeping(int sleeping);
@@ -63,12 +63,11 @@ extern void rho_sys_stop_timer( const char *url );
 #define set_application_icon_badge rho_sys_set_application_icon_badge
 extern void rho_sys_set_application_icon_badge(int badge_number);
 
-#define replace_current_bundle_by_folder rho_sys_replace_current_bundle_by_folder
-extern void rho_sys_replace_current_bundle_by_folder(const char* path);
+#define replace_current_bundle rho_sys_replace_current_bundle
+extern void rho_sys_replace_current_bundle(const char* path);
 
-#define replace_current_bundle_by_zip rho_sys_replace_current_bundle_by_zip
-extern void rho_sys_replace_current_bundle_by_zip(const char* path, const char* zip_password);
-
+#define delete_folder rho_sys_delete_folder
+extern int rho_sys_delete_folder(const char* path);
 
 	#if !defined(bool)
 	#define bool int
@@ -102,6 +101,11 @@ extern void rho_sys_replace_current_bundle_by_zip(const char* path, const char* 
  free((void *) $2);
  free((void *) $3);
 }
+
+%typemap(default) const char* zip_pwd {
+  $1 = 0;
+}
+
 extern VALUE syscall(const char* callname, int nparams, char** param_names, char** param_values);
 extern VALUE get_property(char* property);
 extern VALUE has_network();
@@ -111,7 +115,7 @@ extern int get_screen_height();
 extern void set_push_notification( const char *url, const char* params);
 extern void set_screen_rotation_notification(const char *url, const char* params);
 extern void exit();
-extern void unzip_file( const char *path );
+extern int unzip_file( const char *path, const char* zip_pwd );
 extern int set_sleeping( bool sleeping );
 extern void run_app(const char *appname, VALUE params);
 extern void bring_to_front();
@@ -124,5 +128,5 @@ extern void app_uninstall(const char *appname);
 extern void start_timer( int interval, const char *url, const char* params);
 extern void stop_timer( const char *url);
 extern void set_application_icon_badge(int badge_number);
-extern void replace_current_bundle_by_folder(const char* path);
-extern void replace_current_bundle_by_zip(const char* path, const char* zip_password);
+extern void replace_current_bundle(const char* path);
+extern int  delete_folder(const char* path);
