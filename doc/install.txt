@@ -44,7 +44,9 @@ For Linux installations, and for Windows or Mac OS installations that are not us
 
 2. [RubyGems v1.8.5+](http://rubygems.org/pages/download) (RubyGems offers a .tgz, a .zip, and a .gem download. You want the .zip.) NOTE: Windows doesn't come with the necessary build tools to install gems ('make', for example). There are various ways to get these tools, but the GnuWin32 project at http://gnuwin32.sourceforge.net/ provides the tools, and can be conveniently installed via the GetGnuWin32 installer at http://sourceforge.net/projects/getgnuwin32/files/.
 
-3. Install the Rhode Gem by running:
+3. Install the Rhode Gem.
+
+Run this command to install.
 
 	:::term
   	$ [sudo] gem install rhodes
