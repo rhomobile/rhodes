@@ -625,7 +625,15 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
         NSString *version = [[UIDevice currentDevice] systemVersion];
         *resValue = rho_ruby_create_string([version UTF8String]);
         return 1;
-    }else if (strcasecmp("is_emulator", szPropName) == 0) {
+    }
+    else if (strcasecmp("webview_framework", szPropName) == 0) {
+        NSString *version = [[UIDevice currentDevice] systemVersion];
+        NSString *wvf = @"WEBKIT/";
+        wvf = [wvf stringByAppendingString:version];
+        *resValue = rho_ruby_create_string([wvf UTF8String]);
+        return 1;
+    }
+    else if (strcasecmp("is_emulator", szPropName) == 0) {
         int bSim = 0; 
 #if TARGET_IPHONE_SIMULATOR
 		bSim = 1;
