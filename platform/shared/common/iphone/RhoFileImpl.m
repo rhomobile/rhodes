@@ -31,7 +31,7 @@
 
 #define ZIP_STD 1
 
-extern void delete_files_in_folder(const char *szFolderPath);
+extern void rho_file_impl_delete_files_in_folder(const char *szFolderPath);
 
 @interface RhoFileImpl : NSObject {
 }
@@ -59,18 +59,18 @@ extern void delete_files_in_folder(const char *szFolderPath);
 
 @end
 
-void delete_files_in_folder(const char *szFolderPath)
+void rho_file_impl_delete_files_in_folder(const char *szFolderPath)
 {
 	[RhoFileImpl deleteFilesInFolder:[NSString stringWithUTF8String:szFolderPath]];
 }
 
-void rho_delete_folder(const char* szFolderPath) {
+void rho_file_impl_delete_folder(const char* szFolderPath) {
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	NSError *err;
     [fileManager removeItemAtPath:[NSString stringWithUTF8String:szFolderPath] error:&err];
 }
 
-void rho_copy_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath) {
+void rho_file_impl_copy_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath) {
 
 	NSFileManager *fileManager = [NSFileManager defaultManager];
     
