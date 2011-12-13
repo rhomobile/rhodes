@@ -95,7 +95,7 @@ CFileTransaction::CFileTransaction(const String& strFolder) : m_strFolder(strFol
 
 unsigned int CFileTransaction::start()
 {
-    //CRhoFile::createFolder((m_strFolder + "_temp_journal").c_str());
+    CRhoFile::createFolder((m_strFolder + "_temp_journal").c_str());
 
     m_nError = CRhoFile::copyFoldersContentToAnotherFolder( CFilePath::join(m_strFolder, "").c_str(), (m_strFolder + "_temp_journal").c_str() );
     if (m_nError)
