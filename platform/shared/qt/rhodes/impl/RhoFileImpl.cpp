@@ -54,7 +54,7 @@ bool RemoveDirectory(QString &path, bool deleteDir)
 
 extern "C" {
 
-void delete_files_in_folder(const char *szFolderPath)
+void rho_file_impl_delete_files_in_folder(const char *szFolderPath)
 {
     QString path = QString::fromUtf8(szFolderPath);
     RemoveDirectory(path, false);

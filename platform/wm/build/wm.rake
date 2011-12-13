@@ -153,6 +153,7 @@ namespace "build" do
 
     #    desc "Build wm rhobundle"
     task :rhobundle => ["config:wm", "build:bundle:noxruby", "build:wm:extensions"] do
+	Jake.build_file_map( File.join($srcdir, "apps"), "rhofilelist.txt" )
     end
 
     task :rhodes => ["config:wm", "build:wm:rhobundle"] do
@@ -170,9 +171,17 @@ namespace "build" do
       chdir $startdir
     end
 
-    task :devrhobundle => ["config:set_wm_platform", "win32:rhobundle", "win32:after_bundle"]
-  end
+    task :devrhobundle => ["config:set_wm_platform", "build:wm:rhobundle", "win32:after_bundle"]
+    
+    task :upgrade_package => ["build:wm:rhobundle"] do
+        
+        mkdir_p $targetdir if not File.exists? $targetdir
+        zip_file_path = File.join($targetdir, "upgrade_bundle.zip")
+        Jake.zip_upgrade_bundle( $bindir, zip_file_path)
+    end
 
+  end #wm
+  
   namespace "win32" do
 =begin
     task :extensions => "config:wm" do
@@ -196,10 +205,10 @@ namespace "build" do
     end
 =end
     #    desc "Build win32 rhobundle"
-    task :rhobundle => ["config:wm", "build:bundle:noxruby", "build:wm:extensions"] do
-    end
+    #task :rhobundle => ["config:wm", "build:bundle:noxruby", "build:wm:extensions"] do
+    #end
 
-    task :devrhobundle => ["config:set_win32_platform", :rhobundle, :after_bundle] do
+    task :devrhobundle => ["config:set_win32_platform", "build:wm:rhobundle", :after_bundle] do
     end
 
     task :after_bundle do

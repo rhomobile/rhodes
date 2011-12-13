@@ -127,7 +127,7 @@ boolean CRhodesAppBase::isBaseUrl(const String& strUrl)
 
 extern "C" {
 
-int rho_unzip_file(const char* szZipPath, const char* psw)
+int rho_sys_unzip_file(const char* szZipPath, const char* psw)
 {
     rho::common::CFilePath oPath(szZipPath);
     rho::String strBaseDir = oPath.getFolderName();
@@ -136,14 +136,14 @@ int rho_unzip_file(const char* szZipPath, const char* psw)
     rho::common::convertToStringW(szZipPath, strZipPathW);
     HZIP hz = OpenZipFile(strZipPathW.c_str(), psw);
     if ( !hz )
-        return 0;
+        return -1;
 
 	// Set base for unziping
     SetUnzipBaseDir(hz, rho::common::convertToStringW(strBaseDir).c_str());
 #else
     HZIP hz = OpenZipFile(szZipPath, psw);
     if ( !hz )
-        return 0;
+        return -1;
 
 	// Set base for unziping
     SetUnzipBaseDir(hz,strBaseDir.c_str() );
@@ -167,7 +167,7 @@ int rho_unzip_file(const char* szZipPath, const char* psw)
 
 	CloseZip(hz);
 
-    return res == ZR_OK ? 1 : 0;
+    return res;
 }
 
 #ifdef RHODES_EMULATOR

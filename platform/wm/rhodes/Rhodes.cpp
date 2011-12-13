@@ -58,6 +58,7 @@ extern "C" void rho_ringtone_manager_stop();
 extern "C" void rho_sysimpl_sethas_network(int nValue);
 extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue);
 extern "C" HINSTANCE rho_wmimpl_get_appinstance();
+extern "C" int rho_sys_check_rollback_bundle(const char* szRhoPath);
 
 #if defined(_WIN32_WCE) && !defined(OS_PLATFORM_MOTCE)
 #include <regext.h>
@@ -229,6 +230,15 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 	return __super::ParseCommandLine(lpCmdLine, pnRetCode);
 }
 
+extern "C" void rho_sys_impl_show_errormessage(const char* szTitle, const char* szMsg)
+{
+    //alert_show_status( "Bundle update.", ("Error happen when replace bundle: " + strError).c_str(), 0 );
+    StringW strMsgW, strTitleW;
+    convertToStringW(szMsg, strMsgW);
+    convertToStringW(szTitle, strTitleW);
+    ::MessageBoxW(0, strMsgW.c_str(), strTitleW.c_str(), MB_ICONERROR | MB_OK);
+}
+
 // This method is called immediately before entering the message loop.
 // It contains initialization code for the application.
 // Returns:
@@ -264,6 +274,12 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 		return S_FALSE;
 	}
 #endif
+
+    if ( !rho_sys_check_rollback_bundle(rho_native_rhopath()) )
+    {
+        rho_sys_impl_show_errormessage( "Bundle update.", "Application is currupted. Reinstall it , please.");
+        return S_FALSE;
+    }
 
 	rho_logconf_Init(m_strRootPath.c_str(), m_logPort.c_str());
 
@@ -521,6 +537,15 @@ CMainWindow* Rhodes_getMainWindow() {
 	return _AtlModule.GetMainWindowObject();
 }
 
+extern "C" void rho_wmsys_run_app(const char* szPath, const char* szParams );
+void rho_platform_restart_application() 
+{
+	char module[MAX_PATH];
+    ::GetModuleFileNameA(NULL,module,MAX_PATH);
+                                       
+    rho_wmsys_run_app(module, (g_strCmdLine + " -restarting").c_str());
+}
+
 static inline char *
 translate_char(char *p, int from, int to)
 {
@@ -774,6 +799,7 @@ HBITMAP SHLoadImageFile(  LPCTSTR pszFileName )
     DeleteDC(hdcMem);
     DeleteDC(hDC);
 
+    delete image;
     return hBitmap;
 }
 

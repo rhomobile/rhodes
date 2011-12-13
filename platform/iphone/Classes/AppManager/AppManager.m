@@ -757,7 +757,7 @@ void rho_sys_set_application_icon_badge(int badge_number) {
 }
 
 void rho_platform_restart_application() {
-    [Rhodes restart_app];
+//    [Rhodes restart_app];
 }
 
 /*

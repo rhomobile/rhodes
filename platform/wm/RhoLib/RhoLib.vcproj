@@ -2316,6 +2316,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\shared\common\BundleManager.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\shared\common\InputStream.h"
 				>
 			</File>

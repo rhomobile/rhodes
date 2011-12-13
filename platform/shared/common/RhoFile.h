@@ -63,18 +63,19 @@ public:
 
     static unsigned int getFileSize( const char* szFilePath );
     static bool         isFileExist( const char* szFilePath );
-    static void         deleteFile( const char* szFilePath );
-    static void         renameFile( const char* szOldFilePath, const char* szNewFilePath );
+    static unsigned int deleteFile( const char* szFilePath );
+    static unsigned int renameFile( const char* szOldFilePath, const char* szNewFilePath );
     static void         deleteFilesInFolder(const char* szFolderPath);
     static void         loadTextFile(const char* szFilePath, String& strFile);
-    static void         createFolder(const char* szDirPath);
+    static unsigned int createFolder(const char* szDirPath);
     static void         recursiveCreateDir(const char* szFolderPath, const char* szBasePath);
     static void         readStringFromFile( const char* szFilePath, String& strData );
     static void         writeStringToFile( const char* szFilePath, String& strData );
     
-    static void         copyFile(const char* szSrcFile, const char* szDstFile);
-    static void         deleteFolder(const char* szFolderPath);
-    static void         copyFoldersContentToAnotherFolder(const char* szSrcFolderPath, const char* szDstFolderPath);
+    static unsigned int copyFile(const char* szSrcFile, const char* szDstFile);
+    static unsigned int deleteFolder(const char* szFolderPath);
+    static unsigned int copyFoldersContentToAnotherFolder(const char* szSrcFolderPath, const char* szDstFolderPath);
+    static unsigned int moveFoldersContentToAnotherFolder(const char* szSrcFolderPath, const char* szDstFolderPath);
 
 private:
     CRhoFile(const CRhoFile&);
@@ -85,9 +86,10 @@ private:
 }
 }
 
-extern "C" void delete_files_in_folder(const char *szFolderPath);
+extern "C" void rho_file_impl_delete_files_in_folder(const char *szFolderPath);
 
-extern "C" void rho_delete_folder(const char* szFolderPath);
-extern "C" void rho_copy_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath);
+extern "C" void rho_file_impl_delete_folder(const char* szFolderPath);
+extern "C" void rho_file_impl_copy_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath);
+extern "C" void rho_file_impl_move_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath);
 
 #endif //_RHOFILE_H_

@@ -478,10 +478,10 @@ class Jake
     f.close
   end
 
-  def self.build_file_map(dir)
+  def self.build_file_map(dir, file_name)
     psize = dir.size + 1
 
-    File.open(File.join(dir, 'rho.dat'), 'w') do |dat|
+    File.open(File.join(dir, file_name), 'w') do |dat|
         Dir.glob(File.join(dir, '**/*')).sort.each do |f|
           relpath = f[psize..-1]
 
@@ -497,8 +497,47 @@ class Jake
 
           dat.puts "#{relpath}\t#{type}\t#{size.to_s}\t#{tm.to_s}"
         end
-    end  
-end
-  
+    end 
+  end
+
+  def self.zip_upgrade_bundle(folder_path, zip_file_path)
+     
+      File.delete(zip_file_path) if File.exists?(zip_file_path)
+
+      currentdir = Dir.pwd()
+      Dir.chdir folder_path
+      
+      if RUBY_PLATFORM =~ /(win|w)32$/
+        begin
+      
+          require 'rubygems'
+          require 'zip/zip'
+          require 'find'
+          require 'fileutils'
+          include FileUtils
+
+          Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE)do |zipfile|
+            Find.find("RhoBundle") do |path|
+              Find.prune if File.basename(path)[0] == ?.
+              next if path.start_with?("RhoBundle/lib") || path.start_with?("RhoBundle/db")
+              
+              puts "add to zip : #{path}"
+              zipfile.add(path, path)
+            end 
+          end
+        rescue Exception => e
+          puts "ERROR : #{e}"
+          puts 'Require "rubyzip" gem for make zip file !'
+          puts 'Install gem by "gem install rubyzip"'
+        end        
+      else
+        chdir File.join($srcdir, "apps")
+        sh %{zip -r upgrade_bundle.zip .}
+      end
+      
+      Dir.chdir currentdir
+
+  end
+    
 end
   
