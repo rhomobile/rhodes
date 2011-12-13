@@ -244,7 +244,7 @@ Callback points to the `geo_callback` in the Settings controller.rb:
       if !GeoLocation.known_position?
 		# wait till GPS receiver acquire position
         GeoLocation.set_notification( url_for(:action => :geo_callback), "")
-        redirect wait
+        redirect url_for :action => :wait
       else
 		# show position
         render
