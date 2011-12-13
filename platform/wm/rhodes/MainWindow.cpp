@@ -55,6 +55,7 @@
 
 #ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 #include "MetaHandler.h"
+#else
 #include "../../../../Motorola-Extensions/RhoElements/RhoElementsMsgs.h"
 #endif
 
