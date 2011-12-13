@@ -62,6 +62,9 @@
 #define PB_WINDOW_RESTORE				WM_USER + 10
 #define PB_SCREEN_ORIENTATION_CHANGED	WM_USER + 11
 #define PB_NEWGPSDATA					WM_USER + 12
+
+#include "../../../../Motorola-Extensions/RhoElements/RhoElementsMsgs.h"
+
 #else
 #if defined (_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
 #include <pvdispid.h>
@@ -89,12 +92,6 @@ static UINT WM_BLUETOOTH_DISCOVERED    = ::RegisterWindowMessage(L"RHODES_WM_BLU
 static UINT WM_BLUETOOTH_CALLBACK	   = ::RegisterWindowMessage(L"RHODES_WM_BLUETOOTH_CALLBACK");
 static UINT WM_EXECUTE_COMMAND		   = ::RegisterWindowMessage(L"RHODES_WM_EXECUTE_COMMAND");
 static UINT WM_EXECUTE_RUNNABLE		   = ::RegisterWindowMessage(L"RHODES_WM_EXECUTE_RUNNABLE");
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-extern "C" UINT WM_BROWSER_ONDOCUMENTCOMPLETE;
-extern "C" UINT WM_BROWSER_ONNAVIGATECOMPLETE;
-extern "C" UINT WM_BROWSER_ONTITLECHANGE;
-extern "C" bool Rhodes_WM_ProcessBeforeNavigate(LPCTSTR url);
-#endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 
 typedef struct _TCookieData {
     char* url;
@@ -191,6 +188,7 @@ public:
         MESSAGE_HANDLER(WM_BROWSER_ONDOCUMENTCOMPLETE, OnBrowserDocumentComplete);
         MESSAGE_HANDLER(WM_BROWSER_ONNAVIGATECOMPLETE, OnNavigateComplete);
         MESSAGE_HANDLER(WM_BROWSER_ONTITLECHANGE, OnTitleChange);
+        MESSAGE_HANDLER(WM_BROWSER_ONBEFORENAVIGATE, OnBeforeNavigate);
         MESSAGE_RANGE_HANDLER(PB_NAVIGATETAB, PB_NEWGPSDATA, OnWebKitMessages)
 #endif
 
@@ -243,9 +241,11 @@ private:
     LRESULT OnNavigateComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnTitleChange (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnWebKitMessages (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+    LRESULT OnBeforeNavigate (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);    
 #endif
 
 public:
+
 #ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     BEGIN_SINK_MAP(CMainWindow)
         SINK_ENTRY(ID_BROWSER, DISPID_BEFORENAVIGATE2, &CMainWindow::OnBeforeNavigate2)
@@ -284,8 +284,6 @@ private:
 	void restoreWebView();
 	void hideWebView();
 	void showWebView();
-
-	
 
 private:
 	NativeViewFactory* mNativeViewFactory;

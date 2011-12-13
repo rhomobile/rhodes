@@ -31,11 +31,15 @@
 //#include <soundfile.h>
 //#include <nled.h>
 #endif
+
 #include <string>
+#include <hash_map>
+
 #if defined(OS_WINDOWS)
 #pragma warning(disable : 4995)
 #include <strsafe.h>
 #endif
+
 #include "resource.h"
 #include "MainWindow.h"
 #include "common/StringConverter.h"
@@ -48,15 +52,10 @@
 #include "common/RhoFilePath.h"
 #include "common/RhoFile.h"
 #include "bluetooth/Bluetooth.h"
+
 #ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 #include "MetaHandler.h"
-#endif
-#include <hash_map>
-
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-UINT WM_BROWSER_ONDOCUMENTCOMPLETE = ::RegisterWindowMessage(L"RHODES_WM_BROWSER_ONDOCUMENTCOMPLETE");
-UINT WM_BROWSER_ONNAVIGATECOMPLETE = ::RegisterWindowMessage(L"RHODES_WM_BROWSER_ONNAVIGATECOMPLETE");
-UINT WM_BROWSER_ONTITLECHANGE      = ::RegisterWindowMessage(L"RHODES_WM_BROWSER_ONTITLECHANGE");
+#include "../../../../Motorola-Extensions/RhoElements/RhoElementsMsgs.h"
 #endif
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
@@ -66,7 +65,9 @@ IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 extern "C" void rho_sysimpl_sethas_network(int nValue);
 extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue);
 extern "C" void rho_geoimpl_turngpsoff();
+
 rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent);
+bool Rhodes_WM_ProcessBeforeNavigate(LPCTSTR url);
 
 using namespace rho::common;
 using namespace rho;
@@ -451,6 +452,12 @@ LRESULT CMainWindow::OnTitleChange (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 LRESULT CMainWindow::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     return m_pBrowserEng->OnWebKitMessages(uMsg, wParam, lParam, bHandled);
+}
+
+LRESULT CMainWindow::OnBeforeNavigate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    Rhodes_WM_ProcessBeforeNavigate((LPCTSTR)lParam);
+    return 0;
 }
 #endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 
