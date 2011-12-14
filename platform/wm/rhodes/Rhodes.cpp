@@ -37,12 +37,6 @@
 #include "common/RhoFilePath.h"
 #include "common/app_build_capabilities.h"
 
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-#include "rhoelements/RhoWKBrowserEngine.h"
-#else
-#include "IEBrowserEngine.h"
-#endif
-
 using namespace rho;
 using namespace rho::common;
 using namespace std;
@@ -59,6 +53,13 @@ extern "C" void rho_sysimpl_sethas_network(int nValue);
 extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue);
 extern "C" HINSTANCE rho_wmimpl_get_appinstance();
 extern "C" int rho_sys_check_rollback_bundle(const char* szRhoPath);
+
+#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+class CEng;
+extern "C" CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
+extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
+#endif
+
 
 #if defined(_WIN32_WCE) && !defined(OS_PLATFORM_MOTCE)
 #include <regext.h>
@@ -118,7 +119,7 @@ bool g_restartOnExit = false;
 rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
 {
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-    return CRhoWKBrowserEngine::getInstance(hwndParent, rho_wmimpl_get_appinstance());
+    return rho_wmimpl_get_webkitBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
 #else
     return new CIEBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
 #endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER

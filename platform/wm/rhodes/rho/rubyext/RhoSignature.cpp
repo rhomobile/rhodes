@@ -16,12 +16,16 @@
 #endif
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-#include "RhoElements\Plugins\PB_Signature_PLG\Signature.h"
+extern void *rho_wmimpl_createSignatureInstance(HINSTANCE hInst, HWND hWnd, RECT rcWnd, int bgColor, int penColor, int penWidth);
+extern void rho_wmimpl_deleteSignature(void *inkImpl);
+extern LRESULT rho_wmimpl_signatureSigProcCall(void *inkImpl, HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+extern void rho_wmimpl_signatureClearScreenCall(void *inkImpl);
 #endif
 
 extern "C" HWND getMainWnd();
 
-namespace rho {
+namespace rho 
+{
 using namespace common;
 
 CRhoSignatureWindow* CRhoSignature::m_pSigWindow = 0;
@@ -98,8 +102,7 @@ LRESULT CRhoSignatureWindow::OnDestroyDialog(UINT /*uMsg*/, WPARAM /*wParam*/, L
 
     if (m_pInkImpl != NULL )
     {
-        CSignature* pRESig = (CSignature*)m_pInkImpl;
-        delete pRESig;
+        rho_wmimpl_deleteSignature(m_pInkImpl);
     }
 #else
 
@@ -163,9 +166,10 @@ LRESULT CRhoSignatureWindow::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
     }
 
     #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-        CSignature* pRESig = new CSignature(_AtlBaseModule.GetResourceInstance(), getMainWnd(), 0, 0);
-        pRESig->RhoInitialise(m_hWnd, rcWnd, getParams().getBgColor(), getParams().getPenColor(), getParams().getPenWidth());
-        m_pInkImpl = pRESig;
+        //CSignature* pRESig = new CSignature(_AtlBaseModule.GetResourceInstance(), getMainWnd(), 0, 0);
+        //pRESig->RhoInitialise(m_hWnd, rcWnd, getParams().getBgColor(), getParams().getPenColor(), getParams().getPenWidth());
+        m_pInkImpl = rho_wmimpl_createSignatureInstance(_AtlBaseModule.GetResourceInstance(), m_hWnd, (RECT)rcWnd, 
+                getParams().getBgColor(), getParams().getPenColor(), getParams().getPenWidth());
     #elif defined(_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE ) 
 	    HRESULT hr = S_OK;
 	    HRESULT co_init_result = CoInitializeEx(NULL, 0); //COINIT_APARTMENTTHREADED
@@ -218,8 +222,7 @@ LRESULT CRhoSignatureWindow::OnClearCommand(WORD /*wNotifyCode*/, WORD wID, HWND
 LRESULT CRhoSignatureWindow::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-    CSignature* pRESig = (CSignature*)m_pInkImpl;
-    return pRESig->SigProc( m_hWnd, uMsg, wParam, lParam);
+    return rho_wmimpl_signatureSigProcCall(m_pInkImpl, m_hWnd, uMsg, wParam, lParam);
 #else
     bHandled = FALSE;
 #endif
@@ -229,8 +232,7 @@ LRESULT CRhoSignatureWindow::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lPar
 LRESULT CRhoSignatureWindow::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-    CSignature* pRESig = (CSignature*)m_pInkImpl;
-    return pRESig->SigProc( m_hWnd, uMsg, wParam, lParam);
+    return rho_wmimpl_signatureSigProcCall(m_pInkImpl, m_hWnd, uMsg, wParam, lParam);
 #else
     bHandled = FALSE;
 #endif
@@ -240,8 +242,7 @@ LRESULT CRhoSignatureWindow::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam
 LRESULT CRhoSignatureWindow::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-    CSignature* pRESig = (CSignature*)m_pInkImpl;
-    return pRESig->SigProc( m_hWnd, uMsg, wParam, lParam);
+    return rho_wmimpl_signatureSigProcCall(m_pInkImpl, m_hWnd, uMsg, wParam, lParam);
 #else
     bHandled = FALSE;
 #endif
@@ -251,8 +252,7 @@ LRESULT CRhoSignatureWindow::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam
 LRESULT CRhoSignatureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-    CSignature* pRESig = (CSignature*)m_pInkImpl;
-    return pRESig->SigProc( m_hWnd, uMsg, wParam, lParam);
+    return rho_wmimpl_signatureSigProcCall(m_pInkImpl, m_hWnd, uMsg, wParam, lParam);
 #else
     CPaintDC oPaintDC(m_hWnd);
     CRect rcClient;
@@ -275,8 +275,7 @@ void CRhoSignatureWindow::clearImage()
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 	if (m_pInkImpl != NULL) 
     {
-        CSignature* pRESig = (CSignature*)m_pInkImpl;
-        pRESig->ClearScreen();
+        rho_wmimpl_signatureClearScreenCall(m_pInkImpl);
     }
 #else
 

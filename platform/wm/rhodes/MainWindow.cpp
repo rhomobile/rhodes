@@ -55,7 +55,6 @@
 
 #ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 #include "MetaHandler.h"
-#include "../../../../Motorola-Extensions/RhoElements/RhoElementsMsgs.h"
 #endif
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
