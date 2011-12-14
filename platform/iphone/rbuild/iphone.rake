@@ -991,7 +991,7 @@ namespace "run" do
     puts "Agg Total: #{$total}"
     puts "Agg Passed: #{$passed}"
     puts "Agg Failed: #{$failed}" 
-    exit 1 if $total==0
+    exit 1 if $total.to_i==0
     exit $failed.to_i
   end
   
