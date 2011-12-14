@@ -344,7 +344,7 @@ namespace "config" do
     $builddir = iphonepath + "/rbuild"
     $bindir = Jake.get_absolute(iphonepath) + "/bin"
     $srcdir =  $bindir + "/RhoBundle"
-    $targetdir = iphonepath + "/target" 
+    $targetdir = $app_path + "/bin/target/iphone" 
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
     $tmpdir =  $bindir +"/tmp"
 
@@ -453,6 +453,15 @@ namespace "build" do
       File.open(File.join($srcdir, "name"), "w") { |f| f.write($app_config["name"]) }
 
     end
+    
+    task :upgrade_package => ["build:iphone:rhobundle"] do
+        #puts '$$$$$$$$$$$$$$$$$$'
+        #puts 'targetdir = '+$targetdir.to_s
+        #puts 'bindir = '+$bindir.to_s
+        mkdir_p $targetdir if not File.exists? $targetdir
+        zip_file_path = File.join($targetdir, "upgrade_bundle.zip")
+        Jake.zip_upgrade_bundle( $bindir, zip_file_path)
+    end    
 
     task :extensions => "config:iphone" do
       ENV['RHO_PLATFORM'] = 'iphone'

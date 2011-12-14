@@ -531,8 +531,18 @@ class Jake
           puts 'Install gem by "gem install rubyzip"'
         end        
       else
-        chdir File.join($srcdir, "apps")
-        sh %{zip -r upgrade_bundle.zip .}
+        #chdir folder_path
+        temp_dir = folder_path + '_tmp'
+        cp_r folder_path, temp_dir
+        chdir temp_dir         
+        rm_rf File.join(temp_dir, 'RhoBundle/lib')         
+        rm_rf File.join(temp_dir, 'RhoBundle/db')         
+        rm_rf File.join(temp_dir, 'RhoBundle/hash')         
+        rm_rf File.join(temp_dir, 'RhoBundle/name')         
+        sh %{zip -r temporary_archive.zip .}
+        cp_r 'temporary_archive.zip', zip_file_path
+        rm_rf 'temporary_archive.zip'          
+        rm_rf temp_dir          
       end
       
       Dir.chdir currentdir
