@@ -1,9 +1,4 @@
 # -*- encoding: utf-8 -*-
-ruby_version_is "1.9" do
-  Encoding.default_external = Encoding::UTF_8
-  Encoding.default_internal = Encoding::UTF_8
-end
-
 describe :stringio_each_char, :shared => true do
   before(:each) do
     ruby_version_is ""..."1.9" do
