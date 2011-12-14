@@ -513,15 +513,15 @@ namespace "run" do
     end
 
     task :phone_spec do
-      exit 1 if Jake.run_spec_app('wm','phone_spec')
+      Jake.run_spec_app('wm','phone_spec')
       exit 1 if $total.to_i==0
-      exit 0
+      exit $failed.to_i
     end
 
     task :framework_spec do
-      exit 1 if Jake.run_spec_app('wm','framework_spec')
+      Jake.run_spec_app('wm','framework_spec')
       exit 1 if $total.to_i==0
-      exit 0
+      exit $failed.to_i
     end
 
     namespace "device" do
