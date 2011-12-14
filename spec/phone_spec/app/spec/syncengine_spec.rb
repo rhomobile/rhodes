@@ -20,10 +20,6 @@
 #require 'spec/spec_helper'
 require 'rho/rho'
 
-require 'rest_client'
-require 'json'
-
-
 def getProduct
     return Product_s if $spec_settings[:schema_model]
     
@@ -63,20 +59,6 @@ describe "SyncEngine_test" do
   before(:all)  do
     SyncEngine.set_threaded_mode(false)
   
-    # login to the server
-    unless @srv_token
-      result = RestClient.post("#{SYNC_SERVER_BASE_URL}/login",
-                            { :login => SYNC_SERVER_CONSOLE_LOGIN, :password => SYNC_SERVER_CONSOLE_PASSWORD }.to_json,
-                            :content_type => :json)
-      srv_session_cookie = 'rhoconnect_session='  + result.cookies['rhoconnect_session']
-      @srv_token = RestClient.post("#{SYNC_SERVER_BASE_URL}/api/get_api_token",'',{ 'Cookie' => srv_session_cookie })
-    end
-
-    # reset server
-    RestClient.post("#{SYNC_SERVER_BASE_URL}/api/reset",
-                    {:api_token => @srv_token}.to_json,
-                    :content_type => :json)
-
     # init client
     ::Rhom::Rhom.database_fullclient_reset_and_logout
     
