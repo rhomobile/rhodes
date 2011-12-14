@@ -47,6 +47,7 @@
 #if defined(OS_WINDOWS)
 #include "menubar.h"
 #endif
+
 #include "LogView.h"
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
@@ -63,8 +64,10 @@
 #define PB_SCREEN_ORIENTATION_CHANGED	WM_USER + 11
 #define PB_NEWGPSDATA					WM_USER + 12
 
-#include "../../../../Motorola-Extensions/RhoElements/RhoElementsMsgs.h"
-
+extern UINT WM_BROWSER_ONDOCUMENTCOMPLETE;
+extern UINT WM_BROWSER_ONNAVIGATECOMPLETE;
+extern UINT WM_BROWSER_ONTITLECHANGE;
+extern UINT WM_BROWSER_ONBEFORENAVIGATE;
 #else
 #if defined (_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
 #include <pvdispid.h>
