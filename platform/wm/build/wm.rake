@@ -91,10 +91,12 @@ namespace "config" do
     $cabwiz = "cabwiz" if $cabwiz.nil?
     $webkit_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("webkit_browser").nil?) 
     $wk_data_dir = nil
-    
+
     begin
-      require "rhoelements-data"
-      $wk_data_dir = $data_dir[0]
+      if $webkit_capability
+        require "rhoelements-data"
+        $wk_data_dir = $data_dir[0]
+      end
     rescue
       puts "rhoelements gem is't found, webkit capability is disabled"
       $webkit_capability = "0"
