@@ -1026,7 +1026,7 @@ end
       def method_missing(name, *args)
         unless name == Fixnum
           if name[name.length()-1] == '='
-            RhoConf.set_property_by_name(name.to_s.chop,args[0]) 
+            RhoConf.set_property_by_name(name.to_s.chop,args[0] ? args[0].to_s : "") 
           else
             RhoConf.get_property_by_name(name.to_s)             
           end
