@@ -41,6 +41,13 @@
 #include "common/app_build_capabilities.h"
 
 
+
+extern int rho_sys_check_rollback_bundle(const char* szRhoPath);
+void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg);
+
+
+
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Rhodes"
 
@@ -96,7 +103,7 @@ static BOOL app_created = NO;
 
 @implementation Rhodes
 
-@synthesize window, player, cookies, signatureDelegate, nvDelegate;
+@synthesize window, player, cookies, signatureDelegate, nvDelegate, mBlockExit;
 #ifdef __IPHONE_4_0
 @synthesize eventStore;
 #endif
@@ -570,9 +577,7 @@ static Rhodes *instance = NULL;
 
 - (void)doStartUp {
     NSLog(@"Rhodes starting application...");
-    instance = self;
-    application = [UIApplication sharedApplication];
-    rotationLocked = NO;
+    
     
     [NSThread setThreadPriority:1.0];
     
@@ -842,10 +847,28 @@ static Rhodes *instance = NULL;
 
 #ifdef __IPHONE_3_0
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
+    
+    self.mBlockExit = NO;
+    
+    
+    instance = self;
+    self->application = [UIApplication sharedApplication];
+    rotationLocked = NO;
+    
+    if ( !rho_sys_check_rollback_bundle(rho_native_rhopath()) )
+    {
+        
+        rho_sys_impl_exit_with_errormessage( "Bundle update.", "Application is currupted. Reinstall it , please.");
+        return NO;
+    }    
+    
+    
 
 	NSURL* url = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
     NSLog(@"didFinishLaunchingWithOptions: %@", url);
 	
+    
 	// store start parameter
 	NSString* start_parameter = [NSString stringWithUTF8String:""];
 	if (url != nil) {
@@ -892,6 +915,21 @@ static Rhodes *instance = NULL;
 	
 	return NO;
 }
+
+- (void) exit_with_errormessage:(NSString*)title message:(NSString*)message 
+{
+    [Rhodes sharedInstance].mBlockExit = YES;
+    
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title 
+                                                    message:message
+                                                   delegate:self 
+                                          cancelButtonTitle:@"OK" 
+                                          otherButtonTitles: nil];
+    [alert show];
+    [alert release];
+    
+}
+
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
     exit(EXIT_SUCCESS);
@@ -1036,6 +1074,13 @@ static Rhodes *instance = NULL;
 @end
 
 // Native functions
+
+
+void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg) {
+
+    [[Rhodes sharedInstance] exit_with_errormessage:[NSString stringWithUTF8String:szTitle] message:[NSString stringWithUTF8String:szMsg]];
+}
+
 
 void rho_map_location(char* query) {
     [[Rhodes sharedInstance] mapLocation:[NSString stringWithUTF8String:query]];

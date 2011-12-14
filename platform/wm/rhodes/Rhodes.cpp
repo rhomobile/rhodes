@@ -232,7 +232,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 	return __super::ParseCommandLine(lpCmdLine, pnRetCode);
 }
 
-extern "C" void rho_sys_impl_show_errormessage(const char* szTitle, const char* szMsg)
+extern "C" void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg)
 {
     //alert_show_status( "Bundle update.", ("Error happen when replace bundle: " + strError).c_str(), 0 );
     StringW strMsgW, strTitleW;
