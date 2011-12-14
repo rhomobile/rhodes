@@ -1711,10 +1711,10 @@ namespace "run" do
         end
 
         puts "start read log"
-        
+
+        io = File.new(log_name, 'r:UTF-8')
         end_spec = false
         while !end_spec do
-            io = File.new(log_name, "r")
         
             io.each do |line|
                 #puts line
@@ -1722,11 +1722,11 @@ namespace "run" do
                 end_spec = !Jake.process_spec_output(line)
                 break if end_spec
             end
-            io.close
             
             break unless AndroidTools.application_running($device_flag, $app_package_name)
             sleep(5) unless end_spec
         end
+        io.close
 
         Jake.process_spec_results(start)        
         
