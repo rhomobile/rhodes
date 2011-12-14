@@ -514,11 +514,13 @@ namespace "run" do
 
     task :phone_spec do
       exit 1 if Jake.run_spec_app('wm','phone_spec')
+      exit 1 if $total.to_i==0
       exit 0
     end
 
     task :framework_spec do
       exit 1 if Jake.run_spec_app('wm','framework_spec')
+      exit 1 if $total.to_i==0
       exit 0
     end
 
@@ -610,13 +612,15 @@ namespace "run" do
     end
 
     task :phone_spec do
-      exit 1 if Jake.run_spec_app('win32','phone_spec')
-      exit 0
+      if Jake.run_spec_app('win32','phone_spec')
+      exit 1 if $total.to_i==0
+      exit $failed.to_i
     end
 
     task :framework_spec do
-      exit 1 if Jake.run_spec_app('win32','framework_spec')
-      exit 0
+      Jake.run_spec_app('win32','framework_spec')
+      exit 1 if $total.to_i==0
+      exit $failed.to_i
     end
 
   end
