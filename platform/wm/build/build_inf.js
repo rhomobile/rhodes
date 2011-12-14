@@ -186,7 +186,7 @@ function fill_extensions_files(exts) {
     }
 }
 
-function pinf(platform,es,exts,name,vendor,show_shortcut,webkit) {
+function pinf(platform,es,exts,name,vendor,show_shortcut,webkit,rhogempath) {
 
     p("[Version]");
     p("Signature=\"$Windows NT$\"");
@@ -215,9 +215,9 @@ function pinf(platform,es,exts,name,vendor,show_shortcut,webkit) {
     p("[SourceDisksNames]");
     p("1=,\"\",,\"..\\bin\\"+settings[platform][0]+"\\rhodes\\Release\\\"");
     if (webkit) {
-        p("2=,\"\",,\"..\\..\\..\\..\\Motorola-Extensions\\RhoElements\\bin\\\"");
-        p("3=,\"\",,\"..\\..\\..\\..\\Motorola-Extensions\\RhoElements\\bin\\NPAPI\\\"");
-        p("4=,\"\",,\"..\\..\\..\\..\\Motorola-Extensions\\RhoElements\\Config\\\"");
+        p("2=,\"\",," + rhogempath + "\"\\bin\\\"");
+        p("3=,\"\",," + rhogempath + "\"\\bin\\NPAPI\\\"");
+        p("4=,\"\",," + rhogempath + "\"\\Config\\\"");
     }
     get_source_disks_names(es);
     p("");
@@ -287,6 +287,7 @@ function main() {
     // args(4) = srcdir
     // args(5) = hidden_app
     // args(6) = include motorola webkit binaries and configs
+    // args(7) = rhoelements gem folder path
 
     var args = WScript.Arguments;
     fso = new ActiveXObject("Scripting.FileSystemObject");
@@ -300,7 +301,7 @@ function main() {
 
     var es = expand_sources(sources);
     var exts = expand_extensions(args(1));
-    pinf(args(1),es,exts,args(2),args(3), (args(5) == "0"), (args(6) == "1"));
+    pinf(args(1),es,exts,args(2),args(3), (args(5) == "0"), (args(6) == "1"), args(7));
 
     output_file.Close();
 }
