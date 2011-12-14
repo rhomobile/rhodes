@@ -1731,10 +1731,10 @@ namespace "run" do
         Jake.process_spec_results(start)        
         
         # stop app
-        do_uninstall($device_flag)
         if $device_flag == '-e'
             AndroidTools.kill_adb_and_emulator
         else
+            do_uninstall($device_flag)
             AndroidTools.kill_adb
         end
 
