@@ -25,12 +25,7 @@
 #------------------------------------------------------------------------
 
 def kill_detool
-  #if RUBY_PLATFORM =~ /(win|w)32$/
-  # Windows
   `taskkill /F /IM detool.exe`
-  #else
-  #  `killall -9 detool`
-  #end
 end
 
 def sign (cabfile)
@@ -94,11 +89,23 @@ namespace "config" do
     $vcbuild = "vcbuild" if $vcbuild.nil?
     $cabwiz = File.join($config["env"]["paths"]["cabwiz"], "cabwiz.exe") if $config["env"]["paths"]["cabwiz"]
     $cabwiz = "cabwiz" if $cabwiz.nil?
-    $webkit_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("webkit_browser").nil?)
+    $webkit_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("webkit_browser").nil?) 
+    $wk_data_dir = nil
+    
+    begin
+      require "rhoelements-data"
+      $wk_data_dir = $data_dir[0]
+    rescue
+      puts "rhoelements gem is't found, webkit capability is disabled"
+      $webkit_capability = "0"
+      $wk_data_dir = ""
+    end
+        
     unless $sdk
       $sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
       $sdk = $app_config["wm"]["sdk"] if $app_config["wm"] && $app_config["wm"]["sdk"]
     end
+
     unless $build_solution
         $build_solution = 'rhodes.sln'
     end
@@ -153,7 +160,7 @@ namespace "build" do
 
     #    desc "Build wm rhobundle"
     task :rhobundle => ["config:wm", "build:bundle:noxruby", "build:wm:extensions"] do
-	Jake.build_file_map( File.join($srcdir, "apps"), "rhofilelist.txt" )
+	    Jake.build_file_map( File.join($srcdir, "apps"), "rhofilelist.txt" )
     end
 
     task :rhodes => ["config:wm", "build:wm:rhobundle"] do
@@ -315,8 +322,9 @@ namespace "device" do
       build_platform = 'wm653' if $sdk == "Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
       build_platform = 'ce5' if $sdk == "MC3000c50b (ARMV4I)"
 
-      if $webkit_capability
-        wk_config_dir = '../../../../Motorola-Extensions/RhoElements/Config'
+      if $webkit_capability and $wk_data_dir != nil 
+        wk_config_dir = $wk_data_dir + "/Config" #'../../../../Motorola-Extensions/RhoElements/Config'
+        puts "wk_config_dir - " + wk_config_dir # for test
         config_files = ['Config','Plugin','RegEx']
         config_files.each do |filename|
           filepath = File.join(wk_config_dir,filename + ".xml.template")
@@ -331,7 +339,8 @@ namespace "device" do
         end
       end
 
-      args = ['build_inf.js', $appname + ".inf", build_platform, '"' + $app_config["name"] +'"', $app_config["vendor"], '"' + $srcdir + '"', $hidden_app, ($webkit_capability ? "1" : "0")]
+      args = ['build_inf.js', $appname + ".inf", build_platform, '"' + $app_config["name"] +'"', $app_config["vendor"], '"' + $srcdir + '"', $hidden_app, ($webkit_capability ? "1" : "0"), $wk_data_dir]
+        
       puts Jake.run('cscript',args)
       unless $? == 0
         puts "Error running build_inf"
