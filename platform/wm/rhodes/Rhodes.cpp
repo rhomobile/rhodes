@@ -279,7 +279,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
     if ( !rho_sys_check_rollback_bundle(rho_native_rhopath()) )
     {
-        rho_sys_impl_show_errormessage( "Bundle update.", "Application is currupted. Reinstall it , please.");
+        rho_sys_impl_exit_with_errormessage( "Bundle update.", "Application is currupted. Reinstall it , please.");
         return S_FALSE;
     }
 
