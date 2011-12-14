@@ -612,7 +612,7 @@ namespace "run" do
     end
 
     task :phone_spec do
-      if Jake.run_spec_app('win32','phone_spec')
+      Jake.run_spec_app('win32','phone_spec')
       exit 1 if $total.to_i==0
       exit $failed.to_i
     end
