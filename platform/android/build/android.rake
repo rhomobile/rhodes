@@ -1749,13 +1749,19 @@ namespace "run" do
       task :device do
         $device_flag = "-d"
         Jake.run_spec_app('android','phone_spec')
-        exit $failed.to_i unless $dont_exit_on_failure
+        unless $dont_exit_on_failure
+          exit 1 if $total.to_i==0
+          exit $failed.to_i 
+        end
       end
 
       task :emulator do
         $device_flag = "-e"
         Jake.run_spec_app('android','phone_spec')
-        exit $failed.to_i unless $dont_exit_on_failure
+        unless $dont_exit_on_failure
+          exit 1 if $total.to_i==0
+          exit $failed.to_i
+        end
       end
     end
 
@@ -1790,6 +1796,7 @@ namespace "run" do
       puts "Agg Total: #{$total}"
       puts "Agg Passed: #{$passed}"
       puts "Agg Failed: #{$failed}"
+      exit 1 if $total.to_i==0
       exit $failed.to_i
     end
 
