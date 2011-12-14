@@ -26,6 +26,7 @@
 
 #include "stdafx.h"
 #include "MainWindow.h"
+#include "IEBrowserEngine.h"
 
 #include "common/RhodesApp.h"
 #include "common/StringConverter.h"
