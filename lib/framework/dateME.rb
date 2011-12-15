@@ -136,11 +136,20 @@ class Date
   end
   
   def - (x)
-    ((@m_date-x._get_date()).to_i)/(60*60*24)
+    case x
+    when Numeric; return Date.new( @m_date - x*(60*60*24) )
+    when Date;    return ((@m_date-x._get_date()).to_i)/(60*60*24)
+    end
+    raise TypeError, 'expected numeric or date'
+    
   end
 
   def + (x)
-    Date.new( @m_date + x*(60*60*24) )
+    case x
+    when Numeric; return Date.new( @m_date + x*(60*60*24) )
+    end
+    raise TypeError, 'expected numeric'
+    
   end
 
   # Get the week day of this date.  Sunday is day-of-week 0;
@@ -163,6 +172,7 @@ class Date
   def mon() @m_date.mon end
   def year() @m_date.year end
   def mday() @m_date.mday end
+  def day() @m_date.day end  
   def offset() 
     of = Rational(@m_date.gmt_offset() || 0, 86400)
   end
