@@ -1295,3 +1295,47 @@ LRESULT CMainWindow::OnCustomToolbarItemCommand (WORD /*wNotifyCode*/, WORD  wID
     m_toolbar.processCommand(nItemPos);
     return 0;
 }
+
+extern "C" LRESULT rho_wmimpl_splash_screen(HWND hWnd)
+{
+    PAINTSTRUCT ps;
+	HDC hDC = BeginPaint(hWnd, &ps);
+
+  	CSplashScreen& splash = RHODESAPP().getSplashScreen();
+    splash.start();
+    StringW pathW = convertToStringW(RHODESAPP().getLoadingPngPath());
+
+	HBITMAP hbitmap = SHLoadImageFile(pathW.c_str());
+		
+	if (!hbitmap)
+		return 0;
+
+	BITMAP bmp;
+	GetObject(hbitmap, sizeof(bmp), &bmp);
+
+	HDC hdcMem = CreateCompatibleDC(hDC);
+	HGDIOBJ resObj = SelectObject(hdcMem, hbitmap);
+
+    RECT rcClient;
+    GetClientRect(hWnd, &rcClient);
+    int nLeft = rcClient.left, nTop=rcClient.top, nWidth = bmp.bmWidth, nHeight=bmp.bmHeight, Width = rcClient.right - rcClient.left, Height = rcClient.bottom - rcClient.top;
+    if (splash.isFlag(CSplashScreen::HCENTER) )
+		nLeft = (Width-nWidth)/2;
+	if (splash.isFlag(CSplashScreen::VCENTER) )
+		nTop = (Height-nHeight)/2;
+	if (splash.isFlag(CSplashScreen::VZOOM) )
+		nHeight = Height;
+	if (splash.isFlag(CSplashScreen::HZOOM) )
+		nWidth = Width;
+
+	StretchBlt(hDC, nLeft, nTop, nWidth, nHeight,
+		hdcMem, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY);
+	//BitBlt(hDC, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), hdcMem, 0, 0, SRCCOPY);
+
+    SelectObject(hdcMem, resObj);
+	DeleteObject(hbitmap);
+	DeleteObject(hdcMem);
+
+	EndPaint(hWnd, &ps);
+	return 0;
+}
