@@ -538,7 +538,7 @@ class Date
 				 else /\A([-+]?\d{1,})/
 				 end, '')
 	  val = $1.to_i
-	  puts "val: #{val}"
+	  #puts "val: #{val}"
 	  e.year = val
 	when 'y', 'Ey', 'Oy'
 	  return unless str.sub!(/\A(\d{1,2})/, '')
