@@ -1719,7 +1719,7 @@ namespace "run" do
             io.each do |line|
                 #puts line
                 
-                end_spec = !Jake.process_spec_output(line)
+                end_spec = !Jake.process_spec_output(line) if line.valid_encoding?
                 break if end_spec
             end
             
