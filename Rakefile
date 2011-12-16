@@ -409,7 +409,7 @@ def init_extensions(startdir, dest)
     end
     
     unless extpath.nil?
-      add_extension(extpath, dest)
+      add_extension(extpath, dest) unless dest.nil?
 
       if $config["platform"] != "bb"
         extyml = File.join(extpath, "ext.yml")
@@ -503,7 +503,7 @@ def init_extensions(startdir, dest)
     end
   end
 
-  if $excludeextlib  
+  if $excludeextlib and (not dest.nil?)
       chdir dest
       $excludeextlib.each {|e| Dir.glob(e).each {|f| rm f}}
   end
