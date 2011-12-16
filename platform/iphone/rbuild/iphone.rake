@@ -344,7 +344,7 @@ namespace "config" do
     $builddir = iphonepath + "/rbuild"
     $bindir = Jake.get_absolute(iphonepath) + "/bin"
     $srcdir =  $bindir + "/RhoBundle"
-    $targetdir = iphonepath + "/target" 
+    $targetdir = $app_path + "/bin/target/iphone" 
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
     $tmpdir =  $bindir +"/tmp"
 
@@ -453,6 +453,15 @@ namespace "build" do
       File.open(File.join($srcdir, "name"), "w") { |f| f.write($app_config["name"]) }
 
     end
+    
+    task :upgrade_package => ["build:iphone:rhobundle"] do
+        #puts '$$$$$$$$$$$$$$$$$$'
+        #puts 'targetdir = '+$targetdir.to_s
+        #puts 'bindir = '+$bindir.to_s
+        mkdir_p $targetdir if not File.exists? $targetdir
+        zip_file_path = File.join($targetdir, "upgrade_bundle.zip")
+        Jake.zip_upgrade_bundle( $bindir, zip_file_path)
+    end    
 
     task :extensions => "config:iphone" do
       ENV['RHO_PLATFORM'] = 'iphone'
@@ -668,8 +677,10 @@ namespace "run" do
 
       #NetHTTPSpecs.stop_server if httpserver
 
-      exit $failed.to_i unless $dont_exit_on_failure
- 
+      unless $dont_exit_on_failure
+        exit 1 if $total.to_i==0
+        exit $failed.to_i
+      end
     end
 
     task :spec_old => ["clean:iphone",:buildsim] do
@@ -725,7 +736,10 @@ namespace "run" do
       ENV["DYLD_ROOT_PATH"] = old_dyld_root
       ENV["DYLD_FRAMEWORK_PATH"] = old_dyld_framework
       ENV["IPHONE_SIMULATOR_ROOT"] = old_iphone_simulator
-      exit $failed.to_i unless $dont_exit_on_failure
+      unless $dont_exit_on_failure
+        exit 1 if $total.to_i==0
+        exit $failed.to_i
+      end
     end
 
 
@@ -756,6 +770,7 @@ namespace "run" do
       puts "Agg Total: #{$total}"
       puts "Agg Passed: #{$passed}"
       puts "Agg Failed: #{$failed}"
+      exit 1 if $total.to_i==0
       exit $failed.to_i
     end
 
@@ -985,6 +1000,7 @@ namespace "run" do
     puts "Agg Total: #{$total}"
     puts "Agg Passed: #{$passed}"
     puts "Agg Failed: #{$failed}" 
+    exit 1 if $total.to_i==0
     exit $failed.to_i
   end
   

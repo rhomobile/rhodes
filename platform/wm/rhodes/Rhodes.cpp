@@ -232,7 +232,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 	return __super::ParseCommandLine(lpCmdLine, pnRetCode);
 }
 
-extern "C" void rho_sys_impl_show_errormessage(const char* szTitle, const char* szMsg)
+extern "C" void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg)
 {
     //alert_show_status( "Bundle update.", ("Error happen when replace bundle: " + strError).c_str(), 0 );
     StringW strMsgW, strTitleW;
@@ -279,7 +279,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
     if ( !rho_sys_check_rollback_bundle(rho_native_rhopath()) )
     {
-        rho_sys_impl_show_errormessage( "Bundle update.", "Application is currupted. Reinstall it , please.");
+        rho_sys_impl_exit_with_errormessage( "Bundle update.", "Application is currupted. Reinstall it , please.");
         return S_FALSE;
     }
 
@@ -730,22 +730,52 @@ char* wce_wctomb(const wchar_t* w)
 #endif
 
 #if defined( OS_PLATFORM_MOTCE )
+#include <Imaging.h>
 HBITMAP SHLoadImageFile(  LPCTSTR pszFileName )
 {
     if ( !pszFileName || !*pszFileName )
         return 0;
 
     String strFileName = convertToStringA(pszFileName);
-    if ( String_endsWith(strFileName, ".bmp") )
+    /*if ( String_endsWith(strFileName, ".bmp") )
     {
         return (HBITMAP)::LoadImage(NULL, pszFileName, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-    }
+    }*/
 
-    if ( !String_endsWith(strFileName, ".png") )
+    if ( !String_endsWith(strFileName, ".png") && !String_endsWith(strFileName, ".bmp") )
         return 0;
-    //TODO: show png file
 
-    return 0;
+	IImagingFactory *pImgFactory = NULL;
+    IImage *pImage = NULL;
+    CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	HBITMAP hResult = 0;
+    if (SUCCEEDED(CoCreateInstance (CLSID_ImagingFactory,
+                                    NULL,
+                                    CLSCTX_INPROC_SERVER,
+                                    IID_IImagingFactory,
+                                    (void **)&pImgFactory)))
+    {
+		ImageInfo imageInfo;
+		if (SUCCEEDED(pImgFactory->CreateImageFromFile(CA2W(strFileName.c_str()), &pImage))
+			&& SUCCEEDED(pImage->GetImageInfo(&imageInfo)))
+        {
+			CWindowDC dc(0);
+			CDC dcBitmap;
+			dcBitmap.CreateCompatibleDC(dc.m_hDC);
+			hResult = CreateCompatibleBitmap(dc.m_hDC, imageInfo.Width, imageInfo.Height);
+			if (hResult) 
+			{
+				HBITMAP hOldBitmap = dcBitmap.SelectBitmap(hResult);
+				pImage->Draw(dcBitmap.m_hDC, CRect(0, 0, imageInfo.Width, imageInfo.Height), NULL);
+				dcBitmap.SelectBitmap(hOldBitmap);
+			}
+			pImage->Release();
+       }
+       pImgFactory->Release();
+    }
+    CoUninitialize();
+
+	return hResult;
 }
 
 #endif

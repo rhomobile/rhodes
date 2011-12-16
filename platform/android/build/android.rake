@@ -1711,30 +1711,30 @@ namespace "run" do
         end
 
         puts "start read log"
-        
+
+        io = File.new(log_name, 'r:UTF-8')
         end_spec = false
         while !end_spec do
-            io = File.new(log_name, "r")
         
             io.each do |line|
                 #puts line
                 
-                end_spec = !Jake.process_spec_output(line)
+                end_spec = !Jake.process_spec_output(line) if line.valid_encoding?
                 break if end_spec
             end
-            io.close
             
             break unless AndroidTools.application_running($device_flag, $app_package_name)
             sleep(5) unless end_spec
         end
+        io.close
 
         Jake.process_spec_results(start)        
         
         # stop app
-        do_uninstall($device_flag)
         if $device_flag == '-e'
             AndroidTools.kill_adb_and_emulator
         else
+            do_uninstall($device_flag)
             AndroidTools.kill_adb
         end
 
@@ -1749,13 +1749,19 @@ namespace "run" do
       task :device do
         $device_flag = "-d"
         Jake.run_spec_app('android','phone_spec')
-        exit $failed.to_i unless $dont_exit_on_failure
+        unless $dont_exit_on_failure
+          exit 1 if $total.to_i==0
+          exit $failed.to_i 
+        end
       end
 
       task :emulator do
         $device_flag = "-e"
         Jake.run_spec_app('android','phone_spec')
-        exit $failed.to_i unless $dont_exit_on_failure
+        unless $dont_exit_on_failure
+          exit 1 if $total.to_i==0
+          exit $failed.to_i
+        end
       end
     end
 
@@ -1763,13 +1769,19 @@ namespace "run" do
       task :device do
         $device_flag = "-d"
         Jake.run_spec_app('android','framework_spec')
-        exit $failed.to_i unless $dont_exit_on_failure
+        unless $dont_exit_on_failure
+          exit 1 if $total.to_i==0
+          exit $failed.to_i 
+        end
       end
 
       task :emulator do
         $device_flag = "-e"
         Jake.run_spec_app('android','framework_spec')
-        exit $failed.to_i unless $dont_exit_on_failure
+        unless $dont_exit_on_failure
+          exit 1 if $total.to_i==0
+          exit $failed.to_i 
+        end
       end
     end
 
@@ -1790,6 +1802,7 @@ namespace "run" do
       puts "Agg Total: #{$total}"
       puts "Agg Passed: #{$passed}"
       puts "Agg Failed: #{$failed}"
+      exit 1 if $total.to_i==0
       exit $failed.to_i
     end
 

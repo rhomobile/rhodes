@@ -442,7 +442,9 @@ int rho_sys_set_sleeping(int sleeping)
 }
 
 void rho_sys_app_exit() {
-    exit(EXIT_SUCCESS);
+    if (([Rhodes sharedInstance] != nil) && (![Rhodes sharedInstance].mBlockExit)) {
+        exit(EXIT_SUCCESS);
+    }
 }
 
 int rho_sys_is_app_installed(const char *appname) {

@@ -57,5 +57,28 @@ if !defined? RHO_ME
     res.to_s.should == "2010-08-16"
   end
 end
-  
+
+  it "should support operations with dates" do
+    to_day = Date.civil(2010, 3, 21)
+    to_day2 = Date.civil(2011, 3, 21)
+    
+    res = to_day - 5
+    res.day.should == 16
+    puts "res : #{res.day}"
+
+    res = to_day2-to_day
+    
+if !defined? RHO_ME    
+    res.to_s.should == "365/1"
+else
+    res.to_s.should == "365"    
+end
+    
+    puts "res : #{res}"
+    
+    res = to_day+5
+    res.day.should == 26
+    puts "res : #{res.day}"
+    
+  end
 end
