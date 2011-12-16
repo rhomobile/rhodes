@@ -31,20 +31,108 @@
 }
 
 
-- (void)applicationWillResignActive:(UIApplication *)application {
-    /*
-     Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-     Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
-     */
+
+
+
+
+
+
+- (void)applicationWillResignActive:(UIApplication *)application { 
+}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application { 
+    /* 
+     Restart any tasks that were paused (or not yet started) while the application was inactive. 
+     */ 
+    if([RhoConnectEngine sharedInstance].syncClient) 
+    { 
+        if([[RhoConnectEngine sharedInstance].syncClient is_syncing]) 
+        { 
+            [[RhoConnectEngine sharedInstance].syncClient stop_sync]; 
+        } 
+        if([RhoConnectEngine sharedInstance].syncClient.threaded_mode == FALSE) 
+        { 
+            [RhoConnectEngine sharedInstance].syncClient.threaded_mode = TRUE; 
+        } 
+    } 
+}
+
+- (void)applicationDidEnterBackground:(UIApplication *)app 
+{ 
+    //Check if our iOS version supports multitasking I.E iOS 4 
+    if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]) { 
+        if ([[UIDevice currentDevice] isMultitaskingSupported]) { //Check if device supports mulitasking 
+            UIApplication *application = [UIApplication sharedApplication]; //Get the shared application instance 
+            
+            __block UIBackgroundTaskIdentifier background_task; //Create a task object 
+            
+            background_task = [application beginBackgroundTaskWithExpirationHandler: ^ { 
+                NSLog(@"$$$ Background task is terminated by System !!!");
+                [application endBackgroundTask: background_task]; //Tell the system that we are done with the tasks 
+                background_task = UIBackgroundTaskInvalid; //Set the task to be invalid 
+                
+                //System will be shutting down the app at any point in time now 
+            }]; 
+            
+            
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ 
+                
+                NSLog(@"Background task started");
+                //Perform your tasks that your application requires 
+                
+                if([[RhoConnectEngine sharedInstance].syncClient is_syncing]) 
+                { 
+                    [[RhoConnectEngine sharedInstance].syncClient stop_sync]; 
+                } 
+
+                [RhoConnectEngine sharedInstance].syncClient.threaded_mode = FALSE; 
+                
+                RhoConnectNotify* notify = [[RhoConnectEngine sharedInstance].syncClient syncAll]; 
+                
+                NSLog(@"Background task syncAll finished");
+                
+                NSString* status = notify.status; 
+                NSString* error = notify.error_message; 
+                int err_code = notify.error_code; 
+                NSString* source = notify.source_name; 
+                
+                NSLog(@"syncAll NOTIFY, source: '%s', status: '%s' , total_count: %d, processed_count: %d, cumulative_count: %d, error_msg: '%s' , error_code: %d, callback_params: '%s'", 
+                      [source cStringUsingEncoding:NSUTF8StringEncoding], 
+                      [status cStringUsingEncoding: NSUTF8StringEncoding], 
+                      notify.total_count, 
+                      notify.processed_count, 
+                      notify.cumulative_count, 
+                      [error cStringUsingEncoding: NSUTF8StringEncoding], 
+                      err_code, 
+                      [notify.callback_params cStringUsingEncoding:NSUTF8StringEncoding] 
+                      ); 
+                
+                [application endBackgroundTask: background_task]; //End the task so the system knows that you are done with what you need to perform 
+                background_task = UIBackgroundTaskInvalid; //Invalidate the background_task 
+            }); 
+        } 
+    } 
 }
 
 
-- (void)applicationDidEnterBackground:(UIApplication *)application {
-    /*
-     Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
-     If your application supports background execution, called instead of applicationWillTerminate: when the user quits.
-     */
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
@@ -53,12 +141,6 @@
      */
 }
 
-
-- (void)applicationDidBecomeActive:(UIApplication *)application {
-    /*
-     Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-     */
-}
 
 
 - (void)applicationWillTerminate:(UIApplication *)application 
