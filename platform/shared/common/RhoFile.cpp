@@ -227,10 +227,6 @@ void CRhoFile::loadTextFile(const char* szFilePath, String& strFile)
 
 unsigned int CRhoFile::deleteFile( const char* szFilePath ){
 #if defined(OS_WINDOWS) || defined(OS_WINCE)
-    /*StringW wFileName;
-    common::convertToStringW(szFilePath,wFileName);
-    BOOL res = DeleteFileW(wFileName.c_str());
-    return !res ? ::GetLastError() : 0;*/
     return (unsigned int)_unlink(szFilePath);
 #else
     return (unsigned int)remove(szFilePath);
@@ -291,12 +287,6 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
 /*static*/ unsigned int CRhoFile::renameFile( const char* szOldFilePath, const char* szNewFilePath )
 {
 #if defined(OS_WINCE)
-/*    StringW wNewFileName, wOldFileName;
-    common::convertToStringW(szNewFilePath,wNewFileName);
-    common::convertToStringW(szOldFilePath,wOldFileName);
-
-	BOOL res = MoveFileW( wOldFileName.c_str(), wNewFileName.c_str());
-    return !res ? ::GetLastError() : 0;*/
     return _rename( szOldFilePath, szNewFilePath );
 
 #else
@@ -378,7 +368,11 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
 	fop.wFunc = FO_DELETE;		
 	fop.pFrom = name;
 	fop.pTo = NULL;
-	fop.fFlags = FOF_SILENT | FOF_NOCONFIRMATION | /*FOF_NOERRORUI |*/ FOF_NOCONFIRMMKDIR;
+	fop.fFlags = FOF_SILENT | FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR 
+#if defined(OS_WINDOWS) || defined(OS_PLATFORM_MOTCE)
+                 | FOF_NOERRORUI
+#endif        
+        ;
 	int result = SHFileOperation(&fop);
 
     delete name;

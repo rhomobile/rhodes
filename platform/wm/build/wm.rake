@@ -91,10 +91,12 @@ namespace "config" do
     $cabwiz = "cabwiz" if $cabwiz.nil?
     $webkit_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("webkit_browser").nil?) 
     $wk_data_dir = nil
-    
+
     begin
-      require "rhoelements-data"
-      $wk_data_dir = $data_dir[0]
+      if $webkit_capability
+        require "rhoelements-data"
+        $wk_data_dir = $data_dir[0]
+      end
     rescue
       puts "rhoelements gem is't found, webkit capability is disabled"
       $webkit_capability = "0"
@@ -509,13 +511,15 @@ namespace "run" do
     end
 
     task :phone_spec do
-      exit 1 if Jake.run_spec_app('wm','phone_spec')
-      exit 0
+      Jake.run_spec_app('wm','phone_spec')
+      exit 1 if $total.to_i==0
+      exit $failed.to_i
     end
 
     task :framework_spec do
-      exit 1 if Jake.run_spec_app('wm','framework_spec')
-      exit 0
+      Jake.run_spec_app('wm','framework_spec')
+      exit 1 if $total.to_i==0
+      exit $failed.to_i
     end
 
     namespace "device" do
@@ -606,13 +610,15 @@ namespace "run" do
     end
 
     task :phone_spec do
-      exit 1 if Jake.run_spec_app('win32','phone_spec')
-      exit 0
+      Jake.run_spec_app('win32','phone_spec')
+      exit 1 if $total.to_i==0
+      exit $failed.to_i
     end
 
     task :framework_spec do
-      exit 1 if Jake.run_spec_app('win32','framework_spec')
-      exit 0
+      Jake.run_spec_app('win32','framework_spec')
+      exit 1 if $total.to_i==0
+      exit $failed.to_i
     end
 
   end

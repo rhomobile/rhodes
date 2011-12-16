@@ -35,10 +35,10 @@
 using namespace rho;
 using namespace rho::common;
 extern "C" void rho_sys_app_exit();
-extern "C" void rho_sys_impl_show_errormessage(const char* szTitle, const char* szMsg);
+extern "C" void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg);
 
-#if !defined(OS_WINDOWS) && !defined(OS_WINCE)
-void rho_sys_impl_show_errormessage(const char* szTitle, const char* szMsg)
+#if !defined(OS_WINDOWS) && !defined(OS_WINCE) && !defined(OS_MACOSX)
+void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg)
 {
 }
 #endif
@@ -250,7 +250,7 @@ void CReplaceBundleThread::showError(int nError, const String& strError )
 
     String strMsg = "Error happen when replace bundle: " + strError;
 
-    rho_sys_impl_show_errormessage("Bundle update", strMsg.c_str());
+    rho_sys_impl_exit_with_errormessage("Bundle update", strMsg.c_str());
 }
 
 void CReplaceBundleThread::run()

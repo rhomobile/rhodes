@@ -62,6 +62,7 @@
 	
     id<RhoMainView,NSObject> mainView;
     BOOL rotationLocked;
+    BOOL mBlockExit;
 }
 
 @property (nonatomic, retain) UIWindow *window;
@@ -69,6 +70,8 @@
 @property (nonatomic, retain) NSMutableDictionary *cookies;
 @property (nonatomic, copy) SignatureDelegate* signatureDelegate;
 @property (nonatomic, copy) NVDelegate* nvDelegate;
+@property (nonatomic, assign) BOOL mBlockExit;
+
 #ifdef __IPHONE_4_0
 @property (nonatomic, readonly) EKEventStore *eventStore;
 #endif
@@ -108,5 +111,7 @@
 	
 // UIAlertViewDelegate
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex;
+
+- (void) exit_with_errormessage:(NSString*)title message:(NSString*)message;
 
 @end

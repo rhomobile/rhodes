@@ -226,5 +226,30 @@ module Rho
         raise TypeError, "Conflicting types for parameter containers. Expected an instance of #{klass} but found an instance of #{value.class}. This can be caused by colliding Array and Hash parameters like qs[]=value&qs[key]=value. (The parameters received were #{value.inspect}.)"
       end
     end
+    
+    def self.rhobundle_getfilename()
+        File.join( __rhoGetCurrentDir(), '/RhoBundle/upgrade_bundle.zip')
+    end
+    
+    def self.rhobundle_download(download_url, download_callback)
+
+        file_name = rhobundle_getfilename()
+        dir_name = File.dirname(file_name)
+        if Dir.exists?(dir_name) && System.delete_folder(dir_name) != 0
+            return false
+        end
+        
+        Dir.mkdir(dir_name) unless Dir.exists?(dir_name)
+        
+        Rho::AsyncHttp.download_file(
+                 :url => download_url,
+                 :filename => file_name,
+                 :headers => {},
+                 :callback => download_callback ) if download_url
+                 
+        return true
+    end
+    
+    
   end # RhoSupport
 end # Rho
