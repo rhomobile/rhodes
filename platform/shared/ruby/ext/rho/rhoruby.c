@@ -234,9 +234,9 @@ void RhoRubyStart()
     Init_RhoEvent();
     Init_Calendar();
 //TODO: RhoSimulator  - load extensions dll dynamically
-#if !defined(RHODES_EMULATOR) && !defined(RHO_SYMBIAN)
+#if !defined(RHO_SYMBIAN)
     Init_Extensions();
-#endif //RHODES_EMULATOR
+#endif //RHO_SYMBIAN
 
 #ifdef ENABLE_RUBY_VM_STAT
     struct timeval  start;

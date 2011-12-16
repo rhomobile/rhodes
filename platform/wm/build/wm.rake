@@ -142,6 +142,7 @@ namespace "build" do
           next unless File.exists? File.join(extpath, "build.bat")
 
           ENV['RHO_PLATFORM'] = $current_platform
+          ENV['RHO_BUILD_CONFIG'] = 'Debug'
           ENV['PWD'] = $startdir
           ENV['RHO_ROOT'] = ENV['PWD']
 
@@ -191,7 +192,6 @@ namespace "build" do
   end #wm
   
   namespace "win32" do
-=begin
     task :extensions => "config:wm" do
       $app_config["extensions"].each do |ext|
         $app_config["extpaths"].each do |p|
@@ -199,9 +199,10 @@ namespace "build" do
           next unless File.exists? File.join(extpath, "build.bat")
 
           ENV['RHO_PLATFORM'] = 'win32'
+          ENV['RHO_BUILD_CONFIG'] = $rhosimulator_build ? 'Release' : 'Debug'
           ENV['PWD'] = $startdir
           ENV['RHO_ROOT'] = ENV['PWD']
-          ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", "win32", "rhodes", "Debug")
+          ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", "win32", "rhodes", $rhosimulator_build ? "SimulatorRelease" : "Debug")
           ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", "win32", "extensions", ext)
           ENV['VCBUILD'] = $vcbuild
           ENV['SDK'] = $sdk
@@ -211,7 +212,7 @@ namespace "build" do
         end
       end
     end
-=end
+
     #    desc "Build win32 rhobundle"
     #task :rhobundle => ["config:wm", "build:bundle:noxruby", "build:wm:extensions"] do
     #end
@@ -242,6 +243,12 @@ namespace "build" do
     end
 
     task :rhosimulator => ["config:set_win32_platform", "config:wm"] do
+      $rhosimulator_build = true
+      $config["platform"] = $current_platform
+      init_extensions(pwd, nil)
+      # Rake::Task["build:bundle:noiseq"].invoke
+      Rake::Task["build:win32:extensions"].invoke
+
       chdir $config["build"]["wmpath"]
 
       qtdir = ENV['QTDIR']
