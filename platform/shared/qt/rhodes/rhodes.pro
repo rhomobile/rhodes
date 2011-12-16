@@ -29,6 +29,9 @@ macx {
 ../../../osx/bin/rholib/librholib.a\
 ../../../osx/bin/sqlite3/libsqlite3.a\
 ../../../osx/bin/syncengine/libsyncengine.a
+  exists("../../../osx/bin/extensions/extensions.pri") {
+    include("../../../osx/bin/extensions/extensions.pri")
+  }
 }
 
 win32 {

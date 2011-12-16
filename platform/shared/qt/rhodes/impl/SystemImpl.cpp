@@ -34,6 +34,7 @@
 #include <QWebPage>
 #include <QLocale>
 #include <QDesktopServices>
+#include <QMessageBox>
 #include "MainWindowImpl.h"
 
 using namespace rho;
@@ -248,8 +249,21 @@ int rho_sys_set_sleeping(int sleeping)
 }
 #endif
 
-void rho_sys_set_application_icon_badge(int badge_number) {
-    //unsupported on WM
+void rho_sys_set_application_icon_badge(int badge_number)
+{
+    //TODO: rho_sys_set_application_icon_badge
+    RAWLOGC_INFO1("SystemImpl", "rho_sys_set_application_icon_badge(%d) was called", badge_number);
+}
+
+void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg)
+{
+    QMessageBox::critical(0, QString(szTitle), QString(szMsg));
+}
+
+RHO_GLOBAL void rho_platform_restart_application()
+{
+    //TODO: rho_platform_restart_application
+    RAWLOGC_INFO("SystemImpl", "rho_platform_restart_application() has no implementation in RhoSimulator.");
 }
 
 } //extern "C"

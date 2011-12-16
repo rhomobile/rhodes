@@ -245,8 +245,8 @@ namespace "build" do
     task :rhosimulator => ["config:set_win32_platform", "config:wm"] do
       $rhosimulator_build = true
       $config["platform"] = $current_platform
+      chdir $startdir
       init_extensions(pwd, nil)
-      # Rake::Task["build:bundle:noiseq"].invoke
       Rake::Task["build:win32:extensions"].invoke
 
       chdir $config["build"]["wmpath"]

@@ -19,7 +19,7 @@ def build_extension(name, arch)
       args << "-I#{$rhoroot}/platform/shared/ruby/generated"
       cc_compile f, $tempdir, args or exit 1
 
-    elsif ENV['RHO_PLATFORM'] == 'iphone'
+    elsif (ENV['RHO_PLATFORM'] == 'iphone') or (ENV['RHO_PLATFORM'] == 'osx')
       args << "-I#{$rhoroot}/platform/shared/ruby/iphone"
       args << "-D_XOPEN_SOURCE"
       args << "-D_DARWIN_C_SOURCE"
@@ -43,7 +43,7 @@ def build_extension(name, arch)
   if ENV['RHO_PLATFORM'] == 'android'
     cc_ar File.join( $targetdir, 'lib' + name + '.a' ), Dir.glob($tempdir + "/**/*.o") or exit 1
 
-  elsif ENV['RHO_PLATFORM'] == 'iphone'
+  elsif (ENV['RHO_PLATFORM'] == 'iphone') or (ENV['RHO_PLATFORM'] == 'osx')
     args = []
     args << 'rcs'
     args << File.join( $targetdir, 'lib' + name + '.a' )
@@ -93,7 +93,7 @@ namespace "build" do
 
       setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
 
-    elsif ENV['RHO_PLATFORM'] == 'iphone'
+    elsif (ENV['RHO_PLATFORM'] == 'iphone') or (ENV['RHO_PLATFORM'] == 'osx')
       $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
       raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
       $sdkroot = ENV['SDKROOT']
