@@ -180,11 +180,10 @@ namespace "build" do
 
     task :devrhobundle => ["config:set_wm_platform", "build:wm:rhobundle", "win32:after_bundle"]
     
-    task :upgrade_package => ["build:wm:rhobundle"] do
-        
-        mkdir_p $targetdir if not File.exists? $targetdir
-        zip_file_path = File.join($targetdir, "upgrade_bundle.zip")
-        Jake.zip_upgrade_bundle( $bindir, zip_file_path)
+    task :upgrade_package => ["build:wm:rhobundle"] do        
+      mkdir_p $targetdir if not File.exists? $targetdir
+      zip_file_path = File.join($targetdir, "upgrade_bundle.zip")
+      Jake.zip_upgrade_bundle( $bindir, zip_file_path)
     end
 
   end #wm
@@ -323,8 +322,7 @@ namespace "device" do
       build_platform = 'ce5' if $sdk == "MC3000c50b (ARMV4I)"
 
       if $webkit_capability and $wk_data_dir != nil 
-        wk_config_dir = $wk_data_dir + "/Config" #'../../../../Motorola-Extensions/RhoElements/Config'
-        puts "wk_config_dir - " + wk_config_dir # for test
+        wk_config_dir = $wk_data_dir + "/Config"
         config_files = ['Config','Plugin','RegEx']
         config_files.each do |filename|
           filepath = File.join(wk_config_dir,filename + ".xml.template")
