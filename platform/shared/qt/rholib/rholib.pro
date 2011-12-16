@@ -130,4 +130,5 @@ SOURCES += ../../common/RhoTime.cpp\
 ../../common/RhoMath.cpp\
 ../../common/map/ESRIMapEngine.cpp\
 ../../common/map/GoogleMapEngine.cpp\
-../../common/map/MapEngine.cpp
+../../common/map/MapEngine.cpp\
+../../common/BundleManager.cpp
