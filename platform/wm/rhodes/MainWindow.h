@@ -315,10 +315,10 @@ private:
 	CLogView m_logView;
 #endif //_WIN32_WCE
 
-#if defined( OS_PLATFORM_MOTCE )
+// #if defined( OS_PLATFORM_MOTCE )
     int m_menuBarHeight;
     HWND				g_hWndCommandBar;	// command bar handle
-#endif
+// #endif
 
 #if defined(_WIN32_WCE)
     // Used to manage SIP state. Also used to adjust window for SIP.
