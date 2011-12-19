@@ -91,9 +91,9 @@ static int getColorFromString(const char* szColor)
 
 void CNativeToolbar::createToolbar(rho_param *p)
 {
-#if defined( OS_PLATFORM_MOTCE )
-    return;
-#endif
+//#if defined( OS_PLATFORM_MOTCE )
+//    return;
+//#endif
 
     if (!rho_rhodesapp_check_mode() || !rho_wmsys_has_touchscreen() )
         return;

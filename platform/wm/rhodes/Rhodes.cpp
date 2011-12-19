@@ -59,6 +59,7 @@ extern "C" int rho_sys_check_rollback_bundle(const char* szRhoPath);
 class CEng;
 extern "C" CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
 extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
+
 #endif
 
 
@@ -750,7 +751,7 @@ HBITMAP SHLoadImageFile(  LPCTSTR pszFileName )
 
 	IImagingFactory *pImgFactory = NULL;
     IImage *pImage = NULL;
-    CoInitializeEx(NULL, COINIT_MULTITHREADED);
+    //CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	HBITMAP hResult = 0;
     if (SUCCEEDED(CoCreateInstance (CLSID_ImagingFactory,
                                     NULL,
@@ -762,21 +763,28 @@ HBITMAP SHLoadImageFile(  LPCTSTR pszFileName )
 		if (SUCCEEDED(pImgFactory->CreateImageFromFile(CA2W(strFileName.c_str()), &pImage))
 			&& SUCCEEDED(pImage->GetImageInfo(&imageInfo)))
         {
-			CWindowDC dc(0);
+			CWindowDC dc(getMainWnd());
 			CDC dcBitmap;
 			dcBitmap.CreateCompatibleDC(dc.m_hDC);
 			hResult = CreateCompatibleBitmap(dc.m_hDC, imageInfo.Width, imageInfo.Height);
 			if (hResult) 
 			{
 				HBITMAP hOldBitmap = dcBitmap.SelectBitmap(hResult);
-				pImage->Draw(dcBitmap.m_hDC, CRect(0, 0, imageInfo.Width, imageInfo.Height), NULL);
+                //dcBitmap.FillSolidRect( 0,0, imageInfo.Width, imageInfo.Height, RGB(255,255,255));
+
+                CRect rc(0, 0, imageInfo.Width, imageInfo.Height);
+	            COLORREF clrOld = ::SetBkColor(dcBitmap.m_hDC, RGB(255,255,255));
+	            ::ExtTextOut(dcBitmap.m_hDC, 0, 0, ETO_OPAQUE, &rc, NULL, 0, NULL);
+	            ::SetBkColor(dcBitmap.m_hDC, clrOld);
+
+				pImage->Draw(dcBitmap.m_hDC, rc, NULL);
 				dcBitmap.SelectBitmap(hOldBitmap);
 			}
 			pImage->Release();
        }
        pImgFactory->Release();
     }
-    CoUninitialize();
+    //CoUninitialize();
 
 	return hResult;
 }
