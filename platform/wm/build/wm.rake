@@ -75,6 +75,11 @@ namespace "config" do
   task :wm => [:set_wm_platform, "config:common"] do
     puts " $current_platform : #{$current_platform}"
 
+    unless $sdk
+      $sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
+      $sdk = $app_config["wm"]["sdk"] if $app_config["wm"] && $app_config["wm"]["sdk"]
+    end
+
     $rubypath = "res/build-tools/RhoRuby.exe" #path to RubyMac
     $builddir = $config["build"]["wmpath"] + "/build"
     $vcbindir = $config["build"]["wmpath"] + "/bin"
@@ -83,7 +88,13 @@ namespace "config" do
     $rhobundledir =  $app_path + "/RhoBundle"
     $log_file = $app_config["applog"].nil? ? "applog.txt" : $app_config["applog"]
     $srcdir =  $bindir + "/RhoBundle"
-    $targetdir = $bindir + "/target/wm6p"
+    
+    if $sdk == "Windows Mobile 6 Professional SDK (ARMV4I)"
+        $targetdir = $bindir + "/target/wm6p"
+    else
+        $targetdir = $bindir + "/target/#{$sdk}"
+    end
+        
     $tmpdir =  $bindir +"/tmp"
     $vcbuild = $config["env"]["paths"]["vcbuild"]
     $vcbuild = "vcbuild" if $vcbuild.nil?
@@ -103,11 +114,6 @@ namespace "config" do
       $wk_data_dir = ""
     end
         
-    unless $sdk
-      $sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
-      $sdk = $app_config["wm"]["sdk"] if $app_config["wm"] && $app_config["wm"]["sdk"]
-    end
-
     unless $build_solution
         $build_solution = 'rhodes.sln'
     end
