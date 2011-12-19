@@ -40,6 +40,8 @@ class AndroidFunctionality01 implements AndroidFunctionality {
 		return "";
 	}
 	
-	
+	public int getDeviceRotation() {
+		return -1;
+	}
 	
 }

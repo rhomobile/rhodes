@@ -26,9 +26,19 @@
 
 package com.rhomobile.rhodes.osfunctionality;
 
+import com.rhomobile.rhodes.RhodesService;
+
+import android.content.Context;
+import android.view.Display;
+import android.view.WindowManager;
+
 
 //Android 2.2
 class AndroidFunctionality08 extends AndroidFunctionality07 implements AndroidFunctionality {
 
-	
+	public int getDeviceRotation() {
+		Display display = ((WindowManager) RhodesService.getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+		int rotation = display.getRotation();
+		return rotation;
+	}
 }

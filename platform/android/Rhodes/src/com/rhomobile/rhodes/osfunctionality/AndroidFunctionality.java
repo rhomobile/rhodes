@@ -35,4 +35,6 @@ public interface AndroidFunctionality {
 	
 	public String AccessOwnerInfo_getUsername(Context context);
 	
+	public int getDeviceRotation();
+	
 }
