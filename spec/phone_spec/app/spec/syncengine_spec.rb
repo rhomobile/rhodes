@@ -48,11 +48,24 @@ def getTestDB
     ::Rho::RHO.get_db_partitions['user']
 end
 
-SYNC_SERVER_BASE_URL = 'http://rhodes-store-spec-server.heroku.com'
-#SYNC_SERVER_BASE_URL = 'http://localhost:9292'
-SYNC_SERVER_URL = "#{SYNC_SERVER_BASE_URL}/application"
-SYNC_SERVER_CONSOLE_LOGIN = 'rhoadmin'
-SYNC_SERVER_CONSOLE_PASSWORD = ''
+SYNC_SERVER_URL = "http://rhoconnect-spec-exact_platform.heroku.com/application"
+#SYNC_SERVER_URL = "http://rhodes-store-spec-server.heroku.com/application"
+#SYNC_SERVER_URL = 'http://localhost:9292/application'
+
+def syncserver_url
+  platform = case System.get_property('platform')
+                    when /android/i    then 'android'
+                    when /blackberry/i then 'bb'
+                    when /apple/i      then 'iphone'
+                    when /symbian/i    then 'symbian'
+                    when /windows/i    then 'wm'
+  end
+  platform = 'win32' if System.get_property('device_name') == 'Win32'
+
+  exact_url = SYNC_SERVER_URL.gsub(/exact_platform/, platform)
+  puts "going to reset server: #{exact_url}"
+  exact_url
+end
 
 describe "SyncEngine_test" do
 
@@ -62,7 +75,7 @@ describe "SyncEngine_test" do
     # init client
     ::Rhom::Rhom.database_fullclient_reset_and_logout
     
-    SyncEngine.set_syncserver(SYNC_SERVER_URL)
+    SyncEngine.set_syncserver(syncserver_url)
 
     Rho::RHO.load_all_sources()
 
@@ -80,7 +93,7 @@ describe "SyncEngine_test" do
   end
   
   after (:each) do
-    Rho::RhoConfig.syncserver = SYNC_SERVER_URL
+    Rho::RhoConfig.syncserver = syncserver_url
     
     SyncEngine.set_source_property(getProduct().get_source_id.to_i(), "rho_server_response", "" )        
     ::Rho::RHO.get_user_db().delete_all_from_table('changed_values')
@@ -320,7 +333,7 @@ if !defined?(RHO_WP7)
     records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*')
     records.length.should_not == 0
 
-    Rho::RhoConfig.syncserver = SYNC_SERVER_URL
+    Rho::RhoConfig.syncserver = syncserver_url
     res = ::Rho::RhoSupport::parse_query_parameters getCustomer.sync
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE

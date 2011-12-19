@@ -30,6 +30,13 @@ require 'yaml'
 require 'socket'
 require 'webrick'
   
+require 'rest_client'
+require 'json'
+
+SYNC_SERVER_BASE_URL = 'http://rhoconnect-spec-exact_platform.heroku.com'
+SYNC_SERVER_CONSOLE_LOGIN = 'rhoadmin'
+SYNC_SERVER_CONSOLE_PASSWORD = ''
+
 class Hash
   def fetch_r(key)
     if self.has_key?(key) and not self[key].is_a?(Hash)
@@ -145,7 +152,25 @@ class Jake
     return server, addr, port
   end
 
+  def self.reset_spec_server(platform)
+    platform = platform
+    exact_url = SYNC_SERVER_BASE_URL.gsub(/exact_platform/, platform)
+    puts "going to reset server: #{exact_url}"
+    # login to the server
+    unless @srv_token
+      result = RestClient.post("#{exact_url}/login",
+                           {:login => SYNC_SERVER_CONSOLE_LOGIN, :password => SYNC_SERVER_CONSOLE_PASSWORD}.to_json,
+                           :content_type => :json)
+      srv_session_cookie = 'rhoconnect_session=' + result.cookies['rhoconnect_session']
+      @srv_token = RestClient.post("#{exact_url}/api/get_api_token", '', {'Cookie' => srv_session_cookie})
+    end
+    # reset server
+    RestClient.post("#{exact_url}/api/reset", {:api_token => @srv_token}.to_json, :content_type => :json)
+  end
+
   def self.run_spec_app(platform,appname)
+    reset_spec_server(platform) if appname =~ /phone_spec/
+
     rhobuildyml = File.join(basedir,'rhobuild.yml')
     rhobuild = YAML::load_file(rhobuildyml)
     rhobuild['env']['app'] = app_expanded_path(appname)
