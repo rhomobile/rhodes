@@ -210,3 +210,17 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+
+#ifdef OS_SYMBIAN
+extern "C"
+{
+void rho_sys_replace_current_bundle(const char* path)
+{
+}
+
+int rho_sys_delete_folder(const char* path)
+{
+    return 0;
+}
+}
+#endif
