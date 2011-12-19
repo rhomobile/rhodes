@@ -226,6 +226,7 @@ function pinf(platform,es,exts,name,vendor,show_shortcut,webkit,rhogempath) {
     if (webkit) {
         p("\"eklibrary.dll\"=2");
         p("\"webkit.dll\"=2");
+        p("\"license_rc.dll\"=2");
         p("\"openssl.dll\"=2");
         p("\"PBEngine_WK.dll\"=2");
         p("\"npwtg_jsobjects.dll\"=3");
@@ -255,6 +256,7 @@ function pinf(platform,es,exts,name,vendor,show_shortcut,webkit,rhogempath) {
         p("[CopyWebKitBin]");
         p("\"eklibrary.dll\",\"eklibrary.dll\",,0");
         p("\"webkit.dll\",\"webkit.dll\",,0");
+        p("\"license_rc.dll\",\"license_rc.dll\",,0");
         p("\"openssl.dll\",\"openssl.dll\",,0");
         p("\"PBEngine_WK.dll\",\"PBEngine_WK.dll\",,0");
         p("");
