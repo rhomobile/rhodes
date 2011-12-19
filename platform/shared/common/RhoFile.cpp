@@ -359,21 +359,21 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
 	StringW  swPath;
     convertToStringW(szFolderPath, swPath);
 	wchar_t* name = new wchar_t[ swPath.length() + 2];
-    wsprintf(name, L"%s%c", swPath.c_str(), '\0');
+    swprintf(name, L"%s%c", swPath.c_str(), '\0');
     translate_wchar(name, L'/', L'\\');
 
-    SHFILEOPSTRUCT fop = {0};
+    SHFILEOPSTRUCTW fop = {0};
 
 	fop.hwnd = NULL;
 	fop.wFunc = FO_DELETE;		
-	fop.pFrom = name;
+        fop.pFrom = name;
 	fop.pTo = NULL;
 	fop.fFlags = FOF_SILENT | FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR 
 #if defined(OS_WINDOWS) || defined(OS_PLATFORM_MOTCE)
                  | FOF_NOERRORUI
 #endif        
         ;
-	int result = SHFileOperation(&fop);
+        int result = SHFileOperationW(&fop);
 
     delete name;
 

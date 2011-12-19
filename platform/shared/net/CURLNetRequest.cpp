@@ -417,7 +417,9 @@ int CURLNetRequest::getResponseCode(CURLcode err, char const *body, size_t bodys
         RAWTRACE1("RESPONSE----- (%d bytes)", bodysize);
         if ( !rho_conf_getBool("log_skip_post") )
         {
+#ifndef OS_SYMBIAN
             RAWTRACE_DATA(body, bodysize);
+#endif
         }
         RAWTRACE("END RESPONSE-----");
     }
