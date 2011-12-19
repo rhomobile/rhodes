@@ -469,16 +469,17 @@ static unsigned int copyFolder(const StringW& strSrc, const StringW& strDst, boo
 }
 }
 
+#if defined(OS_MACOSX) && defined(RHODES_EMULATOR)
+    void rho_file_impl_delete_folder(const char* szFolderPath) {
+
+    }
+
+    void rho_file_impl_copy_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath) {
+
+    }
+#endif // OS_MACOSX && RHODES_EMULATOR
+
 #if defined(OS_MACOSX) || defined(OS_ANDROID)
-
-    //void rho_file_impl_delete_folder(const char* szFolderPath) {
-
-    //}
-
-    //void rho_file_impl_copy_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath) {
-
-    //}
-
     void rho_file_impl_move_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath) {
         
     }
@@ -499,4 +500,3 @@ extern "C" {
     
 }
 #endif
-
