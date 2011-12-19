@@ -93,6 +93,7 @@ CMainWindow::CMainWindow()
     m_sai.cbSize = sizeof(m_sai);
 #endif
     m_pageCounter = 0;
+    m_menuBarHeight = 0;
 }
 
 CMainWindow::~CMainWindow()
@@ -241,6 +242,15 @@ LRESULT CMainWindow::InitMainWindow()
     MoveWindow(&rcMainWindow);
 #else
     g_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
+
+    TBBUTTON oBtn = {0};
+    oBtn.iBitmap = -1;
+    oBtn.idCommand = IDM_POPUP_MENU;
+    oBtn.fsState = TBSTATE_ENABLED;
+    oBtn.iString = (int)L"File";
+
+    CommandBar_InsertButton(g_hWndCommandBar, 0, &oBtn);
+
     CommandBar_AddAdornments(g_hWndCommandBar, 0, 0);
     CommandBar_Show(g_hWndCommandBar, TRUE);
 
@@ -367,11 +377,13 @@ LRESULT CMainWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOO
         rect.bottom -= m_toolbar.getHeight();
 
 #if defined( OS_PLATFORM_MOTCE )
-    if ( g_hWndCommandBar ) 
+    if (g_hWndCommandBar)
     {
         CRect rcCmdBar;
         ::GetWindowRect(g_hWndCommandBar, &rcCmdBar);
-        rect.top += rcCmdBar.Height();
+        m_menuBarHeight = rcCmdBar.Height();
+
+        rect.top += m_menuBarHeight;
     }
 #endif
 
@@ -712,13 +724,15 @@ LRESULT CMainWindow::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
     return 0;
 }
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS) || defined( OS_PLATFORM_MOTCE )
 LRESULT CMainWindow::OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
 {
 	createCustomMenu();
 	return 0;
 }
+#endif
 
+#if defined(OS_WINDOWS)
 LRESULT CMainWindow::OnPosChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) 
 {
 	LPWINDOWPOS lp = (LPWINDOWPOS)lParam;
@@ -1186,7 +1200,7 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
     return FALSE;
 }
 
-#if defined (OS_WINDOWS)
+#if defined (OS_WINDOWS) || defined( OS_PLATFORM_MOTCE )
 void CMainWindow::createCustomMenu()
 {
 	CMenu menu;
@@ -1227,9 +1241,20 @@ void CMainWindow::createCustomMenu()
 
 	RECT  rect; 
 	GetWindowRect(&rect);
+#if defined( OS_PLATFORM_MOTCE )
+    rect.right = 1;
+    rect.bottom = m_menuBarHeight+1;
+#else
     rect.bottom -= m_menuBarHeight;
+#endif
+
 	sub.Attach(menu.GetSubMenu(0));
-	sub.TrackPopupMenu( TPM_RIGHTALIGN | TPM_BOTTOMALIGN | TPM_LEFTBUTTON | TPM_VERNEGANIMATION, 
+	sub.TrackPopupMenu( 
+#if defined( OS_PLATFORM_MOTCE )
+        TPM_LEFTALIGN, 
+#else        
+        TPM_RIGHTALIGN | TPM_BOTTOMALIGN | TPM_LEFTBUTTON | TPM_VERNEGANIMATION, 
+#endif
 						rect.right-1, 
 						rect.bottom-1,
 						m_hWnd);

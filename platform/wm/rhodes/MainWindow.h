@@ -170,8 +170,11 @@ public:
         COMMAND_ID_HANDLER(ID_SETCOOKIE, OnSetCookieCommand)
 		COMMAND_RANGE_HANDLER(ID_CUSTOM_MENU_ITEM_FIRST, ID_CUSTOM_MENU_ITEM_LAST, OnCustomMenuItemCommand)
 		COMMAND_RANGE_HANDLER(ID_CUSTOM_TOOLBAR_ITEM_FIRST, ID_CUSTOM_TOOLBAR_ITEM_LAST, OnCustomToolbarItemCommand)
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS) || defined( OS_PLATFORM_MOTCE )
 		COMMAND_ID_HANDLER(IDM_POPUP_MENU, OnPopupMenuCommand)
+#endif
+
+#if defined(OS_WINDOWS)
 		MESSAGE_HANDLER(WM_WINDOWPOSCHANGED, OnPosChanged)
 #endif
 		MESSAGE_HANDLER(WM_TAKEPICTURE, OnTakePicture)
@@ -221,8 +224,11 @@ private:
 	LRESULT OnCustomMenuItemCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnCustomToolbarItemCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS) || defined( OS_PLATFORM_MOTCE )
 	LRESULT OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+#endif
+
+#if defined(OS_WINDOWS)
 	LRESULT OnPosChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 #endif
 
@@ -310,6 +316,7 @@ private:
 #endif //_WIN32_WCE
 
 #if defined( OS_PLATFORM_MOTCE )
+    int m_menuBarHeight;
     HWND				g_hWndCommandBar;	// command bar handle
 #endif
 
