@@ -36,6 +36,8 @@ import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.RhodesAppOptions;
+import com.rhomobile.rhodes.osfunctionality.AndroidFunctionalityManager;
+import com.rhomobile.rhodes.util.Utils;
 
 import android.content.ContentValues;
 import android.graphics.PixelFormat;
@@ -105,9 +107,12 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
             @Override
             public void onOrientationChanged(int orientation) 
             { 
+            	Logger.D(TAG, "onOrientationChanged("+String.valueOf(orientation)+")");
                 //Logger.D(TAG, "onOrientationChanged: " + orientation); 
-                if (orientation == ORIENTATION_UNKNOWN) 
+                if (orientation == ORIENTATION_UNKNOWN) {
+                	Logger.D(TAG, "orientation == UNKNOWN !");
                     return; 
+                }
                  
                 m_rotation = orientation;    
              }   
@@ -120,7 +125,7 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
         }
         else
         {
-           Logger.I(TAG, "cannot detect!"); 
+         	Logger.I(TAG, "orientation detect is not worked !!!");
            myOrientationEventListener = null;
         }		
 	}
@@ -342,14 +347,23 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 	        
             //int nOrient = RhodesService.getInstance().getScreenOrientation();
             int nCamRotate = 90;
-            if ( (m_rotation > 45 && m_rotation < 135) || (m_rotation > 225 && m_rotation < 315) )
+            if ( (m_rotation > 45 && m_rotation < 135) || (m_rotation > 225 && m_rotation < 315) ) {
                 nCamRotate = 0;
+            }
             if (mIsFrontCamera) {
                 nCamRotate = 0;
                 parameters.set("rotation", nCamRotate );//.setRotation(270);
             }
 	        Logger.D(TAG, "Camera rotation: " + nCamRotate );
             parameters.set("rotation", nCamRotate );
+            
+            int deviceRotation = AndroidFunctionalityManager.getAndroidFunctionality().getDeviceRotation();
+            if (deviceRotation >= 0) {
+            	// platform from 2.2
+            	parameters.set("rotation", deviceRotation );
+    	        Logger.D(TAG, "Camera rotation resetup for platforms >= 2.2: " + deviceRotation );
+            }
+            
             if ((mSettings != null) && (mSettings.getWidth() > 0) && (mSettings.getHeight() > 0)) {
 
             	
