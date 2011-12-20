@@ -30,8 +30,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
-import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
 
@@ -42,7 +42,7 @@ import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-public class SplashScreen implements MainView {
+public class SplashScreen extends RhodesMainView {
 	
 	private static final String TAG = SplashScreen.class.getSimpleName();
 	
@@ -62,10 +62,8 @@ public class SplashScreen implements MainView {
 	
 	private boolean mFirstNavigate = true;
 	
-	public void init() {}
-	
     public SplashScreen(RhodesActivity context) {
-    
+        super(context);
         mView = new FrameLayout(context);
         mView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
 		AssetManager am = context.getResources().getAssets();
@@ -103,7 +101,7 @@ public class SplashScreen implements MainView {
         }
 
         // Now create WebView and load appropriate content there
-        WebView view = context.createWebView();
+        WebView view = createWebView(context);
 
         switch (type) {
         case 0:
@@ -129,7 +127,7 @@ public class SplashScreen implements MainView {
 	}
 	
 	@Override
-	public WebView getWebView(int index) {
+	public WebView getGoogleWebView(int index) {
 		return mWebView;
 	}
 	
@@ -151,31 +149,35 @@ public class SplashScreen implements MainView {
 		
 		Utils.platformLog(TAG, "DELAY for SplashScreen = "+String.valueOf(delay));
 
-		PerformOnUiThread.exec(new Runnable() {
-			private String mUrl = url;
-			private int mIndex = index;
-			public void run() {
-			    RhodesService r = RhodesService.getInstance();
-			    MainView mainView = r.getMainView();
-				if (mFirstNavigate) {
-					mFirstNavigate = false;
-					SimpleMainView v = new SimpleMainView(mainView);
-					r.setMainView(v);
-					v.navigate(mUrl,0);
-				}
-				else {
-					if (mainView != null) {
-						mainView.navigate(mUrl,mIndex);
-					}
-				}
-			}
-			
-		}, delay);
-
+        PerformOnUiThread.exec(new Runnable() {
+            private String mUrl = url;
+            private int mIndex = index;
+            public void run() {
+                try {
+                    RhodesActivity activity = RhodesActivity.safeGetInstance();
+                    if (mFirstNavigate) {
+                        mFirstNavigate = false;
+                        
+                        //TODO: switch between SimpleWebView and RhoElementsWebView
+                        WebView webView = mWebView;
+                        detachWebView();
+                        SimpleMainView v = new SimpleMainView(webView);
+                        activity.setMainView(v);
+                        v.navigate(mUrl,0);
+                    }
+                    else {
+                        // Recover navigate in case of race conditions
+                        activity.getMainView().navigate(mUrl, mIndex);
+                    }
+                } catch (Throwable e) {
+                    Logger.D(TAG, e);
+                }
+            }
+        }, delay);
 	}
-	
+
     @Override
-    public WebView detachWebView() {
+    public View detachWebView() {
         WebView v = null;
         if (mWebView != null) {
             mView.removeView(mWebView);

@@ -27,7 +27,6 @@
 package com.rhomobile.rhodes.nativeview;
 
 import android.view.View;
-import android.webkit.WebView;
 import com.rhomobile.rhodes.RhodesService;
 
 public class RhoNativeViewManager {
@@ -65,7 +64,7 @@ public class RhoNativeViewManager {
 		private long mViewHandle;
 	}
 	
-	public static WebView getWebViewObject(int tab_index) {
+	public static View getWebViewObject(int tab_index) {
 		return RhodesService.getInstance().getMainView().getWebView(tab_index);
 	}
 

@@ -47,6 +47,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/file/RhoFileApi.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/geolocation/GeoLocation.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/geolocation/GeoLocationImpl.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mainview/MainView.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/mainview/RhodesMainView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mainview/SplashScreen.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mainview/SimpleMainView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mainview/TabbedMainView.java

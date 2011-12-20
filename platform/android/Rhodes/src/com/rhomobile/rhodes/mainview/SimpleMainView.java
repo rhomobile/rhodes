@@ -36,6 +36,7 @@ import com.rhomobile.rhodes.RhodesAppOptions;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.nativeview.RhoNativeViewManager;
+import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
 
@@ -56,7 +57,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class SimpleMainView implements MainView {
+public class SimpleMainView extends RhodesMainView {
 
 	private final static String TAG = "SimpleMainView";	
 	
@@ -151,7 +152,8 @@ public class SimpleMainView implements MainView {
 		return view;
 	}
 
-	public WebView getWebView(int tab_index) {
+	@Override
+	public WebView getGoogleWebView(int tab_index) {
 		return webView;
 	}
 
@@ -292,7 +294,7 @@ public class SimpleMainView implements MainView {
     }
 	
 	
-	public WebView detachWebView() {
+	public View detachWebView() {
 		restoreWebView();
 		WebView v = null;
 		if (webView != null) {
@@ -508,19 +510,19 @@ public class SimpleMainView implements MainView {
 		}
 	}
 	
-	private void init(MainView v, Object params) {
-		Context ctx = RhodesActivity.getContext();
+	private void init(WebView v, Object params) {
+		Context ctx = ContextFactory.getUiContext();
 		
 		view = new MyView(ctx);
 		view.setOrientation(LinearLayout.VERTICAL);
 		view.setGravity(Gravity.BOTTOM);
 		view.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, FILL_PARENT));
 		
-		webView = null;
-		if (v != null)
-			webView = v.detachWebView();
+		webView = v;
+		//if (v != null)
+		//	webView = v.detachWebView();
 		if (webView == null)
-			webView = RhodesActivity.safeGetInstance().createWebView();
+			webView = createWebView(ctx);
 		view.addView(webView, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
 		
 		LinearLayout bottom = new LinearLayout(ctx);
@@ -538,14 +540,17 @@ public class SimpleMainView implements MainView {
 	}
 	
 	public SimpleMainView() {
+        super(RhodesActivity.safeGetInstance());
 		init(null, null);
 	}
 	
-	public SimpleMainView(MainView v) {
+	public SimpleMainView(WebView v) {
+        super(RhodesActivity.safeGetInstance());
 		init(v, null);
 	}
 	
-	public SimpleMainView(MainView v, Object params) {
+	public SimpleMainView(WebView v, Object params) {
+        super(RhodesActivity.safeGetInstance());
 		init(v, params);
 	}
 	
@@ -559,7 +564,7 @@ public class SimpleMainView implements MainView {
         
         boolean bStartPage = RhodesService.isOnStartPage();
 
-        if ( !bStartPage && webView.canGoBack() )		
+        if ( !bStartPage && webView.canGoBack() )
             webView.goBack();
         else
         {    

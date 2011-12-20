@@ -29,15 +29,14 @@ package com.rhomobile.rhodes.mainview;
 import java.util.Map;
 
 import android.view.View;
-import android.webkit.WebView;
 
 public interface MainView {
 
 	public View getView();
 
-	public WebView getWebView(int tab_index);
+	public View getWebView(int tab_index);
 	
-	public WebView detachWebView();
+	public View detachWebView();
 	
 	public void back(int index);
 	public void forward(int index);

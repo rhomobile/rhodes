@@ -62,14 +62,13 @@ import com.rhomobile.rhodes.uri.SmsUriHandler;
 import com.rhomobile.rhodes.uri.TelUriHandler;
 import com.rhomobile.rhodes.uri.UriHandler;
 import com.rhomobile.rhodes.uri.VideoUriHandler;
+import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.PhoneId;
 import com.rhomobile.rhodes.util.Utils;
 import com.rhomobile.rhodes.util.Utils.AssetsSource;
 import com.rhomobile.rhodes.util.Utils.FileSource;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -655,7 +654,7 @@ public class RhodesService extends Service {
 	public static void showAboutDialog() {
 		PerformOnUiThread.exec(new Runnable() {
 			public void run() {
-				final AboutDialog aboutDialog = new AboutDialog(RhodesActivity.getInstance());
+				final AboutDialog aboutDialog = new AboutDialog(ContextFactory.getUiContext());
 				aboutDialog.setTitle("About");
 				aboutDialog.setCanceledOnTouchOutside(true);
 				aboutDialog.setCancelable(true);
@@ -667,7 +666,7 @@ public class RhodesService extends Service {
 	public static void showLogView() {
 		PerformOnUiThread.exec(new Runnable() {
 			public void run() {
-				final LogViewDialog logViewDialog = new LogViewDialog(RhodesActivity.getInstance());
+				final LogViewDialog logViewDialog = new LogViewDialog(ContextFactory.getUiContext());
 				logViewDialog.setTitle("Log View");
 				logViewDialog.setCancelable(true);
 				logViewDialog.show();
@@ -678,7 +677,7 @@ public class RhodesService extends Service {
 	public static void showLogOptions() {
 		PerformOnUiThread.exec(new Runnable() {
 			public void run() {
-				final LogOptionsDialog logOptionsDialog = new LogOptionsDialog(RhodesActivity.getInstance());
+				final LogOptionsDialog logOptionsDialog = new LogOptionsDialog(ContextFactory.getUiContext());
 				logOptionsDialog.setTitle("Logging Options");
 				logOptionsDialog.setCancelable(true);
 				logOptionsDialog.show();

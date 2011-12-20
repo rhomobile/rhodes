@@ -26,7 +26,6 @@
 
 package com.rhomobile.rhodes;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
@@ -37,17 +36,11 @@ import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.mainview.SplashScreen;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
-import com.rhomobile.rhodes.webview.ChromeClientOld;
-import com.rhomobile.rhodes.webview.RhoWebSettings;
-import com.rhomobile.rhodes.webview.RhoWebViewClient;
 
-import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -57,18 +50,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.Toast;
 
 public class RhodesActivity extends BaseActivity {
 	
 	private static final String TAG = RhodesActivity.class.getSimpleName();
 	
 	private static final boolean DEBUG = false;
-	
-	private static final boolean USE_DELAYED_MAINVIEW_DISPLAY = false;
 	
 	public static boolean ENABLE_LOADING_INDICATION = true;
 	
@@ -83,12 +70,7 @@ public class RhodesActivity extends BaseActivity {
 	private MainView mMainView;
 	
 	private RhoMenu mAppMenu;
-	
-	private WebChromeClient mChromeClient;
-	private WebViewClient mWebViewClient;
-	private RhoWebSettings mWebSettings;
 
-	
 	private long uiThreadId = 0;
 	
 	public long getUiThreadId() {
@@ -173,8 +155,6 @@ public class RhodesActivity extends BaseActivity {
 
 		mHandler = new Handler();
 
-		initWebStuff();
-
         mSplashScreen = new SplashScreen(this);
         setMainView(mSplashScreen);
 
@@ -195,7 +175,7 @@ public class RhodesActivity extends BaseActivity {
 	private void notifyUiCreated() {
 		RhodesService r = RhodesService.getInstance();
 		if ( r != null ) {
-			r.callUiCreatedCallback();
+			RhodesService.callUiCreatedCallback();
 		}
 		else {
 			mHandler.post(new Runnable() {
@@ -208,7 +188,7 @@ public class RhodesActivity extends BaseActivity {
 						return;
 					}
 				
-					r.callUiCreatedCallback();
+					RhodesService.callUiCreatedCallback();
 				}
 			});
 		}
@@ -363,105 +343,15 @@ public class RhodesActivity extends BaseActivity {
 	public SplashScreen getSplashScreen() {
 		return mSplashScreen;
 	}
-	
-	public void setMainView(MainView v) {
-		setMainView(v, true);
-	}
-	
-	public void setMainView(final MainView v, boolean waitUntilNavigationDone) {
-		if (DEBUG)
-			Log.d(TAG, "setMainView: v=" + v + "; mMainView=" + mMainView);
-		
-		// If there's no previous mMainView, don't wait
-		if (mMainView == null)
-			waitUntilNavigationDone = false;
-		
-		// Set mMainView right now but not yet do it visible
-		mMainView = v;
 
-		// This is action need to be executed when mMainView should become visible 
-		final Runnable setMainViewVisible = new Runnable() {
-			public void run() {
-				if (DEBUG)
-					Log.d(TAG, "setMainViewAction: v=" + v);
-				setContentView(v.getView());
-			}
-		};
-		
-		if (!USE_DELAYED_MAINVIEW_DISPLAY /* || !waitUntilNavigationDone*/) {
-			// Make new MainView visible right now
-			setMainViewVisible.run();
-		}
-		else {
-			// If we're requested to wait until first navigation will be done,
-			// use the trick: keep current main view until first navigate will be
-			// finished in the new MainView.
-			// This will end up in good user experience - user will see
-			// new MainView only when it will have completely load its content
-			// (no blank screens for user).
-			WebView webView = v.getWebView(0);
-			webView.setWebViewClient(new WebViewClient() {
-				@Override
-				public void onPageFinished(WebView view, String url) {
-					mWebViewClient.onPageFinished(view, url);
-					// Restore standard WebViewClient to be sure this callback will not
-					// be called anymore (it should be called only once)
-					view.setWebViewClient(mWebViewClient);
-					
-					setMainViewVisible.run();
-				}
-			});
-		}
-	}
-	
+    public void setMainView(MainView v) {
+        mMainView = v;
+        setContentView(v.getView());
+    }
+
 	public MainView getMainView() {
 		return mMainView;
-	}
-	
-	public WebView createWebView() {
-		WebView view = new WebView(this);
-		mWebSettings.setWebSettings(view);
-		view.setWebChromeClient(mChromeClient);
-		view.setWebViewClient(mWebViewClient);
-		view.clearCache(true);
-		
-		return view;
-	}
-	
-	private void initWebStuff() {
-		String ccName;
-		String wsName;
-		int sdkVersion = Integer.parseInt(Build.VERSION.SDK);
-		if (sdkVersion < Build.VERSION_CODES.ECLAIR_MR1) {
-			ccName = "ChromeClientOld";
-			wsName = "RhoWebSettingsOld";
-		}
-		else {
-			ccName = "ChromeClientNew";
-			wsName = "RhoWebSettingsNew";
-		}
-		
-		try {
-			String pkgname = ChromeClientOld.class.getPackage().getName();
-			String fullName = pkgname + "." + ccName;
-			Class<? extends WebChromeClient> ccClass =
-				Class.forName(fullName).asSubclass(WebChromeClient.class);
-			
-			Constructor<? extends WebChromeClient> ctor = ccClass.getConstructor(RhodesActivity.class);
-			mChromeClient = ctor.newInstance(this);
-			
-			pkgname = RhoWebSettings.class.getPackage().getName();
-			fullName = pkgname + "." + wsName;
-			Class<? extends RhoWebSettings> wsClass =
-				Class.forName(fullName).asSubclass(RhoWebSettings.class);
-			mWebSettings = wsClass.newInstance();
-			
-			mWebViewClient = new RhoWebViewClient();
-		}
-		catch (Exception e) {
-			throw new IllegalStateException(e);
-		}
-	}
+	}	
 
 	@Override
 	public void onServiceConnected(ComponentName name, IBinder service) {
