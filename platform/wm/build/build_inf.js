@@ -215,8 +215,8 @@ function pinf(platform,es,exts,name,vendor,show_shortcut,webkit,rhogempath) {
     p("[SourceDisksNames]");
     p("1=,\"\",,\"..\\bin\\"+settings[platform][0]+"\\rhodes\\Release\\\"");
     if (webkit) {
-        p("2=,\"\",," + rhogempath + "\"\\bin\\\"");
-        p("3=,\"\",," + rhogempath + "\"\\bin\\NPAPI\\\"");
+        p("2=,\"\",," + rhogempath + "\"\\\"");
+        p("3=,\"\",," + rhogempath + "\"\\NPAPI\\\"");
         p("4=,\"\",," + rhogempath + "\"\\Config\\\"");
     }
     get_source_disks_names(es);
