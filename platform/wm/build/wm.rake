@@ -431,11 +431,18 @@ namespace "run" do
 
     cd $startdir + "/res/build-tools"
     detool = "detool.exe"
-    args   = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port]
+    
     puts "\nStarting application on the WM6 emulator\n\n"
     log_file = gelLogPath
 
     Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
+
+    if $webkit_capability
+      wk_args   = [ 'wk-emu', "\"#{$wm_emulator}\"", '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
+      Jake.run2( detool, wk_args, {:nowait => false})
+    end
+
+    args   = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port]
     Jake.run2( detool, args, {:nowait => false})
   end
 
@@ -460,13 +467,20 @@ namespace "run" do
       kill_detool
 
       cd $startdir + "/res/build-tools"
-      detool = "detool.exe"
-      args   = [ 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port ]
+      detool = "detool.exe"     
+
       puts "\nStarting application on the device"
       puts "Please, connect you device via ActiveSync.\n\n"
       log_file = gelLogPath
 
       Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
+
+      if $webkit_capability
+        wk_args   = [ 'wk-dev', '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
+        Jake.run2( detool, wk_args, {:nowait => false})
+      end
+
+      args   = [ 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port ]
       Jake.run2( detool, args, {:nowait => false})
     end
 
