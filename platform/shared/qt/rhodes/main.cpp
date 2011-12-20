@@ -214,13 +214,26 @@ int main(int argc, char *argv[])
 #ifdef OS_SYMBIAN
 extern "C"
 {
-void rho_sys_replace_current_bundle(const char* path)
-{
-}
+    void rho_sys_replace_current_bundle(const char* path)
+    {
+    }
 
-int rho_sys_delete_folder(const char* path)
-{
-    return 0;
-}
+    int rho_sys_delete_folder(const char* path)
+    {
+        return 0;
+    }
 }
 #endif
+
+#if defined(OS_MACOSX) && defined(RHODES_EMULATOR)
+extern "C"
+{
+    void rho_file_impl_delete_folder(const char* szFolderPath)
+    {
+    }
+
+    void rho_file_impl_copy_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath)
+    {
+    }
+}
+#endif // OS_MACOSX && RHODES_EMULATOR
