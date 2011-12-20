@@ -34,6 +34,7 @@
 
 #define RHOSETUP_DLL "rhosetup.dll"
 
+
 TCHAR *app_name = NULL;
 
 void checkMDEstart(HRESULT hr) 
@@ -485,7 +486,9 @@ enum {
 	DEPLOY_DEVCAB,
 	DEPLOY_EMU,
 	DEPLOY_DEV,
-	DEPLOY_LOG
+	DEPLOY_LOG,
+    DEPLOY_DEV_WEBKIT,
+    DEPLOY_EMU_WEBKIT
 };
 
 int copyExecutable (TCHAR *file_name, TCHAR *app_dir)
@@ -699,6 +702,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	TCHAR *app_exe = NULL;
 	TCHAR *log_file = NULL;
 	TCHAR *log_port = NULL;
+    TCHAR *src_path = NULL;
+    TCHAR *dst_path = NULL;
 	TCHAR params_buf[MAX_PATH + 16];
 	//WIN32_FIND_DATAW findData;
 	int new_copy = 0;
@@ -706,7 +711,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	USES_CONVERSION;
 
-	if (argc >= 5) {        //assuming that need to start emulator
+	if (argc > 5) {        //assuming that need to start emulator
 		if (strcmp(T2A(argv[1]), "emu") == 0) {
 			emu_name    = argv[2];
 			app_name    = argv[3];
@@ -731,10 +736,18 @@ int _tmain(int argc, _TCHAR* argv[])
 			deploy_type = DEPLOY_DEV;
 		}
 	} else if (argc == 5) { //assuming that need to deploy and start on device
-		cab_file = argv[2];
-		app_name = argv[3];
-		log_port = argv[4];
-		deploy_type = DEPLOY_DEVCAB;
+        if (strcmp(T2A(argv[1]), "wk-emu") == 0)  {
+            deploy_type = DEPLOY_EMU_WEBKIT;
+            emu_name = argv[2];
+            src_path = argv[3];
+            app_name = argv[4];            
+        }
+        else {
+            cab_file = argv[2];
+            app_name = argv[3];
+            log_port = argv[4];
+            deploy_type = DEPLOY_DEVCAB;
+        }
 	} else if (argc == 4) { // log
 		if (strcmp(T2A(argv[1]), "log") == 0) {
 			log_file = argv[2];
@@ -742,6 +755,11 @@ int _tmain(int argc, _TCHAR* argv[])
 			app_name = _T("");
 			deploy_type = DEPLOY_LOG;
 		}
+        else if (strcmp(T2A(argv[1]), "wk-dev") == 0)  {
+            deploy_type = DEPLOY_DEV_WEBKIT;
+            src_path = argv[2];
+            app_name = argv[3];            
+        }
 	}
 	else {
 		usage();
@@ -1098,5 +1116,112 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 	}
 	
+    if (deploy_type == DEPLOY_DEV_WEBKIT)
+    {
+        HANDLE hFind;
+        CE_FIND_DATA findData;
+
+        _tprintf( TEXT("Searching for Windows CE device..."));
+
+        HRESULT hRapiResult;
+        hRapiResult = CeRapiInit();
+        if (FAILED(hRapiResult)) {
+            _tprintf( TEXT("FAILED\n"));
+            return false;
+        }
+        _tprintf( TEXT("DONE\n"));
+
+        hFind = CeFindFirstFile(app_dir, &findData);
+        if (INVALID_HANDLE_VALUE == hFind) {
+            _tprintf( TEXT("Application directory on device was no found\n"));
+
+            new_copy = 1;
+
+            if (!CeCreateDirectory(app_dir, NULL)) {
+                printf ("Failed to create app directory\n");
+                goto stop_emu_deploy;
+            }
+        }
+        FindClose( hFind);
+
+        if (!findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+            _tprintf( TEXT("Error: target directory is file\n"));
+            goto stop_emu_deploy;
+        }
+
+        _tprintf( TEXT("Load file to device..."));
+        USES_CONVERSION;
+        if (copyBundle(src_path, _T("/"), app_dir) == EXIT_FAILURE) {
+            printf ("Failed to copy bundle\n");
+            goto stop_emu_deploy;
+        }
+
+        _tprintf( TEXT("DONE\n"));
+    }
+
+    if (deploy_type == DEPLOY_EMU_WEBKIT)
+    {
+        HANDLE hFind;
+        CE_FIND_DATA findData;
+
+        _tprintf( TEXT("Searching for Windows CE device..."));
+
+        if (SUCCEEDED(CoInitializeEx(NULL, COINIT_MULTITHREADED))) 
+        {
+            HANDLE hFind;
+            CE_FIND_DATA findData;
+
+            CreateThread(NULL, 0, startDEM, NULL, 0, NULL);
+
+            _tprintf( TEXT("Starting emulator... "));
+            if (!emuConnect (emu_name)) {
+                _tprintf( TEXT("FAILED\n"));
+                goto stop_emu_deploy;
+            }
+            _tprintf( TEXT("DONE\n"));
+
+            _tprintf( TEXT("Cradle emulator... "));
+            if(!emuCradle (emu_name)) {
+                _tprintf( TEXT("FAILED\n"));
+                goto stop_emu_deploy;
+            }
+            _tprintf( TEXT("DONE\n"));
+
+            if (!wceConnect ()) {
+                printf ("Failed to connect to remote device.\n");
+                goto stop_emu_deploy;
+            } else {
+                hFind = CeFindFirstFile(app_dir, &findData);
+                if (INVALID_HANDLE_VALUE == hFind) {
+                    _tprintf( TEXT("Application directory on device was no found\n"));
+
+                    new_copy = 1;
+
+                    if (!CeCreateDirectory(app_dir, NULL)) {
+                        printf ("Failed to create app directory\n");
+                        goto stop_emu_deploy;
+                    }
+                }
+                FindClose( hFind);
+
+                if (!findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+                    _tprintf( TEXT("Error: target directory is file\n"));
+                    goto stop_emu_deploy;
+                }
+
+                _tprintf( TEXT("Load files to device..."));
+                USES_CONVERSION;
+                if (copyBundle(src_path, _T("/"), app_dir) == EXIT_FAILURE) {
+                    printf ("Failed to copy bundle\n");
+                    goto stop_emu_deploy;
+                }
+
+                _tprintf( TEXT("DONE\n"));
+
+                emuBringToFront(emu_name);
+            }
+        }
+    }
+
 	return EXIT_SUCCESS;
 }
