@@ -229,8 +229,18 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 			}
 			if (mSettings != null) {
 	            if ((mSettings.getWidth() > 0) && (mSettings.getHeight() > 0)) {
-	                p.setPictureSize(mSettings.getWidth(), mSettings.getHeight());
-	            }
+	            	
+	    			CameraService.Size imgs = com.rhomobile.rhodes.camera.Camera.getCameraService().getClosestPictureSize(camera, mSettings.getWidth(), mSettings.getHeight());
+	    			 
+	    			if (imgs != null) {
+	    				if ((imgs.width >= 0) && (imgs.height >= 0)) {
+	    					p.setPictureSize(imgs.width, imgs.height);
+	    				}
+	    			}
+	    			else {
+	    				p.setPictureSize(mSettings.getWidth(), mSettings.getHeight());
+	    			}
+	    		}
 	            if (mSettings.getColorModel() == mSettings.CAMERA_COLOR_MODEL_GRAYSCALE) {
 	            	p.set("effect", Camera.Parameters.EFFECT_MONO);//p.setColorEffect(Camera.Parameters.EFFECT_MONO);
 	            }
@@ -364,6 +374,7 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
     	        Logger.D(TAG, "Camera rotation resetup for platforms >= 2.2: " + deviceRotation );
             }
             
+            Utils.platformLog(TAG, "$$$   parameters.set(rotation, "+String.valueOf(nCamRotate)+" );");
             if ((mSettings != null) && (mSettings.getWidth() > 0) && (mSettings.getHeight() > 0)) {
 
             	
