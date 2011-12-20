@@ -30,9 +30,6 @@ require 'yaml'
 require 'socket'
 require 'webrick'
   
-require 'rest_client'
-require 'json'
-
 SYNC_SERVER_BASE_URL = 'http://rhoconnect-spec-exact_platform.heroku.com'
 SYNC_SERVER_CONSOLE_LOGIN = 'rhoadmin'
 SYNC_SERVER_CONSOLE_PASSWORD = ''
@@ -153,6 +150,9 @@ class Jake
   end
 
   def self.reset_spec_server(platform)
+    require 'rest_client'
+    require 'json'
+
     platform = platform
     exact_url = SYNC_SERVER_BASE_URL.gsub(/exact_platform/, platform)
     puts "going to reset server: #{exact_url}"
