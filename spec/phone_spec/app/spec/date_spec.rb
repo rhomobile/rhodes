@@ -58,6 +58,7 @@ if !defined? RHO_ME
   end
 end
 
+if !defined?(RHO_WP7)
   it "should support operations with dates" do
     to_day = Date.civil(2010, 3, 21)
     to_day2 = Date.civil(2011, 3, 21)
@@ -81,4 +82,6 @@ end
     puts "res : #{res.day}"
     
   end
+end
+
 end

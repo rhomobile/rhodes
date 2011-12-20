@@ -45,9 +45,8 @@ end
 
     config[:files] << "spec/xruby_spec" if defined? RHO_ME
 
-    config[:files] << [ "spec/syncengine_spec", [ {:schema_model=>true }, {:schema_model=>false } ] ]
-
 if !defined?(RHO_WP7)
+    config[:files] << [ "spec/syncengine_spec", [ {:schema_model=>true }, {:schema_model=>false } ] ]
 
     config[:files] << [ "spec/blobsync_spec", [ {:schema_model=>true }, {:schema_model=>false } ] ]
 
