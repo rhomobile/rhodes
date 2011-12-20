@@ -33,6 +33,7 @@ import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.file.RhoFileApi;
+import com.rhomobile.rhodes.util.ContextFactory;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -55,7 +56,7 @@ import android.widget.FrameLayout;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 
-public class TabbedMainView implements MainView {
+public class TabbedMainView extends RhodesMainView {
 	
 	private static final String TAG = "TabbedMainView";
 	
@@ -84,7 +85,7 @@ public class TabbedMainView implements MainView {
 	}
 	
 	private static class TabData {
-		public MainView view;
+		public RhodesMainView view;
 		public String url;
 		public boolean reload;
 		public boolean loaded;
@@ -346,7 +347,7 @@ public class TabbedMainView implements MainView {
 		
 	};
 	
-	private MainView getView(int index) {
+	private RhodesMainView getView(int index) {
 		if (index == -1)
 			index = activeTab();
 		TabData data = tabData.elementAt(index);
@@ -433,7 +434,8 @@ public class TabbedMainView implements MainView {
 	
 	@SuppressWarnings("unchecked")
 	public TabbedMainView(Object params) {
-		Context ctx = RhodesActivity.getContext();
+	    super(RhodesActivity.safeGetInstance());
+		Context ctx = ContextFactory.getUiContext();
 
 		mBackgroundColorEnable = false;		
 
@@ -611,10 +613,18 @@ public class TabbedMainView implements MainView {
 			if (use_current_view_for_tab) {
 				RhodesService r = RhodesService.getInstance();
 				MainView mainView = r.getMainView();
-				action = mainView.currentLocation(-1);
-				view = new SimpleMainView(mainView);
+                action = mainView.currentLocation(-1);
+                if (mainView instanceof RhodesMainView) {
+                    WebView webView = ((RhodesMainView) mainView).getGoogleWebView(-1);
+                    mainView.detachWebView();
+                    view = new SimpleMainView(webView);
+                } else {
+                    StringBuilder buffer = new StringBuilder("Construction failed: ");
+                    buffer.append("Cannot reuse ").append(mainView.getClass().getSimpleName());
+                    Logger.D(TAG, buffer.toString());
+                }
 			}
-			else {
+			if (view == null) {
 				view = new SimpleMainView();
 			}
 			// Set view factory
@@ -827,7 +837,7 @@ public class TabbedMainView implements MainView {
 						data.loaded = false;
 					}
 					if (i != tabIndex) {
-						WebView wv = getWebView(i);
+						WebView wv = getGoogleWebView(i);
 						wv.clearView();
 						wv.clearCache(true);
 						wv.invalidate();
@@ -851,11 +861,11 @@ public class TabbedMainView implements MainView {
 		return host;
 	}
 
-	public WebView getWebView(int tab_index) {
-		return getView(tab_index).getWebView(-1);
+	public WebView getGoogleWebView(int tab_index) {
+		return getView(tab_index).getGoogleWebView(-1);
 	}
 	
-	public WebView detachWebView() {
+	public View detachWebView() {
 		return getView(activeTab()).detachWebView();
 	}
 	

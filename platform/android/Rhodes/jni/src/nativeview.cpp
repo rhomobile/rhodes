@@ -136,7 +136,7 @@ void* RhoNativeViewManager::getWebViewObject(int tab_index) {
     JNIEnv *env = jnienv();
     jclass cls = rho_find_class(env, "com/rhomobile/rhodes/nativeview/RhoNativeViewManager");
     if (!cls) return null;
-    jmethodID mid = env->GetStaticMethodID( cls, "getWebViewObject", "(I)Landroid/webkit/WebView;");
+    jmethodID mid = env->GetStaticMethodID( cls, "getWebViewObject", "(I)Landroid/view/View;");
     if (!mid) return null;
     return env->CallStaticObjectMethod(cls, mid, tab_index);
 }
