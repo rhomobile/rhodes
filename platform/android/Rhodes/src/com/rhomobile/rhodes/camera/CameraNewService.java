@@ -115,19 +115,23 @@ class CameraNewService implements CameraService {
 	
 	public Size getClosestPreviewSize(android.hardware.Camera camera, int w, int h) {
 
+		com.rhomobile.rhodes.camera.Camera.logDebug(TAG, "getClosestPreviewSize("+String.valueOf(w)+", "+String.valueOf(h)+")");
 		int neww = w;
 		int newh = h;
 		
 		Camera.Parameters p = camera.getParameters();
 		if (p == null) {
+			com.rhomobile.rhodes.camera.Camera.logDebug(TAG, "getClosestPreviewSize() return null - Camera do not return Parameters");
 			return null;
 		}
 		List<android.hardware.Camera.Size> sizes = p.getSupportedPreviewSizes();
 		if (sizes == null) {
+			com.rhomobile.rhodes.camera.Camera.logDebug(TAG, "getClosestPreviewSize() return null - Camera do not return supportedPreviewSize");
 			return null;
 		}
 		Iterator<android.hardware.Camera.Size> iter = sizes.iterator();
 		if (iter == null) {
+			com.rhomobile.rhodes.camera.Camera.logDebug(TAG, "getClosestPreviewSize() return null - Iterator is null");
 			return null;
 		}
 		// find closest preview size
@@ -136,6 +140,7 @@ class CameraNewService implements CameraService {
 		int minH = 0;
 		while (iter.hasNext()) {
 			android.hardware.Camera.Size s = iter.next();
+			com.rhomobile.rhodes.camera.Camera.logDebug(TAG, "        enumerate Size: "+String.valueOf(s.width)+", "+String.valueOf(s.height));
 			if (min_r < 0) {
 				min_r = (float)s.width*(float)s.width+(float)s.height*(float)s.height;
 				minW = s.width;
@@ -155,8 +160,10 @@ class CameraNewService implements CameraService {
 			newh = minH;
 		}
 		else {
+			com.rhomobile.rhodes.camera.Camera.logDebug(TAG, "getClosestPreviewSize() return null - do not found size");
 			return null;
 		}
+		com.rhomobile.rhodes.camera.Camera.logDebug(TAG, "getClosestPreviewSize() return ["+String.valueOf(neww)+", "+String.valueOf(newh)+"]");
 		return new Size(neww, newh);
 	}
 	
