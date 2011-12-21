@@ -311,7 +311,7 @@ private:
     CWindow m_menuBar;
 #elif defined (OS_WINDOWS)
 	CMenuBar m_menuBar;
-	int m_menuBarHeight;
+//	int m_menuBarHeight;
 	CLogView m_logView;
 #endif //_WIN32_WCE
 

@@ -30,6 +30,8 @@
 #include "common/RhodesApp.h"
 #include "common/RhoConf.h"
 #include "logging/RhoLog.h"
+#include "common/app_build_capabilities.h"
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoSystem"
 
@@ -131,6 +133,13 @@ VALUE rho_sys_get_property(char* szPropName)
         }
         return rho_ruby_create_boolean(passed);
     }
+
+	if (strcasecmp("is_moto_device",szPropName) == 0)
+#ifdef APP_BUILD_CAPABILITY_MOTOROLA
+        return rho_ruby_create_boolean(1);
+#else
+        return rho_ruby_create_boolean(0);
+#endif
 
     RAWLOG_ERROR1("Unknown Rho::System property : %s", szPropName);
 
