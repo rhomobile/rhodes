@@ -1,4 +1,12 @@
 #!/bin/sh
 
-rake
+if [ "$RHO_PLATFORM" = "iphone" ]; then
 
+cd iphone
+rake --trace
+
+else
+
+rake --trace
+
+fi
