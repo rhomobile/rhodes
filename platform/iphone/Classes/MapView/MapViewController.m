@@ -379,6 +379,9 @@ static MapViewController *mc = nil;
     mapView.delegate=self;
 
     mapView.showsUserLocation=showsUserLocation;
+    
+    [mapView setUserTrackingMode:MKUserTrackingModeNone animated:NO];
+    
     mapView.scrollEnabled=scrollEnabled;
     mapView.zoomEnabled=zoomEnabled;
     mapView.mapType=mapType;
@@ -511,14 +514,15 @@ static MapViewController *mc = nil;
         if ([url length] > 0) {
             [annView setRightCalloutAccessoryView:[UIButton buttonWithType:UIButtonTypeDetailDisclosure]];
         }
+
+        if ([annView isKindOfClass:[MKPinAnnotationView class]]) {
+            MKPinAnnotationView* annPinView = (MKPinAnnotationView*)annView;
+            annPinView.animatesDrop = TRUE;
+        }
     }
     else {
         annView = [[[MKPinAnnotationView alloc]
                                          initWithAnnotation:annotation reuseIdentifier:@"currentloc"] autorelease];
-    }
-    if ([annView isKindOfClass:[MKPinAnnotationView class]]) {
-        MKPinAnnotationView* annPinView = (MKPinAnnotationView*)annView;
-        annPinView.animatesDrop = TRUE;
     }
     annView.canShowCallout = YES;
     return annView;
