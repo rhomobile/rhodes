@@ -71,7 +71,7 @@ def get_variables(scope)
    prefix = "#{$_classname}."
    vartype = "C"
   elsif (scope =~ /^IVARS/)
-   if ($_classname =~ /^\s*$/) or ($_methodname =~ /^\s*$/)
+   if ($_classname =~ /^\s*$/) || ($_methodname =~ /^\s*$/)
      return
    end
    cmd = "instance_variables"
@@ -136,7 +136,7 @@ def debug_handle_cmd(inline)
       $_breakpoints_enabled = false
       debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Breakpoints disabled")
       processed = true
-    elsif inline and (cmd =~ /^STEPOVER/)
+    elsif inline && (cmd =~ /^STEPOVER/)
       $_s.write("STEPOVER start\n")
       log_command(cmd)
       $_step = 2
@@ -145,7 +145,7 @@ def debug_handle_cmd(inline)
       wait = false
       debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Step over")
       processed = true
-    elsif inline and (cmd =~ /^STEPRET/)
+    elsif inline && (cmd =~ /^STEPRET/)
       log_command(cmd)
       if $_call_stack < 1
         $_step = 0
@@ -159,7 +159,7 @@ def debug_handle_cmd(inline)
       wait = false
       debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Step return" + comment)
       processed = true
-    elsif inline and (cmd =~ /^STEP/)
+    elsif inline && (cmd =~ /^STEP/)
       log_command(cmd)
       $_step = 1
       $_step_level = -1
@@ -167,7 +167,7 @@ def debug_handle_cmd(inline)
       wait = false
       debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Step into")
       processed = true
-    elsif inline and (cmd =~ /^CONT/)
+    elsif inline && (cmd =~ /^CONT/)
       log_command(cmd)
       wait = false
       $_step = 0
@@ -186,12 +186,12 @@ def debug_handle_cmd(inline)
       debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Terminating...")
       processed = true
       System.exit
-    elsif inline and (cmd =~ /^EVL?:/)
+    elsif inline && (cmd =~ /^EVL?:/)
       log_command(cmd)
       processed = true
       debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Calc evaluation...")
       execute_cmd cmd.sub(/^EVL?:/,""), (cmd =~ /^EVL:/ ? true : false)
-    elsif  inline and (cmd =~ /^[GLCI]VARS/)
+    elsif inline && (cmd =~ /^[GLCI]VARS/)
       log_command(cmd)
       debugger_log(DEBUGGER_LOG_LEVEL_DEBUG, "Get variables...")
       get_variables cmd
@@ -220,27 +220,27 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
   $_methodname = id;
   file = file.to_s.gsub('\\', '/')
 
-  if file[0, $_app_path.length] == $_app_path or file.index("./") != nil
+  if (file[0, $_app_path.length] == $_app_path) || (!(file.index("./").nil?))
 
     if event =~ /^line/
 
       unhandled = true
-      step_stop = ($_step > 0) and (($_step_level < 0) or ($_call_stack <= $_step_level))
+      step_stop = ($_step > 0) && (($_step_level < 0) || ($_call_stack <= $_step_level))
 
       #$_s.write('[Debugger][2] file = ' + file.to_s + ' line = ' + line.to_s + "\n")
 
-      if (step_stop or ($_breakpoints_enabled and (not $_breakpoint.empty?)))
+      if (step_stop || ($_breakpoints_enabled && (!($_breakpoint.empty?))))
         filename = ""
          
-        if file.index("./") != nil
+        if !(file.index("./").nil?)
           filename = "/" + file[file.index("./") + 2, file.length]
         else
           filename = file[$_app_path.length, file.length-$_app_path.length]
         end
 
         ln = line.to_i.to_s
-        if (step_stop or ($_breakpoints_enabled and ($_breakpoint.has_key?(filename + ':' + ln))))
-          $_s.write('[Debugger][3] step = ' + filename.to_s + ' line = ' + line.to_s + "\n")
+        if step_stop || ($_breakpoints_enabled && ($_breakpoint.has_key?(filename + ':' + ln)))
+          # $_s.write('[Debugger][3] step = ' + filename.to_s + ' line = ' + line.to_s + "\n")
 
           fn = filename.gsub(/:/, '|')
           cl = classname.to_s.gsub(/:/,'#')
@@ -258,7 +258,7 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
 
             if app_type.eql? "rhodes"
               if System::get_property('main_window_closed')
-                 $_s.write("QUIT\n") if (not $_s.nil?)
+                 $_s.write("QUIT\n") if !($_s.nil?)
                  $_wait = false
               end
             end
@@ -298,8 +298,8 @@ begin
   debug_port_env = ENV['rho_debug_port']
   debug_path_env = ENV['ROOT_PATH']
 
-  debug_host = (debug_host_env.nil? or debug_host_env == "") ? '127.0.0.1' : debug_host_env 
-  debug_port = (debug_port_env.nil? or debug_port_env == "") ? 9000 : debug_port_env  
+  debug_host = ((debug_host_env.nil?) || (debug_host_env == "")) ? '127.0.0.1' : debug_host_env 
+  debug_port = ((debug_port_env.nil?) || (debug_port_env == "")) ? 9000 : debug_port_env  
 
   debugger_log(DEBUGGER_LOG_LEVEL_INFO, "host=" + debug_host_env.to_s)
   debugger_log(DEBUGGER_LOG_LEVEL_INFO, "port=" + debug_port_env.to_s)
@@ -319,11 +319,11 @@ begin
   $_cmd = ""
   $_app_path = ""
 
-  $_app_path = (debug_path_env.nil? or debug_path_env == "") ? "" : debug_path_env  
+  $_app_path = ((debug_path_env.nil?) || (debug_path_env == "")) ? "" : debug_path_env  
   $_s.write("DEBUG PATH=" + $_app_path.to_s + "\n")
 
   at_exit {
-    $_s.write("QUIT\n") if (not $_s.nil?)
+    $_s.write("QUIT\n") if !($_s.nil?)
   }
 
   set_trace_func $_tracefunc
@@ -332,7 +332,7 @@ begin
     while true
       debug_read_cmd($_s,true)
       while debug_handle_cmd(false) do end
-      if ($_cmd !~ /^\s*$/) and (Thread.main.stop?)
+      if ($_cmd !~ /^\s*$/) && (Thread.main.stop?)
         #$_s.write("[manage thread] set wait = true\n")
         $_wait = true
         Thread.main.wakeup
