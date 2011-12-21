@@ -20,6 +20,7 @@ extern void *rho_wmimpl_createSignatureInstance(HINSTANCE hInst, HWND hWnd, RECT
 extern void rho_wmimpl_deleteSignature(void *inkImpl);
 extern LRESULT rho_wmimpl_signatureSigProcCall(void *inkImpl, HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 extern void rho_wmimpl_signatureClearScreenCall(void *inkImpl);
+extern BOOL rho_wmimpl_saveSignature(void *inkImpl, LPCTSTR szFilePathName);
 #endif
 
 extern "C" HWND getMainWnd();
@@ -265,9 +266,16 @@ LRESULT CRhoSignatureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 
 void CRhoSignatureWindow::saveImage()
 {
+    StringW strFilePathW = convertToStringW( getParams().getFilePath() );
+
+#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+    BOOL bRes = rho_wmimpl_saveSignature( m_pInkImpl, strFilePathW.c_str());
+    m_hResult = bRes ? S_OK : E_FAIL;
+#else
 	HBITMAP hBitmap = getScreenBitmap();
-    m_hResult = saveBitmapToFile( hBitmap, convertToStringW(getParams().getFilePath()).c_str(), convertToStringW(getParams().getFileFormat()).c_str() );
+    m_hResult = saveBitmapToFile( hBitmap, strFilePathW.c_str(), convertToStringW(getParams().getFileFormat()).c_str() );
 	DeleteObject(hBitmap);
+#endif
 }
 
 void CRhoSignatureWindow::clearImage()
