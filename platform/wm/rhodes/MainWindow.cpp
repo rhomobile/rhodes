@@ -64,6 +64,7 @@ IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 extern "C" void rho_sysimpl_sethas_network(int nValue);
 extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue);
 extern "C" void rho_geoimpl_turngpsoff();
+extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd);
 
 rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent);
 bool Rhodes_WM_ProcessBeforeNavigate(LPCTSTR url);
@@ -398,47 +399,11 @@ LRESULT CMainWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOO
 
 LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	PAINTSTRUCT ps;
-	HDC hDC = BeginPaint(&ps);
-
-  	CSplashScreen& splash = RHODESAPP().getSplashScreen();
-    splash.start();
-    StringW pathW = convertToStringW(RHODESAPP().getLoadingPngPath());
-
-	HBITMAP hbitmap = SHLoadImageFile(pathW.c_str());
-		
-	if (!hbitmap)
-		return 0;
-
-	BITMAP bmp;
-	GetObject(hbitmap, sizeof(bmp), &bmp);
-
-	HDC hdcMem = CreateCompatibleDC(hDC);
-	HGDIOBJ resObj = SelectObject(hdcMem, hbitmap);
-
-    CRect rcClient;
-    GetClientRect(&rcClient);
-    int nLeft = rcClient.left, nTop=rcClient.top, nWidth = bmp.bmWidth, nHeight=bmp.bmHeight;
-    if (splash.isFlag(CSplashScreen::HCENTER) )
-        nLeft = (rcClient.Width()-nWidth)/2;
-	if (splash.isFlag(CSplashScreen::VCENTER) )
-        nTop = (rcClient.Height()-nHeight)/2;
-	if (splash.isFlag(CSplashScreen::VZOOM) )
-		nHeight = rcClient.Height();
-	if (splash.isFlag(CSplashScreen::HZOOM) )
-		nWidth = rcClient.Width();
-
-	StretchBlt(hDC, nLeft, nTop, nWidth, nHeight,
-		hdcMem, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY);
-	//BitBlt(hDC, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), hdcMem, 0, 0, SRCCOPY);
-
-    SelectObject(hdcMem, resObj);
-	DeleteObject(hbitmap);
-	DeleteObject(hdcMem);
-
-	EndPaint(&ps);
     bHandled = TRUE;
-	return 0;
+
+    rho_wmimpl_draw_splash_screen(m_hWnd);
+
+    return 0;
 }
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
@@ -470,12 +435,16 @@ LRESULT CMainWindow::OnBeforeNavigate(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     Rhodes_WM_ProcessBeforeNavigate((LPCTSTR)lParam);
     return 0;
 }
+
 #endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 
 LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
+    if (lParam) //We get activate from some internal window
+        return 0;
+
     int fActive = LOWORD(wParam);
-	//rho_rhodesapp_callAppActiveCallback(fActive);
+	rho_rhodesapp_callAppActiveCallback(fActive);
 
 #if defined(_WIN32_WCE)
     // Notify shell of our WM_ACTIVATE message
@@ -1321,11 +1290,8 @@ LRESULT CMainWindow::OnCustomToolbarItemCommand (WORD /*wNotifyCode*/, WORD  wID
     return 0;
 }
 
-extern "C" LRESULT rho_wmimpl_splash_screen(HWND hWnd)
+extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd)
 {
-    PAINTSTRUCT ps;
-	HDC hDC = BeginPaint(hWnd, &ps);
-
   	CSplashScreen& splash = RHODESAPP().getSplashScreen();
     splash.start();
     StringW pathW = convertToStringW(RHODESAPP().getLoadingPngPath());
@@ -1334,6 +1300,9 @@ extern "C" LRESULT rho_wmimpl_splash_screen(HWND hWnd)
 		
 	if (!hbitmap)
 		return 0;
+
+    PAINTSTRUCT ps;
+	HDC hDC = BeginPaint(hWnd, &ps);
 
 	BITMAP bmp;
 	GetObject(hbitmap, sizeof(bmp), &bmp);
@@ -1362,5 +1331,5 @@ extern "C" LRESULT rho_wmimpl_splash_screen(HWND hWnd)
 	DeleteObject(hdcMem);
 
 	EndPaint(hWnd, &ps);
-	return 0;
+	return 1;
 }

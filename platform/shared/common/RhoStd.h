@@ -100,6 +100,16 @@ inline boolean String_startsWith(const String& str, const String& strPrefix)
     return strncmp(str.c_str(), strPrefix.c_str(), strPrefix.length()) == 0;
 }
 
+template<typename StrType>
+inline void String_replace(StrType& str, int from, int to)
+{
+    for( int i = 0; i < str.length(); i++)
+    {
+        if ( str[i] == from )
+            str[i] = to;
+    }
+}
+
 template<class Type>
 class Vector : public std::vector<Type>{
 public:
