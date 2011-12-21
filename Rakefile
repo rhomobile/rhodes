@@ -262,6 +262,19 @@ namespace "config" do
     capabilities += $app_config[$config["platform"]]["capabilities"] if $app_config[$config["platform"]] and
        $app_config[$config["platform"]]["capabilities"] and $app_config[$config["platform"]]["capabilities"].is_a? Array
     $app_config["capabilities"] = capabilities
+
+    #Process motorola extensions
+    if capabilities.index("motorola")
+        $app_config["capabilities"] += ["webkit_browser"] if $app_config["extensions"].index("webkit-browser")
+        $app_config["extensions"] += ["rhoelements"]
+        
+        idx_barcode = $app_config["extensions"].index("barcode")
+        $app_config["extensions"][idx_barcode] = "barcode-moto" if idx_barcode
+        
+    end
+
+    puts "$app_config['extensions'] : #{$app_config['extensions']}"   
+    puts "$app_config['capabilities'] : #{$app_config['capabilities']}"   
     
     $hidden_app = $app_config["hidden_app"].nil?() ? "0" : $app_config["hidden_app"]
     
