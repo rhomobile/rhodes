@@ -971,11 +971,14 @@ String CRhodesApp::getAppName()
     String strAppName;
 #ifdef OS_WINCE
     String path = rho_native_rhopath();
-    int last, pre_last;
+    String_replace(path, '/', '\\');
 
-    last = path.find_last_of('\\');
-    pre_last = path.substr(0, last).find_last_of('\\');
-    strAppName = path.substr(pre_last + 1, last - pre_last - 1);
+    int nEnd = path.find_last_of('\\');
+    nEnd = path.find_last_of('\\', nEnd-1)-1;
+
+    int nStart = path.find_last_of('\\', nEnd) +1;
+    strAppName = path.substr( nStart, nEnd-nStart+1);
+
 #else
     strAppName = "Rhodes";
 #endif

@@ -52,15 +52,6 @@ static wchar_t * translate_wchar(wchar_t *p, int from, int to)
     return p;
 }
 
-static void translate_wstring(StringW& str, int from, int to)
-{
-    for( int i = 0; i < str.length(); i++)
-    {
-        if ( str[i] == from )
-            str[i] = to;
-    }
-}
-
 class CFileInputStream : public InputStream
 {
     CRhoFile& m_oFile;
@@ -438,8 +429,8 @@ static unsigned int copyFolder(const StringW& strSrc, const StringW& strDst, boo
     StringW strSrcW, strDstW;
     common::convertToStringW(szSrcFolderPath,strSrcW);
     common::convertToStringW(szDstFolderPath,strDstW);
-    translate_wstring(strSrcW, L'/', L'\\' );
-    translate_wstring(strDstW, L'/', L'\\' );
+    String_replace(strSrcW, L'/', L'\\' );
+    String_replace(strDstW, L'/', L'\\' );
 
     return copyFolder(strSrcW, strDstW, false);
 #else
@@ -455,8 +446,8 @@ static unsigned int copyFolder(const StringW& strSrc, const StringW& strDst, boo
     StringW strSrcW, strDstW;
     common::convertToStringW(szSrcFolderPath,strSrcW);
     common::convertToStringW(szDstFolderPath,strDstW);
-    translate_wstring(strSrcW, L'/', L'\\' );
-    translate_wstring(strDstW, L'/', L'\\' );
+    String_replace(strSrcW, L'/', L'\\' );
+    String_replace(strDstW, L'/', L'\\' );
 
     return copyFolder(strSrcW, strDstW, true);
 
