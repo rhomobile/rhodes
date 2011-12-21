@@ -102,6 +102,11 @@ rhoconnect-client/Java/RhoConnect/bin
 rhoconnect-client/Samples/Java/android_store/bin
 rhoconnect-client/Samples/Java/android_store/gen
 
+lib/extensions/digest/ext/iphone/build/*
+lib/extensions/digest-md5/ext/iphone/build/*
+lib/extensions/digest-sha1/ext/iphone/build/*
+lib/extensions/fcntl/ext/iphone/build/*
+
 spec/bin/*
 spec/**/bin/*
 spec/**/sim-public*
