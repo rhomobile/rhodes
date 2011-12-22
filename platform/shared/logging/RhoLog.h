@@ -358,6 +358,9 @@ int rhoPlainLogData(const char* file, int line, LogSeverity severity, const char
 #define RAWTRACE_IF(exp,msg) RAWLOG_NONE
 #define RAWTRACE_IF1(exp,msg,arg1) RAWLOG_NONE
 
+#define RAWTRACEC_DATA(category,data,len)
+#define RAWTRACE_DATA(data,len)
+
 #endif
 
 #define RHO_ASSERT(exp) (void) ((exp) || rhoPlainLog(__FILE__, __LINE__, L_FATAL, "", #exp ))

@@ -26,6 +26,7 @@
 
 package com.rhomobile.rhodes;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
@@ -33,6 +34,7 @@ import java.util.Set;
 import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
 import com.rhomobile.rhodes.camera.Camera;
 import com.rhomobile.rhodes.mainview.MainView;
+import com.rhomobile.rhodes.mainview.SimpleMainView;
 import com.rhomobile.rhodes.mainview.SplashScreen;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
@@ -50,6 +52,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.WebView;
 
 public class RhodesActivity extends BaseActivity {
 	
@@ -170,7 +173,26 @@ public class RhodesActivity extends BaseActivity {
 		
 		notifyUiCreated();
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityCreated);
-	}
+    }
+
+    public MainView switchToSimpleMainView(MainView currentView) {
+        MainView view = null;
+        if (Capabilities.WEBKIT_BROWSER_ENABLED) {
+            try {
+                Class<? extends MainView> viewClass = (Class<? extends MainView>)Class.forName("com.rhomobile.rhodes.mainview.ElementsMainView");
+                Constructor<? extends MainView> viewCtor = viewClass.getConstructor(RhodesActivity.class);
+                view = viewCtor.newInstance(this);
+            } catch (Throwable e) {
+                Logger.E(TAG, e);
+                RhodesApplication.stop();
+            }
+        } else {
+            WebView webView = (WebView)currentView.detachWebView();
+            view = new SimpleMainView(webView);
+        }
+        setMainView(view);
+        return view;
+    }
 	
 	private void notifyUiCreated() {
 		RhodesService r = RhodesService.getInstance();
@@ -345,8 +367,10 @@ public class RhodesActivity extends BaseActivity {
 	}
 
     public void setMainView(MainView v) {
-        mMainView = v;
-        setContentView(v.getView());
+        if (v != null) {
+            mMainView = v;
+            setContentView(v.getView());
+        }
     }
 
 	public MainView getMainView() {
