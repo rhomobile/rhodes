@@ -513,22 +513,30 @@ namespace "run" do
 		end
         end
 
-	if !File.exist?(log_file)
-		puts "Can not read log file: " + log_file
-		exit(1)
+	    if !File.exist?(log_file)
+		    puts "Can not read log file: " + log_file
+		    exit(1)
         end
 
         puts "start read log"
         
-        while true do
-            break if Jake.run2( 'tasklist', ['/fi', '"ImageName eq detool.exe"'], {:nowait => false, :hide_output => true}).to_s.index('detool.exe').nil?
-            sleep(5)
-        end
+        #while true do
+        #    break if Jake.run2( 'tasklist', ['/fi', '"ImageName eq detool.exe"'], {:nowait => false, :hide_output => true}).to_s.index('detool.exe').nil?
+        #    sleep(5)
+        #end
 
         io = File.new(log_file, "r")
-        io.each do |line|
-            Jake.process_spec_output(line)
+        end_spec = false
+        while !end_spec do
+            io.each do |line|
+                #puts line
+                
+                end_spec = !Jake.process_spec_output(line)
+                break if end_spec
+            end
+            sleep(1) unless end_spec
         end
+        
         io.close
 
         Jake.process_spec_results(start)
