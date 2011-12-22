@@ -29,7 +29,8 @@ LOCAL_SRC_FILES := \
     SplashScreen.cpp \
     ThreadQueue.cpp \
     Tokenizer.cpp \
-    RhoTime.cpp
+    RhoTime.cpp \
+    BundleManager.cpp
 LOCAL_C_INCLUDES := $(SHARED_PATH_INC)
     #$(SHARED_PATH_INC)/curl/include
 #    $(SHARED_PATH_INC)/ruby/include \

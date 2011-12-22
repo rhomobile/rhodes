@@ -80,7 +80,8 @@ ANDROID_PERMISSIONS = {
   'bluetooth' => ['BLUETOOTH_ADMIN', 'BLUETOOTH'],
   'calendar' => ['READ_CALENDAR', 'WRITE_CALENDAR'],
   'sdcard' => 'WRITE_EXTERNAL_STORAGE',
-  'push' => proc do |manifest| add_push(manifest) end
+  'push' => proc do |manifest| add_push(manifest) end,
+  'webkit_browser' => nil
 }
 
 ANDROID_CAPS_ALWAYS_ENABLED = ['network_state']
@@ -773,59 +774,69 @@ namespace "build" do
       mkdir_p $extensionsdir unless File.directory? $extensionsdir
 
       $app_config["extensions"].each do |ext|
+        puts "#{ext} is processing..."
         $app_config["extpaths"].each do |p|
           extpath = File.join(p, ext, 'ext')
 
-          extyml = File.join(p, ext,"ext.yml")
-          if File.file? extyml
-            extconf = Jake.config(File.open(extyml))
+          puts "Checking extpath: #{extpath}"
 
-            android_listener = extconf["android_rhodes_activity_listener"]
-            $ext_android_rhodes_activity_listener << android_listener unless android_listener.nil?
+          if File.exists? extpath and File.directory? extpath
+            puts "#{extpath} is building..."
+            extyml = File.join(p, ext,"ext.yml")
+            if File.file? extyml
+                puts "#{extyml} is processing..."
+                extconf = Jake.config(File.open(extyml))
 
-            android_manifest_changes = extconf["android_manifest_changes"]
-            if android_manifest_changes != nil
-              android_manifest_changes = File.join(p, ext, android_manifest_changes)
-              $ext_android_manifest_changes << android_manifest_changes
-            end
+                android_listener = extconf["android_rhodes_activity_listener"]
+                $ext_android_rhodes_activity_listener << android_listener unless android_listener.nil?
 
-            android_resources_addons = extconf["android_resources_addons"]
-            if android_resources_addons != nil
-              android_resources_addons = File.join(p, ext, android_resources_addons)
-              $ext_android_resources_addons << android_resources_addons
-            end
+                android_manifest_changes = extconf["android_manifest_changes"]
+                if android_manifest_changes != nil
+                  android_manifest_changes = File.join(p, ext, android_manifest_changes)
+                  $ext_android_manifest_changes << android_manifest_changes
+                end
 
-            android_additional_sources_list = extconf["android_additional_sources_list"]
-            if android_additional_sources_list != nil
-              android_additional_sources_list = File.join(p, ext, android_additional_sources_list)
+                android_resources_addons = extconf["android_resources_addons"]
+                if android_resources_addons != nil
+                  android_resources_addons = File.join(p, ext, android_resources_addons)
+                  $ext_android_resources_addons << android_resources_addons
+                end
 
-              File.open(android_additional_sources_list, "r") do |f|
-                  while line = f.gets
-                    $ext_android_additional_sources_list << File.join(p, ext, line)
+                android_additional_sources_list = extconf["android_additional_sources_list"]
+                if android_additional_sources_list != nil
+                  android_additional_sources_list = File.join(p, ext, android_additional_sources_list)
+
+                  File.open(android_additional_sources_list, "r") do |f|
+                    while line = f.gets
+                      $ext_android_additional_sources_list << File.join(p, ext, line)
+                    end
                   end
-              end
-
+                end
+                puts  "#{extyml} is processed"
             end
-          end
 
-          if RUBY_PLATFORM =~ /(win|w)32$/
-            next unless File.exists? File.join(extpath, 'build.bat')
-          else
-            next unless File.executable? File.join(extpath, 'build')
-          end
+            if RUBY_PLATFORM =~ /(win|w)32$/
+                next unless File.exists? File.join(extpath, 'build.bat')
+            else
+                next unless File.executable? File.join(extpath, 'build')
+            end
 
-          ENV['TEMP_FILES_DIR'] = File.join(ENV["TARGET_TEMP_DIR"], ext)
+            ENV['TEMP_FILES_DIR'] = File.join(ENV["TARGET_TEMP_DIR"], ext)
 
-          if RUBY_PLATFORM =~ /(win|w)32$/
-            puts Jake.run('build.bat', [], extpath)
-          else
-            puts Jake.run('./build', [], extpath)
-          end
-          exit 1 unless $?.success?
-        end
-      end
+            if RUBY_PLATFORM =~ /(win|w)32$/
+                Jake.run('build.bat', [], extpath)
+            else
+                Jake.run('./build', [], extpath)
+            end
+            exit 1 unless $?.success?
 
-    end
+            puts "#{extpath} is built"
+            # to prevent to build 2 extensions with same name
+            break
+          end # exists?
+        end # $app_config["extpaths"].each
+      end # $app_config["extensions"].each
+    end #task :extensions
 
     task :libsqlite => "config:android" do
       srcdir = File.join($shareddir, "sqlite")
@@ -1038,6 +1049,8 @@ namespace "build" do
         regenerate = true if caps_already_enabled[k].nil? or caps_enabled[k] != caps_already_enabled[k]
       end
 
+      puts caps_enabled.inspect
+
       if regenerate
         puts "Need to regenerate genconfig.h"
         $stdout.flush
@@ -1087,7 +1100,9 @@ namespace "build" do
         f.puts "package #{JAVA_PACKAGE_NAME};"
         f.puts "public class Capabilities {"
         ANDROID_PERMISSIONS.keys.sort.each do |k|
-          f.puts "  public static boolean #{k.upcase}_ENABLED = true;"
+          val = 'false'
+          val = 'true' if caps_enabled[k]
+          f.puts "  public static final boolean #{k.upcase}_ENABLED = #{val};"
         end
         f.puts "}"
       end

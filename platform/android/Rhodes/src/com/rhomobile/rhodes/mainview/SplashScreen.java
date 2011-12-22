@@ -148,6 +148,7 @@ public class SplashScreen extends RhodesMainView {
 		}
 		
 		Utils.platformLog(TAG, "DELAY for SplashScreen = "+String.valueOf(delay));
+		final SplashScreen curView = this;
 
         PerformOnUiThread.exec(new Runnable() {
             private String mUrl = url;
@@ -157,20 +158,14 @@ public class SplashScreen extends RhodesMainView {
                     RhodesActivity activity = RhodesActivity.safeGetInstance();
                     if (mFirstNavigate) {
                         mFirstNavigate = false;
-                        
-                        //TODO: switch between SimpleWebView and RhoElementsWebView
-                        WebView webView = mWebView;
-                        detachWebView();
-                        SimpleMainView v = new SimpleMainView(webView);
-                        activity.setMainView(v);
-                        v.navigate(mUrl,0);
+                        activity.switchToSimpleMainView(curView).navigate(mUrl, mIndex);
                     }
                     else {
                         // Recover navigate in case of race conditions
                         activity.getMainView().navigate(mUrl, mIndex);
                     }
                 } catch (Throwable e) {
-                    Logger.D(TAG, e);
+                    Logger.E(TAG, e);
                 }
             }
         }, delay);
