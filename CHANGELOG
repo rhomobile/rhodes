@@ -1,3 +1,26 @@
+## 3.3.0
+* Add Ruby Encoding constants
+* MapView improvements on all platforms
+* Android: support SDK 4.0 and NDK r7
+* iPad2: fix camera issue
+* Contacts: add filter parameters for iPhone and Android
+* Support update RhoBundle on iPhone and Windows Mobile
+* Blackberry: support multiple simulators with one JDE
+* Blackberry: support JQueryMobile on Blackberry 6 and later with full browser mode
+
+## 3.2.3
+* Fix Blob sync issue in Rhoconnect-client
+* Fix logging issue on iPhone and Android
+* Fix Cookie issue on Windows phone 7
+* Implement Security token ruby callback
+
+## 3.2.2
+* Fix iPhone build for AppStore
+* Fix Android infinite loop while using GPS
+* Update IronRuby for Windows Phone 7 to log application stack while exception
+* Add generator for native extensions
+* Add real-time Barcode scanning for iPhone
+
 ## 3.2.1
 * Add migrate-rhodes-app command that updates build.yml to use latest Rhodes gem
 * Change set-rhodes-sdk command to set sdk path at build.yml only
