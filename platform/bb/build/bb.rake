@@ -1004,7 +1004,7 @@ namespace "run" do
         startsim
       end
 
-      task :spec => ["config:checkbb", "run:bb:stopmdsandsim", "clean:bb", "package:bb:production_sim"] do
+      task :spec => ["config:checkbb", "run:bb:stopmdsandsim", "clean:bbsim", "package:bb:production_sim"] do
         cp_r File.join($targetdir,"/."), $bb_sim_path
         rm_rf $bb_sim_path + "/sdcard/Rho"
 
