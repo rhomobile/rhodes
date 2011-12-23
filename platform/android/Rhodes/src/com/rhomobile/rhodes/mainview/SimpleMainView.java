@@ -26,20 +26,27 @@
 
 package com.rhomobile.rhodes.mainview;
 
+import java.lang.reflect.Constructor;
 import java.util.Map;
 import java.util.Vector;
 
 import com.rhomobile.rhodes.AndroidR;
+import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesAppOptions;
+import com.rhomobile.rhodes.RhodesApplication;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.file.RhoFileApi;
+import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.nativeview.RhoNativeViewManager;
 import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
+import com.rhomobile.rhodes.webview.WebView;
+import com.rhomobile.rhodes.webview.GoogleWebView;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -51,13 +58,12 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class SimpleMainView extends RhodesMainView {
+public class SimpleMainView implements MainView {
 
 	private final static String TAG = "SimpleMainView";	
 	
@@ -153,7 +159,7 @@ public class SimpleMainView extends RhodesMainView {
 	}
 
 	@Override
-	public WebView getGoogleWebView(int tab_index) {
+	public WebView getWebView(int tab_index) {
 		return webView;
 	}
 
@@ -162,7 +168,7 @@ public class SimpleMainView extends RhodesMainView {
 		mNativeView = nview;
 		mNativeViewView = mNativeView.getView();
 		if (mNativeViewView != null) {
-			view.removeView(webView);
+			view.removeView(webView.getView());
 			//int view_index = 0;
 			//if (navBar != null) {
 				//view_index = 1;
@@ -214,7 +220,7 @@ public class SimpleMainView extends RhodesMainView {
 				view.addView(navBar, index);
 				index++;
 			}
-			view.addView( webView, index, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
+			view.addView(webView.getView(), index, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
 			index++;
 			if (toolBar != null) {
 				view.addView(toolBar, index);
@@ -294,11 +300,11 @@ public class SimpleMainView extends RhodesMainView {
     }
 	
 	
-	public View detachWebView() {
+	public WebView detachWebView() {
 		restoreWebView();
 		WebView v = null;
 		if (webView != null) {
-			view.removeView(webView);
+			view.removeView(webView.getView());
 			v = webView;
 			webView = null;
 		}
@@ -511,9 +517,9 @@ public class SimpleMainView extends RhodesMainView {
 	}
 	
 	private void init(WebView v, Object params) {
-		Context ctx = ContextFactory.getUiContext();
+		RhodesActivity activity = RhodesActivity.safeGetInstance();
 		
-		view = new MyView(ctx);
+		view = new MyView(activity);
 		view.setOrientation(LinearLayout.VERTICAL);
 		view.setGravity(Gravity.BOTTOM);
 		view.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, FILL_PARENT));
@@ -521,11 +527,23 @@ public class SimpleMainView extends RhodesMainView {
 		webView = v;
 		//if (v != null)
 		//	webView = v.detachWebView();
-		if (webView == null)
-			webView = createWebView(ctx);
-		view.addView(webView, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
+		if (webView == null) {
+	        if (Capabilities.WEBKIT_BROWSER_ENABLED) {
+	            try {
+	                Class<? extends WebView> viewClass = (Class<? extends WebView>)Class.forName("com.rhomobile.rhodes.webview.EkiohWebView");
+	                Constructor<? extends WebView> viewCtor = viewClass.getConstructor(Activity.class);
+	                webView = viewCtor.newInstance(activity);
+	            } catch (Throwable e) {
+	                Logger.E(TAG, e);
+	                RhodesApplication.stop();
+	            }
+	        } else {
+	            webView = new GoogleWebView(activity);
+	        }
+		}
+		view.addView(webView.getView(), new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
 		
-		LinearLayout bottom = new LinearLayout(ctx);
+		LinearLayout bottom = new LinearLayout(activity);
 		bottom.setOrientation(LinearLayout.HORIZONTAL);
 		bottom.setBackgroundColor(Color.GRAY);
 		bottom.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, WRAP_CONTENT, 0));
@@ -536,27 +554,24 @@ public class SimpleMainView extends RhodesMainView {
 		setupToolbar(toolBar, params);
 		
 		
-		webView.requestFocus();
+		webView.getView().requestFocus();
 	}
 	
 	public SimpleMainView() {
-        super(RhodesActivity.safeGetInstance());
 		init(null, null);
 	}
 	
 	public SimpleMainView(WebView v) {
-        super(RhodesActivity.safeGetInstance());
 		init(v, null);
 	}
 	
 	public SimpleMainView(WebView v, Object params) {
-        super(RhodesActivity.safeGetInstance());
 		init(v, params);
 	}
 	
 	public void setWebBackgroundColor(int color) {
 		view.setBackgroundColor(color);
-		webView.setBackgroundColor(color);
+		webView.getView().setBackgroundColor(color);
 	}
 	
 	public void back(int index) {

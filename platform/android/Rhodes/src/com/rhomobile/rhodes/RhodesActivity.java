@@ -176,20 +176,7 @@ public class RhodesActivity extends BaseActivity {
     }
 
     public MainView switchToSimpleMainView(MainView currentView) {
-        MainView view = null;
-        if (Capabilities.WEBKIT_BROWSER_ENABLED) {
-            try {
-                Class<? extends MainView> viewClass = (Class<? extends MainView>)Class.forName("com.rhomobile.rhodes.mainview.ElementsMainView");
-                Constructor<? extends MainView> viewCtor = viewClass.getConstructor(RhodesActivity.class);
-                view = viewCtor.newInstance(this);
-            } catch (Throwable e) {
-                Logger.E(TAG, e);
-                RhodesApplication.stop();
-            }
-        } else {
-            WebView webView = (WebView)currentView.detachWebView();
-            view = new SimpleMainView(webView);
-        }
+        MainView view = new SimpleMainView(currentView.detachWebView()); 
         setMainView(view);
         return view;
     }

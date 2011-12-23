@@ -28,6 +28,7 @@ package com.rhomobile.rhodes.webview;
 
 import com.rhomobile.rhodes.RhodesActivity;
 
+import android.app.Activity;
 import android.view.Window;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
@@ -35,7 +36,7 @@ import android.webkit.WebView;
 
 public class ChromeClientOld extends WebChromeClient {
 	
-	private RhodesActivity mRhodesActivity;
+	private Activity mRhodesActivity;
 	
 	public ChromeClientOld(RhodesActivity rhodesActivity) {
 		mRhodesActivity = rhodesActivity;

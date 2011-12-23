@@ -28,21 +28,26 @@ package com.rhomobile.rhodes.mainview;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.util.Map;
 
+import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
+import com.rhomobile.rhodes.RhodesApplication;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
+import com.rhomobile.rhodes.webview.GoogleWebView;
+import com.rhomobile.rhodes.webview.WebView;
 
+import android.app.Activity;
 import android.content.res.AssetManager;
 import android.util.Log;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-public class SplashScreen extends RhodesMainView {
+public class SplashScreen implements MainView {
 	
 	private static final String TAG = SplashScreen.class.getSimpleName();
 	
@@ -63,12 +68,11 @@ public class SplashScreen extends RhodesMainView {
 	private boolean mFirstNavigate = true;
 	
     public SplashScreen(RhodesActivity context) {
-        super(context);
         mView = new FrameLayout(context);
         mView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
 		AssetManager am = context.getResources().getAssets();
 		mWebView = createHtmlView(context, am);
-		mView.addView(mWebView);
+		mView.addView(mWebView.getView());
 		mFirstNavigate = true;
 	}
 
@@ -101,7 +105,19 @@ public class SplashScreen extends RhodesMainView {
         }
 
         // Now create WebView and load appropriate content there
-        WebView view = createWebView(context);
+        WebView view = null;//new GoogleWebView(context);
+        if (Capabilities.WEBKIT_BROWSER_ENABLED) {
+            try {
+                Class<? extends WebView> viewClass = (Class<? extends WebView>)Class.forName("com.rhomobile.rhodes.webview.EkiohWebView");
+                Constructor<? extends WebView> viewCtor = viewClass.getConstructor(Activity.class);
+                view = viewCtor.newInstance(context);
+            } catch (Throwable e) {
+                Logger.E(TAG, e);
+                RhodesApplication.stop();
+            }
+        } else {
+            view = new GoogleWebView(context);
+        }
 
         switch (type) {
         case 0:
@@ -127,7 +143,7 @@ public class SplashScreen extends RhodesMainView {
 	}
 	
 	@Override
-	public WebView getGoogleWebView(int index) {
+	public WebView getWebView(int index) {
 		return mWebView;
 	}
 	
@@ -172,10 +188,10 @@ public class SplashScreen extends RhodesMainView {
 	}
 
     @Override
-    public View detachWebView() {
+    public WebView detachWebView() {
         WebView v = null;
         if (mWebView != null) {
-            mView.removeView(mWebView);
+            mView.removeView(mWebView.getView());
             v = mWebView;
             mWebView = null;
         }
