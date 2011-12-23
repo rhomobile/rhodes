@@ -8,7 +8,8 @@ Prerequisites
 You need to have installed:
 
 * Java Runtime Environment, minimum of Java 5 JRE or JDK.
-* [Rhodes gem](install#rhodes-gem-for-linux-and-non-rhostudio). 
+* [Rhodes gem](install#rhodes-gem-for-linux-and-non-rhostudio).
+* For RhoConnect, you also need the [RhoConnect gem](/rhoconnect/install#rhoconnect-gem-for-linux-and-non-rhostudio).
 
 Checking the Eclipse Installation
 ----------------

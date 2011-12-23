@@ -16,6 +16,8 @@ Then drag RhoStudio to the Applications folder.
 
 If you're running Windows, download the latest [RhoStudio for Windows](http://rhomobile.com/rhostudio-windows). This installs the [Ruby stack](http://www.ruby-lang.org/en/), [Redis](http://redis.io/), [RhoConnect](/rhoconnect/introduction) and [Rhodes](/rhodes/introduction).
 
+If you are running Windows 64-bit, you need to have 64-bit Eclipse, and then you [install RhoStudio as a plugin for Eclipse](/rhodes/rhostudio-eclipse).
+
 Once the installer has completed, and you have installed the Java Development Kit, you can skip to the [Setup Rhodes section](#setup-rhodes).
 
 ## Java Development Kit (JDK)
