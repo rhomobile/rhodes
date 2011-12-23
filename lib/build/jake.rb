@@ -207,7 +207,7 @@ class Jake
   end
   
   def self.process_spec_output(line)
-      puts line if line =~ /\| - it/ or line =~ /\| describe/
+      puts line if line =~ /\| - it/ or line =~ /\| describe/ or line =~ /\|   - /
 
       if $getdump
         if line =~ /^I/
