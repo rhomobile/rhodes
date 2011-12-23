@@ -380,7 +380,7 @@ static MapViewController *mc = nil;
 
     mapView.showsUserLocation=showsUserLocation;
     
-    [mapView setUserTrackingMode:MKUserTrackingModeNone animated:NO];
+    //[mapView setUserTrackingMode:MKUserTrackingModeNone animated:NO];
     
     mapView.scrollEnabled=scrollEnabled;
     mapView.zoomEnabled=zoomEnabled;
