@@ -159,12 +159,29 @@ bool LogServer::createFile()
 
 bool LogServer::writeToFile(const char* dataBuf, const int dataLen)
 {
-	static char crlfBuf[] = "\n";
+	static char crlfBuf[2] = {'\r','\n'};
 
 	if (m_hLogFile != INVALID_HANDLE_VALUE)
 	{
+		char convbuf[2*DEFAULT_BUFLEN];
+		int buflen = 0;
+		char *src = (char*)dataBuf;
+		char *dst = convbuf;
+
+		for (int i=0; i<dataLen; ++i) {
+			if (*src != '\0') {
+				if (*src == '\n') {
+					*(dst++) = '\r';
+					++buflen;
+				}
+				*(dst++) = *(src++);
+				++buflen;
+			} else
+				++src;
+		}
+
 		DWORD dwNumWritten = 0;
-		if (!WriteFile(m_hLogFile, dataBuf, dataLen, &dwNumWritten, NULL)) {
+		if (!WriteFile(m_hLogFile, convbuf, buflen, &dwNumWritten, NULL)) {
 			_tprintf( TEXT("Error !!! writing log file\n"));
 			return false;
 		}
