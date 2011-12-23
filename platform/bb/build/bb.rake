@@ -1024,17 +1024,27 @@ namespace "run" do
         end
 
         io = File.new(log_name, "r")
+        waiting_count = 0
         end_spec = false
         while !end_spec do
+            line_count = 0
             io.each do |line|
                 #puts line
-                
                 end_spec = !Jake.process_spec_output(line)
                 break if end_spec
+                line_count += 1
+            end
+            if line_count==0
+                waiting_count += 1
+            else
+                waiting_count = 0
+            end
+            if waiting_count > 240
+                puts "spec application hung (240 seconds timeout)"
+                end_spec = true
             end
             sleep(1) unless end_spec
         end
-        
         io.close
         
         stopsim  
