@@ -27,12 +27,10 @@
 package com.rhomobile.rhodes;
 
 import com.rhomobile.rhodes.mainview.MainView;
-import com.rhomobile.rhodes.mainview.RhodesMainView;
 import com.rhomobile.rhodes.mainview.SimpleMainView;
 import com.rhomobile.rhodes.mainview.TabbedMainView;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
-
-import android.webkit.WebView;
+import com.rhomobile.rhodes.webview.WebView;
 
 public class NativeBar {
 	
@@ -56,14 +54,9 @@ public class NativeBar {
 
 		public void run() {
 			try {
-				MainView view = RhodesActivity.safeGetInstance().getMainView();
+				MainView mainView = RhodesActivity.safeGetInstance().getMainView();
 				MainView v = null;
 				
-				if(!(view instanceof RhodesMainView)) {
-				    throw new IllegalStateException("Creation failed: web view type is not supported");
-				}
-				
-				RhodesMainView mainView = (RhodesMainView)view;
 				SimpleMainView smv = null;
 				if (mainView instanceof SimpleMainView) {
 					smv = (SimpleMainView)mainView;
@@ -72,8 +65,7 @@ public class NativeBar {
 				switch (type) {
 				case NOBAR_TYPE:
                     if (smv == null) {
-                        WebView webView = mainView.getGoogleWebView(-1);
-                        mainView.detachWebView();
+                        WebView webView = mainView.detachWebView();
                         v = new SimpleMainView(webView);
                     } else
 						smv.removeToolbar();
@@ -81,8 +73,7 @@ public class NativeBar {
 					break;
 				case TOOLBAR_TYPE:
                     if (smv == null) {
-                        WebView webView = mainView.getGoogleWebView(-1);
-                        mainView.detachWebView();
+                        WebView webView = mainView.detachWebView();
                         v = new SimpleMainView(webView, params);
                     }
 					else
