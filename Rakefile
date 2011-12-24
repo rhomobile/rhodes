@@ -270,7 +270,8 @@ namespace "config" do
         
         idx_barcode = $app_config["extensions"].index("barcode")
         $app_config["extensions"][idx_barcode] = "barcode-moto" if idx_barcode
-        
+
+        $app_config["capabilities"] += ["barcode"] if $app_config["extensions"].index("barcode-moto")
     end
 
     puts "$app_config['extensions'] : #{$app_config['extensions']}"   

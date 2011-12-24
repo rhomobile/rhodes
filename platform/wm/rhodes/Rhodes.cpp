@@ -80,6 +80,38 @@ HREGNOTIFY g_hNotify = NULL, g_hNotifyCell = NULL;
 
 #endif
 
+//This is hack. MC4900 device failed to enable barcode after webkit initialization. So we enable it before.
+#if defined(APP_BUILD_CAPABILITY_BARCODE) && defined(APP_BUILD_CAPABILITY_MOTOROLA)
+extern "C" void rho_scanner_before_webkit();
+extern "C" void rho_scanner_after_webkit();
+struct CBarcodeInit
+{
+    bool m_bMC4900;
+    CBarcodeInit()
+    {
+        m_bMC4900 = false;
+        OSVERSIONINFO osv = {0};
+		osv.dwOSVersionInfoSize = sizeof(osv);
+		if (GetVersionEx(&osv))
+			m_bMC4900 = osv.dwMajorVersion == 5;
+
+        RAWLOG_INFO1("CBarcodeInit : OS version :  %d", osv.dwMajorVersion);
+
+        if ( m_bMC4900 )
+            rho_scanner_before_webkit();
+    }
+
+    static DWORD afterWebkit(LPVOID ){ rho_scanner_after_webkit(); return 0; }
+    ~CBarcodeInit()
+    {
+        if ( m_bMC4900 )
+            CloseHandle(CreateThread(NULL, 0, &afterWebkit, 0, 0, NULL));
+    }
+};
+#else
+struct CBarcodeInit{};
+#endif
+
 class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 {
     static HINSTANCE m_hInstance;
@@ -242,6 +274,9 @@ extern "C" void rho_sys_impl_exit_with_errormessage(const char* szTitle, const c
     ::MessageBoxW(0, strMsgW.c_str(), strTitleW.c_str(), MB_ICONERROR | MB_OK);
 }
 
+extern "C" void rho_scanner_TEST(HWND hwnd);
+extern "C" void rho_scanner_TEST2();
+
 // This method is called immediately before entering the message loop.
 // It contains initialization code for the application.
 // Returns:
@@ -373,10 +408,15 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #else
     String strTitle = RHODESAPP().getAppTitle();
     m_appWindow.Create(NULL, CWindow::rcDefault, convertToStringW(strTitle).c_str(), dwStyle);
+
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-    if (!rho_wmimpl_get_webkitbrowser( (HWND)m_appWindow.m_hWnd, rho_wmimpl_get_appinstance() )) {
-        MessageBox(NULL, L"Failed to initialize WebKit engine.", convertToStringW(strTitle).c_str(), MB_ICONERROR | MB_OK);
-	    return S_FALSE;
+    {
+        CBarcodeInit oBarcodeInit;
+
+        if (!rho_wmimpl_get_webkitbrowser( (HWND)m_appWindow.m_hWnd, rho_wmimpl_get_appinstance() )) {
+            MessageBox(NULL, L"Failed to initialize WebKit engine.", convertToStringW(strTitle).c_str(), MB_ICONERROR | MB_OK);
+	        return S_FALSE;
+        }
     }
 #endif
 
@@ -386,6 +426,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     {
         return S_FALSE;
     }
+
 
     RHODESAPP().startApp();
 
