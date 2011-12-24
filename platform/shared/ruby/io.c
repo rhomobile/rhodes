@@ -17,6 +17,10 @@
 #include <ctype.h>
 #include <errno.h>
 
+//RHO
+#include "logging/RhoLog.h"
+//RHO
+
 #define free(x) xfree(x)
 
 #if defined(DOSISH) || defined(__CYGWIN__)
@@ -6280,12 +6284,18 @@ rb_obj_display(int argc, VALUE *argv, VALUE self)
 void
 rb_write_error2(const char *mesg, long len)
 {
+//RHO
+/*
     if (rb_stderr == orig_stderr || RFILE(orig_stderr)->fptr->fd < 0) {
 	(void)fwrite(mesg, sizeof(char), len, stderr);
     }
     else {
 	rb_io_write(rb_stderr, rb_str_new(mesg, len));
     }
+*/
+    VALUE str = rb_str_new(mesg, len);
+    RAWLOGC_ERROR( "RubyVM", RSTRING_PTR(str) );
+//RHO
 }
 
 void
