@@ -403,21 +403,21 @@ VALUE get_camera_info(const char* camera_type) {
             w = 1600;
             h = 1200;
         }
-    }
+    } else
 	if ([platform isEqualToString:@"iPhone1,2"]) {
         // iPhone 3G
         if (!isFront) {
             w = 1600;
             h = 1200;
         }
-    }
+    } else
 	if ([platform hasPrefix:@"iPhone2"]) {
         // iPhone 3GS
         if (!isFront) {
             w = 2048;
             h = 1536;
         }
-    }
+    } else
 	if ([platform hasPrefix:@"iPhone3"]) {
         // iPhone 4
         if (!isFront) {
@@ -428,18 +428,30 @@ VALUE get_camera_info(const char* camera_type) {
             w = 640;
             h = 480;
         }
-    }
+    } else
 	if ([platform hasPrefix:@"iPhone4"]) {
-        // iPhone 5
+        // iPhone 4S
         if (!isFront) {
-            w = 2592;
-            h = 1936;
+            w = 2448;
+            h = 3264;
         }
         else {
             w = 640;
             h = 480;
         }
-    }
+    } else 
+        if ([platform hasPrefix:@"iPhone"]) {
+            // iPhone 5 ?
+            if (!isFront) {
+                w = 2448;
+                h = 3264;
+            }
+            else {
+                w = 640;
+                h = 480;
+            }
+        } else 
+        
     
 	if ([platform isEqualToString:@"iPod1,1"]) {
         // iPod Touch 1
