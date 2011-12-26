@@ -43,6 +43,7 @@
 #include "rubyext/GeoLocation.h"
 #include "common/app_build_configs.h"
 #include "unzip/unzip.h"
+#include "common/Tokenizer.h"
 
 #include <algorithm>
 
@@ -664,6 +665,36 @@ static void callback_syncdb(void *arg, String const &/*query*/ )
     rho_http_sendresponse(arg, "");
 }
 
+static void callback_logger(void *arg, String const &query )
+{
+    int nLevel = 0;
+    String strMsg, strCategory;
+
+    CTokenizer oTokenizer(query, "&");
+    while (oTokenizer.hasMoreTokens()) 
+    {
+	    String tok = oTokenizer.nextToken();
+	    if (tok.length() == 0)
+		    continue;
+
+        if ( String_startsWith( tok, "level=") )
+        {
+            String strLevel = tok.substr(6);
+            convertFromStringA( strLevel.c_str(), nLevel ); 
+        }else if ( String_startsWith( tok, "msg=") )
+        {
+            strMsg = rho::net::URI::urlDecode(tok.substr(4));
+        }else if ( String_startsWith( tok, "cat=") )
+        {
+            strCategory = rho::net::URI::urlDecode(tok.substr(4));
+        }
+    }
+
+    rhoPlainLog( "", 0, nLevel, strCategory.c_str(), strMsg.c_str() );
+
+    rho_http_sendresponse(arg, "");
+}
+
 static void callback_redirect_to(void *arg, String const &strQuery )
 {
     size_t nUrl = strQuery.find("url=");
@@ -761,6 +792,7 @@ void CRhodesApp::initHttpServer()
     m_httpServer->register_uri("/system/loadserversources", callback_loadserversources);
     m_httpServer->register_uri("/system/resetDBOnSyncUserChanged", callback_resetDBOnSyncUserChanged);
     m_httpServer->register_uri("/system/loadallsyncsources", callback_loadallsyncsources);
+    m_httpServer->register_uri("/system/logger", callback_logger);
 }
 
 const char* CRhodesApp::getFreeListeningPort()

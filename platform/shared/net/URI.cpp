@@ -230,6 +230,11 @@ String URI::urlEncode(const String& fullPath)
 /*static*/ void URI::urlDecode(const String &url, String& ret )
 {
 	for (const char *s = url.c_str(); *s != '\0'; ++s) {
+		if (*s == '+') {
+			ret.push_back(' ');
+			continue;
+		}
+
 		if (*s != '%') {
 			ret.push_back(*s);
 			continue;

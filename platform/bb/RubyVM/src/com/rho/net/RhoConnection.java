@@ -683,12 +683,46 @@ public class RhoConnection implements IHttpConnection {
 			}else if ( model.equalsIgnoreCase("resetDBOnSyncUserChanged") ){
 				RhoAppAdapter.resetDBOnSyncUserChanged();
 				return true;
+			}else if ( model.equalsIgnoreCase("logger") ){
+				processLogger();
+				return true;
 			}
 
 		}else if ( application.equalsIgnoreCase("shared") )
 			return false;
 		
 		return false;
+	}
+
+	void processLogger()
+	{
+	    int nLevel = 0;
+	    String strMsg = "", strCategory = "";
+
+	    Tokenizer oTokenizer = new Tokenizer(uri.getQueryString(), "&");
+	    while (oTokenizer.hasMoreTokens()) 
+	    {
+		    String tok = oTokenizer.nextToken();
+		    if (tok.length() == 0)
+			    continue;
+
+	        if ( tok.startsWith("level=") )
+	        {
+	            String strLevel = tok.substring(6);
+	            nLevel = Integer.parseInt(strLevel); 
+	        }else if ( tok.startsWith("msg=") )
+	        {
+	            strMsg = URI.urlDecode(tok.substring(4));
+	        }else if ( tok.startsWith( "cat=") )
+	        {
+	            strCategory = URI.urlDecode(tok.substring(4));
+	        }
+	    }
+
+	    RhoLogger log = new RhoLogger(strCategory);
+	    log.logMessage(nLevel, strMsg );
+		
+		respondOK();
 	}
 	
 	void showGeoLocation(){
