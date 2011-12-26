@@ -1174,3 +1174,49 @@ So if you change icon of application, you have to restart device/simulator(unins
 
 ### Symbian
 You can change icon for your Symbian application replacing icon.svg which is in your application icon folder with a new one.
+
+## Upgrade application
+Rhodes 3.3 support application code upgrade for iPhone(non AppStore distribution) and Windows Mobile.
+
+### Prepare application package
+
+To prepare upgrade package for iPhone run in application folder:
+
+	:::term
+    $ rake build:iphone:upgrade_package
+
+Application package will be placed to <app_root>/bin/target/iphone
+
+To prepare upgrade package for Windows Mobile run in application folder:
+
+	:::term
+    $ rake build:wm:upgrade_package
+    
+Application package will be placed to <app_root>/bin/target/wmp6
+
+### Upgrade package from running application
+
+Download package:
+    :::ruby
+    if !::Rho::RhoSupport.rhobundle_download(url_to_package, url_for(:action => :httpdownload_callback))
+        render :action =>:error    
+    else
+        render :action => :wait_download, :back => '/app'
+    end    
+
+Unzip and replace package:
+    :::ruby
+    if System.unzip_file(::Rho::RhoSupport.rhobundle_getfilename())==0
+        System.replace_current_bundle( File.dirname(::Rho::RhoSupport.rhobundle_getfilename()) )
+        render :action => :wait_replace, :back => '/app'
+    else
+        WebView.navigate url_for :action => :error    
+    end
+
+Application will restart automatically.
+
+NOTE: On iPhone application has to be manually started.
+
+    
+### Sample
+See [Reload bundle demo](http://github.com/rhomobile/ReloadBundleDemo) for more information.
