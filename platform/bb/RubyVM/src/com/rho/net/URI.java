@@ -1306,6 +1306,12 @@ import com.rho.Tokenizer;
 	  for  (int index=0; index < len ; index++)
 	  {
     	char c1 = fullPath.charAt(index);
+		if (c1 == '+') 
+		{
+			sb.append(' ');
+			continue;
+		}
+    	
 		if (c1 != '%') 
 		{
 			sb.append(c1);

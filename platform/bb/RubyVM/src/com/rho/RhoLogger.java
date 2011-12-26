@@ -164,7 +164,7 @@ public class RhoLogger {
 	    	makeStringSize(m_category,15) + "| ";
 	}
 
-	private void logMessage( int severity, String msg ){
+	public void logMessage( int severity, String msg ){
 		logMessage(severity, msg, null, false );
 	}
 	private void logMessage( int severity, String msg, Throwable e ){
