@@ -210,6 +210,9 @@ public class NetworkAccess implements INetworkAccess {
 			return new RhoConnection(uri);
 		}
 		
+		if ( URI.isLocalData(url) )
+			return new BBHttpConnection((HttpConnection)Connector.open(url));
+			
 		int fragment = url.indexOf('#');
 		if (-1 != fragment) {
 			url = url.substring(0, fragment);
