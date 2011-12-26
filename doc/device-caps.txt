@@ -627,6 +627,71 @@ In callback:
 ### Sample
 See controller and view in the /app/BarcodeRecognizer folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/BarcodeRecognizer/controller.rb) for more information.
 
+## Barcode for Motorola devices
+Rhodes 3.3 and RhoElements 2.0 support Motorola barcode scanner devices. Install RhoElements gem or RhoStudio and start developing for Motorola Windows Mobile, Windows CE and Android(ET1) devices .
+
+To enable add to build.yml:
+
+    capabilities:
+    -motorola
+
+    extensions: ["barcode-moto"]
+  
+Barcode API :
+
+Get a list of scanners present on the device. Return array of hashes ('name','id'):
+
+	:::ruby
+    Barcode.enumerate 
+    
+Enables the scanner. barcode_callback get the same parameters as Barcode.take_barcode:
+
+    :::ruby
+    Barcode.enable(url_for(:action => :barcode_callback), {:name=>name_from_enumerate})
+
+Callback parameters:
+
+* "status" - "ok" or "cancel"
+* "barcode" - recognized barcode string
+
+Disables the currently enabled scanner. This reverts the scanner to its default state and flushes any current decoder settings
+
+    :::ruby    
+    Barcode.disable
+
+Performs a soft trigger start. If the scan does not result in a decode it is necessary to perform a soft stop before another soft start    
+
+    :::ruby    
+    Barcode.start
+
+Performs a soft trigger stop     
+
+    :::ruby    
+    Barcode.stop 
+
+Enables the scanner and start scanner. Before callback is called scanner is disabled:
+
+    :::ruby
+    Barcode.take_barcode(url_for(:action => :barcode_callback), {:name=>name_from_enumerate})
+
+Callback parameters:
+
+* "status" - "ok" or "cancel"
+* "barcode" - recognized barcode string
+
+### Sample
+See controller and view in the /app/BarcodeRecognizerMoto folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/BarcodeRecognizerMoto/controller.rb) for more information.
+
+## WebKit browser for Motorola devices
+Rhodes 3.3 and RhoElements 2.0 support Motorola WebKit browser for Windows Mobile, Windows CE and Android (ET1) devices.
+
+To enable: install RhoElements gem or RhoStudio and add to build.yml
+
+    capabilities:
+    -motorola
+
+    extensions: ["webkit-browser"]
+
 ## Signature Capture
 
 The Signature Capture API allow take a signature and save it as an image:
