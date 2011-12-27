@@ -28,6 +28,7 @@ SOURCES += \
     ../../shared/common/RhodesApp.cpp \
     ../../shared/common/RhoConf.cpp \
     ../../shared/common/AppMenu.cpp \
+    ../../shared/common/BundleManager.cpp \
     ../../shared/logging/RhoPlainLog.cpp \
     ../../shared/logging/RhoLogSink.cpp \
     ../../shared/logging/RhoLogConf.cpp \
