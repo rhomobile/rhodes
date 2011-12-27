@@ -275,7 +275,9 @@ public class BrowserAdapter implements RenderingApplication, IBrowserAdapter
         
         try
         {
-        	if (referrer == null || URI.isLocalData(url) || !m_bLoadImageAsync) 
+        	if ( URI.isLocalData(url) )
+        		SecondaryResourceFetchThread.enqueue(resource, referrer);
+        	else if (referrer == null || /*URI.isLocalData(url) ||*/ !m_bLoadImageAsync) 
         	{
 	        	boolean bLocalHost = RhodesApp.getInstance().isRhodesAppUrl(url);
 	        	if ( bLocalHost && m_connResource!= null)

@@ -102,7 +102,7 @@ public class BrowserAdapter5 implements IBrowserAdapter
 			if ( url.startsWith("http:/") && !url.startsWith("http://") )
 				url = RhodesApp.getInstance().getHomeUrl() + url.substring(5);
 				
-    		if ( RhodesApp.getInstance().isRhodesAppUrl(url) || URI.isLocalData(url) )
+    		if ( RhodesApp.getInstance().isRhodesAppUrl(url) ) //|| URI.isLocalData(url) )
     		{
                 HttpConnection connection = Utilities.makeConnection(url, request.getHeaders(), null, null);
 
