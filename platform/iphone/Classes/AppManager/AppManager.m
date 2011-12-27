@@ -609,13 +609,12 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
             return 1;
         }
 #endif
-        UIDevice *device = [UIDevice currentDevice];
-        NSString *version = [device systemVersion];
-        if ([version length] >= 2 && [[version substringToIndex:2] isEqualToString:@"4."])
+        if (get_scale() > 1.2) {
             *resValue = rho_ruby_create_double(RHO_IPHONE4_PPI);
-        else
+        }
+        else {
             *resValue = rho_ruby_create_double(RHO_IPHONE_PPI);
-        
+        }
         return 1;
     }
     else if (strcasecmp("device_name", szPropName) == 0) {
