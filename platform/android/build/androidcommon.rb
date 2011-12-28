@@ -24,6 +24,8 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
+require 'tempfile'
+
 #common functions for compiling android
 #
 # uses following globals
@@ -371,6 +373,43 @@ def cc_clean(name)
   [$objdir[name], $libname[name]].each do |x|
     rm_rf x if File.exists? x
   end
+end
+
+def java_compile(outpath, classpath, srclists)
+    javac = $config["env"]["paths"]["java"] + "/javac" + $exe_ext
+
+    fullsrclist = Tempfile.new 'RhodesSRC_build'
+    srclists.each do |srclist|
+      lines = []
+      File.open(srclist, "r") do |f|
+        while line = f.gets
+          line.chomp!
+          fullsrclist.write "#{line}\n"
+        end
+      end
+    end
+    fullsrclist.close
+
+    args = []
+    args << "-g"
+    args << "-d"
+    args << $tmpdir + '/Rhodes'
+    args << "-source"
+    args << "1.6"
+    args << "-target"
+    args << "1.6"
+    args << "-nowarn"
+    args << "-encoding"
+    args << "latin1"
+    args << "-classpath"
+    args << classpath
+    args << "@#{fullsrclist.path}"
+    puts Jake.run(javac, args)
+    unless $?.success?
+        puts "Error compiling java code"
+        exit 1
+    end
+
 end
 
 def apk_build(sdk, apk_name, res_name, dex_name, debug)

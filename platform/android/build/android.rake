@@ -174,7 +174,7 @@ def set_app_name_android(newname)
 
   caps_proc = []
   # Default permissions. Need to be always enabled.
-  caps = ['INTERNET', 'PERSISTENT_ACTIVITY', 'WAKE_LOCK']
+  caps = ['INTERNET', 'PERSISTENT_ACTIVITY', 'WAKE_LOCK', 'SYSTEM_ALERT_WINDOW']
   $app_config["capabilities"].each do |cap|
     cap = ANDROID_PERMISSIONS[cap]
     next if cap.nil?
@@ -387,6 +387,7 @@ namespace "config" do
     $ext_android_manifest_changes= []
     $ext_android_resources_addons = []
     $ext_android_additional_sources_list = []
+    $ext_android_additional_lib = []
 
     $gapikey = $app_config["android"]["apikey"] unless $app_config["android"].nil?
     $gapikey = $config["android"]["apikey"] if $gapikey.nil? and not $config["android"].nil?
@@ -583,6 +584,7 @@ namespace "config" do
     $app_config["capabilities"] += ANDROID_CAPS_ALWAYS_ENABLED
     $app_config["capabilities"].map! { |cap| cap.is_a?(String) ? cap : nil }.delete_if { |cap| cap.nil? }
     $use_google_addon_api = true unless $app_config["capabilities"].index("push").nil?
+    $use_motosol_barcode_api = false #true unless $app_config["extensions"].index("barcode").nil?
  
     $applog_path = nil
     $applog_file = $app_config["applog"]
@@ -590,6 +592,19 @@ namespace "config" do
     if !$applog_file.nil?
       $applog_path = File.join( $app_path, $applog_file )
     end 
+
+    # Look for Motorola barcode SDK addon
+    if $use_motosol_barcode_api
+      Dir.glob(File.join($androidsdkpath, 'add-ons', '*')).each do |dir|
+        apijar = File.join(dir, 'libs', 'com.motorolasolutions.scanner.jar')
+        if File.exists? apijar
+          $motosol_jar = apijar
+        end
+      end
+      if $motosol_jar.nil?
+        raise "No Motorola Solutions SDK addon is found!!!"
+      end
+    end
 
     # Detect android targets
     if $androidtargets.nil?
@@ -812,6 +827,14 @@ namespace "build" do
                     end
                   end
                 end
+
+                android_additional_lib = extconf["android_additional_lib"]
+                if android_additional_lib != nil
+                  android_additional_lib.each do |lib|
+                    $ext_android_additional_lib << File.join(p, ext, lib)
+                  end
+                end
+
                 puts  "#{extyml} is processed"
             end
 
@@ -1221,11 +1244,8 @@ namespace "build" do
 
  #   desc "Build Rhodes for android"
     task :rhodes => [:rhobundle, :librhodes] do
-      javac = $config["env"]["paths"]["java"] + "/javac" + $exe_ext
-
 
       set_app_name_android($appname)
-
 
       rm_rf $tmpdir + "/Rhodes"
       mkdir_p $tmpdir + "/Rhodes"
@@ -1386,55 +1406,38 @@ namespace "build" do
       lines << "\"" +$app_native_libs_java+"\""
       lines << "\"" +$app_capabilities_java+"\""
       lines << "\"" +$app_push_java+"\""
-      if File.exists? File.join($extensionsdir, "ext_build.files")
-        puts 'ext_build.files found ! Addditional files for compilation :'
-        File.open(File.join($extensionsdir, "ext_build.files")) do |f|
-          while line = f.gets
-            line.chomp!
-            puts 'java file : ' + line
-            lines << "\""+line+"\""
-          end
-        end
-      else
-        puts 'ext_build.files not found - no additional java files for compilation'
-      end
+      
 
       # process collected ext src files
       puts 'process additional java files for build from extensions :'
       $ext_android_additional_sources_list.each do |s|
         s.chomp!
         puts 'java file : ' + s
-        lines << "\""+s+"\""
+        lines << s
       end
 
       File.open(newsrclist, "w") { |f| f.write lines.join("\n") }
       srclist = newsrclist
 
-      args = []
-      args << "-g"
-      args << "-d"
-      args << $tmpdir + '/Rhodes'
-      args << "-source"
-      args << "1.6"
-      args << "-target"
-      args << "1.6"
-      args << "-nowarn"
-      args << "-encoding"
-      args << "latin1"
-      args << "-classpath"
       classpath = $androidjar
       classpath += $path_separator + $gapijar unless $gapijar.nil?
+      classpath += $path_separator + $motosol_jar unless $motosol_jar.nil?
       classpath += $path_separator + "#{$tmpdir}/Rhodes"
       Dir.glob(File.join($extensionsdir, "*.jar")).each do |f|
         classpath += $path_separator + f
       end
-      args << classpath
-      args << "@#{srclist}"
-      puts Jake.run(javac, args)
-      unless $?.success?
-        puts "Error compiling java code"
-        exit 1
+
+      javafilelists = [srclist]
+
+      extlist = File.join $extensionsdir, "ext_build.files"
+      if File.exists? extlist
+        puts "#{extlist} is found! THere are addditional java files"
+        javafilelists << extlist
+      else
+        puts 'ext_build.files not found - no additional java files'
       end
+
+      java_compile($tmpdir+'/Rhodes', classpath, javafilelists)
 
       files = []
       Dir.glob(File.join($extensionsdir, "*.jar")).each do |f|
@@ -1517,6 +1520,9 @@ namespace "package" do
     cp_r File.join($bindir, "libs", $confdir, $ndkabi, $ndkgccver, "librhodes.so"), File.join($tmpdir, "lib/armeabi")
     # Add extensions .so libraries
     Dir.glob($extensionsdir + "/lib*.so").each do |lib|
+      cp_r lib, File.join($tmpdir, "lib/armeabi")
+    end
+    $ext_android_additional_lib.each do |lib|
       cp_r lib, File.join($tmpdir, "lib/armeabi")
     end
     args = ["uf", resourcepkg]
