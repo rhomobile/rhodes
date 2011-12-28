@@ -81,6 +81,7 @@ ANDROID_PERMISSIONS = {
   'calendar' => ['READ_CALENDAR', 'WRITE_CALENDAR'],
   'sdcard' => 'WRITE_EXTERNAL_STORAGE',
   'push' => proc do |manifest| add_push(manifest) end,
+  'motorola' => nil,
   'webkit_browser' => nil
 }
 
