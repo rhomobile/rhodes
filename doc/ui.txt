@@ -114,10 +114,53 @@ By default, Rhodes framework uses a original version of jQuery Mobile version 1.
 * Ajax requests set a 'Transition-Enabled: true' request header. This informs the controller that the request was made by a jQuery Mobile enabled application.
 * Conversely, Ajax requests inspect for a 'Wait-Page' response header. This informs jQuery Mobile that the page it received was returned after an asynchronous HTTP request was spawned by the controller. Wait pages are not added to the jQuery Mobile history. The animation is then deferred until the expected page is returned to the user interface via the Rho.insertAsyncPage() call. This method is typically invoked after an async HTTP callback function has been triggered in the controller.
 
-### Submit form
-Be careful, using expressions like **$('#form_id').submit();** with jQuery Mobile it lead to an incorrect result!
+### Important notes!
+
+#### CSS selection of the DOM elements
+With jQuery Mobile as well with jQTouch it is wrong to select HTML elements in the DOM tree by their *id* attribute value. Due to the way such kind of frameworks performs page caching the *id* attribute values aren't unique anymore. DOM tree may have **multiple instances of the same page**, so you can't rely on *id* value. The reliable way to select some exact element with jQuery is:
+
+    // this code will return exact span element from the current active page
+    var errMsgElement = $("div.ui-page-active span.errorMessageTop");
+
+Also, it is recommended to avoid using of *id* attribute as much as possible and to use *class* names for elements selection instead of *id* values. It may prevent DOM engine in the browser from some glitches with *id* value duplication.
+
+#### How to submit forms
+Due to reasons explained in previous section, using expressions like **$('#form_id').submit();** with jQuery Mobile it may lead to an incorrect result!
 
 If you need to submit form programmatically, please use the expression like **$('div.ui-page-active form.yourFormClass').submit();**. To specify the exact form on the page it is recommended to use **class** instead of **id**. It is important to use *ui-page-active* class name to address elements on current active page.
+
+#### Back button behavior for the very first page
+It may happen that Rhodes don't get controller request when user returns to the very first UI page using back button. It isn't a bug but rather a feature of jQuery Mobile.
+
+jQuery Mobile evaluates the very first page it started on, as a "multi-page". No matter are there multiple pages really defined in one HTML file or it contains just one page.
+And as you can see in [jQueryMobile documentation](http://jquerymobile.com/demos/1.0/docs/pages/page-cache.html): "Pages inside a multi-page template aren't affected by this feature at all - jQuery Mobile only removes pages loaded via Ajax.".
+So this page will never go away from the cache and will never requested again once it has been loaded very first time.
+
+Some workaround are possible:
+1. To implement some start page which doesn't need to be refreshed and put there link to the page which should be refreshed.
+1. To don't rely on any kind of back buttons to transit to very first page, using custom back buttons like that:
+
+    :::html
+    <a href="<%= Rho::RhoConfig.start_path %>" class="ui-btn-left" data-icon="home" data-direction="reverse"
+        <%= "data-ajax='false'" if is_bb6 %>>
+        Home
+    </a>
+
+#### Screen is flying
+It is a jQuery Mobile behavior. There are some hacks able to fix it, but so far we can see it breaks page scrolling or swiping functionality. As soon as good solution will be found it will be published here.
+
+#### Page transition performance problems
+In case of problems with pages transition performance just uncomment appropriate lines in *layout.erb* file of your application:
+
+    :::html
+    // Uncomment these options in case of performance problem in pages transition
+    //$.mobile.defaultPageTransition = 'none';
+    //$.mobile.defaultDialogTransition = 'none';
+    //$.mobile.ajaxEnabled = false;
+    //$.mobile.pushStateEnabled = false;
+    //$.mobile.loadingMessageDelay = 50; // in ms
+
+You may find it at very end of *mobileinit* handler function.
 
 ## Loading screen
 
