@@ -110,28 +110,3 @@ Pay attention on following page code parts please:
 * [jQuery Mobile documentation](http://jquerymobile.com/) is just excellent. There are a lot of useful details and samples.
 * Don't be afraid with rich CSS styles and themes in jQuery Mobile, use RhoSimulator to hack your pages and you will be able to implement your own themes.
 * jQuire Mobile team promised to release Theme Roller tool with jQuery Mobile 1.0. It should make CSS and themes mastering much more easy.
-
-## Important notes!
-
-### CSS selection of the DOM elements
-With jQuery Mobile as well with jQTouch it is wrong to select HTML elements in the DOM tree by their *id* attribute value. Due to the way such kind of frameworks performs page caching the *id* attribute values aren't unique anymore. DOM tree may have **multiple instances of the same page**, so you can't rely on *id* value. The reliable way to select some exact element with jQuery is:
-
-    // this code will return exact span element from the current active page
-    var errMsgElement = $("div.ui-page-active span.errorMessageTop");
-
-Also, it is recommended to avoid using of *id* attribute as much as possible and to use *class* names for elements selection instead of *id* values. It may prevent DOM engine in the browser from some glitches with *id* value duplication.
-
-### Back button behavior for the very first page
-It may happen that rhodes don't get controller request when user returns to the very first UI page using back button. It isn't a bug but rather a feature of jQuery Mobile.
-
-jQuery Mobile evaluates the very first page it started on, as "multi-page". No matter are there multiple pages defined in one HTML file or it contain just one page.
-And as you can see in [jQueryMobile documentation](http://jquerymobile.com/demos/1.0/docs/pages/page-cache.html): "Pages inside a multi-page template aren't affected by this feature at all - jQuery Mobile only removes pages loaded via Ajax.".
-So this page will never go away from the cache and will never requested again once it has been loaded very first time.
-
-There are workaround possible:
-1. To implement some start page which doesn't need to be refreshed and put there link to the page which should be refreshed.
-1. To don't rely on any kind of back buttons to transit to very first page, using custom back buttons like that:
-
-    :::html
-    <a href="<%= Rho::RhoConfig.start_path %>" class="ui-btn-left" data-icon="home" data-direction="reverse"
-        <%= "data-ajax='false'" if is_bb6 %>>Home</a>
