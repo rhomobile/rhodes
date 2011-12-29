@@ -249,6 +249,11 @@ void rho_free_callbackdata(void* pData)
 				   );
 }
 
+- (void) logout
+{
+	rho_sync_logout();
+}
+
 + (void) setNotification: (SEL) callback target:(id)target
 {
 	rho_sync_set_notification_c(-1, callback_impl, 
