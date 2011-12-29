@@ -101,7 +101,7 @@ namespace "config" do
     $cabwiz = File.join($config["env"]["paths"]["cabwiz"], "cabwiz.exe") if $config["env"]["paths"]["cabwiz"]
     $cabwiz = "cabwiz" if $cabwiz.nil?
     $webkit_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("webkit_browser").nil?) 
-    $wk_data_dir = nil
+    $wk_data_dir = "/Program Files" # its fake value for running without motorola extensions. do not delete
 
     begin
       if $webkit_capability
@@ -111,13 +111,11 @@ namespace "config" do
     rescue
       puts "rhoelements gem is't found, webkit capability is disabled"
       $webkit_capability = "0"
-      $wk_data_dir = ""
     end
         
     unless $build_solution
         $build_solution = 'rhodes.sln'
     end
-    #$startdir = $app_config["sdk"]
 
     if $app_config["wm"].nil?
       $port = "11000"
@@ -351,7 +349,7 @@ namespace "device" do
           File.open(filepath, "w") { |f| f.write(config) }
         end
       end
-
+ 
       args = ['build_inf.js', $appname + ".inf", build_platform, '"' + $app_config["name"] +'"', $app_config["vendor"], '"' + $srcdir + '"', $hidden_app, ($webkit_capability ? "1" : "0"), $wk_data_dir]
         
       puts Jake.run('cscript',args)
