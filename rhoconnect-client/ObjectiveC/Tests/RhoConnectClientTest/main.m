@@ -905,7 +905,7 @@ int shouldBulkSyncWithCreate()
     NSMutableDictionary* item1;
     item1 = [[NSMutableDictionary alloc] init];
     [item1 setValue: @"PhoneSpec" forKey:@"name"];	
-    [item1 setValue: @"22" /*[NSNumber numberWithInt:22]*/ forKey:@"sku"];	
+    [item1 setValue: @"22" forKey:@"sku"];	
     [product create: item1];
 
     sclient.bulksync_state = 0;
@@ -938,7 +938,7 @@ int shouldBulkSyncWithCreate()
             bFound = [@"22" isEqualToString: [item objectForKey:@"sku"]];
         }
         
-        [item setObject:@"44" /*[NSNumber numberWithInt:44]*/ forKey:@"sku"];
+        [item setObject:@"44" forKey:@"sku"];
         [product save: item];
     }
     if ( !bFound )
