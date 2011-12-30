@@ -141,8 +141,8 @@ The resulting application package (*.app) is located in your Rhodes source code 
 
 From the XCode 4.2 Apple was removed default support of armv6 architecture. In this case there are two issues:
 
-* Distributution build should include code for armv6 and armv7 both. Our projects already fixed for this require for Distribution build.
-* If you want build/run/debug your application on devices before iPhone/iPad (for example on iPhone 3G), you should manually path all rhodes xcode projects and all xcode projects in native extensions used in your application for Architecture settings:
+* Distributution build should include code for armv6 and armv7 both. Our projects already fixed for this.
+* If you want build/run/debug your application on devices before iPhone/iPad (for example on iPhone 3G), you should manually path all your (our already fixed) native extension xcode projects used in your application for Architecture settings:
 	in each project modify [Build Settings]-[Architectures]-[Debug]/[Release]:
 		remove $(ARCHS_STANDARD_32_BIT)
 		add two architectures manually: "armv7" and "armv6"	
@@ -199,6 +199,14 @@ The default build.yml settings generated for iphone are:
 	  emulatortarget: iphone
 	  BundleIdentifier: com.yourcompany.yourapp
 	  BundleURLScheme: yourapp
+	  entitlements_file: "./production/Entitlements.plist"
+	  production:
+	    app_plist_title: "myapp"
+	    app_plist_subtitle: "myapp"
+	    app_plist_icon_url: "www.yourcompany.com/icon.png"
+	    app_plist_ipa_url: "www.yourcompany.com/myapp.ipa"
+	    ipa_itunesartwork_image: "./production/image.jpg"  
+
 
 * name: name of your application. Will show on screen (iPhone application bundle display name)
 * version: version of your application. iPhone application bundle version
@@ -211,6 +219,14 @@ The default build.yml settings generated for iphone are:
 * emulatortarget: device family for simulator (iphone/ipad)
 * BundleIdentifier: bundle identifier - used in provisioning profile 
 * BundleURLScheme: bundle URL scheme of your app (used for opening your application from another application by using custom URL scheme)
+* entitlements_file: path of your custom Entitlements.plist (if you want use own instead of default) - you also can just put Entitlements.plist file into root folder of your application and it will be automaticallly used during build
+* production: section used only for Ad Hoc distribution, contain some specific options for prepare .plist and *.ipa files etc.
+* app_plist_title: title in plist file (application name by default)
+* app_plist_subtitle: subtitle in plist file (application name by default)
+* app_plist_icon_url: icon url writed in plist file
+* app_plist_ipa_url: IPA file url writed in plist file
+* ipa_itunesartwork_image: path to iTunesArtwork image included into IPA file (must be 512x512 JPG image) 
+
 
 ** NOTE: BundleIdentifier and BundleURLScheme can contain only next symbols : "a"-"z", "A"-"Z", "0"-"9", "-", "." !
 
