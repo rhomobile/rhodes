@@ -255,7 +255,7 @@ def prepare_production_plist (app_path, app_name)
     $plist_title = app_name
     $plist_subtitle = app_name
     $plist_icon_url = "http://example.com/icon57.png"
-    $plist_ipa_url = "http://example.com/Application.ipa"
+    $plist_ipa_url = "http://example.com/"+app_name+".ipa"
     
     appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
     vendor = $app_config['vendor'] ? $app_config['vendor'] : "rhomobile"
@@ -267,10 +267,10 @@ def prepare_production_plist (app_path, app_name)
 
     if !$app_config["iphone"].nil?
       if !$app_config["iphone"]["production"].nil?
-        plist_title = $app_config["iphone"]["production"]["app_plist_title"] unless $app_config["iphone"]["production"]["app_plist_title"].nil? 
-        plist_subtitle = $app_config["iphone"]["production"]["app_plist_subtitle"] unless $app_config["iphone"]["production"]["app_plist_subtitle"].nil? 
-        plist_icon_url = $app_config["iphone"]["production"]["app_plist_icon_url"] unless $app_config["iphone"]["production"]["app_plist_icon_url"].nil? 
-        plist_ipa_url = $app_config["iphone"]["production"]["app_plist_ipa_url"] unless $app_config["iphone"]["production"]["app_plist_ipa_url"].nil? 
+        $plist_title = $app_config["iphone"]["production"]["app_plist_title"] unless $app_config["iphone"]["production"]["app_plist_title"].nil? 
+        $plist_subtitle = $app_config["iphone"]["production"]["app_plist_subtitle"] unless $app_config["iphone"]["production"]["app_plist_subtitle"].nil? 
+        $plist_icon_url = $app_config["iphone"]["production"]["app_plist_icon_url"] unless $app_config["iphone"]["production"]["app_plist_icon_url"].nil? 
+        $plist_ipa_url = $app_config["iphone"]["production"]["app_plist_ipa_url"] unless $app_config["iphone"]["production"]["app_plist_ipa_url"].nil? 
       end
     end        
   
