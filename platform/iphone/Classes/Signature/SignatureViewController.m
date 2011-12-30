@@ -42,7 +42,7 @@
 
 
 - (id)initWithRect:(CGRect)rect  delegate:(SignatureDelegate*)delegate {
-	[self init];
+	self = [super init];
 	
 	signatureDelegate = delegate;
 	self.view.frame = rect;
@@ -103,6 +103,21 @@
 	
 	return self;
 
+}
+
+-(void)setPenColor:(unsigned int)value
+{
+    [signatureView setPenColor:value];
+}
+
+-(void)setPenWidth:(float)value
+{
+    [signatureView setPenWidth:value];
+}
+
+-(void)setBgColor:(unsigned int)value
+{
+    [signatureView setBgColor:value];
 }
 
 

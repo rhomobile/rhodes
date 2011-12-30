@@ -34,6 +34,9 @@
 	UIView* parentView;
 	UIView* prevView;
 	NSString* imageFormat;
+    unsigned int penColor;
+    float penWidth;
+    unsigned int bgColor;
 }
 
 
@@ -42,6 +45,12 @@
 -(void)setSignatureViewControllerValue:(SignatureViewController *)svc;
 -(void)setParentView:(UIView*)parent_view;
 -(void)setPrevView:(UIView*)prev_view;
+
 -(void)setImageFormat:(NSString*)format;
+-(void)setPenColor:(unsigned int)value;
+-(void)setPenWidth:(float)value;
+-(void)setBgColor:(unsigned int)value;
+
+
 
 @end
