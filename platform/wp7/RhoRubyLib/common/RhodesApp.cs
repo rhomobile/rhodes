@@ -219,24 +219,30 @@ namespace rho.common
         {
             m_webBrowser.Dispatcher.BeginInvoke( () =>
             {
-                if (index > 0)
-                {
-                    if (m_tabControl != null && m_tabControl.Items.Count > 0)
+                try{
+                    if (index > 0)
                     {
-                        ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.IsScriptEnabled = true;
+                        if (m_tabControl != null && m_tabControl.Items.Count > 0)
+                        {
+                            ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.IsScriptEnabled = true;
+                            if (isExternalUrl(strUrl))
+                                ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(new Uri(strUrl, UriKind.Absolute));
+                            else
+                                ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(new Uri(strUrl, UriKind.Relative));
+                        }
+                    }
+                    else
+                    {
+                        m_webBrowser.IsScriptEnabled = true;
                         if (isExternalUrl(strUrl))
-                            ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(new Uri(strUrl, UriKind.Absolute));
+                            m_webBrowser.Navigate(new Uri(strUrl, UriKind.Absolute));
                         else
-                            ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(new Uri(strUrl, UriKind.Relative));
+                            m_webBrowser.Navigate(new Uri(strUrl, UriKind.Relative));
                     }
                 }
-                else
+                catch (Exception exc)
                 {
-                    m_webBrowser.IsScriptEnabled = true;
-                    if (isExternalUrl(strUrl))
-                        m_webBrowser.Navigate(new Uri(strUrl, UriKind.Absolute));
-                    else
-                        m_webBrowser.Navigate(new Uri(strUrl, UriKind.Relative));
+                    LOG.ERROR("WebView.navigate failed : " + strUrl + ", index: " + index, exc);
                 }
             });
         }
@@ -245,16 +251,23 @@ namespace rho.common
         {
             m_webBrowser.Dispatcher.BeginInvoke(() =>
             {
-                if (index > 0)
+                try
                 {
-                    if (m_tabControl != null && m_tabControl.Items.Count > 0)
+                    if (index > 0)
                     {
-                        ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(m_webBrowser.Source);
+                        if (m_tabControl != null && m_tabControl.Items.Count > 0)
+                        {
+                            ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(m_webBrowser.Source);
+                        }
+                    }
+                    else
+                    {
+                        m_webBrowser.Navigate(m_webBrowser.Source);
                     }
                 }
-                else
+                catch (Exception exc)
                 {
-                    m_webBrowser.Navigate(m_webBrowser.Source);
+                    LOG.ERROR("WebView.refresh failed : " + index, exc);
                 }
             });
         }
@@ -277,16 +290,23 @@ namespace rho.common
 
             m_webBrowser.Dispatcher.BeginInvoke(() =>
             {
-                if (index > 0)
+                try
                 {
-                    if (m_tabControl != null && m_tabControl.Items.Count > 0)
+                    if (index > 0)
                     {
-                        ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.InvokeScript(arr[0], arrParams);
+                        if (m_tabControl != null && m_tabControl.Items.Count > 0)
+                        {
+                            ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.InvokeScript(arr[0], arrParams);
+                        }
+                    }
+                    else
+                    {
+                        m_webBrowser.InvokeScript(arr[0], arrParams);
                     }
                 }
-                else
+                catch (Exception exc)
                 {
-                    m_webBrowser.InvokeScript(arr[0], arrParams);
+                    LOG.ERROR("WebView.execute_js failed: " + arr[0] + "(" + String.Join(",", arrParams), exc);
                 }
             });
         }
