@@ -510,7 +510,7 @@ namespace rho.net
 		    NetResponse pResp = new NetResponse(strRespBody != null ? strRespBody : "", nErrorCode );
             if (pResp.isSuccess())
             {
-                if (m_strCookies == "" && m_strRespBody.Contains("rhoconnect_session"))
+                if (m_strCookies == "" && m_strRespBody != null && m_strRespBody.Contains("rhoconnect_session"))
                 {
                     m_strRespBody = m_strRespBody.Replace('{', ' ');
                     m_strRespBody = m_strRespBody.Replace('}', ' ');
