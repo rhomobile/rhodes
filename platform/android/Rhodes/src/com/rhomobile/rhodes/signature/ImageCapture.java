@@ -55,6 +55,7 @@ public class ImageCapture extends BaseActivity implements OnClickListener
 	
 	private String callbackUrl;
 	private String imageFormat;
+	
 	private SimpleDateFormat timeStampFormat = new SimpleDateFormat("yyyyMMddHHmmssSS");
 
 	private SignatureView surfaceView;
@@ -74,7 +75,7 @@ public class ImageCapture extends BaseActivity implements OnClickListener
 		
 		Bundle extras = getIntent().getExtras();
 		callbackUrl = extras.getString(com.rhomobile.rhodes.signature.Signature.INTENT_EXTRA_PREFIX + "callback");
-		imageFormat = extras.getString(com.rhomobile.rhodes.signature.Signature.INTENT_EXTRA_PREFIX + "format");
+		imageFormat = extras.getString(com.rhomobile.rhodes.signature.Signature.INTENT_EXTRA_PREFIX + "imageFormat");
 		
 		surfaceView = (SignatureView) findViewById(AndroidR.id.signature_view);
 		surfaceHolder = surfaceView.getHolder();
@@ -86,6 +87,11 @@ public class ImageCapture extends BaseActivity implements OnClickListener
 		clearButton.setOnClickListener(this);
 		okButton = (ImageButton)findViewById(AndroidR.id.sig_okButton);
 		okButton.setOnClickListener(this);
+
+		int penColor = extras.getInt(com.rhomobile.rhodes.signature.Signature.INTENT_EXTRA_PREFIX + "penColor");
+		float penWidth = extras.getFloat(com.rhomobile.rhodes.signature.Signature.INTENT_EXTRA_PREFIX + "penWidth");
+		int bgColor = extras.getInt(com.rhomobile.rhodes.signature.Signature.INTENT_EXTRA_PREFIX + "bgColor");
+		surfaceView.setupView(penColor, penWidth, bgColor);
 	}
 
 	@Override

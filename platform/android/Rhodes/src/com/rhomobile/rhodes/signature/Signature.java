@@ -27,6 +27,8 @@
 package com.rhomobile.rhodes.signature;
 
 import java.io.File;
+import java.util.Map;
+import java.util.Vector;
 
 import android.content.Intent;
 
@@ -55,12 +57,18 @@ public class Signature {
 	private static class Picture implements Runnable {
 		private String url;
 		private Class<?> klass;
-		private String format;
+		private String imageFormat;
+		private int penColor;
+		private float penWidth;
+		private int bgColor;
 		
-		public Picture(String u, Class<?> c, String form) {
+		public Picture(String u, Class<?> c, String _imageFormat, int _penColor, float _penWidth, int _bgColor) {
 			url = u;
 			klass = c;
-			format = form;
+			imageFormat = _imageFormat;
+			penColor = _penColor;
+			penWidth = _penWidth;
+			bgColor = _bgColor;
 		}
 		
 		public void run() {
@@ -68,14 +76,46 @@ public class Signature {
 			RhodesActivity ra = RhodesActivity.getInstance();
 			Intent intent = new Intent(ra, klass);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "callback", url);
-			intent.putExtra(INTENT_EXTRA_PREFIX + "format", format);
+			intent.putExtra(INTENT_EXTRA_PREFIX + "imageFormat", imageFormat);
+			intent.putExtra(INTENT_EXTRA_PREFIX + "penColor", penColor);
+			intent.putExtra(INTENT_EXTRA_PREFIX + "penWidth", penWidth);
+			intent.putExtra(INTENT_EXTRA_PREFIX + "bgColor", bgColor);
 			ra.startActivity(intent);
 		}
 	};
 	
-	public static void takeSignature(String url, String format) {
+	public static void takeSignature(String url, Object params) {
 		try {
-			Runnable runnable = new Picture(url, ImageCapture.class, format);
+			String imageFormat = "png";
+			int penColor = 0xFF66009A;
+			float penWidth = 2;
+			int bgColor = 0xFFFFFFFF;
+			
+			if (params instanceof Map<?,?>) {
+				Map<Object,Object> settings = (Map<Object,Object>)params;
+				
+				Object imgFrmtObj = settings.get("imageFormat");
+				if ((imgFrmtObj != null) && (imgFrmtObj instanceof String)) {
+					imageFormat = new String(((String)imgFrmtObj));
+				}
+				
+				Object penColorObj = settings.get("penColor");
+				if ((penColorObj != null) && (penColorObj instanceof String)) {
+					penColor = Integer.parseInt((String)penColorObj) | 0xFF000000;
+				}
+					
+				Object penWidthObj = settings.get("penWidth");
+				if ((penWidthObj != null) && (penWidthObj instanceof String)) {
+					penWidth = Float.parseFloat((String)penWidthObj);
+				}
+
+				Object bgColorObj = settings.get("bgColor");
+				if ((bgColorObj != null) && (bgColorObj instanceof String)) {
+					bgColor = Integer.parseInt((String)bgColorObj) | 0xFF000000;
+				}
+			}
+			
+			Runnable runnable = new Picture(url, ImageCapture.class, imageFormat, penColor, penWidth, bgColor);
 			PerformOnUiThread.exec(runnable, false);
 		}
 		catch (Exception e) {
