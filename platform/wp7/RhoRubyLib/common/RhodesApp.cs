@@ -389,11 +389,11 @@ namespace rho.common
                     object val = null;
 
                     Hash values = (Hash)hashArray[i];
-                    if (values.TryGetValue(RhoRuby.rubyContext.CreateSymbol("action", RubyEncoding.UTF8), out val))
+                    if (values.TryGetValue(CRhoRuby.CreateSymbol("action"), out val))
                         action = val.ToString();
-                    if (values.TryGetValue(RhoRuby.rubyContext.CreateSymbol("icon", RubyEncoding.UTF8), out val))
+                    if (values.TryGetValue(CRhoRuby.CreateSymbol("icon"), out val))
                         icon = val.ToString();
-                    if (values.TryGetValue(RhoRuby.rubyContext.CreateSymbol("label", RubyEncoding.UTF8), out val))
+                    if (values.TryGetValue(CRhoRuby.CreateSymbol("label"), out val))
                         label = val.ToString();
 
                     if (label == null && barType == 0)
@@ -482,10 +482,10 @@ namespace rho.common
                 else
                     paramHash = (Hash)barParams;
 
-                if (paramHash != null && paramHash.TryGetValue(RhoRuby.rubyContext.CreateSymbol("background_color", RubyEncoding.UTF8), out val))
+                if (paramHash != null && paramHash.TryGetValue(CRhoRuby.CreateSymbol("background_color"), out val))
                     m_appMainPage.ApplicationBar.BackgroundColor = getColorFromString(val.ToString());
 
-                if (paramHash != null && paramHash.TryGetValue(RhoRuby.rubyContext.CreateSymbol("buttons", RubyEncoding.UTF8), out val) && val is RubyArray)
+                if (paramHash != null && paramHash.TryGetValue(CRhoRuby.CreateSymbol("buttons"), out val) && val is RubyArray)
                     hashArray = ((RubyArray)val).ToArray();
 
                 createToolBarButtons(barType, hashArray);
@@ -663,17 +663,17 @@ namespace rho.common
                     object val = null;
 
                     Hash values = (Hash)hashArray[i];
-                    if (values.TryGetValue(RhoRuby.rubyContext.CreateSymbol("action", RubyEncoding.UTF8), out val))
+                    if (values.TryGetValue(CRhoRuby.CreateSymbol("action"), out val))
                         action = val.ToString();
-                    if (values.TryGetValue(RhoRuby.rubyContext.CreateSymbol("icon", RubyEncoding.UTF8), out val))
+                    if (values.TryGetValue(CRhoRuby.CreateSymbol("icon"), out val))
                         icon = val.ToString();
-                    if (values.TryGetValue(RhoRuby.rubyContext.CreateSymbol("label", RubyEncoding.UTF8), out val))
+                    if (values.TryGetValue(CRhoRuby.CreateSymbol("label"), out val))
                         label = val.ToString();
-                    if (values.TryGetValue(RhoRuby.rubyContext.CreateSymbol("reload", RubyEncoding.UTF8), out val))
+                    if (values.TryGetValue(CRhoRuby.CreateSymbol("reload"), out val))
                         reload = Convert.ToBoolean(val);
-                    if (values.TryGetValue(RhoRuby.rubyContext.CreateSymbol("web_bkg_color", RubyEncoding.UTF8), out val))
+                    if (values.TryGetValue(CRhoRuby.CreateSymbol("web_bkg_color"), out val))
                         web_bkg_color = new SolidColorBrush(getColorFromString(val.ToString()));
-                    if (values.TryGetValue(RhoRuby.rubyContext.CreateSymbol("use_current_view_for_tab", RubyEncoding.UTF8), out val))
+                    if (values.TryGetValue(CRhoRuby.CreateSymbol("use_current_view_for_tab"), out val))
                         use_current_view_for_tab = Convert.ToBoolean(val);
 
                     //if (label == null && barType == 0)
@@ -693,9 +693,9 @@ namespace rho.common
                     tabItem.Header = new RhoTabHeader(label, icon);
                     //if (i == 0)// && use_current_view_for_tab)
                     tabItem.Content = new RhoView(m_appMainPage, m_layoutRoot, action, reload, web_bkg_color);
-                    if (values.TryGetValue(RhoRuby.rubyContext.CreateSymbol("selected_color", RubyEncoding.UTF8), out val))
+                    if (values.TryGetValue(CRhoRuby.CreateSymbol("selected_color"), out val))
                         tabItem.Background = new SolidColorBrush(getColorFromString(val.ToString()));
-                    if (values.TryGetValue(RhoRuby.rubyContext.CreateSymbol("disabled", RubyEncoding.UTF8), out val))
+                    if (values.TryGetValue(CRhoRuby.CreateSymbol("disabled"), out val))
                         tabItem.IsEnabled = !Convert.ToBoolean(val);
                     m_tabControl.Items.Add(tabItem);
                 }
@@ -721,10 +721,10 @@ namespace rho.common
                 else
                     paramHash = (Hash)tabBarParams;
 
-                if (paramHash != null && paramHash.TryGetValue(RhoRuby.rubyContext.CreateSymbol("background_color", RubyEncoding.UTF8), out val))
+                if (paramHash != null && paramHash.TryGetValue(CRhoRuby.CreateSymbol("background_color"), out val))
                     m_tabControl.Background = new SolidColorBrush(getColorFromString(val.ToString()));
 
-                if (paramHash != null && paramHash.TryGetValue(RhoRuby.rubyContext.CreateSymbol("tabs", RubyEncoding.UTF8), out val) && val is RubyArray)
+                if (paramHash != null && paramHash.TryGetValue(CRhoRuby.CreateSymbol("tabs"), out val) && val is RubyArray)
                     hashArray = ((RubyArray)val).ToArray();
 
                 createTabBarButtons(tabBarType, hashArray);
