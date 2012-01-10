@@ -696,9 +696,21 @@ To enable: install RhoElements gem or RhoStudio and add to build.yml
 
 The Signature Capture API allow take a signature and save it as an image:
 	:::ruby
-	SignatureTool::take_signature(callback_url, image_format)
+	Rho::SignatureCapture.take(callback_url, params)
 
 Signature Capture open window for hand writing, where user draw his signature. Signature saved to an image file. You can choice 'jpg' or 'png' format for image. 
+* callback_url - callback url
+* params - hash with params
+
+Example :
+	:::ruby
+	Rho::SignatureCapture.take(url_for( :action => :signature_callback), { :imageFormat => "jpg", :penColor => 0xff0000, :penWidth=>3, :bgColor => 0x00ff00 })
+
+Params in hash:
+* imageFormat - "jpg" or "png"
+* penColor - color of pen used for drawing signature
+* penWidth - wide of pen
+* bgColor - color of background
 
 After user entered signature (or canceled) provided callback url will be called. Callback parameters will be:
 * status - 'ok' or 'cancel'
