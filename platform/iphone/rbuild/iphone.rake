@@ -397,7 +397,7 @@ end
 
 def restore_entitlements_file
   enti_rho_name = File.join($config["build"]["iphonepath"], "Entitlements.plist")
-  if File.exists? (enti_rho_name + '_bak')
+  if File.exists?(enti_rho_name + '_bak')
     puts 'restore Entitlements.plist ...'
     rm_f enti_rho_name
     cp (enti_rho_name + '_bak'), enti_rho_name   
