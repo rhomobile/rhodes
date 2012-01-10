@@ -1,0 +1,295 @@
+END USER LICENSE AGREEMENT 
+
+Motorola Solutions is willing to license its Software and the accompanying documentation
+to you only on the condition that you accept all the terms in this License Agreement ("Agreement"). 
+
+IMPORTANT: READ THE FOLLOWING TERMS AND CONDITIONS BEFORE USING THE ACCOMPANYING PRODUCTS. BY CLICKING ON THE "ACCEPT" 
+BUTTON BELOW, YOU ACKNOWLEDGE THAT YOU HAVE READ THIS AGREEMENT, UNDERSTAND IT AND AGREE TO BE BOUND BY THE TERMS OF 
+THIS AGREEMENT. IF YOU DO NOT AGREE TO THE TERMS OF THIS AGREEMENT, MOTOROLA SOLUTIONS IS NOT WILLING TO LICENSE THE 
+PRODUCTS TO YOU.  YOU SHOULD CLICK ON THE "DO NOT ACCEPT" BUTTON TO DISCONTINUE THE SOFTWARE INSTALLATION PROCESS.  
+IF YOU DO NOT AGREE TO THESE TERMS, YOU MAY, WITHIN 15 DAYS, RETURN THIS ENTIRE PRODUCT TO THE LOCATION WHERE YOU 
+ACQUIRED IT OR PROVIDE WRITTEN VERIFICATION OF DELETION OF ALL COPIES OF THE ENTIRE PRODUCT IF YOU HAVE NOT PHYSICALLY 
+RECEIVED A PRODUCT FOR A FULL REFUND. 
+
+1.         Definitions.  In this Agreement, the word "Software" refers to the set of instructions for
+computers, in executable and/or source code form and in any media, (which may include diskette, CD-ROM, downloadable
+internet, hardware, or firmware) licensed to you.  The word "Documentation" refers to electronic or printed manuals and
+accompanying instructional aids licensed to you.  The word "Product(s)" refers to the specific combination of Software
+and Documentation that you have licensed and which has been provided to you under the terms of this Agreement. "Motorola
+Solutions" means Motorola Solutions, Inc and/or its subsidiary Symbol Technologies, Inc. 
+
+2.         Grant of License.
+Provided that  you ("Licensee" or "you") pay Motorola Solutions the per copy license fee agreed upon between Licensee
+and Motorola Solutions, Motorola Solutions grants a personal, nonexclusive, nontransferable license to use the Products
+subject to the Conditions Of Use set forth in Section 3 below and the terms and conditions of this Agreement.  Any terms
+or conditions appearing on the face or reverse side of any purchase order, purchase order acknowledgment or other order
+document that are different from, or in addition to, the terms of this Agreement will not be binding on the parties,
+even if payment is accepted.  
+
+3.         Conditions of Use. Any use of the Products outside of the conditions set forth
+herein is strictly prohibited and will be deemed a breach of this Agreement. 
+
+3.1        You shall use the Products
+exclusively to support Motorola Solutions devices.  Any use of the Products to support non-Motorola Solutions devices
+is strictly prohibited and will be deemed an incurable breach of this Agreement. 
+
+3.2        Only your employees
+or agents may use the Products.  You shall take all necessary steps to insure that your employees and agents abide
+by the terms of this Agreement. 
+
+3.3        You shall use the Products (i) only for your internal business purposes; (ii)
+only as described in the Products; and (iii) in strict accordance with this Agreement. 
+
+3.4        Licensee may install
+and use the Products on a single client workstation, provided that the use is in conformance with the terms set forth
+in this Agreement.  The unmodified Products may not be transferred to another party without the express written consent
+of Motorola Solutions, regardless of whether or not such transfer is accomplished by physical or electronic means.
+
+3.5.       Portions of the Products are protected by United States copyright laws, international treaty provisions,
+and other applicable laws.  Therefore, you must treat the Products like any other copyrighted material (e.g., a book
+or musical recording) except that you may either: (i) make 1 copy of the transportable part of the Products (which
+typically is supplied on diskette, CD-ROM, or downloadable internet), solely for back-up purposes; or (ii) copy the
+transportable part of the Products to a PC hard disk, provided you keep the original solely for back-up purposes. 
+If the Documentation is in printed form, it may not be copied.  If the Documentation is in electronic form, you may
+print out 1 copy, which then may not be copied.  With regard to the copy made for backup or archival purposes, you agree
+to reproduce any Motorola Solutions copyright notice, and other proprietary legends appearing thereon.  Such copyright
+notice(s) may appear in any of several forms, including machine-readable form, and you agree to reproduce such notice
+in each form in which it appears, to the extent it is physically possible to do so.  Unauthorized duplication of the
+Software or Documentation constitutes copyright infringement, and in the United States is punishable in federal court
+by fine and imprisonment.  
+
+3.6        Licensee shall not distribute, sublicense, rent, loan, lease, export, re-export,
+resell, ship or divert or cause to be exported, re-exported, resold, shipped or diverted, directly or indirectly, the
+unmodified Products under this Agreement. 
+
+3.7     Licensee grants Motorola Solutions the right, which Motorola Solutions
+will exercise at its own expense and no more than once per year, to enter Licensee’s premises during business hours for
+the sole purpose of examining Licensee’s records and other information relating to the Licensee’s use of the Products.
+If this examination reveals that Licensee has underpaid fees or improperly used the Products, Motorola Solutions shall
+invoice Licensee for such unauthorized use based upon Motorola Solutions’ standard fees in effect at the time the
+examination is completed.  If the underpaid fees exceed five percent (5%) of the fees actually paid, then Licensee shall
+also pay Motorola Solutions’ reasonable costs of conducting the examination. 
+
+3.8       Under this License, Licensee may
+(i) use, modify, and incorporate all or portions of the sample source code (the "Sample Code"), runtime library files,
+and/or documentation files (the "Documentation") that may be included in the unmodified Products into Licensee’s own
+programs (the "User Programs") to support Motorola Solutions devices exclusively, provided that no license is granted
+herein under any patents that may be infringed by Licensee’s modifications, derivative works or by other works in which
+any portion of the Products may be incorporated; (ii) distribute the runtime library files and Sample Code in object
+code format only as substantially modified or only as part of the User Programs to support Motorola Solutions devices
+exclusively; and (iii) use the Products solely for the purpose of internal development. 
+
+4.         Title; Restrictions. 
+Title to all copies of Software will not pass to Licensee at any time and remains vested exclusively in Motorola
+Solutions.  Motorola Solutions owns and retains all of its proprietary rights in any form concerning the Software and
+Documentation, including all rights in patents, patent applications, inventions, copyrights, trade secrets, trademarks,
+trade names, and other intellectual properties (including any corrections, bug fixes, enhancements, updates,
+or modifications to or derivative works from the Software whether made by Motorola Solutions or another party, or any
+improvements that result from Motorola Solutions’ processes or, if applicable, providing information services).  Nothing
+in this Agreement is intended to restrict the proprietary rights of Motorola Solutions or to grant by implication
+or estoppel any proprietary rights.  All intellectual property developed, originated, or prepared by Motorola Solutions
+in connection with providing to Licensee Software, Products, Documentation, or related services remain vested
+exclusively in Motorola Solutions, and this Agreement does not grant to Licensee any shared development rights
+of intellectual property.  
+
+4.1        If you transfer possession of any copy of the Products to another party outside
+of the terms of this agreement, your license is automatically terminated.  Title and copyrights to the Products and any
+copies made by you remain with Motorola Solutions and its licensors.  You shall not, and shall not permit others to: (i)
+modify, translate, decompile, bootleg, reverse engineer, disassemble, or extract the inner workings of the Software
+or Documentation, (ii) copy the look-and-feel or functionality of the Software or Documentation; (iii) remove any
+proprietary notices, marks, labels, or logos from the Software or Documentation; (iv) rent or transfer all or some
+of the Software or Documentation to any other party without Motorola Solutions’ prior written consent; or (v) utilize
+any computer software or hardware which is designed to defeat any copy protection device, should the Products
+be equipped with such a protection device.  If the Products contain Software or Documentation that is provided
+on multiple types of media (such as diskette, CD-ROM, downloadable internet), then you shall only use the medium which
+best meets your specific needs, and shall not loan, rent, lease, or transfer the other media contained in the package
+without Motorola Solutions’ written consent.  Unauthorized copying of the Software or Documentation, or failure
+to comply with any of the provisions of this Agreement, will result in automatic termination of this license.   
+
+5.         Confidentiality.  You acknowledge that all Products contain valuable proprietary information and trade
+secrets and that unauthorized or improper use of the Products will result in irreparable harm to Motorola Solutions for
+which monetary damages would be inadequate and for which Motorola Solutions will be entitled to immediate injunctive
+relief.  Accordingly, you will limit access to the Products to those of your employees and agents who need to use the
+Products for your internal business purposes, and you will take appropriate action with those employees and agents
+to preserve the confidentiality of the Products, using the same degree of care to avoid unauthorized or improper
+disclosure as you use for the protection of your own proprietary software, but in no event less than reasonable care.
+Notwithstanding anything to the contrary herein, you shall have no obligation to preserve the confidentiality
+of any proprietary information that: (i) was in the public domain at the time of disclosure; (ii) entered the public
+domain through no fault of yours; (iii) was given to you free of any obligation to keep it confidential; (iv)
+is independently developed by you; or (v) is disclosed as required by law provided that you notify Motorola Solutions
+prior to such disclosure and provide Motorola Solutions with a reasonable opportunity to respond. 
+
+6.         Right to Use Motorola Solutions’ Name.  Except as required in Section 3.5 above, you shall not, during the term of this
+Agreement or thereafter, use any trademark, of Motorola Solutions or Symbol, or any word or symbol likely to be confused
+with any Motorola Solutions or Symbol trademark, either alone or in any combination with another word or words.
+
+7.         Payment.  The rights granted hereunder are contingent upon payment for the Products.  All payments shall
+be due net 30 days from date of the invoice. 
+
+8.         Upgrades and Updates.  If the Products are licensed to you as an
+upgrade or update to a product previously licensed to you, you must destroy the Products previously licensed to you,
+including any copies, within 30 days of your receipt of the update or upgrade. 
+
+9.         Maintenance.  Motorola Solutions shall not be responsible for maintenance or field service of the Software under this Agreement. 
+
+10.        Indemnification.  Motorola Solutions shall indemnify Licensee by defending, at its expense, any claim, and any lawsuit
+to the extent based thereon, that is brought against Licensee alleging that the Product, as originally delivered
+by Motorola Solutions to Licensee under this Agreement, directly infringes a patent or copyright registered in the
+country in which Motorola Solutions originally sold the Product to Licensee ("Infringement Claim"), so long as Motorola
+Solutions is notified in writing by Licensee as soon as reasonably practicable as to any such claim, but in no event
+after Motorola Solutions would be prejudiced by a lack of such notice, is given sole authority and control of the
+defense, and is provided by Licensee all requested information and assistance for resolving or defending the
+Infringement Claim.  In addition to Motorola Solutions’ obligation to defend, and subject to the same conditions,
+Motorola Solutions shall pay all damages finally awarded against Licensee by a court of competent jurisdiction to the
+extent based upon such Infringement Claim, or agreed to in writing by Motorola Solutions in settlement of the
+Infringement Claim.  If the Product is subject to an Infringement Claim or, if in Motorola Solutions’ judgment, likely
+to become subject to a Infringement Claim, in addition to its obligation to defend and pay damages, Motorola Solutions,
+in its sole discretion, shall: (a) obtain a license for Licensee to continue to use or to sell the Product purchased
+from Motorola Solutions; (b) replace or modify the Product so as to be substantially functionally equivalent but
+non-infringing; or (c) require the return of the Product and credit the fair market value of the Product less
+a reasonable charge for depreciation calculated on a three (3) year straight line depreciation basis.  Motorola
+Solutions shall have no liability to Licensee for any alleged or actual infringement, or otherwise, arising out of or in
+connection with Licensee’s use or transfer of the Product after Motorola Solutions’ written notice to Licensee that
+Licensee shall cease use or transfer of such Product. Motorola Solutions shall have no obligation to defend or indemnify
+Licensee under this agreement  for any damages based upon a per-use royalty or the Licensee’s revenues, or upon any
+damages theory other than a reasonable royalty applied to, or lost profits of the patent owner based on, the purchase
+price paid by Licensee to Motorola Solutions for the infringing Product.  Motorola Solutions shall have no obligation
+to defend or indemnify Licensee under this agreement for any alleged or actual infringement arising out of (a) use of
+Product in connection or in combination with equipment, devices or Product not provided by Motorola Solutions; (b) use
+of the Product in a manner for which they were not designed;  (c) any modification of the Product by anyone other than
+Motorola Solutions; (d) compliance with Licensee’s designs, specifications, guidelines or instructions; (e) compliance
+with a standard issued by any public or private standards body; or (f) any assertion by a non-practicing entity which
+maintains no significant manufacturing capability ((a) – (d) defined as “Excluded Conduct”).  Licensee shall indemnify
+Motorola Solutions against any claim of infringement that is brought against Motorola Solutions based upon or arising
+out of such Excluded Conduct or arising out of Licensee’s continued use or transfer of the Product after being noticed
+to cease such use or transfer.  Motorola Solutions shall not be responsible for any compromise or settlement made
+by Licensee without Motorola Solutions’ prior written consent.  THIS SECTION PROVIDES LICENSEE’S SOLE AND EXCLUSIVE
+REMEDIES AND MOTOROLA SOLUTIONS’ ENTIRE LIABILITY IN THE EVENT OF AN INFRINGEMENT CLAIM.  LICENSEE HAS NO RIGHT
+TO RECOVER AND MOTOROLA SOLUTIONS HAS NO OBLIGATION TO PROVIDE ANY OTHER OR FURTHER REMEDIES, WHETHER UNDER ANOTHER
+PROVISION OF THIS AGREEMENT OR ANY OTHER LEGAL THEORY OR PRINCIPLE, IN CONNECTION WITH AN INFRINGEMENT CLAIM.
+
+11        Limited Warranty.  All diskettes or CD-ROMS on which the Products are furnished ("Media") are warranted to be
+free from manufacturing and material defects for 90 days after the shipment date of the Products to you.  Media that
+becomes defective during such period will be repaired or, at Motorola Solutions’ option, replaced.  This limited
+warranty is contingent upon proper use of the Media and does not cover Products which have been tampered with, modified,
+or subjected to unusual physical or electrical stress.  Tampering with or removal of any factory seal or label on any
+Media voids this warranty and releases Motorola Solutions from any and all liability. 
+
+12.        Disclaimer.   EXCEPT FOR THE ABOVE EXPRESS LIMITED WARRANTY, MOTOROLA SOLUTIONS MAKES, AND YOU RECEIVE, NO 
+OTHER WARRANTIES OF ANY KIND, WHETHER EXPRESS, IMPLIED, STATUTORY, OR IN ANY COMMUNICATION WITH YOU.  MOTOROLA SOLUTIONS 
+SPECIFICALLY DISCLAIMS ANY WARRANTY INCLUDING THE IMPLIED WARRANTIES OF MERCHANTABILTY, NONINFRINGEMENT, OR FITNESS FOR A 
+PARTICULAR PURPOSE.  THE PRODUCTS ARE PROVIDED "AS IS." MOTOROLA SOLUTIONS DOES NOT WARRANT THAT THE SOFTWARE WILL MEET YOUR REQUIREMENTS,
+OR THAT THE OPERATION OF THE SOFTWARE WILL BE UNINTERRUPTED OR ERROR FREE, OR THAT DEFECTS IN THE SOFTWARE WILL
+BE CORRECTED.  MOTOROLA SOLUTIONS MAKES NO WARRANTY WITH RESPECT TO THE CORRECTNESS, ACCURACY, OR RELIABILITY OF THE
+SOFTWARE AND DOCUMENTATION.  Some jurisdictions do not allow the exclusion of implied warranties, so the above exclusion
+may not apply to you. 
+
+13.        Remedies.  The entire liability of Motorola Solutions, and your exclusive remedy under
+the warranty provided herein will be, at Motorola Solutions’ option, to repair or replace any Media found to be
+defective within the warranty period, or to refund the purchase price and terminate this Agreement.  To seek such
+a remedy, you must return the entire Product to Motorola Solutions, with a copy of the original purchase receipt, within
+the warranty period. 
+
+14.        Limitation of Liability. THE TOTAL LIABILITY OF MOTOROLA SOLUTIONS UNDER THIS AGREEMENT
+FOR DAMAGES SHALL NOT EXCEED THE TOTAL AMOUNT PAID BY YOU FOR THE PRODUCTS LICENSED UNDER THIS AGREEMENT.  IN NO EVENT
+WILL MOTOROLA SOLUTIONS BE LIABLE IN ANY WAY FOR INCIDENTAL, CONSEQUENTIAL, INDIRECT, SPECIAL OR PUNITIVE DAMAGES OF ANY
+NATURE, INCLUDING WITHOUT LIMITATION, LOST BUSINESS PROFITS, OR LIABILITY OR INJURY TO THIRD PERSONS, WHETHER
+FORESEEABLE OR NOT, REGARDLESS OF WHETHER MOTOROLA SOLUTIONS HAS BEEN ADVISED OF THE POSSIBLITY OF SUCH DAMAGES. Some
+jurisdictions do not permit limitations of liability for incidental or consequential damages, so the above exclusions
+may not apply to you.  This Limitation of Liability provision survives the termination of this Agreement and applies
+notwithstanding any contrary provision in this Agreement.  Licensee must bring any action under this Agreement within
+one (1) year after the cause of action arises. 
+
+15.        High Risk Activities.  The Products are not fault-tolerant and
+are not designed, manufactured or intended for use or resale as on-line control software in hazardous environments
+requiring fail-safe performance, such as in the operation of nuclear facilities, aircraft navigation or communication
+systems, air traffic control, direct life support machines, or weapons systems, in which the failure of the Products
+could lead directly to death, personal injury, or severe physical or environmental damage ("High Risk Activities"). 
+Motorola Solutions and its suppliers specifically disclaim any express or implied warranty of fitness for High Risk
+Activities, and if you elect to use the Products in any High Risk Activities, you agree to indemnify, defend, and hold
+Motorola Solutions harmless from and against any and all costs, damages, and losses related to that use. 
+
+6.        U.S. Government.  If you are acquiring the Products on behalf of any unit or agency of the U.S. Government, the following
+shall apply.  Use, duplication, or disclosure of the Products is subject to the restrictions set forth in subparagraphs
+(c) (1) and (2) of the Commercial Computer Software - Restricted Rights clause at FAR 52.227-19 (JUNE 1987),
+if applicable, unless being provided to the Department of Defense.  If being provided to the Department of Defense, use,
+duplication, or disclosure of the Products is subject to the restricted rights set forth in subparagraph (c) (1) (ii)
+of the Rights in Technical Data and Computer Software clause at DFARS 252.227-7013 (OCT 1988), if applicable.  Software
+and Documentation may or may not include a Restricted Rights notice, or other notice referring specifically to the terms
+and conditions of this Agreement.  The terms and conditions of this Agreement shall each continue to apply, but only
+to the extent that such terms and conditions are not inconsistent with the rights provided to you under the
+aforementioned provisions of the FAR and DFARS, as applicable to the particular procuring agency and procurement
+transaction. 
+
+17.        Term of License.  Your right to use the Products will begin when you click the "ACCEPT" button
+below, which constitutes acceptance of the terms and conditions herein, and will continue in perpetuity unless
+terminated as follows.   Your right to use the Products will terminate immediately without notice upon a breach of this
+Agreement by you.  Otherwise, this Agreement may be terminated by either party upon 30 days prior written notice. 
+Within 30 days after termination of this Agreement, you will certify to Motorola Solutions in writing that through your
+best efforts, and to the best of your knowledge, the original and all copies, in whole or in part, in any form, of the
+Software and all related material and Documentation, have been destroyed, except that, with prior written consent from
+Motorola Solutions, you may retain one copy for archival or backup purposes.   You may not sublicense, assign
+or transfer the license or the Products, except as expressly provided in this Agreement.  Any attempt to otherwise
+sublicense, assign or transfer any of the rights, duties or obligations hereunder is null and void. 17.1.     Licensee
+acknowledges that Motorola Solutions has made a considerable investment of resources in the development, marketing, and
+distribution of its proprietary Software and Documentation and that reasonable and appropriate limitations on Licensee’s
+use of the Software and Documentation are necessary for Motorola Solutions to protect its investment, trade secrets, and
+valuable intellectual property rights concerning the Software and Documentation.  Licensee also acknowledges that its
+breach of this Agreement will result in irreparable harm to Motorola Solutions for which monetary damages would
+be inadequate. In the event of a breach of this Agreement and in addition to termination of this Agreement, Motorola
+Solutions will be entitled to all available remedies at law or in equity (including immediate injunctive relief and
+repossession of all non-embedded Software and associated Documentation unless Licensee is a Federal agency of the United
+States Government).  Within thirty (30) days after termination of this Agreement, Licensee must certify in writing
+to Motorola Solutions that all copies of the Software and Documentation have been returned to Motorola Solutions
+or destroyed and are no longer in use by Licensee. 
+
+18.        Governing Law.  This Agreement shall be governed by the laws of the United States of America to the extent 
+that they apply and otherwise by the laws of the State of New York without regard to its conflict of laws provisions. 
+
+19.        Assignment.  This Agreement may not be assigned or otherwise transferred by you. 
+
+20.        Survival of Provisions.  The parties agree that where the context of any provision indicates an intent that 
+it shall survive the term of this Agreement, then it shall survive. 
+
+21.        Entire Agreement.  This Agreement contains the parties’ entire agreement regarding your use of the Products 
+and may be amended only in writing signed by both parties, except that Motorola Solutions may modify this Agreement 
+as necessary to comply with applicable laws and regulations including FCC regulations. 
+
+22.        Compliance with Laws.  Licensee will comply with all applicable laws and regulations, including export 
+laws and regulations of the United States.  Licensee will not, without the prior authorization of Motorola Solutions 
+and the appropriate governmental authority of the United States, in any form export or re-export, sell or resell, 
+ship or reship, or divert, through direct or indirect means, any item or technical data or direct or indirect products sold 
+or otherwise furnished to any person within any territory for which the United States Government or any of its agencies at 
+the time of the action, requires an export license or other governmental approval.  Violation of this provision 
+will be a material breach of this Agreement, permitting immediate termination by Motorola Solutions. 
+
+23.        Waivers.  Failure or delay by either party to exercise a right or power under this Agreement will not be a 
+waiver of the right or power.  For a waiver of a right or power to be effective, it must be in writing signed by the waiving party. 
+An effective waiver of a right or power will not be construed as either a future or continuing waiver of that same right or power, 
+or the waiver of any other right or power. 
+
+24.        Assignments and Subcontracting.  Motorola Solutions may assign any of its rights or subcontract any
+of its obligations under this Agreement, or encumber or sell any of its rights in any Software, without prior notice
+to or consent of Licensee. 
+
+25.        Entire Agreement and Amendment.  This Agreement constitutes the entire agreement
+of the parties regarding Licensee’s use of the Software and Documentation and may be amended or modified only by
+a written instrument signed by an authorized representative of each party, except that Motorola Solutions may modify
+this Agreement as necessary to comply with applicable laws and regulations.  This Agreement will be fairly interpreted
+in accordance with its terms and conditions and not for or against either party.
+ 
+26.        Severability.  If a court of competent jurisdiction renders any part of this Agreement to be invalid or unenforceable, 
+that part will be severed and the remainder of this Agreement will continue in full force and effect. 
+
+27.        Third Party Software.  The Software may contain one or more items of Third-Party Software supplied by other 
+third-party suppliers. The terms of this Agreement govern your use of any Third-Party Software           
+
+UNLESS A SEPARATE THIRD-PARTY SOFTWARE LICENSE IS INCLUDED, IN WHICH CASE YOUR USE OF THE THIRD-PARTY SOFTWARE WILL 
+THEN BE GOVERNED BY THE SEPARATE THIRD-PARTY LICENSE. IF THE FOREGOING TERMS AND CONDITIONS ARE ACCEPTABLE TO YOU, 
+PLEASE INDICATE YOUR AGREEMENT AND ACCEPTANCE BY CLICKING BELOW ON THE BUTTON LABELED "ACCEPT". IF THE FOREGOING TERMS 
+AND CONDITIONS ARE NOT ACCEPTABLE TO YOU, PLEASE CLICK ON THE "DO NOT ACCEPT" BUTTON BELOW. MOTOROLA SOLUTIONS, MOTO, 
+MOTOROLA SOLUTIONS and the Stylized M Logo are trademarks or registered trademarks of Motorola Trademark Holdings,
+LLC and are used under license. SYMBOL is a trademark owned by Symbol Technologies, Inc., which is a wholly owned 
+subsidiary of Motorola Solutions, Inc.  All other trademarks are the property of their respective owners.  
+
+© 2011 Motorola Solutions, Inc. All Rights Reserved.

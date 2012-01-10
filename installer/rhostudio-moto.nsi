@@ -33,6 +33,7 @@
   !define MUI_PAGE_HEADER_TEXT "RhoStudio License Agreement"
   !define MUI_PAGE_HEADER_SUBTEXT "Please review the RhoStudio license terms before installing."
   !insertmacro MUI_PAGE_LICENSE "RHOSTUDIO-LICENSE.txt"
+  !insertmacro MUI_PAGE_LICENSE "RHOELEMENTS-EULA.txt"
   !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
