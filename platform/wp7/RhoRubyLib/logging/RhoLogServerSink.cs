@@ -68,8 +68,8 @@ namespace rho.logging
         {
             IDictionary<object, object> map = new Dictionary<object, object>();
             Hash values = new Hash(map);
-            values.Add(MutableString.Create("url"), MutableString.Create(m_addrHost));
-            values.Add(MutableString.Create("body"), MutableString.Create(strMsg));
+            values.Add(CRhoRuby.CreateSymbol("url"), MutableString.Create(m_addrHost));
+            values.Add(CRhoRuby.CreateSymbol("body"), MutableString.Create(strMsg));
             RhoParams p = new RhoParams(values);
             m_aHttp.addHttpCommand(new CAsyncHttp.HttpCommand("POST", p));
         }
