@@ -417,6 +417,12 @@ namespace "run" do
                 $rhosim_config = "platform='wp'\r\n"
                 Rake::Task["run:rhosimulator_debug"].invoke            
             end
+
+			task :phone_spec do
+				Jake.run_spec_app('wp','phone_spec')
+				exit 1 if $total.to_i==0
+				exit $failed.to_i
+			end
             
 			desc "Build, install .xap and run on WP7 device"
 			task :device => ["device:wp:production_noxap"] do
