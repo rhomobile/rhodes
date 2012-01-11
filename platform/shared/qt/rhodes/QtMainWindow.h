@@ -101,13 +101,13 @@ private:
 private:
     Ui::QtMainWindow *ui;
     QWebInspector *main_webInspector;
+    QtWebInspector* webInspectorWindow;
     IMainWindowCallback* cb;
     std::vector<QWebView*> tabViews;
     std::vector<QWebInspector*> tabInspect;
     QWebView* main_webView;
     QWebInspector* cur_webInspector;
     QTabBarRuntimeParams* cur_tbrp;
-    QtWebInspector* webInspectorWindow;
     QMessageBox *m_alertDialog;
     //TODO: CSyncStatusDlg *m_SyncStatusDlg;
     int m_LogicalDpiX;

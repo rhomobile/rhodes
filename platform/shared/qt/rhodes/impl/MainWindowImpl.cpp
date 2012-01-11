@@ -53,8 +53,8 @@ bool CMainWindow::mainWindowClosed = false;
 CMainWindow::CMainWindow():
     QObject(),
     m_started(true),
-    qtApplication(NULL),
-    qtMainWindow(NULL)
+    qtMainWindow(NULL),
+    qtApplication(NULL)
     //TODO: m_logView
 {
 }
