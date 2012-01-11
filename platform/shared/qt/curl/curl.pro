@@ -11,7 +11,7 @@ INCLUDEPATH += ../..\
 macx {
   DESTDIR = ../../../osx/bin/curl
   OBJECTS_DIR = ../../../osx/bin/curl/tmp
-  DEFINES += USE_RHOSSL
+  DEFINES += USE_SSLEAY USE_OPENSSL # USE_RHOSSL
   HEADERS += ../../curl/lib/config-mac.h
 SOURCES += ../../curl/lib/http_ntlm.c\
 ../../curl/lib/qssl.c\
