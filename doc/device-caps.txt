@@ -201,29 +201,7 @@ Get the distance between two points in miles
 	GeoLocation.haversine_distance(
 		latitude1, longitude1, latitude2, longitude2) 
 
-Get coordinates for adress string :
-
-	:::ruby
-	GeoLocation.do_geocoding({:adress => adress_string}, url_for(:action => :on_geocoding_callback))
-                                                                        
-In callback :
-* status - "ok" or "error"
-* latitude - latitude
-* longitude - longitude
-* description - description of issue when status == "error"
-
-Get nearest adress for coordinates :
-
-	:::ruby
-	GeoLocation.do_geocoding({:latitude => latitude, :longitude => longitude}, url_for(:action => :on_geocoding_callback))
-                                                                        
-In callback :
-* status - "ok" or "error"
-* adress - nearest adress string 
-* latitude - latitude of founded adress
-* longitude - longitude of founded adress
-* description - description of issue when status == "error"
-
+GeoCoding: You can use any free web service for direct and reverse geocoding. See our complete example of using Google geocoding web service in [Rhodes-System-Api-Samples example](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/GeoCoding)
 
 #### Testing GeoLocation
 
