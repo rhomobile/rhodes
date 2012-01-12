@@ -31,33 +31,12 @@ require 'pathname'
 USE_OWN_STLPORT = false
 #USE_TRACES = # see androidcommon.h
 
-ANDROID_API_LEVEL_TO_MARKET_VERSION = {}
-ANDROID_MARKET_VERSION_TO_API_LEVEL = {}
-{
-    2 => "1.1",
-    3 => "1.5",
-    4 => "1.6",
-    5 => "2.0",
-    6 => "2.0.1",
-    7 => "2.1",
-    8 => "2.2",
-    9 => "2.3.1",
-    10 => "2.3.3",
-    11 => "3.0",
-    12 => "3.1",
-    13 => "3.2",
-    14 => "4.0"
-  }.each do |k,v|
-  ANDROID_API_LEVEL_TO_MARKET_VERSION[k] = v
-  ANDROID_MARKET_VERSION_TO_API_LEVEL[v] = k
-end
-
 def get_market_version(apilevel)
-  ANDROID_API_LEVEL_TO_MARKET_VERSION[apilevel]
+  AndroidTools.get_market_version(apilevel)
 end
 
 def get_api_level(version)
-  ANDROID_MARKET_VERSION_TO_API_LEVEL[version]
+  AndroidTools.get_api_level(version)
 end
 
 JAVA_PACKAGE_NAME = 'com.rhomobile.rhodes'
