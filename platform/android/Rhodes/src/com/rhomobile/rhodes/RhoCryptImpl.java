@@ -96,11 +96,6 @@ public class RhoCryptImpl
 
 	}
 	
-	private static void reportFail(String name, Exception e) 
-	{
-	    Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getClass().getSimpleName() + ": " + e.getMessage());
-	}
-	
     public boolean db_encrypt( String szPartition, ByteBuffer dataIn, ByteBuffer dataOut )
     {
     	try
@@ -117,7 +112,7 @@ public class RhoCryptImpl
 	    	return true;
     	}catch(Exception exc)
     	{
-    		reportFail("db_encrypt", exc);
+            Logger.E(TAG, exc);
     		return false;
     	}
     }
@@ -138,7 +133,7 @@ public class RhoCryptImpl
             return true;
 		}catch(Exception exc)
 		{
-			reportFail("db_decrypt", exc);
+			Logger.E(TAG, exc);
 			return false;
 		}
     }
@@ -150,7 +145,7 @@ public class RhoCryptImpl
 	    
 	    if ( keyData.length != (m_nKeyLenBit/8))
 	    {
-	    	reportFail("set_db_CryptKey", new Exception("Incorrect key size : " + keyData.length + "; Should be: " + (int)(m_nKeyLenBit/8)));
+	    	Logger.E(TAG, "Incorrect key size : " + keyData.length + "; Should be: " + (int)(m_nKeyLenBit/8));
 	    	return false;
 	    }
 	    m_dbKeyData = keyData;
