@@ -53,6 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="RhoAlert.cs" />
     <Compile Include="RhoAsyncHttp.cs" />
     <Compile Include="RhoCamera.cs" />
     <Compile Include="RhoConfig.cs" />
