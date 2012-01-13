@@ -1408,7 +1408,7 @@ namespace rho {
 	
 	/*static*/ String _CRhoAppAdapter::getErrorText(int nError)
 	{
-		return String();
+		return String(); //TODO?
 	}
 	
 	/*static*/ int  _CRhoAppAdapter::getErrorFromResponse(NetResponse& resp)
