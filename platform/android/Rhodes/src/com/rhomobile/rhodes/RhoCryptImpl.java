@@ -93,30 +93,37 @@ public class RhoCryptImpl
 		m_decryptCipher.init(Cipher.DECRYPT_MODE, skeySpec, paramSpec);
 		
         Logger.T(TAG, "RhoCrypt context initialized for partition: " + szPartition);
+    }
 
-	}
-	
     public boolean db_encrypt( String szPartition, ByteBuffer dataIn, ByteBuffer dataOut )
     {
-    	try
-    	{
-	    	initContext(szPartition);
+        try
+        {
+            initContext(szPartition);
 
             dataOut.rewind();
 
             if (m_encryptCipher == null)
                 throw new NullPointerException("m_encryptCipher == null");
 
-            m_encryptCipher.doFinal(dataIn, dataOut);
+            /* *********************************************************
+             * Work around Android 4 bug:
+             * http://code.google.com/p/android/issues/detail?id=24327 
+             */
+            ByteBuffer input = ByteBuffer.allocate(dataIn.capacity());
+            input.put(dataIn);
+            /* ******************************************************* */
 
-	    	return true;
-    	}catch(Exception exc)
-    	{
+            m_encryptCipher.doFinal(input, dataOut);
+
+            return true;
+        }catch(Exception exc)
+        {
             Logger.E(TAG, exc);
-    		return false;
-    	}
+            return false;
+        }
     }
-    
+
     public boolean db_decrypt( String szPartition, ByteBuffer dataIn, ByteBuffer dataOut )
     {
         try
@@ -128,7 +135,15 @@ public class RhoCryptImpl
             if (m_decryptCipher == null)
                 throw new NullPointerException("m_decryptCipher == null");
 
-            m_decryptCipher.doFinal(dataIn, dataOut);
+            /* *********************************************************
+             * Work around Android 4 bug:
+             * http://code.google.com/p/android/issues/detail?id=24327 
+             */
+            ByteBuffer input = ByteBuffer.allocate(dataIn.capacity());
+            input.put(dataIn);
+            /* ******************************************************* */
+
+            m_decryptCipher.doFinal(input, dataOut);
 
             return true;
 		}catch(Exception exc)
