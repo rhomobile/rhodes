@@ -54,6 +54,7 @@ namespace rho.common
 
         private WebBrowser m_webBrowser;
         private PhoneApplicationPage m_appMainPage;
+        public PhoneApplicationPage MainPage { get { return m_appMainPage; } }
         private Grid m_layoutRoot;
         private TabControl m_tabControl;
         private Stack<Uri> m_backHistory = new Stack<Uri>();
