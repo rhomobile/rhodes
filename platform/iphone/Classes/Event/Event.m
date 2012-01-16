@@ -333,6 +333,12 @@ const char* event_save(VALUE rEvent)
     EKEvent *event = eventFromRuby(eventStore, rEvent);
     
     NSError *err;
+
+    // Workaround for iOS 5.0 bug - event can not have the same start and end dates !!!
+    if ([event.endDate isEqualToDate:event.startDate]) {
+        event.endDate = [event.startDate dateByAddingTimeInterval:1.0]; // add one second
+    }    
+    
     BOOL saved = [eventStore saveEvent:event span:EKSpanFutureEvents error:&err];
     
     if (saved) {
