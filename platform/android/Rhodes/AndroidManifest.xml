@@ -104,7 +104,7 @@
         <uses-library android:name="com.google.android.maps" />
         
     </application>
-    
+    <supports-screens android:normalScreens="true" android:largeScreens="true" android:xlargeScreens="true" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
