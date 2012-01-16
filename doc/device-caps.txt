@@ -694,6 +694,38 @@ After user entered signature (or canceled) provided callback url will be called.
 * status - 'ok' or 'cancel'
 * signature_uri - path to the image with signature   
 
+### Inline signature capture
+Windows Mobile and Windows CE devices support signature capture started in window, which you can show over current page(scrolling is not supported in this case).
+
+To display window hand writing, where user draw his signature call:
+	:::ruby
+	Rho::SignatureCapture.visible(visibility, params)
+
+* visibility - true or false
+* params - hash with params, same as for 'take'
+
+Example :
+	:::ruby
+	Rho::SignatureCapture.visible(true, { :imageFormat => "jpg", :penColor => 0xff0000, :penWidth=>3, :bgColor => 0x00ff00 })
+
+To save Signature to an image file and call callback:
+	:::ruby
+	Rho::SignatureCapture.capture(callback_url)
+
+* callback_url - callback url
+
+Example :
+	:::ruby
+	Rho::SignatureCapture.capture(url_for( :action => :signature_callback))
+
+To clear Signature in the window:
+	:::ruby
+	Rho::SignatureCapture.clear()
+
+Example :
+	:::ruby
+	Rho::SignatureCapture.clear()
+
 ### Sample
 See controller and view in the /app/SignatureUtil folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/SignatureUtil/controller.rb) for more information.
 
