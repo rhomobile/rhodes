@@ -71,32 +71,38 @@ namespace rho.rubyext
                 m_callback = val.ToString();
             if (args != null && args.TryGetValue(CRhoRuby.CreateSymbol("buttons"), out val) && val is RubyArray)
                 buttons = ((RubyArray)val).ToArray();
-            
-            m_messagePrompt = new MessagePrompt
+
+            RHODESAPP().MainPage.Dispatcher.BeginInvoke(() =>
             {
-                Title = title,
-                Message = message
-            };
-            m_messagePrompt.Completed += messagePrompt_Completed;
-            m_messagePrompt.ActionPopUpButtons.Clear();
-            for (int i = 0; buttons != null && i < buttons.Length; i++)
-            {
-                if (buttons[i] != null)
+                m_messagePrompt = new MessagePrompt
                 {
-                    Button customButton = new Button() { Content = buttons[i] };
-                    customButton.Click += new RoutedEventHandler(customButton_Click);
-                    m_messagePrompt.ActionPopUpButtons.Add(customButton);
+                    Title = title,
+                    Message = message
+                };
+                m_messagePrompt.Completed += messagePrompt_Completed;
+                m_messagePrompt.ActionPopUpButtons.Clear();
+                for (int i = 0; buttons != null && i < buttons.Length; i++)
+                {
+                    if (buttons[i] != null)
+                    {
+                        Button customButton = new Button() { Content = buttons[i] };
+                        customButton.Click += new RoutedEventHandler(customButton_Click);
+                        m_messagePrompt.ActionPopUpButtons.Add(customButton);
+                    }
                 }
-            }
-            m_messagePrompt.Show();
+                m_messagePrompt.Show();
+            });
     
         }
 
         [RubyMethodAttribute("hide_popup", RubyMethodAttributes.PublicSingleton)]
         public static void HidePopup(RubyModule/*!*/ self)
         {
-            if (m_messagePrompt != null)
-                m_messagePrompt.Hide();
+            RHODESAPP().MainPage.Dispatcher.BeginInvoke(() =>
+            {
+                if (m_messagePrompt != null)
+                    m_messagePrompt.Hide();
+            });
         }
 
         [RubyMethodAttribute("vibrate", RubyMethodAttributes.PublicSingleton)]
