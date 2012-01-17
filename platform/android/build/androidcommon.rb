@@ -43,7 +43,7 @@ def setup_ndk(ndkpath,apilevel)
   $ndktools = nil
   $ndkabi = "unknown"
   $ndkgccver = "unknown"
-  ["arm-eabi-4.4.0", "arm-eabi-4.2.1"].each do |abi|
+  ["arm-linux-androideabi-4.4.3", "arm-eabi-4.4.0", "arm-eabi-4.2.1"].each do |abi|
     variants = []
     variants << File.join(ndkpath, "toolchains", abi, "prebuilt", $ndkhost)
     variants << File.join(ndkpath, "build/prebuilt", $ndkhost, abi)
@@ -307,6 +307,8 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "-Wl,-z,defs"
   args << "-fPIC"
   args << "-Wl,-soname,#{File.basename(outname)}"
+  args << "--sysroot"
+  args << $ndksysroot
   args << "-o"
   args << outname
   args += objects
