@@ -35,9 +35,8 @@ end
 
 module Rho
 	module RhoEvent
-    # These values determined experimentally on iPhone
-    MIN_TIME = Time.utc(2008, 'jan', 1, 0, 0, 0)
-    MAX_TIME = Time.utc(2030, 'dec', 31, 23, 59, 59)
+    MIN_TIME = Time.utc(1900, 'jan', 1, 0, 0, 0)
+    MAX_TIME = Time.utc(2100, 'dec', 31, 23, 59, 59)
     
     #TODO: update examples    
     # Examples of how to use select method:
