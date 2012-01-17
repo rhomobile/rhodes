@@ -141,6 +141,8 @@ public:
     static CSyncEngine& getSyncEngine(){ return m_pInstance->m_oSyncEngine; }
 
 	void setPollInterval(int nInterval);
+    
+    void stopAll();
 
     unsigned long getRetValue();
 private:

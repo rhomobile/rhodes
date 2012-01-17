@@ -80,6 +80,7 @@
                 NSLog(@"Background task started");
                 //Perform your tasks that your application requires 
                 
+                [RhoConnectEngine sharedInstance].syncClient.poll_interval = 0;
                 if([[RhoConnectEngine sharedInstance].syncClient is_syncing]) 
                 { 
                     [[RhoConnectEngine sharedInstance].syncClient stop_sync]; 
