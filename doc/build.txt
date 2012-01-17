@@ -908,7 +908,12 @@ By default 'Windows Mobile 6 Professional SDK (ARMV4I)' SDK and "Windows Mobile 
       sdk: <target_sdk>
       emulator: <target_emulator> 
 
-* 'target_sdk' may be: "MC3000c50b (ARMV4I)" - for Motorola CE devices, "Windows Mobile 6.5.3 Professional DTK (ARMV4I)" for latest Windows Mobile SDK.
+* 'target_sdk' may be:
+ 
+  "MC3000c50b (ARMV4I)" - for Motorola CE devices. Install MC3000c50b PSDK from [Symbol support site](http://support.symbol.com)
+  
+  "Windows Mobile 6.5.3 Professional DTK (ARMV4I)" for latest Windows Mobile SDK.
+  
 * 'target_emulator' may be: "Windows Mobile 6.5.3 Professional VGA Emulator" for VGA emulator , or any other installed Windows Mobile emulator
 
 ### Building and Running Your Windows Mobile Application with RhoStudio
