@@ -392,6 +392,14 @@ namespace rho
             return MutableString.Create(str);
         }
 
+        public static object CreateSymbol(String name)
+        {
+            if (m_instance != null && m_instance.rubyContext != null)
+                return (object)m_instance.rubyContext.CreateSymbol(name, RubyEncoding.UTF8);
+
+            return (object)name;
+        }
+
         public static Hashtable<String, String> enum_strhash(Object valHash)
         {
             Hashtable<String, String> hash = new Hashtable<String, String>();

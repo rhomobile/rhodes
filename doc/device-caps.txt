@@ -201,29 +201,7 @@ Get the distance between two points in miles
 	GeoLocation.haversine_distance(
 		latitude1, longitude1, latitude2, longitude2) 
 
-Get coordinates for adress string :
-
-	:::ruby
-	GeoLocation.do_geocoding({:adress => adress_string}, url_for(:action => :on_geocoding_callback))
-                                                                        
-In callback :
-* status - "ok" or "error"
-* latitude - latitude
-* longitude - longitude
-* description - description of issue when status == "error"
-
-Get nearest adress for coordinates :
-
-	:::ruby
-	GeoLocation.do_geocoding({:latitude => latitude, :longitude => longitude}, url_for(:action => :on_geocoding_callback))
-                                                                        
-In callback :
-* status - "ok" or "error"
-* adress - nearest adress string 
-* latitude - latitude of founded adress
-* longitude - longitude of founded adress
-* description - description of issue when status == "error"
-
+GeoCoding: You can use any free web service for direct and reverse geocoding. See our complete example of using Google geocoding web service in [Rhodes-System-Api-Samples example](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/GeoCoding)
 
 #### Testing GeoLocation
 
@@ -268,7 +246,7 @@ Callback points to the `geo_callback` in the Settings controller.rb:
       if !GeoLocation.known_position?
 		# wait till GPS receiver acquire position
         GeoLocation.set_notification( url_for(:action => :geo_callback), "")
-        redirect url_for :action => :wait
+        redirect url_for(:action => :wait)
       else
 		# show position
         render
@@ -696,13 +674,57 @@ To enable: install RhoElements gem or RhoStudio and add to build.yml
 
 The Signature Capture API allow take a signature and save it as an image:
 	:::ruby
-	SignatureTool::take_signature(callback_url, image_format)
+	Rho::SignatureCapture.take(callback_url, params)
 
 Signature Capture open window for hand writing, where user draw his signature. Signature saved to an image file. You can choice 'jpg' or 'png' format for image. 
+* callback_url - callback url
+* params - hash with params
+
+Example :
+	:::ruby
+	Rho::SignatureCapture.take(url_for( :action => :signature_callback), { :imageFormat => "jpg", :penColor => 0xff0000, :penWidth=>3, :bgColor => 0x00ff00 })
+
+Params in hash:
+* imageFormat - "jpg" or "png"
+* penColor - color of pen used for drawing signature
+* penWidth - wide of pen
+* bgColor - color of background
 
 After user entered signature (or canceled) provided callback url will be called. Callback parameters will be:
 * status - 'ok' or 'cancel'
 * signature_uri - path to the image with signature   
+
+### Inline signature capture
+Windows Mobile and Windows CE devices support signature capture started in window, which you can show over current page(scrolling is not supported in this case).
+
+To display window hand writing, where user draw his signature call:
+	:::ruby
+	Rho::SignatureCapture.visible(visibility, params)
+
+* visibility - true or false
+* params - hash with params, same as for 'take'
+
+Example :
+	:::ruby
+	Rho::SignatureCapture.visible(true, { :imageFormat => "jpg", :penColor => 0xff0000, :penWidth=>3, :bgColor => 0x00ff00 })
+
+To save Signature to an image file and call callback:
+	:::ruby
+	Rho::SignatureCapture.capture(callback_url)
+
+* callback_url - callback url
+
+Example :
+	:::ruby
+	Rho::SignatureCapture.capture(url_for( :action => :signature_callback))
+
+To clear Signature in the window:
+	:::ruby
+	Rho::SignatureCapture.clear()
+
+Example :
+	:::ruby
+	Rho::SignatureCapture.clear()
 
 ### Sample
 See controller and view in the /app/SignatureUtil folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/SignatureUtil/controller.rb) for more information.

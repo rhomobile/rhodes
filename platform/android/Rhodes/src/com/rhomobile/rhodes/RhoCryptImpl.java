@@ -118,35 +118,37 @@ public class RhoCryptImpl
 		m_decryptCipher.init(Cipher.DECRYPT_MODE, skeySpec, paramSpec);
 		
         Logger.T(TAG, "RhoCrypt context initialized for partition: " + szPartition);
+    }
 
-	}
-	
-	private static void reportFail(String name, Exception e) 
-	{
-	    Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getClass().getSimpleName() + ": " + e.getMessage());
-	}
-	
     public boolean db_encrypt( String szPartition, ByteBuffer dataIn, ByteBuffer dataOut )
     {
-    	try
-    	{
-	    	initContext(szPartition);
+        try
+        {
+            initContext(szPartition);
 
             dataOut.rewind();
 
             if (m_encryptCipher == null)
                 throw new NullPointerException("m_encryptCipher == null");
 
-            m_encryptCipher.doFinal(dataIn, dataOut);
+            /* *********************************************************
+             * Work around Android 4 bug:
+             * http://code.google.com/p/android/issues/detail?id=24327 
+             */
+            ByteBuffer input = ByteBuffer.allocate(dataIn.capacity());
+            input.put(dataIn);
+            /* ******************************************************* */
 
-	    	return true;
-    	}catch(Exception exc)
-    	{
-    		reportFail("db_encrypt", exc);
-    		return false;
-    	}
+            m_encryptCipher.doFinal(input, dataOut);
+
+            return true;
+        }catch(Exception exc)
+        {
+            Logger.E(TAG, exc);
+            return false;
+        }
     }
-    
+
     public boolean db_decrypt( String szPartition, ByteBuffer dataIn, ByteBuffer dataOut )
     {
         try
@@ -158,12 +160,20 @@ public class RhoCryptImpl
             if (m_decryptCipher == null)
                 throw new NullPointerException("m_decryptCipher == null");
 
-            m_decryptCipher.doFinal(dataIn, dataOut);
+            /* *********************************************************
+             * Work around Android 4 bug:
+             * http://code.google.com/p/android/issues/detail?id=24327 
+             */
+            ByteBuffer input = ByteBuffer.allocate(dataIn.capacity());
+            input.put(dataIn);
+            /* ******************************************************* */
+
+            m_decryptCipher.doFinal(input, dataOut);
 
             return true;
 		}catch(Exception exc)
 		{
-			reportFail("db_decrypt", exc);
+			Logger.E(TAG, exc);
 			return false;
 		}
     }
@@ -175,7 +185,7 @@ public class RhoCryptImpl
 	    
 	    if ( keyData.length != (m_nKeyLenBit/8))
 	    {
-	    	reportFail("set_db_CryptKey", new Exception("Incorrect key size : " + keyData.length + "; Should be: " + (int)(m_nKeyLenBit/8)));
+	    	Logger.E(TAG, "Incorrect key size : " + keyData.length + "; Should be: " + (int)(m_nKeyLenBit/8));
 	    	return false;
 	    }
 	    m_dbKeyData = keyData;

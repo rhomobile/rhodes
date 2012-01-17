@@ -24,59 +24,50 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
-using System;
-using System.Net;
-using System.Threading;
-using System.ComponentModel;
+using Microsoft.Scripting.Utils;
+using Microsoft.Scripting.Runtime;
+using IronRuby.Runtime;
 using IronRuby.Builtins;
-using System.Collections.Generic;
-using rho.net;
-using rho.common;
+using System;
+using System.Runtime.InteropServices;
 
-namespace rho.logging
+namespace rho.rubyext
 {
-    public class RhoLogServerSink : IRhoLogSink
+    [RubyModule("Alert")]
+    public static class RhoAlert
     {
-        private static RhoLogConf m_oLogConf;
-        RhoConf RHOCONF() { return RhoConf.getInstance(); }
-        CAsyncHttp m_aHttp = new CAsyncHttp(true);
-        String m_addrHost = "";
+        #region Private Implementation Details
 
-        public RhoLogServerSink(RhoLogConf conf)
-        {
-            m_oLogConf = conf;
-            m_addrHost = "http://"+RHOCONF().getString("rhologhost") + ":" + RHOCONF().getString("rhologport");
-        }
+        #endregion
 
-        public void close()
-        {
-            if (m_aHttp != null)
-                m_aHttp.stop(2);
-        }
+        #region Private Instance & Singleton Methods
 
-        private RhoLogConf getLogConf()
-        {
-            return m_oLogConf;
-        }
-
-        public int getCurPos()
-        {
-            return 0;
-        }
-
-        public void writeLogMessage(String strMsg)
-        {
-            IDictionary<object, object> map = new Dictionary<object, object>();
-            Hash values = new Hash(map);
-            values.Add(CRhoRuby.CreateSymbol("url"), MutableString.Create(m_addrHost));
-            values.Add(CRhoRuby.CreateSymbol("body"), MutableString.Create(strMsg));
-            RhoParams p = new RhoParams(values);
-            m_aHttp.addHttpCommand(new CAsyncHttp.HttpCommand("POST", p));
-        }
-
-        public void clear()
+        [RubyMethodAttribute("show_popup", RubyMethodAttributes.PublicSingleton)]
+        public static void ShowPopup(RubyModule/*!*/ self, Hash args)
         {
 
         }
+
+        [RubyMethodAttribute("hide_popup", RubyMethodAttributes.PublicSingleton)]
+        public static void HidePopup(RubyModule/*!*/ self)
+        {
+        }
+
+        [RubyMethodAttribute("vibrate", RubyMethodAttributes.PublicSingleton)]
+        public static void Vibrate(RubyModule/*!*/ self, int duration)
+        {
+        }
+
+        [RubyMethodAttribute("play_file", RubyMethodAttributes.PublicSingleton)]
+        public static void PlayFile(RubyModule/*!*/ self, [NotNull]String/*!*/ fileName, [NotNull]String/*!*/ mediaType)
+        {
+        }
+
+        [RubyMethodAttribute("show_status", RubyMethodAttributes.PublicSingleton)]
+        public static void ShowStatus(RubyModule/*!*/ self, [NotNull]String/*!*/ title, [NotNull]String/*!*/ text, String/*!*/ hideLabel)
+        {
+        }
+
+        #endregion
     }
 }

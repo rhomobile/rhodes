@@ -33,6 +33,7 @@ namespace rho.common
 {
     public class RhoParams
     {
+
         protected Object m_pParams;
 
         public RhoParams(Object p)
@@ -52,7 +53,7 @@ namespace rho.common
             
             Object val = null;
             Hash values = (Hash)m_pParams;
-            values.TryGetValue((object)MutableString.Create(name), out val);
+            values.TryGetValue(CRhoRuby.CreateSymbol(name), out val);
             return (val != null) ? val : null;
          }
 

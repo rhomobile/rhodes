@@ -41,6 +41,11 @@ namespace rho
             return CRhoFile.isResourceFileExist(path) || CRhoFile.isFileExist(path);
         }
 
+        public override void DeleteFile(string path, bool deleteReadOnly)
+        {
+            CRhoFile.deleteFile(path);
+        }
+
         public override string GetDirectoryName(string path)
         {
             return Path.GetDirectoryName(CFilePath.removeLastSlash(path));

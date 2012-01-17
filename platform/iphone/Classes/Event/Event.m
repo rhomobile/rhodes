@@ -288,13 +288,42 @@ VALUE event_fetch(VALUE rParams)
     VALUE end_date = rb_hash_aref(rParams, rb_str_new2(RUBY_EV_END_DATE));
     int include_repeating = rho_ruby_get_bool(rb_hash_aref(rParams, rb_str_new2(RUBY_FETCH_include_repeating)));
     
+    EKEventStore *eventStore = [[Rhodes sharedInstance] eventStore];
+    
+    
     NSDate *start = dateFromRuby(start_date);
     NSDate *finish = dateFromRuby(end_date);
     
-    EKEventStore *eventStore = [[Rhodes sharedInstance] eventStore];
-    NSPredicate *pred = [eventStore predicateForEventsWithStartDate:start endDate:finish calendars:nil];
-    NSArray *events = [eventStore eventsMatchingPredicate:pred];
+    // use Dictionary for remove dublicates produced by eventscovered more one year segment
+    NSMutableDictionary *eventsDict = [NSMutableDictionary dictionaryWithCapacity:1024];
     
+    NSDate* currentStart = [NSDate dateWithTimeInterval:0 sinceDate:start];
+
+    int seconds_in_year = 60*60*24*365;
+    
+    // enumerate events by one year segment because iOS do not support predicate longer than 4 year !
+    while ([currentStart compare:finish] == NSOrderedAscending) {
+        
+        NSDate* currentFinish = [NSDate dateWithTimeInterval:seconds_in_year sinceDate:currentStart];
+        
+        if ([currentFinish compare:finish] == NSOrderedDescending) {
+            currentFinish = [NSDate dateWithTimeInterval:0 sinceDate:finish];
+        }
+        NSPredicate *predicate = [eventStore predicateForEventsWithStartDate:currentStart endDate:currentFinish calendars:nil];
+        [eventStore enumerateEventsMatchingPredicate:predicate
+                                          usingBlock:^(EKEvent *event, BOOL *stop) {
+                                              
+                                              if (event) {
+                                                  [eventsDict setObject:event forKey:event.eventIdentifier];
+                                              }
+                                              
+                                          }];       
+        currentStart = [NSDate dateWithTimeInterval:(seconds_in_year + 1) sinceDate:currentStart];
+        
+    }
+    
+    NSArray *events = [eventsDict allValues];
+
     VALUE ret = rho_ruby_create_array();
     
     for (int i = 0, lim = [events count]; i != lim; ++i) {
@@ -333,6 +362,12 @@ const char* event_save(VALUE rEvent)
     EKEvent *event = eventFromRuby(eventStore, rEvent);
     
     NSError *err;
+
+    // Workaround for iOS 5.0 bug - event can not have the same start and end dates !!!
+    if ([event.endDate isEqualToDate:event.startDate]) {
+        event.endDate = [event.startDate dateByAddingTimeInterval:1.0]; // add one second
+    }    
+    
     BOOL saved = [eventStore saveEvent:event span:EKSpanFutureEvents error:&err];
     
     if (saved) {

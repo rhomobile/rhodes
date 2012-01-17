@@ -47,6 +47,12 @@ import com.rhomobile.rhodes.Logger;
 
 class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
 
+	public int penColor;
+	public float penWidth;
+	public int bgColor;
+	
+	
+	
 	private class PointSequence {
 		public Vector<PointF> mPoints = new Vector<PointF>();
 	}
@@ -130,9 +136,16 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
 	}
 	
 	private void doFullRedraw() {
+		if (mCanvas == null) {
+			return;
+		}
+		
         Paint paint = new Paint();
         paint.setAntiAlias(false);
-        paint.setARGB(255, 255, 255, 255);
+        paint.setARGB(	255, 
+        				(bgColor & 0xFF0000) >> 16, 
+        				(bgColor & 0xFF00) >> 8,
+        				(bgColor & 0xFF));
    	 
         mCanvas.drawRect(0, 0, mCanvas.getWidth(), mCanvas.getHeight(), paint);
         
@@ -194,6 +207,20 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
 		
 	}
     
+	
+	public void setupView(int _penColor, float _penWidth, int _bgColor) {
+		penColor = _penColor;
+		penWidth = _penWidth;
+		bgColor = _bgColor;
+        mPaint = new Paint();
+        mPaint.setAntiAlias(true);
+        mPaint.setColor(0xFF000000 | penColor);
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setStrokeJoin(Paint.Join.ROUND);
+        mPaint.setStrokeCap(Paint.Cap.ROUND);
+        mPaint.setStrokeWidth(penWidth);
+        doFullRedraw();
+	}
     
     public SignatureView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -214,6 +241,7 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setStrokeWidth(2);
 
+        bgColor = 0xFFFFFFFF;
         
         setFocusable(true); // make sure we get key events
         

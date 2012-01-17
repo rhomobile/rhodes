@@ -25,9 +25,11 @@
 *------------------------------------------------------------------------*/
 
 #include "rhodes/JNIRhodes.h"
+#include "rhodes/JNIRhoRuby.h"
 
 #include "rhodes/jni/com_rhomobile_rhodes_signature_Signature.h"
 
+#include <common/rhoparams.h>
 #include <common/RhodesApp.h>
 #include "ruby/ext/rho/rhoruby.h"
 
@@ -44,14 +46,15 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_signature_Signature_callback
 
 RHO_GLOBAL void rho_signature_take(char* callback_url, rho_param* p)
 {
-///*
+
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_SIGNATURE);
     if (!cls) return;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "takeSignature", "(Ljava/lang/String;Ljava/lang/String;)V");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "takeSignature", "(Ljava/lang/String;Ljava/lang/Object;)V");
     if (!mid) return;
     jhstring objCallback = rho_cast<jhstring>(callback_url);
 
+    /*
     char* image_format = 0;
     if (p)
     {
@@ -64,7 +67,14 @@ RHO_GLOBAL void rho_signature_take(char* callback_url, rho_param* p)
 
     jhstring objFormat = rho_cast<jhstring>(image_format);
     env->CallStaticVoidMethod(cls, mid, objCallback.get(), objFormat.get());
-//*/
+     */
+    
+    jobject paramsObj = RhoValueConverter(env).createObject(p);
+    env->CallStaticVoidMethod(cls, mid, objCallback.get(), paramsObj);
+    env->DeleteLocalRef(paramsObj);
+    
+    
+    
 }
 
 RHO_GLOBAL void rho_signature_visible(bool b, rho_param* p)

@@ -30,7 +30,11 @@
 	else
 		[RhoConnectEngine sharedInstance].loginState = logged_in;	
 	 
-	[waitPage loginComplete: [notify error_message] ];	
+	NSString* error_message = notify.error_message;
+    if ( error_message == nil || error_message.length == 0 )
+        error_message = [NSString stringWithFormat:@"Error code: %d", notify.error_code];
+    
+    [waitPage loginComplete: error_message ];	
 	
 	//[notify release];
 }

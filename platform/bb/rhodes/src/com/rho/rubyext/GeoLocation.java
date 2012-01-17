@@ -37,6 +37,7 @@ import com.rho.net.NetResponse;
 import com.xruby.runtime.lang.*;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
+import com.xruby.runtime.builtin.RubyHash;
 import com.rho.net.NetRequest;
 import com.rho.RhoAppAdapter;
 import j2me.lang.MathEx;
@@ -590,6 +591,31 @@ public class GeoLocation extends RhoThread{
 				}
 			}
 		});
+		
+		klass.getSingletonClass().defineMethod("do_geocoding",	new RubyVarArgMethod() {
+			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) {
+				
+				if ( args.size() < 2 )
+					throw new RubyException(RubyRuntime.ArgumentErrorClass, 
+							"in GeoLocation.set_view_notification: wrong number of arguments ( " + args.size() + " for " + 2 + " )");			
+				
+				try{
+					RubyHash hashParams = (RubyHash)(args.get(0) != RubyConstant.QNIL ? args.get(0) : null);
+					String url = args.get(1) != RubyConstant.QNIL ? args.get(1).toStr() : "";
+					String params = "";
+					int nTimeout = 0;
+					if ( args.size() > 2 )
+						params = args.get(2) != RubyConstant.QNIL ? args.get(2).toStr() : "";
+					
+						
+				}catch(Exception e)
+				{
+					LOG.ERROR("do_geocoding failed", e);
+					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+				}
+				return RubyConstant.QNIL;
+			}
+		});		
 	}
 	
 }

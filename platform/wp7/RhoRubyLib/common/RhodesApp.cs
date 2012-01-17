@@ -54,6 +54,7 @@ namespace rho.common
 
         private WebBrowser m_webBrowser;
         private PhoneApplicationPage m_appMainPage;
+        public PhoneApplicationPage MainPage { get { return m_appMainPage; } }
         private Grid m_layoutRoot;
         private TabControl m_tabControl;
         private Stack<Uri> m_backHistory = new Stack<Uri>();
@@ -219,24 +220,30 @@ namespace rho.common
         {
             m_webBrowser.Dispatcher.BeginInvoke( () =>
             {
-                if (index > 0)
-                {
-                    if (m_tabControl != null && m_tabControl.Items.Count > 0)
+                try{
+                    if (index > 0)
                     {
-                        ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.IsScriptEnabled = true;
+                        if (m_tabControl != null && m_tabControl.Items.Count > 0)
+                        {
+                            ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.IsScriptEnabled = true;
+                            if (isExternalUrl(strUrl))
+                                ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(new Uri(strUrl, UriKind.Absolute));
+                            else
+                                ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(new Uri(strUrl, UriKind.Relative));
+                        }
+                    }
+                    else
+                    {
+                        m_webBrowser.IsScriptEnabled = true;
                         if (isExternalUrl(strUrl))
-                            ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(new Uri(strUrl, UriKind.Absolute));
+                            m_webBrowser.Navigate(new Uri(strUrl, UriKind.Absolute));
                         else
-                            ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(new Uri(strUrl, UriKind.Relative));
+                            m_webBrowser.Navigate(new Uri(strUrl, UriKind.Relative));
                     }
                 }
-                else
+                catch (Exception exc)
                 {
-                    m_webBrowser.IsScriptEnabled = true;
-                    if (isExternalUrl(strUrl))
-                        m_webBrowser.Navigate(new Uri(strUrl, UriKind.Absolute));
-                    else
-                        m_webBrowser.Navigate(new Uri(strUrl, UriKind.Relative));
+                    LOG.ERROR("WebView.navigate failed : " + strUrl + ", index: " + index, exc);
                 }
             });
         }
@@ -245,16 +252,23 @@ namespace rho.common
         {
             m_webBrowser.Dispatcher.BeginInvoke(() =>
             {
-                if (index > 0)
+                try
                 {
-                    if (m_tabControl != null && m_tabControl.Items.Count > 0)
+                    if (index > 0)
                     {
-                        ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(m_webBrowser.Source);
+                        if (m_tabControl != null && m_tabControl.Items.Count > 0)
+                        {
+                            ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(m_webBrowser.Source);
+                        }
+                    }
+                    else
+                    {
+                        m_webBrowser.Navigate(m_webBrowser.Source);
                     }
                 }
-                else
+                catch (Exception exc)
                 {
-                    m_webBrowser.Navigate(m_webBrowser.Source);
+                    LOG.ERROR("WebView.refresh failed : " + index, exc);
                 }
             });
         }
@@ -277,16 +291,23 @@ namespace rho.common
 
             m_webBrowser.Dispatcher.BeginInvoke(() =>
             {
-                if (index > 0)
+                try
                 {
-                    if (m_tabControl != null && m_tabControl.Items.Count > 0)
+                    if (index > 0)
                     {
-                        ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.InvokeScript(arr[0], arrParams);
+                        if (m_tabControl != null && m_tabControl.Items.Count > 0)
+                        {
+                            ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.InvokeScript(arr[0], arrParams);
+                        }
+                    }
+                    else
+                    {
+                        m_webBrowser.InvokeScript(arr[0], arrParams);
                     }
                 }
-                else
+                catch (Exception exc)
                 {
-                    m_webBrowser.InvokeScript(arr[0], arrParams);
+                    LOG.ERROR("WebView.execute_js failed: " + arr[0] + "(" + String.Join(",", arrParams), exc);
                 }
             });
         }
@@ -369,11 +390,11 @@ namespace rho.common
                     object val = null;
 
                     Hash values = (Hash)hashArray[i];
-                    if (values.TryGetValue((object)MutableString.Create("action"), out val))
+                    if (values.TryGetValue(CRhoRuby.CreateSymbol("action"), out val))
                         action = val.ToString();
-                    if (values.TryGetValue((object)MutableString.Create("icon"), out val))
+                    if (values.TryGetValue(CRhoRuby.CreateSymbol("icon"), out val))
                         icon = val.ToString();
-                    if (values.TryGetValue((object)MutableString.Create("label"), out val))
+                    if (values.TryGetValue(CRhoRuby.CreateSymbol("label"), out val))
                         label = val.ToString();
 
                     if (label == null && barType == 0)
@@ -462,10 +483,10 @@ namespace rho.common
                 else
                     paramHash = (Hash)barParams;
 
-                if (paramHash != null && paramHash.TryGetValue((object)MutableString.Create("background_color"), out val))
+                if (paramHash != null && paramHash.TryGetValue(CRhoRuby.CreateSymbol("background_color"), out val))
                     m_appMainPage.ApplicationBar.BackgroundColor = getColorFromString(val.ToString());
 
-                if (paramHash != null && paramHash.TryGetValue((object)MutableString.Create("buttons"), out val) && val is RubyArray)
+                if (paramHash != null && paramHash.TryGetValue(CRhoRuby.CreateSymbol("buttons"), out val) && val is RubyArray)
                     hashArray = ((RubyArray)val).ToArray();
 
                 createToolBarButtons(barType, hashArray);
@@ -643,17 +664,17 @@ namespace rho.common
                     object val = null;
 
                     Hash values = (Hash)hashArray[i];
-                    if (values.TryGetValue((object)MutableString.Create("action"), out val))
+                    if (values.TryGetValue(CRhoRuby.CreateSymbol("action"), out val))
                         action = val.ToString();
-                    if (values.TryGetValue((object)MutableString.Create("icon"), out val))
+                    if (values.TryGetValue(CRhoRuby.CreateSymbol("icon"), out val))
                         icon = val.ToString();
-                    if (values.TryGetValue((object)MutableString.Create("label"), out val))
+                    if (values.TryGetValue(CRhoRuby.CreateSymbol("label"), out val))
                         label = val.ToString();
-                    if (values.TryGetValue((object)MutableString.Create("reload"), out val))
+                    if (values.TryGetValue(CRhoRuby.CreateSymbol("reload"), out val))
                         reload = Convert.ToBoolean(val);
-                    if (values.TryGetValue((object)MutableString.Create("web_bkg_color"), out val))
+                    if (values.TryGetValue(CRhoRuby.CreateSymbol("web_bkg_color"), out val))
                         web_bkg_color = new SolidColorBrush(getColorFromString(val.ToString()));
-                    if (values.TryGetValue((object)MutableString.Create("use_current_view_for_tab"), out val))
+                    if (values.TryGetValue(CRhoRuby.CreateSymbol("use_current_view_for_tab"), out val))
                         use_current_view_for_tab = Convert.ToBoolean(val);
 
                     //if (label == null && barType == 0)
@@ -673,9 +694,9 @@ namespace rho.common
                     tabItem.Header = new RhoTabHeader(label, icon);
                     //if (i == 0)// && use_current_view_for_tab)
                     tabItem.Content = new RhoView(m_appMainPage, m_layoutRoot, action, reload, web_bkg_color);
-                    if (values.TryGetValue((object)MutableString.Create("selected_color"), out val))
+                    if (values.TryGetValue(CRhoRuby.CreateSymbol("selected_color"), out val))
                         tabItem.Background = new SolidColorBrush(getColorFromString(val.ToString()));
-                    if (values.TryGetValue((object)MutableString.Create("disabled"), out val))
+                    if (values.TryGetValue(CRhoRuby.CreateSymbol("disabled"), out val))
                         tabItem.IsEnabled = !Convert.ToBoolean(val);
                     m_tabControl.Items.Add(tabItem);
                 }
@@ -701,10 +722,10 @@ namespace rho.common
                 else
                     paramHash = (Hash)tabBarParams;
 
-                if (paramHash != null && paramHash.TryGetValue((object)MutableString.Create("background_color"), out val))
+                if (paramHash != null && paramHash.TryGetValue(CRhoRuby.CreateSymbol("background_color"), out val))
                     m_tabControl.Background = new SolidColorBrush(getColorFromString(val.ToString()));
 
-                if (paramHash != null && paramHash.TryGetValue((object)MutableString.Create("tabs"), out val) && val is RubyArray)
+                if (paramHash != null && paramHash.TryGetValue(CRhoRuby.CreateSymbol("tabs"), out val) && val is RubyArray)
                     hashArray = ((RubyArray)val).ToArray();
 
                 createTabBarButtons(tabBarType, hashArray);

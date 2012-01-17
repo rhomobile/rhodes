@@ -29,15 +29,21 @@
 #import "RhoViewController.h"
 
 @class SignatureDelegate;
+@class SignatureView;
 
 @interface SignatureViewController : RhoViewController {
-	UIView *signatureView; 
+	SignatureView *signatureView; 
 	UIToolbar *toolbar;
 	SignatureDelegate* signatureDelegate;
+    
 }
 
 - (id)initWithRect:(CGRect)rect delegate:(SignatureDelegate*)delegate;
 
 - (void)loadView;
+
+-(void)setPenColor:(unsigned int)value;
+-(void)setPenWidth:(float)value;
+-(void)setBgColor:(unsigned int)value;
 
 @end
