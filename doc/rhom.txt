@@ -292,6 +292,9 @@ Below is the full list of methods available to Rhom models:
 ### `clear_notification`
 Used to clear the notification for the object, see the [sync notification section](/rhodes/synchronization#notifications) for more details.
 
+### `client_id`
+Returns the current sync client id.
+
 ### `delete_all(conditions)`
 Deletes all rhom objects for a source, optionally filtering by conditions:
 

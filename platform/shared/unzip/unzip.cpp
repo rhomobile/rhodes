@@ -3894,9 +3894,10 @@ class TUnzip
   TUnzip(const char *pwd) : uf(0), unzbuf(0), currentfile(-1), czei(-1), password(0) {if (pwd!=0) {password=new char[strlen(pwd)+1]; strcpy(password,pwd);}}
   ~TUnzip() {if (password!=0) delete[] password; password=0; if (unzbuf!=0) delete[] unzbuf; unzbuf=0;}
 
-  unzFile uf; int currentfile; ZIPENTRY cze; int czei;
-  char *password;
+  unzFile uf;
   char *unzbuf;            // lazily created and destroyed, used by Unzip
+  int currentfile; ZIPENTRY cze; int czei;
+  char *password;
   TCHAR rootdir[MAX_PATH]; // includes a trailing slash
 
   ZRESULT Open(void *z,unsigned int len,DWORD flags);

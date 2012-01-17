@@ -180,6 +180,13 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doRequest
     rho_net_request(url.c_str());
 }
 
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doRequestAsync
+  (JNIEnv *env, jobject, jstring strUrl)
+{
+    std::string const &url = rho_cast<std::string>(strUrl);
+    RHODESAPP().runCallbackInThread(url.c_str(), "");
+}
+
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_normalizeUrl
   (JNIEnv *env, jobject, jstring strUrl)
 {

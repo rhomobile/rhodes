@@ -33,9 +33,27 @@
 
 @implementation SignatureDelegate
 
+-(id) init
+{
+    if (self = [super init])
+    {
+        signatureViewController = nil;
+        parentView = nil;
+        prevView = nil;
+        imageFormat = nil;
+        penColor = 0;
+        penWidth = 0;
+        bgColor = 0;
+
+    }
+    return self;
+}
 
 -(void)setSignatureViewControllerValue:(SignatureViewController *)svc {
 	signatureViewController = svc;
+    [signatureViewController setPenColor:penColor];
+    [signatureViewController setPenWidth:penWidth];
+    [signatureViewController setBgColor:bgColor];
 }
 
 -(void)setParentView:(UIView*)parent_view {
@@ -48,6 +66,21 @@
 
 -(void)setImageFormat:(NSString*)format {
 	imageFormat = format;
+}
+
+-(void)setPenColor:(unsigned int)value
+{
+    penColor = value;
+}
+
+-(void)setPenWidth:(float)value
+{
+    penWidth = value;
+}
+
+-(void)setBgColor:(unsigned int)value
+{
+    bgColor = value;
 }
 
 
@@ -89,8 +122,10 @@
     [self useImage:image]; 
     [signatureViewController.view removeFromSuperview];
     [signatureViewController release];
+    signatureViewController = nil;
 	[parentView addSubview:prevView];
 	[prevView release];
+    prevView = nil;
 	[image release];
 }
 
@@ -98,8 +133,10 @@
     rho_rhodesapp_callSignatureCallback([postUrl UTF8String], "", "", 1);
     [signatureViewController.view removeFromSuperview];
     [signatureViewController release];
+    signatureViewController = nil;
 	[parentView addSubview:prevView];
 	[prevView release];
+    prevView = nil;
 }
 
 
@@ -109,19 +146,47 @@
 void rho_signature_take(char* callback_url, rho_param* p) {
     NSString *url = [NSString stringWithUTF8String:callback_url];
     char* image_format = 0;
+    char* penColor = 0;
+    char* penWidth = 0;
+    char* bgColor = 0;
+        
     if (p)
     {
         rho_param* pFF = rho_param_hash_get(p, "imageFormat");
         if ( pFF )
             image_format = pFF->v.string;
+        pFF = rho_param_hash_get(p, "penColor");
+        if ( pFF )
+            penColor = pFF->v.string;
+        pFF = rho_param_hash_get(p, "penWidth");
+        if ( pFF )
+            penWidth = pFF->v.string;
+        pFF = rho_param_hash_get(p, "bgColor");
+        if ( pFF )
+            bgColor = pFF->v.string;
     }
     if (!image_format)
-        image_format = "";
+        image_format = "png";
+    if (!penColor)
+        penColor = "0xFF66009A";
+    if (!penWidth)
+        penWidth = "3";
+    if (!bgColor)
+        bgColor = "0xFFFFFFFF";
+    
+    
+    
+    NSString* ns_penColor = [NSString stringWithUTF8String:penColor];
+    NSString* ns_penWidth = [NSString stringWithUTF8String:penWidth];
+    NSString* ns_bgColor = [NSString stringWithUTF8String:bgColor];
     
     NSString *iformat = [NSString stringWithUTF8String:image_format];
 	Rhodes* rho = [Rhodes sharedInstance];
 	SignatureDelegate* deleg = rho.signatureDelegate; 
 	[deleg setImageFormat:iformat];
+    [deleg setPenColor:(unsigned int)[ns_penColor longLongValue]];
+    [deleg setPenWidth:[ns_penWidth floatValue]];
+    [deleg setBgColor:(unsigned int)[ns_bgColor longLongValue]];
     [[Rhodes sharedInstance] performSelectorOnMainThread:@selector(takeSignature:)
                                               withObject:url waitUntilDone:NO];
 }

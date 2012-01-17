@@ -195,7 +195,98 @@ def make_app_info
   File.open(fname,"w") { |f| f.write(buf) }
 end
 
+
+def prepare_production_ipa (app_path, app_name)
+  puts 'Preparing *.IPA file ...'
+
+  tmp_dir = File.join(app_path, "tmp_ipa")
+  mkdir_p tmp_dir
+  payload_dir = File.join(tmp_dir, "Payload")  
+  mkdir_p payload_dir
+  app_file = File.join(app_path, app_name + ".app")
+  app_in_payload = File.join(payload_dir,  app_name + ".app") 
+  cp_r app_file, app_in_payload
+  
+  itunes_artwork = File.join($config["build"]["iphonepath"], "iTunesArtwork.jpg")
+  itunes_artwork_dst = File.join(tmp_dir, "iTunesArtwork")
+  
+  if !$app_config["iphone"].nil?
+    if !$app_config["iphone"]["production"].nil?
+      if !$app_config["iphone"]["production"]["ipa_itunesartwork_image"].nil?
+        art_test_name = $app_config["iphone"]["production"]["ipa_itunesartwork_image"]
+        if File.exists? art_test_name
+          itunes_artwork = art_test_name
+        else
+          art_test_name = File.join($app_path,$app_config["iphone"]["production"]["ipa_itunesartwork_image"])
+          if File.exists? art_test_name
+            itunes_artwork = art_test_name
+          else 
+            itunes_artwork = $app_config["iphone"]["production"]["ipa_itunesartwork_image"]  
+          end  
+        end 
+      end
+    end
+  end
+  
+  cp itunes_artwork, itunes_artwork_dst
+  
+  currentdir = Dir.pwd()      
+  chdir tmp_dir 
+  sh %{zip -r temporary_archive.zip .}
+  ipa_file_path = File.join(app_path, app_name + ".ipa")  
+  rm_rf ipa_file_path 
+  cp 'temporary_archive.zip', ipa_file_path     
+  Dir.chdir currentdir         
+  rm_rf tmp_dir
+
+end
+
+def copy_all_png_from_icon_folder_to_product(app_path)
+   app_icon_folder = File.join($app_path, 'icon')
+   rm_rf File.join(app_path, "*.png")
+   Dir.glob(File.join(app_icon_folder, "*.png")).each do |icon_file|
+     cp icon_file, app_path
+   end
+end
+
+def prepare_production_plist (app_path, app_name)
+    puts 'Preparing application production plist ...'
+  
+    $plist_title = app_name
+    $plist_subtitle = app_name
+    $plist_icon_url = "http://example.com/icon57.png"
+    $plist_ipa_url = "http://example.com/"+app_name+".ipa"
+    
+    appname = $app_config["name"] ? $app_config["name"] : "rhorunner"
+    vendor = $app_config['vendor'] ? $app_config['vendor'] : "rhomobile"
+    $plist_bundle_id = "com.#{vendor}.#{appname}"
+    $plist_bundle_id = $app_config["iphone"]["BundleIdentifier"] unless $app_config["iphone"]["BundleIdentifier"].nil?
+    
+    $plist_bundle_version = "1.0"
+    $plist_bundle_version = $app_config["version"] unless $app_config["version"].nil?
+
+    if !$app_config["iphone"].nil?
+      if !$app_config["iphone"]["production"].nil?
+        $plist_title = $app_config["iphone"]["production"]["app_plist_title"] unless $app_config["iphone"]["production"]["app_plist_title"].nil? 
+        $plist_subtitle = $app_config["iphone"]["production"]["app_plist_subtitle"] unless $app_config["iphone"]["production"]["app_plist_subtitle"].nil? 
+        $plist_icon_url = $app_config["iphone"]["production"]["app_plist_icon_url"] unless $app_config["iphone"]["production"]["app_plist_icon_url"].nil? 
+        $plist_ipa_url = $app_config["iphone"]["production"]["app_plist_ipa_url"] unless $app_config["iphone"]["production"]["app_plist_ipa_url"].nil? 
+      end
+    end        
+  
+    rbText = ERB.new( IO.read(File.join($config["build"]["iphonepath"], "rbuild", "ApplicationPlist.erb")) ).result
+	fAlx = File.new(File.join(app_path, app_name + ".plist"), "w")
+    fAlx.write(rbText)
+    fAlx.close()
+end
+
 ICONS = [['icon', 'icon57'], ['icon57','icon57'], ['icon72','icon72'], ['icon114','icon114']]
+
+def copy_all_icons_to_production_folder
+  ICONS.each do |pair|
+
+  end
+end
 
 def restore_app_icon
   puts "restore icon"
@@ -276,7 +367,43 @@ def set_default_images(make_bak)
   end
 end
 
+def copy_entitlements_file_from_app
+  enti_rho_name = File.join($config["build"]["iphonepath"], "Entitlements.plist")
+  enti_app_name = File.join($app_path, "Entitlements.plist")
 
+  if !$app_config["iphone"].nil?
+    if !$app_config["iphone"]["entitlements_file"].nil?
+      enti_test_name = $app_config["iphone"]["entitlements_file"]
+      if File.exists? enti_test_name
+        enti_app_name = enti_test_name
+      else
+        enti_test_name = File.join($app_path, $app_config["iphone"]["entitlements_file"])
+        if File.exists? enti_test_name
+          enti_app_name = enti_test_name
+        else 
+          enti_app_name = $app_config["iphone"]["entitlements_file"]  
+        end  
+      end 
+    end  
+  end
+
+  if File.exists? enti_app_name
+    puts 'Copy Entitlements.plist from application ...'
+    cp enti_rho_name, (enti_rho_name + '_bak')   
+    rm_f enti_rho_name
+    cp enti_app_name,enti_rho_name   
+  end
+end
+
+def restore_entitlements_file
+  enti_rho_name = File.join($config["build"]["iphonepath"], "Entitlements.plist")
+  if File.exists?(enti_rho_name + '_bak')
+    puts 'restore Entitlements.plist ...'
+    rm_f enti_rho_name
+    cp (enti_rho_name + '_bak'), enti_rho_name   
+    rm_f (enti_rho_name + '_bak')
+  end  
+end
 
 
 def set_signing_identity(identity,profile,entitlements)
@@ -296,7 +423,6 @@ def set_signing_identity(identity,profile,entitlements)
   end
   
   File.open(fname,"w") { |f| f.write(buf) }
-
 end
 
 def basedir
@@ -529,6 +655,8 @@ namespace "build" do
       end
 
       set_signing_identity($signidentity,$provisionprofile,$entitlements.to_s) if $signidentity.to_s != ""
+      copy_entitlements_file_from_app
+      
     end
 
 #    desc "Build rhodes"
@@ -563,6 +691,7 @@ namespace "build" do
       end
 
       set_signing_identity($signidentity,$provisionprofile,$entitlements.to_s) if $signidentity.to_s != ""
+      copy_entitlements_file_from_app
 
       chdir $config["build"]["iphonepath"]
 
@@ -584,6 +713,7 @@ namespace "build" do
       set_app_url_scheme(saved_url_scheme) unless $app_config["iphone"]["BundleURLScheme"].nil?
       set_app_url_name(saved_url_name) unless $app_config["iphone"]["BundleIdentifier"].nil?
       
+      restore_entitlements_file
       restore_default_images
       restore_app_icon
 
@@ -1095,7 +1225,10 @@ namespace "device" do
     puts 'copy result build package to application target folder ...'    
     cp_r src_file, dst_file
     make_app_info 
-
+    prepare_production_ipa(app_path, appname)
+    prepare_production_plist(app_path, appname)
+    copy_all_png_from_icon_folder_to_product(app_path)
+    
     end
   end
 

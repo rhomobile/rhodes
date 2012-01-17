@@ -51,9 +51,9 @@ class GoogleGeoCoding : public IGeoCoding, public CThreadQueue
 private:
     struct Command : public IQueueCommand
     {
-        String address;
-        float latitude;
         float longitude;
+        float latitude;
+        String address;
         bool is_inverse;
         std::auto_ptr<GeoCodingCallback> callback;
 

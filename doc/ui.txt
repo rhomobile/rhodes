@@ -561,13 +561,13 @@ Please find sample code in "NativeToolbarTest" in [Rhodes-System-Api-Samples](ht
 
 ## Native Tabbar Control
 
-Rhodes supports displaying a native looking 'tabbar'. 
+Rhodes supports the displaying of a native-looking 'tabbar'. 
 
-The tabbar is set of different UI views associated with each tab, so that selecting any tab will display the associated view. There is no ability to define custom actions for the tabbar like you can for the toolbar. The only action when a tab is selected is to switch to another UI view.
+The tabbar is a set of different UI views associated with each tab, so that selecting any tab will display the associated view. There is no ability to define custom actions for the tabbar like you can for the toolbar. The only tabbar action is when a tab is selected, it switches to another UI view.
 
-The tabbar are supported on iPhone and Android.
+The tabbar is supported on iPhone and Android.
 
-You can use VerticalTabBar control on iPad (specifically control for iPad). It like Tabbar, but tabs located on left side and each item have horizontal orientation. Like Tabs items can have Icon image and text. Functionality very similar Tabbar.
+You can use the VerticalTabBar control on the iPad: this is a specific control for the iPad. The VerticalTabBar is similar to the Tabbar, but the tabs are located on the left side and each item has horizontal orientation. Like tabs in tabbar, the items can have an Icon image and text. The functionality is very similar to Tabbar.
 
 You can customize toolbars/tabbars during runtime.
 
@@ -591,16 +591,16 @@ For the tabbar:
 	  end
 	end
 
-Each tabbar item defined in the above sample defines following tab elements:
+Each tabbar item defined in the above sample defines the following tab elements:
 
 * :label - Visible label to display on the tabbar (required)
 * :action - Path to your rhodes action; i.e. '/app/Account' would load the Account index action (required)
-* :icon - Relative path to tabbar item icon in your rhodes app; typically located in /public/images/ (required) 
-* :reload => true - Optional argument which tells rhodes to reload the tab's :action, defaults to false
-* :selected_color => 0xFFFF00 - Optional parameter for change selected color of this tabs (if you use it on Android - you should defined it for all tabs! and also define :background_color for TabBar!)
-* :disabled => true - Optional parameter for disable this tab
-* :web_bkg_color = > int hex value (0x7F7F7F for example) - background color for tab (use when your app bkg is not white for remove blink during switch tabs)
-* :use_current_view_for_tab => true - Optional argument which tells rhodes to smooth transfer WebView from current view into this Tab and make this Tab active. Defaults to false. Only one Tab can have this parameter!
+* :icon - Relative path to the tabbar item icon in your rhodes app; typically located in /public/images/ (required)
+* :reload => true - (optional) tells rhodes to reload the tab's :action, default is false
+* :selected_color => 0xFFFF00 - (optional) change selected color of this tab (if you use it on Android, you should define it for all tabs, and also define :background_color for TabBar)
+* :disabled => true - (optional) disable this tab
+* :web_bkg_color = > int hex value (0x7F7F7F for example) - background color for the tab (use when your app bkg is not white to remove blink when switching tabs)
+* :use_current_view_for_tab => true - (optional) tells rhodes to smooth transfer WebView from current view into this Tab and make this Tab active. Defaults to false. Only one Tab can have this parameter.
 
 
 Behind the scenes, Rho::RhoApplication will detect the @tabs array in its initialize method and build the native bar through the following function:
@@ -608,7 +608,6 @@ Behind the scenes, Rho::RhoApplication will detect the @tabs array in its initia
 	:::ruby
 	require 'rho/rhotabbar'
 	Rho::NativeTabbar.create(bar_items_array)
-
 
 To disable the tabbar entirely:
 	:::ruby
@@ -621,54 +620,52 @@ To disable the tabbar entirely:
 
 ### Native Tabbar runtime API
 
-Require rhotabbar in your controller to use it 
+You need to require rhotabbar in your controller to use the native tabbar.
 	:::ruby
 	require 'rho/rhotabbar'
 
-Remove existing tabbar (if exists) and create new one
+Removes existing tabbar (if it exists) and create a new one.
 	:::ruby
 	Rho::NativeTabbar.create(tabs) 
 
-Same as above
+This works the same as above.
 	:::ruby
 	Rho::NativeTabbar.create( :tabs => tabs) 
 	
-Means the same as above and setup background color for tabbar.	
+This works the same as above, and sets up a background color for the tabbar.	
 	:::ruby
 	Rho::NativeTabbar.create( :tabs => tabs, 
 		:background_color => 0x0000FF)
 
-Means the same as above and place TabBar in bottom of screen (actual only on Android, where TabBar placed in top of screen by default).	
+This places the TabBar at the bottom of the screen (only on Android, where the TabBar is placed in the top of screen by default).	
 	:::ruby
 	Rho::NativeTabbar.create( :tabs => tabs, 
 		:background_color => 0x0000FF, :place_tabs_bottom => true)
 	
-**NOTE: If you setup :background_color on Android you should also setup :selected_color for each tab **	 
+**NOTE: If you set up :background_color on Android, you should also set up :selected_color for each tab. **	 
 
-Create TabBar and set callback for change tab event. In callback see @params['tab_index'] for string value with new tab index.
+Create a TabBar and set a callback for the change tab event. In callback, see @params['tab_index'] for a string value with the new tab index.
 	:::ruby
 	Rho::NativeTabbar.create(:tabs => tabs, :on_change_tab_callback => url_for(:action => :tabbar_on_tab_change_callback))
 
-
-Remove current tabbar. Does nothing if there is no active bar	
+Remove the current tabbar. Does nothing if there is no active bar.	
 	:::ruby
 	Rho::NativeTabbar.remove
 	 
-Switch active tab to second (numeration is zero based i.e. 0 means first tab, 1 - second etc)	
+Switch the active tab to second (numeration is zero based, i.e. 0 means first tab, 1 - second, etc.)	
 	:::ruby
 	Rho::NativeTabbar.switch_tab(1) 
 
-Get current tab index
+Get the current tab index.
 	:::ruby
 	Rho::NativeTabbar.get_current_tab 
 
-Set iPhone badge to Tab (worked only on iOS devices!) 
+Set the iPhone badge to Tab (only on iOS devices).
 	:::ruby
 	# set badge '12' to tab 1
 	Rho::NativeTabbar.set_tab_badge( 1, '12')
 
-
-Rho::NativeTabbar.create() create native tab bar UI element and activate its first tab. If you want to see another tab, call Rho::NativeTabbar.switch_tab explicitly just after NativeBar.create:
+Rho::NativeTabbar.create() createa a native tab bar UI element and activates its first tab. If you want to see another tab, call Rho::NativeTabbar.switch_tab explicitly just after NativeBar.create, as in the following example.
 
 	:::ruby
 	require 'rho/rhotabbar'
@@ -679,7 +676,7 @@ Rho::NativeTabbar.create() create native tab bar UI element and activate its fir
 	# Show 'app/Settings' on the 3-rd tab
 	WebView.navigate('app/Settings', 3)
 	
-For VerticalTabBar on iPad (if you run this code not on iPad, then regular tabbar will be created):
+For VerticalTabBar on iPad (if you run this code on a device other than iPad, then a regular tabbar will be created):
 
 	:::ruby
 	require 'rho/rhotabbar'

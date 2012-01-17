@@ -68,7 +68,7 @@ In present version of RhoStudio you may:
 If you use custom native extensions, then running and debugging your applications in RhoSimulator requires a custom build.
 Follow these instructions to build your own customized version of RhoSimulator.
 
-### Preliminary steps
+### Preliminary steps for Windows
 
 * Currently only <b>Visual Studio 2005 Service Pack 1</b> is supported
 * Follow [Build for Windows - Prerequisites](build#build-for-windows), but do not install the Rhodes gem since you're going to use Rhodes SDK source.
@@ -77,14 +77,14 @@ Follow these instructions to build your own customized version of RhoSimulator.
     * Download the Qt source:
         * Go to [http://qt.nokia.com/downloads](http://qt.nokia.com/downloads)
         * Jump to `Qt libraries`
-        * Download the [source code as a zip](http://get.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.3.zip) (236 MB)
-        * Extract the downloaded archive, e.g. into `C:\Qt\4.7.3-msvc2005`
+        * Download the [source code as a zip](http://get.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.4.zip) (236 MB)
+        * Extract the downloaded archive, e.g. into `C:\Qt\4.7.4-msvc2005`
     * Prepare to build the OpenSSL library:
-        * Download [v0.9 source code](http://www.openssl.org/source/openssl-0.9.8r.tar.gz) from [www.openssl.org](http://www.openssl.org/) and extract the downloaded archive, e.g. into `C:\Qt\openssl-0.9.8r`
+        * Download [v0.9 source code](http://www.openssl.org/source/openssl-0.9.8s.tar.gz) from [www.openssl.org](http://www.openssl.org/) and extract the downloaded archive, e.g. into `C:\Qt\openssl-0.9.8s`
         * Install Perl interpreter (if it's not installed yet), e.g. [ActiveState Perl](http://www.activestate.com/activeperl)
     * Open Control Panel » System » Advanced system settings » Environment Variables and then:
-        * Create new system variable `QTDIR` = `C:\Qt\4.7.3-msvc2005`
-        * Add to the `PATH` variable: `C:\Qt\4.7.3-msvc2005\bin;C:\Qt\openssl-0.9.8r\bin` (it doesn't matter that `C:\Qt\openssl-0.9.8r\bin` folder does not exist yet)
+        * Create new system variable `QTDIR` = `C:\Qt\4.7.4-msvc2005`
+        * Add to the `PATH` variable: `C:\Qt\4.7.4-msvc2005\bin;C:\Qt\openssl-0.9.8s\bin` (it doesn't matter that `C:\Qt\openssl-0.9.8s\bin` folder does not exist yet)
         * Either close all command prompts and Visual Studio instances, or reboot the computer so the new settings take effect.
     * Open Visual Studio 2005 Command Prompt. This is accomplished using Start » All Programs » Microsoft Visual Studio 2005 » Visual Studio Tools » Visual Studio 2005 Command Prompt. Run in Visual Studio 2005 Command Prompt:
 
@@ -93,8 +93,8 @@ Follow these instructions to build your own customized version of RhoSimulator.
 
     * To build OpenSSL library run in the same command prompt:
 
-			> cd \Qt\openssl-0.9.8r
-			> perl Configure VC-WIN32 --prefix=C:/Qt/openssl-0.9.8r
+			> cd \Qt\openssl-0.9.8s
+			> perl Configure VC-WIN32 --prefix=C:/Qt/openssl-0.9.8s
 			> ms\do_masm
 			> nmake -f ms\ntdll.mak
 			> nmake -f ms\ntdll.mak install
@@ -102,30 +102,70 @@ Follow these instructions to build your own customized version of RhoSimulator.
 
     * To build Qt library run in the same command prompt:
 
-			> cd \Qt\4.7.3-msvc2005
+			> cd \Qt\4.7.4-msvc2005
 			> configure -opensource -platform win32-msvc2005
 			  -nomake examples -nomake demos -nomake docs
 			  -qt-libpng -qt-libjpeg -qt-libtiff -qt-gif -qt-libmng
-			  -openssl-linked -I C:/Qt/openssl-0.9.8r/include
-			  -L C:/Qt/openssl-0.9.8r/lib
+			  -openssl-linked -I C:/Qt/openssl-0.9.8s/include
+			  -L C:/Qt/openssl-0.9.8s/lib
 			> nmake
 			> nmake clean
 
       Be aware that it will take a while to build the Qt libraries from sources (maybe few hours or so). Particularly the `configure` command may run for a few minutes, and the `nmake` command may run for a few hours.
     * After the build process is completed exit Visual Studio 2005 Command Prompt
 
-### Build with rake command:
+### Preliminary steps for Mac OS X
 
-	rake build:win32:rhosimulator
+* Follow [Building a Rhodes Application for iPhone/iPad - Prerequisites](build#building-a-rhodes-application-for-iphoneipad), but do not install the Rhodes gem since you're going to use Rhodes SDK source.
+* Get the `rhodes` source (if haven't done it already) as described [here](build#setup-rhodes-source-code). Don't forget to add the `bin` folder to your path, run `rhodes-setup` and update Rhodes SDK path in `build.yml` at your application root folder.
+* First build the Qt libraries for Mac from sources to enable HTTPS protocol support in RhoSimulator:
+    * Download the Qt source:
+        * Go to [http://qt.nokia.com/downloads](http://qt.nokia.com/downloads)
+        * Jump to `Qt libraries`
+        * Download the [source code as a zip](http://get.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.4.zip) (236 MB)
+        * Extract the downloaded archive, e.g. into `~/QtSource`
+    * Make sure that your `PATH` environment variable does not contain the path to any previously installed Qt binaries
+    * Add to your `~/.profile` the new environment variable `QTDIR` by adding the line (or by changing the existing `QTDIR` variable):
 
-To run Rhodes applications in custom built RhoSimulator, please ensure that no `env:` » `paths:` » `rhosimulator:` line is present at your `rhobuild.yml` (if present, remove that line).
+			export QTDIR=/Developer/SDKs/Qt
 
-### Build in Visual Studio 2005:
+    * Open `Terminal.app` and issue commands:
+
+			$ cd ~/QtSource
+			$ make confclean
+			$ ./configure -opensource -platform macx-g++
+			  -nomake examples -nomake demos -nomake docs
+			  -qt-libpng -qt-libjpeg -qt-libtiff -qt-gif -qt-libmng
+			  -prefix /Developer/SDKs/Qt -release
+			$ make
+			$ sudo make install
+
+      Be aware that it will take a while to build the Qt libraries from sources (maybe few hours or so).
+
+### Enable bundled native extensions
+
+To enable `digest` native extensions bundled with Rhodes SDK make sure that the default application in your `rhobuild.yml` is the `framework_spec`:
+
+	app: [...]/rhodes/spec/framework_spec
+
+To compile RhoSimulator with the custom native extensions change this path to your own Rhodes application home folder.
+It should be noted that extensions you'd like to compile into RhoSimulator should be listed in the main `extensions`
+section of your Rhodes application `build.yml` (but not in its platform-specific `extensions` sections).
+
+### Build RhoSimulator with rake command:
+
+When you've finished all the preliminary steps for your OS, the only thing you need to do is to run the rake command in the `rhodes` source folder:
+
+	rake build:rhosimulator
+
+To run Rhodes applications in the custom built RhoSimulator, please ensure that no `env:` » `paths:` » `rhosimulator:` line is present at your `rhobuild.yml` (if present, remove that line).
+
+### Build RhoSimulator for Windows in Visual Studio 2005:
 
 * Open the solution:
   `C:\Rhomobile\rhodes\platform\wm\rhodes\rhodes.vcproj`
 * Build solution for the configuration `SimulatorRelease|Win32`
 * Specify the path to custom built RhoSimulator at `rhobuild.yml`:
-        env: 
-          paths:    
+        env:
+          paths:
             rhosimulator: platform/wm/bin/Win32/rhodes/SimulatorRelease

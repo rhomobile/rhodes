@@ -88,6 +88,23 @@
 }
 
 
+-(void)setPenColor:(unsigned int)value
+{
+    penColor = value;
+    [self setNeedsDisplay];
+}
+
+-(void)setPenWidth:(float)value
+{
+    penWidth = value;
+    [self setNeedsDisplay];
+}
+
+-(void)setBgColor:(unsigned int)value
+{
+    bgColor = value;
+    [self setNeedsDisplay];
+}
 
 - (id)initWithFrame:(CGRect)frame {
     if ((self = [super initWithFrame:frame])) {
@@ -96,6 +113,9 @@
 		self.backgroundColor = [UIColor whiteColor];
 		self.opaque = YES;
 		self.multipleTouchEnabled = NO;
+        penColor = 0xFF66009A;
+        penWidth = 3.0;
+        bgColor = 0xFFFFFFFF;
     }
 	mPath = nil;
 	[self doClear];
@@ -110,12 +130,21 @@
 	CGContextRef context = UIGraphicsGetCurrentContext();
 	
 	// draw backgound
-	CGContextSetRGBFillColor(context,1,1,1,1);
-	CGContextSetRGBStrokeColor(context, 0.4, 0, 0.6, 1);
+    
+	CGContextSetRGBFillColor(context,   ((float)((bgColor & 0xFF0000) >> 16))/255.0, 
+                                        ((float)((bgColor & 0xFF00) >> 8))/255.0,
+                                        ((float)((bgColor & 0xFF)))/255.0,
+                                        1);
+	
+    
+    CGContextSetRGBStrokeColor(context, ((float)((penColor & 0xFF0000) >> 16))/255.0,
+                                        ((float)((penColor & 0xFF00) >> 8))/255.0,
+                                        ((float)((penColor & 0xFF)))/255.0,
+                                        1);
 	CGContextFillRect(context, rect);
 	
 	// draw signature
-	CGContextSetLineWidth(context, 3);
+	CGContextSetLineWidth(context, penWidth);
 	CGContextBeginPath(context);
 	CGContextClipToRect(context, rect);
 	//CGContextClip(context);
@@ -142,13 +171,21 @@
 	rect.origin.y = 0;
 	
 	// draw backgound
-	CGContextSetRGBFillColor(context,1,1,1,1);
-	CGContextSetRGBStrokeColor(context, 0.4, 0, 0.6, 1);
+	CGContextSetRGBFillColor(context,   ((float)((bgColor & 0xFF0000) >> 16))/255.0, 
+                             ((float)((bgColor & 0xFF00) >> 8))/255.0,
+                             ((float)((bgColor & 0xFF)))/255.0,
+                             1);
+	
+    
+    CGContextSetRGBStrokeColor(context, ((float)((penColor & 0xFF0000) >> 16))/255.0,
+                               ((float)((penColor & 0xFF00) >> 8))/255.0,
+                               ((float)((penColor & 0xFF)))/255.0,
+                               1);
 	CGContextFillRect(context, rect);
 	
 	// draw signature
 	if (!CGPathIsEmpty(mPath)) {
-		CGContextSetLineWidth(context, 3);
+        CGContextSetLineWidth(context, penWidth);
 		CGContextTranslateCTM (context, 0, rect.size.height);
 		CGContextScaleCTM(context, 1, -1);
 		CGContextBeginPath(context);

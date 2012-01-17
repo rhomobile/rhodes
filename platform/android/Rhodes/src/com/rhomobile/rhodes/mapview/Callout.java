@@ -75,7 +75,11 @@ public class Callout {
 		mTitle = title;
 		mDetails = details;
 		mUrl = url;
-		
+
+		if (mDetails == null) {
+		    mDetails = "";
+		}
+
 		if (mUrl != null) {
 			if (mUrl.length() < 2) {
 				mUrl = null;
@@ -84,8 +88,6 @@ public class Callout {
 		
 		Paint paint = new Paint();
 		paint.setAntiAlias(true);
-
-
 		
 		int title_width = 0;
 		int title_height = 0;
@@ -99,12 +101,11 @@ public class Callout {
 		title_height = rcLine.bottom - rcLine.top;
 		int max_text_width = title_width;
 		
-		
 		int details_width = 0;
 		int details_height = 0;
 		int details_max_line_height = 0;
 		// calc Details size (W,H)
-		String [] lines = details.split("\n");
+		String [] lines = mDetails.split("\n");
 		int i;
 		paint.setColor(DETAILS_COLOR);
 		paint.setTextSize(DETAILS_FONT_SIZE);

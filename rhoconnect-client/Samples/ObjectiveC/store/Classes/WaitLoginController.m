@@ -28,6 +28,7 @@
         {
             [[RhoConnectEngine sharedInstance].syncClient database_client_reset]; 
             [[RhoConnectEngine sharedInstance].syncClient setNotification: @selector(syncAllComplete:) target:self];
+            [RhoConnectEngine sharedInstance].syncClient.bulksync_state = 0;
             [[RhoConnectEngine sharedInstance].syncClient syncAll];
         }
 	}
@@ -40,6 +41,7 @@
 	if ([RhoConnectEngine sharedInstance].loginState == logged_in) 
 	{
 		[ [RhoConnectEngine sharedInstance].syncClient setNotification: @selector(syncAllComplete:) target:self];
+        [RhoConnectEngine sharedInstance].syncClient.bulksync_state = 0;
 		[ [RhoConnectEngine sharedInstance].syncClient syncAll];
 	} else {
 		lblMessage.text = errorMessage;

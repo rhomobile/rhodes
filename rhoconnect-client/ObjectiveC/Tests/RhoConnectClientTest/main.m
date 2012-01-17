@@ -63,6 +63,16 @@ int shouldLogin()
 	return 1;
 }
 
+int shouldLogout()
+{
+	[sclient logout];
+	if ([sclient is_logged_in]) {
+		return 0;
+	}
+	
+	return 1;
+}
+
 int shouldSyncProductByName()
 {
 	RhoConnectNotify* res = [product sync];
@@ -343,7 +353,7 @@ int shouldPerfomanceTest_create(int nCount)
 
 int shouldPerfomanceTest_delete()
 {
-	NSMutableArray* items = [perftest find_all:NULL];
+	NSMutableArray* items = [perftest find_all:nil];
 	if ( !items )
 		return 0;
 	
@@ -362,7 +372,6 @@ int shouldCreateNewProductWithCustomers()
     NSMutableDictionary* cust1;
     NSMutableDictionary* cust2;
     NSMutableDictionary* item;
-    ;
     
     // exception to throw on test failure
     NSException *e = [NSException
@@ -517,9 +526,7 @@ int runObjCClientTest()
         
         if ( !shouldDeleteAllTestProduct() )
             @throw e;
-        
-        
-        
+
         if ( !shouldCreateNewProductWithCustomers() )
             @throw e;
         
@@ -819,6 +826,227 @@ int runObjCClientBlobTest()
     return result;
 }
 
+NSMutableArray* savedSyncSources;
+
+int shouldPrepareSourceTypes()
+{
+	savedSyncSources = [product find_bysql:@"SELECT name, sync_type FROM sources" args: nil];	
+	if ( !savedSyncSources )
+		return 0;
+    
+    if ( [savedSyncSources count] == 0 )
+        return 0;
+    
+	[product find_bysql:@"UPDATE sources SET sync_type='none'" args: nil];
+	[product find_bysql:@"UPDATE sources SET sync_type='incremental' WHERE name='Product'" args: nil];
+    
+    return 1;
+}
+
+int shouldRestoreSourceTypes()
+{
+	for (NSDictionary* src in savedSyncSources) {
+        NSArray* params = [NSArray arrayWithObjects:
+                           [src objectForKey: @"sync_type"],
+                           [src objectForKey: @"name"],
+                           nil];
+        
+        [product find_bysql:@"UPDATE sources SET sync_type='?' WHERE name='?'" args: nil];
+    }
+    
+    
+    return 1;
+}
+
+
+int shouldBulkSync()
+{
+	if ( ![sclient is_logged_in] ) {
+		return 0; 
+	}
+    
+    RhoConnectNotify* res = [sclient syncAll];
+    if (   res.error_code != RHO_ERR_NONE
+        || NO == [@"complete" isEqualToString: res.status] ) {
+		return 0; 
+    }
+	if ( sclient.bulksync_state != 1 ) {
+		return 0; 
+	}
+    
+    NSMutableArray* items = [product find_all:nil];	
+    if ( !items || 0 == [items count])
+        return 0;
+    
+    return 1;
+}
+
+int shouldBulkSyncWithCreate()
+{
+	if ( ![sclient is_logged_in] ) {
+		return 0; 
+	}
+    
+    [sclient database_full_reset_and_logout];
+    
+    RhoConnectNotify* res = [sclient loginWithUser:@"" pwd:@""];
+	int nErr = res.error_code;
+	if ( nErr!= RHO_ERR_NONE || ![sclient is_logged_in]) {
+		return 0;
+	}
+	
+    sclient.bulksync_state = 1;
+    res = [sclient syncAll];
+    if (   res.error_code != RHO_ERR_NONE
+        || NO == [@"complete" isEqualToString: res.status] ) {
+		return 0; 
+    }
+
+    NSMutableDictionary* item1;
+    item1 = [[NSMutableDictionary alloc] init];
+    [item1 setValue: @"PhoneSpec" forKey:@"name"];	
+    [item1 setValue: @"22" forKey:@"sku"];	
+    [product create: item1];
+
+    sclient.bulksync_state = 0;
+    res = [sclient syncAll];
+    if (   res.error_code != RHO_ERR_NONE
+        || NO == [@"complete" isEqualToString: res.status] ) {
+		return 0; 
+    }
+    if ( sclient.bulksync_state != 1 ) {
+		return 0; 
+	}
+    
+    NSMutableArray* items = [product find_all:nil];	
+    if ( !items || 0 == [items count])
+        return 0;
+    
+    NSMutableDictionary* item2 = [product find:[item1 objectForKey:@"object"]];	
+    if ( item2 )
+        return 0;
+
+    NSMutableDictionary* cond = [[NSMutableDictionary alloc] init];
+	[cond setValue:@"PhoneSpec" forKey:@"name"];							 
+    NSMutableArray* items2 = [product find_all:cond];	
+    if ( !items2 || 0 == [items2 count])
+        return 0;
+
+    BOOL bFound = NO;
+    for (NSMutableDictionary* item in items2) {
+        if (NO == bFound) {
+            bFound = [@"22" isEqualToString: [item objectForKey:@"sku"]];
+        }
+        
+        [item setObject:@"44" forKey:@"sku"];
+        [product save: item];
+    }
+    if ( !bFound )
+        return 0;
+    
+    sclient.bulksync_state = 0;
+    res = [sclient syncAll];
+    if (   res.error_code != RHO_ERR_NONE
+        || NO == [@"complete" isEqualToString: res.status] ) {
+		return 0; 
+    }
+    if ( sclient.bulksync_state != 1 ) {
+		return 0; 
+	}
+    
+    items2 = [product find_all:cond];	
+    if ( !items2 || 0 == [items2 count])
+        return 0;
+    
+    for (NSMutableDictionary* item in items2) {
+        if ( NO == [@"44" isEqualToString: [item objectForKey:@"sku"]] )
+            return 0;
+
+        [product destroy: item];
+    }
+    
+    sclient.bulksync_state = 0;
+    res = [sclient syncAll];
+    if (   res.error_code != RHO_ERR_NONE
+        || NO == [@"complete" isEqualToString: res.status] ) {
+		return 0; 
+    }
+    if ( sclient.bulksync_state != 1 ) {
+		return 0; 
+	}
+    
+    items2 = [product find_all:cond];	
+    if ( !items2 || 0 != [items2 count])
+        return 0;
+
+    [item1 release];
+    [cond release];
+    return 1;
+}
+
+
+
+int runObjCClientBulkSyncTest()
+{
+	product = [[RhomModel alloc] init];
+	product.name = @"Product";
+    
+	[RhoConnectClient initDatabase];
+	sclient = [[RhoConnectClient alloc] init];
+    NSMutableArray* models = [NSMutableArray arrayWithObjects:product, nil];	
+	
+	[sclient addModels:models];
+    
+    //sclient.threaded_mode = FALSE;
+	//sclient.poll_interval = 0;
+    [sclient setLogSeverity:1];
+	
+    // exception to throw on test failure
+    NSException *e = [NSException
+                      exceptionWithName: @"NSException"
+                      reason: @"test faled"
+                      userInfo: nil];
+    int result = 1;
+    @try {
+        if ( !ResetAndLogout() )
+            @throw e;
+        
+        sclient.sync_server = @"http://store-bulk.rhohub.com/application";
+        //sclient.sync_server = @"http://192.168.0.103:9292/application";
+        
+        sclient.bulksync_state = 0;
+        
+        if ( !shouldPrepareSourceTypes() )
+            @throw e;
+        
+        if ( !shouldLogin() )
+            @throw e;
+        
+        if ( !shouldBulkSync() )
+            @throw e;
+        
+
+        if ( !shouldBulkSyncWithCreate() )
+            @throw e;
+        
+        if ( !shouldLogout() )
+            @throw e;
+        
+        if ( !shouldRestoreSourceTypes() )
+            @throw e;
+        
+        sclient.bulksync_state = 1;
+        
+    } @catch( NSException* e) {
+        result = 0;
+    }
+    
+    [product release];
+    [sclient release];
+    
+    return result;
+}
+
 int main(int argc, char *argv[]) {
     
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
@@ -827,6 +1055,8 @@ int main(int argc, char *argv[]) {
 	int retVal = runObjCClientTest();
     if (0 < retVal)
         retVal = runObjCClientBlobTest();
+    if (0 < retVal)
+        retVal = runObjCClientBulkSyncTest();
 	
 	if (retVal)
 		NSLog(@"SUCCESS");

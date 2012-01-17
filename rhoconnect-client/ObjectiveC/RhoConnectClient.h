@@ -57,6 +57,7 @@
 
 - (RhoConnectNotify*) loginWithUser: (NSString*) user pwd:(NSString*) pwd;
 - (void) loginWithUser: (NSString*) user pwd:(NSString*) pwd callback:(SEL) callback target:(id)target;
+- (void) logout;
 - (void) setNotification: (SEL) callback target:(id)target;
 - (void) clearNotification;
 

@@ -34,6 +34,9 @@
 
 	CGMutablePathRef mPath;
 	CGPoint mLastPoint;
+    unsigned int penColor;
+    float penWidth;
+    unsigned int bgColor;
 	
 }
 
@@ -45,5 +48,10 @@
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event;
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event;
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event;
+
+-(void)setPenColor:(unsigned int)value;
+-(void)setPenWidth:(float)value;
+-(void)setBgColor:(unsigned int)value;
+
 
 @end

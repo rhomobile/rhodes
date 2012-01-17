@@ -100,9 +100,10 @@ namespace rho.net
                 Hashtable<String, String>.Enumerator hashEnum = headers.GetEnumerator();
 		        while( hashEnum.MoveNext() )
 		        {
-				    String strName = hashEnum.Current.Key;
+                    String strName = hashEnum.Current.Key.Replace(" ", "").Replace("-", "");
 				    String strValue = hashEnum.Current.Value;
-                    m_webRequest.Headers[strName.Replace("-", "")] = strValue;
+                    m_webRequest.Headers[strName] = strValue;
+                    if (strName == "ContentType") m_webRequest.ContentType = strValue;
 		        }
 			
 		    }
@@ -510,7 +511,7 @@ namespace rho.net
 		    NetResponse pResp = new NetResponse(strRespBody != null ? strRespBody : "", nErrorCode );
             if (pResp.isSuccess())
             {
-                if (m_strCookies == "" && m_strRespBody.Contains("rhoconnect_session"))
+                if (m_strCookies == "" && m_strRespBody != null && m_strRespBody.Contains("rhoconnect_session"))
                 {
                     m_strRespBody = m_strRespBody.Replace('{', ' ');
                     m_strRespBody = m_strRespBody.Replace('}', ' ');

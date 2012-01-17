@@ -26,6 +26,8 @@ namespace rho.rubyext {
             IronRuby.Builtins.RubyClass classRef0 = GetClass(typeof(System.Object));
             
             
+            DefineGlobalModule("Alert", typeof(rho.rubyext.RhoAlert), 0x00000008, null, LoadAlert_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
+            DefineGlobalModule("Camera", typeof(rho.rubyext.RhoCamera), 0x00000008, null, LoadCamera_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
             DefineGlobalModule("NativeBar", typeof(rho.rubyext.RhoNativeBar), 0x00000008, null, LoadNativeBar_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
             IronRuby.Builtins.RubyModule def3 = DefineGlobalModule("Rho", typeof(rho.rubyext.RhoRoot), 0x00000008, null, null, null, IronRuby.Builtins.RubyModule.EmptyArray);
             IronRuby.Builtins.RubyModule def1 = DefineGlobalModule("Rho", typeof(rho.rubyext.Rho), 0x00000008, null, null, null, IronRuby.Builtins.RubyModule.EmptyArray);
@@ -42,6 +44,47 @@ namespace rho.rubyext {
             SetConstant(def3, "AsyncHttp", def4);
             SetConstant(def1, "JSON", def2);
             SetConstant(def5, "Database", def6);
+        }
+        
+        private static void LoadAlert_Class(IronRuby.Builtins.RubyModule/*!*/ module) {
+            DefineLibraryMethod(module, "hide_popup", 0x21, 
+                0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule>(rho.rubyext.RhoAlert.HidePopup)
+            );
+            
+            DefineLibraryMethod(module, "play_file", 0x21, 
+                0x00000006U, 
+                new Action<IronRuby.Builtins.RubyModule, System.String, System.String>(rho.rubyext.RhoAlert.PlayFile)
+            );
+            
+            DefineLibraryMethod(module, "show_popup", 0x21, 
+                0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule, IronRuby.Builtins.Hash>(rho.rubyext.RhoAlert.ShowPopup)
+            );
+            
+            DefineLibraryMethod(module, "show_status", 0x21, 
+                0x00000006U, 
+                new Action<IronRuby.Builtins.RubyModule, System.String, System.String, System.String>(rho.rubyext.RhoAlert.ShowStatus)
+            );
+            
+            DefineLibraryMethod(module, "vibrate", 0x21, 
+                0x00000000U, 
+                new Action<IronRuby.Builtins.RubyModule, System.Int32>(rho.rubyext.RhoAlert.Vibrate)
+            );
+            
+        }
+        
+        private static void LoadCamera_Class(IronRuby.Builtins.RubyModule/*!*/ module) {
+            DefineLibraryMethod(module, "choose_picture", 0x21, 
+                0x00000002U, 
+                new Action<IronRuby.Builtins.RubyModule, System.String>(rho.rubyext.RhoCamera.choosePicture)
+            );
+            
+            DefineLibraryMethod(module, "take_picture", 0x21, 
+                0x00000002U, 
+                new Action<IronRuby.Builtins.RubyModule, System.String>(rho.rubyext.RhoCamera.takePicture)
+            );
+            
         }
         
         private static void LoadNativeBar_Class(IronRuby.Builtins.RubyModule/*!*/ module) {
