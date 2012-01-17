@@ -56,20 +56,26 @@ namespace rho.rubyext
         #region Private Instance & Singleton Methods
 
         [RubyMethodAttribute("show_popup", RubyMethodAttributes.PublicSingleton)]
-        public static void ShowPopup(RubyModule/*!*/ self, Hash args)
+        public static void ShowPopup(RubyModule/*!*/ self, Object args)
         {
             String message = "";
             String title = "";
             Object[] buttons = null;
             object val = null;
 
-            if (args != null && args.TryGetValue(CRhoRuby.CreateSymbol("title"), out val))
+            if (args != null && args is MutableString)
+            {
+                message = ((MutableString)args).ToString();
+                buttons = new String[1];
+                buttons[0] = "Ok";
+            }
+            if (args != null && args is Hash && ((Hash)args).TryGetValue(CRhoRuby.CreateSymbol("title"), out val))
                 title = val.ToString();
-            if (args != null && args.TryGetValue(CRhoRuby.CreateSymbol("message"), out val))
+            if (args != null && args is Hash && ((Hash)args).TryGetValue(CRhoRuby.CreateSymbol("message"), out val))
                 message = val.ToString();
-            if (args != null && args.TryGetValue(CRhoRuby.CreateSymbol("callback"), out val))
+            if (args != null && args is Hash && ((Hash)args).TryGetValue(CRhoRuby.CreateSymbol("callback"), out val))
                 m_callback = val.ToString();
-            if (args != null && args.TryGetValue(CRhoRuby.CreateSymbol("buttons"), out val) && val is RubyArray)
+            if (args != null && args is Hash && ((Hash)args).TryGetValue(CRhoRuby.CreateSymbol("buttons"), out val) && val is RubyArray)
                 buttons = ((RubyArray)val).ToArray();
 
             RHODESAPP().MainPage.Dispatcher.BeginInvoke(() =>
@@ -85,7 +91,15 @@ namespace rho.rubyext
                 {
                     if (buttons[i] != null)
                     {
-                        Button customButton = new Button() { Content = buttons[i] };
+                        Button customButton = new Button();
+                        if(buttons[i] is Hash)
+                        {
+                            ((Hash)buttons[i]).TryGetValue(CRhoRuby.CreateSymbol("title"), out val);
+                            if(val != null)
+                                customButton.Content = val;
+                        }
+                        else
+                            customButton.Content = buttons[i];
                         customButton.Click += new RoutedEventHandler(customButton_Click);
                         m_messagePrompt.ActionPopUpButtons.Add(customButton);
                     }
