@@ -43,8 +43,8 @@ module Rho
         params['start_date'] = params['start_date'].to_time if !params['start_date'].nil? and !params['start_date'].is_a?(Time)
         params['end_date'] = params['end_date'].to_time if !params['end_date'].nil? and !params['end_date'].is_a?(Time)
         
-        params['start_date'] = MIN_TIME if params['start_date'].nil? or params['start_date'] < MIN_TIME
-        params['end_date'] = MAX_TIME if params['end_date'].nil? or params['end_date'] > MAX_TIME
+        params['start_date'] = MIN_TIME if params['start_date'].nil? #or params['start_date'] < MIN_TIME
+        params['end_date'] = MAX_TIME if params['end_date'].nil? #or params['end_date'] > MAX_TIME
         
         if params['start_date'] == MIN_TIME or params['end_date'] == MAX_TIME
           params['include_repeating'] = false
