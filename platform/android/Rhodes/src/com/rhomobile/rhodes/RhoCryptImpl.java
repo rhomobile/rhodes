@@ -19,6 +19,7 @@ import com.rhomobile.rhodes.Logger;
 public class RhoCryptImpl 
 {
     private static final String TAG = "RhoCryptJava";
+    private static final boolean DEBUG = false;
 
 	byte[] m_dbKeyData;
 	String m_strDBPartition;
@@ -29,12 +30,28 @@ public class RhoCryptImpl
     private void readKeyFromStorage()
     {
         SharedPreferences settings = RhodesService.getInstance().getSharedPreferences( m_strPrefName, Context.MODE_PRIVATE);
-    	String strOldKey = settings.getString(m_strDBPartition, "");
-    	if ( strOldKey != null && strOldKey.length() > 0 )
-    	{
-    		m_dbKeyData = Base64.decode(strOldKey);//, Base64.DEFAULT);
-    	}
-	}
+        String strOldKey = settings.getString(m_strDBPartition, "");
+        if (strOldKey != null && strOldKey.length() > 0)
+        {
+            
+            m_dbKeyData = Base64.decode(strOldKey);//, Base64.DEFAULT);
+            Logger.I(TAG, "Key is successfully read from Shared Preferences");
+            if(DEBUG) {
+                Logger.I(TAG, "Key: " + dumpKey(m_dbKeyData));
+                Logger.I(TAG, "Encoded key: " + strOldKey);
+            }
+        } else {
+            Logger.I(TAG, "No key is found in Shared Preferences");
+        }
+    }
+
+    private static String dumpKey(byte[] key) {
+        StringBuffer buffer = new StringBuffer();
+        for(byte b:key) {
+            buffer.append(String.format("%x ", b));
+        }
+        return buffer.toString();
+    }
 
 	private void generateNewKey()throws Exception
 	{
@@ -43,15 +60,28 @@ public class RhoCryptImpl
 	    kgen.init(m_nKeyLenBit, sr);  
 	    SecretKey skey = kgen.generateKey();  
 	    m_dbKeyData = skey.getEncoded();
+	    Logger.I(TAG, "New key is generated");
+	    if(DEBUG)
+	        Logger.I(TAG, "Key: " + dumpKey(m_dbKeyData));
 	}
 
-	private void writeKeyToStorage()
-	{
-		SharedPreferences settings = RhodesService.getInstance().getSharedPreferences(m_strPrefName, Context.MODE_PRIVATE);		
-    	SharedPreferences.Editor editor = settings.edit();
-    	String strKey = Base64.encodeToString(m_dbKeyData, false);//, Base64.DEFAULT);
-    	editor.putString(m_strDBPartition, strKey );
-    	editor.commit();
+    private void writeKeyToStorage()
+    {
+        SharedPreferences settings = RhodesService.getInstance().getSharedPreferences(m_strPrefName, Context.MODE_PRIVATE);		
+        SharedPreferences.Editor editor = settings.edit();
+        String strKey = Base64.encodeToString(m_dbKeyData, false);//, Base64.DEFAULT);
+        
+        editor.putString(m_strDBPartition, strKey );
+        if (editor.commit()) {
+            Logger.I(TAG, "Key is successfully saved to Shared Preferences");
+        } else {
+            Logger.E(TAG, "Write key to Shared Preferences is failed");
+        }
+
+        if (DEBUG) {
+            Logger.I(TAG, "Key: " + dumpKey(m_dbKeyData));
+            Logger.I(TAG, "Encoded key: " + strKey);
+        }
 	}
 
 	private void initKey(String szPartition)throws Exception
@@ -112,6 +142,7 @@ public class RhoCryptImpl
              */
             ByteBuffer input = ByteBuffer.allocate(dataIn.capacity());
             input.put(dataIn);
+            input.rewind();
             /* ******************************************************* */
 
             m_encryptCipher.doFinal(input, dataOut);
@@ -141,6 +172,7 @@ public class RhoCryptImpl
              */
             ByteBuffer input = ByteBuffer.allocate(dataIn.capacity());
             input.put(dataIn);
+            input.rewind();
             /* ******************************************************* */
 
             m_decryptCipher.doFinal(input, dataOut);
