@@ -238,10 +238,17 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     real_mkdir = (func_mkdir_t)dlsym(pc, "mkdir");
     real_fchdir = (func_fchdir_t)dlsym(pc, "fchdir");
     real_fcntl = (func_fcntl_t)dlsym(pc, "fcntl");
+    real_fsync = (func_fsync_t)dlsym(pc, "fsync");
     real_fdatasync = (func_fdatasync_t)dlsym(pc, "fdatasync");
+
+    if (real_fdatasync == NULL) {
+        //Android 2.1 have no fdatasync call. Use fsync instead
+        RHO_LOG("No fdatasync implementation, using fsync instead");
+        real_fdatasync = real_fsync;
+    }
+
     real_flock = (func_flock_t)dlsym(pc, "flock");
     real_fstat = (func_fstat_t)dlsym(pc, "fstat");
-    real_fsync = (func_fsync_t)dlsym(pc, "fsync");
     real_ftruncate = (func_ftruncate_t)dlsym(pc, "ftruncate");
     real_lseek = (func_lseek_t)dlsym(pc, "lseek");
     real_lseek64 = (func_lseek64_t)dlsym(pc, "lseek64");
