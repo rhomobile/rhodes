@@ -43,12 +43,24 @@ namespace rho.rubyext
         static CRhoRuby RhoRuby { get { return CRhoRuby.Instance; } }
 
         [RubyMethod("dosync", RubyMethodAttributes.PublicSingleton)]
-        public static object dosync(RubyModule/*!*/ self)
+        public static object dosync(RubyModule/*!*/ self, RubyArray args)
         {
             object res = null;
             try
             {
-                SyncThread.getInstance().addQueueCommand(new SyncThread.SyncCommand(SyncThread.scSyncAll, false));
+                boolean bShowStatus = true;	
+                String query_params = "";
+                if ( args != null && args.Count > 0 )	
+                {
+                    String str = ((MutableString)args[0]).ToString();	
+                    //bShowStatus = args[0].Equals(RubyConstant.QTRUE)||"true".equalsIgnoreCase(str);	
+                    bShowStatus = "true".equalsIgnoreCase(str);	
+                }
+        
+                if (args != null && args.Count > 1)
+                    query_params = ((MutableString)args[1]).ToString();
+                
+                SyncThread.getInstance().addQueueCommand(new SyncThread.SyncCommand(SyncThread.scSyncAll, bShowStatus, query_params));
 
                 res = SyncThread.getInstance().getRetValue();
             }
@@ -66,8 +78,8 @@ namespace rho.rubyext
             return res;
         }
 
-        [RubyMethod("dosync", RubyMethodAttributes.PublicSingleton)]
-        public static object dosync(RubyModule/*!*/ self, bool/*!*/ show_status_popup)
+        /*[RubyMethod("dosync", RubyMethodAttributes.PublicSingleton)]
+        public static object dosync(RubyModule self, bool show_status_popup)
         {
             object res = null;
             try
@@ -88,24 +100,44 @@ namespace rho.rubyext
             }
 
             return res;
-        }
+        }*/
 
         [RubyMethod("dosync_source", RubyMethodAttributes.PublicSingleton)]
-        public static object dosync_source(RubyModule/*!*/ self, [NotNull]object/*!*/ srcID)
+        public static object dosync_source(RubyModule/*!*/ self, RubyArray args)
         {
             object res = null;
             try
             {
                 int nSrcID = 0;
                 String strName = "";
-                if (srcID is long)
+
+                if ( args[0] is  long)
+                    nSrcID = (int)(long)args[0];
+                else if (args[0] is int)
+                    nSrcID = (int)args[0];
+                else
+                    strName = ((MutableString)args[0]).ToString();
+
+                /*if (srcID is long)
                     nSrcID = (int)(long)srcID;
                 else if (srcID is int)
                     nSrcID = (int)srcID;
                 else
-                    strName = srcID.ToString();
+                    strName = srcID.ToString();*/
 
-                SyncThread.getInstance().addQueueCommand(new SyncThread.SyncCommand(SyncThread.scSyncOne, strName, nSrcID, true));
+                boolean bShowStatus = true;	
+                String query_params = "";
+                if ( args != null && args.Count > 1 )	
+                {
+                    String str = ((MutableString)args[1]).ToString();	
+                    //bShowStatus = args[0].Equals(RubyConstant.QTRUE)||"true".equalsIgnoreCase(str);	
+                    bShowStatus = "true".equalsIgnoreCase(str);	
+                }
+        
+                if (args != null && args.Count > 2)
+                    query_params = ((MutableString)args[2]).ToString();
+
+                SyncThread.getInstance().addQueueCommand(new SyncThread.SyncCommand(SyncThread.scSyncOne, strName, nSrcID, bShowStatus, query_params));
 
                 res = SyncThread.getInstance().getRetValue();
             }
@@ -123,8 +155,8 @@ namespace rho.rubyext
             return res;
         }
         
-        [RubyMethod("dosync_source", RubyMethodAttributes.PublicSingleton)]
-        public static object dosync_source(RubyModule/*!*/ self, [NotNull]object/*!*/ srcID, bool/*!*/ show_status_popup)
+        /*[RubyMethod("dosync_source", RubyMethodAttributes.PublicSingleton)]
+        public static object dosync_source(RubyModule self, [NotNull]object srcID, bool show_status_popup)
         {
             object res = null;
             try
@@ -154,7 +186,7 @@ namespace rho.rubyext
             }
 
             return res;
-        }
+        }*/
 
         [RubyMethod("dosearch", RubyMethodAttributes.PublicSingleton)]
         public static object dosearch(RubyModule/*!*/ self, [NotNull]RubyArray/*!*/ arSourcesR, [NotNull]String/*!*/ from, [NotNull]String/*!*/ strParams,

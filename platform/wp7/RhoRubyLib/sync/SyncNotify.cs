@@ -9,6 +9,7 @@ namespace rho.sync
     {
         private static RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		    new RhoLogger("Sync");
+        int MAX_SERVER_ERROR_LEN = 1000;
         private static CRhodesApp RHODESAPP() { return CRhodesApp.Instance; }
 
         public class SyncNotification
@@ -505,17 +506,32 @@ namespace rho.sync
 				        	
 				        	    strBody += "error";				        	
 						        strBody += "&error_code=" + nErrCode;
-						    
-						        if ( strError != null && strError.length() > 0 )
-						    	    strBody += "&error_message=" + URI.urlEncode(strError);
-						        else  if ( src != null )
-						    	    strBody += "&error_message=" + URI.urlEncode(src.m_strError);
-						    
-						        if ( strServerError != null && strServerError.length() > 0 )
-						    	    strBody += "&" + strServerError;
-						        else if ( src != null && src.m_strServerError != null && src.m_strServerError.length() > 0  )
-						    	    strBody += "&" + src.m_strServerError;						    
-				            }
+
+                                if (strError != null && strError.length() > 0)
+                                {
+                                    if (strError.length() > MAX_SERVER_ERROR_LEN)
+                                        strError = strError.substring(0, MAX_SERVER_ERROR_LEN);
+                                    strBody += "&error_message=" + URI.urlEncode(strError);
+                                }
+                                else if (src != null && src.m_strError != null)
+                                {
+                                    if (src.m_strError.length() > MAX_SERVER_ERROR_LEN)
+                                        src.m_strError = src.m_strError.substring(0, MAX_SERVER_ERROR_LEN);
+                                    strBody += "&error_message=" + URI.urlEncode(src.m_strError);
+                                }
+
+                                if (strServerError != null && strServerError.length() > 0)
+                                {
+                                    if (strServerError.length() > MAX_SERVER_ERROR_LEN)
+                                        strServerError = strServerError.substring(0, MAX_SERVER_ERROR_LEN);
+                                    strBody += "&" + strServerError;
+                                }
+                                else if (src != null && src.m_strServerError != null && src.m_strServerError.length() > 0)                              
+                                {
+                                    if ( src.m_strServerError.length() > MAX_SERVER_ERROR_LEN )
+                                        src.m_strServerError = src.m_strServerError.substring(0, MAX_SERVER_ERROR_LEN);	
+                                    strBody += "&" + src.m_strServerError;	                }						    
+				                }
 				        
 		                    if ( src != null )
 		                        strBody += makeCreateObjectErrorBody( src.getID());
@@ -636,6 +652,10 @@ namespace rho.sync
 				    return;
 			
 		        String strBody = "error_code=" + nErrCode;
+
+                if (strMessage != null && strMessage.length() > MAX_SERVER_ERROR_LEN)
+                    strMessage = strMessage.substring(0, MAX_SERVER_ERROR_LEN);
+
 	            strBody += "&error_message=" + URI.urlEncode(strMessage != null? strMessage : "");
 	            strBody += "&rho_callback=1";
 	        
