@@ -285,15 +285,13 @@ namespace rho.rubyext {
             );
             
             DefineLibraryMethod(module, "dosync", 0x21, 
-                0x00000000U, 0x00000000U, 
-                new Func<IronRuby.Builtins.RubyModule, System.Object>(rho.rubyext.RhoSyncEngine.dosync), 
-                new Func<IronRuby.Builtins.RubyModule, System.Boolean, System.Object>(rho.rubyext.RhoSyncEngine.dosync)
+                0x00000000U, 
+                new Func<IronRuby.Builtins.RubyModule, IronRuby.Builtins.RubyArray, System.Object>(rho.rubyext.RhoSyncEngine.dosync)
             );
             
             DefineLibraryMethod(module, "dosync_source", 0x21, 
-                0x00000002U, 0x00000002U, 
-                new Func<IronRuby.Builtins.RubyModule, System.Object, System.Object>(rho.rubyext.RhoSyncEngine.dosync_source), 
-                new Func<IronRuby.Builtins.RubyModule, System.Object, System.Boolean, System.Object>(rho.rubyext.RhoSyncEngine.dosync_source)
+                0x00000000U, 
+                new Func<IronRuby.Builtins.RubyModule, IronRuby.Builtins.RubyArray, System.Object>(rho.rubyext.RhoSyncEngine.dosync_source)
             );
             
             DefineLibraryMethod(module, "enable_status_popup", 0x21, 

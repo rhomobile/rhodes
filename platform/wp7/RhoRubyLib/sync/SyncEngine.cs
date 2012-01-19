@@ -222,7 +222,7 @@ namespace rho.sync
             stopSync();
         }
     
-        public void doSyncAllSources()
+        public void doSyncAllSources(String strQueryParams)
         {
 	        try
 	        {
@@ -237,8 +237,8 @@ namespace rho.sync
 			        PROF.CREATE_COUNTER("Data1");
 			        PROF.CREATE_COUNTER("Pull");
 			        PROF.START("Sync");
-	
-	                syncAllSources();
+
+                    syncAllSources(strQueryParams);
 	
 			        PROF.DESTROY_COUNTER("Net");	    
 			        PROF.DESTROY_COUNTER("Parse");
@@ -432,7 +432,7 @@ namespace rho.sync
 		    
         }
 
-        public void doSyncSource(SourceID oSrcID)
+        public void doSyncSource(SourceID oSrcID, String strQueryParams)
         {
             SyncSource src = null;
 
@@ -446,8 +446,9 @@ namespace rho.sync
 	                if ( src != null )
 	                {
 		                LOG.INFO("Started synchronization of the data source: " + src.getName() );
-	
-	                    src.sync();
+
+                        src.m_strQueryParams = strQueryParams;
+                        src.sync();
 	
 				        getNotify().fireSyncNotification(src, true, src.m_nErrCode, src.m_nErrCode == RhoAppAdapter.ERR_NONE ? RhoAppAdapter.getMessageText("sync_completed") : "");
 	                }else
@@ -864,7 +865,7 @@ namespace rho.sync
 	        return -1;
 	    }
 */
-	    void syncOneSource(int i)
+	    void syncOneSource(int i, String strQueryParams)
 	    {
     	    SyncSource src = null;
     	    //boolean bError = false;
@@ -872,9 +873,12 @@ namespace rho.sync
 		        src = (SyncSource)m_sources.elementAt(i);
 		        if ( src.getSyncType().compareTo("bulk_sync_only")==0 )
 		            return;
-	
-		        if ( isSessionExist() && getState() != esStop )
-		            src.sync();
+
+                if (isSessionExist() && getState() != esStop)
+                {
+                    src.m_strQueryParams = strQueryParams;
+                    src.sync();
+                }
 	
 		        //getNotify().onSyncSourceEnd(i, m_sources);
     	    }catch(Exception exc)
@@ -893,7 +897,7 @@ namespace rho.sync
 	        //return !bError;
 	    }
 	
-	    void syncAllSources()
+	    void syncAllSources(String strQueryParams)
 	    {
 //	        boolean bError = false;
 
@@ -904,7 +908,7 @@ namespace rho.sync
 	        //TODO: do not stop on error source
 	        for( int i = 0; i < (int)m_sources.size() && isContinueSync(); i++ )
 	        {
-	            /*bError = !*/syncOneSource(i);
+                /*bError = !*/syncOneSource(i, strQueryParams);
 	        }
 
             if (!isSchemaChanged() && getState() != SyncEngine.esStop )
@@ -975,9 +979,12 @@ namespace rho.sync
 		        RHOCONF().setString("rho_sync_user", name, true);
 		    
 	    	    getNotify().callLoginCallback(oNotify, RhoAppAdapter.ERR_NONE, "" );
-		    
-	    	    if ( ClientRegister.getInstance() != null )
-	    		    ClientRegister.getInstance().startUp();	    	
+
+                if (ClientRegister.getInstance() != null)
+                {
+                    getUserDB().executeSQL("UPDATE client_info SET token_sent=?", 0);
+                    ClientRegister.getInstance().startUp();
+                }    	
 	    	
 		    }catch(Exception exc)
 		    {
