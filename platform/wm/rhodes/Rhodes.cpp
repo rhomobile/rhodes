@@ -396,7 +396,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 		return S_FALSE;
     }
 
-    rho::common::CRhodesApp::Create(m_strRootPath );
+    rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath);
 
     DWORD dwStyle = WS_VISIBLE;
 
