@@ -25,6 +25,9 @@ void rho_barcode_take_barcode(const char* callback, VALUE options) {
 
 
 const char* rho_barcode_barcode_recognize(const char* filename) {
+
+   //NSLog(@"$$$$$$$$$$$$$$$$$$$$  Barcode File : %@: ", [NSString stringWithUTF8String:filename]);
+
     void* img_buf = 0;
     int img_width;
     int img_height;	

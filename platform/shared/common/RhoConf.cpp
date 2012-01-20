@@ -50,7 +50,7 @@ void RhoSettings::saveToFile(const char* szName)
     saveChangesToString(strData);
 
     CRhoFile oFile;
-    oFile.open( (getConfFilePath()+CONF_CHANGES).c_str(), common::CRhoFile::OpenForWrite);
+    oFile.open( (getAppConfUserFilePath()+CONF_CHANGES).c_str(), common::CRhoFile::OpenForWrite);
     oFile.write( strData.c_str(), strData.size() );
 }
 
@@ -93,10 +93,10 @@ void RhoSettings::readChanges()
     String strTimestamp;
     CRhoFile::readStringFromFile((getConfFilePath()+CONF_TIMESTAMP).c_str(), strTimestamp);
 
-    if ( CRhoFile::isFileExist((getConfFilePath()+CONF_CHANGES).c_str()) )
+    if ( CRhoFile::isFileExist((getAppConfUserFilePath()+CONF_CHANGES).c_str()) )
     {
         String strSettings;
-        CRhoFile::readStringFromFile((getConfFilePath()+CONF_CHANGES).c_str(), strSettings);
+        CRhoFile::readStringFromFile((getAppConfUserFilePath()+CONF_CHANGES).c_str(), strSettings);
         loadFromString( strSettings.c_str(), m_mapChangedValues );
 
         String strOldTimestamp = "";
@@ -258,10 +258,18 @@ bool   RhoSettings::isExist(const char* szName){
 
 extern "C" {
 	
-void rho_conf_Init(const char* szRootPath){
+void rho_conf_Init(const char* szRootPath)
+{
+    rho_conf_Init_with_separate_user_path(szRootPath, szRootPath);
+}
+    
+void  rho_conf_Init_with_separate_user_path(const char* szRootPath, const char* szUserPath)
+{
 	rho::common::CFilePath oRhoPath( szRootPath );
-
+	rho::common::CFilePath oUserPath( szUserPath );
+    
     RHOCONF().setAppConfFilePath(oRhoPath.makeFullPath(CONF_FILENAME).c_str());
+    RHOCONF().setAppConfUserFilePath(oUserPath.makeFullPath(CONF_FILENAME).c_str());
 #ifdef RHODES_EMULATOR
     rho::String strPath = rho::common::CFilePath::join( szRootPath, RHO_EMULATOR_DIR);
     strPath = rho::common::CFilePath::join( strPath, CONF_FILENAME);
@@ -269,9 +277,10 @@ void rho_conf_Init(const char* szRootPath){
 #else
     RHOCONF().setConfFilePath(oRhoPath.makeFullPath(CONF_FILENAME).c_str());
 #endif
-
+    
     RHOCONF().loadFromFile();
 }
+    
 
 int rho_conf_getBool(const char* szName) {
     return RHOCONF().getBool(szName) ? 1 : 0;

@@ -43,6 +43,8 @@
 
 #import "Rhodes.h"
 
+#import "common/app_build_configs.h"
+
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
@@ -117,16 +119,19 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
  * Application folders located undern the root
  */
 + (NSString *) getApplicationsRootPath {
-	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	NSString *documentsDirectory = [paths objectAtIndex:0];
+	NSString *documentsDirectory = [NSString stringWithUTF8String:rho_native_rhopath()];
 	return [documentsDirectory stringByAppendingPathComponent:@"apps"];
 }
 
 + (NSString *) getDbPath {
-	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	NSString *documentsDirectory = [paths objectAtIndex:0];
+	NSString *documentsDirectory = [NSString stringWithUTF8String:rho_native_rhouserpath()];
 	return [documentsDirectory stringByAppendingPathComponent:@"db"];
 }
+
++ (NSString *) getApplicationsUserPath {
+	return [NSString stringWithUTF8String:rho_native_rhouserpath()];
+}
+
 
 + (NSString *) getApplicationsRosterUrl {
 	return @"http://dev.rhomobile.com/vlad/";
@@ -207,9 +212,10 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
     
 	NSString *bundleRoot = [[NSBundle mainBundle] resourcePath];
 	NSString *rhoRoot = [NSString stringWithUTF8String:rho_native_rhopath()];
+	NSString *rhoUserRoot = [NSString stringWithUTF8String:rho_native_rhouserpath()];
 
 	NSString *filePathNew = [bundleRoot stringByAppendingPathComponent:@"name"];
-	NSString *filePathOld = [rhoRoot stringByAppendingPathComponent:@"name"];
+	NSString *filePathOld = [rhoUserRoot stringByAppendingPathComponent:@"name"];
 //#ifndef RHO_DONT_COPY_ON_START
     BOOL hasOldName = [fileManager fileExistsAtPath:filePathOld];
 //#endif
@@ -222,7 +228,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
         contentChanged = YES;
 	else {
 		filePathNew = [bundleRoot stringByAppendingPathComponent:@"hash"];
-		filePathOld = [rhoRoot stringByAppendingPathComponent:@"hash"];
+		filePathOld = [rhoUserRoot stringByAppendingPathComponent:@"hash"];
 
         contentChanged = ![self isContentsEqual:fileManager first:filePathNew second:filePathOld];
         
@@ -271,13 +277,21 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
         }
 
         NSError *error;
+        
+        NSString *appsDocDir = [rhoUserRoot stringByAppendingPathComponent:@"apps"];
+        [fileManager createDirectoryAtPath:rhoRoot withIntermediateDirectories:YES attributes:nil error:&error];
+        [fileManager createDirectoryAtPath:appsDocDir withIntermediateDirectories:YES attributes:nil error:&error];
+        
         // Create symlink to "lib"
         NSString *src = [bundleRoot stringByAppendingPathComponent:@"lib"];
         NSLog(@"src: %@", src);
         NSString *dst = [rhoRoot stringByAppendingPathComponent:@"lib"];
         NSLog(@"dst: %@", dst);
         [fileManager removeItemAtPath:dst error:&error];
+        
         [fileManager createSymbolicLinkAtPath:dst withDestinationPath:src error:&error];
+        //[self copyFromMainBundle:fileManager fromPath:src toPath:dst remove:YES];
+
         
         NSString *dirs[] = {@"apps"};
         for (int i = 0, lim = sizeof(dirs)/sizeof(dirs[0]); i < lim; ++i) {
@@ -323,7 +337,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
                     remove = NO;
                 NSString *src = [bundleRoot stringByAppendingPathComponent:copy_dirs[i]];
                 NSLog(@"copy src: %@", src);
-                NSString *dst = [rhoRoot stringByAppendingPathComponent:copy_dirs[i]];
+                NSString *dst = [rhoUserRoot stringByAppendingPathComponent:copy_dirs[i]];
                 NSLog(@"copy dst: %@", dst);
                 [self copyFromMainBundle:fileManager fromPath:src toPath:dst remove:remove];
             }
@@ -332,7 +346,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
             for (int i = 0, lim = sizeof(items)/sizeof(items[0]); i < lim; ++i) {
                 NSString *src = [bundleRoot stringByAppendingPathComponent:items[i]];
                 NSLog(@"copy src: %@", src);
-                NSString *dst = [rhoRoot stringByAppendingPathComponent:items[i]];
+                NSString *dst = [rhoUserRoot stringByAppendingPathComponent:items[i]];
                 NSLog(@"copy dst: %@", dst);
                 [fileManager removeItemAtPath:dst error:&error];
                 [fileManager copyItemAtPath:src toPath:dst error:&error];
@@ -353,8 +367,8 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 #endif
 	}
     
-	rho_logconf_Init(rho_native_rhopath(), "");
-	rho_rhodesapp_create(rho_native_rhopath());
+	rho_logconf_Init_with_separate_user_path(rho_native_rhopath(), "", rho_native_rhouserpath());
+	rho_rhodesapp_create_with_separate_user_path(rho_native_rhopath(), rho_native_rhouserpath());
 	RAWLOG_INFO("Rhodes started");
 }
 
@@ -391,8 +405,9 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 
 @end
 
-const char* rho_native_rhopath() 
-{
+
+
+const char* getUserPath() {
 	static bool loaded = FALSE;
 	static char root[FILENAME_MAX];
 	if (!loaded){
@@ -405,6 +420,49 @@ const char* rho_native_rhopath()
 	}
 	
 	return root;
+}
+
+
+
+const char* rho_native_rhopath() 
+{
+    BOOL all_in_doc = NO;
+    const char* svalue = get_app_build_config_item("iphone_all_in_doc_folder");
+    if (svalue != NULL) {
+        all_in_doc = svalue[0] != '0';
+    } 
+    
+    if (all_in_doc) {
+        return getUserPath();
+    }
+
+	static bool loaded = FALSE;
+	static char root[FILENAME_MAX];
+	if (!loaded){
+		NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+		NSString *documentsDirectory = //[paths objectAtIndex:0];
+		[ [paths objectAtIndex:0] stringByAppendingString:@"/Private Documents/"];
+		[documentsDirectory getFileSystemRepresentation:root maxLength:sizeof(root)];
+		
+		loaded = TRUE;
+	}
+	
+	return root;
+}
+
+const char* rho_native_rhouserpath() 
+{
+    BOOL use_doc = YES;
+    const char* svalue = get_app_build_config_item("iphone_use_doc_folder");
+    if (svalue != NULL) {
+        use_doc = svalue[0] != '0';
+    } 
+    
+    if (!use_doc) {
+        return rho_native_rhopath();
+    }
+
+    return getUserPath();
 }
 
 VALUE rho_sys_get_locale() 

@@ -145,6 +145,7 @@ extern "C"{
 #endif //__cplusplus
 
 void rho_logconf_Init(const char* szRootPath, const char* szLogPort);
+void rho_logconf_Init_with_separate_user_path(const char* szRootPath, const char* szLogPort, const char* szUserPath);
 
 char* rho_logconf_getText();
 int   rho_logconf_getTextPos();

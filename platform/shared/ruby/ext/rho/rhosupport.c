@@ -60,6 +60,14 @@ VALUE __rhoGetCurrentDir(void)
     return rb_str_new2(rho_native_rhopath());
 }
 
+VALUE __rhoGetUserDir(void)
+{
+    return rb_str_new2(rho_native_rhouserpath());
+}
+
+
+
+
 #ifdef RHODES_EMULATOR
 VALUE __rhoGetRhodesDir(void)
 {
@@ -570,6 +578,7 @@ void Init_RhoSupport()
     rb_define_global_function("__rhoGetRhodesDir", __rhoGetRhodesDir, 0);
 #endif
 	rb_define_global_function("__rhoGetCurrentDir", __rhoGetCurrentDir, 0);
+	rb_define_global_function("__rhoGetUserDir", __rhoGetUserDir, 0);
 	rb_define_global_function("load", rb_load_compiled, 1);
 	rb_define_global_function("__rhoGetCallbackObject", __rhoGetCallbackObject, 1);
 
@@ -583,9 +592,10 @@ void Init_RhoSupport()
 static void Init_RhoBlobs()
 {
     const char* szBlobPath = rho_rhodesapp_getblobsdirpath();
+    const char* szUserPath = rho_rhodesapp_getuserrootpath();
     RAWLOG_INFO1("Init_RhoBlobs: %s", szBlobPath );
 
-    rho_file_recursive_createdir(szBlobPath, rho_native_rhopath());
+    rho_file_recursive_createdir(szBlobPath, szUserPath);
 }
 
 void rhoRubyLogWithSeverity(int severity, VALUE category, VALUE str) {

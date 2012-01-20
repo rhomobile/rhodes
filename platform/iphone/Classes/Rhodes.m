@@ -550,10 +550,11 @@ static Rhodes *instance = NULL;
         [appManager configure];
         
         const char *szRootPath = rho_native_rhopath();
+        const char *szUserPath = rho_native_rhouserpath();
         NSLog(@"Init logconf");
-        rho_logconf_Init(szRootPath, "");
+        rho_logconf_Init_with_separate_user_path(szRootPath, "", szUserPath);
         NSLog(@"Create rhodes app");
-        rho_rhodesapp_create(szRootPath);
+        rho_rhodesapp_create_with_separate_user_path(szRootPath, szUserPath);
         app_created = YES;
         
         rotationLocked = rho_conf_getBool("disable_screen_rotation");
