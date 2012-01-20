@@ -1363,8 +1363,6 @@ For execute you rhodes based application from enother rhodes based application u
 ## MapView
 MapView class provides an embeddable map interface, similar to the one provided by the Maps application. The following code would go into your controller and the map appears on a whole page.
 
-NOTE: in order to use it on Android, you need to install Google Add-on API and retrieve Google Map API key as described [here](build#build-for-android).
-
 	:::ruby
 	map_params = {
 	     :provider => 'Google',
@@ -1393,6 +1391,21 @@ For use ESRI maps in your projects on iPhone:
 
 * Install [ESRI iOS SDK](http://resources.arcgis.com/content/arcgis-iphone/api) - use default folders during installations !
 * Add "esri" to your applications extensions list in build.yml file.
+
+To use native Google map view on Android:
+
+* Install Google Add-on API
+* Get [Google Maps API key](http://code.google.com/android/maps-api-signup.html)
+* Add 'mapping' and 'apikey' parameters to your build.yml
+    
+        android:
+            mapping: yes
+            apikey: <YOUR-API-KEY>
+
+* Add 'network_state' to capabilities list in your build.yml.
+
+        capabilities:
+            - network_state
 
 Map settings:
 
