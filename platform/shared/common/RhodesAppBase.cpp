@@ -36,12 +36,12 @@ namespace common{
 IMPLEMENT_LOGCLASS(CRhodesAppBase,"RhodesApp");
 CRhodesAppBase* CRhodesAppBase::m_pInstance = 0;
 
-/*static*/ CRhodesAppBase* CRhodesAppBase::Create(const String& strRootPath)
+/*static*/ CRhodesAppBase* CRhodesAppBase::Create(const String& strRootPath, const String& strUserPath)
 {
     if ( m_pInstance != null) 
         return m_pInstance;
 
-    m_pInstance = new CRhodesAppBase(strRootPath);
+    m_pInstance = new CRhodesAppBase(strRootPath, strUserPath);
     return m_pInstance;
 }
 
@@ -53,9 +53,10 @@ CRhodesAppBase* CRhodesAppBase::m_pInstance = 0;
     m_pInstance = 0;
 }
 
-CRhodesAppBase::CRhodesAppBase(const String& strRootPath) : CRhoThread()
+CRhodesAppBase::CRhodesAppBase(const String& strRootPath, const String& strUserPath) : CRhoThread()
 {
     m_strRhoRootPath = strRootPath;
+    m_strAppUserPath = strUserPath;
 
     initAppUrls();
 }
@@ -63,14 +64,14 @@ CRhodesAppBase::CRhodesAppBase(const String& strRootPath) : CRhoThread()
 void CRhodesAppBase::initAppUrls() 
 {
 #ifndef RHODES_EMULATOR
-    m_strBlobsDirPath = getRhoRootPath() + "db/db-files";
-	m_strDBDirPath = getRhoRootPath() + "db";
+    m_strBlobsDirPath = getRhoUserPath() + "db/db-files";
+	m_strDBDirPath = getRhoUserPath() + "db";
 
     m_strAppRootPath = getRhoRootPath() + "apps";
     //m_strRhodesPath = "";
 #else
-    m_strBlobsDirPath = getRhoRootPath() + RHO_EMULATOR_DIR"/db/db-files";
-    m_strDBDirPath = getRhoRootPath() + RHO_EMULATOR_DIR"/db";
+    m_strBlobsDirPath = getRhoUserPath() + RHO_EMULATOR_DIR"/db/db-files";
+    m_strDBDirPath = getRhoUserPath() + RHO_EMULATOR_DIR"/db";
 
     m_strAppRootPath = getRhoRootPath();
 #endif
@@ -79,7 +80,7 @@ void CRhodesAppBase::initAppUrls()
 String CRhodesAppBase::getRelativeDBFilesPath(const String& strFilePath)
 {
 #ifndef RHODES_EMULATOR
-    String strDbFileRoot = getRhoRootPath();
+    String strDbFileRoot = getRhoUserPath();//getRhoRootPath();
 #else
     String strDbFileRoot = getRhoRootPath() + RHO_EMULATOR_DIR;
 #endif
@@ -93,7 +94,7 @@ String CRhodesAppBase::getRelativeDBFilesPath(const String& strFilePath)
 String CRhodesAppBase::resolveDBFilesPath(const String& strFilePath)
 {
 #ifndef RHODES_EMULATOR
-    String strDbFileRoot = getRhoRootPath();
+    String strDbFileRoot = getRhoUserPath();//getRhoRootPath();
 #else
     String strDbFileRoot = getRhoRootPath() + RHO_EMULATOR_DIR;
 #endif
@@ -304,5 +305,12 @@ int rho_base64_decode(const char *src, int srclen, char *dst)
 rho::String rho_sysimpl_get_phone_id()
 {
     return "";
+}
+#endif
+
+#if !defined(OS_MACOSX)
+const char* rho_native_rhouserpath()
+{
+    return rho_native_rhopath();
 }
 #endif

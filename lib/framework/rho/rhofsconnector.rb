@@ -36,6 +36,14 @@ module Rho
       def get_base_app_path
         File.join(__rhoGetCurrentDir(), RHO_APPS_DIR)
       end
+
+      def get_user_path
+          if System::get_property('platform') == 'APPLE'
+                File.join(__rhoGetUserDir(), RHO_APPS_DIR)
+          else
+                File.join(__rhoGetCurrentDir(), RHO_APPS_DIR)
+          end
+      end
       
       def get_app_manifest_filename
         File.join(__rhoGetCurrentDir(), RHO_APPS_DIR + 'app_manifest.txt')
@@ -53,7 +61,12 @@ module Rho
 if defined?( RHODES_EMULATOR )                  
           File.join(__rhoGetCurrentDir(), RHO_EMULATOR_DIR + '/db/syncdb' + postfix + '.sqlite')
 else
-          File.join(__rhoGetCurrentDir(), 'db/syncdb' + postfix + '.sqlite')
+          if System::get_property('platform') == 'APPLE'
+                File.join(__rhoGetUserDir(), 'db/syncdb' + postfix + '.sqlite')
+          else
+                File.join(__rhoGetCurrentDir(), 'db/syncdb' + postfix + '.sqlite')
+          end
+          
 end          
       end
 
@@ -61,7 +74,12 @@ end
 if defined?( RHODES_EMULATOR )                        
         File.join(__rhoGetCurrentDir(), RHO_EMULATOR_DIR + '/db/db-files')
 else
-        File.join(__rhoGetCurrentDir(), 'db/db-files')
+          if System::get_property('platform') == 'APPLE'
+                return File.join(__rhoGetUserDir(), 'db/db-files')
+          else
+                return File.join(__rhoGetCurrentDir(), 'db/db-files')
+          end
+        
 end        
       end
 
@@ -71,7 +89,11 @@ end
 
       def get_blob_path(relative_path)
         cur_dir = __rhoGetCurrentDir()
+          if System::get_property('platform') == 'APPLE'
+                 cur_dir = __rhoGetUserDir()
+          end
 if defined?( RHODES_EMULATOR )
+        cur_dir = __rhoGetCurrentDir()
         cur_dir = File.join(cur_dir, RHO_EMULATOR_DIR)
 end
         if cur_dir && cur_dir.length()>0

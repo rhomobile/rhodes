@@ -1288,14 +1288,23 @@ if !defined?(RHO_WP7)
     f.close        
 
     File.exists?(file_name).should == true
+
     blob_name = file_name[__rhoGetCurrentDir().length(), file_name.length()-__rhoGetCurrentDir().length()]
-    #puts "blob_name : #{blob_name}"
+      
+    if System::get_property('platform') == 'APPLE'
+        blob_name = file_name[__rhoGetUserDir().length(), file_name.length()-__rhoGetUserDir().length()]
+    end
+    
+    puts "file_name : #{file_name}"
+    puts "blob_name : #{blob_name}"
     
     item = getAccount.create({'my_text'=>blob_name})
     item.my_text.should == blob_name
     File.exists?(file_name).should == true
     
     item.destroy
+      
+      #sleep 30  
     
     item2 = getAccount.find(item.object)
     item2.should be_nil

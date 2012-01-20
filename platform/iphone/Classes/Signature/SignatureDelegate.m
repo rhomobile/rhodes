@@ -85,7 +85,7 @@
 
 
 - (void)useImage:(UIImage*)theImage { 
-    NSString *folder = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:@"/../db/db-files"];
+    NSString *folder = [[AppManager getDbPath] stringByAppendingPathComponent:@"/db-files"];
 
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:folder])

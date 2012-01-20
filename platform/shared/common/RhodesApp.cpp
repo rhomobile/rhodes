@@ -260,12 +260,12 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
     m_commands.clear();
 }
 
-/*static*/ CRhodesApp* CRhodesApp::Create(const String& strRootPath)
+/*static*/ CRhodesApp* CRhodesApp::Create(const String& strRootPath, const String& strUserPath)
 {
     if ( m_pInstance != null) 
         return (CRhodesApp*)m_pInstance;
 
-    m_pInstance = new CRhodesApp(strRootPath);
+    m_pInstance = new CRhodesApp(strRootPath, strUserPath);
 
     String push_pin = RHOCONF().getString("push_pin");
     if(!push_pin.empty())
@@ -285,8 +285,8 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
 
 }
 
-CRhodesApp::CRhodesApp(const String& strRootPath)
-    :CRhodesAppBase(strRootPath)
+CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath)
+    :CRhodesAppBase(strRootPath, strUserPath)
 {
     m_bExit = false;
     m_bDeactivationMode = false;
@@ -773,11 +773,12 @@ const String& CRhodesApp::getRhoMessage(int nError, const char* szName)
 void CRhodesApp::initHttpServer()
 {
     String strAppRootPath = getRhoRootPath();
+    String strAppUserPath = getRhoUserPath();
 #ifndef RHODES_EMULATOR
     strAppRootPath += "apps";
 #endif
 
-    m_httpServer = new net::CHttpServer(atoi(getFreeListeningPort()), strAppRootPath);
+    m_httpServer = new net::CHttpServer(atoi(getFreeListeningPort()), strAppRootPath, strAppUserPath);
     m_httpServer->register_uri("/system/geolocation", rubyext::CGeoLocation::callback_geolocation);
     m_httpServer->register_uri("/system/syncdb", callback_syncdb);
     m_httpServer->register_uri("/system/redirect_to", callback_redirect_to);
@@ -1401,9 +1402,15 @@ int	rho_http_snprintf(char *buf, size_t buflen, const char *fmt, ...)
 	
 void rho_rhodesapp_create(const char* szRootPath)
 {
-    rho::common::CRhodesApp::Create(szRootPath);
+    rho::common::CRhodesApp::Create(szRootPath, szRootPath);
 }
 
+void rho_rhodesapp_create_with_separate_user_path(const char* szRootPath, const char* szUserPath)
+{
+    rho::common::CRhodesApp::Create(szRootPath, szUserPath);
+}
+    
+    
 void rho_rhodesapp_start()
 {
     RHODESAPP().startApp();
@@ -1453,6 +1460,12 @@ const char* rho_rhodesapp_getblobsdirpath()
 {
     return RHODESAPP().getBlobsDirPath().c_str();
 }
+    
+const char* rho_rhodesapp_getuserrootpath()
+{
+    return RHODESAPP().getRhoUserPath().c_str();
+}
+    
 
 const char* rho_rhodesapp_getdbdirpath()
 {

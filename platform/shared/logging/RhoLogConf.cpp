@@ -233,9 +233,9 @@ extern "C" {
 using namespace rho;
 using namespace rho::common;
 
+void rho_logconf_Init_with_separate_user_path(const char* szRootPath, const char* szLogPort, const char* szUserPath)
+{
     
-void rho_logconf_Init(const char* szRootPath, const char* szLogPort){
-
 #ifdef RHODES_EMULATOR
     String strRootPath = szRootPath;
     strRootPath += RHO_EMULATOR_DIR"/";
@@ -243,7 +243,7 @@ void rho_logconf_Init(const char* szRootPath, const char* szLogPort){
 #else
     rho::common::CFilePath oLogPath( szRootPath );
 #endif
-
+    
     //Set defaults
 #ifdef RHO_DEBUG
     LOGCONF().setMinSeverity( L_TRACE );
@@ -255,16 +255,16 @@ void rho_logconf_Init(const char* szRootPath, const char* szLogPort){
     LOGCONF().setLogToOutput(false);
     LOGCONF().setEnabledCategories("");
 #endif//!RHO_DEBUG
-
+    
     LOGCONF().setLogPrefix(true);
-
+    
     rho::String logPath = oLogPath.makeFullPath("rholog.txt");
     LOGCONF().setLogToFile(true);
     LOGCONF().setLogFilePath( logPath.c_str() );
     LOGCONF().setMaxLogFileSize(1024*50);
-
-    rho_conf_Init(szRootPath);
-
+    
+    rho_conf_Init_with_separate_user_path(szRootPath, szUserPath);
+    
     LOGCONF().loadFromConf(RHOCONF());
     if (szLogPort != NULL) {
         LOGCONF().setLogPort(szLogPort);
@@ -272,6 +272,12 @@ void rho_logconf_Init(const char* szRootPath, const char* szLogPort){
     else {
         LOGCONF().setLogPort("");
     }
+        
+}
+    
+    
+void rho_logconf_Init(const char* szRootPath, const char* szLogPort){
+    rho_logconf_Init_with_separate_user_path(szRootPath, szLogPort, szRootPath);
 }
 
 char* rho_logconf_getText() {
