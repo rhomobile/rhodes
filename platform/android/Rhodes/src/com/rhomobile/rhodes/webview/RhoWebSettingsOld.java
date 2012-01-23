@@ -26,6 +26,9 @@
 
 package com.rhomobile.rhodes.webview;
 
+import com.rhomobile.rhodes.RhoConf;
+
+import android.util.Log;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -37,8 +40,13 @@ public class RhoWebSettingsOld implements RhoWebSettings {
 		webSettings.setSaveFormData(false);
 		webSettings.setJavaScriptEnabled(true);
 		webSettings.setJavaScriptCanOpenWindowsAutomatically(false);
-		webSettings.setSupportZoom(true);
-		webSettings.setBuiltInZoomControls(true);
+        if (RhoConf.getBool("enable_screen_zoom")) {
+            webSettings.setSupportZoom(true);
+            webSettings.setBuiltInZoomControls(true);
+        } else {
+            webSettings.setSupportZoom(false);
+            webSettings.setBuiltInZoomControls(false);
+        }
 		webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 		webSettings.setSupportMultipleWindows(false);
 

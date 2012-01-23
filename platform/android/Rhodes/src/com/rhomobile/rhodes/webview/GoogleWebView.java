@@ -69,6 +69,10 @@ public class GoogleWebView implements WebView {
             throw new IllegalStateException(e);
         }
     }
+    
+    public void applyWebSettings() {
+        mWebSettings.setWebSettings(mWebView);
+    }
 
     @Override
     public View getView() {

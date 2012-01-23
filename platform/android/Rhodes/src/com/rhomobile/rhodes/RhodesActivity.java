@@ -137,6 +137,7 @@ public class RhodesActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		
 		super.onCreate(savedInstanceState);
+        Log.i(TAG, ">>>>>>>>>>>>>>> onCreate()");
 		
 		mListeners = new ArrayList<RhodesActivityListener>();
 
@@ -160,8 +161,6 @@ public class RhodesActivity extends BaseActivity {
 
         mSplashScreen = new SplashScreen(this);
         setMainView(mSplashScreen);
-
-		Log.i(TAG, ">>>>>>>>>>>>>>> onCreate()");
 
 		processStartupListeners();
         {
