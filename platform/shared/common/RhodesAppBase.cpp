@@ -298,7 +298,7 @@ int rho_base64_decode(const char *src, int srclen, char *dst)
 	dst[out++] = '\0';
 	return out;
 }
-	
+
 } //extern "C"
 
 #if !defined(OS_ANDROID)
@@ -308,7 +308,7 @@ rho::String rho_sysimpl_get_phone_id()
 }
 #endif
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_MACOSX) || defined(RHODES_EMULATOR)
 const char* rho_native_rhouserpath()
 {
     return rho_native_rhopath();
