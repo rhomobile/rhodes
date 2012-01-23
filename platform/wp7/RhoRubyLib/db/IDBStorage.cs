@@ -54,5 +54,7 @@ namespace rho.db
 	
         boolean isDbFileExists(String strPath);
         void createTriggers();
+        void createTrigger(String strSQL);
+        void dropTrigger(String strName);
     }
 }

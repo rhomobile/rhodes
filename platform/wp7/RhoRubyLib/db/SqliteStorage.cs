@@ -239,9 +239,9 @@ namespace rho.db
                                                 DBAdapter.SyncBlob_DeleteCallback, null, null);
                 Sqlite3.sqlite3_create_function(m_db, "rhoOnUpdateObjectRecord", 3, Sqlite3.SQLITE_ANY, 0,
                                                 DBAdapter.SyncBlob_UpdateCallback, null, null);
-                Sqlite3.sqlite3_create_function(m_db, "rhoOnDeleteSchemaRecord", 3, Sqlite3.SQLITE_ANY, 0,
+                Sqlite3.sqlite3_create_function(m_db, "rhoOnDeleteSchemaRecord", 1, Sqlite3.SQLITE_ANY, 0,
                                                 DBAdapter.SyncBlob_DeleteSchemaCallback, null, null);
-                Sqlite3.sqlite3_create_function(m_db, "rhoOnUpdateSchemaRecord", 3, Sqlite3.SQLITE_ANY, 0,
+                Sqlite3.sqlite3_create_function(m_db, "rhoOnUpdateSchemaRecord", 2, Sqlite3.SQLITE_ANY, 0,
                                                 DBAdapter.SyncBlob_UpdateSchemaCallback, null, null);
 
                 string[] ar2 = CRhoFile.enumDirectory("db");
