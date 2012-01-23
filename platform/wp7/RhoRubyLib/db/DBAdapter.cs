@@ -109,7 +109,9 @@ namespace rho.db
 
     public static void SyncBlob_DeleteSchemaCallback(Sqlite3.sqlite3_context dbContext, int nArgs, Sqlite3.Mem[] Args)
     {
-        String strFilePath = RHODESAPP().resolveDBFilesPath(Sqlite3.sqlite3_value_text(Args[0]));
+        String value = Sqlite3.sqlite3_value_text(Args[0]);
+        if (value == null) return;
+        String strFilePath = RHODESAPP().resolveDBFilesPath(value);
         if (strFilePath != "")
             CRhoFile.deleteFile(strFilePath);
     }
@@ -119,13 +121,13 @@ namespace rho.db
         String szOldValue = Sqlite3.sqlite3_value_text(Args[0]);
         String szNewValue = Sqlite3.sqlite3_value_text(Args[1]);
         
-        if ( szOldValue == szNewValue || szOldValue == "" )
+        if ( szOldValue == szNewValue || szOldValue == null )
             return;
 
-        if ( szOldValue != "" && szNewValue != "" &&  szOldValue == szNewValue )
+        if ( szOldValue != null && szNewValue != null &&  szOldValue == szNewValue )
             return;
 
-        if (szOldValue != "")
+        if (szOldValue != null)
         {
             String strFilePath = RHODESAPP().resolveDBFilesPath(szOldValue);
             CRhoFile.deleteFile(strFilePath);
@@ -136,6 +138,16 @@ namespace rho.db
 	{
 		m_strDbPartition = strPartition;
 	}
+
+    public void createTrigger(String strSQL)
+    {
+        m_dbStorage.createTrigger(strSQL);
+    }
+
+    public void dropTrigger(String strName)
+    {
+        m_dbStorage.dropTrigger(strName);
+    }
 	 
 	public void close()
 	{ 
