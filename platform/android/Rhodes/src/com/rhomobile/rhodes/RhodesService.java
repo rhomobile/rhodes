@@ -832,7 +832,7 @@ public class RhodesService extends Service {
 				return AndroidFunctionalityManager.getAndroidFunctionality().AccessOwnerInfo_getEmail(getContext());
 			}
 			else if (name.equalsIgnoreCase("device_name")) {
-				return Build.DEVICE;
+				return Build.MANUFACTURER + " " + Build.DEVICE;
 			}
 			else if (name.equalsIgnoreCase("is_emulator")) {
 			    String strDevice = Build.DEVICE;
