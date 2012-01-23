@@ -393,7 +393,7 @@ def java_compile(outpath, classpath, srclists)
     args = []
     args << "-g"
     args << "-d"
-    args << $tmpdir + '/Rhodes'
+    args << outpath
     args << "-source"
     args << "1.6"
     args << "-target"
