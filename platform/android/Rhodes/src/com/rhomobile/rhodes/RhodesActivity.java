@@ -60,7 +60,7 @@ public class RhodesActivity extends BaseActivity {
 	
 	private static final boolean DEBUG = false;
 	
-	public static boolean ENABLE_LOADING_INDICATION = true;
+	public static boolean ENABLE_LOADING_INDICATION = false;
 	
 	public static int MAX_PROGRESS = 10000;
 	
@@ -155,7 +155,7 @@ public class RhodesActivity extends BaseActivity {
 		else {
 		}
 		requestWindowFeature(Window.FEATURE_PROGRESS);
-		getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 10000);
+        getWindow().setFeatureInt(Window.FEATURE_PROGRESS, MAX_PROGRESS);
 
 		mHandler = new Handler();
 

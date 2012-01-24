@@ -52,6 +52,8 @@ public class RhoWebViewClient extends WebViewClient
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
         if (RhodesActivity.ENABLE_LOADING_INDICATION)
             RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 0);
+        else
+            RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, RhodesActivity.MAX_PROGRESS);
         super.onPageStarted(view, url, favicon);
     }
     
@@ -60,8 +62,7 @@ public class RhoWebViewClient extends WebViewClient
         // Set title
         String title = view.getTitle();
         RhodesActivity.safeGetInstance().setTitle(title);
-        if (RhodesActivity.ENABLE_LOADING_INDICATION)
-            RhodesActivity.safeGetInstance().getWindow().setFeatureInt(
+        RhodesActivity.safeGetInstance().getWindow().setFeatureInt(
                     Window.FEATURE_PROGRESS, RhodesActivity.MAX_PROGRESS);
         
         super.onPageFinished(view, url);
