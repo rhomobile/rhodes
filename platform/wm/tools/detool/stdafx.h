@@ -37,6 +37,7 @@
 
 #include <atlbase.h>
 #include <atlstr.h>
+#include <windows.h>
 
 //Device Emulator interface
 #import "DEMComInterface.tlb" no_namespace raw_interfaces_only
