@@ -228,5 +228,5 @@ platform/shared/qt/rhodes/RhoSimulatorVersion.h
 platform/shared/qt/rhodes/resources/Info.plist
 platform/wm/tools/Debug/*
 platform/wm/tools/Release/*
-platform/wm/tools/wmdc_connect/Debug/*
-platform/wm/tools/wmdc_connect/Release/*
+platform/wm/tools/detool/Debug/*
+platform/wm/tools/detool/Release/*
