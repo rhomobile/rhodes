@@ -88,7 +88,9 @@ namespace "config" do
     $rhobundledir =  $app_path + "/RhoBundle"
     $log_file = $app_config["applog"].nil? ? "applog.txt" : $app_config["applog"]
     $srcdir =  $bindir + "/RhoBundle"
-    
+    $buildcfg = $app_config["buildcfg"]
+    $buildcfg = "Release" if $buildcfg.nil?
+
     if $sdk == "Windows Mobile 6 Professional SDK (ARMV4I)"
         $targetdir = $bindir + "/target/wm6p"
     else
@@ -98,6 +100,8 @@ namespace "config" do
     $tmpdir =  $bindir +"/tmp"
     $vcbuild = $config["env"]["paths"]["vcbuild"]
     $vcbuild = "vcbuild" if $vcbuild.nil?
+    $nsis    = $config["env"]["paths"]["nsis"]
+    $nsis    = "makensis.exe" if $nsis.nil?
     $cabwiz = File.join($config["env"]["paths"]["cabwiz"], "cabwiz.exe") if $config["env"]["paths"]["cabwiz"]
     $cabwiz = "cabwiz" if $cabwiz.nil?
     $webkit_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("webkit_browser").nil?) 
@@ -150,7 +154,7 @@ namespace "build" do
           ENV['PWD'] = $startdir
           ENV['RHO_ROOT'] = ENV['PWD']
 
-          ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", 'wm', "bin", $sdk, "rhodes", $current_platform == 'wm' ? "Release" : "Debug")
+          ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", 'wm', "bin", $sdk, "rhodes", $current_platform == 'wm' ? "Release" : $buildcfg)
           ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform",  'wm', "bin", $sdk, "extensions", ext)
           ENV['VCBUILD'] = $vcbuild
           ENV['SDK'] = $sdk
@@ -203,10 +207,10 @@ namespace "build" do
           next unless File.exists? File.join(extpath, "build.bat")
 
           ENV['RHO_PLATFORM'] = 'win32'
-          ENV['RHO_BUILD_CONFIG'] = $rhosimulator_build ? 'Release' : 'Debug'
+          ENV['RHO_BUILD_CONFIG'] = $rhosimulator_build ? 'Release' : $buildcfg
           ENV['PWD'] = $startdir
           ENV['RHO_ROOT'] = ENV['PWD']
-          ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", "win32", "rhodes", $rhosimulator_build ? "SimulatorRelease" : "Debug")
+          ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", "win32", "rhodes", $rhosimulator_build ? "SimulatorRelease" : $buildcfg)
           ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", "win32", "extensions", ext)
           ENV['VCBUILD'] = $vcbuild
           ENV['SDK'] = $sdk
@@ -225,7 +229,7 @@ namespace "build" do
     end
 
     task :after_bundle do
-      win32rhopath = 'platform/wm/bin/win32/rhodes/Debug/rho/'
+      win32rhopath = 'platform/wm/bin/win32/rhodes/'+ $buildcfg + '/rho/'
       mkdir_p win32rhopath
       namepath = File.join(win32rhopath,"name.txt")
       old_appname = File.read(namepath) if File.exists?(namepath)
@@ -300,7 +304,7 @@ namespace "build" do
   task :win32 => ["build:win32:devrhobundle"] do
     chdir $config["build"]["wmpath"]
 
-    args = ['/M4', $build_solution, '"debug|win32"']
+    args = ['/M4', $build_solution,  "\"" + $buildcfg + '|win32"']
     puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
     puts Jake.run($vcbuild,args)
 
@@ -600,7 +604,7 @@ namespace "run" do
     args = [' ']
     #    chdir $config["build"]["wmpath"]
     #    Thread.new { Jake.run("bin\\win32\\rhodes\\Debug\\rhodes", args) }
-    Jake.run2 "bin\\win32\\rhodes\\Debug\\rhodes.exe", args, {:directory => $config["build"]["wmpath"], :nowait => true}
+    Jake.run2 "bin\\win32\\rhodes\\" + $buildcfg + "\\rhodes.exe", args, {:directory => $config["build"]["wmpath"], :nowait => true}
 
     $stdout.flush
     chdir $startdir
@@ -620,13 +624,13 @@ namespace "run" do
 
   namespace "win32" do
     task :delete_db do
-      db_path = 'platform/wm/bin/win32/rhodes/Debug/rho/db'
+      db_path = 'platform/wm/bin/win32/rhodes/' + $buildcfg + '/rho/db'
       rm_rf db_path if File.exists?(db_path)
     end
 
     task :spec => [:delete_db, "build:win32"] do
       #remove log file
-      win32rhopath = 'platform/wm/bin/win32/rhodes/Debug/rho/'
+      win32rhopath = 'platform/wm/bin/win32/rhodes/' + $buildcfg + '/rho/'
       win32logpath = File.join(win32rhopath,"RhoLog.txt")
       win32logpospath = File.join(win32rhopath,"RhoLog.txt_pos")
       win32configpath = File.join(win32rhopath,"apps/rhoconfig.txt.changes")
@@ -638,7 +642,7 @@ namespace "run" do
       start = Time.now
 
       args = [' ']
-      Jake.run2( "bin\\win32\\rhodes\\Debug\\rhodes.exe", args, {:directory => $config["build"]["wmpath"], :nowait => false}) do |line|
+      Jake.run2( "bin\\win32\\rhodes\\" + $buildcfg + "\\rhodes.exe", args, {:directory => $config["build"]["wmpath"], :nowait => false}) do |line|
         Jake.process_spec_output(line)
       end
       Jake.process_spec_results(start)
@@ -657,6 +661,49 @@ namespace "run" do
       Jake.run_spec_app('win32','framework_spec')
       exit 1 if $total.to_i==0
       exit $failed.to_i
+    end
+
+    desc "Build production for Motorola device"
+    task :production => ["build:win32"] do
+
+      out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/" + $buildcfg + "/"
+      puts "out_dir - "  + out_dir
+      cp out_dir + "rhodes.exe", out_dir + $appname + ".exe"
+      cp out_dir + $appname + ".exe", $bindir + "/" + $appname + ".exe"
+
+      script_name = File.join($startdir, "platform", "wm", "build", "rhodes.nsi")
+      app_script_name = File.join($startdir, "platform", "wm", "build")
+      app_script_name += "/" + $appname + ".nsi"
+
+      # custumize install script for application
+      install_script = File.read(script_name)
+      install_script = install_script.gsub(/%APPNAME%/, $appname)
+      install_script = install_script.gsub(/%APP_EXECUTABLE%/, $appname + ".exe") 
+      install_script = install_script.gsub(/%SECTOIN_TITLE%/, "\"This installs " + $appname + "\"")
+      install_script = install_script.gsub(/%SMPROGDIR%/, $appname)
+      install_script = install_script.gsub(/%FINISHPAGE_TEXT%/, "\"Thank you for installing " + $appname + " \\r\\n\\n\\n\"")
+      install_script = install_script.gsub(/%APPINSTALLDIR%/, "C:\\" + $appname)
+      install_script = install_script.gsub(/%APPICON%/, "rhodes.ico")
+      install_script = install_script.gsub(/%SCUNISTALLPATH%/, "\"$SMPROGRAMS\\" + $appname + "\\Uninstall " + $appname + ".lnk\"")
+      install_script = install_script.gsub(/%SCAPPPATH%/, "\"$SMPROGRAMS\\" + $appname + "\\" + $appname + ".lnk\"")
+      install_script = install_script.gsub(/%APPEXEPATH%/, "\"C:\\" + $appname + "\\" + $appname + ".exe\"")
+      install_script = install_script.gsub(/%SECTION_NAME%/, "\"" + $appname + "\"")
+      File.open(app_script_name, "w") { |file| file.puts install_script }
+
+      cp app_script_name, $bindir
+      puts "$appname - " + $appname
+      cp out_dir + "/" + $appname + ".exe", $bindir
+      cp $startdir + "/res/icons/rhodes.ico", $bindir
+      rm app_script_name
+
+      chdir $bindir
+
+      cp_r  $srcdir, $bindir + "/rho"
+      puts "$nsis - " + $nsis
+      args = [$bindir + "/" + $appname + ".nsi"]
+      puts "arg = " + args.to_s
+      puts Jake.run2($nsis, args, {:nowait => false} )
+
     end
 
   end
