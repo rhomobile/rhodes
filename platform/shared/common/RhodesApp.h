@@ -51,7 +51,7 @@ public:
 
 private:
 
-    CRhodesApp(const String& strRootPath);
+    CRhodesApp(const String& strRootPath, const String& strUserPath);
     boolean m_bExit, m_bRestartServer;
 
     String m_strListeningPorts;
@@ -88,7 +88,7 @@ private:
 public:
     ~CRhodesApp(void);
 
-    static CRhodesApp* Create(const String& strRootPath);
+    static CRhodesApp* Create(const String& strRootPath, const String& strUserPath);
     static void Destroy();
     static CRhodesApp* getInstance(){ return (CRhodesApp*)m_pInstance; }
     void startApp();
@@ -188,6 +188,7 @@ extern "C" {
 #endif //__cplusplus
 	
 void rho_rhodesapp_create(const char* szRootPath);
+void rho_rhodesapp_create_with_separate_user_path(const char* szRootPath, const char* szUserPath);    
 void rho_rhodesapp_start();	
 void rho_rhodesapp_destroy();
 	
@@ -203,6 +204,7 @@ const char* rho_rhodesapp_getloadingpagepath();
 const char* rho_rhodesapp_getblobsdirpath();
 const char* rho_rhodesapp_getdbdirpath();
 const char* rho_rhodesapp_getapprootpath();
+const char* rho_rhodesapp_getuserrootpath();
 	
 void rho_http_redirect(void* httpContext, const char* szUrl);
 void rho_http_senderror(void* httpContext, int nError, const char* szMsg);

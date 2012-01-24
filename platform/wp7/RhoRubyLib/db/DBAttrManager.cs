@@ -26,6 +26,7 @@
 
 using System;
 using rho.common;
+using System.Collections.Generic;
 
 namespace rho.db
 {
@@ -73,7 +74,68 @@ namespace rho.db
     public void loadBlobAttrs(DBAdapter db)
     {
         loadAttrs(db, m_mapBlobAttrs, "blob_attribs", m_mapSrcNames);
-        //TODO: update/delete trigger for schema sources
+
+        String strTriggerPrefix = "rhoSchemaTrigger_";
+        IDBResult res = db.executeSQL("SELECT name FROM sqlite_master WHERE type='trigger'");
+        Hashtable<String, int> mapTriggers = new Hashtable<String, int>();
+        for (; !res.isEnd(); res.next())
+        {
+            String strName = res.getStringByIdx(0);
+            if (!strName.startsWith(strTriggerPrefix))
+                continue;
+
+            mapTriggers[strName.Substring(strTriggerPrefix.length())] = 0;
+        }
+
+        foreach (KeyValuePair<int, Hashtable<String,int>> kvpBlobAttrs in m_mapBlobAttrs)
+        {
+            int nSrcID = kvpBlobAttrs.Key;
+
+            res = db.executeSQL("SELECT name FROM sources WHERE source_id=?", nSrcID);
+            if ( res.isEnd() )
+                continue;
+
+            String strName = res.getStringByIdx(0);
+            if ( !db.isTableExist(strName) )
+                continue;
+
+            Hashtable<String,int> hashAttribs = kvpBlobAttrs.Value;
+            foreach (KeyValuePair<String, int> kvpHashAttribs in hashAttribs)
+            {
+                String strTriggerName = strName + "_" + kvpHashAttribs.Key;
+                if ( !mapTriggers.containsKey(strTriggerName + "_delete") )
+                {
+                    String strTrigger = "CREATE TRIGGER " + strTriggerPrefix + strTriggerName + "_delete BEFORE DELETE ON \"" + strName + "\" FOR EACH ROW \r\n"
+                    +"   BEGIN \r\n"
+                    + "       SELECT rhoOnDeleteSchemaRecord( OLD." + kvpHashAttribs.Key + ");\r\n"
+                    +"   END;\r\n"
+                    +";";
+
+                    db.createTrigger(strTrigger);
+                }else
+                    mapTriggers[strTriggerName + "_delete"] = 1;
+
+                if ( !mapTriggers.containsKey(strTriggerName + "_update") )
+                {
+                    String strTrigger = "CREATE TRIGGER " + strTriggerPrefix + strTriggerName + "_update BEFORE UPDATE ON \"" + strName + "\" FOR EACH ROW\r\n"
+                    +"   BEGIN \r\n"
+                    + "       SELECT rhoOnUpdateSchemaRecord( OLD." + kvpHashAttribs.Key + ", NEW." + kvpHashAttribs.Key + ");\r\n"
+                    +"   END;\r\n"
+                    +";";
+
+                    db.createTrigger(strTrigger);
+                }else
+                    mapTriggers[strTriggerName + "_update"] = 1;
+
+                }
+        }
+
+        //Remove outdated triggers
+        foreach (KeyValuePair<string, int> kvp in mapTriggers)
+        {
+            if(kvp.Value != 0)
+                db.dropTrigger(strTriggerPrefix+kvp.Key.ToString());
+        }
     }
     
     static void loadAttrs(DBAdapter db, Hashtable< int, Hashtable<String,int> > mapAttrs, String strDBAttr,

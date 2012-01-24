@@ -942,7 +942,7 @@ namespace "run" do
        simapp = File.join($simdir, $emulator_version, "Applications")
        
        
-       rholog = simapp + "/" + $guid + "/Documents/RhoLog.txt"
+       rholog = simapp + "/" + $guid + "/Library/Private Documents/rholog.txt"
        puts "log_file=" + rholog
     end 
 
@@ -1068,7 +1068,7 @@ namespace "run" do
 
 #>>>>>>>>>>
         `echo "#{$applog}" > "#{$simrhodes}/Documents/rhologpath.txt"`
-        rholog = simapp + "/" + $guid + "/Documents/RhoLog.txt"
+        rholog = simapp + "/" + $guid + "/Library/Private Documents/rholog.txt"
 
 
         simpublic = simapp + "/" + $guid + "/Documents/apps/public"

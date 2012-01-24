@@ -107,10 +107,47 @@ namespace rho.db
         }
     }
 
+    public static void SyncBlob_DeleteSchemaCallback(Sqlite3.sqlite3_context dbContext, int nArgs, Sqlite3.Mem[] Args)
+    {
+        String value = Sqlite3.sqlite3_value_text(Args[0]);
+        if (value == null) return;
+        String strFilePath = RHODESAPP().resolveDBFilesPath(value);
+        if (strFilePath != "")
+            CRhoFile.deleteFile(strFilePath);
+    }
+
+    public static void SyncBlob_UpdateSchemaCallback(Sqlite3.sqlite3_context dbContext, int nArgs, Sqlite3.Mem[] Args)
+    {
+        String szOldValue = Sqlite3.sqlite3_value_text(Args[0]);
+        String szNewValue = Sqlite3.sqlite3_value_text(Args[1]);
+        
+        if ( szOldValue == szNewValue || szOldValue == null )
+            return;
+
+        if ( szOldValue != null && szNewValue != null &&  szOldValue == szNewValue )
+            return;
+
+        if (szOldValue != null)
+        {
+            String strFilePath = RHODESAPP().resolveDBFilesPath(szOldValue);
+            CRhoFile.deleteFile(strFilePath);
+        }
+    }
+
 	private void setDbPartition(String strPartition)
 	{
 		m_strDbPartition = strPartition;
 	}
+
+    public void createTrigger(String strSQL)
+    {
+        m_dbStorage.createTrigger(strSQL);
+    }
+
+    public void dropTrigger(String strName)
+    {
+        m_dbStorage.dropTrigger(strName);
+    }
 	 
 	public void close()
 	{ 

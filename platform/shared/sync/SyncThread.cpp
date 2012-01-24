@@ -191,6 +191,32 @@ void CSyncThread::setPollInterval(int nInterval)
 
     CThreadQueue::setPollInterval(nInterval);
 }
+    
+void CSyncThread::stopAll() {
+	LOG(INFO)+"STOP sync";
+	
+	if (CSyncThread::getSyncEngine().isSyncing() )
+	{
+		LOG(INFO)+"STOP sync in progress.";
+
+        {
+            synchronized(getCommandLock());
+        
+            getCommands().clear();
+        }
+        
+		CSyncThread::getSyncEngine().stopSyncByUser();
+        CSyncThread::getInstance()->stopWait();
+        
+        while (!CSyncThread::getInstance()->isWaiting()) {
+            CSyncThread::getInstance()->sleep(100);
+        }
+        
+        while( CDBAdapter::isAnyInsideTransaction() )
+			CSyncThread::getInstance()->sleep(100);
+	}
+}
+
 
 String CSyncThread::CSyncCommand::toString()
 {
@@ -251,18 +277,7 @@ unsigned long rho_sync_doSyncSource(unsigned long nSrcID,int show_status_popup, 
 
 void rho_sync_stop()
 {
-	LOG(INFO)+"STOP sync";
-	
-	if (CSyncThread::getSyncEngine().isSyncing() )
-	{
-		LOG(INFO)+"STOP sync in progress.";
-
-		CSyncThread::getSyncEngine().stopSyncByUser();
-        CSyncThread::getInstance()->stopWait();
-
-        while( CDBAdapter::isAnyInsideTransaction() )
-			CSyncThread::getInstance()->sleep(100);
-	}
+	CSyncThread::getInstance()->stopAll();
 }
 
 int  rho_sync_issyncing()

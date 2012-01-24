@@ -176,6 +176,10 @@ module Rho
         Rho::RhoFSConnector::get_base_app_path
       end
 
+      def get_user_path
+          Rho::RhoFSConnector::get_user_path
+      end
+      
       def get_model_path(appname, modelname)
         Rho::RhoFSConnector::get_model_path(appname, modelname)
       end

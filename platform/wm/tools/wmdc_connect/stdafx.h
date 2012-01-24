@@ -1,4 +1,4 @@
-﻿/*------------------------------------------------------------------------
+/*------------------------------------------------------------------------
 * (The MIT License)
 * 
 * Copyright (c) 2008-2011 Rhomobile, Inc.
@@ -24,37 +24,12 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
-using System;
-using rho.common;
+#pragma once
 
-namespace rho.db
-{
-    public interface IDBStorage
-    {
-        void open(String strPath, String strSqlScript, String strEncryptionInfo);
-        void close();
-	
-        IDBResult executeSQL(String strStatement, Object[] values, boolean bReportNonUnique, boolean bNoCopy);
-	
-        void executeBatchSQL(String strStatement);
-	
-        IDBResult createResult();
-	
-        void deleteAllFiles(String strPath);
-	
-        void startTransaction();
-        void commit();
-        void rollback();
-        void onBeforeCommit();
-	
-        void setDbCallback(IDBCallback callback);
-	
-        String[] getAllTableNames();
-        boolean isTableExists(String strName);
-	
-        boolean isDbFileExists(String strPath);
-        void createTriggers();
-        void createTrigger(String strSQL);
-        void dropTrigger(String strName);
-    }
-}
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT 0x0501
+#endif						
+
+#include <stdio.h>
+#include <tchar.h>
+#include <windows.h>
