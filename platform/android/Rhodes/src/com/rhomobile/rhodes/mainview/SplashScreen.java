@@ -91,7 +91,7 @@ public class SplashScreen implements MainView {
                 }
                 catch (IOException e) {
                     if (DEBUG)
-                        Log.d(TAG, "Can't load " + url, e);
+                        Log.d(TAG, "Can't load " + url + ": " + e.getMessage());
                     continue;
                 }
                 finally {
@@ -116,7 +116,15 @@ public class SplashScreen implements MainView {
                 RhodesApplication.stop();
             }
         } else {
-            view = new GoogleWebView(context);
+            final GoogleWebView googleWebView = new GoogleWebView(context);
+            view = googleWebView;
+            RhodesApplication.runWhen(RhodesApplication.AppState.AppStarted, new RhodesApplication.StateHandler(true) {
+                @Override
+                public void run()
+                {
+                    googleWebView.applyWebSettings();
+                }
+            });
         }
 
         switch (type) {

@@ -18,34 +18,38 @@ namespace rho.sync
    	    {
    		    public int m_nCmdCode;
    		    public int m_nCmdParam;
-   		    public String m_strCmdParam;
+            public String m_strCmdParam, m_strQueryParams;
    		    public boolean m_bShowStatus;
-   		
-   		    public SyncCommand(int nCode, int nParam, boolean bShowStatus)
+
+            public SyncCommand(int nCode, int nParam, boolean bShowStatus, String query_params)
    		    {
    			    m_nCmdCode = nCode;
    			    m_nCmdParam = nParam;
    			    m_bShowStatus = bShowStatus;
+                m_strQueryParams = query_params != null ? query_params : "";
    		    }
-   		    public SyncCommand(int nCode, String strParam, boolean bShowStatus)
+            public SyncCommand(int nCode, String strParam, boolean bShowStatus, String query_params)
    		    {
    			    m_nCmdCode = nCode;
    			    m_strCmdParam = strParam;
    			    m_bShowStatus = bShowStatus;
+                m_strQueryParams = query_params != null ? query_params : "";
    		    }
-	        public SyncCommand(int nCode, String strParam, int nCmdParam, boolean bShowStatus)
+            public SyncCommand(int nCode, String strParam, int nCmdParam, boolean bShowStatus, String query_params)
 	        {
 		        m_nCmdCode = nCode;
 		        m_strCmdParam = strParam;
                 m_nCmdParam = nCmdParam;
                 m_bShowStatus = bShowStatus;
+                m_strQueryParams = query_params != null ? query_params : "";
 	        }
-   		
-   		    public SyncCommand(int nCode, boolean bShowStatus)
+
+            public SyncCommand(int nCode, boolean bShowStatus, String query_params)
    		    {
    			    m_nCmdCode = nCode;
    			    m_nCmdParam = 0;
    			    m_bShowStatus = bShowStatus;
+                m_strQueryParams = query_params != null ? query_params : "";
    		    }
    		
    		    public boolean equals(IQueueCommand obj)
@@ -53,7 +57,9 @@ namespace rho.sync
    			    SyncCommand oSyncCmd = (SyncCommand)obj;
    			    return m_nCmdCode == oSyncCmd.m_nCmdCode && m_nCmdParam == oSyncCmd.m_nCmdParam &&
    				    (m_strCmdParam == oSyncCmd.m_strCmdParam ||
-   				    (m_strCmdParam != null && oSyncCmd.m_strCmdParam != null && m_strCmdParam.equals(oSyncCmd.m_strCmdParam)));  		
+                    (m_strCmdParam != null && oSyncCmd.m_strCmdParam != null && m_strCmdParam.equals(oSyncCmd.m_strCmdParam))) &&
+                    (m_strQueryParams == oSyncCmd.m_strQueryParams ||
+                    (m_strQueryParams != null && oSyncCmd.m_strQueryParams != null && m_strQueryParams.equals(oSyncCmd.m_strQueryParams)));
    		    }
    		
    		    public String toString()
@@ -85,7 +91,7 @@ namespace rho.sync
    		    public String m_strName, m_strPassword;
    		    public /*common::CAutoPtr<C*/SyncNotify.SyncNotification/*>*/ m_pNotify;
    		    public SyncLoginCommand(String name, String password, String callback, SyncNotify.SyncNotification pNotify) :
-                base(scLogin,callback,false)
+                base(scLogin, callback, false, "")
    		    {
    			    m_strName = name;
    			    m_strPassword = password;
@@ -99,7 +105,7 @@ namespace rho.sync
 	        public Vector<String> m_arSources;
 	    
             public SyncSearchCommand(String from, String _params, Vector<String> arSources, boolean sync_changes, int nProgressStep) :
-                base(scSearchOne,_params,nProgressStep, false)
+                base(scSearchOne, _params, nProgressStep, false, "")
 	        {
 		        m_strFrom = from;
 		        m_bSyncChanges = sync_changes;
@@ -199,7 +205,7 @@ namespace rho.sync
 	    public override void onTimeout()//throws Exception
 	    {
 	        if ( isNoCommands() && getPollInterval()>0 )
-	            addQueueCommandInt(new SyncCommand(scSyncAll,false));
+                addQueueCommandInt(new SyncCommand(scSyncAll, false, ""));
 	    }
 	
 	    void checkShowStatus(SyncCommand oSyncCmd)
@@ -217,12 +223,12 @@ namespace rho.sync
 	        {
 	        case scSyncAll:
 	    	    checkShowStatus(oSyncCmd);
-	            m_oSyncEngine.doSyncAllSources();
+                m_oSyncEngine.doSyncAllSources(oSyncCmd.m_strQueryParams);
 	            break;
             case scSyncOne:
 	            {
 				    checkShowStatus(oSyncCmd);
-	                m_oSyncEngine.doSyncSource(new SyncEngine.SourceID(oSyncCmd.m_nCmdParam,oSyncCmd.m_strCmdParam));
+                    m_oSyncEngine.doSyncSource(new SyncEngine.SourceID(oSyncCmd.m_nCmdParam, oSyncCmd.m_strCmdParam), oSyncCmd.m_strQueryParams);
 	            }
 	            break;
 	        
@@ -266,7 +272,7 @@ namespace rho.sync
 	
 	    public static void doSyncAllSources(boolean bShowStatus)
 	    {
-		    getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncAll,bShowStatus));
+            getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncAll, bShowStatus, ""));
 	    }
 	
 	    public static void doSyncSourceByName(String strSrcName, boolean bShowStatus)
@@ -274,7 +280,7 @@ namespace rho.sync
 		    if (bShowStatus&&(m_statusListener != null)) {
 			    m_statusListener.createStatusPopup(RhoAppAdapter.getMessageText("syncronizing_data"));
 		    }
-	        getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncOne, strSrcName, (int)0, bShowStatus ) );		
+            getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncOne, strSrcName, (int)0, bShowStatus, ""));		
 	    }
 	
 	    public static void stopSync()

@@ -34,6 +34,7 @@
 
 + (AppManager *)instance;
 + (NSString *) getApplicationsRootPath;
++ (NSString *) getApplicationsUserPath;
 + (NSString *) getDbPath;
 + (NSString *) getApplicationsRosterUrl;
 + (bool) installApplication:(NSString*)appName data:(NSData*)appData;

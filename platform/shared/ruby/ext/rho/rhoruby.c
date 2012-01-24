@@ -76,6 +76,7 @@ extern void Init_RhoSupport(void);
 extern VALUE require_compiled(VALUE fname, VALUE* result);
 extern VALUE RhoPreparePath(VALUE path);
 extern const char* rho_native_rhopath();
+extern const char* rho_native_rhouserpath();
 //extern void RhoSetCurAppPath(char* path);
 
 static VALUE  framework;

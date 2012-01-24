@@ -107,6 +107,29 @@ namespace rho.db
             }
         }
 
+        public void createTrigger(String strSQL)
+        {
+            int res = Sqlite3.sqlite3_exec(m_db, strSQL, 0, 0, 0);
+            if (res != Sqlite3.SQLITE_OK)
+            {
+                Sqlite3.sqlite3_close(m_db);
+                m_db = null;
+                throw new DBException(res, "Cannot create trigger: " + strSQL);
+            }
+        }
+
+        public  void dropTrigger(String strName)
+        {
+            String strSQL = "DROP TRIGGER " + strName + ";";
+            int res = Sqlite3.sqlite3_exec(m_db, strSQL, 0, 0, 0);
+            if (res != Sqlite3.SQLITE_OK)
+            {
+                Sqlite3.sqlite3_close(m_db);
+                m_db = null;
+                throw new DBException(res, "Cannot drop trigger: " + strName);
+            }
+        }
+
         void checkError()
         {
             int res = Sqlite3.sqlite3_errcode(m_db);
@@ -216,6 +239,10 @@ namespace rho.db
                                                 DBAdapter.SyncBlob_DeleteCallback, null, null);
                 Sqlite3.sqlite3_create_function(m_db, "rhoOnUpdateObjectRecord", 3, Sqlite3.SQLITE_ANY, 0,
                                                 DBAdapter.SyncBlob_UpdateCallback, null, null);
+                Sqlite3.sqlite3_create_function(m_db, "rhoOnDeleteSchemaRecord", 1, Sqlite3.SQLITE_ANY, 0,
+                                                DBAdapter.SyncBlob_DeleteSchemaCallback, null, null);
+                Sqlite3.sqlite3_create_function(m_db, "rhoOnUpdateSchemaRecord", 2, Sqlite3.SQLITE_ANY, 0,
+                                                DBAdapter.SyncBlob_UpdateSchemaCallback, null, null);
 
                 string[] ar2 = CRhoFile.enumDirectory("db");
 

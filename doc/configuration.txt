@@ -121,9 +121,13 @@ Geo location inactivity timeout (in seconds). This parameter controls the time a
 	
 	geo_location_inactivity_timeout = gps_ping_timeout_sec * 10
 
-Set this option to 1 in order to open Rhodes app in full screen mode. Default 1 for Android up to Rhodes 2.2.5. On all other platforms and on Android from Rhodes > 2.2.5 default is 0
+Set this option to 1 in order to open Rhodes app in full screen mode. Default is 1 for Android up to Rhodes 2.2.5. On all other platforms and on Android from Rhodes > 2.2.5 default is 0
 	
 	full_screen = 1
+
+Set this option to 1 in order to enable WebView zoom (Android only). Defauld is 0
+
+	enable_screen_zoom = 1
 
 Port of the local (embedded) HTTP server. This parameter is mainly for debug purposes. If not specified, application will use dynamically selected one.
 **NOTE WARNING!!! Remove this parameter before put application to production. **

@@ -38,7 +38,7 @@ namespace common{
 #define RHODBVERSION "DBVersion"
 
 class RhoSettings{
-    String      m_strConfFilePath, m_strAppConfFilePath;
+    String      m_strConfFilePath, m_strAppConfFilePath, m_strAppConfUserPath;
     Hashtable<String,String> m_mapValues;
     Hashtable<String,String> m_mapChangedValues;
     HashtablePtr<String,Vector<String>* > m_mapConflictedValues;
@@ -58,8 +58,12 @@ public:
 
     const String& getConfFilePath()const{ return m_strConfFilePath;}
     void setConfFilePath(const char* szConfFilePath){ m_strConfFilePath = szConfFilePath; }
+    
     const String& getAppConfFilePath()const{ return m_strAppConfFilePath;}
     void setAppConfFilePath(const char* szConfFilePath){ m_strAppConfFilePath = szConfFilePath; }
+    
+    const String& getAppConfUserFilePath()const{ return m_strAppConfUserPath;}
+    void setAppConfUserFilePath(const char* szUserPath){ m_strAppConfUserPath = szUserPath; }
 
     void loadFromFile();
 
@@ -92,6 +96,7 @@ extern "C"{
 #endif //__cplusplus
 
 void  rho_conf_Init(const char* szRootPath);
+void  rho_conf_Init_with_separate_user_path(const char* szRootPath, const char* szUserPath);
 int  rho_conf_getBool(const char* szName);
 void  rho_conf_setBool(const char* szName, bool value);
 int   rho_conf_getInt(const char* szName);

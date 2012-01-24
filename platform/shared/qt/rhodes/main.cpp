@@ -185,7 +185,7 @@ int main(int argc, char *argv[])
         setenv("rho_debug_port", RHOSIMCONF().getString("debug_port").c_str(), 1 );
 #endif // OS_WINDOWS
 #endif // RHODES_EMULATOR
-    rho::common::CRhodesApp::Create(m_strRootPath);
+    rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath);
 
     // Create the main application window
 #ifdef RHODES_EMULATOR

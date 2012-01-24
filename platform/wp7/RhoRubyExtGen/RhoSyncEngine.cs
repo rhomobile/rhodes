@@ -37,28 +37,28 @@ namespace rho.rubyext
     public static class RhoSyncEngine
     {
         [RubyMethod("dosync", RubyMethodAttributes.PublicSingleton)]
-        public static object dosync(RubyModule/*!*/ self)
+        public static object dosync(RubyModule/*!*/ self, RubyArray args)
         {
             return null;
         }
 
-        [RubyMethod("dosync", RubyMethodAttributes.PublicSingleton)]
-        public static object dosync(RubyModule/*!*/ self, bool/*!*/ show_status_popup)
+        /*[RubyMethod("dosync", RubyMethodAttributes.PublicSingleton)]
+        public static object dosync(RubyModule self, bool show_status_popup)
         {
             return null;
-        }
-
-        [RubyMethod("dosync_source", RubyMethodAttributes.PublicSingleton)]
-        public static object dosync_source(RubyModule/*!*/ self, [NotNull]object/*!*/ srcID)
-        {
-            return null;
-        }
+        }*/
 
         [RubyMethod("dosync_source", RubyMethodAttributes.PublicSingleton)]
-        public static object dosync_source(RubyModule/*!*/ self, [NotNull]object/*!*/ srcID, bool/*!*/ show_status_popup)
+        public static object dosync_source(RubyModule/*!*/ self, RubyArray args)
         {
             return null;
         }
+
+        /*[RubyMethod("dosync_source", RubyMethodAttributes.PublicSingleton)]
+        public static object dosync_source(RubyModule self, [NotNull]object srcID, bool show_status_popup)
+        {
+            return null;
+        }*/
 
         [RubyMethod("dosearch", RubyMethodAttributes.PublicSingleton)]
         public static object dosearch(RubyModule/*!*/ self, [NotNull]RubyArray/*!*/ arSources, [NotNull]String/*!*/ from, [NotNull]String/*!*/ strParams,

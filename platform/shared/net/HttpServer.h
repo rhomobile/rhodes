@@ -94,6 +94,7 @@ public:
     
 public:
     CHttpServer(int port, String const &root);
+    CHttpServer(int port, String const &root, String const &user_root);
     ~CHttpServer();
     
     void register_uri(String const &uri, callback_t const &callback);
@@ -139,7 +140,7 @@ private:
 private:
     bool m_active;
     int m_port;
-    String m_root, m_strRhoRoot;
+    String m_root, m_userroot, m_strRhoRoot, m_strRhoUserRoot;
     SOCKET m_listener;
     SOCKET m_sock;
     std::map<String, callback_t> m_registered;

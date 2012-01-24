@@ -1402,7 +1402,7 @@ namespace "build" do
       classpath = $androidjar
       classpath += $path_separator + $gapijar unless $gapijar.nil?
       classpath += $path_separator + $motosol_jar unless $motosol_jar.nil?
-      classpath += $path_separator + "#{$tmpdir}/Rhodes"
+      classpath += $path_separator + File.join($tmpdir, 'Rhodes')
       Dir.glob(File.join($extensionsdir, "*.jar")).each do |f|
         classpath += $path_separator + f
       end
@@ -1417,11 +1417,11 @@ namespace "build" do
         puts 'ext_build.files not found - no additional java files'
       end
 
-      java_compile($tmpdir+'/Rhodes', classpath, javafilelists)
+      java_compile(File.join($tmpdir, 'Rhodes'), classpath, javafilelists)
 
       files = []
       Dir.glob(File.join($extensionsdir, "*.jar")).each do |f|
-        puts Jake.run($jarbin, ["xf", f], File.join($tmpdir, "Rhodes"))
+        puts Jake.run($jarbin, ["xf", f], File.join($tmpdir, 'Rhodes'))
         unless $?.success?
           puts "Error running jar (xf)"
           exit 1
@@ -1890,7 +1890,7 @@ namespace "run" do
         $avdname = $appavdname
       end
 
-      createavd = "\"#{$androidbin}\" create avd --name #{$avdname} --target #{$avdtarget} --sdcard 32M "
+      createavd = "\"#{$androidbin}\" create avd --name #{$avdname} --target #{$avdtarget} --sdcard 128M "
       system("echo no | #{createavd}") unless File.directory?( File.join(ENV['HOME'], ".android", "avd", "#{$avdname}.avd" ) )
 
       if $use_google_addon_api
