@@ -1059,6 +1059,32 @@ To clean all binaries run:
 	:::term
 	$rake clean:win32
 
+### Create application installer for windows platform
+
+Download NSIS installer tool (http://nsis.sourceforge.net/Download) 
+
+Add path to NSIS complier path to 'rhobuild.yml' in rhodes folder:
+
+On 32-bit platform:
+
+        env:
+          paths:
+            nsis: C:/Program Files/NSIS/makensis.exe
+
+On 64-bit platform:
+
+        env:
+          paths:
+            nsis: C:/Program Files (x86)/NSIS/makensis.exe
+
+
+To build intaller bundle run:
+
+	:::term
+	$rake run:win32:production 
+
+and after finished build process you can find installer for you application in bin subfolder with 'RhodesBundle.exe' name 
+
 ### Logging
 
 Rholog.txt is placed in `<rhodes folder>\platform\wm\bin\win32\rhodes\Debug\rho`
@@ -1070,7 +1096,7 @@ Rholog.txt is placed in `<rhodes folder>\platform\wm\bin\win32\rhodes\Debug\rho`
 * Follow [All Platforms Prerequisites](#all-platforms-prerequisites)
 * Windows 7 OS
 * Visual Studio 2010 installed or VS Express for Windows Phone and VS Express for C#
-    * [Windows Phone SDK 7.1](http://www.microsoft.com/download/en/details.aspx?id=27570)
+    * [Windows Phone Developer Tools 7.1 Beta](http://www.microsoft.com/download/en/details.aspx?displaylang=en&id=11321)
     
 * Add path to `msbuild` to `rhobuild.yml` in rhodes folder. For example:
 
