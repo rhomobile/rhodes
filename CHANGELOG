@@ -1,5 +1,12 @@
-## 3.3.0
-* Integration with RhoElements v2 to suppport Motorola devices
+## 3.3.2
+* iPhone: fix AppStore sumbit issue. Now all files stored in Private Documents, only database and user files in Documents 
+* Android: fix issue with database encryption on OS 4.0
+* Android: disable zooming by default
+* iPhone: fix issue with creating Event
+* Fix spec generator
+* Windows Phone 7: implement Alerts, fix several build issues.
+
+## 3.3.1
 * Add Ruby Encoding constants
 * MapView improvements on all platforms
 * Android: support SDK 4.0 and NDK r7
