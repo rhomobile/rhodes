@@ -51,6 +51,8 @@ public class ChromeClientOld extends WebChromeClient {
 			if (newProgress > RhodesActivity.MAX_PROGRESS)
 				newProgress = RhodesActivity.MAX_PROGRESS;
 			mRhodesActivity.getWindow().setFeatureInt(Window.FEATURE_PROGRESS, newProgress);
+		} else {
+		    newProgress = RhodesActivity.MAX_PROGRESS;
 		}
 		super.onProgressChanged(view, newProgress);
 	}
