@@ -26,6 +26,41 @@
 
 #include "stdafx.h"
 
+void GenerateKey (int vk, BOOL bExtended, BOOL doDown, BOOL doUp)
+{
+    KEYBDINPUT kb = {0};
+    INPUT Input = {0};
+
+    if (doDown) {
+        // generate down 
+        if (bExtended)
+            kb.dwFlags = KEYEVENTF_EXTENDEDKEY;
+        kb.wVk = vk;  
+        Input.type = INPUT_KEYBOARD;
+
+        Input.ki = kb;
+        ::SendInput(1,&Input,sizeof(Input));
+    }
+
+    if (doUp) {
+        // generate up 
+        ::ZeroMemory(&kb,sizeof(KEYBDINPUT));
+        ::ZeroMemory(&Input,sizeof(INPUT));
+        kb.dwFlags = KEYEVENTF_KEYUP;
+        if (bExtended)
+            kb.dwFlags |= KEYEVENTF_EXTENDEDKEY;
+
+        kb.wVk = vk;
+        Input.type = INPUT_KEYBOARD;
+        Input.ki = kb;
+        ::SendInput(1,&Input,sizeof(Input));
+    }
+}
+
+HWND FindWMDCWindow() {
+    return FindWindow(NULL, L"Windows Mobile Device Center");
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
     bool launched = false;
@@ -42,7 +77,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
     int pass = 0;
     do {
-        hwnd = FindWindow(NULL, L"Windows Mobile Device Center");
+        hwnd = FindWMDCWindow();
         if (hwnd == 0) {
             if (pass == 0) {
                 printf("WMDC is not running. Starting WMDC...\n");
@@ -56,38 +91,29 @@ int _tmain(int argc, _TCHAR* argv[])
         pass++;
     } while ((hwnd == 0) && (pass < 12));
 
+    if (hwnd != 0) {
+        printf("WMDC window found.\n");
+        if (launched) {
+            printf("Waiting for WMDC to connect to Device Emulator...\n");
+	        Sleep(25000);
+        } else {
+            Sleep(200);
+        }
+        hwnd = FindWMDCWindow();
+    }
     if (hwnd == 0) {
         printf("ERROR: Cannot find WMDC window.\n");
         return 1;
     }
-
-    printf("WMDC window found.\n");
-    if (launched) {
-        printf("Waiting for WMDC to connect to Device Emulator...\n");
-	    Sleep(10000);
-    }
     printf("Pushing Connect button...\n");
-
-	RECT r;
-	GetWindowRect(hwnd, &r);
-	RECT cr;
-	GetClientRect(hwnd, &cr);
- 
-	int x = r.left + cr.right - 243;
-	int y = r.top + cr.bottom - 168;
- 
-	SetCursorPos(x,y);
- 
-	POINT p;
-	GetCursorPos(&p);
-	hwnd = WindowFromPoint(p);
- 
-	GetWindowRect(hwnd, &r);
-	GetClientRect(hwnd, &cr);
- 
-	mouse_event(MOUSEEVENTF_LEFTDOWN, x, y, 0, 0);
-    Sleep(20);
-	mouse_event(MOUSEEVENTF_LEFTUP, x, y, 0, 0);
+    SetForegroundWindow(hwnd);
+    SetFocus(hwnd);
+    LockSetForegroundWindow(LSFW_LOCK);
+    Sleep(100);
+    GenerateKey(VK_MENU, TRUE, TRUE, FALSE);
+    GenerateKey('C', FALSE, TRUE, TRUE);
+    GenerateKey(VK_MENU, TRUE, FALSE, TRUE);
+    LockSetForegroundWindow(LSFW_UNLOCK);
 
 	return 0;
 }
