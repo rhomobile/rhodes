@@ -89,7 +89,7 @@ namespace "config" do
     $log_file = $app_config["applog"].nil? ? "applog.txt" : $app_config["applog"]
     $srcdir =  $bindir + "/RhoBundle"
     $buildcfg = $app_config["buildcfg"]
-    $buildcfg = "Release" if $buildcfg.nil?
+    $buildcfg = "Release" unless $buildcfg
 
     if $sdk == "Windows Mobile 6 Professional SDK (ARMV4I)"
         $targetdir = $bindir + "/target/wm6p"
@@ -624,6 +624,9 @@ namespace "run" do
 
   namespace "win32" do
     task :delete_db do
+      $buildcfg = $app_config["buildcfg"]
+      $buildcfg = "Release" unless $buildcfg
+    
       db_path = 'platform/wm/bin/win32/rhodes/' + $buildcfg + '/rho/db'
       rm_rf db_path if File.exists?(db_path)
     end
