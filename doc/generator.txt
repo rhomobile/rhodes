@@ -198,3 +198,9 @@ This will generate the following files in the app folder:
 If you are going to use mspec, then add mspec and fileutils extensions to your application's build.yml file:
 
 	extensions: ["mspec", "fileutils"]
+
+To run the tests you need to add a link to the SpecRunner controller in your index.erb:
+	:::html
+	<li><a href="SpecRunner">Run tests</a></li>
+
+Once you click the link a summary of the results with number of passing/failing tests will be displayed on the screen.
