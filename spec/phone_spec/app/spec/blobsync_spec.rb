@@ -45,8 +45,9 @@ describe "BlobSync_test" do
   end
   
   it "should login" do
-    
-    res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.login('lars', 'b', "/app/Settings/login_callback")
+
+    login_name = System.get_property('platform') + System.get_property('device_name')    
+    res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.login('login_name', '', "/app/Settings/login_callback")
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
     
     SyncEngine.logged_in.should == 1
