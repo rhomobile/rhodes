@@ -5,7 +5,6 @@
 </div>
 
 <%@color = @code == 0 ? "#00ff00" : "#ff0000"%>
-<% unless @is_network_available %>Network is not available, only offline tests are processed!<% end %>
 
 <ul id="specrunner" title="SpecRunner" selected="true">
 	<% if @msg %><li style="color:<%=@color%>" align="center"><%=@msg%></li><% end %>
