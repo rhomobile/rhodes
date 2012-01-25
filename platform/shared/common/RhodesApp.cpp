@@ -915,7 +915,7 @@ void CRhodesApp::initAppUrls()
 {
     CRhodesAppBase::initAppUrls(); 
     
-#if defined( OS_WINCE ) || defined( __SYMBIAN32__ ) || defined( OS_ANDROID )
+#if defined( __SYMBIAN32__ ) || defined( OS_ANDROID )
     m_strHomeUrl = "http://localhost:";
 #else
     m_strHomeUrl = "http://127.0.0.1:";
