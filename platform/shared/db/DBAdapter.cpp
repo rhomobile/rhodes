@@ -701,13 +701,12 @@ void CDBAdapter::createSchema()
 {
 #ifdef RHODES_EMULATOR
     String strPath = CFilePath::join( RHOSIMCONF().getRhodesPath(), "platform/shared/db/res/db/syncdb.schema" );
-    CFilePath oPath(strPath);
 #else
-    CFilePath oPath(m_strDbPath);
+    String strPath = CFilePath::join( RHODESAPP().getRhoRootPath(), "db/syncdb.schema" );
 #endif
 
     String strSqlScript;
-    CRhoFile::loadTextFile(oPath.changeBaseName("syncdb.schema").c_str(), strSqlScript);
+    CRhoFile::loadTextFile(strPath.c_str(), strSqlScript);
 
     if ( strSqlScript.length() == 0 )
     {
@@ -727,13 +726,12 @@ void CDBAdapter::createTriggers()
     char* errmsg = 0;
 #ifdef RHODES_EMULATOR
     String strPath = CFilePath::join( RHOSIMCONF().getRhodesPath(), "platform/shared/db/res/db/syncdb.triggers" );
-    CFilePath oPath(strPath);
 #else
-    CFilePath oPath(m_strDbPath);
+    String strPath = CFilePath::join( RHODESAPP().getRhoRootPath(), "db/syncdb.triggers" );
 #endif
 
     String strSqlTriggers;
-    CRhoFile::loadTextFile(oPath.changeBaseName("syncdb.triggers").c_str(), strSqlTriggers);
+    CRhoFile::loadTextFile(strPath.c_str(), strSqlTriggers);
 
     if ( strSqlTriggers.length() == 0 )
     {

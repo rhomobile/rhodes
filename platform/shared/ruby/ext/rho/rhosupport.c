@@ -786,7 +786,7 @@ const char* rho_ruby_internal_getErrorText(int nError)
 
     return szValue;
 }
-
+/*
 static void Init_RhoLog2()
 {
   VALUE path = __rhoGetCurrentDir();
@@ -809,7 +809,8 @@ static void Init_RhoLog2()
       }
     }
   }
-}
+}*/
+
 void rhoGCReport(VALUE valReport)
 {
     char *report = RSTRING_PTR(valReport);
