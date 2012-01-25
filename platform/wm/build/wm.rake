@@ -150,7 +150,7 @@ namespace "build" do
           next unless File.exists? File.join(extpath, "build.bat")
 
           ENV['RHO_PLATFORM'] = $current_platform
-          ENV['RHO_BUILD_CONFIG'] = 'Debug'
+          ENV['RHO_BUILD_CONFIG'] = 'Release'
           ENV['PWD'] = $startdir
           ENV['RHO_ROOT'] = ENV['PWD']
 
