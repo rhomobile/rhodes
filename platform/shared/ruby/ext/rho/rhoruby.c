@@ -451,7 +451,7 @@ long rho_ruby_get_int(VALUE val)
     return NUM2LONG(val);
 }
 
-time_t rho_ruby_get_time(VALUE rDate)
+VALUE rho_ruby_get_time(VALUE rDate)
 {
     VALUE res, cDate;
     if (TYPE(rDate) == T_STRING) {
@@ -462,8 +462,12 @@ time_t rho_ruby_get_time(VALUE rDate)
     if (!rb_equal(cDate, rb_cTime))
         rb_raise(rb_eArgError, "Wrong type of parameter: %s (Time expected)", rb_class2name(cDate));
 
-    res = rb_funcall(rDate, rb_intern("to_i"), 0, NULL);
-    return NUM2LONG(res);
+    return rDate;
+}
+
+unsigned long rho_ruby_get_time_part(VALUE rDate, const char* szPart)
+{
+    return NUM2LONG(rb_funcall(rDate, rb_intern(szPart), 0));
 }
 
 VALUE rho_ruby_create_array()

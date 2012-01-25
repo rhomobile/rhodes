@@ -106,7 +106,8 @@ void rho_ruby_add_to_array(VALUE ar, VALUE val);
 void rho_ruby_add_to_hash(VALUE hash, VALUE key, VALUE item);
 
 
-time_t rho_ruby_get_time(VALUE rTime);
+VALUE rho_ruby_get_time(VALUE rTime);
+unsigned long rho_ruby_get_time_part(VALUE rDate, const char* szPart);
 
 VALUE rho_ruby_create_byte_array(unsigned char* buf, int length);	
 int rho_ruby_unpack_byte_array(VALUE array_value, unsigned char* buf, int max_length);
