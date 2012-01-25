@@ -4,17 +4,17 @@ require 'time'
 describe "DateTime" do
 
   it "should parse date after 2038" do
+    if (System::get_property('platform') != 'ANDROID') || (!System::get_property('is_emulator'))
 if !defined? RHO_ME
-    res = Time.strptime("20400804",'%Y%m%d')
+      res = Time.strptime("20400804",'%Y%m%d')
 else
-    res = Time.strptime("08/04/2040 04:13 PM","%m/%d/%Y %I:%M %p")
+      res = Time.strptime("08/04/2040 04:13 PM","%m/%d/%Y %I:%M %p")
 end
     
-    res.year.should == 2040
-    res.month.should == 8
-    res.day.should == 4
+      res.year.should == 2040
+      res.month.should == 8
+      res.day.should == 4
 
-    if (System::get_property('platform') != 'ANDROID') || (!System::get_property('is_emulator'))
       res1 = Time.parse("08/04/2040")
       res1.year.should == 2040
       res1.month.should == 4
