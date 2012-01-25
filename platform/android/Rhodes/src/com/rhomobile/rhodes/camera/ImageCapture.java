@@ -36,6 +36,8 @@ import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.RhodesAppOptions;
+import com.rhomobile.rhodes.osfunctionality.AndroidFunctionalityManager;
+import com.rhomobile.rhodes.util.Utils;
 
 import android.content.ContentValues;
 import android.graphics.PixelFormat;
@@ -105,9 +107,12 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
             @Override
             public void onOrientationChanged(int orientation) 
             { 
+            	Logger.D(TAG, "onOrientationChanged("+String.valueOf(orientation)+")");
                 //Logger.D(TAG, "onOrientationChanged: " + orientation); 
-                if (orientation == ORIENTATION_UNKNOWN) 
+                if (orientation == ORIENTATION_UNKNOWN) {
+                	Logger.D(TAG, "orientation == UNKNOWN !");
                     return; 
+                }
                  
                 m_rotation = orientation;    
              }   
@@ -120,7 +125,7 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
         }
         else
         {
-           Logger.I(TAG, "cannot detect!"); 
+         	Logger.I(TAG, "orientation detect is not worked !!!");
            myOrientationEventListener = null;
         }		
 	}
@@ -224,8 +229,18 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 			}
 			if (mSettings != null) {
 	            if ((mSettings.getWidth() > 0) && (mSettings.getHeight() > 0)) {
-	                p.setPictureSize(mSettings.getWidth(), mSettings.getHeight());
-	            }
+	            	
+	    			CameraService.Size imgs = com.rhomobile.rhodes.camera.Camera.getCameraService().getClosestPictureSize(camera, mSettings.getWidth(), mSettings.getHeight());
+	    			 
+	    			if (imgs != null) {
+	    				if ((imgs.width >= 0) && (imgs.height >= 0)) {
+	    					p.setPictureSize(imgs.width, imgs.height);
+	    				}
+	    			}
+	    			else {
+	    				p.setPictureSize(mSettings.getWidth(), mSettings.getHeight());
+	    			}
+	    		}
 	            if (mSettings.getColorModel() == mSettings.CAMERA_COLOR_MODEL_GRAYSCALE) {
 	            	p.set("effect", Camera.Parameters.EFFECT_MONO);//p.setColorEffect(Camera.Parameters.EFFECT_MONO);
 	            }
@@ -285,6 +300,9 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 
 	
 	private void takePicture() {
+		
+		com.rhomobile.rhodes.camera.Camera.logDebug(TAG, "takePicture()");
+		
 		if (camera == null) {
 			Logger.E(TAG, "Attempt of take picture while camera was not opened");
 			return;
@@ -339,19 +357,32 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 	        
             //int nOrient = RhodesService.getInstance().getScreenOrientation();
             int nCamRotate = 90;
-            if ( (m_rotation > 45 && m_rotation < 135) || (m_rotation > 225 && m_rotation < 315) )
+            if ( (m_rotation > 45 && m_rotation < 135) || (m_rotation > 225 && m_rotation < 315) ) {
                 nCamRotate = 0;
+            }
             if (mIsFrontCamera) {
                 nCamRotate = 0;
                 parameters.set("rotation", nCamRotate );//.setRotation(270);
             }
 	        Logger.D(TAG, "Camera rotation: " + nCamRotate );
             parameters.set("rotation", nCamRotate );
-            if ((mSettings != null) && (mSettings.getWidth() > 0) && (mSettings.getHeight() > 0)) {
             
+            int deviceRotation = AndroidFunctionalityManager.getAndroidFunctionality().getDeviceRotation();
+            if (deviceRotation >= 0) {
+            	// platform from 2.2
+            	parameters.set("rotation", deviceRotation );
+    	        Logger.D(TAG, "Camera rotation resetup for platforms >= 2.2: " + deviceRotation );
+            }
+            
+            Utils.platformLog(TAG, "$$$   parameters.set(rotation, "+String.valueOf(nCamRotate)+" );");
+            if ((mSettings != null) && (mSettings.getWidth() > 0) && (mSettings.getHeight() > 0)) {
+
+            	
     			int newW = mSettings.getWidth();
     			int newH = mSettings.getHeight();
 
+        		com.rhomobile.rhodes.camera.Camera.logDebug(TAG, "    use custom size: ["+String.valueOf(newW)+"x"+String.valueOf(newH)+"]");
+    			
     			CameraService.Size s = com.rhomobile.rhodes.camera.Camera.getCameraService().getClosestPictureSize(camera, newW, newH);
  
     			if (s != null) {
@@ -363,6 +394,7 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
     			}
             	imgW = newW;
             	imgH = newH;
+        		com.rhomobile.rhodes.camera.Camera.logDebug(TAG, "    final size: ["+String.valueOf(imgW)+"x"+String.valueOf(imgH)+"]");
             }
             else {
             	// detect camera resolution

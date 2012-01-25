@@ -24,30 +24,50 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
-package com.rhomobile.rhodes.camera;
+package com.rhomobile.rhodes.osfunctionality;
 
-class CameraOldService implements CameraService {
+import android.os.Build;
 
-	
-	public android.hardware.Camera getMainCamera() {
-		return android.hardware.Camera.open();
-	}
 
-	public android.hardware.Camera getFrontCamera() {
-		return null;
-	}
+public class AndroidFunctionalityManager {
+
+private static AndroidFunctionality ourFunctionality = null;
 	
-	public Size getClosestPictureSize(android.hardware.Camera camera, int w, int h) {
-		return null;
+	public static AndroidFunctionality getAndroidFunctionality() {
+		if (ourFunctionality == null) {
+			int sdkVersion = Integer.parseInt(Build.VERSION.SDK);
+			if (sdkVersion >= 10) {
+				ourFunctionality = new AndroidFunctionality10();
+			}
+			else if (sdkVersion >= 9) {
+				ourFunctionality = new AndroidFunctionality09();
+			}
+			else if (sdkVersion >= 8) {
+				ourFunctionality = new AndroidFunctionality08();
+			}
+			else if (sdkVersion >= 7) {
+				ourFunctionality = new AndroidFunctionality07();
+			}
+			else if (sdkVersion >= 6) {
+				ourFunctionality = new AndroidFunctionality06();
+			}
+			else if (sdkVersion >= 5) {
+				ourFunctionality = new AndroidFunctionality05();
+			}
+			else if (sdkVersion >= 4) {
+				ourFunctionality = new AndroidFunctionality04();
+			}
+			else if (sdkVersion >= 3) {
+				ourFunctionality = new AndroidFunctionality03();
+			}
+			else if (sdkVersion >= 2) {
+				ourFunctionality = new AndroidFunctionality02();
+			}
+			else {
+				ourFunctionality = new AndroidFunctionality01();
+			}
+		}
+		return ourFunctionality;
 	}
-	
-	public Size getClosestPreviewSize(android.hardware.Camera camera, int w, int h) {
-		return null;
-	}
-	
-	public boolean isAutoFocusSupported(android.hardware.Camera camera) {
-		return false;
-	}
-	
 	
 }

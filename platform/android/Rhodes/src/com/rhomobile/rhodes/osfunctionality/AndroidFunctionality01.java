@@ -24,30 +24,24 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
-package com.rhomobile.rhodes.camera;
+package com.rhomobile.rhodes.osfunctionality;
 
-class CameraOldService implements CameraService {
+import android.content.Context;
+
+// Android 1.0
+class AndroidFunctionality01 implements AndroidFunctionality {
 
 	
-	public android.hardware.Camera getMainCamera() {
-		return android.hardware.Camera.open();
-	}
-
-	public android.hardware.Camera getFrontCamera() {
-		return null;
+	public String AccessOwnerInfo_getEmail(Context context) {
+		return "";
 	}
 	
-	public Size getClosestPictureSize(android.hardware.Camera camera, int w, int h) {
-		return null;
+	public String AccessOwnerInfo_getUsername(Context context) {
+		return "";
 	}
 	
-	public Size getClosestPreviewSize(android.hardware.Camera camera, int w, int h) {
-		return null;
+	public int getDeviceRotation() {
+		return -1;
 	}
-	
-	public boolean isAutoFocusSupported(android.hardware.Camera camera) {
-		return false;
-	}
-	
 	
 }

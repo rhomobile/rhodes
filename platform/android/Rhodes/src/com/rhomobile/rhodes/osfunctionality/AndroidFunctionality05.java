@@ -24,30 +24,52 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
-package com.rhomobile.rhodes.camera;
+package com.rhomobile.rhodes.osfunctionality;
 
-class CameraOldService implements CameraService {
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.content.Context;
 
-	
-	public android.hardware.Camera getMainCamera() {
-		return android.hardware.Camera.open();
-	}
 
-	public android.hardware.Camera getFrontCamera() {
-		return null;
-	}
+//Android 2.0
+class AndroidFunctionality05 extends AndroidFunctionality04 implements AndroidFunctionality {
+
+	 private Account AccessOwnerInfo_getAccount(AccountManager accountManager) {
+		    Account[] accounts = accountManager.getAccountsByType("com.google");
+	    Account account;
+	    if (accounts.length > 0) {
+	      account = accounts[0];
+	    } else {
+	      account = null;
+	    }
+	    return account;
+	  }
 	
-	public Size getClosestPictureSize(android.hardware.Camera camera, int w, int h) {
-		return null;
-	}
+	  public String AccessOwnerInfo_getEmail(Context context) {
+	    AccountManager accountManager = AccountManager.get(context);
+	    Account account = AccessOwnerInfo_getAccount(accountManager);
 	
-	public Size getClosestPreviewSize(android.hardware.Camera camera, int w, int h) {
-		return null;
-	}
+	    if (account == null) {
+	      return null;
+	    } else {
+	      return account.name;
+	    }
+	  }
 	
-	public boolean isAutoFocusSupported(android.hardware.Camera camera) {
-		return false;
-	}
-	
+	  public String AccessOwnerInfo_getUsername(Context context) {
+	    // String email;
+		AccountManager manager = AccountManager.get(context);
+		Account account = AccessOwnerInfo_getAccount(manager);
+		if (account == null) {
+		  return "";
+		} else {
+		  String email = account.name;
+		  String[] parts = email.split("@");
+		  if (parts.length > 0 && parts[0] != null)
+		    return parts[0];
+		  else
+		    return "";
+	    }
+	  }	
 	
 }

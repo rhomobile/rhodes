@@ -24,30 +24,21 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
-package com.rhomobile.rhodes.camera;
+package com.rhomobile.rhodes.osfunctionality;
 
-class CameraOldService implements CameraService {
+import com.rhomobile.rhodes.RhodesService;
 
-	
-	public android.hardware.Camera getMainCamera() {
-		return android.hardware.Camera.open();
-	}
+import android.content.Context;
+import android.view.Display;
+import android.view.WindowManager;
 
-	public android.hardware.Camera getFrontCamera() {
-		return null;
+
+//Android 2.2
+class AndroidFunctionality08 extends AndroidFunctionality07 implements AndroidFunctionality {
+
+	public int getDeviceRotation() {
+		Display display = ((WindowManager) RhodesService.getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+		int rotation = display.getRotation();
+		return rotation;
 	}
-	
-	public Size getClosestPictureSize(android.hardware.Camera camera, int w, int h) {
-		return null;
-	}
-	
-	public Size getClosestPreviewSize(android.hardware.Camera camera, int w, int h) {
-		return null;
-	}
-	
-	public boolean isAutoFocusSupported(android.hardware.Camera camera) {
-		return false;
-	}
-	
-	
 }
