@@ -42,6 +42,21 @@
 
 
 
+/*
+use this non-public code for see level of memory warning 
+ 
+typedef enum {
+	OSMemoryNotificationLevelAny      = -1,
+	OSMemoryNotificationLevelNormal   =  0,
+	OSMemoryNotificationLevelWarning  =  1,
+	OSMemoryNotificationLevelUrgent   =  2,
+	OSMemoryNotificationLevelCritical =  3
+} OSMemoryNotificationLevel;
+
+extern OSMemoryNotificationLevel OSMemoryNotificationCurrentLevel(void);
+*/
+
+
 extern int rho_sys_check_rollback_bundle(const char* szRhoPath);
 void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg);
 
@@ -1008,6 +1023,18 @@ static Rhodes *instance = NULL;
     // Nothing right now
 }
 #endif
+
+
+- (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
+{
+    RAWLOG_INFO("Application receive Memory Warning !!!");
+    /*
+    int level = OSMemoryNotificationCurrentLevel();
+    
+    int o;
+    o = 9;
+    */
+}
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     RAWLOG_INFO("Runner will terminate");
