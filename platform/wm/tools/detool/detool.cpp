@@ -739,7 +739,7 @@ void startWMDC() {
         if (findWMDCWindow() == 0) {
             _tprintf( TEXT("WMDC is not running. Starting WMDC...\n") );
 			::system("start %WINDIR%\\WindowsMobile\\wmdc.exe /show");
-			Sleep(5000);
+			::Sleep(5000);
 		}
 	}
 }
