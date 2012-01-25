@@ -178,7 +178,7 @@ To show currency (see rails analog for details):
 
 Geolocation information is available in two ways: as an asynchronous service through Ajax calls to a predefined local URL, or in a controller using Ruby calls to the GeoLocation class.
 
-You need to enable the GPS capability to use GeoLocaiton. This is done by adding the following lines to build.yml:
+You need to enable the GPS capability to use GeoLocaiton. This is done by adding the following line to build.yml:
 
 	:::yaml
 	capabilities:
@@ -192,18 +192,18 @@ The GPS receiver will be switched off authomatically after some time (see [Confi
 Also note that it usually takes a while to acquire the device's current position; in some cases, it may take several minutes and may not work at all indoors.
 
 Note that in old rhodes versions (up to 2.3.1) this feature uses only GPS location provider;
-however, in new rhodes it also use network based location determination. Network based location
-is not so precise as GPS but in most cases it consume less power and return results faster than GPS.
-Rhodes will update location using network data until GPS signal has received; then only GPS will be used as more precise data.
+however, in more recent rhodes it also use network based location determination. Network based location
+is not as precise as GPS but in most cases it consumes less power and returns results faster than GPS.
+Rhodes will update location using network data until the GPS signal has been received; then only GPS will be used for more precise data.
 
-It is two ways to use GeoLocation:
+There are two ways to use GeoLocation:
 * Syncronous call to GeoLocation module for particular value.
 * Set GeoLocation notification and track location by call back. In this case all location values passed to notification as parameters.
 
-Note that GeoLocation is switched off authomatically when application goes background and switched on as application is back to foreground.
+Note that GeoLocation is switched off automatically when the application goes into the background, and is switched on as the application goes back to foreground.
 However it is possible to switch on location services as usual while the application is in background.
 
-See rhodes-system-api-samples application for GeoLocation usage example.
+See the [Rhodes-System-Api-Samples example](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/Geolocation) application for GeoLocation usage example.
 
 ### Asynchronous Ajax calls
 
@@ -242,24 +242,24 @@ Set callback to track location changes.
 	GeoLocation.set_notification(
 		callback, callback_param="", ping_gpssystem_timeout=0)
 
-* callback - callback url; it will be called only once, to have it called again, you need to call set_notification again.
-* ping_gpssystem_timeout  - optional, if 0 system timeout used, use to redefine timeout in sec for gps system reading
+* callback - callback url; after the callback has been called once, it will be automatically called repeatedly with the current location coordinates passed to the callback as parameters. (You need not reset the callback within the callback.)
+* ping_gpssystem_timeout - optional, if 0 system timeout used, use to redefine timeout in sec for gps system reading
 * callback params: known_position, latitude, longitude, available, status('error', 'ok'), error_code(from RhoError)
 	
-Get the distance between two points in miles
+Get the distance between two points in miles.
 	:::ruby
 	GeoLocation.haversine_distance(
 		latitude1, longitude1, latitude2, longitude2) 
 
-GeoCoding: You can use any free web service for direct and reverse geocoding. See our complete example of using Google geocoding web service in [Rhodes-System-Api-Samples example](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/GeoCoding)
+GeoCoding: You can use any free web service for direct and reverse geocoding. See our complete example of using Google geocoding web service in [Rhodes-System-Api-Samples example](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/GeoCoding).
 
 #### Testing GeoLocation
 
-While developing your application on Windows Mobile emulator, you may find [FakeGPS](http://msdn.microsoft.com/en-us/library/bb158722.aspx) utility useful.
+While developing your application on Windows Mobile emulator, you may find the [FakeGPS](http://msdn.microsoft.com/en-us/library/bb158722.aspx) utility useful.
 
-Before testing on BB simulator select menu Simulate/GPS Location and set your position.
+Before testing on BB simulator, select menu Simulate/GPS Location and set your position.
 
-To provide Mock Location Data on Android see [here](http://developer.android.com/guide/topics/location/index.html)
+To provide Mock Location Data on Android, see [here](http://developer.android.com/guide/topics/location/index.html)
 
 #### Samples
 
@@ -282,8 +282,6 @@ Callback points to the `geo_callback` in the Settings controller.rb:
         puts "geo_callback : #{@params}"
 		# do something on position changes
 		#...
-		# Reset callback
-		GeoLocation.set_notification("/app/Settings/geo_callback", "")
       end
     end
 
@@ -317,7 +315,7 @@ Callback points to the `geo_callback` in the Settings controller.rb:
 
 #### Code Sample
 
-See controller and view in the /app/GeoLocation folder of the [ System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/GeoLocation/controller.rb) for more information
+See controller and view in the /app/GeoLocation folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/GeoLocation/controller.rb) for more information.
 
 ## PIM Contacts
 
@@ -1517,7 +1515,7 @@ See GeoLocation/controller.rb of [system API sample application](http://github.c
 
 ### Rhodes client file system structure
 	<rhodes root>  #system-dependent path
-	  apps         #Rho::RhoApplication::get_base_app_path   and also    Rho::RhoApplication::get_user_path - use user path for your local files (files created by your code in runtime)
+	  apps         #Rho::RhoApplication::get_base_app_path
 	    app        #Rho::RhoApplication::get_app_path('app') - contain models
 	      model1   #Rho::RhoApplication::get_model_path('app','model1')
 	  public       #contains files from application public folder
@@ -1530,11 +1528,11 @@ See GeoLocation/controller.rb of [system API sample application](http://github.c
 
 ### Read\write file example
 	:::ruby	
-	fileName = File.join(Rho::RhoApplication::get_user_path(), 'myfile.txt')
+	fileName = File.join(Rho::RhoApplication::get_base_app_path(), 'myfile.txt')
 	File.open(fileName).each do |line|
 	end
 
-	fileNameW = File.join(Rho::RhoApplication::get_user_path(), 'tempfile.txt')
+	fileNameW = File.join(Rho::RhoApplication::get_base_app_path(), 'tempfile.txt')
 	f = File.new(fileNameW)
 	f.write('test')
 	f.close
@@ -1545,7 +1543,7 @@ See GeoLocation/controller.rb of [system API sample application](http://github.c
 	file_testname = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'test.png')
 	test_content = File.binread(file_testname)
 
-	file_name = File.join(Rho::RhoApplication::get_user_path(), 'temp.png')
+	file_name = File.join(Rho::RhoApplication::get_base_app_path(), 'temp.png')
 	f = File.new(file_name, "wb")
 	f.write(test_content)
 	f.close        
@@ -1565,7 +1563,7 @@ Simulator files folder - run search for RhoLog.txt from the drive root. Files ar
 Application can creates folders and files under apps and db roots.
 
 ### Rhodes client file system structure on iOS platform
-	<rhodes root>  # /Library/Caches/Private Documents/
+	<rhodes root>  # /Library/Private Documents/
 	  apps         #Rho::RhoApplication::get_base_app_path
 	    app        #Rho::RhoApplication::get_app_path('app') - contain models
 	      model1   #Rho::RhoApplication::get_model_path('app','model1')
@@ -1581,7 +1579,7 @@ Application can creates folders and files under apps and db roots.
 
 On iOS platform only files stored in /Documents/ bakuped in iCloud etc.
 Before Rhodes 3.3.2 all files stored in /Documents/ but Apple require do not placing files in Documents folder except user produced files. 
-Now all files except databases stored in /Library/Caches/Private Documents/ - files in this folder do not bakup and can be deleted by iOS device platform (all files from application bundle restored automatically)
+Now all files except databases stored in /Library/Private Documents/ - files in this folder do not bakup.
 If you want make any files should be bakup - use "user folder" for it - Rho::RhoApplication::get_user_path. All you files created in old version in Rho::RhoApplication::get_base_app_path now should be open in Rho::RhoApplication::get_user_path.
 
 ### write file in user folder example
