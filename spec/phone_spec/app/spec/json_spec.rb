@@ -81,7 +81,6 @@ describe "Json" do
     end
 
     it "should webservice" do
-        return unless $is_network_available
             
         res = Rho::AsyncHttp.get( :url => 'http://rhostore.heroku.com/products.json' )
         #puts "res : #{res}"  
@@ -117,7 +116,6 @@ describe "Json" do
 
 =begin
     def webservice2_test
-        return unless $is_network_available
             
         res = Rho::AsyncHttp.get( :url => 'http://www.glutenfreechecklist.com/Mob_API/GetCat_MnfsList.aspx?checkListId=17&CategoryID=0&ManfName=&startindex=1&endindex=10' )
         puts "res : #{res}"  
@@ -143,7 +141,6 @@ describe "Json" do
     end
 
     def webservice3_test
-        return unless $is_network_available
             
         res = Rho::AsyncHttp.get( :url => 'http://api.foursquare.com/v1/venues.json?geolat=37.331689&geolong=-122.030731' )
         puts "res : #{res}"  

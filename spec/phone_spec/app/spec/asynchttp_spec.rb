@@ -8,11 +8,10 @@ describe "AsyncHttp" do
 
         file_name = File.join(Rho::RhoApplication::get_app_path('DataTemp'), 'test_log.txt')
         File.delete(file_name) if File.exists?(file_name)		
+        
     end
     
     it "should http get" do
-        return unless $is_network_available
-        
         res = Rho::AsyncHttp.get(
           :url => 'http://www.apache.org/licenses/LICENSE-2.0' )
         
@@ -33,13 +32,11 @@ describe "AsyncHttp" do
     end
 
     it "should http post" do
-        return unless $is_network_available    
         
         #TODO: post_test
     end
 
     it "should http download" do
-        return unless $is_network_available
 
         file_name = File.join(Rho::RhoApplication::get_base_app_path(), 'test.jpg')
         File.delete(file_name) if File.exists?(file_name)
@@ -84,7 +81,6 @@ describe "AsyncHttp" do
     end
 
     it "should http upload" do
-        return unless $is_network_available
         
         server = 'http://rhologs.heroku.com'
         
@@ -101,7 +97,6 @@ describe "AsyncHttp" do
     end
 
     it "should http upload" do
-        return unless $is_network_available
         
         server = 'http://rhologs.heroku.com'
 		dir_name = Rho::RhoApplication::get_app_path('DataTemp')
@@ -123,7 +118,6 @@ describe "AsyncHttp" do
     end
 
     it "should decode chunked body" do
-      return unless $is_network_available
 
       host = SPEC_LOCAL_SERVER_HOST
       port = SPEC_LOCAL_SERVER_PORT
@@ -135,7 +129,6 @@ describe "AsyncHttp" do
     end
 
     it "should send custom command" do
-        return unless $is_network_available
         
         res = Rho::AsyncHttp.get(
           :url => 'http://www.apache.org/licenses/LICENSE-2.0',
@@ -156,7 +149,6 @@ describe "AsyncHttp" do
     end    
 
     it "should upload with body" do
-        return unless $is_network_available
         
         server = 'http://rhologs.heroku.com'
         
@@ -180,7 +172,6 @@ describe "AsyncHttp" do
     end
 
     it "should upload miltiple" do
-        return unless $is_network_available
         
         server = 'http://rhologs.heroku.com'
         
@@ -210,7 +201,6 @@ describe "AsyncHttp" do
     end
 
     it "should send https request" do
-        return unless $is_network_available
             
         res = Rho::AsyncHttp.get(
           :url => 'https://rhologs.heroku.com' )
