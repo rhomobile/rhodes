@@ -229,7 +229,7 @@ namespace "build" do
     end
 
     task :after_bundle do
-      win32rhopath = 'platform/wm/bin/win32/rhodes/'+ $buildcfg + '/rho/'
+      win32rhopath = 'platform/wm/bin/win32/rhodes/debug/rho/'
       mkdir_p win32rhopath
       namepath = File.join(win32rhopath,"name.txt")
       old_appname = File.read(namepath) if File.exists?(namepath)
