@@ -83,7 +83,14 @@ static void addVariantTimeToHash(VALUE hash, const char* key, DATE time)
 static DATE dateFromRuby(VALUE rDate)
 {
     SYSTEMTIME sysTime = {0};
-    UnixTimeToSystemTime(rho_ruby_get_time(rDate), &sysTime );
+//    UnixTimeToSystemTime(rho_ruby_get_time(rDate), &sysTime );
+    rDate = rho_ruby_get_time(rDate);
+    sysTime.wYear = (WORD)rho_ruby_get_time_part(rDate, "year");
+    sysTime.wMonth = (WORD)rho_ruby_get_time_part(rDate, "month");
+    sysTime.wDay = (WORD)rho_ruby_get_time_part(rDate, "day");
+    sysTime.wHour = (WORD)rho_ruby_get_time_part(rDate, "hour");
+    sysTime.wMinute = (WORD)rho_ruby_get_time_part(rDate, "min");
+    sysTime.wSecond = (WORD)rho_ruby_get_time_part(rDate, "sec");
 
     DATE time = 0;
     SystemTimeToVariantTime(&sysTime, &time);
