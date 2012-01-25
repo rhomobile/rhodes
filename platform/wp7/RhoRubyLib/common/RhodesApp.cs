@@ -289,6 +289,11 @@ namespace rho.common
                 }
             }
 
+            processInvokeScriptArgs(arr[0], arrParams, index);
+        }
+
+        public void processInvokeScriptArgs(String strFuncName, String[] arrParams, int index)
+        {
             m_webBrowser.Dispatcher.BeginInvoke(() =>
             {
                 try
@@ -297,17 +302,17 @@ namespace rho.common
                     {
                         if (m_tabControl != null && m_tabControl.Items.Count > 0)
                         {
-                            ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.InvokeScript(arr[0], arrParams);
+                            ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.InvokeScript(strFuncName, arrParams);
                         }
                     }
                     else
                     {
-                        m_webBrowser.InvokeScript(arr[0], arrParams);
+                        m_webBrowser.InvokeScript(strFuncName, arrParams);
                     }
                 }
                 catch (Exception exc)
                 {
-                    LOG.ERROR("WebView.execute_js failed: " + arr[0] + "(" + String.Join(",", arrParams), exc);
+                    LOG.ERROR("WebView.execute_js failed: " + strFuncName + "(" + String.Join(",", arrParams), exc);
                 }
             });
         }
