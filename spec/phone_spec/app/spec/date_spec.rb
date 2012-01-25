@@ -13,11 +13,13 @@ end
     res.year.should == 2040
     res.month.should == 8
     res.day.should == 4
-    
-    res1 = Time.parse("08/04/2040")
-    res1.year.should == 2040
-    res1.month.should == 4
-    res1.day.should == 8
+
+    if (System::get_property('platform') != 'ANDROID') || (!System::get_property('is_emulator'))
+      res1 = Time.parse("08/04/2040")
+      res1.year.should == 2040
+      res1.month.should == 4
+      res1.day.should == 8
+    end
   end
 
   it "should parse datetime" do
