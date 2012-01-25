@@ -1067,7 +1067,7 @@ namespace "run" do
          end
 
 #>>>>>>>>>>
-        `echo "#{$applog}" > "#{$simrhodes}/Documents/rhologpath.txt"`
+        #`echo "#{$applog}" > "#{$simrhodes}/Documents/rhologpath.txt"`
         rholog = simapp + "/" + $guid + "/Library/Private Documents/rholog.txt"
 
 
