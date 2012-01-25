@@ -12,11 +12,13 @@ Run the install gems script appropriate for you. You can run "Install gems." If 
 
 Then drag RhoStudio to the Applications folder.
 
+You can also install Rhodes without RhoStudio by [installing Ruby and the Rhodes gem](/rhodes/install#rhodes-gem-for-linux-and-non-rhostudio). 
+
 ## Windows
 
 If you're running Windows, download the latest [RhoStudio for Windows](http://rhomobile.com/rhostudio-windows). This installs the [Ruby stack](http://www.ruby-lang.org/en/), [Redis](http://redis.io/), [RhoConnect](/rhoconnect/introduction) and [Rhodes](/rhodes/introduction).
 
-If you are running Windows 64-bit, you need to have 64-bit Eclipse, and then you [install RhoStudio as a plugin for Eclipse](/rhodes/rhostudio-eclipse).
+If you are running Windows 64-bit, you need to [install Ruby and the Rhodes gem](/rhodes/install#rhodes-gem-for-linux-and-non-rhostudio). If you also want RhoStudio, you need to have 64-bit Eclipse, and then you [install RhoStudio as a plugin for Eclipse](/rhodes/rhostudio-eclipse).
 
 Once the installer has completed, and you have installed the Java Development Kit, you can skip to the [Setup Rhodes section](#setup-rhodes).
 
@@ -42,9 +44,9 @@ For non-RhoStudio installations, set the JDK path on the JAVA_HOME variable in y
 
 For Linux installations, and for Windows or Mac OS installations that are not using RhoStudio, you need to install the Rhodes gem. Download and install:
 
-1. [Ruby v1.8.7+](http://www.ruby-lang.org/en/downloads/) (On Windows, [RubyInstaller](http://rubyinstaller.org) is a convenient way to install Ruby.)
+1. [Ruby v1.8.7](http://www.ruby-lang.org/en/downloads/) (On Windows, [RubyInstaller](http://rubyinstaller.org) is a convenient way to install Ruby.)
 
-2. [RubyGems v1.8.5+](http://rubygems.org/pages/download) (RubyGems offers a .tgz, a .zip, and a .gem download. You want the .zip.) NOTE: Windows doesn't come with the necessary build tools to install gems ('make', for example). There are various ways to get these tools, but the GnuWin32 project at http://gnuwin32.sourceforge.net/ provides the tools, and can be conveniently installed via the GetGnuWin32 installer at http://sourceforge.net/projects/getgnuwin32/files/.
+2. [RubyGems](http://rubygems.org/pages/download) (RubyGems offers a .tgz, a .zip, and a .gem download. You want the .zip.) NOTE: Windows doesn't come with the necessary build tools to install gems ('make', for example). There are various ways to get these tools, but the GnuWin32 project at http://gnuwin32.sourceforge.net/ provides the tools, and can be conveniently installed via the GetGnuWin32 installer at http://sourceforge.net/projects/getgnuwin32/files/.
 
 3. Install the Rhode Gem.
 
