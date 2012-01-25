@@ -44,6 +44,9 @@ namespace rho.views
 {
     public partial class RhoView : UserControl
     {
+        private static RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
+                    new RhoLogger("RhoView");
+
         private Stack<Uri> m_backHistory = new Stack<Uri>();
         private Stack<Uri> m_forwardHistory = new Stack<Uri>();
         /// <summary>
@@ -74,6 +77,7 @@ namespace rho.views
             //webBrowser1.LoadCompleted += WebBrowser_OnLoadCompleted;
             webBrowser1.Navigating += WebBrowser_OnNavigating;
             webBrowser1.Navigated += WebBrowser_OnNavigated;
+            webBrowser1.ScriptNotify += WebBrowser_OnScriptNotify;
         }
         
         public RhoView(PhoneApplicationPage mainPage, Grid layoutRoot, String strAction,
@@ -86,7 +90,7 @@ namespace rho.views
             //webBrowser1.LoadCompleted += WebBrowser_OnLoadCompleted;
             webBrowser1.Navigating += WebBrowser_OnNavigating;
             webBrowser1.Navigated += WebBrowser_OnNavigated;
-            //webBrowser1.ScriptNotify += WebBrowser_OnScriptNotify;
+            webBrowser1.ScriptNotify += WebBrowser_OnScriptNotify;
             m_mainPage = mainPage;
             m_strAction = strAction;
             m_layoutRoot = layoutRoot;
@@ -134,7 +138,7 @@ namespace rho.views
 
         private void WebBrowser_OnNavigating(object sender, NavigatingEventArgs e)
         {
-            if (!RHODESAPP().HttpServer.processBrowserRequest(e.Uri))
+            if (!RHODESAPP().HttpServer.processBrowserRequest(e.Uri, false))
                 return;
 
             e.Cancel = true;
@@ -143,6 +147,15 @@ namespace rho.views
         private void WebBrowser_OnNavigated(object sender, NavigationEventArgs e)
         {
             RHODESAPP().addToHistory(e.Uri);
+        }
+
+        private void WebBrowser_OnScriptNotify(object sender, NotifyEventArgs e)
+        {
+            if (!RHODESAPP().HttpServer.processBrowserRequest(new Uri(e.Value, UriKind.Relative), true))
+            {
+                LOG.ERROR("External requests should be filtered in javascript");
+            }
+
         }
 
         public void refresh()
