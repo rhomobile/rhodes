@@ -45,6 +45,7 @@
 
 #import "common/app_build_configs.h"
 
+#include <sys/xattr.h>
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
@@ -201,6 +202,18 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 }
 
 
+- (BOOL)addSkipBackupAttributeToItemAtURL:(NSString *)nsFilePath
+{
+    const char* filePath = [nsFilePath UTF8String];
+    
+    const char* attrName = "com.apple.MobileBackup";
+    u_int8_t attrValue = 1;
+    
+    int result = setxattr(filePath, attrName, &attrValue, sizeof(attrValue), 0, 0);
+    return result == 0;
+}
+
+
 /*
  * Configures AppManager
  */
@@ -215,7 +228,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 	NSString *rhoUserRoot = [NSString stringWithUTF8String:rho_native_rhouserpath()];
 
 	NSString *filePathNew = [bundleRoot stringByAppendingPathComponent:@"name"];
-	NSString *filePathOld = [rhoUserRoot stringByAppendingPathComponent:@"name"];
+	NSString *filePathOld = [rhoRoot stringByAppendingPathComponent:@"name"];
 //#ifndef RHO_DONT_COPY_ON_START
     BOOL hasOldName = [fileManager fileExistsAtPath:filePathOld];
 //#endif
@@ -228,7 +241,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
         contentChanged = YES;
 	else {
 		filePathNew = [bundleRoot stringByAppendingPathComponent:@"hash"];
-		filePathOld = [rhoUserRoot stringByAppendingPathComponent:@"hash"];
+		filePathOld = [rhoRoot stringByAppendingPathComponent:@"hash"];
 
         contentChanged = ![self isContentsEqual:fileManager first:filePathNew second:filePathOld];
         
@@ -280,6 +293,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
         
         NSString *appsDocDir = [rhoUserRoot stringByAppendingPathComponent:@"apps"];
         [fileManager createDirectoryAtPath:rhoRoot withIntermediateDirectories:YES attributes:nil error:&error];
+        
         [fileManager createDirectoryAtPath:appsDocDir withIntermediateDirectories:YES attributes:nil error:&error];
         
         // Create symlink to "lib"
@@ -292,8 +306,8 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
         [fileManager createSymbolicLinkAtPath:dst withDestinationPath:src error:&error];
         //[self copyFromMainBundle:fileManager fromPath:src toPath:dst remove:YES];
 
-        
-        NSString *dirs[] = {@"apps"};
+
+        NSString *dirs[] = {@"apps", @"db"};
         for (int i = 0, lim = sizeof(dirs)/sizeof(dirs[0]); i < lim; ++i) {
             // Create directory
             src = [bundleRoot stringByAppendingPathComponent:dirs[i]];
@@ -304,6 +318,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
                 [fileManager createDirectoryAtPath:dst withIntermediateDirectories:YES attributes:nil error:&error];
             
             // And make symlinks from its content
+            
             NSArray *subelements = [fileManager contentsOfDirectoryAtPath:src error:&error];
             for (int i = 0, lim = [subelements count]; i < lim; ++i) {
                 NSString *child = [subelements objectAtIndex:i];
@@ -321,14 +336,19 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
                 else {
                     [fileManager createSymbolicLinkAtPath:target withDestinationPath:fchild error:&error];
                 }
+                //[self addSkipBackupAttributeToItemAtURL:target];
             }
         }
+        
+        // make symlinks for db files
         
         [fileManager setDelegate:nil];
         if (myDelegate != nil) {
             [myDelegate release];
         }
         // copy "db"
+        NSString* exclude_db[] = {@"syncdb.schema", @"syncdb.triggers", @"syncdb_java.triggers"};
+        
         if (!restoreSymLinks_only) { 
             NSString *copy_dirs[] = {@"db"};
             for (int i = 0, lim = sizeof(copy_dirs)/sizeof(copy_dirs[0]); i < lim; ++i) {
@@ -339,17 +359,45 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
                 NSLog(@"copy src: %@", src);
                 NSString *dst = [rhoUserRoot stringByAppendingPathComponent:copy_dirs[i]];
                 NSLog(@"copy dst: %@", dst);
-                [self copyFromMainBundle:fileManager fromPath:src toPath:dst remove:remove];
+                
+                //[self copyFromMainBundle:fileManager fromPath:src toPath:dst remove:remove];
+                
+                NSArray *subelements = [fileManager contentsOfDirectoryAtPath:src error:&error];
+                for (int i = 0, lim = [subelements count]; i < lim; ++i) {
+                    NSString *child = [subelements objectAtIndex:i];
+                    NSString *fchild = [src stringByAppendingPathComponent:child];
+                    NSLog(@" .. copy src: %@", fchild);
+                    NSString *target = [dst stringByAppendingPathComponent:child];
+                    NSLog(@" .. copy dst: %@", target);
+                    [fileManager removeItemAtPath:target error:&error];
+                    
+                    BOOL copyit = YES;
+                    
+                    int j, jlim;
+                    for (j = 0, jlim = sizeof(exclude_db)/sizeof(exclude_db[0]); j < jlim; j++) {
+                        if ([child isEqualToString:exclude_db[j]]) {
+                            copyit = NO;
+                        }
+                    }
+                    
+                    if (copyit) {
+                        [fileManager removeItemAtPath:target error:&error];
+                        [fileManager copyItemAtPath:fchild toPath:target error:&error];
+                    }
+                }
+                
             }
             // Finally, copy "hash" and "name" files
             NSString *items[] = {@"hash", @"name"};
             for (int i = 0, lim = sizeof(items)/sizeof(items[0]); i < lim; ++i) {
                 NSString *src = [bundleRoot stringByAppendingPathComponent:items[i]];
                 NSLog(@"copy src: %@", src);
-                NSString *dst = [rhoUserRoot stringByAppendingPathComponent:items[i]];
+                NSString *dst = [rhoRoot stringByAppendingPathComponent:items[i]];
                 NSLog(@"copy dst: %@", dst);
                 [fileManager removeItemAtPath:dst error:&error];
                 [fileManager copyItemAtPath:src toPath:dst error:&error];
+                
+                //[self addSkipBackupAttributeToItemAtURL:dst];
             }
         }
 #else
@@ -432,6 +480,7 @@ const char* rho_native_rhopath()
         all_in_doc = svalue[0] != '0';
     } 
     
+    
     if (all_in_doc) {
         return getUserPath();
     }
@@ -439,7 +488,8 @@ const char* rho_native_rhopath()
 	static bool loaded = FALSE;
 	static char root[FILENAME_MAX];
 	if (!loaded){
-		NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+		//NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
 		NSString *documentsDirectory = //[paths objectAtIndex:0];
 		[ [paths objectAtIndex:0] stringByAppendingString:@"/Private Documents/"];
 		[documentsDirectory getFileSystemRepresentation:root maxLength:sizeof(root)];
