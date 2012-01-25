@@ -138,7 +138,7 @@ namespace rho.views
 
         private void WebBrowser_OnNavigating(object sender, NavigatingEventArgs e)
         {
-            if (!RHODESAPP().HttpServer.processBrowserRequest(e.Uri, false))
+            if (!RHODESAPP().HttpServer.processBrowserRequest(e.Uri, ""))
                 return;
 
             e.Cancel = true;
@@ -151,7 +151,7 @@ namespace rho.views
 
         private void WebBrowser_OnScriptNotify(object sender, NotifyEventArgs e)
         {
-            if (!RHODESAPP().HttpServer.processBrowserRequest(new Uri(e.Value, UriKind.Relative), true))
+            if (!RHODESAPP().HttpServer.processBrowserRequest(new Uri(e.Value, UriKind.Relative), "ajax"))
             {
                 LOG.ERROR("External requests should be filtered in javascript");
             }

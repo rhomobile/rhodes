@@ -67,12 +67,12 @@ namespace rho.net
             CRoute m_route;
             CHttpServer m_Parent;
             int m_nCommand;
-            boolean m_bAjaxCall;
+            String m_strAjaxContext;
 
             public const int scDispatch = 1, scIndex = 2;
 
             public CServerCommand(CHttpServer Parent, CRoute route,
-                String method, String uri, String query, String body, int nCommand, boolean bAjaxCall)
+                String method, String uri, String query, String body, int nCommand, String strAjaxContext)
             {
                 m_Parent = Parent;
                 m_method = method;
@@ -81,7 +81,7 @@ namespace rho.net
                 m_body = body;
                 m_route = route;
                 m_nCommand = nCommand;
-                m_bAjaxCall = bAjaxCall;
+                m_strAjaxContext = strAjaxContext;
             }
 
             public void execute()
@@ -92,7 +92,7 @@ namespace rho.net
                 else if ( m_nCommand == scIndex )
                     strUrl = m_Parent.processIndex(m_route, m_method, m_uri, m_query, m_body);
 
-                if (!m_bAjaxCall)
+                if (m_strAjaxContext == null || m_strAjaxContext.length() == 0)
                 {
                     RHODESAPP().processWebNavigate(strUrl, -1);
                 }
@@ -100,8 +100,9 @@ namespace rho.net
                 {
                     String res = CRhoFile.isResourceFileExist(strUrl) ? CRhoFile.readStringFromResourceFile(strUrl) : CRhoFile.readStringFromFile(strUrl);
                     
-                    String[] args = new String[1];
-                    args[0] = res;
+                    String[] args = new String[2];
+                    args[0] = m_strAjaxContext;
+                    args[1] = res;
 
                     RHODESAPP().processInvokeScriptArgs("RhodesAjaxResult", args, RHODESAPP().getCurrentTab());
                 }
@@ -136,8 +137,10 @@ namespace rho.net
             (pCmd as CServerCommand).execute();
         }
 
-        public boolean processBrowserRequest(Uri uri, boolean bAjaxCall)
+        public boolean processBrowserRequest(Uri uri, String strAjaxContext)
         {
+            boolean bAjaxCall = !(strAjaxContext == null || strAjaxContext.length() == 0);
+            
             if (!uri.OriginalString.StartsWith(RHODESAPP().getHomeUrl())
                            && (uri.IsAbsoluteUri || uri.OriginalString.StartsWith("res:")))
                 return false;
@@ -163,7 +166,7 @@ namespace rho.net
             CRoute route = new CRoute();
             if (dispatch(url, route))
             {
-                addQueueCommand(new CServerCommand(this, route, bAjaxCall ? "POST" : "GET", url, query, "", CServerCommand.scDispatch, bAjaxCall));
+                addQueueCommand(new CServerCommand(this, route, bAjaxCall ? "POST" : "GET", url, query, "", CServerCommand.scDispatch, strAjaxContext));
 
                 return true;
             }
@@ -173,7 +176,7 @@ namespace rho.net
             String strIndexFile = getIndex(fullPath);
             if (strIndexFile.Length > 0)
             {
-                addQueueCommand(new CServerCommand(this, route, bAjaxCall ? "POST" : "GET", url, query, "", CServerCommand.scIndex, bAjaxCall));
+                addQueueCommand(new CServerCommand(this, route, bAjaxCall ? "POST" : "GET", url, query, "", CServerCommand.scIndex, strAjaxContext));
 
                 return true;
             }
