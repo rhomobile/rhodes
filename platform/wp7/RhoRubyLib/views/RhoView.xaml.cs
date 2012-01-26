@@ -39,6 +39,7 @@ using Microsoft.Phone.Controls;
 using System.Windows.Navigation;
 using IronRuby.Builtins;
 using rho.common;
+using System.IO;
 
 namespace rho.views
 {
@@ -62,6 +63,7 @@ namespace rho.views
         private bool m_reload = false;
         private bool m_loadFirstTime = true;
         private bool m_masterView = false;
+        private const string AJAX_CONTEXT_PARAM = "_rho_callbackId";
         //TO DO history. each time we have to save our current state of rhodesapp in rhoview entity
         public Stack<Uri> BackHistory { set { m_backHistory = value; } }
         public Stack<Uri> ForwardHistory { set { m_forwardHistory = value; } }
@@ -138,7 +140,7 @@ namespace rho.views
 
         private void WebBrowser_OnNavigating(object sender, NavigatingEventArgs e)
         {
-            if (!RHODESAPP().HttpServer.processBrowserRequest(e.Uri, ""))
+            if (!RHODESAPP().HttpServer.processBrowserRequest(e.Uri, null))
                 return;
 
             e.Cancel = true;
@@ -149,9 +151,25 @@ namespace rho.views
             RHODESAPP().addToHistory(e.Uri);
         }
 
+        private string extractAjaxContext(string uri)
+        {
+            int idx = uri.indexOf(AJAX_CONTEXT_PARAM) + AJAX_CONTEXT_PARAM.length();
+            if (-1 == idx)
+                return null;
+
+            string context = uri.substring(idx + 1);  // +1 due to the '=' sign after param name
+
+            idx = context.indexOf('&');
+            if (-1 < idx)
+                context = context.substring(0, idx);
+
+            return context;
+        }
+
         private void WebBrowser_OnScriptNotify(object sender, NotifyEventArgs e)
         {
-            if (!RHODESAPP().HttpServer.processBrowserRequest(new Uri(e.Value, UriKind.Relative), "ajax"))
+            string ajaxContext = extractAjaxContext(e.Value);
+            if (!RHODESAPP().HttpServer.processBrowserRequest(new Uri(e.Value, UriKind.Relative), ajaxContext))
             {
                 LOG.ERROR("External requests should be filtered in javascript");
             }

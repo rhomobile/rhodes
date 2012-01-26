@@ -100,9 +100,11 @@ namespace rho.net
                 {
                     String res = CRhoFile.isResourceFileExist(strUrl) ? CRhoFile.readStringFromResourceFile(strUrl) : CRhoFile.readStringFromFile(strUrl);
                     
-                    String[] args = new String[2];
+                    String[] args = new String[4];
                     args[0] = m_strAjaxContext;
                     args[1] = res;
+                    args[2] = "ok";
+                    args[3] = "200";
 
                     RHODESAPP().processInvokeScriptArgs("RhodesAjaxResult", args, RHODESAPP().getCurrentTab());
                 }
