@@ -266,15 +266,10 @@ void rho_logconf_Init_with_separate_user_path(const char* szRootPath, const char
     rho_conf_Init_with_separate_user_path(szRootPath, szUserPath);
     
     LOGCONF().loadFromConf(RHOCONF());
-    if (szLogPort != NULL) {
+    if ( szLogPort != NULL && *szLogPort ) 
         LOGCONF().setLogPort(szLogPort);
-    }
-    else {
-        LOGCONF().setLogPort("");
-    }
-        
+
 }
-    
     
 void rho_logconf_Init(const char* szRootPath, const char* szLogPort){
     rho_logconf_Init_with_separate_user_path(szRootPath, szLogPort, szRootPath);

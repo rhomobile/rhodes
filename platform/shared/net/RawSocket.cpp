@@ -130,6 +130,9 @@ bool RawSocket::send(const String& sendData)
 {
     int iResult = 0;
 
+    if ( m_clientSocket == INVALID_SOCKET )
+        return false;
+
     // Send an initial buffer
     iResult = ::send(m_clientSocket, sendData.c_str(), (int) sendData.size(), 0);
 
