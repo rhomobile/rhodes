@@ -388,6 +388,11 @@ module Rhogen
         template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/wm/Rakefile"
     end
 
+    template :extension_wm_vcsol do |template|
+        template.source = 'extensions/montana/ext/montana/platform/wm/Montana.sln'
+        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/wm/#{name.camel_case}.sln"
+    end
+
     template :extension_wm_vcproject do |template|
         template.source = 'extensions/montana/ext/montana/platform/wm/Montana.vcproj'
         template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/wm/#{name.camel_case}.vcproj"
