@@ -37,7 +37,7 @@ namespace rho.rubyext
     public static class RhoSyncEngine
     {
         [RubyMethod("dosync", RubyMethodAttributes.PublicSingleton)]
-        public static object dosync(RubyModule/*!*/ self, RubyArray args)
+        public static object dosync(RubyModule/*!*/ self, params object[] args)
         {
             return null;
         }
@@ -49,7 +49,7 @@ namespace rho.rubyext
         }*/
 
         [RubyMethod("dosync_source", RubyMethodAttributes.PublicSingleton)]
-        public static object dosync_source(RubyModule/*!*/ self, RubyArray args)
+        public static object dosync_source(RubyModule/*!*/ self, params object[] args)
         {
             return null;
         }

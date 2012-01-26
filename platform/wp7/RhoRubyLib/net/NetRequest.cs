@@ -467,7 +467,7 @@ namespace rho.net
 
             if ((strBody != null && strBody.length() > 0) || m_isPullFile || m_isMultiPart)
 			{
-                if (oSession != null)
+                if (oSession != null && !m_isPullFile)
                     m_webRequest.ContentType = oSession.getContentType();
                 else if (m_isMultiPart)
                     m_webRequest.ContentType = "multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5";

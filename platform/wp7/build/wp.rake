@@ -417,6 +417,10 @@ namespace "run" do
                 $rhosim_config = "platform='wp'\r\n"
                 Rake::Task["run:rhosimulator_debug"].invoke            
             end
+            
+            task :spec => ["device:wp:production"] do
+				Rake::Task["run:wp"].invoke
+			end
 
 			task :phone_spec do
 				Jake.run_spec_app('wp','phone_spec')

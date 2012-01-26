@@ -15,13 +15,17 @@ class SpecRunner < MSpecScript
     config[:files] << "spec/array/pack_spec"
     
     config[:files] << "spec/rho_spec"
+    
+    
 if !defined?(RHO_WP7)
-    config[:files] << "spec/asynchttp_spec"
     config[:files] << "spec/crypt_spec"
     config[:files] << "spec/json_spec"
     config[:files] << "spec/xml_spec"
-    config[:files] << "spec/rhofile_spec"
+    	config[:files] << "spec/rhofile_spec"
+    		
+	config[:files] << "spec/asynchttp_spec"
 end
+
     config[:files] << "spec/date_spec"
     config[:files] << "spec/bsearch_spec"
 
@@ -46,13 +50,12 @@ end
     config[:files] << "spec/xruby_spec" if defined? RHO_ME
 
 if !defined?(RHO_WP7)
-    config[:files] << [ "spec/syncengine_spec", [ {:schema_model=>true }, {:schema_model=>false } ] ]
-
-    config[:files] << [ "spec/blobsync_spec", [ {:schema_model=>true }, {:schema_model=>false } ] ]
-
     config[:files] << "spec/bulksync_spec"
 end
 
+config[:files] << [ "spec/syncengine_spec", [ {:schema_model=>true }, {:schema_model=>false } ] ]
+config[:files] << [ "spec/blobsync_spec", [ {:schema_model=>true }, {:schema_model=>false } ] ]
+    
 if !defined?(RHO_WP7) && !(System.get_property('platform') == 'Blackberry' && (System::get_property('os_version') =~ /^6\.0/))
     config[:files] << "spec/uri_spec"
 end    
