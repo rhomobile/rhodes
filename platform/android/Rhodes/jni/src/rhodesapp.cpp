@@ -88,19 +88,23 @@ jclass rho_find_class(JNIEnv *env, const char *c)
     return cls;
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_initClassLoader
-  (JNIEnv *env, jobject, jobject cl)
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesApplication_initClassLoader
+  (JNIEnv *env, jclass, jobject cl)
 {
     g_classLoader = env->NewGlobalRef(cl);
     jclass javaLangClassLoader = env->FindClass("java/lang/ClassLoader");
     g_loadClass = env->GetMethodID(javaLangClassLoader, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesApplication_createRhodesApp
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesApplication_setupRhodesApp
   (JNIEnv *env, jclass)
 {
     android_setup(env);
+}
 
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesApplication_createRhodesApp
+  (JNIEnv *env, jclass)
+{
     // Start Rhodes application
     rho_rhodesapp_create(rho_native_rhopath());
 }

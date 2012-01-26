@@ -44,4 +44,6 @@ public class RhoLogConf {
 	public static native int getLogTextPos();
 	
 	public static native void sendLog();
+	
+	public static native boolean hasLogView();
 }

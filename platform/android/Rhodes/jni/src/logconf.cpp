@@ -102,3 +102,8 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_sendLog
     rho_conf_send_log("");
 }
 
+RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhoLogConf_hasLogView
+  (JNIEnv *, jclass)
+{
+    return LOGCONF().hasLogView();
+}

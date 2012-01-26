@@ -34,45 +34,90 @@ import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.WindowManager;
 
 public class BaseActivity extends Activity implements ServiceConnection {
 	
-	private static final String TAG = BaseActivity.class.getName();
+	private static final String TAG = BaseActivity.class.getSimpleName();
 	
 	private static final boolean DEBUG = false;
 	
 	public static final String INTENT_SOURCE = BaseActivity.class.getName();
 	
-	protected RhodesService mRhodesService;
+    public static class ScreenProperties {
+        private int mScreenWidth;
+        private int mScreenHeight;
+        private int mScreenOrientation;
+        private float mScreenPpiX;
+        private float mScreenPpiY;
+        
+        ScreenProperties(Context context) {
+            reread(context);
+        }
+        
+        public void reread(Context context) {
+            Logger.T(TAG, "Updating screen properties");
+            
+            WindowManager wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+
+            Display d = wm.getDefaultDisplay();
+
+            mScreenWidth = d.getWidth();
+            mScreenHeight = d.getHeight();
+
+            DisplayMetrics metrics = new DisplayMetrics();
+            d.getMetrics(metrics);
+
+            mScreenPpiX = metrics.xdpi;
+            mScreenPpiY = metrics.ydpi;
+            
+            int orientation;
+            orientation = context.getResources().getConfiguration().orientation;
+            Logger.D(TAG, "Resources orientation: "+ orientation);
+
+            if (orientation == Configuration.ORIENTATION_UNDEFINED)
+            {
+                orientation = d.getOrientation();
+                Logger.D(TAG, "DisplayMetrics orientation: "+ orientation);
+
+                if (orientation == Configuration.ORIENTATION_UNDEFINED) {
+                    if (d.getWidth() == d.getHeight())
+                        orientation = Configuration.ORIENTATION_SQUARE;
+                    else if(d.getWidth() < d.getHeight())
+                        orientation = Configuration.ORIENTATION_PORTRAIT;
+                    else
+                        orientation = Configuration.ORIENTATION_LANDSCAPE;
+
+                    Logger.D(TAG, "Screen resolution orientation: " + orientation);
+                }
+            }
+            mScreenOrientation = orientation;
+
+            Logger.D(TAG, "New screen properties - width: " + mScreenWidth + ", height: " + mScreenHeight + ", orientation: " + mScreenOrientation);
+        }
+        
+        public int getWidth() { return mScreenWidth; }
+        public int getHeight() { return mScreenHeight; }
+        public int getOrientation() { return mScreenOrientation; }
+        public float getPpiX() { return mScreenPpiX; }
+        public float getPpiY() { return mScreenPpiY; }
+    }
+
+    private static ScreenProperties sScreenProp = null;
+    
+    public static ScreenProperties getScreenProperties() { return sScreenProp; }
+    
+    protected RhodesService mRhodesService;
 	private boolean mBoundToService;
-	private int mRuntimeOrientation;
-
-	protected int getScreenOrientation() {
-	    Display display = getWindowManager().getDefaultDisplay();
-	    int orientation = display.getOrientation();
-
-	    if (orientation == Configuration.ORIENTATION_UNDEFINED)
-	    {
-	        orientation = getResources().getConfiguration().orientation;
-
-	        if (orientation == Configuration.ORIENTATION_UNDEFINED) {
-	            if (display.getWidth() == display.getHeight())
-	                orientation = Configuration.ORIENTATION_SQUARE;
-	            else if(display.getWidth() < display.getHeight())
-	                orientation = Configuration.ORIENTATION_PORTRAIT;
-	            else
-	                orientation = Configuration.ORIENTATION_LANDSCAPE;
-	        }
-	    }
-	    return orientation;
-	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+		Logger.T(TAG, "onCreate");
+
 		Intent intent = new Intent(this, RhodesService.class);
 		intent.putExtra(RhodesService.INTENT_SOURCE, INTENT_SOURCE);
 		ComponentName serviceName = startService(intent);
@@ -80,8 +125,15 @@ public class BaseActivity extends Activity implements ServiceConnection {
 			throw new RuntimeException("Can not start Rhodes service");
 		bindService(intent, this, Context.BIND_AUTO_CREATE);
 		mBoundToService = true;
-		
-		mRuntimeOrientation = this.getScreenOrientation();
+
+        if (sScreenProp == null) {
+            sScreenProp = new ScreenProperties(this);
+        } else {
+            if (RhoConf.getBool("disable_screen_rotation")) { 
+                Logger.D(TAG, "Screen rotation is disabled. Force orientation: " + getScreenProperties().getOrientation());
+                setRequestedOrientation(getScreenProperties().getOrientation());
+            }
+        }
 	}
 	
 	@Override
@@ -107,26 +159,19 @@ public class BaseActivity extends Activity implements ServiceConnection {
 	
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
-		Logger.T(TAG, "+++ onConfigurationChanged");
+		Logger.T(TAG, "onConfigurationChanged");
 		if (RhoConf.getBool("disable_screen_rotation"))
 		{
 			super.onConfigurationChanged(newConfig);
-			this.setRequestedOrientation(mRuntimeOrientation);
+            Logger.D(TAG, "Screen rotation is disabled. Force old orientation: " + getScreenProperties().getOrientation());
+			setRequestedOrientation(getScreenProperties().getOrientation());
 		}
 		else
 		{
-			mRuntimeOrientation = this.getScreenOrientation();
 			super.onConfigurationChanged(newConfig);
-			RhodesService.getInstance().rereadScreenProperties();
+			getScreenProperties().reread(this);
 		}
 	}
-	
-//	public NativeApplication getRhodesApplication() {
-//		Application app = super.getApplication();
-//		if (DEBUG)
-//			Log.d(TAG, "getApplication: " + app);
-//		return (NativeApplication)app;
-//	}
 
 	@Override
 	public void onServiceConnected(ComponentName name, IBinder service) {

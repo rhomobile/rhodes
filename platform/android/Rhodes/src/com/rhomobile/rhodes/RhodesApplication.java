@@ -26,12 +26,23 @@
 
 package com.rhomobile.rhodes;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Vector;
 
+import com.rhomobile.rhodes.file.RhoFileApi;
+import com.rhomobile.rhodes.util.Utils;
+import com.rhomobile.rhodes.util.Utils.AssetsSource;
+import com.rhomobile.rhodes.util.Utils.FileSource;
+
 import android.app.Application;
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Handler;
 import android.os.Process;
+import android.util.Log;
 
 public class RhodesApplication extends Application{
 	
@@ -40,11 +51,39 @@ public class RhodesApplication extends Application{
     static {
         NativeLibraries.load();
     }
-    
+
+    private ApplicationInfo getAppInfo() {
+        Context context = this;
+        String pkgName = context.getPackageName();
+        try {
+            ApplicationInfo info = context.getPackageManager().getApplicationInfo(pkgName, 0);
+            return info;
+        } catch (NameNotFoundException e) {
+            throw new RuntimeException("Internal error: package " + pkgName + " not found: " + e.getMessage());
+        }
+    }
+
+    private boolean isAppHashChanged(String rootPath) {
+        try {
+            File hash = new File(rootPath, "hash");
+            if (!hash.exists())
+                return true;
+            
+            FileSource as = new AssetsSource(getResources().getAssets());
+            FileSource fs = new FileSource();
+            return !Utils.isContentsEquals(as, "hash", fs, hash.getPath());
+        }
+        catch (IOException e) {
+            return true;
+        }
+    }
+
     @Override
     public void onCreate(){
         super.onCreate();
 
+        Log.i(TAG, "Initializing...");
+        
         RhodesApplication.runWhen(
                 UiState.MainActivityStarted,
                 new StateHandler(false) {
@@ -65,6 +104,50 @@ public class RhodesApplication extends Application{
                         }
                     }
                 });
+
+        initClassLoader(getClassLoader());
+
+        ApplicationInfo appInfo = getAppInfo();
+        String rootPath;
+
+        try {
+            rootPath = RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir);
+            Log.d(TAG, "Root path: " + rootPath);
+
+            RhoFileApi.init(this);
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage());
+            stop();
+            return;
+        }
+
+        if (this.isAppHashChanged(rootPath)) {
+            try {
+                Log.i(TAG, "Application hash was changed");
+                
+                File libDir = new File(rootPath, "lib");
+                File testLib = new File(libDir.getPath(), "rhoframework.iseq");
+                if(libDir.isDirectory() && testLib.isFile())
+                {
+                    Log.i(TAG, "Updating from very old rhodes version, clean filesystem.");
+                    Utils.deleteChildrenIgnoreFirstLevel(new File(rootPath, "apps"), "rhoconfig.txt");
+                    Utils.deleteRecursively(libDir);
+                }
+
+                rootPath = RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir);
+                Log.d(TAG, "Root path: " + rootPath);
+
+                RhoFileApi.init(this);
+                RhoFileApi.copy("hash");
+            } catch (IOException e) {
+                Log.e(TAG, e.getMessage());
+                stop();
+                return;
+            }
+        }
+        
+        setupRhodesApp();
+        Log.i(TAG, "Initialized");
     }
     private static boolean sRhodesActivityStarted = false;
 
@@ -76,11 +159,13 @@ public class RhodesApplication extends Application{
     synchronized
     public static boolean isRhodesActivityStarted() { return sRhodesActivityStarted; }
 
+    private native static void initClassLoader(ClassLoader c);
+    private native static void setupRhodesApp();
     private native static void createRhodesApp();
     private native static void startRhodesApp();
     private native static void stopRhodesApp();
     private native static boolean canStartApp(String strCmdLine, String strSeparators);
-
+    
     public static void create()
     {
         if (sAppState != AppState.Undefined) {

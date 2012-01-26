@@ -43,7 +43,6 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.view.Display;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.RelativeLayout;
 
@@ -52,6 +51,7 @@ import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MyLocationOverlay;
 import com.rhomobile.rhodes.AndroidR;
+import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.RhodesActivity;
@@ -80,8 +80,6 @@ public class GoogleMapView extends MapActivity {
 	private String apiKey;
 	
 	private Vector<Annotation> annotations;
-	
-	private int mRuntimeOrientation;
 	
 	static private ExtrasHolder mHolder = null;
 	
@@ -119,29 +117,7 @@ public class GoogleMapView extends MapActivity {
 			}
 		}, false);
 	}
-	
-	protected int getScreenOrientation() {
-	    Display display = getWindowManager().getDefaultDisplay();
-	    int orientation = display.getOrientation();
 
-	    if (orientation == Configuration.ORIENTATION_UNDEFINED)
-	    {
-	        orientation = getResources().getConfiguration().orientation;
-
-	        if (orientation == Configuration.ORIENTATION_UNDEFINED) {
-	            if (display.getWidth() == display.getHeight())
-	                orientation = Configuration.ORIENTATION_SQUARE;
-	            else if(display.getWidth() < display.getHeight())
-	                orientation = Configuration.ORIENTATION_PORTRAIT;
-	            else
-	                orientation = Configuration.ORIENTATION_LANDSCAPE;
-	        }
-	    }
-	    return orientation;
-	}
-	
-	
-	
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
@@ -306,9 +282,9 @@ public class GoogleMapView extends MapActivity {
 			}
 		});
 		geocoding.start();
-		
-		mRuntimeOrientation = this.getScreenOrientation();
 
+        if (RhoConf.getBool("disable_screen_rotation")) 
+            setRequestedOrientation(BaseActivity.getScreenProperties().getOrientation());
 	}
 	
 	@Override
@@ -317,13 +293,12 @@ public class GoogleMapView extends MapActivity {
 		if (RhoConf.getBool("disable_screen_rotation"))
 		{
 			super.onConfigurationChanged(newConfig);
-			this.setRequestedOrientation(mRuntimeOrientation);
+			setRequestedOrientation(BaseActivity.getScreenProperties().getOrientation());
 		}
 		else
 		{
-			mRuntimeOrientation = this.getScreenOrientation();
-			super.onConfigurationChanged(newConfig);
-			RhodesService.getInstance().rereadScreenProperties();
+            super.onConfigurationChanged(newConfig);
+            BaseActivity.getScreenProperties().reread(this);
 		}
 	}
 	

@@ -66,8 +66,6 @@ import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.PhoneId;
 import com.rhomobile.rhodes.util.Utils;
-import com.rhomobile.rhodes.util.Utils.AssetsSource;
-import com.rhomobile.rhodes.util.Utils.FileSource;
 
 import android.app.AlertDialog;
 import android.app.Notification;
@@ -81,10 +79,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -95,9 +93,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.telephony.TelephonyManager;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -142,13 +138,6 @@ public class RhodesService extends Service {
 	private Method mSetForeground;
 	
 	private NotificationManager mNM;
-	
-	private static int mScreenWidth;
-	private static int mScreenHeight;
-	private static int mScreenOrientation;
-	
-	private static float mScreenPpiX;
-	private static float mScreenPpiY;
 	
 	private static boolean mCameraAvailable;
 	
@@ -233,8 +222,6 @@ public class RhodesService extends Service {
 	
 	Handler mHandler = null;
 	
-	private native void initClassLoader(ClassLoader c);
-	
 	public native void doSyncAllSources(boolean v);
 	public native void doSyncSource(String source);
 	
@@ -246,8 +233,6 @@ public class RhodesService extends Service {
 	public static native void loadUrl(String url);
 	
 	public static native void navigateBack();
-	
-	private String mRootPath;
 	
 	public static native void onScreenOrientationChanged(int width, int height, int angle);
 	
@@ -277,36 +262,6 @@ public class RhodesService extends Service {
 	    return phoneId;
 	}
 	
-	public String getRootPath() {
-	    return mRootPath;
-    }
-
-    // TODO: Move these methods to RhodesApplication class
-	private ApplicationInfo getAppInfo() {
-		Context context = this;
-		String pkgName = context.getPackageName();
-		try {
-			ApplicationInfo info = context.getPackageManager().getApplicationInfo(pkgName, 0);
-			return info;
-		} catch (NameNotFoundException e) {
-			throw new RuntimeException("Internal error: package " + pkgName + " not found: " + e.getMessage());
-		}
-	}
-	
-	private boolean isAppHashChanged() {
-		try {
-			File hash = new File(this.getRootPath(), "hash");
-			if (!hash.exists())
-				return true;
-			
-			FileSource as = new AssetsSource(this.getResources().getAssets());
-			FileSource fs = new FileSource();
-			return !Utils.isContentsEquals(as, "hash", fs, hash.getPath());
-		}
-		catch (IOException e) {
-			return true;
-		}
-	}
 	public class LocalBinder extends Binder {
 		RhodesService getService() {
 			return RhodesService.this;
@@ -315,99 +270,43 @@ public class RhodesService extends Service {
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		if (DEBUG)
-			Log.d(TAG, "+++ onBind");
+		Logger.D(TAG, "onBind");
 		return mBinder;
 	}
-	
+
 	@Override
 	public void onCreate() {
-		
-		if (DEBUG)
-			Log.d(TAG, "+++ onCreate");
-		
+		Logger.D(TAG, "onCreate");
+
 		sInstance = this;
-		
+
 		Context context = this;
-		
+
 		mNM = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
-		
-		initClassLoader(context.getClassLoader());
-		
-		ApplicationInfo appInfo = getAppInfo();
 
-		Log.d(TAG, "Root path: " + mRootPath);
-
-		try {
-			mRootPath = RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir);
-			RhoFileApi.init(this);
-		} catch (IOException e) {
-			Log.e(TAG, e.getMessage());
-			exit();
-			return;
-		}
-		
-		if (this.isAppHashChanged()) {
-			try {
-				Log.i(TAG, "Application hash was changed");
-				
-				File libDir = new File(getRootPath(), "lib");
-				File testLib = new File(libDir.getPath(), "rhoframework.iseq");
-				if(libDir.isDirectory() && testLib.isFile())
-				{
-				    Log.i(TAG, "Updating from very old rhodes version, clean filesystem.");
-				    Utils.deleteChildrenIgnoreFirstLevel(new File(getRootPath(), "apps"), "rhoconfig.txt");
-				    Utils.deleteRecursively(libDir);
-				}
-				
-				LocalFileProvider.revokeUriPermissions(context);
-
-				mRootPath = RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir);
-				RhoFileApi.init(this);
-				RhoFileApi.copy("hash");
-			} catch (IOException e) {
-				Log.e(TAG, e.getMessage());
-				exit();
-				return;
-			}
-		}
-		
-		RhodesApplication.create();
-		//Logger is initialized from this point
+        LocalFileProvider.revokeUriPermissions(this);
 
         Logger.I("Rhodes", "Loading...");
+        RhodesApplication.create();
 
-		RhodesActivity ra = RhodesActivity.getInstance();
-		if (ra != null) {
-			// Show splash screen only if we have active activity
-			SplashScreen splashScreen = ra.getSplashScreen();
-			splashScreen.start();
-		}
-		
+        RhodesActivity ra = RhodesActivity.getInstance();
+        if (ra != null) {
+            // Show splash screen only if we have active activity
+            SplashScreen splashScreen = ra.getSplashScreen();
+            splashScreen.start();
+
+            // Increase WebView rendering priority
+            WebView w = new WebView(context);
+            WebSettings webSettings = w.getSettings();
+            webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH);
+        }
+
 		initForegroundServiceApi();
-		
 		setFullscreenParameters();
-		
-		// Increase WebView rendering priority
-		WebView w = new WebView(context);
-		WebSettings webSettings = w.getSettings();
-		webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH);
-		
-		// Get screen width/height
-		WindowManager wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
-		Display d = wm.getDefaultDisplay();
-		mScreenHeight = d.getHeight();
-		mScreenWidth = d.getWidth();
-		mScreenOrientation = d.getOrientation();
-		
-		DisplayMetrics metrics = new DisplayMetrics();
-		d.getMetrics(metrics);
-		mScreenPpiX = metrics.xdpi;
-		mScreenPpiY = metrics.ydpi;
-		
+
 		// TODO: detect camera availability
 		mCameraAvailable = true;
-		
+
 		// Register custom uri handlers here
 		mUriHandlers.addElement(new ExternalHttpHandler(context));
 		mUriHandlers.addElement(new LocalFileHandler(context));
@@ -415,7 +314,7 @@ public class RhodesService extends Service {
 		mUriHandlers.addElement(new TelUriHandler(context));
 		mUriHandlers.addElement(new SmsUriHandler(context));
 		mUriHandlers.addElement(new VideoUriHandler(context));
-		
+
         if (Capabilities.PUSH_ENABLED) {
             Logger.D(TAG, "Push is enabled");
             try {
@@ -638,20 +537,6 @@ public class RhodesService extends Service {
 	    });
 	}
 	
-	public void rereadScreenProperties() {
-		// check for orientarion changed
-		// Get screen width/height
-		WindowManager wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
-		Display d = wm.getDefaultDisplay();
-		mScreenHeight = d.getHeight();
-		mScreenWidth = d.getWidth();
-		int newScreenOrientation = d.getOrientation();
-		if (newScreenOrientation != mScreenOrientation) {
-			onScreenOrientationChanged(mScreenWidth, mScreenHeight, 90);
-			mScreenOrientation = newScreenOrientation; 				
-		}
-	}
-	
 	public static void showAboutDialog() {
 		PerformOnUiThread.exec(new Runnable() {
 			public void run() {
@@ -782,16 +667,43 @@ public class RhodesService extends Service {
 		String cl = Locale.getDefault().getCountry();
 		return cl;
 	}
+
+    public static int getScreenWidth() {
+        if (BaseActivity.getScreenProperties() != null)
+            return BaseActivity.getScreenProperties().getWidth();
+        else
+            return 0;
+    }
 	
-	public static int getScreenWidth() {
-		return mScreenWidth;
-	}
-	
-	public static int getScreenHeight() {
-		return mScreenHeight;
-	}
-	
-	public static Object getProperty(String name) {
+    public static int getScreenHeight() {
+        if (BaseActivity.getScreenProperties() != null)
+            return BaseActivity.getScreenProperties().getHeight();
+        else
+            return 0;
+    }
+
+    public static float getScreenPpiX() {
+        if (BaseActivity.getScreenProperties() != null)
+            return BaseActivity.getScreenProperties().getPpiX();
+        else
+            return 0;
+    }
+    
+    public static float getScreenPpiY() {
+        if (BaseActivity.getScreenProperties() != null)
+            return BaseActivity.getScreenProperties().getPpiY();
+        else
+            return 0;
+    }
+
+    public static int getScreenOrientation() {
+        if (BaseActivity.getScreenProperties() != null)
+            return BaseActivity.getScreenProperties().getOrientation();
+        else
+            return Configuration.ORIENTATION_UNDEFINED;
+    }
+
+    public static Object getProperty(String name) {
 		try {
 			if (name.equalsIgnoreCase("platform"))
 				return "ANDROID";
@@ -804,25 +716,26 @@ public class RhodesService extends Service {
 			else if (name.equalsIgnoreCase("screen_height"))
 				return new Integer(getScreenHeight());
 			else if (name.equalsIgnoreCase("screen_orientation")) {
-				if (getScreenWidth() <= getScreenHeight()) {
-					return "portrait";
-				}
-				else {
+				if (getScreenOrientation() == Configuration.ORIENTATION_LANDSCAPE)
 					return "landscape";
-				}
+				else
+					return "portrait";
 			}
 			else if (name.equalsIgnoreCase("has_camera"))
 				return new Boolean(mCameraAvailable);
 			else if (name.equalsIgnoreCase("has_network"))
 				return hasNetwork();
 			else if (name.equalsIgnoreCase("ppi_x"))
-				return new Float(mScreenPpiX);
+				return new Float(getScreenPpiX());
 			else if (name.equalsIgnoreCase("ppi_y"))
-				return new Float(mScreenPpiY);
+				return new Float(getScreenPpiY());
 			else if (name.equalsIgnoreCase("phone_number")) {
-				Context context = RhodesService.getContext();
-				TelephonyManager manager = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
-				String number = manager.getLine1Number();
+                Context context = ContextFactory.getContext();
+                String number = "";
+                if (context != null) {
+                    TelephonyManager manager = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+                    number = manager.getLine1Number();
+                }
 				return number;
 			}
 			else if (name.equalsIgnoreCase("device_owner_name")) {
@@ -845,8 +758,13 @@ public class RhodesService extends Service {
 				return new Boolean(EventStore.hasCalendar());
 			}
 			else if (name.equalsIgnoreCase("phone_id")) {
-			    PhoneId phoneId = RhodesService.getInstance().getPhoneId();
-			    return phoneId.toString();
+                RhodesService service = RhodesService.getInstance();
+                if (service != null) {
+                    PhoneId phoneId = service.getPhoneId();
+                    return phoneId.toString();
+                } else {
+                    return "";
+                }
 			}
 			else if (name.equalsIgnoreCase("webview_framework")) {
 				return "WEBKIT/" + Build.VERSION.RELEASE;
