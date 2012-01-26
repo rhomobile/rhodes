@@ -167,7 +167,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 	LPCTSTR lpszToken = FindOneOf(lpCmdLine, szTokens);
     getRhoRootPath();
 
-	m_logPort = rho::String("11000");
+	m_logPort = "";
 
 	while (lpszToken != NULL)
 	{
