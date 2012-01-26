@@ -135,9 +135,8 @@ public class RhodesActivity extends BaseActivity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		
+        Logger.T(TAG, "onCreate");
 		super.onCreate(savedInstanceState);
-        Log.i(TAG, ">>>>>>>>>>>>>>> onCreate()");
 		
 		mListeners = new ArrayList<RhodesActivityListener>();
 
@@ -223,7 +222,7 @@ public class RhodesActivity extends BaseActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-        Log.d(TAG, "RhodesActivity.onNewIntent()");
+        Logger.D(TAG, "onNewIntent");
 
         handleStartParams(intent);
 
@@ -239,7 +238,7 @@ public class RhodesActivity extends BaseActivity {
 	public void onStart() {
 		super.onStart();
 
-        Log.d(TAG, "RhodesActivity.onStart()");
+        Logger.D(TAG, "onStart");
         mIsInsideStartStop = true;
         
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityStarted);
@@ -247,7 +246,7 @@ public class RhodesActivity extends BaseActivity {
 	
 	@Override
 	public void onResume() {
-        Log.d(TAG, "RhodesActivity.onResume()");
+        Logger.D(TAG, "onResume");
     	mIsForeground = true;
 		super.onResume();
         {
@@ -270,7 +269,7 @@ public class RhodesActivity extends BaseActivity {
         }
 
         super.onPause();
-        Log.d(TAG, "RhodesActivity.onPause()");
+        Logger.D(TAG, "onPause");
 
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityPaused);
     }
@@ -279,13 +278,13 @@ public class RhodesActivity extends BaseActivity {
 	public void onStop() 
 	{
 		super.onStop();
-        Log.d(TAG, "RhodesActivity.onStop()");
+        Logger.D(TAG, "onStop");
         mIsInsideStartStop = false;
 	}
 	
 	@Override
 	public void onDestroy() {
-        Log.d(TAG, "RhodesActivity.onDestroy()");
+        Logger.D(TAG, "onDestroy");
         
         //TODO: Check is it really correct in case activity killed immediately after onPause()
         sInstance = null;
@@ -298,7 +297,7 @@ public class RhodesActivity extends BaseActivity {
 		case KeyEvent.KEYCODE_BACK:
 			RhodesService r = RhodesService.getInstance();
 			if (DEBUG)
-				Log.d(TAG, "onKeyDown: r=" + r);
+				Logger.D(TAG, "onKeyDown: r=" + r);
 			if (r == null)
 				return false;
 			

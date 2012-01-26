@@ -123,6 +123,10 @@ public:
 		m_pLogViewSink = logView; 
 	}
 
+	bool hasLogView() {
+		return m_pLogViewSink == NULL;
+	}
+
 	void clearLog();
 
     void saveToFile();

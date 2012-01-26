@@ -51,7 +51,7 @@ public class SplashScreen implements MainView {
 	
 	private static final String TAG = SplashScreen.class.getSimpleName();
 	
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	
 	private static final String LOADING_ANDROID_PNG = "apps/app/loading.android.png";
 	private static final String LOADING_PNG = "apps/app/loading.png";
@@ -91,7 +91,7 @@ public class SplashScreen implements MainView {
                 }
                 catch (IOException e) {
                     if (DEBUG)
-                        Log.d(TAG, "Can't load " + url + ": " + e.getMessage());
+                        Logger.D(TAG, "Can't load " + url + ": " + e.getMessage());
                     continue;
                 }
                 finally {
@@ -163,15 +163,14 @@ public class SplashScreen implements MainView {
 	@Override
 	public void navigate(final String url, final int index) {
 
-		if (DEBUG)
-			Log.d(TAG, "navigate: url=" + url);
+		Logger.D(TAG, "navigate: url=" + url);
 		
 		int delay = howLongWaitMs();
 		if (delay < 0) {
 			delay = 0;
 		}
 		
-		Utils.platformLog(TAG, "DELAY for SplashScreen = "+String.valueOf(delay));
+		Logger.D(TAG, "DELAY for SplashScreen = " + String.valueOf(delay));
 		final SplashScreen curView = this;
 
         PerformOnUiThread.exec(new Runnable() {
