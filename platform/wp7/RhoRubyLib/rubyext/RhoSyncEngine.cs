@@ -43,21 +43,26 @@ namespace rho.rubyext
         static CRhoRuby RhoRuby { get { return CRhoRuby.Instance; } }
 
         [RubyMethod("dosync", RubyMethodAttributes.PublicSingleton)]
-        public static object dosync(RubyModule/*!*/ self, RubyArray args)
+        public static object dosync(RubyModule/*!*/ self, params object[] args)
         {
             object res = null;
             try
             {
                 boolean bShowStatus = true;	
                 String query_params = "";
-                if ( args != null && args.Count > 0 )	
+                if ( args != null && args.Length > 0 )	
                 {
-                    String str = ((MutableString)args[0]).ToString();	
-                    //bShowStatus = args[0].Equals(RubyConstant.QTRUE)||"true".equalsIgnoreCase(str);	
-                    bShowStatus = "true".equalsIgnoreCase(str);	
+                    if (args[0] is int)
+                        bShowStatus = ((int)args[0]).Equals(1);
+                    else
+                    {
+                        String str = ((MutableString)args[0]).ToString();
+                        //bShowStatus = args[0].Equals(RubyConstant.QTRUE)||"true".equalsIgnoreCase(str);	
+                        bShowStatus = "true".equalsIgnoreCase(str);
+                    }
                 }
         
-                if (args != null && args.Count > 1)
+                if (args != null && args.Length > 1)
                     query_params = ((MutableString)args[1]).ToString();
                 
                 SyncThread.getInstance().addQueueCommand(new SyncThread.SyncCommand(SyncThread.scSyncAll, bShowStatus, query_params));
@@ -103,7 +108,7 @@ namespace rho.rubyext
         }*/
 
         [RubyMethod("dosync_source", RubyMethodAttributes.PublicSingleton)]
-        public static object dosync_source(RubyModule/*!*/ self, RubyArray args)
+        public static object dosync_source(RubyModule/*!*/ self, params object[] args)
         {
             object res = null;
             try
@@ -127,14 +132,19 @@ namespace rho.rubyext
 
                 boolean bShowStatus = true;	
                 String query_params = "";
-                if ( args != null && args.Count > 1 )	
+                if ( args != null && args.Length > 1 )	
                 {
-                    String str = ((MutableString)args[1]).ToString();	
-                    //bShowStatus = args[0].Equals(RubyConstant.QTRUE)||"true".equalsIgnoreCase(str);	
-                    bShowStatus = "true".equalsIgnoreCase(str);	
+                    if (args[1] is int)
+                        bShowStatus = ((int)args[1]).Equals(1);
+                    else
+                    {
+                        String str = ((MutableString)args[1]).ToString();
+                        //bShowStatus = args[0].Equals(RubyConstant.QTRUE)||"true".equalsIgnoreCase(str);	
+                        bShowStatus = "true".equalsIgnoreCase(str);
+                    }
                 }
-        
-                if (args != null && args.Count > 2)
+
+                if (args != null && args.Length > 2)
                     query_params = ((MutableString)args[2]).ToString();
 
                 SyncThread.getInstance().addQueueCommand(new SyncThread.SyncCommand(SyncThread.scSyncOne, strName, nSrcID, bShowStatus, query_params));

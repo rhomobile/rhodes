@@ -17,7 +17,12 @@ namespace rho.sync
 
         public String getLoginUrl()
         {
-            return RhoConf.getInstance().getPath("syncserver") + "clientlogin";
+            if (RhoConf.getInstance().getPath("syncserver").Equals("http://rhoconnect-spec-wp.heroku.com/application/"))
+                return "http://rhoconnect-spec-wp.heroku.com/api/application/clientlogin";
+            else if (RhoConf.getInstance().getPath("syncserver").Equals("http://rhodes-samples-server.heroku.com/application/"))
+                return "http://rhodes-samples-server.heroku.com/api/application/clientlogin";
+            else
+                return RhoConf.getInstance().getPath("syncserver") + "clientlogin";
         }
 
         public String getLoginBody(String name, String password)
