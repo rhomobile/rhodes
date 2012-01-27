@@ -30,10 +30,12 @@ module Rhom
 class RhomDbAdapter
     
   @database = nil
+  @dbpath = nil  
       
   # maintains a single database connection
   def initialize(dbfile, partition)
     unless @database
+      @dbpath = dbfile  
       @database = SQLite3::Database.new(dbfile,partition)
     end
   end
@@ -43,6 +45,7 @@ class RhomDbAdapter
     if @database
       @database.close
       @database = nil
+      @dbpath = nil
     else
       return false
     end
@@ -273,6 +276,13 @@ class RhomDbAdapter
     end
     
     return cols,quests,vals
+  end
+
+  def set_do_not_bakup_attribute(attr=1)
+       if System::get_property('platform') == 'APPLE'
+              System.set_do_not_bakup_attribute(@dbpath, attr)
+              System.set_do_not_bakup_attribute(@dbpath+'.version', attr)
+       end                         
   end
 
   # deletes rows from a table which satisfy condition (hash)

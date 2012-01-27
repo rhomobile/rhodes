@@ -65,6 +65,10 @@ VALUE __rhoGetUserDir(void)
     return rb_str_new2(rho_native_rhouserpath());
 }
 
+VALUE __rhoGetDBDir(void)
+{
+    return rb_str_new2(rho_native_rhodbpath());
+}
 
 
 
@@ -579,6 +583,7 @@ void Init_RhoSupport()
 #endif
 	rb_define_global_function("__rhoGetCurrentDir", __rhoGetCurrentDir, 0);
 	rb_define_global_function("__rhoGetUserDir", __rhoGetUserDir, 0);
+	rb_define_global_function("__rhoGetDBDir", __rhoGetDBDir, 0);
 	rb_define_global_function("load", rb_load_compiled, 1);
 	rb_define_global_function("__rhoGetCallbackObject", __rhoGetCallbackObject, 1);
 
@@ -592,7 +597,7 @@ void Init_RhoSupport()
 static void Init_RhoBlobs()
 {
     const char* szBlobPath = rho_rhodesapp_getblobsdirpath();
-    const char* szUserPath = rho_rhodesapp_getuserrootpath();
+    const char* szUserPath = rho_native_rhodbpath();
     RAWLOG_INFO1("Init_RhoBlobs: %s", szBlobPath );
 
     rho_file_recursive_createdir(szBlobPath, szUserPath);
