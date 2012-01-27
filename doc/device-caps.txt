@@ -1566,24 +1566,35 @@ Simulator files folder - run search for RhoLog.txt from the drive root. Files ar
 Application can creates folders and files under apps and db roots.
 
 ### Rhodes client file system structure on iOS platform
-	<rhodes root>  # /Library/Private Documents/
+	<rhodes root>  # /Library/Caches/Private Documents/
 	  apps         #Rho::RhoApplication::get_base_app_path
 	    app        #Rho::RhoApplication::get_app_path('app') - contain models
 	      model1   #Rho::RhoApplication::get_model_path('app','model1')
 	    public       #contains files from application public folder
 	  lib          #contains rho framework library files. Blackberry does not has this folder, library files are stored in jar
+	  db           #contains schema files
 	  RhoLog.txt   #application log
 	<rhodes user root>  # /Documents/
                         apps     # user path   Rho::RhoApplication::get_user_path
-	  db           #contains schema and data files
+	  db           #contains data files
 	    db-files   #contains files stored in database(blobs)
 	               # for file paths from camera callback etc: Rho::RhoApplication::get_blob_path(relative_file_path); 
 	               # to create file path for blob: Rho::RhoApplication::get_blob_folder()
 
 On iOS platform only files stored in /Documents/ bakuped in iCloud etc.
 Before Rhodes 3.3.2 all files stored in /Documents/ but Apple require do not placing files in Documents folder except user produced files. 
-Now all files except databases stored in /Library/Private Documents/ - files in this folder do not bakup.
+Now all files except databases stored in /Library/Caches/Private Documents/ - files in this folder do not bakup.
 If you want make any files should be bakup - use "user folder" for it - Rho::RhoApplication::get_user_path. All you files created in old version in Rho::RhoApplication::get_base_app_path now should be open in Rho::RhoApplication::get_user_path.
+
+Also there are few additional parameters in build.yml (use it only if you want tune iOS specific folder scheme for some reason):
+* iphone_db_in_approot - if 1 then place databases files into <rhodes root>
+* iphone_set_approot - set <rhodes root> to one of the three folders (property value - folder): "Documents" - /Documents/, "Library_Caches" - /Library/Caches/Private Documents/, "Library_Private_Documents" - /Library/Private Documents/
+* iphone_userpath_in_approot  - is 1 then <rhodes user root> will be in the same place with <rhodes root>
+
+### change low level parameters in build.yml example
+	iphone_db_in_approot: 1
+	iphone_set_approot: library_Private_Documents
+	iphone_userpath_in_approot: 1
 
 ### write file in user folder example
 	:::ruby
@@ -1592,6 +1603,12 @@ If you want make any files should be bakup - use "user folder" for it - Rho::Rho
 	f.write('my own file !')
 	f.close  
 
+Also you can set special iOS attiribute "do not bakup" to any files or folders or files related to database :
+### setup "do not bakup" attribute for files related database conaint Model 'Product'
+	:::ruby
+	require_model 'Product'
+	db = Rho::RHO::get_src_db('Product')
+	db.set_do_not_bakup_attribute(1)
 
 
 #### Windows Mobile
