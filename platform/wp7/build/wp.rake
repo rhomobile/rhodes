@@ -420,7 +420,7 @@ namespace "run" do
             
             task :spec do
 				Rake::Task["run:wp"].invoke
-
+				Jake.before_run_spec
 				log_file = getLogPath
 
 				puts "waiting for log: " + log_file
