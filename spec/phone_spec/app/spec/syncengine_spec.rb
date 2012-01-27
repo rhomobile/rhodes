@@ -97,6 +97,8 @@ describe "SyncEngine_test" do
     
     SyncEngine.set_source_property(getProduct().get_source_id.to_i(), "rho_server_response", "" )        
     ::Rho::RHO.get_user_db().delete_all_from_table('changed_values')
+
+    Rho::RhoConfig.bulksync_state='1'    
     
   end
 

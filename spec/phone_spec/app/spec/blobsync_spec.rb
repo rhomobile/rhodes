@@ -51,6 +51,8 @@ describe "BlobSync_test" do
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
     
     SyncEngine.logged_in.should == 1
+    
+    Rho::RhoConfig.bulksync_state='1'    
   end
 
   it "should sync BlobTest" do
