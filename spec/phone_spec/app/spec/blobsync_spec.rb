@@ -90,6 +90,7 @@ describe "BlobSync_test" do
     File.open(File.join( dst_dir, File.basename(src) ), "wb"){|f| f.write(content) }
   end
   
+  if !defined?(RHO_WP7)
   it "should create new BlobTest" do
     SyncEngine.logged_in.should == 1
 
@@ -159,6 +160,7 @@ describe "BlobSync_test" do
 #    content_new.should == file_content
     
   end
+end
 
   it "should logout" do
     SyncEngine.logout()
