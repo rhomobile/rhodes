@@ -225,11 +225,18 @@ namespace "build" do
     #task :rhobundle => ["config:wm", "build:bundle:noxruby", "build:wm:extensions"] do
     #end
 
-    task :devrhobundle => ["config:set_win32_platform", "build:wm:rhobundle", :after_bundle] do
+    task :rhobundle => ["config:set_win32_platform", "build:wm:rhobundle", :after_bundle] do
+    end
+
+    task :set_debug_config do
+        $buildcfg = 'debug'
+    end
+
+    task :devrhobundle => ["config:set_win32_platform", :set_debug_config, "build:wm:rhobundle", :after_bundle] do
     end
 
     task :after_bundle do
-      win32rhopath = 'platform/wm/bin/win32/rhodes/debug/rho/'
+      win32rhopath = 'platform/wm/bin/win32/rhodes/' + $buildcfg + '/rho/'
       mkdir_p win32rhopath
       namepath = File.join(win32rhopath,"name.txt")
       old_appname = File.read(namepath) if File.exists?(namepath)
@@ -301,7 +308,7 @@ namespace "build" do
   end
 
   #desc "Build rhodes for win32"
-  task :win32 => ["build:win32:devrhobundle"] do
+  task :win32 => ["build:win32:rhobundle"] do
     chdir $config["build"]["wmpath"]
 
     args = ['/M4', $build_solution,  "\"" + $buildcfg + '|win32"']
