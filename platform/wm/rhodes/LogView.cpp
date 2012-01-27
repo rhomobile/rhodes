@@ -53,7 +53,7 @@ LRESULT CLogView::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
     mbi.nToolBarId = IDR_LOGMENUBAR; // ID of toolbar resource
     mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
     mbi.dwFlags    = SHCMBF_HMENU;
-    RHO_ASSERT(SHCreateMenuBar(&mbi));
+    SHCreateMenuBar(&mbi);
 
 //    SendDlgItemMessage(IDC_LOGEDIT,WM_SETFONT, (WPARAM)GetStockObject(SYSTEM_FONT),0);
 
@@ -296,6 +296,30 @@ LRESULT CLogView::OnNotify(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 }
 
 #endif  //OS_WINDOWS
+
+
+#ifdef OS_WINCE
+LRESULT CLogView::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	EndDialog(IDCANCEL);
+    bHandled = TRUE;
+	return 0;
+}
+
+LRESULT CLogView::OnOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	EndDialog(wID);
+    bHandled = TRUE;
+	return 0;
+}
+
+LRESULT CLogView::OnCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	EndDialog(wID);
+    bHandled = TRUE;
+	return 0;
+}
+#endif
 
 LRESULT CLogView::OnBack(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
