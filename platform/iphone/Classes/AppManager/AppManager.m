@@ -214,6 +214,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 	NSString *bundleRoot = [[NSBundle mainBundle] resourcePath];
 	NSString *rhoRoot = [NSString stringWithUTF8String:rho_native_rhopath()];
 	NSString *rhoUserRoot = [NSString stringWithUTF8String:rho_native_rhouserpath()];
+    NSString *rhoDBRoot = [NSString stringWithUTF8String:rho_native_rhodbpath()]; 
 
 	NSString *filePathNew = [bundleRoot stringByAppendingPathComponent:@"name"];
 	NSString *filePathOld = [rhoRoot stringByAppendingPathComponent:@"name"];
@@ -294,7 +295,6 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
         [fileManager createSymbolicLinkAtPath:dst withDestinationPath:src error:&error];
         //[self copyFromMainBundle:fileManager fromPath:src toPath:dst remove:YES];
 
-
         NSString *dirs[] = {@"apps", @"db"};
         for (int i = 0, lim = sizeof(dirs)/sizeof(dirs[0]); i < lim; ++i) {
             // Create directory
@@ -335,6 +335,8 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
             [myDelegate release];
         }
         // copy "db"
+        
+        
         NSString* exclude_db[] = {@"syncdb.schema", @"syncdb.triggers", @"syncdb_java.triggers"};
         
         if (!restoreSymLinks_only) { 
@@ -345,7 +347,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
                     remove = NO;
                 NSString *src = [bundleRoot stringByAppendingPathComponent:copy_dirs[i]];
                 NSLog(@"copy src: %@", src);
-                NSString *dst = [rhoUserRoot stringByAppendingPathComponent:copy_dirs[i]];
+                NSString *dst = [rhoDBRoot stringByAppendingPathComponent:copy_dirs[i]];
                 NSLog(@"copy dst: %@", dst);
                 
                 //[self copyFromMainBundle:fileManager fromPath:src toPath:dst remove:remove];
