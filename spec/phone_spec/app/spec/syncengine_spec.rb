@@ -99,7 +99,8 @@ describe "SyncEngine_test" do
     ::Rho::RHO.get_user_db().delete_all_from_table('changed_values')
     
   end
-  
+
+if !defined?(RHO_WP7)
   it "should database_full_reset_ex raise an exception" do  
     exc = false
     begin
@@ -110,6 +111,7 @@ describe "SyncEngine_test" do
     
     exc.should be_true
   end
+end
 
   it "should database_full_reset_ex support different parameters" do
     Rhom::Rhom.database_full_reset_ex()
