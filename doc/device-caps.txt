@@ -733,10 +733,13 @@ Example :
 	Rho::SignatureCapture.take(url_for( :action => :signature_callback), { :imageFormat => "jpg", :penColor => 0xff0000, :penWidth=>3, :bgColor => 0x00ff00 })
 
 Params in hash:
-* imageFormat - "jpg" or "png"
+
+* imageFormat - "jpg", "png" or "bmp"
 * penColor - color of pen used for drawing signature
 * penWidth - wide of pen
 * bgColor - color of background
+
+NOTE: On Windows Mobile and Windows CE devices only "bmp" supported as 'imageFormat'
 
 After user entered signature (or canceled) provided callback url will be called. Callback parameters will be:
 * status - 'ok' or 'cancel'
