@@ -359,7 +359,6 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
                     NSLog(@" .. copy src: %@", fchild);
                     NSString *target = [dst stringByAppendingPathComponent:child];
                     NSLog(@" .. copy dst: %@", target);
-                    [fileManager removeItemAtPath:target error:&error];
                     
                     BOOL copyit = YES;
                     
@@ -475,7 +474,7 @@ const char* rho_native_rhopath()
             
             if ([value compare:@"Documents" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
                 paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-                rootDirectory = [paths objectAtIndex:0];
+                rootDirectory = [ [paths objectAtIndex:0] stringByAppendingString:@"/"];
             }
             else if ([value compare:@"Library_Caches" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
                 paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
