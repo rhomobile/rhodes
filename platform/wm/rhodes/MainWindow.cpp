@@ -810,10 +810,14 @@ LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
         }
     }else if (params->m_dlgType == CAlertDialog::Params::DLG_DEFAULT) {
 		MessageBox(convertToStringW(params->m_message).c_str(), strAppName.c_str(), MB_ICONWARNING | MB_OK);
+        RHODESAPP().callPopupCallback(params->m_callback, "ok", "ok");
 	} else if (params->m_dlgType == CAlertDialog::Params::DLG_CUSTOM) 
     {
         if ( params->m_buttons.size() == 1 && strcasecmp(params->m_buttons[0].m_strCaption.c_str(), "ok") == 0)
+        {
             MessageBox(convertToStringW(params->m_message).c_str(), convertToStringW(params->m_title).c_str(), MB_ICONWARNING | MB_OK);
+            RHODESAPP().callPopupCallback(params->m_callback, params->m_buttons[0].m_strID, params->m_buttons[0].m_strCaption);
+        }
         else if (params->m_buttons.size() == 2 && strcasecmp(params->m_buttons[0].m_strCaption.c_str(), "ok") == 0 &&
             strcasecmp(params->m_buttons[1].m_strCaption.c_str(), "cancel") == 0)
         {
