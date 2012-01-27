@@ -80,7 +80,7 @@ namespace "framework" do
 end
 
 
-$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_use_doc_folder', 'iphone_all_in_doc_folder']
+$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot']
 
 def make_application_build_config_header_file
   f = StringIO.new("", "w+")      

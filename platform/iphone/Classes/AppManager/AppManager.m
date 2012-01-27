@@ -125,7 +125,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 }
 
 + (NSString *) getDbPath {
-	NSString *documentsDirectory = [NSString stringWithUTF8String:rho_native_rhouserpath()];
+	NSString *documentsDirectory = [NSString stringWithUTF8String:rho_native_rhodbpath()];
 	return [documentsDirectory stringByAppendingPathComponent:@"db"];
 }
 
@@ -199,18 +199,6 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
     [content1 release];
     [content2 release];
     return result;
-}
-
-
-- (BOOL)addSkipBackupAttributeToItemAtURL:(NSString *)nsFilePath
-{
-    const char* filePath = [nsFilePath UTF8String];
-    
-    const char* attrName = "com.apple.MobileBackup";
-    u_int8_t attrValue = 1;
-    
-    int result = setxattr(filePath, attrName, &attrValue, sizeof(attrValue), 0, 0);
-    return result == 0;
 }
 
 
@@ -470,30 +458,34 @@ const char* getUserPath() {
 	return root;
 }
 
-
-
 const char* rho_native_rhopath() 
 {
-    BOOL all_in_doc = NO;
-    const char* svalue = get_app_build_config_item("iphone_all_in_doc_folder");
-    if (svalue != NULL) {
-        all_in_doc = svalue[0] != '0';
-    } 
-    
-    
-    if (all_in_doc) {
-        return getUserPath();
-    }
-
 	static bool loaded = FALSE;
 	static char root[FILENAME_MAX];
 	if (!loaded){
-		//NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-		NSString *documentsDirectory = //[paths objectAtIndex:0];
-		[ [paths objectAtIndex:0] stringByAppendingString:@"/Private Documents/"];
-		[documentsDirectory getFileSystemRepresentation:root maxLength:sizeof(root)];
-		
+        NSString *rootDirectory = [ [paths objectAtIndex:0] stringByAppendingString:@"/Private Documents/"];
+        
+        const char* svalue = get_app_build_config_item("iphone_set_approot");
+        if (svalue != NULL) {
+            NSString* value = [NSString stringWithUTF8String:svalue];
+            
+            if ([value compare:@"Documents" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+                paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+                rootDirectory = [paths objectAtIndex:0];
+            }
+            else if ([value compare:@"Library_Caches" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+                paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+                rootDirectory = [ [paths objectAtIndex:0] stringByAppendingString:@"/Private Documents/"];
+            }
+            else if ([value compare:@"Library_Private_Documents" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+                paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+                rootDirectory = [ [paths objectAtIndex:0] stringByAppendingString:@"/Private Documents/"];
+            }
+        } 
+        
+        [rootDirectory getFileSystemRepresentation:root maxLength:sizeof(root)];
 		loaded = TRUE;
 	}
 	
@@ -502,18 +494,38 @@ const char* rho_native_rhopath()
 
 const char* rho_native_rhouserpath() 
 {
-    BOOL use_doc = YES;
-    const char* svalue = get_app_build_config_item("iphone_use_doc_folder");
+    BOOL user_path_in_root = NO;
+    const char* svalue = get_app_build_config_item("iphone_userpath_in_approot");
     if (svalue != NULL) {
-        use_doc = svalue[0] != '0';
+        user_path_in_root = svalue[0] != '0';
     } 
     
-    if (!use_doc) {
+    if (user_path_in_root) {
         return rho_native_rhopath();
     }
 
     return getUserPath();
 }
+
+const char* rho_native_rhodbpath()
+{
+    BOOL db_path_in_root = NO;
+    const char* svalue = get_app_build_config_item("iphone_db_in_approot");
+    if (svalue != NULL) {
+        db_path_in_root = svalue[0] != '0';
+    } 
+    
+    if (db_path_in_root) {
+        return rho_native_rhopath();
+    }
+    return rho_native_rhouserpath();
+}
+
+
+
+
+
+
 
 VALUE rho_sys_get_locale() 
 {
@@ -876,6 +888,20 @@ void rho_sys_set_application_icon_badge(int badge_number) {
 void rho_platform_restart_application() {
 //    [Rhodes restart_app];
 }
+
+int rho_sys_set_do_not_bakup_attribute(const char* path, int value) {
+    const char* attrName = "com.apple.MobileBackup";
+    u_int8_t attrValue = value;
+    
+    int result = setxattr(path, attrName, &attrValue, sizeof(attrValue), 0, 0);
+    
+    if (result != 0) {
+        NSLog(@"Can not change [do_not_bakup] attribute for path: %@", [NSString stringWithUTF8String:path]);
+    }
+    
+    return (int)(result == 0);
+}
+
 
 /*
 #define MAX_ACTIONS 4
