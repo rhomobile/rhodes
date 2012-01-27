@@ -1015,7 +1015,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 			TCHAR params[128];
 			_tcscpy(params, _T("-log="));
-			_tcscpy(params, log_port);
+			_tcscat(params, log_port);
 
 			if(!wceRunProcess(T2A(params_buf), T2A(params))) {
 				_tprintf( TEXT("FAILED\n"));
@@ -1108,7 +1108,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		TCHAR params[128];
 		_tcscpy(params, _T("-log="));
-		_tcscpy(params, log_port);
+		_tcscat(params, log_port);
 
 		if(!wceRunProcess(T2A(params_buf), T2A(params))) {
 			_tprintf( TEXT("FAILED\n"));
@@ -1181,7 +1181,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
             TCHAR params[128];
             _tcscpy(params, _T("-log="));
-			_tcscpy(params, log_port);
+			_tcscat(params, log_port);
 
 			if(!wceRunProcess (T2A(params_buf), T2A(params))) {
 				_tprintf( TEXT("FAILED\n"));
