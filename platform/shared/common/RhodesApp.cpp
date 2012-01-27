@@ -917,7 +917,7 @@ void CRhodesApp::initAppUrls()
    
 #if defined( __SYMBIAN32__ ) || defined( OS_ANDROID )
     m_strHomeUrl = "http://localhost:";
-#elif defined( OS_WINCE )
+#elif defined( OS_WINCE ) && !defined(OS_PLATFORM_MOTCE)
     TCHAR oem[257];
     SystemParametersInfo(SPI_GETPLATFORMNAME, sizeof(oem), oem, 0);
     // LOG(INFO) + oem;
