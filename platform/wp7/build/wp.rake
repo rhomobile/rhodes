@@ -420,6 +420,54 @@ namespace "run" do
             
             task :spec do
 				Rake::Task["run:wp"].invoke
+
+				log_file = getLogPath
+
+				puts "waiting for log: " + log_file
+        
+				for i in 0..120
+				if !File.exist?(log_file)
+					sleep(1)
+				else
+					break
+				end
+				end
+
+				if !File.exist?(log_file)
+					puts "Can not read log file: " + log_file
+					exit(1)
+		        end
+
+		        puts "start read log"
+
+				io = File.new(log_file, "r")
+				waiting_count = 0
+				end_spec = false
+				while !end_spec do
+					line_count = 0
+					io.each do |line|
+						#puts line
+						end_spec = !Jake.process_spec_output(line)
+						break if end_spec
+						line_count += 1
+					end
+					if line_count==0
+						waiting_count += 1
+					else
+						waiting_count = 0
+					end
+					if waiting_count > 240
+						puts "spec application hung (240 seconds timeout)"
+						end_spec = true
+					end
+					sleep(1) unless end_spec
+				end
+				io.close
+
+				Jake.process_spec_results(start)
+        
+				$stdout.flush
+				chdir $startdir
 			end
 
 			task :phone_spec do
