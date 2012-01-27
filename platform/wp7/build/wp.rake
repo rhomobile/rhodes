@@ -418,7 +418,7 @@ namespace "run" do
                 Rake::Task["run:rhosimulator_debug"].invoke            
             end
             
-            task :spec => ["device:wp:production"] do
+            task :spec do
 				Rake::Task["run:wp"].invoke
 			end
 
