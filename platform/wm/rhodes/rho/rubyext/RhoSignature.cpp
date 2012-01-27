@@ -6,14 +6,9 @@
 #include "common/RhoFilePath.h"
 #include "common/app_build_capabilities.h"
 
-#if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
-#include <msinkaut.h>
-#include <msinkaut_i.c>
-#endif
-
-#if defined(_WIN32_WCE)
-#include <imaging.h>
-#endif
+//#if defined(_WIN32_WCE)
+//#include <imaging.h>
+//#endif
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 extern void *rho_wmimpl_createSignatureInstance(HINSTANCE hInst, HWND hWnd, RECT rcWnd, int bgColor, int penColor, int penWidth);
@@ -24,6 +19,7 @@ extern BOOL rho_wmimpl_saveSignature(void *inkImpl, LPCTSTR szFilePathName);
 #endif
 
 extern "C" HWND getMainWnd();
+extern "C" HWND getWebViewWnd(int index);
 
 namespace rho 
 {
@@ -57,7 +53,7 @@ CRhoSignature::~CRhoSignature(void)
     if (oSigParams.m_bVisible)
     {
         m_pSigWindow = new CRhoSignatureWindow(params);
-        m_pSigWindow->Create(getMainWnd());
+        m_pSigWindow->Create(getWebViewWnd(0));
         m_pSigWindow->ShowWindow(SW_SHOW);
 
     }else
@@ -99,29 +95,11 @@ CRhoSignature::~CRhoSignature(void)
 
 LRESULT CRhoSignatureWindow::OnDestroyDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-
-    if (m_pInkImpl != NULL )
-    {
-        rho_wmimpl_deleteSignature(m_pInkImpl);
-    }
-#else
-
-#if defined(_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
-	if (m_pInkImpl != NULL) 
-    {
-        ((IInkOverlay*)m_pInkImpl)->Release();
-	}
-#endif
-
-#endif
-
     if ( m_hWndCommandBar )
         ::DestroyWindow(m_hWndCommandBar);
 
     m_hWndCommandBar = 0;
 
-	m_pInkImpl = NULL;
 	return FALSE;
 }
 
@@ -166,51 +144,6 @@ LRESULT CRhoSignatureWindow::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
 
     }
 
-    #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-        //CSignature* pRESig = new CSignature(_AtlBaseModule.GetResourceInstance(), getMainWnd(), 0, 0);
-        //pRESig->RhoInitialise(m_hWnd, rcWnd, getParams().getBgColor(), getParams().getPenColor(), getParams().getPenWidth());
-        m_pInkImpl = rho_wmimpl_createSignatureInstance(_AtlBaseModule.GetResourceInstance(), m_hWnd, (RECT)rcWnd, 
-                getParams().getBgColor(), getParams().getPenColor(), getParams().getPenWidth());
-    #elif defined(_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE ) 
-	    HRESULT hr = S_OK;
-	    HRESULT co_init_result = CoInitializeEx(NULL, 0); //COINIT_APARTMENTTHREADED
-	    if ( (co_init_result == S_OK) || (co_init_result == S_FALSE)  ) 
-        {
-            IInkOverlay* pInkOverlay = 0;
-		    hr = ::CoCreateInstance(CLSID_InkOverlay,
-								    NULL,
-								    CLSCTX_INPROC_SERVER,
-								    IID_IInkOverlay,
-								    (void **)&pInkOverlay);
-		    if (pInkOverlay != NULL) 
-            {
-                m_pInkImpl = pInkOverlay;
-
-                CComPtr<IInkDrawingAttributes> spIInkDrawAttrs = NULL;
-                hr = pInkOverlay->get_DefaultDrawingAttributes(&spIInkDrawAttrs);
-                if (SUCCEEDED(hr))
-                {
-                    spIInkDrawAttrs->put_Color(getParams().getPenColor());      
-                    //HIMETRIC = (PIXEL * 2540) / 96
-                    spIInkDrawAttrs->put_Width( ((float)getParams().getPenWidth()*2540)/96 );
-
-                    // Set the new drawing attributes
-                    pInkOverlay->putref_DefaultDrawingAttributes(spIInkDrawAttrs);
-                }
-
-                // Attach the inkoverlay object to the window and enable it to start collecting ink
-			    pInkOverlay->put_hWnd((long)m_hWnd);
-			    hr = pInkOverlay->put_Enabled(VARIANT_TRUE);
-		    }
-		    else {
-			    RAWLOG_ERROR("ERROR: Can not get Ink Overlay in Signature Capture !");
-		    }
-	    }
-	    else {
-		    RAWLOG_ERROR("ERROR: Can not Signature CoInitialize !");
-	    }
-    #endif //!APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-
 	return FALSE;
 }
 
@@ -220,88 +153,194 @@ LRESULT CRhoSignatureWindow::OnClearCommand(WORD /*wNotifyCode*/, WORD wID, HWND
     return FALSE;
 }
 
+void CRhoSignatureWindow::addNewPoint(int x, int y, bool bNewLine)
+{
+    m_vecPoints.addElement( CSigPoint( x, y, bNewLine ) );
+}
+
+void CRhoSignatureWindow::sendVectors()
+{
+	if ( !m_bDoVectors )
+        return;
+#if 0
+	TCHAR		szTarget[MAXURL + 1];
+	LPTSTR		pIndex;
+	int			iTotalLen,iStrLen,iErr = 1;
+	CSignature	*pObj = (CSignature *)lParam;
+	P_COORDXY	pPoint = pObj->m_pCurrentVector;
+		
+	while(pPoint)	// we need at least 2 points for a line
+	{
+		wcscpy(szTarget,L"new Array(");
+		iTotalLen = 10;
+		pIndex = szTarget + 10;
+		//set our pointer past 'new Array('  
+		while(pPoint && iTotalLen < ((MAXLEN_VECTORARR / 2) - 13))
+		{
+			if(pPoint->bNewLine){
+				wcscpy(pIndex,L"0xFFFF,0xFFFF,");
+				iTotalLen	+= 14;
+				pIndex		+= 14;
+
+			}
+			
+			iStrLen		= wsprintf(pIndex,L"0x%X,0x%X,",pPoint->XPos,pPoint->YPos);
+			iTotalLen	+= iStrLen;
+			pIndex		+= iStrLen;
+			
+			pPoint = pPoint->pPoint;
+			
+		}
+		
+		
+		if(pPoint){				// if we haven't finished outputting this batch of points
+			--pIndex;			//get rid of the last seperator
+			*pIndex = L')';		//add the bracket
+			pIndex++;			
+			*pIndex = NULL;		//finally NULL terminate
+			
+		}
+		else{					
+			*pIndex = NULL;		//we have reached the end of a batch send
+			wcscat(szTarget,L"0xFFFF,0xFFFF)");//add the last point indicator
+		}
+		
+		//navigate
+		if(pObj && pObj->m_hParent && *pObj->m_tcVectorNavigateURI != NULL)
+		{
+            //RHO
+            //TODO: SendPBNavigate
+			//pObj->m_pModule->SendPBNavigate(tcVectorEventNames, pObj->m_iInstanceID, pObj->m_tcVectorNavigateURI, szTarget, NULL); 
+            //RHO
+			iErr = 0;
+		}
+	}
+#endif
+}
+
 LRESULT CRhoSignatureWindow::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-    return rho_wmimpl_signatureSigProcCall(m_pInkImpl, m_hWnd, uMsg, wParam, lParam);
-#else
-    bHandled = FALSE;
-#endif
+    //LOG(INFO) + "DOWN: " + (int)LOWORD(lParam) + "," + (int)HIWORD(lParam);
+
+    addNewPoint( LOWORD(lParam), HIWORD(lParam), true );
+
+    SetCapture();
+    m_bCapture = true;
+    m_bOutOfSignature = false;
+    m_ptLast = CPoint(LOWORD(lParam), HIWORD(lParam));
+
     return TRUE;
 }
 
 LRESULT CRhoSignatureWindow::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-    return rho_wmimpl_signatureSigProcCall(m_pInkImpl, m_hWnd, uMsg, wParam, lParam);
-#else
-    bHandled = FALSE;
-#endif
+    //LOG(INFO) + "UP: " + (int)LOWORD(lParam) + "," + (int)HIWORD(lParam);
+    ReleaseCapture();
+    m_bCapture = false;
+    m_ptLast = CPoint(-1, -1);
+    //sendVectors();
+
     return TRUE;
 }
 
 LRESULT CRhoSignatureWindow::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-    return rho_wmimpl_signatureSigProcCall(m_pInkImpl, m_hWnd, uMsg, wParam, lParam);
-#else
-    bHandled = FALSE;
-#endif
+    //LOG(INFO) + "MouseMove: " + (int)LOWORD(lParam) + "," + (int)HIWORD(lParam);
+
+    if (!m_bCapture)
+        return TRUE;
+
+    if ( !m_bOutOfSignature && m_ptLast.x >= 0 )
+    {
+        int xDelta = abs(LOWORD(lParam)-m_ptLast.x);
+        int yDelta = abs(HIWORD(lParam)-m_ptLast.y);
+
+        if ( xDelta > 30 || yDelta >30 )
+        {
+            LOG(ERROR) + "Sporadic stroke!";
+            return TRUE;
+        }
+    }
+
+    m_ptLast = CPoint(LOWORD(lParam), HIWORD(lParam));
+    CRect rcClient;
+    GetClientRect(rcClient);
+    if ( !rcClient.PtInRect( CPoint( LOWORD(lParam), HIWORD(lParam) ) ) )
+    {
+        m_bOutOfSignature = true;
+        return TRUE;
+    }
+
+    if ( m_bOutOfSignature )
+    {
+        addNewPoint( LOWORD(lParam), HIWORD(lParam), true );
+        m_bOutOfSignature = false;
+    }else
+    {
+
+        addNewPoint( LOWORD(lParam), HIWORD(lParam), false );
+    }
+
+    drawLastStroke();
+
     return TRUE;
+}
+
+void CRhoSignatureWindow::drawLastStroke()
+{
+    CDC oDC(GetDC());
+
+    CPen oPen;
+    oPen.CreatePen( PS_SOLID, getParams().getPenWidth(), getParams().getPenColor() );
+	HPEN hOldPen = oDC.SelectPen( oPen );
+
+    int nLastPos = m_vecPoints.size()-1;
+    if ( nLastPos > 0 && !m_vecPoints[nLastPos].m_bNewLine )
+    {
+	    oDC.MoveTo( m_vecPoints[nLastPos-1].m_xPos, m_vecPoints[nLastPos-1].m_yPos );
+	    oDC.LineTo( m_vecPoints[nLastPos].m_xPos, m_vecPoints[nLastPos].m_yPos );
+    }
+
+    oDC.SelectPen( hOldPen );
 }
 
 LRESULT CRhoSignatureWindow::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-    return rho_wmimpl_signatureSigProcCall(m_pInkImpl, m_hWnd, uMsg, wParam, lParam);
-#else
     CPaintDC oPaintDC(m_hWnd);
+
     CRect rcClient;
     GetClientRect(rcClient);
-    oPaintDC.FillSolidRect(rcClient, getParams().getBgColor());
-    bHandled = TRUE;
-#endif
+
+    drawSignature( oPaintDC, rcClient );
+
     return TRUE;
 }
 
-void CRhoSignatureWindow::saveImage()
+void CRhoSignatureWindow::drawSignature( CDC& oDC, CRect& rcDraw )
 {
-    StringW strFilePathW = convertToStringW( getParams().getFilePath() );
+    oDC.FillSolidRect(rcDraw, getParams().getBgColor() );
 
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-    BOOL bRes = rho_wmimpl_saveSignature( m_pInkImpl, strFilePathW.c_str());
-    m_hResult = bRes ? S_OK : E_FAIL;
-#else
-	HBITMAP hBitmap = getScreenBitmap();
-    m_hResult = saveBitmapToFile( hBitmap, strFilePathW.c_str(), convertToStringW(getParams().getFileFormat()).c_str() );
-	DeleteObject(hBitmap);
-#endif
+    CPen oPen;
+    oPen.CreatePen( PS_SOLID, getParams().getPenWidth(), getParams().getPenColor()  );
+	HPEN hOldPen = oDC.SelectPen( oPen );
+
+    for( int i = 0; i < (int)m_vecPoints.size()-1; i++ )
+    {
+        if ( m_vecPoints[i+1].m_bNewLine )
+            continue;
+
+		oDC.MoveTo( m_vecPoints[i].m_xPos, m_vecPoints[i].m_yPos );
+		oDC.LineTo( m_vecPoints[i+1].m_xPos, m_vecPoints[i+1].m_yPos );
+    }
+
+    oDC.SelectPen( hOldPen );
+
 }
 
 void CRhoSignatureWindow::clearImage()
 {
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-	if (m_pInkImpl != NULL) 
-    {
-        rho_wmimpl_signatureClearScreenCall(m_pInkImpl);
-    }
-#else
-
-#if defined(_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
-	if (m_pInkImpl != NULL) 
-    {
-        CComPtr<IInkDisp> pDisp;
-        HRESULT hRes = ((IInkOverlay*)m_pInkImpl)->get_Ink(&pDisp);
-        if ( SUCCEEDED(hRes) && pDisp )
-        {
-            pDisp->DeleteStrokes();
-
-            InvalidateRect(NULL,TRUE);
-        }
-	}
-#endif
-
-#endif
+    m_vecPoints.removeAllElements();
+    InvalidateRect(NULL,TRUE);
 }
 
 LRESULT CRhoSignatureWindow::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND hwnd, BOOL& /*bHandled*/)
@@ -322,8 +361,18 @@ LRESULT CRhoSignatureWindow::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 	return 0;
 }
 
-HBITMAP CRhoSignatureWindow::getScreenBitmap() 
+void RGBFromColour (RGBQUAD *prgb, COLORREF colour)
 {
+	prgb->rgbBlue = (BYTE) ((colour & 0x00FF0000) >> 16);
+	prgb->rgbGreen = (BYTE) ((colour & 0x0000FF00) >> 8);
+	prgb->rgbRed = (BYTE) (colour & 0x000000FF);
+	prgb->rgbReserved = 0;
+}	
+
+void CRhoSignatureWindow::saveImage() 
+{
+    StringW strFilePathW = convertToStringW( getParams().getFilePath() );
+
 	// get screen rectangle 
 	CRect windowRect; 
 	GetWindowRect(&windowRect); 
@@ -352,35 +401,76 @@ HBITMAP CRhoSignatureWindow::getScreenBitmap()
 	infoHeader.biWidth         = bitmap_dx; 
 	infoHeader.biHeight        = bitmap_dy; 
 	infoHeader.biPlanes        = 1; 
-	infoHeader.biBitCount      = 24;
+	infoHeader.biBitCount      = 1;
 	infoHeader.biCompression   = BI_RGB; 
 
 	// dibsection information 
-	BITMAPINFO info; 
-	info.bmiHeader = infoHeader; 
-	HDC winDC = GetWindowDC(); 
-	HDC memDC = CreateCompatibleDC(winDC); 
-	BYTE* memory = 0; 
-	HBITMAP bitmap = CreateDIBSection(winDC, &info, DIB_RGB_COLORS, (void**)&memory, 0, 0); 
-	HBITMAP old_selected = (HBITMAP)SelectObject(memDC, bitmap); 
-	// Copies screen upside down (as it is already upside down) - if need normal layout, change to BitBlt function call
-    StretchBlt(memDC, 0, 0, bitmap_dx, bitmap_dy, winDC, hasBorder ? 1 : 0, bitmap_dy+(hasBorder ? 1 : 0)+nTopHeader, bitmap_dx, bitmap_dy * -1, SRCCOPY); 
-	SelectObject(memDC, old_selected);
-	DeleteDC(memDC); 
-	ReleaseDC(winDC); 
+	BITMAPINFO* pInfo = (BITMAPINFO*)(new BYTE [sizeof (BITMAPINFOHEADER) + 2 * sizeof (RGBQUAD)]); 
+	pInfo->bmiHeader = infoHeader; 
+    RGBFromColour( &(pInfo->bmiColors[0]), getParams().getPenColor() );
+    RGBFromColour( &(pInfo->bmiColors[1]), getParams().getBgColor() );
 
-	return bitmap;
+    BYTE* memory = 0; 
+    HBITMAP hBitmap = 0;
+    {
+	    CDC memDC = CreateCompatibleDC(NULL); 
+	    hBitmap = CreateDIBSection( NULL, pInfo, DIB_RGB_COLORS, (void**)&memory, 0, 0 ); 
+	    HBITMAP hBmpOld = (HBITMAP)SelectObject( memDC, hBitmap ); 
+	    // Copies screen upside down (as it is already upside down) - if need normal layout, change to BitBlt function call
+        //StretchBlt(memDC, 0, 0, bitmap_dx, bitmap_dy, winDC, hasBorder ? 1 : 0, bitmap_dy+(hasBorder ? 1 : 0)+nTopHeader, bitmap_dx, bitmap_dy /* * -1 */, SRCCOPY); 
+        drawSignature( memDC, CRect(0,0, bitmap_dx, bitmap_dy ) );
+	    SelectObject( memDC, hBmpOld );
+    }
+
+    //#if defined(_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
+    //    m_hResult = saveBitmapToFileByImageFactory( hBitmap, strFilePathW.c_str(), convertToStringW(getParams().getFileFormat()).c_str() );
+    //#else
+	    if ( getParams().getFileFormat().compare("bmp") != 0 )
+        {
+            LOG(ERROR) + "Windows support only bmp image format.";
+            m_hResult = E_FAIL;
+        }else
+        {
+            int bytes_per_line = ((bitmap_dx + 31) & (~31)) / 8;
+            BITMAPFILEHEADER bfh = {0};
+	        bfh.bfType = 0x4D42;
+	        bfh.bfOffBits = sizeof( bfh ) + sizeof (BITMAPINFOHEADER) + 2 * sizeof (RGBQUAD);
+	        bfh.bfSize = bfh.bfOffBits + (bytes_per_line * bitmap_dy);
+
+	        //RGBFromColour( &(pInfo->bmiColors[0]), getParams().getPenColor() );
+	        //RGBFromColour( &(pInfo->bmiColors[1]), getParams().getBgColor() );
+
+	        // Write file
+	        FILE *pfile = _wfopen( strFilePathW.c_str(), L"wb" );
+	        if (pfile)
+	        {
+		        fwrite( &bfh, sizeof (BITMAPFILEHEADER), 1, pfile );
+		        fwrite( &(pInfo->bmiHeader), sizeof (BITMAPINFOHEADER), 1, pfile );
+		        fwrite( pInfo->bmiColors, sizeof (RGBQUAD), 2, pfile );
+		        fwrite( memory, 1, bytes_per_line * bitmap_dy, pfile );
+		        fclose( pfile );
+	        }
+
+            m_hResult = S_OK;
+        }
+
+    //#endif
+
+    delete pInfo;
+	DeleteObject(hBitmap);
 }
-
-HRESULT CRhoSignatureWindow::saveBitmapToFile( HBITMAP hBitmap, LPCTSTR filename, LPCTSTR format)
+/*
+HRESULT CRhoSignatureWindow::saveBitmapToFileByImageFactory( HBITMAP hBitmap, LPCTSTR filename, LPCTSTR format)
 {
 	HRESULT res = S_OK;
-#if defined(_WIN32_WCE) //&& !defined( OS_PLATFORM_MOTCE )
+
+#if defined(_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
 	IImagingFactory* factory=NULL;
 	if (CoCreateInstance(CLSID_ImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IImagingFactory, (void**)&factory) == S_OK) {
 		UINT count;
 		ImageCodecInfo* imageCodecInfo=NULL;
-		if (factory->GetInstalledEncoders(&count, &imageCodecInfo) == S_OK) {
+		if (factory->GetInstalledEncoders(&count, &imageCodecInfo) == S_OK) 
+        {
 			// Get the particular encoder to use
 			LPTSTR formatString;
 			if (wcscmp(format, L"png") == 0) {
@@ -391,7 +481,10 @@ HRESULT CRhoSignatureWindow::saveBitmapToFile( HBITMAP hBitmap, LPCTSTR filename
 				formatString = _T("image/gif");
 			} else if (wcscmp(format, L"bmp") == 0) {
 				formatString = _T("image/bmp");
-			} else {
+			} else 
+            {
+                LOG(ERROR) + "Unsupported image format:" + format;
+
 				factory->Release();
 				CoUninitialize();
 				return S_FALSE;
@@ -461,6 +554,7 @@ HRESULT CRhoSignatureWindow::saveBitmapToFile( HBITMAP hBitmap, LPCTSTR filename
 				UINT bitStride = bitAlignment * (bitsPerLine / bitAlignment);	// The image buffer is always padded to LONG boundaries
 				if ((bitsPerLine % bitAlignment) != 0) bitStride += bitAlignment; // Add a bit more for the leftover values
 				bmData->Stride = (bitStride / 8);
+                bmData->Stride *= -1;
 
 				IBitmapImage* pBitmap;
 				factory->CreateBitmapFromBuffer(bmData, &pBitmap);
@@ -497,6 +591,7 @@ HRESULT CRhoSignatureWindow::saveBitmapToFile( HBITMAP hBitmap, LPCTSTR filename
 
 	return res;
 }
+*/
 
 static void readIntFromParam(rho_param* params, const char* szName, long& res)
 {
@@ -523,7 +618,7 @@ CRect CRhoSignature::CParams::getWndRect()
         ::GetWindowRect(getMainWnd(), rcDefault);
     }else
     {
-        rcDefault = CRect(15, 60, 15 + 200, 60 + 150);
+        rcDefault = CRect(30, 100, 30 + 200, 100 + 150);
     }
 
     if (rcWnd.left == -1)
@@ -573,7 +668,7 @@ const String& CRhoSignature::CParams::getFileFormat()
     if ( m_strFileFormat.length() > 0 )
         return m_strFileFormat;
 
-    m_strFileFormat = "png";
+    m_strFileFormat = "bmp";
 
     return m_strFileFormat;
 }

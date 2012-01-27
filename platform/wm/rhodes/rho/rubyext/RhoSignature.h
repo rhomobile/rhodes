@@ -74,16 +74,35 @@ public:
 
 class CRhoSignatureWindow : public CDialogImpl <CRhoSignatureWindow>
 {
-    void* m_pInkImpl;
+    struct CSigPoint
+    {
+   	    short m_xPos;
+	    short m_yPos;
+	    bool  m_bNewLine;	
+
+        CSigPoint() : m_xPos(-1), m_yPos(-1), m_bNewLine(false){}
+        CSigPoint( int x, int y, bool bNewLine ) : m_xPos(x), m_yPos(y), m_bNewLine(bNewLine){}
+    };
+
+    //bool        m_bSigning;
+    //int         m_nCurPoint;
+    CPoint      m_ptLast;
+    bool        m_bOutOfSignature, m_bCapture;
+	Vector<CSigPoint> m_vecPoints;
+	bool		m_bDoVectors;
+
+    void addNewPoint(int x, int y, bool bNewLine);
+    void sendVectors();
+    void drawLastStroke();
+
     CRhoSignature::CParams* m_pParams;
     HRESULT m_hResult;
     HWND m_hWndCommandBar;
 
-    HBITMAP getScreenBitmap();
-    HRESULT saveBitmapToFile( HBITMAP hBitmap, LPCTSTR filename, LPCTSTR format);
-
+    HRESULT saveBitmapToFileByImageFactory( HBITMAP hBitmap, LPCTSTR filename, LPCTSTR format);
+    void drawSignature( CDC& oDC, CRect& rcDraw );
 public:
-    CRhoSignatureWindow(CRhoSignature::CParams* pParams) : m_pInkImpl(0), m_pParams(pParams), m_hWndCommandBar(0){}
+    CRhoSignatureWindow(CRhoSignature::CParams* pParams) : m_pParams(pParams), m_hWndCommandBar(0), m_bDoVectors(false), m_bOutOfSignature(false), m_bCapture(false){}
     ~CRhoSignatureWindow(){ delete m_pParams; }
 	
 	enum { IDD = IDD_TAKE_SIGNATURE };
