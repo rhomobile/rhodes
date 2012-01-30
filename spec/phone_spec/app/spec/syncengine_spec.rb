@@ -164,7 +164,7 @@ end
     res.should > 0    
   end
 
-if !defined?(RHO_WP7)    
+ 
   it "should update syncserver at runtime" do
   
     dbRes = ::Rho::RHO.get_user_db().select_from_table('client_info','token,token_sent')
@@ -181,7 +181,7 @@ if !defined?(RHO_WP7)
     SyncEngine.set_syncserver(saveSrv)
     Rho::RhoConfig.syncserver.should == saveSrv
   end
-end
+
 
   it "should not sync without login" do
     SyncEngine.logged_in.should == 0

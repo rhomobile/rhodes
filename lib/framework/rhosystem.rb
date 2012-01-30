@@ -77,7 +77,7 @@ module NavBar
 	end
 	
 end
-
+=begin
 module Rho
 
 class RhoConf
@@ -152,7 +152,7 @@ class RhoConf
 end
 
 end
-
+=end
 class RhoLog
     def initialize
 	end
