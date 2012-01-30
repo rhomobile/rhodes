@@ -317,7 +317,7 @@ end
     cust22.first.should == cust2.first
     
   end
-if !defined?(RHO_WP7)
+
   it "should process error sync" do
 
     records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*')
@@ -346,7 +346,7 @@ if !defined?(RHO_WP7)
     records.length.should == 0
     
   end
-end  
+ 
   it "should modify Product" do
     SyncEngine.logged_in.should == 1
   
