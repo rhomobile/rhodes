@@ -578,6 +578,8 @@ namespace "build" do
       # Store app name
       File.open(File.join($srcdir, "name"), "w") { |f| f.write($app_config["name"]) }
 
+      Jake.build_file_map( File.join($srcdir, "apps"), "rhofilelist.txt" )  
+
     end
     
     task :upgrade_package => ["build:iphone:rhobundle"] do
@@ -942,7 +944,7 @@ namespace "run" do
        simapp = File.join($simdir, $emulator_version, "Applications")
        
        
-       rholog = simapp + "/" + $guid + "/Library/Private Documents/rholog.txt"
+       rholog = simapp + "/" + $guid + "/Library/Caches/Private Documents/rholog.txt"
        puts "log_file=" + rholog
     end 
 
@@ -1068,7 +1070,7 @@ namespace "run" do
 
 #>>>>>>>>>>
         #`echo "#{$applog}" > "#{$simrhodes}/Documents/rhologpath.txt"`
-        rholog = simapp + "/" + $guid + "/Library/Private Documents/rholog.txt"
+        rholog = simapp + "/" + $guid + "/Library/Caches/Private Documents/rholog.txt"
 
 
         simpublic = simapp + "/" + $guid + "/Documents/apps/public"
