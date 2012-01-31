@@ -90,8 +90,9 @@ LRESULT CRhoMapViewDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 {
 	SetWindowText(_T("MapView"));
 
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE) 
 
+#if !defined (OS_PLATFORM_MOTCE)
 	SHINITDLGINFO shidi = { SHIDIM_FLAGS, m_hWnd, SHIDIF_SIZEDLGFULLSCREEN };
 	RHO_ASSERT(SHInitDialog(&shidi));
 
@@ -102,7 +103,7 @@ LRESULT CRhoMapViewDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
 	
 	SHCreateMenuBar(&mbi);
-	//RHO_ASSERT(SHCreateMenuBar(&mbi));
+#endif
 
 	//::SetWindowLong(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, 
 	//	GWL_EXSTYLE,

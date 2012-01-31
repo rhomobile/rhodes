@@ -41,7 +41,9 @@ rho::common::CMutex CLogView::m_ViewFlushLock;
 
 LRESULT CLogView::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-#ifdef OS_WINCE
+#if defined( OS_WINCE )
+
+#if !defined (OS_PLATFORM_MOTCE)
 	SHINITDLGINFO shidi;
 	shidi.dwMask = SHIDIM_FLAGS; 
 	shidi.dwFlags = SHIDIF_SIZEDLGFULLSCREEN;//SHIDIF_DONEBUTTON | SHIDIF_SIZEDLGFULLSCREEN |SHIDIF_EMPTYMENU; 
@@ -56,6 +58,7 @@ LRESULT CLogView::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
     SHCreateMenuBar(&mbi);
 
 //    SendDlgItemMessage(IDC_LOGEDIT,WM_SETFONT, (WPARAM)GetStockObject(SYSTEM_FONT),0);
+#endif
 
     loadLogText();
 

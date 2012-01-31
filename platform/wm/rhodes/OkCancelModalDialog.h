@@ -26,7 +26,7 @@
 
 #pragma once
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS)  || defined(OS_PLATFORM_MOTCE)
 
 template <class T> class COkCancelModalDialog : public CDialogImpl<T> 
 {
@@ -64,10 +64,10 @@ private:
 	void Maximize () 
 	{
 		RECT rect;
-		NONCLIENTMETRICS ncm = { sizeof(NONCLIENTMETRICS) };
+		
 
 		GetParent().GetWindowRect(&rect);
-		SystemParametersInfo ( SPI_GETNONCLIENTMETRICS, 0, &ncm, false );
+		
 
 		m_width = rect.right - rect.left - GetSystemMetrics(SM_CXEDGE)*2;
 		m_height = rect.bottom - rect.top - GetSystemMetrics(SM_CYCAPTION) - GetSystemMetrics(SM_CYEDGE)*2;
@@ -75,8 +75,15 @@ private:
 									GetSystemMetrics(SM_CXEDGE) : GetSystemMetrics(SM_CXBORDER);
 		m_yborder = GetSystemMetrics(SM_CYEDGE) > GetSystemMetrics(SM_CYBORDER) ? 
 									GetSystemMetrics(SM_CYEDGE) : GetSystemMetrics(SM_CYBORDER);
-		m_btnHeight = ncm.iMenuHeight+ncm.iBorderWidth * 4 + 2;
 
+
+#if !defined(OS_PLATFORM_MOTCE)
+        NONCLIENTMETRICS ncm = { sizeof(NONCLIENTMETRICS) };
+        SystemParametersInfo ( SPI_GETNONCLIENTMETRICS, 0, &ncm, false );
+		m_btnHeight = ncm.iMenuHeight+ncm.iBorderWidth * 4 + 2;
+#else
+        m_btnHeight = GetSystemMetrics(SM_CYMENU) + GetSystemMetrics(SM_CYBORDER)*4 + 2;
+#endif
 		MoveWindow(rect.left + m_xborder, rect.top  + GetSystemMetrics(SM_CYCAPTION), m_width, m_height);
 	}
 

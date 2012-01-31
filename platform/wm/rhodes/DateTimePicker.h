@@ -73,7 +73,7 @@ public:
 #endif
 
 class CDateTimePickerDialog : public 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS) || defined(OS_PLATFORM_MOTCE)
 	COkCancelModalDialog<CDateTimePickerDialog>
 #else
 	CDialogImpl <CDateTimePickerDialog>
@@ -108,7 +108,7 @@ private:
 
 
 class CTimePickerDialog : public
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS) || defined(OS_PLATFORM_MOTCE)
 	COkCancelModalDialog<CTimePickerDialog>
 #else
 	CDialogImpl <CTimePickerDialog>
