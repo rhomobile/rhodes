@@ -920,10 +920,10 @@ void CRhodesApp::initAppUrls()
 #elif defined( OS_WINCE ) && !defined(OS_PLATFORM_MOTCE)
     TCHAR oem[257];
     SystemParametersInfo(SPI_GETPLATFORMNAME, sizeof(oem), oem, 0);
-    // LOG(INFO) + oem;
-    if ((_tcscmp(oem, _T("MC75"))==0) || (_tcscmp(oem, _T("MC75A"))==0))
-       m_strHomeUrl = "http://localhost:";
-    else
+    LOG(INFO) + "Device name: " + oem;
+    //if ((_tcscmp(oem, _T("MC75"))==0) || (_tcscmp(oem, _T("MC75A"))==0))
+    //   m_strHomeUrl = "http://localhost:";
+    //else
        m_strHomeUrl = "http://127.0.0.1:";
 #else
     m_strHomeUrl = "http://127.0.0.1:";
