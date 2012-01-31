@@ -199,7 +199,7 @@ Rhodes will update location using network data until the GPS signal has been rec
 There are two ways to use GeoLocation.
 
  * Syncronous call to GeoLocation module for particular value.
- * Set GeoLocation notification and track location by call back. In this case all location values passed to notification as parameters.
+ * Set GeoLocation notification and track location by call back. In this case all location values are passed to notification as parameters.
 
 Note that GeoLocation is switched off automatically when the application goes into the background, and is switched on as the application goes back to foreground.
 However it is possible to switch on location services as usual while the application is in background.
@@ -237,7 +237,7 @@ Test if the location system is up and acquired position:
 	:::ruby
 	GeoLocation.known_position?
 	
-Set callback to track location changes.  
+Set callback to track location changes.
 
 	:::ruby
 	GeoLocation.set_notification(
@@ -311,17 +311,14 @@ Callback points to the `geo_callback` in the Settings controller.rb:
     
     def geo_callback
       # navigate to `show_location` page if GPS receiver acquire position  
-	  if @params['known_position'].to_i != 0 && @params['status'] =='ok'	
-	  	WebView.navigate url_for(:action => :show_location) 
-	  end	
-	  # show error if timeout expired and GPS receiver didn't acquire position
-	  if @params['available'].to_i == 0 || @params['status'] !='ok'
-        WebView.navigate url_for(:action => :show_location_error) 
+	  if @params['known_position'].to_i != 0 && @params['status'] =='ok'
+	  
+	  	GeoLocation.set_notification '', '', 2
+	  	WebView.navigate url_for(:action => :map_all)
 	  end
-      # do nothing, still wait for location 
     end
 
-##### Turning off GeoLocation as soon as the app goes of the device front page
+##### Turning off GeoLocation as soon as the app goes off the device front page
 
 In this code sample, /GeoLocation/ has to be replaced with an appropriate regular expression to detect the controller. This code is called from geo_callback. This decision allows you to switch off GeoLocation from a single code point in case geo_callback is set.
 
@@ -336,7 +333,7 @@ In this code sample, /GeoLocation/ has to be replaced with an appropriate regula
 	  end
 	end
 
-If the app does not need location updates, and GeoLocation should still remian active, you can send an empty notification.
+If the app does not need location updates, and GeoLocation should still remain active, you can send an empty notification.
 
 	:::ruby
 	GeoLocation.set_notification "", "", 30
@@ -1621,10 +1618,11 @@ Before Rhodes 3.3.2 all files stored in /Documents/ but Apple require do not pla
 Now all files except databases stored in /Library/Caches/Private Documents/ - files in this folder do not bakup.
 If you want make any files should be bakup - use "user folder" for it - Rho::RhoApplication::get_user_path. All you files created in old version in Rho::RhoApplication::get_base_app_path now should be open in Rho::RhoApplication::get_user_path.
 
-Also there are few additional parameters in build.yml (use it only if you want tune iOS specific folder scheme for some reason):
-* iphone_db_in_approot - if 1 then place databases files into <rhodes root>
-* iphone_set_approot - set <rhodes root> to one of the three folders (property value - folder): "Documents" - /Documents/, "Library_Caches" - /Library/Caches/Private Documents/, "Library_Private_Documents" - /Library/Private Documents/
-* iphone_userpath_in_approot  - is 1 then <rhodes user root> will be in the same place with <rhodes root>
+Also there are few additional parameters in build.yml (use it only if you want tune iOS specific folder scheme for some reason).
+
+ * iphone_db_in_approot - if 1 then place databases files into <rhodes root>
+ * iphone_set_approot - set <rhodes root> to one of the three folders (property value - folder): "Documents" - /Documents/, "Library_Caches" - /Library/Caches/Private Documents/, "Library_Private_Documents" - /Library/Private Documents/
+ * iphone_userpath_in_approot  - is 1 then <rhodes user root> will be in the same place with <rhodes root>
 
 ### change low level parameters in build.yml example
 	iphone_db_in_approot: 1
