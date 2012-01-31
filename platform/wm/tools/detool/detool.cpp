@@ -1046,6 +1046,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 		_tprintf( TEXT("DONE\n"));
 
+		startWMDC();
+
 		hFind = CeFindFirstFile(app_dir, &findData);
 		if (INVALID_HANDLE_VALUE == hFind) {
 			_tprintf( TEXT("Application directory on device was no found\n"));
@@ -1096,6 +1098,9 @@ int _tmain(int argc, _TCHAR* argv[])
 			goto stop_emu_deploy;
 		}
 
+		// establish network connectivity of the device from Windows Mobile Device Center (if applicable)
+		connectWMDC();
+
 		Sleep(2 * 1000);
 
 		_tprintf( TEXT("Starting application..."));
@@ -1107,8 +1112,10 @@ int _tmain(int argc, _TCHAR* argv[])
 		_tprintf( TEXT("%s\n"), params_buf);
 
 		TCHAR params[128];
-		_tcscpy(params, _T("-log="));
-		_tcscat(params, log_port);
+		// temporary disable log from device (caused enormous delays)
+		params[0] = 0;
+		//_tcscpy(params, _T("-log="));
+		//_tcscat(params, log_port);
 
 		if(!wceRunProcess(T2A(params_buf), T2A(params))) {
 			_tprintf( TEXT("FAILED\n"));
@@ -1129,6 +1136,8 @@ int _tmain(int argc, _TCHAR* argv[])
 					return false;
 			}
 			_tprintf( TEXT("DONE\n"));
+
+			startWMDC();
 
 			_tprintf( TEXT("Loading cab file to device..."));
 			USES_CONVERSION;
@@ -1172,6 +1181,9 @@ int _tmain(int argc, _TCHAR* argv[])
 			}
 			_tprintf( TEXT("DONE\n"));
 
+			// establish network connectivity of the device from Windows Mobile Device Center (if applicable)
+			connectWMDC();
+
 			_tprintf( TEXT("Starting application..."));
 			_tcscpy(params_buf, TEXT("\\Program Files\\"));
 			_tcscat(params_buf, app_name);
@@ -1180,8 +1192,10 @@ int _tmain(int argc, _TCHAR* argv[])
 			_tcscat(params_buf, _T(".exe"));
 
             TCHAR params[128];
-            _tcscpy(params, _T("-log="));
-			_tcscat(params, log_port);
+			// temporary disable log from device (caused enormous delays)
+			params[0] = 0;
+            //_tcscpy(params, _T("-log="));
+			//_tcscat(params, log_port);
 
 			if(!wceRunProcess (T2A(params_buf), T2A(params))) {
 				_tprintf( TEXT("FAILED\n"));
