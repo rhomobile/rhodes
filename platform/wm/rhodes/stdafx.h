@@ -124,17 +124,17 @@
 #include <tpcshell.h>
 #endif
 
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE) && !defined(OS_PLATFORM_MOTCE)
 #include <aygshell.h>
 #pragma comment(lib, "aygshell.lib") 
 //#include <tpcshell.h> // Required for SHSendBackToFocusWindow
-#endif // SHELL_AYGSHELL
+//#endif // SHELL_AYGSHELL
 
-#ifndef OS_PLATFORM_CE
+//#ifndef OS_PLATFORM_MOTCE
 #define _WTL_CE_NO_ZOOMSCROLL
 #define _WTL_CE_NO_CONTROLS
 #include <atlwince.h>
-#endif //OS_PLATFORM_CE
+#endif 
 
 #undef max
 #undef min

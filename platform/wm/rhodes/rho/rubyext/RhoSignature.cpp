@@ -124,7 +124,7 @@ LRESULT CRhoSignatureWindow::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
 	    mbi.hwndParent = m_hWnd;
 	    mbi.nToolBarId = IDR_GETURL_MENUBAR;
 	    mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
-	    RHO_ASSERT(SHCreateMenuBar(&mbi));
+	    SHCreateMenuBar(&mbi);
     #elif defined( OS_PLATFORM_MOTCE )
         m_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
         TBBUTTON oBtn = {0};
