@@ -482,7 +482,8 @@ namespace "run" do
       puts "Please, connect you device via ActiveSync.\n\n"
       log_file = gelLogPath
 
-      Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
+      # temporary disable log from device (caused enormous delays)
+      # Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
 
       if $webkit_capability
         wk_args   = [ 'wk-dev', '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
@@ -584,7 +585,8 @@ namespace "run" do
         puts "Please, connect you device via ActiveSync.\n\n"
         log_file = gelLogPath
 
-        Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
+        # temporary disable log from device (caused enormous delays)
+        # Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
         Jake.run(detool,args)
       end
     end
