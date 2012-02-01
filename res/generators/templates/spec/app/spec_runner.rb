@@ -12,10 +12,16 @@ class SpecRunner < MSpecScript
     app_folder = Rho::RhoFSConnector.get_app_path('app')
     app_folder.gsub!(/\\/, '/')
 
-    specs = app_folder + "**/*_spec.iseq"
+    specs = app_folder + "**/*_spec" + RHO_RB_EXT
     Dir.glob(specs) { |file|
       file.gsub!(app_folder,"")
-      file.gsub!(/\.iseq/,"")
+      
+      if RHO_RB_EXT == '.rb'
+        file.gsub!(/\.rb/,"")
+      else
+        file.gsub!(/\.iseq/,"")
+      end
+      
       config[:files] << file
     }
 
