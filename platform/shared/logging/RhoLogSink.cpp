@@ -29,6 +29,7 @@
 #include "common/RhoFile.h"
 #include "common/StringConverter.h"
 #include "net/RawSocket.h"
+#include "net/AsyncHttp.h"
 
 #if defined( OS_SYMBIAN )
 #include <e32debug.h>
@@ -165,25 +166,22 @@ void CLogOutputSink::writeLogMessage( String& strMsg )
 
 CLogSocketSink::CLogSocketSink(const LogSettings& oSettings) 
 	: m_oLogConf(oSettings)
-	, m_logNetClient(0)
 {
-	m_hostName = oSettings.getLogHost();
-    m_hostPort = oSettings.getLogPort(); 
+	 m_addrHost = "http://"+oSettings.getLogHost() + ":" + oSettings.getLogPort();
 }
 
 void CLogSocketSink::writeLogMessage( String& strMsg )
 {
-    if (!m_logNetClient)
+	if (!net::CAsyncHttp::getInstance())
     {
-		m_logNetClient = new rho::net::RawSocket(m_hostName, m_hostPort);
+		rho_param* p = rho_param_hash(2);
+		p->v.hash->name[0] = strdup("url");
+		p->v.hash->value[0] = rho_param_str(const_cast<char*>(m_addrHost.c_str()));
+		p->v.hash->name[1] = strdup("body");
+		p->v.hash->value[1] = rho_param_str(const_cast<char*>(strMsg.c_str()));
+		net::CAsyncHttp::getInstance()->addHttpCommand(new net::CAsyncHttp::CHttpCommand( "POST", p ));
+		rho_param_free(p);
     }
-    
-    if (!m_logNetClient->isInit())
-    {
-         m_logNetClient->init();
-    }
-
-    m_logNetClient->send(strMsg);
 }
         
 }
