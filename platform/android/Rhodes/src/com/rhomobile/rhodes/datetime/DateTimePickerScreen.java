@@ -314,10 +314,10 @@ public class DateTimePickerScreen extends BaseActivity {
 
 		switch (_fmt) {
 		case FORMAT_DATE:
-			_timePicker.setVisibility(View.INVISIBLE);
+			_timePicker.setVisibility(View.GONE);
 			break;
 		case FORMAT_TIME:
-			_datePicker.setVisibility(View.INVISIBLE);
+			_datePicker.setVisibility(View.GONE);
 			break;
 		case FORMAT_DATE_TIME:
 			break;
