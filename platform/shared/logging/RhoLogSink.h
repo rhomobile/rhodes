@@ -29,6 +29,7 @@
 
 #include "RhoLogConf.h"
 #include "net/RawSocket.h"
+#include "net/AsyncHttp.h"
 
 namespace rho {
 namespace common {
@@ -72,10 +73,18 @@ public:
 class CLogSocketSink : public ILogSink{
     const LogSettings& m_oLogConf;
     String m_addrHost;
+	net::CAsyncHttp* m_aHttp;
 
 public:
     CLogSocketSink(const LogSettings& oSettings); 
-	virtual ~CLogSocketSink(){};
+	virtual ~CLogSocketSink()
+	{
+		if(m_aHttp)
+		{
+			m_aHttp->stop(2);
+			delete m_aHttp;
+		}
+	}
 
     void writeLogMessage( String& strMsg );
     int getCurPos(){ return -1; }

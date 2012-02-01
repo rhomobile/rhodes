@@ -102,7 +102,7 @@ public:
 	void setLogHost(const char* szLogHost) { m_strLogHost = rho::String(szLogHost); }
 
 	const String& getLogPort() const { return m_strLogPort; }
-	void setLogPort(const char* szLogPort);
+	void initRemoteSync();
 	
     void setEnabledCategories( const char* szCatList );
     void setDisabledCategories( const char* szCatList );
