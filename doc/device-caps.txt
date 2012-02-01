@@ -247,13 +247,13 @@ Set callback to track location changes.
 * ping_gpssystem_timeout - optional, if 0 system timeout used, use to redefine timeout in sec for gps system reading
 * callback params: known_position, latitude, longitude, available, status('error', 'ok'), error_code(from RhoError), accuracy
 
-Also there are two parameters in rhoconfig.txt :
+Also there are two parameters you can set in rhoconfig.txt:
 
-Geo location update period (in seconds). Used as default value for third parameter of GeoLocation.set_notification method. This value is passed to OS API and behaviour is OS dependent (it should be used by system as a tip how often call notification back). Ignored on iOS.
+Geo location update period (in seconds). Used as the default value for the third parameter (ping_gpssystem_timeout) of GeoLocation.set_notification method. This value is passed to OS API and behaviour and is OS dependent (it should be used by system as a tip on how often to call notification back). Ignored on iOS.
 
 	gps_ping_timeout_sec = 30
 
-Geo location inactivity timeout (in seconds). This parameter controls the time after that location service is switched off in case no calls to the service. It also used as time period to drop cached location value.
+Geo location inactivity timeout (in seconds). This parameter controls the time after that location service is switched off in case there are no calls to the service. It is also used as the time period to drop cached location value.
 	
 	geo_location_inactivity_timeout = gps_ping_timeout_sec * 10
 
@@ -263,7 +263,7 @@ Turn off GeoLocation.
 	:::ruby
 	GeoLocation.turnoff
 
-**NOTE: GeoLocation.turnoff - after GPS switched off you can receive few callbacks (it depends of platform).
+**NOTE: GeoLocation.turnoff - after GPS switched off you can receive few callbacks (it depends on the platform).**
 
 **NOTE: The current behavior of the geolocation callback is that it will be called forever until it is stopped; you need to call `GeoLocation.turnoff` to stop it. Previous behavior was that the callback was called once and needed to be reset.**
 
@@ -274,7 +274,7 @@ Get the distance between two points in miles.
 
 GeoCoding: You can use any free web service for direct and reverse geocoding. See our complete example of using Google geocoding web service in [Rhodes-System-Api-Samples example](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/GeoCoding).
 
-**NOTE: on iOS real GPS strt works after first access to GeoLocation module. Real GPS hrdware switched off after call GeoLocation.turnoff. But keep in mind - any call to GeoLocation include just get latitude etc. start hardware GPS again !
+**NOTE: On iOS, real GPS starts working after the first access to the GeoLocation module. Real GPS hardware is switched off after a call to GeoLocation.turnoff. But keep in mind - any call to GeoLocation, such as getting latitude, starts the hardware GPS again!**
 
 #### Testing GeoLocation
 
