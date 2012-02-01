@@ -65,14 +65,13 @@ LogSettings::~LogSettings(){
     delete m_pSocketSink;
 }
 
-void LogSettings::setLogPort(const char* szLogPort) 
+void LogSettings::initRemoteSync()
 {
-	setLogToSocket(true);
+	m_strLogHost = RHOCONF().getString("rhologhost"); 
+	m_strLogPort = RHOCONF().getString("rhologport"); 
 
-	m_strLogPort = rho::String(szLogPort); 
-
-	delete m_pSocketSink;
-    m_pSocketSink = new CLogSocketSink(*this);
+	if(!m_pSocketSink && m_strLogHost != "" && m_strLogPort != "")
+		m_pSocketSink = new CLogSocketSink(*this);
 }
 
 void LogSettings::getLogTextW(StringW& strTextW)
@@ -173,7 +172,7 @@ void LogSettings::sinkLogMessage( String& strMsg ){
     if ( isLogToOutput() )
         m_pOutputSink->writeLogMessage(strMsg);
 
-    if ( isLogToSocket() )
+	if (m_pSocketSink)
         m_pSocketSink->writeLogMessage(strMsg);
 }
 
@@ -266,8 +265,7 @@ void rho_logconf_Init_with_separate_user_path(const char* szRootPath, const char
     rho_conf_Init_with_separate_user_path(szRootPath, szUserPath);
     
     LOGCONF().loadFromConf(RHOCONF());
-    if ( szLogPort != NULL && *szLogPort ) 
-        LOGCONF().setLogPort(szLogPort);
+    LOGCONF().initRemoteSync();
 
 }
     

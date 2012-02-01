@@ -137,9 +137,10 @@ public:
 
     unsigned long addHttpCommand(IQueueCommand* pCmd);
 
-private:
-    CAsyncHttp();
+	CAsyncHttp();
     ~CAsyncHttp();
+
+private:
 
     virtual void processCommand(IQueueCommand* pCmd);
 };
