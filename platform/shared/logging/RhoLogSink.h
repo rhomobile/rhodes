@@ -71,14 +71,11 @@ public:
 
 class CLogSocketSink : public ILogSink{
     const LogSettings& m_oLogConf;
+    String m_addrHost;
 
-    rho::net::RawSocket *m_logNetClient;
-
-	String m_hostName;
-	String m_hostPort;
 public:
     CLogSocketSink(const LogSettings& oSettings); 
-	virtual ~CLogSocketSink() { delete m_logNetClient; }
+	virtual ~CLogSocketSink(){};
 
     void writeLogMessage( String& strMsg );
     int getCurPos(){ return -1; }
