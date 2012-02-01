@@ -1112,10 +1112,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		_tprintf( TEXT("%s\n"), params_buf);
 
 		TCHAR params[128];
-		// temporary disable log from device (caused enormous delays)
-		params[0] = 0;
-		//_tcscpy(params, _T("-log="));
-		//_tcscat(params, log_port);
+		_tcscpy(params, _T("-log="));
+		_tcscat(params, log_port);
 
 		if(!wceRunProcess(T2A(params_buf), T2A(params))) {
 			_tprintf( TEXT("FAILED\n"));
@@ -1192,10 +1190,8 @@ int _tmain(int argc, _TCHAR* argv[])
 			_tcscat(params_buf, _T(".exe"));
 
             TCHAR params[128];
-			// temporary disable log from device (caused enormous delays)
-			params[0] = 0;
-            //_tcscpy(params, _T("-log="));
-			//_tcscat(params, log_port);
+            _tcscpy(params, _T("-log="));
+			_tcscat(params, log_port);
 
 			if(!wceRunProcess (T2A(params_buf), T2A(params))) {
 				_tprintf( TEXT("FAILED\n"));
