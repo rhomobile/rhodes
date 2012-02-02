@@ -245,7 +245,7 @@ Set callback to track location changes.
 
 * callback - callback url; after the callback has been called once, it will be automatically called repeatedly with the current location coordinates passed to the callback as parameters. (You need not reset the callback within the callback.)
 * ping_gpssystem_timeout - optional, if 0 system timeout used, use to redefine timeout in sec for gps system reading
-* callback params: known_position, latitude, longitude, available, status('error', 'ok'), error_code(from RhoError), accuracy
+* callback params: known_position, latitude, longitude, available, status('error', 'ok'), error_code(from RhoError), accuracy(horizontal radius in meters; iOS and Android)
 
 Also there are two parameters you can set in rhoconfig.txt:
 
@@ -263,7 +263,7 @@ Turn off GeoLocation.
 	:::ruby
 	GeoLocation.turnoff
 
-**NOTE: GeoLocation.turnoff - after GPS switched off you can receive few callbacks (it depends on the platform).**
+**NOTE: GeoLocation.turnoff - after GPS is switched off, you might still receive a few callbacks (this depends on the platform; iOS does not receive callbacks after turnoff).**
 
 **NOTE: The current behavior of the geolocation callback is that it will be called forever until it is stopped; you need to call `GeoLocation.turnoff` to stop it. Previous behavior was that the callback was called once and needed to be reset.**
 
