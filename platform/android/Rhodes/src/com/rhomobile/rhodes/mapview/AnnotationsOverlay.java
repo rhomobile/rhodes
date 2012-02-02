@@ -38,6 +38,7 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.OverlayItem;
 import com.rhomobile.rhodes.file.RhoFileApi;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 public class AnnotationsOverlay extends ItemizedOverlay<OverlayItem> {
 	
@@ -121,10 +122,15 @@ public class AnnotationsOverlay extends ItemizedOverlay<OverlayItem> {
 	
 	@Override
 	protected boolean onTap(int i) {
-		Annotation ann = annotations.elementAt(i);
+		final Annotation ann = annotations.elementAt(i);
 		//if (ann.url == null)
 		//	return false;
-		mainView.selectAnnotation(ann);
+		//PerformOnUiThread.exec(new Runnable() {
+			//public void run() {
+				mainView.selectAnnotation(ann);
+			//}
+		//}, false);
+		
 		//WebView.navigate(ann.url, WebView.activeTab());
 		//mainView.finish();
 		return true;
