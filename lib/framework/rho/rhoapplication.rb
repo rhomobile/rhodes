@@ -79,7 +79,13 @@ module Rho
       if @@native_bar_data[:type] == :vtabbar
         tabs = @@native_bar_data[:data]
         # normalize the list
-        tabs.map! { |tab| tab[:refresh] = false unless tab[:refresh]; tab }
+        if tabs.kind_of? Array
+             tabs.map! { |tab| tab[:refresh] = false unless tab[:refresh]; tab }
+        else
+             if tabs.kind_of? Hash
+                 tabs[:tabs].map! { |tab| tab[:refresh] = false unless tab[:refresh]; tab }
+             end
+        end
         puts "Initializing application with vertical tabs: #{tabs.inspect}"
         NativeTabbar.create_vertical(tabs)
         #NativeTabbar.create(tabs)
@@ -87,7 +93,13 @@ module Rho
       elsif @@native_bar_data[:type] == :tabbar
         tabs = @@native_bar_data[:data]
         # normalize the list
-        tabs.map! { |tab| tab[:refresh] = false unless tab[:refresh]; tab }
+        if tabs.kind_of? Array
+             tabs.map! { |tab| tab[:refresh] = false unless tab[:refresh]; tab }
+        else
+             if tabs.kind_of? Hash
+                  tabs[:tabs].map! { |tab| tab[:refresh] = false unless tab[:refresh]; tab }
+             end
+        end
         puts "Initializing application with tabs: #{tabs.inspect}"
         NativeTabbar.create(tabs)
         NativeTabbar.switch_tab(0)
