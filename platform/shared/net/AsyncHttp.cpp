@@ -56,13 +56,13 @@ CAsyncHttp* CAsyncHttp::m_pInstance = 0;
     m_pInstance = 0;
 }
 
-CAsyncHttp::CAsyncHttp(LogCategory logCat) : CThreadQueue(logCat)
+CAsyncHttp::CAsyncHttp(LogCategory logCat) : CThreadQueue()
 {
+	setLogCategory(logCat);
+	
 	CThreadQueue::setLogCategory(getLogCategory());
 
     setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
-
-	__rhoCurrentCategory = logCat;
 
 	start(epNormal);
 }
@@ -237,7 +237,7 @@ void CAsyncHttp::CHttpCommand::execute()
 unsigned long CAsyncHttp::CHttpCommand::getRetValue()
 {
 	if ( m_strCallback.length() == 0 )
-		return atoi(m_strResBody.c_str());//rho_ruby_create_string(m_strCallback.c_str());
+		return rho_ruby_create_string(m_strResBody.c_str());
 
     return rho_ruby_get_NIL();
 }

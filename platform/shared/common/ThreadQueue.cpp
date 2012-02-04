@@ -41,14 +41,6 @@ CThreadQueue::CThreadQueue() : CRhoThread()
     m_pCurCmd = null;
 }
 
-CThreadQueue::CThreadQueue(LogCategory logCat) : CRhoThread()
-{
-    m_nPollInterval = QUEUE_POLL_INTERVAL_SECONDS;
-    m_bNoThreaded = false;
-    m_pCurCmd = null;
-	__rhoCurrentCategory = logCat;
-}
-
 CThreadQueue::~CThreadQueue(void)
 {
 }
