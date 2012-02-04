@@ -77,6 +77,8 @@ public:
     LogSeverity getMinSeverity()const{ return m_nMinSeverity; }
     void setMinSeverity(LogSeverity nMinSeverity){ m_nMinSeverity = nMinSeverity; }
 
+	void closeRemoteSync();
+
     bool isLogToOutput()const{ return m_bLogToOutput;}
     void setLogToOutput(bool bLogToOutput){ m_bLogToOutput = bLogToOutput;}
 

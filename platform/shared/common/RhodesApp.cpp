@@ -352,6 +352,8 @@ void CRhodesApp::run()
 
     net::CAsyncHttp::Destroy();
 
+	LOGCONF().closeRemoteSync();
+
     RhoRubyStop();
 }
 
