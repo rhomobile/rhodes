@@ -66,7 +66,6 @@ private:
 
 public:
     CThreadQueue();
-	CThreadQueue(LogCategory logCat);
 
     ~CThreadQueue(void);
 
