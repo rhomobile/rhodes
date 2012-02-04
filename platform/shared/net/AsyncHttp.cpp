@@ -56,14 +56,22 @@ CAsyncHttp* CAsyncHttp::m_pInstance = 0;
     m_pInstance = 0;
 }
 
-CAsyncHttp::CAsyncHttp(boolean bInternal) : CThreadQueue(bInternal)
+CAsyncHttp::CAsyncHttp(LogCategory logCat) : CThreadQueue(logCat)
 {
 	CThreadQueue::setLogCategory(getLogCategory());
 
     setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
 
-	//if(bInternal)
-	//	start(epNormal);
+	__rhoCurrentCategory = logCat;
+
+	start(epNormal);
+}
+
+CAsyncHttp::CAsyncHttp() : CThreadQueue()
+{
+	CThreadQueue::setLogCategory(getLogCategory());
+
+    setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
 }
 
 CAsyncHttp::~CAsyncHttp(void)
@@ -74,17 +82,24 @@ CAsyncHttp::~CAsyncHttp(void)
 
 unsigned long CAsyncHttp::addHttpCommand(IQueueCommand* pCmd)
 {
-	if (!isLogThread() && ((CHttpCommand*)pCmd)->m_strCallback.length()==0)
+	if (((CHttpCommand*)pCmd)->m_strCallback.length()==0)
     {
         processCommandBase(pCmd);
         unsigned long ret = ((CHttpCommand*)pCmd)->getRetValue();
         delete pCmd;
         return ret;
     }
-	else if(isLogThread())
-		start(epNormal);
-	else
-		start(epLow);
+		
+	CThreadQueue::addQueueCommand(pCmd);
+
+	start(epLow);
+    
+    return ((CHttpCommand*)pCmd)->getRetValue();
+}
+
+unsigned long CAsyncHttp::addLogHttpCommand(IQueueCommand* pCmd)
+{
+    start(epNormal);
 
 	CThreadQueue::addQueueCommand(pCmd);
 
@@ -151,9 +166,9 @@ void CAsyncHttp::CHttpCommand::execute()
         resp = getNet().doRequest( m_params.getString("http_command", "GET").c_str(),
             m_params.getString("url"), m_params.getString("body"), null, &m_mapHeaders);
         break;
-	case hcPost:{
+	case hcPost:
         resp = getNet().doRequest(m_params.getString("http_command", "POST").c_str(),
-			m_params.getString("url"), m_params.getString("body"), null, &m_mapHeaders);}
+			m_params.getString("url"), m_params.getString("body"), null, &m_mapHeaders);
         break;
 
     case hcDownload:
