@@ -28,14 +28,17 @@
 
 //1. when stop thread - cancel current command. Add cancelCurrentCommand to ThreadQueue and call it from stop
 
+extern unsigned int  __logThreadId;
+
 namespace rho {
 namespace common {
 
-CThreadQueue::CThreadQueue() : CRhoThread()
+CThreadQueue::CThreadQueue(boolean bLogThread) : CRhoThread()
 {
     m_nPollInterval = QUEUE_POLL_INTERVAL_SECONDS;
     m_bNoThreaded = false;
     m_pCurCmd = null;
+	m_bLogThread = bLogThread;
 }
 
 CThreadQueue::~CThreadQueue(void)
@@ -68,7 +71,8 @@ int CThreadQueue::getCommandsCount() {
     
 void CThreadQueue::addQueueCommandInt(IQueueCommand* pCmd)
 {
-    LOG(INFO) + "addCommand: " + pCmd->toString();
+    if(!m_bLogThread)
+		LOG(INFO) + "addCommand: " + pCmd->toString();
 
     synchronized(m_mxStackCommands);
 
@@ -136,6 +140,9 @@ void CThreadQueue::processCommandBase(IQueueCommand* pCmd)
 
 void CThreadQueue::run()
 {
+    if(m_bLogThread)
+		__logThreadId = getThreadID();
+
 	LOG(INFO) + "Starting main routine...";
 
 	int nLastPollInterval = getLastPollInterval();

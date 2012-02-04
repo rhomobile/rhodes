@@ -137,8 +137,9 @@ public:
 
     unsigned long addHttpCommand(IQueueCommand* pCmd);
 
-	CAsyncHttp();
-    ~CAsyncHttp();
+	CAsyncHttp(boolean bInternal = false);
+    
+	~CAsyncHttp();
 
 private:
 

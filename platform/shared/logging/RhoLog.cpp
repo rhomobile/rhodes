@@ -30,6 +30,7 @@
 #include "common/RhoSystem.h"
 
 rho::LogCategory __rhoCurrentCategory;
+unsigned int  __logThreadId = 0;
 
 const char*const LogSeverityNames[L_NUM_SEVERITIES] = {
   "TRACE", "INFO", "WARNING", "ERROR", "FATAL"
@@ -44,7 +45,9 @@ LogMessage::LogMessage(const char* file, int line, LogSeverity severity, LogSett
 }
 
 bool LogMessage::isEnabled()const{
-    if ( m_severity >= getLogConf().getMinSeverity() ){
+	if(__logThreadId == common::CSystem::getThreadID()) return false;
+	
+	if ( m_severity >= getLogConf().getMinSeverity() ){
         if ( m_category.isEmpty() || m_severity >= L_ERROR )
             return true;
 
