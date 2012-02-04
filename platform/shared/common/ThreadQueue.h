@@ -62,8 +62,10 @@ private:
     IQueueCommand* m_pCurCmd;
 
     boolean m_bNoThreaded;
+	boolean m_bLogThread;
+
 public:
-    CThreadQueue();
+    CThreadQueue(boolean bLogThread = false);
 
     ~CThreadQueue(void);
 
@@ -99,6 +101,7 @@ protected:
     void addQueueCommandToFrontInt(IQueueCommand* pCmd);
 
     boolean isNoCommands();
+	boolean isLogThread() {return m_bLogThread;}
 };
 
 }

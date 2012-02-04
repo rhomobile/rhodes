@@ -265,7 +265,7 @@ void rho_logconf_Init_with_separate_user_path(const char* szRootPath, const char
     rho_conf_Init_with_separate_user_path(szRootPath, szUserPath);
     
     LOGCONF().loadFromConf(RHOCONF());
-    LOGCONF().initRemoteSync();
+    //LOGCONF().initRemoteSync();
 
 }
     
