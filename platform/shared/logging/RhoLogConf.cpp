@@ -62,7 +62,17 @@ LogSettings::LogSettings(){
 LogSettings::~LogSettings(){
     delete m_pFileSink;
     delete m_pOutputSink;
-    delete m_pSocketSink;
+	if(m_pSocketSink)
+		delete m_pSocketSink;
+}
+
+void LogSettings::closeRemoteSync()
+{
+	if(m_pSocketSink)
+	{
+		delete m_pSocketSink;
+	    m_pSocketSink = 0;
+	}
 }
 
 void LogSettings::initRemoteSync()
