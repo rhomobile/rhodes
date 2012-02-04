@@ -427,46 +427,10 @@ namespace "clean" do
   end
 end
 
-def run_wm_rho_log_server()
-    system("START rake run:wmrhologserver[#{$app_path}]")
-end
-
 namespace "run" do
   def gelLogPath
     log_file_path =  File.join($app_path, $log_file)
     return log_file_path
-  end
-
-  task :wmrhologserver, :app_path  do |t, args|
-			    puts "Args were: #{args}"
-			    $app_path = args[:app_path]
-			    
-			    Rake::Task["config:wm"].invoke
-			    
-				$rhologhostaddr = Jake.localip()
-				$rhologhostport = 0
-				$rhologserver = WEBrick::HTTPServer.new :Port => $rhologhostport
-				$rhologhostport = $rhologserver.config[:Port]
-				confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
-				confpath_content += "\r\n" + "rhologhost=" + $rhologhostaddr
-				confpath_content += "\r\n" + "rhologport=" + $rhologhostport.to_s()
-				File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
-				puts "LOCAL SERVER STARTED ON #{$rhologhostaddr}:#{$rhologhostport}"
-				started = File.open($app_path + "/started", "w+")
-				started.close
-				Thread.new { $rhologserver.start }
-				#write host and port 4 log server     
-				$rhologfile = File.open(getLogPath, "w+")
-				$rhologserver.mount_proc '/' do |req,res|
-					$rhologfile.puts req.body
-					$rhologfile.flush
-					res.status = 200
-					res.chunked = true
-					res.body = ""
-				end
-				while(1)
-					sleep(1000)
-				end
   end
 
   desc "Build and run on WM6 emulator"
@@ -483,7 +447,7 @@ namespace "run" do
     #Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
 
 	File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
-	run_wm_rho_log_server()
+	Jake.run_rho_log_server($app_path)
 	puts "RhoLogServer is starting"
 	while(1)
 		if File.exists?($app_path + "/started")
@@ -531,7 +495,7 @@ namespace "run" do
       # Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
 
 	  File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
-			run_wm_rho_log_server()
+			Jake.run_rho_log_server($app_path)
 			puts "RhoLogServer is starting"
 			while(1)
 			if File.exists?($app_path + "/started")
