@@ -137,11 +137,14 @@ public:
 
     unsigned long addHttpCommand(IQueueCommand* pCmd);
 
-	CAsyncHttp(boolean bInternal = false);
+	unsigned long addLogHttpCommand(IQueueCommand* pCmd);
+
+	CAsyncHttp(LogCategory logCat);
     
 	~CAsyncHttp();
 
 private:
+	CAsyncHttp();
 
     virtual void processCommand(IQueueCommand* pCmd);
 };

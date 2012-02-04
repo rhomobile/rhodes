@@ -28,17 +28,25 @@
 
 //1. when stop thread - cancel current command. Add cancelCurrentCommand to ThreadQueue and call it from stop
 
-extern unsigned int  __logThreadId;
 
 namespace rho {
 namespace common {
 
-CThreadQueue::CThreadQueue(boolean bLogThread) : CRhoThread()
+unsigned int CThreadQueue::m_logThreadId = 0;
+
+CThreadQueue::CThreadQueue() : CRhoThread()
 {
     m_nPollInterval = QUEUE_POLL_INTERVAL_SECONDS;
     m_bNoThreaded = false;
     m_pCurCmd = null;
-	m_bLogThread = bLogThread;
+}
+
+CThreadQueue::CThreadQueue(LogCategory logCat) : CRhoThread()
+{
+    m_nPollInterval = QUEUE_POLL_INTERVAL_SECONDS;
+    m_bNoThreaded = false;
+    m_pCurCmd = null;
+	__rhoCurrentCategory = logCat;
 }
 
 CThreadQueue::~CThreadQueue(void)
@@ -71,8 +79,7 @@ int CThreadQueue::getCommandsCount() {
     
 void CThreadQueue::addQueueCommandInt(IQueueCommand* pCmd)
 {
-    if(!m_bLogThread)
-		LOG(INFO) + "addCommand: " + pCmd->toString();
+    LOG(INFO) + "addCommand: " + pCmd->toString();
 
     synchronized(m_mxStackCommands);
 
@@ -140,8 +147,8 @@ void CThreadQueue::processCommandBase(IQueueCommand* pCmd)
 
 void CThreadQueue::run()
 {
-    if(m_bLogThread)
-		__logThreadId = getThreadID();
+    if(__rhoCurrentCategory.getName() == "NO_LOGGING")
+		m_logThreadId = getThreadID();
 
 	LOG(INFO) + "Starting main routine...";
 

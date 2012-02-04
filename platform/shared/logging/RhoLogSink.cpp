@@ -166,7 +166,7 @@ void CLogOutputSink::writeLogMessage( String& strMsg )
 CLogSocketSink::CLogSocketSink(const LogSettings& oSettings) 
 	: m_oLogConf(oSettings)
 {
-	m_aHttp = new net::CAsyncHttp(true); 
+	m_aHttp = new net::CAsyncHttp(LogCategory("NO_LOGGING")); 
 	m_addrHost = "http://"+oSettings.getLogHost() + ":" + oSettings.getLogPort();
 }
 
@@ -179,8 +179,7 @@ void CLogSocketSink::writeLogMessage( String& strMsg )
 		p->v.hash->value[0] = rho_param_str(const_cast<char*>(m_addrHost.c_str()));
 		p->v.hash->name[1] = strdup("body");
 		p->v.hash->value[1] = rho_param_str(const_cast<char*>(strMsg.c_str()));
-		m_aHttp->addHttpCommand(new net::CAsyncHttp::CHttpCommand("POST", p ));
-	//	rho_param_free(p);
+		m_aHttp->addLogHttpCommand(new net::CAsyncHttp::CHttpCommand("POST", p ));
     }
 }
         
