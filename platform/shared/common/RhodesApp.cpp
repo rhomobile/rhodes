@@ -306,7 +306,7 @@ CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath)
     
     initHttpServer();
 
-	//LOGCONF().initRemoteSync();
+	LOGCONF().initRemoteSync();
 
     getSplashScreen().init();
 }
