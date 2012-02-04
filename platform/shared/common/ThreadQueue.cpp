@@ -71,7 +71,7 @@ int CThreadQueue::getCommandsCount() {
     
 void CThreadQueue::addQueueCommandInt(IQueueCommand* pCmd)
 {
-    LOG(INFO) + "addCommand: " + pCmd->toString();
+	LOG(INFO) + "addCommand: " + pCmd->toString();
 
     synchronized(m_mxStackCommands);
 

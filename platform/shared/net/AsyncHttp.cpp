@@ -58,7 +58,7 @@ CAsyncHttp* CAsyncHttp::m_pInstance = 0;
 
 CAsyncHttp::CAsyncHttp(LogCategory logCat) : CThreadQueue()
 {
-	setLogCategory(logCat);
+	__rhoCurrentCategory = logCat;
 	
 	CThreadQueue::setLogCategory(getLogCategory());
 
@@ -237,7 +237,12 @@ void CAsyncHttp::CHttpCommand::execute()
 unsigned long CAsyncHttp::CHttpCommand::getRetValue()
 {
 	if ( m_strCallback.length() == 0 )
-		return rho_ruby_create_string(m_strResBody.c_str());
+	{
+		if(getLogCategory().getName() == "NO_LOGGING")
+			return atoi(m_strResBody.c_str());
+		else
+			return rho_ruby_create_string(m_strResBody.c_str());
+	}
 
     return rho_ruby_get_NIL();
 }

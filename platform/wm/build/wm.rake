@@ -427,7 +427,7 @@ namespace "clean" do
   end
 end
 
-def run_rho_log_server()
+def run_wm_rho_log_server()
     system("START rake run:wmrhologserver[#{$app_path}]")
 end
 
@@ -445,7 +445,7 @@ namespace "run" do
 			    
 				$rhologhostaddr = Jake.localip()
 				$rhologhostport = 0
-				$rhologserver = WEBrick::HTTPServer.new :BindAddress => $rhologhostaddr, :Port => $rhologhostport
+				$rhologserver = WEBrick::HTTPServer.new :Port => $rhologhostport
 				$rhologhostport = $rhologserver.config[:Port]
 				confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
 				confpath_content += "\r\n" + "rhologhost=" + $rhologhostaddr
@@ -483,7 +483,7 @@ namespace "run" do
     #Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
 
 	File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
-	run_rho_log_server()
+	run_wm_rho_log_server()
 	puts "RhoLogServer is starting"
 	while(1)
 		if File.exists?($app_path + "/started")
@@ -531,7 +531,7 @@ namespace "run" do
       # Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
 
 	  File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
-			run_rho_log_server()
+			run_wm_rho_log_server()
 			puts "RhoLogServer is starting"
 			while(1)
 			if File.exists?($app_path + "/started")
