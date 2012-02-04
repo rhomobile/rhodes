@@ -222,7 +222,7 @@ void CAsyncHttp::CHttpCommand::execute()
 unsigned long CAsyncHttp::CHttpCommand::getRetValue()
 {
 	if ( m_strCallback.length() == 0 )
-		return atoi(m_strCallback.c_str());//rho_ruby_create_string(m_strCallback.c_str());
+		return atoi(m_strResBody.c_str());//rho_ruby_create_string(m_strCallback.c_str());
 
     return rho_ruby_get_NIL();
 }
