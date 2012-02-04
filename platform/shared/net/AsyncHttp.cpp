@@ -64,7 +64,7 @@ CAsyncHttp::CAsyncHttp(LogCategory logCat) : CThreadQueue()
 
     setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
 
-	start(epNormal);
+	start(epLow);
 }
 
 CAsyncHttp::CAsyncHttp() : CThreadQueue()
@@ -99,7 +99,7 @@ unsigned long CAsyncHttp::addHttpCommand(IQueueCommand* pCmd)
 
 unsigned long CAsyncHttp::addLogHttpCommand(IQueueCommand* pCmd)
 {
-    start(epNormal);
+    start(epLow);
 
 	CThreadQueue::addQueueCommand(pCmd);
 
