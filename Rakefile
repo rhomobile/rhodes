@@ -303,6 +303,10 @@ namespace "config" do
       make_application_build_capabilities_header_file
     end
 
+    $rhologhostport = $config["log_host_port"] 
+    $rhologhostport = 52363 unless $rhologhostport
+	$rhologhostaddr = Jake.localip()
+
   end
 
   task :qt do

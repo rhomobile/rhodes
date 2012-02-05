@@ -88,7 +88,7 @@ namespace "config" do
     $rhobundledir =  $app_path + "/RhoBundle"
     $log_file = $app_config["applog"].nil? ? "applog.txt" : $app_config["applog"]
     $srcdir =  $bindir + "/RhoBundle"
-    $buildcfg = $app_config["buildcfg"]
+    $buildcfg = $app_config["buildcfg"] unless $buildcfg
     $buildcfg = "Release" unless $buildcfg
 
     if $sdk == "Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -428,6 +428,10 @@ namespace "clean" do
 end
 
 namespace "run" do
+    task :mylogserver => ["config:wm"] do
+        Jake.run_rho_log_server($app_path)
+    end
+
   def gelLogPath
     log_file_path =  File.join($app_path, $log_file)
     return log_file_path
