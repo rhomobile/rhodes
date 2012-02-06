@@ -588,6 +588,10 @@ class Jake
         
         if ( res && res.body == app_path)
             puts "Log server is already running. Reuse it."
+            
+	        started = File.open($app_path + "/started", "w+")
+	        started.close
+            
             return
         else
             puts "Close Log server for another app."            

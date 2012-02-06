@@ -453,10 +453,11 @@ namespace "run" do
 	File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
 	Jake.run_rho_log_server($app_path)
 	puts "RhoLogServer is starting"
-	while(1)
+	while true do
 		if File.exists?($app_path + "/started")
 			break
 		end
+		sleep(1)
 	end
 
     if $webkit_capability
@@ -499,13 +500,15 @@ namespace "run" do
       # Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
 
 	  File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
-			Jake.run_rho_log_server($app_path)
-			puts "RhoLogServer is starting"
-			while(1)
-			if File.exists?($app_path + "/started")
-				break
-			end
-	  end
+	  
+      Jake.run_rho_log_server($app_path)
+	  puts "RhoLogServer is starting"
+	  while true do
+	    if File.exists?($app_path + "/started")
+		    break
+	    end
+	    sleep(1)
+	  end    
 
       if $webkit_capability
         wk_args   = [ 'wk-dev', '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
