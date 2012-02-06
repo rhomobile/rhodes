@@ -29,7 +29,6 @@
 
 #include "RhoLogConf.h"
 #include "net/RawSocket.h"
-#include "net/AsyncHttp.h"
 #include "common/RhodesApp.h"
 
 namespace rho {
@@ -70,10 +69,9 @@ public:
     void clear(){}
 };
 
-class CLogSocketSink : public ILogSink, common::CAppCallbacksQueue{
+class CLogSocketSink : public ILogSink, common::CThreadQueue{
     const LogSettings& m_oLogConf;
     String m_addrHost;
-	net::CAsyncHttp* m_aHttp;
 
 public:
     CLogSocketSink(const LogSettings& oSettings); 
@@ -82,6 +80,19 @@ public:
     void writeLogMessage( String& strMsg );
     int getCurPos(){ return -1; }
     void clear(){}
+
+    struct LogCommand : public IQueueCommand
+    {
+        String m_url;
+		String m_body;
+		LogCommand(String url, String body) : m_url(url), m_body(body) {}
+
+		boolean equals(IQueueCommand const &) {return false;}
+        String toString() {return "";}
+    };
+
+private:
+	void processCommand(IQueueCommand* pCmd);
 };
   
 }
