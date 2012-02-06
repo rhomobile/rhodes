@@ -77,6 +77,14 @@ void LogSettings::closeRemoteLog()
 
 void LogSettings::initRemoteLog()
 {
+#ifdef OS_PLATFORM_MOTCE
+    //TODO: remote log prevent loading app - stuck on loading.png
+    OSVERSIONINFO osv = {0};
+	osv.dwOSVersionInfoSize = sizeof(osv);
+	if (GetVersionEx(&osv) && osv.dwMajorVersion == 5)
+		return;
+#endif
+
 	m_strLogHost = RHOCONF().getString("rhologhost"); 
 	m_strLogPort = RHOCONF().getString("rhologport"); 
 
