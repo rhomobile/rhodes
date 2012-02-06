@@ -182,7 +182,7 @@ void CLogSocketSink::processCommand(IQueueCommand* pCmd)
     if (!cmd)
         return;
 
-	NetResponse resp = getNetRequest().doRequest( "POST", cmd->m_url, cmd->m_body, 0, 0 );
+	getNetRequest().doRequest( "POST", cmd->m_url, cmd->m_body, 0, 0 );
 }
         
 }
