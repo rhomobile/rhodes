@@ -51,7 +51,7 @@ LogSettings::LogSettings(){
     m_nMaxLogFileSize = 0; 
     m_bLogPrefix = true; 
 
-    m_strLogHost = "PPP_PEER";
+    //m_strLogHost = "PPP_PEER";
 
     m_pFileSink = new CLogFileSink(*this);
     m_pOutputSink = new CLogOutputSink(*this);
@@ -66,7 +66,7 @@ LogSettings::~LogSettings(){
 		delete m_pSocketSink;
 }
 
-void LogSettings::closeRemoteSync()
+void LogSettings::closeRemoteLog()
 {
 	if(m_pSocketSink)
 	{
@@ -75,7 +75,7 @@ void LogSettings::closeRemoteSync()
 	}
 }
 
-void LogSettings::initRemoteSync()
+void LogSettings::initRemoteLog()
 {
 	m_strLogHost = RHOCONF().getString("rhologhost"); 
 	m_strLogPort = RHOCONF().getString("rhologport"); 
@@ -275,8 +275,6 @@ void rho_logconf_Init_with_separate_user_path(const char* szRootPath, const char
     rho_conf_Init_with_separate_user_path(szRootPath, szUserPath);
     
     LOGCONF().loadFromConf(RHOCONF());
-    //LOGCONF().initRemoteSync();
-
 }
     
 void rho_logconf_Init(const char* szRootPath, const char* szLogPort){

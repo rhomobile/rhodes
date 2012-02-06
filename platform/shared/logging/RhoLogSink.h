@@ -74,7 +74,7 @@ class CLogSocketSink : public ILogSink, common::CThreadQueue{
 
 public:
     CLogSocketSink(const LogSettings& oSettings); 
-	virtual ~CLogSocketSink(){}
+	virtual ~CLogSocketSink();
 
     void writeLogMessage( String& strMsg );
     int getCurPos(){ return -1; }

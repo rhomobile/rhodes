@@ -165,10 +165,17 @@ void CLogOutputSink::writeLogMessage( String& strMsg )
 
 CLogSocketSink::CLogSocketSink(const LogSettings& oSettings)
 {
+	m_addrHost = "http://"+oSettings.getLogHost() + ":" + oSettings.getLogPort();
+
 	CThreadQueue::setLogCategory(LogCategory("NO_LOGGING"));
     setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
-    start(epNormal);
-	m_addrHost = "http://"+oSettings.getLogHost() + ":" + oSettings.getLogPort();
+    start(epLow);
+}
+
+CLogSocketSink::~CLogSocketSink()
+{
+    //wait till all commands will be sent to server
+    CRhoThread::stop(-1);
 }
 
 void CLogSocketSink::writeLogMessage( String& strMsg )

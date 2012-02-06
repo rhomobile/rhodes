@@ -39,6 +39,7 @@ namespace common{ class RhoSettings; }
 class LogCategory;
 
 struct ILogSink{
+    virtual ~ILogSink(){}
     virtual void writeLogMessage( String& strMsg ) = 0;
     virtual int getCurPos() = 0;
     virtual void clear() = 0;
@@ -77,8 +78,6 @@ public:
     LogSeverity getMinSeverity()const{ return m_nMinSeverity; }
     void setMinSeverity(LogSeverity nMinSeverity){ m_nMinSeverity = nMinSeverity; }
 
-	void closeRemoteSync();
-
     bool isLogToOutput()const{ return m_bLogToOutput;}
     void setLogToOutput(bool bLogToOutput){ m_bLogToOutput = bLogToOutput;}
 
@@ -104,8 +103,9 @@ public:
 	void setLogHost(const char* szLogHost) { m_strLogHost = rho::String(szLogHost); }
 
 	const String& getLogPort() const { return m_strLogPort; }
-	void initRemoteSync();
-	
+	void initRemoteLog();
+	void closeRemoteLog();
+
     void setEnabledCategories( const char* szCatList );
     void setDisabledCategories( const char* szCatList );
     const String& getEnabledCategories(){ return m_strEnabledCategories; }
