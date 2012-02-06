@@ -30,6 +30,7 @@
 #include "RhoLogConf.h"
 #include "net/RawSocket.h"
 #include "net/AsyncHttp.h"
+#include "common/RhodesApp.h"
 
 namespace rho {
 namespace common {
@@ -69,22 +70,14 @@ public:
     void clear(){}
 };
 
-
-class CLogSocketSink : public ILogSink{
+class CLogSocketSink : public ILogSink, common::CAppCallbacksQueue{
     const LogSettings& m_oLogConf;
     String m_addrHost;
 	net::CAsyncHttp* m_aHttp;
 
 public:
     CLogSocketSink(const LogSettings& oSettings); 
-	virtual ~CLogSocketSink()
-	{
-		if(m_aHttp)
-		{
-			m_aHttp->stop(2);
-			delete m_aHttp;
-		}
-	}
+	virtual ~CLogSocketSink(){}
 
     void writeLogMessage( String& strMsg );
     int getCurPos(){ return -1; }

@@ -56,17 +56,6 @@ CAsyncHttp* CAsyncHttp::m_pInstance = 0;
     m_pInstance = 0;
 }
 
-CAsyncHttp::CAsyncHttp(LogCategory logCat) : CThreadQueue()
-{
-	__rhoCurrentCategory = logCat;
-	
-	CThreadQueue::setLogCategory(getLogCategory());
-
-    setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
-
-	start(epLow);
-}
-
 CAsyncHttp::CAsyncHttp() : CThreadQueue()
 {
 	CThreadQueue::setLogCategory(getLogCategory());
@@ -94,15 +83,6 @@ unsigned long CAsyncHttp::addHttpCommand(IQueueCommand* pCmd)
 
 	start(epLow);
     
-    return ((CHttpCommand*)pCmd)->getRetValue();
-}
-
-unsigned long CAsyncHttp::addLogHttpCommand(IQueueCommand* pCmd)
-{
-    start(epLow);
-
-	CThreadQueue::addQueueCommand(pCmd);
-
     return ((CHttpCommand*)pCmd)->getRetValue();
 }
 

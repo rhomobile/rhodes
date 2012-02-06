@@ -31,6 +31,7 @@
 #ifdef __cplusplus
 
 #include "common/ThreadQueue.h"
+#include "common/rhoparams.h"
 
 #include "net/INetRequest.h"
 
@@ -164,6 +165,52 @@ protected:
 
     void initHttpServer();
     void initAppUrls();
+};
+
+class CAppCallbacksQueue : public CThreadQueue
+{
+    DEFINE_LOGCLASS;
+public:
+    enum callback_t
+    {
+        app_deactivated,
+        local_server_restart,
+        local_server_started,
+        ui_created,
+        app_activated,
+		sync_log
+    };
+
+public:
+    CAppCallbacksQueue();
+	CAppCallbacksQueue(LogCategory logCat);
+	~CAppCallbacksQueue();
+
+    //void call(callback_t type);
+
+    friend class Command;
+    struct Command : public IQueueCommand
+    {
+        callback_t type;
+		CRhoParams    m_params;
+		Command(callback_t t, rho_param *p = 0) :type(t), m_params(p) {}
+
+        boolean equals(IQueueCommand const &) {return false;}
+        String toString() {return CAppCallbacksQueue::toString(type);}
+    };
+
+protected:
+
+    void processCommand(IQueueCommand* pCmd);
+
+private:
+
+	static char const *toString(int type);
+
+private:
+    callback_t m_expected;
+    Vector<int> m_commands;
+    boolean m_bFirstServerStart;
 };
 
 #if defined(OS_WINDOWS) || defined(OS_WINCE)
