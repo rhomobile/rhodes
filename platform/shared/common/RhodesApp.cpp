@@ -304,10 +304,10 @@ CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath)
 #endif
 
     initAppUrls();
-    
-    initHttpServer();
 
-	LOGCONF().initRemoteSync();
+   	LOGCONF().initRemoteLog();
+
+    initHttpServer();
 
     getSplashScreen().init();
 }
@@ -354,13 +354,13 @@ void CRhodesApp::run()
     net::CAsyncHttp::Destroy();
 
     RhoRubyStop();
-
-	LOGCONF().closeRemoteSync();
 }
 
 CRhodesApp::~CRhodesApp(void)
 {
     stopApp();
+
+	LOGCONF().closeRemoteLog();
 
 #ifdef OS_WINCE
     WSACleanup();

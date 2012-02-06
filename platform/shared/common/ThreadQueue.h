@@ -67,7 +67,7 @@ private:
 public:
     CThreadQueue();
 
-    ~CThreadQueue(void);
+    virtual ~CThreadQueue(void);
 
     virtual void addQueueCommand(IQueueCommand* pCmd);
     virtual void addQueueCommandToFront(IQueueCommand* pCmd);
