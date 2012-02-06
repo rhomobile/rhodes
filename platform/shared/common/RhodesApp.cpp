@@ -70,6 +70,47 @@ IMPLEMENT_LOGCLASS(CRhodesApp,"RhodesApp");
 String CRhodesApp::m_strStartParameters;
 boolean CRhodesApp::m_bSecurityTokenNotPassed = false;
 
+class CAppCallbacksQueue : public CThreadQueue
+{
+    DEFINE_LOGCLASS;
+public:
+    enum callback_t
+    {
+        app_deactivated,
+        local_server_restart,
+        local_server_started,
+        ui_created,
+        app_activated
+    };
+
+public:
+    CAppCallbacksQueue();
+	CAppCallbacksQueue(LogCategory logCat);
+	~CAppCallbacksQueue();
+
+    //void call(callback_t type);
+
+    friend class Command;
+    struct Command : public IQueueCommand
+    {
+        callback_t type;
+        Command(callback_t t) :type(t) {}
+
+        boolean equals(IQueueCommand const &) {return false;}
+        String toString() {return CAppCallbacksQueue::toString(type);}
+    };
+
+private:
+
+    void processCommand(IQueueCommand* pCmd);
+
+    static char const *toString(int type);
+
+private:
+    callback_t m_expected;
+    Vector<int> m_commands;
+    boolean m_bFirstServerStart;
+};
 IMPLEMENT_LOGCLASS(CAppCallbacksQueue,"AppCallbacks");
 
 char const *CAppCallbacksQueue::toString(int type)
@@ -95,14 +136,6 @@ CAppCallbacksQueue::CAppCallbacksQueue()
     :CThreadQueue(), m_expected(local_server_started), m_bFirstServerStart(true)
 {
     CThreadQueue::setLogCategory(getLogCategory());
-    setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
-    start(epNormal);
-}
-
-CAppCallbacksQueue::CAppCallbacksQueue(LogCategory logCat)
-{
-	__rhoCurrentCategory = logCat;
-	CThreadQueue::setLogCategory(getLogCategory());
     setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
     start(epNormal);
 }
@@ -219,11 +252,6 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
                     LOG(ERROR) + "activate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
 
                 m_expected = app_deactivated;
-            }
-            break;
-		case sync_log:
-            {
-				NetResponse resp = getNetRequest().doRequest(  "POST", cmd->m_params.getString("url"), cmd->m_params.getString("body"), 0, 0 );
             }
             break;
         }
