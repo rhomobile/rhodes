@@ -164,7 +164,6 @@ void CLogOutputSink::writeLogMessage( String& strMsg )
 }
 
 CLogSocketSink::CLogSocketSink(const LogSettings& oSettings)
-	: m_oLogConf(oSettings)
 {
 	CThreadQueue::setLogCategory(LogCategory("NO_LOGGING"));
     setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
