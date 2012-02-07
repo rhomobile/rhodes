@@ -81,11 +81,11 @@ section
     createShortCut "$SMPROGRAMS\RhoStudio\RhoStudio.lnk" "$INSTDIR\eclipse\RhoStudio.exe"
 
     # added information in 'unistall programs' in contorol panel
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoStudio" \
+    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoStudio" \
                  "DisplayName" "RhoStudio - RAD tool for develop and debug rhodes/rhoconnect applications"
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoStudio" \
+    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoStudio" \
                  "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoStudio" \
+    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoStudio" \
                  "DisplayIcon" "$\"$INSTDIR\uninstall.exe$\""
     
     Goto okFinishSection
@@ -114,27 +114,27 @@ section "uninstall"
     # remove env vars
     Push "PATH" 
     Push "R" 
-    Push "HKLM" 
+    Push "HKCU" 
     Push "$INSTDIR\ruby\bin"
     Call un.EnvVarUpdate
     Pop $R0
 
     Push "PATH" 
     Push "R" 
-    Push "HKLM" 
+    Push "HKCU" 
     Push "$INSTDIR\make-3.81\bin"
     Call un.EnvVarUpdate
     Pop $R0
 
     Push "PATH" 
     Push "R" 
-    Push "HKLM" 
+    Push "HKCU" 
     Push "$INSTDIR\redis-2.4.0"
     Call un.EnvVarUpdate
     Pop $R0
 
-    DeleteRegValue HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment" REDIS_HOME
-    DeleteRegKey HKLM  "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoStudio"
+    DeleteRegValue HKCU "SYSTEM\CurrentControlSet\Control\Session Manager\Environment" REDIS_HOME
+    DeleteRegKey HKCU  "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoStudio"
 
     # remove $INSTDIR
     RMDir /r /REBOOTOK $INSTDIR
@@ -150,7 +150,7 @@ Section "GNU Make" gnumakeSection
 
   Push "PATH" 
   Push "P" 
-  Push "HKLM" 
+  Push "HKCU" 
   Push "$INSTDIR\make-3.81\bin"
   Call EnvVarUpdate
   Pop $R0
@@ -181,14 +181,14 @@ Section "DevKit" devkitSection
 
   Push "PATH" 
   Push "P" 
-  Push "HKLM" 
+  Push "HKCU" 
   Push "$INSTDIR\devkit\mingw\bin"
   Call EnvVarUpdate
   Pop $R0
 
   Push "PATH" 
   Push "P" 
-  Push "HKLM" 
+  Push "HKCU" 
   Push "$INSTDIR\devkit\bin"
   Call EnvVarUpdate
   Pop $R0
@@ -201,7 +201,6 @@ Section "Ruby, Rubygems, Rhodes, Rhoconnect and adapters" rubySection
  
   File /r "ruby"
   File /r "make-3.81"
-  #File /r "rhosync"
   File "README.html"
   File "RHOSTUDIO-LICENSE.txt"
  
@@ -209,7 +208,7 @@ Section "Ruby, Rubygems, Rhodes, Rhoconnect and adapters" rubySection
 
   Push "PATH" 
   Push "P" 
-  Push "HKLM" 
+  Push "HKCU" 
   Push "$INSTDIR\ruby\bin"
   Call EnvVarUpdate
   Pop $R0
@@ -228,14 +227,14 @@ Section "Redis" redisSection
 
   Push "PATH" 
   Push "P" 
-  Push "HKLM" 
+  Push "HKCU" 
   Push "$INSTDIR\redis-2.4.0"
   Call EnvVarUpdate
   Pop $R0
 
   Push "REDIS_HOME" 
   Push "P" 
-  Push "HKLM" 
+  Push "HKCU" 
   Push "$INSTDIR\redis-2.4.0"
   Call EnvVarUpdate
   Pop $R0
@@ -300,39 +299,6 @@ SectionEnd
 ;======================================================
 ;Functions
  
-Function .onInit
-    !insertmacro MUI_INSTALLOPTIONS_EXTRACT "configUi.ini"
-FunctionEnd 
-
-LangString TEXT_IO_TITLE ${LANG_ENGLISH} "Configuration page"
-LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "This page will update application files based on your system configuration."
-
-/*
-Function customerConfig
-   !insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
-   !insertmacro MUI_INSTALLOPTIONS_DISPLAY "configUi.ini"
-   !insertmacro MUI_INSTALLOPTIONS_READ $varApacheEmail "configUi.ini" "Field 3" "State"
-   !insertmacro MUI_INSTALLOPTIONS_READ $varApachePort "configUi.ini" "Field 4" "State"
-
-   Push SERVERADMIN
-   Push $varApacheEmail
-   Push all
-   Push all
-   Push $INSTDIR\apache2\conf\httpd.conf
-   Call AdvReplaceInFile
- 
-   Push SERVERPORT
-   Push $varApachePort
-   Push all
-   Push all
-   Push $INSTDIR\apache2\conf\httpd.conf
-   Call AdvReplaceInFile
-
-   ExecWait '"$INSTDIR\apache2\bin\httpd.exe" -k install'
-   ExecWait 'net start Apache2.2'
-FunctionEnd
-*/
-
 Function FixScriptFilesInDir
 Exch $R0 #path
 Exch

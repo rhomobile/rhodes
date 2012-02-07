@@ -80,11 +80,11 @@ section
     createShortCut "$SMPROGRAMS\RhoStudio\RhoStudio.lnk" "$INSTDIR\eclipse\RhoStudio.exe"
 
     # added information in 'unistall programs' in contorol panel
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoStudio" \
+    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoStudio" \
                  "DisplayName" "RhoStudio - RAD tool for develop and debug rhodes/rhoconnect applications"
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoStudio" \
+    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoStudio" \
                  "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoStudio" \
+    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoStudio" \
                  "DisplayIcon" "$\"$INSTDIR\uninstall.exe$\""
     
     Goto okFinishSection
@@ -113,21 +113,21 @@ section "uninstall"
     # remove env vars
     Push "PATH" 
     Push "R" 
-    Push "HKLM" 
+    Push "HKCU" 
     Push "$INSTDIR\ruby\bin"
     Call un.EnvVarUpdate
     Pop $R0
 
     Push "PATH" 
     Push "R" 
-    Push "HKLM" 
+    Push "HKCU" 
     Push "$INSTDIR\make-3.81\bin"
     Call un.EnvVarUpdate
     Pop $R0
 
     Push "PATH" 
     Push "R" 
-    Push "HKLM" 
+    Push "HKCU" 
     Push "$INSTDIR\redis-2.4.0"
     Call un.EnvVarUpdate
     Pop $R0
@@ -149,7 +149,7 @@ Section "GNU Make" gnumakeSection
 
   Push "PATH" 
   Push "P" 
-  Push "HKLM" 
+  Push "HKCU" 
   Push "$INSTDIR\make-3.81\bin"
   Call EnvVarUpdate
   Pop $R0
@@ -180,14 +180,14 @@ Section "DevKit" devkitSection
 
   Push "PATH" 
   Push "P" 
-  Push "HKLM" 
+  Push "HKCU" 
   Push "$INSTDIR\devkit\mingw\bin"
   Call EnvVarUpdate
   Pop $R0
 
   Push "PATH" 
   Push "P" 
-  Push "HKLM" 
+  Push "HKCU" 
   Push "$INSTDIR\devkit\bin"
   Call EnvVarUpdate
   Pop $R0
@@ -208,7 +208,7 @@ Section "Ruby, Rubygems, Rhodes, Rhoconnect and adapters" rubySection
 
   Push "PATH" 
   Push "P" 
-  Push "HKLM" 
+  Push "HKCU" 
   Push "$INSTDIR\ruby\bin"
   Call EnvVarUpdate
   Pop $R0
@@ -227,14 +227,14 @@ Section "Redis" redisSection
 
   Push "PATH" 
   Push "P" 
-  Push "HKLM" 
+  Push "HKCU" 
   Push "$INSTDIR\redis-2.4.0"
   Call EnvVarUpdate
   Pop $R0
 
   Push "REDIS_HOME" 
   Push "P" 
-  Push "HKLM" 
+  Push "HKCU" 
   Push "$INSTDIR\redis-2.4.0"
   Call EnvVarUpdate
   Pop $R0
