@@ -31,6 +31,7 @@
 #include "common/RhoFilePath.h"
 #include "common/RhoConf.h"
 #include "common/Tokenizer.h"
+#include "common/app_build_capabilities.h"
 
 #ifndef RHO_NO_RUBY
 #include "ruby/ext/rho/rhoruby.h"
@@ -77,8 +78,8 @@ void LogSettings::closeRemoteLog()
 
 void LogSettings::initRemoteLog()
 {
-#ifdef OS_PLATFORM_MOTCE
-    //TODO: remote log prevent loading app - stuck on loading.png
+#if defined( OS_PLATFORM_MOTCE ) && !defined (APP_BUILD_CAPABILITY_BARCODE)
+    //TODO: remote log prevent loading app - stuck on loading.png when no barcode. very strange!
     OSVERSIONINFO osv = {0};
 	osv.dwOSVersionInfoSize = sizeof(osv);
 	if (GetVersionEx(&osv) && osv.dwMajorVersion == 5)

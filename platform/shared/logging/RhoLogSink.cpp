@@ -175,7 +175,7 @@ CLogSocketSink::CLogSocketSink(const LogSettings& oSettings)
 CLogSocketSink::~CLogSocketSink()
 {
     //wait till all commands will be sent to server
-    CRhoThread::stop(-1);
+    CRhoThread::stop(2000);
 }
 
 void CLogSocketSink::writeLogMessage( String& strMsg )
