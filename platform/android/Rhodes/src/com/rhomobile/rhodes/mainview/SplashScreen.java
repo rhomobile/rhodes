@@ -36,13 +36,11 @@ import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesApplication;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
-import com.rhomobile.rhodes.util.Utils;
 import com.rhomobile.rhodes.webview.GoogleWebView;
 import com.rhomobile.rhodes.webview.WebView;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.res.AssetManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -107,15 +105,17 @@ public class SplashScreen implements MainView {
         // Now create WebView and load appropriate content there
         WebView view = null;//new GoogleWebView(context);
         if (Capabilities.WEBKIT_BROWSER_ENABLED) {
+            Logger.D(TAG, "Creating Motorola WebKIT view");
             try {
                 Class<? extends WebView> viewClass = (Class<? extends WebView>)Class.forName("com.rhomobile.rhodes.webview.EkiohWebView");
-                Constructor<? extends WebView> viewCtor = viewClass.getConstructor(Activity.class);
+                Constructor<? extends WebView> viewCtor = viewClass.getConstructor(Context.class);
                 view = viewCtor.newInstance(context);
             } catch (Throwable e) {
                 Logger.E(TAG, e);
                 RhodesApplication.stop();
             }
         } else {
+            Logger.D(TAG, "Creating Google web view");
             final GoogleWebView googleWebView = new GoogleWebView(context);
             view = googleWebView;
             RhodesApplication.runWhen(RhodesApplication.AppState.AppStarted, new RhodesApplication.StateHandler(true) {
