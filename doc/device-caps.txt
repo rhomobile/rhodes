@@ -673,7 +673,7 @@ Get a list of scanners present on the device. Return array of hashes ('name','id
 Enables the scanner. barcode_callback get the same parameters as Barcode.take_barcode:
 
     :::ruby
-    Barcode.enable(url_for(:action => :barcode_callback), {:name=>name_from_enumerate})
+    Barcode.enable(url_for(:action => :barcode_callback), {:id=>id_from_enumerate})
 
 Callback parameters:
 
@@ -698,7 +698,7 @@ Performs a soft trigger stop
 Enables the scanner and start scanner. Before callback is called scanner is disabled:
 
     :::ruby
-    Barcode.take_barcode(url_for(:action => :barcode_callback), {:name=>name_from_enumerate})
+    Barcode.take_barcode(url_for(:action => :barcode_callback), {:id=>id_from_enumerate})
 
 Callback parameters:
 
