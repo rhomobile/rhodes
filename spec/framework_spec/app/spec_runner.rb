@@ -14,11 +14,16 @@ class SpecRunner < MSpecScript
     app_folder = Rho::RhoFSConnector.get_app_path('app')
     app_folder.gsub!(/\\/, '/')
     
-    specs =  app_folder + "spec/language/**/*_spec.iseq"
+    specs =  app_folder + "spec/language/**/*_spec" + RHO_RB_EXT
     
     Dir.glob(specs) do |file|
       file.gsub!(app_folder,"")
-      file.gsub!(/\.iseq/,"")
+      if RHO_RB_EXT == '.rb'
+        file.gsub!(/\.rb/,"")
+      else
+        file.gsub!(/\.iseq/,"")
+      end
+
       
       if ( System.get_property('platform') == 'WINDOWS' )
         next if file =~ /\/execution_spec$/           
@@ -87,22 +92,33 @@ class SpecRunner < MSpecScript
     core << 'fiber'
     
     core.each do |folder|
-      specs =  app_folder + "spec/core/#{folder}/**/*_spec.iseq"
+      specs =  app_folder + "spec/core/#{folder}/**/*_spec" + RHO_RB_EXT
       Dir.glob(specs) do |file|
         file.gsub!(app_folder,"")
-        file.gsub!(/\.iseq/,"")
+        
+        if RHO_RB_EXT == '.rb'
+          file.gsub!(/\.rb/,"")
+        else
+          file.gsub!(/\.iseq/,"")
+        end
+
  
         config[:files] << file
       end
     end
     
     # LIBRARIES
-    specs = app_folder + "spec/library/**/*_spec.iseq"
+    specs = app_folder + "spec/library/**/*_spec" + RHO_RB_EXT
     Dir.glob(specs) do |file|
       #next if file =~ /sha1/      
     
       file.gsub!(app_folder,"")
-      file.gsub!(/\.iseq/,"")
+      if RHO_RB_EXT == '.rb'
+        file.gsub!(/\.rb/,"")
+      else
+        file.gsub!(/\.iseq/,"")
+      end
+
       config[:files] << file
     end
     

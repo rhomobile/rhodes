@@ -62,10 +62,12 @@ private:
     IQueueCommand* m_pCurCmd;
 
     boolean m_bNoThreaded;
+	static unsigned int  m_logThreadId;
+
 public:
     CThreadQueue();
 
-    ~CThreadQueue(void);
+    virtual ~CThreadQueue(void);
 
     virtual void addQueueCommand(IQueueCommand* pCmd);
     virtual void addQueueCommandToFront(IQueueCommand* pCmd);
@@ -84,6 +86,8 @@ public:
     LinkedListPtr<IQueueCommand*>& getCommands(){ return m_stackCommands; }
 
     int getCommandsCount();	
+
+	static unsigned int getLogThreadId() {return m_logThreadId;}
 protected:
     virtual int getLastPollInterval(){ return 0;}
     virtual void processCommand(IQueueCommand* pCmd) = 0;

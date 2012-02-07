@@ -39,6 +39,7 @@ namespace common{ class RhoSettings; }
 class LogCategory;
 
 struct ILogSink{
+    virtual ~ILogSink(){}
     virtual void writeLogMessage( String& strMsg ) = 0;
     virtual int getCurPos() = 0;
     virtual void clear() = 0;
@@ -102,8 +103,9 @@ public:
 	void setLogHost(const char* szLogHost) { m_strLogHost = rho::String(szLogHost); }
 
 	const String& getLogPort() const { return m_strLogPort; }
-	void setLogPort(const char* szLogPort);
-	
+	void initRemoteLog();
+	void closeRemoteLog();
+
     void setEnabledCategories( const char* szCatList );
     void setDisabledCategories( const char* szCatList );
     const String& getEnabledCategories(){ return m_strEnabledCategories; }

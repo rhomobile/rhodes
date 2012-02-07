@@ -84,12 +84,12 @@ Enable\disable phone sleep by timeout, return previous state
 Open application associated with url; behavior may be different on different platforms and depend on installed software. 
 	:::ruby
 	System.open_url(url)
-**NOTE: On iPhone, if you post path of local file, then the specific iOS control (UIDocumentInteractionController) where file will previewed and user will be able open this file by selected application wich supported this filetype.
+**NOTE: On iPhone, if you post path of local file, then the specific iOS control (UIDocumentInteractionController) where file will previewed and user will be able open this file by selected application wich supported this filetype.**
 
 Run specified application. Note: appname is platform dependent
 	:::ruby
 	System.run_app(appname, params)
-**NOTE: On iPhone, appname is the same with registered application URL scheme. Params just string. Example : System.run_app('myapp', 'someparams'). Also this the same with : System.open_url('myapp:someparams')
+**NOTE: On iPhone, appname is the same with registered application URL scheme. Params just string. Example : System.run_app('myapp', 'someparams'). Also this the same with : System.open_url('myapp:someparams')**
 
 
 Install application from specified url
@@ -99,7 +99,8 @@ Install application from specified url
 Is specified application installed on device?
 	:::ruby
 	System.app_installed?(appname)
-**NOTE: On iPhone, appname is the same with registered application URL scheme.
+
+**NOTE: On iPhone, appname is the same with registered application URL scheme.**
 	
 Uninstall specified application	
 	:::ruby
@@ -191,14 +192,14 @@ Any call to GeoLocation method or notification call back will power up the GPS r
 The GPS receiver will be switched off authomatically after some time (see [Configuration](configuration#run-time-configuration) for parameters) or explicitly by GeoLocation.turnoff.
 Also note that it usually takes a while to acquire the device's current position; in some cases, it may take several minutes and may not work at all indoors.
 
-Note that in old rhodes versions (up to 2.3.1) this feature uses only GPS location provider;
-however, in more recent rhodes it also use network based location determination. Network based location
-is not as precise as GPS but in most cases it consumes less power and returns results faster than GPS.
+Note that in old rhodes versions (up to 2.3.1) this feature uses only GPS location provider. In more recent rhodes, it also uses network based location determination. Network based location
+is not as precise as GPS, but in most cases it consumes less power and returns results faster than GPS.
 Rhodes will update location using network data until the GPS signal has been received; then only GPS will be used for more precise data.
 
-There are two ways to use GeoLocation:
-* Syncronous call to GeoLocation module for particular value.
-* Set GeoLocation notification and track location by call back. In this case all location values passed to notification as parameters.
+There are two ways to use GeoLocation.
+
+ * Syncronous call to GeoLocation module for particular value.
+ * Set GeoLocation notification and track location by call back. In this case all location values are passed to notification as parameters.
 
 Note that GeoLocation is switched off automatically when the application goes into the background, and is switched on as the application goes back to foreground.
 However it is possible to switch on location services as usual while the application is in background.
@@ -236,7 +237,7 @@ Test if the location system is up and acquired position:
 	:::ruby
 	GeoLocation.known_position?
 	
-Set callback to track location changes.  
+Set callback to track location changes.
 
 	:::ruby
 	GeoLocation.set_notification(
@@ -244,14 +245,36 @@ Set callback to track location changes.
 
 * callback - callback url; after the callback has been called once, it will be automatically called repeatedly with the current location coordinates passed to the callback as parameters. (You need not reset the callback within the callback.)
 * ping_gpssystem_timeout - optional, if 0 system timeout used, use to redefine timeout in sec for gps system reading
-* callback params: known_position, latitude, longitude, available, status('error', 'ok'), error_code(from RhoError)
+* callback params: known_position, latitude, longitude, available, status('error', 'ok'), error_code(from RhoError), accuracy(horizontal radius in meters; iOS and Android)
+
+Also there are two parameters you can set in rhoconfig.txt:
+
+Geo location update period (in seconds). Used as the default value for the third parameter (ping_gpssystem_timeout) of GeoLocation.set_notification method. This value is passed to OS API and behaviour and is OS dependent (it should be used by system as a tip on how often to call notification back). Ignored on iOS.
+
+	gps_ping_timeout_sec = 30
+
+Geo location inactivity timeout (in seconds). This parameter controls the time after that location service is switched off in case there are no calls to the service. It is also used as the time period to drop cached location value.
 	
+	geo_location_inactivity_timeout = gps_ping_timeout_sec * 10
+
+
+Turn off GeoLocation. 
+
+	:::ruby
+	GeoLocation.turnoff
+
+**NOTE: GeoLocation.turnoff - after GPS is switched off, you might still receive a few callbacks (this depends on the platform; iOS does not receive callbacks after turnoff).**
+
+**NOTE: The current behavior of the geolocation callback is that it will be called forever until it is stopped; you need to call `GeoLocation.turnoff` to stop it. Previous behavior was that the callback was called once and needed to be reset.**
+
 Get the distance between two points in miles.
 	:::ruby
 	GeoLocation.haversine_distance(
 		latitude1, longitude1, latitude2, longitude2) 
 
 GeoCoding: You can use any free web service for direct and reverse geocoding. See our complete example of using Google geocoding web service in [Rhodes-System-Api-Samples example](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/GeoCoding).
+
+**NOTE: On iOS, real GPS starts working after the first access to the GeoLocation module. Real GPS hardware is switched off after a call to GeoLocation.turnoff. But keep in mind - any call to GeoLocation, such as getting latitude, starts the hardware GPS again!**
 
 #### Testing GeoLocation
 
@@ -303,15 +326,32 @@ Callback points to the `geo_callback` in the Settings controller.rb:
     
     def geo_callback
       # navigate to `show_location` page if GPS receiver acquire position  
-	  if @params['known_position'].to_i != 0 && @params['status'] =='ok'	
-	  	WebView.navigate url_for(:action => :show_location) 
-	  end	
-	  # show error if timeout expired and GPS receiver didn't acquire position
-	  if @params['available'].to_i == 0 || @params['status'] !='ok'
-        WebView.navigate url_for(:action => :show_location_error) 
+	  if @params['known_position'].to_i != 0 && @params['status'] =='ok'
+	  
+	  	GeoLocation.set_notification '', '', 2
+	  	WebView.navigate url_for(:action => :map_all)
 	  end
-      # do nothing, still wait for location 
     end
+
+##### Turning off GeoLocation as soon as the app goes off the device front page
+
+In this code sample, /GeoLocation/ has to be replaced with an appropriate regular expression to detect the controller. This code is called from geo_callback. This decision allows you to switch off GeoLocation from a single code point in case geo_callback is set.
+
+	:::ruby
+	def geo_callback
+	  puts "geo_callback : #{@params}"
+
+	  if WebView.current_location !~ /GeoLocation/
+	    puts "Stopping geo location since we are away of geo page: " + WebView.current_location
+	    GeoLocation.turnoff
+	    return
+	  end
+	end
+
+If the app does not need location updates, and GeoLocation should still remain active, you can send an empty notification.
+
+	:::ruby
+	GeoLocation.set_notification "", "", 30
 
 #### Code Sample
 
@@ -351,9 +391,10 @@ For these selectors an additional params hash may be used. The next keys and val
 * :offset - offset from begin of contacts' list
 These two parameters are used to paginate contacts list. If used with :count exact number of returned contacts can be determined (for example for last page).
 
-The next parameters are available at Android only:
-* :select - list of contact properties have to be selected from phonebook (Use it to enchance query performance)
-* :conditions - hash of conditions to query contacts. Look for more details below.
+The next parameters are available at Android only.
+
+ * :select - list of contact properties have to be selected from phonebook (Use it to enchance query performance)
+ * :conditions - hash of conditions to query contacts. Look for more details below.
 
 **NOTE: It is allowed to pass additional params hash at all platforms. Platforms that has no extended functionality will just skip these**
 
@@ -525,30 +566,31 @@ Recurrence properties:
 Recurrence properties are groupped in separate hash stored as single event property (event[Rho::RhoEvent::RECURRENCE]).
 
 ### Names of properties
-There are helper constants defined in Rho::RhoEvent which can be used to address event values and as predefined set of values (for frequency):
-* ID
-* TITLE
-* CANCELED
-* ORGANIZER
-* START_DATE
-* END_DATE
-* LAST_MODIFIED
-* LOCATION
-* NOTES
-* PRIVACY
-* REMINDER
-* RECURRENCE
-* RECURRENCE_FREQUENCY
-* RECURRENCE_FREQUENCY_DAILY
-* RECURRENCE_FREQUENCY_WEEKLY
-* RECURRENCE_FREQUENCY_MONTHLY
-* RECURRENCE_FREQUENCY_YEARLY
-* RECURRENCE_INTERVAL
-* RECURRENCE_COUNT
-* RECURRENCE_END
-* RECURRENCE_DAYOFMONTH
-* RECURRENCE_MONTHS
-* RECURRENCE_DAYS
+There are helper constants defined in Rho::RhoEvent which can be used to address event values and as predefined set of values (for frequency).
+
+ * ID
+ * TITLE
+ * CANCELED
+ * ORGANIZER
+ * START_DATE
+ * END_DATE
+ * LAST_MODIFIED
+ * LOCATION
+ * NOTES
+ * PRIVACY
+ * REMINDER
+ * RECURRENCE
+ * RECURRENCE_FREQUENCY
+ * RECURRENCE_FREQUENCY_DAILY
+ * RECURRENCE_FREQUENCY_WEEKLY
+ * RECURRENCE_FREQUENCY_MONTHLY
+ * RECURRENCE_FREQUENCY_YEARLY
+ * RECURRENCE_INTERVAL
+ * RECURRENCE_COUNT
+ * RECURRENCE_END
+ * RECURRENCE_DAYOFMONTH
+ * RECURRENCE_MONTHS
+ * RECURRENCE_DAYS
 
 
 ### Sample
@@ -614,8 +656,9 @@ Get camera info:
 
 camera_type - "default"(is the same with "main"), "main", "front"
 return Hash with camera info for selected camera type or NIL if this type is not supported.
-In returned hash :
-* "max_resolution" - hash with "width" and "height" numeric values.
+In returned hash:
+
+ * "max_resolution" - hash with "width" and "height" numeric values.
 
 
 ### Sample
@@ -635,7 +678,7 @@ For barcode recognition we use Zbar library (iPhone, and Windows Mobile platform
 * iPhone platform: UPC-A, UPC-E, EAN-8, EAN-13, Code 39, Code 128, QR Code .
 * Android and BlackBerry platforms: UPC-A, UPC-E, EAN-8, EAN-13, Code 39, Code 128, Code 93, QR Code, ITF, Codabar
 
-**NOTE: We are very sorry, but we are removed ZBar source code from our project by ZBar license requirements. For build Barcode extension for WM, you should download ZBar sources from http://zbar.sourceforge.net/ and copy to [rhodes root]/lib/extensions/barcode/ext/barcode/shared/zbar/zbar/ folder "include" and "zbar" folders from ZBar sources. Also you should fix ZBar sources for building by Microsoft Visual Studio (move define of inner function variables to begin of functions, etc.). See detailed instructon in [Rhodes root]/lib/extensions/barcode/ext/barcode/shared/zbar/zbar/README.TXT
+**NOTE: We are very sorry, but we are removed ZBar source code from our project by ZBar license requirements. For build Barcode extension for WM, you should download ZBar sources from http://zbar.sourceforge.net/ and copy to [rhodes root]/lib/extensions/barcode/ext/barcode/shared/zbar/zbar/ folder "include" and "zbar" folders from ZBar sources. Also you should fix ZBar sources for building by Microsoft Visual Studio (move define of inner function variables to begin of functions, etc.). See detailed instructon in your Rhodes installation at /lib/extensions/barcode/ext/barcode/shared/zbar/zbar/README.TXT**
 
 On Android and iOS (not supported on iPhone 2G and iPhone 3G !) now supported real-time barcode recognizing (second parameter is hash with options):
 	:::ruby
@@ -646,9 +689,10 @@ On Android also you can use front camera for take_barcode :
 	Barcode.take_barcode(url_for(:action => :take_callback), {:camera => 'front'})
 
 This code open special UI for real-time barcode recognizing from camera. If any barcode found recognizing stopped and user can select - confirm recognizing barcode or continue recognizig. If user confirmed or cancelled the callback will be called.
-In callback:
-* "status" - "ok" or "cancel"
-* "barcode" - recognized barcode string
+In callback are these parameters.
+ 
+ * "status" - "ok" or "cancel"
+ * "barcode" - recognized barcode string
 
 ### Sample
 See controller and view in the /app/BarcodeRecognizer folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/BarcodeRecognizer/controller.rb) for more information.
@@ -663,7 +707,7 @@ To enable add to build.yml:
 
     extensions: ["barcode-moto"]
   
-Barcode API :
+Barcode API:
 
 Get a list of scanners present on the device. Return array of hashes ('name','id'):
 
@@ -700,10 +744,10 @@ Enables the scanner and start scanner. Before callback is called scanner is disa
     :::ruby
     Barcode.take_barcode(url_for(:action => :barcode_callback), {:id=>id_from_enumerate})
 
-Callback parameters:
+THe callback uses these parameters.
 
-* "status" - "ok" or "cancel"
-* "barcode" - recognized barcode string
+ * "status" - "ok" or "cancel"
+ * "barcode" - recognized barcode string
 
 ### Sample
 See controller and view in the /app/BarcodeRecognizerMoto folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/BarcodeRecognizerMoto/controller.rb) for more information.
@@ -724,26 +768,28 @@ The Signature Capture API allow take a signature and save it as an image:
 	:::ruby
 	Rho::SignatureCapture.take(callback_url, params)
 
-Signature Capture open window for hand writing, where user draw his signature. Signature saved to an image file. You can choice 'jpg' or 'png' format for image. 
-* callback_url - callback url
-* params - hash with params
+Signature Capture open window for hand writing, where user draw his signature. Signature saved to an image file. You can choice 'jpg' or 'png' format for image.
 
-Example :
+ * callback_url - callback url
+ * params - hash with params
+
+Example:
 	:::ruby
 	Rho::SignatureCapture.take(url_for( :action => :signature_callback), { :imageFormat => "jpg", :penColor => 0xff0000, :penWidth=>3, :bgColor => 0x00ff00 })
 
-Params in hash:
+The following parameters are in the hash.
 
-* imageFormat - "jpg", "png" or "bmp"
-* penColor - color of pen used for drawing signature
-* penWidth - wide of pen
-* bgColor - color of background
+ * imageFormat - "jpg", "png" or "bmp"
+ * penColor - color of pen used for drawing signature
+ * penWidth - wide of pen
+ * bgColor - color of background
 
-NOTE: On Windows Mobile and Windows CE devices only "bmp" supported as 'imageFormat'
+**NOTE: On Windows Mobile and Windows CE devices only "bmp" is supported as 'imageFormat'.**
 
-After user entered signature (or canceled) provided callback url will be called. Callback parameters will be:
-* status - 'ok' or 'cancel'
-* signature_uri - path to the image with signature   
+After user entered signature (or canceled) provided callback url will be called. Callback parameters will be the following.
+
+ * status - 'ok' or 'cancel'
+ * signature_uri - path to the image with signature   
 
 ### Inline signature capture
 Windows Mobile and Windows CE devices support signature capture started in window, which you can show over current page(scrolling is not supported in this case).
@@ -806,7 +852,7 @@ There are two steps to make connection and start using of Bluetooth :
 * For make connection without UI, you should execute `Rho::BluetoothManager.create_server_and_wait_for_connection` on server and `Rho::BluetoothManager.create_client_connection_to_device` on client. On client you should specify server name(display name - not Bluetooth ID!) for connect. Specify callback - callback have the same parameters with `Rho::BluetoothManager.create_session`.  You can cancel connection process by `Rho::BluetoothManager.stop_current_connection_process`
 * After receiving successful result and name of connected device in create_session_callback you should setup session_callback by `Rho::BluetoothSession.set_callback` to process incoming session events from connected device (data received) or event related to this session connection(disconnect, errors).
 
-**NOTE: Connection without UI worked only on iOS and Android platforms only !
+**NOTE: Connection without UI worked only on iOS and Android platforms!**
 
 ### Bluetooth API
 
@@ -989,14 +1035,15 @@ Get all available ringtones
 Play a given ringtone
 	:::ruby
 	RingtoneManager::play @ringtones['My Ringtone']	
-NOTE: that if 'play' is called while another ringtone is playing, it will stop the old ringtone and start the new one.
+
+**NOTE: If 'play' is called while another ringtone is playing, it will stop the old ringtone and start the new one.**
 
 Halt playing of a ringtone
 	:::ruby
 	RingtoneManager::stop
 * Can safely be called even if no ringtone is playing
 
-NOTE: Currently implemented for Android, Blackberry and Windows mobile. On Blackberry, only the user installed ringtones are accessible. System preinstalled ringtones are not accessible due to Blackberry limitations.
+**NOTE: Currently implemented for Android, Blackberry and Windows mobile. On Blackberry, only the user installed ringtones are accessible. System preinstalled ringtones are not accessible due to Blackberry limitations.**
 
 ### Sample
 See controller and view in the /app/Ringtones folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/Ringtones/controller.rb) for more information.
@@ -1056,7 +1103,7 @@ Automatic push message parameters handling takes its place in case no custom pus
 ### iPhone
 iPhone PUSH support uses the Apple Push Notification Service (APNS) introduced in iPhone SDK 3.0.  In order to use the service, you will need to obtain a push-enabled provisioning profile and a server-side push certificate used for encrypting RhoConnect->APNS traffic.
 
-NOTE: For testing push, you will need to build and deploy your application to a physical iPhone (or iPad) device. Apple does not support testing push on simulators.
+**NOTE: For testing push, you will need to build and deploy your application to a physical iPhone (or iPad) device. Apple does not support testing push on simulators.**
 
 #### Setup Push Certificate
 The first step to setting up your environment is to create an APNS push certificate. To create the SSL certificate, follow the "Creating the SSL Certificate and Keys" section on the 
@@ -1105,7 +1152,7 @@ Then modify your application's build.yml and specify there google account used t
 
 This is the same address used by RhoConnect to retrieve authtoken. See [here](/rhoconnect/push#android) for more information.
 
-NOTE: **WARNING** This e-mail address MUST NOT be the same as origin of google account on phone! This mean that google account registered on your phone/emulator MUST NOT be push-app@gmail.com; it MUST be another one. This is known bug in Android C2DM implementation - if sender and receiver are the same, underlying android service crash and lose message. More details [here](http://groups.google.com/group/android-c2dm/browse_thread/thread/128790789c4e9d6a/67aca1e1764724d4). This is actual not for all Android versions.
+**NOTE: WARNING! This e-mail address MUST NOT be the same as origin of google account on phone! This mean that google account registered on your phone/emulator MUST NOT be push-app@gmail.com; it MUST be another one. This is known bug in Android C2DM implementation - if sender and receiver are the same, underlying android service crash and lose message. More details [here](http://groups.google.com/group/android-c2dm/browse_thread/thread/128790789c4e9d6a/67aca1e1764724d4). This is actual not for all Android versions.**
 
 At Android it is possible to set up status bar notifications for PUSH messages. In this case push message is handled by application only after user has opened the notification.
 There are two modes available for push notifications:
@@ -1140,7 +1187,7 @@ Uncomment the last line of the file, which should be 'push.application.reliable.
 #### Setup BlackBerry Simulator
 To listen for incoming messages on BlackBerry, the Rhodes application will start when device powers on and will run a listener thread in the background. You will use the "push_port" option in the [rhoconfig.txt](configuration#run-time-configuration) to specify the listening port for incoming push messages. If "push_port" is not specified, default will be 100 as shown in the previous section.
 
-NOTE: For testing push, the BlackBerry simulator requires a 'kickstart' process.  When the simulator starts, open the web browser on the simulator and navigate to any web page (i.e. http://m.google.com/).  Now your simulator is ready to receive push messages.
+**NOTE: For testing push, the BlackBerry simulator requires a 'kickstart' process.  When the simulator starts, open the web browser on the simulator and navigate to any web page (i.e. http://m.google.com/). Now your simulator is ready to receive push messages.**
 
 Now you are ready to [testing Push in the RhoConnect Web Console](/rhoconnect/push#testing-push-in-the-web-console).
 
@@ -1363,7 +1410,7 @@ You can customize sheme and host name parts with following build.yml parameters:
 In case if URIHost is specified no path prefix will be used. If no custom URIHost then default one is used (rhomobile.com) and path prefix must contain java package name of your application.
 Optional path and query just passed to your application for further processing.
 
-NOTE: Google recommends to always use common scheme such as 'http', 'https', 'ftp', etc.
+**NOTE: Google recommends to always use common scheme such as 'http', 'https', 'ftp', etc.**
 
 http scheme example:
     :::html
@@ -1566,24 +1613,36 @@ Simulator files folder - run search for RhoLog.txt from the drive root. Files ar
 Application can creates folders and files under apps and db roots.
 
 ### Rhodes client file system structure on iOS platform
-	<rhodes root>  # /Library/Private Documents/
+	<rhodes root>  # /Library/Caches/Private Documents/
 	  apps         #Rho::RhoApplication::get_base_app_path
 	    app        #Rho::RhoApplication::get_app_path('app') - contain models
 	      model1   #Rho::RhoApplication::get_model_path('app','model1')
 	    public       #contains files from application public folder
 	  lib          #contains rho framework library files. Blackberry does not has this folder, library files are stored in jar
+	  db           #contains schema files
 	  RhoLog.txt   #application log
 	<rhodes user root>  # /Documents/
                         apps     # user path   Rho::RhoApplication::get_user_path
-	  db           #contains schema and data files
+	  db           #contains data files
 	    db-files   #contains files stored in database(blobs)
 	               # for file paths from camera callback etc: Rho::RhoApplication::get_blob_path(relative_file_path); 
 	               # to create file path for blob: Rho::RhoApplication::get_blob_folder()
 
 On iOS platform only files stored in /Documents/ bakuped in iCloud etc.
 Before Rhodes 3.3.2 all files stored in /Documents/ but Apple require do not placing files in Documents folder except user produced files. 
-Now all files except databases stored in /Library/Private Documents/ - files in this folder do not bakup.
+Now all files except databases stored in /Library/Caches/Private Documents/ - files in this folder do not bakup.
 If you want make any files should be bakup - use "user folder" for it - Rho::RhoApplication::get_user_path. All you files created in old version in Rho::RhoApplication::get_base_app_path now should be open in Rho::RhoApplication::get_user_path.
+
+Also there are few additional parameters in build.yml (use it only if you want tune iOS specific folder scheme for some reason).
+
+ * iphone_db_in_approot - if 1 then place databases files into <rhodes root>
+ * iphone_set_approot - set <rhodes root> to one of the three folders (property value - folder): "Documents" - /Documents/, "Library_Caches" - /Library/Caches/Private Documents/, "Library_Private_Documents" - /Library/Private Documents/
+ * iphone_userpath_in_approot  - is 1 then <rhodes user root> will be in the same place with <rhodes root>
+
+### change low level parameters in build.yml example
+	iphone_db_in_approot: 1
+	iphone_set_approot: library_Private_Documents
+	iphone_userpath_in_approot: 1
 
 ### write file in user folder example
 	:::ruby
@@ -1592,6 +1651,12 @@ If you want make any files should be bakup - use "user folder" for it - Rho::Rho
 	f.write('my own file !')
 	f.close  
 
+Also you can set special iOS attiribute "do not bakup" to any files or folders or files related to database :
+### setup "do not bakup" attribute for files related database conaint Model 'Product'
+	:::ruby
+	require_model 'Product'
+	db = Rho::RHO::get_src_db('Product')
+	db.set_do_not_bakup_attribute(1)
 
 
 #### Windows Mobile

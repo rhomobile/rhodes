@@ -971,8 +971,8 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
     String fullPath = CFilePath::normalizePath(path);
 
     if (String_startsWith(fullPath,"/app/db/db-files") )
-        fullPath = CFilePath::join( RHODESAPP().getRhoUserPath(), path.substr(4) );
-    else if (fullPath.find(m_root) != 0 && fullPath.find(m_strRhoRoot) != 0 && fullPath.find(m_strRhoUserRoot) != 0)
+        fullPath = CFilePath::join( rho_native_rhodbpath(), path.substr(4) );
+    else if (fullPath.find(m_root) != 0 && fullPath.find(m_strRhoRoot) != 0 && fullPath.find(m_userroot) != 0 && fullPath.find(m_strRhoUserRoot) != 0)
         fullPath = CFilePath::join( m_root, path );
 	
     if (verbose) RAWTRACE1("Sending file %s...", fullPath.c_str());

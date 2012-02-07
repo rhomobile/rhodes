@@ -62,7 +62,7 @@ if defined?( RHODES_EMULATOR )
           File.join(__rhoGetCurrentDir(), RHO_EMULATOR_DIR + '/db/syncdb' + postfix + '.sqlite')
 else
           if System::get_property('platform') == 'APPLE'
-                File.join(__rhoGetUserDir(), 'db/syncdb' + postfix + '.sqlite')
+                File.join(__rhoGetDBDir(), 'db/syncdb' + postfix + '.sqlite')
           else
                 File.join(__rhoGetCurrentDir(), 'db/syncdb' + postfix + '.sqlite')
           end
@@ -75,7 +75,7 @@ if defined?( RHODES_EMULATOR )
         File.join(__rhoGetCurrentDir(), RHO_EMULATOR_DIR + '/db/db-files')
 else
           if System::get_property('platform') == 'APPLE'
-                return File.join(__rhoGetUserDir(), 'db/db-files')
+                return File.join(__rhoGetDBDir(), 'db/db-files')
           else
                 return File.join(__rhoGetCurrentDir(), 'db/db-files')
           end
@@ -90,18 +90,21 @@ end
       def get_blob_path(relative_path)
         cur_dir = __rhoGetCurrentDir()
           if System::get_property('platform') == 'APPLE'
-                 cur_dir = __rhoGetUserDir()
+                 cur_dir = __rhoGetDBDir()
           end
 if defined?( RHODES_EMULATOR )
         cur_dir = __rhoGetCurrentDir()
         cur_dir = File.join(cur_dir, RHO_EMULATOR_DIR)
 end
+        ress = ''  
         if cur_dir && cur_dir.length()>0
-            File.join(cur_dir, relative_path)
+            ress = File.join(cur_dir, relative_path)
         else
-            relative_path.start_with?('/') ? relative_path : "/" + relative_path
+            ress = relative_path.start_with?('/') ? relative_path : "/" + relative_path
             
-        end    
+        end
+        #puts '$$$ blob path ['+ress.to_s+']  for ['+relative_path.to_s+']'  
+        return ress 
       end
       
     end

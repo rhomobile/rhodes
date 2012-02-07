@@ -18,7 +18,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <%% end %>
 
-    <%% if System::get_property('platform') == 'APPLE' || System::get_property('platform') == 'ANDROID' || is_bb6 || System::get_property('webview_framework') =~ /^WEBKIT/ %>
+    <%% if System::get_property('platform') == 'APPLE' || System::get_property('platform') == 'ANDROID' || System::get_property('platform') == 'WP7' || is_bb6 || System::get_property('webview_framework') =~ /^WEBKIT/ %>
         <script src="/public/jquery/jquery-1.6.4.min.js" type="text/javascript"></script>
 
         <link rel="stylesheet" href="/public/jqmobile/jquery.mobile-1.0.min.css">
@@ -48,6 +48,9 @@
                 $.mobile.loadingMessageDelay = 300; // in ms
             });
         </script>
+        <%% if System::get_property('platform') == 'WP7'%>
+          <script type="text/javascript" charset="utf-8" src="/public/js/jquery-wp7-patch.js"></script>
+        <%% end %>
         <script type="text/javascript" charset="utf-8" src="/public/jqmobile/jquery.mobile-1.0.min.js"></script>
         <script type="text/javascript" charset="utf-8" src="/public/js/jqmobile-patch.js"></script>
 
@@ -62,7 +65,7 @@
     <%% elsif System::get_property('platform') == 'Blackberry' %>
         <link href="/public/css/blackberry.css" type="text/css" rel="stylesheet"/>
     <%% elsif System::get_property('platform') == 'WP7' %>
-	    <link href="/public/css/windows_mobile.css" type="text/css" rel="stylesheet"/>
+	    <link href="/public/css/iphone.css" type="text/css" rel="stylesheet"/>
 		<script src="/public/js/wp7.js" type="text/javascript"></script>
     <%% elsif System::get_property('webview_framework') =~ /^WEBKIT/ %>
         <link href="/public/css/android.css" type="text/css" rel="stylesheet"/>
@@ -77,6 +80,7 @@
 <%% elsif System::get_property('platform') == 'WP7' %>
 	onload="wp7_change_forms_action_to_get()"
 <%% end %>
+    data-platform="<%%= System::get_property('platform') %>"
 	>
     <%%= @content %>
 </body>

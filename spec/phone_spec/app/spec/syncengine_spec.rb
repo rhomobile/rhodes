@@ -97,6 +97,8 @@ describe "SyncEngine_test" do
     
     SyncEngine.set_source_property(getProduct().get_source_id.to_i(), "rho_server_response", "" )        
     ::Rho::RHO.get_user_db().delete_all_from_table('changed_values')
+
+    Rho::RhoConfig.bulksync_state='1'    
     
   end
 
@@ -162,7 +164,7 @@ end
     res.should > 0    
   end
 
-if !defined?(RHO_WP7)    
+ 
   it "should update syncserver at runtime" do
   
     dbRes = ::Rho::RHO.get_user_db().select_from_table('client_info','token,token_sent')
@@ -179,7 +181,7 @@ if !defined?(RHO_WP7)
     SyncEngine.set_syncserver(saveSrv)
     Rho::RhoConfig.syncserver.should == saveSrv
   end
-end
+
 
   it "should not sync without login" do
     SyncEngine.logged_in.should == 0
@@ -315,7 +317,7 @@ end
     cust22.first.should == cust2.first
     
   end
-if !defined?(RHO_WP7)
+
   it "should process error sync" do
 
     records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*')
@@ -344,7 +346,7 @@ if !defined?(RHO_WP7)
     records.length.should == 0
     
   end
-end  
+ 
   it "should modify Product" do
     SyncEngine.logged_in.should == 1
   

@@ -65,6 +65,7 @@ static LocationController *sharedLC = nil;
 		CFRunLoopTimerSetNextFireDate(_timer, CFAbsoluteTimeGetCurrent() + timeOutInSeconds);
 	}
 	
+    _locationManager.delegate = self; // Tells the location manager to send updates to this object
 	[_locationManager startUpdatingLocation];
 	return true;
 }
@@ -105,6 +106,7 @@ static LocationController *sharedLC = nil;
     if (!_locationManager)
         return;
 	[_locationManager stopUpdatingLocation];
+    _locationManager.delegate = nil;
 	
     // Get rid of the timer, if it still exists
     if (_timer != NULL) {
@@ -277,6 +279,7 @@ int rho_geo_known_position() {
 
 void rho_geoimpl_settimeout(int nTimeoutSec)
 {
+    
 }
 
 void rho_geoimpl_turngpsoff()

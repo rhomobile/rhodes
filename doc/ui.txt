@@ -591,6 +591,30 @@ For the tabbar:
 	  end
 	end
 
+Also you can use Hash instead of Array for additional parameters (the same with call runtime functionality) :
+	:::ruby
+	class AppApplication < Rho::RhoApplication
+	  def initialize
+	    # Tab items are loaded left->right, @tabs[0] is leftmost tab in the tab-bar
+	    @tabs = {
+	      :background_color => 0x0000FF,
+	      :tabs => [
+	      { :label => "Dashboard", :action => '/app', 
+			:icon => "/public/images/tabs/dashboard.png", :reload => true, :web_bkg_color => 0x7F7F7F }, 
+	      { :label => "Accounts",  :action => '/app/Account',  
+			:icon => "/public/images/tabs/accounts.png" },
+	      { :label => "Contacts",  :action => '/app/Contact',  
+			:icon => "/public/images/tabs/contacts.png" },
+	      { :label => "Options",   :action => '/app/Settings', 
+			:icon => "/public/images/tabs/options.png" }
+	      ]
+	    }
+	    # Important to call super _after_ you define @tabs!
+	    super
+	  end
+	end
+
+
 Each tabbar item defined in the above sample defines the following tab elements:
 
 * :label - Visible label to display on the tabbar (required)

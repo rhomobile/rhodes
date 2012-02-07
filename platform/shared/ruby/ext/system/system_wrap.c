@@ -1894,6 +1894,9 @@ extern void rho_sys_replace_current_bundle(const char* path);
 #define delete_folder rho_sys_delete_folder
 extern int rho_sys_delete_folder(const char* path);
 
+#define set_do_not_bakup_attribute rho_sys_set_do_not_bakup_attribute 
+extern int rho_sys_set_do_not_bakup_attribute(const char* path, int value);
+
 	#if !defined(bool)
 	#define bool int
 	#define true  1
@@ -1973,7 +1976,7 @@ SWIG_ruby_failed(void)
 } 
 
 
-/*@SWIG:C:\Install\swigwin-2.0.4\Lib\ruby\rubyprimtypes.swg,19,%ruby_aux_method@*/
+/*@SWIG:/usr/local/share/swig/2.0.4/ruby/rubyprimtypes.swg,19,%ruby_aux_method@*/
 SWIGINTERN VALUE SWIG_AUX_NUM2LONG(VALUE *args)
 {
   VALUE obj = args[0];
@@ -2664,6 +2667,41 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_set_do_not_bakup_attribute(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int arg2 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","set_do_not_bakup_attribute", 1, argv[0] ));
+  }
+  arg1 = (char *)(buf1);
+  ecode2 = SWIG_AsVal_int(argv[1], &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","set_do_not_bakup_attribute", 2, argv[1] ));
+  } 
+  arg2 = (int)(val2);
+  result = (int)set_do_not_bakup_attribute((char const *)arg1,arg2);
+  vresult = SWIG_From_int((int)(result));
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -2997,5 +3035,6 @@ SWIGEXPORT void Init_System(void) {
   rb_define_module_function(mSystem, "set_application_icon_badge", _wrap_set_application_icon_badge, -1);
   rb_define_module_function(mSystem, "replace_current_bundle", _wrap_replace_current_bundle, -1);
   rb_define_module_function(mSystem, "delete_folder", _wrap_delete_folder, -1);
+  rb_define_module_function(mSystem, "set_do_not_bakup_attribute", _wrap_set_do_not_bakup_attribute, -1);
 }
 

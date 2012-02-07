@@ -578,6 +578,8 @@ namespace "build" do
       # Store app name
       File.open(File.join($srcdir, "name"), "w") { |f| f.write($app_config["name"]) }
 
+      Jake.build_file_map( File.join($srcdir, "apps"), "rhofilelist.txt" )  
+
     end
     
     task :upgrade_package => ["build:iphone:rhobundle"] do
@@ -942,7 +944,7 @@ namespace "run" do
        simapp = File.join($simdir, $emulator_version, "Applications")
        
        
-       rholog = simapp + "/" + $guid + "/Library/Private Documents/rholog.txt"
+       rholog = simapp + "/" + $guid + "/Library/Caches/Private Documents/rholog.txt"
        puts "log_file=" + rholog
     end 
 
@@ -1059,6 +1061,7 @@ namespace "run" do
 
          mkdir_p File.join($simrhodes, "Documents")
          mkdir_p File.join($simrhodes, "Library", "Preferences")
+         mkdir_p File.join($simrhodes, "Library", "Caches", "Private Documents")
 
          rm_rf File.join($simrhodes, 'rhorunner.app')
          cp_r rhorunner, $simrhodes
@@ -1068,7 +1071,7 @@ namespace "run" do
 
 #>>>>>>>>>>
         #`echo "#{$applog}" > "#{$simrhodes}/Documents/rhologpath.txt"`
-        rholog = simapp + "/" + $guid + "/Library/Private Documents/rholog.txt"
+        rholog = simapp + "/" + $guid + "/Library/Caches/Private Documents/rholog.txt"
 
 
         simpublic = simapp + "/" + $guid + "/Documents/apps/public"
@@ -1099,7 +1102,8 @@ namespace "run" do
     rhorunner = File.join($startdir, $config["build"]["iphonepath"],"build/#{$configuration}-iphonesimulator/rhorunner.app")
     commandis = iphonesim + ' launch "' + rhorunner + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget
 
-    Thread.new {
+    thr = Thread.new do
+       puts 'start thread with execution of application' 
        if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
            puts  'use old execution way - just open iPhone Simulator'
            system("open \"#{$sim}/iPhone Simulator.app\"")
@@ -1107,7 +1111,9 @@ namespace "run" do
            puts 'use iphonesim tool - open iPhone Simulator and execute our application, also support device family (iphone/ipad)'
            system(commandis)
        end
-    }
+    end
+    
+    thr.join
   
     puts "end build iphone app"  
     exit

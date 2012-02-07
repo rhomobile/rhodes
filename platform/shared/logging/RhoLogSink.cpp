@@ -163,27 +163,33 @@ void CLogOutputSink::writeLogMessage( String& strMsg )
 #endif
 }
 
-CLogSocketSink::CLogSocketSink(const LogSettings& oSettings) 
-	: m_oLogConf(oSettings)
-	, m_logNetClient(0)
+CLogSocketSink::CLogSocketSink(const LogSettings& oSettings)
 {
-	m_hostName = oSettings.getLogHost();
-    m_hostPort = oSettings.getLogPort(); 
+	m_addrHost = "http://"+oSettings.getLogHost() + ":" + oSettings.getLogPort();
+
+	CThreadQueue::setLogCategory(LogCategory("NO_LOGGING"));
+    setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
+    start(epLow);
+}
+
+CLogSocketSink::~CLogSocketSink()
+{
+    //wait till all commands will be sent to server
+    CRhoThread::stop(2000);
 }
 
 void CLogSocketSink::writeLogMessage( String& strMsg )
 {
-    if (!m_logNetClient)
-    {
-		m_logNetClient = new rho::net::RawSocket(m_hostName, m_hostPort);
-    }
-    
-    if (!m_logNetClient->isInit())
-    {
-         m_logNetClient->init();
-    }
+	addQueueCommand(new LogCommand(m_addrHost.c_str(), strMsg.c_str()));
+}
 
-    m_logNetClient->send(strMsg);
+void CLogSocketSink::processCommand(IQueueCommand* pCmd)
+{
+    LogCommand *cmd = (LogCommand *)pCmd;
+    if (!cmd)
+        return;
+
+	getNetRequest().doRequest( "POST", cmd->m_url, cmd->m_body, 0, 0 );
 }
         
 }

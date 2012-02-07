@@ -139,6 +139,13 @@ BEGIN_MSG_MAP(CLogView)
     COMMAND_ID_HANDLER(IDM_SENDLOG, OnSendLog)
     COMMAND_ID_HANDLER(IDM_REFRESH, OnRefresh)
     COMMAND_ID_HANDLER(IDM_CLEAR, OnClear)
+
+#ifdef OS_WINCE
+    COMMAND_ID_HANDLER(IDOK, OnOK)
+    COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
+	MESSAGE_HANDLER(WM_CLOSE,OnClose)
+#endif
+
 END_MSG_MAP()
 //	CHAIN_MSG_MAP(CAxDialogImpl<CLogView>)
 
@@ -154,6 +161,12 @@ END_MSG_MAP()
 	LRESULT OnSendLog(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnRefresh(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnClear(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+
+#ifdef OS_WINCE
+    LRESULT OnOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   	LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+#endif
 
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnCtlColor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

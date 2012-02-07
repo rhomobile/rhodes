@@ -1144,7 +1144,7 @@ LRESULT CRhoBluetoothDiscoverDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/,
 	mbi.hwndParent = m_hWnd;
 	mbi.nToolBarId = IDR_GETURL_MENUBAR;
 	mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
-	RHO_ASSERT(SHCreateMenuBar(&mbi));
+	SHCreateMenuBar(&mbi);
 	//GotoDlgCtrl(GetDlgItem(IDC_DATE_CTRL));
 
 #else 
@@ -1211,7 +1211,7 @@ LRESULT CRhoBluetoothDiscoveredDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*
 	mbi.hwndParent = m_hWnd;
 	mbi.nToolBarId = IDR_GETURL_MENUBAR;
 	mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
-	RHO_ASSERT(SHCreateMenuBar(&mbi));
+	SHCreateMenuBar(&mbi);
 	//GotoDlgCtrl(GetDlgItem(IDC_DATE_CTRL));
 
 #else 

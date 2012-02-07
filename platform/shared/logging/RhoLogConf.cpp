@@ -31,6 +31,7 @@
 #include "common/RhoFilePath.h"
 #include "common/RhoConf.h"
 #include "common/Tokenizer.h"
+#include "common/app_build_capabilities.h"
 
 #ifndef RHO_NO_RUBY
 #include "ruby/ext/rho/rhoruby.h"
@@ -51,7 +52,7 @@ LogSettings::LogSettings(){
     m_nMaxLogFileSize = 0; 
     m_bLogPrefix = true; 
 
-    m_strLogHost = "PPP_PEER";
+    //m_strLogHost = "PPP_PEER";
 
     m_pFileSink = new CLogFileSink(*this);
     m_pOutputSink = new CLogOutputSink(*this);
@@ -62,17 +63,34 @@ LogSettings::LogSettings(){
 LogSettings::~LogSettings(){
     delete m_pFileSink;
     delete m_pOutputSink;
-    delete m_pSocketSink;
+	if(m_pSocketSink)
+		delete m_pSocketSink;
 }
 
-void LogSettings::setLogPort(const char* szLogPort) 
+void LogSettings::closeRemoteLog()
 {
-	setLogToSocket(true);
+	if(m_pSocketSink)
+	{
+		delete m_pSocketSink;
+	    m_pSocketSink = 0;
+	}
+}
 
-	m_strLogPort = rho::String(szLogPort); 
+void LogSettings::initRemoteLog()
+{
+#if defined( OS_PLATFORM_MOTCE ) && !defined (APP_BUILD_CAPABILITY_BARCODE)
+    //TODO: remote log prevent loading app - stuck on loading.png when no barcode. very strange!
+    OSVERSIONINFO osv = {0};
+	osv.dwOSVersionInfoSize = sizeof(osv);
+	if (GetVersionEx(&osv) && osv.dwMajorVersion == 5)
+		return;
+#endif
 
-	delete m_pSocketSink;
-    m_pSocketSink = new CLogSocketSink(*this);
+	m_strLogHost = RHOCONF().getString("rhologhost"); 
+	m_strLogPort = RHOCONF().getString("rhologport"); 
+
+	if(!m_pSocketSink && m_strLogHost != "" && m_strLogPort != "")
+		m_pSocketSink = new CLogSocketSink(*this);
 }
 
 void LogSettings::getLogTextW(StringW& strTextW)
@@ -173,7 +191,7 @@ void LogSettings::sinkLogMessage( String& strMsg ){
     if ( isLogToOutput() )
         m_pOutputSink->writeLogMessage(strMsg);
 
-    if ( isLogToSocket() )
+	if (m_pSocketSink)
         m_pSocketSink->writeLogMessage(strMsg);
 }
 
@@ -266,9 +284,6 @@ void rho_logconf_Init_with_separate_user_path(const char* szRootPath, const char
     rho_conf_Init_with_separate_user_path(szRootPath, szUserPath);
     
     LOGCONF().loadFromConf(RHOCONF());
-    if ( szLogPort != NULL && *szLogPort ) 
-        LOGCONF().setLogPort(szLogPort);
-
 }
     
 void rho_logconf_Init(const char* szRootPath, const char* szLogPort){

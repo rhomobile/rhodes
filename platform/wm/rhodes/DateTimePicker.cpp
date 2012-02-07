@@ -77,7 +77,7 @@ LRESULT CDateTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LP
 	else {
 		SetWindowText(_T("Date"));
 	}
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE)  && !defined(OS_PLATFORM_MOTCE)
 
     SHINITDLGINFO shidi = { SHIDIM_FLAGS, m_hWnd, SHIDIF_SIZEDLGFULLSCREEN };
     RHO_ASSERT(SHInitDialog(&shidi));
@@ -87,7 +87,7 @@ LRESULT CDateTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LP
     mbi.hwndParent = m_hWnd;
     mbi.nToolBarId = IDR_GETURL_MENUBAR;
     mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
-    RHO_ASSERT(SHCreateMenuBar(&mbi));
+    SHCreateMenuBar(&mbi);
 
 	SYSTEMTIME times[2]; // min and max times
 	unsigned int flags = 0;
@@ -208,7 +208,7 @@ LRESULT CTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 		SetWindowText(_T("Date"));
 	}
 
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE)  && !defined(OS_PLATFORM_MOTCE)
 
     SHINITDLGINFO shidi = { SHIDIM_FLAGS, m_hWnd, SHIDIF_SIZEDLGFULLSCREEN };
     RHO_ASSERT(SHInitDialog(&shidi));
@@ -217,7 +217,7 @@ LRESULT CTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
     mbi.hwndParent = m_hWnd;
     mbi.nToolBarId = IDR_GETURL_MENUBAR;
     mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
-    RHO_ASSERT(SHCreateMenuBar(&mbi));
+    SHCreateMenuBar(&mbi);
 	GotoDlgCtrl(GetDlgItem(IDC_TIME_CTRL));
 
 	SYSTEMTIME start_time;

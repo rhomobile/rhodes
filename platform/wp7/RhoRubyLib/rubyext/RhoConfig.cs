@@ -53,7 +53,7 @@ namespace rho.rubyext
         {
             try
             {
-                RhoConf.getInstance().setString(name, value as String, true);
+                RhoConf.getInstance().setString(name, value.ToString(), true);
 
                 RhoLogger.getLogConf().loadFromConf(RhoConf.getInstance());
             }

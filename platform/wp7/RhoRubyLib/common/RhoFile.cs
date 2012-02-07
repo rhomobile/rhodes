@@ -298,6 +298,22 @@ namespace rho.common
             return content;
         }
 
+        public static String readFileToString(String path)
+        {
+            string content = "";
+            path = CFilePath.removeFirstSlash(path);
+
+            if (!isFileExist(path)) return content;
+
+            using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
+            using (Stream st = isoStore.OpenFile(path, FileMode.Open, FileAccess.Read, FileShare.None))
+            using (System.IO.BinaryReader br = new BinaryReader(st))
+            {
+                content = new String(br.ReadChars((int)st.Length));
+            }
+            return content;
+        }
+
         public static String readStringFromResourceFile(String path)
         {
             string content = "";

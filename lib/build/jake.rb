@@ -141,8 +141,8 @@ class Jake
   end
 
   def self.run_local_server(port = 0)
-    addr = localip
-    server = WEBrick::HTTPServer.new :BindAddress => addr, :Port => port
+    addr = localip                   #:BindAddress => addr,
+    server = WEBrick::HTTPServer.new :Port => port
     port = server.config[:Port]
     puts "LOCAL SERVER STARTED ON #{addr}:#{port}"
     Thread.new { server.start }
@@ -574,6 +574,89 @@ class Jake
       Dir.chdir currentdir
 
   end
+  
+  def self.run_rho_log_server(app_path)
+
+	confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
+	confpath_content += "\r\n" + "rhologhost=" + $rhologhostaddr
+	confpath_content += "\r\n" + "rhologport=" + $rhologhostport.to_s()
+	File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
+  
+    begin
+        require 'net/http'
+        
+        res = Net::HTTP.start(Jake.localip(), $rhologhostport) {|http|
+             http.post('/', "RHOLOG_GET_APP_NAME")
+        }
+        puts "res : #{res}"
+        puts "body : #{res.body}"
+        
+        if ( res && res.body == app_path)
+            puts "Log server is already running. Reuse it."
+            
+	        started = File.open($app_path + "/started", "w+")
+	        started.close
+            
+            return
+        else
+            puts "Close Log server for another app."            
+            res = Net::HTTP.start(Jake.localip(), $rhologhostport) {|http|
+                 http.post('/', "RHOLOG_CLOSE")
+            }
+            
+        end
+    rescue Exception => e
+        puts "EXC: #{e}"
+    end    
+  
+    system("START rake run:webrickrhologserver[#{app_path}]")
+  end
     
 end
   
+namespace :run do
+  desc "start rholog(webrick) server"
+  task :webrickrhologserver, :app_path  do |t, args|
+    puts "Args were: #{args}"
+    $app_path = args[:app_path]
+    
+    Rake::Task["config:wm"].invoke
+
+	$rhologserver = WEBrick::HTTPServer.new :Port => $rhologhostport
+	
+	puts "LOCAL SERVER STARTED ON #{$rhologhostaddr}:#{$rhologhostport}"
+	started = File.open($app_path + "/started", "w+")
+	started.close
+	
+	#write host and port 4 log server     
+	$rhologfile = File.open(getLogPath, "w+")
+	
+	$rhologserver.mount_proc '/' do |req,res|
+	    if ( req.body == "RHOLOG_GET_APP_NAME" )
+		    res.status = 200
+		    res.chunked = true
+		    res.body = $app_path
+		elsif ( req.body == "RHOLOG_CLOSE" )
+		    res.status = 200
+		    res.chunked = true
+		    res.body = ""
+		
+		    $rhologserver.shutdown
+	    else
+		    $rhologfile.puts req.body
+		    $rhologfile.flush
+		    res.status = 200
+		    res.chunked = true
+		    res.body = ""
+		end    
+	end
+
+    ['INT', 'TERM'].each {|signal| 
+        trap(signal) {$rhologserver.shutdown}
+    }
+	
+	$rhologserver.start
+	$rhologfile.close
+	
+  end
+end
