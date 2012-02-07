@@ -64,8 +64,11 @@ CRhodesAppBase::CRhodesAppBase(const String& strRootPath, const String& strUserP
 void CRhodesAppBase::initAppUrls() 
 {
 #ifndef RHODES_EMULATOR
-    m_strBlobsDirPath = getRhoUserPath() + "db/db-files";
-	m_strDBDirPath = getRhoUserPath() + "db";
+    
+    String db_dir = rho_native_rhodbpath();
+    
+    m_strBlobsDirPath = db_dir + "db/db-files";
+	m_strDBDirPath = db_dir + "db";
 
     m_strAppRootPath = getRhoRootPath() + "apps";
     //m_strRhodesPath = "";
@@ -80,7 +83,7 @@ void CRhodesAppBase::initAppUrls()
 String CRhodesAppBase::getRelativeDBFilesPath(const String& strFilePath)
 {
 #ifndef RHODES_EMULATOR
-    String strDbFileRoot = getRhoUserPath();//getRhoRootPath();
+    String strDbFileRoot = rho_native_rhodbpath();//getRhoRootPath();
 #else
     String strDbFileRoot = getRhoRootPath() + RHO_EMULATOR_DIR;
 #endif
@@ -94,7 +97,7 @@ String CRhodesAppBase::getRelativeDBFilesPath(const String& strFilePath)
 String CRhodesAppBase::resolveDBFilesPath(const String& strFilePath)
 {
 #ifndef RHODES_EMULATOR
-    String strDbFileRoot = getRhoUserPath();//getRhoRootPath();
+    String strDbFileRoot = rho_native_rhodbpath();//getRhoRootPath();
 #else
     String strDbFileRoot = getRhoRootPath() + RHO_EMULATOR_DIR;
 #endif
@@ -313,4 +316,17 @@ const char* rho_native_rhouserpath()
 {
     return rho_native_rhopath();
 }
+
+const char* rho_native_rhodbpath()
+{
+    return rho_native_rhopath();
+}
+
+
+int rho_sys_set_do_not_bakup_attribute(const char* path, int value)
+{
+    // nothing
+    return 1;
+}
+
 #endif

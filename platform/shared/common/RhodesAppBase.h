@@ -89,6 +89,7 @@ extern "C" {
 
 const char* rho_native_rhopath();
 const char* rho_native_rhouserpath();
+const char* rho_native_rhodbpath();    
 
 const char* rho_rhodesapp_getplatform();
 //const char* rho_rhodesapp_getrhodespath();
@@ -100,6 +101,9 @@ void rho_free_callbackdata(void* pData);
 	
 int rho_base64_encode(const char *src, int srclen, char *dst);
 int rho_base64_decode(const char *src, int srclen, char *dst);	
+    
+int rho_sys_set_do_not_bakup_attribute(const char* path, int value);
+
 	
 #ifdef __cplusplus
 };

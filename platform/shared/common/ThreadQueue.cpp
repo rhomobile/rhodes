@@ -28,8 +28,11 @@
 
 //1. when stop thread - cancel current command. Add cancelCurrentCommand to ThreadQueue and call it from stop
 
+
 namespace rho {
 namespace common {
+
+unsigned int CThreadQueue::m_logThreadId = 0;
 
 CThreadQueue::CThreadQueue() : CRhoThread()
 {
@@ -68,7 +71,7 @@ int CThreadQueue::getCommandsCount() {
     
 void CThreadQueue::addQueueCommandInt(IQueueCommand* pCmd)
 {
-    LOG(INFO) + "addCommand: " + pCmd->toString();
+	LOG(INFO) + "addCommand: " + pCmd->toString();
 
     synchronized(m_mxStackCommands);
 
@@ -136,6 +139,9 @@ void CThreadQueue::processCommandBase(IQueueCommand* pCmd)
 
 void CThreadQueue::run()
 {
+    if(__rhoCurrentCategory.getName() == "NO_LOGGING")
+		m_logThreadId = getThreadID();
+
 	LOG(INFO) + "Starting main routine...";
 
 	int nLastPollInterval = getLastPollInterval();

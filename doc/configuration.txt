@@ -113,9 +113,9 @@ Sync server url, typically this will look like 'http://<hostname>:<port>/applica
 
 	syncserver = 'http://localhost:9292/application'
 
-Geo location update period (in seconds). Used as default value for third parameter of GeoLocation.set_notification method. This value is passed to OS API and behaviour is OS dependent (it should be used by system as a tip how often call notification back).
+Geo location update period (in seconds). Used as default value for third parameter of GeoLocation.set_notification method. This value is passed to OS API and behaviour is OS dependent (it should be used by system as a tip how often call notification back). Ignored on iOS.
 
-    gps_ping_timeout_sec = 30
+	gps_ping_timeout_sec = 30
 
 Geo location inactivity timeout (in seconds). This parameter controls the time after that location service is switched off in case no calls to the service. It also used as time period to drop cached location value.
 	

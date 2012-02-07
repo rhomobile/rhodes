@@ -85,6 +85,7 @@ public:
 
 public:
     CAppCallbacksQueue();
+	CAppCallbacksQueue(LogCategory logCat);
 	~CAppCallbacksQueue();
 
     //void call(callback_t type);
@@ -303,7 +304,9 @@ CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath)
 #endif
 
     initAppUrls();
-    
+
+   	LOGCONF().initRemoteLog();
+
     initHttpServer();
 
     getSplashScreen().init();
@@ -356,6 +359,8 @@ void CRhodesApp::run()
 CRhodesApp::~CRhodesApp(void)
 {
     stopApp();
+
+	LOGCONF().closeRemoteLog();
 
 #ifdef OS_WINCE
     WSACleanup();
@@ -914,9 +919,17 @@ int CRhodesApp::determineFreeListeningPort()
 void CRhodesApp::initAppUrls() 
 {
     CRhodesAppBase::initAppUrls(); 
-    
+   
 #if defined( __SYMBIAN32__ ) || defined( OS_ANDROID )
     m_strHomeUrl = "http://localhost:";
+#elif defined( OS_WINCE ) && !defined(OS_PLATFORM_MOTCE)
+    TCHAR oem[257];
+    SystemParametersInfo(SPI_GETPLATFORMNAME, sizeof(oem), oem, 0);
+    LOG(INFO) + "Device name: " + oem;
+    //if ((_tcscmp(oem, _T("MC75"))==0) || (_tcscmp(oem, _T("MC75A"))==0))
+    //   m_strHomeUrl = "http://localhost:";
+    //else
+       m_strHomeUrl = "http://127.0.0.1:";
 #else
     m_strHomeUrl = "http://127.0.0.1:";
 #endif

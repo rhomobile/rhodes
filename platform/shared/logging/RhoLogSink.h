@@ -29,6 +29,7 @@
 
 #include "RhoLogConf.h"
 #include "net/RawSocket.h"
+#include "common/RhodesApp.h"
 
 namespace rho {
 namespace common {
@@ -68,21 +69,29 @@ public:
     void clear(){}
 };
 
+class CLogSocketSink : public ILogSink, common::CThreadQueue{
+    String m_addrHost;
 
-class CLogSocketSink : public ILogSink{
-    const LogSettings& m_oLogConf;
-
-    rho::net::RawSocket *m_logNetClient;
-
-	String m_hostName;
-	String m_hostPort;
 public:
     CLogSocketSink(const LogSettings& oSettings); 
-	virtual ~CLogSocketSink() { delete m_logNetClient; }
+	virtual ~CLogSocketSink();
 
     void writeLogMessage( String& strMsg );
     int getCurPos(){ return -1; }
     void clear(){}
+
+    struct LogCommand : public IQueueCommand
+    {
+        String m_url;
+		String m_body;
+		LogCommand(String url, String body) : m_url(url), m_body(body) {}
+
+		boolean equals(IQueueCommand const &) {return false;}
+        String toString() {return "";}
+    };
+
+private:
+	void processCommand(IQueueCommand* pCmd);
 };
   
 }

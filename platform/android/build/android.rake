@@ -60,7 +60,8 @@ ANDROID_PERMISSIONS = {
   'calendar' => ['READ_CALENDAR', 'WRITE_CALENDAR'],
   'sdcard' => 'WRITE_EXTERNAL_STORAGE',
   'push' => proc do |manifest| add_push(manifest) end,
-  'motorola' => nil,
+  'motorola' => ['SYSTEM_ALERT_WINDOW', 'BROADCAST_STICKY', proc do |manifest| add_motosol_sdk(manifest) end],
+  'motoroladev' => ['SYSTEM_ALERT_WINDOW', 'BROADCAST_STICKY', proc do |manifest| add_motosol_sdk(manifest) end],
   'webkit_browser' => nil
 }
 
@@ -109,6 +110,14 @@ def add_push(manifest)
   end
 end
 
+def add_motosol_sdk(manifest)
+  uses_library = REXML::Element.new 'uses-library'
+  uses_library.add_attribute 'android:name', 'com.motorolasolutions.scanner'
+  manifest.elements.each('application') do |app|
+    app.add uses_library
+  end  
+end
+
 def set_app_name_android(newname)
   puts "set_app_name"
   $stdout.flush
@@ -154,17 +163,22 @@ def set_app_name_android(newname)
 
   caps_proc = []
   # Default permissions. Need to be always enabled.
-  caps = ['INTERNET', 'PERSISTENT_ACTIVITY', 'WAKE_LOCK', 'SYSTEM_ALERT_WINDOW']
+  caps = ['INTERNET', 'PERSISTENT_ACTIVITY', 'WAKE_LOCK']
   $app_config["capabilities"].each do |cap|
     cap = ANDROID_PERMISSIONS[cap]
     next if cap.nil?
-    if cap.is_a? Proc
-      caps_proc << cap
-      next
+    cap = [cap] unless cap.is_a? Array
+
+    cap.each do |cap_item|
+      if cap_item.is_a? Proc
+        caps_proc << cap_item
+        next
+      end
+      if cap_item.is_a? String
+        caps << cap_item
+        next
+      end
     end
-    cap = [cap] if cap.is_a? String
-    cap = [] unless cap.is_a? Array
-    caps += cap
   end
   caps.uniq!
 
@@ -564,7 +578,11 @@ namespace "config" do
     $app_config["capabilities"] += ANDROID_CAPS_ALWAYS_ENABLED
     $app_config["capabilities"].map! { |cap| cap.is_a?(String) ? cap : nil }.delete_if { |cap| cap.nil? }
     $use_google_addon_api = true unless $app_config["capabilities"].index("push").nil?
-    $use_motosol_barcode_api = false #true unless $app_config["extensions"].index("barcode").nil?
+    
+    unless $app_config['capabilities'].index('motorola').nil? and $app_config['capabilities'].index('motoroladev').nil?
+      $use_motosol_barcode_api = true if $app_config['extensions'].index('barcode') or $app_config['extensions'].index('barcode-moto')
+      raise 'Cannot use Motorola SDK addon and Google SDK addon together!' if $use_google_addon_api
+    end
  
     $applog_path = nil
     $applog_file = $app_config["applog"]

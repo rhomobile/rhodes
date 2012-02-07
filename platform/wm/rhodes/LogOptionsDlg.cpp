@@ -31,7 +31,7 @@
 
 LRESULT CLogOptionsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-#ifdef OS_WINCE
+#if defined( OS_WINCE ) && !defined (OS_PLATFORM_MOTCE)
 	SHINITDLGINFO shidi;
 	shidi.dwMask = SHIDIM_FLAGS; 
 	shidi.dwFlags = SHIDIF_SIZEDLGFULLSCREEN;//SHIDIF_DONEBUTTON | SHIDIF_SIZEDLGFULLSCREEN |SHIDIF_EMPTYMENU; 
@@ -43,7 +43,7 @@ LRESULT CLogOptionsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     mbi.nToolBarId = IDR_LOGOPTIONSMENUBAR; // ID of toolbar resource
     mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
     mbi.dwFlags    = SHCMBF_HMENU;
-    RHO_ASSERT(SHCreateMenuBar(&mbi));
+    SHCreateMenuBar(&mbi);
 #endif //OS_WINCE
 
     SendDlgItemMessage(IDC_CBXLEVELS,CB_ADDSTRING,0,  (LPARAM)_T("Trace"));

@@ -28,6 +28,7 @@
 #include "common/RhoFilePath.h"
 #include "common/RhoTime.h"
 #include "common/RhoSystem.h"
+#include "common/ThreadQueue.h"
 
 rho::LogCategory __rhoCurrentCategory;
 
@@ -44,7 +45,9 @@ LogMessage::LogMessage(const char* file, int line, LogSeverity severity, LogSett
 }
 
 bool LogMessage::isEnabled()const{
-    if ( m_severity >= getLogConf().getMinSeverity() ){
+	if(m_category.getName() == "NO_LOGGING" || common::CThreadQueue::getLogThreadId() == common::CSystem::getThreadID()) return false;
+	
+	if ( m_severity >= getLogConf().getMinSeverity() ){
         if ( m_category.isEmpty() || m_severity >= L_ERROR )
             return true;
 

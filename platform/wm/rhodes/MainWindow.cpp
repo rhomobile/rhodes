@@ -446,7 +446,7 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     int fActive = LOWORD(wParam);
 	rho_rhodesapp_callAppActiveCallback(fActive);
 
-#if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE)  && !defined (OS_PLATFORM_MOTCE)
     // Notify shell of our WM_ACTIVATE message
     SHHandleWMActivate(m_hWnd, wParam, lParam, &m_sai, 0);
 
@@ -613,8 +613,11 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 		rho_rhodesapp_callScreenRotationCallback(width, height, 90);
 	}
 	
+#if !defined (OS_PLATFORM_MOTCE)
 	// Notify shell of our WM_SETTINGCHANGE message
 	SHHandleWMSettingChange(m_hWnd, wParam, lParam, &m_sai);
+#endif
+
 #endif
     return 0;
 }

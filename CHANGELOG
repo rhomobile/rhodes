@@ -1,5 +1,6 @@
 ## 3.3.2
 * iPhone: fix AppStore sumbit issue. Now all files stored in Private Documents, only database and user files in Documents 
+* Fix issues with Ruby 1.9.2 on Mac
 * Android: fix issue with database encryption on OS 4.0
 * Android: disable zooming by default
 * iPhone: fix issue with creating Event

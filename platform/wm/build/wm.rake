@@ -88,7 +88,7 @@ namespace "config" do
     $rhobundledir =  $app_path + "/RhoBundle"
     $log_file = $app_config["applog"].nil? ? "applog.txt" : $app_config["applog"]
     $srcdir =  $bindir + "/RhoBundle"
-    $buildcfg = $app_config["buildcfg"]
+    $buildcfg = $app_config["buildcfg"] unless $buildcfg
     $buildcfg = "Release" unless $buildcfg
 
     if $sdk == "Windows Mobile 6 Professional SDK (ARMV4I)"
@@ -225,11 +225,18 @@ namespace "build" do
     #task :rhobundle => ["config:wm", "build:bundle:noxruby", "build:wm:extensions"] do
     #end
 
-    task :devrhobundle => ["config:set_win32_platform", "build:wm:rhobundle", :after_bundle] do
+    task :rhobundle => ["config:set_win32_platform", "build:wm:rhobundle", :after_bundle] do
+    end
+
+    task :set_debug_config do
+        $buildcfg = 'debug'
+    end
+
+    task :devrhobundle => ["config:set_win32_platform", :set_debug_config, "build:wm:rhobundle", :after_bundle] do
     end
 
     task :after_bundle do
-      win32rhopath = 'platform/wm/bin/win32/rhodes/debug/rho/'
+      win32rhopath = 'platform/wm/bin/win32/rhodes/' + $buildcfg + '/rho/'
       mkdir_p win32rhopath
       namepath = File.join(win32rhopath,"name.txt")
       old_appname = File.read(namepath) if File.exists?(namepath)
@@ -301,7 +308,7 @@ namespace "build" do
   end
 
   #desc "Build rhodes for win32"
-  task :win32 => ["build:win32:devrhobundle"] do
+  task :win32 => ["build:win32:rhobundle"] do
     chdir $config["build"]["wmpath"]
 
     args = ['/M4', $build_solution,  "\"" + $buildcfg + '|win32"']
@@ -421,6 +428,10 @@ namespace "clean" do
 end
 
 namespace "run" do
+    task :mylogserver => ["config:wm"] do
+        Jake.run_rho_log_server($app_path)
+    end
+
   def gelLogPath
     log_file_path =  File.join($app_path, $log_file)
     return log_file_path
@@ -437,7 +448,17 @@ namespace "run" do
     puts "\nStarting application on the WM6 emulator\n\n"
     log_file = gelLogPath
 
-    Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
+    #Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
+
+	File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
+	Jake.run_rho_log_server($app_path)
+	puts "RhoLogServer is starting"
+	while true do
+		if File.exists?($app_path + "/started")
+			break
+		end
+		sleep(1)
+	end
 
     if $webkit_capability
       wk_args   = [ 'wk-emu', "\"#{$wm_emulator}\"", '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
@@ -475,7 +496,19 @@ namespace "run" do
       puts "Please, connect you device via ActiveSync.\n\n"
       log_file = gelLogPath
 
-      Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
+      # temporary disable log from device (caused enormous delays)
+      # Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
+
+	  File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
+	  
+      Jake.run_rho_log_server($app_path)
+	  puts "RhoLogServer is starting"
+	  while true do
+	    if File.exists?($app_path + "/started")
+		    break
+	    end
+	    sleep(1)
+	  end    
 
       if $webkit_capability
         wk_args   = [ 'wk-dev', '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
@@ -577,7 +610,8 @@ namespace "run" do
         puts "Please, connect you device via ActiveSync.\n\n"
         log_file = gelLogPath
 
-        Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
+        # temporary disable log from device (caused enormous delays)
+        # Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
         Jake.run(detool,args)
       end
     end

@@ -69,6 +69,9 @@ extern void rho_sys_replace_current_bundle(const char* path);
 #define delete_folder rho_sys_delete_folder
 extern int rho_sys_delete_folder(const char* path);
 
+#define set_do_not_bakup_attribute rho_sys_set_do_not_bakup_attribute 
+extern int rho_sys_set_do_not_bakup_attribute(const char* path, int value);
+
 	#if !defined(bool)
 	#define bool int
 	#define true  1
@@ -130,3 +133,4 @@ extern void stop_timer( const char *url);
 extern void set_application_icon_badge(int badge_number);
 extern void replace_current_bundle(const char* path);
 extern int  delete_folder(const char* path);
+extern int set_do_not_bakup_attribute(const char* path, int value);

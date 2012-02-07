@@ -81,7 +81,7 @@ HREGNOTIFY g_hNotify = NULL, g_hNotifyCell = NULL;
 #endif
 
 //This is hack. MC4900 device failed to enable barcode after webkit initialization. So we enable it before.
-#if defined(APP_BUILD_CAPABILITY_BARCODE) && defined(APP_BUILD_CAPABILITY_MOTOROLA)
+#if defined(APP_BUILD_CAPABILITY_BARCODE) && defined(APP_BUILD_CAPABILITY_MOTOROLA) && defined (OS_PLATFORM_MOTCE)
 extern "C" void rho_scanner_before_webkit();
 extern "C" void rho_scanner_after_webkit();
 struct CBarcodeInit

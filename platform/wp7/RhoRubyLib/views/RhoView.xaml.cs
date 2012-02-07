@@ -48,6 +48,9 @@ namespace rho.views
         private static RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
                     new RhoLogger("RhoView");
 
+        private static RhoLogger JSLOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() :
+                    new RhoLogger("JavaScript");
+
         private Stack<Uri> m_backHistory = new Stack<Uri>();
         private Stack<Uri> m_forwardHistory = new Stack<Uri>();
         /// <summary>
@@ -63,7 +66,15 @@ namespace rho.views
         private bool m_reload = false;
         private bool m_loadFirstTime = true;
         private bool m_masterView = false;
+        
         private const string AJAX_CONTEXT_PARAM = "_rho_callbackId";
+        private const string JS_NOTIFY_CONSOLE_LOG = "console.log:";
+        private const string JS_NOTIFY_CONSOLE_INFO = "console.info:";
+        private const string JS_NOTIFY_CONSOLE_WARNING = "console.warn:";
+        private const string JS_NOTIFY_CONSOLE_ERROR = "console.error:";
+        private const string JS_NOTIFY_REQUEST = "request:";
+        private const string REQUEST_URL_SCHEME = "x-wmapp1:";
+
         //TO DO history. each time we have to save our current state of rhodesapp in rhoview entity
         public Stack<Uri> BackHistory { set { m_backHistory = value; } }
         public Stack<Uri> ForwardHistory { set { m_forwardHistory = value; } }
@@ -168,12 +179,34 @@ namespace rho.views
 
         private void WebBrowser_OnScriptNotify(object sender, NotifyEventArgs e)
         {
-            string ajaxContext = extractAjaxContext(e.Value);
-            if (!RHODESAPP().HttpServer.processBrowserRequest(new Uri(e.Value, UriKind.Relative), ajaxContext))
-            {
-                LOG.ERROR("External requests should be filtered in javascript");
-            }
+            string request = e.Value;
 
+            if (request.startsWith(JS_NOTIFY_CONSOLE_LOG))
+            {
+                JSLOG.INFO(request.substring(JS_NOTIFY_CONSOLE_LOG.length()).trim());
+            }
+            else if (request.startsWith(JS_NOTIFY_CONSOLE_INFO))
+            {
+                JSLOG.INFO(request.substring(JS_NOTIFY_CONSOLE_INFO.length()).trim());
+            }
+            else if (request.startsWith(JS_NOTIFY_CONSOLE_WARNING))
+            {
+                JSLOG.WARNING(request.substring(JS_NOTIFY_CONSOLE_WARNING.length()).trim());
+            }
+            else if (request.startsWith(JS_NOTIFY_CONSOLE_ERROR))
+            {
+                JSLOG.ERROR(request.substring(JS_NOTIFY_CONSOLE_ERROR.length()).trim());
+            }
+            else if (request.startsWith(JS_NOTIFY_REQUEST))
+            {
+                string req = request.substring(JS_NOTIFY_REQUEST.length()).trim();
+
+                string ajaxContext = extractAjaxContext(req);
+                if (!RHODESAPP().HttpServer.processBrowserRequest(new Uri(req.substring(REQUEST_URL_SCHEME.length()), UriKind.Relative), ajaxContext))
+                {
+                    LOG.ERROR("External requests should be filtered in javascript");
+                }
+            }
         }
 
         public void refresh()
