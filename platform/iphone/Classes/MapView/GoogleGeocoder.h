@@ -30,7 +30,8 @@
 #import <CoreLocation/CoreLocation.h>
 #import "MapAnnotation.h"
 
-#define kGeoCodeURL @"http://maps.google.com/maps/geo?q="
+//#define kGeoCodeURL @"http://maps.google.com/maps/geo?q="
+#define kGeoCodeURL @"http://maps.googleapis.com/maps/api/geocode/json?address="
 
 @interface GoogleGeocoder : NSObject {
     NSMutableArray *annotations;

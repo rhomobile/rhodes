@@ -32,6 +32,8 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "GoogleGeocoder"
 
+extern     void rho_geocoding_parse_json_responce(const char* data, char* adress_buf, int max_adress_length, double* latitude, double* longitude, int* is_adress_ok, int* is_coords_ok); 
+
 @implementation GoogleGeocoder
 
 @synthesize actionTarget,onDidFindAddress,theElement,annotations,gapikey;
@@ -80,16 +82,17 @@
     currentAnnotation = annotation;
     NSMutableString *url = [[NSMutableString alloc] initWithString:kGeoCodeURL];
     [url appendString:[annotation address]];
-    [url appendFormat:@"&output=xml"];
+    //[url appendFormat:@"&output=xml"];
     [url replaceOccurrencesOfString:@"ä" withString:@"ae" options:1 range:(NSRange){0,[url length]}];
     [url replaceOccurrencesOfString:@"ö" withString:@"oe" options:1 range:(NSRange){0,[url length]}];
     [url replaceOccurrencesOfString:@"ü" withString:@"ue" options:1 range:(NSRange){0,[url length]}];
     [url replaceOccurrencesOfString:@"ß" withString:@"ss" options:1 range:(NSRange){0,[url length]}];
     [url replaceOccurrencesOfString:@" " withString:@"+" options:1 range:(NSRange){0,[url length]}];
-    if (gapikey) {
-        [url appendString:@"&key="];
-        [url appendString:gapikey];
-    }
+    [url appendString:@"&sensor=false"];
+    //if (gapikey) {
+    //    [url appendString:@"&key="];
+    //    [url appendString:gapikey];
+    //}
     NSLog(@"Geocoding url = %@\n", url);
     NSURLRequest *request=[NSURLRequest requestWithURL:[NSURL URLWithString:url]							  
                                         cachePolicy:NSURLRequestUseProtocolCachePolicy
@@ -97,10 +100,42 @@
     @try {
         NSHTTPURLResponse *response = NULL;
         NSData* data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:nil];
+        
+        
+        NSString* data_string = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]; 
+
+        char adress_buf[2048];
+        int is_adress_ok = 0;
+        int is_coords_ok = 0;
+        double latitude = 0;
+        double longitude = 0;
+        
+        rho_geocoding_parse_json_responce([data_string UTF8String], adress_buf, 2048, &latitude, &longitude, &is_adress_ok, &is_coords_ok); 
+
+        if (is_adress_ok != 0) {
+            [currentAnnotation setCoordinateString:[NSString stringWithUTF8String:adress_buf]];
+        }
+        
+        if (is_coords_ok) {
+            CLLocation *location = [[[CLLocation alloc] initWithLatitude:latitude longitude:longitude] autorelease];
+            [currentAnnotation setCoordinate:location.coordinate];
+        }
+        
+        
+        /*
+        const char* curl = [url UTF8String];
+        
         NSXMLParser *parser = [[NSXMLParser alloc] initWithData:data];
         [parser setDelegate:self];
         [parser parse];
-        [self stringCooridinatesToCLLocation];
+         */
+        
+        
+        
+        
+        
+        
+        //[self stringCooridinatesToCLLocation];
     }
     @catch (NSException *exception) {
         NSLog(@"Geocoding failed");
@@ -124,6 +159,7 @@
 #pragma mark -
 #pragma mark XML Parsing Methods
 
+/*
 -(void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName
  namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qualifiedName
    attributes:(NSDictionary *)attributeDict {
@@ -134,6 +170,7 @@
 -(void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string {
     string = [string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     string = [string stringByReplacingOccurrencesOfString:@"\\n" withString:@""];
+    const char* cstring = [string UTF8String];
     if ([string length] == 0)
         return;
     
@@ -147,6 +184,7 @@
 -(void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName
  namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qname {
 }
+ */
 
 	
 
