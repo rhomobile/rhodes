@@ -388,4 +388,27 @@ void rho_geoimpl_do_geocoding(rho_param* p, const char* callback, int callback_t
     }
 }
 
-
+void rho_geocoding_parse_json_responce(const char* data, char* adress_buf, int max_adress_length, double* latitude, double* longitude, int* is_adress_ok, int* is_coords_ok) {
+    
+    rho::String adress;
+    bool coord_ok = false;
+    bool adress_ok = false;
+    bool is_result = rho::common::map::parse_json(data, latitude, longitude, &adress, &coord_ok, &adress_ok);
+    
+    *is_adress_ok = 0;
+    *is_coords_ok = 0;
+    
+    if (is_result) {
+        if (adress_ok) {
+            if (adress.length() > (max_adress_length-1)) {
+                adress = adress.substr(0, max_adress_length-1); 
+            }
+            strcpy(adress_buf, adress.c_str());
+            *is_adress_ok = 1;
+        }
+        if (coord_ok) {
+            *is_coords_ok = 1;
+        }
+    }
+    
+}

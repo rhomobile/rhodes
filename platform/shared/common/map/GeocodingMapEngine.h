@@ -101,6 +101,9 @@ extern "C" {
     
     
 void rho_geoimpl_do_geocoding(rho_param* p, const char* callback, int callback_tag);    
+    
+    void rho_geocoding_parse_json_responce(const char* data, char* adress_buf, int max_adress_length, double* latitude, double* longitude, int* is_adress_ok, int* is_coords_ok);    
+    
 #ifdef __cplusplus
 }
 #endif

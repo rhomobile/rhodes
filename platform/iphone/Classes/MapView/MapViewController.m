@@ -298,7 +298,16 @@ static MapViewController *mc = nil;
             MapAnnotation *annObj = [[MapAnnotation alloc] init];
             [annObj setCoordinate:coord];
             if (address) [annObj setAddress:address];
-            if (title) [annObj setTitle:title];
+            if (title) {
+                if ([title length] == 0) {
+                    if (subtitle) {
+                        if ([subtitle length] > 0) {
+                            title = @" ";
+                        }
+                    }
+                }
+                [annObj setTitle:title];    
+            }
             if (subtitle) [annObj setSubtitle:subtitle];
             if (url) [annObj setUrl:url];
             if (image) [annObj setImage:image];
