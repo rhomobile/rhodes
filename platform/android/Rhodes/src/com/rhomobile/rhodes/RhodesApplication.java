@@ -48,10 +48,15 @@ public class RhodesApplication extends Application{
 	
     private static final String TAG = RhodesApplication.class.getSimpleName();
     private static Handler mHandler;
+    static AppEventObserver sRhodesAppActiveWatcher;
     static {
         NativeLibraries.load();
     }
 
+    public static void handleAppStarted() {
+        sRhodesAppActiveWatcher.run();
+    }
+    
     private ApplicationInfo getAppInfo() {
         Context context = this;
         String pkgName = context.getPackageName();
@@ -83,6 +88,8 @@ public class RhodesApplication extends Application{
         super.onCreate();
 
         Log.i(TAG, "Initializing...");
+        
+        sRhodesAppActiveWatcher = AppState.AppStarted.addObserver("RhodesAppActiveObserver", true);
         
         RhodesApplication.runWhen(
                 UiState.MainActivityStarted,
@@ -228,18 +235,123 @@ public class RhodesApplication extends Application{
         public abstract void run();
     }
 
-    private static void runHandlers(Collection<StateHandler> handlers)
-    { 
-    	for(StateHandler handler: handlers) {
-    		handler.run();
+    /**
+     * 
+     * @author lexis_tikh
+     *
+     */
+    private static class EventObserver implements Runnable{
+        private volatile boolean mReady = false;
+        private boolean mCheckOnce;
+        private String mTag;
+
+        public EventObserver(String tag, boolean once) { mTag = tag; mCheckOnce = once; }
+        public synchronized boolean isReady() { return mReady; }
+        public String toString() { return mTag + " - " + (mReady?"ready":"not ready");}
+        public synchronized void reset() { mReady = false; }
+        public boolean isCheckOnce() { return mCheckOnce; }
+        public void run() { // notify
+            synchronized(this) {
+                mReady = true;
+            }
+            Logger.I(mTag, "Ready");
+        }
+    }
+
+    public static class AppEventObserver extends EventObserver {
+        private AppState mState;
+
+        public AppEventObserver(String tag, AppState state, boolean once) {
+            super(tag, once);
+            mState = state;
+        }
+        public void run() {
+            super.run();
+            
+            if(mState == null) throw new IllegalStateException("AppEventObserver state is not initialized");
+            
+            RhodesApplication.stateChanged(mState);
+        }
+    }
+
+    public static class UiEventObserver extends EventObserver {
+        private UiState mState;
+
+        public UiEventObserver(String tag, UiState state, boolean once) {
+            super(tag, once);
+            mState = state;
+        }
+        public void run() {
+            super.run();
+            
+            if(mState == null) throw new IllegalStateException("UiEventObserver state is not initialized");
+            
+            RhodesApplication.stateChanged(mState);
+        }
+    }
+
+    private static int runHandlers(Collection<StateHandler> handlers) {
+        if (handlers == null) return 0;
+
+        for(StateHandler handler: handlers) {
+            handler.run();
             Exception error = handler.getError();
             if (error != null)
             {
                 Logger.E(TAG, error);
                 Thread.dumpStack();
             }
-    	}
+        }
+        
+        return handlers.size();
     }
+    
+    private static class StateImpl <Observer extends EventObserver> {
+        private String TAG;
+        private Vector<Observer> mObservers = new Vector<Observer>();
+        private Vector<StateHandler> mHandlers = new Vector<StateHandler>();
+
+        public StateImpl(String tag) { TAG = tag; }
+        
+        public void addObserver(Observer o) { mObservers.add(o); }
+        public void addHandler(StateHandler h) { mHandlers.add(h); }
+
+        public boolean isComplete() {
+            boolean complete = true;
+            for (Observer observer: mObservers) {
+                complete &= observer.isReady();
+                if (!complete) {
+                    Logger.D(TAG, observer.toString());
+                    break;
+                }
+            }
+            return complete;
+        }
+
+        public Collection<StateHandler> commitHandlers() {
+            Vector<StateHandler> handlers = new Vector<StateHandler>();
+            Vector<StateHandler> doneHandlers = new Vector<StateHandler>();
+            for (StateHandler handler: mHandlers) {
+                handlers.add(handler);
+                if (handler.isRunOnce()) {
+                    doneHandlers.add(handler);
+                }
+            }
+            mHandlers.removeAll(doneHandlers);
+            return handlers;
+        }
+
+        public void commitObservers() {
+            Vector<EventObserver> observers = new Vector<EventObserver>();
+            for (EventObserver o: mObservers) {
+                if (o.isCheckOnce()) {
+                    observers.add(o);
+                }
+            }
+            mObservers.removeAll(observers);
+        }
+    }
+    
     
     public enum AppState
     {
@@ -264,42 +376,49 @@ public class RhodesApplication extends Application{
         
         private Vector<StateHandler> mHandlers = new Vector<StateHandler>();
         private String TAG;
+        private StateImpl<AppEventObserver> mImpl;
         
-        private AppState(String tag) { TAG = tag; }
+        private AppState(String tag) {
+            TAG = tag;
+            mImpl = new StateImpl<AppEventObserver>(tag);
+        }
         
         private synchronized Collection<StateHandler> commit()
         {
-            Vector<StateHandler> handlers = new Vector<StateHandler>();
+            Collection<StateHandler> handlers = null;// = new Vector<StateHandler>();
 
             Logger.T(TAG, "Starting commit. Current AppState: " + sAppState.TAG);
-            if((this == AppActivated) && (sAppState == Undefined)) {
-                appActivatedFlag = true;
-                Logger.I(TAG, "Cannot commit now, application will be activated when started.");
-            } else {
-       	      	Logger.T(TAG, "Commiting AppState handlers.");
-	            Vector<StateHandler> doneHandlers = new Vector<StateHandler>();
-	            for (StateHandler handler: mHandlers) {
-	            	handlers.add(handler);
-	                if (handler.isRunOnce()) {
-	                    doneHandlers.add(handler);
-	                }
-	            }
-	            mHandlers.removeAll(doneHandlers);
-	            sAppState = this;
+            if(mImpl.isComplete()) {
+                if((this == AppActivated) && (sAppState == Undefined)) {
+                    appActivatedFlag = true;
+                    Logger.I(TAG, "Cannot commit now, application will be activated when started.");
+                } else {
+                    Logger.T(TAG, "Commiting AppState handlers.");
+                    
+                    handlers = mImpl.commitHandlers();
+                    mImpl.commitObservers();
+                    
+                    sAppState = this;
+                }
             }
             Logger.T(TAG, "After AppState commit: " + sAppState.TAG);
             return handlers;
         }
         
         public synchronized void addHandler(StateHandler handler) { mHandlers.add(handler); }
+        public synchronized AppEventObserver addObserver(String tag, boolean once) {
+            AppEventObserver observer = new AppEventObserver(tag, this, once);
+            mImpl.addObserver(observer);
+            return observer;
+        }
         public abstract boolean canHandle(AppState state);
-        
+
         static public void handleState(AppState state) {
-            runHandlers(state.commit());
-            Logger.I(sAppState.TAG, "Handlers have completed.");
+            int cnt = runHandlers(state.commit());
+            Logger.I(sAppState.TAG, "Handlers have completed: " + cnt);
             if((state == AppStarted) && appActivatedFlag) {
-                runHandlers(AppActivated.commit());
-                Logger.I(sAppState.TAG, "Handlers have completed.");
+                cnt = runHandlers(AppActivated.commit());
+                Logger.I(sAppState.TAG, "Handlers have completed: " + cnt);
             }
             return;
         }
@@ -324,40 +443,42 @@ public class RhodesApplication extends Application{
             public boolean canHandle(UiState state) { return (state == this) || (state == MainActivityCreated); }
         };
 
-        private Vector<StateHandler> mHandlers = new Vector<StateHandler>();
+        private StateImpl<UiEventObserver> mImpl;
         public String TAG;
         
-        private UiState(String tag) { TAG = tag; }
+        private UiState(String tag) {
+            TAG = tag;
+            mImpl = new StateImpl<UiEventObserver>(tag);
+        }
         
         private synchronized Collection<StateHandler> commit()
         {
-            Vector<StateHandler> handlers = new Vector<StateHandler>();
+            Collection<StateHandler> handlers = null;
 
             Logger.T(TAG, "Starting commit. Current UiState: " + sUiState.TAG);
 
-            if (!sUiState.canHandle(this)) {
-        		
-	            Logger.T(TAG, "Commiting UiState handlers.");
-	            Vector<StateHandler> doneHandlers = new Vector<StateHandler>();
-	            for (StateHandler handler: mHandlers) {
-	            	handlers.add(handler);
-	                if (handler.isRunOnce()) {
-	                    doneHandlers.add(handler);
-	                }
-	            }
-	            mHandlers.removeAll(doneHandlers);
-	            sUiState = this;
-        	}
+            if (mImpl.isComplete()) {
+                if (!sUiState.canHandle(this)) {
+                    handlers = mImpl.commitHandlers();
+                    mImpl.commitObservers();
+                    sUiState = this;
+                }
+            }
             Logger.T(TAG, "After UiState commit: " + sUiState.TAG);
             return handlers;
         }
         
-        public synchronized void addHandler(StateHandler handler) { mHandlers.add(handler); }
+        public synchronized void addHandler(StateHandler handler) { mImpl.addHandler(handler); }
+        public synchronized UiEventObserver addObserver(String tag, boolean once) {
+            UiEventObserver observer = new UiEventObserver(tag, this, once);
+            mImpl.addObserver(observer);
+            return observer;
+        }
         public abstract boolean canHandle(UiState state);
-        
+
         static public void handleState(UiState state) {
-            runHandlers(state.commit());
-            Logger.I(sAppState.TAG, "Handlers have completed.");
+            int cnt = runHandlers(state.commit());
+            Logger.I(sAppState.TAG, "Handlers have completed: " + cnt);
         }
     }
 

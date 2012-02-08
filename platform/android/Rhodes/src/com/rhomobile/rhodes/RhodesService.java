@@ -340,7 +340,7 @@ public class RhodesService extends Service {
 
 	public static void handleAppStarted()
 	{
-	    RhodesApplication.stateChanged(AppState.AppStarted);
+	    RhodesApplication.handleAppStarted();
 	}
 
 	private void setFullscreenParameters() {

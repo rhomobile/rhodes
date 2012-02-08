@@ -108,8 +108,8 @@ public class SplashScreen implements MainView {
             Logger.D(TAG, "Creating Motorola WebKIT view");
             try {
                 Class<? extends WebView> viewClass = (Class<? extends WebView>)Class.forName("com.rhomobile.rhodes.webview.EkiohWebView");
-                Constructor<? extends WebView> viewCtor = viewClass.getConstructor(Context.class);
-                view = viewCtor.newInstance(context);
+                Constructor<? extends WebView> viewCtor = viewClass.getConstructor(Context.class, Runnable.class);
+                view = viewCtor.newInstance(context, RhodesApplication.AppState.AppStarted.addObserver("MotorolaStartEngineObserver", true));
             } catch (Throwable e) {
                 Logger.E(TAG, e);
                 RhodesApplication.stop();
@@ -125,18 +125,18 @@ public class SplashScreen implements MainView {
                     googleWebView.applyWebSettings();
                 }
             });
+            switch (type) {
+            case 0:
+              view.loadDataWithBaseURL("file:///android_asset/", "<html><body style=\"margin:0px\"><img src=\""+ fn[type] + "\" height=\"100%\" width=\"100%\" border=\"0\"/></body></html>", "text/html", "utf-8", null);
+              break;
+            case 1:
+              view.loadUrl("file:///android_asset/" + fn[type]);
+              break;
+            default:
+              view.loadData("<html><title>Loading</title><body text='white' bgcolor='black'>Loading...</body></html>", "text/html", "utf-8");
+          }
         }
 
-        switch (type) {
-        case 0:
-            view.loadDataWithBaseURL("file:///android_asset/", "<html><body style=\"margin:0px\"><img src=\""+ fn[type] + "\" height=\"100%\" width=\"100%\" border=\"0\"/></body></html>", "text/html", "utf-8", null);
-            break;
-        case 1:
-            view.loadUrl("file:///android_asset/" + fn[type]);
-            break;
-        default:
-            view.loadData("<html><title>Loading</title><body text='white' bgcolor='black'>Loading...</body></html>", "text/html", "utf-8");
-        }
 
         return view;
     }
