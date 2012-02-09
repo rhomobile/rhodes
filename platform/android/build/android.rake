@@ -1520,9 +1520,6 @@ namespace "package" do
     Dir.glob($extensionsdir + "/lib*.so").each do |lib|
       cp_r lib, File.join($tmpdir, "lib/armeabi")
     end
-    Dir.glob($extensionsdir + '/noautoload/lib*.so').each do |lib|
-      cp_r lib, File.join($tmpdir, "lib/armeabi")
-    end
     $ext_android_additional_lib.each do |lib|
       cp_r lib, File.join($tmpdir, "lib/armeabi")
     end
@@ -1900,55 +1897,64 @@ namespace "run" do
     def  run_emulator(options = {})
       apkfile = Jake.get_absolute $targetdir + "/" + $appname + "-debug.apk"
 
-      AndroidTools.kill_adb
+      #AndroidTools.kill_adb
       Jake.run($adb, ['start-server'], nil, true)
-      puts 'Sleep for 5 sec. waiting for "adb start-server"'
-      sleep 5
+      #puts 'Sleep for 5 sec. waiting for "adb start-server"'
+      #sleep 5
 
       AndroidTools.logcat_process()
 
-      if $appavdname != nil
-        $avdname = $appavdname
-      end
-
-      createavd = "\"#{$androidbin}\" create avd --name #{$avdname} --target #{$avdtarget} --sdcard 128M "
-      system("echo no | #{createavd}") unless File.directory?( File.join(ENV['HOME'], ".android", "avd", "#{$avdname}.avd" ) )
-
-      if $use_google_addon_api
-        avdini = File.join(ENV['HOME'], '.android', 'avd', "#{$avdname}.ini")
-        avd_using_gapi = true if File.new(avdini).read =~ /:Google APIs:/
-        unless avd_using_gapi
-          puts "Can not use specified AVD (#{$avdname}) because of incompatibility with Google APIs. Delete it and try again."
-          exit 1
-        end
-      end
-
       running = AndroidTools.is_emulator_running
-
       if !running
+
+        if $appavdname != nil
+          $avdname = $appavdname
+        end
+
+        createavd = "\"#{$androidbin}\" create avd --name #{$avdname} --target #{$avdtarget} --sdcard 128M "
+        system("echo no | #{createavd}") unless File.directory?( File.join(ENV['HOME'], ".android", "avd", "#{$avdname}.avd" ) )
+
+        if $use_google_addon_api
+          avdini = File.join(ENV['HOME'], '.android', 'avd', "#{$avdname}.ini")
+          avd_using_gapi = true if File.new(avdini).read =~ /:Google APIs:/
+          unless avd_using_gapi
+            puts "Can not use specified AVD (#{$avdname}) because of incompatibility with Google APIs. Delete it and try again."
+            exit 1
+          end
+        end
+
         # Start the emulator, check on it every 5 seconds until it's running
-        cmd = "\"#{$emulator}\" -cpu-delay 0 -no-boot-anim"
+        cmd = "\"#{$emulator}\" -cpu-delay 0"
         cmd << " -no-window" if options[:hidden]
         cmd << " -avd #{$avdname}"
         Thread.new { system(cmd) }
 
         puts "Waiting for emulator..."
-        puts Jake.run($adb, ['wait-for-device'] )
+        res = 'error'        
+        while res =~ /error/ do
+            sleep 5
+            res = Jake.run $adb, ['-e', 'wait-for-device']
+            puts res
+        end
 
-        puts "Waiting up to 180 seconds for emulator..."
+        puts "Waiting up to 600 seconds for emulator..."
         startedWaiting = Time.now
         adbRestarts = 1
-        while (Time.now - startedWaiting < 180 )
+        while (Time.now - startedWaiting < 600 )
           sleep 5
           now = Time.now
           started = false
+          booted = true
           Jake.run2 $adb, ["-e", "shell", "ps"], :system => false, :hideerrors => false do |line|
+            #puts line
+            booted = false if line =~ /bootanimation/
             started = true if line =~ /android\.process\.acore/
             true
           end
-          unless started
+          #puts "started: #{started}, booted: #{booted}"
+          unless started and booted
             printf("%.2fs: ",(now - startedWaiting))
-            if (now - startedWaiting) > (60 * adbRestarts)
+            if (now - startedWaiting) > (180 * adbRestarts)
               # Restart the adb server every 60 seconds to prevent eternal waiting
               puts "Appears hung, restarting adb server"
               AndroidTools.kill_adb

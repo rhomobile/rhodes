@@ -274,8 +274,8 @@ namespace "config" do
         $app_config["capabilities"] += ["barcode"] if $app_config["extensions"].index("barcode-moto")
     end
 
-    puts "$app_config['extensions'] : #{$app_config['extensions']}"   
-    puts "$app_config['capabilities'] : #{$app_config['capabilities']}"   
+    puts "$app_config['extensions'] : #{$app_config['extensions'].inspect}"   
+    puts "$app_config['capabilities'] : #{$app_config['capabilities'].inspect}"   
     
     $hidden_app = $app_config["hidden_app"].nil?() ? "0" : $app_config["hidden_app"]
     
