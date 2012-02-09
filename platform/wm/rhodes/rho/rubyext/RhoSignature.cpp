@@ -20,6 +20,7 @@ extern BOOL rho_wmimpl_saveSignature(void *inkImpl, LPCTSTR szFilePathName);
 
 extern "C" HWND getMainWnd();
 extern "C" HWND getWebViewWnd(int index);
+extern "C" void rho_webview_navigate(const char* url, int index);
 
 namespace rho 
 {
@@ -32,6 +33,14 @@ CRhoSignature::CRhoSignature(void)
 
 CRhoSignature::~CRhoSignature(void)
 {
+}
+
+static bool namecmp(const wchar_t* tc1, LPCTSTR tc2)
+{
+	if (!tc1 || !tc2)
+		return false;
+
+	return !_wcsicmp( (LPCTSTR)tc1, tc2);
 }
 
 /*static*/ void CRhoSignature::takeSignature(CParams* params)
@@ -160,62 +169,31 @@ void CRhoSignatureWindow::addNewPoint(int x, int y, bool bNewLine)
 
 void CRhoSignatureWindow::sendVectors()
 {
-	if ( !m_bDoVectors )
+	if ( !getParams().m_bSendVectors )
         return;
-#if 0
-	TCHAR		szTarget[MAXURL + 1];
-	LPTSTR		pIndex;
-	int			iTotalLen,iStrLen,iErr = 1;
-	CSignature	*pObj = (CSignature *)lParam;
-	P_COORDXY	pPoint = pObj->m_pCurrentVector;
-		
-	while(pPoint)	// we need at least 2 points for a line
-	{
-		wcscpy(szTarget,L"new Array(");
-		iTotalLen = 10;
-		pIndex = szTarget + 10;
-		//set our pointer past 'new Array('  
-		while(pPoint && iTotalLen < ((MAXLEN_VECTORARR / 2) - 13))
-		{
-			if(pPoint->bNewLine){
-				wcscpy(pIndex,L"0xFFFF,0xFFFF,");
-				iTotalLen	+= 14;
-				pIndex		+= 14;
 
-			}
-			
-			iStrLen		= wsprintf(pIndex,L"0x%X,0x%X,",pPoint->XPos,pPoint->YPos);
-			iTotalLen	+= iStrLen;
-			pIndex		+= iStrLen;
-			
-			pPoint = pPoint->pPoint;
-			
-		}
-		
-		
-		if(pPoint){				// if we haven't finished outputting this batch of points
-			--pIndex;			//get rid of the last seperator
-			*pIndex = L')';		//add the bracket
-			pIndex++;			
-			*pIndex = NULL;		//finally NULL terminate
-			
-		}
-		else{					
-			*pIndex = NULL;		//we have reached the end of a batch send
-			wcscat(szTarget,L"0xFFFF,0xFFFF)");//add the last point indicator
-		}
-		
-		//navigate
-		if(pObj && pObj->m_hParent && *pObj->m_tcVectorNavigateURI != NULL)
-		{
-            //RHO
-            //TODO: SendPBNavigate
-			//pObj->m_pModule->SendPBNavigate(tcVectorEventNames, pObj->m_iInstanceID, pObj->m_tcVectorNavigateURI, szTarget, NULL); 
-            //RHO
-			iErr = 0;
-		}
-	}
-#endif
+    if ( getParams().m_strSendVectorJS.length() == 0 )
+        return;
+
+    String	strTarget = m_vecPoints.size() > 1 ? "new Array(" : "" ;
+    char szPtBuf[100];
+    for( int i = 0; i < (int)m_vecPoints.size()-1; i++ )
+    {
+        if ( m_vecPoints[i+1].m_bNewLine )
+            strTarget += "0xFFFF,0xFFFF,";
+
+        sprintf( szPtBuf, "0x%X,0x%X,", m_vecPoints[i].m_xPos, m_vecPoints[i].m_yPos );
+
+        strTarget += szPtBuf;
+    }
+
+    strTarget += "0xFFFF,0xFFFF)";
+
+    //TODO: send vector
+    //m_strSendVectorJS + "(" + strTarget + ")"
+    //BUT : "VectorEvent:url('Javascript:onVectors(%s);')"
+    //rho_webview_navigate( );
+
 }
 
 LRESULT CRhoSignatureWindow::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -238,7 +216,7 @@ LRESULT CRhoSignatureWindow::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam
     ReleaseCapture();
     m_bCapture = false;
     m_ptLast = CPoint(-1, -1);
-    //sendVectors();
+    sendVectors();
 
     return TRUE;
 }
@@ -600,18 +578,133 @@ static void readIntFromParam(rho_param* params, const char* szName, long& res)
         convertFromStringA( p->v.string, res );
 }
 
+static int getColorFromString(const char* szColor)
+{
+    if ( !szColor || !*szColor )
+        return RGB(0, 0, 0);
+
+	int c = atoi(szColor);
+
+	int cR = (c & 0xFF0000) >> 16;
+	int cG = (c & 0xFF00) >> 8;
+	int cB = (c & 0xFF);
+
+    return RGB(cR, cG, cB);
+}
+
+static BYTE CharHexToByte(TCHAR chHex)
+{
+	TCHAR ch =  chHex;
+	ch = towupper(chHex);
+	TCHAR conv[] = {L"0123456789ABCDEF"};
+	int byIndex;
+	for(byIndex = 0;ch != conv[byIndex];byIndex++);
+	return byIndex;
+	
+}
+
+static COLORREF getColorFromMetaString(LPCTSTR lpSzColor)
+{
+	TCHAR	pStr[7];
+	int		iVal;
+	BYTE byCol[3];
+		
+	if(wcslen(lpSzColor)!= 7)
+		return FALSE;
+
+	for(int loop = 0;loop < 3;loop++)
+	{
+		_tcscpy(pStr,lpSzColor +(loop * 2)+ 1);
+		pStr[2] = '\0';
+		
+		iVal = CharHexToByte(*pStr);
+		byCol[loop] = (iVal * 16) + CharHexToByte(*(pStr+1));
+
+	}
+	COLORREF nCrColor = 0;	//set the COLORREF to 0
+	nCrColor = (byCol[0] << 16)|(byCol[1] << 8)|(byCol[2]);
+	
+	return nCrColor;
+}
+
+void CRhoSignature::CParams::readParams(rho_param* params)
+{
+    m_nLeft = m_nTop = m_nWidth = m_nHeight = -1;
+    if ( params )
+    {
+        readIntFromParam(params, "left", m_nLeft);
+        readIntFromParam(params, "top", m_nTop);
+        readIntFromParam(params, "width", m_nWidth);
+        readIntFromParam(params, "height", m_nHeight);
+    }
+
+    if (params)
+    {
+        rho_param* pFP = rho_param_hash_get(params, "filePath");
+        if ( pFP )
+           m_strFilePath = pFP->v.string;
+    }
+
+    if ( m_strFilePath.length() == 0 )
+        m_strFilePath = RHODESAPPBASE().getBlobsDirPath() + "/Image_" + CLocalTime().toString(true,true) + "." + getFileFormat();
+
+    if (params)
+    {
+        rho_param* pFF = rho_param_hash_get(params, "imageFormat");
+        if ( pFF )
+            m_strFileFormat = pFF->v.string;
+    }
+
+    if ( m_strFileFormat.length() == 0 )
+        m_strFileFormat = "bmp";
+
+
+    m_nPenColor = RGB(0,0,0);
+
+    if (params)
+    {
+        rho_param* p = rho_param_hash_get(params, "penColor");
+        if ( p )
+            m_nPenColor = getColorFromString(p->v.string);
+    }
+
+    m_nBgColor = RGB(255,255,255);
+
+    if (params)
+    {
+        rho_param* p = rho_param_hash_get(params, "bgColor");
+        if ( p )
+            m_nBgColor = getColorFromString(p->v.string);
+    }
+
+    m_nPenWidth = 1;
+
+    if (params)
+        readIntFromParam(params, "penWidth", m_nPenWidth);
+
+    m_nBorder = 0;
+
+    if (params)
+    {
+        rho_param* p = rho_param_hash_get(params, "border");
+        if ( p && (strcasecmp(p->v.string, "true") == 0 || strcasecmp(p->v.string, "1") == 0 ) )
+            m_nBorder = 1;
+    }
+
+    m_bSendVectors = false;
+
+}
+
 CRect CRhoSignature::CParams::getWndRect()
 {
     CRect rcDefault, rcWnd(-1,-1,-1,-1);
-    if (m_params)
-    {
-        readIntFromParam(m_params, "left", rcWnd.left);
-        readIntFromParam(m_params, "top", rcWnd.top);
-        readIntFromParam(m_params, "width", rcWnd.right);
-        rcWnd.right += rcWnd.left > 0 ? rcWnd.left : 0;
-        readIntFromParam(m_params, "height", rcWnd.bottom);
-        rcWnd.bottom += rcWnd.top > 0 ? rcWnd.top : 0;
-    }
+    
+    rcWnd.left = m_nLeft;
+    rcWnd.top = m_nTop;
+    rcWnd.right = m_nWidth;
+    rcWnd.right += rcWnd.left > 0 ? rcWnd.left : 0;
+    rcWnd.bottom = m_nHeight;
+    rcWnd.bottom += rcWnd.top > 0 ? rcWnd.top : 0;
 
     if ( m_eType == esModal )
     {
@@ -633,111 +726,165 @@ CRect CRhoSignature::CParams::getWndRect()
     return rcWnd;
 }
 
-const String& CRhoSignature::CParams::getFilePath()
+
+//IRhoExtension
+void CRhoSignature::onSetProperty(const wchar_t* pName, const wchar_t* pValue, const CRhoExtData& oExtData)
 {
-    if ( m_strFilePath.length() > 0 )
-        return m_strFilePath;
+    LOG(INFO) + "onSetProperty";
 
-    if (m_params)
-    {
-        rho_param* pFP = rho_param_hash_get(m_params, "filePath");
-        if ( pFP )
-            m_strFilePath = pFP->v.string;
-    }
+    if (!m_pSigWindow)
+        m_pSigWindow = new CRhoSignatureWindow(new CRhoSignature::CNonModalParams(false, 0));
 
-    if ( m_strFilePath.length() > 0 )
-        return m_strFilePath;
+    CParams& oParams = m_pSigWindow->getParams();
 
-    m_strFilePath = RHODESAPPBASE().getBlobsDirPath() + "/Image_" + CLocalTime().toString(true,true) + "." + getFileFormat();
+    if( namecmp(pName, L"Visibility") )
+	{
+		if( namecmp(pValue, L"Visible") ) 
+		{
+            m_pSigWindow->Create(getWebViewWnd(0));
+            m_pSigWindow->ShowWindow(SW_SHOW);
+		}
+		else if( namecmp(pValue, L"Hidden")) 
+		{
+			hideSignature();
+		}
+	}
+	else if (namecmp(pName, L"Enabled"))
+	{
+		//  In order to maintain compatibility with PB2.x we also need to 
+		//  condider enabled / disabled as well as visibility.
+		m_pSigWindow->Create(getWebViewWnd(0));
+        m_pSigWindow->ShowWindow(SW_SHOW);
+	}
+	else if (namecmp(pName, L"Disabled"))
+	{
+		hideSignature();
+	}else if( namecmp(pName, L"Border") )
+	{
+		if( namecmp(pValue, L"Visible"))
+            oParams.m_nBorder = 1;
+		else if( namecmp(pValue, L"Hidden"))
+            oParams.m_nBorder = 0;
+	}
+	else if( namecmp(pName, L"Clear") ) 
+	{
+		m_pSigWindow->clearImage();
+	}
+	else if( namecmp(pName, L"Width")) 
+	{
+        convertFromStringW( (LPCTSTR)pValue, oParams.m_nWidth );
+	}
+	else if( namecmp(pName, L"Height")) 
+	{
+		convertFromStringW( (LPCTSTR)pValue, oParams.m_nHeight );
+	}
+	else if( namecmp(pName, L"Left")) 
+	{
+		convertFromStringW( (LPCTSTR)pValue, oParams.m_nLeft );
+	}
+	else if( namecmp(pName, L"Top")) 
+	{
+		convertFromStringW( (LPCTSTR)pValue, oParams.m_nTop );
+	}
+	else if( namecmp(pName, L"Penwidth")) 
+	{
+		convertFromStringW( (LPCTSTR)pValue, oParams.m_nPenWidth );
+	}
+	else if( namecmp(pName, L"Pencolor")) 
+	{
+        oParams.m_nPenColor = getColorFromMetaString( (LPCTSTR)pValue );
+	}
+	else if( namecmp( pName, L"BGColor")) 
+	{
+		oParams.m_nBgColor = getColorFromMetaString( (LPCTSTR)pValue );
+	}
+	/*else if(cmp(pbMetaStructure->lpParameter, L"Destination")) 
+	{
+		m_bDestinationSet = true;
+		if (pbMetaStructure->lpValue)
+			return SetIMOProperty(m_FileTransferIMO,L"Destination",pbMetaStructure->lpValue); 
+	}*/
+	else if( namecmp( pName, L"Name")) 
+	{
+        oParams.m_strFilePath = pValue ? convertToStringA((LPCTSTR)pValue) : "Signature";
+        oParams.m_strFilePath += ".bmp";
+	}
+	/*else if(cmp(pbMetaStructure->lpParameter, L"Username"))
+	{
+		if (pbMetaStructure->lpValue)
+			return SetIMOProperty(m_FileTransferIMO,L"UserName",pbMetaStructure->lpValue);
+	}
+	else if(cmp(pbMetaStructure->lpParameter, L"Password"))
+	{
+		if (pbMetaStructure->lpValue)
+			return SetIMOProperty(m_FileTransferIMO,L"Password",pbMetaStructure->lpValue);
+	}
+	else if(cmp(pbMetaStructure->lpParameter, L"Protocol"))
+	{
+		if (pbMetaStructure->lpValue)
+			return SetIMOProperty(m_FileTransferIMO,L"Protocol",pbMetaStructure->lpValue);
+	}
+	else if(cmp(pbMetaStructure->lpParameter, L"SignatureSaveEvent")) 
+	{
+		//set the nav string for the filetransfer module
+		if (pbMetaStructure->lpValue)
+			return SetIMOProperty(m_FileTransferIMO,L"TransferEvent",pbMetaStructure->lpValue);
+	}*/
+	else if( namecmp(pName, L"VectorEvent"))
+	{
+		//  Set the signature capture module to vector mode
+		if (pValue)
+		{
+            oParams.m_strSendVectorJS = convertToStringA((LPCTSTR)pValue);
+            oParams.m_bSendVectors = true;
+		}
+	}/*
+	else if( namecmp(pName, L"capture")) 
+	{
+		//  Capture will save the signature as a bitmap and transfer this 
+		//  to a remote destination if a destination parameter has been set.
+		//  Create a Bitmap based on the Captured Signature
+		if(pSig->CreateDIBitmap() == FALSE)
+		{
+			return FALSE;
+		}
 
-    return m_strFilePath;
+		//  Call FileTransfer Plug-in to transfer the captured bitmap to the 
+		//  specified destination.
+		if(m_FileTransferIMO && m_bDestinationSet)
+		{
+			TCHAR tcFormattedSource[MAXURL];
+			wsprintf(tcFormattedSource, L"file://\\%s", pSig->m_lpSzFilename);
+			if(SetIMOProperty(m_FileTransferIMO,L"Source", tcFormattedSource))
+			{
+				if(SetIMOProperty(m_FileTransferIMO,L"Overwrite",L"true"))
+				{
+					if (SetIMOProperty(m_FileTransferIMO, L"SetFileDestination", L"FALSE"))
+					{
+						return CallIMOMethod(m_FileTransferIMO,L"Transfer");
+					}
+				}
+			}
+		}
+		//  The transfer to FileTransfer has failed
+		return FALSE;
+	}*/
+	else
+	{
+		//  Unrecognized tag
+		//Log(PB_LOG_WARNING, L"Unrecognised Meta Tag Provided to Signature Capture Module", _T(__FUNCTION__), __LINE__);
+		
+	}
+
+    //TODO: process meta tags: save props to rho_param
+    // if action is coming like show/hide call correspondign methods
 }
 
-const String& CRhoSignature::CParams::getFileFormat()
+void CRhoSignature::onBeforeNavigate(const CRhoExtData& oExtData)
 {
-    if ( m_strFileFormat.length() > 0 )
-        return m_strFileFormat;
-
-    if (m_params)
-    {
-        rho_param* pFF = rho_param_hash_get(m_params, "imageFormat");
-        if ( pFF )
-            m_strFileFormat = pFF->v.string;
-    }
-
-    if ( m_strFileFormat.length() > 0 )
-        return m_strFileFormat;
-
-    m_strFileFormat = "bmp";
-
-    return m_strFileFormat;
+    hideSignature();
 }
-
-static int getColorFromString(const char* szColor)
-{
-    if ( !szColor || !*szColor )
-        return RGB(0, 0, 0);
-
-	int c = atoi(szColor);
-
-	int cR = (c & 0xFF0000) >> 16;
-	int cG = (c & 0xFF00) >> 8;
-	int cB = (c & 0xFF);
-
-    return RGB(cR, cG, cB);
-}
-
-int CRhoSignature::CParams::getPenColor()
-{
-    COLORREF color = RGB(0,0,0);
-
-    if (m_params)
-    {
-        rho_param* p = rho_param_hash_get(m_params, "penColor");
-        if ( p )
-            color = getColorFromString(p->v.string);
-    }
-
-    return color;
-}
-
-int CRhoSignature::CParams::getBgColor()
-{
-    COLORREF color = RGB(255,255,255);
-
-    if (m_params)
-    {
-        rho_param* p = rho_param_hash_get(m_params, "bgColor");
-        if ( p )
-            color = getColorFromString(p->v.string);
-    }
-
-    return color;
-}
-
-int CRhoSignature::CParams::getPenWidth()
-{
-    long nw = 1;
-
-    if (m_params)
-        readIntFromParam(m_params, "penWidth", nw);
-
-    return (int)nw;
-}
-
-boolean CRhoSignature::CParams::hasBorder()
-{
-    long nw = 0;
-
-    if (m_params)
-    {
-        rho_param* p = rho_param_hash_get(m_params, "border");
-        if ( p && (strcasecmp(p->v.string, "true") == 0 || strcasecmp(p->v.string, "1") == 0 ) )
-            nw = 1;
-    }
-
-    return nw != 0;
-}
+//IRhoExtension
 
 }
 
@@ -766,5 +913,14 @@ void rho_signature_clear()
 {
     rho_callInUIThread(CRhoSignature::clearSignature, 0);
 }
+
+void Init_SignatureCapture(void);
+void init_rhoext_Signature()
+{
+    Init_SignatureCapture();
+
+    RHODESAPP().getExtManager().registerExtension( "signaturecapture", new CRhoSignature() );
+}
+
 
 }

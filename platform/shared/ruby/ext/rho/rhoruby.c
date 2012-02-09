@@ -70,6 +70,7 @@ extern void Init_NavBar(void);
 extern void Init_RhoEvent(void);
 extern void Init_Calendar(void);
 extern void Init_Extensions(void);
+extern void init_rhoext_Signature();
 
 //RhoSupport extension
 extern void Init_RhoSupport(void);
@@ -220,7 +221,12 @@ void RhoRubyStart()
     Init_WebView();
     Init_RhoConf();
     Init_Alert();
+#if defined(WINDOWS_PLATFORM)
+    init_rhoext_Signature();
+#else
     Init_SignatureCapture();
+#endif
+    
     Init_RhoBluetooth();	
 	Init_RhodesNativeViewManager();	
     Init_Camera();

@@ -2320,6 +2320,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\shared\common\ExtManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\common\ExtManager.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\shared\common\InputStream.h"
 				>
 			</File>
