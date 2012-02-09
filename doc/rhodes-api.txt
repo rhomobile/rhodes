@@ -52,13 +52,10 @@ The [BluetoothSession Class](/rhodes/device-caps#bluetooth) controls the session
 
 The [NFC Classes](/rhodes/nfc) provide access to Near Field Communication functionality, which is currently only supported on Android.
 
-ZZZ Filled in
 The [RingtoneManager Class](/rhodes/ringtonemanager-api) allows you to view and play a device's ringtones.
 
-ZZZZ Filled in
 The [Alert Class](/rhodes/alert-api) lets you call system alert methods for popup, vibrate, or playing audio files.
 
-ZZZZ Filled in
 The [Timer Class](/rhodes/timer-api) lets the device use a timer.
 
 The [MapView Class](/rhodes/device-caps#mapview) provides an embeddable map interface with the create method and various settings and annotations depending on the map provider (such as Google).
