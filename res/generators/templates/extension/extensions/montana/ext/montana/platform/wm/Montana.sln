@@ -26,17 +26,17 @@ Global
 		{93453E28-E84A-40C4-BD6A-51A8373D7044}.Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I).Deploy.0 = Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)
 		{93453E28-E84A-40C4-BD6A-51A8373D7044}.Debug|Win32.ActiveCfg = Debug|Win32
 		{93453E28-E84A-40C4-BD6A-51A8373D7044}.Debug|Win32.Build.0 = Debug|Win32
-		{93453E28-E84A-40C4-BD6A-51A8373D7044}.Release|MC3000c50b (ARMV4I).ActiveCfg = Debug|MC3000c50b (ARMV4I)
-		{93453E28-E84A-40C4-BD6A-51A8373D7044}.Release|MC3000c50b (ARMV4I).Build.0 = Debug|MC3000c50b (ARMV4I)
-		{93453E28-E84A-40C4-BD6A-51A8373D7044}.Release|MC3000c50b (ARMV4I).Deploy.0 = Debug|MC3000c50b (ARMV4I)
+		{93453E28-E84A-40C4-BD6A-51A8373D7044}.Release|MC3000c50b (ARMV4I).ActiveCfg = Release|MC3000c50b (ARMV4I)
+		{93453E28-E84A-40C4-BD6A-51A8373D7044}.Release|MC3000c50b (ARMV4I).Build.0 = Release|MC3000c50b (ARMV4I)
+		{93453E28-E84A-40C4-BD6A-51A8373D7044}.Release|MC3000c50b (ARMV4I).Deploy.0 = Release|MC3000c50b (ARMV4I)
 		{93453E28-E84A-40C4-BD6A-51A8373D7044}.Release|Windows Mobile 6 Professional SDK (ARMV4I).ActiveCfg = Release|Windows Mobile 6 Professional SDK (ARMV4I)
 		{93453E28-E84A-40C4-BD6A-51A8373D7044}.Release|Windows Mobile 6 Professional SDK (ARMV4I).Build.0 = Release|Windows Mobile 6 Professional SDK (ARMV4I)
 		{93453E28-E84A-40C4-BD6A-51A8373D7044}.Release|Windows Mobile 6 Professional SDK (ARMV4I).Deploy.0 = Release|Windows Mobile 6 Professional SDK (ARMV4I)
-		{93453E28-E84A-40C4-BD6A-51A8373D7044}.Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I).ActiveCfg = Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)
-		{93453E28-E84A-40C4-BD6A-51A8373D7044}.Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I).Build.0 = Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)
-		{93453E28-E84A-40C4-BD6A-51A8373D7044}.Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I).Deploy.0 = Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)
-		{93453E28-E84A-40C4-BD6A-51A8373D7044}.Release|Win32.ActiveCfg = Debug|Win32
-		{93453E28-E84A-40C4-BD6A-51A8373D7044}.Release|Win32.Build.0 = Debug|Win32
+		{93453E28-E84A-40C4-BD6A-51A8373D7044}.Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I).ActiveCfg = Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)
+		{93453E28-E84A-40C4-BD6A-51A8373D7044}.Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I).Build.0 = Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)
+		{93453E28-E84A-40C4-BD6A-51A8373D7044}.Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I).Deploy.0 = Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)
+		{93453E28-E84A-40C4-BD6A-51A8373D7044}.Release|Win32.ActiveCfg = Release|Win32
+		{93453E28-E84A-40C4-BD6A-51A8373D7044}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
