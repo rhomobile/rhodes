@@ -47,7 +47,6 @@
 #include "ext/rho/rhoruby.h"
 #include "rubyext/WebView.h"
 #include "camera/Camera.h"
-#include "rubyext/RhoSignature.h"
 #include "sync/SyncThread.h"
 #include "common/RhoFilePath.h"
 #include "common/RhoFile.h"
@@ -927,7 +926,7 @@ bool Rhodes_WM_ProcessBeforeNavigate(LPCTSTR url)
 {
     LOG(TRACE) + "OnBeforeNavigate2: " + url;
 
-    rho::CRhoSignature::hideSignature();
+    RHODESAPP().getExtManager().onBeforeNavigate();
 
     const wchar_t *to_remove;
     if ( (to_remove = wcsstr(url, L"rho_open_target=_blank")) != 0)

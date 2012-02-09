@@ -37,6 +37,7 @@
 #include "net/HttpServer.h"
 #include "SplashScreen.h"
 #include "AppMenu.h"
+#include "ExtManager.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
@@ -60,6 +61,7 @@ private:
     CSplashScreen m_oSplashScreen;
     CAppMenu m_oAppMenu;
     CRhoTimer m_oTimer;
+    CExtManager m_oExtManager;
 
     String m_strLoadingPagePath, m_strLoadingPngPath;
     String m_strStartUrl, m_strOptionsUrl, m_strRhobundleReloadUrl;//, m_strFirstStartUrl;
@@ -136,6 +138,7 @@ public:
     CAppMenu& getAppMenu (void) { return m_oAppMenu; }
     CSplashScreen& getSplashScreen(){return m_oSplashScreen;}
     CRhoTimer&     getTimer(){ return m_oTimer; }
+    CExtManager&   getExtManager(){ return m_oExtManager; }
 
     boolean sendLog(const String& strCallbackUrl);
 

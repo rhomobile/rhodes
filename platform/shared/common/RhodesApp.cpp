@@ -348,6 +348,7 @@ void CRhodesApp::run()
 
     LOG(INFO) + "RhodesApp thread shutdown";
 
+    getExtManager().close();
     rubyext::CGeoLocation::Destroy();
     sync::CSyncThread::Destroy();
 
