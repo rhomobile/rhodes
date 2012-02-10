@@ -428,6 +428,9 @@ namespace rho.net
             }
             else 
             {
+                if (aoi == null || aoi.length() == 0)
+                    return false; //index
+
                 if (arParts.Length > 3)
                     route.id = arParts[3];
 
