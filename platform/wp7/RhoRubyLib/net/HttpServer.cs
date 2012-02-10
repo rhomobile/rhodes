@@ -168,7 +168,7 @@ namespace rho.net
             CRoute route = new CRoute();
             if (dispatch(url, route))
             {
-                addQueueCommand(new CServerCommand(this, route, bAjaxCall ? "POST" : "GET", url, query, "", CServerCommand.scDispatch, strAjaxContext));
+                addQueueCommand(new CServerCommand(this, route, bAjaxCall ? "GET" : "GET", url, query, "", CServerCommand.scDispatch, strAjaxContext));
 
                 return true;
             }
@@ -178,7 +178,7 @@ namespace rho.net
             String strIndexFile = getIndex(fullPath);
             if (strIndexFile.Length > 0)
             {
-                addQueueCommand(new CServerCommand(this, route, bAjaxCall ? "POST" : "GET", url, query, "", CServerCommand.scIndex, strAjaxContext));
+                addQueueCommand(new CServerCommand(this, route, bAjaxCall ? "GET" : "GET", url, query, "", CServerCommand.scIndex, strAjaxContext));
 
                 return true;
             }
@@ -428,9 +428,6 @@ namespace rho.net
             }
             else 
             {
-                if (aoi == null || aoi.length() == 0)
-                    return false; //index
-
                 if (arParts.Length > 3)
                     route.id = arParts[3];
 
