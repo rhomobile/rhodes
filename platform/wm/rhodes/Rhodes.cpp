@@ -89,9 +89,8 @@ struct CBarcodeInit
     bool m_bMC4900;
     CBarcodeInit()
     {
-        //With new scanner sources it prevents webkit to load page on Wince5.0
-/*
         m_bMC4900 = false;
+/*
         OSVERSIONINFO osv = {0};
 		osv.dwOSVersionInfoSize = sizeof(osv);
 		if (GetVersionEx(&osv))
