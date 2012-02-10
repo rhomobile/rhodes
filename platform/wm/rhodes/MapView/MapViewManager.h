@@ -132,6 +132,7 @@ class CRhoMapViewDlg : public //CDialog
 {
     HBRUSH m_hBrush;
     HBITMAP m_hMemBitmap;
+	HWND m_hWndCommandBar;
 public:
 	CRhoMapViewDlg  ();
 	~CRhoMapViewDlg ();
@@ -155,6 +156,7 @@ public:
 
 public:
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnDestroyDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnDraw(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnSliderScroll(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

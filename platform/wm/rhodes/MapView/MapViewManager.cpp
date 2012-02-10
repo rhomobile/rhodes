@@ -78,12 +78,22 @@ class DrawingDeviceMapViewImpl : public WmDrawingDeviceImpl {
 static DrawingDeviceMapViewImpl ourDrawingDevice;
 
 
-CRhoMapViewDlg::CRhoMapViewDlg () : m_hBrush(0), m_hMemBitmap(0)
+CRhoMapViewDlg::CRhoMapViewDlg () : m_hBrush(0), m_hMemBitmap(0), m_hWndCommandBar(0)
 {
 }
 
 CRhoMapViewDlg::~CRhoMapViewDlg ()
 {
+}
+
+LRESULT CRhoMapViewDlg::OnDestroyDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+    if ( m_hWndCommandBar )
+        ::DestroyWindow(m_hWndCommandBar);
+
+    m_hWndCommandBar = 0;
+
+	return FALSE;
 }
 
 LRESULT CRhoMapViewDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -103,7 +113,11 @@ LRESULT CRhoMapViewDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
 	
 	SHCreateMenuBar(&mbi);
-#endif
+#else
+	m_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
+	CommandBar_AddAdornments(m_hWndCommandBar, 0, 0 );
+    CommandBar_Show(m_hWndCommandBar, TRUE);
+#endif //OS_WINCE
 
 	//::SetWindowLong(GetDlgItem(IDC_SLIDER_ZOOM).m_hWnd, 
 	//	GWL_EXSTYLE,
