@@ -89,6 +89,8 @@ struct CBarcodeInit
     bool m_bMC4900;
     CBarcodeInit()
     {
+        //With new scanner sources it prevents webkit to load page on Wince5.0
+/*
         m_bMC4900 = false;
         OSVERSIONINFO osv = {0};
 		osv.dwOSVersionInfoSize = sizeof(osv);
@@ -98,7 +100,7 @@ struct CBarcodeInit
         RAWLOG_INFO1("CBarcodeInit : OS version :  %d", osv.dwMajorVersion);
 
         if ( m_bMC4900 )
-            rho_scanner_before_webkit();
+            rho_scanner_before_webkit();*/
     }
 
     static DWORD afterWebkit(LPVOID ){ rho_scanner_after_webkit(); return 0; }

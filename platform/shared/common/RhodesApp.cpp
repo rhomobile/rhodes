@@ -856,7 +856,7 @@ int CRhodesApp::determineFreeListeningPort()
         serv_addr.sin_len = sizeof(serv_addr);
 #endif
         serv_addr.sin_family = AF_INET;
-        serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+        serv_addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
         serv_addr.sin_port = htons((short)listenPort);
         
         LOG(INFO) + "Trying to bind of " + listenPort + " port...";
@@ -870,7 +870,7 @@ int CRhodesApp::determineFreeListeningPort()
                 serv_addr.sin_len = sizeof(serv_addr);
 #endif
                 serv_addr.sin_family = AF_INET;
-                serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+                serv_addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
                 serv_addr.sin_port = htons(0);
 
                 LOG(INFO) + "Trying to bind on dynamic port...";
