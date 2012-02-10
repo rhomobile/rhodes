@@ -1520,6 +1520,9 @@ namespace "package" do
     Dir.glob($extensionsdir + "/lib*.so").each do |lib|
       cp_r lib, File.join($tmpdir, "lib/armeabi")
     end
+    Dir.glob($extensionsdir + '/noautoload/lib*.so').each do |lib|
+      cp_r lib, File.join($tmpdir, "lib/armeabi")
+    end
     $ext_android_additional_lib.each do |lib|
       cp_r lib, File.join($tmpdir, "lib/armeabi")
     end
