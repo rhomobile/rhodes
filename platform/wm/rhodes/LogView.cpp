@@ -39,6 +39,16 @@
 rho::common::CMutex CLogView::m_ViewFlushLock;
 #endif
 
+LRESULT CLogView::OnDestroyDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+    if ( m_hWndCommandBar )
+        ::DestroyWindow(m_hWndCommandBar);
+
+    m_hWndCommandBar = 0;
+
+	return FALSE;
+}
+
 LRESULT CLogView::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 #if defined( OS_WINCE )
@@ -58,6 +68,15 @@ LRESULT CLogView::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
     SHCreateMenuBar(&mbi);
 
 //    SendDlgItemMessage(IDC_LOGEDIT,WM_SETFONT, (WPARAM)GetStockObject(SYSTEM_FONT),0);
+#else
+	SetWindowLong(GWL_STYLE,(long)WS_BORDER);
+
+	m_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
+	CommandBar_AddAdornments(m_hWndCommandBar, 0, 0 );
+	HMENU menu = LoadMenu(0, MAKEINTRESOURCE(IDR_LOGMENUBAR));
+	CommandBar_InsertMenubarEx(m_hWndCommandBar, 0, (LPTSTR)menu, 0);
+	CommandBar_DrawMenuBar(m_hWndCommandBar, 0);
+    CommandBar_Show(m_hWndCommandBar, TRUE);
 #endif
 
     loadLogText();
@@ -156,7 +175,7 @@ LRESULT CLogView::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& 
 	}
     ::MoveWindow( GetDlgItem(IDC_LOGEDIT), 0,0, LOWORD(lParam), HIWORD(lParam), TRUE );
 #else
-    ::MoveWindow( GetDlgItem(IDC_LOGEDIT), 0,0, LOWORD(lParam), HIWORD(lParam), TRUE );
+    ::MoveWindow( GetDlgItem(IDC_LOGEDIT), 0,CommandBar_Height( m_hWndCommandBar ), LOWORD(lParam), HIWORD(lParam), TRUE );
 #endif
     return 0;
 }

@@ -33,7 +33,7 @@ class CLogOptionsDlg :
 	public CDialogImpl<CLogOptionsDlg>
 {
 public:
-    CLogOptionsDlg(){}
+	CLogOptionsDlg() : m_hWndCommandBar(0) {}
 	~CLogOptionsDlg(){}
 
 #if defined(OS_WINDOWS)
@@ -49,12 +49,13 @@ BEGIN_MSG_MAP(CLogOptionsDlg)
 END_MSG_MAP()
 
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-
+	LRESULT OnDestroyDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
 private:
     void saveOptions();
+	HWND m_hWndCommandBar;
 };
 
 

@@ -29,6 +29,16 @@
 
 #include "logging/RhoLog.h"
 
+LRESULT CLogOptionsDlg::OnDestroyDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+    if ( m_hWndCommandBar )
+        ::DestroyWindow(m_hWndCommandBar);
+
+    m_hWndCommandBar = 0;
+
+	return FALSE;
+}
+
 LRESULT CLogOptionsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 #if defined( OS_WINCE ) && !defined (OS_PLATFORM_MOTCE)
@@ -44,6 +54,12 @@ LRESULT CLogOptionsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
     mbi.dwFlags    = SHCMBF_HMENU;
     SHCreateMenuBar(&mbi);
+#else
+	SetWindowLong(GWL_STYLE,(long)WS_BORDER);
+
+	m_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
+	CommandBar_AddAdornments(m_hWndCommandBar, CMDBAR_OK, 0 );
+    CommandBar_Show(m_hWndCommandBar, TRUE);
 #endif //OS_WINCE
 
     SendDlgItemMessage(IDC_CBXLEVELS,CB_ADDSTRING,0,  (LPARAM)_T("Trace"));

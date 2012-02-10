@@ -51,7 +51,7 @@ extern "C" int rho_sys_get_screen_width();
 
 extern "C" HWND getMainWnd();
 
-CDateTimePickerDialog::CDateTimePickerDialog (const CDateTimeMessage *msg)
+CDateTimePickerDialog::CDateTimePickerDialog (const CDateTimeMessage *msg) : m_hWndCommandBar(0)
 {
 	m_returnTime  = 0;
 	m_format       = msg->m_format;
@@ -63,6 +63,16 @@ CDateTimePickerDialog::CDateTimePickerDialog (const CDateTimeMessage *msg)
 
 CDateTimePickerDialog::~CDateTimePickerDialog ()
 {
+}
+
+LRESULT CDateTimePickerDialog::OnDestroyDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+    if ( m_hWndCommandBar )
+        ::DestroyWindow(m_hWndCommandBar);
+
+    m_hWndCommandBar = 0;
+
+	return FALSE;
 }
 
 LRESULT CDateTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -112,10 +122,15 @@ LRESULT CDateTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LP
 
 	GotoDlgCtrl(GetDlgItem(IDC_DATE_CTRL));
 
-#else 
+#elif defined( OS_PLATFORM_MOTCE )
 
-	CreateButtons();
-	GotoDlgCtrl(m_btnOk);
+	//CreateButtons();
+	//GotoDlgCtrl(m_btnOk);
+	SetWindowLong(GWL_STYLE,(long)WS_BORDER);
+	m_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
+    CommandBar_AddAdornments(m_hWndCommandBar, CMDBAR_OK, 0 );
+
+    CommandBar_Show(m_hWndCommandBar, TRUE);
 
 #endif
 
@@ -183,7 +198,7 @@ LRESULT CDateTimePickerDialog::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*h
 }
 
 
-CTimePickerDialog::CTimePickerDialog (const CDateTimeMessage *msg)
+CTimePickerDialog::CTimePickerDialog (const CDateTimeMessage *msg) : m_hWndCommandBar(0)
 {
 	m_returnTime  = 0;
 	m_format       = msg->m_format;
@@ -193,6 +208,16 @@ CTimePickerDialog::CTimePickerDialog (const CDateTimeMessage *msg)
 
 CTimePickerDialog::~CTimePickerDialog ()
 {
+}
+
+LRESULT CTimePickerDialog::OnDestroyDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+    if ( m_hWndCommandBar )
+        ::DestroyWindow(m_hWndCommandBar);
+
+    m_hWndCommandBar = 0;
+
+	return FALSE;
 }
 
 LRESULT CTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -226,10 +251,15 @@ LRESULT CTimePickerDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 		DateTime_SetSystemtime( GetDlgItem(IDC_TIME_CTRL), GDT_VALID, &start_time);
 	}
 
-#else
+#elif defined( OS_PLATFORM_MOTCE )
 
-	CreateButtons();
-	GotoDlgCtrl(m_btnOk);
+	//CreateButtons();
+	//GotoDlgCtrl(m_btnOk);
+	SetWindowLong(GWL_STYLE,(long)WS_BORDER);
+	m_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
+    CommandBar_AddAdornments(m_hWndCommandBar, CMDBAR_OK, 0 );
+
+    CommandBar_Show(m_hWndCommandBar, TRUE);
 
 #endif
 

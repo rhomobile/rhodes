@@ -89,11 +89,12 @@ class CLogView :
 #endif
 {
     HBRUSH m_hBrush;
+	HWND m_hWndCommandBar;
 
     void loadLogText();
 public:
     CLogView() : 
-	  m_hBrush ( NULL )
+	  m_hBrush ( NULL ), m_hWndCommandBar(0)
 #if defined(OS_WINDOWS)
 	, m_pFindDialog(NULL), m_findText(L""), m_findParams(FR_DOWN)
 #endif
@@ -155,6 +156,7 @@ END_MSG_MAP()
 //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnDestroyDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	LRESULT OnBack(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnOptions(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
