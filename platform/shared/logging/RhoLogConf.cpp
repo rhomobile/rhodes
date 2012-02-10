@@ -78,7 +78,8 @@ void LogSettings::closeRemoteLog()
 
 void LogSettings::initRemoteLog()
 {
-#if defined( OS_PLATFORM_MOTCE ) && !defined (APP_BUILD_CAPABILITY_BARCODE)
+
+#if defined( OS_PLATFORM_MOTCE )// && !defined (APP_BUILD_CAPABILITY_BARCODE)
     //TODO: remote log prevent loading app - stuck on loading.png when no barcode. very strange!
     OSVERSIONINFO osv = {0};
 	osv.dwOSVersionInfoSize = sizeof(osv);

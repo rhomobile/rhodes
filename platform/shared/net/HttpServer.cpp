@@ -381,7 +381,7 @@ bool CHttpServer::init()
     memset(&sa, 0, sizeof(sa));
     sa.sin_family = AF_INET;
     sa.sin_port = htons((uint16_t)m_port);
-    sa.sin_addr.s_addr = INADDR_ANY;
+    sa.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
     if (bind(m_listener, (const sockaddr *)&sa, sizeof(sa)) == SOCKET_ERROR) {
         RAWLOG_ERROR2("Can not bind to port %d: %d", m_port, RHO_NET_ERROR_CODE);
         close_listener();
