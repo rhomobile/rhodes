@@ -591,6 +591,35 @@ void CRhodesApp::callBarcodeCallback(String strCallbackUrl, const String& strBar
     runCallbackInThread(strCallbackUrl, strBody);
 }
 
+void CRhodesApp::callBarcodeCallbackWithData(String strCallbackUrl, const String& strBarcode, const String& strCallbackData, bool isError) 
+{
+    strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
+    String strBody;
+    strBody = "barcode=" + strBarcode;
+
+    if (!isError)
+    {
+        strBody += "&status=ok";
+    }
+    else
+    {
+        strBody += "&status=fail";
+    }
+
+    strBody += "&rho_callback=1";
+
+    if (strCallbackData.length() > 0 )
+    {
+        if ( !String_startsWith( strCallbackData, "&" ) )
+            strBody += "&";
+
+        strBody += strCallbackData;
+    }
+
+    //getNetRequest().pushData( strCallbackUrl, strBody, null );
+    runCallbackInThread(strCallbackUrl, strBody);
+}
+
 void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImagePath, 
     const String& strError, boolean bCancel ) 
 {
