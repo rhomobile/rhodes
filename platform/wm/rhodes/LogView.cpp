@@ -70,6 +70,7 @@ LRESULT CLogView::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 //    SendDlgItemMessage(IDC_LOGEDIT,WM_SETFONT, (WPARAM)GetStockObject(SYSTEM_FONT),0);
 #else
 	SetWindowLong(GWL_STYLE,(long)WS_BORDER);
+	ShowWindow(SW_MAXIMIZE);
 
 	m_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
 	CommandBar_AddAdornments(m_hWndCommandBar, 0, 0 );
