@@ -1,3 +1,6 @@
+## 3.3.3
+* Fix Windows Mobile issues
+
 ## 3.3.2
 * iPhone: fix AppStore sumbit issue. Now all files stored in Private Documents, only database and user files in Documents 
 * Fix issues with Ruby 1.9.2 on Mac
