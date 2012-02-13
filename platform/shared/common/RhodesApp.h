@@ -125,6 +125,7 @@ public:
     StringW getAppNameW();
 
     void callBarcodeCallback(String strCallbackUrl, const String& strBarcode, bool isError);
+    void callBarcodeCallbackWithData(String strCallbackUrl, const String& strBarcode, const String& strCallbackData, bool isError) ;
     void callCameraCallback(String strCallbackUrl, const String& strImagePath, const String& strError, boolean bCancel );
     void callSignatureCallback(String strCallbackUrl, const String& strSignaturePath, const String& strError, boolean bCancel );
     void callDateTimeCallback(String strCallbackUrl, long lDateTime, const char* szData, int bCancel );
