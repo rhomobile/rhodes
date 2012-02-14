@@ -27,7 +27,19 @@
 #import <UIKit/UIKit.h>
 
 
+@interface SignatureViewProperties : NSObject {
+}
 
+@property (nonatomic, assign) unsigned int penColor;
+@property (nonatomic, assign) float penWidth;
+@property (nonatomic, assign) unsigned int bgColor;
+@property (nonatomic, assign) int left;
+@property (nonatomic, assign) int top;
+@property (nonatomic, assign) unsigned int width;
+@property (nonatomic, assign) unsigned int height;
+
+
+@end
 
 
 @interface SignatureView : UIView {

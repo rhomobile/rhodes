@@ -36,6 +36,8 @@
 
 #include "NativeBar.h"
 
+#import "SignatureDelegate.h"
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "SimpleMainView"
 
@@ -659,6 +661,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	//[webView setNeedsDisplay];
 	//}
 	//else {
+        [[SignatureDelegate getSharedInstance] hideSignatureInlineView];
 		[webView goBack];
 	//}
 }
@@ -989,6 +992,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
         NSMutableURLRequest *r = (NSMutableURLRequest*)request;
         [r addValue:c forHTTPHeaderField:@"Cookie"];
     }
+    [[SignatureDelegate getSharedInstance] hideSignatureInlineView];
     return YES;
 }
 

@@ -26,6 +26,13 @@
 
 #import "SignatureView.h"
 
+
+@implementation SignatureViewProperties
+
+@synthesize penColor, penWidth, bgColor, left, top, width, height;
+@end
+
+
 @implementation SignatureView
 
 -(CGContextRef)CreateRGBABitmapContext:(int)width height:(int)height
@@ -116,6 +123,7 @@
         penColor = 0xFF66009A;
         penWidth = 3.0;
         bgColor = 0xFFFFFFFF;
+
     }
 	mPath = nil;
 	[self doClear];
@@ -134,13 +142,13 @@
 	CGContextSetRGBFillColor(context,   ((float)((bgColor & 0xFF0000) >> 16))/255.0, 
                                         ((float)((bgColor & 0xFF00) >> 8))/255.0,
                                         ((float)((bgColor & 0xFF)))/255.0,
-                                        1);
+                                        ((float)((bgColor & 0xFF000000) >> 24))/255.0);
 	
     
     CGContextSetRGBStrokeColor(context, ((float)((penColor & 0xFF0000) >> 16))/255.0,
                                         ((float)((penColor & 0xFF00) >> 8))/255.0,
                                         ((float)((penColor & 0xFF)))/255.0,
-                                        1);
+                                        ((float)((penColor & 0xFF000000) >> 24))/255.0);
 	CGContextFillRect(context, rect);
 	
 	// draw signature
@@ -180,7 +188,7 @@
     CGContextSetRGBStrokeColor(context, ((float)((penColor & 0xFF0000) >> 16))/255.0,
                                ((float)((penColor & 0xFF00) >> 8))/255.0,
                                ((float)((penColor & 0xFF)))/255.0,
-                               1);
+                               ((float)((penColor & 0xFF000000) >> 24))/255.0);
 	CGContextFillRect(context, rect);
 	
 	// draw signature

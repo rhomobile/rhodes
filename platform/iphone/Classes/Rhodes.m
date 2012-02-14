@@ -636,7 +636,7 @@ static Rhodes *instance = NULL;
     NSLog(@"Init delegates");
     dateTimePickerDelegate = [[DateTimePickerDelegate alloc] init];
     pickImageDelegate = [[PickImageDelegate alloc] init];
-    signatureDelegate = [[SignatureDelegate alloc] init];
+    signatureDelegate = [SignatureDelegate getSharedInstance];
     nvDelegate = [[NVDelegate alloc] init];
     
 #ifdef APP_BUILD_CAPABILITY_PUSH    
