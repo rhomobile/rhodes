@@ -129,6 +129,11 @@ public:
     // Required to forward messages to the PIEWebBrowser control
     BOOL TranslateAccelerator(MSG* pMsg);
 
+#if defined( OS_PLATFORM_MOTCE )
+   	void SetFullScreen(bool bFull);
+	bool m_bFullScreen;
+#endif
+
 	void openNativeView(	NativeViewFactory* nativeViewFactory, 
 							NativeView* nativeView,
 							String nativeViewType);
