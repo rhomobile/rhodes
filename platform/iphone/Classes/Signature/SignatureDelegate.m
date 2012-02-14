@@ -30,14 +30,26 @@
 #import "common/RhodesApp.h"
 #include "ruby/ext/rho/rhoruby.h"
 
+SignatureDelegate* ourSD = nil;
+
 
 @implementation SignatureDelegate
+
++(id) getSharedInstance
+{
+    if (ourSD == nil) {
+        ourSD = [[SignatureDelegate alloc] init];
+    }
+    return ourSD;
+}
+
 
 -(id) init
 {
     if (self = [super init])
     {
         signatureViewController = nil;
+        signatureInlineView = nil;
         parentView = nil;
         prevView = nil;
         imageFormat = nil;
@@ -139,6 +151,83 @@
     prevView = nil;
 }
 
+-(void)hideSignatureInlineViewCommand
+{
+    if (signatureInlineView != nil) {
+        [signatureInlineView removeFromSuperview];
+        [signatureInlineView release];
+        signatureInlineView = nil;
+    }
+}
+
+-(void)hideSignatureInlineView
+{
+    [self performSelectorOnMainThread:@selector(hideSignatureInlineViewCommand) withObject:nil waitUntilDone:NO];
+}
+
+
+-(void)showSignatureInlineViewCommand:(SignatureViewProperties*)properties
+{
+    [self hideSignatureInlineViewCommand];
+    
+    CGRect rect;
+    
+    rect.origin.x = properties.left;
+    rect.origin.y = properties.top;
+    rect.size.width = properties.width;
+    rect.size.height = properties.height;
+    
+    signatureInlineView = [[SignatureView alloc] initWithFrame:rect];
+
+    [signatureInlineView setPenColor:properties.penColor];
+    [signatureInlineView setPenWidth:properties.penWidth];
+    [signatureInlineView setBgColor:properties.bgColor];
+    
+    signatureInlineView.opaque = NO;
+    signatureInlineView.backgroundColor = [UIColor colorWithWhite:1 alpha:0];
+
+    
+    UIWebView* webView = [[[Rhodes sharedInstance] mainView] getWebView:-1];
+    if (webView != nil) {
+        UIView* v = webView;//[[webView subviews] objectAtIndex:0];
+        //UIView* v = [[webView subviews] objectAtIndex:0];
+        [v addSubview:signatureInlineView];
+        [v bringSubviewToFront:signatureInlineView];
+        [v setNeedsDisplay];
+    }
+}
+
+
+-(void)showSignatureInlineView:(SignatureViewProperties*)properties
+{
+    [self performSelectorOnMainThread:@selector(showSignatureInlineViewCommand:) withObject:properties waitUntilDone:NO];
+}
+
+-(void)clearSignatureInlineViewCommand
+{
+    if (signatureInlineView != nil) {
+        [signatureInlineView doClear];
+    }
+}
+
+-(void)clearSignatureInlineView
+{
+    [self performSelectorOnMainThread:@selector(clearSignatureInlineViewCommand) withObject:nil waitUntilDone:NO];
+}
+
+-(void)captureInlineSignatureCommand
+{
+    if (signatureInlineView != nil) {
+        UIImage* img = [signatureInlineView makeUIImage];
+        [self hideSignatureInlineViewCommand];
+        [self useImage:img];
+    }
+}
+
+-(void)captureInlineSignature
+{
+    [self performSelectorOnMainThread:@selector(captureInlineSignatureCommand) withObject:nil waitUntilDone:NO];
+}
 
 
 @end
@@ -191,17 +280,109 @@ void rho_signature_take(char* callback_url, rho_param* p) {
                                               withObject:url waitUntilDone:NO];
 }
 
+
 void rho_signature_visible(bool b, rho_param* p)
 {
-    //TODO: rho_signature_visible
+    if (!b) {
+        SignatureDelegate* deleg = [SignatureDelegate getSharedInstance]; 
+        [deleg hideSignatureInlineView]; 
+        return;
+    }
+    
+    
+    char* image_format = 0;
+    char* penColor = 0;
+    char* penWidth = 0;
+    char* bgColor = 0;
+    char* left = 0;
+    char* top = 0;
+    char* width = 0;
+    char* height = 0;
+    
+    if (p)
+    {
+        rho_param* pFF = rho_param_hash_get(p, "imageFormat");
+        if ( pFF )
+            image_format = pFF->v.string;
+        pFF = rho_param_hash_get(p, "penColor");
+        if ( pFF )
+            penColor = pFF->v.string;
+        pFF = rho_param_hash_get(p, "penWidth");
+        if ( pFF )
+            penWidth = pFF->v.string;
+        pFF = rho_param_hash_get(p, "bgColor");
+        if ( pFF )
+            bgColor = pFF->v.string;
+        pFF = rho_param_hash_get(p, "left");
+        if ( pFF )
+            left = pFF->v.string;
+        pFF = rho_param_hash_get(p, "top");
+        if ( pFF )
+            top = pFF->v.string;
+        pFF = rho_param_hash_get(p, "width");
+        if ( pFF )
+            width = pFF->v.string;
+        pFF = rho_param_hash_get(p, "height");
+        if ( pFF )
+            height = pFF->v.string;
+    }
+
+    if (!image_format)
+        image_format = "png";
+    if (!penColor)
+        penColor = "0xFF66009A";
+    if (!penWidth)
+        penWidth = "3";
+    if (!bgColor)
+        bgColor = "0xFFFFFFFF";
+    if (!left)
+        left = "0";
+    if (!top)
+        top = "0";
+    if (!width)
+        width = "100";
+    if (!height)
+        height = "100";
+    
+    NSString *iformat = [NSString stringWithUTF8String:image_format];
+    NSString* ns_penColor = [NSString stringWithUTF8String:penColor];
+    NSString* ns_penWidth = [NSString stringWithUTF8String:penWidth];
+    NSString* ns_bgColor = [NSString stringWithUTF8String:bgColor];
+    NSString* ns_left = [NSString stringWithUTF8String:left];
+    NSString* ns_top = [NSString stringWithUTF8String:top];
+    NSString* ns_width = [NSString stringWithUTF8String:width];
+    NSString* ns_height = [NSString stringWithUTF8String:height];
+    
+    SignatureViewProperties* props = [[SignatureViewProperties alloc] init];
+
+    props.penColor = (unsigned int)[ns_penColor longLongValue];
+    props.penWidth = (float)[ns_penWidth floatValue];
+    props.bgColor = (unsigned int)[ns_bgColor longLongValue];
+    props.left = (int)[ns_left longLongValue];
+    props.top = (int)[ns_top longLongValue];
+    props.width = (int)[ns_width longLongValue];
+    props.height = (int)[ns_height longLongValue];
+    
+	SignatureDelegate* deleg = [SignatureDelegate getSharedInstance]; 
+
+    [deleg setImageFormat:iformat];
+
+    [deleg showSignatureInlineView:props];
+    
 }
 
 void rho_signature_capture(const char* callback_url) 
 {
-    //TODO: rho_signature_capture
+	SignatureDelegate* deleg = [SignatureDelegate getSharedInstance]; 
+    
+    [deleg setPostUrl:[NSString stringWithUTF8String:callback_url]];
+        
+    [deleg captureInlineSignature];
 }
 
 void rho_signature_clear() 
 {
-    //TODO: rho_signature_clear
+	SignatureDelegate* deleg = [SignatureDelegate getSharedInstance]; 
+    [deleg clearSignatureInlineView];
+    
 }
