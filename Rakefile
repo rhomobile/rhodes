@@ -263,6 +263,8 @@ namespace "config" do
        $app_config[$config["platform"]]["capabilities"] and $app_config[$config["platform"]]["capabilities"].is_a? Array
     $app_config["capabilities"] = capabilities
 
+    application_build_configs = {}
+
     #Process motorola extensions
     if capabilities.index("motorola")
         $app_config["capabilities"] += ["webkit_browser"] if $app_config["extensions"].index("webkit-browser")
@@ -272,6 +274,17 @@ namespace "config" do
         $app_config["extensions"][idx_barcode] = "barcode-moto" if idx_barcode
 
         $app_config["capabilities"] += ["barcode"] if $app_config["extensions"].index("barcode-moto")
+        
+        #check for RE2 plugins
+        plugins = ""
+        $app_config["extensions"].each do |ext|
+            if ( ext.start_with?('moto-') )
+                plugins += ',' if plugins.length() > 0
+                plugins += ext[5, ext.length()-5]
+            end
+        end
+        
+        application_build_configs['moto-plugins'] = plugins if plugins.length() > 0
     end
 
     puts "$app_config['extensions'] : #{$app_config['extensions'].inspect}"   
@@ -279,9 +292,7 @@ namespace "config" do
     
     $hidden_app = $app_config["hidden_app"].nil?() ? "0" : $app_config["hidden_app"]
     
-
     #application build configs
-    application_build_configs = {}
 
     $application_build_configs_keys.each do |key|
       value = $app_config[key]
