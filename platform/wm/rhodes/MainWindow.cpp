@@ -140,6 +140,29 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     return S_OK;
 }
 
+#if defined( OS_PLATFORM_MOTCE )
+void CMainWindow::SetFullScreen(bool bFull)
+{
+	HWND hTaskBar = FindWindow(_T("HHTaskBar"), NULL);
+	if(!hTaskBar) 
+		return;
+	::ShowWindow(hTaskBar, !bFull ? SW_SHOW : SW_HIDE);
+
+	if(g_hWndCommandBar)
+		::ShowWindow(g_hWndCommandBar, !bFull ? SW_SHOW : SW_HIDE);
+
+	RECT rect = { 0 };
+	SystemParametersInfo(SPI_GETWORKAREA, NULL, &rect, FALSE);
+	
+	if(bFull)
+		rect.bottom =  GetSystemMetrics(SM_CYSCREEN);
+	
+	MoveWindow(&rect);
+
+	m_bFullScreen = bFull;
+}
+#endif
+
 LRESULT CMainWindow::InitMainWindow()
 {
     HRESULT hr = S_OK;
@@ -256,9 +279,12 @@ LRESULT CMainWindow::InitMainWindow()
 
 #endif
 
-#if defined(_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
+#if defined(_WIN32_WCE)
 	//Set fullscreen after window resizing
-	if ( RHOCONF().getBool("full_screen"))
+#if defined( OS_PLATFORM_MOTCE )
+	m_bFullScreen = RHOCONF().getBool("full_screen");
+#endif
+	if (RHOCONF().getBool("full_screen"))
    	    SetFullScreen(true);
 #endif
 
@@ -327,6 +353,7 @@ LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 #if defined (_WIN32_WCE)
     m_menuBar = NULL;
+   	SetFullScreen(false);
 #endif
 
 #if defined(OS_WINDOWS)
@@ -377,7 +404,7 @@ LRESULT CMainWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOO
         rect.bottom -= m_toolbar.getHeight();
 
 #if defined( OS_PLATFORM_MOTCE )
-    if (g_hWndCommandBar)
+    if (!m_bFullScreen && g_hWndCommandBar)
     {
         CRect rcCmdBar;
         ::GetWindowRect(g_hWndCommandBar, &rcCmdBar);
@@ -672,8 +699,8 @@ LRESULT CMainWindow::OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 LRESULT CMainWindow::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND hwnd, BOOL& /*bHandled*/)
 {
-#if defined (_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
-	SetFullScreen(!m_bFullScreen);
+#if defined (_WIN32_WCE)
+	SetFullScreen((int)hwnd);
 #endif
 	return 0;
 };
