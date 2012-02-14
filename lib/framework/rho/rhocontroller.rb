@@ -52,8 +52,8 @@ module Rho
 
     def default_action
       return Hash['GET','show','PUT','update','POST','update',
-        'DELETE','delete'][@request['request-method']] unless @request['id'].nil?
-      return Hash['GET','index','POST','create'][@request['request-method']]
+        'DELETE','delete'][@request['request-method'].upcase] unless @request['id'].nil?
+      return Hash['GET','index','POST','create'][@request['request-method'].upcase]
     end
 
     def self.process_rho_object(params)

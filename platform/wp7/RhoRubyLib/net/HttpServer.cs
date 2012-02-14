@@ -28,6 +28,8 @@ using System;
 using rho.common;
 using rho;
 using System.Collections.Generic;
+using System.Collections;
+using System.Text;
 
 namespace rho.net
 {
@@ -40,6 +42,15 @@ namespace rho.net
 
         static CRhodesApp RHODESAPP() { return CRhodesApp.Instance; }
         private CRhoRuby RhoRuby { get { return CRhoRuby.Instance; } }
+
+        static public String HTTP_REDIRECT_CODE = "302";
+        static public String PARAM_PREFIX_REQ = "request-";
+        static public String PARAM_PREFIX_RESP = "response-";
+        static public String RESPONSE_BODY_FILEPATH = "response-body-filepath";
+        static public String AJAX_PARAM_CALLBACK_ID = "_rho_callbackId";
+        static public String AJAX_PARAM_RESPONSE = "response";
+        static public String AJAX_PARAM_STATUS = "status";
+        static public String AJAX_PARAM_MESSAGE = "message";
 
         class CRoute
         {
@@ -64,6 +75,7 @@ namespace rho.net
         class CServerCommand : IQueueCommand
         {
             String m_method, m_uri, m_query, m_body;
+            Dictionary<String, String> m_headers;
             CRoute m_route;
             CHttpServer m_Parent;
             int m_nCommand;
@@ -72,27 +84,78 @@ namespace rho.net
             public const int scDispatch = 1, scIndex = 2;
 
             public CServerCommand(CHttpServer Parent, CRoute route,
-                String method, String uri, String query, String body, int nCommand, String strAjaxContext)
+                String method, String uri, IDictionary headers, IDictionary data, int nCommand, String strAjaxContext)
             {
                 m_Parent = Parent;
-                m_method = method;
-                m_uri = uri;
-                m_query = query;
-                m_body = body;
+                m_method = (null != method) ? method.toUpperCase() : "GET";
+                m_uri = (0 <= uri.indexOf('?')) ? uri.substring(0, uri.indexOf('?')) : uri;
                 m_route = route;
                 m_nCommand = nCommand;
                 m_strAjaxContext = strAjaxContext;
+
+                m_body = "";
+
+                m_headers = new Dictionary<String, String>();
+                if (null != headers)
+                {
+                    foreach (object key in headers.Keys)
+                    {
+                        m_headers[key.ToString()] = headers[key].ToString();
+                    }
+                }
+
+                // Query parameters from URL are added first, then data parameters added.
+                m_query = (0 <= uri.indexOf('?')) ? uri.substring(uri.indexOf('?') + 1) : "";
+                if (null != data)
+                {
+                    StringBuilder sb = new StringBuilder(m_query);
+                    foreach (object key in data.Keys)
+                    {
+                        if (0 < sb.Length) sb.Append("&");
+                        sb.Append(key.ToString() + "=" + (null != data[key] ? data[key].ToString() : ""));
+                    }
+                    m_query = sb.ToString();
+                }
+            }
+
+            public boolean isAjaxRequest()
+            {
+                return (m_strAjaxContext != null && 0 < m_strAjaxContext.length());
             }
 
             public void execute()
             {
                 String strUrl = "";
-                if (m_nCommand == scDispatch )
-                    strUrl = m_Parent.processDispatch(m_route, m_method, m_uri, m_query, m_body);
-                else if ( m_nCommand == scIndex )
-                    strUrl = m_Parent.processIndex(m_route, m_method, m_uri, m_query, m_body);
+                IDictionary result = null;
+                if (m_nCommand == scDispatch)
+                {
+                    result = m_Parent.processDispatch(m_route, m_method, m_uri, m_headers, m_query, m_body);
+                    strUrl = result[RESPONSE_BODY_FILEPATH].ToString();
 
-                if (m_strAjaxContext == null || m_strAjaxContext.length() == 0)
+                    if (isAjaxRequest() && result[AJAX_PARAM_STATUS].ToString().equals(HTTP_REDIRECT_CODE))
+                    {
+                        IDictionary headers = new Dictionary<String, String>();
+                        headers["X-Requested-With"] = "XMLHttpRequest";
+                        if (!RHODESAPP().HttpServer.processBrowserRequest(
+                            "GET",
+                            new Uri(strUrl, UriKind.Relative),
+                            headers,
+                            new Dictionary<String, String>(),
+                            m_strAjaxContext
+                            ))
+                        {
+                            LOG.ERROR("Ajax request redirection failed.");
+                        }
+                        return;
+                    }
+                }
+                else if (m_nCommand == scIndex)
+                {
+                    result = m_Parent.processIndex(m_route, m_method, m_uri, m_headers, m_query, m_body);
+                    strUrl = result[RESPONSE_BODY_FILEPATH].ToString();
+                }
+
+                if (!isAjaxRequest())
                 {
                     RHODESAPP().processWebNavigate(strUrl, -1);
                 }
@@ -100,11 +163,29 @@ namespace rho.net
                 {
                     String res = CRhoFile.isResourceFileExist(strUrl) ? CRhoFile.readStringFromResourceFile(strUrl) : CRhoFile.readFileToString(strUrl);
 
-                    String[] args = new String[4];
+                    
+                    IDictionary headers = new Dictionary<String, String>();
+                    StringBuilder jsonHeaders = new StringBuilder();
+                    foreach (object key in result.Keys)
+                    {
+                        if (
+                               key.ToString().startsWith(PARAM_PREFIX_REQ)
+                            || key.ToString().startsWith(PARAM_PREFIX_RESP)
+                            || key.ToString().equals(AJAX_PARAM_MESSAGE)
+                            || key.ToString().equals(AJAX_PARAM_STATUS)
+                            ) continue;
+                        headers[key.ToString()] = result[key].ToString();
+                        jsonHeaders.AppendFormat("{0}\"{1}\": \"{2}\"",
+                            (0 < jsonHeaders.Length) ? ", " : "",
+                            key.ToString(), result[key].ToString());
+                    }
+
+                    String[] args = new String[5];
                     args[0] = m_strAjaxContext;
                     args[1] = res;
-                    args[2] = "ok";
-                    args[3] = "200";
+                    args[2] = "{" + jsonHeaders + "}";
+                    args[3] = result[AJAX_PARAM_MESSAGE].ToString();
+                    args[4] = result[AJAX_PARAM_STATUS].ToString();
 
                     RHODESAPP().processInvokeScriptArgs("_rho_ajaxProxyCallback", args, RHODESAPP().getCurrentTab());
                 }
@@ -141,6 +222,11 @@ namespace rho.net
 
         public boolean processBrowserRequest(Uri uri, String strAjaxContext)
         {
+            return processBrowserRequest("get", uri, null, null, strAjaxContext);
+        }
+
+        public boolean processBrowserRequest(String reqType, Uri uri, IDictionary headers, IDictionary data, String strAjaxContext)
+        {
             boolean bAjaxCall = !(strAjaxContext == null || strAjaxContext.length() == 0);
             
             if (!uri.OriginalString.StartsWith(RHODESAPP().getHomeUrl())
@@ -168,7 +254,10 @@ namespace rho.net
             CRoute route = new CRoute();
             if (dispatch(url, route))
             {
-                addQueueCommand(new CServerCommand(this, route, bAjaxCall ? "GET" : "GET", url, query, "", CServerCommand.scDispatch, strAjaxContext));
+                addQueueCommand(new CServerCommand(this, route, reqType,
+                    url + (0 < query.Length ? ("?"+query) : ""),
+                    headers, data, CServerCommand.scDispatch, strAjaxContext));
+                //addQueueCommand(new CServerCommand(this, route, bAjaxCall ? "GET" : "GET", url, query, "", CServerCommand.scDispatch, strAjaxContext));
 
                 return true;
             }
@@ -178,7 +267,8 @@ namespace rho.net
             String strIndexFile = getIndex(fullPath);
             if (strIndexFile.Length > 0)
             {
-                addQueueCommand(new CServerCommand(this, route, bAjaxCall ? "GET" : "GET", url, query, "", CServerCommand.scIndex, strAjaxContext));
+                addQueueCommand(new CServerCommand(this, route, reqType, url, headers, data, CServerCommand.scIndex, strAjaxContext));
+                //addQueueCommand(new CServerCommand(this, route, bAjaxCall ? "GET" : "GET", url, query, "", CServerCommand.scIndex, strAjaxContext));
 
                 return true;
             }
@@ -186,14 +276,17 @@ namespace rho.net
             return false;
         }
 
-        String processDispatch(CRoute route, String method, String uri, String query, String body)
+        IDictionary processDispatch(CRoute route, String method, String uri, Dictionary<String, String> headers, String query, String body)
         {
-            Object rhoReq = create_request_hash(route, method, uri, query, null, body);
+            Object rhoReq = create_request_hash(route, method, uri, query, headers, body);
             Object rhoResp = RhoRuby.callServe(rhoReq);
 
             String strRedirectUrl = getRedirectUrl(rhoResp);
             if (strRedirectUrl.Length > 0)
-                return strRedirectUrl;
+            {
+                ((IDictionary)rhoResp)[RESPONSE_BODY_FILEPATH] = strRedirectUrl;
+                return (IDictionary)rhoResp;
+            }
 
             String strFilePath = RHODESAPP().canonicalizeRhoPath(uri) + ".gen.html";
             if (route.id.Length > 0)
@@ -204,12 +297,14 @@ namespace rho.net
 
             if (method == "GET")
                 RHODESAPP().keepLastVisitedUrl(uri);
-
-            return strFilePath;
+            ((IDictionary)rhoResp)[RESPONSE_BODY_FILEPATH] = strFilePath;
+            return (IDictionary)rhoResp;
         }
 
-        String processIndex(CRoute route, String method, String uri, String query, String body)
+        IDictionary processIndex(CRoute route, String method, String uri, Dictionary<String, String> headers, String query, String body)
         {
+            Object rhoResp = new Dictionary<String, String>();
+
             String fullPath = uri.StartsWith(m_root) ? uri : CFilePath.join(m_root, uri);
             String strIndexFile = getIndex(fullPath);
 
@@ -219,18 +314,25 @@ namespace rho.net
                 String strFilePath = CFilePath.join(m_root, "rhodes_error") + ".gen.html";
                 CRhoFile.recursiveCreateDir(strFilePath);
                 CRhoFile.writeStringToFile(strFilePath, error);
-                return strFilePath;
+                ((IDictionary)rhoResp)[RESPONSE_BODY_FILEPATH] = strFilePath;
+                return (IDictionary)rhoResp;
             }
 
             if (CFilePath.getExtension(fullPath).Length > 0)
-                return strIndexFile;
+            {
+                ((IDictionary)rhoResp)[RESPONSE_BODY_FILEPATH] = strIndexFile;
+                return (IDictionary)rhoResp;
+            }
 
-            Object rhoReq = create_request_hash(route, method, uri, query, null, body);
-            Object rhoResp = RhoRuby.callServeIndex(strIndexFile, rhoReq);
+            Object rhoReq = create_request_hash(route, method, uri, query, headers, body);
+            rhoResp = RhoRuby.callServeIndex(strIndexFile, rhoReq);
 
             String strRedirectUrl = getRedirectUrl(rhoResp);
             if (strRedirectUrl.Length > 0)
-                return strRedirectUrl;
+            {
+                ((IDictionary)rhoResp)[RESPONSE_BODY_FILEPATH] = strRedirectUrl;
+                return (IDictionary)rhoResp;
+            }
 
             strIndexFile += ".gen.html";
             CRhoFile.recursiveCreateDir(strIndexFile);
@@ -239,7 +341,8 @@ namespace rho.net
             if (method == "GET")
                 RHODESAPP().keepLastVisitedUrl(uri);
 
-            return strIndexFile;
+            ((IDictionary)rhoResp)[RESPONSE_BODY_FILEPATH] = strIndexFile;
+            return (IDictionary)rhoResp;
         }
 /*
         CResponse decide(String method, String uri, String query, String body)
@@ -493,7 +596,7 @@ namespace rho.net
             }
             RhoRuby.hashAdd(hash, "headers", hash_headers);
 	
-            if ( body.Length > 0 )
+            if ( null != body && body.Length > 0 )
                 RhoRuby.hashAdd(hash, "request-body", body);
     
             return hash;

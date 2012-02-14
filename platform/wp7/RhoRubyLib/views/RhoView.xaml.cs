@@ -40,6 +40,7 @@ using System.Windows.Navigation;
 using IronRuby.Builtins;
 using rho.common;
 using System.IO;
+using System.Collections;
 
 namespace rho.views
 {
@@ -201,11 +202,46 @@ namespace rho.views
             {
                 string req = request.substring(JS_NOTIFY_REQUEST.length()).trim();
 
-                string ajaxContext = extractAjaxContext(req);
-                if (!RHODESAPP().HttpServer.processBrowserRequest(new Uri(req.substring(REQUEST_URL_SCHEME.length()), UriKind.Relative), ajaxContext))
+                IDictionary res = null;
+                try
                 {
-                    LOG.ERROR("External requests should be filtered in javascript");
+                    res = (IDictionary) fastJSON.RJSONTokener.JsonDecode(req);
                 }
+                catch (Exception ex)
+                {
+                    LOG.ERROR("JsonDecode", ex);
+                    throw ex;
+                }
+
+                if (null != res)
+                {
+                    string url = res["url"].ToString();
+                    string type = res["type"].ToString().toUpperCase();
+                    string contentType = res["contentType"].ToString();
+                    IDictionary headers = (IDictionary)res["headers"];
+                    IDictionary data = (IDictionary)res["data"];
+                    string httpUsername = (null == res["usename"]) ? null : res["usename"].ToString();
+                    string httpPassword = (null == res["password"]) ? null : res["password"].ToString();
+
+                    headers["X-Requested-With"] = "XMLHttpRequest";
+
+                    string ajaxContext = data[AJAX_CONTEXT_PARAM].ToString();
+                    if (!RHODESAPP().HttpServer.processBrowserRequest(
+                        type,
+                        new Uri(url.substring(REQUEST_URL_SCHEME.length()), UriKind.Relative),
+                        headers,
+                        data,
+                        ajaxContext
+                        ))
+                    {
+                        LOG.ERROR("External requests should be filtered in javascript");
+                    }
+                }
+                else
+                {
+                    LOG.ERROR("Empty request URI");
+                }
+
             }
         }
 
