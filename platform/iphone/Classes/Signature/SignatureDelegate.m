@@ -273,9 +273,9 @@ void rho_signature_take(char* callback_url, rho_param* p) {
 	Rhodes* rho = [Rhodes sharedInstance];
 	SignatureDelegate* deleg = rho.signatureDelegate; 
 	[deleg setImageFormat:iformat];
-    [deleg setPenColor:(unsigned int)[ns_penColor longLongValue]];
+    [deleg setPenColor:((unsigned int)[ns_penColor longLongValue] | 0xFF000000)];
     [deleg setPenWidth:[ns_penWidth floatValue]];
-    [deleg setBgColor:(unsigned int)[ns_bgColor longLongValue]];
+    [deleg setBgColor:((unsigned int)[ns_bgColor longLongValue] | 0xFF000000)];
     [[Rhodes sharedInstance] performSelectorOnMainThread:@selector(takeSignature:)
                                               withObject:url waitUntilDone:NO];
 }
