@@ -15,25 +15,43 @@ function p(str) {
     output_file.WriteLine(str);
 }
 
-function expand_source(es,name,path,section,destination) {
+function expand_source(es,name,path,section,destination,flag) {
     var s = new Object();
     s.name = name;
     s.path = path;
     s.section = ""+section+"_"+name.replace(/ /g,"_");
-    s.destination = destination+"\\"+name;
+    
+    if (destination == null || destination == "")
+    {
+      if (flag == true)
+        s.destination = "";
+      else
+	    s.destination = name;
+    }
+    else {
+      s.destination = destination+"\\"+name;	
+    }
+    
     s.folder = fso.GetFolder(path);
     es.push(s);
 
     var fc = new Enumerator(s.folder.SubFolders);
     for (; !fc.atEnd(); fc.moveNext()) {
-        expand_source(es,fc.item().Name,fc.item().Path,s.section,s.destination);
+        expand_source(es,fc.item().Name,fc.item().Path,s.section,s.destination,false);
     }
 }
 
 function expand_sources(sources) {
     var es = new Array();
     for (var i in sources) {
-        expand_source(es,sources[i][0],sources[i][1],"copyfiles","rho");
+        expand_source(es,sources[i][0],sources[i][1],"copyfiles","rho",false);
+    }
+    return es;
+}
+
+function expand_sources1(es, sources) {
+    for (var i in sources) {
+        expand_source(es, sources[i][0], sources[i][1], "copyfiles", "",true);
     }
     return es;
 }
@@ -290,6 +308,7 @@ function main() {
     // args(5) = hidden_app
     // args(6) = include motorola webkit binaries and configs
     // args(7) = rhoelements gem folder path
+    // args(8) = additional files 
 
     var args = WScript.Arguments;
     fso = new ActiveXObject("Scripting.FileSystemObject");
@@ -302,6 +321,17 @@ function main() {
     sources['apps']= ["apps",args(4)+"/apps"];
 
     var es = expand_sources(sources);
+    
+    for (var idx = 8; idx < args.length; idx++) 
+    {
+    	if (args(idx) == null)
+    		break;
+    		
+    	var sources_add = new Object();
+        sources_add['files']= ["add" + idx,args(idx)];
+        es  = expand_sources1(es, sources_add);
+    }
+
     var exts = expand_extensions(args(1));
     pinf(args(1),es,exts,args(2),args(3), (args(5) == "0"), (args(6) == "1"), args(7));
 
