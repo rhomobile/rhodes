@@ -106,6 +106,7 @@ namespace "config" do
     $cabwiz = "cabwiz" if $cabwiz.nil?
     $webkit_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("webkit_browser").nil?) 
     $wk_data_dir = "/Program Files" # its fake value for running without motorola extensions. do not delete
+    $additional_dlls_path = nil
 
     begin
       if $webkit_capability
@@ -144,9 +145,25 @@ namespace "build" do
   namespace "wm" do
     task :extensions => "config:wm" do
 
+      if $additional_dlls_path.nil?
+        puts 'new $additional_dlls_paths'
+        $additional_dlls_paths = Array.new
+      end
+
       $app_config["extensions"].each do |ext|
         $app_config["extpaths"].each do |p|
           extpath = File.join(p, ext, 'ext')
+          ext_config_path = File.join(p, ext, "ext.yml")
+          ext_config = nil
+
+          if File.exist? ext_config_path
+            ext_config = YAML::load_file(ext_config_path)
+          end
+        
+          if ext_config != nil && ext_config["files"] != nil
+            $additional_dlls_paths << ext_config["files"]
+          end
+
           next unless File.exists? File.join(extpath, "build.bat")
 
           ENV['RHO_PLATFORM'] = $current_platform
@@ -167,6 +184,11 @@ namespace "build" do
           break
         end
       end
+      #test
+      #$additional_dlls_paths.each do |x|
+      #  puts " - " + x.to_s
+      #end
+      #exit
     end
 
     #    desc "Build wm rhobundle"
@@ -360,8 +382,14 @@ namespace "device" do
           File.open(filepath, "w") { |f| f.write(config) }
         end
       end
- 
+
+      $additional_dlls_paths << "C:/Android/runtime-rhostudio.product/RhodesApplication1/icon"
+
       args = ['build_inf.js', $appname + ".inf", build_platform, '"' + $app_config["name"] +'"', $app_config["vendor"], '"' + $srcdir + '"', $hidden_app, ($webkit_capability ? "1" : "0"), $wk_data_dir]
+
+      $additional_dlls_paths.each do |path|
+         args << path
+      end
         
       puts Jake.run('cscript',args)
       unless $? == 0
@@ -448,21 +476,26 @@ namespace "run" do
     puts "\nStarting application on the WM6 emulator\n\n"
     log_file = gelLogPath
 
-    #Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
-
-	File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
-	Jake.run_rho_log_server($app_path)
-	puts "RhoLogServer is starting"
-	while true do
-		if File.exists?($app_path + "/started")
-			break
-		end
-		sleep(1)
-	end
+    File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
+    Jake.run_rho_log_server($app_path)
+    puts "RhoLogServer is starting"
+    while true do
+      if File.exists?($app_path + "/started")
+        break
+      end
+      sleep(1)
+    end
 
     if $webkit_capability
       wk_args   = [ 'wk-emu', "\"#{$wm_emulator}\"", '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
       Jake.run2( detool, wk_args, {:nowait => false})
+    end
+
+    if $additional_dlls_paths
+      $additional_dlls_paths.each do |path|
+        add_files_args   = [ 'wk-emu', "\"#{$wm_emulator}\"", '"'+ path.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
+        Jake.run2( detool, add_files_args, {:nowait => false})
+      end
     end
 
     args   = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port]
@@ -496,23 +529,27 @@ namespace "run" do
       puts "Please, connect you device via ActiveSync.\n\n"
       log_file = gelLogPath
 
-      # temporary disable log from device (caused enormous delays)
-      # Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
-
-	  File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
+      File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
 	  
       Jake.run_rho_log_server($app_path)
-	  puts "RhoLogServer is starting"
-	  while true do
-	    if File.exists?($app_path + "/started")
-		    break
-	    end
-	    sleep(1)
-	  end    
+      puts "RhoLogServer is starting"
+      while true do
+        if File.exists?($app_path + "/started")
+          break
+        end
+        sleep(1)
+      end    
 
       if $webkit_capability
         wk_args   = [ 'wk-dev', '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
         Jake.run2( detool, wk_args, {:nowait => false})
+      end
+
+      if $additional_dlls_paths
+        $additional_dlls_paths.each do |path|
+          add_files_args   = [ 'wk-dev', '"'+ path.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
+          Jake.run2( detool, add_files_args, {:nowait => false})
+        end
       end
 
       args   = [ 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port ]
