@@ -105,6 +105,7 @@ public:
 
     const String& getRhobundleReloadUrl();
     const String& getBaseUrl();
+    void  setBaseUrl(const String& strBaseUrl);
     const String& getStartUrl();
     const String& getOptionsUrl();
     const String& getCurrentUrl(int index = 0);
