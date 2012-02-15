@@ -37,6 +37,7 @@ import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesAppOptions;
 import com.rhomobile.rhodes.RhodesApplication;
 import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.extmanager.RhoExtManagerPrivate;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.nativeview.RhoNativeViewManager;
@@ -579,8 +580,10 @@ public class SimpleMainView implements MainView {
         
         boolean bStartPage = RhodesService.isOnStartPage();
 
-        if ( !bStartPage && webView.canGoBack() )
+        if ( !bStartPage && webView.canGoBack() ) {
+        	RhoExtManagerPrivate.onBeforeNavigate(index);
             webView.goBack();
+        }
         else
         {    
 	        RhodesActivity ra = RhodesActivity.getInstance();
@@ -605,6 +608,7 @@ public class SimpleMainView implements MainView {
 		if (cleared_url.length() > 0) {
 			// check for handle because if we call loadUrl - WebView do not check this url for handle
 			if (!RhodesService.getInstance().handleUrlLoading(cleared_url)) {
+	        	RhoExtManagerPrivate.onBeforeNavigate(index);
 				webView.loadUrl(cleared_url);
 			}
 		}
@@ -615,6 +619,7 @@ public class SimpleMainView implements MainView {
 			mNativeViewView.invalidate();
 		}
 		else {
+        	RhoExtManagerPrivate.onBeforeNavigate(index);
 			webView.reload();
 		}
 	}

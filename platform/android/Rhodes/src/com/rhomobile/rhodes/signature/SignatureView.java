@@ -42,17 +42,21 @@ import android.view.SurfaceView;
 import android.view.MotionEvent;
 import java.io.Serializable;
 import java.io.IOException;
+import com.rhomobile.rhodes.extmanager.IRhoExtension;
+import com.rhomobile.rhodes.extmanager.IRhoExtManager;
+import com.rhomobile.rhodes.extmanager.RhoExtManagerSingletone;
+
 
 import com.rhomobile.rhodes.Logger;
 
-class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
+class SignatureView extends SurfaceView implements SurfaceHolder.Callback, IRhoExtension {
 
 	public int penColor;
 	public float penWidth;
 	public int bgColor;
 	public String imgFormat;
 	
-	
+	private static final String SIGNATURE_EXT_VIEW = "signature_ext_view";
 	
 	private class PointSequence {
 		public Vector<PointF> mPoints = new Vector<PointF>();
@@ -115,6 +119,9 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
     
     private Paint mPaint;
     
+	public void onBeforeNavigate(int tab_index) {
+		Signature.inline_signature_hide();
+	}
    
     public void doClear() {
     	// clear paths
@@ -262,7 +269,7 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
         requestFocus();
         bringToFront();
         
-        
+        RhoExtManagerSingletone.getRhoExtManagerInstance().registerExtension(SIGNATURE_EXT_VIEW, this);
     }
 	
     public Bitmap makeBitmap() {
