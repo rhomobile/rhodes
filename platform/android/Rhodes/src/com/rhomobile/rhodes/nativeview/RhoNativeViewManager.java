@@ -65,8 +65,8 @@ public class RhoNativeViewManager {
 		private long mViewHandle;
 	}
 	
-	public static WebView getWebViewObject(int tab_index) {
-		return RhodesService.getInstance().getMainView().getWebView(tab_index);
+	public static android.webkit.WebView getWebViewObject(int tab_index) {
+		return (android.webkit.WebView)RhodesService.getInstance().getMainView().getWebView(tab_index).getView();
 	}
 
 	public static RhoNativeView getNativeViewByteType(String typename) {

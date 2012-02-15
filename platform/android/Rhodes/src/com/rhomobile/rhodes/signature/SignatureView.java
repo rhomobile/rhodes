@@ -50,6 +50,7 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
 	public int penColor;
 	public float penWidth;
 	public int bgColor;
+	public String imgFormat;
 	
 	
 	
@@ -118,7 +119,7 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
     public void doClear() {
     	// clear paths
     	mSequences.clear();
-    	doFullRedraw();
+    	doFullRedraw(mCanvas, true);
     }
 	
      
@@ -135,19 +136,28 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
 		outState.putSerializable(mStateID, s);
 	}
 	
-	private void doFullRedraw() {
-		if (mCanvas == null) {
+	private void doFullRedraw(Canvas canvas, boolean useAlpha) {
+		if (canvas == null) {
 			return;
 		}
 		
         Paint paint = new Paint();
         paint.setAntiAlias(false);
-        paint.setARGB(	255, 
+        
+        int a = (bgColor & 0xFF000000) >> 24;
+	    if (useAlpha) {
+	    	mBitmap.eraseColor(bgColor & 0xFFFFFF);
+	    }
+	    else {
+	        a = 255;		
+	    }
+        
+        paint.setARGB(	a, 
         				(bgColor & 0xFF0000) >> 16, 
         				(bgColor & 0xFF00) >> 8,
         				(bgColor & 0xFF));
    	 
-        mCanvas.drawRect(0, 0, mCanvas.getWidth(), mCanvas.getHeight(), paint);
+        canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), paint);
         
         // draw path
         int s;
@@ -159,7 +169,7 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
 	        		PointF prev = ps.mPoints.elementAt(p-1);
 	        		PointF cur = ps.mPoints.elementAt(p);
 	        		if ((prev != null) && (cur != null)) {
-	        			mCanvas.drawLine(prev.x, prev.y, cur.x, cur.y, mPaint);
+	        			canvas.drawLine(prev.x, prev.y, cur.x, cur.y, mPaint);
 	        		}
 	        	}
         	}
@@ -209,17 +219,18 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
     
 	
 	public void setupView(int _penColor, float _penWidth, int _bgColor) {
-		penColor = _penColor;
+		penColor = _penColor | 0xFF000000;
 		penWidth = _penWidth;
-		bgColor = _bgColor;
+		bgColor = _bgColor | 0xFF000000;
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mPaint.setColor(0xFF000000 | penColor);
+        mPaint.setColor(penColor);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setStrokeWidth(penWidth);
-        doFullRedraw();
+        //setBackgroundColor(bgColor);
+        doFullRedraw(mCanvas, true);        
 	}
     
     public SignatureView(Context context, AttributeSet attrs) {
@@ -243,6 +254,9 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
 
         bgColor = 0xFFFFFFFF;
         
+        //setBackgroundColor(0);
+        
+        
         setFocusable(true); // make sure we get key events
         
         requestFocus();
@@ -252,8 +266,12 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
     }
 	
     public Bitmap makeBitmap() {
-    	return mBitmap;
+        Bitmap b = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.RGB_565);
+        Canvas c = new Canvas(b);
+        doFullRedraw(c, false);
+        return b;
     }
+    
     
     public boolean onTouchEvent(MotionEvent event) {
     	 float x = event.getX();
@@ -287,7 +305,7 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
  		Logger.D(TAG, "SurfaceChanged()");
         mBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.RGB_565);
         mCanvas = new Canvas(mBitmap);
-        doFullRedraw();
+        doFullRedraw(mCanvas, true);
     }
     
     
