@@ -298,12 +298,9 @@ namespace rho.common
             {
                 try
                 {
-                    if (index > 0)
+                    if (index >= 0 && m_tabControl != null && m_tabControl.Items.Count > 0)
                     {
-                        if (m_tabControl != null && m_tabControl.Items.Count > 0)
-                        {
-                            ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.InvokeScript(strFuncName, arrParams);
-                        }
+                        ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.InvokeScript(strFuncName, arrParams);
                     }
                     else
                     {
