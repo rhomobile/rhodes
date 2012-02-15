@@ -105,6 +105,7 @@ private:
     void processCommand(IQueueCommand* pCmd);
 
     static char const *toString(int type);
+    void   callCallback(const String& strCallback);
 
 private:
     callback_t m_expected;
@@ -148,6 +149,41 @@ void CAppCallbacksQueue::call(CAppCallbacksQueue::callback_t type)
 {
     addQueueCommand(new Command(type));
 }*/
+
+void CAppCallbacksQueue::callCallback(const String& strCallback)
+{
+    String strUrl = RHODESAPP().getBaseUrl();
+    strUrl += strCallback;
+    NetResponse resp = getNetRequest().pullData( strUrl, null );
+    if ( !resp.isOK() )
+    {
+        boolean bTryAgain = false;
+#if defined( __SYMBIAN32__ ) || defined( OS_ANDROID )
+        if ( String_startsWith( strUrl, "http://localhost:" ) )
+        {
+            RHODESAPP().setBaseUrl("http://127.0.0.1:");
+            bTryAgain = true;
+        }
+#else
+        if ( String_startsWith( strUrl, "http://127.0.0.1:" ) )
+        {
+            RHODESAPP().setBaseUrl("http://localhost:");
+            bTryAgain = true;
+        }
+#endif
+
+        if ( bTryAgain )
+        {
+            LOG(INFO) + "Change base url and try again.";
+            strUrl = RHODESAPP().getBaseUrl();
+            strUrl += strCallback;
+            resp = getNetRequest().pullData( strUrl, null );
+        }
+
+        if ( !resp.isOK() )
+            LOG(ERROR) + strCallback + " call failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+    }
+}
 
 void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
 {
@@ -234,23 +270,13 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
             break;
         case ui_created:
             {
-                String strUrl = RHODESAPP().getBaseUrl();
-                strUrl += "/system/uicreated";
-                NetResponse resp = getNetRequest().pullData( strUrl, null );
-                if ( !resp.isOK() )
-                    LOG(ERROR) + "activate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
-
+                callCallback("/system/uicreated");
                 m_expected = app_activated;
             }
             break;
         case app_activated:
             {
-                String strUrl = RHODESAPP().getBaseUrl();
-                strUrl += "/system/activateapp";
-                NetResponse resp = getNetRequest().pullData( strUrl, null );
-                if ( !resp.isOK() )
-                    LOG(ERROR) + "activate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
-
+                callCallback("/system/activateapp");
                 m_expected = app_deactivated;
             }
             break;
@@ -1111,6 +1137,11 @@ boolean CRhodesApp::isOnStartPage()
 const String& CRhodesApp::getBaseUrl()
 {
     return m_strHomeUrl;
+}
+
+void CRhodesApp::setBaseUrl(const String& strBaseUrl)
+{
+    m_strHomeUrl = strBaseUrl + getFreeListeningPort();
 }
 
 const String& CRhodesApp::getOptionsUrl()

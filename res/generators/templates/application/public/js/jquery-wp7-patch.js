@@ -44,6 +44,27 @@
         return {};
     }
 
+    function normalizeAjaxData(data) {
+        // if it is an object then return as it is
+        if ('object' == typeof data) return data;
+        // if it is a query string then parse it and return as an object
+        if ('string' == typeof data) {
+            data = $.trim(data);
+            data = (0 <= data.indexOf('?')) ? data.substring(data.indexOf('?')) : data;
+            var items = {};
+            $.each(data.split('&'), function(idx, item){
+                var keyVal = item.split('=');
+                if (keyVal && keyVal[0]) {
+                    items[keyVal[0]] = keyVal[1] || null;
+                }
+            });
+            return items;
+        }
+        // if it is neither string nor object,
+        // then so far we have no idea how to handle it
+        return {};
+    }
+
     var _ajax = $.ajax;
 
     function wp7ajax() {
@@ -80,44 +101,64 @@
         //console.log('typeof options.data: ' + typeof options.data);
         //if ("string" == typeof options.data) console.log('options.data: ' + options.data);
 
-        var urlQueryParams = "";
         // set next call id value
-        var cbIdValue = encodeURIComponent(_rho_callbackId_valuePrefix + callbackCount++);
+        var cbIdValue = (_rho_callbackId_valuePrefix + callbackCount++);
 
-        if ("string" == typeof options.data) {
-            urlQueryParams = options.data;
-        }
-        if ("object" != typeof options.data) {
-            options.data = {};
-        }
+        // ensure data is an object, not string
+        var data = normalizeAjaxData(options.data);
 
         // set callback id param value
-        options.data[_rho_callbackId_paramName] = cbIdValue;
+        data[_rho_callbackId_paramName] = encodeURIComponent(cbIdValue);
+
         // set deferred object to resolve/reject late
         options[_rho_deferred_paramName] = $.Deferred();
+
         // store options for pending callback
-        pendingCallbacks[options.data[_rho_callbackId_paramName]] = options;
+        pendingCallbacks[cbIdValue] = options;
 
         // compose GET request formatted URI
-        $.each(options.data, function(name, value){
-            urlQueryParams += ((0 < urlQueryParams.length ? "&" : "")
+        var urlQueryParams = "";
+        $.each(data, function(name, value){
+            urlQueryParams += ((0 < urlQueryParams.length ? "&" : "?")
                 +encodeURIComponent(name) +'=' +encodeURIComponent(value));
         });
 
+        var request = $.extend({}, {
+            url: options.url,
+            type: options.type || 'GET',
+            contentType: options.contentType || 'application/x-www-form-urlencoded',
+            headers: options.headers || {},
+            username: options.username || null,
+            password: options.password || null,
+            data: data
+        });
+
+        if (options.accepts) {
+            request.headers['Accept'] = options.accepts;
+        }
+
         //console.log('wp7notifyProxy: urlQueryParams: ' +urlQueryParams);
-        window.external.notify('request:' +options.url +"?" +urlQueryParams);
+        var reqObj = $.toJSON(request);
+        window.external.notify('request:' +reqObj);
+        //window.external.notify('request:' +options.url +urlQueryParams);
         return options[_rho_deferred_paramName];
     }
 
-    function fireHandlers(options, result, status, errCode) {
+    function fireHandlers(options, result, headers, status, errCode) {
         // TODO: fake jqXHR needs to be provided
-        var jqXHR = null;
-
+        var jqXHR = {
+            getResponseHeader: function(name) {
+                return ("object" == typeof headers) ? headers[name] : undefined;
+            },
+            getAllResponseHeaders: function() {
+                return ("object" == typeof headers) ? headers : {};
+            }
+        };
         if ("error" == status) {
             if ('function' == typeof options.error) {
                 // start handler asynchronously
                 setTimeout(function(){
-                    options.error.apply(this, [jqXHR, status, result]);
+                    options.error.apply(options.context, [jqXHR, status, result]);
                 }, 1);
             }
             if ('object' == typeof options[_rho_deferred_paramName]) {
@@ -127,7 +168,7 @@
             if ('function' == typeof options.success) {
                 // start handler asynchronously
                 setTimeout(function(){
-                    options.success.apply(this, [result, status, jqXHR]);
+                    options.success.apply(options.context, [result, status, jqXHR]);
                 }, 1);
             }
             if ('object' == typeof options[_rho_deferred_paramName]) {
@@ -136,14 +177,17 @@
         }
     }
 
-    window._rho_ajaxProxyCallback = function(callbackId, result, status, errCode) {
+    window._rho_ajaxProxyCallback = function(callbackId, result, headers, status, errCode) {
         var cbId = decodeURIComponent(callbackId);
         //console.log('_rho_ajaxProxyCallback: callback for: ' +cbId);
+        //console.log('_rho_ajaxProxyCallback: result: ' +result);
         if (pendingCallbacks[cbId]) {
-            fireHandlers(pendingCallbacks[cbId], result, status, errCode);
+            //console.log('_rho_ajaxProxyCallback: callback found!');
+            fireHandlers(pendingCallbacks[cbId], result,
+                ("string" == typeof headers) ? $.parseJSON(headers) : headers,
+                status, errCode);
             delete pendingCallbacks[cbId];
         }
     };
-
 
 })(jQuery);
