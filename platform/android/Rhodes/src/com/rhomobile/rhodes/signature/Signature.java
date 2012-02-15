@@ -239,6 +239,7 @@ public class Signature {
 		if (ourInlineSignatureView != null) {
 			ImageCapture.takeSignature(callback_url, ourInlineSignatureView.imgFormat, ourInlineSignatureView.makeBitmap());
 		}
+		inline_signature_hide();
 	}
 	
 	public static void inline_signature_clear() {
