@@ -79,15 +79,41 @@ RHO_GLOBAL void rho_signature_take(char* callback_url, rho_param* p)
 
 RHO_GLOBAL void rho_signature_visible(bool b, rho_param* p)
 {
-    //TODO: rho_signature_visible
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_SIGNATURE);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "inline_signature_visible", "(ILjava/lang/Object;)V");
+    if (!mid) return;
+
+    int visible = 0;
+    if (b) visible = 1;
+    
+    jobject paramsObj = RhoValueConverter(env).createObject(p);
+    env->CallStaticVoidMethod(cls, mid, visible, paramsObj);
+    env->DeleteLocalRef(paramsObj);
 }
 
 RHO_GLOBAL void rho_signature_capture(const char* callback_url) 
 {
-    //TODO: rho_signature_capture
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_SIGNATURE);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "inline_signature_capture", "(Ljava/lang/String;)V");
+    if (!mid) return;
+    jhstring objCallback = rho_cast<jhstring>(callback_url);
+    
+    env->CallStaticVoidMethod(cls, mid, objCallback.get());
+    
+    
 }
 
 RHO_GLOBAL void rho_signature_clear() 
 {
-    //TODO: rho_signature_clear
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_SIGNATURE);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "inline_signature_clear", "()V");
+    if (!mid) return;
+    env->CallStaticVoidMethod(cls, mid);
+    
 }

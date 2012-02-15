@@ -31,12 +31,17 @@ import java.util.Map;
 import java.util.Vector;
 
 import android.content.Intent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.widget.AbsoluteLayout;
 
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesAppOptions;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
+import com.rhomobile.rhodes.util.Utils;
 
 public class Signature {
 
@@ -44,8 +49,18 @@ public class Signature {
 	
 	public static final String INTENT_EXTRA_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + "signature.";
 	
+	private static SignatureView ourInlineSignatureView = null;
+	
 	private static void reportFail(String name, Exception e) {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
+	}
+	
+	private static final boolean ENABLE_LOGGING = true;
+	
+	private static void reportMsg(String msg) {
+		if (ENABLE_LOGGING) {
+			Utils.platformLog("SignatureCapture", msg);
+		}
 	}
 	
 	private static void init() {
@@ -132,6 +147,127 @@ public class Signature {
 		callback(callbackUrl, fp, "", fp.length() == 0);
 	}
 
-	public static native void callback(String callbackUrl, String filePath, String error, boolean cancelled);
+	public static void inline_signature_visible(int visible, Object params) {
+		if (visible == 0) {
+			inline_signature_hide();
+			return;
+		}
+		
+		final Object _fparams = params;
+		
+		PerformOnUiThread.exec( new Runnable () {
+			public void run() {
+				reportMsg(" $$$ Start make of Signature View");
+				
+				ViewGroup wv = (WebView)RhodesService.getInstance().getMainView().getWebView(-1).getView();
+				if ((wv != null) && (ourInlineSignatureView != null)) {
+					wv.removeView(ourInlineSignatureView);
+					ourInlineSignatureView = null;
+				}
+				
+				ourInlineSignatureView = new SignatureView(RhodesService.getContext(), null);
+				
+				{
+					String imageFormat = "png";
+					int penColor = 0xFF66009A;
+					float penWidth = 2;
+					int bgColor = 0xFFFFFFFF;
+					int left = 0;
+					int top = 0;
+					int width = 100;
+					int height = 100;
+					
+					Object params = _fparams;
+					
+					if (params instanceof Map<?,?>) {
+						Map<Object,Object> settings = (Map<Object,Object>)params;
+						
+						Object imgFrmtObj = settings.get("imageFormat");
+						if ((imgFrmtObj != null) && (imgFrmtObj instanceof String)) {
+							imageFormat = new String(((String)imgFrmtObj));
+						}
+						
+						Object penColorObj = settings.get("penColor");
+						if ((penColorObj != null) && (penColorObj instanceof String)) {
+							penColor = Integer.parseInt((String)penColorObj);
+						}
+							
+						Object penWidthObj = settings.get("penWidth");
+						if ((penWidthObj != null) && (penWidthObj instanceof String)) {
+							penWidth = Float.parseFloat((String)penWidthObj);
+						}
 
+						Object bgColorObj = settings.get("bgColor");
+						if ((bgColorObj != null) && (bgColorObj instanceof String)) {
+							bgColor = Integer.parseInt((String)bgColorObj);
+						}
+
+						Object bgLeftObj = settings.get("left");
+						if ((bgLeftObj != null) && (bgLeftObj instanceof String)) {
+							left = Integer.parseInt((String)bgLeftObj);
+						}
+						Object bgTopObj = settings.get("top");
+						if ((bgTopObj != null) && (bgTopObj instanceof String)) {
+							top = Integer.parseInt((String)bgTopObj);
+						}
+						Object bgWidthObj = settings.get("width");
+						if ((bgWidthObj != null) && (bgWidthObj instanceof String)) {
+							width = Integer.parseInt((String)bgWidthObj);
+						}
+						Object bgHeightObj = settings.get("height");
+						if ((bgHeightObj != null) && (bgHeightObj instanceof String)) {
+							height = Integer.parseInt((String)bgHeightObj);
+						}
+					}
+					
+					ourInlineSignatureView.setLayoutParams(new AbsoluteLayout.LayoutParams(width, height, left, top));
+					ourInlineSignatureView.imgFormat = imageFormat;
+					ourInlineSignatureView.setupView(penColor, penWidth, bgColor);
+					
+				}
+				
+				wv.addView(ourInlineSignatureView);
+				wv.bringChildToFront(ourInlineSignatureView);	
+				ourInlineSignatureView.requestFocus();
+				ourInlineSignatureView.bringToFront();
+				reportMsg(" $$$ Finish make of Signature View");
+			}
+		});
+	}
+	
+	public static void inline_signature_capture(String callback_url) {
+		if (ourInlineSignatureView != null) {
+			ImageCapture.takeSignature(callback_url, ourInlineSignatureView.imgFormat, ourInlineSignatureView.makeBitmap());
+		}
+	}
+	
+	public static void inline_signature_clear() {
+		PerformOnUiThread.exec( new Runnable () {
+			public void run() {
+				if (ourInlineSignatureView != null) {
+					ourInlineSignatureView.doClear();
+				}
+			}
+		});
+	}
+	
+	public static void inline_signature_hide() {
+		PerformOnUiThread.exec( new Runnable () {
+			public void run() {
+				ViewGroup wv = (WebView)RhodesService.getInstance().getMainView().getWebView(-1).getView();
+				if ((wv != null) && (ourInlineSignatureView != null)) {
+					wv.removeView(ourInlineSignatureView);
+					ourInlineSignatureView = null;
+				}
+			}
+		});
+	}
+	
+	
+	public static native void callback(String callbackUrl, String filePath, String error, boolean cancelled);
 }
+
+
+
+
+
