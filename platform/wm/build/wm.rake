@@ -153,18 +153,24 @@ namespace "build" do
       $app_config["extensions"].each do |ext|
         $app_config["extpaths"].each do |p|
           extpath = File.join(p, ext, 'ext')
+          commin_ext_path = File.join(p, ext)
           ext_config_path = File.join(p, ext, "ext.yml")
           ext_config = nil
 
+          next unless File.exists? File.join(extpath, "build.bat")
+          
+          puts "ext_config_path - " + ext_config_path.to_s
           if File.exist? ext_config_path
             ext_config = YAML::load_file(ext_config_path)
           end
-        
-          if ext_config != nil && ext_config["files"] != nil
-            $additional_dlls_paths << ext_config["files"]
-          end
 
-          next unless File.exists? File.join(extpath, "build.bat")
+          puts "extpath - " + commin_ext_path.to_s
+          chdir commin_ext_path 
+            if ext_config != nil && ext_config["files"] != nil
+              puts "ext_config[files] - " + ext_config["files"].to_s
+              $additional_dlls_paths << File.expand_path(ext_config["files"])
+            end
+          chdir $startdir
 
           ENV['RHO_PLATFORM'] = $current_platform
           ENV['RHO_BUILD_CONFIG'] = 'Release'
@@ -176,7 +182,6 @@ namespace "build" do
           ENV['VCBUILD'] = $vcbuild
           ENV['SDK'] = $sdk
 
-          #puts Jake.run("build.bat", [], extpath)
           chdir extpath
           puts `build.bat`
           chdir $startdir
@@ -185,9 +190,9 @@ namespace "build" do
         end
       end
       #test
-      #$additional_dlls_paths.each do |x|
-      #  puts " - " + x.to_s
-      #end
+      $additional_dlls_paths.each do |x|
+        puts " - " + x.to_s
+      end
       #exit
     end
 
@@ -382,8 +387,6 @@ namespace "device" do
           File.open(filepath, "w") { |f| f.write(config) }
         end
       end
-
-      $additional_dlls_paths << "C:/Android/runtime-rhostudio.product/RhodesApplication1/icon"
 
       args = ['build_inf.js', $appname + ".inf", build_platform, '"' + $app_config["name"] +'"', $app_config["vendor"], '"' + $srcdir + '"', $hidden_app, ($webkit_capability ? "1" : "0"), $wk_data_dir]
 
