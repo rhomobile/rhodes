@@ -54,7 +54,7 @@ LRESULT CLogOptionsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     mbi.hInstRes = _AtlBaseModule.GetResourceInstance();
     mbi.dwFlags    = SHCMBF_HMENU;
     SHCreateMenuBar(&mbi);
-#else
+#elif defined (OS_PLATFORM_MOTCE) 
 	SetWindowLong(GWL_STYLE,(long)WS_BORDER);
 
 	m_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
