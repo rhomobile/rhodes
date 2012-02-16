@@ -273,24 +273,6 @@ namespace rho.common
             });
         }
 
-        public void processInvokeScript(String strScript, int index)
-        {
-            String[] arr = strScript.Split('(');
-            String[] arrParams = null;
-            if (arr.Length > 1)
-            {
-                arrParams = arr[1].Split(',');
-                if (arrParams.Length == 1)
-                {
-                    arrParams[0] = arrParams[0].Replace('"', ' ');
-                    arrParams[0] = arrParams[0].Replace(')', ' ');
-                    arrParams[0] = arrParams[0].Replace(';', ' ');
-                    arrParams[0] = arrParams[0].Trim();
-                }
-            }
-
-            processInvokeScriptArgs(arr[0], arrParams, index);
-        }
 
         public void processInvokeScriptArgs(String strFuncName, String[] arrParams, int index)
         {

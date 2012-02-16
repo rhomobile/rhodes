@@ -467,7 +467,7 @@ namespace rho.rubyext {
             
             DefineLibraryMethod(module, "execute_js", 0x21, 
                 0x00000002U, 
-                new Action<IronRuby.Builtins.RubyModule, System.String, System.Int32>(rho.rubyext.RhoWebView.execute_js)
+                new Action<IronRuby.Builtins.RubyModule, System.String, IronRuby.Builtins.RubyArray, System.Int32>(rho.rubyext.RhoWebView.execute_js)
             );
             
             DefineLibraryMethod(module, "navigate", 0x21, 
