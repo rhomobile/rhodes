@@ -47,6 +47,8 @@ namespace rho.net
         static public String PARAM_PREFIX_REQ = "request-";
         static public String PARAM_PREFIX_RESP = "response-";
         static public String RESPONSE_BODY_FILEPATH = "response-body-filepath";
+        static public String JS_EVAL_FUNCNAME = "_rho_execJsWrapper";
+        static public String AJAX_CALLBACK_FUNCNAME = "_rho_ajaxProxyCallback";
         static public String AJAX_PARAM_CALLBACK_ID = "_rho_callbackId";
         static public String AJAX_PARAM_RESPONSE = "response";
         static public String AJAX_PARAM_STATUS = "status";
@@ -187,7 +189,7 @@ namespace rho.net
                     args[3] = result[AJAX_PARAM_MESSAGE].ToString();
                     args[4] = result[AJAX_PARAM_STATUS].ToString();
 
-                    RHODESAPP().processInvokeScriptArgs("_rho_ajaxProxyCallback", args, RHODESAPP().getCurrentTab());
+                    RHODESAPP().processInvokeScriptArgs(AJAX_CALLBACK_FUNCNAME, args, RHODESAPP().getCurrentTab());
                 }
             }
 

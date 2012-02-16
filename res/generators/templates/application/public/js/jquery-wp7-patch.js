@@ -190,4 +190,8 @@
         }
     };
 
+    window._rho_execJsWrapper = function(expr) {
+        eval(expr);
+    };
+
 })(jQuery);
