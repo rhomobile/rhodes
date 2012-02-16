@@ -45,6 +45,7 @@ struct CRhoExtData
 
 struct IRhoExtension 
 {
+    virtual ~IRhoExtension(){}
     virtual void onSetPropertiesData( const wchar_t* pPropID, const wchar_t* pData, const CRhoExtData& oExtData ){}
     virtual void onSetProperty( const wchar_t* pName, const wchar_t* pValue, const CRhoExtData& oExtData ){}
     virtual void onBeforeNavigate(const wchar_t* szUrlBeingNavigatedTo, const CRhoExtData& oExtData){}
@@ -60,6 +61,8 @@ struct IRhoExtension
 
 struct IRhoExtManager
 {
+    virtual ~IRhoExtManager(){}
+
     virtual void onUnhandledProperty( const wchar_t* pModuleName, const wchar_t* pName, const wchar_t* pValue, const CRhoExtData& oExtData ) = 0;
     virtual void executeRubyCallback( const char* szCallback, const char* szCallbackBody, const char* szCallbackData, bool bWaitForResponse) = 0;
     virtual void requireRubyFile( const char* szFilePath ) = 0;
