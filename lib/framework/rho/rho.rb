@@ -1304,3 +1304,24 @@ module Kernel
     end
     
 end    
+
+if defined?(RHO_WP7).nil?
+module WebView
+
+    class << self
+        alias_method :orig_execute_js, :execute_js
+    end
+
+    def self.execute_js(func, index, vals)
+        if (vals)
+            func += '('
+            vals.each do |val|
+                func += val
+                func += ',' if val != vals.last
+            end
+            func += ');'
+        end
+       orig_execute_js(func, index)                
+    end
+end
+end
