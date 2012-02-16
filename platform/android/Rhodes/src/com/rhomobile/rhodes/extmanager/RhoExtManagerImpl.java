@@ -27,8 +27,19 @@ class RhoExtManagerImpl extends Object implements IRhoExtManager {
 		while (keys.hasMoreElements()) {
 			String key = keys.nextElement();
 			IRhoExtension ext = mExtensions.get(key);
-			ext.onBeforeNavigate(tab_index);
+			RhoExtDataImpl data = new RhoExtDataImpl();
+			data.setTabIndex(tab_index);
+			ext.onBeforeNavigate(data);
 		}
 	}
 	
+	public void onSetProperty(String extName, String name, String value, int tab_index) {
+		IRhoExtension ext = mExtensions.get(extName);
+		if (ext != null) {
+			RhoExtDataImpl data = new RhoExtDataImpl();
+			data.setTabIndex(tab_index);
+			ext.onSetProperty(name, value, data);
+		}
+	}
+		
 }

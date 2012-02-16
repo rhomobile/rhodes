@@ -71,6 +71,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/Phonebook.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/signature/ImageCapture.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/signature/Signature.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/signature/SignatureView.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/signature/SignatureProperties.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/socket/RhoSockAddr.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/socket/RhoSocket.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/socket/RhoSocketImpl.java
@@ -97,8 +98,10 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebSettingsOld.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebViewClient.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/WebView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/GoogleWebView.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoExtData.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoExtension.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoExtManager.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/RhoExtDataImpl.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/RhoExtManagerImpl.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/RhoExtManagerPrivate.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/RhoExtManagerSingletone.java
