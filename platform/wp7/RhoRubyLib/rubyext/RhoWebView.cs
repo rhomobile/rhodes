@@ -87,7 +87,7 @@ namespace rho.rubyext
         }
 
         [RubyMethodAttribute("execute_js", RubyMethodAttributes.PublicSingleton)]
-        public static void execute_js(RubyModule/*!*/ self, [NotNull]String/*!*/ strScript, RubyArray vals = null, int index = 0)
+        public static void execute_js(RubyModule/*!*/ self, [NotNull]String/*!*/ strScript, int index = 0, RubyArray vals = null)
         {
             try
             {
