@@ -87,11 +87,17 @@ namespace rho.rubyext
         }
 
         [RubyMethodAttribute("execute_js", RubyMethodAttributes.PublicSingleton)]
-        public static void execute_js(RubyModule/*!*/ self, [NotNull]String/*!*/ strScript, int index = 0)
+        public static void execute_js(RubyModule/*!*/ self, [NotNull]String/*!*/ strScript, RubyArray vals = null, int index = 0)
         {
             try
             {
-                RHODESAPP().processInvokeScript(strScript, index);
+                String[] arr = new String[vals.Count];
+                int ind = -1;
+                foreach (object val in vals)
+                    if (val is MutableString)
+                        arr[++ind] = val.ToString();
+
+                RHODESAPP().processInvokeScriptArgs(strScript, arr, index);
             }
             catch (Exception ex)
             {
