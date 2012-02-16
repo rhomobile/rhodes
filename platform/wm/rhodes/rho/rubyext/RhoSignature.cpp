@@ -880,7 +880,7 @@ void CRhoSignature::onSetProperty(const wchar_t* pName, const wchar_t* pValue, c
     // if action is coming like show/hide call correspondign methods
 }
 
-void CRhoSignature::onBeforeNavigate(const CRhoExtData& oExtData)
+void CRhoSignature::onBeforeNavigate(const wchar_t* szUrlBeingNavigatedTo, const CRhoExtData& oExtData)
 {
     hideSignature();
 }

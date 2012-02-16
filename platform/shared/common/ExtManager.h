@@ -45,19 +45,42 @@ struct CRhoExtData
 
 struct IRhoExtension 
 {
-    virtual void onSetPropertiesData( const wchar_t* pData, const CRhoExtData& oExtData ){}
+    virtual void onSetPropertiesData( const wchar_t* pPropID, const wchar_t* pData, const CRhoExtData& oExtData ){}
     virtual void onSetProperty( const wchar_t* pName, const wchar_t* pValue, const CRhoExtData& oExtData ){}
-    virtual void onBeforeNavigate(const CRhoExtData& oExtData){}
+    virtual void onBeforeNavigate(const wchar_t* szUrlBeingNavigatedTo, const CRhoExtData& oExtData){}
+    virtual void onNavigateComplete(const wchar_t* szUrlBeingNavigatedTo, const CRhoExtData& oExtData){}
+    virtual void onDocumentComplete(const wchar_t* szUrlOfDocument, const CRhoExtData& oExtData){}
+    virtual bool onWndMsg(MSG& oMsg){return false;}
+    virtual long OnNavigateTimeout(const wchar_t* szUrlBeingNavigatedTo, const CRhoExtData& oExtData){return 0;}
+    virtual long OnSIPState(bool bSIPState, const CRhoExtData& oExtData){return 0;}
+    virtual long OnAlertPopup(int nEnum, void* pData, const CRhoExtData& oExtData){return 0;}
+    virtual long OnNavigateError(const wchar_t* szUrlBeingNavigatedTo, const CRhoExtData& oExtData){return 0;}
+    virtual void OnAppActivate(bool bActivate, const CRhoExtData& oExtData){}
 };
 
 struct IRhoExtManager
 {
     virtual void onUnhandledProperty( const wchar_t* pModuleName, const wchar_t* pName, const wchar_t* pValue, const CRhoExtData& oExtData ) = 0;
-    virtual void executeRuby( const char* szMethod, const char* szParam) = 0;
-    virtual void executeRubyCallback( const char* szCallback, const char* szCallbackBody, const char* szCallbackData) = 0;
+    virtual void executeRubyCallback( const char* szCallback, const char* szCallbackBody, const char* szCallbackData, bool bWaitForResponse) = 0;
     virtual void requireRubyFile( const char* szFilePath ) = 0;
 
     virtual void navigate(const wchar_t* szUrl) = 0;
+    virtual bool existsJavascript(const wchar_t* szJSFunction) = 0;
+    virtual void executeJavascript(const wchar_t* szJSFunction) = 0;
+
+    virtual void rhoLog(int nSeverity, const char* szModule, const char* szMsg, const char* szFile, int nLine) = 0;
+    virtual StringW getCurrentUrl() = 0;
+    virtual void stopNavigate() = 0;
+    virtual void historyForward() = 0;
+    virtual void historyBack() = 0;
+    virtual void refreshPage(bool bFromCache) = 0;
+    virtual void quiteApp() = 0;
+    virtual void minimizeApp() = 0;
+    virtual void restoreApp() = 0;
+    virtual void resizeBrowserWindow(RECT rc) = 0;
+    virtual void zoomPage(float fZoom) = 0;
+    virtual void zoomText(int nZoom) = 0;
+
 };
 
 class CExtManager : public IRhoExtManager
@@ -70,17 +93,40 @@ public:
     void registerExtension(const String& strName, IRhoExtension* pExt);
 
     IRhoExtension* getExtByName(const String& strName);
-    void onBeforeNavigate();
+
+    void onSetPropertiesData( const wchar_t* pPropID, const wchar_t* pData);
+    void onBeforeNavigate(const wchar_t* szUrlBeingNavigatedTo);
+    void onNavigateComplete(const wchar_t* szUrlBeingNavigatedTo);
+    void onDocumentComplete(const wchar_t* szUrlOfDocument);
+    bool onWndMsg(MSG& oMsg);
+    long OnNavigateTimeout(const wchar_t* szUrlBeingNavigatedTo);
+    long OnSIPState(bool bSIPState);
+    long OnAlertPopup(int nEnum, void* pData);
+    long OnNavigateError(const wchar_t* szUrlBeingNavigatedTo);
+    void OnAppActivate(bool bActivate);
 
     CRhoExtData makeExtData();
     void close();
 
     //IRhoExtManager
     virtual void onUnhandledProperty( const wchar_t* pModuleName, const wchar_t* pName, const wchar_t* pValue, const CRhoExtData& oExtData );
-    virtual void executeRuby( const char* szMethod, const char* szParam);
-    virtual void executeRubyCallback( const char* szCallback, const char* szCallbackBody, const char* szCallbackData);
+    virtual void executeRubyCallback( const char* szCallback, const char* szCallbackBody, const char* szCallbackData, bool bWaitForResponse);
     virtual void navigate(const wchar_t* szUrl);
     virtual void requireRubyFile( const char* szFilePath );
+    virtual void executeJavascript(const wchar_t* szJSFunction);
+    virtual bool existsJavascript(const wchar_t* szJSFunction);
+    virtual void rhoLog(int nSeverity, const char* szModule, const char* szMsg, const char* szFile, int nLine);
+    virtual StringW getCurrentUrl();
+    virtual void stopNavigate();
+    virtual void historyForward();
+    virtual void historyBack();
+    virtual void refreshPage(bool bFromCache);
+    virtual void quiteApp();
+    virtual void minimizeApp();
+    virtual void restoreApp();
+    virtual void resizeBrowserWindow(RECT rc);
+    virtual void zoomPage(float fZoom);
+    virtual void zoomText(int nZoom);
 
 };
 
