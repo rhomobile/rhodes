@@ -712,6 +712,27 @@ LRESULT CMainWindow::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
     return 0;
 }
 
+LRESULT CMainWindow::OnExecuteJS(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
+{
+    TNavigateData* nd = (TNavigateData*)hWndCtl;
+    if (nd) {
+        LPTSTR wcurl = (LPTSTR)(nd->url);
+        if (wcurl) {
+
+            StringW strUrlW;
+            if(_memicmp(wcurl,L"JavaScript:",11*2) != 0)
+                strUrlW = L"javascript:";
+
+            strUrlW += wcurl;
+
+            Navigate2((LPWSTR)strUrlW.c_str(), nd->index);
+            free(wcurl);
+        }
+        free(nd);
+    }
+    return 0;
+}
+
 LRESULT CMainWindow::OnSetCookieCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
     TCookieData* cd = (TCookieData*)hWndCtl;

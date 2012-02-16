@@ -353,7 +353,8 @@ LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 #if defined (_WIN32_WCE)
     m_menuBar = NULL;
-   	SetFullScreen(false);
+    ShowTaskBar(true, false);
+   	//SetFullScreen(false);
 #endif
 
 #if defined(OS_WINDOWS)
@@ -462,6 +463,26 @@ LRESULT CMainWindow::OnBeforeNavigate(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     return 0;
 }
 
+LRESULT CMainWindow::OnNavigateTimeout (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+    return RHODESAPP().getExtManager().OnNavigateTimeout((LPCTSTR)lParam);
+}
+
+LRESULT CMainWindow::OnNavigateError (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+    return RHODESAPP().getExtManager().OnNavigateError((LPCTSTR)lParam);
+}
+
+LRESULT CMainWindow::OnSetSIPState (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+    return RHODESAPP().getExtManager().OnSIPState(lParam != 0 ? true:false);
+}
+
+LRESULT CMainWindow::OnAlertPopup (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+{
+    return RHODESAPP().getExtManager().OnAlertPopup(wParam, (void*)lParam);
+}
+
 #endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 
 LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -471,6 +492,7 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 
     int fActive = LOWORD(wParam);
 	rho_rhodesapp_callAppActiveCallback(fActive);
+    RHODESAPP().getExtManager().OnAppActivate(fActive!=0);
 
 #if defined(_WIN32_WCE)  && !defined (OS_PLATFORM_MOTCE)
     // Notify shell of our WM_ACTIVATE message
@@ -700,7 +722,7 @@ LRESULT CMainWindow::OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 LRESULT CMainWindow::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND hwnd, BOOL& /*bHandled*/)
 {
 #if defined (_WIN32_WCE)
-	SetFullScreen((int)hwnd);
+    SetFullScreen( hwnd != 0 ? true : false);
 #endif
 	return 0;
 };
@@ -717,6 +739,17 @@ LRESULT CMainWindow::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 	if (wcurl) 
     {
 		Navigate2(wcurl);
+		free(wcurl);
+	}
+    return 0;
+}
+
+LRESULT CMainWindow::OnExecuteJSCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
+{
+	LPTSTR wcurl = (LPTSTR)hWndCtl;
+	if (wcurl) 
+    {
+        m_pBrowserEng->executeJavascript(wcurl,0);
 		free(wcurl);
 	}
     return 0;
@@ -953,7 +986,7 @@ bool Rhodes_WM_ProcessBeforeNavigate(LPCTSTR url)
 {
     LOG(TRACE) + "OnBeforeNavigate2: " + url;
 
-    RHODESAPP().getExtManager().onBeforeNavigate();
+    RHODESAPP().getExtManager().onBeforeNavigate(url);
 
     const wchar_t *to_remove;
     if ( (to_remove = wcsstr(url, L"rho_open_target=_blank")) != 0)
@@ -1027,7 +1060,10 @@ void CMainWindow::ProcessNavigateComplete(LPCTSTR url)
 	if ( !m_bLoading && !mIsBrowserViewHided )
         ::ShowWindow(m_pBrowserEng->GetHTMLWND(), SW_SHOW);
 
+
     LOG(TRACE) + "OnNavigateComplete2: " + url;
+
+    RHODESAPP().getExtManager().onNavigateComplete(url);
 }
 
 void CMainWindow::ShowLoadingPage()
@@ -1081,6 +1117,8 @@ void CMainWindow::ProcessDocumentComplete(LPCTSTR url)
 #endif	
     
     //CMetaHandler oHandler(m_spIWebBrowser2);
+
+    RHODESAPP().getExtManager().onDocumentComplete(url);
 }
 
 void __stdcall CMainWindow::OnCommandStateChange(long lCommand, BOOL bEnable)

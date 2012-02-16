@@ -140,12 +140,30 @@ void CIEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
     MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
     {
+        if ( RHODESAPP().getExtManager().onWndMsg(msg) )
+            continue;
+
         if (!mainWnd.TranslateAccelerator(&msg))
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
     }
+}
+
+bool CIEBrowserEngine::isExistJavascript(const wchar_t* szJSFunction, int index)
+{
+    return true;
+}
+
+void CIEBrowserEngine::executeJavascript(const wchar_t* szJSFunction, int index)
+{
+    StringW strUrlW;
+    if(_memicmp(szJSFunction,L"JavaScript:",11*2) != 0)
+        strUrlW = L"javascript:";
+
+    strUrlW += szJSFunction;
+    Navigate(strUrlW.c_str());
 }
 
 void CIEBrowserEngine::SetCookie(char* url, char* cookie)

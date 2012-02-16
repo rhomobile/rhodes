@@ -76,7 +76,7 @@ public:
 
     //IRhoExtension
     virtual void onSetProperty(const wchar_t* pName, const wchar_t* pValue, const common::CRhoExtData& oExtData);
-    virtual void onBeforeNavigate(const common::CRhoExtData& oExtData);
+    virtual void onBeforeNavigate(const wchar_t* szUrlBeingNavigatedTo, const common::CRhoExtData& oExtData);
 };
 
 class CRhoSignatureWindow : public CDialogImpl <CRhoSignatureWindow>

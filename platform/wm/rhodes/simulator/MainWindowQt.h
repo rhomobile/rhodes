@@ -118,6 +118,8 @@ public:
     void tabbarSwitch(int index);
     void tabbarBadge(int index, char* badge);
     int tabbarGetCurrent();
+    bool isExistJavascript(const wchar_t* szJSFunction, int index){return true;}
+
 
     BEGIN_MSG_MAP(CMainWindow)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
@@ -130,6 +132,7 @@ public:
         COMMAND_ID_HANDLER(IDM_REFRESH, OnRefreshCommand)
         COMMAND_ID_HANDLER(IDM_NAVIGATE, OnNavigateCommand)
         COMMAND_ID_HANDLER(ID_SETCOOKIE, OnSetCookieCommand)
+        COMMAND_ID_HANDLER(IDM_EXECUTEJS, OnExecuteJS)
         MESSAGE_HANDLER(WM_TAKEPICTURE, OnTakePicture)
         MESSAGE_HANDLER(WM_SELECTPICTURE, OnSelectPicture)
         MESSAGE_HANDLER(WM_ALERT_SHOW_POPUP, OnAlertShowPopup)
@@ -153,6 +156,7 @@ private:
     LRESULT OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/);
     LRESULT OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/);
     LRESULT OnSetCookieCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnExecuteJS(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/);
 
     LRESULT OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
