@@ -1312,8 +1312,8 @@ module WebView
         alias_method :orig_execute_js, :execute_js
     end
 
-    def self.execute_js(func, index, vals)
-        if (vals)
+    def self.execute_js(func, index = 0, vals = nil)
+        if (vals && 0 < vals.size)
             func += '('
             vals.each do |val|
                 func += val
