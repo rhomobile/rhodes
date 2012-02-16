@@ -91,11 +91,15 @@ namespace rho.rubyext
         {
             try
             {
-                String[] arr = new String[vals.Count];
-                int ind = -1;
-                foreach (object val in vals)
-                    if (val is MutableString)
-                        arr[++ind] = val.ToString();
+                String[] arr = null;
+                if (null != vals && 0 < vals.Count)
+                {
+                    arr = new String[vals.Count];
+                    int ind = -1;
+                    foreach (object val in vals)
+                        if (val is MutableString)
+                            arr[++ind] = val.ToString();
+                }
 
                 RHODESAPP().processInvokeScriptArgs(strScript, arr, index);
             }

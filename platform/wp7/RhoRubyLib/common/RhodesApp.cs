@@ -276,6 +276,11 @@ namespace rho.common
 
         public void processInvokeScriptArgs(String strFuncName, String[] arrParams, int index)
         {
+            if (null != strFuncName && 0 < strFuncName.Length && (null == arrParams || 0 == arrParams.Length))
+            {
+                arrParams = new String[]{strFuncName};
+                strFuncName = CHttpServer.JS_EVAL_FUNCNAME;
+            }
             m_webBrowser.Dispatcher.BeginInvoke(() =>
             {
                 try
