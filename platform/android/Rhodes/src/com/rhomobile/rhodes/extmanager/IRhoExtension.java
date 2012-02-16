@@ -2,8 +2,9 @@ package com.rhomobile.rhodes.extmanager;
 
 public interface IRhoExtension {
 	
-	void onBeforeNavigate(int tab_index);
+	void onBeforeNavigate(IRhoExtData data);
 	
+	void onSetProperty(String name, String value, IRhoExtData data);
 }
 
 

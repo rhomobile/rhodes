@@ -36,6 +36,7 @@ import com.rhomobile.rhodes.camera.Camera;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.mainview.SimpleMainView;
 import com.rhomobile.rhodes.mainview.SplashScreen;
+import com.rhomobile.rhodes.signature.Signature;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
 
@@ -161,6 +162,9 @@ public class RhodesActivity extends BaseActivity {
         mSplashScreen = new SplashScreen(this);
         setMainView(mSplashScreen);
 
+        
+        Signature.registerSignatureCaptureExtension();
+        
 		processStartupListeners();
         {
         	Iterator<RhodesActivityListener> iterator = mListeners.iterator();

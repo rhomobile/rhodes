@@ -70,7 +70,7 @@ public class ImageCapture extends BaseActivity implements OnClickListener
 		//Logger.D(TAG, "$$$$$$$$$$$$$$$$$$$$$$$$  onCreate");
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		//getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		getWindow().setFormat(PixelFormat.TRANSLUCENT);
+		//getWindow().setFormat(PixelFormat.TRANSLUCENT);
 		setContentView(AndroidR.layout.signature);
 		
 		Bundle extras = getIntent().getExtras();
@@ -91,7 +91,9 @@ public class ImageCapture extends BaseActivity implements OnClickListener
 		int penColor = extras.getInt(com.rhomobile.rhodes.signature.Signature.INTENT_EXTRA_PREFIX + "penColor");
 		float penWidth = extras.getFloat(com.rhomobile.rhodes.signature.Signature.INTENT_EXTRA_PREFIX + "penWidth");
 		int bgColor = extras.getInt(com.rhomobile.rhodes.signature.Signature.INTENT_EXTRA_PREFIX + "bgColor");
+		surfaceView.isTransparency = false;
 		surfaceView.setupView(penColor | 0xFF000000, penWidth, bgColor | 0xFF000000);
+		surfaceView.invalidate();
 	}
 
 	@Override
