@@ -24,7 +24,8 @@ capabilities:
   - pim
   - push
   - calendar
-     
+  - gps
+   
 extensions: ["json", "rhoxml", "rhospec", "crypt"]  
 
 wp:
