@@ -1741,7 +1741,11 @@ namespace "run" do
             io.each do |line|
                 #puts line
                 
-                end_spec = !Jake.process_spec_output(line) if line.valid_encoding?
+                if line.class.method_defined? "valid_encoding?" 
+                    end_spec = !Jake.process_spec_output(line) if line.valid_encoding?
+                else 
+                    end_spec = !Jake.process_spec_output(line)
+                end    
                 break if end_spec
             end
             
