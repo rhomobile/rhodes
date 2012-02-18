@@ -59,7 +59,6 @@ extern "C" int rho_sys_check_rollback_bundle(const char* szRhoPath);
 class CEng;
 extern "C" CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
 extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
-
 #endif
 
 
@@ -120,6 +119,11 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
     rho::String m_strRootPath, m_strRhodesPath, m_logPort;//, m_strDebugHost, m_strDebugPort;*/
 	int m_nRestarting;
 
+#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+    static WCHAR g_ConfigFilePath[MAX_PATH + 1];
+    static TCHAR g_StartPage[MAX_PATH + 1];
+#endif // APP_BUILD_CAPABILITY_MOTOROLA
+
 #ifdef OS_WINDOWS
     String m_strHttpProxy;
 #endif
@@ -127,6 +131,14 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 public :
     static HINSTANCE GetModuleInstance(){return m_hInstance;}
     static void SetModuleInstance(HINSTANCE hInstance){m_hInstance = hInstance;}
+
+#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+    static void setConfigFilePath(const char* path);
+    static void setStartPage(const char* path);
+    static void setStartPage(const TCHAR* tpath);
+    static WCHAR* getConfigFilePath();
+    static TCHAR* getStartPage();
+#endif // APP_BUILD_CAPABILITY_MOTOROLA
 
     HWND GetMainWindow() { return m_appWindow.m_hWnd;}
 	CMainWindow* GetMainWindowObject() { return &m_appWindow;}
@@ -149,6 +161,33 @@ static String g_strCmdLine;
 HINSTANCE CRhodesModule::m_hInstance;
 CRhodesModule _AtlModule;
 bool g_restartOnExit = false;
+
+#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+WCHAR CRhodesModule::g_ConfigFilePath[MAX_PATH + 1] = {0};
+TCHAR CRhodesModule::g_StartPage[MAX_PATH + 1] = {0};
+
+extern "C" WCHAR* rho_wmimpl_get_configfilepath()
+{
+    return CRhodesModule::getConfigFilePath();
+}
+extern "C" TCHAR* rho_wmimpl_get_startpage()
+{
+    return CRhodesModule::getStartPage();
+}
+extern "C" void rho_wmimpl_set_configfilepath(const char* path)
+{
+    CRhodesModule::setConfigFilePath(path);
+}
+extern "C" void rho_wmimpl_set_startpage(const char* path)
+{
+    CRhodesModule::setStartPage(path);
+}
+extern "C" void rho_wmimpl_set_startpage_tchar(const TCHAR* path)
+{
+    CRhodesModule::setStartPage(path);
+}
+#endif // APP_BUILD_CAPABILITY_MOTOROLA
+
 
 #ifndef RHODES_EMULATOR
 rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
@@ -190,6 +229,28 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 				m_logPort = rho::String("11000");
 			}
 		}
+
+#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+        else if (wcsnicmp(lpszToken, _T("s"),1)==0)
+        {
+			String token = convertToStringA(lpszToken);
+            char* path = parseToken( token.c_str(), token.length() );
+			if (path) {
+				rho_wmimpl_set_startpage(path);
+				free(path);
+			}
+        }
+        else if (wcsnicmp(lpszToken, _T("c"),1)==0)
+        {
+			String token = convertToStringA(lpszToken);
+            char* path = parseToken( token.c_str(), token.length() );
+			if (path) {
+				rho_wmimpl_set_configfilepath(path);
+				free(path);
+			}
+        }
+#endif // APP_BUILD_CAPABILITY_MOTOROLA
+
 #if defined(OS_WINDOWS)
 		else if (wcsncmp(lpszToken, _T("http_proxy_url"),14)==0) 
         {
@@ -277,6 +338,46 @@ extern "C" void rho_sys_impl_exit_with_errormessage(const char* szTitle, const c
 
 extern "C" void rho_scanner_TEST(HWND hwnd);
 extern "C" void rho_scanner_TEST2();
+
+#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+
+WCHAR* CRhodesModule::getConfigFilePath()
+{
+    return g_ConfigFilePath;
+}
+
+TCHAR* CRhodesModule::getStartPage()
+{
+    return g_StartPage;
+}
+
+void CRhodesModule::setConfigFilePath(const char* path)
+{
+    USES_CONVERSION;
+    WCHAR* wpath = A2W(path);
+    _tcscpy(g_ConfigFilePath, wpath);
+}
+
+void CRhodesModule::setStartPage(const char* path)
+{
+    USES_CONVERSION;
+    TCHAR* tpath = A2T(path);
+    setStartPage(tpath);
+}
+
+void CRhodesModule::setStartPage(const TCHAR* tpath)
+{
+    _tcscpy(g_StartPage, tpath);
+    // Store command line parameter in the registry
+    HKEY hKey;
+    DWORD Disposition;
+    RegCreateKeyEx( HKEY_CURRENT_USER, L"Software\\Symbol\\SymbolPB\\Temp", 0, NULL, 0, 0, 0, &hKey, &Disposition ); 
+    RegSetValueEx(hKey, L"cmdline", 0, REG_MULTI_SZ, (const BYTE *) tpath, (wcslen(tpath)+1)*2); 
+    RegCloseKey(hKey);
+}
+
+#endif // APP_BUILD_CAPABILITY_MOTOROLA
+
 
 // This method is called immediately before entering the message loop.
 // It contains initialization code for the application.
@@ -421,6 +522,14 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         }
     }
 #endif
+
+#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+    if (rho_wmimpl_get_startpage()[0] != 0) {
+        String spath = convertToStringA(rho_wmimpl_get_startpage());
+        RHOCONF().setString("start_path", spath, false);
+    }
+#endif // APP_BUILD_CAPABILITY_MOTOROLA
+
 
     m_appWindow.InitMainWindow();
 #endif
@@ -712,7 +821,7 @@ char* parseToken( const char* start, int len ) {
 
     int i = 0;
     for( i = 0; i < len; i++ ){
-        if ( start[i] == '=' ){
+        if (( start[i] == '=' ) || ( start[i] == ':' ) || ( start[i] == ' ' )) {
             if ( i > 0 ){
                 int s = i-1;
                 for(; s >= 0 && start[s]==' '; s-- );
