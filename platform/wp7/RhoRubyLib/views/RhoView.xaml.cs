@@ -67,6 +67,7 @@ namespace rho.views
         private bool m_reload = false;
         private bool m_loadFirstTime = true;
         private bool m_masterView = false;
+        private int m_index = -1;
         
         private const string AJAX_CONTEXT_PARAM = "_rho_callbackId";
         private const string JS_NOTIFY_CONSOLE_LOG = "console.log:";
@@ -95,7 +96,7 @@ namespace rho.views
         }
         
         public RhoView(PhoneApplicationPage mainPage, Grid layoutRoot, String strAction,
-                       bool reload, Brush webBkgColor)
+                       bool reload, Brush webBkgColor, int index)
         {
             InitializeComponent();
             webBrowser1.IsScriptEnabled = true;
@@ -109,6 +110,7 @@ namespace rho.views
             m_strAction = strAction;
             m_layoutRoot = layoutRoot;
             m_reload = reload;
+            m_index = index;
             if (webBkgColor != null)
                 webBrowser1.Background = webBkgColor;
         }
@@ -117,6 +119,7 @@ namespace rho.views
 
         private void WebBrowser_OnLoaded(object sender, RoutedEventArgs e)
         {
+            if (RHODESAPP().Tab != null && RHODESAPP().Tab.SelectedIndex != m_index) return;
             OperatingSystem os = Environment.OSVersion;
             Version vs = os.Version;
             if (vs.Minor < 10) m_reload = true;
@@ -130,7 +133,7 @@ namespace rho.views
             RHODESAPP().BackHistory = m_backHistory;
             RHODESAPP().ForwardHistory = m_forwardHistory;
             RHODESAPP().CurrentUri = m_currentUri;
-            if ( ((!m_loadFirstTime && m_reload) || m_loadFirstTime) && m_strAction != null)
+            if (((!m_loadFirstTime && m_reload) || m_loadFirstTime) && m_strAction != null)
             {
                 if (m_loadFirstTime)
                     m_loadFirstTime = false;
