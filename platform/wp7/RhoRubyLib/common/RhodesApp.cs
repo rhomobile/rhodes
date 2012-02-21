@@ -56,7 +56,9 @@ namespace rho.common
         private PhoneApplicationPage m_appMainPage;
         public PhoneApplicationPage MainPage { get { return m_appMainPage; } }
         private Grid m_layoutRoot;
-        private TabControl m_tabControl;
+        //private TabControl m_tabControl;
+        private Pivot m_tabControl;
+        public Pivot Tab { get { return m_tabControl; } }
         private Stack<Uri> m_backHistory = new Stack<Uri>();
         private Stack<Uri> m_forwardHistory = new Stack<Uri>();
         private Hash m_menuItems = null;
@@ -84,6 +86,11 @@ namespace rho.common
 
         public String getBlobsDirPath() { return m_strBlobsDirPath; }
         public String getHomeUrl() { return m_strHomeUrl; }
+
+        private void Pivot_OnChanged(object sender, RoutedEventArgs e)
+        {
+            ((RhoView)(((PivotItem)m_tabControl.SelectedItem).Content)).refresh();
+        }
 
         public void Init(WebBrowser browser, PhoneApplicationPage appMainPage, Grid layoutRoot, RhoView rhoView)
         {
@@ -679,10 +686,11 @@ namespace rho.common
 
 
                     //tabItem.Header = "Test";to do
-                    TabItem tabItem = new TabItem();
+                    //TabItem tabItem = new TabItem();
+                    PivotItem tabItem = new PivotItem();
                     tabItem.Header = new RhoTabHeader(label, icon);
                     //if (i == 0)// && use_current_view_for_tab)
-                    tabItem.Content = new RhoView(m_appMainPage, m_layoutRoot, action, reload, web_bkg_color);
+                    tabItem.Content = new RhoView(m_appMainPage, m_layoutRoot, action, reload, web_bkg_color, i);
                     if (values.TryGetValue(CRhoRuby.CreateSymbol("selected_color"), out val))
                         tabItem.Background = new SolidColorBrush(getColorFromString(val.ToString()));
                     if (values.TryGetValue(CRhoRuby.CreateSymbol("disabled"), out val))
@@ -696,11 +704,14 @@ namespace rho.common
         {
             m_appMainPage.Dispatcher.BeginInvoke( () =>
             {
-                m_tabControl = new TabControl();
+                /*m_tabControl = new TabControl();
                 if (tabBarType == 1)
                     m_tabControl.TabStripPlacement = Dock.Top;
                 else if (tabBarType == 3)
-                    m_tabControl.TabStripPlacement = Dock.Left;
+                    m_tabControl.TabStripPlacement = Dock.Left;*/
+
+                m_tabControl = new Pivot();
+                m_tabControl.SelectionChanged += Pivot_OnChanged;
 
                 Object[] hashArray = null;
                 Hash paramHash = null;
