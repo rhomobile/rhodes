@@ -88,7 +88,7 @@ public class RhoRubyHelper implements IRhoRubyHelper
         GeoLocation.initMethods(RubyRuntime.GeoLocationClass);
         com.rho.rubyext.System.initMethods(RubyRuntime.SystemClass);
         com.rho.rubyext.XMLParser.initMethods(RubyRuntime.XMLParserClass);
-
+        com.rho.rubyext.SignatureCapture.initMethods(RubyRuntime.SignatureCaptureClass);
 	}
 	
 	public RubyProgram createMainObject() throws Exception

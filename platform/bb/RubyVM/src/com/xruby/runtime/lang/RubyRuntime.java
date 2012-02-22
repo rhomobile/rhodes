@@ -102,7 +102,7 @@ public class RubyRuntime
     public static RubyModule JSONClass;
     public static RubyClass CameraClass;
     public static RubyClass RhoBluetoothClass;
-    public static RubyClass WebViewClass;
+    public static RubyModule WebViewClass;
     public static RubyClass RhoConfClass;
     public static RubyClass AlertClass;    
     public static RubyClass DateTimePickerClass;
@@ -115,6 +115,7 @@ public class RubyRuntime
     public static RubyClass TopSelfClass;
     public static RubyModule MapViewClass;
     public static RubyClass XMLParserClass;
+    public static RubyModule SignatureCaptureClass;
     //RHO
 
     public static /*final*/ RubyValue TOP_LEVEL_SELF_VALUE;
@@ -315,7 +316,7 @@ public class RubyRuntime
         JSONClass = rhoModule.defineModule("JSON" );//, RubyRuntime.ObjectClass);
         CameraClass = RubyAPI.defineClass("Camera", RubyRuntime.ObjectClass);
         RhoBluetoothClass = RubyAPI.defineClass("RhoBluetooth", RubyRuntime.ObjectClass);
-        WebViewClass = RubyAPI.defineClass("WebView", RubyRuntime.ObjectClass);
+        WebViewClass = RubyAPI.defineModule("WebView" );//, RubyRuntime.ObjectClass);
         RhoConfClass = RubyAPI.defineClass("RhoConf", RubyRuntime.ObjectClass);
         AlertClass = RubyAPI.defineClass("Alert", RubyRuntime.ObjectClass);        
         DateTimePickerClass = RubyAPI.defineClass("DateTimePicker", RubyRuntime.ObjectClass);
@@ -332,6 +333,7 @@ public class RubyRuntime
         RubyModule rexmlModule = RubyAPI.defineModule("REXML"); 
         RubyModule parsersModule = rexmlModule.defineModule("Parsers");
         XMLParserClass = parsersModule.defineClass("BaseParser", RubyRuntime.ObjectClass);
+        SignatureCaptureClass = rhoModule.defineModule("SignatureCapture");
                 
 //      RhoPhonebook.initMethods(PhonebookClass);
         

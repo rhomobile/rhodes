@@ -45,7 +45,7 @@ public class WebView
 		RhodesApplication.getInstance().navigateUrl(url);
 	}
 	
-	public static void initMethods(RubyClass klass) {
+	public static void initMethods(RubyModule klass) {
 		klass.getSingletonClass().defineMethod("refresh", new RubyNoArgMethod() {
 			protected RubyValue run(RubyValue receiver, RubyBlock block) 
 			{
