@@ -707,7 +707,7 @@
 				OutputFile="$(OutDir)/rhodes.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(OutDir)"
-				GenerateDebugInformation="false"
+				GenerateDebugInformation="true"
 				SubSystem="0"
 				StackReserveSize="196608"
 				StackCommitSize="4096"
