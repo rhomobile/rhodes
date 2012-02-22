@@ -898,3 +898,5 @@ If your application requires that the local database is encrypted on the filesys
 
 	:::ruby
     require_source 'Model'  
+
+*NOTE see more tips here: [How can I create a lot of objects in controller action](/faq#how-can-i-create-a-lot-of-objects-in-controller-action)
