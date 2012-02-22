@@ -37,14 +37,13 @@ import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesAppOptions;
 import com.rhomobile.rhodes.RhodesApplication;
 import com.rhomobile.rhodes.RhodesService;
-import com.rhomobile.rhodes.extmanager.RhoExtManagerPrivate;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.nativeview.RhoNativeViewManager;
 import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
-import com.rhomobile.rhodes.webview.WebView;
+import com.rhomobile.rhodes.webview.IRhoWebView;
 import com.rhomobile.rhodes.webview.GoogleWebView;
 
 import android.app.Activity;
@@ -146,7 +145,7 @@ public class SimpleMainView implements MainView {
 	};
 	
 	private LinearLayout view;
-	private WebView webView;
+	private IRhoWebView webView;
 	private RhoNativeViewManager.RhoNativeView mNativeView = null;
 	private View mNativeViewView = null;
 	private LinearLayout navBar = null;
@@ -160,7 +159,7 @@ public class SimpleMainView implements MainView {
 	}
 
 	@Override
-	public WebView getWebView(int tab_index) {
+	public IRhoWebView getWebView(int tab_index) {
 		return webView;
 	}
 
@@ -301,9 +300,9 @@ public class SimpleMainView implements MainView {
     }
 	
 	
-	public WebView detachWebView() {
+	public IRhoWebView detachWebView() {
 		restoreWebView();
-		WebView v = null;
+		IRhoWebView v = null;
 		if (webView != null) {
 			view.removeView(webView.getView());
 			v = webView;
@@ -517,7 +516,7 @@ public class SimpleMainView implements MainView {
 		}
 	}
 	
-	private void init(WebView v, Object params) {
+	private void init(IRhoWebView v, Object params) {
 		RhodesActivity activity = RhodesActivity.safeGetInstance();
 		
 		view = new MyView(activity);
@@ -531,8 +530,8 @@ public class SimpleMainView implements MainView {
 		if (webView == null) {
 	        if (Capabilities.WEBKIT_BROWSER_ENABLED) {
 	            try {
-	                Class<? extends WebView> viewClass = (Class<? extends WebView>)Class.forName("com.rhomobile.rhodes.webview.EkiohWebView");
-	                Constructor<? extends WebView> viewCtor = viewClass.getConstructor(Activity.class);
+	                Class<? extends IRhoWebView> viewClass = (Class<? extends IRhoWebView>)Class.forName("com.rhomobile.rhodes.webview.EkiohWebView");
+	                Constructor<? extends IRhoWebView> viewCtor = viewClass.getConstructor(Activity.class);
 	                webView = viewCtor.newInstance(activity);
 	            } catch (Throwable e) {
 	                Logger.E(TAG, e);
@@ -562,11 +561,11 @@ public class SimpleMainView implements MainView {
 		init(null, null);
 	}
 	
-	public SimpleMainView(WebView v) {
+	public SimpleMainView(IRhoWebView v) {
 		init(v, null);
 	}
 	
-	public SimpleMainView(WebView v, Object params) {
+	public SimpleMainView(IRhoWebView v, Object params) {
 		init(v, params);
 	}
 	
@@ -581,7 +580,6 @@ public class SimpleMainView implements MainView {
         boolean bStartPage = RhodesService.isOnStartPage();
 
         if ( !bStartPage && webView.canGoBack() ) {
-        	RhoExtManagerPrivate.onBeforeNavigate(index);
             webView.goBack();
         }
         else
@@ -589,7 +587,7 @@ public class SimpleMainView implements MainView {
 	        RhodesActivity ra = RhodesActivity.getInstance();
 	        if ( ra != null )
 	            ra.moveTaskToBack(true);
-        }		
+        }
 	}
 	
 	public void goBack() 
@@ -608,20 +606,29 @@ public class SimpleMainView implements MainView {
 		if (cleared_url.length() > 0) {
 			// check for handle because if we call loadUrl - WebView do not check this url for handle
 			if (!RhodesService.getInstance().handleUrlLoading(cleared_url)) {
-	        	RhoExtManagerPrivate.onBeforeNavigate(index);
 				webView.loadUrl(cleared_url);
 			}
 		}
 	}
-	
+
+    @Override
+    public void executeJS(String js, int index) {
+        com.rhomobile.rhodes.WebView.executeJs(js, index);
+    }
+    
 	public void reload(int index) {
 		if (mNativeViewView != null) {
 			mNativeViewView.invalidate();
 		}
 		else {
-        	RhoExtManagerPrivate.onBeforeNavigate(index);
 			webView.reload();
 		}
+	}
+	
+	public void stopNavigate(int index) {
+	    if (mNativeViewView == null) {
+	        webView.stopLoad();
+	    }
 	}
 	
 	public String currentLocation(int index) {

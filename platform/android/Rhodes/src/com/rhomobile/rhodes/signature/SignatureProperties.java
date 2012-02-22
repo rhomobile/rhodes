@@ -1,5 +1,7 @@
 package com.rhomobile.rhodes.signature;
 
+import com.rhomobile.rhodes.Logger;
+
 class SignatureProperties {
 	
 	public int penColor;
@@ -84,7 +86,8 @@ class SignatureProperties {
 			}
 		}
 		catch (Exception e) {
-			Signature.reportFail("SignatureProperties Exception during set param["+name+"] to value["+value+"]", e);
+		    Logger.E(Signature.TAG, "SignatureProperties Exception during set param["+name+"] to value["+value+"]");
+			Logger.E(Signature.TAG, e);
 		}
 	}	
 	

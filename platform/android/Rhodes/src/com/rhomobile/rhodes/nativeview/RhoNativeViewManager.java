@@ -28,7 +28,7 @@ package com.rhomobile.rhodes.nativeview;
 
 import android.view.View;
 import com.rhomobile.rhodes.RhodesService;
-import com.rhomobile.rhodes.webview.WebView;
+import com.rhomobile.rhodes.webview.IRhoWebView;
 
 public class RhoNativeViewManager {
 

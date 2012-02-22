@@ -30,7 +30,7 @@ import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.mainview.SimpleMainView;
 import com.rhomobile.rhodes.mainview.TabbedMainView;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
-import com.rhomobile.rhodes.webview.WebView;
+import com.rhomobile.rhodes.webview.IRhoWebView;
 
 public class NativeBar {
 	
@@ -65,7 +65,7 @@ public class NativeBar {
 				switch (type) {
 				case NOBAR_TYPE:
                     if (smv == null) {
-                        WebView webView = mainView.detachWebView();
+                        IRhoWebView webView = mainView.detachWebView();
                         v = new SimpleMainView(webView);
                     } else
 						smv.removeToolbar();
@@ -73,7 +73,7 @@ public class NativeBar {
 					break;
 				case TOOLBAR_TYPE:
                     if (smv == null) {
-                        WebView webView = mainView.detachWebView();
+                        IRhoWebView webView = mainView.detachWebView();
                         v = new SimpleMainView(webView, params);
                     }
 					else

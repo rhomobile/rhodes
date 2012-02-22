@@ -178,17 +178,26 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesAppOptions_getBlobPat
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doRequest
-  (JNIEnv *env, jobject, jstring strUrl)
+  (JNIEnv *env, jclass, jstring strUrl)
 {
-    std::string const &url = rho_cast<std::string>(strUrl);
+    std::string url = rho_cast<std::string>(strUrl);
     rho_net_request(url.c_str());
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doRequestAsync
-  (JNIEnv *env, jobject, jstring strUrl)
+  (JNIEnv *env, jclass, jstring strUrl)
 {
-    std::string const &url = rho_cast<std::string>(strUrl);
-    RHODESAPP().runCallbackInThread(url.c_str(), "");
+    std::string url = rho_cast<std::string>(strUrl);
+    RHODESAPP().runCallbackInThread(url, "");
+}
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doRequestEx
+  (JNIEnv *env, jclass, jstring jUrl, jstring jBody, jstring jData, jboolean waitForResponse)
+{
+    std::string url = rho_cast<std::string>(jUrl);
+    std::string body = rho_cast<std::string>(jBody);
+    std::string data = rho_cast<std::string>(jData);
+    RHODESAPP().callCallbackWithData(url, body, data, waitForResponse);
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_normalizeUrl

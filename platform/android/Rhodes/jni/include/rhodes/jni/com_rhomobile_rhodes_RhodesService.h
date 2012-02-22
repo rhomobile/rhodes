@@ -13,14 +13,6 @@ extern "C" {
 #define com_rhomobile_rhodes_RhodesService_DOWNLOAD_PACKAGE_ID 1L
 /*
  * Class:     com_rhomobile_rhodes_RhodesService
- * Method:    initClassLoader
- * Signature: (Ljava/lang/ClassLoader;)V
- */
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_initClassLoader
-  (JNIEnv *, jobject, jobject);
-
-/*
- * Class:     com_rhomobile_rhodes_RhodesService
  * Method:    doSyncAllSources
  * Signature: (Z)V
  */
@@ -49,7 +41,23 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_normalizeUrl
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_doRequest
-  (JNIEnv *, jobject, jstring);
+  (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     com_rhomobile_rhodes_RhodesService
+ * Method:    doRequestAsync
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_doRequestAsync
+  (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     com_rhomobile_rhodes_RhodesService
+ * Method:    doRequestEx
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Z)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_doRequestEx
+  (JNIEnv *, jclass, jstring, jstring, jstring, jboolean);
 
 /*
  * Class:     com_rhomobile_rhodes_RhodesService
@@ -113,6 +121,14 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getBuildConfig
  * Signature: ()Z
  */
 JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isOnStartPage
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     com_rhomobile_rhodes_RhodesService
+ * Method:    getInvalidSecurityTokenMessage
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getInvalidSecurityTokenMessage
   (JNIEnv *, jclass);
 
 /*

@@ -4,8 +4,8 @@ class RhoExtDataImpl implements IRhoExtData {
 	
 	private int mTabIndex;
 	
-	public RhoExtDataImpl() {
-		mTabIndex = 0;
+	public RhoExtDataImpl(int tabIndex) {
+		mTabIndex = tabIndex;
 	}
 	
 	public int getTabIndex() {
