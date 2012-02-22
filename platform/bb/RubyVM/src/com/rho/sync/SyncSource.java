@@ -950,6 +950,14 @@ public class SyncSource
 	        for( ; !attrIter.isEnd(); attrIter.next() )
 	        {
 	            CAttrValue oAttrValue = new CAttrValue(attrIter.getCurKey(),attrIter.getCurString());
+	            
+	            String strFreezedProps = getSync().getSourceOptions().getProperty(getID(), "freezed");
+	            if ( strFreezedProps.length() > 0 && strFreezedProps.indexOf(oAttrValue.m_strAttrib) < 0 )
+	            {
+	                LOG.INFO("Skip Non-exist property : " + oAttrValue.m_strAttrib + ". For model : " + getName());
+	                continue;
+	            }
+	            
 	            if ( !processBlob(strCmd,strObject,oAttrValue) )
 	                break;
 	        	
@@ -1139,6 +1147,13 @@ public class SyncSource
 		
 	    if ( strCmd.compareTo("insert") == 0 )
 	    {
+            String strFreezedProps = getSync().getSourceOptions().getProperty(getID(), "freezed");
+            if ( strFreezedProps.length() > 0 && strFreezedProps.indexOf(oAttrValue.m_strAttrib) < 0 )
+            {
+                LOG.INFO("Skip Non-exist property : " + oAttrValue.m_strAttrib + ". For model : " + getName());
+                return;
+            }
+	    	
 	        if ( !processBlob(strCmd,strObject,oAttrValue) )
 	            return;
 
