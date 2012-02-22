@@ -349,4 +349,25 @@ public class RhodesApp
         	return false;
         }
         return true;
-    }}
+    }
+   
+    public void callSignatureCallback( String strCallbackUrl, String strSignaturePath, String strError, boolean bCancel ) throws Exception
+    {
+    	strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
+    	String strBody;
+    	if ( bCancel || strError.length() > 0 )
+    	{
+    		if ( bCancel )
+    			strBody = "status=cancel&message=User canceled operation.";
+    		else
+    			strBody = "status=error&message=" + strError;
+    	}else
+    		strBody = "status=ok&signature_uri=db%2Fdb-files%2F" + strSignaturePath;
+
+    	strBody += "&rho_callback=1";
+    	
+    	IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
+		helper.postUrlNoWait(strCallbackUrl,strBody);
+    }    
+}
+
