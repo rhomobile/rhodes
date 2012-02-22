@@ -43,17 +43,18 @@ import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesAppOptions;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.extmanager.IRhoExtension;
+import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
 
 import com.rhomobile.rhodes.extmanager.IRhoExtData;
 import com.rhomobile.rhodes.extmanager.IRhoExtension;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
-import com.rhomobile.rhodes.extmanager.RhoExtManagerSingletone;
+import com.rhomobile.rhodes.extmanager.RhoExtManagerSingleton;
 
 public class Signature implements IRhoExtension {
 
-	private static final String TAG = "Signature";
+	static final String TAG = "Signature";
 	
 	public static final String INTENT_EXTRA_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + "signature.";
 	
@@ -64,11 +65,6 @@ public class Signature implements IRhoExtension {
 	private static Signature ourInstance = null;
 	
 	public SignatureProperties mProperties = null;
-	
-	
-	static void reportFail(String name, Exception e) {
-		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
-	}
 	
 	private static final boolean ENABLE_LOGGING = true;
 	
@@ -134,7 +130,7 @@ public class Signature implements IRhoExtension {
 			PerformOnUiThread.exec(runnable);
 		}
 		catch (Exception e) {
-			reportFail("takeSignature", e);
+			Logger.E(TAG, e);
 		}
 	}
 
@@ -165,7 +161,7 @@ public class Signature implements IRhoExtension {
 					ourInlineSignatureView = null;
 				}
 				
-				ourInlineSignatureView = new SignatureView(RhodesService.getContext(), null);
+				ourInlineSignatureView = new SignatureView(ContextFactory.getUiContext(), null);
 				
 				{
 					if ((getSharedInstance().mProperties.bgColor & 0xFF000000) != 0xFF000000) {
@@ -231,8 +227,8 @@ public class Signature implements IRhoExtension {
 		});
 	}
 	
-	
-	public void onBeforeNavigate(IRhoExtData data) {
+	@Override
+	public void onBeforeNavigate(String url, IRhoExtData data) {
 		inline_signature_hide();
 	}
 	
@@ -266,13 +262,43 @@ public class Signature implements IRhoExtension {
 	}
 	
 	public static void registerSignatureCaptureExtension() {
-		RhoExtManagerSingletone.getRhoExtManagerInstance().registerExtension(SIGNATURE_EXT, getSharedInstance());
+		RhoExtManagerSingleton.getRhoExtManagerInstance().registerExtension(SIGNATURE_EXT, getSharedInstance());
 	}
 	
 	public static native void callback(String callbackUrl, String filePath, String error, boolean cancelled);
+
+    @Override
+    public void onSetPropertiesData(String propId, String data, IRhoExtData ext) {
+        // Nothing
+    }
+
+    @Override
+    public void onNavigateComplete(String urlBeingNavigatedTo, IRhoExtData ext) {
+    }
+
+    @Override
+    public void onDocumentComplete(String urlOfDocument, IRhoExtData ext) {
+    }
+
+    @Override
+    public long onNavigateTimeout(String urlBeingNavigatedTo, IRhoExtData ext) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public long onSIPState(boolean bSIPState, IRhoExtData ext) {
+        return 0;
+    }
+
+    @Override
+    public long onNavigateError(String urlBeingNavigatedTo, IRhoExtData ext) {
+        return 0;
+    }
+
+    @Override
+    public void onAppActivate(boolean bActivate, IRhoExtData ext) {
+    }
 }
-
-
-
 
 

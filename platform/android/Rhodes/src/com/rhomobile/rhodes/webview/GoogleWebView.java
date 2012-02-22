@@ -5,13 +5,12 @@ import java.lang.reflect.Constructor;
 import com.rhomobile.rhodes.RhodesActivity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Build;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebViewClient;
 
-public class GoogleWebView implements WebView {
+public class GoogleWebView implements IRhoWebView {
 
     private static WebChromeClient mChromeClient;
     private static WebViewClient mWebViewClient;
@@ -125,5 +124,10 @@ public class GoogleWebView implements WebView {
     @Override
     public void loadDataWithBaseURL(String baseUrl, String data, String mimeType, String encoding, String historyUrl) {
         mWebView.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl);
+    }
+
+    @Override
+    public void stopLoad() {
+        mWebView.stopLoading();
     }
 }

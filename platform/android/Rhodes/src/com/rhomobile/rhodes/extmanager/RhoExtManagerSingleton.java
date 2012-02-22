@@ -1,6 +1,6 @@
 package com.rhomobile.rhodes.extmanager;
 
-public class RhoExtManagerSingletone extends Object {
+public class RhoExtManagerSingleton extends Object {
 	
 	private static RhoExtManagerImpl ourRhoExtManager = null;
 	

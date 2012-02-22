@@ -34,7 +34,7 @@ import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.util.ContextFactory;
-import com.rhomobile.rhodes.webview.WebView;
+import com.rhomobile.rhodes.webview.IRhoWebView;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -613,7 +613,7 @@ public class TabbedMainView implements MainView {
 				RhodesService r = RhodesService.getInstance();
 				MainView mainView = r.getMainView();
                 action = mainView.currentLocation(-1);
-                WebView webView = mainView.detachWebView();
+                IRhoWebView webView = mainView.detachWebView();
                 view = new SimpleMainView(webView);
 			}
 			if (view == null) {
@@ -829,7 +829,7 @@ public class TabbedMainView implements MainView {
 						data.loaded = false;
 					}
 					if (i != tabIndex) {
-						WebView wv = getWebView(i);
+						IRhoWebView wv = getWebView(i);
 						wv.clear();
 					}
 				}
@@ -851,12 +851,12 @@ public class TabbedMainView implements MainView {
 	}
 	
     @Override
-    public WebView getWebView(int tab_index) {
+    public IRhoWebView getWebView(int tab_index) {
         return getTabMainView(tab_index).getWebView(-1);
     }
 	
 	@Override
-	public WebView detachWebView() {
+	public IRhoWebView detachWebView() {
 		return getTabMainView(activeTab()).detachWebView();
 	}
 	
@@ -912,5 +912,15 @@ public class TabbedMainView implements MainView {
 	public int getTabsCount() {
 		return tabData.size();
 	}
+
+    @Override
+    public void executeJS(String js, int index) {
+        getTabMainView(index).executeJS(js, 0);
+    }
+
+    @Override
+    public void stopNavigate(int index) {
+        getTabMainView(index).stopNavigate(0);
+    }
 
 }

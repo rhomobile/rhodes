@@ -35,10 +35,8 @@ public class WebView {
 	
 	private static final String TAG = "WebView";
 	
-	private static void reportFail(String name, Exception e) {
-		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
-	}
-	
+	///*** NavigateTask ***
+	///
 	private static class NavigateTask implements Runnable {
 		private String url;
 		private int index;
@@ -54,6 +52,8 @@ public class WebView {
 		}
 	};
 	
+	///*** NavigateBackTask ***
+	///
 	private static class NavigateBackTask implements Runnable {
 		public NavigateBackTask(int index) {
 			mIndex = index;
@@ -65,6 +65,21 @@ public class WebView {
 		private int mIndex;
 	};
 	
+    ///*** NavigateForwardTask ***
+    ///
+    private static class NavigateForwardTask implements Runnable {
+        public NavigateForwardTask(int index) {
+            mIndex = index;
+        }
+        public void run() {
+            RhodesService r = RhodesService.getInstance();
+            r.getMainView().forward(mIndex);
+        }
+        private int mIndex;
+    };
+    
+	///*** RefreshTask ***
+	///
 	private static class RefreshTask implements Runnable {
 		private int index;
 		
@@ -78,6 +93,8 @@ public class WebView {
 		}
 	};
 	
+	///*** SetCookieTask ***
+	///
 	private static class SetCookieTask implements Runnable {
 		private String url;
 		private String cookie;
@@ -94,12 +111,28 @@ public class WebView {
 		}
 	};
 
+    ///*** StopNavigateTask ***
+    ///
+    private static class StopNavigateTask implements Runnable {
+        private int index;
+        
+        public StopNavigateTask(int i) {
+            index = i;
+        }
+        
+        public void run() {
+            RhodesService r = RhodesService.getInstance();
+            r.getMainView().stopNavigate(index);
+        }
+    };
+    
+	
 	public static void navigate(String url, int index) {
 		try {
 			PerformOnUiThread.exec(new NavigateTask(url, index));
 		}
 		catch (Exception e) {
-			reportFail("navigate", e);
+            Logger.E(TAG, e);
 		}
 	}
 	
@@ -108,16 +141,25 @@ public class WebView {
 			PerformOnUiThread.exec(new NavigateBackTask(activeTab()));
 		}
 		catch (Exception e) {
-			reportFail("navigateBack", e);
+            Logger.E(TAG, e);
 		}
 	}
 	
+    public static void navigateForward() {
+        try {
+            PerformOnUiThread.exec(new NavigateForwardTask(activeTab()));
+        }
+        catch (Exception e) {
+            Logger.E(TAG, e);
+        }
+    }
+    
 	public static void refresh(int index) {
 		try {
 			PerformOnUiThread.exec(new RefreshTask(index));
 		}
 		catch (Exception e) {
-			reportFail("refresh", e);
+            Logger.E(TAG, e);
 		}
 	}
 	
@@ -127,7 +169,7 @@ public class WebView {
 			return r.getMainView().activeTab();
 		}
 		catch (Exception e) {
-			reportFail("activeTab", e);
+            Logger.E(TAG, e);
 		}
 		
 		return 0;
@@ -138,7 +180,7 @@ public class WebView {
 			PerformOnUiThread.exec(new NavigateTask("javascript:" + js, index));
 		}
 		catch (Exception e) {
-			reportFail("executeJs", e);
+            Logger.E(TAG, e);
 		}
 	}
 	
@@ -147,7 +189,16 @@ public class WebView {
 			PerformOnUiThread.exec(new SetCookieTask(url, cookie));
 		}
 		catch (Exception e) {
-			reportFail("setCookie", e);
+            Logger.E(TAG, e);
 		}
 	}
+
+    public static void stopNavigate() {
+        try {
+            PerformOnUiThread.exec(new StopNavigateTask(activeTab()));
+        }
+        catch (Exception e) {
+            Logger.E(TAG, e);
+        }
+    }
 }
