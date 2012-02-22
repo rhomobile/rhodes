@@ -867,6 +867,14 @@ void CSyncSource::processServerCmd_Ver3_Schema(const String& strCmd, const Strin
         for( ; !attrIter.isEnd(); attrIter.next() )
         {
             CAttrValue oAttrValue(attrIter.getCurKey(),attrIter.getCurString());
+
+            String strFreezedProps = getSync().getSourceOptions().getProperty(getID(), "freezed");
+            if ( strFreezedProps.length() > 0 && strFreezedProps.find(oAttrValue.m_strAttrib) == String::npos )
+            {
+                LOG(INFO) + "Skip Non-exist property : " + oAttrValue.m_strAttrib + ". For model : " + getName();
+                continue;
+            }
+
             if ( !processBlob(strCmd,strObject,oAttrValue) )
                 break;
 
@@ -1045,6 +1053,13 @@ void CSyncSource::processServerCmd_Ver3(const String& strCmd, const String& strO
 
     if ( strCmd.compare("insert") == 0 )
     {
+        String strFreezedProps = getSync().getSourceOptions().getProperty(getID(), "freezed");
+        if ( strFreezedProps.length() > 0 && strFreezedProps.find(oAttrValue.m_strAttrib) == String::npos )
+        {
+            LOG(INFO) + "Skip Non-exist property : " + oAttrValue.m_strAttrib + ". For model : " + getName();
+            return;
+        }
+
         if ( !processBlob(strCmd,strObject,oAttrValue) )
             return;
 

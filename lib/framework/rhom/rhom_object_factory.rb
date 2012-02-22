@@ -62,6 +62,8 @@ module Rhom
               end
               
               def initialize(obj=nil)
+                check_freezing_model(obj)
+              
                 @vars = {}
                 self.rhom_init(@vars)
                 self.vars[:object] = "#{generate_id()}" unless obj && obj[:object]
@@ -93,12 +95,29 @@ module Rhom
               def method_missing(name, *args)
                 unless name == Fixnum
                   if name[name.length()-1] == '='
-                    @vars[name.to_s.chop.to_sym()] = args[0]  
+                    s_name = name.to_s.chop
+                    check_freezing_model(s_name)
+                    @vars[s_name.to_sym()] = args[0]  
                   else
                     @vars[name]
                   end
                 end
               end
+
+                def check_freezing_model(obj)
+                    isSchemaSrc = is_inst_schema_source()
+                    return unless obj && (isSchemaSrc || Rho::RhoConfig.sources[get_inst_source_name()]['freezed'])
+                     
+                    hash_props = isSchemaSrc ? Rho::RhoConfig.sources[get_inst_source_name()]['schema']["property"] : Rho::RhoConfig.sources[get_inst_source_name()]["property"]
+                    if obj.is_a?(Hash)
+                        obj.each do |key, value|
+                            next if key.to_s() == 'object'
+                            raise ArgumentError.new( "Non-exist property : #{key}. For model : #{get_inst_source_name()}" ) unless hash_props[key.to_s()]
+                        end
+                    elsif obj.to_s() != 'object'
+                        raise ArgumentError.new( "Non-exist property : #{obj}. For model : #{get_inst_source_name()}" ) unless hash_props[obj.to_s()]
+                    end    
+                end
 
               class << self
 
@@ -1679,6 +1698,8 @@ module Rhom
               # updates the current record in the viewable list and adds
               # a sync operation to update
               def update_attributes(attrs)
+                check_freezing_model(attrs)
+              
                 obj = self.object #self.inst_strip_braces(self.object)
                 update_type='update'
                 nSrcID = self.get_inst_source_id
