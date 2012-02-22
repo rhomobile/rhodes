@@ -564,7 +564,38 @@ Or multiple declarations:
 
 **NOTE: After a new product is created, the `:product_id` for the `Customer` records will be updated to the new value.**
 
+## Freezed models
+If you want to limit model attributes by specific list - you can 'freeze' model:
 
+	:::ruby
+    class Customer
+        include Rhom::PropertyBag
+
+        enable :sync
+
+        set :freezed, true
+
+        property :address, :string
+        property :city, :string
+        property :email, :string
+    end
+
+For such models if you try to add not listed property - you will get ArgumentError exception:
+
+	:::ruby
+    obj = Customer.new( :wrong_address => 'test') #will raise ArgumentError exception
+    obj = Customer.create( :wrong_address => 'test') #will raise ArgumentError exception
+    
+    obj = getCase().new
+    obj.wrong_address = 'test' #will raise ArgumentError exception
+    
+    obj = getCase().new
+    obj.update_attributes(:wrong_address => 'test') #will raise ArgumentError exception
+
+
+NOTE: FixedSchema models 'freezed' by default.
+
+    
 ## Accessing Sync Info with RhomSource
 Rhom exposes sync information as a `RhomSource` object.  You can use this information for alerts, status pages, etc.  
 
