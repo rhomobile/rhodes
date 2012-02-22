@@ -73,7 +73,11 @@ To build for iPhone/iPad using you will need the following software installed:
 
 * Mac OS X 10.6 or greater.
 * Follow [All Platforms Prerequisites](#all-platforms-prerequisites).
-* iPhone SDK. We recommend the latest stable version available from the [iPhone Dev Center](http://developer.apple.com/iphone/index.action).
+* XCode 4.2 or greater
+* XCode Command Line Tools (already included to XCode in old versions of XCode(before 4.3), should be installed manually from XCode 4.3 - see Note below)
+* iPhone SDK. We recommend install latest XCode with latest iOS SDK(latest XCode already included iOS SDK). The latest stable version available from the [iPhone Dev Center](http://developer.apple.com/iphone/index.action).
+
+** NOTE: From XCode 4.3 Command Line Tools not included to XCode installation. You should install it from XCode using the Components tab of the Downloads preferences panel. See [New Features in Xcode 4.3](https://developer.apple.com/library/ios/#documentation/DeveloperTools/Conceptual/WhatsNewXcode/Articles/xcode_4_3.html)
 
 ### Building and Running Your iOS Application with RhoStudio
 
@@ -142,7 +146,7 @@ The resulting application package (*.app) is located in your Rhodes source code 
 From the XCode 4.2 Apple was removed default support of armv6 architecture. In this case there are two issues:
 
 * Distributution build should include code for armv6 and armv7 both. Our projects already fixed for this.
-* If you want build/run/debug your application on devices before iPhone/iPad (for example on iPhone 3G), you should manually path all your (our already fixed) native extension xcode projects used in your application for Architecture settings:
+* If you want build/run/debug your application on devices before iPhone4/iPad (for example on iPhone 3G), you should manually path all your (our already fixed) native extension xcode projects used in your application for Architecture settings:
 	in each project modify [Build Settings]-[Architectures]-[Debug]/[Release]:
 		remove $(ARCHS_STANDARD_32_BIT)
 		add two architectures manually: "armv7" and "armv6"	
