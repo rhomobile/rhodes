@@ -1,21 +1,17 @@
-/* min-width has been changed from 450px to 320px */
 @media all and (min-width: 320px){
 	.ui-controlgroup-label { vertical-align: top; display: inline-block;  width: 20%;  margin: 0 2% 0 0;  }
 	.ui-controlgroup-controls { width: 60%; display: inline-block; }
 }
 
-/* min-width has been changed from 450px to 320px */
 @media all and (min-width: 320px){
 	.ui-field-contain { border-width: 0; padding: 0; margin: 1em 0; }
 }
 
-/* min-width has been changed from 450px to 320px */
 @media all and (min-width: 320px){
 	label.ui-select { display: inline-block;  width: 20%;  margin: 0 2% 0 0; }
 	.ui-select { width: 60%; display: inline-block; }
 }	
 
-/* min-width has been changed from 450px to 320px */
 @media all and (min-width: 320px){
 	label.ui-input-text  { vertical-align: top; display: inline-block;  width: 20%;  margin: 0 2% 0 0 }
 	input.ui-input-text, 
@@ -25,7 +21,7 @@
 	.ui-input-search input.ui-input-text { width: 98%; /*echos rule from above*/ }
 }
 
-/* fields placement fix, because min-width has been changed from 450px to 320px */
+
 @media all and (min-width: 320px){
     .ui-controlgroup-controls,
     .ui-select,
@@ -46,4 +42,21 @@
         float: none;            /* Un-do the default float */
         word-wrap: break-word;  /* breaks-up long strings with no spaces */
     }
+}
+
+/* endless scrolling feature support */
+div.ui-page-active ul.endless.loading li.loadingMessage {
+    display: block;
+}
+div.ui-page-active ul.endless li.loadingMessage {
+    display: none;
+}
+
+/*
+Fix for flying screen (horizontal axis motions) issue
+proposed here: https://groups.google.com/d/msg/rhomobile/ZfGetqYv-JI/KpncA9zHAlQJ
+*/
+
+div.ui-header {
+   border-style: solid none;
 }
