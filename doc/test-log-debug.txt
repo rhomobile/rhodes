@@ -1,4 +1,4 @@
-# Testing, Logging, and Debugging 
+# Testing and Logging, and Debugging 
 
 ## Testing
 
@@ -77,13 +77,29 @@ There are two methods to log messages.
 
 From any controller you can log using the methods app_info and app_error. These methods take a string and will write that to rholog.txt with the category of your controllers name. See platform specific [build topic](build) to see notes on how to get rholog.txt.
 
+Call app_info and app_error from a method in your controller:
+
+	:::ruby
+	def index
+		app_info "My info message"
+		app_error "My error message"
+	end
+
 There also is a logging Ruby class called RhoLog. This class has methods info and error which take 2 strings. The first string is the category, the second string is the message.
+
+Call the RhoLog error or info methods from a method in your Rhodes app:
+
+	:::ruby
+	def index
+		RhoLog.error("Some Category", "Some message")
+	end
 
 In rholog.txt the lines appear as follows:
 
 	<Timestamp> <category> | <message>
 
 ### RhoError class
+
 You may find access to the error class useful in logging and reporting:
 
 This class contains error codes and the method message() to translate error code to a text message.
@@ -106,46 +122,6 @@ See [Login/Logout Manager]() as an example.
 
 ## Debugging
 
-You can debug your Rhodes app running on OSX using the Rhodes Debugger.
+You can use the [RhoStudio debugger](rhostudio.tutorial#using-the-debugger) to debug your Rhodes app. 
 
-The Rhodes Debugger app is located in [platform/osx/Rhodes Debugger](https://github.com/rhomobile/rhodes/tree/master/platform/osx/Rhodes%20Debugger). An xcode project is located there that you can use to build the debugger.
 
-Launching the debugger, by default it listens for debugger connections over tcp. There is a checkbox to enable scanning using gdb for a local emulator running.
-
-Be aware that debugging using the methods below will have a noticeable performance penalty on your application. GDB performance penalty is incurred when the debugger connects to the application and until the application is relaunched. TCP performance penalty is incurred if the application makes a successful connection to the debugger.
-
-[This video demonstrates debugging using TCP on iPhone and Android](http://www.youtube.com/watch?v=xtpjlIdOdQE).
-
-[This video demonstrates debugging using GDB](http://www.youtube.com/watch?v=dHJ3qvzjcuA).
-
-### TCP debugging
-
-Tcp debugging works across multiple platforms, and can be run from the device.
-
-To enable tcp debugging, you have two make a few small modifications to your application:
-
-Include the extensions net-http and debugger in your build.yml.
-
-	extensions:
-	- net-http
-	- debugger
-
-Modify your rhoconfig.txt add two lines at the bottom: debug_host and debug_port. This should be set to an ip address and port of the machine that the debugger app is running on that is reachable by the phone or emulator.
-
-	debug_host = '192.168.1.106'
-	debug_port = 9000
-
-Modify your application.rb. At the top of the application.rb file in your app, after the first require add the line:
-
-	:::ruby
-	require 'debugger'
-
-Then you can launch your application and you should see the text in the bottom left of the debugger change from 'Waiting for Rhodes' to 'Connected'. Once this is connected, browse to your rhodes application and then you can set breakpoints or execute ruby commands.
-
-Once you are done debugging, you should click the disconnect button on the debugger to disconnect the debugger from the app.
-
-### Gdb debugging
-
-Gdb debugging only works when you run the debugger and iphone simulator on the same machine. It only works with the iphone simulator.
-
-There is no changes needed to your application to use gdb debugging. Simply launch the Rhodes Debugger app select the gdb checkbox and then launch your application in the iphone simulator. The debugger will detect your application and connect to it automatically.
