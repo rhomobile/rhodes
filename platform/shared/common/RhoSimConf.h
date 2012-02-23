@@ -36,6 +36,7 @@ class RhoSimSettings : public RhoSettings
 {
 public:
     const String& getRhodesPath(){return getString("rhodes_path");}
+    const String& getRhoRuntimePath(){return getString("rhodes_path");}
 };
 
 extern RhoSimSettings g_RhoSimSettings;
