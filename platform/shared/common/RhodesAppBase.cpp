@@ -36,12 +36,12 @@ namespace common{
 IMPLEMENT_LOGCLASS(CRhodesAppBase,"RhodesApp");
 CRhodesAppBase* CRhodesAppBase::m_pInstance = 0;
 
-/*static*/ CRhodesAppBase* CRhodesAppBase::Create(const String& strRootPath, const String& strUserPath)
+/*static*/ CRhodesAppBase* CRhodesAppBase::Create(const String& strRootPath, const String& strUserPath, const String& strRuntimePath)
 {
     if ( m_pInstance != null) 
         return m_pInstance;
 
-    m_pInstance = new CRhodesAppBase(strRootPath, strUserPath);
+    m_pInstance = new CRhodesAppBase(strRootPath, strUserPath, strRuntimePath);
     return m_pInstance;
 }
 
@@ -53,10 +53,11 @@ CRhodesAppBase* CRhodesAppBase::m_pInstance = 0;
     m_pInstance = 0;
 }
 
-CRhodesAppBase::CRhodesAppBase(const String& strRootPath, const String& strUserPath) : CRhoThread()
+CRhodesAppBase::CRhodesAppBase(const String& strRootPath, const String& strUserPath, const String& strRuntimePath) : CRhoThread()
 {
     m_strRhoRootPath = strRootPath;
     m_strAppUserPath = strUserPath;
+    m_strRuntimePath = strRuntimePath;
 
     initAppUrls();
 }

@@ -385,7 +385,7 @@ String CNativeToolbar::CToolbarBtn::getDefaultImagePath(const String& strAction)
     else if ( strcasecmp(strAction.c_str(), "forward")==0 )
         strImagePath = "lib/res/forward_btn.png";
 
-    return strImagePath.length() > 0 ? CFilePath::join( RHODESAPP().getRhoRootPath(), strImagePath) : String();
+    return strImagePath.length() > 0 ? CFilePath::join( RHODESAPP().getRhoRuntimePath(), strImagePath) : String();
 }
 
 CNativeToolbar::CToolbarBtn::CToolbarBtn( const char *label, const char *action, const char *icon, int nItemWidth  )

@@ -429,7 +429,7 @@ void CMainWindow::createToolbar(rho_param *p)
 #ifdef RHODES_EMULATOR
                         strImagePath = strImagePath.length() > 0 ? CFilePath::join( RHOSIMCONF().getRhodesPath(), "lib/framework/" + strImagePath) : String();
 #else
-                        strImagePath = strImagePath.length() > 0 ? CFilePath::join( rho_native_rhopath() , "lib/" + strImagePath) : String();
+                        strImagePath = strImagePath.length() > 0 ? CFilePath::join( rho_native_reruntimepath() , "lib/" + strImagePath) : String();
 #endif
                     }
 

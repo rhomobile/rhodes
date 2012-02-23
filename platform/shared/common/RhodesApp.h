@@ -52,7 +52,7 @@ public:
 
 private:
 
-    CRhodesApp(const String& strRootPath, const String& strUserPath);
+    CRhodesApp(const String& strRootPath, const String& strUserPath, const String& strRuntimePath);
     boolean m_bExit, m_bRestartServer;
 
     String m_strListeningPorts;
@@ -90,7 +90,7 @@ private:
 public:
     ~CRhodesApp(void);
 
-    static CRhodesApp* Create(const String& strRootPath, const String& strUserPath);
+    static CRhodesApp* Create(const String& strRootPath, const String& strUserPath, const String& strRuntimePath);
     static void Destroy();
     static CRhodesApp* getInstance(){ return (CRhodesApp*)m_pInstance; }
     void startApp();
@@ -194,6 +194,7 @@ extern "C" {
 	
 void rho_rhodesapp_create(const char* szRootPath);
 void rho_rhodesapp_create_with_separate_user_path(const char* szRootPath, const char* szUserPath);    
+void rho_rhodesapp_create_with_separate_runtime(const char* szRootPath, const char* szRuntimePath);    
 void rho_rhodesapp_start();	
 void rho_rhodesapp_destroy();
 	

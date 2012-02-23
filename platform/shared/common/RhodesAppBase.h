@@ -47,12 +47,12 @@ protected:
 
     static CRhodesAppBase* m_pInstance;
 
-    String m_strRhoRootPath, m_strBlobsDirPath, m_strDBDirPath, m_strAppRootPath, m_strAppUserPath;//, m_strRhodesPath;
+    String m_strRhoRootPath, m_strBlobsDirPath, m_strDBDirPath, m_strAppRootPath, m_strAppUserPath, m_strRuntimePath;//, m_strRhodesPath;
     String m_strHomeUrl;
 
-    CRhodesAppBase(const String& strRootPath, const String& strUserPath);
+    CRhodesAppBase(const String& strRootPath, const String& strUserPath, const String& strRuntimePath);
 public:
-    static CRhodesAppBase* Create(const String& strRootPath, const String& strUserPath);
+    static CRhodesAppBase* Create(const String& strRootPath, const String& strUserPath, const String& strRuntimePath);
     static void Destroy();
     static CRhodesAppBase* getInstance(){ return m_pInstance; }
 
@@ -60,6 +60,7 @@ public:
     String getRelativeDBFilesPath(const String& strFilePath);
     const String& getRhoRootPath(){return m_strRhoRootPath;}
     const String& getRhoUserPath(){return m_strAppUserPath;}
+    const String& getRhoRuntimePath(){return m_strRuntimePath;}
     //const String& getRhodesPath(){return m_strRhodesPath;}
     //void setRhodesPath(const String& path){m_strRhodesPath = path;}
     const String& getAppRootPath(){return m_strAppRootPath;}
@@ -87,6 +88,7 @@ inline rho::common::CRhodesAppBase& RHODESAPPBASE(){ return *rho::common::CRhode
 extern "C" {
 #endif //__cplusplus
 
+const char* rho_native_reruntimepath();
 const char* rho_native_rhopath();
 const char* rho_native_rhouserpath();
 const char* rho_native_rhodbpath();    

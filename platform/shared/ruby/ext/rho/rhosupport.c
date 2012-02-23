@@ -60,6 +60,11 @@ VALUE __rhoGetCurrentDir(void)
     return rb_str_new2(rho_native_rhopath());
 }
 
+VALUE __rhoGetRuntimeDir(void)
+{
+    return rb_str_new2(rho_native_reruntimepath());
+}
+
 VALUE __rhoGetUserDir(void)
 {
     return rb_str_new2(rho_native_rhouserpath());
@@ -271,8 +276,8 @@ static VALUE check_extension(VALUE res, VALUE fname, int nAddExtName)
 
 static VALUE check_app_file_exist(VALUE dir, VALUE fname1, const char* szPlatform)
 {
-    //RAWLOG_INFO1("find_file: check dir %s", RSTRING_PTR(dir));
     VALUE res = rb_str_dup(dir);
+    //RAWLOG_INFO1("find_file: check dir %s", RSTRING_PTR(dir));
 
     #ifdef __SYMBIAN32__
         if(*RSTRING_PTR(res) == '/')
@@ -306,6 +311,10 @@ static VALUE find_file(VALUE fname)
 #endif
 
     if ( strncmp(RSTRING_PTR(fname), rho_native_rhopath(), strlen(rho_native_rhopath())) == 0 ){
+        res = rb_str_dup(fname);
+        rb_str_cat(res,RHO_RB_EXT,strlen(RHO_RB_EXT));
+        //RAWLOG_INFO1("find_file: res: %s", RSTRING_PTR(res));
+    } else if ( strncmp(RSTRING_PTR(fname), rho_native_reruntimepath(), strlen(rho_native_reruntimepath())) == 0 ){
         res = rb_str_dup(fname);
         rb_str_cat(res,RHO_RB_EXT,strlen(RHO_RB_EXT));
         //RAWLOG_INFO1("find_file: res: %s", RSTRING_PTR(res));
@@ -582,6 +591,7 @@ void Init_RhoSupport()
     rb_define_global_function("__rhoGetRhodesDir", __rhoGetRhodesDir, 0);
 #endif
 	rb_define_global_function("__rhoGetCurrentDir", __rhoGetCurrentDir, 0);
+	rb_define_global_function("__rhoGetRuntimeDir", __rhoGetRuntimeDir, 0);
 	rb_define_global_function("__rhoGetUserDir", __rhoGetUserDir, 0);
 	rb_define_global_function("__rhoGetDBDir", __rhoGetDBDir, 0);
 	rb_define_global_function("load", rb_load_compiled, 1);

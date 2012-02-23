@@ -287,12 +287,12 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
     m_commands.clear();
 }
 
-/*static*/ CRhodesApp* CRhodesApp::Create(const String& strRootPath, const String& strUserPath)
+/*static*/ CRhodesApp* CRhodesApp::Create(const String& strRootPath, const String& strUserPath, const String& strRuntimePath)
 {
     if ( m_pInstance != null) 
         return (CRhodesApp*)m_pInstance;
 
-    m_pInstance = new CRhodesApp(strRootPath, strUserPath);
+    m_pInstance = new CRhodesApp(strRootPath, strUserPath, strRuntimePath);
 
     String push_pin = RHOCONF().getString("push_pin");
     if(!push_pin.empty())
@@ -312,8 +312,8 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
 
 }
 
-CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath)
-    :CRhodesAppBase(strRootPath, strUserPath)
+CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath, const String& strRuntimePath)
+    :CRhodesAppBase(strRootPath, strUserPath, strRuntimePath)
 {
     m_bExit = false;
     m_bDeactivationMode = false;
@@ -826,11 +826,12 @@ void CRhodesApp::initHttpServer()
 {
     String strAppRootPath = getRhoRootPath();
     String strAppUserPath = getRhoUserPath();
+    String strRuntimePath = getRhoRuntimePath();
 #ifndef RHODES_EMULATOR
     strAppRootPath += "apps";
 #endif
 
-    m_httpServer = new net::CHttpServer(atoi(getFreeListeningPort()), strAppRootPath, strAppUserPath);
+    m_httpServer = new net::CHttpServer(atoi(getFreeListeningPort()), strAppRootPath, strAppUserPath, strRuntimePath);
     m_httpServer->register_uri("/system/geolocation", rubyext::CGeoLocation::callback_geolocation);
     m_httpServer->register_uri("/system/syncdb", callback_syncdb);
     m_httpServer->register_uri("/system/redirect_to", callback_redirect_to);
@@ -1467,12 +1468,17 @@ int	rho_http_snprintf(char *buf, size_t buflen, const char *fmt, ...)
 	
 void rho_rhodesapp_create(const char* szRootPath)
 {
-    rho::common::CRhodesApp::Create(szRootPath, szRootPath);
+    rho::common::CRhodesApp::Create(szRootPath, szRootPath, szRootPath);
 }
 
 void rho_rhodesapp_create_with_separate_user_path(const char* szRootPath, const char* szUserPath)
 {
-    rho::common::CRhodesApp::Create(szRootPath, szUserPath);
+    rho::common::CRhodesApp::Create(szRootPath, szUserPath, szRootPath);
+}
+
+void rho_rhodesapp_create_with_separate_runtime(const char* szRootPath, const char* szRuntimePath)
+{
+    rho::common::CRhodesApp::Create(szRootPath, szRootPath, szRuntimePath);
 }
     
     
