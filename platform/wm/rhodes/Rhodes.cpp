@@ -38,6 +38,8 @@
 #include "common/RhoFilePath.h"
 #include "common/app_build_capabilities.h"
 
+#include <algorithm>
+
 using namespace rho;
 using namespace rho::common;
 using namespace std;
@@ -116,7 +118,7 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 {
     static HINSTANCE m_hInstance;
     CMainWindow m_appWindow;
-    rho::String m_strRootPath, m_strRhodesPath, m_logPort;//, m_strDebugHost, m_strDebugPort;*/
+    rho::String m_strRootPath, m_strRhodesPath, m_logPort, m_strRuntimePath;//, m_strDebugHost, m_strDebugPort;*/
 	int m_nRestarting;
 
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)
@@ -154,6 +156,7 @@ public :
     HRESULT PreMessageLoop(int nShowCmd) throw();
     void RunMessageLoop( ) throw( );
     const rho::String& getRhoRootPath();
+    const rho::String& getRhoRuntimePath();
     void parseHttpProxyURI(const rho::String &http_proxy);
 };
 
@@ -234,9 +237,22 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
         else if (wcsnicmp(lpszToken, _T("s"),1)==0)
         {
 			String token = convertToStringA(lpszToken);
-            char* path = parseToken( token.c_str(), token.length() );
+			char* path = parseToken( token.c_str(), token.length() );
 			if (path) {
-				rho_wmimpl_set_startpage(path);
+				if ((_strnicmp(path+strlen(path)-1,".html",5)==0) || (_strnicmp(path+strlen(path)-5,".htm",4)==0))
+                {
+					// RhoElements v1.0 compatibility mode
+					rho_wmimpl_set_startpage(path);
+                } else {
+					// RhoElements v2.0 mode
+					m_strRootPath = path;
+                    if (m_strRootPath.substr(0,7).compare("file://")==0)
+                        m_strRootPath.erase(0,7);
+                    ::std::replace(m_strRootPath.begin(), m_strRootPath.end(), '\\', '/');
+                    if (m_strRootPath.at(m_strRootPath.length()-1)!='/')
+                        m_strRootPath.append("/");
+                    m_strRootPath.append("rho/");
+				}
 				free(path);
 			}
         }
@@ -498,7 +514,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 		return S_FALSE;
     }
 
-    rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath);
+    rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, m_strRuntimePath);
 
     DWORD dwStyle = WS_VISIBLE;
 
@@ -630,6 +646,13 @@ void CRhodesModule::RunMessageLoop( ) throw( )
 const rho::String& CRhodesModule::getRhoRootPath()
 {
     if ( m_strRootPath.length() == 0 )
+        m_strRootPath = getRhoRuntimePath();
+    return m_strRootPath;
+}
+
+const rho::String& CRhodesModule::getRhoRuntimePath()
+{
+    if ( m_strRuntimePath.length() == 0 )
     {
         char rootpath[MAX_PATH];
         int len;
@@ -642,15 +665,15 @@ const rho::String& CRhodesModule::getRhoRootPath()
             rootpath[len+1]=0;
         }
 
-        m_strRootPath = rootpath;
-        m_strRootPath += "rho\\";
+        m_strRuntimePath = rootpath;
+        m_strRuntimePath += "rho\\";
 
-        for(unsigned int i = 0; i < m_strRootPath.length(); i++ )
-            if ( m_strRootPath.at(i) == '\\' )
-                m_strRootPath[i] = '/';
+        for(unsigned int i = 0; i < m_strRuntimePath.length(); i++ )
+            if ( m_strRuntimePath.at(i) == '\\' )
+                m_strRuntimePath[i] = '/';
     }
 
-    return m_strRootPath; 
+    return m_strRuntimePath; 
 }
 
 extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/,
@@ -716,6 +739,11 @@ translate_char(char *p, int from, int to)
 extern "C" const char* rho_native_rhopath() 
 {
     return _AtlModule.getRhoRootPath().c_str();
+}
+
+extern "C" const char* rho_native_reruntimepath() 
+{
+    return _AtlModule.getRhoRuntimePath().c_str();
 }
 
 extern "C" HINSTANCE rho_wmimpl_get_appinstance()

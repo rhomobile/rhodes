@@ -36,6 +36,7 @@
 #include "../stat/stat.h"
 #endif
 
+#include "common/app_build_capabilities.h"
 #include "logging/RhoLog.h"
 
 #ifdef RHODES_EMULATOR
@@ -77,6 +78,7 @@ extern void Init_RhoSupport(void);
 extern VALUE require_compiled(VALUE fname, VALUE* result);
 extern VALUE RhoPreparePath(VALUE path);
 extern const char* rho_native_rhopath();
+extern const char* rho_native_reruntimepath();
 extern const char* rho_native_rhouserpath();
 //extern void RhoSetCurAppPath(char* path);
 
@@ -192,7 +194,7 @@ void RhoRubyStart()
     //rb_funcall(rb_mGC, rb_intern("stress="), 1, Qtrue);
 
     ruby_init_loadpath(szRoot);
-#ifdef RHODES_EMULATOR
+#if defined(RHODES_EMULATOR) || defined(APP_BUILD_CAPABILITY_MOTOROLA)
     {
         VALUE load_path = GET_VM()->load_path;
         char* app_path = malloc(strlen(szRoot)+100);
@@ -200,12 +202,20 @@ void RhoRubyStart()
         rb_ary_clear(load_path);
 
         strcpy(app_path, szRoot);
+#if defined(RHODES_EMULATOR)
         strcat(app_path, "app");
-
+#else
+        strcat(app_path, "apps/app");
+#endif
         rb_ary_push(load_path, rb_str_new2(app_path) );
 
+#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+        strcpy(app_path, rho_native_reruntimepath());
+        strcat(app_path, "lib");
+#else
         strcpy(app_path, rho_simconf_getRhodesPath());
         strcat(app_path, "/lib/framework");
+#endif
         rb_ary_push(load_path, rb_str_new2(app_path) );
     }
 

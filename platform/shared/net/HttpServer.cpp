@@ -275,11 +275,12 @@ static VALUE create_request_hash(String const &application, String const &model,
     return hash;
 }
 
-CHttpServer::CHttpServer(int port, String const &root, String const &user_root)
+CHttpServer::CHttpServer(int port, String const &root, String const &user_root, String const &runtime_root)
     :m_active(false), m_port(port), verbose(true)
 {
     m_root = CFilePath::normalizePath(root);
     m_strRhoRoot = m_root.substr(0, m_root.length()-5);
+    m_strRuntimeRoot = runtime_root.substr(0, runtime_root.length()-5);
     m_userroot = CFilePath::normalizePath(user_root);
     m_strRhoUserRoot = m_userroot;
 }
@@ -288,10 +289,9 @@ CHttpServer::CHttpServer(int port, String const &root)
     :m_active(false), m_port(port), verbose(true)
 {
     m_root = CFilePath::normalizePath(root);
-    m_strRhoRoot = m_root.substr(0, m_root.length()-5);
+    m_strRuntimeRoot = m_strRhoRoot = m_root.substr(0, m_root.length()-5);
     m_userroot = CFilePath::normalizePath(root);
     m_strRhoUserRoot = m_root.substr(0, m_root.length()-5);
-        
 }
 
 CHttpServer::~CHttpServer()
@@ -972,7 +972,7 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
 
     if (String_startsWith(fullPath,"/app/db/db-files") )
         fullPath = CFilePath::join( rho_native_rhodbpath(), path.substr(4) );
-    else if (fullPath.find(m_root) != 0 && fullPath.find(m_strRhoRoot) != 0 && fullPath.find(m_userroot) != 0 && fullPath.find(m_strRhoUserRoot) != 0)
+    else if (fullPath.find(m_root) != 0 && fullPath.find(m_strRhoRoot) != 0 && fullPath.find(m_strRuntimeRoot) != 0 && fullPath.find(m_userroot) != 0 && fullPath.find(m_strRhoUserRoot) != 0)
         fullPath = CFilePath::join( m_root, path );
 	
     if (verbose) RAWTRACE1("Sending file %s...", fullPath.c_str());

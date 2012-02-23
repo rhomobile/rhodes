@@ -31,6 +31,7 @@
 #ifdef ENABLE_DYNAMIC_RHOBUNDLE
 #include "net/INetRequest.h"
 
+#include "common/app_build_capabilities.h"
 #include "common/RhodesApp.h"
 
 #include "unzip/unzip.h"
@@ -221,10 +222,20 @@ int CAppManager::removeOldRhoBundle (void)
 		return RRB_REMOVEOLD_ERR;
 	}
 
-	if (!RemoveFolder(root + "lib")) {
-		LOG(ERROR) + "Failed to remove" + "\"" + (root + "lib	") + "\"";
-		return RRB_REMOVEOLD_ERR;
+#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+	const char *rhopath = rho_native_rhopath();
+	const char *runtimepath = rho_native_reruntimepath();
+	int rhopath_len = strlen(rhopath);
+	int runtimepath_len = strlen(runtimepath);
+	if ((rhopath_len > 0) && (rhopath_len == runtimepath_len) && (_strnicmp(rhopath, runtimepath, rhopath_len)==0)) {
+#endif
+		if (!RemoveFolder(root + "lib")) {
+			LOG(ERROR) + "Failed to remove" + "\"" + (root + "lib	") + "\"";
+			return RRB_REMOVEOLD_ERR;
+		}
+#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
 	}
+#endif
 	
 	return RRB_NONE_ERR;
 }
