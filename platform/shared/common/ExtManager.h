@@ -38,9 +38,10 @@ namespace common {
 
 struct CRhoExtData
 {
-	void*	    m_hWnd;
+	HWND	    m_hWnd;
 	void*		m_hInstance;
 	int			m_iTabIndex;
+    HWND       m_hBrowserWnd;
 };
 
 struct IRhoExtension 

@@ -61,10 +61,9 @@ IRhoExtension* CExtManager::getExtByName(const String& strName)
 CRhoExtData CExtManager::makeExtData()
 {
     CRhoExtData oData;
-#if defined (OS_WINDOWS)
     oData.m_hWnd = getMainWnd();
     oData.m_hInstance = rho_wmimpl_get_appinstance();
-#endif
+    oData.m_hBrowserWnd = getAppWindow().getWebKitEngine()->GetHTMLWND();
 
     oData.m_iTabIndex = rho_webview_active_tab();
     return oData;
