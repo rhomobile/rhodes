@@ -275,7 +275,7 @@ Get the distance between two points in miles.
 
 GeoCoding: You can use any free web service for direct and reverse geocoding. See our complete example of using Google geocoding web service in [Rhodes-System-Api-Samples example](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/GeoCoding).
 
-**NOTE: On iOS, real GPS starts working after the first access to the GeoLocation module. Real GPS hardware is switched off after a call to GeoLocation.turnoff. But keep in mind - any call to GeoLocation, such as getting latitude, starts the hardware GPS again!**
+**NOTE: On iOS and Android, real GPS starts working after the first access to the GeoLocation module. Real GPS hardware is switched off after a call to GeoLocation.turnoff. But keep in mind - any call to GeoLocation, such as getting latitude, starts the hardware GPS again!**
 
 #### Testing GeoLocation
 
