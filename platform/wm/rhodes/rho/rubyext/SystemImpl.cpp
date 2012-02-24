@@ -422,6 +422,8 @@ int get_msie_version(rho::String& msieVer)
 }
 #endif
 
+static int g_rho_has_network = 1, g_rho_has_cellnetwork = 0;
+
 int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 {
 	if (strcasecmp("webview_framework",szPropName) == 0)
@@ -576,6 +578,12 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
     }
 #endif
 
+	if (strcasecmp("has_cell_network",szPropName) == 0) 
+        return rho_ruby_create_boolean( g_rho_has_cellnetwork != 0 );
+
+	if (strcasecmp("has_wifi_network",szPropName) == 0) 
+        return rho_ruby_create_boolean( g_rho_has_network != 0 );
+
     return 0;
 }
 
@@ -583,8 +591,6 @@ VALUE rho_sys_makephonecall(const char* callname, int nparams, char** param_name
 {
 	return rho_ruby_get_NIL();
 }
-
-static int g_rho_has_network = 1, g_rho_has_cellnetwork = 0;
 
 void rho_sysimpl_sethas_network(int nValue)
 {
