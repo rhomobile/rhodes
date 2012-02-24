@@ -59,6 +59,11 @@ const char* rho_native_rhopath()
     return rho_root_path().c_str();
 }
 //--------------------------------------------------------------------------------------------------
+const char* rho_native_reruntimepath()
+{
+    return rho_root_path().c_str();
+}
+//--------------------------------------------------------------------------------------------------
 rho::String rho_cur_path()
 {
     char buf[PATH_MAX];
