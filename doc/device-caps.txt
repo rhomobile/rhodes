@@ -55,6 +55,8 @@ Properties:
 * ppi_x - horizontal PPI (Pixels Per Inch)
 * ppi_y - vertical PPI (Pixels Per Inch)
 * has_network - is device connected to the network
+* has_cell_network - is device connected to the cell network
+* has_wifi_network - is device connected to the wifi network
 * phone_number - device phone number
 * device_owner_email - primary email of phone owner (works only on Android)
 * device_owner_device_owner_name - name(account name) of phone owner (works only on Android)
