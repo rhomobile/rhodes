@@ -85,13 +85,16 @@
 #define ID_CANCEL                       40030
 #define ID_SETCOOKIE                    40032
 #define IDM_EXECUTEJS                   40033
+#define IDM_STOPNAVIGATE                40034
+#define IDM_ZOOMPAGE                    40035
+#define IDM_ZOOMTEXT                    40036
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        128
-#define _APS_NEXT_COMMAND_VALUE         40034
+#define _APS_NEXT_COMMAND_VALUE         40037
 #define _APS_NEXT_CONTROL_VALUE         1022
 #define _APS_NEXT_SYMED_VALUE           111
 #endif

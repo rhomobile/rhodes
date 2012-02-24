@@ -50,11 +50,6 @@ void rho_webview_refresh(int index)
     ::PostMessage( getMainWnd(), WM_COMMAND, IDM_REFRESH, (LPARAM)index );
 }
 
-bool rho_webview_exist_javascript(const wchar_t* szJSFunction, int index) 
-{
-    return getAppWindow().isExistJavascript(szJSFunction, index);    
-}
-
 void rho_webview_navigate(const char* url, int index) 
 {
     if ( !url )

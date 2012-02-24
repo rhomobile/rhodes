@@ -3870,6 +3870,10 @@
 				Name="common"
 				>
 				<File
+					RelativePath=".\rho\common\ExtManager.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\rho\common\RhoClassFactory.cpp"
 					>
 				</File>

@@ -61,7 +61,6 @@ private:
     CSplashScreen m_oSplashScreen;
     CAppMenu m_oAppMenu;
     CRhoTimer m_oTimer;
-    CExtManager m_oExtManager;
 
     String m_strLoadingPagePath, m_strLoadingPngPath;
     String m_strStartUrl, m_strOptionsUrl, m_strRhobundleReloadUrl;//, m_strFirstStartUrl;
@@ -86,6 +85,7 @@ private:
 
     common::CAutoPtr<common::CThreadQueue> m_appCallbacksQueue;
     boolean m_bSendingLog;
+    CExtManager* m_pExtManager;
 
 public:
     ~CRhodesApp(void);
@@ -140,7 +140,9 @@ public:
     CAppMenu& getAppMenu (void) { return m_oAppMenu; }
     CSplashScreen& getSplashScreen(){return m_oSplashScreen;}
     CRhoTimer&     getTimer(){ return m_oTimer; }
-    CExtManager&   getExtManager(){ return m_oExtManager; }
+
+    void setExtManager( CExtManager* pExtManager ){m_pExtManager = pExtManager; }
+    CExtManager&   getExtManager(){ return *m_pExtManager; }
 
     boolean sendLog(const String& strCallbackUrl);
 
