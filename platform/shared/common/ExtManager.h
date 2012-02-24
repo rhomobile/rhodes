@@ -85,6 +85,8 @@ struct IRhoExtManager
     virtual void zoomText(int nZoom) = 0;
     virtual int getTextZoom() = 0; //Enum (0 to 4)
     virtual StringW getPageTitle(UINT iTab) = 0;
+
+    virtual StringW getConfigPath() = 0;
 };
 
 class CExtManager : public IRhoExtManager
@@ -133,6 +135,7 @@ public:
     virtual void zoomText(int nZoom);
     virtual int getTextZoom(); //Enum (0 to 4)
     virtual StringW getPageTitle(UINT iTab);
+    virtual StringW getConfigPath();
 };
 
 } //namespace common
