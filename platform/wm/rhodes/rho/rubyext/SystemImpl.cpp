@@ -579,10 +579,16 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 #endif
 
 	if (strcasecmp("has_cell_network",szPropName) == 0) 
-        return rho_ruby_create_boolean( g_rho_has_cellnetwork != 0 );
+    {
+        *resValue = rho_ruby_create_boolean( g_rho_has_cellnetwork != 0 );
+        return 1;
+    }
 
 	if (strcasecmp("has_wifi_network",szPropName) == 0) 
-        return rho_ruby_create_boolean( g_rho_has_network != 0 );
+    {
+        *resValue = rho_ruby_create_boolean( g_rho_has_network != 0 );
+        return 1;
+    }
 
     return 0;
 }
