@@ -141,6 +141,12 @@ VALUE rho_sys_get_property(char* szPropName)
         return rho_ruby_create_boolean(0);
 #endif
 
+	if (strcasecmp("has_cell_network",szPropName) == 0) 
+        return rho_sys_has_network();
+
+	if (strcasecmp("has_wifi_network",szPropName) == 0) 
+        return rho_sys_has_network();
+
     RAWLOG_ERROR1("Unknown Rho::System property : %s", szPropName);
 
     return rho_ruby_get_NIL();
