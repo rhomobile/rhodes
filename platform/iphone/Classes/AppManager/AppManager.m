@@ -493,6 +493,11 @@ const char* rho_native_rhopath()
 	return root;
 }
 
+const char* rho_native_reruntimepath()
+{
+    return rho_native_rhopath();
+}
+
 const char* rho_native_rhouserpath() 
 {
     BOOL user_path_in_root = NO;
