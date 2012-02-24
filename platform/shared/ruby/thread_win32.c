@@ -495,6 +495,7 @@ thread_start_func_1(void *th_ptr)
     volatile HANDLE thread_id = th->thread_id;
 
     native_thread_init_stack(th);
+//RHO		
 /*    th->native_thread_data.interrupt_event = CreateEvent(0, TRUE, FALSE, 0);
 
     if ( !th->native_thread_data.interrupt_event)
@@ -503,7 +504,7 @@ thread_start_func_1(void *th_ptr)
         thread_debug("thread interrupt_event error: %d\n", dwErr );
     }
 */
-
+//RHO
     /* run */
     thread_debug("thread created (th: %p, thid: %p, event: %p)\n", th,
 		 th->thread_id, th->native_thread_data.interrupt_event);
