@@ -163,7 +163,7 @@ void CExtManager::stopNavigate()
     ::PostMessage( getMainWnd(), WM_COMMAND, IDM_STOPNAVIGATE, (LPARAM)rho_webview_active_tab() );
 }
 
-void CExtManager::quiteApp()
+void CExtManager::quitApp()
 {
     rho_sys_app_exit();
 }

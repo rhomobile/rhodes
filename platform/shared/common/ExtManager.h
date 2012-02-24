@@ -77,7 +77,7 @@ struct IRhoExtManager
     virtual void historyForward() = 0;
     virtual void historyBack() = 0;
     virtual void refreshPage(bool bFromCache) = 0;
-    virtual void quiteApp() = 0;
+    virtual void quitApp() = 0;
     virtual void minimizeApp() = 0;
     virtual void restoreApp() = 0;
     virtual void resizeBrowserWindow(RECT rc) = 0;
@@ -127,7 +127,7 @@ public:
     virtual void historyForward();
     virtual void historyBack();
     virtual void refreshPage(bool bFromCache);
-    virtual void quiteApp();
+    virtual void quitApp();
     virtual void minimizeApp();
     virtual void restoreApp();
     virtual void resizeBrowserWindow(RECT rc);
