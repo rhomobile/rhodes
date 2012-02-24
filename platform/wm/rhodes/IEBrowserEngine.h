@@ -29,10 +29,15 @@ public:
     virtual BOOL BackOnTab(int iInstID,int iPagesBack = 1);
     virtual BOOL ForwardOnTab(int iInstID);
     virtual BOOL ReloadOnTab(bool bFromCache, UINT iTab);
+    virtual BOOL StopOnTab(UINT iTab);
     virtual BOOL NavigateToHtml(LPCTSTR szHtml);
     virtual LRESULT OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     virtual void RunMessageLoop(CMainWindow& mainWnd);
     virtual void SetCookie(char* url, char* cookie);
     virtual bool isExistJavascript(const wchar_t* szJSFunction, int index);
     virtual void executeJavascript(const wchar_t* szJSFunction, int index);
+    virtual BOOL ZoomPageOnTab(float fZoom, UINT iTab);
+    virtual BOOL ZoomTextOnTab(int nZoom, UINT iTab);
+    virtual int GetTextZoomOnTab(UINT iTab);
+    virtual BOOL GetTitleOnTab(LPTSTR szURL, UINT iMaxLen, UINT iTab);
 };

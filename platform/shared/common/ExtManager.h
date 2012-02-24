@@ -83,7 +83,8 @@ struct IRhoExtManager
     virtual void resizeBrowserWindow(RECT rc) = 0;
     virtual void zoomPage(float fZoom) = 0;
     virtual void zoomText(int nZoom) = 0;
-
+    virtual int getTextZoom() = 0; //Enum (0 to 4)
+    virtual StringW getPageTitle(UINT iTab) = 0;
 };
 
 class CExtManager : public IRhoExtManager
@@ -130,7 +131,8 @@ public:
     virtual void resizeBrowserWindow(RECT rc);
     virtual void zoomPage(float fZoom);
     virtual void zoomText(int nZoom);
-
+    virtual int getTextZoom(); //Enum (0 to 4)
+    virtual StringW getPageTitle(UINT iTab);
 };
 
 } //namespace common

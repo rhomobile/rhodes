@@ -120,6 +120,7 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
     CMainWindow m_appWindow;
     rho::String m_strRootPath, m_strRhodesPath, m_logPort, m_strRuntimePath;//, m_strDebugHost, m_strDebugPort;*/
 	int m_nRestarting;
+    CExtManager m_oExtManager;
 
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)
     static WCHAR g_ConfigFilePath[MAX_PATH + 1];
@@ -515,6 +516,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }
 
     rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, m_strRuntimePath);
+    RHODESAPP().setExtManager( &m_oExtManager );
 
     DWORD dwStyle = WS_VISIBLE;
 

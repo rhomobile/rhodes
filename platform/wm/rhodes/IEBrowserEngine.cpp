@@ -70,6 +70,31 @@ BOOL CIEBrowserEngine::ReloadOnTab(bool bFromCache, UINT iTab)
     return m_spIWebBrowser2->Refresh() == S_OK;
 }
 
+BOOL CIEBrowserEngine::StopOnTab(UINT iTab)
+{
+    return FALSE;
+}
+
+BOOL CIEBrowserEngine::ZoomPageOnTab(float fZoom, UINT iTab)
+{
+    return FALSE;
+}
+
+BOOL CIEBrowserEngine::ZoomTextOnTab(int nZoom, UINT iTab)
+{
+    return FALSE;
+}
+
+int CIEBrowserEngine::GetTextZoomOnTab(UINT iTab)
+{
+    return 2; //Normal
+}
+
+BOOL CIEBrowserEngine::GetTitleOnTab(LPTSTR szURL, UINT iMaxLen, UINT iTab)
+{
+    return FALSE;
+}
+
 static void writeHtmlToTheDoc (
 #if defined(_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
 					IPIEHTMLDocument2 *document

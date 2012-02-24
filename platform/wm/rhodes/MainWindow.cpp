@@ -755,6 +755,26 @@ LRESULT CMainWindow::OnExecuteJSCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
     return 0;
 }
 
+LRESULT CMainWindow::OnStopNavigate(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
+{
+    m_pBrowserEng->StopOnTab((UINT)hWndCtl);
+    return 0;
+}
+
+LRESULT CMainWindow::OnZoomPage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
+{
+    float fZoom = (float)(long)(hWndCtl);
+    m_pBrowserEng->ZoomPageOnTab(fZoom, rho_webview_active_tab());
+    return 0;
+}
+
+LRESULT CMainWindow::OnZoomText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
+{
+    int nZoom = (int)hWndCtl;
+    m_pBrowserEng->ZoomTextOnTab(nZoom, rho_webview_active_tab());
+    return 0;
+}
+
 #if defined(OS_WINDOWS) || defined( OS_PLATFORM_MOTCE )
 LRESULT CMainWindow::OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
 {
