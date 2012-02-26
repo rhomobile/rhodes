@@ -29,6 +29,10 @@ public class RhoSupport {
 			protected RubyValue run(RubyValue receiver, RubyBlock block ){
 				return RhoGetCurrentDir(receiver);}
 		});
+		RubyRuntime.KernelModule.defineModuleMethod( "__rhoGetRuntimeDir", new RubyNoArgMethod(){ 
+			protected RubyValue run(RubyValue receiver, RubyBlock block ){
+				return RhoGetCurrentDir(receiver);}
+		});
 		RubyRuntime.KernelModule.defineModuleMethod( "__load_with_reflection__", new RubyOneArgMethod(){ 
 			protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block ){
 				return loadWithReflection(receiver, arg, block);}
