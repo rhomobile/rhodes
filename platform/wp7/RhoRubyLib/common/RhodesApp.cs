@@ -232,11 +232,11 @@ namespace rho.common
                     {
                         if (m_tabControl != null && m_tabControl.Items.Count > 0)
                         {
-                            ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.IsScriptEnabled = true;
+                            ((RhoView)((PivotItem)m_tabControl.Items[index]).Content).webBrowser1.IsScriptEnabled = true;
                             if (isExternalUrl(strUrl))
-                                ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(new Uri(strUrl, UriKind.Absolute));
+                                ((RhoView)((PivotItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(new Uri(strUrl, UriKind.Absolute));
                             else
-                                ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(new Uri(strUrl, UriKind.Relative));
+                                ((RhoView)((PivotItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(new Uri(strUrl, UriKind.Relative));
                         }
                     }
                     else
@@ -265,7 +265,7 @@ namespace rho.common
                     {
                         if (m_tabControl != null && m_tabControl.Items.Count > 0)
                         {
-                            ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(m_webBrowser.Source);
+                            ((RhoView)((PivotItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(m_webBrowser.Source);
                         }
                     }
                     else
@@ -294,7 +294,7 @@ namespace rho.common
                 {
                     if (index >= 0 && m_tabControl != null && m_tabControl.Items.Count > 0)
                     {
-                        ((RhoView)((TabItem)m_tabControl.Items[index]).Content).webBrowser1.InvokeScript(strFuncName, arrParams);
+                        ((RhoView)((PivotItem)m_tabControl.Items[index]).Content).webBrowser1.InvokeScript(strFuncName, arrParams);
                     }
                     else
                     {
@@ -685,17 +685,17 @@ namespace rho.common
                        // continue;
 
 
-                    //tabItem.Header = "Test";to do
-                    //TabItem tabItem = new TabItem();
-                    PivotItem tabItem = new PivotItem();
-                    tabItem.Header = new RhoTabHeader(label, icon);
+                    //PivotItem.Header = "Test";to do
+                    //PivotItem PivotItem = new PivotItem();
+                    PivotItem PivotItem = new PivotItem();
+                    PivotItem.Header = new RhoTabHeader(label, icon);
                     //if (i == 0)// && use_current_view_for_tab)
-                    tabItem.Content = new RhoView(m_appMainPage, m_layoutRoot, action, reload, web_bkg_color, i);
+                    PivotItem.Content = new RhoView(m_appMainPage, m_layoutRoot, action, reload, web_bkg_color, i);
                     if (values.TryGetValue(CRhoRuby.CreateSymbol("selected_color"), out val))
-                        tabItem.Background = new SolidColorBrush(getColorFromString(val.ToString()));
+                        PivotItem.Background = new SolidColorBrush(getColorFromString(val.ToString()));
                     if (values.TryGetValue(CRhoRuby.CreateSymbol("disabled"), out val))
-                        tabItem.IsEnabled = !Convert.ToBoolean(val);
-                    m_tabControl.Items.Add(tabItem);
+                        PivotItem.IsEnabled = !Convert.ToBoolean(val);
+                    m_tabControl.Items.Add(PivotItem);
                 }
             }
         }
@@ -765,7 +765,7 @@ namespace rho.common
                 if (m_tabControl != null)
                 {
                     //TO DO
-                    //((TabItem)m_tabControl.Items[index]).Header
+                    //((PivotItem)m_tabControl.Items[index]).Header
                 }
             });
         }
