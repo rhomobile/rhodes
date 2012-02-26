@@ -68,6 +68,7 @@ namespace rho.views
         private bool m_loadFirstTime = true;
         private bool m_masterView = false;
         private int m_index = -1;
+        private bool m_callback = false;
         
         private const string AJAX_CONTEXT_PARAM = "_rho_callbackId";
         private const string JS_NOTIFY_CONSOLE_LOG = "console.log:";
@@ -137,14 +138,14 @@ namespace rho.views
             {
                 if (m_loadFirstTime)
                     m_loadFirstTime = false;
-                bool callback = false;
+                //bool callback = false;
                 if (m_strAction.startsWith("callback:"))
                 {
                     m_strAction = m_strAction.substring(9);
-                    callback = true;
+                    m_callback = true;
                 }
                 m_strAction = RHODESAPP().canonicalizeRhoUrl(m_strAction);
-                if (callback)
+                if (m_callback)
                 {
                     RhoClassFactory.createNetRequest().pushData(m_strAction, "rho_callback=1", null);
                 }
