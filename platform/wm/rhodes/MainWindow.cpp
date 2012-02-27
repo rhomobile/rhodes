@@ -351,7 +351,7 @@ LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 {
 	rho_rhodesapp_callUiDestroyedCallback();
 
-#if defined (_WIN32_WCE)
+#if defined (_WIN32_WCE)  && !defined(OS_PLATFORM_MOTCE)
     m_menuBar = NULL;
     ShowTaskBar(true, false);
    	//SetFullScreen(false);
