@@ -903,6 +903,14 @@ namespace rho.sync
 	            for( ; !attrIter.isEnd(); attrIter.next() )
 	            {
 	                CAttrValue oAttrValue = new CAttrValue(attrIter.getCurKey(),attrIter.getCurString());
+
+                    String strFreezedProps = SyncEngine.getSourceOptions().getProperty(getID(), "freezed");	
+                    if ( strFreezedProps.length() > 0 && strFreezedProps.indexOf(oAttrValue.m_strAttrib) < 0 )	
+                    {	
+                        LOG.INFO("Skip Non-exist property : " + oAttrValue.m_strAttrib + ". For model : " + getName());	
+                        continue;	
+                    }
+
 	                if ( !processBlob(strCmd,strObject,oAttrValue) )
 	                    break;
 	        	
@@ -1092,7 +1100,15 @@ namespace rho.sync
 		
 	        if ( strCmd.compareTo("insert") == 0 )
 	        {
-	            if ( !processBlob(strCmd,strObject,oAttrValue) )
+	            
+                String strFreezedProps = SyncEngine.getSourceOptions().getProperty(getID(), "freezed");
+                if ( strFreezedProps.length() > 0 && strFreezedProps.indexOf(oAttrValue.m_strAttrib) < 0 ) 	
+                {
+                    LOG.INFO("Skip Non-exist property : " + oAttrValue.m_strAttrib + ". For model : " + getName());
+                    return;
+                }
+                
+                if ( !processBlob(strCmd,strObject,oAttrValue) )
 	                return;
 
 	            IDBResult resInsert = getDB().executeSQLReportNonUnique("INSERT INTO object_values "+
