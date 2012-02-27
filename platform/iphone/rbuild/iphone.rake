@@ -475,7 +475,7 @@ namespace "config" do
     $tmpdir =  $bindir +"/tmp"
 
     $devroot = '/Developer' if $devroot.nil?
-    $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim')
+    $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim') if $iphonesim.nil?
 
 
     $xcodebuild = $devroot + "/usr/bin/xcodebuild"
