@@ -475,7 +475,7 @@ namespace "config" do
     $tmpdir =  $bindir +"/tmp"
 
     $devroot = '/Developer' if $devroot.nil?
-    $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim')
+    $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim') if $iphonesim.nil?
 
 
     $xcodebuild = $devroot + "/usr/bin/xcodebuild"
@@ -776,8 +776,8 @@ namespace "run" do
       Thread.new {
             # run spec
             rhorunner = File.join($startdir, $config["build"]["iphonepath"],"build/#{$configuration}-iphonesimulator/rhorunner.app")
-            iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim')
-            commandis = iphonesim + ' launch "' + rhorunner + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget + ' "' +log_name+'"'
+            #iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim')
+            commandis = $iphonesim + ' launch "' + rhorunner + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget + ' "' +log_name+'"'
             puts 'use iphonesim tool - open iPhone Simulator and execute our application, also support device family (iphone/ipad)'
             puts 'execute command : ' + commandis
             system(commandis)
