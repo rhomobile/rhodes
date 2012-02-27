@@ -31,6 +31,7 @@
 #include <common/RhodesApp.h>
 
 #include "MainWindow.h"
+#include "common/app_build_capabilities.h"
 
 extern CMainWindow& getAppWindow();
 //#define IDM_NAVIGATE                    40022
@@ -203,7 +204,11 @@ int CExtManager::getTextZoom() //Enum (0 to 4)
 
 StringW CExtManager::getConfigPath()
 {
+#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
     return rho_wmimpl_get_configfilepath();
+#else
+    return L"";
+#endif
 }
 
 StringW CExtManager::getPageTitle(UINT iTab)
