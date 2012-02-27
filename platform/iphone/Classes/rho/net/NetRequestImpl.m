@@ -73,7 +73,7 @@ VALUE rho_sys_has_wifi_network() {
 			return rho_ruby_create_boolean(0);
 		}
 		else if (defaultRouteFlags & ReachableViaWiFiNetwork) {
-			// Cell network available
+			// WiFi network available
 			return rho_ruby_create_boolean(1);
 		}
 	}
@@ -97,6 +97,10 @@ VALUE rho_sys_has_cell_network() {
 		}
 		else if (defaultRouteFlags & ReachableViaCarrierDataNetwork) {
 			// Cell network available
+			return rho_ruby_create_boolean(1);
+		}
+		else if (defaultRouteFlags & ReachableViaWiFiNetwork) {
+			// Wifi network available
 			return rho_ruby_create_boolean(1);
 		}
 	}

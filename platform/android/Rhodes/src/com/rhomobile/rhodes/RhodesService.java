@@ -624,7 +624,7 @@ public class RhodesService extends Service {
 		return hostExists;
 	}
 	
-	private static boolean hasNetwork() {
+	private static boolean hasNetworkEx( boolean checkCell, boolean checkWifi, boolean checkEthernet, boolean checkWimax, boolean checkBluetooth, boolean checkAny) {
 		if (!Capabilities.NETWORK_STATE_ENABLED) {
 			Logger.E(TAG, "HAS_NETWORK: Capability NETWORK_STATE disabled");
 			return false;
@@ -644,17 +644,47 @@ public class RhodesService extends Service {
 			Logger.E(TAG, "HAS_NETWORK: cannot issue getAllNetworkInfo");
 			return false;
 		}
+
+		//{
+		//	Utils.platformLog("NETWORK", "$$$$$$$$$$$$$$$$$$$   Networks ; $$$$$$$$$$$$$$$$$$$$$$");
+		//	for (int i = 0, lim = info.length; i < lim; ++i) 
+		//	{
+		//		int type = info[i].getType();
+		//		String name = info[i].getTypeName();
+		//		boolean is_connected = info[i].getState() == NetworkInfo.State.CONNECTED;
+		//		Utils.platformLog("NETWORK", "        - Name ["+name+"],  type ["+String.valueOf(type)+"], connected ["+String.valueOf(is_connected)+"]");
+		//	}
+		//}
 		
 		for (int i = 0, lim = info.length; i < lim; ++i) 
 		{
-		    //Logger.I(TAG, "HAS_NETWORK: " + info[i].toString() );
-			if (info[i].getState() == NetworkInfo.State.CONNECTED)
-				return true;
+			boolean is_connected = info[i].getState() == NetworkInfo.State.CONNECTED;
+			int type = info[i].getType();
+			if (is_connected) {
+				if ((type == ConnectivityManager.TYPE_MOBILE) && (checkCell)) return true;
+				if ((type == ConnectivityManager.TYPE_WIFI) && (checkWifi)) return true;
+				if ((type == 6) && (checkWimax)) return true;
+				if ((type == 9) && (checkEthernet)) return true;
+				if ((type == 7) && (checkBluetooth)) return true;
+				if (checkAny) return true; 
+			}
 		}
 
     	Logger.I(TAG, "HAS_NETWORK: all networks are disconnected");
 		
 		return false;
+	}
+	
+	private static boolean hasWiFiNetwork() {
+		return hasNetworkEx(false, true, true, true, false, false);
+	}
+	
+	private static boolean hasCellNetwork() {
+		return hasNetworkEx(true, false, false, false, false, false);
+	}
+	
+	private static boolean hasNetwork() {
+		return hasNetworkEx(true, true, true, true, false, true);
 	}
 	
 	private static String getCurrentLocale() {
@@ -725,7 +755,11 @@ public class RhodesService extends Service {
 			else if (name.equalsIgnoreCase("has_camera"))
 				return new Boolean(mCameraAvailable);
 			else if (name.equalsIgnoreCase("has_network"))
-				return hasNetwork();
+				return new Boolean(hasNetwork());
+			else if (name.equalsIgnoreCase("has_wifi_network"))
+				return new Boolean(hasWiFiNetwork());
+			else if (name.equalsIgnoreCase("has_cell_network"))
+				return new Boolean(hasCellNetwork());
 			else if (name.equalsIgnoreCase("ppi_x"))
 				return new Float(getScreenPpiX());
 			else if (name.equalsIgnoreCase("ppi_y"))
