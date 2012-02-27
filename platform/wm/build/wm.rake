@@ -138,12 +138,17 @@ namespace "config" do
 
     $wm_emulator = $app_config["wm"]["emulator"] if $app_config["wm"] and $app_config["wm"]["emulator"]
     $wm_emulator = "Windows Mobile 6 Professional Emulator" unless $wm_emulator
+
+    $use_re_runtime = (($app_config["wm"]["use_re_runtime"].nil?) ? nil : 1 )
+    #puts $app_config["wm"]["use_re_runtime"].inspect
+    #puts $use_re_runtime.inspect
   end
 end
 
 namespace "build" do
   namespace "wm" do
     task :extensions => "config:wm" do
+      if not $use_re_runtime.nil? then next end
 
       if $additional_dlls_path.nil?
         puts 'new $additional_dlls_paths'
@@ -202,6 +207,8 @@ namespace "build" do
     end
 
     task :rhodes => ["config:wm", "build:wm:rhobundle"] do
+      if not $use_re_runtime.nil? then next end
+
       chdir $config["build"]["wmpath"]
 
       cp $app_path + "/icon/icon.ico", "rhodes/resources" if File.exists? $app_path + "/icon/icon.ico"
@@ -363,8 +370,10 @@ namespace "device" do
     desc "Build production for device or emulator"
     task :production => ["config:wm","build:wm:rhobundle","build:wm:rhodes"] do
 
-      out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/"
-      cp  out_dir + "rhodes.exe", out_dir + $appname + ".exe"
+      if $use_re_runtime.nil? then
+        out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/"
+        cp out_dir + "rhodes.exe", out_dir + $appname + ".exe"
+      end
 
       chdir $builddir
 
@@ -372,7 +381,7 @@ namespace "device" do
       build_platform = 'wm653' if $sdk == "Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
       build_platform = 'ce5' if $sdk == "MC3000c50b (ARMV4I)"
 
-      if $webkit_capability and $wk_data_dir != nil 
+      if $webkit_capability and ($wk_data_dir != nil) and ($use_re_runtime.nil?)
         wk_config_dir = $wk_data_dir + "/Config"
         config_files = ['Config','Plugin','RegEx']
         config_files.each do |filename|
@@ -388,10 +397,12 @@ namespace "device" do
         end
       end
 
-      args = ['build_inf.js', $appname + ".inf", build_platform, '"' + $app_config["name"] +'"', $app_config["vendor"], '"' + $srcdir + '"', $hidden_app, ($webkit_capability ? "1" : "0"), $wk_data_dir]
+      args = ['build_inf.js', $appname + ".inf", build_platform, '"' + $app_config["name"] +'"', $app_config["vendor"], '"' + $srcdir + '"', $hidden_app, ($webkit_capability ? "1" : "0"), $wk_data_dir, (($use_re_runtime.nil?) ? "0" : "1")]
 
-      $additional_dlls_paths.each do |path|
-         args << path
+      if $use_re_runtime.nil? then
+         $additional_dlls_paths.each do |path|
+            args << path
+         end
       end
         
       puts Jake.run('cscript',args)
@@ -489,7 +500,7 @@ namespace "run" do
       sleep(1)
     end
 
-    if $webkit_capability
+    if $webkit_capability and ($use_re_runtime.nil?)
       wk_args   = [ 'wk-emu', "\"#{$wm_emulator}\"", '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
       Jake.run2( detool, wk_args, {:nowait => false})
     end
@@ -501,7 +512,7 @@ namespace "run" do
     #  end
     #end
 
-    args   = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port]
+    args = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+((not $use_re_runtime.nil?) ? 'reruntime' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port]
     Jake.run2( detool, args, {:nowait => false})
   end
 
@@ -543,7 +554,7 @@ namespace "run" do
         sleep(1)
       end    
 
-      if $webkit_capability
+      if $webkit_capability and ($use_re_runtime.nil?)
         wk_args   = [ 'wk-dev', '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
         Jake.run2( detool, wk_args, {:nowait => false})
       end
@@ -555,7 +566,7 @@ namespace "run" do
       #  end
       #end
 
-      args   = [ 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port ]
+      args = [ 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+((not $use_re_runtime.nil?) ? 'reruntime' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port ]
       Jake.run2( detool, args, {:nowait => false})
     end
 
@@ -648,7 +659,7 @@ namespace "run" do
     end
 
     namespace "device" do
-      desc "Build, install .cab  and run on the Windows Phone"
+      desc "Build, install .cab and run on the Windows Mobile device"
       task :cab => ["device:wm:production"] do
         # kill all running detool
         kill_detool

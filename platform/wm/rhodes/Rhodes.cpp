@@ -137,6 +137,7 @@ public :
 
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)
     static void setConfigFilePath(const char* path);
+    static void setConfigFilePath(const WCHAR* path);
     static void setStartPage(const char* path);
     static void setStartPage(const TCHAR* tpath);
     static WCHAR* getConfigFilePath();
@@ -179,6 +180,10 @@ extern "C" TCHAR* rho_wmimpl_get_startpage()
     return CRhodesModule::getStartPage();
 }
 extern "C" void rho_wmimpl_set_configfilepath(const char* path)
+{
+    CRhodesModule::setConfigFilePath(path);
+}
+extern "C" void rho_wmimpl_set_configfilepath_wchar(const WCHAR* path)
 {
     CRhodesModule::setConfigFilePath(path);
 }
@@ -240,20 +245,8 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 			String token = convertToStringA(lpszToken);
 			char* path = parseToken( token.c_str(), token.length() );
 			if (path) {
-				if ((_strnicmp(path+strlen(path)-1,".html",5)==0) || (_strnicmp(path+strlen(path)-5,".htm",4)==0))
-                {
-					// RhoElements v1.0 compatibility mode
-					rho_wmimpl_set_startpage(path);
-                } else {
-					// RhoElements v2.0 mode
-					m_strRootPath = path;
-                    if (m_strRootPath.substr(0,7).compare("file://")==0)
-                        m_strRootPath.erase(0,7);
-                    ::std::replace(m_strRootPath.begin(), m_strRootPath.end(), '\\', '/');
-                    if (m_strRootPath.at(m_strRootPath.length()-1)!='/')
-                        m_strRootPath.append("/");
-                    m_strRootPath.append("rho/");
-				}
+				// RhoElements v1.0 compatibility mode
+				rho_wmimpl_set_startpage(path);
 				free(path);
 			}
         }
@@ -337,6 +330,23 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 				free(port);
 			}
 		} */
+#else
+        else if (wcsnicmp(lpszToken, _T("approot"),7)==0)
+        {
+            String token = convertToStringA(lpszToken);
+			char* path = parseToken( token.c_str(), token.length() );
+			if (path) {
+				// RhoElements v2.0 Shared Runtime command line parameter
+				m_strRootPath = path;
+                if (m_strRootPath.substr(0,7).compare("file://")==0)
+                    m_strRootPath.erase(0,7);
+                ::std::replace(m_strRootPath.begin(), m_strRootPath.end(), '\\', '/');
+                if (m_strRootPath.at(m_strRootPath.length()-1)!='/')
+                    m_strRootPath.append("/");
+                m_strRootPath.append("rho/");
+        	}
+			free(path);
+        }
 #endif
 		lpszToken = FindOneOf(lpszToken, szTokens);
 	}
@@ -373,6 +383,11 @@ void CRhodesModule::setConfigFilePath(const char* path)
     USES_CONVERSION;
     WCHAR* wpath = A2W(path);
     _tcscpy(g_ConfigFilePath, wpath);
+}
+
+void CRhodesModule::setConfigFilePath(const WCHAR* path)
+{
+    _tcscpy(g_ConfigFilePath, path);
 }
 
 void CRhodesModule::setStartPage(const char* path)

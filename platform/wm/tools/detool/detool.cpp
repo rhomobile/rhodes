@@ -778,6 +778,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	//WIN32_FIND_DATAW findData;
 	int new_copy = 0;
 	int deploy_type;
+	bool use_re_runtime = false;
 
 	USES_CONVERSION;
 
@@ -828,13 +829,15 @@ int _tmain(int argc, _TCHAR* argv[])
         else if (strcmp(T2A(argv[1]), "wk-dev") == 0)  {
             deploy_type = DEPLOY_DEV_WEBKIT;
             src_path = argv[2];
-            app_name = argv[3];            
+            app_name = argv[3];
         }
 	}
 	else {
 		usage();
 		return EXIT_FAILURE;
 	}
+	if (app_exe)
+		use_re_runtime = wcsnicmp(app_exe, L"reruntime", 9) == 0;
 
 	TCHAR app_dir[MAX_PATH];
 	_tcscpy(app_dir, TEXT("\\Program Files\\"));
@@ -904,13 +907,15 @@ int _tmain(int argc, _TCHAR* argv[])
 				}
 				FindClose( hFind);
 
-				int retval = copyExecutable (app_exe, app_dir);
-				if (retval != EXIT_SUCCESS) {
-					printf ("Failed to copy application executable\n");
-					if (retval == 32) {
-						printf ("Please, stop application on device and try again.\n");
+				if (!use_re_runtime) {
+					int retval = copyExecutable (app_exe, app_dir);
+					if (retval != EXIT_SUCCESS) {
+						printf ("Failed to copy application executable\n");
+						if (retval == 32) {
+							printf ("Please, stop application on device and try again.\n");
+						}
+						goto stop_emu_deploy;
 					}
-					goto stop_emu_deploy;
 				}
 
 				if (copyBundle(bundle_path, _T("/"), remote_bundle_path) == EXIT_FAILURE) {
@@ -924,15 +929,23 @@ int _tmain(int argc, _TCHAR* argv[])
 				emuBringToFront(emu_name);
 
 				_tprintf( TEXT("Starting application..."));
-				_tcscpy(params_buf, TEXT("\\Program Files\\"));
-				_tcscat(params_buf, app_name);
-				_tcscat(params_buf, _T("\\"));
-				_tcscat(params_buf, app_name);
-				_tcscat(params_buf, _T(".exe"));
-
-				TCHAR params[128];
-				_tcscpy(params, _T("-log="));
-				_tcscat(params, log_port);
+				TCHAR params[MAX_PATH];
+				params[0] = 0;
+				if (use_re_runtime) {
+					_tcscpy(params_buf, TEXT("\\Program Files\\RERuntime\\RERuntime.exe"));
+					_tcscpy(params, _T("-approot='\\Program Files\\"));
+					_tcscat(params, app_name);
+					_tcscat(params, _T("'"));
+				} else {
+					_tcscpy(params_buf, TEXT("\\Program Files\\"));
+					_tcscat(params_buf, app_name);
+					_tcscat(params_buf, _T("\\"));
+					_tcscat(params_buf, app_name);
+					_tcscat(params_buf, _T(".exe"));
+				}
+				//_tcscpy(params, _T("-log="));
+				//_tcscat(params, log_port);
+				_tprintf( TEXT("%s %s\n"), params_buf, params);
 
 				if(!wceRunProcess(T2A(params_buf), T2A(params))) {
 					_tprintf( TEXT("FAILED\n"));
@@ -1007,15 +1020,23 @@ int _tmain(int argc, _TCHAR* argv[])
 			emuBringToFront(emu_name);
 
 			_tprintf( TEXT("Starting application..."));
-			_tcscpy(params_buf, TEXT("\\Program Files\\"));
-			_tcscat(params_buf, app_name);
-			_tcscat(params_buf, _T("\\"));
-			_tcscat(params_buf, app_name);
-			_tcscat(params_buf, _T(".exe"));
-
-			TCHAR params[128];
-			_tcscpy(params, _T("-log="));
-			_tcscat(params, log_port);
+			TCHAR params[MAX_PATH];
+			params[0] = 0;
+			if (use_re_runtime) {
+				_tcscpy(params_buf, TEXT("\\Program Files\\RERuntime\\RERuntime.exe"));
+				_tcscpy(params, _T("-approot='\\Program Files\\"));
+				_tcscat(params, app_name);
+				_tcscat(params, _T("'"));
+			} else {
+				_tcscpy(params_buf, TEXT("\\Program Files\\"));
+				_tcscat(params_buf, app_name);
+				_tcscat(params_buf, _T("\\"));
+				_tcscat(params_buf, app_name);
+				_tcscat(params_buf, _T(".exe"));
+			}
+			//_tcscat(params, _T("-log="));
+			//_tcscat(params, log_port);
+			_tprintf( TEXT("%s %s\n"), params_buf, params);
 
 			if(!wceRunProcess(T2A(params_buf), T2A(params))) {
 				_tprintf( TEXT("FAILED\n"));
@@ -1083,14 +1104,15 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 		FindClose( hFind);
 
-		
-		int retval = copyExecutable (app_exe, app_dir);
-		if (retval != EXIT_SUCCESS) {
-			printf ("Failed to copy application executable\n");
-			if (retval == 32) {
-				printf ("Please, stop application on device and try again.\n");
+		if (!use_re_runtime) {
+			int retval = copyExecutable (app_exe, app_dir);
+			if (retval != EXIT_SUCCESS) {
+				printf ("Failed to copy application executable\n");
+				if (retval == 32) {
+					printf ("Please, stop application on device and try again.\n");
+				}
+				goto stop_emu_deploy;
 			}
-			goto stop_emu_deploy;
 		}
 
 		if (copyBundle(bundle_path, _T("/"), remote_bundle_path) == EXIT_FAILURE) {
@@ -1104,16 +1126,23 @@ int _tmain(int argc, _TCHAR* argv[])
 		Sleep(2 * 1000);
 
 		_tprintf( TEXT("Starting application..."));
-		_tcscpy(params_buf, TEXT("\\Program Files\\"));
-		_tcscat(params_buf, app_name);
-		_tcscat(params_buf, _T("\\"));
-		_tcscat(params_buf, app_name);
-		_tcscat(params_buf, _T(".exe"));
-		_tprintf( TEXT("%s\n"), params_buf);
-
-		TCHAR params[128];
-		_tcscpy(params, _T("-log="));
-		_tcscat(params, log_port);
+		TCHAR params[MAX_PATH];
+		params[0] = 0;
+		if (use_re_runtime) {
+			_tcscpy(params_buf, TEXT("\\Program Files\\RERuntime\\RERuntime.exe"));
+			_tcscpy(params, _T("-approot='\\Program Files\\"));
+			_tcscat(params, app_name);
+			_tcscat(params, _T("'"));
+		} else {
+			_tcscpy(params_buf, TEXT("\\Program Files\\"));
+			_tcscat(params_buf, app_name);
+			_tcscat(params_buf, _T("\\"));
+			_tcscat(params_buf, app_name);
+			_tcscat(params_buf, _T(".exe"));
+		}
+		//_tcscat(params, _T("-log="));
+		//_tcscat(params, log_port);
+		_tprintf( TEXT("%s %s\n"), params_buf, params);
 
 		if(!wceRunProcess(T2A(params_buf), T2A(params))) {
 			_tprintf( TEXT("FAILED\n"));
@@ -1183,15 +1212,23 @@ int _tmain(int argc, _TCHAR* argv[])
 			connectWMDC();
 
 			_tprintf( TEXT("Starting application..."));
-			_tcscpy(params_buf, TEXT("\\Program Files\\"));
-			_tcscat(params_buf, app_name);
-			_tcscat(params_buf, _T("\\"));
-			_tcscat(params_buf, app_name);
-			_tcscat(params_buf, _T(".exe"));
-
-            TCHAR params[128];
-            _tcscpy(params, _T("-log="));
-			_tcscat(params, log_port);
+			TCHAR params[MAX_PATH];
+			params[0] = 0;
+			if (use_re_runtime) {
+				_tcscpy(params_buf, TEXT("\\Program Files\\RERuntime\\RERuntime.exe"));
+				_tcscpy(params, _T("-approot='\\Program Files\\"));
+				_tcscat(params, app_name);
+				_tcscat(params, _T("'"));
+			} else {
+				_tcscpy(params_buf, TEXT("\\Program Files\\"));
+				_tcscat(params_buf, app_name);
+				_tcscat(params_buf, _T("\\"));
+				_tcscat(params_buf, app_name);
+				_tcscat(params_buf, _T(".exe"));
+			}
+			//_tcscat(params, _T("-log="));
+			//_tcscat(params, log_port);
+			_tprintf( TEXT("%s %s\n"), params_buf, params);
 
 			if(!wceRunProcess (T2A(params_buf), T2A(params))) {
 				_tprintf( TEXT("FAILED\n"));
