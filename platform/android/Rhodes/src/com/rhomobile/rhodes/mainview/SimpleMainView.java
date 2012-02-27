@@ -529,10 +529,11 @@ public class SimpleMainView implements MainView {
 		//	webView = v.detachWebView();
 		if (webView == null) {
 	        if (Capabilities.WEBKIT_BROWSER_ENABLED) {
+	            Logger.D(TAG, "Creating Motorola WebKIT view");
 	            try {
 	                Class<? extends IRhoWebView> viewClass = (Class<? extends IRhoWebView>)Class.forName("com.rhomobile.rhodes.webview.EkiohWebView");
-	                Constructor<? extends IRhoWebView> viewCtor = viewClass.getConstructor(Activity.class);
-	                webView = viewCtor.newInstance(activity);
+	                Constructor<? extends IRhoWebView> viewCtor = viewClass.getConstructor(Context.class, Runnable.class);
+	                webView = viewCtor.newInstance(activity, RhodesApplication.AppState.AppStarted.addObserver("MotorolaStartEngineObserver", true));
 	            } catch (Throwable e) {
 	                Logger.E(TAG, e);
 	                RhodesApplication.stop();
