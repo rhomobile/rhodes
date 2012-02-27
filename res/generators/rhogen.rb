@@ -293,14 +293,19 @@ module Rhogen
 
     first_argument :name, :required => true, :desc => "extension name"
 
+
+    def namefixed
+        return name.downcase.split(/[^a-zA-Z0-9]/).map{|w| w.downcase}.join("")
+    end    
+
     template :ext do |template|
       template.source = 'extensions/montana/ext.yml'
-      template.destination = "extensions/#{name.downcase}/ext.yml"
+      template.destination = "extensions/#{namefixed.downcase}/ext.yml"
     end
 
     template :extension_ruby do |template|
       template.source = 'extensions/montana/montana.rb'
-      template.destination = "extensions/#{name.downcase}/#{name.downcase}.rb"
+      template.destination = "extensions/#{namefixed.downcase}/#{namefixed.downcase}.rb"
     end
 
     $build_script_full_path = ''
@@ -312,138 +317,138 @@ module Rhogen
 
     template :build do |template|
       template.source = 'extensions/montana/ext/build'
-      template.destination = "extensions/#{name.downcase}/ext/build"
+      template.destination = "extensions/#{namefixed.downcase}/ext/build"
       $build_script_full_path = template.destination   
       template.options = { :after => :callback_after_make_build}  
     end
 
     template :build_bat do |template|
       template.source = 'extensions/montana/ext/build.bat'
-      template.destination = "extensions/#{name.downcase}/ext/build.bat"
+      template.destination = "extensions/#{namefixed.downcase}/ext/build.bat"
     end
 
     template :extension_i do |template|
       template.source = 'extensions/montana/ext/montana/shared/ruby/montana.i'
-      template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/shared/ruby/#{name.downcase}.i"
+      template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}/shared/ruby/#{namefixed.downcase}.i"
     end
 
     template :extension_wrap do |template|
       template.source = 'extensions/montana/ext/montana/shared/ruby/montana_wrap.c'
-      template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/shared/ruby/#{name.downcase}_wrap.c"
+      template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}/shared/ruby/#{namefixed.downcase}_wrap.c"
     end
 
     template :extension_c do |template|
       template.source = 'extensions/montana/ext/montana/shared/src/montana.c'
-      template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/shared/src/#{name.downcase}.c"
+      template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}/shared/src/#{namefixed.downcase}.c"
     end
 
     template :extension_iphone_rakefile do |template|
       template.source = 'extensions/montana/ext/montana/platform/iphone/Rakefile'
-      template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/iphone/Rakefile"
+      template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}/platform/iphone/Rakefile"
     end
 
     file :extension_iphone_pch do |file|
       file.source = 'extensions/montana/ext/montana/platform/iphone/Montana_Prefix.pch'
-      file.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/iphone/#{name.camel_case}_Prefix.pch"
+      file.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}/platform/iphone/#{namefixed.camel_case}_Prefix.pch"
     end
 
     template :extension_iphone_project do |template|
       template.source = 'extensions/montana/ext/montana/platform/iphone/Montana.xcodeproj/project.pbxproj'
-      template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/iphone/#{name.camel_case}.xcodeproj/project.pbxproj"
+      template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}/platform/iphone/#{namefixed.camel_case}.xcodeproj/project.pbxproj"
     end
 
     template :extension_iphone_src_h do |template|
       template.source = 'extensions/montana/ext/montana/platform/iphone/Classes/Montana.h'
-      template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/iphone/Classes/#{name.camel_case}.h"
+      template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}/platform/iphone/Classes/#{namefixed.camel_case}.h"
     end
 
     template :extension_iphone_src_m do |template|
       template.source = 'extensions/montana/ext/montana/platform/iphone/Classes/Montana.m'
-      template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/iphone/Classes/#{name.camel_case}.m"
+      template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}/platform/iphone/Classes/#{namefixed.camel_case}.m"
     end
 
     template :extension_android_ext_build do |template|
         template.source = 'extensions/montana/ext/montana/platform/android/ext_build.files'
-        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/android/ext_build.files"
+        template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}/platform/android/ext_build.files"
     end
 
     template :extension_android_rakefile do |template|
         template.source = 'extensions/montana/ext/montana/platform/android/Rakefile'
-        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/android/Rakefile"
+        template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}/platform/android/Rakefile"
     end
 
     template :extension_android_cpp do |template|
         template.source = 'extensions/montana/ext/montana/platform/android/jni/src/montana.cpp'
-        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/android/jni/src/#{name.downcase}.cpp"
+        template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}/platform/android/jni/src/#{namefixed.downcase}.cpp"
     end
 
     template :extension_android_java do |template|
         template.source = 'extensions/montana/ext/montana/platform/android/src/com/montana/Montana.java'
-        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/android/src/com/#{name.downcase}/#{name.camel_case}.java"
+        template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}/platform/android/src/com/#{namefixed.downcase}/#{namefixed.camel_case}.java"
     end
 
 
     template :extension_wm_rakefile do |template|
         template.source = 'extensions/montana/ext/montana/platform/wm/Rakefile'
-        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/wm/Rakefile"
+        template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}/platform/wm/Rakefile"
     end
 
     template :extension_wm_vcsol do |template|
         template.source = 'extensions/montana/ext/montana/platform/wm/Montana.sln'
-        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/wm/#{name.camel_case}.sln"
+        template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}/platform/wm/#{namefixed.camel_case}.sln"
     end
 
     template :extension_wm_vcproject do |template|
         template.source = 'extensions/montana/ext/montana/platform/wm/Montana.vcproj'
-        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/wm/#{name.camel_case}.vcproj"
+        template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}/platform/wm/#{namefixed.camel_case}.vcproj"
     end
 
     template :extension_wm_vcproject do |template|
         template.source = 'extensions/montana/ext/montana/platform/wm/Montana.vsprops'
-        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/wm/#{name.camel_case}.vsprops"
+        template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}/platform/wm/#{namefixed.camel_case}.vsprops"
     end
 
     template :extension_wm_h do |template|
         template.source = 'extensions/montana/ext/montana/platform/wm/src/montana_wm.h'
-        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/wm/src/#{name.downcase}_wm.h"
+        template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}/platform/wm/src/#{namefixed.downcase}_wm.h"
     end
 
     template :extension_wm_cpp do |template|
         template.source = 'extensions/montana/ext/montana/platform/wm/src/montana_wm.cpp'
-        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/wm/src/#{name.downcase}_wm.cpp"
+        template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}/platform/wm/src/#{namefixed.downcase}_wm.cpp"
     end
 
 
     template :extension_bb_files do |template|
         template.source = 'extensions/montana/ext/montana/platform/bb/Montana.files'
-        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/bb/#{name.camel_case}.files"
+        template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}/platform/bb/#{namefixed.camel_case}.files"
     end
 
     template :extension_bb_jgp do |template|
         template.source = 'extensions/montana/ext/montana/platform/bb/montana.jdp'
-        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/bb/#{name.downcase}.jdp"
+        template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}/platform/bb/#{namefixed.downcase}.jdp"
     end
 
     template :extension_bb_Rakefile do |template|
         template.source = 'extensions/montana/ext/montana/platform/bb/Rakefile'
-        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/bb/Rakefile"
+        template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}/platform/bb/Rakefile"
     end
 
     template :extension_bb_java do |template|
         template.source = 'extensions/montana/ext/montana/platform/bb/src/com/montana/Montana.java'
-        template.destination = "extensions/#{name.downcase}/ext/#{name.downcase}/platform/bb/src/com/#{name.downcase}/#{name.camel_case}.java"
+        template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}/platform/bb/src/com/#{namefixed.downcase}/#{namefixed.camel_case}.java"
     end
 
 
 
     template :extension_test_controller do |template|
       template.source = 'app/MontanaTest/controller.rb'
-      template.destination = "app/#{name.camel_case}Test/controller.rb"
+      template.destination = "app/#{namefixed.camel_case}Test/controller.rb"
     end
 
     template :extension_test_index do |template|
       template.source = 'app/MontanaTest/index.erb'
-      template.destination = "app/#{name.camel_case}Test/index.erb"
+      template.destination = "app/#{namefixed.camel_case}Test/index.erb"
     end
 
 
