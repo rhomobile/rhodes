@@ -59,9 +59,11 @@ def syncserver_url
                     when /apple/i      then 'iphone'
                     when /symbian/i    then 'symbian'
                     when /wp7/i    then 'wp'
+                    when /windows/i    then 'wm'
   end
   platform = 'win32' if System.get_property('device_name') == 'Win32'
 
+  puts "platform: #{platform}"
   exact_url = SYNC_SERVER_URL.gsub(/exact_platform/, platform)
   puts "going to reset server: #{exact_url}"
   exact_url
