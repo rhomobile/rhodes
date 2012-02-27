@@ -1,4 +1,7 @@
 ## 3.3.3
+* Support freezed models (FixedSchema and PropertyBag)
+* Detect available network types
+* iPhone: support Xcode 4.3
 * Fix Windows Mobile issues
 
 ## 3.3.2
