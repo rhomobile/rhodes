@@ -572,10 +572,20 @@ namespace "run" do
         #remove log file
         rm_rf log_file if File.exists?(log_file)
 
+        File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
+        Jake.run_rho_log_server($app_path)
+        puts "RhoLogServer is starting"
+        while true do
+          if File.exists?($app_path + "/started")
+            break
+          end
+          sleep(1)
+        end
+
         Jake.before_run_spec
         start = Time.now
         
-        Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
+        #Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
         Jake.run2( detool, args, {:nowait => false})
 
         puts "waiting for log: " + log_file
