@@ -218,10 +218,12 @@ public class Signature implements IRhoExtension {
 	public static void inline_signature_hide() {
 		PerformOnUiThread.exec( new Runnable () {
 			public void run() {
-				ViewGroup wv = (WebView)RhodesService.getInstance().getMainView().getWebView(-1).getView();
-				if ((wv != null) && (ourInlineSignatureView != null)) {
-					wv.removeView(ourInlineSignatureView);
-					ourInlineSignatureView = null;
+				if (ourInlineSignatureView != null) {
+					ViewGroup wv = (WebView)RhodesService.getInstance().getMainView().getWebView(-1).getView();
+					if (wv != null) {
+						wv.removeView(ourInlineSignatureView);
+						ourInlineSignatureView = null;
+					}
 				}
 			}
 		});
