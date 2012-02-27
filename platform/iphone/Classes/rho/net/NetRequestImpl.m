@@ -47,14 +47,62 @@ typedef void (*FSAVECONNDATA)(void* pThis, void* pData);
  */
 typedef enum {
 	NotReachable = 0,
-	ReachableViaCarrierDataNetwork,
-	ReachableViaWiFiNetwork
+	ReachableViaCarrierDataNetwork = 1,
+	ReachableViaWiFiNetwork = 2
 } NetworkStatus;
 
 void rho_net_impl_network_indicator(int active)
 {
 	[UIApplication sharedApplication].networkActivityIndicatorVisible = active ? YES : NO;
 }
+
+
+VALUE rho_sys_has_wifi_network() {
+	SCNetworkReachabilityFlags defaultRouteFlags;
+	
+	int defaultRouteIsAvailable = 0;
+	
+	int i = 0;
+	while  ((!defaultRouteIsAvailable) && (i++ < MAX_CONNECTION_TRY)) {
+		defaultRouteIsAvailable = isNetworkAvailableFlags(&defaultRouteFlags);
+    }
+	
+	if (defaultRouteIsAvailable == 1) {
+		if (defaultRouteFlags & kSCNetworkReachabilityFlagsIsDirect) {
+			// Ad-Hoc network, not available
+			return rho_ruby_create_boolean(0);
+		}
+		else if (defaultRouteFlags & ReachableViaWiFiNetwork) {
+			// Cell network available
+			return rho_ruby_create_boolean(1);
+		}
+	}
+	return rho_ruby_create_boolean(0);
+}
+
+VALUE rho_sys_has_cell_network() {
+	SCNetworkReachabilityFlags defaultRouteFlags;
+	
+	int defaultRouteIsAvailable = 0;
+	
+	int i = 0;
+	while  ((!defaultRouteIsAvailable) && (i++ < MAX_CONNECTION_TRY)) {
+		defaultRouteIsAvailable = isNetworkAvailableFlags(&defaultRouteFlags);
+    }
+	
+	if (defaultRouteIsAvailable == 1) {
+		if (defaultRouteFlags & kSCNetworkReachabilityFlagsIsDirect) {
+			// Ad-Hoc network, not available
+			return rho_ruby_create_boolean(0);
+		}
+		else if (defaultRouteFlags & ReachableViaCarrierDataNetwork) {
+			// Cell network available
+			return rho_ruby_create_boolean(1);
+		}
+	}
+	return rho_ruby_create_boolean(0);
+}
+
 
 // Determines network connectivity
 VALUE rho_sys_has_network() {
@@ -109,6 +157,47 @@ int rho_net_ping_network(const char* szHost)
 	return returnData == NULL ? 0 : 1;
 }
 
+int networkStatusForFlags(SCNetworkReachabilityFlags flags)
+{
+    if ((flags & kSCNetworkReachabilityFlagsReachable) == 0)
+    {
+        // if target host is not reachable
+        return NotReachable;
+    }
+    
+    int retVal = NotReachable;
+    
+    if ((flags & kSCNetworkReachabilityFlagsConnectionRequired) == 0)
+    {
+        // if target host is reachable and no connection is required
+        //  then we'll assume (for now) that your on Wi-Fi
+        retVal = ReachableViaWiFiNetwork;
+    }
+    
+    
+    if ((((flags & kSCNetworkReachabilityFlagsConnectionOnDemand ) != 0) ||
+         (flags & kSCNetworkReachabilityFlagsConnectionOnTraffic) != 0))
+    {
+        // ... and the connection is on-demand (or on-traffic) if the
+        //     calling application is using the CFSocketStream or higher APIs
+        
+        if ((flags & kSCNetworkReachabilityFlagsInterventionRequired) == 0)
+        {
+            // ... and no [user] intervention is needed
+            retVal = ReachableViaWiFiNetwork;
+        }
+    }
+    
+    if ((flags & kSCNetworkReachabilityFlagsIsWWAN) == kSCNetworkReachabilityFlagsIsWWAN)
+    {
+        // ... but WWAN connections are OK if the calling application
+        //     is using the CFNetwork (CFSocketStream?) APIs.
+        retVal = retVal | ReachableViaCarrierDataNetwork;
+    }
+    return retVal;
+}
+
+
 int isNetworkAvailableFlags(SCNetworkReachabilityFlags *outFlags)
 {
 	struct sockaddr_in zeroAddress;
@@ -141,7 +230,9 @@ int isNetworkAvailableFlags(SCNetworkReachabilityFlags *outFlags)
 	// Callers of this method might want to use the reachability flags, so if an 'out' parameter
 	// was passed in, assign the reachability flags to it.
 	if (outFlags) {
-		*outFlags = flags;
+        
+        int fl = networkStatusForFlags(flags);
+		*outFlags = fl;
 	}
 	CFRelease(defaultRouteReachability);
 	return reachable;
