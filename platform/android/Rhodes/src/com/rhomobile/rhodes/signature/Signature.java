@@ -50,7 +50,7 @@ import com.rhomobile.rhodes.util.Utils;
 import com.rhomobile.rhodes.extmanager.IRhoExtData;
 import com.rhomobile.rhodes.extmanager.IRhoExtension;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
-import com.rhomobile.rhodes.extmanager.RhoExtManagerSingleton;
+import com.rhomobile.rhodes.extmanager.RhoExtManager;
 
 public class Signature implements IRhoExtension {
 
@@ -264,7 +264,7 @@ public class Signature implements IRhoExtension {
 	}
 	
 	public static void registerSignatureCaptureExtension() {
-		RhoExtManagerSingleton.getRhoExtManagerInstance().registerExtension(SIGNATURE_EXT, getSharedInstance());
+		RhoExtManager.getInstance().registerExtension(SIGNATURE_EXT, getSharedInstance());
 	}
 	
 	public static native void callback(String callbackUrl, String filePath, String error, boolean cancelled);

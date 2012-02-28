@@ -85,9 +85,9 @@ class RhoExtManagerImpl extends Object implements IRhoExtManager {
         WebView.executeJs(jsFunction, WebView.activeTab());
     }
 
-    @Override
-    public void rhoLog(int nSeverity, String szModule, String szMsg, String szFile, int nLine) {
-    }
+//    @Override
+//    public void rhoLog(int nSeverity, String szModule, String szMsg, String szFile, int nLine) {
+//    }
 
     @Override
     public String getCurrentUrl() {

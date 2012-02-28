@@ -30,7 +30,7 @@ import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
-import com.rhomobile.rhodes.extmanager.RhoExtManagerSingleton;
+import com.rhomobile.rhodes.extmanager.RhoExtManager;
 
 import android.graphics.Bitmap;
 import android.net.http.SslError;
@@ -52,7 +52,7 @@ public class RhoWebViewClient extends WebViewClient
     @Override
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
         
-        RhoExtManagerSingleton.getRhoExtManagerInstance().onBeforeNavigate(url);
+        RhoExtManager.getInstance().onBeforeNavigate(url);
         
         if (RhodesActivity.ENABLE_LOADING_INDICATION)
             RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 0);

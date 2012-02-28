@@ -5,8 +5,8 @@ import android.view.View;
 public interface IRhoExtManager {
 
     void registerExtension(String strName, IRhoExtension ext);
-
-    IRhoExtension getExtByName(String strName);
+//
+//    IRhoExtension getExtByName(String strName);
 
     View getWebView();
     View getTopView();
@@ -21,7 +21,7 @@ public interface IRhoExtManager {
     //boolean existsJavascript(String jsFunction);
     void executeJavascript(String jsFunction);
 
-    void rhoLog(int nSeverity,String szModule,String szMsg,String szFile, int nLine);
+    //void rhoLog(int nSeverity,String szModule,String szMsg,String szFile, int nLine);
     String getCurrentUrl();
     void stopNavigate();
     void historyForward();
