@@ -1,0 +1,7 @@
+#Tue Feb 28 17:20:08 MSK 2012
+eclipse.preferences.version=1
+environment/project/com.android.toolchain.gcc.245515483/NDK_MODULE_PATH/delimiter=\:
+environment/project/com.android.toolchain.gcc.245515483/NDK_MODULE_PATH/operation=replace
+environment/project/com.android.toolchain.gcc.245515483/NDK_MODULE_PATH/value=${ProjDirPath}/../../shared
+environment/project/com.android.toolchain.gcc.245515483/append=true
+environment/project/com.android.toolchain.gcc.245515483/appendContributed=true

@@ -193,15 +193,17 @@ public class Nfc implements RhodesActivityListener {
 		log(" $$$$$$$$$ setEnable() FINISH() ");
 	}
 	
+	@Override
 	public void onCreate(RhodesActivity activity, Intent intent) {
 		getInstance().onNewIntent(activity, intent, true);
 	}
 	
+	@Override
 	public void onRhodesActivityStartup(RhodesActivity activity) {
 		activity.addRhodesActivityListener(getInstance());
 	}
 	
-	
+	@Override
 	public void onPause(RhodesActivity activity) {
 		log(" $$$$$$$$$ onPause() ");
 		NfcAdapter nfcAdapter = getDefaultAdapter(RhodesActivity.getContext());
@@ -211,6 +213,7 @@ public class Nfc implements RhodesActivityListener {
 		}
 	}
 	
+	@Override
 	public void onResume(RhodesActivity activity) {
 		log(" $$$$$$$$$ onResume() ");
 		NfcAdapter nfcAdapter = getDefaultAdapter(RhodesActivity.getContext());
@@ -230,6 +233,15 @@ public class Nfc implements RhodesActivityListener {
 		}
 	}
 
+	@Override
+	public void onStart(RhodesActivity activity) {}
+	
+	@Override
+	public void onStop(RhodesActivity activity) {}
+	
+	@Override
+	public void onDestroy(RhodesActivity activity) {}
+	
 	public void onNewIntent(RhodesActivity activity, Intent intent, boolean postpone) {
 		String action = intent.getAction();
 		
@@ -345,6 +357,7 @@ public class Nfc implements RhodesActivityListener {
         }
 	}
 	
+    @Override
 	public void onNewIntent(RhodesActivity activity, Intent intent) {
 		if (activity.isInsideStartStop()) {
 			onNewIntent(activity, intent, false);
@@ -353,9 +366,6 @@ public class Nfc implements RhodesActivityListener {
 			onNewIntent(activity, intent, true);
 		}
 	}
-	
-	
-	
 	
 	public static void setCallback(String callback) {
 		ourCallback = callback;
