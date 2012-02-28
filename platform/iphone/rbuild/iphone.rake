@@ -801,7 +801,13 @@ namespace "run" do
         
             io.each do |line|
                 puts line
-                $iphone_end_spec = !Jake.process_spec_output(line)
+                
+                if line.class.method_defined? "valid_encoding?" 
+                    $iphone_end_spec = !Jake.process_spec_output(line) if line.valid_encoding?
+                else 
+                    $iphone_end_spec = !Jake.process_spec_output(line)
+                end                    
+               
                 break if $iphone_end_spec
             end
             io.close
