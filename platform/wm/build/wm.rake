@@ -397,6 +397,10 @@ namespace "device" do
         end
       end
 
+      if not $use_re_runtime.nil? then
+        rm_rf $srcdir + '/lib'
+      end
+
       args = ['build_inf.js', $appname + ".inf", build_platform, '"' + $app_config["name"] +'"', $app_config["vendor"], '"' + $srcdir + '"', $hidden_app, ($webkit_capability ? "1" : "0"), $wk_data_dir, (($use_re_runtime.nil?) ? "0" : "1")]
 
       if $use_re_runtime.nil? then
