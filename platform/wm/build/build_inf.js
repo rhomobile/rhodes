@@ -325,7 +325,8 @@ function main() {
     var sources = new Object();
     sources['db'] = ["db","..\\..\\..\\platform\\shared\\db\\res\\db"];
     //sources['sqlite3']= ["sqlite3","..\\..\\shared\\sqlite3"];
-    sources['lib']= ["lib",args(4)+"/lib"];
+    if (args(8) != "1")
+        sources['lib']= ["lib",args(4)+"/lib"];
     sources['apps']= ["apps",args(4)+"/apps"];
 
     var es = expand_sources(sources);
@@ -341,7 +342,7 @@ function main() {
     }
 
     var exts;
-    if (args(8) == "0") {
+    if (args(8) != "1") {
         exts = expand_extensions(args(1));
     }
     pinf(args(1),es,exts,args(2),args(3), (args(5) == "0"), (args(6) == "1"), args(7), (args(8) == "1"));
