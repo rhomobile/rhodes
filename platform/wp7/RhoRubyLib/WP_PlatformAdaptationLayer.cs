@@ -38,6 +38,7 @@ namespace rho
     {
         public override bool FileExists(string path)
         {
+            if (path == "") return false;
             return CRhoFile.isResourceFileExist(path) || CRhoFile.isFileExist(path);
         }
 
@@ -58,6 +59,7 @@ namespace rho
 
         public override bool DirectoryExists(string path)
         {
+            if (path == "") return false;
             return CRhoFile.isDirectoryExist(path);
         }
 

@@ -68,10 +68,10 @@ namespace rho.common
                 szFilePath = CFilePath.removeFirstSlash(szFilePath);
                 if (eMode == EOpenModes.OpenForAppend || eMode == EOpenModes.OpenForReadWrite)
                 {
-                    if (!isFileExist(szFilePath))
-                    {
+                    //if (!isFileExist(szFilePath))
+                    //{
                         m_st = isoStore.OpenFile(szFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
-                    }
+                    //}
 
                     if (eMode == EOpenModes.OpenForAppend)
                         movePosToEnd();

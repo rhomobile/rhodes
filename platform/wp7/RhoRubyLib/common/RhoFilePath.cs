@@ -83,8 +83,8 @@ namespace rho.common
 
         public static String removeLastSlash(String path)
         {
-            if (path.EndsWith("/") || path.EndsWith("\\") )
-                return path.Substring(1);
+            if (path.EndsWith("/") || path.EndsWith("\\"))
+                return path.Substring(1, path.length() - 2);
 
             return path;
         }
