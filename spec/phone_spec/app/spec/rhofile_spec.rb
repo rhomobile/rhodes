@@ -2,7 +2,6 @@ describe "RhoFile" do
     
     before(:all) do
         clear()
-		
 		dir_name = Rho::RhoApplication::get_app_path('DataTemp')
 		Dir.mkdir(dir_name) unless Dir.exists?(dir_name)
     end
@@ -32,7 +31,7 @@ describe "RhoFile" do
         content.should ==  write_data1 + write_data2 
         
     end
-
+if !defined?(RHO_WP7)
     it "should binary read/write" do
         file_testname = File.join(Rho::RhoApplication::get_model_path('app', 'Data'), 'test.png')
         test_content = File.binread(file_testname)
@@ -49,17 +48,20 @@ describe "RhoFile" do
         content = File.binread(file_name)
         content.should == test_content
     end
-
+end
     def create_file_in_cache(dir_name, file, ext)
 	    # get full file path
 	    f = File.join(dir_name, "#{file}"+ "#{ext}")
         #check if file exists and return to fileName action if yes.
 	    return "exist" if File.exists?(f)
-	    
+	   
+        dd = 0    
+if !defined?(RHO_WP7)     
         # if no, get number of files in saving location. call delete action if equals 14
         files = Dir.entries(dir_name)
         #puts "files: #{files}"
 	    dd = files.size - 2 #skip . and ..
+end        
 	    if  dd == 2
 	        return "limit"
 	    else
@@ -85,9 +87,10 @@ describe "RhoFile" do
         
         res = create_file_in_cache(dir_name, "cache_test", "1")
         res.should ==  "exist" 
-        
+if !defined?(RHO_WP7)         
         res = create_file_in_cache(dir_name, "cache_test", "3")
         res.should ==  "limit" 
+end        
         
     end
 
@@ -95,18 +98,21 @@ describe "RhoFile" do
         File.exist?(Rho::RhoApplication::get_model_path('app', 'spec')).should == true if System.get_property('platform') != 'Blackberry'
         File.exist?(Rho::RhoApplication::get_blob_folder()).should ==  true 
         File.exist?( File.join( __rhoGetCurrentDir(), 'rholog.txt')).should ==  true 
-        
+   
+if !defined?(RHO_WP7)      
         bExc = false
         begin
             File.exist?(nil)
         rescue Exception => e
             bExc = e.is_a?(TypeError)
-        end
+        end        
         
         bExc.should ==  true
+end        
         File.exist?("").should == false
     end
     
+   if !defined?(RHO_WP7)   
     it "should readnonexistfile" do
         file_name = Rho::RhoFSConnector::get_app_path('app') + 'lang/lang_345'
         File.exist?(file_name).should ==  false 
@@ -122,6 +128,7 @@ describe "RhoFile" do
             end
             bExc.should ==  true
         end    
+    end
     end
     
     def clear

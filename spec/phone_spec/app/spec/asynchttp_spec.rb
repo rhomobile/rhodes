@@ -35,7 +35,7 @@ describe "AsyncHttp" do
         
         #TODO: post_test
     end
-
+if !defined?(RHO_WP7)
     it "should http download" do
 
         file_name = File.join(Rho::RhoApplication::get_base_app_path(), 'test.jpg')
@@ -79,7 +79,7 @@ describe "AsyncHttp" do
         File.exists?(file_name).should == true
         File.size(file_name).should == orig_len
     end
-
+end
     it "should http upload" do
         
         server = 'http://rhologs.heroku.com'
