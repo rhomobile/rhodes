@@ -139,7 +139,7 @@ namespace "config" do
     $wm_emulator = $app_config["wm"]["emulator"] if $app_config["wm"] and $app_config["wm"]["emulator"]
     $wm_emulator = "Windows Mobile 6 Professional Emulator" unless $wm_emulator
 
-    $use_re_runtime = (($app_config["wm"]["use_re_runtime"].nil?) ? nil : 1 )
+    $use_re_runtime = (($app_config["wm"].nil? || $app_config["wm"]["use_re_runtime"].nil?) ? nil : 1 )
     #puts $app_config["wm"]["use_re_runtime"].inspect
     #puts $use_re_runtime.inspect
   end
