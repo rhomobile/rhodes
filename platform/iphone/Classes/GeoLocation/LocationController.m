@@ -27,6 +27,8 @@ static void _TimerCallBack(CFRunLoopTimerRef timer, void* context);
 // This is a singleton class, see below
 static LocationController *sharedLC = nil;
 
+
+/*
 @interface LocationManagerInit : NSObject {}
 + (void)run;
 @end
@@ -36,19 +38,23 @@ static LocationController *sharedLC = nil;
     [[LocationController sharedInstance] initLocationManager];
 }
 @end
-
+*/
 
 @implementation LocationController
 
 @synthesize _locationManager;
-@synthesize onUpdateLocation; 
+//@synthesize onUpdateLocation; 
 
 - (bool)update{
     if (!_locationManager)
         return false;
-	if (!_locationManager.locationServicesEnabled) {
+	if (!_locationManager.locationServicesEnabled)
 		return false;
-	}
+    if (![CLLocationManager locationServicesEnabled])    
+        return false;
+    if (([CLLocationManager authorizationStatus] != kCLAuthorizationStatusAuthorized) && 
+        ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusNotDetermined) ) 
+        return false;
 	if (_timer==NULL) {
 		_timer = CFRunLoopTimerCreate(NULL,
 									  CFAbsoluteTimeGetCurrent() + timeOutInSeconds,
@@ -74,7 +80,7 @@ static LocationController *sharedLC = nil;
 	[self update];
 }
 
-- (void) initLocationManager {
+- (void) initLocationManager:(NSObject*)param {
     int timeout = rho_conf_getInt("geo_location_inactivity_timeout");
     if (timeout == 0)
         timeout = RHO_GEO_LOCATION_INACTIVITY_TIMEOUT;
@@ -87,14 +93,16 @@ static LocationController *sharedLC = nil;
 - (id) init {
 	self = [super init];
 	if (self != nil) {
-		[Rhodes performOnUiThread:[LocationManagerInit class] wait:NO];
-		
-		self.onUpdateLocation = @selector(doUpdateLocation);	
+		//[Rhodes performOnUiThread:[LocationManagerInit class] wait:YES];
+		[self performSelectorOnMainThread:@selector(initLocationManager:) withObject:nil waitUntilDone:YES];
+        
+        
+		//self.onUpdateLocation = @selector(doUpdateLocation);	
 		_dLatitude = 0;
 		_dLongitude = 0;
         _dAccuracy = 0;
 		_bKnownPosition = false;
-		
+		isErrorState = false;
     	RAWLOG_INFO("init");
 		
 	}
@@ -140,7 +148,6 @@ static LocationController *sharedLC = nil;
 	
     if ( bNotify )
         rho_geo_callcallback();
-	
 }
 
 - (double) getLatitude{
@@ -179,8 +186,22 @@ static LocationController *sharedLC = nil;
 
 - (bool) isAvailable{
 	bool res = false;
-	@synchronized(self){
-		res = _locationManager &&_locationManager.locationServicesEnabled;
+
+    //bool service_enabled = false;
+    //bool service_enabled_f = false;
+    //int auth_status = -1;
+	
+    @synchronized(self){
+
+        //if (_locationManager) {
+        //    service_enabled = _locationManager.locationServicesEnabled;
+        //    service_enabled_f = [CLLocationManager locationServicesEnabled];
+        //    auth_status = [CLLocationManager authorizationStatus];
+        //}
+		res =   _locationManager && 
+                _locationManager.locationServicesEnabled && 
+                [CLLocationManager locationServicesEnabled] && 
+                ( ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorized ) || ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusNotDetermined ) );
 	}
 	return res;
 }
@@ -188,8 +209,20 @@ static LocationController *sharedLC = nil;
 - (void)locationManager:(CLLocationManager *)manager
 	   didFailWithError:(NSError *)error
 {
-	RAWLOG_ERROR("Error reading location");
+/*    
+    if (error != nil) {
+        const char* description = [[error localizedDescription] UTF8String];
+        const char* reason = [[error localizedFailureReason] UTF8String];
+        
+        int o = 0;
+        o = 9;
+    }
+*/    
+    isErrorState = true;
+    _bKnownPosition = false;
+	RAWLOG_ERROR("Error in GeoLocation");
 	rho_geo_callcallback_error();
+    isErrorState = false;
 }
 
 + (LocationController *)sharedInstance {
@@ -232,6 +265,13 @@ static LocationController *sharedLC = nil;
     return self;
 }
 
+- (void) runUpdateInMainThread
+{
+    if (!isErrorState) {
+        [self performSelectorOnMainThread:@selector(doUpdateLocation) withObject:nil waitUntilDone:NO];
+    }
+}
+
 @end
 
 /* static */ void
@@ -244,7 +284,7 @@ void geo_update() {
     if (!rho_rhodesapp_check_mode())
         return;
     LocationController *loc = [LocationController sharedInstance];
-    [loc performSelectorOnMainThread:[loc onUpdateLocation] withObject:nil waitUntilDone:NO];
+    [loc runUpdateInMainThread];
 }
 
 double rho_geo_latitude() {
