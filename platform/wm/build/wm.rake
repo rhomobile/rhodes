@@ -370,9 +370,17 @@ namespace "device" do
     desc "Build production for device or emulator"
     task :production => ["config:wm","build:wm:rhobundle","build:wm:rhodes"] do
 
+      out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/"
+      wm_icon = $app_path + '/icon/icon.ico'
       if $use_re_runtime.nil? then
-        out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/"
         cp out_dir + "rhodes.exe", out_dir + $appname + ".exe"
+      else
+        shortcut_content = '"\\Program Files\\RERuntime\\RERuntime.exe" -approot="\\Program Files\\' + $appname + '"'
+        if File.exists? wm_icon then
+          shortcut_content = shortcut_content + '?"\\Program Files\\' + $appname + '\\rho\\icon\\icon.ico"'
+        end
+        shortcut_content = shortcut_content.length().to_s + '#' + shortcut_content
+        File.open(out_dir + $appname + ".lnk", "w") { |f| f.write(shortcut_content) }
       end
 
       chdir $builddir
@@ -397,8 +405,14 @@ namespace "device" do
         end
       end
 
+      icon_dest = $srcdir + '/icon'
+      rm_rf icon_dest
       if not $use_re_runtime.nil? then
         rm_rf $srcdir + '/lib'
+        if File.exists? wm_icon then
+          mkdir_p icon_dest if not File.exists? icon_dest
+          cp wm_icon, icon_dest
+        end
       end
 
       args = ['build_inf.js', $appname + ".inf", build_platform, '"' + $app_config["name"] +'"', $app_config["vendor"], '"' + $srcdir + '"', $hidden_app, ($webkit_capability ? "1" : "0"), $wk_data_dir, (($use_re_runtime.nil?) ? "0" : "1")]
