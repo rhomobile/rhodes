@@ -29,19 +29,23 @@
 @interface LocationController : NSObject<CLLocationManagerDelegate> {
 	CLLocationManager* _locationManager;
 	CFRunLoopTimerRef  _timer;
+    
+    bool isErrorState;
 	
 @public	
 	double _dLatitude, _dLongitude, _dAccuracy;
 	bool _bKnownPosition;
 	
-	SEL onUpdateLocation;	
+	//SEL onUpdateLocation;	
 }
 
 @property (nonatomic, retain) CLLocationManager *_locationManager;
 @property (assign) SEL onUpdateLocation;
 
-- (void) initLocationManager;
+- (void) initLocationManager:(NSObject*)param;
 - (void)  stop; 
+
+- (void)doUpdateLocation;
 
 - (double) getLatitude;
 - (double) getLongitude;

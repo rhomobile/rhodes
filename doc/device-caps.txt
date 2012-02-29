@@ -247,7 +247,15 @@ Set callback to track location changes.
 
 * callback - callback url; after the callback has been called once, it will be automatically called repeatedly with the current location coordinates passed to the callback as parameters. (You need not reset the callback within the callback.)
 * ping_gpssystem_timeout - optional, if 0 system timeout used, use to redefine timeout in sec for gps system reading
-* callback params: known_position, latitude, longitude, available, status('error', 'ok'), error_code(from RhoError), accuracy(horizontal radius in meters; iOS and Android)
+
+In callback you can receive next params :
+* known_position - 1 or 0
+* latitude
+* longitude
+* available - 1 or 0 Availability of GeoLocation (not only HW exist, but also user can turn GPS off in phone settings or not allowed GPS activity on iPhone etc.)
+* status('error', 'ok')
+* error_code(from RhoError)
+* accuracy(horizontal radius in meters; iOS and Android)
 
 **NOTE: You should call GeoLocation.set_notification only once. The current behavior of the callback is that it will be called forever until it is stopped; you need to call `GeoLocation.turnoff` to stop it. The previous behavior was that the callback was called once and needed to be reset.**
 
