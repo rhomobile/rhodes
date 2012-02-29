@@ -337,10 +337,16 @@ namespace "config" do
   end
 
   task :android => :set_android_platform do
-  
+
     Rake::Task["config:common"].invoke
 
     $java = $config["env"]["paths"]["java"]
+
+    $neon_root = nil
+    $neon_root = $config["env"]["paths"]["neon"] unless $config["env"]["paths"].nil?
+    if !($app_config["paths"].nil? or $app_config["paths"]["neon"].nil?)
+      $neon_root = $app_config["paths"]["neon"]  
+    end
 
     $androidsdkpath = $config["env"]["paths"]["android"]
     unless File.exists? $androidsdkpath
@@ -778,6 +784,7 @@ namespace "build" do
       ENV["BUILD_DIR"] ||= $startdir + "/platform/android/build"
       ENV["RHO_INC"] = $appincdir
       ENV["RHO_ANDROID_TMP_DIR"] = $tmpdir
+      ENV["NEON_ROOT"] = $neon_root unless $neon_root.nil?
 
       ext_build_files = File.join($extensionsdir, "ext_build.files")
       if File.exist? ext_build_files

@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Vector;
 
+import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.util.Utils;
 import com.rhomobile.rhodes.util.Utils.AssetsSource;
@@ -111,6 +112,22 @@ public class RhodesApplication extends Application{
                         }
                     }
                 });
+        RhodesApplication.runWhen(
+                AppState.AppActivated,
+                new StateHandler(false) {
+                    @Override
+                    public void run() {
+                        RhoExtManager.getImplementationInstance().onAppActivate(true);
+                    }
+                });
+        RhodesApplication.runWhen(
+                AppState.AppDeactivated,
+                new StateHandler(false) {
+                    @Override
+                    public void run() {
+                        RhoExtManager.getImplementationInstance().onAppActivate(false);
+                    }
+                });
 
         initClassLoader(getClassLoader());
 
@@ -154,7 +171,7 @@ public class RhodesApplication extends Application{
         }
         
         setupRhodesApp();
-        Log.i(TAG, "Initialized");
+        Logger.I(TAG, "Initialized");
     }
     private static boolean sRhodesActivityStarted = false;
 
@@ -337,14 +354,17 @@ public class RhodesApplication extends Application{
                     doneHandlers.add(handler);
                 }
             }
+            Logger.T(TAG, "Handlers gone: " + doneHandlers.size());
             mHandlers.removeAll(doneHandlers);
             return handlers;
         }
 
         public void commitObservers() {
+            Logger.T(TAG, "Commit observers");
             Vector<EventObserver> observers = new Vector<EventObserver>();
             for (EventObserver o: mObservers) {
                 if (o.isCheckOnce()) {
+                    Logger.T(TAG, o.mTag + " is gone");
                     observers.add(o);
                 }
             }
@@ -374,7 +394,6 @@ public class RhodesApplication extends Application{
         
         private static boolean appActivatedFlag = false;
         
-        private Vector<StateHandler> mHandlers = new Vector<StateHandler>();
         private String TAG;
         private StateImpl<AppEventObserver> mImpl;
         
@@ -405,7 +424,7 @@ public class RhodesApplication extends Application{
             return handlers;
         }
         
-        public synchronized void addHandler(StateHandler handler) { mHandlers.add(handler); }
+        public synchronized void addHandler(StateHandler handler) { mImpl.addHandler(handler); }
         public synchronized AppEventObserver addObserver(String tag, boolean once) {
             AppEventObserver observer = new AppEventObserver(tag, this, once);
             mImpl.addObserver(observer);
@@ -415,10 +434,10 @@ public class RhodesApplication extends Application{
 
         static public void handleState(AppState state) {
             int cnt = runHandlers(state.commit());
-            Logger.I(sAppState.TAG, "Handlers have completed: " + cnt);
+            Logger.T(sAppState.TAG, "Handlers have completed: " + cnt);
             if((state == AppStarted) && appActivatedFlag) {
                 cnt = runHandlers(AppActivated.commit());
-                Logger.I(sAppState.TAG, "Handlers have completed: " + cnt);
+                Logger.T(sAppState.TAG, "Handlers have completed: " + cnt);
             }
             return;
         }
@@ -478,7 +497,7 @@ public class RhodesApplication extends Application{
 
         static public void handleState(UiState state) {
             int cnt = runHandlers(state.commit());
-            Logger.I(sAppState.TAG, "Handlers have completed: " + cnt);
+            Logger.T(sAppState.TAG, "Handlers have completed: " + cnt);
         }
     }
 
@@ -498,6 +517,7 @@ public class RhodesApplication extends Application{
         }
         state.addHandler(handler);
         Logger.T(TAG, "AppState handler added: " + state.TAG);
+        Logger.T(TAG, "Overall handlers: " + state.mImpl.mHandlers.size());
     }
 
     public static void runWhen(UiState state, StateHandler handler) {

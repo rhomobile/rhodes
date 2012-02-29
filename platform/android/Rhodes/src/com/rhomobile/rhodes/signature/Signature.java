@@ -270,7 +270,7 @@ public class Signature implements IRhoExtension {
 	public static native void callback(String callbackUrl, String filePath, String error, boolean cancelled);
 
     @Override
-    public void onSetPropertiesData(String propId, String data, IRhoExtData ext) {
+    public void onSetPropertiesData(String propId, String data, int pos, int total, IRhoExtData ext) {
         // Nothing
     }
 

@@ -5,11 +5,26 @@ import android.view.View;
 public interface IRhoExtManager {
 
     void registerExtension(String strName, IRhoExtension ext);
-//
-//    IRhoExtension getExtByName(String strName);
+    IRhoExtension getExtByName(String strName);
 
+    /**
+     * Web view getter. In case of Motorola WebKit is used it returns object which may be directly casted to NeonEkihView
+     * @return Current web view instance from MainView
+     */
     View getWebView();
+    
+    /**
+     * RhodesActivity top level View getter
+     * @return RhodesActivity top level View
+     */
     View getTopView();
+    
+    /**
+     * 
+     * @param name - build configuration item name
+     * @return build configuration item value
+     */
+    String getBuildConfigItem(String name);
 
     void onBeforeNavigate(String url);
 

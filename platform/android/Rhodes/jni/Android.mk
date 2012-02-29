@@ -50,17 +50,14 @@ LOCAL_C_INCLUDES := \
 
 LOCAL_STATIC_LIBRARIES := \
 	ruby rhorubyext json rhomain rhocommon rhodb rhoconnect rhonet curl sqlite rholog \
-	rhocommon rhonet rhostat rhorubyext \
-	unzip
+	rhocommon rhonet rhostat rhorubyext unzip \
+	
 #barcode nfc
 
 LOCAL_LDLIBS := -llog -ldl -lz
 
 include $(BUILD_SHARED_LIBRARY)
 
-#include $(LOCAL_PATH)/../../../../lib/extensions/barcode/ext/barcode/platform/android/jni/Android.mk
-
-NDK_MODULE_PATH := $(SHARED_PATH_INC)
 $(call import-module,sqlite)
 $(call import-module,curl)
 $(call import-module,ruby)

@@ -4,11 +4,13 @@ import java.util.Hashtable;
 
 import android.view.View;
 
+import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.WebView;
 
-class RhoExtManagerImpl extends Object implements IRhoExtManager {
+public class RhoExtManagerImpl extends Object implements IRhoExtManager {
+    private static final String TAG = RhoExtManagerImpl.class.getSimpleName();
 
 	private Hashtable<String, IRhoExtension> mExtensions;
 
@@ -22,6 +24,7 @@ class RhoExtManagerImpl extends Object implements IRhoExtManager {
 		mExtensions = new Hashtable<String, IRhoExtension>();
 	}
 	
+	@Override
 	public IRhoExtension getExtByName(String strName) {
 		return mExtensions.get(strName);
 	}
@@ -42,26 +45,12 @@ class RhoExtManagerImpl extends Object implements IRhoExtManager {
     public View getTopView() {
         return RhodesActivity.safeGetInstance().getMainView().getView();
     }
-    
-    public void onSetPropertiesData(String propId, String data) {
-        for (IRhoExtension ext : mExtensions.values()) {
-            ext.onSetPropertiesData(propId, data, makeDefExtData());
-        }
-    }
 
     @Override
     public void onUnhandledProperty(String extName, String name, String value, IRhoExtData extData) {
         IRhoExtension ext = mExtensions.get(extName);
         if (ext != null) {
             ext.onSetProperty(name, value, extData);
-        }
-    }
-
-    public void onBeforeNavigate(String url) {
-        int tabIndex = WebView.activeTab();
-        for (IRhoExtension ext : mExtensions.values()) {
-            RhoExtDataImpl data = new RhoExtDataImpl(tabIndex);
-            ext.onBeforeNavigate(url, data);
         }
     }
 
@@ -72,6 +61,7 @@ class RhoExtManagerImpl extends Object implements IRhoExtManager {
 
     @Override
     public void requireRubyFile(String filePath) {
+        Logger.I(TAG, "Require ruby file: " + filePath);
         nativeRequireRubyFile(filePath);
     }
 
@@ -139,4 +129,37 @@ class RhoExtManagerImpl extends Object implements IRhoExtManager {
         // TODO Auto-generated method stub
     }
 
+    @Override
+    public String getBuildConfigItem(String name) {
+        return RhodesService.getBuildConfig(name);
+    }
+
+
+    //-----------------------------------------------------------------------------------------------------------------
+    // Rhodes implementation related methods are below
+
+    public void onSetPropertiesData(String propId, String data, int position, int total) {
+        for (IRhoExtension ext : mExtensions.values()) {
+            ext.onSetPropertiesData(propId, data, position, total, makeDefExtData());
+        }
+    }
+
+    public void onBeforeNavigate(String url) {
+        for (IRhoExtension ext : mExtensions.values()) {
+            ext.onBeforeNavigate(url, makeDefExtData());
+        }
+    }
+
+    public void onNavigateComplete(String url) {
+        for (IRhoExtension ext : mExtensions.values()) {
+            ext.onNavigateComplete(url, makeDefExtData());
+        }
+    }
+
+    public void onAppActivate(boolean isActivate) {
+        for (IRhoExtension ext : mExtensions.values()) {
+            ext.onAppActivate(isActivate, makeDefExtData());
+        }
+    }
+    
 }
