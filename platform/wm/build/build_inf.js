@@ -145,9 +145,9 @@ function get_source_disks_files(es) {
     return f;
 }
 
-function get_destination_dirs(es) {
+function get_destination_dirs(es,instdir) {
     for (var i in es) {
-        p(es[i].section+"=0,\"%InstallDir%"+"\\"+es[i].destination+"\"");
+        p(es[i].section+"=0,\"%"+instdir+"%"+"\\"+es[i].destination+"\"");
     }
 }
 
@@ -204,7 +204,8 @@ function fill_extensions_files(exts) {
     }
 }
 
-function pinf(platform,es,exts,name,vendor,show_shortcut,webkit,rhogempath,usereruntime) {
+function pinf(platform,es,exts,name,vendor,show_shortcut,is_icon,webkit,rhogempath,usereruntime) {
+    instdir = usereruntime ? "CE1%\\%AppName" : "InstallDir";
 
     p("[Version]");
     p("Signature=\"$Windows NT$\"");
@@ -213,7 +214,9 @@ function pinf(platform,es,exts,name,vendor,show_shortcut,webkit,rhogempath,usere
     p("");
     p("[CEStrings]");
     p("AppName=\""+name+"\"");
-    p("InstallDir=%CE1%\\%AppName%");
+    if (!usereruntime) {
+        p("InstallDir=%CE1%\\%AppName%");
+    }
     p("");
     p("[Strings]");
     p("Manufacturer=\""+vendor+"\"");
@@ -224,25 +227,25 @@ function pinf(platform,es,exts,name,vendor,show_shortcut,webkit,rhogempath,usere
     p("BuildMax=0xE0000000");
     p("");
     p("[DefaultInstall]");
-    if (show_shortcut){
+    if (show_shortcut && (!usereruntime)){
         p("CEShortcuts=Shortcuts");
     }
     p("AddReg=RegKeys");
-    p("CopyFiles=CopyToInstallDir"+((!usereruntime) && webkit ? ",CopyWebKitBin,CopyNPAPI,CopyConfig" : "")+get_copyfiles_sections(es));
+    p("CopyFiles=CopyToInstallDir"+((!usereruntime) && webkit ? ",CopyWebKitBin,CopyNPAPI,CopyConfig" : "")+(show_shortcut && usereruntime ? ",Shortcuts" : "")+get_copyfiles_sections(es));
     p("");
     p("[SourceDisksNames]");
-    if (!usereruntime) {
-        p("1=,\"\",,\"..\\bin\\"+settings[platform][0]+"\\rhodes\\Release\\\"");
-        if (webkit) {
-            p("2=,\"\",," + rhogempath + "\"\\\"");
-            p("3=,\"\",," + rhogempath + "\"\\NPAPI\\\"");
-            p("4=,\"\",," + rhogempath + "\"\\Config\\\"");
-        }
+    p("1=,\"\",,\"..\\bin\\"+settings[platform][0]+"\\rhodes\\Release\\\"");
+    if ((!usereruntime) && webkit) {
+        p("2=,\"\",," + rhogempath + "\"\\\"");
+        p("3=,\"\",," + rhogempath + "\"\\NPAPI\\\"");
+        p("4=,\"\",," + rhogempath + "\"\\Config\\\"");
     }
     get_source_disks_names(es);
     p("");
     p("[SourceDisksFiles]");
-    if (!usereruntime) {
+    if (usereruntime) {
+        p("\"" + name + ".lnk\"=1");
+    } else {
         p("\"" + name + ".exe\"=1");
         if (webkit) {
             p("\"eklibrary.dll\"=2");
@@ -261,15 +264,15 @@ function pinf(platform,es,exts,name,vendor,show_shortcut,webkit,rhogempath,usere
     p("");
     p("[DestinationDirs]");
     if (show_shortcut){
-        p("Shortcuts=0,%CE2%\Start Menu");
+        p("Shortcuts=0,\"%CE11%\"");
     }
-    p("CopyToInstallDir=0,\"%InstallDir%\"");
+    p("CopyToInstallDir=0,\"%"+instdir+"%\"");
     if ((!usereruntime) && webkit) {
-        p("CopyWebKitBin=0,\"%InstallDir%\"");
-        p("CopyNPAPI=0,\"%InstallDir%\\NPAPI\"");
-        p("CopyConfig=0,\"%InstallDir%\\Config\"");
+        p("CopyWebKitBin=0,\"%"+instdir+"%\"");
+        p("CopyNPAPI=0,\"%"+instdir+"%\\NPAPI\"");
+        p("CopyConfig=0,\"%"+instdir+"%\\Config\"");
     }
-    get_destination_dirs(es);
+    get_destination_dirs(es,instdir);
     p("");
     p("[CopyToInstallDir]");
     if (!usereruntime) {
@@ -298,7 +301,9 @@ function pinf(platform,es,exts,name,vendor,show_shortcut,webkit,rhogempath,usere
     if (show_shortcut){
         p("");
         p("[Shortcuts]");
-        if (!usereruntime)
+        if (usereruntime)
+            p("\"" + name + ".lnk\",\"" + name + ".lnk\",,0");
+        else
             p("\""+name+"\",0,\"" + name + ".exe\",%CE11%");
     }
     p("");
@@ -321,12 +326,18 @@ function main() {
     var args = WScript.Arguments;
     fso = new ActiveXObject("Scripting.FileSystemObject");
     output_file = fso.CreateTextFile(args(0));
+    is_icon = fso.FileExists(args(4)+"/icon/icon.ico");
+    show_shortcut = (args(5) == "0");
+    include_webkit = (args(6) == "1");
+    usereruntime = (args(8) == "1");
 
     var sources = new Object();
     sources['db'] = ["db","..\\..\\..\\platform\\shared\\db\\res\\db"];
     //sources['sqlite3']= ["sqlite3","..\\..\\shared\\sqlite3"];
-    if (args(8) != "1")
+    if (!usereruntime)
         sources['lib']= ["lib",args(4)+"/lib"];
+    else if (is_icon && show_shortcut)
+        sources['icon']= ["icon",args(4)+"/icon"];
     sources['apps']= ["apps",args(4)+"/apps"];
 
     var es = expand_sources(sources);
@@ -342,10 +353,10 @@ function main() {
     }
 
     var exts;
-    if (args(8) != "1") {
+    if (!usereruntime) {
         exts = expand_extensions(args(1));
     }
-    pinf(args(1),es,exts,args(2),args(3), (args(5) == "0"), (args(6) == "1"), args(7), (args(8) == "1"));
+    pinf(args(1),es,exts,args(2),args(3),show_shortcut,is_icon,include_webkit,args(7),usereruntime);
 
     output_file.Close();
 }
