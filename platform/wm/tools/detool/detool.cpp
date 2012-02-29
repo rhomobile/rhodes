@@ -795,7 +795,9 @@ int _tmain(int argc, _TCHAR* argv[])
 			emu_name = argv[2];
 			cab_file = argv[3];
 			app_name = argv[4];
-			log_port = argv[5];
+			//log_port = argv[5];
+			if (strcmp(T2A(argv[5]), "1") == 0)
+				use_re_runtime = true;
 			deploy_type = DEPLOY_EMUCAB;
 		}
 
@@ -816,7 +818,9 @@ int _tmain(int argc, _TCHAR* argv[])
         else {
             cab_file = argv[2];
             app_name = argv[3];
-            log_port = argv[4];
+            //log_port = argv[4];
+			if (strcmp(T2A(argv[4]), "1") == 0)
+				use_re_runtime = true;
             deploy_type = DEPLOY_DEVCAB;
         }
 	} else if (argc == 4) { // log
@@ -836,7 +840,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		usage();
 		return EXIT_FAILURE;
 	}
-	if (app_exe)
+	if ((!use_re_runtime) && app_exe)
 		use_re_runtime = wcsnicmp(app_exe, L"reruntime", 9) == 0;
 
 	TCHAR app_dir[MAX_PATH];
