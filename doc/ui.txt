@@ -162,6 +162,14 @@ In case of problems with pages transition performance just uncomment appropriate
 
 You may find it at very end of *mobileinit* handler function.
 
+#### jQueryMobile CSS issues on Windows Phone 7.0
+In case you have jQueryMobile rendering broken on Windows Phone 7.0 you need to add this tag inside of *<head>* tag in *layout.erb* file:
+
+    :::html
+    <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+
+It should fix jQueryMobile rendering problems on Windows Phone 7.0 platform.
+
 ## Loading screen
 
 Rhodes supports the display of a custom "Loading" screen while your application is launching. This screen's source is the file loading.html, located at <application-root>/app/loading.html.
