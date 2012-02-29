@@ -2,7 +2,7 @@ package com.rhomobile.rhodes.extmanager;
 
 public interface IRhoExtension {
 
-    void onSetPropertiesData(String propId, String data, IRhoExtData ext);
+    void onSetPropertiesData(String propId, String data, int pos, int total, IRhoExtData ext);
     void onSetProperty(String name, String value, IRhoExtData ext);
     void onBeforeNavigate(String urlBeingNavigatedTo, IRhoExtData ext);
     void onNavigateComplete(String urlBeingNavigatedTo, IRhoExtData ext);

@@ -29,8 +29,11 @@
 
 #include <ruby/ext/rho/rhoruby.h>
 
+#include <string>
+
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_extmanager_RhoExtManagerImpl_nativeRequireRubyFile
   (JNIEnv * env, jclass, jstring jPath)
 {
-
+    std::string path = rho_cast<std::string>(env, jPath);
+    rb_require(path.c_str());
 }

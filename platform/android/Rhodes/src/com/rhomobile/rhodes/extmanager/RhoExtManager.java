@@ -4,7 +4,7 @@ public class RhoExtManager extends Object {
 
     private static RhoExtManagerImpl ourRhoExtManager = null;
 
-    static RhoExtManagerImpl getImplementationInstance() {
+    public static RhoExtManagerImpl getImplementationInstance() {
         if (ourRhoExtManager == null) {
             ourRhoExtManager = new RhoExtManagerImpl();
         }
