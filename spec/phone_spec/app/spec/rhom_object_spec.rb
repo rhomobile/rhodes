@@ -1603,7 +1603,7 @@ end
     
   end          
 #=end  
-
+if !defined?(RHO_WP7)
   it "should not add property to freezed model" do
   
     if !$spec_settings[:schema_model]  
@@ -1614,7 +1614,7 @@ end
         #props['property'].should_not be_nil
         #props['property']['description'].should_not be_nil
     end
-
+   
     lambda { obj = getCase().new( :wrong_address => 'test') }.should raise_error(ArgumentError)
     lambda { obj = getCase().create( :wrong_address => 'test') }.should raise_error(ArgumentError)
     
@@ -1635,7 +1635,8 @@ end
     end
     
   end
-
+end
+  
   it "should add property to freezed model" do
     if !$spec_settings[:schema_model]  
         props = Rho::RhoConfig.sources()[getCase_str()]

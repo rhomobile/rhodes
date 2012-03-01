@@ -285,7 +285,14 @@ namespace fastJSON
 			success = true;
 			
 			index = lastIndex + 1;
-			return RhoRuby.createString(number);
+            long intResult;
+            double floatResult;
+            if (long.TryParse(number, out intResult))
+                return intResult;
+            else if (double.TryParse(number, out floatResult))
+                return floatResult;
+
+            return 0;
 		}
 
 		protected static int GetLastIndexOfNumber(char[] json, int index)
