@@ -98,8 +98,7 @@ end
         File.exist?(Rho::RhoApplication::get_model_path('app', 'spec')).should == true if System.get_property('platform') != 'Blackberry'
         File.exist?(Rho::RhoApplication::get_blob_folder()).should ==  true 
         File.exist?( File.join( __rhoGetCurrentDir(), 'rholog.txt')).should ==  true 
-   
-if !defined?(RHO_WP7)      
+        
         bExc = false
         begin
             File.exist?(nil)
@@ -107,8 +106,8 @@ if !defined?(RHO_WP7)
             bExc = e.is_a?(TypeError)
         end        
         
-        bExc.should ==  true
-end        
+        bExc.should ==  true  
+    
         File.exist?("").should == false
     end
     
