@@ -9,13 +9,13 @@ import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.WebView;
 
-public class RhoExtManagerImpl extends Object implements IRhoExtManager {
+public class RhoExtManagerImpl implements IRhoExtManager {
     private static final String TAG = RhoExtManagerImpl.class.getSimpleName();
 
 	private Hashtable<String, IRhoExtension> mExtensions;
 
-    private IRhoExtData makeDefExtData() {
-        return new RhoExtDataImpl(RhodesActivity.safeGetInstance().getMainView().activeTab());
+    private IRhoExtData makeDefExtData(View view) {
+        return new RhoExtDataImpl(view, RhodesActivity.safeGetInstance().getMainView().activeTab());
     }
     
     private static native void nativeRequireRubyFile(String path);
@@ -50,7 +50,7 @@ public class RhoExtManagerImpl extends Object implements IRhoExtManager {
     public void onUnhandledProperty(String extName, String name, String value, IRhoExtData extData) {
         IRhoExtension ext = mExtensions.get(extName);
         if (ext != null) {
-            ext.onSetProperty(name, value, extData);
+            ext.onSetProperty(this, name, value, extData);
         }
     }
 
@@ -74,10 +74,6 @@ public class RhoExtManagerImpl extends Object implements IRhoExtManager {
     public void executeJavascript(String jsFunction) {
         WebView.executeJs(jsFunction, WebView.activeTab());
     }
-
-//    @Override
-//    public void rhoLog(int nSeverity, String szModule, String szMsg, String szFile, int nLine) {
-//    }
 
     @Override
     public String getCurrentUrl() {
@@ -138,28 +134,101 @@ public class RhoExtManagerImpl extends Object implements IRhoExtManager {
     //-----------------------------------------------------------------------------------------------------------------
     // Rhodes implementation related methods are below
 
-    public void onSetPropertiesData(String propId, String data, int position, int total) {
+    public void onSetPropertiesData(View view,String propId, String data, int position, int total) {
         for (IRhoExtension ext : mExtensions.values()) {
-            ext.onSetPropertiesData(propId, data, position, total, makeDefExtData());
+            ext.onSetPropertiesData(this, propId, data, position, total, makeDefExtData(view));
         }
     }
 
-    public void onBeforeNavigate(String url) {
+    public void onBeforeNavigate(View view, String url) {
         for (IRhoExtension ext : mExtensions.values()) {
-            ext.onBeforeNavigate(url, makeDefExtData());
+            ext.onBeforeNavigate(this, url, makeDefExtData(view));
         }
     }
 
-    public void onNavigateComplete(String url) {
+    public void onNavigateComplete(View view, String url) {
         for (IRhoExtension ext : mExtensions.values()) {
-            ext.onNavigateComplete(url, makeDefExtData());
+            ext.onNavigateComplete(this, url, makeDefExtData(view));
         }
     }
 
     public void onAppActivate(boolean isActivate) {
         for (IRhoExtension ext : mExtensions.values()) {
-            ext.onAppActivate(isActivate, makeDefExtData());
+            ext.onAppActivate(this, isActivate);
         }
     }
+
+    public void onAlert(View view, String msg) {
+        for (IRhoExtension ext : mExtensions.values()) {
+            ext.onAlert(this, msg, makeDefExtData(view));
+        }
+    }
+
+    public void onConfirm(View view, String msg) {
+        for (IRhoExtension ext : mExtensions.values()) {
+            ext.onConfirm(this, msg, makeDefExtData(view));
+        }
+    }
+
+    public void onConsole(View view, String msg) {
+        for (IRhoExtension ext : mExtensions.values()) {
+            ext.onConsole(this, msg, makeDefExtData(view));
+        }
+    }
+
+    public void onInputMethod(View view, boolean enabled) {
+        for (IRhoExtension ext : mExtensions.values()) {
+            ext.onInputMethod(this, enabled, makeDefExtData(view));
+        }
+    }
+
+    public void onLoadEnd(View view, String url, long arg2, long arg3) {
+        for (IRhoExtension ext : mExtensions.values()) {
+            ext.onNavigateComplete(this, url, makeDefExtData(view));
+        }
+    }
+
+    public void onLoadError(View view) {
+        for (IRhoExtension ext : mExtensions.values()) {
+            ext.onNavigateError(this, "", makeDefExtData(view));
+        }
+    }
+
+    public void onLoadProgress(View view, int val, int total) {
+        for (IRhoExtension ext : mExtensions.values()) {
+            ext.onNavigateProgress(this, "", val, total, makeDefExtData(view));
+        }
+    }
+
+    public void onMetaEnd(View view) {
+        for (IRhoExtension ext : mExtensions.values()) {
+            ext.onSetPropertiesDataEnd(this, makeDefExtData(view));
+        }
+    }
+
+    public void onPrompt(View view, String prompt, String arg2) {
+        for (IRhoExtension ext : mExtensions.values()) {
+            ext.onConfirm(this, prompt, makeDefExtData(view));
+        }
+    }
+
+    public void onSelect(View view, String[] lines, int pos) {
+        for (IRhoExtension ext : mExtensions.values()) {
+            ext.onSelect(this, lines, pos, makeDefExtData(view));
+        }
+    }
+
+    public void onStatus(View view, String msg) {
+        for (IRhoExtension ext : mExtensions.values()) {
+            ext.onStatus(this, msg, makeDefExtData(view));
+        }
+    }
+
+    public void onTitle(View view, String title) {
+        for (IRhoExtension ext : mExtensions.values()) {
+            ext.onStatus(this, title, makeDefExtData(view));
+        }
+    }
+
     
 }

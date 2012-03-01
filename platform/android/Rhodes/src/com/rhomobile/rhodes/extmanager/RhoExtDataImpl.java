@@ -1,18 +1,21 @@
 package com.rhomobile.rhodes.extmanager;
 
+import android.view.View;
+
 class RhoExtDataImpl implements IRhoExtData {
 	
-	private int mTabIndex;
+	View mWebView;
+    private int mTabIndex;
 	
-	public RhoExtDataImpl(int tabIndex) {
+	public RhoExtDataImpl(View view, int tabIndex) {
+	    mWebView = view;
 		mTabIndex = tabIndex;
 	}
 	
 	public int getTabIndex() {
 		return mTabIndex;
 	}
-	
-	public void setTabIndex(int tab_index) {
-		mTabIndex = tab_index;
+	public View getWebView() {
+	    return mWebView;
 	}
 }

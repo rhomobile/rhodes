@@ -27,13 +27,9 @@
 package com.rhomobile.rhodes.signature;
 
 import java.io.File;
-import java.util.Enumeration;
 import java.util.Map;
-import java.util.Vector;
 
 import android.content.Intent;
-import android.text.method.HideReturnsTransformationMethod;
-import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.AbsoluteLayout;
@@ -47,12 +43,13 @@ import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
 
+import com.rhomobile.rhodes.extmanager.AbstractRhoExtension;
 import com.rhomobile.rhodes.extmanager.IRhoExtData;
 import com.rhomobile.rhodes.extmanager.IRhoExtension;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 
-public class Signature implements IRhoExtension {
+public class Signature extends AbstractRhoExtension implements IRhoExtension {
 
 	static final String TAG = "Signature";
 	
@@ -89,7 +86,7 @@ public class Signature implements IRhoExtension {
 		
 		public void run() {
 			init();
-			RhodesActivity ra = RhodesActivity.getInstance();
+			RhodesActivity ra = RhodesActivity.safeGetInstance();
 			Intent intent = new Intent(ra, klass);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "callback", getSharedInstance().mProperties.callbackUrl);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "imageFormat", getSharedInstance().mProperties.imageFormat);
@@ -143,9 +140,13 @@ public class Signature implements IRhoExtension {
 		callback(callbackUrl, fp, "", fp.length() == 0);
 	}
 
-	public static void inline_signature_visible(int visible, Object params) {
-		if (visible == 0) {
-			inline_signature_hide();
+    public static void inline_signature_visible(boolean visible, Object params) {
+        inlineSignatureVisible(RhoExtManager.getInstance(), visible, params);
+    }
+
+    public static void inlineSignatureVisible(final IRhoExtManager extManager, boolean visible, Object params) {
+		if (!visible) {
+			inlineSignatureHide(extManager);
 			return;
 		}
 		
@@ -155,7 +156,7 @@ public class Signature implements IRhoExtension {
 			public void run() {
 				reportMsg(" $$$ Start make of Signature View");
 				
-				ViewGroup wv = (WebView)RhodesService.getInstance().getMainView().getWebView(-1).getView();
+				ViewGroup wv = (ViewGroup)extManager.getWebView();
 				if ((wv != null) && (ourInlineSignatureView != null)) {
 					wv.removeView(ourInlineSignatureView);
 					ourInlineSignatureView = null;
@@ -196,10 +197,14 @@ public class Signature implements IRhoExtension {
 		if (ourInlineSignatureView != null) {
 			ImageCapture.takeSignature(callback_url, getSharedInstance().mProperties.imageFormat, ourInlineSignatureView.makeBitmap());
 		}
-		inline_signature_hide();
+		inlineSignatureHide(RhoExtManager.getInstance());
 	}
 	
 	public static void inline_signature_clear() {
+	    inlineSignatureClear(RhoExtManager.getInstance());
+	}
+	
+	public static void inlineSignatureClear(IRhoExtManager extmanager) {
 		PerformOnUiThread.exec( new Runnable () {
 			public void run() {
 				if (ourInlineSignatureView != null) {
@@ -215,11 +220,11 @@ public class Signature implements IRhoExtension {
 		});
 	}
 	
-	public static void inline_signature_hide() {
+	public static void inlineSignatureHide(final IRhoExtManager extManager) {
 		PerformOnUiThread.exec( new Runnable () {
 			public void run() {
 				if (ourInlineSignatureView != null) {
-					ViewGroup wv = (WebView)RhodesService.getInstance().getMainView().getWebView(-1).getView();
+					ViewGroup wv = (ViewGroup)extManager.getWebView();
 					if (wv != null) {
 						wv.removeView(ourInlineSignatureView);
 						ourInlineSignatureView = null;
@@ -230,11 +235,12 @@ public class Signature implements IRhoExtension {
 	}
 	
 	@Override
-	public void onBeforeNavigate(String url, IRhoExtData data) {
-		inline_signature_hide();
+	public void onBeforeNavigate(IRhoExtManager extManager, String url, IRhoExtData data) {
+		inlineSignatureHide(extManager);
 	}
 	
-	public void onSetProperty(String name, String value, IRhoExtData data) {
+	@Override
+	public void onSetProperty(IRhoExtManager extManager, String name, String value, IRhoExtData data) {
 		if ((name == null) || (value == null)) {
 			return;
 		}
@@ -242,16 +248,16 @@ public class Signature implements IRhoExtension {
 		if ("Visibility".equalsIgnoreCase(name)) {
 			if ("Visible".equalsIgnoreCase(value)) {
 				// show
-				inline_signature_visible(1, null);
+				inlineSignatureVisible(extManager, true, null);
 			}
 			else {
 				// hide;
-				inline_signature_hide();
+				inlineSignatureHide(extManager);
 			}
 		}
 		else if ("Clear".equalsIgnoreCase(name)) {
 			// clear
-			inline_signature_clear();
+			inlineSignatureClear(extManager);
 		}
 	}
 	
@@ -269,38 +275,6 @@ public class Signature implements IRhoExtension {
 	
 	public static native void callback(String callbackUrl, String filePath, String error, boolean cancelled);
 
-    @Override
-    public void onSetPropertiesData(String propId, String data, int pos, int total, IRhoExtData ext) {
-        // Nothing
-    }
-
-    @Override
-    public void onNavigateComplete(String urlBeingNavigatedTo, IRhoExtData ext) {
-    }
-
-    @Override
-    public void onDocumentComplete(String urlOfDocument, IRhoExtData ext) {
-    }
-
-    @Override
-    public long onNavigateTimeout(String urlBeingNavigatedTo, IRhoExtData ext) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public long onSIPState(boolean bSIPState, IRhoExtData ext) {
-        return 0;
-    }
-
-    @Override
-    public long onNavigateError(String urlBeingNavigatedTo, IRhoExtData ext) {
-        return 0;
-    }
-
-    @Override
-    public void onAppActivate(boolean bActivate, IRhoExtData ext) {
-    }
 }
 
 

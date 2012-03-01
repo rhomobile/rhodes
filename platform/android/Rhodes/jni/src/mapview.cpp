@@ -24,14 +24,13 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
+#include <genconfig.h>
 #include "rhodes/JNIRhodes.h"
 
 #include "rhodes/JNIRhoRuby.h"
 
 #include <common/rhoparams.h>
 #include <common/map/MapEngine.h>
-
-#include <genconfig.h>
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "AndroidMapEngine"

@@ -51,14 +51,14 @@ public class RhoWebViewClient extends WebViewClient
     
     @Override
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
-        
-        RhoExtManager.getInstance().onBeforeNavigate(url);
+        super.onPageStarted(view, url, favicon);
         
         if (RhodesActivity.ENABLE_LOADING_INDICATION)
             RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 0);
         else
             RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, RhodesActivity.MAX_PROGRESS);
-        super.onPageStarted(view, url, favicon);
+
+        RhoExtManager.getImplementationInstance().onBeforeNavigate(view, url);
     }
     
     @Override
@@ -69,11 +69,18 @@ public class RhoWebViewClient extends WebViewClient
         RhodesActivity.safeGetInstance().getWindow().setFeatureInt(
                     Window.FEATURE_PROGRESS, RhodesActivity.MAX_PROGRESS);
         
+        RhoExtManager.getImplementationInstance().onLoadEnd(view, url, 0, 0);
+        
         super.onPageFinished(view, url);
     }
     
-    public void onReceivedError(android.webkit.WebView view, int errorCode, java.lang.String description, java.lang.String failingUrl)
+    @Override
+    public void onReceivedError(WebView view, int errorCode, String description, String failingUrl)
     {
+        super.onReceivedError(view, errorCode, description, failingUrl);
+        
+        RhoExtManager.getImplementationInstance().onLoadError(view);
+        
         StringBuilder msg = new StringBuilder(failingUrl);
         msg.append(" failed: ");
         msg.append(errorCode);
