@@ -77,7 +77,7 @@ RHO_GLOBAL void rho_signature_take(char* callback_url, rho_param* p)
     
 }
 
-RHO_GLOBAL void rho_signature_visible(bool b, rho_param* p)
+RHO_GLOBAL void rho_signature_visible(bool visible, rho_param* p)
 {
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_SIGNATURE);
@@ -85,9 +85,6 @@ RHO_GLOBAL void rho_signature_visible(bool b, rho_param* p)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "inline_signature_visible", "(ILjava/lang/Object;)V");
     if (!mid) return;
 
-    int visible = 0;
-    if (b) visible = 1;
-    
     jobject paramsObj = RhoValueConverter(env).createObject(p);
     env->CallStaticVoidMethod(cls, mid, visible, paramsObj);
     env->DeleteLocalRef(paramsObj);

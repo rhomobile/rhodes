@@ -98,6 +98,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebSettingsOld.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebViewClient.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/IRhoWebView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/GoogleWebView.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/AbstractRhoExtension.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoExtData.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoExtension.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoExtManager.java
