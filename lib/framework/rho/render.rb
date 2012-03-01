@@ -128,12 +128,16 @@ module Rho
       action = options[:action] if options[:action]
       action = @request['action'].nil? ? default_action : @request['action'] unless action
 
-      if $".include?( "rhodes_translator") and @request['model'] != nil
+      if @request['model'] != nil
         model = nil
         model = Object.const_get(@request['model'].to_sym) if Object.const_defined?(@request['model'].to_sym)
         if model && model.respond_to?( :metadata ) and model.metadata != nil
+          if $".include?( "rhodes_translator")
             metaenabled = model.metadata[action.to_s] != nil
-        end    
+          else
+            rho_error( "unable to load rhodes_translator gem." )
+          end
+        end
       end
 
       if not options[:string].nil?
