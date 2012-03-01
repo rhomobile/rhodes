@@ -130,7 +130,11 @@ module Rho
 
       if @request['model'] != nil
         model = nil
-        model = Object.const_get(@request['model'].to_sym) if Object.const_defined?(@request['model'].to_sym)
+        begin
+            model = Object.const_get(@request['model'].to_sym) if Object.const_defined?(@request['model'].to_sym)
+        rescue Exception => e
+        end
+            
         if model && model.respond_to?( :metadata ) and model.metadata != nil
           if $".include?( "rhodes_translator")
             metaenabled = model.metadata[action.to_s] != nil
