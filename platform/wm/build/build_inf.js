@@ -145,9 +145,9 @@ function get_source_disks_files(es) {
     return f;
 }
 
-function get_destination_dirs(es,instdir) {
+function get_destination_dirs(es) {
     for (var i in es) {
-        p(es[i].section+"=0,\"%"+instdir+"%"+"\\"+es[i].destination+"\"");
+        p(es[i].section+"=0,\"%InstallDir%"+"\\"+es[i].destination+"\"");
     }
 }
 
@@ -205,8 +205,6 @@ function fill_extensions_files(exts) {
 }
 
 function pinf(platform,es,exts,name,vendor,show_shortcut,is_icon,webkit,rhogempath,usereruntime) {
-    instdir = usereruntime ? "CE1%\\%AppName" : "InstallDir";
-
     p("[Version]");
     p("Signature=\"$Windows NT$\"");
     p("Provider=\""+vendor+"\"");
@@ -214,9 +212,7 @@ function pinf(platform,es,exts,name,vendor,show_shortcut,is_icon,webkit,rhogempa
     p("");
     p("[CEStrings]");
     p("AppName=\""+name+"\"");
-    if (!usereruntime) {
-        p("InstallDir=%CE1%\\%AppName%");
-    }
+    p("InstallDir=%CE1%\\%AppName%");
     p("");
     p("[Strings]");
     p("Manufacturer=\""+vendor+"\"");
@@ -266,13 +262,13 @@ function pinf(platform,es,exts,name,vendor,show_shortcut,is_icon,webkit,rhogempa
     if (show_shortcut){
         p("Shortcuts=0,\"%CE11%\"");
     }
-    p("CopyToInstallDir=0,\"%"+instdir+"%\"");
+    p("CopyToInstallDir=0,\"%InstallDir%\"");
     if ((!usereruntime) && webkit) {
-        p("CopyWebKitBin=0,\"%"+instdir+"%\"");
-        p("CopyNPAPI=0,\"%"+instdir+"%\\NPAPI\"");
-        p("CopyConfig=0,\"%"+instdir+"%\\Config\"");
+        p("CopyWebKitBin=0,\"%InstallDir%\"");
+        p("CopyNPAPI=0,\"%InstallDir%\\NPAPI\"");
+        p("CopyConfig=0,\"%InstallDir%\\Config\"");
     }
-    get_destination_dirs(es,instdir);
+    get_destination_dirs(es);
     p("");
     p("[CopyToInstallDir]");
     if (!usereruntime) {
