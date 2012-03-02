@@ -28,6 +28,7 @@
 #import <Foundation/Foundation.h>
 #import "RhoDelegate.h"
 #import "DateTime.h"
+#import "DateTimePickerViewController.h"
 
 @interface DateTimePickerDelegate : RhoDelegate <UIPickerViewDelegate>
 {
@@ -37,6 +38,7 @@
     UIToolbar *toolbar;
     UILabel *barLabel;
     DateTime *dateTime;
+    DateTimePickerViewController* dt_controller;
 }
 
 @property (nonatomic, retain) DateTime *dateTime;

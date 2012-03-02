@@ -349,7 +349,8 @@ static Rhodes *instance = NULL;
                 picker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
             }
             
-            [window addSubview:picker.view];
+            //[window addSubview:picker.view];
+            [[mainView getMainViewController] presentModalViewController:picker animated:NO];
         }
     } @catch(NSException* theException) {
         RAWLOG_ERROR2("startCameraPickerFromViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
