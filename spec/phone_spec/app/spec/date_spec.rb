@@ -67,11 +67,13 @@ end
     puts "res : #{res.day}"
 
     res = to_day2-to_day
-    
-if !defined? RHO_ME && !defined?(RHO_WP7)  
-    res.to_s.should == "365/1"
+
+if defined? RHO_ME
+    res.to_s.should == "365"        
+elsif defined?(RHO_WP7) 
+    res.to_s.should == "365"           
 else
-    res.to_s.should == "365"    
+    res.to_s.should == "365/1"
 end
     
     puts "res : #{res}"
