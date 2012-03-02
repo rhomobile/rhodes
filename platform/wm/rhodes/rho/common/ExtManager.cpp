@@ -121,6 +121,42 @@ void CExtManager::executeRubyCallback( const char* szCallback, const char* szCal
     RHODESAPP().callCallbackWithData(szCallback, szCallbackBody, szCallbackData, bWaitForResponse );
 }
 
+extern "C" VALUE rjson_tokener_parse(const char *str, char** pszError );
+
+class CJsonResponse : public rho::ICallbackObject
+{
+    CExtManager* m_pExtManager;
+    String m_strJson;
+public:
+    CJsonResponse(const char* szJson, CExtManager* pExtManager) : m_strJson(szJson), m_pExtManager(pExtManager) { }
+    virtual unsigned long getObjectValue()
+    {
+        return m_pExtManager->parseJsonToRubyHash(m_strJson.c_str());
+    }
+};
+
+void CExtManager::executeRubyCallbackWithJsonBody( const char* szCallback, const char* szCallbackBody, const char* szCallbackData, bool bWaitForResponse)
+{
+    String strBody;
+    strBody = RHODESAPP().addCallbackObject( new CJsonResponse( szCallbackBody, this ), "__rho_inline" );
+
+    RHODESAPP().callCallbackWithData(szCallback, strBody, szCallbackData, bWaitForResponse );
+}
+
+unsigned long CExtManager::parseJsonToRubyHash(const char* szJson)
+{
+    char* szError = 0;
+    unsigned long valBody = rjson_tokener_parse(szJson, &szError);
+    if ( valBody != 0 )
+        return valBody;
+
+    LOG(ERROR) + "Incorrect json body.Error:" + (szError ? szError : "");
+    if ( szError )
+        free(szError);
+
+    return rho_ruby_get_NIL();
+}
+
 void CExtManager::navigate(const wchar_t* szUrl)
 {
     ::PostMessage( getMainWnd(), WM_COMMAND, IDM_NAVIGATE, (LPARAM)_wcsdup(szUrl) );

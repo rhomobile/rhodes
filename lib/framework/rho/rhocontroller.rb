@@ -61,7 +61,11 @@ module Rho
         hashObjs = params['__rho_object']
         
         hashObjs.each do |name,index|
-            params[name] = __rhoGetCallbackObject(index.to_i())
+            if name == '__rho_inline'
+                params.merge!( __rhoGetCallbackObject(index.to_i()) )
+            else
+                params[name] = __rhoGetCallbackObject(index.to_i())
+            end    
         end
         
         params.delete('__rho_object')

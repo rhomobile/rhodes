@@ -66,7 +66,10 @@ struct IRhoExtManager
 
     virtual void onUnhandledProperty( const wchar_t* pModuleName, const wchar_t* pName, const wchar_t* pValue, const CRhoExtData& oExtData ) = 0;
     virtual void executeRubyCallback( const char* szCallback, const char* szCallbackBody, const char* szCallbackData, bool bWaitForResponse) = 0;
+    virtual void executeRubyCallbackWithJsonBody( const char* szCallback, const char* szCallbackBody, const char* szCallbackData, bool bWaitForResponse) = 0;
+
     virtual void requireRubyFile( const char* szFilePath ) = 0;
+    virtual unsigned long parseJsonToRubyHash(const char* szJson)=0;
 
     virtual void navigate(const wchar_t* szUrl) = 0;
     virtual bool existsJavascript(const wchar_t* szJSFunction) = 0;
@@ -118,8 +121,12 @@ public:
     //IRhoExtManager
     virtual void onUnhandledProperty( const wchar_t* pModuleName, const wchar_t* pName, const wchar_t* pValue, const CRhoExtData& oExtData );
     virtual void executeRubyCallback( const char* szCallback, const char* szCallbackBody, const char* szCallbackData, bool bWaitForResponse);
+    virtual void executeRubyCallbackWithJsonBody( const char* szCallback, const char* szCallbackBody, const char* szCallbackData, bool bWaitForResponse);
+
     virtual void navigate(const wchar_t* szUrl);
     virtual void requireRubyFile( const char* szFilePath );
+    virtual unsigned long parseJsonToRubyHash(const char* szJson);
+
     virtual void executeJavascript(const wchar_t* szJSFunction);
     virtual bool existsJavascript(const wchar_t* szJSFunction);
     virtual void rhoLog(int nSeverity, const char* szModule, const char* szMsg, const char* szFile, int nLine);
