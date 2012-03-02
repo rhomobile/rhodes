@@ -527,7 +527,7 @@ class Jake
   end
 
   def self.zip_upgrade_bundle(folder_path, zip_file_path)
-     
+
       File.delete(zip_file_path) if File.exists?(zip_file_path)
 
       currentdir = Dir.pwd()
@@ -545,7 +545,7 @@ class Jake
           Zip::ZipFile.open(zip_file_path, Zip::ZipFile::CREATE)do |zipfile|
             Find.find("RhoBundle") do |path|
               Find.prune if File.basename(path)[0] == ?.
-              next if path.start_with?("RhoBundle/lib") || path.start_with?("RhoBundle/db")
+              next if path.start_with?("RhoBundle/lib") || path.start_with?("RhoBundle/db") || path == 'RhoBundle/hash' || path = 'RhoBundle/name'
               
               puts "add to zip : #{path}"
               zipfile.add(path, path)
@@ -559,16 +559,17 @@ class Jake
       else
         #chdir folder_path
         temp_dir = folder_path + '_tmp'
-        cp_r folder_path, temp_dir
+        mkdir_p temp_dir
+        cp_r 'RhoBundle', temp_dir
         chdir temp_dir         
-        rm_rf File.join(temp_dir, 'RhoBundle/lib')         
-        rm_rf File.join(temp_dir, 'RhoBundle/db')         
-        rm_rf File.join(temp_dir, 'RhoBundle/hash')         
-        rm_rf File.join(temp_dir, 'RhoBundle/name')         
+        rm_rf File.join(temp_dir, 'RhoBundle/lib')
+        rm_rf File.join(temp_dir, 'RhoBundle/db')
+        rm_rf File.join(temp_dir, 'RhoBundle/hash')
+        rm_rf File.join(temp_dir, 'RhoBundle/name')
         sh %{zip -r temporary_archive.zip .}
         cp_r 'temporary_archive.zip', zip_file_path
-        rm_rf 'temporary_archive.zip'          
-        rm_rf temp_dir          
+        rm_rf 'temporary_archive.zip'
+        rm_rf temp_dir
       end
       
       Dir.chdir currentdir

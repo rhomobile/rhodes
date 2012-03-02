@@ -1467,6 +1467,16 @@ namespace "build" do
       end
     end
 
+    task :upgrade_package => :rhobundle do
+        #puts '$$$$$$$$$$$$$$$$$$'
+        #puts 'targetdir = '+$targetdir.to_s
+        #puts 'bindir = '+$bindir.to_s
+        android_targetdir = File.join($targetdir, 'android')
+        mkdir_p android_targetdir if not File.exists? android_targetdir
+        zip_file_path = File.join(android_targetdir, 'upgrade_bundle.zip')
+        Jake.zip_upgrade_bundle($bindir, zip_file_path)
+    end    
+    
     #desc "build all"
     task :all => [:rhobundle, :rhodes]
   end
