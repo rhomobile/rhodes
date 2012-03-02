@@ -55,56 +55,30 @@ describe "BlobSync_test" do
     Rho::RhoConfig.bulksync_state='1'    
   end
 
-  it "should sync BlobTest" do
-    SyncEngine.logged_in.should == 1
-  
-    res = ::Rho::RhoSupport::parse_query_parameters getBlobTest.sync( "/app/Settings/sync_notify")
-    res['status'].should == 'ok'
-    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-  end
 
-  it "should delete all Test Blobs" do
-    SyncEngine.logged_in.should == 1
-  
-    items = getBlobTest.find(:all ) #, :conditions => {:name => 'BlobTestItem'})
-    items.should_not == nil
-    
-    items.each do |item|
-        file_name = File.join(Rho::RhoApplication::get_blob_path(item.image_uri))
-        File.exists?(file_name).should == true
-        item.destroy
-        File.exists?(file_name).should == false
-    end    
-
-    getBlobTest.sync( "/app/Settings/sync_notify")
-    sleep(2) #wait till sync server update data
-    
-    res = ::Rho::RhoSupport::parse_query_parameters getBlobTest.sync( "/app/Settings/sync_notify")
-    res['status'].should == 'ok'
-    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-    
-    item2 = getBlobTest.find(:first ) #, :conditions => {:name => 'BlobTestItem'})
-    item2.should == nil
-  end
 
   def copy_file(src, dst_dir)
+if !defined?(RHO_WP7)  
     content = File.binread(src)  
+else
+    content = File.read(src)  
+end    
     File.open(File.join( dst_dir, File.basename(src) ), "wb"){|f| f.write(content) }
   end
   
-  if !defined?(RHO_WP7)
   it "should create new BlobTest" do
     SyncEngine.logged_in.should == 1
 
     file_name = File.join(Rho::RhoApplication::get_model_path('app',getBlobTest_str()), 'test.png')
     copy_file(file_name, Rho::RhoApplication::get_blob_folder() )
     file_name = File.join(Rho::RhoApplication::get_blob_folder(), 'test.png')
-    
+if !defined?(RHO_WP7)   
     file_size = File.size(file_name)
+end    
     file_content = File.read(file_name)
     
     item = getBlobTest.new
-    #item.name = 'BlobTestItem'
+    item.name = 'BlobTestItem'
     item.image_uri = file_name
     item.save
     getBlobTest.sync( "/app/Settings/sync_notify")
@@ -120,7 +94,9 @@ describe "BlobSync_test" do
     
     items[0].image_uri.should_not == file_name
     new_file_name = File.join(Rho::RhoApplication::get_blob_path(items[0].image_uri))
+if !defined?(RHO_WP7)    
     File.size(new_file_name).should == file_size
+end    
     content_new = File.read(new_file_name)
     content_new.should == file_content
     
@@ -162,7 +138,6 @@ describe "BlobSync_test" do
 #    content_new.should == file_content
     
   end
-end
 
   it "should logout" do
     SyncEngine.logout()

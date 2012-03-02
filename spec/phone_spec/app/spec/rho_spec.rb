@@ -39,14 +39,12 @@ describe "RhoConfig" do
     Rho::RhoConfig.options_path = '/app/Settings'
   end
   
-if !defined?(RHO_WP7)
   it "should populate configuration in sources table" do
     sources = ::Rho::RHO.get_user_db().select_from_table('sources','*')
     sources.size.should == 0
     
     Rho::RhoConfig.sources().size.should > 0
   end
-end
   
   it "should have start_path" do
     Rho::RhoConfig.start_path.should == '/app'
@@ -117,7 +115,6 @@ describe "RhoError" do
 
 end
 
-if !defined?(RHO_WP7)
 describe "RhomSource" do
 
   it "should find first source" do
@@ -154,7 +151,6 @@ describe "RhomSource" do
   end
 
 end
-end
 
 describe "RhoRuby" do
 
@@ -175,7 +171,6 @@ describe "RhoRuby" do
     val[10].should == '9'
 =end          
   end
-
 if !defined?(RHO_WP7)
   it "should support encoding" do
     "Utf8 String".force_encoding( Encoding::UTF_8 )
@@ -321,7 +316,7 @@ if !defined?(RHO_WP7)
     res = (1..6).group_by {|i| i%3}
     res.should == {0=>[3, 6], 1=>[1, 4], 2=>[2, 5]}
   end
-end
+end  
 
   it "should split with regex"  do
     str = "http://www.abc.com/abc/servlet/SearchServlet?act=viewDetail&amp;LanguageCountry=en_US&amp;searchLang=en_US&amp;caseLang=en_US&amp;orgPrefix=NCMC&amp;caseNum=1234567&amp;seqNum=1"
