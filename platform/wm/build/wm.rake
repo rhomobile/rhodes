@@ -389,22 +389,6 @@ namespace "device" do
       build_platform = 'wm653' if $sdk == "Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
       build_platform = 'ce5' if $sdk == "MC3000c50b (ARMV4I)"
 
-      if $webkit_capability and ($wk_data_dir != nil) and ($use_re_runtime.nil?)
-        wk_config_dir = $wk_data_dir + "/Config"
-        config_files = ['Config','Plugin','RegEx']
-        config_files.each do |filename|
-          filepath = File.join(wk_config_dir,filename + ".xml.template")
-          if not File.exists?(filepath)
-            puts "Cannot find required config template: #{filepath}"
-            exit 1
-          end
-          template = File.read(filepath)
-          config = template.to_s.gsub('(%APPNAME%)',$app_config["name"]);
-          filepath = File.join(wk_config_dir,filename + ".xml")
-          File.open(filepath, "w") { |f| f.write(config) }
-        end
-      end
-
       icon_dest = $srcdir + '/icon'
       rm_rf icon_dest
       if not $use_re_runtime.nil? then
