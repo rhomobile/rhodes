@@ -1827,11 +1827,11 @@ static VALUE mWebView;
 
 extern void rho_webview_refresh(int index);
 #define refresh rho_webview_refresh 
-extern void rho_webview_navigate(const char* url, int index);
+extern void rho_webview_navigate(const char* url, int tab_index);
 #define navigate rho_webview_navigate
 extern char* rho_webview_current_location(int index);
 #define current_location rho_webview_current_location
-extern char* rho_webview_execute_js(const char* js, int index);
+extern char* rho_webview_execute_js(const char* js, int tab_index);
 #define execute_js rho_webview_execute_js
 extern void rho_webview_set_menu_items(VALUE argv);
 #define set_menu_items rho_webview_set_menu_items
