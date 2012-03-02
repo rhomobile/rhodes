@@ -64,7 +64,9 @@ CRhoExtData CExtManager::makeExtData()
     CRhoExtData oData;
     oData.m_hWnd = getMainWnd();
     oData.m_hInstance = rho_wmimpl_get_appinstance();
+#ifndef RHODES_EMULATOR
     oData.m_hBrowserWnd = getAppWindow().getWebKitEngine()->GetHTMLWND();
+#endif
 
     oData.m_iTabIndex = rho_webview_active_tab();
     return oData;

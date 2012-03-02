@@ -89,7 +89,16 @@ const char* rho_webview_execute_js(const char* js, int index)
     //rho_webview_navigate(strJS.c_str(), index);
     StringW strJsW;
     convertToStringW(js, strJsW);
+
+#ifdef RHODES_EMULATOR
+    TNavigateData* nd = (TNavigateData*)malloc(sizeof(TNavigateData));
+    nd->index = index;
+    nd->url = _tcsdup(strJsW.c_str());
+    ::PostMessage( getMainWnd(), WM_COMMAND, IDM_EXECUTEJS, (LPARAM)nd );
+#else
     ::PostMessage( getMainWnd(), WM_COMMAND, IDM_EXECUTEJS, (LPARAM)_tcsdup(strJsW.c_str()) );
+#endif
+
 	return "";
 }
 
