@@ -204,7 +204,7 @@ function fill_extensions_files(exts) {
     }
 }
 
-function pinf(platform,es,exts,name,vendor,show_shortcut,is_icon,webkit,rhogempath,usereruntime) {
+function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,rhogempath,usereruntime) {
     p("[Version]");
     p("Signature=\"$Windows NT$\"");
     p("Provider=\""+vendor+"\"");
@@ -230,11 +230,15 @@ function pinf(platform,es,exts,name,vendor,show_shortcut,is_icon,webkit,rhogempa
     p("CopyFiles=CopyToInstallDir"+((!usereruntime) && webkit ? ",CopyWebKitBin,CopyNPAPI,CopyConfig" : "")+(show_shortcut && usereruntime ? ",Shortcuts" : "")+get_copyfiles_sections(es));
     p("");
     p("[SourceDisksNames]");
-    p("1=,\"\",,\"..\\bin\\"+settings[platform][0]+"\\rhodes\\Release\\\"");
-    if ((!usereruntime) && webkit) {
-        p("2=,\"\",," + rhogempath + "\"\\\"");
-        p("3=,\"\",," + rhogempath + "\"\\NPAPI\\\"");
-        p("4=,\"\",," + rhogempath + "\"\\Config\\\"");
+    if (usereruntime) {
+        p("1=,\"\",,\"" + srcdir + "\\..\\\"");
+    } else {
+        p("1=,\"\",,\"..\\bin\\"+settings[platform][0]+"\\rhodes\\Release\\\"");
+        if (webkit) {
+            p("2=,\"\",," + rhogempath + "\"\\\"");
+            p("3=,\"\",," + rhogempath + "\"\\NPAPI\\\"");
+            p("4=,\"\",," + rhogempath + "\"\\Config\\\"");
+        }
     }
     get_source_disks_names(es);
     p("");
@@ -271,7 +275,9 @@ function pinf(platform,es,exts,name,vendor,show_shortcut,is_icon,webkit,rhogempa
     get_destination_dirs(es);
     p("");
     p("[CopyToInstallDir]");
-    if (!usereruntime) {
+    if (usereruntime) {
+        p("\"" + name + ".lnk\",\"" + name + ".lnk\",,0");
+    } else {
         p("\"" + name + ".exe\",\"" + name + ".exe\",,0");
         if (webkit) {
             p("");
@@ -322,7 +328,8 @@ function main() {
     var args = WScript.Arguments;
     fso = new ActiveXObject("Scripting.FileSystemObject");
     output_file = fso.CreateTextFile(args(0));
-    is_icon = fso.FileExists(args(4)+"/icon/icon.ico");
+    srcdir = args(4)
+    is_icon = fso.FileExists(srcdir+"/icon/icon.ico");
     show_shortcut = (args(5) == "0");
     include_webkit = (args(6) == "1");
     usereruntime = (args(8) == "1");
@@ -331,10 +338,10 @@ function main() {
     sources['db'] = ["db","..\\..\\..\\platform\\shared\\db\\res\\db"];
     //sources['sqlite3']= ["sqlite3","..\\..\\shared\\sqlite3"];
     if (!usereruntime)
-        sources['lib']= ["lib",args(4)+"/lib"];
-    else if (is_icon && show_shortcut)
-        sources['icon']= ["icon",args(4)+"/icon"];
-    sources['apps']= ["apps",args(4)+"/apps"];
+        sources['lib']= ["lib",srcdir+"/lib"];
+    else if (is_icon)
+        sources['icon']= ["icon",srcdir+"/icon"];
+    sources['apps']= ["apps",srcdir+"/apps"];
 
     var es = expand_sources(sources);
     
@@ -352,7 +359,7 @@ function main() {
     if (!usereruntime) {
         exts = expand_extensions(args(1));
     }
-    pinf(args(1),es,exts,args(2),args(3),show_shortcut,is_icon,include_webkit,args(7),usereruntime);
+    pinf(args(1),es,exts,args(2),args(3),srcdir,show_shortcut,is_icon,include_webkit,args(7),usereruntime);
 
     output_file.Close();
 }

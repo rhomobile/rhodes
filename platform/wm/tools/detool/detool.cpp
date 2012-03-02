@@ -492,7 +492,7 @@ enum {
     DEPLOY_EMU_WEBKIT
 };
 
-int copyExecutable (TCHAR *file_name, TCHAR *app_dir)
+int copyExecutable (TCHAR *file_name, TCHAR *app_dir, bool use_re_runtime)
 {
 	TCHAR exe_fullpath[MAX_PATH];
 	int retval = 0;
@@ -505,7 +505,7 @@ int copyExecutable (TCHAR *file_name, TCHAR *app_dir)
 	_tcscpy(exe_fullpath, app_dir);
 	_tcscat(exe_fullpath, _T("\\"));
 	_tcscat(exe_fullpath, app_name);
-	_tcscat(exe_fullpath, _T(".exe"));
+	_tcscat(exe_fullpath, (use_re_runtime ? _T(".lnk") : _T(".exe")));
 
 	hSrc = CreateFile(file_name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (INVALID_HANDLE_VALUE == hSrc) {
@@ -764,6 +764,20 @@ void connectWMDC() {
 	}
 }
 
+bool str_ends_with(const TCHAR* str, const TCHAR* suffix)
+{
+	if( str == NULL || suffix == NULL )
+		return 0;
+
+	size_t str_len = wcslen(str);
+	size_t suffix_len = wcslen(suffix);
+
+	if(suffix_len > str_len)
+		return 0;
+
+	return (_wcsnicmp( str + str_len - suffix_len, suffix, suffix_len ) == 0);
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	TCHAR *emu_name = NULL;
@@ -841,7 +855,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		return EXIT_FAILURE;
 	}
 	if ((!use_re_runtime) && app_exe)
-		use_re_runtime = wcsnicmp(app_exe, L"reruntime", 9) == 0;
+		use_re_runtime = str_ends_with(app_exe, L".lnk");
 
 	TCHAR app_dir[MAX_PATH];
 	_tcscpy(app_dir, TEXT("\\Program Files\\"));
@@ -911,15 +925,13 @@ int _tmain(int argc, _TCHAR* argv[])
 				}
 				FindClose( hFind);
 
-				if (!use_re_runtime) {
-					int retval = copyExecutable (app_exe, app_dir);
-					if (retval != EXIT_SUCCESS) {
-						printf ("Failed to copy application executable\n");
-						if (retval == 32) {
-							printf ("Please, stop application on device and try again.\n");
-						}
-						goto stop_emu_deploy;
+				int retval = copyExecutable (app_exe, app_dir, use_re_runtime);
+				if (retval != EXIT_SUCCESS) {
+					printf ("Failed to copy application executable\n");
+					if (retval == 32) {
+						printf ("Please, stop application on device and try again.\n");
 					}
+					goto stop_emu_deploy;
 				}
 
 				if (copyBundle(bundle_path, _T("/"), remote_bundle_path) == EXIT_FAILURE) {
@@ -1108,15 +1120,13 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 		FindClose( hFind);
 
-		if (!use_re_runtime) {
-			int retval = copyExecutable (app_exe, app_dir);
-			if (retval != EXIT_SUCCESS) {
-				printf ("Failed to copy application executable\n");
-				if (retval == 32) {
-					printf ("Please, stop application on device and try again.\n");
-				}
-				goto stop_emu_deploy;
+		int retval = copyExecutable (app_exe, app_dir, use_re_runtime);
+		if (retval != EXIT_SUCCESS) {
+			printf ("Failed to copy application executable\n");
+			if (retval == 32) {
+				printf ("Please, stop application on device and try again.\n");
 			}
+			goto stop_emu_deploy;
 		}
 
 		if (copyBundle(bundle_path, _T("/"), remote_bundle_path) == EXIT_FAILURE) {
