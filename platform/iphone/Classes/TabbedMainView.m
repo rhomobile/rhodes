@@ -579,6 +579,11 @@
 	[self onSwitchTab];
 }
 
+-(UIViewController*)getMainViewController {
+    return self;
+}
+
+
 - (void)onSwitchTab {
 	int new_index = tabbar.selectedIndex;
     RhoTabBarData *td = [self tabData:new_index];

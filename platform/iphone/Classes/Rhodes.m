@@ -382,9 +382,14 @@ static Rhodes *instance = NULL;
 		rect.origin.y = 0;
 		SignatureViewController* svc = [[SignatureViewController alloc] initWithRect:rect delegate:signatureDelegate];
 		[signatureDelegate setSignatureViewControllerValue:svc];
-		[mainView.view retain];
-		[mainView.view removeFromSuperview];
-		[window addSubview:svc.view];
+        
+        [[mainView getMainViewController] presentModalViewController:svc animated:YES];
+ 
+        
+        
+		//[mainView.view retain];
+		//[mainView.view removeFromSuperview];
+		//[window addSubview:svc.view];
     } @catch(NSException* theException) {
         RAWLOG_ERROR2("startSignatureViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
     }

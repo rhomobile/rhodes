@@ -719,6 +719,9 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	[self restoreWebView];
 }
 
+-(UIViewController*)getMainViewController {
+    return self;
+}
 
 
 - (NSString*)processForNativeView:(NSString*)url {

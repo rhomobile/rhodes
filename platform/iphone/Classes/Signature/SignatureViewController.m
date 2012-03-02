@@ -81,6 +81,7 @@
 		
 	}
 	
+    self.view.autoresizesSubviews = YES;
 	
 	[toolbar sizeToFit];
 	CGRect srect = self.view.frame;
@@ -93,7 +94,7 @@
 	toolbar.frame = trect;
 	toolbar.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
 	
-	signatureView = [[SignatureView alloc] initWithFrame:CGRectZero];
+	signatureView = [[SignatureView alloc] initWithFrame:srect];
 	signatureView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	signatureView.autoresizesSubviews = YES;
 	signatureView.frame = srect;
