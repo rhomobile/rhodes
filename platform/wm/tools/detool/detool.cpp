@@ -33,7 +33,7 @@
 #include "LogServer.h"
 
 #define RHOSETUP_DLL "rhosetup.dll"
-
+#define RE2_RUNTIME TEXT("\\Program Files\\RhoElements2\\RhoElements2.exe")
 
 TCHAR *app_name = NULL;
 
@@ -936,7 +936,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				TCHAR params[MAX_PATH];
 				params[0] = 0;
 				if (use_re_runtime) {
-					_tcscpy(params_buf, TEXT("\\Program Files\\RERuntime\\RERuntime.exe"));
+					_tcscpy(params_buf, RE2_RUNTIME);
 					_tcscpy(params, _T("-approot='\\Program Files\\"));
 					_tcscat(params, app_name);
 					_tcscat(params, _T("'"));
@@ -1027,7 +1027,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			TCHAR params[MAX_PATH];
 			params[0] = 0;
 			if (use_re_runtime) {
-				_tcscpy(params_buf, TEXT("\\Program Files\\RERuntime\\RERuntime.exe"));
+				_tcscpy(params_buf, RE2_RUNTIME);
 				_tcscpy(params, _T("-approot='\\Program Files\\"));
 				_tcscat(params, app_name);
 				_tcscat(params, _T("'"));
@@ -1133,7 +1133,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		TCHAR params[MAX_PATH];
 		params[0] = 0;
 		if (use_re_runtime) {
-			_tcscpy(params_buf, TEXT("\\Program Files\\RERuntime\\RERuntime.exe"));
+			_tcscpy(params_buf, RE2_RUNTIME);
 			_tcscpy(params, _T("-approot='\\Program Files\\"));
 			_tcscat(params, app_name);
 			_tcscat(params, _T("'"));
@@ -1219,7 +1219,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			TCHAR params[MAX_PATH];
 			params[0] = 0;
 			if (use_re_runtime) {
-				_tcscpy(params_buf, TEXT("\\Program Files\\RERuntime\\RERuntime.exe"));
+				_tcscpy(params_buf, RE2_RUNTIME);
 				_tcscpy(params, _T("-approot='\\Program Files\\"));
 				_tcscat(params, app_name);
 				_tcscat(params, _T("'"));
