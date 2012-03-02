@@ -70,6 +70,7 @@
 		F5B8FAD40F44EA7B00C9AF85 /* PickImageDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F5B8FAD30F44EA7B00C9AF85 /* PickImageDelegate.m */; };
 		F5F06668102CB134006CFD39 /* ParamsWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = F5F06667102CB134006CFD39 /* ParamsWrapper.m */; };
 		F5FD0944106151C200B7B8ED /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0943106151C200B7B8ED /* MapViewController.m */; };
+		FA14CECD150130DB00734801 /* DateTimePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA14CECC150130DB00734801 /* DateTimePickerViewController.m */; };
 		FA291E9811FF2EF70096AC39 /* SignatureDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA291E9511FF2EF70096AC39 /* SignatureDelegate.m */; };
 		FA291E9911FF2EF70096AC39 /* SignatureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA291E9711FF2EF70096AC39 /* SignatureViewController.m */; };
 		FA3C79AE136ED523002302E5 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA3C79AD136ED523002302E5 /* CoreVideo.framework */; };
@@ -265,6 +266,8 @@
 		F5F06667102CB134006CFD39 /* ParamsWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ParamsWrapper.m; sourceTree = "<group>"; };
 		F5FD0942106151C200B7B8ED /* MapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MapViewController.h; path = MapView/MapViewController.h; sourceTree = "<group>"; };
 		F5FD0943106151C200B7B8ED /* MapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MapViewController.m; path = MapView/MapViewController.m; sourceTree = "<group>"; };
+		FA14CECB150130DB00734801 /* DateTimePickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateTimePickerViewController.h; sourceTree = "<group>"; };
+		FA14CECC150130DB00734801 /* DateTimePickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateTimePickerViewController.m; sourceTree = "<group>"; };
 		FA291E9411FF2EF70096AC39 /* SignatureDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignatureDelegate.h; path = Signature/SignatureDelegate.h; sourceTree = "<group>"; };
 		FA291E9511FF2EF70096AC39 /* SignatureDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SignatureDelegate.m; path = Signature/SignatureDelegate.m; sourceTree = "<group>"; };
 		FA291E9611FF2EF70096AC39 /* SignatureViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignatureViewController.h; path = Signature/SignatureViewController.h; sourceTree = "<group>"; };
@@ -450,6 +453,8 @@
 				46B005F51033690F00D0C2F4 /* DateTime.h */,
 				46B005F61033690F00D0C2F4 /* DateTime.m */,
 				BD97ACA611610666006960F9 /* DateTimePicker.m */,
+				FA14CECB150130DB00734801 /* DateTimePickerViewController.h */,
+				FA14CECC150130DB00734801 /* DateTimePickerViewController.m */,
 			);
 			name = DateTimePicker;
 			sourceTree = "<group>";
@@ -1002,6 +1007,7 @@
 				FA522E8112DEA7B300AB55CC /* RhoNativeViewManager.mm in Sources */,
 				FA52300D12E4BBC700AB55CC /* MapViewManager.m in Sources */,
 				FAC6EE6D143B3AF100B8E352 /* RhoMapViewController.m in Sources */,
+				FA14CECD150130DB00734801 /* DateTimePickerViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

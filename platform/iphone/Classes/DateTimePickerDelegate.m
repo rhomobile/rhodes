@@ -27,6 +27,8 @@
 #import "DateTimePickerDelegate.h"
 #import "common/RhodesApp.h"
 #import "ruby/ext/rho/rhoruby.h"
+#import "DateTimePickerViewController.h"
+#import "Rhodes.h"
 
 
 static NSString* ourChangeValueCallback = nil;
@@ -166,6 +168,20 @@ static NSString* ourChangeValueCallback = nil;
         // Add toolbar to view
         [self createPickerBar:pickerFrame];
         
+        
+        //pickerFrame.origin.y = self.toolbar.frame.size.height;
+        
+        CGRect totalrect = CGRectMake(  parentFrame.origin.x,
+                                        parentFrame.origin.y + parentFrame.size.height - pickerSize.height - self.toolbar.frame.size.height,
+                                        pickerSize.width,
+                                        pickerSize.height + self.toolbar.frame.size.height);
+        
+        
+        [self.pickerView setFrame:pickerFrame];
+
+        
+        
+        /*
         // Add picker to view
         [parentView addSubview:self.pickerView];
         
@@ -181,22 +197,62 @@ static NSString* ourChangeValueCallback = nil;
         self.pickerView.frame = pickerFrame;
         
         [UIView commitAnimations];
+        */
+        
+        //parentFrame.origin.y += totalrect.size.height;
+        
+        dt_controller = [[DateTimePickerViewController alloc] initWithRect:parentFrame];
+        
+        [dt_controller makeTransparencyBackground];
+        
+        [dt_controller.view addSubview:self.toolbar];
+        [dt_controller.view addSubview:self.barLabel];
+        [dt_controller.view addSubview:self.pickerView];
+        
+        self.pickerView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
+        self.barLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
+        self.toolbar.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
+        
+        //[[[[Rhodes sharedInstance] mainView] getMainViewController] presentViewController:ctrl animated:YES completion:nil];
+        //[ctrl release];
+
+        
+        
+        [parentView addSubview:dt_controller.view];
+        
+        CGRect startFrame = parentFrame;
+        startFrame.origin.y = parentFrame.origin.y + parentFrame.size.height - totalrect.size.height;
+        dt_controller.view.frame = startFrame;
+        
+        [UIView beginAnimations:nil context:NULL];
+        [UIView setAnimationDuration:0.3];
+        
+        [UIView setAnimationDelegate:self];
+        [UIView setAnimationDidStopSelector:@selector(slideUpDidStop)];
+        
+        dt_controller.view.frame = parentFrame;
+        
+        [UIView commitAnimations];
+        
+        
     }
 }
 
 - (void)slideUpDidStop
 {
     // the date picker has finished sliding upwards, so add toolbar
-    [self.parentView addSubview:self.toolbar];
-    [self.parentView addSubview:self.barLabel];
+    //[self.parentView addSubview:self.toolbar];
+    //[self.parentView addSubview:self.barLabel];
+    [dt_controller makeGrayBacground];
     [self.pickerView addTarget:self action:@selector(onChangeValue:) forControlEvents:UIControlEventValueChanged]; 
 }
 
 - (void)slideDownDidStop
 {
     // the date picker has finished sliding downwards, so remove it
-    [self.pickerView removeFromSuperview];
-	[self.pickerView release];
+    [dt_controller.view removeFromSuperview];
+	[dt_controller release];
+    [self.pickerView release];
 	self.pickerView = nil;
     [self.barLabel release];
     self.barLabel = nil;
@@ -207,9 +263,11 @@ static NSString* ourChangeValueCallback = nil;
 - (void)animateDown
 {
     CGRect parentFrame = parentView.frame;
-    CGRect endFrame = pickerView.frame;
-    endFrame.origin.y = parentFrame.origin.y + parentFrame.size.height;
+    CGRect endFrame = dt_controller.view.frame;
+    endFrame.origin.y += self.pickerView.frame.size.height + self.toolbar.frame.size.height;
     // start the slide down animation
+    [dt_controller makeTransparencyBackground];
+
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationDuration:0.3];
     
@@ -218,10 +276,10 @@ static NSString* ourChangeValueCallback = nil;
     [UIView setAnimationDidStopSelector:@selector(slideDownDidStop)];
     
     // Remove toolbar immediately
-    [self.barLabel removeFromSuperview];
-    [self.toolbar removeFromSuperview];
+    //[self.barLabel removeFromSuperview];
+    //[self.toolbar removeFromSuperview];
 
-    self.pickerView.frame = endFrame;
+    dt_controller.view.frame = endFrame;
     [UIView commitAnimations];
 }
 
@@ -235,6 +293,15 @@ static NSString* ourChangeValueCallback = nil;
         [postUrl cStringUsingEncoding:[NSString defaultCStringEncoding]],
         0, [self.dateTime.data cStringUsingEncoding:[NSString defaultCStringEncoding]], 1 );	
     [self animateDown];
+    /*
+     [[[[Rhodes sharedInstance] mainView] getMainViewController] dismissViewControllerAnimated:YES completion:nil];
+    [self.pickerView release];
+	self.pickerView = nil;
+    [self.barLabel release];
+    self.barLabel = nil;
+    [self.toolbar release];
+    self.toolbar = nil;
+     */
 }
 
 - (IBAction)dateAction:(id)sender
@@ -252,6 +319,15 @@ static NSString* ourChangeValueCallback = nil;
         ldate, [self.dateTime.data cStringUsingEncoding:[NSString defaultCStringEncoding]], 0 );
     
     [self animateDown];
+    /*
+     [[[[Rhodes sharedInstance] mainView] getMainViewController] dismissViewControllerAnimated:YES completion:nil];
+     [self.pickerView release];
+	self.pickerView = nil;
+    [self.barLabel release];
+    self.barLabel = nil;
+    [self.toolbar release];
+    self.toolbar = nil;
+     */
 }
 
 +(void)setChangeValueCallback:(NSString*)callback {
