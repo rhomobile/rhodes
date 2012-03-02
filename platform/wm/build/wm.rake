@@ -375,7 +375,7 @@ namespace "device" do
       if $use_re_runtime.nil? then
         cp out_dir + "rhodes.exe", out_dir + $appname + ".exe"
       else
-        shortcut_content = '"\\Program Files\\RERuntime\\RERuntime.exe" -approot="\\Program Files\\' + $appname + '"'
+        shortcut_content = '"\\Program Files\\RhoElements2\\RhoElements2.exe" -approot="\\Program Files\\' + $appname + '"'
         if File.exists? wm_icon then
           shortcut_content = shortcut_content + '?"\\Program Files\\' + $appname + '\\rho\\icon\\icon.ico"'
         end
