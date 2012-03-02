@@ -586,7 +586,7 @@ namespace "config" do
     $use_google_addon_api = true unless $app_config["capabilities"].index("push").nil?
     
     unless $app_config['capabilities'].index('motorola').nil? and $app_config['capabilities'].index('motoroladev').nil?
-      $use_motosol_barcode_api = true if $app_config['extensions'].index('barcode') or $app_config['extensions'].index('barcode-moto')
+      $use_motosol_barcode_api = true #if $app_config['extensions'].index('barcode') or $app_config['extensions'].index('barcode-moto')
       raise 'Cannot use Motorola SDK addon and Google SDK addon together!' if $use_google_addon_api
     end
  
