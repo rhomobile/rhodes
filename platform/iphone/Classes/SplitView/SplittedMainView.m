@@ -257,6 +257,9 @@
 }
 
 
+-(UIViewController*)getMainViewController {
+    return self;
+}
 
 
 - (void)switchTab:(int)index {

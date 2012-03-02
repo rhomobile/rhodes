@@ -130,24 +130,25 @@ SignatureDelegate* ourSD = nil;
 } 
 
 -(void)doDone:(UIImage*)image {
-	
+	[[[[Rhodes sharedInstance] mainView] getMainViewController] dismissModalViewControllerAnimated:YES]; 
     [self useImage:image]; 
-    [signatureViewController.view removeFromSuperview];
+    //[signatureViewController.view removeFromSuperview];
     [signatureViewController release];
     signatureViewController = nil;
-	[parentView addSubview:prevView];
-	[prevView release];
-    prevView = nil;
+	//[parentView addSubview:prevView];
+	//[prevView release];
+    //prevView = nil;
 	[image release];
 }
 
 -(void)doCancel {
+	[[[[Rhodes sharedInstance] mainView] getMainViewController] dismissModalViewControllerAnimated:YES]; 
     rho_rhodesapp_callSignatureCallback([postUrl UTF8String], "", "", 1);
-    [signatureViewController.view removeFromSuperview];
+    //[signatureViewController.view removeFromSuperview];
     [signatureViewController release];
     signatureViewController = nil;
-	[parentView addSubview:prevView];
-	[prevView release];
+	//[parentView addSubview:prevView];
+	//[prevView release];
     prevView = nil;
 }
 
@@ -257,11 +258,11 @@ void rho_signature_take(char* callback_url, rho_param* p) {
     if (!image_format)
         image_format = "png";
     if (!penColor)
-        penColor = "0xFF66009A";
+        penColor = "4284874906";
     if (!penWidth)
         penWidth = "3";
     if (!bgColor)
-        bgColor = "0xFFFFFFFF";
+        bgColor = "4294967295";
     
     
     
@@ -330,11 +331,11 @@ void rho_signature_visible(bool b, rho_param* p)
     if (!image_format)
         image_format = "png";
     if (!penColor)
-        penColor = "0xFF66009A";
+        penColor = "4284874906";
     if (!penWidth)
         penWidth = "3";
     if (!bgColor)
-        bgColor = "0xFFFFFFFF";
+        bgColor = "4294967295";
     if (!left)
         left = "0";
     if (!top)
