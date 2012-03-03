@@ -408,6 +408,11 @@ Here is list of allowed values for actions for user defined menus, toolbars and 
 * :separator - draw a separator line (if supported)
 * :close - close or put Rhodes to background (depending on platform)
 * :fullscreen - go to full screen mode
+* :copy_paste - enable copy\paste functionality (Blackberry only). System menu items are displayed:
+
+	    @default_menu = {
+	      "Copy_Paste" => :copy_paste, 
+        }
 
 Action can be also URL of user-defined controller method. URL can be prefixed with 'callback:' meaning it should be loaded by rhodes core, not WebView. This will effectively load specified url but in background, not touching UI. 
 
