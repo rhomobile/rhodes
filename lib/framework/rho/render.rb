@@ -113,6 +113,14 @@ module Rho
         #puts "meta deleted"
     end
     
+    def __get_model
+        model = nil
+        begin
+            model = Object.const_get(@request['model'].to_sym()) if Object.const_defined?(@request['model'].to_sym() )
+        rescue Exception => exc
+        end
+    end
+    
     def render(options = nil)
       if @params['rho_callback']
         rho_error( "render call in callback. Call WebView.navigate instead" ) 
@@ -129,11 +137,8 @@ module Rho
       action = @request['action'].nil? ? default_action : @request['action'] unless action
 
       if @request['model'] != nil
-        model = nil
-        begin
-            model = Object.const_get(@request['model'].to_sym) if Object.const_defined?(@request['model'].to_sym)
-        rescue Exception => e
-        end
+        
+        model = __get_model()
             
         if model && model.respond_to?( :metadata ) and model.metadata != nil
           if $".include?( "rhodes_translator")
