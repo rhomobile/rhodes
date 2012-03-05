@@ -508,7 +508,9 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     	if ( ClientRegister.getInstance() != null )
     		ClientRegister.getInstance().Destroy();
     	
-    	RhoRuby.rho_ruby_deactivateApp();
+    	if (!m_bInDeactivate)
+    		RhoRuby.rho_ruby_deactivateApp();
+    	
     	RhoRuby.rho_ruby_uiDestroyed();
     	
 		GeoLocation.stop();
@@ -566,6 +568,7 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     private static boolean m_bRubyInit = false;
 	public void activate()
 	{
+		m_bInDeactivate = false;
 		if (!m_bActivate)
 			rhodes_activate();
 		else
@@ -671,9 +674,11 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     	}
     }
 
+    boolean m_bInDeactivate = false;
 	public void deactivate() {
     	LOG.TRACE("Rhodes deactivate ***--------------------------***");		
     	
+    	m_bInDeactivate = true;
     	RhoRuby.rho_ruby_deactivateApp();
     	
 //		SyncEngine.stop(null);
@@ -1379,6 +1384,14 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
 				_mainScreen.close();
             }
     	});
+    	
+    	this.invokeLater(new Runnable() {
+            public void run() 
+            {
+				System.exit(1);
+            }
+    	});
+    	
     }
 
     boolean m_bDisableInput = false;
