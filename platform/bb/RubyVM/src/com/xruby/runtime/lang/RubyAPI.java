@@ -212,7 +212,7 @@ public class RubyAPI {
 			className = ((RubyClass)receiver).getName() + "::";
 		else
 		{
-			if ( receiver.getRubyClass() != null )
+			if ( receiver != null && receiver.getRubyClass() != null )
 				className = receiver.getRubyClass().getName() + ".";
 		}
 		
