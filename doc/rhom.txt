@@ -586,10 +586,10 @@ For such models if you try to add not listed property - you will get ArgumentErr
     obj = Customer.new( :wrong_address => 'test') #will raise ArgumentError exception
     obj = Customer.create( :wrong_address => 'test') #will raise ArgumentError exception
     
-    obj = getCase().new
+    obj = Customer.new
     obj.wrong_address = 'test' #will raise ArgumentError exception
     
-    obj = getCase().new
+    obj = Customer.new
     obj.update_attributes(:wrong_address => 'test') #will raise ArgumentError exception
 
 
