@@ -246,7 +246,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 			char* path = parseToken( token.c_str(), token.length() );
 			if (path) {
 				// RhoElements v1.0 compatibility mode
-				rho_wmimpl_set_startpage(path);
+                rho_wmimpl_set_startpage(path);
 				free(path);
 			}
         }
@@ -255,7 +255,10 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 			String token = convertToStringA(lpszToken);
             char* path = parseToken( token.c_str(), token.length() );
 			if (path) {
-				rho_wmimpl_set_configfilepath(path);
+                token = path;
+                if (token.substr(0,7).compare("file://")==0)
+                    token.erase(0,7);
+				rho_wmimpl_set_configfilepath(token.c_str());
 				free(path);
 			}
         }
