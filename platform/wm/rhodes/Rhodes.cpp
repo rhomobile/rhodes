@@ -125,6 +125,7 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)
     static WCHAR g_ConfigFilePath[MAX_PATH + 1];
     static TCHAR g_StartPage[MAX_PATH + 1];
+    static char g_LogPath[MAX_PATH + 1];
 #endif // APP_BUILD_CAPABILITY_MOTOROLA
 
 #ifdef OS_WINDOWS
@@ -140,8 +141,10 @@ public :
     static void setConfigFilePath(const WCHAR* path);
     static void setStartPage(const char* path);
     static void setStartPage(const TCHAR* tpath);
+    static void setLogPath(const TCHAR* tpath);
     static WCHAR* getConfigFilePath();
     static TCHAR* getStartPage();
+    static const char* getLogPath();
 #endif // APP_BUILD_CAPABILITY_MOTOROLA
 
     HWND GetMainWindow() { return m_appWindow.m_hWnd;}
@@ -170,6 +173,7 @@ bool g_restartOnExit = false;
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)
 WCHAR CRhodesModule::g_ConfigFilePath[MAX_PATH + 1] = {0};
 TCHAR CRhodesModule::g_StartPage[MAX_PATH + 1] = {0};
+char CRhodesModule::g_LogPath[MAX_PATH + 1] = {0};
 
 extern "C" WCHAR* rho_wmimpl_get_configfilepath()
 {
@@ -194,6 +198,10 @@ extern "C" void rho_wmimpl_set_startpage(const char* path)
 extern "C" void rho_wmimpl_set_startpage_tchar(const TCHAR* path)
 {
     CRhodesModule::setStartPage(path);
+}
+extern "C" void rho_wmimpl_set_logpath(const TCHAR* path)
+{
+    CRhodesModule::setLogPath(path);
 }
 #endif // APP_BUILD_CAPABILITY_MOTOROLA
 
@@ -381,6 +389,11 @@ TCHAR* CRhodesModule::getStartPage()
     return g_StartPage;
 }
 
+const char* CRhodesModule::getLogPath()
+{
+    return g_LogPath;
+}
+
 void CRhodesModule::setConfigFilePath(const char* path)
 {
     USES_CONVERSION;
@@ -409,6 +422,13 @@ void CRhodesModule::setStartPage(const TCHAR* tpath)
     RegCreateKeyEx( HKEY_CURRENT_USER, L"Software\\Symbol\\SymbolPB\\Temp", 0, NULL, 0, 0, 0, &hKey, &Disposition ); 
     RegSetValueEx(hKey, L"cmdline", 0, REG_MULTI_SZ, (const BYTE *) tpath, (wcslen(tpath)+1)*2); 
     RegCloseKey(hKey);
+}
+
+void CRhodesModule::setLogPath(const TCHAR* tpath)
+{
+    String logPath = convertToStringA(tpath);
+    strncpy(g_LogPath, logPath.c_str(), MAX_PATH);
+    g_LogPath[MAX_PATH+1] = 0;
 }
 
 #endif // APP_BUILD_CAPABILITY_MOTOROLA
@@ -456,7 +476,11 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         return S_FALSE;
     }
 
-	rho_logconf_Init(m_strRootPath.c_str(), m_logPort.c_str());
+#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+    rho_logconf_Init((getLogPath()[0]==0 ? m_strRootPath.c_str() : getLogPath()), m_logPort.c_str());
+#else
+    rho_logconf_Init(m_strRootPath.c_str(), m_logPort.c_str());
+#endif // APP_BUILD_CAPABILITY_MOTOROLA
 
 #ifdef RHODES_EMULATOR
     RHOSIMCONF().setAppConfFilePath(CFilePath::join( m_strRootPath, RHO_EMULATOR_DIR"/rhosimconfig.txt").c_str());
