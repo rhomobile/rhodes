@@ -1,27 +1,27 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Deployment xmlns="http://schemas.microsoft.com/windowsphone/2009/deployment" AppPlatformVersion="7.0">
-  <App xmlns="" ProductID="{1aa73f88-4d47-4f94-acdd-ab9301d45a2a}" Title="Rhodes" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="Rhodes author" Description="Sample description" Publisher="Rhodes">
-    <IconPath IsRelative="true" IsResource="false">icon.png</IconPath>
+<?xml version='1.0' encoding='UTF-8'?>
+<Deployment AppPlatformVersion='7.1' xmlns='http://schemas.microsoft.com/windowsphone/2009/deployment'>
+  <App Author='Rhodes author' Description='Sample description' Genre='apps.normal' ProductID='{1aa73f88-4d47-4f94-acdd-ab9301d45a2a}' Publisher='Rhodes' RuntimeType='Silverlight' Title='InSite Mobile' Version='1.0.0.0' xmlns=''>
+    <IconPath IsRelative='true' IsResource='false'>icon.png</IconPath>
     <Capabilities>
-      <Capability Name="ID_CAP_GAMERSERVICES" />
-      <Capability Name="ID_CAP_IDENTITY_DEVICE" />
-      <Capability Name="ID_CAP_IDENTITY_USER" />
-      <Capability Name="ID_CAP_LOCATION" />
-      <Capability Name="ID_CAP_MEDIALIB" />
-      <Capability Name="ID_CAP_MICROPHONE" />
-      <Capability Name="ID_CAP_NETWORKING" />
-      <Capability Name="ID_CAP_PHONEDIALER" />
-      <Capability Name="ID_CAP_PUSH_NOTIFICATION" />
-      <Capability Name="ID_CAP_SENSORS" />
-      <Capability Name="ID_CAP_WEBBROWSERCOMPONENT" />
+      <Capability Name='ID_CAP_GAMERSERVICES'/>
+      <Capability Name='ID_CAP_IDENTITY_DEVICE'/>
+      <Capability Name='ID_CAP_IDENTITY_USER'/>
+      <Capability Name='ID_CAP_LOCATION'/>
+      <Capability Name='ID_CAP_MEDIALIB'/>
+      <Capability Name='ID_CAP_MICROPHONE'/>
+      <Capability Name='ID_CAP_NETWORKING'/>
+      <Capability Name='ID_CAP_PHONEDIALER'/>
+      <Capability Name='ID_CAP_PUSH_NOTIFICATION'/>
+      <Capability Name='ID_CAP_SENSORS'/>
+      <Capability Name='ID_CAP_WEBBROWSERCOMPONENT'/>
     </Capabilities>
     <Tasks>
-      <DefaultTask Name="_default" NavigationPage="MainPage.xaml" />
+      <DefaultTask Name='_default' NavigationPage='MainPage.xaml'/>
     </Tasks>
     <Tokens>
-      <PrimaryToken TokenID="RhodesToken" TaskName="_default">
+      <PrimaryToken TaskName='_default' TokenID='RhodesToken'>
         <TemplateType5>
-          <BackgroundImageURI IsRelative="true" IsResource="false">Background.png</BackgroundImageURI>
+          <BackgroundImageURI IsRelative='true' IsResource='false'>Background.png</BackgroundImageURI>
           <Count>0</Count>
           <Title>Rhodes</Title>
         </TemplateType5>
