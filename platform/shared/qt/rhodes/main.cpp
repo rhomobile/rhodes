@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
 #endif
 
     // PreMessageLoop:
-    rho_logconf_Init(m_strRootPath.c_str(), m_logPort.c_str());
+    rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
 #ifdef RHODES_EMULATOR
     RHOSIMCONF().setAppConfFilePath(CFilePath::join(m_strRootPath, RHO_EMULATOR_DIR"/rhosimconfig.txt").c_str());
     RHOSIMCONF().loadFromFile();
