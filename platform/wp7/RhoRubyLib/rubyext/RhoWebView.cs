@@ -49,7 +49,7 @@ namespace rho.rubyext
         #region Private Instance & Singleton Methods
 
         [RubyMethodAttribute("navigate", RubyMethodAttributes.PublicSingleton)]
-        public static void Navigate(RubyModule/*!*/ self, [NotNull]String/*!*/ url, int index = 0)
+        public static void Navigate(RubyModule/*!*/ self, [NotNull]String/*!*/ url, int index = -1)
         {
             try
             {
@@ -87,7 +87,7 @@ namespace rho.rubyext
         }
 
         [RubyMethodAttribute("execute_js", RubyMethodAttributes.PublicSingleton)]
-        public static void execute_js(RubyModule/*!*/ self, [NotNull]String/*!*/ strScript, int index = 0, RubyArray vals = null)
+        public static void execute_js(RubyModule/*!*/ self, [NotNull]String/*!*/ strScript, int index = -1, RubyArray vals = null)
         {
             try
             {
