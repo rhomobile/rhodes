@@ -59,7 +59,9 @@ extern "C" int rho_sys_check_rollback_bundle(const char* szRhoPath);
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 class CEng;
+class CConfig;
 extern "C" CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
+extern "C" CConfig* rho_wmimpl_get_webkitconfig();
 extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
 #endif
 
@@ -428,7 +430,7 @@ void CRhodesModule::setLogPath(const TCHAR* tpath)
 {
     String logPath = convertToStringA(tpath);
     strncpy(g_LogPath, logPath.c_str(), MAX_PATH);
-    g_LogPath[MAX_PATH+1] = 0;
+    g_LogPath[MAX_PATH] = 0;
 }
 
 #endif // APP_BUILD_CAPABILITY_MOTOROLA
@@ -477,9 +479,10 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }
 
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)
-    rho_logconf_Init((getLogPath()[0]==0 ? m_strRootPath.c_str() : getLogPath()), m_logPort.c_str());
+    CConfig* conf = rho_wmimpl_get_webkitconfig();
+    rho_logconf_Init((getLogPath()[0]==0 ? m_strRootPath.c_str() : getLogPath()), m_strRootPath.c_str(), m_logPort.c_str());
 #else
-    rho_logconf_Init(m_strRootPath.c_str(), m_logPort.c_str());
+    rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
 #endif // APP_BUILD_CAPABILITY_MOTOROLA
 
 #ifdef RHODES_EMULATOR

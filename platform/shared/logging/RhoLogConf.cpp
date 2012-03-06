@@ -252,15 +252,15 @@ extern "C" {
 using namespace rho;
 using namespace rho::common;
 
-void rho_logconf_Init_with_separate_user_path(const char* szRootPath, const char* szLogPort, const char* szUserPath)
+void rho_logconf_Init_with_separate_user_path(const char* szLogPath, const char* szRootPath, const char* szLogPort, const char* szUserPath)
 {
     
 #ifdef RHODES_EMULATOR
-    String strRootPath = szRootPath;
+    String strRootPath = szLogPath;
     strRootPath += RHO_EMULATOR_DIR"/";
     rho::common::CFilePath oLogPath( strRootPath );
 #else
-    rho::common::CFilePath oLogPath( szRootPath );
+    rho::common::CFilePath oLogPath( szLogPath );
 #endif
     
     //Set defaults
@@ -287,8 +287,8 @@ void rho_logconf_Init_with_separate_user_path(const char* szRootPath, const char
     LOGCONF().loadFromConf(RHOCONF());
 }
     
-void rho_logconf_Init(const char* szRootPath, const char* szLogPort){
-    rho_logconf_Init_with_separate_user_path(szRootPath, szLogPort, szRootPath);
+void rho_logconf_Init(const char* szLogPath, const char* szRootPath, const char* szLogPort){
+    rho_logconf_Init_with_separate_user_path(szLogPath, szRootPath, szLogPort, szRootPath);
 }
 
 char* rho_logconf_getText() {

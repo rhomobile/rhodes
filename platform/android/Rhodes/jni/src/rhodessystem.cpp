@@ -166,7 +166,7 @@ RHO_GLOBAL void android_setup(JNIEnv *env)
     sqlite3_temp_directory = (char*)s_sqlite_path.c_str();
 
     // Init logconf
-    rho_logconf_Init(rho_native_rhopath(), "");
+    rho_logconf_Init(rho_native_rhopath(), rho_native_rhopath(), "");
 
     // Disable log to stdout as on android all stdout redirects to /dev/null
     RHOCONF().setBool("LogToOutput", false, true);

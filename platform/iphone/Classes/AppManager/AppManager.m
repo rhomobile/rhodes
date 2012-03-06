@@ -406,7 +406,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 #endif
 	}
     
-	rho_logconf_Init_with_separate_user_path(rho_native_rhopath(), "", rho_native_rhouserpath());
+	rho_logconf_Init_with_separate_user_path(rho_native_rhopath(), rho_native_rhopath(), "", rho_native_rhouserpath());
 	rho_rhodesapp_create_with_separate_user_path(rho_native_rhopath(), rho_native_rhouserpath());
 	RAWLOG_INFO("Rhodes started");
 }
