@@ -63,6 +63,12 @@ class CConfig;
 extern "C" CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
 extern "C" CConfig* rho_wmimpl_get_webkitconfig();
 extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
+extern "C" WCHAR* rho_wmimpl_get_configfilepath();
+extern "C" void rho_wmimpl_set_configfilepath(const char* path);
+extern "C" TCHAR* rho_wmimpl_get_startpage();
+extern "C" void rho_wmimpl_set_startpage(const char* path);
+extern "C" void rho_wmimpl_set_logpath(const TCHAR* path);
+extern "C" const char* rho_wmimpl_get_logpath();
 #endif
 
 
@@ -124,12 +130,6 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 	int m_nRestarting;
     CExtManager m_oExtManager;
 
-#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
-    static WCHAR g_ConfigFilePath[MAX_PATH + 1];
-    static TCHAR g_StartPage[MAX_PATH + 1];
-    static char g_LogPath[MAX_PATH + 1];
-#endif // APP_BUILD_CAPABILITY_MOTOROLA
-
 #ifdef OS_WINDOWS
     String m_strHttpProxy;
 #endif
@@ -137,18 +137,6 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 public :
     static HINSTANCE GetModuleInstance(){return m_hInstance;}
     static void SetModuleInstance(HINSTANCE hInstance){m_hInstance = hInstance;}
-
-#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
-    static void setConfigFilePath(const char* path);
-    static void setConfigFilePath(const WCHAR* path);
-    static void setStartPage(const char* path);
-    static void setStartPage(const TCHAR* tpath);
-    static void setLogPath(const TCHAR* tpath);
-    static WCHAR* getConfigFilePath();
-    static TCHAR* getStartPage();
-    static const char* getLogPath();
-#endif // APP_BUILD_CAPABILITY_MOTOROLA
-
     HWND GetMainWindow() { return m_appWindow.m_hWnd;}
 	CMainWindow* GetMainWindowObject() { return &m_appWindow;}
 	CMainWindow& GetAppWindow() { return m_appWindow; }
@@ -171,42 +159,6 @@ static String g_strCmdLine;
 HINSTANCE CRhodesModule::m_hInstance;
 CRhodesModule _AtlModule;
 bool g_restartOnExit = false;
-
-#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
-WCHAR CRhodesModule::g_ConfigFilePath[MAX_PATH + 1] = {0};
-TCHAR CRhodesModule::g_StartPage[MAX_PATH + 1] = {0};
-char CRhodesModule::g_LogPath[MAX_PATH + 1] = {0};
-
-extern "C" WCHAR* rho_wmimpl_get_configfilepath()
-{
-    return CRhodesModule::getConfigFilePath();
-}
-extern "C" TCHAR* rho_wmimpl_get_startpage()
-{
-    return CRhodesModule::getStartPage();
-}
-extern "C" void rho_wmimpl_set_configfilepath(const char* path)
-{
-    CRhodesModule::setConfigFilePath(path);
-}
-extern "C" void rho_wmimpl_set_configfilepath_wchar(const WCHAR* path)
-{
-    CRhodesModule::setConfigFilePath(path);
-}
-extern "C" void rho_wmimpl_set_startpage(const char* path)
-{
-    CRhodesModule::setStartPage(path);
-}
-extern "C" void rho_wmimpl_set_startpage_tchar(const TCHAR* path)
-{
-    CRhodesModule::setStartPage(path);
-}
-extern "C" void rho_wmimpl_set_logpath(const TCHAR* path)
-{
-    CRhodesModule::setLogPath(path);
-}
-#endif // APP_BUILD_CAPABILITY_MOTOROLA
-
 
 #ifndef RHODES_EMULATOR
 rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
@@ -379,63 +331,6 @@ extern "C" void rho_sys_impl_exit_with_errormessage(const char* szTitle, const c
 extern "C" void rho_scanner_TEST(HWND hwnd);
 extern "C" void rho_scanner_TEST2();
 
-#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
-
-WCHAR* CRhodesModule::getConfigFilePath()
-{
-    return g_ConfigFilePath;
-}
-
-TCHAR* CRhodesModule::getStartPage()
-{
-    return g_StartPage;
-}
-
-const char* CRhodesModule::getLogPath()
-{
-    return g_LogPath;
-}
-
-void CRhodesModule::setConfigFilePath(const char* path)
-{
-    USES_CONVERSION;
-    WCHAR* wpath = A2W(path);
-    _tcscpy(g_ConfigFilePath, wpath);
-}
-
-void CRhodesModule::setConfigFilePath(const WCHAR* path)
-{
-    _tcscpy(g_ConfigFilePath, path);
-}
-
-void CRhodesModule::setStartPage(const char* path)
-{
-    USES_CONVERSION;
-    TCHAR* tpath = A2T(path);
-    setStartPage(tpath);
-}
-
-void CRhodesModule::setStartPage(const TCHAR* tpath)
-{
-    _tcscpy(g_StartPage, tpath);
-    // Store command line parameter in the registry
-    HKEY hKey;
-    DWORD Disposition;
-    RegCreateKeyEx( HKEY_CURRENT_USER, L"Software\\Symbol\\SymbolPB\\Temp", 0, NULL, 0, 0, 0, &hKey, &Disposition ); 
-    RegSetValueEx(hKey, L"cmdline", 0, REG_MULTI_SZ, (const BYTE *) tpath, (wcslen(tpath)+1)*2); 
-    RegCloseKey(hKey);
-}
-
-void CRhodesModule::setLogPath(const TCHAR* tpath)
-{
-    String logPath = convertToStringA(tpath);
-    strncpy(g_LogPath, logPath.c_str(), MAX_PATH);
-    g_LogPath[MAX_PATH] = 0;
-}
-
-#endif // APP_BUILD_CAPABILITY_MOTOROLA
-
-
 // This method is called immediately before entering the message loop.
 // It contains initialization code for the application.
 // Returns:
@@ -480,7 +375,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)
     CConfig* conf = rho_wmimpl_get_webkitconfig();
-    rho_logconf_Init((getLogPath()[0]==0 ? m_strRootPath.c_str() : getLogPath()), m_strRootPath.c_str(), m_logPort.c_str());
+    rho_logconf_Init((rho_wmimpl_get_logpath()[0]==0 ? m_strRootPath.c_str() : rho_wmimpl_get_logpath()), m_strRootPath.c_str(), m_logPort.c_str());
 #else
     rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
 #endif // APP_BUILD_CAPABILITY_MOTOROLA
