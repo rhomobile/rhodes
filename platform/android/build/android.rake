@@ -587,6 +587,7 @@ namespace "config" do
     
     unless $app_config['capabilities'].index('motorola').nil? and $app_config['capabilities'].index('motoroladev').nil?
       $use_motosol_barcode_api = true #if $app_config['extensions'].index('barcode') or $app_config['extensions'].index('barcode-moto')
+      $use_motosol_api_classpath = true if $app_config['capabilities'].index('motoroladev').nil?
       raise 'Cannot use Motorola SDK addon and Google SDK addon together!' if $use_google_addon_api
     end
  
@@ -598,7 +599,7 @@ namespace "config" do
     end 
 
     # Look for Motorola barcode SDK addon
-    if $use_motosol_barcode_api
+    if $use_motosol_api_classpath
       Dir.glob(File.join($androidsdkpath, 'add-ons', '*')).each do |dir|
         apijar = File.join(dir, 'libs', 'com.motorolasolutions.scanner.jar')
         if File.exists? apijar
