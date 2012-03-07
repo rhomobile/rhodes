@@ -67,6 +67,13 @@
 
     var _ajax = $.ajax;
 
+    function isLocalUrl(url) {
+        //console.log('isLocalUrl: ' +url);
+        if (url.match(/^https?:\/\//) &&
+            !url.match(/^https?:\/\/(127\.0\.0\.1|localhost)/)) return false;
+        return true;
+    }
+
     function wp7ajax() {
         //console.log('in wp7ajax');
         //console.log('window.location: ' +window.location);
@@ -75,8 +82,7 @@
         //console.log('options has been normalized, options.url == "' +options.url +'"');
 
         // if we have URL in request options and it is a local URL
-        if (options.url.match(/^https?:\/\/(127\.0\.0\.1|localhost)/) ||
-            options.url.match(/^x-wmapp1:/)) {
+        if (isLocalUrl(options.url)) {
             //console.log('it is a local app URL');
             // then call proxy
             return wp7notifyProxy.apply(this, [options]);
