@@ -76,7 +76,7 @@ namespace rho.views
         private const string JS_NOTIFY_CONSOLE_WARNING = "console.warn:";
         private const string JS_NOTIFY_CONSOLE_ERROR = "console.error:";
         private const string JS_NOTIFY_REQUEST = "request:";
-        private const string REQUEST_URL_SCHEME = "x-wmapp1:";
+        private const string REQUEST_URL_SCHEME_PREFIX = "x-wmapp1:";
 
         //TO DO history. each time we have to save our current state of rhodesapp in rhoview entity
         public Stack<Uri> BackHistory { set { m_backHistory = value; } }
@@ -182,6 +182,14 @@ namespace rho.views
             return context;
         }
 
+        private String pathFromUrl(String url)
+        {
+            if (0 == url.IndexOf(REQUEST_URL_SCHEME_PREFIX)) {
+                return url.substring(url.indexOf(":"));
+            }
+            return "";
+        }
+
         private void WebBrowser_OnScriptNotify(object sender, NotifyEventArgs e)
         {
             string request = e.Value;
@@ -232,7 +240,7 @@ namespace rho.views
                     string ajaxContext = data[AJAX_CONTEXT_PARAM].ToString();
                     if (!RHODESAPP().HttpServer.processBrowserRequest(
                         type,
-                        new Uri(url.substring(REQUEST_URL_SCHEME.length()), UriKind.Relative),
+                        new Uri(pathFromUrl(url), UriKind.Relative),
                         headers,
                         data,
                         ajaxContext
