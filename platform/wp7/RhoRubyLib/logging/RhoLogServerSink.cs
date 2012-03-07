@@ -40,12 +40,12 @@ namespace rho.logging
         private static RhoLogConf m_oLogConf;
         RhoConf RHOCONF() { return RhoConf.getInstance(); }
         CAsyncHttp m_aHttp = new CAsyncHttp(true);
-        String m_addrHost = "";
+        String m_URL = "";
 
         public RhoLogServerSink(RhoLogConf conf)
         {
             m_oLogConf = conf;
-            m_addrHost = "http://"+RHOCONF().getString("rhologhost") + ":" + RHOCONF().getString("rhologport");
+            m_URL = RHOCONF().getString("rhologurl");
         }
 
         public void close()
@@ -68,7 +68,7 @@ namespace rho.logging
         {
             IDictionary<object, object> map = new Dictionary<object, object>();
             Hash values = new Hash(map);
-            values.Add(CRhoRuby.CreateSymbol("url"), MutableString.Create(m_addrHost));
+            values.Add(CRhoRuby.CreateSymbol("url"), MutableString.Create(m_URL));
             values.Add(CRhoRuby.CreateSymbol("body"), MutableString.Create(strMsg));
             RhoParams p = new RhoParams(values);
             m_aHttp.addHttpCommand(new CAsyncHttp.HttpCommand("POST", p));

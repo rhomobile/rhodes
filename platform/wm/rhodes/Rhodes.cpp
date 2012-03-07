@@ -69,6 +69,7 @@ extern "C" TCHAR* rho_wmimpl_get_startpage();
 extern "C" void rho_wmimpl_set_startpage(const char* path);
 extern "C" void rho_wmimpl_set_logpath(const TCHAR* path);
 extern "C" const char* rho_wmimpl_get_logpath();
+extern "C" const char* rho_wmimpl_get_logurl();
 #endif
 
 
@@ -376,6 +377,8 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)
     CConfig* conf = rho_wmimpl_get_webkitconfig();
     rho_logconf_Init((rho_wmimpl_get_logpath()[0]==0 ? m_strRootPath.c_str() : rho_wmimpl_get_logpath()), m_strRootPath.c_str(), m_logPort.c_str());
+    if (rho_wmimpl_get_logurl()[0]!=0)
+        RHOCONF().setString("rhologurl", rho_wmimpl_get_logurl(), false);
 #else
     rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
 #endif // APP_BUILD_CAPABILITY_MOTOROLA

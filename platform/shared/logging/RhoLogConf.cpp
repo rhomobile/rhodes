@@ -52,7 +52,7 @@ LogSettings::LogSettings(){
     m_nMaxLogFileSize = 0; 
     m_bLogPrefix = true; 
 
-    //m_strLogHost = "PPP_PEER";
+    m_strLogURL = "";
 
     m_pFileSink = new CLogFileSink(*this);
     m_pOutputSink = new CLogOutputSink(*this);
@@ -87,10 +87,9 @@ void LogSettings::initRemoteLog()
 		return;
 #endif
 
-	m_strLogHost = RHOCONF().getString("rhologhost"); 
-	m_strLogPort = RHOCONF().getString("rhologport"); 
+	m_strLogURL = RHOCONF().getString("rhologurl"); 
 
-	if(!m_pSocketSink && m_strLogHost != "" && m_strLogPort != "")
+	if(!m_pSocketSink && m_strLogURL != "")
 		m_pSocketSink = new CLogSocketSink(*this);
 }
 

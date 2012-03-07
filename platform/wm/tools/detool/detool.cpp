@@ -892,7 +892,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 				hFind = CeFindFirstFile(app_dir, &findData);
 				if (INVALID_HANDLE_VALUE == hFind) {
-					_tprintf( TEXT("Application directory on device was no found\n"));
+					_tprintf( TEXT("Application directory on device was not found\n"));
 					
 					new_copy = 1;
 
@@ -916,7 +916,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 				hFind = CeFindFirstFile(remote_bundle_path, &findData);
 				if (INVALID_HANDLE_VALUE == hFind) {
-					_tprintf( TEXT("Bundle directory on device was no found\n"));
+					_tprintf( TEXT("Bundle directory on device was not found\n"));
 	
 					if (!CeCreateDirectory(remote_bundle_path, NULL)) {
 						printf ("Failed to create bundle directory\n");
@@ -1087,7 +1087,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		hFind = CeFindFirstFile(app_dir, &findData);
 		if (INVALID_HANDLE_VALUE == hFind) {
-			_tprintf( TEXT("Application directory on device was no found\n"));
+			_tprintf( TEXT("Application directory on device was not found\n"));
 					
 			new_copy = 1;
 
@@ -1111,7 +1111,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		hFind = CeFindFirstFile(remote_bundle_path, &findData);
 		if (INVALID_HANDLE_VALUE == hFind) {
-			_tprintf( TEXT("Bundle directory on device was no found\n"));
+			_tprintf( TEXT("Bundle directory on device was not found\n"));
 	
 			if (!CeCreateDirectory(remote_bundle_path, NULL)) {
 				printf ("Failed to create bundle directory\n");
@@ -1275,7 +1275,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
         hFind = CeFindFirstFile(app_dir, &findData);
         if (INVALID_HANDLE_VALUE == hFind) {
-            _tprintf( TEXT("Application directory on device was no found\n"));
+            _tprintf( TEXT("Application directory on device was not found\n"));
 
             new_copy = 1;
 
@@ -1335,7 +1335,7 @@ int _tmain(int argc, _TCHAR* argv[])
             } else {
                 hFind = CeFindFirstFile(app_dir, &findData);
                 if (INVALID_HANDLE_VALUE == hFind) {
-                    _tprintf( TEXT("Application directory on device was no found\n"));
+                    _tprintf( TEXT("Application directory on device was not found\n"));
 
                     new_copy = 1;
 
