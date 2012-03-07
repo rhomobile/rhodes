@@ -76,7 +76,7 @@ namespace rho.views
         private const string JS_NOTIFY_CONSOLE_WARNING = "console.warn:";
         private const string JS_NOTIFY_CONSOLE_ERROR = "console.error:";
         private const string JS_NOTIFY_REQUEST = "request:";
-        private const string REQUEST_URL_SCHEME_PREFIX = "x-wmapp1:";
+        private const string REQUEST_URL_SCHEME_PREFIX = "x-wmapp";
 
         //TO DO history. each time we have to save our current state of rhodesapp in rhoview entity
         public Stack<Uri> BackHistory { set { m_backHistory = value; } }
