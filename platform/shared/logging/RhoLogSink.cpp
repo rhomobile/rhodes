@@ -165,9 +165,9 @@ void CLogOutputSink::writeLogMessage( String& strMsg )
 
 CLogSocketSink::CLogSocketSink(const LogSettings& oSettings)
 {
-	m_addrHost = "http://"+oSettings.getLogHost() + ":" + oSettings.getLogPort();
+	m_URL = oSettings.getLogURL();
 
-	CThreadQueue::setLogCategory(LogCategory("NO_LOGGING"));
+    CThreadQueue::setLogCategory(LogCategory("NO_LOGGING"));
     setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
     start(epLow);
 }
@@ -180,7 +180,7 @@ CLogSocketSink::~CLogSocketSink()
 
 void CLogSocketSink::writeLogMessage( String& strMsg )
 {
-	addQueueCommand(new LogCommand(m_addrHost.c_str(), strMsg.c_str()));
+	addQueueCommand(new LogCommand(m_URL.c_str(), strMsg.c_str()));
 }
 
 void CLogSocketSink::processCommand(IQueueCommand* pCmd)

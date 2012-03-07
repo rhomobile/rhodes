@@ -70,7 +70,7 @@ public:
 };
 
 class CLogSocketSink : public ILogSink, common::CThreadQueue{
-    String m_addrHost;
+    String m_URL;
 
 public:
     CLogSocketSink(const LogSettings& oSettings); 

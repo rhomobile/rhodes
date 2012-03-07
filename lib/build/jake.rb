@@ -579,8 +579,7 @@ class Jake
   def self.run_rho_log_server(app_path)
 
 	confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
-	confpath_content += "\r\n" + "rhologhost=" + $rhologhostaddr
-	confpath_content += "\r\n" + "rhologport=" + $rhologhostport.to_s()
+	confpath_content += "\r\n" + "rhologurl=http://" + $rhologhostaddr + ":" + $rhologhostport.to_s() if !confpath_content.include?("rhologurl=")
 	File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
   
     begin
