@@ -1161,7 +1161,9 @@ NOTE: in form action when using url_for specify :action => :create to call creat
 
         $rake run:wp
 
-* Run application device:    
+NOTE: You may use your computer keyboard with Windows Phone 7 emulator. By default it is disabled, but you can enable it pressing **PgUp** key. While it enabled a device rotation simulation is not supported. To rotate device you need to disable keyboard support pressing **PgDown** key.  Look (MSDN page)[http://msdn.microsoft.com/en-us/library/ff754352(v=vs.92).aspx] for much more details on this topic.
+
+* Run application device:
 
         $rake run:wp:device
 
