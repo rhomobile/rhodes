@@ -51,8 +51,8 @@ namespace rho.net
         static public String AJAX_CALLBACK_FUNCNAME = "_rho_ajaxProxyCallback";
         static public String AJAX_PARAM_CALLBACK_ID = "_rho_callbackId";
         static public String AJAX_PARAM_RESPONSE = "response";
-        static public String AJAX_PARAM_STATUS = "status";
-        static public String AJAX_PARAM_MESSAGE = "message";
+        static public String RESPONSE_STATUS = "status";
+        static public String RESPONSE_STATUS_MESSAGE = "message";
 
         class CRoute
         {
@@ -134,7 +134,7 @@ namespace rho.net
                     result = m_Parent.processDispatch(m_route, m_method, m_uri, m_headers, m_query, m_body);
                     strUrl = result[RESPONSE_BODY_FILEPATH].ToString();
 
-                    if (isAjaxRequest() && result[AJAX_PARAM_STATUS].ToString().equals(HTTP_REDIRECT_CODE))
+                    if (isAjaxRequest() && result[RESPONSE_STATUS].ToString().equals(HTTP_REDIRECT_CODE))
                     {
                         IDictionary headers = new Dictionary<String, String>();
                         headers["X-Requested-With"] = "XMLHttpRequest";
@@ -173,8 +173,8 @@ namespace rho.net
                         if (
                                key.ToString().startsWith(PARAM_PREFIX_REQ)
                             || key.ToString().startsWith(PARAM_PREFIX_RESP)
-                            || key.ToString().equals(AJAX_PARAM_MESSAGE)
-                            || key.ToString().equals(AJAX_PARAM_STATUS)
+                            || key.ToString().equals(RESPONSE_STATUS_MESSAGE)
+                            || key.ToString().equals(RESPONSE_STATUS)
                             ) continue;
                         headers[key.ToString()] = result[key].ToString();
                         jsonHeaders.AppendFormat("{0}\"{1}\": \"{2}\"",
@@ -186,8 +186,9 @@ namespace rho.net
                     args[0] = m_strAjaxContext;
                     args[1] = res;
                     args[2] = "{" + jsonHeaders + "}";
-                    args[3] = result[AJAX_PARAM_MESSAGE].ToString();
-                    args[4] = result[AJAX_PARAM_STATUS].ToString();
+                    args[3] = result[RESPONSE_STATUS_MESSAGE] != null ? result[RESPONSE_STATUS_MESSAGE].ToString() : "";
+                    args[4] = result[RESPONSE_STATUS] != null ? result[RESPONSE_STATUS].ToString() : "";
+
 
                     RHODESAPP().processInvokeScriptArgs(AJAX_CALLBACK_FUNCNAME, args, RHODESAPP().getCurrentTab());
                 }
@@ -317,12 +318,16 @@ namespace rho.net
                 CRhoFile.recursiveCreateDir(strFilePath);
                 CRhoFile.writeStringToFile(strFilePath, error);
                 ((IDictionary)rhoResp)[RESPONSE_BODY_FILEPATH] = strFilePath;
+                ((IDictionary)rhoResp)[RESPONSE_STATUS] = "404";
+                ((IDictionary)rhoResp)[RESPONSE_STATUS_MESSAGE] = "Not Found";
                 return (IDictionary)rhoResp;
             }
 
             if (CFilePath.getExtension(fullPath).Length > 0)
             {
                 ((IDictionary)rhoResp)[RESPONSE_BODY_FILEPATH] = strIndexFile;
+                ((IDictionary)rhoResp)[RESPONSE_STATUS] = "200";
+                ((IDictionary)rhoResp)[RESPONSE_STATUS_MESSAGE] = "Ok";
                 return (IDictionary)rhoResp;
             }
 
