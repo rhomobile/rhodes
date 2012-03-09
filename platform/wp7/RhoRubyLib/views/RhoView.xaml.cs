@@ -185,9 +185,9 @@ namespace rho.views
         private String pathFromUrl(String url)
         {
             if (0 == url.IndexOf(REQUEST_URL_SCHEME_PREFIX)) {
-                return url.substring(url.indexOf(":"));
+                return url.substring(url.indexOf(":")+1);
             }
-            return "";
+            return url;
         }
 
         private void WebBrowser_OnScriptNotify(object sender, NotifyEventArgs e)
