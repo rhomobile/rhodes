@@ -89,6 +89,7 @@ namespace rho.common
 
         private void Pivot_OnChanged(object sender, RoutedEventArgs e)
         {
+            m_currentTabIndex = m_tabControl.SelectedIndex;
             ((RhoView)(((PivotItem)m_tabControl.SelectedItem).Content)).refresh();
         }
 
@@ -772,16 +773,7 @@ namespace rho.common
 
         public int getCurrentTab()
         {
-            int result = -1;
-            m_appMainPage.Dispatcher.BeginInvoke( () =>
-            {
-                if (m_tabControl != null)
-                {
-                    result =  m_tabControl.SelectedIndex;
-                }    
-            });
-            
-            return result;
+            return m_currentTabIndex;
         }
     }
 }
