@@ -709,7 +709,7 @@ namespace rho.common
                     m_tabControl.TabStripPlacement = Dock.Top;
                 else if (tabBarType == 3)
                     m_tabControl.TabStripPlacement = Dock.Left;*/
-
+                
                 m_tabControl = new Pivot();
                 m_tabControl.SelectionChanged += Pivot_OnChanged;
 
@@ -772,12 +772,16 @@ namespace rho.common
 
         public int getCurrentTab()
         {
-            if (m_tabControl != null)
+            int result = -1;
+            m_appMainPage.Dispatcher.BeginInvoke( () =>
             {
-                return m_tabControl.SelectedIndex;
-            }
-                
-            return -1;
+                if (m_tabControl != null)
+                {
+                    result =  m_tabControl.SelectedIndex;
+                }    
+            });
+            
+            return result;
         }
     }
 }
