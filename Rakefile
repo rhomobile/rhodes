@@ -430,8 +430,10 @@ def init_extensions(startdir, dest)
       begin
         $rhodes_extensions = nil
         require extname
-        extpath = $rhodes_extensions[0] unless $rhodes_extensions.nil?        
-        $app_config["extpaths"] << extpath 
+        if $rhodes_extensions
+            extpath = $rhodes_extensions[0]
+            $app_config["extpaths"] << extpath 
+        end    
       rescue Exception => e      
         puts "exception"  
       end
