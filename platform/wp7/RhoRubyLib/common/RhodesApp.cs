@@ -229,16 +229,16 @@ namespace rho.common
             m_webBrowser.Dispatcher.BeginInvoke( () =>
             {
                 try{
-                    if (index > 0)
+                    if (m_tabControl != null && m_tabControl.Items.Count > 0)
                     {
-                        if (m_tabControl != null && m_tabControl.Items.Count > 0)
-                        {
-                            ((RhoView)((PivotItem)m_tabControl.Items[index]).Content).webBrowser1.IsScriptEnabled = true;
-                            if (isExternalUrl(strUrl))
-                                ((RhoView)((PivotItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(new Uri(strUrl, UriKind.Absolute));
-                            else
-                                ((RhoView)((PivotItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(new Uri(strUrl, UriKind.Relative));
-                        }
+                        if (index == -1)
+                            index = getCurrentTab();
+
+                        ((RhoView)((PivotItem)m_tabControl.Items[index]).Content).webBrowser1.IsScriptEnabled = true;
+                        if (isExternalUrl(strUrl))
+                            ((RhoView)((PivotItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(new Uri(strUrl, UriKind.Absolute));
+                        else
+                            ((RhoView)((PivotItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(new Uri(strUrl, UriKind.Relative));
                     }
                     else
                     {
@@ -262,12 +262,12 @@ namespace rho.common
             {
                 try
                 {
-                    if (index > 0)
+                    if (m_tabControl != null && m_tabControl.Items.Count > 0)
                     {
-                        if (m_tabControl != null && m_tabControl.Items.Count > 0)
-                        {
-                            ((RhoView)((PivotItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(m_webBrowser.Source);
-                        }
+                        if (index == -1)
+                            index = this.getCurrentTab();
+
+                        ((RhoView)((PivotItem)m_tabControl.Items[index]).Content).webBrowser1.Navigate(m_webBrowser.Source);
                     }
                     else
                     {
@@ -293,8 +293,11 @@ namespace rho.common
             {
                 try
                 {
-                    if (index >= 0 && m_tabControl != null && m_tabControl.Items.Count > 0)
+                    if (m_tabControl != null && m_tabControl.Items.Count > 0)
                     {
+                        if (index == -1)
+                            index = getCurrentTab();
+
                         ((RhoView)((PivotItem)m_tabControl.Items[index]).Content).webBrowser1.InvokeScript(strFuncName, arrParams);
                     }
                     else
@@ -324,7 +327,10 @@ namespace rho.common
 
         public String getCurrentUrl(int index)
         {
-            return m_currentUrls[m_currentTabIndex];
+            if ( index == -1 )
+                index = m_currentTabIndex;
+
+            return m_currentUrls[index];
         }
 
         public void keepLastVisitedUrl(String strUrl)

@@ -68,7 +68,7 @@ namespace rho.rubyext
         }
 
         [RubyMethodAttribute("refresh", RubyMethodAttributes.PublicSingleton)]
-        public static void Refresh(RubyModule/*!*/ self, int index = 0)
+        public static void Refresh(RubyModule/*!*/ self, int index = -1)
         {
             try
             {
@@ -116,12 +116,12 @@ namespace rho.rubyext
         }
 
         [RubyMethodAttribute("current_location", RubyMethodAttributes.PublicSingleton)]
-        public static String currentLocation(RubyModule/*!*/ self)
+        public static String currentLocation(RubyModule/*!*/ self, int index = -1)
         {
             String res = "";
             try
             {
-                res = RHODESAPP().getCurrentUrl(0);
+                res = RHODESAPP().getCurrentUrl(index);
             }
             catch (Exception ex)
             {
