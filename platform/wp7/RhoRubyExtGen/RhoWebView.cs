@@ -48,7 +48,7 @@ namespace rho.rubyext
         }
 
         [RubyMethodAttribute("refresh", RubyMethodAttributes.PublicSingleton)]
-        public static void Refresh(RubyModule/*!*/ self, int index = 0)
+        public static void Refresh(RubyModule/*!*/ self, int index = -1)
         {
         }
 
@@ -58,7 +58,7 @@ namespace rho.rubyext
         }
 
         [RubyMethodAttribute("current_location", RubyMethodAttributes.PublicSingleton)]
-        public static String currentLocation(RubyModule/*!*/ self)
+        public static String currentLocation(RubyModule/*!*/ self, int index = -1)
         {
             return null;
         }
