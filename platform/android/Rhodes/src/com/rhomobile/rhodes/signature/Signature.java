@@ -140,8 +140,8 @@ public class Signature extends AbstractRhoExtension implements IRhoExtension {
 		callback(callbackUrl, fp, "", fp.length() == 0);
 	}
 
-    public static void inline_signature_visible(boolean visible, Object params) {
-        inlineSignatureVisible(RhoExtManager.getInstance(), visible, params);
+    public static void inline_signature_visible(int visible, Object params) {
+        inlineSignatureVisible(RhoExtManager.getInstance(), (visible != 0), params);
     }
 
     public static void inlineSignatureVisible(final IRhoExtManager extManager, boolean visible, Object params) {
