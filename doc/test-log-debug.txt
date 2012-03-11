@@ -98,6 +98,12 @@ In rholog.txt the lines appear as follows:
 
 	<Timestamp> <category> | <message>
 
+To enable remote logging just add the line to `rhoconfig.txt`:
+
+	rhologurl = 'http://<host>:<port>[/path]'
+
+Then all log messages will be sent to the specified URL via POST HTTP-requests.
+
 ### RhoError class
 
 You may find access to the error class useful in logging and reporting:
