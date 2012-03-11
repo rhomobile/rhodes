@@ -43,12 +43,12 @@ if !defined?(RHO_WP7)
         File.exists?(file_name).should == false
 
         res = Rho::AsyncHttp.download_file(
-          :url => 'http://rhomobile.com/wp-content/themes/rhomobile/img/imgs_21.jpg',
+          :url => 'http://www.rhomobile.com/wp-content/themes/rhomobile_theme/images/misc/ruby_app.jpg',
           :filename => file_name )
-        #puts "res : #{res}"  
+        puts "res : #{res}"  
         
         res['status'].should == 'ok'
-        res['headers']['content-length'].to_i.should ==  8945
+        res['headers']['content-length'].to_i.should ==  14451
         res['headers']['content-type'].should == 'image/jpeg'
 
         File.exists?(file_name).should == true
@@ -57,12 +57,13 @@ if !defined?(RHO_WP7)
 
         #check that in case of one more download, files keeps the same        
         res = Rho::AsyncHttp.download_file(
-          :url => 'http://rhomobile.com/wp-content/themes/rhomobile/img/imgs_21.jpg',
+          :url => 'http://www.rhomobile.com/wp-content/themes/rhomobile_theme/images/misc/ruby_app.jpg',
           :filename => file_name )
-        #puts "res : #{res}"  
+        puts "res : #{res}"  
         
         res['status'].should == 'ok'
-        res['headers']['content-length'].to_i.should ==  0
+        res['headers']['content-length'].to_i.should == 12554
+        res['http_error'].should == '206'
         #res['headers']['content-type'].should == 'image/jpeg'
 
         File.exists?(file_name).should == true
@@ -70,9 +71,9 @@ if !defined?(RHO_WP7)
 
         #check that in case of network error, files keeps the same        
         res = Rho::AsyncHttp.download_file(
-          :url => 'http://rhomobile.com/wp-content/themes/rhomobile/img/imgs_21__BAD.jpg',
+          :url => 'http://www.rhomobile.com/wp-content/themes/rhomobile_theme/images/misc/ruby_app_BAD.jpg',
           :filename => file_name )
-        #puts "res : #{res}"  
+        puts "res : #{res}"  
         res['status'].should == 'error'
         res['http_error'].should == '404'
 
