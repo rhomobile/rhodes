@@ -198,7 +198,28 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
         		}
         	}
         }
-        
+        {   
+        	PointSequence ps = mCurrentSequence;
+        	if ((ps != null) && (ps.mPoints != null)) {
+	        	for (p = 1; p < ps.mPoints.size(); p++) {
+	        		PointF prev = ps.mPoints.elementAt(p-1);
+	        		PointF cur = ps.mPoints.elementAt(p);
+	        		if ((prev != null) && (cur != null)) {
+	        			canvas.drawLine(prev.x, prev.y, cur.x, cur.y, mPaint);
+	        		}
+	        	}
+        	}
+        	else {
+        		if (ps == null) {
+        			//Logger.D(TAG, "##################  ps == null !");
+        		}
+        		else {
+	        		if (ps.mPoints == null) {
+	        			//Logger.D(TAG, "##################  ps.mPoints == null !");
+	        		}
+        		}
+        	}
+        }
         // update screen
         if (redrawOnScreen && (!isTransparency)) {
         	Canvas c = null;
@@ -335,14 +356,17 @@ class SignatureView extends SurfaceView implements SurfaceHolder.Callback {
                 	mCurrentSequence.mPoints.add(new PointF(x,y));
                 	break;
                 case MotionEvent.ACTION_MOVE:
-                	doDrawSegment(mX,mY, x,y);
+                	//doDrawSegment(mX,mY, x,y);
                 	mCurrentSequence.mPoints.add(new PointF(x,y));
+                	doFullRedraw(mCanvas, mBitmap, true, true);
+                	invalidate();
                     break;
                 case MotionEvent.ACTION_UP:
-                	doDrawSegment(mX,mY, x,y);
+                	//doDrawSegment(mX,mY, x,y);
                 	mCurrentSequence.mPoints.add(new PointF(x,y));
                 	mSequences.add(mCurrentSequence);
                 	mCurrentSequence = new PointSequence();
+                	doFullRedraw(mCanvas, mBitmap, true, true);
                     break;
             }
     	 
