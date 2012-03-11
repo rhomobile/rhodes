@@ -280,7 +280,7 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
 {
     m_root = CFilePath::normalizePath(root);
     m_strRhoRoot = m_root.substr(0, m_root.length()-5);
-    m_strRuntimeRoot = runtime_root.substr(0, runtime_root.length()-5);
+    m_strRuntimeRoot = runtime_root.substr(0, runtime_root.length()-5) + "/rho/apps";
     m_userroot = CFilePath::normalizePath(user_root);
     m_strRhoUserRoot = m_userroot;
 }
@@ -289,7 +289,7 @@ CHttpServer::CHttpServer(int port, String const &root)
     :m_active(false), m_port(port), verbose(true)
 {
     m_root = CFilePath::normalizePath(root);
-    m_strRuntimeRoot = m_strRhoRoot = m_root.substr(0, m_root.length()-5);
+    m_strRuntimeRoot = (m_strRhoRoot = m_root.substr(0, m_root.length()-5)) + "/rho/apps";
     m_userroot = CFilePath::normalizePath(root);
     m_strRhoUserRoot = m_root.substr(0, m_root.length()-5);
 }
@@ -975,8 +975,6 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
     else if (fullPath.find(m_root) != 0 && fullPath.find(m_strRhoRoot) != 0 && fullPath.find(m_strRuntimeRoot) != 0 && fullPath.find(m_userroot) != 0 && fullPath.find(m_strRhoUserRoot) != 0)
         fullPath = CFilePath::join( m_root, path );
 	
-    if (verbose) RAWTRACE1("Sending file %s...", fullPath.c_str());
-    
     struct stat st;
     bool bCheckExist = true;
 #ifdef RHODES_EMULATOR
@@ -999,11 +997,21 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
 
 #endif
 
-     if ( bCheckExist && (stat(fullPath.c_str(), &st) != 0 || !S_ISREG(st.st_mode))) {
-        RAWLOG_ERROR1("The file %s was not found", path.c_str());
-        String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + path + " was not found.</font></html>";
-        send_response(create_response("404 Not Found",error));
-        return false;
+    bool doesNotExists = bCheckExist && (stat(fullPath.c_str(), &st) != 0 || !S_ISREG(st.st_mode));
+    if ( doesNotExists ) {
+        // looking for files at 'rho/apps' at runtime folder
+        fullPath = CFilePath::join( m_strRuntimeRoot, path );
+    }
+
+    if (verbose) RAWTRACE1("Sending file %s...", fullPath.c_str());
+
+    if ( doesNotExists ) {
+        if ( stat(fullPath.c_str(), &st) != 0 || !S_ISREG(st.st_mode) ) {
+            RAWLOG_ERROR1("The file %s was not found", path.c_str());
+            String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + path + " was not found.</font></html>";
+            send_response(create_response("404 Not Found",error));
+            return false;
+        }
     }
     
     FILE *fp = fopen(fullPath.c_str(), "rb");
