@@ -485,14 +485,39 @@ VALUE get_camera_info(const char* camera_type) {
         }
     }
     
-	if ([platform isEqualToString:@"iPad1,1"])  {
+	if ([platform hasPrefix:@"iPad1"])  {
         // iPad
     }
-	if ([platform isEqualToString:@"iPad2,1"])  {
+    else
+	if ([platform hasPrefix:@"iPad2"])  {
         // iPad 2
         if (!isFront) {
             w = 960;
             h = 720;
+        }
+        else {
+            w = 640;
+            h = 480;
+        }
+    } 
+    else 
+    if ([platform hasPrefix:@"iPad3"])  {
+        // iPad 3
+        if (!isFront) {
+            w = 2592;
+            h = 1936;
+        }
+        else {
+            w = 640;
+            h = 480;
+        }
+    } 
+    else 
+    if ([platform hasPrefix:@"iPad"]) {
+        // iPad 3/4 ?
+        if (!isFront) {
+            w = 2592;
+            h = 1936;
         }
         else {
             w = 640;
