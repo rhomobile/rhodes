@@ -33,6 +33,7 @@
 
 #include <hash_map>
 
+#include "rhodes/fileapi.h"
 #include "rhodes/jni/com_rhomobile_rhodes_file_RhoFileApi.h"
 
 #ifdef RHO_NOT_IMPLEMENTED
@@ -105,6 +106,8 @@ typedef std::map<DIR*, rho_dir_data_t> rho_dir_map_t;
 rho_dir_map_t rho_dir_map;
 static std::vector<DIR*> rho_dir_free;
 static int rho_dir_counter = -1;
+
+static volatile RhoFsMode rho_fs_mode = RHO_FS_DISK_ONLY;
 
 static jclass clsFileApi;
 static jmethodID midCopy;
@@ -201,6 +204,8 @@ static func_scandir_t real_scandir;
 struct stat librhodes_st;
 
 static std::string g_apk_path;
+
+RHO_GLOBAL void rho_file_set_fs_mode(int mode);
 
 std::string const &rho_apk_path()
 {
@@ -333,6 +338,8 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     librhodes_st.st_nlink = 1;
     librhodes_st.st_uid = getuid();
     librhodes_st.st_gid = getgid();
+
+    rho_file_set_fs_mode(RHO_FS_TRANSPARRENT);
 
     RHO_LOG("Library stat (mode: %d, uid: %d, gid: %d)", librhodes_st.st_mode, librhodes_st.st_uid, librhodes_st.st_gid);
 }
@@ -481,8 +488,10 @@ static void dump_stat(struct stat const &st)
 }
 #endif
 
-static bool need_emulate_dir(std::string const &path)
+inline bool need_emulate_dir(std::string const &path)
 {
+    if (rho_fs_mode != RHO_FS_TRANSPARRENT) return false;
+
     std::string fpath = make_full_path(path);
     std::string const &root_path = rho_root_path();
     if (fpath.size() < root_path.size())
@@ -490,27 +499,24 @@ static bool need_emulate_dir(std::string const &path)
     return ::strncmp(fpath.c_str(), root_path.c_str(), root_path.size()) == 0;
 }
 
-static bool need_emulate_dir(const char *path)
+inline bool need_emulate_dir(const char *path)
 {
     return path ? need_emulate_dir(std::string(path)) : false;
 }
 
 static bool need_emulate(std::string const &path)
 {
-    //RHO_LOG("need_emulate: %s", path.c_str());
+    if (rho_fs_mode != RHO_FS_TRANSPARRENT) return false;
+
     std::string fpath = make_full_path(path);
-    //RHO_LOG("need_emulate: (1): %s", fpath.c_str());
     std::string const &root_path = rho_root_path();
     if (::strncmp(fpath.c_str(), root_path.c_str(), root_path.size()) == 0)
     {
-        //RHO_LOG("need_emulate: (2)");
         struct stat st;
         if (real_stat(fpath.c_str(), &st) == -1)
         {
-            //RHO_LOG("need_emulate: (3)");
             if (errno == ENOENT)
             {
-                //RHO_LOG("No such file or directory: %s, need to read it from Android package", fpath.substr(root_path.size()).c_str());
                 rho_stat_t *rst = rho_stat(fpath);
                 return rst != NULL;
             }
@@ -518,25 +524,19 @@ static bool need_emulate(std::string const &path)
         }
         else if (S_ISREG(st.st_mode))
         {
-            //RHO_LOG("need_emulate: (4)");
             rho_stat_t *rst = rho_stat(fpath);
-            //RHO_LOG("need_emulate: (5)");
             if (rst && rst->mtime > st.st_mtime)
             {
-                //RHO_LOG("need_emulate: %s, st.st_mtime: %lu", fpath.c_str(), st.st_mtime);
-                //RHO_LOG("need_emulate: %s, rst->mtime: %lu", fpath.c_str(), rst ? rst->mtime : -1);
-                //RHO_LOG("need_emulate: file %s in Android package is newer than one located on FS, unlink FS one", fpath.c_str());
                 real_unlink(fpath.c_str());
                 return true;
             }
         }
     }
 
-    //RHO_LOG("need_emulate: return false");
     return false;
 }
 
-static bool need_emulate(const char *path)
+inline bool need_emulate(const char *path)
 {
     return path ? need_emulate(std::string(path)) : false;
 }
@@ -1673,3 +1673,18 @@ RHO_GLOBAL int scandir(const char *dir, struct dirent ***namelist, int (*filter)
 
     RHO_NOT_IMPLEMENTED;
 }
+
+RHO_GLOBAL void rho_file_set_fs_mode(int mode)
+{
+    switch (mode)
+    {
+    case RHO_FS_TRANSPARRENT:
+    case RHO_FS_DISK_ONLY:
+        rho_fs_mode = static_cast<RhoFsMode>(mode);
+        LOG(TRACE) + "New FS mode: " + mode;
+        break;
+    default:
+        LOG(ERROR) + "Wrong FS mode: " + mode;
+    }
+}
+

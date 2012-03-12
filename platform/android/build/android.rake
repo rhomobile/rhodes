@@ -755,27 +755,41 @@ namespace "build" do
       end
 
     end
-#    desc "Build RhoBundle for android"
-    task :rhobundle => ["config:android","build:bundle:noxruby",:extensions] do
-#      Rake::Task["build:bundle:noxruby"].execute
+
+    desc "Build RhoBundle for android"
+    task :rhobundle => ["config:android", :extensions] do
+    
+      Rake::Task["build:bundle:noxruby"].invoke
 
       assets = File.join(Jake.get_absolute($androidpath), "Rhodes", "assets")
       rm_rf assets
       mkdir_p assets
       hash = nil
       ["apps", "db", "lib"].each do |d|
-        cp_r File.join($srcdir, d), assets, :preserve => true
+        path = File.join($srcdir, d)
+        #cp_r File.join($srcdir, d), assets, :preserve => true
         # Calculate hash of directories
-        hash = get_dir_hash(File.join(assets, d), hash)
+        hash = get_dir_hash(File.join($srcdir, d), hash)
       end
-      File.open(File.join(assets, "hash"), "w") { |f| f.write(hash.hexdigest) }
+      File.open(File.join($srcdir, "hash"), "w") { |f| f.write(hash.hexdigest) }    
 
-      File.open(File.join(assets, "name"), "w") { |f| f.write($appname) }
+      File.open(File.join($srcdir, "name"), "w") { |f| f.write($appname) }
       
-      Jake.build_file_map(assets, "rho.dat")
+      Jake.build_file_map($srcdir, "rho.dat")
     end
 
-    task :extensions => :genconfig do
+    desc "Build RhoBundle for Eclipse project"
+    task :eclipsebundle => "build:android:rhobundle" do
+      assets = File.join(Jake.get_absolute($androidpath), "Rhodes", "assets")
+      rm_rf assets
+      mkdir_p assets
+      hash = nil
+      ["apps", "db", "lib", "hash", "name", "rho.dat"].each do |d|
+        cp_r File.join($srcdir, d), assets, :preserve => true
+      end
+    end
+
+    task :extensions => ["config:android", :genconfig] do
 
       ENV['RHO_PLATFORM'] = 'android'
       ENV["ANDROID_NDK"] = $androidndkpath
@@ -1475,6 +1489,7 @@ namespace "build" do
         android_targetdir = File.join($targetdir, 'android')
         mkdir_p android_targetdir if not File.exists? android_targetdir
         zip_file_path = File.join(android_targetdir, 'upgrade_bundle.zip')
+        Jake.build_file_map(File.join($srcdir, "apps"), "rhofilelist.txt")
         Jake.zip_upgrade_bundle($bindir, zip_file_path)
     end    
     

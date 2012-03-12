@@ -36,9 +36,16 @@ using namespace rho;
 using namespace rho::common;
 extern "C" void rho_sys_app_exit();
 extern "C" void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg);
+extern "C" void rho_sys_impl_before_exit();
 
 #if !defined(OS_WINDOWS) && !defined(OS_WINCE) && !defined(OS_MACOSX)
 void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg)
+{
+}
+#endif
+#if !defined(OS_ANDROID)
+extern "C"
+void rho_sys_impl_before_exit()
 {
 }
 #endif
@@ -95,7 +102,12 @@ CFileTransaction::CFileTransaction(const String& strFolder) : m_strFolder(strFol
 
 unsigned int CFileTransaction::start()
 {
+    LOG(TRACE) + "FileTransaction is starting: " + m_strFolder;
+    LOG(TRACE) + "Creating folder" + m_strFolder + "_temp_journal";
+
     CRhoFile::createFolder((m_strFolder + "_temp_journal").c_str());
+
+    LOG(TRACE) + "Coping: " + CFilePath::join(m_strFolder, "") + " -> " + m_strFolder + "_temp_journal";
 
     m_nError = CRhoFile::copyFoldersContentToAnotherFolder( CFilePath::join(m_strFolder, "").c_str(), (m_strFolder + "_temp_journal").c_str() );
     if (m_nError)
@@ -104,12 +116,16 @@ unsigned int CFileTransaction::start()
         return m_nError;
     }
 
+    LOG(TRACE) + "Renaming: " + m_strFolder + "_temp_journal" + " -> " + m_strFolder + "_journal";
+
     m_nError = CRhoFile::renameFile( (m_strFolder + "_temp_journal").c_str(), (m_strFolder + "_journal").c_str());
     if (m_nError)
     {
         m_strError = "Unable to rename folder: " + m_strFolder + "_temp_journal to : " + m_strFolder + "_journal";
         return m_nError;
     }
+
+    LOG(TRACE) + "FileTransaction has started";
 
     return m_nError;
 }
@@ -121,8 +137,11 @@ CFileTransaction::~CFileTransaction()
 
 void CFileTransaction::commit()
 {
+    LOG(TRACE) + "FileTransaction is committing: " + m_strFolder;
     String strFolder = m_strFolder;
     
+    LOG(TRACE) + "Renaming: " + strFolder + "_journal" + " -> " + strFolder + "_temp_journal";
+
     m_nError = CRhoFile::renameFile( (strFolder + "_journal").c_str(), (strFolder + "_temp_journal").c_str() );
     if (m_nError)
     {
@@ -131,6 +150,8 @@ void CFileTransaction::commit()
     }
     m_strFolder = "";
 
+    LOG(TRACE) + "Deleting: " + strFolder + "_temp_journal";
+
     m_nError = CRhoFile::deleteFolder( (strFolder + "_temp_journal").c_str() );
     if (m_nError)
     {
@@ -138,15 +159,18 @@ void CFileTransaction::commit()
         return;
     }
 
+    LOG(TRACE) + "FileTransaction has committed";
 }
 
 unsigned int CFileTransaction::rollback()
 {
+    LOG(TRACE) + "FileTransaction is rolling back: " + m_strFolder;
+
     String strFolder = m_strFolder;
     m_strFolder = "";
 
     if ( strFolder.length() == 0 )
-        return 0;                                 
+        return 0;
 
     CRhoFile::deleteFolder( CFilePath(strFolder).changeBaseName("RhoBundle").c_str() );
     CRhoFile::deleteFolder( (strFolder + "_temp_journal").c_str() );
@@ -170,11 +194,15 @@ unsigned int CFileTransaction::rollback()
         return m_nError;
     }
 
+    LOG(TRACE) + "FileTransaction has rolled back";
+
     return m_nError;
 }
 
 unsigned int CReplaceBundleThread::removeFilesByList( const String& strListPath, const String& strSrcFolder )
 {
+	LOG(TRACE) + "Removing files by list: " + strSrcFolder;
+
     unsigned int nError = 0;
     String strList;
     CRhoFile::loadTextFile(strListPath.c_str(), strList);
@@ -194,6 +222,8 @@ unsigned int CReplaceBundleThread::removeFilesByList( const String& strListPath,
 
         if ( strType.compare("file") == 0)
         {
+            LOG(TRACE) + "Deleting file: " + CFilePath::join( strSrcFolder,strPath);
+
             nError = CRhoFile::deleteFile( CFilePath::join( strSrcFolder,strPath).c_str() );
             if (nError != 0)
             {
@@ -208,7 +238,9 @@ unsigned int CReplaceBundleThread::removeFilesByList( const String& strListPath,
 
 unsigned int CReplaceBundleThread::moveFilesByList( const String& strListPath, const String& strSrcFolder, const String& strDestFolder )
 {
-    unsigned int nError = 0;
+	LOG(TRACE) + "Moving files by list: " + strSrcFolder + " -> " + strDestFolder;
+
+	unsigned int nError = 0;
     String strList;
     CRhoFile::loadTextFile(strListPath.c_str(), strList);
 
@@ -229,9 +261,11 @@ unsigned int CReplaceBundleThread::moveFilesByList( const String& strListPath, c
 
         if ( strType.compare("dir") == 0)
         {
+            LOG(TRACE) + "Creating folder: " + strDstPath;
             CRhoFile::createFolder(strDstPath.c_str());
         }else if ( strType.compare("file") == 0)
         {
+            LOG(TRACE) + "Renaming file: " + strSrcPath + " -> " + strDstPath;
             nError = CRhoFile::renameFile( strSrcPath.c_str(), strDstPath.c_str() );
             if (nError != 0)
             {

@@ -28,9 +28,16 @@
 #include "common/StringConverter.h"
 #include "common/Tokenizer.h"
 #include "common/RhoFilePath.h"
+#include "logging/RhoLog.h"
+
+#include <dirent.h>
+
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "RhoFile"
 
 #if defined(WINDOWS_PLATFORM)
     extern "C" int _mkdir(const char * dir);
+    extern "C" int _rmdir(const char * dir);
     extern "C" int  _unlink(const char *path);
 #endif
 
@@ -42,6 +49,125 @@
 
 namespace rho{
 namespace common{
+
+// Below is cross platform folder tree iteration algo implementation
+// but it tested for Android only and removed from other platforms unlil tested
+#ifdef OS_ANDROID
+
+template <typename FileFunctor>
+unsigned iterateFolderTree(const String& path, const FileFunctor& functor)
+{
+    unsigned res = 0;
+    struct dirent *dent;
+    DIR *dir;
+
+    if (!(dir = opendir(path.c_str())))
+    {
+        LOG(ERROR) + "Can't open dir: " + path;
+        return static_cast<unsigned>(errno);
+    }
+
+    while ((dent = readdir(dir))) {
+        if (!strcmp(dent->d_name, ".") || !strcmp(dent->d_name, ".."))
+            continue;
+
+        String child = CFilePath::join(path, dent->d_name);
+        if(child.length() > FILENAME_MAX)
+        {
+            LOG(ERROR) + "Path is too long: " + child;
+            res = ENAMETOOLONG;
+            continue;
+        }
+
+        unsigned res1 = functor(child.c_str() + strlen(functor.m_root));
+        if(res1 != 0) res = res1;
+    }
+
+    if (dir) closedir(dir);
+
+    return res;
+}
+
+struct RemoveFileFunctor {
+    const char* m_root;
+    RemoveFileFunctor(const char* root) : m_root(root) {}
+
+    unsigned operator()(const String& rel_path) const
+    {
+        unsigned res = 0;
+        String path = CFilePath::join(m_root, rel_path);
+        if(CRhoFile::isDirectory(path.c_str()))
+        {
+            res = iterateFolderTree(path, *this);
+            unsigned res1 = CRhoFile::deleteEmptyFolder(path.c_str());
+            if(res1 != 0) res = res1;
+        }
+        else
+        {
+            res = CRhoFile::deleteFile(path.c_str());
+        }
+        return res;
+    }
+};
+
+struct CopyFileFunctor {
+    const char* m_root;
+    const char* m_dst_root;
+    CopyFileFunctor(const char* src_root, const char* dst_root)
+        : m_root(src_root), m_dst_root(dst_root) {}
+
+    unsigned operator()(const String& rel_path) const
+    {
+        unsigned res = 0;
+        String path = CFilePath::join(m_root, rel_path);
+        String dst_path = CFilePath::join(m_dst_root, rel_path);
+
+        if(CRhoFile::isDirectory(path.c_str()))
+        {
+            if((res = CRhoFile::createFolder(dst_path.c_str())) == 0)
+            {
+                res = iterateFolderTree(path, *this);
+            }
+        }
+        else
+        {
+            res = CRhoFile::copyFile(path.c_str(), dst_path.c_str());
+        }
+        return res;
+    }
+};
+
+struct MoveFileFunctor {
+    const char* m_root;
+    const char* m_dst_root;
+    MoveFileFunctor(const char* src_root, const char* dst_root)
+        : m_root(src_root), m_dst_root(dst_root) {}
+
+    unsigned operator()(const String& rel_path) const
+    {
+        unsigned res = 0;
+        String path = CFilePath::join(m_root, rel_path);
+        String dst_path = CFilePath::join(m_dst_root, rel_path);
+
+        if(CRhoFile::isDirectory(path.c_str()))
+        {
+            if((res = CRhoFile::createFolder(dst_path.c_str())) == 0)
+            {
+                if((res = iterateFolderTree(path, *this)) == 0)
+                {
+                    CRhoFile::deleteEmptyFolder(path.c_str());
+                }
+            }
+        }
+        else
+        {
+            res = CRhoFile::renameFile(path.c_str(), dst_path.c_str());
+        }
+        return res;
+    }
+};
+
+#endif
 
 static wchar_t * translate_wchar(wchar_t *p, int from, int to)
 {
@@ -199,6 +325,17 @@ bool CRhoFile::isFileExist( const char* szFilePath ){
     return stat(szFilePath, &st) == 0;
 }
 
+bool CRhoFile::isDirectory( const char* szFilePath ){
+    bool res = false;
+    struct stat st;
+    memset(&st,0, sizeof(st));
+    if (stat(szFilePath, &st) == 0)
+    {
+        return S_ISDIR(st.st_mode);
+    }
+    return res;
+}
+
 unsigned int CRhoFile::getFileSize( const char* szFilePath ){
     struct stat st;
     memset(&st,0, sizeof(st));
@@ -223,6 +360,15 @@ unsigned int CRhoFile::deleteFile( const char* szFilePath ){
     return (unsigned int)remove(szFilePath);
 #endif
 }
+
+unsigned int CRhoFile::deleteEmptyFolder( const char* szFilePath ){
+#if defined(OS_WINDOWS) || defined(OS_WINCE)
+    return (unsigned int)_rmdir(szFilePath);
+#else
+    return (unsigned int)rmdir(szFilePath);
+#endif
+}
+
 
 void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
 {
@@ -318,13 +464,13 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
         return -1;
     }
     
-    int buf_size = 1 << 16;
+    unsigned int buf_size = 1 << 16;
     unsigned char* buf = new unsigned char[buf_size];
     
     unsigned int to_copy = src.size();
     
     while (to_copy > 0) {
-        int portion_size = buf_size;
+        unsigned int portion_size = buf_size;
         if (to_copy < portion_size) {
             portion_size = to_copy;
         }
@@ -369,6 +515,10 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
     delete name;
 
     return result == 0 ? 0 : (unsigned int)-1;
+#elif defined (OS_ANDROID)
+
+    return iterateFolderTree(String(szFolderPath), RemoveFileFunctor(szFolderPath));
+
 #else
     rho_file_impl_delete_folder(szFolderPath);
     return 0;
@@ -433,6 +583,10 @@ static unsigned int copyFolder(const StringW& strSrc, const StringW& strDst, boo
     String_replace(strDstW, L'/', L'\\' );
 
     return copyFolder(strSrcW, strDstW, false);
+#elif defined (OS_ANDROID)
+
+    return iterateFolderTree(String(szSrcFolderPath), CopyFileFunctor(szSrcFolderPath, szDstFolderPath));
+
 #else
     rho_file_impl_copy_folders_content_to_another_folder(szSrcFolderPath, szDstFolderPath);
     return 0;
@@ -450,6 +604,9 @@ static unsigned int copyFolder(const StringW& strSrc, const StringW& strDst, boo
     String_replace(strDstW, L'/', L'\\' );
 
     return copyFolder(strSrcW, strDstW, true);
+#elif defined (OS_ANDROID)
+
+    return iterateFolderTree(String(szSrcFolderPath), MoveFileFunctor(szSrcFolderPath, szDstFolderPath));
 
 #else
     rho_file_impl_move_folders_content_to_another_folder(szSrcFolderPath, szDstFolderPath);
@@ -459,6 +616,11 @@ static unsigned int copyFolder(const StringW& strSrc, const StringW& strDst, boo
 
 }
 }
+
+#ifndef OS_ANDROID
+extern "C" void rho_file_set_fs_mode(int mode) {
+}
+#endif
 
 #if defined(OS_MACOSX) || defined(OS_ANDROID)
     void rho_file_impl_move_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath) {
