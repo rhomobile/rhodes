@@ -63,6 +63,12 @@ module Rho
         hashObjs.each do |name,index|
             if name == '__rho_inline'
                 params.merge!( __rhoGetCallbackObject(index.to_i()) )
+                
+                barcodeModule = Object.const_get('Barcode') if Object.const_defined?('Barcode')
+                if barcodeModule && barcodeModule.respond_to?( :rho_process_moto_callback )
+                    barcodeModule.rho_process_moto_callback(params)
+                end
+                
             else
                 params[name] = __rhoGetCallbackObject(index.to_i())
             end    

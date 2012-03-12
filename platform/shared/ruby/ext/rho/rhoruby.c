@@ -255,6 +255,10 @@ void RhoRubyStart()
     Init_Extensions();
 #endif //RHO_SYMBIAN
 
+#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+    rb_require("rhomotoapi");
+#endif //APP_BUILD_CAPABILITY_MOTOROLA
+
 #ifdef ENABLE_RUBY_VM_STAT
     struct timeval  start;
     struct timeval  end;
