@@ -761,32 +761,32 @@ namespace "build" do
     
       Rake::Task["build:bundle:noxruby"].invoke
 
-      assets = File.join(Jake.get_absolute($androidpath), "Rhodes", "assets")
+      #assets = File.join(Jake.get_absolute($androidpath), "Rhodes", "assets")
+      assets = File.join $tmpdir, 'assets'
       rm_rf assets
       mkdir_p assets
       hash = nil
       ["apps", "db", "lib"].each do |d|
-        path = File.join($srcdir, d)
-        #cp_r File.join($srcdir, d), assets, :preserve => true
+        cp_r File.join($srcdir, d), assets, :preserve => true
         # Calculate hash of directories
         hash = get_dir_hash(File.join($srcdir, d), hash)
       end
       File.open(File.join($srcdir, "hash"), "w") { |f| f.write(hash.hexdigest) }    
-
       File.open(File.join($srcdir, "name"), "w") { |f| f.write($appname) }
-      
       Jake.build_file_map($srcdir, "rho.dat")
+
+      ["apps", "db", "lib", "hash", "name", "rho.dat"].each do |d|
+        cp_r File.join($srcdir, d), assets, :preserve => true
+      end
+
     end
 
     desc "Build RhoBundle for Eclipse project"
     task :eclipsebundle => "build:android:rhobundle" do
-      assets = File.join(Jake.get_absolute($androidpath), "Rhodes", "assets")
-      rm_rf assets
-      mkdir_p assets
-      hash = nil
-      ["apps", "db", "lib", "hash", "name", "rho.dat"].each do |d|
-        cp_r File.join($srcdir, d), assets, :preserve => true
-      end
+      assets = File.join $tmpdir, 'assets'
+      eclipse_assets = File.join(Jake.get_absolute($androidpath), "Rhodes", "assets")
+      rm_rf eclipse_assets
+      cp_r assets, eclipse_assets, :preserve => true
     end
 
     task :extensions => ["config:android", :genconfig] do
@@ -1494,7 +1494,7 @@ namespace "build" do
     end    
     
     #desc "build all"
-    task :all => [:rhobundle, :rhodes]
+    task :all => ['build:android:rhobundle', :rhodes]
   end
 end
 
@@ -1515,7 +1515,7 @@ namespace "package" do
 
     manifest = $appmanifest
     resource = $appres
-    assets = Jake.get_absolute $androidpath + "/Rhodes/assets"
+    assets = File.join($tmpdir, 'assets')
     resourcepkg =  $bindir + "/rhodes.ap_"
 
     puts "Packaging Assets and Jars"
@@ -1531,8 +1531,6 @@ namespace "package" do
     end
 
     # Workaround: manually add files starting with '_' because aapt silently ignore such files when creating package
-    rm_rf File.join($tmpdir, "assets")
-    cp_r assets, $tmpdir
     Dir.glob(File.join($tmpdir, "assets/**/*")).each do |f|
       next unless File.basename(f) =~ /^_/
       relpath = Pathname.new(f).relative_path_from(Pathname.new($tmpdir)).to_s

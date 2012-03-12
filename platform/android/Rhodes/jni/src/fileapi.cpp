@@ -1688,3 +1688,12 @@ RHO_GLOBAL void rho_file_set_fs_mode(int mode)
     }
 }
 
+RHO_GLOBAL void rho_file_patch_stat_table(const rho::String& path)
+{
+    JNIEnv* env = jnienv();
+    static jmethodID mid = getJNIClassStaticMethod(env, clsFileApi, "patchStatTable", "(Ljava/lang/String;)Z");
+
+    jhstring jhPath = rho_cast<jhstring>(env, path);
+
+    env->CallStaticVoidMethod(clsFileApi, mid, jhPath.get());
+}
