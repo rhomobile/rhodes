@@ -28,6 +28,7 @@
 #include "rhodes/JNIRhoRuby.h"
 
 #include "rhodes/RhoClassFactory.h"
+#include "rhodes/fileapi.h"
 
 #include <ruby/ext/rho/rhoruby.h>
 
@@ -67,32 +68,6 @@ RHO_GLOBAL void rho_file_impl_delete_files_in_folder(const char *szFolderPath)
     if (!mid) return;
     jhstring objFolderPath = rho_cast<jhstring>(szFolderPath);
     env->CallStaticVoidMethod(cls, mid, objFolderPath.get());
-}
-
-RHO_GLOBAL void rho_file_impl_delete_folder(const char* szFolderPath) {
-    /*
-    JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
-    if (!cls) return;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "deleteFolder", "(Ljava/lang/String;)V");
-    if (!mid) return;
-    jhstring objFolderPath = rho_cast<jhstring>(szFolderPath);
-    env->CallStaticVoidMethod(cls, mid, objFolderPath.get());
-     */
-    
-}
-
-RHO_GLOBAL void rho_file_impl_copy_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath) {
-    /*
-    JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
-    if (!cls) return;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "copyFoldersContentToAnotherFolder", "(Ljava/lang/String;Ljava/lang/String;)V");
-    if (!mid) return;
-    jhstring objSrcFolderPath = rho_cast<jhstring>(szSrcFolderPath);
-    jhstring objDstFolderPath = rho_cast<jhstring>(szDstFolderPath);
-    env->CallStaticVoidMethod(cls, mid, objSrcFolderPath.get(), objDstFolderPath.get());
-     */
 }
 
 RHO_GLOBAL void rho_platform_restart_application() {
@@ -307,3 +282,9 @@ RHO_GLOBAL void rho_sys_app_uninstall(const char *appname)
 RHO_GLOBAL void rho_sys_set_application_icon_badge(int badge_number) {
     //unsupported on Android
 }
+
+RHO_GLOBAL void rho_sys_impl_before_exit()
+{
+    rho_file_set_fs_mode(RHO_FS_DISK_ONLY);
+}
+

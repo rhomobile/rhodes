@@ -40,8 +40,6 @@ public class Utils {
 	
 	public static class FileSource {
 		
-		public FileSource() {}
-		
 		String[] list(String dir) throws IOException {
 			return new File(dir).list();
 		}
@@ -136,24 +134,25 @@ public class Utils {
 		}
 	}
 	
-	public static void copyRecursively(FileSource fs, String source, File target, boolean remove) throws IOException
+	public static void copyRecursively(FileSource fs, File source, File target, boolean deleteTarget) throws IOException
 	{
-		if (remove && target.exists())
+		if (deleteTarget && target.exists())
 			deleteRecursively(target);
 		
-		String[] children = fs.list(source);
-		if (children != null && children.length > 0) {
-			if (!target.exists())
-				target.mkdirs();
-			
-			for(int i = 0; i != children.length; ++i)
-				copyRecursively(fs, source + "/" + children[i], new File(target, children[i]), false);
-		}
-		else {
+		if (source.isDirectory()) {
+    		String[] children = fs.list(source.getAbsolutePath());
+    		if (children != null && children.length > 0) {
+    			if (!target.exists())
+    				target.mkdirs();
+    			
+    			for(String child: children)
+    				copyRecursively(fs, new File(source, child), new File(target, child), false);
+    		}
+		} else if (source.isFile()){
 			InputStream in = null;
 			OutputStream out = null;
 			try {
-				in = fs.open(source);
+				in = fs.open(source.getAbsolutePath());
 				target.getParentFile().mkdirs();
 				out = new FileOutputStream(target);
 				

@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.util.Utils;
 
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -325,5 +326,27 @@ public class RhoFileApi {
 			return null;
 		}
 	}
-	
+
+    public static int copyRecursively(String srcPath, String trgPath) {
+        try {
+            File source = new File(srcPath);
+            File target = new File(trgPath);
+            Utils.copyRecursively(new Utils.FileSource(), source, target, true);
+            return 0;
+        } catch (Throwable ex) {
+            Logger.E(TAG, ex.getMessage());
+            return -1;
+        }
+    }
+
+    public static int deleteRecursively(String path) {
+        try {
+            Utils.deleteRecursively(new File(path));
+            return 0;
+        } catch (Throwable ex) {
+            Logger.E(TAG, ex.getMessage());
+            return -1;
+        }
+    }
+    
 }

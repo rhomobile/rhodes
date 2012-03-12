@@ -4,7 +4,7 @@
 
   <target name="all">
     <exec executable="rake" failOnError="true" >
-      <arg value="build:android:rhobundle" />
+      <arg value="build:android:eclipsebundle" />
     </exec>
   </target>
 

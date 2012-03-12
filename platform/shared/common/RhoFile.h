@@ -63,7 +63,9 @@ public:
 
     static unsigned int getFileSize( const char* szFilePath );
     static bool         isFileExist( const char* szFilePath );
+    static bool         isDirectory( const char* szFilePath );
     static unsigned int deleteFile( const char* szFilePath );
+    static unsigned int deleteEmptyFolder( const char* szFilePath );
     static unsigned int renameFile( const char* szOldFilePath, const char* szNewFilePath );
     static void         deleteFilesInFolder(const char* szFolderPath);
     static void         loadTextFile(const char* szFilePath, String& strFile);
@@ -91,5 +93,7 @@ extern "C" void rho_file_impl_delete_files_in_folder(const char *szFolderPath);
 extern "C" void rho_file_impl_delete_folder(const char* szFolderPath);
 extern "C" void rho_file_impl_copy_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath);
 extern "C" void rho_file_impl_move_folders_content_to_another_folder(const char* szSrcFolderPath, const char* szDstFolderPath);
+
+extern "C" void rho_file_set_fs_mode(int mode);
 
 #endif //_RHOFILE_H_
