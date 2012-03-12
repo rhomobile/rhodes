@@ -28,9 +28,11 @@
 #define FILEAPI_H_
 
 #include "common/RhoDefs.h"
+#include "common/RhoStd.h"
 
 enum RhoFsMode {RHO_FS_DISK_ONLY = 0, RHO_FS_TRANSPARRENT};
 
 RHO_GLOBAL void rho_file_set_fs_mode(int mode);
+RHO_GLOBAL void rho_file_patch_stat_table(const rho::String& path);
 
 #endif /* FILEAPI_H_ */

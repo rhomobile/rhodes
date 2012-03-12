@@ -329,6 +329,12 @@ void CReplaceBundleThread::doReplaceBundle()
     LOG(INFO) + "STOP";
     oFT.commit();
 
+#ifdef OS_ANDROID
+    //rho_file_patch_stat_table(CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt"))
+    CRhoFile::copyFile(CFilePath::join(m_bundle_path, "RhoBundle/rho.dat").c_str(), RHODESAPP().getRhoRootPath().c_str());
+#endif
+
+
     //Delete bundle folder
     CRhoFile::deleteFolder( m_bundle_path.c_str());
 }
