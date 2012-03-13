@@ -156,7 +156,8 @@ namespace rho.views
 
         private void WebBrowser_OnNavigating(object sender, NavigatingEventArgs e)
         {
-            if (!RHODESAPP().HttpServer.processBrowserRequest(e.Uri, null))
+            var tabIndex = RHODESAPP().getTabIndexFor(sender);
+            if (!RHODESAPP().HttpServer.processBrowserRequest(e.Uri, null, tabIndex))
                 return;
 
             e.Cancel = true;
@@ -231,19 +232,22 @@ namespace rho.views
                     string type = res["type"].ToString().toUpperCase();
                     string contentType = res["contentType"].ToString();
                     IDictionary headers = (IDictionary)res["headers"];
+                    headers["X-Requested-With"] = "XMLHttpRequest";
                     IDictionary data = (IDictionary)res["data"];
+
                     string httpUsername = (null == res["usename"]) ? null : res["usename"].ToString();
                     string httpPassword = (null == res["password"]) ? null : res["password"].ToString();
-
-                    headers["X-Requested-With"] = "XMLHttpRequest";
-
                     string ajaxContext = data[AJAX_CONTEXT_PARAM].ToString();
+
+                    int tabIdx = RHODESAPP().getTabIndexFor(sender);
+                    
                     if (!RHODESAPP().HttpServer.processBrowserRequest(
                         type,
                         new Uri(pathFromUrl(url), UriKind.Relative),
                         headers,
                         data,
-                        ajaxContext
+                        ajaxContext,
+                        tabIdx
                         ))
                     {
                         LOG.ERROR("External requests should be filtered in javascript");
