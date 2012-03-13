@@ -638,6 +638,36 @@ void CRhodesApp::callCallbackWithData(String strCallbackUrl, String strBody, con
         runCallbackInThread(strCallbackUrl, strBody);
 }
 
+extern "C" VALUE rjson_tokener_parse(const char *str, char** pszError );
+
+class CJsonResponse : public rho::ICallbackObject
+{
+    String m_strJson;
+public:
+    CJsonResponse(const char* szJson) : m_strJson(szJson) { }
+    virtual unsigned long getObjectValue()
+    {
+        char* szError = 0;
+        unsigned long valBody = rjson_tokener_parse(m_strJson.c_str(), &szError);
+        if ( valBody != 0 )
+            return valBody;
+
+        LOG(ERROR) + "Incorrect json body.Error:" + (szError ? szError : "");
+        if ( szError )
+            free(szError);
+
+        return rho_ruby_get_NIL();
+    }
+};
+
+void CRhodesApp::callCallbackWithJsonBody( const char* szCallback, const char* szCallbackBody, const char* szCallbackData, bool bWaitForResponse)
+{
+    String strBody;
+    strBody = addCallbackObject( new CJsonResponse( szCallbackBody ), "__rho_inline" );
+
+    callCallbackWithData(szCallback, strBody, szCallbackData, bWaitForResponse );
+}
+
 void CRhodesApp::callCameraCallback(String strCallbackUrl, const String& strImagePath, 
     const String& strError, boolean bCancel ) 
 {
