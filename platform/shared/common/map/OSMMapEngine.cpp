@@ -49,6 +49,14 @@ OSMMapView::OSMMapView(IDrawingDevice *device)
 {
     //MOHUS
     //preloadMapTiles(60.1, 30, 59.7, 30.6, 6, 12);
+    
+    String url = RHOCONF().getString("OSM_map_url_roadmap");
+    if (url.empty())
+        url = "http://tile.openstreetmap.org/";
+    if (url[url.size() - 1] != '/')
+        url.push_back('/');    
+    
+    map_url = url + "%d/%d/%d.png";
 }
 
 int OSMMapView::getMapTile(uint64 p_zoom, uint64 p_row, uint64 p_column, void** p_data, size_t* p_size)
@@ -61,16 +69,16 @@ int OSMMapView::getMapTile(uint64 p_zoom, uint64 p_row, uint64 p_column, void** 
     char buf[1024];
 
     // Open Street Map
-    snprintf(buf, sizeof(buf), "http://a.tah.openstreetmap.org/Tiles/tile/%d/%d/%d.png", (int)p_zoom, (int)p_column, (int)p_row);
+    snprintf(buf, sizeof(buf), map_url.c_str(), (int)p_zoom, (int)p_column, (int)p_row);
 
     url += buf;
 
-    RAWLOG_ERROR("###########  getMapTime() BEFORE FETCH");
+    //RAWLOG_ERROR("###########  getMapTime() BEFORE FETCH");
 
     if (!fetchData(url, &data, &datasize))
         return 0;
 
-    RAWLOG_ERROR("###########  getMapTime() AFTER FETCH");
+    //RAWLOG_ERROR("###########  getMapTime() AFTER FETCH");
 
     *p_data = data;
     *p_size = datasize;
