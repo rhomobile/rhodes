@@ -81,12 +81,13 @@ namespace rho.net
             CRoute m_route;
             CHttpServer m_Parent;
             int m_nCommand;
+            int m_iTabIndex;
             String m_strAjaxContext;
 
             public const int scDispatch = 1, scIndex = 2;
 
             public CServerCommand(CHttpServer Parent, CRoute route,
-                String method, String uri, IDictionary headers, IDictionary data, int nCommand, String strAjaxContext)
+                String method, String uri, IDictionary headers, IDictionary data, int nCommand, String strAjaxContext, int tabIndex)
             {
                 m_Parent = Parent;
                 m_method = (null != method) ? method.toUpperCase() : "GET";
@@ -94,6 +95,7 @@ namespace rho.net
                 m_route = route;
                 m_nCommand = nCommand;
                 m_strAjaxContext = strAjaxContext;
+                m_iTabIndex = tabIndex;
 
                 m_body = "";
 
@@ -143,7 +145,8 @@ namespace rho.net
                             new Uri(strUrl, UriKind.Relative),
                             headers,
                             new Dictionary<String, String>(),
-                            m_strAjaxContext
+                            m_strAjaxContext,
+                            m_iTabIndex
                             ))
                         {
                             LOG.ERROR("Ajax request redirection failed.");
@@ -189,8 +192,7 @@ namespace rho.net
                     args[3] = result[RESPONSE_STATUS_MESSAGE] != null ? result[RESPONSE_STATUS_MESSAGE].ToString() : "";
                     args[4] = result[RESPONSE_STATUS] != null ? result[RESPONSE_STATUS].ToString() : "";
 
-
-                    RHODESAPP().processInvokeScriptArgs(AJAX_CALLBACK_FUNCNAME, args, RHODESAPP().getCurrentTab());
+                    RHODESAPP().processInvokeScriptArgs(AJAX_CALLBACK_FUNCNAME, args, m_iTabIndex);
                 }
             }
 
@@ -223,12 +225,12 @@ namespace rho.net
             (pCmd as CServerCommand).execute();
         }
 
-        public boolean processBrowserRequest(Uri uri, String strAjaxContext)
+        public boolean processBrowserRequest(Uri uri, String strAjaxContext, int tabIndex = -1)
         {
-            return processBrowserRequest("get", uri, null, null, strAjaxContext);
+            return processBrowserRequest("get", uri, null, null, strAjaxContext, tabIndex);
         }
 
-        public boolean processBrowserRequest(String reqType, Uri uri, IDictionary headers, IDictionary data, String strAjaxContext)
+        public boolean processBrowserRequest(String reqType, Uri uri, IDictionary headers, IDictionary data, String strAjaxContext, int tabIndex = -1)
         {
             boolean bAjaxCall = !(strAjaxContext == null || strAjaxContext.length() == 0);
             
@@ -259,7 +261,7 @@ namespace rho.net
             {
                 addQueueCommand(new CServerCommand(this, route, reqType,
                     url + (0 < query.Length ? ("?"+query) : ""),
-                    headers, data, CServerCommand.scDispatch, strAjaxContext));
+                    headers, data, CServerCommand.scDispatch, strAjaxContext, tabIndex));
                 //addQueueCommand(new CServerCommand(this, route, bAjaxCall ? "GET" : "GET", url, query, "", CServerCommand.scDispatch, strAjaxContext));
 
                 return true;
@@ -270,7 +272,7 @@ namespace rho.net
             String strIndexFile = getIndex(fullPath);
             if (strIndexFile.Length > 0)
             {
-                addQueueCommand(new CServerCommand(this, route, reqType, url, headers, data, CServerCommand.scIndex, strAjaxContext));
+                addQueueCommand(new CServerCommand(this, route, reqType, url, headers, data, CServerCommand.scIndex, strAjaxContext, tabIndex));
                 //addQueueCommand(new CServerCommand(this, route, bAjaxCall ? "GET" : "GET", url, query, "", CServerCommand.scIndex, strAjaxContext));
 
                 return true;

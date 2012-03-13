@@ -281,6 +281,17 @@ namespace rho.common
             });
         }
 
+        public int getTabIndexFor(object obj)
+        {
+            if (!(obj is WebBrowser) || m_tabControl == null || m_tabControl.Items.Count == 0) return -1;
+
+            for (int i = 0; i < m_tabControl.Items.Count; i++)
+            {
+                if (obj == ((RhoView)((PivotItem)m_tabControl.Items[i]).Content).webBrowser1) return i;
+            }
+
+            return -1;
+        }
 
         public void processInvokeScriptArgs(String strFuncName, String[] arrParams, int index)
         {
