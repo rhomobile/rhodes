@@ -121,28 +121,12 @@ void CExtManager::executeRubyCallback( const char* szCallback, const char* szCal
     RHODESAPP().callCallbackWithData(szCallback, szCallbackBody, szCallbackData, bWaitForResponse );
 }
 
-extern "C" VALUE rjson_tokener_parse(const char *str, char** pszError );
-
-class CJsonResponse : public rho::ICallbackObject
-{
-    CExtManager* m_pExtManager;
-    String m_strJson;
-public:
-    CJsonResponse(const char* szJson, CExtManager* pExtManager) : m_strJson(szJson), m_pExtManager(pExtManager) { }
-    virtual unsigned long getObjectValue()
-    {
-        return m_pExtManager->parseJsonToRubyHash(m_strJson.c_str());
-    }
-};
-
 void CExtManager::executeRubyCallbackWithJsonBody( const char* szCallback, const char* szCallbackBody, const char* szCallbackData, bool bWaitForResponse)
 {
-    String strBody;
-    strBody = RHODESAPP().addCallbackObject( new CJsonResponse( szCallbackBody, this ), "__rho_inline" );
-
-    RHODESAPP().callCallbackWithData(szCallback, strBody, szCallbackData, bWaitForResponse );
+    RHODESAPP().callCallbackWithJsonBody(szCallback, szCallbackBody, szCallbackData, bWaitForResponse );
 }
 
+extern "C" VALUE rjson_tokener_parse(const char *str, char** pszError );
 unsigned long CExtManager::parseJsonToRubyHash(const char* szJson)
 {
     char* szError = 0;
