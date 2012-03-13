@@ -265,15 +265,11 @@ namespace "config" do
 
     application_build_configs = {}
 
-    #Process motorola extensions
-    if capabilities.index("motorola")
-        $app_config["capabilities"] += ["webkit_browser"] if $app_config["extensions"].index("webkit-browser")
-        $app_config["extensions"] += ["rhoelements"]
-        
-        idx_barcode = $app_config["extensions"].index("barcode")
-        $app_config["extensions"][idx_barcode] = "barcode-moto" if idx_barcode
-
-        $app_config["capabilities"] += ["barcode"] if $app_config["extensions"].index("barcode-moto")
+    #Process rhoelements settings
+    if $app_config["app_type"] == 'rhoelements'
+        $app_config["capabilities"] += ["motorola"] unless $app_config["capabilities"].index("motorola")
+        $app_config["extensions"] += ["rhoelementsext"] #extension with plug-ins
+        $app_config["extensions"] += ['webkit-browser'] unless $app_config["extensions"].index("webkit-browser")
         
         #check for RE2 plugins
         plugins = ""
@@ -284,7 +280,20 @@ namespace "config" do
             end
         end
         
+        if plugins.length() == 0
+            plugins = "ALL"    
+        end
+        
         application_build_configs['moto-plugins'] = plugins if plugins.length() > 0
+        
+    end
+    
+    if $app_config["capabilities"].index("motorola")
+        if $app_config["extensions"].index("webkit-browser")
+            $app_config["capabilities"] += ["webkit_browser"]
+            $app_config["extensions"].delete("webkit-browser")
+        end    
+        $app_config["extensions"] += ["rhoelements"]
     end
 
     puts "$app_config['extensions'] : #{$app_config['extensions'].inspect}"   
@@ -639,11 +648,11 @@ def process_exclude_folders
       excl << $config["excludedirs"][exclude_platform] if $config["excludedirs"][exclude_platform]
   end  
   
-  if excl
-      chdir File.join($srcdir, 'apps')
+  if excl.size() > 0
+      chdir File.join($srcdir)#, 'apps')
   
       excl.each do |mask|
-        Dir.glob(mask).each {|f| rm_rf f}
+        Dir.glob(mask).each {|f| puts "f: #{f}"; rm_rf f}
       end
   end
 

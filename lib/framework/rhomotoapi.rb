@@ -26,6 +26,11 @@
 
 module Barcode
     def self.take_barcode( callback, hashParams = {} )
+        enable(callback, hashParams)
+        RhoElementsExt.meta_proc('scanner', 'start', "")
+    end
+
+    def self.enable( callback, hashParams = {} )
         strParams = ""
         scannerID = nil
         hashParams.each do |key, value|
@@ -39,9 +44,9 @@ module Barcode
 
         strParams += "decodeEvent:url('#{callback}');"
         if scannerID
-            strParams += "enabled:#{scannerID};start;"        
+            strParams += "enabled:#{scannerID};"
         else
-            strParams += "enabled;start;"                    
+            strParams += "enable;" 
         end    
                 
         RhoElementsExt.meta_proc('scanner', strParams, "")

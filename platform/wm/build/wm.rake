@@ -66,12 +66,6 @@ namespace "config" do
     $sdk = "Win32"
   end
 
-  task :set_motce_platform do
-    $current_platform = "wm" unless $current_platform
-    $build_solution = 'rhoelements.sln' unless $build_solution
-    $sdk = "MC3000c50b (ARMV4I)"
-  end
-
   task :wm => [:set_wm_platform, "config:common"] do
     puts " $current_platform : #{$current_platform}"
 
@@ -360,12 +354,6 @@ end
 
 namespace "device" do
 
-  namespace "motce" do
-    desc "Build production for Motorola device"
-    task :production => ["config:set_motce_platform", "device:wm:production"] do
-    end
-  end
-
   namespace "wm" do
     desc "Build production for device or emulator"
     task :production => ["config:wm","build:wm:rhobundle","build:wm:rhodes"] do
@@ -447,10 +435,6 @@ namespace "device" do
 end
 
 namespace "clean" do
-
-  desc "Clean Motorola device build"
-  task :motce => ["config:set_motce_platform", "clean:wm:all"] do
-  end
 
   desc "Clean wm"
   task :wm => "clean:wm:all" do

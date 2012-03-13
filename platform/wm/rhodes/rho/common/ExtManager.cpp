@@ -107,7 +107,7 @@ void CExtManager::onDocumentComplete(const wchar_t* szUrlOfDocument)
 {
     for ( HashtablePtr<String, IRhoExtension*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )
     {
-        (it->second)->onNavigateComplete( szUrlOfDocument, makeExtData() );
+        (it->second)->onDocumentComplete( szUrlOfDocument, makeExtData() );
     }
 }
 
