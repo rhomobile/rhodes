@@ -30,7 +30,13 @@
 #include "common/RhoFilePath.h"
 #include "logging/RhoLog.h"
 
+#if !defined(WINDOWS_PLATFORM)
 #include <dirent.h>
+#else
+#  ifndef S_ISDIR
+#    define S_ISDIR(m) ((_S_IFDIR & m) == _S_IFDIR)
+#  endif
+#endif
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoFile"
