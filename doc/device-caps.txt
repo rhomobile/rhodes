@@ -1482,6 +1482,12 @@ Annotations - array of map annotation objects (list of pins on the map). Annotat
 * image_y_offset - int vertical coordinate of image anchor (ancor point placed to annotation point on map). Set image height/2 for center
 * pass_location  - then true, location coordinates added to url in the format: latitude=xx.xxx&longitude=xx.xxx
 
+Map settings in rhoconfig.txt :
+
+* ESRI_map_url_roadmap - URL of ESRI roadmap tile map server (example:  'http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/')
+* ESRI_map_url_satellite - URL of ESRI satellite tile map server (example:  'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/')
+* OSM_map_url_roadmap - URL of OSM tile map server (example:  'http://tile.openstreetmap.org/')
+
 Enable file caching for map tiles - file cache can use for offline map browsing:
 	:::ruby
 	MapView.set_file_caching_enable(1)
