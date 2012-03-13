@@ -48,6 +48,9 @@ public:
 
     virtual void setESRILogoImage(IDrawingImage *ESRILogoImg) {}
     virtual void setGoogleLogoImage(IDrawingImage *GoogleLogoImg) {}
+    
+private:
+    String map_url;
 };
 
 class OSMMapEngine : public IMapEngine
