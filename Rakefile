@@ -327,6 +327,10 @@ namespace "config" do
     $rhologhostport = 52363 unless $rhologhostport
 	$rhologhostaddr = Jake.localip()
 
+    $obfuscate_js = (($app_config["obfuscate"].nil? || $app_config["obfuscate"]["js"].nil?) ? nil : 1 )
+    $obfuscate_css = (($app_config["obfuscate"].nil? || $app_config["obfuscate"]["css"].nil?) ? nil : 1 )
+    $obfuscate_exclude = ($app_config["obfuscate"].nil? ? nil : $app_config["obfuscate"]["exclude_dirs"] )
+    $obfuscator = 'res/build-tools/yuicompressor-2.4.7.jar'
   end
 
   task :qt do
@@ -550,6 +554,28 @@ def init_extensions(startdir, dest)
 
 end
 
+def public_folder_cp_r(src_dir,dst_dir,level,obfuscate)
+  mkdir_p dst_dir if not File.exists? dst_dir
+  Dir.foreach(src_dir) do |filename|
+    next if filename.eql?('.') || filename.eql?('..')
+    filepath = src_dir + '/' + filename
+    dst_path = dst_dir + '/' + filename
+    if File.directory?(filepath)
+      public_folder_cp_r(filepath,dst_path,(level+1),((obfuscate==1) && ((level>0) || $obfuscate_exclude.nil? || !$obfuscate_exclude.include?(filename)) ? 1 : 0))
+    else
+      if (obfuscate==1) && (((!$obfuscate_js.nil?) && File.extname(filename).eql?(".js")) || ((!$obfuscate_css.nil?) && File.extname(filename).eql?(".css")))
+        puts Jake.run('java',['-jar', $obfuscator, filepath, '-o', dst_path])
+        unless $? == 0
+          puts "Obfuscation error"
+          exit 1
+        end
+      else
+        cp filepath, dst_path, :preserve => true
+      end
+    end
+  end
+end
+
 def common_bundle_start(startdir, dest)
   puts "common_bundle_start"
   
@@ -580,8 +606,14 @@ def common_bundle_start(startdir, dest)
   chdir startdir
   #throw "ME"
   cp_r app + '/app',File.join($srcdir,'apps'), :preserve => true
-  cp_r app + '/public', File.join($srcdir,'apps'), :preserve => true if File.exists? app + '/public'
-  cp   app + '/rhoconfig.txt', File.join($srcdir,'apps'), :preserve => true
+  if File.exists? app + '/public'
+    if $obfuscate_js.nil? && $obfuscate_css.nil?
+      cp_r app + '/public', File.join($srcdir,'apps'), :preserve => true 
+    else
+      public_folder_cp_r app + '/public', File.join($srcdir,'apps/public'), 0, 1
+    end
+  end
+  cp app + '/rhoconfig.txt', File.join($srcdir,'apps'), :preserve => true
 
   app_version = "\r\napp_version='#{$app_config["version"]}'"  
   File.open(File.join($srcdir,'apps/rhoconfig.txt'), "a"){ |f| f.write(app_version) }

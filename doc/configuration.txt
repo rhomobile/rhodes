@@ -46,6 +46,19 @@ Run application with special parameter:
 	:::ruby
 	System::run_app( 'app_name', "security_token=123" )
 
+### JavaScript and CSS Obfuscation
+
+To enable JavaScript and/or CSS code obfuscation at `public` folder of Rhodes application just add the following lines to the build.yml:
+
+	obfuscate:
+	  js: yes
+	  css: yes
+	  exclude_dirs: ["jqmobile", "jqtouch", "jquery"]
+
+If JavaScript or CSS code obfuscation is not required, then just omit `js` or `css` line accordingly.
+
+NOTE: The `jqmobile`, `jqtouch`, and `jquery` folders <b>must</b> be excluded when obfuscation is enabled, because the obfuscated versions of these libraries are there already.
+
 ## Run time configuration
 Each Rhodes application contains a configuration file called "rhoconfig.txt".  A typical rhoconfig.txt will look like the following when an app is generated:
 
