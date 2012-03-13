@@ -25,12 +25,15 @@
 #------------------------------------------------------------------------
 
 module Barcode
-    def self.take_barcode( callback, hashParams = {} )
+
+class << self
+
+    def take_barcode( callback, hashParams = {} )
         enable(callback, hashParams)
         RhoElementsExt.meta_proc('scanner', 'start', "")
     end
 
-    def self.enable( callback, hashParams = {} )
+    def enable( callback = nil, hashParams = {} )
         strParams = ""
         scannerID = nil
         hashParams.each do |key, value|
@@ -42,7 +45,8 @@ module Barcode
             strParams += "#{key}:#{value};"
         end
 
-        strParams += "decodeEvent:url('#{callback}');"
+        strParams += "decodeEvent:url('#{callback}');" if callback
+        
         if scannerID
             strParams += "enabled:#{scannerID};"
         else
@@ -52,12 +56,43 @@ module Barcode
         RhoElementsExt.meta_proc('scanner', strParams, "")
     end
 
-    def self.enumerate(callback)
+    def enumerate(callback=nil)
     
-        RhoElementsExt.meta_proc('scanner', "EnumScannerEvent:url('#{callback}');enumerate", "")
+        if callback
+            RhoElementsExt.meta_proc('scanner', "EnumScannerEvent:url('#{callback}');enumerate", "")
+        else
+            RhoElementsExt.meta_proc('scanner', 'enumerate', '')    
+        end    
+        
     end
+
+	def disable
+		RhoElementsExt.meta_proc('scanner', 'disable', '')
+	end
+	
+	def start
+		RhoElementsExt.meta_proc('scanner', 'start', '')
+	end
+	
+	def stop
+		RhoElementsExt.meta_proc('scanner', 'stop', '')
+	end
+
+	def setEmml(argument)
+		RhoElementsExt.meta_proc('scanner', argument.to_s, '')
+	end
     
-    def self.rho_process_moto_callback(params)
+    def method_missing(name, *args)
+      unless name == Fixnum
+        if name[name.length()-1] == '='
+          Scanner.send(name.to_s.chop().to_sym , args[0] ? args[0].to_s : "") 
+        else
+          Scanner.send(name.to_sym)
+        end
+      end
+    end
+      
+    def rho_process_moto_callback(params)
         puts "rho_process_moto_callback : #{params}"        
         
         return unless params['event'] == 'Decode'
@@ -68,4 +103,5 @@ module Barcode
             params['status'] = 'cancel'            
         end    
     end
+end    
 end
