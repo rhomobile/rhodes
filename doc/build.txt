@@ -1,4 +1,4 @@
-﻿# Build Rhodes Application
+# Build Rhodes Application
 
 This page describes how to build Rhodes Application on all of our supported platforms: iPhone, RIM Blackberry, Windows Mobile and Android.
 
