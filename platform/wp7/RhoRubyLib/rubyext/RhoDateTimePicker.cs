@@ -55,8 +55,6 @@ namespace rho.rubyext
         private static CRhodesApp RHODESAPP() { return CRhodesApp.Instance; }
         private static PhoneApplicationFrame m_frame = null;
         private static object m_frameContentWhenOpened;
-        private static NavigationInTransition m_savedNavigationInTransition;
-        private static NavigationOutTransition m_savedNavigationOutTransition;
         private static RhoDateTimeDlg m_dateTimePickerPage = null;
         private static DateTime m_dateValue;
         private static DateTime m_timeValue;
@@ -156,15 +154,6 @@ namespace rho.rubyext
                 {
                     m_frameContentWhenOpened = m_frame.Content;
 
-                    UIElement frameContentWhenOpenedAsUIElement = m_frameContentWhenOpened as UIElement;
-                    if (null != frameContentWhenOpenedAsUIElement)
-                    {
-                        m_savedNavigationInTransition = TransitionService.GetNavigationInTransition(frameContentWhenOpenedAsUIElement);
-                        TransitionService.SetNavigationInTransition(frameContentWhenOpenedAsUIElement, null);
-                        m_savedNavigationOutTransition = TransitionService.GetNavigationOutTransition(frameContentWhenOpenedAsUIElement);
-                        TransitionService.SetNavigationOutTransition(frameContentWhenOpenedAsUIElement, null);
-                    }
-
                     m_frame.Navigated += OnFrameNavigated;
                     m_frame.NavigationStopped += OnFrameNavigationStoppedOrFailed;
                     m_frame.NavigationFailed += OnFrameNavigationStoppedOrFailed;
@@ -183,15 +172,6 @@ namespace rho.rubyext
                 m_frame.Navigated -= OnFrameNavigated;
                 m_frame.NavigationStopped -= OnFrameNavigationStoppedOrFailed;
                 m_frame.NavigationFailed -= OnFrameNavigationStoppedOrFailed;
-
-                UIElement frameContentWhenOpenedAsUIElement = m_frameContentWhenOpened as UIElement;
-                if (null != frameContentWhenOpenedAsUIElement)
-                {
-                    TransitionService.SetNavigationInTransition(frameContentWhenOpenedAsUIElement, m_savedNavigationInTransition);
-                    m_savedNavigationInTransition = null;
-                    TransitionService.SetNavigationOutTransition(frameContentWhenOpenedAsUIElement, m_savedNavigationOutTransition);
-                    m_savedNavigationOutTransition = null;
-                }
 
                 m_frame = null;
                 m_frameContentWhenOpened = null;
