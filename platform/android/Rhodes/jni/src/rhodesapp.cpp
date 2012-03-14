@@ -200,6 +200,16 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doRequestEx
     RHODESAPP().callCallbackWithData(url, body, data, waitForResponse);
 }
 
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doRequestJson
+  (JNIEnv *env, jclass, jstring jUrl, jstring jBody, jstring jData, jboolean waitForResponse)
+{
+    std::string url = rho_cast<std::string>(jUrl);
+    std::string body = rho_cast<std::string>(jBody);
+    std::string data = rho_cast<std::string>(jData);
+
+    RHODESAPP().callCallbackWithJsonBody(url.c_str(), body.c_str(), data.c_str(), waitForResponse);
+}
+
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_normalizeUrl
   (JNIEnv *env, jobject, jstring strUrl)
 {
