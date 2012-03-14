@@ -57,6 +57,7 @@
     <Compile Include="RhoAsyncHttp.cs" />
     <Compile Include="RhoCamera.cs" />
     <Compile Include="RhoConfig.cs" />
+    <Compile Include="RhoDateTimePicker.cs" />
     <Compile Include="RhoJSON.cs" />
     <Compile Include="RhoNativeBar.cs" />
     <Compile Include="RhoSyncEngine.cs" />

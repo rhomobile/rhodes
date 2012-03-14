@@ -28,6 +28,7 @@ namespace rho.rubyext {
             
             DefineGlobalModule("Alert", typeof(rho.rubyext.RhoAlert), 0x00000008, null, LoadAlert_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
             DefineGlobalModule("Camera", typeof(rho.rubyext.RhoCamera), 0x00000008, null, LoadCamera_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
+            DefineGlobalModule("DateTimePicker", typeof(rho.rubyext.RhoDateTimePicker), 0x00000008, null, LoadDateTimePicker_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
             DefineGlobalModule("NativeBar", typeof(rho.rubyext.RhoNativeBar), 0x00000008, null, LoadNativeBar_Class, null, IronRuby.Builtins.RubyModule.EmptyArray);
             IronRuby.Builtins.RubyModule def3 = DefineGlobalModule("Rho", typeof(rho.rubyext.RhoRoot), 0x00000008, null, null, null, IronRuby.Builtins.RubyModule.EmptyArray);
             IronRuby.Builtins.RubyModule def1 = DefineGlobalModule("Rho", typeof(rho.rubyext.Rho), 0x00000008, null, null, null, IronRuby.Builtins.RubyModule.EmptyArray);
@@ -83,6 +84,19 @@ namespace rho.rubyext {
             DefineLibraryMethod(module, "take_picture", 0x21, 
                 0x00000002U, 
                 new Action<IronRuby.Builtins.RubyModule, System.String>(rho.rubyext.RhoCamera.takePicture)
+            );
+            
+        }
+        
+        private static void LoadDateTimePicker_Class(IronRuby.Builtins.RubyModule/*!*/ module) {
+            DefineLibraryMethod(module, "choose", 0x21, 
+                0x80000000U, 
+                new Action<IronRuby.Builtins.RubyModule, System.Object[]>(rho.rubyext.RhoDateTimePicker.choose)
+            );
+            
+            DefineLibraryMethod(module, "choose_with_range", 0x21, 
+                0x80000000U, 
+                new Action<IronRuby.Builtins.RubyModule, System.Object[]>(rho.rubyext.RhoDateTimePicker.choose_with_range)
             );
             
         }
