@@ -181,22 +181,24 @@ namespace rho.rubyext
             {
                 m_dateValue = m_dateTimePickerPage.m_dateValue;
                 m_timeValue = m_dateTimePickerPage.m_timeValue;
-                DateTime result;
+                DateTime result = new DateTime();
 
                 switch(m_fmt)
                 {
                     case 0:
-                        //result = (m_dateValue - new DateTime(1970, 1, 1)).Ticks / 10000;
+                        result = m_dateValue;//TODO// + m_timeValue;
                         break;
                     case 1:
+                        result = m_dateValue;
                         break;
                     case 2:
+                        result = m_timeValue;
                         break;
                     default:
                         break;
                 }
 
-                long sec = (m_dateValue - new DateTime(1970, 1, 1)).Ticks / 10000000;
+                long sec = (result - new DateTime(1970, 1, 1)).Ticks / 10000000;
 
                 if (m_callback != "")
                 {
