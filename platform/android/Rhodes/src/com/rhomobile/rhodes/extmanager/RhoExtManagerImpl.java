@@ -26,15 +26,21 @@ public class RhoExtManagerImpl implements IRhoExtManager {
 	
 	@Override
 	public IRhoExtension getExtByName(String strName) {
-		return mExtensions.get(strName);
+	    synchronized (mExtensions) {
+	        return mExtensions.get(strName);
+	    }
 	}
 
-	public void registerExtension(String strName, IRhoExtension ext) {
-		if (mExtensions.containsKey(strName)) {
-			mExtensions.remove(strName);
-		}
-		mExtensions.put(strName, ext);
-	}
+    public void registerExtension(String strName, IRhoExtension ext) {
+        Logger.T(TAG, "Registering extension: " + strName);
+        synchronized (mExtensions) {
+            if (mExtensions.containsKey(strName)) {
+                mExtensions.remove(strName);
+            }
+
+            mExtensions.put(strName, ext);
+        }
+    }
 
     @Override
 	public View getWebView() {
@@ -48,7 +54,10 @@ public class RhoExtManagerImpl implements IRhoExtManager {
 
     @Override
     public void onUnhandledProperty(String extName, String name, String value, IRhoExtData extData) {
-        IRhoExtension ext = mExtensions.get(extName);
+        IRhoExtension ext = null;
+        synchronized (mExtensions) {
+            ext = mExtensions.get(extName);
+        }
         if (ext != null) {
             ext.onSetProperty(this, name, value, extData);
         }
@@ -135,100 +144,131 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     // Rhodes implementation related methods are below
 
     public void onSetPropertiesData(View view,String propId, String data, int position, int total) {
-        for (IRhoExtension ext : mExtensions.values()) {
-            ext.onSetPropertiesData(this, propId, data, position, total, makeDefExtData(view));
+        synchronized (mExtensions) {
+            for (IRhoExtension ext : mExtensions.values()) {
+                ext.onSetPropertiesData(this, propId, data, position, total, makeDefExtData(view));
+            }
         }
     }
 
     public void onBeforeNavigate(View view, String url) {
-        for (IRhoExtension ext : mExtensions.values()) {
-            ext.onBeforeNavigate(this, url, makeDefExtData(view));
+        synchronized (mExtensions) {
+            for (IRhoExtension ext : mExtensions.values()) {
+                ext.onBeforeNavigate(this, url, makeDefExtData(view));
+            }
         }
     }
 
     public void onNavigateComplete(View view, String url) {
-        for (IRhoExtension ext : mExtensions.values()) {
-            ext.onNavigateComplete(this, url, makeDefExtData(view));
+        synchronized (mExtensions) {
+            for (IRhoExtension ext : mExtensions.values()) {
+                ext.onNavigateComplete(this, url, makeDefExtData(view));
+            }
         }
     }
 
     public void onAppActivate(boolean isActivate) {
-        for (IRhoExtension ext : mExtensions.values()) {
-            ext.onAppActivate(this, isActivate);
+        synchronized (mExtensions) {
+            for (IRhoExtension ext : mExtensions.values()) {
+                ext.onAppActivate(this, isActivate);
+            }
         }
     }
 
     public void onAlert(View view, String msg) {
-        for (IRhoExtension ext : mExtensions.values()) {
-            ext.onAlert(this, msg, makeDefExtData(view));
+        synchronized (mExtensions) {
+            for (IRhoExtension ext : mExtensions.values()) {
+                ext.onAlert(this, msg, makeDefExtData(view));
+            }
         }
     }
 
     public void onConfirm(View view, String msg) {
-        for (IRhoExtension ext : mExtensions.values()) {
-            ext.onConfirm(this, msg, makeDefExtData(view));
+        synchronized (mExtensions) {
+            for (IRhoExtension ext : mExtensions.values()) {
+                ext.onConfirm(this, msg, makeDefExtData(view));
+            }
         }
     }
 
     public void onConsole(View view, String msg) {
-        for (IRhoExtension ext : mExtensions.values()) {
-            ext.onConsole(this, msg, makeDefExtData(view));
+        synchronized (mExtensions) {
+            for (IRhoExtension ext : mExtensions.values()) {
+                ext.onConsole(this, msg, makeDefExtData(view));
+            }
         }
     }
 
     public void onInputMethod(View view, boolean enabled) {
-        for (IRhoExtension ext : mExtensions.values()) {
-            ext.onInputMethod(this, enabled, makeDefExtData(view));
+        synchronized (mExtensions) {
+            for (IRhoExtension ext : mExtensions.values()) {
+                ext.onInputMethod(this, enabled, makeDefExtData(view));
+            }
         }
     }
 
     public void onLoadEnd(View view, String url, long arg2, long arg3) {
-        for (IRhoExtension ext : mExtensions.values()) {
-            ext.onNavigateComplete(this, url, makeDefExtData(view));
+        synchronized (mExtensions) {
+            for (IRhoExtension ext : mExtensions.values()) {
+                ext.onNavigateComplete(this, url, makeDefExtData(view));
+            }
         }
     }
 
     public void onLoadError(View view) {
-        for (IRhoExtension ext : mExtensions.values()) {
-            ext.onNavigateError(this, "", makeDefExtData(view));
+        synchronized (mExtensions) {
+            for (IRhoExtension ext : mExtensions.values()) {
+                ext.onNavigateError(this, "", makeDefExtData(view));
+            }
         }
     }
 
     public void onLoadProgress(View view, int val, int total) {
-        for (IRhoExtension ext : mExtensions.values()) {
-            ext.onNavigateProgress(this, "", val, total, makeDefExtData(view));
+        synchronized (mExtensions) {
+            for (IRhoExtension ext : mExtensions.values()) {
+                ext.onNavigateProgress(this, "", val, total, makeDefExtData(view));
+            }
         }
     }
 
     public void onMetaEnd(View view) {
-        for (IRhoExtension ext : mExtensions.values()) {
-            ext.onSetPropertiesDataEnd(this, makeDefExtData(view));
+        synchronized (mExtensions) {
+            for (IRhoExtension ext : mExtensions.values()) {
+                ext.onSetPropertiesDataEnd(this, makeDefExtData(view));
+            }
         }
     }
 
     public void onPrompt(View view, String prompt, String arg2) {
-        for (IRhoExtension ext : mExtensions.values()) {
-            ext.onConfirm(this, prompt, makeDefExtData(view));
+        synchronized (mExtensions) {
+            for (IRhoExtension ext : mExtensions.values()) {
+                ext.onConfirm(this, prompt, makeDefExtData(view));
+            }
         }
     }
 
     public void onSelect(View view, String[] lines, int pos) {
-        for (IRhoExtension ext : mExtensions.values()) {
-            ext.onSelect(this, lines, pos, makeDefExtData(view));
+        synchronized (mExtensions) {
+            for (IRhoExtension ext : mExtensions.values()) {
+                ext.onSelect(this, lines, pos, makeDefExtData(view));
+            }
         }
     }
 
     public void onStatus(View view, String msg) {
-        for (IRhoExtension ext : mExtensions.values()) {
-            ext.onStatus(this, msg, makeDefExtData(view));
+        synchronized (mExtensions) {
+            for (IRhoExtension ext : mExtensions.values()) {
+                ext.onStatus(this, msg, makeDefExtData(view));
+            }
         }
     }
 
     public void onTitle(View view, String title) {
-        for (IRhoExtension ext : mExtensions.values()) {
-            ext.onStatus(this, title, makeDefExtData(view));
+        synchronized (mExtensions) {
+            for (IRhoExtension ext : mExtensions.values()) {
+                ext.onStatus(this, title, makeDefExtData(view));
+            }
         }
     }
-
-    
 }
+
