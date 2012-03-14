@@ -24,6 +24,8 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
+#TODO: enable it for Android also
+if System.get_property('platform') == 'WINDOWS'
 module Barcode
 
 class << self
@@ -104,4 +106,5 @@ class << self
         end    
     end
 end    
+end
 end
