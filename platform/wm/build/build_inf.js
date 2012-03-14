@@ -254,6 +254,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
             p("\"openssl.dll\"=2");
             p("\"PBEngine_WK.dll\"=2");
             p("\"npwtg_jsobjects.dll\"=3");
+            p("\"npwtg_legacy.dll\"=3");
             p("\"Config.xml\"=4");
             p("\"Plugin.xml\"=4");
             p("\"RegEx.xml\"=4");
@@ -290,6 +291,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
             p("");
             p("[CopyNPAPI]");
             p("\"npwtg_jsobjects.dll\",\"npwtg_jsobjects.dll\",,0");
+            p("\"npwtg_legacy.dll\",\"npwtg_legacy.dll\",,0");
             p("");
             p("[CopyConfig]");
             p("\"Config.xml\",\"Config.xml\",,0");
