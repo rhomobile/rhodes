@@ -46,7 +46,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Coding4Fun.Phone.Controls">
-    <HintPath>..\..\..\res\build-tools\Coding4Fun.Phone.Controls.dll</HintPath>
+      <HintPath>..\..\..\res\build-tools\Coding4Fun.Phone.Controls.dll</HintPath>
     </Reference>
     <Reference Include="IronRuby">
       <HintPath>..\ironruby\bin\Silverlight3$(Configuration)\IronRuby.dll</HintPath>
@@ -56,6 +56,9 @@
     </Reference>
     <Reference Include="Microsoft.Phone" />
     <Reference Include="Microsoft.Phone.Controls, Version=7.0.0.0, Culture=neutral, PublicKeyToken=24eec0d8c86cda1e, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Phone.Controls.Toolkit">
+      <HintPath>..\..\..\res\build-tools\Microsoft.Phone.Controls.Toolkit.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Phone.Interop" />
     <Reference Include="Microsoft.Scripting">
       <HintPath>..\ironruby\bin\Silverlight3$(Configuration)\Microsoft.Scripting.dll</HintPath>
@@ -127,6 +130,7 @@
     <Compile Include="rubyext\RhoConfig.cs" />
     <Compile Include="rubyext\RhoDatabase.cs" />
     <Compile Include="RhoRuby.cs" />
+    <Compile Include="rubyext\RhoDateTimePicker.cs" />
     <Compile Include="rubyext\RhoJSON.cs" />
     <Compile Include="rubyext\RhoKernelOps.cs" />
     <Compile Include="rubyext\RhoNativeBar.cs" />
@@ -148,6 +152,9 @@
     <Compile Include="sync\SyncThread.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="views\RhoDateTimeDlg.xaml.cs">
+      <DependentUpon>RhoDateTimeDlg.xaml</DependentUpon>
+    </Compile>
     <Compile Include="views\RhoTabHeader.xaml.cs">
       <DependentUpon>RhoTabHeader.xaml</DependentUpon>
     </Compile>
@@ -163,6 +170,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="views\RhoDateTimeDlg.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="views\RhoTabHeader.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -172,7 +183,6 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />
   <ProjectExtensions />

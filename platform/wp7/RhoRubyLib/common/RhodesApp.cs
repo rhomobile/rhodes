@@ -72,6 +72,7 @@ namespace rho.common
         private String m_strAppBackUrl;
         private RhoView m_rhoView;
         private RhoView m_masterView = null;
+        public  bool m_transition = false;
         ManualResetEvent m_UIWaitEvent = new ManualResetEvent(false);
         Vector<Object> m_arCallbackObjects = new Vector<Object>();
 
@@ -98,7 +99,6 @@ namespace rho.common
             initAppUrls();
             RhoLogger.InitRhoLog();
             LOG.INFO("Init");
-
             CRhoFile.recursiveCreateDir(CFilePath.join(getBlobsDirPath()," "));
 
             m_webBrowser = browser;
