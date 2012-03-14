@@ -150,8 +150,6 @@ def make_application_build_capabilities_header_file
   Jake.modify_file_if_content_changed(File.join($startdir, "platform", "shared", "common", "app_build_capabilities.h"), f)
 end
 
-
-
 def make_application_build_config_java_file
 
     f = StringIO.new("", "w+")
@@ -268,7 +266,7 @@ namespace "config" do
     #Process rhoelements settings
     if $app_config["app_type"] == 'rhoelements'
         $app_config["capabilities"] += ["motorola"] unless $app_config["capabilities"].index("motorola")
-        $app_config["extensions"] += ["rhoelementsext"] #extension with plug-ins
+        $app_config["extensions"] += ["rhoelementsext", "motoapi"] #extension with plug-ins
         $app_config["extensions"] += ['webkit-browser'] unless $app_config["extensions"].index("webkit-browser")
         
         #check for RE2 plugins
@@ -414,6 +412,8 @@ def set_linker_flags
 end
 
 def add_extension(path,dest)
+  puts 'add_extension - ' + path.to_s + " - " + dest.to_s
+  
   start = pwd
   chdir path if File.directory?(path)
 
@@ -430,6 +430,8 @@ def init_extensions(startdir, dest)
     
   puts 'init extensions'
   $app_config["extensions"].each do |extname|  
+    puts 'ext - ' + extname
+    
     extpath = nil
     extpaths.each do |p|
       ep = File.join(p, extname)
@@ -438,21 +440,24 @@ def init_extensions(startdir, dest)
         break
       end
     end    
+    
+    puts '1'
 
     if extpath.nil?
       begin
         $rhodes_extensions = nil
         require extname
+        puts '1-2'
         if $rhodes_extensions
             extpath = $rhodes_extensions[0]
-            $app_config["extpaths"] << extpath 
+            $app_config["extpaths"] << extpath
         end    
       rescue Exception => e      
         puts "exception"  
       end
     end
-    
-    unless extpath.nil?
+        
+    unless extpath.nil?      
       add_extension(extpath, dest) unless dest.nil?
 
       if $config["platform"] != "bb"
@@ -484,8 +489,10 @@ def init_extensions(startdir, dest)
             extlibs += libs
           end
         end
-      end    
+      end
+      
     end
+    
   end
   
   exts = File.join($startdir, "platform", "shared", "ruby", "ext", "rho", "extensions.c")
@@ -534,6 +541,8 @@ def init_extensions(startdir, dest)
     nativelib.each { |lib| add_linker_library(lib) }
 
     set_linker_flags
+    
+    #exit
   end
   
   unless $app_config["constants"].nil?
@@ -644,7 +653,7 @@ def common_bundle_start(startdir, dest)
       end
       
       Dir.glob("**/*.wm.*").each { |f| rm f }
-	  Dir.glob("**/*.wp7.*").each { |f| rm f }
+	    Dir.glob("**/*.wp7.*").each { |f| rm f }
       Dir.glob("**/*.iphone.*").each { |f| rm f }
       Dir.glob("**/*.bb.*").each { |f| rm f }
       Dir.glob("**/*.bb6.*").each { |f| rm f }
@@ -867,21 +876,17 @@ namespace "build" do
         sh %{zip -r upgrade_bundle.zip .}
       end
 
-      
       cp   new_zip_file, $bindir
       
       rm   new_zip_file
       
-      
-      
     end
     
-    
-    
+
     task :noiseq do
       app = $app_path
       rhodeslib = File.dirname(__FILE__) + "/lib/framework"
-	  compileERB = "lib/build/compileERB/bb.rb"
+	    compileERB = "lib/build/compileERB/bb.rb"
       startdir = pwd
       dest = $srcdir + "/lib"      
 
