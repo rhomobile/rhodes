@@ -749,6 +749,7 @@ namespace rho.common
                 createTabBarButtons(tabBarType, hashArray);
                 m_tabControl.Margin = new Thickness(0, 70, 0, 0);
                 m_layoutRoot.Children.Add(m_tabControl);
+                m_layoutRoot.Children.Remove(m_masterView);
             });
         }
 
@@ -760,6 +761,7 @@ namespace rho.common
                 {
                     m_tabControl.Items.Clear();
                     m_layoutRoot.Children.Remove(m_tabControl);
+                    m_layoutRoot.Children.Add(m_masterView);
                     m_masterView.refresh();
                 }
             });
