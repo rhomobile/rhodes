@@ -26,8 +26,9 @@ public interface IRhoExtManager {
      */
     String getBuildConfigItem(String name);
 
-    void onUnhandledProperty(String pModuleName,String pName,String pValue, IRhoExtData ext);
-    void executeRubyCallback(String szCallback,String szCallbackBody,String szCallbackData, boolean waitForResponse);
+    void onUnhandledProperty(String moduleName,String name,String value, IRhoExtData ext);
+    void executeRubyCallback(String callback,String callbackBody,String callbackData, boolean waitForResponse);
+    void executeRubyCallbackWithJsonBody(String szCallback, String callbackBody, String callbackData, boolean waitForResponse);
     void requireRubyFile(String szFilePath);
 
     void navigate(String url);

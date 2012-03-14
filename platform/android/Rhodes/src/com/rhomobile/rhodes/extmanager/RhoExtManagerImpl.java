@@ -69,6 +69,11 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     }
 
     @Override
+    public void executeRubyCallbackWithJsonBody(String url, String json, String data, boolean waitForResponse) {
+        RhodesService.doRequestJson(url, json, data, waitForResponse);
+    }
+
+    @Override
     public void requireRubyFile(String filePath) {
         Logger.I(TAG, "Require ruby file: " + filePath);
         nativeRequireRubyFile(filePath);
