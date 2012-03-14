@@ -266,7 +266,8 @@ namespace "config" do
     #Process rhoelements settings
     if $app_config["app_type"] == 'rhoelements'
         $app_config["capabilities"] += ["motorola"] unless $app_config["capabilities"].index("motorola")
-        $app_config["extensions"] += ["rhoelementsext", "motoapi"] #extension with plug-ins
+        $app_config["extensions"] += ["rhoelementsext"] if $current_platform == 'wm'
+        $app_config["extensions"] += ["motoapi"] #extension with plug-ins
         $app_config["extensions"] += ['webkit-browser'] unless $app_config["extensions"].index("webkit-browser")
         
         #check for RE2 plugins
