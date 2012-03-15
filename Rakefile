@@ -291,7 +291,11 @@ namespace "config" do
         if $app_config["extensions"].index("webkit-browser")
             $app_config["capabilities"] += ["webkit_browser"]
             $app_config["extensions"].delete("webkit-browser") unless $current_platform == 'android'
-        end    
+        end
+        if $current_platform == 'android'
+            barcode_idx = $app_config['extensions'].index('barcode')
+            $app_config['extensions'][barcode_idx] = 'barcode-moto' unless barcode_idx.nil?
+        end
         $app_config["extensions"] += ["rhoelements"]
     end
 
