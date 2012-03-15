@@ -70,6 +70,7 @@ extern "C" void rho_wmimpl_set_startpage(const char* path);
 extern "C" void rho_wmimpl_set_logpath(const TCHAR* path);
 extern "C" const char* rho_wmimpl_get_logpath();
 extern "C" const char* rho_wmimpl_get_logurl();
+extern "C" bool rho_wmimpl_get_fullscreen();
 #endif
 
 
@@ -379,6 +380,8 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     rho_logconf_Init((rho_wmimpl_get_logpath()[0]==0 ? m_strRootPath.c_str() : rho_wmimpl_get_logpath()), m_strRootPath.c_str(), m_logPort.c_str());
     if (rho_wmimpl_get_logurl()[0]!=0)
         RHOCONF().setString("rhologurl", rho_wmimpl_get_logurl(), false);
+    if (rho_wmimpl_get_fullscreen())
+        RHOCONF().setBool("full_screen", true, false);
 #else
     rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
 #endif // APP_BUILD_CAPABILITY_MOTOROLA
