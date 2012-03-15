@@ -749,7 +749,8 @@ namespace rho.common
                 createTabBarButtons(tabBarType, hashArray);
                 m_tabControl.Margin = new Thickness(0, 70, 0, 0);
                 m_layoutRoot.Children.Add(m_tabControl);
-                m_layoutRoot.Children.Remove(m_masterView);
+                m_masterView = null;
+                ///m_layoutRoot.Children.Remove(m_masterView);
             });
         }
 
@@ -760,8 +761,9 @@ namespace rho.common
                 if (m_tabControl != null)
                 {
                     m_tabControl.Items.Clear();
+                    m_masterView = (RhoView)((PivotItem)m_tabControl.SelectedItem).Content;
                     m_layoutRoot.Children.Remove(m_tabControl);
-                    m_layoutRoot.Children.Add(m_masterView);
+                    ///m_layoutRoot.Children.Add(m_masterView);
                     m_masterView.refresh();
                 }
             });
