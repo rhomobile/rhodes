@@ -157,7 +157,7 @@
 		[session setUuid:uuid];
 	}
 
-    if (![session requestStartWithConfig: config timeout: 30 error: &error]) {
+    if (![session requestStartWithConfig: config timeout: 180 error: &error]) {
         nsprintf(@"Could not start simulator session: %@", error);
         return EXIT_FAILURE;
     }
