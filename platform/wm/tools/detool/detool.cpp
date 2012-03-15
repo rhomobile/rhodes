@@ -492,7 +492,7 @@ enum {
     DEPLOY_EMU_WEBKIT
 };
 
-int copyExecutable (TCHAR *file_name, TCHAR *app_dir, bool use_re_runtime)
+int copyExecutable (TCHAR *file_name, TCHAR *app_dir, bool use_shared_runtime)
 {
 	TCHAR exe_fullpath[MAX_PATH];
 	int retval = 0;
@@ -505,7 +505,7 @@ int copyExecutable (TCHAR *file_name, TCHAR *app_dir, bool use_re_runtime)
 	_tcscpy(exe_fullpath, app_dir);
 	_tcscat(exe_fullpath, _T("\\"));
 	_tcscat(exe_fullpath, app_name);
-	_tcscat(exe_fullpath, (use_re_runtime ? _T(".lnk") : _T(".exe")));
+	_tcscat(exe_fullpath, (use_shared_runtime ? _T(".lnk") : _T(".exe")));
 
 	hSrc = CreateFile(file_name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (INVALID_HANDLE_VALUE == hSrc) {
@@ -792,7 +792,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	//WIN32_FIND_DATAW findData;
 	int new_copy = 0;
 	int deploy_type;
-	bool use_re_runtime = false;
+	bool use_shared_runtime = false;
 
 	USES_CONVERSION;
 
@@ -811,7 +811,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			app_name = argv[4];
 			//log_port = argv[5];
 			if (strcmp(T2A(argv[5]), "1") == 0)
-				use_re_runtime = true;
+				use_shared_runtime = true;
 			deploy_type = DEPLOY_EMUCAB;
 		}
 
@@ -834,7 +834,7 @@ int _tmain(int argc, _TCHAR* argv[])
             app_name = argv[3];
             //log_port = argv[4];
 			if (strcmp(T2A(argv[4]), "1") == 0)
-				use_re_runtime = true;
+				use_shared_runtime = true;
             deploy_type = DEPLOY_DEVCAB;
         }
 	} else if (argc == 4) { // log
@@ -854,8 +854,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		usage();
 		return EXIT_FAILURE;
 	}
-	if ((!use_re_runtime) && app_exe)
-		use_re_runtime = str_ends_with(app_exe, L".lnk");
+	if ((!use_shared_runtime) && app_exe)
+		use_shared_runtime = str_ends_with(app_exe, L".lnk");
 
 	TCHAR app_dir[MAX_PATH];
 	_tcscpy(app_dir, TEXT("\\Program Files\\"));
@@ -925,7 +925,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				}
 				FindClose( hFind);
 
-				int retval = copyExecutable (app_exe, app_dir, use_re_runtime);
+				int retval = copyExecutable (app_exe, app_dir, use_shared_runtime);
 				if (retval != EXIT_SUCCESS) {
 					printf ("Failed to copy application executable\n");
 					if (retval == 32) {
@@ -947,7 +947,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				_tprintf( TEXT("Starting application..."));
 				TCHAR params[MAX_PATH];
 				params[0] = 0;
-				if (use_re_runtime) {
+				if (use_shared_runtime) {
 					_tcscpy(params_buf, RE2_RUNTIME);
 					_tcscpy(params, _T("-approot='\\Program Files\\"));
 					_tcscat(params, app_name);
@@ -1038,7 +1038,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			_tprintf( TEXT("Starting application..."));
 			TCHAR params[MAX_PATH];
 			params[0] = 0;
-			if (use_re_runtime) {
+			if (use_shared_runtime) {
 				_tcscpy(params_buf, RE2_RUNTIME);
 				_tcscpy(params, _T("-approot='\\Program Files\\"));
 				_tcscat(params, app_name);
@@ -1120,7 +1120,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 		FindClose( hFind);
 
-		int retval = copyExecutable (app_exe, app_dir, use_re_runtime);
+		int retval = copyExecutable (app_exe, app_dir, use_shared_runtime);
 		if (retval != EXIT_SUCCESS) {
 			printf ("Failed to copy application executable\n");
 			if (retval == 32) {
@@ -1142,7 +1142,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		_tprintf( TEXT("Starting application..."));
 		TCHAR params[MAX_PATH];
 		params[0] = 0;
-		if (use_re_runtime) {
+		if (use_shared_runtime) {
 			_tcscpy(params_buf, RE2_RUNTIME);
 			_tcscpy(params, _T("-approot='\\Program Files\\"));
 			_tcscat(params, app_name);
@@ -1228,7 +1228,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			_tprintf( TEXT("Starting application..."));
 			TCHAR params[MAX_PATH];
 			params[0] = 0;
-			if (use_re_runtime) {
+			if (use_shared_runtime) {
 				_tcscpy(params_buf, RE2_RUNTIME);
 				_tcscpy(params, _T("-approot='\\Program Files\\"));
 				_tcscat(params, app_name);
