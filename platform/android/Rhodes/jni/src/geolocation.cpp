@@ -33,21 +33,21 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "GeoLocationJNI"
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_geolocation_GeoLocationImpl_geoCallback
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_geolocation_GeoLocation_geoCallback
   (JNIEnv *, jclass)
 {
     RAWTRACE("Call geo callback");
     rho_geo_callcallback();
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_geolocation_GeoLocationImpl_geoCallbackError
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_geolocation_GeoLocation_geoCallbackError
   (JNIEnv *, jclass)
 {
     RAWTRACE("Call geo callback error");
     rho_geo_callcallback_error();
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_geolocation_GeoLocationImpl_geoCallbackStop
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_geolocation_GeoLocation_geoCallbackStop
   (JNIEnv *, jclass)
 {
     RAWTRACE("Call geo callback stop");
