@@ -1259,14 +1259,14 @@ public class RhodesService extends Service {
 	
 	private void restartGeoLocationIfNeeded() {
 		if (mNeedGeoLocationRestart) {
-			GeoLocation.restart();
+			//GeoLocation.restart();
 			mNeedGeoLocationRestart = false;
 		}
 	}
 	
 	private void stopGeoLocation() {
 		mNeedGeoLocationRestart = GeoLocation.isAvailable();
-		GeoLocation.stop();
+		//GeoLocation.stop();
 	}
 	
 	private void restoreWakeLockIfNeeded() {

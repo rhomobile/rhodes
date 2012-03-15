@@ -243,11 +243,11 @@ Set callback to track location changes.
 
 	:::ruby
 	GeoLocation.set_notification(
-		callback, callback_param="", ping_gpssystem_timeout=0)
+		callback, callback_param="", ping_gpssystem_interval=0)
 
 * callback - callback url; after the callback has been called once, it will be automatically called repeatedly with the current location coordinates passed to the callback as parameters. (You need not reset the callback within the callback.)
-* callback_param: known_position, latitude, longitude, available, status, error_code, accuracy
-* ping_gpssystem_timeout - optional, if 0 system timeout used, use to redefine timeout in sec for gps system reading
+* callback_param: string will be added to callback url in body section. You can use it for identity your setter of callback. Example : "my_tag=55". In general you should not use it.
+* ping_gpssystem_interval - optional, if 0 system interval used(callback executed when system process update location), use to redefine callback execution interval in sec for gps system.
 
 Here are the callback parameters for the set_notification callback.
 
@@ -261,22 +261,14 @@ Here are the callback parameters for the set_notification callback.
 
 **NOTE: You should call GeoLocation.set_notification only once. The current behavior of the callback is that it will be called forever until it is stopped; you need to call `GeoLocation.turnoff` to stop it. The previous behavior was that the callback was called once and needed to be reset.**
 
-Also there are two parameters you can set in rhoconfig.txt:
-
-GeoLocation update period (in seconds): `gps_ping_timeout_sec`. Used as the default value for the third parameter (ping_gpssystem_timeout) of GeoLocation.set_notification method. This value is passed to OS API and behaviour and is OS dependent (it should be used by system as a tip on how often to call notification back). Ignored on iOS.
-
-	gps_ping_timeout_sec = 30
-
-GeoLocation inactivity timeout (in seconds): `geo_location_inactivity_timeout`. This parameter controls the time after that location service is switched off in case there are no calls to the service. It is also used as the time period to drop cached location value.
-	
-	geo_location_inactivity_timeout = gps_ping_timeout_sec * 10
+**NOTE: Now we do not have timeout parameter for automatically turn GPS system off - if you want turn off GPS system by any reason - do it by self via call GeoLocation.turnoff (see below)
 
 Turn off GeoLocation. 
 
 	:::ruby
 	GeoLocation.turnoff
 
-**NOTE: GeoLocation.turnoff - after GPS is switched off, you might still receive a few callbacks (this depends on the platform; iOS does not receive callbacks after turnoff).**
+**NOTE: GeoLocation.turnoff - after GPS is switched off, you might still receive a few callbacks (this depends on the platform; iOS and Android does not receive callbacks after turnoff).**
 
 Get the distance between two points in miles.
 	:::ruby
@@ -304,7 +296,7 @@ You may decide to keep track of your position right after application starts. To
     class AppApplication < Rho::RhoApplication
       def on_activate_app
         #start geolocation
-        GeoLocation.set_notification("/app/Settings/geo_callback", "")
+        GeoLocation.set_notification("/app/Settings/geo_callback", "", 3)
       end
     end
 
