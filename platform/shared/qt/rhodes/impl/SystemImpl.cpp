@@ -266,4 +266,9 @@ RHO_GLOBAL void rho_platform_restart_application()
     RAWLOGC_INFO("SystemImpl", "rho_platform_restart_application() has no implementation in RhoSimulator.");
 }
 
+const char* rho_native_reruntimepath()
+{
+    return rho_native_rhopath();
+}
+
 } //extern "C"
