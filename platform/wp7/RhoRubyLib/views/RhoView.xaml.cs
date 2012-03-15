@@ -90,11 +90,23 @@ namespace rho.views
                 webBrowser1.Background = webBkgColor;
         }
 
+        public void Init(PhoneApplicationPage mainPage, Grid layoutRoot, String strAction,
+                       bool reload, Brush webBkgColor, int index)
+        {
+            m_mainPage = mainPage;
+            m_strAction = strAction;
+            m_layoutRoot = layoutRoot;
+            m_reload = reload;
+            m_index = index;
+            if (webBkgColor != null)
+                webBrowser1.Background = webBkgColor;
+        }
+
         private CRhodesApp RHODESAPP() { return CRhodesApp.Instance; }
 
         public void removeBrowser()
         {
-            webBrowser1.ScriptNotify -= WebBrowser_OnScriptNotify;
+            //webBrowser1.ScriptNotify -= WebBrowser_OnScriptNotify;
             webBrowser1.IsScriptEnabled = false;
         }
 

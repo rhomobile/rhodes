@@ -71,7 +71,7 @@ namespace rho.common
         private String m_strHomeUrl;
         private String m_strAppBackUrl;
         private RhoView m_rhoView;
-        private RhoView m_masterView = null;
+        private static RhoView m_masterView = null;
         public  bool m_transition = false;
         ManualResetEvent m_UIWaitEvent = new ManualResetEvent(false);
         Vector<Object> m_arCallbackObjects = new Vector<Object>();
@@ -707,8 +707,14 @@ namespace rho.common
                     //PivotItem PivotItem = new PivotItem();
                     PivotItem PivotItem = new PivotItem();
                     PivotItem.Header = new RhoTabHeader(label, icon);
-                    //if (i == 0)// && use_current_view_for_tab)
-                    PivotItem.Content = new RhoView(m_appMainPage, m_layoutRoot, action, reload, web_bkg_color, i);
+                    if (i == 0)
+                    {// && use_current_view_for_tab)
+                        ((Grid)m_masterView.Parent).Children.Remove(m_masterView);
+                        m_masterView.Init(m_appMainPage, m_layoutRoot, action, reload, web_bkg_color, i);
+                        PivotItem.Content = m_masterView;
+                    }
+                    else
+                        PivotItem.Content = new RhoView(m_appMainPage, m_layoutRoot, action, reload, web_bkg_color, i);
                     if (values.TryGetValue(CRhoRuby.CreateSymbol("selected_color"), out val))
                         PivotItem.Background = new SolidColorBrush(getColorFromString(val.ToString()));
                     if (values.TryGetValue(CRhoRuby.CreateSymbol("disabled"), out val))
@@ -750,7 +756,6 @@ namespace rho.common
                 m_tabControl.Margin = new Thickness(0, 70, 0, 0);
                 m_layoutRoot.Children.Add(m_tabControl);
                 m_masterView.removeBrowser();
-                ///m_layoutRoot.Children.Remove(m_masterView);
             });
         }
 
@@ -761,9 +766,8 @@ namespace rho.common
                 if (m_tabControl != null)
                 {
                     m_tabControl.Items.Clear();
-                    m_masterView = (RhoView)((PivotItem)m_tabControl.SelectedItem).Content;
+                    ((Grid)m_masterView.Parent).Children.Add(m_masterView);
                     m_layoutRoot.Children.Remove(m_tabControl);
-                    ///m_layoutRoot.Children.Add(m_masterView);
                     m_masterView.refresh();
                 }
             });
