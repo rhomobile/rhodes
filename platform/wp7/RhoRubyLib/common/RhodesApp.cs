@@ -749,7 +749,7 @@ namespace rho.common
                 createTabBarButtons(tabBarType, hashArray);
                 m_tabControl.Margin = new Thickness(0, 70, 0, 0);
                 m_layoutRoot.Children.Add(m_tabControl);
-                m_masterView = null;
+                m_masterView.removeBrowser();
                 ///m_layoutRoot.Children.Remove(m_masterView);
             });
         }

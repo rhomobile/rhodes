@@ -92,6 +92,11 @@ namespace rho.views
 
         private CRhodesApp RHODESAPP() { return CRhodesApp.Instance; }
 
+        public void removeBrowser()
+        {
+            webBrowser1 = null;
+        }
+
         private void WebBrowser_OnLoaded(object sender, RoutedEventArgs e)
         {
             if (RHODESAPP().Tab != null && RHODESAPP().Tab.SelectedIndex != m_index) return;
