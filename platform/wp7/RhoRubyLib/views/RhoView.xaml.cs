@@ -94,7 +94,8 @@ namespace rho.views
 
         public void removeBrowser()
         {
-            webBrowser1 = null;
+            webBrowser1.ScriptNotify -= WebBrowser_OnScriptNotify;
+            webBrowser1.IsScriptEnabled = false;
         }
 
         private void WebBrowser_OnLoaded(object sender, RoutedEventArgs e)
