@@ -184,4 +184,5 @@ SOURCES += ../../ruby/ext/datetimepicker/datetimepicker_wrap.c\
 ../../ruby/ext/signature/signature_wrap.c\
 ../../ruby/ext/nativeviewmanager/nativeviewmanager_wrap.c\
 ../../ruby/ext/bluetooth/bluetooth_wrap.c\
-../../ruby/enc/encdb.c
+../../ruby/enc/encdb.c\
+../../ruby/ext/rho/extensions.c
