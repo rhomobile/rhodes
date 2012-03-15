@@ -742,7 +742,7 @@ namespace "build" do
 
       manifest = $appmanifest
       resource = $appres
-      assets = Jake.get_absolute(File.join($androidpath, "Rhodes", "assets"))
+      assets = Jake.get_absolute File.join($tmpdir, 'assets')
       nativelibs = Jake.get_absolute(File.join($androidpath, "Rhodes", "libs"))
       #rjava = Jake.get_absolute(File.join($androidpath, "Rhodes", "gen", "com", "rhomobile", "rhodes"))
 
@@ -790,6 +790,8 @@ namespace "build" do
     end
 
     task :extensions => ["config:android", :genconfig] do
+    
+      Rake::Task["build:bundle:noxruby"].invoke
 
       ENV['RHO_PLATFORM'] = 'android'
       ENV["ANDROID_NDK"] = $androidndkpath

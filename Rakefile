@@ -290,7 +290,7 @@ namespace "config" do
     if $app_config["capabilities"].index("motorola")
         if $app_config["extensions"].index("webkit-browser")
             $app_config["capabilities"] += ["webkit_browser"]
-            $app_config["extensions"].delete("webkit-browser")
+            $app_config["extensions"].delete("webkit-browser") unless $current_platform == 'android'
         end    
         $app_config["extensions"] += ["rhoelements"]
     end
