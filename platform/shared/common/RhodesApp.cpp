@@ -622,6 +622,8 @@ void CRhodesApp::callCallbackWithData(String strCallbackUrl, String strBody, con
 {
     strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
 
+    LOG(TRACE) + "Call back URL: " + strCallbackUrl;
+
     strBody += "&rho_callback=1";
 
     if (strCallbackData.length() > 0 )
