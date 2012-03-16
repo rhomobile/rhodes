@@ -1800,8 +1800,11 @@ class Time
 
   def to_datetime
     jd = DateTime.__send__(:civil_to_jd, year(), mon(), mday(), DateTime::ITALY)
-    fr = DateTime.__send__(:time_to_day_fraction, hour(), min(), [sec(), 59].min) +
+    fr = DateTime.__send__(:time_to_day_fraction, hour(), min(), [sec(), 59].min) 
+if !defined?(RHO_WP7)
+    +
        Rational(subsec(), 86400)
+end       
     of = Rational(utc_offset(), 86400)
     DateTime.new!(DateTime.__send__(:jd_to_ajd, jd, fr, of),
 		  of, DateTime::ITALY)
@@ -1830,8 +1833,11 @@ class Date
   def self.now(sg=ITALY)
     t = Time.now
     jd = civil_to_jd(t.year(), t.mon(), t.mday(), sg)
-    fr = time_to_day_fraction(t.hour(), t.min(), [t.sec(), 59].min()) +
+    fr = time_to_day_fraction(t.hour(), t.min(), [t.sec(), 59].min()) 
+if !defined?(RHO_WP7)    
+    +
       Rational(t.subsec, 86400)
+end      
     of = Rational(t.utc_offset(), 86400)
     new!(jd_to_ajd(jd, fr, of), of, sg)
   end
