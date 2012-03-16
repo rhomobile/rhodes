@@ -492,7 +492,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         String spath = convertToStringA(rho_wmimpl_get_startpage());
         RHOCONF().setString("start_path", spath, false);
     }
-#endif // APP_BUILD_CAPABILITY_MOTOROLA
+#endif // APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 
 
     m_appWindow.InitMainWindow();
