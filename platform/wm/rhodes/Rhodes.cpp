@@ -203,7 +203,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 			}
 		}
 
-#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
         else if (wcsnicmp(lpszToken, _T("s"),1)==0)
         {
 			String token = convertToStringA(lpszToken);
@@ -226,7 +226,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 				free(path);
 			}
         }
-#endif // APP_BUILD_CAPABILITY_MOTOROLA
+#endif // APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 
 #if defined(OS_WINDOWS)
 		else if (wcsncmp(lpszToken, _T("http_proxy_url"),14)==0) 
@@ -375,7 +375,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         return S_FALSE;
     }
 
-#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
     CConfig* conf = rho_wmimpl_get_webkitconfig();
     rho_logconf_Init((rho_wmimpl_get_logpath()[0]==0 ? m_strRootPath.c_str() : rho_wmimpl_get_logpath()), m_strRootPath.c_str(), m_logPort.c_str());
     if (rho_wmimpl_get_logurl()[0]!=0)
@@ -384,7 +384,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         RHOCONF().setBool("full_screen", true, false);
 #else
     rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
-#endif // APP_BUILD_CAPABILITY_MOTOROLA
+#endif // APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 
 #ifdef RHODES_EMULATOR
     RHOSIMCONF().setAppConfFilePath(CFilePath::join( m_strRootPath, RHO_EMULATOR_DIR"/rhosimconfig.txt").c_str());
@@ -487,7 +487,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }
 #endif
 
-#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
     if (rho_wmimpl_get_startpage()[0] != 0) {
         String spath = convertToStringA(rho_wmimpl_get_startpage());
         RHOCONF().setString("start_path", spath, false);
