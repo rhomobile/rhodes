@@ -202,7 +202,7 @@ void CExtManager::restoreApp()
 
 void CExtManager::resizeBrowserWindow(RECT rc)
 {
-    ::MoveWindow( getMainWnd(), rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top, TRUE );
+    //::MoveWindow( getMainWnd(), rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top, TRUE );
 }
 
 void CExtManager::zoomPage(float fZoom)
