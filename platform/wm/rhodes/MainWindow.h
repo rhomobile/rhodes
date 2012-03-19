@@ -72,6 +72,8 @@ extern UINT WM_BROWSER_ONNAVIGATIONTIMEOUT;
 extern UINT WM_BROWSER_ONNAVIGATIONERROR;
 extern UINT WM_BROWSER_ONSETSIPSTATE;
 extern UINT WM_BROWSER_ONALERTPOPUP;
+extern UINT WM_BROWSER_ONAUTHENTICATIONREQUEST;
+extern UINT WM_BROWSER_ONGPSDATA;
 
 #else
 #if defined (_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
@@ -213,6 +215,8 @@ public:
         MESSAGE_HANDLER(WM_BROWSER_ONNAVIGATIONERROR, OnNavigateError);
         MESSAGE_HANDLER(WM_BROWSER_ONSETSIPSTATE, OnSetSIPState);
         MESSAGE_HANDLER(WM_BROWSER_ONALERTPOPUP, OnAlertPopup);
+        MESSAGE_HANDLER(WM_BROWSER_ONAUTHENTICATIONREQUEST, OnAuthenticationRequest);
+        MESSAGE_HANDLER(WM_BROWSER_ONGPSDATA, OnGeolocationData);
 
         MESSAGE_RANGE_HANDLER(PB_NAVIGATETAB, PB_NEWGPSDATA, OnWebKitMessages)
 #endif
@@ -273,11 +277,13 @@ private:
     LRESULT OnNavigateComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnTitleChange (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnWebKitMessages (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-    LRESULT OnBeforeNavigate (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);    
-    LRESULT OnNavigateTimeout (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);    
-    LRESULT OnNavigateError (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);    
-    LRESULT OnSetSIPState (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);    
-    LRESULT OnAlertPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);    
+    LRESULT OnBeforeNavigate (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+    LRESULT OnNavigateTimeout (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+    LRESULT OnNavigateError (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+    LRESULT OnSetSIPState (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+    LRESULT OnAlertPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+    LRESULT OnAuthenticationRequest (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+    LRESULT OnGeolocationData (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 #endif
 
 public:

@@ -304,6 +304,30 @@ long CExtManager::OnAlertPopup(int nEnum, void* pData)
     return 0;
 }
 
+long CExtManager::OnAuthenticationRequest(int nEnum, void* pData)
+{
+    for ( HashtablePtr<String, IRhoExtension*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )
+    {
+        long lRes = (it->second)->OnAuthenticationRequest( nEnum, pData, makeExtData() );
+        if ( lRes )
+            return lRes;
+    }
+
+    return 0;
+}
+
+long CExtManager::OnGeolocationData(int nEnum, void* pData)
+{
+    for ( HashtablePtr<String, IRhoExtension*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )
+    {
+        long lRes = (it->second)->OnGeolocationData( nEnum, pData, makeExtData() );
+        if ( lRes )
+            return lRes;
+    }
+
+    return 0;
+}
+
 long CExtManager::OnNavigateError(const wchar_t* szUrlBeingNavigatedTo)
 {
     for ( HashtablePtr<String, IRhoExtension*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )
