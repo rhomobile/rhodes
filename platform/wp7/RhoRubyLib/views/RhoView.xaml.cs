@@ -141,7 +141,7 @@ namespace rho.views
                     m_callback = true;
                 }
                 m_strAction = RHODESAPP().canonicalizeRhoUrl(m_strAction);
-                if (m_callback && m_loadFirstTime)
+                if (m_callback)
                 {
                     RhoClassFactory.createNetRequest().pushData(m_strAction, "rho_callback=1", null);
                 }
