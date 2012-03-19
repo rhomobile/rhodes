@@ -1393,3 +1393,12 @@ namespace "build" do
         end
     end
 end
+
+
+at_exit do
+  if !$app_config["sdk"].nil? 
+    puts '*********************** WARRNING ********************************'
+    puts 'Please remove sdk parameter from build.yml in application folder'
+    puts '*****************************************************************'
+  end
+end
