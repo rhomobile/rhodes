@@ -126,14 +126,6 @@ Sync server url, typically this will look like 'http://<hostname>:<port>/applica
 
 	syncserver = 'http://localhost:9292/application'
 
-Geo location update period (in seconds). Used as default value for third parameter of GeoLocation.set_notification method. This value is passed to OS API and behaviour is OS dependent (it should be used by system as a tip how often call notification back). Ignored on iOS.
-
-	gps_ping_timeout_sec = 30
-
-Geo location inactivity timeout (in seconds). This parameter controls the time after that location service is switched off in case no calls to the service. It also used as time period to drop cached location value.
-	
-	geo_location_inactivity_timeout = gps_ping_timeout_sec * 10
-
 Set this option to 1 in order to open Rhodes app in full screen mode. Default is 1 for Android up to Rhodes 2.2.5. On all other platforms and on Android from Rhodes > 2.2.5 default is 0
 	
 	full_screen = 1
