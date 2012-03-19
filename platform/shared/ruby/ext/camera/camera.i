@@ -4,7 +4,7 @@
 #include "ext/rho/rhoruby.h"
 
 extern void take_picture(char* callback_url, rho_param *options_hash);
-extern void choose_picture(char* callback_url);
+extern void choose_picture(char* callback_url, rho_param *options_hash);
 
 extern VALUE get_camera_info(const char* camera_type);
 
@@ -24,6 +24,6 @@ extern VALUE get_camera_info(const char* camera_type);
 
 
 extern void take_picture(char* callback_url, rho_param *options_hash );
-extern void choose_picture(char* callback_url);
+extern void choose_picture(char* callback_url, rho_param *options_hash);
 
 extern VALUE get_camera_info(const char* camera_type);

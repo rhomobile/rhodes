@@ -34,13 +34,18 @@
 
 #define CAMERA_SETTINGS_TYPE_MAIN 1
 #define CAMERA_SETTINGS_TYPE_FRONT 2
+#define CAMERA_SETTINGS_TYPE_CHOOSE_IMAGE 3
 
+#define CAMERA_SETTINGS_FORMAT_NOT_SETTED 0
 #define CAMERA_SETTINGS_FORMAT_JPG 1
 #define CAMERA_SETTINGS_FORMAT_PNG 2
 
 #define CAMERA_SETTINGS_COLOR_MODEL_RGB 1
 #define CAMERA_SETTINGS_COLOR_MODEL_GRAY 2
 
+#define CAMERA_SETTINGS_EDITING_NOT_SETTED 0
+#define CAMERA_SETTINGS_EDITING_ENABLE 1
+#define CAMERA_SETTINGS_EDITING_DISABLE 2
 
 
 @interface RhoCameraSettings : NSObject {
@@ -52,6 +57,7 @@
     int width;
     int height;
     int enable_editing;
+    int enable_editing_setted;
 }
 
 @property (retain) NSString* callback_url;
@@ -61,6 +67,7 @@
 @property (assign) int width;
 @property (assign) int height;
 @property (assign) int enable_editing;
+@property (assign) int enable_editing_setted;
 
 - (id)init:(void*)data url:(NSString*)url;
 

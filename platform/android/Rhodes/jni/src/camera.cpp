@@ -68,7 +68,7 @@ RHO_GLOBAL void take_picture(char* callback_url, rho_param *options_hash )
 
 }
 
-RHO_GLOBAL void choose_picture(char* callback_url)
+RHO_GLOBAL void choose_picture(char* callback_url, rho_param *options_hash)
 {
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_CAMERA);
