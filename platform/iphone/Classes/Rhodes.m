@@ -427,10 +427,11 @@ static Rhodes *instance = NULL;
 }
 
 
-- (void)choosePicture:(NSString*) url {
+- (void)choosePicture:(RhoCameraSettings*) settings {
     if (!rho_rhodesapp_check_mode())
         return;
-    [pickImageDelegate setPostUrl:url];
+    [pickImageDelegate setPostUrl:settings.callback_url];
+    pickImageDelegate.settings = settings;
     [self startCameraPicker:pickImageDelegate 
                  sourceType:UIImagePickerControllerSourceTypePhotoLibrary];
 }

@@ -1829,7 +1829,7 @@ static VALUE mCamera;
 #include "ext/rho/rhoruby.h"
 
 extern void take_picture(char* callback_url, rho_param *options_hash);
-extern void choose_picture(char* callback_url);
+extern void choose_picture(char* callback_url, rho_param *options_hash);
 
 extern VALUE get_camera_info(const char* camera_type);
 
@@ -1930,11 +1930,15 @@ fail:
 SWIGINTERN VALUE
 _wrap_choose_picture(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
+  rho_param *arg2 = (rho_param *) 0 ;
   int res1 ;
   char *buf1 = 0 ;
   int alloc1 = 0 ;
   
-  if ((argc < 1) || (argc > 1)) {
+  {
+    arg2 = NULL;
+  }
+  if ((argc < 1) || (argc > 2)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
   }
   res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
@@ -1942,11 +1946,22 @@ _wrap_choose_picture(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char *","choose_picture", 1, argv[0] ));
   }
   arg1 = (char *)(buf1);
-  choose_picture(arg1);
+  if (argc > 1) {
+    {
+      arg2 = rho_param_fromvalue(argv[1]);
+    }
+  }
+  choose_picture(arg1,arg2);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  {
+    rho_param_free(arg2);
+  }
   return Qnil;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  {
+    rho_param_free(arg2);
+  }
   return Qnil;
 }
 
