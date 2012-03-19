@@ -201,7 +201,7 @@ Rhodes will update location using network data until the GPS signal has been rec
 There are two ways to use GeoLocation.
 
  * Synchronous call to GeoLocation module for particular value.
- * Set GeoLocation notification and track location by call back. In this case all location values are passed to notification as parameters.
+ * Set GeoLocation notification (geoLocation.set_notification) and track location by the notification callback. In this case all location values are passed to notification as parameters in a @param variable.
 
 Note that GeoLocation is switched off automatically when the application goes into the background, and is switched on as the application goes back to foreground.
 However it is possible to switch on location services as usual while the application is in background.
@@ -245,30 +245,30 @@ Set callback to track location changes.
 	GeoLocation.set_notification(
 		callback, callback_param="", ping_gpssystem_interval=0)
 
-* callback - callback url; after the callback has been called once, it will be automatically called repeatedly with the current location coordinates passed to the callback as parameters. (You need not reset the callback within the callback.)
-* callback_param: string will be added to callback url in body section. You can use it for identity your setter of callback. Example : "my_tag=55". In general you should not use it.
-* ping_gpssystem_interval - optional, if 0 system interval used(callback executed when system process update location), use to redefine callback execution interval in sec for gps system.
+* callback - url for the notification callback; after the callback has been called once, it will automatically be called repeatedly with the current location coordinates passed to the callback in the @params variable. (You need not reset the callback within the callback.)
+* callback_param: this string will be added to the body of the callback url. You can use it to identity who is setting up the callback, such as "my_tag=55". In general you do not set callback_param (leave it blank as in "").
+* ping_gpssystem_interval – Optional. If 0, the system interval is used; the callback is executed when the GPS system processes a location update (dependent on the mobile platform). If set to a number (such as 3), the callback is executed at an interval of this number of seconds (such as every three seconds).
 
-Here are the callback parameters for the set_notification callback.
+When the GeoLocation.set_notification callback is called, it will receive a variable called @params, just like a normal Rhodes controller action. Here are the parameters included in the @params variable.
 
-* known_position - 1 or 0.
+* known_position - 1 or 0
 * latitude
 * longitude
-* available - 1 or 0. Availability of GeoLocation: not only does the hardware exist, but also the user can turn GPS off in phone settings, or not allowed GPS activity on iPhone, etc.)
+* available - 1 or 0. This is the availability of GeoLocation: not only does the hardware exist, but also the user can turn GPS off in phone settings, or not allow GPS activity on iPhone, etc.
 * status - 'error' or 'ok'
 * error_code - from RhoError.
 * accuracy - horizontal radius in meters; iOS and Android.
 
-**NOTE: You should call GeoLocation.set_notification only once. The current behavior of the callback is that it will be called forever until it is stopped; you need to call `GeoLocation.turnoff` to stop it. The previous behavior was that the callback was called once and needed to be reset.**
+**NOTE: You only need to call GeoLocation.set_notification once. The current behavior of the callback is that it will be called forever until it is stopped; you need to call `GeoLocation.turnoff` to stop it. The previous behavior was that the callback was called once and needed to be reset.**
 
-**NOTE: Now we do not have timeout parameter for automatically turn GPS system off - if you want turn off GPS system by any reason - do it by self via call GeoLocation.turnoff (see below)
+**NOTE: We do not have a timeout parameter to automatically turn off the GPS system. If you want to turn off the GPS system, call GeoLocation.turnoff.**
 
 Turn off GeoLocation. 
 
 	:::ruby
 	GeoLocation.turnoff
 
-**NOTE: GeoLocation.turnoff - after GPS is switched off, you might still receive a few callbacks (this depends on the platform; iOS and Android does not receive callbacks after turnoff).**
+**NOTE: When you call GeoLocation.turnoff, after the GPS is switched off, you might still receive a few callbacks (this depends on the platform; iOS and Android does not receive callbacks after turnoff).**
 
 Get the distance between two points in miles.
 	:::ruby
