@@ -483,6 +483,16 @@ LRESULT CMainWindow::OnAlertPopup (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
     return RHODESAPP().getExtManager().OnAlertPopup(wParam, (void*)lParam);
 }
 
+LRESULT CMainWindow::OnAuthenticationRequest (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+{
+    return RHODESAPP().getExtManager().OnAuthenticationRequest(wParam, (void*)lParam);
+}
+
+LRESULT CMainWindow::OnGeolocationData (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+{
+    return RHODESAPP().getExtManager().OnGeolocationData(wParam, (void*)lParam);
+}
+
 #endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 
 LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
