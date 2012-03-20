@@ -288,6 +288,7 @@ namespace "config" do
         
         application_build_configs['moto-plugins'] = plugins if plugins.length() > 0
         
+        application_build_configs['shared-runtime'] = '1' if $app_config["capabilities"].index('shared_runtime')
     end
     
     if $app_config["capabilities"].index("motorola")
