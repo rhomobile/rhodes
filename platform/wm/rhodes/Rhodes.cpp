@@ -63,14 +63,14 @@ class CConfig;
 extern "C" CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
 extern "C" CConfig* rho_wmimpl_get_webkitconfig();
 extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
-extern "C" WCHAR* rho_wmimpl_get_configfilepath();
 extern "C" void rho_wmimpl_set_configfilepath(const char* path);
 extern "C" TCHAR* rho_wmimpl_get_startpage();
 extern "C" void rho_wmimpl_set_startpage(const char* path);
-extern "C" void rho_wmimpl_set_logpath(const TCHAR* path);
 extern "C" const char* rho_wmimpl_get_logpath();
 extern "C" const char* rho_wmimpl_get_logurl();
 extern "C" bool rho_wmimpl_get_fullscreen();
+extern "C" void rho_wmimpl_set_is_version2();
+extern "C" bool rho_wmimpl_get_is_version2();
 #endif
 
 
@@ -311,6 +311,9 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
                 if (m_strRootPath.at(m_strRootPath.length()-1)!='/')
                     m_strRootPath.append("/");
                 m_strRootPath.append("rho/");
+#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+                rho_wmimpl_set_is_version2();
+#endif
         	}
 			free(path);
         }
@@ -488,7 +491,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #endif
 
 #if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
-    if (rho_wmimpl_get_startpage()[0] != 0) {
+    if ((!rho_wmimpl_get_is_version2()) && (rho_wmimpl_get_startpage()[0] != 0)) {
         String spath = convertToStringA(rho_wmimpl_get_startpage());
         RHOCONF().setString("start_path", spath, false);
     }
