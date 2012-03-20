@@ -156,10 +156,10 @@ void CMainWindow::SetFullScreen(bool bFull)
 	
 	if(bFull)
 		rect.bottom =  GetSystemMetrics(SM_CYSCREEN);
-	
-	MoveWindow(&rect);
 
 	m_bFullScreen = bFull;
+
+	MoveWindow(&rect);
 }
 #endif
 
