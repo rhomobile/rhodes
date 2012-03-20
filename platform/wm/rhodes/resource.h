@@ -28,7 +28,6 @@
 #define IDD_TAKE_SIGNATURE              124
 #define IDR_SIGNATURE_MENU              126
 #define IDM_SAVE                        127
-#define IDR_VERSION2                    128
 #define IDC_STATIC_PROMPT               1001
 #define IDC_EDIT_URL                    1002
 #define IDC_LOGEDIT                     1003
