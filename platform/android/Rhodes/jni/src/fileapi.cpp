@@ -120,6 +120,10 @@ static jmethodID midGetChildren;
 typedef FILE *(*func_sfp_t)();
 typedef int (*func_sflags_t)(const char *mode, int *optr);
 
+#ifndef DEFFILEMODE
+#define DEFFILEMODE  (S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH)
+#endif
+
 static func_sflags_t __sflags;
 static func_sfp_t __sfp;
 
@@ -339,10 +343,24 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     librhodes_st.st_uid = getuid();
     librhodes_st.st_gid = getgid();
 
-    rho_file_set_fs_mode(RHO_FS_TRANSPARRENT);
-
     RHO_LOG("Library stat (mode: %d, uid: %d, gid: %d)", librhodes_st.st_mode, librhodes_st.st_uid, librhodes_st.st_gid);
 }
+
+
+extern "C" void rho_sysimpl_remove_bundle_files(const char* rootPath, const char* listFileName);
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_removeBundleUpgrade
+  (JNIEnv *env, jclass)
+{
+    rho_sysimpl_remove_bundle_files((rho_root_path() + "apps").c_str(), "rhofilelist.txt");
+}
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_setFsModeTransparrent
+  (JNIEnv *env, jclass , jboolean transparrent)
+{
+    rho_file_set_fs_mode(transparrent ? RHO_FS_TRANSPARRENT : RHO_FS_DISK_ONLY);
+}
+
 
 static std::string normalize_path(std::string path)
 {
@@ -521,15 +539,6 @@ static bool need_emulate(std::string const &path)
                 return rst != NULL;
             }
 
-        }
-        else if (S_ISREG(st.st_mode))
-        {
-            rho_stat_t *rst = rho_stat(fpath);
-            if (rst && rst->mtime > st.st_mtime)
-            {
-                real_unlink(fpath.c_str());
-                return true;
-            }
         }
     }
 
@@ -1296,20 +1305,21 @@ static int __sclose(void *cookie)
 
 RHO_GLOBAL FILE *fopen(const char *path, const char *mode)
 {
+    int flags, oflags;
+    FILE *fp = 0;
+
     RHO_LOG("fopen: %s (%s)", path, mode);
 
-    int flags, oflags;
     if ((flags = __sflags(mode, &oflags)) == 0)
         return NULL;
+    if((fp = __sfp()) == 0)
+        return NULL;
 
-    int fd = open(path, oflags, S_IRWXU);
+    int fd = open(path, oflags, DEFFILEMODE);
     RHO_LOG("fopen: %s (%s): fd: %d", path, mode, fd);
-    if (fd == -1)
+    if (fd < 0)
         return NULL;
 
-    FILE *fp = __sfp();
-    if (!fp)
-        return NULL;
 
     fp->_flags = flags;
     fp->_file = fd;
@@ -1318,6 +1328,10 @@ RHO_GLOBAL FILE *fopen(const char *path, const char *mode)
     fp->_write = __swrite;
     fp->_seek = __sseek;
     fp->_close = __sclose;
+
+    // Do seek at our level as well even though oflags passed to open
+    if (oflags & O_APPEND)
+        (void) __sseek((void *)fp, (fpos_t)0, SEEK_END);
 
     RHO_LOG("fopen: %s (%s): fp: %p", path, mode, fp);
     return fp;

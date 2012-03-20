@@ -69,6 +69,9 @@ public class RhoFileApi {
 	
 	private static native boolean needEmulate(String path);
 	private static native String makeRelativePath(String path);
+	
+    public static native void setFsModeTransparrent(boolean transparrent);
+	public static native void removeBundleUpgrade();
 
     private static void fillStatTable() throws IOException {
         InputStream is = null;
@@ -163,10 +166,13 @@ public class RhoFileApi {
 		fillStatTable();
 	}
 	
-	public static void initCopy(Context ctx, String assets[])
+	public static void initialCopy(Context ctx, String assets[])
 	{
 		am = ctx.getAssets();
-		copyAssets(assets);
+        for(String asset: assets)
+        {
+            forceFile(getRootPath() + asset);
+        }
 	}
 	
 	public static boolean copy(String path)
@@ -175,8 +181,6 @@ public class RhoFileApi {
 		InputStream is = null;
 		OutputStream os = null;
 		try {
-			//RhodesService r = RhodesService.getInstance();
-			
 			is = am.open(path);
 			
 			File dst = new File(root, path);

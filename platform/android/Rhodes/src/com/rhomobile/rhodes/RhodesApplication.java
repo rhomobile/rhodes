@@ -134,10 +134,17 @@ public class RhodesApplication extends Application{
         ApplicationInfo appInfo = getAppInfo();
         String rootPath;
 
-        try {
-            rootPath = RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir);
-            Log.d(TAG, "Root path: " + rootPath);
+        rootPath = RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir);
+        Log.d(TAG, "Root path: " + rootPath);
 
+        boolean hashChanged = isAppHashChanged(rootPath);
+        if (hashChanged) {
+            Log.i(TAG, "Application hash was changed");
+            
+            RhoFileApi.initialCopy(this, new String[] {"hash", "rho.dat", "apps/rhoconfig.txt"});
+        }
+        
+        try {
             RhoFileApi.init(this);
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
@@ -145,9 +152,11 @@ public class RhodesApplication extends Application{
             return;
         }
 
-        if (this.isAppHashChanged(rootPath)) {
+        setupRhodesApp();
+
+        if (hashChanged) {
             try {
-                Log.i(TAG, "Application hash was changed");
+                RhoFileApi.removeBundleUpgrade();
                 
                 File libDir = new File(rootPath, "lib");
                 File testLib = new File(libDir.getPath(), "rhoframework.iseq");
@@ -161,16 +170,15 @@ public class RhodesApplication extends Application{
                 rootPath = RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir);
                 Log.d(TAG, "Root path: " + rootPath);
 
-                RhoFileApi.init(this);
-                RhoFileApi.copy("hash");
             } catch (IOException e) {
                 Log.e(TAG, e.getMessage());
                 stop();
                 return;
             }
         }
-        
-        setupRhodesApp();
+
+        RhoFileApi.setFsModeTransparrent(true);
+
         Logger.I(TAG, "Initialized");
     }
     private static boolean sRhodesActivityStarted = false;

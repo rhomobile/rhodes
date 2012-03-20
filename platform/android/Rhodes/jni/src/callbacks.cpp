@@ -283,8 +283,3 @@ RHO_GLOBAL void rho_sys_set_application_icon_badge(int badge_number) {
     //unsupported on Android
 }
 
-RHO_GLOBAL void rho_sys_impl_before_exit()
-{
-    rho_file_set_fs_mode(RHO_FS_DISK_ONLY);
-}
-
