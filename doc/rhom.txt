@@ -520,12 +520,16 @@ Assigns the [metadata](/rhoconnect/metadata) for a given model.
 
 	:::ruby
 	Product.metadata = { 'foo' => 'bar' }.to_json
-	
 
 ## Associations
-For sync-enabled models, Rhom offers associations as a means to automatically trigger sync updates for dependent objects.  This is useful where you have relationships between backend service objects.
 
-For example, you can have a list of customers who have purchased a product:
+Rhom does not support Ruby on Rails associations. However, Rhom has a [sync  association](/rhodes/rhom#sync-associations) called `belongs_to` which you can use to trigger updates on sync-enabled models.
+
+## Sync Associations
+
+For sync-enabled models, Rhom has a `belongs_to` sync association as a means to automatically trigger sync updates for dependent objects. This is useful where you have relationships between backend service objects.
+
+For example, you can have a list of customers who have purchased a product, and thus you can have them belong to that product:
 
 	:::ruby
 	class Customer
@@ -535,7 +539,7 @@ For example, you can have a list of customers who have purchased a product:
 	  belongs_to :product_id, 'Product'
 	end
 
-In your `product_controller.rb`, assign the `:belongs_to` attribute when a product is created:
+In your `product_controller.rb`, assign the `belongs_to` attribute when a product is created:
 
 	:::ruby
 	def create
@@ -548,7 +552,7 @@ In your `product_controller.rb`, assign the `:belongs_to` attribute when a produ
 	  redirect :action => :index
 	end
 
-You can also define polymorphic associations, or associations across multiple classes.
+You can also define polymorphic sync associations, or sync associations across multiple classes.
 
 Using array notation:
 	
@@ -560,7 +564,6 @@ Or multiple declarations:
 	:::ruby
 	belongs_to :parent_id, 'Product'
 	belongs_to :parent_id, 'Cases'
-
 
 **NOTE: After a new product is created, the `:product_id` for the `Customer` records will be updated to the new value.**
 
@@ -593,7 +596,7 @@ For such models if you try to add not listed property - you will get ArgumentErr
     obj.update_attributes(:wrong_address => 'test') #will raise ArgumentError exception
 
 
-NOTE: FixedSchema models 'freezed' by default.
+**NOTE: FixedSchema models are 'freezed' by default.**
 
     
 ## Accessing Sync Info with RhomSource
