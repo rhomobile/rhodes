@@ -157,6 +157,7 @@ public class RhodesApplication extends Application{
         if (hashChanged) {
             try {
                 RhoFileApi.removeBundleUpgrade();
+                RhoFileApi.copy("apps/rhoconfig.txt");
                 
                 File libDir = new File(rootPath, "lib");
                 File testLib = new File(libDir.getPath(), "rhoframework.iseq");
