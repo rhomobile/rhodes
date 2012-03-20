@@ -61,6 +61,11 @@ void rho_appmanager_load( void* httpContext, const char* szQuery);
 void rho_db_init_attr_manager();
 void rho_sys_app_exit();
 void rho_sys_report_app_started();
+
+#ifdef OS_ANDROID
+void rho_file_set_fs_mode(int mode);
+#endif
+
 }
     
 namespace rho {
@@ -426,6 +431,11 @@ void CRhodesApp::stopApp()
         stopWait();
         stop(2000);
     }
+
+    #ifdef OS_ANDROID
+        // Switch Android libc hooks to FS only mode
+        rho_file_set_fs_mode(0);
+    #endif
 
 //    net::CAsyncHttp::Destroy();
 }

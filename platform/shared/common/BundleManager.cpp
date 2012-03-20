@@ -36,16 +36,9 @@ using namespace rho;
 using namespace rho::common;
 extern "C" void rho_sys_app_exit();
 extern "C" void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg);
-extern "C" void rho_sys_impl_before_exit();
 
 #if !defined(OS_WINDOWS) && !defined(OS_WINCE) && !defined(OS_MACOSX)
 void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg)
-{
-}
-#endif
-#if !defined(OS_ANDROID)
-extern "C"
-void rho_sys_impl_before_exit()
 {
 }
 #endif
@@ -77,8 +70,6 @@ class CReplaceBundleThread : public rho::common::CRhoThread
 
     String m_bundle_path;
 
-    unsigned int removeFilesByList( const String& strListPath, const String& strSrcFolder );
-    unsigned int moveFilesByList( const String& strListPath, const String& strSrcFolder, const String& strDstFolder );
     void doReplaceBundle();
 public:
 
@@ -93,6 +84,9 @@ public:
     virtual void run();
 
     static void showError(int nError, const String& strError );
+
+    static unsigned int removeFilesByList( const String& strListPath, const String& strSrcFolder );
+    static unsigned int moveFilesByList( const String& strListPath, const String& strSrcFolder, const String& strDstFolder );
 };
 IMPLEMENT_LOGCLASS(CReplaceBundleThread,"RhoBundle");
 
@@ -201,11 +195,12 @@ unsigned int CFileTransaction::rollback()
 
 unsigned int CReplaceBundleThread::removeFilesByList( const String& strListPath, const String& strSrcFolder )
 {
-	LOG(TRACE) + "Removing files by list: " + strSrcFolder;
+	LOG(TRACE) + "Removing files by list: " + strSrcFolder + ", list: " + strListPath;
 
     unsigned int nError = 0;
     String strList;
     CRhoFile::loadTextFile(strListPath.c_str(), strList);
+
 
     CTokenizer oTokenizer( strList, "\n" );
 	while (oTokenizer.hasMoreTokens()) 
@@ -331,7 +326,11 @@ void CReplaceBundleThread::doReplaceBundle()
 
 #ifdef OS_ANDROID
     //rho_file_patch_stat_table(CFilePath::join(m_bundle_path, "RhoBundle/apps/rhofilelist.txt"))
-    CRhoFile::copyFile(CFilePath::join(m_bundle_path, "RhoBundle/rho.dat").c_str(), RHODESAPP().getRhoRootPath().c_str());
+    if (CRhoFile::copyFile(CFilePath::join(m_bundle_path, "RhoBundle/rho.dat").c_str(), CFilePath::join(RHODESAPP().getRhoRootPath().c_str(), "rho.dat").c_str()))
+    {
+        int err = errno;
+        LOG(ERROR) + "Cannot copy rho.dat, errno: " + LOGFMT("%d") + err;
+    }
 #endif
 
 
@@ -359,6 +358,16 @@ int rho_sys_check_rollback_bundle(const char* szRhoPath)
 int rho_sys_delete_folder(const char* szRhoPath)
 {
     return CRhoFile::deleteFolder(szRhoPath);
+}
+
+int rho_sysimpl_remove_bundle_files(const char* path, const char* fileListName)
+{
+    unsigned int nError = CReplaceBundleThread::removeFilesByList(CFilePath::join(path, fileListName), path);
+    if ( nError != 0 )
+    {
+        CReplaceBundleThread::showError(nError, String("Remove of bundle files is failed: ") += path);
+    }
+    return nError;
 }
 
 } //extern "C"
