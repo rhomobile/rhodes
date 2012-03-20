@@ -59,9 +59,7 @@ extern "C" int rho_sys_check_rollback_bundle(const char* szRhoPath);
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 class CEng;
-class CConfig;
 extern "C" CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
-extern "C" CConfig* rho_wmimpl_get_webkitconfig();
 extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
 extern "C" void rho_wmimpl_set_configfilepath(const char* path);
 extern "C" TCHAR* rho_wmimpl_get_startpage();
@@ -379,7 +377,6 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }
 
 #if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
-    CConfig* conf = rho_wmimpl_get_webkitconfig();
     rho_logconf_Init((rho_wmimpl_get_logpath()[0]==0 ? m_strRootPath.c_str() : rho_wmimpl_get_logpath()), m_strRootPath.c_str(), m_logPort.c_str());
     if (rho_wmimpl_get_logurl()[0]!=0)
         RHOCONF().setString("rhologurl", rho_wmimpl_get_logurl(), false);
