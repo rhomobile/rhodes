@@ -430,6 +430,12 @@ const char* rho_native_rhopath()
 	return root;
 }
 
+const char* rho_native_rhodbpath()
+{
+    return rho_native_rhopath();
+}
+
+
 void copyFromMainBundle( NSFileManager* fileManager,  NSString * source, NSString * target, BOOL remove )
 {
 	BOOL dir;
