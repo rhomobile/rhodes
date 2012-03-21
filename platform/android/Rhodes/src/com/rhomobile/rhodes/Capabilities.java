@@ -15,5 +15,5 @@ public class Capabilities {
 	  public static final boolean VIBRATE_ENABLED = true;
       public static final boolean MOTOROLA_ENABLED = false;
 	  public static final boolean WEBKIT_BROWSER_ENABLED = false;
-	  
+	  public static final boolean SHARED_RUNTIME_ENABLED = false;
 }

@@ -62,7 +62,8 @@ ANDROID_PERMISSIONS = {
   'push' => proc do |manifest| add_push(manifest) end,
   'motorola' => ['SYSTEM_ALERT_WINDOW', 'BROADCAST_STICKY', proc do |manifest| add_motosol_sdk(manifest) end],
   'motoroladev' => ['SYSTEM_ALERT_WINDOW', 'BROADCAST_STICKY', proc do |manifest| add_motosol_sdk(manifest) end],
-  'webkit_browser' => nil
+  'webkit_browser' => nil,
+  'shared_runtime' => nil
 }
 
 ANDROID_CAPS_ALWAYS_ENABLED = ['network_state']
