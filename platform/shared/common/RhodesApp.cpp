@@ -768,15 +768,12 @@ static void callback_dosync(void *arg, String const &/*query*/ )
 
 static void callback_dosync_source(void *arg, String const &strQuery )
 {
-    int nSrcId = -1;
-
     size_t nPos = strQuery.find("srcName=");
     if ( nPos != String::npos )
     {
-        String strSrcId = strQuery.substr(nPos+8);
-        LOG(INFO) + "srcName = '" + strSrcId + "'";
-        nSrcId = atoi(strSrcId.c_str());
-    	rho_sync_doSyncSource(nSrcId, 1, "");
+        String strSrcName = strQuery.substr(nPos+8);
+        LOG(INFO) + "srcName = '" + strSrcName + "'";
+        rho_sync_doSyncSourceByName(strSrcName.c_str());
     } else {
     	LOG(WARNING) + "Unable to find 'srcName' parameter";
     }
@@ -896,7 +893,7 @@ static void callback_logged_in(void *arg, String const &strQuery)
 static void callback_logout(void *arg, String const &strQuery)
 {
 	rho_sync_logout();
-    rho_http_sendresponse(arg, "");
+    rho_http_sendresponse(arg, "ok");
 }
 
 static void callback_stop_sync(void *arg, String const &strQuery)
@@ -1018,6 +1015,127 @@ static void callback_register_push(void *arg, String const &strQuery)
     rho_http_sendresponse(arg,  "ok");
 }
 
+static void callback_set_source_property(void *arg, String const &strQuery)
+{
+	//TODO: stub (DmitryP)
+    rho_http_sendresponse(arg,  "ok");
+}
+
+static void callback_set_ssl_verify_peer(void *arg, String const &strQuery)
+{
+    size_t nPos = strQuery.find("verify=");
+    if ( nPos != String::npos )
+    {
+        String strVerify = strQuery.substr(nPos+7);
+        rho_sync_set_ssl_verify_peer(strVerify == "true" ? 2 : 0);
+    } else {
+    	LOG(WARNING) + "Unable to find 'verify' parameter";
+    }
+	rho_http_sendresponse(arg, "ok");
+}
+
+static void callback_update_blob_attribs(void *arg, String const &strQuery)
+{
+	//TODO: stub (DmitryP)
+    rho_http_sendresponse(arg,  "ok");
+}
+
+static void callback_set_objectnotify_url(void *arg, String const &strQuery)
+{
+    size_t nPos = strQuery.find("url=");
+    if ( nPos != String::npos )
+    {
+        String strUrl = strQuery.substr(nPos+4);
+        rho_sync_setobjectnotify_url(strUrl.c_str());
+    } else {
+    	LOG(WARNING) + "Unable to find 'url' parameter";
+    }
+	rho_http_sendresponse(arg, "ok");
+}
+
+static void callback_add_objectnotify(void *arg, String const &strQuery)
+{
+	//TODO: stub (DmitryP)
+    rho_http_sendresponse(arg,  "ok");
+}
+
+static void callback_clean_objectnotify(void *arg, String const &strQuery)
+{
+	rho_sync_cleanobjectnotify();
+    rho_http_sendresponse(arg,  "ok");
+}
+
+static void callback_set_notification(void *arg, String const &strQuery)
+{
+	//TODO: stub (DmitryP)
+    rho_http_sendresponse(arg,  "ok");
+}
+
+static void callback_clear_notification(void *arg, String const &strQuery)
+{
+    int nSrcId = -1;
+
+    size_t nPos = strQuery.find("srcName=");
+    if ( nPos != String::npos )
+    {
+        String strSrcId = strQuery.substr(nPos+8);
+        LOG(INFO) + "srcName = '" + strSrcId + "'";
+        nSrcId = atoi(strSrcId.c_str());
+        rho_sync_clear_notification(nSrcId);
+    } else {
+    	LOG(WARNING) + "Unable to find 'srcName' parameter";
+    }
+    rho_http_sendresponse(arg, "ok");
+}
+
+static void callback_login(void *arg, String const &strQuery)
+{
+    int nLevel = 0;
+    String strLogin, strPassword, strCallback;
+
+    CTokenizer oTokenizer(strQuery, "&");
+    while (oTokenizer.hasMoreTokens())
+    {
+	    String tok = oTokenizer.nextToken();
+	    if (tok.length() == 0)
+		    continue;
+
+        if ( String_startsWith(tok, "login=") )
+        {
+            strLogin = tok.substr(6);
+        }else if ( String_startsWith( tok, "password=") )
+        {
+            strPassword = tok.substr(9);
+        }else if ( String_startsWith( tok, "callback=") )
+        {
+            strCallback = rho::net::URI::urlDecode(tok.substr(9));
+        }
+    }
+
+    rho_sync_login(strLogin.c_str(), strPassword.c_str(), strCallback.c_str());
+    rho_http_sendresponse(arg,  "ok");
+}
+
+static void callback_dosearch(void *arg, String const &strQuery)
+{
+	//TODO: stub (DmitryP)
+    rho_http_sendresponse(arg,  "ok");
+}
+
+static void callback_get_src_attrs(void *arg, String const &strQuery)
+{
+	//TODO: stub (DmitryP)
+    rho_http_sendresponse(arg,  "ok");
+}
+
+static void callback_is_blob_attr(void *arg, String const &strQuery)
+{
+	//TODO: stub (DmitryP)
+    rho_http_sendresponse(arg,  "ok");
+}
+
+
+
 void CRhodesApp::initHttpServer()
 {
     String strAppRootPath = getRhoRootPath();
@@ -1055,11 +1173,23 @@ void CRhodesApp::initHttpServer()
     m_httpServer->register_uri("/system/syncengine/get_pagesize", callback_get_pagesize);
     m_httpServer->register_uri("/system/syncengine/get_lastsync_objectcount", callback_get_lastsync_objectcount);
     m_httpServer->register_uri("/system/syncengine/is_syncing", callback_is_syncing);
-
     m_httpServer->register_uri("/system/syncengine/dosync_source", callback_dosync_source);
     m_httpServer->register_uri("/system/syncengine/enable_status_popup", callback_enable_status_popup);
     m_httpServer->register_uri("/system/syncengine/set_threaded_mode", callback_set_threaded_mode);
     m_httpServer->register_uri("/system/syncengine/register_push", callback_register_push);
+
+    m_httpServer->register_uri("/system/syncengine/set_source_property", callback_set_source_property);
+    m_httpServer->register_uri("/system/syncengine/set_ssl_verify_peer", callback_set_ssl_verify_peer);
+    m_httpServer->register_uri("/system/syncengine/update_blob_attribs", callback_update_blob_attribs);
+    m_httpServer->register_uri("/system/syncengine/set_objectnotify_url", callback_set_objectnotify_url);
+    m_httpServer->register_uri("/system/syncengine/add_objectnotify", callback_add_objectnotify);
+    m_httpServer->register_uri("/system/syncengine/clean_objectnotify", callback_clean_objectnotify);
+    m_httpServer->register_uri("/system/syncengine/set_notification", callback_set_notification);
+    m_httpServer->register_uri("/system/syncengine/clear_notification", callback_clear_notification);
+    m_httpServer->register_uri("/system/syncengine/login", callback_login);
+    m_httpServer->register_uri("/system/syncengine/dosearch", callback_dosearch);
+    m_httpServer->register_uri("/system/syncengine/get_src_attrs", callback_get_src_attrs);
+    m_httpServer->register_uri("/system/syncengine/is_blob_attr", callback_is_blob_attr);
 }
 
 const char* CRhodesApp::getFreeListeningPort()
