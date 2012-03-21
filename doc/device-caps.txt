@@ -34,6 +34,7 @@ Rhodes provide access to device specific capabilities such as GPS, PIM, camera, 
 	<tr><td class='cap'>Native Maps</td><td>1.4</td><td class='tbd'>3.5</td><td class='tbd'>TBD</td><td>1.4</td><td>1.5</td><td class='tbd'>3.5</td><td class='tbd'>TBD</td></tr>
 	<tr><td class='cap'>Alerts/Audio File Playback</td><td>1.2</td><td>1.5</td><td class='tbd'>TBD</td><td>1.2</td><td>1.2</td><td>3.1</td><td class='tbd'>TBD</td></tr>
 	<tr><td class='cap'>Ringtones</td><td>3.5</td><td>1.5</td><td class='tbd'>TBD</td><td>1.5</td><td>1.5</td><td class='tbd'>3.5</td><td class='tbd'>TBD</td></tr>
+	<tr><td class='cap'>Printing</td><td>3.4</td><td>3.4</td><td class='tbd'>TBD</td><td class='tbd'>TBD</td><td class='tbd'>TBD</td><td class='tbd'>TBD</td><td class='tbd'>TBD</td></tr>
 </table>	
 
 ## System class
@@ -990,6 +991,22 @@ Halt playing of a ringtone
 
 ### Sample
 See controller and view in the /app/Ringtones folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/Ringtones/controller.rb) for more information.
+
+
+## Printing
+
+### Printing on iOS
+iOS inlude printing support. You should prepare File for printing and open it by standart platform - use System.open_url(file_full_path).
+We recommend prepare PDF. You can use PDF-Writer pure Ruby library for it - we include it into rhodes - just include "pdf-writer" and "thread" extensions to your application extension list in build.yml.
+See example in our [System API Samples application Generate PDF example](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/GeneratePDF/controller.rb) application.
+
+
+### Printing on Android
+Android do not support printing. You can use any third-party application for printing, for example Google Cloud Print application for print by using of Google Cloud Print web service.
+You should prepare file for printing and open it by standart platform - use System.open_url(file_full_path).
+We recommend prepare PDF. You can use PDF-Writer pure Ruby library for it - we include it into rhodes - just include "pdf-writer" and "thread" extensions to your application extension list in build.yml.
+See example in our [System API Samples application Generate PDF example](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/GeneratePDF/controller.rb) application.
+
 
 ## PUSH Notifications
 Push notification support is currently available for Android, Blackberry and iPhone. 
