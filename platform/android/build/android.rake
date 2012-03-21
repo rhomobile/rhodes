@@ -435,19 +435,6 @@ namespace "config" do
     $tmpdir = File.join($bindir, "tmp")
     $resourcedir = File.join($tmpdir, "resource")
     $libs = File.join($androidpath, "Rhodes", "libs")
-    $appname = $app_config["name"]
-    $appname = "Rhodes" if $appname.nil?
-    $vendor = $app_config["vendor"]
-    $vendor = "rhomobile" if $vendor.nil?
-    $vendor = $vendor.gsub(/^[^A-Za-z]/, '_').gsub(/[^A-Za-z0-9]/, '_').gsub(/_+/, '_').downcase
-    $app_package_name = $app_config["android"] ? $app_config["android"]["package_name"] : nil
-    $app_package_name = "com.#{$vendor}." + $appname.downcase.gsub(/[^A-Za-z_0-9]/, '') unless $app_package_name
-    $app_package_name.gsub!(/\.[\d]/, "._")
-
-    if $uri_host.nil?
-      $uri_host = "rhomobile.com"
-      $uri_path_prefix = "/#{$app_package_name}"
-    end
 
     $rhomanifest = File.join $androidpath, "Rhodes", "AndroidManifest.xml"
     $appmanifest = File.join $tmpdir, "AndroidManifest.xml"
@@ -585,8 +572,35 @@ namespace "config" do
     $app_config["capabilities"].map! { |cap| cap.is_a?(String) ? cap : nil }.delete_if { |cap| cap.nil? }
     $use_google_addon_api = true unless $app_config["capabilities"].index("push").nil?
     
+    $appname = $app_config["name"]
+    $appname = "Rhodes" if $appname.nil?
+    $vendor = $app_config["vendor"]
+    if $vendor.nil?
+      if $app_config['capabilities'].index('motorola').nil? and $app_config['capabilities'].index('motoroladev').nil?
+        $vendor = 'rhomobile' 
+      else
+        $vendor = 'motorolasolutions'
+      end
+    end
+    $vendor = $vendor.gsub(/^[^A-Za-z]/, '_').gsub(/[^A-Za-z0-9]/, '_').gsub(/_+/, '_').downcase
+    $app_package_name = $app_config["android"] ? $app_config["android"]["package_name"] : nil
+    $app_package_name = "com.#{$vendor}." + $appname.downcase.gsub(/[^A-Za-z_0-9]/, '') unless $app_package_name
+    $app_package_name.gsub!(/\.[\d]/, "._")
+    
+    puts "$vendor = #{$vendor} >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+    puts "$app_package_name = #{$app_package_name} >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+
+    if $uri_host.nil?
+      if $app_config['capabilities'].index('motorola').nil? and $app_config['capabilities'].index('motoroladev').nil?
+        $uri_host = 'rhomobile.com'
+      else
+        $uri_host = 'motorolasolutions.com'
+      end
+      $uri_path_prefix = "/#{$app_package_name}"
+    end
+
     unless $app_config['capabilities'].index('motorola').nil? and $app_config['capabilities'].index('motoroladev').nil?
-      $use_motosol_barcode_api = true #if $app_config['extensions'].index('barcode') or $app_config['extensions'].index('barcode-moto')
+      $use_motosol_barcode_api = true
       $use_motosol_api_classpath = true unless $app_config['capabilities'].index('motoroladev').nil?
       raise 'Cannot use Motorola SDK addon and Google SDK addon together!' if $use_google_addon_api
     end

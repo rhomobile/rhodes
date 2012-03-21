@@ -14,6 +14,7 @@ public interface IRhoExtension {
     //long onSIPState(IRhoExtManager extManager, boolean bSIPState, IRhoExtData ext);
     void onAlert(IRhoExtManager extManager, String message, IRhoExtData ext);
     void onConfirm(IRhoExtManager extManager, String message, IRhoExtData ext);
+    void onPrompt(IRhoExtManager extManager, String message, String defaultResponse, IRhoExtData ext);
     void onSelect(IRhoExtManager extManager, String[] items, int selected, IRhoExtData ext);
     void onStatus(IRhoExtManager extManager, String status, IRhoExtData ext);
     void onTitle(IRhoExtManager extManager, String title, IRhoExtData ext);
@@ -22,6 +23,10 @@ public interface IRhoExtension {
     void onNavigateError(IRhoExtManager extManager, String url, IRhoExtData ext);
 
     void onAppActivate(IRhoExtManager extManager, boolean bActivate);
+
+    //EkiohLocation getCachedLocation(IRhoExtManager extManager, IRhoExtData ext);
+    void startLocationUpdates(IRhoExtManager extManager, boolean highAccuracy, IRhoExtData ext); 
+    void stopLocationUpdates(IRhoExtManager extManager, IRhoExtData ext); 
 
 }
 

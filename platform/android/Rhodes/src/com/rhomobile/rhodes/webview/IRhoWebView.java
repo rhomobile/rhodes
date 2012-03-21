@@ -14,4 +14,6 @@ public interface IRhoWebView {
     void loadData(String data, String mime, String encoding);
     void loadDataWithBaseURL(String baseUrl, String data, String mimeType, String encoding, String historyUrl);
     void stopLoad();
+    void setZoom(int scale);
+    void setTextZoom(int scale);
 }

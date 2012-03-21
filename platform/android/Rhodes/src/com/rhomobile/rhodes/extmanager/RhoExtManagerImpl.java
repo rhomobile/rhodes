@@ -131,12 +131,12 @@ public class RhoExtManagerImpl implements IRhoExtManager {
 
     @Override
     public void zoomPage(float fZoom) {
-        // TODO Auto-generated method stub
+        WebView.setZoom((int)(fZoom * 100));
     }
 
     @Override
     public void zoomText(int nZoom) {
-        // TODO Auto-generated method stub
+        WebView.setTextZoom(nZoom);
     }
 
     @Override
@@ -244,10 +244,10 @@ public class RhoExtManagerImpl implements IRhoExtManager {
         }
     }
 
-    public void onPrompt(View view, String prompt, String arg2) {
+    public void onPrompt(View view, String prompt, String defaultResponse) {
         synchronized (mExtensions) {
             for (IRhoExtension ext : mExtensions.values()) {
-                ext.onConfirm(this, prompt, makeDefExtData(view));
+                ext.onPrompt(this, prompt, defaultResponse, makeDefExtData(view));
             }
         }
     }
@@ -272,6 +272,22 @@ public class RhoExtManagerImpl implements IRhoExtManager {
         synchronized (mExtensions) {
             for (IRhoExtension ext : mExtensions.values()) {
                 ext.onStatus(this, title, makeDefExtData(view));
+            }
+        }
+    }
+
+    public void startLocationUpdates(View view, boolean val) {
+        synchronized (mExtensions) {
+            for (IRhoExtension ext : mExtensions.values()) {
+                ext.startLocationUpdates(this, val, makeDefExtData(view));
+            }
+        }
+    }
+
+    public void stopLocationUpdates(View view) {
+        synchronized (mExtensions) {
+            for (IRhoExtension ext : mExtensions.values()) {
+                ext.stopLocationUpdates(this, makeDefExtData(view));
             }
         }
     }
