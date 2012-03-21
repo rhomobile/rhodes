@@ -3,17 +3,31 @@
     // This library is for performing ajax calls to sync engine from javascript, no jQuery used.
     // =========================================================================================
 
+    var URL_logged_in = "/system/syncengine/logged_in";
+    var URL_logout = "/system/syncengine/logout";
     var URL_dosync = "/system/syncengine/dosync";
-    var URL_syncdb = "/system/syncdb";
-    
+    var URL_dosync_source = "/system/syncengine/dosync_source";
+    var URL_stop_sync = "/system/syncengine/stop_sync";
+    var URL_set_pollinterval = "/system/syncengine/set_pollinterval";
+    var URL_get_pollinterval = "/system/syncengine/get_pollinterval";
+    var URL_set_syncserver = "/system/syncengine/set_syncserver";
+    var URL_set_pagesize = "/system/syncengine/set_pagesize";
+    var URL_get_pagesize = "/system/syncengine/get_pagesize";
+    var URL_get_lastsync_objectcount = "/system/syncengine/get_lastsync_objectcount";
+    var URL_is_syncing = "/system/syncengine/is_syncing";
+    var URL_enable_status_popup = "/system/syncengine/enable_status_popup";
+    var URL_set_threaded_mode = "/system/syncengine/set_threaded_mode";
+    var URL_register_push = "/system/syncengine/register_push";
+
     function buildQuery(params) {
         var query = "";
         for (var key in params) {
             if (params.hasOwnProperty(key)) {
                 var type = typeof params[key];
-                if ('string' == type || 'number' == type) {
+                if ('string' == type || 'number' == type || 'boolean' == type) {
+                    var value = '' + params[key];
                     if (0 < query.length) query = query + '&';
-                    query = query + encodeURI(key) + '=' + encodeURI(params[key]);
+                    query = query + encodeURI(key) + '=' + encodeURI(value);
                 }
             }
         }
@@ -90,34 +104,157 @@
     }
 
 
-    function dosync(/*bool*/ show_status_popup, /*const char **/ query_params) {
+    function logged_in(/*function*/ success, /*function*/ error) {
         request({
-            url: URL_syncdb,
+            url: URL_logged_in,
+            success: success,
+            error: error
+        });
+    }
+
+    function logout(/*function*/ success, /*function*/ error) {
+        request({
+            url: URL_logout,
+            success: success,
+            error: error
+        });
+    }
+
+    function dosync(/*bool*/ show_status_popup, /*string*/ query_params,
+            /*function*/ success, /*function*/ error) {
+        request({
+            url: URL_dosync,
+            success: success,
+            error: error
+        });
+    }
+
+    function dosync_source(/*string*/ srcName, /*bool*/ show_status_popup, /*string*/ query_params,
+            /*function*/ success, /*function*/ error) {
+        request({
+            url: URL_dosync_source,
             query: {
-                show_status_popup: 'undefined' != show_status_popup && show_status_popup ? 'true' : 'false',
-                query_params: query_params
-            }
+                srcName: srcName
+            },
+            success: success,
+            error: error
+        });
+    }
+
+    function stop_sync(/*function*/ success, /*function*/ error) {
+        request({
+            url: URL_stop_sync,
+            success: success,
+            error: error
+        });
+    }
+
+    function set_pollinterval(/*number*/ interval, /*function*/ success, /*function*/ error) {
+        request({
+            url: URL_set_pollinterval,
+            query: {
+                interval: interval
+            },
+            success: success,
+            error: error
+        });
+    }
+
+    function get_pollinterval(/*function*/ success, /*function*/ error) {
+        request({
+            url: URL_get_pollinterval,
+            success: success,
+            error: error
+        });
+    }
+
+    function set_syncserver(/*string*/ syncserver, /*function*/ success, /*function*/ error) {
+        request({
+            url: URL_set_syncserver,
+            query: {
+                syncserver: syncserver
+            },
+            success: success,
+            error: error
+        });
+    }
+
+    function set_pagesize(/*number*/ size, /*function*/ success, /*function*/ error) {
+        request({
+            url: URL_set_pagesize,
+            query: {
+                pagesize: size
+            },
+            success: success,
+            error: error
+        });
+    }
+
+    function get_pagesize(/*function*/ success, /*function*/ error) {
+        request({
+            url: URL_get_pagesize,
+            success: success,
+            error: error
+        });
+    }
+
+    function get_lastsync_objectcount(/*string*/ srcName, /*function*/ success, /*function*/ error) {
+        request({
+            url: URL_get_lastsync_objectcount,
+            query: {
+                srcName: srcName
+            },
+            success: success,
+            error: error
+        });
+    }
+
+    function is_syncing(/*function*/ success, /*function*/ error) {
+        request({
+            url: URL_is_syncing,
+            success: success,
+            error: error
+        });
+    }
+
+    function enable_status_popup(/*boolean*/ enable, /*function*/ success, /*function*/ error) {
+        request({
+            url: URL_enable_status_popup,
+            query: {
+                enable: enable
+            },
+            success: success,
+            error: error
+        });
+    }
+
+    function set_threaded_mode(/*boolean*/ threaded, /*function*/ success, /*function*/ error) {
+        request({
+            url: URL_set_threaded_mode,
+            query: {
+                threaded: threaded
+            },
+            success: success,
+            error: error
+        });
+    }
+
+    function register_push(/*function*/ success, /*function*/ error) {
+        request({
+            url: URL_register_push,
+            success: success,
+            error: error
         });
     }
 
 
 
 /*
-extern VALUE dosync_source(VALUE source_id, bool show_status_popup, const char * query_params);
-
 // extern VALUE dosearch(VALUE ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, const char* callback, const char* callback_params);
 // extern VALUE login(const char *login, const char *password, const char* callback);
 
-extern int logged_in();
-extern void logout();
-extern void stop_sync();
 extern void set_notification(int source_id, const char *url, char* params);
 extern void clear_notification(int source_id);
-
-extern int set_pollinterval(int interval);
-extern int get_pollinterval();
-
-extern void set_syncserver(char* syncserver);
 
 //extern VALUE get_src_attrs(const char* szPartition, int source_id);
 //extern VALUE is_blob_attr(const char* szPartition, int source_id, const char* szAttrName);
@@ -126,22 +263,29 @@ extern void  set_objectnotify_url(const char* szUrl);
 extern void  add_objectnotify(int nSrcID, const char* szObject);
 extern void  clean_objectnotify();
 
-//extern int   get_lastsync_objectcount(int nSrcID);
-//extern int   get_pagesize();
-
-extern void  set_pagesize(int pagesize);
-extern void  set_threaded_mode(bool b);
-extern void  enable_status_popup(bool b);
 extern void  set_source_property(int nSrcID, const char* szPropName, const char* szPropValue);
 extern void  set_ssl_verify_peer(bool b);
 extern void  update_blob_attribs(const char* szPartition, int source_id);
 
-extern VALUE is_syncing();
 
-extern void  register_push();
 */
 
     window.Rho = window.Rho || {};
+    window.Rho.logged_in = logged_in;
+    window.Rho.logout = logout;
     window.Rho.dosync = dosync;
+    window.Rho.stop_sync = stop_sync;
+    window.Rho.set_pollinterval = set_pollinterval;
+    window.Rho.get_pollinterval = get_pollinterval;
+    window.Rho.set_syncserver = set_syncserver;
+    window.Rho.set_pagesize = set_pagesize;
+    window.Rho.get_pagesize = get_pagesize;
+    window.Rho.get_lastsync_objectcount = get_lastsync_objectcount;
+    window.Rho.is_syncing = is_syncing;
+
+    window.Rho.dosync_source = dosync_source;
+    window.Rho.enable_status_popup = enable_status_popup;
+    window.Rho.set_threaded_mode = set_threaded_mode;
+    window.Rho.register_push = register_push;
 
 })();
