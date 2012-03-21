@@ -126,6 +126,38 @@ public class WebView {
         }
     };
     
+    
+    ///*** SetZoomTask ***
+    ///
+    private static class SetZoomTask implements Runnable {
+        private int zoom;
+        private int index;
+        SetZoomTask(int z, int i) {zoom = z; index = i;}
+        @Override
+        public void run() {
+            try {
+                RhodesActivity.safeGetInstance().getMainView().getWebView(index).setZoom(zoom);
+            } catch (Throwable e) {
+                Logger.E(TAG, e);
+            }
+        }
+    };
+    
+    ///*** SetTextZoomTask ***
+    ///
+    private static class SetTextZoomTask implements Runnable {
+        private int zoom;
+        private int index;
+        SetTextZoomTask(int z, int i) {zoom = z; index = i;}
+        @Override
+        public void run() {
+            try {
+                RhodesActivity.safeGetInstance().getMainView().getWebView(index).setTextZoom(zoom);
+            } catch (Throwable e) {
+                Logger.E(TAG, e);
+            }
+        }
+    };
 	
 	public static void navigate(String url, int index) {
 		try {
@@ -196,6 +228,24 @@ public class WebView {
     public static void stopNavigate() {
         try {
             PerformOnUiThread.exec(new StopNavigateTask(activeTab()));
+        }
+        catch (Exception e) {
+            Logger.E(TAG, e);
+        }
+    }
+    
+    public static void setZoom(int zoom) {
+        try {
+            PerformOnUiThread.exec(new SetZoomTask(zoom, activeTab()));
+        }
+        catch (Exception e) {
+            Logger.E(TAG, e);
+        }
+    }
+
+    public static void setTextZoom(int zoom) {
+        try {
+            PerformOnUiThread.exec(new SetTextZoomTask(zoom, activeTab()));
         }
         catch (Exception e) {
             Logger.E(TAG, e);
