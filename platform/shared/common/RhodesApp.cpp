@@ -760,6 +760,29 @@ static void callback_syncdb(void *arg, String const &/*query*/ )
     rho_http_sendresponse(arg, "");
 }
 
+static void callback_dosync(void *arg, String const &/*query*/ )
+{
+    rho_sync_doSyncAllSources(1,"");
+    rho_http_sendresponse(arg, "ok");
+}
+
+static void callback_dosync_source(void *arg, String const &strQuery )
+{
+    int nSrcId = -1;
+
+    size_t nPos = strQuery.find("srcName=");
+    if ( nPos != String::npos )
+    {
+        String strSrcId = strQuery.substr(nPos+8);
+        LOG(INFO) + "srcName = '" + strSrcId + "'";
+        nSrcId = atoi(strSrcId.c_str());
+    	rho_sync_doSyncSource(nSrcId, 1, "");
+    } else {
+    	LOG(WARNING) + "Unable to find 'srcName' parameter";
+    }
+    rho_http_sendresponse(arg, "ok");
+}
+
 static void callback_logger(void *arg, String const &query )
 {
     int nLevel = 0;
@@ -865,6 +888,136 @@ const String& CRhodesApp::getRhoMessage(int nError, const char* szName)
     return m_strRhoMessage;
 }
 
+static void callback_logged_in(void *arg, String const &strQuery)
+{
+    rho_http_sendresponse(arg, rho_sync_logged_in() ? "true" : "false");
+}
+
+static void callback_logout(void *arg, String const &strQuery)
+{
+	rho_sync_logout();
+    rho_http_sendresponse(arg, "");
+}
+
+static void callback_stop_sync(void *arg, String const &strQuery)
+{
+	rho_sync_stop();
+    rho_http_sendresponse(arg, "ok");
+}
+
+static void callback_set_pollinterval(void *arg, String const &strQuery)
+{
+    int nInterval = 0;
+
+    size_t nPos = strQuery.find("interval=");
+    if ( nPos != String::npos )
+    {
+        String strInterval = strQuery.substr(nPos+9);
+        nInterval = atoi(strInterval.c_str());
+    } else {
+    	LOG(WARNING) + "Unable to find 'interval' parameter";
+    }
+    nInterval = rho_sync_set_pollinterval(nInterval);
+	rho_http_sendresponse(arg, convertToStringA(nInterval).c_str());
+}
+
+static void callback_get_pollinterval(void *arg, String const &strQuery)
+{
+	rho_http_sendresponse(arg, convertToStringA(rho_sync_get_pollinterval()).c_str());
+}
+
+static void callback_set_syncserver(void *arg, String const &strQuery)
+{
+    String strSyncserver = "";
+
+    size_t nPos = strQuery.find("syncserver=");
+    if ( nPos != String::npos )
+    {
+        strSyncserver = strQuery.substr(nPos+11);
+    } else {
+    	LOG(WARNING) + "Unable to find 'syncserver' parameter";
+    }
+	rho_sync_set_syncserver(strSyncserver.c_str());
+	rho_http_sendresponse(arg, "ok");
+}
+
+static void callback_set_pagesize(void *arg, String const &strQuery)
+{
+    int nSize = 0;
+
+    size_t nPos = strQuery.find("pagesize=");
+    if ( nPos != String::npos )
+    {
+        String strSize = strQuery.substr(nPos+9);
+        nSize = atoi(strSize.c_str());
+    } else {
+    	LOG(WARNING) + "Unable to find 'pagesize' parameter";
+    }
+    int nOldSize = rho_sync_get_pagesize();
+    rho_sync_set_pagesize(nSize);
+	rho_http_sendresponse(arg, convertToStringA(nOldSize).c_str());
+}
+
+static void callback_get_pagesize(void *arg, String const &strQuery)
+{
+	rho_http_sendresponse(arg, convertToStringA(rho_sync_get_pagesize()).c_str());
+}
+
+static void callback_get_lastsync_objectcount(void *arg, String const &strQuery)
+{
+    int nSrcId = -1;
+    int nCount = -1;
+
+    size_t nPos = strQuery.find("srcName=");
+    if ( nPos != String::npos )
+    {
+        String strSrcId = strQuery.substr(nPos+8);
+        LOG(INFO) + "srcName = '" + strSrcId + "'";
+        nSrcId = atoi(strSrcId.c_str());
+        nCount = rho_sync_get_lastsync_objectcount(nSrcId);
+    } else {
+    	LOG(WARNING) + "Unable to find 'srcName' parameter";
+    }
+	rho_http_sendresponse(arg, convertToStringA(nCount).c_str());
+}
+
+static void callback_is_syncing(void *arg, String const &strQuery)
+{
+    rho_http_sendresponse(arg, rho_sync_issyncing() ? "true" : "false");
+}
+
+static void callback_enable_status_popup(void *arg, String const &strQuery)
+{
+    size_t nPos = strQuery.find("enable=");
+    if ( nPos != String::npos )
+    {
+        String strEnable = strQuery.substr(nPos+7);
+        rho_sync_enable_status_popup(strEnable == "true" ? 2 : 0);
+    } else {
+    	LOG(WARNING) + "Unable to find 'enable' parameter";
+    }
+	rho_http_sendresponse(arg, "ok");
+}
+
+static void callback_set_threaded_mode(void *arg, String const &strQuery)
+{
+    size_t nPos = strQuery.find("threaded=");
+    if ( nPos != String::npos )
+    {
+        String strThreaded = strQuery.substr(nPos+9);
+        rho_sync_set_threaded_mode(strThreaded == "true" ? 2 : 0);
+    } else {
+    	LOG(WARNING) + "Unable to find 'threaded' parameter";
+    }
+	rho_http_sendresponse(arg, "ok");
+}
+
+static void callback_register_push(void *arg, String const &strQuery)
+{
+	rho_sync_register_push();
+    rho_http_sendresponse(arg,  "ok");
+}
+
 void CRhodesApp::initHttpServer()
 {
     String strAppRootPath = getRhoRootPath();
@@ -890,6 +1043,23 @@ void CRhodesApp::initHttpServer()
     m_httpServer->register_uri("/system/resetDBOnSyncUserChanged", callback_resetDBOnSyncUserChanged);
     m_httpServer->register_uri("/system/loadallsyncsources", callback_loadallsyncsources);
     m_httpServer->register_uri("/system/logger", callback_logger);
+
+    m_httpServer->register_uri("/system/syncengine/logged_in", callback_logged_in);
+    m_httpServer->register_uri("/system/syncengine/logout", callback_logout);
+    m_httpServer->register_uri("/system/syncengine/dosync", callback_dosync);
+    m_httpServer->register_uri("/system/syncengine/stop_sync", callback_stop_sync);
+    m_httpServer->register_uri("/system/syncengine/set_pollinterval", callback_set_pollinterval);
+    m_httpServer->register_uri("/system/syncengine/get_pollinterval", callback_get_pollinterval);
+    m_httpServer->register_uri("/system/syncengine/set_syncserver", callback_set_syncserver);
+    m_httpServer->register_uri("/system/syncengine/set_pagesize", callback_set_pagesize);
+    m_httpServer->register_uri("/system/syncengine/get_pagesize", callback_get_pagesize);
+    m_httpServer->register_uri("/system/syncengine/get_lastsync_objectcount", callback_get_lastsync_objectcount);
+    m_httpServer->register_uri("/system/syncengine/is_syncing", callback_is_syncing);
+
+    m_httpServer->register_uri("/system/syncengine/dosync_source", callback_dosync_source);
+    m_httpServer->register_uri("/system/syncengine/enable_status_popup", callback_enable_status_popup);
+    m_httpServer->register_uri("/system/syncengine/set_threaded_mode", callback_set_threaded_mode);
+    m_httpServer->register_uri("/system/syncengine/register_push", callback_register_push);
 }
 
 const char* CRhodesApp::getFreeListeningPort()

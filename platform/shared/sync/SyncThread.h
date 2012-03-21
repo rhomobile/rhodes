@@ -205,6 +205,9 @@ void rho_sync_stop();
 void rho_sync_set_source_property(int nSrcID, const char* szPropName, const char* szPropValue);
 int  rho_sync_issyncing();
 
+void rho_sync_enable_status_popup(int b);
+void rho_sync_register_push();
+
 #ifdef __cplusplus
 };
 #endif //__cplusplus
