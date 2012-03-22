@@ -1398,7 +1398,7 @@ end
 
 at_exit do
   if !$app_config["sdk"].nil? 
-    puts '********* WARNING: You use sdk parameter in build.yml !****************'
+    puts '********* NOTE: You use sdk parameter in build.yml !****************'
     puts 'To use latest Rhodes gem, run migrate-rhodes-app in application folder or comment sdk in build.yml.'
     puts '************************************************************************'
   end
