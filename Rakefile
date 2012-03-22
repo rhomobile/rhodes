@@ -266,7 +266,7 @@ namespace "config" do
     #Process rhoelements settings
     if $app_config["app_type"] == 'rhoelements'
         $app_config["capabilities"] += ["motorola"] unless $app_config["capabilities"].index("motorola")
-        $app_config["extensions"] += ["rhoelementsext"] if $current_platform == 'wm'
+        $app_config["extensions"] += ["rhoelementsext"] if $current_platform == 'wm' || $current_platform == 'android'
         $app_config["extensions"] += ["motoapi"] #extension with plug-ins
 
         if !$app_config["capabilities"].index('native_browser')
