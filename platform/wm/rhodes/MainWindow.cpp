@@ -501,6 +501,8 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         return 0;
 
     int fActive = LOWORD(wParam);
+	if (RHOCONF().getBool("full_screen"))
+		SetFullScreen(fActive!=0);
 	rho_rhodesapp_callAppActiveCallback(fActive);
     RHODESAPP().getExtManager().OnAppActivate(fActive!=0);
 
@@ -662,6 +664,8 @@ void CMainWindow::restoreWebView() {
 LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
 #if defined(_WIN32_WCE)
+	if (RHOCONF().getBool("full_screen"))
+		SetFullScreen(true);
 	
 	//handle sreen rotation
 	int width  = GetSystemMetrics(SM_CXSCREEN);	
