@@ -101,6 +101,7 @@ namespace "config" do
     $webkit_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("webkit_browser").nil?) 
     $wk_data_dir = "/Program Files" # its fake value for running without motorola extensions. do not delete
     $additional_dlls_path = nil
+    $additional_regkeys = nil
 
     begin
       if $webkit_capability
@@ -149,6 +150,11 @@ namespace "build" do
         $additional_dlls_paths = Array.new
       end
 
+      #remove file with registry keys      
+      reg_keys_filename = File.join(File.dirname(__FILE__), "regs.txt");
+      rm_f reg_keys_filename
+      $regkey_file = File.new(reg_keys_filename, "w+")
+      
       $app_config["extensions"].each do |ext|
         $app_config["extpaths"].each do |p|
           extpath = File.join(p, ext, 'ext')
@@ -169,6 +175,15 @@ namespace "build" do
               puts "ext_config[files] - " + ext_config["files"].to_s
               $additional_dlls_paths << File.expand_path(ext_config["files"])
             end
+            
+            puts 'start read reg key'
+            if ext_config != nil && ext_config["regkeys"] != nil
+              ext_config["regkeys"].each do |key|
+                puts "extension " + ext + " add regkey to cab " + key
+                $regkey_file.puts(key + "\n")
+              end
+            end
+            puts 'end read reg key'
           chdir $startdir
 
           ENV['RHO_PLATFORM'] = $current_platform
@@ -188,10 +203,13 @@ namespace "build" do
           break
         end
       end
+      
+      $regkey_file.close
+      
       #test
-      $additional_dlls_paths.each do |x|
-        puts " - " + x.to_s
-      end
+      #$additional_dlls_paths.each do |x|
+      #  puts " - " + x.to_s
+      #end
       #exit
     end
 
@@ -429,7 +447,6 @@ namespace "device" do
       rm_f "cleanup.js"
 
       chdir $startdir
-
     end
   end
 end
