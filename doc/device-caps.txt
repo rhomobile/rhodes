@@ -996,15 +996,28 @@ See controller and view in the /app/Ringtones folder of the [System API Samples 
 ## Printing
 
 ### Printing on iOS
-iOS inlude printing support. You should prepare File for printing and open it by standart platform - use System.open_url(file_full_path).
-We recommend prepare PDF. You can use PDF-Writer pure Ruby library for it - we include it into rhodes - just include "pdf-writer" and "thread" extensions to your application extension list in build.yml.
+iOS inlude printing support. You should prepare File for printing and open it by standart platform - use:
+	:::ruby
+	System.open_url(file_full_path)
+
+We recommend prepare PDF. You can use PDF-Writer pure Ruby library for it - we include it into rhodes - just include "pdf-writer" and "thread" extensions to your application extension list in build.yml :
+	:::yaml
+	extensions: ["pdf-writer", "thread"] 
+
 See example in our [System API Samples application Generate PDF example](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/GeneratePDF/controller.rb) application.
 
 
 ### Printing on Android
 Android do not support printing. You can use any third-party application for printing, for example Google Cloud Print application for print by using of Google Cloud Print web service.
-You should prepare file for printing and open it by standart platform - use System.open_url(file_full_path).
+You should prepare file for printing and open it by standart platform - use:
+	:::ruby
+	System.open_url(file_full_path)
+Android platfrom open that file in application registered for file extension or show select dialog for manually choose application if there are more than one application registered for this extension.
+
 We recommend prepare PDF. You can use PDF-Writer pure Ruby library for it - we include it into rhodes - just include "pdf-writer" and "thread" extensions to your application extension list in build.yml.
+	:::yaml
+	extensions: ["pdf-writer", "thread"] 
+
 See example in our [System API Samples application Generate PDF example](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/GeneratePDF/controller.rb) application.
 
 
