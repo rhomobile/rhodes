@@ -239,14 +239,14 @@ namespace "config" do
       if $app_config["paths"]["extensions"].is_a? String
         extpaths << $app_config["paths"]["extensions"]
       elsif $app_config["paths"]["extensions"].is_a? Array
-        extpath += $app_config["paths"]["extensions"]
+        extpaths += $app_config["paths"]["extensions"]
       end
     end
     extpaths << $config["env"]["paths"]["extensions"] if $config["env"]["paths"]["extensions"]
     extpaths << File.join($app_path, "extensions")
     extpaths << File.join($startdir, "lib","extensions")
     $app_config["extpaths"] = extpaths
-
+    
     if $app_config["build"] and $app_config["build"] == "release"
       $debug = false
     else

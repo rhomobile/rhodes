@@ -4,6 +4,7 @@ import java.util.Hashtable;
 
 import android.view.View;
 
+import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
@@ -291,5 +292,11 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             }
         }
     }
+    
+    // RE shared runtime detect
+    public boolean onStartNewConfig() {
+    	return Capabilities.SHARED_RUNTIME_ENABLED;
+    }
+
 }
 
