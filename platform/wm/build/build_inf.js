@@ -41,7 +41,7 @@ function expand_source(es,name,path,section,destination,flag) {
     }
 }
 
-function expand_sources(sources) {
+function expand_sources_rho(sources) {
     var es = new Array();
     for (var i in sources) {
         expand_source(es,sources[i][0],sources[i][1],"copyfiles","rho",false);
@@ -49,7 +49,7 @@ function expand_sources(sources) {
     return es;
 }
 
-function expand_sources1(es, sources) {
+function expand_sources(es, sources) {
     for (var i in sources) {
         expand_source(es, sources[i][0], sources[i][1], "copyfiles", "",true);
     }
@@ -204,6 +204,19 @@ function fill_extensions_files(exts) {
     }
 }
 
+function fill_registry_keys() {
+	var regfName = "regs.txt";
+	
+	if (fso.FileExists(regfName)) {
+		var regf = fso.OpenTextFile(regfName);
+		var contents = regf.ReadAll();
+		regf.Close();
+		
+		p(contents);
+		p("")
+	}
+}
+
 function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,rhogempath,usereruntime) {
     p("[Version]");
     p("Signature=\"$Windows NT$\"");
@@ -312,10 +325,13 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
     }
     p("");
     p("[RegKeys]");
+    fill_registry_keys()
     p("");
 }
 
 function main() {
+	
+	
     // args(0) = .inf filename
     // args(1) = platform ('wm6' or 'ce5')
     // args(2) = app_name
@@ -338,14 +354,14 @@ function main() {
 
     var sources = new Object();
     sources['db'] = ["db","..\\..\\..\\platform\\shared\\db\\res\\db"];
-    //sources['sqlite3']= ["sqlite3","..\\..\\shared\\sqlite3"];
+
     if (!usereruntime)
         sources['lib']= ["lib",srcdir+"/lib"];
     else if (is_icon)
         sources['icon']= ["icon",srcdir+"/icon"];
     sources['apps']= ["apps",srcdir+"/apps"];
 
-    var es = expand_sources(sources);
+    var es = expand_sources_rho(sources);
     
     for (var idx = 9; idx < args.length; idx++)
     {
@@ -354,7 +370,7 @@ function main() {
     		
     	var sources_add = new Object();
         sources_add['files']= ["add" + idx,args(idx)];
-        es  = expand_sources1(es, sources_add);
+        es  = expand_sources(es, sources_add);
     }
 
     var exts;
