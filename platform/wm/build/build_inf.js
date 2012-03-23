@@ -240,7 +240,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
         p("CEShortcuts=Shortcuts");
     }
     p("AddReg=RegKeys");
-    p("CopyFiles=CopyToInstallDir"+((!usereruntime) && webkit ? ",CopyWebKitBin,CopyNPAPI,CopyConfig" : "")+(show_shortcut && usereruntime ? ",Shortcuts" : "")+get_copyfiles_sections(es));
+    p("CopyFiles=CopyToInstallDir"+((!usereruntime) && webkit ? ",CopyWebKitBin,CopyNPAPI,CopyConfig,CopySystemFiles" : "")+(show_shortcut && usereruntime ? ",Shortcuts" : "")+get_copyfiles_sections(es));
     p("");
     p("[SourceDisksNames]");
     if (usereruntime) {
@@ -262,6 +262,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
         p("\"" + name + ".exe\"=1");
         if (webkit) {
             p("\"eklibrary.dll\"=2");
+            p("\"prtlib.dll\"=2");
             p("\"webkit.dll\"=2");
             p("\"license_rc.dll\"=2");
             p("\"openssl.dll\"=2");
@@ -280,7 +281,10 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
     if (show_shortcut){
         p("Shortcuts=0,\"%CE11%\"");
     }
-    p("CopyToInstallDir=0,\"%InstallDir%\"");
+    if ((!usereruntime) && webkit) {
+        p("CopySystemFiles=0,\"%CE2%\"");
+    }
+    p("CopyToInstallDir=0,\"%InstallDir%\"");    
     if ((!usereruntime) && webkit) {
         p("CopyWebKitBin=0,\"%InstallDir%\"");
         p("CopyNPAPI=0,\"%InstallDir%\\NPAPI\"");
@@ -310,6 +314,9 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
             p("\"Config.xml\",\"Config.xml\",,0");
             p("\"Plugin.xml\",\"Plugin.xml\",,0");
             p("\"RegEx.xml\",\"RegEx.xml\",,0");
+            p("");
+            p("[CopySystemFiles]");
+            p("\"prtlib.dll\",\"prtlib.dll\",,0");
         }
     }
     fill_extensions_files(exts);
