@@ -47,6 +47,9 @@ public interface IRhoExtManager {
     //void resizeBrowserWindow(RECT rc);
     void zoomPage(float fZoom);
     void zoomText(int nZoom);
+    
+    // RE shared runtime detect
+    boolean onStartNewConfig();
 
 }
 
