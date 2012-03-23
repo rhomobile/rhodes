@@ -204,8 +204,15 @@ def prepare_production_ipa (app_path, app_name)
   payload_dir = File.join(tmp_dir, "Payload")  
   mkdir_p payload_dir
   app_file = File.join(app_path, app_name + ".app")
-  app_in_payload = File.join(payload_dir,  app_name + ".app") 
+  app_in_payload = File.join(payload_dir,  app_name + ".app")
+
+  mprovision_in_app = File.join(app_file,  "embedded.mobileprovision") 
+  mprovision_in_payload = File.join(payload_dir,  app_name + ".mobileprovision") 
+  
   cp_r app_file, app_in_payload
+  
+  cp mprovision_in_app, mprovision_in_payload
+  
   
   itunes_artwork = File.join($config["build"]["iphonepath"], "iTunesArtwork.jpg")
   itunes_artwork_dst = File.join(tmp_dir, "iTunesArtwork")
