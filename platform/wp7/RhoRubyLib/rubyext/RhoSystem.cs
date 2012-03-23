@@ -54,6 +54,10 @@ namespace rho.rubyext
             if(name == "platform") return "WP7";
             else if(name == "os_version") return "7.0";
             else if(name == "country") return "us";
+            else if(name == "phone_id") {
+              byte[] bytes = (byte[])Microsoft.Phone.Info.DeviceExtendedProperties.GetValue("DeviceUniqueId");
+              return Convert.ToBase64String(bytes);
+            }
             else return "";
         }
 
