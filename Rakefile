@@ -295,6 +295,13 @@ namespace "config" do
         application_build_configs['moto-plugins'] = plugins if plugins.length() > 0
         
         application_build_configs['shared-runtime'] = '1' if $app_config["capabilities"].index('shared_runtime')
+    else
+        if $current_platform == 'wm'
+            puts '********* NOTE ************************************************************************'
+            puts ' To build for Windows Mobile or Windows CE platform  - install Motorola RhoElements v2'
+            puts '**************************************************************************************'
+            exit(1)
+        end
     end
     
     if $app_config["capabilities"].index("motorola")
@@ -1403,7 +1410,7 @@ end
 
 
 at_exit do
-  if !$app_config["sdk"].nil? 
+  if $app_config && !$app_config["sdk"].nil? 
     puts '********* NOTE: You use sdk parameter in build.yml !****************'
     puts 'To use latest Rhodes gem, run migrate-rhodes-app in application folder or comment sdk in build.yml.'
     puts '************************************************************************'
