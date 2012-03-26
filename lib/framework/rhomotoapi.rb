@@ -24,6 +24,8 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
+if System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'ANDROID'
+
 module Barcode
 
 class << self
@@ -104,4 +106,6 @@ class << self
         end    
     end
 end    
+end
+
 end
