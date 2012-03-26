@@ -177,7 +177,7 @@ namespace "build" do
             if ext_config != nil && ext_config["regkeys"] != nil
               ext_config["regkeys"].each do |key|
                 puts "extension " + ext + " add regkey to cab. key: " + key
-                $regkeys << key + "\n"
+                $regkeys << key
               end
             end
             puts 'end read reg key'
