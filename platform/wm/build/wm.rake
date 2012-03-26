@@ -149,11 +149,8 @@ namespace "build" do
         puts 'new $additional_dlls_paths'
         $additional_dlls_paths = Array.new
       end
-
-      #remove file with registry keys      
-      reg_keys_filename = File.join(File.dirname(__FILE__), "regs.txt");
-      rm_f reg_keys_filename
-      $regkey_file = File.new(reg_keys_filename, "w+")
+      
+      $regkeys = Array.new
       
       $app_config["extensions"].each do |ext|
         $app_config["extpaths"].each do |p|
@@ -179,8 +176,8 @@ namespace "build" do
             puts 'start read reg key'
             if ext_config != nil && ext_config["regkeys"] != nil
               ext_config["regkeys"].each do |key|
-                puts "extension " + ext + " add regkey to cab " + key
-                $regkey_file.puts(key + "\n")
+                puts "extension " + ext + " add regkey to cab. key: " + key
+                $regkeys << key + "\n"
               end
             end
             puts 'end read reg key'
@@ -203,8 +200,6 @@ namespace "build" do
           break
         end
       end
-      
-      $regkey_file.close
       
       #test
       #$additional_dlls_paths.each do |x|
@@ -412,7 +407,24 @@ namespace "device" do
             args << path
          end
       end
+      
+      reg_keys_filename = File.join(File.dirname(__FILE__), "regs.txt");
+      puts 'remove file with registry keys'
+      if File.exists? reg_keys_filename  
+        rm reg_keys_filename 
+      end
+      
+      if $regkeys.size > 0
+        puts 'add registry keys to file'
+        $regkey_file = File.new(reg_keys_filename, "w+")
+      
+        $regkeys.each do |key|
+          $regkey_file.puts(key + "\n")
+        end
         
+        $regkey_file.close   
+      end  
+      
       puts Jake.run('cscript',args)
       unless $? == 0
         puts "Error running build_inf"
