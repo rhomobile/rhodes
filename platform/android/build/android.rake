@@ -1449,7 +1449,7 @@ namespace "build" do
       puts 'process additional java files for build from extensions :'
       $ext_android_additional_sources_list.each do |s|
         s.chomp!
-        puts 'java file : ' + s
+        puts "java file : #{s}" if USE_TRACES
         lines << s
       end
 
