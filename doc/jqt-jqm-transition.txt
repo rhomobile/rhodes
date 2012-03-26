@@ -15,15 +15,16 @@ Target platform should be [supported by jQuery Mobile framework](http://jquerymo
 You need to use [Rhodes application template code](https://github.com/rhomobile/rhodes/tree/master/res/generators/templates/application/) (*rhodes_root_dir/res/generators/templates/application*) as the source of files to copy from.
 
 1. Backup your application as it is before any changes.
-1. Copy all content of *public/jquery* directory to the *public/jquery* directory of your application.
-1. Copy all content of *public/jqmobile* directory to the *public/jqmobile* directory of your application.
-1. Copy all content of *public/css* directory to the *public/css* directory of your application.
-1. Copy all content of *public/js* directory to the *public/js* directory of your application.
-1. Rename your *app/layout.erb* to some other name, say *app/layout-legacy.erb*.
-1. Copy *app/layout.erb* file to the *app* directory of your application.
-1. Replace all instances of **'<%%'** symbol combination in the new *app/layout.erb* to the **'<%'** combination.
-1. Use your *app/layout-legacy.erb* as reference to implement needed customization and styling in the *app/layout.erb* file.
-1. Change the HTML structure of all application pages so they will meet jQuery Mobile requirements (see below).
+2. Copy all content of *public/jquery* directory to the *public/jquery* directory of your application.
+3. Copy all content of *public/jqmobile* directory to the *public/jqmobile* directory of your application.
+4. Copy all content of *public/css* directory to the *public/css* directory of your application.
+5. Copy all content of *public/js* directory to the *public/js* directory of your application.
+6. Rename your *app/layout.erb* to some other name, say *app/layout-legacy.erb*.
+7. Copy *app/layout.erb* file to the *app* directory of your application.
+8. Replace all instances of **'<%%'** symbol combination in the new *app/layout.erb* to the **'<%'** combination.
+9. Replace "<%= class_name %>" inside the title tag in the header for the name of your app, ex "My App"
+10. Use your *app/layout-legacy.erb* as reference to implement needed customization and styling in the *app/layout.erb* file.
+11. Change the HTML structure of all application pages so they will meet jQuery Mobile requirements (see below).
 
 ### Application pages structure changes
 
