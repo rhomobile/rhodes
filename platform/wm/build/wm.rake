@@ -134,7 +134,7 @@ namespace "config" do
     $wm_emulator = $app_config["wm"]["emulator"] if $app_config["wm"] and $app_config["wm"]["emulator"]
     $wm_emulator = "Windows Mobile 6 Professional Emulator" unless $wm_emulator
 
-    $use_shared_runtime = (($app_config["use_shared_runtime"].nil? || $app_config["wm"].nil? || $app_config["wm"]["use_shared_runtime"].nil?) ? nil : 1 )
+    $use_shared_runtime = (($app_config["use_shared_runtime"].nil? && ($app_config["wm"].nil? || $app_config["wm"]["use_shared_runtime"].nil?)) ? nil : 1 )
     #puts $app_config["wm"]["use_shared_runtime"].inspect
     #puts $use_shared_runtime.inspect
   end
