@@ -33,6 +33,7 @@ platform/win32/bin/*
 platform/shared/*/win32/bin/*
 platform/wm/target/*
 platform/wm/build/cleanup.js
+platform/wm/build/regs.txt
 platform/iphone/*/rholog.txt
 platform/win32/**/*.pch
 platform/win32/RhoSimulator
