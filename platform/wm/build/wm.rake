@@ -102,6 +102,7 @@ namespace "config" do
     $wk_data_dir = "/Program Files" # its fake value for running without motorola extensions. do not delete
     $additional_dlls_path = nil
     $additional_regkeys = nil
+    $use_direct_deploy = "yes"
 
     begin
       if $webkit_capability
@@ -485,9 +486,9 @@ namespace "clean" do
 end
 
 namespace "run" do
-    task :mylogserver => ["config:wm"] do
-        Jake.run_rho_log_server($app_path)
-    end
+  task :mylogserver => ["config:wm"] do
+    Jake.run_rho_log_server($app_path)
+  end
 
   def gelLogPath
     log_file_path =  File.join($app_path, $log_file)
@@ -496,39 +497,43 @@ namespace "run" do
 
   desc "Build and run on WM6 emulator"
   task :wm => ["device:wm:production"] do
-    # kill all running detool
-    kill_detool
+    if $use_direct_deploy == "no" 
+      Rake::Task["run:wm:cab"].execute
+    else
+      # kill all running detool
+      kill_detool
 
-    cd $startdir + "/res/build-tools"
-    detool = "detool.exe"
+      cd $startdir + "/res/build-tools"
+      detool = "detool.exe"
     
-    puts "\nStarting application on the WM6 emulator\n\n"
-    log_file = gelLogPath
+      puts "\nStarting application on the WM6 emulator\n\n"
+      log_file = gelLogPath
 
-    File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
-    Jake.run_rho_log_server($app_path)
-    puts "RhoLogServer is starting"
-    while true do
-      if File.exists?($app_path + "/started")
-        break
+      File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
+      Jake.run_rho_log_server($app_path)
+      puts "RhoLogServer is starting"
+      while true do
+        if File.exists?($app_path + "/started")
+          break
+        end
+        sleep(1)
       end
-      sleep(1)
-    end
 
-    if $webkit_capability and ($use_shared_runtime.nil?)
-      wk_args   = [ 'wk-emu', "\"#{$wm_emulator}\"", '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
-      Jake.run2( detool, wk_args, {:nowait => false})
-    end
-
-    if $additional_dlls_paths
-      $additional_dlls_paths.each do |path|
-        add_files_args   = [ 'wk-emu', "\"#{$wm_emulator}\"", '"'+ path.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
-        Jake.run2( detool, add_files_args, {:nowait => false})
+      if $webkit_capability and ($use_shared_runtime.nil?)
+        wk_args   = [ 'wk-emu', "\"#{$wm_emulator}\"", '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
+        Jake.run2( detool, wk_args, {:nowait => false})
       end
-    end
 
-    args = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+((not $use_shared_runtime.nil?) ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port]
-    Jake.run2( detool, args, {:nowait => false})
+      if $additional_dlls_paths
+        $additional_dlls_paths.each do |path|
+          add_files_args   = [ 'wk-emu', "\"#{$wm_emulator}\"", '"'+ path.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
+          Jake.run2( detool, add_files_args, {:nowait => false})
+        end
+      end
+
+      args = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+((not $use_shared_runtime.nil?) ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port]
+      Jake.run2( detool, args, {:nowait => false})
+    end
   end
 
   namespace "wm" do
@@ -546,43 +551,47 @@ namespace "run" do
       Rake::Task["run:rhosimulator_debug"].invoke
     end
 
-    desc "Build and run on the Windows Phone"
+    desc "Build and run on the Windows Mobile device"
     task :device => ["device:wm:production"] do
-      # kill all running detool
-      kill_detool
+      if $use_direct_deploy == "no" 
+        Rake::Task["run:wm:device:cab"].execute
+      else
+        # kill all running detool
+        kill_detool
 
-      cd $startdir + "/res/build-tools"
-      detool = "detool.exe"     
+        cd $startdir + "/res/build-tools"
+        detool = "detool.exe"     
 
-      puts "\nStarting application on the device"
-      puts "Please, connect you device via ActiveSync.\n\n"
-      log_file = gelLogPath
+        puts "\nStarting application on the device"
+        puts "Please, connect you device via ActiveSync.\n\n"
+        log_file = gelLogPath
 
-      File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
-	  
-      Jake.run_rho_log_server($app_path)
-      puts "RhoLogServer is starting"
-      while true do
-        if File.exists?($app_path + "/started")
-          break
+        File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
+ 	  
+        Jake.run_rho_log_server($app_path)
+        puts "RhoLogServer is starting"
+        while true do
+          if File.exists?($app_path + "/started")
+            break
+          end
+          sleep(1)
+        end    
+
+        if $webkit_capability and ($use_shared_runtime.nil?)
+          wk_args   = [ 'wk-dev', '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
+          Jake.run2( detool, wk_args, {:nowait => false})
         end
-        sleep(1)
-      end    
 
-      if $webkit_capability and ($use_shared_runtime.nil?)
-        wk_args   = [ 'wk-dev', '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
-        Jake.run2( detool, wk_args, {:nowait => false})
-      end
-
-      if $additional_dlls_paths
-        $additional_dlls_paths.each do |path|
-          add_files_args   = [ 'wk-dev', '"'+ path.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
-          Jake.run2( detool, add_files_args, {:nowait => false})
+        if $additional_dlls_paths
+          $additional_dlls_paths.each do |path|
+            add_files_args   = [ 'wk-dev', '"'+ path.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
+            Jake.run2( detool, add_files_args, {:nowait => false})
+          end
         end
-      end
 
-      args = [ 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+((not $use_shared_runtime.nil?) ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port ]
-      Jake.run2( detool, args, {:nowait => false})
+        args = [ 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+((not $use_shared_runtime.nil?) ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port ]
+        Jake.run2( detool, args, {:nowait => false})
+      end
     end
 
     task :spec => ["device:wm:production"] do
