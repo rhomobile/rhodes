@@ -1801,8 +1801,9 @@ int SWIG_Ruby_arity( VALUE proc, int minimal )
 /* -------- TYPES TABLE (BEGIN) -------- */
 
 #define SWIGTYPE_p_char swig_types[0]
-static swig_type_info *swig_types[2];
-static swig_module_info swig_module = {swig_types, 1, 0, 0, 0, 0};
+#define SWIGTYPE_p_rho_param swig_types[1]
+static swig_type_info *swig_types[3];
+static swig_module_info swig_module = {swig_types, 2, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1831,6 +1832,21 @@ extern void rho_barcode_take_barcode(const char* callback, VALUE options);
 
 #define barcode_recognize rho_barcode_barcode_recognize 
 #define take_barcode rho_barcode_take_barcode 
+
+
+// additional methods for Moto compatibility
+
+extern void rho_scanner_enumerate(const char* callback);
+extern void  rho_motobarcode_enable(const char* callback, rho_param* p);
+extern void  rho_motobarcode_disable();
+extern void  rho_motobarcode_start();
+extern void  rho_motobarcode_stop();
+            
+#define enumerate    rho_motobarcode_enumerate
+#define enable       rho_motobarcode_enable
+#define disable      rho_motobarcode_disable
+#define start        rho_motobarcode_start
+#define stop         rho_motobarcode_stop
 
 
 
@@ -1964,19 +1980,122 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_enumerate(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","enumerate", 1, argv[0] ));
+  }
+  arg1 = (char *)(buf1);
+  enumerate((char const *)arg1);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_enable(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  rho_param *arg2 = (rho_param *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  
+  {
+    arg2 = 0;
+  }
+  if ((argc < 1) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","enable", 1, argv[0] ));
+  }
+  arg1 = (char *)(buf1);
+  if (argc > 1) {
+    {
+      arg2 = rho_param_fromvalue(argv[1]);
+    }
+  }
+  enable((char const *)arg1,arg2);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  {
+    rho_param_free(arg2);
+  }
+  return Qnil;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  {
+    rho_param_free(arg2);
+  }
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_disable(int argc, VALUE *argv, VALUE self) {
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  disable();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_start(int argc, VALUE *argv, VALUE self) {
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  start();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_stop(int argc, VALUE *argv, VALUE self) {
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  stop();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_rho_param = {"_p_rho_param", "rho_param *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_char,
+  &_swigt__p_rho_param,
 };
 
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_rho_param[] = {  {&_swigt__p_rho_param, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_char,
+  _swigc__p_rho_param,
 };
 
 
@@ -2272,5 +2391,10 @@ SWIGEXPORT void Init_Barcode(void) {
   SWIG_RubyInitializeTrackings();
   rb_define_module_function(mBarcode, "barcode_recognize", _wrap_barcode_recognize, -1);
   rb_define_module_function(mBarcode, "take_barcode", _wrap_take_barcode, -1);
+  rb_define_module_function(mBarcode, "enumerate", _wrap_enumerate, -1);
+  rb_define_module_function(mBarcode, "enable", _wrap_enable, -1);
+  rb_define_module_function(mBarcode, "disable", _wrap_disable, -1);
+  rb_define_module_function(mBarcode, "start", _wrap_start, -1);
+  rb_define_module_function(mBarcode, "stop", _wrap_stop, -1);
 }
 

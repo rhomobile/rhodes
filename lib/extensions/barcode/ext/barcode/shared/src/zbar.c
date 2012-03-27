@@ -79,3 +79,20 @@ const char* rho_barcode_barcode_recognize(const char* filename) {
 
   return strbuf;
 }
+
+
+void rho_motobarcode_enumerate(const char* callback) {
+}
+
+void  rho_motobarcode_enable(const char* callback, rho_param* p) {
+}
+
+void  rho_motobarcode_disable() {
+}
+
+void  rho_motobarcode_start() {
+}
+
+void  rho_motobarcode_stop() {
+}
+
