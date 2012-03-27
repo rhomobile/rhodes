@@ -24,7 +24,7 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
-if System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'ANDROID'
+if Object.const_defined?('RhoElementsExt')
 
 module Barcode
 
