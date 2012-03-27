@@ -414,7 +414,7 @@ namespace "device" do
         rm reg_keys_filename 
       end
       
-      if $regkeys.size > 0
+      if $regkeys && $regkeys.size > 0
         puts 'add registry keys to file'
         $regkey_file = File.new(reg_keys_filename, "w+")
       
