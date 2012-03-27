@@ -378,17 +378,22 @@ end
 def java_compile(outpath, classpath, srclists)
     javac = $config["env"]["paths"]["java"] + "/javac" + $exe_ext
 
-    fullsrclist = Tempfile.new 'RhodesSRC_build'
-    srclists.each do |srclist|
-      lines = []
-      File.open(srclist, "r") do |f|
-        while line = f.gets
-          line.chomp!
-          fullsrclist.write "#{line}\n"
+    if srclists.count == 1
+      fullsrclist = srclists.first
+    else
+      fullsrclist = Tempfile.new 'RhodesSRC_build'
+      srclists.each do |srclist|
+        lines = []
+        File.open(srclist, "r") do |f|
+          while line = f.gets
+            line.chomp!
+            fullsrclist.write "#{line}\n"
+          end
         end
       end
+      fullsrclist.close
+      fullsrclist = fullsrclist.path
     end
-    fullsrclist.close
 
     args = []
     args << "-g"
@@ -403,7 +408,7 @@ def java_compile(outpath, classpath, srclists)
     args << "latin1"
     args << "-classpath"
     args << classpath
-    args << "@#{fullsrclist.path}"
+    args << "@#{fullsrclist}"
     puts Jake.run(javac, args)
     unless $?.success?
         puts "Error compiling java code"
