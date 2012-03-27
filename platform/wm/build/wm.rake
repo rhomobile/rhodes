@@ -375,6 +375,7 @@ namespace "device" do
       if $use_shared_runtime.nil? then
         out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/"
         cp out_dir + "rhodes.exe", out_dir + $appname + ".exe"
+        cp $startdir + "/res/build-tools/license_rc.dll", out_dir + "license_rc.dll"
       else
         shortcut_content = '"\\Program Files\\RhoElements2\\RhoElements2.exe" -approot="\\Program Files\\' + $appname + '"'
         if File.exists? wm_icon then
@@ -414,7 +415,7 @@ namespace "device" do
         rm reg_keys_filename 
       end
       
-      if $regkeys && $regkeys.size > 0
+       if $regkeys && $regkeys.size > 0
         puts 'add registry keys to file'
         $regkey_file = File.new(reg_keys_filename, "w+")
       
@@ -581,7 +582,7 @@ namespace "run" do
         end
       end
 
-      args = [ 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+((not $use_shared_runtime.nil?) ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port ]
+      args = [ 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+((not $use_shared_runtime.nil?) ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
       Jake.run2( detool, args, {:nowait => false})
     end
 
