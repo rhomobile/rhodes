@@ -808,7 +808,11 @@ namespace "config" do
             end
 
             build_script = File.join(extpath, 'build' + $bat_ext)
-            $ext_android_build_scripts[extpath] = File.join('.', 'build' + $bat_ext) if File.exists? build_script
+            if RUBY_PLATFORM =~ /(win|w)32$/
+              $ext_android_build_scripts[extpath] = 'build.bat' if File.exists? build_script
+            else
+              $ext_android_build_scripts[extpath] = File.join('.', 'build' + $bat_ext) if File.exists? build_script
+            end
 
             puts "#{extpath} is configured"
             # to prevent to build 2 extensions with same name
@@ -885,6 +889,7 @@ namespace "build" do
       Rake::Task["build:bundle:noxruby"].invoke
 
       ENV['RHO_PLATFORM'] = 'android'
+      ENV["RHO_APP_DIR"] = $app_path
       ENV["ANDROID_NDK"] = $androidndkpath
       ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
       ENV["TARGET_TEMP_DIR"] = $extensionsdir
