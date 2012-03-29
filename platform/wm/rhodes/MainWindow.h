@@ -286,6 +286,10 @@ private:
     LRESULT OnGeolocationData (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 #endif
 
+#if defined( OS_WINCE )
+	bool  m_bLoadingComplete;
+#endif
+
 public:
 
 #ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER

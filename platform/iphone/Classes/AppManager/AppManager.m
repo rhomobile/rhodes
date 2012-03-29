@@ -673,6 +673,7 @@ static const double RHO_IPHONE_PPI = 163.0;
 static const double RHO_IPHONE4_PPI = 326.0;
 // http://www.apple.com/ipad/specs/
 static const double RHO_IPAD_PPI = 132.0;
+static const double RHO_NEW_IPAD_PPI = 264.0;
 
 static float get_scale() {
     float scales = 1;//[[UIScreen mainScreen] scale];
@@ -737,7 +738,12 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
              strcasecmp("ppi_y", szPropName) == 0) {
 #ifdef __IPHONE_3_2
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            *resValue = rho_ruby_create_double(RHO_IPAD_PPI);
+            if (get_scale() > 1.2) {
+                *resValue = rho_ruby_create_double(RHO_NEW_IPAD_PPI);
+            }
+            else {
+                *resValue = rho_ruby_create_double(RHO_IPAD_PPI);
+            }
             return 1;
         }
 #endif

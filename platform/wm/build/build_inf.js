@@ -264,7 +264,6 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
             p("\"eklibrary.dll\"=2");
             p("\"prtlib.dll\"=2");
             p("\"webkit.dll\"=2");
-            p("\"license_rc.dll\"=2");
             p("\"openssl.dll\"=2");
             p("\"PBEngine_WK.dll\"=2");
             p("\"npwtg_jsobjects.dll\"=3");
@@ -296,13 +295,13 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
     if (usereruntime) {
         p("\"" + name + ".lnk\",\"" + name + ".lnk\",,0");
     } else {
-        p("\"" + name + ".exe\",\"" + name + ".exe\",,0");
+    p("\"" + name + ".exe\",\"" + name + ".exe\",,0");
+    p("\"license_rc.dll\",\"license_rc.dll\",,0");
         if (webkit) {
             p("");
             p("[CopyWebKitBin]");
             p("\"eklibrary.dll\",\"eklibrary.dll\",,0");
             p("\"webkit.dll\",\"webkit.dll\",,0");
-            p("\"license_rc.dll\",\"license_rc.dll\",,0");
             p("\"openssl.dll\",\"openssl.dll\",,0");
             p("\"PBEngine_WK.dll\",\"PBEngine_WK.dll\",,0");
             p("");

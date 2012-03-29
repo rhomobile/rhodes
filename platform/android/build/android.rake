@@ -27,6 +27,8 @@
 require File.dirname(__FILE__) + '/androidcommon.rb'
 require File.dirname(__FILE__) + '/android_tools.rb'
 require 'pathname'
+require 'tempfile'
+
 
 USE_OWN_STLPORT = false
 #USE_TRACES = # see androidcommon.h
@@ -384,12 +386,6 @@ namespace "config" do
     android_api_levels.sort!
     $found_api_level = android_api_levels.last
 
-    $ext_android_rhodes_activity_listener = []
-    $ext_android_manifest_changes= []
-    $ext_android_resources_addons = []
-    $ext_android_additional_sources_list = []
-    $ext_android_additional_lib = []
-
     $gapikey = $app_config["android"]["apikey"] unless $app_config["android"].nil?
     $gapikey = $config["android"]["apikey"] if $gapikey.nil? and not $config["android"].nil?
     $gapikey = '' unless $gapikey.is_a? String
@@ -451,6 +447,7 @@ namespace "config" do
     $app_native_libs_java = File.join $tmpdir, "NativeLibraries.java"
     $app_capabilities_java = File.join $tmpdir, "Capabilities.java"
     $app_push_java = File.join $tmpdir, "Push.java"
+    $app_activity_startup_listeners_java = File.join $tmpdir, "RhodesActivityStartupListeners.java"
 
     if RUBY_PLATFORM =~ /(win|w)32$/
       $emulator = #"cmd /c " + 
@@ -747,6 +744,88 @@ namespace "config" do
     mkdir_p $libs if not File.exists? $libs
 
   end
+  
+  namespace 'android' do
+    task :extensions => ['config:android', 'build:bundle:noxruby'] do
+    
+      $ext_android_rhodes_activity_listener = []
+      $ext_android_manifest_changes= []
+      $ext_android_resources_addons = []
+      $ext_android_additional_sources = {}
+      $ext_android_additional_lib = []
+      $ext_android_build_scripts = {}
+
+      $app_config["extensions"].each do |ext|
+        puts "#{ext} is processing..."
+        $app_config["extpaths"].each do |p|
+          extpath = File.join(p, ext, 'ext')
+
+          puts "Checking extpath: #{extpath}"
+
+          if File.exists? extpath and File.directory? extpath
+            puts "#{extpath} is configuring..."
+            extyml = File.join(p, ext,"ext.yml")
+            if File.file? extyml
+                puts "#{extyml} is processing..."
+                extconf = Jake.config(File.open(extyml))
+
+                android_listener = extconf["android_rhodes_activity_listener"]
+                $ext_android_rhodes_activity_listener << android_listener unless android_listener.nil?
+
+                android_manifest_changes = extconf["android_manifest_changes"]
+                if android_manifest_changes != nil
+                  android_manifest_changes = File.join(p, ext, android_manifest_changes)
+                  $ext_android_manifest_changes << android_manifest_changes
+                end
+
+                android_resources_addons = extconf["android_resources_addons"]
+                if android_resources_addons != nil
+                  android_resources_addons = File.join(p, ext, android_resources_addons)
+                  $ext_android_resources_addons << android_resources_addons
+                end
+
+                android_additional_sources_list = extconf["android_additional_sources_list"]
+                unless android_additional_sources_list.nil?
+                  ext_sources_list = File.join(p, ext, android_additional_sources_list)
+
+                  if File.exists? ext_sources_list
+                    $ext_android_additional_sources[File.join(p, ext)] = ext_sources_list
+                  else
+                    raise "Extension java source list is missed: #{ext_sources_list}"
+                  end
+                else
+                  puts "No additional java sources for '#{ext}'"
+                end
+
+                android_additional_lib = extconf["android_additional_lib"]
+                if android_additional_lib != nil
+                  android_additional_lib.each do |lib|
+                    $ext_android_additional_lib << File.join(p, ext, lib)
+                  end
+                end
+
+                puts  "#{extyml} is processed"
+            end
+
+            build_script = File.join(extpath, 'build' + $bat_ext)
+            if RUBY_PLATFORM =~ /(win|w)32$/
+              $ext_android_build_scripts[extpath] = 'build.bat' if File.exists? build_script
+            else
+              $ext_android_build_scripts[extpath] = File.join('.', 'build' + $bat_ext) if File.exists? build_script
+            end
+
+            puts "#{extpath} is configured"
+            # to prevent to build 2 extensions with same name
+            break
+          end # exists?
+        end # $app_config["extpaths"].each
+      end # $app_config["extensions"].each
+      
+      puts "Extensions' java source lists: #{$ext_android_additional_sources.inspect}"
+      
+    end #task :extensions
+
+  end #namespace 'android'  
 end
 
 
@@ -804,11 +883,13 @@ namespace "build" do
       cp_r assets, eclipse_assets, :preserve => true
     end
 
-    task :extensions => ["config:android", :genconfig] do
+    desc 'Building native extensioons'
+    task :extensions => ["config:android:extensions", :genconfig] do
     
       Rake::Task["build:bundle:noxruby"].invoke
 
       ENV['RHO_PLATFORM'] = 'android'
+      ENV["RHO_APP_DIR"] = $app_path
       ENV["ANDROID_NDK"] = $androidndkpath
       ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
       ENV["TARGET_TEMP_DIR"] = $extensionsdir
@@ -818,84 +899,16 @@ namespace "build" do
       ENV["RHO_ANDROID_TMP_DIR"] = $tmpdir
       ENV["NEON_ROOT"] = $neon_root unless $neon_root.nil?
 
-      ext_build_files = File.join($extensionsdir, "ext_build.files")
-      if File.exist? ext_build_files
-           rm ext_build_files
-      end
-
       mkdir_p $extensionsdir unless File.directory? $extensionsdir
 
-      $app_config["extensions"].each do |ext|
-        puts "#{ext} is processing..."
-        $app_config["extpaths"].each do |p|
-          extpath = File.join(p, ext, 'ext')
-
-          puts "Checking extpath: #{extpath}"
-
-          if File.exists? extpath and File.directory? extpath
-            puts "#{extpath} is building..."
-            extyml = File.join(p, ext,"ext.yml")
-            if File.file? extyml
-                puts "#{extyml} is processing..."
-                extconf = Jake.config(File.open(extyml))
-
-                android_listener = extconf["android_rhodes_activity_listener"]
-                $ext_android_rhodes_activity_listener << android_listener unless android_listener.nil?
-
-                android_manifest_changes = extconf["android_manifest_changes"]
-                if android_manifest_changes != nil
-                  android_manifest_changes = File.join(p, ext, android_manifest_changes)
-                  $ext_android_manifest_changes << android_manifest_changes
-                end
-
-                android_resources_addons = extconf["android_resources_addons"]
-                if android_resources_addons != nil
-                  android_resources_addons = File.join(p, ext, android_resources_addons)
-                  $ext_android_resources_addons << android_resources_addons
-                end
-
-                android_additional_sources_list = extconf["android_additional_sources_list"]
-                if android_additional_sources_list != nil
-                  android_additional_sources_list = File.join(p, ext, android_additional_sources_list)
-
-                  File.open(android_additional_sources_list, "r") do |f|
-                    while line = f.gets
-                      $ext_android_additional_sources_list << File.join(p, ext, line)
-                    end
-                  end
-                end
-
-                android_additional_lib = extconf["android_additional_lib"]
-                if android_additional_lib != nil
-                  android_additional_lib.each do |lib|
-                    $ext_android_additional_lib << File.join(p, ext, lib)
-                  end
-                end
-
-                puts  "#{extyml} is processed"
-            end
-
-            if RUBY_PLATFORM =~ /(win|w)32$/
-                next unless File.exists? File.join(extpath, 'build.bat')
-            else
-                next unless File.executable? File.join(extpath, 'build')
-            end
-
-            ENV['TEMP_FILES_DIR'] = File.join(ENV["TARGET_TEMP_DIR"], ext)
-
-            if RUBY_PLATFORM =~ /(win|w)32$/
-                Jake.run('build.bat', [], extpath)
-            else
-                Jake.run('./build', [], extpath)
-            end
-            exit 1 unless $?.success?
-
-            puts "#{extpath} is built"
-            # to prevent to build 2 extensions with same name
-            break
-          end # exists?
-        end # $app_config["extpaths"].each
-      end # $app_config["extensions"].each
+      $ext_android_build_scripts.each do |extpath, script|
+        ext = File.basename(File.dirname(extpath))
+        puts "Executing extension build script: #{ext}"
+        ENV['TEMP_FILES_DIR'] = File.join(ENV["TARGET_TEMP_DIR"], ext)
+        Jake.run(script, [], extpath)
+        raise "Cannot build #{extpath}" unless $?.success?
+        puts "Extension build script finished"
+      end
     end #task :extensions
 
     task :libsqlite => "config:android" do
@@ -1377,7 +1390,7 @@ namespace "build" do
       updated_f.close
 
       #rm tappmanifest
-      puts 'Manifest updated by extension saved!'
+      puts 'Manifest updated by extension is saved!'
 
 
       # RhodesActivity Listeners
@@ -1396,7 +1409,7 @@ namespace "build" do
       f.puts '	};'
       f.puts ''
       f.puts '}'
-      Jake.modify_file_if_content_changed(File.join($startdir, "platform","android","Rhodes","src","com","rhomobile","rhodes","RhodesActivityStartupListeners.java"), f)
+      Jake.modify_file_if_content_changed(File.join($tmpdir, "RhodesActivityStartupListeners.java"), f)
 
 
       puts 'EXT:  add additional files to project before build'
@@ -1431,9 +1444,6 @@ namespace "build" do
                     next if line == "platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/CalloutOverlay.java"
 		      end
 
-          #next if !$use_geomapping and line =~ /\/GoogleMapView\//
-          #next if !$use_geomapping and line =~ /\/AnnotationsOverlay\//
-
           lines << line
         end
       end
@@ -1443,16 +1453,8 @@ namespace "build" do
       lines << "\"" +$app_native_libs_java+"\""
       lines << "\"" +$app_capabilities_java+"\""
       lines << "\"" +$app_push_java+"\""
+      lines << "\"" +$app_activity_startup_listeners_java+"\""
       
-
-      # process collected ext src files
-      puts 'process additional java files for build from extensions :'
-      $ext_android_additional_sources_list.each do |s|
-        s.chomp!
-        puts 'java file : ' + s
-        lines << s
-      end
-
       File.open(newsrclist, "w") { |f| f.write lines.join("\n") }
       srclist = newsrclist
 
@@ -1460,9 +1462,9 @@ namespace "build" do
       classpath += $path_separator + $gapijar unless $gapijar.nil?
       classpath += $path_separator + $motosol_jar unless $motosol_jar.nil?
       classpath += $path_separator + File.join($tmpdir, 'Rhodes')
-      Dir.glob(File.join($extensionsdir, "*.jar")).each do |f|
-        classpath += $path_separator + f
-      end
+#      Dir.glob(File.join($extensionsdir, "*.jar")).each do |f|
+#        classpath += $path_separator + f
+#      end
 
       javafilelists = [srclist]
 
@@ -1477,25 +1479,58 @@ namespace "build" do
       java_compile(File.join($tmpdir, 'Rhodes'), classpath, javafilelists)
 
       files = []
-      Dir.glob(File.join($extensionsdir, "*.jar")).each do |f|
-        puts Jake.run($jarbin, ["xf", f], File.join($tmpdir, 'Rhodes'))
-        unless $?.success?
-          puts "Error running jar (xf)"
-          exit 1
-        end
-      end
       Dir.glob(File.join($tmpdir, "Rhodes", "*")).each do |f|
         relpath = Pathname.new(f).relative_path_from(Pathname.new(File.join($tmpdir, "Rhodes"))).to_s
         files << relpath
       end
       unless files.empty?
-        args = ["cf", "../../Rhodes.jar"]
+        jar = File.join($bindir, 'Rhodes.jar')
+        args = ["cf", jar]
         args += files
-        puts Jake.run($jarbin, args, File.join($tmpdir, "Rhodes"))
+        Jake.run($jarbin, args, File.join($tmpdir, "Rhodes"))
         unless $?.success?
-          puts "Error running jar"
-          exit 1
+          raise "Error creating #{jar}"
         end
+        $android_jars = [jar]
+      end
+    end
+    
+    task :extensions_java => [:rhodes, :extensions] do
+      puts 'Compile additional java files:'
+
+      classpath = $androidjar
+      classpath += $path_separator + $gapijar unless $gapijar.nil?
+      classpath += $path_separator + $motosol_jar unless $motosol_jar.nil?
+      classpath += $path_separator + File.join($tmpdir, 'Rhodes')
+      Dir.glob(File.join($extensionsdir, '*.jar')).each do |jar|
+        classpath += $path_separator + jar
+      end
+
+      $ext_android_additional_sources.each do |extpath, list|
+        ext = File.basename(extpath)
+        puts "Compiling '#{ext}' extension java sources: #{list}"
+
+        srclist = Tempfile.new "#{ext}SRC_build"
+        lines = []
+        File.open(list, "r") do |f|
+          while line = f.gets
+            line.chomp!
+            srclist.write "#{File.join(extpath, line)}\n"
+          end
+        end
+        srclist.close
+        
+        mkdir_p File.join($tmpdir, ext)
+        
+        java_compile(File.join($tmpdir, ext), classpath, [srclist.path])
+
+        extjar = File.join $bindir, ext + '.jar'
+        args = ["cf", extjar, '.']
+        Jake.run($jarbin, args, File.join($tmpdir, ext))
+        unless $?.success?
+          raise "Error creating #{extjar}"
+        end
+        $android_jars << extjar
       end
     end
 
@@ -1511,7 +1546,7 @@ namespace "build" do
     end    
     
     #desc "build all"
-    task :all => ['build:android:rhobundle', :rhodes]
+    task :all => [:rhobundle, :rhodes, :extensions_java]
   end
 end
 
@@ -1519,15 +1554,20 @@ namespace "package" do
   task :android => "build:android:all" do
     puts "Running dx utility"
     args = []
+    args << "-Xmx1024m"    
     args << "-jar"
     args << $dxjar
     args << "--dex"
     args << "--output=#{$bindir}/classes.dex"
-    args << "#{$bindir}/Rhodes.jar"
-    puts Jake.run("java", args)
+    $android_jars.each do |jar|
+        args << jar
+    end
+    Dir.glob(File.join($extensionsdir, "*.jar")).each do |jar|
+        args << jar
+    end
+    Jake.run("java", args)
     unless $?.success?
-      puts "Error running DX utility"
-      exit 1
+      raise "Error running DX utility"
     end
 
     manifest = $appmanifest
@@ -1543,8 +1583,7 @@ namespace "package" do
     args = ["package", "-f", "-M", manifest, "-S", resource, "-A", assets, "-I", $androidjar, "-F", resourcepkg]
     puts Jake.run($aapt, args)
     unless $?.success?
-      puts "Error running AAPT (1)"
-      exit 1
+      raise "Error running AAPT (1)"
     end
 
     # Workaround: manually add files starting with '_' because aapt silently ignore such files when creating package
@@ -1555,8 +1594,7 @@ namespace "package" do
       args = ["uf", resourcepkg, relpath]
       puts Jake.run($jarbin, args, $tmpdir)
       unless $?.success?
-        puts "Error running AAPT (2)"
-        exit 1
+        raise "Error running AAPT (2)"
       end
     end
 
@@ -1584,8 +1622,7 @@ namespace "package" do
     err = $?
     rm_rf $tmpdir + "/lib"
     unless err.success?
-      puts "Error running AAPT (3)"
-      exit 1
+      raise "Error running AAPT (3)"
     end
   end
 end

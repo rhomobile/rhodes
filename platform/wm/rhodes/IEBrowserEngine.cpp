@@ -4,6 +4,10 @@
 #include "common/RhoConf.h"
 #include "MainWindow.h"
 
+#if defined( OS_WINCE )
+extern "C" bool CheckSymbolDevice();
+#endif
+
 #if defined(_WIN32_WCE)
 #include <webvw.h>
 #endif
@@ -162,7 +166,11 @@ LRESULT CIEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lPar
 
 void CIEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 {
-    MSG msg;
+#if defined( OS_WINCE )
+	if(!CheckSymbolDevice()) return;
+#endif
+	
+	MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
     {
         if ( RHODESAPP().getExtManager().onWndMsg(msg) )
