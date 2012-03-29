@@ -798,8 +798,8 @@ namespace "build" do
       
     end
 
-    # its fake task for compiling ruby code in rhostudio
-    task :rhostudiobundle => ["config:wm", "build:bundle:noxruby"] do
+    # its task for compiling ruby code in rhostudio
+    task :rhostudio => ["config:wm", "build:bundle:noxruby"] do
       Jake.build_file_map( File.join($srcdir, "apps"), "rhofilelist.txt" )
     end
     
