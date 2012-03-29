@@ -40,6 +40,10 @@
 #include <strsafe.h>
 #endif
 
+#if defined( OS_WINCE )
+#define USE_LICENSE
+#endif
+
 #include "resource.h"
 #include "MainWindow.h"
 #include "common/StringConverter.h"
@@ -60,6 +64,9 @@ IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 
 #include "DateTimePicker.h"
 
+#if defined( OS_WINCE )
+extern "C" void CheckLicense() ;
+#endif
 extern "C" void rho_sysimpl_sethas_network(int nValue);
 extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue);
 extern "C" void rho_geoimpl_turngpsoff();
@@ -94,6 +101,10 @@ CMainWindow::CMainWindow()
 #endif
     m_pageCounter = 0;
     m_menuBarHeight = 0;
+
+#if defined( OS_WINCE )
+	m_bLoadingComplete = false;
+#endif
 }
 
 CMainWindow::~CMainWindow()
@@ -1123,7 +1134,7 @@ void CMainWindow::ShowLoadingPage()
 
 void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtURL)
 {
-    USES_CONVERSION;
+	USES_CONVERSION;
 	
 	ProcessDocumentComplete( OLE2CT(V_BSTR(pvtURL)) );
 }
@@ -1149,10 +1160,20 @@ void CMainWindow::ProcessDocumentComplete(LPCTSTR url)
 	if (m_pageCounter > 2) //"loading" page + first page
 		SetToolbarButtonEnabled(IDM_SK1_EXIT, TRUE);
 #endif	
-    
+
     //CMetaHandler oHandler(m_spIWebBrowser2);
 
     RHODESAPP().getExtManager().onDocumentComplete(url);
+
+#if defined( OS_WINCE )
+#ifdef	USE_LICENSE
+	if(!m_bLoadingComplete)
+	{
+		CheckLicense();
+		m_bLoadingComplete = true;
+	}
+#endif
+#endif
 }
 
 void __stdcall CMainWindow::OnCommandStateChange(long lCommand, BOOL bEnable)

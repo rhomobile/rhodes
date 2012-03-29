@@ -79,7 +79,18 @@ public class Barcode {
      }
      
    	 public static native void callback(String callbackUrl, String body);
-     
+
+   	 public static native void enumeratecallback(String callback_url);
+   	 
+   	 public static void callMotoEnumerateCallback(String callbackUrl) {
+   		 final String cb = callbackUrl;
+   		 PerformOnUiThread.exec(new Runnable() {
+   			public void run() {
+   				enumeratecallback(cb);
+   			}
+   		 });
+   	 }
+   	 
      public static void callCancelCallback() {
  		StringBuffer body = new StringBuffer();
 		body.append("&rho_callback=1");

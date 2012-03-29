@@ -5,12 +5,14 @@
 #include "app_build_configs.h"
 
 static const char* keys[] = { ""
+,"moto-plugins"
 };
 
 static const char* values[] = { ""
+,"ALL"
 };
 
-#define APP_BUILD_CONFIG_COUNT 1
+#define APP_BUILD_CONFIG_COUNT 2
 
 const char* get_app_build_config_item(const char* key) {
   int i;

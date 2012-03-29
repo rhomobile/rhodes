@@ -296,6 +296,11 @@ namespace "config" do
         
         application_build_configs['shared-runtime'] = '1' if $app_config["capabilities"].index('shared_runtime')
     end
+
+    if $app_config["capabilities"].index("motorola_browser")
+        $app_config["capabilities"] += ["motorola"] unless $app_config["capabilities"].index("motorola")
+        $app_config["capabilities"] += ["webkit_browser"]
+    end
     
     if $app_config["capabilities"].index("motorola")
         if $app_config["extensions"].index("webkit-browser")
@@ -307,13 +312,6 @@ namespace "config" do
             $app_config['extensions'][barcode_idx] = 'barcode-moto' unless barcode_idx.nil?
         end
         $app_config["extensions"] += ["rhoelements"]
-    else
-        if $current_platform == 'wm'
-            puts '********* NOTE ************************************************************************'
-            puts ' To build for Windows Mobile or Windows CE platform  - install Motorola RhoElements v2'
-            puts '**************************************************************************************'
-            exit(1)
-        end
     end
 
     puts "$app_config['extensions'] : #{$app_config['extensions'].inspect}"   

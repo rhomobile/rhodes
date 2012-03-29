@@ -108,6 +108,26 @@ private:
 };
 
 
+class RhoScannersListContainer : public rho::ICallbackObject
+{
+public:
+	RhoScannersListContainer() {
+	}
+    
+	virtual ~RhoScannersListContainer() {
+	}
+    
+	virtual unsigned long getObjectValue() {
+        VALUE b_array = rho_ruby_create_array();
+        VALUE b_hash = rho_ruby_createHash();
+        rho_ruby_add_to_hash(b_hash, rho_ruby_create_string("friendlyName"), rho_ruby_create_string("RhoBarcode based on ZBar"));
+        rho_ruby_add_to_hash(b_hash, rho_ruby_create_string("deviceName"), rho_ruby_create_string("RhoBarcode"));
+        rho_ruby_add_to_array(b_array, b_hash);
+        return b_array;
+	}
+};
+
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -185,6 +205,22 @@ void Barcode_executeRhoCallBackWithParams(NSString* callbackURL,
     rho_http_free(norm_url);
     
     
+}
+    
+void Barcode_executeEnumerateCallback(NSString* url) {
+
+    NSString* strBody = @"&status=ok&rho_callback=1&";
+    NSString* strParam = [NSString stringWithUTF8String:(RHODESAPP().addCallbackObject( new RhoScannersListContainer(), "scannerArray").c_str())]; 
+    strBody = [strBody stringByAppendingString:strParam];
+                                                                                       
+    const char* cb = [url UTF8String];
+    const char* b = [strBody UTF8String];
+    
+                                                                                       
+    char* norm_url = rho_http_normalizeurl(cb);
+    rho_net_request_with_data(norm_url, b);
+                                                                                       
+    rho_http_free(norm_url);
 }
 
 	
