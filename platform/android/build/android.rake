@@ -1554,6 +1554,7 @@ namespace "package" do
   task :android => "build:android:all" do
     puts "Running dx utility"
     args = []
+    args << "-Xmx1024m"    
     args << "-jar"
     args << $dxjar
     args << "--dex"
