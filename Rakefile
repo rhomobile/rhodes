@@ -562,9 +562,7 @@ def init_extensions(startdir, dest)
     extlibs.each { |lib| add_linker_library(lib) }
     nativelib.each { |lib| add_linker_library(lib) }
 
-    set_linker_flags
-    
-    #exit
+    set_linker_flags    
   end
   
   unless $app_config["constants"].nil?
@@ -582,7 +580,8 @@ def init_extensions(startdir, dest)
       chdir dest
       $excludeextlib.each {|e| Dir.glob(e).each {|f| rm f}}
   end
-
+  #puts "end of init extension"
+  #exit
 end
 
 def public_folder_cp_r(src_dir,dst_dir,level,obfuscate)
@@ -801,6 +800,11 @@ namespace "build" do
       
     end
 
+    # its fake task for compiling ruby code in rhostudio
+    task :rhostudiobundle => ["config:wm", "build:bundle:noxruby"] do
+      Jake.build_file_map( File.join($srcdir, "apps"), "rhofilelist.txt" )
+    end
+    
     task :noxruby do
       app = $app_path
       rhodeslib = File.dirname(__FILE__) + "/lib/framework"
