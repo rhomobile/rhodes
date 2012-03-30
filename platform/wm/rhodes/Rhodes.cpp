@@ -168,7 +168,9 @@ public :
 
 static String g_strCmdLine;
 HINSTANCE CRhodesModule::m_hInstance;
+#if defined( OS_WINCE )
 HINSTANCE CRhodesModule::m_hLicenseInstance = 0;
+#endif
 CRhodesModule _AtlModule;
 bool g_restartOnExit = false;
 
