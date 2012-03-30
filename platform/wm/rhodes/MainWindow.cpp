@@ -64,9 +64,9 @@ IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 
 #include "DateTimePicker.h"
 
-#if defined( OS_WINCE )
-extern "C" void CheckLicense() ;
-#endif
+//#if defined( OS_WINCE )
+//extern "C" void CheckLicense();
+//#endif
 extern "C" void rho_sysimpl_sethas_network(int nValue);
 extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue);
 extern "C" void rho_geoimpl_turngpsoff();
@@ -102,9 +102,9 @@ CMainWindow::CMainWindow()
     m_pageCounter = 0;
     m_menuBarHeight = 0;
 
-#if defined( OS_WINCE )
-	m_bLoadingComplete = false;
-#endif
+//#if defined( OS_WINCE )
+//	m_bLoadingComplete = false;
+//#endif
 }
 
 CMainWindow::~CMainWindow()
@@ -988,6 +988,22 @@ LRESULT CMainWindow::OnExecuteCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
 	return 0;
 }	
 
+#if defined( OS_WINCE ) && defined( APP_BUILD_CAPABILITY_MOTOROLA )
+LRESULT CMainWindow::OnLicenseScreen(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	if (!RHOCONF().getBool("full_screen")) {
+		//SetFullScreen(wParam != 0);
+		HWND hTaskBar = FindWindow(_T("HHTaskBar"), NULL);
+		if(hTaskBar) {
+			bool bEnableTaskBar = (wParam == 0);
+			::ShowWindow(hTaskBar, (bEnableTaskBar ? SW_SHOW : SW_HIDE));
+			::EnableWindow(hTaskBar, bEnableTaskBar);
+		}
+	}
+	return 0;
+}	
+#endif
+
 LRESULT CMainWindow::OnBluetoothCallback(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	char* callback_url = (char*)wParam;
 	char* body = (char*)lParam;
@@ -1170,11 +1186,11 @@ void CMainWindow::ProcessDocumentComplete(LPCTSTR url)
 
 #if defined( OS_WINCE )
 #ifdef	USE_LICENSE
-	if(!m_bLoadingComplete)
-	{
-		CheckLicense();
-		m_bLoadingComplete = true;
-	}
+	//if(!m_bLoadingComplete)
+	//{
+	//	CheckLicense();
+	//	m_bLoadingComplete = true;
+	//}
 #endif
 #endif
 }
