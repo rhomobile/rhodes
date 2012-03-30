@@ -378,7 +378,7 @@ namespace "device" do
         cp out_dir + "rhodes.exe", out_dir + $appname + ".exe"
         cp $startdir + "/res/build-tools/license_rc.dll", out_dir + "license_rc.dll"
       else
-        shortcut_content = '"\\Program Files\\RhoElements2\\RhoElements2.exe" -approot="\\Program Files\\' + $appname + '"'
+        shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -approot="\\Program Files\\' + $appname + '"'
         if File.exists? wm_icon then
           shortcut_content = shortcut_content + '?"\\Program Files\\' + $appname + '\\rho\\icon\\icon.ico"'
         end
