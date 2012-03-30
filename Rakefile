@@ -298,7 +298,11 @@ namespace "config" do
     end
 
     if $app_config["capabilities"].index("motorola_browser")
-        $app_config["capabilities"] += ["motorola"] unless $app_config["capabilities"].index("motorola")
+        unless $current_platform == 'android'
+            $app_config["capabilities"] += ["motorola"] unless $app_config["capabilities"].index("motorola")
+        else
+            $app_config['extensions'] += ['webkit-browser'] unless $app_config['extensions'].index('webkit-browser')
+        end
         $app_config["capabilities"] += ["webkit_browser"]
     end
     
