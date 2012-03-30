@@ -30,6 +30,7 @@
 #include "common/RhoFilePath.h"
 #include "common/RhoAppAdapter.h"
 #include "common/RhodesApp.h"
+#include "rubyext/WebView.h"
 
 namespace rho {
 namespace sync {
@@ -538,6 +539,13 @@ boolean CSyncNotify::callNotify(const CSyncNotification& oNotify, const String& 
     }
     if ( strUrl.length() == 0 )
         return true;
+
+    if (0 == strUrl.find("javascript:"))
+    {
+        String js = strUrl.substr(11) + "('" + strBody + "');";
+        rho_webview_execute_js(js.c_str(), -1);
+    	return true;
+    }
 
     NetResponse resp = getNet().pushData( strUrl, strBody, null );
     if ( !resp.isOK() )
