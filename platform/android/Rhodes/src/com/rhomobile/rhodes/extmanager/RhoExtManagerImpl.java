@@ -9,6 +9,7 @@ import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.WebView;
+import com.rhomobile.rhodes.mainview.MainView;
 
 public class RhoExtManagerImpl implements IRhoExtManager {
     private static final String TAG = RhoExtManagerImpl.class.getSimpleName();
@@ -45,12 +46,14 @@ public class RhoExtManagerImpl implements IRhoExtManager {
 
     @Override
 	public View getWebView() {
-        return RhodesActivity.safeGetInstance().getMainView().getWebView(WebView.activeTab()).getView();
+        MainView mainView = RhodesActivity.safeGetInstance().getMainView();
+        return mainView != null ? mainView.getWebView(mainView.activeTab()).getView() : null;
     }
 
     @Override
     public View getTopView() {
-        return RhodesActivity.safeGetInstance().getMainView().getView();
+        MainView mainView = RhodesActivity.safeGetInstance().getMainView();
+        return mainView != null ? mainView.getView() : null;
     }
 
     @Override
@@ -92,7 +95,8 @@ public class RhoExtManagerImpl implements IRhoExtManager {
 
     @Override
     public String getCurrentUrl() {
-        return RhodesActivity.safeGetInstance().getMainView().currentLocation(RhodesActivity.safeGetInstance().getMainView().activeTab());
+        MainView mainView = RhodesActivity.safeGetInstance().getMainView();
+        return mainView != null ? mainView.currentLocation(mainView.activeTab()) : "";
     }
 
     @Override
