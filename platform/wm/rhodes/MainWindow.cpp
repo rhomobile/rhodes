@@ -512,8 +512,11 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         return 0;
 
     int fActive = LOWORD(wParam);
+#if defined(_WIN32_WCE) 
 	if (RHOCONF().getBool("full_screen"))
 		SetFullScreen(fActive!=0);
+#endif
+
 	rho_rhodesapp_callAppActiveCallback(fActive);
     RHODESAPP().getExtManager().OnAppActivate(fActive!=0);
 
