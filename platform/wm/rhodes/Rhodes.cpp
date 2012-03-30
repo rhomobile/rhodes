@@ -188,7 +188,7 @@ rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
 #if defined( OS_WINCE )
 void CRhodesModule::CheckLicense()
 {
-	if(!m_hLicenseInstance)
+/*	if(!m_hLicenseInstance)
 		m_hLicenseInstance = LoadLibrary(L"license_rc.dll");
 	
 	if(m_hLicenseInstance)
@@ -196,12 +196,12 @@ void CRhodesModule::CheckLicense()
 		PCL pCheckLicense = (PCL) GetProcAddress(m_hLicenseInstance, L"CheckLicense");
 		if(pCheckLicense) 
 			pCheckLicense(m_appWindow.m_hWnd);
-	}
+	} */
 }
 
 bool CRhodesModule::CheckSymbolDevice()
 {
-	if(!m_hLicenseInstance)
+/*	if(!m_hLicenseInstance)
 		m_hLicenseInstance = LoadLibrary(L"license_rc.dll");
 	
 	if(m_hLicenseInstance)
@@ -211,7 +211,8 @@ bool CRhodesModule::CheckSymbolDevice()
 			return pCheckSymbolDevice();
 	}
 
-	return false;
+	return false;*/
+    return true;
 }
 #endif
 
@@ -508,6 +509,13 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, m_strRuntimePath);
     RHODESAPP().setExtManager( &m_oExtManager );
 
+#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
+    if ((!rho_wmimpl_get_is_version2()) && (rho_wmimpl_get_startpage()[0] != 0)) {
+        String spath = convertToStringA(rho_wmimpl_get_startpage());
+        RHOCONF().setString("start_path", spath, false);
+    }
+#endif // APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+
     DWORD dwStyle = WS_VISIBLE;
 
 #if !defined(_WIN32_WCE)
@@ -516,35 +524,35 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     // Create the main application window
 #ifdef RHODES_EMULATOR
     m_appWindow.Initialize(convertToStringW(RHOSIMCONF().getString("app_name")).c_str());
+    if (NULL == m_appWindow.m_hWnd)
+    {
+        return S_FALSE;
+    }
+
 #else
     String strTitle = RHODESAPP().getAppTitle();
     m_appWindow.Create(NULL, CWindow::rcDefault, convertToStringW(strTitle).c_str(), dwStyle);
 
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+    if (NULL == m_appWindow.m_hWnd)
     {
-        //CBarcodeInit oBarcodeInit;
+        return S_FALSE;
+    }
+
+/*#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+    {
+        CBarcodeInit oBarcodeInit;
+
         if (!rho_wmimpl_get_webkitbrowser( (HWND)m_appWindow.m_hWnd, rho_wmimpl_get_appinstance() )) {
             MessageBox(NULL, L"Failed to initialize WebKit engine.", convertToStringW(strTitle).c_str(), MB_ICONERROR | MB_OK);
 	        return S_FALSE;
         }
     }
 #endif
-
-#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
-    if ((!rho_wmimpl_get_is_version2()) && (rho_wmimpl_get_startpage()[0] != 0)) {
-        String spath = convertToStringA(rho_wmimpl_get_startpage());
-        RHOCONF().setString("start_path", spath, false);
-    }
-#endif // APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-
+*/
+    //PumpMessages(m_appWindow);
 
     m_appWindow.InitMainWindow();
 #endif
-    if (NULL == m_appWindow.m_hWnd)
-    {
-        return S_FALSE;
-    }
-
 
     RHODESAPP().startApp();
 
