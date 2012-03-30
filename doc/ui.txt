@@ -894,3 +894,8 @@ Setting a target="_webapp" will disable animation and navigate to the specified 
 ### Sample application
 
 Check out the [store app](http://github.com/rhomobile/store) in github for a reference sample application that uses animated transitions.
+
+## Sync angine AJAX API
+[Sync engine AJAX API](syncengine-ajax-api) has been implemented to provide low-level access control on synchronization process.
+It isn't intended to be used in every application. It requires deep knowledge of sync engine functionality and operations.
+It may broke your application if used improperly so use it with care please.
