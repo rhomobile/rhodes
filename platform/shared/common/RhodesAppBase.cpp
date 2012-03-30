@@ -114,6 +114,9 @@ String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl)
     if (strUrl.length() == 0 )
         return m_strHomeUrl;
 
+    if (0 == strUrl.find("javascript:"))
+    	return strUrl;
+
     size_t pos = strUrl.find_first_of(":#");
     if((pos == String::npos) || (strUrl.at(pos) == '#'))
         return CFilePath::join(m_strHomeUrl,strUrl);

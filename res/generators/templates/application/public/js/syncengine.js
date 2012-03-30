@@ -13,14 +13,13 @@
                 if ('string' == type || 'number' == type || 'boolean' == type) {
                     var value = '' + params[key];
                     if (0 < query.length) query = query + '&';
-                    query = query + encodeURI(key) + '=' + encodeURI(value);
+                    query = query + encodeURIComponent(key) + '=' + encodeURIComponent(value);
                 }
             }
         }
         return query;
     }
 
-    var xhr=false;
     /*
         Option names are:
             type    - request type (optional, 'GET' by default)
@@ -31,6 +30,7 @@
             error   - request error handler (optional)
      */
     function request(opts, that) {
+        var xhr = false;
 
         // attempt to create XHR
         if (!xhr) {
@@ -83,12 +83,12 @@
                 opts.error.apply('undefined' == typeof that ? this : that, [
                     xhr.response, "error", xhr
                 ]);
-            }
+            };
             xhr.ontimeout = function () {
                 opts.error.apply('undefined' == typeof that ? this : that, [
                     "", "timeout", xhr
                 ]);
-            }
+            };
             xhr.send(opts.body);
         }
     }
@@ -275,11 +275,12 @@
         });
     }
 
-    function set_objectnotify_url(/*string*/ url, /*function*/ success, /*function*/ error) {
+    function set_objectnotify(/*function*/ notify, /*function*/ success, /*function*/ error) {
+        var uri = setCallback(nextId('notify'), notify, true /*it is persistent callback*/);
         request({
             relUrl: "set_objectnotify_url",
             query: {
-                url: url
+                url: uri
             },
             success: success,
             error: error
@@ -332,14 +333,15 @@
         });
     }
 
-    function login(/*string*/ login, /*string*/ password, /*string*/ callback,
+    function login(/*string*/ login, /*string*/ password, /*function*/ callback,
             /*function*/ success, /*function*/ error) {
+        var uri = setCallback(nextId('callback'), callback);
         request({
             relUrl: "login",
             query: {
                 login: login,
                 password: password,
-                callback: callback
+                callback: uri
             },
             success: success,
             error: error
@@ -392,7 +394,51 @@
         });
     }
 
+    var _rho_callbackId_valuePrefix = "_rhoId#";
 
+    var callbackCount = 0;
+    var pendingCallbacks = {};
+
+    function nextId(tag) {
+        if ('undefined' == typeof tag || !tag)
+            tag = _rho_callbackId_valuePrefix;
+        else
+            tag = '_' +tag +'#';
+        return (tag + callbackCount++);
+
+    }
+
+    function defaultCallback(){}
+
+    function setCallback(id, callback, isPersistent) {
+        if ('undefined' == typeof callback || !callback)
+            callback = defaultCallback;
+
+        pendingCallbacks[id] = {
+            id: id,
+            callback: callback,
+            isPersistent: ('undefined' != typeof isPersistent) && isPersistent
+        };
+        // store options for pending callback
+        return 'javascript:window._rho_syncEngineCallback("' +id +'")';
+    }
+
+    window._rho_syncEngineCallback = function(callbackId) {
+        var cbId = decodeURIComponent(callbackId);
+        //console.log('_rho_syncEngineCallback: callback for: ' +cbId);
+        //console.log('_rho_syncEngineCallback: result: ' +result);
+
+        var opts = pendingCallbacks[cbId];
+        var callback = null;
+
+        if ('undefined' != typeof opts && opts) {
+            //console.log('_rho_syncEngineCallback: callback found!');
+            callback = opts.callback;
+            if (!opts.isPersistent)
+                delete pendingCallbacks[cbId];
+        }
+        return callback;
+    };
 
 /*
    int  rho_sync_get_lastsync_objectcount(int nSrcID);
@@ -407,38 +453,39 @@
 */
 
     window.Rho = window.Rho || {};
+    window.Rho.syncengine = window.Rho.syncengine || {};
 
-    window.Rho.set_threaded_mode = set_threaded_mode;
-    window.Rho.enable_status_popup = enable_status_popup;
-    window.Rho.set_ssl_verify_peer = set_ssl_verify_peer;
-    window.Rho.register_push = register_push;
+    window.Rho.syncengine.set_threaded_mode = set_threaded_mode;
+    window.Rho.syncengine.enable_status_popup = enable_status_popup;
+    window.Rho.syncengine.set_ssl_verify_peer = set_ssl_verify_peer;
+    window.Rho.syncengine.register_push = register_push;
 
-    window.Rho.set_syncserver = set_syncserver;
-    window.Rho.set_pollinterval = set_pollinterval;
-    window.Rho.get_pollinterval = get_pollinterval;
-    window.Rho.set_pagesize = set_pagesize;
-    window.Rho.get_pagesize = get_pagesize;
+    window.Rho.syncengine.set_syncserver = set_syncserver;
+    window.Rho.syncengine.set_pollinterval = set_pollinterval;
+    window.Rho.syncengine.get_pollinterval = get_pollinterval;
+    window.Rho.syncengine.set_pagesize = set_pagesize;
+    window.Rho.syncengine.get_pagesize = get_pagesize;
 
-    window.Rho.login = login;
-    window.Rho.logged_in = logged_in;
-    window.Rho.logout = logout;
+    window.Rho.syncengine.login = login;
+    window.Rho.syncengine.logged_in = logged_in;
+    window.Rho.syncengine.logout = logout;
 
-    window.Rho.dosync = dosync;
-    window.Rho.dosync_source = dosync_source;
-    window.Rho.is_syncing = is_syncing;
-    window.Rho.stop_sync = stop_sync;
+    window.Rho.syncengine.dosync = dosync;
+    window.Rho.syncengine.dosync_source = dosync_source;
+    window.Rho.syncengine.is_syncing = is_syncing;
+    window.Rho.syncengine.stop_sync = stop_sync;
 
-    window.Rho.set_objectnotify_url = set_objectnotify_url;
-    window.Rho.clean_objectnotify = clean_objectnotify;
+    window.Rho.syncengine.set_objectnotify = set_objectnotify;
+    window.Rho.syncengine.clean_objectnotify = clean_objectnotify;
 
-    //window.Rho.get_lastsync_objectcount = get_lastsync_objectcount;
-    //window.Rho.clear_notification = clear_notification;
-    //window.Rho.set_source_property = set_source_property;
-    //window.Rho.update_blob_attribs = update_blob_attribs;
-    //window.Rho.add_objectnotify = add_objectnotify;
-    //window.Rho.set_notification = set_notification;
-    //window.Rho.dosearch = dosearch;
-    //window.Rho.get_src_attrs = get_src_attrs;
-    //window.Rho.is_blob_attr = is_blob_attr;
+    //window.Rho.syncengine.get_lastsync_objectcount = get_lastsync_objectcount;
+    //window.Rho.syncengine.clear_notification = clear_notification;
+    //window.Rho.syncengine.set_source_property = set_source_property;
+    //window.Rho.syncengine.update_blob_attribs = update_blob_attribs;
+    //window.Rho.syncengine.add_objectnotify = add_objectnotify;
+    //window.Rho.syncengine.set_notification = set_notification;
+    //window.Rho.syncengine.dosearch = dosearch;
+    //window.Rho.syncengine.get_src_attrs = get_src_attrs;
+    //window.Rho.syncengine.is_blob_attr = is_blob_attr;
 
 })();

@@ -930,7 +930,7 @@ static void callback_set_syncserver(void *arg, String const &strQuery)
     size_t nPos = strQuery.find("syncserver=");
     if ( nPos != String::npos )
     {
-        strSyncserver = strQuery.substr(nPos+11);
+        strSyncserver = rho::net::URI::urlDecode(strQuery.substr(nPos+11));
     } else {
     	LOG(WARNING) + "Unable to find 'syncserver' parameter";
     }
