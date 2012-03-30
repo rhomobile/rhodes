@@ -46,10 +46,19 @@ public class LocalFileHandler implements UriHandler
         ctx = c;
     }
 
+    private static boolean isHtmlUrl(String url) {
+        Logger.T(TAG, "Looking for html extension: " + url);
+        return url.matches(".*\\.(html|htm)$");
+    }
+
     public boolean handle(String url) throws URISyntaxException {
 
-        if(!URLUtil.isFileUrl(url))
+        if (!URLUtil.isFileUrl(url))
             return false;
+        
+        if (isHtmlUrl(URLUtil.stripAnchor(url))) {
+            return false;
+        }
 
         Logger.D(TAG, "This is 'file' URI, handle it: " + url);
 
