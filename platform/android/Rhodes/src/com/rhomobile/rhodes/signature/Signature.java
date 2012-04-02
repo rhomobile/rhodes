@@ -30,7 +30,9 @@ import java.io.File;
 import java.util.Map;
 
 import android.content.Intent;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.webkit.WebView;
 import android.widget.AbsoluteLayout;
 
@@ -156,11 +158,22 @@ public class Signature extends AbstractRhoExtension implements IRhoExtension {
 			public void run() {
 				reportMsg(" $$$ Start make of Signature View");
 				
-				ViewGroup wv = (ViewGroup)extManager.getWebView();
-				if ((wv != null) && (ourInlineSignatureView != null)) {
-					wv.removeView(ourInlineSignatureView);
-					ourInlineSignatureView = null;
+				Object webView_obj = extManager.getWebView();
+				if (webView_obj instanceof ViewGroup) {
+					ViewGroup wv = (ViewGroup)webView_obj;
+					if ((wv != null) && (ourInlineSignatureView != null)) {
+						wv.removeView(ourInlineSignatureView);
+						ourInlineSignatureView = null;
+					}
 				}
+				else {
+					ViewGroup wv = (ViewGroup)(((View)webView_obj).getParent());
+					if ((wv != null) && (ourInlineSignatureView != null)) {
+						wv.removeView(ourInlineSignatureView);
+						ourInlineSignatureView = null;
+					}
+				}
+				
 				
 				ourInlineSignatureView = new SignatureView(ContextFactory.getUiContext(), null);
 				
@@ -179,13 +192,26 @@ public class Signature extends AbstractRhoExtension implements IRhoExtension {
 																getSharedInstance().mProperties.top));
 					
 				}
-				
-				wv.addView(ourInlineSignatureView);
-				wv.bringChildToFront(ourInlineSignatureView);	
-				ourInlineSignatureView.requestFocus();
-				ourInlineSignatureView.bringToFront();
-				ourInlineSignatureView.invalidate();
-				
+				if (webView_obj instanceof ViewGroup) {
+					ViewGroup wv = (ViewGroup)webView_obj;
+					if ((wv != null) && (ourInlineSignatureView != null)) {
+						wv.addView(ourInlineSignatureView);
+						wv.bringChildToFront(ourInlineSignatureView);	
+						ourInlineSignatureView.requestFocus();
+						ourInlineSignatureView.bringToFront();
+						ourInlineSignatureView.invalidate();
+					}
+				}
+				else {
+					ViewGroup wv = (ViewGroup)(((View)webView_obj).getParent());
+					if ((wv != null) && (ourInlineSignatureView != null)) {
+						wv.addView(ourInlineSignatureView);
+						wv.bringChildToFront(ourInlineSignatureView);	
+						ourInlineSignatureView.requestFocus();
+						ourInlineSignatureView.bringToFront();
+						ourInlineSignatureView.invalidate();
+					}
+				}
 				//wv.invalidate();
 				
 				reportMsg(" $$$ Finish make of Signature View");
@@ -224,10 +250,21 @@ public class Signature extends AbstractRhoExtension implements IRhoExtension {
 		PerformOnUiThread.exec( new Runnable () {
 			public void run() {
 				if (ourInlineSignatureView != null) {
-					ViewGroup wv = (ViewGroup)extManager.getWebView();
-					if (wv != null) {
-						wv.removeView(ourInlineSignatureView);
-						ourInlineSignatureView = null;
+					
+					Object webView_obj = extManager.getWebView();
+					if (webView_obj instanceof ViewGroup) {
+						ViewGroup wv = (ViewGroup)webView_obj;
+						if ((wv != null) && (ourInlineSignatureView != null)) {
+							wv.removeView(ourInlineSignatureView);
+							ourInlineSignatureView = null;
+						}
+					}
+					else {
+						ViewGroup wv = (ViewGroup)(((View)webView_obj).getParent());
+						if ((wv != null) && (ourInlineSignatureView != null)) {
+							wv.removeView(ourInlineSignatureView);
+							ourInlineSignatureView = null;
+						}
 					}
 				}
 			}
