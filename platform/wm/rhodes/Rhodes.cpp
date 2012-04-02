@@ -528,6 +528,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     {
         return S_FALSE;
     }
+    m_appWindow.ShowWindow(nShowCmd);
 
 #else
     String strTitle = RHODESAPP().getAppTitle();
@@ -549,9 +550,10 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }
 #endif
 */
-    //PumpMessages(m_appWindow);
+    m_appWindow.InvalidateRect(NULL, TRUE);
+    m_appWindow.UpdateWindow();
 
-    m_appWindow.InitMainWindow();
+    m_appWindow.initBrowserWindow();
 #endif
 
     RHODESAPP().startApp();
@@ -563,7 +565,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #endif
     );
     // Show the main application window
-    m_appWindow.ShowWindow(nShowCmd);
+    //m_appWindow.ShowWindow(nShowCmd);
 
 #if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
 
