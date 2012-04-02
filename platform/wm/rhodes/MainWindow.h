@@ -136,6 +136,7 @@ public:
     void performOnUiThread(rho::common::IRhoRunnable* pTask);
 
     LRESULT InitMainWindow();
+    void initBrowserWindow();
 
     // Required to forward messages to the PIEWebBrowser control
     BOOL TranslateAccelerator(MSG* pMsg);

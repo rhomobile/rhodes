@@ -148,7 +148,7 @@ void CMainWindow::Navigate(BSTR URL)
 
 LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    return S_OK;
+    return InitMainWindow();
 }
 
 #if defined( OS_PLATFORM_MOTCE )
@@ -196,7 +196,7 @@ LRESULT CMainWindow::InitMainWindow()
     // and also create the control itself. (AtlAxWin is a window class that
     // ATL uses to support containment of controls in windows.)
 #if defined(_WIN32_WCE)    
-    m_pBrowserEng = rho_wmimpl_createBrowserEngine(m_hWnd);
+    //m_pBrowserEng = rho_wmimpl_createBrowserEngine(m_hWnd);
 #else
 	LOGCONF().setLogView(&m_logView);
 
@@ -216,7 +216,7 @@ LRESULT CMainWindow::InitMainWindow()
         height = rcMainWindow.bottom;
 	rcMainWindow.bottom = rcMainWindow.top+height;
 
-    m_pBrowserEng = rho_wmimpl_createBrowserEngine(m_hWnd);
+    //m_pBrowserEng = rho_wmimpl_createBrowserEngine(m_hWnd);
 
 	m_menuBar.Create(m_hWnd,CWindow::rcDefault);
 
@@ -229,7 +229,7 @@ LRESULT CMainWindow::InitMainWindow()
 
 #ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     // set up connection point
-    hr = AtlAdviseSinkMap(this, true);
+    //hr = AtlAdviseSinkMap(this, true);
 #endif
 
 #if defined(_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
@@ -304,6 +304,19 @@ LRESULT CMainWindow::InitMainWindow()
 	rho_rhodesapp_callUiCreatedCallback();
 
     return SUCCEEDED(hr) ? 0 : -1;
+}
+
+void CMainWindow::initBrowserWindow()
+{
+    m_pBrowserEng = rho_wmimpl_createBrowserEngine(m_hWnd);
+    //m_pBrowserEng->ResizeOnTab(0, rect);
+
+    HRESULT hr = S_OK;
+#ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+    // set up connection point
+    hr = AtlAdviseSinkMap(this, true);
+#endif
+
 }
 
 void CMainWindow::performOnUiThread(rho::common::IRhoRunnable* pTask)
@@ -391,15 +404,19 @@ LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 LRESULT CMainWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    if ( (!m_pBrowserEng) || (!m_pBrowserEng->GetHTMLWND()) )
-        return 0;
+    LOG(INFO)  + "OnSize: x=" + (int)(LOWORD(lParam)) + ";y=" + (int)(HIWORD(lParam));
+
+//    if ( (!m_pBrowserEng) || (!m_pBrowserEng->GetHTMLWND()) )
+//        return 0;
 
 #if defined(OS_WINDOWS)
 	USES_CONVERSION;
     LOG(TRACE) + "Seting browser client area size to: " + (int)LOWORD(lParam) + " x " + (int)(HIWORD(lParam)-m_menuBarHeight-m_toolbar.getHeight());
     //m_browser.MoveWindow(0, 0, LOWORD(lParam), HIWORD(lParam)-m_menuBarHeight-m_toolbar.getHeight());
     RECT rect = {0, 0, LOWORD(lParam), HIWORD(lParam)-m_menuBarHeight-m_toolbar.getHeight()};
-    m_pBrowserEng->ResizeOnTab(0, rect);
+
+    if ( m_pBrowserEng && m_pBrowserEng->GetHTMLWND() )
+        m_pBrowserEng->ResizeOnTab(0, rect);
 
     if (m_menuBar.m_hWnd) {
 		m_menuBar.MoveWindow(0, HIWORD(lParam)-m_menuBarHeight, LOWORD(lParam), m_menuBarHeight);
@@ -407,7 +424,7 @@ LRESULT CMainWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOO
     if ( m_toolbar.m_hWnd )
         m_toolbar.MoveWindow(0, HIWORD(lParam)-m_menuBarHeight-m_toolbar.getHeight(), LOWORD(lParam), m_toolbar.getHeight());
 #else
-    LOG(INFO)  + "OnSize: x=" + (int)(LOWORD(lParam)) + ";y=" + (int)(HIWORD(lParam));
+    //LOG(INFO)  + "OnSize: x=" + (int)(LOWORD(lParam)) + ";y=" + (int)(HIWORD(lParam));
 
     //m_browser.MoveWindow(0, 0, LOWORD(lParam), HIWORD(lParam)- m_toolbar.getHeight());
     RECT rect = {0, 0, LOWORD(lParam), HIWORD(lParam) };//- m_toolbar.getHeight()};
@@ -426,7 +443,8 @@ LRESULT CMainWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOO
     }
 #endif
 
-    m_pBrowserEng->ResizeOnTab(0, rect);
+    if ( m_pBrowserEng && m_pBrowserEng->GetHTMLWND() )
+        m_pBrowserEng->ResizeOnTab(0, rect);
 
     if ( m_toolbar.m_hWnd )
         m_toolbar.MoveWindow(0, HIWORD(lParam)-m_toolbar.getHeight(), LOWORD(lParam), m_toolbar.getHeight());
@@ -1437,43 +1455,49 @@ LRESULT CMainWindow::OnCustomToolbarItemCommand (WORD /*wNotifyCode*/, WORD  wID
 
 extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd)
 {
+//    LOG(INFO) + "PAINT";
   	CSplashScreen& splash = RHODESAPP().getSplashScreen();
     splash.start();
-    StringW pathW = convertToStringW(RHODESAPP().getLoadingPngPath());
-
-	HBITMAP hbitmap = SHLoadImageFile(pathW.c_str());
-		
-	if (!hbitmap)
-		return 0;
 
     PAINTSTRUCT ps;
 	HDC hDC = BeginPaint(hWnd, &ps);
 
-	BITMAP bmp;
-	GetObject(hbitmap, sizeof(bmp), &bmp);
+    StringW pathW = convertToStringW(RHODESAPP().getLoadingPngPath());
 
-	HDC hdcMem = CreateCompatibleDC(hDC);
-	HGDIOBJ resObj = SelectObject(hdcMem, hbitmap);
+	HBITMAP hbitmap = SHLoadImageFile(pathW.c_str());
+		
+	if (hbitmap)
+    {
+	    BITMAP bmp;
+	    GetObject(hbitmap, sizeof(bmp), &bmp);
 
-    RECT rcClient;
-    GetClientRect(hWnd, &rcClient);
-    int nLeft = rcClient.left, nTop=rcClient.top, nWidth = bmp.bmWidth, nHeight=bmp.bmHeight, Width = rcClient.right - rcClient.left, Height = rcClient.bottom - rcClient.top;
-    if (splash.isFlag(CSplashScreen::HCENTER) )
-		nLeft = (Width-nWidth)/2;
-	if (splash.isFlag(CSplashScreen::VCENTER) )
-		nTop = (Height-nHeight)/2;
-	if (splash.isFlag(CSplashScreen::VZOOM) )
-		nHeight = Height;
-	if (splash.isFlag(CSplashScreen::HZOOM) )
-		nWidth = Width;
+        RECT rcClient;
+        GetClientRect(hWnd, &rcClient);
 
-	StretchBlt(hDC, nLeft, nTop, nWidth, nHeight,
-		hdcMem, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY);
-	//BitBlt(hDC, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), hdcMem, 0, 0, SRCCOPY);
+	    CDC hdcMem = CreateCompatibleDC(hDC);
+        hdcMem.FillSolidRect(&rcClient, RGB(255,255,255));
 
-    SelectObject(hdcMem, resObj);
-	DeleteObject(hbitmap);
-	DeleteObject(hdcMem);
+	    HGDIOBJ resObj = SelectObject(hdcMem, hbitmap);
+
+
+        int nLeft = rcClient.left, nTop=rcClient.top, nWidth = bmp.bmWidth, nHeight=bmp.bmHeight, Width = rcClient.right - rcClient.left, Height = rcClient.bottom - rcClient.top;
+        if (splash.isFlag(CSplashScreen::HCENTER) )
+		    nLeft = (Width-nWidth)/2;
+	    if (splash.isFlag(CSplashScreen::VCENTER) )
+		    nTop = (Height-nHeight)/2;
+	    if (splash.isFlag(CSplashScreen::VZOOM) )
+		    nHeight = Height;
+	    if (splash.isFlag(CSplashScreen::HZOOM) )
+		    nWidth = Width;
+
+	    StretchBlt(hDC, nLeft, nTop, nWidth, nHeight,
+		    hdcMem, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY);
+	    //BitBlt(hDC, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), hdcMem, 0, 0, SRCCOPY);
+
+        SelectObject(hdcMem, resObj);
+	    DeleteObject(hbitmap);
+	    //DeleteObject(hdcMem);
+    }
 
 	EndPaint(hWnd, &ps);
 	return 1;
