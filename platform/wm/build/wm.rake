@@ -109,7 +109,7 @@ namespace "config" do
         require "rhoelements-data"
         $wk_data_dir = $data_dir[0]
       end
-    rescue
+    rescue Exception => e
       puts "rhoelements gem is't found, webkit capability is disabled"
       $webkit_capability = "0"
     end

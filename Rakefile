@@ -270,57 +270,56 @@ namespace "config" do
     application_build_configs = {}
 
     #Process rhoelements settings
-    if $app_config["app_type"] == 'rhoelements'
-        $app_config["capabilities"] += ["motorola"] unless $app_config["capabilities"].index("motorola")
-        $app_config["extensions"] += ["rhoelementsext"] if $current_platform == 'wm' || $current_platform == 'android'
-        $app_config["extensions"] += ["motoapi"] #extension with plug-ins
-
-        if !$app_config["capabilities"].index('native_browser')
-            $app_config["extensions"] += ['webkit-browser'] unless $app_config["extensions"].index("webkit-browser")
-        end
-        
-        #check for RE2 plugins
-        plugins = ""
-        $app_config["extensions"].each do |ext|
-            if ( ext.start_with?('moto-') )
-                plugins += ',' if plugins.length() > 0
-                plugins += ext[5, ext.length()-5]
-            end
-        end
-        
-        if plugins.length() == 0
-            plugins = "ALL"    
-        end
-        
-        application_build_configs['moto-plugins'] = plugins if plugins.length() > 0
-        
-        application_build_configs['shared-runtime'] = '1' if $app_config["capabilities"].index('shared_runtime')
-    end
-
-    if $app_config["capabilities"].index("motorola_browser")
-        unless $current_platform == 'android'
+    if $current_platform == "wm" || $current_platform = "android"
+        if $app_config["app_type"] == 'rhoelements'
             $app_config["capabilities"] += ["motorola"] unless $app_config["capabilities"].index("motorola")
-        else
-            $app_config['extensions'] += ['webkit-browser'] unless $app_config['extensions'].index('webkit-browser')
+            $app_config["extensions"] += ["rhoelementsext"] if $current_platform == 'wm' || $current_platform == 'android'
+            $app_config["extensions"] += ["motoapi"] #extension with plug-ins
+
+            if !$app_config["capabilities"].index('native_browser')
+                $app_config["extensions"] += ['webkit-browser'] unless $app_config["extensions"].index("webkit-browser")
+            end
+            
+            #check for RE2 plugins
+            plugins = ""
+            $app_config["extensions"].each do |ext|
+                if ( ext.start_with?('moto-') )
+                    plugins += ',' if plugins.length() > 0
+                    plugins += ext[5, ext.length()-5]
+                end
+            end
+            
+            if plugins.length() == 0
+                plugins = "ALL"    
+            end
+            
+            application_build_configs['moto-plugins'] = plugins if plugins.length() > 0
+            
+            application_build_configs['shared-runtime'] = '1' if $app_config["capabilities"].index('shared_runtime')
         end
-        $app_config["capabilities"] += ["webkit_browser"]
-    end
-    
-    if $app_config["capabilities"].index("motorola")
-        if $app_config["extensions"].index("webkit-browser")
+
+        if $app_config["capabilities"].index("motorola_browser")
+            unless $current_platform == 'android'
+                $app_config["capabilities"] += ["motorola"] unless $app_config["capabilities"].index("motorola")
+            else
+                $app_config['extensions'] += ['webkit-browser'] unless $app_config['extensions'].index('webkit-browser')
+            end
             $app_config["capabilities"] += ["webkit_browser"]
-            $app_config["extensions"].delete("webkit-browser") unless $current_platform == 'android'
         end
-        if $current_platform == 'android'
-            barcode_idx = $app_config['extensions'].index('barcode')
-            $app_config['extensions'][barcode_idx] = 'barcode-moto' unless barcode_idx.nil?
+        
+        if $app_config["capabilities"].index("motorola")
+            if $app_config["extensions"].index("webkit-browser")
+                $app_config["capabilities"] += ["webkit_browser"]
+                $app_config["extensions"].delete("webkit-browser") unless $current_platform == 'android'
+            end
+            if $current_platform == 'android'
+                barcode_idx = $app_config['extensions'].index('barcode')
+                $app_config['extensions'][barcode_idx] = 'barcode-moto' unless barcode_idx.nil?
+            end
+            $app_config["extensions"] += ["rhoelements"]
         end
-        $app_config["extensions"] += ["rhoelements"]
     end
 
-    puts "$app_config['extensions'] : #{$app_config['extensions'].inspect}"   
-    puts "$app_config['capabilities'] : #{$app_config['capabilities'].inspect}"   
-    
     $hidden_app = $app_config["hidden_app"].nil?() ? "0" : $app_config["hidden_app"]
     
     #application build configs
@@ -337,6 +336,34 @@ namespace "config" do
       end
     end	
     $application_build_configs = application_build_configs
+
+    #check for rhoelements gem
+    $rhoelements_features = ""
+    begin
+        require "rhoelements"
+    rescue Exception => e
+        if $app_config['extensions'].index('barcode')
+            $app_config['extensions'].delete('barcode')
+            $rhoelements_features += "- Barcode extension\n"
+        end
+        if $app_config['extensions'].index('nfc')
+            $app_config['extensions'].delete('nfc')
+            $rhoelements_features += "- NFC extension\n"
+        end
+        
+        if $current_platform == "wm"
+            $rhoelements_features += "- Windows Mobile/Windows CE platform support\n"
+        end
+        
+        if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
+            $application_build_configs.delete('encrypt_database')
+            $rhoelements_features += "- Database encryption\n"
+        end
+        
+    end
+    
+    puts "$app_config['extensions'] : #{$app_config['extensions'].inspect}"   
+    puts "$app_config['capabilities'] : #{$app_config['capabilities'].inspect}"   
 
     if $current_platform == "bb"  
       make_application_build_config_java_file
@@ -894,7 +921,7 @@ namespace "build" do
                   end
             end 
           end
-        rescue
+        rescue Exception => e
           puts 'ERROR !'
           puts 'Require "rubyzip" gem for make zip file !'
           puts 'Install gem by "gem install rubyzip"'
@@ -1420,5 +1447,13 @@ at_exit do
     puts '********* NOTE: You use sdk parameter in build.yml !****************'
     puts 'To use latest Rhodes gem, run migrate-rhodes-app in application folder or comment sdk in build.yml.'
     puts '************************************************************************'
+  end
+  
+  if $rhoelements_features.length() > 0
+    puts '********* WARNING ************************************************************************'
+    puts ' The following features are only available in RhoElements v2 and above:'
+    puts $rhoelements_features
+    puts ' For more information go to http://www.motorolasolutions.com/rhoelements '
+    puts '**************************************************************************************'
   end
 end
