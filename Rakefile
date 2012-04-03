@@ -270,7 +270,7 @@ namespace "config" do
     application_build_configs = {}
 
     #Process rhoelements settings
-    if $current_platform == "wm" || $current_platform = "android"
+    if $current_platform == "wm" || $current_platform == "android"
         if $app_config["app_type"] == 'rhoelements'
             $app_config["capabilities"] += ["motorola"] unless $app_config["capabilities"].index("motorola")
             $app_config["extensions"] += ["rhoelementsext"] if $current_platform == 'wm' || $current_platform == 'android'
