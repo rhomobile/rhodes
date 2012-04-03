@@ -1449,7 +1449,7 @@ at_exit do
     puts '************************************************************************'
   end
   
-  if $rhoelements_features.length() > 0
+  if (!$rhoelements_features.nil?) && ($rhoelements_features.length() > 0)
     puts '********* WARNING ************************************************************************'
     puts ' The following features are only available in RhoElements v2 and above:'
     puts $rhoelements_features
