@@ -33,6 +33,7 @@ import java.util.Set;
 
 import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
 import com.rhomobile.rhodes.camera.Camera;
+import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.mainview.SimpleMainView;
 import com.rhomobile.rhodes.mainview.SplashScreen;
@@ -183,9 +184,14 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         if (Capabilities.WEBKIT_BROWSER_ENABLED) {
             Logger.D(TAG, "Creating Motorola WebKIT view");
             try {
-                Class<? extends IRhoWebView> viewClass = (Class<? extends IRhoWebView>)Class.forName("com.rhomobile.rhodes.webview.EkiohWebView");
-                Constructor<? extends IRhoWebView> viewCtor = viewClass.getConstructor(Context.class, Runnable.class);
-                view = viewCtor.newInstance(this, RhodesApplication.AppState.AppStarted.addObserver("MotorolaStartEngineObserver", true));
+                Class<? extends IRhoWebView> viewClass = Class.forName("com.rhomobile.rhodes.webview.EkiohWebView").asSubclass(IRhoWebView.class);
+                if (Capabilities.MOTOROLA_BROWSER_ENABLED) {
+                    Constructor<? extends IRhoWebView> viewCtor = viewClass.getConstructor(Context.class, Runnable.class, String.class);
+                    view = viewCtor.newInstance(this, RhodesApplication.AppState.AppStarted.addObserver("MotorolaStartEngineObserver", true), RhoFileApi.getRootPath());
+                } else {
+                    Constructor<? extends IRhoWebView> viewCtor = viewClass.getConstructor(Context.class, Runnable.class);
+                    view = viewCtor.newInstance(this, RhodesApplication.AppState.AppStarted.addObserver("MotorolaStartEngineObserver", true));
+                }
             } catch (Throwable e) {
                 Logger.E(TAG, e);
                 RhodesApplication.stop();
