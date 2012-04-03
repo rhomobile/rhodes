@@ -46,10 +46,14 @@ public class WebView {
 			url = u;
 			index = i;
 		}
-		
-		public void run() {
-			RhodesService r = RhodesService.getInstance();
-			r.getMainView().navigate(url, index);
+
+        public void run() {
+            try {
+                MainView mainView = RhodesActivity.safeGetInstance().getMainView();
+                mainView.navigate(url, index);
+            } catch (Throwable ex) {
+                Logger.E(TAG, ex);
+            }
 		}
 	};
 	

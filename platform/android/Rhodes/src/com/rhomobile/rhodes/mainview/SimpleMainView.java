@@ -544,24 +544,9 @@ public class SimpleMainView implements MainView {
 		view.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, FILL_PARENT));
 		
 		webView = v;
-		//if (v != null)
-		//	webView = v.detachWebView();
 		if (webView == null) {
-	        if (Capabilities.WEBKIT_BROWSER_ENABLED) {
-	            Logger.D(TAG, "Creating Motorola WebKIT view");
-	            try {
-	                Class<? extends IRhoWebView> viewClass = (Class<? extends IRhoWebView>)Class.forName("com.rhomobile.rhodes.webview.EkiohWebView");
-	                Constructor<? extends IRhoWebView> viewCtor = viewClass.getConstructor(Context.class, Runnable.class);
-	                webView = viewCtor.newInstance(activity, RhodesApplication.AppState.AppStarted.addObserver("MotorolaStartEngineObserver", true));
-	            } catch (Throwable e) {
-	                Logger.E(TAG, e);
-	                RhodesApplication.stop();
-	            }
-	        } else {
-	            webView = new GoogleWebView(activity);
-	        }
+		    webView = activity.createWebView();
 		}
-		//view.addView(webView.getView(), new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
 		addWebViewToMainView(webView.getView(), 0, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
 		
 		LinearLayout bottom = new LinearLayout(activity);
@@ -573,7 +558,6 @@ public class SimpleMainView implements MainView {
 		toolBar = bottom;
 		
 		setupToolbar(toolBar, params);
-		
 		
 		webView.getView().requestFocus();
 	}
