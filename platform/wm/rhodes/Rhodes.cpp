@@ -246,7 +246,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 			}
 		}
 
-#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
         else if (wcsnicmp(lpszToken, _T("s"),1)==0)
         {
 			String token = convertToStringA(lpszToken);
@@ -269,7 +269,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 				free(path);
 			}
         }
-#endif // APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+#endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
 #if defined(OS_WINDOWS)
 		else if (wcsncmp(lpszToken, _T("http_proxy_url"),14)==0) 
@@ -354,7 +354,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
                 if (m_strRootPath.at(m_strRootPath.length()-1)!='/')
                     m_strRootPath.append("/");
                 m_strRootPath.append("rho/");
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+#ifdef APP_BUILD_CAPABILITY_SHARED_RUNTIME
                 rho_wmimpl_set_is_version2();
 #endif
         	}
@@ -421,7 +421,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         return S_FALSE;
     }
 
-#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
     rho_logconf_Init((rho_wmimpl_get_logpath()[0]==0 ? m_strRootPath.c_str() : rho_wmimpl_get_logpath()), m_strRootPath.c_str(), m_logPort.c_str());
     if (rho_wmimpl_get_logurl()[0]!=0)
         RHOCONF().setString("rhologurl", rho_wmimpl_get_logurl(), false);
@@ -429,7 +429,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         RHOCONF().setBool("full_screen", true, false);
 #else
     rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
-#endif // APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+#endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
 #ifdef RHODES_EMULATOR
     RHOSIMCONF().setAppConfFilePath(CFilePath::join( m_strRootPath, RHO_EMULATOR_DIR"/rhosimconfig.txt").c_str());
@@ -509,12 +509,12 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, m_strRuntimePath);
     RHODESAPP().setExtManager( &m_oExtManager );
 
-#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
     if ((!rho_wmimpl_get_is_version2()) && (rho_wmimpl_get_startpage()[0] != 0)) {
         String spath = convertToStringA(rho_wmimpl_get_startpage());
         RHOCONF().setString("start_path", spath, false);
     }
-#endif // APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+#endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
     DWORD dwStyle = WS_VISIBLE;
 
@@ -565,7 +565,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #endif
     );
     // Show the main application window
-    //m_appWindow.ShowWindow(nShowCmd);
+    m_appWindow.ShowWindow(nShowCmd);
 
 #if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
 
