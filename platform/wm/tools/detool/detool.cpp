@@ -33,7 +33,7 @@
 #include "LogServer.h"
 
 #define RHOSETUP_DLL "rhosetup.dll"
-#define RE2_RUNTIME TEXT("\\Program Files\\RhoElements2\\RhoElements2.exe")
+#define RE2_RUNTIME TEXT("\\Program Files\\RhoElements\\RhoElements.exe")
 
 TCHAR *app_name = NULL;
 
