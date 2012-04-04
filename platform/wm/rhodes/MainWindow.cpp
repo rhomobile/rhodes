@@ -188,8 +188,6 @@ void CMainWindow::SetFullScreen(bool bFull)
 	m_bFullScreen = bFull;
 
 	MoveWindow(&rect);
-
-    LOG(INFO) + "SetFullScreen END";
 }
 #endif
 
@@ -736,11 +734,10 @@ void CMainWindow::restoreWebView() {
 
 LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    LOG(INFO) + "OnSettingChange";
-
+    LOG(INFO) + "OnSettingChange: " + wParam;
 #if defined(_WIN32_WCE)
-	if (RHOCONF().getBool("full_screen"))
-		SetFullScreen(true);
+	//if (RHOCONF().getBool("full_screen"))
+	//	SetFullScreen(true);
 	
 	//handle sreen rotation
 	int width  = GetSystemMetrics(SM_CXSCREEN);	
