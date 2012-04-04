@@ -403,8 +403,8 @@ module Rhogen
         template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}/platform/wm/#{namefixed.camel_case}.vcproj"
     end
 
-    template :extension_wm_vcproject do |template|
-        template.source = 'extensions/montana/ext/montana/platform/wm/Montana.vsprops'
+    template :extension_wm_vcprojectprops do |template|
+        template.source = 'extensions/montana/ext/montana/platform/wm/montana.vsprops'
         template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}/platform/wm/#{namefixed.camel_case}.vsprops"
     end
 
