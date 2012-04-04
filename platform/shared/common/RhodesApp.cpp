@@ -2085,5 +2085,24 @@ int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
 
     return result; 
 }
+    
+int rho_is_motorola_licence_checked() {
+	const char* szMotorolaLicence = get_app_build_config_item("motorola_licence");
+    
+    // TODO:
+    // checking licence
+    
+    return 1;
+}
+    
+int rho_is_rho_elements_extension_can_be_used() {
+#ifdef APP_BUILD_CAPABILITY_MOTOROLA   
+    return 1;
+#else    
+    return rho_is_motorola_licence_checked(); 
+#endif
+}
+    
+    
 
 } //extern "C"
