@@ -495,9 +495,7 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 {
     bHandled = TRUE;
 
-#ifndef USE_LICENSE
     rho_wmimpl_draw_splash_screen(m_hWnd);
-#endif
 
     return 0;
 }
@@ -1268,6 +1266,8 @@ void CMainWindow::ProcessDocumentComplete(LPCTSTR url)
 	{
 		CheckLicense();
 		m_bLoadingComplete = true;
+		CSplashScreen& splash = RHODESAPP().getSplashScreen();
+		splash.hide();
 	}
 #endif
 
