@@ -47,6 +47,15 @@
 
 #include <algorithm>
 
+// licence lib
+#ifdef OS_ANDROID
+#include "../../../res/libs/motorolalicence/android/MotorolaLicence.h" 
+#endif
+#ifdef OS_MACOSX
+#include "../../../res/libs/motorolalicence/iphone/MotorolaLicence.h" 
+#endif
+
+
 #ifdef OS_WINCE
 #include <winsock.h>
 #endif 
@@ -2088,21 +2097,63 @@ int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
     
 int rho_is_motorola_licence_checked() {
 	const char* szMotorolaLicence = get_app_build_config_item("motorola_licence");
+	const char* szMotorolaLicenceCompany = get_app_build_config_item("motorola_licence_company");
     
-    // TODO:
-    // checking licence
+    if ((szMotorolaLicence == NULL) || (szMotorolaLicenceCompany == NULL)) {
+        return 0;
+    }
+
+    int res_check = 1;
+#ifdef OS_ANDROID
+    res_check = MotorolaLicence_check(szMotorolaLicenceCompany, szMotorolaLicence);
+#endif
     
-    return 1;
+#ifdef OS_MACOSX
+    res_check = MotorolaLicence_check(szMotorolaLicenceCompany, szMotorolaLicence);
+#endif
+    
+    return res_check;
 }
     
 int rho_is_rho_elements_extension_can_be_used() {
-#ifdef APP_BUILD_CAPABILITY_MOTOROLA   
-    return 1;
-#else    
-    return rho_is_motorola_licence_checked(); 
-#endif
+    int res_check = 1;
+
+#ifdef OS_ANDROID
+#ifdef APP_BUILD_CAPABILITY_MOTOROLA
+    // ET1
+    res_check = 1;
+#else
+    res_check = rho_is_motorola_licence_checked();
+#endif    
+#endif    
+#ifdef OS_MACOSX
+    res_check = rho_is_motorola_licence_checked();
+#endif    
+    return res_check;
 }
     
+int rho_can_app_started_with_current_licence() {
+	const char* szMotorolaLicence = get_app_build_config_item("motorola_licence");
+	const char* szMotorolaLicenceCompany = get_app_build_config_item("motorola_licence_company");
+    
+    if ((szMotorolaLicence == NULL) || (szMotorolaLicenceCompany == NULL)) {
+        return 1;
+    }
+        
+    int res_check = 1;
+#ifdef OS_ANDROID
+#ifdef APP_BUILD_CAPABILITY_MOTOROLA
+    // ET1
+    res_check = 1;
+#else
+    res_check = rho_is_motorola_licence_checked();
+#endif    
+#endif    
+#ifdef OS_MACOSX
+    res_check = rho_is_motorola_licence_checked();
+#endif        
+    return res_check;
+}
     
 
 } //extern "C"
