@@ -93,6 +93,13 @@ void LogSettings::initRemoteLog()
 		m_pSocketSink = new CLogSocketSink(*this);
 }
 
+void LogSettings::reinitRemoteLog() {
+    closeRemoteLog();
+	if(!m_pSocketSink && m_strLogURL != "")
+		m_pSocketSink = new CLogSocketSink(*this);
+}
+    
+    
 void LogSettings::getLogTextW(StringW& strTextW)
 {
     boolean bOldSaveToFile = isLogToFile();
@@ -406,6 +413,14 @@ VALUE rho_conf_read_log(int limit)
 
     return res;
 }
+    
+    
+void rho_log_resetup_http_url(const char* http_log_url) {
+    LOGCONF().setLogURL(http_log_url);
+    LOGCONF().reinitRemoteLog();
+}
+    
+    
 #endif //RHO_NO_RUBY
 
 }
