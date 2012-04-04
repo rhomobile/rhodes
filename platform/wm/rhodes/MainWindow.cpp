@@ -90,6 +90,9 @@ CMainWindow::CMainWindow()
     mNativeView = NULL;
     mNativeViewFactory = NULL;
     mNativeViewType = "";
+    g_hWndCommandBar = 0;
+    m_pBrowserEng = NULL;
+    m_bFullScreen = false;
 
     mIsOpenedByURL = false;
 
@@ -101,6 +104,8 @@ CMainWindow::CMainWindow()
 #endif
     m_pageCounter = 0;
     m_menuBarHeight = 0;
+
+    m_alertDialog = 0;
 
 //#if defined( OS_WINCE )
 //	m_bLoadingComplete = false;
@@ -119,7 +124,7 @@ CMainWindow::~CMainWindow()
 void CMainWindow::Navigate2(BSTR URL) 
 {
 	String cleared_url = processForNativeView(convertToStringA(OLE2CT(URL)));
-	if (!cleared_url.empty()) 
+	if ( m_pBrowserEng && !cleared_url.empty()) 
     {
 		StringW cw = convertToStringW(cleared_url);
 		//BSTR cleared_url_bstr = SysAllocString(cw.c_str());
@@ -131,7 +136,7 @@ void CMainWindow::Navigate2(BSTR URL)
 void CMainWindow::Navigate(BSTR URL) 
 {
 	String cleared_url = processForNativeView(convertToStringA(OLE2CT(URL)));
-	if (!cleared_url.empty()) 
+	if (m_pBrowserEng && !cleared_url.empty()) 
     {
 		StringW cw = convertToStringW(cleared_url);
 		//BSTR cleared_url_bstr = SysAllocString(cw.c_str());
@@ -154,14 +159,21 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 #if defined( OS_PLATFORM_MOTCE )
 void CMainWindow::SetFullScreen(bool bFull)
 {
+    LOG(INFO) + "SetFullScreen";
 	HWND hTaskBar = FindWindow(_T("HHTaskBar"), NULL);
 	if(!hTaskBar) 
+    {
+        LOG(INFO) + "SetFullScreen END 1";
 		return;
+    }
+
 	::ShowWindow(hTaskBar, !bFull ? SW_SHOW : SW_HIDE);
+
 
 	if(g_hWndCommandBar)
 		::ShowWindow(g_hWndCommandBar, !bFull ? SW_SHOW : SW_HIDE);
 
+    //return;
 	RECT rect = { 0 };
 	SystemParametersInfo(SPI_GETWORKAREA, NULL, &rect, FALSE);
 	
@@ -171,12 +183,16 @@ void CMainWindow::SetFullScreen(bool bFull)
 	m_bFullScreen = bFull;
 
 	MoveWindow(&rect);
+
+    LOG(INFO) + "SetFullScreen END";
 }
 #endif
 
 LRESULT CMainWindow::InitMainWindow()
 {
     HRESULT hr = S_OK;
+
+    m_pBrowserEng = 0;
 #if defined(_WIN32_WCE)
     SHMENUBARINFO mbi = { sizeof(mbi), 0 };
     SIPINFO si = { sizeof(si), 0 };
@@ -297,6 +313,12 @@ LRESULT CMainWindow::InitMainWindow()
 #endif
 	if (RHOCONF().getBool("full_screen"))
    	    SetFullScreen(true);
+    else
+    {
+        CRect rect;
+        GetWindowRect(&rect);
+        //resizeWindow(rect.Width(), rect.Height());
+    }
 #endif
 
 	RHO_ASSERT(SUCCEEDED(hr));
@@ -309,6 +331,10 @@ LRESULT CMainWindow::InitMainWindow()
 void CMainWindow::initBrowserWindow()
 {
     m_pBrowserEng = rho_wmimpl_createBrowserEngine(m_hWnd);
+
+    CRect rect;
+    GetWindowRect(&rect);
+    resizeWindow(rect.Width(), rect.Height());
     //m_pBrowserEng->ResizeOnTab(0, rect);
 
     HRESULT hr = S_OK;
@@ -323,6 +349,7 @@ void CMainWindow::performOnUiThread(rho::common::IRhoRunnable* pTask)
 {
 	PostMessage(WM_EXECUTE_RUNNABLE, 0, (LPARAM)pTask);
 }
+
 LRESULT CMainWindow::OnExecuteRunnable(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) 
 {
     rho::common::IRhoRunnable* pTask = (rho::common::IRhoRunnable*)lParam;
@@ -332,11 +359,13 @@ LRESULT CMainWindow::OnExecuteRunnable(UINT /*uMsg*/, WPARAM wParam, LPARAM lPar
         delete pTask;
     }
 	return 0;
-}	
+}
+
 LRESULT CMainWindow::OnSetText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
     return TRUE;
 }
+
 LRESULT CMainWindow::OnNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 {
     LPNMHDR pnmh = (LPNMHDR) lParam;
@@ -356,19 +385,28 @@ LRESULT CMainWindow::OnNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 
 HWND CMainWindow::getWebViewHWND() 
 {
+    if (!m_pBrowserEng)
+        return 0;
+
     return m_pBrowserEng->GetHTMLWND();
 }
 
 void CMainWindow::hideWebView() 
 {
-    ::ShowWindow( m_pBrowserEng->GetHTMLWND(), SW_HIDE );
-	mIsBrowserViewHided = true;
+    if ( m_pBrowserEng )
+    {
+        ::ShowWindow( m_pBrowserEng->GetHTMLWND(), SW_HIDE );
+	    mIsBrowserViewHided = true;
+    }
 }
 
 void CMainWindow::showWebView() 
 {
-    ::ShowWindow( m_pBrowserEng->GetHTMLWND(), SW_SHOW );
-	mIsBrowserViewHided = false;
+    if ( m_pBrowserEng )
+    {
+        ::ShowWindow( m_pBrowserEng->GetHTMLWND(), SW_SHOW );
+	    mIsBrowserViewHided = false;
+    }
 }
 
 LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -393,7 +431,9 @@ LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     RHO_ASSERT(SUCCEEDED(AtlAdviseSinkMap(this, false)));
 #endif
 
-    delete m_pBrowserEng;
+    if ( m_pBrowserEng )
+        delete m_pBrowserEng;
+
     m_pBrowserEng = NULL;
 
     PostQuitMessage(0);
@@ -404,30 +444,30 @@ LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 LRESULT CMainWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    LOG(INFO)  + "OnSize: x=" + (int)(LOWORD(lParam)) + ";y=" + (int)(HIWORD(lParam));
+    resizeWindow(LOWORD(lParam), HIWORD(lParam));
+    return 0;
+}
 
-//    if ( (!m_pBrowserEng) || (!m_pBrowserEng->GetHTMLWND()) )
-//        return 0;
+void CMainWindow::resizeWindow( int xSize, int ySize)
+{
+    LOG(INFO)  + "resizeWindow: xSize=" + xSize + ";ySize=" + ySize;
 
 #if defined(OS_WINDOWS)
 	USES_CONVERSION;
     LOG(TRACE) + "Seting browser client area size to: " + (int)LOWORD(lParam) + " x " + (int)(HIWORD(lParam)-m_menuBarHeight-m_toolbar.getHeight());
-    //m_browser.MoveWindow(0, 0, LOWORD(lParam), HIWORD(lParam)-m_menuBarHeight-m_toolbar.getHeight());
-    RECT rect = {0, 0, LOWORD(lParam), HIWORD(lParam)-m_menuBarHeight-m_toolbar.getHeight()};
+    //m_browser.MoveWindow(0, 0, xSize, ySize-m_menuBarHeight-m_toolbar.getHeight());
+    RECT rect = {0, 0, xSize, ySize-m_menuBarHeight-m_toolbar.getHeight()};
 
     if ( m_pBrowserEng && m_pBrowserEng->GetHTMLWND() )
         m_pBrowserEng->ResizeOnTab(0, rect);
 
     if (m_menuBar.m_hWnd) {
-		m_menuBar.MoveWindow(0, HIWORD(lParam)-m_menuBarHeight, LOWORD(lParam), m_menuBarHeight);
+		m_menuBar.MoveWindow(0, ySize-m_menuBarHeight, xSize, m_menuBarHeight);
     }
     if ( m_toolbar.m_hWnd )
-        m_toolbar.MoveWindow(0, HIWORD(lParam)-m_menuBarHeight-m_toolbar.getHeight(), LOWORD(lParam), m_toolbar.getHeight());
+        m_toolbar.MoveWindow(0, ySize-m_menuBarHeight-m_toolbar.getHeight(), xSize, m_toolbar.getHeight());
 #else
-    //LOG(INFO)  + "OnSize: x=" + (int)(LOWORD(lParam)) + ";y=" + (int)(HIWORD(lParam));
-
-    //m_browser.MoveWindow(0, 0, LOWORD(lParam), HIWORD(lParam)- m_toolbar.getHeight());
-    RECT rect = {0, 0, LOWORD(lParam), HIWORD(lParam) };//- m_toolbar.getHeight()};
+    RECT rect = {0, 0, xSize, ySize };//- m_toolbar.getHeight()};
 
     if ( m_toolbar.m_hWnd )
         rect.bottom -= m_toolbar.getHeight();
@@ -447,10 +487,9 @@ LRESULT CMainWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOO
         m_pBrowserEng->ResizeOnTab(0, rect);
 
     if ( m_toolbar.m_hWnd )
-        m_toolbar.MoveWindow(0, HIWORD(lParam)-m_toolbar.getHeight(), LOWORD(lParam), m_toolbar.getHeight());
+        m_toolbar.MoveWindow(0, ySize-m_toolbar.getHeight(), xSize, m_toolbar.getHeight());
 #endif
 
-    return 0;
 }
 
 LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -483,6 +522,9 @@ LRESULT CMainWindow::OnTitleChange (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 
 LRESULT CMainWindow::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    if ( !m_pBrowserEng )
+        return 0;
+
     return m_pBrowserEng->OnWebKitMessages(uMsg, wParam, lParam, bHandled);
 }
 
@@ -530,14 +572,15 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         return 0;
 
     int fActive = LOWORD(wParam);
+
+    LOG(INFO) + "ACTIVATE: " + fActive;
+
 #if defined(_WIN32_WCE) 
 	if (RHOCONF().getBool("full_screen"))
 		SetFullScreen(fActive!=0);
 #endif
-
 	rho_rhodesapp_callAppActiveCallback(fActive);
     RHODESAPP().getExtManager().OnAppActivate(fActive!=0);
-
 #if defined(_WIN32_WCE)  && !defined (OS_PLATFORM_MOTCE)
     // Notify shell of our WM_ACTIVATE message
     SHHandleWMActivate(m_hWnd, wParam, lParam, &m_sai, 0);
@@ -558,7 +601,6 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 
     if (!fActive)
         rho_geoimpl_turngpsoff();
-
     return 0;
 }
 
@@ -566,7 +608,7 @@ LRESULT CMainWindow::OnSetCookieCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 {
     TCookieData* cd = (TCookieData*)hWndCtl;
     if (cd) {
-        if (cd->url && cd->cookie) {
+        if (m_pBrowserEng && cd->url && cd->cookie) {
             m_pBrowserEng->SetCookie(cd->url, cd->cookie);
             if (cd->url) free(cd->url);
             if (cd->cookie) free(cd->cookie);
@@ -695,6 +737,8 @@ void CMainWindow::restoreWebView() {
 
 LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
+    LOG(INFO) + "OnSettingChange";
+
 #if defined(_WIN32_WCE)
 	if (RHOCONF().getBool("full_screen"))
 		SetFullScreen(true);
@@ -731,14 +775,19 @@ LRESULT CMainWindow::OnExitCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 LRESULT CMainWindow::OnNavigateBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	restoreWebView();
-    m_pBrowserEng->BackOnTab(0, 1);
+
+    if ( m_pBrowserEng )
+        m_pBrowserEng->BackOnTab(0, 1);
+
     return 0;
 }
 
 LRESULT CMainWindow::OnNavigateForwardCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	restoreWebView();
-    m_pBrowserEng->ForwardOnTab(0);
+
+    if ( m_pBrowserEng )
+        m_pBrowserEng->ForwardOnTab(0);
 
     return 0;
 }
@@ -767,6 +816,7 @@ LRESULT CMainWindow::OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 LRESULT CMainWindow::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND hwnd, BOOL& /*bHandled*/)
 {
+    LOG(INFO) + "OnFullscreenCommand";
 #if defined (_WIN32_WCE)
     SetFullScreen( hwnd != 0 ? true : false);
 #endif
@@ -775,7 +825,9 @@ LRESULT CMainWindow::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT CMainWindow::OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    m_pBrowserEng->ReloadOnTab(false, 0);
+    if ( m_pBrowserEng )
+        m_pBrowserEng->ReloadOnTab(false, 0);
+
     return 0;
 }
 
@@ -795,7 +847,9 @@ LRESULT CMainWindow::OnExecuteJSCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 	LPTSTR wcurl = (LPTSTR)hWndCtl;
 	if (wcurl) 
     {
-        m_pBrowserEng->executeJavascript(wcurl,0);
+        if ( m_pBrowserEng )
+            m_pBrowserEng->executeJavascript(wcurl,0);
+
 		free(wcurl);
 	}
     return 0;
@@ -803,21 +857,26 @@ LRESULT CMainWindow::OnExecuteJSCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 
 LRESULT CMainWindow::OnStopNavigate(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
-    m_pBrowserEng->StopOnTab((UINT)hWndCtl);
+    if ( m_pBrowserEng )
+        m_pBrowserEng->StopOnTab((UINT)hWndCtl);
+
     return 0;
 }
 
 LRESULT CMainWindow::OnZoomPage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
     float fZoom = (float)(long)(hWndCtl);
-    m_pBrowserEng->ZoomPageOnTab(fZoom, rho_webview_active_tab());
+    if ( m_pBrowserEng )
+        m_pBrowserEng->ZoomPageOnTab(fZoom, rho_webview_active_tab());
+
     return 0;
 }
 
 LRESULT CMainWindow::OnZoomText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
     int nZoom = (int)hWndCtl;
-    m_pBrowserEng->ZoomTextOnTab(nZoom, rho_webview_active_tab());
+    if ( m_pBrowserEng )
+        m_pBrowserEng->ZoomTextOnTab(nZoom, rho_webview_active_tab());
     return 0;
 }
 
@@ -1009,6 +1068,8 @@ LRESULT CMainWindow::OnExecuteCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
 #if defined( OS_WINCE ) && defined( APP_BUILD_CAPABILITY_MOTOROLA )
 LRESULT CMainWindow::OnLicenseScreen(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
+    LOG(INFO) + "OnLicenseScreen";
+    
 	if (!RHOCONF().getBool("full_screen")) {
 		//SetFullScreen(wParam != 0);
 		HWND hTaskBar = FindWindow(_T("HHTaskBar"), NULL);
@@ -1139,7 +1200,7 @@ void __stdcall CMainWindow::OnNavigateComplete2(IDispatch* pDisp, VARIANT * pvtU
 
 void CMainWindow::ProcessNavigateComplete(LPCTSTR url)
 {
-	if ( !m_bLoading && !mIsBrowserViewHided )
+	if ( !m_bLoading && !mIsBrowserViewHided && m_pBrowserEng )
         ::ShowWindow(m_pBrowserEng->GetHTMLWND(), SW_SHOW);
 
 
@@ -1166,7 +1227,8 @@ void CMainWindow::ShowLoadingPage()
 		strTextW = L"<html><head><title>Loading...</title></head><body><h1>Loading...</h1></body></html>";
     }
 
-    m_pBrowserEng->NavigateToHtml(strTextW.c_str());
+    if ( m_pBrowserEng )
+        m_pBrowserEng->NavigateToHtml(strTextW.c_str());
 }
 
 void __stdcall CMainWindow::OnDocumentComplete(IDispatch* pDisp, VARIANT * pvtURL)
@@ -1339,7 +1401,7 @@ void CMainWindow::createCustomMenu()
 	CMenu sub;
 	CMenu popup;
 	
-    if (!m_pBrowserEng->GetHTMLWND())
+    if (!m_pBrowserEng || !m_pBrowserEng->GetHTMLWND())
         return;
 
 	VERIFY(menu.CreateMenu());
@@ -1455,7 +1517,7 @@ LRESULT CMainWindow::OnCustomToolbarItemCommand (WORD /*wNotifyCode*/, WORD  wID
 
 extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd)
 {
-//    LOG(INFO) + "PAINT";
+    LOG(INFO) + "PAINT";
   	CSplashScreen& splash = RHODESAPP().getSplashScreen();
     splash.start();
 
@@ -1478,7 +1540,6 @@ extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd)
         hdcMem.FillSolidRect(&rcClient, RGB(255,255,255));
 
 	    HGDIOBJ resObj = SelectObject(hdcMem, hbitmap);
-
 
         int nLeft = rcClient.left, nTop=rcClient.top, nWidth = bmp.bmWidth, nHeight=bmp.bmHeight, Width = rcClient.right - rcClient.left, Height = rcClient.bottom - rcClient.top;
         if (splash.isFlag(CSplashScreen::HCENTER) )

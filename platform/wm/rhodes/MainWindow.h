@@ -137,6 +137,7 @@ public:
 
     LRESULT InitMainWindow();
     void initBrowserWindow();
+    void resizeWindow( int xSize, int ySize);
 
     // Required to forward messages to the PIEWebBrowser control
     BOOL TranslateAccelerator(MSG* pMsg);
