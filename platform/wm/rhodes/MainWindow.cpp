@@ -40,7 +40,9 @@
 #include <strsafe.h>
 #endif
 
-#if defined( OS_WINCE )
+#if defined(_WIN32_WCE) && !defined(OS_PLATFORM_MOTCE)
+extern "C" void CheckLicense();
+extern "C" int CheckSymbolDevice();
 #define USE_LICENSE
 #endif
 
@@ -64,9 +66,12 @@ IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 
 #include "DateTimePicker.h"
 
-//#if defined( OS_WINCE )
-//extern "C" void CheckLicense();
-//#endif
+#if defined(_WIN32_WCE) && !defined(OS_PLATFORM_MOTCE)
+extern "C" void CheckLicense();
+extern "C" int CheckSymbolDevice();
+#define USE_LICENSE
+#endif
+
 extern "C" void rho_sysimpl_sethas_network(int nValue);
 extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue);
 extern "C" void rho_geoimpl_turngpsoff();
@@ -107,9 +112,9 @@ CMainWindow::CMainWindow()
 
     m_alertDialog = 0;
 
-//#if defined( OS_WINCE )
-//	m_bLoadingComplete = false;
-//#endif
+#ifdef USE_LICENSE
+	m_bLoadingComplete = false;
+#endif
 }
 
 CMainWindow::~CMainWindow()
@@ -490,7 +495,9 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 {
     bHandled = TRUE;
 
+#ifndef USE_LICENSE
     rho_wmimpl_draw_splash_screen(m_hWnd);
+#endif
 
     return 0;
 }
@@ -1256,17 +1263,16 @@ void CMainWindow::ProcessDocumentComplete(LPCTSTR url)
 
     //CMetaHandler oHandler(m_spIWebBrowser2);
 
+#ifdef	USE_LICENSE
+	if(!m_bLoadingComplete)
+	{
+		CheckLicense();
+		m_bLoadingComplete = true;
+	}
+#endif
+
     RHODESAPP().getExtManager().onDocumentComplete(url);
 
-#if defined( OS_WINCE )
-#ifdef	USE_LICENSE
-	//if(!m_bLoadingComplete)
-	//{
-	//	CheckLicense();
-	//	m_bLoadingComplete = true;
-	//}
-#endif
-#endif
 }
 
 void __stdcall CMainWindow::OnCommandStateChange(long lCommand, BOOL bEnable)

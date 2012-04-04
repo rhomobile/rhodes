@@ -298,9 +298,9 @@ private:
     LRESULT OnGeolocationData (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 #endif
 
-//#if defined( OS_WINCE )
-//	bool  m_bLoadingComplete;
-//#endif
+#if defined(_WIN32_WCE)  && !defined(OS_PLATFORM_MOTCE)
+	bool  m_bLoadingComplete;
+#endif
 
 public:
 
