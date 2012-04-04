@@ -1216,6 +1216,12 @@ namespace "build" do
     task :gensources => [:genconfig, :gen_java_ext]
 
     task :librhodes => [:libs, :gensources] do
+      # add licence lib to build
+      lic_dst = $extensionsdir + "/libMotorolaLicence.a"
+      lic_src = $startdir + "/res/libs/motorolalicence/android/libMotorolaLicence.a"
+      rm_f lic_dst
+      cp lic_src, lic_dst 
+    
       srcdir = File.join $androidpath, "Rhodes", "jni", "src"
       objdir = File.join $bindir, "libs", $confdir, $ndkabi, $ndkgccver, "librhodes"
       libname = File.join $bindir, "libs", $confdir, $ndkabi, $ndkgccver, "librhodes.so"
