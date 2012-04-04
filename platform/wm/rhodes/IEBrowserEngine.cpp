@@ -166,9 +166,14 @@ LRESULT CIEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lPar
 
 void CIEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 {
-#if defined( OS_WINCE )
-	if(!CheckSymbolDevice()) return;
-#endif
+	int res = CheckSymbolDevice();
+	if(res == -1)
+	{
+		MessageBox(NULL, L"license_rc.dll is absent. Application will be closed"
+						   , L"Rhodes", MB_SETFOREGROUND | MB_TOPMOST | MB_ICONSTOP | MB_OK);
+		return;
+	}
+	else if(res == 0) return;
 	
 	MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
