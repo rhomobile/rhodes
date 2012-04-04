@@ -565,7 +565,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #endif
     );
     // Show the main application window
-    m_appWindow.ShowWindow(nShowCmd);
+    //m_appWindow.ShowWindow(nShowCmd);
 
 #if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
 
