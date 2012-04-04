@@ -165,9 +165,9 @@ public :
     const rho::String& getRhoRuntimePath();
     void parseHttpProxyURI(const rho::String &http_proxy);
 
-#if defined( OS_WINCE )
+#if defined(_WIN32_WCE)  && !defined(OS_PLATFORM_MOTCE)
 	void CheckLicense();	
-	bool CheckSymbolDevice();	
+	int CheckSymbolDevice();	
 #endif
 };
 
@@ -190,10 +190,10 @@ rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
 }
 #endif //RHODES_EMULATOR
 
-#if defined( OS_WINCE )
+#if defined(_WIN32_WCE)  && !defined(OS_PLATFORM_MOTCE)
 void CRhodesModule::CheckLicense()
 {
-/*	if(!m_hLicenseInstance)
+	if(!m_hLicenseInstance)
 		m_hLicenseInstance = LoadLibrary(L"license_rc.dll");
 	
 	if(m_hLicenseInstance)
@@ -201,12 +201,12 @@ void CRhodesModule::CheckLicense()
 		PCL pCheckLicense = (PCL) GetProcAddress(m_hLicenseInstance, L"CheckLicense");
 		if(pCheckLicense) 
 			pCheckLicense(m_appWindow.m_hWnd);
-	} */
+	}
 }
 
-bool CRhodesModule::CheckSymbolDevice()
+int CRhodesModule::CheckSymbolDevice()
 {
-/*	if(!m_hLicenseInstance)
+	if(!m_hLicenseInstance)
 		m_hLicenseInstance = LoadLibrary(L"license_rc.dll");
 	
 	if(m_hLicenseInstance)
@@ -216,8 +216,7 @@ bool CRhodesModule::CheckSymbolDevice()
 			return pCheckSymbolDevice();
 	}
 
-	return false;*/
-    return true;
+	return -1;
 }
 #endif
 
@@ -749,12 +748,13 @@ extern "C" HWND getMainWnd() {
 	return _AtlModule.GetMainWindow();
 }
 
-#if defined( OS_WINCE )
+
+#if defined(_WIN32_WCE)  && !defined(OS_PLATFORM_MOTCE)
 extern "C" void CheckLicense() {
 	return _AtlModule.CheckLicense();
 }
 
-extern "C" bool CheckSymbolDevice() {
+extern "C" int CheckSymbolDevice() {
 	return _AtlModule.CheckSymbolDevice();
 }
 #endif
