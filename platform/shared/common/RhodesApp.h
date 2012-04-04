@@ -255,8 +255,10 @@ int rho_rhodesapp_check_mode();
 
 int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators);
 
-// return true only if "motorola_licence" property is exist and correct !    
+// return 1 only if "motorola_licence" and "motorola_licence" property is exist and correct !
 int rho_is_motorola_licence_checked();    
+    
+int rho_can_app_started_with_current_licence();    
 int rho_is_rho_elements_extension_can_be_used();    
 
     

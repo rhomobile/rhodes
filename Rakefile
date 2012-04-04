@@ -348,7 +348,7 @@ namespace "config" do
 
         if (!is_ET1) and (!is_win_platform)
              # check the licence parameter
-             if !$app_config["motorola_licence"]
+             if (!$app_config["motorola_licence"]) or (!$app_config["motorola_licence_company"])
                  puts '###################'
                  puts ' '
                  puts 'ERROR: You should provide "motorola_licence" and "motorola_licence_company" parameters ! Please verify your application setting in #{File.dirname(__FILE__)}/rhobuild.yml'
