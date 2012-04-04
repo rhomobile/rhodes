@@ -80,7 +80,7 @@ namespace "framework" do
 end
 
 
-$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "motorola_licence"]
+$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "motorola_licence", "motorola_licence_company"]
 
 def make_application_build_config_header_file
   f = StringIO.new("", "w+")      
@@ -343,10 +343,17 @@ namespace "config" do
         require "rhoelements"
         
         # check licence
-        if !$app_config["capabilities"].index("motorola")
+        is_ET1 = (($current_platform == "android") and ($app_config["capabilities"].index("motorola")))
+        is_win_platform = (($current_platform == "wm") or ($current_platform == "wp") or ($current_platform == "win32") )
+
+        if (!is_ET1) and (!is_win_platform)
              # check the licence parameter
              if !$app_config["motorola_licence"]
-                 puts "ERROR: You should provide motorola_licence parameter ! Please verify your application setting in #{File.dirname(__FILE__)}/rhobuild.yml"
+                 puts '###################'
+                 puts ' '
+                 puts 'ERROR: You should provide "motorola_licence" and "motorola_licence_company" parameters ! Please verify your application setting in #{File.dirname(__FILE__)}/rhobuild.yml'
+                 puts ' '
+                 puts '###################'
                  exit 1
              end
         end
