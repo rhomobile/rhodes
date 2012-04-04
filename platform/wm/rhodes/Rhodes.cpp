@@ -131,6 +131,9 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
     CMainWindow m_appWindow;
     rho::String m_strRootPath, m_strRhodesPath, m_logPort, m_strRuntimePath;//, m_strDebugHost, m_strDebugPort;*/
 	int m_nRestarting;
+#ifndef RHODES_EMULATOR
+	HANDLE m_hMutex;
+#endif
     CExtManager m_oExtManager;
 #if defined( OS_WINCE )
     static HINSTANCE m_hLicenseInstance;
@@ -413,11 +416,22 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 		SetForegroundWindow( HWND( DWORD(hWnd) | 0x01 ) );
 		return S_FALSE;
 	}
+
+	// creating mutex
+	m_hMutex = CreateMutex(NULL, TRUE, CMainWindow::GetWndClassInfo().m_wc.lpszClassName);
+	if (m_hMutex==NULL) {
+		// Failed to create mutex
+		return S_FALSE;
+	}
+	if ((GetLastError() == ERROR_ALREADY_EXISTS) && (WaitForSingleObject(m_hMutex, 60000L) != WAIT_OBJECT_0)) {
+        rho_sys_impl_exit_with_errormessage( "Initialization", "Another instance of the application is running. Please, exit it or use Task Manager to terminate it.");
+        return S_FALSE;
+	}
 #endif
 
     if ( !rho_sys_check_rollback_bundle(rho_native_rhopath()) )
     {
-        rho_sys_impl_exit_with_errormessage( "Bundle update.", "Application is currupted. Reinstall it , please.");
+        rho_sys_impl_exit_with_errormessage( "Bundle update", "Application is corrupted. Reinstall it, please.");
         return S_FALSE;
     }
 
@@ -642,6 +656,10 @@ void CRhodesModule::RunMessageLoop( ) throw( )
     rho::common::CRhodesApp::Destroy();
 
     net::CNetRequestImpl::deinitConnection();
+
+#ifndef RHODES_EMULATOR
+	ReleaseMutex(m_hMutex);
+#endif
 }
 
 const rho::String& CRhodesModule::getRhoRootPath()
