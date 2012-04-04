@@ -315,6 +315,12 @@ void RhoRubyStart()
 
     }
 }
+
+int  rho_ruby_is_started()
+{
+    return rb_mKernel != 0 ? 1 : 0;
+}
+
 int rho_ruby_is_enabled_eval()
 {
 #ifdef RHODES_EMULATOR

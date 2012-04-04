@@ -55,6 +55,8 @@ extern "C" void rho_sysimpl_sethas_network(int nValue);
 extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue);
 extern "C" HINSTANCE rho_wmimpl_get_appinstance();
 extern "C" int rho_sys_check_rollback_bundle(const char* szRhoPath);
+extern "C" void registerRhoExtension();
+extern "C" void rho_webview_navigate(const char* url, int index);
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 class CEng;
@@ -570,14 +572,39 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     m_appWindow.initBrowserWindow();
 #endif
 
-    RHODESAPP().startApp();
-
-    // Navigate to the "loading..." page
-	m_appWindow.Navigate2(_T("about:blank")
-#ifdef RHODES_EMULATOR
-        , -1
+    bool bRE1App = false;
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
+    if (!rho_wmimpl_get_is_version2())
+        bRE1App = true;
 #endif
-    );
+
+    if (bRE1App)
+    {
+        registerRhoExtension();
+	    m_appWindow.Navigate2(_T("about:blank")
+#ifdef RHODES_EMULATOR
+            , -1
+#endif
+        );
+        
+        rho_webview_navigate( RHOCONF().getString("start_path").c_str(), 0 );
+/*    	m_appWindow.Navigate2( convertToStringW( RHOCONF().getString("start_path") ).c_str()
+#ifdef RHODES_EMULATOR
+            , -1
+#endif
+        );*/
+    }
+    else
+    {
+        RHODESAPP().startApp();
+
+        // Navigate to the "loading..." page
+	    m_appWindow.Navigate2(_T("about:blank")
+    #ifdef RHODES_EMULATOR
+            , -1
+    #endif
+        );
+    }
     // Show the main application window
     //m_appWindow.ShowWindow(nShowCmd);
 

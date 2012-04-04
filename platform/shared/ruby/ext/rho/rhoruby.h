@@ -64,6 +64,7 @@ void rho_ruby_loadallsyncsources();
 void rho_ruby_reset_db_on_sync_user_changed();
 void rho_ruby_start_threadidle();
 void rho_ruby_stop_threadidle();
+int  rho_ruby_is_started();
 
 VALUE rho_ruby_createHash();
 VALUE addTimeToHash(VALUE hash, const char* key, time_t val);	
