@@ -157,6 +157,9 @@ void CAppCallbacksQueue::call(CAppCallbacksQueue::callback_t type)
 
 void CAppCallbacksQueue::callCallback(const String& strCallback)
 {
+    if ( !rho_ruby_is_started() )
+        return;
+
     String strUrl = RHODESAPP().getBaseUrl();
     strUrl += strCallback;
     NetResponse resp = getNetRequest().pullData( strUrl, null );
@@ -424,7 +427,7 @@ void CRhodesApp::stopApp()
 {
    	m_appCallbacksQueue->stop(1000);
 
-    if (!m_bExit)
+    if (!m_bExit && rho_ruby_is_started())
     {
         m_bExit = true;
         m_httpServer->stop();
@@ -482,6 +485,9 @@ public:
 
     void run(common::CRhoThread &)
     {
+        if ( !rho_ruby_is_started() )
+            return;
+
         getNetRequest().pushData( m_strCallback, m_strBody, null );
     }
 };
@@ -545,7 +551,7 @@ void CRhodesApp::callUiCreatedCallback()
 
 void CRhodesApp::callUiDestroyedCallback()
 {
-    if ( m_bExit )
+    if ( m_bExit || !rho_ruby_is_started() )
         return;
 
     String strUrl = m_strHomeUrl + "/system/uidestroyed";
@@ -585,22 +591,25 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
         m_bDeactivationMode = true;
         m_appCallbacksQueue->addQueueCommand(new CAppCallbacksQueue::Command(CAppCallbacksQueue::app_deactivated));
 
-        String strUrl = m_strHomeUrl + "/system/deactivateapp";
-        NetResponse resp = getNetRequest().pullData( strUrl, null );
-        if ( !resp.isOK() )
+        if ( rho_ruby_is_started() )
         {
-            LOG(ERROR) + "deactivate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
-        }else
-        {
-            const char* szData = resp.getCharData();
-            boolean bStop = szData && strcmp(szData,"stop_local_server") == 0;
-
-            if (bStop)
+            String strUrl = m_strHomeUrl + "/system/deactivateapp";
+            NetResponse resp = getNetRequest().pullData( strUrl, null );
+            if ( !resp.isOK() )
             {
-#if !defined( OS_WINCE ) && !defined (OS_WINDOWS)
-                LOG(INFO) + "Stopping local server.";
-                m_httpServer->stop();
-#endif
+                LOG(ERROR) + "deactivate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+            }else
+            {
+                const char* szData = resp.getCharData();
+                boolean bStop = szData && strcmp(szData,"stop_local_server") == 0;
+
+                if (bStop)
+                {
+    #if !defined( OS_WINCE ) && !defined (OS_WINDOWS)
+                    LOG(INFO) + "Stopping local server.";
+                    m_httpServer->stop();
+    #endif
+                }
             }
         }
 
@@ -873,14 +882,18 @@ const String& CRhodesApp::getRhoMessage(int nError, const char* szName)
         strUrl += szName;
     }
 
-    NetResponse resp = getNetRequest().pullData( strUrl, null );
-    if ( !resp.isOK() )
+    if ( rho_ruby_is_started() )
     {
-        LOG(ERROR) + "getRhoMessage failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+        NetResponse resp = getNetRequest().pullData( strUrl, null );
+        if ( !resp.isOK() )
+        {
+            LOG(ERROR) + "getRhoMessage failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+            m_strRhoMessage = "";
+        }
+        else
+            m_strRhoMessage = resp.getCharData();
+    }else
         m_strRhoMessage = "";
-    }
-    else
-        m_strRhoMessage = resp.getCharData();
 
     return m_strRhoMessage;
 }
@@ -1642,6 +1655,9 @@ void CRhodesApp::setScreenRotationNotification(String strUrl, String strParams)
 
 void CRhodesApp::callScreenRotationCallback(int width, int height, int degrees)
 {
+    if ( !rho_ruby_is_started() )
+        return;
+
 	synchronized(m_mxScreenRotationCallback) 
 	{
 		if (m_strScreenRotationCallback.length() == 0)
@@ -1702,7 +1718,8 @@ void CRhodesApp::loadUrl(String url)
     url = canonicalizeRhoUrl(url);
     if (callback)
     {
-        getNetRequest().pushData( url,  "rho_callback=1", null );
+        if ( rho_ruby_is_started() )
+            getNetRequest().pushData( url,  "rho_callback=1", null );
     }
     else
         navigateToUrl(url);

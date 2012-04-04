@@ -313,12 +313,6 @@ LRESULT CMainWindow::InitMainWindow()
 #endif
 	if (RHOCONF().getBool("full_screen"))
    	    SetFullScreen(true);
-    else
-    {
-        CRect rect;
-        GetWindowRect(&rect);
-        //resizeWindow(rect.Width(), rect.Height());
-    }
 #endif
 
 	RHO_ASSERT(SUCCEEDED(hr));
