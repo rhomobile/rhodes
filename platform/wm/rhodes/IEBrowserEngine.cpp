@@ -4,9 +4,7 @@
 #include "common/RhoConf.h"
 #include "MainWindow.h"
 
-#if defined( OS_WINCE )
 extern "C" bool CheckSymbolDevice();
-#endif
 
 #if defined(_WIN32_WCE)
 #include <webvw.h>
