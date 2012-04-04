@@ -40,11 +40,8 @@
 #include <strsafe.h>
 #endif
 
-#if defined(_WIN32_WCE) && !defined(OS_PLATFORM_MOTCE)
 extern "C" void CheckLicense();
 extern "C" int CheckSymbolDevice();
-#define USE_LICENSE
-#endif
 
 #include "resource.h"
 #include "MainWindow.h"
@@ -65,12 +62,6 @@ extern "C" int CheckSymbolDevice();
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 
 #include "DateTimePicker.h"
-
-#if defined(_WIN32_WCE) && !defined(OS_PLATFORM_MOTCE)
-extern "C" void CheckLicense();
-extern "C" int CheckSymbolDevice();
-#define USE_LICENSE
-#endif
 
 extern "C" void rho_sysimpl_sethas_network(int nValue);
 extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue);
@@ -97,7 +88,9 @@ CMainWindow::CMainWindow()
     mNativeViewType = "";
     g_hWndCommandBar = 0;
     m_pBrowserEng = NULL;
+#if defined( OS_PLATFORM_MOTCE )
     m_bFullScreen = false;
+#endif
 
     mIsOpenedByURL = false;
 
@@ -112,9 +105,7 @@ CMainWindow::CMainWindow()
 
     m_alertDialog = 0;
 
-#ifdef USE_LICENSE
 	m_bLoadingComplete = false;
-#endif
 }
 
 CMainWindow::~CMainWindow()
@@ -451,7 +442,7 @@ void CMainWindow::resizeWindow( int xSize, int ySize)
 
 #if defined(OS_WINDOWS)
 	USES_CONVERSION;
-    LOG(TRACE) + "Seting browser client area size to: " + (int)LOWORD(lParam) + " x " + (int)(HIWORD(lParam)-m_menuBarHeight-m_toolbar.getHeight());
+    LOG(TRACE) + "Seting browser client area size to: " + xSize + " x " + (ySize-m_menuBarHeight-m_toolbar.getHeight());
     //m_browser.MoveWindow(0, 0, xSize, ySize-m_menuBarHeight-m_toolbar.getHeight());
     RECT rect = {0, 0, xSize, ySize-m_menuBarHeight-m_toolbar.getHeight()};
 
@@ -1258,15 +1249,11 @@ void CMainWindow::ProcessDocumentComplete(LPCTSTR url)
 
     //CMetaHandler oHandler(m_spIWebBrowser2);
 
-#ifdef	USE_LICENSE
-	if(!m_bLoadingComplete)
+	if(!m_bLoadingComplete && wcscmp(url,_T("about:blank"))!=0)
 	{
 		CheckLicense();
 		m_bLoadingComplete = true;
-		CSplashScreen& splash = RHODESAPP().getSplashScreen();
-		splash.hide();
 	}
-#endif
 
     RHODESAPP().getExtManager().onDocumentComplete(url);
 
