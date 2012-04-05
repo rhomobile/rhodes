@@ -40,9 +40,6 @@
 #include <strsafe.h>
 #endif
 
-extern "C" void CheckLicense();
-extern "C" int CheckSymbolDevice();
-
 #include "resource.h"
 #include "MainWindow.h"
 #include "common/StringConverter.h"
@@ -60,6 +57,7 @@ extern "C" int CheckSymbolDevice();
 #endif
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
+UINT WM_LICENSE_SCREEN          = ::RegisterWindowMessage(L"RHODES_WM_LICENSE_SCREEN");
 
 #include "DateTimePicker.h"
 
@@ -104,8 +102,6 @@ CMainWindow::CMainWindow()
     m_menuBarHeight = 0;
 
     m_alertDialog = 0;
-
-	m_bLoadingComplete = false;
 }
 
 CMainWindow::~CMainWindow()
@@ -1052,11 +1048,11 @@ LRESULT CMainWindow::OnExecuteCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
 	return 0;
 }	
 
-#if defined( OS_WINCE ) && defined( APP_BUILD_CAPABILITY_MOTOROLA )
+
 LRESULT CMainWindow::OnLicenseScreen(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
     LOG(INFO) + "OnLicenseScreen";
-    
+#if defined( OS_WINCE )    
 	if (!RHOCONF().getBool("full_screen")) {
 		//SetFullScreen(wParam != 0);
 		HWND hTaskBar = FindWindow(_T("HHTaskBar"), NULL);
@@ -1066,9 +1062,9 @@ LRESULT CMainWindow::OnLicenseScreen(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 			::EnableWindow(hTaskBar, bEnableTaskBar);
 		}
 	}
+#endif
 	return 0;
 }	
-#endif
 
 LRESULT CMainWindow::OnBluetoothCallback(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	char* callback_url = (char*)wParam;
@@ -1249,11 +1245,8 @@ void CMainWindow::ProcessDocumentComplete(LPCTSTR url)
 
     //CMetaHandler oHandler(m_spIWebBrowser2);
 
-	if(!m_bLoadingComplete && wcscmp(url,_T("about:blank"))!=0)
-	{
-		CheckLicense();
-		m_bLoadingComplete = true;
-	}
+    if ( m_pBrowserEng )
+        m_pBrowserEng->OnDocumentComplete(url);
 
     RHODESAPP().getExtManager().onDocumentComplete(url);
 

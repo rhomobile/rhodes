@@ -82,10 +82,6 @@ extern UINT WM_BROWSER_ONGPSDATA;
 #endif
 #endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 
-#if defined( OS_WINCE ) && defined( APP_BUILD_CAPABILITY_MOTOROLA )
-extern UINT WM_LICENSE_SCREEN;
-#endif
-
 #define ID_CUSTOM_MENU_ITEM_FIRST (WM_APP+3)
 #define ID_CUSTOM_MENU_ITEM_LAST  (ID_CUSTOM_MENU_ITEM_FIRST + (APP_MENU_ITEMS_MAX) - 1)
 #define ID_CUSTOM_TOOLBAR_ITEM_FIRST (ID_CUSTOM_MENU_ITEM_LAST+1)
@@ -106,6 +102,7 @@ static UINT WM_BLUETOOTH_DISCOVERED    = ::RegisterWindowMessage(L"RHODES_WM_BLU
 static UINT WM_BLUETOOTH_CALLBACK	   = ::RegisterWindowMessage(L"RHODES_WM_BLUETOOTH_CALLBACK");
 static UINT WM_EXECUTE_COMMAND		   = ::RegisterWindowMessage(L"RHODES_WM_EXECUTE_COMMAND");
 static UINT WM_EXECUTE_RUNNABLE		   = ::RegisterWindowMessage(L"RHODES_WM_EXECUTE_RUNNABLE");
+extern UINT WM_LICENSE_SCREEN;
 
 typedef struct _TCookieData {
     char* url;
@@ -212,9 +209,7 @@ public:
 		MESSAGE_HANDLER(WM_BLUETOOTH_CALLBACK, OnBluetoothCallback);
 		MESSAGE_HANDLER(WM_EXECUTE_COMMAND, OnExecuteCommand);
         MESSAGE_HANDLER(WM_EXECUTE_RUNNABLE, OnExecuteRunnable);
-#if defined( OS_WINCE ) && defined( APP_BUILD_CAPABILITY_MOTOROLA )
 		MESSAGE_HANDLER(WM_LICENSE_SCREEN, OnLicenseScreen);
-#endif
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
         MESSAGE_HANDLER(WM_BROWSER_ONDOCUMENTCOMPLETE, OnBrowserDocumentComplete);
         MESSAGE_HANDLER(WM_BROWSER_ONNAVIGATECOMPLETE, OnNavigateComplete);
@@ -281,9 +276,8 @@ private:
 	LRESULT OnBluetoothCallback (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnExecuteCommand (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnExecuteRunnable (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-#if defined( OS_WINCE ) && defined( APP_BUILD_CAPABILITY_MOTOROLA )
 	LRESULT OnLicenseScreen (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-#endif
+
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     LRESULT OnBrowserDocumentComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnNavigateComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
@@ -297,8 +291,6 @@ private:
     LRESULT OnAuthenticationRequest (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnGeolocationData (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 #endif
-
-	bool  m_bLoadingComplete;
 
 public:
 

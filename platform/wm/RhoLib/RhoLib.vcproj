@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="RhoLib"
 	ProjectGUID="{F196A418-11F1-4067-9F4F-BCC7D70E6EC5}"
 	RootNamespace="RhoLib"
@@ -25,13 +25,13 @@
 			Name="MC3000c50b (ARMV4I)"
 		/>
 		<Platform
-			Name="Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-		/>
-		<Platform
 			Name="Windows Mobile 5.0 Pocket PC SDK (ARMV4I)"
 		/>
 		<Platform
 			Name="Windows Mobile 5.0 Smartphone SDK (ARMV4I)"
+		/>
+		<Platform
+			Name="Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 		/>
 		<Platform
 			Name="Windows Mobile 6 Standard SDK (ARMV4I)"
@@ -427,7 +427,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+			Name="Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
@@ -447,7 +447,6 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TargetEnvironment="1"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -476,7 +475,86 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalOptions=" /subsystem:windowsce,5.02"
+				AdditionalOptions=" /subsystem:windowsce,5.01"
+				OutputFile="$(OutDir)/RhoLib.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="Debug|Windows Mobile 5.0 Smartphone SDK (ARMV4I)"
+			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			ConfigurationType="4"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="0"
+				AdditionalIncludeDirectories="../../shared/ruby;../../shared"
+				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
+				MinimalRebuild="true"
+				RuntimeLibrary="1"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				DisableSpecificWarnings="4018;4996"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLibrarianTool"
+				AdditionalOptions=" /subsystem:windowsce,5.01"
 				OutputFile="$(OutDir)/RhoLib.lib"
 			/>
 			<Tool
@@ -888,7 +966,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+			Name="Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			ConfigurationType="4"
@@ -908,7 +986,6 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TargetEnvironment="1"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -936,7 +1013,85 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalOptions=" /subsystem:windowsce,5.02"
+				AdditionalOptions=" /subsystem:windowsce,5.01"
+				OutputFile="$(OutDir)/RhoLib.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Windows Mobile 5.0 Smartphone SDK (ARMV4I)"
+			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			ConfigurationType="4"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="2"
+				AdditionalIncludeDirectories="../../shared/ruby;../../shared"
+				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
+				RuntimeLibrary="0"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				DisableSpecificWarnings="4018;4996"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLibrarianTool"
+				AdditionalOptions=" /subsystem:windowsce,5.01"
 				OutputFile="$(OutDir)/RhoLib.lib"
 			/>
 			<Tool
@@ -1355,11 +1510,8 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			ConfigurationType="4"
-			CharacterSet="1"
+			Name="SimulatorDebug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)"
+			ConfigurationType="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -1375,37 +1527,84 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TargetEnvironment="1"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
-				Optimization="0"
-				AdditionalIncludeDirectories="../../shared/ruby;../../shared"
-				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
-				MinimalRebuild="true"
-				RuntimeLibrary="1"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-				DisableSpecificWarnings="4018;4996"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLibrarianTool"
-				AdditionalOptions=" /subsystem:windowsce,5.02"
-				OutputFile="$(OutDir)/RhoLib.lib"
+				Name="VCLinkerTool"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="SimulatorDebug|Windows Mobile 5.0 Smartphone SDK (ARMV4I)"
+			ConfigurationType="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -1818,6 +2017,369 @@
 			/>
 		</Configuration>
 		<Configuration
+			Name="SimulatorRelease|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)"
+			ConfigurationType="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="SimulatorRelease|Windows Mobile 5.0 Smartphone SDK (ARMV4I)"
+			ConfigurationType="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			ConfigurationType="4"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="1"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="0"
+				AdditionalIncludeDirectories="../../shared/ruby;../../shared"
+				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
+				MinimalRebuild="true"
+				RuntimeLibrary="1"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				DisableSpecificWarnings="4018;4996"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLibrarianTool"
+				AdditionalOptions=" /subsystem:windowsce,5.02"
+				OutputFile="$(OutDir)/RhoLib.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			ConfigurationType="4"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="1"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="2"
+				AdditionalIncludeDirectories="../../shared/ruby;../../shared"
+				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
+				RuntimeLibrary="0"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				DisableSpecificWarnings="4018;4996"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLibrarianTool"
+				AdditionalOptions=" /subsystem:windowsce,5.02"
+				OutputFile="$(OutDir)/RhoLib.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
+			ConfigurationType="4"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="1"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="0"
+				AdditionalIncludeDirectories="../../shared/ruby;../../shared"
+				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
+				MinimalRebuild="true"
+				RuntimeLibrary="1"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				DisableSpecificWarnings="4018;4996"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLibrarianTool"
+				AdditionalOptions=" /subsystem:windowsce,5.02"
+				OutputFile="$(OutDir)/RhoLib.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
 			Name="SimulatorRelease|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
@@ -1897,158 +2459,6 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Debug|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)"
-			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			ConfigurationType="4"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				ExecutionBucket="7"
-				Optimization="0"
-				AdditionalIncludeDirectories="../../shared/ruby;../../shared"
-				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
-				MinimalRebuild="true"
-				RuntimeLibrary="1"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-				DisableSpecificWarnings="4018;4996"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLibrarianTool"
-				AdditionalOptions=" /subsystem:windowsce,5.01"
-				OutputFile="$(OutDir)/RhoLib.lib"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCCodeSignTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-			<DeploymentTool
-				ForceDirty="-1"
-				RemoteDirectory=""
-				RegisterOutput="0"
-				AdditionalFiles=""
-			/>
-			<DebuggerTool
-			/>
-		</Configuration>
-		<Configuration
-			Name="Debug|Windows Mobile 5.0 Smartphone SDK (ARMV4I)"
-			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			ConfigurationType="4"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				ExecutionBucket="7"
-				Optimization="0"
-				AdditionalIncludeDirectories="../../shared/ruby;../../shared"
-				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
-				MinimalRebuild="true"
-				RuntimeLibrary="1"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-				DisableSpecificWarnings="4018;4996"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLibrarianTool"
-				AdditionalOptions=" /subsystem:windowsce,5.01"
-				OutputFile="$(OutDir)/RhoLib.lib"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCCodeSignTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-			<DeploymentTool
-				ForceDirty="-1"
-				RemoteDirectory=""
-				RegisterOutput="0"
-				AdditionalFiles=""
-			/>
-			<DebuggerTool
-			/>
-		</Configuration>
-		<Configuration
 			Name="Debug|Windows Mobile 6 Standard SDK (ARMV4I)"
 			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
 			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
@@ -2098,156 +2508,6 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.02"
-				OutputFile="$(OutDir)/RhoLib.lib"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCCodeSignTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-			<DeploymentTool
-				ForceDirty="-1"
-				RemoteDirectory=""
-				RegisterOutput="0"
-				AdditionalFiles=""
-			/>
-			<DebuggerTool
-			/>
-		</Configuration>
-		<Configuration
-			Name="Release|Windows Mobile 5.0 Pocket PC SDK (ARMV4I)"
-			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			ConfigurationType="4"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				ExecutionBucket="7"
-				Optimization="2"
-				AdditionalIncludeDirectories="../../shared/ruby;../../shared"
-				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
-				RuntimeLibrary="0"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-				DisableSpecificWarnings="4018;4996"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLibrarianTool"
-				AdditionalOptions=" /subsystem:windowsce,5.01"
-				OutputFile="$(OutDir)/RhoLib.lib"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCCodeSignTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-			<DeploymentTool
-				ForceDirty="-1"
-				RemoteDirectory=""
-				RegisterOutput="0"
-				AdditionalFiles=""
-			/>
-			<DebuggerTool
-			/>
-		</Configuration>
-		<Configuration
-			Name="Release|Windows Mobile 5.0 Smartphone SDK (ARMV4I)"
-			OutputDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			IntermediateDirectory="..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)"
-			ConfigurationType="4"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				ExecutionBucket="7"
-				Optimization="2"
-				AdditionalIncludeDirectories="../../shared/ruby;../../shared"
-				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
-				RuntimeLibrary="0"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-				DisableSpecificWarnings="4018;4996"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLibrarianTool"
-				AdditionalOptions=" /subsystem:windowsce,5.01"
 				OutputFile="$(OutDir)/RhoLib.lib"
 			/>
 			<Tool
@@ -2356,6 +2616,10 @@
 		<Filter
 			Name="common"
 			>
+			<File
+				RelativePath="..\..\shared\common\app_build_capabilities.h"
+				>
+			</File>
 			<File
 				RelativePath="..\..\shared\common\app_build_configs.c"
 				>
