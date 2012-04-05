@@ -335,6 +335,9 @@ namespace "config" do
 
     #check for rhoelements gem
     $rhoelements_features = ""
+    
+    invalid_licence = false
+    
     begin
         require "rhoelements"
         
@@ -345,12 +348,7 @@ namespace "config" do
         if (!is_ET1) and (!is_win_platform)
              # check the licence parameter
              if (!$app_config["motorola_licence"]) or (!$app_config["motorola_licence_company"])
-                 puts '###################'
-                 puts ' '
-                 puts 'ERROR: You should provide "motorola_licence" and "motorola_licence_company" parameters ! Please verify your application setting in #{File.dirname(__FILE__)}/rhobuild.yml'
-                 puts ' '
-                 puts '###################'
-                 exit 1
+                invalid_licence = true
              end
         end
         
@@ -374,6 +372,16 @@ namespace "config" do
         end
         
     end
+    
+    if invalid_licence
+                 puts '###################'
+                 puts ' '
+                 puts 'ERROR: You should provide "motorola_licence" and "motorola_licence_company" parameters ! Please verify your application setting in #{File.dirname(__FILE__)}/rhobuild.yml'
+                 puts ' '
+                 puts '###################'
+                 exit 1
+    end
+    
     
     puts "$app_config['extensions'] : #{$app_config['extensions'].inspect}"   
     puts "$app_config['capabilities'] : #{$app_config['capabilities'].inspect}"   
