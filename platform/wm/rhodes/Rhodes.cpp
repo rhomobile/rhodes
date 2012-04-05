@@ -133,7 +133,6 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 	HANDLE m_hMutex;
 #endif
     CExtManager m_oExtManager;
-    static HINSTANCE m_hLicenseInstance;
 
 #ifdef OS_WINDOWS
     String m_strHttpProxy;
@@ -159,13 +158,10 @@ public :
     const rho::String& getRhoRuntimePath();
     void parseHttpProxyURI(const rho::String &http_proxy);
 
-	void CheckLicense();	
-	int CheckSymbolDevice();	
 };
 
 static String g_strCmdLine;
 HINSTANCE CRhodesModule::m_hInstance;
-HINSTANCE CRhodesModule::m_hLicenseInstance = 0;
 CRhodesModule _AtlModule;
 bool g_restartOnExit = false;
 
@@ -179,48 +175,6 @@ rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
 #endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 }
 #endif //RHODES_EMULATOR
-
-typedef void (WINAPI *PCL)(HWND);
-typedef bool (WINAPI *PCSD)();
-
-void CRhodesModule::CheckLicense()
-{
-#ifndef OS_WINDOWS
-    const char* szMotoExt = get_app_build_config_item("moto-plugins");
-    //TODO: check define is motoext exist and call checkLicense from  License.cpp
-    if ( szMotoExt )
-        return;
-
-    if(!m_hLicenseInstance)
-	    m_hLicenseInstance = LoadLibrary(L"license_rc.dll");
-	
-    if(m_hLicenseInstance)
-    {
-	    PCL pCheckLicense = (PCL) GetProcAddress(m_hLicenseInstance, L"CheckLicense");
-	    if(pCheckLicense) 
-		    pCheckLicense(m_appWindow.m_hWnd);
-    }
-#endif
-}
-
-int CRhodesModule::CheckSymbolDevice()
-{
-#ifndef OS_WINDOWS
-	if(!m_hLicenseInstance)
-		m_hLicenseInstance = LoadLibrary(L"license_rc.dll");
-	
-	if(m_hLicenseInstance)
-	{
-		PCSD pCheckSymbolDevice = (PCSD) GetProcAddress(m_hLicenseInstance, L"CheckSymbolDevice");
-		if(pCheckSymbolDevice) 
-			return pCheckSymbolDevice();
-	}
-
-	return -1;
-#else
-    return 1;
-#endif
-}
 
 bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw( )
 {
@@ -752,15 +706,6 @@ extern "C" HWND getMainWnd() {
 	return _AtlModule.GetMainWindow();
 }
 
-
-extern "C" void CheckLicense() {
-	return _AtlModule.CheckLicense();
-}
-
-extern "C" int CheckSymbolDevice() {
-	return _AtlModule.CheckSymbolDevice();
-}
-
 CMainWindow& getAppWindow() 
 {
 	return _AtlModule.GetAppWindow();
@@ -781,6 +726,60 @@ void rho_platform_restart_application()
     ::GetModuleFileNameA(NULL,module,MAX_PATH);
                                        
     rho_wmsys_run_app(module, (g_strCmdLine + " -restarting").c_str());
+}
+
+typedef void (WINAPI *PCL)(HWND);
+typedef bool (WINAPI *PCSD)();
+
+#ifdef APP_BUILD_CAPABILITY_MOTOROLA
+extern "C" void rho_wm_impl_CheckLicenseWithBarcode(HWND hParent);
+#endif
+
+extern "C" void rho_wm_impl_CheckLicense()
+{
+#ifdef OS_WINDOWS
+    return;
+#else
+
+#ifdef APP_BUILD_CAPABILITY_MOTOROLA
+    rho_wm_impl_CheckLicenseWithBarcode(getMainWnd());
+#else
+    HINSTANCE hLicenseInstance = LoadLibrary(L"license_rc.dll");
+    if(hLicenseInstance)
+    {
+        PCL pCheckLicense = (PCL) GetProcAddress(hLicenseInstance, L"CheckLicense");
+        if(pCheckLicense) 
+	        pCheckLicense(getMainWnd());
+    }
+#endif
+
+#endif
+}
+
+extern "C" int rho_wm_impl_CheckSymbolDevice()
+{
+#ifdef OS_WINDOWS
+    return true;
+#else
+    int res = -1;
+    HINSTANCE hLicenseInstance = LoadLibrary(L"license_rc.dll");
+	if(hLicenseInstance)
+	{
+		PCSD pCheckSymbolDevice = (PCSD) GetProcAddress(hLicenseInstance, L"CheckSymbolDevice");
+		if(pCheckSymbolDevice) 
+			res = pCheckSymbolDevice();
+	}
+
+	if(res == -1)
+	{
+		MessageBox(NULL, L"license_rc.dll is absent. Application will be closed"
+						   , L"Rhodes", MB_SETFOREGROUND | MB_TOPMOST | MB_ICONSTOP | MB_OK);
+		return 0;
+	}
+
+    return 1;
+#endif
+
 }
 
 static inline char *

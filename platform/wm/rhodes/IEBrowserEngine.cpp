@@ -4,15 +4,18 @@
 #include "common/RhoConf.h"
 #include "MainWindow.h"
 
-extern "C" bool CheckSymbolDevice();
-
 #if defined(_WIN32_WCE)
 #include <webvw.h>
 #endif
 
+extern "C" void rho_wm_impl_CheckLicense();
+extern "C" int rho_wm_impl_CheckSymbolDevice();
+
 CIEBrowserEngine::CIEBrowserEngine(HWND hParentWnd, HINSTANCE hInstance) :
     m_spIWebBrowser2(NULL)
 {
+	m_bLoadingComplete = false;
+
 #if defined(_WIN32_WCE)
     m_browser.Create(hParentWnd,
                      CWindow::rcDefault, // proper sizing is done in CMainWindow::OnSize
@@ -164,15 +167,9 @@ LRESULT CIEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lPar
 
 void CIEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 {
-	int res = CheckSymbolDevice();
-	if(res == -1)
-	{
-		MessageBox(NULL, L"license_rc.dll is absent. Application will be closed"
-						   , L"Rhodes", MB_SETFOREGROUND | MB_TOPMOST | MB_ICONSTOP | MB_OK);
-		return;
-	}
-	else if(res == 0) return;
-	
+    if (!rho_wm_impl_CheckSymbolDevice())
+        return;
+
 	MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
     {
@@ -229,5 +226,14 @@ void CIEBrowserEngine::SetCookie(char* url, char* cookie)
 		if (*s == '\0')
 			break;
 		for (c = s + 1; *c == ' '; ++c);
+	}
+}
+
+void CIEBrowserEngine::OnDocumentComplete(LPCTSTR url)
+{
+	if(!m_bLoadingComplete && wcscmp(url,_T("about:blank"))!=0)
+	{
+		rho_wm_impl_CheckLicense();
+		m_bLoadingComplete = true;
 	}
 }
