@@ -378,8 +378,8 @@ namespace "config" do
     
     if invalid_licence
         puts '********* ERROR ************************************************************************'
-        puts ' You should provide "motorola_licence" and "motorola_licence_company" parameters !'
-        puts ' Please verify your application setting in build.yml '
+        puts ' License is required to run RhoElements application.'
+        puts ' Please, provide  "motorola_licence" and "motorola_licence_company" parameters in build.yml.'
         puts '**************************************************************************************'
         exit 1
     end
