@@ -375,6 +375,9 @@ namespace "config" do
         
     end
     
+    $app_config['extensions'].uniq!() if $app_config['extensions']
+    $app_config['capabilities'].uniq!() if $app_config['capabilities']
+    
     puts "$app_config['extensions'] : #{$app_config['extensions'].inspect}"   
     puts "$app_config['capabilities'] : #{$app_config['capabilities'].inspect}"   
 
