@@ -46,7 +46,7 @@ end
 namespace "build" do
   namespace "osx" do
 
-    task :extensions => "config:osx" do
+    task :extensions => ["config:osx", "build:rhosimulator_vesion"] do
         ENV['RHO_PLATFORM'] = 'osx'
         ENV["PLATFORM_DEVELOPER_BIN_DIR"] = "/usr/bin"
         ENV["SDKROOT"] = $sdkroot
