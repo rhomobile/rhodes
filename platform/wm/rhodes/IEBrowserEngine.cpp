@@ -161,7 +161,14 @@ BOOL CIEBrowserEngine::NavigateToHtml(LPCTSTR szHtml)
 
 LRESULT CIEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    bHandled = FALSE;
+    switch (uMsg) 
+    {
+		case PB_ONMETA:
+            RHODESAPP().getExtManager().onSetPropertiesData( (LPCWSTR)wParam, (LPCWSTR)lParam );
+			break;
+    }
+
+    bHandled = TRUE;
     return 0;
 }
 

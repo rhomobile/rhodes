@@ -217,7 +217,7 @@ function fill_registry_keys() {
 	}
 }
 
-function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,rhogempath,usereruntime) {
+function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,rhogempath,usereruntime,include_motocaps) {
     p("[Version]");
     p("Signature=\"$Windows NT$\"");
     p("Provider=\""+vendor+"\"");
@@ -240,7 +240,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
         p("CEShortcuts=Shortcuts");
     }
     p("AddReg=RegKeys");
-    p("CopyFiles=CopyToInstallDir"+((!usereruntime) && webkit ? ",CopyWebKitBin,CopyNPAPI,CopyConfig,CopySystemFiles" : "")+(show_shortcut && usereruntime ? ",Shortcuts" : "")+get_copyfiles_sections(es));
+    p("CopyFiles=CopyToInstallDir"+((!usereruntime) && webkit ? ",CopyWebKitBin,CopyNPAPI,CopyConfig,CopySystemFiles" : "")+((!usereruntime) && (!webkit) && include_motocaps? ",CopyConfig" : "")+(show_shortcut && usereruntime ? ",Shortcuts" : "")+get_copyfiles_sections(es));
     p("");
     p("[SourceDisksNames]");
     if (usereruntime) {
@@ -251,6 +251,12 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
             p("2=,\"\",," + rhogempath + "\"\\\"");
             p("3=,\"\",," + rhogempath + "\"\\NPAPI\\\"");
             p("4=,\"\",," + rhogempath + "\"\\Config\\\"");
+        }else
+        {
+            if(include_motocaps)
+            {
+                p("2=,\"\",," + rhogempath + "\"\\Config\\\"");
+            }
         }
     }
     get_source_disks_names(es);
@@ -271,6 +277,14 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
             p("\"Config.xml\"=4");
             p("\"Plugin.xml\"=4");
             p("\"RegEx.xml\"=4");
+        }else
+        {
+            if(include_motocaps)
+            {
+                p("\"Config.xml\"=2");
+                p("\"Plugin.xml\"=2");
+                p("\"RegEx.xml\"=2");
+            }
         }
     }
     fill_extensions_source_disk_files(exts);
@@ -289,14 +303,18 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
         p("CopyNPAPI=0,\"%InstallDir%\\NPAPI\"");
         p("CopyConfig=0,\"%InstallDir%\\Config\"");
     }
+    if ((!usereruntime) && (!webkit) && include_motocaps) {
+        p("CopyConfig=0,\"%InstallDir%\\Config\"");
+    }
+    
     get_destination_dirs(es);
     p("");
     p("[CopyToInstallDir]");
     if (usereruntime) {
         p("\"" + name + ".lnk\",\"" + name + ".lnk\",,0");
     } else {
-    p("\"" + name + ".exe\",\"" + name + ".exe\",,0");
-    p("\"license_rc.dll\",\"license_rc.dll\",,0");
+        p("\"" + name + ".exe\",\"" + name + ".exe\",,0");
+        p("\"license_rc.dll\",\"license_rc.dll\",,0");
         if (webkit) {
             p("");
             p("[CopyWebKitBin]");
@@ -316,6 +334,16 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
             p("");
             p("[CopySystemFiles]");
             p("\"prtlib.dll\",\"prtlib.dll\",,0");
+        }else
+        {
+            if(include_motocaps)
+            {
+                p("");
+                p("[CopyConfig]");
+                p("\"Config.xml\",\"Config.xml\",,0");
+                p("\"Plugin.xml\",\"Plugin.xml\",,0");
+                p("\"RegEx.xml\",\"RegEx.xml\",,0");
+            }
         }
     }
     fill_extensions_files(exts);
@@ -347,7 +375,8 @@ function main() {
     // args(6) = include motorola webkit binaries and configs?
     // args(7) = rhoelements gem folder path
     // args(8) = use RhoElements runtime?
-    // args(9)... = additional files
+    // args(9) = use Motorola extextension?
+    // args(10)... = additional files
 
     var args = WScript.Arguments;
     fso = new ActiveXObject("Scripting.FileSystemObject");
@@ -357,6 +386,7 @@ function main() {
     show_shortcut = (args(5) == "0");
     include_webkit = (args(6) == "1");
     usereruntime = (args(8) == "1");
+    include_motocaps = (args(9) == "1");
 
     var sources = new Object();
     sources['db'] = ["db","..\\..\\..\\platform\\shared\\db\\res\\db"];
@@ -369,7 +399,7 @@ function main() {
 
     var es = expand_sources_rho(sources);
     
-    for (var idx = 9; idx < args.length; idx++)
+    for (var idx = 10; idx < args.length; idx++)
     {
     	if (args(idx) == null)
     		break;
@@ -383,7 +413,7 @@ function main() {
     if (!usereruntime) {
         exts = expand_extensions(args(1));
     }
-    pinf(args(1),es,exts,args(2),args(3),srcdir,show_shortcut,is_icon,include_webkit,args(7),usereruntime);
+    pinf(args(1),es,exts,args(2),args(3),srcdir,show_shortcut,is_icon,include_webkit,args(7),usereruntime,include_motocaps);
 
     output_file.Close();
 }

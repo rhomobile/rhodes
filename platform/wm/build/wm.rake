@@ -99,19 +99,21 @@ namespace "config" do
     $cabwiz = File.join($config["env"]["paths"]["cabwiz"], "cabwiz.exe") if $config["env"]["paths"]["cabwiz"]
     $cabwiz = "cabwiz" if $cabwiz.nil?
     $webkit_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("webkit_browser").nil?) 
+    $motorola_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("motorola").nil?) 
     $wk_data_dir = "/Program Files" # its fake value for running without motorola extensions. do not delete
     $additional_dlls_path = nil
     $additional_regkeys = nil
     $use_direct_deploy = "yes"
 
     begin
-      if $webkit_capability
+      if $webkit_capability || $motorola_capability
         require "rhoelements-data"
         $wk_data_dir = $data_dir[0]
       end
     rescue Exception => e
       puts "rhoelements gem is't found, webkit capability is disabled"
-      $webkit_capability = "0"
+      $webkit_capability = false
+      $motorola_capability = false
     end
         
     unless $build_solution
@@ -402,7 +404,8 @@ namespace "device" do
         end
       end
 
-      args = ['build_inf.js', $appname + ".inf", build_platform, '"' + $app_config["name"] +'"', $app_config["vendor"], '"' + $srcdir + '"', $hidden_app, ($webkit_capability ? "1" : "0"), $wk_data_dir, (($use_shared_runtime.nil?) ? "0" : "1")]
+      args = ['build_inf.js', $appname + ".inf", build_platform, '"' + $app_config["name"] +'"', $app_config["vendor"], '"' + $srcdir + '"', $hidden_app, 
+        ($webkit_capability ? "1" : "0"), $wk_data_dir, (($use_shared_runtime.nil?) ? "0" : "1"), ($motorola_capability ? "1" : "0")]
 
       if $use_shared_runtime.nil? then
          $additional_dlls_paths.each do |path|

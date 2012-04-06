@@ -485,6 +485,14 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
     return 0;
 }
 
+LRESULT CMainWindow::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    if ( !m_pBrowserEng )
+        return 0;
+
+    return m_pBrowserEng->OnWebKitMessages(uMsg, wParam, lParam, bHandled);
+}
+
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 LRESULT CMainWindow::OnBrowserDocumentComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
@@ -502,14 +510,6 @@ LRESULT CMainWindow::OnTitleChange (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 {
     ProcessTitleChange( (LPCTSTR)lParam );
     return 0;
-}
-
-LRESULT CMainWindow::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    if ( !m_pBrowserEng )
-        return 0;
-
-    return m_pBrowserEng->OnWebKitMessages(uMsg, wParam, lParam, bHandled);
 }
 
 LRESULT CMainWindow::OnBeforeNavigate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -543,10 +543,10 @@ LRESULT CMainWindow::OnAuthenticationRequest (UINT /*uMsg*/, WPARAM wParam, LPAR
     return RHODESAPP().getExtManager().OnAuthenticationRequest(wParam, (void*)lParam);
 }
 
-LRESULT CMainWindow::OnGeolocationData (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
-{
-    return RHODESAPP().getExtManager().OnGeolocationData(wParam, (void*)lParam);
-}
+//LRESULT CMainWindow::OnGeolocationData (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+//{
+//    return RHODESAPP().getExtManager().OnGeolocationData(wParam, (void*)lParam);
+//}
 
 #endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 
