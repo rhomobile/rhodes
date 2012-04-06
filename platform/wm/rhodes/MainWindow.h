@@ -50,7 +50,6 @@
 
 #include "LogView.h"
 
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 #define PB_NAVIGATETAB					WM_USER	+ 1
 #define PB_GEN_ACTIVEX					WM_USER	+ 2
 #define PB_GEN_QUIT						WM_USER + 3
@@ -64,6 +63,8 @@
 #define PB_SCREEN_ORIENTATION_CHANGED	WM_USER + 11
 #define PB_NEWGPSDATA					WM_USER + 12
 
+#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+
 extern UINT WM_BROWSER_ONDOCUMENTCOMPLETE;
 extern UINT WM_BROWSER_ONNAVIGATECOMPLETE;
 extern UINT WM_BROWSER_ONTITLECHANGE;
@@ -73,7 +74,7 @@ extern UINT WM_BROWSER_ONNAVIGATIONERROR;
 extern UINT WM_BROWSER_ONSETSIPSTATE;
 extern UINT WM_BROWSER_ONALERTPOPUP;
 extern UINT WM_BROWSER_ONAUTHENTICATIONREQUEST;
-extern UINT WM_BROWSER_ONGPSDATA;
+//extern UINT WM_BROWSER_ONGPSDATA;
 
 #else
 #if defined (_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
@@ -220,10 +221,10 @@ public:
         MESSAGE_HANDLER(WM_BROWSER_ONSETSIPSTATE, OnSetSIPState);
         MESSAGE_HANDLER(WM_BROWSER_ONALERTPOPUP, OnAlertPopup);
         MESSAGE_HANDLER(WM_BROWSER_ONAUTHENTICATIONREQUEST, OnAuthenticationRequest);
-        MESSAGE_HANDLER(WM_BROWSER_ONGPSDATA, OnGeolocationData);
+//        MESSAGE_HANDLER(WM_BROWSER_ONGPSDATA, OnGeolocationData);
+#endif
 
         MESSAGE_RANGE_HANDLER(PB_NAVIGATETAB, PB_NEWGPSDATA, OnWebKitMessages)
-#endif
 
     END_MSG_MAP()
 	
@@ -278,18 +279,19 @@ private:
     LRESULT OnExecuteRunnable (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnLicenseScreen (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 
+    LRESULT OnWebKitMessages (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     LRESULT OnBrowserDocumentComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnNavigateComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnTitleChange (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-    LRESULT OnWebKitMessages (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnBeforeNavigate (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnNavigateTimeout (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnNavigateError (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnSetSIPState (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnAlertPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnAuthenticationRequest (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-    LRESULT OnGeolocationData (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+//    LRESULT OnGeolocationData (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 #endif
 
 public:
