@@ -411,6 +411,9 @@ public class RhodesService extends Service {
 	}
 	
 	private void handleCommand(Intent intent, int startId) {
+		if (intent == null) {
+			return;
+		}
 		String source = intent.getStringExtra(INTENT_SOURCE);
 		Log.i(TAG, "handleCommand: startId=" + startId + ", source=" + source);
 		if (source == null)
