@@ -35,10 +35,19 @@
         // attempt to create XHR
         if (!xhr) {
             try {
-                if ('undefined' != typeof XMLHttpRequest)
+                if ('undefined' != typeof XMLHttpRequest) {
                     xhr = new XMLHttpRequest();
-                else if (window.createRequest)
+                } else if (window.createRequest) {
                     xhr = window.createRequest();
+                } else if (window.ActiveXObject) {
+                    try {
+                        xhr = new ActiveXObject("MSXML2.XMLHTTP");
+                    } catch(ex) {
+                        xhr = new ActiveXObject("Microsoft.XMLHTTP");
+                    }
+                } else {
+                    //alert('no xhr!');
+                }
             } catch(ex) {
                 xhr = false;
             }
@@ -70,25 +79,29 @@
             var q = opts.query;
             if (0 < q.length)
                 q = '?' + q;
-            
+
             xhr.open(opts.type, opts.url + q, true /*it is async request*/);
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4) {
                     opts.success.apply('undefined' == typeof that ? this : that, [
-                        xhr.response, xhr.status, xhr
+                        xhr.response || xhr.responseText, xhr.status || xhr.statusText, xhr
                     ]);
                 }
             };
-            xhr.onerror = function () {
-                opts.error.apply('undefined' == typeof that ? this : that, [
-                    xhr.response, "error", xhr
-                ]);
-            };
-            xhr.ontimeout = function () {
-                opts.error.apply('undefined' == typeof that ? this : that, [
-                    "", "timeout", xhr
-                ]);
-            };
+            if (xhr.onerror) {
+                xhr.onerror = function () {
+                    opts.error.apply('undefined' == typeof that ? this : that, [
+                        xhr.response || xhr.responseText, "error", xhr
+                    ]);
+                };
+            }
+            if (xhr.ontimeout) {
+                xhr.ontimeout = function () {
+                    opts.error.apply('undefined' == typeof that ? this : that, [
+                        "", "timeout", xhr
+                    ]);
+                };
+            }
             xhr.send(opts.body);
         }
     }
