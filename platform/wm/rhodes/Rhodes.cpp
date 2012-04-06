@@ -61,16 +61,20 @@ extern "C" void rho_webview_navigate(const char* url, int index);
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 class CEng;
-extern "C" CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
 extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
-extern "C" void rho_wmimpl_set_configfilepath(const char* path);
-extern "C" TCHAR* rho_wmimpl_get_startpage();
-extern "C" void rho_wmimpl_set_startpage(const char* path);
-extern "C" const char* rho_wmimpl_get_logpath();
-extern "C" const char* rho_wmimpl_get_logurl();
-extern "C" bool rho_wmimpl_get_fullscreen();
-extern "C" void rho_wmimpl_set_is_version2();
-extern "C" bool rho_wmimpl_get_is_version2();
+extern "C" {
+	CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
+	void rho_wmimpl_set_configfilepath(const char* path);
+	TCHAR* rho_wmimpl_get_startpage();
+	void rho_wmimpl_set_startpage(const char* path);
+	const char* rho_wmimpl_get_logpath();
+	const char* rho_wmimpl_get_logurl();
+	bool rho_wmimpl_get_fullscreen();
+	void rho_wmimpl_set_is_version2();
+	bool rho_wmimpl_get_is_version2();
+	const unsigned int* rho_wmimpl_get_logmaxsize();
+	const int* rho_wmimpl_get_loglevel();
+};
 #endif
 
 #if defined(_WIN32_WCE) && !defined(OS_PLATFORM_MOTCE)
@@ -395,7 +399,11 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
     rho_logconf_Init((rho_wmimpl_get_logpath()[0]==0 ? m_strRootPath.c_str() : rho_wmimpl_get_logpath()), m_strRootPath.c_str(), m_logPort.c_str());
     if (rho_wmimpl_get_logurl()[0]!=0)
-        RHOCONF().setString("rhologurl", rho_wmimpl_get_logurl(), false);
+		LOGCONF().setLogURL(rho_wmimpl_get_logurl());
+	if (rho_wmimpl_get_logmaxsize()[0]!=0)
+		LOGCONF().setMaxLogFileSize(*rho_wmimpl_get_logmaxsize());
+    if (rho_wmimpl_get_loglevel())
+		LOGCONF().setMinSeverity(*rho_wmimpl_get_loglevel());
     if (rho_wmimpl_get_fullscreen())
         RHOCONF().setBool("full_screen", true, false);
 #else
