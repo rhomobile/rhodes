@@ -301,7 +301,7 @@ namespace "build" do
 
     end
 
-    task :rhosimulator => ["config:set_win32_platform", "config:wm"] do
+    task :rhosimulator => ["config:set_win32_platform", "config:wm", "build:rhosimulator_vesion"] do
       $rhosimulator_build = true
       $config["platform"] = $current_platform
       chdir $startdir

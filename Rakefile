@@ -1448,11 +1448,7 @@ namespace "run" do
 end
 
 namespace "build" do
-    task :rhosimulator => "config:common" do
-        $rhodes_version = File.read(File.join($startdir,'version')).chomp
-        File.open(File.join($startdir, 'platform/shared/qt/rhodes/RhoSimulatorVersion.h'), "wb") do |fversion|
-            fversion.write( "#define RHOSIMULATOR_VERSION \"#{$rhodes_version}\"\n" )
-        end
+    task :rhosimulator do
         if RUBY_PLATFORM =~ /(win|w)32$/
             Rake::Task["build:win32:rhosimulator"].invoke
         elsif RUBY_PLATFORM =~ /darwin/
@@ -1460,6 +1456,13 @@ namespace "build" do
         else
             puts "Sorry, at this time RhoSimulator can be built for Windows and Mac OS X only"
             exit 1
+        end
+    end
+
+    task :rhosimulator_vesion do
+        $rhodes_version = File.read(File.join($startdir,'version')).chomp
+        File.open(File.join($startdir, 'platform/shared/qt/rhodes/RhoSimulatorVersion.h'), "wb") do |fversion|
+            fversion.write( "#define RHOSIMULATOR_VERSION \"#{$rhodes_version}\"\n" )
         end
     end
 end
