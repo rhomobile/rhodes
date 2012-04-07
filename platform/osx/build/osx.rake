@@ -46,7 +46,7 @@ end
 namespace "build" do
   namespace "osx" do
 
-    task :extensions => ["config:osx", "build:rhosimulator_vesion"] do
+    task :extensions do
         ENV['RHO_PLATFORM'] = 'osx'
         ENV["PLATFORM_DEVELOPER_BIN_DIR"] = "/usr/bin"
         ENV["SDKROOT"] = $sdkroot
@@ -74,7 +74,7 @@ namespace "build" do
         end
     end
 
-    task :rhosimulator => ["config:set_osx_platform", "config:osx", "config:qt"] do
+    task :rhosimulator => ["config:set_osx_platform", "config:osx", "config:qt", "build:rhosimulator_version"] do
         $rhosimulator_build = true
         $config["platform"] = $current_platform
         chdir $startdir

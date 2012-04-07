@@ -271,4 +271,9 @@ const char* rho_native_reruntimepath()
     return rho_native_rhopath();
 }
 
+int MotorolaLicence_check(const char* company, const char* licence)
+{
+    return 1;
+}
+
 } //extern "C"
