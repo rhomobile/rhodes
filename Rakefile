@@ -1459,7 +1459,7 @@ namespace "build" do
         end
     end
 
-    task :rhosimulator_vesion do
+    task :rhosimulator_version do
         $rhodes_version = File.read(File.join($startdir,'version')).chomp
         File.open(File.join($startdir, 'platform/shared/qt/rhodes/RhoSimulatorVersion.h'), "wb") do |fversion|
             fversion.write( "#define RHOSIMULATOR_VERSION \"#{$rhodes_version}\"\n" )
