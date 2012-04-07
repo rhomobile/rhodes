@@ -464,6 +464,9 @@ void CMainWindow::resizeWindow( int xSize, int ySize)
         m_menuBarHeight = rcCmdBar.Height();
 
         rect.top += m_menuBarHeight;
+
+        rcCmdBar.right = rcCmdBar.left + ySize;
+        ::MoveWindow( g_hWndCommandBar, rcCmdBar.left, rcCmdBar.top, rcCmdBar.Width(), rcCmdBar.Height(), TRUE );
     }
 #endif
 
@@ -719,7 +722,7 @@ void CMainWindow::restoreWebView() {
 }
 
 
-LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
 {
     LOG(INFO) + "OnSettingChange: " + wParam;
 #if defined(_WIN32_WCE)
@@ -731,7 +734,11 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 	int height = GetSystemMetrics(SM_CYSCREEN);
 	
 	if (wParam == SETTINGCHANGE_RESET) {
+
 		rho_rhodesapp_callScreenRotationCallback(width, height, 90);
+
+        if (m_pBrowserEng)
+            m_pBrowserEng->OnWebKitMessages(PB_SCREEN_ORIENTATION_CHANGED, wParam, lParam, bHandled);
 	}
 	
 #if !defined (OS_PLATFORM_MOTCE)
