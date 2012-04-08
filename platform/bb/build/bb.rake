@@ -1077,6 +1077,7 @@ namespace "run" do
         stopmds
     end  
 
+    desc "Run application on RhoSimulator"    
     task :rhosimulator => ["config:set_bb_platform", "config:common", "config:read_bb_version"] do
     
         if $bb6
