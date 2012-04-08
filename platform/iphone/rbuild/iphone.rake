@@ -934,6 +934,7 @@ namespace "run" do
       exit $failed.to_i
     end
 
+    desc "Run application on RhoSimulator"    
     task :rhosimulator => ["config:set_iphone_platform","config:common"] do        
         $rhosim_config = "platform='iphone'\r\n"
         

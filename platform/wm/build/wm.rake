@@ -544,7 +544,8 @@ namespace "run" do
     task :get_log => "config:wm" do
       puts "log_file=" + gelLogPath
     end
-    
+
+    desc "Run application on RhoSimulator"    
     task :rhosimulator => ["config:set_wm_platform", "config:common"] do
       $rhosim_config = "platform='wm'\r\n"
       Rake::Task["run:rhosimulator"].invoke

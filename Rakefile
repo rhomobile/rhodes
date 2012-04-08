@@ -335,44 +335,49 @@ namespace "config" do
 
     #check for rhoelements gem
     $rhoelements_features = ""
-    
-    invalid_licence = false
-    
-    begin
-        require "rhoelements"
-        
-        # check licence
-        is_ET1 = (($current_platform == "android") and ($app_config["capabilities"].index("motorola")))
-        is_win_platform = (($current_platform == "wm") or ($current_platform == "wp") or ($current_platform == "win32") )
-
-        if (!is_ET1) and (!is_win_platform)
-             # check the licence parameter
-             if (!$app_config["motorola_licence"]) or (!$app_config["motorola_licence_company"])
-                invalid_licence = true
-             end
-        end
-        
-    rescue Exception => e
-        if $app_config['extensions'].index('barcode')
-            $app_config['extensions'].delete('barcode')
-            $rhoelements_features += "- Barcode extension\n"
-        end
-        if $app_config['extensions'].index('nfc')
-            $app_config['extensions'].delete('nfc')
-            $rhoelements_features += "- NFC extension\n"
-        end
-        
-        if $current_platform == "wm"
-            $rhoelements_features += "- Windows Mobile/Windows CE platform support\n"
-        end
-        
-        if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
-            $application_build_configs.delete('encrypt_database')
-            $rhoelements_features += "- Database encryption\n"
-        end
-        
+    if $app_config['extensions'].index('barcode')
+        $app_config['extensions'].delete('barcode')
+        $rhoelements_features += "- Barcode extension\n"
+    end
+    if $app_config['extensions'].index('nfc')
+        $app_config['extensions'].delete('nfc')
+        $rhoelements_features += "- NFC extension\n"
     end
     
+    if $current_platform == "wm"
+        $rhoelements_features += "- Windows Mobile/Windows CE platform support\n"
+    end
+    
+    if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
+        $application_build_configs.delete('encrypt_database')
+        $rhoelements_features += "- Database encryption\n"
+    end
+    
+    invalid_licence = false
+
+    if $rhoelements_features.length() > 0     
+        #check for RhoElements gem and license
+        begin
+            require "rhoelements"
+            
+            $rhoelements_features = ""
+            
+            # check licence
+            is_ET1 = (($current_platform == "android") and ($app_config["capabilities"].index("motorola")))
+            is_win_platform = (($current_platform == "wm") or ($current_platform == "win32") or $is_rho_simulator )
+
+            if (!is_ET1) and (!is_win_platform)
+                 # check the licence parameter
+                 if (!$app_config["motorola_licence"]) or (!$app_config["motorola_licence_company"])
+                    invalid_licence = true
+                 end
+            end
+            
+        rescue Exception => e
+            
+        end
+    end
+        
     $app_config['extensions'].uniq!() if $app_config['extensions']
     $app_config['capabilities'].uniq!() if $app_config['capabilities']
     
@@ -1314,8 +1319,11 @@ end
 
 namespace "run" do
 
-    desc "Run application on RhoSimulator"
-    task :rhosimulator_base => "config:common" do
+    task :set_rhosimulator_flag do
+        $is_rho_simulator = true    
+    end
+
+    task :rhosimulator_base => [:set_rhosimulator_flag, "config:common"] do
         puts "rho_reload_app_changes : #{ENV['rho_reload_app_changes']}"
         $path = ""
         $args = ["-approot='#{$app_path}'", "-rhodespath='#{$startdir}'"]
@@ -1430,6 +1438,7 @@ namespace "run" do
         end
     end
 
+    #desc "Run application on RhoSimulator"
     task :rhosimulator => "run:rhosimulator_base" do
         puts 'start rhosimulator'
         Jake.run2 $path, $args, {:nowait => true}
