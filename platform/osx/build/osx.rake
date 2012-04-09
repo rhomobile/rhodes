@@ -83,15 +83,13 @@ namespace "build" do
         init_extensions(pwd, nil)
         Rake::Task["build:osx:extensions"].invoke
 
-        if $extensions_lib.length > 0
-            File.open(File.join($startdir, 'platform/osx/bin/extensions/extensions.pri'), "wb") do |fextensions|
-                fextensions.write(%{SOURCES += ../../ruby/ext/rho/extensions.c
+        ext_dir = File.join($startdir, 'platform/osx/bin/extensions')
+        mkdir_p ext_dir if not File.exists? ext_dir
+        File.open(File.join(ext_dir, 'extensions.pri'), "wb") do |fextensions|
+            fextensions.write(%{SOURCES += ../../ruby/ext/rho/extensions.c
 LIBS += -L../../../osx/bin/extensions#{$extensions_lib}
 PRE_TARGETDEPS += #{$pre_targetdeps}
 })
-            end
-        else
-            Jake.run($remove,['-Rf', File.join($startdir, 'platform/osx/bin/extensions')])
         end
 
         app_path = File.join( $build_dir, 'RhoSimulator/RhoSimulator.app' )
