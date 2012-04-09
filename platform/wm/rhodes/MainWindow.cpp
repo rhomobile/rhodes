@@ -466,7 +466,9 @@ void CMainWindow::resizeWindow( int xSize, int ySize)
         rect.top += m_menuBarHeight;
 
         rcCmdBar.right = rcCmdBar.left + ySize;
-        ::MoveWindow( g_hWndCommandBar, rcCmdBar.left, rcCmdBar.top, rcCmdBar.Width(), rcCmdBar.Height(), TRUE );
+
+        ::SetWindowPos(g_hWndCommandBar, NULL, 0,0, rcCmdBar.Width(), rcCmdBar.Height(), SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOOWNERZORDER|SWP_NOZORDER);
+        //::MoveWindow( g_hWndCommandBar, rcCmdBar.left, rcCmdBar.top, rcCmdBar.Width(), rcCmdBar.Height(), TRUE );
     }
 #endif
 
@@ -741,6 +743,14 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 //            m_pBrowserEng->OnWebKitMessages(PB_SCREEN_ORIENTATION_CHANGED, wParam, lParam, bHandled);
 
 //#ifndef APP_BUILD_CAPABILITY_MOTOROLA
+
+    	if ( !RHOCONF().getBool("full_screen"))
+        {
+	        RECT rect = { 0 };
+	        SystemParametersInfo(SPI_GETWORKAREA, NULL, &rect, FALSE);
+            height = rect.bottom-rect.top;
+        }
+
         SetWindowPos(NULL, 0,0, width, height, SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 //#endif
 
