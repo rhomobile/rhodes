@@ -133,7 +133,7 @@ public:
     CNativeToolbar& getToolbar(){ return m_toolbar; }
     void performOnUiThread(rho::common::IRhoRunnable* pTask);
 
-    LRESULT InitMainWindow();
+    void calculateMainWindowRect(RECT& rcMainWindow);
     void initBrowserWindow();
     void resizeWindow( int xSize, int ySize);
 

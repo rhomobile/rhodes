@@ -143,11 +143,6 @@ void CMainWindow::Navigate(BSTR URL)
 //
 // **************************************************************************
 
-LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-    return InitMainWindow();
-}
-
 #if defined( OS_PLATFORM_MOTCE )
 void CMainWindow::SetFullScreen(bool bFull)
 {
@@ -164,33 +159,12 @@ void CMainWindow::SetFullScreen(bool bFull)
 
 	if(g_hWndCommandBar)
 		::ShowWindow(g_hWndCommandBar, !bFull ? SW_SHOW : SW_HIDE);
-
-    //return;
-	RECT rect = { 0 };
-	SystemParametersInfo(SPI_GETWORKAREA, NULL, &rect, FALSE);
-	
-	if(bFull)
-		rect.bottom =  GetSystemMetrics(SM_CYSCREEN);
-
-	m_bFullScreen = bFull;
-
-	MoveWindow(&rect);
 }
 #endif
 
-LRESULT CMainWindow::InitMainWindow()
+LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    HRESULT hr = S_OK;
-
     m_pBrowserEng = 0;
-#if defined(_WIN32_WCE)
-    SHMENUBARINFO mbi = { sizeof(mbi), 0 };
-    SIPINFO si = { sizeof(si), 0 };
-    RECT rcMenuBar = { 0 };
-#else
-	NONCLIENTMETRICS ncm = { sizeof(NONCLIENTMETRICS) };
-	int nSpiBorder = 0;
-#endif
     int xScreenSize = GetSystemMetrics(SM_CXSCREEN);
     int yScreenSize = GetSystemMetrics(SM_CYSCREEN);
 
@@ -198,12 +172,8 @@ LRESULT CMainWindow::InitMainWindow()
 
 	RECT rcMainWindow = { 0,0,320,470 };
 
-    // In one step, create an "AtlAxWin" window for the PIEWebBrowser control,
-    // and also create the control itself. (AtlAxWin is a window class that
-    // ATL uses to support containment of controls in windows.)
-#if defined(_WIN32_WCE)    
-    //m_pBrowserEng = rho_wmimpl_createBrowserEngine(m_hWnd);
-#else
+#if defined(OS_WINDOWS_DESKTOP)    
+
 	LOGCONF().setLogView(&m_logView);
 
 	rcMainWindow.left = getIniInt(_T("main_view_left"),0);
@@ -226,61 +196,30 @@ LRESULT CMainWindow::InitMainWindow()
 
 	m_menuBar.Create(m_hWnd,CWindow::rcDefault);
 
+	NONCLIENTMETRICS ncm = { sizeof(NONCLIENTMETRICS) };
 	SystemParametersInfo ( SPI_GETNONCLIENTMETRICS, 0, &ncm, false );
 	m_menuBarHeight = ncm.iMenuHeight+ncm.iBorderWidth*4+2;
 	rcMainWindow.bottom += ncm.iCaptionHeight+ncm.iBorderWidth*8+m_menuBarHeight;
 	rcMainWindow.right += ncm.iScrollWidth;
 	rcMainWindow.right += ncm.iBorderWidth*6;
-#endif
 
-#ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-    // set up connection point
-    //hr = AtlAdviseSinkMap(this, true);
-#endif
+	m_screenWidth = rcMainWindow.right - rcMainWindow.left;
+	m_screenHeight = rcMainWindow.bottom - rcMainWindow.top;
 
-#if defined(_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
+    MoveWindow(&rcMainWindow);
+#elif defined(OS_WINCE) && !defined( OS_PLATFORM_MOTCE )
     // Create a menubar
-    // (mbi was initialized above)
+    SHMENUBARINFO mbi = { sizeof(mbi), 0 };
+
     mbi.hwndParent = m_hWnd;
     mbi.nToolBarId = IDR_MAIN_MENUBAR; // ID of toolbar resource
     mbi.hInstRes   = _AtlBaseModule.GetResourceInstance();
     SHCreateMenuBar(&mbi);
 	m_hWndCECommandBar = mbi.hwndMB;
 	m_menuBar = m_hWndCECommandBar;
-
-	// Compute RECT for initial size and position.
-    // The following code should compute RECT appropriately
-    // on both Pocket PC and Smartphone. It should function correctly
-    // whether SIP is on or off, and
-    // whether device is in portrait or landscape mode.
-    // (rcMainWindow was initialized above)
-    RHO_ASSERT(SystemParametersInfo(SPI_GETWORKAREA, 0, &rcMainWindow, 0));
-
-    LOG(INFO)  + "SPI_GETWORKAREA: x=" + rcMainWindow.right + ";y=" + rcMainWindow.bottom;
-
-    // (rcMenuBar was initialized above)
-    m_menuBar.GetWindowRect(&rcMenuBar);
-    rcMainWindow.bottom = rcMenuBar.top;
-
-    // SIP state
-    // (si was initialized above)
-    if (SHSipInfo(SPI_GETSIPINFO, 0, &si, 0) &&
-        (si.fdwFlags & SIPF_ON) && (si.fdwFlags & SIPF_DOCKED))
-    {
-        rcMainWindow.bottom = si.rcVisibleDesktop.bottom;
-    }
-	
 	SetToolbarButtonEnabled(IDM_SK1_EXIT, FALSE);
-#endif
 
-#if !defined(_WIN32_WCE)
-	m_screenWidth = rcMainWindow.right - rcMainWindow.left;
-	m_screenHeight = rcMainWindow.bottom - rcMainWindow.top;
-#endif
-
-#if !defined( OS_PLATFORM_MOTCE )
-    MoveWindow(&rcMainWindow);
-#else
+#elif defined( OS_PLATFORM_MOTCE )
     g_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
 
     TBBUTTON oBtn = {0};
@@ -296,20 +235,58 @@ LRESULT CMainWindow::InitMainWindow()
 
 #endif
 
-#if defined(_WIN32_WCE)
+#if defined(OS_WINCE)
+    calculateMainWindowRect(rcMainWindow);
+    MoveWindow(&rcMainWindow);
+
 	//Set fullscreen after window resizing
 #if defined( OS_PLATFORM_MOTCE )
 	m_bFullScreen = RHOCONF().getBool("full_screen");
-#endif
+#endif //OS_PLATFORM_MOTCE
+
 	if (RHOCONF().getBool("full_screen"))
    	    SetFullScreen(true);
-#endif
-
-	RHO_ASSERT(SUCCEEDED(hr));
+#endif //OS_WINCE
 
 	rho_rhodesapp_callUiCreatedCallback();
 
-    return SUCCEEDED(hr) ? 0 : -1;
+    return 0;
+}
+
+void CMainWindow::calculateMainWindowRect(RECT& rcMainWindow)
+{
+	// Compute RECT for initial size and position.
+    // The following code should compute RECT appropriately
+    // on both Pocket PC and Smartphone. It should function correctly
+    // whether SIP is on or off, and
+    // whether device is in portrait or landscape mode.
+    // (rcMainWindow was initialized above)
+
+    SystemParametersInfo(SPI_GETWORKAREA, 0, &rcMainWindow, 0);
+    LOG(INFO)  + "SPI_GETWORKAREA: x=" + rcMainWindow.right + ";y=" + rcMainWindow.bottom;
+
+#if defined(OS_WINCE) && !defined( OS_PLATFORM_MOTCE )
+
+    RECT rcMenuBar = { 0 };
+    // (rcMenuBar was initialized above)
+    m_menuBar.GetWindowRect(&rcMenuBar);
+    rcMainWindow.bottom = rcMenuBar.top;
+
+    SIPINFO si = { sizeof(si), 0 };
+    // SIP state
+    // (si was initialized above)
+    if (SHSipInfo(SPI_GETSIPINFO, 0, &si, 0) &&
+        (si.fdwFlags & SIPF_ON) && (si.fdwFlags & SIPF_DOCKED))
+    {
+        rcMainWindow.bottom = si.rcVisibleDesktop.bottom;
+    }
+	
+#elif defined( OS_PLATFORM_MOTCE )
+	if ( RHOCONF().getBool("full_screen"))
+		rcMainWindow.bottom =  GetSystemMetrics(SM_CYSCREEN);
+
+#endif
+
 }
 
 void CMainWindow::initBrowserWindow()
@@ -744,14 +721,9 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 
 //#ifndef APP_BUILD_CAPABILITY_MOTOROLA
 
-    	if ( !RHOCONF().getBool("full_screen"))
-        {
-	        RECT rect = { 0 };
-	        SystemParametersInfo(SPI_GETWORKAREA, NULL, &rect, FALSE);
-            height = rect.bottom-rect.top;
-        }
-
-        SetWindowPos(NULL, 0,0, width, height, SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOOWNERZORDER|SWP_NOZORDER);
+        RECT rcMain;    
+        calculateMainWindowRect(rcMain);
+        SetWindowPos(NULL, 0,0, rcMain.right-rcMain.left, rcMain.bottom-rcMain.top, SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 //#endif
 
 	}
