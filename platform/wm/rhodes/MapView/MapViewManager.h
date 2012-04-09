@@ -124,7 +124,7 @@ public:
 */
 
 class CRhoMapViewDlg : public //CDialog
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 	CDialogImpl<CRhoMapViewDlg>
 #else
 	CDialogImpl <CRhoMapViewDlg>

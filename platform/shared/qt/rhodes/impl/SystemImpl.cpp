@@ -241,7 +241,7 @@ void rho_sys_app_uninstall(const char *appname)
     RAWLOGC_INFO("SystemImpl", "rho_sys_app_uninstall() has no implementation in RhoSimulator.");
 }
 
-#if !defined(OS_WINDOWS) && !defined(OS_SYMBIAN)
+#if !defined(OS_WINDOWS_DESKTOP) && !defined(OS_SYMBIAN)
 int rho_sys_set_sleeping(int sleeping)
 {
     //TODO: rho_sys_set_sleeping
