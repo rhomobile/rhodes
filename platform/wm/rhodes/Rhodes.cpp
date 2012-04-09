@@ -400,7 +400,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     rho_logconf_Init((rho_wmimpl_get_logpath()[0]==0 ? m_strRootPath.c_str() : rho_wmimpl_get_logpath()), m_strRootPath.c_str(), m_logPort.c_str());
     if (rho_wmimpl_get_logurl()[0]!=0)
 		LOGCONF().setLogURL(rho_wmimpl_get_logurl());
-	if (rho_wmimpl_get_logmaxsize()[0]!=0)
+	if (rho_wmimpl_get_logmaxsize())
 		LOGCONF().setMaxLogFileSize(*rho_wmimpl_get_logmaxsize());
     if (rho_wmimpl_get_loglevel())
 		LOGCONF().setMinSeverity(*rho_wmimpl_get_loglevel());
