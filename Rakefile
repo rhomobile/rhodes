@@ -80,7 +80,7 @@ namespace "framework" do
 end
 
 
-$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "motorola_licence", "motorola_licence_company"]
+$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "motorola_license", "motorola_license_company"]
 
 def make_application_build_config_header_file
   f = StringIO.new("", "w+")      
@@ -361,7 +361,7 @@ namespace "config" do
         $rhoelements_features += "- Motorola WebKit Browser\n"                
     end
     
-    $invalid_licence = false
+    $invalid_license = false
 
     if $rhoelements_features.length() > 0     
         #check for RhoElements gem and license
@@ -370,14 +370,14 @@ namespace "config" do
             
             $rhoelements_features = ""
             
-            # check licence
+            # check license
             is_ET1 = (($current_platform == "android") and ($app_config["capabilities"].index("motorola")))
             is_win_platform = (($current_platform == "wm") or ($current_platform == "win32") or $is_rho_simulator )
 
             if (!is_ET1) and (!is_win_platform)
-                 # check the licence parameter
-                 if (!$app_config["motorola_licence"]) or (!$app_config["motorola_licence_company"])
-                    $invalid_licence = true
+                 # check the license parameter
+                 if (!$application_build_configs["motorola_license"]) or (!$application_build_configs["motorola_license_company"])
+                    $invalid_license = true
                  end
             end
             
@@ -398,9 +398,9 @@ namespace "config" do
     $app_config['extensions'].uniq!() if $app_config['extensions']
     $app_config['capabilities'].uniq!() if $app_config['capabilities']
     
-    if $invalid_licence
-        $app_config["motorola_licence"] = '123' if !$app_config["motorola_licence"]
-        $app_config["motorola_licence_company"] = 'WRONG' if !$app_config["motorola_licence_company"]
+    if $invalid_license
+        $application_build_configs["motorola_license"] = '123' if !$application_build_configs["motorola_license"]
+        $application_build_configs["motorola_license_company"] = 'WRONG' if !$application_build_configs["motorola_license_company"]
     end
     
     puts "$app_config['extensions'] : #{$app_config['extensions'].inspect}"   
@@ -1505,10 +1505,10 @@ at_exit do
     puts '**************************************************************************************'
   end
   
-  if $invalid_licence
+  if $invalid_license
     puts '********* WARNING ************************************************************************'
     puts ' License is required to run RhoElements application.'
-    puts ' Please, provide  "motorola_licence" and "motorola_licence_company" parameters in build.yml.'
+    puts ' Please, provide  "motorola_license" and "motorola_license_company" parameters in build.yml.'
     puts '**************************************************************************************'
   end
   
