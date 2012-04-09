@@ -29,9 +29,10 @@
 
 #include "rhodes/jni/com_rhomobile_rhodes_signature_Signature.h"
 
-#include <common/rhoparams.h>
-#include <common/RhodesApp.h>
-#include <logging/RhoLog.h>
+#include "common/app_build_capabilities.h"
+#include "common/rhoparams.h"
+#include "common/RhodesApp.h"
+#include "logging/RhoLog.h"
 #include "ruby/ext/rho/rhoruby.h"
 
 #undef DEFAULT_LOGCATEGORY
