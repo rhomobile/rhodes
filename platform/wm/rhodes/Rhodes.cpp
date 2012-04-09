@@ -138,7 +138,7 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 #endif
     CExtManager m_oExtManager;
 
-#ifdef OS_WINDOWS
+#ifdef OS_WINDOWS_DESKTOP
     String m_strHttpProxy;
 #endif
 
@@ -235,7 +235,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
         }
 #endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 		else if (wcsncmp(lpszToken, _T("http_proxy_url"),14)==0) 
         {
 			String token = convertToStringA(lpszToken);
@@ -430,7 +430,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }
 
 	LOG(INFO) + "Rhodes started";
-#ifdef OS_WINDOWS
+#ifdef OS_WINDOWS_DESKTOP
 	if (m_strHttpProxy.length() > 0) {
 		parseHttpProxyURI(m_strHttpProxy);
 	} else {
@@ -745,7 +745,7 @@ extern "C" void rho_wm_impl_CheckLicenseWithBarcode(HWND hParent);
 
 extern "C" void rho_wm_impl_CheckLicense()
 {
-#ifdef OS_WINDOWS
+#ifdef OS_WINDOWS_DESKTOP
     return;
 #else
 
@@ -766,7 +766,7 @@ extern "C" void rho_wm_impl_CheckLicense()
 
 extern "C" int rho_wm_impl_CheckSymbolDevice()
 {
-#ifdef OS_WINDOWS
+#ifdef OS_WINDOWS_DESKTOP
     return true;
 #else
     int res = -1;
@@ -944,7 +944,7 @@ char* parseToken( const char* start, int len ) {
 	return value;
 }
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 /*
 // char -> wchar_t 
 wchar_t* wce_mbtowc(const char* a)

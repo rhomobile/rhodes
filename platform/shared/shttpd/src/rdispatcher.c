@@ -11,7 +11,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RDispatcher"
 
-#if defined(__SYMBIAN32__) || defined(OS_WINDOWS) || defined(OS_WINCE)
+#if defined(__SYMBIAN32__) || defined(WINDOWS_PLATFORM)
 extern char* get_home_url();
 #else
 /*static char* localhost = "http://localhost:8080";*/
@@ -274,7 +274,7 @@ char* rho_resolve_url(char* url, const char* root,const char *index_names) {
 		}
 	}
 	
-#if defined(__SYMBIAN32__) || defined(OS_WINDOWS) || defined(OS_WINCE)	
+#if defined(__SYMBIAN32__) || defined(WINDOWS_PLATFORM)	
 	full_len = strlen(get_home_url())+strlen(tmp_url)+1;
 	ret = malloc(full_len);
 	_shttpd_snprintf(ret, full_len, "%s%s", get_home_url(), tmp_url);	
@@ -408,7 +408,7 @@ void rho_create_write_state(struct shttpd_arg *arg, VALUE data)
 
     state->data = data;
     state->nDataLen = getStringLenFromValue(data);
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 	{
 		char* reply = getStringFromValue(state->data);
 		RAWTRACE1("Reply: [%s]",reply);

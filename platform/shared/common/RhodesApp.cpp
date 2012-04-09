@@ -267,7 +267,7 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
         switch (type)
         {
         case app_deactivated:
-#if !defined( OS_WINCE ) && !defined (OS_WINDOWS)
+#if !defined( WINDOWS_PLATFORM )
             m_expected = local_server_restart;
 #else
             m_expected = app_activated;
@@ -341,7 +341,7 @@ CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath, con
 
     m_appCallbacksQueue = new CAppCallbacksQueue();
 
-#if defined(OS_WINCE) || defined (OS_WINDOWS)
+#if defined(WINDOWS_PLATFORM)
     //initializing winsock
     WSADATA WsaData;
     int result = WSAStartup(MAKEWORD(2,2),&WsaData);
@@ -579,7 +579,7 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
         // Restart server each time when we go to foreground
 /*        if (m_activateCounter++ > 0)
         {
-#if !defined( OS_WINCE ) && !defined (OS_WINDOWS)
+#if !defined( WINDOWS_PLATFORM )
             m_httpServer->stop();
 #endif
             this->stopWait();
@@ -614,7 +614,7 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
 
                 if (bStop)
                 {
-    #if !defined( OS_WINCE ) && !defined (OS_WINDOWS)
+    #if !defined( WINDOWS_PLATFORM )
                     LOG(INFO) + "Stopping local server.";
                     m_httpServer->stop();
     #endif

@@ -307,7 +307,7 @@ VALUE rho_sys_get_locale()
 
 int rho_wmsys_has_touchscreen()
 {
-#if defined( OS_WINDOWS ) || defined( OS_PLATFORM_MOTCE )
+#if defined( OS_WINDOWS_DESKTOP ) || defined( OS_PLATFORM_MOTCE )
         return 1;
 #else
         BOOL bRet;
@@ -385,7 +385,7 @@ int get_msie_version(rho::String& msieVer)
 //    1  : Unable to open Registry Key
 //    2  : Unable to read key value
 {
-#ifdef OS_WINDOWS
+#ifdef OS_WINDOWS_DESKTOP
     LONG lResult;
     HKEY hKey;
     DWORD dwSize=100,dwType;
@@ -472,7 +472,7 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 
 	if (strcasecmp("device_name",szPropName) == 0)
 	{
-#ifdef OS_WINDOWS
+#ifdef OS_WINDOWS_DESKTOP
 		*resValue = rho_ruby_create_string("Win32");
         return 1;
 #else
@@ -518,7 +518,7 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 	if (strcasecmp("is_emulator",szPropName) == 0)
     {
         bool bEmulator = false;
-#ifdef OS_WINDOWS
+#ifdef OS_WINDOWS_DESKTOP
         bEmulator = true;
 #else
 

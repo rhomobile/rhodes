@@ -35,7 +35,7 @@
 #include <string>
 #include <hash_map>
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 #pragma warning(disable : 4995)
 #include <strsafe.h>
 #endif
@@ -403,7 +403,7 @@ LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
    	//SetFullScreen(false);
 #endif
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 	if(m_logView.IsWindow()) {
 		m_logView.DestroyWindow();
 	}
@@ -436,7 +436,7 @@ void CMainWindow::resizeWindow( int xSize, int ySize)
 {
     LOG(INFO)  + "resizeWindow: xSize=" + xSize + ";ySize=" + ySize;
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 	USES_CONVERSION;
     LOG(TRACE) + "Seting browser client area size to: " + xSize + " x " + (ySize-m_menuBarHeight-m_toolbar.getHeight());
     //m_browser.MoveWindow(0, 0, xSize, ySize-m_menuBarHeight-m_toolbar.getHeight());
@@ -737,8 +737,13 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 
 		rho_rhodesapp_callScreenRotationCallback(width, height, 90);
 
-        if (m_pBrowserEng)
-            m_pBrowserEng->OnWebKitMessages(PB_SCREEN_ORIENTATION_CHANGED, wParam, lParam, bHandled);
+//        if (m_pBrowserEng)
+//            m_pBrowserEng->OnWebKitMessages(PB_SCREEN_ORIENTATION_CHANGED, wParam, lParam, bHandled);
+
+//#ifndef APP_BUILD_CAPABILITY_MOTOROLA
+        SetWindowPos(NULL, 0,0, width, height, SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOOWNERZORDER|SWP_NOZORDER);
+//#endif
+
 	}
 	
 #if !defined (OS_PLATFORM_MOTCE)
@@ -790,7 +795,7 @@ LRESULT CMainWindow::OnBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 
 LRESULT CMainWindow::OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 	if ( !m_logView.IsWindow() ) {
 		LoadLibrary(_T("riched20.dll"));
 		m_logView.Create(NULL);
@@ -870,7 +875,7 @@ LRESULT CMainWindow::OnZoomText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl
     return 0;
 }
 
-#if defined(OS_WINDOWS) || defined( OS_PLATFORM_MOTCE )
+#if defined (OS_WINDOWS_DESKTOP) || defined( OS_PLATFORM_MOTCE )
 LRESULT CMainWindow::OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
 {
 	createCustomMenu();
@@ -878,7 +883,7 @@ LRESULT CMainWindow::OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 }
 #endif
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 LRESULT CMainWindow::OnPosChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) 
 {
 	LPWINDOWPOS lp = (LPWINDOWPOS)lParam;
@@ -1035,7 +1040,7 @@ LRESULT CMainWindow::OnBluetoothDiscover (UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
 #if defined( OS_WINCE) && !defined( OS_PLATFORM_MOTCE )
 	RhoDiscoverDlg* dlg = RhoBluetoothManager::getInstance()->getDiscoverDlg();
 	dlg->openDialog(RhoBluetoothManager::getInstance());
-#endif // OS_WINDOWS
+#endif //
 	return 0;
 }
 
@@ -1043,7 +1048,7 @@ LRESULT CMainWindow::OnBluetoothDiscovered (UINT /*uMsg*/, WPARAM /*wParam*/, LP
 #if defined( OS_WINCE) && !defined( OS_PLATFORM_MOTCE )
 	RhoDiscoveredDlg* dlg = RhoBluetoothManager::getInstance()->getDiscoveredDlg();
 	dlg->openDialog(RhoBluetoothManager::getInstance());
-#endif // OS_WINDOWS
+#endif // 
 	return 0;
 }
 
@@ -1378,7 +1383,7 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
     return FALSE;
 }
 
-#if defined (OS_WINDOWS) || defined( OS_PLATFORM_MOTCE )
+#if defined (OS_WINDOWS_DESKTOP) || defined( OS_PLATFORM_MOTCE )
 void CMainWindow::createCustomMenu()
 {
 	CMenu menu;

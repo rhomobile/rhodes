@@ -25,7 +25,7 @@
 *------------------------------------------------------------------------*/
 
 #include "stdafx.h"
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 #include <richedit.h>
 #include "common/RhoConf.h"
 #endif
@@ -35,7 +35,7 @@
 #include "logging/RhoLog.h"
 #include "common/RhodesApp.h"
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 rho::common::CMutex CLogView::m_ViewFlushLock;
 #endif
 
@@ -82,7 +82,7 @@ LRESULT CLogView::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 
     loadLogText();
 
-#elif defined(OS_WINDOWS)
+#elif defined(OS_WINDOWS_DESKTOP)
 	m_grip.InitGrip(m_hWnd);
 	m_grip.ShowSizeGrip();
 	CWindow edit = GetDlgItem(IDC_LOGEDIT);
@@ -105,7 +105,7 @@ LRESULT CLogView::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 	return 1;  // Let the system set the focus
 }
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 void CLogView::writeLogMessage( rho::String& strMsg ) {
 	rho::common::CMutexLock oLock(m_ViewFlushLock);
 	m_buffer.AddTail(strMsg);
@@ -138,7 +138,7 @@ LRESULT CLogView::OnRefresh(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHan
 LRESULT CLogView::OnClear(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled){
 
     LOGCONF().clearLog();
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 	SetDlgItemText(IDC_LOGEDIT,_T(""));
 #else
 	loadLogText();
@@ -170,7 +170,7 @@ void CLogView::OnFinalMessage(HWND /*hWnd*/)
 
 LRESULT CLogView::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 	if (m_grip.GetSafeHwnd()) {
 		m_grip.UpdateGripPos();
 	}
@@ -181,7 +181,7 @@ LRESULT CLogView::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& 
     return 0;
 }
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 LRESULT CLogView::OnSizing(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
   LPRECT pRect = (LPRECT) lParam;
@@ -318,7 +318,7 @@ LRESULT CLogView::OnNotify(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 	return 0;
 }
 
-#endif  //OS_WINDOWS
+#endif  //OS_WINDOWS_DESKTOP
 
 
 #ifdef OS_WINCE
@@ -367,7 +367,7 @@ LRESULT CLogView::OnSendLog(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHan
 }
 
 // CResizableGrip
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 CResizableGrip::CResizableGrip()
 {
 	m_hParent = NULL;
@@ -528,4 +528,4 @@ void setIniInt(LPCTSTR lpKeyName, int nValue) {
 		lpKeyName, value, getIniPath());
 }
 
-#endif //OS_WINDOWS
+#endif //OS_WINDOWS_DESKTOP
