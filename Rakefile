@@ -336,11 +336,11 @@ namespace "config" do
     #check for rhoelements gem
     $rhoelements_features = ""
     if $app_config['extensions'].index('barcode')
-        $app_config['extensions'].delete('barcode')
+        #$app_config['extensions'].delete('barcode')
         $rhoelements_features += "- Barcode extension\n"
     end
     if $app_config['extensions'].index('nfc')
-        $app_config['extensions'].delete('nfc')
+        #$app_config['extensions'].delete('nfc')
         $rhoelements_features += "- NFC extension\n"
     end
     
@@ -349,8 +349,16 @@ namespace "config" do
     end
     
     if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
-        $application_build_configs.delete('encrypt_database')
+        #$application_build_configs.delete('encrypt_database')
         $rhoelements_features += "- Database encryption\n"
+    end
+
+    if $app_config["capabilities"].index("motorola")
+        $rhoelements_features += "- Motorola device capabilities\n"                
+    end
+
+    if $app_config['extensions'].index('webkit-browser')
+        $rhoelements_features += "- Motorola WebKit Browser\n"                
     end
     
     invalid_licence = false
@@ -374,7 +382,7 @@ namespace "config" do
             end
             
         rescue Exception => e
-            
+            exit(1)    
         end
     end
         
