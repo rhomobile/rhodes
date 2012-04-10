@@ -26,17 +26,20 @@
 
 package com.rhomobile.rhodes;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.os.Bundle;
 
 public interface RhodesActivityListener {
-	
-	void onCreate(RhodesActivity activity, Intent intent);
-	void onStart(RhodesActivity activity);
-	void onResume(RhodesActivity activity);
-	void onPause(RhodesActivity activity);
-	void onStop(RhodesActivity activity);
-	void onDestroy(RhodesActivity activity);
-	void onNewIntent(RhodesActivity activity, Intent intent);
-	
-	void onRhodesActivityStartup(RhodesActivity activity);
+
+    void onCreate(RhodesActivity activity, Intent intent);
+    void onStart(RhodesActivity activity);
+    void onResume(RhodesActivity activity);
+    void onPause(RhodesActivity activity);
+    void onStop(RhodesActivity activity);
+    void onDestroy(RhodesActivity activity);
+    void onNewIntent(RhodesActivity activity, Intent intent);
+    Dialog onCreateDialog(RhodesActivity activity, int id/*, Bundle args*/);
+
+    void onRhodesActivityStartup(RhodesActivity activity);
 }
