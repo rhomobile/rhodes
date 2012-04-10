@@ -716,15 +716,15 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 
 		rho_rhodesapp_callScreenRotationCallback(width, height, 90);
 
-//        if (m_pBrowserEng)
-//            m_pBrowserEng->OnWebKitMessages(PB_SCREEN_ORIENTATION_CHANGED, wParam, lParam, bHandled);
+        if (m_pBrowserEng)
+            m_pBrowserEng->OnWebKitMessages(PB_SCREEN_ORIENTATION_CHANGED, wParam, lParam, bHandled);
 
-//#ifndef APP_BUILD_CAPABILITY_MOTOROLA
+#if /*!defined(APP_BUILD_CAPABILITY_MOTOROLA) &&*/ defined (OS_PLATFORM_MOTCE)
 
         RECT rcMain;    
         calculateMainWindowRect(rcMain);
         SetWindowPos(NULL, 0,0, rcMain.right-rcMain.left, rcMain.bottom-rcMain.top, SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOOWNERZORDER|SWP_NOZORDER);
-//#endif
+#endif
 
 	}
 	

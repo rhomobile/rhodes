@@ -350,6 +350,14 @@ void CExtManager::OnAppActivate(bool bActivate)
     }
 }
 
+void CExtManager::OnWindowChanged(LPVOID lparam)
+{
+    for ( HashtablePtr<String, IRhoExtension*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )
+    {
+        (it->second)->OnWindowChanged( lparam );
+    }
+}
+
 } //namespace common
 } //namespace rho
 
