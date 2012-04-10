@@ -160,7 +160,7 @@ To run Rhodes applications in the custom built RhoSimulator, please ensure that 
 ### Build RhoSimulator for Windows in Visual Studio 2008:
 
 * Open the solution:
-  `C:\Rhomobile\rhodes\platform\wm\rhodes\rhodes.vcproj`
+  `C:\Rhomobile\rhodes\platform\wm\rhodes.sln`
 * Build solution for the configuration `SimulatorRelease|Win32`
 * Specify the path to custom built RhoSimulator at `rhobuild.yml`:
         env:
