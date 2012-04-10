@@ -719,18 +719,18 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
         if (m_pBrowserEng)
             m_pBrowserEng->OnWebKitMessages(PB_SCREEN_ORIENTATION_CHANGED, wParam, lParam, bHandled);
 
-#if /*!defined(APP_BUILD_CAPABILITY_MOTOROLA) &&*/ defined (OS_PLATFORM_MOTCE)
+//#if !defined(APP_BUILD_CAPABILITY_MOTOROLA) && defined (OS_PLATFORM_MOTCE)
 
         RECT rcMain;    
         calculateMainWindowRect(rcMain);
         SetWindowPos(NULL, 0,0, rcMain.right-rcMain.left, rcMain.bottom-rcMain.top, SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOOWNERZORDER|SWP_NOZORDER);
-#endif
+//#endif
 
 	}
 	
 #if !defined (OS_PLATFORM_MOTCE)
 	// Notify shell of our WM_SETTINGCHANGE message
-	SHHandleWMSettingChange(m_hWnd, wParam, lParam, &m_sai);
+	//SHHandleWMSettingChange(m_hWnd, wParam, lParam, &m_sai);
 #endif
 
 #endif
