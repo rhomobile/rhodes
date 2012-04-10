@@ -44,8 +44,10 @@ import com.rhomobile.rhodes.webview.GoogleWebView;
 import com.rhomobile.rhodes.webview.IRhoWebView;
 
 import android.app.Dialog;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -512,6 +514,25 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
             */
             return;
         }
+        if (!isPassMotoLicence()) {
+            AlertDialog.Builder b = new AlertDialog.Builder(this);
+            b.setCancelable(true);
+            b.setOnCancelListener( new DialogInterface.OnCancelListener() {
+				public void onCancel(DialogInterface dialog) {
+					RhodesService.exit();
+				}
+			});
+            AlertDialog securityAlert = b.create();
+            securityAlert.setMessage("Your Motorola licence key is invalid !");
+            securityAlert.setButton("OK", new DialogInterface.OnClickListener(){
+				public void onClick(DialogInterface arg0, int arg1) {
+					RhodesService.exit();
+				}
+            	
+            });
+            securityAlert.show();
+            return;
+        }
 
 //        String urlStart = uri.getPath();
 //        if (urlStart != null) { 
@@ -521,6 +542,16 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 //                RhoConf.setString("start_path", Uri.decode(urlStart));
 //            }
 //        }
+    }
+    
+    private boolean isPassMotoLicence() {
+    	if (Capabilities.MOTOROLA_ENABLED) {
+    		return true;
+    	}
+    	if (Capabilities.MOTOROLA_BROWSER_ENABLED) {
+    		return true;
+    	}
+    	return RhodesService.isMotorolaLicencePassed();
     }
 
 	public static Context getContext() {
