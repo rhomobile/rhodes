@@ -43,6 +43,7 @@ import com.rhomobile.rhodes.util.Utils;
 import com.rhomobile.rhodes.webview.GoogleWebView;
 import com.rhomobile.rhodes.webview.IRhoWebView;
 
+import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -379,6 +380,17 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     @Override
     public void onSplashScreenNavigateBack() {
         moveTaskToBack(true);
+    }
+    
+    @Override
+    protected Dialog onCreateDialog(int id/*, Bundle args*/) {
+        Dialog res = null;
+        for(RhodesActivityListener handler: mListeners) {
+            res = handler.onCreateDialog(this, id/*, args*/);
+            if(res != null)
+                break;
+        }
+        return res;
     }
 
 	@Deprecated
