@@ -376,7 +376,7 @@ namespace "config" do
 
             if (!is_ET1) and (!is_win_platform)
                  # check the license parameter
-                 if (!$application_build_configs["motorola_license"]) or (!$application_build_configs["motorola_license_company"])
+                 if (!$application_build_configs["motorola_licence"]) or (!$application_build_configs["motorola_licence_company"])
                     $invalid_license = true
                  end
             end
@@ -399,8 +399,8 @@ namespace "config" do
     $app_config['capabilities'].uniq!() if $app_config['capabilities']
     
     if $invalid_license
-        $application_build_configs["motorola_license"] = '123' if !$application_build_configs["motorola_license"]
-        $application_build_configs["motorola_license_company"] = 'WRONG' if !$application_build_configs["motorola_license_company"]
+        $application_build_configs["motorola_licence"] = '123' if !$application_build_configs["motorola_licence"]
+        $application_build_configs["motorola_licence_company"] = 'WRONG' if !$application_build_configs["motorola_licence_company"]
     end
     
     puts "$app_config['extensions'] : #{$app_config['extensions'].inspect}"   
@@ -1508,7 +1508,7 @@ at_exit do
   if $invalid_license
     puts '********* WARNING ************************************************************************'
     puts ' License is required to run RhoElements application.'
-    puts ' Please, provide  "motorola_license" and "motorola_license_company" parameters in build.yml.'
+    puts ' Please, provide  "motorola_licence" and "motorola_licence_company" parameters in build.yml.'
     puts '**************************************************************************************'
   end
   
