@@ -31,31 +31,31 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Logger"
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Logger_E
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Logger_e
   (JNIEnv *env, jclass, jstring tag, jstring msg)
 {
     RAWLOGC_ERROR(rho_cast<std::string>(env, tag).c_str(), rho_cast<std::string>(env, msg).c_str());
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Logger_W
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Logger_w
   (JNIEnv *env, jclass, jstring tag, jstring msg)
 {
     RAWLOGC_ERROR(rho_cast<std::string>(env, tag).c_str(), rho_cast<std::string>(env, msg).c_str());
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Logger_I
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Logger_i
   (JNIEnv *env, jclass, jstring tag, jstring msg)
 {
     RAWLOGC_INFO(rho_cast<std::string>(env, tag).c_str(), rho_cast<std::string>(env, msg).c_str());
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Logger_D
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Logger_d
   (JNIEnv *env, jclass, jstring tag, jstring msg)
 {
     RAWLOGC_INFO(rho_cast<std::string>(env, tag).c_str(), rho_cast<std::string>(env, msg).c_str());
 }
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Logger_T
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Logger_t
   (JNIEnv *env, jclass, jstring tag, jstring msg)
 {
     RAWTRACEC(rho_cast<std::string>(env, tag).c_str(), rho_cast<std::string>(env, msg).c_str());
