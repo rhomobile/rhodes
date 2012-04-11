@@ -344,6 +344,7 @@ CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath, con
 #if defined(WINDOWS_PLATFORM)
     //initializing winsock
     WSADATA WsaData;
+	m_cameraOpened = false;
     int result = WSAStartup(MAKEWORD(2,2),&WsaData);
 #endif
 
