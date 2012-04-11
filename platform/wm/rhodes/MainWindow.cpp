@@ -86,7 +86,7 @@ CMainWindow::CMainWindow()
     mNativeViewType = "";
     g_hWndCommandBar = 0;
     m_pBrowserEng = NULL;
-#if defined( OS_PLATFORM_MOTCE )
+#if defined( OS_PLATFORM_MOTCE ) || defined(OS_WINCE) || defined(_WIN32_WCE)
     m_bFullScreen = false;
 #endif
 
@@ -159,6 +159,8 @@ void CMainWindow::SetFullScreen(bool bFull)
 
 	if(g_hWndCommandBar)
 		::ShowWindow(g_hWndCommandBar, !bFull ? SW_SHOW : SW_HIDE);
+
+	m_bFullScreen = bFull;
 }
 #endif
 
@@ -240,11 +242,9 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     MoveWindow(&rcMainWindow);
 
 	//Set fullscreen after window resizing
-#if defined( OS_PLATFORM_MOTCE )
 	m_bFullScreen = RHOCONF().getBool("full_screen");
-#endif //OS_PLATFORM_MOTCE
 
-	if (RHOCONF().getBool("full_screen"))
+	if (m_bFullScreen)
    	    SetFullScreen(true);
 #endif //OS_WINCE
 
@@ -282,7 +282,7 @@ void CMainWindow::calculateMainWindowRect(RECT& rcMainWindow)
     }
 	
 #elif defined( OS_PLATFORM_MOTCE )
-	if ( RHOCONF().getBool("full_screen"))
+	if (m_bFullScreen)
 		rcMainWindow.bottom =  GetSystemMetrics(SM_CYSCREEN);
 
 #endif
@@ -541,14 +541,14 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     if (lParam) //We get activate from some internal window
     {
 #if defined(_WIN32_WCE) 
-	if (RHOCONF().getBool("full_screen") && fActive)
+	if (m_bFullScreen && fActive)
 		SetFullScreen(fActive!=0);
 #endif
         return 0;
     }
 
 #if defined(_WIN32_WCE) 
-	if (RHOCONF().getBool("full_screen"))
+	if (m_bFullScreen)
 		SetFullScreen(fActive!=0);
 #endif
 	rho_rhodesapp_callAppActiveCallback(fActive);
@@ -711,7 +711,7 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 {
     LOG(INFO) + "OnSettingChange: " + wParam;
 #if defined(_WIN32_WCE)
-	//if (RHOCONF().getBool("full_screen"))
+	//if (m_bFullScreen)
 	//	SetFullScreen(true);
 	
 	//handle sreen rotation
@@ -720,7 +720,7 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 	
 	if (wParam == SETTINGCHANGE_RESET) {
 
-		rho_rhodesapp_callScreenRotationCallback(width, height, 90);
+		rho_rhodesapp_callScreenRotationCallback(width, height, (m_bFullScreen ? 0 : 90) );
 
 //        if (m_pBrowserEng)
 //            m_pBrowserEng->OnWebKitMessages(PB_SCREEN_ORIENTATION_CHANGED, wParam, lParam, bHandled);
@@ -802,7 +802,7 @@ LRESULT CMainWindow::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HW
 {
     LOG(INFO) + "OnFullscreenCommand";
 #if defined (_WIN32_WCE)
-    SetFullScreen( hwnd != 0 ? true : false);
+	SetFullScreen(m_bFullScreen = (hwnd != 0 ? true : false));
 #endif
 	return 0;
 };
@@ -1059,8 +1059,8 @@ LRESULT CMainWindow::OnExecuteCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
 LRESULT CMainWindow::OnLicenseScreen(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
     LOG(INFO) + "OnLicenseScreen";
-#if defined( OS_WINCE )    
-	if (!RHOCONF().getBool("full_screen")) {
+#if defined( OS_WINCE )
+	if (!m_bFullScreen) {
 		//SetFullScreen(wParam != 0);
 		HWND hTaskBar = FindWindow(_T("HHTaskBar"), NULL);
 		if(hTaskBar) {
