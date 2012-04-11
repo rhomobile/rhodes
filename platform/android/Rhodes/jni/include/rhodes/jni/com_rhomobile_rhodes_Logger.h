@@ -9,42 +9,42 @@ extern "C" {
 #endif
 /*
  * Class:     com_rhomobile_rhodes_Logger
- * Method:    e
+ * Method:    eNative
  * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Logger_e
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Logger_eNative
   (JNIEnv *, jclass, jstring, jstring);
 
 /*
  * Class:     com_rhomobile_rhodes_Logger
- * Method:    w
+ * Method:    wNative
  * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Logger_w
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Logger_wNative
   (JNIEnv *, jclass, jstring, jstring);
 
 /*
  * Class:     com_rhomobile_rhodes_Logger
- * Method:    i
+ * Method:    iNative
  * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Logger_i
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Logger_iNative
   (JNIEnv *, jclass, jstring, jstring);
 
 /*
  * Class:     com_rhomobile_rhodes_Logger
- * Method:    d
+ * Method:    dNative
  * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Logger_d
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Logger_dNative
   (JNIEnv *, jclass, jstring, jstring);
 
 /*
  * Class:     com_rhomobile_rhodes_Logger
- * Method:    t
+ * Method:    tNative
  * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Logger_t
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Logger_tNative
   (JNIEnv *, jclass, jstring, jstring);
 
 #ifdef __cplusplus
