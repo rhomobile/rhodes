@@ -2096,8 +2096,8 @@ int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
 }
     
 int rho_is_motorola_licence_checked() {
-	const char* szMotorolaLicence = get_app_build_config_item("motorola_licence");
-	const char* szMotorolaLicenceCompany = get_app_build_config_item("motorola_licence_company");
+	const char* szMotorolaLicence = get_app_build_config_item("motorola_license");
+	const char* szMotorolaLicenceCompany = get_app_build_config_item("motorola_license_company");
     
     if ((szMotorolaLicence == NULL) || (szMotorolaLicenceCompany == NULL)) {
         return 0;
@@ -2133,8 +2133,8 @@ int rho_is_rho_elements_extension_can_be_used() {
 }
     
 int rho_can_app_started_with_current_licence() {
-	const char* szMotorolaLicence = get_app_build_config_item("motorola_licence");
-	const char* szMotorolaLicenceCompany = get_app_build_config_item("motorola_licence_company");
+	const char* szMotorolaLicence = get_app_build_config_item("motorola_license");
+	const char* szMotorolaLicenceCompany = get_app_build_config_item("motorola_license_company");
     
     if ((szMotorolaLicence == NULL) || (szMotorolaLicenceCompany == NULL)) {
         return 1;
