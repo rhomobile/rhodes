@@ -285,6 +285,8 @@ public class RhodesService extends Service {
 	public void onCreate() {
 		Logger.D(TAG, "onCreate");
 
+		initLogger();
+
 		sInstance = this;
 
 		Context context = this;
@@ -343,6 +345,13 @@ public class RhodesService extends Service {
 
 		if (sActivitiesActive > 0)
 			handleAppActivation();
+	}
+
+	private final static String CONF_MEMORY_INFO_DUMP_INTERVAL = "memory_info_dump_interval";
+	private void initLogger() {
+		if ( RhoConf.isExist(CONF_MEMORY_INFO_DUMP_INTERVAL) ) {
+			Logger.enableMemoryInfoDump(RhoConf.getInt(CONF_MEMORY_INFO_DUMP_INTERVAL));
+		}
 	}
 
 	public static void handleAppStarted()
