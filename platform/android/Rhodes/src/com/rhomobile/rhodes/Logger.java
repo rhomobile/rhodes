@@ -42,23 +42,23 @@ public class Logger {
 
 	// Errors
 	public static void E(String tag, String msg) {
-        e(tag,appendMemoryDumpIfNeeded(msg));
+        eNative(tag, appendMemoryDumpIfNeeded(msg));
     }
 	// Warnings
 	public static void W(String tag, String msg) {
-        w(tag, appendMemoryDumpIfNeeded(msg));
+        wNative(tag, appendMemoryDumpIfNeeded(msg));
     }
 	// Info
 	public static void I(String tag, String msg) {
-        i(tag, appendMemoryDumpIfNeeded(msg));
+        iNative(tag, appendMemoryDumpIfNeeded(msg));
     }
 	// Debug
 	public static void D(String tag, String msg) {
-        d(tag, appendMemoryDumpIfNeeded(msg));
+        dNative(tag, appendMemoryDumpIfNeeded(msg));
     }
 	// Trace
 	public static void T(String tag, String msg) {
-        t(tag, appendMemoryDumpIfNeeded(msg));
+        tNative(tag, appendMemoryDumpIfNeeded(msg));
     }
 	
 	public static void E(String tag, Throwable e) {
@@ -147,28 +147,34 @@ public class Logger {
     }
 
     private static String getActivitiManagerMemInfo() {
-        Context context = RhodesService.getContext();
-        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
-        activityManager.getMemoryInfo(memoryInfo);
+		try {
+			Context context = RhodesService.getContext();
+			ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+			ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+			activityManager.getMemoryInfo(memoryInfo);
 
-        StringBuilder builder = new StringBuilder();
+			StringBuilder builder = new StringBuilder();
 
-        builder.append("memoryInfo.availMem ").append(memoryInfo.availMem).append("\n");
-        builder.append("memoryInfo.lowMemory ").append(memoryInfo.lowMemory).append("\n");
-        builder.append("memoryInfo.threshold ").append(memoryInfo.threshold).append("\n");
+			builder.append("memoryInfo.availMem ").append(memoryInfo.availMem).append("\n");
+			builder.append("memoryInfo.lowMemory ").append(memoryInfo.lowMemory).append("\n");
+			builder.append("memoryInfo.threshold ").append(memoryInfo.threshold).append("\n");
 
-        return builder.toString();
+			return builder.toString();
+		} catch ( IllegalStateException e ) {
+			return "Can't get memory info from ActivityManager";
+		}
+
+
     }
 
     // Errors
-    private native static void e(String tag, String msg);
+    private native static void eNative(String tag, String msg);
     // Warnings
-    private native static void w(String tag, String msg);
+    private native static void wNative(String tag, String msg);
     // Info
-    private native static void i(String tag, String msg);
+    private native static void iNative(String tag, String msg);
     // Debug
-    private native static void d(String tag, String msg);
+    private native static void dNative(String tag, String msg);
     // Trace
-    private native static void t(String tag, String msg);
+    private native static void tNative(String tag, String msg);
 }
