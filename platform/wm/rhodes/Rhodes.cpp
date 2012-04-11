@@ -266,6 +266,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 				}
 				m_strRootPath = path;
 				free(path);
+				std::replace( m_strRootPath.begin(), m_strRootPath.end(), '\\', '/');
 			}
 		} else if (wcsncmp(lpszToken, _T("rhodespath"),10)==0) 
         {
@@ -275,6 +276,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 			if (path) {
 				m_strRhodesPath = path;
 				free(path);
+				std::replace( m_strRhodesPath.begin(), m_strRhodesPath.end(), '\\', '/');
 			}
 		} /* else if (wcsncmp(lpszToken, _T("appname"),7)==0) 
         {
