@@ -428,6 +428,7 @@ void CMainWindow::resizeWindow( int xSize, int ySize)
     if ( m_toolbar.m_hWnd )
         m_toolbar.MoveWindow(0, ySize-m_menuBarHeight-m_toolbar.getHeight(), xSize, m_toolbar.getHeight());
 #else
+
     RECT rect = {0, 0, xSize, ySize };//- m_toolbar.getHeight()};
 
     if ( m_toolbar.m_hWnd )
@@ -534,12 +535,17 @@ LRESULT CMainWindow::OnAuthenticationRequest (UINT /*uMsg*/, WPARAM wParam, LPAR
 
 LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    if (lParam) //We get activate from some internal window
-        return 0;
-
     int fActive = LOWORD(wParam);
-
     LOG(INFO) + "ACTIVATE: " + fActive;
+
+    if (lParam) //We get activate from some internal window
+    {
+#if defined(_WIN32_WCE) 
+	if (RHOCONF().getBool("full_screen") && fActive)
+		SetFullScreen(fActive!=0);
+#endif
+        return 0;
+    }
 
 #if defined(_WIN32_WCE) 
 	if (RHOCONF().getBool("full_screen"))
@@ -719,13 +725,13 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 //        if (m_pBrowserEng)
 //            m_pBrowserEng->OnWebKitMessages(PB_SCREEN_ORIENTATION_CHANGED, wParam, lParam, bHandled);
 
-//#if !defined(APP_BUILD_CAPABILITY_MOTOROLA) && defined (OS_PLATFORM_MOTCE)
+#if defined (OS_PLATFORM_MOTCE)
 
         RECT rcMain;    
         calculateMainWindowRect(rcMain);
         MoveWindow( rcMain.left, rcMain.top, rcMain.right-rcMain.left, rcMain.bottom-rcMain.top, TRUE );
         //SetWindowPos(NULL, 0,0, rcMain.right-rcMain.left, rcMain.bottom-rcMain.top, SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOOWNERZORDER|SWP_NOZORDER);
-//#endif
+#endif
 
 	}
 	
