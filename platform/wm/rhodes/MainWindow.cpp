@@ -889,7 +889,13 @@ LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
     HRESULT status;
 #if defined (_WIN32_WCE)
 	Camera camera;
+#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+	RHODESAPP().m_cameraOpened = true;
+#endif
 	status = camera.takePicture(this->m_hWnd,image_uri);
+#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+	RHODESAPP().m_cameraOpened = false;
+#endif
 #else
     //TODO: show browse file dialog
     wsprintf( image_uri, L"%s", L"dashboard.PNG");

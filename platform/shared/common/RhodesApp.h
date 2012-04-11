@@ -89,7 +89,9 @@ private:
 
 public:
     ~CRhodesApp(void);
-
+#if defined(WINDOWS_PLATFORM)
+	bool m_cameraOpened;
+#endif
     static CRhodesApp* Create(const String& strRootPath, const String& strUserPath, const String& strRuntimePath);
     static void Destroy();
     static CRhodesApp* getInstance(){ return (CRhodesApp*)m_pInstance; }
