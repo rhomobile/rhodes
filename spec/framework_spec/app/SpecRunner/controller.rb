@@ -5,6 +5,8 @@ class SpecRunnerController < Rho::RhoController
 
   #GET /SpecRunner
   def index
+    GC.enable()
+  
     @msg = 'MSpec version: '+MSpec::VERSION
     @runner = SpecRunner.new
     @code = @runner.run
