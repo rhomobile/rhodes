@@ -155,6 +155,14 @@ bool CExtManager::existsJavascript(const wchar_t* szJSFunction)
 #endif
 }
 
+void CExtManager::setBrowserGesturing(bool bEnableGesturing)
+{
+#ifndef RHODES_EMULATOR
+    getAppWindow().getWebKitEngine()->setBrowserGesturing(bEnableGesturing);
+#endif
+
+}
+
 void CExtManager::executeJavascript(const wchar_t* szJSFunction)
 {
     ::PostMessage( getMainWnd(), WM_COMMAND, IDM_EXECUTEJS, (LPARAM)_wcsdup(szJSFunction) );
