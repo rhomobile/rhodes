@@ -33,15 +33,21 @@ import java.util.Set;
 
 import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
 import com.rhomobile.rhodes.camera.Camera;
+import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.mainview.SimpleMainView;
 import com.rhomobile.rhodes.mainview.SplashScreen;
 import com.rhomobile.rhodes.signature.Signature;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
+import com.rhomobile.rhodes.webview.GoogleWebView;
+import com.rhomobile.rhodes.webview.IRhoWebView;
 
+import android.app.Dialog;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -55,7 +61,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebView;
 
-public class RhodesActivity extends BaseActivity {
+public class RhodesActivity extends BaseActivity implements SplashScreen.SplashScreenListener {
 	
 	private static final String TAG = RhodesActivity.class.getSimpleName();
 	
@@ -157,24 +163,56 @@ public class RhodesActivity extends BaseActivity {
 		requestWindowFeature(Window.FEATURE_PROGRESS);
         getWindow().setFeatureInt(Window.FEATURE_PROGRESS, MAX_PROGRESS);
 
-		mHandler = new Handler();
+        mHandler = new Handler();
 
-        mSplashScreen = new SplashScreen(this);
+        mSplashScreen = new SplashScreen(this, createWebView(), this);
         setMainView(mSplashScreen);
 
-        
         Signature.registerSignatureCaptureExtension();
-        
-		processStartupListeners();
+
+        processStartupListeners();
         {
-        	Iterator<RhodesActivityListener> iterator = mListeners.iterator();
-        	while (iterator.hasNext()) {
-        		iterator.next().onCreate(this, getIntent());
-        	}
+            Iterator<RhodesActivityListener> iterator = mListeners.iterator();
+            while (iterator.hasNext()) {
+                iterator.next().onCreate(this, getIntent());
+            }
         }
-		
-		notifyUiCreated();
+
+        notifyUiCreated();
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityCreated);
+    }
+
+    public IRhoWebView createWebView() {
+        IRhoWebView view = null;//new GoogleWebView(context);
+        if (Capabilities.WEBKIT_BROWSER_ENABLED) {
+            Logger.D(TAG, "Creating Motorola WebKIT view");
+            try {
+                Class<? extends IRhoWebView> viewClass = Class.forName("com.rhomobile.rhodes.webview.EkiohWebView").asSubclass(IRhoWebView.class);
+                final boolean runtimeLicense = Capabilities.MOTOROLA_ENABLED || Capabilities.MOTOROLADEV_ENABLED;
+                if (Capabilities.MOTOROLA_BROWSER_ENABLED) {
+                    Constructor<? extends IRhoWebView> viewCtor = viewClass.getConstructor(Context.class, Runnable.class, boolean.class, String.class);
+                    view = viewCtor.newInstance(this, RhodesApplication.AppState.AppStarted.addObserver("MotorolaStartEngineObserver", true), runtimeLicense, RhoFileApi.getRootPath());
+                } else {
+                    Constructor<? extends IRhoWebView> viewCtor = viewClass.getConstructor(Context.class, Runnable.class, boolean.class);
+                    view = viewCtor.newInstance(this, RhodesApplication.AppState.AppStarted.addObserver("MotorolaStartEngineObserver", true), runtimeLicense);
+                }
+            } catch (Throwable e) {
+                Logger.E(TAG, e);
+                RhodesApplication.stop();
+            }
+        } else {
+            Logger.D(TAG, "Creating Google web view");
+            final GoogleWebView googleWebView = new GoogleWebView(this);
+            view = googleWebView;
+            RhodesApplication.runWhen(RhodesApplication.AppState.AppStarted, new RhodesApplication.StateHandler(true) {
+                @Override
+                public void run()
+                {
+                    googleWebView.applyWebSettings();
+                }
+            });
+        }
+        return view;
     }
 
     public MainView switchToSimpleMainView(MainView currentView) {
@@ -336,7 +374,28 @@ public class RhodesActivity extends BaseActivity {
 			return false;
 		return mAppMenu.onMenuItemSelected(item);
 	}
-	
+
+    @Override
+    public void onSplashScreenGone(SplashScreen splashScreen) {
+        switchToSimpleMainView(splashScreen).navigate(splashScreen.getUrlToNavigate(), 0);
+    }
+
+    @Override
+    public void onSplashScreenNavigateBack() {
+        moveTaskToBack(true);
+    }
+    
+    @Override
+    protected Dialog onCreateDialog(int id/*, Bundle args*/) {
+        Dialog res = null;
+        for(RhodesActivityListener handler: mListeners) {
+            res = handler.onCreateDialog(this, id/*, args*/);
+            if(res != null)
+                break;
+        }
+        return res;
+    }
+
 	@Deprecated
 	public static RhodesActivity getInstance() {
 		return sInstance;
@@ -456,6 +515,25 @@ public class RhodesActivity extends BaseActivity {
             */
             return;
         }
+        if (!isPassMotoLicence()) {
+            AlertDialog.Builder b = new AlertDialog.Builder(this);
+            b.setCancelable(true);
+            b.setOnCancelListener( new DialogInterface.OnCancelListener() {
+				public void onCancel(DialogInterface dialog) {
+					RhodesService.exit();
+				}
+			});
+            AlertDialog securityAlert = b.create();
+            securityAlert.setMessage("Your Motorola licence key is invalid !");
+            securityAlert.setButton("OK", new DialogInterface.OnClickListener(){
+				public void onClick(DialogInterface arg0, int arg1) {
+					RhodesService.exit();
+				}
+            	
+            });
+            securityAlert.show();
+            return;
+        }
 
 //        String urlStart = uri.getPath();
 //        if (urlStart != null) { 
@@ -465,6 +543,16 @@ public class RhodesActivity extends BaseActivity {
 //                RhoConf.setString("start_path", Uri.decode(urlStart));
 //            }
 //        }
+    }
+    
+    private boolean isPassMotoLicence() {
+    	if (Capabilities.MOTOROLA_ENABLED) {
+    		return true;
+    	}
+    	if (Capabilities.MOTOROLA_BROWSER_ENABLED) {
+    		return true;
+    	}
+    	return RhodesService.isMotorolaLicencePassed();
     }
 
 	public static Context getContext() {

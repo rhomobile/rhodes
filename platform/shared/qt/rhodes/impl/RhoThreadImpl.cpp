@@ -26,7 +26,7 @@
 
 #include "common/RhoDefs.h"
 
-#ifdef OS_WINDOWS
+#ifdef OS_WINDOWS_DESKTOP
 
 #include "common/RhoPort.h"
 #include "RhoThreadImpl.h"
@@ -96,7 +96,7 @@ void CRhoThreadImpl::sleep(unsigned int nTimeout)
     QRhoThread::sleep(nTimeout);
 }
 
-#endif // OS_WINDOWS
+#endif // OS_WINDOWS_DESKTOP
 
 extern "C" {
 

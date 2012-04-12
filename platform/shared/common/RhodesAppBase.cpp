@@ -114,6 +114,9 @@ String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl)
     if (strUrl.length() == 0 )
         return m_strHomeUrl;
 
+    if (0 == strUrl.find("javascript:"))
+    	return strUrl;
+
     size_t pos = strUrl.find_first_of(":#");
     if((pos == String::npos) || (strUrl.at(pos) == '#'))
         return CFilePath::join(m_strHomeUrl,strUrl);
@@ -207,7 +210,7 @@ const char* rho_rhodesapp_getplatform()
 {
 #if defined(OS_MACOSX)
 	return "APPLE";
-#elif defined(OS_WINDOWS) || defined (OS_WINCE)
+#elif defined(WINDOWS_PLATFORM)
 	return "WINDOWS";
 #elif defined(OS_SYMBIAN)
 	return "SYMBIAN";

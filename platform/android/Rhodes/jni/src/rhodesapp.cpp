@@ -234,6 +234,14 @@ RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isOnStartPag
 }
 
 
+RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isMotorolaLicencePassed
+(JNIEnv *env, jclass)
+{
+    bool res = (rho_can_app_started_with_current_licence() == 1);
+    return (jboolean)res;
+}
+
+
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isTitleEnabled
   (JNIEnv *, jclass)
 {
@@ -317,6 +325,18 @@ RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_callPushCall
     std::string data = rho_cast<std::string>(env, jData);
     return (jboolean)rho_rhodesapp_callPushCallback(data.c_str());
 }
+
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_resetHttpLogging
+  (JNIEnv *env, jobject, jstring jId)
+{
+    //RAWLOG_ERROR("$$$$$$$$$$$ RESET HTTP LOGGING 1 $$$$$$$$$$$$$");
+    std::string url = rho_cast<std::string>(env, jId);
+    rho_log_resetup_http_url(url.c_str());	
+    //RAWLOG_ERROR("$$$$$$$$$$$ RESET HTTP LOGGING 2 $$$$$$$$$$$$$");
+}
+
+
 
 RHO_GLOBAL char *rho_timezone()
 {

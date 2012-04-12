@@ -184,11 +184,11 @@ You can control how image presented by modifying splash_screen options in [rhoco
 
 Examples:
 
-Place splash screen in the center and show it for 5 seconds: 
+Place the splash screen in the center and show it for 5 seconds: 
 	:::ruby
 	splash_screen='delay=5;center'
 
-Center splash screen horizontally, scale it vertically to file all available space, and show it for 5 seconds: 
+Center the splash screen horizontally, scale it vertically to file all available space, and show it for 5 seconds: 
 	:::ruby
 	splash_screen='delay=5;hcenter;vzoom'
 
@@ -199,7 +199,7 @@ You can customize you loading image (showed on start of application) for each pl
 * WM `loading.wm.png`
 * BB `loading.bb.png`
 
-If application doesn't have platform specific `loading.png`, then Rhodes'll try to load default `loading.png`.
+If application doesn't have platform specific `loading.png`, then Rhodes will try to load default `loading.png`.
 
 For iPhone you may define a set of loading images. See Apple documentation about these images, [section Application Launch Images in Build-Time Configuration Details](http://developer.apple.com/library/ios/#documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/BuildTimeConfiguration/BuildTimeConfiguration.html).
 
@@ -263,15 +263,15 @@ Force WebView refresh current page on tab with specified index. If no tab bar pr
 	:::ruby
 	WebView.refresh(index) 
 
-Force WebView navigate to provided location (url)
+Force WebView to navigate to provided location (url)
 	:::ruby
 	WebView.navigate(url) 
 	
-Since 1.2.2 WebView.navigate supports an optional index parameter (defaults to 0, useful for tabbed applications)
+WebView.navigate supports an optional index parameter (defaults to 0, useful for tabbed applications)
 	:::ruby
 	WebView.navigate(url, index)
 
-Force WebView navigate to previouse page using Browser back
+Force WebView to navigate to previous page using Browser back
 	:::ruby
 	WebView.navigate_back
 
@@ -279,12 +279,12 @@ Get location (url) of the currently displayed page
 	:::ruby
 	WebView.current_location 
 
-The same as above but for specified tab (if tab bar present)	
+The same as above, but for specified tab (if tab bar is present)	
 	:::ruby
 	WebView.current_location(index) 
 
 Execute javascript string in the context of the currently displayed page. Supported on iPhone, Android, Windows Mobile and Blackberry 5.0 in full browser mode.
-Suppose that current page has js method:
+Suppose that current page has the Javascript method:
 	:::html
 	function test() {
 	    alert("Test");
@@ -300,7 +300,7 @@ The same as above but for specified tab (if tab bar present)
 	WebView.execute_js("test();", index) 
 
 
-Returns index of @tabs array for currently selected tab
+Returns index of @tabs array for the currently selected tab
 	:::ruby
 	WebView.active_tab 
 
@@ -308,7 +308,7 @@ Switch to/from full screen mode
 	:::ruby
 	WebView.full_screen_mode(enable)
 
-Set cookie to be used by WebView for specified url. Each time when WebView load specified url (either by selecting link or in result of calling WebView.navigate), it will add this cookie to the HTTP request. Cookie should be in format "NAME=VALUE". Multiple name/value pairs allowed. In this case they need to be split by semicolon: "NAME1=VALUE1; NAME2=VALUE2".
+Set cookie is to be used by WebView to load a specified url. Each time WebView loads specified url (either by selecting link or as a result of calling WebView.navigate), it will add this cookie to the HTTP request. The cookie should be in format "NAME=VALUE, with multiple name/value pairs allowed. If more than one is set, they need to be split by semicolon: "NAME1=VALUE1; NAME2=VALUE2".
 	:::ruby
 	WebView.set_cookie(url, cookie)
 
@@ -316,7 +316,7 @@ Set cookie to be used by WebView for specified url. Each time when WebView load 
 See controller and view in the /app/Image folder of the [system API sample application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/Image/controller.rb#L30) for some of the examples of how to use WebView in the callbacks.
 
 ## Application Menu
-For platforms which support menus Rhodes framework provides ability to change the native application menu items through the following simple API:
+For platforms which support menus, Rhodes framework provides the ability to change the native application menu items through the following simple API:
 
 	:::ruby
 	@default_menu = { 
@@ -418,7 +418,7 @@ Action can be also URL of user-defined controller method. URL can be prefixed wi
 
 Some examples:
 
-Calling of this action will be done by UI WebView component so result of the do_that method will be rendered in UI
+Calling of this action will be done by UI WebView component so the result of the do_that method will be rendered in UI
 	:::ruby
 	:action => url_for(:action => :do_that) 
 
@@ -436,14 +436,14 @@ The same as above but for another controller
 	
 ## Redefine back action
 
-Use :back parameter in render:
+Use the :back parameter in render:
 
 	:::ruby
 	render :action => :index, :back => 
 		url_for( :controller => :Settings, :action => :main_page )
 	render :back => '/app'
 
-Use back with callback:
+Use :back with callback:
 
 	:::ruby
 	render :action => :page_alert, :back => 
@@ -588,7 +588,7 @@ For the tabbar:
 	:::ruby
 	class AppApplication < Rho::RhoApplication
 	  def initialize
-	    # Tab items are loaded left->right, @tabs[0] is leftmost tab in the tab-bar
+	    # Tab items are loaded left->right, @tabs[0] is the leftmost tab in the tab-bar
 	    @tabs = [
 	      { :label => "Dashboard", :action => '/app', 
 			:icon => "/public/images/tabs/dashboard.png", :reload => true, :web_bkg_color => 0x7F7F7F }, 
@@ -636,7 +636,7 @@ Each tabbar item defined in the above sample defines the following tab elements:
 * :reload => true - (optional) tells rhodes to reload the tab's :action, default is false
 * :selected_color => 0xFFFF00 - (optional) change selected color of this tab (if you use it on Android, you should define it for all tabs, and also define :background_color for TabBar)
 * :disabled => true - (optional) disable this tab
-* :web_bkg_color = > int hex value (0x7F7F7F for example) - background color for the tab (use when your app bkg is not white to remove blink when switching tabs)
+* :web_bkg_color = > hex value (0x7F7F7F for example) - background color for the tab (use when your app background is not white to remove the blink while switching tabs)
 * :use_current_view_for_tab => true - (optional) tells rhodes to smooth transfer WebView from current view into this Tab and make this Tab active. Defaults to false. Only one Tab can have this parameter.
 
 

@@ -241,7 +241,7 @@ void rho_sys_app_uninstall(const char *appname)
     RAWLOGC_INFO("SystemImpl", "rho_sys_app_uninstall() has no implementation in RhoSimulator.");
 }
 
-#if !defined(OS_WINDOWS) && !defined(OS_SYMBIAN)
+#if !defined(OS_WINDOWS_DESKTOP) && !defined(OS_SYMBIAN)
 int rho_sys_set_sleeping(int sleeping)
 {
     //TODO: rho_sys_set_sleeping
@@ -269,6 +269,11 @@ RHO_GLOBAL void rho_platform_restart_application()
 const char* rho_native_reruntimepath()
 {
     return rho_native_rhopath();
+}
+
+int MotorolaLicence_check(const char* company, const char* licence)
+{
+    return 1;
 }
 
 } //extern "C"

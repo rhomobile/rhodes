@@ -51,7 +51,7 @@ inline String convertToStringA( const wchar_t* szValue )
     if ( !szValue || !*szValue )
         return res;
 
-#if defined(OS_WINDOWS) || defined(OS_WINCE)
+#if defined(WINDOWS_PLATFORM)
     int nSize = WideCharToMultiByte(CP_UTF8, 0, szValue, -1, NULL, 0, NULL, NULL);
     if ( nSize > 1 )
     {
@@ -93,7 +93,7 @@ inline void convertToStringW( const char* szValue, StringW& res )
 	res = szValue;
 #else
 
-#if defined(OS_WINDOWS) || defined(OS_WINCE)
+#if defined(WINDOWS_PLATFORM)
     int nSize = MultiByteToWideChar(CP_UTF8, 0, szValue, -1, NULL, 0);
     if ( nSize > 1 )
     {
@@ -144,7 +144,7 @@ template<> inline String convertToStringA<Type>( const Type& value )\
     return String(buf);\
 }
 
-#if defined(OS_WINDOWS) || defined (OS_WINCE)
+#if defined(WINDOWS_PLATFORM)
 CONVERT_TYPE_W( unsigned int, L"%u" );
 CONVERT_TYPE_W( int, L"%d" );
 CONVERT_TYPE_W( unsigned long, L"%lu" );

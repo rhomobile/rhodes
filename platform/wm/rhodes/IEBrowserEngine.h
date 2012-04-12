@@ -18,7 +18,7 @@ class CIEBrowserEngine :  public rho::IBrowserEngine
 
     // cached copy of hosted control's IWebBrowser2 interface pointer
     CComPtr<IWebBrowser2> m_spIWebBrowser2;
-
+    bool  m_bLoadingComplete;
 public:
     CIEBrowserEngine(HWND hParentWnd, HINSTANCE hInstance);
     virtual ~CIEBrowserEngine(void);
@@ -40,4 +40,5 @@ public:
     virtual BOOL ZoomTextOnTab(int nZoom, UINT iTab);
     virtual int GetTextZoomOnTab(UINT iTab);
     virtual BOOL GetTitleOnTab(LPTSTR szURL, UINT iMaxLen, UINT iTab);
+    virtual void OnDocumentComplete(LPCTSTR url);
 };

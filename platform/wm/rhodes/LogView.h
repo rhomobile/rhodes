@@ -29,7 +29,7 @@
 #include "logging/RhoLogConf.h"
 #include "resource.h"
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 
 static UINT WM_FIND_TEXT = ::RegisterWindowMessage(FINDMSGSTRING);
 
@@ -78,13 +78,13 @@ protected:
 	static LRESULT CALLBACK GripWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 };
-#endif //OS_WINDOWS
+#endif //OS_WINDOWS_DESKTOP
 
 // CLogView
 
 class CLogView : 
 	public CDialogImpl<CLogView>
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
    ,public rho::ILogSink
 #endif
 {
@@ -95,13 +95,13 @@ class CLogView :
 public:
     CLogView() : 
 	  m_hBrush ( NULL ), m_hWndCommandBar(0)
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 	, m_pFindDialog(NULL), m_findText(L""), m_findParams(FR_DOWN)
 #endif
 	{}
 	~CLogView(){}
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 // IlogSink
 	static rho::common::CMutex m_ViewFlushLock;
 	CAtlList<rho::String> m_buffer;
@@ -112,7 +112,7 @@ public:
 #endif
 
 // Dialog
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 	enum { IDD = IDD_SIMULATOR_LOGVIEW };
 #else
 	enum { IDD = IDD_LOGVIEW };
@@ -123,7 +123,7 @@ BEGIN_MSG_MAP(CLogView)
     MESSAGE_HANDLER(WM_SIZE, OnSize)
     MESSAGE_HANDLER(WM_CTLCOLORSTATIC,OnCtlColor)
     MESSAGE_HANDLER(WM_CTLCOLOREDIT,OnCtlColor)
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 	MESSAGE_HANDLER(WM_SIZING, OnSizing)
 	MESSAGE_HANDLER(WM_CLOSE,OnClose)
 	MESSAGE_HANDLER(WM_TIMER, OnTimer)
@@ -172,7 +172,7 @@ END_MSG_MAP()
 
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnCtlColor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 	LRESULT OnSizing(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnPosChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -196,7 +196,7 @@ END_MSG_MAP()
 		return 0;
 	}
 #endif
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 protected:
   CResizableGrip m_grip;
   CFindReplaceDialog *m_pFindDialog;
@@ -205,7 +205,7 @@ protected:
 #endif
 };
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 
 int  getIniInt(LPCTSTR lpKeyName, int nDefault);
 void setIniInt(LPCTSTR lpKeyName, int nValue);

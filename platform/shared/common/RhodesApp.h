@@ -89,7 +89,9 @@ private:
 
 public:
     ~CRhodesApp(void);
-
+#if defined(WINDOWS_PLATFORM)
+	bool m_cameraOpened;
+#endif
     static CRhodesApp* Create(const String& strRootPath, const String& strUserPath, const String& strRuntimePath);
     static void Destroy();
     static CRhodesApp* getInstance(){ return (CRhodesApp*)m_pInstance; }
@@ -174,7 +176,7 @@ protected:
     void initAppUrls();
 };
 
-#if defined(OS_WINDOWS) || defined(OS_WINCE)
+#if defined(WINDOWS_PLATFORM)
 extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask);
 
 template <typename FUNCTYPE, typename PARAMTYPE>
@@ -182,7 +184,7 @@ void rho_callInUIThread( FUNCTYPE pFunc, PARAMTYPE param )
 {
     rho_wm_impl_performOnUiThread( new rho::common::CStaticClassFunctor<FUNCTYPE,PARAMTYPE>(pFunc, param) );
 }
-#endif //defined(OS_WINDOWS) || defined(OS_WINCE)
+#endif //WINDOWS_PLATFORM
 
 }
 }
@@ -254,6 +256,12 @@ void rho_rhodesapp_load_url(const char *url);
 int rho_rhodesapp_check_mode();
 
 int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators);
+
+// return 1 only if "motorola_licence" and "motorola_licence" property is exist and correct !
+int rho_is_motorola_licence_checked();    
+    
+int rho_can_app_started_with_current_licence();    
+int rho_is_rho_elements_extension_can_be_used();    
 
     
 // should be implemented in platforms code

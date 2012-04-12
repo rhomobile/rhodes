@@ -36,3 +36,12 @@ Rhodes contains code from the following other projects:
  zbar 0.10 (http://zbar.sourceforge.net/)
  License: GNU LGPL 2.1 (http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html)
 
+ color (http://rubyforge.org/projects/color/)
+ License: MIT-Style (http://color.rubyforge.org/svn/color/trunk/Licence.txt)
+
+ transaction-simple (http://rubyforge.org/projects/trans-simple/)
+ License: MIT-Style (http://trans-simple.rubyforge.org/svn/transaction-simple/trunk/Licence.txt)
+
+ pdf-writer (http://ruby-pdf.rubyforge.org/pdf-writer/index.html)
+ License: MIT-Style (http://ruby-pdf.rubyforge.org/pdf-writer/licence.html)
+ 

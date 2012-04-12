@@ -49,7 +49,7 @@
 
 #if defined(OS_WINCE)
     extern "C" int  _rename(const char *, const char *);
-#elif defined(OS_WINDOWS)
+#elif defined(OS_WINDOWS_DESKTOP)
     extern "C" int  rename(const char *, const char *);
 #endif
 
@@ -360,7 +360,7 @@ void CRhoFile::loadTextFile(const char* szFilePath, String& strFile)
 }
 
 unsigned int CRhoFile::deleteFile( const char* szFilePath ){
-#if defined(OS_WINDOWS) || defined(OS_WINCE)
+#if defined(WINDOWS_PLATFORM)
     return (unsigned int)_unlink(szFilePath);
 #else
     return (unsigned int)remove(szFilePath);
@@ -368,7 +368,7 @@ unsigned int CRhoFile::deleteFile( const char* szFilePath ){
 }
 
 unsigned int CRhoFile::deleteEmptyFolder( const char* szFilePath ){
-#if defined(OS_WINDOWS) || defined(OS_WINCE)
+#if defined(WINDOWS_PLATFORM)
     return (unsigned int)_rmdir(szFilePath);
 #else
     return (unsigned int)rmdir(szFilePath);
@@ -378,7 +378,7 @@ unsigned int CRhoFile::deleteEmptyFolder( const char* szFilePath ){
 
 void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
 {
-#if defined(OS_WINDOWS) || defined(OS_WINCE)
+#if defined(WINDOWS_PLATFORM)
     StringW wFolderName;
     common::convertToStringW(szFolderPath,wFolderName);
     StringW wFolderMask = wFolderName + L"/*";
@@ -497,7 +497,7 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
     
 /*static*/ unsigned int CRhoFile::deleteFolder(const char* szFolderPath) 
 {
-#if defined(OS_WINDOWS) || defined(OS_WINCE)
+#if defined(WINDOWS_PLATFORM)
 
 	StringW  swPath;
     convertToStringW(szFolderPath, swPath);
@@ -512,7 +512,7 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
         fop.pFrom = name;
 	fop.pTo = NULL;
 	fop.fFlags = FOF_SILENT | FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR 
-#if defined(OS_WINDOWS) || defined(OS_PLATFORM_MOTCE)
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_PLATFORM_MOTCE)
                  | FOF_NOERRORUI
 #endif        
         ;
@@ -532,7 +532,7 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
 
 }
 
-#if defined(OS_WINDOWS) || defined(OS_WINCE)
+#if defined(WINDOWS_PLATFORM)
 static unsigned int copyFolder(const StringW& strSrc, const StringW& strDst, boolean bMove)
 {
     unsigned int nErr = 0;
@@ -580,7 +580,7 @@ static unsigned int copyFolder(const StringW& strSrc, const StringW& strDst, boo
 
 /*static*/ unsigned int CRhoFile::copyFoldersContentToAnotherFolder(const char* szSrcFolderPath, const char* szDstFolderPath) 
 {
-#if defined(OS_WINDOWS) || defined(OS_WINCE)
+#if defined(WINDOWS_PLATFORM)
 
     StringW strSrcW, strDstW;
     common::convertToStringW(szSrcFolderPath,strSrcW);
@@ -601,7 +601,7 @@ static unsigned int copyFolder(const StringW& strSrc, const StringW& strDst, boo
 
 /*static*/ unsigned int CRhoFile::moveFoldersContentToAnotherFolder(const char* szSrcFolderPath, const char* szDstFolderPath) 
 {
-#if defined(OS_WINDOWS) || defined(OS_WINCE)
+#if defined(WINDOWS_PLATFORM)
 
     StringW strSrcW, strDstW;
     common::convertToStringW(szSrcFolderPath,strSrcW);

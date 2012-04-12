@@ -8,9 +8,14 @@
 #include <webvw.h>
 #endif
 
+extern "C" void rho_wm_impl_CheckLicense();
+extern "C" int rho_wm_impl_CheckSymbolDevice();
+
 CIEBrowserEngine::CIEBrowserEngine(HWND hParentWnd, HINSTANCE hInstance) :
     m_spIWebBrowser2(NULL)
 {
+	m_bLoadingComplete = false;
+
 #if defined(_WIN32_WCE)
     m_browser.Create(hParentWnd,
                      CWindow::rcDefault, // proper sizing is done in CMainWindow::OnSize
@@ -156,13 +161,23 @@ BOOL CIEBrowserEngine::NavigateToHtml(LPCTSTR szHtml)
 
 LRESULT CIEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    bHandled = FALSE;
+    switch (uMsg) 
+    {
+		case PB_ONMETA:
+            RHODESAPP().getExtManager().onSetPropertiesData( (LPCWSTR)wParam, (LPCWSTR)lParam );
+			break;
+    }
+
+    bHandled = TRUE;
     return 0;
 }
 
 void CIEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 {
-    MSG msg;
+    if (!rho_wm_impl_CheckSymbolDevice())
+        return;
+
+	MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
     {
         if ( RHODESAPP().getExtManager().onWndMsg(msg) )
@@ -218,5 +233,14 @@ void CIEBrowserEngine::SetCookie(char* url, char* cookie)
 		if (*s == '\0')
 			break;
 		for (c = s + 1; *c == ' '; ++c);
+	}
+}
+
+void CIEBrowserEngine::OnDocumentComplete(LPCTSTR url)
+{
+	if(!m_bLoadingComplete && wcscmp(url,_T("about:blank"))!=0)
+	{
+		rho_wm_impl_CheckLicense();
+		m_bLoadingComplete = true;
 	}
 }

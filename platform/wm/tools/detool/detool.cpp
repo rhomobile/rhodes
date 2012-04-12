@@ -33,7 +33,7 @@
 #include "LogServer.h"
 
 #define RHOSETUP_DLL "rhosetup.dll"
-#define RE2_RUNTIME TEXT("\\Program Files\\RhoElements2\\RhoElements2.exe")
+#define RE2_RUNTIME TEXT("\\Program Files\\RhoElements\\RhoElements.exe")
 
 TCHAR *app_name = NULL;
 
@@ -673,6 +673,61 @@ copyBundleFailure:
 	return EXIT_FAILURE;
 }
 
+int copyLicenseDll (TCHAR *file_name, TCHAR *app_dir)
+{
+	TCHAR fullpath[MAX_PATH];
+	int retval = 0;
+	HANDLE hDest, hSrc;
+	BYTE  buffer[5120];
+	DWORD dwNumRead, dwNumWritten;
+
+	USES_CONVERSION;
+	
+	_tcscpy(fullpath, app_dir);
+	_tcscat(fullpath, _T("\\license_rc.dll"));
+
+	hSrc = CreateFile(file_name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (INVALID_HANDLE_VALUE == hSrc) {
+		_tprintf( TEXT("Unable to open host file\n"));
+		return EXIT_FAILURE;
+	}
+
+	hDest = CeCreateFile(fullpath, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (INVALID_HANDLE_VALUE == hDest ) {
+		_tprintf( TEXT("Unable to open target WinCE file\n"));
+		return CeGetLastError();
+	}
+
+	do {
+		if(ReadFile(hSrc, &buffer, sizeof(buffer), &dwNumRead, NULL)) {
+			if (!CeWriteFile(hDest, &buffer, dwNumRead, &dwNumWritten, NULL)) {
+				_tprintf( TEXT("Error !!! Writing WinCE file\n"));
+				goto copyFailure;
+				}
+			} else {
+				_tprintf( TEXT("Error !!! Reading host file\n"));
+				goto copyFailure;
+		}
+		_tprintf( TEXT("."));                                        
+	} while (dwNumRead);
+	_tprintf( TEXT("\n"));
+
+	CeCloseHandle( hDest);
+	CloseHandle (hSrc);
+
+	return EXIT_SUCCESS;
+
+copyFailure:
+	CeCloseHandle( hDest);
+	CloseHandle (hSrc);
+/*
+
+	if (wcePutFile (T2A(file_name), T2A(exe_fullpath)))
+		return EXIT_SUCCESS;
+*/
+	return EXIT_FAILURE;
+}
+
 void startLogServer( TCHAR * log_file, TCHAR* log_port ) 
 {
 	// Declare and initialize variables
@@ -787,6 +842,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	TCHAR *log_file = NULL;
 	TCHAR *log_port = NULL;
     TCHAR *src_path = NULL;
+	TCHAR *lcdll_path = NULL;
     TCHAR *dst_path = NULL;
 	TCHAR params_buf[MAX_PATH + 16];
 	//WIN32_FIND_DATAW findData;
@@ -820,6 +876,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			bundle_path = argv[3];
 			app_exe     = argv[4];
 			log_port    = argv[5];
+			lcdll_path  = argv[6];
 			deploy_type = DEPLOY_DEV;
 		}
 	} else if (argc == 5) { //assuming that need to deploy and start on device
@@ -1123,6 +1180,16 @@ int _tmain(int argc, _TCHAR* argv[])
 		int retval = copyExecutable (app_exe, app_dir, use_shared_runtime);
 		if (retval != EXIT_SUCCESS) {
 			printf ("Failed to copy application executable\n");
+			if (retval == 32) {
+				printf ("Please, stop application on device and try again.\n");
+			}
+			goto stop_emu_deploy;
+		}
+
+		if(!use_shared_runtime)
+			retval = copyLicenseDll(lcdll_path, app_dir);
+		if (retval != EXIT_SUCCESS) {
+			printf ("Failed to copy license dll\n");
 			if (retval == 32) {
 				printf ("Please, stop application on device and try again.\n");
 			}

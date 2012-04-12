@@ -28,6 +28,7 @@ package com.rhomobile.rhodes.uri;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.util.regex.Pattern;
 
 import com.rhomobile.rhodes.LocalFileProvider;
 import com.rhomobile.rhodes.Logger;
@@ -40,18 +41,35 @@ import android.webkit.URLUtil;
 public class LocalFileHandler implements UriHandler
 {
     private static final String TAG = "LocalFileHandler";
+    private static final Pattern mHtmlPattern = Pattern.compile(".*\\.(html|htm)$");
+    private static final Pattern mImagePattern = Pattern.compile(".*\\.(jpg|jpeg|png|gif|svg)$");
     private Context ctx;
     
     public LocalFileHandler(Context c) {
         ctx = c;
     }
 
+    private static boolean isHtmlUrl(String url) {
+        Logger.T(TAG, "Looking for html extension: " + url);
+        return mHtmlPattern.matcher(url).matches();
+    }
+
+    private static boolean isImageUrl(String url) {
+        Logger.T(TAG, "Looking for image extension: " + url);
+        return mImagePattern.matcher(url).matches();
+    }
+
     public boolean handle(String url) throws URISyntaxException {
 
-        if(!URLUtil.isFileUrl(url))
+        if (!URLUtil.isFileUrl(url))
             return false;
+        
+        String noAnchorUrl = URLUtil.stripAnchor(url);
+        if (isHtmlUrl(noAnchorUrl) || isImageUrl(noAnchorUrl)) {
+            return false;
+        }
 
-        Logger.D(TAG, "This is 'file' URI, handle it: " + url);
+        Logger.D(TAG, "Handle URI externally: " + url);
 
         int intentFlags = 0;
         String path = Uri.parse(url).getPath();

@@ -28,24 +28,25 @@ package com.rhomobile.rhodes.mainview;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
 import java.util.Map;
 
-import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.RhodesActivity;
-import com.rhomobile.rhodes.RhodesApplication;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
-import com.rhomobile.rhodes.webview.GoogleWebView;
 import com.rhomobile.rhodes.webview.IRhoWebView;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.os.SystemClock;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 public class SplashScreen implements MainView {
+    
+    public interface SplashScreenListener {
+        void onSplashScreenGone(SplashScreen splashScreen);
+        void onSplashScreenNavigateBack();
+    }
 	
 	private static final String TAG = SplashScreen.class.getSimpleName();
 	
@@ -55,8 +56,8 @@ public class SplashScreen implements MainView {
 	private static final String LOADING_PNG = "apps/app/loading.png";
 	private static final String LOADING_PAGE = "apps/app/loading.html";
 	
+	private SplashScreenListener mSplashScreenListener;
 	private FrameLayout mView;
-	
 	private IRhoWebView mWebView;
 	
 	private native void nativeStart();
@@ -64,17 +65,24 @@ public class SplashScreen implements MainView {
 	private native int howLongWaitMs();
 	
 	private boolean mFirstNavigate = true;
+	private long mStartTimeMs = 0;
+	private volatile String mUrlToNavigate = null;
+	private int mNavigateIndex = 0;
+	private Thread mSleepThread;
 	
-    public SplashScreen(RhodesActivity context) {
+    public SplashScreen(Context context, IRhoWebView webView, SplashScreenListener listener) {
+        mSplashScreenListener = listener;
         mView = new FrameLayout(context);
         mView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
 		AssetManager am = context.getResources().getAssets();
-		mWebView = createHtmlView(context, am);
+		mWebView = loadContent(am, webView);
 		mView.addView(mWebView.getView());
-		mFirstNavigate = true;
 	}
 
-    private IRhoWebView createHtmlView(RhodesActivity context, AssetManager am) {
+    public synchronized String getUrlToNavigate() { return mUrlToNavigate; }
+    private synchronized void setUrlToNavigate(String url) { mUrlToNavigate = url; }
+
+    private IRhoWebView loadContent(AssetManager am, IRhoWebView view) {
 
         int type = 0;
         final String[][] urls = {{LOADING_ANDROID_PNG, LOADING_PNG}, {LOADING_PAGE}};
@@ -102,46 +110,22 @@ public class SplashScreen implements MainView {
             type++;
         }
 
-        // Now create WebView and load appropriate content there
-        IRhoWebView view = null;//new GoogleWebView(context);
-        if (Capabilities.WEBKIT_BROWSER_ENABLED) {
-            Logger.D(TAG, "Creating Motorola WebKIT view");
-            try {
-                Class<? extends IRhoWebView> viewClass = (Class<? extends IRhoWebView>)Class.forName("com.rhomobile.rhodes.webview.EkiohWebView");
-                Constructor<? extends IRhoWebView> viewCtor = viewClass.getConstructor(Context.class, Runnable.class);
-                view = viewCtor.newInstance(context, RhodesApplication.AppState.AppStarted.addObserver("MotorolaStartEngineObserver", true));
-            } catch (Throwable e) {
-                Logger.E(TAG, e);
-                RhodesApplication.stop();
-            }
-        } else {
-            Logger.D(TAG, "Creating Google web view");
-            final GoogleWebView googleWebView = new GoogleWebView(context);
-            view = googleWebView;
-            RhodesApplication.runWhen(RhodesApplication.AppState.AppStarted, new RhodesApplication.StateHandler(true) {
-                @Override
-                public void run()
-                {
-                    googleWebView.applyWebSettings();
-                }
-            });
-            switch (type) {
-            case 0:
-              view.loadDataWithBaseURL("file:///android_asset/", "<html><body style=\"margin:0px\"><img src=\""+ fn[type] + "\" height=\"100%\" width=\"100%\" border=\"0\"/></body></html>", "text/html", "utf-8", null);
-              break;
-            case 1:
-              view.loadUrl("file:///android_asset/" + fn[type]);
-              break;
-            default:
-              view.loadData("<html><title>Loading</title><body text='white' bgcolor='black'>Loading...</body></html>", "text/html", "utf-8");
-          }
+        switch (type) {
+        case 0:
+          view.loadDataWithBaseURL("file:///android_asset/", "<html><body style=\"margin:0px\"><img src=\""+ fn[type] + "\" height=\"100%\" width=\"100%\" border=\"0\"/></body></html>", "text/html", "utf-8", null);
+          break;
+        case 1:
+          view.loadUrl("file:///android_asset/" + fn[type]);
+          break;
+        default:
+          view.loadData("<html><title>Loading</title><body text='white' bgcolor='black'>Loading...</body></html>", "text/html", "utf-8");
         }
-
 
         return view;
     }
 	
 	public void start() {
+	    mStartTimeMs = SystemClock.uptimeMillis();
 		nativeStart();
 	}
 	
@@ -163,35 +147,46 @@ public class SplashScreen implements MainView {
 	@Override
 	public void navigate(final String url, final int index) {
 
-		Logger.D(TAG, "navigate: url=" + url);
-		
-		int delay = howLongWaitMs();
-		if (delay < 0) {
-			delay = 0;
-		}
-		
-		Logger.D(TAG, "DELAY for SplashScreen = " + String.valueOf(delay));
-		final SplashScreen curView = this;
+        Logger.D(TAG, "navigate: url=" + url);
 
-        PerformOnUiThread.exec(new Runnable() {
-            private String mUrl = url;
-            private int mIndex = index;
-            public void run() {
-                try {
-                    RhodesActivity activity = RhodesActivity.safeGetInstance();
-                    if (mFirstNavigate) {
-                        mFirstNavigate = false;
-                        activity.switchToSimpleMainView(curView).navigate(mUrl, mIndex);
-                    }
-                    else {
-                        // Recover navigate in case of race conditions
-                        activity.getMainView().navigate(mUrl, mIndex);
-                    }
-                } catch (Throwable e) {
-                    Logger.E(TAG, e);
+        long delay = howLongWaitMs();
+        if (delay <= 0) {
+            delay = 0;
+        } else {
+            delay = mStartTimeMs + delay - SystemClock.uptimeMillis();
+            if (delay < 0)
+                delay = 0;
+        }
+
+        Logger.D(TAG, "DELAY for SplashScreen = " + String.valueOf(delay));
+        final SplashScreen curView = this;
+
+        if (getUrlToNavigate() == null) {
+            setUrlToNavigate(url);
+            final long threadDelay = delay;
+            mSleepThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    SystemClock.sleep(threadDelay);
+                    PerformOnUiThread.exec(new Runnable() {
+                        public void run() {
+                            try {
+                                if (mNavigateIndex != 0) {
+                                    throw new IllegalStateException("Non zero tab index(" + mNavigateIndex + ") to navigate from Splash Screen");
+                                }
+                                mSplashScreenListener.onSplashScreenGone(curView);
+                            } catch (Throwable e) {
+                                Logger.E(TAG, e);
+                            }
+                        }
+                    });
                 }
-            }
-        }, delay);
+            });
+            mSleepThread.start();
+        } else {
+            setUrlToNavigate(url);
+        }
+        
 	}
 
     @Override
@@ -205,14 +200,12 @@ public class SplashScreen implements MainView {
         return v;
     }
 
-	@Override
-	public void back(int index) 
-	{
-        RhodesActivity ra = RhodesActivity.getInstance();
-        if ( ra != null )
-            ra.moveTaskToBack(true);
-	}
-	
+    @Override
+    public void back(int index) 
+    {
+        mSplashScreenListener.onSplashScreenNavigateBack();
+    }
+
 	@Override
 	public void forward(int index) {
 	}
