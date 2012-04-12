@@ -138,6 +138,8 @@ public:
 
     boolean getSslVerifyPeer() {return m_sslVerifyPeer;}
     void setSslVerifyPeer(boolean mode) {m_sslVerifyPeer = mode;}
+    
+    bool isInsideRequest() const;
 };
 
 class CNetRequestWrapper
