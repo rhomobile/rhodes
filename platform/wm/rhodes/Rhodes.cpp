@@ -37,6 +37,7 @@
 #include "sync/ClientRegister.h"
 #include "common/RhoFilePath.h"
 #include "common/app_build_capabilities.h"
+#include "common/app_build_configs.h"
 
 #include <algorithm>
 
@@ -50,27 +51,31 @@ typedef unsigned long VALUE;
 #endif //!RUBY_RUBY_H
 
 char* parseToken( const char* start, int len );
-
 extern "C" void rho_ringtone_manager_stop();
 extern "C" void rho_sysimpl_sethas_network(int nValue);
 extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue);
 extern "C" HINSTANCE rho_wmimpl_get_appinstance();
 extern "C" int rho_sys_check_rollback_bundle(const char* szRhoPath);
+extern "C" void registerRhoExtension();
+extern "C" void rho_webview_navigate(const char* url, int index);
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 class CEng;
-extern "C" CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
 extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
-extern "C" void rho_wmimpl_set_configfilepath(const char* path);
-extern "C" TCHAR* rho_wmimpl_get_startpage();
-extern "C" void rho_wmimpl_set_startpage(const char* path);
-extern "C" const char* rho_wmimpl_get_logpath();
-extern "C" const char* rho_wmimpl_get_logurl();
-extern "C" bool rho_wmimpl_get_fullscreen();
-extern "C" void rho_wmimpl_set_is_version2();
-extern "C" bool rho_wmimpl_get_is_version2();
+extern "C" {
+	CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
+	void rho_wmimpl_set_configfilepath(const char* path);
+	TCHAR* rho_wmimpl_get_startpage();
+	void rho_wmimpl_set_startpage(const char* path);
+	const char* rho_wmimpl_get_logpath();
+	const char* rho_wmimpl_get_logurl();
+	bool rho_wmimpl_get_fullscreen();
+	void rho_wmimpl_set_is_version2();
+	bool rho_wmimpl_get_is_version2();
+	const unsigned int* rho_wmimpl_get_logmaxsize();
+	const int* rho_wmimpl_get_loglevel();
+};
 #endif
-
 
 #if defined(_WIN32_WCE) && !defined(OS_PLATFORM_MOTCE)
 #include <regext.h>
@@ -128,9 +133,12 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
     CMainWindow m_appWindow;
     rho::String m_strRootPath, m_strRhodesPath, m_logPort, m_strRuntimePath;//, m_strDebugHost, m_strDebugPort;*/
 	int m_nRestarting;
+#ifndef RHODES_EMULATOR
+	HANDLE m_hMutex;
+#endif
     CExtManager m_oExtManager;
 
-#ifdef OS_WINDOWS
+#ifdef OS_WINDOWS_DESKTOP
     String m_strHttpProxy;
 #endif
 
@@ -153,6 +161,7 @@ public :
     const rho::String& getRhoRootPath();
     const rho::String& getRhoRuntimePath();
     void parseHttpProxyURI(const rho::String &http_proxy);
+
 };
 
 static String g_strCmdLine;
@@ -201,7 +210,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 			}
 		}
 
-#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
         else if (wcsnicmp(lpszToken, _T("s"),1)==0)
         {
 			String token = convertToStringA(lpszToken);
@@ -224,9 +233,9 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 				free(path);
 			}
         }
-#endif // APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+#endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 		else if (wcsncmp(lpszToken, _T("http_proxy_url"),14)==0) 
         {
 			String token = convertToStringA(lpszToken);
@@ -257,6 +266,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 				}
 				m_strRootPath = path;
 				free(path);
+				std::replace( m_strRootPath.begin(), m_strRootPath.end(), '\\', '/');
 			}
 		} else if (wcsncmp(lpszToken, _T("rhodespath"),10)==0) 
         {
@@ -266,6 +276,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 			if (path) {
 				m_strRhodesPath = path;
 				free(path);
+				std::replace( m_strRhodesPath.begin(), m_strRhodesPath.end(), '\\', '/');
 			}
 		} /* else if (wcsncmp(lpszToken, _T("appname"),7)==0) 
         {
@@ -309,7 +320,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
                 if (m_strRootPath.at(m_strRootPath.length()-1)!='/')
                     m_strRootPath.append("/");
                 m_strRootPath.append("rho/");
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+#ifdef APP_BUILD_CAPABILITY_SHARED_RUNTIME
                 rho_wmimpl_set_is_version2();
 #endif
         	}
@@ -368,23 +379,38 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 		SetForegroundWindow( HWND( DWORD(hWnd) | 0x01 ) );
 		return S_FALSE;
 	}
+
+	// creating mutex
+/*	m_hMutex = CreateMutex(NULL, TRUE, CMainWindow::GetWndClassInfo().m_wc.lpszClassName);
+	if (m_hMutex==NULL) {
+		// Failed to create mutex
+		return S_FALSE;
+	}
+	if ((GetLastError() == ERROR_ALREADY_EXISTS) && (WaitForSingleObject(m_hMutex, 60000L) != WAIT_OBJECT_0)) {
+        rho_sys_impl_exit_with_errormessage( "Initialization", "Another instance of the application is running. Please, exit it or use Task Manager to terminate it.");
+        return S_FALSE;
+	}*/
 #endif
 
     if ( !rho_sys_check_rollback_bundle(rho_native_rhopath()) )
     {
-        rho_sys_impl_exit_with_errormessage( "Bundle update.", "Application is currupted. Reinstall it , please.");
+        rho_sys_impl_exit_with_errormessage( "Bundle update", "Application is corrupted. Reinstall it, please.");
         return S_FALSE;
     }
 
-#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
     rho_logconf_Init((rho_wmimpl_get_logpath()[0]==0 ? m_strRootPath.c_str() : rho_wmimpl_get_logpath()), m_strRootPath.c_str(), m_logPort.c_str());
     if (rho_wmimpl_get_logurl()[0]!=0)
-        RHOCONF().setString("rhologurl", rho_wmimpl_get_logurl(), false);
+		LOGCONF().setLogURL(rho_wmimpl_get_logurl());
+	if (rho_wmimpl_get_logmaxsize())
+		LOGCONF().setMaxLogFileSize(*rho_wmimpl_get_logmaxsize());
+    if (rho_wmimpl_get_loglevel())
+		LOGCONF().setMinSeverity(*rho_wmimpl_get_loglevel());
     if (rho_wmimpl_get_fullscreen())
         RHOCONF().setBool("full_screen", true, false);
 #else
     rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
-#endif // APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+#endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
 #ifdef RHODES_EMULATOR
     RHOSIMCONF().setAppConfFilePath(CFilePath::join( m_strRootPath, RHO_EMULATOR_DIR"/rhosimconfig.txt").c_str());
@@ -406,7 +432,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }
 
 	LOG(INFO) + "Rhodes started";
-#ifdef OS_WINDOWS
+#ifdef OS_WINDOWS_DESKTOP
 	if (m_strHttpProxy.length() > 0) {
 		parseHttpProxyURI(m_strHttpProxy);
 	} else {
@@ -464,6 +490,13 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, m_strRuntimePath);
     RHODESAPP().setExtManager( &m_oExtManager );
 
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
+    if ((!rho_wmimpl_get_is_version2()) && (rho_wmimpl_get_startpage()[0] != 0)) {
+        String spath = convertToStringA(rho_wmimpl_get_startpage());
+        RHOCONF().setString("start_path", spath, false);
+    }
+#endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
+
     DWORD dwStyle = WS_VISIBLE;
 
 #if !defined(_WIN32_WCE)
@@ -472,11 +505,22 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     // Create the main application window
 #ifdef RHODES_EMULATOR
     m_appWindow.Initialize(convertToStringW(RHOSIMCONF().getString("app_name")).c_str());
+    if (NULL == m_appWindow.m_hWnd)
+    {
+        return S_FALSE;
+    }
+    m_appWindow.ShowWindow(nShowCmd);
+
 #else
     String strTitle = RHODESAPP().getAppTitle();
     m_appWindow.Create(NULL, CWindow::rcDefault, convertToStringW(strTitle).c_str(), dwStyle);
 
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+    if (NULL == m_appWindow.m_hWnd)
+    {
+        return S_FALSE;
+    }
+
+/*#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     {
         CBarcodeInit oBarcodeInit;
 
@@ -486,33 +530,50 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         }
     }
 #endif
+*/
+    m_appWindow.InvalidateRect(NULL, TRUE);
+    m_appWindow.UpdateWindow();
 
-#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
-    if ((!rho_wmimpl_get_is_version2()) && (rho_wmimpl_get_startpage()[0] != 0)) {
-        String spath = convertToStringA(rho_wmimpl_get_startpage());
-        RHOCONF().setString("start_path", spath, false);
-    }
-#endif // APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-
-
-    m_appWindow.InitMainWindow();
+    m_appWindow.initBrowserWindow();
 #endif
-    if (NULL == m_appWindow.m_hWnd)
+
+    bool bRE1App = false;
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
+    if (!rho_wmimpl_get_is_version2())
+        bRE1App = true;
+#endif
+
+    if (bRE1App)
     {
-        return S_FALSE;
-    }
-
-
-    RHODESAPP().startApp();
-
-    // Navigate to the "loading..." page
-	m_appWindow.Navigate2(_T("about:blank")
-#ifdef RHODES_EMULATOR
-        , -1
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
+        registerRhoExtension();
 #endif
-    );
+	    m_appWindow.Navigate2(_T("about:blank")
+#ifdef RHODES_EMULATOR
+            , -1
+#endif
+        );
+        
+        rho_webview_navigate( RHOCONF().getString("start_path").c_str(), 0 );
+/*    	m_appWindow.Navigate2( convertToStringW( RHOCONF().getString("start_path") ).c_str()
+#ifdef RHODES_EMULATOR
+            , -1
+#endif
+        );*/
+    }
+    else
+    {
+        RHODESAPP().startApp();
+
+        // Navigate to the "loading..." page
+	    m_appWindow.Navigate2(_T("about:blank")
+    #ifdef RHODES_EMULATOR
+            , -1
+    #endif
+        );
+    }
     // Show the main application window
-    m_appWindow.ShowWindow(nShowCmd);
+    //m_appWindow.ShowWindow(nShowCmd);
 
 #if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
 
@@ -551,7 +612,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 		NULL, 
 		&g_hNotifyCell);
 
-#else
+#elif !defined( OS_PLATFORM_MOTCE )
 	rho_clientregister_create("win32_client");
 #endif
 
@@ -589,6 +650,10 @@ void CRhodesModule::RunMessageLoop( ) throw( )
     rho::common::CRhodesApp::Destroy();
 
     net::CNetRequestImpl::deinitConnection();
+
+#ifndef RHODES_EMULATOR
+//	ReleaseMutex(m_hMutex);
+#endif
 }
 
 const rho::String& CRhodesModule::getRhoRootPath()
@@ -671,6 +736,60 @@ void rho_platform_restart_application()
     ::GetModuleFileNameA(NULL,module,MAX_PATH);
                                        
     rho_wmsys_run_app(module, (g_strCmdLine + " -restarting").c_str());
+}
+
+typedef void (WINAPI *PCL)(HWND);
+typedef bool (WINAPI *PCSD)();
+
+#ifdef APP_BUILD_CAPABILITY_MOTOROLA
+extern "C" void rho_wm_impl_CheckLicenseWithBarcode(HWND hParent);
+#endif
+
+extern "C" void rho_wm_impl_CheckLicense()
+{
+#ifdef OS_WINDOWS_DESKTOP
+    return;
+#else
+
+#ifdef APP_BUILD_CAPABILITY_MOTOROLA
+    rho_wm_impl_CheckLicenseWithBarcode(getMainWnd());
+#else
+    HINSTANCE hLicenseInstance = LoadLibrary(L"license_rc.dll");
+    if(hLicenseInstance)
+    {
+        PCL pCheckLicense = (PCL) GetProcAddress(hLicenseInstance, L"CheckLicense");
+        if(pCheckLicense) 
+	        pCheckLicense(getMainWnd());
+    }
+#endif
+
+#endif
+}
+
+extern "C" int rho_wm_impl_CheckSymbolDevice()
+{
+#ifdef OS_WINDOWS_DESKTOP
+    return true;
+#else
+    int res = -1;
+    HINSTANCE hLicenseInstance = LoadLibrary(L"license_rc.dll");
+	if(hLicenseInstance)
+	{
+		PCSD pCheckSymbolDevice = (PCSD) GetProcAddress(hLicenseInstance, L"CheckSymbolDevice");
+		if(pCheckSymbolDevice) 
+			res = pCheckSymbolDevice();
+	}
+
+	if(res == -1)
+	{
+		MessageBox(NULL, L"license_rc.dll is absent. Application will be closed"
+						   , L"Rhodes", MB_SETFOREGROUND | MB_TOPMOST | MB_ICONSTOP | MB_OK);
+		return 0;
+	}
+
+    return 1;
+#endif
+
 }
 
 static inline char *
@@ -827,7 +946,7 @@ char* parseToken( const char* start, int len ) {
 	return value;
 }
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 /*
 // char -> wchar_t 
 wchar_t* wce_mbtowc(const char* a)

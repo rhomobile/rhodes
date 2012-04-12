@@ -81,7 +81,7 @@ using namespace rho::common;
 
 IMPLEMENT_LOGCLASS(CHttpServer, "HttpServer");
 
-#if defined(OS_WINDOWS) || defined(OS_WINCE)
+#if defined(WINDOWS_PLATFORM)
 static size_t const FILE_BUF_SIZE = 64*1024;
 #else
 static size_t const FILE_BUF_SIZE = 256*1024;
@@ -463,8 +463,12 @@ bool CHttpServer::run()
             return false;
         }
 
-        //if ( bProcessed )
+        if ( bProcessed )
+        {
+            LOG(INFO) + "GC Start.";
             rb_gc();
+            LOG(INFO) + "GC End.";
+        }
     }
 }
 
@@ -1109,7 +1113,7 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
     fclose(fp);
     delete buf;
     if (verbose) RAWTRACE1("File %s was sent successfully", path.c_str());
-    return true;
+    return false;
 }
 
 bool CHttpServer::call_ruby_method(String const &uri, String const &body, String& strReply)
@@ -1137,7 +1141,7 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
     if (callback) {
         RAWTRACE1("Uri %s is registered callback, so handle it appropriately", arg_uri.c_str());
         callback(this, query.length() ? query : body);
-        return true;
+        return false;
     }
 
     String uri = arg_uri;

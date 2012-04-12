@@ -60,6 +60,7 @@ struct IRhoExtension
     virtual long OnGeolocationData(int nEnum, void* pData, const CRhoExtData& oExtData){return 0;}
     virtual long OnNavigateError(const wchar_t* szUrlBeingNavigatedTo, const CRhoExtData& oExtData){return 0;}
     virtual void OnAppActivate(bool bActivate, const CRhoExtData& oExtData){}
+    virtual void OnWindowChanged(LPVOID lparam){}
 };
 
 struct IRhoExtManager
@@ -118,6 +119,7 @@ public:
     long OnGeolocationData(int nEnum, void* pData);
     long OnNavigateError(const wchar_t* szUrlBeingNavigatedTo);
     void OnAppActivate(bool bActivate);
+    void OnWindowChanged(LPVOID lparam);
 
     CRhoExtData makeExtData();
     void close();

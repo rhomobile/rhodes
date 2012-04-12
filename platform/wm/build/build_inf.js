@@ -5,9 +5,9 @@ var fso,output_file;
 var stdout = WScript.StdOut;
 
 var settings = new Object();
-settings['wm6'] = ['Windows Mobile 6 Professional SDK (ARMV4I)','VersionMin=5.02','VersionMax=6.99'];
-settings['wm653'] = ['Windows Mobile 6.5.3 Professional DTK (ARMV4I)','VersionMin=5.02','VersionMax=6.99'];
-settings['ce5'] = ['MC3000c50b (ARMV4I)','VersionMin=5.00','VersionMax=6.99'];
+settings['wm6'] = ['Windows Mobile 6 Professional SDK (ARMV4I)','VersionMin=5.02','VersionMax=7.99'];
+settings['wm653'] = ['Windows Mobile 6.5.3 Professional DTK (ARMV4I)','VersionMin=5.02','VersionMax=7.99'];
+settings['ce5'] = ['MC3000c50b (ARMV4I)','VersionMin=5.00','VersionMax=7.99'];
 
 main();
 
@@ -41,7 +41,7 @@ function expand_source(es,name,path,section,destination,flag) {
     }
 }
 
-function expand_sources(sources) {
+function expand_sources_rho(sources) {
     var es = new Array();
     for (var i in sources) {
         expand_source(es,sources[i][0],sources[i][1],"copyfiles","rho",false);
@@ -49,7 +49,7 @@ function expand_sources(sources) {
     return es;
 }
 
-function expand_sources1(es, sources) {
+function expand_sources(es, sources) {
     for (var i in sources) {
         expand_source(es, sources[i][0], sources[i][1], "copyfiles", "",true);
     }
@@ -204,7 +204,20 @@ function fill_extensions_files(exts) {
     }
 }
 
-function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,rhogempath,usereruntime) {
+function fill_registry_keys() {
+	var regfName = "regs.txt";
+	
+	if (fso.FileExists(regfName)) {
+		var regf = fso.OpenTextFile(regfName);
+		var contents = regf.ReadAll();
+		regf.Close();
+		
+		p(contents);
+		p("")
+	}
+}
+
+function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,rhogempath,usereruntime,include_motocaps) {
     p("[Version]");
     p("Signature=\"$Windows NT$\"");
     p("Provider=\""+vendor+"\"");
@@ -227,7 +240,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
         p("CEShortcuts=Shortcuts");
     }
     p("AddReg=RegKeys");
-    p("CopyFiles=CopyToInstallDir"+((!usereruntime) && webkit ? ",CopyWebKitBin,CopyNPAPI,CopyConfig" : "")+(show_shortcut && usereruntime ? ",Shortcuts" : "")+get_copyfiles_sections(es));
+    p("CopyFiles=CopyToInstallDir"+((!usereruntime) && webkit ? ",CopyWebKitBin,CopyNPAPI,CopyConfig,CopySystemFiles" : "")+((!usereruntime) && (!webkit) && include_motocaps? ",CopyConfig" : "")+(show_shortcut && usereruntime ? ",Shortcuts" : "")+get_copyfiles_sections(es));
     p("");
     p("[SourceDisksNames]");
     if (usereruntime) {
@@ -238,6 +251,12 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
             p("2=,\"\",," + rhogempath + "\"\\\"");
             p("3=,\"\",," + rhogempath + "\"\\NPAPI\\\"");
             p("4=,\"\",," + rhogempath + "\"\\Config\\\"");
+        }else
+        {
+            if(include_motocaps)
+            {
+                p("2=,\"\",," + rhogempath + "\"\\Config\\\"");
+            }
         }
     }
     get_source_disks_names(es);
@@ -249,8 +268,8 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
         p("\"" + name + ".exe\"=1");
         if (webkit) {
             p("\"eklibrary.dll\"=2");
+            p("\"prtlib.dll\"=2");
             p("\"webkit.dll\"=2");
-            p("\"license_rc.dll\"=2");
             p("\"openssl.dll\"=2");
             p("\"PBEngine_WK.dll\"=2");
             p("\"npwtg_jsobjects.dll\"=3");
@@ -258,6 +277,14 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
             p("\"Config.xml\"=4");
             p("\"Plugin.xml\"=4");
             p("\"RegEx.xml\"=4");
+        }else
+        {
+            if(include_motocaps)
+            {
+                p("\"Config.xml\"=2");
+                p("\"Plugin.xml\"=2");
+                p("\"RegEx.xml\"=2");
+            }
         }
     }
     fill_extensions_source_disk_files(exts);
@@ -267,12 +294,19 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
     if (show_shortcut){
         p("Shortcuts=0,\"%CE11%\"");
     }
-    p("CopyToInstallDir=0,\"%InstallDir%\"");
+    if ((!usereruntime) && webkit) {
+        p("CopySystemFiles=0,\"%CE2%\"");
+    }
+    p("CopyToInstallDir=0,\"%InstallDir%\"");    
     if ((!usereruntime) && webkit) {
         p("CopyWebKitBin=0,\"%InstallDir%\"");
         p("CopyNPAPI=0,\"%InstallDir%\\NPAPI\"");
         p("CopyConfig=0,\"%InstallDir%\\Config\"");
     }
+    if ((!usereruntime) && (!webkit) && include_motocaps) {
+        p("CopyConfig=0,\"%InstallDir%\\Config\"");
+    }
+    
     get_destination_dirs(es);
     p("");
     p("[CopyToInstallDir]");
@@ -280,12 +314,12 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
         p("\"" + name + ".lnk\",\"" + name + ".lnk\",,0");
     } else {
         p("\"" + name + ".exe\",\"" + name + ".exe\",,0");
+        p("\"license_rc.dll\",\"license_rc.dll\",,0");
         if (webkit) {
             p("");
             p("[CopyWebKitBin]");
             p("\"eklibrary.dll\",\"eklibrary.dll\",,0");
             p("\"webkit.dll\",\"webkit.dll\",,0");
-            p("\"license_rc.dll\",\"license_rc.dll\",,0");
             p("\"openssl.dll\",\"openssl.dll\",,0");
             p("\"PBEngine_WK.dll\",\"PBEngine_WK.dll\",,0");
             p("");
@@ -297,6 +331,19 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
             p("\"Config.xml\",\"Config.xml\",,0");
             p("\"Plugin.xml\",\"Plugin.xml\",,0");
             p("\"RegEx.xml\",\"RegEx.xml\",,0");
+            p("");
+            p("[CopySystemFiles]");
+            p("\"prtlib.dll\",\"prtlib.dll\",,0");
+        }else
+        {
+            if(include_motocaps)
+            {
+                p("");
+                p("[CopyConfig]");
+                p("\"Config.xml\",\"Config.xml\",,0");
+                p("\"Plugin.xml\",\"Plugin.xml\",,0");
+                p("\"RegEx.xml\",\"RegEx.xml\",,0");
+            }
         }
     }
     fill_extensions_files(exts);
@@ -312,10 +359,13 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
     }
     p("");
     p("[RegKeys]");
+    fill_registry_keys()
     p("");
 }
 
 function main() {
+	
+	
     // args(0) = .inf filename
     // args(1) = platform ('wm6' or 'ce5')
     // args(2) = app_name
@@ -325,7 +375,8 @@ function main() {
     // args(6) = include motorola webkit binaries and configs?
     // args(7) = rhoelements gem folder path
     // args(8) = use RhoElements runtime?
-    // args(9)... = additional files
+    // args(9) = use Motorola extextension?
+    // args(10)... = additional files
 
     var args = WScript.Arguments;
     fso = new ActiveXObject("Scripting.FileSystemObject");
@@ -335,33 +386,34 @@ function main() {
     show_shortcut = (args(5) == "0");
     include_webkit = (args(6) == "1");
     usereruntime = (args(8) == "1");
+    include_motocaps = (args(9) == "1");
 
     var sources = new Object();
     sources['db'] = ["db","..\\..\\..\\platform\\shared\\db\\res\\db"];
-    //sources['sqlite3']= ["sqlite3","..\\..\\shared\\sqlite3"];
+
     if (!usereruntime)
         sources['lib']= ["lib",srcdir+"/lib"];
     else if (is_icon)
         sources['icon']= ["icon",srcdir+"/icon"];
     sources['apps']= ["apps",srcdir+"/apps"];
 
-    var es = expand_sources(sources);
+    var es = expand_sources_rho(sources);
     
-    for (var idx = 9; idx < args.length; idx++)
+    for (var idx = 10; idx < args.length; idx++)
     {
     	if (args(idx) == null)
     		break;
     		
     	var sources_add = new Object();
         sources_add['files']= ["add" + idx,args(idx)];
-        es  = expand_sources1(es, sources_add);
+        es  = expand_sources(es, sources_add);
     }
 
     var exts;
     if (!usereruntime) {
         exts = expand_extensions(args(1));
     }
-    pinf(args(1),es,exts,args(2),args(3),srcdir,show_shortcut,is_icon,include_webkit,args(7),usereruntime);
+    pinf(args(1),es,exts,args(2),args(3),srcdir,show_shortcut,is_icon,include_webkit,args(7),usereruntime,include_motocaps);
 
     output_file.Close();
 }

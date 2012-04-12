@@ -49,6 +49,8 @@ public class RhodesApplication extends Application{
 	
     private static final String TAG = RhodesApplication.class.getSimpleName();
     private static Handler mHandler;
+	private final static String CONF_MEMORY_INFO_DUMP_INTERVAL = "memory_info_dump_interval";
+
     static AppEventObserver sRhodesAppActiveWatcher;
     static {
         NativeLibraries.load();
@@ -179,6 +181,10 @@ public class RhodesApplication extends Application{
         }
 
         RhoFileApi.setFsModeTransparrent(true);
+
+		if ( RhoConf.isExist(CONF_MEMORY_INFO_DUMP_INTERVAL) ) {
+			Logger.enableMemoryInfoDump(RhoConf.getInt(CONF_MEMORY_INFO_DUMP_INTERVAL));
+		}
 
         Logger.I(TAG, "Initialized");
     }

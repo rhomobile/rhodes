@@ -102,6 +102,7 @@ public:
 	void setLogURL(const char* szLogURL) { m_strLogURL = rho::String(szLogURL); }
 
 	void initRemoteLog();
+    void reinitRemoteLog();
 	void closeRemoteLog();
 
     void setEnabledCategories( const char* szCatList );
@@ -167,6 +168,8 @@ void rho_logconf_freeString(char* str);
 
 int rho_conf_send_log(const char* callback_url);
 void rho_conf_clean_log();
+    
+void rho_log_resetup_http_url(const char* http_log_url);    
 
 #ifdef __cplusplus
 }

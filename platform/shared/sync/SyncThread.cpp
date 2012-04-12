@@ -82,6 +82,7 @@ CSyncThread::CSyncThread() : CThreadQueue()
 CSyncThread::~CSyncThread(void)
 {
     m_oSyncEngine.exitSync();
+    LOG(INFO) + "Stopping Sync thread";
     stop(SYNC_WAIT_BEFOREKILL_SECONDS);
 
     db::CDBAdapter::closeAll();

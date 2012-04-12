@@ -99,17 +99,21 @@ namespace "config" do
     $cabwiz = File.join($config["env"]["paths"]["cabwiz"], "cabwiz.exe") if $config["env"]["paths"]["cabwiz"]
     $cabwiz = "cabwiz" if $cabwiz.nil?
     $webkit_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("webkit_browser").nil?) 
+    $motorola_capability = !($app_config["capabilities"].nil? or $app_config["capabilities"].index("motorola").nil?) 
     $wk_data_dir = "/Program Files" # its fake value for running without motorola extensions. do not delete
     $additional_dlls_path = nil
+    $additional_regkeys = nil
+    $use_direct_deploy = "yes"
 
     begin
-      if $webkit_capability
+      if $webkit_capability || $motorola_capability
         require "rhoelements-data"
         $wk_data_dir = $data_dir[0]
       end
-    rescue
+    rescue Exception => e
       puts "rhoelements gem is't found, webkit capability is disabled"
-      $webkit_capability = "0"
+      $webkit_capability = false
+      $motorola_capability = false
     end
         
     unless $build_solution
@@ -133,7 +137,7 @@ namespace "config" do
     $wm_emulator = $app_config["wm"]["emulator"] if $app_config["wm"] and $app_config["wm"]["emulator"]
     $wm_emulator = "Windows Mobile 6 Professional Emulator" unless $wm_emulator
 
-    $use_shared_runtime = (($app_config["wm"].nil? || $app_config["wm"]["use_shared_runtime"].nil?) ? nil : 1 )
+    $use_shared_runtime = (($app_config["use_shared_runtime"].nil? && ($app_config["wm"].nil? || $app_config["wm"]["use_shared_runtime"].nil?)) ? nil : 1 )
     #puts $app_config["wm"]["use_shared_runtime"].inspect
     #puts $use_shared_runtime.inspect
   end
@@ -148,7 +152,9 @@ namespace "build" do
         puts 'new $additional_dlls_paths'
         $additional_dlls_paths = Array.new
       end
-
+      
+      $regkeys = Array.new
+      
       $app_config["extensions"].each do |ext|
         $app_config["extpaths"].each do |p|
           extpath = File.join(p, ext, 'ext')
@@ -169,6 +175,15 @@ namespace "build" do
               puts "ext_config[files] - " + ext_config["files"].to_s
               $additional_dlls_paths << File.expand_path(ext_config["files"])
             end
+            
+            puts 'start read reg key'
+            if ext_config != nil && ext_config["regkeys"] != nil
+              ext_config["regkeys"].each do |key|
+                puts "extension " + ext + " add regkey to cab. key: " + key
+                $regkeys << key
+              end
+            end
+            puts 'end read reg key'
           chdir $startdir
 
           ENV['RHO_PLATFORM'] = $current_platform
@@ -188,10 +203,11 @@ namespace "build" do
           break
         end
       end
+      
       #test
-      $additional_dlls_paths.each do |x|
-        puts " - " + x.to_s
-      end
+      #$additional_dlls_paths.each do |x|
+      #  puts " - " + x.to_s
+      #end
       #exit
     end
 
@@ -285,7 +301,7 @@ namespace "build" do
 
     end
 
-    task :rhosimulator => ["config:set_win32_platform", "config:wm"] do
+    task :rhosimulator => ["config:set_win32_platform", "config:wm", "build:rhosimulator_version"] do
       $rhosimulator_build = true
       $config["platform"] = $current_platform
       chdir $startdir
@@ -362,8 +378,9 @@ namespace "device" do
       if $use_shared_runtime.nil? then
         out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/"
         cp out_dir + "rhodes.exe", out_dir + $appname + ".exe"
+        cp $startdir + "/res/build-tools/license_rc.dll", out_dir + "license_rc.dll"
       else
-        shortcut_content = '"\\Program Files\\RhoElements2\\RhoElements2.exe" -approot="\\Program Files\\' + $appname + '"'
+        shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -approot="\\Program Files\\' + $appname + '"'
         if File.exists? wm_icon then
           shortcut_content = shortcut_content + '?"\\Program Files\\' + $appname + '\\rho\\icon\\icon.ico"'
         end
@@ -387,14 +404,32 @@ namespace "device" do
         end
       end
 
-      args = ['build_inf.js', $appname + ".inf", build_platform, '"' + $app_config["name"] +'"', $app_config["vendor"], '"' + $srcdir + '"', $hidden_app, ($webkit_capability ? "1" : "0"), $wk_data_dir, (($use_shared_runtime.nil?) ? "0" : "1")]
+      args = ['build_inf.js', $appname + ".inf", build_platform, '"' + $app_config["name"] +'"', $app_config["vendor"], '"' + $srcdir + '"', $hidden_app, 
+        ($webkit_capability ? "1" : "0"), $wk_data_dir, (($use_shared_runtime.nil?) ? "0" : "1"), ($motorola_capability ? "1" : "0")]
 
       if $use_shared_runtime.nil? then
          $additional_dlls_paths.each do |path|
             args << path
          end
       end
+      
+      reg_keys_filename = File.join(File.dirname(__FILE__), "regs.txt");
+      puts 'remove file with registry keys'
+      if File.exists? reg_keys_filename  
+        rm reg_keys_filename 
+      end
+      
+       if $regkeys && $regkeys.size > 0
+        puts 'add registry keys to file'
+        $regkey_file = File.new(reg_keys_filename, "w+")
+      
+        $regkeys.each do |key|
+          $regkey_file.puts(key + "\n")
+        end
         
+        $regkey_file.close   
+      end  
+      
       puts Jake.run('cscript',args)
       unless $? == 0
         puts "Error running build_inf"
@@ -429,7 +464,6 @@ namespace "device" do
       rm_f "cleanup.js"
 
       chdir $startdir
-
     end
   end
 end
@@ -456,9 +490,9 @@ namespace "clean" do
 end
 
 namespace "run" do
-    task :mylogserver => ["config:wm"] do
-        Jake.run_rho_log_server($app_path)
-    end
+  task :mylogserver => ["config:wm"] do
+    Jake.run_rho_log_server($app_path)
+  end
 
   def gelLogPath
     log_file_path =  File.join($app_path, $log_file)
@@ -467,46 +501,51 @@ namespace "run" do
 
   desc "Build and run on WM6 emulator"
   task :wm => ["device:wm:production"] do
-    # kill all running detool
-    kill_detool
+    if $use_direct_deploy == "no" 
+      Rake::Task["run:wm:cab"].execute
+    else
+      # kill all running detool
+      kill_detool
 
-    cd $startdir + "/res/build-tools"
-    detool = "detool.exe"
+      cd $startdir + "/res/build-tools"
+      detool = "detool.exe"
     
-    puts "\nStarting application on the WM6 emulator\n\n"
-    log_file = gelLogPath
+      puts "\nStarting application on the WM6 emulator\n\n"
+      log_file = gelLogPath
 
-    File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
-    Jake.run_rho_log_server($app_path)
-    puts "RhoLogServer is starting"
-    while true do
-      if File.exists?($app_path + "/started")
-        break
+      File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
+      Jake.run_rho_log_server($app_path)
+      puts "RhoLogServer is starting"
+      while true do
+        if File.exists?($app_path + "/started")
+          break
+        end
+        sleep(1)
       end
-      sleep(1)
-    end
 
-    if $webkit_capability and ($use_shared_runtime.nil?)
-      wk_args   = [ 'wk-emu', "\"#{$wm_emulator}\"", '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
-      Jake.run2( detool, wk_args, {:nowait => false})
-    end
-
-    if $additional_dlls_paths
-      $additional_dlls_paths.each do |path|
-        add_files_args   = [ 'wk-emu', "\"#{$wm_emulator}\"", '"'+ path.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
-        Jake.run2( detool, add_files_args, {:nowait => false})
+      if $webkit_capability and ($use_shared_runtime.nil?)
+        wk_args   = [ 'wk-emu', "\"#{$wm_emulator}\"", '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
+        Jake.run2( detool, wk_args, {:nowait => false})
       end
-    end
 
-    args = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+((not $use_shared_runtime.nil?) ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port]
-    Jake.run2( detool, args, {:nowait => false})
+      if $additional_dlls_paths
+        $additional_dlls_paths.each do |path|
+          add_files_args   = [ 'wk-emu', "\"#{$wm_emulator}\"", '"'+ path.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
+          Jake.run2( detool, add_files_args, {:nowait => false})
+        end
+      end
+
+      args = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+((not $use_shared_runtime.nil?) ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port]
+      Jake.run2( detool, args, {:nowait => false})
+    end
   end
 
   namespace "wm" do
     task :get_log => "config:wm" do
       puts "log_file=" + gelLogPath
     end
-    
+
+    desc "Run application on RhoSimulator"    
     task :rhosimulator => ["config:set_wm_platform", "config:common"] do
       $rhosim_config = "platform='wm'\r\n"
       Rake::Task["run:rhosimulator"].invoke
@@ -517,43 +556,47 @@ namespace "run" do
       Rake::Task["run:rhosimulator_debug"].invoke
     end
 
-    desc "Build and run on the Windows Phone"
+    desc "Build and run on the Windows Mobile device"
     task :device => ["device:wm:production"] do
-      # kill all running detool
-      kill_detool
+      if $use_direct_deploy == "no" 
+        Rake::Task["run:wm:device:cab"].execute
+      else
+        # kill all running detool
+        kill_detool
 
-      cd $startdir + "/res/build-tools"
-      detool = "detool.exe"     
+        cd $startdir + "/res/build-tools"
+        detool = "detool.exe"     
 
-      puts "\nStarting application on the device"
-      puts "Please, connect you device via ActiveSync.\n\n"
-      log_file = gelLogPath
+        puts "\nStarting application on the device"
+        puts "Please, connect you device via ActiveSync.\n\n"
+        log_file = gelLogPath
 
-      File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
-	  
-      Jake.run_rho_log_server($app_path)
-      puts "RhoLogServer is starting"
-      while true do
-        if File.exists?($app_path + "/started")
-          break
+        File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
+ 	  
+        Jake.run_rho_log_server($app_path)
+        puts "RhoLogServer is starting"
+        while true do
+          if File.exists?($app_path + "/started")
+            break
+          end
+          sleep(1)
+        end    
+
+        if $webkit_capability and ($use_shared_runtime.nil?)
+          wk_args   = [ 'wk-dev', '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
+          Jake.run2( detool, wk_args, {:nowait => false})
         end
-        sleep(1)
-      end    
 
-      if $webkit_capability and ($use_shared_runtime.nil?)
-        wk_args   = [ 'wk-dev', '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
-        Jake.run2( detool, wk_args, {:nowait => false})
-      end
-
-      if $additional_dlls_paths
-        $additional_dlls_paths.each do |path|
-          add_files_args   = [ 'wk-dev', '"'+ path.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
-          Jake.run2( detool, add_files_args, {:nowait => false})
+        if $additional_dlls_paths
+          $additional_dlls_paths.each do |path|
+            add_files_args   = [ 'wk-dev', '"'+ path.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
+            Jake.run2( detool, add_files_args, {:nowait => false})
+          end
         end
-      end
 
-      args = [ 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+((not $use_shared_runtime.nil?) ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port ]
-      Jake.run2( detool, args, {:nowait => false})
+        args = [ 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+((not $use_shared_runtime.nil?) ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
+        Jake.run2( detool, args, {:nowait => false})
+      end
     end
 
     task :spec => ["device:wm:production"] do
@@ -789,7 +832,6 @@ namespace "run" do
       puts Jake.run2($nsis, args, {:nowait => false} )
 
     end
-
   end
 
 end

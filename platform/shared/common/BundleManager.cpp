@@ -37,7 +37,7 @@ using namespace rho::common;
 extern "C" void rho_sys_app_exit();
 extern "C" void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg);
 
-#if !defined(OS_WINDOWS) && !defined(OS_WINCE) && !defined(OS_MACOSX)
+#if !defined(OS_WINDOWS_DESKTOP) && !defined(OS_WINCE) && !defined(OS_MACOSX)
 void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg)
 {
 }
@@ -51,8 +51,9 @@ class CFileTransaction
     unsigned int m_nError;
     String m_strError;
     String m_strFolder;
+    boolean m_bRollbackInDestr;
 public:
-    CFileTransaction(const String& strFolder);
+    CFileTransaction(const String& strFolder, boolean bRollbackInDestr = true);
     ~CFileTransaction();
     unsigned int start();
     void commit();
@@ -90,7 +91,7 @@ public:
 };
 IMPLEMENT_LOGCLASS(CReplaceBundleThread,"RhoBundle");
 
-CFileTransaction::CFileTransaction(const String& strFolder) : m_strFolder(strFolder)
+CFileTransaction::CFileTransaction(const String& strFolder, boolean bRollbackInDestr) : m_strFolder(strFolder), m_bRollbackInDestr(bRollbackInDestr)
 {
 }
 
@@ -126,7 +127,8 @@ unsigned int CFileTransaction::start()
 
 CFileTransaction::~CFileTransaction()
 {
-    rollback();
+    if (m_bRollbackInDestr)
+        rollback();
 }
 
 void CFileTransaction::commit()
@@ -351,7 +353,7 @@ void rho_sys_replace_current_bundle(const char* path)
 
 int rho_sys_check_rollback_bundle(const char* szRhoPath)
 {
-    CFileTransaction oFT( CFilePath::join(szRhoPath, "apps") );
+    CFileTransaction oFT( CFilePath::join(szRhoPath, "apps"), false );
     return oFT.rollback() != 0 ? 0 : 1;
 }
 

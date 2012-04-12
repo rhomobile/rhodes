@@ -246,10 +246,12 @@ StringW CExtManager::getPageTitle(UINT iTab)
 }
 
 extern "C" unsigned long rb_require(const char *fname);
+extern "C" int  rho_ruby_is_started();
 
 void CExtManager::requireRubyFile( const char* szFilePath )
 {
-    rb_require(szFilePath);
+    if( rho_ruby_is_started() )
+        rb_require(szFilePath);
 }
 
 void CExtManager::rhoLog(int nSeverity, const char* szModule, const char* szMsg, const char* szFile, int nLine)
@@ -345,6 +347,14 @@ void CExtManager::OnAppActivate(bool bActivate)
     for ( HashtablePtr<String, IRhoExtension*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )
     {
         (it->second)->OnAppActivate( bActivate, makeExtData() );
+    }
+}
+
+void CExtManager::OnWindowChanged(LPVOID lparam)
+{
+    for ( HashtablePtr<String, IRhoExtension*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )
+    {
+        (it->second)->OnWindowChanged( lparam );
     }
 }
 

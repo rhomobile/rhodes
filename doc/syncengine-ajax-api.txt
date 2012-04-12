@@ -1,0 +1,242 @@
+# SyncEngine AJAX API
+
+## Introduction
+SyncEngine AJAX API provides ability for HTML/javascript based application to control SyncEngine using AJAX calls.
+It is implemented as a plain javascript library which doesn't require to use any side libraries or frameworks.
+
+NOTE: It is just for SyncEngine control and at the moment it doesn't provide any methods to read or manipulate stored objects.
+
+## Usage sample
+
+    :::html
+    <!DOCTYPE html>
+    <html>
+        <head><title>SyncEngine AJAX API sample</title>
+            <script src="/public/js/syncengine.js" type="text/javascript"></script>
+
+            <script type="text/javascript">
+                function put(msg, container) {
+                    document.getElementById(container).innerHTML = msg;
+                }
+                api = window.Rho.syncengine;
+            </script>
+
+        </head>
+        <body>
+            API functions tests:
+            <ul>
+                <li>
+                    <a href="#" onclick="api.set_syncserver('http://some.server.url', function(res){put(res, 'result_set_syncserver');}); return false;">
+                        set_syncserver('http://rhodes-samples-server.heroku.com/application')</a>&nbsp;
+                    <span id="result_set_syncserver"></span>
+                </li>
+
+                <li>
+                    <a href="#" onclick="api.set_pollinterval(60, function(res){put(res, 'result_set_pollinterval');}); return false;">
+                        set_pollinterval(60)</a>&nbsp;
+                    <span id="result_set_pollinterval"></span>
+                </li>
+
+                <li>
+                    <a href="#" onclick="api.get_pollinterval(function(res){put(res, 'result_get_pollinterval');}); return false;">
+                        get_pollinterval()</a>&nbsp;
+                    <span id="result_get_pollinterval"></span>
+                </li>
+
+                <li>
+                    <a href="#" onclick="api.login('abc', '123', function(result){alert(result);} ,function(res){put(res, 'result_login');}); return false;">
+                        login('abc', '123', '')</a>&nbsp;
+                    <span id="result_login"></span>
+                </li>
+
+                <li>
+                    <a href="#" onclick="api.logged_in(function(res){put(res, 'result_logged_in');}); return false;">
+                        logged_in()</a>&nbsp;
+                    <span id="result_logged_in"></span>
+                </li>
+
+                <li>
+                    <a href="#" onclick="api.logout(function(res){put(res, 'result_logout');}); return false;">
+                        logout()</a>&nbsp;
+                    <span id="result_logout"></span>
+                </li>
+
+                <li>
+                    <a href="#" onclick="api.dosync(false, '', function(res){put(res, 'result_dosync');}); return false;">
+                        dosync()</a>&nbsp;
+                    <span id="result_dosync"></span>
+                </li>
+
+                <li>
+                    <a href="#" onclick="api.dosync_source('Metadata', false, '', function(res){put(res, 'result_dosync_source');}); return false;">
+                        dosync_source('Metadata')</a>&nbsp;
+                    <span id="result_dosync_source"></span>
+                </li>
+
+                <li>
+                    <a href="#" onclick="api.is_syncing(function(res){put(res, 'result_is_syncing');}); return false;">
+                        is_syncing()</a>&nbsp;
+                    <span id="result_is_syncing"></span>
+                </li>
+
+                <li>
+                    <a href="#" onclick="api.stop_sync(function(res){put(res, 'result_stop_sync');}); return false;">
+                        stop_sync()</a>&nbsp;
+                    <span id="result_stop_sync"></span>
+                </li>
+            </ul>
+
+        </body>
+    </html>
+
+
+## API reference
+
+All API methods are defined in the *Rho.syncengine* namespace. Each method is accessible in javascript as *window.Rho.syncengine.method_name*.
+Each API method receives callback functions as two last parameters, those are:
+
+* success - Success handler function. Paremeters are:
+    * result - String value with AJAX response. Contains just "ok" value if different behavior is not described for exact API method as *RETURNED* value.
+    * status - Number value with HTTP response status
+    * xhr - XmlHttpRequest object associated with response
+
+* error - Error and timeout handler function. Parameters are:
+    * message - String with error message if any. May be empty or null.
+    * status - String with "error" or "timeout" values possible
+    * xhr - XmlHttpRequest object associated with error or timeout
+
+They are the same for every API method and will not be explained for each method description.
+
+### set_threaded_mode
+	:::cplusplus
+    set_threaded_mode(/*boolean*/ threaded, /*function*/ success, /*function*/ error);
+Where:
+
+* threaded - Boolean value, it defines is threaded mode is used. By default SyncEngine works in threaded mode.
+
+### enable_status_popup
+	:::cplusplus
+    enable_status_popup(/*boolean*/ enable, /*function*/ success, /*function*/ error);
+Where:
+
+* enable - Boolean value, it defines are UI status pop-ups enabled or disabled.
+
+### set_ssl_verify_peer
+	:::cplusplus
+    set_ssl_verify_peer(/*boolean*/ verify, /*function*/ success, /*function*/ error);
+Where:
+
+* verify - Boolean value, it defines will SSL peers verification be performed or not.
+
+### register_push
+It register device on push server for push notifications. Have no control parameters, just result handlers.
+	:::cplusplus
+    register_push(/*function*/ success, /*function*/ error);
+
+### set_syncserver
+	:::cplusplus
+    set_syncserver(/*string*/ syncserver, /*function*/ success, /*function*/ error);
+Where:
+
+* syncserver - String value with a new URL of synchronization server to be used.
+
+### set_pollinterval
+	:::cplusplus
+    set_pollinterval(/*number*/ interval, /*function*/ success, /*function*/ error);
+Where:
+
+* interval - Number value with a new poll interval.
+* RETURNED - String with an old value of poll interval.
+
+### get_pollinterval
+	:::cplusplus
+    get_pollinterval(/*function*/ success, /*function*/ error);
+Where:
+
+* RETURNED - String with a value of poll interval.
+
+### set_pagesize
+	:::cplusplus
+    set_pagesize(/*number*/ size, /*function*/ success, /*function*/ error);
+Where:
+
+* size - Number value with a new sync page size.
+* RETURNED - String with an old value of sync page size.
+
+### get_pagesize
+	:::cplusplus
+    get_pagesize(/*function*/ success, /*function*/ error);
+Where:
+
+* RETURNED - String with a value of sync page size.
+
+### set_objectnotify
+This method make it possible to set handler function to watch for changes in exact object during synchronization process.
+	:::cplusplus
+    set_objectnotify(/*function*/ notify, /*function*/ success, /*function*/ error);
+Where:
+
+* notify - Object changes notification handler function. Parameters are:
+    * objectNotifyQuery - String value with URL-encoded parameters for changed object.
+
+### clean_objectnotify
+This method cleans all object notifications.
+	:::cplusplus
+    clean_objectnotify(/*function*/ success, /*function*/ error);
+
+### login
+This method makes user logged in.
+    :::cplusplus
+    login(/*string*/ login, /*string*/ password, /*function*/ callback, /*function*/ success, /*function*/ error)
+Where:
+
+* login - String value with login.
+* password - String value with password.
+* callback - Login status callback handler function. Parameters are:
+    * loginStatusQuery - String value with URL-encoded parameters of login status.
+
+### logged_in
+This methods checks if user is logged in.
+	:::cplusplus
+    logged_in(/*function*/ success, /*function*/ error);
+Where:
+
+* RETURNED - String with a "true" or "false" value.
+
+### logout
+This method makes user logged out.
+	:::cplusplus
+    logout(/*function*/ success, /*function*/ error);
+
+### dosync
+This method runs synchronization for all sources.
+	:::cplusplus
+    dosync(/*bool*/ show_status_popup, /*string*/ query_params, /*function*/ success, /*function*/ error);
+Where:
+
+* show_status_popup - Boolean value, it defines are UI status pop-ups enabled or disabled.
+* query_params - String with synchronization query parameters
+
+### dosync_source
+This method runs synchronization for exact named source.
+	:::cplusplus
+    dosync_source(/*string*/ srcName, /*bool*/ show_status_popup, /*string*/ query_params, /*function*/ success, /*function*/ error);
+Where:
+
+* srcName - String value with exact source name.
+* show_status_popup - Boolean value, it defines are UI status pop-ups enabled or disabled.
+* query_params - String with synchronization query parameters
+
+### is_syncing
+This methods checks if synchronization still in a progress.
+	:::cplusplus
+    is_syncing(/*function*/ success, /*function*/ error);
+Where:
+
+* RETURNED - String with a "true" or "false" value.
+
+### stop_sync
+This method stops synchronization process.
+	:::cplusplus
+    stop_sync(/*function*/ success, /*function*/ error);
+

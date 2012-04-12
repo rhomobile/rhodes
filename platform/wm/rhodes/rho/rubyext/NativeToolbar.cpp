@@ -226,7 +226,7 @@ void CNativeToolbar::createToolbar(rho_param *p)
 
     ShowWindow(SW_SHOW);
 
-#if defined (OS_WINDOWS)
+#if defined (OS_WINDOWS_DESKTOP)
     RECT rcWnd;
     getAppWindow().GetWindowRect(&rcWnd);
     getAppWindow().SetWindowPos( 0, 0,0,rcWnd.right-rcWnd.left-1,rcWnd.bottom-rcWnd.top, SWP_NOMOVE|SWP_NOZORDER|SWP_FRAMECHANGED);
@@ -447,7 +447,7 @@ void CNativeToolbar::removeToolbar()
         ShowWindow(SW_HIDE);
         m_nHeight = 0;
 
-#if defined (OS_WINDOWS)
+#if defined (OS_WINDOWS_DESKTOP)
         RECT rcWnd;
         getAppWindow().GetWindowRect(&rcWnd);
         getAppWindow().SetWindowPos( 0, 0,0,rcWnd.right-rcWnd.left-1,rcWnd.bottom-rcWnd.top, SWP_NOMOVE|SWP_NOZORDER|SWP_FRAMECHANGED);

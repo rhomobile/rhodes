@@ -34,7 +34,7 @@
 #define stricmp strcasecmp
 #endif
 
-#ifdef OS_WINDOWS
+#ifdef OS_WINDOWS_DESKTOP
 #define strncasecmp _strnicmp
 #endif
 
@@ -73,7 +73,7 @@ extern long _timezone;
 #endif
 #endif
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 #define _USE_MATH_DEFINES
 #endif
 
@@ -112,7 +112,7 @@ typedef unsigned __int64 uint64;
 #define FMTI64 "%I64d"
 #define FMTU64 "%I64u"
 
-#else // !(defined( OS_WINDOWS ) || defined( OS_WINCE ))
+#else // !defined( WINDOWS_PLATFORM)
 
 #define FMTI64 "%lli"
 #define FMTU64 "%llu"

@@ -29,19 +29,37 @@ package com.rhomobile.rhodes;
 import java.io.CharArrayWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
+import android.app.ActivityManager;
+import android.content.Context;
+
+import java.io.*;
 
 public class Logger {
 
+    private static boolean mMemoryInfoDumpEnabled = false;
+    private static long mMemoryInfoDumpInterval = 0;
+    private static long mLastTimeMemoryInfoDumped = 0;
+
 	// Errors
-	public native static void E(String tag, String msg);
+	public static void E(String tag, String msg) {
+        eNative(tag, appendMemoryDumpIfNeeded(msg));
+    }
 	// Warnings
-	public native static void W(String tag, String msg);
+	public static void W(String tag, String msg) {
+        wNative(tag, appendMemoryDumpIfNeeded(msg));
+    }
 	// Info
-	public native static void I(String tag, String msg);
+	public static void I(String tag, String msg) {
+        iNative(tag, appendMemoryDumpIfNeeded(msg));
+    }
 	// Debug
-	public native static void D(String tag, String msg);
+	public static void D(String tag, String msg) {
+        dNative(tag, appendMemoryDumpIfNeeded(msg));
+    }
 	// Trace
-	public native static void T(String tag, String msg);
+	public static void T(String tag, String msg) {
+        tNative(tag, appendMemoryDumpIfNeeded(msg));
+    }
 	
 	public static void E(String tag, Throwable e) {
 	    Writer bufWriter = new CharArrayWriter(256);
@@ -71,5 +89,92 @@ public class Logger {
 	public static void T(String tag, Throwable e) {
 		T(tag, e.getMessage());
 	}
-	
+
+    public static void enableMemoryInfoDump(long interval) {
+        mMemoryInfoDumpEnabled = true;
+        mMemoryInfoDumpInterval = interval;
+    }
+
+    public static void disableMemoryInfoDump() {
+        mMemoryInfoDumpEnabled = false;
+    }
+
+    private static String appendMemoryDumpIfNeeded( String msg ) {
+        long now = System.currentTimeMillis();
+        if ( mMemoryInfoDumpEnabled && ( ( now - mLastTimeMemoryInfoDumped) > mMemoryInfoDumpInterval) ) {
+            mLastTimeMemoryInfoDumped = now;
+            return msg + "\n" + getMemoryDump();
+        }
+        return msg;
+    }
+
+    private static String getMemoryDump() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("It's time to dump memory info:\n");
+
+        {
+            builder.append("Contents of /proc/meminfo:\n");
+            builder.append(getProcMeminfoContents());
+            builder.append("\n");
+        }
+
+        {
+            builder.append("MemoryInfo from ActivityService:\n");
+            builder.append( getActivitiManagerMemInfo() );
+            builder.append("\n");
+        }
+
+        return builder.toString();
+    }
+
+    private static String getProcMeminfoContents() {
+        try {
+            BufferedReader reader = new BufferedReader( new FileReader ("/proc/meminfo"));
+            String line  = null;
+            StringBuilder stringBuilder = new StringBuilder();
+            String ls = System.getProperty("line.separator");
+            int nLines = 0;
+            //get only first 5 lines
+            while( (( line = reader.readLine() ) != null) && ( nLines++ < 5 ) ) {
+
+                stringBuilder.append( line );
+                stringBuilder.append( ls );
+            }
+            return stringBuilder.toString();
+        } catch (IOException e) {
+            return "Can't get contents of /proc/meminfo";
+        }
+    }
+
+    private static String getActivitiManagerMemInfo() {
+		try {
+			Context context = RhodesService.getContext();
+			ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+			ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+			activityManager.getMemoryInfo(memoryInfo);
+
+			StringBuilder builder = new StringBuilder();
+
+			builder.append("memoryInfo.availMem ").append(memoryInfo.availMem).append("\n");
+			builder.append("memoryInfo.lowMemory ").append(memoryInfo.lowMemory).append("\n");
+			builder.append("memoryInfo.threshold ").append(memoryInfo.threshold).append("\n");
+
+			return builder.toString();
+		} catch ( IllegalStateException e ) {
+			return "Can't get memory info from ActivityManager";
+		}
+
+
+    }
+
+    // Errors
+    private native static void eNative(String tag, String msg);
+    // Warnings
+    private native static void wNative(String tag, String msg);
+    // Info
+    private native static void iNative(String tag, String msg);
+    // Debug
+    private native static void dNative(String tag, String msg);
+    // Trace
+    private native static void tNative(String tag, String msg);
 }

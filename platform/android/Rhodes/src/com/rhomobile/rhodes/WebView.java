@@ -26,6 +26,7 @@
 
 package com.rhomobile.rhodes;
 
+import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 import android.net.Uri;
@@ -45,10 +46,14 @@ public class WebView {
 			url = u;
 			index = i;
 		}
-		
-		public void run() {
-			RhodesService r = RhodesService.getInstance();
-			r.getMainView().navigate(url, index);
+
+        public void run() {
+            try {
+                MainView mainView = RhodesActivity.safeGetInstance().getMainView();
+                mainView.navigate(url, index);
+            } catch (Throwable ex) {
+                Logger.E(TAG, ex);
+            }
 		}
 	};
 	
@@ -194,19 +199,19 @@ public class WebView {
             Logger.E(TAG, e);
 		}
 	}
-	
-	public static int activeTab() {
-		try {
-			RhodesService r = RhodesService.getInstance();
-			return r.getMainView().activeTab();
-		}
-		catch (Exception e) {
+
+    public static int activeTab() {
+        try {
+            MainView mainView = RhodesActivity.safeGetInstance().getMainView();
+            return mainView != null ? mainView.activeTab() : 0;
+        }
+        catch (Exception e) {
             Logger.E(TAG, e);
-		}
-		
-		return 0;
-	}
-	
+        }
+
+        return 0;
+    }
+
 	public static void executeJs(String js, int index) {
 		try {
 			PerformOnUiThread.exec(new NavigateTask("javascript:" + js, index));

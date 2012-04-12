@@ -24,8 +24,8 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
-#TODO: enable it for Android also
-if System.get_property('platform') == 'WINDOWS'
+if Object.const_defined?('RhoElementsExt')
+
 module Barcode
 
 class << self
@@ -107,4 +107,5 @@ class << self
     end
 end    
 end
+
 end

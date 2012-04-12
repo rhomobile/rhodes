@@ -592,6 +592,8 @@ VALUE rho_json_parse(VALUE v,VALUE str)
 
     RAWLOG_ERROR1("Incorrect json body.Error:%s", (szError ? szError:""));
 
+    rho_ruby_raise_runtime(szError);
+
     if ( szError )
         free(szError);
 

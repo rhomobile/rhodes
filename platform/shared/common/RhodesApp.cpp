@@ -47,6 +47,15 @@
 
 #include <algorithm>
 
+// licence lib
+#ifdef OS_ANDROID
+#include "../../../res/libs/motorolalicence/android/MotorolaLicence.h" 
+#endif
+#ifdef OS_MACOSX
+#include "../../../res/libs/motorolalicence/iphone/MotorolaLicence.h" 
+#endif
+
+
 #ifdef OS_WINCE
 #include <winsock.h>
 #endif 
@@ -157,6 +166,9 @@ void CAppCallbacksQueue::call(CAppCallbacksQueue::callback_t type)
 
 void CAppCallbacksQueue::callCallback(const String& strCallback)
 {
+    if ( !rho_ruby_is_started() )
+        return;
+
     String strUrl = RHODESAPP().getBaseUrl();
     strUrl += strCallback;
     NetResponse resp = getNetRequest().pullData( strUrl, null );
@@ -255,7 +267,7 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
         switch (type)
         {
         case app_deactivated:
-#if !defined( OS_WINCE ) && !defined (OS_WINDOWS)
+#if !defined( WINDOWS_PLATFORM )
             m_expected = local_server_restart;
 #else
             m_expected = app_activated;
@@ -329,9 +341,10 @@ CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath, con
 
     m_appCallbacksQueue = new CAppCallbacksQueue();
 
-#if defined(OS_WINCE) || defined (OS_WINDOWS)
+#if defined(WINDOWS_PLATFORM)
     //initializing winsock
     WSADATA WsaData;
+	m_cameraOpened = false;
     int result = WSAStartup(MAKEWORD(2,2),&WsaData);
 #endif
 
@@ -424,7 +437,7 @@ void CRhodesApp::stopApp()
 {
    	m_appCallbacksQueue->stop(1000);
 
-    if (!m_bExit)
+    if (!m_bExit && rho_ruby_is_started())
     {
         m_bExit = true;
         m_httpServer->stop();
@@ -482,6 +495,9 @@ public:
 
     void run(common::CRhoThread &)
     {
+        if ( !rho_ruby_is_started() )
+            return;
+
         getNetRequest().pushData( m_strCallback, m_strBody, null );
     }
 };
@@ -545,7 +561,7 @@ void CRhodesApp::callUiCreatedCallback()
 
 void CRhodesApp::callUiDestroyedCallback()
 {
-    if ( m_bExit )
+    if ( m_bExit || !rho_ruby_is_started() )
         return;
 
     String strUrl = m_strHomeUrl + "/system/uidestroyed";
@@ -564,7 +580,7 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
         // Restart server each time when we go to foreground
 /*        if (m_activateCounter++ > 0)
         {
-#if !defined( OS_WINCE ) && !defined (OS_WINDOWS)
+#if !defined( WINDOWS_PLATFORM )
             m_httpServer->stop();
 #endif
             this->stopWait();
@@ -585,22 +601,25 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
         m_bDeactivationMode = true;
         m_appCallbacksQueue->addQueueCommand(new CAppCallbacksQueue::Command(CAppCallbacksQueue::app_deactivated));
 
-        String strUrl = m_strHomeUrl + "/system/deactivateapp";
-        NetResponse resp = getNetRequest().pullData( strUrl, null );
-        if ( !resp.isOK() )
+        if ( rho_ruby_is_started() )
         {
-            LOG(ERROR) + "deactivate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
-        }else
-        {
-            const char* szData = resp.getCharData();
-            boolean bStop = szData && strcmp(szData,"stop_local_server") == 0;
-
-            if (bStop)
+            String strUrl = m_strHomeUrl + "/system/deactivateapp";
+            NetResponse resp = getNetRequest().pullData( strUrl, null );
+            if ( !resp.isOK() )
             {
-#if !defined( OS_WINCE ) && !defined (OS_WINDOWS)
-                LOG(INFO) + "Stopping local server.";
-                m_httpServer->stop();
-#endif
+                LOG(ERROR) + "deactivate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+            }else
+            {
+                const char* szData = resp.getCharData();
+                boolean bStop = szData && strcmp(szData,"stop_local_server") == 0;
+
+                if (bStop)
+                {
+    #if !defined( WINDOWS_PLATFORM )
+                    LOG(INFO) + "Stopping local server.";
+                    m_httpServer->stop();
+    #endif
+                }
             }
         }
 
@@ -873,14 +892,18 @@ const String& CRhodesApp::getRhoMessage(int nError, const char* szName)
         strUrl += szName;
     }
 
-    NetResponse resp = getNetRequest().pullData( strUrl, null );
-    if ( !resp.isOK() )
+    if ( rho_ruby_is_started() )
     {
-        LOG(ERROR) + "getRhoMessage failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+        NetResponse resp = getNetRequest().pullData( strUrl, null );
+        if ( !resp.isOK() )
+        {
+            LOG(ERROR) + "getRhoMessage failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+            m_strRhoMessage = "";
+        }
+        else
+            m_strRhoMessage = resp.getCharData();
+    }else
         m_strRhoMessage = "";
-    }
-    else
-        m_strRhoMessage = resp.getCharData();
 
     return m_strRhoMessage;
 }
@@ -930,7 +953,7 @@ static void callback_set_syncserver(void *arg, String const &strQuery)
     size_t nPos = strQuery.find("syncserver=");
     if ( nPos != String::npos )
     {
-        strSyncserver = strQuery.substr(nPos+11);
+        strSyncserver = rho::net::URI::urlDecode(strQuery.substr(nPos+11));
     } else {
     	LOG(WARNING) + "Unable to find 'syncserver' parameter";
     }
@@ -1642,6 +1665,9 @@ void CRhodesApp::setScreenRotationNotification(String strUrl, String strParams)
 
 void CRhodesApp::callScreenRotationCallback(int width, int height, int degrees)
 {
+    if ( !rho_ruby_is_started() )
+        return;
+
 	synchronized(m_mxScreenRotationCallback) 
 	{
 		if (m_strScreenRotationCallback.length() == 0)
@@ -1702,7 +1728,8 @@ void CRhodesApp::loadUrl(String url)
     url = canonicalizeRhoUrl(url);
     if (callback)
     {
-        getNetRequest().pushData( url,  "rho_callback=1", null );
+        if ( rho_ruby_is_started() )
+            getNetRequest().pushData( url,  "rho_callback=1", null );
     }
     else
         navigateToUrl(url);
@@ -2068,5 +2095,66 @@ int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
 
     return result; 
 }
+    
+int rho_is_motorola_licence_checked() {
+	const char* szMotorolaLicence = get_app_build_config_item("motorola_license");
+	const char* szMotorolaLicenceCompany = get_app_build_config_item("motorola_license_company");
+    
+    if ((szMotorolaLicence == NULL) || (szMotorolaLicenceCompany == NULL)) {
+        return 0;
+    }
+
+    int res_check = 1;
+#ifdef OS_ANDROID
+    res_check = MotorolaLicence_check(szMotorolaLicenceCompany, szMotorolaLicence);
+#endif
+    
+#ifdef OS_MACOSX
+    res_check = MotorolaLicence_check(szMotorolaLicenceCompany, szMotorolaLicence);
+#endif
+    
+    return res_check;
+}
+    
+int rho_is_rho_elements_extension_can_be_used() {
+    int res_check = 1;
+
+#ifdef OS_ANDROID
+#ifdef APP_BUILD_CAPABILITY_MOTOROLA
+    // ET1
+    res_check = 1;
+#else
+    res_check = rho_is_motorola_licence_checked();
+#endif    
+#endif    
+#ifdef OS_MACOSX
+    res_check = rho_is_motorola_licence_checked();
+#endif    
+    return res_check;
+}
+    
+int rho_can_app_started_with_current_licence() {
+	const char* szMotorolaLicence = get_app_build_config_item("motorola_license");
+	const char* szMotorolaLicenceCompany = get_app_build_config_item("motorola_license_company");
+    
+    if ((szMotorolaLicence == NULL) || (szMotorolaLicenceCompany == NULL)) {
+        return 1;
+    }
+        
+    int res_check = 1;
+#ifdef OS_ANDROID
+#ifdef APP_BUILD_CAPABILITY_MOTOROLA
+    // ET1
+    res_check = 1;
+#else
+    res_check = rho_is_motorola_licence_checked();
+#endif    
+#endif    
+#ifdef OS_MACOSX
+    res_check = rho_is_motorola_licence_checked();
+#endif        
+    return res_check;
+}
+    
 
 } //extern "C"

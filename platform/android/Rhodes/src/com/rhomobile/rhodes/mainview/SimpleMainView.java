@@ -58,6 +58,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AbsoluteLayout;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -75,6 +76,21 @@ public class SimpleMainView implements MainView {
 			goBack();//back(0);
 		}
 	};
+	
+	private void addWebViewToMainView(View webView, int index, LinearLayout.LayoutParams params) {
+		Context ctx = RhodesActivity.getContext();
+		AbsoluteLayout containerView = new AbsoluteLayout(ctx);
+		
+		containerView.addView(webView, new AbsoluteLayout.LayoutParams(AbsoluteLayout.LayoutParams.MATCH_PARENT, AbsoluteLayout.LayoutParams.MATCH_PARENT, 0, 0));
+		
+		view.addView(containerView, index, params);
+	}
+	
+	private void removeWebViewFromMainView() {
+		ViewGroup pv = (ViewGroup)webView.getView().getParent();
+		pv.removeView(webView.getView());
+		view.removeView(pv);
+	}
 	
 	public class MyView extends LinearLayout {
 		public MyView(Context ctx) {
@@ -168,7 +184,8 @@ public class SimpleMainView implements MainView {
 		mNativeView = nview;
 		mNativeViewView = mNativeView.getView();
 		if (mNativeViewView != null) {
-			view.removeView(webView.getView());
+			//view.removeView(webView.getView());
+			removeWebViewFromMainView();
 			//int view_index = 0;
 			//if (navBar != null) {
 				//view_index = 1;
@@ -220,7 +237,8 @@ public class SimpleMainView implements MainView {
 				view.addView(navBar, index);
 				index++;
 			}
-			view.addView(webView.getView(), index, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
+			//view.addView(webView.getView(), index, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
+			addWebViewToMainView(webView.getView(), index, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
 			index++;
 			if (toolBar != null) {
 				view.addView(toolBar, index);
@@ -304,7 +322,8 @@ public class SimpleMainView implements MainView {
 		restoreWebView();
 		IRhoWebView v = null;
 		if (webView != null) {
-			view.removeView(webView.getView());
+			//view.removeView(webView.getView());
+			removeWebViewFromMainView();
 			v = webView;
 			webView = null;
 		}
@@ -525,24 +544,10 @@ public class SimpleMainView implements MainView {
 		view.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, FILL_PARENT));
 		
 		webView = v;
-		//if (v != null)
-		//	webView = v.detachWebView();
 		if (webView == null) {
-	        if (Capabilities.WEBKIT_BROWSER_ENABLED) {
-	            Logger.D(TAG, "Creating Motorola WebKIT view");
-	            try {
-	                Class<? extends IRhoWebView> viewClass = (Class<? extends IRhoWebView>)Class.forName("com.rhomobile.rhodes.webview.EkiohWebView");
-	                Constructor<? extends IRhoWebView> viewCtor = viewClass.getConstructor(Context.class, Runnable.class);
-	                webView = viewCtor.newInstance(activity, RhodesApplication.AppState.AppStarted.addObserver("MotorolaStartEngineObserver", true));
-	            } catch (Throwable e) {
-	                Logger.E(TAG, e);
-	                RhodesApplication.stop();
-	            }
-	        } else {
-	            webView = new GoogleWebView(activity);
-	        }
+		    webView = activity.createWebView();
 		}
-		view.addView(webView.getView(), new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
+		addWebViewToMainView(webView.getView(), 0, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
 		
 		LinearLayout bottom = new LinearLayout(activity);
 		bottom.setOrientation(LinearLayout.HORIZONTAL);
@@ -553,7 +558,6 @@ public class SimpleMainView implements MainView {
 		toolBar = bottom;
 		
 		setupToolbar(toolBar, params);
-		
 		
 		webView.getView().requestFocus();
 	}

@@ -25,10 +25,10 @@
 *------------------------------------------------------------------------*/
 
 #include "common/RhoPort.h"
-#ifdef OS_WINDOWS
+#ifdef OS_WINDOWS_DESKTOP
 #include <atlstr.h>
 #endif
-#if defined OS_WINCE || defined OS_WINDOWS
+#if defined(WINDOWS_PLATFORM)
 #include "ruby\wince\direct.h"
 #endif
 
@@ -102,11 +102,11 @@ const char* RhoGetRootPath() {
 
 int rho_testvprintf(const char * fmt, va_list args)
 {
-#ifdef OS_WINDOWS
+#ifdef OS_WINDOWS_DESKTOP
     CAtlStringA str;
     str.FormatV(fmt,args);
     OutputDebugStringA(str);
-#endif //OS_WINDOWS
+#endif //OS_WINDOWS_DESKTOP
     return vfprintf(stdout,fmt, args);
 }
 

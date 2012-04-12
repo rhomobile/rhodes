@@ -44,13 +44,12 @@
 #include "IBrowserEngine.h"
 #include "common/app_build_capabilities.h"
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 #include "menubar.h"
 #endif
 
 #include "LogView.h"
 
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 #define PB_NAVIGATETAB					WM_USER	+ 1
 #define PB_GEN_ACTIVEX					WM_USER	+ 2
 #define PB_GEN_QUIT						WM_USER + 3
@@ -64,6 +63,8 @@
 #define PB_SCREEN_ORIENTATION_CHANGED	WM_USER + 11
 #define PB_NEWGPSDATA					WM_USER + 12
 
+#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+
 extern UINT WM_BROWSER_ONDOCUMENTCOMPLETE;
 extern UINT WM_BROWSER_ONNAVIGATECOMPLETE;
 extern UINT WM_BROWSER_ONTITLECHANGE;
@@ -73,7 +74,7 @@ extern UINT WM_BROWSER_ONNAVIGATIONERROR;
 extern UINT WM_BROWSER_ONSETSIPSTATE;
 extern UINT WM_BROWSER_ONALERTPOPUP;
 extern UINT WM_BROWSER_ONAUTHENTICATIONREQUEST;
-extern UINT WM_BROWSER_ONGPSDATA;
+//extern UINT WM_BROWSER_ONGPSDATA;
 
 #else
 #if defined (_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
@@ -102,6 +103,7 @@ static UINT WM_BLUETOOTH_DISCOVERED    = ::RegisterWindowMessage(L"RHODES_WM_BLU
 static UINT WM_BLUETOOTH_CALLBACK	   = ::RegisterWindowMessage(L"RHODES_WM_BLUETOOTH_CALLBACK");
 static UINT WM_EXECUTE_COMMAND		   = ::RegisterWindowMessage(L"RHODES_WM_EXECUTE_COMMAND");
 static UINT WM_EXECUTE_RUNNABLE		   = ::RegisterWindowMessage(L"RHODES_WM_EXECUTE_RUNNABLE");
+extern UINT WM_LICENSE_SCREEN;
 
 typedef struct _TCookieData {
     char* url;
@@ -131,13 +133,17 @@ public:
     CNativeToolbar& getToolbar(){ return m_toolbar; }
     void performOnUiThread(rho::common::IRhoRunnable* pTask);
 
-    LRESULT InitMainWindow();
+    void calculateMainWindowRect(RECT& rcMainWindow);
+    void initBrowserWindow();
+    void resizeWindow( int xSize, int ySize);
 
     // Required to forward messages to the PIEWebBrowser control
     BOOL TranslateAccelerator(MSG* pMsg);
 
 #if defined( OS_PLATFORM_MOTCE )
    	void SetFullScreen(bool bFull);
+#endif
+#if defined(OS_WINCE)
 	bool m_bFullScreen;
 #endif
 
@@ -147,7 +153,7 @@ public:
 	void closeNativeView();
     rho::IBrowserEngine* getWebKitEngine(){return m_pBrowserEng; }
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
     DECLARE_WND_CLASS(TEXT("Rhodes.MainWindow"))
 #else
 	static ATL::CWndClassInfo& GetWndClassInfo() 
@@ -186,11 +192,11 @@ public:
         COMMAND_ID_HANDLER(ID_SETCOOKIE, OnSetCookieCommand)
 		COMMAND_RANGE_HANDLER(ID_CUSTOM_MENU_ITEM_FIRST, ID_CUSTOM_MENU_ITEM_LAST, OnCustomMenuItemCommand)
 		COMMAND_RANGE_HANDLER(ID_CUSTOM_TOOLBAR_ITEM_FIRST, ID_CUSTOM_TOOLBAR_ITEM_LAST, OnCustomToolbarItemCommand)
-#if defined(OS_WINDOWS) || defined( OS_PLATFORM_MOTCE )
+#if defined(OS_WINDOWS_DESKTOP) || defined( OS_PLATFORM_MOTCE )
 		COMMAND_ID_HANDLER(IDM_POPUP_MENU, OnPopupMenuCommand)
 #endif
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 		MESSAGE_HANDLER(WM_WINDOWPOSCHANGED, OnPosChanged)
 #endif
 		MESSAGE_HANDLER(WM_TAKEPICTURE, OnTakePicture)
@@ -206,6 +212,7 @@ public:
 		MESSAGE_HANDLER(WM_BLUETOOTH_CALLBACK, OnBluetoothCallback);
 		MESSAGE_HANDLER(WM_EXECUTE_COMMAND, OnExecuteCommand);
         MESSAGE_HANDLER(WM_EXECUTE_RUNNABLE, OnExecuteRunnable);
+		MESSAGE_HANDLER(WM_LICENSE_SCREEN, OnLicenseScreen);
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
         MESSAGE_HANDLER(WM_BROWSER_ONDOCUMENTCOMPLETE, OnBrowserDocumentComplete);
         MESSAGE_HANDLER(WM_BROWSER_ONNAVIGATECOMPLETE, OnNavigateComplete);
@@ -216,10 +223,10 @@ public:
         MESSAGE_HANDLER(WM_BROWSER_ONSETSIPSTATE, OnSetSIPState);
         MESSAGE_HANDLER(WM_BROWSER_ONALERTPOPUP, OnAlertPopup);
         MESSAGE_HANDLER(WM_BROWSER_ONAUTHENTICATIONREQUEST, OnAuthenticationRequest);
-        MESSAGE_HANDLER(WM_BROWSER_ONGPSDATA, OnGeolocationData);
+//        MESSAGE_HANDLER(WM_BROWSER_ONGPSDATA, OnGeolocationData);
+#endif
 
         MESSAGE_RANGE_HANDLER(PB_NAVIGATETAB, PB_NEWGPSDATA, OnWebKitMessages)
-#endif
 
     END_MSG_MAP()
 	
@@ -251,11 +258,11 @@ private:
 	LRESULT OnCustomMenuItemCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnCustomToolbarItemCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-#if defined(OS_WINDOWS) || defined( OS_PLATFORM_MOTCE )
+#if defined(OS_WINDOWS_DESKTOP) || defined( OS_PLATFORM_MOTCE )
 	LRESULT OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 #endif
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 	LRESULT OnPosChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 #endif
 
@@ -272,18 +279,21 @@ private:
 	LRESULT OnBluetoothCallback (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnExecuteCommand (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnExecuteRunnable (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT OnLicenseScreen (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+
+    LRESULT OnWebKitMessages (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     LRESULT OnBrowserDocumentComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnNavigateComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnTitleChange (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-    LRESULT OnWebKitMessages (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnBeforeNavigate (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnNavigateTimeout (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnNavigateError (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnSetSIPState (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnAlertPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnAuthenticationRequest (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-    LRESULT OnGeolocationData (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+//    LRESULT OnGeolocationData (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 #endif
 
 public:
@@ -342,7 +352,7 @@ private:
 #if defined(_WIN32_WCE)
     // main menu bar for application
     CWindow m_menuBar;
-#elif defined (OS_WINDOWS)
+#elif defined (OS_WINDOWS_DESKTOP)
 	CMenuBar m_menuBar;
 //	int m_menuBarHeight;
 	CLogView m_logView;

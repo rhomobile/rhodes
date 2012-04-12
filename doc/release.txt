@@ -215,7 +215,10 @@ Same procedure as for plug-in
 
 2. Import project into Eclipse (File/Import/'Existing project into Workspace')
 
-3. Install DLTK 2.0
+3. Install additional components 
+
+   3.1 DLTK 2.0 (eclipse update site - http://download.eclipse.org/technology/dltk/updates/)
+   3.2 Egit plugin (eclipse update site - http://download.eclipse.org/egit/updates)
 
 4. Import into workspace DLTK plugins
 
@@ -229,6 +232,7 @@ Same procedure as for plug-in
     org.eclipse.dltk.console
     org.eclipse.dltk.core
     org.eclipse.dltk.debug.ui
+    org.eclipse.egit.ui
 
     After import procedure in workspace should appears seven plugin projects.
 

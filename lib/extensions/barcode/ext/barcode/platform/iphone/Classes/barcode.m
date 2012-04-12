@@ -82,3 +82,66 @@ const char* rho_barcode_barcode_recognize(const char* filename) {
     
     return strbuf;
 }
+
+
+
+@interface RhoUIThreadCallbackRunner : NSObject {
+    
+}
+
++ (RhoUIThreadCallbackRunner*) getSharedInstance;
+
++ (void) runEnumerateCallback:(NSString*) callback_url;
+
+@end
+
+static RhoUIThreadCallbackRunner* uiThreadCallbackRunner = nil;
+
+@implementation RhoUIThreadCallbackRunner
+
++ (RhoUIThreadCallbackRunner*) getSharedInstance {
+    if (uiThreadCallbackRunner == nil) {
+        uiThreadCallbackRunner = [[RhoUIThreadCallbackRunner alloc] init];
+    }
+    return uiThreadCallbackRunner;
+}
+
+- (void) runEnumerateCallbackCommand:(NSString*) callback_url {
+    Barcode_executeEnumerateCallback(callback_url);
+}
+
+- (void) runEnumerateCallbackObj:(NSString*) callback_url {
+    [self performSelectorOnMainThread:@selector(runEnumerateCallbackCommand:) withObject:callback_url waitUntilDone:NO];
+}
+
++ (void) runEnumerateCallback:(NSString*) callback_url {
+    [[RhoUIThreadCallbackRunner getSharedInstance] runEnumerateCallbackObj:callback_url];
+}
+
+
+@end
+
+
+void rho_motobarcode_enumerate(const char* callback) {
+    [RhoUIThreadCallbackRunner runEnumerateCallback:[NSString stringWithUTF8String:callback]];
+    //Barcode_executeEnumerateCallback([NSString stringWithUTF8String:callback]);
+}
+
+void  rho_motobarcode_enable(const char* callback, rho_param* p) {
+    NSLog(@"Barcode::enable() DO NOT SUPPORT BY RHODES SW SCANNER !");    
+}
+
+void  rho_motobarcode_disable() {
+    NSLog(@"Barcode::disable() DO NOT SUPPORT BY RHODES SW SCANNER !");    
+}
+
+void  rho_motobarcode_start() {
+    NSLog(@"Barcode::start() DO NOT SUPPORT BY RHODES SW SCANNER !");    
+}
+
+void  rho_motobarcode_stop() {
+    NSLog(@"Barcode::stop() DO NOT SUPPORT BY RHODES SW SCANNER !");    
+}
+
+
+
