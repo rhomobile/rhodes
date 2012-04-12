@@ -143,7 +143,7 @@ public:
 #if defined( OS_PLATFORM_MOTCE )
    	void SetFullScreen(bool bFull);
 #endif
-#if defined( OS_PLATFORM_MOTCE ) || defined(OS_WINCE) || defined(_WIN32_WCE)
+#if defined(OS_WINCE)
 	bool m_bFullScreen;
 #endif
 
