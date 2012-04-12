@@ -94,6 +94,8 @@ struct IRhoExtManager
     virtual StringW getPageTitle(UINT iTab) = 0;
 
     virtual StringW getConfigPath() = 0;
+
+    virtual void setBrowserGesturing(bool bEnableGesturing) = 0;
 };
 
 class CExtManager : public IRhoExtManager
@@ -150,6 +152,7 @@ public:
     virtual int getTextZoom(); //Enum (0 to 4)
     virtual StringW getPageTitle(UINT iTab);
     virtual StringW getConfigPath();
+    virtual void setBrowserGesturing(bool bEnableGesturing);
 };
 
 } //namespace common
