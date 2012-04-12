@@ -1158,7 +1158,7 @@ public class Nfc implements RhodesActivityListener {
 		return result;
 	}
 
-    Dialog onCreateDialog(RhodesActivity activity, int id) {
+    public Dialog onCreateDialog(RhodesActivity activity, int id) {
         return null;
     }
 
