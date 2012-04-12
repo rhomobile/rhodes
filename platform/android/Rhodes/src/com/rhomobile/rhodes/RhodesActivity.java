@@ -549,9 +549,6 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     	if (Capabilities.MOTOROLA_ENABLED) {
     		return true;
     	}
-    	if (Capabilities.MOTOROLA_BROWSER_ENABLED) {
-    		return true;
-    	}
     	return RhodesService.isMotorolaLicencePassed();
     }
 
