@@ -5,6 +5,8 @@ class SpecRunnerController < Rho::RhoController
 
   #GET /SpecRunner
   def index
+    GC.enable()
+  
     puts 'before render'
   
     @msg = 'MSpec version: '+MSpec::VERSION
