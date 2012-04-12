@@ -71,6 +71,12 @@ boolean CNetRequestHolder::isCancelled()
     return RHODESAPPBASE().canonicalizeRhoUrl(strUrl);
 }
 
+bool CNetRequestHolder::isInsideRequest() const
+{
+	return (m_pReq != 0);
+}
+
+
 CNetRequestWrapper::CNetRequestWrapper(INetRequestImpl* pImpl, CNetRequestHolder* pHolder) : m_pReqImpl(pImpl), m_pHolder(pHolder)
 {
     if ( m_pHolder )
@@ -139,6 +145,7 @@ String CNetRequestWrapper::resolveUrl(const String& strUrl)
 {
     return RHODESAPPBASE().canonicalizeRhoUrl(strUrl);
 }
+
 }
 }
 
