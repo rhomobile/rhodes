@@ -333,6 +333,7 @@ namespace "build" do
       end
       cp File.join($startdir, $vcbindir, "win32/rhodes/SimulatorRelease/rhosimulator.exe"), target_path
 
+      cp File.join(qtdir, "bin/phonon4.dll"), target_path
       cp File.join(qtdir, "bin/QtCore4.dll"), target_path
       cp File.join(qtdir, "bin/QtGui4.dll"), target_path
       cp File.join(qtdir, "bin/QtNetwork4.dll"), target_path
