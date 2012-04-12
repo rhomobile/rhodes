@@ -640,6 +640,12 @@ void CSyncNotify::callLoginCallback(const CSyncNotification& oNotify, int nErrCo
 	//	LOG.ERROR("Call Login callback failed.", exc);
 	//}
 }
+
+bool CSyncNotify::isInsideRequest() const
+{
+	return m_NetRequest.isInsideRequest();
+}
+
 }
 }
 
