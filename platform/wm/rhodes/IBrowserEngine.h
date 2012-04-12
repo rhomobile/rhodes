@@ -27,6 +27,7 @@ public:
     virtual int GetTextZoomOnTab(UINT iTab) = 0;
     virtual BOOL GetTitleOnTab(LPTSTR szURL, UINT iMaxLen, UINT iTab) = 0;
     virtual void OnDocumentComplete(LPCTSTR url) = 0;
+    virtual void setBrowserGesturing(bool bEnableGesturing) = 0;
 };
 
 }

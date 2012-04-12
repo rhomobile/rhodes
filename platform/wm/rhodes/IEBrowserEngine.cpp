@@ -244,3 +244,7 @@ void CIEBrowserEngine::OnDocumentComplete(LPCTSTR url)
 		m_bLoadingComplete = true;
 	}
 }
+
+void CIEBrowserEngine::setBrowserGesturing(bool bEnableGesturing)
+{
+}
