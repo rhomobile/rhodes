@@ -86,7 +86,7 @@ CMainWindow::CMainWindow()
     mNativeViewType = "";
     g_hWndCommandBar = 0;
     m_pBrowserEng = NULL;
-#if defined( OS_PLATFORM_MOTCE ) || defined(OS_WINCE) || defined(_WIN32_WCE)
+#if defined(OS_WINCE)
     m_bFullScreen = false;
 #endif
 
