@@ -1509,6 +1509,7 @@ at_exit do
     puts '********* WARNING ************************************************************************'
     puts ' License is required to run RhoElements application.'
     puts ' Please, provide  "motorola_license" and "motorola_license_company" parameters in build.yml.'
+    puts ' For more information go to http://www.motorolasolutions.com/rhoelements '    
     puts '**************************************************************************************'
   end
   
