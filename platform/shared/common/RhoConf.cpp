@@ -42,9 +42,12 @@ namespace common{
 
 RhoSettings g_RhoSettings;
 
-void RhoSettings::saveToFile(const char* szName)
+void RhoSettings::saveToFile(const char* szName, boolean bRemove/* = false*/)
 {
-    m_mapChangedValues.put(szName, getString(szName) );
+    if ( !bRemove )
+        m_mapChangedValues.put(szName, getString(szName) );
+    else
+        m_mapChangedValues.remove(szName);
 
     String strData;
     saveChangesToString(strData);
@@ -253,6 +256,13 @@ bool   RhoSettings::isExist(const char* szName){
 	return it != m_mapValues.end();
 }
 
+void  RhoSettings::removeProperty(const char* szName, boolean bSaveToFile)
+{
+    m_mapValues.remove(szName);
+    if ( bSaveToFile ) 
+        saveToFile( szName, true );
+}
+
 }
 }
 
@@ -305,6 +315,11 @@ char* rho_conf_getString(const char* szName) {
 int rho_conf_is_property_exists(const char* name)
 {
     return RHOCONF().isExist(name) ? 1 : 0;
+}
+
+void  rho_conf_remove_property(const char* name)
+{
+    RHOCONF().removeProperty(name, true);
 }
 
 void rho_conf_freeString(char* str) {

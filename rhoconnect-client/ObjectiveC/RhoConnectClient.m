@@ -208,6 +208,32 @@ void rho_free_callbackdata(void* pData)
 	[self setPollInterval: 0];
 }
 
+- (void) updateModels: (NSMutableArray*)models
+{
+	RHOM_MODEL rhom_models[models.count];
+	int nModel = 0;
+	for (RhomModel* model in models) 
+	{
+		rho_connectclient_initmodel(&rhom_models[nModel]);
+		rhom_models[nModel].name = [model.name cStringUsingEncoding:[NSString defaultCStringEncoding]];
+
+		rhom_models[nModel].sync_type = model.sync_type;
+        rhom_models[nModel].type = model.model_type;
+        
+		nModel++;
+	}
+	
+    rho_connectclient_updatemodels(rhom_models, models.count);	
+	
+    int i = 0;
+    for (RhomModel* model in models) 
+	{
+        model.source_id = rhom_models[i].source_id; 
+        rho_connectclient_destroymodel(&rhom_models[i]);
+        i++;
+    }
+}
+
 - (void) setSourceProperty: (int) nSrcID szPropName:(NSString*) szPropName szPropValue:(NSString*) szPropValue
 {
     rho_sync_set_source_property( nSrcID, [szPropName cStringUsingEncoding:[NSString defaultCStringEncoding]],
