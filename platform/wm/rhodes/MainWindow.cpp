@@ -238,14 +238,15 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 #endif
 
 #if defined(OS_WINCE)
-    calculateMainWindowRect(rcMainWindow);
-    MoveWindow(&rcMainWindow);
-
 	//Set fullscreen after window resizing
 	m_bFullScreen = RHOCONF().getBool("full_screen");
 
 	if (m_bFullScreen)
    	    SetFullScreen(true);
+
+    calculateMainWindowRect(rcMainWindow);
+    MoveWindow(&rcMainWindow);
+
 #endif //OS_WINCE
 
 	rho_rhodesapp_callUiCreatedCallback();
@@ -741,6 +742,31 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 #endif
 
 #endif
+    return 0;
+}
+
+LRESULT CMainWindow::OnSetFocus (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+{
+    HWND hBrowserWnd = m_pBrowserEng ? m_pBrowserEng->GetHTMLWND() : NULL;
+
+	if (hBrowserWnd && !IsIconic(m_hWnd))
+	{
+		HWND hWndLostFocus = (HWND)wParam;
+		if (hWndLostFocus == hBrowserWnd)
+	        return 0;
+
+		WCHAR wWindowName[30];
+		if (hWndLostFocus && GetClassName(hWndLostFocus, wWindowName, 30))
+		{
+			//  Allow the following windows to remain having focus, avoids
+			//  the bug where we're unable to select anything from a combo 
+			//  box
+			if (wcscmp(wWindowName, L"PopupWindowClass") == 0)
+		        return 0;
+		}
+        ::SetFocus(hBrowserWnd);
+	}
+
     return 0;
 }
 
