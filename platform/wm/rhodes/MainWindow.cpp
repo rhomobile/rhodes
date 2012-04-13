@@ -734,6 +734,43 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
         //SetWindowPos(NULL, 0,0, rcMain.right-rcMain.left, rcMain.bottom-rcMain.top, SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 #endif
 
+	} else if (wParam == SPI_SIPMOVE) {
+		//
+	} else if ((wParam == SPI_SETSIPINFO) && (!m_bFullScreen)) {
+		SIPINFO pSipInfo;
+		memset(&pSipInfo, 0, sizeof(SIPINFO));
+		pSipInfo.cbSize = sizeof(SIPINFO);
+		pSipInfo.dwImDataSize = 0;
+		if (SipGetInfo(&pSipInfo)) {
+			bool isHiding = ((pSipInfo.fdwFlags & SIPF_ON) ^ SIPF_ON) != 0;
+			if (isHiding) {
+				// when hiding SIP, main window is expanded to cover/overlap SIP's area
+				pSipInfo.rcVisibleDesktop.bottom = (m_bFullScreen ? height : pSipInfo.rcSipRect.bottom);
+			} /*else if (m_bFullScreen) {
+				LONG deltaY = height - pSipInfo.rcSipRect.bottom;
+				if (deltaY > 0) {
+					pSipInfo.rcSipRect.top += deltaY;
+					pSipInfo.rcSipRect.bottom += deltaY;
+					pSipInfo.rcVisibleDesktop.bottom = pSipInfo.rcSipRect.top;
+					//SipSetDefaultRect(&pSipInfo.rcSipRect);
+				}
+			}
+			if (m_bFullScreen)
+				pSipInfo.rcVisibleDesktop.top = 0;*/
+			MoveWindow(&pSipInfo.rcVisibleDesktop, TRUE );
+
+			/*if (m_bFullScreen && (!isHiding)) {
+				HWND sipHWND = FindWindow(L"SipWndClass", NULL);
+				if (sipHWND) {
+					//::SetFocus(sipHWND);
+					//::SetForegroundWindow(sipHWND);
+					//::ShowWindow(sipHWND, SW_SHOW);
+					::SetWindowPos(sipHWND, 0, pSipInfo.rcSipRect.left, pSipInfo.rcSipRect.top,
+						pSipInfo.rcSipRect.right-pSipInfo.rcSipRect.left, pSipInfo.rcSipRect.bottom-pSipInfo.rcSipRect.top,
+						SWP_FRAMECHANGED|SWP_NOOWNERZORDER|SWP_NOZORDER|SWP_SHOWWINDOW);
+				}
+			}*/
+		}
 	}
 	
 #if !defined (OS_PLATFORM_MOTCE)
