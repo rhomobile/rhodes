@@ -188,13 +188,12 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
             Logger.D(TAG, "Creating Motorola WebKIT view");
             try {
                 Class<? extends IRhoWebView> viewClass = Class.forName("com.rhomobile.rhodes.webview.EkiohWebView").asSubclass(IRhoWebView.class);
-                final boolean runtimeLicense = Capabilities.MOTOROLA_ENABLED || Capabilities.MOTOROLADEV_ENABLED;
                 if (Capabilities.MOTOROLA_BROWSER_ENABLED) {
-                    Constructor<? extends IRhoWebView> viewCtor = viewClass.getConstructor(Context.class, Runnable.class, boolean.class, String.class);
-                    view = viewCtor.newInstance(this, RhodesApplication.AppState.AppStarted.addObserver("MotorolaStartEngineObserver", true), runtimeLicense, RhoFileApi.getRootPath());
+                    Constructor<? extends IRhoWebView> viewCtor = viewClass.getConstructor(Context.class, Runnable.class, String.class);
+                    view = viewCtor.newInstance(this, RhodesApplication.AppState.AppStarted.addObserver("MotorolaStartEngineObserver", true), RhoFileApi.getRootPath());
                 } else {
-                    Constructor<? extends IRhoWebView> viewCtor = viewClass.getConstructor(Context.class, Runnable.class, boolean.class);
-                    view = viewCtor.newInstance(this, RhodesApplication.AppState.AppStarted.addObserver("MotorolaStartEngineObserver", true), runtimeLicense);
+                    Constructor<? extends IRhoWebView> viewCtor = viewClass.getConstructor(Context.class, Runnable.class);
+                    view = viewCtor.newInstance(this, RhodesApplication.AppState.AppStarted.addObserver("MotorolaStartEngineObserver", true));
                 }
             } catch (Throwable e) {
                 Logger.E(TAG, e);
