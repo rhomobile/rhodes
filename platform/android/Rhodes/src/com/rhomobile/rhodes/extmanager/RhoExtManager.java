@@ -12,6 +12,10 @@ public class RhoExtManager extends Object {
         return ourRhoExtManager;
     }
 
+//    public static int getResourceId(String name) {
+//        return 0;
+//    }
+
     /**
      * @return IRhoExtManager instance
      */
