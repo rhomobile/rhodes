@@ -499,9 +499,10 @@ int runObjCClientTest()
         
         sclient.sync_server = @"http://rhodes-store-server.heroku.com/application";
         //sclient.sync_server = @"http://192.168.0.103:9292/application";
-
+        sclient.bulksync_state = 1;
+        
         if ( !shouldFindBySql() )
-            @throw e;
+           @throw e;
         
         if ( !shouldNotSyncWithoutLogin() )
             @throw e;
@@ -511,6 +512,7 @@ int runObjCClientTest()
         
         if ( !shouldSyncProductByName() )
             @throw e;
+        
         
         if ( !shouldSearchProduct() )
             @throw e;
@@ -794,6 +796,7 @@ int runObjCClientBlobTest()
             @throw e;
         
         sclient.sync_server = @"http://rhodes-samples-server.heroku.com/application";
+        sclient.bulksync_state = 1;
         
         if ( !shouldNotSyncWithoutLogin() )
             @throw e;
@@ -1025,7 +1028,8 @@ int runObjCClientBulkSyncTest()
         if ( !shouldBulkSync() )
             @throw e;
         
-
+        [sclient updateModels:models];
+        
         if ( !shouldBulkSyncWithCreate() )
             @throw e;
         
