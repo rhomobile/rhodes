@@ -32,6 +32,7 @@
 #include "common/RhoStd.h"
 //#include "RhoPlainLog.h"
 #include "common/RhoMutexLock.h"
+#include "common/RhoTime.h"
 
 namespace rho {
 
@@ -45,6 +46,13 @@ struct ILogSink{
     virtual void clear() = 0;
 };
 
+class IMemoryInfoCollector
+{
+public:
+    virtual ~IMemoryInfoCollector() {}
+    virtual String collect() = 0;
+};
+
 class LogSettings{
     LogSeverity m_nMinSeverity;
     bool        m_bLogToOutput;
@@ -54,6 +62,9 @@ class LogSettings{
     String      m_strLogFilePath;
 //    String      m_strLogConfFilePath;
     unsigned int m_nMaxLogFileSize;
+
+    common::CTimeInterval	m_collectMemoryInfoInterval;
+    common::CTimeInterval	m_lastTimeMemoryInfoCollected;
 
 	String      m_strLogURL;
 
@@ -66,6 +77,7 @@ class LogSettings{
     ILogSink*   m_pOutputSink;
     ILogSink*   m_pLogViewSink;
     ILogSink*   m_pSocketSink;
+    IMemoryInfoCollector* m_pMemoryInfoCollector;
 
     static common::CMutex m_FlushLock;
     static common::CMutex m_CatLock;
@@ -110,6 +122,9 @@ public:
     const String& getEnabledCategories(){ return m_strEnabledCategories; }
     const String& getDisabledCategories(){ return m_strDisabledCategories; }
     bool isCategoryEnabled(const LogCategory& cat)const;
+    
+    void setCollectMemoryInfoInterval( const common::CTimeInterval& interval ) { m_collectMemoryInfoInterval = interval; }
+    void setMemoryInfoCollector( IMemoryInfoCollector* memInfoCollector ) { m_pMemoryInfoCollector = memInfoCollector; }
 
     void setExcludeFilter( const String& strExcludeFilter );
     Vector<String>& getExcludeAttribs(){ return m_arExcludeAttribs; }
@@ -119,7 +134,7 @@ public:
     void getLogText(String& strText);
     void getLogTextW(StringW& strTextW);
     int  getLogTextPos();
-	
+
 	void setLogView(ILogSink* logView) { 
 		m_pLogViewSink = logView; 
 	}
@@ -133,6 +148,8 @@ public:
     void saveToFile();
     void loadFromConf(rho::common::RhoSettings& oRhoConf);
 
+private:
+	void processMemoryInfo( String& strMsg );
 };
 
 extern LogSettings g_LogSettings;

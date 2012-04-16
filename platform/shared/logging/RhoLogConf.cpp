@@ -58,6 +58,7 @@ LogSettings::LogSettings(){
     m_pOutputSink = new CLogOutputSink(*this);
     m_pLogViewSink = NULL;
 	m_pSocketSink = NULL;
+	m_pMemoryInfoCollector = NULL;
 }
 
 LogSettings::~LogSettings(){
@@ -98,8 +99,8 @@ void LogSettings::reinitRemoteLog() {
 	if(!m_pSocketSink && m_strLogURL != "")
 		m_pSocketSink = new CLogSocketSink(*this);
 }
-    
-    
+
+
 void LogSettings::getLogTextW(StringW& strTextW)
 {
     boolean bOldSaveToFile = isLogToFile();
@@ -133,7 +134,7 @@ void LogSettings::saveToFile(){
     RHOCONF().setInt("MinSeverity", getMinSeverity(), true );
     RHOCONF().setBool("LogToOutput", isLogToOutput(), true );
     RHOCONF().setBool("LogToFile", isLogToFile(), true );
-#if !defined(OS_MACOSX)	
+#if !defined(OS_MACOSX) 
     RHOCONF().setString("LogFilePath", getLogFilePath(), true );
 #endif
     RHOCONF().setInt("MaxLogFileSize", getMaxLogFileSize(), true );
@@ -161,6 +162,13 @@ void LogSettings::loadFromConf(rho::common::RhoSettings& oRhoConf)
 		setLogToSocket( oRhoConf.getBool("LogToSocket") );
 	if ( oRhoConf.isExist( "log_exclude_filter") )
         setExcludeFilter( oRhoConf.getString("log_exclude_filter") );
+	if ( oRhoConf.isExist( "log_collect_memory_info_interval" ) )
+	{
+		unsigned long seconds = oRhoConf.getInt("log_collect_memory_info_interval");
+		common::CTimeInterval interval;
+		interval.addMillis(seconds*1000);		
+		setCollectMemoryInfoInterval(interval);
+	}
 }
 
 void LogSettings::setLogFilePath(const char* szLogFilePath){ 
@@ -187,6 +195,8 @@ void LogSettings::clearLog(){
 
 void LogSettings::sinkLogMessage( String& strMsg ){
     common::CMutexLock oLock(m_FlushLock);
+
+    processMemoryInfo( strMsg );
 
     if ( isLogToFile() )
         m_pFileSink->writeLogMessage(strMsg);
@@ -246,10 +256,23 @@ void LogSettings::setExcludeFilter( const String& strExcludeFilter )
 
             //m_arExcludeAttribs.addElement( "\"" + tok + "\"=>\"" );
             m_arExcludeAttribs.addElement( tok );
-        }    	
+        } 
     }
     else
     	m_arExcludeAttribs.removeAllElements();
+}
+
+void LogSettings::processMemoryInfo( String& strMsg )
+{
+	if ( (!m_collectMemoryInfoInterval.isEmpty()) && ( m_pMemoryInfoCollector != 0 ) )
+	{
+	    common::CTimeInterval now = common::CTimeInterval::getCurrentTime();
+		if ( m_lastTimeMemoryInfoCollected.isEmpty() || ( (now-m_lastTimeMemoryInfoCollected).toULong() > m_collectMemoryInfoInterval.toULong() ) )
+		{
+		    m_lastTimeMemoryInfoCollected = now;
+		    strMsg += "\n" + m_pMemoryInfoCollector->collect();
+		}
+	}
 }
 
 }
@@ -260,7 +283,7 @@ using namespace rho::common;
 
 void rho_logconf_Init_with_separate_user_path(const char* szLogPath, const char* szRootPath, const char* szLogPort, const char* szUserPath)
 {
-    
+
 #ifdef RHODES_EMULATOR
     String strRootPath = szLogPath;
     strRootPath += RHO_EMULATOR_DIR"/";
@@ -268,7 +291,7 @@ void rho_logconf_Init_with_separate_user_path(const char* szLogPath, const char*
 #else
     rho::common::CFilePath oLogPath( szLogPath );
 #endif
-    
+
     //Set defaults
 #ifdef RHO_DEBUG
     LOGCONF().setMinSeverity( L_TRACE );
@@ -280,19 +303,19 @@ void rho_logconf_Init_with_separate_user_path(const char* szLogPath, const char*
     LOGCONF().setLogToOutput(false);
     LOGCONF().setEnabledCategories("");
 #endif//!RHO_DEBUG
-    
+
     LOGCONF().setLogPrefix(true);
-    
+
     rho::String logPath = oLogPath.makeFullPath("rholog.txt");
     LOGCONF().setLogToFile(true);
     LOGCONF().setLogFilePath( logPath.c_str() );
     LOGCONF().setMaxLogFileSize(1024*50);
-    
+
     rho_conf_Init_with_separate_user_path(szRootPath, szUserPath);
-    
+
     LOGCONF().loadFromConf(RHOCONF());
 }
-    
+
 void rho_logconf_Init(const char* szLogPath, const char* szRootPath, const char* szLogPort){
     rho_logconf_Init_with_separate_user_path(szLogPath, szRootPath, szLogPort, szRootPath);
 }
@@ -413,14 +436,14 @@ VALUE rho_conf_read_log(int limit)
 
     return res;
 }
-    
-    
+
+
 void rho_log_resetup_http_url(const char* http_log_url) {
     LOGCONF().setLogURL(http_log_url);
     LOGCONF().reinitRemoteLog();
 }
-    
-    
+
+
 #endif //RHO_NO_RUBY
 
 }

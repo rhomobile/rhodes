@@ -90,6 +90,13 @@ public:
     void clear() {}
 };
 
+class AndroidMemoryInfoCollector : public IMemoryInfoCollector
+{
+public:
+    virtual String collect();
+};
+
+
 
 } // namespace common
 } // namespace rho
