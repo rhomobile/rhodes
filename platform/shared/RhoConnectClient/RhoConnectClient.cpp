@@ -1028,6 +1028,12 @@ int rho_connectclient_is_changed(const char* szModel)
     return resChanged.isEnd() ? 0 : 1;
 }
 
+void rho_connectclient_set_synctype(const char* szModel, RHOM_SYNC_TYPE sync_type)
+{
+    db::CDBAdapter::getUserDB().executeSQL("UPDATE sources SET sync_type=? WHERE name=?",
+        getSyncTypeName(sync_type), szModel );
+}
+
 void parseServerErrors( const char* szPrefix, const String& name, const String& value, unsigned long& errors_obj, unsigned long& errors_attrs )
 {
     int nPrefixLen = strlen(szPrefix)+1;
