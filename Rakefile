@@ -277,8 +277,7 @@ namespace "config" do
             $app_config["extensions"] += ["motoapi"] #extension with plug-ins
             $app_config["extensions"] += ["rhoelements"] unless $app_config['extensions'].index('rhoelements')
 
-            #if !$app_config["capabilities"].index('native_browser')
-            if $current_platform == "android"
+            if !$app_config["capabilities"].index('native_browser')
                 $app_config["extensions"] += ['webkit-browser'] unless $app_config["extensions"].index("webkit-browser")
             end
             
@@ -297,14 +296,6 @@ namespace "config" do
             
             application_build_configs['moto-plugins'] = plugins if plugins.length() > 0
             
-            if $current_platform == 'android'
-            #    barcode_idx = $app_config['extensions'].index('barcode')
-            #    $app_config['extensions'][barcode_idx] = 'barcode-moto' unless barcode_idx.nil?
-               unless $app_config['capabilities'].index('native_browser')
-                 $app_config['capabilities'] += ['webkit_browser'] unless $app_config['capabilities'].index('webkit_browser')
-               end
-            end
-            
         end
 
         application_build_configs['shared-runtime'] = '1' if $app_config["capabilities"].index('shared_runtime')
@@ -315,7 +306,7 @@ namespace "config" do
         end
         
         if $app_config["extensions"].index("webkit-browser")
-            $app_config["capabilities"] += ["webkit_browser"] unless $current_platform == 'android'
+            $app_config["capabilities"] += ["webkit_browser"]
             $app_config["extensions"].delete("webkit-browser") unless $current_platform == 'android'
         end
     end
