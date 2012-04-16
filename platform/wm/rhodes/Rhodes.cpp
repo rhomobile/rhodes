@@ -64,6 +64,10 @@ class CEng;
 extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
 extern "C" {
 	CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
+};
+#endif // APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+#ifdef APP_BUILD_CAPABILITY_SHARED_RUNTIME
+extern "C" {
 	void rho_wmimpl_set_configfilepath(const char* path);
 	TCHAR* rho_wmimpl_get_startpage();
 	void rho_wmimpl_set_startpage(const char* path);
@@ -75,7 +79,7 @@ extern "C" {
 	const unsigned int* rho_wmimpl_get_logmaxsize();
 	const int* rho_wmimpl_get_loglevel();
 };
-#endif
+#endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
 #if defined(_WIN32_WCE) && !defined(OS_PLATFORM_MOTCE)
 #include <regext.h>
