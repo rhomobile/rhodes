@@ -29,6 +29,11 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     
     private static native void nativeRequireRubyFile(String path);
 
+    public static int getResId(String name) {
+        return 0;
+    }
+    
+    
 	public RhoExtManagerImpl() {
 		mExtensions = new Hashtable<String, IRhoExtension>();
 	}
@@ -188,7 +193,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
                         try {
                             RhodesActivity activity = RhodesActivity.safeGetInstance();
                             LayoutInflater inflater = activity.getLayoutInflater();
-                            View licenseView = inflater.inflate(R.layout.license, null);  
+                            View licenseView = inflater.inflate(getResId("layout.license"), null);  
                             activity.addContentView(licenseView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
                             Class<?> licenseClass = Class.forName("com.motorolasolutions.rhoelements.License");
                             Constructor licenseCtor = licenseClass.getConstructor();
