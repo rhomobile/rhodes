@@ -12,9 +12,15 @@ public class RhoExtManager extends Object {
         return ourRhoExtManager;
     }
 
-//    public static int getResourceId(String name) {
-//        return 0;
-//    }
+    /**
+     * Gets resource id.
+     * For example to get R.string.app_name value call getResourceId("string.app_name")
+     * @param name - symbolic name of resource as it referenced at R class
+     * @return resource id
+     */
+    public static int getResourceId(String name) {
+        return RhoExtManagerImpl.getResId(name);
+    }
 
     /**
      * @return IRhoExtManager instance
