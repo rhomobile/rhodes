@@ -122,6 +122,12 @@
     return rho_connectclient_is_changed([name cStringUsingEncoding:[NSString defaultCStringEncoding]]) == 1 ? TRUE : FALSE;
 }
 
+-(void)setSyncType : (int)type
+{
+    sync_type = type;
+    rho_connectclient_set_synctype([name cStringUsingEncoding:[NSString defaultCStringEncoding]], type);
+}
+
 int enum_func(const char* szKey, const char* szValue, void* pThis)
 {
 	NSMutableDictionary* data = (NSMutableDictionary*)pThis;

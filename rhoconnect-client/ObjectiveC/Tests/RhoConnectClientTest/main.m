@@ -483,6 +483,8 @@ int runObjCClientTest()
 	
 	[sclient addModels:models];
     
+    [product setSyncType:RST_INCREMENTAL];
+    
     //sclient.threaded_mode = FALSE;
 	//sclient.poll_interval = 0;
     [sclient setLogSeverity:1];
