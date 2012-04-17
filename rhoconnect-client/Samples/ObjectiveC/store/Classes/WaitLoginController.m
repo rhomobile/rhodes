@@ -16,6 +16,9 @@
 
 - (void)syncAllComplete:(RhoConnectNotify*) notify
 {
+    NSLog(@"sync_type: \"%@\"", notify.sync_type);
+    NSLog(@"bulk_status: \"%@\"", notify.bulk_status);
+    NSLog(@"partition: \"%@\"", notify.partition);
 	if ( [notify.status compare:@"in_progress"] == 0)
 	{
 	}else if ([notify.status compare:@"complete"] == 0)
