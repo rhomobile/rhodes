@@ -155,6 +155,14 @@ bool CExtManager::existsJavascript(const wchar_t* szJSFunction)
 #endif
 }
 
+void CExtManager::setBrowserGesturing(bool bEnableGesturing)
+{
+#ifndef RHODES_EMULATOR
+    getAppWindow().getWebKitEngine()->setBrowserGesturing(bEnableGesturing);
+#endif
+
+}
+
 void CExtManager::executeJavascript(const wchar_t* szJSFunction)
 {
     ::PostMessage( getMainWnd(), WM_COMMAND, IDM_EXECUTEJS, (LPARAM)_wcsdup(szJSFunction) );
@@ -190,14 +198,19 @@ void CExtManager::quitApp()
     rho_sys_app_exit();
 }
 
+static void __minimize_restoreApp(int nParam)
+{
+    ::ShowWindow(getMainWnd(), nParam );
+}
+
 void CExtManager::minimizeApp()
 {
-    ::ShowWindow(getMainWnd(), SW_MINIMIZE );
+    rho_callInUIThread(__minimize_restoreApp, SW_MINIMIZE);
 }
 
 void CExtManager::restoreApp()
 {
-    ::ShowWindow(getMainWnd(), SW_RESTORE );
+    rho_callInUIThread(__minimize_restoreApp, SW_RESTORE);
 }
 
 void CExtManager::resizeBrowserWindow(RECT rc)
@@ -347,6 +360,14 @@ void CExtManager::OnAppActivate(bool bActivate)
     for ( HashtablePtr<String, IRhoExtension*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )
     {
         (it->second)->OnAppActivate( bActivate, makeExtData() );
+    }
+}
+
+void CExtManager::OnWindowChanged(LPVOID lparam)
+{
+    for ( HashtablePtr<String, IRhoExtension*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )
+    {
+        (it->second)->OnWindowChanged( lparam );
     }
 }
 

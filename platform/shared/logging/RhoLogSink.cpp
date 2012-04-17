@@ -145,7 +145,7 @@ void CLogOutputSink::writeLogMessage( String& strMsg )
 
     const char* szMsg = strMsg.c_str(); 
 
-#if defined( OS_WINDOWS )
+#if defined( OS_WINDOWS_DESKTOP )
 		::OutputDebugStringA(szMsg);
 #elif defined( OS_PLATFORM_MOTCE )
 		::OutputDebugStringW(common::convertToStringW(strMsg).c_str());

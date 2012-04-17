@@ -35,13 +35,13 @@ public interface IRhoExtManager {
     //boolean existsJavascript(String jsFunction);
     void executeJavascript(String jsFunction);
 
-    //void rhoLog(int nSeverity,String szModule,String szMsg,String szFile, int nLine);
     String getCurrentUrl();
     void stopNavigate();
     void historyForward();
     void historyBack();
     void refreshPage(boolean bFromCache);
     void quitApp();
+    void setFullScreen(boolean fullScreen);
     void minimizeApp();
     void restoreApp();
     //void resizeBrowserWindow(RECT rc);

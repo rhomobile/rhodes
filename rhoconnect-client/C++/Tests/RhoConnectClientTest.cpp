@@ -47,6 +47,7 @@ const char* g_szProduct = "Product";
 const char* g_szCustomer = "Customer";
 String g_product_test_name;
 int m_nProductSrcID = 0;
+RHOM_MODEL models[2] = {0};
 
 #ifdef WIN32
 int _tmain(int argc, _TCHAR* argv[])
@@ -58,7 +59,6 @@ extern "C" int runSyncClientTests()
 	char** argv = 0;
 #endif
 
-    RHOM_MODEL models[2] = {0};
     rho_connectclient_initmodel(&models[0]);
     models[0].name = g_szProduct;
     //models[0].type = RMT_PROPERTY_FIXEDSCHEMA;
@@ -121,15 +121,6 @@ TEST(SyncClient, shouldFindProductBySql)
 
 }
 
-TEST(SyncClient, ResetAndLogout) 
-{
-    rho_sync_set_syncserver("http://rhodes-store-server.heroku.com/application");
-
-    rho_connectclient_database_full_reset_and_logout();
-
-    EXPECT_EQ(rho_sync_logged_in(), 0);
-}
-
 TEST(SyncClient, UpdateSyncServer) 
 {
     char* saveSrv = rho_conf_getString("syncserver");
@@ -158,6 +149,57 @@ TEST(SyncClient, shouldNotSyncWithoutLogin)
     rho_connectclient_free_syncnotify(&oNotify);
     rho_sync_free_string(szRes);
 }
+/*
+TEST(SyncClient, shouldLoginToBulk) 
+{
+    EXPECT_EQ(rho_sync_logged_in(), 0);
+
+    rho_sync_set_syncserver("http://store-bulk.rhohub.com/application");
+
+    char* szRes = (char*)rho_sync_login("lars", "larspass", "");
+    RHO_CONNECT_NOTIFY oNotify = {0};
+    rho_connectclient_parsenotify(szRes, &oNotify);
+
+    EXPECT_EQ(oNotify.error_code, RHO_ERR_NONE);
+    EXPECT_EQ(rho_sync_logged_in(), 1);
+
+    rho_connectclient_free_syncnotify(&oNotify);
+    rho_sync_free_string(szRes);
+
+}
+
+TEST(SyncClient, shouldBulkSync) 
+{
+    EXPECT_EQ(rho_sync_logged_in(), 1);
+    rho_conf_setInt("bulksync_state", 0 );
+
+    char* szRes = (char*)rho_sync_doSyncAllSources(0,0);
+    RHO_CONNECT_NOTIFY oNotify = {0};
+    rho_connectclient_parsenotify(szRes, &oNotify);
+
+    EXPECT_EQ(String(oNotify.status), "complete");
+    EXPECT_EQ(oNotify.error_code, RHO_ERR_NONE);
+
+    unsigned long cond = rho_connectclient_hash_create();
+    unsigned long items = rho_connectclient_find_all(g_szProduct, cond );
+    EXPECT_NE( rho_connectclient_strhasharray_size(items), 0 );
+
+    rho_connectclient_free_syncnotify(&oNotify);
+    rho_sync_free_string(szRes);
+
+    rho_connectclient_updatemodels(models, 2);
+} */
+
+TEST(SyncClient, ResetAndLogout) 
+{
+    rho_sync_set_syncserver("http://rhodes-store-server.heroku.com/application");
+    rho_conf_remove_property("bulksync_state");
+    rho_connectclient_database_full_reset_and_logout();
+
+    EXPECT_EQ(rho_sync_logged_in(), 0);
+    EXPECT_EQ( rho_conf_is_property_exists("bulksync_state"), 0 );
+}
+
 
 TEST(SyncClient, shouldLogin) 
 {
@@ -174,6 +216,7 @@ TEST(SyncClient, shouldLogin)
     rho_sync_free_string(szRes);
 
 }
+
 
 TEST(SyncClient, shouldSyncProductByName) 
 {

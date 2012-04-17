@@ -27,11 +27,11 @@
 #include "common/RhoPort.h"
 #include "common/RhoStd.h"
 #include "common/RhodesApp.h"
-#ifdef OS_WINDOWS
+#ifdef OS_WINDOWS_DESKTOP
 #include <atlstr.h>
 #endif
 
-#ifdef OS_WINDOWS		
+#ifdef OS_WINDOWS_DESKTOP		
 extern "C" const char* rho_native_rhopath() 
 {
     static rho::String m_strRootPath;
@@ -64,11 +64,11 @@ rho::StringW rho::common::CRhodesApp::getAppNameW()
 
 int rho_testvprintf(const char * fmt, va_list args)
 {
-#ifdef OS_WINDOWS
+#ifdef OS_WINDOWS_DESKTOP
     CAtlStringA str;
     str.FormatV(fmt,args);
     OutputDebugStringA(str);
-#endif //OS_WINDOWS
+#endif //OS_WINDOWS_DESKTOP
     return vfprintf(stdout,fmt, args);
 }
 

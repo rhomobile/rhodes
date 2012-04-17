@@ -267,7 +267,7 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
         switch (type)
         {
         case app_deactivated:
-#if !defined( OS_WINCE ) && !defined (OS_WINDOWS)
+#if !defined( WINDOWS_PLATFORM )
             m_expected = local_server_restart;
 #else
             m_expected = app_activated;
@@ -341,9 +341,10 @@ CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath, con
 
     m_appCallbacksQueue = new CAppCallbacksQueue();
 
-#if defined(OS_WINCE) || defined (OS_WINDOWS)
+#if defined(WINDOWS_PLATFORM)
     //initializing winsock
     WSADATA WsaData;
+	m_cameraOpened = false;
     int result = WSAStartup(MAKEWORD(2,2),&WsaData);
 #endif
 
@@ -579,7 +580,7 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
         // Restart server each time when we go to foreground
 /*        if (m_activateCounter++ > 0)
         {
-#if !defined( OS_WINCE ) && !defined (OS_WINDOWS)
+#if !defined( WINDOWS_PLATFORM )
             m_httpServer->stop();
 #endif
             this->stopWait();
@@ -614,7 +615,7 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
 
                 if (bStop)
                 {
-    #if !defined( OS_WINCE ) && !defined (OS_WINDOWS)
+    #if !defined( WINDOWS_PLATFORM )
                     LOG(INFO) + "Stopping local server.";
                     m_httpServer->stop();
     #endif
@@ -2096,8 +2097,8 @@ int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
 }
     
 int rho_is_motorola_licence_checked() {
-	const char* szMotorolaLicence = get_app_build_config_item("motorola_licence");
-	const char* szMotorolaLicenceCompany = get_app_build_config_item("motorola_licence_company");
+	const char* szMotorolaLicence = get_app_build_config_item("motorola_license");
+	const char* szMotorolaLicenceCompany = get_app_build_config_item("motorola_license_company");
     
     if ((szMotorolaLicence == NULL) || (szMotorolaLicenceCompany == NULL)) {
         return 0;
@@ -2133,8 +2134,8 @@ int rho_is_rho_elements_extension_can_be_used() {
 }
     
 int rho_can_app_started_with_current_licence() {
-	const char* szMotorolaLicence = get_app_build_config_item("motorola_licence");
-	const char* szMotorolaLicenceCompany = get_app_build_config_item("motorola_licence_company");
+	const char* szMotorolaLicence = get_app_build_config_item("motorola_license");
+	const char* szMotorolaLicenceCompany = get_app_build_config_item("motorola_license_company");
     
     if ((szMotorolaLicence == NULL) || (szMotorolaLicenceCompany == NULL)) {
         return 1;

@@ -41,7 +41,7 @@ public:
     static void processFatalError(){
         #ifdef RHO_DEBUG
 
-        #if defined (OS_WINDOWS)
+        #if defined (OS_WINDOWS_DESKTOP)
             //__debugbreak();
             DebugBreak();
         #elif defined (OS_WINCE)

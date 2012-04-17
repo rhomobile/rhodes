@@ -29,6 +29,10 @@ package com.rhomobile.rhodes;
 import java.io.CharArrayWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
+import android.app.ActivityManager;
+import android.content.Context;
+
+import java.io.*;
 
 public class Logger {
 
@@ -71,5 +75,4 @@ public class Logger {
 	public static void T(String tag, Throwable e) {
 		T(tag, e.getMessage());
 	}
-	
 }

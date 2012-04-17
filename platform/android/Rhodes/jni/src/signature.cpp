@@ -29,9 +29,10 @@
 
 #include "rhodes/jni/com_rhomobile_rhodes_signature_Signature.h"
 
-#include <common/rhoparams.h>
-#include <common/RhodesApp.h>
-#include <logging/RhoLog.h>
+#include "common/app_build_capabilities.h"
+#include "common/rhoparams.h"
+#include "common/RhodesApp.h"
+#include "logging/RhoLog.h"
 #include "ruby/ext/rho/rhoruby.h"
 
 #undef DEFAULT_LOGCATEGORY
@@ -81,10 +82,15 @@ RHO_GLOBAL void rho_signature_take(char* callback_url, rho_param* p)
 RHO_GLOBAL void rho_signature_visible(bool visible, rho_param* p)
 {
     // check for RhoElements :
+#ifndef APP_BUILD_CAPABILITY_MOTOROLA
+#ifndef APP_BUILD_CAPABILITY_MOTOROLA_BROWSER
     if (!rho_is_rho_elements_extension_can_be_used()) {
         RAWLOG_ERROR("Rho::SignatureCapture.visible() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
         return;
     }
+#endif    
+#endif    
+
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_SIGNATURE);
     if (!cls) return;
@@ -99,10 +105,14 @@ RHO_GLOBAL void rho_signature_visible(bool visible, rho_param* p)
 RHO_GLOBAL void rho_signature_capture(const char* callback_url) 
 {
     // check for RhoElements :
+#ifndef APP_BUILD_CAPABILITY_MOTOROLA
+#ifndef APP_BUILD_CAPABILITY_MOTOROLA_BROWSER
     if (!rho_is_rho_elements_extension_can_be_used()) {
         RAWLOG_ERROR("Rho::SignatureCapture.capture() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
         return;
     }
+#endif    
+#endif    
     
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_SIGNATURE);
@@ -119,10 +129,14 @@ RHO_GLOBAL void rho_signature_capture(const char* callback_url)
 RHO_GLOBAL void rho_signature_clear() 
 {
     // check for RhoElements :
+#ifndef APP_BUILD_CAPABILITY_MOTOROLA
+#ifndef APP_BUILD_CAPABILITY_MOTOROLA_BROWSER
     if (!rho_is_rho_elements_extension_can_be_used()) {
         RAWLOG_ERROR("Rho::SignatureCapture.clear() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
         return;
     }
+#endif    
+#endif    
     
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_SIGNATURE);

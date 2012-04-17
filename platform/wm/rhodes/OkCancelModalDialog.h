@@ -26,7 +26,7 @@
 
 #pragma once
 
-#if defined(OS_WINDOWS)  || defined(OS_PLATFORM_MOTCE)
+#if defined(OS_WINDOWS_DESKTOP)  || defined(OS_PLATFORM_MOTCE)
 
 template <class T> class COkCancelModalDialog : public CDialogImpl<T> 
 {

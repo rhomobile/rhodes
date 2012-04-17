@@ -29,7 +29,7 @@
 #include "common/RhoPort.h"
 #include "common/RhoDefs.h"
 #include "common/IRhoClassFactory.h"
-#ifdef OS_WINDOWS
+#ifdef OS_WINDOWS_DESKTOP
 #ifdef RHO_SYMBIAN
 #include "rho/common/RhoThreadImpl.h"
 #else // RHO_SYMBIAN
@@ -67,7 +67,7 @@ public:
 
     net::ISSL* createSSLEngine()
     {
-#ifdef OS_WINDOWS
+#ifdef OS_WINDOWS_DESKTOP
         return NULL;
 #else
         return new net::SSLImpl();

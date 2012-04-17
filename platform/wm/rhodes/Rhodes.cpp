@@ -61,17 +61,25 @@ extern "C" void rho_webview_navigate(const char* url, int index);
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 class CEng;
-extern "C" CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
 extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
-extern "C" void rho_wmimpl_set_configfilepath(const char* path);
-extern "C" TCHAR* rho_wmimpl_get_startpage();
-extern "C" void rho_wmimpl_set_startpage(const char* path);
-extern "C" const char* rho_wmimpl_get_logpath();
-extern "C" const char* rho_wmimpl_get_logurl();
-extern "C" bool rho_wmimpl_get_fullscreen();
-extern "C" void rho_wmimpl_set_is_version2();
-extern "C" bool rho_wmimpl_get_is_version2();
-#endif
+extern "C" {
+	CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
+};
+#endif // APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+#ifdef APP_BUILD_CAPABILITY_SHARED_RUNTIME
+extern "C" {
+	void rho_wmimpl_set_configfilepath(const char* path);
+	TCHAR* rho_wmimpl_get_startpage();
+	void rho_wmimpl_set_startpage(const char* path);
+	const char* rho_wmimpl_get_logpath();
+	const char* rho_wmimpl_get_logurl();
+	bool rho_wmimpl_get_fullscreen();
+	void rho_wmimpl_set_is_version2();
+	bool rho_wmimpl_get_is_version2();
+	const unsigned int* rho_wmimpl_get_logmaxsize();
+	const int* rho_wmimpl_get_loglevel();
+};
+#endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
 #if defined(_WIN32_WCE) && !defined(OS_PLATFORM_MOTCE)
 #include <regext.h>
@@ -134,7 +142,7 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 #endif
     CExtManager m_oExtManager;
 
-#ifdef OS_WINDOWS
+#ifdef OS_WINDOWS_DESKTOP
     String m_strHttpProxy;
 #endif
 
@@ -231,7 +239,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
         }
 #endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 		else if (wcsncmp(lpszToken, _T("http_proxy_url"),14)==0) 
         {
 			String token = convertToStringA(lpszToken);
@@ -262,6 +270,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 				}
 				m_strRootPath = path;
 				free(path);
+				std::replace( m_strRootPath.begin(), m_strRootPath.end(), '\\', '/');
 			}
 		} else if (wcsncmp(lpszToken, _T("rhodespath"),10)==0) 
         {
@@ -271,6 +280,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 			if (path) {
 				m_strRhodesPath = path;
 				free(path);
+				std::replace( m_strRhodesPath.begin(), m_strRhodesPath.end(), '\\', '/');
 			}
 		} /* else if (wcsncmp(lpszToken, _T("appname"),7)==0) 
         {
@@ -395,7 +405,11 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
     rho_logconf_Init((rho_wmimpl_get_logpath()[0]==0 ? m_strRootPath.c_str() : rho_wmimpl_get_logpath()), m_strRootPath.c_str(), m_logPort.c_str());
     if (rho_wmimpl_get_logurl()[0]!=0)
-        RHOCONF().setString("rhologurl", rho_wmimpl_get_logurl(), false);
+		LOGCONF().setLogURL(rho_wmimpl_get_logurl());
+	if (rho_wmimpl_get_logmaxsize())
+		LOGCONF().setMaxLogFileSize(*rho_wmimpl_get_logmaxsize());
+    if (rho_wmimpl_get_loglevel())
+		LOGCONF().setMinSeverity(*rho_wmimpl_get_loglevel());
     if (rho_wmimpl_get_fullscreen())
         RHOCONF().setBool("full_screen", true, false);
 #else
@@ -422,7 +436,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }
 
 	LOG(INFO) + "Rhodes started";
-#ifdef OS_WINDOWS
+#ifdef OS_WINDOWS_DESKTOP
 	if (m_strHttpProxy.length() > 0) {
 		parseHttpProxyURI(m_strHttpProxy);
 	} else {
@@ -737,7 +751,7 @@ extern "C" void rho_wm_impl_CheckLicenseWithBarcode(HWND hParent);
 
 extern "C" void rho_wm_impl_CheckLicense()
 {
-#ifdef OS_WINDOWS
+#ifdef OS_WINDOWS_DESKTOP
     return;
 #else
 
@@ -758,7 +772,7 @@ extern "C" void rho_wm_impl_CheckLicense()
 
 extern "C" int rho_wm_impl_CheckSymbolDevice()
 {
-#ifdef OS_WINDOWS
+#ifdef OS_WINDOWS_DESKTOP
     return true;
 #else
     int res = -1;
@@ -936,7 +950,7 @@ char* parseToken( const char* start, int len ) {
 	return value;
 }
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 /*
 // char -> wchar_t 
 wchar_t* wce_mbtowc(const char* a)

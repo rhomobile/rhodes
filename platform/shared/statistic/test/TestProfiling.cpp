@@ -27,7 +27,7 @@
 #include "statistic/RhoProfiler.h"
 #include "logging/RhoLog.h"
 
-#if !defined(OS_WINDOWS) && !defined(OS_WINCE)
+#if !defined(WINDOWS_PLATFORM)
 #include <unistd.h>
 #define Sleep sleep
 #endif

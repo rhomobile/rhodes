@@ -210,7 +210,7 @@ const char* rho_rhodesapp_getplatform()
 {
 #if defined(OS_MACOSX)
 	return "APPLE";
-#elif defined(OS_WINDOWS) || defined (OS_WINCE)
+#elif defined(WINDOWS_PLATFORM)
 	return "WINDOWS";
 #elif defined(OS_SYMBIAN)
 	return "SYMBIAN";

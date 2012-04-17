@@ -1,26 +1,53 @@
 package com.rhomobile.rhodes.extmanager;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.Hashtable;
 
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.WebView;
 import com.rhomobile.rhodes.mainview.MainView;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 public class RhoExtManagerImpl implements IRhoExtManager {
     private static final String TAG = RhoExtManagerImpl.class.getSimpleName();
 
-	private Hashtable<String, IRhoExtension> mExtensions;
+    private Hashtable<String, IRhoExtension> mExtensions;
+    private Object mLicense;
+    private boolean mFirstNavigate = true;
 
     private IRhoExtData makeDefExtData(View view) {
         return new RhoExtDataImpl(view, RhodesActivity.safeGetInstance().getMainView().activeTab());
     }
     
     private static native void nativeRequireRubyFile(String path);
+
+//    private static Class<?> getSubclass(Class<?> clazz, String subclassName) throws ClassNotFoundException {
+//        Class<?> subClasses [] = clazz.getDeclaredClasses();
+//        for(Class<?> subClass: subClasses) {
+//            if(subClass.getSimpleName)
+//        }
+//        throw new ClassNotFoundException(subclassName);
+//    }
+    
+    static int getResId(String className, String idName) {
+        className = R.class.getCanonicalName() + "$" + className;
+        try {
+            Class<?> rClass = Class.forName(className);
+            Field field = rClass.getDeclaredField(idName);
+            return field.getInt(null);
+        } catch (Throwable e) {
+            throw new IllegalArgumentException("Cannot get " + className + "." + idName, e);
+        }
+    }
 
 	public RhoExtManagerImpl() {
 		mExtensions = new Hashtable<String, IRhoExtension>();
@@ -125,6 +152,11 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     }
 
     @Override
+    public void setFullScreen(boolean fullScreen) {
+        
+    }
+
+    @Override
     public void minimizeApp() {
         // TODO Auto-generated method stub
     }
@@ -166,6 +198,30 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             for (IRhoExtension ext : mExtensions.values()) {
                 ext.onBeforeNavigate(this, url, makeDefExtData(view));
             }
+        }
+        if(mFirstNavigate) {
+            if(Capabilities.MOTOROLA_ENABLED) {
+                PerformOnUiThread.exec(new Runnable() {
+                    @SuppressWarnings("deprecation")
+                    @Override
+                    public void run() {
+                        Logger.I(TAG, "Init license now");
+                        try {
+                            RhodesActivity activity = RhodesActivity.safeGetInstance();
+                            LayoutInflater inflater = activity.getLayoutInflater();
+                            View licenseView = inflater.inflate(getResId("layout", "license"), null);  
+                            activity.addContentView(licenseView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
+                            Class<?> licenseClass = Class.forName("com.motorolasolutions.rhoelements.License");
+                            Constructor<?> licenseCtor = licenseClass.getConstructor();
+                            mLicense = licenseCtor.newInstance();
+                        } catch(Throwable e) {
+                            Logger.E(TAG, e);
+                            Logger.T(TAG, "No motorola runtime licensing");
+                        }
+                    }
+                });
+            }
+            mFirstNavigate = false;
         }
     }
 

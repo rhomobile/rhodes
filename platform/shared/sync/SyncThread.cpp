@@ -206,13 +206,21 @@ void CSyncThread::stopAll() {
             getCommands().clear();
         }
         
-		CSyncThread::getSyncEngine().stopSyncByUser();
+	CSyncThread::getSyncEngine().stopSyncByUser();
+
+	//don't wait if calling from net request
+	if ( CSyncThread::getSyncEngine().getNotify().isInsideRequest() )
+	{
+		LOG(INFO)+"STOP sync called inside notify.";
+		return;
+	}
+
         CSyncThread::getInstance()->stopWait();
-        
-        while (!CSyncThread::getInstance()->isWaiting()) {
+
+	 while (!CSyncThread::getInstance()->isWaiting()) {
             CSyncThread::getInstance()->sleep(100);
         }
-        
+
         while( CDBAdapter::isAnyInsideTransaction() )
 			CSyncThread::getInstance()->sleep(100);
 	}

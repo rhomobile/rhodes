@@ -80,7 +80,7 @@ namespace "framework" do
 end
 
 
-$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "motorola_licence", "motorola_licence_company"]
+$application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "motorola_license", "motorola_license_company"]
 
 def make_application_build_config_header_file
   f = StringIO.new("", "w+")      
@@ -296,11 +296,6 @@ namespace "config" do
             
             application_build_configs['moto-plugins'] = plugins if plugins.length() > 0
             
-            if $current_platform == 'android'
-                barcode_idx = $app_config['extensions'].index('barcode')
-                $app_config['extensions'][barcode_idx] = 'barcode-moto' unless barcode_idx.nil?
-            end
-            
         end
 
         application_build_configs['shared-runtime'] = '1' if $app_config["capabilities"].index('shared_runtime')
@@ -335,55 +330,73 @@ namespace "config" do
 
     #check for rhoelements gem
     $rhoelements_features = ""
-    
-    invalid_licence = false
-    
-    begin
-        require "rhoelements"
-        
-        # check licence
-        is_ET1 = (($current_platform == "android") and ($app_config["capabilities"].index("motorola")))
-        is_win_platform = (($current_platform == "wm") or ($current_platform == "wp") or ($current_platform == "win32") )
-
-        if (!is_ET1) and (!is_win_platform)
-             # check the licence parameter
-             if (!$app_config["motorola_licence"]) or (!$app_config["motorola_licence_company"])
-                invalid_licence = true
-             end
-        end
-        
-    rescue Exception => e
-        if $app_config['extensions'].index('barcode')
-            $app_config['extensions'].delete('barcode')
-            $rhoelements_features += "- Barcode extension\n"
-        end
-        if $app_config['extensions'].index('nfc')
-            $app_config['extensions'].delete('nfc')
-            $rhoelements_features += "- NFC extension\n"
-        end
-        
-        if $current_platform == "wm"
-            $rhoelements_features += "- Windows Mobile/Windows CE platform support\n"
-        end
-        
-        if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
-            $application_build_configs.delete('encrypt_database')
-            $rhoelements_features += "- Database encryption\n"
-        end
-        
+    if $app_config['extensions'].index('barcode')
+        #$app_config['extensions'].delete('barcode')
+        $rhoelements_features += "- Barcode extension\n"
+    end
+    if $app_config['extensions'].index('nfc')
+        #$app_config['extensions'].delete('nfc')
+        $rhoelements_features += "- NFC extension\n"
     end
     
+    if $current_platform == "wm"
+        $rhoelements_features += "- Windows Mobile/Windows CE platform support\n"
+    end
+    
+    if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
+        #$application_build_configs.delete('encrypt_database')
+        $rhoelements_features += "- Database encryption\n"
+    end
+
+    if $app_config["capabilities"].index("motorola")
+        $rhoelements_features += "- Motorola device capabilities\n"                
+    end
+
+    if $app_config['extensions'].index('webkit-browser')
+        $rhoelements_features += "- Motorola WebKit Browser\n"                
+    end
+    
+    $invalid_license = false
+
+    if $rhoelements_features.length() > 0     
+        #check for RhoElements gem and license
+        begin
+            require "rhoelements"
+            
+            $rhoelements_features = ""
+            
+            # check license
+            is_ET1 = (($current_platform == "android") and ($app_config["capabilities"].index("motorola")))
+            is_win_platform = (($current_platform == "wm") or ($current_platform == "win32") or $is_rho_simulator )
+
+            if (!is_ET1) and (!is_win_platform)
+                 # check the license parameter
+                 if (!$application_build_configs["motorola_license"]) or (!$application_build_configs["motorola_license_company"])
+                    $invalid_license = true
+                 end
+            end
+            
+        rescue Exception => e
+            if $app_config['extensions'].index('barcode')
+                $app_config['extensions'].delete('barcode')
+            end
+            if $app_config['extensions'].index('nfc')
+                $app_config['extensions'].delete('nfc')
+            end
+            
+            if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
+                $application_build_configs.delete('encrypt_database')
+            end
+        end
+    end
+        
     $app_config['extensions'].uniq!() if $app_config['extensions']
     $app_config['capabilities'].uniq!() if $app_config['capabilities']
     
-    if invalid_licence
-        puts '********* ERROR ************************************************************************'
-        puts ' License is required to run RhoElements application.'
-        puts ' Please, provide  "motorola_licence" and "motorola_licence_company" parameters in build.yml.'
-        puts '**************************************************************************************'
-        exit 1
+    if $invalid_license
+        $application_build_configs["motorola_license"] = '123' if !$application_build_configs["motorola_license"]
+        $application_build_configs["motorola_license_company"] = 'WRONG' if !$application_build_configs["motorola_license_company"]
     end
-    
     
     puts "$app_config['extensions'] : #{$app_config['extensions'].inspect}"   
     puts "$app_config['capabilities'] : #{$app_config['capabilities'].inspect}"   
@@ -1314,8 +1327,11 @@ end
 
 namespace "run" do
 
-    desc "Run application on RhoSimulator"
-    task :rhosimulator_base => "config:common" do
+    task :set_rhosimulator_flag do
+        $is_rho_simulator = true    
+    end
+
+    task :rhosimulator_base => [:set_rhosimulator_flag, "config:common"] do
         puts "rho_reload_app_changes : #{ENV['rho_reload_app_changes']}"
         $path = ""
         $args = ["-approot='#{$app_path}'", "-rhodespath='#{$startdir}'"]
@@ -1430,6 +1446,7 @@ namespace "run" do
         end
     end
 
+    #desc "Run application on RhoSimulator"
     task :rhosimulator => "run:rhosimulator_base" do
         puts 'start rhosimulator'
         Jake.run2 $path, $args, {:nowait => true}
@@ -1448,11 +1465,7 @@ namespace "run" do
 end
 
 namespace "build" do
-    task :rhosimulator => "config:common" do
-        $rhodes_version = File.read(File.join($startdir,'version')).chomp
-        File.open(File.join($startdir, 'platform/shared/qt/rhodes/RhoSimulatorVersion.h'), "wb") do |fversion|
-            fversion.write( "#define RHOSIMULATOR_VERSION \"#{$rhodes_version}\"\n" )
-        end
+    task :rhosimulator do
         if RUBY_PLATFORM =~ /(win|w)32$/
             Rake::Task["build:win32:rhosimulator"].invoke
         elsif RUBY_PLATFORM =~ /darwin/
@@ -1460,6 +1473,13 @@ namespace "build" do
         else
             puts "Sorry, at this time RhoSimulator can be built for Windows and Mac OS X only"
             exit 1
+        end
+    end
+
+    task :rhosimulator_version do
+        $rhodes_version = File.read(File.join($startdir,'version')).chomp
+        File.open(File.join($startdir, 'platform/shared/qt/rhodes/RhoSimulatorVersion.h'), "wb") do |fversion|
+            fversion.write( "#define RHOSIMULATOR_VERSION \"#{$rhodes_version}\"\n" )
         end
     end
 end
@@ -1479,4 +1499,13 @@ at_exit do
     puts ' For more information go to http://www.motorolasolutions.com/rhoelements '
     puts '**************************************************************************************'
   end
+  
+  if $invalid_license
+    puts '********* WARNING ************************************************************************'
+    puts ' License is required to run RhoElements application.'
+    puts ' Please, provide  "motorola_license" and "motorola_license_company" parameters in build.yml.'
+    puts ' For more information go to http://www.motorolasolutions.com/rhoelements '    
+    puts '**************************************************************************************'
+  end
+  
 end

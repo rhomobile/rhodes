@@ -77,7 +77,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     m_LogicalDpiY(0)
     //TODO: m_SyncStatusDlg
 {
-#ifdef OS_WINDOWS
+#ifdef OS_WINDOWS_DESKTOP
     QPixmap icon(":/images/rho.png");
     QApplication::setWindowIcon(icon);
 #endif
