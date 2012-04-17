@@ -59,7 +59,7 @@ String rhom_generate_id();
 IDBResult rhom_executeSQL(const char* szSql, const char* szModel )
 {
     Hashtable<String,db::CDBAdapter*>& mapDBPartitions = db::CDBAdapter::getDBPartitions();
-    IDBResult res = null;
+    IDBResult res = db::DBResultPtr(0);
     for (Hashtable<String,db::CDBAdapter*>::iterator it = mapDBPartitions.begin();  it != mapDBPartitions.end(); ++it )
     {
         res = (it->second)->executeSQL(szSql, szModel );
