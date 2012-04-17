@@ -73,4 +73,6 @@
 
 - (BOOL) is_changed;
 
+-(void)setSyncType : (int)type;
+
 @end
