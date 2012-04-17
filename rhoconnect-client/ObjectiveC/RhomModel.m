@@ -14,6 +14,7 @@
 @implementation RhomModel
 
 @synthesize name;
+@synthesize partition;
 @synthesize sync_type;
 @synthesize source_id;
 @synthesize model_type;
@@ -23,6 +24,7 @@
 - (id) init
 {
 	self = [super init];
+	partition = @"user";
 	sync_type = RST_INCREMENTAL;
 	model_type = RMT_PROPERTY_BAG;
     source_id = 0;
@@ -35,6 +37,7 @@
 - (void) dealloc;
 {
     [name release];
+    [partition release];
     if (associations) [associations release];
     [blob_attribs release];
     [super dealloc];
