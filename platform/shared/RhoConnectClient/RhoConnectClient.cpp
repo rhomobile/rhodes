@@ -1078,6 +1078,10 @@ void rho_connectclient_parsenotify(const char* msg, RHO_CONNECT_NOTIFY* pNotify)
             pNotify->source_name = strdup(value.c_str());
         else if ( name.compare("sync_type") == 0)
             pNotify->sync_type = strdup(value.c_str());
+        else if ( name.compare("bulk_status") == 0)
+            pNotify->bulk_status = strdup(value.c_str());
+        else if ( name.compare("partition") == 0)
+            pNotify->partition = strdup(value.c_str());
         else if ( name.compare("status") == 0)
             pNotify->status = strdup(value.c_str());
         else if ( name.compare("error_message") == 0)
@@ -1099,7 +1103,7 @@ void rho_connectclient_parsenotify(const char* msg, RHO_CONNECT_NOTIFY* pNotify)
             else if ( String_startsWith(name, "server_errors[delete-error]") )
                 parseServerErrors( "server_errors[delete-error]", name, value, pNotify->delete_errors_obj, pNotify->delete_errors_attrs );
 
-        }else if ( name.compare("rho_callback") != 0)
+        }else if ( name.compare("rho_callback") == 0)
             break;
 
         nLastPos = oTokenizer.getCurPos();
@@ -1119,7 +1123,13 @@ void rho_connectclient_free_syncnotify(RHO_CONNECT_NOTIFY* pNotify)
     
     if ( pNotify->sync_type != null )
         free(pNotify->sync_type);
-    
+
+    if ( pNotify->bulk_status != null )
+        free(pNotify->bulk_status);
+
+    if ( pNotify->partition != null )
+        free(pNotify->partition);
+
     if ( pNotify->status != null )
         free(pNotify->status);
     

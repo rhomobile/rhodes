@@ -59,6 +59,8 @@ typedef struct _RHO_CONNECT_NOTIFY
     char* source_name;
     char* status;
     char* sync_type;
+    char* bulk_status;
+    char* partition;
     int error_code;
     char* error_message;
     char* callback_params;
