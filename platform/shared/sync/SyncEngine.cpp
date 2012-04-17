@@ -637,7 +637,7 @@ void CSyncEngine::doBulkSync()//throws Exception
     if (isContinueSync())
     {
         RHOCONF().setInt("bulksync_state", 1, true);
-        getNotify().fireBulkSyncNotification(true, "", "", RhoAppAdapter.ERR_NONE);
+        getNotify().fireBulkSyncNotification(true, "complete", "", RhoAppAdapter.ERR_NONE);
     }
 }
 
@@ -687,7 +687,7 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
     if ( strCmd.compare("nop") == 0)
     {
 	    LOG(INFO) + "Bulk sync return no data.";
-      	getNotify().fireBulkSyncNotification(true, "", strPartition, RhoAppAdapter.ERR_NONE);
+      	getNotify().fireBulkSyncNotification(true, "ok", strPartition, RhoAppAdapter.ERR_NONE);
 
 	    return;
     }
@@ -734,7 +734,7 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
     processServerSources(String("{\"partition\":\"") + strPartition + "\"}");
 
 	LOG(INFO) + "Bulk sync: end change db";
-   	getNotify().fireBulkSyncNotification(false, "", strPartition, RhoAppAdapter.ERR_NONE);
+   	getNotify().fireBulkSyncNotification(false, "ok", strPartition, RhoAppAdapter.ERR_NONE);
 }
 
 String CSyncEngine::makeBulkDataFileName(String strDataUrl, String strDbPath, String strExt)
