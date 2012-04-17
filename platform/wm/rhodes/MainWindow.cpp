@@ -410,6 +410,18 @@ LRESULT CMainWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOO
     return 0;
 }
 
+#if defined(_WIN32_WCE)
+int getSIPVisibleTop() {
+	SIPINFO pSipInfo;
+	memset(&pSipInfo, 0, sizeof(SIPINFO));
+	pSipInfo.cbSize = sizeof(SIPINFO);
+	pSipInfo.dwImDataSize = 0;
+	if (SipGetInfo(&pSipInfo))
+		return (pSipInfo.fdwFlags & SIPF_ON) ? pSipInfo.rcSipRect.top : -1;
+	return -1;
+}
+#endif
+
 void CMainWindow::resizeWindow( int xSize, int ySize)
 {
     LOG(INFO)  + "resizeWindow: xSize=" + xSize + ";ySize=" + ySize;
@@ -429,6 +441,12 @@ void CMainWindow::resizeWindow( int xSize, int ySize)
     if ( m_toolbar.m_hWnd )
         m_toolbar.MoveWindow(0, ySize-m_menuBarHeight-m_toolbar.getHeight(), xSize, m_toolbar.getHeight());
 #else
+
+#if defined(_WIN32_WCE)
+	int SIPtop = getSIPVisibleTop();
+	if (m_bFullScreen && (SIPtop>=0))
+		ySize = SIPtop;
+#endif
 
     RECT rect = {0, 0, xSize, ySize };//- m_toolbar.getHeight()};
 
@@ -542,8 +560,8 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     if (lParam) //We get activate from some internal window
     {
 #if defined(_WIN32_WCE) 
-	if (m_bFullScreen && fActive)
-		SetFullScreen(fActive!=0);
+	if (m_bFullScreen && fActive && (getSIPVisibleTop()<0))
+		SetFullScreen(true);
 #endif
         return 0;
     }
@@ -734,42 +752,51 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
         //SetWindowPos(NULL, 0,0, rcMain.right-rcMain.left, rcMain.bottom-rcMain.top, SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 #endif
 
-	} else if (wParam == SPI_SIPMOVE) {
-		//
-	} else if ((wParam == SPI_SETSIPINFO) && (!m_bFullScreen)) {
+	//} else if (wParam == SPI_SIPMOVE) {
+	} else if (wParam == SPI_SETSIPINFO) {
 		SIPINFO pSipInfo;
 		memset(&pSipInfo, 0, sizeof(SIPINFO));
 		pSipInfo.cbSize = sizeof(SIPINFO);
 		pSipInfo.dwImDataSize = 0;
 		if (SipGetInfo(&pSipInfo)) {
 			bool isHiding = ((pSipInfo.fdwFlags & SIPF_ON) ^ SIPF_ON) != 0;
+			if (m_bFullScreen)
+				pSipInfo.rcVisibleDesktop.top = 0;
+
+			int bottom = height - ( m_bFullScreen ? 0 : GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYFIXEDFRAME) );
+
+			bool doSIPmove = false;
 			if (isHiding) {
-				// when hiding SIP, main window is expanded to cover/overlap SIP's area
-				pSipInfo.rcVisibleDesktop.bottom = (m_bFullScreen ? height : pSipInfo.rcSipRect.bottom);
-			} /*else if (m_bFullScreen) {
-				LONG deltaY = height - pSipInfo.rcSipRect.bottom;
-				if (deltaY > 0) {
+				// when hiding SIP, main window is expanded to cover an entire screen
+				pSipInfo.rcVisibleDesktop.bottom = bottom;
+			} else {
+				LONG deltaY = bottom - pSipInfo.rcSipRect.bottom;
+				if (deltaY != 0) {
 					pSipInfo.rcSipRect.top += deltaY;
 					pSipInfo.rcSipRect.bottom += deltaY;
+					doSIPmove = true;
 					pSipInfo.rcVisibleDesktop.bottom = pSipInfo.rcSipRect.top;
-					//SipSetDefaultRect(&pSipInfo.rcSipRect);
 				}
 			}
-			if (m_bFullScreen)
-				pSipInfo.rcVisibleDesktop.top = 0;*/
-			MoveWindow(&pSipInfo.rcVisibleDesktop, TRUE );
-
-			/*if (m_bFullScreen && (!isHiding)) {
+			CRect cRect;
+			this->GetClientRect(&cRect);
+			if ((cRect.bottom != pSipInfo.rcVisibleDesktop.bottom) ||
+				(cRect.top != pSipInfo.rcVisibleDesktop.top) ||
+				(cRect.left != pSipInfo.rcVisibleDesktop.left) ||
+				(cRect.right != pSipInfo.rcVisibleDesktop.right)) 
+			{
+				MoveWindow(&pSipInfo.rcVisibleDesktop, TRUE);
+			}
+			if (doSIPmove && (!isHiding)) {
 				HWND sipHWND = FindWindow(L"SipWndClass", NULL);
 				if (sipHWND) {
-					//::SetFocus(sipHWND);
-					//::SetForegroundWindow(sipHWND);
-					//::ShowWindow(sipHWND, SW_SHOW);
 					::SetWindowPos(sipHWND, 0, pSipInfo.rcSipRect.left, pSipInfo.rcSipRect.top,
 						pSipInfo.rcSipRect.right-pSipInfo.rcSipRect.left, pSipInfo.rcSipRect.bottom-pSipInfo.rcSipRect.top,
-						SWP_FRAMECHANGED|SWP_NOOWNERZORDER|SWP_NOZORDER|SWP_SHOWWINDOW);
+						SWP_SHOWWINDOW);
 				}
-			}*/
+			}
+			if (m_bFullScreen && m_toolbar.m_hWnd)
+				m_toolbar.MoveWindow(0, (isHiding ? bottom : pSipInfo.rcSipRect.top) - m_toolbar.getHeight(), width, m_toolbar.getHeight());
 		}
 	}
 	
