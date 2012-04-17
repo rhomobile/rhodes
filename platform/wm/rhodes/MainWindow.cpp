@@ -375,11 +375,17 @@ LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 {
 	rho_rhodesapp_callUiDestroyedCallback();
 
-#if defined (_WIN32_WCE)  && !defined(OS_PLATFORM_MOTCE)
+#if defined (_WIN32_WCE)//  && !defined(OS_PLATFORM_MOTCE)
     m_menuBar = NULL;
-    ShowTaskBar(true, false);
+    //ShowTaskBar(true, false);
    	//SetFullScreen(false);
+
+#if defined(OS_PLATFORM_MOTCE)
+    SetFullScreen(false);
 #endif
+
+#endif
+    
 
 #if defined(OS_WINDOWS_DESKTOP)
 	if(m_logView.IsWindow()) {
@@ -807,6 +813,14 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 
 #endif
     return 0;
+}
+
+LRESULT CMainWindow::OnHotKey (UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    LOG(INFO) + "OnHotKey : " + wParam;
+    bHandled = TRUE;
+
+    return 1;
 }
 
 LRESULT CMainWindow::OnSetFocus (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
