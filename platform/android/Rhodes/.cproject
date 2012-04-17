@@ -1,0 +1,1405 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?>
+
+<cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+	<storageModule moduleId="org.eclipse.cdt.core.settings">
+		<cconfiguration id="com.android.toolchain.gcc.245515483">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.android.toolchain.gcc.245515483" moduleId="org.eclipse.cdt.core.settings" name="Default">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.GNU_ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="${ProjName}" buildProperties="" description="" id="com.android.toolchain.gcc.245515483" name="Default" parent="org.eclipse.cdt.build.core.emptycfg">
+					<folderInfo id="com.android.toolchain.gcc.245515483.1753675669" name="/" resourcePath="">
+						<toolChain id="com.android.toolchain.gcc.672768401" name="com.android.toolchain.gcc" resourceTypeBasedDiscovery="false" superClass="com.android.toolchain.gcc">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.GNU_ELF" id="com.android.targetPlatform.197713237" name="Android Platform" osList="all" superClass="com.android.targetPlatform"/>
+							<builder autoBuildTarget="" cleanBuildTarget="clean" enableAutoBuild="false" enableCleanBuild="true" enabledIncrementalBuild="true" id="com.android.builder.976916776" incrementalBuildTarget="V=1" keepEnvironmentInBuildfile="false" managedBuildOn="false" parallelizationNumber="1" superClass="com.android.builder"/>
+							<tool id="cdt.managedbuild.tool.gnu.archiver.base.2138807245" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
+							<tool id="com.android.tool.compiler.g++.1703750702" name="Android G++" superClass="com.android.tool.compiler.g++">
+								<option id="gnu.cpp.compiler.option.preprocessor.def.1372787464" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="&quot;RHO_GLOBAL=extern &quot;C&quot;"/>
+									<listOptionValue builtIn="false" value="JNICALL"/>
+								</option>
+								<inputType id="com.android.tool.compiler.g++.input.93764809" superClass="com.android.tool.compiler.g++.input"/>
+							</tool>
+							<tool id="com.android.tool.compiler.c.415879859" name="Android GCC" superClass="com.android.tool.compiler.c">
+								<option id="gnu.c.compiler.option.preprocessor.def.symbols.487296033" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="RHO_GLOBAL"/>
+									<listOptionValue builtIn="false" value="JNICALL"/>
+								</option>
+								<inputType id="com.android.tool.compiler.c.input.1877115368" superClass="com.android.tool.compiler.c.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.481765827" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.base.1994170514" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base">
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.264551533" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.assembler.base.641755775" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base">
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1270230666" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1622268851" name="rainbow_stab.cpp" rcbsApplicability="disable" resourcePath="jni/rainbow_stab.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.899962386">
+						<tool id="com.android.tool.compiler.g++.1703750702.899962386" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.797289807" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1201131181" name="webview.cpp" rcbsApplicability="disable" resourcePath="jni/src/webview.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.953534864">
+						<tool id="com.android.tool.compiler.g++.1703750702.953534864" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.745369494" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1422208542" name="event.cpp" rcbsApplicability="disable" resourcePath="jni/src/event.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1713112402">
+						<tool id="com.android.tool.compiler.g++.1703750702.1713112402" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1792988303" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1671377591" name="rhodesapp.cpp" rcbsApplicability="disable" resourcePath="jni/src/rhodesapp.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1519779922">
+						<tool id="com.android.tool.compiler.g++.1703750702.1519779922" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1091538427" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1818394139" name="socketimpl.cpp" rcbsApplicability="disable" resourcePath="jni/src/socketimpl.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.123581128">
+						<tool id="com.android.tool.compiler.g++.1703750702.123581128" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.631469212" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1602274306" name="menu.cpp" rcbsApplicability="disable" resourcePath="jni/src/menu.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.317924722">
+						<tool id="com.android.tool.compiler.g++.1703750702.317924722" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1982167814" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1730926948" name="nativeview.cpp" rcbsApplicability="disable" resourcePath="jni/src/nativeview.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.2129169868">
+						<tool id="com.android.tool.compiler.g++.1703750702.2129169868" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.2146397688" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.39378019" name="phonebook.cpp" rcbsApplicability="disable" resourcePath="jni/src/phonebook.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1929159500">
+						<tool id="com.android.tool.compiler.g++.1703750702.1929159500" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.2042365762" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.355102224" name="rhodes.cpp" rcbsApplicability="disable" resourcePath="jni/src/rhodes.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1436762013">
+						<tool id="com.android.tool.compiler.g++.1703750702.1436762013" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1611976967" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1919058629" name="JNIRhoRuby.cpp" rcbsApplicability="disable" resourcePath="jni/src/JNIRhoRuby.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1960479645">
+						<tool id="com.android.tool.compiler.g++.1703750702.1960479645" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.645207905" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1230385405" name="camera.cpp" rcbsApplicability="disable" resourcePath="jni/src/camera.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1168991426">
+						<tool id="com.android.tool.compiler.g++.1703750702.1168991426" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.946147894" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.249510525" name="mapview.cpp" rcbsApplicability="disable" resourcePath="jni/src/mapview.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.595052247">
+						<tool id="com.android.tool.compiler.g++.1703750702.595052247" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.408709978" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1259287811" name="rhoconf.cpp" rcbsApplicability="disable" resourcePath="jni/src/rhoconf.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1373057010">
+						<tool id="com.android.tool.compiler.g++.1703750702.1373057010" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.673753957" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1443517104" name="sslimpl.cpp" rcbsApplicability="disable" resourcePath="jni/src/sslimpl.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1993913874">
+						<tool id="com.android.tool.compiler.g++.1703750702.1993913874" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1207412342" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.2018312053" name="geolocation.cpp" rcbsApplicability="disable" resourcePath="jni/src/geolocation.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1838472260">
+						<tool id="com.android.tool.compiler.g++.1703750702.1838472260" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1257474856" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.543568555" name="RhoClassFactory.cpp" rcbsApplicability="disable" resourcePath="jni/src/RhoClassFactory.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.973068160">
+						<tool id="com.android.tool.compiler.g++.1703750702.973068160" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.2087383488" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1740731723" name="logconf.cpp" rcbsApplicability="disable" resourcePath="jni/src/logconf.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1364984517">
+						<tool id="com.android.tool.compiler.g++.1703750702.1364984517" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.143031843" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.465703458" name="navbar.cpp" rcbsApplicability="disable" resourcePath="jni/src/navbar.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1422580967">
+						<tool id="com.android.tool.compiler.g++.1703750702.1422580967" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1927955996" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.255479010" name="alert.cpp" rcbsApplicability="disable" resourcePath="jni/src/alert.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1883871041">
+						<tool id="com.android.tool.compiler.g++.1703750702.1883871041" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.84433660" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.552974493" name="bluetooth.cpp" rcbsApplicability="disable" resourcePath="jni/src/bluetooth.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1934382339">
+						<tool id="com.android.tool.compiler.g++.1703750702.1934382339" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1052415006" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.770231714" name="ringtones.cpp" rcbsApplicability="disable" resourcePath="jni/src/ringtones.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1257742727">
+						<tool id="com.android.tool.compiler.g++.1703750702.1257742727" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.2023214913" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1621518458" name="callbacks.cpp" rcbsApplicability="disable" resourcePath="jni/src/callbacks.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.2007750845">
+						<tool id="com.android.tool.compiler.g++.1703750702.2007750845" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.625497779" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.733904131" name="logger.cpp" rcbsApplicability="disable" resourcePath="jni/src/logger.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1540275126">
+						<tool id="com.android.tool.compiler.g++.1703750702.1540275126" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.881371474" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1048440804" name="signature.cpp" rcbsApplicability="disable" resourcePath="jni/src/signature.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1684468930">
+						<tool id="com.android.tool.compiler.g++.1703750702.1684468930" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1401757904" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1764556999" name="rhocryptimpl.cpp" rcbsApplicability="disable" resourcePath="jni/src/rhocryptimpl.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1563668504">
+						<tool id="com.android.tool.compiler.g++.1703750702.1563668504" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.891270828" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1974438096" name="fileapi.cpp" rcbsApplicability="disable" resourcePath="jni/src/fileapi.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.2078054553">
+						<tool id="com.android.tool.compiler.g++.1703750702.2078054553" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1056640028" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.768803379" name="datetimepicker.cpp" rcbsApplicability="disable" resourcePath="jni/src/datetimepicker.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1607580465">
+						<tool id="com.android.tool.compiler.g++.1703750702.1607580465" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.326032460" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1046416854" name="rhodessystem.cpp" rcbsApplicability="disable" resourcePath="jni/src/rhodessystem.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1528250228">
+						<tool id="com.android.tool.compiler.g++.1703750702.1528250228" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1201522952" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1301411350" name="nativebar.cpp" rcbsApplicability="disable" resourcePath="jni/src/nativebar.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.955572387">
+						<tool id="com.android.tool.compiler.g++.1703750702.955572387" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.314396335" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.318067560" name="splashscreen.cpp" rcbsApplicability="disable" resourcePath="jni/src/splashscreen.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.2112278865">
+						<tool id="com.android.tool.compiler.g++.1703750702.2112278865" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1747854994" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1617416127" name="RhoProfiler.cpp" rcbsApplicability="disable" resourcePath="shared/statistic/RhoProfiler.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.963643440">
+						<tool id="com.android.tool.compiler.g++.1703750702.963643440" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.710324965" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.385500138" name="DBAttrManager.cpp" rcbsApplicability="disable" resourcePath="shared/db/DBAttrManager.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.2035940199">
+						<tool id="com.android.tool.compiler.g++.1703750702.2035940199" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.270488085" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1534434935" name="DBResult.cpp" rcbsApplicability="disable" resourcePath="shared/db/DBResult.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.641947324">
+						<tool id="com.android.tool.compiler.g++.1703750702.641947324" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.30002742" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.742657854" name="DBAdapter.cpp" rcbsApplicability="disable" resourcePath="shared/db/DBAdapter.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1634547488">
+						<tool id="com.android.tool.compiler.g++.1703750702.1634547488" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1802025519" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.2106928690" name="vm.c" rcbsApplicability="disable" resourcePath="shared/ruby/vm.c" toolsToInvoke="com.android.tool.compiler.c.415879859.240530083">
+						<tool id="com.android.tool.compiler.c.415879859.240530083" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.915343816" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.351711232" name="regexec.c" rcbsApplicability="disable" resourcePath="shared/ruby/regexec.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1833552832">
+						<tool id="com.android.tool.compiler.c.415879859.1833552832" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.96487222" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.300276481" name="strftime.c" rcbsApplicability="disable" resourcePath="shared/ruby/strftime.c" toolsToInvoke="com.android.tool.compiler.c.415879859.2115332235">
+						<tool id="com.android.tool.compiler.c.415879859.2115332235" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.219699181" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.121459001" name="bignum.c" rcbsApplicability="disable" resourcePath="shared/ruby/bignum.c" toolsToInvoke="com.android.tool.compiler.c.415879859.952578470">
+						<tool id="com.android.tool.compiler.c.415879859.952578470" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.338222238" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1324862119" name="dmyencoding.c" rcbsApplicability="disable" resourcePath="shared/ruby/dmyencoding.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1274177474">
+						<tool id="com.android.tool.compiler.c.415879859.1274177474" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1501130646" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1870211977" name="syncengine_wrap.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/syncengine/syncengine_wrap.c" toolsToInvoke="com.android.tool.compiler.c.415879859.266818597">
+						<tool id="com.android.tool.compiler.c.415879859.266818597" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1640371498" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.203485958" name="alert_wrap.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/alert/alert_wrap.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1996196184">
+						<tool id="com.android.tool.compiler.c.415879859.1996196184" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1907926929" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.2146528035" name="camera_wrap.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/camera/camera_wrap.c" toolsToInvoke="com.android.tool.compiler.c.415879859.2106894851">
+						<tool id="com.android.tool.compiler.c.415879859.2106894851" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1228243104" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1630435514" name="phonebook_wrap.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/phonebook/phonebook_wrap.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1412911695">
+						<tool id="com.android.tool.compiler.c.415879859.1412911695" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.670695278" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1329069519" name="webview_wrap.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/webview/webview_wrap.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1611745903">
+						<tool id="com.android.tool.compiler.c.415879859.1611745903" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.394463281" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.510093765" name="datetimepicker_wrap.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/datetimepicker/datetimepicker_wrap.c" toolsToInvoke="com.android.tool.compiler.c.415879859.202490845">
+						<tool id="com.android.tool.compiler.c.415879859.202490845" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.638133176" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.367190541" name="asynchttp_wrap.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/asynchttp/asynchttp_wrap.c" toolsToInvoke="com.android.tool.compiler.c.415879859.943463227">
+						<tool id="com.android.tool.compiler.c.415879859.943463227" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.947950280" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1189254742" name="nativeviewmanager_wrap.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/nativeviewmanager/nativeviewmanager_wrap.c" toolsToInvoke="com.android.tool.compiler.c.415879859.20485730">
+						<tool id="com.android.tool.compiler.c.415879859.20485730" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.2141410021" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.2065733186" name="ringtones_wrap.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/ringtones/ringtones_wrap.c" toolsToInvoke="com.android.tool.compiler.c.415879859.319122451">
+						<tool id="com.android.tool.compiler.c.415879859.319122451" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1713148664" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.587768092" name="nativebar_wrap.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/nativebar/nativebar_wrap.c" toolsToInvoke="com.android.tool.compiler.c.415879859.489178166">
+						<tool id="com.android.tool.compiler.c.415879859.489178166" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1107567534" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.397485950" name="stringio.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/stringio/stringio.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1328486377">
+						<tool id="com.android.tool.compiler.c.415879859.1328486377" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1306126300" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.2100729093" name="mapview_wrap.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/mapview/mapview_wrap.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1793844301">
+						<tool id="com.android.tool.compiler.c.415879859.1793844301" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.414281259" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1040060294" name="system_wrap.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/system/system_wrap.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1242370139">
+						<tool id="com.android.tool.compiler.c.415879859.1242370139" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.380748855" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1201632356" name="bluetooth_wrap.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/bluetooth/bluetooth_wrap.c" toolsToInvoke="com.android.tool.compiler.c.415879859.201372981">
+						<tool id="com.android.tool.compiler.c.415879859.201372981" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.639421596" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.989141448" name="geolocation_wrap.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/geolocation/geolocation_wrap.c" toolsToInvoke="com.android.tool.compiler.c.415879859.196400364">
+						<tool id="com.android.tool.compiler.c.415879859.196400364" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.605682128" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.961283279" name="strscan.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/strscan/strscan.c" toolsToInvoke="com.android.tool.compiler.c.415879859.192451969">
+						<tool id="com.android.tool.compiler.c.415879859.192451969" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.194329" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.904879129" name="socket.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/socket/socket.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1947964237">
+						<tool id="com.android.tool.compiler.c.415879859.1947964237" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1800102495" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.605465481" name="sqlite3_api_wrap.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/sqlite3_api/sqlite3_api_wrap.c" toolsToInvoke="com.android.tool.compiler.c.415879859.2107682523">
+						<tool id="com.android.tool.compiler.c.415879859.2107682523" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.184093255" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1660032630" name="rhoconf_wrap.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/rhoconf/rhoconf_wrap.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1728164108">
+						<tool id="com.android.tool.compiler.c.415879859.1728164108" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.965544406" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1812434039" name="rhoruby.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/rho/rhoruby.c" toolsToInvoke="com.android.tool.compiler.c.415879859.330387272">
+						<tool id="com.android.tool.compiler.c.415879859.330387272" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.977693748" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.192314613" name="extensions.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/rho/extensions.c" toolsToInvoke="com.android.tool.compiler.c.415879859.2117856492">
+						<tool id="com.android.tool.compiler.c.415879859.2117856492" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1815277456" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.551251826" name="rhosupport.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/rho/rhosupport.c" toolsToInvoke="com.android.tool.compiler.c.415879859.359277764">
+						<tool id="com.android.tool.compiler.c.415879859.359277764" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.346529465" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.442935404" name="signature_wrap.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/signature/signature_wrap.c" toolsToInvoke="com.android.tool.compiler.c.415879859.920704133">
+						<tool id="com.android.tool.compiler.c.415879859.920704133" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.529813460" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1224982224" name="navbar_wrap.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/navbar/navbar_wrap.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1982229922">
+						<tool id="com.android.tool.compiler.c.415879859.1982229922" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.624413670" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.897857018" name="calendar_wrap.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/calendar/calendar_wrap.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1039348311">
+						<tool id="com.android.tool.compiler.c.415879859.1039348311" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1143722390" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.822977753" name="event_wrap.c" rcbsApplicability="disable" resourcePath="shared/ruby/ext/calendar/event_wrap.c" toolsToInvoke="com.android.tool.compiler.c.415879859.223455950">
+						<tool id="com.android.tool.compiler.c.415879859.223455950" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1772698240" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.8658578" name="node.c" rcbsApplicability="disable" resourcePath="shared/ruby/node.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1890241437">
+						<tool id="com.android.tool.compiler.c.415879859.1890241437" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1077118349" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.209558565" name="regparse.c" rcbsApplicability="disable" resourcePath="shared/ruby/regparse.c" toolsToInvoke="com.android.tool.compiler.c.415879859.454709578">
+						<tool id="com.android.tool.compiler.c.415879859.454709578" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.625167604" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1438348962" name="dup2.c" rcbsApplicability="disable" resourcePath="shared/ruby/missing/dup2.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1350983425">
+						<tool id="com.android.tool.compiler.c.415879859.1350983425" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.524447328" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.2042008903" name="stdlib.c" rcbsApplicability="disable" resourcePath="shared/ruby/missing/stdlib.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1901127695">
+						<tool id="com.android.tool.compiler.c.415879859.1901127695" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1237078829" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1918637158" name="lgamma_r.c" rcbsApplicability="disable" resourcePath="shared/ruby/missing/lgamma_r.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1261161606">
+						<tool id="com.android.tool.compiler.c.415879859.1261161606" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1911619474" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1939449169" name="cbrt.c" rcbsApplicability="disable" resourcePath="shared/ruby/missing/cbrt.c" toolsToInvoke="com.android.tool.compiler.c.415879859.355892344">
+						<tool id="com.android.tool.compiler.c.415879859.355892344" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1894554017" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1755119737" name="acosh.c" rcbsApplicability="disable" resourcePath="shared/ruby/missing/acosh.c" toolsToInvoke="com.android.tool.compiler.c.415879859.2110017466">
+						<tool id="com.android.tool.compiler.c.415879859.2110017466" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.509225843" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.364826096" name="hypot.c" rcbsApplicability="disable" resourcePath="shared/ruby/missing/hypot.c" toolsToInvoke="com.android.tool.compiler.c.415879859.542523483">
+						<tool id="com.android.tool.compiler.c.415879859.542523483" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1475352622" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1063926156" name="strlcat.c" rcbsApplicability="disable" resourcePath="shared/ruby/missing/strlcat.c" toolsToInvoke="com.android.tool.compiler.c.415879859.411387489">
+						<tool id="com.android.tool.compiler.c.415879859.411387489" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.183297351" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1984404220" name="erf.c" rcbsApplicability="disable" resourcePath="shared/ruby/missing/erf.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1793096154">
+						<tool id="com.android.tool.compiler.c.415879859.1793096154" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1325741776" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.264744665" name="tgamma.c" rcbsApplicability="disable" resourcePath="shared/ruby/missing/tgamma.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1717283137">
+						<tool id="com.android.tool.compiler.c.415879859.1717283137" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.841080892" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.44086468" name="crypt.c" rcbsApplicability="disable" resourcePath="shared/ruby/missing/crypt.c" toolsToInvoke="com.android.tool.compiler.c.415879859.263434674">
+						<tool id="com.android.tool.compiler.c.415879859.263434674" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.434563941" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.815579571" name="strlcpy.c" rcbsApplicability="disable" resourcePath="shared/ruby/missing/strlcpy.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1273305672">
+						<tool id="com.android.tool.compiler.c.415879859.1273305672" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.734934014" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1181367522" name="rational.c" rcbsApplicability="disable" resourcePath="shared/ruby/rational.c" toolsToInvoke="com.android.tool.compiler.c.415879859.110551927">
+						<tool id="com.android.tool.compiler.c.415879859.110551927" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1047548580" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.714804163" name="enumerator.c" rcbsApplicability="disable" resourcePath="shared/ruby/enumerator.c" toolsToInvoke="com.android.tool.compiler.c.415879859.535037110">
+						<tool id="com.android.tool.compiler.c.415879859.535037110" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.257033785" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.710584520" name="inits.c" rcbsApplicability="disable" resourcePath="shared/ruby/inits.c" toolsToInvoke="com.android.tool.compiler.c.415879859.109244896">
+						<tool id="com.android.tool.compiler.c.415879859.109244896" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.278825795" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1044732313" name="time.c" rcbsApplicability="disable" resourcePath="shared/ruby/time.c" toolsToInvoke="com.android.tool.compiler.c.415879859.125178190">
+						<tool id="com.android.tool.compiler.c.415879859.125178190" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1071295886" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1216277218" name="proc.c" rcbsApplicability="disable" resourcePath="shared/ruby/proc.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1204481363">
+						<tool id="com.android.tool.compiler.c.415879859.1204481363" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.2118056125" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1418530018" name="re.c" rcbsApplicability="disable" resourcePath="shared/ruby/re.c" toolsToInvoke="com.android.tool.compiler.c.415879859.653741693">
+						<tool id="com.android.tool.compiler.c.415879859.653741693" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.436298212" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.2062038855" name="vm_dump.c" rcbsApplicability="disable" resourcePath="shared/ruby/vm_dump.c" toolsToInvoke="com.android.tool.compiler.c.415879859.772888673">
+						<tool id="com.android.tool.compiler.c.415879859.772888673" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.2127962427" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.858618682" name="compar.c" rcbsApplicability="disable" resourcePath="shared/ruby/compar.c" toolsToInvoke="com.android.tool.compiler.c.415879859.564997031">
+						<tool id="com.android.tool.compiler.c.415879859.564997031" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.156741254" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.753933356" name="error.c" rcbsApplicability="disable" resourcePath="shared/ruby/error.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1411571950">
+						<tool id="com.android.tool.compiler.c.415879859.1411571950" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1049046359" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.394815097" name="dln_find.c" rcbsApplicability="disable" resourcePath="shared/ruby/dln_find.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1543665926">
+						<tool id="com.android.tool.compiler.c.415879859.1543665926" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.13460306" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1947890055" name="debug.c" rcbsApplicability="disable" resourcePath="shared/ruby/debug.c" toolsToInvoke="com.android.tool.compiler.c.415879859.914079047">
+						<tool id="com.android.tool.compiler.c.415879859.914079047" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1177335509" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1258248949" name="cont.c" rcbsApplicability="disable" resourcePath="shared/ruby/cont.c" toolsToInvoke="com.android.tool.compiler.c.415879859.593245740">
+						<tool id="com.android.tool.compiler.c.415879859.593245740" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.738703344" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.895302070" name="dmyext.c" rcbsApplicability="disable" resourcePath="shared/ruby/dmyext.c" toolsToInvoke="com.android.tool.compiler.c.415879859.571058014">
+						<tool id="com.android.tool.compiler.c.415879859.571058014" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1397713214" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1410178892" name="class.c" rcbsApplicability="disable" resourcePath="shared/ruby/class.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1020992015">
+						<tool id="com.android.tool.compiler.c.415879859.1020992015" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1164515963" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.432073276" name="complex.c" rcbsApplicability="disable" resourcePath="shared/ruby/complex.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1827944003">
+						<tool id="com.android.tool.compiler.c.415879859.1827944003" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1186746025" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.441157109" name="numeric.c" rcbsApplicability="disable" resourcePath="shared/ruby/numeric.c" toolsToInvoke="com.android.tool.compiler.c.415879859.2140326625">
+						<tool id="com.android.tool.compiler.c.415879859.2140326625" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1262910558" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1931555011" name="random.c" rcbsApplicability="disable" resourcePath="shared/ruby/random.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1945280792">
+						<tool id="com.android.tool.compiler.c.415879859.1945280792" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.786778151" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.319982086" name="hash.c" rcbsApplicability="disable" resourcePath="shared/ruby/hash.c" toolsToInvoke="com.android.tool.compiler.c.415879859.150297890">
+						<tool id="com.android.tool.compiler.c.415879859.150297890" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.925254645" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.619261479" name="miniprelude.c" rcbsApplicability="disable" resourcePath="shared/ruby/miniprelude.c" toolsToInvoke="com.android.tool.compiler.c.415879859.216060006">
+						<tool id="com.android.tool.compiler.c.415879859.216060006" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1674732299" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.692977212" name="dir.c" rcbsApplicability="disable" resourcePath="shared/ruby/dir.c" toolsToInvoke="com.android.tool.compiler.c.415879859.459644621">
+						<tool id="com.android.tool.compiler.c.415879859.459644621" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.737271285" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1970771771" name="parse.c" rcbsApplicability="disable" resourcePath="shared/ruby/generated/parse.c" toolsToInvoke="com.android.tool.compiler.c.415879859.2096897058">
+						<tool id="com.android.tool.compiler.c.415879859.2096897058" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1193548330" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1632101912" name="regenc.c" rcbsApplicability="disable" resourcePath="shared/ruby/regenc.c" toolsToInvoke="com.android.tool.compiler.c.415879859.2126350145">
+						<tool id="com.android.tool.compiler.c.415879859.2126350145" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1803753840" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.913871384" name="eval.c" rcbsApplicability="disable" resourcePath="shared/ruby/eval.c" toolsToInvoke="com.android.tool.compiler.c.415879859.376066408">
+						<tool id="com.android.tool.compiler.c.415879859.376066408" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.861494804" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1975761182" name="ruby.c" rcbsApplicability="disable" resourcePath="shared/ruby/ruby.c" toolsToInvoke="com.android.tool.compiler.c.415879859.500236119">
+						<tool id="com.android.tool.compiler.c.415879859.500236119" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.620920715" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.406624194" name="process.c" rcbsApplicability="disable" resourcePath="shared/ruby/process.c" toolsToInvoke="com.android.tool.compiler.c.415879859.709139253">
+						<tool id="com.android.tool.compiler.c.415879859.709139253" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.524748774" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.996775050" name="util.c" rcbsApplicability="disable" resourcePath="shared/ruby/util.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1423857145">
+						<tool id="com.android.tool.compiler.c.415879859.1423857145" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1681321685" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.2144669719" name="range.c" rcbsApplicability="disable" resourcePath="shared/ruby/range.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1200334232">
+						<tool id="com.android.tool.compiler.c.415879859.1200334232" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.287141451" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.131875757" name="st.c" rcbsApplicability="disable" resourcePath="shared/ruby/st.c" toolsToInvoke="com.android.tool.compiler.c.415879859.904547742">
+						<tool id="com.android.tool.compiler.c.415879859.904547742" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.56669309" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.381541278" name="enum.c" rcbsApplicability="disable" resourcePath="shared/ruby/enum.c" toolsToInvoke="com.android.tool.compiler.c.415879859.101319655">
+						<tool id="com.android.tool.compiler.c.415879859.101319655" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.563473989" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.539020791" name="array.c" rcbsApplicability="disable" resourcePath="shared/ruby/array.c" toolsToInvoke="com.android.tool.compiler.c.415879859.2069091127">
+						<tool id="com.android.tool.compiler.c.415879859.2069091127" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1094027556" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.577840296" name="newline.c" rcbsApplicability="disable" resourcePath="shared/ruby/newline.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1789678575">
+						<tool id="com.android.tool.compiler.c.415879859.1789678575" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1365137236" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.799426157" name="load.c" rcbsApplicability="disable" resourcePath="shared/ruby/load.c" toolsToInvoke="com.android.tool.compiler.c.415879859.192354245">
+						<tool id="com.android.tool.compiler.c.415879859.192354245" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1029089308" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.999496437" name="gc.c" rcbsApplicability="disable" resourcePath="shared/ruby/gc.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1714222154">
+						<tool id="com.android.tool.compiler.c.415879859.1714222154" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.657889076" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1153380541" name="file.c" rcbsApplicability="disable" resourcePath="shared/ruby/file.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1838470362">
+						<tool id="com.android.tool.compiler.c.415879859.1838470362" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.160319440" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.304479234" name="thread.c" rcbsApplicability="disable" resourcePath="shared/ruby/thread.c" toolsToInvoke="com.android.tool.compiler.c.415879859.2145660608">
+						<tool id="com.android.tool.compiler.c.415879859.2145660608" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1446597108" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.2136784243" name="version.c" rcbsApplicability="disable" resourcePath="shared/ruby/version.c" toolsToInvoke="com.android.tool.compiler.c.415879859.975859132">
+						<tool id="com.android.tool.compiler.c.415879859.975859132" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1998680617" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.120844853" name="marshal.c" rcbsApplicability="disable" resourcePath="shared/ruby/marshal.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1415382507">
+						<tool id="com.android.tool.compiler.c.415879859.1415382507" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.464306583" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.786329314" name="signal.c" rcbsApplicability="disable" resourcePath="shared/ruby/signal.c" toolsToInvoke="com.android.tool.compiler.c.415879859.405855283">
+						<tool id="com.android.tool.compiler.c.415879859.405855283" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.7089231" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1836649728" name="regcomp.c" rcbsApplicability="disable" resourcePath="shared/ruby/regcomp.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1093034595">
+						<tool id="com.android.tool.compiler.c.415879859.1093034595" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.33773728" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.2104345238" name="object.c" rcbsApplicability="disable" resourcePath="shared/ruby/object.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1961233559">
+						<tool id="com.android.tool.compiler.c.415879859.1961233559" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1087129022" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.948741722" name="regerror.c" rcbsApplicability="disable" resourcePath="shared/ruby/regerror.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1510212324">
+						<tool id="com.android.tool.compiler.c.415879859.1510212324" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.517546859" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1149058754" name="unicode.c" rcbsApplicability="disable" resourcePath="shared/ruby/enc/unicode.c" toolsToInvoke="com.android.tool.compiler.c.415879859.166266930">
+						<tool id="com.android.tool.compiler.c.415879859.166266930" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.810839920" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1114833017" name="encdb.c" rcbsApplicability="disable" resourcePath="shared/ruby/enc/encdb.c" toolsToInvoke="com.android.tool.compiler.c.415879859.403943222">
+						<tool id="com.android.tool.compiler.c.415879859.403943222" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1765043327" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1342897202" name="iso_8859_9.c" rcbsApplicability="disable" resourcePath="shared/ruby/enc/iso_8859_9.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1857357946">
+						<tool id="com.android.tool.compiler.c.415879859.1857357946" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.548220877" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1400003613" name="utf_8.c" rcbsApplicability="disable" resourcePath="shared/ruby/enc/utf_8.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1966737052">
+						<tool id="com.android.tool.compiler.c.415879859.1966737052" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.838631816" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1761695936" name="us_ascii.c" rcbsApplicability="disable" resourcePath="shared/ruby/enc/us_ascii.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1758996223">
+						<tool id="com.android.tool.compiler.c.415879859.1758996223" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1133042846" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.438562730" name="iso_8859_1.c" rcbsApplicability="disable" resourcePath="shared/ruby/enc/iso_8859_1.c" toolsToInvoke="com.android.tool.compiler.c.415879859.669758562">
+						<tool id="com.android.tool.compiler.c.415879859.669758562" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.450598467" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.926120736" name="ascii.c" rcbsApplicability="disable" resourcePath="shared/ruby/enc/ascii.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1973665307">
+						<tool id="com.android.tool.compiler.c.415879859.1973665307" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.9325344" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1618907425" name="string.c" rcbsApplicability="disable" resourcePath="shared/ruby/string.c" toolsToInvoke="com.android.tool.compiler.c.415879859.812906308">
+						<tool id="com.android.tool.compiler.c.415879859.812906308" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.2011447766" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1773911617" name="io.c" rcbsApplicability="disable" resourcePath="shared/ruby/io.c" toolsToInvoke="com.android.tool.compiler.c.415879859.374697972">
+						<tool id="com.android.tool.compiler.c.415879859.374697972" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.555433703" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.2138733527" name="sprintf.c" rcbsApplicability="disable" resourcePath="shared/ruby/sprintf.c" toolsToInvoke="com.android.tool.compiler.c.415879859.604797185">
+						<tool id="com.android.tool.compiler.c.415879859.604797185" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.373449685" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1047929856" name="regsyntax.c" rcbsApplicability="disable" resourcePath="shared/ruby/regsyntax.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1820705045">
+						<tool id="com.android.tool.compiler.c.415879859.1820705045" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.2114057459" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.206461788" name="transcode.c" rcbsApplicability="disable" resourcePath="shared/ruby/transcode.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1474615794">
+						<tool id="com.android.tool.compiler.c.415879859.1474615794" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1027083170" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1901482891" name="variable.c" rcbsApplicability="disable" resourcePath="shared/ruby/variable.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1481788406">
+						<tool id="com.android.tool.compiler.c.415879859.1481788406" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1522532385" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.643164210" name="iseq.c" rcbsApplicability="disable" resourcePath="shared/ruby/iseq.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1859953367">
+						<tool id="com.android.tool.compiler.c.415879859.1859953367" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.2119161315" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.55293708" name="struct.c" rcbsApplicability="disable" resourcePath="shared/ruby/struct.c" toolsToInvoke="com.android.tool.compiler.c.415879859.850121853">
+						<tool id="com.android.tool.compiler.c.415879859.850121853" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1597880489" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.2034261890" name="dln.c" rcbsApplicability="disable" resourcePath="shared/ruby/dln.c" toolsToInvoke="com.android.tool.compiler.c.415879859.126496857">
+						<tool id="com.android.tool.compiler.c.415879859.126496857" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.802022819" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.736692424" name="pack.c" rcbsApplicability="disable" resourcePath="shared/ruby/pack.c" toolsToInvoke="com.android.tool.compiler.c.415879859.58654257">
+						<tool id="com.android.tool.compiler.c.415879859.58654257" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.148151051" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1360380706" name="safe.c" rcbsApplicability="disable" resourcePath="shared/ruby/safe.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1926673447">
+						<tool id="com.android.tool.compiler.c.415879859.1926673447" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.738253273" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.2123608033" name="math.c" rcbsApplicability="disable" resourcePath="shared/ruby/math.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1271696609">
+						<tool id="com.android.tool.compiler.c.415879859.1271696609" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.838480737" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1895946584" name="compile.c" rcbsApplicability="disable" resourcePath="shared/ruby/compile.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1467890382">
+						<tool id="com.android.tool.compiler.c.415879859.1467890382" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1546489752" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1655199885" name="RhoFile.cpp" rcbsApplicability="disable" resourcePath="shared/common/RhoFile.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.208690160">
+						<tool id="com.android.tool.compiler.g++.1703750702.208690160" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1077206479" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.489046265" name="ThreadQueue.cpp" rcbsApplicability="disable" resourcePath="shared/common/ThreadQueue.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.756002177">
+						<tool id="com.android.tool.compiler.g++.1703750702.756002177" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.648272303" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.261029985" name="AppMenu.cpp" rcbsApplicability="disable" resourcePath="shared/common/AppMenu.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1087340399">
+						<tool id="com.android.tool.compiler.g++.1703750702.1087340399" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1913728877" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.485337596" name="RhoMath.cpp" rcbsApplicability="disable" resourcePath="shared/common/RhoMath.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1759474102">
+						<tool id="com.android.tool.compiler.g++.1703750702.1759474102" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1501924943" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1535754475" name="Tokenizer.cpp" rcbsApplicability="disable" resourcePath="shared/common/Tokenizer.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.636149261">
+						<tool id="com.android.tool.compiler.g++.1703750702.636149261" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.97529226" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1022228883" name="SplashScreen.cpp" rcbsApplicability="disable" resourcePath="shared/common/SplashScreen.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.616450515">
+						<tool id="com.android.tool.compiler.g++.1703750702.616450515" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.2041769398" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1654503440" name="RhodesAppBase.cpp" rcbsApplicability="disable" resourcePath="shared/common/RhodesAppBase.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1651001404">
+						<tool id="com.android.tool.compiler.g++.1703750702.1651001404" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.589646165" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1381632845" name="RhoConf.cpp" rcbsApplicability="disable" resourcePath="shared/common/RhoConf.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1012012350">
+						<tool id="com.android.tool.compiler.g++.1703750702.1012012350" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1244438125" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1433165436" name="GoogleMapEngine.cpp" rcbsApplicability="disable" resourcePath="shared/common/map/GoogleMapEngine.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.314684562">
+						<tool id="com.android.tool.compiler.g++.1703750702.314684562" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.751347645" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.2016873904" name="OSMMapEngine.cpp" rcbsApplicability="disable" resourcePath="shared/common/map/OSMMapEngine.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.17053742">
+						<tool id="com.android.tool.compiler.g++.1703750702.17053742" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1231500337" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1599688879" name="MapEngine.cpp" rcbsApplicability="disable" resourcePath="shared/common/map/MapEngine.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1125504859">
+						<tool id="com.android.tool.compiler.g++.1703750702.1125504859" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1485146252" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.2066839435" name="GeocodingMapEngine.cpp" rcbsApplicability="disable" resourcePath="shared/common/map/GeocodingMapEngine.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1967637221">
+						<tool id="com.android.tool.compiler.g++.1703750702.1967637221" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.2009439235" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.2044428023" name="ESRIMapEngine.cpp" rcbsApplicability="disable" resourcePath="shared/common/map/ESRIMapEngine.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.2104654148">
+						<tool id="com.android.tool.compiler.g++.1703750702.2104654148" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.81837286" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.2134702615" name="BaseMapEngine.cpp" rcbsApplicability="disable" resourcePath="shared/common/map/BaseMapEngine.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.149367232">
+						<tool id="com.android.tool.compiler.g++.1703750702.149367232" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.300927899" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.641504861" name="BundleManager.cpp" rcbsApplicability="disable" resourcePath="shared/common/BundleManager.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.2060079694">
+						<tool id="com.android.tool.compiler.g++.1703750702.2060079694" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.744132243" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.323382679" name="RhoTime.cpp" rcbsApplicability="disable" resourcePath="shared/common/RhoTime.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1149497210">
+						<tool id="com.android.tool.compiler.g++.1703750702.1149497210" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.634740872" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1566033380" name="RhodesApp.cpp" rcbsApplicability="disable" resourcePath="shared/common/RhodesApp.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.25906238">
+						<tool id="com.android.tool.compiler.g++.1703750702.25906238" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.465294969" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1739250567" name="PosixThreadImpl.cpp" rcbsApplicability="disable" resourcePath="shared/common/PosixThreadImpl.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1825908970">
+						<tool id="com.android.tool.compiler.g++.1703750702.1825908970" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.645560688" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1220556009" name="app_build_configs.c" rcbsApplicability="disable" resourcePath="shared/common/app_build_configs.c" toolsToInvoke="com.android.tool.compiler.c.415879859.493024518">
+						<tool id="com.android.tool.compiler.c.415879859.493024518" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.730145656" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1021089659" name="rhoparams.cpp" rcbsApplicability="disable" resourcePath="shared/common/rhoparams.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1873867229">
+						<tool id="com.android.tool.compiler.g++.1703750702.1873867229" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1620008947" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1391787204" name="RhoThread.cpp" rcbsApplicability="disable" resourcePath="shared/common/RhoThread.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.184958120">
+						<tool id="com.android.tool.compiler.g++.1703750702.184958120" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1494421601" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.29715426" name="RJSONTokener.c" rcbsApplicability="disable" resourcePath="shared/json/RJSONTokener.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1115939239">
+						<tool id="com.android.tool.compiler.c.415879859.1115939239" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.921479873" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.2140984469" name="JSONIterator.cpp" rcbsApplicability="disable" resourcePath="shared/json/JSONIterator.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1047287516">
+						<tool id="com.android.tool.compiler.g++.1703750702.1047287516" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1955496077" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1687076721" name="json_tokener.c" rcbsApplicability="disable" resourcePath="shared/json/json_tokener.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1610148626">
+						<tool id="com.android.tool.compiler.c.415879859.1610148626" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.106460256" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1712897213" name="json_object.c" rcbsApplicability="disable" resourcePath="shared/json/json_object.c" toolsToInvoke="com.android.tool.compiler.c.415879859.560394728">
+						<tool id="com.android.tool.compiler.c.415879859.560394728" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1304134248" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.91936561" name="json_util.c" rcbsApplicability="disable" resourcePath="shared/json/json_util.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1824473889">
+						<tool id="com.android.tool.compiler.c.415879859.1824473889" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.344532350" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1323275349" name="printbuf.c" rcbsApplicability="disable" resourcePath="shared/json/printbuf.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1915109185">
+						<tool id="com.android.tool.compiler.c.415879859.1915109185" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1476882620" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1646859038" name="arraylist.c" rcbsApplicability="disable" resourcePath="shared/json/arraylist.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1720592186">
+						<tool id="com.android.tool.compiler.c.415879859.1720592186" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1035870436" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1502805852" name="json_debug.c" rcbsApplicability="disable" resourcePath="shared/json/json_debug.c" toolsToInvoke="com.android.tool.compiler.c.415879859.2072709252">
+						<tool id="com.android.tool.compiler.c.415879859.2072709252" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.671098928" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.880582958" name="linkhash.c" rcbsApplicability="disable" resourcePath="shared/json/linkhash.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1975437618">
+						<tool id="com.android.tool.compiler.c.415879859.1975437618" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.459931560" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1187054993" name="SyncSource.cpp" rcbsApplicability="disable" resourcePath="shared/sync/SyncSource.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1111343178">
+						<tool id="com.android.tool.compiler.g++.1703750702.1111343178" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1880078832" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.916171955" name="SyncThread.cpp" rcbsApplicability="disable" resourcePath="shared/sync/SyncThread.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.844933254">
+						<tool id="com.android.tool.compiler.g++.1703750702.844933254" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1962149389" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1481748635" name="SyncEngine.cpp" rcbsApplicability="disable" resourcePath="shared/sync/SyncEngine.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.659078863">
+						<tool id="com.android.tool.compiler.g++.1703750702.659078863" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.776209718" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1676965826" name="SyncNotify.cpp" rcbsApplicability="disable" resourcePath="shared/sync/SyncNotify.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1730524808">
+						<tool id="com.android.tool.compiler.g++.1703750702.1730524808" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.2041324671" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1207532974" name="ClientRegister.cpp" rcbsApplicability="disable" resourcePath="shared/sync/ClientRegister.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1997976669">
+						<tool id="com.android.tool.compiler.g++.1703750702.1997976669" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1631839603" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1442561285" name="splay.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/splay.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1915327429">
+						<tool id="com.android.tool.compiler.c.415879859.1915327429" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.115722873" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.82204418" name="http_chunks.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/http_chunks.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1843309632">
+						<tool id="com.android.tool.compiler.c.415879859.1843309632" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.2008733979" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1001417619" name="strequal.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/strequal.c" toolsToInvoke="com.android.tool.compiler.c.415879859.692712728">
+						<tool id="com.android.tool.compiler.c.415879859.692712728" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1285704285" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1280527696" name="easy.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/easy.c" toolsToInvoke="com.android.tool.compiler.c.415879859.678596972">
+						<tool id="com.android.tool.compiler.c.415879859.678596972" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.957884811" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1878008872" name="if2ip.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/if2ip.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1976515411">
+						<tool id="com.android.tool.compiler.c.415879859.1976515411" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.376283589" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1001667749" name="progress.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/progress.c" toolsToInvoke="com.android.tool.compiler.c.415879859.147680106">
+						<tool id="com.android.tool.compiler.c.415879859.147680106" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1414764417" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.38513872" name="timeval.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/timeval.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1653692032">
+						<tool id="com.android.tool.compiler.c.415879859.1653692032" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1678612005" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.465432767" name="slist.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/slist.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1538012791">
+						<tool id="com.android.tool.compiler.c.415879859.1538012791" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1470839257" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1638919915" name="hostares.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/hostares.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1353654385">
+						<tool id="com.android.tool.compiler.c.415879859.1353654385" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1133423455" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.23607850" name="amigaos.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/amigaos.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1641685158">
+						<tool id="com.android.tool.compiler.c.415879859.1641685158" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.690275027" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1058415974" name="gtls.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/gtls.c" toolsToInvoke="com.android.tool.compiler.c.415879859.2110655066">
+						<tool id="com.android.tool.compiler.c.415879859.2110655066" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1945530281" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.2082039129" name="curl_addrinfo.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/curl_addrinfo.c" toolsToInvoke="com.android.tool.compiler.c.415879859.624976365">
+						<tool id="com.android.tool.compiler.c.415879859.624976365" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1033550364" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1192898304" name="http.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/http.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1097036750">
+						<tool id="com.android.tool.compiler.c.415879859.1097036750" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.2102495174" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1971985771" name="base64.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/base64.c" toolsToInvoke="com.android.tool.compiler.c.415879859.92676710">
+						<tool id="com.android.tool.compiler.c.415879859.92676710" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.844350033" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.905890356" name="getenv.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/getenv.c" toolsToInvoke="com.android.tool.compiler.c.415879859.818212919">
+						<tool id="com.android.tool.compiler.c.415879859.818212919" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1553952985" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1498856759" name="formdata.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/formdata.c" toolsToInvoke="com.android.tool.compiler.c.415879859.433979140">
+						<tool id="com.android.tool.compiler.c.415879859.433979140" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1480883345" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1004702096" name="tftp.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/tftp.c" toolsToInvoke="com.android.tool.compiler.c.415879859.2127141251">
+						<tool id="com.android.tool.compiler.c.415879859.2127141251" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.2034183026" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1543621091" name="escape.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/escape.c" toolsToInvoke="com.android.tool.compiler.c.415879859.742066159">
+						<tool id="com.android.tool.compiler.c.415879859.742066159" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1724995439" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.397977659" name="curl_sspi.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/curl_sspi.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1760115604">
+						<tool id="com.android.tool.compiler.c.415879859.1760115604" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1480229928" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1458492812" name="dict.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/dict.c" toolsToInvoke="com.android.tool.compiler.c.415879859.602843831">
+						<tool id="com.android.tool.compiler.c.415879859.602843831" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1686748866" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1785497700" name="nss.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/nss.c" toolsToInvoke="com.android.tool.compiler.c.415879859.498734503">
+						<tool id="com.android.tool.compiler.c.415879859.498734503" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.863691090" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1099176522" name="connect.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/connect.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1482374324">
+						<tool id="com.android.tool.compiler.c.415879859.1482374324" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.138158705" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1582873201" name="transfer.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/transfer.c" toolsToInvoke="com.android.tool.compiler.c.415879859.772913753">
+						<tool id="com.android.tool.compiler.c.415879859.772913753" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.59324218" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1733703183" name="speedcheck.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/speedcheck.c" toolsToInvoke="com.android.tool.compiler.c.415879859.419553193">
+						<tool id="com.android.tool.compiler.c.415879859.419553193" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1147821082" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.664232580" name="parsedate.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/parsedate.c" toolsToInvoke="com.android.tool.compiler.c.415879859.633620970">
+						<tool id="com.android.tool.compiler.c.415879859.633620970" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.686115181" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1968619053" name="http_digest.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/http_digest.c" toolsToInvoke="com.android.tool.compiler.c.415879859.585734168">
+						<tool id="com.android.tool.compiler.c.415879859.585734168" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1730352999" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1717804635" name="select.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/select.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1418203800">
+						<tool id="com.android.tool.compiler.c.415879859.1418203800" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.794470983" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1092968275" name="getinfo.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/getinfo.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1679419480">
+						<tool id="com.android.tool.compiler.c.415879859.1679419480" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1619762133" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.2095762172" name="nwos.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/nwos.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1219687534">
+						<tool id="com.android.tool.compiler.c.415879859.1219687534" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.819388145" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.572415700" name="md5.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/md5.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1085876209">
+						<tool id="com.android.tool.compiler.c.415879859.1085876209" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1297619003" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.684873688" name="strdup.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/strdup.c" toolsToInvoke="com.android.tool.compiler.c.415879859.564973410">
+						<tool id="com.android.tool.compiler.c.415879859.564973410" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.463408042" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1203760968" name="curl_memrchr.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/curl_memrchr.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1943257402">
+						<tool id="com.android.tool.compiler.c.415879859.1943257402" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.351623361" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1787144046" name="memdebug.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/memdebug.c" toolsToInvoke="com.android.tool.compiler.c.415879859.787973432">
+						<tool id="com.android.tool.compiler.c.415879859.787973432" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.2060602372" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.107000963" name="multi.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/multi.c" toolsToInvoke="com.android.tool.compiler.c.415879859.600501241">
+						<tool id="com.android.tool.compiler.c.415879859.600501241" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.940762956" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.2007579872" name="hash.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/hash.c" toolsToInvoke="com.android.tool.compiler.c.415879859.605109779">
+						<tool id="com.android.tool.compiler.c.415879859.605109779" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.281294856" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1821531230" name="ssh.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/ssh.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1796384539">
+						<tool id="com.android.tool.compiler.c.415879859.1796384539" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.708102156" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.190877255" name="url.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/url.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1963988160">
+						<tool id="com.android.tool.compiler.c.415879859.1963988160" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.2017435192" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1748551237" name="http_negotiate.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/http_negotiate.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1262793449">
+						<tool id="com.android.tool.compiler.c.415879859.1262793449" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1032677186" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.445712436" name="sslgen.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/sslgen.c" toolsToInvoke="com.android.tool.compiler.c.415879859.2039746830">
+						<tool id="com.android.tool.compiler.c.415879859.2039746830" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1220576963" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.698456312" name="rawstr.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/rawstr.c" toolsToInvoke="com.android.tool.compiler.c.415879859.377414412">
+						<tool id="com.android.tool.compiler.c.415879859.377414412" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.840332092" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.914032495" name="hostip.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/hostip.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1677880305">
+						<tool id="com.android.tool.compiler.c.415879859.1677880305" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.198872413" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.675304875" name="krb4.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/krb4.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1451423473">
+						<tool id="com.android.tool.compiler.c.415879859.1451423473" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.559098465" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.495461629" name="socks_gssapi.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/socks_gssapi.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1393285902">
+						<tool id="com.android.tool.compiler.c.415879859.1393285902" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.239637607" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.786276744" name="hostthre.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/hostthre.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1209487496">
+						<tool id="com.android.tool.compiler.c.415879859.1209487496" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1073088777" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.462259489" name="strerror.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/strerror.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1369286226">
+						<tool id="com.android.tool.compiler.c.415879859.1369286226" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.446698439" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1145728553" name="security.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/security.c" toolsToInvoke="com.android.tool.compiler.c.415879859.137545463">
+						<tool id="com.android.tool.compiler.c.415879859.137545463" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1269717625" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1709580451" name="content_encoding.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/content_encoding.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1101305279">
+						<tool id="com.android.tool.compiler.c.415879859.1101305279" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1602492403" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.154332587" name="telnet.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/telnet.c" toolsToInvoke="com.android.tool.compiler.c.415879859.845232134">
+						<tool id="com.android.tool.compiler.c.415879859.845232134" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.236493145" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.2072295099" name="nwlib.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/nwlib.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1374987090">
+						<tool id="com.android.tool.compiler.c.415879859.1374987090" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1830019540" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1551520750" name="llist.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/llist.c" toolsToInvoke="com.android.tool.compiler.c.415879859.330084079">
+						<tool id="com.android.tool.compiler.c.415879859.330084079" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1143225215" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1167975470" name="inet_ntop.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/inet_ntop.c" toolsToInvoke="com.android.tool.compiler.c.415879859.156681329">
+						<tool id="com.android.tool.compiler.c.415879859.156681329" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1509697880" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.740682847" name="file.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/file.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1685915186">
+						<tool id="com.android.tool.compiler.c.415879859.1685915186" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.822735120" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1063246408" name="hostip4.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/hostip4.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1022998914">
+						<tool id="com.android.tool.compiler.c.415879859.1022998914" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1701638617" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.586805305" name="version.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/version.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1435268779">
+						<tool id="com.android.tool.compiler.c.415879859.1435268779" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1725753937" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1273891839" name="socks_sspi.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/socks_sspi.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1151813799">
+						<tool id="com.android.tool.compiler.c.415879859.1151813799" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.830604994" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.596862639" name="ldap.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/ldap.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1208398051">
+						<tool id="com.android.tool.compiler.c.415879859.1208398051" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.2095849432" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.911357926" name="strtoofft.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/strtoofft.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1483911252">
+						<tool id="com.android.tool.compiler.c.415879859.1483911252" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.2056731679" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1923882079" name="mprintf.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/mprintf.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1265892035">
+						<tool id="com.android.tool.compiler.c.415879859.1265892035" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.403225249" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1517540342" name="socks.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/socks.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1834578986">
+						<tool id="com.android.tool.compiler.c.415879859.1834578986" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.2004602824" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1238740152" name="krb5.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/krb5.c" toolsToInvoke="com.android.tool.compiler.c.415879859.356401777">
+						<tool id="com.android.tool.compiler.c.415879859.356401777" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1234628630" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.700636881" name="share.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/share.c" toolsToInvoke="com.android.tool.compiler.c.415879859.886873662">
+						<tool id="com.android.tool.compiler.c.415879859.886873662" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1810278832" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1502374930" name="hostasyn.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/hostasyn.c" toolsToInvoke="com.android.tool.compiler.c.415879859.193187609">
+						<tool id="com.android.tool.compiler.c.415879859.193187609" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1530994920" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1493931954" name="inet_pton.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/inet_pton.c" toolsToInvoke="com.android.tool.compiler.c.415879859.821149965">
+						<tool id="com.android.tool.compiler.c.415879859.821149965" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.124852858" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1805813385" name="cookie.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/cookie.c" toolsToInvoke="com.android.tool.compiler.c.415879859.779636677">
+						<tool id="com.android.tool.compiler.c.415879859.779636677" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.795320214" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.520646524" name="nonblock.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/nonblock.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1570154541">
+						<tool id="com.android.tool.compiler.c.415879859.1570154541" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.101871772" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.142738295" name="sendf.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/sendf.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1677729446">
+						<tool id="com.android.tool.compiler.c.415879859.1677729446" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.620964689" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.541175247" name="hostip6.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/hostip6.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1460786072">
+						<tool id="com.android.tool.compiler.c.415879859.1460786072" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1361389573" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1678301974" name="ftp.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/ftp.c" toolsToInvoke="com.android.tool.compiler.c.415879859.2037541253">
+						<tool id="com.android.tool.compiler.c.415879859.2037541253" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.217107867" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1953282209" name="curl_rand.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/curl_rand.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1737654529">
+						<tool id="com.android.tool.compiler.c.415879859.1737654529" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1838934685" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1509252052" name="rhossl.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/rhossl.c" toolsToInvoke="com.android.tool.compiler.c.415879859.607212886">
+						<tool id="com.android.tool.compiler.c.415879859.607212886" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.799557940" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.567656294" name="netrc.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/netrc.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1703991883">
+						<tool id="com.android.tool.compiler.c.415879859.1703991883" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1223996533" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.410303049" name="hostsyn.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/hostsyn.c" toolsToInvoke="com.android.tool.compiler.c.415879859.101452463">
+						<tool id="com.android.tool.compiler.c.415879859.101452463" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.631182783" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1102717050" name="strtok.c" rcbsApplicability="disable" resourcePath="shared/curl/lib/strtok.c" toolsToInvoke="com.android.tool.compiler.c.415879859.544359661">
+						<tool id="com.android.tool.compiler.c.415879859.544359661" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.1031960100" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.566824474" name="unzip.cpp" rcbsApplicability="disable" resourcePath="shared/unzip/unzip.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1558325018">
+						<tool id="com.android.tool.compiler.g++.1703750702.1558325018" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1926923224" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1874173678" name="RhoLog.cpp" rcbsApplicability="disable" resourcePath="shared/logging/RhoLog.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.468626869">
+						<tool id="com.android.tool.compiler.g++.1703750702.468626869" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1437807322" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1102356272" name="RhoLogConf.cpp" rcbsApplicability="disable" resourcePath="shared/logging/RhoLogConf.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1315412476">
+						<tool id="com.android.tool.compiler.g++.1703750702.1315412476" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.754566277" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.180439885" name="RhoPlainLog.cpp" rcbsApplicability="disable" resourcePath="shared/logging/RhoPlainLog.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1814329500">
+						<tool id="com.android.tool.compiler.g++.1703750702.1814329500" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1827689769" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.235154860" name="RhoLogSink.cpp" rcbsApplicability="disable" resourcePath="shared/logging/RhoLogSink.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.280974550">
+						<tool id="com.android.tool.compiler.g++.1703750702.280974550" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.141167941" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.561563367" name="System.cpp" rcbsApplicability="disable" resourcePath="shared/rubyext/System.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.426422655">
+						<tool id="com.android.tool.compiler.g++.1703750702.426422655" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.51464445" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.158668356" name="GeoLocation.cpp" rcbsApplicability="disable" resourcePath="shared/rubyext/GeoLocation.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1770812956">
+						<tool id="com.android.tool.compiler.g++.1703750702.1770812956" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1786729603" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.719721653" name="RhoAppAdapter.cpp" rcbsApplicability="disable" resourcePath="shared/rubyext/RhoAppAdapter.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1913079103">
+						<tool id="com.android.tool.compiler.g++.1703750702.1913079103" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1793064661" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.293240049" name="CURLNetRequest.cpp" rcbsApplicability="disable" resourcePath="shared/net/CURLNetRequest.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.64050182">
+						<tool id="com.android.tool.compiler.g++.1703750702.64050182" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1636577978" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.2120694557" name="AsyncHttp.cpp" rcbsApplicability="disable" resourcePath="shared/net/AsyncHttp.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.829889580">
+						<tool id="com.android.tool.compiler.g++.1703750702.829889580" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1309806076" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.1686330374" name="URI.cpp" rcbsApplicability="disable" resourcePath="shared/net/URI.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.870026713">
+						<tool id="com.android.tool.compiler.g++.1703750702.870026713" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.559631740" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.641174067" name="INetRequest.cpp" rcbsApplicability="disable" resourcePath="shared/net/INetRequest.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.137940638">
+						<tool id="com.android.tool.compiler.g++.1703750702.137940638" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.2021098328" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.438253906" name="HttpServer.cpp" rcbsApplicability="disable" resourcePath="shared/net/HttpServer.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1840275995">
+						<tool id="com.android.tool.compiler.g++.1703750702.1840275995" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.624045814" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.2112074749" name="ssl.cpp" rcbsApplicability="disable" resourcePath="shared/net/ssl.cpp" toolsToInvoke="com.android.tool.compiler.g++.1703750702.1093270288">
+						<tool id="com.android.tool.compiler.g++.1703750702.1093270288" name="Android G++" superClass="com.android.tool.compiler.g++.1703750702">
+							<inputType id="com.android.tool.compiler.g++.input.1912204793" superClass="com.android.tool.compiler.g++.input"/>
+						</tool>
+					</fileInfo>
+					<fileInfo id="com.android.toolchain.gcc.245515483.455549005" name="sqlite3.c" rcbsApplicability="disable" resourcePath="shared/sqlite/sqlite3.c" toolsToInvoke="com.android.tool.compiler.c.415879859.1911323552">
+						<tool id="com.android.tool.compiler.c.415879859.1911323552" name="Android GCC" superClass="com.android.tool.compiler.c.415879859">
+							<inputType id="com.android.tool.compiler.c.input.528682332" superClass="com.android.tool.compiler.c.input"/>
+						</tool>
+					</fileInfo>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+		<project id="Rhodes.null.257928795" name="Rhodes"/>
+	</storageModule>
+	<storageModule moduleId="refreshScope" versionNumber="1">
+		<resource resourceType="PROJECT" workspacePath="/Rhodes"/>
+	</storageModule>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="com.android.toolchain.gcc.245515483">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile"/>
+			<profile id="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath="/Users/lexis_tikh/rhomobile/workspaces/rhodes-master/.metadata/.plugins/org.eclipse.cdt.ui/Rhodes.build.log"/>
+					<parser enabled="true"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="makefileGenerator">
+					<runAction arguments="-E -P -v -dD" command="" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="com.android.toolchain.gcc.245515483;com.android.toolchain.gcc.245515483.1753675669;com.android.tool.compiler.g++.1703750702;com.android.tool.compiler.g++.input.93764809">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="com.android.toolchain.gcc.245515483;com.android.toolchain.gcc.245515483.1753675669;com.android.tool.compiler.c.415879859;com.android.tool.compiler.c.input.1877115368">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile"/>
+			<profile id="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath="/Users/lexis_tikh/rhomobile/workspaces/rhodes-master/.metadata/.plugins/org.eclipse.cdt.ui/Rhodes.build.log"/>
+					<parser enabled="true"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="makefileGenerator">
+					<runAction arguments="-E -P -v -dD" command="" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+		</scannerConfigBuildInfo>
+	</storageModule>
+</cproject>

@@ -25,16 +25,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		5C640F3114232F8200D2E157 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC07D0554694100DB518D;
-		};
-		5CBE0A4C142330040046B337 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			proxyType = 1;
-			remoteGlobalIDString = D2AAC07D0554694100DB518D;
-		};
 		6532418C143DFE7D00C1E3C6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5C2CE323122AF5A4005EDBC4 /* RhoConnectClient.xcodeproj */;
@@ -259,11 +249,9 @@
 /* Begin PBXTargetDependency section */
 		5C640F3214232F8200D2E157 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			targetProxy = 5C640F3114232F8200D2E157 /* PBXContainerItemProxy */;
 		};
 		5CBE0A4D142330040046B337 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			targetProxy = 5CBE0A4C142330040046B337 /* PBXContainerItemProxy */;
 		};
 		65324190143DFE9D00C1E3C6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

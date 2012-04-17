@@ -51,6 +51,7 @@
 - (void)dealloc;
 
 - (void) addModels:(NSMutableArray*)models;
+- (void) updateModels:(NSMutableArray*)models;
 - (void) database_full_reset_and_logout;
 - (void) database_client_reset;
 - (BOOL) is_logged_in;

@@ -234,6 +234,14 @@ RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isOnStartPag
 }
 
 
+RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isMotorolaLicencePassed
+(JNIEnv *env, jclass)
+{
+    bool res = (rho_can_app_started_with_current_licence() == 1);
+    return (jboolean)res;
+}
+
+
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isTitleEnabled
   (JNIEnv *, jclass)
 {

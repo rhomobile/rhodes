@@ -121,7 +121,7 @@ void RhoRubyThreadStart()
     VALUE self = rb_thread_alloc(rb_cThread);
     GetThreadPtr(self, th);
 
-#if defined( OS_WINDOWS ) || defined( OS_WINCE )	
+#if defined( WINDOWS_PLATFORM )	
     ruby_thread_init_stack(th);
 #endif	
     ruby_thread_set_native(th);

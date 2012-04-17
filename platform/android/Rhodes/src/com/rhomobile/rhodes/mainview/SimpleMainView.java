@@ -558,8 +558,6 @@ public class SimpleMainView implements MainView {
 		toolBar = bottom;
 		
 		setupToolbar(toolBar, params);
-		
-		webView.getView().requestFocus();
 	}
 	
 	public SimpleMainView() {

@@ -118,6 +118,7 @@ HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename)
     pszFilename[0] = 0;
 
 	ofn.lStructSize     = sizeof(ofn);
+    ofn.hwndOwner       = hwndOwner;
 	ofn.lpstrFilter     = NULL;
 	ofn.lpstrFile       = pszFilename;
 	ofn.nMaxFile        = MAX_PATH;

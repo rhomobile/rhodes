@@ -93,6 +93,8 @@ void rho_connectclient_initmodel(RHOM_MODEL* model);
 void rho_connectclient_destroymodel(RHOM_MODEL* model);
 
 void rho_connectclient_init(RHOM_MODEL* pModels, int nModels);
+void rho_connectclient_updatemodels(RHOM_MODEL* pModels, int nModels);
+
 void rho_connectclient_destroy();
 void rho_connectclient_database_client_reset();
 void rho_connectclient_database_full_reset_and_logout();
@@ -123,6 +125,7 @@ unsigned long rho_connectclient_find_all(const char* szModel, unsigned long hash
 unsigned long rho_connectclient_findbysql(const char* szModel, const char* szSql, unsigned long arParams );
 
 int rho_connectclient_is_changed(const char* szModel);
+void rho_connectclient_set_synctype(const char* szModel, RHOM_SYNC_TYPE sync_type);
 
 void rho_connectclient_save( const char* szModel, unsigned long hash );
 void rho_connectclient_itemdestroy( const char* szModel, unsigned long hash );

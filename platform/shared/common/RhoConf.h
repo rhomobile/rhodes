@@ -55,6 +55,7 @@ public:
     void   setBool(const char* szName, bool bVal, boolean bSaveToFile);
 
     bool   isExist(const char* szName);
+    void   removeProperty(const char* szName, boolean bSaveToFile);
 
     const String& getConfFilePath()const{ return m_strConfFilePath;}
     void setConfFilePath(const char* szConfFilePath){ m_strConfFilePath = szConfFilePath; }
@@ -76,7 +77,7 @@ protected:
     void setPropertyByName(const char* szName, int nNameLen, const char* szValue, int nValueLen, Hashtable<String,String>& mapValues );
     void loadProperty( const char* start, int len, Hashtable<String,String>& mapValues );
 
-    void saveToFile(const char* szName);
+    void saveToFile(const char* szName, boolean bRemove = false );
     void readChanges();
     void checkConflicts();
 };
@@ -106,6 +107,7 @@ void  rho_conf_freeString(char* str);
 void  rho_conf_setString(const char* szName, const char* value);
 //void  rho_conf_save();
 int   rho_conf_is_property_exists(const char* name);
+void  rho_conf_remove_property(const char* name);
 
 #ifdef __cplusplus
 }

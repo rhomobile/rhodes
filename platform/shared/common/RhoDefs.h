@@ -34,7 +34,7 @@
 #elif defined(_WIN32_WCE)
 # define OS_WINCE _WIN32_WINCE
 #elif defined(WIN32)
-# define OS_WINDOWS
+# define OS_WINDOWS_DESKTOP
 #elif defined(__CYGWIN__) || defined(__CYGWIN32__)
 # define OS_CYGWIN
 #elif defined(linux) || defined(__linux) || defined(__linux__)
@@ -46,7 +46,7 @@
 #else
 #endif
 
-#if defined(OS_WINDOWS) || defined(OS_WINCE)
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE)
 #define WINDOWS_PLATFORM
 #endif
 
@@ -97,7 +97,7 @@
 
 typedef int LogSeverity;
 
-#if defined( OS_WINDOWS ) || defined( OS_WINCE )
+#if defined( WINDOWS_PLATFORM )
 #ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS 1
 #endif //_CRT_SECURE_NO_WARNINGS

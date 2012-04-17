@@ -36,7 +36,7 @@
 #include "SyncStatusDlg.h"
 #include "NativeToolbarQt.h"
 #include "NativeTabbarQt.h"
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 #include "menubar.h"
 #endif
 #include "LogView.h"

@@ -99,7 +99,7 @@ void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession
 			break;
 		}
 
-#ifdef OS_WINDOWS
+#ifdef OS_WINDOWS_DESKTOP
 		if (RHOCONF().isExist("http_proxy_host")) {
 			rho::String login, password;
 			
@@ -868,7 +868,7 @@ bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
     if (m_hInternet)
         return true;
 
-#ifdef OS_WINDOWS
+#ifdef OS_WINDOWS_DESKTOP
 	if (RHOCONF().isExist("http_proxy_host")) {
 		rho::String proxyName = RHOCONF().getString("http_proxy_host");
 

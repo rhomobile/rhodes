@@ -36,7 +36,7 @@ public:
 	CLogOptionsDlg() : m_hWndCommandBar(0) {}
 	~CLogOptionsDlg(){}
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 	enum { IDD = IDD_SIMULATOR_LOGOPTIONS };
 #else
 	enum { IDD = IDD_LOGOPTIONS };

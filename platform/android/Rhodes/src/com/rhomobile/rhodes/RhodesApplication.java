@@ -49,6 +49,7 @@ public class RhodesApplication extends Application{
 	
     private static final String TAG = RhodesApplication.class.getSimpleName();
     private static Handler mHandler;
+
     static AppEventObserver sRhodesAppActiveWatcher;
     static {
         NativeLibraries.load();

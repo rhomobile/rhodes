@@ -250,6 +250,8 @@ public class RhodesService extends Service {
 	
 	public static native void resetHttpLogging(String http_log_url);
 	
+	public static native boolean isMotorolaLicencePassed();
+	
 	
 	public static RhodesService getInstance() {
 		return sInstance;

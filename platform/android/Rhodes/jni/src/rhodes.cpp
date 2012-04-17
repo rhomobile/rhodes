@@ -68,6 +68,19 @@ void AndroidLogSink::writeLogMessage(String &strMsg)
     __android_log_write(ANDROID_LOG_INFO, "APP", strMsg.c_str());
 }
 
+String AndroidMemoryInfoCollector::collect()
+{
+    String ret;
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_MEMORY_INFO_COLLECTOR);
+    if (!cls) return ret;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "collect", "()Ljava/lang/String;");
+    if (!mid) return ret;
+    jhstring jStr( static_cast<jstring>(env->CallStaticObjectMethod(cls, mid)) );
+    return rho_cast<String>(env,jStr);
+}
+
+
 } // namespace common
 } // namespace rho
 

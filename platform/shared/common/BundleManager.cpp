@@ -37,7 +37,7 @@ using namespace rho::common;
 extern "C" void rho_sys_app_exit();
 extern "C" void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg);
 
-#if !defined(OS_WINDOWS) && !defined(OS_WINCE) && !defined(OS_MACOSX)
+#if !defined(OS_WINDOWS_DESKTOP) && !defined(OS_WINCE) && !defined(OS_MACOSX)
 void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg)
 {
 }

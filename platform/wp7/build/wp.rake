@@ -376,6 +376,7 @@ namespace "run" do
 				puts "log_file=" + getLogPath
 			end
 
+            desc "Run application on RhoSimulator"    
             task :rhosimulator => ["config:set_wp_platform", "config:common"] do    
                 $rhosim_config = "platform='wp'\r\n"
                 Rake::Task["run:rhosimulator"].invoke            

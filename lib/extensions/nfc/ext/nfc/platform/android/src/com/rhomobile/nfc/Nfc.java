@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -1156,8 +1157,9 @@ public class Nfc implements RhodesActivityListener {
 		}
 		return result;
 	}
-	
-	
-	
+
+    public Dialog onCreateDialog(RhodesActivity activity, int id) {
+        return null;
+    }
 
 }

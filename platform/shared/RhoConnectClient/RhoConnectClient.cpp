@@ -171,6 +171,23 @@ void rho_connectclient_init(RHOM_MODEL* pModels, int nModels)
 
 }
 
+void rho_connectclient_updatemodels(RHOM_MODEL* pModels, int nModels)
+{
+    for( int i = 0; i < nModels; i++ )
+    {
+        RHOM_MODEL& model = pModels[i];
+    
+        db::CDBAdapter& db = db::CDBAdapter::getDB( model.partition );
+        //, sync_type, sync_priority, associations, blob_attribs
+        IDBResult  res = db.executeSQL( "SELECT source_id from sources WHERE name=?", model.name );
+        if ( res.isEnd() )
+            continue;
+
+        model.source_id = res.getIntByIdx(0);
+        //model.sync_type = (RHOM_SYNC_TYPE)res.getIntByIdx(1);
+    }
+}
+
 void rho_connectclient_database_client_reset()
 {
     int pollInterval = rho_sync_set_pollinterval(0);
@@ -1009,6 +1026,12 @@ int rho_connectclient_is_changed(const char* szModel)
     IDBResult resChanged = db.executeSQL("SELECT object FROM changed_values WHERE source_id=? LIMIT 1 OFFSET 0", nSrcID);
 
     return resChanged.isEnd() ? 0 : 1;
+}
+
+void rho_connectclient_set_synctype(const char* szModel, RHOM_SYNC_TYPE sync_type)
+{
+    db::CDBAdapter::getUserDB().executeSQL("UPDATE sources SET sync_type=? WHERE name=?",
+        getSyncTypeName(sync_type), szModel );
 }
 
 void parseServerErrors( const char* szPrefix, const String& name, const String& value, unsigned long& errors_obj, unsigned long& errors_attrs )

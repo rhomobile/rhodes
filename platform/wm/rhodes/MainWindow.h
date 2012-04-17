@@ -44,7 +44,7 @@
 #include "IBrowserEngine.h"
 #include "common/app_build_capabilities.h"
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 #include "menubar.h"
 #endif
 
@@ -133,7 +133,7 @@ public:
     CNativeToolbar& getToolbar(){ return m_toolbar; }
     void performOnUiThread(rho::common::IRhoRunnable* pTask);
 
-    LRESULT InitMainWindow();
+    void calculateMainWindowRect(RECT& rcMainWindow);
     void initBrowserWindow();
     void resizeWindow( int xSize, int ySize);
 
@@ -142,6 +142,8 @@ public:
 
 #if defined( OS_PLATFORM_MOTCE )
    	void SetFullScreen(bool bFull);
+#endif
+#if defined(OS_WINCE)
 	bool m_bFullScreen;
 #endif
 
@@ -151,7 +153,7 @@ public:
 	void closeNativeView();
     rho::IBrowserEngine* getWebKitEngine(){return m_pBrowserEng; }
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
     DECLARE_WND_CLASS(TEXT("Rhodes.MainWindow"))
 #else
 	static ATL::CWndClassInfo& GetWndClassInfo() 
@@ -190,11 +192,11 @@ public:
         COMMAND_ID_HANDLER(ID_SETCOOKIE, OnSetCookieCommand)
 		COMMAND_RANGE_HANDLER(ID_CUSTOM_MENU_ITEM_FIRST, ID_CUSTOM_MENU_ITEM_LAST, OnCustomMenuItemCommand)
 		COMMAND_RANGE_HANDLER(ID_CUSTOM_TOOLBAR_ITEM_FIRST, ID_CUSTOM_TOOLBAR_ITEM_LAST, OnCustomToolbarItemCommand)
-#if defined(OS_WINDOWS) || defined( OS_PLATFORM_MOTCE )
+#if defined(OS_WINDOWS_DESKTOP) || defined( OS_PLATFORM_MOTCE )
 		COMMAND_ID_HANDLER(IDM_POPUP_MENU, OnPopupMenuCommand)
 #endif
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 		MESSAGE_HANDLER(WM_WINDOWPOSCHANGED, OnPosChanged)
 #endif
 		MESSAGE_HANDLER(WM_TAKEPICTURE, OnTakePicture)
@@ -211,6 +213,8 @@ public:
 		MESSAGE_HANDLER(WM_EXECUTE_COMMAND, OnExecuteCommand);
         MESSAGE_HANDLER(WM_EXECUTE_RUNNABLE, OnExecuteRunnable);
 		MESSAGE_HANDLER(WM_LICENSE_SCREEN, OnLicenseScreen);
+        MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus);
+        MESSAGE_HANDLER(WM_HOTKEY, OnHotKey);
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
         MESSAGE_HANDLER(WM_BROWSER_ONDOCUMENTCOMPLETE, OnBrowserDocumentComplete);
         MESSAGE_HANDLER(WM_BROWSER_ONNAVIGATECOMPLETE, OnNavigateComplete);
@@ -256,11 +260,11 @@ private:
 	LRESULT OnCustomMenuItemCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnCustomToolbarItemCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-#if defined(OS_WINDOWS) || defined( OS_PLATFORM_MOTCE )
+#if defined(OS_WINDOWS_DESKTOP) || defined( OS_PLATFORM_MOTCE )
 	LRESULT OnPopupMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 #endif
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS_DESKTOP)
 	LRESULT OnPosChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 #endif
 
@@ -278,6 +282,8 @@ private:
 	LRESULT OnExecuteCommand (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnExecuteRunnable (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnLicenseScreen (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+    LRESULT OnSetFocus (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+    LRESULT OnHotKey (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 
     LRESULT OnWebKitMessages (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 
@@ -350,7 +356,7 @@ private:
 #if defined(_WIN32_WCE)
     // main menu bar for application
     CWindow m_menuBar;
-#elif defined (OS_WINDOWS)
+#elif defined (OS_WINDOWS_DESKTOP)
 	CMenuBar m_menuBar;
 //	int m_menuBarHeight;
 	CLogView m_logView;

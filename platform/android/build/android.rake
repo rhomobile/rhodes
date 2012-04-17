@@ -1929,6 +1929,7 @@ namespace "run" do
         load_app_and_run
     end
 
+    desc "Run application on RhoSimulator"    
     task :rhosimulator => ["config:set_android_platform","config:common"] do    
     
         $emuversion = $app_config["android"]["version"] unless $app_config["android"].nil?

@@ -60,6 +60,7 @@ struct IRhoExtension
     virtual long OnGeolocationData(int nEnum, void* pData, const CRhoExtData& oExtData){return 0;}
     virtual long OnNavigateError(const wchar_t* szUrlBeingNavigatedTo, const CRhoExtData& oExtData){return 0;}
     virtual void OnAppActivate(bool bActivate, const CRhoExtData& oExtData){}
+    virtual void OnWindowChanged(LPVOID lparam){}
 };
 
 struct IRhoExtManager
@@ -93,6 +94,8 @@ struct IRhoExtManager
     virtual StringW getPageTitle(UINT iTab) = 0;
 
     virtual StringW getConfigPath() = 0;
+
+    virtual void setBrowserGesturing(bool bEnableGesturing) = 0;
 };
 
 class CExtManager : public IRhoExtManager
@@ -118,6 +121,7 @@ public:
     long OnGeolocationData(int nEnum, void* pData);
     long OnNavigateError(const wchar_t* szUrlBeingNavigatedTo);
     void OnAppActivate(bool bActivate);
+    void OnWindowChanged(LPVOID lparam);
 
     CRhoExtData makeExtData();
     void close();
@@ -148,6 +152,7 @@ public:
     virtual int getTextZoom(); //Enum (0 to 4)
     virtual StringW getPageTitle(UINT iTab);
     virtual StringW getConfigPath();
+    virtual void setBrowserGesturing(bool bEnableGesturing);
 };
 
 } //namespace common

@@ -154,6 +154,8 @@ public:
     void fireAllSyncNotifications( boolean bFinish, int nErrCode, String strError, String strServerError );
     void reportSyncStatus(String status, int error, String strDetails);
     void showStatusPopup(const String& status);
+    
+    bool isInsideRequest() const;
 private:
     CSyncNotification* getSyncNotifyBySrc(CSyncSource* src);
 

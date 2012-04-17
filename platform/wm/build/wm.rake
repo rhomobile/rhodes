@@ -301,7 +301,7 @@ namespace "build" do
 
     end
 
-    task :rhosimulator => ["config:set_win32_platform", "config:wm"] do
+    task :rhosimulator => ["config:set_win32_platform", "config:wm", "build:rhosimulator_version"] do
       $rhosimulator_build = true
       $config["platform"] = $current_platform
       chdir $startdir
@@ -333,6 +333,7 @@ namespace "build" do
       end
       cp File.join($startdir, $vcbindir, "win32/rhodes/SimulatorRelease/rhosimulator.exe"), target_path
 
+      cp File.join(qtdir, "bin/phonon4.dll"), target_path
       cp File.join(qtdir, "bin/QtCore4.dll"), target_path
       cp File.join(qtdir, "bin/QtGui4.dll"), target_path
       cp File.join(qtdir, "bin/QtNetwork4.dll"), target_path
@@ -544,7 +545,8 @@ namespace "run" do
     task :get_log => "config:wm" do
       puts "log_file=" + gelLogPath
     end
-    
+
+    desc "Run application on RhoSimulator"    
     task :rhosimulator => ["config:set_wm_platform", "config:common"] do
       $rhosim_config = "platform='wm'\r\n"
       Rake::Task["run:rhosimulator"].invoke
