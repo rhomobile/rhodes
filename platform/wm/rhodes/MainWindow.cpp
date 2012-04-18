@@ -448,11 +448,11 @@ void CMainWindow::resizeWindow( int xSize, int ySize)
         m_toolbar.MoveWindow(0, ySize-m_menuBarHeight-m_toolbar.getHeight(), xSize, m_toolbar.getHeight());
 #else
 
-#if defined(_WIN32_WCE)
-	int SIPtop = getSIPVisibleTop();
-	if (m_bFullScreen && (SIPtop>=0))
-		ySize = SIPtop;
-#endif
+//#if defined(_WIN32_WCE)
+//	int SIPtop = getSIPVisibleTop();
+//	if (m_bFullScreen && (SIPtop>=0))
+//		ySize = SIPtop;
+//#endif
 
     RECT rect = {0, 0, xSize, ySize };//- m_toolbar.getHeight()};
 
