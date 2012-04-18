@@ -140,11 +140,9 @@ public:
     // Required to forward messages to the PIEWebBrowser control
     BOOL TranslateAccelerator(MSG* pMsg);
 
-#if defined( OS_PLATFORM_MOTCE )
-   	void SetFullScreen(bool bFull);
-#endif
 #if defined(OS_WINCE)
 	bool m_bFullScreen;
+   	void RhoSetFullScreen(bool bFull, bool bDestroy = false);
 #endif
 
 	void openNativeView(	NativeViewFactory* nativeViewFactory, 
