@@ -142,27 +142,28 @@ void CMainWindow::Navigate(BSTR URL)
 // WM_xxx handlers
 //
 // **************************************************************************
-
-#if defined( OS_PLATFORM_MOTCE )
-void CMainWindow::SetFullScreen(bool bFull)
+#if defined(OS_WINCE)
+void CMainWindow::RhoSetFullScreen(bool bFull, bool bDestroy /*=false*/)
 {
-    LOG(INFO) + "SetFullScreen";
-	HWND hTaskBar = FindWindow(_T("HHTaskBar"), NULL);
-	if(!hTaskBar) 
+    LOG(INFO) + "RhoSetFullScreen";
+
+    HWND hTaskBar = FindWindow(_T("HHTaskBar"), NULL);
+    if ( hTaskBar )
     {
-        LOG(INFO) + "SetFullScreen END 1";
-		return;
+        ::EnableWindow(hTaskBar, bFull ? FALSE : TRUE ); 
+        ::ShowWindow(hTaskBar, bFull ? SW_HIDE : SW_SHOW );
     }
 
-	::ShowWindow(hTaskBar, !bFull ? SW_SHOW : SW_HIDE);
-
+#if defined( OS_PLATFORM_MOTCE )
 
 	if(g_hWndCommandBar)
 		::ShowWindow(g_hWndCommandBar, !bFull ? SW_SHOW : SW_HIDE);
-
-	m_bFullScreen = bFull;
-}
+#else
+    if (!bDestroy)
+        SetFullScreen(bFull);
 #endif
+}
+#endif //OS_WINCE
 
 LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
@@ -239,10 +240,8 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 #if defined(OS_WINCE)
 	//Set fullscreen after window resizing
-	m_bFullScreen = RHOCONF().getBool("full_screen");
-
-	if (m_bFullScreen)
-   	    SetFullScreen(true);
+    m_bFullScreen = RHOCONF().getBool("full_screen");
+    RhoSetFullScreen(m_bFullScreen);
 
     calculateMainWindowRect(rcMainWindow);
     MoveWindow(&rcMainWindow);
@@ -377,12 +376,7 @@ LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 #if defined (_WIN32_WCE)//  && !defined(OS_PLATFORM_MOTCE)
     m_menuBar = NULL;
-    //ShowTaskBar(true, false);
-   	//SetFullScreen(false);
-
-#if defined(OS_PLATFORM_MOTCE)
-    SetFullScreen(false);
-#endif
+    RhoSetFullScreen(false, true);
 
 #endif
     
@@ -567,14 +561,14 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     {
 #if defined(_WIN32_WCE) 
 	if (m_bFullScreen && fActive && (getSIPVisibleTop()<0))
-		SetFullScreen(true);
+		RhoSetFullScreen(true);
 #endif
         return 0;
     }
 
 #if defined(_WIN32_WCE) 
 	if (m_bFullScreen)
-		SetFullScreen(fActive!=0);
+		RhoSetFullScreen(fActive!=0);
 #endif
 	rho_rhodesapp_callAppActiveCallback(fActive);
     RHODESAPP().getExtManager().OnAppActivate(fActive!=0);
@@ -736,8 +730,6 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 {
     LOG(INFO) + "OnSettingChange: " + wParam;
 #if defined(_WIN32_WCE)
-	//if (m_bFullScreen)
-	//	SetFullScreen(true);
 	
 	//handle sreen rotation
 	int width  = GetSystemMetrics(SM_CXSCREEN);	
@@ -755,7 +747,6 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
         RECT rcMain;    
         calculateMainWindowRect(rcMain);
         MoveWindow( rcMain.left, rcMain.top, rcMain.right-rcMain.left, rcMain.bottom-rcMain.top, TRUE );
-        //SetWindowPos(NULL, 0,0, rcMain.right-rcMain.left, rcMain.bottom-rcMain.top, SWP_FRAMECHANGED|SWP_NOMOVE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 #endif
 
 	//} else if (wParam == SPI_SIPMOVE) {
@@ -906,7 +897,7 @@ LRESULT CMainWindow::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HW
 {
     LOG(INFO) + "OnFullscreenCommand";
 #if defined (_WIN32_WCE)
-	SetFullScreen(m_bFullScreen = (hwnd != 0 ? true : false));
+	RhoSetFullScreen(m_bFullScreen = (hwnd != 0 ? true : false));
 #endif
 	return 0;
 };
@@ -1165,13 +1156,13 @@ LRESULT CMainWindow::OnLicenseScreen(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
     LOG(INFO) + "OnLicenseScreen";
 #if defined( OS_WINCE )
 	if (!m_bFullScreen) {
-		//SetFullScreen(wParam != 0);
-		HWND hTaskBar = FindWindow(_T("HHTaskBar"), NULL);
+		RhoSetFullScreen(wParam != 0);
+/*		HWND hTaskBar = FindWindow(_T("HHTaskBar"), NULL);
 		if(hTaskBar) {
 			bool bEnableTaskBar = (wParam == 0);
 			::ShowWindow(hTaskBar, (bEnableTaskBar ? SW_SHOW : SW_HIDE));
 			::EnableWindow(hTaskBar, bEnableTaskBar);
-		}
+		}*/
 	}
 #endif
 	return 0;
@@ -1414,19 +1405,12 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
 {
 #if defined( OS_WINCE) && !defined( OS_PLATFORM_MOTCE )
 	if (pMsg->message == WM_CONTEXTMENU){
-		/*
-		CMenuHandle menu;
-		menu.LoadMenu(IDR_MAIN_MENU);
-		menu = menu.GetSubMenu(0);
-		return menu.TrackPopupMenu( TPM_CENTERALIGN | TPM_VERTICAL, LOWORD(pMsg->lParam), HIWORD(pMsg->lParam), m_hWnd);
-		*/
-		
 		return TRUE;
 	}
 
 	if (m_bFullScreen && pMsg->message == WM_KEYUP && 
 		(pMsg->wParam == VK_F1 ||  pMsg->wParam == VK_F2))
-	        SetFullScreen(false);
+	        RhoSetFullScreen(false);
 #endif
 
     // Accelerators are only keyboard or mouse messages
