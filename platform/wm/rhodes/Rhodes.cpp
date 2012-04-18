@@ -27,6 +27,9 @@
 #include "stdafx.h"
 #include "MainWindow.h"
 #include "IEBrowserEngine.h"
+#if !defined(RHODES_EMULATOR) && !defined(OS_WINDOWS_DESKTOP)
+#include "LogMemory.h"
+#endif
 
 #include "common/RhodesApp.h"
 #include "common/StringConverter.h"
@@ -62,9 +65,7 @@ extern "C" void rho_webview_navigate(const char* url, int index);
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 class CEng;
 extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
-extern "C" {
-	CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
-};
+extern "C" CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
 #endif // APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 #ifdef APP_BUILD_CAPABILITY_SHARED_RUNTIME
 extern "C" {
@@ -78,6 +79,7 @@ extern "C" {
 	bool rho_wmimpl_get_is_version2();
 	const unsigned int* rho_wmimpl_get_logmaxsize();
 	const int* rho_wmimpl_get_loglevel();
+	const unsigned int* rho_wmimpl_get_logmemperiod();
 };
 #endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
@@ -412,9 +414,18 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 		LOGCONF().setMinSeverity(*rho_wmimpl_get_loglevel());
     if (rho_wmimpl_get_fullscreen())
         RHOCONF().setBool("full_screen", true, false);
+	if (rho_wmimpl_get_logmemperiod()) {
+		common::CTimeInterval interval;
+		interval.addMillis(*rho_wmimpl_get_logmemperiod());
+		LOGCONF().setCollectMemoryInfoInterval(interval);
+	}
 #else
     rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
 #endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
+
+#if !defined(RHODES_EMULATOR) && !defined(OS_WINDOWS_DESKTOP)
+	LOGCONF().setMemoryInfoCollector(CLogMemory::getInstance());
+#endif // RHODES_EMULATOR
 
 #ifdef RHODES_EMULATOR
     RHOSIMCONF().setAppConfFilePath(CFilePath::join( m_strRootPath, RHO_EMULATOR_DIR"/rhosimconfig.txt").c_str());

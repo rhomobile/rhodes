@@ -162,11 +162,11 @@ void LogSettings::loadFromConf(rho::common::RhoSettings& oRhoConf)
 		setLogToSocket( oRhoConf.getBool("LogToSocket") );
 	if ( oRhoConf.isExist( "log_exclude_filter") )
         setExcludeFilter( oRhoConf.getString("log_exclude_filter") );
-	if ( oRhoConf.isExist( "log_collect_memory_info_interval" ) )
+	if ( oRhoConf.isExist( "LogMemPeriod" ) )
 	{
-		unsigned long seconds = oRhoConf.getInt("log_collect_memory_info_interval");
+		unsigned long milliseconds = oRhoConf.getInt("LogMemPeriod");
 		common::CTimeInterval interval;
-		interval.addMillis(seconds*1000);		
+		interval.addMillis(milliseconds);
 		setCollectMemoryInfoInterval(interval);
 	}
 }
@@ -194,11 +194,18 @@ void LogSettings::clearLog(){
 }
 
 void LogSettings::sinkLogMessage( String& strMsg ){
+	String logMemory ("");
+    processMemoryInfo( logMemory );
+	if (logMemory.length() > 0)
+		internalSinkLogMessage(logMemory);
+
+	internalSinkLogMessage(strMsg);
+}
+
+void LogSettings::internalSinkLogMessage( String& strMsg ){
     common::CMutexLock oLock(m_FlushLock);
 
-    processMemoryInfo( strMsg );
-
-    if ( isLogToFile() )
+	if ( isLogToFile() )
         m_pFileSink->writeLogMessage(strMsg);
 
     if (m_pLogViewSink)
@@ -270,7 +277,7 @@ void LogSettings::processMemoryInfo( String& strMsg )
 		if ( m_lastTimeMemoryInfoCollected.isEmpty() || ( (now-m_lastTimeMemoryInfoCollected).toULong() > m_collectMemoryInfoInterval.toULong() ) )
 		{
 		    m_lastTimeMemoryInfoCollected = now;
-		    strMsg += "\n" + m_pMemoryInfoCollector->collect();
+		    strMsg += m_pMemoryInfoCollector->collect();
 		}
 	}
 }

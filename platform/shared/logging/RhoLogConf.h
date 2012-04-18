@@ -150,6 +150,7 @@ public:
 
 private:
 	void processMemoryInfo( String& strMsg );
+	void internalSinkLogMessage( String& strMsg );
 };
 
 extern LogSettings g_LogSettings;
