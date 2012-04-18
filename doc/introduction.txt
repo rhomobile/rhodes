@@ -8,18 +8,21 @@ The [Tutorial](tutorial) describes how to install Rhodes and build your apps. Th
 
 ## Supported Operating Systems
 ### BlackBerry
-BlackBerry 4.6, 4.7, 5.0, 6.0
+BlackBerry 4.6, 4.7, 5.0, 6.0, 7.0
 
 NOTE: 4.2 and 4.5 are supported but database access is very slow on these devices.
 
 ### Windows Mobile
-Windows Mobile 6.1 Professional, 6.0 Standard
+Windows Mobile 6.x Professional, 6.0 Standard
 
 ### Android
-Android 1.6 and greater
+Android 2.1 and greater
 
 ### iPhone
 All versions of iPhone 3.0 or greater, iPad
+
+### Windows Phone 7
+Latest Windows Phone devices
 
 ## Rhodes Application
 
