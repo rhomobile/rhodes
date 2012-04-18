@@ -93,7 +93,9 @@ IMapView *OSMMapEngine::createMapView(IDrawingDevice *device)
 
 void OSMMapEngine::destroyMapView(IMapView *view)
 {
+    RHO_MAP_TRACE("OSMMapEngine::destroyMapView() start");
     delete view;
+    RHO_MAP_TRACE("OSMMapEngine::destroyMapView() finish");
 }
 
 } // namespace map
