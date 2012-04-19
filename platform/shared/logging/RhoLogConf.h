@@ -33,6 +33,7 @@
 //#include "RhoPlainLog.h"
 #include "common/RhoMutexLock.h"
 #include "common/RhoTime.h"
+#include "common/RhoThread.h"
 
 namespace rho {
 
@@ -54,6 +55,24 @@ public:
 };
 
 class LogSettings{
+    
+    class MemoryInfoCollectorThread : public common::CRhoThread
+    {
+        unsigned int            m_collectMemoryIntervalSeconds;
+        IMemoryInfoCollector*   m_pCollector;
+        LogSettings&            m_logSettings;
+        
+        mutable common::CMutex  m_accessLock;
+    public:
+        MemoryInfoCollectorThread( LogSettings& logSettings );
+        virtual void run();
+        
+        void setCollectMemoryInfoInterval( unsigned int interval );
+        void setMemoryInfoCollector( IMemoryInfoCollector* memInfoCollector );
+        
+        boolean willCollect() const;
+    };
+    
     LogSeverity m_nMinSeverity;
     bool        m_bLogToOutput;
     bool        m_bLogToSocket;
@@ -62,9 +81,8 @@ class LogSettings{
     String      m_strLogFilePath;
 //    String      m_strLogConfFilePath;
     unsigned int m_nMaxLogFileSize;
-
-    common::CTimeInterval	m_collectMemoryInfoInterval;
-    common::CTimeInterval	m_lastTimeMemoryInfoCollected;
+    
+    MemoryInfoCollectorThread m_memoryCollectorThread;
 
 	String      m_strLogURL;
 
@@ -123,8 +141,8 @@ public:
     const String& getDisabledCategories(){ return m_strDisabledCategories; }
     bool isCategoryEnabled(const LogCategory& cat)const;
     
-    void setCollectMemoryInfoInterval( const common::CTimeInterval& interval ) { m_collectMemoryInfoInterval = interval; }
-    void setMemoryInfoCollector( IMemoryInfoCollector* memInfoCollector ) { m_pMemoryInfoCollector = memInfoCollector; }
+    void setCollectMemoryInfoInterval( unsigned int interval );
+    void setMemoryInfoCollector( IMemoryInfoCollector* memInfoCollector );
 
     void setExcludeFilter( const String& strExcludeFilter );
     Vector<String>& getExcludeAttribs(){ return m_arExcludeAttribs; }
@@ -149,7 +167,6 @@ public:
     void loadFromConf(rho::common::RhoSettings& oRhoConf);
 
 private:
-	void processMemoryInfo( String& strMsg );
 	void internalSinkLogMessage( String& strMsg );
 };
 
