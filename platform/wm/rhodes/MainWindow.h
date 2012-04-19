@@ -113,7 +113,7 @@ typedef struct _TCookieData {
 class CMainWindow :
 #if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
 	public CFrameWindowImpl<CMainWindow>, 
-	public CFullScreenFrame<CMainWindow>
+	public CFullScreenFrame<CMainWindow, false>
 #else
     public CWindowImpl<CMainWindow, CWindow, CWinTraits<WS_BORDER | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_CLIPSIBLINGS> >
 #endif

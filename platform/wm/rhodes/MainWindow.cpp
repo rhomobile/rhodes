@@ -143,6 +143,14 @@ void CMainWindow::Navigate(BSTR URL)
 //
 // **************************************************************************
 #if defined(OS_WINCE)
+
+void hideSIPButton()
+{
+    HWND hg_sipbut = FindWindow(L"MS_SIPBUTTON", NULL);
+    if (hg_sipbut)
+        ::ShowWindow(hg_sipbut, SW_HIDE);
+}
+
 void CMainWindow::RhoSetFullScreen(bool bFull, bool bDestroy /*=false*/)
 {
     LOG(INFO) + "RhoSetFullScreen";
@@ -160,7 +168,12 @@ void CMainWindow::RhoSetFullScreen(bool bFull, bool bDestroy /*=false*/)
 		::ShowWindow(g_hWndCommandBar, !bFull ? SW_SHOW : SW_HIDE);
 #else
     if (!bDestroy)
+    {
         SetFullScreen(bFull);
+
+        if ( bFull )
+            hideSIPButton();
+    }
 #endif
 }
 #endif //OS_WINCE
@@ -757,6 +770,15 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 		pSipInfo.dwImDataSize = 0;
 		if (SipGetInfo(&pSipInfo)) {
 			bool isHiding = ((pSipInfo.fdwFlags & SIPF_ON) ^ SIPF_ON) != 0;
+
+            if ( isHiding && !m_bFullScreen )
+            {
+                RECT rcMain;    
+                calculateMainWindowRect(rcMain);
+                MoveWindow( rcMain.left, rcMain.top, rcMain.right-rcMain.left, rcMain.bottom-rcMain.top, TRUE );
+                return 0;
+            }
+
 			if (m_bFullScreen)
 				pSipInfo.rcVisibleDesktop.top = 0;
 
@@ -794,6 +816,9 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 			}
 			if (m_bFullScreen && m_toolbar.m_hWnd)
 				m_toolbar.MoveWindow(0, (isHiding ? bottom : pSipInfo.rcSipRect.top) - m_toolbar.getHeight(), width, m_toolbar.getHeight());
+
+            if ( m_bFullScreen && isHiding )
+                hideSIPButton();
 		}
 	}
 	
