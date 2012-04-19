@@ -63,7 +63,7 @@ void LogSettings::MemoryInfoCollectorThread::run()
             continue;   
         }
         
-        wait( toWait );
+		Sleep ( toWait );
             
         {
             common::CMutexLock lock(m_accessLock);
