@@ -75,7 +75,7 @@ extern "C" {
 	const char* rho_wmimpl_get_logpath();
 	const char* rho_wmimpl_get_logurl();
 	bool rho_wmimpl_get_fullscreen();
-	void rho_wmimpl_set_is_version2();
+	void rho_wmimpl_set_is_version2(const char* path);
 	bool rho_wmimpl_get_is_version2();
 	const unsigned int* rho_wmimpl_get_logmaxsize();
 	//const int* rho_wmimpl_get_loglevel();
@@ -327,7 +327,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
                     m_strRootPath.append("/");
                 m_strRootPath.append("rho/");
 #ifdef APP_BUILD_CAPABILITY_SHARED_RUNTIME
-                rho_wmimpl_set_is_version2();
+                rho_wmimpl_set_is_version2(m_strRootPath.c_str());
 #endif
         	}
 			free(path);
@@ -414,11 +414,8 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 	//	LOGCONF().setMinSeverity(*rho_wmimpl_get_loglevel());
     if (rho_wmimpl_get_fullscreen())
         RHOCONF().setBool("full_screen", true, false);
-	if (rho_wmimpl_get_logmemperiod()) {
-		common::CTimeInterval interval;
-		interval.addMillis(*rho_wmimpl_get_logmemperiod());
-		LOGCONF().setCollectMemoryInfoInterval(interval);
-	}
+	if (rho_wmimpl_get_logmemperiod())
+		LOGCONF().setCollectMemoryInfoInterval(*rho_wmimpl_get_logmemperiod());
 #else
     rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
 #endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
