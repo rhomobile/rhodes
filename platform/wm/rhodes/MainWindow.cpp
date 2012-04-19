@@ -843,7 +843,7 @@ LRESULT CMainWindow::OnSetFocus (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
 {
     HWND hBrowserWnd = m_pBrowserEng ? m_pBrowserEng->GetHTMLWND() : NULL;
 
-	if (hBrowserWnd && !IsIconic(m_hWnd))
+    if (hBrowserWnd && !::IsIconic(m_hWnd))
 	{
 		HWND hWndLostFocus = (HWND)wParam;
 		if (hWndLostFocus == hBrowserWnd)
