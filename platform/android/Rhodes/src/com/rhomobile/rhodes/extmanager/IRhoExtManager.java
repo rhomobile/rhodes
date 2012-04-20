@@ -1,11 +1,15 @@
 package com.rhomobile.rhodes.extmanager;
 
+import java.util.Map;
+
 import android.view.View;
 
 public interface IRhoExtManager {
 
     void registerExtension(String strName, IRhoExtension ext);
     IRhoExtension getExtByName(String strName);
+
+    void addRhoListener(IRhoListener listener);
 
     /**
      * Web view getter. In case of Motorola WebKit is used it returns object which may be directly casted to NeonEkihView
@@ -48,7 +52,18 @@ public interface IRhoExtManager {
     void zoomPage(float fZoom);
     void zoomText(int nZoom);
     
-    // RE shared runtime detect
+    /**
+     * Handler to notify RhoExtManager about new configuration value
+     * @param name - configuration parameter name
+     * @param value - configuration parameter value
+     * @return true if value is processed by RhoExtManager
+     */
+    boolean onNewConfigValue(String name, String value);
+    
+    /**
+     * Handler to notify RhoExtManager that new configuration is going to apply
+     * @return true if it is allowed for extension to navigate start page itself
+     */
     boolean onStartNewConfig();
 
 }

@@ -1,9 +1,14 @@
 package com.rhomobile.rhodes.extmanager;
 
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Map;
 
+import android.app.Dialog;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +21,13 @@ import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.WebView;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
+import com.rhomobile.rhodes.util.Utils;
 
 public class RhoExtManagerImpl implements IRhoExtManager {
     private static final String TAG = RhoExtManagerImpl.class.getSimpleName();
 
-    private Hashtable<String, IRhoExtension> mExtensions;
+    private Hashtable<String, IRhoExtension> mExtensions = new Hashtable<String, IRhoExtension>();
+    private ArrayList<IRhoListener> mListeners = new ArrayList<IRhoListener>();
     private Object mLicense;
     private boolean mFirstNavigate = true;
 
@@ -30,14 +37,6 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     
     private static native void nativeRequireRubyFile(String path);
 
-//    private static Class<?> getSubclass(Class<?> clazz, String subclassName) throws ClassNotFoundException {
-//        Class<?> subClasses [] = clazz.getDeclaredClasses();
-//        for(Class<?> subClass: subClasses) {
-//            if(subClass.getSimpleName)
-//        }
-//        throw new ClassNotFoundException(subclassName);
-//    }
-    
     static int getResId(String className, String idName) {
         className = R.class.getCanonicalName() + "$" + className;
         try {
@@ -49,10 +48,6 @@ public class RhoExtManagerImpl implements IRhoExtManager {
         }
     }
 
-	public RhoExtManagerImpl() {
-		mExtensions = new Hashtable<String, IRhoExtension>();
-	}
-	
 	@Override
 	public IRhoExtension getExtByName(String strName) {
 	    synchronized (mExtensions) {
@@ -68,6 +63,13 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             }
 
             mExtensions.put(strName, ext);
+        }
+    }
+
+    @Override
+    public void addRhoListener(IRhoListener listener) {
+        if (!mListeners.contains(listener)) {
+            mListeners.add(listener);
         }
     }
 
@@ -181,7 +183,23 @@ public class RhoExtManagerImpl implements IRhoExtManager {
         return RhodesService.getBuildConfig(name);
     }
 
+    /** 
+     * @return is extension allowed to navigate to its start page
+     */
+    @Override
+    public boolean onStartNewConfig() {
+        return Capabilities.SHARED_RUNTIME_ENABLED;
+    }
 
+    /**
+     * @param config - config parameters map 
+     * @return is extension allowed to navigate to its start page
+     */
+    @Override
+    public boolean onNewConfigValue(String name, String value) {
+        // TODO Auto-generated method stub
+        return Capabilities.SHARED_RUNTIME_ENABLED;
+    }
     //-----------------------------------------------------------------------------------------------------------------
     // Rhodes implementation related methods are below
 
@@ -352,10 +370,79 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             }
         }
     }
-    
-    // RE shared runtime detect
-    public boolean onStartNewConfig() {
-    	return Capabilities.SHARED_RUNTIME_ENABLED;
+
+    public void createRhoListeners() {
+        for (String classname: RhodesStartupListeners.ourRunnableList) {
+            if (classname.length() == 0) continue;
+            
+            Class<? extends IRhoListener> klass = null;
+            try {
+                klass = Class.forName(classname).asSubclass(IRhoListener.class);
+            } catch (ClassNotFoundException e) {
+                Utils.platformLog("RhodesActivity", "processStartupListeners() : ClassNotFoundException for ["+classname+"]");
+                e.printStackTrace();
+            }
+            IRhoListener listener = null;
+            try {
+                if (klass != null) {
+                    listener = klass.newInstance();
+                }
+            } catch (InstantiationException e) {
+                Utils.platformLog("RhodesActivity", "processStartupListeners() : InstantiationException for ["+classname+"]");
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                Utils.platformLog("RhodesActivity", "processStartupListeners() : IllegalAccessException for ["+classname+"]");
+                e.printStackTrace();
+            }
+            if (listener != null) {
+                listener.onCreateApplication(this);
+            }
+        }
+    }
+
+    public void onCreateActivity(RhodesActivity activity, Intent intent) {
+        for (IRhoListener listener: mListeners) {
+            listener.onCreate(activity, intent);
+        }
+    }
+    public void onStartActivity(RhodesActivity activity) {
+        for (IRhoListener listener: mListeners) {
+            listener.onStart(activity);
+        }
+    }
+    public void onResumeActivity(RhodesActivity activity) {
+        for (IRhoListener listener: mListeners) {
+            listener.onResume(activity);
+        }
+    }
+    public void onPauseActivity(RhodesActivity activity) {
+        for (IRhoListener listener: mListeners) {
+            listener.onPause(activity);
+        }
+    }
+    public void onStopActivity(RhodesActivity activity) {
+        for (IRhoListener listener: mListeners) {
+            listener.onStop(activity);
+        }
+    }
+    public void onDestroyActivity(RhodesActivity activity) {
+        for (IRhoListener listener: mListeners) {
+            listener.onDestroy(activity);
+        }
+    }
+    public void onNewIntent(RhodesActivity activity, Intent intent) {
+        for (IRhoListener listener: mListeners) {
+            listener.onNewIntent(activity, intent);
+        }
+    }
+    public Dialog onCreateDialog(RhodesActivity activity, int id/*, Bundle args*/) {
+        Dialog res = null;
+        for (IRhoListener listener: mListeners) {
+            res = listener.onCreateDialog(activity, id);
+            if (res != null)
+                break;
+        }
+        return res;
     }
 
 }

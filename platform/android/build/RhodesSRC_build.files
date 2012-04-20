@@ -14,7 +14,6 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/RhoCryptImpl.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhoLogConf.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhoMenu.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesActivity.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesActivityListener.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesAppOptions.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesApplication.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhodesService.java
@@ -101,12 +100,15 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebViewClient.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/IRhoWebView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/GoogleWebView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/AbstractRhoExtension.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/Config.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoExtData.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoExtension.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoExtManager.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoListener.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/RhoExtDataImpl.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/RhoExtManagerImpl.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/RhoExtManager.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/WebkitExtension.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality01.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality02.java
