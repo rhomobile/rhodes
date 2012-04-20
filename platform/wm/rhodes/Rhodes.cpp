@@ -77,6 +77,22 @@ extern "C" {
 	bool rho_wmimpl_get_fullscreen();
 	void rho_wmimpl_set_is_version2(const char* path);
 	bool rho_wmimpl_get_is_version2();
+
+#if !defined( APP_BUILD_CAPABILITY_WEBKIT_BROWSER ) && !defined(APP_BUILD_CAPABILITY_MOTOROLA)
+    bool rho_wmimpl_get_is_version2(){ return 1;}
+    void rho_wmimpl_set_is_version2(const char* path){}
+    void rho_wmimpl_set_configfilepath(const char* path){}
+    void rho_wmimpl_set_configfilepath_wchar(const WCHAR* path){}
+    void rho_wmimpl_set_startpage(const char* path){}
+    TCHAR* rho_wmimpl_get_startpage(){ return L""; }
+    const unsigned int* rho_wmimpl_get_logmemperiod(){ return 0; }
+    const unsigned int* rho_wmimpl_get_logmaxsize(){ return 0; }
+    const char* rho_wmimpl_get_logurl(){ return ""; }
+    bool rho_wmimpl_get_fullscreen(){ return 0; }
+    const char* rho_wmimpl_get_logpath(){ return ""; }
+    int rho_wmimpl_is_loglevel_enabled(int nLogLevel){ return true; }
+#endif
+
 	const unsigned int* rho_wmimpl_get_logmaxsize();
 	//const int* rho_wmimpl_get_loglevel();
 	const unsigned int* rho_wmimpl_get_logmemperiod();
@@ -557,7 +573,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
     if (bRE1App)
     {
-#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
+#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
         registerRhoExtension();
 #endif
 	    m_appWindow.Navigate2(_T("about:blank")

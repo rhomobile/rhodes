@@ -272,42 +272,48 @@ namespace "config" do
     #Process rhoelements settings
     if $current_platform == "wm" || $current_platform == "android"
         if $app_config["app_type"] == 'rhoelements'
-            $app_config["capabilities"] += ["motorola"] unless $app_config["capabilities"].index("motorola")
-            $app_config["extensions"] += ["rhoelementsext"]
-            $app_config["extensions"] += ["motoapi"] #extension with plug-ins
-            $app_config["extensions"] += ["rhoelements"] unless $app_config['extensions'].index('rhoelements')
-
-            if !$app_config["capabilities"].index('native_browser')
-                $app_config["extensions"] += ['webkit-browser'] unless $app_config["extensions"].index("webkit-browser")
-            end
-            
-            #check for RE2 plugins
-            plugins = ""
-            $app_config["extensions"].each do |ext|
-                if ( ext.start_with?('moto-') )
-                    plugins += ',' if plugins.length() > 0
-                    plugins += ext[5, ext.length()-5]
+        
+            if !$app_config["capabilities"].index('non_motorola_device')        
+                $app_config["capabilities"] += ["motorola"] unless $app_config["capabilities"].index("motorola")
+                $app_config["extensions"] += ["rhoelementsext"]
+                $app_config["extensions"] += ["motoapi"] #extension with plug-ins
+                
+                #check for RE2 plugins
+                plugins = ""
+                $app_config["extensions"].each do |ext|
+                    if ( ext.start_with?('moto-') )
+                        plugins += ',' if plugins.length() > 0
+                        plugins += ext[5, ext.length()-5]
+                    end
                 end
+                
+                if plugins.length() == 0
+                    plugins = "ALL"    
+                end
+                
+                application_build_configs['moto-plugins'] = plugins if plugins.length() > 0
+                
             end
             
-            if plugins.length() == 0
-                plugins = "ALL"    
+            if !$app_config["capabilities"].index('native_browser')
+                $app_config["capabilities"] += ["motorola_browser"] unless $app_config["capabilities"].index('motorola_browser')
             end
-            
-            application_build_configs['moto-plugins'] = plugins if plugins.length() > 0
-            
         end
 
         application_build_configs['shared-runtime'] = '1' if $app_config["capabilities"].index('shared_runtime')
 
         if $app_config["capabilities"].index("motorola_browser")
             $app_config['extensions'] += ['webkit-browser'] unless $app_config['extensions'].index('webkit-browser')
-            $app_config["extensions"] += ["rhoelements"] unless $app_config['extensions'].index('rhoelements')
         end
         
         if $app_config["extensions"].index("webkit-browser")
             $app_config["capabilities"] += ["webkit_browser"]
             $app_config["extensions"].delete("webkit-browser") unless $current_platform == 'android'
+        end
+        
+        if  $app_config["capabilities"].index("webkit_browser") || $app_config["capabilities"].index("motorola")
+            #contains wm code for webkit browser support
+            $app_config["extensions"] += ["rhoelements"] unless $app_config['extensions'].index('rhoelements')
         end
     end
 
@@ -327,7 +333,6 @@ namespace "config" do
       end
     end	
     $application_build_configs = application_build_configs
-
     #check for rhoelements gem
     $rhoelements_features = ""
     if $app_config['extensions'].index('barcode')
@@ -401,6 +406,7 @@ namespace "config" do
     puts "$app_config['extensions'] : #{$app_config['extensions'].inspect}"   
     puts "$app_config['capabilities'] : #{$app_config['capabilities'].inspect}"   
 
+    
     if $current_platform == "bb"  
       make_application_build_config_java_file
     else  

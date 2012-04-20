@@ -268,16 +268,19 @@ void CExtManager::requireRubyFile( const char* szFilePath )
 }
 
 extern "C" int rho_wmimpl_is_loglevel_enabled(int nLogLevel);
+extern "C" bool rho_wmimpl_get_is_version2();
 void CExtManager::rhoLog(ELogExtLevels eLogLevel, const char* szModule, const char* szMsg, const char* szFile, int nLine)
 {
-    bool bRE1App = false;
 #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
+    bool bRE1App = false;
+
     if (!rho_wmimpl_get_is_version2())
         bRE1App = true;
-#endif
 
     if (bRE1App && !rho_wmimpl_is_loglevel_enabled(eLogLevel))
         return;
+#endif
+
 
     int nSeverity = L_INFO;
     switch (eLogLevel)
