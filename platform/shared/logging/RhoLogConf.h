@@ -82,7 +82,7 @@ class LogSettings{
 //    String      m_strLogConfFilePath;
     unsigned int m_nMaxLogFileSize;
     
-    MemoryInfoCollectorThread m_memoryCollectorThread;
+    MemoryInfoCollectorThread* m_pMemoryCollectorThread;
 
 	String      m_strLogURL;
 

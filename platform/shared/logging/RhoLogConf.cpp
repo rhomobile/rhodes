@@ -97,8 +97,7 @@ boolean LogSettings::MemoryInfoCollectorThread::willCollect() const
 
 LogSettings g_LogSettings;
 
-LogSettings::LogSettings():
-    m_memoryCollectorThread(*this)
+LogSettings::LogSettings()
 { 
     m_nMinSeverity = 0; 
     m_bLogToOutput = true; 
@@ -115,10 +114,16 @@ LogSettings::LogSettings():
     m_pLogViewSink = NULL;
 	m_pSocketSink = NULL;
 	m_pMemoryInfoCollector = NULL;
+    m_pMemoryCollectorThread = NULL;
 }
 
 LogSettings::~LogSettings(){
-    m_memoryCollectorThread.stop(0);
+    
+    if ( m_pMemoryCollectorThread != 0 )
+    {
+        m_pMemoryCollectorThread->stop(0);
+        delete m_pMemoryCollectorThread;
+    }
     delete m_pFileSink;
     delete m_pOutputSink;
 	if(m_pSocketSink)
@@ -328,27 +333,37 @@ void LogSettings::setExcludeFilter( const String& strExcludeFilter )
 
 void LogSettings::setCollectMemoryInfoInterval( unsigned int interval )
 { 
-    m_memoryCollectorThread.setCollectMemoryInfoInterval(interval);
-    if ( m_memoryCollectorThread.willCollect() )
+    if ( 0 == m_pMemoryCollectorThread )
+    {
+        m_pMemoryCollectorThread = new MemoryInfoCollectorThread(*this);
+    }
+    
+    m_pMemoryCollectorThread->setCollectMemoryInfoInterval(interval);
+    if ( m_pMemoryCollectorThread->willCollect() )
     {        
-        m_memoryCollectorThread.start(common::IRhoRunnable::epLow);        
+        m_pMemoryCollectorThread->start(common::IRhoRunnable::epLow);        
     } 
     else 
     {
-        m_memoryCollectorThread.stop(0);        
+        m_pMemoryCollectorThread->stop(0);        
     }
 }
 
 void LogSettings::setMemoryInfoCollector( IMemoryInfoCollector* memInfoCollector ) 
-{ 
-    m_memoryCollectorThread.setMemoryInfoCollector(memInfoCollector);
-    if ( m_memoryCollectorThread.willCollect() )
+{
+    if ( 0 == m_pMemoryCollectorThread )
     {
-        m_memoryCollectorThread.start(common::IRhoRunnable::epLow);        
+        m_pMemoryCollectorThread = new MemoryInfoCollectorThread(*this);
+    }
+    
+    m_pMemoryCollectorThread->setMemoryInfoCollector(memInfoCollector);
+    if ( m_pMemoryCollectorThread->willCollect() )
+    {
+        m_pMemoryCollectorThread->start(common::IRhoRunnable::epLow);        
     } 
     else 
     {
-        m_memoryCollectorThread.stop(0);        
+        m_pMemoryCollectorThread->stop(0);        
     }
 }
 
