@@ -58,7 +58,7 @@ class LogSettings{
     
     class MemoryInfoCollectorThread : public common::CRhoThread
     {
-        unsigned int            m_collectMemoryIntervalSeconds;
+        unsigned int            m_collectMemoryIntervalMilliseconds;
         IMemoryInfoCollector*   m_pCollector;
         LogSettings&            m_logSettings;
         

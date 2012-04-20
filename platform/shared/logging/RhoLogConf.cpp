@@ -43,7 +43,7 @@ common::CMutex LogSettings::m_CatLock;
 
 
 LogSettings::MemoryInfoCollectorThread::MemoryInfoCollectorThread( LogSettings& logSettings ) :
-    m_pCollector(0), m_logSettings(logSettings), m_collectMemoryIntervalSeconds(0)
+    m_pCollector(0), m_logSettings(logSettings), m_collectMemoryIntervalMilliseconds(0)
 {
     
 }
@@ -55,7 +55,7 @@ void LogSettings::MemoryInfoCollectorThread::run()
         unsigned int toWait = 0;
         {
             common::CMutexLock lock(m_accessLock);
-            toWait = m_collectMemoryIntervalSeconds;
+            toWait = m_collectMemoryIntervalMilliseconds;
         }
         
         if ( 0 == toWait )
@@ -79,7 +79,7 @@ void LogSettings::MemoryInfoCollectorThread::run()
 void LogSettings::MemoryInfoCollectorThread::setCollectMemoryInfoInterval( unsigned int interval )
 {
     common::CMutexLock lock(m_accessLock);
-    m_collectMemoryIntervalSeconds = interval;
+    m_collectMemoryIntervalMilliseconds = interval;
 }
 
 void LogSettings::MemoryInfoCollectorThread::setMemoryInfoCollector( IMemoryInfoCollector* memInfoCollector )
@@ -91,7 +91,7 @@ void LogSettings::MemoryInfoCollectorThread::setMemoryInfoCollector( IMemoryInfo
 boolean LogSettings::MemoryInfoCollectorThread::willCollect() const
 {
     common::CMutexLock lock(m_accessLock); 
-    return (m_collectMemoryIntervalSeconds>0) && (m_pCollector!=0);
+    return (m_collectMemoryIntervalMilliseconds>0) && (m_pCollector!=0);
 }
 
 
@@ -221,8 +221,8 @@ void LogSettings::loadFromConf(rho::common::RhoSettings& oRhoConf)
         setExcludeFilter( oRhoConf.getString("log_exclude_filter") );
 	if ( oRhoConf.isExist( "LogMemPeriod" ) )
 	{
-		int seconds = oRhoConf.getInt("LogMemPeriod");
-		setCollectMemoryInfoInterval(seconds);
+		int milliseconds = oRhoConf.getInt("LogMemPeriod");
+		setCollectMemoryInfoInterval(milliseconds);
 	}
 }
 
