@@ -710,6 +710,18 @@ def common_bundle_start(startdir, dest)
   end
   cp app + '/rhoconfig.txt', File.join($srcdir,'apps'), :preserve => true
 
+  if $app_config["app_type"] == 'rhoelements'
+    config_xml = nil
+    if $app_config[$config["platform"]] && $app_config[$config["platform"]]["rhoelements"] && $app_config[$config["platform"]]["rhoelements"]["config"] && (File.exists? File.join(app, $app_config[$config["platform"]]["rhoelements"]["config"]))
+      config_xml = File.join(app, $app_config[$config["platform"]]["rhoelements"]["config"])
+    elsif $app_config["rhoelements"] && $app_config["rhoelements"]["config"] && (File.exists? File.join(app, $app_config["rhoelements"]["config"]))
+      config_xml = File.join(app, $app_config["rhoelements"]["config"])
+    end
+    if !(config_xml.nil?)
+      cp config_xml, File.join($srcdir,'apps/Config.xml'), :preserve => true
+    end
+  end
+
   app_version = "\r\napp_version='#{$app_config["version"]}'"  
   File.open(File.join($srcdir,'apps/rhoconfig.txt'), "a"){ |f| f.write(app_version) }
   File.open(File.join($srcdir,'apps/rhoconfig.txt.timestamp'), "w"){ |f| f.write(Time.now.to_f().to_s()) }
