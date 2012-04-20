@@ -252,7 +252,10 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
 
         const char* szData = null;
         if ( strTestResp.length() > 0 )
+        {
             szData = strTestResp.c_str();
+            getNotify().setFakeServerResponse(true);
+        }
         else
             szData = resp.getCharData();
 
@@ -311,15 +314,6 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
             pSrc->processServerResponse_ver3(oSrcArr);
 
             nSearchCount += pSrc->getCurPageCount();
-
-            if ( pSrc->getServerError().length() > 0 )
-            {
-                if ( m_strServerError.length() > 0 )
-                    m_strServerError +=  "&";
-
-                m_strServerError += pSrc->getServerError();
-                m_nErrCode = pSrc->getErrorCode();
-            }
         }
 
         if ( nSearchCount == 0 )
@@ -333,6 +327,9 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
 
             break;
         }
+
+        if ( strTestResp.length() > 0 )
+            break;
     }  
 
     getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError, m_strServerError);
