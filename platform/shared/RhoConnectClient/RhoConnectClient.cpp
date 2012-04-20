@@ -658,6 +658,9 @@ void rho_connectclient_itemdestroy( const char* szModel, unsigned long hash )
 void rho_connectclient_on_sync_create_error(const char* szModel, RHO_CONNECT_NOTIFY* pNotify, const char* szAction )
 {
     unsigned long hash_create_errors = pNotify->create_errors;
+    if (!hash_create_errors)
+        return;
+
     String src_name = szModel;
     IDBResult  res = rhom_executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", szModel);
     if ( res.isEnd())
