@@ -63,7 +63,11 @@ void LogSettings::MemoryInfoCollectorThread::run()
             continue;   
         }
         
-		Sleep ( toWait );
+#ifdef WINDOWS_PLATFORM
+        ::Sleep ( toWait );
+#else
+        usleep ( toWait );
+#endif
             
         {
             common::CMutexLock lock(m_accessLock);
