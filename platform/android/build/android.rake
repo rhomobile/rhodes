@@ -448,7 +448,7 @@ namespace "config" do
     $app_native_libs_java = File.join $tmpdir, "NativeLibraries.java"
     $app_capabilities_java = File.join $tmpdir, "Capabilities.java"
     $app_push_java = File.join $tmpdir, "Push.java"
-    $app_activity_startup_listeners_java = File.join $tmpdir, "RhodesActivityStartupListeners.java"
+    $app_startup_listeners_java = File.join $tmpdir, "RhodesStartupListeners.java"
 
     if RUBY_PLATFORM =~ /(win|w)32$/
       $emulator = #"cmd /c " + 
@@ -1403,21 +1403,17 @@ namespace "build" do
       # RhodesActivity Listeners
       f = StringIO.new("", "w+")
       f.puts '// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!'
-      f.puts 'package com.rhomobile.rhodes;'
+      f.puts 'package com.rhomobile.rhodes.extmanager;'
       f.puts ''
-      f.puts 'import com.rhomobile.rhodes.phonebook.ContactAccessor;'
-      f.puts ''
-      f.puts 'class RhodesActivityStartupListeners {'
+      f.puts 'class RhodesStartupListeners {'
       f.puts ''
       f.puts '	public static final String[] ourRunnableList = { ""'
       $ext_android_rhodes_activity_listener.each do |a|
          f.puts '       ,"'+a+'"'
       end
       f.puts '	};'
-      f.puts ''
       f.puts '}'
-      Jake.modify_file_if_content_changed(File.join($tmpdir, "RhodesActivityStartupListeners.java"), f)
-
+      Jake.modify_file_if_content_changed($app_startup_listeners_java, f)
 
       puts 'EXT:  add additional files to project before build'
       $ext_android_resources_addons.each do |r|
@@ -1461,7 +1457,7 @@ namespace "build" do
       lines << "\"" +$app_native_libs_java+"\""
       lines << "\"" +$app_capabilities_java+"\""
       lines << "\"" +$app_push_java+"\""
-      lines << "\"" +$app_activity_startup_listeners_java+"\""
+      lines << "\"" +$app_startup_listeners_java+"\""
       
       File.open(newsrclist, "w") { |f| f.write lines.join("\n") }
       srclist = newsrclist

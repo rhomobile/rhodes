@@ -24,13 +24,14 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
-package com.rhomobile.rhodes;
+package com.rhomobile.rhodes.extmanager;
+
+import com.rhomobile.rhodes.RhodesActivity;
 
 import android.app.Dialog;
 import android.content.Intent;
-import android.os.Bundle;
 
-public interface RhodesActivityListener {
+public interface IRhoListener {
 
     void onCreate(RhodesActivity activity, Intent intent);
     void onStart(RhodesActivity activity);
@@ -41,5 +42,5 @@ public interface RhodesActivityListener {
     void onNewIntent(RhodesActivity activity, Intent intent);
     Dialog onCreateDialog(RhodesActivity activity, int id/*, Bundle args*/);
 
-    void onRhodesActivityStartup(RhodesActivity activity);
+    void onCreateApplication(IRhoExtManager extManager);
 }

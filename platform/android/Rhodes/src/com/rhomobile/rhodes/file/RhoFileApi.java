@@ -60,7 +60,7 @@ public class RhoFileApi {
     private static final String DB_FILES_FOLDER = "db/db-files";
     private static final String TMP_FOLDER = "tmp";
 
-	private static native void nativeInitPath(String rootPath, String sqliteJournalsPath, String apkPath);
+	private static native void nativeInitPath(String rootPath, String sqliteJournalsPath, String apkPath, String sharedPath);
 	private static native void nativeInit();
 	private static native void updateStatTable(String path, String type, long size, long mtime);
 	
@@ -130,12 +130,10 @@ public class RhoFileApi {
 		}
 	}
 
-	public static String initRootPath(String dataDir, String sourceDir) {
+	public static String initRootPath(String dataDir, String sourceDir, String sharedDir) {
 		
 		root = dataDir + "/rhodata/";
 		String sqliteJournals = dataDir + "/sqlite_stmt_journals/";
-		Log.d(TAG, "App root path: " + root);
-		Log.d(TAG, "Sqlite journals path: " + sqliteJournals);
 		
 		File f = new File(getRootPath());
 		f.mkdirs();
@@ -148,7 +146,15 @@ public class RhoFileApi {
 		
 		String apkPath = sourceDir;
 		
-		nativeInitPath(root, sqliteJournals, apkPath);
+		if (sharedDir == null || sharedDir.length() == 0) {
+		    sharedDir = root;
+		}
+		
+        Log.d(TAG, "App root path: " + root);
+        Log.d(TAG, "Sqlite journals path: " + sqliteJournals);
+        Log.d(TAG, "Shared path: " + sharedDir);
+
+        nativeInitPath(root, sqliteJournals, apkPath, sharedDir);
 		return root;
 	}
 
@@ -276,7 +282,7 @@ public class RhoFileApi {
 			return is;
 		}
 		catch (IOException e) {
-			//Log.e(TAG, "Can not open " + path);
+			Log.e(TAG, e.getMessage());
 			return null;
 		}
 	}
