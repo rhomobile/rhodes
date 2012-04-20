@@ -63,12 +63,8 @@ void LogSettings::MemoryInfoCollectorThread::run()
             continue;   
         }
         
-#ifdef WINDOWS_PLATFORM
-        ::Sleep ( toWait );
-#else
-        usleep ( toWait );
-#endif
-            
+        wait(toWait / 1000);
+
         {
             common::CMutexLock lock(m_accessLock);
             if ( m_pCollector!=0 )
@@ -80,7 +76,7 @@ void LogSettings::MemoryInfoCollectorThread::run()
     }
 }
 
-void LogSettings::MemoryInfoCollectorThread::setCollectMemoryInfoInterval( unsigned int interval/*const common::CTimeInterval& interval*/ )
+void LogSettings::MemoryInfoCollectorThread::setCollectMemoryInfoInterval( unsigned int interval )
 {
     common::CMutexLock lock(m_accessLock);
     m_collectMemoryIntervalSeconds = interval;
