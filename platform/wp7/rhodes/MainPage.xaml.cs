@@ -152,5 +152,16 @@ namespace Rhodes
             RHODESAPP().addToHistory(e.Uri);
         }
 
+        protected override void OnBackKeyPress(System.ComponentModel.CancelEventArgs e)
+        {
+            //if (Browser.Visibility == Visibility.Visible)
+            //{
+              //  Browser.Visibility = Visibility.Collapsed;
+                e.Cancel = true;
+                RHODESAPP().back();
+           // }
+        }
+
+
     }
 }
