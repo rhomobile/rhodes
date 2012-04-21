@@ -238,6 +238,10 @@ public class Callout {
 		return mResultBitmap;
 	}
 	
+	public int getResultBitmapID() {
+		return MapBitmapManager.getSharedInstance().addBitmap(mResultBitmap);
+	}
+
 	// return modifier for Y coordinates from ancor point.
 	public int getXOffset() {
 		return mXOffset;

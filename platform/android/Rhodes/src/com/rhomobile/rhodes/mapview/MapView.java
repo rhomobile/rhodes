@@ -26,6 +26,8 @@
 
 package com.rhomobile.rhodes.mapview;
 
+import java.util.Hashtable;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -35,6 +37,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -66,12 +69,12 @@ public class MapView extends BaseActivity implements MapTouch {
 	
 	public native void setSize(MapView javaDevice, long nativeDevice, int width, int height);
 	
-	public native void setPinImage(long nativeDevice, Bitmap pin);
-	public native void setPinCalloutImage(long nativeDevice, Bitmap pin);
-	public native void setPinCalloutLinkImage(long nativeDevice, Bitmap pin);
-	public native void setESRILogoImage(long nativeDevice, Bitmap esriLogo);
-	public native void setGoogleLogoImage(long nativeDevice, Bitmap googleLogo);
-	public native void setMyLocationImage(long nativeDevice, Bitmap pin);
+	public native void setPinImage(long nativeDevice, int pin);
+	public native void setPinCalloutImage(long nativeDevice, int pin);
+	public native void setPinCalloutLinkImage(long nativeDevice, int pin);
+	public native void setESRILogoImage(long nativeDevice, int esriLogo);
+	public native void setGoogleLogoImage(long nativeDevice, int googleLogo);
+	public native void setMyLocationImage(long nativeDevice, int pin);
 	
 	public native int minZoom(long nativeDevice);
 	public native int maxZoom(long nativeDevice);
@@ -121,6 +124,9 @@ public class MapView extends BaseActivity implements MapTouch {
 	}
 
 	public static void create(long nativeDevice) {
+		Logger.I(TAG, "create()");
+		resetRequestSet();
+		
 		RhodesActivity r = RhodesActivity.getInstance();
 		if (r == null) {
 			Logger.E(TAG, "Can't create map view because main activity is null");
@@ -133,17 +139,28 @@ public class MapView extends BaseActivity implements MapTouch {
 	}
 	
 	public static void destroy() {
-		if (mc != null) {
-			mc.finish();
-			mc = null;
+		Logger.I(TAG, "destroy()");
+		final MapView mv = mc;
+		mc = null;
+		if (mv != null) {
+			Logger.I(TAG, "destroy() mc != null - process destroy");
+			PerformOnUiThread.exec(new Runnable() {
+				public void run() {
+					mv.finish();
+					MapBitmapManager.getSharedInstance().totalClean();
+				}
+			});
 		}
 	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		Logger.I(TAG, "onCreate()");
 		super.onCreate(savedInstanceState);
 
 		mc = this;
+		
+		MapBitmapManager.getSharedInstance().totalClean();
 		
 		mNativeDevice = getIntent().getLongExtra(INTENT_EXTRA_PREFIX + ".nativeDevice", 0);
 		if (mNativeDevice == 0)
@@ -155,23 +172,23 @@ public class MapView extends BaseActivity implements MapTouch {
 
 		//ourDensity = pin.getDensity();
 		pin.setDensity(Bitmap.DENSITY_NONE);
-		setPinImage(mNativeDevice, pin);
+		setPinImage(mNativeDevice, MapBitmapManager.getSharedInstance().addBitmap(pin));
 		
 		
 		Bitmap pinCallout = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.callout);
-		setPinCalloutImage(mNativeDevice, pinCallout );
+		setPinCalloutImage(mNativeDevice, MapBitmapManager.getSharedInstance().addBitmap(pinCallout) );
 		Bitmap pinCalloutLink = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.callout_link);
-		setPinCalloutLinkImage(mNativeDevice, pinCalloutLink );
+		setPinCalloutLinkImage(mNativeDevice, MapBitmapManager.getSharedInstance().addBitmap(pinCalloutLink) );
 		
 		Bitmap esriLogo = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.esri);
-		setESRILogoImage(mNativeDevice, esriLogo);
+		setESRILogoImage(mNativeDevice, MapBitmapManager.getSharedInstance().addBitmap(esriLogo) );
 
 		Bitmap googleLogo = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.google);
-		setGoogleLogoImage(mNativeDevice, googleLogo);
+		setGoogleLogoImage(mNativeDevice, MapBitmapManager.getSharedInstance().addBitmap(googleLogo) );
 		
 		Bitmap pinMyLocation = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.location, opt);
 		pinMyLocation.setDensity(Bitmap.DENSITY_NONE);
-		setMyLocationImage(mNativeDevice, pinMyLocation);
+		setMyLocationImage(mNativeDevice, MapBitmapManager.getSharedInstance().addBitmap(pinMyLocation) );
 		
 		mTouchHandler = createTouchHandler();
 		mTouchHandler.setMapTouch(this);
@@ -231,17 +248,50 @@ public class MapView extends BaseActivity implements MapTouch {
 	}
 	
 	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+	    if (keyCode == KeyEvent.KEYCODE_BACK) {
+			Logger.I(TAG, "onBack button pressed()");
+			mc = null;
+			mNativeDevice = 0;
+			destroy(mNativeDevice);
+			PerformOnUiThread.exec(new Runnable() {
+				public void run() {
+					 finish();
+				}
+			});
+	    }
+	    return super.onKeyDown(keyCode, event);
+	}
+	
+	@Override
 	protected void onStop() {
-		mNativeDevice = 0;
-		destroy(mNativeDevice);
-		mc = null;
-		finish();
+		Logger.I(TAG, "onStop() 1");
 		super.onStop();
+		Logger.I(TAG, "onStop() 2");
+		//mNativeDevice = 0;
+		//destroy(mNativeDevice);
+		//mc = null;
+		//PerformOnUiThread.exec(new Runnable() {
+		//	public void run() {
+		//		 finish();
+		//	}
+		//});
+	}
+	
+	@Override
+	public void onPause() {
+		Logger.I(TAG, "onPause() 1");
+		super.onDestroy();
+		Logger.I(TAG, "onPause() 2");
 	}
 	
 	@Override
 	public void onDestroy() {
+		Logger.I(TAG, "onDestroy() 1");
+		MapBitmapManager.getSharedInstance().totalClean();
+		Logger.I(TAG, "onDestroy() 2");
 		super.onDestroy();
+		Logger.I(TAG, "onDestroy() 3");
 	}
 	
 	public int zoom(int n) {
@@ -278,7 +328,9 @@ public class MapView extends BaseActivity implements MapTouch {
 				public void onAnimationRepeat(Animation animation) {}
 				@Override
 				public void onAnimationEnd(Animation animation) {
-					setZoom(mNativeDevice, finalZoom);
+					if (mc != null) {
+						setZoom(mNativeDevice, finalZoom);
+					}
 				}
 			});
 
@@ -286,9 +338,15 @@ public class MapView extends BaseActivity implements MapTouch {
 		}
 	}
 	
-	public void drawImage(Canvas canvas, int x, int y, Bitmap bm) {
-		Paint paint = new Paint();
-		canvas.drawBitmap(bm, x, y, paint);
+	public void drawImage(Canvas canvas, int x, int y, int bm) {
+		//Logger.I(TAG, "drawImage(img_id="+String.valueOf(bm)+") start");
+		Bitmap b = MapBitmapManager.getSharedInstance().getBitmap(bm);
+		if (b != null) {
+			//Logger.I(TAG, "drawImage() image exist");
+			Paint paint = new Paint();
+			canvas.drawBitmap(b, x, y, paint);
+		}
+		//Logger.I(TAG, "drawImage() finish");
 	}
 
 	public void drawText(Canvas canvas, int x, int y, int width, int height, String text, int color) 
@@ -324,46 +382,63 @@ public class MapView extends BaseActivity implements MapTouch {
 	}
 	
 	public void redraw() {
-		PerformOnUiThread.exec(new Runnable() {
-			public void run() {
-				mSurface.invalidate();
-			}
-		});
+		if (mc != null) {
+			PerformOnUiThread.exec(new Runnable() {
+				public void run() {
+					if ((mc != null) && (mSurface != null)) {
+						mSurface.invalidate();
+					}
+				}
+			});
+		}
 	}
 	
-	public static Bitmap createImage(String path) {
-		//Utils.platformLog(TAG, "##################    createBitmap("+path+")");
+	public static int createImage(String path) {
+		//Logger.I(TAG, "createImage(img_path="+path+") start");
 		Bitmap b = BitmapFactory.decodeFile(path);
 		if (b == null) {
-			//Utils.platformLog(TAG, "##################2    createBitmap("+RhoFileApi.normalizePath("apps/" + path)+")");
 			b = BitmapFactory.decodeStream(RhoFileApi.open(RhoFileApi.normalizePath("apps/" + path)));
 			if (b != null) {
-				//Utils.platformLog(TAG, "##################    OK !");
+				//Logger.I(TAG, "createImage() OK!");
 			}
 			else {
-				//Utils.platformLog(TAG, "##################    FALSE !");
+				//Logger.I(TAG, "createImage() FAIL!");
 			}
 		}
 		else {
-			//Utils.platformLog(TAG, "##################    OK !");
+			//Logger.I(TAG, "createImage() OK!");
 		}
 		if (b != null) {
 			b.setDensity(ourDensity);
+			return MapBitmapManager.getSharedInstance().addBitmap(b);
 		}
-		return b;
+		return 0;
 	}
 	
-	public static Bitmap createImage(byte[] data) {
-		return BitmapFactory.decodeByteArray(data, 0, data.length);
-	}
-	
-	public static Bitmap createImageEx(byte[] data, int x, int y, int w, int h) {
+	public static int createImage(byte[] data) {
 		Bitmap b = BitmapFactory.decodeByteArray(data, 0, data.length);
-		return Bitmap.createBitmap(b, x, y, w, h);
+		if (b != null) {
+			return MapBitmapManager.getSharedInstance().addBitmap(b);
+		}
+		return 0;
 	}
 	
-	public static void destroyImage(Bitmap bm) {
-		bm.recycle();
+	public static int createImageEx(byte[] data, int x, int y, int w, int h) {
+		Bitmap b = BitmapFactory.decodeByteArray(data, 0, data.length);
+		if (b == null) {
+			return 0;
+		}
+		return MapBitmapManager.getSharedInstance().addBitmap(Bitmap.createBitmap(b, x, y, w, h));
+	}
+	
+	public static void destroyImage(int bm) {
+		//Logger.I(TAG, "destroyImage("+String.valueOf(bm)+")");
+		MapBitmapManager.getSharedInstance().releaseBitmap(bm);
+	}
+	
+	public static void addRefImage(int bm) {
+		//Logger.I(TAG, "addRefImage("+String.valueOf(bm)+")");
+		MapBitmapManager.getSharedInstance().addRef(bm);
 	}
 
 	public void destroyDevice() {
@@ -447,4 +522,94 @@ public class MapView extends BaseActivity implements MapTouch {
 			}
 		}
 	}
+	
+	public static int getBitmapWidth(int id) {
+		Bitmap b = MapBitmapManager.getSharedInstance().getBitmap(id);
+		if (b != null) {
+			return b.getWidth();
+		}
+		return 0;
+	}
+	
+	public static int getBitmapHeight(int id) {
+		Bitmap b = MapBitmapManager.getSharedInstance().getBitmap(id);
+		if (b != null) {
+			return b.getHeight();
+		}
+		return 0;
+	}
+	
+
+
+	
+	private static Hashtable<Integer,Request> ourRequests = null;
+	
+	public static void resetRequestSet() {
+		getRequests().clear();
+	}
+	
+	public static Hashtable<Integer,Request> getRequests() {
+		if (ourRequests == null) {
+			ourRequests = new Hashtable<Integer,Request>();
+		}
+		return ourRequests;
+	}
+	
+	public static int mapengine_request_make() {
+		Request r = new Request();
+		getRequests().put(new Integer(r.getId()), r);
+		return r.getId();
+	}
+	
+	public static int mapengine_request_data(int request_id, String url) {
+		//Utils.platformLog("MapengineRequest", "mapengine_request_data("+String.valueOf(request_id)+", "+url+");");
+		Request r = getRequests().get(new Integer(request_id));
+		if (r != null) {
+			r.requestData(url);
+			int res = r.getDataSize();
+			//Utils.platformLog("MapengineRequest", "mapengine_request_data() return "+String.valueOf(res));
+			return res;
+		}
+		//Utils.platformLog("MapengineRequest", "mapengine_request_data() return 0");
+		return 0;
+	}
+	
+	public static byte[] mapengine_get_requested_data(int request_id) {
+		Request r = getRequests().get(new Integer(request_id));
+		if (r != null) {
+			byte[] ar = r.getData();
+			r.cancel();
+			getRequests().remove(new Integer(request_id));
+			return ar;
+		}
+		return null;
+	}
+	
+	public static void mapengine_request_cancel(int request_id) {
+		Request r = getRequests().get(new Integer(request_id));
+		if (r != null) {
+			r.cancel();
+			getRequests().remove(new Integer(request_id));
+		}
+	}
+	
+	public static native void deletemapviewpointer(int p);
+	
+	public static void mapengine_delete_mapview_in_ui_thread(int p) {
+		final int pp = p;
+		PerformOnUiThread.exec(new Runnable() {
+			private int mP = pp;
+			public void run() {
+				try {
+					deletemapviewpointer(mP);
+				}
+				catch (Throwable e) {
+					Utils.platformLog("MapengineDeleteInUIThread", "Exception during perform delete !");
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	
+	
 }
