@@ -25,17 +25,21 @@
 *------------------------------------------------------------------------*/
 
 #include <genconfig.h>
+#include <stdio.h>
 #include "rhodes/JNIRhodes.h"
 
 #include "rhodes/JNIRhoRuby.h"
 
 #include <common/rhoparams.h>
 #include <common/map/MapEngine.h>
+#include <common/map/BaseMapEngine.h>
+
+#include <android/log.h>
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "AndroidMapEngine"
 
-//#define RHO_MAP_DISABLE_TRACE
+#define RHO_MAP_DISABLE_TRACE
 #ifdef RHO_MAP_DISABLE_TRACE
 
 #   ifdef RHO_MAP_TRACE
@@ -80,24 +84,23 @@ private:
     AndroidImage(AndroidImage const &);
     AndroidImage &operator=(AndroidImage const &);
 
-    AndroidImage(int *count, jobject *bitmap);
+    AndroidImage(int count, int bitmap);
 
     void init(JNIEnv *env);
 
 public:
-    AndroidImage(jobject bitmap);
+    AndroidImage(int bitmap);
     ~AndroidImage();
 
     AndroidImage *clone();
 
-    jobject bitmap() const {return *m_bitmap;}
+    int bitmap() const {return m_bitmap;}
 
     int width() const {return m_width;}
     int height() const {return m_height;}
 
 private:
-    int *m_count;
-    jobject *m_bitmap;
+    int m_bitmap;
     int m_width;
     int m_height;
 };
@@ -128,12 +131,12 @@ public:
     ~AndroidMapDevice();
 
     void attach(JNIEnv *env, jobject jDevice);
-    void setPinImage(JNIEnv *env, jobject bitmap);
-    void setPinCalloutImage(JNIEnv *env, jobject bitmap);
-    void setPinCalloutLinkImage(JNIEnv *env, jobject bitmap);
-    void setESRILogoImage(JNIEnv *env, jobject bitmap);
-    void setGoogleLogoImage(JNIEnv *env, jobject bitmap);
-    void setPinMyLocationImage(JNIEnv *env, jobject bitmap);
+    void setPinImage(JNIEnv *env, int bitmap);
+    void setPinCalloutImage(JNIEnv *env, int bitmap);
+    void setPinCalloutLinkImage(JNIEnv *env, int bitmap);
+    void setESRILogoImage(JNIEnv *env, int bitmap);
+    void setGoogleLogoImage(JNIEnv *env, int bitmap);
+    void setPinMyLocationImage(JNIEnv *env, int bitmap);
 
     rho_param *params() const { return m_params; }
 
@@ -166,63 +169,68 @@ private:
     std::auto_ptr<IDrawingImage> m_pin_myLocation_image;
 };
 
-AndroidImage::AndroidImage(jobject jbitmap)
-    :m_count(new int(1)), m_bitmap(new jobject(0))
+AndroidImage::AndroidImage(int jbitmap)
 {
     RHO_MAP_TRACE("AndroidImage: ctor start");
+    m_bitmap = jbitmap;
     JNIEnv *env = jnienv();
-    *m_bitmap = env->NewGlobalRef(jbitmap);
-    env->DeleteLocalRef(jbitmap);
+    //*m_bitmap = env->NewGlobalRef(jbitmap);
+    //env->DeleteLocalRef(jbitmap);
     init(env);
     RHO_MAP_TRACE("AndroidImage: ctor finish");
 }
 
-AndroidImage::AndroidImage(int *count, jobject *pjbitmap)
-    :m_count(count), m_bitmap(pjbitmap)
+AndroidImage::AndroidImage(int count, int pjbitmap)
 {
     RHO_MAP_TRACE("AndroidImage: private ctor start");
-    ++*m_count;
+
+    m_bitmap = pjbitmap;
+
+    JNIEnv *env = jnienv();
+    jclass& cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+    if (cls) {
+    	jmethodID midAddRef = getJNIClassStaticMethod(env, cls, "addRefImage", "(I)V");
+    	if (midAddRef) {
+    		env->CallStaticVoidMethod(cls, midAddRef, m_bitmap);
+    	}
+    }
+
     init(jnienv());
     RHO_MAP_TRACE("AndroidImage: private ctor finish");
 }
 
 void AndroidImage::init(JNIEnv *env)
 {
-    jclass& cls = getJNIClass(RHODES_JAVA_CLASS_BITMAP);
+    jclass& cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
     if (!cls) return;
-    jmethodID midWidth = getJNIClassMethod(env, cls, "getWidth", "()I");
+    jmethodID midWidth = getJNIClassStaticMethod(env, cls, "getBitmapWidth", "(I)I");
     if (!midWidth) return;
-    jmethodID midHeight = getJNIClassMethod(env, cls, "getHeight", "()I");
+    jmethodID midHeight = getJNIClassStaticMethod(env, cls, "getBitmapHeight", "(I)I");
     if (!midHeight) return;
 
-    m_width = env->CallIntMethod(*m_bitmap, midWidth);
-    m_height = env->CallIntMethod(*m_bitmap, midHeight);
+    m_width = env->CallStaticIntMethod(cls, midWidth, m_bitmap);
+    m_height = env->CallStaticIntMethod(cls, midHeight, m_bitmap);
     
 }
 
 AndroidImage::~AndroidImage()
 {
-    RHO_MAP_TRACE("AndroidImage: dtor start");
-    if (--*m_count == 0)
+    RHO_MAP_TRACE("AndroidImage: dtorimg start");
     {
         JNIEnv *env = jnienv();
         jclass& cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
-        jmethodID mid = getJNIClassStaticMethod(env, cls, "destroyImage", "(Landroid/graphics/Bitmap;)V");
+        jmethodID mid = getJNIClassStaticMethod(env, cls, "destroyImage", "(I)V");
 
         if (cls && mid)
-            env->CallStaticVoidMethod(cls, mid, *m_bitmap);
+            env->CallStaticVoidMethod(cls, mid, m_bitmap);
 
-        env->DeleteGlobalRef(*m_bitmap);
-
-        delete m_bitmap;
-        delete m_count;
     }
-    RHO_MAP_TRACE("AndroidImage: dtor finish");
+    RHO_MAP_TRACE("AndroidImage: dtorimg finish");
 }
 
 AndroidImage *AndroidImage::clone()
 {
-    return new AndroidImage(m_count, m_bitmap);
+    return new AndroidImage(0, m_bitmap);
 }
 
 void AndroidDrawingContext::drawImage(int x, int y, IDrawingImage *image)
@@ -230,14 +238,15 @@ void AndroidDrawingContext::drawImage(int x, int y, IDrawingImage *image)
     if (!image)
         return;
 
-    RHO_MAP_TRACE3("drawImage: x=%d, y=%d, image=%p", x, y, image);
+    int bitmap = ((AndroidImage*)image)->bitmap();
 
-    jobject bitmap = ((AndroidImage*)image)->bitmap();
+    RHO_MAP_TRACE4("drawImage: x=%d, y=%d, image=%p id=%d", x, y, image, bitmap);
+
 
     JNIEnv *env = jnienv();
     jclass cls = env->GetObjectClass(m_device);
     if (!cls) return;
-    jmethodID mid = getJNIClassMethod(env, cls, "drawImage", "(Landroid/graphics/Canvas;IILandroid/graphics/Bitmap;)V");
+    jmethodID mid = getJNIClassMethod(env, cls, "drawImage", "(Landroid/graphics/Canvas;III)V");
     if (!mid) return;
 
     env->CallVoidMethod(m_device, mid, m_canvas, x, y, bitmap);
@@ -284,7 +293,7 @@ AndroidMapDevice::AndroidMapDevice(rho_param *p)
 
 AndroidMapDevice::~AndroidMapDevice()
 {
-    RHO_MAP_TRACE("AndroidMapDevice: dtor start");
+    RHO_MAP_TRACE("AndroidMapDevice: dtordev start");
     rho_param_free(m_params);
     JNIEnv *env = jnienv();
     if (m_jdevice) {
@@ -296,7 +305,7 @@ AndroidMapDevice::~AndroidMapDevice()
 
         env->DeleteGlobalRef(m_jdevice);
     }
-    RHO_MAP_TRACE("AndroidMapDevice: dtor finish");
+    RHO_MAP_TRACE("AndroidMapDevice: dtordev finish");
 }
 
 void AndroidMapDevice::attach(JNIEnv *env, jobject jDevice)
@@ -347,7 +356,7 @@ void AndroidMapDevice::setMapView(IMapView *mv)
     RHO_MAP_TRACE("AndroidMapDevice: setMapView: finish");
 }
 
-void AndroidMapDevice::setPinImage(JNIEnv *env, jobject bitmap)
+void AndroidMapDevice::setPinImage(JNIEnv *env, int bitmap)
 {
     RHO_MAP_TRACE("AndroidMapDevice: setPinImage: start");
     m_pin_image.reset(new AndroidImage(bitmap));
@@ -367,7 +376,7 @@ void AndroidMapDevice::setPinImage(JNIEnv *env, jobject bitmap)
     RHO_MAP_TRACE("AndroidMapDevice: setPinImage: finish");
 }
 
-void AndroidMapDevice::setPinCalloutImage(JNIEnv *env, jobject bitmap)
+void AndroidMapDevice::setPinCalloutImage(JNIEnv *env, int bitmap)
 {
     RHO_MAP_TRACE("AndroidMapDevice: setPinCalloutImage: start");
     m_pin_calloutimage.reset(new AndroidImage(bitmap));
@@ -381,7 +390,7 @@ void AndroidMapDevice::setPinCalloutImage(JNIEnv *env, jobject bitmap)
     RHO_MAP_TRACE("AndroidMapDevice: setPinCalloutImage: finish");
 }
 
-void AndroidMapDevice::setPinCalloutLinkImage(JNIEnv *env, jobject bitmap)
+void AndroidMapDevice::setPinCalloutLinkImage(JNIEnv *env, int bitmap)
 {
     RHO_MAP_TRACE("AndroidMapDevice: setPinCalloutLinkImage: start");
     m_pin_calloutlinkimage.reset(new AndroidImage(bitmap));
@@ -395,7 +404,7 @@ void AndroidMapDevice::setPinCalloutLinkImage(JNIEnv *env, jobject bitmap)
     RHO_MAP_TRACE("AndroidMapDevice: setPinCalloutLinkImage: finish");
 }
 
-void AndroidMapDevice::setESRILogoImage(JNIEnv *env, jobject bitmap) {
+void AndroidMapDevice::setESRILogoImage(JNIEnv *env, int bitmap) {
     RHO_MAP_TRACE("AndroidMapDevice: setESRILogoImage: start");
     m_esriLogo_image.reset(new AndroidImage(bitmap));
     IMapView *mv = mapView();
@@ -405,7 +414,7 @@ void AndroidMapDevice::setESRILogoImage(JNIEnv *env, jobject bitmap) {
     RHO_MAP_TRACE("AndroidMapDevice: setESRILogoImage: finish");
 }
 
-void AndroidMapDevice::setGoogleLogoImage(JNIEnv *env, jobject bitmap) {
+void AndroidMapDevice::setGoogleLogoImage(JNIEnv *env, int bitmap) {
         RHO_MAP_TRACE("AndroidMapDevice: setGoogleLogoImage: start");
         m_googleLogo_image.reset(new AndroidImage(bitmap));
         IMapView *mv = mapView();
@@ -415,7 +424,7 @@ void AndroidMapDevice::setGoogleLogoImage(JNIEnv *env, jobject bitmap) {
         RHO_MAP_TRACE("AndroidMapDevice: setGoogleLogoImage: finish");
 }
 
-void AndroidMapDevice::setPinMyLocationImage(JNIEnv *env, jobject bitmap) {
+void AndroidMapDevice::setPinMyLocationImage(JNIEnv *env, int bitmap) {
         RHO_MAP_TRACE("AndroidMapDevice: setPinMyLocationImage: start");
         m_pin_myLocation_image.reset(new AndroidImage(bitmap));
         IMapView *mv = mapView();
@@ -444,11 +453,11 @@ IDrawingImage *AndroidMapDevice::createImage(String const &path, bool useAlpha)
     JNIEnv *env = jnienv();
     jclass& cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
     if (!cls) return NULL;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "createImage", "(Ljava/lang/String;)Landroid/graphics/Bitmap;");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "createImage", "(Ljava/lang/String;)I");
     if (!mid) return NULL;
 
-    jobject bitmap = env->CallStaticObjectMethod(cls, mid, rho_cast<jhstring>(path).get());
-    if (bitmap == NULL) {
+    int bitmap = env->CallStaticIntMethod(cls, mid, rho_cast<jhstring>(path).get());
+    if (bitmap == 0) {
         return NULL;
     }
     IDrawingImage *image = new AndroidImage(bitmap);
@@ -464,14 +473,14 @@ IDrawingImage *AndroidMapDevice::createImage(void const *p, size_t size, bool us
     JNIEnv *env = jnienv();
     jclass& cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
     if (!cls) return NULL;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "createImage", "([B)Landroid/graphics/Bitmap;");
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "createImage", "([B)I");
     if (!mid) return NULL;
 
     jholder<jbyteArray> data = jholder<jbyteArray>(env->NewByteArray(size));
     if (!data) return NULL;
     env->SetByteArrayRegion(data.get(), 0, size, (jbyte const *)p);
 
-    jobject bitmap = env->CallStaticObjectMethod(cls, mid, data.get());
+    int bitmap = env->CallStaticIntMethod(cls, mid, data.get());
     IDrawingImage *image = new AndroidImage(bitmap);
     
     RHO_MAP_TRACE1("createImage: return image=%p", image);
@@ -488,11 +497,11 @@ IDrawingImage* AndroidMapDevice::createCalloutImage(String const &title, String 
     
     jobject jo_callout = env->CallStaticObjectMethod(cls, mid, rho_cast<jhstring>(title).get(), rho_cast<jhstring>(subtitle).get(), rho_cast<jhstring>(url).get());
     
-    jmethodID mid_bitmap = env->GetMethodID( cls, "getResultBitmap", "()Landroid/graphics/Bitmap;");
+    jmethodID mid_bitmap = env->GetMethodID( cls, "getResultBitmapID", "()I");
     jmethodID mid_x_off = env->GetMethodID( cls, "getXOffset", "()I");
     jmethodID mid_y_off = env->GetMethodID( cls, "getYOffset", "()I");
     
-    jobject bitmap = env->CallObjectMethod(jo_callout, mid_bitmap);
+    int bitmap = env->CallIntMethod(jo_callout, mid_bitmap);
     IDrawingImage *image = new AndroidImage(bitmap);
     
     *x_offset = env->CallIntMethod(jo_callout, mid_x_off);
@@ -508,14 +517,14 @@ IDrawingImage* AndroidMapDevice::createCalloutImage(String const &title, String 
         JNIEnv *env = jnienv();
         jclass& cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
         if (!cls) return NULL;
-        jmethodID mid = getJNIClassStaticMethod(env, cls, "createImageEx", "([BIIII)Landroid/graphics/Bitmap;");
+        jmethodID mid = getJNIClassStaticMethod(env, cls, "createImageEx", "([BIIII)I");
         if (!mid) return NULL;
         
         jholder<jbyteArray> data = jholder<jbyteArray>(env->NewByteArray(size));
         if (!data) return NULL;
         env->SetByteArrayRegion(data.get(), 0, size, (jbyte const *)p);
         
-        jobject bitmap = env->CallStaticObjectMethod(cls, mid, data.get(), x, y, w, h);
+        int bitmap = env->CallStaticIntMethod(cls, mid, data.get(), x, y, w, h);
         IDrawingImage *image = new AndroidImage(bitmap);
         
         RHO_MAP_TRACE1("createImage: return image=%p", image);
@@ -619,7 +628,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setSize
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setPinImage
-  (JNIEnv *env, jobject, jlong nativeDevice, jobject bitmap)
+  (JNIEnv *env, jobject, jlong nativeDevice, int bitmap)
 {
     RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setPinImage: start");
     rhomap::AndroidMapDevice *d = device(env, nativeDevice);
@@ -628,7 +637,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setPinImage
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setPinCalloutImage
-  (JNIEnv *env, jobject, jlong nativeDevice, jobject bitmap)
+  (JNIEnv *env, jobject, jlong nativeDevice, int bitmap)
 {
     RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setPinCalloutImage: start");
     rhomap::AndroidMapDevice *d = device(env, nativeDevice);
@@ -637,7 +646,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setPinCalloutI
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setPinCalloutLinkImage
-  (JNIEnv *env, jobject, jlong nativeDevice, jobject bitmap)
+  (JNIEnv *env, jobject, jlong nativeDevice, int bitmap)
 {
     RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setPinCalloutLinkImage: start");
     rhomap::AndroidMapDevice *d = device(env, nativeDevice);
@@ -646,7 +655,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setPinCalloutL
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setESRILogoImage
-  (JNIEnv *env, jobject, jlong nativeDevice, jobject bitmap)
+  (JNIEnv *env, jobject, jlong nativeDevice, int bitmap)
 {
     RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setESRILogoImage: start");
     rhomap::AndroidMapDevice *d = device(env, nativeDevice);
@@ -655,7 +664,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setESRILogoIma
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setGoogleLogoImage
-(JNIEnv *env, jobject, jlong nativeDevice, jobject bitmap)
+(JNIEnv *env, jobject, jlong nativeDevice, int bitmap)
 {
     RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setGoogleLogoImage: start");
     rhomap::AndroidMapDevice *d = device(env, nativeDevice);
@@ -664,7 +673,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setGoogleLogoI
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_setMyLocationImage
-(JNIEnv *env, jobject, jlong nativeDevice, jobject bitmap)
+(JNIEnv *env, jobject, jlong nativeDevice, int bitmap)
 {
     RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_setMyLocationImage: start");
     rhomap::AndroidMapDevice *d = device(env, nativeDevice);
@@ -968,5 +977,134 @@ RHO_GLOBAL void mapview_set_file_caching_enable(int enable) {
         return;
     return s_mapdevice->mapView()->set_file_caching_enable(enable);
 }
+
+
+
+RHO_GLOBAL int  mapengine_request_make() {
+	JNIEnv *env = jnienv();
+	jclass cls = rho_find_class(env, "com/rhomobile/rhodes/mapview/MapView");//env->FindClass("com/rhomobile/rhodes/mapview/MapView");//rho_find_class(env, "com/rhomobile/rhodes/mapview/MapView");
+	if (!cls) {
+		RAWLOG_ERROR("mapengine_request : Can not found com/rhomobile/rhodes/mapview/MapView class !!!");
+		return 0;
+	}
+	jmethodID mid = env->GetStaticMethodID( cls, "mapengine_request_make", "()I");
+	if (!mid) {
+		env->DeleteLocalRef(cls);
+		return 0;
+	}
+	int res = env->CallStaticIntMethod(cls, mid);
+	env->DeleteLocalRef(cls);
+	return res;
+}
+
+
+RHO_GLOBAL int  mapengine_request_data(int request_id, const char* url, void** data, int* datasize) {
+	JNIEnv *env = jnienv();
+	jclass cls = rho_find_class(env, "com/rhomobile/rhodes/mapview/MapView");//env->FindClass("com/rhomobile/rhodes/mapview/MapView");//rho_find_class(env, "com/rhomobile/rhodes/mapview/MapView");
+	if (!cls) {
+		RAWLOG_ERROR("mapengine_request : Can not found com/rhomobile/rhodes/mapview/MapView class !!!");
+		return 0;
+	}
+	jmethodID mid = env->GetStaticMethodID( cls, "mapengine_request_data", "(ILjava/lang/String;)I");
+	if (!mid) {
+		env->DeleteLocalRef(cls);
+		return 0;
+	}
+
+    jstring objUrl = env->NewStringUTF(url);//rho_cast<jstring>(command);
+	int size = env->CallStaticIntMethod(cls, mid, request_id, objUrl);
+    env->DeleteLocalRef(objUrl);
+
+    if (size == 0) {
+    	env->DeleteLocalRef(cls);
+    	return 0;
+    }
+
+	jmethodID mid2 = env->GetStaticMethodID( cls, "mapengine_get_requested_data", "(I)[B");
+	if (!mid2) {
+		env->DeleteLocalRef(cls);
+		return 0;
+	}
+
+	jbyteArray jbytear = (jbyteArray)env->CallStaticObjectMethod(cls, mid2, request_id);
+
+	if (jbytear == NULL) {
+		env->DeleteLocalRef(cls);
+		RAWLOG_ERROR("mapengine_request : byte array is NULL");
+		return 0;
+	}
+
+	jbyte* buf_p = env->GetByteArrayElements(jbytear, 0);
+
+	if (buf_p == null) {
+		env->DeleteLocalRef(cls);
+		RAWLOG_ERROR("mapengine_request : buffer from byte array is NULL");
+		return 0;
+	}
+	*data = malloc(size);
+	if (*data == NULL) {
+		env->DeleteLocalRef(cls);
+		RAWLOG_ERROR("mapengine_request : cannot allocate data");
+		return 0;
+	}
+	*datasize = size;
+	memcpy(*data, buf_p, size);
+	env->ReleaseByteArrayElements(jbytear, buf_p, 0);
+	env->DeleteLocalRef(cls);
+	//RAWLOG_ERROR(ANDROID_LOG_INFO, "mapengine_request", "finish OK");
+	return size;
+}
+
+RHO_GLOBAL void mapengine_request_cancel(int request_id) {
+	JNIEnv *env = jnienv();
+	jclass cls = rho_find_class(env, "com/rhomobile/rhodes/mapview/MapView");//env->FindClass("com/rhomobile/rhodes/mapview/MapView");//rho_find_class(env, "com/rhomobile/rhodes/mapview/MapView");
+	if (!cls) {
+		RAWLOG_ERROR("mapengine_request : Can not found com/rhomobile/rhodes/mapview/MapView class !!!");
+		return;
+	}
+	jmethodID mid = env->GetStaticMethodID( cls, "mapengine_request_cancel", "(I)V");
+	if (!mid) {
+		env->DeleteLocalRef(cls);
+		return;
+	}
+	env->CallStaticVoidMethod(cls, mid, request_id);
+	env->DeleteLocalRef(cls);
+}
+
+
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_deletemapviewpointer
+  (JNIEnv *, jclass, jint p)
+{
+	rho::common::map::BaseMapView* mvp = (rho::common::map::BaseMapView*)p;
+	RAWLOG_INFO("delete_mapview_pointer : ^^^^^^^^^^^^^^^^ BEFORE");
+	if (mvp != NULL) {
+		mvp->cleanTiles();
+		RAWLOG_INFO("delete_mapview_pointer : ^^^^^^^^^^^^^^^^ _____ 1 _____");
+		delete mvp;
+	}
+	RAWLOG_INFO("delete_mapview_pointer : ^^^^^^^^^^^^^^^^ AFTER");
+}
+
+void mapengine_delete_mapview_in_ui_thread(void* p) {
+	int pl = (int)p;
+
+	JNIEnv *env = jnienv();
+	jclass cls = rho_find_class(env, "com/rhomobile/rhodes/mapview/MapView");//env->FindClass("com/rhomobile/rhodes/mapview/MapView");//rho_find_class(env, "com/rhomobile/rhodes/mapview/MapView");
+	if (!cls) {
+		RAWLOG_ERROR("mapengine_request : Can not found com/rhomobile/rhodes/mapview/MapView class !!!");
+		return;
+	}
+	jmethodID mid = env->GetStaticMethodID( cls, "mapengine_delete_mapview_in_ui_thread", "(I)V");
+	if (!mid) {
+		env->DeleteLocalRef(cls);
+		return;
+	}
+	env->CallStaticVoidMethod(cls, mid, pl);
+	env->DeleteLocalRef(cls);
+
+
+}
+
 
 

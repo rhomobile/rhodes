@@ -52,6 +52,7 @@ int GoogleMapView::getMapTile(uint64 p_zoom, uint64 p_row, uint64 p_column, void
 
     void *data = NULL;
     size_t datasize = 0;
+    //int datasize = 0;
 
     String url = "";//cmd->baseUrl;
 
@@ -99,6 +100,14 @@ int GoogleMapView::getMapTile(uint64 p_zoom, uint64 p_row, uint64 p_column, void
     if (!fetchData(url, &data, &datasize))
         return 0;
 
+    //{
+    //	int id = mapengine_request_make();
+    //	if (!mapengine_request_data(id, url.c_str(), &data, &datasize)) {
+    //		return 0;
+    //	}
+    //}
+
+
     *p_data = data;
     *p_size = datasize;
 
@@ -112,7 +121,10 @@ IMapView *GoogleMapEngine::createMapView(IDrawingDevice *device)
 
 void GoogleMapEngine::destroyMapView(IMapView *view)
 {
-    delete view;
+    RHO_MAP_TRACE("GoogleMapEngine::destroyMapView() start");
+    //delete view;
+    BaseMapView::processClean((BaseMapView*)view);
+    RHO_MAP_TRACE("GoogleMapEngine::destroyMapView() finish");
 }
 
 } // namespace map
