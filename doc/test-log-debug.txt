@@ -130,6 +130,6 @@ See [Login/Logout Manager]() as an example.
 
 ## Debugging
 
-You can use the [RhoStudio debugger](rhostudio.tutorial#using-the-debugger) to debug your Rhodes app. 
+You can use the [RhoStudio debugger](/rhostudio.tutorial#using-the-debugger) to debug your Rhodes app. 
 
 
