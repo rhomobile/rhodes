@@ -58,6 +58,7 @@
     int height;
     int enable_editing;
     int enable_editing_setted;
+    bool save_to_shared_gallery;
 }
 
 @property (retain) NSString* callback_url;
@@ -68,6 +69,7 @@
 @property (assign) int height;
 @property (assign) int enable_editing;
 @property (assign) int enable_editing_setted;
+@property (assign) bool save_to_shared_gallery;
 
 - (id)init:(void*)data url:(NSString*)url;
 
