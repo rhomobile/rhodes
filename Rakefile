@@ -875,7 +875,23 @@ namespace "build" do
     end
 
     # its task for compiling ruby code in rhostudio
-    task :rhostudio => ["config:wm", "build:bundle:noxruby"] do
+    # TODO: temporary fix I hope. This code is copied from line 207 of this file
+    task :rhostudio => ["config:wm"] do
+
+      if RUBY_PLATFORM =~ /(win|w)32$/
+        $all_files_mask = "*.*"
+        $rubypath = "res/build-tools/RhoRuby.exe"
+      else
+        $all_files_mask = "*"
+        if RUBY_PLATFORM =~ /darwin/
+          $rubypath = "res/build-tools/RubyMac"
+        else
+          $rubypath = "res/build-tools/rubylinux"
+        end
+      end
+
+      Rake::Task["build:bundle:noxruby"].invoke
+
       Jake.build_file_map( File.join($srcdir, "apps"), "rhofilelist.txt" )
     end
     
