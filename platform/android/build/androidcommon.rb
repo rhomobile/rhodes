@@ -240,7 +240,8 @@ def cc_run(command, args, chdir = nil)
   FileUtils.cd chdir unless chdir.nil?
   argv = [command]
   argv += args
-  cmdstr = argv.map! { |x| x.to_s }.map! { |x| x =~ / / ? '"' + x + '"' : x }.join(' ')
+  #cmdstr = argv.map! { |x| x.to_s }.map! { |x| x =~ / / ? '"' + x + '"' : x }.join(' ')
+  cmdstr = argv.map! { |x| x.to_s }.map! { |x| x =~ / / ? '' + x + '' : x }.join(' ')
   puts cmdstr
   $stdout.flush
   argv = cmdstr if RUBY_VERSION =~ /^1\.[89]/
@@ -257,7 +258,7 @@ end
 
 def cc_compile(filename, objdir, additional = nil)
   filename.chomp!
-  objname = File.join objdir, File.basename(filename) + ".o"
+  objname = ('"'+(File.join objdir, File.basename(filename) + ".o")+'"')
 
   return true if FileUtils.uptodate? objname, [filename] + cc_deps(filename, objdir, additional)
 
@@ -346,7 +347,7 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "--sysroot"
   args << $ndksysroot
   args << "-o"
-  args << outname
+  args << ('"'+outname+'"')
   args += objects
   args += additional if additional.is_a? Array and not additional.empty?
   unless USE_OWN_STLPORT
