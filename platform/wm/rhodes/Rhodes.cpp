@@ -99,6 +99,13 @@ extern "C" {
 };
 #endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
+#ifndef APP_BUILD_CAPABILITY_MOTOROLA
+extern "C" bool rho_wmimpl_get_resize_on_sip()
+{
+    return true;
+}
+#endif
+
 #if defined(_WIN32_WCE) && !defined(OS_PLATFORM_MOTCE)
 #include <regext.h>
 
