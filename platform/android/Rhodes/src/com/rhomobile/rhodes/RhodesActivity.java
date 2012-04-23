@@ -515,18 +515,23 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
             return;
         }
         if (!isPassMotoLicence()) {
+        	Logger.E(TAG, "############################");
+        	Logger.E(TAG, " ");
+        	Logger.E(TAG, "ERROR: motorola_license is INVALID !");
+        	Logger.E(TAG, " ");
+        	Logger.E(TAG, "############################");
             AlertDialog.Builder b = new AlertDialog.Builder(this);
             b.setCancelable(true);
             b.setOnCancelListener( new DialogInterface.OnCancelListener() {
 				public void onCancel(DialogInterface dialog) {
-					RhodesService.exit();
+					//RhodesService.exit();
 				}
 			});
             AlertDialog securityAlert = b.create();
-            securityAlert.setMessage("Your Motorola licence key is invalid !");
+            securityAlert.setMessage("Your Motorola license key is invalid !");
             securityAlert.setButton("OK", new DialogInterface.OnClickListener(){
 				public void onClick(DialogInterface arg0, int arg1) {
-					RhodesService.exit();
+					//RhodesService.exit();
 				}
             	
             });
