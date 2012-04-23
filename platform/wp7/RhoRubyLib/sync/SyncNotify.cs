@@ -658,6 +658,11 @@ namespace rho.sync
 
 	            strBody += "&error_message=" + URI.urlEncode(strMessage != null? strMessage : "");
 	            strBody += "&rho_callback=1";
+                if (oNotify.m_strUrl.indexOf("?") > 0)
+                {
+                    strBody += "&" + oNotify.m_strUrl.substring(oNotify.m_strUrl.indexOf("?") + 1, oNotify.m_strUrl.length());
+                    oNotify.m_strUrl = oNotify.m_strUrl.Remove(oNotify.m_strUrl.indexOf("?"));
+                }
 	        
 			    LOG.INFO( "Login callback: " + oNotify.ToString() + ". Body: "+ strBody );
 

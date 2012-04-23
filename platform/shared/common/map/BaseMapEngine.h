@@ -37,6 +37,37 @@
 
 #define TILE_SIZE 256
 
+
+//#define USE_ANDROID_NET_REQUEST
+
+
+
+#ifdef OS_ANDROID
+
+#ifdef USE_ANDROID_NET_REQUEST
+#define ENABLE_ANDROID_NET_REQUEST
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif //__cplusplus
+
+int  mapengine_request_make();
+
+int  mapengine_request_data(int request_id, const char* url, void** data, int* datasize);
+
+void mapengine_request_cancel(int request_id);
+
+void mapengine_delete_mapview_in_ui_thread(void* p);
+
+#ifdef __cplusplus
+}
+#endif //__cplusplus
+
+
+#endif
+
+
 namespace rho { namespace common { namespace map {
 
 uint64 degreesToPixelsX(double n, int zoom);
@@ -71,6 +102,11 @@ public:
 
         Tile &operator=(Tile const &c);
 
+        void resetObjects() {
+        	m_device = NULL;
+        	m_image = NULL;
+        }
+
         int zoom() const
         {
             return m_zoom;
@@ -101,9 +137,18 @@ public:
 
     class TilesCache
     {
+
     public:
         typedef std::list<Tile> list;
         typedef std::list<Tile>::const_iterator iterator;
+
+    public:
+    	TilesCache() : mIsStoped(false) {}
+    	virtual ~TilesCache() {
+            TilesCache::list mapTiles = get_tiles();
+            for (TilesCache::list::iterator it = mapTiles.begin(), lim = mapTiles.end(); it != lim; ++it)
+                it->resetObjects();
+    	}
 
     public:
         list clone() const;
@@ -111,6 +156,15 @@ public:
         bool empty() const
         {
             return m_tiles.empty();
+        }
+
+        void clean() {
+        	mIsStoped = true;
+        	RHO_MAP_TRACE("*******************************    TilesCache::clean: START");
+        	m_by_coordinates.clear();
+        	RHO_MAP_TRACE("*******************************    TilesCache::clean: ___ 1 ___");
+        	m_tiles.clear();
+        	RHO_MAP_TRACE("*******************************    TilesCache::clean: FINISH");
         }
 
         void put(Tile const &tile);
@@ -128,6 +182,7 @@ public:
         static String makeKey(int zoom, uint64 latitude, uint64 longitude);
 
     private:
+        bool mIsStoped;
         std::list<Tile> m_tiles;
         std::map<String, Tile *> m_by_coordinates;
     };
@@ -143,19 +198,28 @@ public:
         struct Command : public IQueueCommand
         {
             Command(String const &u, int z, uint64 lat, uint64 lon)
-                :baseUrl(u), zoom(z), latitude(lat), longitude(lon), row(0), column(0)
+                :baseUrl(u), zoom(z), latitude(lat), longitude(lon), row(0), column(0), mIsCancelled(false), mIsStopCommand(false)
             {}
 
             Command(int z, uint64 _row, uint64 _column)
-                :baseUrl(""), zoom(z), latitude(0), longitude(0), row(_row), column(_column)
+                :baseUrl(""), zoom(z), latitude(0), longitude(0), row(_row), column(_column), mIsCancelled(false), mIsStopCommand(false)
             {}
 
+            Command(bool is_stop) 
+            :baseUrl(""), zoom(0), latitude(0), longitude(0), row(0), column(0), mIsCancelled(false), mIsStopCommand(is_stop)
+            {}
+            
             String baseUrl;
             int zoom;
             uint64 latitude;
             uint64 longitude;
             uint64 row;
             uint64 column;
+            bool mIsCancelled;
+            bool mIsStopCommand;
+
+            
+            virtual void cancel(){mIsCancelled = true;}
 
             bool equals(IQueueCommand const &)
             {
@@ -170,25 +234,44 @@ public:
 
         void fetchTile(String const &baseUrl, int zoom, uint64 latitude, uint64 longitude);
         void fetchTile(int zoom, uint64 row, uint64 column);
+        bool fetchData(String const &url, void **data, size_t *datasize);
+        void delayedStop();
+        
+        bool mIsStoped;
+        
+        bool mRequestCanBeCancelled;
 
         virtual void cancel()
         {
-            m_NetRequest.cancel();
+            //cancelCurrentCommand();
+#ifdef ENABLE_ANDROID_NET_REQUEST
+            mapengine_request_cancel(mNetRequestID);
+            mNetRequestID = 0;
+#else
+            if (mRequestCanBeCancelled) {
+                m_NetRequest.cancel();
+            }
+#endif
         }
 
     private:
         int getMapTile(uint64 p_zoom, uint64 p_row, uint64 p_column, void** p_data, size_t* p_size);
         void processCommand(IQueueCommand *cmd);
-        bool fetchData(String const &url, void **data, size_t *datasize);
     public:
+#ifdef ENABLE_ANDROID_NET_REQUEST
+#else
         net::CNetRequestWrapper getNet()
         {
             return getNetRequest(&m_NetRequest);
         }
-
+#endif
     private:
         BaseMapView *m_mapview;
+#ifdef ENABLE_ANDROID_NET_REQUEST
+        int mNetRequestID;
+#else
         NetRequest   m_NetRequest;
+#endif
     };
 
     friend class CacheUpdate;
@@ -201,9 +284,14 @@ public:
 
         struct Command : public IQueueCommand
         {
-            Command() {}
+            Command(bool is_stop): mIsCancelled(false), mIsStopCommand(is_stop) {}
             bool equals(IQueueCommand const &) { return false; }
             String toString() { return "CACHE-UPDATE"; }
+            
+            bool mIsCancelled;
+            bool mIsStopCommand;
+
+            virtual void cancel(){mIsCancelled = true;}
         };
 
     public:
@@ -211,6 +299,9 @@ public:
         ~CacheUpdate();
 
         void updateCache();
+        void delayedStop();
+        
+        bool mIsStoped;
 
     private:
         void processCommand(IQueueCommand *cmd);
@@ -226,6 +317,13 @@ public:
 
     BaseMapView(IDrawingDevice *device, const char* name);
     virtual ~BaseMapView();
+
+    void cleanTiles();
+    void startClean();
+    bool isReadyToDelete();
+    void finalClean();
+
+    static void processClean(BaseMapView* mapView);
 
     String const &getName() const { return m_name; }
 
@@ -360,6 +458,34 @@ private:
         void destroyMapView(IMapView *view);
     };
 */
+
+class MapViewCleaner : public CThreadQueue
+{
+    DEFINE_LOGCLASS;
+private:
+    struct Command : public IQueueCommand
+    {
+        Command(BaseMapView* mapView): mMapView(mapView){}
+        bool equals(IQueueCommand const &) { return false; }
+        String toString() { return "MapView Cleaner Command"; }
+
+        BaseMapView* mMapView;
+
+        virtual void cancel(){}
+    };
+
+public:
+    MapViewCleaner();
+    ~MapViewCleaner();
+
+    void cleanMapView(BaseMapView* mapView);
+private:
+    void processCommand(IQueueCommand *cmd);
+};
+
+
+
+
 
 } // namespace map
 } // namespace common

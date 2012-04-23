@@ -553,6 +553,18 @@ namespace rho.common
             m_currentUri = uri; 
         }
 
+        public void back()
+        {
+            if (m_strAppBackUrl.length() > 0)
+                processToolBarCommand(this, null, m_strAppBackUrl);
+            else if (m_backHistory.Count > 0)
+            {
+                Uri destination = m_backHistory.Peek();
+                m_webBrowser.Navigate(destination);
+            }
+            return;
+        }
+        
         private void processToolBarCommand(object sender, EventArgs e,  String strAction)
         {
 

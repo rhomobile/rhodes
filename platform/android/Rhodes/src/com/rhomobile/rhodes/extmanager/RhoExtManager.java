@@ -12,10 +12,30 @@ public class RhoExtManager extends Object {
         return ourRhoExtManager;
     }
 
-//    public static int getResourceId(String name) {
-//        return 0;
-//    }
+    /**
+     * Gets resource id.
+     * For example to get R.string.app_name value call getResourceId("string.app_name")
+     * @param name - symbolic name of resource as it referenced at R class
+     * @return resource id
+     */
+    public static int getResourceId(String name) {
+        String[] nameComponents = name.split("\\.", 2);
+        if (nameComponents.length == 2) {
+            return RhoExtManagerImpl.getResId(nameComponents[0], nameComponents[1]);
+        }
+        throw new IllegalArgumentException(name);
+    }
 
+    /**
+     * Gets resource id.
+     * For example to get R.string.app_name value call getResourceId("string", "app_name")
+     * @param className - symbolic name of R sub class containing an id
+     * @param idName - symbolic name of field in the sub class
+     * @return resource id
+     */
+    public static int getResourceId(String className, String idName) {
+        return RhoExtManagerImpl.getResId(className, idName);
+    }
     /**
      * @return IRhoExtManager instance
      */

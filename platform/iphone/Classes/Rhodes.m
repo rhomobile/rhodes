@@ -40,6 +40,8 @@
 
 #include "common/app_build_capabilities.h"
 
+#include "InitMemoryInfoCollector.h"
+
 
 
 /*
@@ -575,6 +577,7 @@ static Rhodes *instance = NULL;
         const char *szUserPath = rho_native_rhouserpath();
         NSLog(@"Init logconf");
         rho_logconf_Init_with_separate_user_path(szRootPath, szRootPath, "", szUserPath);
+        InitMemoryInfoCollector();
         NSLog(@"Create rhodes app");
         rho_rhodesapp_create_with_separate_user_path(szRootPath, szUserPath);
         app_created = YES;

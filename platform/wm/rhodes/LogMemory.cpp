@@ -24,35 +24,44 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
-#import <Foundation/Foundation.h>
+#include "stdafx.h"
+#include "LogMemory.h"
+#include "logging/RhoLog.h"
+#include <sstream>
 
-#include "RhoConnectClient/RhoConnectClient.h"
+#define DIV 1024
 
-@interface RhoConnectNotify : NSObject {
+CLogMemory* CLogMemory::gInstance = 0;
+
+CLogMemory* CLogMemory::getInstance()
+{
+	if (gInstance==0)
+		gInstance = new CLogMemory();
+	return gInstance;
 }
 
-@property int       total_count;
-@property int       processed_count;
-@property int       cumulative_count;
-@property int       source_id;
-@property int       error_code;
-@property(readonly) NSString* source_name;
-@property(readonly) NSString* status;
-@property(readonly) NSString* sync_type;
-@property(readonly) NSString* bulk_status;
-@property(readonly) NSString* partition;
-@property(readonly) NSString* error_message;
-@property(readonly) NSString* callback_params;
-@property(readonly) RHO_CONNECT_NOTIFY notify_data;
+rho::String CLogMemory::collect()
+{
+	std::ostringstream oss;
 
-- (id) init: (RHO_CONNECT_NOTIFY*) data;
-- (void)dealloc;
+	//Get the memory stats
+	MEMORYSTATUS sMemStat;
+	sMemStat.dwLength = sizeof(MEMORYSTATUS);
 
-- (Boolean) hasCreateErrors;
-- (Boolean) hasUpdateErrors;
-- (Boolean) hasDeleteErrors;
-- (Boolean) isUnknownClientError;
+	GlobalMemoryStatus(&sMemStat); 
 
-- (RHO_CONNECT_NOTIFY*)getNotifyPtr;
+	sMemStat.dwTotalPhys /= DIV;
+	sMemStat.dwAvailPhys /= DIV;
+	sMemStat.dwTotalVirtual /= DIV;
+	sMemStat.dwAvailVirtual /= DIV;
 
-@end
+	oss <<
+		"Stats: Load=" << sMemStat.dwMemoryLoad <<
+		"%  TotalPhy=" << sMemStat.dwTotalPhys <<
+		"KB  FreePhy=" << sMemStat.dwAvailPhys <<
+		"KB  TotalVM=" << sMemStat.dwTotalVirtual <<
+		"KB  FreeVM=" << sMemStat.dwAvailVirtual <<
+		"KB\n";
+
+	return rho::String(oss.str());
+}

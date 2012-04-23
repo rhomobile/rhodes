@@ -1873,10 +1873,17 @@ extern int deleteRecord(void* pb, void* record);
   #define SWIG_From_long   LONG2NUM 
 
 
+SWIGINTERNINLINE VALUE 
+SWIG_From_long_SS_long  (long long value)
+{
+  return LL2NUM(value);
+}
+
+
 SWIGINTERNINLINE VALUE
 SWIG_From_int  (int value)
 {    
-  return SWIG_From_long  (value);
+  return SWIG_From_long_SS_long  (value);
 }
 
 

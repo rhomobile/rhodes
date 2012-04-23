@@ -431,7 +431,7 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 #ifdef RHODES_EMULATOR
 		*resValue = rho_ruby_create_string("WEBKIT/" QTWEBKIT_VERSION_STR);
 #elif defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
-		*resValue = rho_ruby_create_string("WEBKIT-MOTOROLA");
+		*resValue = rho_ruby_create_string("WEBKIT/MOTOROLA");
 #else
 		rho::String msieVer = "IE";
 		get_msie_version(msieVer);

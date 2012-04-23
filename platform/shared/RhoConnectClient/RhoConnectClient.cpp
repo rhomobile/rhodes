@@ -56,6 +56,20 @@ const char* getSyncTypeName( RHOM_SYNC_TYPE sync_type )
 void parseSyncNotify(const char* msg, RHO_CONNECT_NOTIFY* pNotify);
 String rhom_generate_id();
 
+IDBResult rhom_executeSQL(const char* szSql, const char* szModel )
+{
+    Hashtable<String,db::CDBAdapter*>& mapDBPartitions = db::CDBAdapter::getDBPartitions();
+    IDBResult res = db::DBResultPtr(0);
+    for (Hashtable<String,db::CDBAdapter*>::iterator it = mapDBPartitions.begin();  it != mapDBPartitions.end(); ++it )
+    {
+        res = (it->second)->executeSQL(szSql, szModel );
+        if ( !res.isEnd() )
+            break;
+    }
+
+    return res;
+}
+
 extern "C" 
 {
 
@@ -79,22 +93,37 @@ void rho_connectclient_destroymodel(RHOM_MODEL* model)
     memset( model, 0, sizeof(RHOM_MODEL) );
 }
 
-void rho_connectclient_processmodels(RHOM_MODEL* pModels, int nModels)
+static int get_start_id(const String& strPartition)
 {
-    db::CDBAdapter& oUserDB = db::CDBAdapter::getUserDB();
+    db::CDBAdapter& dbPart = db::CDBAdapter::getDB(strPartition.c_str());
     int nStartModelID = 1;
     {
-        IDBResult  res = oUserDB.executeSQL("SELECT MAX(source_id) AS maxid FROM sources");
+        IDBResult  res = dbPart.executeSQL("SELECT MAX(source_id) AS maxid FROM sources");
         if ( !res.isEnd() )
             nStartModelID = res.getIntByIdx(0)+2;
     }
+
+    if ( strPartition == "user" && nStartModelID < 1 )
+        nStartModelID = 1;
+    else if ( strPartition == "app" && nStartModelID < 20001 )
+        nStartModelID = 20001 + 2;
+    else if ( strPartition == "local" && nStartModelID < 40001 )
+        nStartModelID = 40001 + 2;
+
+    return nStartModelID;
+}
+
+static void rho_connectclient_processmodels( RHOM_MODEL* pModels, int nModels, const String& strPartition )
+{
+    int nStartModelID = get_start_id(strPartition);
+    db::CDBAdapter& dbPart = db::CDBAdapter::getDB(strPartition.c_str());
 
     //create associations string
     Hashtable<String, String> hashSrcAssoc;
     for ( int i = 0; i < nModels; i++ )
     { 
         RHOM_MODEL& model = pModels[i];
-        if ( !model.associations )
+        if ( !model.associations || strPartition != model.partition )
             continue;
 
         Hashtable<String, String>& assocHash = *((Hashtable<String, String>*)model.associations);
@@ -113,14 +142,17 @@ void rho_connectclient_processmodels(RHOM_MODEL* pModels, int nModels)
     for ( int i = 0; i < nModels; i++ )
     { 
         RHOM_MODEL& model = pModels[i];
-        IDBResult res = oUserDB.executeSQL("SELECT sync_priority,source_id,partition, sync_type, schema_version, associations, blob_attribs FROM sources WHERE name=?",
+        if ( strPartition != model.partition )
+            continue;
+
+        IDBResult res = dbPart.executeSQL("SELECT sync_priority,source_id,partition, sync_type, schema_version, associations, blob_attribs FROM sources WHERE name=?",
             model.name);
 
         String strAssoc = hashSrcAssoc[model.name]; 
 
         if ( !res.isEnd() )
         {
-            oUserDB.executeSQL("UPDATE sources SET sync_priority=?, sync_type=?, partition=?, schema=?, schema_version=?, associations=?, blob_attribs=? WHERE name=?",
+            dbPart.executeSQL("UPDATE sources SET sync_priority=?, sync_type=?, partition=?, schema=?, schema_version=?, associations=?, blob_attribs=? WHERE name=?",
                 model.sync_priority, getSyncTypeName(model.sync_type), model.partition, 
                 (model.type == RMT_PROPERTY_FIXEDSCHEMA ? "schema_model" : ""), "", strAssoc.c_str(), model.blob_attribs, model.name );
             
@@ -128,7 +160,7 @@ void rho_connectclient_processmodels(RHOM_MODEL* pModels, int nModels)
             
         }else //new model
         {
-            oUserDB.executeSQL("INSERT INTO sources (source_id,name,sync_priority, sync_type, partition, schema,schema_version, associations, blob_attribs) values (?,?,?,?,?,?,?,?,?) ",
+            dbPart.executeSQL("INSERT INTO sources (source_id,name,sync_priority, sync_type, partition, schema,schema_version, associations, blob_attribs) values (?,?,?,?,?,?,?,?,?) ",
                 nStartModelID, model.name, model.sync_priority, getSyncTypeName(model.sync_type), model.partition, 
                 (model.type == RMT_PROPERTY_FIXEDSCHEMA ? "schema_model" : ""), "", strAssoc.c_str(), model.blob_attribs );
 
@@ -162,7 +194,11 @@ void rho_connectclient_init(RHOM_MODEL* pModels, int nModels)
     }
 
     //process models
-    rho_connectclient_processmodels(pModels, nModels);
+    Hashtable<String,db::CDBAdapter*>& mapDBPartitions = db::CDBAdapter::getDBPartitions();
+    for (Hashtable<String,db::CDBAdapter*>::iterator it = mapDBPartitions.begin();  it != mapDBPartitions.end(); ++it )
+    {
+        rho_connectclient_processmodels(pModels, nModels, it->first);
+    }
 
     rho_db_init_attr_manager();
 
@@ -373,9 +409,7 @@ unsigned long rhom_load_item_by_object(db::CDBAdapter& db, const String& src_nam
 
 unsigned long rho_connectclient_find(const char* szModel,const char* szObject )
 {
-    String src_name = szModel;
-
-    IDBResult  res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name);
+    IDBResult  res = rhom_executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", szModel);
     if ( res.isEnd())
     {
         //TODO: report error - unknown source
@@ -388,14 +422,14 @@ unsigned long rho_connectclient_find(const char* szModel,const char* szObject )
     //String tableName = isSchemaSrc ? src_name : "object_values";
     db::CDBAdapter& db = db::CDBAdapter::getDB(db_partition.c_str());
 
-    return rhom_load_item_by_object( db, src_name, nSrcID, szObject, isSchemaSrc);
+    return rhom_load_item_by_object( db, szModel, nSrcID, szObject, isSchemaSrc);
 }
 
 unsigned long rhom_find(const char* szModel, unsigned long hash, int nCount )
 {
     String src_name = szModel;
 
-    IDBResult  res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name);
+    IDBResult  res = rhom_executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", szModel);
     if ( res.isEnd())
     {
         //TODO: report error - unknown source
@@ -478,7 +512,7 @@ unsigned long rho_connectclient_findbysql(const char* szModel, const char* szSql
 {
     String src_name = szModel;
 
-    IDBResult  res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name);
+    IDBResult  res = rhom_executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", szModel);
     if ( res.isEnd())
     {
         //TODO: report error - unknown source
@@ -516,7 +550,8 @@ unsigned long rho_connectclient_findbysql(const char* szModel, const char* szSql
 void rho_connectclient_start_bulkupdate(const char* szModel)
 {
     String src_name = szModel;
-    IDBResult  res = db::CDBAdapter::getUserDB().executeSQL("SELECT partition from sources WHERE name=?", src_name);
+
+    IDBResult  res = rhom_executeSQL("SELECT partition from sources WHERE name=?", szModel);
     if ( res.isEnd())
     {
         //TODO: report error - unknown source
@@ -531,7 +566,7 @@ void rho_connectclient_start_bulkupdate(const char* szModel)
 void rho_connectclient_stop_bulkupdate(const char* szModel)
 {
     String src_name = szModel;
-    IDBResult  res = db::CDBAdapter::getUserDB().executeSQL("SELECT partition from sources WHERE name=?", src_name);
+    IDBResult  res = rhom_executeSQL("SELECT partition from sources WHERE name=?", szModel);
     if ( res.isEnd())
     {
         //TODO: report error - unknown source
@@ -551,7 +586,7 @@ void rho_connectclient_itemdestroy( const char* szModel, unsigned long hash )
     String obj = hashObject.get("object");
     String update_type="delete";
 
-    IDBResult  res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name);
+    IDBResult  res = rhom_executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", szModel);
     if ( res.isEnd())
     {
         //TODO: report error - unknown source
@@ -623,8 +658,11 @@ void rho_connectclient_itemdestroy( const char* szModel, unsigned long hash )
 void rho_connectclient_on_sync_create_error(const char* szModel, RHO_CONNECT_NOTIFY* pNotify, const char* szAction )
 {
     unsigned long hash_create_errors = pNotify->create_errors;
+    if (!hash_create_errors)
+        return;
+
     String src_name = szModel;
-    IDBResult res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name);
+    IDBResult  res = rhom_executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", szModel);
     if ( res.isEnd())
     {
         //TODO: report error - unknown source
@@ -705,7 +743,7 @@ void _insert_or_update_attr(db::CDBAdapter& db, bool isSchemaSrc, const String& 
 void rho_connectclient_on_sync_update_error(const char* szModel, RHO_CONNECT_NOTIFY* pNotify, const char* szAction )
 {
     String src_name = szModel;
-    IDBResult res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name);
+    IDBResult  res = rhom_executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", szModel);
     if ( res.isEnd())
     {
         //TODO: report error - unknown source
@@ -772,7 +810,7 @@ void rho_connectclient_on_sync_update_error(const char* szModel, RHO_CONNECT_NOT
 void rho_connectclient_on_sync_delete_error(const char* szModel, RHO_CONNECT_NOTIFY* pNotify, const char* szAction )
 {
     String src_name = szModel;
-    IDBResult res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name);
+    IDBResult  res = rhom_executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", szModel);
     if ( res.isEnd())
     {
         //TODO: report error - unknown source
@@ -822,7 +860,7 @@ void rho_connectclient_save( const char* szModel, unsigned long hash )
     Hashtable<String, String>& hashObject = *((Hashtable<String, String>*)hash);
     String src_name = szModel;
 
-    IDBResult res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name);
+    IDBResult  res = rhom_executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", szModel);
     if ( res.isEnd())
     {
         //TODO: report error - unknown source
@@ -951,7 +989,7 @@ void rho_connectclient_create_object(const char* szModel, unsigned long hash)
     Hashtable<String, String>& hashObject = *((Hashtable<String, String>*)hash);
     String src_name = szModel;
 
-    IDBResult  res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", src_name);
+    IDBResult  res = rhom_executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", szModel);
     if ( res.isEnd())
     {
         //TODO: report error - unknown source
@@ -1012,7 +1050,7 @@ void rho_connectclient_create_object(const char* szModel, unsigned long hash)
 int rho_connectclient_is_changed(const char* szModel)
 {
     String src_name = szModel;
-    IDBResult  res = db::CDBAdapter::getUserDB().executeSQL("SELECT source_id, partition from sources WHERE name=?", src_name);
+    IDBResult  res = rhom_executeSQL("SELECT source_id, partition from sources WHERE name=?", szModel);
     if ( res.isEnd())
     {
         //TODO: report error - unknown source
@@ -1026,6 +1064,22 @@ int rho_connectclient_is_changed(const char* szModel)
     IDBResult resChanged = db.executeSQL("SELECT object FROM changed_values WHERE source_id=? LIMIT 1 OFFSET 0", nSrcID);
 
     return resChanged.isEnd() ? 0 : 1;
+}
+
+void rho_connectclient_set_synctype(const char* szModel, RHOM_SYNC_TYPE sync_type)
+{
+    IDBResult  res = rhom_executeSQL("SELECT source_id, partition from sources WHERE name=?", szModel);
+    if ( res.isEnd())
+    {
+        //TODO: report error - unknown source
+        return;
+    }
+
+    int nSrcID = res.getIntByIdx(0);
+    String db_partition = res.getStringByIdx(1);
+    db::CDBAdapter& db = db::CDBAdapter::getDB(db_partition.c_str());
+
+    db.executeSQL("UPDATE sources SET sync_type=? WHERE name=?", getSyncTypeName(sync_type), szModel );
 }
 
 void parseServerErrors( const char* szPrefix, const String& name, const String& value, unsigned long& errors_obj, unsigned long& errors_attrs )
@@ -1095,6 +1149,10 @@ void rho_connectclient_parsenotify(const char* msg, RHO_CONNECT_NOTIFY* pNotify)
             pNotify->source_name = strdup(value.c_str());
         else if ( name.compare("sync_type") == 0)
             pNotify->sync_type = strdup(value.c_str());
+        else if ( name.compare("bulk_status") == 0)
+            pNotify->bulk_status = strdup(value.c_str());
+        else if ( name.compare("partition") == 0)
+            pNotify->partition = strdup(value.c_str());
         else if ( name.compare("status") == 0)
             pNotify->status = strdup(value.c_str());
         else if ( name.compare("error_message") == 0)
@@ -1116,7 +1174,7 @@ void rho_connectclient_parsenotify(const char* msg, RHO_CONNECT_NOTIFY* pNotify)
             else if ( String_startsWith(name, "server_errors[delete-error]") )
                 parseServerErrors( "server_errors[delete-error]", name, value, pNotify->delete_errors_obj, pNotify->delete_errors_attrs );
 
-        }else if ( name.compare("rho_callback") != 0)
+        }else if ( name.compare("rho_callback") == 0)
             break;
 
         nLastPos = oTokenizer.getCurPos();
@@ -1136,7 +1194,13 @@ void rho_connectclient_free_syncnotify(RHO_CONNECT_NOTIFY* pNotify)
     
     if ( pNotify->sync_type != null )
         free(pNotify->sync_type);
-    
+
+    if ( pNotify->bulk_status != null )
+        free(pNotify->bulk_status);
+
+    if ( pNotify->partition != null )
+        free(pNotify->partition);
+
     if ( pNotify->status != null )
         free(pNotify->status);
     

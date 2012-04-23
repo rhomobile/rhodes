@@ -1387,3 +1387,15 @@ Examples of how to use the url_for_nativeview method:
 ## Using LineaSDK in Rhodes (with using special Linea native extension)
 
 Please see the documentation at [LineaSDK as native extension in Rhodes applications](linea).
+
+## Add registry setting in cab file om Windows Mobile/Windows CE
+
+In ext.yml file you should add rgeistry sections 
+
+    regkeys:
+      - key1
+      - key2
+
+Every key should be created as wrote in MSDN
+
+    http://msdn.microsoft.com/en-us/library/ms933191.aspx

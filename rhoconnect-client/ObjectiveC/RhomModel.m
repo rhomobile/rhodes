@@ -14,6 +14,7 @@
 @implementation RhomModel
 
 @synthesize name;
+@synthesize partition;
 @synthesize sync_type;
 @synthesize source_id;
 @synthesize model_type;
@@ -23,6 +24,7 @@
 - (id) init
 {
 	self = [super init];
+	partition = @"user";
 	sync_type = RST_INCREMENTAL;
 	model_type = RMT_PROPERTY_BAG;
     source_id = 0;
@@ -35,6 +37,7 @@
 - (void) dealloc;
 {
     [name release];
+    [partition release];
     if (associations) [associations release];
     [blob_attribs release];
     [super dealloc];
@@ -117,6 +120,12 @@
 - (BOOL) is_changed
 {
     return rho_connectclient_is_changed([name cStringUsingEncoding:[NSString defaultCStringEncoding]]) == 1 ? TRUE : FALSE;
+}
+
+-(void)setSyncType : (int)type
+{
+    sync_type = type;
+    rho_connectclient_set_synctype([name cStringUsingEncoding:[NSString defaultCStringEncoding]], type);
 }
 
 int enum_func(const char* szKey, const char* szValue, void* pThis)

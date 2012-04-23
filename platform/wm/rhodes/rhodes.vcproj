@@ -3168,6 +3168,26 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\LogMemory.cpp"
+				>
+				<FileConfiguration
+					Name="SimulatorDebug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorRelease|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath=".\LogOptionsDlg.cpp"
 				>
 			</File>
@@ -3526,6 +3546,26 @@
 					>
 					<Tool
 						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\LogMemory.h"
+				>
+				<FileConfiguration
+					Name="SimulatorDebug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorRelease|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
 					/>
 				</FileConfiguration>
 			</File>

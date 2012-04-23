@@ -18,6 +18,8 @@
 @synthesize  source_name;
 @synthesize  status;
 @synthesize  sync_type;
+@synthesize  bulk_status;
+@synthesize  partition;
 @synthesize  error_message;
 @synthesize  callback_params;
 @synthesize  notify_data;
@@ -39,6 +41,11 @@
 		status = [[NSString alloc] initWithUTF8String: data->status];
 	if ( data->sync_type )
 		sync_type = [[NSString alloc] initWithUTF8String: data->sync_type];
+	if ( data->bulk_status )
+		bulk_status = [[NSString alloc] initWithUTF8String: data->bulk_status];
+	if ( data->partition )
+		partition = [[NSString alloc] initWithUTF8String: data->partition];
+		
 	if ( data->error_message )	
 		error_message = [[NSString alloc] initWithUTF8String: data->error_message];
 	if ( data->callback_params )	
@@ -59,6 +66,12 @@
 	
 	if ( sync_type )
 		[sync_type release];
+
+	if ( bulk_status )
+		[bulk_status release];
+
+	if ( partition )
+		[partition release];
 	
 	if (error_message)
 		[error_message release];
