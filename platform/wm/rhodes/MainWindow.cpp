@@ -76,6 +76,8 @@ using namespace stdext;
 #if !defined(_WIN32_WCE)
 int CMainWindow::m_screenWidth;
 int CMainWindow::m_screenHeight;
+#else
+extern "C" bool rho_wmimpl_get_resize_on_sip();
 #endif
 
 CMainWindow::CMainWindow()
@@ -288,7 +290,7 @@ void CMainWindow::calculateMainWindowRect(RECT& rcMainWindow)
     SIPINFO si = { sizeof(si), 0 };
     // SIP state
     // (si was initialized above)
-    if (SHSipInfo(SPI_GETSIPINFO, 0, &si, 0) &&
+    if (rho_wmimpl_get_resize_on_sip() && SHSipInfo(SPI_GETSIPINFO, 0, &si, 0) &&
         (si.fdwFlags & SIPF_ON) && (si.fdwFlags & SIPF_DOCKED))
     {
         rcMainWindow.bottom = si.rcVisibleDesktop.bottom;
@@ -763,13 +765,13 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 #endif
 
 	//} else if (wParam == SPI_SIPMOVE) {
-	} else if (wParam == SPI_SETSIPINFO) {
+	} else if (rho_wmimpl_get_resize_on_sip() && (wParam == SPI_SETSIPINFO)) {
 		SIPINFO pSipInfo;
 		memset(&pSipInfo, 0, sizeof(SIPINFO));
 		pSipInfo.cbSize = sizeof(SIPINFO);
 		pSipInfo.dwImDataSize = 0;
 		if (SipGetInfo(&pSipInfo)) {
-			bool isHiding = ((pSipInfo.fdwFlags & SIPF_ON) ^ SIPF_ON) != 0;
+			bool isHiding = (pSipInfo.fdwFlags & SIPF_ON) == 0;
 
             if ( isHiding && !m_bFullScreen )
             {
