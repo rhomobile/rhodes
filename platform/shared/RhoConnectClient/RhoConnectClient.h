@@ -59,6 +59,8 @@ typedef struct _RHO_CONNECT_NOTIFY
     char* source_name;
     char* status;
     char* sync_type;
+    char* bulk_status;
+    char* partition;
     int error_code;
     char* error_message;
     char* callback_params;
@@ -125,6 +127,7 @@ unsigned long rho_connectclient_find_all(const char* szModel, unsigned long hash
 unsigned long rho_connectclient_findbysql(const char* szModel, const char* szSql, unsigned long arParams );
 
 int rho_connectclient_is_changed(const char* szModel);
+void rho_connectclient_set_synctype(const char* szModel, RHOM_SYNC_TYPE sync_type);
 
 void rho_connectclient_save( const char* szModel, unsigned long hash );
 void rho_connectclient_itemdestroy( const char* szModel, unsigned long hash );

@@ -442,6 +442,11 @@ CSyncNotification* CSyncNotify::getSyncNotifyBySrc(CSyncSource* src)
     return pSN != null ? pSN : &m_emptyNotify;
 }
 
+void CSyncNotify::fireSyncNotification2( CSyncSource* src, boolean bFinish, int nErrCode, String strServerError)
+{
+    doFireSyncNotification(src, bFinish, nErrCode, "", "", strServerError);
+}
+
 void CSyncNotify::doFireSyncNotification( CSyncSource* src, boolean bFinish, int nErrCode, String strError, String strParams, String strServerError)
 {
 	if ( getSync().isStoppedByUser() )
@@ -499,8 +504,6 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* src, boolean bFinish, int
 
                     if ( strServerError.length() > 0 )
                         strBody += "&" + strServerError;
-                    else if ( src != null && (*src).m_strServerError.length() > 0  )
-                        strBody += "&" + (*src).m_strServerError;
 	            }
 
                 if ( src != null )
@@ -527,12 +530,23 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* src, boolean bFinish, int
         clearNotification(src);
 }
 
+const String& CSyncNotify::getNotifyBody()
+{
+    if ( m_arNotifyBody.size() == 0 )
+        return String();
+
+    if ( isFakeServerResponse() )
+        return m_arNotifyBody[0];
+
+    return m_arNotifyBody[m_arNotifyBody.size()-1];
+}
+
 boolean CSyncNotify::callNotify(const CSyncNotification& oNotify, const String& strBody )
 {
     String strUrl = oNotify.m_strUrl; //Need to copy url since notify may be cleared in callback
     if ( getSync().isNoThreadedMode() )
     {
-        m_strNotifyBody = strBody;
+        m_arNotifyBody.addElement( strBody );
         return false;
     }
     if ( oNotify.m_cCallback )

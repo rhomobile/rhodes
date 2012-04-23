@@ -267,9 +267,43 @@ void CExtManager::requireRubyFile( const char* szFilePath )
         rb_require(szFilePath);
 }
 
-void CExtManager::rhoLog(int nSeverity, const char* szModule, const char* szMsg, const char* szFile, int nLine)
+extern "C" int rho_wmimpl_is_loglevel_enabled(int nLogLevel);
+extern "C" bool rho_wmimpl_get_is_version2();
+void CExtManager::rhoLog(ELogExtLevels eLogLevel, const char* szModule, const char* szMsg, const char* szFile, int nLine)
 {
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
+    bool bRE1App = false;
+
+    if (!rho_wmimpl_get_is_version2())
+        bRE1App = true;
+
+    if (bRE1App && !rho_wmimpl_is_loglevel_enabled(eLogLevel))
+        return;
+#endif
+
+
+    int nSeverity = L_INFO;
+    switch (eLogLevel)
+    {
+    case eLogError:
+	    nSeverity = L_ERROR;
+	    break;
+    case eLogWarning:
+        nSeverity = L_WARNING;
+	    break;
+    case eLogInfo:
+        nSeverity = L_INFO;
+	    break;
+    case eLogUser:
+        nSeverity = L_INFO;
+	    break;
+    case eLogDebug:
+        nSeverity = L_TRACE;
+	    break;
+    }
+
     rhoPlainLog(szFile, nLine, nSeverity, szModule, szMsg);
+    
 }
 
 bool CExtManager::onWndMsg(MSG& oMsg)

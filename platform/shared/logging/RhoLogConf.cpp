@@ -41,9 +41,64 @@ namespace rho{
 common::CMutex LogSettings::m_FlushLock;
 common::CMutex LogSettings::m_CatLock;
 
+
+LogSettings::MemoryInfoCollectorThread::MemoryInfoCollectorThread( LogSettings& logSettings ) :
+    m_pCollector(0), m_logSettings(logSettings), m_collectMemoryIntervalMilliseconds(0)
+{
+    
+}
+
+void LogSettings::MemoryInfoCollectorThread::run()
+{
+    while( !isStopping() )    
+    {
+        unsigned int toWait = 0;
+        {
+            common::CMutexLock lock(m_accessLock);
+            toWait = m_collectMemoryIntervalMilliseconds;
+        }
+        
+        if ( 0 == toWait )
+        {
+            continue;   
+        }
+        
+        wait(toWait / 1000);
+
+        {
+            common::CMutexLock lock(m_accessLock);
+            if ( m_pCollector!=0 )
+            {
+                String str = m_pCollector->collect();
+                m_logSettings.sinkLogMessage( str );
+            }            
+        }        
+    }
+}
+
+void LogSettings::MemoryInfoCollectorThread::setCollectMemoryInfoInterval( unsigned int interval )
+{
+    common::CMutexLock lock(m_accessLock);
+    m_collectMemoryIntervalMilliseconds = interval;
+}
+
+void LogSettings::MemoryInfoCollectorThread::setMemoryInfoCollector( IMemoryInfoCollector* memInfoCollector )
+{
+    common::CMutexLock lock(m_accessLock); 
+    m_pCollector = memInfoCollector;   
+}
+
+boolean LogSettings::MemoryInfoCollectorThread::willCollect() const
+{
+    common::CMutexLock lock(m_accessLock); 
+    return (m_collectMemoryIntervalMilliseconds>0) && (m_pCollector!=0);
+}
+
+
 LogSettings g_LogSettings;
 
-LogSettings::LogSettings(){ 
+LogSettings::LogSettings()
+{ 
     m_nMinSeverity = 0; 
     m_bLogToOutput = true; 
     m_bLogToFile = false;
@@ -58,9 +113,17 @@ LogSettings::LogSettings(){
     m_pOutputSink = new CLogOutputSink(*this);
     m_pLogViewSink = NULL;
 	m_pSocketSink = NULL;
+	m_pMemoryInfoCollector = NULL;
+    m_pMemoryCollectorThread = NULL;
 }
 
 LogSettings::~LogSettings(){
+    
+    if ( m_pMemoryCollectorThread != 0 )
+    {
+        m_pMemoryCollectorThread->stop(0);
+        delete m_pMemoryCollectorThread;
+    }
     delete m_pFileSink;
     delete m_pOutputSink;
 	if(m_pSocketSink)
@@ -98,8 +161,8 @@ void LogSettings::reinitRemoteLog() {
 	if(!m_pSocketSink && m_strLogURL != "")
 		m_pSocketSink = new CLogSocketSink(*this);
 }
-    
-    
+
+
 void LogSettings::getLogTextW(StringW& strTextW)
 {
     boolean bOldSaveToFile = isLogToFile();
@@ -133,7 +196,7 @@ void LogSettings::saveToFile(){
     RHOCONF().setInt("MinSeverity", getMinSeverity(), true );
     RHOCONF().setBool("LogToOutput", isLogToOutput(), true );
     RHOCONF().setBool("LogToFile", isLogToFile(), true );
-#if !defined(OS_MACOSX)	
+#if !defined(OS_MACOSX) 
     RHOCONF().setString("LogFilePath", getLogFilePath(), true );
 #endif
     RHOCONF().setInt("MaxLogFileSize", getMaxLogFileSize(), true );
@@ -161,6 +224,11 @@ void LogSettings::loadFromConf(rho::common::RhoSettings& oRhoConf)
 		setLogToSocket( oRhoConf.getBool("LogToSocket") );
 	if ( oRhoConf.isExist( "log_exclude_filter") )
         setExcludeFilter( oRhoConf.getString("log_exclude_filter") );
+	if ( oRhoConf.isExist( "LogMemPeriod" ) )
+	{
+		int milliseconds = oRhoConf.getInt("LogMemPeriod");
+		setCollectMemoryInfoInterval(milliseconds);
+	}
 }
 
 void LogSettings::setLogFilePath(const char* szLogFilePath){ 
@@ -186,9 +254,20 @@ void LogSettings::clearLog(){
 }
 
 void LogSettings::sinkLogMessage( String& strMsg ){
+    /*
+	String logMemory ("");
+    processMemoryInfo( logMemory );
+	if (logMemory.length() > 0)
+		internalSinkLogMessage(logMemory);
+    */
+
+	internalSinkLogMessage(strMsg);
+}
+
+void LogSettings::internalSinkLogMessage( String& strMsg ){
     common::CMutexLock oLock(m_FlushLock);
 
-    if ( isLogToFile() )
+	if ( isLogToFile() )
         m_pFileSink->writeLogMessage(strMsg);
 
     if (m_pLogViewSink)
@@ -246,10 +325,46 @@ void LogSettings::setExcludeFilter( const String& strExcludeFilter )
 
             //m_arExcludeAttribs.addElement( "\"" + tok + "\"=>\"" );
             m_arExcludeAttribs.addElement( tok );
-        }    	
+        } 
     }
     else
     	m_arExcludeAttribs.removeAllElements();
+}
+
+void LogSettings::setCollectMemoryInfoInterval( unsigned int interval )
+{ 
+    if ( 0 == m_pMemoryCollectorThread )
+    {
+        m_pMemoryCollectorThread = new MemoryInfoCollectorThread(*this);
+    }
+    
+    m_pMemoryCollectorThread->setCollectMemoryInfoInterval(interval);
+    if ( m_pMemoryCollectorThread->willCollect() )
+    {        
+        m_pMemoryCollectorThread->start(common::IRhoRunnable::epLow);        
+    } 
+    else 
+    {
+        m_pMemoryCollectorThread->stop(0);        
+    }
+}
+
+void LogSettings::setMemoryInfoCollector( IMemoryInfoCollector* memInfoCollector ) 
+{
+    if ( 0 == m_pMemoryCollectorThread )
+    {
+        m_pMemoryCollectorThread = new MemoryInfoCollectorThread(*this);
+    }
+    
+    m_pMemoryCollectorThread->setMemoryInfoCollector(memInfoCollector);
+    if ( m_pMemoryCollectorThread->willCollect() )
+    {
+        m_pMemoryCollectorThread->start(common::IRhoRunnable::epLow);        
+    } 
+    else 
+    {
+        m_pMemoryCollectorThread->stop(0);        
+    }
 }
 
 }
@@ -260,7 +375,7 @@ using namespace rho::common;
 
 void rho_logconf_Init_with_separate_user_path(const char* szLogPath, const char* szRootPath, const char* szLogPort, const char* szUserPath)
 {
-    
+
 #ifdef RHODES_EMULATOR
     String strRootPath = szLogPath;
     strRootPath += RHO_EMULATOR_DIR"/";
@@ -268,7 +383,7 @@ void rho_logconf_Init_with_separate_user_path(const char* szLogPath, const char*
 #else
     rho::common::CFilePath oLogPath( szLogPath );
 #endif
-    
+
     //Set defaults
 #ifdef RHO_DEBUG
     LOGCONF().setMinSeverity( L_TRACE );
@@ -280,19 +395,19 @@ void rho_logconf_Init_with_separate_user_path(const char* szLogPath, const char*
     LOGCONF().setLogToOutput(false);
     LOGCONF().setEnabledCategories("");
 #endif//!RHO_DEBUG
-    
+
     LOGCONF().setLogPrefix(true);
-    
+
     rho::String logPath = oLogPath.makeFullPath("rholog.txt");
     LOGCONF().setLogToFile(true);
     LOGCONF().setLogFilePath( logPath.c_str() );
     LOGCONF().setMaxLogFileSize(1024*50);
-    
+
     rho_conf_Init_with_separate_user_path(szRootPath, szUserPath);
-    
+
     LOGCONF().loadFromConf(RHOCONF());
 }
-    
+
 void rho_logconf_Init(const char* szLogPath, const char* szRootPath, const char* szLogPort){
     rho_logconf_Init_with_separate_user_path(szLogPath, szRootPath, szLogPort, szRootPath);
 }
@@ -413,14 +528,14 @@ VALUE rho_conf_read_log(int limit)
 
     return res;
 }
-    
-    
+
+
 void rho_log_resetup_http_url(const char* http_log_url) {
     LOGCONF().setLogURL(http_log_url);
     LOGCONF().reinitRemoteLog();
 }
-    
-    
+
+
 #endif //RHO_NO_RUBY
 
 }

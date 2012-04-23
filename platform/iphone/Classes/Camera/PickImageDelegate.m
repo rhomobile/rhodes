@@ -38,7 +38,7 @@
 
 @implementation RhoCameraSettings
 
-@synthesize callback_url, camera_type, color_model, format, width, height, enable_editing, enable_editing_setted;
+@synthesize callback_url, camera_type, color_model, format, width, height, enable_editing, enable_editing_setted, save_to_shared_gallery;
 
 - (id)init:(void*)data url:(NSString*)url{
     self.callback_url = url;
@@ -49,6 +49,7 @@
     self.height = 0;
     self.enable_editing = 1;
     self.enable_editing_setted = 0;
+    self.save_to_shared_gallery = false;
         
     if (data != NULL) {
         rho_param* p =(rho_param*)data; 
@@ -90,6 +91,11 @@
                     self.enable_editing_setted = 1;
                     if (strcasecmp(value->v.string, "false") == 0) {
                         self.enable_editing = 0;
+                    }
+                }
+                if (strcasecmp(name, "save_to_shared_gallery") == 0 ) {
+                    if ( strcasecmp(value->v.string, "true") == 0 ) {
+                        self.save_to_shared_gallery = true;
                     }
                 }
                 
@@ -270,6 +276,9 @@
     int imageWidth = (int)img.size.width;
     int imageHeight = (int)img.size.height;
     
+    if ( settings.save_to_shared_gallery ) {    
+        UIImageWriteToSavedPhotosAlbum(img, nil, nil, nil);
+    }    
     
     
     NSString *filename = nil; 	
@@ -355,7 +364,7 @@
     if (image == nil) {
         image = (UIImage*)[info objectForKey:UIImagePickerControllerOriginalImage];
     }
-    if (image != nil) {
+    if (image != nil) {     
         [self useImage:image];
     }
     else {

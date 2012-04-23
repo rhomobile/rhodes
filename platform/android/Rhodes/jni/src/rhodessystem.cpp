@@ -38,6 +38,7 @@
 
 //--------------------------------------------------------------------------------------------------
 static rho::common::CAutoPtr<rho::common::AndroidLogSink> s_logSink(new rho::common::AndroidLogSink());
+static rho::common::CAutoPtr<rho::common::AndroidMemoryInfoCollector> s_memory_info_collector(new rho::common::AndroidMemoryInfoCollector());
 
 static rho::String s_root_path;
 static rho::String s_sqlite_path;
@@ -173,7 +174,9 @@ RHO_GLOBAL void android_setup(JNIEnv *env)
     LOGCONF().setLogToOutput(false);
     // Add android system log sink
     LOGCONF().setLogView(s_logSink);
-    
+
+    LOGCONF().setMemoryInfoCollector(s_memory_info_collector);
+
 }
 //--------------------------------------------------------------------------------------------------
 RHO_GLOBAL void *rho_nativethread_start()

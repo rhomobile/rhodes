@@ -39,6 +39,12 @@
 #include "ruby/ext/rho/rhoruby.h"
 
 
+
+
+
+
+
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "GeocodingMapEngine"
 
@@ -60,6 +66,9 @@ String GoogleGeoCoding::Command::toString()
 IMPLEMENT_LOGCLASS(GoogleGeoCoding,"GGeoCoding");
 GoogleGeoCoding::GoogleGeoCoding()
 {
+#ifdef ENABLE_ANDROID_NET_REQUEST
+	mNetRequestID = 0;
+#endif
     CThreadQueue::setLogCategory(getLogCategory());
     RHO_MAP_TRACE("GoogleGeoCoding: ctor start");
     start(epNormal);
@@ -70,8 +79,8 @@ GoogleGeoCoding::~GoogleGeoCoding()
 {
     RHO_MAP_TRACE("GoogleGeoCoding: dtor");
 
-    m_NetRequest.cancel();
-    CThreadQueue::stop(200);
+    //m_NetRequest.cancel();
+    //CThreadQueue::stop(200);
 }
 /*
 void GoogleGeoCoding::stop()
@@ -83,7 +92,15 @@ void GoogleGeoCoding::stop()
 bool GoogleGeoCoding::fetchData(String const &url, void **data, size_t *datasize)
 {
     RHO_MAP_TRACE1("GoogleGeoCoding: fetchData: url=%s", url.c_str());
-    NetResponse resp = getNet().doRequest("GET", url, "", 0, 0);
+#ifdef ENABLE_ANDROID_NET_REQUEST
+    mNetRequestID = mapengine_request_make();
+    int s = 0;
+    int res = 0;
+    res = mapengine_request_data(mNetRequestID, url.c_str(), data, &s);
+    *datasize = s;
+    return res > 0;
+#else
+ NetResponse resp = getNet().doRequest("GET", url, "", 0, 0);
     if (!resp.isOK())
         return false;
     *datasize = resp.getDataSize();
@@ -92,7 +109,8 @@ bool GoogleGeoCoding::fetchData(String const &url, void **data, size_t *datasize
         return false;
     memcpy(*data, resp.getCharData(), *datasize);
     return true;
-}
+#endif
+ }
 
 void GoogleGeoCoding::resolve(String const &address, GeoCodingCallback *cb)
 {

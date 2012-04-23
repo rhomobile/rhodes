@@ -27,6 +27,9 @@
 #include "stdafx.h"
 #include "MainWindow.h"
 #include "IEBrowserEngine.h"
+#if !defined(RHODES_EMULATOR) && !defined(OS_WINDOWS_DESKTOP)
+#include "LogMemory.h"
+#endif
 
 #include "common/RhodesApp.h"
 #include "common/StringConverter.h"
@@ -62,20 +65,39 @@ extern "C" void rho_webview_navigate(const char* url, int index);
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 class CEng;
 extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
+extern "C" CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
+#endif // APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+#ifdef APP_BUILD_CAPABILITY_SHARED_RUNTIME
 extern "C" {
-	CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
 	void rho_wmimpl_set_configfilepath(const char* path);
 	TCHAR* rho_wmimpl_get_startpage();
 	void rho_wmimpl_set_startpage(const char* path);
 	const char* rho_wmimpl_get_logpath();
 	const char* rho_wmimpl_get_logurl();
 	bool rho_wmimpl_get_fullscreen();
-	void rho_wmimpl_set_is_version2();
+	void rho_wmimpl_set_is_version2(const char* path);
 	bool rho_wmimpl_get_is_version2();
-	const unsigned int* rho_wmimpl_get_logmaxsize();
-	const int* rho_wmimpl_get_loglevel();
-};
+
+#if !defined( APP_BUILD_CAPABILITY_WEBKIT_BROWSER ) && !defined(APP_BUILD_CAPABILITY_MOTOROLA)
+    bool rho_wmimpl_get_is_version2(){ return 1;}
+    void rho_wmimpl_set_is_version2(const char* path){}
+    void rho_wmimpl_set_configfilepath(const char* path){}
+    void rho_wmimpl_set_configfilepath_wchar(const WCHAR* path){}
+    void rho_wmimpl_set_startpage(const char* path){}
+    TCHAR* rho_wmimpl_get_startpage(){ return L""; }
+    const unsigned int* rho_wmimpl_get_logmemperiod(){ return 0; }
+    const unsigned int* rho_wmimpl_get_logmaxsize(){ return 0; }
+    const char* rho_wmimpl_get_logurl(){ return ""; }
+    bool rho_wmimpl_get_fullscreen(){ return 0; }
+    const char* rho_wmimpl_get_logpath(){ return ""; }
+    int rho_wmimpl_is_loglevel_enabled(int nLogLevel){ return true; }
 #endif
+
+	const unsigned int* rho_wmimpl_get_logmaxsize();
+	//const int* rho_wmimpl_get_loglevel();
+	const unsigned int* rho_wmimpl_get_logmemperiod();
+};
+#endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
 #if defined(_WIN32_WCE) && !defined(OS_PLATFORM_MOTCE)
 #include <regext.h>
@@ -321,7 +343,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
                     m_strRootPath.append("/");
                 m_strRootPath.append("rho/");
 #ifdef APP_BUILD_CAPABILITY_SHARED_RUNTIME
-                rho_wmimpl_set_is_version2();
+                rho_wmimpl_set_is_version2(m_strRootPath.c_str());
 #endif
         	}
 			free(path);
@@ -404,13 +426,19 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 		LOGCONF().setLogURL(rho_wmimpl_get_logurl());
 	if (rho_wmimpl_get_logmaxsize())
 		LOGCONF().setMaxLogFileSize(*rho_wmimpl_get_logmaxsize());
-    if (rho_wmimpl_get_loglevel())
-		LOGCONF().setMinSeverity(*rho_wmimpl_get_loglevel());
+    //if (rho_wmimpl_get_loglevel())
+	//	LOGCONF().setMinSeverity(*rho_wmimpl_get_loglevel());
     if (rho_wmimpl_get_fullscreen())
         RHOCONF().setBool("full_screen", true, false);
+	if (rho_wmimpl_get_logmemperiod())
+		LOGCONF().setCollectMemoryInfoInterval(*rho_wmimpl_get_logmemperiod());
 #else
     rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
 #endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
+
+#if !defined(RHODES_EMULATOR) && !defined(OS_WINDOWS_DESKTOP)
+	LOGCONF().setMemoryInfoCollector(CLogMemory::getInstance());
+#endif // RHODES_EMULATOR
 
 #ifdef RHODES_EMULATOR
     RHOSIMCONF().setAppConfFilePath(CFilePath::join( m_strRootPath, RHO_EMULATOR_DIR"/rhosimconfig.txt").c_str());
@@ -545,7 +573,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
     if (bRE1App)
     {
-#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
+#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
         registerRhoExtension();
 #endif
 	    m_appWindow.Navigate2(_T("about:blank")

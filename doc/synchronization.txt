@@ -144,8 +144,19 @@ These parameters are included in all notifications.
 * `@params["cumulative_count"]` - Number of records the `SyncEngine` has processed so far for this source.
 
 #### "in_progress" - bulk sync
-* `@params["bulk_status"]` - The state of the bulk sync process: "start", "download", "change_db".
+* `@params["bulk_status"]` - The state of the bulk sync process: 
 
+ "start": when bulk sync start and when specific partition is start syncing
+ 
+ "download": when client start downloading database from server
+ 
+ "change_db": when client start applying new database
+ 
+ "ok": when sync of partition finished without error
+ 
+ "complete": when bulk sync finished for all partitions without errors
+ 
+* `@params["partition"]` - Current bulk sync partition.
 
 #### "error"
 * `@params["error_code"]` - HTTP response code of the RhoConnect server error: 401, 500, 404, etc.

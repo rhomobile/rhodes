@@ -272,51 +272,48 @@ namespace "config" do
     #Process rhoelements settings
     if $current_platform == "wm" || $current_platform == "android"
         if $app_config["app_type"] == 'rhoelements'
-            $app_config["capabilities"] += ["motorola"] unless $app_config["capabilities"].index("motorola")
-            $app_config["extensions"] += ["rhoelementsext"]
-            $app_config["extensions"] += ["motoapi"] #extension with plug-ins
-            $app_config["extensions"] += ["rhoelements"] unless $app_config['extensions'].index('rhoelements')
-
-            #if !$app_config["capabilities"].index('native_browser')
-            if $current_platform == "android"
-                $app_config["extensions"] += ['webkit-browser'] unless $app_config["extensions"].index("webkit-browser")
-            end
-            
-            #check for RE2 plugins
-            plugins = ""
-            $app_config["extensions"].each do |ext|
-                if ( ext.start_with?('moto-') )
-                    plugins += ',' if plugins.length() > 0
-                    plugins += ext[5, ext.length()-5]
+        
+            if !$app_config["capabilities"].index('non_motorola_device')        
+                $app_config["capabilities"] += ["motorola"] unless $app_config["capabilities"].index("motorola")
+                $app_config["extensions"] += ["rhoelementsext"]
+                $app_config["extensions"] += ["motoapi"] #extension with plug-ins
+                
+                #check for RE2 plugins
+                plugins = ""
+                $app_config["extensions"].each do |ext|
+                    if ( ext.start_with?('moto-') )
+                        plugins += ',' if plugins.length() > 0
+                        plugins += ext[5, ext.length()-5]
+                    end
                 end
+                
+                if plugins.length() == 0
+                    plugins = "ALL"    
+                end
+                
+                application_build_configs['moto-plugins'] = plugins if plugins.length() > 0
+                
             end
             
-            if plugins.length() == 0
-                plugins = "ALL"    
+            if !$app_config["capabilities"].index('native_browser')
+                $app_config["capabilities"] += ["motorola_browser"] unless $app_config["capabilities"].index('motorola_browser')
             end
-            
-            application_build_configs['moto-plugins'] = plugins if plugins.length() > 0
-            
-            if $current_platform == 'android'
-            #    barcode_idx = $app_config['extensions'].index('barcode')
-            #    $app_config['extensions'][barcode_idx] = 'barcode-moto' unless barcode_idx.nil?
-               unless $app_config['capabilities'].index('native_browser')
-                 $app_config['capabilities'] += ['webkit_browser'] unless $app_config['capabilities'].index('webkit_browser')
-               end
-            end
-            
         end
 
         application_build_configs['shared-runtime'] = '1' if $app_config["capabilities"].index('shared_runtime')
 
         if $app_config["capabilities"].index("motorola_browser")
             $app_config['extensions'] += ['webkit-browser'] unless $app_config['extensions'].index('webkit-browser')
-            $app_config["extensions"] += ["rhoelements"] unless $app_config['extensions'].index('rhoelements')
         end
         
         if $app_config["extensions"].index("webkit-browser")
-            $app_config["capabilities"] += ["webkit_browser"] unless $current_platform == 'android'
+            $app_config["capabilities"] += ["webkit_browser"]
             $app_config["extensions"].delete("webkit-browser") unless $current_platform == 'android'
+        end
+        
+        if  $app_config["capabilities"].index("webkit_browser") || $app_config["capabilities"].index("motorola")
+            #contains wm code for webkit browser support
+            $app_config["extensions"] += ["rhoelements"] unless $app_config['extensions'].index('rhoelements')
         end
     end
 
@@ -336,7 +333,6 @@ namespace "config" do
       end
     end	
     $application_build_configs = application_build_configs
-
     #check for rhoelements gem
     $rhoelements_features = ""
     if $app_config['extensions'].index('barcode')
@@ -410,6 +406,7 @@ namespace "config" do
     puts "$app_config['extensions'] : #{$app_config['extensions'].inspect}"   
     puts "$app_config['capabilities'] : #{$app_config['capabilities'].inspect}"   
 
+    
     if $current_platform == "bb"  
       make_application_build_config_java_file
     else  
@@ -719,6 +716,18 @@ def common_bundle_start(startdir, dest)
   end
   cp app + '/rhoconfig.txt', File.join($srcdir,'apps'), :preserve => true
 
+  if $app_config["app_type"] == 'rhoelements'
+    config_xml = nil
+    if $app_config[$config["platform"]] && $app_config[$config["platform"]]["rhoelements"] && $app_config[$config["platform"]]["rhoelements"]["config"] && (File.exists? File.join(app, $app_config[$config["platform"]]["rhoelements"]["config"]))
+      config_xml = File.join(app, $app_config[$config["platform"]]["rhoelements"]["config"])
+    elsif $app_config["rhoelements"] && $app_config["rhoelements"]["config"] && (File.exists? File.join(app, $app_config["rhoelements"]["config"]))
+      config_xml = File.join(app, $app_config["rhoelements"]["config"])
+    end
+    if !(config_xml.nil?)
+      cp config_xml, File.join($srcdir,'apps/Config.xml'), :preserve => true
+    end
+  end
+
   app_version = "\r\napp_version='#{$app_config["version"]}'"  
   File.open(File.join($srcdir,'apps/rhoconfig.txt'), "a"){ |f| f.write(app_version) }
   File.open(File.join($srcdir,'apps/rhoconfig.txt.timestamp'), "w"){ |f| f.write(Time.now.to_f().to_s()) }
@@ -832,7 +841,7 @@ namespace "build" do
       cp   compileERB, $srcdir
       puts "Running bb.rb"
 
-      puts `#{$rubypath} -I#{rhodeslib} "#{$srcdir}/bb.rb"`
+      puts `#{$rubypath} -I"#{rhodeslib}" "#{$srcdir}/bb.rb"`
       unless $? == 0
         puts "Error interpreting erb code"
         exit 1
@@ -912,7 +921,7 @@ namespace "build" do
       cp   compileERB, $srcdir
       puts "Running default.rb"
 
-      puts `#{$rubypath} -I#{rhodeslib} "#{$srcdir}/default.rb"`
+      puts `#{$rubypath} -I"#{rhodeslib}" "#{$srcdir}/default.rb"`
       unless $? == 0
         puts "Error interpreting erb code"
         exit 1
@@ -922,7 +931,7 @@ namespace "build" do
 
       cp   compileRB, $srcdir
       puts "Running compileRB"
-      puts `#{$rubypath} -I#{rhodeslib} "#{$srcdir}/compileRB.rb"`
+      puts `#{$rubypath} -I"#{rhodeslib}" "#{$srcdir}/compileRB.rb"`
       unless $? == 0
         puts "Error interpreting ruby code"
         exit 1

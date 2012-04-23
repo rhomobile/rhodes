@@ -1,6 +1,7 @@
 package com.rhomobile.rhodes.extmanager;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.Hashtable;
 
 import android.view.LayoutInflater;
@@ -28,6 +29,25 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     }
     
     private static native void nativeRequireRubyFile(String path);
+
+//    private static Class<?> getSubclass(Class<?> clazz, String subclassName) throws ClassNotFoundException {
+//        Class<?> subClasses [] = clazz.getDeclaredClasses();
+//        for(Class<?> subClass: subClasses) {
+//            if(subClass.getSimpleName)
+//        }
+//        throw new ClassNotFoundException(subclassName);
+//    }
+    
+    static int getResId(String className, String idName) {
+        className = R.class.getCanonicalName() + "$" + className;
+        try {
+            Class<?> rClass = Class.forName(className);
+            Field field = rClass.getDeclaredField(idName);
+            return field.getInt(null);
+        } catch (Throwable e) {
+            throw new IllegalArgumentException("Cannot get " + className + "." + idName, e);
+        }
+    }
 
 	public RhoExtManagerImpl() {
 		mExtensions = new Hashtable<String, IRhoExtension>();
@@ -182,16 +202,17 @@ public class RhoExtManagerImpl implements IRhoExtManager {
         if(mFirstNavigate) {
             if(Capabilities.MOTOROLA_ENABLED) {
                 PerformOnUiThread.exec(new Runnable() {
+                    @SuppressWarnings("deprecation")
                     @Override
                     public void run() {
                         Logger.I(TAG, "Init license now");
                         try {
                             RhodesActivity activity = RhodesActivity.safeGetInstance();
                             LayoutInflater inflater = activity.getLayoutInflater();
-                            View licenseView = inflater.inflate(R.layout.license, null);  
+                            View licenseView = inflater.inflate(getResId("layout", "license"), null);  
                             activity.addContentView(licenseView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
                             Class<?> licenseClass = Class.forName("com.motorolasolutions.rhoelements.License");
-                            Constructor licenseCtor = licenseClass.getConstructor();
+                            Constructor<?> licenseCtor = licenseClass.getConstructor();
                             mLicense = licenseCtor.newInstance();
                         } catch(Throwable e) {
                             Logger.E(TAG, e);

@@ -79,7 +79,8 @@ IMapView *ESRIMapEngine::createMapView(IDrawingDevice *device)
 
 void ESRIMapEngine::destroyMapView(IMapView *view)
 {
-    delete view;
+	//delete view;
+	BaseMapView::processClean((BaseMapView*)view);
 }
 
 } // namespace map

@@ -24,35 +24,16 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
-#import <Foundation/Foundation.h>
+#pragma once
 
-#include "RhoConnectClient/RhoConnectClient.h"
+#include "logging/RhoLogConf.h"
 
-@interface RhoConnectNotify : NSObject {
-}
-
-@property int       total_count;
-@property int       processed_count;
-@property int       cumulative_count;
-@property int       source_id;
-@property int       error_code;
-@property(readonly) NSString* source_name;
-@property(readonly) NSString* status;
-@property(readonly) NSString* sync_type;
-@property(readonly) NSString* bulk_status;
-@property(readonly) NSString* partition;
-@property(readonly) NSString* error_message;
-@property(readonly) NSString* callback_params;
-@property(readonly) RHO_CONNECT_NOTIFY notify_data;
-
-- (id) init: (RHO_CONNECT_NOTIFY*) data;
-- (void)dealloc;
-
-- (Boolean) hasCreateErrors;
-- (Boolean) hasUpdateErrors;
-- (Boolean) hasDeleteErrors;
-- (Boolean) isUnknownClientError;
-
-- (RHO_CONNECT_NOTIFY*)getNotifyPtr;
-
-@end
+class CLogMemory: public rho::IMemoryInfoCollector
+{
+private:
+	CLogMemory(){};
+	static CLogMemory* gInstance;
+public:
+	static CLogMemory* getInstance();
+	virtual rho::String collect();
+};

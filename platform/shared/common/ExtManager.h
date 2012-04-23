@@ -65,6 +65,8 @@ struct IRhoExtension
 
 struct IRhoExtManager
 {
+    enum ELogExtLevels { eLogError = 0, eLogWarning, eLogInfo, eLogUser, eLogDebug, eLogLevelsCount };
+
     virtual ~IRhoExtManager(){}
 
     virtual void onUnhandledProperty( const wchar_t* pModuleName, const wchar_t* pName, const wchar_t* pValue, const CRhoExtData& oExtData ) = 0;
@@ -78,7 +80,7 @@ struct IRhoExtManager
     virtual bool existsJavascript(const wchar_t* szJSFunction) = 0;
     virtual void executeJavascript(const wchar_t* szJSFunction) = 0;
 
-    virtual void rhoLog(int nSeverity, const char* szModule, const char* szMsg, const char* szFile, int nLine) = 0;
+    virtual void rhoLog(ELogExtLevels eLogLevel, const char* szModule, const char* szMsg, const char* szFile, int nLine) = 0;
     virtual StringW getCurrentUrl() = 0;
     virtual void stopNavigate() = 0;
     virtual void historyForward() = 0;
@@ -137,7 +139,7 @@ public:
 
     virtual void executeJavascript(const wchar_t* szJSFunction);
     virtual bool existsJavascript(const wchar_t* szJSFunction);
-    virtual void rhoLog(int nSeverity, const char* szModule, const char* szMsg, const char* szFile, int nLine);
+    virtual void rhoLog(ELogExtLevels eLogLevel, const char* szModule, const char* szMsg, const char* szFile, int nLine);
     virtual StringW getCurrentUrl();
     virtual void stopNavigate();
     virtual void historyForward();

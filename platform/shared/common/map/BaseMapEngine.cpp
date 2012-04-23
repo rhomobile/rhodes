@@ -87,6 +87,29 @@ static int const ANNOTATION_SENSITIVITY_AREA_RADIUS = 16;
 static int const BACKGROUND_COLOR = 0x7F7F7F;
 static int const CALLOUT_TEXT_COLOR = 0xFFFFFFFF;
 
+
+
+
+
+static MapViewCleaner* ourMapCleaner = NULL;
+
+static MapViewCleaner* getMapCleaner() {
+	if (ourMapCleaner == NULL) {
+		ourMapCleaner = new MapViewCleaner();
+	}
+	return ourMapCleaner;
+}
+
+
+
+
+
+
+
+
+
+
+
 uint64 degreesToPixelsX(double n, int zoom)
 {
     while (n < -180) n += 360;
@@ -179,7 +202,9 @@ BaseMapView::Tile::Tile(BaseMapView::Tile const &c)
 
 BaseMapView::Tile::~Tile()
 {
-    m_device->destroyImage(m_image);
+	if ((m_device != NULL) && (m_image != NULL)) {
+		m_device->destroyImage(m_image);
+	}
 }
 
 BaseMapView::Tile &BaseMapView::Tile::operator=(BaseMapView::Tile const &c)
@@ -199,7 +224,10 @@ void BaseMapView::Tile::swap(BaseMapView::Tile &tile)
 
 IMPLEMENT_LOGCLASS(BaseMapView::MapFetch,"MapFetch");
 BaseMapView::MapFetch::MapFetch(BaseMapView *view)
-    :CThreadQueue(), m_mapview(view)
+    :CThreadQueue(), m_mapview(view), mIsStoped(false), mRequestCanBeCancelled(false)
+#ifdef ENABLE_ANDROID_NET_REQUEST
+, mNetRequestID(0)
+#endif
 {
     CThreadQueue::setLogCategory(getLogCategory());
 
@@ -210,6 +238,12 @@ BaseMapView::MapFetch::~MapFetch()
 {
     //stop(1000);
 }
+    
+void BaseMapView::MapFetch::delayedStop() {
+    addQueueCommandToFront(new Command(true));
+
+}
+    
 
 void BaseMapView::MapFetch::fetchTile(String const &baseUrl, int zoom, uint64 latitude, uint64 longitude)
 {
@@ -225,16 +259,33 @@ void BaseMapView::MapFetch::fetchTile(int zoom, uint64 row, uint64 column)
 
 bool BaseMapView::MapFetch::fetchData(String const &url, void **data, size_t *datasize)
 {
+#ifdef ENABLE_ANDROID_NET_REQUEST
+	int s = 0;
+	mNetRequestID = mapengine_request_make();
+	int res = mapengine_request_data(mNetRequestID, url.c_str(), data, &s);
+	*datasize = s;
+	return res;
+#else
+    RHO_MAP_TRACE("fetchData: start");
     RHO_MAP_TRACE1("fetchData: url=%s", url.c_str());
+    mRequestCanBeCancelled = true;
     NetResponse resp = getNet().doRequest("GET", url, "", 0, 0);
+    mRequestCanBeCancelled = false;
+    RHO_MAP_TRACE("_____ 1 ______");
     if (!resp.isOK())
         return false;
+    RHO_MAP_TRACE("_____ 2 ______");
     *datasize = resp.getDataSize();
+    RHO_MAP_TRACE("_____ 3 ______");
     *data = malloc(*datasize);
+    RHO_MAP_TRACE("_____ 4 ______");
     if (!*data)
         return false;
+    RHO_MAP_TRACE("_____ 5 ______");
     memcpy(*data, resp.getCharData(), *datasize);
+    RHO_MAP_TRACE("_____ 6 ______");
     return true;
+#endif
 }
 
 #if 0
@@ -298,6 +349,9 @@ int BaseMapView::MapFetch::getMapTile(uint64 p_zoom, uint64 p_row, uint64 p_colu
     size_t datasize = 0;
     char filename[2048] = "";
 
+    if (m_mapview == NULL) {
+    	return 0;
+    }
     if (m_mapview->mEnableFileCaching)
     {
         // check for file
@@ -320,13 +374,14 @@ int BaseMapView::MapFetch::getMapTile(uint64 p_zoom, uint64 p_row, uint64 p_colu
 
             datasize = file.size();
             data = new unsigned char[datasize];
-            file.readData(data, 0, datasize);
-            file.close();
-
-            *p_data = data;
-            *p_size = datasize;
-
-            return 1;
+            if (data != NULL) {
+                file.readData(data, 0, datasize);
+                file.close();
+                *p_data = data;
+                *p_size = datasize;
+                
+                return 1;
+            }
         }
         else
         {
@@ -390,6 +445,9 @@ int BaseMapView::MapFetch::getMapTile(uint64 p_zoom, uint64 p_row, uint64 p_colu
 
     RHO_MAP_TRACE("###########  BEFORE getMapTile()");
 
+    if (m_mapview == NULL) {
+    	return 0;
+    }
     if (!(m_mapview->getMapTile(p_zoom, p_row, p_column, &data, &datasize)))
     {
         RHO_MAP_TRACE("###########  AFTER getMapTime() NOT GET");
@@ -397,6 +455,9 @@ int BaseMapView::MapFetch::getMapTile(uint64 p_zoom, uint64 p_row, uint64 p_colu
     }
     RHO_MAP_TRACE("###########  AFTER getMapTime() OK");
 
+    if (m_mapview == NULL) {
+    	return 0;
+    }
     if (m_mapview->mEnableFileCaching)
     {
         RHO_MAP_TRACE("###########  BEFORE MapTile save");
@@ -426,9 +487,23 @@ int BaseMapView::MapFetch::getMapTile(uint64 p_zoom, uint64 p_row, uint64 p_colu
 
 void BaseMapView::MapFetch::processCommand(IQueueCommand *c)
 {
+    
     Command *cmd = (Command *)c;
-    RHO_MAP_TRACE1("processCommand: cmd=%s", cmd->toString().c_str());
+    RHO_MAP_TRACE(" ###############################  MapFetch::processCommand: start");
+    RHO_MAP_TRACE1(" ###############################  MapFetch::processCommand: cmd=%s", cmd->toString().c_str());
 
+    if (cmd->mIsStopCommand) {
+        mIsStoped = true;
+        RHO_MAP_TRACE(" ###############################  MapFetch::processCommand: stop command");
+        //stop(0);
+        return;
+    }
+    if (mIsStoped) {
+        RHO_MAP_TRACE(" ###############################  MapFetch::processCommand: thread already stoped");
+    	return;
+    }
+    
+    
     String url = "";//cmd->baseUrl;
 
     int zoom = cmd->zoom;
@@ -444,17 +519,36 @@ void BaseMapView::MapFetch::processCommand(IQueueCommand *c)
         column = (unsigned int)cmd->column;
     }
 
-    void *data;
+    void *data = NULL;
     size_t datasize;
 
     if (!getMapTile(zoom, row, column, &data, &datasize))
     {
+        if (cmd->mIsCancelled) {
+            mIsStoped = true;
+            RHO_MAP_TRACE(" ###############################  MapFetch::processCommand: cancelled");
+            //stop(0);
+            return;
+        }
         addQueueCommand(new Command(cmd->baseUrl, zoom, latitude, longitude));
         return;
     }
 
+    if (m_mapview == NULL) {
+    	return;
+    }
     IDrawingDevice *device = m_mapview->drawingDevice();
 
+    if (cmd->mIsCancelled) {
+        free(data);
+        mIsStoped = true;
+        RHO_MAP_TRACE(" ###############################  MapFetch::processCommand: cancelled");
+        //stop(0);
+        return;
+    }
+    if (m_mapview == NULL) {
+    	return;
+    }
     if (!m_mapview->m_isJustDownloadMode)
     {
         synchronized (m_mapview->tilesCacheLock());
@@ -462,6 +556,15 @@ void BaseMapView::MapFetch::processCommand(IQueueCommand *c)
     }
 
     free(data);
+    if (cmd->mIsCancelled) {
+        mIsStoped = true;
+        RHO_MAP_TRACE(" ###############################  MapFetch::processCommand: cancelled");
+        //stop(0);
+        return;
+    }
+    if (m_mapview == NULL) {
+    	return;
+    }
     if (!m_mapview->m_isJustDownloadMode)
     {
         m_mapview->redraw();
@@ -472,6 +575,8 @@ void BaseMapView::MapFetch::processCommand(IQueueCommand *c)
         //snprintf(filename, sizeof(filename), "$$$$$$$$$$$$$$$$    PROCESS TILE    %d  MORE !", (int)getCommandsCount());
         //RHO_MAP_TRACE(filename);
     //}
+    RHO_MAP_TRACE(" ###############################  MapFetch::processCommand finish");
+    
 }
 
 String BaseMapView::MapFetch::Command::toString()
@@ -484,7 +589,7 @@ String BaseMapView::MapFetch::Command::toString()
 
 IMPLEMENT_LOGCLASS(BaseMapView::CacheUpdate,"CacheUpdate");
 BaseMapView::CacheUpdate::CacheUpdate(BaseMapView *view)
-    :CThreadQueue(), m_mapview(view)
+    :CThreadQueue(), m_mapview(view), mIsStoped(false)
 {
     CThreadQueue::setLogCategory(getLogCategory());
     start(epNormal);
@@ -494,16 +599,37 @@ BaseMapView::CacheUpdate::~CacheUpdate()
 {
     //stop(200);
 }
+   
+    void BaseMapView::CacheUpdate::delayedStop() {
+        addQueueCommandToFront(new Command(true));
+    }    
 
 void BaseMapView::CacheUpdate::updateCache()
 {
-    addQueueCommand(new Command());
+    addQueueCommand(new Command(false));
 }
 
 void BaseMapView::CacheUpdate::processCommand(IQueueCommand *c)
 {
-    RHO_MAP_TRACE("CacheUpdate: start");
+    Command *cmd = (Command *)c;
 
+    RHO_MAP_TRACE(" $$$$$$$$$$$$$$$$$$$$$$$$$$$  CacheUpdate: start");
+
+    if (cmd->mIsStopCommand) {
+        mIsStoped = true;
+        RHO_MAP_TRACE(" $$$$$$$$$$$$$$$$$$$$$$$$$$$  CacheUpdate: stopCommand");
+        //stop(0);
+        return;
+    }
+    if (mIsStoped) {
+        RHO_MAP_TRACE(" ###############################  CacheUpdate::processCommand: thread already stoped");
+    	return;
+    }
+
+    
+    if (m_mapview == NULL) {
+    	return;
+    }
     CMutex &lock = m_mapview->tilesCacheLock();
     TilesCache &cache = m_mapview->tilesCache();
 
@@ -541,6 +667,12 @@ void BaseMapView::CacheUpdate::processCommand(IQueueCommand *c)
             uint64 norm_lat = normalize_latitude(lat);
             uint64 norm_lon = normalize_longitude(lon);
 
+            if (cmd->mIsCancelled) {
+                mIsStoped = true;
+                //stop(0);
+                RHO_MAP_TRACE(" $$$$$$$$$$$$$$$$$$$$$$$$$$$  CacheUpdate: cancelled");
+                return;
+            }
             synchronized (lock);
             Tile const *tile = cache.get(zoom, norm_lat, norm_lon);
             if (tile)
@@ -549,10 +681,13 @@ void BaseMapView::CacheUpdate::processCommand(IQueueCommand *c)
             cache.put(Tile(drawingDevice, zoom, norm_lat, norm_lon));
 
             RHO_MAP_TRACE3("CacheUpdate: fetch tile: zoom=%d, latitude="PRINTF_UINT64", longitude="PRINTF_UINT64"", zoom, norm_lat, norm_lon);
+            if (m_mapview == NULL) {
+            	return;
+            }
             m_mapview->fetchTile(zoom, norm_lat, norm_lon);
         }
 
-    RHO_MAP_TRACE("CacheUpdate: stop");
+    RHO_MAP_TRACE(" $$$$$$$$$$$$$$$$$$$$$$$$$$$  CacheUpdate: stop");
 }
 
 BaseMapView::Tile const *BaseMapView::TilesCache::get(int zoom, uint64 latitude, uint64 longitude) const
@@ -567,6 +702,9 @@ BaseMapView::Tile const *BaseMapView::TilesCache::get(int zoom, uint64 latitude,
 
 void BaseMapView::TilesCache::put(Tile const &tile)
 {
+	if (mIsStoped) {
+		return;
+	}
     int zoom = tile.zoom();
     uint64 latitude = tile.latitude();
     uint64 longitude = tile.longitude();
@@ -665,16 +803,75 @@ BaseMapView::BaseMapView(IDrawingDevice *device, const char* name)
     m_map_urls.put("satellite", url);
 }
 
-BaseMapView::~BaseMapView()
-{
+
+void BaseMapView::cleanTiles() {
+	{
+		synchronized(m_tiles_cache_mtx);
+		m_tiles_cache.clean();
+	}
+}
+
+void BaseMapView::startClean() {
+    RHO_MAP_TRACE("  &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&   BaseMapView::startClean start");
     if ( m_map_fetch.get() != 0)
     {
+        RHO_MAP_TRACE("  &&&&&&&&&&&&&&&&&& ___1____");
         m_map_fetch->cancel();
-        m_map_fetch->stop(2000);
+        RHO_MAP_TRACE("  &&&&&&&&&&&&&&&&&& ___2____");
+        m_map_fetch->delayedStop();
+        RHO_MAP_TRACE("  &&&&&&&&&&&&&&&&&& ___3____");
+        m_map_fetch->cancelCurrentCommand();
+        RHO_MAP_TRACE("  &&&&&&&&&&&&&&&&&& ___4____");
+        //m_map_fetch->stop(0);
+        RHO_MAP_TRACE("  &&&&&&&&&&&&&&&&&& ___5____");
+    }
+    if ( m_cache_update.get() != 0) {
+        //m_map_fetch->cancel();
+        RHO_MAP_TRACE("  &&&&&&&&&&&&&&&&&& ___6____");
+        m_cache_update->delayedStop();
+        RHO_MAP_TRACE("  &&&&&&&&&&&&&&&&&& ___7____");
+        m_cache_update->cancelCurrentCommand();
+        RHO_MAP_TRACE("  &&&&&&&&&&&&&&&&&& ___8____");
+        //m_cache_update->stop(0);
+        RHO_MAP_TRACE("  &&&&&&&&&&&&&&&&&& ___9____");
     }
 
-    if ( m_cache_update.get() != 0)
-        m_cache_update->stop(2000);
+    ((GoogleGeoCoding*)(m_geo_coding.get()))->cancel();
+    ((GoogleGeoCoding*)(m_geo_coding.get()))->stop(0);
+    m_geo_coding.reset(NULL);
+
+    RHO_MAP_TRACE("  &&&&&&&&&&&&&&&&&& ___10___");
+    RHO_MAP_TRACE("  &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&   BaseMapView::startClean finish");
+}
+
+bool BaseMapView::isReadyToDelete() {
+    RHO_MAP_TRACE("  &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&   BaseMapView::isReadyToDelete()");
+	return (m_map_fetch->mIsStoped) && (m_cache_update->mIsStoped);
+}
+
+
+void BaseMapView::finalClean() {
+    RHO_MAP_TRACE("  &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&   BaseMapView::finalClean() start");
+    if ( m_map_fetch.get() != 0)
+    {
+        m_map_fetch->stop(0);
+        m_map_fetch.reset(NULL);
+        RHO_MAP_TRACE("  &&&&&&&&&&&&&&&&&& ___11____");
+    }
+    if ( m_cache_update.get() != 0) {
+        m_cache_update->stop(0);
+        m_cache_update.reset(NULL);
+        RHO_MAP_TRACE("  &&&&&&&&&&&&&&&&&& ___12____");
+    }
+
+    
+    RHO_MAP_TRACE("  &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&   BaseMapView::finalClean() finish");
+}
+
+
+BaseMapView::~BaseMapView()
+{
+    RHO_MAP_TRACE("  &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&   BaseMapView::~BaseMapView() @@@@@@@@");
     /*
     if (m_pin != NULL) {
         m_drawing_device->destroyImage(m_pin);
@@ -696,7 +893,7 @@ BaseMapView::~BaseMapView()
 
 void BaseMapView::setSize(int aWidth, int aHeight)
 {
-    RHO_MAP_TRACE2("setSize: width=%d, height=%d", width, height);
+    RHO_MAP_TRACE2("setSize: width=%d, height=%d", aWidth, aHeight);
 
     m_width = aWidth;
     m_height = aHeight;
@@ -1301,6 +1498,12 @@ void BaseMapView::paintCallout(IDrawingContext *context, Annotation const &ann)
 
 bool BaseMapView::fetchData(String const &url, void **data, size_t *datasize)
 {
+#ifdef ENABLE_ANDROID_NET_REQUEST
+	if (m_map_fetch.get() != NULL) {
+		return m_map_fetch->fetchData(url, data, datasize);
+	}
+	return false;
+#else
     RHO_MAP_TRACE("###########  BaseMapView::fetchData() START");
 
     RHO_MAP_TRACE1("fetchData: url=%s", url.c_str());
@@ -1322,6 +1525,7 @@ bool BaseMapView::fetchData(String const &url, void **data, size_t *datasize)
     RHO_MAP_TRACE("###########  BaseMapView::fetchData() FINISH");
 
     return true;
+#endif
 }
 
 int BaseMapView::preloadMapTiles(double top_latitude, double left_longitude, double bottom_latitude, double right_longitude, int min_zoom, int max_zoom)
@@ -1386,6 +1590,83 @@ int BaseMapView::getCountOfTilesToDownload()
 {
     return m_map_fetch->getCommandsCount();
 }
+
+void BaseMapView::processClean(BaseMapView* mapView) {
+#ifdef ENABLE_ANDROID_NET_REQUEST
+    RHO_MAP_TRACE("*******************************    BaseMapView::processClean: start");
+	mapView->cleanTiles();
+    RHO_MAP_TRACE("*******************************    BaseMapView::processClean: _____ 1 _____");
+	getMapCleaner()->cleanMapView(mapView);
+    RHO_MAP_TRACE("*******************************    BaseMapView::processClean: finish");
+#else
+    RHO_MAP_TRACE("*******************************    BaseMapView::processClean: start");
+	mapView->cleanTiles();
+    mapView->startClean();
+    mapView->finalClean();
+    delete mapView;
+    RHO_MAP_TRACE("*******************************    BaseMapView::processClean: finish");
+#endif        
+}
+
+
+
+
+
+MapViewCleaner::MapViewCleaner() {
+	start(epNormal);
+}
+
+MapViewCleaner::~MapViewCleaner() {
+}
+
+    void MapViewCleaner::cleanMapView(BaseMapView* mapView) {
+    	addQueueCommandToFront(new Command(mapView));
+    }
+
+    void MapViewCleaner::processCommand(IQueueCommand *cmd) {
+        RHO_MAP_TRACE("*******************************    MapViewCleaner::processCommand: start");
+    	Command* c = (Command*)cmd;
+
+    	BaseMapView* mapView = c->mMapView;
+
+    	mapView->startClean();
+        RHO_MAP_TRACE("*******************************    MapViewCleaner::processCommand: ____ 1 _____");
+
+    	while (!mapView->isReadyToDelete()) {
+    		sleep(10);
+    	}
+        RHO_MAP_TRACE("*******************************    MapViewCleaner::processCommand: ____ 2 _____");
+
+    	//sleep(50);
+    	mapView->finalClean();
+        RHO_MAP_TRACE("*******************************    MapViewCleaner::processCommand: ____ 3 _____");
+
+    	//sleep(50);
+
+        //delete mapView;
+#ifdef ENABLE_ANDROID_NET_REQUEST
+        mapengine_delete_mapview_in_ui_thread(mapView);
+#else
+        delete mapView;
+#endif        
+
+        RHO_MAP_TRACE("*******************************    MapViewCleaner::processCommand: ____ 4 _____");
+
+        RHO_MAP_TRACE("*******************************    MapViewCleaner::processCommand: finish");
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
 } // namespace map
 } // namespace common

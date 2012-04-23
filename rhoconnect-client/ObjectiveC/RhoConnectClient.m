@@ -175,6 +175,7 @@ void rho_free_callbackdata(void* pData)
 	{
 		rho_connectclient_initmodel(&rhom_models[nModel]);
 		rhom_models[nModel].name = [model.name cStringUsingEncoding:[NSString defaultCStringEncoding]];
+		rhom_models[nModel].partition = [model.partition cStringUsingEncoding:[NSString defaultCStringEncoding]];
 
 		rhom_models[nModel].sync_type = model.sync_type;
         rhom_models[nModel].type = model.model_type;

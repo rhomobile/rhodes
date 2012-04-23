@@ -113,7 +113,7 @@ typedef struct _TCookieData {
 class CMainWindow :
 #if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
 	public CFrameWindowImpl<CMainWindow>, 
-	public CFullScreenFrame<CMainWindow>
+	public CFullScreenFrame<CMainWindow, false>
 #else
     public CWindowImpl<CMainWindow, CWindow, CWinTraits<WS_BORDER | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_CLIPSIBLINGS> >
 #endif
@@ -140,11 +140,9 @@ public:
     // Required to forward messages to the PIEWebBrowser control
     BOOL TranslateAccelerator(MSG* pMsg);
 
-#if defined( OS_PLATFORM_MOTCE )
-   	void SetFullScreen(bool bFull);
-#endif
 #if defined(OS_WINCE)
 	bool m_bFullScreen;
+   	void RhoSetFullScreen(bool bFull, bool bDestroy = false);
 #endif
 
 	void openNativeView(	NativeViewFactory* nativeViewFactory, 
@@ -214,6 +212,7 @@ public:
         MESSAGE_HANDLER(WM_EXECUTE_RUNNABLE, OnExecuteRunnable);
 		MESSAGE_HANDLER(WM_LICENSE_SCREEN, OnLicenseScreen);
         MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus);
+        MESSAGE_HANDLER(WM_HOTKEY, OnHotKey);
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
         MESSAGE_HANDLER(WM_BROWSER_ONDOCUMENTCOMPLETE, OnBrowserDocumentComplete);
         MESSAGE_HANDLER(WM_BROWSER_ONNAVIGATECOMPLETE, OnNavigateComplete);
@@ -282,6 +281,7 @@ private:
     LRESULT OnExecuteRunnable (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnLicenseScreen (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnSetFocus (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+    LRESULT OnHotKey (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 
     LRESULT OnWebKitMessages (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 
