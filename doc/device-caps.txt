@@ -649,6 +649,7 @@ options_has - hash contain additional parameters :
 * "format" "jpg", "png". Default value = "jpg" If you do not define this property when use choose_picture, then on iOS type of image in Gallery will recognize and use the same (JPG or PNG) for save image to applications data.
 * "enable_editing" - boolean, enable post photo capture image customize (supported only on iPhone !). Default value = true. If you enable this, image will captured reduced to screen size (not full size)!
 * "flash_mode" - string, supported only on Android ! Values : "off", "on", "auto", "red-eye", "torch".
+* "save_to_shared_gallery" - boolean, supported for iOS. if true, picture you take will be added to the camera roll. Default value = false.
 
 Additional parameters in camera callback :
 
