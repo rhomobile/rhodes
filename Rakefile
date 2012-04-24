@@ -592,19 +592,19 @@ def init_extensions(startdir, dest)
   puts "exts " + exts
   
   if $config["platform"] != "bb"
-    exists = []
+    #exists = []
       
-    if ( File.exists?(exts) )
-      File.new(exts, "r").read.split("\n").each do |line|
-        next if line !~ /^\s*extern\s+void\s+([A-Za-z_][A-Za-z0-9_]*)/
-        exists << $1
-      end
-    end
+    #if ( File.exists?(exts) )
+    #  File.new(exts, "r").read.split("\n").each do |line|
+    #    next if line !~ /^\s*extern\s+void\s+([A-Za-z_][A-Za-z0-9_]*)/
+    #    exists << $1
+    #  end
+    #end
   
     #if (exists.sort! != extentries.sort! ) || (!File.exists?(exts))
-      File.open(exts, "w") do |f|
-        puts "MODIFY : #{exts}"
-          
+      #File.open(exts, "w") do |f|
+      #  puts "MODIFY : #{exts}"
+        f = StringIO.new("", "w+")          
         f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
         #f.puts "// Generated #{Time.now.to_s}"
         if $config["platform"] == "wm" || $config["platform"] == "win32"
@@ -627,7 +627,8 @@ def init_extensions(startdir, dest)
           f.puts "    #{entry}();"
         end
         f.puts "}"
-      end
+      #end
+        Jake.modify_file_if_content_changed( exts, f )
     #end
 
     extlibs.each { |lib| add_linker_library(lib) }
