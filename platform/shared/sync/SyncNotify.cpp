@@ -163,7 +163,9 @@ void CSyncNotify::fireObjectsNotification()
         callNotify( CSyncNotification(strUrl,"",false), strBody);
     }else if (m_pObjectNotify->m_cCallback)
     {
+        m_isInsideCallback = true;
         (*m_pObjectNotify->m_cCallback)(strBody.c_str(), m_pObjectNotify->m_cCallbackData);
+        m_isInsideCallback = false;
         //callNotify( CSyncNotification(m_pObjectNotify->m_cCallback,m_pObjectNotify->m_cCallbackData,false), strBody);
     }
 }
@@ -547,7 +549,9 @@ boolean CSyncNotify::callNotify(const CSyncNotification& oNotify, const String& 
     }
     if ( oNotify.m_cCallback )
     {
+        m_isInsideCallback = true;        
         int nRet = (*oNotify.m_cCallback)(strBody.c_str(), oNotify.m_cCallbackData);
+        m_isInsideCallback = false;
         return nRet == 1;
     }
     if ( strUrl.length() == 0 )
@@ -640,11 +644,6 @@ void CSyncNotify::callLoginCallback(const CSyncNotification& oNotify, int nErrCo
 	//{
 	//	LOG.ERROR("Call Login callback failed.", exc);
 	//}
-}
-
-bool CSyncNotify::isInsideRequest() const
-{
-	return m_NetRequest.isInsideRequest();
 }
 
 }
