@@ -530,8 +530,9 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* src, boolean bFinish, int
 
 const String& CSyncNotify::getNotifyBody()
 {
+    const static String emptyBody = String();
     if ( m_arNotifyBody.size() == 0 )
-        return String();
+        return emptyBody;
 
     if ( isFakeServerResponse() )
         return m_arNotifyBody[0];
